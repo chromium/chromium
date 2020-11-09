@@ -560,7 +560,7 @@ void TestRenderFrameHost::SendCommitNavigation(
     blink::mojom::ServiceWorkerContainerInfoForClientPtr container_info,
     mojo::PendingRemote<network::mojom::URLLoaderFactory>
         prefetch_loader_factory,
-    blink::mojom::PolicyContainerClientPtr policy_container,
+    blink::mojom::PolicyContainerPtr policy_container,
     const base::UnguessableToken& devtools_navigation_token) {
   CHECK(navigation_client);
   commit_callback_[navigation_request] =

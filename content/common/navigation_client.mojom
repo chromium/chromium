@@ -67,7 +67,7 @@ interface NavigationClient {
       blink.mojom.ServiceWorkerContainerInfoForClient? container_info,
       pending_remote<network.mojom.URLLoaderFactory>? prefetch_loader_factory,
       mojo_base.mojom.UnguessableToken devtools_navigation_token,
-      blink.mojom.PolicyContainerClient policy_container)
+      blink.mojom.PolicyContainer policy_container)
       => (DidCommitProvisionalLoadParams params,
           DidCommitProvisionalLoadInterfaceParams? interface_params);
 

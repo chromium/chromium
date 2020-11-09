@@ -8,18 +8,17 @@ namespace blink {
 
 PolicyContainer::PolicyContainer(
     mojo::PendingAssociatedRemote<mojom::blink::PolicyContainerHost> remote,
-    mojom::blink::PolicyContainerDataPtr policies)
+    mojom::blink::PolicyContainerDocumentPoliciesPtr policies)
     : policies_(std::move(policies)),
       policy_container_host_remote_(std::move(remote)) {}
 
 // static
-std::unique_ptr<PolicyContainer>
-PolicyContainer::CreateFromWebPolicyContainerClient(
-    std::unique_ptr<WebPolicyContainerClient> container) {
+std::unique_ptr<PolicyContainer> PolicyContainer::CreateFromWebPolicyContainer(
+    std::unique_ptr<WebPolicyContainer> container) {
   if (!container)
     return nullptr;
-  mojom::blink::PolicyContainerDataPtr policies =
-      mojom::blink::PolicyContainerData::New(
+  mojom::blink::PolicyContainerDocumentPoliciesPtr policies =
+      mojom::blink::PolicyContainerDocumentPolicies::New(
           container->policies.referrer_policy);
   return std::make_unique<PolicyContainer>(std::move(container->remote),
                                            std::move(policies));
@@ -36,8 +35,8 @@ void PolicyContainer::UpdateReferrerPolicy(
   policy_container_host_remote_->SetReferrerPolicy(policy);
 }
 
-const mojom::blink::PolicyContainerDataPtr& PolicyContainer::GetPolicies()
-    const {
+const mojom::blink::PolicyContainerDocumentPoliciesPtr&
+PolicyContainer::GetPolicies() const {
   return policies_;
 }
 

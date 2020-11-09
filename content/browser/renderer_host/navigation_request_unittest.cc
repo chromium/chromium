@@ -534,19 +534,19 @@ TEST_F(NavigationRequestTest, PolicyContainerInheritance) {
     auto navigation =
         NavigationSimulatorImpl::CreateRendererInitiated(kUrl, child_frame);
     static_cast<blink::mojom::PolicyContainerHost*>(
-        child_frame->policy_container())
+        child_frame->policy_container_host())
         ->SetReferrerPolicy(network::mojom::ReferrerPolicy::kAlways);
     navigation->SetInitiatorFrame(child_frame);
     navigation->Start();
     static_cast<blink::mojom::PolicyContainerHost*>(
-        child_frame->policy_container())
+        child_frame->policy_container_host())
         ->SetReferrerPolicy(network::mojom::ReferrerPolicy::kNever);
     navigation->Commit();
     EXPECT_EQ(
         test.expect_inherit ? network::mojom::ReferrerPolicy::kAlways
                             : network::mojom::ReferrerPolicy::kDefault,
         static_cast<RenderFrameHostImpl*>(navigation->GetFinalRenderFrameHost())
-            ->policy_container()
+            ->policy_container_host()
             ->referrer_policy());
   }
 }

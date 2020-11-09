@@ -13,19 +13,19 @@ namespace blink {
 
 // TODO(antoniosartori): Remove this when CommitNavigation IPC will be handled
 // directly in blink.
-struct WebPolicyContainerData {
+struct WebPolicyContainerDocumentPolicies {
   network::mojom::ReferrerPolicy referrer_policy;
 };
 
 // TODO(antoniosartori): Remove this when CommitNavigation IPC will be handled
 // directly in blink.
-struct WebPolicyContainerClient {
-  WebPolicyContainerClient(
-      WebPolicyContainerData policies,
+struct WebPolicyContainer {
+  WebPolicyContainer(
+      WebPolicyContainerDocumentPolicies policies,
       CrossVariantMojoAssociatedRemote<mojom::PolicyContainerHostInterfaceBase>
           remote);
 
-  WebPolicyContainerData policies;
+  WebPolicyContainerDocumentPolicies policies;
   CrossVariantMojoAssociatedRemote<mojom::PolicyContainerHostInterfaceBase>
       remote;
 };

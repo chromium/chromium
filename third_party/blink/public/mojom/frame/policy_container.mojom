@@ -6,7 +6,7 @@ module blink.mojom;
 
 import "services/network/public/mojom/referrer_policy.mojom";
 
-struct PolicyContainerData {
+struct PolicyContainerDocumentPolicies {
   network.mojom.ReferrerPolicy referrer_policy;
 };
 
@@ -21,7 +21,7 @@ interface PolicyContainerHost {
 
 // Struct containing Blink's copy of the policy container together with a remote
 // to update policies in the browser process copy.
-struct PolicyContainerClient {
-  PolicyContainerData policies;
+struct PolicyContainer {
+  PolicyContainerDocumentPolicies policies;
   pending_associated_remote<PolicyContainerHost> remote;
 };

@@ -526,7 +526,7 @@ void RenderViewTest::SetUp() {
       render_widget_host_->BindNewWidgetInterfaces();
   std::tie(view_params->frame_widget_host, view_params->frame_widget) =
       render_widget_host_->BindNewFrameWidgetInterfaces();
-  view_params->policy_container = CreateStubPolicyContainerClient();
+  view_params->policy_container = CreateStubPolicyContainer();
 
   RenderViewImpl* view = RenderViewImpl::Create(
       *agent_scheduling_group_, compositor_deps_.get(), std::move(view_params),

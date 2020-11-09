@@ -262,7 +262,7 @@ TEST_F(HTMLMetaElementTest, ReferrerPolicyUpdatesPolicyContainer) {
           policy_container_host.BindNewEndpointAndPassDedicatedRemote();
   auto policy_container = std::make_unique<PolicyContainer>(
       std::move(stub_policy_container_remote),
-      mojom::blink::PolicyContainerData::New());
+      mojom::blink::PolicyContainerDocumentPolicies::New());
 
   GetFrame().SetPolicyContainer(std::move(policy_container));
   EXPECT_CALL(policy_container_host,

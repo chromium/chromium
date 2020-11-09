@@ -4218,8 +4218,8 @@ TEST_F(WebViewTest, SetHasTouchEventConsumers) {
   WebLocalFrame* frame = WebLocalFrame::CreateMainFrame(
       web_view_impl, &web_frame_client, nullptr,
       base::UnguessableToken::Create(),
-      std::make_unique<WebPolicyContainerClient>(WebPolicyContainerData(),
-                                                 mojo::NullAssociatedRemote()));
+      std::make_unique<WebPolicyContainer>(WebPolicyContainerDocumentPolicies(),
+                                           mojo::NullAssociatedRemote()));
   web_frame_client.Bind(frame);
 
   FakeFrameWidgetHost frame_widget_host;

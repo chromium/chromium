@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_RENDERER_HOST_POLICY_CONTAINER_H_
-#define CONTENT_BROWSER_RENDERER_HOST_POLICY_CONTAINER_H_
+#ifndef CONTENT_BROWSER_RENDERER_HOST_POLICY_CONTAINER_HOST_H_
+#define CONTENT_BROWSER_RENDERER_HOST_POLICY_CONTAINER_HOST_H_
 
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
@@ -13,35 +13,35 @@
 
 namespace content {
 
-// PolicyContainer serves as a container for several security policies. It
+// PolicyContainerHost serves as a container for several security policies. It
 // should be owned by a RenderFrameHost. It keep tracks of the policies assigned
 // to a document. When a document creates/opens another document with a local
-// scheme (about:blank, about:srcdoc, data, blob, filesystem), the policy
-// container of the opener is cloned and a copy is attached to the new document,
-// so that the same security policies are applied to it. It implements a mojo
-// interface that allows updates coming from Blink.
-class CONTENT_EXPORT PolicyContainer
+// scheme (about:blank, about:srcdoc, data, blob, filesystem), the
+// PolicyContainerhost of the opener is cloned and a copy is attached to the new
+// document, so that the same security policies are applied to it. It implements
+// a mojo interface that allows updates coming from Blink.
+class CONTENT_EXPORT PolicyContainerHost
     : public blink::mojom::PolicyContainerHost {
  public:
-  PolicyContainer();
-  explicit PolicyContainer(network::mojom::ReferrerPolicy referrer_policy);
-  PolicyContainer(const PolicyContainer&) = delete;
-  PolicyContainer& operator=(const PolicyContainer&) = delete;
-  ~PolicyContainer() override;
+  PolicyContainerHost();
+  explicit PolicyContainerHost(network::mojom::ReferrerPolicy referrer_policy);
+  PolicyContainerHost(const PolicyContainerHost&) = delete;
+  PolicyContainerHost& operator=(const PolicyContainerHost&) = delete;
+  ~PolicyContainerHost() override;
 
   network::mojom::ReferrerPolicy referrer_policy() const {
     return referrer_policy_;
   }
 
-  // Return a PolicyContainerClient, containing copies of the policies and a
+  // Return a PolicyContainer, containing copies of the policies and a
   // pending mojo remote that can be used to update policies in this object. If
   // called a second time, it resets the receiver and creates a new
-  // PolicyContainerClient, invalidating the remote of the previous one.
-  blink::mojom::PolicyContainerClientPtr CreateClientForBlink();
+  // PolicyContainer, invalidating the remote of the previous one.
+  blink::mojom::PolicyContainerPtr CreatePolicyContainerForBlink();
 
   // Create a new PolicyContainer with the same policies (i.e. a deep copy), but
   // with a new, unbound mojo receiver.
-  std::unique_ptr<PolicyContainer> Clone() const;
+  std::unique_ptr<PolicyContainerHost> Clone() const;
 
   // Bind this PolicyContainer with the given mojo receiver, so that it can
   // handle mojo messages coming from the corresponding remote.

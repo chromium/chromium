@@ -24,7 +24,7 @@
 #include "content/browser/renderer_host/navigation_controller_impl.h"
 #include "content/browser/renderer_host/navigation_entry_impl.h"
 #include "content/browser/renderer_host/navigation_throttle_runner.h"
-#include "content/browser/renderer_host/policy_container.h"
+#include "content/browser/renderer_host/policy_container_host.h"
 #include "content/browser/site_instance_impl.h"
 #include "content/browser/web_package/web_bundle_handle.h"
 #include "content/common/content_export.h"
@@ -652,8 +652,10 @@ class CONTENT_EXPORT NavigationRequest
   void SetRequiredCSP(network::mojom::ContentSecurityPolicyPtr csp);
   network::mojom::ContentSecurityPolicyPtr TakeRequiredCSP();
 
-  std::unique_ptr<PolicyContainer> TakePolicyContainer();
-  PolicyContainer* policy_container() { return policy_container_.get(); }
+  std::unique_ptr<PolicyContainerHost> TakePolicyContainerHost();
+  PolicyContainerHost* policy_container_host() {
+    return policy_container_host_.get();
+  }
 
   CrossOriginEmbedderPolicyReporter* coep_reporter() {
     return coep_reporter_.get();
@@ -1455,10 +1457,10 @@ class CONTENT_EXPORT NavigationRequest
   // the RenderFrameHost at DidCommitNavigation time.
   network::mojom::ContentSecurityPolicyPtr required_csp_;
 
-  // Holds the policy container for the new document that will be created by
+  // Holds the PolicyContainerHost for the new document that will be created by
   // this navigation. It is moved into the RenderFrameHostImpl at
   // DidCommitNavigation time.
-  std::unique_ptr<PolicyContainer> policy_container_;
+  std::unique_ptr<PolicyContainerHost> policy_container_host_;
 
   std::unique_ptr<CrossOriginEmbedderPolicyReporter> coep_reporter_;
 

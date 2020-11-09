@@ -293,7 +293,7 @@ void TestRenderFrame::Navigate(network::mojom::URLResponseHeadPtr head,
                    blink::mojom::ServiceWorkerContainerInfoForClientPtr(),
                    mojo::NullRemote() /* prefetch_loader_factory */,
                    base::UnguessableToken::Create(),
-                   CreateStubPolicyContainerClient(),
+                   CreateStubPolicyContainer(),
                    base::BindOnce(&MockFrameHost::DidCommitProvisionalLoad,
                                   base::Unretained(mock_frame_host_.get())));
 }

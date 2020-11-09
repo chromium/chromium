@@ -9,7 +9,7 @@
 
 namespace content {
 
-blink::mojom::PolicyContainerClientPtr CreateStubPolicyContainerClient();
+blink::mojom::PolicyContainerPtr CreateStubPolicyContainer();
 
 }  // namespace content
 

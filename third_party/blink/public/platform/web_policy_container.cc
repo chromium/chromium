@@ -6,8 +6,8 @@
 
 namespace blink {
 
-WebPolicyContainerClient::WebPolicyContainerClient(
-    WebPolicyContainerData policies,
+WebPolicyContainer::WebPolicyContainer(
+    WebPolicyContainerDocumentPolicies policies,
     CrossVariantMojoAssociatedRemote<mojom::PolicyContainerHostInterfaceBase>
         remote)
     : policies(std::move(policies)), remote(std::move(remote)) {}

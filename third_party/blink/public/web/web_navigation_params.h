@@ -410,7 +410,7 @@ struct BLINK_EXPORT WebNavigationParams {
 
   // Blink's copy of the policy container containing security policies to be
   // enforced on the document created by this navigation.
-  std::unique_ptr<WebPolicyContainerClient> policy_container;
+  std::unique_ptr<WebPolicyContainer> policy_container;
 };
 
 }  // namespace blink

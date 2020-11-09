@@ -44,7 +44,7 @@
 #include "content/browser/renderer_host/back_forward_cache_metrics.h"
 #include "content/browser/renderer_host/media/render_frame_audio_input_stream_factory.h"
 #include "content/browser/renderer_host/media/render_frame_audio_output_stream_factory.h"
-#include "content/browser/renderer_host/policy_container.h"
+#include "content/browser/renderer_host/policy_container_host.h"
 #include "content/browser/renderer_host/should_swap_browsing_instance.h"
 #include "content/browser/site_instance_impl.h"
 #include "content/browser/webui/web_ui_impl.h"
@@ -1522,7 +1522,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
     return required_csp_.get();
   }
 
-  PolicyContainer* policy_container() { return policy_container_.get(); }
+  PolicyContainerHost* policy_container_host() {
+    return policy_container_host_.get();
+  }
 
   // This function mimics DidCommitProvisionalLoad for navigations served from
   // the back-forward cache.
@@ -1901,7 +1903,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
       blink::mojom::ServiceWorkerContainerInfoForClientPtr container_info,
       mojo::PendingRemote<network::mojom::URLLoaderFactory>
           prefetch_loader_factory,
-      blink::mojom::PolicyContainerClientPtr policy_container,
+      blink::mojom::PolicyContainerPtr policy_container,
       const base::UnguessableToken& devtools_navigation_token);
   virtual void SendCommitFailedNavigation(
       mojom::NavigationClient* navigation_client,
@@ -3296,13 +3298,13 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // stored when the frame commits the navigation.
   network::mojom::ContentSecurityPolicyPtr required_csp_;
 
-  // The policy container for the current document, containing security policies
-  // that apply to it. It should never be null if the RenderFrameHost is
-  // displaying a document. Its lifetime should coincide with the lifetime of
+  // The PolicyContainerHost for the current document, containing security
+  // policies that apply to it. It should never be null if the RenderFrameHost
+  // is displaying a document. Its lifetime should coincide with the lifetime of
   // the document displayed in the RenderFrameHost. It is overwritten at
-  // navigation commit time in DidCommitNewDocument with the policy container of
-  // the new document.
-  std::unique_ptr<PolicyContainer> policy_container_;
+  // navigation commit time in DidCommitNewDocument with the PolicyContainerHost
+  // of the new document.
+  std::unique_ptr<PolicyContainerHost> policy_container_host_;
 
   // Prerender2:
   // Receivers for PrerenderProcessor that handle prerendering requests from a

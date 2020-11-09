@@ -15,32 +15,33 @@ namespace blink {
 
 // PolicyContainer serves as a container for several security policies to be
 // applied to a document. It is constructed at commit time with the data passed
-// by the RenderFrameHost. Some member policies of the policy container can be
-// updated also by Blink (this generally happens when Blink parses meta
-// tags). The corresponding setters trigger also an update in the corresponding
-// content::PolicyContainer owned by the RenderFrameHost via a mojo IPC.
+// by the RenderFrameHost. It is Blink's counterpart of the PolicyContainerHost,
+// which is held by the RenderFrameHost. Some document policies of the policy
+// container can be updated also by Blink (this generally happens when Blink
+// parses meta tags). The corresponding setters trigger also an update in the
+// corresponding PolicyContainerHost via a mojo IPC.
 class CORE_EXPORT PolicyContainer {
  public:
   PolicyContainer() = delete;
   PolicyContainer(
       mojo::PendingAssociatedRemote<mojom::blink::PolicyContainerHost> remote,
-      mojom::blink::PolicyContainerDataPtr policies);
+      mojom::blink::PolicyContainerDocumentPoliciesPtr policies);
   PolicyContainer(const PolicyContainer&) = delete;
   PolicyContainer& operator=(const PolicyContainer&) = delete;
   ~PolicyContainer() = default;
 
-  static std::unique_ptr<PolicyContainer> CreateFromWebPolicyContainerClient(
-      std::unique_ptr<WebPolicyContainerClient> container);
+  static std::unique_ptr<PolicyContainer> CreateFromWebPolicyContainer(
+      std::unique_ptr<WebPolicyContainer> container);
 
   // Change the Referrer Policy and sync the new policy with the corresponding
   // PolicyContainer owned by the RenderFrameHost.
   void UpdateReferrerPolicy(network::mojom::blink::ReferrerPolicy policy);
   network::mojom::blink::ReferrerPolicy GetReferrerPolicy() const;
 
-  const mojom::blink::PolicyContainerDataPtr& GetPolicies() const;
+  const mojom::blink::PolicyContainerDocumentPoliciesPtr& GetPolicies() const;
 
  private:
-  mojom::blink::PolicyContainerDataPtr policies_;
+  mojom::blink::PolicyContainerDocumentPoliciesPtr policies_;
 
   mojo::AssociatedRemote<mojom::blink::PolicyContainerHost>
       policy_container_host_remote_;

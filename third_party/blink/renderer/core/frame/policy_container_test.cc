@@ -10,7 +10,7 @@ namespace blink {
 
 TEST(PolicyContainerTest, UpdateReferrerPolicyIsPropagated) {
   MockPolicyContainerHost host;
-  auto policies = mojom::blink::PolicyContainerData::New(
+  auto policies = mojom::blink::PolicyContainerDocumentPolicies::New(
       network::mojom::blink::ReferrerPolicy::kAlways);
   PolicyContainer policy_container(host.BindNewEndpointAndPassDedicatedRemote(),
                                    std::move(policies));

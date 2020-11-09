@@ -996,21 +996,21 @@ RenderFrameHostImpl::RenderFrameHostImpl(
   // (DidCommitProvisionalLoad) for committing the initial empty
   // document. However, since the RenderFrameHost has already been created, we
   // cannot use DidCommitProvisionalLoad to set the policy container, since we
-  // could run into a race condition. Hence we need to set The policy container
+  // could run into a race condition. Hence we need to set the policy container
   // immediately when creating the RenderFrameHost here.
   if (lifecycle_state_ != LifecycleState::kSpeculative) {
     // Creating a RFH in kActive state implies that it is the RFH for a
     // newly-created FTN, which should not have committed a real load yet.
     DCHECK(!frame_tree_node_->has_committed_real_load());
     if (parent_) {
-      policy_container_ = parent_->policy_container()->Clone();
+      policy_container_host_ = parent_->policy_container_host()->Clone();
     } else if (frame_tree_node_->opener()) {
-      policy_container_ = frame_tree_node_->opener()
-                              ->current_frame_host()
-                              ->policy_container()
-                              ->Clone();
+      policy_container_host_ = frame_tree_node_->opener()
+                                   ->current_frame_host()
+                                   ->policy_container_host()
+                                   ->Clone();
     } else {
-      policy_container_ = std::make_unique<PolicyContainer>();
+      policy_container_host_ = std::make_unique<PolicyContainerHost>();
     }
   }
 
@@ -2226,8 +2226,9 @@ bool RenderFrameHostImpl::CreateRenderFrame(
   // navigation. The policy container for the navigated document will be sent to
   // Blink at CommitNavigation time and then stored in this RenderFrameHost in
   // DidCommitNewDocument.
-  if (policy_container())
-    params->policy_container = policy_container()->CreateClientForBlink();
+  if (policy_container_host())
+    params->policy_container =
+        policy_container_host()->CreatePolicyContainerForBlink();
 
   // Normally, the replication state contains effective frame policy, excluding
   // sandbox flags and feature policy attributes that were updated but have not
@@ -5324,7 +5325,7 @@ void RenderFrameHostImpl::CreateNewWindow(
           std::move(browser_interface_broker)),
       cloned_namespace->id(), main_frame->GetDevToolsFrameToken(),
       wait_for_debugger,
-      main_frame->policy_container()->CreateClientForBlink());
+      main_frame->policy_container_host()->CreatePolicyContainerForBlink());
 
   std::move(callback).Run(mojom::CreateNewWindowStatus::kSuccess,
                           std::move(reply));
@@ -6661,9 +6662,10 @@ void RenderFrameHostImpl::CommitNavigation(
     if (IsURLHandledByNetworkStack(common_params->url))
       last_navigation_previews_state_ = common_params->previews_state;
 
-    DCHECK(navigation_request->policy_container());
-    blink::mojom::PolicyContainerClientPtr policy_container =
-        navigation_request->policy_container()->CreateClientForBlink();
+    DCHECK(navigation_request->policy_container_host());
+    blink::mojom::PolicyContainerPtr policy_container =
+        navigation_request->policy_container_host()
+            ->CreatePolicyContainerForBlink();
 
     SendCommitNavigation(
         navigation_client, navigation_request, std::move(common_params),
@@ -7836,7 +7838,7 @@ void RenderFrameHostImpl::CreateInstalledAppProvider(
 void RenderFrameHostImpl::BindPolicyContainer(
     mojo::PendingAssociatedReceiver<blink::mojom::PolicyContainerHost>
         receiver) {
-  policy_container_->Bind(std::move(receiver));
+  policy_container_host_->Bind(std::move(receiver));
 }
 
 void RenderFrameHostImpl::CreateDedicatedWorkerHostFactory(
@@ -8838,13 +8840,13 @@ void RenderFrameHostImpl::DidCommitNewDocument(
                        weak_ptr_factory_.GetWeakPtr(), std::move(receiver)));
   }
 
-  // We move the policy container of |navigation_request| into the
+  // We move the PolicyContainerHost of |navigation_request| into the
   // RenderFrameHost unless this is the initial, "fake" navigation to
-  // about:blank (because otherwise we would overwrite the policy container of
-  // the new document, inherited at RenderFrameHost creation time, with an empty
-  // policy container).
+  // about:blank (because otherwise we would overwrite the PolicyContainerHost
+  // of the new document, inherited at RenderFrameHost creation time, with an
+  // empty PolicyContainerHost).
   if (navigation_request->IsWaitingToCommit()) {
-    policy_container_ = navigation_request->TakePolicyContainer();
+    policy_container_host_ = navigation_request->TakePolicyContainerHost();
   }
 
   // Set the state whether this navigation is to an MHTML document, since there
@@ -9025,7 +9027,7 @@ void RenderFrameHostImpl::SendCommitNavigation(
     blink::mojom::ServiceWorkerContainerInfoForClientPtr container_info,
     mojo::PendingRemote<network::mojom::URLLoaderFactory>
         prefetch_loader_factory,
-    blink::mojom::PolicyContainerClientPtr policy_container,
+    blink::mojom::PolicyContainerPtr policy_container,
     const base::UnguessableToken& devtools_navigation_token) {
   navigation_client->CommitNavigation(
       std::move(common_params), std::move(commit_params),

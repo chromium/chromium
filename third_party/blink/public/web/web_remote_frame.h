@@ -85,7 +85,7 @@ class WebRemoteFrame : public WebFrame {
       mojom::FrameOwnerElementType,
       const base::UnguessableToken& frame_token,
       WebFrame* opener,
-      std::unique_ptr<blink::WebPolicyContainerClient> policy_container) = 0;
+      std::unique_ptr<blink::WebPolicyContainer> policy_container) = 0;
 
   virtual WebRemoteFrame* CreateRemoteChild(
       mojom::TreeScopeType,

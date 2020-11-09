@@ -34,7 +34,7 @@ class NavigationClient : mojom::NavigationClient {
       mojo::PendingRemote<network::mojom::URLLoaderFactory>
           prefetch_loader_factory,
       const base::UnguessableToken& devtools_navigation_token,
-      blink::mojom::PolicyContainerClientPtr policy_container,
+      blink::mojom::PolicyContainerPtr policy_container,
       CommitNavigationCallback callback) override;
   void CommitFailedNavigation(
       mojom::CommonNavigationParamsPtr common_params,

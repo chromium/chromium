@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/test/scoped_feature_list.h"
-#include "content/browser/renderer_host/policy_container.h"
+#include "content/browser/renderer_host/policy_container_host.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/test/browser_test.h"
@@ -17,9 +17,9 @@
 namespace content {
 
 namespace {
-class PolicyContainerBrowserTest : public content::ContentBrowserTest {
+class PolicyContainerHostBrowserTest : public content::ContentBrowserTest {
  public:
-  PolicyContainerBrowserTest() {
+  PolicyContainerHostBrowserTest() {
     // enable policy container
     feature_list_.InitAndEnableFeature(blink::features::kPolicyContainer);
   }
@@ -44,73 +44,51 @@ class PolicyContainerBrowserTest : public content::ContentBrowserTest {
 };
 }  // namespace
 
-IN_PROC_BROWSER_TEST_F(PolicyContainerBrowserTest, ReferrerPolicyFromHeader) {
+IN_PROC_BROWSER_TEST_F(PolicyContainerHostBrowserTest,
+                       ReferrerPolicyFromHeader) {
   using ReferrerPolicy = network::mojom::ReferrerPolicy;
   const struct {
     const char* headers;
     ReferrerPolicy expected_referrer;
   } kTestCases[] = {
-      {
-          "",
-          ReferrerPolicy::kDefault
-      },
-      {
-          "Referrer-Policy: no-referrer",
-          ReferrerPolicy::kNever
-      },
-      {
-          "Referrer-Policy: no-referrer-when-downgrade",
-          ReferrerPolicy::kNoReferrerWhenDowngrade
-      },
-      {
-          "Referrer-Policy: origin",
-          ReferrerPolicy::kOrigin
-      },
-      {
-          "Referrer-Policy: origin-when-cross-origin",
-          ReferrerPolicy::kOriginWhenCrossOrigin
-      },
-      {
-          "Referrer-Policy: same-origin",
-          ReferrerPolicy::kSameOrigin
-      },
-      {
-          "Referrer-Policy: strict-origin",
-          ReferrerPolicy::kStrictOrigin
-      },
-      {
-          "Referrer-Policy: strict-origin-when-cross-origin",
-          ReferrerPolicy::kStrictOriginWhenCrossOrigin
-      },
-      {
-          "Referrer-Policy: unsafe-url",
-          ReferrerPolicy::kAlways
-      },
+      {"", ReferrerPolicy::kDefault},
+      {"Referrer-Policy: no-referrer", ReferrerPolicy::kNever},
+      {"Referrer-Policy: no-referrer-when-downgrade",
+       ReferrerPolicy::kNoReferrerWhenDowngrade},
+      {"Referrer-Policy: origin", ReferrerPolicy::kOrigin},
+      {"Referrer-Policy: origin-when-cross-origin",
+       ReferrerPolicy::kOriginWhenCrossOrigin},
+      {"Referrer-Policy: same-origin", ReferrerPolicy::kSameOrigin},
+      {"Referrer-Policy: strict-origin", ReferrerPolicy::kStrictOrigin},
+      {"Referrer-Policy: strict-origin-when-cross-origin",
+       ReferrerPolicy::kStrictOriginWhenCrossOrigin},
+      {"Referrer-Policy: unsafe-url", ReferrerPolicy::kAlways},
   };
   for (const auto& test_case : kTestCases) {
     GURL url = embedded_test_server()->GetURL(
         "a.com", "/set-header?" + std::string(test_case.headers));
     ASSERT_TRUE(NavigateToURL(shell(), url));
     EXPECT_EQ(test_case.expected_referrer,
-              current_frame_host()->policy_container()->referrer_policy());
+              current_frame_host()->policy_container_host()->referrer_policy());
   }
 }
 
-IN_PROC_BROWSER_TEST_F(PolicyContainerBrowserTest, ReferrerPolicyMetaUpdates) {
+IN_PROC_BROWSER_TEST_F(PolicyContainerHostBrowserTest,
+                       ReferrerPolicyMetaUpdates) {
   GURL page = embedded_test_server()->GetURL("a.com", "/empty.html");
   ASSERT_TRUE(NavigateToURL(shell(), page));
   EXPECT_EQ(network::mojom::ReferrerPolicy::kDefault,
-            current_frame_host()->policy_container()->referrer_policy());
+            current_frame_host()->policy_container_host()->referrer_policy());
   ASSERT_TRUE(ExecJs(current_frame_host(),
                      "var meta = document.createElement('meta');"
                      "meta.name = 'referrer';"
                      "meta.content = 'no-referrer';"
                      "document.head.appendChild(meta);"));
   EXPECT_EQ(network::mojom::ReferrerPolicy::kNever,
-            current_frame_host()->policy_container()->referrer_policy());
+            current_frame_host()->policy_container_host()->referrer_policy());
 }
 
-IN_PROC_BROWSER_TEST_F(PolicyContainerBrowserTest, CopiedFromPopupOpener) {
+IN_PROC_BROWSER_TEST_F(PolicyContainerHostBrowserTest, CopiedFromPopupOpener) {
   GURL no_referrer_page = embedded_test_server()->GetURL(
       "a.com", "/set-header?Referrer-Policy: no-referrer");
   GURL origin_referrer_page = embedded_test_server()->GetURL(
@@ -119,7 +97,7 @@ IN_PROC_BROWSER_TEST_F(PolicyContainerBrowserTest, CopiedFromPopupOpener) {
 
   {
     // Open a popup. It stays on the initial empty document. The
-    // PolicyContainer's referrer policy must have been inherited from the
+    // PolicyContainerHost's referrer policy must have been inherited from the
     // opener.
     ShellAddedObserver shell_observer;
     ASSERT_TRUE(ExecJs(current_frame_host(), "window.open();"));
@@ -128,7 +106,7 @@ IN_PROC_BROWSER_TEST_F(PolicyContainerBrowserTest, CopiedFromPopupOpener) {
     RenderFrameHostImpl* popup_frame =
         popup_webcontents->GetFrameTree()->root()->current_frame_host();
     EXPECT_EQ(network::mojom::ReferrerPolicy::kOrigin,
-              popup_frame->policy_container()->referrer_policy());
+              popup_frame->policy_container_host()->referrer_policy());
   }
   {
     // Open a popup that navigates to another document, the referrer policy
@@ -146,12 +124,12 @@ IN_PROC_BROWSER_TEST_F(PolicyContainerBrowserTest, CopiedFromPopupOpener) {
     RenderFrameHostImpl* popup_frame =
         popup_webcontents->GetFrameTree()->root()->current_frame_host();
     EXPECT_EQ(network::mojom::ReferrerPolicy::kNever,
-              popup_frame->policy_container()->referrer_policy());
+              popup_frame->policy_container_host()->referrer_policy());
     EXPECT_EQ(origin_referrer_page.GetWithEmptyPath(),
               EvalJs(popup_frame, "document.referrer;"));
   }
 
-  // Taint the RFH PolicyContainer with (referrer-policy: same-origin).
+  // Taint the RFH PolicyContainerHost with (referrer-policy: same-origin).
   // This is not the same as the one in the renderer
   // (referrer-policy: origin).
   // This is not possible in a normal situation, but could occur if the
@@ -159,9 +137,9 @@ IN_PROC_BROWSER_TEST_F(PolicyContainerBrowserTest, CopiedFromPopupOpener) {
   // This will enable the following test, which verifies that the copied policy
   // comes from the browser.
   static_cast<blink::mojom::PolicyContainerHost*>(
-      current_frame_host()->policy_container())
+      current_frame_host()->policy_container_host())
       ->SetReferrerPolicy(network::mojom::ReferrerPolicy::kSameOrigin);
-  // Repeat the two previous tests with the tainted Policy Container:
+  // Repeat the two previous tests with the tainted Policy ContainerHost:
   {
     // Open a popup on a document that inherits the Policy Container and verify
     // its Policy Container value. The policy container must be copied within
@@ -174,7 +152,7 @@ IN_PROC_BROWSER_TEST_F(PolicyContainerBrowserTest, CopiedFromPopupOpener) {
     RenderFrameHostImpl* popup_frame =
         popup_webcontents->GetFrameTree()->root()->current_frame_host();
     EXPECT_EQ(network::mojom::ReferrerPolicy::kSameOrigin,
-              popup_frame->policy_container()->referrer_policy());
+              popup_frame->policy_container_host()->referrer_policy());
   }
   {
     // Open a popup that navigates to another document, the initial empty
@@ -190,7 +168,7 @@ IN_PROC_BROWSER_TEST_F(PolicyContainerBrowserTest, CopiedFromPopupOpener) {
     RenderFrameHostImpl* popup_frame =
         popup_webcontents->GetFrameTree()->root()->current_frame_host();
     EXPECT_EQ(network::mojom::ReferrerPolicy::kNever,
-              popup_frame->policy_container()->referrer_policy());
+              popup_frame->policy_container_host()->referrer_policy());
 
     // The referrer policy used to determine the referrer comes from blink,
     // resulting in the origin referrer policy being applied instead of the
@@ -200,7 +178,7 @@ IN_PROC_BROWSER_TEST_F(PolicyContainerBrowserTest, CopiedFromPopupOpener) {
   }
 }
 
-IN_PROC_BROWSER_TEST_F(PolicyContainerBrowserTest, CopiedFromParent) {
+IN_PROC_BROWSER_TEST_F(PolicyContainerHostBrowserTest, CopiedFromParent) {
   GURL no_referrer_page = embedded_test_server()->GetURL(
       "a.com", "/set-header?Referrer-Policy: no-referrer");
   GURL origin_referrer_page = embedded_test_server()->GetURL(
@@ -221,7 +199,7 @@ IN_PROC_BROWSER_TEST_F(PolicyContainerBrowserTest, CopiedFromParent) {
     EXPECT_TRUE(iframe_node->current_url().IsAboutSrcdoc());
     EXPECT_EQ(network::mojom::ReferrerPolicy::kOrigin,
               iframe_node->current_frame_host()
-                  ->policy_container()
+                  ->policy_container_host()
                   ->referrer_policy());
 
     // Navigate the document and verify the policy container is updated and the
@@ -234,7 +212,7 @@ IN_PROC_BROWSER_TEST_F(PolicyContainerBrowserTest, CopiedFromParent) {
     WaitForLoadStop(web_contents());
     EXPECT_EQ(network::mojom::ReferrerPolicy::kNever,
               iframe_node->current_frame_host()
-                  ->policy_container()
+                  ->policy_container_host()
                   ->referrer_policy());
     EXPECT_EQ(origin_referrer_page.GetWithEmptyPath(),
               EvalJs(iframe_node->current_frame_host(), "document.referrer;"));
@@ -246,7 +224,7 @@ IN_PROC_BROWSER_TEST_F(PolicyContainerBrowserTest, CopiedFromParent) {
   // This will enable the following test, which verifies that the copied policy
   // comes from the browser.
   static_cast<blink::mojom::PolicyContainerHost*>(
-      current_frame_host()->policy_container())
+      current_frame_host()->policy_container_host())
       ->SetReferrerPolicy(network::mojom::ReferrerPolicy::kSameOrigin);
   // Repeat the previous test with the tainted policy container:
   {
@@ -260,7 +238,7 @@ IN_PROC_BROWSER_TEST_F(PolicyContainerBrowserTest, CopiedFromParent) {
     EXPECT_TRUE(iframe_node->current_url().IsAboutSrcdoc());
     EXPECT_EQ(network::mojom::ReferrerPolicy::kSameOrigin,
               iframe_node->current_frame_host()
-                  ->policy_container()
+                  ->policy_container_host()
                   ->referrer_policy());
 
     ASSERT_TRUE(
@@ -271,7 +249,7 @@ IN_PROC_BROWSER_TEST_F(PolicyContainerBrowserTest, CopiedFromParent) {
     // no_referrer_page.
     EXPECT_EQ(network::mojom::ReferrerPolicy::kNever,
               iframe_node->current_frame_host()
-                  ->policy_container()
+                  ->policy_container_host()
                   ->referrer_policy());
     // The referrer is determined using the policy container inherited when the
     // frame was created and navigated to the srcdoc. The tainted value, within
@@ -283,7 +261,7 @@ IN_PROC_BROWSER_TEST_F(PolicyContainerBrowserTest, CopiedFromParent) {
   }
 }
 
-IN_PROC_BROWSER_TEST_F(PolicyContainerBrowserTest,
+IN_PROC_BROWSER_TEST_F(PolicyContainerHostBrowserTest,
                        CopiedFromParentCreatedBySibling) {
   GURL origin_referrer_page = embedded_test_server()->GetURL(
       "a.com", "/set-header?Referrer-Policy: origin");
@@ -307,7 +285,7 @@ IN_PROC_BROWSER_TEST_F(PolicyContainerBrowserTest,
         current_frame_host()->child_at(current_frame_host()->child_count() - 1);
     EXPECT_EQ(network::mojom::ReferrerPolicy::kSameOrigin,
               first_iframe_node->current_frame_host()
-                  ->policy_container()
+                  ->policy_container_host()
                   ->referrer_policy());
 
     // From the iframe, create a sibling.
@@ -324,7 +302,7 @@ IN_PROC_BROWSER_TEST_F(PolicyContainerBrowserTest,
     // main document, which has referrer-policy: origin.
     EXPECT_EQ(network::mojom::ReferrerPolicy::kOrigin,
               second_iframe_node->current_frame_host()
-                  ->policy_container()
+                  ->policy_container_host()
                   ->referrer_policy())
         << "Sibling policy container inherited from parent.";
 
@@ -337,7 +315,7 @@ IN_PROC_BROWSER_TEST_F(PolicyContainerBrowserTest,
     WaitForLoadStop(web_contents());
     EXPECT_EQ(network::mojom::ReferrerPolicy::kOrigin,
               first_iframe_node->current_frame_host()
-                  ->policy_container()
+                  ->policy_container_host()
                   ->referrer_policy());
     EXPECT_EQ(
         origin_referrer_page.GetWithEmptyPath(),
@@ -354,7 +332,7 @@ IN_PROC_BROWSER_TEST_F(PolicyContainerBrowserTest,
     WaitForLoadStop(web_contents());
     EXPECT_EQ(network::mojom::ReferrerPolicy::kNever,
               second_iframe_node->current_frame_host()
-                  ->policy_container()
+                  ->policy_container_host()
                   ->referrer_policy());
     EXPECT_EQ(
         origin_referrer_page.GetWithEmptyPath(),

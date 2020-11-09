@@ -71,8 +71,7 @@ class CORE_EXPORT WebRemoteFrameImpl final
       mojom::FrameOwnerElementType,
       const base::UnguessableToken& frame_token,
       WebFrame* opener,
-      std::unique_ptr<blink::WebPolicyContainerClient> policy_container)
-      override;
+      std::unique_ptr<blink::WebPolicyContainer> policy_container) override;
   WebRemoteFrame* CreateRemoteChild(mojom::blink::TreeScopeType,
                                     const WebString& name,
                                     const FramePolicy&,

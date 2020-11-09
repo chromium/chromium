@@ -29,7 +29,7 @@ void NavigationClient::CommitNavigation(
     mojo::PendingRemote<network::mojom::URLLoaderFactory>
         prefetch_loader_factory,
     const base::UnguessableToken& devtools_navigation_token,
-    blink::mojom::PolicyContainerClientPtr policy_container,
+    blink::mojom::PolicyContainerPtr policy_container,
     CommitNavigationCallback callback) {
   // TODO(ahemery): The reset should be done when the navigation did commit
   // (meaning at a later stage). This is not currently possible because of

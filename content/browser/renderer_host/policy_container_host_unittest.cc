@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/renderer_host/policy_container.h"
+#include "content/browser/renderer_host/policy_container_host.h"
 
 #include "services/network/public/mojom/referrer_policy.mojom-shared.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -10,7 +10,7 @@
 namespace content {
 
 TEST(PolicyContainerTest, ReferrerPolicy) {
-  PolicyContainer policy_container;
+  PolicyContainerHost policy_container;
   EXPECT_EQ(network::mojom::ReferrerPolicy::kDefault,
             policy_container.referrer_policy());
 

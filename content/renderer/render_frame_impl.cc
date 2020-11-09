@@ -1141,13 +1141,13 @@ v8::MaybeLocal<v8::Value> CallMethodOnFrame(blink::WebNavigationControl* frame,
       static_cast<int>(args.size()), args.data());
 }
 
-std::unique_ptr<blink::WebPolicyContainerClient> ToWebPolicyContainerClient(
-    blink::mojom::PolicyContainerClientPtr in) {
+std::unique_ptr<blink::WebPolicyContainer> ToWebPolicyContainer(
+    blink::mojom::PolicyContainerPtr in) {
   if (!in)
     return nullptr;
 
-  return std::make_unique<blink::WebPolicyContainerClient>(
-      blink::WebPolicyContainerData{in->policies->referrer_policy},
+  return std::make_unique<blink::WebPolicyContainer>(
+      blink::WebPolicyContainerDocumentPolicies{in->policies->referrer_policy},
       std::move(in->remote));
 }
 
@@ -1584,7 +1584,7 @@ RenderFrameImpl* RenderFrameImpl::CreateMainFrame(
       render_view->GetWebView(), render_frame,
       render_frame->blink_interface_registry_.get(),
       params->main_frame_frame_token,
-      ToWebPolicyContainerClient(std::move(params->policy_container)), opener,
+      ToWebPolicyContainer(std::move(params->policy_container)), opener,
       // This conversion is a little sad, as this often comes from a
       // WebString...
       WebString::FromUTF8(params->replicated_frame_state.name),
@@ -1653,7 +1653,7 @@ void RenderFrameImpl::CreateFrame(
     mojom::CreateFrameWidgetParamsPtr widget_params,
     blink::mojom::FrameOwnerPropertiesPtr frame_owner_properties,
     bool has_committed_real_load,
-    blink::mojom::PolicyContainerClientPtr policy_container) {
+    blink::mojom::PolicyContainerPtr policy_container) {
   // TODO(danakj): Split this method into two pieces. The first block makes a
   // WebLocalFrame and collects the RenderView and RenderFrame for it. The
   // second block uses that to make a RenderWidget, if needed.
@@ -1701,7 +1701,7 @@ void RenderFrameImpl::CreateFrame(
         previous_sibling_web_frame,
         frame_owner_properties->To<blink::WebFrameOwnerProperties>(),
         replicated_state.frame_owner_element_type, frame_token, opener,
-        ToWebPolicyContainerClient(std::move(policy_container)));
+        ToWebPolicyContainer(std::move(policy_container)));
 
     // The RenderFrame is created and inserted into the frame tree in the above
     // call to createLocalChild.
@@ -3074,7 +3074,7 @@ void RenderFrameImpl::CommitNavigation(
     mojo::PendingRemote<network::mojom::URLLoaderFactory>
         prefetch_loader_factory,
     const base::UnguessableToken& devtools_navigation_token,
-    blink::mojom::PolicyContainerClientPtr policy_container,
+    blink::mojom::PolicyContainerPtr policy_container,
     mojom::NavigationClient::CommitNavigationCallback commit_callback) {
   DCHECK(navigation_client_impl_);
   DCHECK(!IsRendererDebugURL(common_params->url));
@@ -3110,7 +3110,7 @@ void RenderFrameImpl::CommitNavigation(
   FillMiscNavigationParams(*common_params, *commit_params,
                            navigation_params.get());
   navigation_params->policy_container =
-      ToWebPolicyContainerClient(std::move(policy_container));
+      ToWebPolicyContainer(std::move(policy_container));
 
   auto commit_with_params = base::BindOnce(
       &RenderFrameImpl::CommitNavigationWithParams, weak_factory_.GetWeakPtr(),

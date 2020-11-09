@@ -354,7 +354,7 @@ struct CreateNewWindowReply {
 
   // The policy container for the new frame that will be created by Blink in
   // response.
-  blink.mojom.PolicyContainerClient policy_container;
+  blink.mojom.PolicyContainer policy_container;
 };
 
 [Native]

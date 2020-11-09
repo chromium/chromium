@@ -94,29 +94,30 @@ TEST_F(RenderFrameHostImplTest, ExpectedMainWorldOrigin) {
 
 TEST_F(RenderFrameHostImplTest, PolicyContainerLifecycle) {
   TestRenderFrameHost* main_rfh = contents()->GetMainFrame();
-  ASSERT_NE(main_rfh->policy_container(), nullptr);
-  EXPECT_EQ(main_rfh->policy_container()->referrer_policy(),
+  ASSERT_NE(main_rfh->policy_container_host(), nullptr);
+  EXPECT_EQ(main_rfh->policy_container_host()->referrer_policy(),
             network::mojom::ReferrerPolicy::kDefault);
 
-  static_cast<blink::mojom::PolicyContainerHost*>(main_rfh->policy_container())
+  static_cast<blink::mojom::PolicyContainerHost*>(
+      main_rfh->policy_container_host())
       ->SetReferrerPolicy(network::mojom::ReferrerPolicy::kAlways);
-  EXPECT_EQ(main_rfh->policy_container()->referrer_policy(),
+  EXPECT_EQ(main_rfh->policy_container_host()->referrer_policy(),
             network::mojom::ReferrerPolicy::kAlways);
 
-  // Create a child frame and check that it inherits the policy container from
-  // the parent frame.
+  // Create a child frame and check that it inherits the PolicyContainerHost
+  // from the parent frame.
   auto* child_frame = static_cast<TestRenderFrameHost*>(
       content::RenderFrameHostTester::For(main_test_rfh())
           ->AppendChild("child"));
 
-  ASSERT_NE(child_frame->policy_container(), nullptr);
-  EXPECT_EQ(child_frame->policy_container()->referrer_policy(),
+  ASSERT_NE(child_frame->policy_container_host(), nullptr);
+  EXPECT_EQ(child_frame->policy_container_host()->referrer_policy(),
             network::mojom::ReferrerPolicy::kAlways);
 
   // Create a new WebContents with opener and test that the new main frame
-  // inherits the policy container from the opener.
+  // inherits the PolicyContainerHost from the opener.
   static_cast<blink::mojom::PolicyContainerHost*>(
-      child_frame->policy_container())
+      child_frame->policy_container_host())
       ->SetReferrerPolicy(network::mojom::ReferrerPolicy::kNever);
   WebContents::CreateParams params(browser_context());
   std::unique_ptr<WebContentsImpl> new_contents(
@@ -124,8 +125,8 @@ TEST_F(RenderFrameHostImplTest, PolicyContainerLifecycle) {
   RenderFrameHostImpl* new_frame =
       new_contents->GetFrameTree()->root()->current_frame_host();
 
-  ASSERT_NE(new_frame->policy_container(), nullptr);
-  EXPECT_EQ(new_frame->policy_container()->referrer_policy(),
+  ASSERT_NE(new_frame->policy_container_host(), nullptr);
+  EXPECT_EQ(new_frame->policy_container_host()->referrer_policy(),
             network::mojom::ReferrerPolicy::kNever);
 }
 

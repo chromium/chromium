@@ -1072,13 +1072,13 @@ NavigationRequest::NavigationRequest(
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("navigation", "Initializing",
                                     navigation_id_);
 
-  policy_container_ = std::make_unique<PolicyContainer>();
+  policy_container_host_ = std::make_unique<PolicyContainerHost>();
 
-  // Local schemes inherit the policy container from the initiator.
+  // Local schemes inherit the policy container  from the initiator.
   //
-  // TODO(antoniosartori): Fill up the policy container and/or replace it with a
-  // new one whenever needed (e.g. blob: or filesystem: URLs should get the
-  // policy container from the document which created them and not from the
+  // TODO(antoniosartori): Fill up the PolicyContainerHost and/or replace it
+  // with a new one whenever needed (e.g. blob: or filesystem: URLs should get
+  // the policy container from the document which created them and not from the
   // initiator of the navigation).
   if (common_params_->url.SchemeIs(url::kAboutScheme) ||
       common_params_->url.SchemeIs(url::kDataScheme) ||
@@ -1092,7 +1092,8 @@ NavigationRequest::NavigationRequest(
       //
       // TODO(antoniosartori): Fix this.
       if (initiator_rfh) {
-        policy_container_ = initiator_rfh->policy_container()->Clone();
+        policy_container_host_ =
+            initiator_rfh->policy_container_host()->Clone();
       }
     }
   }
@@ -1675,8 +1676,9 @@ network::mojom::ContentSecurityPolicyPtr NavigationRequest::TakeRequiredCSP() {
   return std::move(required_csp_);
 }
 
-std::unique_ptr<PolicyContainer> NavigationRequest::TakePolicyContainer() {
-  return std::move(policy_container_);
+std::unique_ptr<PolicyContainerHost>
+NavigationRequest::TakePolicyContainerHost() {
+  return std::move(policy_container_host_);
 }
 
 void NavigationRequest::CreateCoepReporter(

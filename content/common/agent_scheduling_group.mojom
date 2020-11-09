@@ -129,7 +129,7 @@ struct CreateViewParams {
   // no policy container yet (for example, because it is a speculative
   // RenderFrameHost), and the policy container will be sent during
   // CommitNavigation.
-  blink.mojom.PolicyContainerClient? policy_container;
+  blink.mojom.PolicyContainer? policy_container;
 };
 
 struct CreateFrameWidgetParams {
@@ -207,7 +207,7 @@ struct CreateFrameParams {
   // could not determine a policy container yet, for example in case of a
   // speculative RenderFrameHost. In that case, the final policy container will
   // be sent along CommitNavigation.
-  blink.mojom.PolicyContainerClient? policy_container;
+  blink.mojom.PolicyContainer? policy_container;
 };
 
 

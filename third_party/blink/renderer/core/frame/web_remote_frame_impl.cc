@@ -179,7 +179,7 @@ WebLocalFrame* WebRemoteFrameImpl::CreateLocalChild(
     mojom::blink::FrameOwnerElementType frame_owner_element_type,
     const base::UnguessableToken& frame_token,
     WebFrame* opener,
-    std::unique_ptr<blink::WebPolicyContainerClient> policy_container) {
+    std::unique_ptr<blink::WebPolicyContainer> policy_container) {
   auto* child = MakeGarbageCollected<WebLocalFrameImpl>(
       util::PassKey<WebRemoteFrameImpl>(), scope, client, interface_registry,
       frame_token);

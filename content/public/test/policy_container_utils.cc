@@ -8,13 +8,13 @@
 
 namespace content {
 
-blink::mojom::PolicyContainerClientPtr CreateStubPolicyContainerClient() {
+blink::mojom::PolicyContainerPtr CreateStubPolicyContainer() {
   mojo::PendingAssociatedRemote<blink::mojom::PolicyContainerHost>
       stub_policy_container_remote;
   ignore_result(
       stub_policy_container_remote.InitWithNewEndpointAndPassReceiver());
-  return blink::mojom::PolicyContainerClient::New(
-      blink::mojom::PolicyContainerData::New(),
+  return blink::mojom::PolicyContainer::New(
+      blink::mojom::PolicyContainerDocumentPolicies::New(),
       std::move(stub_policy_container_remote));
 }
 

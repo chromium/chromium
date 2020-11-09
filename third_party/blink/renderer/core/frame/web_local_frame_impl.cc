@@ -1779,7 +1779,7 @@ WebLocalFrame* WebLocalFrame::CreateMainFrame(
     WebLocalFrameClient* client,
     InterfaceRegistry* interface_registry,
     const base::UnguessableToken& frame_token,
-    std::unique_ptr<blink::WebPolicyContainerClient> policy_container,
+    std::unique_ptr<blink::WebPolicyContainer> policy_container,
     WebFrame* opener,
     const WebString& name,
     network::mojom::blink::WebSandboxFlags sandbox_flags,
@@ -1809,7 +1809,7 @@ WebLocalFrameImpl* WebLocalFrameImpl::CreateMainFrame(
     WebFrame* opener,
     const WebString& name,
     network::mojom::blink::WebSandboxFlags sandbox_flags,
-    std::unique_ptr<blink::WebPolicyContainerClient> policy_container,
+    std::unique_ptr<blink::WebPolicyContainer> policy_container,
     const FeaturePolicyFeatureState& opener_feature_state) {
   auto* frame = MakeGarbageCollected<WebLocalFrameImpl>(
       util::PassKey<WebLocalFrameImpl>(),
@@ -1956,15 +1956,14 @@ void WebLocalFrameImpl::InitializeCoreFrame(
     const AtomicString& name,
     WindowAgentFactory* window_agent_factory,
     WebFrame* opener,
-    std::unique_ptr<blink::WebPolicyContainerClient> policy_container,
+    std::unique_ptr<blink::WebPolicyContainer> policy_container,
     network::mojom::blink::WebSandboxFlags sandbox_flags,
     const FeaturePolicyFeatureState& opener_feature_state) {
-  InitializeCoreFrameInternal(
-      page, owner, parent, previous_sibling, insert_type, name,
-      window_agent_factory, opener,
-      PolicyContainer::CreateFromWebPolicyContainerClient(
-          std::move(policy_container)),
-      sandbox_flags, opener_feature_state);
+  InitializeCoreFrameInternal(page, owner, parent, previous_sibling,
+                              insert_type, name, window_agent_factory, opener,
+                              PolicyContainer::CreateFromWebPolicyContainer(
+                                  std::move(policy_container)),
+                              sandbox_flags, opener_feature_state);
 }
 
 void WebLocalFrameImpl::InitializeCoreFrameInternal(
@@ -2044,7 +2043,7 @@ LocalFrame* WebLocalFrameImpl::CreateChildFrame(
   mojo::PendingAssociatedReceiver<mojom::blink::PolicyContainerHost>
       policy_container_receiver =
           policy_container_remote.InitWithNewEndpointAndPassReceiver();
-  mojom::blink::PolicyContainerDataPtr policy_container_data =
+  mojom::blink::PolicyContainerDocumentPoliciesPtr policy_container_data =
       mojo::Clone(GetFrame()->GetPolicyContainer()->GetPolicies());
   std::unique_ptr<PolicyContainer> policy_container =
       std::make_unique<PolicyContainer>(std::move(policy_container_remote),

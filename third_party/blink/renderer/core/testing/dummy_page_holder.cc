@@ -99,7 +99,7 @@ DummyPageHolder::DummyPageHolder(
       /* InterfaceRegistry* */ nullptr,
       std::make_unique<PolicyContainer>(
           std::move(stub_policy_container_remote),
-          mojom::blink::PolicyContainerData::New()),
+          mojom::blink::PolicyContainerDocumentPolicies::New()),
       clock);
   frame_->SetView(
       MakeGarbageCollected<LocalFrameView>(*frame_, initial_view_size));

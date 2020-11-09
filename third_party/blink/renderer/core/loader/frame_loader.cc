@@ -1052,9 +1052,8 @@ void FrameLoader::CommitNavigation(
   // and doesn't have a policy container, so we keep the frame's policy
   // container (which was inherited by the parent/opener) in that case.
   if (navigation_params->policy_container) {
-    frame_->SetPolicyContainer(
-        PolicyContainer::CreateFromWebPolicyContainerClient(
-            std::move(navigation_params->policy_container)));
+    frame_->SetPolicyContainer(PolicyContainer::CreateFromWebPolicyContainer(
+        std::move(navigation_params->policy_container)));
   }
 
   base::Optional<Document::UnloadEventTiming> unload_timing;

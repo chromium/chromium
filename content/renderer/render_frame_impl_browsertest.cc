@@ -150,7 +150,7 @@ class RenderFrameImplTest : public RenderViewTest {
         base::UnguessableToken::Create(), base::UnguessableToken::Create(),
         frame_replication_state, &compositor_deps_, std::move(widget_params),
         blink::mojom::FrameOwnerProperties::New(),
-        /*has_committed_real_load=*/true, CreateStubPolicyContainerClient());
+        /*has_committed_real_load=*/true, CreateStubPolicyContainer());
 
     frame_ = static_cast<TestRenderFrame*>(
         RenderFrameImpl::FromRoutingID(kSubframeRouteId));

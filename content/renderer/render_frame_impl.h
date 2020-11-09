@@ -223,7 +223,7 @@ class CONTENT_EXPORT RenderFrameImpl
       mojom::CreateFrameWidgetParamsPtr widget_params,
       blink::mojom::FrameOwnerPropertiesPtr frame_owner_properties,
       bool has_committed_real_load,
-      blink::mojom::PolicyContainerClientPtr policy_container);
+      blink::mojom::PolicyContainerPtr policy_container);
 
   // Returns the RenderFrameImpl for the given routing ID.
   static RenderFrameImpl* FromRoutingID(int routing_id);
@@ -494,7 +494,7 @@ class CONTENT_EXPORT RenderFrameImpl
       mojo::PendingRemote<network::mojom::URLLoaderFactory>
           prefetch_loader_factory,
       const base::UnguessableToken& devtools_navigation_token,
-      blink::mojom::PolicyContainerClientPtr policy_container,
+      blink::mojom::PolicyContainerPtr policy_container,
       mojom::NavigationClient::CommitNavigationCallback commit_callback);
   void CommitFailedNavigation(
       mojom::CommonNavigationParamsPtr common_params,

@@ -450,14 +450,14 @@ bool RenderViewHostImpl::CreateRenderView(
         main_rfh->GetRenderWidgetHost()->BindNewFrameWidgetInterfaces();
 
     // If this is a new RenderFrameHost for a frame that has already committed a
-    // document, we don't have a policy container yet. Indeed, in that case,
+    // document, we don't have a PolicyContainerHost yet. Indeed, in that case,
     // this RenderFrameHost will not display any document until it commits a
     // navigation. The policy container for the navigated document will be sent
     // to Blink at CommitNavigation time and then stored in this RenderFrameHost
     // in DidCommitNewDocument.
-    if (main_rfh->policy_container()) {
+    if (main_rfh->policy_container_host()) {
       params->policy_container =
-          main_rfh->policy_container()->CreateClientForBlink();
+          main_rfh->policy_container_host()->CreatePolicyContainerForBlink();
     }
   }
   params->main_frame_frame_token =
