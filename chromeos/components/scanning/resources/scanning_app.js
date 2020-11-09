@@ -124,6 +124,12 @@ Polymer({
       type: Boolean,
       value: false,
     },
+
+    /** @private {boolean} */
+    isScanInProgress_: {
+      type: Boolean,
+      value: false,
+    },
   },
 
   /** @override */
@@ -134,6 +140,15 @@ Polymer({
 
   /** @override */
   ready() {
+    window.addEventListener('beforeunload', event => {
+      // When the user tries to close the app while a scan is in progress,
+      // show the 'Leave site' dialog.
+      if (this.isScanInProgress_) {
+        event.preventDefault();
+        event.returnValue = '';
+      }
+    });
+
     this.scanService_.getScanners().then(
         /*@type {!{scanners: !ScannerArr}}*/ (response) => {
           this.onScannersReceived_(response);
@@ -142,6 +157,7 @@ Polymer({
 
   /** @override */
   detached() {
+    // TODO(jschettler): Cancel any ongoing scan jobs.
     if (this.scanJobObserverReceiver_) {
       this.scanJobObserverReceiver_.$.close();
     }
@@ -180,6 +196,7 @@ Polymer({
         'Scan failed.';
     this.settingsDisabled_ = false;
     this.scanButtonDisabled_ = false;
+    this.isScanInProgress_ = false;
   },
 
   /**
@@ -319,6 +336,7 @@ Polymer({
     this.statusText_ = 'Scanning page 1: 0%';
     this.settingsDisabled_ = true;
     this.scanButtonDisabled_ = true;
+    this.isScanInProgress_ = true;
   },
 
   /** @private */
