@@ -5483,15 +5483,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(blink::features::kAudioWorkletRealtimeThread)},
 
 #if defined(OS_CHROMEOS)
-    {"maintain-shelf-state-overview",
-     flag_descriptions::kMaintainShelfStateWhenEnteringOverviewName,
-     flag_descriptions::kMaintainShelfStateWhenEnteringOverviewDescription,
-     kOsCrOS,
-     FEATURE_VALUE_TYPE(
-         ash::features::kMaintainShelfStateWhenEnteringOverview)},
-#endif  // defined(OS_CHROMEOS)
-
-#if defined(OS_CHROMEOS)
     {"smart-dim-model-v3", flag_descriptions::kSmartDimModelV3Name,
      flag_descriptions::kSmartDimModelV3Description, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kSmartDimModelV3)},

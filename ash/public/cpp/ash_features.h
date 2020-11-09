@@ -178,10 +178,6 @@ ASH_PUBLIC_EXPORT extern const base::Feature kWebUITabStripTabDragIntegration;
 // Enables notifications to be shown within context menus.
 ASH_PUBLIC_EXPORT extern const base::Feature kNotificationsInContextMenu;
 
-// Preserve shelf state when entering and exiting overview mode.
-ASH_PUBLIC_EXPORT extern const base::Feature
-    kMaintainShelfStateWhenEnteringOverview;
-
 // Enables the experimental productivity feature that aims to reduce context
 // switching by enabling users to collect content and transfer or access it
 // later.
@@ -257,8 +253,6 @@ ASH_PUBLIC_EXPORT bool IsMovablePartialScreenshotEnabled();
 ASH_PUBLIC_EXPORT bool IsAppScalingEnabled();
 
 ASH_PUBLIC_EXPORT bool IsNotificationsInContextMenuEnabled();
-
-ASH_PUBLIC_EXPORT bool IsMaintainShelfStateWhenEnteringOverviewEnabled();
 
 ASH_PUBLIC_EXPORT bool IsTemporaryHoldingSpaceEnabled();
 

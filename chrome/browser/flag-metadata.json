@@ -3074,11 +3074,6 @@
     "expiry_milestone": 88
   },
   {
-    "name": "maintain-shelf-state-overview",
-    "owners": [ "yulunwu" ],
-    "expiry_milestone": 88
-  },
-  {
     "name": "managed-bookmarks-ios",
     "owners": [ "edchin", "rohitrao", "bling-flags@google.com" ],
     "expiry_milestone": 90

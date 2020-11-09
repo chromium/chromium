@@ -180,9 +180,7 @@ void ShelfConfig::Shutdown() {
 
 void ShelfConfig::OnOverviewModeWillStart() {
   DCHECK(!overview_mode_);
-  use_in_app_shelf_in_overview_ =
-      !features::IsMaintainShelfStateWhenEnteringOverviewEnabled() ||
-      is_in_app();
+  use_in_app_shelf_in_overview_ = is_in_app();
   overview_mode_ = true;
 }
 
@@ -351,10 +349,8 @@ bool ShelfConfig::is_in_app() const {
     return true;
   if (is_app_list_visible_)
     return false;
-  if (overview_mode_ &&
-      features::IsMaintainShelfStateWhenEnteringOverviewEnabled()) {
+  if (overview_mode_)
     return use_in_app_shelf_in_overview_;
-  }
   return true;
 }
 

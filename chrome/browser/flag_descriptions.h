@@ -423,9 +423,6 @@ extern const char kMacCoreLocationBackendDescription[];
 extern const char kNewMacNotificationAPIName[];
 extern const char kNewMacNotificationAPIDescription[];
 
-extern const char kMaintainShelfStateWhenEnteringOverviewName[];
-extern const char kMaintainShelfStateWhenEnteringOverviewDescription[];
-
 extern const char kWinrtGeolocationImplementationName[];
 extern const char kWinrtGeolocationImplementationDescription[];
 

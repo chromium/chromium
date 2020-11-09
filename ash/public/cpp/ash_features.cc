@@ -135,9 +135,6 @@ const base::Feature kShelfAppScaling{"ShelfAppScaling",
 const base::Feature kNotificationsInContextMenu{
     "NotificationsInContextMenu", base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::Feature kMaintainShelfStateWhenEnteringOverview{
-    "MaintainShelfStateWhenEnteringOverview", base::FEATURE_ENABLED_BY_DEFAULT};
-
 const base::Feature kTemporaryHoldingSpace{"TemporaryHoldingSpace",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
 
@@ -294,10 +291,6 @@ bool IsAppScalingEnabled() {
 
 bool IsNotificationsInContextMenuEnabled() {
   return base::FeatureList::IsEnabled(kNotificationsInContextMenu);
-}
-
-bool IsMaintainShelfStateWhenEnteringOverviewEnabled() {
-  return base::FeatureList::IsEnabled(kMaintainShelfStateWhenEnteringOverview);
 }
 
 bool IsTemporaryHoldingSpaceEnabled() {
