@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/bind_helpers.h"
+#include "base/callback_forward.h"
 #include "base/containers/queue.h"
 #include "base/test/bind.h"
 #include "chrome/browser/chromeos/borealis/borealis_context_manager.h"
@@ -239,6 +240,47 @@ TEST_F(BorealisContextManagerTest, ShutDownCancelsRequestsAndTerminatesVm) {
   EXPECT_TRUE(fake_concierge_client->stop_vm_called());
 }
 
+class MockContextManager : public BorealisContextManagerImpl {
+ public:
+  explicit MockContextManager(Profile* profile)
+      : BorealisContextManagerImpl(profile) {}
+
+  ~MockContextManager() override = default;
+
+  MOCK_METHOD(base::queue<std::unique_ptr<BorealisTask>>, GetTasks, (), ());
+};
+
+class TaskThatDoesSomethingAfterCompletion : public BorealisTask {
+ public:
+  explicit TaskThatDoesSomethingAfterCompletion(base::OnceClosure something)
+      : something_(std::move(something)) {}
+
+  void RunInternal(BorealisContext* context) override {
+    Complete(BorealisContextManager::Status::kSuccess, "");
+    std::move(something_).Run();
+  }
+
+  base::OnceClosure something_;
+};
+
+TEST_F(BorealisContextManagerTest, TasksCanOutliveCompletion) {
+  testing::StrictMock<MockContextManager> context_manager(profile_.get());
+  testing::StrictMock<ResultCallbackHandler> callback_expectation;
+  testing::StrictMock<testing::MockFunction<void()>> something_expectation;
+
+  EXPECT_CALL(context_manager, GetTasks).WillOnce(testing::Invoke([&]() {
+    base::queue<std::unique_ptr<BorealisTask>> tasks;
+    tasks.push(std::make_unique<TaskThatDoesSomethingAfterCompletion>(
+        base::BindOnce(&testing::MockFunction<void()>::Call,
+                       base::Unretained(&something_expectation))));
+    return tasks;
+  }));
+  EXPECT_CALL(something_expectation, Call());
+  EXPECT_CALL(callback_expectation, Callback(testing::_));
+  context_manager.StartBorealis(callback_expectation.GetCallback());
+  task_environment_.RunUntilIdle();
+}
+
 class BorealisContextManagerFactoryTest : public testing::Test {
  public:
   BorealisContextManagerFactoryTest() = default;
@@ -281,5 +323,6 @@ TEST_F(BorealisContextManagerFactoryTest,
       BorealisContextManagerFactory::GetForProfile(profile.get());
   EXPECT_FALSE(context_manager);
 }
+
 }  // namespace
 }  // namespace borealis
