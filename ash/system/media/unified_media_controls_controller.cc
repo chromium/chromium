@@ -64,16 +64,20 @@ views::View* UnifiedMediaControlsController::CreateView() {
 
 void UnifiedMediaControlsController::MediaSessionInfoChanged(
     media_session::mojom::MediaSessionInfoPtr session_info) {
-  if (!session_info)
-    return;
-
   if (freeze_session_timer_->IsRunning()) {
-    pending_playback_state_ = session_info->playback_state;
+    if (session_info)
+      pending_session_info_ = std::move(session_info);
     return;
   }
 
+  session_info_ = std::move(session_info);
+  MaybeShowMediaControlsOrEmptyState();
+
+  if (!session_info_)
+    return;
+
   media_controls_->SetIsPlaying(
-      session_info->playback_state ==
+      session_info_->playback_state ==
       media_session::mojom::MediaPlaybackState::kPlaying);
   media_controls_->UpdateActionButtonAvailability(enabled_actions_);
 }
@@ -84,9 +88,11 @@ void UnifiedMediaControlsController::MediaSessionMetadataChanged(
   if (freeze_session_timer_->IsRunning())
     return;
 
+  session_metadata_ = *pending_metadata_;
   media_controls_->SetTitle(pending_metadata_->title);
   media_controls_->SetArtist(pending_metadata_->artist);
   pending_metadata_.reset();
+  MaybeShowMediaControlsOrEmptyState();
 }
 
 void UnifiedMediaControlsController::MediaSessionActionsChanged(
@@ -116,12 +122,10 @@ void UnifiedMediaControlsController::MediaSessionChanged(
     return;
   }
 
-  // If we don't currently have a session, show media controls.
+  // If we don't currently have a session, update session id.
   if (!media_session_id_.has_value()) {
     DCHECK(!freeze_session_timer_->IsRunning());
     media_session_id_ = request_id;
-    delegate_->ShowMediaControls();
-    media_controls_->OnNewMediaSession();
     return;
   }
 
@@ -157,22 +161,24 @@ void UnifiedMediaControlsController::MediaControllerImageChanged(
 void UnifiedMediaControlsController::UpdateSession() {
   media_session_id_ = pending_session_id_;
 
-  if (media_session_id_ == base::nullopt) {
-    media_controls_->ShowEmptyState();
+  if (media_session_id_ == base::nullopt)
     ResetPendingData();
-    return;
-  }
 
-  if (pending_playback_state_.has_value()) {
+  if (pending_session_info_.has_value()) {
     media_controls_->SetIsPlaying(
-        pending_playback_state_ ==
+        (*pending_session_info_)->playback_state ==
         media_session::mojom::MediaPlaybackState::kPlaying);
+    session_info_ = std::move(*pending_session_info_);
+  } else {
+    session_info_ = nullptr;
   }
 
   if (pending_metadata_.has_value()) {
     media_controls_->SetTitle(pending_metadata_->title);
     media_controls_->SetArtist(pending_metadata_->artist);
   }
+  session_metadata_ =
+      pending_metadata_.value_or(media_session::MediaMetadata());
 
   if (pending_enabled_actions_.has_value()) {
     media_controls_->UpdateActionButtonAvailability(*pending_enabled_actions_);
@@ -183,6 +189,7 @@ void UnifiedMediaControlsController::UpdateSession() {
   if (pending_artwork_.has_value())
     UpdateArtwork(*pending_artwork_, false /* should_start_hide_timer */);
 
+  MaybeShowMediaControlsOrEmptyState();
   ResetPendingData();
 }
 
@@ -220,7 +227,7 @@ void UnifiedMediaControlsController::UpdateArtwork(
     return;
   }
 
-  // Start |hide_artork_timer_} if not already started and wait for
+  // Start |hide_artork_timer_| if not already started and wait for
   // artwork update.
   if (!hide_artwork_timer_->IsRunning()) {
     hide_artwork_timer_->Start(
@@ -246,10 +253,29 @@ void UnifiedMediaControlsController::PerformAction(
 
 void UnifiedMediaControlsController::ResetPendingData() {
   pending_session_id_.reset();
-  pending_playback_state_.reset();
+  pending_session_info_.reset();
   pending_metadata_.reset();
   pending_enabled_actions_.reset();
   pending_artwork_.reset();
+}
+
+bool UnifiedMediaControlsController::ShouldShowMediaControls() const {
+  if (!session_info_ || !session_info_->is_controllable)
+    return false;
+
+  if (session_metadata_.title.empty())
+    return false;
+
+  return true;
+}
+
+void UnifiedMediaControlsController::MaybeShowMediaControlsOrEmptyState() {
+  if (ShouldShowMediaControls()) {
+    delegate_->ShowMediaControls();
+    media_controls_->OnNewMediaSession();
+  } else {
+    media_controls_->ShowEmptyState();
+  }
 }
 
 void UnifiedMediaControlsController::FlushForTesting() {

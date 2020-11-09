@@ -328,6 +328,9 @@ void UnifiedMediaControlsView::OnThemeChanged() {
 }
 
 void UnifiedMediaControlsView::ShowEmptyState() {
+  if (is_in_empty_state_)
+    return;
+
   is_in_empty_state_ = true;
 
   title_label_->SetText(

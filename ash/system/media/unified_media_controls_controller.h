@@ -79,6 +79,10 @@ class ASH_EXPORT UnifiedMediaControlsController
   // Reset all pending data to empty.
   void ResetPendingData();
 
+  bool ShouldShowMediaControls() const;
+
+  void MaybeShowMediaControlsOrEmptyState();
+
   // Weak ptr, owned by view hierarchy.
   UnifiedMediaControlsView* media_controls_ = nullptr;
 
@@ -101,12 +105,16 @@ class ASH_EXPORT UnifiedMediaControlsController
 
   base::Optional<base::UnguessableToken> media_session_id_;
 
+  media_session::mojom::MediaSessionInfoPtr session_info_;
+
+  media_session::MediaMetadata session_metadata_;
+
   base::flat_set<media_session::mojom::MediaSessionAction> enabled_actions_;
 
   // Pending data to update when |freeze_session_tmier_| fired.
   base::Optional<base::UnguessableToken> pending_session_id_;
-  base::Optional<media_session::mojom::MediaPlaybackState>
-      pending_playback_state_;
+  base::Optional<media_session::mojom::MediaSessionInfoPtr>
+      pending_session_info_;
   base::Optional<media_session::MediaMetadata> pending_metadata_;
   base::Optional<base::flat_set<media_session::mojom::MediaSessionAction>>
       pending_enabled_actions_;

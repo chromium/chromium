@@ -97,11 +97,25 @@ class UnifiedMediaControlsControllerTest : public AshTestBase {
     NotifyActionsChanged();
   }
 
+  void SimulateNewMediaSessionWithData(base::UnguessableToken request_id) {
+    controller()->MediaSessionChanged(request_id);
+
+    media_session::mojom::MediaSessionInfoPtr session_info(
+        media_session::mojom::MediaSessionInfo::New());
+    session_info->is_controllable = true;
+    controller()->MediaSessionInfoChanged(session_info.Clone());
+
+    media_session::MediaMetadata metadata;
+    metadata.title = base::ASCIIToUTF16("foo");
+    controller()->MediaSessionMetadataChanged(metadata);
+  }
+
   void SimulateMediaPlaybackStateChanged(
       media_session::mojom::MediaPlaybackState playback_state) {
     media_session::mojom::MediaSessionInfoPtr session_info(
         media_session::mojom::MediaSessionInfo::New());
     session_info->playback_state = playback_state;
+    session_info->is_controllable = true;
     controller()->MediaSessionInfoChanged(session_info.Clone());
   }
 
@@ -172,6 +186,8 @@ class UnifiedMediaControlsControllerTest : public AshTestBase {
 
 TEST_F(UnifiedMediaControlsControllerTest, ActionButtonsTest) {
   CreateWidget();
+  SimulateNewMediaSessionWithData(base::UnguessableToken::Create());
+
   EnableAction(MediaSessionAction::kPreviousTrack);
   EnableAction(MediaSessionAction::kNextTrack);
   EnableAction(MediaSessionAction::kPlay);
@@ -237,6 +253,8 @@ TEST_F(UnifiedMediaControlsControllerTest, ActionButtonVisibility) {
 }
 
 TEST_F(UnifiedMediaControlsControllerTest, MetadataUpdate) {
+  SimulateNewMediaSessionWithData(base::UnguessableToken::Create());
+
   media_session::MediaMetadata metadata;
   metadata.title = base::ASCIIToUTF16("title");
   metadata.artist = base::ASCIIToUTF16("artist");
@@ -362,7 +380,28 @@ TEST_F(UnifiedMediaControlsControllerTest,
   auto request_id = base::UnguessableToken::Create();
 
   EXPECT_FALSE(delegate()->IsControlsVisible());
+
+  // Don't show controls if we don't have metadata and session info.
   controller()->MediaSessionChanged(request_id);
+  EXPECT_FALSE(delegate()->IsControlsVisible());
+
+  // Test that we need to have both media title and session info
+  // to display the controls.
+  media_session::mojom::MediaSessionInfoPtr session_info(
+      media_session::mojom::MediaSessionInfo::New());
+  session_info->is_controllable = true;
+  controller()->MediaSessionInfoChanged(session_info.Clone());
+  EXPECT_FALSE(delegate()->IsControlsVisible());
+
+  session_info->is_controllable = false;
+  controller()->MediaSessionInfoChanged(session_info.Clone());
+  media_session::MediaMetadata metadata;
+  metadata.title = base::ASCIIToUTF16("foo");
+  controller()->MediaSessionMetadataChanged(metadata);
+  EXPECT_FALSE(delegate()->IsControlsVisible());
+
+  // Controls should show with metadata and controllable session.
+  SimulateNewMediaSessionWithData(request_id);
   EXPECT_TRUE(delegate()->IsControlsVisible());
   EXPECT_FALSE(IsMediaControlsInEmptyState());
 
@@ -375,7 +414,7 @@ TEST_F(UnifiedMediaControlsControllerTest,
   EXPECT_FALSE(IsMediaControlsInEmptyState());
 
   // Session resumes, controls should still be in normal state.
-  controller()->MediaSessionChanged(request_id);
+  SimulateNewMediaSessionWithData(request_id);
   task_environment()->FastForwardBy(base::TimeDelta::FromMilliseconds(1));
   EXPECT_FALSE(IsMediaControlsInEmptyState());
 
@@ -392,7 +431,7 @@ TEST_F(UnifiedMediaControlsControllerTest, MediaControlsEmptyState) {
 
   // Show media controls.
   auto request_id = base::UnguessableToken::Create();
-  controller()->MediaSessionChanged(request_id);
+  SimulateNewMediaSessionWithData(request_id);
   EXPECT_TRUE(delegate()->IsControlsVisible());
   EXPECT_FALSE(IsMediaControlsInEmptyState());
 
@@ -430,7 +469,7 @@ TEST_F(UnifiedMediaControlsControllerTest, MediaControlsEmptyState) {
   generator->ClickLeftButton();
 
   // Media controls should get back to normal state.
-  controller()->MediaSessionChanged(request_id);
+  SimulateNewMediaSessionWithData(request_id);
   EXPECT_FALSE(IsMediaControlsInEmptyState());
 
   EXPECT_TRUE(artist_label()->GetVisible());
@@ -447,7 +486,7 @@ TEST_F(UnifiedMediaControlsControllerTest, MediaControlsEmptyStateWithArtwork) {
   auto request_id = base::UnguessableToken::Create();
 
   EXPECT_FALSE(delegate()->IsControlsVisible());
-  controller()->MediaSessionChanged(request_id);
+  SimulateNewMediaSessionWithData(request_id);
   EXPECT_TRUE(delegate()->IsControlsVisible());
   EXPECT_FALSE(IsMediaControlsInEmptyState());
 
@@ -470,7 +509,7 @@ TEST_F(UnifiedMediaControlsControllerTest, MediaControlsEmptyStateWithArtwork) {
   EXPECT_NE(artwork_view()->background(), nullptr);
 
   // Session and artwork updated, artwotk view should be back in normal state.
-  controller()->MediaSessionChanged(request_id);
+  SimulateNewMediaSessionWithData(request_id);
   controller()->MediaControllerImageChanged(
       media_session::mojom::MediaSessionImageType::kArtwork, artwork);
   EXPECT_TRUE(artwork_view()->GetVisible());
@@ -479,18 +518,23 @@ TEST_F(UnifiedMediaControlsControllerTest, MediaControlsEmptyStateWithArtwork) {
 
 TEST_F(UnifiedMediaControlsControllerTest, FreezeControlsWhenUpdateSession) {
   auto request_id = base::UnguessableToken::Create();
-  controller()->MediaSessionChanged(request_id);
+  SimulateNewMediaSessionWithData(request_id);
   EnableAction(MediaSessionAction::kPlay);
   EnableAction(MediaSessionAction::kPause);
   SimulateMediaPlaybackStateChanged(
       media_session::mojom::MediaPlaybackState::kPlaying);
 
+  media_session::MediaMetadata init_metadata;
+  init_metadata.title = base::ASCIIToUTF16("init_title");
+  init_metadata.artist = base::ASCIIToUTF16("init_artist");
+  controller()->MediaSessionMetadataChanged(init_metadata);
+
   // Initial state of media controls.
   EXPECT_TRUE(GetActionButton(MediaSessionAction::kPause)->GetVisible());
   EXPECT_FALSE(
       GetActionButton(MediaSessionAction::kPreviousTrack)->GetVisible());
-  EXPECT_EQ(title_label()->GetText(), base::ASCIIToUTF16(""));
-  EXPECT_EQ(artist_label()->GetText(), base::ASCIIToUTF16(""));
+  EXPECT_EQ(title_label()->GetText(), init_metadata.title);
+  EXPECT_EQ(artist_label()->GetText(), init_metadata.artist);
   EXPECT_FALSE(artwork_view()->GetVisible());
 
   controller()->MediaSessionChanged(base::nullopt);
@@ -501,8 +545,8 @@ TEST_F(UnifiedMediaControlsControllerTest, FreezeControlsWhenUpdateSession) {
   metadata.artist = base::ASCIIToUTF16("artist");
   controller()->MediaSessionMetadataChanged(metadata);
 
-  EXPECT_EQ(title_label()->GetText(), base::ASCIIToUTF16(""));
-  EXPECT_EQ(artist_label()->GetText(), base::ASCIIToUTF16(""));
+  EXPECT_EQ(title_label()->GetText(), init_metadata.title);
+  EXPECT_EQ(artist_label()->GetText(), init_metadata.artist);
 
   // Test that media seeesion info update is ignored when we waiting for new
   // session.
