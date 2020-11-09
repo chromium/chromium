@@ -22,13 +22,13 @@
           .catch(e => window.domAutomationController.send(false));
     }
 
-    function enterPictureInPicture() {
+    function enterPictureInPictureAndGetResult() {
       video.requestPictureInPicture()
           .then(_ => window.domAutomationController.send(true))
           .catch(e => window.domAutomationController.send(false));
     }
 
-    function enterFullscreen() {
+    function enterFullscreenAndGetResult() {
       video.requestFullscreen()
           .then(_ => window.domAutomationController.send(true))
           .catch(e => window.domAutomationController.send(false));

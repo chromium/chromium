@@ -17,11 +17,7 @@
 #include "content/shell/browser/shell.h"
 #include "net/dns/mock_host_resolver.h"
 #include "services/media_session/public/cpp/features.h"
-#include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/mojom/picture_in_picture/picture_in_picture.mojom.h"
-
-using testing::Mock;
-using testing::NiceMock;
 
 namespace content {
 
@@ -91,13 +87,16 @@ class TestWebContentsDelegate : public WebContentsDelegate {
       WebContents* web_contents,
       const viz::SurfaceId&,
       const gfx::Size& natural_size) override {
+    is_in_picture_in_picture_ = true;
     return PictureInPictureResult::kSuccess;
   }
+  void ExitPictureInPicture() override { is_in_picture_in_picture_ = false; }
 
-  MOCK_METHOD0(ExitPictureInPicture, void());
+  bool is_in_picture_in_picture() const { return is_in_picture_in_picture_; }
 
  private:
   Shell* const shell_;
+  bool is_in_picture_in_picture_ = false;
 };
 
 class PictureInPictureContentBrowserTest : public ContentBrowserTest {
@@ -116,8 +115,7 @@ class PictureInPictureContentBrowserTest : public ContentBrowserTest {
 
     old_browser_client_ = SetBrowserClientForTesting(&content_browser_client_);
 
-    web_contents_delegate_ =
-        std::make_unique<NiceMock<TestWebContentsDelegate>>(shell());
+    web_contents_delegate_ = std::make_unique<TestWebContentsDelegate>(shell());
     shell()->web_contents()->SetDelegate(web_contents_delegate_.get());
   }
 
@@ -151,8 +149,6 @@ class PictureInPictureContentBrowserTest : public ContentBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(PictureInPictureContentBrowserTest,
                        RequestSecondVideoInSameRFHDoesNotCloseWindow) {
-  EXPECT_CALL(*web_contents_delegate(), ExitPictureInPicture()).Times(0);
-
   EXPECT_TRUE(NavigateToURL(
       shell(), GetTestUrl("media/picture_in_picture", "two-videos.html")));
 
@@ -172,6 +168,8 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureContentBrowserTest,
       expected_title,
       TitleWatcher(shell()->web_contents(), expected_title).WaitAndGetTitle());
 
+  ASSERT_FALSE(web_contents_delegate()->is_in_picture_in_picture());
+
   // Send first video in Picture-in-Picture.
   ASSERT_TRUE(ExecuteScript(shell()->web_contents(),
                             "videos[0].requestPictureInPicture();"));
@@ -180,6 +178,7 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureContentBrowserTest,
   EXPECT_EQ(
       expected_title,
       TitleWatcher(shell()->web_contents(), expected_title).WaitAndGetTitle());
+  EXPECT_TRUE(web_contents_delegate()->is_in_picture_in_picture());
 
   // Send second video in Picture-in-Picture.
   ASSERT_TRUE(ExecuteScript(shell()->web_contents(),
@@ -192,14 +191,11 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureContentBrowserTest,
 
   // The session should still be active and ExitPictureInPicture() never called.
   EXPECT_NE(nullptr, window_controller()->active_session_for_testing());
-
-  Mock::VerifyAndClearExpectations(web_contents_delegate());
+  EXPECT_TRUE(web_contents_delegate()->is_in_picture_in_picture());
 }
 
 IN_PROC_BROWSER_TEST_F(PictureInPictureContentBrowserTest,
                        RequestSecondVideoInDifferentRFHDoesNotCloseWindow) {
-  EXPECT_CALL(*web_contents_delegate(), ExitPictureInPicture()).Times(0);
-
   ASSERT_TRUE(embedded_test_server()->Start());
 
   EXPECT_TRUE(NavigateToURL(
@@ -229,6 +225,8 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureContentBrowserTest,
       expected_title,
       TitleWatcher(shell()->web_contents(), expected_title).WaitAndGetTitle());
 
+  ASSERT_FALSE(web_contents_delegate()->is_in_picture_in_picture());
+
   // Send first video in Picture-in-Picture.
   ASSERT_TRUE(ExecuteScript(shell()->web_contents(),
                             "videos[0].requestPictureInPicture();"));
@@ -237,6 +235,7 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureContentBrowserTest,
   EXPECT_EQ(
       expected_title,
       TitleWatcher(shell()->web_contents(), expected_title).WaitAndGetTitle());
+  EXPECT_TRUE(web_contents_delegate()->is_in_picture_in_picture());
 
   // Send second video in Picture-in-Picture.
   ASSERT_TRUE(ExecuteScript(shell()->web_contents(),
@@ -250,8 +249,49 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureContentBrowserTest,
 
   // The session should still be active and ExitPictureInPicture() never called.
   EXPECT_NE(nullptr, window_controller()->active_session_for_testing());
+  EXPECT_TRUE(web_contents_delegate()->is_in_picture_in_picture());
+}
 
-  Mock::VerifyAndClearExpectations(web_contents_delegate());
+IN_PROC_BROWSER_TEST_F(PictureInPictureContentBrowserTest,
+                       EnterPictureInPictureThenFullscreen) {
+  ASSERT_TRUE(NavigateToURL(
+      shell(), GetTestUrl("media/picture_in_picture", "one-video.html")));
+
+  bool result = false;
+  ASSERT_TRUE(ExecuteScriptAndExtractBool(
+      shell()->web_contents(), "enterPictureInPictureAndGetResult();",
+      &result));
+  ASSERT_TRUE(result);
+  ASSERT_TRUE(web_contents_delegate()->is_in_picture_in_picture());
+
+  // The Picture-in-Picture window should be closed upon entering fullscreen.
+  ASSERT_TRUE(ExecuteScriptAndExtractBool(
+      shell()->web_contents(), "enterFullscreenAndGetResult();", &result));
+  ASSERT_TRUE(result);
+
+  EXPECT_TRUE(shell()->web_contents()->IsFullscreen());
+  EXPECT_FALSE(web_contents_delegate()->is_in_picture_in_picture());
+}
+
+IN_PROC_BROWSER_TEST_F(PictureInPictureContentBrowserTest,
+                       EnterFullscreenThenPictureInPicture) {
+  ASSERT_TRUE(NavigateToURL(
+      shell(), GetTestUrl("media/picture_in_picture", "one-video.html")));
+
+  bool result = false;
+  ASSERT_TRUE(ExecuteScriptAndExtractBool(
+      shell()->web_contents(), "enterFullscreenAndGetResult();", &result));
+  ASSERT_TRUE(result);
+  ASSERT_TRUE(shell()->web_contents()->IsFullscreen());
+
+  // We should leave fullscreen upon entering Picture-in-Picture.
+  ASSERT_TRUE(ExecuteScriptAndExtractBool(
+      shell()->web_contents(), "enterPictureInPictureAndGetResult();",
+      &result));
+  ASSERT_TRUE(result);
+
+  EXPECT_FALSE(shell()->web_contents()->IsFullscreen());
+  EXPECT_TRUE(web_contents_delegate()->is_in_picture_in_picture());
 }
 
 // Check that the playback state in the Picture-in-Picture window follows the
@@ -269,8 +309,9 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureContentBrowserTest,
 
   ASSERT_TRUE(ExecuteScript(shell()->web_contents(), "video.pause();"));
 
-  ASSERT_TRUE(ExecuteScriptAndExtractBool(shell()->web_contents(),
-                                          "enterPictureInPicture();", &result));
+  ASSERT_TRUE(ExecuteScriptAndExtractBool(
+      shell()->web_contents(), "enterPictureInPictureAndGetResult();",
+      &result));
   ASSERT_TRUE(result);
   EXPECT_EQ(overlay_window()->playback_state(),
             OverlayWindow::PlaybackState::kPaused);
@@ -331,8 +372,9 @@ IN_PROC_BROWSER_TEST_F(MediaSessionPictureInPictureContentBrowserTest,
 
   ASSERT_TRUE(ExecuteScript(shell()->web_contents(), "video.pause();"));
 
-  ASSERT_TRUE(ExecuteScriptAndExtractBool(shell()->web_contents(),
-                                          "enterPictureInPicture();", &result));
+  ASSERT_TRUE(ExecuteScriptAndExtractBool(
+      shell()->web_contents(), "enterPictureInPictureAndGetResult();",
+      &result));
   ASSERT_TRUE(result);
   EXPECT_EQ(overlay_window()->playback_state(),
             OverlayWindow::PlaybackState::kPaused);
@@ -388,8 +430,8 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureContentBrowserTest,
       shell(), GetTestUrl("media/picture_in_picture", "one-video.html")));
 
   bool result = false;
-  ASSERT_TRUE(ExecuteScriptAndExtractBool(shell()->web_contents(),
-                                          "enterFullscreen();", &result));
+  ASSERT_TRUE(ExecuteScriptAndExtractBool(
+      shell()->web_contents(), "enterFullscreenAndGetResult();", &result));
   ASSERT_TRUE(result);
 
   ASSERT_TRUE(ExecuteScript(shell()->web_contents(),

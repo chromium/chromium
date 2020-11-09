@@ -1251,53 +1251,6 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
-                       EnterPictureInPictureThenFullscreen) {
-  LoadTabAndEnterPictureInPicture(
-      browser(), base::FilePath(kPictureInPictureWindowSizePage));
-
-  content::WebContents* active_web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(content::ExecuteScript(active_web_contents, "enterFullscreen()"));
-
-  base::string16 expected_title = base::ASCIIToUTF16("fullscreen");
-  EXPECT_EQ(expected_title,
-            content::TitleWatcher(active_web_contents, expected_title)
-                .WaitAndGetTitle());
-
-  EXPECT_TRUE(active_web_contents->IsFullscreen());
-  EXPECT_FALSE(window_controller()->GetWindowForTesting()->IsVisible());
-}
-
-IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
-                       EnterFullscreenThenPictureInPicture) {
-  GURL test_page_url = ui_test_utils::GetTestUrl(
-      base::FilePath(base::FilePath::kCurrentDirectory),
-      base::FilePath(kPictureInPictureWindowSizePage));
-  ui_test_utils::NavigateToURL(browser(), test_page_url);
-
-  content::WebContents* active_web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(active_web_contents != nullptr);
-
-  SetUpWindowController(active_web_contents);
-
-  ASSERT_TRUE(content::ExecuteScript(active_web_contents, "enterFullscreen()"));
-
-  base::string16 expected_title = base::ASCIIToUTF16("fullscreen");
-  EXPECT_EQ(expected_title,
-            content::TitleWatcher(active_web_contents, expected_title)
-                .WaitAndGetTitle());
-
-  bool result = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      active_web_contents, "enterPictureInPicture();", &result));
-  EXPECT_TRUE(result);
-
-  EXPECT_FALSE(active_web_contents->IsFullscreen());
-  EXPECT_TRUE(window_controller()->GetWindowForTesting()->IsVisible());
-}
-
-IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerBrowserTest,
                        EnterPictureInPictureThenNavigateAwayCloseWindow) {
   GURL test_page_url = ui_test_utils::GetTestUrl(
       base::FilePath(base::FilePath::kCurrentDirectory),
