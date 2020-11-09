@@ -12,6 +12,7 @@
 #include "base/mac/scoped_nsobject.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/thread_checker.h"
+#include "media/capture/video/mac/sample_buffer_transformer_mac.h"
 #import "media/capture/video/mac/video_capture_device_avfoundation_protocol_mac.h"
 #include "media/capture/video/video_capture_device.h"
 #include "media/capture/video_capture_types.h"
@@ -60,6 +61,9 @@ CAPTURE_EXPORT
   base::scoped_nsobject<AVCaptureDevice> _captureDevice;
   base::scoped_nsobject<AVCaptureDeviceInput> _captureDeviceInput;
   base::scoped_nsobject<AVCaptureVideoDataOutput> _captureVideoDataOutput;
+
+  // When enabled, converts captured frames to NV12.
+  std::unique_ptr<media::SampleBufferTransformer> _sampleBufferTransformer;
 
   // An AVDataOutput specialized for taking pictures out of |captureSession_|.
   base::scoped_nsobject<AVCaptureStillImageOutput> _stillImageOutput;

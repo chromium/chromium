@@ -9,12 +9,32 @@
 #import <CoreVideo/CoreVideo.h>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "media/capture/capture_export.h"
 #include "media/capture/video/mac/pixel_buffer_pool_mac.h"
 #include "media/capture/video/mac/pixel_buffer_transferer_mac.h"
 
 namespace media {
+
+// When enabled, AutoReconfigureAndTransform() configures the
+// SampleBufferTransformer to use the conversion path (pixel transfer or libyuv)
+// that is believed to be most efficient for the input sample buffer.
+CAPTURE_EXPORT extern const base::Feature kInCaptureConvertToNv12;
+
+// Feature flag used for performance measurements. This will not be shipped.
+//
+// When enabled, AutoReconfigureAndTransform() configures the
+// SampleBufferTransformer to use the pixel transfer path. Transforming an MJPEG
+// sample buffer with this configuration will DCHECK crash.
+CAPTURE_EXPORT extern const base::Feature
+    kInCaptureConvertToNv12WithPixelTransfer;
+
+// Feature flag used for performance measurements. This will not be shipped.
+//
+// When enabled, AutoReconfigureAndTransform() configures the
+// SampleBufferTransformer to use the libyuv path.
+CAPTURE_EXPORT extern const base::Feature kInCaptureConvertToNv12WithLibyuv;
 
 // Capable of converting from any supported capture format (NV12, YUY2, UYVY and
 // MJPEG) to NV12 or I420 and doing rescaling. This class can be configured to
@@ -31,11 +51,24 @@ class CAPTURE_EXPORT SampleBufferTransformer {
     kLibyuv,
   };
 
-  SampleBufferTransformer();
+  // Only construct a sample transformer if one of the "InCaptureConvertToNv12"
+  // flags are enabled and AutoReconfigureAndTransform() is supported. See
+  // IsAutoReconfigureEnabled().
+  static std::unique_ptr<SampleBufferTransformer>
+  CreateIfAutoReconfigureEnabled();
+  static std::unique_ptr<SampleBufferTransformer> Create();
+
   ~SampleBufferTransformer();
 
   Transformer transformer() const;
   OSType destination_pixel_format() const;
+  size_t destination_width() const;
+  size_t destination_height() const;
+
+  // Automatically reconfigures based on |sample_buffer| and base::Feature flags
+  // if needed before performing a Transform().
+  base::ScopedCFTypeRef<CVPixelBufferRef> AutoReconfigureAndTransform(
+      CMSampleBufferRef sample_buffer);
 
   // Future calls to Transform() will output pixel buffers according to this
   // configuration.
@@ -53,6 +86,16 @@ class CAPTURE_EXPORT SampleBufferTransformer {
       CMSampleBufferRef sample_buffer);
 
  private:
+  friend std::unique_ptr<SampleBufferTransformer>
+  std::make_unique<SampleBufferTransformer>();
+
+  static bool IsAutoReconfigureEnabled();
+
+  SampleBufferTransformer();
+
+  void AutoReconfigureBasedOnInputAndFeatureFlags(
+      CMSampleBufferRef sample_buffer);
+
   // Sample buffers from the camera contain pixel buffers when an uncompressed
   // pixel format is used (i.e. it's not MJPEG).
   void TransformPixelBuffer(CVPixelBufferRef source_pixel_buffer,

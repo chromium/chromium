@@ -34,6 +34,12 @@ namespace {
 constexpr NSString* kModelIdLogitech4KPro =
     @"UVC Camera VendorID_1133 ProductID_2175";
 
+constexpr gfx::ColorSpace kColorSpaceRec709Apple(
+    gfx::ColorSpace::PrimaryID::BT709,
+    gfx::ColorSpace::TransferID::BT709_APPLE,
+    gfx::ColorSpace::MatrixID::SMPTE170M,
+    gfx::ColorSpace::RangeID::LIMITED);
+
 constexpr int kTimeToWaitBeforeStoppingStillImageCaptureInSeconds = 60;
 constexpr FourCharCode kDefaultFourCCPixelFormat =
     kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange;  // NV12 (a.k.a. 420v)
@@ -162,6 +168,11 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
             self);
     [self setFrameReceiver:frameReceiver];
     _captureSession.reset([[AVCaptureSession alloc] init]);
+    _sampleBufferTransformer =
+        media::SampleBufferTransformer::CreateIfAutoReconfigureEnabled();
+    if (_sampleBufferTransformer) {
+      VLOG(1) << "Capturing with SampleBufferTransformer enabled";
+    }
   }
   return self;
 }
@@ -169,6 +180,7 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
 - (void)dealloc {
   [self stopStillImageOutput];
   [self stopCapture];
+  _sampleBufferTransformer.reset();
   _weakPtrFactoryForTakePhoto = nullptr;
   _mainThreadTaskRunner = nullptr;
   _sampleQueue.reset();
@@ -583,8 +595,7 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
   return YES;
 }
 
-- (BOOL)processNV12IOSurface:(IOSurfaceRef)ioSurface
-                sampleBuffer:(CMSampleBufferRef)sampleBuffer
+- (void)processNV12IOSurface:(IOSurfaceRef)ioSurface
                captureFormat:(const media::VideoCaptureFormat&)captureFormat
                   colorSpace:(const gfx::ColorSpace&)colorSpace
                    timestamp:(const base::TimeDelta)timestamp {
@@ -602,11 +613,7 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
   // https://crbug.com/1143477 (CPU usage parsing ICC profile)
   // https://crbug.com/959962 (ignoring color space)
   gfx::ColorSpace overriddenColorSpace = colorSpace;
-  constexpr gfx::ColorSpace rec709Apple(
-      gfx::ColorSpace::PrimaryID::BT709,
-      gfx::ColorSpace::TransferID::BT709_APPLE,
-      gfx::ColorSpace::MatrixID::SMPTE170M, gfx::ColorSpace::RangeID::LIMITED);
-  if (colorSpace == rec709Apple) {
+  if (colorSpace == kColorSpaceRec709Apple) {
     overriddenColorSpace = gfx::ColorSpace::CreateSRGB();
     IOSurfaceSetValue(ioSurface, CFSTR("IOSurfaceColorSpace"),
                       kCGColorSpaceSRGB);
@@ -615,7 +622,6 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
   _lock.AssertAcquired();
   _frameReceiver->ReceiveExternalGpuMemoryBufferFrame(
       std::move(handle), captureFormat, overriddenColorSpace, timestamp);
-  return YES;
 }
 
 // |captureOutput| is called by the capture device to deliver a new frame.
@@ -631,6 +637,44 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
   base::AutoLock lock(_lock);
   if (!_frameReceiver)
     return;
+
+  const base::TimeDelta timestamp = GetCMSampleBufferTimestamp(sampleBuffer);
+
+  // If the SampleBufferTransformer is enabled, convert all possible capture
+  // formats to an IOSurface-backed NV12 pixel buffer.
+  // TODO(hbos): If |_sampleBufferTransformer| gets shipped 100%, delete the
+  // other code paths.
+  if (_sampleBufferTransformer) {
+    base::ScopedCFTypeRef<CVPixelBufferRef> pixelBuffer =
+        _sampleBufferTransformer->AutoReconfigureAndTransform(sampleBuffer);
+    if (!pixelBuffer) {
+      LOG(ERROR) << "Failed to transform captured frame. Dropping frame.";
+      return;
+    }
+    IOSurfaceRef ioSurface = CVPixelBufferGetIOSurface(pixelBuffer);
+    DCHECK(ioSurface);
+    DCHECK(CVPixelBufferGetPixelFormatType(pixelBuffer) ==
+           kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange);  // NV12
+    const media::VideoCaptureFormat captureFormat(
+        gfx::Size(CVPixelBufferGetWidth(pixelBuffer),
+                  CVPixelBufferGetHeight(pixelBuffer)),
+        _frameRate, media::PIXEL_FORMAT_NV12);
+    // When the |pixelBuffer| is the result of a conversion (not camera
+    // pass-through) then it originates from a CVPixelBufferPool and the color
+    // space is not recognized by media::GetImageBufferColorSpace(). This
+    // results in log spam and a default color space format is returned. To
+    // avoid this, we pretend the color space is kColorSpaceRec709Apple which
+    // triggers a path that avoids color space parsing inside of
+    // processNV12IOSurface.
+    // TODO(hbos): Investigate how to successfully parse and/or configure the
+    // color space correctly. The implications of this hack is not fully
+    // understood.
+    [self processNV12IOSurface:ioSurface
+                 captureFormat:captureFormat
+                    colorSpace:kColorSpaceRec709Apple
+                     timestamp:timestamp];
+    return;
+  }
 
   // We have certain format expectation for capture output:
   // For MJPEG, |sampleBuffer| is expected to always be a CVBlockBuffer.
@@ -651,7 +695,6 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
   const media::VideoCaptureFormat captureFormat(
       gfx::Size(dimensions.width, dimensions.height), _frameRate,
       videoPixelFormat);
-  const base::TimeDelta timestamp = GetCMSampleBufferTimestamp(sampleBuffer);
 
   if (CVPixelBufferRef pixelBuffer =
           CMSampleBufferGetImageBuffer(sampleBuffer)) {
@@ -667,13 +710,11 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
     if (kEnableGpuMemoryBuffers) {
       IOSurfaceRef ioSurface = CVPixelBufferGetIOSurface(pixelBuffer);
       if (ioSurface && videoPixelFormat == media::PIXEL_FORMAT_NV12) {
-        if ([self processNV12IOSurface:ioSurface
-                          sampleBuffer:sampleBuffer
-                         captureFormat:captureFormat
-                            colorSpace:colorSpace
-                             timestamp:timestamp]) {
-          return;
-        }
+        [self processNV12IOSurface:ioSurface
+                     captureFormat:captureFormat
+                        colorSpace:colorSpace
+                         timestamp:timestamp];
+        return;
       }
     }
 
