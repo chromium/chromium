@@ -83,12 +83,22 @@ class Value;
 //
 // The new design tries to avoid losing type information. Thus when migrating
 // off deprecated types, existing usages of base::ListValue should be replaced
-// by std::vector<base::Value>.
+// by std::vector<base::Value>, and existing usages of base::DictionaryValue
+// should be replaced with base::flat_map<std::string, base::Value>.
 //
-// Furthermore, existing usages of base::DictionaryValue should eventually be
-// replaced with base::flat_map<std::string, base::Value>. However, this
-// requires breaking changing the mapped type of Value::DictStorage first, and
-// thus usages of base::DictionaryValue should be kept for the time being.
+// OLD WAY:
+//
+//   void AlwaysTakesList(std::unique_ptr<base::ListValue> list);
+//   void AlwaysTakesDict(std::unique_ptr<base::DictionaryValue> dict);
+//
+// NEW WAY:
+//
+//   void AlwaysTakesList(std::vector<base::Value> list);
+//   void AlwaysTakesDict(base::flat_map<std::string, base::Value> dict);
+//
+// Migrating code will require conversions on API boundaries. This can be done
+// cheaply by making use of overloaded base::Value constructors and the
+// Value::TakeList() and Value::TakeDict() APIs.
 class BASE_EXPORT Value {
  public:
   using BlobStorage = std::vector<uint8_t>;
