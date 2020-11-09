@@ -51,10 +51,6 @@
     'android_crazy_linker': {
       'filepath': 'third_party/android_crazy_linker/'
     },
-    'android_deps': {
-      'filepath': 'third_party/android_deps/' \
-                  '|tools/android/roll/android_deps/'
-    },
     'android_flags': {
       'filepath': 'chrome/android/java/src/org/chromium/chrome/browser/flags/'
     },
@@ -70,9 +66,6 @@
     'android_item_chooser_dialogs': {
       'filepath': 'chrome/android/java/src/org/chromium/chrome/browser/.*ChooserDialog.java|'\
                   'chrome/android/javatests/src/org/chromium/chrome/browser/.*ChooserDialogTest.java'
-    },
-    'android_lint': {
-      'filepath': 'build/android/lint/'
     },
     'android_media': {
       'filepath': 'content/browser/media/android' \
@@ -2105,13 +2098,11 @@
     'android_crash_reporting': ['asvitkine+watch@chromium.org',
                                 'wnwen+watch@chromium.org'],
     'android_crazy_linker': ['johnmaguire+watch@google.com'],
-    'android_deps': ['wnwen+watch@chromium.org'],
     'android_flags': ['hnakashima+watch@chromium.org'],
     'android_infobars': ['dfalcantara+watch@chromium.org'],
     'android_infra': ['agrieve+watch@chromium.org'],
     'android_item_chooser_dialogs': ['juncai+watch@chromium.org',
                                      'ortuno+watch@chromium.org'],
-    'android_lint': ['wnwen+watch@chromium.org'],
     'android_media': ['mlamouri+watch-media@chromium.org'],
     'android_omnibox': ['ender+watch@chromium.org'],
     'android_search_widget': ['tedchoc+watch@chromium.org',
