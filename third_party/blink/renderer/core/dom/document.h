@@ -1662,7 +1662,11 @@ class CORE_EXPORT Document : public ContainerNode,
   void MarkFirstPaint();
   void MaybeExecuteDelayedAsyncScripts();
 
-  enum class DeclarativeShadowDomAllowState { kNotSet, kAllow, kDeny };
+  enum class DeclarativeShadowDomAllowState : uint8_t {
+    kNotSet,
+    kAllow,
+    kDeny
+  };
   DeclarativeShadowDomAllowState GetDeclarativeShadowDomAllowState() const;
   void setAllowDeclarativeShadowDom(bool val);
   bool allowDeclarativeShadowDom() const;
