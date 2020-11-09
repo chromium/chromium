@@ -126,6 +126,10 @@ std::vector<views::View*> HoldingSpaceTestApi::GetScreenCaptureViews() {
   return screen_capture_views;
 }
 
+views::View* HoldingSpaceTestApi::GetTray() {
+  return holding_space_tray_;
+}
+
 bool HoldingSpaceTestApi::PinnedFilesContainerShown() const {
   if (!holding_space_tray_->GetBubbleView())
     return false;

@@ -113,6 +113,9 @@ void HoldingSpaceTrayIcon::OnHoldingSpaceItemRemoved(
     const HoldingSpaceItem* item) {
   DCHECK(features::IsTemporaryHoldingSpaceContentForwardEntryPointEnabled());
 
+  if (!item->IsFinalized())
+    return;
+
   size_t index = previews_.size();
   for (size_t i = 0u; i < previews_.size(); ++i) {
     if (previews_[i]->item() == item) {

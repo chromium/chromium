@@ -7,11 +7,13 @@
 #include <memory>
 
 #include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "ash/public/cpp/holding_space/holding_space_metrics.h"
 #include "ash/public/cpp/holding_space/holding_space_prefs.h"
 #include "ash/public/cpp/system_tray_client.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
@@ -20,10 +22,18 @@
 #include "ash/system/holding_space/holding_space_tray_icon.h"
 #include "ash/system/tray/tray_container.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/views/controls/menu/menu_runner.h"
 
 namespace ash {
 
 namespace {
+
+// Helpers ---------------------------------------------------------------------
+
+// TODO(crbug.com/1142572): Read state from prefs.
+bool IsShowingPreviews() {
+  return features::IsTemporaryHoldingSpaceContentForwardEntryPointEnabled();
+}
 
 // Returns whether the holding space model contains any finalized items.
 bool ModelContainsFinalizedItems(HoldingSpaceModel* model) {
@@ -36,9 +46,15 @@ bool ModelContainsFinalizedItems(HoldingSpaceModel* model) {
 
 }  // namespace
 
+// HoldingSpaceTray ------------------------------------------------------------
+
 HoldingSpaceTray::HoldingSpaceTray(Shelf* shelf) : TrayBackgroundView(shelf) {
   controller_observer_.Add(HoldingSpaceController::Get());
   SetVisible(false);
+
+  // Context menu.
+  if (features::IsTemporaryHoldingSpaceContentForwardEntryPointEnabled())
+    set_context_menu_controller(this);
 
   // Icon.
   icon_ = tray_container()->AddChildView(
@@ -188,6 +204,49 @@ void HoldingSpaceTray::OnHoldingSpaceItemRemoved(const HoldingSpaceItem* item) {
 void HoldingSpaceTray::OnHoldingSpaceItemFinalized(
     const HoldingSpaceItem* item) {
   UpdateVisibility();
+}
+
+// TODO(crbug.com/1142572): Implement.
+void HoldingSpaceTray::ExecuteCommand(int command_id, int event_flags) {
+  DCHECK(features::IsTemporaryHoldingSpaceContentForwardEntryPointEnabled());
+  NOTIMPLEMENTED();
+}
+
+void HoldingSpaceTray::ShowContextMenuForViewImpl(
+    views::View* source,
+    const gfx::Point& point,
+    ui::MenuSourceType source_type) {
+  DCHECK(features::IsTemporaryHoldingSpaceContentForwardEntryPointEnabled());
+
+  context_menu_model_ = std::make_unique<ui::SimpleMenuModel>(this);
+
+  if (IsShowingPreviews()) {
+    context_menu_model_->AddItemWithIcon(
+        HoldingSpaceCommandId::kHidePreviews,
+        l10n_util::GetStringUTF16(
+            IDS_ASH_HOLDING_SPACE_CONTEXT_MENU_HIDE_PREVIEWS),
+        ui::ImageModel::FromVectorIcon(kVisibilityOffIcon));
+  } else {
+    context_menu_model_->AddItemWithIcon(
+        HoldingSpaceCommandId::kShowPreviews,
+        l10n_util::GetStringUTF16(
+            IDS_ASH_HOLDING_SPACE_CONTEXT_MENU_SHOW_PREVIEWS),
+        ui::ImageModel::FromVectorIcon(kVisibilityIcon));
+  }
+
+  const int run_types = views::MenuRunner::USE_TOUCHABLE_LAYOUT |
+                        views::MenuRunner::CONTEXT_MENU |
+                        views::MenuRunner::FIXED_ANCHOR;
+
+  context_menu_runner_ =
+      std::make_unique<views::MenuRunner>(context_menu_model_.get(), run_types);
+
+  gfx::Rect anchor = source->GetBoundsInScreen();
+  anchor.Inset(gfx::Insets(-kHoldingSpaceContextMenuMargin, 0));
+
+  context_menu_runner_->RunMenuAt(
+      source->GetWidget(), /*button_controller=*/nullptr, anchor,
+      views::MenuAnchorPosition::kTopLeft, source_type);
 }
 
 void HoldingSpaceTray::OnWidgetDragWillStart(views::Widget* widget) {

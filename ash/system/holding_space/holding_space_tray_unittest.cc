@@ -22,6 +22,7 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/views/controls/menu/menu_controller.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -37,10 +38,16 @@ std::unique_ptr<HoldingSpaceImage> CreateStubHoldingSpaceImage() {
 
 }  // namespace
 
-class HoldingSpaceTrayTest : public AshTestBase {
+// Parameterized by whether the content forward entry point is enabled.
+class HoldingSpaceTrayTest : public AshTestBase,
+                             public testing::WithParamInterface<bool> {
  public:
   HoldingSpaceTrayTest() {
-    scoped_feature_list_.InitAndEnableFeature(features::kTemporaryHoldingSpace);
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kTemporaryHoldingSpace,
+        /*field_trial_params=*/{
+            {"content-forward-entry-point-enabled",
+             IsContentForwardEntryPointEnabled() ? "true" : "false"}});
   }
 
   // AshTestBase:
@@ -108,6 +115,8 @@ class HoldingSpaceTrayTest : public AshTestBase {
         GetSessionControllerClient()->GetUserPrefService(user_account));
   }
 
+  bool IsContentForwardEntryPointEnabled() const { return GetParam(); }
+
   HoldingSpaceTestApi* test_api() { return test_api_.get(); }
 
   HoldingSpaceModel* model() { return &holding_space_model_; }
@@ -118,7 +127,7 @@ class HoldingSpaceTrayTest : public AshTestBase {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_F(HoldingSpaceTrayTest, ShowTrayButtonOnFirstUse) {
+TEST_P(HoldingSpaceTrayTest, ShowTrayButtonOnFirstUse) {
   StartSession();
 
   // Tray item should be shown for users that have never added anything to the
@@ -157,7 +166,7 @@ TEST_F(HoldingSpaceTrayTest, ShowTrayButtonOnFirstUse) {
   EXPECT_FALSE(test_api()->IsShowingInShelf());
 }
 
-TEST_F(HoldingSpaceTrayTest, AddingItemShowsTrayBubble) {
+TEST_P(HoldingSpaceTrayTest, AddingItemShowsTrayBubble) {
   MarkTimeOfFirstPin();
   StartSession();
 
@@ -190,7 +199,7 @@ TEST_F(HoldingSpaceTrayTest, AddingItemShowsTrayBubble) {
   EXPECT_FALSE(test_api()->IsShowingInShelf());
 }
 
-TEST_F(HoldingSpaceTrayTest, TrayButtonNotShownForPartialItemsOnly) {
+TEST_P(HoldingSpaceTrayTest, TrayButtonNotShownForPartialItemsOnly) {
   MarkTimeOfFirstPin();
   StartSession();
 
@@ -224,7 +233,7 @@ TEST_F(HoldingSpaceTrayTest, TrayButtonNotShownForPartialItemsOnly) {
 
 // Tests how download chips are updated during item addition, removal and
 // finalization
-TEST_F(HoldingSpaceTrayTest, DownloadsContainer) {
+TEST_P(HoldingSpaceTrayTest, DownloadsContainer) {
   StartSession();
 
   test_api()->Show();
@@ -314,7 +323,7 @@ TEST_F(HoldingSpaceTrayTest, DownloadsContainer) {
 
 // Verifies the downloads container is shown and orders items as expected when
 // the model contains a number of finalized items prior to showing UI.
-TEST_F(HoldingSpaceTrayTest, DownloadsContainerWithFinalizedItemsOnly) {
+TEST_P(HoldingSpaceTrayTest, DownloadsContainerWithFinalizedItemsOnly) {
   MarkTimeOfFirstPin();
   StartSession();
 
@@ -344,7 +353,7 @@ TEST_F(HoldingSpaceTrayTest, DownloadsContainerWithFinalizedItemsOnly) {
   test_api()->Close();
 }
 
-TEST_F(HoldingSpaceTrayTest, FinalizingDownloadItemThatShouldBeInvisible) {
+TEST_P(HoldingSpaceTrayTest, FinalizingDownloadItemThatShouldBeInvisible) {
   StartSession();
   test_api()->Show();
 
@@ -397,7 +406,7 @@ TEST_F(HoldingSpaceTrayTest, FinalizingDownloadItemThatShouldBeInvisible) {
 
 // Tests that a partially initialized download item does not get shown if a full
 // download item gets removed from the holding space.
-TEST_F(HoldingSpaceTrayTest, PartialItemNowShownOnRemovingADownloadItem) {
+TEST_P(HoldingSpaceTrayTest, PartialItemNowShownOnRemovingADownloadItem) {
   StartSession();
   test_api()->Show();
 
@@ -436,7 +445,7 @@ TEST_F(HoldingSpaceTrayTest, PartialItemNowShownOnRemovingADownloadItem) {
 
 // Tests how screen capture list is updated during item addition, removal and
 // finalization
-TEST_F(HoldingSpaceTrayTest, ScreenCaptureContainer) {
+TEST_P(HoldingSpaceTrayTest, ScreenCaptureContainer) {
   StartSession();
   test_api()->Show();
   EXPECT_TRUE(test_api()->PinnedFilesContainerShown());
@@ -536,7 +545,7 @@ TEST_F(HoldingSpaceTrayTest, ScreenCaptureContainer) {
 
 // Verifies the screen captures container is shown and orders items as expected
 // when the model contains a number of finalized items prior to showing UI.
-TEST_F(HoldingSpaceTrayTest, ScreenCapturesContainerWithFinalizedItemsOnly) {
+TEST_P(HoldingSpaceTrayTest, ScreenCapturesContainerWithFinalizedItemsOnly) {
   MarkTimeOfFirstPin();
   StartSession();
 
@@ -566,7 +575,7 @@ TEST_F(HoldingSpaceTrayTest, ScreenCapturesContainerWithFinalizedItemsOnly) {
   test_api()->Close();
 }
 
-TEST_F(HoldingSpaceTrayTest, FinalizingScreenCaptureItemThatShouldBeInvisible) {
+TEST_P(HoldingSpaceTrayTest, FinalizingScreenCaptureItemThatShouldBeInvisible) {
   StartSession();
   test_api()->Show();
 
@@ -637,7 +646,7 @@ TEST_F(HoldingSpaceTrayTest, FinalizingScreenCaptureItemThatShouldBeInvisible) {
 
 // Tests that a partially initialized screenshot item does not get shown if a
 // fully initialized screenshot item gets removed from the holding space.
-TEST_F(HoldingSpaceTrayTest, PartialItemNowShownOnRemovingAScreenCapture) {
+TEST_P(HoldingSpaceTrayTest, PartialItemNowShownOnRemovingAScreenCapture) {
   StartSession();
   test_api()->Show();
 
@@ -683,7 +692,7 @@ TEST_F(HoldingSpaceTrayTest, PartialItemNowShownOnRemovingAScreenCapture) {
 
 // Tests how the pinned item list is updated during item addition, removal and
 // finalization.
-TEST_F(HoldingSpaceTrayTest, PinnedFilesContainer) {
+TEST_P(HoldingSpaceTrayTest, PinnedFilesContainer) {
   MarkTimeOfFirstPin();
   StartSession();
 
@@ -788,7 +797,7 @@ TEST_F(HoldingSpaceTrayTest, PinnedFilesContainer) {
 
 // Verifies the pinned items container is not shown if it only contains
 // partially initialized items.
-TEST_F(HoldingSpaceTrayTest,
+TEST_P(HoldingSpaceTrayTest,
        PinnedFilesContainerWithPartiallyInitializedItemsOnly) {
   MarkTimeOfFirstPin();
   StartSession();
@@ -830,7 +839,7 @@ TEST_F(HoldingSpaceTrayTest,
 
 // Verifies the pinned items container is shown and orders items as expected
 // when the model contains a number of finalized items prior to showing UI.
-TEST_F(HoldingSpaceTrayTest, PinnedFilesContainerWithFinalizedItemsOnly) {
+TEST_P(HoldingSpaceTrayTest, PinnedFilesContainerWithFinalizedItemsOnly) {
   MarkTimeOfFirstPin();
   StartSession();
 
@@ -861,7 +870,7 @@ TEST_F(HoldingSpaceTrayTest, PinnedFilesContainerWithFinalizedItemsOnly) {
 
 // Tests that as nearby shared files are added to the model, they show on the
 // downloads container.
-TEST_F(HoldingSpaceTrayTest, DownloadsContainerWithNearbySharedFiles) {
+TEST_P(HoldingSpaceTrayTest, DownloadsContainerWithNearbySharedFiles) {
   StartSession();
 
   test_api()->Show();
@@ -912,7 +921,7 @@ TEST_F(HoldingSpaceTrayTest, DownloadsContainerWithNearbySharedFiles) {
 
 // Tests that a partially initialized nearby share item does not get shown if a
 // full download item gets removed from the holding space.
-TEST_F(HoldingSpaceTrayTest, PartialNearbyShareItemWithExistingDownloadItems) {
+TEST_P(HoldingSpaceTrayTest, PartialNearbyShareItemWithExistingDownloadItems) {
   StartSession();
   test_api()->Show();
 
@@ -992,7 +1001,7 @@ TEST_F(HoldingSpaceTrayTest, PartialNearbyShareItemWithExistingDownloadItems) {
 
 // Tests that a partially initialized download item does not get shown if a
 // full download item gets removed from the holding space.
-TEST_F(HoldingSpaceTrayTest, PartialDownloadItemWithExistingNearbyShareItems) {
+TEST_P(HoldingSpaceTrayTest, PartialDownloadItemWithExistingNearbyShareItems) {
   StartSession();
   test_api()->Show();
 
@@ -1046,5 +1055,27 @@ TEST_F(HoldingSpaceTrayTest, PartialDownloadItemWithExistingNearbyShareItems) {
 
   test_api()->Close();
 }
+
+// Right clicking the holding space tray should show a context menu if the
+// content forward entry point is enabled. Otherwise it should do nothing.
+TEST_P(HoldingSpaceTrayTest, ShouldMaybeShowContextMenuOnRightClick) {
+  StartSession();
+
+  views::View* tray = test_api()->GetTray();
+  ASSERT_TRUE(tray);
+
+  EXPECT_FALSE(views::MenuController::GetActiveInstance());
+
+  // Move the mouse to and perform a right click on `tray`.
+  auto* root_window = tray->GetWidget()->GetNativeWindow()->GetRootWindow();
+  ui::test::EventGenerator event_generator(root_window);
+  event_generator.MoveMouseTo(tray->GetBoundsInScreen().CenterPoint());
+  event_generator.ClickRightButton();
+
+  EXPECT_EQ(!!views::MenuController::GetActiveInstance(),
+            IsContentForwardEntryPointEnabled());
+}
+
+INSTANTIATE_TEST_SUITE_P(All, HoldingSpaceTrayTest, testing::Bool());
 
 }  // namespace ash
