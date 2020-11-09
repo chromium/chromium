@@ -52,6 +52,7 @@ enum CalcMode {
 };
 
 struct SMILAnimationEffectParameters;
+struct SMILAnimationValue;
 
 class CORE_EXPORT SVGAnimationElement : public SVGSMILElement {
   DEFINE_WRAPPERTYPEINFO();
@@ -71,13 +72,15 @@ class CORE_EXPORT SVGAnimationElement : public SVGSMILElement {
   DEFINE_ATTRIBUTE_EVENT_LISTENER(end, kEndEvent)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(repeat, kRepeatEvent)
 
-  virtual void ResetAnimatedType(bool needs_underlying_value) = 0;
-  virtual void ClearAnimatedType() = 0;
-  virtual void ApplyResultsToTarget() = 0;
+  virtual SMILAnimationValue CreateAnimationValue(
+      bool needs_underlying_value) const = 0;
+  void ApplyAnimation(SMILAnimationValue&);
+  virtual void ApplyResultsToTarget(const SMILAnimationValue&) = 0;
+
+  virtual void ClearAnimationValue() = 0;
   // Returns true if this animation "sets" the value of the animation. Thus all
   // previous animations are rendered useless.
   bool OverwritesUnderlyingAnimationValue() const;
-  void ApplyAnimation(SVGAnimationElement* result_element);
 
  protected:
   SVGAnimationElement(const QualifiedName&, Document&);
@@ -128,9 +131,9 @@ class CORE_EXPORT SVGAnimationElement : public SVGSMILElement {
                                         const String& to_string) = 0;
   virtual bool CalculateFromAndByValues(const String& from_string,
                                         const String& by_string) = 0;
-  virtual void CalculateAnimatedValue(float percent,
-                                      unsigned repeat_count,
-                                      SVGSMILElement* result_element) const = 0;
+  virtual void CalculateAnimationValue(SMILAnimationValue&,
+                                       float percent,
+                                       unsigned repeat_count) const = 0;
   virtual float CalculateDistance(const String& /*fromString*/,
                                   const String& /*toString*/) {
     return -1.f;

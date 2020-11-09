@@ -27,6 +27,7 @@
 
 #include <algorithm>
 
+#include "third_party/blink/renderer/core/svg/animation/smil_animation_value.h"
 #include "third_party/blink/renderer/core/svg/svg_animation_element.h"
 
 namespace blink {
@@ -55,14 +56,12 @@ void SMILAnimationSandwich::Remove(SVGAnimationElement* animation) {
   auto* position = std::find(sandwich_.begin(), sandwich_.end(), animation);
   DCHECK(sandwich_.end() != position);
   sandwich_.erase(position);
-  if (animation == ResultElement()) {
-    animation->ClearAnimatedType();
+  // If the sandwich is now empty, clear any animated value if there are active
+  // animation elements.
+  if (sandwich_.IsEmpty() && !active_.IsEmpty()) {
+    animation->ClearAnimationValue();
     active_.Shrink(0);
   }
-}
-
-SVGAnimationElement* SMILAnimationSandwich::ResultElement() const {
-  return !active_.IsEmpty() ? active_.front() : nullptr;
 }
 
 void SMILAnimationSandwich::UpdateActiveAnimationStack(
@@ -73,7 +72,6 @@ void SMILAnimationSandwich::UpdateActiveAnimationStack(
               PriorityCompare(presentation_time));
   }
 
-  SVGAnimationElement* old_result_element = ResultElement();
   active_.Shrink(0);
   active_.ReserveCapacity(sandwich_.size());
   // Build the contributing/active sandwich.
@@ -83,15 +81,19 @@ void SMILAnimationSandwich::UpdateActiveAnimationStack(
     animation->UpdateProgressState(presentation_time);
     active_.push_back(animation);
   }
-  // If we switched result element, clear the old one.
-  if (old_result_element && old_result_element != ResultElement())
-    old_result_element->ClearAnimatedType();
 }
 
 bool SMILAnimationSandwich::ApplyAnimationValues() {
-  SVGAnimationElement* result_element = ResultElement();
-  if (!result_element)
+  // For now we need an element to setup and apply an animation. Any animation
+  // element in the sandwich will do.
+  SVGAnimationElement* animation = sandwich_.front();
+
+  // If the sandwich does not have any active elements, clear any animated
+  // value.
+  if (active_.IsEmpty()) {
+    animation->ClearAnimationValue();
     return false;
+  }
 
   // Animations have to be applied lowest to highest prio.
   //
@@ -111,14 +113,15 @@ bool SMILAnimationSandwich::ApplyAnimationValues() {
   // Only reset the animated type to the base value once for
   // the lowest priority animation that animates and
   // contributes to a particular element/attribute pair.
-  result_element->ResetAnimatedType(needs_underlying_value);
+  SMILAnimationValue animation_value =
+      animation->CreateAnimationValue(needs_underlying_value);
 
   for (auto* sandwich_it = sandwich_start; sandwich_it != active_.end();
        sandwich_it++) {
-    (*sandwich_it)->ApplyAnimation(result_element);
+    (*sandwich_it)->ApplyAnimation(animation_value);
   }
 
-  result_element->ApplyResultsToTarget();
+  animation->ApplyResultsToTarget(animation_value);
   return true;
 }
 

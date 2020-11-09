@@ -61,8 +61,9 @@ class CORE_EXPORT SVGAnimateElement : public SVGAnimationElement {
 
   bool HasValidAnimation() const override;
 
-  void ResetAnimatedType(bool needs_underlying_value) final;
-  void ClearAnimatedType() final;
+  SMILAnimationValue CreateAnimationValue(
+      bool needs_underlying_value) const final;
+  void ClearAnimationValue() final;
 
   bool CalculateToAtEndOfDurationValue(
       const String& to_at_end_of_duration_string) final;
@@ -70,10 +71,10 @@ class CORE_EXPORT SVGAnimateElement : public SVGAnimationElement {
                                 const String& to_string) final;
   bool CalculateFromAndByValues(const String& from_string,
                                 const String& by_string) final;
-  void CalculateAnimatedValue(float percentage,
-                              unsigned repeat_count,
-                              SVGSMILElement* result_element) const final;
-  void ApplyResultsToTarget() final;
+  void CalculateAnimationValue(SMILAnimationValue&,
+                               float percentage,
+                               unsigned repeat_count) const final;
+  void ApplyResultsToTarget(const SMILAnimationValue&) final;
   float CalculateDistance(const String& from_string,
                           const String& to_string) final;
 
@@ -114,7 +115,6 @@ class CORE_EXPORT SVGAnimateElement : public SVGAnimationElement {
   Member<SVGPropertyBase> from_property_;
   Member<SVGPropertyBase> to_property_;
   Member<SVGPropertyBase> to_at_end_of_duration_property_;
-  Member<SVGPropertyBase> animated_value_;
 
  protected:
   Member<SVGAnimatedPropertyBase> target_property_;

@@ -42,18 +42,19 @@ class SVGAnimateMotionElement final : public SVGAnimationElement {
 
   void ParseAttribute(const AttributeModificationParams&) override;
 
-  void ResetAnimatedType(bool needs_underlying_value) override;
-  void ClearAnimatedType() override;
+  SMILAnimationValue CreateAnimationValue(
+      bool needs_underlying_value) const override;
+  void ClearAnimationValue() override;
   bool CalculateToAtEndOfDurationValue(
       const String& to_at_end_of_duration_string) override;
   bool CalculateFromAndToValues(const String& from_string,
                                 const String& to_string) override;
   bool CalculateFromAndByValues(const String& from_string,
                                 const String& by_string) override;
-  void CalculateAnimatedValue(float percentage,
-                              unsigned repeat_count,
-                              SVGSMILElement* result_element) const override;
-  void ApplyResultsToTarget() override;
+  void CalculateAnimationValue(SMILAnimationValue&,
+                               float percentage,
+                               unsigned repeat_count) const override;
+  void ApplyResultsToTarget(const SMILAnimationValue&) override;
   float CalculateDistance(const String& from_string,
                           const String& to_string) override;
 

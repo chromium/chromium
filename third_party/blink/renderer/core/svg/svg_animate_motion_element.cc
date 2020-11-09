@@ -24,6 +24,7 @@
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/svg/animation/smil_animation_effect_parameters.h"
+#include "third_party/blink/renderer/core/svg/animation/smil_animation_value.h"
 #include "third_party/blink/renderer/core/svg/svg_mpath_element.h"
 #include "third_party/blink/renderer/core/svg/svg_parser_utilities.h"
 #include "third_party/blink/renderer/core/svg/svg_path_element.h"
@@ -153,16 +154,14 @@ static bool ParsePoint(const String& string, FloatPoint& point) {
   });
 }
 
-void SVGAnimateMotionElement::ResetAnimatedType(bool needs_underlying_value) {
-  SVGElement* target_element = targetElement();
-  DCHECK(target_element);
-  DCHECK(TargetCanHaveMotionTransform(*target_element));
-  AffineTransform* transform = target_element->AnimateMotionTransform();
-  DCHECK(transform);
-  transform->MakeIdentity();
+SMILAnimationValue SVGAnimateMotionElement::CreateAnimationValue(
+    bool needs_underlying_value) const {
+  DCHECK(targetElement());
+  DCHECK(TargetCanHaveMotionTransform(*targetElement()));
+  return SMILAnimationValue();
 }
 
-void SVGAnimateMotionElement::ClearAnimatedType() {
+void SVGAnimateMotionElement::ClearAnimationValue() {
   SVGElement* target_element = targetElement();
   DCHECK(target_element);
   AffineTransform* transform = target_element->AnimateMotionTransform();
@@ -202,15 +201,12 @@ bool SVGAnimateMotionElement::CalculateFromAndByValues(
   return true;
 }
 
-void SVGAnimateMotionElement::CalculateAnimatedValue(float percentage,
-                                                     unsigned repeat_count,
-                                                     SVGSMILElement*) const {
+void SVGAnimateMotionElement::CalculateAnimationValue(
+    SMILAnimationValue& animation_value,
+    float percentage,
+    unsigned repeat_count) const {
   SMILAnimationEffectParameters parameters = ComputeEffectParameters();
-
-  SVGElement* target_element = targetElement();
-  DCHECK(target_element);
-  AffineTransform* transform = target_element->AnimateMotionTransform();
-  DCHECK(transform);
+  AffineTransform* transform = &animation_value.motion_transform;
 
   // If additive, we accumulate into the underlying (transform) value.
   if (!parameters.is_additive)
@@ -251,13 +247,15 @@ void SVGAnimateMotionElement::CalculateAnimatedValue(float percentage,
   transform->Rotate(angle);
 }
 
-void SVGAnimateMotionElement::ApplyResultsToTarget() {
+void SVGAnimateMotionElement::ApplyResultsToTarget(
+    const SMILAnimationValue& animation_value) {
   // We accumulate to the target element transform list so there is not much to
   // do here.
   SVGElement* target_element = targetElement();
   DCHECK(target_element);
   AffineTransform* target_transform = target_element->AnimateMotionTransform();
   DCHECK(target_transform);
+  *target_transform = animation_value.motion_transform;
 
   if (LayoutObject* target_layout_object = target_element->GetLayoutObject())
     InvalidateForAnimateMotionTransformChange(*target_layout_object);

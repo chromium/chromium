@@ -109,11 +109,6 @@ class SMILAnimationSandwich : public GarbageCollected<SMILAnimationSandwich> {
   void Trace(Visitor*) const;
 
  private:
-  // Results are accumulated to the first animation element that animates and
-  // contributes to a particular element/attribute pair. We refer to this as
-  // the "result element".
-  SVGAnimationElement* ResultElement() const;
-
   using AnimationsVector = HeapVector<Member<SVGAnimationElement>>;
 
   // All the animation (really: timed) elements that make up the sandwich,

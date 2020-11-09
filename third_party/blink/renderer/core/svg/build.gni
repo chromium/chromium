@@ -9,6 +9,7 @@ blink_core_sources_svg = [
   "animation/smil_animation_effect_parameters.h",
   "animation/smil_animation_sandwich.cc",
   "animation/smil_animation_sandwich.h",
+  "animation/smil_animation_value.h",
   "animation/smil_repeat_count.h",
   "animation/smil_time.cc",
   "animation/smil_time.h",
