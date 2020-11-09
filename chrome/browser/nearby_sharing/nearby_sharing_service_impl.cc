@@ -3362,9 +3362,10 @@ void NearbySharingServiceImpl::UnregisterShareTarget(
         last_incoming_metadata_->first.id == share_target.id) {
       last_incoming_metadata_.reset();
     }
-    incoming_share_target_info_map_.erase(share_target.id);
-    // Clear legacy incoming payloads to release resource
+
+    // Clear legacy incoming payloads to release resource.
     nearby_connections_manager_->ClearIncomingPayloads();
+    incoming_share_target_info_map_.erase(share_target.id);
   } else {
     if (last_outgoing_metadata_ &&
         last_outgoing_metadata_->first.id == share_target.id) {
