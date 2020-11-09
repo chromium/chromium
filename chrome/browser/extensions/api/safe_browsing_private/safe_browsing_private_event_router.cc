@@ -136,6 +136,8 @@ const char SafeBrowsingPrivateEventRouter::kKeyMalwareFamily[] =
     "malwareFamily";
 const char SafeBrowsingPrivateEventRouter::kKeyMalwareCategory[] =
     "malwareCategory";
+const char SafeBrowsingPrivateEventRouter::kKeyEvidenceLockerFilePath[] =
+    "evidenceLockerFilepath";
 
 const char SafeBrowsingPrivateEventRouter::kKeyPasswordReuseEvent[] =
     "passwordReuseEvent";
@@ -427,7 +429,7 @@ void SafeBrowsingPrivateEventRouter::OnAnalysisConnectorResult(
         url, file_name, download_digest_sha256,
         MalwareRuleToThreatType(result.triggered_rules(0).rule_name()),
         mime_type, trigger, content_size, event_result, result.malware_family(),
-        result.malware_category());
+        result.malware_category(), result.evidence_locker_filepath());
   } else if (result.tag() == "dlp") {
     OnSensitiveDataEvent(url, file_name, download_digest_sha256, mime_type,
                          trigger, result, content_size, event_result);
@@ -444,7 +446,8 @@ void SafeBrowsingPrivateEventRouter::OnDangerousDeepScanningResult(
     const int64_t content_size,
     safe_browsing::EventResult event_result,
     const std::string& malware_family,
-    const std::string& malware_category) {
+    const std::string& malware_category,
+    const std::string& evidence_locker_filepath) {
   if (!IsRealtimeReportingEnabled())
     return;
 
@@ -458,7 +461,8 @@ void SafeBrowsingPrivateEventRouter::OnDangerousDeepScanningResult(
              const std::string& trigger, const int64_t content_size,
              safe_browsing::EventResult event_result,
              const std::string& malware_family,
-             const std::string& malware_category) {
+             const std::string& malware_category,
+             const std::string& evidence_locker_filepath) {
             // Create a real-time event dictionary from the arguments and
             // report it.
             base::Value event(base::Value::Type::DICTIONARY);
@@ -484,11 +488,15 @@ void SafeBrowsingPrivateEventRouter::OnDangerousDeepScanningResult(
               event.SetStringKey(kKeyMalwareFamily, malware_family);
             if (!malware_category.empty())
               event.SetStringKey(kKeyMalwareCategory, malware_category);
+            if (!evidence_locker_filepath.empty()) {
+              event.SetStringKey(kKeyEvidenceLockerFilePath,
+                                 evidence_locker_filepath);
+            }
             return event;
           },
           url.spec(), file_name, download_digest_sha256, GetProfileUserName(),
           threat_type, mime_type, trigger, content_size, event_result,
-          malware_family, malware_category));
+          malware_family, malware_category, evidence_locker_filepath));
 }
 
 void SafeBrowsingPrivateEventRouter::OnSensitiveDataEvent(
@@ -533,6 +541,10 @@ void SafeBrowsingPrivateEventRouter::OnSensitiveDataEvent(
             event.SetBoolKey(
                 kKeyClickedThrough,
                 event_result == safe_browsing::EventResult::BYPASSED);
+            if (!result.evidence_locker_filepath().empty()) {
+              event.SetStringKey(kKeyEvidenceLockerFilePath,
+                                 result.evidence_locker_filepath());
+            }
 
             AddAnalysisConnectorVerdictToEvent(result, &event);
 
@@ -584,6 +596,10 @@ void SafeBrowsingPrivateEventRouter::OnAnalysisConnectorWarningBypassed(
                                safe_browsing::EventResultToString(
                                    safe_browsing::EventResult::BYPASSED));
             event.SetBoolKey(kKeyClickedThrough, true);
+            if (!result.evidence_locker_filepath().empty()) {
+              event.SetStringKey(kKeyEvidenceLockerFilePath,
+                                 result.evidence_locker_filepath());
+            }
 
             AddAnalysisConnectorVerdictToEvent(result, &event);
 
