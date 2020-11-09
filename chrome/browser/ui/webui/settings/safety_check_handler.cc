@@ -479,6 +479,7 @@ void SafetyCheckHandler::CheckChromeCleaner() {
     base::UmaHistogramEnumeration("Settings.SafetyCheck.ChromeCleanerResult",
                                   chrome_cleaner_status_);
   }
+  CompleteParentIfChildrenCompleted();
 }
 #endif
 
@@ -557,7 +558,6 @@ void SafetyCheckHandler::OnChromeCleanerCheckResult(
                                 timestamp_delegate_->GetSystemTime()));
   FireWebUIListener(kChromeCleanerEvent, event);
   chrome_cleaner_status_ = result.status;
-  CompleteParentIfChildrenCompleted();
 }
 #endif
 

@@ -1742,4 +1742,22 @@ TEST_F(SafetyCheckHandlerTest, CheckSafetyCheckCompletedWebUiEvents) {
   ASSERT_TRUE(event_parent);
   VerifyDisplayString(event_parent,
                       base::UTF8ToUTF16("Safety check ran a moment ago"));
+
+#if defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  // Subsequent Chrome cleaner status updates without the user running safety
+  // check again should not trigger further parent element completion events.
+  safety_check_->OnIdle(safe_browsing::ChromeCleanerController::IdleReason::
+                            kReporterFoundNothing);
+  safety_check_->OnReporterRunning();
+  safety_check_->OnScanning();
+  safety_check_->OnRebootRequired();
+  safety_check_->OnRebootFailed();
+#endif
+
+  // Check that there is no new parent completion event.
+  const base::DictionaryValue* event_parent2 =
+      GetSafetyCheckStatusChangedWithDataIfExists(
+          kParent, static_cast<int>(SafetyCheckHandler::ParentStatus::kAfter));
+  ASSERT_TRUE(event_parent2);
+  ASSERT_TRUE(event_parent == event_parent2);
 }
