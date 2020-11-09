@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_TABS_TAB_SEARCH_BUTTON_H_
 #define CHROME_BROWSER_UI_VIEWS_TABS_TAB_SEARCH_BUTTON_H_
 
+#include "base/time/time.h"
 #include "chrome/browser/ui/views/bubble/webui_bubble_manager.h"
 #include "chrome/browser/ui/views/tabs/new_tab_button.h"
 #include "chrome/browser/ui/webui/tab_search/tab_search_ui.h"
@@ -42,6 +43,7 @@ class TabSearchButton : public NewTabButton,
   void FrameColorsChanged() override;
 
   // views::WidgetObserver:
+  void OnWidgetVisibilityChanged(views::Widget* widget, bool visible) override;
   void OnWidgetDestroying(views::Widget* widget) override;
 
   // When this is called the bubble may already be showing or be loading in.
@@ -52,6 +54,10 @@ class TabSearchButton : public NewTabButton,
 
   WebUIBubbleManagerBase* webui_bubble_manager_for_testing() {
     return &webui_bubble_manager_;
+  }
+  const base::Optional<base::TimeTicks>& bubble_created_time_for_testing()
+      const {
+    return bubble_created_time_;
   }
 
  protected:
@@ -64,6 +70,9 @@ class TabSearchButton : public NewTabButton,
   WebUIBubbleManager<TabSearchUI> webui_bubble_manager_;
 
   views::WidgetOpenTimer widget_open_timer_;
+
+  // Timestamp for when the current bubble was created.
+  base::Optional<base::TimeTicks> bubble_created_time_;
 
   views::MenuButtonController* menu_button_controller_ = nullptr;
 

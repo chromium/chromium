@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/timer/elapsed_timer.h"
 #include "chrome/browser/ui/webui/tab_search/tab_search.mojom.h"
 #include "chrome/browser/ui/webui/tab_search/tab_search_page_handler.h"
 #include "chrome/browser/ui/webui/webui_load_timer.h"
@@ -41,6 +42,10 @@ class TabSearchUI : public ui::MojoBubbleWebUIController,
       this};
 
   WebuiLoadTimer webui_load_timer_;
+
+  // A timer used to track the duration between when the WebUI is constructed
+  // and when the TabSearchPageHandler is constructed.
+  base::Optional<base::ElapsedTimer> page_handler_timer_;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };

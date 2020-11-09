@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/views/tabs/tab_strip_controller.h"
 #include "chrome/common/webui_url_constants.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/gfx/presentation_feedback.h"
 #include "ui/views/widget/widget.h"
 
 namespace {
@@ -72,6 +73,27 @@ void TabSearchButton::FrameColorsChanged() {
            gfx::CreateVectorIcon(kTabSearchIcon, GetForegroundColor()));
 }
 
+void TabSearchButton::OnWidgetVisibilityChanged(views::Widget* widget,
+                                                bool visible) {
+  DCHECK_EQ(webui_bubble_manager_.GetBubbleWidget(), widget);
+  if (visible && bubble_created_time_.has_value()) {
+    GetWidget()->GetCompositor()->RequestPresentationTimeForNextFrame(
+        base::BindOnce(
+            [](base::TimeTicks bubble_created_time,
+               bool bubble_using_cached_webview,
+               const gfx::PresentationFeedback& feedback) {
+              base::UmaHistogramMediumTimes(
+                  bubble_using_cached_webview
+                      ? "Tabs.TabSearch.WindowTimeToShowCachedWebView"
+                      : "Tabs.TabSearch.WindowTimeToShowUncachedWebView",
+                  feedback.timestamp - bubble_created_time);
+            },
+            *bubble_created_time_,
+            webui_bubble_manager_.bubble_using_cached_webview()));
+    bubble_created_time_.reset();
+  }
+}
+
 void TabSearchButton::OnWidgetDestroying(views::Widget* widget) {
   DCHECK_EQ(webui_bubble_manager_.GetBubbleWidget(), widget);
   observed_bubble_widget_.Remove(webui_bubble_manager_.GetBubbleWidget());
@@ -79,8 +101,11 @@ void TabSearchButton::OnWidgetDestroying(views::Widget* widget) {
 }
 
 bool TabSearchButton::ShowTabSearchBubble(bool triggered_by_keyboard_shortcut) {
-  if (!webui_bubble_manager_.ShowBubble())
+  if (webui_bubble_manager_.GetBubbleWidget())
     return false;
+
+  bubble_created_time_ = base::TimeTicks::Now();
+  webui_bubble_manager_.ShowBubble();
 
   if (triggered_by_keyboard_shortcut) {
     base::UmaHistogramEnumeration("Tabs.TabSearch.OpenAction",

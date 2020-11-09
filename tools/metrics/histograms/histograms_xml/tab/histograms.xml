@@ -2029,6 +2029,25 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Tabs.TabSearch.PageHandlerConstructionDelay" units="ms"
+    expires_after="M90">
+  <owner>tluk@chromium.org</owner>
+  <owner>robliao@chromium.org</owner>
+  <owner>yuhengh@chromium.org</owner>
+  <owner>romanarora@chromium.org</owner>
+  <summary>
+    Tab Search is a feature that allows users to better search for and switch to
+    their desired tabs. The Tab Search UI is shown in a bubble anchored to an
+    element of the UI in the browser window.
+
+    When the WebUIController is first created it waits for the WebUI code in the
+    renderer process to request the creation of the TabSearchPageHandler. This
+    metric tracks the time between when the WebUIController was constructed to
+    when the TabSearchPageHandler begins construction. This metric is emitted
+    right before the TabSearchPageHandler's constructor is called.
+  </summary>
+</histogram>
+
 <histogram name="Tabs.TabSearch.WebUI.InitialTabsRenderTime" units="ms"
     expires_after="M90">
   <owner>tluk@chromium.org</owner>
@@ -2131,6 +2150,43 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Users may leave the bubble open for long periods of time without directly
     interacting with the UI which could result in a long tail of displayed
     durations.
+  </summary>
+</histogram>
+
+<histogram name="Tabs.TabSearch.WindowTimeToShowCachedWebView" units="ms"
+    expires_after="M90">
+  <owner>tluk@chromium.org</owner>
+  <owner>robliao@chromium.org</owner>
+  <owner>yuhengh@chromium.org</owner>
+  <owner>romanarora@chromium.org</owner>
+  <summary>
+    Tab Search is a feature that allows users to better search for and switch to
+    their desired tabs. The Tab Search UI is shown in a bubble anchored to an
+    element of the UI in the browser window.
+
+    This tracks the time between when the Tab Search WebUI bubble widget is
+    first created and when it is first shown to users. This metric is only
+    logged if a previously cached WebView is used for the construction of the
+    bubble widget. This metric is emitted when the bubble window is first
+    revealed.
+  </summary>
+</histogram>
+
+<histogram name="Tabs.TabSearch.WindowTimeToShowUncachedWebView" units="ms"
+    expires_after="M90">
+  <owner>tluk@chromium.org</owner>
+  <owner>robliao@chromium.org</owner>
+  <owner>yuhengh@chromium.org</owner>
+  <owner>romanarora@chromium.org</owner>
+  <summary>
+    Tab Search is a feature that allows users to better search for and switch to
+    their desired tabs. The Tab Search UI is shown in a bubble anchored to an
+    element of the UI in the browser window.
+
+    This tracks the time between when the Tab Search WebUI bubble widget is
+    first created and when it is first shown to users. This metric is only
+    logged if a new WebView was created for the construction of the bubble
+    widget. This metric is emitted when the bubble window is first revealed.
   </summary>
 </histogram>
 

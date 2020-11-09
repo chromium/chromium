@@ -46,6 +46,9 @@ class WebUIBubbleManagerBase : public views::WidgetObserver {
   content::BrowserContext* browser_context() { return browser_context_; }
   const GURL& webui_url() const { return webui_url_; }
   bool enable_extension_apis() const { return enable_extension_apis_; }
+  bool bubble_using_cached_webview() const {
+    return bubble_using_cached_webview_;
+  }
 
   void ResetWebViewForTesting();
   base::WeakPtr<WebUIBubbleDialogView> bubble_view_for_testing() {
@@ -61,6 +64,10 @@ class WebUIBubbleManagerBase : public views::WidgetObserver {
   GURL webui_url_;
   base::WeakPtr<WebUIBubbleDialogView> bubble_view_;
   const bool enable_extension_apis_;
+
+  // Tracks whether the current bubble was created by reusing
+  // |cached_web_view_|.
+  bool bubble_using_cached_webview_ = false;
 
   // A cached WebView used to make re-triggering the UI faster. This is not set
   // when the bubble is showing. It will only be set when the bubble is

@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/bubble/webui_bubble_dialog_view.h"
 #include "chrome/browser/ui/views/bubble/webui_bubble_manager.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/tabs/tab_search_button.h"
@@ -71,6 +72,25 @@ IN_PROC_BROWSER_TEST_F(TabSearchButtonBrowserTest, ButtonClickCreatesBubble) {
   tab_search_button()->CloseTabSearchBubble();
   ASSERT_TRUE(bubble_manager()->GetBubbleWidget()->IsClosed());
 
+  RunUntilBubbleWidgetDestroyed();
+}
+
+IN_PROC_BROWSER_TEST_F(TabSearchButtonBrowserTest,
+                       BubbleShowTimerTriggersCorrectly) {
+  ASSERT_EQ(nullptr, bubble_manager()->GetBubbleWidget());
+  tab_search_button()->ShowTabSearchBubble();
+
+  // |bubble_created_time_| should be set as soon as the bubble widget is
+  // created.
+  EXPECT_FALSE(bubble_manager()->GetBubbleWidget()->IsVisible());
+  EXPECT_TRUE(tab_search_button()->bubble_created_time_for_testing());
+
+  // Showing the bubble should reset the timestamp.
+  bubble_manager()->bubble_view_for_testing()->ShowUI();
+  EXPECT_TRUE(bubble_manager()->GetBubbleWidget()->IsVisible());
+  EXPECT_FALSE(tab_search_button()->bubble_created_time_for_testing());
+
+  tab_search_button()->CloseTabSearchBubble();
   RunUntilBubbleWidgetDestroyed();
 }
 

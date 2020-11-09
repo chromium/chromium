@@ -41,8 +41,10 @@ bool WebUIBubbleManagerBase::ShowBubble() {
 
   if (cached_web_view_) {
     cached_web_view_->GetWebContents()->ReloadFocusedFrame();
+    bubble_using_cached_webview_ = true;
   } else {
     cached_web_view_ = CreateWebView();
+    bubble_using_cached_webview_ = false;
   }
 
   bubble_view_ = WebUIBubbleDialogView::CreateWebUIBubbleDialog(
@@ -72,6 +74,7 @@ void WebUIBubbleManagerBase::OnWidgetDestroying(views::Widget* widget) {
   cached_web_view_ = bubble_view_->RemoveWebView();
   observed_bubble_widget_.Remove(bubble_view_->GetWidget());
   cache_timer_->Reset();
+  bubble_using_cached_webview_ = false;
 }
 
 void WebUIBubbleManagerBase::ResetWebViewForTesting() {

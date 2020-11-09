@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/tab_search/tab_search_ui.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "base/numerics/ranges.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
@@ -73,6 +74,10 @@ TabSearchUI::TabSearchUI(content::WebUI* web_ui)
   content::URLDataSource::Add(
       profile, std::make_unique<FaviconSource>(
                    profile, chrome::FaviconUrlFormat::kFavicon2));
+
+  page_handler_timer_ = base::ElapsedTimer();
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
+      "browser", "TabSearchPageHandlerConstructionDelay", this);
 }
 
 TabSearchUI::~TabSearchUI() = default;
@@ -89,6 +94,21 @@ void TabSearchUI::CreatePageHandler(
     mojo::PendingRemote<tab_search::mojom::Page> page,
     mojo::PendingReceiver<tab_search::mojom::PageHandler> receiver) {
   DCHECK(page);
+
+  // CreatePageHandler() can be called multiple times if reusing the same
+  // WebUIController. For eg refreshing the page will create new PageHandler but
+  // reuse TabSearchUI. Check to make sure |page_handler_timer_| is valid before
+  // logging metrics.
+  if (page_handler_timer_.has_value()) {
+    TRACE_EVENT_NESTABLE_ASYNC_END0(
+        "browser", "TabSearchPageHandlerConstructionDelay", this);
+    UmaHistogramMediumTimes("Tabs.TabSearch.PageHandlerConstructionDelay",
+                            page_handler_timer_->Elapsed());
+    page_handler_timer_.reset();
+  }
+
+  // TODO(tluk): Investigate whether we can avoid recreating this multiple times
+  // per instance of the TabSearchUI.
   page_handler_ = std::make_unique<TabSearchPageHandler>(
       std::move(receiver), std::move(page), web_ui(), this);
 }
