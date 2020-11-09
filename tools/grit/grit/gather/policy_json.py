@@ -168,9 +168,16 @@ class PolicyJson(skeleton_gatherer.SkeletonGatherer):
               (key_map[key], item['name'],
                ','.join(item['owners'] if 'owners' in item else 'unknown')))
     if item_type == 'enum_item':
-      return ('%s of the option named %s in policy %s [owner(s): %s]' %
-              (key_map[key], item['name'], parent_item['name'],
-               ','.join(parent_item['owners'] if 'owners' in parent_item else 'unknown')))
+      if 'name' in item:
+        return ('%s of the option named %s in policy %s [owner(s): %s]' %
+                (key_map[key], item['name'], parent_item['name'],
+                 ','.join(parent_item['owners'] if 'owners' in
+                          parent_item else 'unknown')))
+      else:
+        return ('%s of the option with value %s in policy %s [owner(s): %s]' %
+                (key_map[key], item['value'], parent_item['name'],
+                 ','.join(parent_item['owners'] if 'owners' in
+                          parent_item else 'unknown')))
     raise Exception('Unexpected type %s' % item_type)
 
   def _AddSchemaKeys(self, obj, depth):
