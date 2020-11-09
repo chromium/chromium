@@ -7,6 +7,8 @@ per-file *.typemap=set noparent
 per-file *.typemap=file://ipc/SECURITY_OWNERS
 
 per-file web_application_cache_*=pwnall@chromium.org
+per-file web_graphics_context_3d_provider.h=kbr@chromium.org
+per-file web_graphics_context_3d_provider.h=khushalsagar@chromium.org
 per-file web_rtc_*=hbos@chromium.org
 per-file web_media_player*=mlamouri@chromium.org
 
