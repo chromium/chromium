@@ -44,16 +44,13 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_loader_options.h"
 #include "third_party/blink/renderer/platform/network/http_header_map.h"
 #include "third_party/blink/renderer/platform/timer.h"
-#include "third_party/blink/renderer/platform/weborigin/referrer.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-#include "third_party/blink/renderer/platform/wtf/cross_thread_copier.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 
 class ExecutionContext;
-class KURL;
 class LocalFrame;
 class ResourceRequest;
 class SecurityOrigin;
@@ -104,10 +101,6 @@ class CORE_EXPORT ThreadableLoader final
                    ResourceFetcher* = nullptr);
   ~ThreadableLoader() override;
 
-  // Exposed for testing. Code outside this class should not call this function.
-  static std::unique_ptr<ResourceRequest>
-  CreateAccessControlPreflightRequestForTesting(const ResourceRequest&);
-
   // Must be called to actually begin the request.
   void Start(ResourceRequest);
 
@@ -123,7 +116,7 @@ class CORE_EXPORT ThreadableLoader final
 
   void Cancel();
 
-  // Detach the loader from the request. This ffunction is for "keepalive"
+  // Detach the loader from the request. This function is for "keepalive"
   // requests. No notification will be sent to the client, but the request
   // will be processed.
   void Detach();
@@ -133,21 +126,27 @@ class CORE_EXPORT ThreadableLoader final
   void Trace(Visitor* visitor) const override;
 
  private:
-  class AssignOnScopeExit;
-  class DetachedClient;
-
-  static std::unique_ptr<ResourceRequest> CreateAccessControlPreflightRequest(
-      const ResourceRequest&,
-      const SecurityOrigin*);
-
   void Clear();
 
-  // ResourceClient
-  void NotifyFinished(Resource*) override;
+  // Notify Inspector and log to console about resource response. Use this
+  // method if response is not going to be finished normally.
+  void ReportResponseReceived(uint64_t identifier, const ResourceResponse&);
 
+  void DidTimeout(TimerBase*);
+
+  void DispatchDidFail(const ResourceError&);
+
+  const SecurityOrigin* GetSecurityOrigin() const;
+
+  // Returns null if the loader is not associated with a frame.
+  // TODO(kinuko): Remove dependency to frame.
+  LocalFrame* GetFrame() const;
+
+  // ResourceClient implementation:
+  void NotifyFinished(Resource*) override;
   String DebugName() const override { return "ThreadableLoader"; }
 
-  // RawResourceClient
+  // RawResourceClient implementation:
   void DataSent(Resource*,
                 uint64_t bytes_sent,
                 uint64_t total_bytes_to_be_sent) override;
@@ -162,112 +161,30 @@ class CORE_EXPORT ThreadableLoader final
   void DataDownloaded(Resource*, uint64_t) override;
   void DidDownloadToBlob(Resource*, scoped_refptr<BlobDataHandle>) override;
 
-  // Notify Inspector and log to console about resource response. Use this
-  // method if response is not going to be finished normally.
-  void ReportResponseReceived(uint64_t identifier, const ResourceResponse&);
-
-  void DidTimeout(TimerBase*);
-  // Calls the appropriate loading method according to policy and data about
-  // origin. Only for handling the initial load (including fallback after
-  // consulting ServiceWorker).
-  void DispatchInitialRequest(ResourceRequest&);
-  void MakeCrossOriginAccessRequest(const ResourceRequest&);
-
-  // Loads m_fallbackRequestForServiceWorker.
-  void LoadFallbackRequestForServiceWorker();
-  // Issues a CORS preflight.
-  void LoadPreflightRequest(const ResourceRequest&,
-                            const ResourceLoaderOptions&);
-  // Loads actual_request_.
-  void LoadActualRequest();
-  // Clears actual_request_ and reports access control check failure to
-  // m_client.
-  void HandlePreflightFailure(const KURL&, const network::CorsErrorStatus&);
-  // Investigates the response for the preflight request. If successful,
-  // the actual request will be made later in NotifyFinished().
-  void HandlePreflightResponse(const ResourceResponse&);
-
-  void DispatchDidFail(const ResourceError&);
-
-  void PrepareCrossOriginRequest(ResourceRequest&) const;
-
-  // This method modifies the ResourceRequest by calling
-  // SetAllowStoredCredentials() on it based on same-origin-ness and the
-  // credentials mode.
-  //
-  // This method configures the ResourceLoaderOptions so that the underlying
-  // ResourceFetcher doesn't perform some part of the CORS logic since this
-  // class performs it by itself.
-  void LoadRequest(ResourceRequest&, ResourceLoaderOptions);
-
-  const SecurityOrigin* GetSecurityOrigin() const;
-
-  // Returns null if the loader is not associated with a frame.
-  // TODO(kinuko): Remove dependency to frame.
-  LocalFrame* GetFrame() const;
-
   Member<ThreadableLoaderClient> client_;
   Member<ExecutionContext> execution_context_;
   Member<ResourceFetcher> resource_fetcher_;
 
-  base::TimeDelta timeout_;
   // Some items may be overridden by m_forceDoNotAllowStoredCredentials and
   // m_securityOrigin. In such a case, build a ResourceLoaderOptions with
   // up-to-date values from them and this variable, and use it.
   const ResourceLoaderOptions resource_loader_options_;
 
-  // Always true. TODO(1053866): Remove this flag and code hidden by this flag.
-  const bool out_of_blink_cors_;
-
   // Corresponds to the CORS flag in the Fetch spec.
-  bool cors_flag_ = false;
   scoped_refptr<const SecurityOrigin> security_origin_;
-  scoped_refptr<const SecurityOrigin> original_security_origin_;
 
-  const bool async_;
-
-  // Holds the original request context (used for sanity checks).
-  mojom::blink::RequestContextType request_context_;
-
-  // Saved so that we can use the original value for the modes in
-  // ResponseReceived() where |resource| might be a reused one (e.g. preloaded
-  // resource) which can have different modes.
+  // Saved so that we can use the original mode in ResponseReceived() where
+  // |resource| might be a reused one (e.g. preloaded resource) which can have a
+  // different mode.
   network::mojom::RequestMode request_mode_;
-  network::mojom::CredentialsMode credentials_mode_;
 
-  // Holds the original request for fallback in case the Service Worker
-  // does not respond.
-  ResourceRequest fallback_request_for_service_worker_;
-
-  // Holds the original request and options for it during preflight request
-  // handling phase.
-  ResourceRequest actual_request_;
-  ResourceLoaderOptions actual_options_{nullptr /* world */};
-  network::mojom::FetchResponseType response_tainting_ =
-      network::mojom::FetchResponseType::kBasic;
-
-  KURL initial_request_url_;
-  KURL last_request_url_;
-
-  // stores request headers in case of a cross-origin redirect.
-  HTTPHeaderMap request_headers_;
-
+  // Set via SetTimeout() by a user before Start().
+  base::TimeDelta timeout_;
+  // Used to detect |timeout_| is over.
   TaskRunnerTimer<ThreadableLoader> timeout_timer_;
-  base::TimeTicks
-      request_started_;  // Time an asynchronous fetch request is started
 
-  // Max number of times that this ThreadableLoader can follow.
-  int redirect_limit_;
-
-  network::mojom::RedirectMode redirect_mode_;
-
-  // Holds the referrer after a redirect response was received. This referrer is
-  // used to populate the HTTP Referer header when following the redirect.
-  bool override_referrer_;
-  bool report_upload_progress_ = false;
-  Referrer referrer_after_redirect_;
-
-  bool detached_ = false;
+  // Time an asynchronous fetch request is started
+  base::TimeTicks request_started_;
 
   RawResourceClientStateChecker checker_;
 
