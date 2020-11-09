@@ -12,9 +12,14 @@ component("account_manager_core") {
     "account.h",
     "account_manager_facade.cc",
     "account_manager_facade.h",
+    "account_manager_util.cc",
+    "account_manager_util.h",
   ]
 
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//chromeos/crosapi/mojom",
+  ]
 
   defines = [ "IS_ACCOUNT_MANAGER_CORE_IMPL" ]
 }

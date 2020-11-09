@@ -81,8 +81,18 @@ base::Optional<::account_manager::AccountType> FromProtoAccountType(
     case chromeos::account_manager::AccountType::ACCOUNT_TYPE_UNSPECIFIED:
       return base::nullopt;
     case chromeos::account_manager::AccountType::ACCOUNT_TYPE_GAIA:
+      static_assert(
+          static_cast<int>(
+              chromeos::account_manager::AccountType::ACCOUNT_TYPE_GAIA) ==
+              static_cast<int>(::account_manager::AccountType::kGaia),
+          "Underlying enum values must match");
       return ::account_manager::AccountType::kGaia;
     case chromeos::account_manager::AccountType::ACCOUNT_TYPE_ACTIVE_DIRECTORY:
+      static_assert(static_cast<int>(chromeos::account_manager::AccountType::
+                                         ACCOUNT_TYPE_ACTIVE_DIRECTORY) ==
+                        static_cast<int>(
+                            ::account_manager::AccountType::kActiveDirectory),
+                    "Underlying enum values must match");
       return ::account_manager::AccountType::kActiveDirectory;
   }
 }

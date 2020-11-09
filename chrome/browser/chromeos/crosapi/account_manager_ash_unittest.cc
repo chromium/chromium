@@ -14,6 +14,7 @@
 #include "base/test/task_environment.h"
 #include "chromeos/crosapi/mojom/account_manager.mojom-test-utils.h"
 #include "chromeos/crosapi/mojom/account_manager.mojom.h"
+#include "components/account_manager_core/account_manager_util.h"
 #include "components/prefs/testing_pref_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -67,14 +68,13 @@ class TestAccountManagerObserver
   // mojom::AccountManagerObserverInterceptorForTesting override:
   void OnTokenUpserted(mojom::AccountPtr account) override {
     ++num_token_upserted_calls_;
-    last_upserted_account_ =
-        AccountManagerAsh::FromMojoAccount(account).value();
+    last_upserted_account_ = account_manager::FromMojoAccount(account).value();
   }
 
   // mojom::AccountManagerObserverInterceptorForTesting override:
   void OnAccountRemoved(mojom::AccountPtr account) override {
     ++num_account_removed_calls_;
-    last_removed_account_ = AccountManagerAsh::FromMojoAccount(account).value();
+    last_removed_account_ = account_manager::FromMojoAccount(account).value();
   }
 
   int num_token_upserted_calls_ = 0;

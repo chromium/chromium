@@ -39,18 +39,6 @@ class AccountManagerAsh : public mojom::AccountManager,
   friend class AccountManagerAshTest;
   friend class TestAccountManagerObserver;
 
-  // Following util functions are static for ease of testing.
-  // Returns `base::nullopt` if `mojom_account` cannot be parsed.
-  static base::Optional<account_manager::Account> FromMojoAccount(
-      const mojom::AccountPtr& mojom_account);
-  static mojom::AccountPtr ToMojoAccount(
-      const account_manager::Account& account);
-  // Returns `base::nullopt` if `account_type` cannot be parsed.
-  static base::Optional<account_manager::AccountType> FromMojoAccountType(
-      const mojom::AccountType& account_type);
-  static mojom::AccountType ToMojoAccountType(
-      const account_manager::AccountType& account_type);
-
   void FlushMojoForTesting();
 
   chromeos::AccountManager* const account_manager_;
