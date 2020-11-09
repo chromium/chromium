@@ -1891,19 +1891,26 @@ INSTANTIATE_TEST_SUITE_P(ItemizeTextToRunsEmoji,
                          ::testing::ValuesIn(kEmojiRunListCases),
                          RenderTextTestWithRunListCase::ParamInfoToString);
 
+struct ElideTextTestOptions {
+  const ElideBehavior elide_behavior;
+};
+
 struct ElideTextCase {
   const char* test_name;
   const wchar_t* text;
   const wchar_t* display_text;
+  int available_width_as_glyph_count = -1;
 };
+
+using ElideTextCaseParam = std::tuple<ElideTextTestOptions, ElideTextCase>;
 
 class RenderTextTestWithElideTextCase
     : public RenderTextTest,
-      public ::testing::WithParamInterface<ElideTextCase> {
+      public ::testing::WithParamInterface<ElideTextCaseParam> {
  public:
   static std::string ParamInfoToString(
-      ::testing::TestParamInfo<ElideTextCase> param_info) {
-    return param_info.param.test_name;
+      ::testing::TestParamInfo<ElideTextCaseParam> param_info) {
+    return std::get<1>(param_info.param).test_name;
   }
 };
 
@@ -1912,7 +1919,8 @@ TEST_P(RenderTextTestWithElideTextCase, ElideText) {
   constexpr int kGlyphWidth = 10;
   SetGlyphWidth(kGlyphWidth);
 
-  ElideTextCase param = GetParam();
+  const ElideTextTestOptions options = std::get<0>(GetParam());
+  const ElideTextCase param = std::get<1>(GetParam());
   const base::string16 text = WideToUTF16(param.text);
   const base::string16 display_text = WideToUTF16(param.display_text);
 
@@ -1923,10 +1931,20 @@ TEST_P(RenderTextTestWithElideTextCase, ElideText) {
 
   // Set the text and the eliding behavior.
   render_text->SetText(text);
-  render_text->SetDisplayRect(
-      Rect(0, 0, expected_width + kGlyphWidth / 2, 100));
-  render_text->SetElideBehavior(ELIDE_TAIL);
+  render_text->SetElideBehavior(options.elide_behavior);
   render_text->SetWhitespaceElision(false);
+
+  // Set the display width to trigger the eliding.
+  if (param.available_width_as_glyph_count >= 0) {
+    render_text->SetDisplayRect(Rect(
+        0, 0,
+        param.available_width_as_glyph_count * kGlyphWidth + kGlyphWidth / 2,
+        100));
+  } else {
+    render_text->SetDisplayRect(
+        Rect(0, 0, expected_width + kGlyphWidth / 2, 100));
+  }
+
   const int elided_width = render_text->GetContentWidth();
 
   EXPECT_EQ(text, render_text->text());
@@ -1982,10 +2000,61 @@ const ElideTextCase kElideTailTextCases[] = {
     {"emoji", L"012\U0001D11Ex", L"012\u2026"},
 };
 
-INSTANTIATE_TEST_SUITE_P(ElideTail,
-                         RenderTextTestWithElideTextCase,
-                         ::testing::ValuesIn(kElideTailTextCases),
-                         RenderTextTestWithElideTextCase::ParamInfoToString);
+INSTANTIATE_TEST_SUITE_P(
+    ElideTail,
+    RenderTextTestWithElideTextCase,
+    testing::Combine(testing::Values(ElideTextTestOptions{ELIDE_TAIL}),
+                     testing::ValuesIn(kElideTailTextCases)),
+    RenderTextTestWithElideTextCase::ParamInfoToString);
+
+const ElideTextCase kElideEmailTextCases[] = {
+    // Invalid email text.
+    {"empty", L"", L""},
+    {"invalid_char1", L"x", L""},
+    {"invalid_char3", L"xyz", L"x\u2026"},
+    {"invalid_amp", L"@", L""},
+    {"invalid_no_prefix0", L"@y", L""},
+    {"invalid_no_prefix1", L"@y", L"\u2026"},
+    {"invalid_no_prefix2", L"@xyz", L"@x\u2026"},
+    {"invalid_no_suffix0", L"x@", L""},
+    {"invalid_no_suffix1", L"x@", L"\u2026"},
+    {"invalid_no_suffix2", L"xyz@", L"x\u2026@"},
+
+    {"at1", L"@", L"@"},
+    {"at2", L"@@", L"\u2026", 1},
+    {"at3", L"@@@", L"\u2026", 2},
+    {"at4", L"@@@@", L"@\u2026@", 3},
+
+    {"small1", L"a@b", L"\u2026", 1},
+    {"small2", L"a@b", L"\u2026", 2},
+    {"small3", L"a@b", L"a@b", 3},
+    {"small_username3", L"xyz@b", L"\u2026", 3},
+    {"small_username4", L"xyz@b", L"x\u2026@b", 4},
+    {"small_username5", L"xyz@b", L"xyz@b", 5},
+    {"small_domain3", L"a@xyz", L"\u2026", 3},
+    {"small_domain4", L"a@xyz", L"a@x\u2026", 4},
+    {"small_domain5", L"a@xyz", L"a@xyz", 5},
+
+    // Valid email.
+    {"email_small", L"a@b.com", L"\u2026"},
+    {"email_nobody3", L"nobody@gmail.com", L"\u2026", 3},
+    {"email_nobody4", L"nobody@gmail.com", L"\u2026", 4},
+    {"email_nobody5", L"nobody@gmail.com", L"n\u2026@g\u2026", 5},
+    {"email_nobody6", L"nobody@gmail.com", L"no\u2026@g\u2026", 6},
+    {"email_nobody7", L"nobody@gmail.com", L"no\u2026@g\u2026m", 7},
+    {"email_nobody8", L"nobody@gmail.com", L"nob\u2026@g\u2026m", 8},
+    {"email_nobody9", L"nobody@gmail.com", L"nob\u2026@gm\u2026m", 9},
+    {"email_nobody10", L"nobody@gmail.com", L"nobo\x2026@gm\u2026m", 10},
+    {"email_root", L"root@localhost", L"r\u2026@l\u2026", 5},
+    {"email_myself", L"myself@127.0.0.1", L"my\u2026@1\u2026", 6},
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    ElideEmail,
+    RenderTextTestWithElideTextCase,
+    testing::Combine(testing::Values(ElideTextTestOptions{ELIDE_EMAIL}),
+                     testing::ValuesIn(kElideEmailTextCases)),
+    RenderTextTestWithElideTextCase::ParamInfoToString);
 
 TEST_F(RenderTextTest, ElidedText_NoTrimWhitespace) {
   // This test requires glyphs to be the same width.

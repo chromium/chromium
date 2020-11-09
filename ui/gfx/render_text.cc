@@ -2144,23 +2144,51 @@ base::string16 RenderText::ElideEmail(const base::string16& email,
   // spec allows for @ symbols in the username under some special requirements,
   // but not in the domain part, so splitting at the last @ symbol is safe.
   const size_t split_index = email.find_last_of('@');
-  DCHECK_NE(split_index, base::string16::npos);
+  if (split_index == base::string16::npos)
+    return Elide(email, 0, available_width, ELIDE_TAIL);
+
   base::string16 username = email.substr(0, split_index);
   base::string16 domain = email.substr(split_index + 1);
-  DCHECK(!username.empty());
-  DCHECK(!domain.empty());
+
+  // TODO(http://crbug.com/1085014): Fix eliding of text with styles.
+  DCHECK(IsHomogeneous())
+      << "ElideEmail(...) doesn't work with non homogeneous styles.";
+  auto render_text = CreateInstanceOfSameStyle(base::string16());
+  auto get_string_width = [&](const base::string16& text) {
+    render_text->SetText(text);
+    return render_text->GetStringSizeF().width();
+  };
 
   // Subtract the @ symbol from the available width as it is mandatory.
   const base::string16 kAtSignUTF16 = base::ASCIIToUTF16("@");
-  available_width -= GetStringWidthF(kAtSignUTF16, font_list());
+  float at_width = get_string_width(kAtSignUTF16);
+  if (available_width < at_width)
+    return Elide(kEllipsisUTF16, 0, available_width, ELIDE_TAIL);
+  const float remaining_width = available_width - at_width;
+
+  // Handle corner cases where one of username or domain is empty.
+  if (username.empty() && domain.empty()) {
+    return Elide(email, 0, available_width, ELIDE_TAIL);
+  } else if (username.empty()) {
+    domain = Elide(domain, 0, remaining_width, ELIDE_MIDDLE);
+    if (domain.empty() || domain == kEllipsisUTF16)
+      return Elide(kEllipsisUTF16, 0, available_width, ELIDE_TAIL);
+    return kAtSignUTF16 + domain;
+  } else if (domain.empty()) {
+    username = Elide(username, 0, remaining_width, ELIDE_TAIL);
+    if (username.empty() || username == kEllipsisUTF16)
+      return Elide(kEllipsisUTF16, 0, available_width, ELIDE_TAIL);
+    return username + kAtSignUTF16;
+  }
 
   // Check whether eliding the domain is necessary: if eliding the username
   // is sufficient, the domain will not be elided.
-  const float full_username_width = GetStringWidthF(username, font_list());
-  const float available_domain_width = available_width -
+  const float full_username_width = get_string_width(username);
+  const float available_domain_width =
+      remaining_width -
       std::min(full_username_width,
-          GetStringWidthF(username.substr(0, 1) + kEllipsisUTF16, font_list()));
-  if (GetStringWidthF(domain, font_list()) > available_domain_width) {
+               get_string_width(username.substr(0, 1) + kEllipsisUTF16));
+  if (get_string_width(domain) > available_domain_width) {
     // Elide the domain so that it only takes half of the available width.
     // Should the username not need all the width available in its half, the
     // domain will occupy the leftover width.
@@ -2169,20 +2197,22 @@ base::string16 RenderText::ElideEmail(const base::string16& email,
     // |desired_domain_width| must be <= |available_domain_width| at all cost.
     const float desired_domain_width =
         std::min<float>(available_domain_width,
-            std::max<float>(available_width - full_username_width,
-                            available_width / 2));
+                        std::max<float>(remaining_width - full_username_width,
+                                        remaining_width / 2));
     domain = Elide(domain, 0, desired_domain_width, ELIDE_MIDDLE);
     // Failing to elide the domain such that at least one character remains
     // (other than the ellipsis itself) remains: return a single ellipsis.
-    if (domain.length() <= 1U)
-      return base::string16(kEllipsisUTF16);
+    if (domain.empty() || domain == kEllipsisUTF16)
+      return Elide(kEllipsisUTF16, 0, available_width, ELIDE_TAIL);
   }
 
   // Fit the username in the remaining width (at this point the elided username
   // is guaranteed to fit with at least one character remaining given all the
   // precautions taken earlier).
-  available_width -= GetStringWidthF(domain, font_list());
-  username = Elide(username, 0, available_width, ELIDE_TAIL);
+  const float domain_width = get_string_width(domain);
+  const float available_username_width = remaining_width - domain_width;
+  username = Elide(username, 0, available_username_width, ELIDE_TAIL);
+
   return username + kAtSignUTF16 + domain;
 }
 
