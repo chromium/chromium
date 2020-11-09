@@ -101,11 +101,13 @@ const CGFloat kFadeOutAnimationDuration = 0.16f;
 #pragma mark - SigninCoordinator
 
 - (void)start {
+  AuthenticationService* authenticationService =
+      AuthenticationServiceFactory::GetForBrowserState(
+          self.browser->GetBrowserState());
+  authenticationService->WaitUntilCacheIsPopulated();
   // The user should be signed out before triggering sign-in or upgrade states.
   // Users are allowed to be signed-in during FirstRun for testing purposes.
-  DCHECK(!AuthenticationServiceFactory::GetForBrowserState(
-              self.browser->GetBrowserState())
-              ->IsAuthenticated() ||
+  DCHECK(!authenticationService->IsAuthenticated() ||
          self.signinIntent == UserSigninIntentFirstRun);
   [super start];
   self.viewController = [[UserSigninViewController alloc] init];

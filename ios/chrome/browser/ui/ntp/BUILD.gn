@@ -172,6 +172,8 @@ source_set("unit_tests") {
     "//ios/chrome/browser/search_engines",
     "//ios/chrome/browser/sessions",
     "//ios/chrome/browser/sessions:test_support",
+    "//ios/chrome/browser/signin",
+    "//ios/chrome/browser/signin:test_support",
     "//ios/chrome/browser/tabs",
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/content_suggestions:content_suggestions_constant",

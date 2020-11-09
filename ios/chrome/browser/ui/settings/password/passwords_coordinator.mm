@@ -13,6 +13,7 @@
 #include "ios/chrome/browser/passwords/ios_chrome_password_check_manager.h"
 #include "ios/chrome/browser/passwords/ios_chrome_password_check_manager_factory.h"
 #include "ios/chrome/browser/passwords/ios_chrome_password_store_factory.h"
+#import "ios/chrome/browser/signin/authentication_service.h"
 #include "ios/chrome/browser/signin/authentication_service_factory.h"
 #include "ios/chrome/browser/sync/sync_setup_service_factory.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
@@ -96,13 +97,16 @@
 #pragma mark - ChromeCoordinator
 
 - (void)start {
+  AuthenticationService* authenticationService =
+      AuthenticationServiceFactory::GetForBrowserState(
+          self.browser->GetBrowserState());
+  authenticationService->WaitUntilCacheIsPopulated();
   self.mediator = [[PasswordsMediator alloc]
       initWithPasswordStore:IOSChromePasswordStoreFactory::GetForBrowserState(
                                 self.browser->GetBrowserState(),
                                 ServiceAccessType::EXPLICIT_ACCESS)
        passwordCheckManager:[self passwordCheckManager]
-                authService:AuthenticationServiceFactory::GetForBrowserState(
-                                self.browser->GetBrowserState())
+                authService:authenticationService
                 syncService:SyncSetupServiceFactory::GetForBrowserState(
                                 self.browser->GetBrowserState())];
   self.reauthModule = [[ReauthenticationModule alloc]

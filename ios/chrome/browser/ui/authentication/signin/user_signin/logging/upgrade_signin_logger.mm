@@ -61,9 +61,10 @@ typedef NS_ENUM(NSUInteger, UserSigninPromoAction) {
   [standardDefaults setInteger:promoSeenCount
                         forKey:kDisplayedSSORecallPromoCountKey];
 
-  NSArray* identities = ios::GetChromeBrowserProvider()
-                            ->GetChromeIdentityService()
-                            ->GetAllIdentitiesSortedForDisplay();
+  ios::ChromeIdentityService* identity_service =
+      ios::GetChromeBrowserProvider()->GetChromeIdentityService();
+  identity_service->WaitUntilCacheIsPopulated();
+  NSArray* identities = identity_service->GetAllIdentitiesSortedForDisplay();
   UMA_HISTOGRAM_COUNTS_100(kUMASSORecallAccountsAvailable, [identities count]);
   UMA_HISTOGRAM_COUNTS_100(kUMASSORecallPromoSeenCount, promoSeenCount);
 }

@@ -185,9 +185,10 @@ const BOOL kDefaultStatsCheckboxValue = YES;
   }
 
   self.firstRunConfig = [[FirstRunConfiguration alloc] init];
-  self.firstRunConfig.hasSSOAccount = ios::GetChromeBrowserProvider()
-                                          ->GetChromeIdentityService()
-                                          ->HasIdentities();
+  ios::ChromeIdentityService* identityService =
+      ios::GetChromeBrowserProvider()->GetChromeIdentityService();
+  identityService->WaitUntilCacheIsPopulated();
+  self.firstRunConfig.hasSSOAccount = identityService->HasIdentities();
 
   self.coordinator = [SigninCoordinator
       firstRunCoordinatorWithBaseNavigationController:self.navigationController

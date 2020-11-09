@@ -72,6 +72,7 @@ ReSignInInfoBarDelegate::CreateInfoBarDelegate(
   if (!authService->ShouldPromptForSignIn())
     return nullptr;
   // Returns null if user has already signed in via some other path.
+  authService->WaitUntilCacheIsPopulated();
   if (authService->IsAuthenticated()) {
     authService->ResetPromptForSignIn();
     return nullptr;

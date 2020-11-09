@@ -138,6 +138,10 @@
 
   _visible = YES;
 
+  self.authService = AuthenticationServiceFactory::GetForBrowserState(
+      self.browser->GetBrowserState());
+  self.authService->WaitUntilCacheIsPopulated();
+
   ntp_snippets::ContentSuggestionsService* contentSuggestionsService =
       IOSChromeContentSuggestionsServiceFactory::GetForBrowserState(
           self.browser->GetBrowserState());
@@ -164,9 +168,6 @@
   } else {
     ntp_home::RecordNTPImpression(ntp_home::LOCAL_SUGGESTIONS);
   }
-
-  self.authService = AuthenticationServiceFactory::GetForBrowserState(
-      self.browser->GetBrowserState());
 
   TemplateURLService* templateURLService =
       ios::TemplateURLServiceFactory::GetForBrowserState(

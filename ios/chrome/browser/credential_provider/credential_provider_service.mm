@@ -145,6 +145,7 @@ CredentialProviderService::CredentialProviderService(
   password_store_->AddObserver(this);
 
   DCHECK(authentication_service_);
+  authentication_service_->WaitUntilCacheIsPopulated();
   UpdateAccountValidationId();
 
   if (identity_manager_) {

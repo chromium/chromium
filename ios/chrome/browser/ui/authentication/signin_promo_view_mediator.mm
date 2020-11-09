@@ -403,9 +403,10 @@ const char* AlreadySeenSigninViewPreferenceKey(
     _accessPoint = accessPoint;
     _browserState = browserState;
     _presenter = presenter;
-    NSArray* identities = ios::GetChromeBrowserProvider()
-                              ->GetChromeIdentityService()
-                              ->GetAllIdentitiesSortedForDisplay();
+    ios::ChromeIdentityService* identityService =
+        ios::GetChromeBrowserProvider()->GetChromeIdentityService();
+    identityService->WaitUntilCacheIsPopulated();
+    NSArray* identities = identityService->GetAllIdentitiesSortedForDisplay();
     if (identities.count != 0) {
       [self selectIdentity:identities[0]];
     }

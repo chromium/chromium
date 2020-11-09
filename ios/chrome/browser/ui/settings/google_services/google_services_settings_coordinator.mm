@@ -92,6 +92,7 @@ using signin_metrics::PromoAction;
 }
 
 - (void)start {
+  self.authService->WaitUntilCacheIsPopulated();
   UITableViewStyle style = base::FeatureList::IsEnabled(kSettingsRefresh)
                                ? UITableViewStylePlain
                                : UITableViewStyleGrouped;

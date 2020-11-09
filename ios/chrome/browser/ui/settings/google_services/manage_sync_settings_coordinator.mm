@@ -93,6 +93,7 @@ using signin_metrics::PromoAction;
 
 - (void)start {
   DCHECK(self.baseNavigationController);
+  self.authService->WaitUntilCacheIsPopulated();
   self.mediator = [[ManageSyncSettingsMediator alloc]
       initWithSyncService:self.syncService
           userPrefService:self.browser->GetBrowserState()->GetPrefs()];
