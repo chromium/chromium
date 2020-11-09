@@ -12,7 +12,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
-import android.accounts.Account;
 import android.support.test.InstrumentationRegistry;
 import android.text.Spanned;
 import android.text.style.ClickableSpan;
@@ -46,6 +45,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ActivityUtils;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
+import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.DisableAnimationsTestRule;
@@ -96,13 +96,13 @@ public class SigninFragmentTest {
     @LargeTest
     @Feature("RenderTest")
     public void testSigninFragmentNotDefaultAccountWithPrimaryAccount() throws IOException {
-        Account account = mSyncTestRule.addTestAccount();
+        CoreAccountInfo accountInfo = mSyncTestRule.addTestAccount();
         mSyncTestRule.addAccount("test.second.account@gmail.com");
         mSigninActivity = ActivityUtils.waitForActivity(
                 InstrumentationRegistry.getInstrumentation(), SigninActivity.class, () -> {
                     SigninActivityLauncherImpl.get().launchActivityForPromoChooseAccountFlow(
                             mSyncTestRule.getActivity(), SigninAccessPoint.BOOKMARK_MANAGER,
-                            account.name);
+                            accountInfo.getEmail());
                 });
         mRenderTestRule.render(mSigninActivity.findViewById(R.id.fragment_container),
                 "signin_fragment_choose_primary_account");
@@ -129,12 +129,12 @@ public class SigninFragmentTest {
     @LargeTest
     @Feature("RenderTest")
     public void testSigninFragmentDefaultAccount() throws IOException {
-        Account account = mSyncTestRule.addTestAccount();
+        CoreAccountInfo accountInfo = mSyncTestRule.addTestAccount();
         mSigninActivity = ActivityUtils.waitForActivity(
                 InstrumentationRegistry.getInstrumentation(), SigninActivity.class, () -> {
                     SigninActivityLauncherImpl.get().launchActivityForPromoDefaultFlow(
                             mSyncTestRule.getActivity(), SigninAccessPoint.BOOKMARK_MANAGER,
-                            account.name);
+                            accountInfo.getEmail());
                 });
         mRenderTestRule.render(mSigninActivity.findViewById(R.id.fragment_container),
                 "signin_fragment_default_account");
@@ -143,13 +143,14 @@ public class SigninFragmentTest {
     @Test
     @LargeTest
     public void testClickingSettingsDoesNotSetFirstSetupComplete() {
-        Account account = mSyncTestRule.addTestAccount();
+        CoreAccountInfo accountInfo = mSyncTestRule.addTestAccount();
         mSigninActivity = ActivityUtils.waitForActivity(
                 InstrumentationRegistry.getInstrumentation(), SigninActivity.class, () -> {
                     SigninActivityLauncherImpl.get().launchActivityForPromoDefaultFlow(
-                            mSyncTestRule.getActivity(), SigninAccessPoint.SETTINGS, account.name);
+                            mSyncTestRule.getActivity(), SigninAccessPoint.SETTINGS,
+                            accountInfo.getEmail());
                 });
-        onView(withText(account.name)).check(matches(isDisplayed()));
+        onView(withText(accountInfo.getEmail())).check(matches(isDisplayed()));
         onView(withId(R.id.signin_details_description)).perform(clickOnClickableSpan());
         // Wait for sign in process to finish.
         CriteriaHelper.pollUiThread(() -> {
@@ -180,20 +181,22 @@ public class SigninFragmentTest {
     @Test
     @MediumTest
     public void testSelectNonDefaultAccountInAccountPickerDialog() {
-        Account defaultAccount = mSyncTestRule.addTestAccount();
+        CoreAccountInfo defaultAccountInfo = mSyncTestRule.addTestAccount();
         String nonDefaultAccountName = "test.account.nondefault@gmail.com";
         mSyncTestRule.addAccount(nonDefaultAccountName);
         mSigninActivity = ActivityUtils.waitForActivity(
                 InstrumentationRegistry.getInstrumentation(), SigninActivity.class, () -> {
                     SigninActivityLauncherImpl.get().launchActivityForPromoDefaultFlow(
                             mSyncTestRule.getActivity(), SigninAccessPoint.BOOKMARK_MANAGER,
-                            defaultAccount.name);
+                            defaultAccountInfo.getEmail());
                 });
-        onView(withText(defaultAccount.name)).check(matches(isDisplayed())).perform(click());
+        onView(withText(defaultAccountInfo.getEmail()))
+                .check(matches(isDisplayed()))
+                .perform(click());
         onView(withText(nonDefaultAccountName)).inRoot(isDialog()).perform(click());
         // We should return to the signin promo screen where the previous account is
         // not shown anymore.
-        onView(withText(defaultAccount.name)).check(doesNotExist());
+        onView(withText(defaultAccountInfo.getEmail())).check(doesNotExist());
         onView(withText(nonDefaultAccountName)).check(matches(isDisplayed()));
     }
 

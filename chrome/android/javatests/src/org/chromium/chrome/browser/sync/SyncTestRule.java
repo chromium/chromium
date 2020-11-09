@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.sync;
 
-import android.accounts.Account;
 import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -32,7 +31,6 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestUtil;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
-import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.sync.ModelType;
 import org.chromium.components.sync.protocol.AutofillWalletSpecifics;
@@ -169,44 +167,40 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
 
     /**
      * Adds an account of default account name to AccountManagerFacade and waits for the seeding.
-     * TODO(https://crbug.com/1117006): Return CoreAccountInfo object
      */
-    public Account addTestAccount() {
+    public CoreAccountInfo addTestAccount() {
         return addAccount(AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
     }
 
     /**
      * Adds an account of given account name to AccountManagerFacade and waits for the seeding.
      */
-    public Account addAccount(String accountName) {
+    public CoreAccountInfo addAccount(String accountName) {
         CoreAccountInfo coreAccountInfo =
                 mAccountManagerTestRule.addAccountAndWaitForSeeding(accountName);
         Assert.assertFalse(SyncTestUtil.isSyncRequested());
-        return CoreAccountInfo.getAndroidAccountFrom(coreAccountInfo);
+        return coreAccountInfo;
     }
 
     /**
      * Returns the currently signed in account.
-     * TODO(https://crbug.com/1117006): Return CoreAccountInfo object
      */
-    public Account getCurrentSignedInAccount() {
-        return CoreAccountInfo.getAndroidAccountFrom(
-                mAccountManagerTestRule.getCurrentSignedInAccount());
+    public CoreAccountInfo getCurrentSignedInAccount() {
+        return mAccountManagerTestRule.getCurrentSignedInAccount();
     }
 
     /**
      * Set up a test account, sign in and enable sync. FirstSetupComplete bit will be set after
      * this. For most purposes this function should be used as this emulates the basic sign in flow.
      * @return the test account that is signed in.
-     * TODO(https://crbug.com/1135510): Return CoreAccountInfo object
      */
-    public Account setUpAccountAndEnableSyncForTesting() {
+    public CoreAccountInfo setUpAccountAndEnableSyncForTesting() {
         CoreAccountInfo accountInfo =
                 mAccountManagerTestRule.addTestAccountThenSigninAndEnableSync(mProfileSyncService);
         enableUKM();
         SyncTestUtil.waitForSyncActive();
         SyncTestUtil.triggerSyncAndWaitForCompletion();
-        return AccountUtils.createAccountFromName(accountInfo.getEmail());
+        return accountInfo;
     }
 
     /**
@@ -222,14 +216,13 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
     /**
      * Set up a test account, sign in but don't mark sync setup complete.
      * @return the test account that is signed in.
-     * TODO(https://crbug.com/1135510): Return CoreAccountInfo object
      */
-    public Account setUpTestAccountAndSignInWithSyncSetupAsIncomplete() {
+    public CoreAccountInfo setUpTestAccountAndSignInWithSyncSetupAsIncomplete() {
         CoreAccountInfo accountInfo = mAccountManagerTestRule.addTestAccountThenSigninAndEnableSync(
                 /* profileSyncService= */ null);
         enableUKM();
         SyncTestUtil.waitForSyncTransportActive();
-        return AccountUtils.createAccountFromName(accountInfo.getEmail());
+        return accountInfo;
     }
 
     public void startSync() {
@@ -246,9 +239,8 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
     }
 
-    public void signinAndEnableSync(final Account account) {
-        SigninTestUtil.signinAndEnableSync(
-                mAccountManagerTestRule.toCoreAccountInfo(account.name), mProfileSyncService);
+    public void signinAndEnableSync(final CoreAccountInfo accountInfo) {
+        SigninTestUtil.signinAndEnableSync(accountInfo, mProfileSyncService);
         enableUKM();
         SyncTestUtil.waitForSyncActive();
         SyncTestUtil.triggerSyncAndWaitForCompletion();

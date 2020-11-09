@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.sync;
 
-import android.accounts.Account;
 import android.app.Activity;
 import android.app.Instrumentation;
 import android.app.Instrumentation.ActivityMonitor;
@@ -38,6 +37,7 @@ import org.chromium.chrome.browser.sync.settings.AccountManagementFragment;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ActivityUtils;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
+import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.concurrent.TimeoutException;
@@ -140,12 +140,12 @@ public class FirstRunTest {
     @Test
     @FlakyTest(message = "https://crbug.com/616456")
     public void testSignIn() {
-        Account testAccount = mSyncTestRule.addTestAccount();
+        CoreAccountInfo testAccountInfo = mSyncTestRule.addTestAccount();
         Assert.assertNull(mSyncTestRule.getCurrentSignedInAccount());
         Assert.assertFalse(SyncTestUtil.isSyncRequested());
 
-        processFirstRun(testAccount.name, false /* ShowSettings */);
-        Assert.assertEquals(testAccount, mSyncTestRule.getCurrentSignedInAccount());
+        processFirstRun(testAccountInfo.getEmail(), false /* ShowSettings */);
+        Assert.assertEquals(testAccountInfo, mSyncTestRule.getCurrentSignedInAccount());
         SyncTestUtil.waitForSyncActive();
     }
 
@@ -158,13 +158,13 @@ public class FirstRunTest {
     @Test
     @FlakyTest(message = "https://crbug.com/616456")
     public void testSignInWithOpenSettings() {
-        final Account testAccount = mSyncTestRule.addTestAccount();
+        CoreAccountInfo testAccountInfo = mSyncTestRule.addTestAccount();
         final SettingsActivity settingsActivity =
-                processFirstRun(testAccount.name, true /* ShowSettings */);
+                processFirstRun(testAccountInfo.getEmail(), true /* ShowSettings */);
 
         // User should be signed in and the sync backend should initialize, but sync should not
         // become fully active until the settings page is closed.
-        Assert.assertEquals(testAccount, mSyncTestRule.getCurrentSignedInAccount());
+        Assert.assertEquals(testAccountInfo, mSyncTestRule.getCurrentSignedInAccount());
         SyncTestUtil.waitForEngineInitialized();
         Assert.assertFalse(SyncTestUtil.isSyncActive());
 

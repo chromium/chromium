@@ -18,7 +18,6 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
-import android.accounts.Account;
 import android.app.Activity;
 import android.content.Context;
 
@@ -38,6 +37,7 @@ import org.chromium.chrome.browser.signin.SigninActivityLauncherImpl;
 import org.chromium.chrome.browser.sync.SyncTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.BookmarkTestRule;
+import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 
 /**
@@ -78,12 +78,12 @@ public class BookmarkPersonalizedSigninPromoTest {
         doNothing()
                 .when(SigninActivityLauncherImpl.get())
                 .launchActivityForPromoDefaultFlow(any(Context.class), anyInt(), anyString());
-        Account account = mSyncTestRule.addTestAccount();
+        CoreAccountInfo accountInfo = mSyncTestRule.addTestAccount();
         showBookmarkManagerAndCheckSigninPromoIsDisplayed();
         onView(withId(R.id.signin_promo_signin_button)).perform(click());
         verify(mMockSigninActivityLauncherImpl)
                 .launchActivityForPromoDefaultFlow(any(Activity.class),
-                        eq(SigninAccessPoint.BOOKMARK_MANAGER), eq(account.name));
+                        eq(SigninAccessPoint.BOOKMARK_MANAGER), eq(accountInfo.getEmail()));
     }
 
     @Test
@@ -92,12 +92,12 @@ public class BookmarkPersonalizedSigninPromoTest {
         doNothing()
                 .when(SigninActivityLauncherImpl.get())
                 .launchActivityForPromoChooseAccountFlow(any(Context.class), anyInt(), anyString());
-        Account account = mSyncTestRule.addTestAccount();
+        CoreAccountInfo accountInfo = mSyncTestRule.addTestAccount();
         showBookmarkManagerAndCheckSigninPromoIsDisplayed();
         onView(withId(R.id.signin_promo_choose_account_button)).perform(click());
         verify(mMockSigninActivityLauncherImpl)
                 .launchActivityForPromoChooseAccountFlow(any(Activity.class),
-                        eq(SigninAccessPoint.BOOKMARK_MANAGER), eq(account.name));
+                        eq(SigninAccessPoint.BOOKMARK_MANAGER), eq(accountInfo.getEmail()));
     }
 
     @Test
