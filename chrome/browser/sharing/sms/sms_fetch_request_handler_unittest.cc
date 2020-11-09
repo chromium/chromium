@@ -5,7 +5,7 @@
 #include "chrome/browser/sharing/sms/sms_fetch_request_handler.h"
 
 #include "base/run_loop.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "chrome/browser/sharing/proto/sharing_message.pb.h"
 #include "chrome/browser/sharing/sharing_message_handler.h"
 #include "content/public/browser/sms_fetcher.h"

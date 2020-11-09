@@ -8,7 +8,7 @@
 #include "base/files/file_util.h"
 #include "base/optional.h"
 #include "base/path_service.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "components/cbor/writer.h"
 #include "components/web_package/test_support/web_bundle_builder.h"

@@ -5,7 +5,7 @@
 #include "chrome/browser/media/history/media_history_test_utils.h"
 
 #include "base/run_loop.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "chrome/browser/media/history/media_history_keyed_service.h"
 
 namespace media_history {

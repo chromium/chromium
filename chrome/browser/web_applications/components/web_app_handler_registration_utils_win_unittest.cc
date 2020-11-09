@@ -6,7 +6,7 @@
 
 #include "base/files/file_util.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/test_reg_util_win.h"
 #include "base/win/windows_version.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"

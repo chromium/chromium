@@ -14,7 +14,7 @@
 #include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "components/services/storage/indexed_db/scopes/disjoint_range_lock_manager.h"
 #include "content/browser/indexed_db/fake_indexed_db_metadata_coding.h"

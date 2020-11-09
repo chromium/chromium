@@ -17,7 +17,7 @@
 #include "base/files/file_path.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_piece.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "components/services/storage/indexed_db/scopes/disjoint_range_lock_manager.h"
 #include "components/services/storage/indexed_db/scopes/leveldb_scope.h"

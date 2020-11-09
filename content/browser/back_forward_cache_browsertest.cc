@@ -17,7 +17,7 @@
 #include "base/system/sys_info.h"
 #include "base/task/common/task_annotator.h"
 #include "base/task/post_task.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/test/test_timeouts.h"

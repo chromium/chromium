@@ -5,7 +5,7 @@
 #include "content/browser/file_system_access/native_file_system_handle_base.h"
 
 #include "base/files/scoped_temp_dir.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
 #include "content/browser/file_system_access/mock_native_file_system_permission_grant.h"

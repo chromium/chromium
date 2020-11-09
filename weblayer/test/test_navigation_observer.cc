@@ -4,7 +4,7 @@
 
 #include "weblayer/test/test_navigation_observer.h"
 
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "url/gurl.h"
 #include "weblayer/public/navigation.h"
 #include "weblayer/public/navigation_controller.h"

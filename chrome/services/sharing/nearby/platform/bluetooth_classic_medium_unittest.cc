@@ -8,7 +8,7 @@
 
 #include "base/bind.h"
 #include "base/run_loop.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "chrome/services/sharing/nearby/test_support/fake_adapter.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"

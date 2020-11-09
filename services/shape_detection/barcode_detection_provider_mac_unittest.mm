@@ -12,7 +12,7 @@
 #include "base/bind.h"
 #include "base/callback_forward.h"
 #include "base/run_loop.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
 #include "mojo/public/cpp/bindings/remote.h"

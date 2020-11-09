@@ -5,7 +5,7 @@
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 
 #include "base/callback.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/time/default_tick_clock.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/renderer/bindings/core/v8/string_or_array_buffer_or_array_buffer_view.h"

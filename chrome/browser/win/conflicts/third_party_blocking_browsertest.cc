@@ -10,7 +10,7 @@
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/scoped_native_library.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_reg_util_win.h"
 #include "base/win/registry.h"

@@ -4,7 +4,7 @@
 
 #include "chrome/browser/visibility_timer_tab_helper.h"
 
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "content/public/browser/web_contents.h"

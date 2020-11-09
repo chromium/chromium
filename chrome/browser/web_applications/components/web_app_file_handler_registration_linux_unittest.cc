@@ -9,7 +9,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/shell_integration_linux.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"

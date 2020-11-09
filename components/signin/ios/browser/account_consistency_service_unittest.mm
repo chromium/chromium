@@ -11,7 +11,7 @@
 #include "base/bind.h"
 #include "base/bind_helpers.h"
 #include "base/ios/ios_util.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #import "base/test/ios/wait_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"

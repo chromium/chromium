@@ -5,7 +5,7 @@
 #include "chrome/browser/ui/views/download/download_in_progress_dialog_view.h"
 
 #include "base/optional.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/chrome_constrained_window_views_client.h"
 #include "chrome/test/views/chrome_views_test_base.h"

@@ -8,7 +8,7 @@
 
 #include "base/callback.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "components/cbor/reader.h"
 #include "device/fido/attestation_statement.h"

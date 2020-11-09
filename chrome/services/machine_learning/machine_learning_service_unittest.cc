@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "base/macros.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "chrome/services/machine_learning/public/cpp/test_support/machine_learning_test_utils.h"
 #include "chrome/services/machine_learning/public/mojom/decision_tree.mojom.h"

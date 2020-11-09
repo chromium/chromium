@@ -11,7 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/optional.h"
 #include "base/strings/string_piece.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "components/games/core/data_files_parser.h"
 #include "components/games/core/games_prefs.h"

@@ -9,7 +9,7 @@
 #include "base/task/thread_pool/task_tracker.h"
 #include "base/task/thread_pool/test_utils.h"
 #include "base/task_runner.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/test_timeouts.h"
 #include "base/test/test_waitable_event.h"
 #include "base/threading/platform_thread.h"

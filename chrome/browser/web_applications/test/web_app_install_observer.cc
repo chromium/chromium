@@ -6,7 +6,7 @@
 #include <memory>
 
 #include "base/run_loop.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "chrome/browser/web_applications/components/web_app_provider_base.h"
 
 namespace web_app {

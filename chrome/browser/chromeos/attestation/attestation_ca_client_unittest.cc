@@ -6,7 +6,7 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/constants/chromeos_switches.h"
 #include "content/public/test/browser_task_environment.h"

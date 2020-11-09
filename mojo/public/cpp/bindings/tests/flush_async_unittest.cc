@@ -15,7 +15,7 @@
 #include "base/synchronization/lock.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "mojo/public/cpp/bindings/async_flusher.h"
 #include "mojo/public/cpp/bindings/pending_flush.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"

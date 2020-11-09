@@ -15,7 +15,7 @@
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/synchronization/lock.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "content/browser/loader/navigation_url_loader_impl.h"

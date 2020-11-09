@@ -9,7 +9,7 @@
 #include "base/bind_helpers.h"
 #include "base/command_line.h"
 #include "base/memory/ptr_util.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "chromeos/constants/chromeos_switches.h"
 #include "chromeos/dbus/arc/fake_arc_data_snapshotd_client.h"

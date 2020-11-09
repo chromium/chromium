@@ -9,7 +9,7 @@
 
 #include "base/run_loop.h"
 #include "base/task/task_traits.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/performance_manager_impl.h"
 #include "components/performance_manager/performance_manager_tab_helper.h"

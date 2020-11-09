@@ -21,7 +21,7 @@
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/posix/eintr_wrapper.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "build/build_config.h"
 #include "sandbox/linux/bpf_dsl/bpf_dsl.h"
 #include "sandbox/linux/bpf_dsl/policy.h"

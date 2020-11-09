@@ -9,7 +9,7 @@
 
 #include "base/bind.h"
 #include "base/no_destructor.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"

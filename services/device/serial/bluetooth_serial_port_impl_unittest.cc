@@ -5,7 +5,7 @@
 #include "services/device/serial/bluetooth_serial_port_impl.h"
 
 #include "base/command_line.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"

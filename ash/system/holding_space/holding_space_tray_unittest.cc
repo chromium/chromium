@@ -19,7 +19,7 @@
 #include "ash/test/ash_test_base.h"
 #include "base/files/file_path.h"
 #include "base/strings/strcat.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "ui/gfx/image/image_skia.h"
 #include "url/gurl.h"

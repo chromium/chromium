@@ -8,7 +8,7 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/mock_entropy_provider.h"
 #include "base/test/task_environment.h"
 #include "components/offline_pages/core/offline_page_feature.h"

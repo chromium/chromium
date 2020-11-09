@@ -6,7 +6,7 @@
 #include "base/files/file_util.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/quirks/quirks_manager.h"

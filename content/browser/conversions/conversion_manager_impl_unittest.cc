@@ -15,7 +15,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
 #include "base/sequenced_task_runner.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "build/build_config.h"

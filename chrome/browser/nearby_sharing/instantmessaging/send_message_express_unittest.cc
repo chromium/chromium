@@ -5,7 +5,7 @@
 #include "chrome/browser/nearby_sharing/instantmessaging/send_message_express.h"
 
 #include "base/run_loop.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/nearby_sharing/instantmessaging/constants.h"
 #include "chrome/browser/nearby_sharing/instantmessaging/fake_token_fetcher.h"

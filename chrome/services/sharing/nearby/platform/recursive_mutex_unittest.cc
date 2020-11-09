@@ -11,7 +11,7 @@
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/task_runner.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/gtest_util.h"
 #include "base/test/task_environment.h"
 #include "base/unguessable_token.h"

@@ -5,7 +5,7 @@
 #include "chrome/browser/offline_pages/visuals_decoder_impl.h"
 
 #include "base/base64.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/image_fetcher/image_decoder_impl.h"
 #include "components/image_fetcher/core/mock_image_decoder.h"

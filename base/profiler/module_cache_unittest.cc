@@ -12,7 +12,7 @@
 #include "base/callback_helpers.h"
 #include "base/profiler/module_cache.h"
 #include "base/strings/string_piece.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

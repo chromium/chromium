@@ -11,7 +11,7 @@
 #include "base/run_loop.h"
 #include "base/task/post_task.h"
 #include "base/task/task_traits.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "chrome/browser/performance_manager/test_support/page_aggregator.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/performance_manager/embedder/performance_manager_registry.h"

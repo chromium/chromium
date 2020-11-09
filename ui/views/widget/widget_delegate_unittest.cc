@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/view.h"
 #include "ui/views/view_tracker.h"

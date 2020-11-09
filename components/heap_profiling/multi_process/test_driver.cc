@@ -16,7 +16,7 @@
 #include "base/run_loop.h"
 #include "base/sampling_heap_profiler/poisson_allocation_sampler.h"
 #include "base/stl_util.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/threading/platform_thread.h"
 #include "base/trace_event/heap_profiler.h"
 #include "base/trace_event/heap_profiler_event_filter.h"

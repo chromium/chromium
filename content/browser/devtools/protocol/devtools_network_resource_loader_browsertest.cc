@@ -5,7 +5,7 @@
 #include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "content/browser/devtools/protocol/devtools_network_resource_loader.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"

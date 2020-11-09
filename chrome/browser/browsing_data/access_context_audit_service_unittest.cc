@@ -6,7 +6,7 @@
 
 #include "base/files/scoped_temp_dir.h"
 #include "base/i18n/time_formatting.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/test_simple_task_runner.h"

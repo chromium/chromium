@@ -9,7 +9,7 @@
 #include <numeric>
 
 #include "base/task/test_task_traits_extension.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/gtest_util.h"
 #include "base/test/task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"

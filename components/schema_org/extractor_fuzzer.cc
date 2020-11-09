@@ -7,7 +7,7 @@
 
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_executor.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "components/schema_org/common/improved_metadata.mojom.h"
 #include "components/schema_org/extractor.h"
 #include "components/schema_org/schema_org_entity_names.h"

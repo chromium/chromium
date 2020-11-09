@@ -12,7 +12,7 @@
 #include "base/bind.h"
 #include "base/callback_forward.h"
 #include "base/memory/ptr_util.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "chromeos/components/multidevice/remote_device_test_util.h"
 #include "chromeos/services/secure_channel/ble_constants.h"
 #include "chromeos/services/secure_channel/connection_role.h"

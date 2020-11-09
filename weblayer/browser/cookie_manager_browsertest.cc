@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "weblayer/browser/profile_impl.h"
 #include "weblayer/public/cookie_manager.h"

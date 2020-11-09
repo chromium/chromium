@@ -7,7 +7,7 @@
 #include <string>
 
 #include "base/run_loop.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "content/browser/service_worker/embedded_worker_test_helper.h"
 #include "content/public/browser/content_index_provider.h"

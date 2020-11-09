@@ -5,7 +5,7 @@
 #include "content/browser/font_access/font_access_manager_impl.h"
 
 #include "base/run_loop.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "content/browser/font_access/font_access_test_utils.h"
 #include "content/browser/font_access/font_enumeration_cache.h"

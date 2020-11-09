@@ -17,7 +17,7 @@ specific_include_rules = {
     ".*test\.cc" : [
         "+base/message_loop/message_pump_type.h",
         "+base/run_loop.h",
-        "+base/test/bind_test_util.h",
+        "+base/test/bind.h",
         "+base/test/gtest_util.h",
         "+base/test/test_mock_time_task_runner.h",
         "+base/threading/thread.h",

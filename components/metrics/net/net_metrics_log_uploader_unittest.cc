@@ -8,7 +8,7 @@
 #include "base/bind.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "components/encrypted_messages/encrypted_message.pb.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"

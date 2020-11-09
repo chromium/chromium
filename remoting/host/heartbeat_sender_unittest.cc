@@ -12,7 +12,7 @@
 
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/threading/sequenced_task_runner_handle.h"

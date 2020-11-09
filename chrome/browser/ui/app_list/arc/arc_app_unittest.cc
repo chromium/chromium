@@ -22,7 +22,7 @@
 #include "base/run_loop.h"
 #include "base/stl_util.h"
 #include "base/task_runner_util.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_command_line.h"
 #include "base/values.h"

@@ -8,7 +8,7 @@
 #include "base/command_line.h"
 #include "base/optional.h"
 #include "base/synchronization/lock.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/values.h"
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"

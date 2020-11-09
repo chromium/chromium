@@ -14,7 +14,7 @@
 #include "base/macros.h"
 #include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/ui/ash/test_ime_controller.h"
 #include "testing/gtest/include/gtest/gtest.h"

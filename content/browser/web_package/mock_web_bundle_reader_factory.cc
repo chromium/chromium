@@ -13,7 +13,7 @@
 #include "base/macros.h"
 #include "base/optional.h"
 #include "base/run_loop.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
 #include "content/browser/web_package/web_bundle_reader.h"
 #include "content/browser/web_package/web_bundle_source.h"

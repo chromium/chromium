@@ -14,7 +14,7 @@
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/post_task.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/test/browser_task_environment.h"

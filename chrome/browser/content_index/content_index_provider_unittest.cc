@@ -10,7 +10,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/time/time.h"
 #include "chrome/browser/engagement/site_engagement_service.h"
 #include "chrome/browser/engagement/site_engagement_service_factory.h"

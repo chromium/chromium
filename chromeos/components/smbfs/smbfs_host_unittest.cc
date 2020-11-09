@@ -6,7 +6,7 @@
 
 #include "base/files/file_util.h"
 #include "base/run_loop.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
 #include "chromeos/disks/mock_disk_mount_manager.h"

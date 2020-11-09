@@ -5,7 +5,7 @@
 #include "base/barrier_closure.h"
 #include "base/run_loop.h"
 #include "base/task/thread_pool.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "chrome/browser/after_startup_task_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/browser/browser_task_traits.h"

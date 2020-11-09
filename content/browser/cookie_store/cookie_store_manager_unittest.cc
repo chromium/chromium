@@ -8,7 +8,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "content/browser/cookie_store/cookie_store_context.h"
 #include "content/browser/cookie_store/cookie_store_manager.h"

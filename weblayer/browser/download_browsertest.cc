@@ -9,7 +9,7 @@
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/task/post_task.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/threading/thread_restrictions.h"
 #include "content/public/browser/download_manager.h"
 #include "content/public/browser/web_contents.h"

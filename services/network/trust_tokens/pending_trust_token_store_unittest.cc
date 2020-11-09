@@ -4,7 +4,7 @@
 
 #include "services/network/trust_tokens/pending_trust_token_store.h"
 
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "services/network/trust_tokens/trust_token_store.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

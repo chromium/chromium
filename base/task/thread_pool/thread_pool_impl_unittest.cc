@@ -26,7 +26,7 @@
 #include "base/task/thread_pool/test_task_factory.h"
 #include "base/task/thread_pool/test_utils.h"
 #include "base/task/thread_pool/worker_thread_observer.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/gtest_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"

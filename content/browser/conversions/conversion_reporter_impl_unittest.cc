@@ -10,7 +10,7 @@
 #include "base/sequenced_task_runner.h"
 #include "base/strings/strcat.h"
 #include "base/task/post_task.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/simple_test_clock.h"
 #include "content/browser/conversions/conversion_manager.h"
 #include "content/browser/conversions/conversion_test_utils.h"

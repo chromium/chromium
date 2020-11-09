@@ -10,7 +10,7 @@
 #include "base/run_loop.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/games/games_service_factory.h"

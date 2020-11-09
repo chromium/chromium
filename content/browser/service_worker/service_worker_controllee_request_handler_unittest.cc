@@ -11,7 +11,7 @@
 #include "base/callback_helpers.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "components/offline_pages/buildflags/buildflags.h"
 #include "content/browser/service_worker/embedded_worker_test_helper.h"

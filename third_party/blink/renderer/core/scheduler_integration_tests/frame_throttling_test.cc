@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/callback.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "cc/layers/picture_layer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"

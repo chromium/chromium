@@ -8,7 +8,7 @@
 #include <string>
 #include <utility>
 
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "services/network/trust_tokens/in_memory_trust_token_persister.h"

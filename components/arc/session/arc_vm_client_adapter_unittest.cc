@@ -25,7 +25,7 @@
 #include "base/system/sys_info.h"
 #include "base/task/current_thread.h"
 #include "base/task/post_task.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_run_loop_timeout.h"
 #include "base/time/time.h"
 #include "chromeos/cryptohome/cryptohome_parameters.h"

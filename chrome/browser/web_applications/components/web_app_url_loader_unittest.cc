@@ -7,7 +7,7 @@
 #include <memory>
 
 #include "base/memory/ptr_util.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/web_contents_tester.h"

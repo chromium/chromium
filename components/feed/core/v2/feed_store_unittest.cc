@@ -11,7 +11,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "components/feed/core/proto/v2/wire/content_id.pb.h"
 #include "components/feed/core/v2/protocol_translator.h"

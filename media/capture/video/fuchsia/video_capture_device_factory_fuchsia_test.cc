@@ -6,7 +6,7 @@
 
 #include "base/fuchsia/test_component_context_for_process.h"
 #include "base/run_loop.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "media/fuchsia/camera/fake_fuchsia_camera.h"
 #include "testing/gtest/include/gtest/gtest.h"

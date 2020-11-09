@@ -13,7 +13,7 @@
 
 #include "base/bind.h"
 #include "base/memory/ref_counted.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "net/base/address_list.h"

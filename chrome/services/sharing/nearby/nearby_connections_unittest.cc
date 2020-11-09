@@ -15,7 +15,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "chrome/services/sharing/nearby/nearby_connections_conversions.h"
 #include "chrome/services/sharing/nearby/test_support/fake_adapter.h"

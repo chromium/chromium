@@ -6,7 +6,7 @@
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "base/callback_forward.h"
 #include "base/macros.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "build/build_config.h"
 #include "chrome/browser/chromeos/arc/arc_util.h"
 #include "chrome/browser/chromeos/arc/session/arc_session_manager.h"

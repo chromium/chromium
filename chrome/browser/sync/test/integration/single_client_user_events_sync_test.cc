@@ -4,7 +4,7 @@
 
 #include "base/bind.h"
 #include "base/macros.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/sync/test/integration/bookmarks_helper.h"

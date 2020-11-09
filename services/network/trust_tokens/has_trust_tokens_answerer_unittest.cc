@@ -5,7 +5,7 @@
 #include "services/network/trust_tokens/has_trust_tokens_answerer.h"
 
 #include "base/strings/stringprintf.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "services/network/public/cpp/trust_token_parameterization.h"
 #include "services/network/public/mojom/trust_tokens.mojom.h"
 #include "services/network/trust_tokens/pending_trust_token_store.h"

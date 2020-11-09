@@ -5,7 +5,7 @@
 #include "media/capture/video/linux/video_capture_device_factory_linux.h"
 
 #include "base/run_loop.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "media/capture/video/linux/fake_device_provider.h"
 #include "media/capture/video/linux/fake_v4l2_impl.h"

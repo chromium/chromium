@@ -13,7 +13,7 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "components/cbor/reader.h"
 #include "components/cbor/values.h"
 #include "crypto/sha2.h"

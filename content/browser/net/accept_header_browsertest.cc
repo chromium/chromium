@@ -7,7 +7,7 @@
 #include "base/bind.h"
 #include "base/run_loop.h"
 #include "base/synchronization/lock.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "build/build_config.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"

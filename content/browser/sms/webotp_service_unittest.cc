@@ -16,7 +16,7 @@
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/task/post_task.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "content/browser/sms/sms_fetcher_impl.h"
 #include "content/browser/sms/test/mock_sms_provider.h"

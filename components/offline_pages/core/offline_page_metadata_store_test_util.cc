@@ -12,7 +12,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/offline_pages/core/model/add_page_task.h"
 #include "components/offline_pages/core/model/get_pages_task.h"

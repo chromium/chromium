@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "components/offline_pages/core/model/get_visuals_task.h"
 #include "components/offline_pages/core/model/model_task_test_base.h"

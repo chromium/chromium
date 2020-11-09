@@ -12,7 +12,7 @@
 #include "base/bind.h"
 #include "base/containers/flat_map.h"
 #include "base/run_loop.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "chromeos/components/sync_wifi/fake_local_network_collector.h"

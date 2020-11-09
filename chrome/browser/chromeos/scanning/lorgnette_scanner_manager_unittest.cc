@@ -15,7 +15,7 @@
 #include "base/containers/flat_map.h"
 #include "base/optional.h"
 #include "base/run_loop.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/chromeos/scanning/zeroconf_scanner_detector.h"
 #include "chrome/browser/chromeos/scanning/zeroconf_scanner_detector_utils.h"

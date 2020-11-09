@@ -5,7 +5,7 @@
 #include "weblayer/test/weblayer_browser_test.h"
 
 #include "base/macros.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/error_page/content/browser/net_error_auto_reloader.h"
 #include "content/public/test/browser_test_utils.h"

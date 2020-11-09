@@ -5,7 +5,7 @@
 #include "base/bind.h"
 #include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/installable/installable_metrics.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"

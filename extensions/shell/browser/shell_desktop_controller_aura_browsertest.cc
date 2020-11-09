@@ -7,7 +7,7 @@
 #include "base/bind.h"
 #include "base/macros.h"
 #include "base/task/post_task.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/time/time.h"
 #include "components/keep_alive_registry/keep_alive_registry.h"
 #include "extensions/browser/app_window/app_window.h"

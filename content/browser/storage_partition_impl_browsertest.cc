@@ -6,7 +6,7 @@
 
 #include <string>
 
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "build/build_config.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/client_certificate_delegate.h"

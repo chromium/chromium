@@ -6,7 +6,7 @@
 
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "chrome/browser/media/feeds/media_feeds_store.mojom-forward.h"

@@ -5,7 +5,7 @@
 #include "content/browser/sms/user_consent_handler.h"
 
 #include "base/callback.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "content/browser/sms/test/mock_sms_web_contents_delegate.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/test/navigation_simulator.h"

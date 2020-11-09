@@ -13,7 +13,7 @@
 #include "base/containers/flat_set.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/process_context.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "components/viz/test/test_context_support.h"

@@ -5,7 +5,7 @@
 #include <memory>
 
 #include "base/path_service.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/test_timeouts.h"
 #include "chrome/browser/browsing_data/access_context_audit_service.h"

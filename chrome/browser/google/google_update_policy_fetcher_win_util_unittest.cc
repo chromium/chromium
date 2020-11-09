@@ -7,7 +7,7 @@
 #include <OleCtl.h>
 #include <wtypes.h>
 
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/values.h"
 #include "base/win/scoped_bstr.h"
 #include "components/policy/core/common/policy_map.h"

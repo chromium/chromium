@@ -11,7 +11,7 @@
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/waitable_event.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/mock_log.h"
 #include "build/build_config.h"
 #include "content/browser/child_process_security_policy_impl.h"

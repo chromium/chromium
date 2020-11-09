@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/core/loader/resource_load_observer_for_frame.h"
 
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"

@@ -7,7 +7,7 @@
 #include <memory>
 #include <utility>
 
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "build/build_config.h"
 #include "content/browser/picture_in_picture/picture_in_picture_window_controller_impl.h"
 #include "content/common/media/media_player_delegate_messages.h"

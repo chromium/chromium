@@ -38,6 +38,6 @@ specific_include_rules = {
         "+testing/libfuzzer/proto/lpm_interface.h",
     ],
     "canvas_fuzzer.cc": [
-        "+base/test/bind_test_util.h",
+        "+base/test/bind.h",
     ],
 }

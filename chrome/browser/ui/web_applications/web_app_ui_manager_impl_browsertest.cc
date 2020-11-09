@@ -5,7 +5,7 @@
 #include "chrome/browser/ui/web_applications/web_app_ui_manager_impl.h"
 
 #include "base/barrier_closure.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"

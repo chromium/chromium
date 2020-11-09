@@ -5,7 +5,7 @@
 #include <memory>
 
 #include "base/run_loop.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #import "ios/web/public/test/web_test.h"
 #import "ios/web/public/web_client.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
