@@ -12,7 +12,6 @@
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
-#include "ui/aura/client/focus_change_observer.h"
 #include "ui/aura/window_tracker.h"
 
 class AccountId;
@@ -27,9 +26,7 @@ class InSessionAuthDialogClient;
 class WebAuthnRequestRegistrarImpl;
 
 // InSessionAuthDialogControllerImpl persists as long as UI is running.
-class InSessionAuthDialogControllerImpl
-    : public InSessionAuthDialogController,
-      public aura::client::FocusChangeObserver {
+class InSessionAuthDialogControllerImpl : public InSessionAuthDialogController {
  public:
   InSessionAuthDialogControllerImpl();
   InSessionAuthDialogControllerImpl(const InSessionAuthDialogControllerImpl&) =
@@ -50,10 +47,6 @@ class InSessionAuthDialogControllerImpl
       base::OnceCallback<void(bool, FingerprintState)> callback) override;
   void OpenInSessionAuthHelpPage() override;
   void Cancel() override;
-
-  // aura::client::FocusChangeObserver overrides
-  void OnWindowFocused(aura::Window* gained_focus,
-                       aura::Window* lost_focus) override;
 
  private:
   bool IsFingerprintAvailable(const AccountId& account_id);
@@ -88,12 +81,7 @@ class InSessionAuthDialogControllerImpl
 
   aura::WindowTracker source_window_tracker_;
 
-  // Tracks windows that show the help article about in-session auth.
-  aura::WindowTracker help_window_tracker_;
-
   std::unique_ptr<WebAuthnRequestRegistrarImpl> webauthn_request_registrar_;
-
-  bool should_ignore_focus_change_ = false;
 
   base::WeakPtrFactory<InSessionAuthDialogControllerImpl> weak_factory_{this};
 };

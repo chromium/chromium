@@ -15,7 +15,6 @@
 #include "components/user_manager/known_user.h"
 #include "ui/aura/window.h"
 #include "ui/views/widget/widget.h"
-#include "ui/wm/core/focus_controller.h"
 
 namespace ash {
 
@@ -117,7 +116,6 @@ void InSessionAuthDialogControllerImpl::OnPinCanAuthenticate(
   auth_metadata.autosubmit_pin_length =
       user_manager::known_user::GetUserPinLength(account_id);
   source_window_tracker_.Remove(source_window);
-  Shell::Get()->focus_controller()->AddObserver(this);
   dialog_ = std::make_unique<InSessionAuthDialog>(
       auth_methods, source_window, origin_name, auth_metadata, avatar);
 }
@@ -132,7 +130,6 @@ void InSessionAuthDialogControllerImpl::DestroyAuthenticationDialog() {
 
   dialog_.reset();
   source_window_tracker_.RemoveAll();
-  Shell::Get()->focus_controller()->RemoveObserver(this);
 }
 
 void InSessionAuthDialogControllerImpl::AuthenticateUserWithPin(
@@ -194,28 +191,9 @@ void InSessionAuthDialogControllerImpl::Cancel() {
     std::move(finish_callback_).Run(false);
 }
 
-void InSessionAuthDialogControllerImpl::OnWindowFocused(
-    aura::Window* gained_focus,
-    aura::Window* lost_focus) {
-  if (should_ignore_focus_change_)
-    return;
-
-  if (!dialog_)
-    return;
-
-  // No-op if focus moved to the help page or back to the dialog.
-  if (help_window_tracker_.Contains(gained_focus) ||
-      gained_focus == dialog_->widget()->GetNativeWindow()) {
-    return;
-  }
-
-  Cancel();
-}
-
 void InSessionAuthDialogControllerImpl::OpenInSessionAuthHelpPage() {
   DCHECK(client_);
-  base::AutoReset<bool> scoped_ignore_focus(&should_ignore_focus_change_, true);
-  help_window_tracker_.Add(client_->OpenInSessionAuthHelpPage());
+  client_->OpenInSessionAuthHelpPage();
 }
 
 }  // namespace ash

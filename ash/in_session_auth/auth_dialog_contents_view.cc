@@ -540,6 +540,18 @@ void AuthDialogContentsView::AddActionButtonsView() {
   buttons_layout->set_main_axis_alignment(
       views::BoxLayout::MainAxisAlignment::kStart);
 
+  cancel_button_ =
+      action_view_container_->AddChildView(std::make_unique<views::LabelButton>(
+          base::BindRepeating(&AuthDialogContentsView::OnCancelButtonPressed,
+                              base::Unretained(this)),
+          l10n_util::GetStringUTF16(IDS_ASH_IN_SESSION_AUTH_CANCEL),
+          views::style::CONTEXT_BUTTON));
+  cancel_button_->SetEnabledTextColors(kTextColorPrimary);
+
+  auto* spacing = action_view_container_->AddChildView(
+      std::make_unique<NonAccessibleView>());
+  buttons_layout->SetFlexForView(spacing, 1);
+
   help_button_ =
       action_view_container_->AddChildView(std::make_unique<views::LabelButton>(
           base::BindRepeating(&AuthDialogContentsView::OnNeedHelpButtonPressed,
@@ -549,6 +561,10 @@ void AuthDialogContentsView::AddActionButtonsView() {
   help_button_->SetEnabledTextColors(kTextColorPrimary);
   action_view_container_->SetPreferredSize(
       gfx::Size(kContainerPreferredWidth, help_button_->height()));
+}
+
+void AuthDialogContentsView::OnCancelButtonPressed(const ui::Event& event) {
+  InSessionAuthDialogController::Get()->Cancel();
 }
 
 void AuthDialogContentsView::OnNeedHelpButtonPressed(const ui::Event& event) {

@@ -113,6 +113,9 @@ class AuthDialogContentsView : public views::View {
   void OnFingerprintAuthComplete(bool success,
                                  FingerprintState fingerprint_state);
 
+  // Called when the cancel button is pressed.
+  void OnCancelButtonPressed(const ui::Event& event);
+
   // Called when the "Need help?" button is pressed.
   void OnNeedHelpButtonPressed(const ui::Event& event);
 
@@ -147,6 +150,9 @@ class AuthDialogContentsView : public views::View {
   LoginPinView* pin_pad_view_ = nullptr;
 
   FingerprintView* fingerprint_view_ = nullptr;
+
+  // A button to cancel authentication and close the dialog.
+  views::LabelButton* cancel_button_ = nullptr;
 
   // A button to show a help center article.
   views::LabelButton* help_button_ = nullptr;
