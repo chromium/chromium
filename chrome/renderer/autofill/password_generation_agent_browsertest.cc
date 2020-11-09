@@ -187,8 +187,8 @@ class PasswordGenerationAgentTest : public ChromeRenderViewTest {
   void BindPasswordManagerDriver(mojo::ScopedInterfaceEndpointHandle handle);
   void BindPasswordManagerClient(mojo::ScopedInterfaceEndpointHandle handle);
 
-  // Callback for UserTriggeredGeneratePassword.
-  MOCK_METHOD1(UserTriggeredGeneratePasswordReply,
+  // Callback for TriggeredGeneratePassword.
+  MOCK_METHOD1(TriggeredGeneratePasswordReply,
                void(const base::Optional<
                     autofill::password_generation::PasswordGenerationUIData>&));
 
@@ -319,13 +319,13 @@ void PasswordGenerationAgentTest::SelectGenerationFallbackAndExpect(
     bool available) {
   if (available) {
     EXPECT_CALL(*this,
-                UserTriggeredGeneratePasswordReply(testing::Ne(base::nullopt)));
+                TriggeredGeneratePasswordReply(testing::Ne(base::nullopt)));
   } else {
     EXPECT_CALL(*this,
-                UserTriggeredGeneratePasswordReply(testing::Eq(base::nullopt)));
+                TriggeredGeneratePasswordReply(testing::Eq(base::nullopt)));
   }
-  password_generation_->UserTriggeredGeneratePassword(base::BindOnce(
-      &PasswordGenerationAgentTest::UserTriggeredGeneratePasswordReply,
+  password_generation_->TriggeredGeneratePassword(base::BindOnce(
+      &PasswordGenerationAgentTest::TriggeredGeneratePasswordReply,
       base::Unretained(this)));
   testing::Mock::VerifyAndClearExpectations(this);
 }

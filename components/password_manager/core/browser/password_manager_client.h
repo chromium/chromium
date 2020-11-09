@@ -15,6 +15,7 @@
 #include "base/util/type_safety/strong_alias.h"
 #include "build/build_config.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom.h"
+#include "components/autofill/core/common/password_generation_util.h"
 #include "components/password_manager/core/browser/credentials_filter.h"
 #include "components/password_manager/core/browser/hsts_query.h"
 #include "components/password_manager/core/browser/http_auth_manager.h"
@@ -181,9 +182,10 @@ class PasswordManagerClient {
   // BiometricAuthentication is not available for a given platform.
   virtual BiometricAuthenticator* GetBiometricAuthenticator();
 
-  // Informs the embedder that the user has manually requested to generate a
+  // Informs the embedder that the user has requested to generate a
   // password in the focused password field.
-  virtual void GeneratePassword();
+  virtual void GeneratePassword(
+      autofill::password_generation::PasswordGenerationType type);
 
   // Informs the embedder that automatic signing in just happened. The form
   // returned to the site is |local_forms[0]|. |local_forms| contains all the

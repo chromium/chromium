@@ -17,6 +17,7 @@
 #include "base/strings/string16.h"
 #include "build/build_config.h"
 #include "components/autofill/core/common/password_form_fill_data.h"
+#include "components/autofill/core/common/password_generation_util.h"
 #include "components/autofill/core/common/renderer_id.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/password_manager/core/browser/credential_cache.h"
@@ -122,13 +123,12 @@ class PasswordManager : public PasswordManagerInterface {
   void OnPasswordNoLongerGenerated(PasswordManagerDriver* driver,
                                    const autofill::FormData& form_data);
 
-  // Update the generation element and whether generation was triggered
-  // manually.
-  void SetGenerationElementAndReasonForForm(
+  // Update the `generation_element` and `type` for `form_data`.
+  void SetGenerationElementAndTypeForForm(
       PasswordManagerDriver* driver,
       const autofill::FormData& form_data,
       autofill::FieldRendererId generation_element,
-      bool is_manually_triggered);
+      autofill::password_generation::PasswordGenerationType type);
 
   // Called upon navigation to persist the state from |CredentialCache|
   // used to decide when to record

@@ -26,6 +26,7 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/password_form_fill_data.h"
+#include "components/autofill/core/common/password_generation_util.h"
 #include "components/favicon/core/test/mock_favicon_service.h"
 #include "components/password_manager/core/browser/mock_password_feature_manager.h"
 #include "components/password_manager/core/browser/password_manager.h"
@@ -64,6 +65,7 @@ using autofill::SuggestionVectorIconsAre;
 using autofill::SuggestionVectorIdsAre;
 using autofill::SuggestionVectorLabelsAre;
 using autofill::SuggestionVectorValuesAre;
+using autofill::password_generation::PasswordGenerationType;
 using favicon_base::FaviconImageCallback;
 using gfx::test::AreImagesEqual;
 using testing::_;
@@ -144,7 +146,7 @@ class TestPasswordManagerClient : public StubPasswordManagerClient {
         .WillByDefault(Return(needs_signin));
   }
 
-  MOCK_METHOD(void, GeneratePassword, (), (override));
+  MOCK_METHOD(void, GeneratePassword, (PasswordGenerationType), (override));
   MOCK_METHOD(void,
               TriggerReauthForPrimaryAccount,
               (signin_metrics::ReauthAccessPoint,
@@ -802,7 +804,7 @@ TEST_F(PasswordAutofillManagerTest,
   EXPECT_CALL(autofill_client,
               HideAutofillPopup(autofill::PopupHidingReason::kAcceptSuggestion))
       .Times(testing::AtLeast(1));
-  EXPECT_CALL(client, GeneratePassword());
+  EXPECT_CALL(client, GeneratePassword(PasswordGenerationType::kAutomatic));
 
   password_autofill_manager_->DidAcceptSuggestion(
       test_username_,
@@ -1317,7 +1319,7 @@ TEST_F(PasswordAutofillManagerTest,
                                          GetManagePasswordsTitle())));
 
   // Click "Generate password".
-  EXPECT_CALL(client, GeneratePassword());
+  EXPECT_CALL(client, GeneratePassword(PasswordGenerationType::kAutomatic));
   EXPECT_CALL(
       autofill_client,
       HideAutofillPopup(autofill::PopupHidingReason::kAcceptSuggestion));

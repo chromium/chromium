@@ -25,6 +25,7 @@
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
+#include "components/autofill/core/common/password_generation_util.h"
 #include "components/autofill/core/common/renderer_id.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/password_manager/core/browser/field_info_manager.h"
@@ -2145,7 +2146,7 @@ TEST_P(PasswordManagerTest, PasswordGenerationPresavePasswordAndLogin) {
   }
 }
 
-TEST_P(PasswordManagerTest, SetGenerationElementAndReasonForForm) {
+TEST_P(PasswordManagerTest, SetGenerationElementAndTypeForForm) {
   PasswordForm form(MakeSimpleForm());
   EXPECT_CALL(client_, IsSavingAndFillingEnabled(form.url))
       .WillRepeatedly(Return(true));
@@ -2153,9 +2154,9 @@ TEST_P(PasswordManagerTest, SetGenerationElementAndReasonForForm) {
   EXPECT_CALL(*store_, GetLogins(PasswordStore::FormDigest(form), _));
   manager()->OnPasswordFormsParsed(&driver_, {form.form_data});
 
-  manager()->SetGenerationElementAndReasonForForm(
+  manager()->SetGenerationElementAndTypeForForm(
       &driver_, form.form_data, form.form_data.fields[1].unique_renderer_id,
-      false);
+      autofill::password_generation::PasswordGenerationType::kAutomatic);
   EXPECT_CALL(*store_, AddLogin(_));
   manager()->OnPresaveGeneratedPassword(&driver_, form.form_data,
                                         form.password_value);

@@ -59,8 +59,8 @@ class PasswordGenerationAgent : public content::RenderFrameObserver,
       const PasswordFormGenerationData& form) override;
   // Sets |generation_element_| to the focused password field and responds back
   // if the generation was triggered successfully.
-  void UserTriggeredGeneratePassword(
-      UserTriggeredGeneratePasswordCallback callback) override;
+  void TriggeredGeneratePassword(
+      TriggeredGeneratePasswordCallback callback) override;
 
   // Returns true if the field being changed is one where a generated password
   // is being offered. Updates the state of the popup if necessary.
@@ -110,7 +110,7 @@ class PasswordGenerationAgent : public content::RenderFrameObserver,
   // Helper function which takes care of the form processing and collecting the
   // information which is required to show the generation popup. Returns true if
   // all required information is collected.
-  bool SetUpUserTriggeredGeneration();
+  bool SetUpTriggeredGeneration();
 
   // This is called whenever automatic generation could be offered.
   // If manual generation was already requested, automatic generation will

@@ -14,6 +14,7 @@
 #include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
+#include "components/autofill/core/common/password_generation_util.h"
 #include "components/password_manager/core/browser/mock_password_feature_manager.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
@@ -24,6 +25,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using autofill::password_generation::PasswordGenerationType;
 using password_manager::PasswordForm;
 
 namespace password_manager_util {
@@ -50,7 +52,7 @@ class MockPasswordManagerClient
                base::OnceCallback<void(
                    password_manager::PasswordManagerClient::ReauthSucceeded)>),
               (override));
-  MOCK_METHOD(void, GeneratePassword, (), (override));
+  MOCK_METHOD(void, GeneratePassword, (PasswordGenerationType), (override));
 };
 
 PasswordForm GetTestAndroidCredential() {
@@ -438,7 +440,7 @@ TEST(PasswordManagerUtil, ManualGenerationShouldNotReauthIfNotNeeded) {
       .WillByDefault(Return(false));
 
   EXPECT_CALL(mock_client, TriggerReauthForPrimaryAccount).Times(0);
-  EXPECT_CALL(mock_client, GeneratePassword);
+  EXPECT_CALL(mock_client, GeneratePassword(PasswordGenerationType::kManual));
 
   UserTriggeredManualGenerationFromContextMenu(&mock_client);
 }
@@ -462,7 +464,7 @@ TEST(PasswordManagerUtil,
             std::move(callback).Run(
                 password_manager::PasswordManagerClient::ReauthSucceeded(true));
           });
-  EXPECT_CALL(mock_client, GeneratePassword);
+  EXPECT_CALL(mock_client, GeneratePassword(PasswordGenerationType::kManual));
 
   UserTriggeredManualGenerationFromContextMenu(&mock_client);
 }

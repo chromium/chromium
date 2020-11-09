@@ -5,6 +5,7 @@
 #include <utility>
 
 #include "base/macros.h"
+#include "components/autofill/core/common/password_generation_util.h"
 #include "components/password_manager/core/browser/http_auth_manager.h"
 #include "components/password_manager/core/browser/password_form_manager_for_ui.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
@@ -37,7 +38,8 @@ BiometricAuthenticator* PasswordManagerClient::GetBiometricAuthenticator() {
   return nullptr;
 }
 
-void PasswordManagerClient::GeneratePassword() {}
+void PasswordManagerClient::GeneratePassword(
+    autofill::password_generation::PasswordGenerationType type) {}
 
 void PasswordManagerClient::UpdateCredentialCache(
     const url::Origin& origin,

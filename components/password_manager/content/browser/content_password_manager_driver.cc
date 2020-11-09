@@ -208,10 +208,9 @@ void ContentPasswordManagerDriver::AnnotateFieldsWithParsingResult(
 }
 
 void ContentPasswordManagerDriver::GeneratePassword(
-    autofill::mojom::PasswordGenerationAgent::
-        UserTriggeredGeneratePasswordCallback callback) {
-  GetPasswordGenerationAgent()->UserTriggeredGeneratePassword(
-      std::move(callback));
+    autofill::mojom::PasswordGenerationAgent::TriggeredGeneratePasswordCallback
+        callback) {
+  GetPasswordGenerationAgent()->TriggeredGeneratePassword(std::move(callback));
 }
 
 void ContentPasswordManagerDriver::PasswordFormsParsed(

@@ -32,6 +32,7 @@
 #include "components/autofill/core/common/autofill_data_validation.h"
 #include "components/autofill/core/common/autofill_util.h"
 #include "components/autofill/core/common/password_form_fill_data.h"
+#include "components/autofill/core/common/password_generation_util.h"
 #include "components/favicon/core/favicon_util.h"
 #include "components/password_manager/core/browser/android_affiliation/affiliation_utils.h"
 #include "components/password_manager/core/browser/password_feature_manager.h"
@@ -53,6 +54,8 @@
 namespace password_manager {
 
 namespace {
+
+using autofill::password_generation::PasswordGenerationType;
 
 using AutoselectFirstSuggestion =
     autofill::AutofillClient::PopupOpenArgs::AutoselectFirstSuggestion;
@@ -377,7 +380,7 @@ void PasswordAutofillManager::DidAcceptSuggestion(const base::string16& value,
   using metrics_util::PasswordDropdownSelectedOption;
 
   if (identifier == autofill::POPUP_ITEM_ID_GENERATE_PASSWORD_ENTRY) {
-    password_client_->GeneratePassword();
+    password_client_->GeneratePassword(PasswordGenerationType::kAutomatic);
     metrics_util::LogPasswordDropdownItemSelected(
         PasswordDropdownSelectedOption::kGenerate,
         password_client_->IsIncognito());
@@ -756,7 +759,7 @@ void PasswordAutofillManager::OnUnlockReauthCompleted(
   if (reauth_succeeded) {
     if (unlock_item ==
         autofill::POPUP_ITEM_ID_PASSWORD_ACCOUNT_STORAGE_OPT_IN_AND_GENERATE) {
-      password_client_->GeneratePassword();
+      password_client_->GeneratePassword(PasswordGenerationType::kAutomatic);
       autofill_client_->HideAutofillPopup(
           autofill::PopupHidingReason::kAcceptSuggestion);
     }

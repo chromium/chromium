@@ -95,9 +95,9 @@ void PasswordGenerationControllerImpl::OnAutomaticGenerationAvailable(
   DCHECK(!dialog_view_);
 
   active_frame_driver_->GetPasswordManager()
-      ->SetGenerationElementAndReasonForForm(
+      ->SetGenerationElementAndTypeForForm(
           active_frame_driver_.get(), ui_data.form_data,
-          ui_data.generation_element_id, false /* is_manually_triggered */);
+          ui_data.generation_element_id, PasswordGenerationType::kAutomatic);
 
   if (!base::FeatureList::IsEnabled(
           autofill::features::kAutofillKeyboardAccessory)) {
@@ -139,7 +139,7 @@ void PasswordGenerationControllerImpl::OnGenerationRequested(
     PasswordGenerationType type) {
   if (type == PasswordGenerationType::kManual) {
     manual_generation_requested_ = true;
-    client_->GeneratePassword();
+    client_->GeneratePassword(type);
   } else {
     ShowDialog(PasswordGenerationType::kAutomatic);
   }

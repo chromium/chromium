@@ -67,6 +67,7 @@ using autofill::PasswordFormGenerationData;
 using autofill::ServerFieldType;
 using autofill::SINGLE_USERNAME;
 using autofill::UNKNOWN_TYPE;
+using autofill::password_generation::PasswordGenerationType;
 using base::ASCIIToUTF16;
 using testing::_;
 using testing::AllOf;
@@ -1421,7 +1422,7 @@ TEST_P(PasswordFormManagerTest, PresaveGeneratedPasswordEmptyStore) {
 
   MockFormSaver& form_saver = MockFormSaver::Get(form_manager_.get());
 
-  form_manager_->SetGenerationPopupWasShown(false /* is_manual_generation */);
+  form_manager_->SetGenerationPopupWasShown(PasswordGenerationType::kAutomatic);
 
   // Check that the generated password is presaved.
   PasswordForm saved_form;
@@ -1478,7 +1479,7 @@ TEST_P(PasswordFormManagerTest, PresaveGenerated_ModifiedUsername) {
 
   MockFormSaver& form_saver = MockFormSaver::Get(form_manager_.get());
 
-  form_manager_->SetGenerationPopupWasShown(false /* is_manual_generation */);
+  form_manager_->SetGenerationPopupWasShown(PasswordGenerationType::kAutomatic);
 
   // Check that the generated password is presaved.
   PasswordForm saved_form;
@@ -1582,7 +1583,7 @@ TEST_P(PasswordFormManagerTest, PasswordNoLongerGenerated) {
   fetcher_->NotifyFetchCompleted();
 
   MockFormSaver& form_saver = MockFormSaver::Get(form_manager_.get());
-  form_manager_->SetGenerationPopupWasShown(true /* is_manual_generation */);
+  form_manager_->SetGenerationPopupWasShown(PasswordGenerationType::kManual);
 
   EXPECT_CALL(form_saver, Save(_, _, _));
 
@@ -1615,7 +1616,7 @@ TEST_P(PasswordFormManagerTest, PresaveGeneratedPasswordExistingCredential) {
 
   MockFormSaver& form_saver = MockFormSaver::Get(form_manager_.get());
 
-  form_manager_->SetGenerationPopupWasShown(false /* is_manual_generation */);
+  form_manager_->SetGenerationPopupWasShown(PasswordGenerationType::kAutomatic);
 
   // Check that the generated password is presaved.
   PasswordForm saved_form;
@@ -1853,7 +1854,8 @@ TEST_P(PasswordFormManagerTest, GenerationUploadOnNoInteraction) {
 
     if (generation_popup_shown) {
       form_manager_->SetGenerationElement(FieldRendererId(3));
-      form_manager_->SetGenerationPopupWasShown(false /*is_manual_generation*/);
+      form_manager_->SetGenerationPopupWasShown(
+          PasswordGenerationType::kAutomatic);
     }
     EXPECT_TRUE(
         form_manager_->ProvisionallySave(submitted_form_, &driver_, nullptr));
@@ -1876,7 +1878,8 @@ TEST_P(PasswordFormManagerTest, GenerationUploadOnNeverClicked) {
 
     if (generation_popup_shown) {
       form_manager_->SetGenerationElement(FieldRendererId(3));
-      form_manager_->SetGenerationPopupWasShown(false /*is_manual_generation*/);
+      form_manager_->SetGenerationPopupWasShown(
+          PasswordGenerationType::kAutomatic);
     }
     EXPECT_TRUE(
         form_manager_->ProvisionallySave(submitted_form_, &driver_, nullptr));
@@ -2646,7 +2649,7 @@ TEST_F(PasswordFormManagerTestWithMockedSaver, GetPendingCredentials) {
 TEST_F(PasswordFormManagerTestWithMockedSaver, PresaveGeneratedPassword) {
   fetcher_->NotifyFetchCompleted();
   EXPECT_FALSE(form_manager_->HasGeneratedPassword());
-  form_manager_->SetGenerationPopupWasShown(/*is_manual_generation=*/false);
+  form_manager_->SetGenerationPopupWasShown(PasswordGenerationType::kAutomatic);
   PasswordForm form_with_generated_password = parsed_submitted_form_;
   FormData& form_data = form_with_generated_password.form_data;
   // Check that the generated password is forwarded to the save manager.
@@ -2716,7 +2719,7 @@ TEST_F(PasswordFormManagerTestWithMockedSaver,
 TEST_F(PasswordFormManagerTestWithMockedSaver, PasswordNoLongerGenerated) {
   ukm::TestAutoSetUkmRecorder test_ukm_recorder;
   fetcher_->NotifyFetchCompleted();
-  form_manager_->SetGenerationPopupWasShown(true /* is_manual_generation */);
+  form_manager_->SetGenerationPopupWasShown(PasswordGenerationType::kManual);
   EXPECT_CALL(*mock_password_save_manager(), PresaveGeneratedPassword(_));
   PasswordForm form = parsed_submitted_form_;
   form_manager_->PresaveGeneratedPassword(form.form_data, form.password_value);

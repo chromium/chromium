@@ -23,6 +23,7 @@
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/common/form_data_predictions.h"
+#include "components/autofill/core/common/password_generation_util.h"
 #include "components/autofill/core/common/save_password_progress_logger.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/password_manager/core/browser/browser_save_password_progress_logger.h"
@@ -297,17 +298,17 @@ void PasswordManager::OnPasswordNoLongerGenerated(PasswordManagerDriver* driver,
     form_manager->PasswordNoLongerGenerated();
 }
 
-void PasswordManager::SetGenerationElementAndReasonForForm(
+void PasswordManager::SetGenerationElementAndTypeForForm(
     password_manager::PasswordManagerDriver* driver,
     const FormData& form_data,
     FieldRendererId generation_element,
-    bool is_manually_triggered) {
+    autofill::password_generation::PasswordGenerationType type) {
   DCHECK(client_->IsSavingAndFillingEnabled(form_data.url));
 
   PasswordFormManager* form_manager = GetMatchedManager(driver, form_data);
   if (form_manager) {
     form_manager->SetGenerationElement(generation_element);
-    form_manager->SetGenerationPopupWasShown(is_manually_triggered);
+    form_manager->SetGenerationPopupWasShown(type);
   }
 }
 

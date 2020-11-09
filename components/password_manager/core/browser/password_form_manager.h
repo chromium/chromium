@@ -17,6 +17,7 @@
 #include "build/build_config.h"
 #include "components/autofill/core/common/field_data_manager.h"
 #include "components/autofill/core/common/form_data.h"
+#include "components/autofill/core/common/password_generation_util.h"
 #include "components/autofill/core/common/renderer_id.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/password_manager/core/browser/form_fetcher.h"
@@ -179,7 +180,8 @@ class PasswordFormManager : public PasswordFormManagerForUI,
                                 const base::string16& generated_password);
   void PasswordNoLongerGenerated();
   bool HasGeneratedPassword() const;
-  void SetGenerationPopupWasShown(bool is_manual_generation);
+  void SetGenerationPopupWasShown(
+      autofill::password_generation::PasswordGenerationType type);
   void SetGenerationElement(autofill::FieldRendererId generation_element);
   bool IsPossibleChangePasswordFormWithoutUsername() const;
   bool IsPasswordUpdate() const;

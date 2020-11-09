@@ -40,6 +40,7 @@
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_user_settings.h"
 
+using autofill::password_generation::PasswordGenerationType;
 using password_manager::PasswordForm;
 
 namespace password_manager_util {
@@ -145,7 +146,7 @@ void UserTriggeredManualGenerationFromContextMenu(
     password_manager::PasswordManagerClient* password_manager_client) {
   if (!password_manager_client->GetPasswordFeatureManager()
            ->ShouldShowAccountStorageOptIn()) {
-    password_manager_client->GeneratePassword();
+    password_manager_client->GeneratePassword(PasswordGenerationType::kManual);
     LogPasswordGenerationEvent(autofill::password_generation::
                                    PASSWORD_GENERATION_CONTEXT_MENU_PRESSED);
     return;
@@ -159,7 +160,7 @@ void UserTriggeredManualGenerationFromContextMenu(
              password_manager::PasswordManagerClient::ReauthSucceeded
                  succeeded) {
             if (succeeded) {
-              client->GeneratePassword();
+              client->GeneratePassword(PasswordGenerationType::kManual);
               LogPasswordGenerationEvent(
                   autofill::password_generation::
                       PASSWORD_GENERATION_CONTEXT_MENU_PRESSED);

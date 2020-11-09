@@ -81,9 +81,9 @@ class ContentPasswordManagerDriver
   void AnnotateFieldsWithParsingResult(
       const autofill::ParsingResult& parsing_result) override;
 
-  // Notify the renderer that the user wants to generate password manually.
+  // Notify the renderer that the user wants to trigger password generation.
   void GeneratePassword(autofill::mojom::PasswordGenerationAgent::
-                            UserTriggeredGeneratePasswordCallback callback);
+                            TriggeredGeneratePasswordCallback callback);
 
   content::RenderFrameHost* render_frame_host() const {
     return render_frame_host_;

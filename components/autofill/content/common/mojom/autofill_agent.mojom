@@ -118,7 +118,7 @@ interface PasswordGenerationAgent {
   // Tells the renderer to find a focused element, and if it is a password field
   // eligible for generation then to trigger generation by returning
   // non-empty PasswordGenerationUIData.
-  UserTriggeredGeneratePassword() => (PasswordGenerationUIData? data);
+  TriggeredGeneratePassword() => (PasswordGenerationUIData? data);
 
   // Tells the renderer that a password can be generated on the fields
   // identified by |form|.

@@ -149,6 +149,7 @@ using password_manager::CredentialCache;
 #endif
 
 using autofill::mojom::FocusedFieldType;
+using autofill::password_generation::PasswordGenerationType;
 using password_manager::BadMessageReason;
 using password_manager::ContentPasswordManagerDriverFactory;
 using password_manager::FieldInfoManager;
@@ -476,7 +477,8 @@ ChromePasswordManagerClient::GetBiometricAuthenticator() {
   return biometric_authenticator_.get();
 }
 
-void ChromePasswordManagerClient::GeneratePassword() {
+void ChromePasswordManagerClient::GeneratePassword(
+    PasswordGenerationType type) {
 #if defined(OS_ANDROID)
   PasswordGenerationController* generation_controller =
       PasswordGenerationController::GetIfExisting(web_contents());
@@ -494,8 +496,8 @@ void ChromePasswordManagerClient::GeneratePassword() {
   // Using unretained pointer is safe because |this| outlives
   // ContentPasswordManagerDriver that holds the connection.
   content_driver->GeneratePassword(base::BindOnce(
-      &ChromePasswordManagerClient::ManualGenerationResultAvailable,
-      base::Unretained(this), base::AsWeakPtr(content_driver)));
+      &ChromePasswordManagerClient::GenerationResultAvailable,
+      base::Unretained(this), type, base::AsWeakPtr(content_driver)));
 }
 
 void ChromePasswordManagerClient::NotifyUserAutoSignin(
@@ -965,8 +967,8 @@ void ChromePasswordManagerClient::AutomaticGenerationAvailable(
     return;
   }
 
-  ShowPasswordGenerationPopup(driver, ui_data,
-                              false /* is_manually_triggered */);
+  ShowPasswordGenerationPopup(PasswordGenerationType::kAutomatic, driver,
+                              ui_data);
 #endif  // defined(OS_ANDROID)
 }
 
@@ -1449,7 +1451,8 @@ bool ChromePasswordManagerClient::ShouldAnnotateNavigationEntries(
   return true;
 }
 
-void ChromePasswordManagerClient::ManualGenerationResultAvailable(
+void ChromePasswordManagerClient::GenerationResultAvailable(
+    PasswordGenerationType type,
     base::WeakPtr<password_manager::ContentPasswordManagerDriver> driver,
     const base::Optional<
         autofill::password_generation::PasswordGenerationUIData>& ui_data) {
@@ -1469,23 +1472,21 @@ void ChromePasswordManagerClient::ManualGenerationResultAvailable(
   password_generation_controller->ShowManualGenerationDialog(driver.get(),
                                                              ui_data.value());
 #else
-  ShowPasswordGenerationPopup(driver.get(), *ui_data,
-                              true /* is_manually_triggered */);
+  ShowPasswordGenerationPopup(type, driver.get(), *ui_data);
 #endif
 }
 
 void ChromePasswordManagerClient::ShowPasswordGenerationPopup(
+    PasswordGenerationType type,
     password_manager::ContentPasswordManagerDriver* driver,
-    const autofill::password_generation::PasswordGenerationUIData& ui_data,
-    bool is_manually_triggered) {
+    const autofill::password_generation::PasswordGenerationUIData& ui_data) {
   gfx::RectF element_bounds_in_top_frame_space =
       TransformToRootCoordinates(driver->render_frame_host(), ui_data.bounds);
 
   gfx::RectF element_bounds_in_screen_space =
       GetBoundsInScreenSpace(element_bounds_in_top_frame_space);
-  password_manager_.SetGenerationElementAndReasonForForm(
-      driver, ui_data.form_data, ui_data.generation_element_id,
-      is_manually_triggered);
+  password_manager_.SetGenerationElementAndTypeForForm(
+      driver, ui_data.form_data, ui_data.generation_element_id, type);
 
   popup_controller_ = PasswordGenerationPopupControllerImpl::GetOrCreate(
       popup_controller_, element_bounds_in_screen_space, ui_data,

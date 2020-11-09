@@ -289,10 +289,10 @@ void PasswordGenerationAgent::FoundFormEligibleForGeneration(
   }
 }
 
-void PasswordGenerationAgent::UserTriggeredGeneratePassword(
-    UserTriggeredGeneratePasswordCallback callback) {
-  if (SetUpUserTriggeredGeneration()) {
-    LogMessage(Logger::STRING_GENERATION_RENDERER_SHOW_MANUAL_GENERATION_POPUP);
+void PasswordGenerationAgent::TriggeredGeneratePassword(
+    TriggeredGeneratePasswordCallback callback) {
+  if (SetUpTriggeredGeneration()) {
+    LogMessage(Logger::STRING_GENERATION_RENDERER_SHOW_GENERATION_POPUP);
     // If the field is not |type=password|, the list of suggestions
     // should not be populated with passwords to avoid filling them in a
     // clear-text field.
@@ -319,7 +319,7 @@ void PasswordGenerationAgent::UserTriggeredGeneratePassword(
   }
 }
 
-bool PasswordGenerationAgent::SetUpUserTriggeredGeneration() {
+bool PasswordGenerationAgent::SetUpTriggeredGeneration() {
   if (last_focused_password_element_.IsNull() || !render_frame())
     return false;
 

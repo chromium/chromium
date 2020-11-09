@@ -21,6 +21,7 @@
 #include "build/build_config.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/password_form_generation_data.h"
+#include "components/autofill/core/common/password_generation_util.h"
 #include "components/password_manager/core/browser/android_affiliation/affiliation_utils.h"
 #include "components/password_manager/core/browser/browser_save_password_progress_logger.h"
 #include "components/password_manager/core/browser/field_info_manager.h"
@@ -50,6 +51,7 @@ using autofill::FormStructure;
 using autofill::GaiaIdHash;
 using autofill::NOT_USERNAME;
 using autofill::SINGLE_USERNAME;
+using autofill::password_generation::PasswordGenerationType;
 using base::TimeDelta;
 using base::TimeTicks;
 
@@ -486,7 +488,8 @@ bool PasswordFormManager::HasGeneratedPassword() const {
 }
 
 void PasswordFormManager::SetGenerationPopupWasShown(
-    bool is_manual_generation) {
+    PasswordGenerationType type) {
+  const bool is_manual_generation = type == PasswordGenerationType::kManual;
   votes_uploader_.set_generation_popup_was_shown(true);
   votes_uploader_.set_is_manual_generation(is_manual_generation);
   metrics_recorder_->SetPasswordGenerationPopupShown(true,

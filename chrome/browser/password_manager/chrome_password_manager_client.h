@@ -15,6 +15,7 @@
 #include "base/optional.h"
 #include "build/build_config.h"
 #include "components/autofill/content/common/mojom/autofill_driver.mojom-forward.h"
+#include "components/autofill/core/common/password_generation_util.h"
 #include "components/autofill/core/common/renderer_id.h"
 #include "components/autofill_assistant/browser/public/runtime_observer.h"
 #include "components/password_manager/content/browser/content_credential_manager.h"
@@ -122,7 +123,8 @@ class ChromePasswordManagerClient
   // will always be null.
   password_manager::BiometricAuthenticator* GetBiometricAuthenticator()
       override;
-  void GeneratePassword() override;
+  void GeneratePassword(
+      autofill::password_generation::PasswordGenerationType type) override;
   void NotifyUserAutoSignin(
       std::vector<std::unique_ptr<password_manager::PasswordForm>> local_forms,
       const url::Origin& origin) override;
@@ -320,18 +322,19 @@ class ChromePasswordManagerClient
   // without custom sync passphrase.
   static bool ShouldAnnotateNavigationEntries(Profile* profile);
 
-  // Called back by the PasswordGenerationAgent when the manual generation flow
-  // is completed. If |ui_data| is non-empty, will create a UI to display the
+  // Called back by the PasswordGenerationAgent when the generation flow is
+  // completed. If |ui_data| is non-empty, will create a UI to display the
   // generated password. Otherwise, nothing will happen.
-  void ManualGenerationResultAvailable(
+  void GenerationResultAvailable(
+      autofill::password_generation::PasswordGenerationType type,
       base::WeakPtr<password_manager::ContentPasswordManagerDriver> driver,
       const base::Optional<
           autofill::password_generation::PasswordGenerationUIData>& ui_data);
 
   void ShowPasswordGenerationPopup(
+      autofill::password_generation::PasswordGenerationType type,
       password_manager::ContentPasswordManagerDriver* driver,
-      const autofill::password_generation::PasswordGenerationUIData& ui_data,
-      bool is_manually_triggered);
+      const autofill::password_generation::PasswordGenerationUIData& ui_data);
 
   gfx::RectF TransformToRootCoordinates(
       content::RenderFrameHost* frame_host,
