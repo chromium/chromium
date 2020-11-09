@@ -50,9 +50,14 @@ void FakeSensorService::SetDevice(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   DeviceData data;
-  data.types = std::move(types);
+  data.types = types;
   data.sensor_device = std::move(sensor_device);
   devices_[iio_device_id] = std::move(data);
+
+  for (auto& observer : observers_) {
+    observer->OnNewDeviceAdded(iio_device_id, std::vector<mojom::DeviceType>(
+                                                  types.begin(), types.end()));
+  }
 }
 
 void FakeSensorService::GetDeviceIds(mojom::DeviceType type,
@@ -95,6 +100,13 @@ void FakeSensorService::GetDevice(
     return;
 
   it->second.sensor_device->AddReceiver(std::move(device_request));
+}
+
+void FakeSensorService::RegisterNewDevicesObserver(
+    mojo::PendingRemote<mojom::SensorServiceNewDevicesObserver> observer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  observers_.Add(std::move(observer));
 }
 
 FakeSensorService::DeviceData::DeviceData() = default;

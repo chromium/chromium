@@ -12,6 +12,8 @@
 #include "base/sequence_checker.h"
 #include "chromeos/components/sensors/fake_sensor_device.h"
 #include "chromeos/components/sensors/mojom/sensor.mojom.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote_set.h"
 
 namespace chromeos {
 namespace sensors {
@@ -38,6 +40,9 @@ class FakeSensorService final : public mojom::SensorService {
   void GetDevice(
       int32_t iio_device_id,
       mojo::PendingReceiver<mojom::SensorDevice> device_request) override;
+  void RegisterNewDevicesObserver(
+      mojo::PendingRemote<mojom::SensorServiceNewDevicesObserver> observer)
+      override;
 
  private:
   struct DeviceData {
@@ -54,6 +59,7 @@ class FakeSensorService final : public mojom::SensorService {
   std::map<int32_t, DeviceData> devices_;
 
   mojo::Receiver<mojom::SensorService> receiver_{this};
+  mojo::RemoteSet<mojom::SensorServiceNewDevicesObserver> observers_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

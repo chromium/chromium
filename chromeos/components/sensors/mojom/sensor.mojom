@@ -62,7 +62,7 @@ enum ObserverErrorType {
 // multiple isolated SensorDevices for one physical device, if it wants
 // different frequencies of that device's samples.
 //
-// Next method ID: 3
+// Next method ID: 4
 interface SensorService {
   // Gets device ids as a vector of int given the device's type. Only devices
   // with id having "iio:device" as the prefix would be available.
@@ -81,6 +81,11 @@ interface SensorService {
   // If failed, the request won't be bound and will be destroyed directly.
   GetDevice@2(int32 iio_device_id,
       pending_receiver<SensorDevice> device_request);
+
+  // Registers a SensorServiceNewDevicesObserver to iioservice. Users will get
+  // notified when new devices are added and visible to iioservice.
+  RegisterNewDevicesObserver
+      @3(pending_remote<SensorServiceNewDevicesObserver> observer);
 };
 
 // SensorDevice, an interface sending requests for a physical device
@@ -148,4 +153,14 @@ interface SensorDeviceSamplesObserver {
 
   // An error occurs and is sent to the client as an enum type.
   OnErrorOccurred@1(ObserverErrorType type);
+};
+
+// One observer is created to track new sensors updated to iioservice, using
+// SensorService::RegisterNewDevicesObserver to register the observer.
+//
+// Next method ID: 1
+interface SensorServiceNewDevicesObserver {
+  // A new IIO device with |iio_device_id| and |types| is added and visible to
+  // iioservice. Sensor clients can get access to this device with the id.
+  OnNewDeviceAdded@0(int32 iio_device_id, array<DeviceType> types);
 };
