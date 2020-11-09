@@ -333,7 +333,7 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
       return;
     }
 
-    lorgnette::StartScanResponse response_proto;
+    lorgnette::GetNextImageResponse response_proto;
     dbus::MessageReader reader(response);
     if (!reader.PopArrayOfBytesAsProto(&response_proto)) {
       LOG(ERROR) << "Failed to decode GetNextImageResponse proto";
@@ -342,7 +342,7 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
       return;
     }
 
-    if (response_proto.state() == lorgnette::SCAN_STATE_FAILED) {
+    if (!response_proto.success()) {
       LOG(ERROR) << "Getting next image failed: "
                  << response_proto.failure_reason();
       std::move(state.completion_callback).Run(false);
