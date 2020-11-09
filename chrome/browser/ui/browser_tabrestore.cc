@@ -16,6 +16,8 @@
 #include "chrome/browser/tab_contents/tab_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/tabs/tab_group.h"
+#include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/sessions/content/content_serialized_navigation_builder.h"
 #include "components/tab_groups/tab_group_id.h"
@@ -143,20 +145,34 @@ WebContents* AddRestoredTab(
       from_last_session, last_active_time, session_storage_namespace,
       user_agent_override, initially_hidden, from_session_restore);
 
+  TabStripModel* const tab_strip_model = browser->tab_strip_model();
+
   int add_types = select ? TabStripModel::ADD_ACTIVE : TabStripModel::ADD_NONE;
   if (pin) {
-    tab_index = std::min(
-        tab_index, browser->tab_strip_model()->IndexOfFirstNonPinnedTab());
+    tab_index =
+        std::min(tab_index, tab_strip_model->IndexOfFirstNonPinnedTab());
     add_types |= TabStripModel::ADD_PINNED;
   }
 
+  const base::Optional<tab_groups::TabGroupId> surrounding_group =
+      tab_strip_model->GetSurroundingTabGroup(tab_index);
+
+  // If inserting at |tab_index| would put the tab within a different
+  // group, adjust the index to put it outside.
+  if (surrounding_group && surrounding_group != group) {
+    const int last_tab_in_group = tab_strip_model->group_model()
+                                      ->GetTabGroup(*surrounding_group)
+                                      ->ListTabs()
+                                      .back();
+    tab_index = last_tab_in_group + 1;
+  }
+
   WebContents* raw_web_contents = web_contents.get();
-  const int actual_index = browser->tab_strip_model()->InsertWebContentsAt(
+  const int actual_index = tab_strip_model->InsertWebContentsAt(
       tab_index, std::move(web_contents), add_types);
 
   if (group.has_value()) {
-    browser->tab_strip_model()->AddToGroupForRestore({actual_index},
-                                                     group.value());
+    tab_strip_model->AddToGroupForRestore({actual_index}, group.value());
   }
 
   if (initially_hidden) {

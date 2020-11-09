@@ -362,6 +362,13 @@ class TabStripModel : public TabGroupController {
   base::Optional<tab_groups::TabGroupId> GetTabGroupForTab(
       int index) const override;
 
+  // If a tab inserted at |index| would be within a tab group, return that
+  // group's ID. Otherwise, return nullopt. If |index| points to the first tab
+  // in a group, it will return nullopt since a new tab would be either between
+  // two different groups or just after a non-grouped tab.
+  base::Optional<tab_groups::TabGroupId> GetSurroundingTabGroup(
+      int index) const;
+
   // Returns the index of the first tab that is not a pinned tab. This returns
   // |count()| if all of the tabs are pinned tabs, and 0 if none of the tabs are
   // pinned tabs.

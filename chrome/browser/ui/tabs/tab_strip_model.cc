@@ -850,6 +850,24 @@ base::Optional<tab_groups::TabGroupId> TabStripModel::GetTabGroupForTab(
   return ContainsIndex(index) ? contents_data_[index]->group() : base::nullopt;
 }
 
+base::Optional<tab_groups::TabGroupId> TabStripModel::GetSurroundingTabGroup(
+    int index) const {
+  if (!ContainsIndex(index - 1) || !ContainsIndex(index))
+    return base::nullopt;
+
+  // If the tab before is not in a group, a tab inserted at |index|
+  // wouldn't be surrounded by one group.
+  base::Optional<tab_groups::TabGroupId> group = GetTabGroupForTab(index - 1);
+  if (!group)
+    return base::nullopt;
+
+  // If the tab after is in a different (or no) group, a new tab at
+  // |index| isn't surrounded.
+  if (group != GetTabGroupForTab(index))
+    return base::nullopt;
+  return group;
+}
+
 int TabStripModel::IndexOfFirstNonPinnedTab() const {
   for (size_t i = 0; i < contents_data_.size(); ++i) {
     if (!IsTabPinned(static_cast<int>(i)))

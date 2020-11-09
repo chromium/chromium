@@ -4123,6 +4123,23 @@ TEST_F(TabStripModelTest, MoveTabsToNewWindow) {
   strip.CloseAllTabs();
 }
 
+TEST_F(TabStripModelTest, SurroundingGroupAtIndex) {
+  TestTabStripModelDelegate delegate;
+  TabStripModel strip(&delegate, profile());
+  PrepareTabs(&strip, 4);
+
+  auto group1 = strip.AddToNewGroup({1, 2});
+  strip.AddToNewGroup({3});
+
+  EXPECT_EQ(base::nullopt, strip.GetSurroundingTabGroup(0));
+  EXPECT_EQ(base::nullopt, strip.GetSurroundingTabGroup(1));
+  EXPECT_EQ(group1, strip.GetSurroundingTabGroup(2));
+  EXPECT_EQ(base::nullopt, strip.GetSurroundingTabGroup(3));
+  EXPECT_EQ(base::nullopt, strip.GetSurroundingTabGroup(4));
+
+  strip.CloseAllTabs();
+}
+
 class TabStripModelTestWithReadLaterEnabled : public BrowserWithTestWindowTest {
  public:
   TabStripModelTestWithReadLaterEnabled() {

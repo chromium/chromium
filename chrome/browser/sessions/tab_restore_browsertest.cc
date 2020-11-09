@@ -1168,6 +1168,34 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTestWithTabGroupsEnabled,
             *restored_group_model->GetTabGroup(group2)->visual_data());
 }
 
+// Ensure a tab is not restored between tabs of another group.
+// Regression test for https://crbug.com/1109368.
+IN_PROC_BROWSER_TEST_F(TabRestoreTestWithTabGroupsEnabled,
+                       DoesNotRestoreIntoOtherGroup) {
+  TabStripModel* const tabstrip = browser()->tab_strip_model();
+
+  tabstrip->AddToNewGroup({0});
+  const tab_groups::TabGroupId group1 = tabstrip->GetTabGroupForTab(0).value();
+
+  AddSomeTabs(browser(), 1);
+  tabstrip->AddToNewGroup({1});
+  const tab_groups::TabGroupId group2 = tabstrip->GetTabGroupForTab(1).value();
+
+  CloseTab(1);
+
+  ASSERT_EQ(1, tabstrip->count());
+  EXPECT_EQ(group1, tabstrip->GetTabGroupForTab(0));
+
+  AddSomeTabs(browser(), 1);
+  tabstrip->AddToExistingGroup({1}, group1);
+
+  // The restored tab of |group2| should be placed to the right of |group1|.
+  ASSERT_NO_FATAL_FAILURE(RestoreTab(0, 2));
+  EXPECT_EQ(group1, tabstrip->GetTabGroupForTab(0));
+  EXPECT_EQ(group1, tabstrip->GetTabGroupForTab(1));
+  EXPECT_EQ(group2, tabstrip->GetTabGroupForTab(2));
+}
+
 // Ensure tab groups aren't restored if |features::kTabGroups| is disabled.
 // Regression test for crbug.com/983962.
 //
