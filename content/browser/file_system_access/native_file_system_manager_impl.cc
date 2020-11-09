@@ -310,8 +310,28 @@ void NativeFileSystemManagerImpl::ChooseEntries(
     return;
   }
 
+  // TODO(https://crbug.com/1142824): Check if path exists.
+  base::FilePath default_directory;
+  if (permission_context_) {
+    default_directory =
+        permission_context_->GetLastPickedDirectory(context.origin);
+    if (default_directory.empty()) {
+      default_directory = permission_context_->GetDefaultDirectory();
+    }
+  }
+
+  // TODO(https://crbug.com/1019408): Append suggested filename to the default
+  // directory.
   FileSystemChooser::Options options(type, std::move(accepts),
-                                     include_accepts_all);
+                                     include_accepts_all, default_directory);
+
+  if (auto_file_picker_result_for_test_) {
+    DidChooseEntries(context, options, std::move(callback),
+                     native_file_system_error::Ok(),
+                     {*auto_file_picker_result_for_test_});
+    return;
+  }
+
   ShowFilePickerOnUIThread(
       context.origin, context.frame_id, options,
       base::BindOnce(&NativeFileSystemManagerImpl::DidChooseEntries,
@@ -886,6 +906,16 @@ void NativeFileSystemManagerImpl::DidVerifySensitiveDirectoryAccess(
                        weak_factory_.GetWeakPtr(), binding_context, options,
                        std::move(callback)));
     return;
+  }
+
+  if (permission_context_ && !entries.empty()) {
+    auto picked_directory =
+        options.type() ==
+                blink::mojom::ChooseFileSystemEntryType::kOpenDirectory
+            ? entries.front().path
+            : entries.front().path.DirName();
+    permission_context_->SetLastPickedDirectory(binding_context.origin,
+                                                picked_directory);
   }
 
   if (options.type() ==

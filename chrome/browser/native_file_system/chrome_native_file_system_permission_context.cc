@@ -9,9 +9,11 @@
 
 #include "base/base_paths.h"
 #include "base/bind.h"
+#include "base/files/file_path.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/path_service.h"
 #include "base/task/thread_pool.h"
+#include "base/util/values/values_util.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
@@ -33,6 +35,9 @@
 namespace {
 
 using HandleType = content::NativeFileSystemPermissionContext::HandleType;
+
+// Dictionary key for the FILE_SYSTEM_LAST_PICKED_DIRECTORY website setting.
+const char kLastPickedDirectoryKey[] = "default-path";
 
 void ShowNativeFileSystemRestrictedDirectoryDialogOnUIThread(
     content::GlobalFrameRoutingId frame_id,
@@ -431,4 +436,35 @@ bool ChromeNativeFileSystemPermissionContext::OriginHasWriteAccess(
     const url::Origin& origin) {
   NOTREACHED();
   return false;
+}
+
+void ChromeNativeFileSystemPermissionContext::SetLastPickedDirectory(
+    const url::Origin& origin,
+    const base::FilePath& path) {
+  base::Value dict(base::Value::Type::DICTIONARY);
+  dict.SetKey(kLastPickedDirectoryKey, util::FilePathToValue(path));
+
+  content_settings_->SetWebsiteSettingDefaultScope(
+      origin.GetURL(), origin.GetURL(),
+      ContentSettingsType::FILE_SYSTEM_LAST_PICKED_DIRECTORY,
+      base::Value::ToUniquePtrValue(std::move(dict)));
+}
+
+base::FilePath ChromeNativeFileSystemPermissionContext::GetLastPickedDirectory(
+    const url::Origin& origin) {
+  std::unique_ptr<base::Value> value = content_settings()->GetWebsiteSetting(
+      origin.GetURL(), origin.GetURL(),
+      ContentSettingsType::FILE_SYSTEM_LAST_PICKED_DIRECTORY, /*info=*/nullptr);
+  if (!value)
+    return base::FilePath();
+
+  return util::ValueToFilePath(value->FindKey(kLastPickedDirectoryKey))
+      .value_or(base::FilePath());
+}
+
+base::FilePath ChromeNativeFileSystemPermissionContext::GetDefaultDirectory() {
+  base::FilePath default_path;
+  // On failure, |default_path| will remain empty.
+  base::PathService::Get(chrome::DIR_USER_DOCUMENTS, &default_path);
+  return default_path;
 }

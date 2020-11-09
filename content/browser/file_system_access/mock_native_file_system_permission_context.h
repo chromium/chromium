@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_FILE_SYSTEM_ACCESS_MOCK_NATIVE_FILE_SYSTEM_PERMISSION_CONTEXT_H_
 #define CONTENT_BROWSER_FILE_SYSTEM_ACCESS_MOCK_NATIVE_FILE_SYSTEM_PERMISSION_CONTEXT_H_
 
+#include "base/files/file_path.h"
 #include "content/public/browser/native_file_system_permission_context.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -57,6 +58,12 @@ class MockNativeFileSystemPermissionContext
 
   MOCK_METHOD1(CanObtainReadPermission, bool(const url::Origin& origin));
   MOCK_METHOD1(CanObtainWritePermission, bool(const url::Origin& origin));
+
+  MOCK_METHOD2(SetLastPickedDirectory,
+               void(const url::Origin& origin, const base::FilePath& path));
+  MOCK_METHOD1(GetLastPickedDirectory,
+               base::FilePath(const url::Origin& origin));
+  MOCK_METHOD0(GetDefaultDirectory, base::FilePath());
 };
 
 }  // namespace content

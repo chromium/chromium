@@ -33,7 +33,7 @@ class FileSystemChooserTest : public testing::Test {
         /*web_contents=*/nullptr,
         FileSystemChooser::Options(
             blink::mojom::ChooseFileSystemEntryType::kOpenFile,
-            std::move(accepts), include_accepts_all),
+            std::move(accepts), include_accepts_all, base::FilePath()),
         base::BindLambdaForTesting(
             [&](blink::mojom::NativeFileSystemErrorPtr,
                 std::vector<FileSystemChooser::ResultEntry> entries) {

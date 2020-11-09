@@ -229,6 +229,10 @@ enum class ContentSettingsType : int32_t {
   // types).
   PERMISSION_AUTOREVOCATION_DATA,
 
+  // Stores per-origin state of the most recently selected directory for the use
+  // by the File System Access API.
+  FILE_SYSTEM_LAST_PICKED_DIRECTORY,
+
   NUM_TYPES,
 };
 

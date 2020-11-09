@@ -133,10 +133,12 @@ ui::SelectFileDialog::FileTypeInfo ConvertAcceptsToFileTypeInfo(
 FileSystemChooser::Options::Options(
     blink::mojom::ChooseFileSystemEntryType type,
     std::vector<blink::mojom::ChooseFileSystemEntryAcceptsOptionPtr> accepts,
-    bool include_accepts_all)
+    bool include_accepts_all,
+    base::FilePath default_path)
     : type_(type),
       file_types_(ConvertAcceptsToFileTypeInfo(accepts, include_accepts_all)),
-      default_file_type_index_(file_types_.extensions.empty() ? 0 : 1) {}
+      default_file_type_index_(file_types_.extensions.empty() ? 0 : 1),
+      default_path_(std::move(default_path)) {}
 
 // static
 void FileSystemChooser::CreateAndShow(
@@ -179,9 +181,8 @@ void FileSystemChooser::CreateAndShow(
   DCHECK_NE(dialog_type, ui::SelectFileDialog::SELECT_NONE);
 
   listener->dialog_->SelectFile(
-      dialog_type, /*title=*/base::string16(),
-      /*default_path=*/base::FilePath(), &options.file_type_info(),
-      options.default_file_type_index(),
+      dialog_type, /*title=*/base::string16(), options.default_path(),
+      &options.file_type_info(), options.default_file_type_index(),
       /*default_extension=*/base::FilePath::StringType(),
       web_contents ? web_contents->GetTopLevelNativeWindow() : nullptr,
       /*params=*/nullptr);

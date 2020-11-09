@@ -116,6 +116,14 @@ class NativeFileSystemPermissionContext {
   // shown if there is no need to ask for it.
   virtual bool CanObtainWritePermission(const url::Origin& origin) = 0;
 
+  // Store the directory recently chosen using a file picker.
+  virtual void SetLastPickedDirectory(const url::Origin& origin,
+                                      const base::FilePath& path) = 0;
+  // Returns the directory recently chosen using a file picker.
+  virtual base::FilePath GetLastPickedDirectory(const url::Origin& origin) = 0;
+  // Return the default directory used by the File System Access API.
+  virtual base::FilePath GetDefaultDirectory() = 0;
+
  protected:
   virtual ~NativeFileSystemPermissionContext() = default;
 };

@@ -226,6 +226,11 @@ void WebsiteSettingsRegistry::Init() {
            WebsiteSettingsInfo::SINGLE_ORIGIN_ONLY_SCOPE,
            DESKTOP | PLATFORM_ANDROID,
            WebsiteSettingsInfo::DONT_INHERIT_IN_INCOGNITO);
+  Register(ContentSettingsType::FILE_SYSTEM_LAST_PICKED_DIRECTORY,
+           "file-system-last-picked-directory", nullptr,
+           WebsiteSettingsInfo::UNSYNCABLE, WebsiteSettingsInfo::NOT_LOSSY,
+           WebsiteSettingsInfo::SINGLE_ORIGIN_ONLY_SCOPE, DESKTOP,
+           WebsiteSettingsInfo::DONT_INHERIT_IN_INCOGNITO);
 }
 
 }  // namespace content_settings
