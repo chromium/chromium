@@ -260,8 +260,8 @@ void GotVideoFrame(GotVideoFrameOutput* metrics_output,
                    bool continuous) {
   ++metrics_output->counter;
   cast_receiver->RequestDecodedVideoFrame(
-      base::Bind(&GotVideoFrame, metrics_output, yuv_output,
-                 video_frame_tracker, cast_receiver));
+      base::BindRepeating(&GotVideoFrame, metrics_output, yuv_output,
+                          video_frame_tracker, cast_receiver));
 
   // If |video_frame_tracker| is available that means we're computing
   // quality metrices.
@@ -284,7 +284,7 @@ void GotAudioFrame(int* counter,
                    bool is_continuous) {
   ++*counter;
   cast_receiver->RequestDecodedAudioFrame(
-      base::Bind(&GotAudioFrame, counter, cast_receiver));
+      base::BindRepeating(&GotAudioFrame, counter, cast_receiver));
 }
 
 // Run simulation once.
@@ -426,16 +426,16 @@ void RunSimulation(const base::FilePath& source_path,
   // Start receiver.
   int audio_frame_count = 0;
   cast_receiver->RequestDecodedVideoFrame(
-      base::Bind(&GotVideoFrame, &metrics_output, yuv_output_path,
-                 video_frame_tracker.get(), cast_receiver.get()));
-  cast_receiver->RequestDecodedAudioFrame(
-      base::Bind(&GotAudioFrame, &audio_frame_count, cast_receiver.get()));
+      base::BindRepeating(&GotVideoFrame, &metrics_output, yuv_output_path,
+                          video_frame_tracker.get(), cast_receiver.get()));
+  cast_receiver->RequestDecodedAudioFrame(base::BindRepeating(
+      &GotAudioFrame, &audio_frame_count, cast_receiver.get()));
 
   // Initializing audio and video senders.
   cast_sender->InitializeAudio(audio_sender_config,
                                base::BindOnce(&LogAudioOperationalStatus));
   cast_sender->InitializeVideo(media_source.get_video_config(),
-                               base::Bind(&LogVideoOperationalStatus),
+                               base::BindRepeating(&LogVideoOperationalStatus),
                                CreateDefaultVideoEncodeAcceleratorCallback(),
                                CreateDefaultVideoEncodeMemoryCallback());
   task_runner->RunTasks();

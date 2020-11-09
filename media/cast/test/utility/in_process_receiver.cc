@@ -107,8 +107,8 @@ void InProcessReceiver::StartOnMainThread() {
       std::make_unique<UdpTransportImpl>(
           cast_environment_->GetTaskRunner(CastEnvironment::MAIN),
           local_end_point_, remote_end_point_,
-          base::Bind(&InProcessReceiver::UpdateCastTransportStatus,
-                     base::Unretained(this))),
+          base::BindRepeating(&InProcessReceiver::UpdateCastTransportStatus,
+                              base::Unretained(this))),
       cast_environment_->GetTaskRunner(CastEnvironment::MAIN));
 
   cast_receiver_ = CastReceiver::Create(
@@ -138,14 +138,13 @@ void InProcessReceiver::GotVideoFrame(scoped_refptr<VideoFrame> video_frame,
 
 void InProcessReceiver::PullNextAudioFrame() {
   DCHECK(cast_environment_->CurrentlyOn(CastEnvironment::MAIN));
-  cast_receiver_->RequestDecodedAudioFrame(
-      base::Bind(&InProcessReceiver::GotAudioFrame,
-                 weak_factory_.GetWeakPtr()));
+  cast_receiver_->RequestDecodedAudioFrame(base::BindRepeating(
+      &InProcessReceiver::GotAudioFrame, weak_factory_.GetWeakPtr()));
 }
 
 void InProcessReceiver::PullNextVideoFrame() {
   DCHECK(cast_environment_->CurrentlyOn(CastEnvironment::MAIN));
-  cast_receiver_->RequestDecodedVideoFrame(base::Bind(
+  cast_receiver_->RequestDecodedVideoFrame(base::BindRepeating(
       &InProcessReceiver::GotVideoFrame, weak_factory_.GetWeakPtr()));
 }
 

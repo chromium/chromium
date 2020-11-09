@@ -145,8 +145,9 @@ void CastReceiverImpl::DecodeEncodedVideoFrame(
   const base::TimeTicks playout_time = encoded_frame->reference_time;
   video_decoder_->DecodeFrame(
       std::move(encoded_frame),
-      base::Bind(&CastReceiverImpl::EmitDecodedVideoFrame, cast_environment_,
-                 callback, frame_id, rtp_timestamp, playout_time));
+      base::BindRepeating(&CastReceiverImpl::EmitDecodedVideoFrame,
+                          cast_environment_, callback, frame_id, rtp_timestamp,
+                          playout_time));
 }
 
 // static

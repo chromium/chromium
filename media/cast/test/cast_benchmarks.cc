@@ -305,7 +305,7 @@ class RunOneBenchmark {
                                 bool continuous) {
     video_ticks_.push_back(
         std::make_pair(testing_clock_receiver_.NowTicks(), render_time));
-    cast_receiver_->RequestDecodedVideoFrame(base::Bind(
+    cast_receiver_->RequestDecodedVideoFrame(base::BindRepeating(
         &RunOneBenchmark::BasicPlayerGotVideoFrame, base::Unretained(this)));
   }
 
@@ -314,14 +314,14 @@ class RunOneBenchmark {
                                 bool is_continuous) {
     audio_ticks_.push_back(
         std::make_pair(testing_clock_receiver_.NowTicks(), playout_time));
-    cast_receiver_->RequestDecodedAudioFrame(base::Bind(
+    cast_receiver_->RequestDecodedAudioFrame(base::BindRepeating(
         &RunOneBenchmark::BasicPlayerGotAudioFrame, base::Unretained(this)));
   }
 
   void StartBasicPlayer() {
-    cast_receiver_->RequestDecodedVideoFrame(base::Bind(
+    cast_receiver_->RequestDecodedVideoFrame(base::BindRepeating(
         &RunOneBenchmark::BasicPlayerGotVideoFrame, base::Unretained(this)));
-    cast_receiver_->RequestDecodedAudioFrame(base::Bind(
+    cast_receiver_->RequestDecodedAudioFrame(base::BindRepeating(
         &RunOneBenchmark::BasicPlayerGotAudioFrame, base::Unretained(this)));
   }
 
@@ -495,7 +495,7 @@ void RunOneBenchmark::Create(const MeasuringPoint& p) {
   cast_sender_->InitializeAudio(audio_sender_config_,
                                 base::BindOnce(&ExpectAudioSuccess));
   cast_sender_->InitializeVideo(video_sender_config_,
-                                base::Bind(&ExpectVideoSuccess),
+                                base::BindRepeating(&ExpectVideoSuccess),
                                 CreateDefaultVideoEncodeAcceleratorCallback(),
                                 CreateDefaultVideoEncodeMemoryCallback());
 

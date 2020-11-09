@@ -130,9 +130,9 @@ class EndToEndFrameChecker
     bool decoder_init_result;
     decoder_.Initialize(
         config, false, nullptr,
-        base::Bind(&SaveDecoderInitResult, &decoder_init_result),
-        base::Bind(&EndToEndFrameChecker::CompareFrameWithExpected,
-                   base::Unretained(this)),
+        base::BindOnce(&SaveDecoderInitResult, &decoder_init_result),
+        base::BindRepeating(&EndToEndFrameChecker::CompareFrameWithExpected,
+                            base::Unretained(this)),
         base::NullCallback());
     base::RunLoop().RunUntilIdle();
     EXPECT_TRUE(decoder_init_result);
@@ -145,8 +145,8 @@ class EndToEndFrameChecker
   void EncodeDone(std::unique_ptr<SenderEncodedFrame> encoded_frame) {
     auto buffer = DecoderBuffer::CopyFrom(encoded_frame->bytes(),
                                           encoded_frame->data.size());
-    decoder_.Decode(buffer, base::Bind(&EndToEndFrameChecker::DecodeDone,
-                                       base::Unretained(this)));
+    decoder_.Decode(buffer, base::BindOnce(&EndToEndFrameChecker::DecodeDone,
+                                           base::Unretained(this)));
   }
 
   void CompareFrameWithExpected(scoped_refptr<VideoFrame> frame) {
@@ -220,7 +220,7 @@ class H264VideoToolboxEncoderTest : public ::testing::Test {
         task_environment_.GetMainThreadTaskRunner());
     encoder_ = std::make_unique<H264VideoToolboxEncoder>(
         cast_environment_, video_sender_config_,
-        base::Bind(&SaveOperationalStatus, &operational_status_));
+        base::BindRepeating(&SaveOperationalStatus, &operational_status_));
     base::RunLoop().RunUntilIdle();
     EXPECT_EQ(STATUS_INITIALIZED, operational_status_);
   }

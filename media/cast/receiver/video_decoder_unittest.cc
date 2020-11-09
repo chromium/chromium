@@ -108,9 +108,9 @@ class VideoDecoderTest : public ::testing::TestWithParam<Codec> {
         base::BindOnce(&VideoDecoder::DecodeFrame,
                        base::Unretained(video_decoder_.get()),
                        std::move(encoded_frame),
-                       base::Bind(&VideoDecoderTest::OnDecodedFrame,
-                                  base::Unretained(this), video_frame,
-                                  num_dropped_frames == 0)));
+                       base::BindRepeating(&VideoDecoderTest::OnDecodedFrame,
+                                           base::Unretained(this), video_frame,
+                                           num_dropped_frames == 0)));
   }
 
   // Blocks the caller until all video that has been feed in has been decoded.

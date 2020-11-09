@@ -72,8 +72,8 @@ class VideoEncoderTest
     video_config_.video_codec_params.max_number_of_video_buffers_used = 1;
     video_encoder_ = VideoEncoder::Create(
         cast_environment_, video_config_,
-        base::Bind(&VideoEncoderTest::OnOperationalStatusChange,
-                   base::Unretained(this)),
+        base::BindRepeating(&VideoEncoderTest::OnOperationalStatusChange,
+                            base::Unretained(this)),
         base::Bind(
             &FakeVideoEncodeAcceleratorFactory::CreateVideoEncodeAccelerator,
             base::Unretained(vea_factory_.get())),

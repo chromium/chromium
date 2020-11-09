@@ -120,7 +120,7 @@ class PeerVideoSender : public VideoSender {
                     create_vea_cb,
                     create_video_encode_mem_cb,
                     transport_sender,
-                    base::Bind(&IgnorePlayoutDelayChanges)) {}
+                    base::BindRepeating(&IgnorePlayoutDelayChanges)) {}
   using VideoSender::OnReceivedCastFeedback;
   using VideoSender::OnReceivedPli;
 };
@@ -180,7 +180,7 @@ class VideoSenderTest : public ::testing::Test {
       vea_factory_.SetInitializationWillSucceed(expect_init_success);
       video_sender_.reset(new PeerVideoSender(
           cast_environment_, video_config,
-          base::Bind(&SaveOperationalStatus, &operational_status_),
+          base::BindRepeating(&SaveOperationalStatus, &operational_status_),
           base::Bind(
               &FakeVideoEncodeAcceleratorFactory::CreateVideoEncodeAccelerator,
               base::Unretained(&vea_factory_)),
@@ -190,7 +190,7 @@ class VideoSenderTest : public ::testing::Test {
     } else {
       video_sender_.reset(new PeerVideoSender(
           cast_environment_, video_config,
-          base::Bind(&SaveOperationalStatus, &operational_status_),
+          base::BindRepeating(&SaveOperationalStatus, &operational_status_),
           CreateDefaultVideoEncodeAcceleratorCallback(),
           CreateDefaultVideoEncodeMemoryCallback(), transport_sender_.get()));
     }

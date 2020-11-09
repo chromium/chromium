@@ -77,8 +77,9 @@ class QueueManager {
   QueueManager(int input_fd, int output_fd, std::unique_ptr<PacketPipe> pipe)
       : input_fd_(input_fd), packet_pipe_(std::move(pipe)) {
     read_socket_watch_controller_ = base::FileDescriptorWatcher::WatchReadable(
-        input_fd_, base::Bind(&QueueManager::OnFileCanReadWithoutBlocking,
-                              base::Unretained(this)));
+        input_fd_,
+        base::BindRepeating(&QueueManager::OnFileCanReadWithoutBlocking,
+                            base::Unretained(this)));
 
     std::unique_ptr<PacketPipe> tmp(new SendToFDPipe(output_fd));
     if (packet_pipe_) {

@@ -219,7 +219,7 @@ class ExternalVideoEncoder::VEAClientImpl final
       }
       frame->BackWithSharedMemory(&input_buffer->first);
 
-      frame->AddDestructionObserver(media::BindToCurrentLoop(base::Bind(
+      frame->AddDestructionObserver(media::BindToCurrentLoop(base::BindOnce(
           &ExternalVideoEncoder::VEAClientImpl::ReturnInputBufferToPool, this,
           index)));
       free_input_buffer_index_.pop_back();
@@ -754,7 +754,7 @@ void ExternalVideoEncoder::OnCreateVideoEncodeAccelerator(
 
   // Create a callback that wraps the StatusChangeCallback. It monitors when a
   // fatal error occurs and schedules destruction of the VEAClientImpl.
-  StatusChangeCallback wrapped_status_change_cb = base::Bind(
+  StatusChangeCallback wrapped_status_change_cb = base::BindRepeating(
       [](base::WeakPtr<ExternalVideoEncoder> self,
          const StatusChangeCallback& status_change_cb,
          OperationalStatus status) {

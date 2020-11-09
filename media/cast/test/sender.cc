@@ -221,7 +221,7 @@ int main(int argc, char** argv) {
           std::make_unique<TransportClient>(cast_environment->logger()),
           std::make_unique<media::cast::UdpTransportImpl>(
               io_task_executor.task_runner(), net::IPEndPoint(),
-              remote_endpoint, base::Bind(&UpdateCastTransportStatus)),
+              remote_endpoint, base::BindRepeating(&UpdateCastTransportStatus)),
           io_task_executor.task_runner());
 
   // Set up event subscribers.
@@ -290,7 +290,7 @@ int main(int argc, char** argv) {
       base::BindOnce(&media::cast::CastSender::InitializeVideo,
                      base::Unretained(cast_sender.get()),
                      fake_media_source->get_video_config(),
-                     base::Bind(&QuitLoopOnInitializationResult),
+                     base::BindRepeating(&QuitLoopOnInitializationResult),
                      media::cast::CreateDefaultVideoEncodeAcceleratorCallback(),
                      media::cast::CreateDefaultVideoEncodeMemoryCallback()));
   base::RunLoop().Run();  // Wait for video initialization.

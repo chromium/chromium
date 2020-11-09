@@ -271,8 +271,9 @@ void CastTransportImpl::ResendPackets(
 }
 
 PacketReceiverCallback CastTransportImpl::PacketReceiverForTesting() {
-  return base::Bind(base::IgnoreResult(&CastTransportImpl::OnReceivedPacket),
-                    weak_factory_.GetWeakPtr());
+  return base::BindRepeating(
+      base::IgnoreResult(&CastTransportImpl::OnReceivedPacket),
+      weak_factory_.GetWeakPtr());
 }
 
 void CastTransportImpl::SendRawEvents() {

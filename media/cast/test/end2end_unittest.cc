@@ -539,10 +539,10 @@ class End2EndTest : public ::testing::Test {
 
   void RequestAudioFrames(int count, bool with_check) {
     for (int i = 0; i < count; ++i) {
-      cast_receiver_->RequestDecodedAudioFrame(
-          base::Bind(with_check ? &TestReceiverAudioCallback::CheckAudioFrame
-                                : &TestReceiverAudioCallback::IgnoreAudioFrame,
-                     test_receiver_audio_callback_));
+      cast_receiver_->RequestDecodedAudioFrame(base::BindRepeating(
+          with_check ? &TestReceiverAudioCallback::CheckAudioFrame
+                     : &TestReceiverAudioCallback::IgnoreAudioFrame,
+          test_receiver_audio_callback_));
     }
   }
 
@@ -622,10 +622,10 @@ class End2EndTest : public ::testing::Test {
 
       RequestAudioFrames(1, verify_audio_data);
       if (send_and_receive_a_video_frame) {
-        cast_receiver_->RequestDecodedVideoFrame(
-            base::Bind(&TestReceiverVideoCallback::CheckVideoFrame,
-                       test_receiver_video_callback_,
-                       video_sender_config_.codec != CODEC_VIDEO_FAKE));
+        cast_receiver_->RequestDecodedVideoFrame(base::BindRepeating(
+            &TestReceiverVideoCallback::CheckVideoFrame,
+            test_receiver_video_callback_,
+            video_sender_config_.codec != CODEC_VIDEO_FAKE));
       }
     }
 
@@ -792,7 +792,7 @@ class End2EndTest : public ::testing::Test {
 
     video_ticks_.push_back(
         std::make_pair(testing_clock_receiver_.NowTicks(), playout_time));
-    cast_receiver_->RequestDecodedVideoFrame(base::Bind(
+    cast_receiver_->RequestDecodedVideoFrame(base::BindRepeating(
         &End2EndTest::BasicPlayerGotVideoFrame, base::Unretained(this)));
   }
 
@@ -807,14 +807,14 @@ class End2EndTest : public ::testing::Test {
 
     audio_ticks_.push_back(
         std::make_pair(testing_clock_receiver_.NowTicks(), playout_time));
-    cast_receiver_->RequestDecodedAudioFrame(base::Bind(
+    cast_receiver_->RequestDecodedAudioFrame(base::BindRepeating(
         &End2EndTest::BasicPlayerGotAudioFrame, base::Unretained(this)));
   }
 
   void StartBasicPlayer() {
-    cast_receiver_->RequestDecodedVideoFrame(base::Bind(
+    cast_receiver_->RequestDecodedVideoFrame(base::BindRepeating(
         &End2EndTest::BasicPlayerGotVideoFrame, base::Unretained(this)));
-    cast_receiver_->RequestDecodedAudioFrame(base::Bind(
+    cast_receiver_->RequestDecodedAudioFrame(base::BindRepeating(
         &End2EndTest::BasicPlayerGotAudioFrame, base::Unretained(this)));
   }
 
@@ -933,10 +933,11 @@ void End2EndTest::Create() {
   // Initializing audio and video senders.
   cast_sender_->InitializeAudio(
       audio_sender_config_, base::BindOnce(&ExpectSuccessOperationalStatus));
-  cast_sender_->InitializeVideo(video_sender_config_,
-                                base::Bind(&ExpectSuccessOperationalStatus),
-                                CreateDefaultVideoEncodeAcceleratorCallback(),
-                                CreateDefaultVideoEncodeMemoryCallback());
+  cast_sender_->InitializeVideo(
+      video_sender_config_,
+      base::BindRepeating(&ExpectSuccessOperationalStatus),
+      CreateDefaultVideoEncodeAcceleratorCallback(),
+      CreateDefaultVideoEncodeMemoryCallback());
   task_runner_->RunTasks();
 
   receiver_to_sender_->SetPacketReceiver(
@@ -1055,9 +1056,9 @@ TEST_F(End2EndTest, DISABLED_StartSenderBeforeReceiver) {
     num_audio_frames_requested += num_audio_frames;
 
     cast_receiver_->RequestDecodedVideoFrame(
-        base::Bind(&TestReceiverVideoCallback::CheckVideoFrame,
-                   test_receiver_video_callback_,
-                   video_sender_config_.codec != CODEC_VIDEO_FAKE));
+        base::BindRepeating(&TestReceiverVideoCallback::CheckVideoFrame,
+                            test_receiver_video_callback_,
+                            video_sender_config_.codec != CODEC_VIDEO_FAKE));
 
     RunTasks(kFrameTimerMs - kAudioFrameDurationMs);
     audio_diff += kFrameTimerMs;
