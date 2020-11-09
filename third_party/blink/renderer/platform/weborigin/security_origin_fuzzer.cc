@@ -33,7 +33,9 @@ void RoundTripFromContent(const GURL& input) {
   url::Origin origin_2 = web_security_origin_2;
 
   // The notion of unspecified port and port zero doesn't match in between
-  // url::Origin and blink::SecurityOrigin. This cause some conversion problems.
+  // url::Origin and blink::SecurityOrigin. This cause some conversion problems
+  // when the scheme is a standard one and the unspecified port can be converted
+  // to the default one.
   //                       ┌──────────────────┬───────────┐
   //                       │ port unspecified │ port zero │
   // ┌─────────────────────┼──────────────────┼───────────┤
@@ -42,7 +44,9 @@ void RoundTripFromContent(const GURL& input) {
   // │blink::SecurityOrigin│ 0                │ 0         │
   // └─────────────────────┴──────────────────┴───────────┘
   // TODO(https://crbug.com/1136678): Remove this, once fixed.
-  if (!origin_1.opaque() && origin_1.port() == 0) {
+  if (!origin_1.opaque() && origin_1.port() == 0 &&
+      url::DefaultPortForScheme(origin_1.scheme().data(),
+                                origin_1.scheme().size()) != -1) {
     CHECK_NE(origin_1, origin_2);
     CHECK_EQ(url::DefaultPortForScheme(origin_2.scheme().data(),
                                        origin_2.scheme().size()),
