@@ -25,7 +25,6 @@ import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
  */
 public class FeedStreamWrapper implements FeedSurfaceCoordinator.StreamWrapper {
     private @Nullable FeedImageLoader mImageLoader;
-    private boolean mPlaceholderShown;
     private Stream mStream;
 
     public FeedStreamWrapper() {}
@@ -46,7 +45,6 @@ public class FeedStreamWrapper implements FeedSurfaceCoordinator.StreamWrapper {
             SnackbarManager snackbarManager, NativePageNavigationDelegate pageNavigationDelegate,
             UiConfig uiConfig, boolean placeholderShown,
             BottomSheetController bottomSheetController, FeedV1ActionOptions v1ActionOptions) {
-        mPlaceholderShown = placeholderShown;
         FeedAppLifecycle appLifecycle = FeedProcessScopeFactory.getFeedAppLifecycle();
         appLifecycle.onNTPOpened();
 
@@ -63,7 +61,7 @@ public class FeedStreamWrapper implements FeedSurfaceCoordinator.StreamWrapper {
 
     @Override
     public boolean isPlaceholderShown() {
-        return mPlaceholderShown;
+        return mStream.isPlaceholderShown();
     }
 
     @Override

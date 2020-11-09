@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.feed.v2;
 
+import android.animation.ObjectAnimator;
+import android.animation.PropertyValuesHolder;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Handler;
@@ -56,6 +58,7 @@ import org.chromium.chrome.browser.xsurface.SurfaceScope;
 import org.chromium.chrome.browser.xsurface.SurfaceScopeDependencyProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.widget.animation.Interpolators;
 import org.chromium.components.feed.proto.FeedUiProto.SharedState;
 import org.chromium.components.feed.proto.FeedUiProto.Slice;
 import org.chromium.components.feed.proto.FeedUiProto.StreamUpdate;
@@ -126,6 +129,7 @@ public class FeedStreamSurface implements SurfaceActionsHandler, FeedActionsHand
     private String mBottomSheetOriginatingSliceId;
     private final int mLoadMoreTriggerLookahead;
     private boolean mIsLoadingMoreContent;
+    private boolean mIsPlaceholderShown;
 
     private static ProcessScope sXSurfaceProcessScope;
 
@@ -390,7 +394,7 @@ public class FeedStreamSurface implements SurfaceActionsHandler, FeedActionsHand
     public FeedStreamSurface(Activity activity, boolean isBackgroundDark,
             SnackbarManager snackbarManager, NativePageNavigationDelegate pageNavigationDelegate,
             BottomSheetController bottomSheetController,
-            HelpAndFeedbackLauncher helpAndFeedbackLauncher) {
+            HelpAndFeedbackLauncher helpAndFeedbackLauncher, boolean isPlaceholderShown) {
         mNativeFeedStreamSurface = FeedStreamSurfaceJni.get().init(FeedStreamSurface.this);
         mSnackbarManager = snackbarManager;
         mActivity = activity;
@@ -401,6 +405,8 @@ public class FeedStreamSurface implements SurfaceActionsHandler, FeedActionsHand
         mLoadMoreTriggerLookahead = FeedServiceBridge.getLoadMoreTriggerLookahead();
 
         mContentManager = new FeedListContentManager(this, this);
+
+        mIsPlaceholderShown = isPlaceholderShown;
 
         Context context = new ContextThemeWrapper(
                 activity, (isBackgroundDark ? R.style.Dark : R.style.Light));
@@ -547,7 +553,11 @@ public class FeedStreamSurface implements SurfaceActionsHandler, FeedActionsHand
         }
         for (SliceUpdate sliceUpdate : streamUpdate.getUpdatedSlicesList()) {
             if (sliceUpdate.hasSlice()) {
-                newContentList.add(createContentFromSlice(sliceUpdate.getSlice()));
+                FeedListContentManager.FeedContent content =
+                        createContentFromSlice(sliceUpdate.getSlice());
+                if (content != null) {
+                    newContentList.add(content);
+                }
             } else {
                 String existingSliceId = sliceUpdate.getSliceId();
                 int position = mContentManager.findContentPositionByKey(existingSliceId);
@@ -643,6 +653,10 @@ public class FeedStreamSurface implements SurfaceActionsHandler, FeedActionsHand
             return new FeedListContentManager.ExternalViewContent(
                     sliceId, slice.getXsurfaceSlice().getXsurfaceFrame().toByteArray());
         } else if (slice.hasLoadingSpinnerSlice()) {
+            // If the placeholder is shown, spinner is not needed.
+            if (mIsPlaceholderShown) {
+                return null;
+            }
             return new FeedListContentManager.NativeViewContent(sliceId, R.layout.feed_spinner);
         }
         assert slice.hasZeroStateSlice();
@@ -1022,6 +1036,29 @@ public class FeedStreamSurface implements SurfaceActionsHandler, FeedActionsHand
         FeedStreamSurfaceJni.get().reportStreamScrollStart(
                 mNativeFeedStreamSurface, FeedStreamSurface.this);
         mScrollReporter.trackScroll(dx, dy);
+    }
+
+    boolean isPlaceholderShown() {
+        return mIsPlaceholderShown;
+    }
+
+    /**
+     * Feed v2's background is set to be transparent in {@link FeedSurfaceCoordinator#createStream}
+     * if the Feed placeholder is shown. After first batch of articles are loaded, set recyclerView
+     * back to non-transparent. Since Feed v2 doesn't have fade-in animation, we add a fade-in
+     * animation for Feed background to make the transition smooth.
+     */
+    void hidePlaceholder() {
+        if (!mIsPlaceholderShown) {
+            return;
+        }
+        ObjectAnimator animator = ObjectAnimator.ofPropertyValuesHolder(
+                mRootView.getBackground(), PropertyValuesHolder.ofInt("alpha", 255));
+        animator.setTarget(mRootView.getBackground());
+        animator.setDuration(mRootView.getItemAnimator().getAddDuration())
+                .setInterpolator(Interpolators.LINEAR_INTERPOLATOR);
+        animator.start();
+        mIsPlaceholderShown = false;
     }
 
     private static Context createFeedContext(Context context) {

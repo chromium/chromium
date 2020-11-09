@@ -37,8 +37,11 @@ import android.widget.ImageView;
 
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.espresso.contrib.RecyclerViewActions;
+import androidx.test.espresso.matcher.BoundedMatcher;
 import androidx.test.filters.SmallTest;
 
+import org.hamcrest.Description;
+import org.hamcrest.Matcher;
 import org.hamcrest.core.AllOf;
 import org.junit.Assert;
 import org.junit.Rule;
@@ -701,31 +704,34 @@ public class InstantStartTest {
     @SmallTest
     @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
     @EnableFeatures({ChromeFeatureList.TAB_SWITCHER_ON_RETURN + "<Study,",
-            ChromeFeatureList.START_SURFACE_ANDROID + "<Study"})
+            ChromeFeatureList.START_SURFACE_ANDROID + "<Study", ChromeFeatureList.INTEREST_FEED_V2})
     // clang-format off
     @CommandLineFlags.Add({ChromeSwitches.DISABLE_NATIVE_INITIALIZATION,
             "force-fieldtrials=Study/Group",
             IMMEDIATE_RETURN_PARAMS + "/start_surface_variation/single"})
     public void testFeedLoading() {
         // clang-format on
-        if (!FeedV1.IS_AVAILABLE) return; // Test not yet working for FeedV2.
-
         startMainActivityFromLauncher();
         Assert.assertFalse(mActivityTestRule.getActivity().isTablet());
         Assert.assertTrue(CachedFeatureFlags.isEnabled(ChromeFeatureList.INSTANT_START));
         onView(withId(R.id.placeholders_layout)).check(matches(isDisplayed()));
         Assert.assertFalse(LibraryLoader.getInstance().isInitialized());
+
+        startAndWaitNativeInitialization();
+        // Feed background should be non-transparent finally.
+        ViewUtils.onViewWaiting(
+                AllOf.allOf(withId(R.id.feed_stream_recycler_view), matchesBackgroundAlpha(255)));
     }
 
     @Test
     @SmallTest
     @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
     @EnableFeatures({ChromeFeatureList.TAB_SWITCHER_ON_RETURN + "<Study,",
-            ChromeFeatureList.START_SURFACE_ANDROID + "<Study"})
+            ChromeFeatureList.START_SURFACE_ANDROID + "<Study", ChromeFeatureList.INTEREST_FEED_V2})
     // clang-format off
     @CommandLineFlags.Add({"force-fieldtrials=Study/Group",
             IMMEDIATE_RETURN_PARAMS + "/start_surface_variation/single"})
-    public void testFeedPlaceholderVisibility() {
+    public void testCachedFeedVisibility() {
         // clang-format on
         startMainActivityFromLauncher();
         mActivityTestRule.waitForActivityNativeInitializationComplete();
@@ -760,7 +766,7 @@ public class InstantStartTest {
     @SmallTest
     @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
     @EnableFeatures({ChromeFeatureList.TAB_SWITCHER_ON_RETURN + "<Study,",
-            ChromeFeatureList.START_SURFACE_ANDROID + "<Study"})
+            ChromeFeatureList.START_SURFACE_ANDROID + "<Study", ChromeFeatureList.INTEREST_FEED_V2})
     // clang-format off
     @CommandLineFlags.Add({ChromeSwitches.DISABLE_NATIVE_INITIALIZATION,
             "force-fieldtrials=Study/Group",
@@ -770,6 +776,7 @@ public class InstantStartTest {
         StartSurfaceConfiguration.setFeedVisibilityForTesting(false);
         startMainActivityFromLauncher();
 
+        // When cached Feed articles' visibility is invisible, placeholder should be invisible too.
         onView(withId(R.id.placeholders_layout)).check(doesNotExist());
     }
 
@@ -777,17 +784,17 @@ public class InstantStartTest {
     @SmallTest
     @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
     @EnableFeatures({ChromeFeatureList.TAB_SWITCHER_ON_RETURN + "<Study,",
-            ChromeFeatureList.START_SURFACE_ANDROID + "<Study"})
+            ChromeFeatureList.START_SURFACE_ANDROID + "<Study", ChromeFeatureList.INTEREST_FEED_V2})
     // clang-format off
     @CommandLineFlags.Add({ChromeSwitches.DISABLE_NATIVE_INITIALIZATION,
             "force-fieldtrials=Study/Group",
             IMMEDIATE_RETURN_PARAMS + "/start_surface_variation/single"})
     public void testShowPlaceholder() {
         // clang-format on
-        if (!FeedV1.IS_AVAILABLE) return; // Test not yet working for FeedV2.
         StartSurfaceConfiguration.setFeedVisibilityForTesting(true);
         startMainActivityFromLauncher();
 
+        // When cached Feed articles' visibility is visible, placeholder should be visible too.
         onView(withId(R.id.placeholders_layout)).check(matches(isDisplayed()));
     }
 
@@ -888,5 +895,30 @@ public class InstantStartTest {
                     allOf(withId(R.id.header_status),
                             withText(expanded ? R.string.hide_content : R.string.show_content)));
         }
+    }
+
+    public static Matcher<View> matchesBackgroundAlpha(final int expectedAlpha) {
+        return new BoundedMatcher<View, View>(View.class) {
+            String mMessage;
+            int mActualAlpha;
+
+            @Override
+            protected boolean matchesSafely(View item) {
+                if (item.getBackground() == null) {
+                    mMessage = item.getId() + " does not have a background";
+                    return false;
+                }
+                mActualAlpha = item.getBackground().getAlpha();
+                return mActualAlpha == expectedAlpha;
+            }
+            @Override
+            public void describeTo(final Description description) {
+                if (expectedAlpha != mActualAlpha) {
+                    mMessage = "Background alpha did not match: Expected " + expectedAlpha + " was "
+                            + mActualAlpha;
+                }
+                description.appendText(mMessage);
+            }
+        };
     }
 }

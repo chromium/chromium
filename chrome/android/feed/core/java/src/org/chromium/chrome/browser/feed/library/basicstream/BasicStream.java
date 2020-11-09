@@ -454,6 +454,17 @@ public class BasicStream implements Stream, ModelProviderObserver, OnLayoutChang
     }
 
     @Override
+    public boolean isPlaceholderShown() {
+        return mIsPlaceholderShown;
+    }
+
+    @Override
+    public void hidePlaceholder() {
+        mRecyclerView.getBackground().setAlpha(255);
+        mIsPlaceholderShown = false;
+    }
+
+    @Override
     public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft,
             int oldTop, int oldRight, int oldBottom) {
         if ((oldLeft != 0 && left != oldLeft) || (oldRight != 0 && right != oldRight)) {

@@ -20,6 +20,7 @@ import android.widget.ScrollView;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.supplier.Supplier;
@@ -97,7 +98,7 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
     @Nullable
     private final View mNtpHeader;
     private final boolean mShowDarkBackground;
-    private final boolean mIsPlaceholderRequested;
+    private final boolean mIsPlaceholderShownInitially;
     private final FeedSurfaceDelegate mDelegate;
     private final int mDefaultMarginPixels;
     private final int mWideMarginPixels;
@@ -247,7 +248,7 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
      * @param pageNavigationDelegate The {@link NativePageNavigationDelegate}
      *                               that handles page navigation.
      * @param profile The current user profile.
-     * @param isPlaceholderRequested Whether the placeholder should be shown.
+     * @param isPlaceholderShownInitially Whether the placeholder is shown initially.
      * @param bottomSheetController The bottom sheet controller, used in v2.
      */
     public FeedSurfaceCoordinator(Activity activity, SnackbarManager snackbarManager,
@@ -256,7 +257,7 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
             @Nullable SectionHeaderView sectionHeaderView, FeedV1ActionOptions actionOptions,
             boolean showDarkBackground, FeedSurfaceDelegate delegate,
             @Nullable NativePageNavigationDelegate pageNavigationDelegate, Profile profile,
-            boolean isPlaceholderRequested, BottomSheetController bottomSheetController) {
+            boolean isPlaceholderShownInitially, BottomSheetController bottomSheetController) {
         if (FeedFeatures.isV2Enabled()) {
             mStreamWrapper = FeedV2.createStreamWrapper();
         } else {
@@ -268,7 +269,7 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
         mNtpHeader = ntpHeader;
         mSectionHeaderView = sectionHeaderView;
         mShowDarkBackground = showDarkBackground;
-        mIsPlaceholderRequested = isPlaceholderRequested;
+        mIsPlaceholderShownInitially = isPlaceholderShownInitially;
         mDelegate = delegate;
         mPageNavigationDelegate = pageNavigationDelegate;
         mBottomSheetController = bottomSheetController;
@@ -374,7 +375,7 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
 
         mStreamCreatedTimeMs = SystemClock.elapsedRealtime();
         mStream = mStreamWrapper.createStream(mProfile, mActivity, mShowDarkBackground,
-                mSnackbarManager, mPageNavigationDelegate, mUiConfig, mIsPlaceholderRequested,
+                mSnackbarManager, mPageNavigationDelegate, mUiConfig, mIsPlaceholderShownInitially,
                 mBottomSheetController, mV1ActionOptions);
 
         mStreamLifecycleManager = mDelegate.createStreamLifecycleManager(mStream, mActivity);
@@ -493,13 +494,27 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
             mSigninPromoView = (PersonalizedSigninPromoView) inflater.inflate(
                     R.layout.personalized_signin_promo_view_modern_content_suggestions, mRootView,
                     false);
-            // If the placeholder is shown in V1, delay to show the sign-in view until the articles
-            // are shown.
-            if (mStreamWrapper.isPlaceholderShown()) {
+
+            // If the placeholder is shown in Feed v1, delay to show the sign-in view until the
+            // articles are shown. Feed v2's articles don't have fade-in animations, so sign-in view
+            // is already shown together with v2 articles.
+            if (isPlaceholderShown() && !FeedFeatures.isV2Enabled()) {
                 mSigninPromoView.setVisibility(View.INVISIBLE);
             }
         }
         return mSigninPromoView;
+    }
+
+    /**
+     * Show the sign-in view with the same fade-in animation as Feed articles' add-animation.
+     */
+    void fadeInSigninView() {
+        if (mSigninPromoView != null) {
+            mSigninPromoView.setAlpha(0f);
+            mSigninPromoView.setVisibility(View.VISIBLE);
+            mSigninPromoView.animate().alpha(1f).setDuration(
+                    ((RecyclerView) mStream.getView()).getItemAnimator().getAddDuration());
+        }
     }
 
     /**
@@ -563,9 +578,9 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
     }
 
     public void onOverviewShownAtLaunch(long activityCreationTimeMs) {
-        mMediator.onOverviewShownAtLaunch(activityCreationTimeMs, mIsPlaceholderRequested);
+        mMediator.onOverviewShownAtLaunch(activityCreationTimeMs, mIsPlaceholderShownInitially);
         StartSurfaceConfiguration.recordHistogram(FEED_STREAM_CREATED_TIME_MS_UMA,
-                mStreamCreatedTimeMs - activityCreationTimeMs, mIsPlaceholderRequested);
+                mStreamCreatedTimeMs - activityCreationTimeMs, mIsPlaceholderShownInitially);
     }
 
     Tracker getFeatureEngagementTracker() {

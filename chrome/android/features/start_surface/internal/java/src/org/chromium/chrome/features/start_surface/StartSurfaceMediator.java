@@ -44,7 +44,6 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.feed.FeedSurfaceCoordinator;
-import org.chromium.chrome.browser.feed.shared.FeedFeatures;
 import org.chromium.chrome.browser.feed.shared.stream.Stream;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -754,14 +753,9 @@ class StartSurfaceMediator
                     StartSurfaceConfiguration.getFeedArticlesVisibility();
         }
 
-        // ChromeFeatureList.INTEREST_FEED_V2 is checked directly with ChromeFeatureList#isEnabled()
-        // in other places. Using CachedFeatureFlags#isEnabled here is deliberate for a pre-native
-        // check. This mismatch is acceptable, because in our use case in
-        // FeedSurfaceCoordinator#createStream, we check both versions to avoid the broken UI.
         return mSurfaceMode == SurfaceMode.SINGLE_PANE
                 && CachedFeatureFlags.isEnabled(ChromeFeatureList.INSTANT_START)
-                && StartSurfaceConfiguration.getFeedArticlesVisibility()
-                && !FeedFeatures.cachedIsV2Enabled();
+                && StartSurfaceConfiguration.getFeedArticlesVisibility();
     }
 
     /** This interface builds the feed surface coordinator when showing if needed. */

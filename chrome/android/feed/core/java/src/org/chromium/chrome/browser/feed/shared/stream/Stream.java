@@ -131,6 +131,16 @@ public interface Stream {
     void triggerRefresh();
 
     /**
+     * @return Whether the placeholder is shown.
+     */
+    boolean isPlaceholderShown();
+
+    /**
+     * Called when the placeholder is shown and the first batch of articles are about to show.
+     */
+    void hidePlaceholder();
+
+    /**
      * Get whether the first card of Feed is dense in portrait mode.
      */
     default int getFirstCardDensity() {

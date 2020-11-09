@@ -53,12 +53,12 @@ public class FeedStream implements Stream {
 
     public FeedStream(Activity activity, boolean isBackgroundDark, SnackbarManager snackbarManager,
             NativePageNavigationDelegate nativePageNavigationDelegate,
-            BottomSheetController bottomSheetController) {
+            BottomSheetController bottomSheetController, boolean isPlaceholderShown) {
         // TODO(petewil): Use isBackgroundDark to turn on dark theme.
         this.mActivity = activity;
         this.mFeedStreamSurface = new FeedStreamSurface(activity, isBackgroundDark, snackbarManager,
                 nativePageNavigationDelegate, bottomSheetController,
-                HelpAndFeedbackLauncherImpl.getInstance());
+                HelpAndFeedbackLauncherImpl.getInstance(), isPlaceholderShown);
     }
 
     @Override
@@ -195,6 +195,16 @@ public class FeedStream implements Stream {
 
     @Override
     public void triggerRefresh() {}
+
+    @Override
+    public boolean isPlaceholderShown() {
+        return mFeedStreamSurface.isPlaceholderShown();
+    }
+
+    @Override
+    public void hidePlaceholder() {
+        mFeedStreamSurface.hidePlaceholder();
+    }
 
     private void setupRecyclerView() {
         mRecyclerView = (RecyclerView) mFeedStreamSurface.getView();

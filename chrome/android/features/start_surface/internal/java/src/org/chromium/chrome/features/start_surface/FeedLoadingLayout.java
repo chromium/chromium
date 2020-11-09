@@ -13,8 +13,6 @@ import android.graphics.drawable.LayerDrawable;
 import android.os.SystemClock;
 import android.util.AttributeSet;
 import android.util.TypedValue;
-import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -71,22 +69,24 @@ public class FeedLoadingLayout extends LinearLayout {
      */
     @SuppressLint("InflateParams")
     private void setHeader() {
-        LayoutInflater inflater = LayoutInflater.from(mContext);
-        View header;
+        LinearLayout headerView = findViewById(R.id.feed_placeholder_header);
+        ViewGroup.LayoutParams lp = headerView.getLayoutParams();
         // FeedFeatures.cachedIsReportingUserActions uses CachedFeatureFlags for checking feature
         // states, but these same features are checked directly with ChromeFeatureList in other
         // places. Using the cached check here is deliberate for pre-native usage. This
         // inconsistency is fine because the check here is for the Feed header blank size, the
         // mismatch is bearable and only once for every change.
         if (FeedFeatures.cachedIsReportingUserActions()) {
-            header = inflater.inflate(
-                    R.layout.new_tab_page_snippets_expandable_header_with_menu, null, false);
-            header.findViewById(R.id.header_menu).setVisibility(INVISIBLE);
+            // Header blank size should be consistent with
+            // R.layout.new_tab_page_snippets_expandable_header_with_menu.
+            lp.height =
+                    getResources().getDimensionPixelSize(R.dimen.snippets_article_header_menu_size);
         } else {
-            header = inflater.inflate(R.layout.ss_feed_header, null, false);
+            // Header blank size should be consistent with R.layout.ss_feed_header.
+            lp.height =
+                    getResources().getDimensionPixelSize(R.dimen.snippets_article_header_height);
         }
-        LinearLayout headerView = findViewById(R.id.feed_placeholder_header);
-        headerView.addView(header);
+        headerView.setLayoutParams(lp);
     }
 
     private void setPlaceholders() {
@@ -230,8 +230,9 @@ public class FeedLoadingLayout extends LinearLayout {
      * is resized by {@link ViewResizer} in {@link FeedLoadingCoordinator}
      */
     private void setPadding() {
-        int defaultPadding =
-                mResources.getDimensionPixelSize(R.dimen.content_suggestions_card_modern_margin);
+        int defaultPadding = mResources.getDimensionPixelSize(FeedFeatures.cachedIsV2Enabled()
+                        ? R.dimen.content_suggestions_card_modern_margin_v2
+                        : R.dimen.content_suggestions_card_modern_margin);
         UiConfig uiConfig = new UiConfig(this);
         // mUiConfig.getContext().getResources() is used here instead of mView.getResources()
         // because lemon compression, somehow, causes the resources to return a different
@@ -244,11 +245,16 @@ public class FeedLoadingLayout extends LinearLayout {
         } else {
             mPaddingPx = defaultPadding;
         }
+        mPaddingPx += FeedFeatures.cachedIsV2Enabled() ? mResources.getDimensionPixelSize(
+                              R.dimen.content_suggestions_card_modern_padding_v2)
+                                                       : 0;
         setPaddingRelative(mPaddingPx, 0, mPaddingPx, 0);
     }
 
     private int computePadding() {
-        int widePadding = mResources.getDimensionPixelSize(R.dimen.ntp_wide_card_lateral_margins);
+        int widePadding = mResources.getDimensionPixelSize(FeedFeatures.cachedIsV2Enabled()
+                        ? R.dimen.ntp_wide_card_lateral_margins_v2
+                        : R.dimen.ntp_wide_card_lateral_margins);
         int padding =
                 dpToPx((int) ((mScreenWidthDp - UiConfig.WIDE_DISPLAY_STYLE_MIN_WIDTH_DP) / 2.f));
         padding = Math.max(widePadding, padding);

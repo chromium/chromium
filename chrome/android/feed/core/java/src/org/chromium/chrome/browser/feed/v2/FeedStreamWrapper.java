@@ -20,6 +20,7 @@ import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
  * Wraps management of the Feed V2 stream.
  */
 public class FeedStreamWrapper implements FeedSurfaceCoordinator.StreamWrapper {
+    private Stream mStream;
     @Override
     public int defaultMarginPixels(Activity activity) {
         return activity.getResources().getDimensionPixelSize(
@@ -37,13 +38,14 @@ public class FeedStreamWrapper implements FeedSurfaceCoordinator.StreamWrapper {
             SnackbarManager snackbarManager, NativePageNavigationDelegate pageNavigationDelegate,
             UiConfig uiConfig, boolean placeholderShown,
             BottomSheetController bottomSheetController, FeedV1ActionOptions v1ActionOptions) {
-        return new FeedStream(activity, showDarkBackground, snackbarManager, pageNavigationDelegate,
-                bottomSheetController);
+        mStream = new FeedStream(activity, showDarkBackground, snackbarManager,
+                pageNavigationDelegate, bottomSheetController, placeholderShown);
+        return mStream;
     }
 
     @Override
     public boolean isPlaceholderShown() {
-        return false;
+        return mStream.isPlaceholderShown();
     }
 
     @Override
