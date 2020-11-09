@@ -519,6 +519,7 @@ void FindRequestManager::OnGetNearestFindResultReply(RenderFrameHostImpl* rfh,
 void FindRequestManager::RequestFindMatchRects(int current_version) {
   match_rects_.pending_replies.clear();
   match_rects_.request_version = current_version;
+  match_rects_.active_rect = gfx::RectF();
 
   // Request the latest find match rects from each frame.
   for (WebContentsImpl* contents : contents_->GetWebContentsAndAllInner()) {

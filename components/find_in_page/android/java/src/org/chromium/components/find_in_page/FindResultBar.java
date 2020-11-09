@@ -276,25 +276,20 @@ public class FindResultBar extends View {
 
         // Draw the active tickmark on top (covering up the inactive tickmark
         // we probably already drew for it).
-        if (mActiveMatch != null) {
-            Tickmark tickmark;
+        if (mActiveMatch != null && !mActiveMatch.isEmpty()) {
             int i = Arrays.binarySearch(mMatches, mActiveMatch, sComparator);
             if (i >= 0) {
                 // We've already generated a tickmark for all rects in mMatches,
                 // so use the corresponding one. However it was generated
                 // assuming the match would be inactive. Keep the position, but
                 // re-expand it using mActiveMinHeight.
-                tickmark = expandTickmarkToMinHeight(mTickmarks.get(i), true);
-            } else {
-                // How strange - mActiveMatch isn't in mMatches. Do our best to
-                // draw it anyway (though it might not line up exactly).
-                tickmark = tickmarkForRect(mActiveMatch, true);
+                Tickmark tickmark = expandTickmarkToMinHeight(mTickmarks.get(i), true);
+                RectF rect = tickmark.toRectF();
+                mFillPaint.setColor(mActiveColor);
+                mStrokePaint.setColor(mActiveBorderColor);
+                canvas.drawRoundRect(rect, 2, 2, mFillPaint);
+                canvas.drawRoundRect(rect, 2, 2, mStrokePaint);
             }
-            RectF rect = tickmark.toRectF();
-            mFillPaint.setColor(mActiveColor);
-            mStrokePaint.setColor(mActiveBorderColor);
-            canvas.drawRoundRect(rect, 2, 2, mFillPaint);
-            canvas.drawRoundRect(rect, 2, 2, mStrokePaint);
         }
     }
 

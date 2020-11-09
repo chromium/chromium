@@ -693,6 +693,37 @@ IN_PROC_BROWSER_TEST_F(FindRequestManagerTest, MAYBE(FindInPage_Issue644448)) {
 }
 
 #if defined(OS_ANDROID)
+// Tests empty active match rect when kWrapAround is false.
+IN_PROC_BROWSER_TEST_F(FindRequestManagerTest, EmptyActiveMatchRect) {
+  LoadAndWait("/find_in_page.html");
+
+  // kWrapAround is false by default.
+  auto default_options = blink::mojom::FindOptions::New();
+  default_options->run_synchronously_for_testing = true;
+  Find("result 01", default_options.Clone());
+  delegate()->WaitForFinalReply();
+  EXPECT_EQ(1, delegate()->GetFindResults().number_of_matches);
+
+  // Request the find match rects.
+  contents()->RequestFindMatchRects(-1);
+  delegate()->WaitForMatchRects();
+  const std::vector<gfx::RectF>& rects = delegate()->find_match_rects();
+
+  // The first match should be active.
+  EXPECT_EQ(rects[0], delegate()->active_match_rect());
+
+  Find("result 00", default_options.Clone());
+  delegate()->WaitForFinalReply();
+  EXPECT_EQ(1, delegate()->GetFindResults().number_of_matches);
+
+  // Request the find match rects.
+  contents()->RequestFindMatchRects(-1);
+  delegate()->WaitForMatchRects();
+
+  // The active match rect should be empty.
+  EXPECT_EQ(gfx::RectF(), delegate()->active_match_rect());
+}
+
 // TODO(wjmaclean): This test, if re-enabled, may require work to make it
 // OOPIF-compatible.
 // Tests requesting find match rects.
