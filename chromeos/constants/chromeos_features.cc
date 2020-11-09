@@ -145,10 +145,6 @@ const base::Feature kBluetoothFixA2dpPacketSize{
 const base::Feature kBluetoothPhoneFilter{"BluetoothPhoneFilter",
                                           base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Enable or disables running the Camera App as a System Web App.
-const base::Feature kCameraSystemWebApp{"CameraSystemWebApp",
-                                        base::FEATURE_DISABLED_BY_DEFAULT};
-
 // If enabled, will use the CDM in the Chrome OS daemon rather than loading the
 // CDM using the library CDM interface.
 const base::Feature kCdmFactoryDaemon{"CdmFactoryDaemon",
