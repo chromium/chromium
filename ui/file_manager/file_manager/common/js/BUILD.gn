@@ -282,8 +282,8 @@ js_unittest("util_unittest.m") {
 js_test_gen_html("js_test_gen_html_modules") {
   js_module = true
   deps = [
+    ":files_app_entry_types_unittest.m",
     ":util_unittest.m",
-    # ":files_app_entry_types_unittest.m",
   ]
 
   closure_flags =

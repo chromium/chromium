@@ -95,7 +95,7 @@ IN_PROC_BROWSER_TEST_F(FileManagerJsTest, FileOperationManagerTest) {
 }
 
 // TODO(crbug.com/1146484): Test is flaky.
-IN_PROC_BROWSER_TEST_F(FileManagerJsTest, DISABLED_FilesAppEntryTypes) {
+IN_PROC_BROWSER_TEST_F(FileManagerJsTest, FilesAppEntryTypes) {
   RunTestURL("common/js/files_app_entry_types_unittest.m_gen.html");
 }
 
