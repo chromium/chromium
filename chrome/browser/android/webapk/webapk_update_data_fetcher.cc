@@ -235,7 +235,7 @@ void WebApkUpdateDataFetcher::OnGotIconMurmur2Hashes(
 
     java_share_params_is_method_post =
         (info_.share_target->method ==
-         blink::Manifest::ShareTarget::Method::kPost);
+         blink::mojom::ManifestShareTarget_Method::kPost);
     java_share_params_is_enctype_multipart =
         (info_.share_target->enctype ==
          blink::Manifest::ShareTarget::Enctype::kMultipartFormData);

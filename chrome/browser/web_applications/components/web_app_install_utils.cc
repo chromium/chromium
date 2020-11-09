@@ -128,11 +128,11 @@ UpdateShortcutsMenuItemInfosFromManifest(
 }
 
 apps::ShareTarget::Method ToAppsShareTargetMethod(
-    blink::Manifest::ShareTarget::Method method) {
+    blink::mojom::ManifestShareTarget_Method method) {
   switch (method) {
-    case blink::Manifest::ShareTarget::Method::kGet:
+    case blink::mojom::ManifestShareTarget_Method::kGet:
       return apps::ShareTarget::Method::kGet;
-    case blink::Manifest::ShareTarget::Method::kPost:
+    case blink::mojom::ManifestShareTarget_Method::kPost:
       return apps::ShareTarget::Method::kPost;
   }
   NOTREACHED();

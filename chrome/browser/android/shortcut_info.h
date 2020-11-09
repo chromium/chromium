@@ -39,7 +39,7 @@ struct ShareTargetParams {
 // https://wicg.github.io/web-share-target/#dom-sharetarget
 struct ShareTarget {
   GURL action;
-  blink::Manifest::ShareTarget::Method method;
+  blink::mojom::ManifestShareTarget_Method method;
   blink::Manifest::ShareTarget::Enctype enctype;
   ShareTargetParams params;
   ShareTarget();

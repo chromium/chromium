@@ -211,7 +211,7 @@ std::unique_ptr<std::string> BuildProtoInBackground(
     webapk::ShareTarget* share_target = web_app_manifest->add_share_targets();
     share_target->set_action(shortcut_info.share_target->action.spec());
     if (shortcut_info.share_target->method ==
-        blink::Manifest::ShareTarget::Method::kPost) {
+        blink::mojom::ManifestShareTarget_Method::kPost) {
       share_target->set_method("POST");
     } else {
       share_target->set_method("GET");

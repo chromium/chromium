@@ -15,7 +15,7 @@
 #include "services/device/public/mojom/screen_orientation_lock_types.mojom-shared.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
-#include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
+#include "third_party/blink/public/mojom/manifest/manifest.mojom-shared.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
@@ -86,11 +86,6 @@ struct BLINK_COMMON_EXPORT Manifest {
 
   // Structure representing how a Web Share target handles an incoming share.
   struct BLINK_COMMON_EXPORT ShareTarget {
-    enum class Method {
-      kGet,
-      kPost,
-    };
-
     enum class Enctype {
       kFormUrlEncoded,
       kMultipartFormData,
@@ -104,7 +99,7 @@ struct BLINK_COMMON_EXPORT Manifest {
     GURL action;
 
     // The HTTP request method for the web share target.
-    Method method;
+    blink::mojom::ManifestShareTarget_Method method;
 
     // The way that share data is encoded in "POST" request.
     Enctype enctype;

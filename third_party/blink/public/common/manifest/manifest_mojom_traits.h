@@ -290,7 +290,7 @@ struct BLINK_COMMON_EXPORT
       const ::blink::Manifest::ShareTarget& share_target) {
     return share_target.action;
   }
-  static ::blink::Manifest::ShareTarget::Method method(
+  static ::blink::mojom::ManifestShareTarget_Method method(
       const ::blink::Manifest::ShareTarget& share_target) {
     return share_target.method;
   }
@@ -341,35 +341,6 @@ struct BLINK_COMMON_EXPORT
   }
   static bool Read(blink::mojom::ManifestProtocolHandlerDataView data,
                    ::blink::Manifest::ProtocolHandler* out);
-};
-
-template <>
-struct BLINK_COMMON_EXPORT EnumTraits<blink::mojom::ManifestShareTarget_Method,
-                                      ::blink::Manifest::ShareTarget::Method> {
-  static blink::mojom::ManifestShareTarget_Method ToMojom(
-      ::blink::Manifest::ShareTarget::Method method) {
-    switch (method) {
-      case ::blink::Manifest::ShareTarget::Method::kGet:
-        return blink::mojom::ManifestShareTarget_Method::kGet;
-      case ::blink::Manifest::ShareTarget::Method::kPost:
-        return blink::mojom::ManifestShareTarget_Method::kPost;
-    }
-    NOTREACHED();
-    return blink::mojom::ManifestShareTarget_Method::kGet;
-  }
-  static bool FromMojom(blink::mojom::ManifestShareTarget_Method input,
-                        ::blink::Manifest::ShareTarget::Method* out) {
-    switch (input) {
-      case blink::mojom::ManifestShareTarget_Method::kGet:
-        *out = ::blink::Manifest::ShareTarget::Method::kGet;
-        return true;
-      case blink::mojom::ManifestShareTarget_Method::kPost:
-        *out = ::blink::Manifest::ShareTarget::Method::kPost;
-        return true;
-    }
-
-    return false;
-  }
 };
 
 template <>

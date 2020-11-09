@@ -210,7 +210,7 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifest_ShareTarget) {
   {
     blink::Manifest::ShareTarget share_target;
     share_target.action = GURL("http://example.com/share1");
-    share_target.method = blink::Manifest::ShareTarget::Method::kPost;
+    share_target.method = blink::mojom::ManifestShareTarget_Method::kPost;
     share_target.enctype =
         blink::Manifest::ShareTarget::Enctype::kMultipartFormData;
     share_target.params.title = base::ASCIIToUTF16("kTitle");
@@ -247,7 +247,7 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifest_ShareTarget) {
   {
     blink::Manifest::ShareTarget share_target;
     share_target.action = GURL("http://example.com/share2");
-    share_target.method = blink::Manifest::ShareTarget::Method::kGet;
+    share_target.method = blink::mojom::ManifestShareTarget_Method::kGet;
     share_target.enctype =
         blink::Manifest::ShareTarget::Enctype::kFormUrlEncoded;
     share_target.params.text = base::ASCIIToUTF16("kText");

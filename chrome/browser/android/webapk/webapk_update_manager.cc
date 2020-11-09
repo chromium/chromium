@@ -113,8 +113,8 @@ static void JNI_WebApkUpdateManager_StoreWebApkUpdateRequestToFile(
         ConvertJavaStringToUTF16(java_share_target_param_text);
     info.share_target->method =
         java_share_target_param_is_method_post == JNI_TRUE
-            ? blink::Manifest::ShareTarget::Method::kPost
-            : blink::Manifest::ShareTarget::Method::kGet;
+            ? blink::mojom::ManifestShareTarget_Method::kPost
+            : blink::mojom::ManifestShareTarget_Method::kGet;
 
     info.share_target->enctype =
         java_share_target_param_is_enctype_multipart == JNI_TRUE
