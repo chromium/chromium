@@ -223,14 +223,6 @@ const char kStabilityStatsVersion[] =
 const char kStabilitySystemCrashCount[] =
     "user_experience_metrics.stability.system_crash_count";
 
-// The keys below are strictly increasing counters over the lifetime of
-// a chrome installation. They are (optionally) sent up to the uninstall
-// survey in the event of uninstallation.
-const char kUninstallLaunchCount[] = "uninstall_metrics.launch_count";
-const char kUninstallMetricsPageLoadCount[] =
-    "uninstall_metrics.page_load_count";
-const char kUninstallMetricsUptimeSec[] = "uninstall_metrics.uptime_sec";
-
 // Dictionary for measuring cellular data used by UKM service during last 7
 // days.
 const char kUkmCellDataUse[] = "user_experience_metrics.ukm_cell_datause";

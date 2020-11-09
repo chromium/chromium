@@ -64,11 +64,6 @@ extern const char kStabilityStatsBuildTime[];
 extern const char kStabilityStatsVersion[];
 extern const char kStabilitySystemCrashCount[];
 
-// Preferences for generating metrics at uninstall time.
-extern const char kUninstallLaunchCount[];
-extern const char kUninstallMetricsPageLoadCount[];
-extern const char kUninstallMetricsUptimeSec[];
-
 // For measuring data use for throttling UMA log uploads on cellular.
 extern const char kUkmCellDataUse[];
 extern const char kUmaCellDataUse[];

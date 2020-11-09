@@ -202,9 +202,6 @@ void MetricsService::RegisterPrefs(PrefRegistrySimple* registry) {
   MetricsReportingService::RegisterPrefs(registry);
 
   registry->RegisterIntegerPref(prefs::kMetricsSessionID, -1);
-
-  registry->RegisterInt64Pref(prefs::kUninstallLaunchCount, 0);
-  registry->RegisterInt64Pref(prefs::kUninstallMetricsUptimeSec, 0);
 }
 
 MetricsService::MetricsService(MetricsStateManager* state_manager,
@@ -546,9 +543,6 @@ void MetricsService::InitializeMetricsState() {
   base::TimeDelta startup_uptime;
   GetUptimes(local_state_, &startup_uptime, &ignored_uptime_parameter);
   DCHECK_EQ(0, startup_uptime.InMicroseconds());
-
-  // Bookkeeping for the uninstall metrics.
-  IncrementLongPrefsValue(prefs::kUninstallLaunchCount);
 }
 
 void MetricsService::OnUserAction(const std::string& action,
@@ -583,13 +577,6 @@ void MetricsService::GetUptimes(PrefService* pref,
   *incremental_uptime = now - last_updated_time_;
   *uptime = now - first_updated_time_;
   last_updated_time_ = now;
-
-  const int64_t incremental_time_secs = incremental_uptime->InSeconds();
-  if (incremental_time_secs > 0) {
-    int64_t metrics_uptime = pref->GetInt64(prefs::kUninstallMetricsUptimeSec);
-    metrics_uptime += incremental_time_secs;
-    pref->SetInt64(prefs::kUninstallMetricsUptimeSec, metrics_uptime);
-  }
 }
 
 //------------------------------------------------------------------------------
