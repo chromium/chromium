@@ -1017,6 +1017,7 @@ virtual/layout_ng_block_frag/external/wpt/css/css-multicol/multicol-span-float-0
 virtual/layout_ng_block_frag/external/wpt/css/css-multicol/nested-with-too-tall-line.html [ Pass ]
 virtual/layout_ng_block_frag/external/wpt/css/css-multicol/non-adjacent-spanners-000.html [ Pass ]
 virtual/layout_ng_block_frag/external/wpt/css/css-multicol/spanner-fragmentation-001.html [ Pass ]
+virtual/layout_ng_block_frag/fast/multicol/file-upload-as-multicol.html [ Pass ]
 virtual/layout_ng_block_frag/fast/multicol/newmulticol/hide-box-vertical-lr.html [ Pass ]
 virtual/layout_ng_block_frag/fast/multicol/span/vertical-lr.html [ Pass ]
 virtual/layout_ng_block_frag/fast/multicol/vertical-lr/abspos-auto-position-on-line.html [ Pass ]
@@ -1030,6 +1031,10 @@ virtual/layout_ng_block_frag/fast/multicol/vertical-lr/float-content-break.html 
 virtual/layout_ng_block_frag/fast/multicol/vertical-lr/float-edge.html [ Pass ]
 virtual/layout_ng_block_frag/fast/multicol/vertical-lr/float-paginate.html [ Pass ]
 virtual/layout_ng_block_frag/fast/multicol/vertical-lr/unsplittable-inline-block.html [ Pass ]
+virtual/layout_ng_block_frag/fast/multicol/vertical-rl/column-count-with-rules.html [ Pass ]
+virtual/layout_ng_block_frag/fast/multicol/vertical-rl/float-big-line.html [ Pass ]
+virtual/layout_ng_block_frag/fast/multicol/vertical-rl/float-content-break.html [ Pass ]
+virtual/layout_ng_block_frag/fast/multicol/vertical-rl/float-edge.html [ Pass ]
 
 ### Tests failing with LayoutNGBlockFragmentation enabled:
 crbug.com/1079031 virtual/layout_ng_block_frag/external/wpt/css/css-break/block-end-aligned-abspos-nested.html [ Failure ]
