@@ -140,6 +140,20 @@ ash::ShelfLayoutManager* GetShelfLayoutManagerForDisplay(
   return ash::Shelf::ForWindow(root)->shelf_layout_manager();
 }
 
+int SystemUiVisibility(const display::Display& display) {
+  auto* shelf_layout_manager = GetShelfLayoutManagerForDisplay(display);
+  switch (shelf_layout_manager->visibility_state()) {
+    case ash::SHELF_VISIBLE:
+      return ZCR_REMOTE_SURFACE_V1_SYSTEMUI_VISIBILITY_STATE_VISIBLE;
+    case ash::SHELF_AUTO_HIDE:
+    case ash::SHELF_HIDDEN:
+      return ZCR_REMOTE_SURFACE_V1_SYSTEMUI_VISIBILITY_STATE_AUTOHIDE_NON_STICKY;
+  }
+  NOTREACHED() << "Got unexpected shelf visibility state "
+               << shelf_layout_manager->visibility_state();
+  return 0;
+}
+
 int Component(uint32_t direction) {
   switch (direction) {
     case ZCR_REMOTE_SURFACE_V1_RESIZE_DIRECTION_NONE:
@@ -805,11 +819,7 @@ class WaylandRemoteOutput : public WaylandDisplayObserver {
         resource_, stable_insets_in_pixel.left(), stable_insets_in_pixel.top(),
         stable_insets_in_pixel.right(), stable_insets_in_pixel.bottom());
 
-    auto* shelf_layout_manager = GetShelfLayoutManagerForDisplay(display);
-    int systemui_visibility =
-        shelf_layout_manager->visibility_state() == ash::SHELF_AUTO_HIDE
-            ? ZCR_REMOTE_SURFACE_V1_SYSTEMUI_VISIBILITY_STATE_AUTOHIDE_NON_STICKY
-            : ZCR_REMOTE_SURFACE_V1_SYSTEMUI_VISIBILITY_STATE_VISIBLE;
+    int systemui_visibility = SystemUiVisibility(display);
     zcr_remote_output_v1_send_systemui_visibility(resource_,
                                                   systemui_visibility);
 
@@ -1032,8 +1042,6 @@ class WaylandRemoteShell : public ash::TabletModeObserver,
       }
 
       if (wl_resource_get_version(remote_shell_resource_) >= 20) {
-        auto* shelf_layout_manager = GetShelfLayoutManagerForDisplay(display);
-
         // Apply the scale factor used on the remote shell client (ARC).
         const gfx::Rect& bounds = display.bounds();
 
@@ -1059,10 +1067,7 @@ class WaylandRemoteShell : public ash::TabletModeObserver,
         MaybeApplyCTSHack(layout_mode_, size_in_pixel, &insets_in_client_pixel,
                           &stable_insets_in_client_pixel);
 
-        int systemui_visibility =
-            shelf_layout_manager->visibility_state() == ash::SHELF_AUTO_HIDE
-                ? ZCR_REMOTE_SURFACE_V1_SYSTEMUI_VISIBILITY_STATE_AUTOHIDE_NON_STICKY
-                : ZCR_REMOTE_SURFACE_V1_SYSTEMUI_VISIBILITY_STATE_VISIBLE;
+        int systemui_visibility = SystemUiVisibility(display);
 
         zcr_remote_shell_v1_send_workspace_info(
             remote_shell_resource_, display_id_hi, display_id_lo, x_px, y_px,
