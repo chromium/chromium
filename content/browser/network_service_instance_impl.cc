@@ -520,22 +520,12 @@ GetNewCertVerifierServiceRemote(
   return cert_verifier_remote;
 }
 
-void RunInProcessCertVerifierServiceFactory(
+void CreateInProcessCertVerifierServiceOnThread(
     mojo::PendingReceiver<cert_verifier::mojom::CertVerifierServiceFactory>
         receiver) {
-#if defined(OS_CHROMEOS)
-  DCHECK(!BrowserThread::IsThreadInitialized(BrowserThread::IO) ||
-         BrowserThread::CurrentlyOn(BrowserThread::IO));
-#else
-  DCHECK(!BrowserThread::IsThreadInitialized(BrowserThread::UI) ||
-         BrowserThread::CurrentlyOn(BrowserThread::UI));
-#endif
-  static base::NoDestructor<base::SequenceLocalStorageSlot<
-      std::unique_ptr<cert_verifier::CertVerifierServiceFactoryImpl>>>
-      service_factory_slot;
-  service_factory_slot->GetOrCreateValue() =
-      std::make_unique<cert_verifier::CertVerifierServiceFactoryImpl>(
-          std::move(receiver));
+  // Except in tests, our CertVerifierServiceFactoryImpl is a singleton.
+  static base::NoDestructor<cert_verifier::CertVerifierServiceFactoryImpl>
+      cv_service_factory(std::move(receiver));
 }
 
 // Owns the CertVerifierServiceFactory used by the browser.
@@ -543,19 +533,16 @@ void RunInProcessCertVerifierServiceFactory(
 class CertVerifierServiceFactoryOwner {
  public:
   CertVerifierServiceFactoryOwner() = default;
-
   CertVerifierServiceFactoryOwner(const CertVerifierServiceFactoryOwner&) =
       delete;
   CertVerifierServiceFactoryOwner& operator=(
       const CertVerifierServiceFactoryOwner&) = delete;
-
-  ~CertVerifierServiceFactoryOwner() = default;
+  ~CertVerifierServiceFactoryOwner() = delete;
 
   static CertVerifierServiceFactoryOwner* Get() {
-    static base::NoDestructor<
-        base::SequenceLocalStorageSlot<CertVerifierServiceFactoryOwner>>
+    static base::NoDestructor<CertVerifierServiceFactoryOwner>
         cert_verifier_service_factory_owner;
-    return &cert_verifier_service_factory_owner->GetOrCreateValue();
+    return &*cert_verifier_service_factory_owner;
   }
 
   // Passing nullptr will reset the current remote.
@@ -578,10 +565,10 @@ class CertVerifierServiceFactoryOwner {
       // See for example InitializeNSSForChromeOSUser().
       GetIOThreadTaskRunner({})->PostTask(
           FROM_HERE,
-          base::BindOnce(&RunInProcessCertVerifierServiceFactory,
+          base::BindOnce(&CreateInProcessCertVerifierServiceOnThread,
                          service_factory_remote_.BindNewPipeAndPassReceiver()));
 #else
-      RunInProcessCertVerifierServiceFactory(
+      CreateInProcessCertVerifierServiceOnThread(
           service_factory_remote_.BindNewPipeAndPassReceiver());
 #endif
       service_factory_ = service_factory_remote_.get();
