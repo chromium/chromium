@@ -24,13 +24,12 @@ BorealisTask::BorealisTask() = default;
 BorealisTask::~BorealisTask() = default;
 
 void BorealisTask::Run(BorealisContext* context,
-                       CompletionStatusCallback callback) {
+                       CompletionResultCallback callback) {
   callback_ = std::move(callback);
   RunInternal(context);
 }
 
-void BorealisTask::Complete(BorealisContextManager::Status status,
-                            std::string message) {
+void BorealisTask::Complete(BorealisStartupResult status, std::string message) {
   // Task completion is self-mutually-exclusive, because tasks are deleted once
   // complete.
   base::SequencedTaskRunnerHandle::Get()->PostTask(
@@ -55,11 +54,11 @@ void MountDlc::OnMountDlc(
     BorealisContext* context,
     const chromeos::DlcserviceClient::InstallResult& install_result) {
   if (install_result.error != dlcservice::kErrorNone) {
-    Complete(BorealisContextManager::Status::kMountFailed,
+    Complete(BorealisStartupResult::kMountFailed,
              "Mounting the DLC for Borealis failed: " + install_result.error);
   } else {
     context->set_root_path(install_result.root_path);
-    Complete(BorealisContextManager::Status::kSuccess, "");
+    Complete(BorealisStartupResult::kSuccess, "");
   }
 }
 
@@ -85,7 +84,7 @@ void CreateDiskImage::OnCreateDiskImage(
     base::Optional<vm_tools::concierge::CreateDiskImageResponse> response) {
   if (!response) {
     context->set_disk_path(base::FilePath());
-    Complete(BorealisContextManager::Status::kDiskImageFailed,
+    Complete(BorealisStartupResult::kDiskImageFailed,
              "Failed to create disk image for Borealis: Empty response.");
     return;
   }
@@ -93,13 +92,13 @@ void CreateDiskImage::OnCreateDiskImage(
   if (response->status() != vm_tools::concierge::DISK_STATUS_EXISTS &&
       response->status() != vm_tools::concierge::DISK_STATUS_CREATED) {
     context->set_disk_path(base::FilePath());
-    Complete(BorealisContextManager::Status::kDiskImageFailed,
+    Complete(BorealisStartupResult::kDiskImageFailed,
              "Failed to create disk image for Borealis: " +
                  response->failure_reason());
     return;
   }
   context->set_disk_path(base::FilePath(response->disk_path()));
-  Complete(BorealisContextManager::Status::kSuccess, "");
+  Complete(BorealisStartupResult::kSuccess, "");
 }
 
 StartBorealisVm::StartBorealisVm() = default;
@@ -140,18 +139,18 @@ void StartBorealisVm::OnStartBorealisVm(
     BorealisContext* context,
     base::Optional<vm_tools::concierge::StartVmResponse> response) {
   if (!response) {
-    Complete(BorealisContextManager::Status::kStartVmFailed,
+    Complete(BorealisStartupResult::kStartVmFailed,
              "Failed to start Borealis VM: Empty response.");
     return;
   }
 
   if (response->status() == vm_tools::concierge::VM_STATUS_RUNNING ||
       response->status() == vm_tools::concierge::VM_STATUS_STARTING) {
-    Complete(BorealisContextManager::Status::kSuccess, "");
+    Complete(BorealisStartupResult::kSuccess, "");
     return;
   }
 
-  Complete(BorealisContextManager::Status::kStartVmFailed,
+  Complete(BorealisStartupResult::kStartVmFailed,
            "Failed to start Borealis VM: " + response->failure_reason() +
                " (code " + base::NumberToString(response->status()) + ")");
 }
@@ -175,11 +174,11 @@ void AwaitBorealisStartup::OnAwaitBorealisStartup(
     BorealisContext* context,
     base::Optional<std::string> container) {
   if (!container) {
-    Complete(BorealisContextManager::Status::kAwaitBorealisStartupFailed,
+    Complete(BorealisStartupResult::kAwaitBorealisStartupFailed,
              "Awaiting for Borealis launch failed: timed out");
     return;
   }
   context->set_container_name(container.value());
-  Complete(BorealisContextManager::Status::kSuccess, "");
+  Complete(BorealisStartupResult::kSuccess, "");
 }
 }  // namespace borealis

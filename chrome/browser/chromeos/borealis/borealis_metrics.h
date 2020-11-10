@@ -53,4 +53,7 @@ void RecordBorealisStartupOverallTimeHistogram(base::TimeDelta startup_time);
 
 }  // namespace borealis
 
+std::ostream& operator<<(std::ostream& stream,
+                         borealis::BorealisStartupResult result);
+
 #endif  // CHROME_BROWSER_CHROMEOS_BOREALIS_BOREALIS_METRICS_H_

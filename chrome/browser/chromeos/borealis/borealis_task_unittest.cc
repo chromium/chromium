@@ -8,6 +8,7 @@
 
 #include "chrome/browser/chromeos/borealis/borealis_context.h"
 #include "chrome/browser/chromeos/borealis/borealis_context_manager.h"
+#include "chrome/browser/chromeos/borealis/borealis_metrics.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
@@ -26,15 +27,12 @@ namespace {
 
 class CallbackForTesting {
  public:
-  BorealisTask::CompletionStatusCallback GetCallback() {
+  BorealisTask::CompletionResultCallback GetCallback() {
     return base::BindOnce(&CallbackForTesting::Callback,
                           base::Unretained(this));
   }
 
-  MOCK_METHOD(void,
-              Callback,
-              (BorealisContextManager::Status, std::string),
-              ());
+  MOCK_METHOD(void, Callback, (BorealisStartupResult, std::string), ());
 };
 
 class BorealisTasksTest : public testing::Test {
@@ -91,7 +89,7 @@ TEST_F(BorealisTasksTest, MountDlcSucceedsAndCallbackRanWithResults) {
   EXPECT_EQ(context_->root_path(), "");
 
   testing::StrictMock<CallbackForTesting> callback;
-  EXPECT_CALL(callback, Callback(BorealisContextManager::Status::kSuccess, _));
+  EXPECT_CALL(callback, Callback(BorealisStartupResult::kSuccess, _));
 
   MountDlc task;
   task.Run(context_.get(), callback.GetCallback());
@@ -109,7 +107,7 @@ TEST_F(BorealisTasksTest, CreateDiskSucceedsAndCallbackRanWithResults) {
   EXPECT_EQ(context_->disk_path(), base::FilePath());
 
   testing::StrictMock<CallbackForTesting> callback;
-  EXPECT_CALL(callback, Callback(BorealisContextManager::Status::kSuccess, _));
+  EXPECT_CALL(callback, Callback(BorealisStartupResult::kSuccess, _));
 
   CreateDiskImage task;
   task.Run(context_.get(), callback.GetCallback());
@@ -129,7 +127,7 @@ TEST_F(BorealisTasksTest,
   EXPECT_EQ(context_->disk_path(), base::FilePath());
 
   testing::StrictMock<CallbackForTesting> callback;
-  EXPECT_CALL(callback, Callback(BorealisContextManager::Status::kSuccess, _));
+  EXPECT_CALL(callback, Callback(BorealisStartupResult::kSuccess, _));
 
   CreateDiskImage task;
   task.Run(context_.get(), callback.GetCallback());
@@ -145,7 +143,7 @@ TEST_F(BorealisTasksTest, StartBorealisVmSucceedsAndCallbackRanWithResults) {
   fake_concierge_client_->set_start_vm_response(std::move(response));
 
   testing::StrictMock<CallbackForTesting> callback;
-  EXPECT_CALL(callback, Callback(BorealisContextManager::Status::kSuccess, _));
+  EXPECT_CALL(callback, Callback(BorealisStartupResult::kSuccess, _));
 
   StartBorealisVm task;
   task.Run(context_.get(), callback.GetCallback());
@@ -161,7 +159,7 @@ TEST_F(BorealisTasksTest,
   fake_concierge_client_->set_start_vm_response(std::move(response));
 
   testing::StrictMock<CallbackForTesting> callback;
-  EXPECT_CALL(callback, Callback(BorealisContextManager::Status::kSuccess, _));
+  EXPECT_CALL(callback, Callback(BorealisStartupResult::kSuccess, _));
 
   StartBorealisVm task;
   task.Run(context_.get(), callback.GetCallback());
@@ -179,7 +177,7 @@ TEST_F(BorealisTasksTest,
   signal.set_container_name("penguin");
 
   testing::StrictMock<CallbackForTesting> callback;
-  EXPECT_CALL(callback, Callback(BorealisContextManager::Status::kSuccess, _));
+  EXPECT_CALL(callback, Callback(BorealisStartupResult::kSuccess, _));
 
   AwaitBorealisStartup task(context_->profile(), context_->vm_name());
   task.Run(context_.get(), callback.GetCallback());
@@ -197,7 +195,7 @@ TEST_F(BorealisTasksTest,
   signal.set_container_name("penguin");
 
   testing::StrictMock<CallbackForTesting> callback;
-  EXPECT_CALL(callback, Callback(BorealisContextManager::Status::kSuccess, _));
+  EXPECT_CALL(callback, Callback(BorealisStartupResult::kSuccess, _));
 
   AwaitBorealisStartup task(context_->profile(), context_->vm_name());
   fake_cicerone_client_->NotifyContainerStarted(std::move(signal));
@@ -210,8 +208,7 @@ TEST_F(BorealisTasksTest,
   testing::StrictMock<CallbackForTesting> callback;
   EXPECT_CALL(
       callback,
-      Callback(BorealisContextManager::Status::kAwaitBorealisStartupFailed,
-               StrNe("")));
+      Callback(BorealisStartupResult::kAwaitBorealisStartupFailed, StrNe("")));
 
   AwaitBorealisStartup task(context_->profile(), context_->vm_name());
   task.GetWatcherForTesting().SetTimeoutForTesting(
@@ -226,8 +223,8 @@ class BorealisTasksTestDlc : public BorealisTasksTest,
 TEST_P(BorealisTasksTestDlc, MountDlcFailsAndCallbackRanWithResults) {
   fake_dlcservice_client_->set_install_error(GetParam());
   testing::StrictMock<CallbackForTesting> callback;
-  EXPECT_CALL(callback, Callback(BorealisContextManager::Status::kMountFailed,
-                                 StrNe("")));
+  EXPECT_CALL(callback,
+              Callback(BorealisStartupResult::kMountFailed, StrNe("")));
 
   MountDlc task;
   task.Run(context_.get(), callback.GetCallback());
@@ -255,9 +252,8 @@ TEST_P(BorealisTasksTestDiskImage, CreateDiskFailsAndCallbackRanWithResults) {
   EXPECT_EQ(context_->disk_path(), base::FilePath());
 
   testing::StrictMock<CallbackForTesting> callback;
-  EXPECT_CALL(
-      callback,
-      Callback(BorealisContextManager::Status::kDiskImageFailed, StrNe("")));
+  EXPECT_CALL(callback,
+              Callback(BorealisStartupResult::kDiskImageFailed, StrNe("")));
 
   CreateDiskImage task;
   task.Run(context_.get(), callback.GetCallback());
@@ -288,8 +284,8 @@ TEST_P(BorealisTasksTestsStartBorealisVm,
   fake_concierge_client_->set_start_vm_response(std::move(response));
 
   testing::StrictMock<CallbackForTesting> callback;
-  EXPECT_CALL(callback, Callback(BorealisContextManager::Status::kStartVmFailed,
-                                 StrNe("")));
+  EXPECT_CALL(callback,
+              Callback(BorealisStartupResult::kStartVmFailed, StrNe("")));
 
   StartBorealisVm task;
   task.Run(context_.get(), callback.GetCallback());

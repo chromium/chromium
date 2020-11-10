@@ -20,24 +20,6 @@ namespace {
 // need to determine the name instead.
 constexpr char kBorealisVmName[] = "borealis";
 
-std::ostream& operator<<(std::ostream& stream,
-                         borealis::BorealisContextManager::Status status) {
-  switch (status) {
-    case borealis::BorealisContextManager::Status::kSuccess:
-      return stream << "Success";
-    case borealis::BorealisContextManager::Status::kCancelled:
-      return stream << "Cancelled";
-    case borealis::BorealisContextManager::Status::kMountFailed:
-      return stream << "Mount Failed";
-    case borealis::BorealisContextManager::Status::kDiskImageFailed:
-      return stream << "Disk Image Failed";
-    case borealis::BorealisContextManager::Status::kStartVmFailed:
-      return stream << "Start VM Failed";
-    case borealis::BorealisContextManager::Status::kAwaitBorealisStartupFailed:
-      return stream << "Await Borealis Startup Failed";
-  }
-}
-
 }  // namespace
 
 namespace borealis {
@@ -57,6 +39,8 @@ void BorealisContextManagerImpl::StartBorealis(ResultCallback callback) {
     context_ = base::WrapUnique(new BorealisContext(profile_));
     context_->set_vm_name(kBorealisVmName);
     task_queue_ = GetTasks();
+    startup_start_tick_ = base::TimeTicks::Now();
+    RecordBorealisStartupNumAttemptsHistogram();
     NextTask();
   }
 }
@@ -82,7 +66,7 @@ void BorealisContextManagerImpl::ShutDownBorealis() {
                          << response.value().failure_reason();
             }
           }));
-  Complete(BorealisContextManager::Status::kCancelled, "shut down");
+  Complete(BorealisStartupResult::kCancelled, "shut down");
 }
 
 base::queue<std::unique_ptr<BorealisTask>>
@@ -102,7 +86,9 @@ void BorealisContextManagerImpl::AddCallback(ResultCallback callback) {
 
 void BorealisContextManagerImpl::NextTask() {
   if (task_queue_.empty()) {
-    Complete(Status::kSuccess, "");
+    RecordBorealisStartupOverallTimeHistogram(base::TimeTicks::Now() -
+                                              startup_start_tick_);
+    Complete(BorealisStartupResult::kSuccess, "");
     return;
   }
   task_queue_.front()->Run(
@@ -110,21 +96,22 @@ void BorealisContextManagerImpl::NextTask() {
                                      weak_factory_.GetWeakPtr()));
 }
 
-void BorealisContextManagerImpl::TaskCallback(Status status,
+void BorealisContextManagerImpl::TaskCallback(BorealisStartupResult result,
                                               std::string error) {
   task_queue_.pop();
-  if (status == Status::kSuccess) {
+  if (result == BorealisStartupResult::kSuccess) {
     NextTask();
     return;
   }
-  LOG(ERROR) << "Startup failed: failure=" << status << " message=" << error;
-  Complete(status, std::move(error));
+  LOG(ERROR) << "Startup failed: failure=" << result << " message=" << error;
+  Complete(result, std::move(error));
 }
 
-void BorealisContextManagerImpl::Complete(BorealisContextManager::Status status,
+void BorealisContextManagerImpl::Complete(BorealisStartupResult result,
                                           std::string error_or_empty) {
-  startup_status_ = status;
+  startup_result_ = result;
   startup_error_ = error_or_empty;
+  RecordBorealisStartupResultHistogram(result);
 
   while (!callback_queue_.empty()) {
     ResultCallback callback = std::move(callback_queue_.front());
@@ -132,7 +119,7 @@ void BorealisContextManagerImpl::Complete(BorealisContextManager::Status status,
     std::move(callback).Run(GetResult());
   }
 
-  if (startup_status_ == BorealisContextManager::Status::kSuccess)
+  if (startup_result_ == BorealisStartupResult::kSuccess)
     return;
 
   task_queue_ = {};
@@ -141,10 +128,10 @@ void BorealisContextManagerImpl::Complete(BorealisContextManager::Status status,
 }
 
 BorealisContextManager::Result BorealisContextManagerImpl::GetResult() {
-  if (startup_status_ == Status::kSuccess) {
+  if (startup_result_ == BorealisStartupResult::kSuccess) {
     return BorealisContextManager::Result(context_.get());
   }
-  return BorealisContextManager::Result(startup_status_, startup_error_);
+  return BorealisContextManager::Result(startup_result_, startup_error_);
 }
 
 }  // namespace borealis

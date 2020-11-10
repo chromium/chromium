@@ -10,8 +10,10 @@
 #include "base/callback_forward.h"
 #include "base/containers/queue.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/chromeos/borealis/borealis_context_manager.h"
 #include "chrome/browser/chromeos/borealis/borealis_context_manager_factory.h"
+#include "chrome/browser/chromeos/borealis/borealis_metrics.h"
 #include "chrome/browser/chromeos/borealis/borealis_task.h"
 #include "chrome/browser/chromeos/login/users/mock_user_manager.h"
 #include "chrome/test/base/testing_profile.h"
@@ -30,7 +32,7 @@ MATCHER(IsSuccessResult, "") {
 
 MATCHER(IsFailureResult, "") {
   return !arg.Ok() &&
-         arg.Failure() == BorealisContextManager::Status::kStartVmFailed &&
+         arg.Failure() == borealis::BorealisStartupResult::kStartVmFailed &&
          arg.FailureReason() == "Something went wrong!";
 }
 
@@ -40,10 +42,10 @@ class MockTask : public BorealisTask {
   void RunInternal(BorealisContext* context) override {
     if (success_) {
       context->set_vm_name("test_vm_name");
-      Complete(BorealisContextManager::Status::kSuccess, "");
+      Complete(borealis::BorealisStartupResult::kSuccess, "");
     } else {
       // Just use a random error.
-      Complete(BorealisContextManager::Status::kStartVmFailed,
+      Complete(borealis::BorealisStartupResult::kStartVmFailed,
                "Something went wrong!");
     }
   }
@@ -97,16 +99,18 @@ class BorealisContextManagerTest : public testing::Test {
   void SetUp() override {
     CreateProfile();
     chromeos::DBusThreadManager::Initialize();
+    histogram_tester_ = std::make_unique<base::HistogramTester>();
   }
 
   void TearDown() override {
     chromeos::DBusThreadManager::Shutdown();
     profile_.reset();
+    histogram_tester_.reset();
   }
 
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
-  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
+  std::unique_ptr<base::HistogramTester> histogram_tester_;
 
  private:
   void CreateProfile() {
@@ -203,6 +207,31 @@ TEST_F(BorealisContextManagerTest,
   task_environment_.RunUntilIdle();
 }
 
+TEST_F(BorealisContextManagerTest, StartupSucceedsMetricsRecorded) {
+  BorealisContextManagerImplForTesting context_manager(
+      profile_.get(), /*tasks=*/1, /*success=*/true);
+  context_manager.StartBorealis(base::DoNothing());
+  task_environment_.RunUntilIdle();
+
+  histogram_tester_->ExpectTotalCount(kBorealisStartupNumAttemptsHistogram, 1);
+  histogram_tester_->ExpectUniqueSample(kBorealisStartupResultHistogram,
+                                        BorealisStartupResult::kSuccess, 1);
+  histogram_tester_->ExpectTotalCount(kBorealisStartupOverallTimeHistogram, 1);
+}
+
+TEST_F(BorealisContextManagerTest, StartupFailsMetricsRecorded) {
+  BorealisContextManagerImplForTesting context_manager(
+      profile_.get(), /*tasks=*/1, /*success=*/false);
+  context_manager.StartBorealis(base::DoNothing());
+  task_environment_.RunUntilIdle();
+
+  histogram_tester_->ExpectTotalCount(kBorealisStartupNumAttemptsHistogram, 1);
+  histogram_tester_->ExpectUniqueSample(kBorealisStartupResultHistogram,
+                                        BorealisStartupResult::kStartVmFailed,
+                                        1);
+  histogram_tester_->ExpectTotalCount(kBorealisStartupOverallTimeHistogram, 0);
+}
+
 class NeverCompletingContextManager : public BorealisContextManagerImpl {
  public:
   explicit NeverCompletingContextManager(Profile* profile)
@@ -226,7 +255,7 @@ TEST_F(BorealisContextManagerTest, ShutDownCancelsRequestsAndTerminatesVm) {
   EXPECT_CALL(callback_expectation, Callback(testing::_))
       .WillOnce(testing::Invoke([](BorealisContextManager::Result result) {
         EXPECT_FALSE(result.Ok());
-        EXPECT_EQ(result.Failure(), BorealisContextManager::Status::kCancelled);
+        EXPECT_EQ(result.Failure(), BorealisStartupResult::kCancelled);
       }));
 
   NeverCompletingContextManager context_manager(profile_.get());
@@ -256,7 +285,7 @@ class TaskThatDoesSomethingAfterCompletion : public BorealisTask {
       : something_(std::move(something)) {}
 
   void RunInternal(BorealisContext* context) override {
-    Complete(BorealisContextManager::Status::kSuccess, "");
+    Complete(BorealisStartupResult::kSuccess, "");
     std::move(something_).Run();
   }
 

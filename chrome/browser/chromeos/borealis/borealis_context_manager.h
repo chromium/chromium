@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/callback.h"
+#include "chrome/browser/chromeos/borealis/borealis_metrics.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace borealis {
@@ -16,33 +17,23 @@ class BorealisContext;
 
 class BorealisContextManager : public KeyedService {
  public:
-  // A list of possible outcomes for an attempt to startup borealis.
-  enum class Status {
-    kSuccess,
-    kCancelled,
-    kMountFailed,
-    kDiskImageFailed,
-    kStartVmFailed,
-    kAwaitBorealisStartupFailed,
-  };
-
   // An attempt to launch borealis. If the launch succeeds, holds a reference to
   // the context created for that launch, otherwise holds an error.
   class Result {
    public:
-    // Used to indicate the the result was a success.
+    // Used to indicate that the result was a success.
     explicit Result(const BorealisContext* ctx);
 
     // Used to indicate the the result was a failure.
-    Result(Status status, std::string failure_reason);
+    Result(BorealisStartupResult result, std::string failure_reason);
 
     ~Result();
 
     // Returns true if the result was successful.
     bool Ok() const;
 
-    // In the event of a failed launch, returns the status code for that error.
-    Status Failure() const;
+    // In the event of a failed launch, returns the result code for that error.
+    BorealisStartupResult Failure() const;
 
     // In the event of a failed launch, returns the message provided.
     const std::string& FailureReason() const;
@@ -52,7 +43,7 @@ class BorealisContextManager : public KeyedService {
     const BorealisContext& Success() const;
 
    private:
-    Status status_;
+    BorealisStartupResult result_;
     std::string failure_reason_;
     const BorealisContext* ctx_;
   };
@@ -71,7 +62,7 @@ class BorealisContextManager : public KeyedService {
 
   // Stop the current running state, re-initializing the context manager
   // to the state it was in prior to being started. All pending callbacks are
-  // invoked with kCancelled status.
+  // invoked with kCancelled result.
   virtual void ShutDownBorealis() = 0;
 };
 

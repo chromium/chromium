@@ -8,6 +8,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/chromeos/borealis/borealis_context_manager.h"
 #include "chrome/browser/chromeos/borealis/borealis_launch_watcher.h"
+#include "chrome/browser/chromeos/borealis/borealis_metrics.h"
 #include "chromeos/dbus/concierge_client.h"
 #include "chromeos/dbus/dlcservice/dlcservice_client.h"
 
@@ -19,26 +20,25 @@ class BorealisContext;
 // Borealis Context Manager.
 class BorealisTask {
  public:
-  // Callback to be run when the task completes. The |status| should reflect
+  // Callback to be run when the task completes. The |result| should reflect
   // if the task succeeded with kSuccess and an empty string. If it fails, a
-  // different status should be used, and an error string provided.
-  using CompletionStatusCallback =
-      base::OnceCallback<void(BorealisContextManager::Status, std::string)>;
-
+  // different result should be used, and an error string provided.
+  using CompletionResultCallback =
+      base::OnceCallback<void(BorealisStartupResult, std::string)>;
   BorealisTask();
   BorealisTask(const BorealisTask&) = delete;
   BorealisTask& operator=(const BorealisTask&) = delete;
   virtual ~BorealisTask();
 
-  void Run(BorealisContext* context, CompletionStatusCallback callback);
+  void Run(BorealisContext* context, CompletionResultCallback callback);
 
  protected:
   virtual void RunInternal(BorealisContext* context) = 0;
 
-  void Complete(BorealisContextManager::Status status, std::string message);
+  void Complete(BorealisStartupResult result, std::string message);
 
  private:
-  CompletionStatusCallback callback_;
+  CompletionResultCallback callback_;
 };
 
 // Mounts the Borealis DLC.

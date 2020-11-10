@@ -37,20 +37,20 @@ class BorealisContextManagerImpl : public BorealisContextManager {
  private:
   void AddCallback(ResultCallback callback);
   void NextTask();
-  void TaskCallback(Status status, std::string error);
+  void TaskCallback(BorealisStartupResult result, std::string error);
 
-  // Completes the startup with the given |status| and error messgae, invoking
-  // all callbacks with the result. For any status except kSuccess the state of
+  // Completes the startup with the given |result| and error messgae, invoking
+  // all callbacks with the result. For any result except kSuccess the state of
   // the system will be as though StartBorealis() had not been called.
-  void Complete(BorealisContextManager::Status status,
-                std::string error_or_empty);
+  void Complete(BorealisStartupResult result, std::string error_or_empty);
 
   // Returns the result of the startup (i.e. the context if it succeeds, or an
   // error if it doesn't).
   BorealisContextManager::Result GetResult();
 
   Profile* profile_ = nullptr;
-  BorealisContextManager::Status startup_status_ = Status::kSuccess;
+  BorealisStartupResult startup_result_ = BorealisStartupResult::kSuccess;
+  base::TimeTicks startup_start_tick_;
   std::string startup_error_;
   std::unique_ptr<BorealisContext> context_;
   base::queue<ResultCallback> callback_queue_;

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/chromeos/borealis/borealis_metrics.h"
+
 #include "base/metrics/histogram_functions.h"
 
 namespace borealis {
@@ -47,3 +48,21 @@ void RecordBorealisStartupOverallTimeHistogram(base::TimeDelta startup_time) {
 }
 
 }  // namespace borealis
+
+std::ostream& operator<<(std::ostream& stream,
+                         borealis::BorealisStartupResult result) {
+  switch (result) {
+    case borealis::BorealisStartupResult::kSuccess:
+      return stream << "Success";
+    case borealis::BorealisStartupResult::kCancelled:
+      return stream << "Cancelled";
+    case borealis::BorealisStartupResult::kMountFailed:
+      return stream << "Mount Failed";
+    case borealis::BorealisStartupResult::kDiskImageFailed:
+      return stream << "Disk Image Failed";
+    case borealis::BorealisStartupResult::kStartVmFailed:
+      return stream << "Start VM Failed";
+    case borealis::BorealisStartupResult::kAwaitBorealisStartupFailed:
+      return stream << "Await Borealis Startup Failed";
+  }
+}

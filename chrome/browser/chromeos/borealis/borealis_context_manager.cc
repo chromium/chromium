@@ -7,27 +7,27 @@
 namespace borealis {
 
 BorealisContextManager::Result::Result(const BorealisContext* ctx)
-    : status_(Status::kSuccess), failure_reason_(), ctx_(ctx) {
+    : result_(BorealisStartupResult::kSuccess), failure_reason_(), ctx_(ctx) {
   DCHECK(ctx);
 }
 
-BorealisContextManager::Result::Result(Status status,
+BorealisContextManager::Result::Result(BorealisStartupResult result,
                                        std::string failure_reason)
-    : status_(status),
+    : result_(result),
       failure_reason_(std::move(failure_reason)),
       ctx_(nullptr) {
-  DCHECK(status != Status::kSuccess);
+  DCHECK(result != BorealisStartupResult::kSuccess);
 }
 
 BorealisContextManager::Result::~Result() = default;
 
 bool BorealisContextManager::Result::Ok() const {
-  return status_ == Status::kSuccess;
+  return result_ == BorealisStartupResult::kSuccess;
 }
 
-BorealisContextManager::Status BorealisContextManager::Result::Failure() const {
+BorealisStartupResult BorealisContextManager::Result::Failure() const {
   DCHECK(!Ok());
-  return status_;
+  return result_;
 }
 
 const std::string& BorealisContextManager::Result::FailureReason() const {
