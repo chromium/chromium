@@ -2841,6 +2841,9 @@ void RenderFrameHostImpl::UpdateRenderProcessHostFramePriorities() {
 }
 
 void RenderFrameHostImpl::Detach() {
+  if (lifecycle_state() == LifecycleState::kSpeculative)
+    return;
+
   if (!parent_) {
     bad_message::ReceivedBadMessage(GetProcess(),
                                     bad_message::RFH_DETACH_MAIN_FRAME);
