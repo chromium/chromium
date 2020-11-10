@@ -56,7 +56,7 @@ class UpstartClientImpl : public UpstartClient {
   void StopJob(const std::string& job,
                const std::vector<std::string>& upstart_env,
                VoidDBusMethodCallback callback) override {
-    CallJobMethod(job, kStopMethod, {}, std::move(callback));
+    CallJobMethod(job, kStopMethod, upstart_env, std::move(callback));
   }
 
   void StartAuthPolicyService() override {
