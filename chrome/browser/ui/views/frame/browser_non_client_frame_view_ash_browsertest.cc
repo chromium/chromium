@@ -5,6 +5,7 @@
 #include <string>
 
 #include "ash/public/cpp/ash_switches.h"
+#include "ash/public/cpp/default_frame_header.h"
 #include "ash/public/cpp/shelf_test_api.h"
 #include "ash/public/cpp/split_view_test_api.h"
 #include "ash/public/cpp/test/shell_test_api.h"
@@ -72,7 +73,6 @@
 #include "chromeos/ui/base/window_pin_type.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
-#include "chromeos/ui/frame/default_frame_header.h"
 #include "chromeos/ui/frame/frame_header.h"
 #include "chromeos/ui/frame/immersive/immersive_fullscreen_controller_test_api.h"
 #include "components/account_id/account_id.h"
@@ -831,7 +831,7 @@ class WebAppNonClientFrameViewAshTest
 
   Browser* app_browser_ = nullptr;
   BrowserView* browser_view_ = nullptr;
-  chromeos::DefaultFrameHeader* frame_header_ = nullptr;
+  ash::DefaultFrameHeader* frame_header_ = nullptr;
   WebAppFrameToolbarView* web_app_frame_toolbar_ = nullptr;
   const std::vector<ContentSettingImageView*>* content_setting_views_ = nullptr;
   BrowserActionsContainer* browser_actions_container_ = nullptr;
@@ -886,8 +886,8 @@ class WebAppNonClientFrameViewAshTest
 
     browser_view_ = BrowserView::GetBrowserViewForBrowser(app_browser_);
     BrowserNonClientFrameViewAsh* frame_view = GetFrameViewAsh(browser_view_);
-    frame_header_ = static_cast<chromeos::DefaultFrameHeader*>(
-        frame_view->frame_header_.get());
+    frame_header_ =
+        static_cast<ash::DefaultFrameHeader*>(frame_view->frame_header_.get());
 
     web_app_frame_toolbar_ = frame_view->web_app_frame_toolbar_for_testing();
     DCHECK(web_app_frame_toolbar_);

@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "ash/public/cpp/app_types.h"
+#include "ash/public/cpp/default_frame_header.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/wm/window_util.h"
 #include "base/metrics/user_metrics.h"
@@ -38,7 +39,6 @@
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
-#include "chromeos/ui/frame/default_frame_header.h"
 #include "chromeos/ui/frame/frame_utils.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -630,7 +630,7 @@ BrowserNonClientFrameViewAsh::CreateFrameHeader() {
     header = std::make_unique<BrowserFrameHeaderAsh>(frame(), this, this,
                                                      caption_button_container_);
   } else {
-    header = std::make_unique<chromeos::DefaultFrameHeader>(
+    header = std::make_unique<ash::DefaultFrameHeader>(
         frame(), this, caption_button_container_);
   }
 

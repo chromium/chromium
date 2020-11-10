@@ -2,28 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_UI_FRAME_DEFAULT_FRAME_HEADER_H_
-#define CHROMEOS_UI_FRAME_DEFAULT_FRAME_HEADER_H_
+#ifndef ASH_PUBLIC_CPP_DEFAULT_FRAME_HEADER_H_
+#define ASH_PUBLIC_CPP_DEFAULT_FRAME_HEADER_H_
 
 #include <memory>
 
+#include "ash/public/cpp/ash_public_export.h"
 #include "base/compiler_specific.h"  // override
-#include "base/component_export.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "chromeos/ui/base/chromeos_ui_constants.h"
 #include "chromeos/ui/frame/frame_header.h"
 
 namespace ash {
-FORWARD_DECLARE_TEST(DefaultFrameHeaderTest, FrameColors);
-}  // namespace ash
-
-namespace chromeos {
 
 // Helper class for managing the default window header, which is used for
 // Chrome apps (but not bookmark apps), for example.
-class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) DefaultFrameHeader
-    : public FrameHeader {
+class ASH_PUBLIC_EXPORT DefaultFrameHeader : public chromeos::FrameHeader {
  public:
   // DefaultFrameHeader does not take ownership of any of the parameters.
   DefaultFrameHeader(
@@ -48,7 +43,7 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) DefaultFrameHeader
   SkColor GetCurrentFrameColor() const override;
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(ash::DefaultFrameHeaderTest, FrameColors);
+  FRIEND_TEST_ALL_PREFIXES(DefaultFrameHeaderTest, FrameColors);
 
   // Returns the window of the target widget.
   aura::Window* GetTargetWindow();
@@ -63,6 +58,6 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) DefaultFrameHeader
   DISALLOW_COPY_AND_ASSIGN(DefaultFrameHeader);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-#endif  // CHROMEOS_UI_FRAME_DEFAULT_FRAME_HEADER_H_
+#endif  // ASH_PUBLIC_CPP_DEFAULT_FRAME_HEADER_H_

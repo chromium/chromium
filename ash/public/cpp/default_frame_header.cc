@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/ui/frame/default_frame_header.h"
+#include "ash/public/cpp/default_frame_header.h"
 
 #include "base/logging.h"  // DCHECK
 #include "chromeos/ui/base/chromeos_ui_constants.h"
@@ -21,6 +21,8 @@
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/window/caption_button_layout_constants.h"
 
+using chromeos::kFrameActiveColorKey;
+using chromeos::kFrameInactiveColorKey;
 using views::Widget;
 
 namespace {
@@ -55,7 +57,7 @@ void TileRoundRect(gfx::Canvas* canvas,
 
 }  // namespace
 
-namespace chromeos {
+namespace ash {
 
 ///////////////////////////////////////////////////////////////////////////////
 // DefaultFrameHeader, public:
@@ -164,4 +166,4 @@ SkColor DefaultFrameHeader::GetActiveFrameColorForPaintForTest() {
   return active_frame_color_;
 }
 
-}  // namespace chromeos
+}  // namespace ash

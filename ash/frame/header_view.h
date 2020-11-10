@@ -21,7 +21,6 @@
 #include "ui/views/view.h"
 
 namespace chromeos {
-class DefaultFrameHeader;
 class FrameCaptionButtonContainerView;
 }
 
@@ -38,6 +37,7 @@ class NonClientFrameView;
 
 namespace ash {
 
+class DefaultFrameHeader;
 enum class FrameBackButtonState;
 
 // View which paints the frame header (title, caption buttons...). It slides off
@@ -124,7 +124,7 @@ class ASH_EXPORT HeaderView
   std::vector<gfx::Rect> GetVisibleBoundsInScreen() const override;
   void Relayout() override;
 
-  chromeos::DefaultFrameHeader* GetFrameHeader() { return frame_header_.get(); }
+  DefaultFrameHeader* GetFrameHeader() { return frame_header_.get(); }
 
  private:
   class HeaderContentView;
@@ -147,7 +147,7 @@ class ASH_EXPORT HeaderView
   // CustomFrameHeader which is aware of theming. In classic Ash, Chrome Browser
   // windows won't use HeaderView at all. In either configuration, non Browser
   // windows will use DefaultFrameHeader.
-  std::unique_ptr<chromeos::DefaultFrameHeader> frame_header_;
+  std::unique_ptr<DefaultFrameHeader> frame_header_;
 
   views::ImageView* avatar_icon_ = nullptr;
 
