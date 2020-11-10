@@ -1061,13 +1061,6 @@ int RenderThreadImpl::PostTaskToAllWebWorkers(base::RepeatingClosure closure) {
       std::move(closure));
 }
 
-bool RenderThreadImpl::ResolveProxy(const GURL& url, std::string* proxy_list) {
-  base::Optional<std::string> result;
-  GetRendererHost()->ResolveProxy(url, &result);
-  *proxy_list = result.value_or(std::string());
-  return result.has_value();
-}
-
 media::GpuVideoAcceleratorFactories* RenderThreadImpl::GetGpuFactories() {
   DCHECK(IsMainThread());
 

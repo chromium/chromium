@@ -195,10 +195,6 @@ int MockRenderThread::PostTaskToAllWebWorkers(base::RepeatingClosure closure) {
   return 0;
 }
 
-bool MockRenderThread::ResolveProxy(const GURL& url, std::string* proxy_list) {
-  return false;
-}
-
 base::WaitableEvent* MockRenderThread::GetShutdownEvent() {
   return nullptr;
 }

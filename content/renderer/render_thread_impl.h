@@ -175,7 +175,6 @@ class CONTENT_EXPORT RenderThreadImpl
       ResourceDispatcherDelegate* delegate) override;
   void RegisterExtension(std::unique_ptr<v8::Extension> extension) override;
   int PostTaskToAllWebWorkers(base::RepeatingClosure closure) override;
-  bool ResolveProxy(const GURL& url, std::string* proxy_list) override;
   base::WaitableEvent* GetShutdownEvent() override;
   int32_t GetClientId() override;
   bool IsOnline() override;

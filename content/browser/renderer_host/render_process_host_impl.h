@@ -126,7 +126,6 @@ class RenderProcessHostCreationObserver;
 class RenderProcessHostFactory;
 class RenderProcessHostTest;
 class RenderWidgetHelper;
-class ResolveProxyHelper;
 class SiteInfo;
 class SiteInstance;
 class SiteInstanceImpl;
@@ -775,9 +774,6 @@ class CONTENT_EXPORT RenderProcessHostImpl
                            BrowserHistogramCallback callback) override;
   void SuddenTerminationChanged(bool enabled) override;
   void RecordUserMetricsAction(const std::string& action) override;
-  void ResolveProxy(
-      const GURL& url,
-      mojom::RendererHost::ResolveProxyCallback callback) override;
 
   void CreateEmbeddedFrameSinkProvider(
       mojo::PendingReceiver<blink::mojom::EmbeddedFrameSinkProvider> receiver);
@@ -1052,8 +1048,6 @@ class CONTENT_EXPORT RenderProcessHostImpl
   // Used to allow a RenderWidgetHost to intercept various messages on the
   // IO thread.
   scoped_refptr<RenderWidgetHelper> widget_helper_;
-
-  scoped_refptr<ResolveProxyHelper> resolve_proxy_helper_;
 
   scoped_refptr<RenderFrameMessageFilter> render_frame_message_filter_;
 

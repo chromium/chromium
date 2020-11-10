@@ -23,9 +23,4 @@ interface RendererHost {
 
   // Sends a string to be recorded by UserMetrics.
   RecordUserMetricsAction(string action);
-
-  // Gets the list of proxies to use for |url|, as a semicolon delimited list
-  // of "<TYPE> <HOST>:<PORT>" | "DIRECT".
-  [Sync]
-  ResolveProxy(url.mojom.Url url) => (string? proxy_list);
 };

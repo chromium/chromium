@@ -17,8 +17,6 @@
 #include "ipc/ipc_channel_proxy.h"
 #include "third_party/blink/public/platform/web_string.h"
 
-class GURL;
-
 namespace base {
 class UnguessableToken;
 class WaitableEvent;
@@ -89,11 +87,6 @@ class CONTENT_EXPORT RenderThread : virtual public ChildThread {
 
   // Post task to all worker threads. Returns number of workers.
   virtual int PostTaskToAllWebWorkers(base::RepeatingClosure closure) = 0;
-
-  // Resolve the proxy servers to use for a given url. On success true is
-  // returned and |proxy_list| is set to a PAC string containing a list of
-  // proxy servers.
-  virtual bool ResolveProxy(const GURL& url, std::string* proxy_list) = 0;
 
   // Gets the shutdown event for the process.
   virtual base::WaitableEvent* GetShutdownEvent() = 0;
