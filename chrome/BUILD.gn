@@ -132,13 +132,9 @@ if (!is_android && !is_mac) {
     defines = []
     public_deps = []
     deps = [ "//printing/buildflags" ]
-
     data = [ "$root_out_dir/resources.pak" ]
-    if (is_linux || is_chromeos || is_win) {
-      data_deps = [ "//chrome:packed_resources" ]
-    }
-
     data_deps = []
+
     if (chromeos_is_browser_only && also_build_ash_chrome) {
       data_deps += [ "//chrome:chrome(//build/toolchain/linux:ash_clang_x64)" ]
     }
