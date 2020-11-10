@@ -36,12 +36,6 @@ without changes to the corresponding grd file. -->
                file="images/apps/topbar_button_maximize.png" type="BINDATA" />
       <include name="IDR_WEBUI_IMAGES_APPS_TOPBAR_BUTTON_MINIMIZE_PNG"
                file="images/apps/topbar_button_minimize.png" type="BINDATA" />
-      <include name="IDR_WEBUI_IMAGES_APPS_BUTTON_BUTTER_BAR_CLOSE_PNG"
-               file="images/apps/button_butter_bar_close.png" type="BINDATA" />
-      <include name="IDR_WEBUI_IMAGES_APPS_BUTTON_BUTTER_BAR_CLOSE_HOVER_PNG"
-               file="images/apps/button_butter_bar_close_hover.png" type="BINDATA" />
-      <include name="IDR_WEBUI_IMAGES_APPS_BUTTON_BUTTER_BAR_CLOSE_PRESSED_PNG"
-               file="images/apps/button_butter_bar_close_pressed.png" type="BINDATA" />
 
       <!-- Component apps common image resources - 2x -->
       <!-- Misc buttons -->
@@ -51,12 +45,6 @@ without changes to the corresponding grd file. -->
                file="images/2x/apps/topbar_button_maximize.png" type="BINDATA" />
       <include name="IDR_WEBUI_IMAGES_APPS_TOPBAR_BUTTON_2X_MINIMIZE_PNG"
                file="images/2x/apps/topbar_button_minimize.png" type="BINDATA" />
-      <include name="IDR_WEBUI_IMAGES_APPS_BUTTON_BUTTER_BAR_CLOSE_2X_PNG"
-               file="images/2x/apps/button_butter_bar_close.png" type="BINDATA" />
-      <include name="IDR_WEBUI_IMAGES_APPS_BUTTON_BUTTER_BAR_CLOSE_HOVER_2X_PNG"
-               file="images/2x/apps/button_butter_bar_close_hover.png" type="BINDATA" />
-      <include name="IDR_WEBUI_IMAGES_APPS_BUTTON_BUTTER_BAR_CLOSE_PRESSED_2X_PNG"
-               file="images/2x/apps/button_butter_bar_close_pressed.png" type="BINDATA" />
 
       <!-- Non-apps images -->
       <include name="IDR_WEBUI_IMAGES_ADD_SVG"

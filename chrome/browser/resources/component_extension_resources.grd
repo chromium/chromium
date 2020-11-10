@@ -40,7 +40,7 @@
       <if expr="not is_android">
         <include name="IDR_FEEDBACK_BLUETOOTHLOGSINFO_HTML" file="feedback/html/bluetooth_logs_info.html" flattenhtml="true" allowexternalscript="true" type="BINDATA" />
         <include name="IDR_FEEDBACK_ASSISTANTLOGSINFO_HTML" file="feedback/html/assistant_logs_info.html" flattenhtml="true" allowexternalscript="true" type="BINDATA" />
-        <include name="IDR_FEEDBACK_DEFAULT_HTML" file="feedback/html/default.html" flattenhtml="true" allowexternalscript="true" type="BINDATA" />
+        <include name="IDR_FEEDBACK_DEFAULT_HTML" file="feedback/html/default.html" preprocess="true" type="BINDATA" />
         <include name="IDR_FEEDBACK_SYSINFO_HTML" file="feedback/html/sys_info.html" flattenhtml="true" allowexternalscript="true" type="BINDATA" />
         <include name="IDR_FEEDBACK_ASSISTANT_LOGS_INFO_JS" file="feedback/js/assistant_logs_info.js" flattenhtml="true" type="BINDATA" />
         <include name="IDR_FEEDBACK_FEEDBACK_UTIL_JS" file="feedback/js/feedback_util.js" flattenhtml="true" type="BINDATA" />
@@ -54,6 +54,18 @@
         <include name="IDR_FEEDBACK_SYSINFO_CSS" file="feedback/css/sys_info.css" type="BINDATA" />
         <include name="IDR_FEEDBACK_ICON_48" file="feedback/images/icon48.png" type="BINDATA" />
         <include name="IDR_FEEDBACK_ICON_192" file="feedback/images/icon192.png" type="BINDATA" />
+        <include name="IDR_FEEDBACK_BUTTON_BUTTER_BAR_CLOSE_PNG"
+                 file="feedback/images/button_butter_bar_close.png" type="BINDATA" />
+        <include name="IDR_FEEDBACK_BUTTON_BUTTER_BAR_CLOSE_HOVER_PNG"
+                 file="feedback/images/button_butter_bar_close_hover.png" type="BINDATA" />
+        <include name="IDR_FEEDBACK_BUTTON_BUTTER_BAR_CLOSE_PRESSED_PNG"
+                 file="feedback/images/button_butter_bar_close_pressed.png" type="BINDATA" />
+        <include name="IDR_FEEDBACK_BUTTON_BUTTER_BAR_CLOSE_2X_PNG"
+                 file="feedback/images/2x/button_butter_bar_close.png" type="BINDATA" />
+        <include name="IDR_FEEDBACK_BUTTON_BUTTER_BAR_CLOSE_HOVER_2X_PNG"
+                 file="feedback/images/2x/button_butter_bar_close_hover.png" type="BINDATA" />
+        <include name="IDR_FEEDBACK_BUTTON_BUTTER_BAR_CLOSE_PRESSED_2X_PNG"
+                 file="feedback/images/2x/button_butter_bar_close_pressed.png" type="BINDATA" />
       </if>
       <include name="IDR_IDENTITY_API_SCOPE_APPROVAL_BACKGROUND_JS" file="identity_scope_approval_dialog/background.js" type="BINDATA" />
       <include name="IDR_IDENTITY_API_SCOPE_APPROVAL_DIALOG_CSS" file="identity_scope_approval_dialog/scope_approval_dialog.css" type="BINDATA" />
