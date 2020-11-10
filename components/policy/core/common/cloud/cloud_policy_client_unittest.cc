@@ -513,6 +513,15 @@ class CloudPolicyClientTest : public testing::Test {
                             net::OK, DeviceManagementService::kSuccess, "{}")));
   }
 
+  void ExpectEncryptedReport() {
+    EXPECT_CALL(service_, StartJob(_))
+        .WillOnce(DoAll(service_.CaptureJobType(&job_type_),
+                        service_.CaptureQueryParams(&query_params_),
+                        service_.CapturePayload(&job_payload_),
+                        service_.StartJobAsync(
+                            net::OK, DeviceManagementService::kSuccess, "{}")));
+  }
+
   void ExpectFetchRemoteCommands(
       const em::DeviceManagementResponse& remote_command_response) {
     EXPECT_CALL(service_, StartJob(_))
@@ -575,6 +584,17 @@ class CloudPolicyClientTest : public testing::Test {
     policy_data.set_policy_type(dm_protocol::kChromeUserPolicyType);
     policy_data.set_policy_value(policy_value);
     return policy_data.SerializeAsString();
+  }
+
+  void AttemptUploadEncryptedWaitUntilIdle(
+      const ::reporting::EncryptedRecord& record,
+      base::Optional<base::Value> context = base::nullopt) {
+    CloudPolicyClient::StatusCallback callback =
+        base::BindOnce(&MockStatusCallbackObserver::OnCallbackComplete,
+                       base::Unretained(&callback_observer_));
+    client_->UploadEncryptedReport(record, std::move(context),
+                                   std::move(callback));
+    base::RunLoop().RunUntilIdle();
   }
 
   // Request protobufs used as expectations for the client requests.
@@ -1636,6 +1656,65 @@ TEST_F(CloudPolicyClientTest, RealtimeReportMerge) {
       payload->FindListPath(RealtimeReportingJobConfiguration::kEventListKey)
           ->GetList()
           .size());
+}
+
+TEST_F(CloudPolicyClientTest, UploadEncryptedReport) {
+  // Create record
+  ::reporting::EncryptedRecord record;
+  record.set_encrypted_wrapped_record("Enterprise");
+  auto* sequencing_information = record.mutable_sequencing_information();
+  sequencing_information->set_sequencing_id(1701);
+  sequencing_information->set_generation_id(12345678);
+  sequencing_information->set_priority(::reporting::IMMEDIATE);
+
+  RegisterClient();
+  ExpectEncryptedReport();
+
+  EXPECT_CALL(callback_observer_, OnCallbackComplete(true)).Times(1);
+  AttemptUploadEncryptedWaitUntilIdle(record);
+
+  EXPECT_EQ(
+      job_type_,
+      DeviceManagementService::JobConfiguration::TYPE_UPLOAD_ENCRYPTED_REPORT);
+  EXPECT_EQ(client_->status(), DM_STATUS_SUCCESS);
+}
+
+TEST_F(CloudPolicyClientTest, DenyPoorlyFormedEncryptedRecords) {
+  RegisterClient();
+
+  // Create empty record
+  ::reporting::EncryptedRecord record;
+
+  EXPECT_CALL(callback_observer_, OnCallbackComplete(false)).Times(4);
+
+  AttemptUploadEncryptedWaitUntilIdle(record);
+
+  // Add encrypted_wrapped_record without sequencing information.
+  record.set_encrypted_wrapped_record("Enterprise");
+  AttemptUploadEncryptedWaitUntilIdle(record);
+
+  // Incorrectly set sequencing information by only setting sequencing id.
+  auto* sequencing_information = record.mutable_sequencing_information();
+  sequencing_information->set_sequencing_id(1701);
+  AttemptUploadEncryptedWaitUntilIdle(record);
+
+  // Finish correctly setting sequencing information but incorrectly set
+  // encryption info.
+  sequencing_information->set_generation_id(12345678);
+  sequencing_information->set_priority(::reporting::IMMEDIATE);
+
+  auto* encryption_info = record.mutable_encryption_info();
+  encryption_info->set_encryption_key("Key");
+
+  AttemptUploadEncryptedWaitUntilIdle(record);
+
+  // Finish correctly setting encryption info - expect complete call.
+  encryption_info->set_public_key_id(1234);
+
+  EXPECT_CALL(callback_observer_, OnCallbackComplete(true)).Times(1);
+  ExpectEncryptedReport();
+
+  AttemptUploadEncryptedWaitUntilIdle(record);
 }
 
 TEST_F(CloudPolicyClientTest, UploadAppInstallReport) {
