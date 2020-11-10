@@ -174,11 +174,6 @@
         "description": "Called from |onProcessOutput| when the event is dispatched to terminal extension. Observing the terminal process output will be paused after |onProcessOutput| is dispatched until this method is called.",
         "parameters": [
           {
-            "name": "tabId",
-            "type": "integer",
-            "description": "Tab ID from |onProcessOutput| event."
-          },
-          {
             "name": "id",
             "type": "string",
             "description": "The id of the process to which |onProcessOutput| was dispatched."

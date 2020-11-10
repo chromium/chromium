@@ -62,16 +62,13 @@ class TerminalPrivateOpenTerminalProcessFunction : public ExtensionFunction {
   void OnCrostiniRestarted(
       std::unique_ptr<CrostiniStartupStatus> startup_status,
       const std::string& user_id_hash,
-      int tab_id,
       base::CommandLine cmdline,
       crostini::CrostiniResult result);
 
   void OpenVmshellProcess(const std::string& user_id_hash,
-                          int tab_id,
                           base::CommandLine cmdline);
 
   void OnGetVshSession(const std::string& user_id_hash,
-                       int tab_id,
                        base::CommandLine cmdline,
                        int32_t vsh_pid,
                        bool success,
@@ -79,7 +76,6 @@ class TerminalPrivateOpenTerminalProcessFunction : public ExtensionFunction {
                        int32_t container_shell_pid);
 
   void OpenProcess(const std::string& user_id_hash,
-                   int tab_id,
                    base::CommandLine cmdline);
 
   using ProcessOutputCallback =

@@ -77,11 +77,10 @@ chrome.terminalPrivate.onTerminalResize = function(id, width, height, callback) 
  * Called from |onProcessOutput| when the event is dispatched to terminal
  * extension. Observing the terminal process output will be paused after
  * |onProcessOutput| is dispatched until this method is called.
- * @param {number} tabId Tab ID from |onProcessOutput| event.
  * @param {string} id The id of the process to which |onProcessOutput| was
  *     dispatched.
  */
-chrome.terminalPrivate.ackOutput = function(tabId, id) {};
+chrome.terminalPrivate.ackOutput = function(id) {};
 
 /**
  * Open the Terminal tabbed window.
