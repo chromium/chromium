@@ -271,6 +271,11 @@ void AccessibilityEventRecorderAuraLinux::ProcessATKEvent(
       log += " CHILD:(" + AtkObjectToString(child, log_name) + ")";
     else
       log += " CHILD:(NULL)";
+  } else if (event_name.find("focus-event") != std::string::npos) {
+    log += base::ToUpperASCII(event);
+    gchar* parameter = g_strdup_value_contents(&params[1]);
+    log += base::StringPrintf(":%s", parameter);
+    g_free(parameter);
   } else {
     log += base::ToUpperASCII(event);
     if (event_name.find("state-change") != std::string::npos) {
