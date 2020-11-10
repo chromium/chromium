@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<grit latest_public_release="0" current_release="1" output_all_resource_defines="false">
+  <outputs>
+    <output filename="grit/preinstalled_web_apps_resources.h" type="rc_header">
+      <emit emit_type='prepend'></emit>
+    </output>
+    <output filename="grit/preinstalled_web_apps_resources_map.cc"
+            type="resource_file_map_source" />
+    <output filename="grit/preinstalled_web_apps_resources_map.h"
+            type="resource_map_header" />
+    <output filename="preinstalled_web_apps_resources.pak" type="data_package" />
+  </outputs>
+  <release seq="1">
+    <includes>
+      <include name="IDR_PREINSTALLED_WEB_APPS_GOOGLE_DOCS_ICON_192_PNG" file="google_docs_192.png" type="BINDATA" />
+    </includes>
+  </release>
+</grit>

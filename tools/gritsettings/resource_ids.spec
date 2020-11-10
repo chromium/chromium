@@ -156,6 +156,9 @@
   "chrome/browser/resources/new_tab_page/new_tab_page_resources.grd": {
     "includes": [1680],
   },
+  "chrome/browser/resources/preinstalled_web_apps/resources.grd": {
+    "includes": [1710],
+  },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/print_preview/print_preview_resources.grd": {
     "META": {"sizes": {"includes": [500],}},
     "includes": [1720],

@@ -9,11 +9,14 @@
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
+#include "chrome/browser/web_applications/components/external_app_install_features.h"
 #include "chrome/browser/web_applications/components/os_integration_manager.h"
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
+#include "chrome/browser/web_applications/preinstalled_web_apps/preinstalled_web_apps.h"
 #include "chrome/browser/web_applications/test/test_file_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -480,5 +483,34 @@ IN_PROC_BROWSER_TEST_F(ExternalWebAppManagerBrowserTest,
 }
 
 #endif  // defined(OS_CHROMEOS)
+
+// Icon resourcs are only available on Chrome branded builds.
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+IN_PROC_BROWSER_TEST_F(ExternalWebAppManagerBrowserTest, PreinstalledWebApps) {
+  base::AutoReset<bool> scope =
+      SetExternalAppInstallFeatureAlwaysEnabledForTesting();
+
+  constexpr std::array<const char*, 1> kExpectedInstallUrls = {
+      "https://docs.google.com/document/installwebapp?usp=chrome_default",
+  };
+
+  base::RunLoop run_loop;
+  WebAppProvider::Get(browser()->profile())
+      ->external_web_app_manager_for_testing()
+      .LoadAndSynchronizeForTesting(base::BindLambdaForTesting(
+          [&](std::map<GURL, InstallResultCode> install_results,
+              std::map<GURL, bool> uninstall_results) {
+            EXPECT_EQ(install_results.size(), kExpectedInstallUrls.size());
+            for (const char* install_url : kExpectedInstallUrls) {
+              EXPECT_TRUE(base::Contains(install_results, GURL(install_url)))
+                  << install_url;
+            }
+
+            EXPECT_EQ(uninstall_results.size(), 0u);
+            run_loop.Quit();
+          }));
+  run_loop.Run();
+}
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 }  // namespace web_app

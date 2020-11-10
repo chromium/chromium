@@ -6,6 +6,7 @@
 #include "base/json/json_reader.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -20,7 +21,7 @@
 #include "chrome/browser/web_applications/components/os_integration_manager.h"
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
 #include "chrome/browser/web_applications/external_web_app_manager.h"
-#include "chrome/browser/web_applications/preinstalled_web_apps.h"
+#include "chrome/browser/web_applications/preinstalled_web_apps/preinstalled_web_apps.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
@@ -169,8 +170,10 @@ class ExternalWebAppMigrationBrowserTest : public InProcessBrowserTest {
         [&](std::map<GURL, InstallResultCode> install_results,
             std::map<GURL, bool> uninstall_results) {
           if (expect_install) {
-            EXPECT_EQ(install_results.at(GetWebAppUrl()),
-                      InstallResultCode::kSuccessNewInstall);
+            InstallResultCode result = install_results.at(GetWebAppUrl());
+            EXPECT_TRUE(result == InstallResultCode::kSuccessNewInstall ||
+                        result ==
+                            InstallResultCode::kSuccessOfflineOnlyInstall);
           } else {
             EXPECT_EQ(install_results.find(GetWebAppUrl()),
                       install_results.end());
@@ -429,6 +432,13 @@ IN_PROC_BROWSER_TEST_F(ExternalWebAppMigrationBrowserTest,
   options.gate_on_feature = kMigrationFlag;
   options.user_type_allowlist = {"unmanaged"};
   options.uninstall_and_replace.push_back(kExtensionId);
+  options.only_use_app_info_factory = true;
+  options.app_info_factory = base::BindLambdaForTesting([&]() {
+    auto info = std::make_unique<WebApplicationInfo>();
+    info->start_url = GetWebAppUrl();
+    info->title = base::UTF8ToUTF16("Test app");
+    return info;
+  });
   preinstalled_apps.apps.push_back(std::move(options));
   EXPECT_EQ(1u, GetPreinstalledWebApps().size());
   // Set up pre-migration state.

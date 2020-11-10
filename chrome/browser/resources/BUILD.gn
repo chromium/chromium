@@ -199,6 +199,18 @@ if (!is_android) {
     ]
     output_dir = "$root_gen_dir/chrome"
   }
+
+  grit("preinstalled_web_apps_resources") {
+    source = "preinstalled_web_apps/resources.grd"
+    defines = chrome_grit_defines
+    outputs = [
+      "grit/preinstalled_web_apps_resources.h",
+      "grit/preinstalled_web_apps_resources_map.cc",
+      "grit/preinstalled_web_apps_resources_map.h",
+      "preinstalled_web_apps_resources.pak",
+    ]
+    output_dir = "$root_gen_dir/chrome"
+  }
 }
 
 if (is_chromeos) {

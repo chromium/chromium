@@ -19,7 +19,8 @@
   },
   "aohghmighlieiainnegkcijnfilokake" : {
     "external_crx": "docs.crx",
-    "external_version": "0.0.0.6"
+    "external_version": "0.0.0.6",
+    "web_app_migration_flag": "MigrateDefaultChromeAppToWebAppsGSuite"
   },
   // Google Sheets
   "aapocclcgogkmnckokdopfmhonfmgoek" : {

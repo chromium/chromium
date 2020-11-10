@@ -22,7 +22,7 @@
 #include "chrome/browser/supervised_user/supervised_user_constants.h"
 #include "chrome/browser/web_applications/components/external_app_install_features.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
-#include "chrome/browser/web_applications/preinstalled_web_apps.h"
+#include "chrome/browser/web_applications/preinstalled_web_apps/preinstalled_web_apps.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/testing_profile.h"
@@ -174,6 +174,8 @@ class ExternalWebAppManagerTest : public testing::Test {
 
   base::HistogramTester histograms_;
 
+  ScopedTestingPreinstalledAppData preinstalled_web_app_override_;
+
  private:
 #if defined(OS_CHROMEOS)
   chromeos::FakeChromeUserManager* user_manager() {
@@ -187,7 +189,6 @@ class ExternalWebAppManagerTest : public testing::Test {
 
   // To support context of browser threads.
   content::BrowserTaskEnvironment task_environment_;
-
 };
 
 TEST_F(ExternalWebAppManagerTest, ReplacementExtensionBlockedByPolicy) {
@@ -197,14 +198,16 @@ TEST_F(ExternalWebAppManagerTest, ReplacementExtensionBlockedByPolicy) {
   sync_preferences::TestingPrefServiceSyncable* prefs =
       test_profile->GetTestingPrefService();
 
-  ScopedTestingPreinstalledAppData scoped_preinstalled_apps;
   GURL install_url("https://test.app");
   constexpr char kExtensionId[] = "abcdefghijklmnopabcdefghijklmnop";
   ExternalInstallOptions options(install_url, DisplayMode::kBrowser,
                                  ExternalInstallSource::kExternalDefault);
   options.user_type_allowlist = {"unmanaged"};
   options.uninstall_and_replace = {kExtensionId};
-  scoped_preinstalled_apps.apps.push_back(std::move(options));
+  options.only_use_app_info_factory = true;
+  options.app_info_factory = base::BindRepeating(
+      []() { return std::make_unique<WebApplicationInfo>(); });
+  preinstalled_web_app_override_.apps.push_back(std::move(options));
 
   auto expect_present = [&]() {
     std::vector<ExternalInstallOptions> options_list =

@@ -1,0 +1,21 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("preinstalled_web_apps") {
+  sources = [
+    "google_docs.cc",
+    "google_docs.h",
+    "preinstalled_web_app_utils.cc",
+    "preinstalled_web_app_utils.h",
+    "preinstalled_web_apps.cc",
+    "preinstalled_web_apps.h",
+  ]
+
+  deps = [
+    "//build:branding_buildflags",
+    "//chrome/browser/resources:preinstalled_web_apps_resources",
+    "//chrome/browser/web_applications/components",
+    "//chrome/common",
+  ]
+}
