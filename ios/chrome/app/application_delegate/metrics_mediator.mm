@@ -34,6 +34,7 @@
 #import "ios/chrome/browser/ui/main/scene_state.h"
 #import "ios/chrome/browser/ui/ntp/ntp_util.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/widget_kit/widget_metrics_util.h"
 #include "ios/chrome/common/app_group/app_group_metrics_mainapp.h"
 #include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
 #include "ios/public/provider/chrome/browser/distribution/app_distribution_provider.h"
@@ -185,6 +186,10 @@ using metrics_mediator::kAppEnteredBackgroundDateKey;
   if (UIAccessibilityIsVoiceOverRunning()) {
     base::RecordAction(
         base::UserMetricsAction("MobileVoiceOverActiveOnLaunch"));
+  }
+
+  if (@available(iOS 14, *)) {
+    [WidgetMetricsUtil logInstalledWidgets];
   }
 
   // Create the first user action recorder and schedule a task to expire it

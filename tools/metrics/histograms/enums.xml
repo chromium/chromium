@@ -39172,6 +39172,12 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="5" label="Quick Actions Widget - QR Reader"/>
 </enum>
 
+<enum name="IOSWidgetKitExtensionKind">
+  <int value="0" label="Dino game widget"/>
+  <int value="1" label="Search widget"/>
+  <int value="2" label="Quick actions widget"/>
+</enum>
+
 <enum name="IOSWKWebViewLinkPreviewAction">
   <summary>
     This enum is used to track the user actions that occur when previewing links

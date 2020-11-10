@@ -831,12 +831,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>javierrobles@chromium.org</owner>
   <owner>muradyan@chromium.org</owner>
   <summary>
-    Indicates the {Status} of an iOS 14 widget. Logged when the app goes to
-    foreground. &quot;Current&quot; widgets are logged everytime widgets are
-    detected, &quot;Install&quot; and &quot;Uninstall&quot; are logged only when
-    changes are detected. It is important to consider the bias created towards
-    users that foreground the app more often when doing analysis. This can be
-    accounted by filtering per unique users when looking at the metric.
+    Indicates the {Status} of an iOS 14 widget. Logged when the app goes
+    to foreground. "Current" widgets are logged everytime widgets are detected, "Install" and "Uninstall" are logged only when changes are detected. It is important to consider the bias created towards users
+    that foreground the app more often when doing analysis. This can be accounted by filtering per unique users when looking at the metric.
   </summary>
   <token key="Status">
     <variant name="Current" summary="presence"/>

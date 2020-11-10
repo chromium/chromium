@@ -7,7 +7,7 @@ import SwiftUI
 import WidgetKit
 
 struct DinoGameWidget: Widget {
-  let kind: String = "DinoGame_Widget"
+  let kind: String = "DinoGameWidget"
   var body: some WidgetConfiguration {
     StaticConfiguration(kind: kind, provider: Provider()) { entry in
       DinoGameWidgetEntryView(entry: entry)

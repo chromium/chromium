@@ -7,7 +7,7 @@ import SwiftUI
 import WidgetKit
 
 struct SearchWidget: Widget {
-  let kind: String = "Search_Widget"
+  let kind: String = "SearchWidget"
   var body: some WidgetConfiguration {
     StaticConfiguration(kind: kind, provider: Provider()) { entry in
       SearchWidgetEntryView(entry: entry)
