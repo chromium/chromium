@@ -118,7 +118,7 @@ void TelemetryExtensionUiBrowserTest::SetUpOnMainThread() {
     battery_info->status = "Charging";
     battery_info->manufacture_date = "2020-07-30";
     battery_info->temperature =
-        chromeos::cros_healthd::mojom::UInt64Value::New(7777777777777777);
+        chromeos::cros_healthd::mojom::NullableUint64::New(7777777777777777);
 
     telemetry_info->battery_result =
         chromeos::cros_healthd::mojom::BatteryResult::NewBatteryInfo(
@@ -139,7 +139,7 @@ void TelemetryExtensionUiBrowserTest::SetUpOnMainThread() {
     block_device_info->write_time_seconds_since_last_boot = 6666666666666666;
     block_device_info->io_time_seconds_since_last_boot = 1111111111111;
     block_device_info->discard_time_seconds_since_last_boot =
-        chromeos::cros_healthd::mojom::UInt64Value::New(77777777777777);
+        chromeos::cros_healthd::mojom::NullableUint64::New(77777777777777);
 
     // Need to put some placeholder values, otherwise Mojo will crash, because
     // mandatory union fields cannot be nullptr.

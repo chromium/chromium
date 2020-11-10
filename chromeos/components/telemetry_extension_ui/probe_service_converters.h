@@ -32,7 +32,7 @@ health::mojom::ProbeErrorPtr UncheckedConvertPtr(
     cros_healthd::mojom::ProbeErrorPtr input);
 
 health::mojom::UInt64ValuePtr UncheckedConvertPtr(
-    cros_healthd::mojom::UInt64ValuePtr input);
+    cros_healthd::mojom::NullableUint64Ptr input);
 
 health::mojom::BatteryInfoPtr UncheckedConvertPtr(
     cros_healthd::mojom::BatteryInfoPtr input);

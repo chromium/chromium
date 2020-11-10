@@ -10,6 +10,7 @@
 
 module chromeos.cros_healthd.mojom;
 
+import "chromeos/services/cros_healthd/public/mojom/nullable_primitives.mojom";
 import "chromeos/services/network_health/public/mojom/network_health.mojom";
 
 // An enumeration of CPU architectures.
@@ -58,13 +59,6 @@ struct ProbeError {
   // A debug message with more information about the error. This string is not
   // intended to be shown to the user.
   string msg;
-};
-
-// Optional uint64 field. Since primitives numeric types cannot be optional,
-// wrap uint64 in a struct that can be nulled.
-struct UInt64Value {
-  // The value of the uint64.
-  uint64 value;
 };
 
 // An enumeration of states a process can be in.
@@ -166,7 +160,7 @@ struct BatteryInfo {
   // Manufacture date converted to yyyy-mm-dd format.
   string? manufacture_date;
   // Temperature in 0.1K. Included when the main battery is a Smart Battery.
-  UInt64Value? temperature;
+  NullableUint64? temperature;
 };
 
 // Non-removable block device probe result. Can either be populated with the
@@ -236,7 +230,7 @@ struct NonRemovableBlockDeviceInfo {
   uint64 io_time_seconds_since_last_boot;
   // Time spent discarding since last boot. Discarding is writing to clear
   // blocks which are no longer in use. Supported on kernels 4.18+.
-  UInt64Value? discard_time_seconds_since_last_boot;
+  NullableUint64? discard_time_seconds_since_last_boot;
 
   // Device identification.
 
@@ -492,7 +486,7 @@ struct SystemInfo {
   // The chassis type of the device. The values reported by chassis type are
   // mapped in
   // www.dmtf.org/sites/default/files/standards/documents/DSP0134_3.0.0.pdf.
-  UInt64Value? chassis_type;
+  NullableUint64? chassis_type;
   // The product name (model) of the system.
   string? product_name;
   // The OS version of the system.

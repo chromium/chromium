@@ -1,0 +1,26 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// This file contains Mojo structs representing nullable primitives - since Mojo
+// doesn't support these natively, when we want a primitive parameter or return
+// value to be optional, we need to wrap it in a nullable struct.
+// TODO(crbug/657632): Remove this file if Mojo adds support for nullable
+// primitives.
+
+// NOTE: This mojom should be kept in sync with the copy in Chromium's repo in
+// src/platform2/diagnostics/mojo/nullable_primitives.mojom.
+
+module chromeos.cros_healthd.mojom;
+
+// Optional uint32 field.
+struct NullableUint32 {
+  // The value of the uint32.
+  uint32 value;
+};
+
+// Optional uint64 field.
+struct NullableUint64 {
+  // The value of the uint64.
+  uint64 value;
+};

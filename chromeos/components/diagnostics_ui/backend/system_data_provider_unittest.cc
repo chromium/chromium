@@ -106,8 +106,8 @@ cros_healthd::mojom::BatteryInfoPtr CreateCrosHealthdBatteryInfoResponse(
     const std::string& status,
     const base::Optional<std::string>& manufacture_date,
     uint64_t temperature) {
-  cros_healthd::mojom::UInt64ValuePtr temp_value_ptr(
-      cros_healthd::mojom::UInt64Value::New());
+  cros_healthd::mojom::NullableUint64Ptr temp_value_ptr(
+      cros_healthd::mojom::NullableUint64::New());
   if (temperature != 0) {
     temp_value_ptr->value = temperature;
   }

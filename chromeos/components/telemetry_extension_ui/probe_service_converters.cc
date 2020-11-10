@@ -56,7 +56,7 @@ health::mojom::ProbeErrorPtr UncheckedConvertPtr(
 }
 
 health::mojom::UInt64ValuePtr UncheckedConvertPtr(
-    cros_healthd::mojom::UInt64ValuePtr input) {
+    cros_healthd::mojom::NullableUint64Ptr input) {
   return health::mojom::UInt64Value::New(input->value);
 }
 

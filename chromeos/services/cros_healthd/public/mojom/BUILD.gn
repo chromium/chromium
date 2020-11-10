@@ -11,6 +11,7 @@ mojom("mojom") {
     "cros_healthd_diagnostics.mojom",
     "cros_healthd_events.mojom",
     "cros_healthd_probe.mojom",
+    "nullable_primitives.mojom",
   ]
 
   public_deps = [

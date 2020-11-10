@@ -95,7 +95,7 @@ TEST(ProbeServiceConvertors, UInt64Value) {
 
 TEST(ProbeServiceConvertors, UInt64ValuePtr) {
   constexpr uint64_t kValue = (1ULL << 63) + 3000000000;
-  EXPECT_EQ(ConvertPtr(cros_healthd::mojom::UInt64Value::New(kValue)),
+  EXPECT_EQ(ConvertPtr(cros_healthd::mojom::NullableUint64::New(kValue)),
             health::mojom::UInt64Value::New(kValue));
 }
 
@@ -130,7 +130,7 @@ TEST(ProbeServiceConvertors, BatteryInfoPtr) {
     input->technology = kTechnology;
     input->status = kStatus;
     input->manufacture_date = kManufactureDate;
-    input->temperature = cros_healthd::mojom::UInt64Value::New(kTemperature);
+    input->temperature = cros_healthd::mojom::NullableUint64::New(kTemperature);
   }
 
   EXPECT_EQ(
@@ -189,7 +189,8 @@ TEST(ProbeServiceConvertors, NonRemovableBlockDeviceInfoPtr) {
     input->write_time_seconds_since_last_boot = kWriteTimeSecondsSinceLastBoot;
     input->io_time_seconds_since_last_boot = kIoTimeSecondsSinceLastBoot;
     input->discard_time_seconds_since_last_boot =
-        cros_healthd::mojom::UInt64Value::New(kDiscardTimeSecondsSinceLastBoot);
+        cros_healthd::mojom::NullableUint64::New(
+            kDiscardTimeSecondsSinceLastBoot);
   }
 
   EXPECT_EQ(

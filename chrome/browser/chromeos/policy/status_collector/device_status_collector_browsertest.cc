@@ -499,7 +499,7 @@ cros_healthd::BatteryResultPtr CreateBatteryResult() {
           kFakeBatteryModel, kFakeBatteryChargeNow, kFakeBatteryCurrentNow,
           kFakeBatteryTechnology, kFakeBatteryStatus,
           kFakeSmartBatteryManufactureDate,
-          cros_healthd::UInt64Value::New(kFakeSmartBatteryTemperature)));
+          cros_healthd::NullableUint64::New(kFakeSmartBatteryTemperature)));
 }
 
 cros_healthd::NonRemovableBlockDeviceResultPtr CreateBlockDeviceResult() {
@@ -508,7 +508,7 @@ cros_healthd::NonRemovableBlockDeviceResultPtr CreateBlockDeviceResult() {
       kFakeStorageBytesRead, kFakeStorageBytesWritten,
       kFakeStorageReadTimeSeconds, kFakeStorageWriteTimeSeconds,
       kFakeStorageIoTimeSeconds,
-      cros_healthd::UInt64Value::New(kFakeStorageDiscardTimeSeconds),
+      cros_healthd::NullableUint64::New(kFakeStorageDiscardTimeSeconds),
       cros_healthd::BlockDeviceVendor::NewEmmcOemid(kFakeOemid),
       cros_healthd::BlockDeviceProduct::NewEmmcPnm(kFakePnm),
       cros_healthd::BlockDeviceRevision::NewEmmcPrv(kFakePrv), kFakeStorageName,
@@ -526,7 +526,7 @@ cros_healthd::SystemResultPtr CreateSystemResult() {
           kFakeFirstPowerDate, kFakeManufactureDate, kFakeSkuNumber,
           kFakeSerialNumber, kFakeMarketingName, kFakeBiosVersion,
           kFakeBoardName, kFakeBoardVersion,
-          cros_healthd::UInt64Value::New(kFakeChassisType), kFakeProductName,
+          cros_healthd::NullableUint64::New(kFakeChassisType), kFakeProductName,
           cros_healthd::OsVersion::New(
               kFakeVersionMilestone, kFakeVersionBuildNumber,
               kFakeVersionPatchNumber, kFakeVersionReleaseChannel)));
