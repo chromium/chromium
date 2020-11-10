@@ -51,7 +51,8 @@ class StoreMetricsReporter {
   class MultiStoreMetricsReporter;
 
   void ReportMultiStoreMetrics(scoped_refptr<PasswordStore> profile_store,
-                               scoped_refptr<PasswordStore> account_store);
+                               scoped_refptr<PasswordStore> account_store,
+                               bool is_opted_in);
   void MultiStoreMetricsDone();
 
   std::unique_ptr<MultiStoreMetricsReporter> multi_store_reporter_;

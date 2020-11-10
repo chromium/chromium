@@ -183,23 +183,52 @@ TEST_F(StoreMetricsReporterTest, MultiStoreMetrics) {
   profile_store->AddLogin(
       CreateForm(kRealm2, "identicaluser1", "identicalpass1"));
 
-  base::HistogramTester histogram_tester;
+  for (bool opted_in : {false, true}) {
+    EXPECT_CALL(*client_.GetPasswordFeatureManager(),
+                IsOptedInForAccountStorage())
+        .WillRepeatedly(Return(opted_in));
 
-  StoreMetricsReporter reporter(&client_, sync_service(), identity_manager(),
-                                &prefs_);
-  // Wait for the metrics to get reported. This is delayed by 30 seconds, and
-  // then involves queries to the stores, i.e. to background task runners.
-  FastForwardBy(base::TimeDelta::FromSeconds(30));
-  RunUntilIdle();
+    base::HistogramTester histogram_tester;
 
-  histogram_tester.ExpectUniqueSample(
-      "PasswordManager.AccountStoreVsProfileStore.Additional", 2, 1);
-  histogram_tester.ExpectUniqueSample(
-      "PasswordManager.AccountStoreVsProfileStore.Missing", 4, 1);
-  histogram_tester.ExpectUniqueSample(
-      "PasswordManager.AccountStoreVsProfileStore.Identical", 2, 1);
-  histogram_tester.ExpectUniqueSample(
-      "PasswordManager.AccountStoreVsProfileStore.Conflicting", 1, 1);
+    StoreMetricsReporter reporter(&client_, sync_service(), identity_manager(),
+                                  &prefs_);
+    // Wait for the metrics to get reported. This is delayed by 30 seconds, and
+    // then involves queries to the stores, i.e. to background task runners.
+    FastForwardBy(base::TimeDelta::FromSeconds(30));
+    RunUntilIdle();
+
+    // The original version of the metrics (without "2") is still recorded, even
+    // if the user isn't opted in to the account storage.
+    histogram_tester.ExpectUniqueSample(
+        "PasswordManager.AccountStoreVsProfileStore.Additional", 2, 1);
+    histogram_tester.ExpectUniqueSample(
+        "PasswordManager.AccountStoreVsProfileStore.Missing", 4, 1);
+    histogram_tester.ExpectUniqueSample(
+        "PasswordManager.AccountStoreVsProfileStore.Identical", 2, 1);
+    histogram_tester.ExpectUniqueSample(
+        "PasswordManager.AccountStoreVsProfileStore.Conflicting", 1, 1);
+
+    // Version "2" of the metrics is only recorded if the user is opted in.
+    if (opted_in) {
+      histogram_tester.ExpectUniqueSample(
+          "PasswordManager.AccountStoreVsProfileStore2.Additional", 2, 1);
+      histogram_tester.ExpectUniqueSample(
+          "PasswordManager.AccountStoreVsProfileStore2.Missing", 4, 1);
+      histogram_tester.ExpectUniqueSample(
+          "PasswordManager.AccountStoreVsProfileStore2.Identical", 2, 1);
+      histogram_tester.ExpectUniqueSample(
+          "PasswordManager.AccountStoreVsProfileStore2.Conflicting", 1, 1);
+    } else {
+      histogram_tester.ExpectTotalCount(
+          "PasswordManager.AccountStoreVsProfileStore2.Additional", 0);
+      histogram_tester.ExpectTotalCount(
+          "PasswordManager.AccountStoreVsProfileStore2.Missing", 0);
+      histogram_tester.ExpectTotalCount(
+          "PasswordManager.AccountStoreVsProfileStore2.Identical", 0);
+      histogram_tester.ExpectTotalCount(
+          "PasswordManager.AccountStoreVsProfileStore2.Conflicting", 0);
+    }
+  }
 
   account_store->ShutdownOnUIThread();
   profile_store->ShutdownOnUIThread();

@@ -7,6 +7,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/sequenced_task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "components/password_manager/core/browser/password_feature_manager.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_store.h"
@@ -45,8 +46,9 @@ class StoreMetricsReporter::MultiStoreMetricsReporter {
  public:
   MultiStoreMetricsReporter(PasswordStore* profile_store,
                             PasswordStore* account_store,
+                            bool is_opted_in,
                             base::OnceClosure done_callback)
-      : done_callback_(std::move(done_callback)) {
+      : is_opted_in_(is_opted_in), done_callback_(std::move(done_callback)) {
     DCHECK(profile_store);
     DCHECK(account_store);
     profile_store_consumer_ = std::make_unique<Consumer>(
@@ -144,9 +146,23 @@ class StoreMetricsReporter::MultiStoreMetricsReporter {
     base::UmaHistogramCounts100(
         "PasswordManager.AccountStoreVsProfileStore.Conflicting", conflicting);
 
+    if (is_opted_in_) {
+      base::UmaHistogramCounts100(
+          "PasswordManager.AccountStoreVsProfileStore2.Additional", additional);
+      base::UmaHistogramCounts100(
+          "PasswordManager.AccountStoreVsProfileStore2.Missing", missing);
+      base::UmaHistogramCounts100(
+          "PasswordManager.AccountStoreVsProfileStore2.Identical", identical);
+      base::UmaHistogramCounts100(
+          "PasswordManager.AccountStoreVsProfileStore2.Conflicting",
+          conflicting);
+    }
+
     std::move(done_callback_).Run();
     // Note: |this| might be destroyed now.
   }
+
+  const bool is_opted_in_;
 
   base::OnceClosure done_callback_;
 
@@ -197,20 +213,23 @@ StoreMetricsReporter::StoreMetricsReporter(
     // delayed task runs.
     scoped_refptr<PasswordStore> retained_profile_store = profile_store;
     scoped_refptr<PasswordStore> retained_account_store = account_store;
+    bool is_opted_in =
+        client->GetPasswordFeatureManager()->IsOptedInForAccountStorage();
     base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&StoreMetricsReporter::ReportMultiStoreMetrics,
                        weak_ptr_factory_.GetWeakPtr(), retained_profile_store,
-                       retained_account_store),
+                       retained_account_store, is_opted_in),
         base::TimeDelta::FromSeconds(30));
   }
 }
 
 void StoreMetricsReporter::ReportMultiStoreMetrics(
     scoped_refptr<PasswordStore> profile_store,
-    scoped_refptr<PasswordStore> account_store) {
+    scoped_refptr<PasswordStore> account_store,
+    bool is_opted_in) {
   multi_store_reporter_ = std::make_unique<MultiStoreMetricsReporter>(
-      profile_store.get(), account_store.get(),
+      profile_store.get(), account_store.get(), is_opted_in,
       base::BindOnce(&StoreMetricsReporter::MultiStoreMetricsDone,
                      weak_ptr_factory_.GetWeakPtr()));
 }
