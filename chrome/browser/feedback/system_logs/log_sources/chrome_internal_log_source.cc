@@ -48,10 +48,12 @@
 #include "chrome/browser/chromeos/login/demo_mode/demo_session.h"
 #include "chrome/browser/chromeos/login/login_pref_names.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
+#include "chrome/browser/chromeos/settings/cros_settings.h"
 #include "chrome/browser/metrics/chromeos_metrics_provider.h"
 #include "chrome/browser/metrics/enrollment_status.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/dbus/util/version_loader.h"
+#include "chromeos/settings/cros_settings_names.h"
 #include "chromeos/system/statistics_provider.h"
 #endif
 
@@ -91,6 +93,7 @@ constexpr char kChromeEnrollmentTag[] = "ENTERPRISE_ENROLLED";
 constexpr char kHWIDKey[] = "HWID";
 constexpr char kSettingsKey[] = "settings";
 constexpr char kLocalStateSettingsResponseKey[] = "Local State: settings";
+constexpr char kLTSChromeVersionPrefix[] = "LTS ";
 constexpr char kArcStatusKey[] = "CHROMEOS_ARC_STATUS";
 constexpr char kMonitorInfoKey[] = "monitor_info";
 constexpr char kAccountTypeKey[] = "account_type";
@@ -242,6 +245,14 @@ std::string GetChromeVersionString() {
 #endif
 
 #if defined(OS_CHROMEOS)
+  // If the device is receiving LTS updates, add a prefix to the version string.
+  // The value of the policy is ignored here.
+  std::string value;
+  const bool is_lts = chromeos::CrosSettings::Get()->GetString(
+      chromeos::kReleaseLtsTag, &value);
+  if (is_lts)
+    browser_version = kLTSChromeVersionPrefix + browser_version;
+
   // If lacros-chrome is allowed & supported, and launched before, which
   // is indicated by |lacros_version| in BrowserManager being set to non-empty
   // string during lacros startup, attach its version in the chrome
