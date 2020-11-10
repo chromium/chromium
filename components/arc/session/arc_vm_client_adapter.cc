@@ -60,20 +60,18 @@ namespace {
 // The "_2d" in job names below corresponds to "-". Upstart escapes characters
 // that aren't valid in D-Bus object paths with underscore followed by its
 // ascii code in hex. So "arc_2dcreate_2ddata" becomes "arc-create-data".
-constexpr const char kArcCreateDataJobName[] = "arc_2dcreate_2ddata";
 constexpr const char kArcHostClockServiceJobName[] =
     "arc_2dhost_2dclock_2dservice";
 constexpr const char kArcKeymasterJobName[] = "arc_2dkeymasterd";
 constexpr const char kArcSensorServiceJobName[] = "arc_2dsensor_2dservice";
-constexpr const char kArcVmMountMyFilesJobName[] = "arcvm_2dmount_2dmyfiles";
-constexpr const char kArcVmMountRemovableMediaJobName[] =
-    "arcvm_2dmount_2dremovable_2dmedia";
-constexpr const char kArcVmServerProxyJobName[] = "arcvm_2dserver_2dproxy";
 constexpr const char kArcVmAdbdJobName[] = "arcvm_2dadbd";
 constexpr const char kArcVmPerBoardFeaturesJobName[] =
     "arcvm_2dper_2dboard_2dfeatures";
 constexpr const char kArcVmBootNotificationServerJobName[] =
     "arcvm_2dboot_2dnotification_2dserver";
+// TODO(hashimoto): Introduce another job for pre-login services.
+constexpr char kArcVmPostLoginServicesJobName[] =
+    "arcvm_2dpost_2dlogin_2dservices";
 
 constexpr const char kCrosSystemPath[] = "/usr/bin/crossystem";
 constexpr const char kArcVmBootNotificationServerSocketPath[] =
@@ -643,10 +641,7 @@ class ArcVmClientAdapter : public ArcClientAdapter,
         // exist.
         JobDesc{kArcVmPerBoardFeaturesJobName, UpstartOperation::JOB_START, {}},
 
-        JobDesc{kArcVmServerProxyJobName, UpstartOperation::JOB_STOP, {}},
-        JobDesc{kArcVmMountMyFilesJobName, UpstartOperation::JOB_STOP, {}},
-        JobDesc{
-            kArcVmMountRemovableMediaJobName, UpstartOperation::JOB_STOP, {}},
+        JobDesc{kArcVmPostLoginServicesJobName, UpstartOperation::JOB_STOP, {}},
         JobDesc{kArcKeymasterJobName, UpstartOperation::JOB_STOP_AND_START, {}},
         JobDesc{
             kArcSensorServiceJobName, UpstartOperation::JOB_STOP_AND_START, {}},
@@ -722,20 +717,15 @@ class ArcVmClientAdapter : public ArcClientAdapter,
       return;
     }
 
-    std::vector<std::string> environment_for_create_data = {
+    std::vector<std::string> environment{
         "CHROMEOS_USER=" +
-        cryptohome::CreateAccountIdentifierFromIdentification(cryptohome_id_)
-            .account_id()};
-    std::vector<std::string> environment_for_arcvm_mount_myfiles = {
+            cryptohome::CreateAccountIdentifierFromIdentification(
+                cryptohome_id_)
+                .account_id(),
         "CHROMEOS_USER_ID_HASH=" + user_id_hash_};
     std::deque<JobDesc> jobs{
-        JobDesc{kArcVmServerProxyJobName, UpstartOperation::JOB_START, {}},
-        JobDesc{kArcCreateDataJobName, UpstartOperation::JOB_START,
-                std::move(environment_for_create_data)},
-        JobDesc{kArcVmMountMyFilesJobName, UpstartOperation::JOB_START,
-                std::move(environment_for_arcvm_mount_myfiles)},
-        JobDesc{
-            kArcVmMountRemovableMediaJobName, UpstartOperation::JOB_START, {}},
+        JobDesc{kArcVmPostLoginServicesJobName, UpstartOperation::JOB_START,
+                std::move(environment)},
     };
     ConfigureUpstartJobs(
         std::move(jobs),
