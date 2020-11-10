@@ -155,8 +155,8 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
   [model addItem:[self websiteItem]
       toSectionWithIdentifier:SectionIdentifierPassword];
 
-  // Blocked password forms don't have username value.
-  if ([self.password.username length]) {
+  // Blocked password forms have username equal to nil.
+  if (self.password.username != nil) {
     self.usernameTextItem = [self usernameItem];
     [model addItem:self.usernameTextItem
         toSectionWithIdentifier:SectionIdentifierPassword];

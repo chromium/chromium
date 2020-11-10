@@ -38,7 +38,10 @@
       _website = base::SysUTF8ToNSString(nameWithLink.second.spec());
       _changePasswordURL = password_manager::CreateChangePasswordUrl(form.url);
     }
-    _username = base::SysUTF16ToNSString(form.username_value);
+
+    if (!form.blocked_by_user) {
+      _username = base::SysUTF16ToNSString(form.username_value);
+    }
 
     if (form.federation_origin.opaque()) {
       _password = base::SysUTF16ToNSString(form.password_value);
