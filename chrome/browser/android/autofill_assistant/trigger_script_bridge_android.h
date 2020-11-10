@@ -1,0 +1,76 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_ANDROID_AUTOFILL_ASSISTANT_TRIGGER_SCRIPT_BRIDGE_ANDROID_H_
+#define CHROME_BROWSER_ANDROID_AUTOFILL_ASSISTANT_TRIGGER_SCRIPT_BRIDGE_ANDROID_H_
+
+#include <map>
+#include <memory>
+#include <string>
+
+#include "base/android/jni_android.h"
+#include "components/autofill_assistant/browser/client.h"
+#include "components/autofill_assistant/browser/metrics.h"
+#include "components/autofill_assistant/browser/service.pb.h"
+#include "components/autofill_assistant/browser/trigger_context.h"
+#include "components/autofill_assistant/browser/trigger_scripts/trigger_script_coordinator.h"
+#include "url/gurl.h"
+
+namespace autofill_assistant {
+
+// Facilitates communication between trigger script UI and native coordinator.
+class TriggerScriptBridgeAndroid : public TriggerScriptCoordinator::Observer {
+ public:
+  TriggerScriptBridgeAndroid();
+  ~TriggerScriptBridgeAndroid() override;
+  TriggerScriptBridgeAndroid(const TriggerScriptBridgeAndroid&) = delete;
+  TriggerScriptBridgeAndroid& operator=(const TriggerScriptBridgeAndroid&) =
+      delete;
+
+  // Attempts to start a trigger script on |initial_url|. Will communicate with
+  // |jdelegate| to show/hide UI as necessary.
+  void StartTriggerScript(Client* client,
+                          const base::android::JavaParamRef<jobject>& jdelegate,
+                          const GURL& initial_url,
+                          std::unique_ptr<TriggerContext> trigger_context);
+
+  // Stops and destroys the current trigger script, if any. Also disconnects the
+  // java-side delegate.
+  void StopTriggerScript();
+
+  // Called by the UI to execute a specific trigger script action.
+  void OnTriggerScriptAction(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& jcaller,
+      jint action);
+
+  // Called by the UI when the bottom sheet has been swipe-dismissed.
+  void OnBottomSheetClosedWithSwipe(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& jcaller);
+
+  // Called by the UI when the back button was pressed.
+  void OnBackButtonPressed(JNIEnv* env,
+                           const base::android::JavaParamRef<jobject>& jcaller);
+
+  // Called by the UI when the feedback form was requested.
+  void OnFeedbackButtonClicked(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& jcaller);
+
+ private:
+  // From TriggerScriptCoordinator::Observer:
+  void OnTriggerScriptShown(const TriggerScriptUIProto& proto) override;
+  void OnTriggerScriptHidden() override;
+  void OnTriggerScriptFinished(Metrics::LiteScriptFinishedState state) override;
+
+  // Reference to the Java counterpart to this class.
+  base::android::ScopedJavaGlobalRef<jobject> java_object_;
+  ClientSettings client_settings_;
+  std::unique_ptr<TriggerScriptCoordinator> trigger_script_coordinator_;
+};
+
+}  // namespace autofill_assistant
+
+#endif  // CHROME_BROWSER_ANDROID_AUTOFILL_ASSISTANT_TRIGGER_SCRIPT_BRIDGE_ANDROID_H_

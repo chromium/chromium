@@ -171,6 +171,21 @@ bool ClientAndroid::Start(JNIEnv* env,
   return controller_->Start(initial_url, std::move(trigger_context));
 }
 
+void ClientAndroid::StartTriggerScript(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& jcaller,
+    const base::android::JavaParamRef<jobject>& jdelegate,
+    const base::android::JavaParamRef<jstring>& jinitial_url,
+    const base::android::JavaParamRef<jstring>& jexperiment_ids,
+    const base::android::JavaParamRef<jobjectArray>& jparameter_names,
+    const base::android::JavaParamRef<jobjectArray>& jparameter_values) {
+  trigger_script_bridge_.StartTriggerScript(
+      this, jdelegate,
+      GURL(base::android::ConvertJavaStringToUTF8(env, jinitial_url)),
+      CreateTriggerContext(env, jexperiment_ids, jparameter_names,
+                           jparameter_values));
+}
+
 void ClientAndroid::OnJavaDestroyUI(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jcaller) {

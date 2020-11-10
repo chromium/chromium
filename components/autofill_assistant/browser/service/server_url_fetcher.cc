@@ -15,6 +15,7 @@ const char kDefaultAutofillAssistantServerUrl[] =
     "https://automate-pa.googleapis.com";
 const char kScriptEndpoint[] = "/v1/supportsSite2";
 const char kActionEndpoint[] = "/v1/actions2";
+const char kTriggersEndpoint[] = "/v1/triggers";
 }  // namespace
 
 namespace autofill_assistant {
@@ -44,6 +45,12 @@ GURL ServerUrlFetcher::GetNextActionsEndpoint() {
   url::StringPieceReplacements<std::string> action_replacements;
   action_replacements.SetPathStr(kActionEndpoint);
   return server_url_.ReplaceComponents(action_replacements);
+}
+
+GURL ServerUrlFetcher::GetTriggerScriptsEndpoint() {
+  url::StringPieceReplacements<std::string> trigger_replacements;
+  trigger_replacements.SetPathStr(kTriggersEndpoint);
+  return server_url_.ReplaceComponents(trigger_replacements);
 }
 
 }  // namespace autofill_assistant

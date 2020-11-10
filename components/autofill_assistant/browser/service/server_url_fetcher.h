@@ -22,6 +22,8 @@ class ServerUrlFetcher {
   virtual GURL GetSupportsScriptEndpoint();
   // Returns the endpoint to send the GetNextActions RPC to.
   virtual GURL GetNextActionsEndpoint();
+  // Returns the endpoint to send the GetTriggerScripts RPC to.
+  virtual GURL GetTriggerScriptsEndpoint();
 
  private:
   GURL server_url_;

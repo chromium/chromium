@@ -39,5 +39,11 @@ TEST(ServerUrlFetcherTest, GetActionsEndpoint) {
               Eq(GURL("https://www.example.com/v1/actions2")));
 }
 
+TEST(ServerUrlFetcherTest, GetTriggerScriptsEndpoint) {
+  EXPECT_THAT(ServerUrlFetcher(GURL("https://www.example.com"))
+                  .GetTriggerScriptsEndpoint(),
+              Eq(GURL("https://www.example.com/v1/triggers")));
+}
+
 }  // namespace
 }  // namespace autofill_assistant
