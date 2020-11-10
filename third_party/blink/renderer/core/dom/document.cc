@@ -1166,8 +1166,7 @@ Element* Document::CreateElementForBinding(
   bool is_v1 =
       string_or_options.IsElementCreationOptions() || !RegistrationContext();
   // V0 is only allowed with the flag.
-  DCHECK(is_v1 || RuntimeEnabledFeatures::CustomElementsV0Enabled(
-                      GetExecutionContext()));
+  DCHECK(is_v1 || RuntimeEnabledFeatures::CustomElementsV0Enabled());
   bool create_v1_builtin = string_or_options.IsElementCreationOptions();
   bool should_create_builtin =
       create_v1_builtin || string_or_options.IsString();
@@ -1245,8 +1244,7 @@ Element* Document::createElementNS(
   bool is_v1 =
       string_or_options.IsElementCreationOptions() || !RegistrationContext();
   // V0 is only allowed with the flag.
-  DCHECK(is_v1 || RuntimeEnabledFeatures::CustomElementsV0Enabled(
-                      GetExecutionContext()));
+  DCHECK(is_v1 || RuntimeEnabledFeatures::CustomElementsV0Enabled());
   bool create_v1_builtin = string_or_options.IsElementCreationOptions();
   bool should_create_builtin =
       create_v1_builtin || string_or_options.IsString();
@@ -1301,6 +1299,10 @@ ScriptValue Document::registerElement(ScriptState* script_state,
                                       const AtomicString& name,
                                       const ElementRegistrationOptions* options,
                                       ExceptionState& exception_state) {
+  // TODO(crbug.com/937746): Anything caught by this DCHECK is using the
+  // now-removed Custom Elements v0 API.
+  DCHECK(false) << "Custom Elements v0 has been removed.";
+
   if (!RegistrationContext()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,
@@ -1324,7 +1326,7 @@ ScriptValue Document::registerElement(ScriptState* script_state,
 }
 
 V0CustomElementRegistrationContext* Document::RegistrationContext() const {
-  if (RuntimeEnabledFeatures::CustomElementsV0Enabled(GetExecutionContext()))
+  if (RuntimeEnabledFeatures::CustomElementsV0Enabled())
     return registration_context_.Get();
   return nullptr;
 }
