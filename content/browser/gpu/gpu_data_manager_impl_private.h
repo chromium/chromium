@@ -121,6 +121,8 @@ class CONTENT_EXPORT GpuDataManagerImplPrivate {
   gpu::GpuMode GetGpuMode() const;
   void FallBackToNextGpuMode();
 
+  bool CanFallback() const { return !fallback_modes_.empty(); }
+
   bool IsGpuProcessUsingHardwareGpu() const;
 
   void SetApplicationVisible(bool is_visible);

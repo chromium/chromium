@@ -344,6 +344,11 @@ void GpuDataManagerImpl::FallBackToNextGpuMode() {
   private_->FallBackToNextGpuMode();
 }
 
+bool GpuDataManagerImpl::CanFallback() const {
+  base::AutoLock auto_lock(lock_);
+  return private_->CanFallback();
+}
+
 bool GpuDataManagerImpl::IsGpuProcessUsingHardwareGpu() const {
   base::AutoLock auto_lock(lock_);
   return private_->IsGpuProcessUsingHardwareGpu();
