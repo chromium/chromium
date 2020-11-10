@@ -10,6 +10,7 @@
 #include <jni.h>
 
 #include "base/android/scoped_java_ref.h"
+#include "base/containers/flat_map.h"
 #include "base/macros.h"
 #include "media/capture/video/video_capture_device.h"
 
@@ -24,8 +25,8 @@ class CAPTURE_EXPORT VideoCaptureDeviceFactoryAndroid
       int id,
       jlong nativeVideoCaptureDeviceAndroid);
 
-  VideoCaptureDeviceFactoryAndroid() : test_mode_(false) {}
-  ~VideoCaptureDeviceFactoryAndroid() override {}
+  VideoCaptureDeviceFactoryAndroid();
+  ~VideoCaptureDeviceFactoryAndroid() override;
 
   std::unique_ptr<VideoCaptureDevice> CreateDevice(
       const VideoCaptureDeviceDescriptor& device_descriptor) override;
@@ -37,14 +38,21 @@ class CAPTURE_EXPORT VideoCaptureDeviceFactoryAndroid
   void ConfigureForTesting() { test_mode_ = true; }
 
  private:
-  VideoCaptureFormats GetSupportedFormats(int device_id,
+  VideoCaptureFormats GetSupportedFormats(int device_index,
                                           const std::string& display_name);
 
   // Switch to indicate that all created Java capturers will be in test mode.
-  bool test_mode_;
+  bool test_mode_ = false;
+
+  // VideoCaptureFormats are cached, so GetSupportedFormats() doesn't need to be
+  // called for every device every time GetDevicesInfo() is called. It also
+  // allows to workaround bugs on some devices that don't handle the case when
+  // an actively used camera is opened again (see https://crbug.com/1138608).
+  base::flat_map<std::string, VideoCaptureFormats> supported_formats_cache_;
 
   DISALLOW_COPY_AND_ASSIGN(VideoCaptureDeviceFactoryAndroid);
 };
+
 }  // namespace media
 
 #endif  // MEDIA_CAPTURE_VIDEO_ANDROID_VIDEO_CAPTURE_DEVICE_FACTORY_ANDROID_H_

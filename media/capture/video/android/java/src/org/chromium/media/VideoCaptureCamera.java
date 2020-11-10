@@ -222,6 +222,10 @@ public class VideoCaptureCamera
                                   : "back");
     }
 
+    static String getDeviceId(int id) {
+        return Integer.toString(id);
+    }
+
     static VideoCaptureFormat[] getDeviceSupportedFormats(int id) {
         android.hardware.Camera camera;
         try {
