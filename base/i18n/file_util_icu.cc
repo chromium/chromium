@@ -20,6 +20,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "third_party/icu/source/common/unicode/uniset.h"
 #include "third_party/icu/source/i18n/unicode/coll.h"
 
@@ -165,7 +166,7 @@ bool LocaleAwareCompareFilenames(const FilePath& a, const FilePath& b) {
 }
 
 void NormalizeFileNameEncoding(FilePath* file_name) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   std::string normalized_str;
   if (ConvertToUtf8AndNormalize(file_name->BaseName().value(), kCodepageUTF8,
                                 &normalized_str) &&

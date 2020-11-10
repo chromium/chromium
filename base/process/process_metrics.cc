@@ -11,6 +11,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 
 namespace base {
 
@@ -54,7 +55,7 @@ SystemMetrics SystemMetrics::Sample() {
   GetVmStatInfo(&system_metrics.vmstat_info_);
   GetSystemDiskInfo(&system_metrics.disk_info_);
 #endif
-#if defined(OS_CHROMEOS) || BUILDFLAG(IS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   GetSwapInfo(&system_metrics.swap_info_);
   GetGraphicsMemoryInfo(&system_metrics.gpu_memory_info_);
 #endif
@@ -75,7 +76,7 @@ std::unique_ptr<Value> SystemMetrics::ToValue() const {
   res->Set("meminfo", std::move(meminfo));
   res->Set("diskinfo", disk_info_.ToValue());
 #endif
-#if defined(OS_CHROMEOS) || BUILDFLAG(IS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   res->Set("swapinfo", swap_info_.ToValue());
   res->Set("gpu_meminfo", gpu_memory_info_.ToValue());
 #endif

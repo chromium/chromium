@@ -6,6 +6,7 @@
 #define BASE_TEST_SCOPED_LOGGING_SETTINGS_H_
 
 #include "base/logging.h"
+#include "build/chromeos_buildflags.h"
 
 namespace logging {
 // Saves the current logging settings and restores them when destroyed.
@@ -20,7 +21,7 @@ class BASE_EXPORT ScopedLoggingSettings {
   ScopedLoggingSettings(const ScopedLoggingSettings&) = delete;
   ScopedLoggingSettings& operator=(const ScopedLoggingSettings&) = delete;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   void SetLogFormat(LogFormat) const;
 #endif
 
@@ -32,9 +33,9 @@ class BASE_EXPORT ScopedLoggingSettings {
   int min_log_level_;
   LogMessageHandlerFunction message_handler_;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   LogFormat log_format_;
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 };
 }  // namespace logging
 

@@ -18,8 +18,9 @@
 #include "base/dcheck_is_on.h"
 #include "base/scoped_clear_last_error.h"
 #include "base/strings/string_piece_forward.h"
+#include "build/chromeos_buildflags.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include <cstdio>
 #endif
 
@@ -216,7 +217,7 @@ enum LogLockingState { LOCK_LOG_FILE, DONT_LOCK_LOG_FILE };
 // Defaults to APPEND_TO_OLD_LOG_FILE.
 enum OldFileDeletionState { DELETE_OLD_LOG_FILE, APPEND_TO_OLD_LOG_FILE };
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Defines the log message prefix format to use.
 // LOG_FORMAT_SYSLOG indicates syslog-like message prefixes.
 // LOG_FORMAT_CHROME indicates the normal Chrome format.
@@ -233,7 +234,7 @@ struct BASE_EXPORT LoggingSettings {
   const PathChar* log_file_path = nullptr;
   LogLockingState lock_log = LOCK_LOG_FILE;
   OldFileDeletionState delete_old = APPEND_TO_OLD_LOG_FILE;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Contains an optional file that logs should be written to. If present,
   // |log_file_path| will be ignored, and the logging system will take ownership
   // of the FILE. If there's an error writing to this file, no fallback paths
@@ -618,7 +619,7 @@ class BASE_EXPORT LogMessage {
   // will have lost the thread error value when the log call returns.
   base::ScopedClearLastError last_error_;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   void InitWithSyslogPrefix(base::StringPiece filename,
                             int line,
                             uint64_t tick_count,
@@ -693,7 +694,7 @@ class BASE_EXPORT ErrnoLogMessage : public LogMessage {
 //       after this call.
 BASE_EXPORT void CloseLogFile();
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Returns a new file handle that will write to the same destination as the
 // currently open log file. Returns nullptr if logging to a file is disabled,
 // or if opening the file failed. This is intended to be used to initialize
