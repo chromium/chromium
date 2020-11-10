@@ -292,7 +292,7 @@ void RenderAccessibilityImpl::DidCommitProvisionalLoad(
   }
   tree_source_->RemoveImageAnnotator();
   ax_image_annotator_->Destroy();
-  ax_image_annotator_.release();
+  ax_image_annotator_.reset();
   page_language_.clear();
 }
 
@@ -1285,7 +1285,7 @@ void RenderAccessibilityImpl::StartOrStopLabelingImages(ui::AXMode old_mode,
              !new_mode.has_mode(ui::AXMode::kLabelImages)) {
     tree_source_->RemoveImageAnnotator();
     ax_image_annotator_->Destroy();
-    ax_image_annotator_.release();
+    ax_image_annotator_.reset();
   }
 }
 
