@@ -149,7 +149,6 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
       wtf_size_t* start_index,
       LogicalOffset* offset) const;
 
-  const NGConstraintSpace& container_space_;
   NGBoxFragmentBuilder* container_builder_;
   ContainingBlockInfo default_containing_block_;
   HashMap<const LayoutObject*, ContainingBlockInfo> containing_blocks_map_;
@@ -167,6 +166,7 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
   bool is_absolute_container_;
   bool is_fixed_container_;
   bool allow_first_tier_oof_cache_;
+  bool has_block_fragmentation_;
 };
 
 }  // namespace blink
