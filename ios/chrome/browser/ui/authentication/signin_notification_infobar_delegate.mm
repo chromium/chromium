@@ -78,14 +78,15 @@ SigninNotificationInfoBarDelegate::SigninNotificationInfoBarDelegate(
 
   if (base::FeatureList::IsEnabled(
           signin::kSigninNotificationInfobarUsernameInTitle)) {
-    message_ = base::SysNSStringToUTF16(l10n_util::GetNSStringF(
+    title_ = base::SysNSStringToUTF16(l10n_util::GetNSStringF(
         IDS_IOS_SIGNIN_ACCOUNT_NOTIFICATION_TITLE_WITH_USERNAME,
         base::SysNSStringToUTF16(identity.userFullName)));
   } else {
-    message_ = base::SysNSStringToUTF16(
+    title_ = base::SysNSStringToUTF16(
         l10n_util::GetNSString(IDS_IOS_SIGNIN_ACCOUNT_NOTIFICATION_TITLE));
   }
 
+  message_ = base::SysNSStringToUTF16(identity.userEmail);
   button_text_ =
       base::SysNSStringToUTF16(l10n_util::GetNSString(IDS_IOS_SETTINGS_TITLE));
 }
@@ -95,6 +96,10 @@ SigninNotificationInfoBarDelegate::~SigninNotificationInfoBarDelegate() {}
 infobars::InfoBarDelegate::InfoBarIdentifier
 SigninNotificationInfoBarDelegate::GetIdentifier() const {
   return RE_SIGN_IN_INFOBAR_DELEGATE_IOS;
+}
+
+base::string16 SigninNotificationInfoBarDelegate::GetTitleText() const {
+  return title_;
 }
 
 base::string16 SigninNotificationInfoBarDelegate::GetMessageText() const {
