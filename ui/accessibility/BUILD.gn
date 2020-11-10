@@ -238,6 +238,7 @@ test("accessibility_unittests") {
     "platform/ax_platform_node_unittest.cc",
     "platform/ax_platform_node_unittest.h",
     "platform/ax_unique_id_unittest.cc",
+    "platform/inspect/property_node_unittest.cc",
     "run_all_unittests.cc",
   ]
 

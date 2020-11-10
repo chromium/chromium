@@ -7,6 +7,9 @@
 #include "base/strings/sys_string_conversions.h"
 #include "content/browser/accessibility/accessibility_tools_utils_mac.h"
 #include "content/browser/accessibility/browser_accessibility_mac.h"
+#include "ui/accessibility/platform/inspect/property_node.h"
+
+using ui::AXPropertyNode;
 
 namespace content {
 namespace a11y {
@@ -114,7 +117,7 @@ AttributeInvoker::AttributeInvoker(const id node,
 }
 
 OptionalNSObject AttributeInvoker::Invoke(
-    const PropertyNode& property_node) const {
+    const AXPropertyNode& property_node) const {
   // Attributes
   for (NSString* attribute : attributes) {
     if (property_node.IsMatching(base::SysNSStringToUTF8(attribute))) {
@@ -173,7 +176,7 @@ void AttributeInvoker::SetValue(const std::string& property_name,
 }
 
 OptionalNSObject AttributeInvoker::ParamByPropertyNode(
-    const PropertyNode& property_node) const {
+    const AXPropertyNode& property_node) const {
   // NSAccessibility attributes always take a single parameter.
   if (property_node.parameters.size() != 1) {
     LOG(ERROR) << "Failed to parse " << property_node.original_property
@@ -182,7 +185,7 @@ OptionalNSObject AttributeInvoker::ParamByPropertyNode(
   }
 
   // Nested attribute case: attempt to invoke an attribute for an argument node.
-  const PropertyNode& arg_node = property_node.parameters[0];
+  const AXPropertyNode& arg_node = property_node.parameters[0];
   OptionalNSObject subvalue = Invoke(arg_node);
   if (!subvalue.IsNotApplicable()) {
     return subvalue;
@@ -216,7 +219,7 @@ OptionalNSObject AttributeInvoker::ParamByPropertyNode(
 
 // NSNumber. Format: integer.
 NSNumber* AttributeInvoker::PropertyNodeToInt(
-    const PropertyNode& intnode) const {
+    const AXPropertyNode& intnode) const {
   base::Optional<int> param = intnode.AsInt();
   if (!param) {
     INT_FAIL(intnode, "not a number")
@@ -226,7 +229,7 @@ NSNumber* AttributeInvoker::PropertyNodeToInt(
 
 // NSArray of two NSNumber. Format: [integer, integer].
 NSArray* AttributeInvoker::PropertyNodeToIntArray(
-    const PropertyNode& arraynode) const {
+    const AXPropertyNode& arraynode) const {
   if (arraynode.name_or_value != "[]") {
     INTARRAY_FAIL(arraynode, "not array")
   }
@@ -245,7 +248,7 @@ NSArray* AttributeInvoker::PropertyNodeToIntArray(
 
 // NSRange. Format: {loc: integer, len: integer}.
 NSValue* AttributeInvoker::PropertyNodeToRange(
-    const PropertyNode& dictnode) const {
+    const AXPropertyNode& dictnode) const {
   if (!dictnode.IsDict()) {
     NSRANGE_FAIL(dictnode, "dictionary is expected")
   }
@@ -265,7 +268,7 @@ NSValue* AttributeInvoker::PropertyNodeToRange(
 
 // UIElement. Format: :line_num.
 gfx::NativeViewAccessible AttributeInvoker::PropertyNodeToUIElement(
-    const PropertyNode& uielement_node) const {
+    const AXPropertyNode& uielement_node) const {
   gfx::NativeViewAccessible uielement =
       line_indexer->NodeBy(uielement_node.name_or_value);
   if (!uielement) {
@@ -275,7 +278,8 @@ gfx::NativeViewAccessible AttributeInvoker::PropertyNodeToUIElement(
   return uielement;
 }
 
-id AttributeInvoker::DictNodeToTextMarker(const PropertyNode& dictnode) const {
+id AttributeInvoker::DictNodeToTextMarker(
+    const AXPropertyNode& dictnode) const {
   if (!dictnode.IsDict()) {
     TEXTMARKER_FAIL(dictnode, "dictionary is expected")
   }
@@ -310,17 +314,17 @@ id AttributeInvoker::DictNodeToTextMarker(const PropertyNode& dictnode) const {
 }
 
 id AttributeInvoker::PropertyNodeToTextMarker(
-    const PropertyNode& dictnode) const {
+    const AXPropertyNode& dictnode) const {
   return DictNodeToTextMarker(dictnode);
 }
 
 id AttributeInvoker::PropertyNodeToTextMarkerRange(
-    const PropertyNode& rangenode) const {
+    const AXPropertyNode& rangenode) const {
   if (!rangenode.IsDict()) {
     TEXTMARKER_FAIL(rangenode, "dictionary is expected")
   }
 
-  const PropertyNode* anchornode = rangenode.FindKey("anchor");
+  const AXPropertyNode* anchornode = rangenode.FindKey("anchor");
   if (!anchornode) {
     TEXTMARKER_FAIL(rangenode, "no anchor")
   }
@@ -330,7 +334,7 @@ id AttributeInvoker::PropertyNodeToTextMarkerRange(
     TEXTMARKER_FAIL(rangenode, "failed to parse anchor")
   }
 
-  const PropertyNode* focusnode = rangenode.FindKey("focus");
+  const AXPropertyNode* focusnode = rangenode.FindKey("focus");
   if (!focusnode) {
     TEXTMARKER_FAIL(rangenode, "no focus")
   }
