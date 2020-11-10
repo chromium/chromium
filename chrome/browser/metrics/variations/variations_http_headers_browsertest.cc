@@ -32,13 +32,17 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/metrics/metrics_pref_names.h"
+#include "components/metrics_services_manager/metrics_services_manager.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/optimization_guide/optimization_guide_features.h"
 #include "components/optimization_guide/proto/hints.pb.h"
+#include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/variations/net/variations_http_headers.h"
 #include "components/variations/proto/study.pb.h"
 #include "components/variations/variations.mojom.h"
+#include "components/variations/variations_associated_data.h"
 #include "components/variations/variations_features.h"
 #include "components/variations/variations_ids_provider.h"
 #include "components/variations/variations_test_utils.h"
@@ -166,7 +170,7 @@ class VariationsHttpHeadersBrowserTest : public InProcessBrowserTest {
     return it->second.find(header) != it->second.end();
   }
 
-  // Returns the |header| recievced by |url| or nullopt if it hasn't been
+  // Returns the |header| received by |url| or nullopt if it hasn't been
   // received. Fails an EXPECT if |url| hasn't been observed.
   base::Optional<std::string> GetReceivedHeader(
       const GURL& url,
@@ -405,7 +409,7 @@ void CreateGoogleSignedInFieldTrial(variations::VariationID id) {
                 variations::mojom::GoogleWebVisibility::FIRST_PARTY));
 }
 
-// Creates FieldTrials associatedd with the FIRST_PARTY IDCollectionKeys and
+// Creates FieldTrials associated with the FIRST_PARTY IDCollectionKeys and
 // their corresponding ANY_CONTEXT keys.
 void CreateFieldTrialsWithDifferentVisibilities() {
   scoped_refptr<base::FieldTrial> trial_1(variations::CreateTrialAndAssociateId(
@@ -585,6 +589,64 @@ IN_PROC_BROWSER_TEST_F(VariationsHttpHeadersBrowserTest, UserNotSignedIn) {
                                               &trigger_ids_any_context));
 
   EXPECT_FALSE(base::Contains(ids_any_context, signed_in_id));
+}
+
+IN_PROC_BROWSER_TEST_F(VariationsHttpHeadersBrowserTest,
+                       PRE_CheckLowEntropySourceValue) {
+  // We use the PRE_ prefix mechanism to ensure that this test always runs
+  // before CheckLowEntropyValue(). None of the subclasses in the
+  // InProcessBrowserTest class allow us to set this pref early enough to be
+  // read by the variations code, which runs very early during the browser
+  // startup.
+  PrefService* local_state = g_browser_process->local_state();
+  local_state->SetInteger(metrics::prefs::kMetricsLowEntropySource, 5);
+}
+
+IN_PROC_BROWSER_TEST_F(VariationsHttpHeadersBrowserTest,
+                       CheckLowEntropySourceValue) {
+  std::unique_ptr<const base::FieldTrial::EntropyProvider>
+      low_entropy_provider = g_browser_process->GetMetricsServicesManager()
+                                 ->CreateEntropyProvider();
+
+  // Create a trial with 100 groups and variation ids to validate that the group
+  // reported in the variations header is actually based on the low entropy
+  // source.
+  //
+  // TODO(crbug.com/1146199): Refactor this so that creating the field trial
+  // either uses a different API or tighten the current API to set up a field
+  // trial that can only be made with the low entropy provider.
+  scoped_refptr<base::FieldTrial> trial =
+      base::FieldTrialList::FactoryGetFieldTrialWithRandomizationSeed(
+          "t1", 100, "default", base::FieldTrial::ONE_TIME_RANDOMIZED, 0,
+          /*default_group_number=*/nullptr, low_entropy_provider.get());
+  for (int i = 1; i < 101; ++i) {
+    const std::string group_name = base::StringPrintf("%d", i);
+    variations::AssociateGoogleVariationID(
+        variations::GOOGLE_WEB_PROPERTIES_ANY_CONTEXT, trial->trial_name(),
+        group_name, i);
+    trial->AppendGroup(group_name, 1);
+  }
+  // Activate the trial. This corresponds to ACTIVATE_ON_STARTUP for server-side
+  // studies.
+  trial->group();
+
+  ui_test_utils::NavigateToURL(browser(), GetGoogleUrl());
+  base::Optional<std::string> header =
+      GetReceivedHeader(GetGoogleUrl(), "X-Client-Data");
+  ASSERT_TRUE(header);
+
+  std::set<variations::VariationID> variation_ids;
+  std::set<variations::VariationID> trigger_ids;
+  ASSERT_TRUE(variations::ExtractVariationIds(header.value(), &variation_ids,
+                                              &trigger_ids));
+
+  // 3320983 is the offset value of kLowEntropySourceVariationIdRangeMin + 5.
+  EXPECT_TRUE(base::Contains(variation_ids, 3320983));
+
+  // Check that the reported group in the header is consistent with the low
+  // entropy source. 33 is the group that is derived from the low entropy source
+  // value of 5.
+  EXPECT_TRUE(base::Contains(variation_ids, 33));
 }
 
 INSTANTIATE_TEST_SUITE_P(

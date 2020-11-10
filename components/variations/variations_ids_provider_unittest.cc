@@ -160,6 +160,88 @@ INSTANTIATE_TEST_SUITE_P(All,
                          ::testing::Bool());
 
 TEST_P(VariationsIdsProviderTestWithRestrictedVisibility,
+       LowEntropySourceValue_Valid) {
+  VariationsIdsProvider provider;
+
+  base::Optional<int> valid_low_entropy_source_value = 5;
+  provider.SetLowEntropySourceValue(valid_low_entropy_source_value);
+  provider.InitVariationIDsCacheIfNeeded();
+  variations::mojom::VariationsHeadersPtr headers =
+      provider.GetClientDataHeaders(/*is_signed_in=*/false);
+  EXPECT_FALSE(headers->headers_map.empty());
+
+  const std::string variations_header_first_party = headers->headers_map.at(
+      variations::mojom::GoogleWebVisibility::FIRST_PARTY);
+  const std::string variations_header_any_context =
+      headers->headers_map.at(variations::mojom::GoogleWebVisibility::ANY);
+
+  std::set<VariationID> variation_ids_first_party;
+  std::set<VariationID> trigger_ids_first_party;
+  ASSERT_TRUE(ExtractVariationIds(variations_header_first_party,
+                                  &variation_ids_first_party,
+                                  &trigger_ids_first_party));
+  std::set<VariationID> variation_ids_any_context;
+  std::set<VariationID> trigger_ids_any_context;
+  ASSERT_TRUE(ExtractVariationIds(variations_header_any_context,
+                                  &variation_ids_any_context,
+                                  &trigger_ids_any_context));
+
+  // 3320983 is the offset value of kLowEntropySourceVariationIdRangeMin + 5.
+  EXPECT_TRUE(base::Contains(variation_ids_first_party, 3320983));
+
+  // The value will be omitted from third-party contexts under
+  // kRestrictGoogleWebVisibility.
+  bool value_omitted =
+      base::FeatureList::IsEnabled(internal::kRestrictGoogleWebVisibility);
+  EXPECT_EQ(value_omitted, !base::Contains(variation_ids_any_context, 3320983));
+}
+
+TEST_P(VariationsIdsProviderTestWithRestrictedVisibility,
+       LowEntropySourceValue_Null) {
+  VariationsIdsProvider provider;
+
+  base::Optional<int> null_low_entropy_source_value = base::nullopt;
+  provider.SetLowEntropySourceValue(null_low_entropy_source_value);
+
+  // Valid experiment ids.
+  CreateTrialAndAssociateId("t1", "g1", GOOGLE_WEB_PROPERTIES_ANY_CONTEXT, 12);
+  CreateTrialAndAssociateId("t2", "g2", GOOGLE_WEB_PROPERTIES_ANY_CONTEXT, 456);
+  provider.InitVariationIDsCacheIfNeeded();
+  variations::mojom::VariationsHeadersPtr headers =
+      provider.GetClientDataHeaders(/*is_signed_in=*/false);
+  EXPECT_FALSE(headers->headers_map.empty());
+
+  const std::string variations_header_first_party = headers->headers_map.at(
+      variations::mojom::GoogleWebVisibility::FIRST_PARTY);
+  const std::string variations_header_any_context =
+      headers->headers_map.at(variations::mojom::GoogleWebVisibility::ANY);
+
+  std::set<VariationID> variation_ids_first_party;
+  std::set<VariationID> trigger_ids_first_party;
+  ASSERT_TRUE(ExtractVariationIds(variations_header_first_party,
+                                  &variation_ids_first_party,
+                                  &trigger_ids_first_party));
+  std::set<VariationID> variation_ids_any_context;
+  std::set<VariationID> trigger_ids_any_context;
+  ASSERT_TRUE(ExtractVariationIds(variations_header_any_context,
+                                  &variation_ids_any_context,
+                                  &trigger_ids_any_context));
+
+  // We test to make sure that only two valid variation IDs are present and that
+  // the low entropy source value is not added to the sets.
+  EXPECT_TRUE(base::Contains(variation_ids_first_party, 12));
+  EXPECT_TRUE(base::Contains(variation_ids_first_party, 456));
+  EXPECT_FALSE(base::Contains(variation_ids_first_party, 3320983));
+  EXPECT_TRUE(base::Contains(variation_ids_any_context, 12));
+  EXPECT_TRUE(base::Contains(variation_ids_any_context, 456));
+  EXPECT_FALSE(base::Contains(variation_ids_any_context, 3320983));
+
+  // Check to make sure that no other variation IDs are present.
+  EXPECT_EQ(2U, variation_ids_first_party.size());
+  EXPECT_EQ(2U, variation_ids_any_context.size());
+}
+
+TEST_P(VariationsIdsProviderTestWithRestrictedVisibility,
        OnFieldTrialGroupFinalized) {
   VariationsIdsProvider provider;
   provider.InitVariationIDsCacheIfNeeded();

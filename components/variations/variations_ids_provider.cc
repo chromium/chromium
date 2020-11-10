@@ -18,6 +18,11 @@
 
 namespace variations {
 
+// Range of low entropy source values (8000) as variation ids for the
+// X-Client-Data header. This range is reserved in cl/333331461 (internal CL).
+const int kLowEntropySourceVariationIdRangeMin = 3320978;
+const int kLowEntropySourceVariationIdRangeMax = 3328977;
+
 bool VariationsHeaderKey::operator<(const VariationsHeaderKey& other) const {
   if (is_signed_in != other.is_signed_in)
     return is_signed_in < other.is_signed_in;
@@ -116,8 +121,8 @@ void VariationsIdsProvider::SetLowEntropySourceValue(
   // inclusive. See components/metrics/metrics_state_manager.cc for the logic to
   // generate it.
   if (low_entropy_source_value) {
-    DCHECK(low_entropy_source_value.value() >= 0 &&
-           low_entropy_source_value.value() <= 7999);
+    DCHECK_GE(low_entropy_source_value.value(), 0);
+    DCHECK_LE(low_entropy_source_value.value(), 7999);
   }
   low_entropy_source_value_ = low_entropy_source_value;
 }
@@ -435,6 +440,27 @@ VariationsIdsProvider::GetAllVariationIds() {
   for (const VariationIDEntry& entry : force_disabled_ids_set_) {
     all_variation_ids_set.erase(entry);
   }
+
+  // Add the low entropy source value, if it exists, which has one of
+  // 8000 possible values (between kLowEntropySourceVariationIdRange[Min/Max],
+  // ~13 bits). This is the value that has been used for deriving the variation
+  // ids included in the X-Client-Data header and therefore does not reveal
+  // additional information about the client when there are more than 13
+  // variations. A typical Chrome client has more than 13 variation ids
+  // reported.
+  //
+  // The entropy source value is used for retrospective A/A tests to validate
+  // that there's no existing bias between two randomized groups of clients for
+  // a later A/B study.
+  if (low_entropy_source_value_) {
+    int source_value = low_entropy_source_value_.value() +
+                       kLowEntropySourceVariationIdRangeMin;
+    DCHECK_GE(source_value, kLowEntropySourceVariationIdRangeMin);
+    DCHECK_LE(source_value, kLowEntropySourceVariationIdRangeMax);
+    all_variation_ids_set.insert(
+        VariationIDEntry(source_value, GOOGLE_WEB_PROPERTIES_FIRST_PARTY));
+  }
+
   return all_variation_ids_set;
 }
 

@@ -146,6 +146,10 @@ class VariationsIdsProvider : public base::FieldTrialList::Observer,
                            ForceDisableVariationIds_Invalid);
   FRIEND_TEST_ALL_PREFIXES(VariationsIdsProviderTestWithRestrictedVisibility,
                            OnFieldTrialGroupFinalized);
+  FRIEND_TEST_ALL_PREFIXES(VariationsIdsProviderTestWithRestrictedVisibility,
+                           LowEntropySourceValue_Valid);
+  FRIEND_TEST_ALL_PREFIXES(VariationsIdsProviderTestWithRestrictedVisibility,
+                           LowEntropySourceValue_Null);
   FRIEND_TEST_ALL_PREFIXES(VariationsIdsProviderTest,
                            GetGoogleAppVariationsString);
   FRIEND_TEST_ALL_PREFIXES(VariationsIdsProviderTest, GetVariationsString);
