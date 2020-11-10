@@ -38,11 +38,10 @@ class TouchToFillViewImpl : public TouchToFillView {
   void OnDismiss(JNIEnv* env);
 
  private:
-  // Returns either the fully initialized java counterpart of this bridge or
-  // a is_null() reference if the creation failed. By using this method, the
-  // bridge will try to recreate the java object if it failed previously (e.g.
-  // because there was no native window available).
-  base::android::ScopedJavaGlobalRef<jobject> GetOrCreateJavaObject();
+  // Returns either true if the java counterpart of this bridge is initialized
+  // successfully or false if the creation failed. This method will recreate the
+  // java object whenever Show() is called.
+  bool RecreateJavaObject();
 
   TouchToFillController* controller_ = nullptr;
   base::android::ScopedJavaGlobalRef<jobject> java_object_internal_;
