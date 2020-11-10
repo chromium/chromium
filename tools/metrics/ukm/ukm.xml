@@ -3307,6 +3307,13 @@ be describing additional metrics about the same event.
     <summary>
       Type of rendering context created for HTMLCanvasElement.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
   <metric name="GPUDevice">
     <summary>
@@ -3317,6 +3324,13 @@ be describing additional metrics about the same event.
     <summary>
       Type of rendering context created for OffscreenCanvas.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
 </event>
 
