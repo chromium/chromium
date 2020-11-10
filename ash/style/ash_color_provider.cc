@@ -64,12 +64,6 @@ constexpr SkColor kBackgroundColorDefaultDark = gfx::kGoogleGrey900;
 // The spacing between a pill button's icon and label, if it has both.
 constexpr int kPillButtonImageLabelSpacingDp = 8;
 
-// TODO(minch): Let colors can be live updated on color mode/theme changes.
-// Restart the chrome browser to let the color mode/theme changes take effect.
-void AttemptRestartChrome() {
-  Shell::Get()->session_controller()->AttemptRestartChrome();
-}
-
 // AshColorProvider is kind of NativeTheme of ChromeOS. This will notify the
 // View::OnThemeChanged to live update the colors on color mode/theme changes.
 void NotifyThemeChanges() {
@@ -356,7 +350,7 @@ bool AshColorProvider::IsDarkModeEnabled() const {
   if (!features::IsDarkLightModeEnabled() && override_light_mode_as_default_)
     return false;
 
-  if (!active_user_pref_service_)
+  if (!active_user_pref_service_ || !features::IsDarkLightModeEnabled())
     return kDefaultDarkModeEnabled;
   return active_user_pref_service_->GetBoolean(prefs::kDarkModeEnabled);
 }
@@ -375,8 +369,6 @@ void AshColorProvider::ToggleColorMode() {
 
   ui::NativeTheme::GetInstanceForNativeUi()->set_use_dark_colors(
       IsDarkModeEnabled());
-
-  AttemptRestartChrome();
 }
 
 void AshColorProvider::UpdateColorModeThemed(bool is_themed) {
@@ -386,8 +378,6 @@ void AshColorProvider::UpdateColorModeThemed(bool is_themed) {
   DCHECK(active_user_pref_service_);
   active_user_pref_service_->SetBoolean(prefs::kColorModeThemed, is_themed);
   active_user_pref_service_->CommitPendingWrite();
-
-  AttemptRestartChrome();
 }
 
 SkColor AshColorProvider::GetBackgroundDefaultColor() const {
