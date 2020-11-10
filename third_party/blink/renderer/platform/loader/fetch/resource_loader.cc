@@ -414,10 +414,15 @@ ResourceLoader::ResourceLoader(ResourceFetcher* fetcher,
   if (!RequestContextObserveResponse(request_context)) {
     if (auto* frame_or_worker_scheduler =
             fetcher->GetFrameOrWorkerScheduler()) {
-      feature_handle_for_scheduler_ =
-          frame_or_worker_scheduler->RegisterFeature(
-              GetFeatureFromRequestContextType(request_context),
-              {SchedulingPolicy::RecordMetricsForBackForwardCache()});
+      // Only when this feature is turned on and the loading tasks keep being
+      // processed and the data is queued up on the renderer, a page can stay in
+      // BackForwardCache with network requests.
+      if (!base::FeatureList::IsEnabled(features::kLoadingTasksUnfreezable)) {
+        feature_handle_for_scheduler_ =
+            frame_or_worker_scheduler->RegisterFeature(
+                GetFeatureFromRequestContextType(request_context),
+                {SchedulingPolicy::RecordMetricsForBackForwardCache()});
+      }
     }
   }
 
@@ -565,19 +570,20 @@ void ResourceLoader::StartWith(const ResourceRequestHead& request) {
   DCHECK(loader_);
 
   if (resource_->Options().synchronous_policy == kRequestSynchronously &&
-      fetcher_->GetProperties().IsPaused()) {
+      fetcher_->GetProperties().IsLoadDeferred()) {
+    // TODO(yuzus): Evict bfcache if necessary.
     Cancel();
     return;
   }
 
   is_downloading_to_blob_ = request.DownloadToBlob();
 
-  SetDefersLoading(fetcher_->GetProperties().IsPaused());
+  SetDefersLoading(fetcher_->GetProperties().IsLoadDeferred());
 
   if (ShouldFetchCodeCache()) {
     code_cache_request_ = std::make_unique<CodeCacheRequest>(
         fetcher_->CreateCodeCacheLoader(), request.Url(),
-        fetcher_->GetProperties().IsPaused());
+        fetcher_->GetProperties().IsLoadDeferred());
   }
 
   if (is_cache_aware_loading_activated_) {

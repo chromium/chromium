@@ -719,6 +719,8 @@ class CORE_EXPORT LocalFrame final
   PolicyContainer* GetPolicyContainer() { return policy_container_.get(); }
   void SetPolicyContainer(std::unique_ptr<PolicyContainer> container);
 
+  bool IsLoadDeferred();
+
  private:
   friend class FrameNavigationDisabler;
   FRIEND_TEST_ALL_PREFIXES(LocalFrameTest, CharacterIndexAtPointWithPinchZoom);

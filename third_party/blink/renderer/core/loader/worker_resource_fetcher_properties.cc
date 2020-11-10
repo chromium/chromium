@@ -38,6 +38,10 @@ bool WorkerResourceFetcherProperties::IsPaused() const {
   return global_scope_->IsContextPaused();
 }
 
+bool WorkerResourceFetcherProperties::IsLoadDeferred() const {
+  return global_scope_->IsLoadDeferred();
+}
+
 const KURL& WorkerResourceFetcherProperties::WebBundlePhysicalUrl() const {
   return NullURL();
 }

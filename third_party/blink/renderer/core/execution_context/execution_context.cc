@@ -233,6 +233,11 @@ bool ExecutionContext::IsContextPaused() const {
   return lifecycle_state_ == mojom::blink::FrameLifecycleState::kPaused;
 }
 
+bool ExecutionContext::IsLoadDeferred() const {
+  return lifecycle_state_ == mojom::blink::FrameLifecycleState::kPaused ||
+         lifecycle_state_ == mojom::blink::FrameLifecycleState::kFrozen;
+}
+
 int ExecutionContext::CircularSequentialID() {
   ++circular_sequential_id_;
   if (circular_sequential_id_ > ((1U << 31) - 1U))

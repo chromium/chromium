@@ -2284,10 +2284,14 @@ void LocalFrame::SetContextPaused(bool is_paused) {
     return;
   paused_ = is_paused;
 
-  GetDocument()->Fetcher()->SetDefersLoading(is_paused);
-  Loader().SetDefersLoading(is_paused);
+  GetDocument()->Fetcher()->SetDefersLoading(IsLoadDeferred());
+  Loader().SetDefersLoading(IsLoadDeferred());
   // TODO(altimin): Move this to PageScheduler level.
   GetFrameScheduler()->SetPaused(is_paused);
+}
+
+bool LocalFrame::IsLoadDeferred() {
+  return frozen_ || paused_;
 }
 
 void LocalFrame::DidFreeze() {
@@ -2303,6 +2307,9 @@ void LocalFrame::DidFreeze() {
     document_resource_coordinator->SetLifecycleState(
         performance_manager::mojom::LifecycleState::kFrozen);
   }
+
+  GetDocument()->Fetcher()->SetDefersLoading(true);
+  Loader().SetDefersLoading(true);
 }
 
 void LocalFrame::DidResume() {
@@ -2319,6 +2326,8 @@ void LocalFrame::DidResume() {
     document_resource_coordinator->SetLifecycleState(
         performance_manager::mojom::LifecycleState::kRunning);
   }
+  GetDocument()->Fetcher()->SetDefersLoading(IsLoadDeferred());
+  Loader().SetDefersLoading(IsLoadDeferred());
 }
 
 void LocalFrame::MaybeLogAdClickNavigation() {

@@ -45,6 +45,7 @@ class TestResourceFetcherProperties final : public ResourceFetcherProperties {
   }
   bool IsPaused() const override { return paused_; }
   bool IsDetached() const override { return false; }
+  bool IsLoadDeferred() const override { return false; }
   bool IsLoadComplete() const override { return load_complete_; }
   bool ShouldBlockLoadingSubResource() const override {
     return should_block_loading_sub_resource_;

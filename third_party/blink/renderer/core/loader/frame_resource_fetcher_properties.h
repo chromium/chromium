@@ -36,6 +36,7 @@ class CORE_EXPORT FrameResourceFetcherProperties final
   int64_t ServiceWorkerId() const override;
   bool IsPaused() const override;
   bool IsDetached() const override { return false; }
+  bool IsLoadDeferred() const override;
   bool IsLoadComplete() const override;
   bool ShouldBlockLoadingSubResource() const override;
   bool IsSubframeDeprioritizationEnabled() const override;
