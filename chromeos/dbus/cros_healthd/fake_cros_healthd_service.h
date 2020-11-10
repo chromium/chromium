@@ -109,6 +109,7 @@ class FakeCrosHealthdService final
       RunDnsResolutionRoutineCallback callback) override;
   void RunCaptivePortalRoutine(
       RunCaptivePortalRoutineCallback callback) override;
+  void RunHttpFirewallRoutine(RunHttpFirewallRoutineCallback callback) override;
 
   // CrosHealthdEventService overrides:
   void AddBluetoothObserver(

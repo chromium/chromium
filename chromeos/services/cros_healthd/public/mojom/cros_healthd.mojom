@@ -379,6 +379,16 @@ interface CrosHealthdDiagnosticsService {
   // * |response| - contains a unique identifier and status for the created
   //                routine.
   RunCaptivePortalRoutine() => (RunRoutineResponse response);
+
+  // Requests that the HttpFirewall routine is created and started on the
+  // platform. This routine checks whether a firewall is blocking HTTP port 80.
+  // This routine is only available if GetAvailableRoutines returned
+  // kHttpFirewall.
+  //
+  // The response:
+  // * |response| - contains a unique identifier and status for the created
+  //                routine.
+  RunHttpFirewallRoutine() => (RunRoutineResponse response);
 };
 
 // Event interface exposed by the cros_healthd daemon.
