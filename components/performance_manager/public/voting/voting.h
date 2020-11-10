@@ -59,6 +59,7 @@
 // maintenance is a reasonable trade-off for memory efficiency.
 
 #include <cstring>
+#include <map>
 #include <utility>
 
 #include "base/check.h"
@@ -363,10 +364,7 @@ class VoteConsumer {
  public:
   using ContextType = typename VoteImpl::ContextType;
 
-  VoteConsumer();
   virtual ~VoteConsumer();
-  VoteConsumer(const VoteConsumer& rhs) = delete;
-  VoteConsumer& operator=(const VoteConsumer& rhs) = delete;
 
   // Used by a VotingChannel to submit votes to this consumer.
   virtual VoteReceipt<VoteImpl> SubmitVote(
@@ -388,6 +386,69 @@ class VoteConsumer {
   // VoteConsumer.
   virtual void VoteInvalidated(util::PassKey<AcceptedVote<VoteImpl>>,
                                AcceptedVote<VoteImpl>* vote) = 0;
+};
+
+template <class VoteImpl>
+class VoteConsumerDefaultImpl;
+
+template <class VoteImpl>
+class VoteObserver {
+ public:
+  using ContextType = typename VoteImpl::ContextType;
+
+  virtual ~VoteObserver();
+
+  // Invoked when a |vote| is submitted for |context|. |voter_id| identifies the
+  // voting channel.
+  virtual void OnVoteSubmitted(VoterId<VoteImpl> voter_id,
+                               const ContextType* context,
+                               const VoteImpl& vote) = 0;
+
+  // Invoked when the vote for |context| is changed to |new_vote|. |voter_id|
+  // identifies the voting channel.
+  virtual void OnVoteChanged(VoterId<VoteImpl> voter_id,
+                             const ContextType* context,
+                             const VoteImpl& new_vote) = 0;
+
+  // Invoked when a vote for |context| is invalided. |voter_id| identifies the
+  // voting channel.
+  virtual void OnVoteInvalidated(VoterId<VoteImpl> voter_id,
+                                 const ContextType* context) = 0;
+};
+
+template <class VoteImpl>
+class VoteConsumerDefaultImpl : public VoteConsumer<VoteImpl> {
+ public:
+  using ContextType = typename VoteImpl::ContextType;
+  using PassKey = util::PassKey<VoteConsumerDefaultImpl>;
+
+  explicit VoteConsumerDefaultImpl(VoteObserver<VoteImpl>* vote_observer);
+  ~VoteConsumerDefaultImpl() override;
+
+  // Builds a new VotingChannel that routes votes to |vote_observer_|.
+  VotingChannel<VoteImpl> BuildVotingChannel();
+
+  size_t voting_channels_issued() const {
+    return voting_channel_factory_.voting_channels_issued();
+  }
+
+  // VoteConsumer:
+  VoteReceipt<VoteImpl> SubmitVote(util::PassKey<VotingChannel<VoteImpl>>,
+                                   VoterId<VoteImpl> voter_id,
+                                   const ContextType* context,
+                                   const VoteImpl& vote) override;
+  void ChangeVote(util::PassKey<AcceptedVote<VoteImpl>>,
+                  AcceptedVote<VoteImpl>* old_vote,
+                  const VoteImpl& new_vote) override;
+  void VoteInvalidated(util::PassKey<AcceptedVote<VoteImpl>>,
+                       AcceptedVote<VoteImpl>* vote) override;
+
+ private:
+  VoteObserver<VoteImpl>* vote_observer_;
+
+  VotingChannelFactory<VoteImpl> voting_channel_factory_;
+
+  std::map<const ContextType*, AcceptedVote<VoteImpl>> accepted_votes_;
 };
 
 /////////////////////////////////////////////////////////////////////
@@ -780,9 +841,80 @@ void VotingChannelFactory<VoteImpl>::OnVotingChannelDestroyed(
 // VoteConsumer
 
 template <class VoteImpl>
-VoteConsumer<VoteImpl>::VoteConsumer() = default;
-template <class VoteImpl>
 VoteConsumer<VoteImpl>::~VoteConsumer() = default;
+
+/////////////////////////////////////////////////////////////////////
+// VoteObserver
+
+template <class VoteImpl>
+VoteObserver<VoteImpl>::~VoteObserver() = default;
+
+/////////////////////////////////////////////////////////////////////
+// VoteConsumerDefaultImpl
+
+template <class VoteImpl>
+VoteConsumerDefaultImpl<VoteImpl>::VoteConsumerDefaultImpl(
+    VoteObserver<VoteImpl>* vote_observer)
+    : vote_observer_(vote_observer), voting_channel_factory_(this) {}
+
+template <class VoteImpl>
+VoteConsumerDefaultImpl<VoteImpl>::~VoteConsumerDefaultImpl() = default;
+
+template <class VoteImpl>
+VotingChannel<VoteImpl>
+VoteConsumerDefaultImpl<VoteImpl>::BuildVotingChannel() {
+  return voting_channel_factory_.BuildVotingChannel();
+}
+
+template <class VoteImpl>
+VoteReceipt<VoteImpl> VoteConsumerDefaultImpl<VoteImpl>::SubmitVote(
+    util::PassKey<VotingChannel<VoteImpl>>,
+    VoterId<VoteImpl> voter_id,
+    const ContextType* context,
+    const VoteImpl& vote) {
+  AcceptedVote<VoteImpl> accepted_vote(this, voter_id, context, vote);
+
+  VoteReceipt<VoteImpl> vote_receipt = accepted_vote.IssueReceipt();
+
+  bool inserted =
+      accepted_votes_.emplace(context, std::move(accepted_vote)).second;
+  DCHECK(inserted);
+
+  vote_observer_->OnVoteSubmitted(voter_id, context, vote);
+
+  return vote_receipt;
+}
+
+template <class VoteImpl>
+void VoteConsumerDefaultImpl<VoteImpl>::ChangeVote(
+    util::PassKey<AcceptedVote<VoteImpl>>,
+    AcceptedVote<VoteImpl>* old_vote,
+    const VoteImpl& new_vote) {
+  auto it = accepted_votes_.find(old_vote->context());
+  DCHECK(it != accepted_votes_.end());
+  auto* accepted_vote = &it->second;
+  DCHECK_EQ(accepted_vote, old_vote);
+
+  accepted_vote->UpdateVote(new_vote);
+
+  vote_observer_->OnVoteChanged(accepted_vote->voter_id(),
+                                accepted_vote->context(), new_vote);
+}
+
+template <class VoteImpl>
+void VoteConsumerDefaultImpl<VoteImpl>::VoteInvalidated(
+    util::PassKey<AcceptedVote<VoteImpl>>,
+    AcceptedVote<VoteImpl>* vote) {
+  auto it = accepted_votes_.find(vote->context());
+  DCHECK(it != accepted_votes_.end());
+  auto* accepted_vote = &it->second;
+  DCHECK_EQ(accepted_vote, vote);
+
+  vote_observer_->OnVoteInvalidated(accepted_vote->voter_id(),
+                                    accepted_vote->context());
+
+  accepted_votes_.erase(it);
+}
 
 }  // namespace voting
 }  // namespace performance_manager

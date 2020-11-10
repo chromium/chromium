@@ -24,6 +24,7 @@ using TestAcceptedVote = voting::AcceptedVote<TestVote>;
 
 using DummyVoter = voting::test::DummyVoter<TestVote>;
 using DummyVoteConsumer = voting::test::DummyVoteConsumer<TestVote>;
+using DummyVoteObserver = voting::test::DummyVoteObserver<TestVote>;
 
 // Some dummy contexts.
 const void* kDummyContext1 = reinterpret_cast<const void*>(0xDEADBEEF);
@@ -179,6 +180,22 @@ TEST(VotingTest, OverwriteVoteReceipt) {
 
   // The first vote was invalidated because its vote receipt was cleaned up.
   consumer.ExpectInvalidVote(0);
+}
+
+TEST(VotingTest, VoteObserver) {
+  DummyVoteObserver observer;
+
+  TestVotingChannel voting_channel =
+      observer.vote_consumer_default_impl_.BuildVotingChannel();
+  voting::VoterId<TestVote> voter_id = voting_channel.voter_id();
+
+  {
+    TestVoteReceipt receipt =
+        voting_channel.SubmitVote(kDummyContext1, TestVote(5, kReason));
+    EXPECT_TRUE(observer.HasVote(voter_id, kDummyContext1, 5, kReason));
+  }
+
+  EXPECT_FALSE(observer.HasVote(voter_id, kDummyContext1, 5, kReason));
 }
 
 }  // namespace performance_manager

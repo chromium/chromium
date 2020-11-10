@@ -7,8 +7,10 @@
 
 #include "components/performance_manager/public/voting/voting.h"
 
+#include <map>
 #include <vector>
 
+#include "base/stl_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace performance_manager {
@@ -78,6 +80,35 @@ class DummyVoter {
 
   VotingChannel<VoteImpl> voting_channel_;
   std::vector<VoteReceipt<VoteImpl>> receipts_;
+};
+
+template <class VoteImpl>
+class DummyVoteObserver : public VoteObserver<VoteImpl> {
+ public:
+  using ContextType = typename VoteImpl::ContextType;
+  using VoteConsumerDefaultImpl = VoteConsumerDefaultImpl<VoteImpl>;
+
+  DummyVoteObserver();
+  ~DummyVoteObserver() override;
+
+  // VoteObserver:
+  void OnVoteSubmitted(voting::VoterId<VoteImpl> voter_id,
+                       const ContextType* context,
+                       const VoteImpl& vote) override;
+  void OnVoteChanged(voting::VoterId<VoteImpl> voter_id,
+                     const ContextType* context,
+                     const VoteImpl& new_vote) override;
+  void OnVoteInvalidated(voting::VoterId<VoteImpl> voter_id,
+                         const ContextType* context) override;
+
+  bool HasVote(voting::VoterId<VoteImpl> voter_id,
+               const typename VoteImpl::ContextType* context,
+               typename VoteImpl::VoteType vote_value,
+               const char* reason = nullptr);
+
+  VoteConsumerDefaultImpl vote_consumer_default_impl_{this};
+  std::map<voting::VoterId<VoteImpl>, std::map<const ContextType*, VoteImpl>>
+      votes_by_voter_id_;
 };
 
 // IMPLEMENTATION
@@ -184,6 +215,61 @@ void DummyVoter<VoteImpl>::EmitVote(
   EXPECT_TRUE(voting_channel_.IsValid());
   receipts_.emplace_back(
       voting_channel_.SubmitVote(context, VoteImpl(vote_value, reason)));
+}
+
+template <class VoteImpl>
+DummyVoteObserver<VoteImpl>::DummyVoteObserver() = default;
+
+template <class VoteImpl>
+DummyVoteObserver<VoteImpl>::~DummyVoteObserver() = default;
+
+template <class VoteImpl>
+void DummyVoteObserver<VoteImpl>::OnVoteSubmitted(VoterId<VoteImpl> voter_id,
+                                                  const ContextType* context,
+                                                  const VoteImpl& vote) {
+  bool inserted = votes_by_voter_id_[voter_id].emplace(context, vote).second;
+  DCHECK(inserted);
+}
+
+template <class VoteImpl>
+void DummyVoteObserver<VoteImpl>::OnVoteChanged(VoterId<VoteImpl> voter_id,
+                                                const ContextType* context,
+                                                const VoteImpl& new_vote) {
+  auto it = votes_by_voter_id_[voter_id].find(context);
+  DCHECK(it != votes_by_voter_id_[voter_id].end());
+  it->second = new_vote;
+}
+
+template <class VoteImpl>
+void DummyVoteObserver<VoteImpl>::OnVoteInvalidated(
+    VoterId<VoteImpl> voter_id,
+    const ContextType* context) {
+  auto it = votes_by_voter_id_.find(voter_id);
+  DCHECK(it != votes_by_voter_id_.end());
+
+  std::map<const ContextType*, VoteImpl>& votes = it->second;
+  size_t removed = votes.erase(context);
+  DCHECK_EQ(removed, 1u);
+
+  if (votes.empty())
+    votes_by_voter_id_.erase(it);
+}
+
+template <class VoteImpl>
+bool DummyVoteObserver<VoteImpl>::HasVote(
+    voting::VoterId<VoteImpl> voter_id,
+    const typename VoteImpl::ContextType* context,
+    typename VoteImpl::VoteType vote_value,
+    const char* reason) {
+  if (!base::Contains(votes_by_voter_id_, voter_id))
+    return false;
+
+  std::map<const ContextType*, VoteImpl>& votes = votes_by_voter_id_[voter_id];
+
+  if (!base::Contains(votes, context))
+    return false;
+
+  return votes[context] == VoteImpl(vote_value, reason);
 }
 
 }  // namespace test
