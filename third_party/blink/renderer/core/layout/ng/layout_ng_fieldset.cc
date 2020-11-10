@@ -166,14 +166,14 @@ bool LayoutNGFieldset::HitTestChildren(HitTestResult& result,
 LayoutUnit LayoutNGFieldset::ScrollWidth() const {
   const LayoutObject* child = FirstChild();
   if (child && child->IsAnonymous())
-    return ToLayoutBox(child)->ScrollWidth();
+    return To<LayoutBox>(child)->ScrollWidth();
   return LayoutNGBlockFlow::ScrollWidth();
 }
 
 LayoutUnit LayoutNGFieldset::ScrollHeight() const {
   const LayoutObject* child = FirstChild();
   if (child && child->IsAnonymous())
-    return ToLayoutBox(child)->ScrollHeight();
+    return To<LayoutBox>(child)->ScrollHeight();
   return LayoutNGBlockFlow::ScrollHeight();
 }
 

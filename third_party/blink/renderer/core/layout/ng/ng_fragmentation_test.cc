@@ -18,7 +18,7 @@ class NGFragmentationTest : public NGBaseLayoutAlgorithmTest,
 
   scoped_refptr<const NGPhysicalBoxFragment> RunBlockLayoutAlgorithm(
       Element* element) {
-    NGBlockNode container(ToLayoutBox(element->GetLayoutObject()));
+    NGBlockNode container(element->GetLayoutBox());
     NGConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
         {WritingMode::kHorizontalTb, TextDirection::kLtr},
         LogicalSize(LayoutUnit(1000), kIndefiniteSize));
@@ -40,10 +40,10 @@ TEST_F(NGFragmentationTest, MultipleFragments) {
   )HTML");
 
   RunBlockLayoutAlgorithm(GetElementById("container"));
-  const LayoutBox* outer1 = ToLayoutBox(GetLayoutObjectByElementId("outer1"));
-  const LayoutBox* outer2 = ToLayoutBox(GetLayoutObjectByElementId("outer2"));
-  const LayoutBox* inner1 = ToLayoutBox(GetLayoutObjectByElementId("inner1"));
-  const LayoutBox* inner2 = ToLayoutBox(GetLayoutObjectByElementId("inner2"));
+  const LayoutBox* outer1 = GetLayoutBoxByElementId("outer1");
+  const LayoutBox* outer2 = GetLayoutBoxByElementId("outer2");
+  const LayoutBox* inner1 = GetLayoutBoxByElementId("inner1");
+  const LayoutBox* inner2 = GetLayoutBoxByElementId("inner2");
 
   EXPECT_EQ(outer1->PhysicalFragmentCount(), 3u);
   EXPECT_EQ(outer2->PhysicalFragmentCount(), 2u);
@@ -85,16 +85,13 @@ TEST_F(NGFragmentationTest, MultipleFragmentsAndColumnSpanner) {
   )HTML");
 
   RunBlockLayoutAlgorithm(GetElementById("container"));
-  const LayoutBox* multicol =
-      ToLayoutBox(GetLayoutObjectByElementId("multicol"));
-  const LayoutBox* outer = ToLayoutBox(GetLayoutObjectByElementId("outer"));
-  const LayoutBox* inner1 = ToLayoutBox(GetLayoutObjectByElementId("inner1"));
-  const LayoutBox* inner2 = ToLayoutBox(GetLayoutObjectByElementId("inner2"));
-  const LayoutBox* inner3 = ToLayoutBox(GetLayoutObjectByElementId("inner3"));
-  const LayoutBox* spanner1 =
-      ToLayoutBox(GetLayoutObjectByElementId("spanner1"));
-  const LayoutBox* spanner2 =
-      ToLayoutBox(GetLayoutObjectByElementId("spanner2"));
+  const LayoutBox* multicol = GetLayoutBoxByElementId("multicol");
+  const LayoutBox* outer = GetLayoutBoxByElementId("outer");
+  const LayoutBox* inner1 = GetLayoutBoxByElementId("inner1");
+  const LayoutBox* inner2 = GetLayoutBoxByElementId("inner2");
+  const LayoutBox* inner3 = GetLayoutBoxByElementId("inner3");
+  const LayoutBox* spanner1 = GetLayoutBoxByElementId("spanner1");
+  const LayoutBox* spanner2 = GetLayoutBoxByElementId("spanner2");
 
   EXPECT_EQ(multicol->PhysicalFragmentCount(), 1u);
 
@@ -149,12 +146,10 @@ TEST_F(NGFragmentationTest, MultipleFragmentsNestedMulticol) {
   )HTML");
 
   RunBlockLayoutAlgorithm(GetElementById("container"));
-  const LayoutBox* outer_multicol =
-      ToLayoutBox(GetLayoutObjectByElementId("outer_multicol"));
-  const LayoutBox* inner_multicol =
-      ToLayoutBox(GetLayoutObjectByElementId("inner_multicol"));
-  const LayoutBox* child1 = ToLayoutBox(GetLayoutObjectByElementId("child1"));
-  const LayoutBox* child2 = ToLayoutBox(GetLayoutObjectByElementId("child2"));
+  const LayoutBox* outer_multicol = GetLayoutBoxByElementId("outer_multicol");
+  const LayoutBox* inner_multicol = GetLayoutBoxByElementId("inner_multicol");
+  const LayoutBox* child1 = GetLayoutBoxByElementId("child1");
+  const LayoutBox* child2 = GetLayoutBoxByElementId("child2");
 
   EXPECT_EQ(outer_multicol->PhysicalFragmentCount(), 1u);
 
@@ -209,7 +204,7 @@ TEST_F(NGFragmentationTest, HasSeenAllChildrenIfc) {
 
   RunBlockLayoutAlgorithm(GetElementById("container"));
 
-  const LayoutBox* ifc = ToLayoutBox(GetLayoutObjectByElementId("ifc"));
+  const LayoutBox* ifc = GetLayoutBoxByElementId("ifc");
   ASSERT_EQ(ifc->PhysicalFragmentCount(), 6u);
   const NGPhysicalBoxFragment* fragment = ifc->GetPhysicalFragment(0);
   const NGBlockBreakToken* break_token =

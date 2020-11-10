@@ -190,7 +190,7 @@ void NGFragmentItems::ClearAssociatedFragments(LayoutObject* container) {
       ClearAssociatedFragments(child);
   }
 #if DCHECK_IS_ON()
-  if (const auto* box = ToLayoutBoxOrNull(container)) {
+  if (const auto* box = DynamicTo<LayoutBox>(container)) {
     for (const NGPhysicalBoxFragment& fragment : box->PhysicalFragments())
       CheckNoItemsAreAssociated(fragment);
   }

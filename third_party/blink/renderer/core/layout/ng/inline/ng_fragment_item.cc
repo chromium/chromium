@@ -365,13 +365,13 @@ void NGFragmentItem::LayoutObjectWillBeMoved() const {
 
 inline const LayoutBox* NGFragmentItem::InkOverflowOwnerBox() const {
   if (Type() == kBox)
-    return ToLayoutBoxOrNull(GetLayoutObject());
+    return DynamicTo<LayoutBox>(GetLayoutObject());
   return nullptr;
 }
 
 inline LayoutBox* NGFragmentItem::MutableInkOverflowOwnerBox() {
   if (Type() == kBox)
-    return ToLayoutBoxOrNull(const_cast<LayoutObject*>(layout_object_));
+    return DynamicTo<LayoutBox>(const_cast<LayoutObject*>(layout_object_));
   return nullptr;
 }
 

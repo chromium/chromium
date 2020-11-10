@@ -100,7 +100,7 @@ class CORE_EXPORT NGPhysicalFragment
   }
   bool IsFragmentainerBox() const { return IsColumnBox(); }
   bool IsColumnSpanAll() const {
-    if (const LayoutBox* box = ToLayoutBoxOrNull(GetLayoutObject()))
+    if (const auto* box = DynamicTo<LayoutBox>(GetLayoutObject()))
       return box->IsColumnSpanAll();
     return false;
   }
@@ -252,7 +252,7 @@ class CORE_EXPORT NGPhysicalFragment
   }
 
   bool IsInSelfHitTestingPhase(HitTestAction action) const {
-    if (const auto* box = ToLayoutBoxOrNull(GetLayoutObject()))
+    if (const auto* box = DynamicTo<LayoutBox>(GetLayoutObject()))
       return box->IsInSelfHitTestingPhase(action);
     if (IsInlineBox())
       return action == kHitTestForeground;
@@ -341,7 +341,7 @@ class CORE_EXPORT NGPhysicalFragment
     const LayoutObject* layout_object = GetLayoutObject();
     if (!layout_object || !IsBox() || !layout_object->IsBox())
       return false;
-    return ToLayoutBox(layout_object)->GetNGPaginationBreakability() ==
+    return To<LayoutBox>(layout_object)->GetNGPaginationBreakability() ==
            LayoutBox::kForbidBreaks;
   }
 

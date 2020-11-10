@@ -69,14 +69,14 @@ const LayoutInline* GetOOFContainingBlockFromAnonymous(
   // container rather than any anonymous block created to manage a block-flow
   // ancestor of ours in the rel-pos inline's inline flow.
   LayoutBoxModelObject* absolute_containing_block =
-      ToLayoutBox(anonymous_block)->Continuation();
+      To<LayoutBox>(anonymous_block)->Continuation();
   // There may be nested parallel inline continuations. We have now found the
   // innermost inline (which may not be relatively positioned). Locate the
   // inline that serves as the containing block of this box.
   while (!absolute_containing_block->CanContainOutOfFlowPositionedElement(
       child_position)) {
     absolute_containing_block =
-        ToLayoutBoxModelObject(absolute_containing_block->Container());
+        To<LayoutBoxModelObject>(absolute_containing_block->Container());
   }
   DCHECK(absolute_containing_block->IsLayoutInline());
   // Make absolute_containing_block continuation root.
@@ -252,7 +252,7 @@ bool NGOutOfFlowLayoutPart::SweepLegacyCandidates(
     // We perform a pre-layout to correctly determine the static position.
     // Copied from LayoutBlock::LayoutPositionedObject
     // TODO(layout-dev): Remove this once LayoutFlexibleBox is removed.
-    LayoutBox* layout_box = ToLayoutBox(legacy_object);
+    LayoutBox* layout_box = To<LayoutBox>(legacy_object);
     if (layout_box->Parent()->IsFlexibleBox()) {
       LayoutFlexibleBox* parent = ToLayoutFlexibleBox(layout_box->Parent());
       if (parent->SetStaticPositionForPositionedLayout(*layout_box)) {
@@ -314,7 +314,7 @@ NGOutOfFlowLayoutPart::GetContainingBlockInfo(
     LogicalSize size = containing_block_fragment->Size().ConvertToLogical(
         writing_direction.GetWritingMode());
     size.block_size =
-        LayoutBoxUtils::TotalBlockSize(*ToLayoutBox(containing_block));
+        LayoutBoxUtils::TotalBlockSize(*To<LayoutBox>(containing_block));
 
     const NGPhysicalBoxFragment* fragment =
         To<NGPhysicalBoxFragment>(containing_block_fragment);

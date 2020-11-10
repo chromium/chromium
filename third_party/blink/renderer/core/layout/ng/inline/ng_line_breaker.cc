@@ -1572,7 +1572,7 @@ void NGLineBreaker::HandleAtomicInline(
     // > The first line of a table-cell or inline-block cannot be the first
     // > formatted line of an ancestor element.
     item_result->layout_result =
-        NGBlockNode(ToLayoutBox(item.GetLayoutObject()))
+        NGBlockNode(To<LayoutBox>(item.GetLayoutObject()))
             .LayoutAtomicInline(constraint_space_, node_.Style(),
                                 /* use_first_line_style */ false);
     item_result->inline_size =
@@ -1585,7 +1585,7 @@ void NGLineBreaker::HandleAtomicInline(
     item_result->inline_size = (*max_size_cache_)[item_index];
   } else {
     DCHECK(mode_ == NGLineBreakerMode::kMinContent || !max_size_cache_);
-    NGBlockNode child(ToLayoutBox(item.GetLayoutObject()));
+    NGBlockNode child(To<LayoutBox>(item.GetLayoutObject()));
     MinMaxSizesInput input(percentage_resolution_block_size_for_min_max,
                            MinMaxSizesType::kContent);
     MinMaxSizesResult result =
@@ -1686,7 +1686,7 @@ void NGLineBreaker::HandleFloat(const NGInlineItem& item,
 
   LayoutUnit bfc_block_offset = line_opportunity_.bfc_block_offset;
   NGUnpositionedFloat unpositioned_float(
-      NGBlockNode(ToLayoutBox(item.GetLayoutObject())),
+      NGBlockNode(To<LayoutBox>(item.GetLayoutObject())),
       /* break_token */ nullptr, constraint_space_.AvailableSize(),
       constraint_space_.PercentageResolutionSize(),
       constraint_space_.ReplacedPercentageResolutionSize(),

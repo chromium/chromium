@@ -45,8 +45,7 @@ TEST_F(NGBlockChildIteratorTest, NoBreakToken) {
       <div id='child2'></div>
       <div id='child3'></div>
     )HTML");
-  NGLayoutInputNode node1 =
-      NGBlockNode(ToLayoutBox(GetLayoutObjectByElementId("child1")));
+  NGLayoutInputNode node1 = NGBlockNode(GetLayoutBoxByElementId("child1"));
   NGLayoutInputNode node2 = node1.NextSibling();
   NGLayoutInputNode node3 = node2.NextSibling();
 
@@ -68,8 +67,7 @@ TEST_F(NGBlockChildIteratorTest, BreakTokens) {
         <div id='child4'></div>
       </div>
     )HTML");
-  NGBlockNode container =
-      NGBlockNode(ToLayoutBox(GetLayoutObjectByElementId("container")));
+  NGBlockNode container = NGBlockNode(GetLayoutBoxByElementId("container"));
   NGLayoutInputNode node1 = container.FirstChild();
   NGLayoutInputNode node2 = node1.NextSibling();
   NGLayoutInputNode node3 = node2.NextSibling();
@@ -145,8 +143,7 @@ TEST_F(NGBlockChildIteratorTest, SeenAllChildren) {
         <div id='child2'></div>
       </div>
     )HTML");
-  NGBlockNode container =
-      NGBlockNode(ToLayoutBox(GetLayoutObjectByElementId("container")));
+  NGBlockNode container = NGBlockNode(GetLayoutBoxByElementId("container"));
   NGLayoutInputNode node1 = container.FirstChild();
 
   scoped_refptr<const NGBlockBreakToken> child_token1 = CreateBreakToken(node1);

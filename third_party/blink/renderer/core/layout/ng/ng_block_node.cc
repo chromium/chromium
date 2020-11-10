@@ -939,7 +939,7 @@ NGLayoutInputNode NGBlockNode::NextSibling() const {
   if (!next_sibling)
     return nullptr;
 
-  return NGBlockNode(ToLayoutBox(next_sibling));
+  return NGBlockNode(To<LayoutBox>(next_sibling));
 }
 
 NGLayoutInputNode NGBlockNode::FirstChild() const {
@@ -950,7 +950,7 @@ NGLayoutInputNode NGBlockNode::FirstChild() const {
   if (!child)
     return nullptr;
   if (!AreNGBlockFlowChildrenInline(block))
-    return NGBlockNode(ToLayoutBox(child));
+    return NGBlockNode(To<LayoutBox>(child));
 
   NGInlineNode inline_node(To<LayoutBlockFlow>(block));
   if (!inline_node.IsBlockLevel())
@@ -976,7 +976,7 @@ NGLayoutInputNode NGBlockNode::FirstChild() const {
     return nullptr;
 
   DCHECK(child->IsFloatingOrOutOfFlowPositioned());
-  return NGBlockNode(ToLayoutBox(child));
+  return NGBlockNode(To<LayoutBox>(child));
 }
 
 NGBlockNode NGBlockNode::GetRenderedLegend() const {
@@ -991,7 +991,7 @@ NGBlockNode NGBlockNode::GetFieldsetContent() const {
   auto* child = GetLayoutObjectForFirstChildNode(To<LayoutBlock>(box_));
   if (!child)
     return nullptr;
-  return NGBlockNode(ToLayoutBox(child));
+  return NGBlockNode(To<LayoutBox>(child));
 }
 
 bool NGBlockNode::CanUseNewLayout(const LayoutBox& box) {
@@ -1152,7 +1152,7 @@ void NGBlockNode::PlaceChildrenInLayoutBox(
     const auto& box_fragment = *To<NGPhysicalBoxFragment>(child_fragment.get());
     if (box_fragment.IsFirstForNode()) {
       if (box_fragment.IsRenderedLegend())
-        rendered_legend = ToLayoutBox(box_fragment.GetMutableLayoutObject());
+        rendered_legend = To<LayoutBox>(box_fragment.GetMutableLayoutObject());
       CopyChildFragmentPosition(box_fragment, child_fragment.offset,
                                 physical_fragment, previous_break_token);
     }
@@ -1233,7 +1233,7 @@ void NGBlockNode::PlaceChildrenInFlowThread(
 
   for (const auto& child : physical_fragment.Children()) {
     const auto& child_fragment = To<NGPhysicalBoxFragment>(*child);
-    const LayoutBox* child_box = ToLayoutBox(child_fragment.GetLayoutObject());
+    const auto* child_box = To<LayoutBox>(child_fragment.GetLayoutObject());
     if (child_box && child_box != box_) {
       DCHECK(child_box->IsColumnSpanAll());
       CopyChildFragmentPosition(child_fragment, child.offset,
@@ -1348,7 +1348,7 @@ void NGBlockNode::CopyChildFragmentPosition(
     PhysicalOffset offset,
     const NGPhysicalBoxFragment& container_fragment,
     const NGBlockBreakToken* previous_container_break_token) const {
-  LayoutBox* layout_box = ToLayoutBox(child_fragment.GetMutableLayoutObject());
+  auto* layout_box = To<LayoutBox>(child_fragment.GetMutableLayoutObject());
   if (!layout_box)
     return;
 
@@ -1376,7 +1376,7 @@ void NGBlockNode::CopyFragmentDataToLayoutBoxForInlineChildren(
       // their block container.
       LayoutObject* layout_object = child->GetMutableLayoutObject();
       if (layout_object && layout_object->IsBox()) {
-        LayoutBox& layout_box = ToLayoutBox(*layout_object);
+        auto& layout_box = To<LayoutBox>(*layout_object);
         PhysicalOffset maybe_flipped_offset = child_offset;
         if (initial_container_is_flipped) {
           maybe_flipped_offset.left = initial_container_width -
@@ -1426,7 +1426,7 @@ void NGBlockNode::CopyFragmentItemsToLayoutBox(
       LayoutObject* layout_object = child->GetMutableLayoutObject();
       if (!layout_object)
         continue;
-      if (LayoutBox* layout_box = ToLayoutBoxOrNull(layout_object)) {
+      if (auto* layout_box = DynamicTo<LayoutBox>(layout_object)) {
         PhysicalOffset maybe_flipped_offset =
             cursor.Current().OffsetInContainerBlock();
         if (initial_container_is_flipped) {

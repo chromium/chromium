@@ -668,7 +668,7 @@ NGInlineLayoutStateStack::BoxData::CreateBoxFragment(
 
     if (child.out_of_flow_positioned_box) {
       DCHECK(item->GetLayoutObject()->IsLayoutInline());
-      NGBlockNode oof_box(ToLayoutBox(child.out_of_flow_positioned_box));
+      NGBlockNode oof_box(To<LayoutBox>(child.out_of_flow_positioned_box));
 
       // child.offset is the static position wrt. the linebox. As we are adding
       // this as a child of an inline level fragment, we adjust the static

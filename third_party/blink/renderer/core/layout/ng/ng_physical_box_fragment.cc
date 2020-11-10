@@ -35,7 +35,7 @@ struct SameSizeAsNGPhysicalBoxFragment : NGPhysicalContainerFragment {
 ASSERT_SIZE(NGPhysicalBoxFragment, SameSizeAsNGPhysicalBoxFragment);
 
 bool HasControlClip(const NGPhysicalBoxFragment& self) {
-  const LayoutBox* box = ToLayoutBoxOrNull(self.GetLayoutObject());
+  const LayoutBox* box = DynamicTo<LayoutBox>(self.GetLayoutObject());
   return box && box->HasControlClip();
 }
 
@@ -376,7 +376,7 @@ const NGPhysicalBoxFragment* NGPhysicalBoxFragment::PostLayout() const {
     NOTREACHED();
     return nullptr;
   }
-  const auto* box = ToLayoutBoxOrNull(layout_object);
+  const auto* box = DynamicTo<LayoutBox>(layout_object);
   if (UNLIKELY(!box)) {
     DCHECK(IsInlineBox());
     return this;
@@ -411,7 +411,7 @@ const NGPhysicalBoxFragment* NGPhysicalBoxFragment::PostLayout() const {
 }
 
 PhysicalRect NGPhysicalBoxFragment::InkOverflow() const {
-  if (const LayoutBox* owner_box = ToLayoutBoxOrNull(GetLayoutObject()))
+  if (const auto* owner_box = DynamicTo<LayoutBox>(GetLayoutObject()))
     return owner_box->PhysicalVisualOverflowRect();
   // TODO(kojii): (!IsCSSBox() || IsInlineBox()) is not supported yet. Implement
   // if needed.
@@ -420,7 +420,7 @@ PhysicalRect NGPhysicalBoxFragment::InkOverflow() const {
 }
 
 PhysicalRect NGPhysicalBoxFragment::ContentsInkOverflow() const {
-  if (const LayoutBox* owner_box = ToLayoutBoxOrNull(GetLayoutObject()))
+  if (const auto* owner_box = DynamicTo<LayoutBox>(GetLayoutObject()))
     return owner_box->PhysicalContentsVisualOverflowRect();
   // TODO(kojii): (!IsCSSBox() || IsInlineBox()) is not supported yet. Implement
   // if needed.
@@ -432,7 +432,7 @@ PhysicalRect NGPhysicalBoxFragment::OverflowClipRect(
     const PhysicalOffset& location,
     OverlayScrollbarClipBehavior overlay_scrollbar_clip_behavior) const {
   DCHECK(GetLayoutObject() && GetLayoutObject()->IsBox());
-  const LayoutBox* box = ToLayoutBox(GetLayoutObject());
+  const LayoutBox* box = To<LayoutBox>(GetLayoutObject());
   return box->OverflowClipRect(location, overlay_scrollbar_clip_behavior);
 }
 
@@ -440,7 +440,7 @@ bool NGPhysicalBoxFragment::MayIntersect(
     const HitTestResult& result,
     const HitTestLocation& hit_test_location,
     const PhysicalOffset& accumulated_offset) const {
-  if (const LayoutBox* box = ToLayoutBoxOrNull(GetLayoutObject()))
+  if (const auto* box = DynamicTo<LayoutBox>(GetLayoutObject()))
     return box->MayIntersect(result, hit_test_location, accumulated_offset);
   // TODO(kojii): (!IsCSSBox() || IsInlineBox()) is not supported yet. Implement
   // if needed. For now, just return |true| not to do early return.
@@ -463,7 +463,7 @@ PhysicalRect NGPhysicalBoxFragment::ScrollableOverflow(
     if (HasNonVisibleOverflow())
       return PhysicalRect({}, Size());
     // Legacy is the source of truth for overflow
-    return PhysicalRect(ToLayoutBox(layout_object)->LayoutOverflowRect());
+    return PhysicalRect(To<LayoutBox>(layout_object)->LayoutOverflowRect());
   } else if (layout_object->IsLayoutInline()) {
     // Inline overflow is a union of child overflows.
     PhysicalRect overflow;
@@ -510,8 +510,7 @@ PhysicalRect NGPhysicalBoxFragment::ScrollableOverflowFromChildren(
       DCHECK_EQ(container.HasNonVisibleOverflow(),
                 container.GetLayoutObject()->HasNonVisibleOverflow());
       if (container.HasNonVisibleOverflow()) {
-        const LayoutBox* layout_object =
-            ToLayoutBox(container.GetLayoutObject());
+        const auto* layout_object = To<LayoutBox>(container.GetLayoutObject());
         padding_strut = NGBoxStrut(LayoutUnit(), layout_object->PaddingEnd(),
                                    LayoutUnit(), layout_object->PaddingAfter())
                             .ConvertToPhysical(writing_direction);
@@ -643,14 +642,14 @@ PhysicalRect NGPhysicalBoxFragment::ScrollableOverflowFromChildren(
 }
 
 LayoutSize NGPhysicalBoxFragment::PixelSnappedScrolledContentOffset() const {
-  DCHECK(GetLayoutObject() && GetLayoutObject()->IsBox());
-  const LayoutBox* box = ToLayoutBox(GetLayoutObject());
+  DCHECK(GetLayoutObject());
+  const LayoutBox* box = To<LayoutBox>(GetLayoutObject());
   return box->PixelSnappedScrolledContentOffset();
 }
 
 PhysicalSize NGPhysicalBoxFragment::ScrollSize() const {
-  DCHECK(GetLayoutObject() && GetLayoutObject()->IsBox());
-  const LayoutBox* box = ToLayoutBox(GetLayoutObject());
+  DCHECK(GetLayoutObject());
+  const LayoutBox* box = To<LayoutBox>(GetLayoutObject());
   return {box->ScrollWidth(), box->ScrollHeight()};
 }
 
@@ -725,9 +724,9 @@ void NGPhysicalBoxFragment::AddSelfOutlineRects(
     // Since containing_block is our layout object, offset must be 0,0.
     // https://crbug.com/968019
     Vector<PhysicalRect> children_rects;
-    AddOutlineRectsForNormalChildren(&children_rects, PhysicalOffset(),
-                                     outline_type,
-                                     ToLayoutBoxModelObject(GetLayoutObject()));
+    AddOutlineRectsForNormalChildren(
+        &children_rects, PhysicalOffset(), outline_type,
+        To<LayoutBoxModelObject>(GetLayoutObject()));
     if (!additional_offset.IsZero()) {
       for (auto& rect : children_rects)
         rect.offset += additional_offset;
@@ -924,7 +923,7 @@ void NGPhysicalBoxFragment::CheckSameForSimplifiedLayout(
     DCHECK(IsLegacyLayoutRoot() || LastBaseline() == other.LastBaseline());
   } else {
     DCHECK(IsLegacyLayoutRoot() || LastBaseline() == other.LastBaseline() ||
-           NGBlockNode(ToLayoutBox(GetMutableLayoutObject()))
+           NGBlockNode(To<LayoutBox>(GetMutableLayoutObject()))
                .UseBlockEndMarginEdgeForInlineBlockBaseline());
   }
 

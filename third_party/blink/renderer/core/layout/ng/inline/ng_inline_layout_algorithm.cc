@@ -725,7 +725,7 @@ void NGInlineLayoutAlgorithm::PlaceFloatingObjects(
       if (positioned_float.need_break_before) {
         // We decided to break before the float. No fragment here. Create a
         // break token and propagate it to the block container.
-        NGBlockNode float_node(ToLayoutBox(child.unpositioned_float));
+        NGBlockNode float_node(To<LayoutBox>(child.unpositioned_float));
         auto break_before = NGBlockBreakToken::CreateBreakBefore(
             float_node, /* is_forced_break */ false);
         context_->PropagateBreakToken(std::move(break_before));
@@ -1197,7 +1197,7 @@ unsigned NGInlineLayoutAlgorithm::PositionLeadingFloats(
     if (ConstraintSpace().HasBlockFragmentation()) {
       // Propagate any breaks before or inside floats to the block container.
       if (positioned_float.need_break_before) {
-        NGBlockNode float_node(ToLayoutBox(item.GetLayoutObject()));
+        NGBlockNode float_node(To<LayoutBox>(item.GetLayoutObject()));
         auto break_before = NGBlockBreakToken::CreateBreakBefore(
             float_node, /* is_forced_break */ false);
         context_->PropagateBreakToken(std::move(break_before));
@@ -1223,7 +1223,7 @@ NGPositionedFloat NGInlineLayoutAlgorithm::PositionFloat(
                                    origin_bfc_block_offset};
 
   NGUnpositionedFloat unpositioned_float(
-      NGBlockNode(ToLayoutBox(floating_object)),
+      NGBlockNode(To<LayoutBox>(floating_object)),
       /* break_token */ nullptr, ConstraintSpace().AvailableSize(),
       ConstraintSpace().PercentageResolutionSize(),
       ConstraintSpace().ReplacedPercentageResolutionSize(), origin_bfc_offset,

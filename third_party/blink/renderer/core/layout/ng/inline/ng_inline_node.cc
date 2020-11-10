@@ -1748,7 +1748,7 @@ static LayoutUnit ComputeContentSize(
       LayoutObject* floating_object = item.GetLayoutObject();
       DCHECK(floating_object && floating_object->IsFloating());
 
-      NGBlockNode float_node(ToLayoutBox(floating_object));
+      NGBlockNode float_node(To<LayoutBox>(floating_object));
       const ComputedStyle& float_style = float_node.Style();
 
       // Floats don't intrude into floats.

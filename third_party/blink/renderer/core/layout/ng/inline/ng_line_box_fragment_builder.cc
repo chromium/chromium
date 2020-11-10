@@ -59,7 +59,7 @@ void NGLineBoxFragmentBuilder::AddChildren(NGLogicalLineItems& children) {
       DCHECK(!child.text_fragment);
     } else if (child.out_of_flow_positioned_box) {
       AddOutOfFlowInlineChildCandidate(
-          NGBlockNode(ToLayoutBox(child.out_of_flow_positioned_box)),
+          NGBlockNode(To<LayoutBox>(child.out_of_flow_positioned_box)),
           child.Offset(), child.container_direction);
       child.out_of_flow_positioned_box = nullptr;
     }
@@ -84,7 +84,7 @@ void NGLineBoxFragmentBuilder::PropagateChildrenData(
     }
     if (child.out_of_flow_positioned_box) {
       AddOutOfFlowInlineChildCandidate(
-          NGBlockNode(ToLayoutBox(child.out_of_flow_positioned_box)),
+          NGBlockNode(To<LayoutBox>(child.out_of_flow_positioned_box)),
           child.Offset(), child.container_direction);
       child.out_of_flow_positioned_box = nullptr;
     }

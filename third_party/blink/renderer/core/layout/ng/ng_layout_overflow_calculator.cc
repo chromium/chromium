@@ -20,7 +20,7 @@ PhysicalRect NGLayoutOverflowCalculator::RecalculateLayoutOverflowForFragment(
     const NGPhysicalBoxFragment& fragment) {
   DCHECK(!fragment.IsLegacyLayoutRoot());
   const NGBlockNode node(const_cast<LayoutBox*>(
-      ToLayoutBox(fragment.GetSelfOrContainerLayoutObject())));
+      To<LayoutBox>(fragment.GetSelfOrContainerLayoutObject())));
   const WritingDirectionMode writing_direction =
       node.Style().GetWritingDirection();
 

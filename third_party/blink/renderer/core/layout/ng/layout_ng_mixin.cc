@@ -207,9 +207,8 @@ NGConstraintSpace LayoutNGMixin<Base>::ConstraintSpaceForMinMaxSizes() const {
 
 template <typename Base>
 void LayoutNGMixin<Base>::UpdateOutOfFlowBlockLayout() {
-  LayoutBoxModelObject* css_container =
-      ToLayoutBoxModelObject(Base::Container());
-  LayoutBox* container = css_container->IsBox() ? ToLayoutBox(css_container)
+  auto* css_container = To<LayoutBoxModelObject>(Base::Container());
+  LayoutBox* container = css_container->IsBox() ? To<LayoutBox>(css_container)
                                                 : Base::ContainingBlock();
   const ComputedStyle* container_style = container->Style();
   NGConstraintSpace constraint_space =
@@ -308,8 +307,8 @@ void LayoutNGMixin<Base>::UpdateOutOfFlowBlockLayout() {
   for (auto& child : fragment.Children()) {
     const NGPhysicalFragment* child_fragment = child.get();
     DCHECK(child_fragment->GetLayoutObject()->IsBox());
-    LayoutBox* child_legacy_box =
-        ToLayoutBox(child_fragment->GetMutableLayoutObject());
+    auto* child_legacy_box =
+        To<LayoutBox>(child_fragment->GetMutableLayoutObject());
     PhysicalOffset child_offset = child.Offset();
     if (container_style->IsFlippedBlocksWritingMode()) {
       child_legacy_box->SetX(container_border_box_logical_height -

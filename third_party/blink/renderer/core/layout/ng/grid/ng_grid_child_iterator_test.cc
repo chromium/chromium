@@ -26,7 +26,7 @@ TEST_F(NGLayoutTest, TestNGGridChildIterator) {
     </div>
   )HTML");
 
-  NGBlockNode parent_block(ToLayoutBox(GetLayoutObjectByElementId("parent")));
+  NGBlockNode parent_block(GetLayoutBoxByElementId("parent"));
 
   int index = 0;
   NGGridChildIterator iterator(parent_block);
@@ -35,8 +35,8 @@ TEST_F(NGLayoutTest, TestNGGridChildIterator) {
     StringBuilder cell_id;
     cell_id.Append("child");
     cell_id.Append(AtomicString::Number(++index));
-    NGBlockNode cell_block(ToLayoutBox(
-        GetLayoutObjectByElementId(cell_id.ToString().Ascii().c_str())));
+    NGBlockNode cell_block(
+        GetLayoutBoxByElementId(cell_id.ToString().Ascii().c_str()));
     EXPECT_EQ(child, cell_block);
   }
 
@@ -60,7 +60,7 @@ TEST_F(NGLayoutTest, TestNGGridChildIteratorWithOrderReversed) {
     </div>
   )HTML");
 
-  NGBlockNode parent_block(ToLayoutBox(GetLayoutObjectByElementId("parent")));
+  NGBlockNode parent_block(GetLayoutBoxByElementId("parent"));
 
   int index = 4;
   NGGridChildIterator iterator(parent_block);
@@ -69,8 +69,8 @@ TEST_F(NGLayoutTest, TestNGGridChildIteratorWithOrderReversed) {
     StringBuilder cell_id;
     cell_id.Append("child");
     cell_id.Append(AtomicString::Number(index));
-    NGBlockNode cell_block(ToLayoutBox(
-        GetLayoutObjectByElementId(cell_id.ToString().Ascii().c_str())));
+    NGBlockNode cell_block(
+        GetLayoutBoxByElementId(cell_id.ToString().Ascii().c_str()));
     EXPECT_EQ(child, cell_block);
     --index;
   }
@@ -95,7 +95,7 @@ TEST_F(NGLayoutTest, TestNGGridChildIteratorWithOrderMixed) {
     </div>
   )HTML");
 
-  NGBlockNode parent_block(ToLayoutBox(GetLayoutObjectByElementId("parent")));
+  NGBlockNode parent_block(GetLayoutBoxByElementId("parent"));
   int expected_order[] = {3, 4, 1, 2};
 
   int index = 0;
@@ -105,8 +105,8 @@ TEST_F(NGLayoutTest, TestNGGridChildIteratorWithOrderMixed) {
     StringBuilder cell_id;
     cell_id.Append("child");
     cell_id.Append(AtomicString::Number(expected_order[index]));
-    NGBlockNode cell_block(ToLayoutBox(
-        GetLayoutObjectByElementId(cell_id.ToString().Ascii().c_str())));
+    NGBlockNode cell_block(
+        GetLayoutBoxByElementId(cell_id.ToString().Ascii().c_str()));
     EXPECT_EQ(child, cell_block);
     ++index;
   }

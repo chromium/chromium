@@ -176,7 +176,7 @@ scoped_refptr<const NGLayoutResult> NGSimplifiedLayoutAlgorithm::Layout() {
 
     // Add the (potentially updated) layout result.
     scoped_refptr<const NGLayoutResult> result =
-        NGBlockNode(ToLayoutBox(child_fragment.GetMutableLayoutObject()))
+        NGBlockNode(To<LayoutBox>(child_fragment.GetMutableLayoutObject()))
             .SimplifiedLayout(child_fragment);
 
     // The child may have failed "simplified" layout! (Due to adding/removing
