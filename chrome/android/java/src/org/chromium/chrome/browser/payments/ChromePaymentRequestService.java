@@ -344,7 +344,7 @@ public class ChromePaymentRequestService implements BrowserPaymentRequest,
         ChromeActivity chromeActivity = ChromeActivity.fromWebContents(mWebContents);
         if (quitShowIfActivityNotFound(chromeActivity) || !buildUI(chromeActivity)) return false;
         if (!mPaymentUiService.shouldSkipShowingPaymentRequestUi() && mSkipToGPayHelper == null) {
-            mPaymentUiService.getPaymentRequestUI().show();
+            mPaymentUiService.getPaymentRequestUI().show(mWaitForUpdatedDetails);
         }
         return true;
     }
@@ -801,12 +801,6 @@ public class ChromePaymentRequestService implements BrowserPaymentRequest,
      */
     private boolean parseAndValidateDetailsForSkipToGPayHelper(PaymentDetails details) {
         return mSkipToGPayHelper == null || mSkipToGPayHelper.setShippingOptionIfValid(details);
-    }
-
-    // Implements PaymentUiService.Delegate:
-    @Override
-    public boolean waitForUpdatedDetails() {
-        return mWaitForUpdatedDetails;
     }
 
     // Implements PaymentUiService.Delegate:

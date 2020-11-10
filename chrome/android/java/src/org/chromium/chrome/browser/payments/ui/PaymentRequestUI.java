@@ -98,8 +98,11 @@ public class PaymentRequestUI implements DimmingDialog.OnDismissListener, View.O
     public interface Client {
         /**
          * Asynchronously returns the default payment information.
+         * @param waitForUpdatedDetails Whether the payment details is pending for updating.
+         * @param callback Retrieves the data to show in the initial PaymentRequest UI.
          */
-        void getDefaultPaymentInformation(Callback<PaymentInformation> callback);
+        void getDefaultPaymentInformation(
+                boolean waitForUpdatedDetails, Callback<PaymentInformation> callback);
 
         /**
          * Asynchronously returns the full bill. Includes the total price and its breakdown into
@@ -428,35 +431,38 @@ public class PaymentRequestUI implements DimmingDialog.OnDismissListener, View.O
 
     /**
      * Shows the PaymentRequest UI. This will dim the background behind the PaymentRequest UI.
+     * @param waitForUpdatedDetails Whether the payment details is pending to be updated.
      */
-    public void show() {
+    public void show(boolean waitForUpdatedDetails) {
         mDialog.addBottomSheetView(mRequestView);
         mPaymentUisShowStateReconciler.showPaymentRequestDialogWhenNoBottomSheet();
-        mClient.getDefaultPaymentInformation(new Callback<PaymentInformation>() {
-            @Override
-            public void onResult(PaymentInformation result) {
-                updateOrderSummarySection(result.getShoppingCart());
+        mClient.getDefaultPaymentInformation(
+                waitForUpdatedDetails, new Callback<PaymentInformation>() {
+                    @Override
+                    public void onResult(PaymentInformation result) {
+                        updateOrderSummarySection(result.getShoppingCart());
 
-                if (mClient.shouldShowShippingSection()) {
-                    updateSection(DataType.SHIPPING_ADDRESSES, result.getShippingAddresses());
-                    updateSection(DataType.SHIPPING_OPTIONS, result.getShippingOptions());
-                }
+                        if (mClient.shouldShowShippingSection()) {
+                            updateSection(
+                                    DataType.SHIPPING_ADDRESSES, result.getShippingAddresses());
+                            updateSection(DataType.SHIPPING_OPTIONS, result.getShippingOptions());
+                        }
 
-                if (mClient.shouldShowContactSection()) {
-                    updateSection(DataType.CONTACT_DETAILS, result.getContactDetails());
-                }
+                        if (mClient.shouldShowContactSection()) {
+                            updateSection(DataType.CONTACT_DETAILS, result.getContactDetails());
+                        }
 
-                mPaymentMethodSection.setDisplaySummaryInSingleLineInNormalMode(
-                        result.getPaymentMethods()
-                                .getDisplaySelectedItemSummaryInSingleLineInNormalMode());
-                updateSection(DataType.PAYMENT_METHODS, result.getPaymentMethods());
-                updatePayButtonEnabled();
+                        mPaymentMethodSection.setDisplaySummaryInSingleLineInNormalMode(
+                                result.getPaymentMethods()
+                                        .getDisplaySelectedItemSummaryInSingleLineInNormalMode());
+                        updateSection(DataType.PAYMENT_METHODS, result.getPaymentMethods());
+                        updatePayButtonEnabled();
 
-                // Hide the loading indicators and show the real sections.
-                changeSpinnerVisibility(false);
-                mRequestView.addOnLayoutChangeListener(new SheetEnlargingAnimator(false));
-            }
-        });
+                        // Hide the loading indicators and show the real sections.
+                        changeSpinnerVisibility(false);
+                        mRequestView.addOnLayoutChangeListener(new SheetEnlargingAnimator(false));
+                    }
+                });
     }
 
     /**

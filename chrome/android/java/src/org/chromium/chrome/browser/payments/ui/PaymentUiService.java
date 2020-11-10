@@ -167,8 +167,6 @@ public class PaymentUiService implements SettingsAutofillAndPaymentsObserver.Obs
          *         called.
          */
         boolean wasRetryCalled();
-        /** @return Whether to wait for updated payment details. */
-        boolean waitForUpdatedDetails();
 
         // TODO(crbug.com/1144165): The return semantics is not intuitive for this method; the
         // method should not take the selectedShippingAddress, selectedShippingOption parameters of
@@ -1490,14 +1488,10 @@ public class PaymentUiService implements SettingsAutofillAndPaymentsObserver.Obs
         }
     }
 
-    /**
-     * The implementation of {@link PaymentRequestUI.Client#getDefaultPaymentInformation}.
-     * @param callback Retrieves the data to show in the initial PaymentRequest UI.
-     */
-    // Implements PaymentUiService.Delegate:
+    // Implements PaymentRequestUI.Client:
     @Override
-    public void getDefaultPaymentInformation(Callback<PaymentInformation> callback) {
-        boolean waitForUpdatedDetails = mDelegate.waitForUpdatedDetails();
+    public void getDefaultPaymentInformation(
+            boolean waitForUpdatedDetails, Callback<PaymentInformation> callback) {
         mPaymentInformationCallback = callback;
 
         if (waitForUpdatedDetails) return;
