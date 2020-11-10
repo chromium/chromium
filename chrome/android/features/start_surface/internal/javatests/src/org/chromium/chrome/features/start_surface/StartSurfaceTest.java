@@ -43,6 +43,7 @@ import static org.chromium.chrome.test.util.ViewUtils.waitForView;
 import android.content.Intent;
 import android.os.Build;
 import android.support.test.InstrumentationRegistry;
+import android.support.test.uiautomator.UiDevice;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -94,6 +95,7 @@ import org.chromium.chrome.start_surface.R;
 import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.util.ChromeApplicationTestUtils;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.OverviewModeBehaviorWatcher;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
@@ -165,6 +167,12 @@ public class StartSurfaceTest {
 
     private boolean isInstantReturn() {
         return CachedFeatureFlags.isEnabled(ChromeFeatureList.INSTANT_START) && mImmediateReturn;
+    }
+
+    private void pressHome() {
+        UiDevice device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
+        device.pressHome();
+        ChromeApplicationTestUtils.waitUntilChromeInBackground();
     }
 
     @Before
@@ -782,6 +790,41 @@ public class StartSurfaceTest {
         TouchCommon.singleClickView(
                 mActivityTestRule.getActivity().getCompositorViewHolder().getCompositorView());
         hideWatcher.waitForBehavior();
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"StartSurface"})
+    @CommandLineFlags.Add({BASE_PARAMS + "/single/exclude_mv_tiles/true"
+            + "/show_last_active_tab_only/true/show_stack_tab_switcher/true"})
+    public void
+    testShow_SingleAsHomepageV2_FromResumeShowStart() throws ExecutionException {
+        // clang-format on
+        if (!mImmediateReturn) return;
+
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        CriteriaHelper.pollUiThread(
+                () -> cta.getLayoutManager() != null && cta.getLayoutManager().overviewVisible());
+        waitForTabModel();
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { cta.getTabModelSelector().getModel(false).closeAllTabs(); });
+        TabUiTestHelper.verifyTabModelTabCount(cta, 0, 0);
+        assertTrue(cta.getLayoutManager().overviewVisible());
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> cta.getTabCreator(true /*incognito*/).launchNTP());
+        TabUiTestHelper.verifyTabModelTabCount(cta, 0, 1);
+
+        // Simulates pressing the Android's home button and bringing Chrome to the background.
+        pressHome();
+
+        // Simulates pressing Chrome's icon and launching Chrome from warm start.
+        startMainActivityFromLauncher();
+
+        CriteriaHelper.pollUiThread(
+                () -> cta.getLayoutManager() != null && cta.getLayoutManager().overviewVisible());
+        waitForTabModel();
+        assertFalse(cta.getTabModelSelector().getCurrentModel().isIncognito());
+        assertThat(cta.getTabModelSelector().getCurrentModel().getCount(), equalTo(0));
     }
 
     @Test

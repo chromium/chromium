@@ -268,6 +268,9 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     // Whether or not the initial tab is being created.
     private boolean mPendingInitialTabCreation;
 
+    // Whether {@link setInitialOverviewState()} has been called within the current onStart/onStop
+    // session.
+    private boolean mHasDeterminedOverviewStateForCurrentSession;
     /**
      *  Keeps track of the pref for the last time since this activity was stopped.
      */
@@ -848,6 +851,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         super.onStopWithNative();
 
         mTabModelSelectorImpl.saveState();
+        mHasDeterminedOverviewStateForCurrentSession = false;
     }
 
     @Override
@@ -857,9 +861,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
         // Don't call setInitialOverviewState if we're waiting for the tab's creation or we risk
         // showing a glimpse of the tab selector during start up.
-        if (!mPendingInitialTabCreation
-                && !(TabUiFeatureUtilities.supportInstantStart(isTablet())
-                        && shouldShowTabSwitcherOnStart() && !hadWarmStart())) {
+        if (!mPendingInitialTabCreation) {
             setInitialOverviewState();
         }
 
@@ -953,6 +955,9 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     }
 
     private void setInitialOverviewState() {
+        if (mHasDeterminedOverviewStateForCurrentSession) return;
+
+        mHasDeterminedOverviewStateForCurrentSession = true;
         boolean isOverviewVisible = mOverviewModeController.overviewVisible();
 
         if (shouldShowTabSwitcherOnStart() && !isOverviewVisible) {
@@ -1168,11 +1173,9 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             getTabCreator(false).launchUrl(url, TabLaunchType.FROM_STARTUP);
         }
 
-        // If we didn't call setInitialOverviewState() in startWithNative() because
+        // If we didn't call setInitialOverviewState() in onStartWithNative() because
         // mPendingInitialTabCreation was true then do so now.
-        if (hasStartWithNativeBeenCalled()
-                && !(TabUiFeatureUtilities.supportInstantStart(isTablet())
-                        && shouldShowTabSwitcherOnStart() && !hadWarmStart())) {
+        if (hasStartWithNativeBeenCalled()) {
             setInitialOverviewState();
         }
     }
@@ -1580,6 +1583,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             if (shouldShowTabSwitcherOnStart()) {
                 mLayoutManager.setTabModelSelector(mTabModelSelectorImpl);
                 mIsAccessibilityTabSwitcherEnabled = DeviceClassManager.enableAccessibilityLayout();
+                assert !mHasDeterminedOverviewStateForCurrentSession;
                 setInitialOverviewState();
             }
         }
