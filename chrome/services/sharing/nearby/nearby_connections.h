@@ -153,7 +153,6 @@ class NearbyConnections : public mojom::NearbyConnections {
  private:
   Core* GetCore(const std::string& service_id);
 
-  void InitializeOfflineServiceController();
   void OnDisconnect();
 
   mojo::Receiver<mojom::NearbyConnections> nearby_connections_;

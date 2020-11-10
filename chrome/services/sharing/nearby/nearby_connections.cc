@@ -185,19 +185,6 @@ NearbyConnections::NearbyConnections(
       on_disconnect_(std::move(on_disconnect)),
       service_controller_(std::move(service_controller)),
       thread_task_runner_(base::ThreadTaskRunnerHandle::Get()) {
-  // Note: Some tests pass a value for |service_controller_|, but this value is
-  // expected to be null during normal operation.
-  if (!service_controller_) {
-    // Post a task which initializes |service_controller_|. This must be posted
-    // as a task instead of being completed synchrnously here because
-    // OfflineServiceController invokes NearbyConnections::GetInstance(), which
-    // requires that the instance be initialized by completing this constructor.
-    thread_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&NearbyConnections::InitializeOfflineServiceController,
-                       weak_ptr_factory_.GetWeakPtr()));
-  }
-
   nearby_connections_.set_disconnect_handler(base::BindOnce(
       &NearbyConnections::OnDisconnect, weak_ptr_factory_.GetWeakPtr()));
 
@@ -244,6 +231,15 @@ NearbyConnections::NearbyConnections(
   // There should only be one instance of NearbyConnections in a process.
   DCHECK(!g_instance);
   g_instance = this;
+
+  // Note: Some tests pass a value for |service_controller_|, but this value is
+  // expected to be null during normal operation.
+  if (!service_controller_) {
+    // OfflineServiceController indirectly invokes
+    // NearbyConnections::GetInstance(), so it must be initialized after
+    // |g_instance| is set.
+    service_controller_ = std::make_unique<OfflineServiceController>();
+  }
 }
 
 NearbyConnections::~NearbyConnections() {
@@ -251,11 +247,6 @@ NearbyConnections::~NearbyConnections() {
   // is required to ensure that Nearby cleans itself up.
   service_id_to_core_map_.clear();
   g_instance = nullptr;
-}
-
-void NearbyConnections::InitializeOfflineServiceController() {
-  DCHECK(!service_controller_);
-  service_controller_ = std::make_unique<OfflineServiceController>();
 }
 
 void NearbyConnections::OnDisconnect() {
