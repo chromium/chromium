@@ -29,7 +29,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/sequenced_task_runner.h"
 #include "base/single_thread_task_runner.h"
 #include "base/stl_util.h"
@@ -467,19 +467,18 @@ class RenderWidgetHostVisibilityObserver : public RenderWidgetHostObserver {
   explicit RenderWidgetHostVisibilityObserver(RenderWidgetHostImpl* rwhi,
                                               bool expected_visibility_state)
       : expected_visibility_state_(expected_visibility_state),
-        observer_(this),
         was_observed_(false),
         did_fail_(false),
         render_widget_(rwhi) {
-    observer_.Add(render_widget_);
+    observation_.Observe(render_widget_);
     message_loop_runner_ = new MessageLoopRunner;
   }
 
   bool WaitUntilSatisfied() {
     if (!was_observed_)
       message_loop_runner_->Run();
-    if (observer_.IsObserving(render_widget_))
-      observer_.Remove(render_widget_);
+    if (observation_.IsObservingSource(render_widget_))
+      observation_.RemoveObservation();
     return !did_fail_;
   }
 
@@ -493,12 +492,14 @@ class RenderWidgetHostVisibilityObserver : public RenderWidgetHostObserver {
   }
 
   void RenderWidgetHostDestroyed(RenderWidgetHost* widget_host) override {
-    observer_.Remove(widget_host);
+    DCHECK(observation_.IsObservingSource(widget_host));
+    observation_.RemoveObservation();
   }
 
   bool expected_visibility_state_;
   scoped_refptr<MessageLoopRunner> message_loop_runner_;
-  ScopedObserver<RenderWidgetHost, RenderWidgetHostObserver> observer_;
+  base::ScopedObservation<RenderWidgetHost, RenderWidgetHostObserver>
+      observation_{this};
   bool was_observed_;
   bool did_fail_;
   RenderWidgetHost* render_widget_;
