@@ -514,13 +514,16 @@ void Display::SetOutputIsSecure(bool secure) {
 }
 
 void Display::InitializeRenderer(bool enable_shared_images) {
-  auto mode = output_surface_->context_provider() || skia_output_surface_
-                  ? DisplayResourceProvider::kGpu
-                  : DisplayResourceProvider::kSoftware;
+  bool uses_gpu_resources = output_surface_->context_provider() ||
+                            skia_output_surface_ ||
+                            output_surface_->capabilities().skips_draw;
+
   resource_provider_ = std::make_unique<DisplayResourceProvider>(
-      mode, output_surface_->context_provider(), bitmap_manager_,
+      uses_gpu_resources ? DisplayResourceProvider::kGpu
+                         : DisplayResourceProvider::kSoftware,
+      output_surface_->context_provider(), bitmap_manager_,
       enable_shared_images);
-  if (settings_.use_skia_renderer && mode == DisplayResourceProvider::kGpu) {
+  if (skia_output_surface_) {
     renderer_ = std::make_unique<SkiaRenderer>(
         &settings_, debug_settings_, output_surface_.get(),
         resource_provider_.get(), overlay_processor_.get(),
@@ -598,11 +601,6 @@ bool Display::DrawAndSwap(base::TimeTicks expected_display_time) {
   if (!output_surface_) {
     TRACE_EVENT_INSTANT0("viz", "No output surface", TRACE_EVENT_SCOPE_THREAD);
     return false;
-  }
-
-  if (output_surface_->capabilities().skips_draw) {
-    TRACE_EVENT_INSTANT0("viz", "Skip draw", TRACE_EVENT_SCOPE_THREAD);
-    return true;
   }
 
   gfx::OverlayTransform current_display_transform = gfx::OVERLAY_TRANSFORM_NONE;
@@ -695,6 +693,14 @@ bool Display::DrawAndSwap(base::TimeTicks expected_display_time) {
 
   // Run callbacks early to allow pipelining and collect presented callbacks.
   damage_tracker_->RunDrawCallbacks();
+
+  if (output_surface_->capabilities().skips_draw) {
+    TRACE_EVENT_INSTANT0("viz", "Skip draw", TRACE_EVENT_SCOPE_THREAD);
+    // Aggregation needs to happen before generating hit test for the unified
+    // desktop display. After this point skip drawing anything for real.
+    client_->DisplayWillDrawAndSwap(false, &frame.render_pass_list);
+    return true;
+  }
 
   frame.latency_info.insert(frame.latency_info.end(),
                             stored_latency_info_.begin(),
