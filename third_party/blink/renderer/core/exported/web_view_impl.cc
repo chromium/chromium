@@ -1480,12 +1480,12 @@ void WebView::ApplyWebPreferences(const web_pref::WebPreferences& prefs,
   settings->SetDownloadableBinaryFontsEnabled(prefs.remote_fonts_enabled);
   settings->SetJavaScriptCanAccessClipboard(
       prefs.javascript_can_access_clipboard);
-  WebRuntimeFeatures::EnableXSLT(prefs.xslt_enabled);
+  RuntimeEnabledFeatures::SetXSLTEnabled(prefs.xslt_enabled);
   settings->SetDNSPrefetchingEnabled(prefs.dns_prefetching_enabled);
   blink::WebNetworkStateNotifier::SetSaveDataEnabled(prefs.data_saver_enabled);
   settings->SetLocalStorageEnabled(prefs.local_storage_enabled);
   settings->SetSyncXHRInDocumentsEnabled(prefs.sync_xhr_in_documents_enabled);
-  WebRuntimeFeatures::EnableDatabase(prefs.databases_enabled);
+  RuntimeEnabledFeatures::SetDatabaseEnabled(prefs.databases_enabled);
   settings->SetOfflineWebApplicationCacheEnabled(
       prefs.application_cache_enabled);
   settings->SetShouldProtectAgainstIpcFlooding(
@@ -1513,11 +1513,12 @@ void WebView::ApplyWebPreferences(const web_pref::WebPreferences& prefs,
   settings->SetHideScrollbars(prefs.hide_scrollbars);
 
   // Enable gpu-accelerated 2d canvas if requested on the command line.
-  WebRuntimeFeatures::EnableAccelerated2dCanvas(
+  RuntimeEnabledFeatures::SetAccelerated2dCanvasEnabled(
       prefs.accelerated_2d_canvas_enabled);
 
   // Enable new canvas 2d api features
-  WebRuntimeFeatures::EnableNewCanvas2DAPI(prefs.new_canvas_2d_api_enabled);
+  RuntimeEnabledFeatures::SetNewCanvas2DAPIEnabled(
+      prefs.new_canvas_2d_api_enabled);
 
   // Disable antialiasing for 2d canvas if requested on the command line.
   settings->SetAntialiased2dCanvasEnabled(
@@ -1554,7 +1555,7 @@ void WebView::ApplyWebPreferences(const web_pref::WebPreferences& prefs,
   settings->SetEnableScrollAnimator(prefs.enable_scroll_animator);
   settings->SetPrefersReducedMotion(prefs.prefers_reduced_motion);
 
-  WebRuntimeFeatures::EnableTouchEventFeatureDetection(
+  RuntimeEnabledFeatures::SetTouchEventFeatureDetectionEnabled(
       prefs.touch_event_feature_detection_enabled);
   settings->SetMaxTouchPoints(prefs.pointer_events_max_touch_points);
   settings->SetAvailablePointerTypes(prefs.available_pointer_types);
@@ -1576,7 +1577,7 @@ void WebView::ApplyWebPreferences(const web_pref::WebPreferences& prefs,
   // disabled KFS because they need more time to update their custom elements,
   // crbug.com/907284. Meanwhile, we pre-ship KFS to spatnav users.
   if (prefs.spatial_navigation_enabled)
-    WebRuntimeFeatures::EnableKeyboardFocusableScrollers(true);
+    RuntimeEnabledFeatures::SetKeyboardFocusableScrollersEnabled(true);
 
   settings->SetSelectionIncludesAltImageText(true);
 
@@ -1668,21 +1669,22 @@ void WebView::ApplyWebPreferences(const web_pref::WebPreferences& prefs,
   settings->SetPreferHiddenVolumeControls(true);
   settings->SetSpellCheckEnabledByDefault(prefs.spellcheck_enabled_by_default);
 
-  WebRuntimeFeatures::EnableVideoFullscreenOrientationLock(
+  RuntimeEnabledFeatures::SetVideoFullscreenOrientationLockEnabled(
       prefs.video_fullscreen_orientation_lock_enabled);
-  WebRuntimeFeatures::EnableVideoRotateToFullscreen(
+  RuntimeEnabledFeatures::SetVideoRotateToFullscreenEnabled(
       prefs.video_rotate_to_fullscreen_enabled);
   settings->SetEmbeddedMediaExperienceEnabled(
       prefs.embedded_media_experience_enabled);
   settings->SetImmersiveModeEnabled(prefs.immersive_mode_enabled);
   settings->SetDoNotUpdateSelectionOnMutatingSelectionRange(
       prefs.do_not_update_selection_on_mutating_selection_range);
-  WebRuntimeFeatures::EnableCSSHexAlphaColor(prefs.css_hex_alpha_color_enabled);
-  WebRuntimeFeatures::EnableScrollTopLeftInterop(
+  RuntimeEnabledFeatures::SetCSSHexAlphaColorEnabled(
+      prefs.css_hex_alpha_color_enabled);
+  RuntimeEnabledFeatures::SetScrollTopLeftInteropEnabled(
       prefs.scroll_top_left_interop_enabled);
-  WebRuntimeFeatures::EnableSurfaceEmbeddingFeatures(
+  RuntimeEnabledFeatures::SetSurfaceEmbeddingFeaturesEnabled(
       !prefs.disable_features_depending_on_viz);
-  WebRuntimeFeatures::EnableAcceleratedSmallCanvases(
+  RuntimeEnabledFeatures::SetAcceleratedSmallCanvasesEnabled(
       !prefs.disable_accelerated_small_canvases);
 #endif  // defined(OS_ANDROID)
   settings->SetForceDarkModeEnabled(prefs.force_dark_mode_enabled);
@@ -1824,10 +1826,11 @@ void WebView::ApplyWebPreferences(const web_pref::WebPreferences& prefs,
 #endif
 
 #if defined(OS_WIN)
-  WebRuntimeFeatures::EnableMiddleClickAutoscroll(true);
+  RuntimeEnabledFeatures::SetMiddleClickAutoscrollEnabled(true);
 #endif
 
-  WebRuntimeFeatures::EnableTranslateService(prefs.translate_service_available);
+  RuntimeEnabledFeatures::SetTranslateServiceEnabled(
+      prefs.translate_service_available);
 }
 
 void WebViewImpl::ThemeChanged() {

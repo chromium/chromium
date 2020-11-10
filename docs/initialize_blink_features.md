@@ -11,8 +11,8 @@ If you simply need to enable/disable the Blink feature you can simply use
 
 However, if there are side effects (e.g. you need to disable other features if
 this feature is also disabled), you should declare a custom enabler function in
-- [third_party/blink/public/platform/web_runtime_features.h][WebRuntimeFeatures.h]
-- [third_party/blink/public/platform/web_runtime_features.cc][WebRuntimeFeatures.cc]
+- [third_party/blink/public/platform/web_runtime_features.h][web_runtime_features.h]
+- [third_party/blink/renderer/platform/exported/web_runtime_features.cc][web_runtime_features.cc]
 
 ## Step 2: Determine how your feature is initialized.
 ### 1) Depends on OS-specific Macros:
@@ -94,9 +94,9 @@ command line switch. In this case, your custom logic should live here in
 [runtime_features]:<https://chromium.googlesource.com/chromium/src/+/HEAD/content/child/runtime_features.cc>
 [RuntimeEnabledFeatures]:
 <https://chromium.googlesource.com/chromium/src/+/HEAD/third_party/blink/renderer/platform/RuntimeEnabledFeatures.md>
-[WebRuntimeFeatures.h]:
-<https://chromium.googlesource.com/chromium/src/+/HEAD/third_party/blink/renderer/platform/exported/web_runtime_features.h>
-[WebRuntimeFeatures.cc]:
+[web_runtime_features.h]:
+<https://chromium.googlesource.com/chromium/src/+/HEAD/third_party/blink/public/platform/web_runtime_features.h>
+[web_runtime_features.cc]:
 <https://chromium.googlesource.com/chromium/src/+/HEAD/third_party/blink/renderer/platform/exported/web_runtime_features.cc>
 [EnableFeatureFromString]:<https://chromium.googlesource.com/chromium/src/+/HEAD/third_party/blink/public/platform/web_runtime_features.h#56>
 [SetRuntimeFeatureDefaultsForPlatform]:<https://chromium.googlesource.com/chromium/src/+/HEAD/content/child/runtime_features.cc#46>
