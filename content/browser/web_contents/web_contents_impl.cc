@@ -835,8 +835,7 @@ WebContentsImpl::WebContentsImpl(BrowserContext* browser_context)
 #endif  // !defined(OS_ANDROID)
       is_overlay_content_(false),
       showing_context_menu_(false),
-      text_autosizer_page_info_({0, 0, 1.f}),
-      native_theme_observer_(this) {
+      text_autosizer_page_info_({0, 0, 1.f}) {
   TRACE_EVENT0("content", "WebContentsImpl::WebContentsImpl");
   frame_tree_.SetFrameRemoveListener(base::BindRepeating(
       &WebContentsImpl::OnFrameRemoved, base::Unretained(this)));
@@ -849,7 +848,7 @@ WebContentsImpl::WebContentsImpl(BrowserContext* browser_context)
 #endif
 
   ui::NativeTheme* native_theme = ui::NativeTheme::GetInstanceForWeb();
-  native_theme_observer_.Add(native_theme);
+  native_theme_observation_.Observe(native_theme);
   using_dark_colors_ = native_theme->ShouldUseDarkColors();
   preferred_color_scheme_ = native_theme->GetPreferredColorScheme();
   preferred_contrast_ = native_theme->GetPreferredContrast();
@@ -8725,7 +8724,7 @@ void WebContentsImpl::SetVisibilityForChildViews(bool visible) {
 
 void WebContentsImpl::OnNativeThemeUpdated(ui::NativeTheme* observed_theme) {
   OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::OnNativeThemeUpdated");
-  DCHECK(native_theme_observer_.IsObserving(observed_theme));
+  DCHECK(native_theme_observation_.IsObservingSource(observed_theme));
 
   bool using_dark_colors = observed_theme->ShouldUseDarkColors();
   ui::NativeTheme::PreferredColorScheme preferred_color_scheme =

@@ -22,7 +22,7 @@
 #include "base/observer_list.h"
 #include "base/optional.h"
 #include "base/process/process.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -2067,8 +2067,8 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // Observe native theme for changes to dark mode, preferred color scheme, and
   // preferred contrast. Used to notify the renderer of preferred color scheme
   // and preferred contrast changes.
-  ScopedObserver<ui::NativeTheme, ui::NativeThemeObserver>
-      native_theme_observer_;
+  base::ScopedObservation<ui::NativeTheme, ui::NativeThemeObserver>
+      native_theme_observation_{this};
 
   bool using_dark_colors_ = false;
   ui::NativeTheme::PreferredColorScheme preferred_color_scheme_ =
