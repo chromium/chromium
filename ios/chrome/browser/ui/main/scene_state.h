@@ -113,6 +113,9 @@ typedef NS_ENUM(NSUInteger, SceneActivationLevel) {
 // Adds a new agent. Agents are owned by the scene state.
 - (void)addAgent:(id<SceneAgent>)agent;
 
+// Array of all agents added to this scene state.
+- (NSArray*)connectedAgents;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_MAIN_SCENE_STATE_H_

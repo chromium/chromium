@@ -70,6 +70,10 @@
   [agent setSceneState:self];
 }
 
+- (NSArray*)connectedAgents {
+  return self.agents;
+}
+
 #pragma mark - Setters & Getters.
 
 - (void)setWindow:(UIWindow*)window {
