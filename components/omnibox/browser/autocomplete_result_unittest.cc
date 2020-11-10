@@ -116,6 +116,9 @@ class AutocompleteResultTest : public testing::Test {
 
     // Duplicate matches.
     std::vector<AutocompleteMatch> duplicate_matches;
+
+    // Type of the match
+    AutocompleteMatchType::Type type{AutocompleteMatchType::SEARCH_SUGGEST};
   };
 
   AutocompleteResultTest() {
@@ -152,7 +155,7 @@ class AutocompleteResultTest : public testing::Test {
                            size_t expected_count);
 
   void AssertMatch(AutocompleteMatch match,
-                   TestData expected_match_data,
+                   const TestData& expected_match_data,
                    int i);
 
   // Creates an AutocompleteResult from |last| and |current|. The two are
@@ -191,6 +194,7 @@ void AutocompleteResultTest::PopulateAutocompleteMatch(
     const TestData& data,
     AutocompleteMatch* match) {
   match->provider = GetProvider(data.provider_id);
+  match->type = data.type;
   match->fill_into_edit = base::NumberToString16(data.url_id);
   std::string url_id(1, data.url_id + 'a');
   match->destination_url = GURL("http://" + url_id);
@@ -220,11 +224,12 @@ void AutocompleteResultTest::AssertResultMatches(
 }
 
 void AutocompleteResultTest::AssertMatch(AutocompleteMatch match,
-                                         TestData expected_match_data,
+                                         const TestData& expected_match_data,
                                          int i) {
   AutocompleteMatch expected_match;
   PopulateAutocompleteMatch(expected_match_data, &expected_match);
   EXPECT_EQ(expected_match.provider, match.provider) << i;
+  EXPECT_EQ(expected_match.type, match.type) << i;
   EXPECT_EQ(expected_match.relevance, match.relevance) << i;
   EXPECT_EQ(expected_match.allowed_to_be_default_match,
             match.allowed_to_be_default_match)
@@ -480,6 +485,26 @@ TEST_F(AutocompleteResultTest,
     { 6, 2, 800,  false },
     { 4, 1, 700,  false },
     { 7, 1, 500,  true  },
+  };
+
+  ASSERT_NO_FATAL_FAILURE(RunTransferOldMatchesTest(
+      last, base::size(last), current, base::size(current), result,
+      base::size(result)));
+}
+
+// Tests that transferred matches do not include the specialized match types.
+TEST_F(AutocompleteResultTest, TransferOldMatchesSkipsSpecializedSuggestions) {
+  TestData last[] = {
+      {0, 1, 1000, true, {}, AutocompleteMatchType::TILE_NAVSUGGEST},
+      {1, 4, 999, true, {}, AutocompleteMatchType::TILE_SUGGESTION},
+      {2, 2, 500, true},
+  };
+  TestData current[] = {
+      {3, 1, 600, true},
+  };
+  TestData result[] = {
+      {3, 1, 600, true},
+      {2, 2, 500, true},
   };
 
   ASSERT_NO_FATAL_FAILURE(RunTransferOldMatchesTest(
@@ -1503,26 +1528,16 @@ TEST_F(AutocompleteResultTest, SortAndCullGroupSuggestionsByType) {
         {{OmniboxFieldTrial::kUIMaxAutocompleteMatchesParam, "6"}}}},
       {/* nothing disabled */});
   TestData data[] = {
-    { 0, 1,  500, false },
-    { 1, 2,  600, false },
-    { 2, 1,  700, false },
-    { 3, 2,  800, true  },
-    { 4, 1,  900, false },
-    { 5, 2, 1000, false },
-    { 6, 3, 1100, false },
+      {0, 1, 500, false, {}, AutocompleteMatchType::SEARCH_SUGGEST},
+      {1, 2, 600, false, {}, AutocompleteMatchType::HISTORY_URL},
+      {2, 1, 700, false, {}, AutocompleteMatchType::SEARCH_HISTORY},
+      {3, 2, 800, true, {}, AutocompleteMatchType::HISTORY_TITLE},
+      {4, 1, 900, false, {}, AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED},
+      {5, 2, 1000, false, {}, AutocompleteMatchType::HISTORY_BODY},
+      {6, 3, 1100, false, {}, AutocompleteMatchType::BOOKMARK_TITLE},
   };
   ACMatches matches;
   PopulateAutocompleteMatches(data, base::size(data), &matches);
-  AutocompleteMatchType::Type match_types[] = {
-      AutocompleteMatchType::SEARCH_SUGGEST,
-      AutocompleteMatchType::HISTORY_URL,
-      AutocompleteMatchType::SEARCH_HISTORY,
-      AutocompleteMatchType::HISTORY_TITLE,
-      AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED,
-      AutocompleteMatchType::HISTORY_BODY,
-      AutocompleteMatchType::BOOKMARK_TITLE};
-  for (size_t i = 0; i < base::size(data); ++i)
-    matches[i].type = match_types[i];
 
   AutocompleteInput input(base::ASCIIToUTF16("a"),
                           metrics::OmniboxEventProto::OTHER,
@@ -1532,10 +1547,15 @@ TEST_F(AutocompleteResultTest, SortAndCullGroupSuggestionsByType) {
   result.SortAndCull(input, template_url_service_.get());
 
   TestData expected_data[] = {
-      {3, 2, 800, true},                         // default match unmoved
-      {4, 1, 900, false},                        // search types
-      {2, 1, 700, false},  {6, 3, 1100, false},  // other types
-      {5, 2, 1000, false}, {1, 2, 600, false},
+      // default match unmoved
+      {3, 2, 800, true, {}, AutocompleteMatchType::HISTORY_TITLE},
+      // search types
+      {4, 1, 900, false, {}, AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED},
+      {2, 1, 700, false, {}, AutocompleteMatchType::SEARCH_HISTORY},
+      // other types
+      {6, 3, 1100, false, {}, AutocompleteMatchType::BOOKMARK_TITLE},
+      {5, 2, 1000, false, {}, AutocompleteMatchType::HISTORY_BODY},
+      {1, 2, 600, false, {}, AutocompleteMatchType::HISTORY_URL},
   };
 
   AssertResultMatches(result, expected_data,

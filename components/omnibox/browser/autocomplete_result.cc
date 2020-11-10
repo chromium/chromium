@@ -126,11 +126,22 @@ void AutocompleteResult::TransferOldMatches(
   if (old_matches->empty())
     return;
 
+  // Exclude specialized suggestion types from being transferred to prevent
+  // user-visible artifacts.
+  old_matches->matches_.erase(
+      std::remove_if(
+          old_matches->begin(), old_matches->end(),
+          [](const auto& match) {
+            return match.type == AutocompleteMatchType::TILE_NAVSUGGEST ||
+                   match.type == AutocompleteMatchType::TILE_SUGGESTION;
+          }),
+      old_matches->matches_.end());
+
   if (empty()) {
     // If we've got no matches we can copy everything from the last result.
     Swap(old_matches);
-    for (auto i(begin()); i != end(); ++i)
-      i->from_previous = true;
+    for (auto& match : *this)
+      match.from_previous = true;
     return;
   }
 
@@ -160,9 +171,8 @@ void AutocompleteResult::TransferOldMatches(
   BuildProviderToMatchesCopy(&matches_per_provider);
   // |old_matches| is going away soon, so we can move out the matches.
   old_matches->BuildProviderToMatchesMove(&old_matches_per_provider);
-  for (ProviderToMatches::iterator i = old_matches_per_provider.begin();
-       i != old_matches_per_provider.end(); ++i) {
-    MergeMatchesByProvider(&i->second, matches_per_provider[i->first]);
+  for (auto& pair : old_matches_per_provider) {
+    MergeMatchesByProvider(&pair.second, matches_per_provider[pair.first]);
   }
 
   SortAndCull(input, template_url_service);
