@@ -1307,12 +1307,6 @@ VideoFrame::~VideoFrame() {
     std::move(mailbox_holders_release_cb_).Run(release_sync_token);
   }
 
-  // Someone might be monitoring original wrapped frame for feedback.
-  // Ensure all accumulated feedback is propagated to the original frame.
-  if (wrapped_frame_) {
-    wrapped_frame_->feedback()->Combine(feedback_);
-  }
-
   for (auto& callback : done_callbacks_)
     std::move(callback).Run();
 }

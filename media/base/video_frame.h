@@ -27,7 +27,6 @@
 #include "build/build_config.h"
 #include "gpu/command_buffer/common/mailbox_holder.h"
 #include "gpu/ipc/common/vulkan_ycbcr_info.h"
-#include "media/base/video_frame_feedback.h"
 #include "media/base/video_frame_layout.h"
 #include "media/base/video_frame_metadata.h"
 #include "media/base/video_types.h"
@@ -568,9 +567,6 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   // Resets |metadata_|.
   void clear_metadata() { set_metadata(VideoFrameMetadata()); }
 
-  const VideoFrameFeedback* feedback() const { return &feedback_; }
-  VideoFrameFeedback* feedback() { return &feedback_; }
-
   // The time span between the current frame and the first frame of the stream.
   // This is the media timestamp, and not the reference time.
   // See VideoFrameMetadata::REFERENCE_TIME for details.
@@ -723,8 +719,6 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   gpu::SyncToken release_sync_token_ GUARDED_BY(release_sync_token_lock_);
 
   VideoFrameMetadata metadata_;
-
-  VideoFrameFeedback feedback_;
 
   // Generated at construction time.
   const int unique_id_;
