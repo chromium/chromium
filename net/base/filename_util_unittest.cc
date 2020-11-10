@@ -192,13 +192,15 @@ TEST(FilenameUtilTest, FileURLConversion) {
     // Other percent-encoded characters that are left alone when displaying a
     // URL are decoded in a file path (https://crbug.com/585422).
     {L"C:\\foo\\\U0001F512.txt",
-     "file:///C:/foo/%F0%9F%94%92.txt"},                       // Blocked.
-    {L"C:\\foo\\\u2001.txt", "file:///C:/foo/%E2%80%81.txt"},  // Blocked.
+     "file:///C:/foo/%F0%9F%94%92.txt"},                         // Blocked.
+    {L"C:\\foo\\\u2001.txt", "file:///C:/foo/%E2%80%81.txt"},    // Blocked.
+    {L"C:\\foo\\\a\tbar\n ", "file:///C:/foo/%07%09bar%0A%20"},  // Blocked.
 #elif defined(OS_POSIX) || defined(OS_FUCHSIA)
     {L"/foo/bar.txt", "file:///foo/bar.txt"},
     {L"/foo/BAR.txt", "file:///foo/BAR.txt"},
     {L"/C:/foo/bar.txt", "file:///C:/foo/bar.txt"},
     {L"/foo/bar?.txt", "file:///foo/bar%3F.txt"},
+    {L"/foo/\a\tbar\n ", "file:///foo/%07%09bar%0A%20"},
     // %5C ('\\') is not special on POSIX, and is therefore decoded as normal.
     {L"/foo/..\\bar", "file:///foo/..%5Cbar"},
     {L"/some computer/foo/bar.txt", "file:///some%20computer/foo/bar.txt"},

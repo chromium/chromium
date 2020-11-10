@@ -690,9 +690,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_DomSerializerTests, SerializeHTMLDOMWithBaseTag) {
 
   // Get page dir URL which is base URL of this file.
   base::FilePath dir_name = page_file_path.DirName();
-  dir_name = dir_name.Append(
-      base::FilePath::StringType(base::FilePath::kSeparators[0], 1));
-  GURL path_dir_url = net::FilePathToFileURL(dir_name);
+  GURL path_dir_url = net::FilePathToFileURL(dir_name.AsEndingWithSeparator());
 
   // Get file URL.
   GURL file_url = net::FilePathToFileURL(page_file_path);

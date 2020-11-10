@@ -32,31 +32,26 @@ GURL FilePathToFileURL(const base::FilePath& path) {
   // "file://///server/path" for UNC. The URL canonicalizer will fix up the
   // latter case to be the canonical UNC form: "file://server/path"
   base::FilePath::StringType url_string(kFileURLPrefix);
-  url_string.append(path.value());
 
-  // Now do replacement of some characters. Since we assume the input is a
-  // literal filename, anything the URL parser might consider special should
-  // be escaped here.
+  // GURL() strips some whitespace and trailing control chars which are valid
+  // in file paths. It also interprets chars such as `%;#?` and maybe `\`, so we
+  // must percent encode these first. Reserve max possible length up front.
+  url_string.reserve(url_string.size() + (3 * path.value().size()));
 
-  // must be the first substitution since others will introduce percents as the
-  // escape character
-  base::ReplaceSubstringsAfterOffset(
-      &url_string, 0, FILE_PATH_LITERAL("%"), FILE_PATH_LITERAL("%25"));
-
-  // semicolon is supposed to be some kind of separator according to RFC 2396
-  base::ReplaceSubstringsAfterOffset(
-      &url_string, 0, FILE_PATH_LITERAL(";"), FILE_PATH_LITERAL("%3B"));
-
-  base::ReplaceSubstringsAfterOffset(
-      &url_string, 0, FILE_PATH_LITERAL("#"), FILE_PATH_LITERAL("%23"));
-
-  base::ReplaceSubstringsAfterOffset(
-      &url_string, 0, FILE_PATH_LITERAL("?"), FILE_PATH_LITERAL("%3F"));
-
+  for (auto c : path.value()) {
+    if (c == '%' || c == ';' || c == '#' || c == '?' ||
 #if defined(OS_POSIX) || defined(OS_FUCHSIA)
-  base::ReplaceSubstringsAfterOffset(
-      &url_string, 0, FILE_PATH_LITERAL("\\"), FILE_PATH_LITERAL("%5C"));
+        c == '\\' ||
 #endif
+        c <= ' ') {
+      static const char kHexChars[] = "0123456789ABCDEF";
+      url_string += '%';
+      url_string += kHexChars[(c >> 4) & 0xf];
+      url_string += kHexChars[c & 0xf];
+    } else {
+      url_string += c;
+    }
+  }
 
   return GURL(base::AsCrossPlatformPiece(url_string));
 }
