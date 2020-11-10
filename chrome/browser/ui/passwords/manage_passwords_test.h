@@ -13,6 +13,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/autofill/core/common/form_data.h"
+#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/password_manager/core/browser/fake_form_fetcher.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
@@ -31,6 +32,7 @@ class ManagePasswordsTest : public InProcessBrowserTest {
 
   // InProcessBrowserTest:
   void SetUpOnMainThread() override;
+  void SetUpInProcessBrowserTestFixture() override;
 
   // Execute the browser command to open the manage passwords bubble.
   void ExecuteManagePasswordsCommand();
@@ -84,6 +86,10 @@ class ManagePasswordsTest : public InProcessBrowserTest {
   password_manager::StubPasswordManagerClient client_;
   password_manager::StubPasswordManagerDriver driver_;
   password_manager::FakeFormFetcher fetcher_;
+
+  std::unique_ptr<
+      BrowserContextDependencyManager::CreateServicesCallbackList::Subscription>
+      create_services_subscription_;
 
   DISALLOW_COPY_AND_ASSIGN(ManagePasswordsTest);
 };

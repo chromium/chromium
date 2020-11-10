@@ -77,7 +77,6 @@ class PasswordBubbleBrowserTest
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  DISALLOW_COPY_AND_ASSIGN(PasswordBubbleBrowserTest);
 };
 
 INSTANTIATE_TEST_SUITE_P(All, PasswordBubbleBrowserTest, ::testing::Bool());
@@ -101,34 +100,15 @@ IN_PROC_BROWSER_TEST_P(PasswordBubbleBrowserTest, InvokeUi_AutoSignin) {
   ShowAndVerifyUi();
 }
 
-// TODO(crbug.com/1146503): Flaky on Linux
-#if defined(OS_LINUX)
-#define MAYBE_InvokeUi_SafeState DISABLED_InvokeUi_SafeState
-#else
-#define MAYBE_InvokeUi_SafeState InvokeUi_SafeState
-#endif
-IN_PROC_BROWSER_TEST_P(PasswordBubbleBrowserTest, MAYBE_InvokeUi_SafeState) {
+IN_PROC_BROWSER_TEST_P(PasswordBubbleBrowserTest, InvokeUi_SafeState) {
   ShowAndVerifyUi();
 }
 
-// TODO(crbug.com/1146503): Flaky on Linux
-#if defined(OS_LINUX)
-#define MAYBE_InvokeUi_MoreToFixState DISABLED_InvokeUi_MoreToFixState
-#else
-#define MAYBE_InvokeUi_MoreToFixState InvokeUi_MoreToFixState
-#endif
-IN_PROC_BROWSER_TEST_P(
-    PasswordBubbleBrowserTest, MAYBE_InvokeUi_MoreToFixState) {
+IN_PROC_BROWSER_TEST_P(PasswordBubbleBrowserTest, InvokeUi_MoreToFixState) {
   ShowAndVerifyUi();
 }
 
-// TODO(crbug.com/1146503): Flaky on Linux
-#if defined(OS_LINUX)
-#define MAYBE_InvokeUi_UnsafeState DISABLED_InvokeUi_UnsafeState
-#else
-#define MAYBE_InvokeUi_UnsafeState InvokeUi_UnsafeState
-#endif
-IN_PROC_BROWSER_TEST_P(PasswordBubbleBrowserTest, MAYBE_InvokeUi_UnsafeState) {
+IN_PROC_BROWSER_TEST_P(PasswordBubbleBrowserTest, InvokeUi_UnsafeState) {
   ShowAndVerifyUi();
 }
 
