@@ -20,7 +20,7 @@ import org.chromium.base.ApplicationStatus.ActivityStateListener;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelManager.PanelPriority;
 import org.chromium.chrome.browser.compositor.layouts.Layout;
-import org.chromium.chrome.browser.compositor.layouts.LayoutManager;
+import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.compositor.layouts.SceneChangeObserver;
 import org.chromium.chrome.browser.compositor.layouts.eventfilter.EdgeSwipeHandler;
 import org.chromium.chrome.browser.compositor.layouts.eventfilter.GestureHandler;
@@ -109,7 +109,7 @@ public class OverlayPanel extends OverlayPanelAnimation implements ActivityState
     }
 
     /** A layout manager for tracking changes in the active layout. */
-    private final LayoutManager mLayoutManager;
+    private final LayoutManagerImpl mLayoutManager;
 
     /** The observer that reacts to scene-change events. */
     private final SceneChangeObserver mSceneChangeObserver;
@@ -160,11 +160,11 @@ public class OverlayPanel extends OverlayPanelAnimation implements ActivityState
 
     /**
      * @param context The current Android {@link Context}.
-     * @param layoutManager A {@link LayoutManager} for observing changes in the active layout.
+     * @param layoutManager A {@link LayoutManagerImpl} for observing changes in the active layout.
      * @param panelManager The {@link OverlayPanelManager} responsible for showing panels.
      */
     public OverlayPanel(
-            Context context, LayoutManager layoutManager, OverlayPanelManager panelManager) {
+            Context context, LayoutManagerImpl layoutManager, OverlayPanelManager panelManager) {
         super(context, layoutManager);
         mLayoutManager = layoutManager;
         mContentFactory = this;

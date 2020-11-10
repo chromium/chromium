@@ -10,9 +10,9 @@ import android.content.res.Resources;
 import android.test.mock.MockResources;
 
 /**
- * This is the minimal {@link Context} needed by the {@link LayoutManager} to be working properly.
- * It points to a {@link MockResources} for anything that is based on xml configurations. For
- * everything else the standard provided Context should be sufficient.
+ * This is the minimal {@link Context} needed by the {@link LayoutManagerImpl} to be working
+ * properly. It points to a {@link MockResources} for anything that is based on xml configurations.
+ * For everything else the standard provided Context should be sufficient.
  */
 public class MockContextForLayout extends ContextWrapper {
     private final MockResourcesForLayout mResources;

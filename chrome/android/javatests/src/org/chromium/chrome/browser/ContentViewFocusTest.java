@@ -23,7 +23,7 @@ import org.chromium.base.test.util.FlakyTest;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.compositor.layouts.LayoutManager;
+import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.compositor.layouts.eventfilter.EdgeSwipeHandler;
 import org.chromium.chrome.browser.compositor.layouts.eventfilter.ScrollDirection;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -123,7 +123,7 @@ public class ContentViewFocusTest {
         });
 
         CriteriaHelper.pollUiThread(() -> {
-            LayoutManager driver = mActivityTestRule.getActivity().getLayoutManager();
+            LayoutManagerImpl driver = mActivityTestRule.getActivity().getLayoutManager();
             return !driver.getActiveLayout().shouldDisplayContentOverlay();
         }, "Layout still requesting Tab Android view be attached");
 
@@ -135,7 +135,7 @@ public class ContentViewFocusTest {
         PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> edgeSwipeHandler.swipeFinished());
 
         CriteriaHelper.pollUiThread(() -> {
-            LayoutManager driver = mActivityTestRule.getActivity().getLayoutManager();
+            LayoutManagerImpl driver = mActivityTestRule.getActivity().getLayoutManager();
             return driver.getActiveLayout().shouldDisplayContentOverlay();
         }, "Layout not requesting Tab Android view be attached");
 

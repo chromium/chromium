@@ -50,10 +50,10 @@ import java.util.List;
 
 /**
  * A {@link Layout} controller for the more complicated Chrome browser.  This is currently a
- * superset of {@link LayoutManager}.
+ * superset of {@link LayoutManagerImpl}.
  */
-public class LayoutManagerChrome
-        extends LayoutManager implements OverviewModeController, ChromeAccessibilityUtil.Observer {
+public class LayoutManagerChrome extends LayoutManagerImpl
+        implements OverviewModeController, ChromeAccessibilityUtil.Observer {
     // Layouts
     /** An {@link Layout} that should be used as the accessibility tab switcher. */
     protected OverviewListLayout mOverviewListLayout;

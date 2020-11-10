@@ -8,7 +8,7 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelManager;
 import org.chromium.chrome.browser.compositor.layouts.Layout;
-import org.chromium.chrome.browser.compositor.layouts.LayoutManager;
+import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.compositor.layouts.SceneChangeObserver;
 import org.chromium.chrome.browser.compositor.layouts.ToolbarSwipeLayout;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
@@ -86,7 +86,7 @@ class BottomControlsMediator implements BrowserControlsStateProvider.Observer,
         mWindowAndroid.getKeyboardDelegate().addKeyboardVisibilityListener(this);
     }
 
-    void setLayoutManager(LayoutManager layoutManager) {
+    void setLayoutManager(LayoutManagerImpl layoutManager) {
         mModel.set(BottomControlsProperties.LAYOUT_MANAGER, layoutManager);
         layoutManager.addSceneChangeObserver(this);
         layoutManager.getOverlayPanelManager().addObserver(this);
@@ -108,7 +108,7 @@ class BottomControlsMediator implements BrowserControlsStateProvider.Observer,
             mWindowAndroid = null;
         }
         if (mModel.get(BottomControlsProperties.LAYOUT_MANAGER) != null) {
-            LayoutManager manager = mModel.get(BottomControlsProperties.LAYOUT_MANAGER);
+            LayoutManagerImpl manager = mModel.get(BottomControlsProperties.LAYOUT_MANAGER);
             manager.getOverlayPanelManager().removeObserver(this);
             manager.removeSceneChangeObserver(this);
         }

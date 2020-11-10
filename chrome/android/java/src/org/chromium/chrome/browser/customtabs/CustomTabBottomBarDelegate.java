@@ -28,7 +28,7 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browserservices.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelManager.OverlayPanelManagerObserver;
-import org.chromium.chrome.browser.compositor.layouts.LayoutManager;
+import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.night_mode.RemoteViewsWithNightModeInflater;
 import org.chromium.chrome.browser.night_mode.SystemNightModeMonitor;
@@ -232,7 +232,7 @@ public class CustomTabBottomBarDelegate implements BrowserControlsStateProvider.
         return mBottomBarView;
     }
 
-    public void addOverlayPanelManagerObserver(LayoutManager layoutDriver) {
+    public void addOverlayPanelManagerObserver(LayoutManagerImpl layoutDriver) {
         layoutDriver.getOverlayPanelManager().addObserver(new OverlayPanelManagerObserver() {
             @Override
             public void onOverlayPanelShown() {

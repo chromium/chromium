@@ -14,7 +14,7 @@ import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsUtils;
 import org.chromium.chrome.browser.compositor.layouts.Layout;
-import org.chromium.chrome.browser.compositor.layouts.LayoutManager;
+import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.compositor.layouts.SceneChangeObserver;
 import org.chromium.chrome.browser.compositor.layouts.ToolbarSwipeLayout;
 import org.chromium.chrome.browser.compositor.layouts.phone.StackLayout;
@@ -37,7 +37,7 @@ public class TopToolbarOverlayMediator {
     private final Context mContext;
 
     /** A handle to the layout manager for observing scene changes. */
-    private final LayoutManager mLayoutManager;
+    private final LayoutManagerImpl mLayoutManager;
 
     /** The observer of changes to the active layout. */
     private final SceneChangeObserver mSceneChangeObserver;
@@ -69,7 +69,7 @@ public class TopToolbarOverlayMediator {
     /** Whether the android view for this overlay is visible. */
     private boolean mIsAndroidViewVisible;
 
-    TopToolbarOverlayMediator(PropertyModel model, Context context, LayoutManager layoutManager,
+    TopToolbarOverlayMediator(PropertyModel model, Context context, LayoutManagerImpl layoutManager,
             Callback<ClipDrawableProgressBar.DrawingInfo> progressInfoCallback,
             ActivityTabProvider tabSupplier,
             BrowserControlsStateProvider browserControlsStateProvider) {

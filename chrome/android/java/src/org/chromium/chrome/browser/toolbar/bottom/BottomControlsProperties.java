@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.toolbar.bottom;
 
-import org.chromium.chrome.browser.compositor.layouts.LayoutManager;
+import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
@@ -26,8 +26,8 @@ class BottomControlsProperties {
     static final WritableBooleanPropertyKey COMPOSITED_VIEW_VISIBLE =
             new WritableBooleanPropertyKey();
 
-    /** A {@link LayoutManager} to attach overlays to. */
-    static final WritableObjectPropertyKey<LayoutManager> LAYOUT_MANAGER =
+    /** A {@link LayoutManagerImpl} to attach overlays to. */
+    static final WritableObjectPropertyKey<LayoutManagerImpl> LAYOUT_MANAGER =
             new WritableObjectPropertyKey<>();
 
     /** A {@link ResourceManager} for loading textures into the compositor. */

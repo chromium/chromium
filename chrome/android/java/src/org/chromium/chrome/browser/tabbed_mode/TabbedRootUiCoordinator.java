@@ -25,7 +25,7 @@ import org.chromium.chrome.browser.banners.AppBannerInProductHelpControllerFacto
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
 import org.chromium.chrome.browser.compositor.bottombar.ephemeraltab.EphemeralTabCoordinator;
-import org.chromium.chrome.browser.compositor.layouts.LayoutManager;
+import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchManager;
 import org.chromium.chrome.browser.datareduction.DataReductionPromoScreen;
@@ -86,7 +86,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private HistoryNavigationCoordinator mHistoryNavigationCoordinator;
     private NavigationSheet mNavigationSheet;
     private ComposedBrowserControlsVisibilityDelegate mAppBrowserControlsVisibilityDelegate;
-    private LayoutManager mLayoutManager;
+    private LayoutManagerImpl mLayoutManager;
 
     /**
      * Construct a new TabbedRootUiCoordinator.
@@ -257,7 +257,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     // Protected class methods
 
     @Override
-    protected void onLayoutManagerAvailable(LayoutManager layoutManager) {
+    protected void onLayoutManagerAvailable(LayoutManagerImpl layoutManager) {
         super.onLayoutManagerAvailable(layoutManager);
 
         initStatusIndicatorCoordinator(layoutManager);
@@ -340,7 +340,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 mActivity.getWindowAndroid(), mAppBannerInProductHelpController);
     }
 
-    private void initStatusIndicatorCoordinator(LayoutManager layoutManager) {
+    private void initStatusIndicatorCoordinator(LayoutManagerImpl layoutManager) {
         // TODO(crbug.com/1035584): Disable on tablets for now as we need to do one or two extra
         // things for tablets.
         if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity)

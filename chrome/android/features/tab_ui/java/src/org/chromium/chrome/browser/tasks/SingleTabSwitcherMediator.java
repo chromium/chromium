@@ -17,7 +17,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.ObserverList;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.chrome.browser.compositor.layouts.LayoutManager;
+import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
@@ -78,7 +78,7 @@ public class SingleTabSwitcherMediator implements TabSwitcher.Controller {
                     mShouldIgnoreNextSelect = false;
                     return;
                 }
-                mTabSelectingListener.onTabSelecting(LayoutManager.time(), tab.getId());
+                mTabSelectingListener.onTabSelecting(LayoutManagerImpl.time(), tab.getId());
             }
         };
         mTabModelSelectorObserver = new EmptyTabModelSelectorObserver() {
@@ -249,6 +249,6 @@ public class SingleTabSwitcherMediator implements TabSwitcher.Controller {
             RecordUserAction.record("MobileTabReturnedToCurrentTab.SingleTabCard");
         }
         mTabSelectingListener.onTabSelecting(
-                LayoutManager.time(), mTabModelSelector.getCurrentTabId());
+                LayoutManagerImpl.time(), mTabModelSelector.getCurrentTabId());
     }
 }

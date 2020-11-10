@@ -11,7 +11,7 @@ import org.chromium.base.ObserverList;
 import org.chromium.base.ObserverList.RewindableIterator;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.compositor.layouts.Layout;
-import org.chromium.chrome.browser.compositor.layouts.LayoutManager;
+import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.compositor.layouts.SceneChangeObserver;
 import org.chromium.chrome.browser.compositor.layouts.StaticLayout;
 import org.chromium.chrome.browser.compositor.layouts.phone.SimpleAnimationLayout;
@@ -147,10 +147,10 @@ public class ActivityTabProvider implements Supplier<Tab> {
     /** The {@link Tab} that is considered to be the activity's tab. */
     private Tab mActivityTab;
 
-    /** A handle to the {@link LayoutManager} to get the active layout. */
-    private LayoutManager mLayoutManager;
+    /** A handle to the {@link LayoutManagerImpl} to get the active layout. */
+    private LayoutManagerImpl mLayoutManager;
 
-    /** The observer watching scene changes in the {@link LayoutManager}. */
+    /** The observer watching scene changes in the {@link LayoutManagerImpl}. */
     private SceneChangeObserver mSceneChangeObserver;
 
     /** A handle to the {@link TabModelSelector}. */
@@ -238,9 +238,9 @@ public class ActivityTabProvider implements Supplier<Tab> {
     }
 
     /**
-     * @param layoutManager A {@link LayoutManager} for watching for scene changes.
+     * @param layoutManager A {@link LayoutManagerImpl} for watching for scene changes.
      */
-    public void setLayoutManager(LayoutManager layoutManager) {
+    public void setLayoutManager(LayoutManagerImpl layoutManager) {
         assert mLayoutManager == null;
         mLayoutManager = layoutManager;
         mLayoutManager.addSceneChangeObserver(mSceneChangeObserver);

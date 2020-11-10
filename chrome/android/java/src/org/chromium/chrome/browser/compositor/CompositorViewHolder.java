@@ -45,8 +45,8 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsUtils;
-import org.chromium.chrome.browser.compositor.layouts.LayoutManager;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerHost;
+import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.compositor.layouts.LayoutRenderHost;
 import org.chromium.chrome.browser.compositor.layouts.content.ContentOffsetProvider;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
@@ -91,7 +91,7 @@ import java.util.Set;
  * This class holds a {@link CompositorView}. This level of indirection is needed to benefit from
  * the {@link android.view.ViewGroup#onInterceptTouchEvent(android.view.MotionEvent)} capability on
  * available on {@link android.view.ViewGroup}s.
- * This class also holds the {@link LayoutManager} responsible to describe the items to be
+ * This class also holds the {@link LayoutManagerImpl} responsible to describe the items to be
  * drawn by the UI compositor on the native side.
  */
 public class CompositorViewHolder extends FrameLayout
@@ -109,7 +109,7 @@ public class CompositorViewHolder extends FrameLayout
         /**
          * Initializes the {@link CompositorViewHolder} with the relevant content it needs to
          * properly show content on the screen.
-         * @param layoutManager             A {@link LayoutManager} instance.  This class is
+         * @param layoutManager             A {@link LayoutManagerImpl} instance.  This class is
          *                                  responsible for driving all high level screen content
          * and determines which {@link Layout} is shown when.
          * @param urlBar                    The {@link View} representing the URL bar (must be
@@ -118,7 +118,7 @@ public class CompositorViewHolder extends FrameLayout
          *                                  {@link Layout}s.
          * @param controlContainer          A {@link ControlContainer} instance to draw.
          */
-        void initializeCompositorContent(LayoutManager layoutManager, View urlBar,
+        void initializeCompositorContent(LayoutManagerImpl layoutManager, View urlBar,
                 ViewGroup contentContainer, ControlContainer controlContainer);
     }
 
@@ -147,7 +147,7 @@ public class CompositorViewHolder extends FrameLayout
     private boolean mIsKeyboardShowing;
 
     private final Invalidator mInvalidator = new Invalidator();
-    private LayoutManager mLayoutManager;
+    private LayoutManagerImpl mLayoutManager;
     private LayerTitleCache mLayerTitleCache;
     private CompositorView mCompositorView;
 
@@ -480,10 +480,10 @@ public class CompositorViewHolder extends FrameLayout
     }
 
     /**
-     * @param layoutManager The {@link LayoutManager} instance that will be driving what
+     * @param layoutManager The {@link LayoutManagerImpl} instance that will be driving what
      *                      shows in this {@link CompositorViewHolder}.
      */
-    public void setLayoutManager(LayoutManager layoutManager) {
+    public void setLayoutManager(LayoutManagerImpl layoutManager) {
         mLayoutManager = layoutManager;
         onViewportChanged();
     }
@@ -723,9 +723,9 @@ public class CompositorViewHolder extends FrameLayout
     }
 
     /**
-     * @return The {@link LayoutManager} associated with this view.
+     * @return The {@link LayoutManagerImpl} associated with this view.
      */
-    public LayoutManager getLayoutManager() {
+    public LayoutManagerImpl getLayoutManager() {
         return mLayoutManager;
     }
 
@@ -1619,7 +1619,7 @@ public class CompositorViewHolder extends FrameLayout
                 int virtualViewId, int action, Bundle arguments) {
             switch (action) {
                 case AccessibilityNodeInfoCompat.ACTION_CLICK:
-                    mVirtualViews.get(virtualViewId).handleClick(LayoutManager.time());
+                    mVirtualViews.get(virtualViewId).handleClick(LayoutManagerImpl.time());
                     return true;
             }
 

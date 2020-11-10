@@ -44,7 +44,7 @@ import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsV
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.compositor.Invalidator;
 import org.chromium.chrome.browser.compositor.layouts.Layout;
-import org.chromium.chrome.browser.compositor.layouts.LayoutManager;
+import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.compositor.layouts.SceneChangeObserver;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
@@ -171,7 +171,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
     private LocationBar mLocationBar;
     private FindToolbarManager mFindToolbarManager;
 
-    private LayoutManager mLayoutManager;
+    private LayoutManagerImpl mLayoutManager;
     private final ObservableSupplier<ShareDelegate> mShareDelegateSupplier;
 
     private TabObserver mTabObserver;
@@ -945,7 +945,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
      * <p>
      * Calling this must occur after the native library have completely loaded.
      *
-     * @param layoutManager A {@link LayoutManager} instance used to watch for scene
+     * @param layoutManager A {@link LayoutManagerImpl} instance used to watch for scene
      *                      changes.
      * @param tabSwitcherClickHandler The {@link OnClickListener} for the tab switcher button.
      * @param newTabClickHandler The {@link OnClickListener} for the new tab button.
@@ -954,7 +954,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
      *         button.
      * @param showStartSurfaceSupplier Supplies if we should show the start surface.
      */
-    public void initializeWithNative(LayoutManager layoutManager,
+    public void initializeWithNative(LayoutManagerImpl layoutManager,
             OnClickListener tabSwitcherClickHandler, OnClickListener newTabClickHandler,
             OnClickListener bookmarkClickHandler, OnClickListener customTabsBackClickHandler,
             Supplier<Boolean> showStartSurfaceSupplier) {

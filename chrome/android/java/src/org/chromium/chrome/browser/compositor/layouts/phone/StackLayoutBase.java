@@ -27,7 +27,7 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider
 import org.chromium.chrome.browser.browser_controls.BrowserControlsUtils;
 import org.chromium.chrome.browser.compositor.LayerTitleCache;
 import org.chromium.chrome.browser.compositor.layouts.Layout;
-import org.chromium.chrome.browser.compositor.layouts.LayoutManager;
+import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.compositor.layouts.LayoutRenderHost;
 import org.chromium.chrome.browser.compositor.layouts.LayoutUpdateHost;
 import org.chromium.chrome.browser.compositor.layouts.components.LayoutTab;
@@ -372,7 +372,7 @@ public abstract class StackLayoutBase extends Layout {
         }
 
         private long time() {
-            return LayoutManager.time();
+            return LayoutManagerImpl.time();
         }
     }
 
@@ -422,7 +422,7 @@ public abstract class StackLayoutBase extends Layout {
         ensureSceneLayerCreated();
         if (mShowPending) {
             mShowPending = false;
-            show(LayoutManager.time(), false);
+            show(LayoutManagerImpl.time(), false);
         }
     }
 
@@ -548,7 +548,7 @@ public abstract class StackLayoutBase extends Layout {
             @Override
             public void tabClosureUndone(Tab tab) {
                 if (!isActive()) return;
-                onTabClosureCancelled(LayoutManager.time(), tab.getId(), tab.isIncognito());
+                onTabClosureCancelled(LayoutManagerImpl.time(), tab.getId(), tab.isIncognito());
             }
         };
     }

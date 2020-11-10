@@ -23,7 +23,7 @@ import org.mockito.MockitoAnnotations;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
-import org.chromium.chrome.browser.compositor.layouts.LayoutManager;
+import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabImpl;
 import org.chromium.chrome.browser.tab.TabObserver;
@@ -39,7 +39,7 @@ public class TopToolbarOverlayMediatorTest {
     private Context mContext;
 
     @Mock
-    private LayoutManager mLayoutManager;
+    private LayoutManagerImpl mLayoutManager;
 
     @Mock
     private BrowserControlsStateProvider mBrowserControlsProvider;

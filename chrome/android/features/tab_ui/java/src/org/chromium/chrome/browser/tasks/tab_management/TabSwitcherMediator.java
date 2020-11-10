@@ -32,7 +32,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
-import org.chromium.chrome.browser.compositor.layouts.LayoutManager;
+import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -774,7 +774,7 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
     public void onTabSelecting(int tabId) {
         mIsSelectingInTabSwitcher = true;
         if (mOnTabSelectingListener != null) {
-            mOnTabSelectingListener.onTabSelecting(LayoutManager.time(), tabId);
+            mOnTabSelectingListener.onTabSelecting(LayoutManagerImpl.time(), tabId);
         }
     }
 

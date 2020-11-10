@@ -74,7 +74,7 @@ import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.compositor.layouts.Layout;
-import org.chromium.chrome.browser.compositor.layouts.LayoutManager;
+import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
 import org.chromium.chrome.browser.compositor.layouts.SceneChangeObserver;
 import org.chromium.chrome.browser.compositor.layouts.content.ContentOffsetProvider;
@@ -273,7 +273,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     private PictureInPictureController mPictureInPictureController;
 
     private CompositorViewHolder mCompositorViewHolder;
-    private ObservableSupplierImpl<LayoutManager> mLayoutManagerSupplier =
+    private ObservableSupplierImpl<LayoutManagerImpl> mLayoutManagerSupplier =
             new ObservableSupplierImpl<>();
     private ObservableSupplierImpl<ShareDelegate> mShareDelegateSupplier =
             new ObservableSupplierImpl<>();
@@ -1732,7 +1732,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     }
 
     @Override
-    public void initializeCompositorContent(LayoutManager layoutManager, View urlBar,
+    public void initializeCompositorContent(LayoutManagerImpl layoutManager, View urlBar,
             ViewGroup contentContainer, ControlContainer controlContainer) {
         mLayoutManagerSupplier.set(layoutManager);
 
@@ -1759,10 +1759,10 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     }
 
     /**
-     * @return An {@link ObservableSupplier} that will supply the {@link LayoutManager} when it is
-     *         ready.
+     * @return An {@link ObservableSupplier} that will supply the {@link LayoutManagerImpl} when it
+     *         is ready.
      */
-    public ObservableSupplier<LayoutManager> getLayoutManagerSupplier() {
+    public ObservableSupplier<LayoutManagerImpl> getLayoutManagerSupplier() {
         return mLayoutManagerSupplier;
     }
 
@@ -1885,7 +1885,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         if (arDelegate != null && arDelegate.onBackPressed()) return;
 
         if (mCompositorViewHolder != null) {
-            LayoutManager layoutManager = mCompositorViewHolder.getLayoutManager();
+            LayoutManagerImpl layoutManager = mCompositorViewHolder.getLayoutManager();
             if (layoutManager != null && layoutManager.onBackPressed()) return;
         }
 

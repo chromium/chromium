@@ -21,7 +21,7 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.StateChangeReason;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelManager.OverlayPanelManagerObserver;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelManager.PanelPriority;
-import org.chromium.chrome.browser.compositor.layouts.LayoutManager;
+import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
 
@@ -45,7 +45,7 @@ public class OverlayPanelManagerTest {
         private ViewGroup mContainerView;
         private DynamicResourceLoader mResourceLoader;
 
-        public MockOverlayPanel(Context context, LayoutManager updateHost,
+        public MockOverlayPanel(Context context, LayoutManagerImpl updateHost,
                 OverlayPanelManager panelManager, @PanelPriority int priority,
                 boolean canBeSuppressed) {
             super(context, updateHost, panelManager);

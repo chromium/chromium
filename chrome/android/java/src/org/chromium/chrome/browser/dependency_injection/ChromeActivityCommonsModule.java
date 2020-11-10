@@ -20,7 +20,7 @@ import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
-import org.chromium.chrome.browser.compositor.layouts.LayoutManager;
+import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
@@ -53,7 +53,7 @@ public class ChromeActivityCommonsModule {
     private final BrowserControlsVisibilityManager mBrowserControlsVisibilityManager;
     private final BrowserControlsSizer mBrowserControlsSizer;
     private final FullscreenManager mFullscreenManager;
-    private final Supplier<LayoutManager> mLayoutManagerSupplier;
+    private final Supplier<LayoutManagerImpl> mLayoutManagerSupplier;
     private final ActivityLifecycleDispatcher mLifecycleDispatcher;
     private final Supplier<SnackbarManager> mSnackbarManagerSupplier;
     private final ActivityTabProvider mActivityTabProvider;
@@ -77,7 +77,7 @@ public class ChromeActivityCommonsModule {
                 BrowserControlsManager browserControlsManager,
                 BrowserControlsVisibilityManager browserControlsVisibilityManager,
                 BrowserControlsSizer browserControlsSizer, FullscreenManager fullscreenManager,
-                Supplier<LayoutManager> layoutManagerSupplier,
+                Supplier<LayoutManagerImpl> layoutManagerSupplier,
                 ActivityLifecycleDispatcher lifecycleDispatcher,
                 Supplier<SnackbarManager> snackbarManagerSupplier,
                 ActivityTabProvider activityTabProvider, TabContentManager tabContentManager,
@@ -98,7 +98,7 @@ public class ChromeActivityCommonsModule {
             BrowserControlsManager browserControlsManager,
             BrowserControlsVisibilityManager browserControlsVisibilityManager,
             BrowserControlsSizer browserControlsSizer, FullscreenManager fullscreenManager,
-            Supplier<LayoutManager> layoutManagerSupplier,
+            Supplier<LayoutManagerImpl> layoutManagerSupplier,
             ActivityLifecycleDispatcher lifecycleDispatcher,
             Supplier<SnackbarManager> snackbarManagerSupplier,
             ActivityTabProvider activityTabProvider, TabContentManager tabContentManager,
@@ -166,7 +166,7 @@ public class ChromeActivityCommonsModule {
     }
 
     @Provides
-    public LayoutManager provideLayoutManager() {
+    public LayoutManagerImpl provideLayoutManager() {
         return mLayoutManagerSupplier.get();
     }
 

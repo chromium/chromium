@@ -39,6 +39,7 @@ import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.gesturenav.HistoryNavigationCoordinator;
 import org.chromium.chrome.browser.layouts.CompositorModelChangeProcessor;
 import org.chromium.chrome.browser.layouts.EventFilter;
+import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.layouts.SceneOverlay;
@@ -84,8 +85,8 @@ import java.util.Map;
  * A class that is responsible for managing an active {@link Layout} to show to the screen.  This
  * includes lifecycle managment like showing/hiding this {@link Layout}.
  */
-public class LayoutManager implements LayoutUpdateHost, LayoutProvider,
-                                      TabModelSelector.CloseAllTabsDelegate, LayoutStateProvider {
+public class LayoutManagerImpl implements LayoutManager, LayoutUpdateHost, LayoutProvider,
+                                          TabModelSelector.CloseAllTabsDelegate {
     /** Sampling at 60 fps. */
     private static final long FRAME_DELTA_TIME_MS = 16;
 
@@ -181,7 +182,8 @@ public class LayoutManager implements LayoutUpdateHost, LayoutProvider,
 
     /**
      * Protected class to handle {@link TabModelObserver} related tasks. Extending classes will
-     * need to override any related calls to add new functionality */
+     * need to override any related calls to add new functionality
+     */
     protected class LayoutManagerTabModelObserver implements TabModelObserver {
         @Override
         public void didSelectTab(Tab tab, @TabSelectionType int type, int lastId) {
@@ -241,7 +243,7 @@ public class LayoutManager implements LayoutUpdateHost, LayoutProvider,
 
         @Override
         public void tabClosureCommitted(Tab tab) {
-            LayoutManager.this.tabClosureCommitted(tab.getId(), tab.isIncognito());
+            LayoutManagerImpl.this.tabClosureCommitted(tab.getId(), tab.isIncognito());
         }
 
         @Override
@@ -251,7 +253,7 @@ public class LayoutManager implements LayoutUpdateHost, LayoutProvider,
     }
 
     /**
-     * Creates a {@link LayoutManager} instance.
+     * Creates a {@link LayoutManagerImpl} instance.
      * @param host A {@link LayoutManagerHost} instance.
      * @param contentContainer A {@link ViewGroup} for Android views to be bound to.
      * @param tabContentManagerSupplier Supplier of the {@link TabContentManager} instance.
@@ -259,7 +261,7 @@ public class LayoutManager implements LayoutUpdateHost, LayoutProvider,
      * @param layoutStateProviderOneshotSupplier Supplier used to supply the {@link
      *         LayoutStateProvider}.
      */
-    public LayoutManager(LayoutManagerHost host, ViewGroup contentContainer,
+    public LayoutManagerImpl(LayoutManagerHost host, ViewGroup contentContainer,
             ObservableSupplier<TabContentManager> tabContentManagerSupplier,
             Supplier<LayerTitleCache> layerTitleCacheSupplier,
             OneshotSupplierImpl<LayoutStateProvider> layoutStateProviderOneshotSupplier) {
@@ -320,7 +322,7 @@ public class LayoutManager implements LayoutUpdateHost, LayoutProvider,
     }
 
     /**
-     * Gives the {@link LayoutManager} a chance to intercept and process touch events from the
+     * Gives the {@link LayoutManagerImpl} a chance to intercept and process touch events from the
      * Android {@link View} system.
      * @param e                 The {@link MotionEvent} that might be intercepted.
      * @param isKeyboardShowing Whether or not the keyboard is showing.
@@ -365,7 +367,7 @@ public class LayoutManager implements LayoutUpdateHost, LayoutProvider,
     }
 
     /**
-     * Gives the {@link LayoutManager} a chance to process the touch events from the Android
+     * Gives the {@link LayoutManagerImpl} a chance to process the touch events from the Android
      * {@link View} system.
      * @param e A {@link MotionEvent} instance.
      * @return  Whether or not {@code e} was consumed.
@@ -424,7 +426,7 @@ public class LayoutManager implements LayoutUpdateHost, LayoutProvider,
      * Updates the state of the layout.
      * @param timeMs The time in milliseconds.
      * @param dtMs   The delta time since the last update in milliseconds.
-     * @return       Whether or not the {@link LayoutManager} needs more updates.
+     * @return       Whether or not the {@link LayoutManagerImpl} needs more updates.
      */
     @VisibleForTesting
     boolean onUpdate(long timeMs, long dtMs) {
@@ -462,7 +464,7 @@ public class LayoutManager implements LayoutUpdateHost, LayoutProvider,
     }
 
     /**
-     * Initializes the {@link LayoutManager}.  Must be called before using this object.
+     * Initializes the {@link LayoutManagerImpl}.  Must be called before using this object.
      * @param selector                 A {@link TabModelSelector} instance.
      * @param creator                  A {@link TabCreatorManager} instance.
      * @param controlContainer         A {@link ControlContainer} for browser controls' layout.
@@ -571,14 +573,7 @@ public class LayoutManager implements LayoutUpdateHost, LayoutProvider,
         return mHost.getLayoutRenderHost().getResourceManager();
     }
 
-    /**
-     * Creates a CompositorModelChangeProcessor observing the given {@code model} that will operate
-     * on this {@link LayoutManager}'s frame cycle. The model will be bound to the view initially
-     * and request a new frame.
-     * @param model The model containing the data to be bound to the view.
-     * @param view The view which the model will be bound to.
-     * @param viewBinder This is used to bind the model to the view.
-     */
+    @Override
     public <V extends SceneLayer> CompositorModelChangeProcessor<V> createCompositorMCP(
             PropertyModel model, V view,
             PropertyModelChangeProcessor.ViewBinder<PropertyModel, V, PropertyKey> viewBinder) {
@@ -618,9 +613,9 @@ public class LayoutManager implements LayoutUpdateHost, LayoutProvider,
             // If the SceneOverlay is not showing, don't bother adding it to the tree.
             if (!mSceneOverlays.get(i).isSceneOverlayTreeShowing()) continue;
 
-            SceneOverlayLayer overlayLayer = mSceneOverlays.get(i).getUpdatedSceneOverlayTree(
-                    mCachedWindowViewport, mCachedVisibleViewport, resourceManager,
-                    offsetPx * mPxToDp);
+            SceneOverlayLayer overlayLayer =
+                    mSceneOverlays.get(i).getUpdatedSceneOverlayTree(mCachedWindowViewport,
+                            mCachedVisibleViewport, resourceManager, offsetPx * mPxToDp);
 
             overlayLayer.setContentTree(layer);
             layer = overlayLayer;
@@ -1059,10 +1054,7 @@ public class LayoutManager implements LayoutUpdateHost, LayoutProvider,
         return getActiveLayout() != null && getActiveLayout().onBackPressed();
     }
 
-    /**
-     * Add a {@link SceneOverlay} to be drawn on the composited layer of the active layout.
-     * @param overlay The overlay to add.
-     */
+    @Override
     public void addSceneOverlay(SceneOverlay overlay) {
         if (mSceneOverlays.contains(overlay)) throw new RuntimeException("Overlay already added!");
 

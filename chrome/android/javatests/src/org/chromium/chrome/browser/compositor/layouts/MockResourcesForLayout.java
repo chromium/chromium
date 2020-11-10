@@ -18,11 +18,10 @@ import android.util.SparseIntArray;
 import org.chromium.chrome.R;
 
 /**
- * This is the minimal {@link Resources} needed by the {@link LayoutManager} to be working properly.
- * Values Come from the xml files (e.g. dimens.xml, values.xml, ...).
- * All the dimension values are in dp.
- * For internal structures, not based on xml configurations, a dummy {@link Resources} instance is
- * provided.
+ * This is the minimal {@link Resources} needed by the {@link LayoutManagerImpl} to be working
+ * properly. Values Come from the xml files (e.g. dimens.xml, values.xml, ...). All the dimension
+ * values are in dp. For internal structures, not based on xml configurations, a dummy {@link
+ * Resources} instance is provided.
  */
 public class MockResourcesForLayout extends MockResources {
     private final Resources mValidResources;

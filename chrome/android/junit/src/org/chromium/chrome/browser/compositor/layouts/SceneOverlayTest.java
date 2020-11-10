@@ -60,7 +60,7 @@ public class SceneOverlayTest {
     @Mock
     private OneshotSupplierImpl<LayoutStateProvider> mLayoutStateProviderOneshotSupplier;
 
-    private LayoutManager mLayoutManager;
+    private LayoutManagerImpl mLayoutManager;
 
     @Before
     public void setup() {
@@ -71,7 +71,7 @@ public class SceneOverlayTest {
         when(mResources.getDisplayMetrics()).thenReturn(mDisplayMetrics);
         doNothing().when(mLayoutStateProviderOneshotSupplier).set(any());
 
-        mLayoutManager = new LayoutManager(mLayoutManagerHost, mContainerView,
+        mLayoutManager = new LayoutManagerImpl(mLayoutManagerHost, mContainerView,
                 mTabContentManagerSupplier, null, mLayoutStateProviderOneshotSupplier);
     }
 

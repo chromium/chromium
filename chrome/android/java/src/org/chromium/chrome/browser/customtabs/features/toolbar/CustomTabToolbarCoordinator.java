@@ -24,7 +24,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
 import org.chromium.chrome.browser.browserservices.BrowserServicesIntentDataProvider;
-import org.chromium.chrome.browser.compositor.layouts.LayoutManager;
+import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.customtabs.CloseButtonVisibilityManager;
 import org.chromium.chrome.browser.customtabs.CustomButtonParams;
 import org.chromium.chrome.browser.customtabs.CustomTabCompositorContentInitializer;
@@ -172,7 +172,7 @@ public class CustomTabToolbarCoordinator {
         }
     }
 
-    private void onCompositorContentInitialized(LayoutManager layoutDriver) {
+    private void onCompositorContentInitialized(LayoutManagerImpl layoutDriver) {
         mToolbarManager.initializeWithNative(
                 layoutDriver, null, null, null, v -> onCloseButtonClick(), null);
         mInitializedToolbarWithNative = true;
