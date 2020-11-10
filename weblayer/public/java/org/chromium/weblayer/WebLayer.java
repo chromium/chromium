@@ -544,7 +544,8 @@ public class WebLayer {
      * state.
      *
      * @throws UnsupportedOperationException If {@link params} is incognito and name is not empty
-     *         and <= 88.
+     *         and <= 88. In order for this function not to trigger loading of WebLayer the
+     *         exception is thrown later on.
      *
      * @since 88
      */
@@ -557,12 +558,8 @@ public class WebLayer {
     private static Fragment createBrowserFragmentImpl(
             @NonNull String profileName, @Nullable String persistenceId, boolean isIncognito) {
         ThreadCheck.ensureOnUiThread();
-        if (WebLayer.getSupportedMajorVersionInternal() < 88 && isIncognito
-                && !"".equals(profileName)) {
-            // Incognito profiles are only allowed to have non-empty names in >= 88.
-            throw new UnsupportedOperationException();
-        }
-
+        // Support for named incognito profiles was added in 88. Checking is done in
+        // BrowserFragment, as this code should not trigger loading WebLayer.
         Bundle args = new Bundle();
         args.putString(BrowserFragmentArgs.PROFILE_NAME, profileName);
         if (persistenceId != null) {

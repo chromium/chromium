@@ -11,6 +11,7 @@ import android.os.RemoteException;
 import androidx.annotation.NonNull;
 
 import org.chromium.weblayer_private.interfaces.APICallException;
+import org.chromium.weblayer_private.interfaces.BrowserFragmentArgs;
 import org.chromium.weblayer_private.interfaces.IBrowserFragment;
 import org.chromium.weblayer_private.interfaces.IRemoteFragment;
 
@@ -67,12 +68,24 @@ public final class BrowserFragment extends RemoteFragment {
 
     @Override
     protected IRemoteFragment createRemoteFragment(Context appContext) {
+        Bundle args = getArguments();
+        if (args == null) {
+            throw new RuntimeException("BrowserFragment was created without arguments.");
+        }
         try {
-            Bundle args = getArguments();
-            if (args == null) {
-                throw new RuntimeException("BrowserFragment was created without arguments.");
-            }
             mWebLayer = WebLayer.loadSync(appContext);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to initialize WebLayer", e);
+        }
+        // Ideally this would be in WebLayer when the fragment is created, but at that time we don't
+        // want to trigger loading WebLayer.
+        if (args.getBoolean(BrowserFragmentArgs.IS_INCOGNITO, false)) {
+            String name = args.getString(BrowserFragmentArgs.PROFILE_NAME);
+            if (!"".equals(name) && WebLayer.getSupportedMajorVersionInternal() < 88) {
+                throw new UnsupportedOperationException("Named incognito profile requires 88");
+            }
+        }
+        try {
             mImpl = mWebLayer.connectFragment(getRemoteFragmentClient(), args);
             return mImpl.asRemoteFragment();
         } catch (Exception e) {
