@@ -8,6 +8,9 @@
     <link rel="help" href="https://html.spec.whatwg.org/#triggered-by-user-activation">
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
+    <script src="/resources/testdriver.js"></script>
+    <script src="/resources/testdriver-actions.js"></script>
+    <script src="/resources/testdriver-vendor.js"></script>
     <style>
       #target {
         width: 250px;
@@ -28,12 +31,16 @@
       function run() {
         let success = false;
         let test_contextmenu = async_test("'contextmenu' can call vibrate.");
+        let actions_promise;
+        var target = document.getElementById("target");
+        var button = document.getElementById("done");
 
         on_event(document.getElementById("done"), "click", () => {
           test_contextmenu.step(() => {
             assert_true(activation_event_fired, "activation event has fired");
           });
-          test_contextmenu.done();
+          // Make sure the test finishes after all the input actions are completed.
+          actions_promise.then(() => test_contextmenu.done());
         });
 
         on_event(document.getElementById("target"), "contextmenu", (e) => {
@@ -43,6 +50,17 @@
               activation_event_fired = true;
             });
         });
+
+        // Inject mouse inputs.
+        var actions = new test_driver.Actions();
+        actions_promise = actions
+            .pointerMove(0, 0, {origin: target})
+            .pointerDown({button: actions.ButtonType.RIGHT})
+            .pointerUp({button: actions.ButtonType.RIGHT})
+            .pointerMove(0, 0, {origin: button})
+            .pointerDown()
+            .pointerUp()
+            .send();
       }
     </script>
   </head>
