@@ -441,8 +441,7 @@ ALWAYS_INLINE DeferredUnmap SlotSpanMetadata<thread_safe>::Free(void* ptr) {
   // Catches an immediate double free.
   PA_CHECK(ptr != freelist_head);
   // Look for double free one level deeper in debug.
-  PA_DCHECK(!freelist_head ||
-            ptr != EncodedPartitionFreelistEntry::Decode(freelist_head->next));
+  PA_DCHECK(!freelist_head || ptr != freelist_head->GetNext());
   auto* entry = static_cast<internal::PartitionFreelistEntry*>(ptr);
   entry->SetNext(freelist_head);
   SetFreelistHead(entry);

@@ -478,8 +478,7 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocFromBucket(
     // the size metadata.
     PA_DCHECK(!slot_span->CanStoreRawSize());
     internal::PartitionFreelistEntry* new_head =
-        internal::EncodedPartitionFreelistEntry::Decode(
-            slot_span->freelist_head->next);
+        slot_span->freelist_head->GetNext();
     slot_span->SetFreelistHead(new_head);
     slot_span->num_allocated_slots++;
 

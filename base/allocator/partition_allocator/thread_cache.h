@@ -223,7 +223,7 @@ ALWAYS_INLINE bool ThreadCache::MaybePutInCache(void* address,
   PA_DCHECK(bucket.count != 0 || bucket.freelist_head == nullptr);
 
   auto* entry = reinterpret_cast<PartitionFreelistEntry*>(address);
-  entry->next = internal::PartitionFreelistEntry::Encode(bucket.freelist_head);
+  entry->SetNextForThreadCache(bucket.freelist_head);
   bucket.freelist_head = entry;
   bucket.count++;
 
@@ -250,7 +250,7 @@ ALWAYS_INLINE void* ThreadCache::GetFromCache(size_t bucket_index) {
   }
 
   PA_DCHECK(bucket.count != 0);
-  auto* next = EncodedPartitionFreelistEntry::Decode(result->next);
+  auto* next = result->GetNext();
   PA_DCHECK(result != next);
   bucket.count--;
   PA_DCHECK(bucket.count != 0 || !next);

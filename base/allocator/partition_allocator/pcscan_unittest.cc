@@ -96,7 +96,7 @@ FullSlotSpanAllocation GetFullSlotSpan(ThreadSafePartitionRoot& root,
 bool IsInFreeList(void* object) {
   auto* slot_span = SlotSpan::FromPointerNoAlignmentCheck(object);
   for (auto* entry = slot_span->freelist_head; entry;
-       entry = EncodedPartitionFreelistEntry::Decode(entry->next)) {
+       entry = entry->GetNext()) {
     if (entry == object)
       return true;
   }

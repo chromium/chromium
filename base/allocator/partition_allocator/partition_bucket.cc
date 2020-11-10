@@ -698,8 +698,7 @@ void* PartitionBucket<thread_safe>::SlowPathAlloc(
   // have a usable freelist head.
   if (LIKELY(new_slot_span->freelist_head != nullptr)) {
     PartitionFreelistEntry* entry = new_slot_span->freelist_head;
-    PartitionFreelistEntry* new_head =
-        EncodedPartitionFreelistEntry::Decode(entry->next);
+    PartitionFreelistEntry* new_head = entry->GetNext();
     new_slot_span->SetFreelistHead(new_head);
     new_slot_span->num_allocated_slots++;
     return entry;

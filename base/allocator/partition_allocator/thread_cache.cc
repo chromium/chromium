@@ -193,7 +193,7 @@ void ThreadCache::Purge() {
 
     while (bucket.freelist_head) {
       auto* entry = bucket.freelist_head;
-      bucket.freelist_head = EncodedPartitionFreelistEntry::Decode(entry->next);
+      bucket.freelist_head = entry->GetNext();
 
       PartitionRoot<ThreadSafe>::RawFreeStatic(entry);
       count--;

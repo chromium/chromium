@@ -17,9 +17,8 @@ namespace internal {
 
 struct EncodedPartitionFreelistEntry;
 
-struct PartitionFreelistEntry {
-  EncodedPartitionFreelistEntry* next;
-
+class PartitionFreelistEntry {
+ public:
   PartitionFreelistEntry() = delete;
   ~PartitionFreelistEntry() = delete;
 
@@ -28,16 +27,24 @@ struct PartitionFreelistEntry {
     return reinterpret_cast<EncodedPartitionFreelistEntry*>(Transform(ptr));
   }
 
+  ALWAYS_INLINE PartitionFreelistEntry* GetNext() const;
+
+  // Regular freelists always point to an entry within the same super page.
   ALWAYS_INLINE void SetNext(PartitionFreelistEntry* ptr) {
     PA_DCHECK(!ptr ||
               (reinterpret_cast<uintptr_t>(this) & kSuperPageBaseMask) ==
                   (reinterpret_cast<uintptr_t>(ptr) & kSuperPageBaseMask));
-    next = Encode(ptr);
+    next_ = Encode(ptr);
+  }
+
+  // ThreadCache freelists can point to entries across superpage boundaries.
+  ALWAYS_INLINE void SetNextForThreadCache(PartitionFreelistEntry* ptr) {
+    next_ = Encode(ptr);
   }
 
  private:
   friend struct EncodedPartitionFreelistEntry;
-  static ALWAYS_INLINE void* Transform(void* ptr) {
+  ALWAYS_INLINE static void* Transform(void* ptr) {
     // We use bswap on little endian as a fast mask for two reasons:
     // 1) If an object is freed and its vtable used where the attacker doesn't
     // get the chance to run allocations between the free and use, the vtable
@@ -53,6 +60,8 @@ struct PartitionFreelistEntry {
 #endif
     return reinterpret_cast<void*>(masked);
   }
+
+  EncodedPartitionFreelistEntry* next_;
 };
 
 struct EncodedPartitionFreelistEntry {
@@ -71,6 +80,10 @@ struct EncodedPartitionFreelistEntry {
 static_assert(sizeof(PartitionFreelistEntry) ==
                   sizeof(EncodedPartitionFreelistEntry),
               "Should not have padding");
+
+ALWAYS_INLINE PartitionFreelistEntry* PartitionFreelistEntry::GetNext() const {
+  return EncodedPartitionFreelistEntry::Decode(next_);
+}
 
 }  // namespace internal
 }  // namespace base
