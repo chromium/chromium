@@ -112,6 +112,11 @@ public class PolicyLoadListenerUnitTest {
         setPolicyServiceInitialized();
         Assert.assertTrue(LOADED_POLICY_READY, mPolicyLoadListener.get());
         Mockito.verify(mListener).onResult(true);
+
+        mAppRestrictionsCallback.onResult(true);
+        Assert.assertTrue("App restriction arrives after policy initialized should be ignored.",
+                mPolicyLoadListener.get());
+        Mockito.verify(mListener, never()).onResult(false);
     }
 
     @Test

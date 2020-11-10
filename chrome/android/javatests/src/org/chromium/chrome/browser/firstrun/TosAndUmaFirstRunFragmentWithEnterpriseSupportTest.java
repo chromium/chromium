@@ -238,20 +238,6 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupportTest {
 
     @Test
     @SmallTest
-    public void testDialogDisabled_NoRestriction() {
-        setPolicyServiceMockInitializedWithDialogEnabled(false);
-        launchFirstRunThroughCustomTab();
-        assertUIState(FragmentState.LOADING);
-
-        setAppRestrictionsMockInitialized(false);
-        assertUIState(FragmentState.NO_POLICY);
-
-        assertHistograms(true, SpeedComparedToInflation.SLOWER,
-                SpeedComparedToInflation.NOT_RECORDED, SpeedComparedToInflation.SLOWER);
-    }
-
-    @Test
-    @SmallTest
     public void testNotOwnedDevice() {
         setAppRestrictionsMockInitialized(true);
         launchFirstRunThroughCustomTab();
@@ -522,14 +508,14 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupportTest {
         assertSingleHistogram("MobileFre.FragmentInflationSpeed.SlowerThanAppRestriction",
                 appRestrictionMetricsState == SpeedComparedToInflation.FASTER);
 
-        assertSingleHistogram("MobileFre.CctTos.IsDeviceOwnedCheckSpeed.FasterThanInflation",
+        assertSingleHistogram("MobileFre.CctTos.IsDeviceOwnedCheckSpeed2.FasterThanInflation",
                 deviceOwnershipMetricsState == SpeedComparedToInflation.FASTER);
-        assertSingleHistogram("MobileFre.CctTos.IsDeviceOwnedCheckSpeed.SlowerThanInflation",
+        assertSingleHistogram("MobileFre.CctTos.IsDeviceOwnedCheckSpeed2.SlowerThanInflation",
                 deviceOwnershipMetricsState == SpeedComparedToInflation.SLOWER);
 
-        assertSingleHistogram("MobileFre.CctTos.EnterprisePolicyCheckSpeed.FasterThanInflation",
+        assertSingleHistogram("MobileFre.CctTos.EnterprisePolicyCheckSpeed2.FasterThanInflation",
                 policyCheckMetricsState == SpeedComparedToInflation.FASTER);
-        assertSingleHistogram("MobileFre.CctTos.EnterprisePolicyCheckSpeed.SlowerThanInflation",
+        assertSingleHistogram("MobileFre.CctTos.EnterprisePolicyCheckSpeed2.SlowerThanInflation",
                 policyCheckMetricsState == SpeedComparedToInflation.SLOWER);
     }
 

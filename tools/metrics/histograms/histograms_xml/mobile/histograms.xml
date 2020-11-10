@@ -22,8 +22,12 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histograms>
 
 <variants name="MobileFreInflationSpeedComparison">
-  <variant name=".FasterThanInflation"/>
-  <variant name=".SlowerThanInflation"/>
+  <variant name=".FasterThanInflation"
+      summary="This histogram reports just those timings that were faster
+               than inflation."/>
+  <variant name=".SlowerThanInflation"
+      summary="This histogram reports just those timings that were slower
+               than inflation."/>
 </variants>
 
 <histogram name="Mobile.AppMenu.SimilarSelection"
@@ -667,8 +671,28 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram
+    name="MobileFre.CctTos.EnterprisePolicyCheckSpeed2{MobileFreInflationSpeedComparison}"
+    units="ms" expires_after="2021-07-31">
+  <owner>skym@chromium.org</owner>
+  <owner>wenyufu@chromium.org</owner>
+  <summary>
+    Android: Records the time it takes from ToS fragment attached to the
+    activity to the enterprise policy check completing. This check is often
+    skipped when its result becomes irrelevant.
+    {MobileFreInflationSpeedComparison}
+  </summary>
+  <token key="MobileFreInflationSpeedComparison"
+      variants="MobileFreInflationSpeedComparison"/>
+</histogram>
+
+<histogram
     name="MobileFre.CctTos.EnterprisePolicyCheckSpeed{MobileFreInflationSpeedComparison}"
     units="ms" expires_after="2021-07-31">
+  <obsolete>
+    Deprecated and replaced with MobileFre.CctTos.EnterprisePolicyCheckSpeed2.*.
+    as of 11/2020. The starting time of this metrics is changed to when the
+    fragment attached to the FirstRunActivity.
+  </obsolete>
   <owner>skym@chromium.org</owner>
   <owner>wenyufu@chromium.org</owner>
   <summary>
@@ -682,8 +706,27 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram
+    name="MobileFre.CctTos.IsDeviceOwnedCheckSpeed2{MobileFreInflationSpeedComparison}"
+    units="ms" expires_after="2021-07-31">
+  <owner>skym@chromium.org</owner>
+  <owner>wenyufu@chromium.org</owner>
+  <summary>
+    Android: Records the time it takes from ToS fragment attached to the
+    activity to the device ownership check completing.
+    {MobileFreInflationSpeedComparison}
+  </summary>
+  <token key="MobileFreInflationSpeedComparison"
+      variants="MobileFreInflationSpeedComparison"/>
+</histogram>
+
+<histogram
     name="MobileFre.CctTos.IsDeviceOwnedCheckSpeed{MobileFreInflationSpeedComparison}"
     units="ms" expires_after="2021-07-31">
+  <obsolete>
+    Deprecated and replaced with MobileFre.CctTos.IsDeviceOwnedCheckSpeed2.*. as
+    of 11/2020. The starting time of this metrics is changed to when the
+    fragment attached to the FirstRunActivity.
+  </obsolete>
   <owner>skym@chromium.org</owner>
   <owner>wenyufu@chromium.org</owner>
   <summary>
