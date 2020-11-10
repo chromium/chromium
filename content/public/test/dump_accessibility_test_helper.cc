@@ -21,11 +21,85 @@
 
 namespace content {
 
+using base::FilePath;
+using ui::AXNodeFilter;
+using ui::AXPropertyFilter;
+
 namespace {
 const char kCommentToken = '#';
 const char kMarkSkipFile[] = "#<skip";
 const char kSignalDiff[] = "*";
 const char kMarkEndOfFile[] = "<-- End-of-file -->";
+
+struct TypeInfo {
+  std::string type;
+  struct Mapping {
+    std::string directive_prefix;
+    base::FilePath::StringType expectations_file_postfix;
+  } mapping;
+};
+
+const TypeInfo kTypeInfos[] = {{
+                                   "android",
+                                   {
+                                       "@ANDROID",
+                                       FILE_PATH_LITERAL("-android"),
+                                   },
+                               },
+                               {
+                                   "blink",
+                                   {
+                                       "@BLINK",
+                                       FILE_PATH_LITERAL("-blink"),
+                                   },
+                               },
+                               {
+                                   "linux",
+                                   {
+                                       "@AURALINUX",
+                                       FILE_PATH_LITERAL("-auralinux"),
+                                   },
+                               },
+                               {
+                                   "mac",
+                                   {
+                                       "@MAC",
+                                       FILE_PATH_LITERAL("-mac"),
+                                   },
+                               },
+                               {
+                                   "content",
+                                   {
+                                       "@",
+                                       FILE_PATH_LITERAL(""),
+                                   },
+                               },
+                               {
+                                   "uia",
+                                   {
+                                       "@UIA-WIN",
+                                       FILE_PATH_LITERAL("-uia-win"),
+                                   },
+                               },
+                               {
+                                   "win",
+                                   {
+                                       "@WIN",
+                                       FILE_PATH_LITERAL("-win"),
+                                   },
+                               }};
+
+const TypeInfo::Mapping* TypeMapping(const std::string& type) {
+  const TypeInfo::Mapping* mapping = nullptr;
+  for (const auto& info : kTypeInfos) {
+    if (info.type == type) {
+      mapping = &info.mapping;
+    }
+  }
+  CHECK(mapping) << "Unknown dump accessibility type " << type;
+  return mapping;
+}
+
 }  // namespace
 
 DumpAccessibilityTestHelper::DumpAccessibilityTestHelper(
@@ -62,6 +136,98 @@ base::FilePath DumpAccessibilityTestHelper::GetExpectationFilePath(
             << "with the switch: --"
             << switches::kGenerateAccessibilityTestExpectations;
   return base::FilePath();
+}
+
+bool DumpAccessibilityTestHelper::ParsePropertyFilter(
+    const std::string& line,
+    std::vector<AXPropertyFilter>* filters) const {
+  const TypeInfo::Mapping* mapping = TypeMapping(expectation_type_);
+  if (!mapping) {
+    return false;
+  }
+
+  std::string directive = mapping->directive_prefix + "-ALLOW-EMPTY:";
+  if (base::StartsWith(line, directive, base::CompareCase::SENSITIVE)) {
+    filters->emplace_back(line.substr(directive.size()),
+                          AXPropertyFilter::ALLOW_EMPTY);
+    return true;
+  }
+
+  directive = mapping->directive_prefix + "-ALLOW:";
+  if (base::StartsWith(line, directive, base::CompareCase::SENSITIVE)) {
+    filters->emplace_back(line.substr(directive.size()),
+                          AXPropertyFilter::ALLOW);
+    return true;
+  }
+
+  directive = mapping->directive_prefix + "-DENY:";
+  if (base::StartsWith(line, directive, base::CompareCase::SENSITIVE)) {
+    filters->emplace_back(line.substr(directive.size()),
+                          AXPropertyFilter::DENY);
+    return true;
+  }
+
+  return false;
+}
+
+bool DumpAccessibilityTestHelper::ParseNodeFilter(
+    const std::string& line,
+    std::vector<AXNodeFilter>* filters) const {
+  const TypeInfo::Mapping* mapping = TypeMapping(expectation_type_);
+  if (!mapping) {
+    return false;
+  }
+
+  std::string directive = mapping->directive_prefix + "-DENY-NODE:";
+  if (base::StartsWith(line, directive, base::CompareCase::SENSITIVE)) {
+    const auto& node_filter = line.substr(directive.size());
+    const auto& parts = base::SplitString(
+        node_filter, "=", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+    // Silently skip over parsing errors like the rest of the enclosing code.
+    if (parts.size() == 2) {
+      filters->emplace_back(parts[0], parts[1]);
+      return true;
+    }
+  }
+
+  return false;
+}
+
+DumpAccessibilityTestHelper::Directive
+DumpAccessibilityTestHelper::ParseDirective(const std::string& line) const {
+  // Directives have format of @directive:value.
+  if (!base::StartsWith(line, "@")) {
+    return {};
+  }
+
+  auto directive_end_pos = line.find_first_of(':');
+  if (directive_end_pos == std::string::npos) {
+    return {};
+  }
+
+  const TypeInfo::Mapping* mapping = TypeMapping(expectation_type_);
+  if (!mapping) {
+    return {};
+  }
+
+  std::string directive = line.substr(0, directive_end_pos);
+  std::string value = line.substr(directive_end_pos + 1);
+  if (directive == "@NO-LOAD-EXPECTED") {
+    return {Directive::kNoLoadExpected, value};
+  }
+  if (directive == "@WAIT-FOR") {
+    return {Directive::kWaitFor, value};
+  }
+  if (directive == "@EXECUTE-AND-WAIT-FOR") {
+    return {Directive::kExecuteAndWaitFor, value};
+  }
+  if (directive == mapping->directive_prefix + "-RUN-UNTIL-EVENT") {
+    return {Directive::kRunUntil, value};
+  }
+  if (directive == "@DEFAULT-ACTION-ON") {
+    return {Directive::kDefaultActionOn, value};
+  }
+  return {};
 }
 
 base::Optional<std::vector<std::string>>
@@ -150,35 +316,18 @@ bool DumpAccessibilityTestHelper::ValidateAgainstExpectation(
   return !is_different;
 }
 
-base::FilePath::StringType
-DumpAccessibilityTestHelper::GetExpectedFileSuffix() {
-  if (expectation_type_ == "android") {
-    return FILE_PATH_LITERAL("-expected-android.txt");
+FilePath::StringType DumpAccessibilityTestHelper::GetExpectedFileSuffix()
+    const {
+  const TypeInfo::Mapping* mapping = TypeMapping(expectation_type_);
+  if (!mapping) {
+    return FILE_PATH_LITERAL("");
   }
-  if (expectation_type_ == "blink") {
-    return FILE_PATH_LITERAL("-expected-blink.txt");
-  }
-  if (expectation_type_ == "linux") {
-    return FILE_PATH_LITERAL("-expected-auralinux.txt");
-  }
-  if (expectation_type_ == "mac") {
-    return FILE_PATH_LITERAL("-expected-mac.txt");
-  }
-  if (expectation_type_ == "content") {
-    return FILE_PATH_LITERAL("-expected.txt");
-  }
-  if (expectation_type_ == "uia") {
-    return FILE_PATH_LITERAL("-expected-uia-win.txt");
-  }
-  if (expectation_type_ == "win") {
-    return FILE_PATH_LITERAL("-expected-win.txt");
-  }
-  NOTREACHED();
-  return FILE_PATH_LITERAL("");
+  return FILE_PATH_LITERAL("-expected") + mapping->expectations_file_postfix +
+         FILE_PATH_LITERAL(".txt");
 }
 
-base::FilePath::StringType
-DumpAccessibilityTestHelper::GetVersionSpecificExpectedFileSuffix() {
+FilePath::StringType
+DumpAccessibilityTestHelper::GetVersionSpecificExpectedFileSuffix() const {
 #if defined(OS_WIN)
   if (expectation_type_ == "uia" &&
       base::win::GetVersion() == base::win::Version::WIN7) {

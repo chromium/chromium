@@ -38,12 +38,6 @@ class AccessibilityTreeFormatterAuraLinux
   ~AccessibilityTreeFormatterAuraLinux() override;
 
  private:
-  const std::string GetAllowEmptyString() override;
-  const std::string GetAllowString() override;
-  const std::string GetDenyString() override;
-  const std::string GetDenyNodeString() override;
-  const std::string GetRunUntilEventString() override;
-
   std::string ProcessTreeForOutput(
       const base::DictionaryValue& node,
       base::DictionaryValue* filtered_dict_result = nullptr) override;
@@ -735,27 +729,6 @@ std::string AccessibilityTreeFormatterAuraLinux::ProcessTreeForOutput(
   }
 
   return line;
-}
-
-const std::string AccessibilityTreeFormatterAuraLinux::GetAllowEmptyString() {
-  return "@AURALINUX-ALLOW-EMPTY:";
-}
-
-const std::string AccessibilityTreeFormatterAuraLinux::GetAllowString() {
-  return "@AURALINUX-ALLOW:";
-}
-
-const std::string AccessibilityTreeFormatterAuraLinux::GetDenyString() {
-  return "@AURALINUX-DENY:";
-}
-
-const std::string AccessibilityTreeFormatterAuraLinux::GetDenyNodeString() {
-  return "@AURALINUX-DENY-NODE:";
-}
-
-const std::string
-AccessibilityTreeFormatterAuraLinux::GetRunUntilEventString() {
-  return "@AURALINUX-RUN-UNTIL-EVENT:";
 }
 
 }  // namespace content

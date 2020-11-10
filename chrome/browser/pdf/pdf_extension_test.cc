@@ -3164,8 +3164,8 @@ class PDFExtensionAccessibilityTreeDumpTest
 
   //  See chrome/test/data/pdf/accessibility/readme.md for more info.
   void ParsePdfForExtraDirectives(
+      const content::DumpAccessibilityTestHelper& test_helper,
       const std::string& pdf_contents,
-      AXTreeFormatter* formatter,
       std::vector<AXPropertyFilter>* property_filters) {
     const char kCommentMark = '%';
     for (const std::string& line : base::SplitString(
@@ -3173,12 +3173,7 @@ class PDFExtensionAccessibilityTreeDumpTest
       if (line.size() > 1 && line[0] == kCommentMark) {
         // Remove first character since it's the comment mark.
         std::string trimmed_line = line.substr(1);
-        const std::string& allow_str = formatter->GetAllowString();
-        if (base::StartsWith(trimmed_line, allow_str,
-                             base::CompareCase::SENSITIVE)) {
-          property_filters->push_back(AXPropertyFilter(
-              trimmed_line.substr(allow_str.size()), AXPropertyFilter::ALLOW));
-        }
+        test_helper.ParsePropertyFilter(trimmed_line, property_filters);
       }
     }
   }
@@ -3192,18 +3187,18 @@ class PDFExtensionAccessibilityTreeDumpTest
 
     // Set up the tree formatter. Parse filters and other directives in the test
     // file.
+    content::DumpAccessibilityTestHelper test_helper(test_pass_.name);
+
     std::unique_ptr<AXTreeFormatter> formatter = test_pass_.create_formatter();
     std::vector<AXPropertyFilter> property_filters;
     formatter->AddDefaultFilters(&property_filters);
     AddDefaultFilters(&property_filters);
-    ParsePdfForExtraDirectives(pdf_contents, formatter.get(),
-                               &property_filters);
+    ParsePdfForExtraDirectives(test_helper, pdf_contents, &property_filters);
     formatter->SetPropertyFilters(property_filters);
 
     // Exit without running the test if we can't find an expectation file or if
     // the expectation file contains a skip marker.
     // This is used to skip certain tests on certain platforms.
-    content::DumpAccessibilityTestHelper test_helper(test_pass_.name);
     base::FilePath expected_file_path =
         test_helper.GetExpectationFilePath(test_file_path);
     if (expected_file_path.empty()) {

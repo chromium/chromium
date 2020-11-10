@@ -13,6 +13,11 @@ namespace base {
 class FilePath;
 }
 
+namespace ui {
+struct AXNodeFilter;
+struct AXPropertyFilter;
+}  // namespace ui
+
 namespace content {
 
 // A helper class for writing accessibility tree dump tests.
@@ -25,6 +30,50 @@ class DumpAccessibilityTestHelper {
   // suitable expectation file can be found, logs an error message and returns
   // an empty path.
   base::FilePath GetExpectationFilePath(const base::FilePath& test_file_path);
+
+  // Parses property filter directive, if the line is a valid property filter
+  // directive, then a new property filter is created and appneded to the list,
+  // true is returned, otherwise false.
+  bool ParsePropertyFilter(const std::string& line,
+                           std::vector<ui::AXPropertyFilter>* filters) const;
+
+  // Parses node filter directive, if the line is a valid node filter directive
+  // then a new node filter is created and appneded to the list, true is
+  // returned, otherwise false.
+  bool ParseNodeFilter(const std::string& line,
+                       std::vector<ui::AXNodeFilter>* filters) const;
+
+  struct Directive {
+    enum Type {
+      // No directive.
+      kNone,
+
+      // Instructs to not wait for document load for url defined by the
+      // directive.
+      kNoLoadExpected,
+
+      // Delays a test unitl a string defined by the directive is present
+      // in the dump.
+      kWaitFor,
+
+      // Delays a test until a string returned by a script defined by the
+      // directive is present in the dump.
+      kExecuteAndWaitFor,
+
+      // Indicates event recording should continue at least until a specific
+      // event has been received.
+      kRunUntil,
+
+      // Invokes default action on an accessible object defined by the
+      // directive.
+      kDefaultActionOn,
+    } type;
+
+    std::string value;
+  };
+
+  // Parses directives from the given line.
+  Directive ParseDirective(const std::string& line) const;
 
   // Loads the given expectation file and returns the contents. An expectation
   // file may be empty, in which case an empty vector is returned.
@@ -47,12 +96,12 @@ class DumpAccessibilityTestHelper {
   // Example:
   // HTML test:      test-file.html
   // Expected:       test-file-expected-mac.txt.
-  base::FilePath::StringType GetExpectedFileSuffix();
+  base::FilePath::StringType GetExpectedFileSuffix() const;
 
   // Some Platforms expect different outputs depending on the version.
   // Most test outputs are identical but this allows a version specific
   // expected file to be used.
-  base::FilePath::StringType GetVersionSpecificExpectedFileSuffix();
+  base::FilePath::StringType GetVersionSpecificExpectedFileSuffix() const;
 
   FRIEND_TEST_ALL_PREFIXES(DumpAccessibilityTestHelperTest, TestDiffLines);
 

@@ -34,12 +34,6 @@ class CONTENT_EXPORT AccessibilityTreeFormatterBlink
   static std::unique_ptr<ui::AXTreeFormatter> CreateBlink();
 
  private:
-  const std::string GetAllowEmptyString() override;
-  const std::string GetAllowString() override;
-  const std::string GetDenyString() override;
-  const std::string GetDenyNodeString() override;
-  const std::string GetRunUntilEventString() override;
-
   void RecursiveBuildAccessibilityTree(const BrowserAccessibility& node,
                                        base::DictionaryValue* dict) const;
 

@@ -19,6 +19,7 @@
 namespace content {
 
 class BrowserAccessibility;
+class DumpAccessibilityTestHelper;
 
 // Base class for an accessibility browsertest that takes an HTML file as
 // input, loads it into a tab, dumps some accessibility data in text format,
@@ -95,12 +96,14 @@ class DumpAccessibilityTestBase : public ContentBrowserTest,
   // indicating that the test is done, and this framework will wait for that
   // string to appear before comparing the results. There can be multiple
   // @WAIT-FOR: directives.
-  void ParseHtmlForExtraDirectives(const std::string& test_html,
-                                   std::vector<std::string>* no_load_expected,
-                                   std::vector<std::string>* wait_for,
-                                   std::vector<std::string>* execute,
-                                   std::vector<std::string>* run_until,
-                                   std::vector<std::string>* default_action_on);
+  void ParseHtmlForExtraDirectives(
+      const DumpAccessibilityTestHelper& test_helper,
+      const std::string& test_html,
+      std::vector<std::string>* no_load_expected,
+      std::vector<std::string>* wait_for,
+      std::vector<std::string>* execute,
+      std::vector<std::string>* run_until,
+      std::vector<std::string>* default_action_on);
 
   void RunTestForPlatform(const base::FilePath file_path, const char* file_dir);
 

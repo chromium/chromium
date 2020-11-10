@@ -77,6 +77,7 @@ bool AccessibilityTreeContainsLoadedDocWithUrl(BrowserAccessibility* node,
 
 }  // namespace
 
+using Directive = DumpAccessibilityTestHelper::Directive;
 using ui::AXPropertyFilter;
 using ui::AXTreeFormatter;
 
@@ -159,6 +160,7 @@ DumpAccessibilityTestBase::DumpUnfilteredAccessibilityTreeAsString() {
 }
 
 void DumpAccessibilityTestBase::ParseHtmlForExtraDirectives(
+    const DumpAccessibilityTestHelper& test_helper,
     const std::string& test_html,
     std::vector<std::string>* no_load_expected,
     std::vector<std::string>* wait_for,
@@ -167,48 +169,30 @@ void DumpAccessibilityTestBase::ParseHtmlForExtraDirectives(
     std::vector<std::string>* default_action_on) {
   for (const std::string& line : base::SplitString(
            test_html, "\n", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL)) {
-    const std::string& allow_empty_str = formatter_->GetAllowEmptyString();
-    const std::string& allow_str = formatter_->GetAllowString();
-    const std::string& deny_str = formatter_->GetDenyString();
-    const std::string& deny_node_str = formatter_->GetDenyNodeString();
-    const std::string& no_load_expected_str = "@NO-LOAD-EXPECTED:";
-    const std::string& wait_str = "@WAIT-FOR:";
-    const std::string& execute_str = "@EXECUTE-AND-WAIT-FOR:";
-    const std::string& until_str = formatter_->GetRunUntilEventString();
-    const std::string& default_action_on_str = "@DEFAULT-ACTION-ON:";
-    if (base::StartsWith(line, allow_empty_str, base::CompareCase::SENSITIVE)) {
-      property_filters_.emplace_back(line.substr(allow_empty_str.size()),
-                                     AXPropertyFilter::ALLOW_EMPTY);
-    } else if (base::StartsWith(line, allow_str,
-                                base::CompareCase::SENSITIVE)) {
-      property_filters_.emplace_back(line.substr(allow_str.size()),
-                                     AXPropertyFilter::ALLOW);
-    } else if (base::StartsWith(line, deny_str, base::CompareCase::SENSITIVE)) {
-      property_filters_.emplace_back(line.substr(deny_str.size()),
-                                     AXPropertyFilter::DENY);
-    } else if (base::StartsWith(line, deny_node_str,
-                                base::CompareCase::SENSITIVE)) {
-      const auto& node_filter = line.substr(deny_node_str.size());
-      const auto& parts = base::SplitString(
-          node_filter, "=", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-      // Silently skip over parsing errors like the rest of the enclosing code.
-      if (parts.size() == 2) {
-        node_filters_.emplace_back(parts[0], parts[1]);
-      }
-    } else if (base::StartsWith(line, no_load_expected_str,
-                                base::CompareCase::SENSITIVE)) {
-      no_load_expected->push_back(line.substr(no_load_expected_str.size()));
-    } else if (base::StartsWith(line, wait_str, base::CompareCase::SENSITIVE)) {
-      wait_for->push_back(line.substr(wait_str.size()));
-    } else if (base::StartsWith(line, execute_str,
-                                base::CompareCase::SENSITIVE)) {
-      execute->push_back(line.substr(execute_str.size()));
-    } else if (base::StartsWith(line, until_str,
-                                base::CompareCase::SENSITIVE)) {
-      run_until->push_back(line.substr(until_str.size()));
-    } else if (base::StartsWith(line, default_action_on_str,
-                                base::CompareCase::SENSITIVE)) {
-      default_action_on->push_back(line.substr(default_action_on_str.size()));
+    if (test_helper.ParsePropertyFilter(line, &property_filters_) ||
+        test_helper.ParseNodeFilter(line, &node_filters_)) {
+      continue;
+    }
+
+    Directive directive = test_helper.ParseDirective(line);
+    switch (directive.type) {
+      case Directive::kNoLoadExpected:
+        no_load_expected->push_back(directive.value);
+        break;
+      case Directive::kWaitFor:
+        wait_for->push_back(directive.value);
+        break;
+      case Directive::kExecuteAndWaitFor:
+        execute->push_back(directive.value);
+        break;
+      case Directive::kRunUntil:
+        run_until->push_back(directive.value);
+        break;
+      case Directive::kDefaultActionOn:
+        default_action_on->push_back(directive.value);
+        break;
+      default:  // Directive::kNone
+        break;
     }
   }
 }
@@ -298,8 +282,9 @@ void DumpAccessibilityTestBase::RunTestForPlatform(
   node_filters_.clear();
   formatter_->AddDefaultFilters(&property_filters_);
   AddDefaultFilters(&property_filters_);
-  ParseHtmlForExtraDirectives(html_contents, &no_load_expected, &wait_for,
-                              &execute, &run_until, &default_action_on);
+  ParseHtmlForExtraDirectives(test_helper, html_contents, &no_load_expected,
+                              &wait_for, &execute, &run_until,
+                              &default_action_on);
 
   // Get the test URL.
   GURL url(embedded_test_server()->GetURL("/" + std::string(file_dir) + "/" +

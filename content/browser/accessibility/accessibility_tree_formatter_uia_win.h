@@ -92,11 +92,6 @@ class AccessibilityTreeFormatterUia : public AccessibilityTreeFormatterBase {
                          IUIAutomationElementArray* array,
                          base::DictionaryValue* dict);
   base::string16 GetNodeName(IUIAutomationElement* node);
-  const std::string GetAllowEmptyString() override;
-  const std::string GetAllowString() override;
-  const std::string GetDenyString() override;
-  const std::string GetDenyNodeString() override;
-  const std::string GetRunUntilEventString() override;
   std::string ProcessTreeForOutput(
       const base::DictionaryValue& node,
       base::DictionaryValue* filtered_result = nullptr) override;

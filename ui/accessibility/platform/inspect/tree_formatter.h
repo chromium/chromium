@@ -80,37 +80,6 @@ class AX_EXPORT AXTreeFormatter {
   // If true, the internal accessibility id of each node will be included
   // in its output.
   virtual void set_show_ids(bool show_ids) = 0;
-
-  // A string that indicates a given line in a file is an allow-empty,
-  // allow or deny filter. Overridden by each platform subclass. Example:
-  // Mac values:
-  //   GetAllowEmptyString() -> "@MAC-ALLOW-EMPTY:"
-  //   GetAllowString() -> "@MAC-ALLOW:"
-  //   GetDenyString() -> "@MAC-DENY:"
-  //   GetDenyNodeString() -> "@MAC-DENY-NODE:"
-  // Example html:
-  // <!--
-  // @MAC-ALLOW-EMPTY:description*
-  // @MAC-ALLOW:roleDescription*
-  // @MAC-DENY:subrole*
-  // @BLINK-DENY-NODE:internalRole=inlineTextBox
-  // -->
-  // <p>Text</p>
-  virtual const std::string GetAllowEmptyString() = 0;
-  virtual const std::string GetAllowString() = 0;
-  virtual const std::string GetDenyString() = 0;
-  virtual const std::string GetDenyNodeString() = 0;
-
-  // A string that indicates event recording should continue at least until a
-  // specific event has been received.
-  // Overridden by each platform subclass.
-  // Example win value:
-  //   GetRunUntilEventString() -> "@WIN-RUN-UNTIL-EVENT"
-  // Example html:
-  // <!--
-  // @WIN-RUN-UNTIL-EVENT:IA2_EVENT_TEXT_CARET_MOVED
-  // -->
-  virtual const std::string GetRunUntilEventString() = 0;
 };
 
 }  // namespace ui

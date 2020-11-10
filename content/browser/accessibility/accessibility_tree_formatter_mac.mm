@@ -77,12 +77,6 @@ class AccessibilityTreeFormatterMac : public AccessibilityTreeFormatterBase {
                                        const LineIndexer* line_indexer,
                                        base::DictionaryValue* dict) const;
 
-  const std::string GetAllowEmptyString() override;
-  const std::string GetAllowString() override;
-  const std::string GetDenyString() override;
-  const std::string GetDenyNodeString() override;
-  const std::string GetRunUntilEventString() override;
-
   void AddProperties(const id node,
                      const LineIndexer* line_indexer,
                      base::Value* dict) const;
@@ -584,26 +578,6 @@ std::string AccessibilityTreeFormatterMac::FormatAttributeValue(
     return "{" + output + "}";
   }
   return "";
-}
-
-const string AccessibilityTreeFormatterMac::GetAllowEmptyString() {
-  return "@MAC-ALLOW-EMPTY:";
-}
-
-const string AccessibilityTreeFormatterMac::GetAllowString() {
-  return "@MAC-ALLOW:";
-}
-
-const string AccessibilityTreeFormatterMac::GetDenyString() {
-  return "@MAC-DENY:";
-}
-
-const string AccessibilityTreeFormatterMac::GetDenyNodeString() {
-  return "@MAC-DENY-NODE:";
-}
-
-const std::string AccessibilityTreeFormatterMac::GetRunUntilEventString() {
-  return "@MAC-RUN-UNTIL-EVENT:";
 }
 
 }  // namespace content

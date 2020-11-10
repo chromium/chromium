@@ -96,12 +96,6 @@ class AccessibilityTreeFormatterAndroid
       std::vector<AXPropertyFilter>* property_filters) override;
 
  private:
-  const std::string GetAllowEmptyString() override;
-  const std::string GetAllowString() override;
-  const std::string GetDenyString() override;
-  const std::string GetDenyNodeString() override;
-  const std::string GetRunUntilEventString() override;
-
   void RecursiveBuildAccessibilityTree(const BrowserAccessibility& node,
                                        base::DictionaryValue* dict) const;
 
@@ -307,26 +301,6 @@ std::string AccessibilityTreeFormatterAndroid::ProcessTreeForOutput(
   }
 
   return line;
-}
-
-const std::string AccessibilityTreeFormatterAndroid::GetAllowEmptyString() {
-  return "@ANDROID-ALLOW-EMPTY:";
-}
-
-const std::string AccessibilityTreeFormatterAndroid::GetAllowString() {
-  return "@ANDROID-ALLOW:";
-}
-
-const std::string AccessibilityTreeFormatterAndroid::GetDenyString() {
-  return "@ANDROID-DENY:";
-}
-
-const std::string AccessibilityTreeFormatterAndroid::GetDenyNodeString() {
-  return "@ANDROID-DENY-NODE:";
-}
-
-const std::string AccessibilityTreeFormatterAndroid::GetRunUntilEventString() {
-  return "@ANDROID-RUN-UNTIL-EVENT:";
 }
 
 }  // namespace content

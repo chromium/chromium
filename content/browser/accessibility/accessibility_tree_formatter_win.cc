@@ -64,11 +64,6 @@ class AccessibilityTreeFormatterWin : public AccessibilityTreeFormatterBase {
       LONG root_x,
       LONG root_y);
 
-  const std::string GetAllowEmptyString() override;
-  const std::string GetAllowString() override;
-  const std::string GetDenyString() override;
-  const std::string GetDenyNodeString() override;
-  const std::string GetRunUntilEventString() override;
   void AddProperties(const Microsoft::WRL::ComPtr<IAccessible>,
                      base::DictionaryValue* dict,
                      LONG root_x,
@@ -1002,26 +997,6 @@ std::string AccessibilityTreeFormatterWin::ProcessTreeForOutput(
   }
 
   return line;
-}
-
-const std::string AccessibilityTreeFormatterWin::GetAllowEmptyString() {
-  return "@WIN-ALLOW-EMPTY:";
-}
-
-const std::string AccessibilityTreeFormatterWin::GetAllowString() {
-  return "@WIN-ALLOW:";
-}
-
-const std::string AccessibilityTreeFormatterWin::GetDenyString() {
-  return "@WIN-DENY:";
-}
-
-const std::string AccessibilityTreeFormatterWin::GetDenyNodeString() {
-  return "@WIN-DENY-NODE:";
-}
-
-const std::string AccessibilityTreeFormatterWin::GetRunUntilEventString() {
-  return "@WIN-RUN-UNTIL-EVENT:";
 }
 
 }  // namespace content

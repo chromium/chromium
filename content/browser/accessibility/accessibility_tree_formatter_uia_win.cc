@@ -1151,24 +1151,4 @@ void AccessibilityTreeFormatterUia::ProcessValueForOutput(
   }
 }
 
-const std::string AccessibilityTreeFormatterUia::GetAllowEmptyString() {
-  return "@UIA-WIN-ALLOW-EMPTY:";
-}
-
-const std::string AccessibilityTreeFormatterUia::GetAllowString() {
-  return "@UIA-WIN-ALLOW:";
-}
-
-const std::string AccessibilityTreeFormatterUia::GetDenyString() {
-  return "@UIA-WIN-DENY:";
-}
-
-const std::string AccessibilityTreeFormatterUia::GetDenyNodeString() {
-  return "@UIA-WIN-DENY-NODE:";
-}
-
-const std::string AccessibilityTreeFormatterUia::GetRunUntilEventString() {
-  return "@UIA-WIN-RUN-UNTIL-EVENT:";
-}
-
 }  // namespace content

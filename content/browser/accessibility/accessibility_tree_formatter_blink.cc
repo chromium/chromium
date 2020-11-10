@@ -604,24 +604,4 @@ std::string AccessibilityTreeFormatterBlink::ProcessTreeForOutput(
   return line;
 }
 
-const std::string AccessibilityTreeFormatterBlink::GetAllowEmptyString() {
-  return "@BLINK-ALLOW-EMPTY:";
-}
-
-const std::string AccessibilityTreeFormatterBlink::GetAllowString() {
-  return "@BLINK-ALLOW:";
-}
-
-const std::string AccessibilityTreeFormatterBlink::GetDenyString() {
-  return "@BLINK-DENY:";
-}
-
-const std::string AccessibilityTreeFormatterBlink::GetDenyNodeString() {
-  return "@BLINK-DENY-NODE:";
-}
-
-const std::string AccessibilityTreeFormatterBlink::GetRunUntilEventString() {
-  return "@BLINK-RUN-UNTIL-EVENT:";
-}
-
 }  // namespace content
