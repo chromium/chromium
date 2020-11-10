@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/single_thread_task_runner.h"
+#include "media/capture/video/chromeos/camera_device_context.h"
 #include "media/capture/video/chromeos/capture_metadata_dispatcher.h"
 #include "media/capture/video/chromeos/mojom/camera3.mojom.h"
 #include "media/capture/video/chromeos/mojom/camera_common.mojom.h"
@@ -25,7 +26,6 @@ namespace media {
 
 class Camera3AController;
 class CameraAppDeviceImpl;
-class CameraDeviceContext;
 class CameraHalDelegate;
 class RequestManager;
 
@@ -99,7 +99,8 @@ class CAPTURE_EXPORT CameraDeviceDelegate final
       VideoCaptureDeviceDescriptor device_descriptor,
       scoped_refptr<CameraHalDelegate> camera_hal_delegate,
       scoped_refptr<base::SingleThreadTaskRunner> ipc_task_runner,
-      CameraAppDeviceImpl* camera_app_device);
+      CameraAppDeviceImpl* camera_app_device,
+      ClientType client_type);
 
   ~CameraDeviceDelegate() final;
 
@@ -270,6 +271,8 @@ class CAPTURE_EXPORT CameraDeviceDelegate final
   uint32_t result_metadata_frame_number_;
   ResultMetadata result_metadata_;
   gfx::Rect active_array_size_;
+
+  ClientType client_type_;
 
   base::WeakPtrFactory<CameraDeviceDelegate> weak_ptr_factory_{this};
 

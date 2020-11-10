@@ -86,22 +86,28 @@ class RequestManagerTest : public ::testing::Test {
  public:
   void SetUp() override {
     quit_ = false;
-    device_context_ = std::make_unique<CameraDeviceContext>(
-        std::make_unique<unittest_internal::MockVideoCaptureClient>());
-
-    request_manager_ = std::make_unique<RequestManager>(
-        mock_callback_ops_.BindNewPipeAndPassReceiver(),
-        std::make_unique<MockStreamCaptureInterface>(), device_context_.get(),
-        VideoCaptureBufferType::kSharedMemory,
-        std::make_unique<FakeCameraBufferFactory>(),
-        base::BindRepeating(
-            [](const uint8_t* buffer, const uint32_t bytesused,
-               const VideoCaptureFormat& capture_format,
-               const int rotation) { return mojom::Blob::New(); }),
-        base::ThreadTaskRunnerHandle::Get(), nullptr);
+    client_type_ = ClientType::kPreviewClient;
+    device_context_ = std::make_unique<CameraDeviceContext>();
+    if (device_context_->AddClient(
+            client_type_,
+            std::make_unique<unittest_internal::MockVideoCaptureClient>())) {
+      request_manager_ = std::make_unique<RequestManager>(
+          mock_callback_ops_.BindNewPipeAndPassReceiver(),
+          std::make_unique<MockStreamCaptureInterface>(), device_context_.get(),
+          VideoCaptureBufferType::kSharedMemory,
+          std::make_unique<FakeCameraBufferFactory>(),
+          base::BindRepeating(
+              [](const uint8_t* buffer, const uint32_t bytesused,
+                 const VideoCaptureFormat& capture_format,
+                 const int rotation) { return mojom::Blob::New(); }),
+          base::ThreadTaskRunnerHandle::Get(), nullptr, client_type_);
+    }
   }
 
-  void TearDown() override { request_manager_.reset(); }
+  void TearDown() override {
+    device_context_->RemoveClient(client_type_);
+    request_manager_.reset();
+  }
 
   void DoLoop() {
     run_loop_.reset(new base::RunLoop());
@@ -181,8 +187,10 @@ class RequestManagerTest : public ::testing::Test {
 
   unittest_internal::MockVideoCaptureClient* GetMockVideoCaptureClient() {
     EXPECT_NE(nullptr, device_context_);
+    base::AutoLock lock(device_context_->client_lock_);
+    EXPECT_TRUE(!device_context_->clients_.empty());
     return reinterpret_cast<unittest_internal::MockVideoCaptureClient*>(
-        device_context_->client_.get());
+        device_context_->clients_[client_type_].get());
   }
 
   std::map<uint32_t, RequestManager::CaptureResult>& GetPendingResults() {
@@ -275,7 +283,7 @@ class RequestManagerTest : public ::testing::Test {
   std::unique_ptr<RequestManager> request_manager_;
   mojo::Remote<cros::mojom::Camera3CallbackOps> mock_callback_ops_;
   std::unique_ptr<CameraDeviceContext> device_context_;
-  cros::mojom::Camera3StreamPtr stream;
+  ClientType client_type_;
 
  private:
   std::unique_ptr<base::RunLoop> run_loop_;

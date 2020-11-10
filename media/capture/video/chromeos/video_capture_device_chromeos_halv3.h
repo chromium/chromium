@@ -11,6 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/single_thread_task_runner.h"
 #include "base/threading/thread.h"
+#include "media/capture/video/chromeos/camera_device_context.h"
 #include "media/capture/video/chromeos/display_rotation_observer.h"
 #include "media/capture/video/video_capture_device.h"
 #include "media/capture/video/video_capture_device_descriptor.h"
@@ -26,7 +27,6 @@ namespace media {
 
 class CameraAppDeviceImpl;
 class CameraHalDelegate;
-class CameraDeviceContext;
 class CameraDeviceDelegate;
 
 // Implementation of VideoCaptureDevice for ChromeOS with CrOS camera HALv3.
@@ -101,6 +101,9 @@ class CAPTURE_EXPORT VideoCaptureDeviceChromeOSHalv3 final
   base::OnceClosure cleanup_callback_;
 
   scoped_refptr<PowerManagerClientProxy> power_manager_client_proxy_;
+
+  // The client type in CameraDeviceContext.
+  ClientType client_type_;
 
   base::WeakPtrFactory<VideoCaptureDeviceChromeOSHalv3> weak_ptr_factory_{this};
 

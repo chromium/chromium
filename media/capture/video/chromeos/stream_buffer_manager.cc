@@ -14,7 +14,6 @@
 #include "base/trace_event/trace_event.h"
 #include "gpu/ipc/common/gpu_memory_buffer_support.h"
 #include "media/capture/video/chromeos/camera_buffer_factory.h"
-#include "media/capture/video/chromeos/camera_device_context.h"
 #include "media/capture/video/chromeos/camera_metadata_utils.h"
 #include "media/capture/video/chromeos/pixel_format_utils.h"
 #include "media/capture/video/chromeos/request_builder.h"
@@ -28,10 +27,12 @@ namespace media {
 StreamBufferManager::StreamBufferManager(
     CameraDeviceContext* device_context,
     bool video_capture_use_gmb,
-    std::unique_ptr<CameraBufferFactory> camera_buffer_factory)
+    std::unique_ptr<CameraBufferFactory> camera_buffer_factory,
+    ClientType client_type)
     : device_context_(device_context),
       video_capture_use_gmb_(video_capture_use_gmb),
-      camera_buffer_factory_(std::move(camera_buffer_factory)) {
+      camera_buffer_factory_(std::move(camera_buffer_factory)),
+      client_type_(client_type) {
   if (video_capture_use_gmb_) {
     gmb_support_ = std::make_unique<gpu::GpuMemoryBufferSupport>();
   }
@@ -155,7 +156,8 @@ StreamBufferManager::AcquireBufferForClientById(StreamType stream_type,
     // We have to reserve a new buffer because the size is different.
     Buffer rotated_buffer;
     if (!device_context_->ReserveVideoCaptureBufferFromPool(
-            format->frame_size, format->pixel_format, &rotated_buffer)) {
+            client_type_, format->frame_size, format->pixel_format,
+            &rotated_buffer)) {
       DLOG(WARNING) << "Failed to reserve video capture buffer";
       original_gmb->Unmap();
       return std::move(buffer_pair.vcd_buffer);
@@ -440,7 +442,7 @@ void StreamBufferManager::ReserveBufferFromPool(StreamType stream_type) {
   }
   Buffer vcd_buffer;
   if (!device_context_->ReserveVideoCaptureBufferFromPool(
-          stream_context->buffer_dimension,
+          client_type_, stream_context->buffer_dimension,
           stream_context->capture_format.pixel_format, &vcd_buffer)) {
     DLOG(WARNING) << "Failed to reserve video capture buffer";
     return;

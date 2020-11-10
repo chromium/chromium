@@ -122,7 +122,8 @@ VideoCaptureDeviceChromeOSHalv3::VideoCaptureDeviceChromeOSHalv3(
       camera_app_device_(camera_app_device),
       cleanup_callback_(std::move(cleanup_callback)),
       power_manager_client_proxy_(
-          base::MakeRefCounted<PowerManagerClientProxy>()) {
+          base::MakeRefCounted<PowerManagerClientProxy>()),
+      client_type_(ClientType::kPreviewClient) {
   power_manager_client_proxy_->Init(weak_ptr_factory_.GetWeakPtr(),
                                     capture_task_runner_,
                                     std::move(ui_task_runner));
@@ -152,12 +153,14 @@ void VideoCaptureDeviceChromeOSHalv3::AllocateAndStart(
     return;
   }
   capture_params_ = params;
-  device_context_ = std::make_unique<CameraDeviceContext>(std::move(client));
-
-  camera_device_delegate_ = std::make_unique<CameraDeviceDelegate>(
-      device_descriptor_, camera_hal_delegate_,
-      camera_device_ipc_thread_.task_runner(), camera_app_device_);
-  OpenDevice();
+  device_context_ = std::make_unique<CameraDeviceContext>();
+  if (device_context_->AddClient(client_type_, std::move(client))) {
+    camera_device_delegate_ = std::make_unique<CameraDeviceDelegate>(
+        device_descriptor_, camera_hal_delegate_,
+        camera_device_ipc_thread_.task_runner(), camera_app_device_,
+        client_type_);
+    OpenDevice();
+  }
 }
 
 void VideoCaptureDeviceChromeOSHalv3::StopAndDeAllocate() {
@@ -169,6 +172,7 @@ void VideoCaptureDeviceChromeOSHalv3::StopAndDeAllocate() {
   CloseDevice(base::UnguessableToken());
   camera_device_ipc_thread_.Stop();
   camera_device_delegate_.reset();
+  device_context_->RemoveClient(client_type_);
   device_context_.reset();
 }
 

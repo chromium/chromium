@@ -701,6 +701,9 @@ EnumTraits<media::mojom::VideoCaptureError, media::VideoCaptureError>::ToMojom(
       return media::mojom::VideoCaptureError::kFuchsiaUnsupportedPixelFormat;
     case media::VideoCaptureError::kFuchsiaFailedToMapSysmemBuffer:
       return media::mojom::VideoCaptureError::kFuchsiaFailedToMapSysmemBuffer;
+    case media::VideoCaptureError::kCrosHalV3DeviceContextDuplicatedClient:
+      return media::mojom::VideoCaptureError::
+          kCrosHalV3DeviceContextDuplicatedClient;
   }
   NOTREACHED();
   return media::mojom::VideoCaptureError::kNone;
@@ -1242,6 +1245,11 @@ bool EnumTraits<media::mojom::VideoCaptureError, media::VideoCaptureError>::
       return true;
     case media::mojom::VideoCaptureError::kFuchsiaFailedToMapSysmemBuffer:
       *output = media::VideoCaptureError::kFuchsiaFailedToMapSysmemBuffer;
+      return true;
+    case media::mojom::VideoCaptureError::
+        kCrosHalV3DeviceContextDuplicatedClient:
+      *output =
+          media::VideoCaptureError::kCrosHalV3DeviceContextDuplicatedClient;
       return true;
   }
   NOTREACHED();

@@ -18,7 +18,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "media/capture/video/chromeos/camera_buffer_factory.h"
-#include "media/capture/video/chromeos/camera_device_context.h"
 #include "media/capture/video/chromeos/camera_metadata_utils.h"
 #include "media/capture/video/chromeos/video_capture_features_chromeos.h"
 #include "mojo/public/cpp/platform/platform_handle.h"
@@ -43,7 +42,8 @@ RequestManager::RequestManager(
     std::unique_ptr<CameraBufferFactory> camera_buffer_factory,
     BlobifyCallback blobify_callback,
     scoped_refptr<base::SingleThreadTaskRunner> ipc_task_runner,
-    CameraAppDeviceImpl* camera_app_device)
+    CameraAppDeviceImpl* camera_app_device,
+    ClientType client_type)
     : callback_ops_(this, std::move(callback_ops_receiver)),
       capture_interface_(std::move(capture_interface)),
       device_context_(device_context),
@@ -52,13 +52,15 @@ RequestManager::RequestManager(
       stream_buffer_manager_(
           new StreamBufferManager(device_context_,
                                   video_capture_use_gmb_,
-                                  std::move(camera_buffer_factory))),
+                                  std::move(camera_buffer_factory),
+                                  client_type)),
       blobify_callback_(std::move(blobify_callback)),
       ipc_task_runner_(std::move(ipc_task_runner)),
       capturing_(false),
       partial_result_count_(1),
       first_frame_shutter_time_(base::TimeTicks()),
-      camera_app_device_(std::move(camera_app_device)) {
+      camera_app_device_(std::move(camera_app_device)),
+      client_type_(client_type) {
   DCHECK(ipc_task_runner_->BelongsToCurrentThread());
   DCHECK(callback_ops_.is_bound());
   DCHECK(device_context_);
@@ -864,7 +866,7 @@ void RequestManager::SubmitCapturedPreviewBuffer(uint32_t frame_number,
       metadata.rotation = VideoRotation::VIDEO_ROTATION_0;
     }
     device_context_->SubmitCapturedVideoCaptureBuffer(
-        std::move(*buffer), format, pending_result.reference_time,
+        client_type_, std::move(*buffer), format, pending_result.reference_time,
         pending_result.timestamp, metadata);
     // |buffer| ownership is transferred to client, so we need to reserve a
     // new video buffer.
@@ -874,7 +876,7 @@ void RequestManager::SubmitCapturedPreviewBuffer(uint32_t frame_number,
         StreamType::kPreviewOutput, buffer_ipc_id);
     CHECK(gmb);
     device_context_->SubmitCapturedGpuMemoryBuffer(
-        gmb,
+        client_type_, gmb,
         stream_buffer_manager_->GetStreamCaptureFormat(
             StreamType::kPreviewOutput),
         pending_result.reference_time, pending_result.timestamp);

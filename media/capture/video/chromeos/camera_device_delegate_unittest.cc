@@ -162,7 +162,7 @@ class CameraDeviceDelegateTest : public ::testing::Test {
 
     camera_device_delegate_ = std::make_unique<CameraDeviceDelegate>(
         devices_info[0].descriptor, camera_hal_delegate_,
-        device_delegate_thread_.task_runner(), nullptr);
+        device_delegate_thread_.task_runner(), nullptr, client_type_);
   }
 
   void GetNumberOfFakeCameras(
@@ -462,15 +462,17 @@ class CameraDeviceDelegateTest : public ::testing::Test {
   }
 
   unittest_internal::NiceMockVideoCaptureClient* ResetDeviceContext() {
+    client_type_ = ClientType::kPreviewClient;
     auto mock_client =
         std::make_unique<unittest_internal::NiceMockVideoCaptureClient>();
     auto* client_ptr = mock_client.get();
-    device_context_ =
-        std::make_unique<CameraDeviceContext>(std::move(mock_client));
+    device_context_ = std::make_unique<CameraDeviceContext>();
+    device_context_->AddClient(client_type_, std::move(mock_client));
     return client_ptr;
   }
 
   void ResetDevice() {
+    device_context_->RemoveClient(client_type_);
     ASSERT_TRUE(device_delegate_thread_.IsRunning());
     ASSERT_TRUE(camera_device_delegate_);
     ASSERT_TRUE(device_delegate_thread_.task_runner()->DeleteSoon(
@@ -516,6 +518,7 @@ class CameraDeviceDelegateTest : public ::testing::Test {
   base::Thread device_delegate_thread_;
 
   std::unique_ptr<CameraDeviceContext> device_context_;
+  ClientType client_type_;
 
  private:
   base::Thread hal_delegate_thread_;

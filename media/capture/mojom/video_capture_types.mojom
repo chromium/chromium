@@ -229,6 +229,7 @@ enum VideoCaptureError {
   kFuchsiaSysmemInvalidBufferSize,
   kFuchsiaUnsupportedPixelFormat,
   kFuchsiaFailedToMapSysmemBuffer,
+  kCrosHalV3DeviceContextDuplicatedClient,
 };
 
 enum VideoCaptureFrameDropReason {

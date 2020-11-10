@@ -18,6 +18,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/single_thread_task_runner.h"
+#include "media/capture/video/chromeos/camera_device_context.h"
 #include "media/capture/video/chromeos/camera_device_delegate.h"
 #include "media/capture/video/chromeos/mojom/camera3.mojom.h"
 #include "media/capture/video_capture_types.h"
@@ -37,7 +38,6 @@ class GpuMemoryBufferSupport;
 namespace media {
 
 class CameraBufferFactory;
-class CameraDeviceContext;
 
 struct BufferInfo;
 
@@ -51,7 +51,8 @@ class CAPTURE_EXPORT StreamBufferManager final {
   StreamBufferManager(
       CameraDeviceContext* device_context,
       bool video_capture_use_gmb,
-      std::unique_ptr<CameraBufferFactory> camera_buffer_factory);
+      std::unique_ptr<CameraBufferFactory> camera_buffer_factory,
+      ClientType client_type);
   ~StreamBufferManager();
 
   void ReserveBuffer(StreamType stream_type);
@@ -162,6 +163,8 @@ class CAPTURE_EXPORT StreamBufferManager final {
   std::unique_ptr<gpu::GpuMemoryBufferSupport> gmb_support_;
 
   std::unique_ptr<CameraBufferFactory> camera_buffer_factory_;
+
+  ClientType client_type_;
 
   base::WeakPtrFactory<StreamBufferManager> weak_ptr_factory_{this};
 

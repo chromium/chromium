@@ -16,6 +16,7 @@
 #include "base/optional.h"
 #include "media/capture/mojom/image_capture.mojom.h"
 #include "media/capture/video/chromeos/camera_app_device_impl.h"
+#include "media/capture/video/chromeos/camera_device_context.h"
 #include "media/capture/video/chromeos/camera_device_delegate.h"
 #include "media/capture/video/chromeos/capture_metadata_dispatcher.h"
 #include "media/capture/video/chromeos/mojom/camera3.mojom.h"
@@ -29,7 +30,6 @@
 namespace media {
 
 class CameraBufferFactory;
-class CameraDeviceContext;
 
 // The JPEG transport header as defined by Android camera HAL v3 API.  The JPEG
 // transport header is at the end of the blob buffer filled by the HAL.
@@ -107,7 +107,8 @@ class CAPTURE_EXPORT RequestManager final
                  std::unique_ptr<CameraBufferFactory> camera_buffer_factory,
                  BlobifyCallback blobify_callback,
                  scoped_refptr<base::SingleThreadTaskRunner> ipc_task_runner,
-                 CameraAppDeviceImpl* camera_app_device);
+                 CameraAppDeviceImpl* camera_app_device,
+                 ClientType client_type);
   ~RequestManager() override;
 
   // Sets up the stream context and allocate buffers according to the
@@ -362,6 +363,8 @@ class CAPTURE_EXPORT RequestManager final
   std::map<StreamType, uint32_t> last_received_frame_number_map_;
 
   CameraAppDeviceImpl* camera_app_device_;  // Weak.
+
+  ClientType client_type_;
 
   base::WeakPtrFactory<RequestManager> weak_ptr_factory_{this};
 
