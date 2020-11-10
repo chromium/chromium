@@ -164,12 +164,7 @@ void ExpectDisplayingErrorPage(Browser* browser, net::Error error_code) {
 // Returns true if the platform has support for a diagnostics tool, and it
 // can be launched from |web_contents|.
 bool WebContentsCanShowDiagnosticsTool(content::WebContents* web_contents) {
-#if defined(OS_CHROMEOS)
-  // ChromeOS uses an extension instead of a diagnostics dialog.
-  return true;
-#else
   return CanShowNetworkDiagnosticsDialog(web_contents);
-#endif
 }
 
 class ErrorPageTest : public InProcessBrowserTest {

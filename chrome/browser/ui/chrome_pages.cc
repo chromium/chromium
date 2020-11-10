@@ -64,6 +64,7 @@
 #include "chrome/browser/ui/webui/settings/chromeos/app_management/app_management_uma.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes_util.h"
+#include "chromeos/components/connectivity_diagnostics/url_constants.h"
 #include "chromeos/constants/chromeos_features.h"
 #else
 #include "chrome/browser/ui/signin_view_controller.h"
@@ -453,6 +454,13 @@ void ShowPrintManagementApp(Profile* profile,
                                 entry_point);
   LaunchSystemWebApp(profile, web_app::SystemAppType::PRINT_MANAGEMENT,
                      GURL(chrome::kChromeUIPrintManagementUrl));
+}
+
+void ShowConnectivityDiagnosticsApp(Profile* profile) {
+  DCHECK(base::FeatureList::IsEnabled(
+      chromeos::features::kConnectivityDiagnosticsWebUi));
+  LaunchSystemWebApp(profile, web_app::SystemAppType::CONNECTIVITY_DIAGNOSTICS,
+                     GURL(chromeos::kChromeUIConnectivityDiagnosticsUrl));
 }
 
 GURL GetOSSettingsUrl(const std::string& sub_page) {

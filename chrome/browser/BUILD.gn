@@ -2379,11 +2379,20 @@ static_library("browser") {
     deps += [ "//chrome/services/machine_learning" ]
   }
 
+  # Platforms that have a network diagnostics dialog. All others fall through
+  # to the stub which is not implemented.
+  if (is_chromeos) {
+    sources += [ "net/net_error_diagnostics_dialog_chromeos.cc" ]
+  } else if (is_win) {
+    sources += [ "net/net_error_diagnostics_dialog_win.cc" ]
+  } else {
+    sources += [ "net/net_error_diagnostics_dialog_stub.cc" ]
+  }
+
   if (is_posix || is_fuchsia) {
     sources += [
       "download/trusted_sources_manager_posix.cc",
       "google/google_update_settings_posix.cc",
-      "net/net_error_diagnostics_dialog_posix.cc",
       "performance_monitor/metric_evaluator_helper_posix.cc",
       "performance_monitor/metric_evaluator_helper_posix.h",
     ]
@@ -4540,7 +4549,6 @@ static_library("browser") {
       "metrics/jumplist_metrics_win.h",
       "metrics/tab_stats_tracker_delegate_win.cc",
       "metrics/tab_stats_tracker_win.cc",
-      "net/net_error_diagnostics_dialog_win.cc",
       "net/service_providers_win.cc",
       "net/service_providers_win.h",
       "notifications/win/notification_template_builder.cc",
