@@ -29,10 +29,14 @@ fidl::InterfaceHandle<fuchsia::io::Directory> StartWebEngineForTestsInternal(
         component_controller_request,
     const base::CommandLine& command_line,
     bool is_for_logging_test) {
+  DCHECK(command_line.argv()[0].empty()) << "Must use NO_PROGRAM.";
+
   fuchsia::sys::LaunchInfo launch_info;
   launch_info.url =
       "fuchsia-pkg://fuchsia.com/web_engine#meta/context_provider.cmx";
-  launch_info.arguments = command_line.argv();
+  // Add all switches and arguments, skipping the program.
+  launch_info.arguments.emplace(std::vector<std::string>(
+      command_line.argv().begin() + 1, command_line.argv().end()));
 
   if (!is_for_logging_test) {
     // Clone stderr from the current process to WebEngine and ask it to

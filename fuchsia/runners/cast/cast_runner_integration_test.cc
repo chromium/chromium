@@ -224,6 +224,7 @@ sys::ServiceDirectory StartCastRunner(
   zx_status_t status = fdio_fd_clone(
       STDERR_FILENO, launch_info.err->handle0.reset_and_get_address());
   ZX_CHECK(status == ZX_OK, status);
+
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
   command_line.AppendSwitchASCII("enable-logging", "stderr");
 
@@ -234,6 +235,7 @@ sys::ServiceDirectory StartCastRunner(
   if (runner_features & kCastRunnerFeaturesFrameHost)
     command_line.AppendSwitch(kEnableFrameHostComponent);
 
+  // Add all switches and arguments, skipping the program.
   launch_info.arguments.emplace(std::vector<std::string>(
       command_line.argv().begin() + 1, command_line.argv().end()));
 
