@@ -46,13 +46,13 @@ EnableAdbSideloadingScreen::EnableAdbSideloadingScreen(
                  OobeScreenPriority::SCREEN_DEVICE_DEVELOPER_MODIFICATION),
       view_(view),
       exit_callback_(exit_callback) {
-  DCHECK(view_);
-  view_->Bind(this);
+  if (view_)
+    view_->Bind(this);
 }
 
 EnableAdbSideloadingScreen::~EnableAdbSideloadingScreen() {
-  DCHECK(view_);
-  view_->Unbind();
+  if (view_)
+    view_->Unbind();
 }
 
 // static
@@ -100,7 +100,8 @@ void EnableAdbSideloadingScreen::OnQueryAdbSideload(
     return;
   }
 
-  DCHECK(view_);
+  if (!view_)
+    return;
   EnableAdbSideloadingScreenView::UIState ui_state;
   switch (response_code) {
     case SessionManagerClient::AdbSideloadResponseCode::SUCCESS:
@@ -121,8 +122,8 @@ void EnableAdbSideloadingScreen::OnQueryAdbSideload(
 }
 
 void EnableAdbSideloadingScreen::HideImpl() {
-  DCHECK(view_);
-  view_->Hide();
+  if (view_)
+    view_->Hide();
 }
 
 void EnableAdbSideloadingScreen::OnCancel() {
@@ -149,9 +150,10 @@ void EnableAdbSideloadingScreen::OnEnableAdbSideload(
     case SessionManagerClient::AdbSideloadResponseCode::NEED_POWERWASH:
     case SessionManagerClient::AdbSideloadResponseCode::FAILED:
       LogEvent(AdbSideloadingPromptEvent::kFailedToEnable);
-      DCHECK(view_);
-      view_->SetScreenState(
-          EnableAdbSideloadingScreenView::UIState::UI_STATE_ERROR);
+      if (view_) {
+        view_->SetScreenState(
+            EnableAdbSideloadingScreenView::UIState::UI_STATE_ERROR);
+      }
       break;
   }
 }
