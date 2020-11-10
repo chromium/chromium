@@ -138,6 +138,7 @@ const base::Feature* kFeaturesExposedToJava[] = {
     &kChromeShareScreenshot,
     &kChromeSharingHub,
     &kChromeSharingHubV15,
+    &kChromeStartupDelegate,
     &kCommandLineOnNonRooted,
     &kConditionalTabStripAndroid,
     &kContentSuggestionsScrollToLoad,

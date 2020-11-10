@@ -13,6 +13,7 @@ import org.chromium.chrome.browser.firstrun.FirstRunUtils;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.CachedFieldTrialParameter;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.init.ChromeStartupDelegate;
 import org.chromium.chrome.browser.tasks.ConditionalTabStripUtils;
 import org.chromium.chrome.browser.tasks.ReturnToChromeExperimentsUtil;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
@@ -50,6 +51,7 @@ public class ChromeCachedFlags {
         List<String> featuresToCache = Arrays.asList(
                 ChromeFeatureList.ANDROID_MANAGED_BY_MENU_ITEM,
                 ChromeFeatureList.ANDROID_PARTNER_CUSTOMIZATION_PHENOTYPE,
+                ChromeFeatureList.CHROME_STARTUP_DELEGATE,
                 ChromeFeatureList.CLOSE_TAB_SUGGESTIONS,
                 ChromeFeatureList.CRITICAL_PERSISTED_TAB_DATA,
                 ChromeFeatureList.COMMAND_LINE_ON_NON_ROOTED,
@@ -82,6 +84,7 @@ public class ChromeCachedFlags {
         List<CachedFieldTrialParameter> fieldTrialsToCache = Arrays.asList(
                 AppMenuPropertiesDelegateImpl.ACTION_BAR_VARIATION,
                 AppMenuPropertiesDelegateImpl.THREE_BUTTON_ACTION_BAR_VARIATION,
+                ChromeStartupDelegate.ENABLED,
                 ConditionalTabStripUtils.CONDITIONAL_TAB_STRIP_INFOBAR_LIMIT,
                 ConditionalTabStripUtils.CONDITIONAL_TAB_STRIP_INFOBAR_PERIOD,
                 ConditionalTabStripUtils.CONDITIONAL_TAB_STRIP_SESSION_TIME_MS,
