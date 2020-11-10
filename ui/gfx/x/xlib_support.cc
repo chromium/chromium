@@ -5,16 +5,9 @@
 #include "ui/gfx/x/xlib_support.h"
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/logging.h"
-
-extern "C" {
-int XInitThreads(void);
-struct _XDisplay* XOpenDisplay(const char*);
-int XCloseDisplay(struct _XDisplay*);
-int XFlush(struct _XDisplay*);
-int XSynchronize(struct _XDisplay*, int);
-int XSetErrorHandler(int (*)(void*, void*));
-}
+#include "library_loaders/xlib_loader.h"
 
 namespace x11 {
 
@@ -27,52 +20,65 @@ int XlibErrorHandler(void*, void*) {
 
 }  // namespace
 
+DISABLE_CFI_ICALL
 XlibDisplay::XlibDisplay(const std::string& address) {
-  CHECK(XInitThreads());
+  xlib_loader_ = std::make_unique<XlibLoader>();
+  CHECK(xlib_loader_->Load("libX11.so.6"));
+
+  CHECK(xlib_loader_->XInitThreads());
 
   // The default Xlib error handler calls exit(1), which we don't want.  This
   // shouldn't happen in the browser process since only XProto requests are
   // made, but in the GPU process, GLX can make Xlib requests, so setting an
   // error handler is necessary.  Importantly, there's also an IO error handler,
   // and Xlib always calls exit(1) with no way to change this behavior.
-  XSetErrorHandler(XlibErrorHandler);
+  xlib_loader_->XSetErrorHandler(XlibErrorHandler);
 
-  display_ = XOpenDisplay(address.empty() ? nullptr : address.c_str());
+  display_ =
+      xlib_loader_->XOpenDisplay(address.empty() ? nullptr : address.c_str());
 }
 
+DISABLE_CFI_ICALL
 XlibDisplay::~XlibDisplay() {
   if (display_)
-    XCloseDisplay(display_);
+    xlib_loader_->XCloseDisplay(display_);
 }
 
-XlibDisplayWrapper::XlibDisplayWrapper(struct _XDisplay* display,
+DISABLE_CFI_ICALL
+XlibDisplayWrapper::XlibDisplayWrapper(XlibLoader* xlib_loader,
+                                       struct _XDisplay* display,
                                        XlibDisplayType type)
-    : display_(display), type_(type) {
+    : xlib_loader_(xlib_loader), display_(display), type_(type) {
   if (!display_)
     return;
   if (type == XlibDisplayType::kSyncing)
-    XSynchronize(display_, true);
+    xlib_loader_->XSynchronize(display_, true);
 }
 
+DISABLE_CFI_ICALL
 XlibDisplayWrapper::~XlibDisplayWrapper() {
   if (!display_)
     return;
   if (type_ == XlibDisplayType::kFlushing)
-    XFlush(display_);
+    xlib_loader_->XFlush(display_);
   else if (type_ == XlibDisplayType::kSyncing)
-    XSynchronize(display_, false);
+    xlib_loader_->XSynchronize(display_, false);
 }
 
 XlibDisplayWrapper::XlibDisplayWrapper(XlibDisplayWrapper&& other) {
+  xlib_loader_ = other.xlib_loader_;
   display_ = other.display_;
   type_ = other.type_;
+  other.xlib_loader_ = nullptr;
   other.display_ = nullptr;
   other.type_ = XlibDisplayType::kNormal;
 }
 
 XlibDisplayWrapper& XlibDisplayWrapper::operator=(XlibDisplayWrapper&& other) {
+  xlib_loader_ = other.xlib_loader_;
   display_ = other.display_;
   type_ = other.type_;
+  other.xlib_loader_ = nullptr;
   other.display_ = nullptr;
   other.type_ = XlibDisplayType::kNormal;
   return *this;

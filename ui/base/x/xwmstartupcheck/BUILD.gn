@@ -11,6 +11,4 @@ executable("xwmstartupcheck") {
     "//base",
     "//ui/gfx/x",
   ]
-
-  configs += [ "//build/config/linux:x11" ]
 }

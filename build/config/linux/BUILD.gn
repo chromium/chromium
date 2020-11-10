@@ -35,14 +35,6 @@ config("runtime_library") {
   }
 }
 
-config("x11") {
-  libs = [
-    "X11",
-    "X11-xcb",
-    "xcb",
-  ]
-}
-
 config("libcap") {
   libs = [ "cap" ]
 }

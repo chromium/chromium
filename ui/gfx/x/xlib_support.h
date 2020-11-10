@@ -10,6 +10,7 @@
 #include "base/component_export.h"
 
 struct _XDisplay;
+class XlibLoader;
 
 namespace x11 {
 
@@ -32,10 +33,12 @@ class COMPONENT_EXPORT(X11) XlibDisplay {
 
  private:
   friend class Connection;
+  friend class XlibDisplayWrapper;
 
   explicit XlibDisplay(const std::string& address);
 
   struct _XDisplay* display_ = nullptr;
+  std::unique_ptr<XlibLoader> xlib_loader_;
 };
 
 // A temporary wrapper around an unowned Xlib display that adds behavior
@@ -53,10 +56,13 @@ class COMPONENT_EXPORT(X11) XlibDisplayWrapper {
   XlibDisplayWrapper& operator=(XlibDisplayWrapper&& other);
 
  private:
-  XlibDisplayWrapper(struct _XDisplay* display, XlibDisplayType type);
+  XlibDisplayWrapper(XlibLoader* xlib_loader,
+                     struct _XDisplay* display,
+                     XlibDisplayType type);
 
   friend class Connection;
 
+  XlibLoader* xlib_loader_;
   struct _XDisplay* display_;
   XlibDisplayType type_;
 };

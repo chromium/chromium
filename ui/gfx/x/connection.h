@@ -95,12 +95,14 @@ class COMPONENT_EXPORT(X11) Connection : public XProto,
 
   const std::string& DisplayString() const;
 
+  std::string GetConnectionHostname() const;
+
   int DefaultScreenId() const;
 
   template <typename T>
   T GenerateId() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    return static_cast<T>(xcb_generate_id(XcbConnection()));
+    return static_cast<T>(GenerateIdImpl());
   }
 
   // Is the connection up and error-free?
@@ -187,6 +189,8 @@ class COMPONENT_EXPORT(X11) Connection : public XProto,
   void InitErrorParsers();
 
   std::unique_ptr<Error> ParseError(FutureBase::RawError error_bytes);
+
+  uint32_t GenerateIdImpl();
 
   xcb_connection_t* connection_ = nullptr;
   std::unique_ptr<XlibDisplay> xlib_display_;

@@ -70,16 +70,9 @@ bool ShouldUseMitShm(x11::Connection* connection) {
   // codepath.  It may be possible in contrived cases for there to be a
   // false-positive, but in that case we'll just fallback to the non-SHM
   // codepath.
-  const std::string& display_string = connection->DisplayString();
-  char* host = nullptr;
-  int display_id = 0;
-  int screen = 0;
-  if (xcb_parse_display(display_string.c_str(), &host, &display_id, &screen)) {
-    std::string name = host;
-    free(host);
-    if (IsRemoteHost(name))
-      return false;
-  }
+  auto host = connection->GetConnectionHostname();
+  if (!host.empty() && IsRemoteHost(host))
+    return false;
 
   std::unique_ptr<base::Environment> env = base::Environment::Create();
 
