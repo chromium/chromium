@@ -99,10 +99,14 @@ void WebSocket::Connect(net::CompletionOnceCallback callback) {
   }
 
   if (url_.host() == "localhost") {
-    // ensure that both localhost addresses are included
-    // see https://bugs.chromium.org/p/chromedriver/issues/detail?id=3316
-    addresses.push_back(net::IPEndPoint(net::IPAddress::IPv4Localhost(), port));
-    addresses.push_back(net::IPEndPoint(net::IPAddress::IPv6Localhost(), port));
+    // Ensure that both localhost addresses are included.
+    // See https://bugs.chromium.org/p/chromedriver/issues/detail?id=3316.
+    // Put IPv4 address at front, followed by IPv6 address, since that is
+    // the ordering used by DevTools.
+    addresses.endpoints().insert(
+        addresses.begin(),
+        {net::IPEndPoint(net::IPAddress::IPv4Localhost(), port),
+         net::IPEndPoint(net::IPAddress::IPv6Localhost(), port)});
     addresses.Deduplicate();
   }
 
