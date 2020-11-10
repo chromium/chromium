@@ -277,7 +277,7 @@ void TextFieldInputType::CustomStyleForLayoutObject(ComputedStyle& style) {
 }
 
 bool TextFieldInputType::TypeShouldForceLegacyLayout() const {
-  if (RuntimeEnabledFeatures::LayoutNGTextFieldEnabled())
+  if (RuntimeEnabledFeatures::LayoutNGTextControlEnabled())
     return false;
   UseCounter::Count(GetElement().GetDocument(),
                     WebFeature::kLegacyLayoutByTextControl);

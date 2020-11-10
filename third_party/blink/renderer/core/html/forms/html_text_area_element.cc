@@ -253,7 +253,7 @@ void HTMLTextAreaElement::ParseAttribute(
 }
 
 bool HTMLTextAreaElement::TypeShouldForceLegacyLayout() const {
-  if (RuntimeEnabledFeatures::LayoutNGTextAreaEnabled())
+  if (RuntimeEnabledFeatures::LayoutNGTextControlEnabled())
     return false;
   UseCounter::Count(GetDocument(), WebFeature::kLegacyLayoutByTextControl);
   return true;

@@ -761,8 +761,8 @@ TEST_F(AccessibilitySelectionTest, FromCurrentSelectionInTextareaWithAffinity) {
 
 TEST_F(AccessibilitySelectionTest,
        FromCurrentSelectionInTextareaWithCollapsedSelectionAndAffinity) {
-  // TODO(crbug.com/1140302): This test fails with LayoutNGTextArea.
-  ScopedLayoutNGTextAreaForTest scope(false);
+  // TODO(crbug.com/1140302): This test fails with LayoutNGTextControl.
+  ScopedLayoutNGTextControlForTest scope(false);
 
   SetBodyInnerHTML(R"HTML(
       <textarea id="textarea"

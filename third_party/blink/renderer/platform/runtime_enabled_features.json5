@@ -1082,12 +1082,7 @@
       name: "LayoutNGTable",
     },
     {
-      name: "LayoutNGTextArea",
-      depends_on: ["EditingNG"],
-      status: "experimental",
-    },
-    {
-      name: "LayoutNGTextField",
+      name: "LayoutNGTextControl",
       depends_on: ["EditingNG"],
       status: "experimental",
     },

@@ -16,9 +16,7 @@ namespace {
 class LayoutTextControlTest : public testing::WithParamInterface<bool>,
                               public RenderingTest {
  public:
-  LayoutTextControlTest()
-      : scoped_text_area_flag_(GetParam()),
-        scoped_text_field_flag_(GetParam()) {}
+  LayoutTextControlTest() : scoped_text_control_flag_(GetParam()) {}
 
  protected:
   TextControlElement* GetTextControlElementById(const char* id) {
@@ -51,8 +49,7 @@ class LayoutTextControlTest : public testing::WithParamInterface<bool>,
   }
 
  private:
-  ScopedLayoutNGTextAreaForTest scoped_text_area_flag_;
-  ScopedLayoutNGTextFieldForTest scoped_text_field_flag_;
+  ScopedLayoutNGTextControlForTest scoped_text_control_flag_;
 };
 
 INSTANTIATE_TEST_SUITE_P(All, LayoutTextControlTest, testing::Bool());

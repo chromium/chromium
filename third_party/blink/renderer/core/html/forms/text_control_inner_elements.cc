@@ -65,7 +65,7 @@ EditingViewPortElement::CustomStyleForLayoutObject() {
 }
 
 bool EditingViewPortElement::TypeShouldForceLegacyLayout() const {
-  return !RuntimeEnabledFeatures::LayoutNGTextFieldEnabled();
+  return !RuntimeEnabledFeatures::LayoutNGTextControlEnabled();
 }
 
 // ---------------------------
@@ -123,9 +123,7 @@ void TextControlInnerEditorElement::FocusChanged() {
 }
 
 bool TextControlInnerEditorElement::TypeShouldForceLegacyLayout() const {
-  if (OwnerShadowHost()->HasTagName(html_names::kInputTag))
-    return !RuntimeEnabledFeatures::LayoutNGTextFieldEnabled();
-  return !RuntimeEnabledFeatures::LayoutNGTextAreaEnabled();
+  return !RuntimeEnabledFeatures::LayoutNGTextControlEnabled();
 }
 
 LayoutObject* TextControlInnerEditorElement::CreateLayoutObject(
@@ -255,7 +253,7 @@ bool SearchFieldCancelButtonElement::WillRespondToMouseClickEvents() {
 }
 
 bool SearchFieldCancelButtonElement::TypeShouldForceLegacyLayout() const {
-  return !RuntimeEnabledFeatures::LayoutNGTextFieldEnabled();
+  return !RuntimeEnabledFeatures::LayoutNGTextControlEnabled();
 }
 
 // ----------------------------
