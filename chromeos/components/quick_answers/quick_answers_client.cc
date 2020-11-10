@@ -134,8 +134,6 @@ void QuickAnswersClient::NotifyEligibilityChanged() {
   bool is_eligible =
       (chromeos::features::IsQuickAnswersEnabled() && assistant_state_ &&
        assistant_enabled_ && locale_supported_ && assistant_context_enabled_ &&
-       (!chromeos::features::IsQuickAnswersSettingToggleEnabled() ||
-        quick_answers_settings_enabled_) &&
        assistant_allowed_state_ ==
            chromeos::assistant::AssistantAllowedState::ALLOWED);
 

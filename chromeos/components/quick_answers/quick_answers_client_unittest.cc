@@ -153,10 +153,7 @@ class QuickAnswersClientTest : public testing::Test {
 
 TEST_F(QuickAnswersClientTest, FeatureEligible) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {chromeos::features::kQuickAnswers,
-       chromeos::features::kQuickAnswersSubToggle},
-      {});
+  scoped_feature_list.InitAndEnableFeature(chromeos::features::kQuickAnswers);
 
   // Verify that OnEligibilityChanged is called.
   EXPECT_CALL(*mock_delegate_, OnEligibilityChanged(false)).Times(0);
@@ -269,23 +266,6 @@ TEST_F(QuickAnswersClientTest, UnsupportedLocale) {
       /*quick_answers_enabled=*/true,
       /*assistant_state=*/chromeos::assistant::AssistantAllowedState::ALLOWED,
       /*locale=*/"en-GB");
-}
-
-TEST_F(QuickAnswersClientTest, SettingToggleDisabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {chromeos::features::kQuickAnswersSubToggle}, {});
-
-  // Verify that OnEligibilityChanged is called.
-  EXPECT_CALL(*mock_delegate_, OnEligibilityChanged(false)).Times(0);
-  EXPECT_CALL(*mock_delegate_, OnEligibilityChanged(true)).Times(0);
-
-  NotifyAssistantStateChange(
-      /*setting_enabled=*/true,
-      /*context_enabled=*/true,
-      /*quick_answers_enabled=*/false,
-      /*assistant_state=*/chromeos::assistant::AssistantAllowedState::ALLOWED,
-      /*locale=*/"en-US");
 }
 
 TEST_F(QuickAnswersClientTest, NetworkError) {

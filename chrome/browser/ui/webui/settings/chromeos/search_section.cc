@@ -311,22 +311,8 @@ bool SearchSection::IsAssistantAllowed() const {
 }
 
 bool SearchSection::IsQuickAnswersAllowed() const {
-  if (!features::IsQuickAnswersSettingToggleEnabled())
-    return false;
-
-  const PrefService* prefs = profile()->GetPrefs();
-  std::string pref_locale =
-      prefs->GetString(language::prefs::kApplicationLocale);
-  // Also accept runtime locale which maybe an approximation of user's pref
-  // locale.
-  const std::string kRuntimeLocale = icu::Locale::getDefault().getName();
-
-  base::ReplaceChars(pref_locale, "-", "_", &pref_locale);
-  if (!::chromeos::quick_answers::QuickAnswersClient::
-          IsQuickAnswersAllowedForLocale(pref_locale, kRuntimeLocale))
-    return false;
-
-  return true;
+  // TODO(b/159670857): Clean up Quick Answer settings toggle.
+  return false;
 }
 
 void SearchSection::UpdateAssistantSearchTags() {
