@@ -11,18 +11,18 @@ EMAIL_ADDRESS | customer.emailAddress |  |  | billingAddress.firstName_1-default
 UNKNOWN_TYPE | customer.optIn | Yes, send me J&R's promotional email newsletter. | on | billingAddress.firstName_1-default
 UNKNOWN_TYPE | storePickup | Pickup In-Store (Park Row, New York NY) | on | billingAddress.firstName_1-default
 UNKNOWN_TYPE | shipToBillingAddress | Ship to my billing address | on | billingAddress.firstName_1-default
-NAME_FIRST | shippingAddress.firstName |  |  | shippingAddress.firstName_1-default
-NAME_LAST | shippingAddress.lastName |  |  | shippingAddress.firstName_1-default
-ADDRESS_HOME_LINE1 | shippingAddress.address1 |  |  | shippingAddress.firstName_1-default
-ADDRESS_HOME_LINE2 | shippingAddress.address2 | Street address or P.O. box |  | shippingAddress.firstName_1-default
-ADDRESS_HOME_CITY | shippingAddress.city |  |  | shippingAddress.firstName_1-default
-ADDRESS_HOME_STATE | shippingAddress.stateCode |  | XX | shippingAddress.firstName_1-default
-ADDRESS_HOME_ZIP | shippingAddress.postalCode |  |  | shippingAddress.firstName_1-default
-ADDRESS_HOME_COUNTRY | shippingAddress.country |  | US | shippingAddress.firstName_1-default
-PHONE_HOME_WHOLE_NUMBER | shippingAddress.phoneNumber |  |  | shippingAddress.firstName_1-default
-UNKNOWN_TYPE | customOrderHeader.internationalBilling | International Billing |  | shippingAddress.firstName_1-default
-UNKNOWN_TYPE | customOrderHeader.salespersonNumber | Salesperson Number |  | shippingAddress.firstName_1-default
-UNKNOWN_TYPE | customOrderHeader.giftFromName | Gift From |  | shippingAddress.firstName_1-default
-UNKNOWN_TYPE | customOrderHeader.giftMessage | Gift Message |  | shippingAddress.firstName_1-default
-EMAIL_ADDRESS | customOrderHeader.giftEmailAddress | Gift Email |  | shippingAddress.firstName_1-default
-UNKNOWN_TYPE | customOrderHeader.giftHidePrices | Hide prices on the recipient's invoice and products on gift email. | on | shippingAddress.firstName_1-default
+NAME_FIRST | shippingAddress.firstName |  |  | shippingAddress.firstName_2-default
+NAME_LAST | shippingAddress.lastName |  |  | shippingAddress.firstName_2-default
+ADDRESS_HOME_LINE1 | shippingAddress.address1 |  |  | shippingAddress.firstName_2-default
+ADDRESS_HOME_LINE2 | shippingAddress.address2 | Street address or P.O. box |  | shippingAddress.firstName_2-default
+ADDRESS_HOME_CITY | shippingAddress.city |  |  | shippingAddress.firstName_2-default
+ADDRESS_HOME_STATE | shippingAddress.stateCode |  | XX | shippingAddress.firstName_2-default
+ADDRESS_HOME_ZIP | shippingAddress.postalCode |  |  | shippingAddress.firstName_2-default
+ADDRESS_HOME_COUNTRY | shippingAddress.country |  | US | shippingAddress.firstName_2-default
+PHONE_HOME_WHOLE_NUMBER | shippingAddress.phoneNumber |  |  | shippingAddress.firstName_2-default
+UNKNOWN_TYPE | customOrderHeader.internationalBilling | International Billing |  | shippingAddress.firstName_2-default
+UNKNOWN_TYPE | customOrderHeader.salespersonNumber | Salesperson Number |  | shippingAddress.firstName_2-default
+UNKNOWN_TYPE | customOrderHeader.giftFromName | Gift From |  | shippingAddress.firstName_2-default
+UNKNOWN_TYPE | customOrderHeader.giftMessage | Gift Message |  | shippingAddress.firstName_2-default
+EMAIL_ADDRESS | customOrderHeader.giftEmailAddress | Gift Email |  | shippingAddress.firstName_2-default
+UNKNOWN_TYPE | customOrderHeader.giftHidePrices | Hide prices on the recipient's invoice and products on gift email. | on | shippingAddress.firstName_2-default

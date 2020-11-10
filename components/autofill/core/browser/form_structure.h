@@ -398,11 +398,12 @@ class FormStructure {
  private:
   friend class AutofillMergeTest;
   friend class FormStructureTestImpl;
+  friend class ParameterizedFormStructureTest;
   FRIEND_TEST_ALL_PREFIXES(AutofillDownloadTest, QueryAndUploadTest);
   FRIEND_TEST_ALL_PREFIXES(FormStructureTestImpl, FindLongestCommonPrefix);
   FRIEND_TEST_ALL_PREFIXES(FormStructureTestImpl, FindLongestCommonAffixLength);
   FRIEND_TEST_ALL_PREFIXES(FormStructureTestImpl, IsValidParseableName);
-  FRIEND_TEST_ALL_PREFIXES(FormStructureTestImpl,
+  FRIEND_TEST_ALL_PREFIXES(ParameterizedFormStructureTest,
                            RationalizePhoneNumber_RunsOncePerSection);
 
   class SectionedFieldsIndexes {

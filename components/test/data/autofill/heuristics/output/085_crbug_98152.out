@@ -4,11 +4,11 @@ CREDIT_CARD_EXP_MONTH | CCForm.expirationMonth | Expiration date | 9 | credit-ca
 CREDIT_CARD_EXP_4_DIGIT_YEAR | CCForm.expirationYear | Expiration date | 2011 | credit-card-cc
 CREDIT_CARD_NAME_FULL | CCForm.name | Name as it appears on card |  | credit-card-cc
 CREDIT_CARD_VERIFICATION_CODE | CCForm.cid |  |  | credit-card-cc
-UNKNOWN_TYPE | isBillingAddress | Same as Shipping address | on | CCForm.cardType_1-default
-COMPANY_NAME | CCForm.companyName | Company Name |  | CCForm.cardType_1-default
-ADDRESS_HOME_LINE1 | addressForm.street1 | Address Line 1 |  | CCForm.cardType_1-default
-ADDRESS_HOME_LINE2 | addressForm.street2 | Address Line 2 |  | CCForm.cardType_1-default
-ADDRESS_HOME_CITY | addressForm.city | City |  | CCForm.cardType_1-default
-ADDRESS_HOME_STATE | addressForm.state | State |  | CCForm.cardType_1-default
-ADDRESS_HOME_ZIP | addressForm.zip | Zip Code |  | CCForm.cardType_1-default
-PHONE_HOME_WHOLE_NUMBER | addressForm.phone | Phone Number |  | CCForm.cardType_1-default
+UNKNOWN_TYPE | isBillingAddress | Same as Shipping address | on | CCForm.cardType_2-default
+COMPANY_NAME | CCForm.companyName | Company Name |  | CCForm.cardType_2-default
+ADDRESS_HOME_LINE1 | addressForm.street1 | Address Line 1 |  | CCForm.cardType_2-default
+ADDRESS_HOME_LINE2 | addressForm.street2 | Address Line 2 |  | CCForm.cardType_2-default
+ADDRESS_HOME_CITY | addressForm.city | City |  | CCForm.cardType_2-default
+ADDRESS_HOME_STATE | addressForm.state | State |  | CCForm.cardType_2-default
+ADDRESS_HOME_ZIP | addressForm.zip | Zip Code |  | CCForm.cardType_2-default
+PHONE_HOME_WHOLE_NUMBER | addressForm.phone | Phone Number |  | CCForm.cardType_2-default

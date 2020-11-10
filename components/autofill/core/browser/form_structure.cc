@@ -2079,9 +2079,21 @@ void FormStructure::IdentifySections(bool has_author_specified_sections) {
       base::FeatureList::IsEnabled(
           features::kAutofillSectionUponRedundantNameInfo);
 
+  // Creates a unique name for the section that starts with |field|.
+  // TODO(crbug/896689): Cleanup once experiment is launched.
+  auto get_section_name = [](const AutofillField& field) {
+    if (base::FeatureList::IsEnabled(
+            features::kAutofillNameSectionsWithRendererIds)) {
+      return base::StrCat(
+          {field.name, base::ASCIIToUTF16("_"),
+           base::NumberToString16(field.unique_renderer_id.value())});
+    } else {
+      return field.unique_name();
+    }
+  };
+
   if (!has_author_specified_sections || is_enabled_autofill_new_sectioning) {
-    // Name sections after the first field in the section.
-    base::string16 current_section = fields_.front()->unique_name();
+    base::string16 current_section = get_section_name(*fields_.front());
 
     // Keep track of the types we've seen in this section.
     std::set<ServerFieldType> seen_types;
@@ -2203,7 +2215,7 @@ void FormStructure::IdentifySections(bool has_author_specified_sections) {
         }
 
         // The end of a section, so start a new section.
-        current_section = field->unique_name();
+        current_section = get_section_name(*field);
 
         if (is_enabled_autofill_new_sectioning) {
           // The section described in the autocomplete section attribute

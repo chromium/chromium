@@ -13,26 +13,26 @@ ADDRESS_HOME_COUNTRY | paisNacimiento | País de nacimiento | 0 | internacion_1-
 UNKNOWN_TYPE | tipoDocumento | Tipo de documento | 0 | internacion_1-default
 UNKNOWN_TYPE | numeroDocumento | Número de documento |  | internacion_1-default
 UNKNOWN_TYPE | confirmarNumeroDocumento | Número de documento (Confirmación) |  | internacion_1-default
-ADDRESS_HOME_COUNTRY | paisExpedicion | País de expedición | 0 | paisExpedicion_1-default
-UNKNOWN_TYPE | fechaExpedicion | Fecha de expedición |  | paisExpedicion_1-default
-UNKNOWN_TYPE | confirmarFechaExpedicion | Fecha de expedición (Confirmación) |  | paisExpedicion_1-default
-UNKNOWN_TYPE | fechaExpiracion | Fecha de expiración |  | paisExpedicion_1-default
-UNKNOWN_TYPE | confirmarFechaExpiracion | Fecha de expiración (Confirmación) |  | paisExpedicion_1-default
-ADDRESS_HOME_COUNTRY | paisResidencia | País de residencia | 0 | paisResidencia_1-default
-ADDRESS_HOME_LINE1 | direccionResidencia | Dirección de residencia |  | paisResidencia_1-default
-UNKNOWN_TYPE | motivoViaje | Motivo de viaje | 0 | paisResidencia_1-default
-UNKNOWN_TYPE | especifiqueMotivo | Especifique motivo | 0 | paisResidencia_1-default
-ADDRESS_HOME_STATE | estadoDestino | Estado | 0 | paisResidencia_1-default
-UNKNOWN_TYPE | domicilioMexico | Domicilio en México |  | paisResidencia_1-default
-NAME_FIRST | nombreTutor | Nombre(s) |  | paisResidencia_1-default
-NAME_LAST | apellidosTutor | Apellido(s) |  | paisResidencia_1-default
-UNKNOWN_TYPE | sexoTutor | Sexo | 0 | paisResidencia_1-default
-UNKNOWN_TYPE | fechaNacimientoTutor | Fecha de nacimiento |  | paisResidencia_1-default
-ADDRESS_HOME_COUNTRY | nacionalidadTutor | Nacionalidad (País) | 0 | nacionalidadTutor_1-default
-ADDRESS_HOME_COUNTRY | paisNacimientoTutor | País de nacimiento | 0 | nacionalidadTutor_1-default
-EMAIL_ADDRESS | correoElectronico | Correo electrónico |  | paisResidencia_1-default
-EMAIL_ADDRESS | confirmacionCorreoElectronico | Correo electrónico (Confirmación) |  | paisResidencia_1-default
-UNKNOWN_TYPE | captcha | Código de verificación: |  | paisResidencia_1-default
+ADDRESS_HOME_COUNTRY | paisExpedicion | País de expedición | 0 | paisExpedicion_2-default
+UNKNOWN_TYPE | fechaExpedicion | Fecha de expedición |  | paisExpedicion_2-default
+UNKNOWN_TYPE | confirmarFechaExpedicion | Fecha de expedición (Confirmación) |  | paisExpedicion_2-default
+UNKNOWN_TYPE | fechaExpiracion | Fecha de expiración |  | paisExpedicion_2-default
+UNKNOWN_TYPE | confirmarFechaExpiracion | Fecha de expiración (Confirmación) |  | paisExpedicion_2-default
+ADDRESS_HOME_COUNTRY | paisResidencia | País de residencia | 0 | paisResidencia_3-default
+ADDRESS_HOME_LINE1 | direccionResidencia | Dirección de residencia |  | paisResidencia_3-default
+UNKNOWN_TYPE | motivoViaje | Motivo de viaje | 0 | paisResidencia_3-default
+UNKNOWN_TYPE | especifiqueMotivo | Especifique motivo | 0 | paisResidencia_3-default
+ADDRESS_HOME_STATE | estadoDestino | Estado | 0 | paisResidencia_3-default
+UNKNOWN_TYPE | domicilioMexico | Domicilio en México |  | paisResidencia_3-default
+NAME_FIRST | nombreTutor | Nombre(s) |  | paisResidencia_3-default
+NAME_LAST | apellidosTutor | Apellido(s) |  | paisResidencia_3-default
+UNKNOWN_TYPE | sexoTutor | Sexo | 0 | paisResidencia_3-default
+UNKNOWN_TYPE | fechaNacimientoTutor | Fecha de nacimiento |  | paisResidencia_3-default
+ADDRESS_HOME_COUNTRY | nacionalidadTutor | Nacionalidad (País) | 0 | nacionalidadTutor_4-default
+ADDRESS_HOME_COUNTRY | paisNacimientoTutor | País de nacimiento | 0 | nacionalidadTutor_4-default
+EMAIL_ADDRESS | correoElectronico | Correo electrónico |  | paisResidencia_3-default
+EMAIL_ADDRESS | confirmacionCorreoElectronico | Correo electrónico (Confirmación) |  | paisResidencia_3-default
+UNKNOWN_TYPE | captcha | Código de verificación: |  | paisResidencia_3-default
 UNKNOWN_TYPE | idioma | Idioma: | es | idioma_1-default
 UNKNOWN_TYPE | noConsecutivoInterno | Consecutivo: |  | idioma_1-default
 UNKNOWN_TYPE | numero_pasaporte | Número de pasaporte: |  | idioma_1-default

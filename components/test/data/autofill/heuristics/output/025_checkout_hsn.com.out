@@ -18,14 +18,14 @@ UNKNOWN_TYPE | Body$MobileAlerts | Send me special promotion mobile alerts | on 
 EMAIL_ADDRESS | Body$NewEmailAddress2 | Email Address |  | Body$BillingIsShippingCheckboxB_1-default
 UNKNOWN_TYPE | Body$WeeklyNewsletterSignup12 | Email me weekly HSN newsletters and special offers | on | Body$BillingIsShippingCheckboxB_1-default
 UNKNOWN_TYPE | Body$TSNewsletterSignup2 | Email me the daily Today's Special | on | Body$BillingIsShippingCheckboxB_1-default
-NAME_FIRST | Body$ShippingAddress$_firstName | First Name |  | Body$ShippingAddress$_firstName_1-default
-NAME_LAST | Body$ShippingAddress$_lastName | Last Name |  | Body$ShippingAddress$_firstName_1-default
-ADDRESS_HOME_LINE1 | Body$ShippingAddress$_address1 | Address Line 1 |  | Body$ShippingAddress$_firstName_1-default
-ADDRESS_HOME_LINE2 | Body$ShippingAddress$_address2 | Address Line 2(optional) |  | Body$ShippingAddress$_firstName_1-default
-ADDRESS_HOME_CITY | Body$ShippingAddress$_city | City |  | Body$ShippingAddress$_firstName_1-default
-ADDRESS_HOME_STATE | Body$ShippingAddress$_state | State |    | Body$ShippingAddress$_firstName_1-default
-ADDRESS_HOME_ZIP | Body$ShippingAddress$_zipcode | Zip Code |  | Body$ShippingAddress$_firstName_1-default
-PHONE_HOME_WHOLE_NUMBER | Body$ShippingAddress$_telephone | Phone Number |  | Body$ShippingAddress$_firstName_1-default
+NAME_FIRST | Body$ShippingAddress$_firstName | First Name |  | Body$ShippingAddress$_firstName_2-default
+NAME_LAST | Body$ShippingAddress$_lastName | Last Name |  | Body$ShippingAddress$_firstName_2-default
+ADDRESS_HOME_LINE1 | Body$ShippingAddress$_address1 | Address Line 1 |  | Body$ShippingAddress$_firstName_2-default
+ADDRESS_HOME_LINE2 | Body$ShippingAddress$_address2 | Address Line 2(optional) |  | Body$ShippingAddress$_firstName_2-default
+ADDRESS_HOME_CITY | Body$ShippingAddress$_city | City |  | Body$ShippingAddress$_firstName_2-default
+ADDRESS_HOME_STATE | Body$ShippingAddress$_state | State |    | Body$ShippingAddress$_firstName_2-default
+ADDRESS_HOME_ZIP | Body$ShippingAddress$_zipcode | Zip Code |  | Body$ShippingAddress$_firstName_2-default
+PHONE_HOME_WHOLE_NUMBER | Body$ShippingAddress$_telephone | Phone Number |  | Body$ShippingAddress$_firstName_2-default
 UNKNOWN_TYPE | PaymentTypeSelection | Pay with a Credit or Debit Card | 0 | Body$BillingIsShippingCheckboxB_1-default
 CREDIT_CARD_NUMBER | Body$CCNumber | Card Number |  | credit-card-cc
 CREDIT_CARD_EXP_MONTH | Body$CCExpirationDateMonth | Expiration Date | 0 | credit-card-cc

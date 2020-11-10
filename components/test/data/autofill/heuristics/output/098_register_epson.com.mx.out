@@ -7,6 +7,6 @@ EMAIL_ADDRESS | emailLogin | Email * |  | doAction_1-default
 UNKNOWN_TYPE | passLogin | a * |  | doAction_1-default
 NAME_FIRST | nombre | Nombre * |  | doAction_1-default
 NAME_LAST | apellido | Apellido * |  | doAction_1-default
-EMAIL_ADDRESS | emailRegistro | Email * |  | emailRegistro_1-default
-UNKNOWN_TYPE | passRegistro | a * |  | emailRegistro_1-default
-UNKNOWN_TYPE | rePassRegistro | a * |  | emailRegistro_1-default
+EMAIL_ADDRESS | emailRegistro | Email * |  | emailRegistro_2-default
+UNKNOWN_TYPE | passRegistro | a * |  | emailRegistro_2-default
+UNKNOWN_TYPE | rePassRegistro | a * |  | emailRegistro_2-default

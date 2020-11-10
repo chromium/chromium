@@ -139,6 +139,12 @@ const base::Feature kAutofillFixFillableFieldTypes{
 const base::Feature kAutofillRefillWithRendererIds{
     "AutofillRefillWithRendererIds", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// When enabled, Autofill will use FormRendererIds instead of
+// unique_name() to create unique section names.
+// TODO(crbug/896689): Remove once experiment is finished.
+const base::Feature kAutofillNameSectionsWithRendererIds{
+    "AutofillNameSectionsWithRendererIds", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // When enabled, Autofill will use FieldRendererIds instead of unique_names
 // to align forms in FormStructure::RetrieveFromCache().
 const base::Feature kAutofillRetrieveFromCacheWithRendererIds{

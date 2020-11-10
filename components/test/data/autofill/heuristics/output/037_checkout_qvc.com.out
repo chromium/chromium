@@ -19,11 +19,11 @@ PHONE_HOME_NUMBER | BilltoWpExchange | Work Phone: |  | EmailAddress_1-default
 PHONE_HOME_EXTENSION | BilltoWpExt | Work Phone: |  | EmailAddress_1-default
 UNKNOWN_TYPE | SameAsBilltoCheckbox | Same as Bill-To: | 1 | EmailAddress_1-default
 UNKNOWN_TYPE | ShiptoFirstName | * Name: |  | EmailAddress_1-default
-ADDRESS_HOME_LINE1 | ShiptoAddress1 | * Address Line 1: |  | ShiptoAddress1_1-default
-ADDRESS_HOME_LINE2 | ShiptoAddress2 | Address Line 2: |  | ShiptoAddress1_1-default
-ADDRESS_HOME_CITY | ShiptoCity | City: |  | ShiptoAddress1_1-default
-ADDRESS_HOME_STATE | ShiptoState | State/Province: | AL | ShiptoAddress1_1-default
-ADDRESS_HOME_ZIP | ShiptoZipCode | * Postal Code: |  | ShiptoAddress1_1-default
-ADDRESS_HOME_COUNTRY | ShiptoCountry | * Country: | US | ShiptoAddress1_1-default
-UNKNOWN_TYPE | ShiptoRadiobutton | This order only | ThisOrderOnly | ShiptoAddress1_1-default
-UNKNOWN_TYPE | ShiptoRadiobutton | (Permanent Ship-To)**All future orders | PermanentShipto | ShiptoAddress1_1-default
+ADDRESS_HOME_LINE1 | ShiptoAddress1 | * Address Line 1: |  | ShiptoAddress1_2-default
+ADDRESS_HOME_LINE2 | ShiptoAddress2 | Address Line 2: |  | ShiptoAddress1_2-default
+ADDRESS_HOME_CITY | ShiptoCity | City: |  | ShiptoAddress1_2-default
+ADDRESS_HOME_STATE | ShiptoState | State/Province: | AL | ShiptoAddress1_2-default
+ADDRESS_HOME_ZIP | ShiptoZipCode | * Postal Code: |  | ShiptoAddress1_2-default
+ADDRESS_HOME_COUNTRY | ShiptoCountry | * Country: | US | ShiptoAddress1_2-default
+UNKNOWN_TYPE | ShiptoRadiobutton | This order only | ThisOrderOnly | ShiptoAddress1_2-default
+UNKNOWN_TYPE | ShiptoRadiobutton | (Permanent Ship-To)**All future orders | PermanentShipto | ShiptoAddress1_2-default

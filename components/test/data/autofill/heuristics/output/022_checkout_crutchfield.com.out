@@ -11,13 +11,13 @@ EMAIL_ADDRESS | ctl00$ctl00$MainContentPlaceHolder$MainContentPlaceHolder$email2
 UNKNOWN_TYPE | ctl00$ctl00$MainContentPlaceHolder$MainContentPlaceHolder$chbox2 | Send me exclusive offers, deals and expert reviews. | on | ctl00$ctl00$MainContentPlaceHolder$MainContentPlaceHolder$firstname_1-default
 UNKNOWN_TYPE | ctl00$ctl00$MainContentPlaceHolder$MainContentPlaceHolder$same | Same as billing address. | same | ctl00$ctl00$MainContentPlaceHolder$MainContentPlaceHolder$firstname_1-default
 UNKNOWN_TYPE | ctl00$ctl00$MainContentPlaceHolder$MainContentPlaceHolder$giftOrder | Prices will not appear on invoice. This order is a gift. | gift | ctl00$ctl00$MainContentPlaceHolder$MainContentPlaceHolder$firstname_1-default
-NAME_FIRST | ctl00$ctl00$MainContentPlaceHolder$MainContentPlaceHolder$shippingFirstname | First Name |  | ctl00$ctl00$MainContentPlaceHolder$MainContentPlaceHolder$shippingFirstname_1-default
-NAME_MIDDLE_INITIAL | ctl00$ctl00$MainContentPlaceHolder$MainContentPlaceHolder$shippingMi | M.I. |  | ctl00$ctl00$MainContentPlaceHolder$MainContentPlaceHolder$shippingFirstname_1-default
-NAME_LAST | ctl00$ctl00$MainContentPlaceHolder$MainContentPlaceHolder$shippingLastname | Last Name |  | ctl00$ctl00$MainContentPlaceHolder$MainContentPlaceHolder$shippingFirstname_1-default
-COMPANY_NAME | ctl00$ctl00$MainContentPlaceHolder$MainContentPlaceHolder$shippingAddress2 | Company |  | ctl00$ctl00$MainContentPlaceHolder$MainContentPlaceHolder$shippingFirstname_1-default
-ADDRESS_HOME_LINE1 | ctl00$ctl00$MainContentPlaceHolder$MainContentPlaceHolder$shippingAddress1 | Address |  | ctl00$ctl00$MainContentPlaceHolder$MainContentPlaceHolder$shippingFirstname_1-default
-ADDRESS_HOME_CITY | ctl00$ctl00$MainContentPlaceHolder$MainContentPlaceHolder$shippingCity | City |  | ctl00$ctl00$MainContentPlaceHolder$MainContentPlaceHolder$shippingFirstname_1-default
-ADDRESS_HOME_STATE | ctl00$ctl00$MainContentPlaceHolder$MainContentPlaceHolder$shippingState | State | Select Your State | ctl00$ctl00$MainContentPlaceHolder$MainContentPlaceHolder$shippingFirstname_1-default
-ADDRESS_HOME_ZIP | ctl00$ctl00$MainContentPlaceHolder$MainContentPlaceHolder$shippingZip | Zip/Postal Code |  | ctl00$ctl00$MainContentPlaceHolder$MainContentPlaceHolder$shippingFirstname_1-default
-PHONE_HOME_WHOLE_NUMBER | ctl00$ctl00$MainContentPlaceHolder$MainContentPlaceHolder$shippingPhone | Shipping Phone |  | ctl00$ctl00$MainContentPlaceHolder$MainContentPlaceHolder$shippingFirstname_1-default
-UNKNOWN_TYPE | ctl00$ctl00$MainContentPlaceHolder$MainContentPlaceHolder$customerID | Customer # |  | ctl00$ctl00$MainContentPlaceHolder$MainContentPlaceHolder$shippingFirstname_1-default
+NAME_FIRST | ctl00$ctl00$MainContentPlaceHolder$MainContentPlaceHolder$shippingFirstname | First Name |  | ctl00$ctl00$MainContentPlaceHolder$MainContentPlaceHolder$shippingFirstname_2-default
+NAME_MIDDLE_INITIAL | ctl00$ctl00$MainContentPlaceHolder$MainContentPlaceHolder$shippingMi | M.I. |  | ctl00$ctl00$MainContentPlaceHolder$MainContentPlaceHolder$shippingFirstname_2-default
+NAME_LAST | ctl00$ctl00$MainContentPlaceHolder$MainContentPlaceHolder$shippingLastname | Last Name |  | ctl00$ctl00$MainContentPlaceHolder$MainContentPlaceHolder$shippingFirstname_2-default
+COMPANY_NAME | ctl00$ctl00$MainContentPlaceHolder$MainContentPlaceHolder$shippingAddress2 | Company |  | ctl00$ctl00$MainContentPlaceHolder$MainContentPlaceHolder$shippingFirstname_2-default
+ADDRESS_HOME_LINE1 | ctl00$ctl00$MainContentPlaceHolder$MainContentPlaceHolder$shippingAddress1 | Address |  | ctl00$ctl00$MainContentPlaceHolder$MainContentPlaceHolder$shippingFirstname_2-default
+ADDRESS_HOME_CITY | ctl00$ctl00$MainContentPlaceHolder$MainContentPlaceHolder$shippingCity | City |  | ctl00$ctl00$MainContentPlaceHolder$MainContentPlaceHolder$shippingFirstname_2-default
+ADDRESS_HOME_STATE | ctl00$ctl00$MainContentPlaceHolder$MainContentPlaceHolder$shippingState | State | Select Your State | ctl00$ctl00$MainContentPlaceHolder$MainContentPlaceHolder$shippingFirstname_2-default
+ADDRESS_HOME_ZIP | ctl00$ctl00$MainContentPlaceHolder$MainContentPlaceHolder$shippingZip | Zip/Postal Code |  | ctl00$ctl00$MainContentPlaceHolder$MainContentPlaceHolder$shippingFirstname_2-default
+PHONE_HOME_WHOLE_NUMBER | ctl00$ctl00$MainContentPlaceHolder$MainContentPlaceHolder$shippingPhone | Shipping Phone |  | ctl00$ctl00$MainContentPlaceHolder$MainContentPlaceHolder$shippingFirstname_2-default
+UNKNOWN_TYPE | ctl00$ctl00$MainContentPlaceHolder$MainContentPlaceHolder$customerID | Customer # |  | ctl00$ctl00$MainContentPlaceHolder$MainContentPlaceHolder$shippingFirstname_2-default

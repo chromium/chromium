@@ -138,6 +138,8 @@ FormStructureBrowserTest::FormStructureBrowserTest()
           autofill::features::kAutofillEnableSupportForMoreStructureInNames,
           // TODO(crbug.com/1125978): Remove once launched.
           autofill::features::kAutofillEnableSupportForMoreStructureInAddresses,
+          // TODO(crbug.com/896689): Remove once launched.
+          autofill::features::kAutofillNameSectionsWithRendererIds,
       },
       // Disabled
       {autofill::features::kAutofillRestrictUnownedFieldsToFormlessCheckout});
@@ -212,6 +214,7 @@ std::string FormStructureBrowserTest::FormStructuresToString(
   // deterministic.
   for (const auto& form_kv : forms) {
     const auto* form = form_kv.second.get();
+    std::map<std::string, int> section_to_index;
     for (const auto& field : *form) {
       std::string name = base::UTF16ToUTF8(field->name);
       if (base::StartsWith(name, "gChrome~field~",
@@ -220,6 +223,7 @@ std::string FormStructureBrowserTest::FormStructuresToString(
         // to have a behavior similar to other platforms.
         name = "";
       }
+
       std::string section = field->section;
       if (base::StartsWith(section, "gChrome~field~",
                            base::CompareCase::SENSITIVE)) {
@@ -228,6 +232,22 @@ std::string FormStructureBrowserTest::FormStructuresToString(
         size_t first_underscore = section.find_first_of('_');
         section = section.substr(first_underscore);
       }
+
+      // Normalize the section by replacing the unique but platform-dependent
+      // integers in |field->section| with consecutive unique integers.
+      size_t last_underscore = section.find_last_of('_');
+      size_t next_dash = section.find_first_of('-', last_underscore);
+      int new_section_index = static_cast<int>(section_to_index.size() + 1);
+      int section_index =
+          section_to_index.insert(std::make_pair(section, new_section_index))
+              .first->second;
+      if (last_underscore != std::string::npos &&
+          next_dash != std::string::npos) {
+        section = base::StringPrintf(
+            "%s%d%s", section.substr(0, last_underscore + 1).c_str(),
+            section_index, section.substr(next_dash).c_str());
+      }
+
       forms_string += field->Type().ToString();
       forms_string += " | " + name;
       forms_string += " | " + base::UTF16ToUTF8(field->label);

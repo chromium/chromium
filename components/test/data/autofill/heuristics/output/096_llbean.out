@@ -18,12 +18,12 @@ ADDRESS_HOME_LINE3 | address3 | Address Line 3 (optional) |  | personTitle_1-def
 ADDRESS_HOME_ZIP | zipCode | Zip Code |  | personTitle_1-default
 ADDRESS_HOME_CITY | city | City |  | personTitle_1-default
 ADDRESS_HOME_STATE | state | State |  | personTitle_1-default
-ADDRESS_HOME_ZIP | CAPostal | Postal Code |  | CAPostal_1-default
-ADDRESS_HOME_CITY | CACity | City |  | CAPostal_1-default
-ADDRESS_HOME_STATE | CAProvince | Province |  | CAPostal_1-default
-ADDRESS_HOME_CITY | INTLCity | City |  | CAPostal_1-default
-ADDRESS_HOME_STATE | INTLCounty | County |  | CAPostal_1-default
-ADDRESS_HOME_ZIP | INTLPostal | Postal Code |  | CAPostal_1-default
+ADDRESS_HOME_ZIP | CAPostal | Postal Code |  | CAPostal_2-default
+ADDRESS_HOME_CITY | CACity | City |  | CAPostal_2-default
+ADDRESS_HOME_STATE | CAProvince | Province |  | CAPostal_2-default
+ADDRESS_HOME_CITY | INTLCity | City |  | CAPostal_2-default
+ADDRESS_HOME_STATE | INTLCounty | County |  | CAPostal_2-default
+ADDRESS_HOME_ZIP | INTLPostal | Postal Code |  | CAPostal_2-default
 PHONE_HOME_WHOLE_NUMBER | phone1 | Daytime Phone Number (optional) |  | personTitle_1-default
 PHONE_HOME_WHOLE_NUMBER | intlPhone1Prefix | International Country Code |  | personTitle_1-default
 PHONE_HOME_WHOLE_NUMBER | intlPhone1 | Daytime Phone Number |  | personTitle_1-default
