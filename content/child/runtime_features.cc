@@ -339,8 +339,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
           {"BlockHTMLParserOnStyleSheets",
            blink::features::kBlockHTMLParserOnStyleSheets},
           {"CSSColorSchemeUARendering", features::kCSSColorSchemeUARendering},
-          {"CSSKeyframesMemoryReduction",
-           blink::features::kCSSKeyframesMemoryReduction},
           {"CSSReducedFontLoadingLayoutInvalidations",
            blink::features::kCSSReducedFontLoadingLayoutInvalidations},
           {"CSSMatchedPropertiesCacheDependencies",

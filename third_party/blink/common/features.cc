@@ -808,13 +808,6 @@ const base::Feature kWebRtcLibvpxEncodeNV12{"WebRtcLibvpxEncodeNV12",
 const base::Feature kLoadingTasksUnfreezable{"LoadingTasksUnfreezable",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Changes ScopedStyleResolve and StyleEngine to use the already stored
-// StyleSheetCollection to find @keyframes rules instead of creating their
-// own hashmaps, so that we can save memory when there are web components
-// with @keyframes rules in their stylesheets.
-const base::Feature kCSSKeyframesMemoryReduction{
-    "CSSKeyframesMemoryReduction", base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Kill switch for the new behavior whereby anchors with target=_blank get
 // noopener behavior by default. TODO(crbug.com/898942): Remove in Chrome 95.
 const base::Feature kTargetBlankImpliesNoOpener{
