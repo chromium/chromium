@@ -461,11 +461,7 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceWithFirstPartySetBrowserTest,
 
   EXPECT_EQ(GetPreloadedFirstPartySetCountFromNetworkService(), 2);
 
-  mojo::Remote<network::mojom::NetworkServiceTest> network_service_test;
-  GetNetworkService()->BindTestInterface(
-      network_service_test.BindNewPipeAndPassReceiver());
-  network_service_test->SimulateCrash();
-  network_service_test.FlushForTesting();
+  SimulateNetworkServiceCrash();
 
   EXPECT_EQ(GetPreloadedFirstPartySetCountFromNetworkService(), 2);
 }
