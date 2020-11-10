@@ -110,4 +110,14 @@ suite('ConfirmatonPageTest', function() {
         confirmationPageElement.$$('nearby-preview').$$('#title').textContent;
     assertEquals(title, renderedTitle);
   });
+
+  test('renders error', async function() {
+    const token = 'TestToken1234';
+    transferUpdateListener.remote_.onTransferUpdate(
+        nearbyShare.mojom.TransferStatus.kRejected, token);
+    await transferUpdateListener.remote_.$.flushForTesting();
+
+    const errorTitle = confirmationPageElement.$$('#errorTitle').textContent;
+    assertTrue(!!errorTitle);
+  });
 });

@@ -111,6 +111,25 @@ Polymer({
     },
 
     /**
+     * Header text for error. The error section is not displayed if this is
+     * falsey.
+     * @private {?string}
+     */
+    errorTitle_: {
+      type: String,
+      value: null,
+    },
+
+    /**
+     * Description text for error, displayed under the error title.
+     * @private {?string}
+     */
+    errorDescription_: {
+      type: String,
+      value: null,
+    },
+
+    /**
      * Whether the user needs to confirm this transfer on the local device. This
      * affects which buttons are displayed to the user.
      * @private
@@ -162,6 +181,25 @@ Polymer({
         break;
       case nearbyShare.mojom.TransferStatus.kInProgress:
         this.fire('close');
+        break;
+      case nearbyShare.mojom.TransferStatus.kRejected:
+        this.errorTitle_ = this.i18n('nearbyShareErrorCantShare');
+        this.errorDescription_ = this.i18n('nearbyShareErrorRejected');
+        break;
+      case nearbyShare.mojom.TransferStatus.kTimedOut:
+        this.errorTitle_ = this.i18n('nearbyShareErrorTimeOut');
+        this.errorDescription_ = this.i18n('nearbyShareErrorNoResponse');
+        break;
+      case nearbyShare.mojom.TransferStatus.kUnsupportedAttachmentType:
+        this.errorTitle_ = this.i18n('nearbyShareErrorCantShare');
+        this.errorDescription_ =
+            this.i18n('nearbyShareErrorUnsupportedFileType');
+        break;
+      case nearbyShare.mojom.TransferStatus.kMediaUnavailable:
+      case nearbyShare.mojom.TransferStatus.kNotEnoughSpace:
+      case nearbyShare.mojom.TransferStatus.kFailed:
+        this.errorTitle_ = this.i18n('nearbyShareErrorCantShare');
+        this.errorDescription_ = this.i18n('nearbyShareErrorSomethingWrong');
         break;
     }
   },

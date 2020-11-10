@@ -116,6 +116,24 @@
   <message name="IDS_NEARBY_DEFAULT_DEVICE_NAME" desc="The default device name used unless a user explicitly sets the device name during onboarding or in settings. Displayed to other users during sharing.">
     <ph name="GIVEN_NAME">$1<ex>Josh</ex></ph>'s <ph name="DEVICE_TYPE">$2<ex>Chromebook</ex></ph>
   </message>
+  <message name="IDS_NEARBY_ERROR_CANT_SHARE" desc="Notify user that the file wasn't able to be shared. Generic title text for displaying errors to the user. To be shown next to more specific error text.">
+    Can't share
+  </message>
+  <message name="IDS_NEARBY_ERROR_NO_RESPONSE" desc="Notify user that the file share failed because the receiver neither accepted nor declined the share.">
+    The device you're sharing with didn't respond
+  </message>
+  <message name="IDS_NEARBY_ERROR_REJECTED" desc="Notify sender that receiver declined the file share.">
+    The device you’re trying to share with did not accept
+  </message>
+  <message name="IDS_NEARBY_ERROR_SOMETHING_WRONG" desc="Generic error text shown when the reason for the failure is unknown or too technical to explain.">
+    Something went wrong
+  </message>
+  <message name="IDS_NEARBY_ERROR_TIME_OUT" desc="Notify user that the file share failed because something didn't happen in time, e.g. the receiver neither accepted nor declined the share. Generic title text to be shown next to more specific error text describing the situation.">
+    Time out
+  </message>
+  <message name="IDS_NEARBY_ERROR_UNSUPPORTED_FILE_TYPE" desc="Notify user that the file chosen can't be shared because of its type, e.g. missing file extension.">
+    Unsupported file type
+  </message>
   <message name="IDS_NEARBY_FILE_ATTACHMENTS_APPS" desc="Describes one or more apps being transfered via Nearby Share.">
     {COUNT, plural, =1 {1 app} other {# apps}}
   </message>

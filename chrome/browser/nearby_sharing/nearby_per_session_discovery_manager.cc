@@ -17,7 +17,6 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
 namespace {
-
 base::Optional<nearby_share::mojom::TransferStatus> GetTransferStatus(
     const TransferMetadata& transfer_metadata) {
   switch (transfer_metadata.status()) {
@@ -28,14 +27,27 @@ base::Optional<nearby_share::mojom::TransferStatus> GetTransferStatus(
     case TransferMetadata::Status::kComplete:
     case TransferMetadata::Status::kInProgress:
       return nearby_share::mojom::TransferStatus::kInProgress;
-    default:
-      break;
+    case TransferMetadata::Status::kRejected:
+      return nearby_share::mojom::TransferStatus::kRejected;
+    case TransferMetadata::Status::kTimedOut:
+      return nearby_share::mojom::TransferStatus::kTimedOut;
+    case TransferMetadata::Status::kUnsupportedAttachmentType:
+      return nearby_share::mojom::TransferStatus::kUnsupportedAttachmentType;
+    case TransferMetadata::Status::kMediaUnavailable:
+      return nearby_share::mojom::TransferStatus::kMediaUnavailable;
+    case TransferMetadata::Status::kNotEnoughSpace:
+      return nearby_share::mojom::TransferStatus::kNotEnoughSpace;
+    case TransferMetadata::Status::kFailed:
+    case TransferMetadata::Status::kAwaitingRemoteAcceptanceFailed:
+      return nearby_share::mojom::TransferStatus::kFailed;
+    case TransferMetadata::Status::kUnknown:
+    case TransferMetadata::Status::kConnecting:
+    case TransferMetadata::Status::kCancelled:
+    case TransferMetadata::Status::kMediaDownloading:
+    case TransferMetadata::Status::kExternalProviderLaunched:
+      // Ignore all other transfer status updates.
+      return base::nullopt;
   }
-
-  // TODO(crbug.com/1123934): Show error if transfer_metadata.is_final_status().
-
-  // Ignore all other transfer status updates.
-  return base::nullopt;
 }
 
 nearby_share::mojom::ShareType GetTextShareType(
