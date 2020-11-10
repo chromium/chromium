@@ -8,6 +8,8 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Build;
 
+import androidx.collection.SimpleArrayMap;
+
 import dalvik.system.BaseDexClassLoader;
 
 import org.chromium.base.annotations.CalledByNative;
@@ -33,6 +35,10 @@ import java.util.Arrays;
  * library APKs.
  */
 public final class BundleUtils {
+    // These Contexts will be needed throughout the lifetime of the application, so it is fine to
+    // have strong references in the map.
+    private static final SimpleArrayMap<String, Context> sIsolatedSplitContextCache =
+            new SimpleArrayMap<>();
     private static Boolean sIsBundle;
 
     /**
@@ -89,11 +95,18 @@ public final class BundleUtils {
             return base;
         }
 
-        try {
-            return ApiHelperForO.createContextForSplit(base, splitName);
-        } catch (PackageManager.NameNotFoundException e) {
-            throw new RuntimeException(e);
+        // Context.createContextForSplit() creates a new ContextImpl for each call, so we cache the
+        // returned context for future calls.
+        Context splitContext = sIsolatedSplitContextCache.get(splitName);
+        if (splitContext == null) {
+            try {
+                splitContext = ApiHelperForO.createContextForSplit(base, splitName);
+            } catch (PackageManager.NameNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+            sIsolatedSplitContextCache.put(splitName, splitContext);
         }
+        return splitContext;
     }
 
     /* Returns absolute path to a native library in a feature module. */
