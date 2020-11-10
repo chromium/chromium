@@ -2140,8 +2140,11 @@ be describing additional metrics about the same event.
   <owner>paint-dev@chromium.org</owner>
   <summary>
     Metrics that measure various update times in Blink. This includes paint,
-    compositing, and layout update times. The metrics are recorded at first
-    lifecycle update and then a random frame with mean interval of 2000 frames.
+    compositing, and layout update times. This event is reported once in the
+    first main frame update after First Contentful Paint, with data from a
+    randomly chosen frame up to and including First Contentful Paint, and once
+    on LocalFrameView destruction with data from a random frame between
+    FirstContentfulPaint and shutdown.
 
     This event is not recorded on machines with low-resolution clocks.
   </summary>
@@ -2204,7 +2207,16 @@ be describing additional metrics about the same event.
       within the sample window. An int in the range [0,100].
     </summary>
   </metric>
+  <metric name="AnimateBeginMainFrame">
+    <summary>
+      The total main frame time used by by main thread animations, in
+      microseconds.
+    </summary>
+  </metric>
   <metric name="AnimatePercentage">
+    <obsolete>
+      Deprecated as of 11/2020. Replaced with AnimateBeginMainFrame.
+    </obsolete>
     <summary>
       The percentage of the main frame time used by main thread animations. An
       int in the range [0,100].
@@ -2286,7 +2298,17 @@ be describing additional metrics about the same event.
       </history>
     </aggregation>
   </metric>
+  <metric name="CompositingAssignmentsBeginMainFrame">
+    <summary>
+      The total main frame time used by the compositing assignments phase, in
+      microseconds.
+    </summary>
+  </metric>
   <metric name="CompositingAssignmentsPercentage">
+    <obsolete>
+      Deprecated as of 11/2020. Replaced with
+      CompositingAssignmentsBeginMainFrame.
+    </obsolete>
     <summary>
       The percentage of the main frame time used by the compositing assignments
       phase. An int in the range [0,100].
@@ -2352,7 +2374,15 @@ be describing additional metrics about the same event.
       int in the range [0,100].
     </summary>
   </metric>
+  <metric name="CompositingCommitBeginMainFrame">
+    <summary>
+      The total main frame time used by the compositing commit, in microseconds.
+    </summary>
+  </metric>
   <metric name="CompositingCommitPercentage">
+    <obsolete>
+      Deprecated as of 11/2020. Replaced with CompositingCommitBeginMainFrame.
+    </obsolete>
     <summary>
       The percentage of the main frame time used by the compositing commit. An
       int in the range [0,100].
@@ -2372,17 +2402,28 @@ be describing additional metrics about the same event.
       </history>
     </aggregation>
   </metric>
+  <metric name="CompositingInputsBeginMainFrame">
+    <summary>
+      The total main frame time used by the compositing inputs phase, in
+      microseconds.
+    </summary>
+  </metric>
   <metric name="CompositingInputsPercentage">
+    <obsolete>
+      Deprecated as of 11/2020. Replaced with CompositingInputsBeginMainFrame.
+    </obsolete>
     <summary>
       The percentage of the main frame time used by the compositing inputs
       phase. An int in the range [0,100].
     </summary>
   </metric>
   <metric name="CompositingPercentage">
+    <obsolete>
+      Obsolete as of http://crrev.com/794384.
+    </obsolete>
     <summary>
       The percentage of the main frame time used by the compositing phase. An
-      int in the range [0,100]. This is being replaced soon by
-      CompositingInputsPercentage and CompositingAssignmentsPercentage.
+      int in the range [0,100].
     </summary>
   </metric>
   <metric name="ForcedStyleAndLayout">
@@ -2446,7 +2487,18 @@ be describing additional metrics about the same event.
       frame. An int in the range [0,100].
     </summary>
   </metric>
+  <metric name="ForcedStyleAndLayoutBeginMainFrame">
+    <summary>
+      The total main frame time used by forced style updates and layouts, in
+      microseconds. This metric may include time that is also included in the
+      AnimateBeginMainFrame metric.
+    </summary>
+  </metric>
   <metric name="ForcedStyleAndLayoutPercentage">
+    <obsolete>
+      Deprecated as of 11/2020. Replaced with
+      ForcedStyleAndLayoutBeginMainFrame.
+    </obsolete>
     <summary>
       The percentage of the main frame time used by forced style updates and
       layouts during the main frame update (not including time outside of the
@@ -2514,7 +2566,16 @@ be describing additional metrics about the same event.
       range [0,100].
     </summary>
   </metric>
+  <metric name="HandleInputEventsBeginMainFrame">
+    <summary>
+      The total main frame time used in processing rAF-aligned input, in
+      microseconds.
+    </summary>
+  </metric>
   <metric name="HandleInputEventsPercentage">
+    <obsolete>
+      Deprecated as of 11/2020. Replaced with HandleInputEventsBeginMainFrame.
+    </obsolete>
     <summary>
       The percentage of the main frame time used in processing rAF-aligned
       input. An int in the range [0,100].
@@ -2536,7 +2597,17 @@ be describing additional metrics about the same event.
       </history>
     </aggregation>
   </metric>
+  <metric name="HitTestDocumentUpdateBeginMainFrame">
+    <summary>
+      The total main frame time used in performing hit test document updates, in
+      microseconds.
+    </summary>
+  </metric>
   <metric name="HitTestDocumentUpdatePercentage">
+    <obsolete>
+      Deprecated as of 11/2020. Replaced with
+      HitTestDocumentUpdateBeginMainFrame.
+    </obsolete>
     <summary>
       The percentage of the main frame time used in performing hit test document
       updates. An int in the range [0,100].
@@ -2556,7 +2627,18 @@ be describing additional metrics about the same event.
       </history>
     </aggregation>
   </metric>
+  <metric name="ImplCompositorCommitBeginMainFrame">
+    <summary>
+      The total main frame time spent committing layer tree impl data in the
+      compositor thread, in microseconds. This should always match
+      ImplCompositorCommit and serves as a check.
+    </summary>
+  </metric>
   <metric name="ImplCompositorCommitPercentage">
+    <obsolete>
+      Deprecated as of 11/2020. Replaced with
+      ImplCompositorCommitBeginMainFrame.
+    </obsolete>
     <summary>
       The percentage of the main frame time spent committing layer tree impl
       data in the compositor thread. An int in the range [0,100].
@@ -2622,7 +2704,17 @@ be describing additional metrics about the same event.
       range [0,100].
     </summary>
   </metric>
+  <metric name="IntersectionObservationBeginMainFrame">
+    <summary>
+      The total main frame time used to compute IntersectionObserver
+      observations, in microseconds.
+    </summary>
+  </metric>
   <metric name="IntersectionObservationPercentage">
+    <obsolete>
+      Deprecated as of 11/2020. Replaced with
+      IntersectionObservationBeginMainFrame.
+    </obsolete>
     <summary>
       The percentage of the main frame time used in computing intersection
       observer state. An int in the range [0,100].
@@ -2642,7 +2734,15 @@ be describing additional metrics about the same event.
       </history>
     </aggregation>
   </metric>
+  <metric name="LayoutBeginMainFrame">
+    <summary>
+      The total main frame time used in layout, in microseconds.
+    </summary>
+  </metric>
   <metric name="LayoutPercentage">
+    <obsolete>
+      Deprecated as of 11/2020. Replaced with LayoutBeginMainFrame.
+    </obsolete>
     <summary>
       The percentage of the main frame time used in layout work. An int in the
       range [0,100].
@@ -2762,7 +2862,15 @@ be describing additional metrics about the same event.
       sample window. An int in the range [0,100].
     </summary>
   </metric>
+  <metric name="PaintBeginMainFrame">
+    <summary>
+      The total main frame time used in paint, in microseconds.
+    </summary>
+  </metric>
   <metric name="PaintPercentage">
+    <obsolete>
+      Deprecated as of 11/2020. Replaced with PaintBeginMainFrame.
+    </obsolete>
     <summary>
       The percentage of the main frame time used in paint. An int in the range
       [0,100].
@@ -2827,7 +2935,15 @@ be describing additional metrics about the same event.
       the sample window. An int in the range [0,100].
     </summary>
   </metric>
+  <metric name="PrePaintBeginMainFrame">
+    <summary>
+      The total main frame time used in pre-paint, in microseconds.
+    </summary>
+  </metric>
   <metric name="PrePaintPercentage">
+    <obsolete>
+      Deprecated as of 11/2020. Replaced with PrePaintBeginMainFrame.
+    </obsolete>
     <summary>
       The percentage of the main frame time used in pre-paint. An int in the
       range [0,100].
@@ -2863,7 +2979,8 @@ be describing additional metrics about the same event.
   </metric>
   <metric name="ScrollingCoordinator">
     <obsolete>
-      Merged into CompositingCommit in http://crrev.com/815947 in M88.
+      Merged into Blink.MainFrame.CompositingCommitRatio in
+      http://crrev.com/815947 in M88.
     </obsolete>
     <summary>
       The time taken for scrolling coordinator for the main frame in
@@ -2926,7 +3043,8 @@ be describing additional metrics about the same event.
   </metric>
   <metric name="ScrollingCoordinatorPercentage">
     <obsolete>
-      Merged into CompositingCommitPercentage in http://crrev.com/815947 in M88.
+      Merged into Blink.MainFrame.CompositingCommitRatio in
+      http://crrev.com/815947 in M88.
     </obsolete>
     <summary>
       The percentage of the main frame time used in scrolling coordinator. An
@@ -3018,6 +3136,12 @@ be describing additional metrics about the same event.
       int in the range [0,100].
     </summary>
   </metric>
+  <metric name="StyleBeginMainFrame">
+    <summary>
+      The total main frame time spent updating style information and and
+      building the layout tree, in microseconds.
+    </summary>
+  </metric>
   <metric name="StylePercentage">
     <summary>
       The percentage of the main frame time used in style work. An int in the
@@ -3038,7 +3162,16 @@ be describing additional metrics about the same event.
       </history>
     </aggregation>
   </metric>
+  <metric name="UpdateLayersBeginMainFrame">
+    <summary>
+      The total main frame time spent in LayerTreeHost::UpdateLayer, in
+      microseconds. This should always match UpdateLayers and serves as a check.
+    </summary>
+  </metric>
   <metric name="UpdateLayersPercentage">
+    <obsolete>
+      Deprecated as of 11/2020. Replaced with UpdateLayersBeginMainFrame.
+    </obsolete>
     <summary>
       The percentage of the main frame time used by LayerTreeHost::UpdateLayers.
       An int in the range [0,100].
@@ -3058,7 +3191,17 @@ be describing additional metrics about the same event.
       </history>
     </aggregation>
   </metric>
+  <metric name="WaitForCommitBeginMainFrame">
+    <summary>
+      The total main frame time spent waiting for the compositor thread to begin
+      processing a commit, in microseconds. This should always match
+      WaitForCommit and serves as a check.
+    </summary>
+  </metric>
   <metric name="WaitForCommitPercentage">
+    <obsolete>
+      Deprecated as of 11/2020. Replaced with WaitForCommitBeginMainFrame.
+    </obsolete>
     <summary>
       The percentage of the main frame time spent waiting for the compositor
       thread to begin processing a commit. An int in the range [0,100].

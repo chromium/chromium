@@ -1157,6 +1157,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram base="true" name="Blink.MainFrame.AnimateRatio" units="%"
     expires_after="2020-11-08">
+  <obsolete>
+    Removed M88 due to lack of use.
+  </obsolete>
   <owner>schenney@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
 <!-- Name completed by histogram_suffixes name="BlinkMainFrameUpdateTimeSuffixes" -->
@@ -1169,6 +1172,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram base="true" name="Blink.MainFrame.CompositingAssignmentsRatio"
     units="%" expires_after="2020-11-08">
+  <obsolete>
+    Removed M88 due to lack of use.
+  </obsolete>
   <owner>schenney@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
 <!-- Name completed by histogram_suffixes name="BlinkMainFrameUpdateTimeSuffixes" -->
@@ -1181,6 +1187,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram base="true" name="Blink.MainFrame.CompositingCommitRatio" units="%"
     expires_after="2020-11-08">
+  <obsolete>
+    Removed M88 due to lack of use.
+  </obsolete>
   <owner>schenney@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
 <!-- Name completed by histogram_suffixes name="BlinkMainFrameUpdateTimeSuffixes" -->
@@ -1193,6 +1202,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram base="true" name="Blink.MainFrame.CompositingInputsRatio" units="%"
     expires_after="2020-11-08">
+  <obsolete>
+    Removed M88 due to lack of use.
+  </obsolete>
   <owner>schenney@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
 <!-- Name completed by histogram_suffixes name="BlinkMainFrameUpdateTimeSuffixes" -->
@@ -1205,6 +1217,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram base="true" name="Blink.MainFrame.CompositingRatio" units="%"
     expires_after="2020-11-08">
+  <obsolete>
+    Removed M88 due to lack of use.
+  </obsolete>
   <owner>schenney@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
 <!-- Name completed by histogram_suffixes name="BlinkMainFrameUpdateTimeSuffixes" -->
@@ -1217,6 +1232,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram base="true" name="Blink.MainFrame.ForcedStyleAndLayoutRatio"
     units="%" expires_after="2021-01-10">
+  <obsolete>
+    Removed M88 due to lack of use.
+  </obsolete>
   <owner>schenney@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
 <!-- Name completed by histogram_suffixes name="BlinkMainFrameUpdateTimeSuffixes" -->
@@ -1230,6 +1248,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram base="true" name="Blink.MainFrame.HandleInputEventsRatio" units="%"
     expires_after="2020-11-08">
+  <obsolete>
+    Removed M88 due to lack of use.
+  </obsolete>
   <owner>schenney@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
 <!-- Name completed by histogram_suffixes name="BlinkMainFrameUpdateTimeSuffixes" -->
@@ -1242,6 +1263,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram base="true" name="Blink.MainFrame.HitTestDocumentUpdateRatio"
     units="%" expires_after="2020-11-08">
+  <obsolete>
+    Removed M88 due to lack of use.
+  </obsolete>
   <owner>schenney@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
 <!-- Name completed by histogram_suffixes name="BlinkMainFrameUpdateTimeSuffixes" -->
@@ -1254,6 +1278,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram base="true" name="Blink.MainFrame.ImplCompositorCommitRatio"
     units="%" expires_after="2020-11-08">
+  <obsolete>
+    Removed M88 due to lack of use.
+  </obsolete>
   <owner>schenney@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
 <!-- Name completed by histogram_suffixes name="BlinkMainFrameUpdateTimeSuffixes" -->
@@ -1267,6 +1294,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram base="true" name="Blink.MainFrame.IntersectionObservationRatio"
     units="%" expires_after="2020-11-08">
+  <obsolete>
+    Removed M88 due to lack of use.
+  </obsolete>
   <owner>schenney@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
 <!-- Name completed by histogram_suffixes name="BlinkMainFrameUpdateTimeSuffixes" -->
@@ -1279,6 +1309,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram base="true" name="Blink.MainFrame.LayoutRatio" units="%"
     expires_after="2021-03-21">
+  <obsolete>
+    Removed M88 due to lack of use.
+  </obsolete>
   <owner>schenney@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
 <!-- Name completed by histogram_suffixes name="BlinkMainFrameUpdateTimeSuffixes" -->
@@ -1291,6 +1324,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram base="true" name="Blink.MainFrame.PaintRatio" units="%"
     expires_after="2021-03-21">
+  <obsolete>
+    Removed M88 due to lack of use.
+  </obsolete>
   <owner>schenney@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
 <!-- Name completed by histogram_suffixes name="BlinkMainFrameUpdateTimeSuffixes" -->
@@ -1303,6 +1339,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram base="true" name="Blink.MainFrame.PrePaintRatio" units="%"
     expires_after="2020-11-08">
+  <obsolete>
+    Removed M88 due to lack of use.
+  </obsolete>
   <owner>schenney@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
 <!-- Name completed by histogram_suffixes name="BlinkMainFrameUpdateTimeSuffixes" -->
@@ -1332,6 +1371,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram base="true" name="Blink.MainFrame.StyleRatio" units="%"
     expires_after="2020-11-08">
+  <obsolete>
+    Removed M88 due to lack of use.
+  </obsolete>
   <owner>schenney@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
 <!-- Name completed by histogram_suffixes name="BlinkMainFrameUpdateTimeSuffixes" -->
@@ -1344,6 +1386,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram base="true" name="Blink.MainFrame.UpdateLayersRatio" units="%"
     expires_after="2021-03-21">
+  <obsolete>
+    Removed M88 due to lack of use.
+  </obsolete>
   <owner>schenney@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
 <!-- Name completed by histogram_suffixes name="BlinkMainFrameUpdateTimeSuffixes" -->
@@ -1374,6 +1419,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Blink.MainFrame.WaitForCommitRatio" units="%"
     expires_after="2020-11-08">
+  <obsolete>
+    Removed M88 due to lack of use.
+  </obsolete>
   <owner>schenney@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
 <!-- Name completed by histogram_suffixes name="BlinkMainFrameUpdateTimeSuffixes" -->

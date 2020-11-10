@@ -41,6 +41,11 @@ LocalFrameUkmAggregator::ScopedUkmHierarchicalTimer::
   }
 }
 
+void LocalFrameUkmAggregator::AbsoluteMetricRecord::reset() {
+  interval_duration = base::TimeDelta();
+  main_frame_duration = base::TimeDelta();
+}
+
 LocalFrameUkmAggregator::LocalFrameUkmAggregator(int64_t source_id,
                                                  ukm::UkmRecorder* recorder)
     : source_id_(source_id),
@@ -51,8 +56,6 @@ LocalFrameUkmAggregator::LocalFrameUkmAggregator(int64_t source_id,
   primary_metric_.reset();
 
   // Define the UMA for the primary metric.
-  primary_metric_.uma_counter.reset(
-      new CustomCountHistogram("Blink.MainFrame.UpdateTime", 0, 10000000, 50));
   primary_metric_.pre_fcp_uma_counter.reset(new CustomCountHistogram(
       "Blink.MainFrame.UpdateTime.PreFCP", 0, 10000000, 50));
   primary_metric_.post_fcp_uma_counter.reset(new CustomCountHistogram(
@@ -66,30 +69,9 @@ LocalFrameUkmAggregator::LocalFrameUkmAggregator(int64_t source_id,
   const char* const uma_prefcp_postscript = ".PreFCP";
   const char* const uma_postfcp_postscript = ".PostFCP";
   const char* const uma_pre_fcp_aggregated_postscript = ".AggregatedPreFCP";
-  const char* const uma_percentage_preamble = "Blink.MainFrame.";
-  const char* const uma_percentage_postscript = "Ratio";
-
-  // Set up sub-strings for the bucketed UMA metrics
-  Vector<String> threshold_substrings;
-  if (!bucket_thresholds().size()) {
-    threshold_substrings.push_back(".All");
-  } else {
-    threshold_substrings.push_back(String::Format(
-        ".LessThan%" PRId64 "ms", bucket_thresholds()[0].InMilliseconds()));
-    for (wtf_size_t i = 1; i < bucket_thresholds().size(); ++i) {
-      threshold_substrings.push_back(
-          String::Format(".%" PRId64 "msTo%" PRId64 "ms",
-                         bucket_thresholds()[i - 1].InMilliseconds(),
-                         bucket_thresholds()[i].InMilliseconds()));
-    }
-    threshold_substrings.push_back(String::Format(
-        ".MoreThan%" PRId64 "ms",
-        bucket_thresholds()[bucket_thresholds().size() - 1].InMilliseconds()));
-  }
 
   // Populate all the sub-metrics.
   absolute_metric_records_.ReserveInitialCapacity(kCount);
-  main_frame_percentage_records_.ReserveInitialCapacity(kCount);
   for (const MetricInitializationData& metric_data : metrics_data()) {
     // Absolute records report the absolute time for each metric per frame.
     // They also aggregate the time spent in each stage between navigation
@@ -103,8 +85,6 @@ LocalFrameUkmAggregator::LocalFrameUkmAggregator(int64_t source_id,
       uma_name.Append(uma_preamble);
       uma_name.Append(metric_data.name);
       uma_name.Append(uma_postscript);
-      absolute_record.uma_counter.reset(new CustomCountHistogram(
-          uma_name.ToString().Utf8().c_str(), 0, 10000000, 50));
       StringBuilder pre_fcp_uma_name;
       pre_fcp_uma_name.Append(uma_name);
       pre_fcp_uma_name.Append(uma_prefcp_postscript);
@@ -121,27 +101,12 @@ LocalFrameUkmAggregator::LocalFrameUkmAggregator(int64_t source_id,
       absolute_record.uma_aggregate_counter.reset(new CustomCountHistogram(
           aggregated_uma_name.ToString().Utf8().c_str(), 0, 10000000, 50));
     }
-
-    // Percentage records report the ratio of each metric to the primary metric.
-    // UMA counters are also associated with the ratios and we allocate and own
-    // them here.
-    auto& percentage_record = main_frame_percentage_records_.emplace_back();
-    percentage_record.reset();
-    for (auto bucket_substring : threshold_substrings) {
-      StringBuilder uma_percentage_name;
-      uma_percentage_name.Append(uma_percentage_preamble);
-      uma_percentage_name.Append(metric_data.name);
-      uma_percentage_name.Append(uma_percentage_postscript);
-      uma_percentage_name.Append(bucket_substring);
-      percentage_record.uma_counters_per_bucket.push_back(
-          std::make_unique<CustomCountHistogram>(
-              uma_percentage_name.ToString().Utf8().c_str(), 0, 10000000, 50));
-    }
   }
 
   // Make space in the current sample.
   current_sample_.sub_metrics_durations.Grow(static_cast<wtf_size_t>(kCount));
-  current_sample_.sub_metric_percentages.Grow(static_cast<wtf_size_t>(kCount));
+  current_sample_.sub_main_frame_durations.Grow(
+      static_cast<wtf_size_t>(kCount));
 }
 
 LocalFrameUkmAggregator::~LocalFrameUkmAggregator() {
@@ -169,36 +134,36 @@ LocalFrameUkmAggregator::GetBeginMainFrameMetrics() {
   std::unique_ptr<cc::BeginMainFrameMetrics> metrics_data =
       std::make_unique<cc::BeginMainFrameMetrics>();
   metrics_data->handle_input_events =
-      main_frame_percentage_records_[static_cast<unsigned>(
-                                         MetricId::kHandleInputEvents)]
-          .interval_duration;
+      absolute_metric_records_[static_cast<unsigned>(
+                                   MetricId::kHandleInputEvents)]
+          .main_frame_duration;
   metrics_data->animate =
-      main_frame_percentage_records_[static_cast<unsigned>(MetricId::kAnimate)]
-          .interval_duration;
+      absolute_metric_records_[static_cast<unsigned>(MetricId::kAnimate)]
+          .main_frame_duration;
   metrics_data->style_update =
-      main_frame_percentage_records_[static_cast<unsigned>(MetricId::kStyle)]
-          .interval_duration;
+      absolute_metric_records_[static_cast<unsigned>(MetricId::kStyle)]
+          .main_frame_duration;
   metrics_data->layout_update =
-      main_frame_percentage_records_[static_cast<unsigned>(MetricId::kLayout)]
-          .interval_duration;
+      absolute_metric_records_[static_cast<unsigned>(MetricId::kLayout)]
+          .main_frame_duration;
   metrics_data->prepaint =
-      main_frame_percentage_records_[static_cast<unsigned>(MetricId::kPrePaint)]
-          .interval_duration;
+      absolute_metric_records_[static_cast<unsigned>(MetricId::kPrePaint)]
+          .main_frame_duration;
   metrics_data->compositing_assignments =
-      main_frame_percentage_records_[static_cast<unsigned>(
-                                         MetricId::kCompositingAssignments)]
-          .interval_duration;
+      absolute_metric_records_[static_cast<unsigned>(
+                                   MetricId::kCompositingAssignments)]
+          .main_frame_duration;
   metrics_data->compositing_inputs =
-      main_frame_percentage_records_[static_cast<unsigned>(
-                                         MetricId::kCompositingInputs)]
-          .interval_duration;
+      absolute_metric_records_[static_cast<unsigned>(
+                                   MetricId::kCompositingInputs)]
+          .main_frame_duration;
   metrics_data->paint =
-      main_frame_percentage_records_[static_cast<unsigned>(MetricId::kPaint)]
-          .interval_duration;
+      absolute_metric_records_[static_cast<unsigned>(MetricId::kPaint)]
+          .main_frame_duration;
   metrics_data->composite_commit =
-      main_frame_percentage_records_[static_cast<unsigned>(
-                                         MetricId::kCompositingCommit)]
-          .interval_duration;
+      absolute_metric_records_[static_cast<unsigned>(
+                                   MetricId::kCompositingCommit)]
+          .main_frame_duration;
   metrics_data->should_measure_smoothness =
       (fcp_state_ >= kThisFrameReachedFCP);
   return metrics_data;
@@ -213,7 +178,6 @@ void LocalFrameUkmAggregator::RecordForcedStyleLayoutUMA(
     base::TimeDelta& duration) {
   if (!calls_to_next_forced_style_layout_uma_) {
     auto& record = absolute_metric_records_[kForcedStyleAndLayout];
-    record.uma_counter->CountMicroseconds(duration);
     if (fcp_state_ == kHavePassedFCP)
       record.post_fcp_uma_counter->CountMicroseconds(duration);
     else
@@ -248,30 +212,24 @@ void LocalFrameUkmAggregator::RecordSample(size_t metric_index,
   DCHECK_LT(metric_index, absolute_metric_records_.size());
   auto& record = absolute_metric_records_[metric_index];
   record.interval_duration += duration;
+  if (in_main_frame_update_)
+    record.main_frame_duration += duration;
   if (is_pre_fcp)
     record.pre_fcp_aggregate += duration;
   // Record the UMA
   // ForcedStyleAndLayout happen so frequently on some pages that we overflow
   // the signed 32 counter for number of events in a 30 minute period. So
   // randomly record with probability 1/100.
-  if (record.uma_counter) {
+  if (record.pre_fcp_uma_counter) {
     if (metric_index == static_cast<size_t>(kForcedStyleAndLayout)) {
       RecordForcedStyleLayoutUMA(duration);
     } else {
-      record.uma_counter->CountMicroseconds(duration);
       if (is_pre_fcp) {
         record.pre_fcp_uma_counter->CountMicroseconds(duration);
       } else {
         record.post_fcp_uma_counter->CountMicroseconds(duration);
       }
     }
-  }
-
-  // Only record ratios when inside a main frame.
-  if (in_main_frame_update_) {
-    // Just record the duration for ratios. We compute the ratio later
-    // when we know the frame time.
-    main_frame_percentage_records_[metric_index].interval_duration += duration;
   }
 }
 
@@ -319,7 +277,6 @@ void LocalFrameUkmAggregator::RecordEndOfFrameMetrics(
   bool report_fcp_metrics = (fcp_state_ == kThisFrameReachedFCP);
 
   // Record UMA
-  primary_metric_.uma_counter->CountMicroseconds(duration);
   if (report_as_pre_fcp)
     primary_metric_.pre_fcp_uma_counter->CountMicroseconds(duration);
   else
@@ -330,23 +287,6 @@ void LocalFrameUkmAggregator::RecordEndOfFrameMetrics(
   if (report_as_pre_fcp)
     primary_metric_.pre_fcp_aggregate += duration;
 
-  // Compute all the dependent metrics, after finding which bucket we're in
-  // for UMA data.
-  size_t bucket_index = bucket_thresholds().size();
-  for (size_t i = 0; i < bucket_index; ++i) {
-    if (duration < bucket_thresholds()[i]) {
-      bucket_index = i;
-    }
-  }
-
-  for (auto& record : main_frame_percentage_records_) {
-    auto percentage = base::ClampRound<base::HistogramBase::Sample>(
-        100 * record.interval_duration / duration);
-    record.uma_counters_per_bucket[bucket_index]->Count(percentage);
-  }
-
-  // Record here to avoid resetting the ratios before this data point is
-  // recorded.
   UpdateEventTimeAndUpdateSampleIfNeeded(trackers);
 
   // Report the FCP metrics, if necessary, after updating the sample so that
@@ -391,9 +331,8 @@ void LocalFrameUkmAggregator::UpdateSample(
   for (unsigned i = 0; i < static_cast<unsigned>(kCount); ++i) {
     current_sample_.sub_metrics_durations[i] =
         absolute_metric_records_[i].interval_duration;
-    current_sample_.sub_metric_percentages[i] = base::ClampRound<unsigned>(
-        100 * main_frame_percentage_records_[i].interval_duration /
-        primary_metric_.interval_duration);
+    current_sample_.sub_main_frame_durations[i] =
+        absolute_metric_records_[i].main_frame_duration;
   }
   current_sample_.trackers = trackers;
 }
@@ -451,7 +390,8 @@ void LocalFrameUkmAggregator::ReportUpdateTimeEvent() {
     builder                                                                    \
         .Set##name(                                                            \
             current_sample_.sub_metrics_durations[index].InMicroseconds())     \
-        .Set##name##Percentage(current_sample_.sub_metric_percentages[index]); \
+        .Set##name##BeginMainFrame(                                            \
+            current_sample_.sub_main_frame_durations[index].InMicroseconds()); \
     break
 
   ukm::builders::Blink_UpdateTime builder(source_id_);
@@ -493,8 +433,6 @@ void LocalFrameUkmAggregator::ResetAllMetrics() {
   primary_metric_.reset();
   for (auto& record : absolute_metric_records_)
     record.reset();
-  for (auto& record : main_frame_percentage_records_)
-    record.reset();
 }
 
 bool LocalFrameUkmAggregator::AllMetricsAreZero() {
@@ -502,6 +440,9 @@ bool LocalFrameUkmAggregator::AllMetricsAreZero() {
     return false;
   for (auto& record : absolute_metric_records_) {
     if (record.interval_duration.InMicroseconds()) {
+      return false;
+    }
+    if (record.main_frame_duration.InMicroseconds()) {
       return false;
     }
   }
