@@ -59,6 +59,8 @@ class KaleidoscopeDataProviderImpl
       bool accepted_auto_select_media_feeds,
       const std::vector<int64_t>& enabled_feed_ids,
       const std::vector<int64_t>& disabled_feed_ids) override;
+  void GetAutoSelectMediaFeedsConsent(
+      GetAutoSelectMediaFeedsConsentCallback cb) override;
   void GetHighWatchTimeOrigins(GetHighWatchTimeOriginsCallback cb) override;
   void SendFeedback() override;
   void GetCollections(const std::string& request,

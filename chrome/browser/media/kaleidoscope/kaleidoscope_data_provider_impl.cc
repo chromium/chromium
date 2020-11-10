@@ -207,6 +207,17 @@ void KaleidoscopeDataProviderImpl::SetMediaFeedsConsent(
   }
 }
 
+void KaleidoscopeDataProviderImpl::GetAutoSelectMediaFeedsConsent(
+    GetAutoSelectMediaFeedsConsentCallback cb) {
+  auto* prefs = profile_->GetPrefs();
+  if (!prefs) {
+    std::move(cb).Run(false);
+    return;
+  }
+  std::move(cb).Run(prefs->GetBoolean(
+      kaleidoscope::prefs::kKaleidoscopeAutoSelectMediaFeeds));
+}
+
 void KaleidoscopeDataProviderImpl::GetHighWatchTimeOrigins(
     GetHighWatchTimeOriginsCallback cb) {
   GetMediaHistoryService()->GetHighWatchTimeOrigins(kProviderHighWatchTimeMin,

@@ -80,6 +80,10 @@ interface KaleidoscopeDataProvider {
                        array<int64> enabled_feed_ids,
                        array<int64> disabled_feed_ids);
 
+  // Returns true if the user has consented to auto-select media feeds to
+  // display.
+  GetAutoSelectMediaFeedsConsent() => (bool consent);
+
   // Returns all the watch time origins from media history store that have
   // watch time above a threshold.
   GetHighWatchTimeOrigins() => (array<url.mojom.Origin> origins);
