@@ -218,6 +218,13 @@ export class App {
       await browserProxy.fitWindow();
       windowController.enable();
       this.backgroundOps_.notifyActivation();
+      // For intent only requiring open camera with specific mode without
+      // returning the capture result, called onIntentHandled() right
+      // after app successfully launched.
+      const intent = this.backgroundOps_.getIntent();
+      if (intent !== null && !intent.shouldHandleResult) {
+        intent.finish();
+      }
     })();
 
     const cameraResourceInitialized = new WaitableEvent();

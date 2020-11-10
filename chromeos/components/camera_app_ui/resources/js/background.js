@@ -250,12 +250,6 @@ class CCAWindow {
    */
   notifyActivation() {
     this.state_ = WindowState.ACTIVE;
-    // For intent only requiring open camera with specific mode without
-    // returning the capture result, called onIntentHandled() right
-    // after app successfully launched.
-    if (this.intent_ !== null && !this.intent_.shouldHandleResult) {
-      this.intent_.finish();
-    }
     this.callbacks_.onActive(this);
   }
 
