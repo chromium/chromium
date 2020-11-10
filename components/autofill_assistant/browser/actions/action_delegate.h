@@ -102,6 +102,11 @@ class ActionDelegate {
   virtual void FindElement(const Selector&,
                            ElementFinder::Callback callback) const = 0;
 
+  // Find all elements matching |selector|. If there are no matches, the status
+  // will be ELEMENT_RESOLUTION_FAILED.
+  virtual void FindAllElements(const Selector& selector,
+                               ElementFinder::Callback callback) const = 0;
+
   // Click or tap the |element|.
   virtual void ClickOrTapElement(
       ClickType click_type,
@@ -291,6 +296,13 @@ class ActionDelegate {
       const ElementFinder::Result& element,
       base::OnceCallback<void(const ClientStatus&, const std::string&)>
           callback) = 0;
+
+  // Return the outerHTML of each element in |elements|. |elements| must contain
+  // the object ID of a JS array containing the elements.
+  virtual void GetOuterHtmls(
+      const ElementFinder::Result& elements,
+      base::OnceCallback<void(const ClientStatus&,
+                              const std::vector<std::string>&)> callback) = 0;
 
   // Return the tag of the |element|. In case of an error, returns an empty
   // string.

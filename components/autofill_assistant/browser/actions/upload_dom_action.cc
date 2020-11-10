@@ -33,16 +33,31 @@ void UploadDomAction::InternalProcessAction(ProcessActionCallback callback) {
   }
   delegate_->ShortWaitForElement(
       selector,
-      base::BindOnce(&UploadDomAction::OnWaitForElementTimed,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     base::BindOnce(&UploadDomAction::OnWaitForElement,
-                                    weak_ptr_factory_.GetWeakPtr(), selector)));
+      base::BindOnce(
+          &UploadDomAction::OnWaitForElementTimed,
+          weak_ptr_factory_.GetWeakPtr(),
+          base::BindOnce(&UploadDomAction::OnWaitForElement,
+                         weak_ptr_factory_.GetWeakPtr(), selector,
+                         proto_.upload_dom().can_match_multiple_elements())));
 }
 
 void UploadDomAction::OnWaitForElement(const Selector& selector,
+                                       bool can_match_multiple_elements,
                                        const ClientStatus& element_status) {
   if (!element_status.ok()) {
     EndAction(element_status);
+    return;
+  }
+
+  if (can_match_multiple_elements) {
+    delegate_->FindAllElements(
+        selector,
+        base::BindOnce(&action_delegate_util::TakeElementAndGetProperty<
+                           std::vector<std::string>>,
+                       base::BindOnce(&ActionDelegate::GetOuterHtmls,
+                                      delegate_->GetWeakPtr()),
+                       base::BindOnce(&UploadDomAction::OnGetOuterHtmls,
+                                      weak_ptr_factory_.GetWeakPtr())));
     return;
   }
 
@@ -59,8 +74,22 @@ void UploadDomAction::OnWaitForElement(const Selector& selector,
 void UploadDomAction::OnGetOuterHtml(const ClientStatus& status,
                                      const std::string& outer_html) {
   if (status.ok()) {
-    processed_action_proto_->set_html_source(outer_html);
+    processed_action_proto_->mutable_upload_dom_result()->add_outer_htmls(
+        outer_html);
   }
+  EndAction(status);
+}
+
+void UploadDomAction::OnGetOuterHtmls(
+    const ClientStatus& status,
+    const std::vector<std::string>& outer_htmls) {
+  if (status.ok()) {
+    auto* result = processed_action_proto_->mutable_upload_dom_result();
+    for (const auto& outer_html : outer_htmls) {
+      result->add_outer_htmls(outer_html);
+    }
+  }
+
   EndAction(status);
 }
 

@@ -82,6 +82,11 @@ class WebController {
                            bool strict_mode,
                            ElementFinder::Callback callback);
 
+  // Find all elements matching |selector|. If there are no matches, the status
+  // will be ELEMENT_RESOLUTION_FAILED.
+  virtual void FindAllElements(const Selector& selector,
+                               ElementFinder::Callback callback);
+
   // Scroll the |element| into view.
   virtual void ScrollIntoView(
       const ElementFinder::Result& element,
@@ -214,6 +219,13 @@ class WebController {
       base::OnceCallback<void(const ClientStatus&, const std::string&)>
           callback);
 
+  // Return the outerHTML of each element in |elements|. |elements| must contain
+  // the object ID of a JS array containing the elements.
+  virtual void GetOuterHtmls(
+      const ElementFinder::Result& elements,
+      base::OnceCallback<void(const ClientStatus&,
+                              const std::vector<std::string>&)> callback);
+
   // Return the tag of the |element|. In case of an error, will return an empty
   // string.
   virtual void GetElementTag(
@@ -308,6 +320,11 @@ class WebController {
           callback,
       const DevtoolsClient::ReplyStatus& reply_status,
       std::unique_ptr<runtime::CallFunctionOnResult> result);
+  void OnJavaScriptResultForStringArray(
+      base::OnceCallback<void(const ClientStatus&,
+                              const std::vector<std::string>&)> callback,
+      const DevtoolsClient::ReplyStatus& reply_status,
+      std::unique_ptr<runtime::CallFunctionOnResult> result);
   void OnWaitForDocumentToBecomeInteractive(
       base::OnceCallback<void(const ClientStatus&)> callback,
       bool result);
@@ -348,6 +365,9 @@ class WebController {
       base::OnceCallback<void(const ClientStatus&)> callback,
       const DevtoolsClient::ReplyStatus& reply_status,
       std::unique_ptr<runtime::EvaluateResult> result);
+  void RunElementFinder(const Selector& selector,
+                        ElementFinder::ResultType result_type,
+                        ElementFinder::Callback callback);
   void OnFindElementResult(ElementFinder* finder_to_release,
                            ElementFinder::Callback callback,
                            const ClientStatus& status,

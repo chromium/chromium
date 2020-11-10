@@ -397,6 +397,46 @@ class WebControllerBrowserTest : public content::ContentBrowserTest,
             std::move(done_callback), result_output, html_output));
   }
 
+  ClientStatus GetOuterHtmls(const Selector& selector,
+                             std::vector<std::string>* htmls_output) {
+    base::RunLoop run_loop;
+    ClientStatus result;
+
+    web_controller_->FindAllElements(
+        selector, base::BindOnce(&WebControllerBrowserTest::OnFindAllElements,
+                                 base::Unretained(this), run_loop.QuitClosure(),
+                                 &result, htmls_output));
+
+    run_loop.Run();
+    return result;
+  }
+
+  void OnFindAllElements(base::OnceClosure done_callback,
+                         ClientStatus* client_status_output,
+                         std::vector<std::string>* htmls_output,
+                         const ClientStatus& client_status,
+                         std::unique_ptr<ElementFinder::Result> elements) {
+    EXPECT_EQ(ACTION_APPLIED, client_status.proto_status());
+    ASSERT_TRUE(elements);
+
+    web_controller_->GetOuterHtmls(
+        *elements, base::BindOnce(&WebControllerBrowserTest::OnGetOuterHtmls,
+                                  base::Unretained(this), std::move(elements),
+                                  std::move(done_callback),
+                                  client_status_output, htmls_output));
+  }
+
+  void OnGetOuterHtmls(std::unique_ptr<ElementFinder::Result> elements,
+                       base::OnceClosure done_callback,
+                       ClientStatus* client_status_output,
+                       std::vector<std::string>* htmls_output,
+                       const ClientStatus& client_status,
+                       const std::vector<std::string>& htmls) {
+    *client_status_output = client_status;
+    *htmls_output = htmls;
+    std::move(done_callback).Run();
+  }
+
   ClientStatus GetElementTag(const Selector& selector,
                              std::string* element_tag_output) {
     base::RunLoop run_loop;
@@ -1804,6 +1844,18 @@ IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, GetOuterHtml) {
   Selector oopif_selector({"#iframeExternal", "#divToRemove"});
   ASSERT_EQ(ACTION_APPLIED, GetOuterHtml(oopif_selector, &html).proto_status());
   EXPECT_EQ(R"(<div id="divToRemove">Text</div>)", html);
+}
+
+IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, GetOuterHtmls) {
+  std::vector<std::string> htmls;
+
+  Selector div_selector({".label"});
+  ASSERT_EQ(ACTION_APPLIED, GetOuterHtmls(div_selector, &htmls).proto_status());
+
+  EXPECT_THAT(htmls,
+              testing::ElementsAre(R"(<div class="label">Label 1</div>)",
+                                   R"(<div class="label">Label 2</div>)",
+                                   R"(<div class="label">Label 3</div>)"));
 }
 
 IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, GetElementTag) {

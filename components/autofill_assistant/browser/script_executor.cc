@@ -321,6 +321,13 @@ void ScriptExecutor::FindElement(const Selector& selector,
                                              std::move(callback));
 }
 
+void ScriptExecutor::FindAllElements(const Selector& selector,
+                                     ElementFinder::Callback callback) const {
+  DCHECK(!selector.empty());
+  VLOG(3) << __func__ << " " << selector;
+  delegate_->GetWebController()->FindAllElements(selector, std::move(callback));
+}
+
 void ScriptExecutor::WaitForDocumentToBecomeInteractive(
     const ElementFinder::Result& element,
     base::OnceCallback<void(const ClientStatus&)> callback) {
@@ -651,6 +658,13 @@ void ScriptExecutor::GetOuterHtml(
     base::OnceCallback<void(const ClientStatus&, const std::string&)>
         callback) {
   delegate_->GetWebController()->GetOuterHtml(element, std::move(callback));
+}
+
+void ScriptExecutor::GetOuterHtmls(
+    const ElementFinder::Result& elements,
+    base::OnceCallback<void(const ClientStatus&,
+                            const std::vector<std::string>&)> callback) {
+  delegate_->GetWebController()->GetOuterHtmls(elements, std::move(callback));
 }
 
 void ScriptExecutor::GetElementTag(

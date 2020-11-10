@@ -160,6 +160,10 @@ const char* const kSetAttributeScript =
 const char* const kGetOuterHtmlScript =
     "function () { return this.outerHTML; }";
 
+// Javascript code to get the outerHTML of each node in a list.
+const char* const kGetOuterHtmlsScript =
+    "function () { return this.map((e) => e.outerHTML); }";
+
 const char* const kGetElementTagScript = "function () { return this.tagName; }";
 
 // Javascript code to query whether the document is ready for interact.
@@ -345,6 +349,49 @@ void WebController::OnJavaScriptResultForString(
   }
   SafeGetStringValue(result->GetResult(), &value);
   std::move(callback).Run(status, value);
+}
+
+void WebController::OnJavaScriptResultForStringArray(
+    base::OnceCallback<void(const ClientStatus&,
+                            const std::vector<std::string>&)> callback,
+    const DevtoolsClient::ReplyStatus& reply_status,
+    std::unique_ptr<runtime::CallFunctionOnResult> result) {
+  ClientStatus status =
+      CheckJavaScriptResult(reply_status, result.get(), __FILE__, __LINE__);
+  if (!status.ok()) {
+    VLOG(1) << __func__ << "Failed JavaScript with status: " << status;
+    std::move(callback).Run(status, {});
+    return;
+  }
+
+  auto* remote_object = result->GetResult();
+  if (!remote_object || !remote_object->HasValue() ||
+      !remote_object->GetValue()->is_list()) {
+    VLOG(1) << __func__ << "JavaScript result is not an array.";
+    std::move(callback).Run(
+        JavaScriptErrorStatus(reply_status, __FILE__, __LINE__,
+                              /* exception= */ nullptr),
+        {});
+    return;
+  }
+
+  auto values = remote_object->GetValue()->GetList();
+  std::vector<std::string> v;
+  for (const base::Value& value : values) {
+    if (!value.is_string()) {
+      VLOG(1) << __func__
+              << "JavaScript array content is not a string: " << value.type();
+      std::move(callback).Run(
+          JavaScriptErrorStatus(reply_status, __FILE__, __LINE__,
+                                /* exception= */ nullptr),
+          {});
+      return;
+    }
+
+    v.push_back(value.GetString());
+  }
+
+  std::move(callback).Run(status, v);
 }
 
 void WebController::ScrollIntoView(
@@ -743,10 +790,24 @@ void WebController::OnWaitForDocumentReadyState(
 void WebController::FindElement(const Selector& selector,
                                 bool strict_mode,
                                 ElementFinder::Callback callback) {
+  RunElementFinder(selector,
+                   strict_mode ? ElementFinder::ResultType::kExactlyOneMatch
+                               : ElementFinder::ResultType::kAnyMatch,
+                   std::move(callback));
+}
+
+void WebController::FindAllElements(const Selector& selector,
+                                    ElementFinder::Callback callback) {
+  RunElementFinder(selector, ElementFinder::ResultType::kMatchArray,
+                   std::move(callback));
+}
+
+void WebController::RunElementFinder(const Selector& selector,
+                                     ElementFinder::ResultType result_type,
+                                     ElementFinder::Callback callback) {
   auto finder = std::make_unique<ElementFinder>(
-      web_contents_, devtools_client_.get(), selector,
-      strict_mode ? ElementFinder::ResultType::kExactlyOneMatch
-                  : ElementFinder::ResultType::kAnyMatch);
+      web_contents_, devtools_client_.get(), selector, result_type);
+
   auto* ptr = finder.get();
   pending_workers_.emplace_back(std::move(finder));
   ptr->Start(base::BindOnce(&WebController::OnFindElementResult,
@@ -1382,6 +1443,26 @@ void WebController::GetOuterHtml(
           base::BindOnce(&DecorateControllerStatusWithValue<std::string>,
                          WebControllerErrorInfoProto::GET_OUTER_HTML,
                          std::move(callback))));
+}
+
+void WebController::GetOuterHtmls(
+    const ElementFinder::Result& elements,
+    base::OnceCallback<void(const ClientStatus&,
+                            const std::vector<std::string>&)> callback) {
+  devtools_client_->GetRuntime()->CallFunctionOn(
+      runtime::CallFunctionOnParams::Builder()
+          .SetObjectId(elements.object_id)
+          .SetFunctionDeclaration(std::string(kGetOuterHtmlsScript))
+          .SetReturnByValue(true)
+          .Build(),
+      elements.node_frame_id,
+      base::BindOnce(
+          &WebController::OnJavaScriptResultForStringArray,
+          weak_ptr_factory_.GetWeakPtr(),
+          base::BindOnce(
+              &DecorateControllerStatusWithValue<std::vector<std::string>>,
+              WebControllerErrorInfoProto::GET_OUTER_HTML,
+              std::move(callback))));
 }
 
 void WebController::GetElementTag(

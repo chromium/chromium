@@ -10,6 +10,7 @@
 #include "components/autofill_assistant/browser/actions/mock_action_delegate.h"
 #include "components/autofill_assistant/browser/selector.h"
 #include "components/autofill_assistant/browser/service.pb.h"
+#include "components/autofill_assistant/browser/test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace autofill_assistant {
@@ -18,6 +19,7 @@ namespace {
 using ::base::test::RunOnceCallback;
 using ::testing::_;
 using ::testing::AllOf;
+using ::testing::Eq;
 using ::testing::InSequence;
 using ::testing::Pointee;
 using ::testing::Property;
@@ -34,6 +36,15 @@ class UploadDomActionTest : public testing::Test {
     *action_proto.mutable_upload_dom() = proto_;
     UploadDomAction action(&mock_action_delegate_, action_proto);
     action.ProcessAction(callback_.Get());
+  }
+
+  UploadDomProto::Result UploadDomResult(
+      const std::vector<std::string>& outer_htmls) {
+    UploadDomProto::Result result;
+    for (const auto& outer_html : outer_htmls) {
+      result.add_outer_htmls(outer_html);
+    }
+    return result;
   }
 
   MockActionDelegate mock_action_delegate_;
@@ -61,7 +72,8 @@ TEST_F(UploadDomActionTest, ActionFailsForNonExistentElement) {
   EXPECT_CALL(
       callback_,
       Run(Pointee(AllOf(Property(&ProcessedActionProto::status, TIMED_OUT),
-                        Property(&ProcessedActionProto::html_source, "")))));
+                        Property(&ProcessedActionProto::upload_dom_result,
+                                 Eq(UploadDomResult({})))))));
   Run();
 }
 
@@ -82,9 +94,9 @@ TEST_F(UploadDomActionTest, CheckExpectedCallChain) {
 
   EXPECT_CALL(
       callback_,
-      Run(Pointee(AllOf(
-          Property(&ProcessedActionProto::status, ACTION_APPLIED),
-          Property(&ProcessedActionProto::html_source, "<html></html>")))));
+      Run(Pointee(AllOf(Property(&ProcessedActionProto::status, ACTION_APPLIED),
+                        Property(&ProcessedActionProto::upload_dom_result,
+                                 Eq(UploadDomResult({"<html></html>"})))))));
   Run();
 }
 
@@ -109,7 +121,43 @@ TEST_F(UploadDomActionTest, ReturnsEmptyStringForNotFoundElement) {
       callback_,
       Run(Pointee(AllOf(
           Property(&ProcessedActionProto::status, ELEMENT_RESOLUTION_FAILED),
-          Property(&ProcessedActionProto::html_source, "")))));
+          Property(&ProcessedActionProto::upload_dom_result,
+                   Eq(UploadDomResult({})))))));
+  Run();
+}
+
+TEST_F(UploadDomActionTest, MultipleDomUpload) {
+  InSequence sequence;
+
+  Selector selector({"#element"});
+  *proto_.mutable_tree_root() = selector.proto;
+  proto_.set_can_match_multiple_elements(true);
+
+  EXPECT_CALL(mock_action_delegate_, OnShortWaitForElement(selector, _))
+      .WillOnce(RunOnceCallback<1>(OkClientStatus(),
+                                   base::TimeDelta::FromSeconds(0)));
+
+  EXPECT_CALL(mock_action_delegate_, FindAllElements(selector, _))
+      .WillOnce(testing::WithArgs<1>([](auto&& callback) {
+        auto element_result = std::make_unique<ElementFinder::Result>();
+        element_result->object_id = "fake_object_id";
+        std::move(callback).Run(OkClientStatus(), std::move(element_result));
+      }));
+
+  ElementFinder::Result expected_result;
+  expected_result.object_id = "fake_object_id";
+
+  std::vector<std::string> fake_htmls{"<div></div>", "<span></span>"};
+  EXPECT_CALL(mock_action_delegate_,
+              GetOuterHtmls(EqualsElement(expected_result), _))
+      .WillOnce(RunOnceCallback<1>(OkClientStatus(), fake_htmls));
+
+  EXPECT_CALL(
+      callback_,
+      Run(Pointee(AllOf(
+          Property(&ProcessedActionProto::status, ACTION_APPLIED),
+          Property(&ProcessedActionProto::upload_dom_result,
+                   Eq(UploadDomResult({"<div></div>", "<span></span>"})))))));
   Run();
 }
 

@@ -701,7 +701,6 @@ message ProcessedActionProto {
 
   oneof result_data {
     PromptProto.Result prompt_choice = 5;
-    string html_source = 12;
     // Should be set as a result of CollectUserDataAction.
     CollectUserDataResultProto collect_user_data_result = 15;
     // Should be set as a result of SetFormFieldValueAction.
@@ -715,6 +714,8 @@ message ProcessedActionProto {
     ShowGenericUiProto.Result show_generic_ui_result = 28;
     // Should be set as a result of GetElementStatusProto.
     GetElementStatusProto.Result get_element_status_result = 31;
+    // Should be set as a result of UploadDomProto.
+    UploadDomProto.Result upload_dom_result = 33;
   }
 
   // Reports information about navigation that happened while
@@ -733,7 +734,7 @@ message ProcessedActionProto {
   // selecting a chip on the UI. This is meant for monitoring and debugging.
   optional bool direct_action = 24;
 
-  reserved 3, 4, 6 to 11, 13, 14, 16, 18, 26, 27, 29, 30;
+  reserved 3, 4, 6 to 14, 16, 18, 26, 27, 29, 30;
 }
 
 // Extended information about the action status, which provides more details
@@ -1521,9 +1522,18 @@ message ElementConditionsProto {
 // Volatile upload of a portion of the dom for backend analysis, does not store
 // anything.
 message UploadDomProto {
+  message Result {
+    // The outer HTML of the element(s) matched by |tree_root|.
+    repeated string outer_htmls = 1;
+  }
+
   // The element that should be a root of uploaded DOM. If empty then the whole
   // page is returned.
   optional SelectorProto tree_root = 1;
+
+  // Whether |tree_root| can match multiple elements. If false and multiple
+  // elements are matched, this action will fail with TOO_MANY_MATCHES.
+  optional bool can_match_multiple_elements = 2;
 }
 
 // Shows the progress bar.

@@ -126,6 +126,8 @@ class ScriptExecutor : public ActionDelegate,
   std::string GetBubbleMessage() override;
   void FindElement(const Selector& selector,
                    ElementFinder::Callback callback) const override;
+  void FindAllElements(const Selector& selector,
+                       ElementFinder::Callback callback) const override;
   void WaitForDocumentToBecomeInteractive(
       const ElementFinder::Result& element,
       base::OnceCallback<void(const ClientStatus&)> callback) override;
@@ -222,6 +224,10 @@ class ScriptExecutor : public ActionDelegate,
       const ElementFinder::Result& element,
       base::OnceCallback<void(const ClientStatus&, const std::string&)>
           callback) override;
+  void GetOuterHtmls(const ElementFinder::Result& elements,
+                     base::OnceCallback<void(const ClientStatus&,
+                                             const std::vector<std::string>&)>
+                         callback) override;
   void GetElementTag(
       const ElementFinder::Result& element,
       base::OnceCallback<void(const ClientStatus&, const std::string&)>

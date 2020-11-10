@@ -17,6 +17,7 @@
 #include "components/autofill_assistant/browser/actions/mock_action_delegate.h"
 #include "components/autofill_assistant/browser/mock_personal_data_manager.h"
 #include "components/autofill_assistant/browser/mock_website_login_manager.h"
+#include "components/autofill_assistant/browser/test_util.h"
 #include "components/autofill_assistant/browser/user_model.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/test/test_renderer_host.h"
@@ -39,13 +40,6 @@ void SetDateProto(DateProto* proto, int year, int month, int day) {
   proto->set_year(year);
   proto->set_month(month);
   proto->set_day(day);
-}
-
-MATCHER_P(EqualsProto, message, "") {
-  std::string expected_serialized, actual_serialized;
-  message.SerializeToString(&expected_serialized);
-  arg.SerializeToString(&actual_serialized);
-  return expected_serialized == actual_serialized;
 }
 
 using ::base::test::RunOnceCallback;
@@ -1189,14 +1183,14 @@ TEST_F(CollectUserDataActionTest, SelectDateTimeRange) {
           Property(&ProcessedActionProto::status, ACTION_APPLIED),
           Property(&ProcessedActionProto::collect_user_data_result,
                    Property(&CollectUserDataResultProto::date_range_start_date,
-                            EqualsProto(actual_pickup_date))),
+                            Eq(actual_pickup_date))),
           Property(
               &ProcessedActionProto::collect_user_data_result,
               Property(&CollectUserDataResultProto::date_range_start_timeslot,
                        Eq(actual_pickup_time))),
           Property(&ProcessedActionProto::collect_user_data_result,
                    Property(&CollectUserDataResultProto::date_range_end_date,
-                            EqualsProto(actual_return_date))),
+                            Eq(actual_return_date))),
           Property(
               &ProcessedActionProto::collect_user_data_result,
               Property(&CollectUserDataResultProto::date_range_end_timeslot,

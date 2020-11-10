@@ -73,6 +73,10 @@ class MockActionDelegate : public ActionDelegate {
   MOCK_CONST_METHOD2(FindElement,
                      void(const Selector& selector, ElementFinder::Callback));
 
+  MOCK_CONST_METHOD2(FindAllElements,
+                     void(const Selector& selector,
+                          ElementFinder::Callback callback));
+
   MOCK_METHOD3(ClickOrTapElement,
                void(ClickType click_type,
                     const ElementFinder::Result& element,
@@ -238,6 +242,12 @@ class MockActionDelegate : public ActionDelegate {
                void(const ElementFinder::Result& element,
                     base::OnceCallback<void(const ClientStatus&,
                                             const std::string&)> callback));
+
+  MOCK_METHOD2(
+      GetOuterHtmls,
+      void(const ElementFinder::Result& elements,
+           base::OnceCallback<void(const ClientStatus&,
+                                   const std::vector<std::string>&)> callback));
 
   MOCK_METHOD2(GetElementTag,
                void(const ElementFinder::Result& element,

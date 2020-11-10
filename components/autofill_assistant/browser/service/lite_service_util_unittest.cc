@@ -137,7 +137,7 @@ TEST(LiteServiceUtilTest, GetActionResponseType) {
   proto.set_status(ACTION_APPLIED);
   EXPECT_EQ(GetActionResponseType(proto), ActionResponseType::UNKNOWN);
 
-  proto.mutable_html_source();
+  proto.mutable_upload_dom_result();
   EXPECT_EQ(GetActionResponseType(proto), ActionResponseType::UNKNOWN);
   proto.mutable_collect_user_data_result();
   EXPECT_EQ(GetActionResponseType(proto), ActionResponseType::UNKNOWN);

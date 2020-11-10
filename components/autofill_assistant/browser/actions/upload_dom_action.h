@@ -11,6 +11,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/autofill_assistant/browser/actions/action.h"
+#include "components/autofill_assistant/browser/web/element_finder.h"
 
 namespace autofill_assistant {
 
@@ -24,9 +25,12 @@ class UploadDomAction : public Action {
   void InternalProcessAction(ProcessActionCallback callback) override;
 
   void OnWaitForElement(const Selector& selector,
+                        bool can_match_multiple_elements,
                         const ClientStatus& element_status);
   void OnGetOuterHtml(const ClientStatus& status,
                       const std::string& outer_html);
+  void OnGetOuterHtmls(const ClientStatus& status,
+                       const std::vector<std::string>& outer_htmls);
   void EndAction(const ClientStatus& status);
 
   ProcessActionCallback process_action_callback_;
