@@ -12443,6 +12443,7 @@ Called by update_net_error_codes.py.-->
   <int value="30" label="Shop Similar Products"/>
   <int value="31" label="Shop image with Google Lens"/>
   <int value="32" label="Search Similar Products"/>
+  <int value="33" label="Read later"/>
 </enum>
 
 <enum name="ContextMenuOptionDesktop">

@@ -10,6 +10,7 @@ import android.text.style.RelativeSizeSpan;
 import android.text.style.SuperscriptSpan;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
 import org.chromium.base.ApiCompatibilityUtils;
@@ -33,9 +34,9 @@ class ChromeContextMenuItem {
             Item.OPEN_IN_BROWSER_ID, Item.OPEN_IN_NEW_TAB, Item.OPEN_IN_INCOGNITO_TAB,
             Item.OPEN_IN_OTHER_WINDOW, Item.OPEN_IN_EPHEMERAL_TAB, Item.COPY_LINK_ADDRESS,
             Item.COPY_LINK_TEXT, Item.SAVE_LINK_AS, Item.SHARE_LINK, Item.DIRECT_SHARE_LINK,
-            Item.LOAD_ORIGINAL_IMAGE, Item.SAVE_IMAGE, Item.OPEN_IMAGE, Item.OPEN_IMAGE_IN_NEW_TAB,
-            Item.OPEN_IMAGE_IN_EPHEMERAL_TAB, Item.COPY_IMAGE, Item.SEARCH_BY_IMAGE,
-            Item.SEARCH_WITH_GOOGLE_LENS, Item.SHOP_SIMILAR_PRODUCTS,
+            Item.READ_LATER, Item.LOAD_ORIGINAL_IMAGE, Item.SAVE_IMAGE, Item.OPEN_IMAGE,
+            Item.OPEN_IMAGE_IN_NEW_TAB, Item.OPEN_IMAGE_IN_EPHEMERAL_TAB, Item.COPY_IMAGE,
+            Item.SEARCH_BY_IMAGE, Item.SEARCH_WITH_GOOGLE_LENS, Item.SHOP_SIMILAR_PRODUCTS,
             Item.SHOP_IMAGE_WITH_GOOGLE_LENS, Item.SEARCH_SIMILAR_PRODUCTS, Item.SHARE_IMAGE,
             Item.DIRECT_SHARE_IMAGE, Item.CALL, Item.SEND_MESSAGE, Item.ADD_TO_CONTACTS, Item.COPY,
             Item.SAVE_VIDEO, Item.OPEN_IN_CHROME})
@@ -57,31 +58,32 @@ class ChromeContextMenuItem {
         int SAVE_LINK_AS = 9;
         int SHARE_LINK = 10;
         int DIRECT_SHARE_LINK = 11;
+        int READ_LATER = 12;
         // Image Group
-        int LOAD_ORIGINAL_IMAGE = 12;
-        int SAVE_IMAGE = 13;
-        int OPEN_IMAGE = 14;
-        int OPEN_IMAGE_IN_NEW_TAB = 15;
-        int OPEN_IMAGE_IN_EPHEMERAL_TAB = 16;
-        int COPY_IMAGE = 17;
-        int SEARCH_BY_IMAGE = 18;
-        int SEARCH_WITH_GOOGLE_LENS = 19;
-        int SHOP_SIMILAR_PRODUCTS = 20;
-        int SHOP_IMAGE_WITH_GOOGLE_LENS = 21;
-        int SEARCH_SIMILAR_PRODUCTS = 22;
-        int SHARE_IMAGE = 23;
-        int DIRECT_SHARE_IMAGE = 24;
+        int LOAD_ORIGINAL_IMAGE = 13;
+        int SAVE_IMAGE = 14;
+        int OPEN_IMAGE = 15;
+        int OPEN_IMAGE_IN_NEW_TAB = 16;
+        int OPEN_IMAGE_IN_EPHEMERAL_TAB = 17;
+        int COPY_IMAGE = 18;
+        int SEARCH_BY_IMAGE = 19;
+        int SEARCH_WITH_GOOGLE_LENS = 20;
+        int SHOP_SIMILAR_PRODUCTS = 21;
+        int SHOP_IMAGE_WITH_GOOGLE_LENS = 22;
+        int SEARCH_SIMILAR_PRODUCTS = 23;
+        int SHARE_IMAGE = 24;
+        int DIRECT_SHARE_IMAGE = 25;
         // Message Group
-        int CALL = 25;
-        int SEND_MESSAGE = 26;
-        int ADD_TO_CONTACTS = 27;
-        int COPY = 28;
+        int CALL = 26;
+        int SEND_MESSAGE = 27;
+        int ADD_TO_CONTACTS = 28;
+        int COPY = 29;
         // Video Group
-        int SAVE_VIDEO = 29;
+        int SAVE_VIDEO = 30;
         // Other
-        int OPEN_IN_CHROME = 30;
+        int OPEN_IN_CHROME = 31;
         // ALWAYS UPDATE!
-        int NUM_ENTRIES = 31;
+        int NUM_ENTRIES = 32;
     }
 
     /**
@@ -100,6 +102,7 @@ class ChromeContextMenuItem {
             R.id.contextmenu_save_link_as, // Item.SAVE_LINK_AS
             R.id.contextmenu_share_link, // Item.SHARE_LINK
             R.id.contextmenu_direct_share_link, // Item.DIRECT_SHARE_LINK
+            R.id.contextmenu_read_later, // Item.READ_LATER
             R.id.contextmenu_load_original_image, // Item.LOAD_ORIGINAL_IMAGE
             R.id.contextmenu_save_image, // Item.SAVE_IMAGE
             R.id.contextmenu_open_image, // Item.OPEN_IMAGE
@@ -137,6 +140,7 @@ class ChromeContextMenuItem {
             R.string.contextmenu_save_link, // Item.SAVE_LINK_AS:
             R.string.contextmenu_share_link, // Item.SHARE_LINK
             0, // Item.DIRECT_SHARE_LINK is not handled by this mapping.
+            R.string.contextmenu_read_later, // Item.READ_LATER
             R.string.contextmenu_load_original_image, // Item.LOAD_ORIGINAL_IMAGE:
             R.string.contextmenu_save_image, // Item.SAVE_IMAGE:
             R.string.contextmenu_open_image, // Item.OPEN_IMAGE:
@@ -201,6 +205,8 @@ class ChromeContextMenuItem {
                         TemplateUrlServiceFactory.get()
                                 .getDefaultSearchEngineTemplateUrl()
                                 .getShortName());
+            case Item.READ_LATER:
+                return addOrRemoveNewLabel(context, item, null, showInProductHelp);
             case Item.OPEN_IN_EPHEMERAL_TAB:
                 return addOrRemoveNewLabel(context, item,
                         ChromePreferenceKeys.CONTEXT_MENU_OPEN_IN_EPHEMERAL_TAB_CLICKED,
@@ -235,9 +241,11 @@ class ChromeContextMenuItem {
      * has already been selected before.
      */
     private static CharSequence addOrRemoveNewLabel(
-            Context context, @Item int item, String prefKey, boolean showNewLabel) {
+            Context context, @Item int item, @Nullable String prefKey, boolean showNewLabel) {
         String menuTitle = context.getString(getStringId(item));
-        if (!showNewLabel || SharedPreferencesManager.getInstance().readBoolean(prefKey, false)) {
+        if (!showNewLabel
+                || (prefKey != null
+                        && SharedPreferencesManager.getInstance().readBoolean(prefKey, false))) {
             return SpanApplier.removeSpanText(menuTitle, new SpanInfo("<new>", "</new>"));
         }
         return SpanApplier.applySpans(menuTitle,

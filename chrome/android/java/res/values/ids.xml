@@ -63,6 +63,7 @@
     <item type="id" name="contextmenu_save_link_as" />
     <item type="id" name="contextmenu_share_link" />
     <item type="id" name="contextmenu_direct_share_link" />
+    <item type="id" name="contextmenu_read_later" />
 
     <!--Image Group -->
     <item type="id" name="contextmenu_load_original_image" />

@@ -32,6 +32,7 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.bottombar.ephemeraltab.EphemeralTabCoordinator;
 import org.chromium.chrome.browser.contextmenu.ChromeContextMenuItem.Item;
+import org.chromium.chrome.browser.contextmenu.ChromeContextMenuPopulator.ContextMenuUma.Action;
 import org.chromium.chrome.browser.contextmenu.RevampedContextMenuCoordinator.ListItemType;
 import org.chromium.chrome.browser.externalauth.ExternalAuthUtils;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
@@ -135,7 +136,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                 Action.SHARE_LINK, Action.OPEN_IN_EPHEMERAL_TAB, Action.OPEN_IMAGE_IN_EPHEMERAL_TAB,
                 Action.DIRECT_SHARE_LINK, Action.DIRECT_SHARE_IMAGE, Action.SEARCH_WITH_GOOGLE_LENS,
                 Action.COPY_IMAGE, Action.SHOP_SIMILAR_PRODUCTS, Action.SHOP_IMAGE_WITH_GOOGLE_LENS,
-                Action.SEARCH_SIMILAR_PRODUCTS})
+                Action.SEARCH_SIMILAR_PRODUCTS, Action.READ_LATER})
         @Retention(RetentionPolicy.SOURCE)
         public @interface Action {
             int OPEN_IN_NEW_TAB = 0;
@@ -175,7 +176,8 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             int SHOP_SIMILAR_PRODUCTS = 30;
             int SHOP_IMAGE_WITH_GOOGLE_LENS = 31;
             int SEARCH_SIMILAR_PRODUCTS = 32;
-            int NUM_ENTRIES = 33;
+            int READ_LATER = 33;
+            int NUM_ENTRIES = 34;
         }
 
         // Note: these values must match the ContextMenuSaveLinkType enum in enums.xml.
@@ -396,6 +398,10 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                 if (!mItemDelegate.isIncognito()
                         && UrlUtilities.isDownloadableScheme(mParams.getLinkUrl())) {
                     linkGroup.add(createListItem(Item.SAVE_LINK_AS));
+                    if (ChromeFeatureList.isEnabled(ChromeFeatureList.READ_LATER)) {
+                        linkGroup.add(
+                                createListItem(Item.READ_LATER, shouldTriggerReadLaterHelpUi()));
+                    }
                 }
                 linkGroup.add(createShareListItem(Item.SHARE_LINK, Item.DIRECT_SHARE_LINK));
                 if (UrlUtilities.isTelScheme(mParams.getLinkUrl())) {
@@ -582,6 +588,12 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                 && tracker.shouldTriggerHelpUI(FeatureConstants.EPHEMERAL_TAB_FEATURE);
     }
 
+    private boolean shouldTriggerReadLaterHelpUi() {
+        Tracker tracker = TrackerFactory.getTrackerForProfile(Profile.getLastUsedRegularProfile());
+        return tracker.isInitialized()
+                && tracker.shouldTriggerHelpUI(FeatureConstants.READ_LATER_CONTEXT_MENU_FEATURE);
+    }
+
     @Override
     public boolean isIncognito() {
         return mItemDelegate.isIncognito();
@@ -680,6 +692,9 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                             .build();
             mShareDelegateSupplier.get().share(
                     linkShareParams, new ChromeShareExtras.Builder().setSaveLastUsed(true).build());
+        } else if (itemId == R.id.contextmenu_read_later) {
+            recordContextMenuSelection(ContextMenuUma.Action.READ_LATER);
+            // TODO(crbug/1145825): Implement backend action.
         } else if (itemId == R.id.contextmenu_direct_share_link) {
             recordContextMenuSelection(ContextMenuUma.Action.DIRECT_SHARE_LINK);
             final ShareParams shareParams =

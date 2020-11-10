@@ -2129,6 +2129,9 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_CONTEXTMENU_OPEN_IN_EPHEMERAL_TAB" desc="Context-sensitive menu item to open a quick preview of the selected linked page.   Note that 'preview' is a verb, not a noun. We're also labeling it *New* to draw attention to it when first released. The selected link will open in an overlay panel on top of the current tab which will go away easily too. [CHAR-LIMIT=30]">
         Preview page <ph name="BEGIN_NEW">&lt;new&gt;</ph>New<ph name="END_NEW">&lt;/new&gt;</ph>
       </message>
+      <message name="IDS_CONTEXTMENU_READ_LATER" desc="Context sensitive menu item for marking a link to be read later. We're also labeling it *New* to draw attention to it when first released. [CHAR-LIMIT=30]">
+        Read later <ph name="BEGIN_NEW">&lt;new&gt;</ph>New<ph name="END_NEW">&lt;/new&gt;</ph>
+      </message>
       <message name="IDS_CONTEXTMENU_PERFORMANCE_INFO_FAST" desc="This string is shown in the context sensitive menu for links and is shown underneath the link URL. It indicates to the user that the link's target page is fast-loading and responsive. [CHAR-LIMIT=30]">
         Fast page
       </message>

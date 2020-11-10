@@ -49,6 +49,7 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHPreviewsOmniboxUIFeature,
     &kIPHPwaInstallAvailableFeature,
     &kIPHQuietNotificationPromptsFeature,
+    &kIPHReadLaterContextMenuFeature,
     &kIPHTabGroupsQuicklyComparePagesFeature,
     &kIPHTabGroupsTapToSeeAnotherTabFeature,
     &kIPHTabGroupsYourTabsAreTogetherFeature,
