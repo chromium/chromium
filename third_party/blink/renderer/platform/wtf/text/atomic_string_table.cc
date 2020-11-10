@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string_table.h"
 
 #include "base/notreached.h"
+#include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
 #include "third_party/blink/renderer/platform/wtf/text/utf8.h"
 
@@ -142,37 +143,59 @@ struct StringViewLookupTranslator {
   }
 };
 
+// Allows lookups of the ASCII-lowercase version of a string without actually
+// allocating memory to store it. Instead, the translator computes the results
+// of hash and equality computations as if we had done so.
 struct LowercaseStringViewLookupTranslator {
   template <typename CharType>
   static UChar ToASCIILowerUChar(CharType ch) {
     return ToASCIILower(ch);
   }
 
-  static unsigned GetHash(const StringView& buf) {
+  // Computes the hash that |query| would have if it were first converted to
+  // ASCII lowercase.
+  static unsigned GetHash(const StringView& query) {
     // If possible, use cached hash if the string is lowercased.
-    StringImpl* shared_impl = buf.SharedImpl();
-    if (LIKELY(shared_impl && buf.IsLowerASCII()))
+    StringImpl* shared_impl = query.SharedImpl();
+    if (LIKELY(shared_impl && query.IsLowerASCII()))
       return shared_impl->GetHash();
 
-    if (buf.Is8Bit()) {
+    if (query.Is8Bit()) {
       return StringHasher::ComputeHashAndMaskTop8Bits<LChar,
                                                       ToASCIILowerUChar<LChar>>(
-          buf.Characters8(), buf.length());
+          query.Characters8(), query.length());
     } else {
       return StringHasher::ComputeHashAndMaskTop8Bits<UChar,
                                                       ToASCIILowerUChar<UChar>>(
-          buf.Characters16(), buf.length());
+          query.Characters16(), query.length());
     }
   }
 
-  static bool Equal(StringImpl* const& str, const StringView& buf) {
+  // Returns true if the hashtable |bucket| contains a string which is the ASCII
+  // lowercase version of |query|.
+  static bool Equal(StringImpl* const& bucket, const StringView& query) {
     // This is similar to EqualIgnoringASCIICase, but not the same.
-    // In particular, it validates that |str| is a lowercase version of |buf|.
+    // In particular, it validates that |bucket| is a lowercase version of
+    // |query|.
+    //
     // Unlike EqualIgnoringASCIICase, it returns false if they are equal
-    // ignoring ASCII case but |str| contains an uppercase ASCII character.
-    // TODO(crbug.com/1138487): Replace this with a more efficient version.
-    StringView str_view(str);
-    return EqualIgnoringASCIICase(str_view, buf) && str_view.IsLowerASCII();
+    // ignoring ASCII case but |bucket| contains an uppercase ASCII character.
+    //
+    // However, similar optimizations are used here as there, so these should
+    // have generally similar correctness and performance constraints.
+    if (bucket->length() != query.length())
+      return false;
+    if (bucket->Bytes() == query.Bytes() && bucket->Is8Bit() == query.Is8Bit())
+      return query.IsLowerASCII();
+    return WTF::VisitCharacters(*bucket, [&](const auto* bch, wtf_size_t) {
+      return WTF::VisitCharacters(query, [&](const auto* qch, wtf_size_t len) {
+        for (wtf_size_t i = 0; i < len; ++i) {
+          if (bch[i] != ToASCIILower(qch[i]))
+            return false;
+        }
+        return true;
+      });
+    });
   }
 };
 
