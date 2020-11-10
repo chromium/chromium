@@ -18,7 +18,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/metrics/statistics_recorder.h"
 #include "base/run_loop.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/stl_util.h"
 #include "base/strings/string16.h"
 #include "base/strings/string_number_conversions.h"
@@ -470,9 +470,8 @@ class MockContentBrowserClient : public TestContentBrowserClient {
 // An observer that waits for the service worker to be running.
 class WorkerRunningStatusObserver : public ServiceWorkerContextObserver {
  public:
-  explicit WorkerRunningStatusObserver(ServiceWorkerContext* context)
-      : scoped_context_observer_(this) {
-    scoped_context_observer_.Add(context);
+  explicit WorkerRunningStatusObserver(ServiceWorkerContext* context) {
+    scoped_context_observation_.Observe(context);
   }
 
   ~WorkerRunningStatusObserver() override = default;
@@ -495,8 +494,8 @@ class WorkerRunningStatusObserver : public ServiceWorkerContextObserver {
 
  private:
   base::RunLoop run_loop_;
-  ScopedObserver<ServiceWorkerContext, ServiceWorkerContextObserver>
-      scoped_context_observer_;
+  base::ScopedObservation<ServiceWorkerContext, ServiceWorkerContextObserver>
+      scoped_context_observation_{this};
   int64_t version_id_ = blink::mojom::kInvalidServiceWorkerVersionId;
 
   DISALLOW_COPY_AND_ASSIGN(WorkerRunningStatusObserver);

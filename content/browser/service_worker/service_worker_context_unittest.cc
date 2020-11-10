@@ -9,7 +9,7 @@
 #include "base/bind.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "content/browser/service_worker/embedded_worker_test_helper.h"
 #include "content/browser/service_worker/fake_embedded_worker_instance_client.h"
@@ -283,9 +283,8 @@ class TestServiceWorkerContextObserver : public ServiceWorkerContextObserver {
     base::Optional<bool> is_running;
   };
 
-  explicit TestServiceWorkerContextObserver(ServiceWorkerContext* context)
-      : scoped_observer_(this) {
-    scoped_observer_.Add(context);
+  explicit TestServiceWorkerContextObserver(ServiceWorkerContext* context) {
+    scoped_observation_.Observe(context);
   }
 
   ~TestServiceWorkerContextObserver() override = default;
@@ -374,7 +373,7 @@ class TestServiceWorkerContextObserver : public ServiceWorkerContextObserver {
   }
 
   void OnDestruct(content::ServiceWorkerContext* context) override {
-    scoped_observer_.Remove(context);
+    scoped_observation_.RemoveObservation();
 
     EventLog log;
     log.type = EventType::Destruct;
@@ -384,8 +383,8 @@ class TestServiceWorkerContextObserver : public ServiceWorkerContextObserver {
   const std::vector<EventLog>& events() { return events_; }
 
  private:
-  ScopedObserver<ServiceWorkerContext, ServiceWorkerContextObserver>
-      scoped_observer_;
+  base::ScopedObservation<ServiceWorkerContext, ServiceWorkerContextObserver>
+      scoped_observation_{this};
   std::vector<EventLog> events_;
   DISALLOW_COPY_AND_ASSIGN(TestServiceWorkerContextObserver);
 };

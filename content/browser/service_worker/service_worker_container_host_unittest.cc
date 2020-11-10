@@ -14,7 +14,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
@@ -1188,9 +1188,8 @@ class TestServiceWorkerContextCoreObserver
     : public ServiceWorkerContextCoreObserver {
  public:
   explicit TestServiceWorkerContextCoreObserver(
-      ServiceWorkerContextWrapper* wrapper)
-      : observer_(this) {
-    observer_.Add(wrapper);
+      ServiceWorkerContextWrapper* wrapper) {
+    observation_.Observe(wrapper);
   }
 
   void OnControlleeAdded(int64_t version_id,
@@ -1222,8 +1221,9 @@ class TestServiceWorkerContextCoreObserver
   int on_controllee_removed_count_ = 0;
   int on_controllee_navigation_committed_count_ = 0;
 
-  ScopedObserver<ServiceWorkerContextWrapper, ServiceWorkerContextCoreObserver>
-      observer_;
+  base::ScopedObservation<ServiceWorkerContextWrapper,
+                          ServiceWorkerContextCoreObserver>
+      observation_{this};
 };
 
 TEST_F(ServiceWorkerContainerHostTestWithBackForwardCache, ControlleeEvents) {
