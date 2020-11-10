@@ -45,6 +45,7 @@ android_resources("java_resources") {
   sources = [
     "java/res/drawable/header.xml",
     "java/res/layout/cablev2_fcm.xml",
+    "java/res/layout/cablev2_qr_dialog.xml",
     "java/res/layout/cablev2_qr_scan.xml",
     "java/res/layout/cablev2_usb_attached.xml",
     "java/res/values/attrs.xml",

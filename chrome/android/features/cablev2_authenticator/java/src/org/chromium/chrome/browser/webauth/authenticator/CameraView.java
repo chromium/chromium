@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.webauth.authenticator;
 
 import android.content.Context;
 import android.hardware.Camera;
+import android.util.AttributeSet;
 import android.view.Display;
 import android.view.Surface;
 import android.view.SurfaceHolder;
@@ -26,10 +27,10 @@ import java.io.IOException;
  * TODO: locking and unlocking the screen seems to stop the camera preview because, on unlock,
  * multiple of these Views end up getting created and only one wins the race to the camera.
  */
-class CameraView extends SurfaceView implements SurfaceHolder.Callback {
+public class CameraView extends SurfaceView implements SurfaceHolder.Callback {
     private static final String TAG = "CameraView";
-    private final Camera.PreviewCallback mCallback;
-    private final Display mDisplay;
+    private Camera.PreviewCallback mCallback;
+    private Display mDisplay;
 
     /**
      * Holds a reference to the camera. Only referenced from the UI thread.
@@ -51,9 +52,15 @@ class CameraView extends SurfaceView implements SurfaceHolder.Callback {
     private boolean mDetached;
     private SurfaceHolder mHolder;
 
-    public CameraView(Context context, Display display, Camera.PreviewCallback callback) {
-        super(context);
+    public CameraView(Context context, AttributeSet attributeSet) {
+        super(context, attributeSet);
+    }
+
+    public void setCallback(Camera.PreviewCallback callback) {
         mCallback = callback;
+    }
+
+    public void setDisplay(Display display) {
         mDisplay = display;
     }
 
@@ -89,6 +96,21 @@ class CameraView extends SurfaceView implements SurfaceHolder.Callback {
             mCamera.release();
             mCamera = null;
         }
+    }
+
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        // This view is only used in a context where the width is set by the
+        // container.
+        int width = MeasureSpec.getSize(widthMeasureSpec);
+
+        // The aspect ratio of the camera's preview is only available after
+        // opening it. But that's a slow operation and is performed on a
+        // background thread, while the layout needs to be done immediately.
+        // Therefore assume a 16:9 aspect ratio, which is the most common.
+        // If the ratio turns out to be 4:3, there will be some slight
+        // distortion in the image, but it'll still work.
+        setMeasuredDimension(width, (16 * width) / 9);
     }
 
     private void openCamera() {
