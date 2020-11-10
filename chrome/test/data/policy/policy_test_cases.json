@@ -5017,15 +5017,7 @@
   },
 
   "EcryptfsMigrationStrategy": {
-    "os": ["chromeos"],
-    "policy_pref_mapping_test": [
-      {
-        "policies": {
-          "EcryptfsMigrationStrategy": 1
-        },
-        "prefs": { "ecryptfs_migration_strategy": {} }
-      }
-    ]
+    "note": "This policy is deprecated and removed since Chrome 88."
   },
 
   "SchedulerConfiguration": {

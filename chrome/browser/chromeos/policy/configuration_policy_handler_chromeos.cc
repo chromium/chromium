@@ -22,14 +22,12 @@
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "chrome/browser/chromeos/accessibility/magnifier_type.h"
-#include "chrome/browser/chromeos/arc/policy/arc_policy_util.h"
 #include "chrome/browser/ui/ash/chrome_launcher_prefs.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/dbus/power/power_policy_controller.h"
 #include "chromeos/network/onc/onc_signature.h"
 #include "chromeos/network/onc/onc_utils.h"
 #include "chromeos/network/onc/onc_validator.h"
-#include "components/arc/arc_prefs.h"
 #include "components/crx_file/id_util.h"
 #include "components/onc/onc_constants.h"
 #include "components/onc/onc_pref_names.h"
@@ -42,8 +40,6 @@
 #include "components/strings/grit/components_strings.h"
 #include "crypto/sha2.h"
 #include "url/gurl.h"
-
-namespace apu = arc::policy_util;
 
 namespace policy {
 
@@ -553,34 +549,6 @@ void ArcServicePolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
   } else if (value->GetInt() ==
              static_cast<int>(ArcServicePolicyValue::kEnabled)) {
     prefs->SetBoolean(pref_, true);
-  }
-}
-
-EcryptfsMigrationStrategyPolicyHandler::EcryptfsMigrationStrategyPolicyHandler()
-    : IntRangePolicyHandlerBase(
-          key::kEcryptfsMigrationStrategy,
-          static_cast<int>(apu::EcryptfsMigrationAction::kDisallowMigration),
-          static_cast<int>(apu::EcryptfsMigrationAction::
-                               kAskForEcryptfsArcUsersNoLongerSupported),
-          false /* clamp */) {}
-
-void EcryptfsMigrationStrategyPolicyHandler::ApplyPolicySettings(
-    const PolicyMap& policies,
-    PrefValueMap* prefs) {
-  const base::Value* const value = policies.GetValue(policy_name());
-  if (!value || !EnsureInRange(value, nullptr, nullptr)) {
-    return;
-  }
-  if (value->GetInt() ==
-          static_cast<int>(apu::EcryptfsMigrationAction::kAskUser) ||
-      value->GetInt() ==
-          static_cast<int>(apu::EcryptfsMigrationAction::
-                               kAskForEcryptfsArcUsersNoLongerSupported)) {
-    // Alias obsolete values to apu::kMigrate.
-    prefs->SetInteger(arc::prefs::kEcryptfsMigrationStrategy,
-                      static_cast<int>(apu::EcryptfsMigrationAction::kMigrate));
-  } else {
-    prefs->SetValue(arc::prefs::kEcryptfsMigrationStrategy, value->Clone());
   }
 }
 

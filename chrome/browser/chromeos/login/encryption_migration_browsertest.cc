@@ -8,8 +8,6 @@
 #include "base/command_line.h"
 #include "base/optional.h"
 #include "base/strings/string_piece.h"
-#include "base/test/simple_test_tick_clock.h"
-#include "base/time/time.h"
 #include "chrome/browser/chromeos/arc/policy/arc_policy_util.h"
 #include "chrome/browser/chromeos/login/login_wizard.h"
 #include "chrome/browser/chromeos/login/oobe_screen.h"
@@ -32,6 +30,7 @@
 #include "chromeos/login/auth/stub_authenticator_builder.h"
 #include "chromeos/login/auth/user_context.h"
 #include "components/account_id/account_id.h"
+#include "components/user_manager/known_user.h"
 #include "content/public/test/browser_test.h"
 #include "third_party/cros_system_api/dbus/cryptohome/dbus-constants.h"
 
@@ -83,7 +82,6 @@ class EncryptionMigrationTest : public OobeBaseTest {
     // Configure encryption migration screen for test.
     EncryptionMigrationScreen* screen = EncryptionMigrationScreen::Get(
         WizardController::default_controller()->screen_manager());
-    screen->set_tick_clock_for_testing(&tick_clock_);
     screen->set_free_disk_space_fetcher_for_testing(base::BindRepeating(
         &EncryptionMigrationTest::GetFreeSpace, base::Unretained(this)));
   }
@@ -108,12 +106,10 @@ class EncryptionMigrationTest : public OobeBaseTest {
         test_user_.account_id);
   }
 
-  void SetUpEncryptionMigrationActionPolicy(
-      arc::policy_util::EcryptfsMigrationAction action) {
-    std::unique_ptr<ScopedUserPolicyUpdate> updater =
-        user_policy_mixin_.RequestPolicyUpdate();
-    updater->policy_payload()->mutable_ecryptfsmigrationstrategy()->set_value(
-        static_cast<int>(action));
+  void MarkUserHasEnterprisePolicy() {
+    user_manager::known_user::SetProfileRequiresPolicy(
+        test_user_.account_id,
+        user_manager::known_user::ProfileRequiresPolicy::kPolicyRequired);
   }
 
   // Runs a successful full migration flow, and tests that UI is updated as
@@ -169,16 +165,12 @@ class EncryptionMigrationTest : public OobeBaseTest {
 
   void set_free_space(int64_t free_space) { free_space_ = free_space; }
 
-  void AdvanceTime(base::TimeDelta delta) { tick_clock_.Advance(delta); }
-
  private:
   int64_t GetFreeSpace() const { return free_space_; }
 
   // Encryption migration requires at least 50 MB - set the default reported
   // free space to an arbitrary amount above that limit.
   int64_t free_space_ = 200 * 1024 * 1024;
-
-  base::SimpleTestTickClock tick_clock_;
 
   const LoginManagerMixin::TestUserInfo test_user_{
       AccountId::FromUserEmailGaiaId("user@gmail.com", "user")};
@@ -247,8 +239,7 @@ IN_PROC_BROWSER_TEST_F(EncryptionMigrationTest,
 }
 
 IN_PROC_BROWSER_TEST_F(EncryptionMigrationTest, MigratePolicy) {
-  SetUpEncryptionMigrationActionPolicy(
-      arc::policy_util::EcryptfsMigrationAction::kMigrate);
+  MarkUserHasEnterprisePolicy();
 
   SetUpStubAuthenticatorAndAttemptLogin(false /* has_incomplete_migration */);
   OobeScreenWaiter(EncryptionMigrationScreenView::kScreenId).Wait();
@@ -259,181 +250,11 @@ IN_PROC_BROWSER_TEST_F(EncryptionMigrationTest, MigratePolicy) {
 
 IN_PROC_BROWSER_TEST_F(EncryptionMigrationTest,
                        ResumeMigrationWithMigratePolicy) {
-  SetUpEncryptionMigrationActionPolicy(
-      arc::policy_util::EcryptfsMigrationAction::kMigrate);
-
+  MarkUserHasEnterprisePolicy();
   SetUpStubAuthenticatorAndAttemptLogin(true /* has_incomplete_migration */);
   OobeScreenWaiter(EncryptionMigrationScreenView::kScreenId).Wait();
 
   RunFullMigrationFlowTest();
-}
-
-// The "ask user" mode should be available to consumer users only - is set as a
-// policy value, it should be treated the same as migrate.
-IN_PROC_BROWSER_TEST_F(EncryptionMigrationTest, AskUserPolicy) {
-  SetUpEncryptionMigrationActionPolicy(
-      arc::policy_util::EcryptfsMigrationAction::kAskUser);
-
-  SetUpStubAuthenticatorAndAttemptLogin(false /* has_incomplete_migration */);
-  OobeScreenWaiter(EncryptionMigrationScreenView::kScreenId).Wait();
-
-  // Verify that ready dialog is not shown, and that the migration started
-  // without ask user for confirmation.
-  test::OobeJS().CreateVisibilityWaiter(true, kMigratingDialog)->Wait();
-  test::OobeJS().ExpectHiddenPath(kReadyDialog);
-
-  EXPECT_EQ(
-      GetTestCryptohomeId(),
-      FakeCryptohomeClient::Get()->get_id_for_disk_migrated_to_dircrypto());
-  EXPECT_FALSE(FakeCryptohomeClient::Get()->minimal_migration());
-}
-
-IN_PROC_BROWSER_TEST_F(EncryptionMigrationTest, MinimalMigration) {
-  SetUpEncryptionMigrationActionPolicy(
-      arc::policy_util::EcryptfsMigrationAction::kMinimalMigrate);
-
-  SetUpStubAuthenticatorAndAttemptLogin(false /* has_incomplete_migration */);
-  OobeScreenWaiter(EncryptionMigrationScreenView::kScreenId).Wait();
-
-  test::OobeJS().CreateVisibilityWaiter(true, kMinimalMigrationDialog)->Wait();
-
-  test::OobeJS().ExpectHiddenPath(kReadyDialog);
-  test::OobeJS().ExpectHiddenPath(kMigratingDialog);
-  test::OobeJS().ExpectHiddenPath(kErrorDialog);
-  test::OobeJS().ExpectHiddenPath(kInsufficientSpaceDialog);
-
-  EXPECT_EQ(0, FakePowerManagerClient::Get()->num_request_restart_calls());
-
-  EXPECT_EQ(
-      GetTestCryptohomeId(),
-      FakeCryptohomeClient::Get()->get_id_for_disk_migrated_to_dircrypto());
-  EXPECT_TRUE(FakeCryptohomeClient::Get()->minimal_migration());
-
-  // Simulate migration success - restart should be requested immediately after.
-  FakeCryptohomeClient::Get()->NotifyDircryptoMigrationProgress(
-      cryptohome::DIRCRYPTO_MIGRATION_SUCCESS, 5 /*current*/, 5 /*total*/);
-  EXPECT_EQ(0, FakePowerManagerClient::Get()->num_request_restart_calls());
-
-  WaitForActiveSession();
-}
-
-IN_PROC_BROWSER_TEST_F(EncryptionMigrationTest, MinimalMigrationWithTimeout) {
-  SetUpEncryptionMigrationActionPolicy(
-      arc::policy_util::EcryptfsMigrationAction::kMinimalMigrate);
-
-  SetUpStubAuthenticatorAndAttemptLogin(false /* has_incomplete_migration */);
-  OobeScreenWaiter(EncryptionMigrationScreenView::kScreenId).Wait();
-
-  test::OobeJS().CreateVisibilityWaiter(true, kMinimalMigrationDialog)->Wait();
-
-  test::OobeJS().ExpectHiddenPath(kReadyDialog);
-  test::OobeJS().ExpectHiddenPath(kMigratingDialog);
-  test::OobeJS().ExpectHiddenPath(kErrorDialog);
-  test::OobeJS().ExpectHiddenPath(kInsufficientSpaceDialog);
-
-  EXPECT_EQ(0, FakePowerManagerClient::Get()->num_request_restart_calls());
-
-  EXPECT_EQ(
-      GetTestCryptohomeId(),
-      FakeCryptohomeClient::Get()->get_id_for_disk_migrated_to_dircrypto());
-  EXPECT_TRUE(FakeCryptohomeClient::Get()->minimal_migration());
-
-  // Simulate time passage during migration - enough for the user to get asked
-  // to reauthenticate upon migration completion..
-  AdvanceTime(base::TimeDelta::FromMinutes(3));
-
-  FakeCryptohomeClient::Get()->NotifyDircryptoMigrationProgress(
-      cryptohome::DIRCRYPTO_MIGRATION_SUCCESS, 5 /*current*/, 5 /*total*/);
-  EXPECT_EQ(0, FakePowerManagerClient::Get()->num_request_restart_calls());
-
-  OobeScreenWaiter(GetFirstSigninScreen()).Wait();
-}
-
-IN_PROC_BROWSER_TEST_F(EncryptionMigrationTest,
-                       PRE_MinimalMigrationPolicyWithIncompleteFullMigration) {
-  SetUpEncryptionMigrationActionPolicy(
-      arc::policy_util::EcryptfsMigrationAction::kMigrate);
-
-  SetUpStubAuthenticatorAndAttemptLogin(false /* has_incomplete_migration */);
-  OobeScreenWaiter(EncryptionMigrationScreenView::kScreenId).Wait();
-
-  test::OobeJS()
-      .CreateWaiter(test::GetOobeElementPath(kMigratingDialog))
-      ->Wait();
-}
-
-// Tests that attempted full migration is continued, even if the migration mode
-// changes to minimal in mean time.
-IN_PROC_BROWSER_TEST_F(EncryptionMigrationTest,
-                       MinimalMigrationPolicyWithIncompleteFullMigration) {
-  SetUpEncryptionMigrationActionPolicy(
-      arc::policy_util::EcryptfsMigrationAction::kMinimalMigrate);
-
-  SetUpStubAuthenticatorAndAttemptLogin(true /* has_incomplete_migration */);
-  OobeScreenWaiter(EncryptionMigrationScreenView::kScreenId).Wait();
-
-  RunFullMigrationFlowTest();
-}
-
-IN_PROC_BROWSER_TEST_F(EncryptionMigrationTest, PRE_ResumeMinimalMigration) {
-  SetUpEncryptionMigrationActionPolicy(
-      arc::policy_util::EcryptfsMigrationAction::kMinimalMigrate);
-
-  SetUpStubAuthenticatorAndAttemptLogin(false /* has_incomplete_migration */);
-  OobeScreenWaiter(EncryptionMigrationScreenView::kScreenId).Wait();
-
-  test::OobeJS()
-      .CreateWaiter(test::GetOobeElementPath(kMinimalMigrationDialog))
-      ->Wait();
-}
-
-IN_PROC_BROWSER_TEST_F(EncryptionMigrationTest, ResumeMinimalMigration) {
-  SetUpEncryptionMigrationActionPolicy(
-      arc::policy_util::EcryptfsMigrationAction::kMigrate);
-
-  SetUpStubAuthenticatorAndAttemptLogin(true /* has_incomplete_migration */);
-  OobeScreenWaiter(EncryptionMigrationScreenView::kScreenId).Wait();
-
-  test::OobeJS().CreateVisibilityWaiter(true, kMinimalMigrationDialog)->Wait();
-
-  EXPECT_EQ(0, FakePowerManagerClient::Get()->num_request_restart_calls());
-
-  EXPECT_EQ(
-      GetTestCryptohomeId(),
-      FakeCryptohomeClient::Get()->get_id_for_disk_migrated_to_dircrypto());
-  EXPECT_TRUE(FakeCryptohomeClient::Get()->minimal_migration());
-
-  // Simulate migration success - restart should be requested immediately after.
-  FakeCryptohomeClient::Get()->NotifyDircryptoMigrationProgress(
-      cryptohome::DIRCRYPTO_MIGRATION_SUCCESS, 5 /*current*/, 5 /*total*/);
-  EXPECT_EQ(0, FakePowerManagerClient::Get()->num_request_restart_calls());
-
-  WaitForActiveSession();
-}
-
-IN_PROC_BROWSER_TEST_F(EncryptionMigrationTest, MigrationDisallowedByPolicy) {
-  SetUpEncryptionMigrationActionPolicy(
-      arc::policy_util::EcryptfsMigrationAction::kDisallowMigration);
-
-  SetUpStubAuthenticatorAndAttemptLogin(false /* has_incomplete_migration */);
-  WaitForActiveSession();
-  EXPECT_FALSE(FakeCryptohomeClient::Get()
-                   ->get_id_for_disk_migrated_to_dircrypto()
-                   .has_account_id());
-}
-
-IN_PROC_BROWSER_TEST_F(EncryptionMigrationTest, WipeMigrationActionPolicy) {
-  SetUpEncryptionMigrationActionPolicy(
-      arc::policy_util::EcryptfsMigrationAction::kWipe);
-
-  SetUpStubAuthenticatorAndAttemptLogin(false /* has_incomplete_migration */);
-
-  // Wipe is expected to wipe the cryptohome, and force online login.
-  OobeScreenWaiter(GetFirstSigninScreen()).Wait();
-
-  EXPECT_FALSE(FakeCryptohomeClient::Get()
-                   ->get_id_for_disk_migrated_to_dircrypto()
-                   .has_account_id());
 }
 
 IN_PROC_BROWSER_TEST_F(EncryptionMigrationTest,
@@ -462,8 +283,7 @@ IN_PROC_BROWSER_TEST_F(EncryptionMigrationTest,
 
 IN_PROC_BROWSER_TEST_F(EncryptionMigrationTest, MigrateWithInsuficientSpace) {
   set_free_space(5 * 1000 * 1000);
-  SetUpEncryptionMigrationActionPolicy(
-      arc::policy_util::EcryptfsMigrationAction::kMigrate);
+  MarkUserHasEnterprisePolicy();
 
   SetUpStubAuthenticatorAndAttemptLogin(false /* has_incomplete_migration */);
   OobeScreenWaiter(EncryptionMigrationScreenView::kScreenId).Wait();
@@ -488,8 +308,7 @@ IN_PROC_BROWSER_TEST_F(EncryptionMigrationTest, MigrateWithInsuficientSpace) {
 
 IN_PROC_BROWSER_TEST_F(EncryptionMigrationTest, InsufficientSpaceOnResume) {
   set_free_space(5 * 1000 * 1000);
-  SetUpEncryptionMigrationActionPolicy(
-      arc::policy_util::EcryptfsMigrationAction::kMigrate);
+  MarkUserHasEnterprisePolicy();
 
   SetUpStubAuthenticatorAndAttemptLogin(true /* has_incomplete_migration */);
   OobeScreenWaiter(EncryptionMigrationScreenView::kScreenId).Wait();
@@ -513,8 +332,7 @@ IN_PROC_BROWSER_TEST_F(EncryptionMigrationTest, InsufficientSpaceOnResume) {
 }
 
 IN_PROC_BROWSER_TEST_F(EncryptionMigrationTest, MigrationFailure) {
-  SetUpEncryptionMigrationActionPolicy(
-      arc::policy_util::EcryptfsMigrationAction::kMigrate);
+  MarkUserHasEnterprisePolicy();
 
   SetUpStubAuthenticatorAndAttemptLogin(false /* has_incomplete_migration */);
   OobeScreenWaiter(EncryptionMigrationScreenView::kScreenId).Wait();
@@ -546,8 +364,7 @@ IN_PROC_BROWSER_TEST_F(EncryptionMigrationTest, MigrationFailure) {
 
 IN_PROC_BROWSER_TEST_F(EncryptionMigrationTest, LowBattery) {
   SetBatteryPercent(5);
-  SetUpEncryptionMigrationActionPolicy(
-      arc::policy_util::EcryptfsMigrationAction::kMigrate);
+  MarkUserHasEnterprisePolicy();
 
   SetUpStubAuthenticatorAndAttemptLogin(false /* has_incomplete_migration */);
   OobeScreenWaiter(EncryptionMigrationScreenView::kScreenId).Wait();
@@ -576,8 +393,7 @@ IN_PROC_BROWSER_TEST_F(EncryptionMigrationTest, LowBattery) {
 IN_PROC_BROWSER_TEST_F(EncryptionMigrationTest,
                        CannotSkipWithLowBatteryOnMigrationResume) {
   SetBatteryPercent(5);
-  SetUpEncryptionMigrationActionPolicy(
-      arc::policy_util::EcryptfsMigrationAction::kMigrate);
+  MarkUserHasEnterprisePolicy();
 
   SetUpStubAuthenticatorAndAttemptLogin(true /* has_incomplete_migration */);
   OobeScreenWaiter(EncryptionMigrationScreenView::kScreenId).Wait();
@@ -600,8 +416,7 @@ IN_PROC_BROWSER_TEST_F(EncryptionMigrationTest,
 IN_PROC_BROWSER_TEST_F(EncryptionMigrationTest,
                        StartMigrationWhenEnoughBattery) {
   SetBatteryPercent(5);
-  SetUpEncryptionMigrationActionPolicy(
-      arc::policy_util::EcryptfsMigrationAction::kMigrate);
+  MarkUserHasEnterprisePolicy();
 
   SetUpStubAuthenticatorAndAttemptLogin(false /* has_incomplete_migration */);
   OobeScreenWaiter(EncryptionMigrationScreenView::kScreenId).Wait();

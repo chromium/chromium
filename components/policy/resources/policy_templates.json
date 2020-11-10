@@ -16509,7 +16509,7 @@
       'id': 374,
       'caption': '''Migration strategy for ecryptfs''',
       'tags': [],
-      'desc': '''This policy is deprecated in M61, please use EcryptfsMigrationStrategy instead.
+      'desc': '''This policy was removed in M61.
 
       Specifies how a device should behave that shipped with ecryptfs and needs to transition to ext4 encryption.
 
@@ -16549,17 +16549,19 @@
           'caption': '''Similar to Wipe (value 2), but tries to preserve login tokens so the user does not have to sign in again.''',
         },
       ],
-      'supported_on': ['chrome_os:61-'],
+      'supported_on': ['chrome_os:61-87'],
       'device_only': False,
       'features': {
         'dynamic_refresh': False,
         'per_profile': False,
       },
+      'deprecated': True,
       'example_value': 2,
       'id': 376,
       'caption': '''Migration strategy for ecryptfs''',
       'tags': [],
-      'desc': '''Setting the policy specifies the action to take when the user's home directory was created with ecryptfs encryption. Unless ecryptfs-encrypted home directories migrate to ext4-encryption, Android apps might stop running.
+      'desc': '''This policy was removed in M87 and home directories will automatically migrate to ext4 at sign-in.
+      Setting the policy specifies the action to take when the user's home directory was created with ecryptfs encryption. Unless ecryptfs-encrypted home directories migrate to ext4-encryption, Android apps might stop running.
 
       Setting the policy to:
 

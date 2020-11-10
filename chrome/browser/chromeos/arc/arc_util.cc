@@ -72,11 +72,6 @@ namespace {
 base::LazyInstance<std::map<const Profile*, bool>>::DestructorAtExit
     g_profile_status_check = LAZY_INSTANCE_INITIALIZER;
 
-// The cached value of migration allowed for profile. It is necessary to use
-// the same value during a user session.
-base::LazyInstance<std::map<base::FilePath, bool>>::DestructorAtExit
-    g_is_arc_migration_allowed = LAZY_INSTANCE_INITIALIZER;
-
 // Let IsAllowedForProfile() return "false" for any profile.
 bool g_disallow_for_testing = false;
 
@@ -136,13 +131,6 @@ void StoreCompatibilityCheckResult(const AccountId& account_id,
   std::move(callback).Run();
 }
 
-bool IsArcMigrationAllowedInternal(const Profile* profile) {
-  return static_cast<policy_util::EcryptfsMigrationAction>(
-             profile->GetPrefs()->GetInteger(
-                 prefs::kEcryptfsMigrationStrategy)) !=
-         policy_util::EcryptfsMigrationAction::kDisallowMigration;
-}
-
 bool IsUnaffiliatedArcAllowed() {
   bool arc_allowed;
   ArcSessionManager* arc_session_manager = ArcSessionManager::Get();
@@ -193,13 +181,6 @@ bool IsArcAllowedForProfileInternal(const Profile* profile,
   if (profile->IsLegacySupervised()) {
     VLOG_IF(1, should_report_reason)
         << "Supervised users are not supported in ARC.";
-    return false;
-  }
-
-  if (IsArcBlockedDueToIncompatibleFileSystem(profile) &&
-      !IsArcMigrationAllowedByPolicyForProfile(profile)) {
-    VLOG_IF(1, should_report_reason)
-        << "Incompatible encryption and migration forbidden.";
     return false;
   }
 
@@ -287,23 +268,6 @@ bool IsArcProvisioned(const Profile* profile) {
 
 void ResetArcAllowedCheckForTesting(const Profile* profile) {
   g_profile_status_check.Get().erase(profile);
-}
-
-bool IsArcMigrationAllowedByPolicyForProfile(const Profile* profile) {
-  // Always allow migration for unmanaged users.
-  if (!profile || !policy_util::IsAccountManaged(profile))
-    return true;
-
-  // Use the profile path as unique identifier for profile.
-  const base::FilePath path = profile->GetPath();
-  auto iter = g_is_arc_migration_allowed.Get().find(path);
-  if (iter == g_is_arc_migration_allowed.Get().end()) {
-    iter = g_is_arc_migration_allowed.Get()
-               .emplace(path, IsArcMigrationAllowedInternal(profile))
-               .first;
-  }
-
-  return iter->second;
 }
 
 bool IsArcBlockedDueToIncompatibleFileSystem(const Profile* profile) {

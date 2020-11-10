@@ -27,7 +27,6 @@
 #include "chrome/browser/chromeos/login/screens/encryption_migration_mode.h"
 #include "chrome/browser/chromeos/login/session/user_session_manager.h"
 #include "chrome/browser/chromeos/login/ui/login_display.h"
-#include "chrome/browser/chromeos/policy/pre_signin_policy_fetcher.h"
 #include "chrome/browser/chromeos/settings/cros_settings.h"
 #include "chrome/browser/chromeos/settings/device_settings_service.h"
 #include "chromeos/login/auth/login_performer.h"
@@ -46,10 +45,6 @@
 namespace base {
 class ElapsedTimer;
 class ListValue;
-}
-
-namespace enterprise_management {
-class CloudPolicySettings;
 }
 
 namespace chromeos {
@@ -304,18 +299,6 @@ class ExistingUserController : public LoginDisplay::Delegate,
   // Callback invoked when `oauth2_token_initializer_` has finished.
   void OnOAuth2TokensFetched(bool success, const UserContext& user_context);
 
-  // Called on completition of a pre-signin policy fetch, which is performed to
-  // check if there is a user policy governing migration action.
-  void OnPolicyFetchResult(
-      const UserContext& user_context,
-      policy::PreSigninPolicyFetcher::PolicyFetchResult result,
-      std::unique_ptr<enterprise_management::CloudPolicySettings>
-          policy_payload);
-
-  // Called when cryptohome wipe has finished.
-  void WipePerformed(const UserContext& user_context,
-                     base::Optional<cryptohome::BaseReply> reply);
-
   // Triggers online login for the given `account_id`.
   void ForceOnlineLoginForAccountId(const AccountId& account_id);
 
@@ -419,8 +402,6 @@ class ExistingUserController : public LoginDisplay::Delegate,
       family_link_allowed_subscription_;
 
   std::unique_ptr<OAuth2TokenInitializer> oauth2_token_initializer_;
-
-  std::unique_ptr<policy::PreSigninPolicyFetcher> pre_signin_policy_fetcher_;
 
   // Used to wait for cloud policy store load during public session login, if
   // the store is not yet initialized when the login is attempted.

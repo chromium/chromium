@@ -103,9 +103,6 @@ const char kArcSkippedReportingNotice[] = "arc.skipped.reporting.notice";
 // the user directory (i.e., the user finished required migration.)
 const char kArcCompatibleFilesystemChosen[] =
     "arc.compatible_filesystem.chosen";
-// Integer pref indicating the ecryptfs to ext4 migration strategy. One of
-// options: forbidden = 0, migrate = 1, wipe = 2 or minimal migrate = 4.
-const char kEcryptfsMigrationStrategy[] = "ecryptfs_migration_strategy";
 // Preferences for storing engagement time data, as per
 // GuestOsEngagementMetrics.
 const char kEngagementPrefsPrefix[] = "arc.metrics";
@@ -159,9 +156,6 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   // from a previous managed state to the unmanaged.
   registry->RegisterBooleanPref(kArcBackupRestoreEnabled, false);
   registry->RegisterBooleanPref(kArcLocationServiceEnabled, false);
-
-  // This is used to decide whether migration from ecryptfs to ext4 is allowed.
-  registry->RegisterIntegerPref(prefs::kEcryptfsMigrationStrategy, 0);
 
   registry->RegisterIntegerPref(
       kArcSupervisionTransition,

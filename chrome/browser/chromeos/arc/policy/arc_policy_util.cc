@@ -42,32 +42,6 @@ bool IsArcDisabledForEnterprise() {
       chromeos::switches::kEnterpriseDisableArc);
 }
 
-base::Optional<EcryptfsMigrationAction> DecodeMigrationActionFromPolicy(
-    const enterprise_management::CloudPolicySettings& policy) {
-  if (!policy.has_ecryptfsmigrationstrategy())
-    return base::nullopt;
-  const enterprise_management::IntegerPolicyProto& policy_proto =
-      policy.ecryptfsmigrationstrategy();
-  if (!policy_proto.has_value())
-    return base::nullopt;
-
-  // Use |policy::EcryptfsMigrationStrategyPolicyHandler| to translate from
-  // policy to enum, as some obsolete policy settings need to be aliased to
-  // other enum values.
-  policy::PolicyMap policy_map;
-  policy_map.Set(policy::key::kEcryptfsMigrationStrategy,
-                 policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
-                 policy::POLICY_SOURCE_CLOUD,
-                 base::Value(static_cast<int>(policy_proto.value())), nullptr);
-  PrefValueMap prefs;
-  policy::EcryptfsMigrationStrategyPolicyHandler handler;
-  handler.ApplyPolicySettings(policy_map, &prefs);
-  int strategy = 0;
-  if (!prefs.GetInteger(arc::prefs::kEcryptfsMigrationStrategy, &strategy))
-    return base::nullopt;
-  return static_cast<EcryptfsMigrationAction>(strategy);
-}
-
 std::set<std::string> GetRequestedPackagesFromArcPolicy(
     const std::string& arc_policy) {
   base::Optional<base::Value> dict = base::JSONReader::Read(

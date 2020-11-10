@@ -211,21 +211,6 @@ class ArcServicePolicyHandler : public IntRangePolicyHandlerBase {
   DISALLOW_COPY_AND_ASSIGN(ArcServicePolicyHandler);
 };
 
-// Handles the |EcryptfsMigrationStrategy| policy, aliasing policy values that
-// are no longer supported to the "migrate" option.
-class EcryptfsMigrationStrategyPolicyHandler
-    : public IntRangePolicyHandlerBase {
- public:
-  EcryptfsMigrationStrategyPolicyHandler();
-
-  // IntRangePolicyHandlerBase:
-  void ApplyPolicySettings(const PolicyMap& policies,
-                           PrefValueMap* prefs) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(EcryptfsMigrationStrategyPolicyHandler);
-};
-
 }  // namespace policy
 
 #endif  // CHROME_BROWSER_CHROMEOS_POLICY_CONFIGURATION_POLICY_HANDLER_CHROMEOS_H_

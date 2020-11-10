@@ -12,7 +12,6 @@
 #include "base/json/json_reader.h"
 #include "base/macros.h"
 #include "base/values.h"
-#include "chrome/browser/chromeos/arc/policy/arc_policy_util.h"
 #include "chrome/browser/ui/ash/chrome_launcher_prefs.h"
 #include "chrome/common/pref_names.h"
 #include "components/arc/arc_prefs.h"
@@ -24,8 +23,6 @@
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_value_map.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-namespace apu = arc::policy_util;
 
 namespace policy {
 
@@ -498,109 +495,6 @@ TEST(ArcServicePolicyHandlerTest, UnserUserControlForConsumer) {
   handler.ApplyPolicySettings(policy_map, &prefs);
   const base::Value* enabled = nullptr;
   EXPECT_FALSE(prefs.GetValue(arc::prefs::kArcBackupRestoreEnabled, &enabled));
-}
-
-TEST(EcryptfsMigrationStrategyPolicyHandlerTest, Empty) {
-  PolicyMap policy_map;
-  EcryptfsMigrationStrategyPolicyHandler handler;
-  PolicyErrorMap errors;
-  EXPECT_TRUE(handler.CheckPolicySettings(policy_map, &errors));
-  EXPECT_TRUE(errors.GetErrors(key::kEcryptfsMigrationStrategy).empty());
-}
-
-TEST(EcryptfsMigrationStrategyPolicyHandlerTest, ValidPolicy) {
-  PolicyMap policy_map;
-  policy_map.Set(
-      key::kEcryptfsMigrationStrategy, POLICY_LEVEL_MANDATORY,
-      POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
-      base::Value(static_cast<int>(apu::EcryptfsMigrationAction::kMigrate)),
-      nullptr);
-  EcryptfsMigrationStrategyPolicyHandler handler;
-  PolicyErrorMap errors;
-  EXPECT_TRUE(handler.CheckPolicySettings(policy_map, &errors));
-  EXPECT_TRUE(errors.GetErrors(key::kEcryptfsMigrationStrategy).empty());
-}
-
-TEST(EcryptfsMigrationStrategyPolicyHandlerTest, WrongType) {
-  PolicyMap policy_map;
-  policy_map.Set(key::kEcryptfsMigrationStrategy, POLICY_LEVEL_MANDATORY,
-                 POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, base::Value(false),
-                 nullptr);
-  EcryptfsMigrationStrategyPolicyHandler handler;
-  PolicyErrorMap errors;
-  EXPECT_FALSE(handler.CheckPolicySettings(policy_map, &errors));
-  EXPECT_FALSE(errors.GetErrors(key::kEcryptfsMigrationStrategy).empty());
-}
-
-TEST(EcryptfsMigrationStrategyPolicyHandlerTest, OutOfRange) {
-  PolicyMap policy_map;
-  policy_map.Set(key::kEcryptfsMigrationStrategy, POLICY_LEVEL_MANDATORY,
-                 POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, base::Value(6),
-                 nullptr);
-  EcryptfsMigrationStrategyPolicyHandler handler;
-  PolicyErrorMap errors;
-  EXPECT_FALSE(handler.CheckPolicySettings(policy_map, &errors));
-  EXPECT_FALSE(errors.GetErrors(key::kEcryptfsMigrationStrategy).empty());
-}
-
-TEST(EcryptfsMigrationStrategyPolicyHandlerTest, SupportedValue) {
-  // Values of the EcryptfsMigrationStrategy policy to be tested.
-  std::vector<base::Value> test_policy_values;
-  test_policy_values.emplace_back(
-      static_cast<int>(apu::EcryptfsMigrationAction::kDisallowMigration));
-  test_policy_values.emplace_back(
-      static_cast<int>(apu::EcryptfsMigrationAction::kMigrate));
-  test_policy_values.emplace_back(
-      static_cast<int>(apu::EcryptfsMigrationAction::kWipe));
-  test_policy_values.emplace_back(
-      static_cast<int>(apu::EcryptfsMigrationAction::kMinimalMigrate));
-
-  PolicyMap policy_map;
-  EcryptfsMigrationStrategyPolicyHandler handler;
-  PolicyErrorMap errors;
-  PrefValueMap prefs;
-  for (const auto& test_policy_value : test_policy_values) {
-    policy_map.Set(key::kEcryptfsMigrationStrategy, POLICY_LEVEL_MANDATORY,
-                   POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
-                   test_policy_value.Clone(), nullptr);
-    ASSERT_TRUE(handler.CheckPolicySettings(policy_map, &errors));
-    EXPECT_TRUE(errors.empty());
-    handler.ApplyPolicySettings(policy_map, &prefs);
-    const base::Value* strategy = nullptr;
-    EXPECT_TRUE(
-        prefs.GetValue(arc::prefs::kEcryptfsMigrationStrategy, &strategy));
-    ASSERT_TRUE(strategy);
-    EXPECT_EQ(test_policy_value, *strategy);
-  }
-}
-
-TEST(EcryptfsMigrationStrategyPolicyHandlerTest, ObsoleteValue) {
-  // Values of the EcryptfsMigrationStrategy policy to be tested.
-  std::vector<base::Value> test_policy_values;
-  test_policy_values.emplace_back(
-      static_cast<int>(apu::EcryptfsMigrationAction::kAskUser));
-  test_policy_values.emplace_back(static_cast<int>(
-      apu::EcryptfsMigrationAction::kAskForEcryptfsArcUsersNoLongerSupported));
-
-  PolicyMap policy_map;
-  EcryptfsMigrationStrategyPolicyHandler handler;
-  PolicyErrorMap errors;
-  PrefValueMap prefs;
-  for (const auto& test_policy_value : test_policy_values) {
-    policy_map.Set(key::kEcryptfsMigrationStrategy, POLICY_LEVEL_MANDATORY,
-                   POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
-                   test_policy_value.Clone(), nullptr);
-    ASSERT_TRUE(handler.CheckPolicySettings(policy_map, &errors));
-    EXPECT_TRUE(errors.empty());
-    handler.ApplyPolicySettings(policy_map, &prefs);
-    const base::Value* strategy = nullptr;
-    EXPECT_TRUE(
-        prefs.GetValue(arc::prefs::kEcryptfsMigrationStrategy, &strategy));
-    ASSERT_TRUE(strategy);
-    EXPECT_EQ(
-        base::Value(static_cast<int>(apu::EcryptfsMigrationAction::kMigrate)),
-        *strategy);
-  }
 }
 
 }  // namespace policy
