@@ -113,10 +113,15 @@ class AccountConsistencyHandler : public web::WebStatePolicyDecider,
       base::OnceCallback<void(PolicyDecision)> callback) override;
   void WebStateDestroyed() override;
 
+  // Marks that GAIA cookies have been restored.
+  void MarkGaiaCookiesRestored();
+
   bool show_consistency_promo_ = false;
+  bool gaia_cookies_restored_ = false;
   AccountConsistencyService* account_consistency_service_;  // Weak.
   AccountReconcilor* account_reconcilor_;                   // Weak.
   __weak id<ManageAccountsDelegate> delegate_;
+  base::WeakPtrFactory<AccountConsistencyHandler> weak_ptr_factory_;
 };
 }  // namespace
 
@@ -128,7 +133,8 @@ AccountConsistencyHandler::AccountConsistencyHandler(
     : web::WebStatePolicyDecider(web_state),
       account_consistency_service_(service),
       account_reconcilor_(account_reconcilor),
-      delegate_(delegate) {
+      delegate_(delegate),
+      weak_ptr_factory_(this) {
   web_state->AddObserver(this);
 }
 
@@ -159,11 +165,13 @@ void AccountConsistencyHandler::ShouldAllowResponse(
   if (google_util::IsGoogleDomainUrl(
           url, google_util::ALLOW_SUBDOMAIN,
           google_util::DISALLOW_NON_STANDARD_PORTS)) {
-    account_consistency_service_->SetGaiaCookiesIfDeleted(base::BindOnce(
-        [](id<ManageAccountsDelegate> delegate) {
-          [delegate onRestoreGaiaCookies];
-        },
-        delegate_));
+    // Reset boolean that tracks displaying the sign-in notification infobar.
+    // This ensures that only the most recent navigation will trigger an
+    // infobar.
+    gaia_cookies_restored_ = false;
+    account_consistency_service_->SetGaiaCookiesIfDeleted(
+        base::BindOnce(&AccountConsistencyHandler::MarkGaiaCookiesRestored,
+                       weak_ptr_factory_.GetWeakPtr()));
   }
 
   if (!gaia::IsGaiaSignonRealm(url.GetOrigin())) {
@@ -227,22 +235,40 @@ void AccountConsistencyHandler::ShouldAllowResponse(
   std::move(callback).Run(PolicyDecision::Cancel());
 }
 
+void AccountConsistencyHandler::MarkGaiaCookiesRestored() {
+  gaia_cookies_restored_ = true;
+}
+
 void AccountConsistencyHandler::PageLoaded(
     web::WebState* web_state,
     web::PageLoadCompletionStatus load_completion_status) {
-  if (!show_consistency_promo_ ||
-      !gaia::IsGaiaSignonRealm(web_state->GetLastCommittedURL().GetOrigin()) ||
-      load_completion_status == web::PageLoadCompletionStatus::FAILURE) {
+  const GURL& url = web_state->GetLastCommittedURL();
+  if (load_completion_status == web::PageLoadCompletionStatus::FAILURE ||
+      !google_util::IsGoogleDomainUrl(
+          url, google_util::ALLOW_SUBDOMAIN,
+          google_util::DISALLOW_NON_STANDARD_PORTS)) {
     return;
   }
-  [delegate_ onShowConsistencyPromo];
-  show_consistency_promo_ = false;
 
-  // Chrome uses the CHROME_CONNECTED cookie to determine whether the
-  // eligibility promo should be shown. Once it is shown we should remove the
-  // cookie, since it should otherwise not be used unless the user is signed in.
-  account_consistency_service_->RemoveAllChromeConnectedCookies(
-      base::OnceClosure());
+  // Displays the sign-in notification infobar if GAIA cookies have been
+  // restored. This occurs once the URL has been loaded to avoid a race
+  // condition in which the infobar is dismissed prior to the page load.
+  if (gaia_cookies_restored_) {
+    [delegate_ onRestoreGaiaCookies];
+    gaia_cookies_restored_ = false;
+  }
+
+  if (show_consistency_promo_ && gaia::IsGaiaSignonRealm(url.GetOrigin())) {
+    [delegate_ onShowConsistencyPromo];
+    show_consistency_promo_ = false;
+
+    // Chrome uses the CHROME_CONNECTED cookie to determine whether the
+    // eligibility promo should be shown. Once it is shown we should remove the
+    // cookie, since it should otherwise not be used unless the user is signed
+    // in.
+    account_consistency_service_->RemoveAllChromeConnectedCookies(
+        base::OnceClosure());
+  }
 }
 
 void AccountConsistencyHandler::WebStateDestroyed(web::WebState* web_state) {}
