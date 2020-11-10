@@ -43,7 +43,9 @@ void CancelTrace() {
 }
 
 struct TestTrackEvent;
+struct TestTracePacket;
 TestTrackEvent* g_test_track_event;
+TestTracePacket* g_test_trace_packet;
 
 struct TestTrackEvent : public TrackEventHandle::CompletionListener {
  public:
@@ -66,6 +68,26 @@ struct TestTrackEvent : public TrackEventHandle::CompletionListener {
   bool event_completed = false;
 };
 
+struct TestTracePacket : public TracePacketHandle::CompletionListener {
+ public:
+  TestTracePacket() {
+    CHECK_EQ(g_test_trace_packet, nullptr)
+        << "Another instance of TestTracePacket is already active";
+    g_test_trace_packet = this;
+  }
+
+  ~TestTracePacket() override { g_test_trace_packet = nullptr; }
+
+  void OnTracePacketCompleted() override {
+    EXPECT_FALSE(packet_completed);
+    packet_completed = true;
+  }
+
+  protozero::HeapBuffered<perfetto::protos::pbzero::TracePacket> packet;
+  bool prepare_called = false;
+  bool packet_completed = false;
+};
+
 TrackEventHandle PrepareTrackEvent(TraceEvent*) {
   CHECK_NE(g_test_track_event, nullptr) << "TestTrackEvent not set yet";
   g_test_track_event->prepare_called = true;
@@ -74,14 +96,26 @@ TrackEventHandle PrepareTrackEvent(TraceEvent*) {
                           g_test_track_event);
 }
 
+TracePacketHandle PrepareTracePacket() {
+  CHECK_NE(g_test_track_event, nullptr) << "TestTracePacket not set yet";
+  g_test_trace_packet->prepare_called = true;
+  return TracePacketHandle(TracePacketHandle::PerfettoPacketHandle(
+                               g_test_trace_packet->packet.get()),
+                           g_test_trace_packet);
+}
+
 class TypedTraceEventTest : public testing::Test {
  public:
-  TypedTraceEventTest() { EnableTypedTraceEvents(&PrepareTrackEvent); }
+  TypedTraceEventTest() {
+    perfetto::internal::TrackRegistry::InitializeInstance();
+    EnableTypedTraceEvents(&PrepareTrackEvent, &PrepareTracePacket);
+  }
 
   ~TypedTraceEventTest() override { ResetTypedTraceEventsForTesting(); }
 
  protected:
   TestTrackEvent event_;
+  TestTracePacket packet_;
 };
 
 }  // namespace
@@ -113,6 +147,23 @@ TEST_F(TypedTraceEventTest, CallbackNotExecutedWhenTracingDisabled) {
   EXPECT_FALSE(event_.prepare_called);
   EXPECT_TRUE(event_.event.empty());
   EXPECT_FALSE(event_.event_completed);
+}
+
+TEST_F(TypedTraceEventTest, DescriptorPacketWrittenForEventWithTrack) {
+  TraceLog::GetInstance()->SetEnabled(TraceConfig(kRecordAllCategoryFilter, ""),
+                                      TraceLog::RECORDING_MODE);
+
+  TRACE_EVENT("cat", "Name", perfetto::Track(1234));
+
+  EXPECT_TRUE(event_.prepare_called);
+  EXPECT_FALSE(event_.event.empty());
+  EXPECT_TRUE(event_.event_completed);
+
+  EXPECT_TRUE(packet_.prepare_called);
+  EXPECT_FALSE(packet_.packet.empty());
+  EXPECT_TRUE(packet_.packet_completed);
+
+  CancelTrace();
 }
 
 namespace {

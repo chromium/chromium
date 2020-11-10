@@ -25,21 +25,64 @@ base::trace_event::ThreadInstructionCount ThreadInstructionNow() {
 }
 
 base::trace_event::PrepareTrackEventFunction g_typed_event_callback = nullptr;
+base::trace_event::PrepareTracePacketFunction g_trace_packet_callback = nullptr;
 
 }  // namespace
 
 namespace base {
 namespace trace_event {
 
-void EnableTypedTraceEvents(PrepareTrackEventFunction typed_event_callback) {
+void EnableTypedTraceEvents(PrepareTrackEventFunction typed_event_callback,
+                            PrepareTracePacketFunction trace_packet_callback) {
   g_typed_event_callback = typed_event_callback;
+  g_trace_packet_callback = trace_packet_callback;
 }
 
 void ResetTypedTraceEventsForTesting() {
   g_typed_event_callback = nullptr;
+  g_trace_packet_callback = nullptr;
+}
+
+TrackEventHandle::TrackEventHandle(TrackEvent* event,
+                                   IncrementalState* incremental_state,
+                                   CompletionListener* listener)
+    : event_(event),
+      incremental_state_(incremental_state),
+      listener_(listener) {}
+
+TrackEventHandle::TrackEventHandle()
+    : TrackEventHandle(nullptr, nullptr, nullptr) {}
+
+TrackEventHandle::~TrackEventHandle() {
+  if (listener_)
+    listener_->OnTrackEventCompleted();
 }
 
 TrackEventHandle::CompletionListener::~CompletionListener() = default;
+
+TracePacketHandle::TracePacketHandle(PerfettoPacketHandle packet,
+                                     CompletionListener* listener)
+    : packet_(std::move(packet)), listener_(listener) {}
+
+TracePacketHandle::TracePacketHandle()
+    : TracePacketHandle(PerfettoPacketHandle(), nullptr) {}
+
+TracePacketHandle::~TracePacketHandle() {
+  if (listener_)
+    listener_->OnTracePacketCompleted();
+}
+
+TracePacketHandle::TracePacketHandle(TracePacketHandle&& handle) noexcept {
+  *this = std::move(handle);
+}
+
+TracePacketHandle& TracePacketHandle::operator=(TracePacketHandle&& handle) {
+  this->packet_ = std::move(handle.packet_);
+  this->listener_ = handle.listener_;
+  return *this;
+}
+
+TracePacketHandle::CompletionListener::~CompletionListener() = default;
 
 }  // namespace trace_event
 }  // namespace base
@@ -90,6 +133,21 @@ base::trace_event::TrackEventHandle CreateTrackEvent(
       trace_event_internal::kNoId, trace_event_internal::kNoId, nullptr, flags);
 
   return g_typed_event_callback(&event);
+}
+
+base::trace_event::TracePacketHandle CreateTracePacket() {
+  // We only call CreateTracePacket() if the embedder installed a valid
+  // g_typed_event_callback, and in that case we also expect a valid
+  // g_trace_packet_callback.
+  DCHECK(g_trace_packet_callback);
+  return g_trace_packet_callback();
+}
+
+bool ShouldEmitTrackDescriptor(
+    uint64_t track_uuid,
+    base::trace_event::TrackEventHandle::IncrementalState* incr_state) {
+  auto it_and_inserted = incr_state->seen_tracks.insert(track_uuid);
+  return it_and_inserted.second;
 }
 
 }  // namespace trace_event_internal

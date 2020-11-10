@@ -460,7 +460,8 @@ TraceEventDataSource::~TraceEventDataSource() = default;
 void TraceEventDataSource::RegisterStartupHooks() {
   RegisterTracedValueProtoWriter();
   base::trace_event::EnableTypedTraceEvents(
-      &TraceEventDataSource::OnAddTypedTraceEvent);
+      &TraceEventDataSource::OnAddTypedTraceEvent,
+      &TraceEventDataSource::OnAddTracePacket);
 }
 
 void TraceEventDataSource::RegisterWithTraceLog(
@@ -1020,6 +1021,16 @@ void TraceEventDataSource::OnUpdateDuration(
         category_group_enabled, name, handle, thread_id, explicit_timestamps,
         now, thread_now, thread_instruction_now);
   }
+}
+
+// static
+base::trace_event::TracePacketHandle TraceEventDataSource::OnAddTracePacket() {
+  auto* thread_local_event_sink = GetOrPrepareEventSink();
+  if (thread_local_event_sink) {
+    // GetThreadIsInTraceEventTLS() is handled by the sink for trace packets.
+    return thread_local_event_sink->AddTracePacket();
+  }
+  return base::trace_event::TracePacketHandle();
 }
 
 // static

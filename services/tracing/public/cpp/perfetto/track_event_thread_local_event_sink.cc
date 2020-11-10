@@ -311,6 +311,31 @@ void TrackEventThreadLocalEventSink::OnTrackEventCompleted() {
   TraceEventDataSource::GetInstance()->GetThreadIsInTraceEventTLS()->Set(false);
 }
 
+base::trace_event::TracePacketHandle
+TrackEventThreadLocalEventSink::AddTracePacket() {
+  DCHECK(!TraceEventDataSource::GetInstance()
+              ->GetThreadIsInTraceEventTLS()
+              ->Get());
+  // Cleared in OnTracePacketCompleted().
+  TraceEventDataSource::GetInstance()->GetThreadIsInTraceEventTLS()->Set(true);
+
+  DCHECK(!pending_trace_packet_);
+
+  perfetto::TraceWriter::TracePacketHandle packet =
+      trace_writer_->NewTracePacket();
+  // base doesn't require accurate timestamps in these packets, so we just emit
+  // the packet with the last timestamp we used.
+  SetPacketTimestamp(&packet, last_timestamp_);
+
+  return base::trace_event::TracePacketHandle(std::move(packet), this);
+}
+
+void TrackEventThreadLocalEventSink::OnTracePacketCompleted() {
+  DCHECK(
+      TraceEventDataSource::GetInstance()->GetThreadIsInTraceEventTLS()->Get());
+  TraceEventDataSource::GetInstance()->GetThreadIsInTraceEventTLS()->Set(false);
+}
+
 void TrackEventThreadLocalEventSink::UpdateIncrementalStateIfNeeded(
     base::trace_event::TraceEvent* trace_event) {
   bool explicit_timestamp =

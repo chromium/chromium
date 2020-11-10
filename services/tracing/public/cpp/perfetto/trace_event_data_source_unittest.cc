@@ -309,6 +309,13 @@ class TraceEventDataSourceTest : public testing::Test {
                                         SEQ_INCREMENTAL_STATE_CLEARED));
   }
 
+  void ExpectChildTrack(const perfetto::protos::TracePacket* packet,
+                        uint64_t uuid,
+                        uint64_t parent_uuid) {
+    EXPECT_EQ(packet->track_descriptor().uuid(), uuid);
+    EXPECT_EQ(packet->track_descriptor().parent_uuid(), parent_uuid);
+  }
+
   size_t ExpectStandardPreamble(size_t packet_index = 0,
                                 bool privacy_filtering_enabled = false) {
     auto* pt_packet = producer_client()->GetFinalizedPacket(packet_index++);
@@ -1217,6 +1224,9 @@ TEST_F(TraceEventDataSourceTest, TrackSupportOnBeginAndEndWithLambda) {
   ExpectEventCategories(b_packet, {{1u, "browser"}});
   ExpectEventNames(b_packet, {{1u, "bar"}});
 
+  auto* t_packet = producer_client()->GetFinalizedPacket(packet_index++);
+  ExpectChildTrack(t_packet, track.uuid, track.parent_uuid);
+
   auto* e_packet = producer_client()->GetFinalizedPacket(packet_index++);
 
   ExpectTraceEvent(e_packet, /*category_iid=*/0, /*name_iid=*/0,
@@ -1243,6 +1253,9 @@ TEST_F(TraceEventDataSourceTest, TrackSupportOnBeginAndEnd) {
 
   ExpectEventCategories(b_packet, {{1u, "browser"}});
   ExpectEventNames(b_packet, {{1u, "bar"}});
+
+  auto* t_packet = producer_client()->GetFinalizedPacket(packet_index++);
+  ExpectChildTrack(t_packet, track.uuid, track.parent_uuid);
 
   auto* e_packet = producer_client()->GetFinalizedPacket(packet_index++);
 
