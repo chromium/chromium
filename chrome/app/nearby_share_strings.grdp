@@ -160,6 +160,10 @@
     Receive from this device?
   </message>
 
+  <!-- File Preview Strings -->
+  <message name="IDS_NEARBY_PREVIEW_TITLE_MULTIPLE_FILE" desc="The file share preview would show the name of the file being shared, but if multiple files are being shared, we show this description instead. The FILE_COUNT will always be greater than 1, so this string will always be plural.">
+    <ph name="FILE_COUNT">$1<ex>3</ex></ph> Files
+  </message>
 
   <!-- Settings Strings -->
   <message name="IDS_NEARBY_ACCOUNT_ROW_LABEL" desc="Label to describe the account row which displays the user's full name and their email which will identify them when using the Nearby Share feature." is_accessibility_with_no_ui="true">

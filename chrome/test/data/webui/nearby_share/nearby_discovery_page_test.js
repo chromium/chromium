@@ -145,7 +145,7 @@ suite('DiscoveryPageTest', function() {
     await discoveryManager.whenCalled('getSendPreview');
     assertEquals(
         discoveryManager.shareDescription,
-        discoveryPageElement.$$('nearby-preview').title);
+        discoveryPageElement.$$('nearby-preview').sendPreview.description);
   });
 
   test('selects share target with success', async function() {

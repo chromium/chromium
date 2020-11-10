@@ -89,8 +89,7 @@
         cancel-button-event-name="close">
   <div id="centerContent" slot="content">
     <div id="process-row">
-      <nearby-preview title="[[sendPreview.description]]"
-          share-type="[[sendPreview.shareType]]"></nearby-preview>
+      <nearby-preview send-preview="[[sendPreview]]"></nearby-preview>
       <div id="placeholder"
           hidden="[[!isShareTargetsEmpty_(shareTargets_.*)]]">
         $i18n{nearbyShareDiscoveryPagePlaceholder}

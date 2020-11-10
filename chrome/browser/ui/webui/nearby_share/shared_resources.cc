@@ -76,6 +76,8 @@ void RegisterNearbySharedStrings(content::WebUIDataSource* data_source) {
       {"nearbyShareOnboardingPageSubtitle",
        IDS_NEARBY_ONBOARDING_PAGE_SUBTITLE},
       {"nearbyShareOnboardingPageTitle", IDS_NEARBY_ONBOARDING_PAGE_TITLE},
+      {"nearbySharePreviewMultipleFileTitle",
+       IDS_NEARBY_PREVIEW_TITLE_MULTIPLE_FILE},
       {"nearbyShareSecureConnectionId", IDS_NEARBY_SECURE_CONNECTION_ID},
       {"nearbyShareVisibilityPageManageContacts",
        IDS_NEARBY_VISIBILITY_PAGE_MANAGE_CONTACTS},

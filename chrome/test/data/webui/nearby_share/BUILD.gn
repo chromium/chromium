@@ -74,6 +74,7 @@ js_library("nearby_preview_test") {
   deps = [
     "..:chai_assert",
     "//chrome/browser/resources/nearby_share:nearby_preview",
+    "//chrome/browser/ui/webui/nearby_share:mojom_js_library_for_compile",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }

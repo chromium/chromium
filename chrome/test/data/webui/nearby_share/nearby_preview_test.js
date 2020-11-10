@@ -4,6 +4,9 @@
 
 // So that mojo is defined.
 import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
+import 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-lite.js';
+import 'chrome://nearby/mojo/nearby_share_target_types.mojom-lite.js';
+import 'chrome://nearby/mojo/nearby_share.mojom-lite.js';
 
 import 'chrome://nearby/nearby_preview.js';
 
@@ -29,7 +32,11 @@ suite('PreviewTest', function() {
 
   test('renders title', function() {
     const title = 'Title';
-    previewElement.setAttribute('title', title);
+    previewElement.sendPreview = {
+      description: title,
+      fileCount: 1,
+      shareType: /** @type {nearbyShare.mojom.ShareType} */ (0)
+    };
 
     const renderedTitle = previewElement.$$('#title').textContent;
     assertEquals(title, renderedTitle);
