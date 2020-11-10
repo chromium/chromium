@@ -26,6 +26,12 @@ Polymer({
       type: Array,
       value: () => [],
     },
+
+    /** @type {boolean} */
+    hidden: {
+      type: Boolean,
+      value: false,
+    }
   },
 
   /**

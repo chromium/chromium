@@ -78,6 +78,17 @@ export function routineSectionTestSuite() {
   }
 
   /**
+   * Returns the Show/Hide Test Report button.
+   * @return {!CrButtonElement}
+   */
+  function getToggleTestReportButton() {
+    const button =
+        dx_utils.getToggleTestReportButtonFromSection(routineSectionElement);
+    assertTrue(!!button);
+    return button;
+  }
+
+  /**
    * Returns whether the run tests button is disabled.
    * @return {boolean}
    */
@@ -91,6 +102,15 @@ export function routineSectionTestSuite() {
    */
   function clickRunTestsButton() {
     getRunTestsButton().click();
+    return flushTasks();
+  }
+
+  /**
+   * Clicks the show/hide test report button.
+   * @return {!Promise}
+   */
+  function clickToggleTestReportButton() {
+    getToggleTestReportButton().click();
     return flushTasks();
   }
 
@@ -125,6 +145,40 @@ export function routineSectionTestSuite() {
           assertTrue(isRunTestsButtonDisabled());
         });
   });
+
+  test('ResultListToggleButton', () => {
+    /** @type {!Array<!RoutineName>} */
+    const routines = [
+      RoutineName.kCpuCache,
+      RoutineName.kFloatingPoint,
+    ];
+
+    return initializeRoutineSection(routines)
+        .then(() => {
+          // Hidden by default.
+          assertTrue(getResultList().hidden);
+          assertTrue(getToggleTestReportButton().hidden);
+          return clickRunTestsButton();
+        })
+        .then(() => {
+          // Report is still hidden by default, but toggle button is visible.
+          assertTrue(getResultList().hidden);
+          assertFalse(getToggleTestReportButton().hidden);
+          return clickToggleTestReportButton();
+        })
+        .then(() => {
+          // Report is visible when button is clicked.
+          assertFalse(getResultList().hidden);
+          assertFalse(getToggleTestReportButton().hidden);
+          return clickToggleTestReportButton();
+        })
+        .then(() => {
+          // Report is hidden when button is clicked again.
+          assertTrue(getResultList().hidden);
+          assertFalse(getToggleTestReportButton().hidden);
+        });
+  });
+
 
   test('ClickButtonInitializesResultList', () => {
     /** @type {!Array<!RoutineName>} */

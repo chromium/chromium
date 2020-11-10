@@ -8,9 +8,10 @@ import './routine_result_list.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
 import {RoutineName} from './diagnostics_types.js';
 import {getSystemRoutineController} from './mojo_interface_provider.js';
-import {RoutineListExecutor} from './routine_list_executor.js'
+import {ExecutionProgress, RoutineListExecutor} from './routine_list_executor.js'
 
 /**
  * @fileoverview
@@ -35,11 +36,32 @@ Polymer({
       value: () => [],
     },
 
+    /**
+     * @type {!ExecutionProgress}
+     * @private
+     */
+    executionStatus_: {
+      type: Number,
+      value: ExecutionProgress.kNotStarted,
+    },
+
     /** @private */
     isRunTestsDisabled_: {
       type: Boolean,
       value: false,
     },
+
+    /** @private */
+    isReportListHidden_: {
+      type: Boolean,
+      value: true,
+    }
+  },
+
+  /** @private */
+  getResultListElem_() {
+    return /** @type {!RoutineResultListElement} */ (
+        this.$$('routine-result-list'));
   },
 
   /** @private */
@@ -51,16 +73,31 @@ Polymer({
     this.executor_ = new RoutineListExecutor(getSystemRoutineController());
     this.executor_
         .runRoutines(
-            this.routines, resultListElem.onStatusUpdate.bind(resultListElem))
+            this.routines,
+            (status) => {
+              this.executionStatus_ = status.progress;
+              resultListElem.onStatusUpdate.call(resultListElem, status);
+            })
         .then(() => {
           this.isRunTestsDisabled_ = false;
         });
   },
 
   /** @private */
-  getResultListElem_() {
-    return /** @type {!RoutineResultListElement} */ (
-        this.$$('routine-result-list'));
+  onToggleReportClicked_() {
+    // Toggle report list visibility
+    this.isReportListHidden_ = !this.isReportListHidden_;
+  },
+
+  /** @protected */
+  isReportButtonHidden_() {
+    return this.executionStatus_ === ExecutionProgress.kNotStarted;
+  },
+
+  /** @protected */
+  getReportToggleButtonText_() {
+    // TODO(joonbug): Localize this string.
+    return this.isReportListHidden_ ? 'See Report' : 'Hide Report';
   },
 
   /** @override */

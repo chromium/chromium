@@ -72,6 +72,22 @@ export function routineResultListTestSuite() {
     });
   });
 
+  test('HideElement', () => {
+    return initializeRoutineResultList([])
+        .then(() => {
+          assertFalse(routineResultListElement.hidden);
+          assertFalse(
+              routineResultListElement.$$('#resultListContainer').hidden);
+          routineResultListElement.hidden = true;
+          return flushTasks();
+        })
+        .then(() => {
+          assertTrue(routineResultListElement.hidden);
+          assertTrue(
+              routineResultListElement.$$('#resultListContainer').hidden);
+        });
+  });
+
   test('EmptyByDefault', () => {
     return initializeRoutineResultList([]).then(() => {
       assertEquals(0, getEntries().length);

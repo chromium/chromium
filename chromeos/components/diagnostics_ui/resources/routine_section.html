@@ -7,5 +7,9 @@
     <!-- TODO(zentaro): Localize this string. -->
     Run Tests
   </cr-button>
-  <routine-result-list id="resultList"></routine-result-list>
+  <cr-button id="toggleReportButton" class="action-button" on-click="onToggleReportClicked_"
+      hidden="[[isReportButtonHidden_(executionStatus_)]]">
+    [[getReportToggleButtonText_(isReportListHidden_)]]
+  </cr-button>
+  <routine-result-list id="resultList" hidden="[[isReportListHidden_]]"></routine-result-list>
 </div>
