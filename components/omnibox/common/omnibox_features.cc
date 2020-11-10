@@ -251,7 +251,7 @@ const base::Feature kReactiveZeroSuggestionsOnNTPRealbox{
 // NonIncognito will only controls behaviors under incognito / non-incognito
 // mode respectively.
 const base::Feature kOnDeviceHeadProviderIncognito{
-    "OmniboxOnDeviceHeadProviderIncognito", enabled_by_default_android_ios};
+    "OmniboxOnDeviceHeadProviderIncognito", base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kOnDeviceHeadProviderNonIncognito{
     "OmniboxOnDeviceHeadProviderNonIncognito", enabled_by_default_android_ios};
 
