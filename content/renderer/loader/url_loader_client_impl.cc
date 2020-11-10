@@ -165,6 +165,14 @@ class URLLoaderClientImpl::BodyBuffer final
   // mojo::DataPipeDrainer::Client
   void OnDataAvailable(const void* data, size_t num_bytes) override {
     DCHECK(draining_);
+    SCOPED_CRASH_KEY_NUMBER(OnDataAvailable, buffered_body_bytes,
+                            buffered_body_.size());
+    SCOPED_CRASH_KEY_NUMBER(OnDataAvailable, remaining_bytes,
+                            bytes_remaining_in_buffer_);
+    SCOPED_CRASH_KEY_NUMBER(OnDataAvailable, data_bytes, num_bytes);
+    SCOPED_CRASH_KEY_STRING256(
+        OnDataAvailable, last_loaded_url,
+        owner_->last_loaded_url().possibly_invalid_spec());
     const auto span =
         base::make_span(static_cast<const char*>(data), num_bytes);
     buffered_body_.insert(buffered_body_.end(), span.begin(), span.end());

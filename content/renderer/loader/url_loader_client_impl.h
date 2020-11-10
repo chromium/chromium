@@ -76,6 +76,8 @@ class CONTENT_EXPORT URLLoaderClientImpl final
       mojo::ScopedDataPipeConsumerHandle body) override;
   void OnComplete(const network::URLLoaderCompletionStatus& status) override;
 
+  const GURL& last_loaded_url() const { return last_loaded_url_; }
+
  private:
   class BodyBuffer;
   class DeferredMessage;
