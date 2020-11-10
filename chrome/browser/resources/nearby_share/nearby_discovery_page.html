@@ -6,8 +6,8 @@
   }
 
   #centerContent {
-    background: radial-gradient(160% 50% at 0 100%, rgba(138, 180, 248, 0.25),
-        rgba(255, 255, 255, 0));
+    background: radial-gradient(160% 50% at 0 100%,
+        rgba(var(--google-blue-refresh-300-rgb), 0.25), rgba(255, 255, 255, 0));
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
@@ -31,7 +31,7 @@
 
   #help {
     align-items: flex-start;
-    color: rgb(95, 99, 104);
+    color: var(--google-grey-refresh-700);
     display: flex;
     flex-direction: row;
     font-size: 9px;
@@ -46,7 +46,7 @@
   }
 
   #helpText a {
-    color: rgb(26, 115, 232);
+    color: var(--google-blue-600);
     text-decoration: none;
   }
 
