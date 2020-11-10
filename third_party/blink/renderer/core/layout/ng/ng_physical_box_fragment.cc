@@ -777,23 +777,22 @@ PositionWithAffinity NGPhysicalBoxFragment::PositionForPoint(
       continue;
 
     PhysicalRect child_rect(child.offset, child->Size());
-    if (child_rect.Contains(point)) {
+    LayoutUnit horizontal_distance;
+    if (child_rect.X() > point_rect.X())
+      horizontal_distance = child_rect.X() - point_rect.X();
+    else if (point_rect.Right() > child_rect.Right())
+      horizontal_distance = point_rect.Right() - child_rect.Right();
+    LayoutUnit vertical_distance;
+    if (child_rect.Y() > point_rect.Y())
+      vertical_distance = child_rect.Y() - point_rect.Y();
+    else if (point_rect.Bottom() > child_rect.Bottom())
+      vertical_distance = point_rect.Bottom() - child_rect.Bottom();
+
+    if (!horizontal_distance && !vertical_distance) {
       // We actually hit a child. We're done.
       closest_child = child;
       break;
     }
-
-    LayoutUnit horizontal_distance;
-    if (child_rect.X() > point_rect.X())
-      horizontal_distance = child_rect.X() - point_rect.X();
-    else
-      horizontal_distance = point_rect.Right() - child_rect.Right();
-
-    LayoutUnit vertical_distance;
-    if (child_rect.Y() > point_rect.Y())
-      vertical_distance = child_rect.Y() - point_rect.Y();
-    else
-      vertical_distance = point_rect.Bottom() - child_rect.Bottom();
 
     const LayoutUnit distance = horizontal_distance * horizontal_distance +
                                 vertical_distance * vertical_distance;

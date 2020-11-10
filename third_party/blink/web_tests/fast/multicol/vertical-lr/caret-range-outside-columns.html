@@ -33,42 +33,50 @@
 </div>
 <script src="../../../resources/js-test.js"></script>
 <script>
+    if (window.internals)
+        internals.settings.setEditingBehavior('win');
+
     description("Test that hitting areas outside columns takes us to the right text content inside columns.");
 
     debug("To the left of the first column:");
     shouldBe("document.caretRangeFromPoint(0,10).startOffset", "0");
-    shouldBe("document.caretRangeFromPoint(0,70).startOffset", "0");
-    shouldBe("document.caretRangeFromPoint(0,109).startOffset", "0");
+    shouldBe("document.caretRangeFromPoint(0,70).startOffset", "2");
+    shouldBe("document.caretRangeFromPoint(0,109).startOffset", "3");
 
     debug("To the left of the second column:");
     shouldBe("document.caretRangeFromPoint(0,110).startOffset", "12");
-    shouldBe("document.caretRangeFromPoint(0,170).startOffset", "12");
-    shouldBe("document.caretRangeFromPoint(0,209).startOffset", "12");
+    shouldBe("document.caretRangeFromPoint(0,170).startOffset", "14");
+    shouldBe("document.caretRangeFromPoint(0,209).startOffset", "15");
 
     debug("To the left of the third column:");
     shouldBe("document.caretRangeFromPoint(0,210).startOffset", "24");
-    shouldBe("document.caretRangeFromPoint(0,270).startOffset", "24");
-    shouldBe("document.caretRangeFromPoint(0,309).startOffset", "24");
+    shouldBe("document.caretRangeFromPoint(0,270).startOffset", "26");
+    shouldBe("document.caretRangeFromPoint(0,309).startOffset", "27");
 
     debug("To the right of the first column:");
-    shouldBe("document.caretRangeFromPoint(400,10).startOffset", "12");
-    shouldBe("document.caretRangeFromPoint(400,70).startOffset", "12");
-    shouldBe("document.caretRangeFromPoint(400,109).startOffset", "12");
+    shouldBe("document.caretRangeFromPoint(400,10).startOffset", "8");
+    shouldBe("document.caretRangeFromPoint(400,70).startOffset", "10");
+    shouldBe("document.caretRangeFromPoint(400,109).startOffset", "11");
 
     debug("To the right of the second column:");
-    shouldBe("document.caretRangeFromPoint(400,110).startOffset", "24");
-    shouldBe("document.caretRangeFromPoint(400,170).startOffset", "24");
-    shouldBe("document.caretRangeFromPoint(400,209).startOffset", "24");
+    shouldBe("document.caretRangeFromPoint(400,110).startOffset", "20");
+    shouldBe("document.caretRangeFromPoint(400,170).startOffset", "22");
+    shouldBe("document.caretRangeFromPoint(400,209).startOffset", "23");
+
+    debug("To the right of the third column:");
+    shouldBe("document.caretRangeFromPoint(400,210).startOffset", "32");
+    shouldBe("document.caretRangeFromPoint(400,270).startOffset", "34");
+    shouldBe("document.caretRangeFromPoint(400,309).startOffset", "35");
 
     debug("Above first column:");
     shouldBe("document.caretRangeFromPoint(90,0).startOffset", "0");
     shouldBe("document.caretRangeFromPoint(110,0).startOffset", "0");
     shouldBe("document.caretRangeFromPoint(130,0).startOffset", "4");
     shouldBe("document.caretRangeFromPoint(150,0).startOffset", "8");
-    shouldBe("document.caretRangeFromPoint(170,0).startOffset", "12");
+    shouldBe("document.caretRangeFromPoint(170,0).startOffset", "8");
 
     debug("Below third column:");
-    shouldBe("document.caretRangeFromPoint(90,350).startOffset", "24");
+    shouldBe("document.caretRangeFromPoint(90,350).startOffset", "27");
     shouldBe("document.caretRangeFromPoint(110,350).startOffset", "27");
     shouldBe("document.caretRangeFromPoint(130,350).startOffset", "31");
     shouldBe("document.caretRangeFromPoint(150,350).startOffset", "35");

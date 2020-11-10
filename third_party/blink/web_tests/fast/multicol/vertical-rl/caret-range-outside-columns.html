@@ -34,15 +34,40 @@
 </div>
 <script src="../../../resources/js-test.js"></script>
 <script>
-    description("Test that hitting areas outside columns takes us to the right text content inside columns.");
+    if (window.internals)
+        internals.settings.setEditingBehavior('win');
 
-    // Note that this test is very limited (compared to the other caret-range- tests),
-    // due to platform behavioral differences, and crbug.com/466974
+    description("Test that hitting areas outside columns takes us to the right text content inside columns.");
 
     debug("To the right of the first column:");
     shouldBe("document.caretRangeFromPoint(550,10).startOffset", "0");
-    shouldBe("document.caretRangeFromPoint(550,70).startOffset", "0");
-    shouldBe("document.caretRangeFromPoint(550,109).startOffset", "0");
+    shouldBe("document.caretRangeFromPoint(550,70).startOffset", "2");
+    shouldBe("document.caretRangeFromPoint(550,109).startOffset", "3");
+
+    debug("To the right of the second column:");
+    shouldBe("document.caretRangeFromPoint(550,110).startOffset", "12");
+    shouldBe("document.caretRangeFromPoint(550,170).startOffset", "14");
+    shouldBe("document.caretRangeFromPoint(550,209).startOffset", "15");
+
+    debug("To the right of the third column:");
+    shouldBe("document.caretRangeFromPoint(550,210).startOffset", "24");
+    shouldBe("document.caretRangeFromPoint(550,270).startOffset", "26");
+    shouldBe("document.caretRangeFromPoint(550,309).startOffset", "27");
+
+    debug("To the left of the first column:");
+    shouldBe("document.caretRangeFromPoint(0,10).startOffset", "8");
+    shouldBe("document.caretRangeFromPoint(0,70).startOffset", "10");
+    shouldBe("document.caretRangeFromPoint(0,109).startOffset", "11");
+
+    debug("To the left of the second column:");
+    shouldBe("document.caretRangeFromPoint(0,110).startOffset", "20");
+    shouldBe("document.caretRangeFromPoint(0,170).startOffset", "22");
+    shouldBe("document.caretRangeFromPoint(0,209).startOffset", "23");
+
+    debug("To the left of the third column:");
+    shouldBe("document.caretRangeFromPoint(0,210).startOffset", "32");
+    shouldBe("document.caretRangeFromPoint(0,270).startOffset", "34");
+    shouldBe("document.caretRangeFromPoint(0,309).startOffset", "35");
 
     debug("Above first column:");
     shouldBe("document.caretRangeFromPoint(550,0).startOffset", "0");
