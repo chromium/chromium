@@ -45,6 +45,8 @@ enum class MessageType : uint32_t {
   BIND_BROKER_HOST,
 };
 
+#pragma pack(push, 1)
+
 struct Header {
   MessageType type;
   uint32_t padding;
@@ -129,6 +131,8 @@ struct EventMessageFromRelayData {
   ports::NodeName source;
 };
 #endif
+
+#pragma pack(pop)
 
 template <typename DataType>
 Channel::MessagePtr CreateMessage(MessageType type,
