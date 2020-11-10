@@ -176,13 +176,16 @@ LayoutUnit LayoutNGBlockFlowMixin<Base>::InlineBlockBaseline(
       return *offset;
   }
 
-  // This logic is in |LayoutBlock|, but we cannot call |Base| because doing so
-  // may traverse |LayoutObject| tree, which may call this function for a child,
-  // but the child may be block fragmented.
-  for (LayoutBox* child = Base::LastChildBox(); child;
-       child = child->PreviousSiblingBox()) {
-    if (!child->IsFloatingOrOutOfFlowPositioned())
-      return LayoutUnit(-1);
+  // This logic is in |LayoutBlock| and |LayoutBlockFlow|, but we cannot call
+  // |Base| because doing so may traverse |LayoutObject| tree, which may call
+  // this function for a child, but the child may be block fragmented.
+  if (!Base::ChildrenInline()) {
+    for (LayoutObject* child = Base::LastChild(); child;
+         child = child->PreviousSibling()) {
+      DCHECK(child->IsBox());
+      if (!child->IsFloatingOrOutOfFlowPositioned())
+        return LayoutUnit(-1);
+    }
   }
   return Base::EmptyLineBaseline(line_direction);
 }
