@@ -314,6 +314,13 @@ if (is_chromeos_device) {
 
       # crbug.com/1141944
       "crostini.LaunchBrowser.artifact",
+
+      # crbug.com/1147607
+      "inputs.VirtualKeyboardAccessibility.stable",
+      "inputs.VirtualKeyboardChangeInput.stable",
+      "inputs.VirtualKeyboardDeadKeys.french_stable",
+      "inputs.VirtualKeyboardTypingApps.stable",
+      "inputs.VirtualKeyboardTypingBrowser.stable",
     ]
   }
 
