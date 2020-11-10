@@ -2,34 +2,43 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/accessibility/platform/inspect/property_node.h"
+#include "content/browser/accessibility/accessibility_tree_formatter_base.h"
+
+#include "content/browser/accessibility/browser_accessibility.h"
+#include "content/browser/accessibility/browser_accessibility_manager.h"
+#include "content/browser/accessibility/test_browser_accessibility_delegate.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_enums.mojom.h"
-#include "ui/accessibility/platform/inspect/inspect.h"
 
-using ui::AXPropertyFilter;
-using ui::AXPropertyNode;
+namespace content {
 
-namespace ui {
-
-class AXPropertyNodeTest : public testing::Test {
+class AccessibilityTreeFormatterBaseTest : public testing::Test {
  public:
-  AXPropertyNodeTest() = default;
-  ~AXPropertyNodeTest() override = default;
+  AccessibilityTreeFormatterBaseTest() = default;
+  ~AccessibilityTreeFormatterBaseTest() override = default;
+
+ protected:
+  std::unique_ptr<TestBrowserAccessibilityDelegate>
+      test_browser_accessibility_delegate_;
 
  private:
-  DISALLOW_COPY_AND_ASSIGN(AXPropertyNodeTest);
+  void SetUp() override {
+    test_browser_accessibility_delegate_ =
+        std::make_unique<TestBrowserAccessibilityDelegate>();
+  }
+
+  DISALLOW_COPY_AND_ASSIGN(AccessibilityTreeFormatterBaseTest);
 };
 
-AXPropertyNode Parse(const char* input) {
-  AXPropertyFilter filter(input, AXPropertyFilter::ALLOW);
-  return AXPropertyNode::From(filter);
+PropertyNode Parse(const char* input) {
+  ui::AXPropertyFilter filter(input, ui::AXPropertyFilter::ALLOW);
+  return PropertyNode::FromPropertyFilter(filter);
 }
 
-AXPropertyNode GetArgumentNode(const char* input) {
+PropertyNode GetArgumentNode(const char* input) {
   auto got = Parse(input);
   if (got.parameters.size() == 0) {
-    return AXPropertyNode();
+    return PropertyNode();
   }
   return std::move(got.parameters[0]);
 }
@@ -45,7 +54,7 @@ struct ProperyNodeCheck {
   std::vector<ProperyNodeCheck> parameters;
 };
 
-void Check(const AXPropertyNode& got, const ProperyNodeCheck& expected) {
+void Check(const PropertyNode& got, const ProperyNodeCheck& expected) {
   EXPECT_EQ(got.target, expected.target);
   EXPECT_EQ(got.name_or_value, expected.name_or_value);
   EXPECT_EQ(got.parameters.size(), expected.parameters.size());
@@ -59,7 +68,7 @@ void ParseAndCheck(const char* input, const ProperyNodeCheck& expected) {
   Check(Parse(input), expected);
 }
 
-TEST_F(AXPropertyNodeTest, ParseProperty) {
+TEST_F(AccessibilityTreeFormatterBaseTest, ParseProperty) {
   // Properties and methods.
   ParseAndCheck("Role", "Role");
   ParseAndCheck("ChildAt(3)", "ChildAt(3)");
@@ -142,4 +151,4 @@ TEST_F(AXPropertyNodeTest, ParseProperty) {
             "anchor: {}(:2, 1, down)");
 }
 
-}  // namespace ui
+}  // namespace content

@@ -8,10 +8,6 @@
 #include "content/browser/accessibility/accessibility_tree_formatter_base.h"
 #include "content/browser/accessibility/browser_accessibility_cocoa.h"
 
-namespace ui {
-class AXPropertyNode;
-}
-
 namespace content {
 namespace a11y {
 
@@ -73,7 +69,7 @@ class CONTENT_EXPORT AttributeInvoker final {
   AttributeInvoker(const id node, const LineIndexer* line_indexer);
 
   // Invokes an attribute matching to a property filter.
-  OptionalNSObject Invoke(const ui::AXPropertyNode& property_node) const;
+  OptionalNSObject Invoke(const PropertyNode& property_node) const;
   // Gets the value of a parameterized attribute by name.
   OptionalNSObject GetValue(const std::string& property_name,
                             const OptionalNSObject& param) const;
@@ -85,17 +81,16 @@ class CONTENT_EXPORT AttributeInvoker final {
 
  private:
   // Returns a parameterized attribute parameter by a property node.
-  OptionalNSObject ParamByPropertyNode(const ui::AXPropertyNode&) const;
+  OptionalNSObject ParamByPropertyNode(const PropertyNode&) const;
 
-  NSNumber* PropertyNodeToInt(const ui::AXPropertyNode&) const;
-  NSArray* PropertyNodeToIntArray(const ui::AXPropertyNode&) const;
-  NSValue* PropertyNodeToRange(const ui::AXPropertyNode&) const;
-  gfx::NativeViewAccessible PropertyNodeToUIElement(
-      const ui::AXPropertyNode&) const;
+  NSNumber* PropertyNodeToInt(const PropertyNode&) const;
+  NSArray* PropertyNodeToIntArray(const PropertyNode&) const;
+  NSValue* PropertyNodeToRange(const PropertyNode&) const;
+  gfx::NativeViewAccessible PropertyNodeToUIElement(const PropertyNode&) const;
 
-  id DictNodeToTextMarker(const ui::AXPropertyNode&) const;
-  id PropertyNodeToTextMarker(const ui::AXPropertyNode&) const;
-  id PropertyNodeToTextMarkerRange(const ui::AXPropertyNode&) const;
+  id DictNodeToTextMarker(const PropertyNode&) const;
+  id PropertyNodeToTextMarker(const PropertyNode&) const;
+  id PropertyNodeToTextMarkerRange(const PropertyNode&) const;
 
   gfx::NativeViewAccessible LineIndexToNode(
       const base::string16 line_index) const;
