@@ -258,7 +258,10 @@ void NativeInputMethodEngine::ImeObserver::OnKeyEvent(
       return;
     }
   }
-  autocorrect_manager_->OnKeyEvent(event);
+  if (autocorrect_manager_->OnKeyEvent(event)) {
+    std::move(callback).Run(true);
+    return;
+  }
   auto key_event = ime::mojom::PhysicalKeyEvent::New(
       event.type == "keydown" ? ime::mojom::KeyEventType::kKeyDown
                               : ime::mojom::KeyEventType::kKeyUp,

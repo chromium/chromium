@@ -31,10 +31,23 @@ void AutocorrectManager::MarkAutocorrectRange(const std::string& corrected_word,
   }
 }
 
-void AutocorrectManager::OnKeyEvent(
+bool AutocorrectManager::OnKeyEvent(
     const InputMethodEngineBase::KeyboardEvent& event) {
   if (event.type != "keydown") {
-    return;
+    return false;
+  }
+  if (event.key == "Up" && window_visible) {
+    std::string error;
+    auto button = ui::ime::AssistiveWindowButton();
+    button.id = ui::ime::ButtonId::kUndo;
+    button.window_type = ui::ime::AssistiveWindowType::kUndoWindow;
+    engine_->SetButtonHighlighted(context_id_, button, true, &error);
+    button_highlighted = true;
+    return true;
+  }
+  if (event.key == "Enter" && window_visible && button_highlighted) {
+    UndoAutocorrect();
+    return true;
   }
   if (key_presses_until_underline_hide_ > 0) {
     --key_presses_until_underline_hide_;
@@ -42,6 +55,7 @@ void AutocorrectManager::OnKeyEvent(
   if (key_presses_until_underline_hide_ == 0) {
     ClearUnderline();
   }
+  return false;
 }
 
 void AutocorrectManager::ClearUnderline() {
@@ -60,6 +74,8 @@ void AutocorrectManager::OnSurroundingTextChanged(const base::string16& text,
     chromeos::AssistiveWindowProperties properties;
     properties.type = ui::ime::AssistiveWindowType::kUndoWindow;
     properties.visible = true;
+    window_visible = true;
+    button_highlighted = false;
 
     engine_->SetAssistiveWindowProperties(context_id_, properties, &error);
     key_presses_until_underline_hide_ = kKeysUntilAutocorrectWindowHides;
@@ -67,7 +83,8 @@ void AutocorrectManager::OnSurroundingTextChanged(const base::string16& text,
     chromeos::AssistiveWindowProperties properties;
     properties.type = ui::ime::AssistiveWindowType::kUndoWindow;
     properties.visible = false;
-
+    window_visible = false;
+    button_highlighted = false;
     engine_->SetAssistiveWindowProperties(context_id_, properties, &error);
   }
 }
@@ -82,6 +99,8 @@ void AutocorrectManager::UndoAutocorrect() {
   chromeos::AssistiveWindowProperties properties;
   properties.type = ui::ime::AssistiveWindowType::kUndoWindow;
   properties.visible = false;
+  window_visible = false;
+  button_highlighted = false;
   engine_->SetAssistiveWindowProperties(context_id_, properties, &error);
   const gfx::Range range = engine_->GetAutocorrectRange();
   const ui::SurroundingTextInfo surrounding_text =

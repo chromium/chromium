@@ -36,8 +36,8 @@ class AutocorrectManager {
                             const std::string& typed_word,
                             int start_index);
   // To hide the underline after enough keypresses, this class intercepts
-  // keystrokes.
-  void OnKeyEvent(const InputMethodEngineBase::KeyboardEvent& event);
+  // keystrokes. Returns whether the keypress has now been handled.
+  bool OnKeyEvent(const InputMethodEngineBase::KeyboardEvent& event);
   // Indicates a new text field is focused, used to save context ID.
   void OnFocus(int context_id);
   // To show the undo window when cursor is in an autocorrected word, this class
@@ -54,6 +54,8 @@ class AutocorrectManager {
   int context_id_ = -1;
   InputMethodEngine* const engine_;
   std::string last_typed_word_;
+  bool window_visible = false;
+  bool button_highlighted = false;
 };
 
 }  // namespace chromeos
