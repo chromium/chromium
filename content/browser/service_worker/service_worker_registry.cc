@@ -1341,9 +1341,44 @@ ServiceWorkerRegistry::GetRemoteStorageControl() {
 }
 
 void ServiceWorkerRegistry::OnRemoteStorageDisconnected() {
+  const size_t kMaxRetryCounts = 100;
+
+  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+
   remote_storage_control_.reset();
 
-  // TODO(crbug.com/1133143): Add crash recovery logic.
+  if (!context_)
+    return;
+
+  if (connection_state_ == ConnectionState::kRecovering) {
+    ++recovery_retry_counts_;
+    if (recovery_retry_counts_ > kMaxRetryCounts) {
+      CHECK(false) << "The Storage Service consistently crashes.";
+      return;
+    }
+  }
+  connection_state_ = ConnectionState::kRecovering;
+
+  // Collect live version information to recover resource purging state in the
+  // Storage Service.
+  std::vector<storage::mojom::ServiceWorkerLiveVersionInfoPtr> versions;
+  for (auto& it : context_->GetLiveVersions()) {
+    if (!it.second->is_redundant())
+      versions.push_back(it.second->RebindStorageReference());
+  }
+
+  GetRemoteStorageControl()->Recover(
+      std::move(versions), base::BindOnce(&ServiceWorkerRegistry::DidRecover,
+                                          weak_factory_.GetWeakPtr()));
+}
+
+void ServiceWorkerRegistry::DidRecover() {
+  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+
+  recovery_retry_counts_ = 0;
+  connection_state_ = ConnectionState::kNormal;
+  // TODO(crbug.com/1133143): Retry mojo method calls which are invoked during
+  // recovery steps.
 }
 
 }  // namespace content

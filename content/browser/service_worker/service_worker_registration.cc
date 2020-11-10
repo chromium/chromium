@@ -17,6 +17,7 @@
 #include "content/browser/service_worker/service_worker_job_coordinator.h"
 #include "content/browser/service_worker/service_worker_metrics.h"
 #include "content/browser/service_worker/service_worker_register_job.h"
+#include "content/browser/service_worker/service_worker_version.h"
 #include "content/common/content_navigation_policy.h"
 #include "content/public/browser/browser_thread.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"
@@ -90,6 +91,13 @@ void ServiceWorkerRegistration::SetStatus(Status status) {
 #endif  // DCHECK_IS_ON()
 
   status_ = status;
+
+  if (active_version_)
+    active_version_->SetRegistrationStatus(status_);
+  if (waiting_version_)
+    waiting_version_->SetRegistrationStatus(status_);
+  if (installing_version_)
+    installing_version_->SetRegistrationStatus(status_);
 }
 
 bool ServiceWorkerRegistration::IsStored() const {
@@ -161,8 +169,10 @@ void ServiceWorkerRegistration::SetActiveVersion(
 
   auto mask =
       blink::mojom::ChangedServiceWorkerObjectsMask::New(false, false, false);
-  if (version)
+  if (version) {
     UnsetVersionInternal(version.get(), mask.get());
+    version->SetRegistrationStatus(status_);
+  }
   active_version_ = version;
   if (active_version_)
     active_version_->SetNavigationPreloadState(navigation_preload_state_);
@@ -180,8 +190,10 @@ void ServiceWorkerRegistration::SetWaitingVersion(
 
   auto mask =
       blink::mojom::ChangedServiceWorkerObjectsMask::New(false, false, false);
-  if (version)
+  if (version) {
     UnsetVersionInternal(version.get(), mask.get());
+    version->SetRegistrationStatus(status_);
+  }
   waiting_version_ = version;
   mask->waiting = true;
 
@@ -194,8 +206,10 @@ void ServiceWorkerRegistration::SetInstallingVersion(
     return;
   auto mask =
       blink::mojom::ChangedServiceWorkerObjectsMask::New(false, false, false);
-  if (version)
+  if (version) {
     UnsetVersionInternal(version.get(), mask.get());
+    version->SetRegistrationStatus(status_);
+  }
   installing_version_ = version;
   mask->installing = true;
   NotifyVersionAttributesChanged(std::move(mask));

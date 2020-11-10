@@ -24,6 +24,21 @@ import "url/mojom/url.mojom";
 // owned by the C++ ServiceWorkerVersion instance.
 interface ServiceWorkerLiveVersionRef {};
 
+// Conveys information about a live service worker version. Sent from the
+// browser to the Storage Service to recover resource purging state after a
+// Storage Service restart.
+struct ServiceWorkerLiveVersionInfo {
+  // Version id.
+  int64 id;
+  // Contains resource ids which are purgeable when `reference` is disconnected.
+  // Non-empty only when the associated service worker registration has been
+  // deleted from the storage but the corresponding service worker version is
+  // still being used.
+  array<int64> purgeable_resources;
+  // A receiver which is associated with `id`.
+  pending_receiver<ServiceWorkerLiveVersionRef> reference;
+};
+
 // Conveys a result of finding a registration.
 // The Storage Service (components/services/storage) supplies this
 // information and the //content consumes the information.
@@ -115,6 +130,12 @@ interface ServiceWorkerStorageControl {
 
   // Deletes the whole storage.
   Delete() => (ServiceWorkerDatabaseStatus status);
+
+  // Called by the browser after a Storage Service restart. Tells the Storage
+  // Service which service worker versions are being used, which is needed to
+  // decide when it's safe to purge resources for service worker versions that
+  // have been deleted.
+  Recover(array<ServiceWorkerLiveVersionInfo> versions) => ();
 
   // Returns all origins which have service worker registrations.
   GetRegisteredOrigins() => (array<url.mojom.Origin> origins);

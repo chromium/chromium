@@ -9,6 +9,7 @@
 
 #include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/threading/sequence_bound.h"
 #include "content/browser/service_worker/service_worker_database.h"
 #include "content/browser/service_worker/service_worker_registration.h"
 #include "content/browser/service_worker/service_worker_storage.h"
@@ -365,6 +366,8 @@ class CONTENT_EXPORT ServiceWorkerRegistry {
 
   void OnRemoteStorageDisconnected();
 
+  void DidRecover();
+
   // The ServiceWorkerContextCore object must outlive this.
   ServiceWorkerContextCore* const context_;
 
@@ -402,6 +405,13 @@ class CONTENT_EXPORT ServiceWorkerRegistry {
 
   // Indicates whether recovery process should be scheduled.
   bool should_schedule_delete_and_start_over_ = true;
+
+  enum class ConnectionState {
+    kNormal,
+    kRecovering,
+  };
+  ConnectionState connection_state_ = ConnectionState::kNormal;
+  size_t recovery_retry_counts_ = 0;
 
   base::WeakPtrFactory<ServiceWorkerRegistry> weak_factory_{this};
 };

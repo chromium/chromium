@@ -44,9 +44,12 @@ class CONTENT_EXPORT ServiceWorkerStorageControlImpl
   void LazyInitializeForTest();
 
  private:
+  // storage::mojom::ServiceWorkerStorageControl implementations:
   void Disable() override;
   void Delete(DeleteCallback callback) override;
-  // storage::mojom::ServiceWorkerStorageControl implementations:
+  void Recover(
+      std::vector<storage::mojom::ServiceWorkerLiveVersionInfoPtr> versions,
+      RecoverCallback callback) override;
   void GetRegisteredOrigins(GetRegisteredOriginsCallback callback) override;
   void FindRegistrationForClientUrl(
       const GURL& client_url,

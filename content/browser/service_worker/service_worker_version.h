@@ -35,6 +35,7 @@
 #include "content/browser/service_worker/service_worker_client_utils.h"
 #include "content/browser/service_worker/service_worker_metrics.h"
 #include "content/browser/service_worker/service_worker_ping_controller.h"
+#include "content/browser/service_worker/service_worker_registration.h"
 #include "content/browser/service_worker/service_worker_script_cache_map.h"
 #include "content/browser/service_worker/service_worker_update_checker.h"
 #include "content/common/content_export.h"
@@ -70,7 +71,6 @@ class ServiceWorkerContainerHost;
 class ServiceWorkerContextCore;
 class ServiceWorkerHost;
 class ServiceWorkerInstalledScriptsSender;
-class ServiceWorkerRegistration;
 struct ServiceWorkerVersionInfo;
 
 namespace service_worker_controllee_request_handler_unittest {
@@ -241,6 +241,11 @@ class CONTENT_EXPORT ServiceWorkerVersion
   // function.
   void SetNavigationPreloadState(
       const blink::mojom::NavigationPreloadState& state);
+
+  // Only intended for use by ServiceWorkerRegistration. Generally use
+  // ServiceWorkerRegistration::status() instead of this function.
+  void SetRegistrationStatus(
+      ServiceWorkerRegistration::Status registration_status);
 
   ServiceWorkerMetrics::Site site_for_uma() const { return site_for_uma_; }
 
@@ -588,6 +593,10 @@ class CONTENT_EXPORT ServiceWorkerVersion
       blink::mojom::ConsoleMessageLevel message_level,
       const std::string& message);
 
+  // Rebinds the mojo remote to the Storage Service. Called during a recovery
+  // step of the Storage Service.
+  storage::mojom::ServiceWorkerLiveVersionInfoPtr RebindStorageReference();
+
   mojo::AssociatedReceiver<blink::mojom::ServiceWorkerHost>&
   service_worker_host_receiver_for_testing() {
     return receiver_;
@@ -904,6 +913,12 @@ class CONTENT_EXPORT ServiceWorkerVersion
   // doesn't necessarily exist whenever there is a live version.
   blink::mojom::NavigationPreloadState navigation_preload_state_;
   ServiceWorkerMetrics::Site site_for_uma_;
+
+  // A copy of ServiceWorkerRegistration::status(). Cached for the same reason
+  // as `navigation_preload_state_`: A live registration doesn't necessarily
+  // exist whenever there is a live version, but `registation_status_` is needed
+  // to check if the registration is already deleted or not.
+  ServiceWorkerRegistration::Status registration_status_;
 
   // Cross-Origin-Embedder-Policy for the service worker script. This persists
   // in the disk.

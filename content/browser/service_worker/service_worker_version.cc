@@ -38,7 +38,6 @@
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/service_worker/service_worker_host.h"
 #include "content/browser/service_worker/service_worker_installed_scripts_sender.h"
-#include "content/browser/service_worker/service_worker_registration.h"
 #include "content/common/content_navigation_policy.h"
 #include "content/common/service_worker/service_worker_utils.h"
 #include "content/public/browser/browser_thread.h"
@@ -259,6 +258,7 @@ ServiceWorkerVersion::ServiceWorkerVersion(
       script_type_(script_type),
       fetch_handler_existence_(FetchHandlerExistence::UNKNOWN),
       site_for_uma_(ServiceWorkerMetrics::SiteFromURL(scope_)),
+      registration_status_(registration->status()),
       context_(context),
       script_cache_map_(this, context),
       tick_clock_(base::DefaultTickClock::GetInstance()),
@@ -301,6 +301,11 @@ ServiceWorkerVersion::~ServiceWorkerVersion() {
 void ServiceWorkerVersion::SetNavigationPreloadState(
     const blink::mojom::NavigationPreloadState& state) {
   navigation_preload_state_ = state;
+}
+
+void ServiceWorkerVersion::SetRegistrationStatus(
+    ServiceWorkerRegistration::Status registration_status) {
+  registration_status_ = registration_status;
 }
 
 void ServiceWorkerVersion::SetStatus(Status status) {
@@ -2413,6 +2418,33 @@ void ServiceWorkerVersion::MaybeReportConsoleMessageToInternals(
   OnReportConsoleMessage(blink::mojom::ConsoleMessageSource::kOther,
                          message_level, base::UTF8ToUTF16(message), -1,
                          script_url_);
+}
+
+storage::mojom::ServiceWorkerLiveVersionInfoPtr
+ServiceWorkerVersion::RebindStorageReference() {
+  DCHECK(context_);
+
+  std::vector<int64_t> purgeable_resources;
+  // Resources associated with this version are purgeable when the corresponding
+  // registration is uninstalling or uninstalled.
+  switch (registration_status_) {
+    case ServiceWorkerRegistration::Status::kIntact:
+      break;
+    case ServiceWorkerRegistration::Status::kUninstalling:
+    case ServiceWorkerRegistration::Status::kUninstalled: {
+      std::vector<storage::mojom::ServiceWorkerResourceRecordPtr> resources;
+      script_cache_map_.GetResources(&resources);
+      for (auto& resource : resources) {
+        purgeable_resources.push_back(resource->resource_id);
+      }
+      break;
+    }
+  }
+
+  remote_reference_.reset();
+  return storage::mojom::ServiceWorkerLiveVersionInfo::New(
+      version_id_, std::move(purgeable_resources),
+      remote_reference_.BindNewPipeAndPassReceiver());
 }
 
 void ServiceWorkerVersion::MaybeUpdateIdleDelayForTerminationOnNoControllee(

@@ -112,6 +112,21 @@ void ServiceWorkerStorageControlImpl::Delete(DeleteCallback callback) {
   storage_->DeleteAndStartOver(std::move(callback));
 }
 
+void ServiceWorkerStorageControlImpl::Recover(
+    std::vector<storage::mojom::ServiceWorkerLiveVersionInfoPtr> versions,
+    RecoverCallback callback) {
+  for (auto& version : versions) {
+    DCHECK(!base::Contains(live_versions_, version->id));
+    auto reference = std::make_unique<ServiceWorkerLiveVersionRefImpl>(
+        weak_ptr_factory_.GetWeakPtr(), version->id);
+    reference->Add(std::move(version->reference));
+    reference->set_purgeable_resources(version->purgeable_resources);
+    live_versions_[version->id] = std::move(reference);
+  }
+
+  std::move(callback).Run();
+}
+
 void ServiceWorkerStorageControlImpl::GetRegisteredOrigins(
     GetRegisteredOriginsCallback callback) {
   storage_->GetRegisteredOrigins(std::move(callback));

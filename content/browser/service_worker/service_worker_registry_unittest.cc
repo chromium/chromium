@@ -17,6 +17,7 @@
 #include "net/test/cert_test_util.h"
 #include "net/test/test_data_directory.h"
 #include "storage/browser/test/mock_special_storage_policy.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/loader/network_utils.h"
 #include "third_party/blink/public/common/origin_trials/origin_trial_policy.h"
@@ -1799,6 +1800,51 @@ TEST_F(ServiceWorkerRegistryResourceTest, CleanupOnRestart) {
   EXPECT_FALSE(VerifyBasicResponse(storage_control(),
                                    kStaleUncommittedResourceId, false));
   EXPECT_TRUE(VerifyBasicResponse(storage_control(), kNewResourceId, true));
+}
+
+// Tests resource purging with storage service restarts.
+TEST_F(ServiceWorkerRegistryResourceTest, Restart_LiveVersion) {
+  // Precondition: One registration with two resources is stored. There is a
+  // waiting version associated with the registration.
+
+  // Restarting should not schedule resource purging.
+  registry()->SimulateStorageRestartForTesting();
+  storage_control().FlushForTesting();
+
+  ASSERT_EQ(GetPurgeableResourceIds().size(), 0u);
+  ASSERT_EQ(GetPurgingResources().size(), 0u);
+
+  // Delete the registration. The resources should be on the purgeable list but
+  // should not be purged yet.
+  ASSERT_EQ(DeleteRegistration(registration_, scope_.GetOrigin()),
+            blink::ServiceWorkerStatusCode::kOk);
+
+  EXPECT_THAT(GetPurgeableResourceIds(), testing::UnorderedElementsAreArray(
+                                             {resource_id1_, resource_id2_}));
+  EXPECT_TRUE(GetPurgingResources().empty());
+  ASSERT_TRUE(VerifyBasicResponse(storage_control(), resource_id1_, true));
+  ASSERT_TRUE(VerifyBasicResponse(storage_control(), resource_id2_, true));
+
+  // Restarting should not change the situation.
+  registry()->SimulateStorageRestartForTesting();
+  storage_control().FlushForTesting();
+
+  EXPECT_THAT(GetPurgeableResourceIds(), testing::UnorderedElementsAreArray(
+                                             {resource_id1_, resource_id2_}));
+  EXPECT_TRUE(GetPurgingResources().empty());
+  ASSERT_TRUE(VerifyBasicResponse(storage_control(), resource_id1_, true));
+  ASSERT_TRUE(VerifyBasicResponse(storage_control(), resource_id2_, true));
+
+  // Doom the version. The resources should be purged.
+  base::RunLoop loop;
+  storage_control()->SetPurgingCompleteCallbackForTest(loop.QuitClosure());
+  registration_->waiting_version()->Doom();
+  loop.Run();
+
+  ASSERT_EQ(GetPurgeableResourceIds().size(), 0u);
+  ASSERT_EQ(GetPurgingResources().size(), 0u);
+  ASSERT_FALSE(VerifyBasicResponse(storage_control(), resource_id1_, false));
+  ASSERT_FALSE(VerifyBasicResponse(storage_control(), resource_id2_, false));
 }
 
 }  // namespace content
