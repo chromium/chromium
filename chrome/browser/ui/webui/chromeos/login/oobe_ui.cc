@@ -577,9 +577,6 @@ void OobeUI::BindInterface(
 
 OobeUI::OobeUI(content::WebUI* web_ui, const GURL& url)
     : ui::MojoWebUIController(web_ui, true /* enable_chrome_send */) {
-  // TODO(crbug.com/1082670): Remove excessive logging after investigation.
-  LOG(ERROR) << "1082670 : Creating new OobeUI";
-
   display_type_ = GetDisplayType(url);
 
   js_calls_container_ = std::make_unique<JSCallsContainer>();
@@ -699,13 +696,7 @@ void OobeUI::AddScreenHandler(std::unique_ptr<BaseScreenHandler> handler) {
 }
 
 void OobeUI::InitializeHandlers() {
-  // TODO(crbug.com/1082670): Remove excessive logging after investigation.
-  LOG(ERROR) << "1082670 : OobeUI::InitializeHandlers";
-
   js_calls_container_->ExecuteDeferredJSCalls(web_ui());
-
-  // TODO(crbug.com/1082670): Remove excessive logging after investigation.
-  LOG(ERROR) << "1082670 : OobeUI::Marking as ready and executing callbacks";
 
   ready_ = true;
   for (size_t i = 0; i < ready_callbacks_.size(); ++i)
@@ -737,9 +728,6 @@ bool OobeUI::IsScreenInitialized(OobeScreenId screen) {
 }
 
 bool OobeUI::IsJSReady(const base::Closure& display_is_ready_callback) {
-  // TODO(crbug.com/1082670): Remove excessive logging after investigation.
-  LOG(ERROR) << "1082670 : OobeUI::IsJSReady? = " << ready_;
-
   if (!ready_)
     ready_callbacks_.push_back(display_is_ready_callback);
   return ready_;
