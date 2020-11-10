@@ -108,6 +108,24 @@ Polymer({
       value: () => [],
     },
 
+    /**
+     * Used to display which page is being scanned during a scan.
+     * @private {number}
+     */
+    pageNumber_: {
+      type: Number,
+      value: 1,
+    },
+
+    /**
+     * Used to display a page's scan progress during a scan.
+     * @private {number}
+     */
+    progressPercent_: {
+      type: Number,
+      value: 0,
+    },
+
     /** @private {!Array<chromeos.scanning.mojom.PageSize>} */
     selectedSourcePageSizes_: {
       type: Array,
@@ -156,10 +174,8 @@ Polymer({
    * @param {number} progressPercent
    */
   onPageProgress(pageNumber, progressPercent) {
-    // TODO(jschettler): Move this text to the preview area and add a progress
-    // bar to display the progress.
-    this.statusText_ =
-        'Scanning page ' + pageNumber + ': ' + progressPercent + '%';
+    this.pageNumber_ = pageNumber;
+    this.progressPercent_ = progressPercent;
   },
 
   /**
@@ -277,6 +293,7 @@ Polymer({
       return;
     }
 
+    this.statusText_ = '';
     this.objectUrls_ = [];
 
     const settings = {
@@ -317,8 +334,9 @@ Polymer({
       return;
     }
 
-    this.statusText_ = 'Scanning page 1: 0%';
     this.setAppState_(AppState.SCANNING);
+    this.pageNumber_ = 1;
+    this.progressPercent_ = 0;
   },
 
   /** @private */

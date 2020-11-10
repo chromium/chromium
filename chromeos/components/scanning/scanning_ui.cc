@@ -72,6 +72,7 @@ void AddScanningAppStrings(content::WebUIDataSource* html_source) {
       {"resolutionOptionText", IDS_SCANNING_APP_RESOLUTION_OPTION_TEXT},
       {"scanButtonText", IDS_SCANNING_APP_SCAN_BUTTON_TEXT},
       {"scanPreviewHelperText", IDS_SCANNING_APP_SCAN_PREVIEW_HELPER_TEXT},
+      {"scanPreviewProgressText", IDS_SCANNING_APP_SCAN_PREVIEW_PROGRESS_TEXT},
       {"scanToDropdownLabel", IDS_SCANNING_APP_SCAN_TO_DROPDOWN_LABEL},
       {"scannerDropdownLabel", IDS_SCANNING_APP_SCANNER_DROPDOWN_LABEL},
       {"selectFolderOption", IDS_SCANNING_APP_SELECT_FOLDER_OPTION},

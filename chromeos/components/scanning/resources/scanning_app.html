@@ -79,7 +79,9 @@
 <div id="scanningContainer">
   <div class="panel-container">
     <div class="left-panel">
-      <scan-preview></scan-preview>
+      <scan-preview id="scanPreview" app-state="[[appState_]]"
+          page-number="[[pageNumber_]]"
+          progress-percent="[[progressPercent_]]"></scan-preview>
     </div>
     <div class="right-panel">
       <h1 id="appTitle">[[i18n('appTitle')]]</h1>

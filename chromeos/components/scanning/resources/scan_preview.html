@@ -5,6 +5,17 @@
     text-align-last: center;
     width: 60%;
   }
+
+  #progressText {
+    @apply --scanning-progress-text-font;
+    color: var(--scanning-progress-text-color);
+  }
+
+  #scanProgress {
+    text-align: center;
+    width: 60%;
+  }
+
   .preview {
     align-items: center;
     border: 1px solid var(--google-grey-200);
@@ -15,7 +26,22 @@
     height: 420px;
     justify-content: center;
   }
+
+  paper-progress {
+    --paper-progress-active-color: var(--google-blue-600);
+    --paper-progress-container-color: var(--google-blue-200);
+    border-radius: 4px;
+    height: 4px;
+    margin-top: 12px;
+    width: 256px;
+  }
 </style>
 <div class="preview">
-  <div id="helperText">[[i18n('scanPreviewHelperText')]]</div>
+  <div id="helperText" hidden$="[[shouldHideHelperText_(appState)]]">
+    [[i18n('scanPreviewHelperText')]]
+  </div>
+  <div id="scanProgress" hidden$="[[shouldHideProgress_(appState)]]">
+    <span id="progressText">[[getProgressTextString_(pageNumber)]]</span>
+    <paper-progress value="[[progressPercent]]"></paper-progress>
+  </div>
 </div>

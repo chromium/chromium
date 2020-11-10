@@ -301,6 +301,14 @@ export function scanningAppTest() {
     let scanButton;
     /** @type {!Element} */
     let statusText;
+    /** @type {!Element} */
+    let helperText;
+    /** @type {!Element} */
+    let scanProgress;
+    /** @type {!Element} */
+    let progressText;
+    /** @type {!Element} */
+    let progressBar;
 
     return initializeScanningApp(expectedScanners, capabilities)
         .then(() => {
@@ -313,6 +321,12 @@ export function scanningAppTest() {
           scanButton =
               /** @type {!CrButtonElement} */ (scanningApp.$$('#scanButton'));
           statusText = /** @type {!Element} */ (scanningApp.$$('#statusText'));
+          helperText = /** @type {!Element} */ (
+              scanningApp.$$('#scanPreview').$$('#helperText'));
+          scanProgress = scanningApp.$$('#scanPreview').$$('#scanProgress');
+          progressText = /** @type {!Element} */ (
+              scanningApp.$$('#scanPreview').$$('#progressText'));
+          progressBar = scanningApp.$$('#scanPreview').$$('paper-progress');
           return fakeScanService_.whenCalled('getScannerCapabilities');
         })
         .then(() => {
@@ -334,7 +348,7 @@ export function scanningAppTest() {
               scanningApp.selectedResolution);
 
           // Before the scan button is clicked, the settings and scan button
-          // should be enabled, and there should be no scan status.
+          // should be enabled, and the helper text should be displayed.
           assertFalse(scannerSelect.disabled);
           assertFalse(sourceSelect.disabled);
           assertFalse(fileTypeSelect.disabled);
@@ -343,6 +357,8 @@ export function scanningAppTest() {
           assertFalse(resolutionSelect.disabled);
           assertFalse(scanButton.disabled);
           assertEquals('', statusText.textContent.trim());
+          assertFalse(helperText.hidden);
+          assertTrue(scanProgress.hidden);
 
           // Click the Scan button and wait till the scan is started.
           scanButton.click();
@@ -350,8 +366,9 @@ export function scanningAppTest() {
         })
         .then(() => {
           // After the scan button is clicked and the scan has started, the
-          // settings and scan button should be disabled, and the scan status
-          // should indicate that scanning is in progress.
+          // settings and scan button should be disabled, and the progress bar
+          // and text should be visible and indicate that scanning is in
+          // progress.
           assertTrue(scannerSelect.disabled);
           assertTrue(sourceSelect.disabled);
           assertTrue(fileTypeSelect.disabled);
@@ -359,28 +376,46 @@ export function scanningAppTest() {
           assertTrue(pageSizeSelect.disabled);
           assertTrue(resolutionSelect.disabled);
           assertTrue(scanButton.disabled);
-          assertEquals('Scanning page 1: 0%', statusText.textContent.trim());
+          assertTrue(helperText.hidden);
+          assertFalse(scanProgress.hidden);
+          assertEquals('Scanning page 1', progressText.textContent.trim());
+          assertEquals(0, progressBar.value);
 
-          // Simulate a progress update and verify the status is set correctly.
+          // Simulate a progress update and verify the progress bar and text are
+          // updated correctly.
           return fakeScanService_.simulateProgress(1, 17);
         })
         .then(() => {
-          assertEquals('Scanning page 1: 17%', statusText.textContent.trim());
+          assertEquals('Scanning page 1', progressText.textContent.trim());
+          assertEquals(17, progressBar.value);
 
-          // Simulate a page complete update and verify the status is set
-          // correctly.
+          // Simulate a page complete update and verify the progress bar and
+          // text are updated correctly.
           return fakeScanService_.simulatePageComplete(1);
         })
         .then(() => {
-          assertEquals('Scanning page 1: 100%', statusText.textContent.trim());
+          assertEquals('Scanning page 1', progressText.textContent.trim());
+          assertEquals(100, progressBar.value);
 
+          // Simulate a progress update for a second page and verify the
+          // progress bar and text are updated correctly.
+          return fakeScanService_.simulateProgress(2, 53);
+        })
+        .then(() => {
+          assertEquals('Scanning page 2', progressText.textContent.trim());
+          assertEquals(53, progressBar.value);
+
+          // Complete the page.
+          return fakeScanService_.simulatePageComplete(2);
+        })
+        .then(() => {
           // Complete the scan.
           return fakeScanService_.simulateScanComplete(true);
         })
         .then(() => {
           // After scanning is complete, the settings and scan button should be
           // enabled, and the scan status should indicate that scanning is
-          // complete.
+          // complete. The progress bar and text should no longer be visible.
           assertFalse(scannerSelect.disabled);
           assertFalse(sourceSelect.disabled);
           assertFalse(fileTypeSelect.disabled);
@@ -391,6 +426,8 @@ export function scanningAppTest() {
           assertEquals(
               'Scan complete! File(s) saved to /home/chronos/user/MyFiles.',
               statusText.textContent.trim());
+          assertFalse(helperText.hidden);
+          assertTrue(scanProgress.hidden);
         });
   });
 
