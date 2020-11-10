@@ -1132,6 +1132,18 @@ bool IsListItem(const Node* n) {
          n->GetLayoutObject()->IsListItemIncludingNG();
 }
 
+bool IsListItemTag(const Node* n) {
+  return n && (n->HasTagName(html_names::kLiTag) ||
+               n->HasTagName(html_names::kDdTag) ||
+               n->HasTagName(html_names::kDtTag));
+}
+
+bool IsListElementTag(const Node* n) {
+  return n && (n->HasTagName(html_names::kUlTag) ||
+               n->HasTagName(html_names::kOlTag) ||
+               n->HasTagName(html_names::kDlTag));
+}
+
 bool IsPresentationalHTMLElement(const Node* node) {
   const auto* element = DynamicTo<HTMLElement>(node);
   if (!element)

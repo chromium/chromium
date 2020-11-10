@@ -166,6 +166,8 @@ bool IsDisplayInsideTable(const Node*);
 bool IsTableCell(const Node*);
 bool IsHTMLListElement(const Node*);
 bool IsListItem(const Node*);
+bool IsListItemTag(const Node*);
+bool IsListElementTag(const Node*);
 bool IsPresentationalHTMLElement(const Node*);
 bool IsRenderedAsNonInlineTableImageOrHR(const Node*);
 bool IsNonTableCellHTMLBlockElement(const Node*);

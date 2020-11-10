@@ -1734,14 +1734,10 @@ bool CompositeEditCommand::BreakOutOfEmptyListItem(
   Node* next_list_node = empty_list_item->IsElementNode()
                              ? ElementTraversal::NextSibling(*empty_list_item)
                              : empty_list_item->nextSibling();
-  if (next_list_node && (list_node->HasTagName(html_names::kOlTag) ||
-                         list_node->HasTagName(html_names::kUlTag) ||
-                         list_node->HasTagName(html_names::kDlTag))) {
+  if (next_list_node && IsListElementTag(list_node)) {
     // If emptyListItem follows another list item or nested list, split the list
     // node.
-    if (previous_list_node->HasTagName(html_names::kLiTag) ||
-        previous_list_node->HasTagName(html_names::kDdTag) ||
-        previous_list_node->HasTagName(html_names::kDtTag) ||
+    if (IsListItemTag(previous_list_node) ||
         IsHTMLListElement(previous_list_node)) {
       SplitElement(To<Element>(list_node), empty_list_item);
     }
