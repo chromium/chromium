@@ -6518,13 +6518,13 @@ void RenderFrameHostImpl::CommitNavigation(
       SCOPED_CRASH_KEY_BOOL(SpecSameDocNav, browser_initiated,
                             navigation_request->browser_initiated());
 
-      SCOPED_CRASH_KEY_NUMBER(SpecSameDocNav, from_item_sequence_number,
+      SCOPED_CRASH_KEY_NUMBER(SpecSameDocNav, from_item_sequence,
                               from_item_seq_number);
-      SCOPED_CRASH_KEY_NUMBER(SpecSameDocNav, to_item_sequence_number,
+      SCOPED_CRASH_KEY_NUMBER(SpecSameDocNav, to_item_sequence,
                               to_item_seq_number);
-      SCOPED_CRASH_KEY_NUMBER(SpecSameDocNav, from_document_sequence_number,
+      SCOPED_CRASH_KEY_NUMBER(SpecSameDocNav, from_document_sequence,
                               from_document_seq_number);
-      SCOPED_CRASH_KEY_NUMBER(SpecSameDocNav, to_document_sequence_number,
+      SCOPED_CRASH_KEY_NUMBER(SpecSameDocNav, to_document_sequence,
                               to_document_seq_number);
       SCOPED_CRASH_KEY_STRING256(SpecSameDocNav, from_url, from_url);
       SCOPED_CRASH_KEY_STRING256(SpecSameDocNav, to_url, to_url);
