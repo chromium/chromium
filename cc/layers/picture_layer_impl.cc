@@ -60,10 +60,6 @@ const float kSnapToExistingTilingRatio = 1.2f;
 // scales.
 const float kMaxIdealContentsScale = 10000.f;
 
-// We try to avoid raster scale adjustment for will-change:transform for
-// performance, unless the scale is too small compared to the ideal scale.
-const float kMinScaleRatioForWillChangeTransform = 0.1f;
-
 // Intersect rects which may have right() and bottom() that overflow integer
 // boundaries. This code is similar to gfx::Rect::Intersect with the exception
 // that the types are promoted to int64_t when there is a chance of overflow.
@@ -1347,10 +1343,9 @@ bool PictureLayerImpl::ShouldAdjustRasterScale() const {
   }
 
   // Don't update will-change: transform layers if the raster contents scale is
-  // bigger than the minimum scale.
+  // at least the native scale (otherwise, we'd need to clamp it).
   if (HasWillChangeTransformHint() &&
-      raster_contents_scale_ >=
-          MinimumRasterContentsScaleForWillChangeTransform()) {
+      raster_contents_scale_ >= raster_page_scale_ * raster_device_scale_) {
     return false;
   }
 
@@ -1509,10 +1504,13 @@ void PictureLayerImpl::RecalculateRasterScales() {
     }
   }
 
+  // Clamp will-change: transform layers to be at least the native scale.
   if (HasWillChangeTransformHint()) {
-    raster_contents_scale_ =
-        std::max(raster_contents_scale_,
-                 MinimumRasterContentsScaleForWillChangeTransform());
+    float min_desired_scale = raster_device_scale_ * raster_page_scale_;
+    if (raster_contents_scale_ < min_desired_scale) {
+      raster_contents_scale_ = min_desired_scale;
+      raster_page_scale_ = 1.f;
+    }
   }
 
   raster_contents_scale_ =
@@ -1570,23 +1568,6 @@ void PictureLayerImpl::CleanUpTilingsOnActiveLayer(
                            twin_set);
   DCHECK_GT(tilings_->num_tilings(), 0u);
   SanityCheckTilingState();
-}
-
-float PictureLayerImpl::MinimumRasterContentsScaleForWillChangeTransform()
-    const {
-  DCHECK(HasWillChangeTransformHint());
-  // Don't let the scale too small compared to the ideal scale.
-  float min_scale =
-      ideal_contents_scale_ * kMinScaleRatioForWillChangeTransform;
-  float native_scale = ideal_device_scale_ * ideal_page_scale_;
-  // Clamp will-change: transform layers to be at least the native scale,
-  // unless the scale is too small to avoid too many tiles using too much tile
-  // memory.
-  if (ideal_contents_scale_ <
-      native_scale * kMinScaleRatioForWillChangeTransform) {
-    return min_scale;
-  }
-  return std::max(native_scale, min_scale);
 }
 
 bool PictureLayerImpl::CalculateRasterTranslation(
@@ -1650,13 +1631,24 @@ bool PictureLayerImpl::CalculateRasterTranslation(
 }
 
 float PictureLayerImpl::MinimumContentsScale() const {
+  float setting_min = layer_tree_impl()->settings().minimum_contents_scale;
+
   // If the contents scale is less than 1 / width (also for height),
   // then it will end up having less than one pixel of content in that
   // dimension.  Bump the minimum contents scale up in this case to prevent
   // this from happening.
   int min_dimension = std::min(raster_source_->GetSize().width(),
                                raster_source_->GetSize().height());
-  return min_dimension ? 1.f / min_dimension : 1.f;
+  if (!min_dimension)
+    return setting_min;
+
+  // Directly composited images may result in contents scales that are
+  // less than the configured setting. We allow this lower scale so that we
+  // can raster at the intrinsic image size.
+  const float inverse_min_dimension = 1.f / min_dimension;
+  return (directly_composited_image_size_.has_value())
+             ? inverse_min_dimension
+             : std::max(inverse_min_dimension, setting_min);
 }
 
 float PictureLayerImpl::MaximumContentsScale() const {

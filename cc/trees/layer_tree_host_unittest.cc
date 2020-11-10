@@ -2897,6 +2897,13 @@ MULTI_THREAD_BLOCKNOTIFY_TEST_F(
 // its damage is preserved until the next time it is drawn.
 class LayerTreeHostTestUndrawnLayersDamageLater : public LayerTreeHostTest {
  public:
+  void InitializeSettings(LayerTreeSettings* settings) override {
+    // If we don't set the minimum contents scale, it's harder to verify whether
+    // the damage we get is correct. For other scale amounts, please see
+    // LayerTreeHostTestDamageWithScale.
+    settings->minimum_contents_scale = 1.f;
+  }
+
   void SetupTree() override {
     root_layer_ = FakePictureLayer::Create(&client_);
     root_layer_->SetIsDrawable(true);

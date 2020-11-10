@@ -64,6 +64,7 @@ class CC_EXPORT LayerTreeSettings {
   base::TimeDelta scroll_animation_duration_for_testing;
   bool timeout_and_draw_when_animation_checkerboards = true;
   bool layers_always_allowed_lcd_text = false;
+  float minimum_contents_scale = 0.0625f;
   float low_res_contents_scale_factor = 0.25f;
   float top_controls_show_threshold = 0.5f;
   float top_controls_hide_threshold = 0.5f;

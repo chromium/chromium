@@ -846,7 +846,7 @@ TEST_F(LegacySWPictureLayerImplTest, SnappedTilingDuringZoom) {
   EXPECT_FLOAT_EQ(
       0.24f, active_layer()->tilings()->tiling_at(0)->contents_scale_key());
   EXPECT_FLOAT_EQ(
-      0.06f, active_layer()->tilings()->tiling_at(1)->contents_scale_key());
+      0.0625f, active_layer()->tilings()->tiling_at(1)->contents_scale_key());
 
   // Ensure UpdateTiles won't remove any tilings.
   active_layer()->MarkAllTilingsUsed();
@@ -868,7 +868,7 @@ TEST_F(LegacySWPictureLayerImplTest, SnappedTilingDuringZoom) {
   EXPECT_FLOAT_EQ(
       0.12f, active_layer()->tilings()->tiling_at(1)->contents_scale_key());
   EXPECT_FLOAT_EQ(
-      0.06f, active_layer()->tilings()->tiling_at(2)->contents_scale_key());
+      0.0625, active_layer()->tilings()->tiling_at(2)->contents_scale_key());
 
   // Ensure UpdateTiles won't remove any tilings.
   active_layer()->MarkAllTilingsUsed();
@@ -878,12 +878,10 @@ TEST_F(LegacySWPictureLayerImplTest, SnappedTilingDuringZoom) {
   SetContentsScaleOnBothLayers(0.1f, 1.0f, 0.1f, 1.0f, 0.f, false);
   ASSERT_EQ(3u, active_layer()->tilings()->num_tilings());
 
-  // Zoom in. 0.22(desired_scale) should be snapped to 0.24 during zoom-in
-  // because 0.22(desired_scale) is within the ratio(1.2).
-  SetContentsScaleOnBothLayers(0.22f, 1.0f, 0.22f, 1.0f, 0.f, false);
+  // Zoom in. 0.25(desired_scale) should be snapped to 0.24 during zoom-in
+  // because 0.25(desired_scale) is within the ratio(1.2).
+  SetContentsScaleOnBothLayers(0.25f, 1.0f, 0.25f, 1.0f, 0.f, false);
   ASSERT_EQ(3u, active_layer()->tilings()->num_tilings());
-  EXPECT_FLOAT_EQ(
-      0.24f, active_layer()->tilings()->tiling_at(0)->contents_scale_key());
 
   // Zoom in a lot. Since we move in factors of two, we should get a scale that
   // is a power of 2 times 0.24.
@@ -1322,7 +1320,8 @@ TEST_F(LegacySWPictureLayerImplTest, HugeBackdropFilterMasksGetScaledDown) {
 
   // Resize even larger, so that the scale would be smaller than the minimum
   // contents scale. Then the layer should no longer have any tiling.
-  gfx::Size extra_huge_bounds(max_texture_size * 10 + 1, 10);
+  float min_contents_scale = host_impl()->settings().minimum_contents_scale;
+  gfx::Size extra_huge_bounds(max_texture_size / min_contents_scale + 1, 10);
   scoped_refptr<FakeRasterSource> extra_huge_raster_source =
       FakeRasterSource::CreateFilled(extra_huge_bounds);
 
@@ -3527,22 +3526,6 @@ TEST_F(LegacySWPictureLayerImplTest, RasterScaleChangeWithoutAnimation) {
                                starting_animation_scale, animating_transform);
   EXPECT_BOTH_EQ(HighResTiling()->contents_scale_key(), 1.5f);
 
-  // ... unless the difference is very big.
-  contents_scale = 20.f;
-
-  SetContentsScaleOnBothLayers(contents_scale, device_scale, page_scale,
-                               maximum_animation_scale,
-                               starting_animation_scale, animating_transform);
-  EXPECT_BOTH_EQ(HighResTiling()->contents_scale_key(), 20.f);
-
-  // And we don't downscale from a higher scale.
-  contents_scale = 2.f;
-
-  SetContentsScaleOnBothLayers(contents_scale, device_scale, page_scale,
-                               maximum_animation_scale,
-                               starting_animation_scale, animating_transform);
-  EXPECT_BOTH_EQ(HighResTiling()->contents_scale_key(), 20.f);
-
   // Disabling the will-change hint will once again make the raster scale update
   // with the ideal scale.
   GetTransformNode(active_layer())->will_change_transform = false;
@@ -3554,62 +3537,6 @@ TEST_F(LegacySWPictureLayerImplTest, RasterScaleChangeWithoutAnimation) {
                                maximum_animation_scale,
                                starting_animation_scale, animating_transform);
   EXPECT_BOTH_EQ(HighResTiling()->contents_scale_key(), 3.f);
-}
-
-TEST_F(LegacySWPictureLayerImplTest, TinyRasterScale) {
-  gfx::Size tile_size(host_impl()->settings().default_tile_size);
-  SetupDefaultTrees(tile_size);
-
-  ResetTilingsAndRasterScales();
-
-  float contents_scale = 0.01f;
-  float device_scale = 1.5f;
-  float page_scale = 1.f;
-  float maximum_animation_scale = 1.f;
-  float starting_animation_scale = 0.f;
-  bool animating_transform = false;
-
-  SetContentsScaleOnBothLayers(contents_scale, device_scale, page_scale,
-                               maximum_animation_scale,
-                               starting_animation_scale, animating_transform);
-  EXPECT_BOTH_EQ(HighResTiling()->contents_scale_key(), 0.01f);
-
-  // If we change the layer contents scale after setting will change
-  // will, then it will be updated if it's below the minimum scale (page scale *
-  // device scale).
-  GetTransformNode(active_layer())->will_change_transform = true;
-  GetTransformNode(pending_layer())->will_change_transform = true;
-
-  SetContentsScaleOnBothLayers(contents_scale, device_scale, page_scale,
-                               maximum_animation_scale,
-                               starting_animation_scale, animating_transform);
-  // The scale is clamped to the native scale.
-  EXPECT_BOTH_EQ(HighResTiling()->contents_scale_key(), 0.01f);
-
-  // Further changes to the source scale will no longer be reflected in the
-  // contents scale.
-  contents_scale = 0.02f;
-
-  SetContentsScaleOnBothLayers(contents_scale, device_scale, page_scale,
-                               maximum_animation_scale,
-                               starting_animation_scale, animating_transform);
-  EXPECT_BOTH_EQ(HighResTiling()->contents_scale_key(), 0.01f);
-
-  // ... unless the difference is very big.
-  contents_scale = 0.12f;
-
-  SetContentsScaleOnBothLayers(contents_scale, device_scale, page_scale,
-                               maximum_animation_scale,
-                               starting_animation_scale, animating_transform);
-  EXPECT_BOTH_EQ(HighResTiling()->contents_scale_key(), 0.12f);
-
-  // Bigger scale will be clamped to the native scale.
-  contents_scale = 0.5f;
-
-  SetContentsScaleOnBothLayers(contents_scale, device_scale, page_scale,
-                               maximum_animation_scale,
-                               starting_animation_scale, animating_transform);
-  EXPECT_BOTH_EQ(HighResTiling()->contents_scale_key(), 1.5f);
 }
 
 TEST_F(LegacySWPictureLayerImplTest,
