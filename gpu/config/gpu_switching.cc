@@ -18,6 +18,10 @@
 #include "ui/gl/gl_switches.h"
 #include "ui/gl/gpu_preference.h"
 
+#if defined(OS_MAC)
+#include "base/mac/mac_util.h"
+#endif  // OS_MAC
+
 namespace gpu {
 
 namespace {
@@ -60,14 +64,24 @@ bool SwitchableGPUsSupported(const GPUInfo& gpu_info,
            gl::kGLImplementationANGLEName)) {
     return false;
   }
+  // Always allow offline renderers on ARM-based macs.
+  // https://crbug.com/1131312
+  switch (base::mac::GetCPUType()) {
+    case base::mac::CPUType::kArm:
+    case base::mac::CPUType::kTranslatedIntel:
+      return true;
+    default:
+      break;
+  }
   if (gpu_info.secondary_gpus.size() != 1) {
     return false;
   }
-  // Only advertise that we have two GPUs to the rest of
-  // Chrome's code if we find an Intel GPU and some other
-  // vendor's GPU. Otherwise we don't understand the
-  // configuration and don't deal well with it (an example being
-  // the dual AMD GPUs in recent Mac Pros).
+
+  // Only advertise that we have two GPUs to the rest of Chrome's code if we
+  // find an Intel GPU and some other vendor's GPU. Otherwise we don't
+  // understand the configuration and don't deal well with it (an example being
+  // the dual AMD GPUs in recent Mac Pros). Motivation is explained in:
+  // http://crbug.com/380026#c70.
   const uint32_t kVendorIntel = 0x8086;
   return ((gpu_info.gpu.vendor_id == kVendorIntel &&
            gpu_info.secondary_gpus[0].vendor_id != kVendorIntel) ||
