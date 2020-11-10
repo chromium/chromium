@@ -1131,6 +1131,8 @@ static_library("browser") {
     "permissions/permission_decision_auto_blocker_factory.h",
     "permissions/permission_manager_factory.cc",
     "permissions/permission_manager_factory.h",
+    "permissions/pref_notification_permission_ui_selector.cc",
+    "permissions/pref_notification_permission_ui_selector.h",
     "permissions/quiet_notification_permission_ui_config.cc",
     "permissions/quiet_notification_permission_ui_config.h",
     "permissions/quiet_notification_permission_ui_state.cc",

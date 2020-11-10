@@ -68,10 +68,10 @@ PermissionRequest::IconId PermissionsClient::GetOverrideIconId(
 #endif
 }
 
-std::unique_ptr<NotificationPermissionUiSelector>
-PermissionsClient::CreateNotificationPermissionUiSelector(
+std::vector<std::unique_ptr<NotificationPermissionUiSelector>>
+PermissionsClient::CreateNotificationPermissionUiSelectors(
     content::BrowserContext* browser_context) {
-  return nullptr;
+  return std::vector<std::unique_ptr<NotificationPermissionUiSelector>>();
 }
 
 void PermissionsClient::OnPromptResolved(

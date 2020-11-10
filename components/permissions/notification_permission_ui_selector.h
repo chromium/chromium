@@ -75,7 +75,8 @@ class NotificationPermissionUiSelector {
 
   // Cancel the pending request, if any. After this, the |callback| is
   // guaranteed not to be invoked anymore, and another call to SelectUiToUse()
-  // can be issued.
+  // can be issued. Can be called when there is no pending request which will
+  // simply be a no-op.
   virtual void Cancel() {}
 };
 

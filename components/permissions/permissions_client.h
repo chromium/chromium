@@ -121,11 +121,14 @@ class PermissionsClient {
   // used.
   virtual PermissionRequest::IconId GetOverrideIconId(ContentSettingsType type);
 
-  // Allows the embedder to provide a selector for chossing the UI to use for
-  // notification permission requests. If the embedder returns null here, the
-  // normal UI will be used.
-  virtual std::unique_ptr<NotificationPermissionUiSelector>
-  CreateNotificationPermissionUiSelector(
+  // Allows the embedder to provide a list of selectors for choosing the UI to
+  // use for notification permission requests. If the embedder returns an empty
+  // list, the normal UI will be used always. Then for each request, if none of
+  // the returned selectors prescribe the quiet UI, the normal UI will be used.
+  // Otherwise the quiet UI will be used. Selectors at lower indices have higher
+  // priority when determining the quiet UI flavor.
+  virtual std::vector<std::unique_ptr<NotificationPermissionUiSelector>>
+  CreateNotificationPermissionUiSelectors(
       content::BrowserContext* browser_context);
 
   using QuietUiReason = NotificationPermissionUiSelector::QuietUiReason;

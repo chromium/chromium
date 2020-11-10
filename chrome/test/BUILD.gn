@@ -3565,6 +3565,7 @@ test("unit_tests") {
     "../browser/permissions/crowd_deny_preload_data_unittest.cc",
     "../browser/permissions/crowd_deny_safe_browsing_request_unittest.cc",
     "../browser/permissions/permission_context_base_feature_policy_unittest.cc",
+    "../browser/permissions/pref_notification_permission_ui_selector_unittest.cc",
     "../browser/persisted_state_db/persisted_state_db_factory_unittest.cc",
     "../browser/persisted_state_db/persisted_state_db_unittest.cc",
     "../browser/plugins/pdf_iframe_navigation_throttle_unittest.cc",

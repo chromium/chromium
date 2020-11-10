@@ -3,10 +3,12 @@
 // found in the LICENSE file.
 
 #include <stddef.h>
+#include <memory>
 #include <string>
 
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -576,7 +578,7 @@ class MockNotificationPermissionUiSelector
   static void CreateForManager(PermissionRequestManager* manager,
                                base::Optional<QuietUiReason> quiet_ui_reason,
                                bool async) {
-    manager->set_notification_permission_ui_selector_for_testing(
+    manager->add_notification_permission_ui_selector_for_testing(
         std::make_unique<MockNotificationPermissionUiSelector>(quiet_ui_reason,
                                                                async));
   }
@@ -589,6 +591,7 @@ class MockNotificationPermissionUiSelector
 TEST_F(PermissionRequestManagerTest,
        UiSelectorNotUsedForPermissionsOtherThanNotification) {
   for (auto* request : {&request_mic_, &request_camera_, &request_ptz_}) {
+    manager_->clear_notification_permission_ui_selector_for_testing();
     MockNotificationPermissionUiSelector::CreateForManager(
         manager_,
         NotificationPermissionUiSelector::QuietUiReason::kEnabledInPrefs,
@@ -620,6 +623,7 @@ TEST_F(PermissionRequestManagerTest, UiSelectorUsedForNotifications) {
   };
 
   for (const auto& test : kTests) {
+    manager_->clear_notification_permission_ui_selector_for_testing();
     MockNotificationPermissionUiSelector::CreateForManager(
         manager_, test.quiet_ui_reason, test.async);
 
@@ -644,6 +648,7 @@ TEST_F(PermissionRequestManagerTest, UiSelectorUsedForNotifications) {
 TEST_F(PermissionRequestManagerTest,
        UiSelectionHappensSeparatelyForEachRequest) {
   using QuietUiReason = NotificationPermissionUiSelector::QuietUiReason;
+  manager_->clear_notification_permission_ui_selector_for_testing();
   MockNotificationPermissionUiSelector::CreateForManager(
       manager_, QuietUiReason::kEnabledInPrefs, true);
   MockPermissionRequest request1(
@@ -657,6 +662,7 @@ TEST_F(PermissionRequestManagerTest,
   MockPermissionRequest request2(
       "request2", PermissionRequestType::PERMISSION_NOTIFICATIONS,
       PermissionRequestGestureType::GESTURE);
+  manager_->clear_notification_permission_ui_selector_for_testing();
   MockNotificationPermissionUiSelector::CreateForManager(
       manager_, NotificationPermissionUiSelector::Decision::UseNormalUi(),
       true);
@@ -677,4 +683,80 @@ TEST_F(PermissionRequestManagerTest, RequestsNotSupported) {
   manager_->AddRequest(web_contents()->GetMainFrame(), &request2_);
   EXPECT_TRUE(request2_.cancelled());
 }
+
+TEST_F(PermissionRequestManagerTest, MultipleUiSelectors) {
+  using QuietUiReason = NotificationPermissionUiSelector::QuietUiReason;
+
+  const struct {
+    std::vector<base::Optional<QuietUiReason>> quiet_ui_reasons;
+    std::vector<bool> simulate_delayed_decision;
+    base::Optional<QuietUiReason> expected_reason;
+  } kTests[] = {
+      // Simple sync selectors, first one should take priority.
+      {{QuietUiReason::kTriggeredByCrowdDeny, QuietUiReason::kEnabledInPrefs},
+       {false, false},
+       QuietUiReason::kTriggeredByCrowdDeny},
+      // First selector is async but should still take priority even if it
+      // returns later.
+      {{QuietUiReason::kTriggeredByCrowdDeny, QuietUiReason::kEnabledInPrefs},
+       {true, false},
+       QuietUiReason::kTriggeredByCrowdDeny},
+      // The first selector that has a quiet ui decision should be used.
+      {{base::nullopt, base::nullopt,
+        QuietUiReason::kTriggeredDueToAbusiveContent,
+        QuietUiReason::kEnabledInPrefs},
+       {false, true, true, false},
+       QuietUiReason::kTriggeredDueToAbusiveContent},
+      // If all selectors return a normal ui, it should use a normal ui.
+      {{base::nullopt, base::nullopt}, {false, true}, base::nullopt},
+
+      // Use a bunch of selectors both async and sync.
+      {{base::nullopt, base::nullopt, base::nullopt, base::nullopt,
+        base::nullopt, QuietUiReason::kTriggeredDueToAbusiveRequests,
+        base::nullopt, QuietUiReason::kEnabledInPrefs},
+       {false, true, false, true, true, true, false, false},
+       QuietUiReason::kTriggeredDueToAbusiveRequests},
+      // Use a bunch of selectors all sync.
+      {{base::nullopt, base::nullopt, base::nullopt, base::nullopt,
+        base::nullopt, QuietUiReason::kTriggeredDueToAbusiveRequests,
+        base::nullopt, QuietUiReason::kEnabledInPrefs},
+       {false, false, false, false, false, false, false, false},
+       QuietUiReason::kTriggeredDueToAbusiveRequests},
+      // Use a bunch of selectors all async.
+      {{base::nullopt, base::nullopt, base::nullopt, base::nullopt,
+        base::nullopt, QuietUiReason::kTriggeredDueToAbusiveRequests,
+        base::nullopt, QuietUiReason::kEnabledInPrefs},
+       {true, true, true, true, true, true, true, true},
+       QuietUiReason::kTriggeredDueToAbusiveRequests},
+  };
+
+  for (const auto& test : kTests) {
+    manager_->clear_notification_permission_ui_selector_for_testing();
+    for (size_t i = 0; i < test.quiet_ui_reasons.size(); ++i) {
+      MockNotificationPermissionUiSelector::CreateForManager(
+          manager_, test.quiet_ui_reasons[i],
+          test.simulate_delayed_decision[i]);
+    }
+
+    MockPermissionRequest request(
+        "foo", PermissionRequestType::PERMISSION_NOTIFICATIONS,
+        PermissionRequestGestureType::GESTURE);
+
+    manager_->AddRequest(web_contents()->GetMainFrame(), &request);
+    WaitForBubbleToBeShown();
+
+    EXPECT_TRUE(prompt_factory_->is_visible());
+    EXPECT_TRUE(
+        prompt_factory_->RequestTypeSeen(request.GetPermissionRequestType()));
+    if (test.expected_reason.has_value()) {
+      EXPECT_EQ(test.expected_reason, manager_->ReasonForUsingQuietUi());
+    } else {
+      EXPECT_FALSE(manager_->ShouldCurrentRequestUseQuietUI());
+    }
+
+    Accept();
+    EXPECT_TRUE(request.granted());
+  }
+}
+
 }  // namespace permissions

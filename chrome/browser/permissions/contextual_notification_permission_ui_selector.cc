@@ -18,12 +18,9 @@
 #include "chrome/browser/permissions/crowd_deny_preload_data.h"
 #include "chrome/browser/permissions/quiet_notification_permission_ui_config.h"
 #include "chrome/browser/permissions/quiet_notification_permission_ui_state.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/common/chrome_features.h"
-#include "components/content_settings/core/common/pref_names.h"
 #include "components/permissions/permission_request.h"
-#include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/db/database_manager.h"
 
 namespace {
@@ -134,8 +131,7 @@ bool ShouldHoldBackQuietUI(QuietUiReason quiet_ui_reason) {
 }  // namespace
 
 ContextualNotificationPermissionUiSelector::
-    ContextualNotificationPermissionUiSelector(Profile* profile)
-    : profile_(profile) {}
+    ContextualNotificationPermissionUiSelector() = default;
 
 void ContextualNotificationPermissionUiSelector::SelectUiToUse(
     permissions::PermissionRequest* request,
@@ -171,7 +167,7 @@ void ContextualNotificationPermissionUiSelector::EvaluatePerSiteTriggers(
   // If the PreloadData suggests this is an unacceptable site, ping Safe
   // Browsing to verify; but do not ping if it is not warranted.
   if (!decision || (!decision->quiet_ui_reason && !decision->warning_reason)) {
-    OnPerSiteTriggersEvaluated(Decision::UseNormalUiAndShowNoWarning());
+    Notify(Decision::UseNormalUiAndShowNoWarning());
     return;
   }
 
@@ -198,29 +194,16 @@ void ContextualNotificationPermissionUiSelector::OnSafeBrowsingVerdictReceived(
 
   switch (verdict) {
     case CrowdDenySafeBrowsingRequest::Verdict::kAcceptable:
-      OnPerSiteTriggersEvaluated(Decision::UseNormalUiAndShowNoWarning());
+      Notify(Decision::UseNormalUiAndShowNoWarning());
       break;
     case CrowdDenySafeBrowsingRequest::Verdict::kUnacceptable:
       if (candidate_decision.quiet_ui_reason &&
           ShouldHoldBackQuietUI(*(candidate_decision.quiet_ui_reason))) {
         candidate_decision.quiet_ui_reason.reset();
       }
-      OnPerSiteTriggersEvaluated(candidate_decision);
+      Notify(candidate_decision);
       break;
   }
-}
-
-void ContextualNotificationPermissionUiSelector::OnPerSiteTriggersEvaluated(
-    Decision decision) {
-  // Still show the quiet UI if it is enabled for all sites, even if per-site
-  // conditions did not trigger showing the quiet UI on this origin.
-  if (!decision.quiet_ui_reason &&
-      profile_->GetPrefs()->GetBoolean(
-          prefs::kEnableQuietNotificationPermissionUi)) {
-    decision.quiet_ui_reason = QuietUiReason::kEnabledInPrefs;
-  }
-
-  Notify(decision);
 }
 
 void ContextualNotificationPermissionUiSelector::Notify(

@@ -426,8 +426,8 @@ PermissionRequestManager::PermissionRequestManager(
       tab_is_hidden_(web_contents->GetVisibility() ==
                      content::Visibility::HIDDEN),
       auto_response_for_test_(NONE),
-      notification_permission_ui_selector_(
-          PermissionsClient::Get()->CreateNotificationPermissionUiSelector(
+      notification_permission_ui_selectors_(
+          PermissionsClient::Get()->CreateNotificationPermissionUiSelectors(
               web_contents->GetBrowserContext())) {}
 
 void PermissionRequestManager::ScheduleShowBubble() {
@@ -474,14 +474,23 @@ void PermissionRequestManager::DequeueRequestIfNeeded() {
     }
   }
 
-  if (notification_permission_ui_selector_ &&
+  if (!notification_permission_ui_selectors_.empty() &&
       requests_.front()->GetPermissionRequestType() ==
           PermissionRequestType::PERMISSION_NOTIFICATIONS) {
-    notification_permission_ui_selector_->SelectUiToUse(
-        requests_.front(),
-        base::BindOnce(
-            &PermissionRequestManager::OnSelectedUiToUseForNotifications,
-            weak_factory_.GetWeakPtr()));
+    DCHECK(!current_request_ui_to_use_.has_value());
+    // Initialize the selector decisions vector.
+    DCHECK(selector_decisions_.empty());
+    selector_decisions_.resize(notification_permission_ui_selectors_.size());
+
+    for (size_t selector_index = 0;
+         selector_index < notification_permission_ui_selectors_.size();
+         ++selector_index) {
+      notification_permission_ui_selectors_[selector_index]->SelectUiToUse(
+          requests_.front(),
+          base::BindOnce(
+              &PermissionRequestManager::OnNotificationPermissionUiSelectorDone,
+              weak_factory_.GetWeakPtr(), selector_index));
+    }
   } else {
     current_request_ui_to_use_ =
         UiDecision(UiDecision::UseNormalUi(), UiDecision::ShowNoWarning());
@@ -531,17 +540,6 @@ void PermissionRequestManager::ShowBubble() {
       }
       base::RecordAction(base::UserMetricsAction(
           "Notifications.Quiet.PermissionRequestShown"));
-    }
-
-    if (current_request_ui_to_use_->warning_reason) {
-      switch (*(current_request_ui_to_use_->warning_reason)) {
-        case WarningReason::kAbusiveRequests:
-          LogWarningToConsole(kAbusiveNotificationRequestsWarningMessage);
-          break;
-        case WarningReason::kAbusiveContent:
-          LogWarningToConsole(kAbusiveNotificationContentWarningMessage);
-          break;
-      }
     }
   }
   current_request_already_displayed_ = true;
@@ -614,11 +612,12 @@ void PermissionRequestManager::FinalizeBubble(
   }
   requests_.clear();
 
-  if (notification_permission_ui_selector_)
-    notification_permission_ui_selector_->Cancel();
+  for (const auto& selector : notification_permission_ui_selectors_)
+    selector->Cancel();
 
   current_request_already_displayed_ = false;
   current_request_ui_to_use_.reset();
+  selector_decisions_.clear();
 
   if (view_)
     DeleteBubble();
@@ -716,7 +715,7 @@ bool PermissionRequestManager::ShouldCurrentRequestUseQuietUI() const {
     return false;
 
   // ContentSettingImageModel might call into this method if the user switches
-  // between tabs while the |notification_permission_ui_selector_| is pending.
+  // between tabs while the |notification_permission_ui_selectors_| are pending.
   return current_request_ui_to_use_ &&
          current_request_ui_to_use_->quiet_ui_reason;
 }
@@ -740,10 +739,49 @@ void PermissionRequestManager::NotifyBubbleRemoved() {
     observer.OnBubbleRemoved();
 }
 
-void PermissionRequestManager::OnSelectedUiToUseForNotifications(
+void PermissionRequestManager::OnNotificationPermissionUiSelectorDone(
+    size_t selector_index,
     const UiDecision& decision) {
-  current_request_ui_to_use_ = decision;
-  ScheduleShowBubble();
+  if (decision.warning_reason) {
+    switch (*(decision.warning_reason)) {
+      case WarningReason::kAbusiveRequests:
+        LogWarningToConsole(kAbusiveNotificationRequestsWarningMessage);
+        break;
+      case WarningReason::kAbusiveContent:
+        LogWarningToConsole(kAbusiveNotificationContentWarningMessage);
+        break;
+    }
+  }
+
+  // We have already made a decision because of a higher priority selector
+  // therefore this selector's decision can be discarded.
+  if (current_request_ui_to_use_.has_value())
+    return;
+
+  CHECK_LT(selector_index, selector_decisions_.size());
+  selector_decisions_[selector_index] = decision;
+
+  size_t decision_index = 0;
+  while (decision_index < selector_decisions_.size() &&
+         selector_decisions_[decision_index].has_value()) {
+    const UiDecision& current_decision =
+        selector_decisions_[decision_index++].value();
+
+    if (current_decision.quiet_ui_reason.has_value()) {
+      current_request_ui_to_use_ = current_decision;
+      break;
+    }
+  }
+
+  // All decisions have been considered and none was conclusive.
+  if (decision_index == selector_decisions_.size() &&
+      !current_request_ui_to_use_.has_value()) {
+    current_request_ui_to_use_ = UiDecision::UseNormalUiAndShowNoWarning();
+  }
+
+  if (current_request_ui_to_use_.has_value()) {
+    ScheduleShowBubble();
+  }
 }
 
 PermissionPromptDisposition

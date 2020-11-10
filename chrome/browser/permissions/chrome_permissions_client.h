@@ -42,8 +42,8 @@ class ChromePermissionsClient : public permissions::PermissionsClient {
                       GetUkmSourceIdCallback callback) override;
   permissions::PermissionRequest::IconId GetOverrideIconId(
       ContentSettingsType type) override;
-  std::unique_ptr<permissions::NotificationPermissionUiSelector>
-  CreateNotificationPermissionUiSelector(
+  std::vector<std::unique_ptr<permissions::NotificationPermissionUiSelector>>
+  CreateNotificationPermissionUiSelectors(
       content::BrowserContext* browser_context) override;
   void OnPromptResolved(content::BrowserContext* browser_context,
                         permissions::PermissionRequestType request_type,

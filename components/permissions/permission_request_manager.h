@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_PERMISSIONS_PERMISSION_REQUEST_MANAGER_H_
 #define COMPONENTS_PERMISSIONS_PERMISSION_REQUEST_MANAGER_H_
 
+#include <algorithm>
 #include <unordered_map>
 #include <utility>
 #include <vector>
@@ -145,10 +146,24 @@ class PermissionRequestManager
         web_contents_supports_permission_requests;
   }
 
-  // For testing only, used to override the default UI selector.
+  // For testing only, used to override the default UI selectors and instead use
+  // a new one.
   void set_notification_permission_ui_selector_for_testing(
       std::unique_ptr<NotificationPermissionUiSelector> selector) {
-    notification_permission_ui_selector_ = std::move(selector);
+    clear_notification_permission_ui_selector_for_testing();
+    add_notification_permission_ui_selector_for_testing(std::move(selector));
+  }
+
+  // For testing only, used to add a new selector without overriding the
+  // existing ones.
+  void add_notification_permission_ui_selector_for_testing(
+      std::unique_ptr<NotificationPermissionUiSelector> selector) {
+    notification_permission_ui_selectors_.emplace_back(std::move(selector));
+  }
+
+  // For testing only, clear the existing ui selectors.
+  void clear_notification_permission_ui_selector_for_testing() {
+    notification_permission_ui_selectors_.clear();
   }
 
   void set_view_factory_for_testing(PermissionPrompt::Factory view_factory) {
@@ -209,7 +224,8 @@ class PermissionRequestManager
   void NotifyBubbleAdded();
   void NotifyBubbleRemoved();
 
-  void OnSelectedUiToUseForNotifications(const UiDecision& decision);
+  void OnNotificationPermissionUiSelectorDone(size_t selector_index,
+                                              const UiDecision& decision);
 
   PermissionPromptDisposition DetermineCurrentRequestUIDispositionForUMA();
 
@@ -256,10 +272,17 @@ class PermissionRequestManager
   // origin requesting the permission.
   bool is_notification_prompt_cooldown_active_ = false;
 
-  // Decides if the quiet prompt UI should be used to display notification
-  // permission requests.
-  std::unique_ptr<NotificationPermissionUiSelector>
-      notification_permission_ui_selector_;
+  // A vector of selectors which decide if the quiet prompt UI should be used
+  // to display notification permission requests. Sorted from the highest
+  // priority to the lowest priority selector.
+  std::vector<std::unique_ptr<NotificationPermissionUiSelector>>
+      notification_permission_ui_selectors_;
+
+  // Holds the decisions returned by selectors. Needed in case a lower priority
+  // selector returns a decision first and we need to wait for the decisions of
+  // higher priority selectors before making use of it.
+  std::vector<base::Optional<NotificationPermissionUiSelector::Decision>>
+      selector_decisions_;
 
   // Whether the view for the current |requests_| has been shown to the user at
   // least once.
@@ -267,7 +290,7 @@ class PermissionRequestManager
 
   // Whether to use the normal or quiet UI to display the current permission
   // |requests_|, and whether to show warnings. This will be nullopt if we are
-  // still waiting on the result from |notification_permission_ui_selector_|.
+  // still waiting on the result from |notification_permission_ui_selectors_|.
   base::Optional<UiDecision> current_request_ui_to_use_;
 
   // Whether the bubble is being destroyed by this class, rather than in
