@@ -1025,8 +1025,8 @@ source_set("test_support") {
       "//ui/gfx/x",
     ]
   }
-  if (ozone_platform_x11) {
-    deps += [ "//ui/base/x" ]
+  if (use_ozone) {
+    deps += [ "//ui/ozone" ]
   }
 
   if (use_ozone && is_linux && enable_desktop_aura) {

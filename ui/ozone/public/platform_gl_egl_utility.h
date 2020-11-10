@@ -37,6 +37,10 @@ class COMPONENT_EXPORT(OZONE_BASE) PlatformGLEGLUtility {
   // |enable_native_gpu_memory_buffers| should be taken from GpuPreferences.
   virtual void CollectGpuExtraInfo(bool enable_native_gpu_memory_buffers,
                                    gfx::GpuExtraInfo& gpu_extra_info) const = 0;
+
+  // X11 specific; returns whether the test configuration supports alpha for
+  // window visuals.
+  virtual bool X11DoesVisualHaveAlphaForTest() const = 0;
 };
 
 }  // namespace ui

@@ -550,6 +550,10 @@ x11::Future<void> SendClientMessage(
 // Return true if VulkanSurface is supported.
 COMPONENT_EXPORT(UI_BASE_X) bool IsVulkanSurfaceSupported();
 
+// Returns whether the visual supports alpha.
+// The function examines the _CHROMIUM_INSIDE_XVFB environment variable.
+COMPONENT_EXPORT(UI_BASE_X) bool DoesVisualHaveAlphaForTest();
+
 // --------------------------------------------------------------------------
 // Selects a visual with a preference for alpha support on compositing window
 // managers.

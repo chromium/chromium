@@ -1155,6 +1155,22 @@ bool IsVulkanSurfaceSupported() {
   return false;
 }
 
+bool DoesVisualHaveAlphaForTest() {
+  // testing/xvfb.py runs xvfb and xcompmgr.
+  std::unique_ptr<base::Environment> env(base::Environment::Create());
+
+  uint8_t depth = 0;
+  bool visual_has_alpha = false;
+  ui::XVisualManager::GetInstance()->ChooseVisualForWindow(
+      env->HasVar("_CHROMIUM_INSIDE_XVFB"), nullptr, &depth, nullptr,
+      &visual_has_alpha);
+
+  if (visual_has_alpha)
+    DCHECK_EQ(32, depth);
+
+  return visual_has_alpha;
+}
+
 // static
 XVisualManager* XVisualManager::GetInstance() {
   return base::Singleton<XVisualManager>::get();
