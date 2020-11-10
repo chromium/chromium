@@ -208,6 +208,8 @@ FeatureInfo::FeatureInfo(
   feature_flags_.chromium_image_ycbcr_p010 = base::Contains(
       gpu_feature_info.supported_buffer_formats_for_allocation_and_texturing,
       gfx::BufferFormat::P010);
+#elif defined(OS_MAC)
+  feature_flags_.chromium_image_ycbcr_p010 = base::mac::IsAtLeastOS11();
 #endif
 }
 

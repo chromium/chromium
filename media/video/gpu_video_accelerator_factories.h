@@ -67,6 +67,7 @@ class MEDIA_EXPORT GpuVideoAcceleratorFactories {
     XB30,             // 10:10:10:2 RGBX in one GMB
     RGBA,             // One 8:8:8:8 RGBA
     BGRA,             // One 8:8:8:8 BGRA (Usually Mac)
+    P010,             // One P010 GMB.
   };
 
   enum class Supported {

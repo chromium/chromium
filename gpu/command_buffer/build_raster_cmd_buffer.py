@@ -135,7 +135,7 @@ _NAMED_TYPE_INFO = {
       'viz::ResourceFormat::BGRA_1010102',
       'viz::ResourceFormat::YVU_420',
       'viz::ResourceFormat::YUV_420_BIPLANAR',
-
+      'viz::ResourceFormat::P010',
     ],
     'invalid': [
       'viz::ResourceFormat::ETC1',

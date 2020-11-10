@@ -65,6 +65,7 @@ class GpuMemoryBufferVideoFramePoolTest : public ::testing::Test {
 
     const VideoPixelFormat format =
         (bit_depth > 8) ? PIXEL_FORMAT_YUV420P10 : PIXEL_FORMAT_I420;
+    const int multiplier = format == PIXEL_FORMAT_YUV420P10 ? 2 : 1;
     DCHECK_LE(dimension, kDimension);
     const gfx::Size size(dimension, dimension);
 
@@ -75,9 +76,9 @@ class GpuMemoryBufferVideoFramePoolTest : public ::testing::Test {
                   size.width() - visible_rect_crop,
                   size.height() - visible_rect_crop),  // visible_rect
         size,                                          // natural_size
-        size.width(),                                  // y_stride
-        size.width() / 2,                              // u_stride
-        size.width() / 2,                              // v_stride
+        size.width() * multiplier,                     // y_stride
+        size.width() * multiplier / 2,                 // u_stride
+        size.width() * multiplier / 2,                 // v_stride
         y_data,                                        // y_data
         u_data,                                        // u_data
         v_data,                                        // v_data
@@ -324,6 +325,37 @@ TEST_F(GpuMemoryBufferVideoFramePoolTest, CreateOneHardwareXR30Frame) {
 
   void* memory = mock_gpu_factories_->created_memory_buffers()[0]->memory(0);
   EXPECT_EQ(as_xr30(0, 311, 0), *static_cast<uint32_t*>(memory));
+}
+
+TEST_F(GpuMemoryBufferVideoFramePoolTest, CreateOneHardwareP010Frame) {
+  scoped_refptr<VideoFrame> software_frame = CreateTestYUVVideoFrame(10, 10);
+  scoped_refptr<VideoFrame> frame;
+  mock_gpu_factories_->SetVideoFrameOutputFormat(
+      media::GpuVideoAcceleratorFactories::OutputFormat::P010);
+  gpu_memory_buffer_pool_->MaybeCreateHardwareFrame(
+      software_frame, base::BindOnce(MaybeCreateHardwareFrameCallback, &frame));
+
+  RunUntilIdle();
+
+  EXPECT_NE(software_frame.get(), frame.get());
+  EXPECT_EQ(PIXEL_FORMAT_P016LE, frame->format());
+  EXPECT_EQ(1u, frame->NumTextures());
+  EXPECT_EQ(1u, sii_->shared_image_count());
+  EXPECT_TRUE(frame->metadata()->read_lock_fences_enabled);
+
+  EXPECT_EQ(1u, mock_gpu_factories_->created_memory_buffers().size());
+  mock_gpu_factories_->created_memory_buffers()[0]->Map();
+
+  const uint16_t* y_memory = reinterpret_cast<uint16_t*>(
+      mock_gpu_factories_->created_memory_buffers()[0]->memory(0));
+  EXPECT_EQ(software_frame->visible_data(VideoFrame::kYPlane)[0] << 6,
+            y_memory[0]);
+  const uint16_t* uv_memory = reinterpret_cast<uint16_t*>(
+      mock_gpu_factories_->created_memory_buffers()[0]->memory(1));
+  EXPECT_EQ(software_frame->visible_data(VideoFrame::kUPlane)[0] << 6,
+            uv_memory[0]);
+  EXPECT_EQ(software_frame->visible_data(VideoFrame::kVPlane)[0] << 6,
+            uv_memory[1]);
 }
 
 TEST_F(GpuMemoryBufferVideoFramePoolTest, CreateOneHardwareXR30FrameBT709) {

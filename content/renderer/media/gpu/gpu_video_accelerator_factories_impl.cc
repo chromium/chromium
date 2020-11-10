@@ -430,6 +430,10 @@ GpuVideoAcceleratorFactoriesImpl::VideoFrameOutputFormat(
   const size_t bit_depth = media::BitDepth(pixel_format);
   if (bit_depth > 8) {
 #if !defined(OS_MAC)
+    // TODO(crbug.com/1101041): Enable P010 support for macOS.
+    if (capabilities.image_ycbcr_p010 && bit_depth == 10)
+      return media::GpuVideoAcceleratorFactories::OutputFormat::P010;
+
     // If high bit depth rendering is enabled, bail here, otherwise try and use
     // XR30 storage, and if not and we support RG textures, use those, albeit at
     // a reduced bit depth of 8 bits per component.

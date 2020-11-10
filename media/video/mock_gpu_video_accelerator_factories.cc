@@ -28,6 +28,7 @@ class GpuMemoryBufferImpl : public gfx::GpuMemoryBuffer {
     DCHECK(gfx::BufferFormat::R_8 == format_ ||
            gfx::BufferFormat::RG_88 == format_ ||
            gfx::BufferFormat::YUV_420_BIPLANAR == format_ ||
+           gfx::BufferFormat::P010 == format_ ||
            gfx::BufferFormat::BGRA_1010102 == format_ ||
            gfx::BufferFormat::RGBA_1010102 == format_ ||
            gfx::BufferFormat::RGBA_8888 == format_ ||

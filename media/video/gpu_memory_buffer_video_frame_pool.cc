@@ -24,6 +24,7 @@
 #include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
+#include "base/sys_byteorder.h"
 #include "base/time/default_tick_clock.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/memory_dump_provider.h"
@@ -239,6 +240,9 @@ gfx::BufferFormat GpuMemoryBufferFormat(
     case GpuVideoAcceleratorFactories::OutputFormat::I420:
       DCHECK_LE(plane, 2u);
       return gfx::BufferFormat::R_8;
+    case GpuVideoAcceleratorFactories::OutputFormat::P010:
+      DCHECK_LE(plane, 1u);
+      return gfx::BufferFormat::P010;
     case GpuVideoAcceleratorFactories::OutputFormat::NV12_SINGLE_GMB:
       DCHECK_LE(plane, 1u);
       return gfx::BufferFormat::YUV_420_BIPLANAR;
@@ -273,6 +277,7 @@ size_t PlanesPerCopy(GpuVideoAcceleratorFactories::OutputFormat format) {
       return 1;
     case GpuVideoAcceleratorFactories::OutputFormat::NV12_DUAL_GMB:
     case GpuVideoAcceleratorFactories::OutputFormat::NV12_SINGLE_GMB:
+    case GpuVideoAcceleratorFactories::OutputFormat::P010:
       return 2;
     case GpuVideoAcceleratorFactories::OutputFormat::XR30:
     case GpuVideoAcceleratorFactories::OutputFormat::XB30:
@@ -292,6 +297,8 @@ VideoPixelFormat VideoFormat(
     case GpuVideoAcceleratorFactories::OutputFormat::NV12_SINGLE_GMB:
     case GpuVideoAcceleratorFactories::OutputFormat::NV12_DUAL_GMB:
       return PIXEL_FORMAT_NV12;
+    case GpuVideoAcceleratorFactories::OutputFormat::P010:
+      return PIXEL_FORMAT_P016LE;
     case GpuVideoAcceleratorFactories::OutputFormat::BGRA:
       return PIXEL_FORMAT_ARGB;
     case GpuVideoAcceleratorFactories::OutputFormat::RGBA:
@@ -312,6 +319,8 @@ size_t NumGpuMemoryBuffers(GpuVideoAcceleratorFactories::OutputFormat format) {
   switch (format) {
     case GpuVideoAcceleratorFactories::OutputFormat::I420:
       return 3;
+    case GpuVideoAcceleratorFactories::OutputFormat::P010:
+      return 1;
     case GpuVideoAcceleratorFactories::OutputFormat::NV12_SINGLE_GMB:
       return 1;
     case GpuVideoAcceleratorFactories::OutputFormat::NV12_DUAL_GMB:
@@ -372,6 +381,56 @@ void CopyRowsToI420Buffer(int first_row,
         reinterpret_cast<const uint16_t*>(source + source_stride * first_row),
         source_stride / 2, output + dest_stride * first_row, dest_stride, scale,
         bytes_per_row, rows);
+  }
+}
+
+void CopyRowsToP010Buffer(int first_row,
+                          int rows,
+                          int bytes_per_row,
+                          const VideoFrame* source_frame,
+                          uint8_t* dest_y,
+                          int dest_stride_y,
+                          uint8_t* dest_uv,
+                          int dest_stride_uv,
+                          base::OnceClosure done) {
+  base::ScopedClosureRunner done_runner(std::move(done));
+  TRACE_EVENT2("media", "CopyRowsToP010Buffer", "bytes_per_row", bytes_per_row,
+               "rows", rows);
+
+  if (!dest_y || !dest_uv)
+    return;
+
+  DCHECK_NE(dest_stride_y, 0);
+  DCHECK_NE(dest_stride_uv, 0);
+  DCHECK_LE(bytes_per_row, std::abs(dest_stride_y));
+  DCHECK_LE(bytes_per_row, std::abs(dest_stride_uv));
+  DCHECK_EQ(0, first_row % 2);
+  DCHECK_EQ(source_frame->format(), PIXEL_FORMAT_YUV420P10);
+  DCHECK_LE(bytes_per_row, source_frame->stride(VideoFrame::kYPlane));
+
+  // TODO(crbug.com/libyuv/873): Replace this with a libyuv optimized path or at
+  // least add a SIMD variant.
+  for (int r = first_row; r < first_row + rows; ++r) {
+    const uint16_t* src = reinterpret_cast<const uint16_t*>(
+        source_frame->visible_data(VideoFrame::kYPlane) +
+        r * source_frame->stride(VideoFrame::kYPlane));
+    uint16_t* dest = reinterpret_cast<uint16_t*>(dest_y + r * dest_stride_y);
+    for (int c = 0; c < bytes_per_row / 2; ++c)
+      *dest++ = *src++ << 6;
+  }
+
+  for (int r = first_row / 2; r < (first_row + rows) / 2; ++r) {
+    const uint16_t* u_src = reinterpret_cast<const uint16_t*>(
+        source_frame->visible_data(VideoFrame::kUPlane) +
+        r * source_frame->stride(VideoFrame::kUPlane));
+    const uint16_t* v_src = reinterpret_cast<const uint16_t*>(
+        source_frame->visible_data(VideoFrame::kVPlane) +
+        r * source_frame->stride(VideoFrame::kVPlane));
+    uint16_t* dest = reinterpret_cast<uint16_t*>(dest_uv + r * dest_stride_uv);
+    for (int c = 0; c < bytes_per_row / 4; ++c) {
+      *dest++ = *u_src++ << 6;
+      *dest++ = *v_src++ << 6;
+    }
   }
 }
 
@@ -530,6 +589,7 @@ gfx::Size CodedSize(const VideoFrame* video_frame,
   gfx::Size output;
   switch (output_format) {
     case GpuVideoAcceleratorFactories::OutputFormat::I420:
+    case GpuVideoAcceleratorFactories::OutputFormat::P010:
     case GpuVideoAcceleratorFactories::OutputFormat::NV12_SINGLE_GMB:
     case GpuVideoAcceleratorFactories::OutputFormat::NV12_DUAL_GMB:
       DCHECK((video_frame->visible_rect().y() & 1) == 0);
@@ -588,9 +648,7 @@ void GpuMemoryBufferVideoFramePool::PoolImpl::CreateHardwareFrame(
     // Supported cases.
     case PIXEL_FORMAT_YV12:
     case PIXEL_FORMAT_I420:
-    case PIXEL_FORMAT_YUV420P9:
     case PIXEL_FORMAT_YUV420P10:
-    case PIXEL_FORMAT_YUV420P12:
     case PIXEL_FORMAT_I420A:
       break;
     // Unsupported cases.
@@ -606,9 +664,11 @@ void GpuMemoryBufferVideoFramePool::PoolImpl::CreateHardwareFrame(
     case PIXEL_FORMAT_RGB24:
     case PIXEL_FORMAT_MJPEG:
     case PIXEL_FORMAT_YUV422P9:
+    case PIXEL_FORMAT_YUV420P9:
     case PIXEL_FORMAT_YUV444P9:
     case PIXEL_FORMAT_YUV422P10:
     case PIXEL_FORMAT_YUV444P10:
+    case PIXEL_FORMAT_YUV420P12:
     case PIXEL_FORMAT_YUV422P12:
     case PIXEL_FORMAT_YUV444P12:
     case PIXEL_FORMAT_Y16:
@@ -796,6 +856,18 @@ void GpuMemoryBufferVideoFramePool::PoolImpl::CopyVideoFrameToGpuMemoryBuffers(
                              buffer->stride(0), barrier));
           break;
         }
+        case GpuVideoAcceleratorFactories::OutputFormat::P010:
+          // Using base::Unretained(video_frame) here is safe because |barrier|
+          // keeps refptr of |video_frame| until all copy tasks are done.
+          worker_task_runner_->PostTask(
+              FROM_HERE,
+              base::BindOnce(
+                  &CopyRowsToP010Buffer, row, rows_to_copy,
+                  coded_size.width() * 2, base::Unretained(video_frame.get()),
+                  static_cast<uint8_t*>(buffer->memory(0)), buffer->stride(0),
+                  static_cast<uint8_t*>(buffer->memory(1)), buffer->stride(1),
+                  barrier));
+          break;
         case GpuVideoAcceleratorFactories::OutputFormat::NV12_SINGLE_GMB:
           // Using base::Unretained(video_frame) here is safe because |barrier|
           // keeps refptr of |video_frame| until all copy tasks are done.
@@ -936,6 +1008,7 @@ void GpuMemoryBufferVideoFramePool::PoolImpl::
     case GpuVideoAcceleratorFactories::OutputFormat::I420:
       allow_overlay = video_frame->metadata()->allow_overlay;
       break;
+    case GpuVideoAcceleratorFactories::OutputFormat::P010:
     case GpuVideoAcceleratorFactories::OutputFormat::NV12_SINGLE_GMB:
       allow_overlay = true;
       break;

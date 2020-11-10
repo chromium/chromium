@@ -1010,7 +1010,8 @@ GrBackendFormat SkiaOutputSurfaceImpl::GetGrBackendFormatForTexture(
 #if BUILDFLAG(ENABLE_VULKAN)
     if (!ycbcr_info) {
       // YCbCr info is required for YUV images.
-      DCHECK(resource_format != YVU_420 && resource_format != YUV_420_BIPLANAR);
+      DCHECK(resource_format != YVU_420 &&
+             resource_format != YUV_420_BIPLANAR && resource_format != P010);
       return GrBackendFormat::MakeVk(ToVkFormat(resource_format));
     }
 
