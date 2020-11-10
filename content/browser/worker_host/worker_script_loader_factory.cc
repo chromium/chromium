@@ -16,6 +16,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/network/public/mojom/fetch_api.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_container_type.mojom.h"
 
 namespace content {
@@ -54,11 +55,11 @@ void WorkerScriptLoaderFactory::CreateLoaderAndStart(
     mojo::PendingRemote<network::mojom::URLLoaderClient> client,
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(resource_request.resource_type ==
-             static_cast<int>(blink::mojom::ResourceType::kWorker) ||
-         resource_request.resource_type ==
-             static_cast<int>(blink::mojom::ResourceType::kSharedWorker))
-      << resource_request.resource_type;
+  DCHECK(resource_request.destination ==
+             network::mojom::RequestDestination::kWorker ||
+         resource_request.destination ==
+             network::mojom::RequestDestination::kSharedWorker)
+      << resource_request.destination;
   DCHECK(!script_loader_);
 
   // Create a WorkerScriptLoader to load the script.

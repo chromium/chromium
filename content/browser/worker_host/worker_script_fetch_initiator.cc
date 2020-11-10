@@ -51,7 +51,6 @@
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/constants.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "services/network/public/mojom/fetch_api.mojom.h"
 #include "third_party/blink/public/common/loader/url_loader_factory_bundle.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_provider.mojom.h"
@@ -71,7 +70,7 @@ void WorkerScriptFetchInitiator::Start(
     network::mojom::CredentialsMode credentials_mode,
     blink::mojom::FetchClientSettingsObjectPtr
         outside_fetch_client_settings_object,
-    blink::mojom::ResourceType resource_type,
+    network::mojom::RequestDestination request_destination,
     scoped_refptr<ServiceWorkerContextWrapper> service_worker_context,
     ServiceWorkerMainResourceHandle* service_worker_handle,
     base::WeakPtr<AppCacheHost> appcache_host,
@@ -85,9 +84,10 @@ void WorkerScriptFetchInitiator::Start(
     CompletionCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(storage_partition);
-  DCHECK(resource_type == blink::mojom::ResourceType::kWorker ||
-         resource_type == blink::mojom::ResourceType::kSharedWorker)
-      << static_cast<int>(resource_type);
+  DCHECK(request_destination == network::mojom::RequestDestination::kWorker ||
+         request_destination ==
+             network::mojom::RequestDestination::kSharedWorker)
+      << static_cast<int>(request_destination);
 
   BrowserContext* browser_context = storage_partition->browser_context();
   ResourceContext* resource_context =
@@ -103,7 +103,7 @@ void WorkerScriptFetchInitiator::Start(
   // TODO(https://crbug.com/987517): Filesystem URL support on shared workers
   // are now broken.
   bool filesystem_url_support =
-      resource_type == blink::mojom::ResourceType::kWorker;
+      request_destination == network::mojom::RequestDestination::kWorker;
 
   // Set up the factory bundle for non-NetworkService URLs, e.g.,
   // chrome-extension:// URLs. One factory bundle is consumed by the browser
@@ -138,7 +138,7 @@ void WorkerScriptFetchInitiator::Start(
   resource_request->referrer = sanitized_referrer.url,
   resource_request->referrer_policy = Referrer::ReferrerPolicyForUrlRequest(
       outside_fetch_client_settings_object->referrer_policy);
-  resource_request->resource_type = static_cast<int>(resource_type);
+  resource_request->destination = request_destination;
   resource_request->credentials_mode = credentials_mode;
   if (creator_render_frame_host) {
     resource_request->render_frame_id =
@@ -156,17 +156,17 @@ void WorkerScriptFetchInitiator::Start(
   // module fetch flag is set, then set request's mode to "same-origin"."
   resource_request->mode = network::mojom::RequestMode::kSameOrigin;
 
-  switch (resource_type) {
-    case blink::mojom::ResourceType::kWorker:
-      resource_request->destination =
-          network::mojom::RequestDestination::kWorker;
+  switch (request_destination) {
+    case network::mojom::RequestDestination::kWorker:
+      resource_request->resource_type =
+          static_cast<int>(blink::mojom::ResourceType::kWorker);
       break;
-    case blink::mojom::ResourceType::kSharedWorker:
-      resource_request->destination =
-          network::mojom::RequestDestination::kSharedWorker;
+    case network::mojom::RequestDestination::kSharedWorker:
+      resource_request->resource_type =
+          static_cast<int>(blink::mojom::ResourceType::kSharedWorker);
       break;
     default:
-      NOTREACHED() << static_cast<int>(resource_type);
+      NOTREACHED() << static_cast<int>(request_destination);
       break;
   }
 

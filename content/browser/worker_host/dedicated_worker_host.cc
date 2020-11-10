@@ -31,6 +31,7 @@
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "net/base/isolation_info.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "services/network/public/mojom/fetch_api.mojom.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/loader/fetch_client_settings_object.mojom.h"
@@ -196,7 +197,7 @@ void DedicatedWorkerHost::StartScriptLoad(
       creator_origin_,
       nearest_ancestor_render_frame_host->GetIsolationInfoForSubresources(),
       credentials_mode, std::move(outside_fetch_client_settings_object),
-      blink::mojom::ResourceType::kWorker,
+      network::mojom::RequestDestination::kWorker,
       storage_partition_impl->GetServiceWorkerContext(),
       service_worker_handle_.get(),
       appcache_host ? appcache_host->GetWeakPtr() : nullptr,

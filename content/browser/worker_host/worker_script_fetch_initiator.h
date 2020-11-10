@@ -79,7 +79,7 @@ class CONTENT_EXPORT WorkerScriptFetchInitiator {
       network::mojom::CredentialsMode credentials_mode,
       blink::mojom::FetchClientSettingsObjectPtr
           outside_fetch_client_settings_object,
-      blink::mojom::ResourceType resource_type,
+      network::mojom::RequestDestination request_destination,
       scoped_refptr<ServiceWorkerContextWrapper> service_worker_context,
       ServiceWorkerMainResourceHandle* service_worker_handle,
       base::WeakPtr<AppCacheHost> appcache_host,
