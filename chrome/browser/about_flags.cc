@@ -5158,6 +5158,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAutofillAssistantDirectActionsDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(
          autofill_assistant::features::kAutofillAssistantDirectActions)},
+
+    {"autofill-assistant-proactive-help",
+     flag_descriptions::kAutofillAssistantProactiveHelpName,
+     flag_descriptions::kAutofillAssistantProactiveHelpDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         autofill_assistant::features::kAutofillAssistantProactiveHelp)},
 #endif  // defined(OS_ANDROID)
 
 #if defined(OS_WIN) || defined(OS_MAC) || defined(OS_CHROMEOS)

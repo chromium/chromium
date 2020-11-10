@@ -116,6 +116,8 @@ public class SyncAndServicesSettings extends PreferenceFragmentCompat
     @VisibleForTesting
     public static final String PREF_AUTOFILL_ASSISTANT = "autofill_assistant";
     @VisibleForTesting
+    public static final String PREF_AUTOFILL_ASSISTANT_SUBSECTION = "autofill_assistant_subsection";
+    @VisibleForTesting
     public static final String PREF_METRICS_SETTINGS = "metrics_settings";
 
     private static final int REQUEST_CODE_TRUSTED_VAULT_KEY_RETRIEVAL = 1;
@@ -258,7 +260,12 @@ public class SyncAndServicesSettings extends PreferenceFragmentCompat
         mUrlKeyedAnonymizedData.setManagedPreferenceDelegate(mManagedPreferenceDelegate);
 
         mAutofillAssistant = (ChromeSwitchPreference) findPreference(PREF_AUTOFILL_ASSISTANT);
-        if (shouldShowAutofillAssistantPreference()) {
+        Preference autofillAssistantSubsection = findPreference(PREF_AUTOFILL_ASSISTANT_SUBSECTION);
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_ASSISTANT_PROACTIVE_HELP)) {
+            removePreference(servicesCategory, mAutofillAssistant);
+            mAutofillAssistant = null;
+            autofillAssistantSubsection.setVisible(true);
+        } else if (shouldShowAutofillAssistantPreference()) {
             mAutofillAssistant.setOnPreferenceChangeListener(this);
             mAutofillAssistant.setManagedPreferenceDelegate(mManagedPreferenceDelegate);
         } else {

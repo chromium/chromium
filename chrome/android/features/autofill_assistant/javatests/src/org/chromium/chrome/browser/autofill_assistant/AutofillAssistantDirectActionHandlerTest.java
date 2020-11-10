@@ -233,15 +233,6 @@ public class AutofillAssistantDirectActionHandlerTest {
         acceptOnboarding();
     }
 
-    @Test
-    @MediumTest
-    public void testSwitchedOffInPreferences() throws Exception {
-        AutofillAssistantPreferencesUtil.setInitialPreferences(false);
-
-        assertThat(isOnboardingReported(), is(false));
-        assertFalse(performAction("onboarding", Bundle.EMPTY));
-    }
-
     private void acceptOnboarding() throws Exception {
         WaitingCallback<Boolean> onboardingCallback =
                 performActionAsync("onboarding", Bundle.EMPTY);

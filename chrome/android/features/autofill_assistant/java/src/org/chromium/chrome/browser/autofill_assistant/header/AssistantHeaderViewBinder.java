@@ -17,10 +17,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.autofill_assistant.R;
 import org.chromium.chrome.browser.autofill_assistant.AssistantTextUtils;
+import org.chromium.chrome.browser.autofill_assistant.AutofillAssistantPreferenceFragment;
 import org.chromium.chrome.browser.autofill_assistant.carousel.AssistantChipAdapter;
 import org.chromium.chrome.browser.settings.SettingsLauncher;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
-import org.chromium.chrome.browser.sync.settings.SyncAndServicesSettings;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.browser_ui.widget.textbubble.TextBubble;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
@@ -159,7 +159,7 @@ class AssistantHeaderViewBinder
             if (itemId == R.id.settings) {
                 SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
                 settingsLauncher.launchSettingsActivity(
-                        view.mHeader.getContext(), SyncAndServicesSettings.class);
+                        view.mHeader.getContext(), AutofillAssistantPreferenceFragment.class);
                 return true;
             } else if (itemId == R.id.send_feedback) {
                 if (feedbackCallback != null) {

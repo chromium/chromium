@@ -251,6 +251,11 @@
     "expiry_milestone": 90
   },
   {
+    "name": "autofill-assistant-proactive-help",
+    "owners": [ "//components/autofill_assistant/OWNERS" ],
+    "expiry_milestone": 90
+  },
+  {
     "name": "autofill-cache-query-responses",
     "owners": [ "rogerm" ],
     "expiry_milestone": 72

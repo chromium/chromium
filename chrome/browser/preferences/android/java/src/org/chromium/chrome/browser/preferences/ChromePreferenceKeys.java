@@ -71,6 +71,9 @@ public final class ChromePreferenceKeys {
     /** The number of times a user has explicitly canceled a lite script. */
     public static final String AUTOFILL_ASSISTANT_NUMBER_OF_LITE_SCRIPTS_CANCELED =
             "Chrome.AutofillAssistant.NumberOfLiteScriptsCanceled";
+    /** Whether proactive help is enabled. */
+    public static final String AUTOFILL_ASSISTANT_PROACTIVE_HELP =
+            "Chrome.AutofillAssistant.ProactiveHelp";
     /**
      * LEGACY preference indicating whether "do not show again" was checked in the autofill
      * assistant onboarding
@@ -797,6 +800,7 @@ public final class ChromePreferenceKeys {
                 ASSISTANT_VOICE_SEARCH_SUPPORTED,
                 AUTOFILL_ASSISTANT_FIRST_TIME_LITE_SCRIPT_USER,
                 AUTOFILL_ASSISTANT_NUMBER_OF_LITE_SCRIPTS_CANCELED,
+                AUTOFILL_ASSISTANT_PROACTIVE_HELP,
                 APPLICATION_OVERRIDE_LANGUAGE,
                 CLIPBOARD_SHARED_URI,
                 CONDITIONAL_TAB_STRIP_CONTINUOUS_DISMISS_COUNTER,

@@ -71,6 +71,8 @@ public class GoogleServicesSettings
     @VisibleForTesting
     public static final String PREF_AUTOFILL_ASSISTANT = "autofill_assistant";
     @VisibleForTesting
+    public static final String PREF_AUTOFILL_ASSISTANT_SUBSECTION = "autofill_assistant_subsection";
+    @VisibleForTesting
     public static final String PREF_METRICS_SETTINGS = "metrics_settings";
 
     private final PrefService mPrefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
@@ -159,7 +161,12 @@ public class GoogleServicesSettings
         mUrlKeyedAnonymizedData.setManagedPreferenceDelegate(mManagedPreferenceDelegate);
 
         mAutofillAssistant = (ChromeSwitchPreference) findPreference(PREF_AUTOFILL_ASSISTANT);
-        if (shouldShowAutofillAssistantPreference()) {
+        Preference autofillAssistantSubsection = findPreference(PREF_AUTOFILL_ASSISTANT_SUBSECTION);
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_ASSISTANT_PROACTIVE_HELP)) {
+            removePreference(getPreferenceScreen(), mAutofillAssistant);
+            mAutofillAssistant = null;
+            autofillAssistantSubsection.setVisible(true);
+        } else if (shouldShowAutofillAssistantPreference()) {
             mAutofillAssistant.setOnPreferenceChangeListener(this);
             mAutofillAssistant.setManagedPreferenceDelegate(mManagedPreferenceDelegate);
         } else {

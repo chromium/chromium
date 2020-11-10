@@ -137,6 +137,7 @@ public class GoogleServicesSettingsTest {
     @LargeTest
     @Feature({"Sync"})
     @EnableFeatures(ChromeFeatureList.AUTOFILL_ASSISTANT)
+    @DisableFeatures(ChromeFeatureList.AUTOFILL_ASSISTANT_PROACTIVE_HELP)
     public void testAutofillAssistantNoPreferenceIfOnboardingNeverShown() {
         final GoogleServicesSettings googleServicesSettings = startGoogleServicesSettings();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
@@ -155,6 +156,7 @@ public class GoogleServicesSettingsTest {
     @LargeTest
     @Feature({"Sync"})
     @EnableFeatures(ChromeFeatureList.AUTOFILL_ASSISTANT)
+    @DisableFeatures(ChromeFeatureList.AUTOFILL_ASSISTANT_PROACTIVE_HELP)
     public void testAutofillAssistantPreferenceShownIfOnboardingShown() {
         setAutofillAssistantSwitchValue(true);
         final GoogleServicesSettings googleServicesSettings = startGoogleServicesSettings();
@@ -170,8 +172,10 @@ public class GoogleServicesSettingsTest {
     @Test
     @LargeTest
     @Feature({"Sync"})
-    @DisableFeatures(ChromeFeatureList.AUTOFILL_ASSISTANT)
-    public void testAutofillAssistantNoPreferenceIfFeatureDisabled() {
+    @DisableFeatures({ChromeFeatureList.AUTOFILL_ASSISTANT,
+            ChromeFeatureList.AUTOFILL_ASSISTANT_PROACTIVE_HELP})
+    public void
+    testAutofillAssistantNoPreferenceIfFeatureDisabled() {
         setAutofillAssistantSwitchValue(true);
         final GoogleServicesSettings googleServicesSettings = startGoogleServicesSettings();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
@@ -187,6 +191,7 @@ public class GoogleServicesSettingsTest {
     @LargeTest
     @Feature({"Sync"})
     @EnableFeatures(ChromeFeatureList.AUTOFILL_ASSISTANT)
+    @DisableFeatures(ChromeFeatureList.AUTOFILL_ASSISTANT_PROACTIVE_HELP)
     public void testAutofillAssistantSwitchOn() {
         TestThreadUtils.runOnUiThreadBlocking(() -> { setAutofillAssistantSwitchValue(true); });
         final GoogleServicesSettings googleServicesSettings = startGoogleServicesSettings();
@@ -208,6 +213,7 @@ public class GoogleServicesSettingsTest {
     @LargeTest
     @Feature({"Sync"})
     @EnableFeatures(ChromeFeatureList.AUTOFILL_ASSISTANT)
+    @DisableFeatures(ChromeFeatureList.AUTOFILL_ASSISTANT_PROACTIVE_HELP)
     public void testAutofillAssistantSwitchOff() {
         TestThreadUtils.runOnUiThreadBlocking(() -> { setAutofillAssistantSwitchValue(false); });
         final GoogleServicesSettings googleServicesSettings = startGoogleServicesSettings();
@@ -217,6 +223,25 @@ public class GoogleServicesSettingsTest {
                     (ChromeSwitchPreference) googleServicesSettings.findPreference(
                             GoogleServicesSettings.PREF_AUTOFILL_ASSISTANT);
             Assert.assertFalse(autofillAssistantSwitch.isChecked());
+        });
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"Sync"})
+    @EnableFeatures(ChromeFeatureList.AUTOFILL_ASSISTANT_PROACTIVE_HELP)
+    public void testAutofillAssistantProactiveHelp() {
+        final GoogleServicesSettings googleServicesSettings = startGoogleServicesSettings();
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            Assert.assertNull(googleServicesSettings.findPreference(
+                    GoogleServicesSettings.PREF_AUTOFILL_ASSISTANT));
+
+            Assert.assertTrue(
+                    googleServicesSettings
+                            .findPreference(
+                                    GoogleServicesSettings.PREF_AUTOFILL_ASSISTANT_SUBSECTION)
+                            .isVisible());
         });
     }
 
