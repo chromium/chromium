@@ -1244,6 +1244,7 @@ XRDepthInformation* XRSession::GetDepthInformation() const {
 }
 
 ScriptPromise XRSession::requestLightProbe(ScriptState* script_state,
+                                           XRLightProbeInit* light_probe_init,
                                            ExceptionState& exception_state) {
   if (ended_) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,

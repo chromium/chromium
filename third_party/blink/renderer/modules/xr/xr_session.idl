@@ -32,6 +32,11 @@ enum XRImageTrackingScore {
   "trackable",
 };
 
+enum XRReflectionFormat {
+  "srgba8",
+  "rgba16f",
+};
+
 [
     ActiveScriptWrappable,
     SecureContext,
@@ -44,6 +49,7 @@ enum XRImageTrackingScore {
   [SameObject] readonly attribute XRRenderState renderState;
   [CallWith=ScriptState, MeasureAs=XRSessionGetInputSources, SameObject] readonly attribute XRInputSourceArray inputSources;
   [SameObject] readonly attribute XRDOMOverlayState domOverlayState;
+  [RuntimeEnabled=WebXRLightEstimation] readonly attribute XRReflectionFormat preferredReflectionFormat;
 
   attribute EventHandler onend;
   attribute EventHandler onselect;
@@ -74,7 +80,7 @@ enum XRImageTrackingScore {
   Promise<XRTransientInputHitTestSource> requestHitTestSourceForTransientInput(XRTransientInputHitTestOptionsInit options);
 
   [RuntimeEnabled=WebXRLightEstimation, CallWith=ScriptState, RaisesException]
-  Promise<XRLightProbe> requestLightProbe();
+  Promise<XRLightProbe> requestLightProbe(optional XRLightProbeInit options = {});
 
   [RuntimeEnabled=WebXRImageTracking, CallWith=ScriptState, RaisesException]
   Promise<FrozenArray<XRImageTrackingScore>> getTrackedImageScores();

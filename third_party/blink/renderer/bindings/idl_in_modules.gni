@@ -993,6 +993,7 @@ static_idl_files_in_modules = get_path_info(
           "//third_party/blink/renderer/modules/xr/xr_layer.idl",
           "//third_party/blink/renderer/modules/xr/xr_light_estimate.idl",
           "//third_party/blink/renderer/modules/xr/xr_light_probe.idl",
+          "//third_party/blink/renderer/modules/xr/xr_light_probe_init.idl",
           "//third_party/blink/renderer/modules/xr/xr_plane.idl",
           "//third_party/blink/renderer/modules/xr/xr_plane_detection_state.idl",
           "//third_party/blink/renderer/modules/xr/xr_plane_set.idl",

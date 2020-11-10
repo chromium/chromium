@@ -52,6 +52,7 @@ modules_dictionary_idl_files = [
   "xr_hit_test_options_init.idl",
   "xr_input_source_event_init.idl",
   "xr_input_sources_change_event_init.idl",
+  "xr_light_probe_init.idl",
   "xr_ray_direction_init.idl",
   "xr_reference_space_event_init.idl",
   "xr_render_state_init.idl",

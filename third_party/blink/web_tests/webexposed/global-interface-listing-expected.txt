@@ -10550,6 +10550,7 @@ interface XRSession : EventTarget
     getter onsqueezeend
     getter onsqueezestart
     getter onvisibilitychange
+    getter preferredReflectionFormat
     getter renderState
     getter visibilityState
     getter worldTrackingState

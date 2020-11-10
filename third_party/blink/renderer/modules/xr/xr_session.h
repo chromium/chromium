@@ -10,6 +10,7 @@
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_xr_light_probe_init.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h"
@@ -123,6 +124,11 @@ class XRSession final
   XRRenderState* renderState() const { return render_state_; }
   XRWorldTrackingState* worldTrackingState() { return world_tracking_state_; }
 
+  // ARCore by default returns textures in RGBA half-float HDR format and no
+  // other runtimes support reflection mapping, so just return this until we
+  // have a need to differentiate based on the underlying runtime.
+  const String preferredReflectionFormat() const { return "rgba16f"; }
+
   XRSpace* viewerSpace() const;
 
   XRAnchorSet* TrackedAnchors() const;
@@ -199,7 +205,9 @@ class XRSession final
       XRTransientInputHitTestOptionsInit* options_init,
       ExceptionState& exception_state);
 
-  ScriptPromise requestLightProbe(ScriptState* script_state, ExceptionState&);
+  ScriptPromise requestLightProbe(ScriptState* script_state,
+                                  XRLightProbeInit*,
+                                  ExceptionState&);
 
   ScriptPromise getTrackedImageScores(ScriptState* script_state,
                                       ExceptionState&);
