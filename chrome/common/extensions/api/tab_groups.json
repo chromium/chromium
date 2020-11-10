@@ -144,6 +144,49 @@
             ]
           }
         ]
+      },
+      {
+        "name": "move",
+        "type": "function",
+        "description": "Moves the group and all its tabs within its window, or to a new window.",
+        "parameters": [
+          {
+            "type": "integer",
+            "name": "groupId",
+            "minimum": 0,
+            "description": "The ID of the group to move."
+          },
+          {
+            "type": "object",
+            "name": "moveProperties",
+            "properties": {
+              "windowId": {
+                "type": "integer",
+                "minimum": -2,
+                "optional": true,
+                "description": "The window to move the group to. Defaults to the window the group is currently in. Note that groups can only be moved to and from windows with $(ref:windows.WindowType) type <code>\"normal\"</code>."
+              },
+              "index": {
+                "type": "integer",
+                "minimum": -1,
+                "description": "The position to move the group to. Use <code>-1</code> to place the group at the end of the window."
+              }
+            }
+          },
+          {
+            "type": "function",
+            "name": "callback",
+            "optional": true,
+            "parameters": [
+              {
+                "name": "group",
+                "$ref": "TabGroup",
+                "optional": true,
+                "description": "Details about the moved group."
+              }
+            ]
+          }
+        ]
       }
     ]
   }

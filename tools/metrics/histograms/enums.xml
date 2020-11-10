@@ -25326,6 +25326,7 @@ Called by update_extension_histograms.py.-->
   <int value="1528" label="TAB_GROUPS_QUERY"/>
   <int value="1529" label="TAB_GROUPS_UPDATE"/>
   <int value="1530" label="ACCESSIBILITY_PRIVATE_UPDATESELECTTOSPEAKPANEL"/>
+  <int value="1531" label="TAB_GROUPS_MOVE"/>
 </enum>
 
 <enum name="ExtensionIconState">

@@ -16,6 +16,8 @@ extern const char kColorKey[];
 extern const char kTitleKey[];
 
 // Error messages.
+extern const char kCannotMoveGroupIntoMiddleOfOtherGroupError[];
+extern const char kCannotMoveGroupIntoMiddleOfPinnedTabsError[];
 extern const char kGroupNotFoundError[];
 
 }  // namespace tab_groups_constants

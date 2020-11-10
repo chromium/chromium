@@ -5,7 +5,13 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_TAB_GROUPS_TAB_GROUPS_API_H_
 #define CHROME_BROWSER_EXTENSIONS_API_TAB_GROUPS_TAB_GROUPS_API_H_
 
+#include <string>
+
 #include "extensions/browser/extension_function.h"
+
+namespace tab_groups {
+class TabGroupId;
+}
 
 namespace extensions {
 
@@ -49,6 +55,31 @@ class TabGroupsUpdateFunction : public ExtensionFunction {
 
  protected:
   ~TabGroupsUpdateFunction() override = default;
+};
+
+class TabGroupsMoveFunction : public ExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("tabGroups.move", TAB_GROUPS_MOVE)
+  TabGroupsMoveFunction() = default;
+  TabGroupsMoveFunction(const TabGroupsMoveFunction&) = delete;
+  TabGroupsMoveFunction& operator=(const TabGroupsMoveFunction&) = delete;
+
+  // ExtensionFunction:
+  ResponseAction Run() override;
+
+ protected:
+  ~TabGroupsMoveFunction() override = default;
+
+ private:
+  // Moves the group with ID |group_id| to the |new_index| in the window with ID
+  // |window_id|. If |window_id| is not specified, moves the group within its
+  // current window. |group| is populated with the group's TabGroupId, and
+  // |error| is populated if the group cannot be found or moved.
+  bool MoveGroup(int group_id,
+                 int new_index,
+                 int* window_id,
+                 tab_groups::TabGroupId* group,
+                 std::string* error);
 };
 
 }  // namespace extensions

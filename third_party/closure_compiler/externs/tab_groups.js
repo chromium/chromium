@@ -83,3 +83,15 @@ chrome.tabGroups.query = function(queryInfo, callback) {};
  * @see https://developer.chrome.com/extensions/tabGroups#method-update
  */
 chrome.tabGroups.update = function(groupId, updateProperties, callback) {};
+
+/**
+ * Moves the group and all its tabs within its window, or to a new window.
+ * @param {number} groupId The ID of the group to move.
+ * @param {{
+ *   windowId: (number|undefined),
+ *   index: number
+ * }} moveProperties
+ * @param {function((!chrome.tabGroups.TabGroup|undefined)): void=} callback
+ * @see https://developer.chrome.com/extensions/tabGroups#method-move
+ */
+chrome.tabGroups.move = function(groupId, moveProperties, callback) {};
