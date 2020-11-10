@@ -10455,6 +10455,36 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   EXPECT_EQ("opener-ping-reply", response);
 }
 
+IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
+                       DetachSpeculativeRenderFrameHost) {
+  // Commit a page with one iframe.
+  GURL main_url(embedded_test_server()->GetURL(
+      "a.com", "/cross_site_iframe_factory.html?a(a)"));
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  // Start a cross-site navigation.
+  GURL cross_site_url(embedded_test_server()->GetURL("b.com", "/title2.html"));
+  TestNavigationManager nav_manager(shell()->web_contents(), cross_site_url);
+  BeginNavigateIframeToURL(web_contents(), "child-0", cross_site_url);
+
+  // Wait for the request, but don't commit it yet. This should create a
+  // speculative RenderFrameHost.
+  ASSERT_TRUE(nav_manager.WaitForRequestStart());
+  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  RenderFrameHostImpl* speculative_rfh = root->current_frame_host()
+                                             ->child_at(0)
+                                             ->render_manager()
+                                             ->speculative_frame_host();
+  EXPECT_TRUE(speculative_rfh);
+
+  // Currently, the browser process never handles an explicit Detach() for a
+  // speculative RFH, since the speculative RFH or the entire FTN is always
+  // destroyed before the renderer sends this IPC.
+  speculative_rfh->Detach();
+
+  // Passes if there is no crash.
+}
+
 #if defined(OS_ANDROID)
 
 namespace {

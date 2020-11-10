@@ -145,6 +145,12 @@ bool NavigateIframeToURL(WebContents* web_contents,
                          const std::string& iframe_id,
                          const GURL& url);
 
+// Similar to |NavigateIframeToURL()| but returns as soon as the navigation is
+// initiated.
+bool BeginNavigateIframeToURL(WebContents* web_contents,
+                              const std::string& iframe_id,
+                              const GURL& url);
+
 // Generate a URL for a file path including a query string.
 GURL GetFileUrlWithQuery(const base::FilePath& path,
                          const std::string& query_string);
