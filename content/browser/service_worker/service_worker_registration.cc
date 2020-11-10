@@ -300,7 +300,7 @@ void ServiceWorkerRegistration::ClaimClients() {
       continue;
 
     // "2. If client is not a secure context, continue."
-    if (!container_host->IsContextSecureForServiceWorker())
+    if (!container_host->IsEligibleForServiceWorkerController())
       continue;
 
     // "3. Let registration be the result of running Match Service Worker

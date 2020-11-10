@@ -8,6 +8,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/service_worker/service_worker_accessed_callback.h"
+#include "content/browser/service_worker/service_worker_main_resource_handle_core.h"
 #include "content/common/content_export.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/mojom/network_context.mojom.h"
@@ -25,7 +26,6 @@ struct CrossOriginEmbedderPolicy;
 namespace content {
 
 class ServiceWorkerContextWrapper;
-class ServiceWorkerMainResourceHandleCore;
 
 // This class is used to manage the lifetime of ServiceWorkerContainerHosts
 // created for main resource requests (navigations and web workers). This is a

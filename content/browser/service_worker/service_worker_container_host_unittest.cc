@@ -401,20 +401,22 @@ TEST_F(ServiceWorkerContainerHostTest, ContextSecurity) {
   container_host_secure_parent->UpdateUrls(
       GURL("http://host"), net::SiteForCookies::FromUrl(GURL("http://host")),
       url::Origin::Create(GURL("http://host")));
-  EXPECT_FALSE(container_host_secure_parent->IsContextSecureForServiceWorker());
+  EXPECT_FALSE(
+      container_host_secure_parent->IsEligibleForServiceWorkerController());
 
   // Insecure parent frame.
   container_host_insecure_parent->UpdateUrls(
       GURL("https://host"), net::SiteForCookies::FromUrl(GURL("https://host")),
       url::Origin::Create(GURL("https://host")));
   EXPECT_FALSE(
-      container_host_insecure_parent->IsContextSecureForServiceWorker());
+      container_host_insecure_parent->IsEligibleForServiceWorkerController());
 
   // Secure URL and parent frame.
   container_host_secure_parent->UpdateUrls(
       GURL("https://host"), net::SiteForCookies::FromUrl(GURL("https://host")),
       url::Origin::Create(GURL("https://host")));
-  EXPECT_TRUE(container_host_secure_parent->IsContextSecureForServiceWorker());
+  EXPECT_TRUE(
+      container_host_secure_parent->IsEligibleForServiceWorkerController());
 
   // Exceptional service worker scheme.
   GURL url(std::string(kServiceWorkerScheme) + "://host");
@@ -424,13 +426,14 @@ TEST_F(ServiceWorkerContainerHostTest, ContextSecurity) {
   EXPECT_TRUE(OriginCanAccessServiceWorkers(url));
   container_host_secure_parent->UpdateUrls(
       url, net::SiteForCookies::FromUrl(url), origin);
-  EXPECT_TRUE(container_host_secure_parent->IsContextSecureForServiceWorker());
+  EXPECT_TRUE(
+      container_host_secure_parent->IsEligibleForServiceWorkerController());
 
   // Exceptional service worker scheme with insecure parent frame.
   container_host_insecure_parent->UpdateUrls(
       url, net::SiteForCookies::FromUrl(url), origin);
   EXPECT_FALSE(
-      container_host_insecure_parent->IsContextSecureForServiceWorker());
+      container_host_insecure_parent->IsEligibleForServiceWorkerController());
 }
 
 TEST_F(ServiceWorkerContainerHostTest, UpdateUrls_SameOriginRedirect) {

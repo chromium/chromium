@@ -69,6 +69,16 @@ class CONTENT_EXPORT ServiceWorkerMainResourceHandleCore {
     return container_host_;
   }
 
+  void set_parent_container_host(
+      base::WeakPtr<ServiceWorkerContainerHost> container_host) {
+    DCHECK(!parent_container_host_);
+    parent_container_host_ = std::move(container_host);
+  }
+
+  base::WeakPtr<ServiceWorkerContainerHost> parent_container_host() {
+    return parent_container_host_;
+  }
+
   void set_interceptor(
       std::unique_ptr<ServiceWorkerControlleeRequestHandler> interceptor) {
     interceptor_ = std::move(interceptor);
@@ -90,6 +100,8 @@ class CONTENT_EXPORT ServiceWorkerMainResourceHandleCore {
   scoped_refptr<ServiceWorkerContextWrapper> context_wrapper_;
   base::WeakPtr<ServiceWorkerMainResourceHandle> ui_handle_;
   base::WeakPtr<ServiceWorkerContainerHost> container_host_;
+  // Only used for workers with a blob URL.
+  base::WeakPtr<ServiceWorkerContainerHost> parent_container_host_;
   std::unique_ptr<ServiceWorkerControlleeRequestHandler> interceptor_;
   ServiceWorkerAccessedCallback service_worker_accessed_callback_;
 

@@ -132,7 +132,7 @@ ServiceWorkerContainerHost::ServiceWorkerContainerHost(
 ServiceWorkerContainerHost::~ServiceWorkerContainerHost() {
   DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
 
-  if (IsBackForwardCacheEnabled() && IsContainerForClient()) {
+  if (IsContainerForClient()) {
     auto* rfh = RenderFrameHostImpl::FromID(process_id(), frame_id());
     if (rfh)
       rfh->RemoveServiceWorkerContainerHost(client_uuid());
@@ -446,8 +446,9 @@ void ServiceWorkerContainerHost::OnSkippedWaiting(
 void ServiceWorkerContainerHost::AddMatchingRegistration(
     ServiceWorkerRegistration* registration) {
   DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
-  DCHECK(blink::ServiceWorkerScopeMatches(registration->scope(), url_));
-  if (!IsContextSecureForServiceWorker())
+  DCHECK(blink::ServiceWorkerScopeMatches(registration->scope(),
+                                          GetUrlForScopeMatch()));
+  if (!IsEligibleForServiceWorkerController())
     return;
   size_t key = registration->scope().spec().size();
   if (base::Contains(matching_registrations_, key))
@@ -778,12 +779,10 @@ void ServiceWorkerContainerHost::OnBeginNavigationCommit(
                                      std::move(coep_reporter_to_be_passed));
   }
 
-  if (IsBackForwardCacheEnabled()) {
-    auto* rfh = RenderFrameHostImpl::FromID(container_process_id, frame_id());
-    // |rfh| may be null in tests (but it should not happen in production).
-    if (rfh)
-      rfh->AddServiceWorkerContainerHost(client_uuid(), GetWeakPtr());
-  }
+  auto* rfh = RenderFrameHostImpl::FromID(container_process_id, frame_id());
+  // |rfh| may be null in tests (but it should not happen in production).
+  if (rfh)
+    rfh->AddServiceWorkerContainerHost(client_uuid(), GetWeakPtr());
 
   DCHECK_EQ(ukm_source_id_, ukm::kInvalidSourceId);
   ukm_source_id_ = document_ukm_source_id;
@@ -888,7 +887,7 @@ void ServiceWorkerContainerHost::SetControllerRegistration(
   DCHECK(IsContainerForClient());
 
   if (controller_registration) {
-    CHECK(IsContextSecureForServiceWorker());
+    CHECK(IsEligibleForServiceWorkerController());
     DCHECK(controller_registration->active_version());
 #if DCHECK_IS_ON()
     DCHECK(IsMatchingRegistration(controller_registration.get()));
@@ -968,13 +967,19 @@ bool ServiceWorkerContainerHost::AllowServiceWorker(const GURL& scope,
   return allowed;
 }
 
-bool ServiceWorkerContainerHost::IsContextSecureForServiceWorker() const {
+bool ServiceWorkerContainerHost::IsEligibleForServiceWorkerController() const {
   DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
   DCHECK(IsContainerForClient());
 
   if (!url_.is_valid())
     return false;
-  if (!OriginCanAccessServiceWorkers(url_))
+  // Pass GetUrlForScopeMatch() instead of `url_` because we cannot take the
+  // origin of `url_` when it's a blob URL (see https://crbug.com/1144717). It's
+  // guaranteed that the URL returned by GetURLForScopeMatch() has the same
+  // logical origin as `url_`.
+  // TODO(asamidoi): Add url::Origin member for ServiceWorkerContainerHost and
+  // use it as the argument of OriginCanAccessServiceWorkers().
+  if (!OriginCanAccessServiceWorkers(GetUrlForScopeMatch()))
     return false;
 
   if (is_parent_frame_secure_)
@@ -1126,7 +1131,8 @@ void ServiceWorkerContainerHost::SyncMatchingRegistrations() {
   for (const auto& key_registration : registrations) {
     ServiceWorkerRegistration* registration = key_registration.second;
     if (!registration->is_uninstalled() &&
-        blink::ServiceWorkerScopeMatches(registration->scope(), url_)) {
+        blink::ServiceWorkerScopeMatches(registration->scope(),
+                                         GetUrlForScopeMatch())) {
       AddMatchingRegistration(registration);
     }
   }
@@ -1224,7 +1230,7 @@ void ServiceWorkerContainerHost::UpdateController(
   ServiceWorkerVersion* version =
       controller_registration_ ? controller_registration_->active_version()
                                : nullptr;
-  CHECK(!version || IsContextSecureForServiceWorker());
+  CHECK(!version || IsEligibleForServiceWorkerController());
   if (version == controller_.get())
     return;
 
@@ -1578,6 +1584,37 @@ bool ServiceWorkerContainerHost::CanServeContainerHostMethods(
   }
 
   return true;
+}
+
+const GURL& ServiceWorkerContainerHost::GetUrlForScopeMatch() const {
+  DCHECK(IsContainerForClient());
+  if (!scope_match_url_for_blob_client_.is_empty())
+    return scope_match_url_for_blob_client_;
+  return url_;
+}
+
+void ServiceWorkerContainerHost::InheritControllerFrom(
+    ServiceWorkerContainerHost& creator_host,
+    const GURL& blob_url) {
+  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+  DCHECK(IsContainerForClient());
+  DCHECK_EQ(blink::mojom::ServiceWorkerClientType::kDedicatedWorker,
+            GetClientType());
+  DCHECK(blob_url.SchemeIsBlob());
+
+  UpdateUrls(blob_url, net::SiteForCookies::FromUrl(blob_url),
+             creator_host.top_frame_origin());
+
+  // Let `scope_match_url_for_blob_client_` be the creator's url for scope match
+  // because a client should be handled by the service worker of its creator.
+  scope_match_url_for_blob_client_ = creator_host.GetUrlForScopeMatch();
+
+  // Inherit the controller of the creator.
+  if (creator_host.controller_registration()) {
+    AddMatchingRegistration(creator_host.controller_registration());
+    SetControllerRegistration(creator_host.controller_registration(),
+                              false /* notify_controllerchange */);
+  }
 }
 
 }  // namespace content

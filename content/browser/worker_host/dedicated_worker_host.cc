@@ -12,6 +12,7 @@
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
 #include "content/browser/loader/content_security_notifier.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/browser/service_worker/service_worker_container_host.h"
 #include "content/browser/service_worker/service_worker_main_resource_handle.h"
 #include "content/browser/service_worker/service_worker_object_host.h"
 #include "content/browser/storage_partition_impl.h"
@@ -184,6 +185,24 @@ void DedicatedWorkerHost::StartScriptLoad(
 
   service_worker_handle_ = std::make_unique<ServiceWorkerMainResourceHandle>(
       storage_partition_impl->GetServiceWorkerContext(), base::DoNothing());
+
+  // For blob URL workers, inherit the controller from the worker's parent.
+  // See https://w3c.github.io/ServiceWorker/#control-and-use-worker-client
+  if (script_url.SchemeIsBlob()) {
+    if (creator_render_frame_host_id_) {
+      base::WeakPtr<ServiceWorkerContainerHost> creator_container_host =
+          RenderFrameHostImpl::FromID(creator_render_frame_host_id_.value())
+              ->GetLastCommittedServiceWorkerHost();
+
+      service_worker_handle_->core()->set_parent_container_host(
+          creator_container_host);
+    } else {
+      // TODO(https://crbug.com/1017034): When this worker is nested, the worker
+      // should inherit the active service worker from the parent worker host.
+      // Implement this behavior.
+      NOTIMPLEMENTED();
+    }
+  }
 
   // Get a storage domain.
   auto partition_domain =

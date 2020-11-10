@@ -303,7 +303,7 @@ void ServiceWorkerControlleeRequestHandler::ContinueWithRegistration(
     return;
   }
 
-  if (!container_host_->IsContextSecureForServiceWorker()) {
+  if (!container_host_->IsEligibleForServiceWorkerController()) {
     // TODO(falken): Figure out a way to surface in the page's DevTools
     // console that the service worker was blocked for security.
     TRACE_EVENT_WITH_FLOW1(

@@ -116,6 +116,7 @@ void MaybeCreateLoaderOnCoreThread(
     DCHECK(host_receiver);
     DCHECK(client_remote);
     base::WeakPtr<ServiceWorkerContainerHost> container_host;
+    bool inherit_container_host_only = false;
 
     if (request_destination == network::mojom::RequestDestination::kDocument ||
         request_destination == network::mojom::RequestDestination::kIframe) {
@@ -135,6 +136,18 @@ void MaybeCreateLoaderOnCoreThread(
       container_host = context_core->CreateContainerHostForWorker(
           std::move(host_receiver), process_id, std::move(client_remote),
           client_info);
+
+      // For the blob worker case, inherit the controller from the worker's
+      // parent. See
+      // https://w3c.github.io/ServiceWorker/#control-and-use-worker-client
+      base::WeakPtr<ServiceWorkerContainerHost> parent_container_host =
+          handle_core->parent_container_host();
+      if (parent_container_host &&
+          tentative_resource_request.url.SchemeIsBlob()) {
+        container_host->InheritControllerFrom(*parent_container_host,
+                                              tentative_resource_request.url);
+        inherit_container_host_only = true;
+      }
     }
     DCHECK(container_host);
     handle_core->set_container_host(container_host);
@@ -146,6 +159,19 @@ void MaybeCreateLoaderOnCoreThread(
             context_core->AsWeakPtr(), container_host, request_destination,
             skip_service_worker,
             handle_core->service_worker_accessed_callback()));
+
+    // For the blob worker case, we only inherit the controller and do not
+    // let it intercept the requests. Blob URLs are not eligible to go through
+    // service worker interception. So just call the loader callback now.
+    // We don't use the interceptor but have to set it because we need
+    // ControllerServiceWorkerInfoPtr and ServiceWorkerObjectHost from the
+    // subresource loader params which is created by the interceptor.
+    if (inherit_container_host_only) {
+      LoaderCallbackWrapperOnCoreThread(
+          handle_core, std::move(interceptor_on_ui), std::move(loader_callback),
+          /*handler=*/{});
+      return;
+    }
   }
 
   // If |initialize_container_host_only| is true, we have already determined
@@ -193,7 +219,12 @@ bool SchemeMaySupportRedirectingToHTTPS(BrowserContext* browser_context,
 
 // Returns true if a ServiceWorkerMainResourceLoaderInterceptor should be
 // created for a worker with this |url|.
-bool ShouldCreateForWorker(const GURL& url) {
+bool ShouldCreateForWorker(
+    const GURL& url,
+    base::WeakPtr<ServiceWorkerContainerHost> parent_container_host) {
+  // Blob URL can be controlled by a parent's controller.
+  if (url.SchemeIsBlob() && parent_container_host)
+    return true;
   // Create the handler even for insecure HTTP since it's used in the
   // case of redirect to HTTPS.
   return url.SchemeIsHTTPOrHTTPS() || OriginCanAccessServiceWorkers(url);
@@ -239,9 +270,9 @@ ServiceWorkerMainResourceLoaderInterceptor::CreateForWorker(
              network::mojom::RequestDestination::kSharedWorker)
       << resource_request.destination;
 
-  // Create the handler even for insecure HTTP since it's used in the
-  // case of redirect to HTTPS.
-  if (!ShouldCreateForWorker(resource_request.url))
+  if (!ShouldCreateForWorker(
+          resource_request.url,
+          navigation_handle->core()->parent_container_host()))
     return nullptr;
 
   return base::WrapUnique(new ServiceWorkerMainResourceLoaderInterceptor(

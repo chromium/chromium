@@ -230,8 +230,8 @@ class CONTENT_EXPORT ServiceWorkerContainerHost final
   blink::mojom::ServiceWorkerObjectInfoPtr CreateServiceWorkerObjectInfoToSend(
       scoped_refptr<ServiceWorkerVersion> version);
 
-  // Returns a ServiceWorkerObjectHost instance for |version| for this provider
-  // host. A new instance is created if one does not already exist.
+  // Returns a ServiceWorkerObjectHost instance for |version| for this
+  // container host. A new instance is created if one does not already exist.
   // ServiceWorkerObjectHost will have an ownership of the |version|.
   base::WeakPtr<ServiceWorkerObjectHost> GetOrCreateServiceWorkerObjectHost(
       scoped_refptr<ServiceWorkerVersion> version);
@@ -379,7 +379,7 @@ class CONTENT_EXPORT ServiceWorkerContainerHost final
   // If non-empty, |script_url| is the script the service worker will run.
   bool AllowServiceWorker(const GURL& scope, const GURL& script_url);
 
-  // Returns whether this provider host is secure enough to have a service
+  // Returns whether this container host is secure enough to have a service
   // worker controller.
   // Analogous to Blink's Document::IsSecureContext. Because of how service
   // worker intercepts main resource requests, this check must be done
@@ -387,7 +387,7 @@ class CONTENT_EXPORT ServiceWorkerContainerHost final
   // ServiceWorkerNetworkProviderForFrame::Create). This function uses
   // |url_| and |is_parent_frame_secure_| to determine context security, so they
   // must be set properly before calling this function.
-  bool IsContextSecureForServiceWorker() const;
+  bool IsEligibleForServiceWorkerController() const;
 
   // For service worker clients. True if the response for the main resource load
   // was committed to the renderer. When this is false, the client's URL may
@@ -447,6 +447,19 @@ class CONTENT_EXPORT ServiceWorkerContainerHost final
 
   void EnterBackForwardCacheForTesting() { is_in_back_forward_cache_ = true; }
   void LeaveBackForwardCacheForTesting() { is_in_back_forward_cache_ = false; }
+
+  // For service worker clients. Returns the URL that is used for scope matching
+  // algorithm. This can be different from url() in the case of blob URL
+  // workers. In that case, url() may be like "blob://https://a.test" and the
+  // scope matching URL is "https://a.test", inherited from the parent container
+  // host.
+  const GURL& GetUrlForScopeMatch() const;
+
+  // For service worker clients that are dedicated workers. Inherits the
+  // controller of the creator document or worker. Used when the client was
+  // created with a blob URL.
+  void InheritControllerFrom(ServiceWorkerContainerHost& creator_host,
+                             const GURL& blob_url);
 
   base::WeakPtr<ServiceWorkerContainerHost> GetWeakPtr();
 
@@ -623,7 +636,7 @@ class CONTENT_EXPORT ServiceWorkerContainerHost final
       std::map<size_t, scoped_refptr<ServiceWorkerRegistration>>;
   // Contains all living registrations whose scope this client's URL starts
   // with, used for .ready and claim(). It is empty if
-  // IsContextSecureForServiceWorker() is false. See also
+  // IsEligibleForServiceWorkerController() is false. See also
   // AddMatchingRegistration().
   ServiceWorkerRegistrationMap matching_registrations_;
 
@@ -656,6 +669,10 @@ class CONTENT_EXPORT ServiceWorkerContainerHost final
 
   // The source id of the client's ExecutionContext, set on response commit.
   ukm::SourceId ukm_source_id_ = ukm::kInvalidSourceId;
+
+  // The URL used for service worker scope matching. It is empty except in the
+  // case of a service worker client with a blob URL.
+  GURL scope_match_url_for_blob_client_;
 
   // For window clients only ---------------------------------------------------
 
