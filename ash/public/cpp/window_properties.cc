@@ -57,12 +57,6 @@ DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(SkRegion,
 DEFINE_UI_CLASS_PROPERTY_KEY(aura::Window*,
                              kTabDraggingSourceWindowKey,
                              nullptr)
-DEFINE_UI_CLASS_PROPERTY_KEY(SkColor,
-                             kFrameActiveColorKey,
-                             chromeos::kDefaultFrameColor)
-DEFINE_UI_CLASS_PROPERTY_KEY(SkColor,
-                             kFrameInactiveColorKey,
-                             chromeos::kDefaultFrameColor)
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(base::string16,
                                    kWindowOverviewTitleKey,
                                    nullptr)

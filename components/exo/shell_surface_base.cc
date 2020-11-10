@@ -633,9 +633,9 @@ void ShellSurfaceBase::OnSetFrameColors(SkColor active_color,
   active_frame_color_ = SkColorSetA(active_color, SK_AlphaOPAQUE);
   inactive_frame_color_ = SkColorSetA(inactive_color, SK_AlphaOPAQUE);
   if (widget_) {
-    widget_->GetNativeWindow()->SetProperty(ash::kFrameActiveColorKey,
+    widget_->GetNativeWindow()->SetProperty(chromeos::kFrameActiveColorKey,
                                             active_frame_color_);
-    widget_->GetNativeWindow()->SetProperty(ash::kFrameInactiveColorKey,
+    widget_->GetNativeWindow()->SetProperty(chromeos::kFrameInactiveColorKey,
                                             inactive_frame_color_);
   }
 }

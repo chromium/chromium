@@ -1004,8 +1004,10 @@ IN_PROC_BROWSER_TEST_P(WebAppNonClientFrameViewAshTest,
 IN_PROC_BROWSER_TEST_P(WebAppNonClientFrameViewAshTest, FrameThemeColorIsSet) {
   SetUpWebApp();
   aura::Window* window = browser_view_->GetWidget()->GetNativeWindow();
-  EXPECT_EQ(GetThemeColor(), window->GetProperty(ash::kFrameActiveColorKey));
-  EXPECT_EQ(GetThemeColor(), window->GetProperty(ash::kFrameInactiveColorKey));
+  EXPECT_EQ(GetThemeColor(),
+            window->GetProperty(chromeos::kFrameActiveColorKey));
+  EXPECT_EQ(GetThemeColor(),
+            window->GetProperty(chromeos::kFrameInactiveColorKey));
   EXPECT_EQ(gfx::kGoogleGrey200, GetActiveColor());
 }
 
@@ -1382,7 +1384,8 @@ IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewAshTest, AppFrameColor) {
   aura::Window* window = app_browser->window()->GetNativeWindow();
   window->Show();
 
-  SkColor active_frame_color = window->GetProperty(ash::kFrameActiveColorKey);
+  SkColor active_frame_color =
+      window->GetProperty(chromeos::kFrameActiveColorKey);
   EXPECT_EQ(active_frame_color, SkColorSetRGB(253, 254, 255))
       << "RGB: " << SkColorGetR(active_frame_color) << ", "
       << SkColorGetG(active_frame_color) << ", "

@@ -4,6 +4,7 @@
 
 #include "chromeos/ui/base/window_properties.h"
 
+#include "chromeos/ui/base/chromeos_ui_constants.h"
 #include "chromeos/ui/base/window_pin_type.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "ui/base/class_property.h"
@@ -13,6 +14,11 @@ DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(COMPONENT_EXPORT(CHROMEOS_UI_BASE),
                                        chromeos::WindowPinType)
 
 namespace chromeos {
+
+DEFINE_UI_CLASS_PROPERTY_KEY(SkColor, kFrameActiveColorKey, kDefaultFrameColor)
+DEFINE_UI_CLASS_PROPERTY_KEY(SkColor,
+                             kFrameInactiveColorKey,
+                             kDefaultFrameColor)
 
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kFrameRestoreLookKey, false)
 

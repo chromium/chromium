@@ -8,7 +8,6 @@
 
 #include "ash/public/cpp/keyboard/keyboard_switches.h"
 #include "ash/public/cpp/test/shell_test_api.h"
-#include "ash/public/cpp/window_properties.h"
 #include "base/bind_helpers.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -34,6 +33,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_view_host.h"
@@ -625,9 +625,10 @@ IN_PROC_BROWSER_TEST_P(SelectFileDialogExtensionFlagTest, DialogColoredTitle) {
       dialog_->GetRenderViewHost()->GetMainFrame();
   aura::Window* dialog_window =
       frame_host->GetNativeView()->GetToplevelWindow();
-  SkColor active_color = dialog_window->GetProperty(ash::kFrameActiveColorKey);
+  SkColor active_color =
+      dialog_window->GetProperty(chromeos::kFrameActiveColorKey);
   SkColor inactive_color =
-      dialog_window->GetProperty(ash::kFrameInactiveColorKey);
+      dialog_window->GetProperty(chromeos::kFrameInactiveColorKey);
 
   constexpr SkColor kFilesNgTitleColor = gfx::kGoogleGrey200;
   if (GetParam()) {

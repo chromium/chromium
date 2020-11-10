@@ -4,7 +4,6 @@
 
 #include "ash/public/cpp/default_frame_header.h"
 
-#include "ash/public/cpp/window_properties.h"
 #include "base/logging.h"  // DCHECK
 #include "chromeos/ui/base/chromeos_ui_constants.h"
 #include "chromeos/ui/base/window_properties.h"
@@ -22,6 +21,8 @@
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/window/caption_button_layout_constants.h"
 
+using chromeos::kFrameActiveColorKey;
+using chromeos::kFrameInactiveColorKey;
 using views::Widget;
 
 namespace {

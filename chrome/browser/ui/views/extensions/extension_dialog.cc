@@ -30,7 +30,7 @@
 
 #if defined(OS_CHROMEOS)
 #include "ash/public/cpp/tablet_mode.h"
-#include "ash/public/cpp/window_properties.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "ui/aura/window.h"
 #endif
 
@@ -226,12 +226,12 @@ ExtensionDialog::ExtensionDialog(
   aura::Window* native_view = window->GetNativeWindow();
   if (init_params.title_color) {
     // Frame active color changes the title color when dialog is active.
-    native_view->SetProperty(ash::kFrameActiveColorKey,
+    native_view->SetProperty(chromeos::kFrameActiveColorKey,
                              init_params.title_color.value());
   }
   if (init_params.title_inactive_color) {
     // Frame inactive color changes the title color when dialog is inactive.
-    native_view->SetProperty(ash::kFrameInactiveColorKey,
+    native_view->SetProperty(chromeos::kFrameInactiveColorKey,
                              init_params.title_inactive_color.value());
   }
 #endif

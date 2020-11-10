@@ -6,6 +6,7 @@
 #define CHROMEOS_UI_BASE_WINDOW_PROPERTIES_H_
 
 #include "base/component_export.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/class_property.h"
 
 namespace gfx {
@@ -20,6 +21,14 @@ enum class WindowPinType;
 // Shell-specific window property keys for use by ash and lacros clients.
 
 // Alphabetical sort.
+
+// A property key to store the active color on the window frame.
+COMPONENT_EXPORT(CHROMEOS_UI_BASE)
+extern const ui::ClassProperty<SkColor>* const kFrameActiveColorKey;
+
+// A property key to store the inactive color on the window frame.
+COMPONENT_EXPORT(CHROMEOS_UI_BASE)
+extern const ui::ClassProperty<SkColor>* const kFrameInactiveColorKey;
 
 // A property key that is set to true when the window frame should look like it
 // is in restored state, but actually isn't. Set while dragging a maximized

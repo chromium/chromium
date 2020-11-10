@@ -730,12 +730,12 @@ void BrowserNonClientFrameViewAsh::OnUpdateFrameColor() {
   }
 
   if (active_color) {
-    window->SetProperty(ash::kFrameActiveColorKey, *active_color);
-    window->SetProperty(ash::kFrameInactiveColorKey,
+    window->SetProperty(chromeos::kFrameActiveColorKey, *active_color);
+    window->SetProperty(chromeos::kFrameInactiveColorKey,
                         inactive_color.value_or(*active_color));
   } else {
-    window->ClearProperty(ash::kFrameActiveColorKey);
-    window->ClearProperty(ash::kFrameInactiveColorKey);
+    window->ClearProperty(chromeos::kFrameActiveColorKey);
+    window->ClearProperty(chromeos::kFrameInactiveColorKey);
   }
 
   if (frame_header_)

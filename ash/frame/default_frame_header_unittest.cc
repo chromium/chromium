@@ -8,12 +8,12 @@
 
 #include "ash/frame/non_client_frame_view_ash.h"
 #include "ash/public/cpp/shell_window_ids.h"
-#include "ash/public/cpp/window_properties.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/desks/desks_util.h"
 #include "base/i18n/rtl.h"
 #include "base/stl_util.h"
 #include "base/test/icu_test_util.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/frame/caption_buttons/frame_back_button.h"
 #include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
 #include "ui/aura/window.h"
@@ -28,6 +28,8 @@
 using chromeos::FrameBackButton;
 using chromeos::FrameCaptionButtonContainerView;
 using chromeos::FrameHeader;
+using chromeos::kFrameActiveColorKey;
+using chromeos::kFrameInactiveColorKey;
 using views::NonClientFrameView;
 using views::Widget;
 

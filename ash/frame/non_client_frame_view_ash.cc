@@ -41,6 +41,8 @@ DEFINE_UI_CLASS_PROPERTY_TYPE(ash::NonClientFrameViewAsh*)
 namespace ash {
 
 using ::chromeos::ImmersiveFullscreenController;
+using ::chromeos::kFrameActiveColorKey;
+using ::chromeos::kFrameInactiveColorKey;
 using ::chromeos::kImmersiveImpliedByFullscreen;
 using ::chromeos::WindowStateType;
 

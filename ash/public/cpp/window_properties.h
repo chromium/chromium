@@ -178,13 +178,6 @@ ASH_PUBLIC_EXPORT extern const aura::WindowProperty<SkRegion*>* const
 ASH_PUBLIC_EXPORT extern const aura::WindowProperty<aura::Window*>* const
     kTabDraggingSourceWindowKey;
 
-// A property key to store the active color on the window frame.
-ASH_PUBLIC_EXPORT extern const aura::WindowProperty<SkColor>* const
-    kFrameActiveColorKey;
-// A property key to store the inactive color on the window frame.
-ASH_PUBLIC_EXPORT extern const aura::WindowProperty<SkColor>* const
-    kFrameInactiveColorKey;
-
 // A property key whose value is shown in alt-tab/overview mode. If non-value
 // is set, the window's title is used.
 ASH_PUBLIC_EXPORT extern const aura::WindowProperty<base::string16*>* const

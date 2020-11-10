@@ -7,11 +7,11 @@
 #include <memory>
 
 #include "ash/public/cpp/default_frame_header.h"
-#include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_state.h"
 #include "base/auto_reset.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/frame/caption_buttons/caption_button_model.h"
 #include "chromeos/ui/frame/caption_buttons/frame_back_button.h"
 #include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
@@ -23,6 +23,9 @@
 #include "ui/views/window/non_client_view.h"
 
 namespace ash {
+
+using ::chromeos::kFrameActiveColorKey;
+using ::chromeos::kFrameInactiveColorKey;
 
 // The view used to draw the content (background and title string)
 // of the header. This is a separate view so that it can use
