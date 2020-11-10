@@ -70,8 +70,11 @@ const BrowserAccessibility* GetTextContainerForPlainTextField(
   if (child->InternalChildCount() == 1) {
     const BrowserAccessibility* grand_child = child->InternalGetFirstChild();
     if (grand_child->GetRole() == ax::mojom::Role::kGenericContainer) {
-      DCHECK_EQ(grand_child->InternalGetFirstChild()->GetRole(),
-                ax::mojom::Role::kStaticText);
+      // There is not always a static text child of the grandchild, but if there
+      // is, it must be static text.
+      DCHECK(!grand_child->InternalGetFirstChild() ||
+             grand_child->InternalGetFirstChild()->GetRole() ==
+                 ax::mojom::Role::kStaticText);
       return grand_child;
     }
     DCHECK_EQ(child->InternalGetFirstChild()->GetRole(),
