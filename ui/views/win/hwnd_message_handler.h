@@ -715,6 +715,14 @@ class VIEWS_EXPORT HWNDMessageHandler : public gfx::WindowImpl,
   // IsMouseEventFromTouch function.
   static LONG last_touch_or_pen_message_time_;
 
+  // When true, this flag makes us discard window management mouse messages.
+  // Windows sends window management mouse messages at the mouse location when
+  // window states change (e.g. tooltips or status bubbles opening/closing).
+  // Those system generated messages should be ignored while the pen is active
+  // over the client area, where it is not in sync with the mouse position.
+  // Reset to false when we get user mouse input again.
+  static bool is_pen_active_in_client_area_;
+
   // Time the last WM_MOUSEHWHEEL message is received. Please refer to the
   // HandleMouseEventInternal function as to why this is needed.
   LONG last_mouse_hwheel_time_;
