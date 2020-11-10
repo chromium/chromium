@@ -10,8 +10,10 @@
 #include "base/bind.h"
 #include "base/json/json_writer.h"
 #include "base/scoped_observer.h"
+#include "base/stl_util.h"
 #include "base/values.h"
 #include "components/history/core/browser/history_service.h"
+#include "components/history/core/browser/history_types.h"
 #include "components/history/core/browser/keyword_search_term.h"
 #include "components/history/core/browser/url_database.h"
 #include "components/search/ntp_features.h"
@@ -44,8 +46,8 @@ bool JsonToRepeatableQueriesData(const base::Value& root_value,
   // the Suggest server containing the deletion URLs.
   const base::DictionaryValue* extras = nullptr;
   const base::ListValue* suggestion_details = nullptr;
-  if (root_list->GetDictionary(4, &extras) &&
-      extras->GetList("google:suggestdetail", &suggestion_details) &&
+  if (!root_list->GetDictionary(4, &extras) ||
+      !extras->GetList("google:suggestdetail", &suggestion_details) ||
       suggestion_details->GetSize() != results_list->GetSize()) {
     return false;
   }
@@ -150,6 +152,37 @@ void RepeatableQueriesService::Refresh() {
   }
 }
 
+void RepeatableQueriesService::DeleteQueryWithDestinationURL(const GURL& url) {
+  auto it = std::find_if(repeatable_queries_.begin(), repeatable_queries_.end(),
+                         [&url](const auto& repeatable_query) {
+                           return repeatable_query.destination_url == url;
+                         });
+
+  // Return if no repeatable query with a matching destination URL exists.
+  if (it == repeatable_queries_.end()) {
+    // Still notify observers of the deletion attempt.
+    NotifyObservers();
+    return;
+  }
+
+  if (it->deletion_url.empty()) {
+    DeleteRepeatableQueryFromURLDatabase(it->query);
+  } else {
+    DeleteRepeatableQueryFromServer(it->deletion_url);
+  }
+
+  // Delete all the Google search URLs for the given query from history.
+  history_service_->DeleteMatchingURLsForKeyword(
+      template_url_service_->GetDefaultSearchProvider()->id(), it->query);
+
+  // Make sure the query is not suggested again.
+  MarkQueryAsDeleted(it->query);
+
+  // Update the repeatable queries and notify the observers.
+  repeatable_queries_.erase(it);
+  NotifyObservers();
+}
+
 void RepeatableQueriesService::AddObserver(
     RepeatableQueriesServiceObserver* observer) {
   observers_.AddObserver(observer);
@@ -181,6 +214,28 @@ void RepeatableQueriesService::SigninStatusChanged() {
   Refresh();
 }
 
+GURL RepeatableQueriesService::GetQueryDestinationURL(
+    const base::string16& query) {
+  TemplateURLRef::SearchTermsArgs search_terms_args(query);
+  const TemplateURLRef& search_url_ref =
+      template_url_service_->GetDefaultSearchProvider()->url_ref();
+  const SearchTermsData& search_terms_data =
+      template_url_service_->search_terms_data();
+  DCHECK(search_url_ref.SupportsReplacement(search_terms_data));
+  return GURL(
+      search_url_ref.ReplaceSearchTerms(search_terms_args, search_terms_data));
+}
+
+GURL RepeatableQueriesService::GetQueryDeletionURL(
+    const std::string& deletion_url) {
+  const auto* default_provider =
+      template_url_service_->GetDefaultSearchProvider();
+  const SearchTermsData& search_terms_data =
+      template_url_service_->search_terms_data();
+  GURL request_url = default_provider->GenerateSearchURL(search_terms_data);
+  return request_url.GetOrigin().Resolve(deletion_url);
+}
+
 GURL RepeatableQueriesService::GetRequestURL() {
   TemplateURLRef::SearchTermsArgs search_terms_args;
   search_terms_args.request_source = TemplateURLRef::NON_SEARCHBOX_NTP;
@@ -188,6 +243,7 @@ GURL RepeatableQueriesService::GetRequestURL() {
       template_url_service_->GetDefaultSearchProvider()->suggestions_url_ref();
   const SearchTermsData& search_terms_data =
       template_url_service_->search_terms_data();
+  DCHECK(suggestion_url_ref.SupportsReplacement(search_terms_data));
   return GURL(suggestion_url_ref.ReplaceSearchTerms(search_terms_args,
                                                     search_terms_data));
 }
@@ -235,18 +291,23 @@ void RepeatableQueriesService::GetRepeatableQueriesFromServer() {
   resource_request->request_initiator =
       url::Origin::Create(request_initiator_url_);
 
-  simple_loader_ = network::SimpleURLLoader::Create(std::move(resource_request),
-                                                    traffic_annotation);
-  simple_loader_->DownloadToString(
+  loaders_.push_back(network::SimpleURLLoader::Create(
+      std::move(resource_request), traffic_annotation));
+  loaders_.back()->DownloadToString(
       url_loader_factory_.get(),
       base::BindOnce(&RepeatableQueriesService::RepeatableQueriesResponseLoaded,
-                     weak_ptr_factory_.GetWeakPtr()),
+                     weak_ptr_factory_.GetWeakPtr(), loaders_.back().get()),
       network::SimpleURLLoader::kMaxBoundedStringDownloadSize);
 }
 
 void RepeatableQueriesService::RepeatableQueriesResponseLoaded(
+    network::SimpleURLLoader* loader,
     std::unique_ptr<std::string> response) {
-  auto net_error = simple_loader_->NetError();
+  auto net_error = loader->NetError();
+  base::EraseIf(loaders_, [loader](const auto& loader_ptr) {
+    return loader == loader_ptr.get();
+  });
+
   if (net_error != net::OK || !response) {
     // In the case of network errors, keep the cached data, if any, but still
     // notify observers of the finished load attempt.
@@ -267,12 +328,18 @@ void RepeatableQueriesService::RepeatableQueriesResponseLoaded(
 
 void RepeatableQueriesService::RepeatableQueriesParsed(
     data_decoder::DataDecoder::ValueOrError result) {
-  std::vector<RepeatableQuery> data;
-  if (result.value && JsonToRepeatableQueriesData(*result.value, &data)) {
-    repeatable_queries_ = std::vector<RepeatableQuery>(
-        data.begin(), data.begin() + std::min(data.size(), kMaxQueries));
-  } else {
-    repeatable_queries_ = data;
+  repeatable_queries_.clear();
+
+  std::vector<RepeatableQuery> queries;
+  if (result.value && JsonToRepeatableQueriesData(*result.value, &queries)) {
+    for (auto& query : queries) {
+      if (IsQueryDeleted(query.query))
+        continue;
+      query.destination_url = GetQueryDestinationURL(query.query);
+      repeatable_queries_.push_back(query);
+      if (repeatable_queries_.size() >= kMaxQueries)
+        break;
+    }
   }
 
   NotifyObservers();
@@ -304,6 +371,10 @@ void RepeatableQueriesService::GetRepeatableQueriesFromURLDatabase() {
   for (const auto& result : results) {
     RepeatableQuery repeatable_query;
     repeatable_query.query = result.normalized_term;
+    if (IsQueryDeleted(repeatable_query.query))
+      continue;
+    repeatable_query.destination_url =
+        GetQueryDestinationURL(repeatable_query.query);
     repeatable_queries_.push_back(repeatable_query);
     if (repeatable_queries_.size() >= kMaxQueries)
       break;
@@ -312,8 +383,92 @@ void RepeatableQueriesService::GetRepeatableQueriesFromURLDatabase() {
   NotifyObservers();
 }
 
+void RepeatableQueriesService::DeleteRepeatableQueryFromServer(
+    const std::string& deletion_url) {
+  net::NetworkTrafficAnnotationTag traffic_annotation =
+      net::DefineNetworkTrafficAnnotation("repeatable_queries_deletion", R"(
+        semantics {
+          sender: "Repeatable Queries Service"
+          description:
+            "When users attempt to delete a server-provided repeatable search "
+            "query from the Most Visited section of New Tab Page, Chrome sends "
+            "a request to the server requesting deletion of that suggestion."
+          trigger:
+            "User attempts to delete a server-provided repeatable search "
+            "query for which the server provided a custom deletion URL from "
+            "the Most Visited section of New Tab Page, if Google is the "
+            "configured search provider, and the user is signed in."
+          data: "Google credentials if user is signed in."
+          destination: GOOGLE_OWNED_SERVICE
+        }
+        policy {
+          cookies_allowed: YES
+          cookies_store: "user"
+          setting:
+            "Users can control this feature by selecting a non-Google default "
+            "search engine in Chrome settings under 'Search Engine', or by "
+            "signing out of the browser on the New Tab Page. Users can opt "
+            "out of this feature by switching to custom shortcuts."
+          chrome_policy {
+            DefaultSearchProviderEnabled {
+              policy_options {mode: MANDATORY}
+              DefaultSearchProviderEnabled: false
+            }
+            BrowserSignin {
+              policy_options {mode: MANDATORY}
+              BrowserSignin: 0
+            }
+          }
+        })");
+
+  GURL request_url = GetQueryDeletionURL(deletion_url);
+  auto deletion_request = std::make_unique<network::ResourceRequest>();
+  variations::AppendVariationsHeaderUnknownSignedIn(
+      request_url, variations::InIncognito::kNo, deletion_request.get());
+  deletion_request->url = request_url;
+  deletion_request->request_initiator =
+      url::Origin::Create(request_initiator_url_);
+
+  loaders_.push_back(network::SimpleURLLoader::Create(
+      std::move(deletion_request), traffic_annotation));
+  loaders_.back()->DownloadToString(
+      url_loader_factory_.get(),
+      base::BindOnce(&RepeatableQueriesService::DeletionResponseLoaded,
+                     weak_ptr_factory_.GetWeakPtr(), loaders_.back().get()),
+      network::SimpleURLLoader::kMaxBoundedStringDownloadSize);
+}
+
+void RepeatableQueriesService::DeletionResponseLoaded(
+    network::SimpleURLLoader* loader,
+    std::unique_ptr<std::string> response) {
+  base::EraseIf(loaders_, [loader](const auto& loader_ptr) {
+    return loader == loader_ptr.get();
+  });
+}
+
+void RepeatableQueriesService::DeleteRepeatableQueryFromURLDatabase(
+    const base::string16& query) {
+  // Fail if the in-memory URL database is not available.
+  history::URLDatabase* url_db = history_service_->InMemoryDatabase();
+  if (!url_db)
+    return;
+
+  // Delete all the search terms matching the repeatable query suggestion from
+  // the in-memory URL database.
+  url_db->DeleteKeywordSearchTermForNormalizedTerm(
+      template_url_service_->GetDefaultSearchProvider()->id(), query);
+}
+
 void RepeatableQueriesService::NotifyObservers() {
   for (auto& observer : observers_) {
     observer.OnRepeatableQueriesUpdated();
   }
+}
+
+bool RepeatableQueriesService::IsQueryDeleted(const base::string16& query) {
+  return base::Contains(deleted_repeatable_queries_, query);
+}
+
+void RepeatableQueriesService::MarkQueryAsDeleted(const base::string16& query) {
+  deleted_repeatable_queries_.insert(query);
 }

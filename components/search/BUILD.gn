@@ -51,6 +51,7 @@ source_set("unit_tests") {
     "//components/history/core/test",
     "//components/omnibox/browser:test_support",
     "//components/search_engines:search_engines",
+    "//components/search_engines:test_support",
     "//components/signin/public/base:test_support",
     "//components/signin/public/identity_manager:test_support",
     "//components/variations",

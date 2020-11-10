@@ -39,7 +39,8 @@ class RepeatableQuery {
   ~RepeatableQuery() = default;
 
   bool operator==(const RepeatableQuery& other) const {
-    return query == other.query && deletion_url == other.deletion_url;
+    return query == other.query && destination_url == other.destination_url &&
+           deletion_url == other.deletion_url;
   }
   bool operator!=(const RepeatableQuery& other) const {
     return !(this == &other);
@@ -48,7 +49,10 @@ class RepeatableQuery {
   // Repeatable query suggestion.
   base::string16 query;
 
-  // The endpoint used for deleting the query suggestion on the server.
+  // The URL to navigate to when the suggestion is selected.
+  GURL destination_url;
+
+  // The relative endpoint used for deleting the query suggestion on the server.
   // Populated for server provided queries only.
   std::string deletion_url;
 };
@@ -82,6 +86,13 @@ class RepeatableQueriesService : public KeyedService {
   // RepeatableQueriesServiceObserver::OnRepeatableQueriesUpdated.
   void Refresh();
 
+  // Deletes the records of the repeatable query suggestion with the given
+  // destination URL on the server as well as on the device, whichever is
+  // applicable. Prevents the suggestion from being offered again by
+  // blocklisting it. Updates the current set of suggestions and notifies the
+  // observers.
+  void DeleteQueryWithDestinationURL(const GURL& url);
+
   // Add/remove observers.
   void AddObserver(RepeatableQueriesServiceObserver* observer);
   void RemoveObserver(RepeatableQueriesServiceObserver* observer);
@@ -98,20 +109,38 @@ class RepeatableQueriesService : public KeyedService {
   // Called when the signin status changes.
   void SigninStatusChanged();
 
+  // Returns the server destination URL for |query|.
+  GURL GetQueryDestinationURL(const base::string16& query);
+
+  // Returns the resolved deletion URL for the given relative deletion URL.
+  GURL GetQueryDeletionURL(const std::string& deletion_url);
+
   // Returns the server request URL.
   GURL GetRequestURL();
 
  private:
   // Requests repeatable queries from the server. Called for signed-in users.
   void GetRepeatableQueriesFromServer();
-  void RepeatableQueriesResponseLoaded(std::unique_ptr<std::string> response);
+  void RepeatableQueriesResponseLoaded(network::SimpleURLLoader* loader,
+                                       std::unique_ptr<std::string> response);
   void RepeatableQueriesParsed(data_decoder::DataDecoder::ValueOrError result);
 
   // Queries the in-memory URLDatabase for the repeatable queries submitted
   // to the default search provider. Called for unauthenticated users.
   void GetRepeatableQueriesFromURLDatabase();
 
+  // Deletes |query| from the in-memory URLDatabase.
+  void DeleteRepeatableQueryFromURLDatabase(const base::string16& query);
+
+  // Deletes the query with |deletion_url| from the server.
+  void DeleteRepeatableQueryFromServer(const std::string& deletion_url);
+  void DeletionResponseLoaded(network::SimpleURLLoader* loader,
+                              std::unique_ptr<std::string> response);
+
   void NotifyObservers();
+
+  bool IsQueryDeleted(const base::string16& query);
+  void MarkQueryAsDeleted(const base::string16& query);
 
   history::HistoryService* history_service_;
 
@@ -129,7 +158,12 @@ class RepeatableQueriesService : public KeyedService {
 
   std::vector<RepeatableQuery> repeatable_queries_;
 
-  std::unique_ptr<network::SimpleURLLoader> simple_loader_;
+  // Used to ensure the deleted repeatable queries won't be suggested again.
+  // This does not need to be persisted across sessions as the queries do get
+  // deleted on the server as well as on the device, whichever is applicable.
+  std::set<base::string16> deleted_repeatable_queries_;
+
+  std::vector<std::unique_ptr<network::SimpleURLLoader>> loaders_;
 
   base::WeakPtrFactory<RepeatableQueriesService> weak_ptr_factory_{this};
 };

@@ -22,6 +22,7 @@
 #include "components/omnibox/browser/in_memory_url_index_test_util.h"
 #include "components/search/search.h"
 #include "components/search/search_provider_observer.h"
+#include "components/search_engines/search_engines_test_util.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/signin/public/base/test_signin_client.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -62,7 +63,23 @@ std::string GoodServerResponse() {
 ])";
 }
 
-std::string BadServerResponse() {
+std::string BadServerResponse1() {
+  return R"()]}'
+[
+   "",
+   [
+      "server query 1",
+      "server query 2",
+      "server query 3"
+   ],
+   [],
+   [],
+   {
+   }
+])";
+}
+
+std::string BadServerResponse2() {
   return R"()]}'
 [
    "",
@@ -126,6 +143,14 @@ class TestRepeatableQueriesService : public RepeatableQueriesService {
 
   MockSearchProviderObserver* search_provider_observer() override {
     return &search_provider_observer_;
+  }
+
+  GURL GetQueryDestinationURL(const base::string16& query) {
+    return RepeatableQueriesService::GetQueryDestinationURL(query);
+  }
+
+  GURL GetQueryDeletionURL(const std::string& deletion_url) {
+    return RepeatableQueriesService::GetQueryDeletionURL(deletion_url);
   }
 
   GURL GetRequestURL() { return RepeatableQueriesService::GetRequestURL(); }
@@ -218,6 +243,10 @@ class RepeatableQueriesServiceTest : public ::testing::Test,
 
   void SignOut() { identity_env_->SetCookieAccounts({}); }
 
+  GURL GetQueryDestinationURL(const std::string& query) {
+    return service_->GetQueryDestinationURL(base::ASCIIToUTF16(query));
+  }
+
   void RefreshAndMaybeWaitForService() {
     service_is_done_ = false;
     service_->Refresh();
@@ -305,8 +334,10 @@ TEST_F(RepeatableQueriesServiceTest, SignedIn) {
   RefreshAndMaybeWaitForService();
   // The first two server suggestions are kept as repeatable queries.
   std::vector<RepeatableQuery> expected_server_queries{
-      {base::ASCIIToUTF16("server query 1"), "/delete?server+query+1"},
-      {base::ASCIIToUTF16("server query 2"), "/delete?server+query+2"}};
+      {base::ASCIIToUTF16("server query 1"),
+       GetQueryDestinationURL("server query 1"), "/delete?server+query+1"},
+      {base::ASCIIToUTF16("server query 2"),
+       GetQueryDestinationURL("server query 2"), "/delete?server+query+2"}};
   EXPECT_EQ(expected_server_queries, service()->repeatable_queries());
 }
 
@@ -321,16 +352,26 @@ TEST_F(RepeatableQueriesServiceTest, SignedIn_BadResponse) {
   // Request a refresh.
   RefreshAndMaybeWaitForService();
   std::vector<RepeatableQuery> expected_server_queries{
-      {base::ASCIIToUTF16("server query 1"), "/delete?server+query+1"},
-      {base::ASCIIToUTF16("server query 2"), "/delete?server+query+2"}};
+      {base::ASCIIToUTF16("server query 1"),
+       GetQueryDestinationURL("server query 1"), "/delete?server+query+1"},
+      {base::ASCIIToUTF16("server query 2"),
+       GetQueryDestinationURL("server query 2"), "/delete?server+query+2"}};
   EXPECT_EQ(expected_server_queries, service()->repeatable_queries());
 
   test_url_loader_factory()->AddResponse(service()->GetRequestURL().spec(),
-                                         BadServerResponse());
+                                         BadServerResponse1());
 
   // Request a refresh.
   RefreshAndMaybeWaitForService();
   // Cached data is cleared.
+  EXPECT_TRUE(service()->repeatable_queries().empty());
+
+  test_url_loader_factory()->AddResponse(service()->GetRequestURL().spec(),
+                                         BadServerResponse2());
+
+  // Request a refresh.
+  RefreshAndMaybeWaitForService();
+  // Cached data is still empty.
   EXPECT_TRUE(service()->repeatable_queries().empty());
 }
 
@@ -345,8 +386,10 @@ TEST_F(RepeatableQueriesServiceTest, SignedIn_ErrorResponse) {
   // Request a refresh.
   RefreshAndMaybeWaitForService();
   std::vector<RepeatableQuery> expected_server_queries{
-      {base::ASCIIToUTF16("server query 1"), "/delete?server+query+1"},
-      {base::ASCIIToUTF16("server query 2"), "/delete?server+query+2"}};
+      {base::ASCIIToUTF16("server query 1"),
+       GetQueryDestinationURL("server query 1"), "/delete?server+query+1"},
+      {base::ASCIIToUTF16("server query 2"),
+       GetQueryDestinationURL("server query 2"), "/delete?server+query+2"}};
   EXPECT_EQ(expected_server_queries, service()->repeatable_queries());
 
   test_url_loader_factory()->AddResponse(
@@ -371,8 +414,10 @@ TEST_F(RepeatableQueriesServiceTest, SignedIn_DefaultSearchProviderChanged) {
   // Request a refresh.
   RefreshAndMaybeWaitForService();
   std::vector<RepeatableQuery> expected_server_queries{
-      {base::ASCIIToUTF16("server query 1"), "/delete?server+query+1"},
-      {base::ASCIIToUTF16("server query 2"), "/delete?server+query+2"}};
+      {base::ASCIIToUTF16("server query 1"),
+       GetQueryDestinationURL("server query 1"), "/delete?server+query+1"},
+      {base::ASCIIToUTF16("server query 2"),
+       GetQueryDestinationURL("server query 2"), "/delete?server+query+2"}};
   EXPECT_EQ(expected_server_queries, service()->repeatable_queries());
 
   set_service_is_done(false);
@@ -394,8 +439,10 @@ TEST_F(RepeatableQueriesServiceTest, SignedIn_SigninStatusChanged) {
   // Request a refresh.
   RefreshAndMaybeWaitForService();
   std::vector<RepeatableQuery> expected_server_queries{
-      {base::ASCIIToUTF16("server query 1"), "/delete?server+query+1"},
-      {base::ASCIIToUTF16("server query 2"), "/delete?server+query+2"}};
+      {base::ASCIIToUTF16("server query 1"),
+       GetQueryDestinationURL("server query 1"), "/delete?server+query+1"},
+      {base::ASCIIToUTF16("server query 2"),
+       GetQueryDestinationURL("server query 2"), "/delete?server+query+2"}};
   EXPECT_EQ(expected_server_queries, service()->repeatable_queries());
 
   int original_query_age =
@@ -418,9 +465,63 @@ TEST_F(RepeatableQueriesServiceTest, SignedIn_SigninStatusChanged) {
   MaybeWaitForService();
   // Cached data is updated to local results.
   std::vector<RepeatableQuery> expected_local_queries{
-      {base::ASCIIToUTF16("more recent local query"), ""},
-      {base::ASCIIToUTF16("less recent local query"), ""}};
+      {base::ASCIIToUTF16("more recent local query"),
+       GetQueryDestinationURL("more recent local query"), ""},
+      {base::ASCIIToUTF16("less recent local query"),
+       GetQueryDestinationURL("less recent local query"), ""}};
   EXPECT_EQ(expected_local_queries, service()->repeatable_queries());
+}
+
+TEST_F(RepeatableQueriesServiceTest, SignedIn_Deletion) {
+  SignIn();
+  test_url_loader_factory()->AddResponse(service()->GetRequestURL().spec(),
+                                         GoodServerResponse());
+
+  EXPECT_CALL(*service()->search_provider_observer(), is_google())
+      .WillRepeatedly(testing::Return(true));
+
+  // Request a refresh.
+  RefreshAndMaybeWaitForService();
+  std::vector<RepeatableQuery> expected_server_queries{
+      {base::ASCIIToUTF16("server query 1"),
+       GetQueryDestinationURL("server query 1"), "/delete?server+query+1"},
+      {base::ASCIIToUTF16("server query 2"),
+       GetQueryDestinationURL("server query 2"), "/delete?server+query+2"}};
+  EXPECT_EQ(expected_server_queries, service()->repeatable_queries());
+
+  // Try to delete a query suggestion not provided by the service.
+  set_service_is_done(false);
+  service()->DeleteQueryWithDestinationURL(GetQueryDestinationURL("blah"));
+  // No request to delete the suggestion was sent.
+  EXPECT_TRUE(test_url_loader_factory()->pending_requests()->empty());
+  MaybeWaitForService();
+  // Suggestions should not change.
+  EXPECT_EQ(expected_server_queries, service()->repeatable_queries());
+
+  // Delete the query suggestion provided by the service.
+  set_service_is_done(false);
+  service()->DeleteQueryWithDestinationURL(
+      GetQueryDestinationURL("server query 1"));
+  // A request to delete the suggestion was sent.
+  EXPECT_EQ(1u, test_url_loader_factory()->pending_requests()->size());
+  EXPECT_EQ(test_url_loader_factory()->GetPendingRequest(0)->request.url,
+            service()->GetQueryDeletionURL("/delete?server+query+1"));
+  MaybeWaitForService();
+  expected_server_queries = {{base::ASCIIToUTF16("server query 2"),
+                              GetQueryDestinationURL("server query 2"),
+                              "/delete?server+query+2"}};
+  // The deleted suggestion is not offered anymore.
+  EXPECT_EQ(expected_server_queries, service()->repeatable_queries());
+
+  expected_server_queries = {
+      {base::ASCIIToUTF16("server query 2"),
+       GetQueryDestinationURL("server query 2"), "/delete?server+query+2"},
+      {base::ASCIIToUTF16("server query 3"),
+       GetQueryDestinationURL("server query 3"), "/delete?server+query+3"}};
+  // Request a refresh.
+  RefreshAndMaybeWaitForService();
+  // The deleted suggestion will not be offered again.
+  EXPECT_EQ(expected_server_queries, service()->repeatable_queries());
 }
 
 TEST_F(RepeatableQueriesServiceTest, SignedOut_DefaultSearchProviderChanged) {
@@ -446,8 +547,10 @@ TEST_F(RepeatableQueriesServiceTest, SignedOut_DefaultSearchProviderChanged) {
   // Request a refresh.
   RefreshAndMaybeWaitForService();
   std::vector<RepeatableQuery> expected_local_queries{
-      {base::ASCIIToUTF16("more recent local query"), ""},
-      {base::ASCIIToUTF16("less recent local query"), ""}};
+      {base::ASCIIToUTF16("more recent local query"),
+       GetQueryDestinationURL("more recent local query"), ""},
+      {base::ASCIIToUTF16("less recent local query"),
+       GetQueryDestinationURL("less recent local query"), ""}};
   EXPECT_EQ(expected_local_queries, service()->repeatable_queries());
 
   set_service_is_done(false);
@@ -480,8 +583,10 @@ TEST_F(RepeatableQueriesServiceTest, SignedOut_SigninStatusChanged) {
   // Request a refresh.
   RefreshAndMaybeWaitForService();
   std::vector<RepeatableQuery> expected_local_queries{
-      {base::ASCIIToUTF16("more recent local query"), ""},
-      {base::ASCIIToUTF16("less recent local query"), ""}};
+      {base::ASCIIToUTF16("more recent local query"),
+       GetQueryDestinationURL("more recent local query"), ""},
+      {base::ASCIIToUTF16("less recent local query"),
+       GetQueryDestinationURL("less recent local query"), ""}};
   EXPECT_EQ(expected_local_queries, service()->repeatable_queries());
 
   test_url_loader_factory()->AddResponse(service()->GetRequestURL().spec(),
@@ -492,7 +597,56 @@ TEST_F(RepeatableQueriesServiceTest, SignedOut_SigninStatusChanged) {
   MaybeWaitForService();
   // Cached data is updated to server results.
   std::vector<RepeatableQuery> expected_server_queries{
-      {base::ASCIIToUTF16("server query 1"), "/delete?server+query+1"},
-      {base::ASCIIToUTF16("server query 2"), "/delete?server+query+2"}};
+      {base::ASCIIToUTF16("server query 1"),
+       GetQueryDestinationURL("server query 1"), "/delete?server+query+1"},
+      {base::ASCIIToUTF16("server query 2"),
+       GetQueryDestinationURL("server query 2"), "/delete?server+query+2"}};
   EXPECT_EQ(expected_server_queries, service()->repeatable_queries());
+}
+
+TEST_F(RepeatableQueriesServiceTest, SignedOut_Deletion) {
+  FillURLDatabase({{default_search_provider(), "local query 1",
+                    /*age_in_seconds=*/1},
+                   {default_search_provider(), "local query 2",
+                    /*age_in_seconds=*/2},
+                   {default_search_provider(), "local query 3",
+                    /*age_in_seconds=*/3}});
+
+  EXPECT_CALL(*service()->search_provider_observer(), is_google())
+      .WillRepeatedly(testing::Return(true));
+
+  // Request a refresh.
+  RefreshAndMaybeWaitForService();
+  std::vector<RepeatableQuery> expected_local_queries{
+      {base::ASCIIToUTF16("local query 1"),
+       GetQueryDestinationURL("local query 1"), ""},
+      {base::ASCIIToUTF16("local query 2"),
+       GetQueryDestinationURL("local query 2"), ""}};
+  EXPECT_EQ(expected_local_queries, service()->repeatable_queries());
+
+  // Try to delete a query suggestion not provided by the service.
+  set_service_is_done(false);
+  service()->DeleteQueryWithDestinationURL(GetQueryDestinationURL("blah"));
+  MaybeWaitForService();
+  // Suggestions should not change.
+  EXPECT_EQ(expected_local_queries, service()->repeatable_queries());
+
+  // Delete the query suggestion provided by the service.
+  set_service_is_done(false);
+  service()->DeleteQueryWithDestinationURL(
+      GetQueryDestinationURL("local query 1"));
+  MaybeWaitForService();
+  expected_local_queries = {{base::ASCIIToUTF16("local query 2"),
+                             GetQueryDestinationURL("local query 2"), ""}};
+  // The deleted suggestion is not offered anymore.
+  EXPECT_EQ(expected_local_queries, service()->repeatable_queries());
+
+  // Request a refresh.
+  RefreshAndMaybeWaitForService();
+  expected_local_queries = {{base::ASCIIToUTF16("local query 2"),
+                             GetQueryDestinationURL("local query 2"), ""},
+                            {base::ASCIIToUTF16("local query 3"),
+                             GetQueryDestinationURL("local query 3"), ""}};
+  // The deleted suggestion will not be offered again.
+  EXPECT_EQ(expected_local_queries, service()->repeatable_queries());
 }
