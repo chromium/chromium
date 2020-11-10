@@ -1795,6 +1795,7 @@ bool CSSAnimations::IsAnimationAffectingProperty(const CSSProperty& property) {
     case CSSPropertyID::kAnimationPlayState:
     case CSSPropertyID::kAnimationTimeline:
     case CSSPropertyID::kAnimationTimingFunction:
+    case CSSPropertyID::kContentVisibility:
     case CSSPropertyID::kContain:
     case CSSPropertyID::kDirection:
     case CSSPropertyID::kDisplay:
