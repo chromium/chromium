@@ -160,6 +160,13 @@ void AmbientController::RegisterProfilePrefs(PrefRegistrySimple* registry) {
     registry->RegisterIntegerPref(
         ambient::prefs::kAmbientModeLockScreenBackgroundTimeoutSeconds,
         kLockScreenBackgroundTimeout.InSeconds());
+
+    // Used to control the photo refresh interval in Ambient mode. This pref is
+    // not displayed to the user. Registered as integer rather than TimeDelta to
+    // work with prefs_util.
+    registry->RegisterIntegerPref(
+        ambient::prefs::kAmbientModePhotoRefreshIntervalSeconds,
+        kPhotoRefreshInterval.InSeconds());
   }
 }
 
@@ -354,9 +361,15 @@ void AmbientController::OnActiveUserPrefServiceChanged(
           &AmbientController::OnLockScreenBackgroundTimeoutPrefChanged,
           weak_ptr_factory_.GetWeakPtr()));
 
+  pref_change_registrar_->Add(
+      ambient::prefs::kAmbientModePhotoRefreshIntervalSeconds,
+      base::BindRepeating(&AmbientController::OnPhotoRefreshIntervalPrefChanged,
+                          weak_ptr_factory_.GetWeakPtr()));
+
   // Trigger the callbacks manually the first time to init AmbientUiModel.
   OnLockScreenInactivityTimeoutPrefChanged();
   OnLockScreenBackgroundTimeoutPrefChanged();
+  OnPhotoRefreshIntervalPrefChanged();
 }
 
 void AmbientController::OnPowerStatusChanged() {
@@ -572,6 +585,16 @@ void AmbientController::OnLockScreenBackgroundTimeoutPrefChanged() {
   ambient_ui_model_.SetBackgroundLockScreenTimeout(
       base::TimeDelta::FromSeconds(pref_service->GetInteger(
           ambient::prefs::kAmbientModeLockScreenBackgroundTimeoutSeconds)));
+}
+
+void AmbientController::OnPhotoRefreshIntervalPrefChanged() {
+  auto* pref_service = GetPrimaryUserPrefService();
+  if (!pref_service)
+    return;
+
+  ambient_ui_model_.SetPhotoRefreshInterval(
+      base::TimeDelta::FromSeconds(pref_service->GetInteger(
+          ambient::prefs::kAmbientModePhotoRefreshIntervalSeconds)));
 }
 
 void AmbientController::RequestAccessToken(

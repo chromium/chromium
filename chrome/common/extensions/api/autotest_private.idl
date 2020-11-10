@@ -1087,12 +1087,10 @@ namespace autotestPrivate {
     static void disableSwitchAccessDialog();
 
     // Waits for the completion of photo transition animation in ambient mode.
-    // |photoRefreshInterval|: photo refresh interval in seconds.
     // |numCompletions|: number of completions of the animation.
     // |timeout|: the timeout in seconds.
     // |callback|: Called when the operation has completed.
     static void waitForAmbientPhotoAnimation(
-        long photoRefreshInterval,
         long numCompletions,
         long timeout,
         VoidCallback callback);

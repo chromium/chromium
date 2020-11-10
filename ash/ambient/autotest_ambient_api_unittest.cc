@@ -6,7 +6,11 @@
 
 #include "ash/ambient/ambient_controller.h"
 #include "ash/ambient/test/ambient_ash_test_base.h"
+#include "ash/public/cpp/ambient/ambient_prefs.h"
+#include "ash/session/session_controller_impl.h"
+#include "ash/shell.h"
 #include "base/run_loop.h"
+#include "components/prefs/pref_service.h"
 
 namespace ash {
 
@@ -14,14 +18,16 @@ using AutotestAmbientApiTest = AmbientAshTestBase;
 
 TEST_F(AutotestAmbientApiTest,
        ShouldSuccessfullyWaitForPhotoTransitionAnimation) {
-  AutotestAmbientApi test_api;
+  PrefService* prefs =
+      Shell::Get()->session_controller()->GetPrimaryUserPrefService();
+  prefs->SetInteger(ambient::prefs::kAmbientModePhotoRefreshIntervalSeconds, 2);
 
   ShowAmbientScreen();
 
   // Wait for 10 photo transition animation to complete.
   base::RunLoop run_loop;
+  AutotestAmbientApi test_api;
   test_api.WaitForPhotoTransitionAnimationCompleted(
-      /*refresh_interval_s=*/2,
       /*num_completions=*/10, run_loop.QuitClosure());
   run_loop.Run();
 }

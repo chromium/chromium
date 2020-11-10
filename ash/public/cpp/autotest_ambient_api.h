@@ -20,9 +20,7 @@ class ASH_EXPORT AutotestAmbientApi {
   ~AutotestAmbientApi();
 
   // Wait for the photo transition animation completes |num_completions| times.
-  // |refresh_interval_s| is the photo refresh interval.
-  void WaitForPhotoTransitionAnimationCompleted(int refresh_interval_s,
-                                                int num_completions,
+  void WaitForPhotoTransitionAnimationCompleted(int num_completions,
                                                 base::OnceClosure on_complete);
 };
 

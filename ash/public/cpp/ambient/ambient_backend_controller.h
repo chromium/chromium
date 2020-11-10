@@ -14,10 +14,6 @@
 #include "base/callback_forward.h"
 #include "base/optional.h"
 
-namespace base {
-class TimeDelta;
-}  // namespace base
-
 namespace ash {
 
 enum class AmbientModeTopicType {
@@ -151,9 +147,6 @@ class ASH_PUBLIC_EXPORT AmbientBackendController {
                                       int banner_height,
                                       int num_albums,
                                       OnSettingsAndAlbumsFetchedCallback) = 0;
-
-  // Set the photo refresh interval in ambient mode.
-  virtual void SetPhotoRefreshInterval(base::TimeDelta interval) = 0;
 
   // Fetch the weather information.
   virtual void FetchWeather(FetchWeatherCallback) = 0;

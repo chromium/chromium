@@ -20,10 +20,6 @@ constexpr base::TimeDelta kAnimationDuration =
 constexpr base::TimeDelta kTopicFetchInterval =
     base::TimeDelta::FromSeconds(30);
 
-// The default interval to refresh photos.
-constexpr base::TimeDelta kPhotoRefreshInterval =
-    base::TimeDelta::FromSeconds(60);
-
 // The default interval to fetch backup cache photos.
 constexpr base::TimeDelta kBackupPhotoRefreshDelay =
     base::TimeDelta::FromMinutes(5);

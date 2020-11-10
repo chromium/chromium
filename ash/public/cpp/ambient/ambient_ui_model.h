@@ -36,6 +36,10 @@ constexpr base::TimeDelta kLockScreenInactivityTimeout =
 constexpr base::TimeDelta kLockScreenBackgroundTimeout =
     base::TimeDelta::FromSeconds(5);
 
+// The default interval to refresh photos.
+constexpr base::TimeDelta kPhotoRefreshInterval =
+    base::TimeDelta::FromSeconds(60);
+
 // A checked observer which receives notification of changes to the Ambient Mode
 // UI model.
 class ASH_PUBLIC_EXPORT AmbientUiModelObserver : public base::CheckedObserver {
@@ -78,6 +82,12 @@ class ASH_PUBLIC_EXPORT AmbientUiModel {
     return background_lock_screen_timeout_;
   }
 
+  void SetPhotoRefreshInterval(base::TimeDelta interval);
+
+  base::TimeDelta photo_refresh_interval() const {
+    return photo_refresh_interval_;
+  }
+
  private:
   void NotifyAmbientUiVisibilityChanged();
 
@@ -94,6 +104,9 @@ class ASH_PUBLIC_EXPORT AmbientUiModel {
   // The delay between ambient mode starts and enabling lock screen.
   base::TimeDelta background_lock_screen_timeout_ =
       kLockScreenBackgroundTimeout;
+
+  // The interval to refresh photos.
+  base::TimeDelta photo_refresh_interval_ = kPhotoRefreshInterval;
 
   base::ObserverList<AmbientUiModelObserver> observers_;
 };

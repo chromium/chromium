@@ -55,12 +55,8 @@ AutotestAmbientApi::AutotestAmbientApi() = default;
 AutotestAmbientApi::~AutotestAmbientApi() = default;
 
 void AutotestAmbientApi::WaitForPhotoTransitionAnimationCompleted(
-    int refresh_interval_s,
     int num_completions,
     base::OnceClosure on_complete) {
-  ash::AmbientBackendController::Get()->SetPhotoRefreshInterval(
-      base::TimeDelta::FromSeconds(refresh_interval_s));
-
   new PhotoTransitionAnimationObserver(num_completions, std::move(on_complete));
 }
 

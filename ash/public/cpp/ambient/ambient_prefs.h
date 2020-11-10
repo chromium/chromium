@@ -32,6 +32,10 @@ ASH_PUBLIC_EXPORT extern const char
 ASH_PUBLIC_EXPORT extern const char
     kAmbientModeLockScreenBackgroundTimeoutSeconds[];
 
+// Integer pref for the interval in seconds to refresh photos. Not displayed to
+// the user in settings.
+ASH_PUBLIC_EXPORT extern const char kAmbientModePhotoRefreshIntervalSeconds[];
+
 }  // namespace prefs
 }  // namespace ambient
 }  // namespace ash

@@ -47,7 +47,6 @@ class AmbientBackendControllerImpl : public AmbientBackendController {
       int banner_height,
       int num_albums,
       OnSettingsAndAlbumsFetchedCallback callback) override;
-  void SetPhotoRefreshInterval(base::TimeDelta interval) override;
   void FetchWeather(FetchWeatherCallback callback) override;
   const std::array<const char*, 2>& GetBackupPhotoUrls() const override;
 

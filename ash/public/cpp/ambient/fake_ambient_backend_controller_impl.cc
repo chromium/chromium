@@ -151,11 +151,6 @@ void FakeAmbientBackendControllerImpl::FetchSettingsAndAlbums(
   pending_fetch_settings_albums_callback_ = std::move(callback);
 }
 
-void FakeAmbientBackendControllerImpl::SetPhotoRefreshInterval(
-    base::TimeDelta interval) {
-  NOTIMPLEMENTED();
-}
-
 void FakeAmbientBackendControllerImpl::FetchWeather(
     FetchWeatherCallback callback) {
   std::move(callback).Run(weather_info_);

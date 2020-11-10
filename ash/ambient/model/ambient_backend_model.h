@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "ash/ambient/ambient_constants.h"
 #include "ash/ash_export.h"
 #include "ash/public/cpp/ambient/ambient_backend_controller.h"
 #include "base/macros.h"
@@ -72,10 +73,6 @@ class ASH_EXPORT AmbientBackendModel {
 
   bool ImageLoadingFailed();
 
-  // Get/Set the photo refresh interval.
-  base::TimeDelta GetPhotoRefreshInterval();
-  void SetPhotoRefreshInterval(base::TimeDelta interval);
-
   // Clear local storage.
   void Clear();
 
@@ -101,6 +98,8 @@ class ASH_EXPORT AmbientBackendModel {
   // Calculate the temperature in celsius.
   float GetTemperatureInCelsius() const;
 
+  base::TimeDelta GetPhotoRefreshInterval() const;
+
   bool show_celsius() const { return show_celsius_; }
 
  private:
@@ -125,9 +124,6 @@ class ASH_EXPORT AmbientBackendModel {
 
   // The number of consecutive failures to load the next image.
   int failures_ = 0;
-
-  // The interval to refresh photos.
-  base::TimeDelta photo_refresh_interval_;
 
   base::ObserverList<AmbientBackendModelObserver> observers_;
 

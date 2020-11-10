@@ -23,6 +23,9 @@ constexpr char kAmbientModeLockScreenInactivityTimeoutSeconds[] =
 constexpr char kAmbientModeLockScreenBackgroundTimeoutSeconds[] =
     "ash.ambient.lock_screen_background_timeout";
 
+constexpr char kAmbientModePhotoRefreshIntervalSeconds[] =
+    "ash.ambient.photo_refresh_interval";
+
 }  // namespace prefs
 }  // namespace ambient
 }  // namespace ash

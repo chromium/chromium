@@ -274,7 +274,7 @@ void AmbientAshTestBase::FastForwardToLockScreenTimeout() {
 void AmbientAshTestBase::FastForwardToNextImage() {
   task_environment()->FastForwardBy(
       kFastForwardFactor *
-      ambient_controller()->GetAmbientBackendModel()->photo_refresh_interval_);
+      ambient_controller()->ambient_ui_model()->photo_refresh_interval());
 }
 
 void AmbientAshTestBase::FastForwardTiny() {

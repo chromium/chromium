@@ -392,14 +392,6 @@ void AmbientBackendControllerImpl::FetchPersonalAlbums(
                      num_albums, resume_token, std::move(callback)));
 }
 
-void AmbientBackendControllerImpl::SetPhotoRefreshInterval(
-    base::TimeDelta interval) {
-  Shell::Get()
-      ->ambient_controller()
-      ->GetAmbientBackendModel()
-      ->SetPhotoRefreshInterval(interval);
-}
-
 void AmbientBackendControllerImpl::FetchWeather(FetchWeatherCallback callback) {
   auto response_handler =
       [](FetchWeatherCallback callback,

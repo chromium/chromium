@@ -60,6 +60,13 @@ void AmbientUiModel::SetBackgroundLockScreenTimeout(base::TimeDelta timeout) {
   NotifyBackgroundLockScreenTimeoutChanged();
 }
 
+void AmbientUiModel::SetPhotoRefreshInterval(base::TimeDelta interval) {
+  if (interval == photo_refresh_interval_)
+    return;
+
+  photo_refresh_interval_ = interval;
+}
+
 void AmbientUiModel::NotifyAmbientUiVisibilityChanged() {
   for (auto& observer : observers_)
     observer.OnAmbientUiVisibilityChanged(ui_visibility_);

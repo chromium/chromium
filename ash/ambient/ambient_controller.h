@@ -160,6 +160,7 @@ class ASH_EXPORT AmbientController
   // Invoked when the Ambient mode prefs state changes.
   void OnLockScreenInactivityTimeoutPrefChanged();
   void OnLockScreenBackgroundTimeoutPrefChanged();
+  void OnPhotoRefreshIntervalPrefChanged();
 
   AmbientContainerView* get_container_view_for_testing() {
     return container_view_;

@@ -6,8 +6,8 @@
 
 #include "ash/ambient/model/ambient_backend_model.h"
 
-#include "ash/ambient/ambient_constants.h"
 #include "ash/ambient/model/ambient_backend_model_observer.h"
+#include "ash/public/cpp/ambient/ambient_ui_model.h"
 #include "base/logging.h"
 
 namespace ash {
@@ -36,10 +36,7 @@ bool PhotoWithDetails::IsNull() const {
 }
 
 // AmbientBackendModel---------------------------------------------------------
-AmbientBackendModel::AmbientBackendModel() {
-  SetPhotoRefreshInterval(kPhotoRefreshInterval);
-}
-
+AmbientBackendModel::AmbientBackendModel() = default;
 AmbientBackendModel::~AmbientBackendModel() = default;
 
 void AmbientBackendModel::AddObserver(AmbientBackendModelObserver* observer) {
@@ -98,15 +95,11 @@ bool AmbientBackendModel::ImageLoadingFailed() {
   return !ImagesReady() && failures_ >= kMaxConsecutiveReadPhotoFailures;
 }
 
-base::TimeDelta AmbientBackendModel::GetPhotoRefreshInterval() {
+base::TimeDelta AmbientBackendModel::GetPhotoRefreshInterval() const {
   if (!ImagesReady())
     return base::TimeDelta();
 
-  return photo_refresh_interval_;
-}
-
-void AmbientBackendModel::SetPhotoRefreshInterval(base::TimeDelta interval) {
-  photo_refresh_interval_ = interval;
+  return AmbientUiModel::Get()->photo_refresh_interval();
 }
 
 void AmbientBackendModel::Clear() {

@@ -4773,7 +4773,7 @@ AutotestPrivateWaitForAmbientPhotoAnimationFunction::Run() {
 
   // Wait for photo transition animation completed in ambient mode.
   ash::AutotestAmbientApi().WaitForPhotoTransitionAnimationCompleted(
-      params->photo_refresh_interval, params->num_completions,
+      params->num_completions,
       base::BindOnce(&AutotestPrivateWaitForAmbientPhotoAnimationFunction::
                          OnPhotoTransitionAnimationCompleted,
                      this));

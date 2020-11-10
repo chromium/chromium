@@ -7,8 +7,11 @@
 #include <memory>
 #include <string>
 
-#include "ash/ambient/ambient_constants.h"
 #include "ash/ambient/model/ambient_backend_model_observer.h"
+#include "ash/public/cpp/ambient/ambient_prefs.h"
+#include "ash/public/cpp/ambient/ambient_ui_model.h"
+#include "ash/session/session_controller_impl.h"
+#include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "base/scoped_observer.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -72,15 +75,18 @@ class AmbientBackendModelTest : public AshTestBase {
   // Returns whether the image is null.
   bool IsNullImage(const gfx::ImageSkia& image) { return image.isNull(); }
 
-  base::TimeDelta GetPhotoRefreshInterval() {
+  base::TimeDelta GetPhotoRefreshInterval() const {
     return ambient_backend_model()->GetPhotoRefreshInterval();
   }
 
   void SetPhotoRefreshInterval(const base::TimeDelta& interval) {
-    ambient_backend_model()->SetPhotoRefreshInterval(interval);
+    PrefService* prefs =
+        Shell::Get()->session_controller()->GetPrimaryUserPrefService();
+    prefs->SetInteger(ambient::prefs::kAmbientModePhotoRefreshIntervalSeconds,
+                      interval.InSeconds());
   }
 
-  AmbientBackendModel* ambient_backend_model() {
+  AmbientBackendModel* ambient_backend_model() const {
     return ambient_backend_model_.get();
   }
 
