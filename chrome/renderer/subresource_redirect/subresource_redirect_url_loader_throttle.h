@@ -7,26 +7,35 @@
 
 #include "base/macros.h"
 #include "base/timer/timer.h"
-#include "content/public/renderer/render_frame.h"
+#include "chrome/renderer/subresource_redirect/subresource_redirect_hints_agent.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 
 namespace blink {
 class WebURLRequest;
 }  // namespace blink
 
+namespace previews {
+class ResourceLoadingHintsAgent;
+}  // namespace previews
+
 namespace subresource_redirect {
 
-// This class handles internal redirects for HTTPS public subresources
-// (currently only for images) compressed versions of subresources. When the
-// redirect fails/timesout the original image is fetched directly. Subclasses
-// should implement the decider logic if an URL should be compressed.
+class SubresourceRedirectHintsAgent;
+
+// This class handles internal redirects for subresouces on HTTPS sites to
+// compressed versions of subresources.
 class SubresourceRedirectURLLoaderThrottle : public blink::URLLoaderThrottle {
  public:
   static std::unique_ptr<SubresourceRedirectURLLoaderThrottle>
-  MaybeCreateThrottle(const blink::WebURLRequest& request, int render_frame_id);
+  MaybeCreateThrottle(const blink::WebURLRequest& request,
+                      int render_frame_id);
 
-  explicit SubresourceRedirectURLLoaderThrottle(int render_frame_id);
   ~SubresourceRedirectURLLoaderThrottle() override;
+
+  previews::ResourceLoadingHintsAgent* GetResourceLoadingHintsAgent();
+
+  // virtual for testing.
+  virtual SubresourceRedirectHintsAgent* GetSubresourceRedirectHintsAgent();
 
   // blink::URLLoaderThrottle:
   void WillStartRequest(network::ResourceRequest* request,
@@ -50,30 +59,21 @@ class SubresourceRedirectURLLoaderThrottle : public blink::URLLoaderThrottle {
   // Overridden to do nothing as the default implementation is NOT_REACHED()
   void DetachFromCurrentSequence() override;
 
-  // Return whether the image url should be redirected.
-  virtual bool ShouldRedirectImage(const GURL& url) = 0;
-
-  // Indicates the subresource redirect failed, and the image will be fetched
-  // directly from the  origin instead. The failures can be due to non-2xx http
-  // responses or other net errors
-  virtual void OnRedirectedLoadCompleteWithError() = 0;
-
-  // Notifies the image load finished.
-  virtual void RecordMetricsOnLoadFinished(const GURL& url,
-                                           int64_t content_length) = 0;
-
-  content::RenderFrame* GetRenderFrame() const {
-    return content::RenderFrame::FromRoutingID(render_frame_id_);
-  }
-
  private:
-  friend class TestPublicImageHintsURLLoaderThrottle;
+  friend class TestSubresourceRedirectURLLoaderThrottle;
+
+  SubresourceRedirectURLLoaderThrottle(int render_frame_id,
+                                       bool allowed_to_redirect);
 
   // Callback invoked when the redirect fetch times out.
   void OnRedirectTimeout();
 
   // Render frame id to get the hints agent of the render frame.
   const int render_frame_id_;
+
+  // Whether the subresource can be redirected or not and what was the reason if
+  // its not eligible.
+  SubresourceRedirectHintsAgent::RedirectResult redirect_result_;
 
   // Whether this resource was actually redirected to compressed server origin.
   // This will be true when the redirect was attempted. Will be false when

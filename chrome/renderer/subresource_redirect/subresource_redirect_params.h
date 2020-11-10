@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/time/time.h"
 #include "url/origin.h"
 
 namespace subresource_redirect {
@@ -15,21 +14,6 @@ namespace subresource_redirect {
 // Returns the origin to use for subresource redirect from fieldtrial or the
 // default.
 url::Origin GetSubresourceRedirectOrigin();
-
-// Returns if the public image hints based subresource compression is enabled.
-bool IsPublicImageHintsBasedCompressionEnabled();
-
-// Should the subresource be redirected to its compressed version. This returns
-// false if only coverage metrics need to be recorded and actual redirection
-// should not happen.
-bool ShouldCompressionServerRedirectSubresource();
-
-// Returns the timeout for the compressed subresource redirect, after which the
-// subresource should be fetched directly from the origin.
-base::TimeDelta GetCompressionRedirectTimeout();
-
-// Returns the public image hinte receive timeout value from field trial.
-int64_t GetHintsReceiveTimeout();
 
 }  // namespace subresource_redirect
 
