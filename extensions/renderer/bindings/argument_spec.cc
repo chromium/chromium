@@ -4,6 +4,7 @@
 
 #include "extensions/renderer/bindings/argument_spec.h"
 
+#include "base/check.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -190,6 +191,9 @@ void ArgumentSpec::InitializeType(const base::DictionaryValue* dict) {
         enum_values_.insert(std::move(enum_value));
       }
     }
+  } else if (type_ == ArgumentType::FUNCTION) {
+    serialize_function_ =
+        dict->FindBoolKey("serializableFunction").value_or(false);
   }
 
   // Check if we should preserve null in objects. Right now, this is only used
@@ -301,19 +305,8 @@ bool ArgumentSpec::ParseArgument(v8::Local<v8::Context> context,
     case ArgumentType::BINARY:
       return ParseArgumentToAny(context, value, out_value, v8_out_value, error);
     case ArgumentType::FUNCTION:
-      if (out_value) {
-        // Certain APIs (contextMenus) have functions as parameters other than
-        // the callback (contextMenus uses it for an onclick listener). Our
-        // generated types have adapted to consider functions "objects" and
-        // serialize them as dictionaries.
-        // TODO(devlin): It'd be awfully nice to get rid of this eccentricity.
-        *out_value = std::make_unique<base::DictionaryValue>();
-      }
-
-      if (v8_out_value)
-        *v8_out_value = value;
-
-      return true;
+      return ParseArgumentToFunction(context, value, out_value, v8_out_value,
+                                     error);
     case ArgumentType::REF: {
       DCHECK(ref_);
       const ArgumentSpec* reference = refs.GetSpec(ref_.value());
@@ -748,6 +741,43 @@ bool ArgumentSpec::ParseArgumentToAny(v8::Local<v8::Context> context,
       DCHECK_EQ(base::Value::Type::BINARY, converted->type());
     *out_value = std::move(converted);
   }
+  if (v8_out_value)
+    *v8_out_value = value;
+
+  return true;
+}
+
+bool ArgumentSpec::ParseArgumentToFunction(
+    v8::Local<v8::Context> context,
+    v8::Local<v8::Value> value,
+    std::unique_ptr<base::Value>* out_value,
+    v8::Local<v8::Value>* v8_out_value,
+    std::string* error) const {
+  DCHECK_EQ(ArgumentType::FUNCTION, type_);
+  DCHECK(value->IsFunction());
+  if (out_value) {
+    if (serialize_function_) {
+      v8::Local<v8::String> serialized_function;
+      if (!value.As<v8::Function>()->FunctionProtoToString(context).ToLocal(
+              &serialized_function)) {
+        *error = api_errors::ScriptThrewError();
+        return false;
+      }
+      std::string str;
+      // If ToLocal() succeeds, this should always be a string.
+      CHECK(gin::Converter<std::string>::FromV8(context->GetIsolate(),
+                                                serialized_function, &str));
+      *out_value = std::make_unique<base::Value>(std::move(str));
+    } else {  // Not a serializable function.
+      // Certain APIs (contextMenus) have functions as parameters other than
+      // the callback (contextMenus uses it for an onclick listener). Our
+      // generated types have adapted to consider functions "objects" and
+      // serialize them as dictionaries.
+      // TODO(devlin): It'd be awfully nice to get rid of this eccentricity.
+      *out_value = std::make_unique<base::DictionaryValue>();
+    }
+  }
+
   if (v8_out_value)
     *v8_out_value = value;
 

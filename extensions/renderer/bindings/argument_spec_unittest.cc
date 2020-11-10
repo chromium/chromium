@@ -7,6 +7,7 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/stl_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "extensions/renderer/bindings/api_binding_test_util.h"
 #include "extensions/renderer/bindings/api_invocation_errors.h"
@@ -1014,6 +1015,39 @@ TEST_F(ArgumentSpecUnitTest, TestV8ValuePassedThrough) {
             .Build();
     test_is_same_value(*additional_properties_spec, "({foo: 'bar'})");
   }
+}
+
+// Tests the serialization of functions that are explicitly marked as
+// serializable (otherwise, they are represented as empty DictionaryValues).
+TEST_F(ArgumentSpecUnitTest, SerializableFunctions) {
+  constexpr char kFunctionSpec[] =
+      R"({
+           "type": "function",
+           "serializableFunction": true
+         })";
+  ArgumentSpec spec(*ValueFromString(kFunctionSpec));
+
+  constexpr char kExpectedSerialization[] = R"("function() { }")";
+  ExpectSuccess(spec, "(function() { })", kExpectedSerialization);
+
+  {
+    constexpr char kNonTrivialFunction[] =
+        R"(function(foo, bar, baz) { let alpha = baz; })";
+    ExpectSuccess(spec, base::StringPrintf("(%s)", kNonTrivialFunction),
+                  base::StringPrintf(R"("%s")", kNonTrivialFunction));
+  }
+
+  // Test a couple tricky values with custom toString() implementations.
+  ExpectSuccess(spec,
+                R"(var f = function() { };
+         f.toString = function() { throw new Error('haha!'); };
+         f;)",
+                kExpectedSerialization);
+  ExpectSuccess(spec,
+                R"(var g = function() { };
+         g.toString = function() { return 'function() { return 3; }'; };
+         g;)",
+                kExpectedSerialization);
 }
 
 }  // namespace extensions

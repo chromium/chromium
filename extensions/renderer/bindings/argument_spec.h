@@ -107,6 +107,9 @@ class ArgumentSpec {
     instance_of_ = std::move(instance_of);
   }
   void set_preserve_null(bool preserve_null) { preserve_null_ = preserve_null; }
+  void set_serialize_function(bool serialize_function) {
+    serialize_function_ = serialize_function;
+  }
 
  private:
   // Initializes this object according to |type_string| and |dict|.
@@ -136,6 +139,11 @@ class ArgumentSpec {
                           std::unique_ptr<base::Value>* out_value,
                           v8::Local<v8::Value>* v8_out_value,
                           std::string* error) const;
+  bool ParseArgumentToFunction(v8::Local<v8::Context> context,
+                               v8::Local<v8::Value> value,
+                               std::unique_ptr<base::Value>* out_value,
+                               v8::Local<v8::Value>* v8_out_value,
+                               std::string* error) const;
 
   // Returns an error message indicating the type of |value| does not match the
   // expected type.
@@ -155,6 +163,10 @@ class ArgumentSpec {
 
   // Whether to preserve null properties found in objects.
   bool preserve_null_ = false;
+
+  // Whether to serialize (by stringifying) a function argument. Only valid for
+  // arguments of type FUNCTION.
+  bool serialize_function_ = false;
 
   // The reference the argument points to, if any. Note that if this is set,
   // none of the following fields describing the argument will be.
