@@ -41,8 +41,8 @@ export function fileTypeSelectTest() {
     assertFalse(select.disabled);
     assertEquals(3, select.length);
     assertEquals('JPG', select.options[0].textContent.trim());
-    assertEquals('PDF', select.options[1].textContent.trim());
-    assertEquals('PNG', select.options[2].textContent.trim());
+    assertEquals('PNG', select.options[1].textContent.trim());
+    assertEquals('PDF', select.options[2].textContent.trim());
     assertEquals(FileType.PNG.toString(), select.value);
 
     // Selecting a different option should update the selected value.
