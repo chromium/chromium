@@ -24,7 +24,8 @@ using LoadAndLocalizeResourceCallback =
 
 // Loads |resource| from |extension|, optionally localizing the content, and
 // invokes |callback| with the result. Handles both component and non-component
-// extension resources. |resource| must be valid.
+// extension resources. |resource| must be valid. Note: |callback| is always
+// invoked asynchronously.
 void LoadAndLocalizeResource(const Extension& extension,
                              const ExtensionResource& resource,
                              bool localize_file,

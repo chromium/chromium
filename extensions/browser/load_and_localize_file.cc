@@ -7,6 +7,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "extensions/browser/component_extension_resource_manager.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/file_reader.h"
@@ -29,22 +30,14 @@ void MaybeLocalizeInBackground(
     const base::FilePath& extension_path,
     const std::string& extension_default_locale,
     extension_l10n_util::GzippedMessagesPermission gzip_permission,
-    bool localize_file,
     std::string* data) {
-  // TODO(karandeepb): Limit scope of ScopedBlockingCall.
-  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
-                                                base::BlockingType::MAY_BLOCK);
-
-  // TODO(devlin): Don't call the localization function if no localization is
-  // potentially required.
-  if (!localize_file)
-    return;
-
   bool needs_message_substituion =
       data->find(extensions::MessageBundle::kMessageBegin) != std::string::npos;
   if (!needs_message_substituion)
     return;
 
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::MAY_BLOCK);
   std::unique_ptr<MessageBundle::SubstitutionMap> localization_messages(
       file_util::LoadMessageBundleSubstitutionMap(extension_path, extension_id,
                                                   extension_default_locale,
@@ -62,11 +55,10 @@ std::unique_ptr<std::string> LocalizeComponentResourceInBackground(
     const ExtensionId& extension_id,
     const base::FilePath& extension_path,
     const std::string& extension_default_locale,
-    extension_l10n_util::GzippedMessagesPermission gzip_permission,
-    bool localize_file) {
+    extension_l10n_util::GzippedMessagesPermission gzip_permission) {
   MaybeLocalizeInBackground(extension_id, extension_path,
                             extension_default_locale, gzip_permission,
-                            localize_file, data.get());
+                            data.get());
 
   return data;
 }
@@ -100,20 +92,30 @@ void LoadAndLocalizeResource(const Extension& extension,
         ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
             resource_id));
 
-    base::ThreadPool::PostTaskAndReplyWithResult(
-        FROM_HERE,
-        {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-        base::BindOnce(&LocalizeComponentResourceInBackground, std::move(data),
-                       extension.id(), extension.path(),
-                       extension_default_locale, gzip_permission,
-                       localize_file),
-        base::BindOnce(std::move(callback),
-                       true /* We assume this call always succeeds */));
+    // We assume this call always succeeds.
+    constexpr bool kSuccess = true;
+    if (!localize_file) {
+      // Even if no localization is necessary, we post the task asynchronously
+      // so that |callback| is not run re-entrantly.
+      base::ThreadTaskRunnerHandle::Get()->PostTask(
+          FROM_HERE,
+          base::BindOnce(std::move(callback), kSuccess, std::move(data)));
+    } else {
+      base::ThreadPool::PostTaskAndReplyWithResult(
+          FROM_HERE,
+          {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
+          base::BindOnce(&LocalizeComponentResourceInBackground,
+                         std::move(data), extension.id(), extension.path(),
+                         extension_default_locale, gzip_permission),
+          base::BindOnce(std::move(callback), kSuccess));
+    }
   } else {
-    FileReader::OptionalFileSequenceTask get_file_and_l10n_callback =
-        base::BindOnce(&MaybeLocalizeInBackground, extension.id(),
-                       extension.path(), extension_default_locale,
-                       gzip_permission, localize_file);
+    FileReader::OptionalFileSequenceTask get_file_and_l10n_callback;
+    if (localize_file) {
+      get_file_and_l10n_callback = base::BindOnce(
+          &MaybeLocalizeInBackground, extension.id(), extension.path(),
+          extension_default_locale, gzip_permission);
+    }
 
     auto file_reader = base::MakeRefCounted<FileReader>(
         resource, std::move(get_file_and_l10n_callback), std::move(callback));
