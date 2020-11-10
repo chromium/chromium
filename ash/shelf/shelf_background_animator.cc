@@ -241,9 +241,8 @@ SkColor ShelfBackgroundAnimator::GetBackgroundColor(
       shelf_target_color = SK_ColorTRANSPARENT;
       break;
     case ShelfBackgroundType::kLoginNonBlurredWallpaper:
-      shelf_target_color = SkColorSetA(
-          DeprecatedGetLoginBackgroundBaseColor(kLoginBackgroundBaseColor),
-          login_constants::kNonBlurredWallpaperBackgroundAlpha);
+      shelf_target_color = AshColorProvider::Get()->GetShieldLayerColor(
+          AshColorProvider::ShieldLayerType::kShield80);
       break;
   }
   return shelf_target_color;

@@ -9,7 +9,6 @@
 #include "ash/public/cpp/ash_constants.h"
 #include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/ash_pref_names.h"
-#include "ash/public/cpp/login_constants.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/system/dark_mode/color_mode_observer.h"
@@ -389,11 +388,6 @@ void AshColorProvider::UpdateColorModeThemed(bool is_themed) {
   active_user_pref_service_->CommitPendingWrite();
 
   AttemptRestartChrome();
-}
-
-SkColor AshColorProvider::GetLoginBackgroundBaseColor() const {
-  return IsDarkModeEnabled() ? login_constants::kDefaultBaseColor
-                             : login_constants::kLightModeBaseColor;
 }
 
 SkColor AshColorProvider::GetBackgroundDefaultColor() const {

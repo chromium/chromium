@@ -94,7 +94,8 @@ SkColor GetButtonBackgroundColor() {
       session_manager::SessionState::OOBE) {
     return SkColorSetA(SK_ColorBLACK, 16);  // 6% opacity
   }
-  return DeprecatedGetLoginBackgroundBaseColor(kLoginButtonBackgroundBaseColor);
+  return AshColorProvider::Get()->GetControlsLayerColor(
+      AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive);
 }
 
 LoginMetricsRecorder::ShelfButtonClickTarget GetUserClickTarget(int button_id) {
@@ -180,13 +181,8 @@ class LoginShelfButton : public views::LabelButton {
         text_resource_id_(text_resource_id),
         icon_(icon) {
     SetAccessibleName(GetText());
-    SkColor button_icon_color = GetButtonIconColor();
-    SetImage(views::Button::STATE_NORMAL,
-             gfx::CreateVectorIcon(icon, button_icon_color));
-    SetImage(views::Button::STATE_DISABLED,
-             gfx::CreateVectorIcon(
-                 icon, SkColorSetA(button_icon_color,
-                                   login_constants::kButtonDisabledAlpha)));
+    AshColorProvider::Get()->DecoratePillButton(this, &icon);
+
     SetFocusBehavior(FocusBehavior::ALWAYS);
     SetInstallFocusRingOnFocus(true);
     views::InstallRoundRectHighlightPathGenerator(
@@ -209,11 +205,6 @@ class LoginShelfButton : public views::LabelButton {
 
     SetImageLabelSpacing(kImageLabelSpacingDp);
 
-    SkColor button_text_color = GetButtonTextColor();
-    SetEnabledTextColors(button_text_color);
-    SetTextColor(
-        views::Button::STATE_DISABLED,
-        SkColorSetA(button_text_color, login_constants::kButtonDisabledAlpha));
     label()->SetFontList(views::Label::GetDefaultFontList().Derive(
         1, gfx::Font::FontStyle::NORMAL, gfx::Font::Weight::NORMAL));
   }

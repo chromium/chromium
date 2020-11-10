@@ -254,12 +254,9 @@ ScrollableUsersListView::GradientParams::BuildForStyle(
               color_utils::ColorProfile(color_utils::LumaRange::DARK,
                                         color_utils::SaturationRange::MUTED));
       SkColor tint_color = color_utils::GetResultingPaintColor(
-          SkColorSetA(
-              DeprecatedGetLoginBackgroundBaseColor(kLoginBackgroundBaseColor),
-              login_constants::kTranslucentColorDarkenAlpha),
+          AshColorProvider::Get()->GetShieldLayerColor(
+              AshColorProvider::ShieldLayerType::kShield80),
           SkColorSetA(dark_muted_color, SK_AlphaOPAQUE));
-      tint_color =
-          SkColorSetA(tint_color, login_constants::kScrollTranslucentAlpha);
 
       GradientParams params;
       params.color_from = dark_muted_color;
@@ -427,9 +424,8 @@ void ScrollableUsersListView::OnPaintBackground(gfx::Canvas* canvas) {
     cc::PaintFlags flags;
     flags.setAntiAlias(true);
     flags.setStyle(cc::PaintFlags::kFill_Style);
-    flags.setColor(SkColorSetA(
-        DeprecatedGetLoginBackgroundBaseColor(kLoginBackgroundBaseColor),
-        login_constants::kNonBlurredWallpaperBackgroundAlpha));
+    flags.setColor(AshColorProvider::Get()->GetShieldLayerColor(
+        AshColorProvider::ShieldLayerType::kShield80));
     canvas->DrawRoundRect(
         render_bounds, login_constants::kNonBlurredWallpaperBackgroundRadiusDp,
         flags);

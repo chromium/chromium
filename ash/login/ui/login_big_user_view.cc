@@ -120,9 +120,8 @@ void LoginBigUserView::OnWallpaperBlurChanged() {
     layer()->SetFillsBoundsOpaquely(false);
     SetBackground(views::CreateBackgroundFromPainter(
         views::Painter::CreateSolidRoundRectPainter(
-            SkColorSetA(DeprecatedGetLoginBackgroundBaseColor(
-                            kLoginBackgroundBaseColor),
-                        login_constants::kNonBlurredWallpaperBackgroundAlpha),
+            AshColorProvider::Get()->GetShieldLayerColor(
+                AshColorProvider::ShieldLayerType::kShield80),
             login_constants::kNonBlurredWallpaperBackgroundRadiusDp)));
   }
 }

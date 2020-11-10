@@ -210,9 +210,6 @@ class ASH_EXPORT AshColorProvider : public SessionObserver {
   // Updates pref |kColorModeThemed| to |is_themed|.
   void UpdateColorModeThemed(bool is_themed);
 
-  // Gets the background base color for login screen.
-  SkColor GetLoginBackgroundBaseColor() const;
-
  private:
   friend class ScopedLightModeAsDefault;
 

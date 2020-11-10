@@ -22,38 +22,11 @@ namespace ash {
 
 namespace {
 
-// The value used for alpha to apply a color filter to the wallpaper in tablet
-// mode. A higher number up to 255 results the color filter being more
-// prominent.
-constexpr int kTabletModeWallpaperAlpha = 102;
-
-// Gets the color filter based on the state. This is used for the login, lock,
-// overview and tablet mode.
 SkColor GetWallpaperFilterColor() {
-  if (Shell::Get()->overview_controller()->InOverviewSession()) {
-    return AshColorProvider::Get()->GetShieldLayerColor(
-        AshColorProvider::ShieldLayerType::kShield40);
-  }
-
-  SkColor darken_color =
-      Shell::Get()->wallpaper_controller()->GetProminentColor(
-          color_utils::ColorProfile(color_utils::LumaRange::DARK,
-                                    color_utils::SaturationRange::MUTED));
-  if (darken_color == kInvalidWallpaperColor) {
-    darken_color =
-        DeprecatedGetLoginBackgroundBaseColor(kLoginBackgroundBaseColor);
-  }
-
-  darken_color = color_utils::GetResultingPaintColor(
-      SkColorSetA(
-          DeprecatedGetLoginBackgroundBaseColor(kLoginBackgroundBaseColor),
-          login_constants::kTranslucentColorDarkenAlpha),
-      SkColorSetA(darken_color, 0xFF));
-
-  const int alpha = Shell::Get()->tablet_mode_controller()->InTabletMode()
-                        ? kTabletModeWallpaperAlpha
-                        : login_constants::kTranslucentAlpha;
-  return SkColorSetA(darken_color, alpha);
+  return AshColorProvider::Get()->GetShieldLayerColor(
+      Shell::Get()->overview_controller()->InOverviewSession()
+          ? AshColorProvider::ShieldLayerType::kShield40
+          : AshColorProvider::ShieldLayerType::kShield80);
 }
 
 }  // namespace

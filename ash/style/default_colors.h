@@ -25,7 +25,6 @@ SkColor DeprecatedGetControlsLayerColor(
     SkColor default_color);
 SkColor DeprecatedGetContentLayerColor(AshColorProvider::ContentLayerType type,
                                        SkColor default_color);
-SkColor DeprecatedGetLoginBackgroundBaseColor(SkColor default_color);
 SkColor DeprecatedGetInkDropBaseColor(SkColor default_color);
 SkColor DeprecatedGetInkDropRippleColor(SkColor default_color);
 SkColor DeprecatedGetInkDropHighlightColor(SkColor default_color);
