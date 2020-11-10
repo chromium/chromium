@@ -6,12 +6,9 @@
 #define ASH_CLIPBOARD_CLIPBOARD_HISTORY_H_
 
 #include <list>
-#include <map>
 
 #include "ash/ash_export.h"
 #include "ash/clipboard/clipboard_history_item.h"
-#include "ash/public/cpp/session/session_observer.h"
-#include "ash/shell_observer.h"
 #include "base/component_export.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
