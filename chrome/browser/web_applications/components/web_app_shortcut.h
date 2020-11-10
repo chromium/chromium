@@ -164,6 +164,10 @@ void ScheduleDeletePlatformShortcuts(
     std::unique_ptr<ShortcutInfo> shortcut_info,
     DeleteShortcutsCallback callback);
 
+void ScheduleDeleteMultiProfileShortcutsForApp(
+    const std::string& app_id,
+    DeleteShortcutsCallback callback);
+
 // Delete all the shortcuts we have added for this extension. This is the
 // platform specific implementation of the DeleteAllShortcuts function, and
 // is executed on the FILE thread.
