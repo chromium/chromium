@@ -48,6 +48,9 @@ class MEDIA_EXPORT AudioManagerCrasBase : public AudioManagerBase {
   // Set |is_input| to true for capture devices, false for output.
   virtual bool IsDefault(const std::string& device_id, bool is_input) = 0;
 
+  // Returns CRAS client type.
+  virtual enum CRAS_CLIENT_TYPE GetClientType() = 0;
+
  protected:
   // Called by MakeLinearOutputStream and MakeLowLatencyOutputStream.
   AudioOutputStream* MakeOutputStream(const AudioParameters& params,

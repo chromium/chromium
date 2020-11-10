@@ -537,4 +537,8 @@ void AudioManagerChromeOS::WaitEventOrShutdown(base::WaitableEvent* event) {
   base::WaitableEvent::WaitMany(waitables, base::size(waitables));
 }
 
+enum CRAS_CLIENT_TYPE AudioManagerChromeOS::GetClientType() {
+  return CRAS_CLIENT_TYPE_CHROME;
+}
+
 }  // namespace media

@@ -203,7 +203,7 @@ void CrasUnifiedStream::Start(AudioSourceCallback* callback) {
   }
 
   cras_client_stream_params_set_client_type(stream_params,
-                                            CRAS_CLIENT_TYPE_CHROME);
+                                            manager_->GetClientType());
 
   // Before starting the stream, save the number of bytes in a frame for use in
   // the callback.

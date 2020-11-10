@@ -167,4 +167,8 @@ bool AudioManagerCras::IsDefault(const std::string& device_id, bool is_input) {
   return device_id == AudioDeviceDescription::kDefaultDeviceId;
 }
 
+enum CRAS_CLIENT_TYPE AudioManagerCras::GetClientType() {
+  return CRAS_CLIENT_TYPE_LACROS;
+}
+
 }  // namespace media
