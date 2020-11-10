@@ -23,11 +23,15 @@ import java.util.List;
  */
 /* package */ class PhysicalDisplayAndroid extends DisplayAndroid {
     private static final String TAG = "DisplayAndroid";
+    private static final String SAMSUNG_DEX_DISPLAY = "Desktop";
 
     // When this object exists, a positive value means that the forced DIP scale is set and
     // the zero means it is not. The non existing object (i.e. null reference) means that
     // the existence and value of the forced DIP scale has not yet been determined.
     private static Float sForcedDIPScale;
+
+    // This is a workaround for crbug.com/1042581.
+    private final boolean mDisableSurfaceControlWorkaround;
 
     private static boolean hasForcedDIPScale() {
         if (sForcedDIPScale == null) {
@@ -123,6 +127,7 @@ import java.util.List;
 
     /* package */ PhysicalDisplayAndroid(Display display) {
         super(display.getDisplayId());
+        mDisableSurfaceControlWorkaround = display.getName().equals(SAMSUNG_DEX_DISPLAY);
     }
 
     @SuppressWarnings("deprecation")
@@ -163,5 +168,10 @@ import java.util.List;
         super.update(size, displayMetrics.density, bitsPerPixel(pixelFormatId),
                 bitsPerComponent(pixelFormatId), display.getRotation(), isWideColorGamut, null,
                 display.getRefreshRate(), currentMode, supportedModes);
+    }
+
+    @Override
+    public boolean applyDisableSurfaceControlWorkaround() {
+        return mDisableSurfaceControlWorkaround;
     }
 }

@@ -57,4 +57,9 @@ public class VirtualDisplayAndroid extends DisplayAndroid {
     public void destroy() {
         getManager().removeVirtualDisplay(this);
     }
+
+    @Override
+    public boolean applyDisableSurfaceControlWorkaround() {
+        return false;
+    }
 }
