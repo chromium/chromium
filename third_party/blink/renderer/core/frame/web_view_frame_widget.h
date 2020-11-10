@@ -66,7 +66,6 @@ class CORE_EXPORT WebViewFrameWidget : public WebFrameWidgetBase {
   void Resize(const gfx::Size& size_with_dsf) override;
   void UpdateLifecycle(WebLifecycleUpdate requested_update,
                        DocumentUpdateReason reason) override;
-  WebInputEventResult HandleInputEvent(const WebCoalescedInputEvent&) override;
   WebInputEventResult DispatchBufferedTouchEvents() override;
   void MouseCaptureLost() override;
 
@@ -149,8 +148,6 @@ class CORE_EXPORT WebViewFrameWidget : public WebFrameWidgetBase {
   void HandleMouseLeave(LocalFrame&, const WebMouseEvent&) override;
   WebInputEventResult HandleGestureEvent(const WebGestureEvent&) override;
   WebInputEventResult HandleKeyEvent(const WebKeyboardEvent&) override;
-
-  WebInputEventResult HandleCapturedMouseEvent(const WebCoalescedInputEvent&);
 
   LocalFrameView* GetLocalFrameViewForAnimationScrolling() override;
   void SetWindowRectSynchronously(const gfx::Rect& new_window_rect);

@@ -95,7 +95,6 @@ class WebFrameWidgetImpl final : public WebFrameWidgetBase {
                        DocumentUpdateReason reason) override;
   WebHitTestResult HitTestResultAt(const gfx::PointF&) override;
   WebInputEventResult DispatchBufferedTouchEvents() override;
-  WebInputEventResult HandleInputEvent(const WebCoalescedInputEvent&) override;
 
   void MouseCaptureLost() override;
   void SetRemoteViewportIntersection(

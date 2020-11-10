@@ -22,8 +22,7 @@ class CORE_EXPORT CurrentInputEvent {
   static const WebInputEvent* Get() { return current_input_event_; }
 
  private:
-  friend class WebFrameWidgetImpl;
-  friend class WebViewFrameWidget;
+  friend class WebFrameWidgetBase;
   friend class NavigationPolicyTest;
 
   static const WebInputEvent* current_input_event_;

@@ -25,10 +25,13 @@
 #include "third_party/blink/public/web/web_plugin.h"
 #include "third_party/blink/public/web/web_settings.h"
 #include "third_party/blink/public/web/web_widget_client.h"
+#include "third_party/blink/renderer/core/content_capture/content_capture_manager.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
+#include "third_party/blink/renderer/core/events/current_input_event.h"
 #include "third_party/blink/renderer/core/events/web_input_event_conversion.h"
 #include "third_party/blink/renderer/core/events/wheel_event.h"
+#include "third_party/blink/renderer/core/exported/web_dev_tools_agent_impl.h"
 #include "third_party/blink/renderer/core/exported/web_plugin_container_impl.h"
 #include "third_party/blink/renderer/core/exported/web_view_impl.h"
 #include "third_party/blink/renderer/core/frame/local_frame_ukm_aggregator.h"
@@ -56,6 +59,7 @@
 #include "third_party/blink/renderer/core/page/focus_controller.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/pointer_lock_controller.h"
+#include "third_party/blink/renderer/core/paint/first_meaningful_paint_detector.h"
 #include "third_party/blink/renderer/core/paint/paint_timing_detector.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme.h"
@@ -1416,6 +1420,153 @@ void WebFrameWidgetBase::ProcessInputEventSynchronouslyForTesting(
     HandledEventCallback callback) {
   widget_base_->input_handler().HandleInputEvent(event, nullptr,
                                                  std::move(callback));
+}
+
+WebInputEventResult WebFrameWidgetBase::HandleInputEvent(
+    const WebCoalescedInputEvent& coalesced_event) {
+  const WebInputEvent& input_event = coalesced_event.Event();
+  TRACE_EVENT1("input,rail", "WebFrameWidgetBase::HandleInputEvent", "type",
+               WebInputEvent::GetName(input_event.GetType()));
+  DCHECK(!WebInputEvent::IsTouchEventType(input_event.GetType()));
+  CHECK(LocalRootImpl());
+
+  // Only record metrics for the main frame.
+  if (ForMainFrame()) {
+    GetPage()->GetVisualViewport().StartTrackingPinchStats();
+  }
+
+  // If a drag-and-drop operation is in progress, ignore input events except
+  // PointerCancel.
+  if (doing_drag_and_drop_ &&
+      input_event.GetType() != WebInputEvent::Type::kPointerCancel)
+    return WebInputEventResult::kHandledSuppressed;
+
+  // Don't handle events once we've started shutting down.
+  if (!GetPage())
+    return WebInputEventResult::kNotHandled;
+
+  if (WebDevToolsAgentImpl* devtools = LocalRootImpl()->DevToolsAgentImpl()) {
+    auto result = devtools->HandleInputEvent(input_event);
+    if (result != WebInputEventResult::kNotHandled)
+      return result;
+  }
+
+  // Report the event to be NOT processed by WebKit, so that the browser can
+  // handle it appropriately.
+  if (IgnoreInputEvents())
+    return WebInputEventResult::kNotHandled;
+
+  base::AutoReset<const WebInputEvent*> current_event_change(
+      &CurrentInputEvent::current_input_event_, &input_event);
+  UIEventWithKeyState::ClearNewTabModifierSetFromIsolatedWorld();
+
+  if (GetPage()->GetPointerLockController().IsPointerLocked() &&
+      WebInputEvent::IsMouseEventType(input_event.GetType())) {
+    PointerLockMouseEvent(coalesced_event);
+    return WebInputEventResult::kHandledSystem;
+  }
+
+  /// These metrics are only captured for the main frame.
+  if (ForMainFrame()) {
+    Document& main_frame_document = *LocalRootImpl()->GetFrame()->GetDocument();
+
+    if (input_event.GetType() != WebInputEvent::Type::kMouseMove) {
+      FirstMeaningfulPaintDetector::From(main_frame_document)
+          .NotifyInputEvent();
+    }
+
+    if (input_event.GetType() != WebInputEvent::Type::kMouseMove &&
+        input_event.GetType() != WebInputEvent::Type::kMouseEnter &&
+        input_event.GetType() != WebInputEvent::Type::kMouseLeave) {
+      InteractiveDetector* interactive_detector(
+          InteractiveDetector::From(main_frame_document));
+      if (interactive_detector) {
+        interactive_detector->OnInvalidatingInputEvent(input_event.TimeStamp());
+      }
+    }
+  }
+
+  NotifyInputObservers(coalesced_event);
+
+  // Notify the focus frame of the input. Note that the other frames are not
+  // notified as input is only handled by the focused frame.
+  Frame* frame = FocusedCoreFrame();
+  if (auto* local_frame = DynamicTo<LocalFrame>(frame)) {
+    if (auto* content_capture_manager =
+            local_frame->LocalFrameRoot().GetContentCaptureManager()) {
+      content_capture_manager->NotifyInputEvent(input_event.GetType(),
+                                                *local_frame);
+    }
+  }
+
+  // Skip the pointerrawupdate for mouse capture case.
+  if (mouse_capture_element_ &&
+      input_event.GetType() == WebInputEvent::Type::kPointerRawUpdate)
+    return WebInputEventResult::kHandledSystem;
+
+  if (mouse_capture_element_ &&
+      WebInputEvent::IsMouseEventType(input_event.GetType()))
+    return HandleCapturedMouseEvent(coalesced_event);
+
+  // FIXME: This should take in the intended frame, not the local frame
+  // root.
+  return PageWidgetDelegate::HandleInputEvent(*this, coalesced_event,
+                                              LocalRootImpl()->GetFrame());
+}
+
+WebInputEventResult WebFrameWidgetBase::HandleCapturedMouseEvent(
+    const WebCoalescedInputEvent& coalesced_event) {
+  const WebInputEvent& input_event = coalesced_event.Event();
+  TRACE_EVENT1("input", "captured mouse event", "type", input_event.GetType());
+  // Save |mouse_capture_element_| since |MouseCaptureLost()| will clear it.
+  HTMLPlugInElement* element = mouse_capture_element_;
+
+  // Not all platforms call mouseCaptureLost() directly.
+  if (input_event.GetType() == WebInputEvent::Type::kMouseUp)
+    MouseCaptureLost();
+
+  AtomicString event_type;
+  switch (input_event.GetType()) {
+    case WebInputEvent::Type::kMouseEnter:
+      event_type = event_type_names::kMouseover;
+      break;
+    case WebInputEvent::Type::kMouseMove:
+      event_type = event_type_names::kMousemove;
+      break;
+    case WebInputEvent::Type::kPointerRawUpdate:
+      // There will be no mouse event for rawupdate events.
+      event_type = event_type_names::kPointerrawupdate;
+      break;
+    case WebInputEvent::Type::kMouseLeave:
+      event_type = event_type_names::kMouseout;
+      break;
+    case WebInputEvent::Type::kMouseDown:
+      event_type = event_type_names::kMousedown;
+      LocalFrame::NotifyUserActivation(
+          element->GetDocument().GetFrame(),
+          mojom::blink::UserActivationNotificationType::kInteraction);
+      break;
+    case WebInputEvent::Type::kMouseUp:
+      event_type = event_type_names::kMouseup;
+      break;
+    default:
+      NOTREACHED();
+  }
+
+  WebMouseEvent transformed_event =
+      TransformWebMouseEvent(LocalRootImpl()->GetFrameView(),
+                             static_cast<const WebMouseEvent&>(input_event));
+  if (LocalFrame* frame = element->GetDocument().GetFrame()) {
+    frame->GetEventHandler().HandleTargetedMouseEvent(
+        element, transformed_event, event_type,
+        TransformWebMouseEventVector(
+            LocalRootImpl()->GetFrameView(),
+            coalesced_event.GetCoalescedEventsPointers()),
+        TransformWebMouseEventVector(
+            LocalRootImpl()->GetFrameView(),
+            coalesced_event.GetPredictedEventsPointers()));
+  }
+  return WebInputEventResult::kHandledSystem;
 }
 
 void WebFrameWidgetBase::UpdateTextInputState() {

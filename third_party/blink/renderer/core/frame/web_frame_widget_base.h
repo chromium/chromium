@@ -96,8 +96,19 @@ class CORE_EXPORT WebFrameWidgetBase
 
   void BindLocalRoot(WebLocalFrame&);
 
+  // If this widget is for the top level frame. This is different than
+  // |ForMainFrame| because |ForMainFrame| could return true but this method
+  // returns false. If this widget is a MainFrame widget embedded in another
+  // widget, for example embedding a portal.
   virtual bool ForTopLevelFrame() const = 0;
+
+  // Returns true if this widget is for a local root that is a child frame,
+  // false otherwise.
   virtual bool ForSubframe() const = 0;
+
+  // Opposite of |ForSubframe|. If this widget is for the local main frame.
+  bool ForMainFrame() const { return !ForSubframe(); }
+
   virtual void IntrinsicSizingInfoChanged(
       mojom::blink::IntrinsicSizingInfoPtr) {}
 
@@ -315,6 +326,7 @@ class CORE_EXPORT WebFrameWidgetBase
   void SetHandlingInputEvent(bool handling) override;
   void ProcessInputEventSynchronouslyForTesting(const WebCoalescedInputEvent&,
                                                 HandledEventCallback) override;
+  WebInputEventResult HandleInputEvent(const WebCoalescedInputEvent&) override;
   void UpdateTextInputState() override;
   void UpdateSelectionBounds() override;
   void ShowVirtualKeyboard() override;
@@ -713,6 +725,7 @@ class CORE_EXPORT WebFrameWidgetBase
                                        const WebMouseWheelEvent&) override;
   WebInputEventResult HandleCharEvent(const WebKeyboardEvent&) override;
 
+  WebInputEventResult HandleCapturedMouseEvent(const WebCoalescedInputEvent&);
   void MouseContextMenu(const WebMouseEvent&);
   void CancelDrag();
   void RequestAnimationAfterDelayTimerFired(TimerBase*);
