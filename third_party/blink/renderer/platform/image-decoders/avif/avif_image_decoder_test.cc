@@ -628,29 +628,33 @@ void TestYUVRed(const char* file_name,
 
 TEST(AnimatedAVIFTests, ValidImages) {
   TestByteByByteDecode(&CreateAVIFDecoder,
-                       "/images/resources/avif/star-8bpc.avifs", 5u,
+                       "/images/resources/avif/star-animated-8bpc.avif", 5u,
                        kAnimationLoopInfinite);
+  TestByteByByteDecode(
+      &CreateAVIFDecoder,
+      "/images/resources/avif/star-animated-8bpc-with-alpha.avif", 5u,
+      kAnimationLoopInfinite);
   TestByteByByteDecode(&CreateAVIFDecoder,
-                       "/images/resources/avif/star-8bpc-with-alpha.avifs", 5u,
+                       "/images/resources/avif/star-animated-10bpc.avif", 5u,
                        kAnimationLoopInfinite);
+  TestByteByByteDecode(
+      &CreateAVIFDecoder,
+      "/images/resources/avif/star-animated-10bpc-with-alpha.avif", 5u,
+      kAnimationLoopInfinite);
   TestByteByByteDecode(&CreateAVIFDecoder,
-                       "/images/resources/avif/star-10bpc.avifs", 5u,
+                       "/images/resources/avif/star-animated-12bpc.avif", 5u,
                        kAnimationLoopInfinite);
-  TestByteByByteDecode(&CreateAVIFDecoder,
-                       "/images/resources/avif/star-10bpc-with-alpha.avifs", 5u,
-                       kAnimationLoopInfinite);
-  TestByteByByteDecode(&CreateAVIFDecoder,
-                       "/images/resources/avif/star-12bpc.avifs", 5u,
-                       kAnimationLoopInfinite);
-  TestByteByByteDecode(&CreateAVIFDecoder,
-                       "/images/resources/avif/star-12bpc-with-alpha.avifs", 5u,
-                       kAnimationLoopInfinite);
-  // TODO(ryoh): Add avifs with EditListBox.
+  TestByteByByteDecode(
+      &CreateAVIFDecoder,
+      "/images/resources/avif/star-animated-12bpc-with-alpha.avif", 5u,
+      kAnimationLoopInfinite);
+  // TODO(ryoh): Add animated avif files with EditListBox.
 }
 
 TEST(AnimatedAVIFTests, HasMultipleSubImages) {
   std::unique_ptr<ImageDecoder> decoder = CreateAVIFDecoder();
-  decoder->SetData(ReadFile("/images/resources/avif/star-8bpc.avifs"), true);
+  decoder->SetData(ReadFile("/images/resources/avif/star-animated-8bpc.avif"),
+                   true);
   EXPECT_TRUE(decoder->ImageHasBothStillAndAnimatedSubImages());
 }
 
