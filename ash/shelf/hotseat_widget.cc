@@ -1099,9 +1099,6 @@ void HotseatWidget::MaybeAdjustTargetBoundsForAppScaling(
 }
 
 HotseatDensity HotseatWidget::CalculateTargetHotseatDensity() const {
-  if (!ash::features::IsAppScalingEnabled())
-    return HotseatDensity::kNormal;
-
   // App scaling is only applied to the standard shelf. So the hotseat density
   // should not update in dense shelf.
   if (ShelfConfig::Get()->is_dense())

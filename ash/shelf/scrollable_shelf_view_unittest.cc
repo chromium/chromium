@@ -1143,10 +1143,6 @@ class ScrollableShelfViewWithAppScalingTest : public ScrollableShelfViewTest {
   ~ScrollableShelfViewWithAppScalingTest() override = default;
 
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        {ash::features::kShelfAppScaling,
-         features::kHideShelfControlsInTabletMode},
-        {});
     ScrollableShelfViewTest::SetUp();
 
     // Display should be big enough (width and height are bigger than 600).
@@ -1164,11 +1160,6 @@ class ScrollableShelfViewWithAppScalingTest : public ScrollableShelfViewTest {
     ASSERT_FALSE(ShelfConfig::Get()->is_dense());
   }
 
-  void TearDown() override {
-    ScrollableShelfViewTest::TearDown();
-    scoped_feature_list_.Reset();
-  }
-
  protected:
   // |kAppCount| is a magic number, which satisfies the following
   // conditions:
@@ -1184,9 +1175,6 @@ class ScrollableShelfViewWithAppScalingTest : public ScrollableShelfViewTest {
   // of [1, (hotseat width) / (shelf button + button spacing) + 1].
   // So we can get |kAppCount| in that range manually
   static constexpr int kAppCount = 10;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Verifies the basic function of app scaling which scales down the hotseat and

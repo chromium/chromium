@@ -132,9 +132,6 @@ const base::Feature kSystemTrayMicGainSetting{"SystemTrayMicGainSetting",
 const base::Feature kWebUITabStripTabDragIntegration{
     "WebUITabStripTabDragIntegration", base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::Feature kShelfAppScaling{"ShelfAppScaling",
-                                     base::FEATURE_ENABLED_BY_DEFAULT};
-
 const base::Feature kNotificationsInContextMenu{
     "NotificationsInContextMenu", base::FEATURE_DISABLED_BY_DEFAULT};
 
@@ -290,10 +287,6 @@ bool IsDisplayAlignmentAssistanceEnabled() {
 
 bool IsMovablePartialScreenshotEnabled() {
   return base::FeatureList::IsEnabled(kMovablePartialScreenshot);
-}
-
-bool IsAppScalingEnabled() {
-  return base::FeatureList::IsEnabled(kShelfAppScaling);
 }
 
 bool IsNotificationsInContextMenuEnabled() {

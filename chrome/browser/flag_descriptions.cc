@@ -97,11 +97,6 @@ const char kEnableFtpDescription[] =
     "When disabled, the browser has no special handling for ftp:// URLs and "
     "by default defer handling of the URL to the underlying platform.";
 
-const char kShelfAppScalingName[] = "Enable shelf app scaling";
-const char kShelfAppScalingDescription[] =
-    "Reduce the app icon size from standard to dense when the user exceeds the "
-    "available space to add an additional app icon in tablet mode";
-
 const char kEnableSignedExchangeSubresourcePrefetchName[] =
     "Enable Signed Exchange subresource prefetching";
 const char kEnableSignedExchangeSubresourcePrefetchDescription[] =
