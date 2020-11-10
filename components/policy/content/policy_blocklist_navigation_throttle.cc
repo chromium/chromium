@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/check_op.h"
+#include "base/strings/string_piece.h"
 #include "components/policy/content/policy_blocklist_service.h"
 #include "components/policy/core/browser/url_blocklist_manager.h"
 #include "components/policy/core/browser/url_blocklist_policy_handler.h"
@@ -23,10 +24,18 @@ using SafeSitesFilterBehavior = policy::SafeSitesFilterBehavior;
 PolicyBlocklistNavigationThrottle::PolicyBlocklistNavigationThrottle(
     content::NavigationHandle* navigation_handle,
     content::BrowserContext* context)
-    : NavigationThrottle(navigation_handle) {
-  blocklist_service_ = PolicyBlocklistFactory::GetForBrowserContext(context);
-  prefs_ = user_prefs::UserPrefs::Get(context);
+    : NavigationThrottle(navigation_handle),
+      blocklist_service_(PolicyBlocklistFactory::GetForBrowserContext(context)),
+      prefs_(user_prefs::UserPrefs::Get(context)) {
   DCHECK(prefs_);
+}
+
+PolicyBlocklistNavigationThrottle::PolicyBlocklistNavigationThrottle(
+    content::NavigationHandle* navigation_handle,
+    content::BrowserContext* context,
+    base::StringPiece safe_sites_error_page_content)
+    : PolicyBlocklistNavigationThrottle(navigation_handle, context) {
+  safe_sites_error_page_content_ = safe_sites_error_page_content.as_string();
 }
 
 PolicyBlocklistNavigationThrottle::~PolicyBlocklistNavigationThrottle() =
@@ -51,6 +60,11 @@ PolicyBlocklistNavigationThrottle::WillStartRequest() {
   if (blocklist_state == URLBlocklistState::URL_IN_ALLOWLIST)
     return PROCEED;
 
+  return CheckSafeSitesFilter(url);
+}
+
+content::NavigationThrottle::ThrottleCheckResult
+PolicyBlocklistNavigationThrottle::CheckSafeSitesFilter(const GURL& url) {
   // Safe Sites filter applies to top-level HTTP[S] requests.
   if (!url.SchemeIsHTTPOrHTTPS())
     return PROCEED;
@@ -78,7 +92,8 @@ PolicyBlocklistNavigationThrottle::WillStartRequest() {
   }
 
   if (should_cancel_)
-    return ThrottleCheckResult(CANCEL, net::ERR_BLOCKED_BY_ADMINISTRATOR);
+    return ThrottleCheckResult(CANCEL, net::ERR_BLOCKED_BY_ADMINISTRATOR,
+                               safe_sites_error_page_content_);
   return PROCEED;
 }
 
@@ -102,6 +117,7 @@ void PolicyBlocklistNavigationThrottle::CheckSafeSearchCallback(bool is_safe) {
     Resume();
   } else {
     CancelDeferredNavigation(
-        ThrottleCheckResult(CANCEL, net::ERR_BLOCKED_BY_ADMINISTRATOR));
+        ThrottleCheckResult(CANCEL, net::ERR_BLOCKED_BY_ADMINISTRATOR,
+                            safe_sites_error_page_content_));
   }
 }

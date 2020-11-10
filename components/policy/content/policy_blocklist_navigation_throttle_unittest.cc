@@ -123,6 +123,23 @@ class PolicyBlocklistNavigationThrottleTest
   DISALLOW_COPY_AND_ASSIGN(PolicyBlocklistNavigationThrottleTest);
 };
 
+class PolicyBlocklistNavigationThrottleWithSafeSitesErrorContentTest
+    : public PolicyBlocklistNavigationThrottleTest {
+ public:
+  static const char kErrorPageContent[];
+  // content::WebContentsObserver:
+  void DidStartNavigation(
+      content::NavigationHandle* navigation_handle) override {
+    auto throttle = std::make_unique<PolicyBlocklistNavigationThrottle>(
+        navigation_handle, browser_context(), kErrorPageContent);
+
+    navigation_handle->RegisterThrottleForTesting(std::move(throttle));
+  }
+};
+
+const char PolicyBlocklistNavigationThrottleWithSafeSitesErrorContentTest::
+    kErrorPageContent[] = "<html><body>URL was filtered.</body></html>";
+
 TEST_F(PolicyBlocklistNavigationThrottleTest, Blocklist) {
   SetBlocklistUrlPattern("example.com");
 
@@ -133,7 +150,7 @@ TEST_F(PolicyBlocklistNavigationThrottleTest, Blocklist) {
             navigation_simulator->GetLastThrottleCheckResult());
 }
 
-TEST_F(PolicyBlocklistNavigationThrottleTest, Whitelist) {
+TEST_F(PolicyBlocklistNavigationThrottleTest, Allowlist) {
   SetAllowlistUrlPattern("www.example.com");
   SetBlocklistUrlPattern("example.com");
 
@@ -144,7 +161,7 @@ TEST_F(PolicyBlocklistNavigationThrottleTest, Whitelist) {
             navigation_simulator->GetLastThrottleCheckResult());
 }
 
-TEST_F(PolicyBlocklistNavigationThrottleTest, Safe) {
+TEST_F(PolicyBlocklistNavigationThrottleTest, SafeSites_Safe) {
   SetSafeSitesFilterBehavior(SafeSitesFilterBehavior::kSafeSitesFilterEnabled);
   stub_url_checker_.SetUpValidResponse(false /* is_porn */);
 
@@ -156,7 +173,7 @@ TEST_F(PolicyBlocklistNavigationThrottleTest, Safe) {
             navigation_simulator->GetLastThrottleCheckResult());
 }
 
-TEST_F(PolicyBlocklistNavigationThrottleTest, Porn) {
+TEST_F(PolicyBlocklistNavigationThrottleTest, SafeSites_Porn) {
   SetSafeSitesFilterBehavior(SafeSitesFilterBehavior::kSafeSitesFilterEnabled);
   stub_url_checker_.SetUpValidResponse(true /* is_porn */);
 
@@ -168,7 +185,7 @@ TEST_F(PolicyBlocklistNavigationThrottleTest, Porn) {
             navigation_simulator->GetLastThrottleCheckResult());
 }
 
-TEST_F(PolicyBlocklistNavigationThrottleTest, Allowlisted) {
+TEST_F(PolicyBlocklistNavigationThrottleTest, SafeSites_Allowlisted) {
   SetAllowlistUrlPattern("example.com");
   SetSafeSitesFilterBehavior(SafeSitesFilterBehavior::kSafeSitesFilterEnabled);
   stub_url_checker_.SetUpValidResponse(true /* is_porn */);
@@ -180,7 +197,7 @@ TEST_F(PolicyBlocklistNavigationThrottleTest, Allowlisted) {
             navigation_simulator->GetLastThrottleCheckResult());
 }
 
-TEST_F(PolicyBlocklistNavigationThrottleTest, Schemes) {
+TEST_F(PolicyBlocklistNavigationThrottleTest, SafeSites_Schemes) {
   SetSafeSitesFilterBehavior(SafeSitesFilterBehavior::kSafeSitesFilterEnabled);
   stub_url_checker_.SetUpValidResponse(true /* is_porn */);
 
@@ -197,7 +214,7 @@ TEST_F(PolicyBlocklistNavigationThrottleTest, Schemes) {
             navigation_simulator->GetLastThrottleCheckResult());
 }
 
-TEST_F(PolicyBlocklistNavigationThrottleTest, PolicyChange) {
+TEST_F(PolicyBlocklistNavigationThrottleTest, SafeSites_PolicyChange) {
   stub_url_checker_.SetUpValidResponse(true /* is_porn */);
 
   // The safe sites filter is initially disabled.
@@ -228,7 +245,7 @@ TEST_F(PolicyBlocklistNavigationThrottleTest, PolicyChange) {
   }
 }
 
-TEST_F(PolicyBlocklistNavigationThrottleTest, DISABLED_Failure) {
+TEST_F(PolicyBlocklistNavigationThrottleTest, DISABLED_SafeSites_Failure) {
   SetSafeSitesFilterBehavior(SafeSitesFilterBehavior::kSafeSitesFilterEnabled);
   stub_url_checker_.SetUpFailedResponse();
 
@@ -240,7 +257,7 @@ TEST_F(PolicyBlocklistNavigationThrottleTest, DISABLED_Failure) {
             navigation_simulator->GetLastThrottleCheckResult());
 }
 
-TEST_F(PolicyBlocklistNavigationThrottleTest, CachedSites) {
+TEST_F(PolicyBlocklistNavigationThrottleTest, SafeSites_CachedSites) {
   SetSafeSitesFilterBehavior(SafeSitesFilterBehavior::kSafeSitesFilterEnabled);
 
   // Check a couple of sites.
@@ -255,6 +272,8 @@ TEST_F(PolicyBlocklistNavigationThrottleTest, CachedSites) {
     navigation_simulator->Wait();
     EXPECT_EQ(content::NavigationThrottle::PROCEED,
               navigation_simulator->GetLastThrottleCheckResult());
+    EXPECT_FALSE(navigation_simulator->GetLastThrottleCheckResult()
+                     .error_page_content());
   }
 
   stub_url_checker_.SetUpValidResponse(true /* is_porn */);
@@ -264,6 +283,8 @@ TEST_F(PolicyBlocklistNavigationThrottleTest, CachedSites) {
     navigation_simulator->Wait();
     EXPECT_EQ(content::NavigationThrottle::CANCEL,
               navigation_simulator->GetLastThrottleCheckResult());
+    EXPECT_FALSE(navigation_simulator->GetLastThrottleCheckResult()
+                     .error_page_content());
   }
 
   stub_url_checker_.ClearResponses();
@@ -273,12 +294,74 @@ TEST_F(PolicyBlocklistNavigationThrottleTest, CachedSites) {
     ASSERT_FALSE(navigation_simulator->IsDeferred());
     EXPECT_EQ(content::NavigationThrottle::PROCEED,
               navigation_simulator->GetLastThrottleCheckResult());
+    EXPECT_FALSE(navigation_simulator->GetLastThrottleCheckResult()
+                     .error_page_content());
   }
+
   {
     // This check is synchronous since the site is in the cache.
     auto navigation_simulator = StartNavigation(porn_site);
     ASSERT_FALSE(navigation_simulator->IsDeferred());
     EXPECT_EQ(content::NavigationThrottle::CANCEL,
               navigation_simulator->GetLastThrottleCheckResult());
+    EXPECT_FALSE(navigation_simulator->GetLastThrottleCheckResult()
+                     .error_page_content());
+  }
+}
+
+TEST_F(PolicyBlocklistNavigationThrottleWithSafeSitesErrorContentTest,
+       SafeSites_CachedSites) {
+  SetSafeSitesFilterBehavior(SafeSitesFilterBehavior::kSafeSitesFilterEnabled);
+
+  // Check a couple of sites.
+  ASSERT_EQ(2u, kCacheSize);
+  const GURL safe_site = GURL("http://example.com/");
+  const GURL porn_site = GURL("http://example2.com/");
+
+  stub_url_checker_.SetUpValidResponse(false /* is_porn */);
+  {
+    auto navigation_simulator = StartNavigation(safe_site);
+    EXPECT_TRUE(navigation_simulator->IsDeferred());
+    navigation_simulator->Wait();
+    EXPECT_EQ(content::NavigationThrottle::PROCEED,
+              navigation_simulator->GetLastThrottleCheckResult());
+    EXPECT_FALSE(navigation_simulator->GetLastThrottleCheckResult()
+                     .error_page_content());
+  }
+
+  stub_url_checker_.SetUpValidResponse(true /* is_porn */);
+  {
+    auto navigation_simulator = StartNavigation(porn_site);
+    EXPECT_TRUE(navigation_simulator->IsDeferred());
+    navigation_simulator->Wait();
+    EXPECT_EQ(content::NavigationThrottle::CANCEL,
+              navigation_simulator->GetLastThrottleCheckResult());
+    EXPECT_STREQ(kErrorPageContent,
+                 navigation_simulator->GetLastThrottleCheckResult()
+                     .error_page_content()
+                     ->c_str());
+  }
+
+  stub_url_checker_.ClearResponses();
+  {
+    // This check is synchronous since the site is in the cache.
+    auto navigation_simulator = StartNavigation(safe_site);
+    ASSERT_FALSE(navigation_simulator->IsDeferred());
+    EXPECT_EQ(content::NavigationThrottle::PROCEED,
+              navigation_simulator->GetLastThrottleCheckResult());
+    EXPECT_FALSE(navigation_simulator->GetLastThrottleCheckResult()
+                     .error_page_content());
+  }
+
+  {
+    // This check is synchronous since the site is in the cache.
+    auto navigation_simulator = StartNavigation(porn_site);
+    ASSERT_FALSE(navigation_simulator->IsDeferred());
+    EXPECT_EQ(content::NavigationThrottle::CANCEL,
+              navigation_simulator->GetLastThrottleCheckResult());
+    EXPECT_STREQ(kErrorPageContent,
+                 navigation_simulator->GetLastThrottleCheckResult()
+                     .error_page_content()
+                     ->c_str());
   }
 }
