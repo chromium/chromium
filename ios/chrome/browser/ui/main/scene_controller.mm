@@ -905,10 +905,12 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
                 name:kChromeFirstRunUIDidFinishNotification
               object:nil];
 
-  // As soon as First Run has finished, give OmniboxGeolocationController an
-  // opportunity to present the iOS system location alert.
-  [[OmniboxGeolocationController sharedInstance]
-      triggerSystemPromptForNewUser:YES];
+  if (!location_permissions_field_trial::IsInRemoveFirstRunPromptGroup()) {
+    // As soon as First Run has finished, give OmniboxGeolocationController an
+    // opportunity to present the iOS system location alert.
+    [[OmniboxGeolocationController sharedInstance]
+        triggerSystemPromptForNewUser:YES];
+  }
 }
 
 // Presents the sign-in upgrade promo if is relevant and possible.
