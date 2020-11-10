@@ -121,11 +121,16 @@ class MdIPHBubbleButton : public MdTextButton {
 
 }  // namespace views
 
+// Explicitly don't use the default DIALOG_SHADOW as it will show a black
+// outline in dark mode on Mac. Use our own shadow instead. The shadow type is
+// the same for all other platforms.
 FeaturePromoBubbleView::FeaturePromoBubbleView(
     const FeaturePromoBubbleParams& params,
     base::RepeatingClosure snooze_callback,
     base::RepeatingClosure dismiss_callback)
-    : BubbleDialogDelegateView(params.anchor_view, params.arrow),
+    : BubbleDialogDelegateView(params.anchor_view,
+                               params.arrow,
+                               views::BubbleBorder::SMALL_SHADOW),
       focusable_(params.allow_focus),
       persist_on_blur_(params.persist_on_blur),
       snoozable_(params.allow_snooze),
@@ -263,10 +268,8 @@ FeaturePromoBubbleView::FeaturePromoBubbleView(
     dismiss_button_->SetCustomPadding(kBubbleButtonPadding);
   }
 
-  if (!focusable_) {
+  if (!focusable_)
     SetCanActivate(false);
-    set_shadow(views::BubbleBorder::BIG_SHADOW);
-  }
 
   set_close_on_deactivate(!persist_on_blur_);
 
