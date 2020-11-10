@@ -396,9 +396,9 @@ def ci_builder(
     ]
     merged_resultdb_bigquery_exports.extend(resultdb_bigquery_exports or [])
 
-    # Enable "chromium.resultdb.result_sink" on ci builders at 10%.
+    # Enable "chromium.resultdb.result_sink" on ci builders at 50%.
     experiments = experiments or {}
-    experiments.setdefault("chromium.resultdb.result_sink", 10)
+    experiments.setdefault("chromium.resultdb.result_sink", 50)
 
     # Define the builder first so that any validation of luci.builder arguments
     # (e.g. bucket) occurs before we try to use it
