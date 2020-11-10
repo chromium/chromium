@@ -36,6 +36,9 @@
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/web_contents.h"
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "extensions/browser/process_manager.h"
+#endif
 #include "ipc/ipc_message.h"
 #include "url/gurl.h"
 
@@ -125,6 +128,27 @@ void SafeBrowsingUIManager::StartDisplayingBlockingPage(
                                   false /*showed_interstitial*/));
     return;
   }
+
+// We don't show interstitials for extension triggered SB errors, since they
+// might not be visible, and cause the extension to hang. The request is just
+// cancelled instead.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  extensions::ProcessManager* extension_manager =
+      extensions::ProcessManager::Get(web_contents->GetBrowserContext());
+  if (extension_manager) {
+    extensions::ExtensionHost* extension_host =
+        extension_manager->GetExtensionHostForRenderFrameHost(
+            web_contents->GetMainFrame());
+    if (extension_host) {
+      if (!resource.callback.is_null()) {
+        resource.callback_thread->PostTask(
+            FROM_HERE, base::BindOnce(resource.callback, false /* proceed */,
+                                      false /* showed_interstitial */));
+      }
+      return;
+    }
+  }
+#endif
 
   // With committed interstitials, if this is a main frame load, we need to
   // get the navigation URL and referrer URL from the navigation entry now,

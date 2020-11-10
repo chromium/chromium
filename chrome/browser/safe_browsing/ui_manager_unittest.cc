@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/bind_helpers.h"
 #include "base/run_loop.h"
+#include "base/values.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/safe_browsing/safe_browsing_blocking_page.h"
 #include "chrome/browser/safe_browsing/test_safe_browsing_service.h"
@@ -31,6 +32,13 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/web_contents_tester.h"
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "extensions/browser/extension_host.h"
+#include "extensions/browser/process_manager.h"
+#include "extensions/common/extension.h"
+#include "extensions/common/manifest.h"
+#include "extensions/common/manifest_constants.h"
+#endif
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -45,36 +53,39 @@ static const char* kLandingURL = "https://www.landing.com";
 namespace safe_browsing {
 
 class SafeBrowsingCallbackWaiter {
-  public:
-   SafeBrowsingCallbackWaiter() {}
+ public:
+  SafeBrowsingCallbackWaiter() {}
 
-   bool callback_called() const { return callback_called_; }
-   bool proceed() const { return proceed_; }
+  bool callback_called() const { return callback_called_; }
+  bool proceed() const { return proceed_; }
+  bool showed_interstitial() const { return showed_interstitial_; }
 
-   void OnBlockingPageDone(bool proceed, bool showed_interstitial) {
-     DCHECK_CURRENTLY_ON(BrowserThread::UI);
-     callback_called_ = true;
-     proceed_ = proceed;
-     loop_.Quit();
-   }
+  void OnBlockingPageDone(bool proceed, bool showed_interstitial) {
+    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    callback_called_ = true;
+    proceed_ = proceed;
+    showed_interstitial_ = showed_interstitial;
+    loop_.Quit();
+  }
 
-   void OnBlockingPageDoneOnIO(bool proceed, bool showed_interstitial) {
-     DCHECK_CURRENTLY_ON(BrowserThread::IO);
-     content::GetUIThreadTaskRunner({})->PostTask(
-         FROM_HERE,
-         base::BindOnce(&SafeBrowsingCallbackWaiter::OnBlockingPageDone,
-                        base::Unretained(this), proceed, showed_interstitial));
-   }
+  void OnBlockingPageDoneOnIO(bool proceed, bool showed_interstitial) {
+    DCHECK_CURRENTLY_ON(BrowserThread::IO);
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE,
+        base::BindOnce(&SafeBrowsingCallbackWaiter::OnBlockingPageDone,
+                       base::Unretained(this), proceed, showed_interstitial));
+  }
 
-   void WaitForCallback() {
-     DCHECK_CURRENTLY_ON(BrowserThread::UI);
-     loop_.Run();
-   }
+  void WaitForCallback() {
+    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    loop_.Run();
+  }
 
-  private:
-   bool callback_called_ = false;
-   bool proceed_ = false;
-   base::RunLoop loop_;
+ private:
+  bool callback_called_ = false;
+  bool proceed_ = false;
+  bool showed_interstitial_ = false;
+  base::RunLoop loop_;
 };
 
 class SafeBrowsingUIManagerTest : public ChromeRenderViewHostTestHarness {
@@ -549,5 +560,43 @@ TEST_F(SafeBrowsingUIManagerTest, ShowBlockPageNoCallback) {
   // don't crash anymore.
   ui_manager()->DisplayBlockingPage(resource);
 }
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+TEST_F(SafeBrowsingUIManagerTest, NoInterstitialInExtensions) {
+  // Pretend the current web contents is in an extension.
+  base::DictionaryValue manifest;
+  manifest.SetString(extensions::manifest_keys::kName, "TestComponentApp");
+  manifest.SetString(extensions::manifest_keys::kVersion, "0.0.0.0");
+  manifest.SetString(extensions::manifest_keys::kApp, "true");
+  manifest.SetString(extensions::manifest_keys::kPlatformAppBackgroundPage,
+                     std::string());
+  std::string error;
+  scoped_refptr<extensions::Extension> app;
+  app = extensions::Extension::Create(
+      base::FilePath(), extensions::Manifest::COMPONENT, manifest, 0, &error);
+  extensions::ProcessManager* extension_manager =
+      extensions::ProcessManager::Get(web_contents()->GetBrowserContext());
+  extension_manager->CreateBackgroundHost(app.get(), GURL("background.html"));
+  extensions::ExtensionHost* host =
+      extension_manager->GetBackgroundHostForExtension(app->id());
+
+  security_interstitials::UnsafeResource resource =
+      MakeUnsafeResource(kBadURL, false /* is_subresource */);
+  resource.web_contents_getter = security_interstitials::GetWebContentsGetter(
+      host->host_contents()->GetMainFrame()->GetProcess()->GetID(),
+      host->host_contents()->GetMainFrame()->GetRoutingID());
+
+  SafeBrowsingCallbackWaiter waiter;
+  resource.callback =
+      base::BindRepeating(&SafeBrowsingCallbackWaiter::OnBlockingPageDone,
+                          base::Unretained(&waiter));
+  resource.callback_thread = content::GetUIThreadTaskRunner({});
+  SafeBrowsingUIManager::StartDisplayingBlockingPage(ui_manager(), resource);
+  waiter.WaitForCallback();
+  EXPECT_FALSE(waiter.proceed());
+  EXPECT_FALSE(waiter.showed_interstitial());
+  delete host;
+}
+#endif
 
 }  // namespace safe_browsing
