@@ -34,6 +34,7 @@ suite('CellularSetupButtonBarTest', function() {
       next: state,
       tryAgain: state,
       done: state,
+      skipDiscovery: state,
     };
     Polymer.dom.flush();
   }
@@ -69,6 +70,7 @@ suite('CellularSetupButtonBarTest', function() {
     assertTrue(isButtonShownAndEnabled(buttonBar.$$('#tryAgain')));
     assertTrue(isButtonShownAndEnabled(buttonBar.$$('#next')));
     assertTrue(isButtonShownAndEnabled(buttonBar.$$('#done')));
+    assertTrue(isButtonShownAndEnabled(buttonBar.$$('#skipDiscovery')));
   });
 
   test('individual buttons appear but are diabled', function() {
@@ -78,6 +80,7 @@ suite('CellularSetupButtonBarTest', function() {
     assertTrue(isButtonShownAndDisabled(buttonBar.$$('#tryAgain')));
     assertTrue(isButtonShownAndDisabled(buttonBar.$$('#next')));
     assertTrue(isButtonShownAndDisabled(buttonBar.$$('#done')));
+    assertTrue(isButtonShownAndDisabled(buttonBar.$$('#skipDiscovery')));
   });
 
   test('individual buttons are hidden', function() {
@@ -87,5 +90,6 @@ suite('CellularSetupButtonBarTest', function() {
     assertTrue(isButtonHidden(buttonBar.$$('#tryAgain')));
     assertTrue(isButtonHidden(buttonBar.$$('#next')));
     assertTrue(isButtonHidden(buttonBar.$$('#done')));
+    assertTrue(isButtonHidden(buttonBar.$$('#skipDiscovery')));
   });
 });

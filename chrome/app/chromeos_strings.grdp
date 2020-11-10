@@ -264,6 +264,9 @@
   <message name="IDS_CELLULAR_SETUP_NEXT_LABEL" desc="Label for button that advances to next step during cellular setup">
     Next
   </message>
+  <message name="IDS_CELLULAR_SETUP_SKIP_DISCOVERY_LABEL" desc="Label for button that skips the multiple profile selection step and sets up a new profile during eSIM cellular setup">
+    Skip &amp; Set up new profile
+  </message>
   <message name="IDS_CELLULAR_SETUP_ESIM_PAGE_ACTIVATION_CODE" desc="Label for activation code input box">
     Activation code
   </message>

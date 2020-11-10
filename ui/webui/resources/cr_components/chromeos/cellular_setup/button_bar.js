@@ -89,6 +89,8 @@ Polymer({
         return this.buttonState.next;
       case cellularSetup.Button.TRY_AGAIN:
         return this.buttonState.tryAgain;
+      case cellularSetup.Button.SKIP_DISCOVERY:
+        return this.buttonState.skipDiscovery;
       default:
         assertNotReached();
         return cellularSetup.ButtonState.SHOWN_AND_ENABLED;

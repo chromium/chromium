@@ -30,6 +30,13 @@
       [[i18n('back')]]
     </cr-button>
     <div id="flex"></div>
+    <cr-button id="cancel"
+        class="cancel-button"
+        on-click="onCancelButtonClicked_"
+        disabled="[[isButtonDisabled_(Button.CANCEL, buttonState.*)]]"
+        hidden$="[[isButtonHidden_(Button.CANCEL, buttonState.*)]]">
+      [[i18n('cancel')]]
+    </cr-button>
     <cr-button id="tryAgain"
         class="action-button"
         on-click="onTryAgainButtonClicked_"
@@ -38,18 +45,18 @@
       [[i18n('tryAgain')]]
     </cr-button>
     <cr-button id="done"
-          class="action-button"
-          on-click="onDoneButtonClicked_"
-          disabled="[[isButtonDisabled_(Button.DONE, buttonState.*)]]"
-          hidden$="[[isButtonHidden_(Button.DONE, buttonState.*)]]">
-        [[i18n('done')]]
-      </cr-button>
-    <cr-button id="cancel"
-        class="cancel-button"
-        on-click="onCancelButtonClicked_"
-        disabled="[[isButtonDisabled_(Button.CANCEL, buttonState.*)]]"
-        hidden$="[[isButtonHidden_(Button.CANCEL, buttonState.*)]]">
-      [[i18n('cancel')]]
+        class="action-button"
+        on-click="onDoneButtonClicked_"
+        disabled="[[isButtonDisabled_(Button.DONE, buttonState.*)]]"
+        hidden$="[[isButtonHidden_(Button.DONE, buttonState.*)]]">
+      [[i18n('done')]]
+    </cr-button>
+    <cr-button id="skipDiscovery"
+        class="action-button"
+        on-click="onNextButtonClicked_"
+        disabled="[[isButtonDisabled_(Button.SKIP_DISCOVERY, buttonState.*)]]"
+        hidden$="[[isButtonHidden_(Button.SKIP_DISCOVERY, buttonState.*)]]">
+      [[i18n('skipDiscovery')]]
     </cr-button>
     <cr-button id="next"
         class="action-button"

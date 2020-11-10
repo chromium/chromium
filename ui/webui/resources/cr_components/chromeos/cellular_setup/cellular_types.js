@@ -27,6 +27,7 @@ cr.define('cellularSetup', function() {
     DONE: 3,
     NEXT: 4,
     TRY_AGAIN: 5,
+    SKIP_DISCOVERY: 6,
   };
 
   /**
@@ -36,6 +37,7 @@ cr.define('cellularSetup', function() {
    *   done: (!cellularSetup.ButtonState|undefined),
    *   next: (!cellularSetup.ButtonState|undefined),
    *   tryAgain: (!cellularSetup.ButtonState|undefined),
+   *   skipDiscovery: (!cellularSetup.ButtonState|undefined),
    * }}
    */
   /* #export */ let ButtonBarState;

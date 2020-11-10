@@ -212,6 +212,7 @@ cr.define('cellularSetup', function() {
             done: cellularSetup.ButtonState.HIDDEN,
             next: cellularSetup.ButtonState.SHOWN_BUT_DISABLED,
             tryAgain: cellularSetup.ButtonState.HIDDEN,
+            skipDiscovery: cellularSetup.ButtonState.HIDDEN,
           };
           break;
         case PSimUIState.ACTIVATION_SUCCESS:
@@ -223,6 +224,7 @@ cr.define('cellularSetup', function() {
             done: cellularSetup.ButtonState.HIDDEN,
             next: cellularSetup.ButtonState.SHOWN_AND_ENABLED,
             tryAgain: cellularSetup.ButtonState.HIDDEN,
+            skipDiscovery: cellularSetup.ButtonState.HIDDEN,
           };
           break;
         case PSimUIState.WAITING_FOR_ACTIVATION_TO_FINISH:
@@ -233,6 +235,7 @@ cr.define('cellularSetup', function() {
             done: cellularSetup.ButtonState.SHOWN_AND_ENABLED,
             next: cellularSetup.ButtonState.HIDDEN,
             tryAgain: cellularSetup.ButtonState.HIDDEN,
+            skipDiscovery: cellularSetup.ButtonState.HIDDEN,
           };
           break;
         default:

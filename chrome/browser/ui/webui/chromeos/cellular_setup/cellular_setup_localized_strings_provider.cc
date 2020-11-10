@@ -29,6 +29,7 @@ constexpr webui::LocalizedString kLocalizedStringsWithoutPlaceholders[] = {
      IDS_CELLULAR_SETUP_ESTABLISH_NETWORK_CONNECTION},
     {"next", IDS_CELLULAR_SETUP_NEXT_LABEL},
     {"tryAgain", IDS_CELLULAR_SETUP_TRY_AGAIN_LABEL},
+    {"skipDiscovery", IDS_CELLULAR_SETUP_SKIP_DISCOVERY_LABEL},
     {"simDetectPageTitle", IDS_CELLULAR_SETUP_SIM_DETECT_PAGE_TITLE},
     {"simDetectPageErrorTitle", IDS_CELLULAR_SETUP_SIM_DETECT_PAGE_ERROR_TITLE},
     {"simDetectPageErrorMessage",

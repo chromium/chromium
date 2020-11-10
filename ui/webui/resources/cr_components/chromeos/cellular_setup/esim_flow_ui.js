@@ -54,7 +54,8 @@ cr.define('cellular_setup', function() {
             cellularSetup.ButtonState.HIDDEN,
         done: cellularSetup.ButtonState.HIDDEN,
         next: cellularSetup.ButtonState.SHOWN_BUT_DISABLED,
-        tryAgain: cellularSetup.ButtonState.HIDDEN
+        tryAgain: cellularSetup.ButtonState.HIDDEN,
+        skipDiscovery: cellularSetup.ButtonState.HIDDEN,
       };
     },
 
