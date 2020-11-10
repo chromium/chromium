@@ -112,7 +112,7 @@ void LayoutFrameSet::LayOutAxis(GridAxis& axis,
     // Count the total length of all of the fixed columns/rows -> totalFixed.
     // Count the number of columns/rows which are fixed -> countFixed.
     if (grid[i].IsAbsolute()) {
-      grid_layout[i] = max<int>(grid[i].Value() * effective_zoom, 0);
+      grid_layout[i] = clampTo<int>(max(grid[i].Value() * effective_zoom, 0.0));
       total_fixed += grid_layout[i];
       count_fixed++;
     }
@@ -121,7 +121,8 @@ void LayoutFrameSet::LayOutAxis(GridAxis& axis,
     // totalPercent. Count the number of columns/rows which are percentages ->
     // countPercent.
     if (grid[i].IsPercentage()) {
-      grid_layout[i] = max<int>(grid[i].Value() * available_len / 100., 0);
+      grid_layout[i] =
+          clampTo<int>(max(grid[i].Value() * available_len / 100., 0.0));
       total_percent += grid_layout[i];
       count_percent++;
     }
@@ -130,7 +131,7 @@ void LayoutFrameSet::LayOutAxis(GridAxis& axis,
     // totalRelative. Count the number of columns/rows which are relative ->
     // countRelative.
     if (grid[i].IsRelative()) {
-      total_relative += max<int>(grid[i].Value(), 1);
+      total_relative += clampTo<int>(max(grid[i].Value(), 1.0));
       count_relative++;
     }
   }
