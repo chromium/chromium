@@ -5,6 +5,16 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_V8_WRAPPER_PERSISTENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_V8_WRAPPER_PERSISTENT_H_
 
-// TODO(chromium:1056170): Implement wrapper.
+#include "v8/include/cppgc/persistent.h"
+
+namespace blink {
+
+template <typename T>
+using Persistent = cppgc::Persistent<T>;
+
+template <typename T>
+using WeakPersistent = cppgc::WeakPersistent<T>;
+
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_V8_WRAPPER_PERSISTENT_H_

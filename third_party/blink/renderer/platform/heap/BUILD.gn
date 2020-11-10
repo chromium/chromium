@@ -77,6 +77,16 @@ blink_platform_sources("heap") {
     "visitor.h",
   ]
 
+  deps = [
+    ":blink_heap_buildflags",
+    "//base",
+    "//third_party/blink/renderer/platform:make_platform_generated",
+    "//third_party/blink/renderer/platform/heap:heap_unsanitized",
+    "//third_party/blink/renderer/platform/heap/asm",
+    "//third_party/icu",
+    "//v8",
+  ]
+
   if (enable_blink_heap_use_v8_oilpan) {
     sources += [
       "v8_wrapper/blink_gc.h",
@@ -97,6 +107,8 @@ blink_platform_sources("heap") {
       "v8_wrapper/unified_heap_marking_visitor.h",
       "v8_wrapper/visitor.h",
     ]
+
+    deps += [ "//v8:cppgc" ]
   } else {
     sources += [
       "impl/atomic_entry_flag.h",
@@ -154,16 +166,6 @@ blink_platform_sources("heap") {
       "impl/worklist.h",
     ]
   }
-
-  deps = [
-    ":blink_heap_buildflags",
-    "//base",
-    "//third_party/blink/renderer/platform:make_platform_generated",
-    "//third_party/blink/renderer/platform/heap:heap_unsanitized",
-    "//third_party/blink/renderer/platform/heap/asm",
-    "//third_party/icu",
-    "//v8",
-  ]
 
   if (!is_debug && !optimize_for_size) {
     configs -= [ "//build/config/compiler:default_optimization" ]

@@ -5,6 +5,19 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_V8_WRAPPER_MEMBER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_V8_WRAPPER_MEMBER_H_
 
-// TODO(chromium:1056170): Implement wrapper.
+#include "v8/include/cppgc/member.h"
+
+namespace blink {
+
+template <typename T>
+using Member = cppgc::Member<T>;
+
+template <typename T>
+using WeakMember = cppgc::WeakMember<T>;
+
+template <typename T>
+using UntracedMember = cppgc::UntracedMember<T>;
+
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_V8_WRAPPER_MEMBER_H_

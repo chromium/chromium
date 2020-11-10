@@ -5,6 +5,15 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_V8_WRAPPER_HEAP_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_V8_WRAPPER_HEAP_H_
 
-// TODO(chromium:1056170): Implement wrapper.
+#include "v8/include/cppgc/garbage-collected.h"
+
+namespace blink {
+
+template <typename T>
+using GarbageCollected = cppgc::GarbageCollected<T>;
+
+using GarbageCollectedMixin = cppgc::GarbageCollectedMixin;
+
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_V8_WRAPPER_HEAP_H_

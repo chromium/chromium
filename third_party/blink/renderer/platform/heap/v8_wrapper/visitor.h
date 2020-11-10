@@ -5,6 +5,12 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_V8_WRAPPER_VISITOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_V8_WRAPPER_VISITOR_H_
 
-// TODO(chromium:1056170): Implement wrapper.
+#include "v8/include/cppgc/visitor.h"
+
+namespace blink {
+
+using Visitor = cppgc::Visitor;
+
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_V8_WRAPPER_VISITOR_H_
