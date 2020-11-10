@@ -3177,6 +3177,14 @@ message ExtensionInstallReportLogEvent {
   // Extended error code if the extension installation failed due to CRX install
   // error.
   optional CrxInstallErrorDetail crx_install_error_detail = 18;
+
+  // Fetch error code when failure_reason is CRX_FETCH_FAILED or
+  // MANIFEST_FETCH_FAILED.
+  optional int32 fetch_error_code = 19;
+
+  // Number of fetch tries made when failure reason is CRX_FETCH_FAILED or
+  // MANIFEST_FETCH_FAILED.
+  optional int32 fetch_tries = 20;
 }
 
 // A single entry in the push-install log for an app.

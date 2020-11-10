@@ -11,6 +11,7 @@
 #include "chrome/browser/profiles/reporting_util.h"
 #include "chromeos/system/fake_statistics_provider.h"
 #include "components/policy/proto/device_management_backend.pb.h"
+#include "net/base/net_errors.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -24,6 +25,10 @@ namespace {
 constexpr char kTestExtensionId[] = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
 constexpr int64_t kDiskSpaceTotalBytes = 5 * 1024 * 1024;
 const int64_t kDiskSpaceFreeBytes = 2 * 1024 * 1024;
+
+const int kExampleFetchTries = 5;
+// HTTP_UNAUTHORIZED
+const int kExampleResponseCode = 401;
 
 // Common key names used when building the dictionary to pass to the Chrome
 // Reporting API. These must be same as ones mentioned in
@@ -52,6 +57,8 @@ constexpr char kDownloadCacheStatus[] = "downloadCacheStatus";
 constexpr char kUnpackerFailureReason[] = "unpackerFailureReason";
 constexpr char kManifestInvalidError[] = "manifestInvalidError";
 constexpr char kCrxInstallErrorDetail[] = "crxInstallErrorDetail";
+constexpr char kFetchErrorCode[] = "fetchErrorCode";
+constexpr char kFetchTries[] = "fetchTries";
 
 void ConvertToValueAndVerify(const em::ExtensionInstallReportLogEvent& event,
                              const std::vector<std::string>& keys) {
@@ -150,6 +157,22 @@ TEST_F(ExtensionInstallEventLogUtilTest, ManifestInvalidFailureReasonEvent) {
   ConvertToValueAndVerify(event_,
                           {kEventType, kFailureReason, kManifestInvalidError,
                            kStatefulTotal, kStatefulFree});
+}
+
+// Verifies that an event reporting error codes and number of fetch tries when
+// extension failed to install with error MANIFEST_FETCH_FAILED is successfully
+// parsed.
+TEST_F(ExtensionInstallEventLogUtilTest, ManifestFetchFailedEvent) {
+  event_.set_event_type(
+      em::ExtensionInstallReportLogEvent::INSTALLATION_FAILED);
+  event_.set_failure_reason(
+      em::ExtensionInstallReportLogEvent::MANIFEST_FETCH_FAILED);
+  event_.set_fetch_error_code(kExampleResponseCode);
+  event_.set_fetch_tries(kExampleFetchTries);
+  event_.set_stateful_total(kDiskSpaceTotalBytes);
+  event_.set_stateful_free(kDiskSpaceFreeBytes);
+  ConvertToValueAndVerify(event_, {kEventType, kFailureReason, kFetchErrorCode,
+                                   kFetchTries, kStatefulTotal, kStatefulFree});
 }
 
 // Verifies that an event reporting extension installation stage is successfully

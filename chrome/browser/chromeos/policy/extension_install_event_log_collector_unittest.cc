@@ -28,6 +28,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/common/extension_builder.h"
+#include "net/base/net_errors.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
@@ -46,6 +47,10 @@ constexpr char kExtensionName1[] = "name1";
 
 constexpr char kEmailId[] = "test@example.com";
 constexpr char kGaiaId[] = "12345";
+
+const int kFetchTries = 5;
+// HTTP_UNAUTHORIZED
+const int kResponseCode = 401;
 
 class FakeExtensionInstallEventLogCollectorDelegate
     : public ExtensionInstallEventLogCollector::Delegate {
@@ -553,6 +558,59 @@ TEST_F(ExtensionInstallEventLogCollectorTest,
             delegate()->last_request().event.failure_reason());
   EXPECT_EQ(em::ExtensionInstallReportLogEvent::MISSING_APP_ID,
             delegate()->last_request().event.manifest_invalid_error());
+}
+
+// Verifies that a new event with error codes and number of fetch tries is
+// created when the extension failed with error MANFIEST_FETCH_FAILED.
+TEST_F(ExtensionInstallEventLogCollectorTest,
+       ExtensionInstallFailedWithManifestFetchFailed) {
+  auto collector = std::make_unique<ExtensionInstallEventLogCollector>(
+      registry(), delegate(), profile());
+
+  extensions::InstallStageTracker* tracker =
+      extensions::InstallStageTracker::Get(profile());
+
+  // One extension failed.
+  extensions::ExtensionDownloaderDelegate::FailureData data(
+      net::Error::OK, kResponseCode, kFetchTries);
+  tracker->ReportFetchError(
+      kExtensionId1,
+      extensions::InstallStageTracker::FailureReason::MANIFEST_FETCH_FAILED,
+      data);
+  ASSERT_TRUE(VerifyEventAddedSuccessfully(1 /*expected_add_count*/,
+                                           0 /*expected_add_all_count*/));
+  EXPECT_EQ(em::ExtensionInstallReportLogEvent::INSTALLATION_FAILED,
+            delegate()->last_request().event.event_type());
+  EXPECT_EQ(em::ExtensionInstallReportLogEvent::MANIFEST_FETCH_FAILED,
+            delegate()->last_request().event.failure_reason());
+  EXPECT_EQ(kResponseCode, delegate()->last_request().event.fetch_error_code());
+  EXPECT_EQ(kFetchTries, delegate()->last_request().event.fetch_tries());
+}
+
+// Verifies that a new event with fetch error code and number of fetch tries is
+// created when the extension failed with error CRX_FETCH_FAILED.
+TEST_F(ExtensionInstallEventLogCollectorTest,
+       ExtensionInstallFailedWithCrxFetchFailed) {
+  auto collector = std::make_unique<ExtensionInstallEventLogCollector>(
+      registry(), delegate(), profile());
+
+  extensions::InstallStageTracker* tracker =
+      extensions::InstallStageTracker::Get(profile());
+
+  // One extension failed.
+  extensions::ExtensionDownloaderDelegate::FailureData data(
+      net::Error::OK, kResponseCode, kFetchTries);
+  tracker->ReportFetchError(
+      kExtensionId1,
+      extensions::InstallStageTracker::FailureReason::CRX_FETCH_FAILED, data);
+  ASSERT_TRUE(VerifyEventAddedSuccessfully(1 /*expected_add_count*/,
+                                           0 /*expected_add_all_count*/));
+  EXPECT_EQ(em::ExtensionInstallReportLogEvent::INSTALLATION_FAILED,
+            delegate()->last_request().event.event_type());
+  EXPECT_EQ(em::ExtensionInstallReportLogEvent::CRX_FETCH_FAILED,
+            delegate()->last_request().event.failure_reason());
+  EXPECT_EQ(kResponseCode, delegate()->last_request().event.fetch_error_code());
+  EXPECT_EQ(kFetchTries, delegate()->last_request().event.fetch_tries());
 }
 
 // Verifies that a new event is created when an extension is successfully

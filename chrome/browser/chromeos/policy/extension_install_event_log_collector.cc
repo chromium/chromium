@@ -485,7 +485,23 @@ ConvertManifestInvalidErrorToProto(extensions::ManifestInvalidError error) {
   }
 }
 
+void AddErrorCodesToFailureEvent(
+    const extensions::InstallStageTracker::InstallationData& data,
+    em::ExtensionInstallReportLogEvent* event) {
+  if (data.response_code) {
+    event->set_fetch_error_code(data.response_code.value());
+  } else {
+    DCHECK(data.network_error_code);
+    event->set_fetch_error_code(data.network_error_code.value());
+  }
+
+  DCHECK(data.fetch_tries);
+  event->set_fetch_tries(data.fetch_tries.value_or(0));
+}
+
 }  // namespace
+
+using FailureReason = extensions::InstallStageTracker::FailureReason;
 
 ExtensionInstallEventLogCollector::ExtensionInstallEventLogCollector(
     extensions::ExtensionRegistry* registry,
@@ -564,7 +580,7 @@ void ExtensionInstallEventLogCollector::OnConnectionChanged(
 
 void ExtensionInstallEventLogCollector::OnExtensionInstallationFailed(
     const extensions::ExtensionId& extension_id,
-    extensions::InstallStageTracker::FailureReason reason) {
+    FailureReason reason) {
   if (!delegate_->IsExtensionPending(extension_id))
     return;
   auto event = std::make_unique<em::ExtensionInstallReportLogEvent>();
@@ -598,6 +614,12 @@ void ExtensionInstallEventLogCollector::OnExtensionInstallationFailed(
     event->set_crx_install_error_detail(
         ConvertCrxInstallErrorDetailToProto(data.install_error_detail.value()));
   }
+
+  if (reason == FailureReason::CRX_FETCH_FAILED ||
+      reason == FailureReason::MANIFEST_FETCH_FAILED) {
+    AddErrorCodesToFailureEvent(data, event.get());
+  }
+
   extensions::ForceInstalledTracker* force_installed_tracker =
       extensions::ExtensionSystem::Get(profile_)
           ->extension_service()
