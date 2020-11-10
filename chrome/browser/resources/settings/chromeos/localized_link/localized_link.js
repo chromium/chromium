@@ -112,6 +112,7 @@ Polymer({
    * @private
    */
   onAnchorTagClick_(event) {
+    this.fire('link-clicked', {event});
     // Stop propagation of the event, since it has already been handled by
     // opening the link.
     event.stopPropagation();

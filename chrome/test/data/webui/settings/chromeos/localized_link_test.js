@@ -2,8 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
 // #import {assertEquals, assertFalse, assertNotEquals, assertTrue} from '../../chai_assert.js';
+// #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+// #import {eventToPromise, flushTasks, waitAfterNextRender} from 'chrome://test/test_util.m.js';
 // #import 'chrome://os-settings/chromeos/os_settings.js';
+// clang-format on
 
 suite('localized_link', function() {
   let localizedStringWithLink;
@@ -11,6 +15,12 @@ suite('localized_link', function() {
   function GetLocalizedStringWithLinkElementHtml(localizedString, linkUrl) {
     return `<settings-localized-link localized-string="${localizedString}"` +
         ` link-url="${linkUrl}"></settings-localized-link>`;
+  }
+
+  function flushAsync() {
+    Polymer.dom.flush();
+    // Use setTimeout to wait for the next macrotask.
+    return new Promise(resolve => setTimeout(resolve));
   }
 
   test('LinkFirst', function() {
@@ -77,5 +87,23 @@ suite('localized_link', function() {
     assertEquals(
         localizedStringWithLink.$.container.innerHTML,
         `No anchor tags in this sentence.`);
+  });
+
+  test('LinkClick', function() {
+    document.body.innerHTML = GetLocalizedStringWithLinkElementHtml(
+        `Text with a <a href='#'>link</a>`, ``);
+
+    return flushAsync().then(async () => {
+      const localizedLink =
+        document.body.querySelector('settings-localized-link');
+      assertTrue(!!localizedLink);
+      const anchorTag = localizedLink.$$('a');
+      assertTrue(!!anchorTag);
+      const localizedLinkPromise = test_util.eventToPromise(
+        'link-clicked', localizedLink);
+
+      anchorTag.click();
+      await Promise.all([localizedLinkPromise, test_util.flushTasks()]);
+    });
   });
 });

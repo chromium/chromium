@@ -54,6 +54,7 @@ var SettingsLocalizedLinkTest = class extends OSSettingsBrowserTest {
   /** @override */
   get extraLibraries() {
     return super.extraLibraries.concat([
+      BROWSER_SETTINGS_PATH + '../test_util.js',
       'localized_link_test.js',
     ]);
   }
