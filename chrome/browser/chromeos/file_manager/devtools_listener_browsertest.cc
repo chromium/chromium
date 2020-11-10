@@ -78,15 +78,7 @@ class DevToolsListenerBrowserTest : public content::DevToolsAgentHostObserver,
     CHECK(tmp_dir_.CreateUniqueTempDir());
     base::FilePath coverage_store =
         tmp_dir_.GetPath().AppendASCII("devtools_listener_browser_test");
-    CHECK(base::CreateDirectory(coverage_store));
-
-    base::FilePath tests = coverage_store.AppendASCII("tests");
-    if (!base::PathExists(tests))
-      CHECK(base::CreateDirectory(tests));
-
-    base::FilePath scripts = coverage_store.AppendASCII("scripts");
-    if (!base::PathExists(scripts))
-      CHECK(base::CreateDirectory(scripts));
+    DevToolsListener::SetupCoverageStore(coverage_store);
 
     for (auto& agent : devtools_agent_) {
       auto* host = agent.first;

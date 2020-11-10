@@ -42,6 +42,9 @@ class DevToolsListener : public content::DevToolsAgentHostClient {
   static std::string HostString(content::DevToolsAgentHost* host,
                                 const std::string& prefix = {});
 
+  // Creates coverage output directory and subdirectories.
+  static void SetupCoverageStore(const base::FilePath& store_path);
+
  private:
   // Starts CDP session on host.
   void Start(content::DevToolsAgentHost* host);

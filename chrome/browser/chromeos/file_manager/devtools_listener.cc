@@ -85,6 +85,19 @@ std::string DevToolsListener::HostString(content::DevToolsAgentHost* host,
   return result;
 }
 
+void DevToolsListener::SetupCoverageStore(const base::FilePath& store_path) {
+  if (!base::PathExists(store_path))
+    CHECK(base::CreateDirectory(store_path));
+
+  base::FilePath tests = store_path.AppendASCII("tests");
+  if (!base::PathExists(tests))
+    CHECK(base::CreateDirectory(tests));
+
+  base::FilePath scripts = store_path.AppendASCII("scripts");
+  if (!base::PathExists(scripts))
+    CHECK(base::CreateDirectory(scripts));
+}
+
 void DevToolsListener::Start(content::DevToolsAgentHost* host) {
   std::string enable_runtime = "{\"id\":10,\"method\":\"Runtime.enable\"}";
   SendCommandMessage(host, enable_runtime);
