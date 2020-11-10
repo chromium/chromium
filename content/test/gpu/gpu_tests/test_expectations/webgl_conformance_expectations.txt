@@ -197,6 +197,8 @@ crbug.com/1081973 conformance/buffers/buffer-data-and-buffer-sub-data.html [ Fai
 crbug.com/1082533 [ mac intel ] conformance/textures/misc/texture-copying-and-deletion.html [ Failure ]
 crbug.com/1018028 [ win angle-vulkan nvidia ] conformance/rendering/bind-framebuffer-flush-bug.html [ Failure ]
 crbug.com/1110111 [ win nvidia ] conformance/rendering/point-no-attributes.html [ RetryOnFailure ]
+crbug.com/1146687 [ chromeos ] conformance/textures/misc/exif-orientation.html [ RetryOnFailure ]
+crbug.com/1146687 [ mac ] conformance/textures/misc/exif-orientation.html [ RetryOnFailure ]
 
 # Skipping new tests
 crbug.com/angleproject/5038 conformance/extensions/ext-color-buffer-half-float.html [ Skip ]

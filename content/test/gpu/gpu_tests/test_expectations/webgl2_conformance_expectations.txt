@@ -118,6 +118,8 @@ crbug.com/1082533 [ mac intel ] conformance/textures/misc/texture-copying-and-de
 crbug.com/1082533 [ win angle-vulkan passthrough ] conformance/textures/misc/texture-copying-and-deletion.html [ Failure ]
 crbug.com/1018028 [ win angle-vulkan ] conformance/rendering/bind-framebuffer-flush-bug.html [ Failure ]
 crbug.com/angleproject/5038 conformance/extensions/ext-color-buffer-half-float.html [ Skip ]
+crbug.com/1146687 [ chromeos ] conformance/textures/misc/exif-orientation.html [ RetryOnFailure ]
+crbug.com/1146687 [ mac ] conformance/textures/misc/exif-orientation.html [ RetryOnFailure ]
 
 crbug.com/953120 conformance/programs/program-handling.html [ Failure ]
 
