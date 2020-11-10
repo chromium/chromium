@@ -3527,21 +3527,13 @@ TEST_F(LegacySWPictureLayerImplTest, RasterScaleChangeWithoutAnimation) {
                                starting_animation_scale, animating_transform);
   EXPECT_BOTH_EQ(HighResTiling()->contents_scale_key(), 1.5f);
 
-  // ... unless the difference is very big.
+  // Ditto.
   contents_scale = 20.f;
 
   SetContentsScaleOnBothLayers(contents_scale, device_scale, page_scale,
                                maximum_animation_scale,
                                starting_animation_scale, animating_transform);
-  EXPECT_BOTH_EQ(HighResTiling()->contents_scale_key(), 20.f);
-
-  // And we don't downscale from a higher scale.
-  contents_scale = 2.f;
-
-  SetContentsScaleOnBothLayers(contents_scale, device_scale, page_scale,
-                               maximum_animation_scale,
-                               starting_animation_scale, animating_transform);
-  EXPECT_BOTH_EQ(HighResTiling()->contents_scale_key(), 20.f);
+  EXPECT_BOTH_EQ(HighResTiling()->contents_scale_key(), 1.5f);
 
   // Disabling the will-change hint will once again make the raster scale update
   // with the ideal scale.

@@ -61,8 +61,9 @@ const float kSnapToExistingTilingRatio = 1.2f;
 const float kMaxIdealContentsScale = 10000.f;
 
 // We try to avoid raster scale adjustment for will-change:transform for
-// performance, unless the scale is too small compared to the ideal scale.
-const float kMinScaleRatioForWillChangeTransform = 0.1f;
+// performance, unless the scale is too small compared to the ideal scale and
+// the native scale.
+const float kMinScaleRatioForWillChangeTransform = 0.25f;
 
 // Intersect rects which may have right() and bottom() that overflow integer
 // boundaries. This code is similar to gfx::Rect::Intersect with the exception
@@ -1575,18 +1576,16 @@ void PictureLayerImpl::CleanUpTilingsOnActiveLayer(
 float PictureLayerImpl::MinimumRasterContentsScaleForWillChangeTransform()
     const {
   DCHECK(HasWillChangeTransformHint());
-  // Don't let the scale too small compared to the ideal scale.
-  float min_scale =
-      ideal_contents_scale_ * kMinScaleRatioForWillChangeTransform;
   float native_scale = ideal_device_scale_ * ideal_page_scale_;
   // Clamp will-change: transform layers to be at least the native scale,
   // unless the scale is too small to avoid too many tiles using too much tile
   // memory.
   if (ideal_contents_scale_ <
       native_scale * kMinScaleRatioForWillChangeTransform) {
-    return min_scale;
+    // Don't let the scale too small compared to the ideal scale.
+    return ideal_contents_scale_ * kMinScaleRatioForWillChangeTransform;
   }
-  return std::max(native_scale, min_scale);
+  return native_scale;
 }
 
 bool PictureLayerImpl::CalculateRasterTranslation(
