@@ -33,9 +33,6 @@ class It2MeDesktopEnvironment : public BasicDesktopEnvironment {
       base::WeakPtr<ClientSessionControl> client_session_control,
       const DesktopEnvironmentOptions& options);
 
-  // DesktopEnvironment interface.
-  std::string GetCapabilities() const override;
-
  private:
   // Presents the continue window to the local user.
   std::unique_ptr<HostWindow> continue_window_;

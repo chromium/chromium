@@ -378,6 +378,11 @@ void ClientSession::OnConnectionAuthenticated() {
   if (!host_capabilities_.empty())
     host_capabilities_.append(" ");
   host_capabilities_.append(extension_manager_->GetCapabilities());
+  if (!host_capabilities_.empty())
+    host_capabilities_.append(" ");
+  host_capabilities_.append(protocol::kRtcLogTransferCapability);
+  host_capabilities_.append(" ");
+  host_capabilities_.append(protocol::kWebrtcIceSdpRestartAction);
 
   // Create the object that controls the screen resolution.
   screen_controls_ = desktop_environment_->CreateScreenControls();

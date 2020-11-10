@@ -63,7 +63,7 @@ constexpr char kTestDataChannelCallbackName[] = "test_channel_name";
 
 // Matches a |protocol::Capabilities| argument against a list of capabilities
 // formatted as a space-separated string.
-MATCHER_P(EqCapabilities, expected_capabilities, "") {
+MATCHER_P(IncludesCapabilities, expected_capabilities, "") {
   if (!arg.has_capabilities())
     return false;
 
@@ -73,9 +73,14 @@ MATCHER_P(EqCapabilities, expected_capabilities, "") {
   std::vector<std::string> words_expected = base::SplitString(
       expected_capabilities, " ", base::KEEP_WHITESPACE,
       base::SPLIT_WANT_NONEMPTY);
-  std::sort(words_args.begin(), words_args.end());
-  std::sort(words_expected.begin(), words_expected.end());
-  return words_args == words_expected;
+
+  for (const auto& word : words_expected) {
+    if (std::find(words_args.begin(), words_args.end(), word) ==
+        words_args.end()) {
+      return false;
+    }
+  }
+  return true;
 }
 
 protocol::MouseEvent MakeMouseMoveEvent(int x, int y) {
@@ -712,7 +717,7 @@ TEST_F(ClientSessionTest, Extensions) {
   extensions_.push_back(&extension3);
 
   // Verify that the ClientSession reports the correct capabilities.
-  EXPECT_CALL(client_stub_, SetCapabilities(EqCapabilities("cap1 cap3")));
+  EXPECT_CALL(client_stub_, SetCapabilities(IncludesCapabilities("cap1 cap3")));
 
   CreateClientSession();
   ConnectClientSession();

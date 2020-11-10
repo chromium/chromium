@@ -84,14 +84,6 @@ It2MeDesktopEnvironment::It2MeDesktopEnvironment(
   }
 }
 
-std::string It2MeDesktopEnvironment::GetCapabilities() const {
-  std::string capabilities;
-  capabilities += protocol::kWebrtcIceSdpRestartAction;
-  capabilities += " ";
-  capabilities += protocol::kRtcLogTransferCapability;
-  return capabilities;
-}
-
 It2MeDesktopEnvironmentFactory::It2MeDesktopEnvironmentFactory(
     scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner> video_capture_task_runner,
