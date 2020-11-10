@@ -710,16 +710,18 @@ void FeedStream::UnloadModel() {
 
 void FeedStream::ReportOpenAction(const std::string& slice_id) {
   int index = surface_updater_->GetSliceIndexFromSliceId(slice_id);
-  if (index >= 0)
-    metrics_reporter_->OpenAction(index);
+  if (index < 0)
+    index = MetricsReporter::kUnknownCardIndex;
+  metrics_reporter_->OpenAction(index);
 }
 void FeedStream::ReportOpenVisitComplete(base::TimeDelta visit_time) {
   metrics_reporter_->OpenVisitComplete(visit_time);
 }
 void FeedStream::ReportOpenInNewTabAction(const std::string& slice_id) {
   int index = surface_updater_->GetSliceIndexFromSliceId(slice_id);
-  if (index >= 0)
-    metrics_reporter_->OpenInNewTabAction(index);
+  if (index < 0)
+    index = MetricsReporter::kUnknownCardIndex;
+  metrics_reporter_->OpenInNewTabAction(index);
 }
 void FeedStream::ReportOpenInNewIncognitoTabAction() {
   metrics_reporter_->OpenInNewIncognitoTabAction();

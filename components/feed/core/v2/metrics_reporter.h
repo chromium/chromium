@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_FEED_CORE_V2_METRICS_REPORTER_H_
 #define COMPONENTS_FEED_CORE_V2_METRICS_REPORTER_H_
 
+#include <climits>
 #include <map>
 
 #include "base/memory/weak_ptr.h"
@@ -61,6 +62,11 @@ enum class FeedUserActionType {
 // Note this is inherited only for testing.
 class MetricsReporter {
  public:
+  // For 'index_in_stream' parameters, when the card index is unknown.
+  // This is most likely to happen when the action originates from the bottom
+  // sheet.
+  static const int kUnknownCardIndex = INT_MAX;
+
   explicit MetricsReporter(const base::TickClock* clock,
                            PrefService* profile_prefs);
   virtual ~MetricsReporter();
