@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "build/chromeos_buildflags.h"
 #include "ui/base/cursor/ozone/bitmap_cursor_factory_ozone.h"
 #include "ui/events/event.h"
 #include "ui/events/event_utils.h"
@@ -232,8 +233,11 @@ void WaylandWindow::SetCursor(PlatformCursor cursor) {
         WaylandZcrCursorShapes::ShapeFromType(bitmap->type());
     // If the server supports this cursor type, use a server-side cursor.
     if (shape.has_value()) {
-      // We should not have loaded image assets for this cursor.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+      // Lacros should not load image assets for default cursors. See
+      // BitmapCursorFactoryOzone::GetDefaultCursor().
       DCHECK(bitmap_->bitmaps().empty());
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
       connection_->zcr_cursor_shapes()->SetCursorShape(shape.value());
       return;
     }
