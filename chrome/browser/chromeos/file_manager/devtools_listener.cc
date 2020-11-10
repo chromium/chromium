@@ -219,7 +219,8 @@ void DevToolsListener::StoreScripts(content::DevToolsAgentHost* host,
     CHECK(script->SetString("text", text));
     CHECK(script->SetString("url", url));
 
-    base::FilePath path = store.AppendASCII(hash.append(".js.json"));
+    base::FilePath path =
+        store.AppendASCII("scripts").Append(hash.append(".js.json"));
     CHECK(base::JSONWriter::Write(*script, &text));
     if (!base::PathExists(path))  // script de-duplication
       base::WriteFile(path, text.data(), text.size());
