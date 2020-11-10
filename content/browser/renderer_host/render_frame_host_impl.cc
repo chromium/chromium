@@ -8576,9 +8576,20 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
     bool is_same_document_navigation) {
   // Sanity-check the page transition for frame type.
   DCHECK_EQ(ui::PageTransitionIsMainFrame(params->transition), !GetParent());
-  if (navigation_request) {
-    DCHECK_EQ(navigation_request->commit_params().navigation_token,
-              params->navigation_token);
+  if (navigation_request &&
+      navigation_request->commit_params().navigation_token !=
+          params->navigation_token) {
+    // We should have the same navigation_token in CommitNavigationParams and
+    // DidCommit's |params| for all navigations, because:
+    // - Cross-document navigations use NavigationClient.
+    // - Same-document navigations will have a null |navigation_request|
+    //   here if the navigation_token doesn't match (checked in
+    //   DidCommitSameDocumentNavigation).
+    // TODO(https://crbug.com/1131832): Make this a CHECK instead once we're
+    // sure we never hit this case.
+    LogCannotCommitUrlCrashKeys(params->url, is_same_document_navigation,
+                                navigation_request.get());
+    base::debug::DumpWithoutCrashing();
   }
 
   if (!navigation_request) {
