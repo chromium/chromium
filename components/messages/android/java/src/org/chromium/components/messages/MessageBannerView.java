@@ -60,6 +60,7 @@ public class MessageBannerView extends LinearLayout {
     }
 
     void setPrimaryButtonText(String text) {
+        mPrimaryButton.setVisibility(VISIBLE);
         mPrimaryButton.setText(text);
     }
 

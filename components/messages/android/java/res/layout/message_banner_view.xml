@@ -73,17 +73,12 @@
         android:layout_width="1dp"
         android:layout_height="match_parent" />
 
-    <TextView
-        style="@style/TextAppearance.Button.Text.Blue"
+    <org.chromium.ui.widget.ButtonCompat
+        style="@style/TextButton"
         android:id="@+id/message_primary_button"
-        android:paddingStart="@dimen/message_button_padding"
-        android:paddingEnd="@dimen/message_button_padding"
         android:layout_weight="0"
-        android:gravity="center_vertical"
-        android:minWidth="@dimen/message_banner_button_min_width"
-        android:minHeight="@dimen/min_touch_target_size"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:background="?attr/selectableItemBackground" />
+        android:layout_gravity="center_vertical"
+        android:visibility="gone" />
 </org.chromium.components.messages.MessageBannerView>
