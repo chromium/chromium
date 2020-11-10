@@ -72,6 +72,9 @@ js_type_check("closure_compile_module") {
 js_type_check("closure_compile_jsmodules") {
   uses_js_modules = true
   deps = [
+    ":app_window_wrapper.m",
+    ":app_windows.m",
+    ":background_base.m",
     ":entry_location_impl.m",
     ":volume_info_impl.m",
     ":volume_info_list_impl.m",
@@ -134,7 +137,28 @@ js_library("app_window_wrapper") {
   ]
 }
 
+js_library("app_window_wrapper.m") {
+  visibility += related_apps
+  sources = [ "$root_gen_dir/ui/file_manager/file_manager/background/js/app_window_wrapper.m.js" ]
+  deps = [
+    ":app_windows.m",
+    "//ui/file_manager/base/js:app_util.m",
+    "//ui/file_manager/file_manager/common/js:async_util.m",
+    "//ui/webui/resources/js:assert.m",
+  ]
+
+  extra_deps = [ ":modulize" ]
+}
+
 js_library("app_windows") {
+}
+
+js_library("app_windows.m") {
+  sources = [
+    "$root_gen_dir/ui/file_manager/file_manager/background/js/app_windows.m.js",
+  ]
+
+  extra_deps = [ ":modulize" ]
 }
 
 js_library("background") {
@@ -170,6 +194,19 @@ js_library("background_base") {
     "//ui/webui/resources/js:assert",
     "//ui/webui/resources/js:load_time_data",
   ]
+}
+
+js_library("background_base.m") {
+  visibility += related_apps
+  sources = [ "$root_gen_dir/ui/file_manager/file_manager/background/js/background_base.m.js" ]
+  deps = [
+    ":volume_manager_factory.m",
+    "//ui/file_manager/file_manager/common/js:util.m",
+    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:load_time_data.m",
+  ]
+
+  extra_deps = [ ":modulize" ]
 }
 
 js_library("crostini") {
@@ -745,6 +782,9 @@ js_test_gen_html("js_test_gen_html") {
 
 js_modulizer("modulize") {
   input_files = [
+    "app_windows.js",
+    "app_window_wrapper.js",
+    "background_base.js",
     "entry_location_impl.js",
     "mock_volume_manager.js",
     "volume_info_impl.js",

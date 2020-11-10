@@ -2,13 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
+// #import * as wrappedVolumeManagerFactory from './volume_manager_factory.m.js'; const {volumeManagerFactory} = wrappedVolumeManagerFactory;
+// #import * as wrappedUtil from '../../common/js/util.m.js'; const {util} = wrappedUtil;
+// #import {assert} from 'chrome://resources/js/assert.m.js';
+// #import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+// clang-format on
+
 /** @typedef {function(!Array<string>):!Promise} */
 let LaunchHandler;
 
 /**
  * Root class of the background page.
  */
-class BackgroundBase {
+/* #export */ class BackgroundBase {
   constructor() {
     /**
      * Map of all currently open file dialogs. The key is an app ID.

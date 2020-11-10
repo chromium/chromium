@@ -2,6 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
+// #import './app_windows.m.js';
+// #import * as wrappedAsyncUtil from '../../common/js/async_util.m.js'; const {AsyncUtil} = wrappedAsyncUtil;
+// #import * as wrappedAppUtil from '../../../base/js/app_util.m.js'; const {appUtil} = wrappedAppUtil;
+// #import {assertInstanceof} from 'chrome://resources/js/assert.m.js';
+// clang-format on
+
 /**
  * Wrapper for an app window.
  *
@@ -13,7 +20,7 @@
  * 3. The app may have |unload| function to persist the app state that does not
  *    fit into |window.appState|.
  */
-class AppWindowWrapper {
+/* #export */ class AppWindowWrapper {
   /**
    * @param {string} url App window content url.
    * @param {string} id App window id.
@@ -313,7 +320,7 @@ AppWindowWrapper.SHIFT_DISTANCE = 40;
  * have |reload| method that re-initializes the app based on a changed
  * |window.appState|.
  */
-class SingletonAppWindowWrapper extends AppWindowWrapper {
+/* #export */ class SingletonAppWindowWrapper extends AppWindowWrapper {
   /**
    * @param {string} url App window content url.
    * @param {Object|function()} options Options object or a function to return

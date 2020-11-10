@@ -6,7 +6,7 @@
  * Map of all currently open file dialogs. The key is an app ID.
  * @type {!Object<!chrome.app.window.AppWindow>}
  */
-window.appWindows = {};
+window.appWindows = window.appWindows || {};
 
 /**
  * Gets similar windows, it means with the same initial url.
