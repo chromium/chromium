@@ -40,7 +40,7 @@ const base::Feature kMigrateDefaultChromeAppToWebAppsNonGSuite{
 #if defined(OS_CHROMEOS)
 // Enable or disables running the Camera App as a System Web App.
 const base::Feature kCameraSystemWebApp{"CameraSystemWebApp",
-                                        base::FEATURE_DISABLED_BY_DEFAULT};
+                                        base::FEATURE_ENABLED_BY_DEFAULT};
 #endif  // OS_CHROMEOS
 
 bool IsExternalAppInstallFeatureEnabled(base::StringPiece feature_name) {
