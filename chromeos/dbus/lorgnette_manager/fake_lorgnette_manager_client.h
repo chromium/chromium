@@ -38,6 +38,7 @@ class COMPONENT_EXPORT(LORGNETTE_MANAGER) FakeLorgnetteManagerClient
       base::RepeatingCallback<void(std::string, uint32_t)> page_callback,
       base::RepeatingCallback<void(uint32_t, uint32_t)> progress_callback)
       override;
+  void CancelScan(VoidDBusMethodCallback completion_callback) override;
 
   // Sets the response returned by ListScanners().
   void SetListScannersResponse(

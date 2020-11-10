@@ -62,6 +62,12 @@ void FakeLorgnetteManagerClient::StartScan(
   scan_response_ = base::nullopt;
 }
 
+void FakeLorgnetteManagerClient::CancelScan(
+    VoidDBusMethodCallback completion_callback) {
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(completion_callback), true));
+}
+
 void FakeLorgnetteManagerClient::SetListScannersResponse(
     const base::Optional<lorgnette::ListScannersResponse>&
         list_scanners_response) {

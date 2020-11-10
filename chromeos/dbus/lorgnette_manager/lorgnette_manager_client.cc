@@ -96,6 +96,15 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
                        weak_ptr_factory_.GetWeakPtr(), std::move(state)));
   }
 
+  void CancelScan(VoidDBusMethodCallback completion_callback) override {
+    // Post the task to the proper sequence (since it requires access to
+    // scan_job_state_).
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(&LorgnetteManagerClientImpl::DoScanCancel,
+                                  weak_ptr_factory_.GetWeakPtr(),
+                                  std::move(completion_callback)));
+  }
+
  protected:
   void Init(dbus::Bus* bus) override {
     lorgnette_daemon_proxy_ =
@@ -223,6 +232,48 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
                        weak_ptr_factory_.GetWeakPtr(), uuid));
   }
 
+  // Helper method to actually perform scan cancellation.
+  // We use this method since the scan cancel logic requires that we are running
+  // on the proper sequence.
+  void DoScanCancel(VoidDBusMethodCallback callback) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    if (scan_job_state_.size() == 0) {
+      LOG(ERROR) << "No active scan job to cancel.";
+      base::ThreadTaskRunnerHandle::Get()->PostTask(
+          FROM_HERE, base::BindOnce(std::move(callback), false));
+      return;
+    }
+
+    // A more robust implementation would pass a scan job identifier to callers
+    // of StartScan() so they could request cancellation of a particular scan.
+    if (scan_job_state_.size() > 1) {
+      LOG(ERROR) << "Multiple scan jobs running; not clear which to cancel.";
+      base::ThreadTaskRunnerHandle::Get()->PostTask(
+          FROM_HERE, base::BindOnce(std::move(callback), false));
+      return;
+    }
+
+    std::string uuid = scan_job_state_.begin()->first;
+
+    lorgnette::CancelScanRequest request;
+    request.set_scan_uuid(uuid);
+
+    dbus::MethodCall method_call(lorgnette::kManagerServiceInterface,
+                                 lorgnette::kCancelScanMethod);
+    dbus::MessageWriter writer(&method_call);
+    if (!writer.AppendProtoAsArrayOfBytes(request)) {
+      LOG(ERROR) << "Failed to encode CancelScanRequest protobuf";
+      base::ThreadTaskRunnerHandle::Get()->PostTask(
+          FROM_HERE, base::BindOnce(std::move(callback), false));
+      return;
+    }
+
+    lorgnette_daemon_proxy_->CallMethod(
+        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+        base::BindOnce(&LorgnetteManagerClientImpl::OnCancelScanResponse,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  }
+
   // Called when ListScanners completes.
   void OnListScanners(
       DBusMethodCallback<lorgnette::ListScannersResponse> callback,
@@ -321,6 +372,33 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
     GetNextImage(response_proto.scan_uuid());
   }
 
+  void OnCancelScanResponse(VoidDBusMethodCallback callback,
+                            dbus::Response* response) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    if (!response) {
+      LOG(ERROR) << "Failed to obtain CancelScanResponse";
+      std::move(callback).Run(false);
+      return;
+    }
+
+    lorgnette::CancelScanResponse response_proto;
+    dbus::MessageReader reader(response);
+    if (!reader.PopArrayOfBytesAsProto(&response_proto)) {
+      LOG(ERROR) << "Failed to decode CancelScanResponse proto";
+      std::move(callback).Run(false);
+      return;
+    }
+
+    if (!response_proto.success()) {
+      LOG(ERROR) << "Cancelling scan failed: "
+                 << response_proto.failure_reason();
+      std::move(callback).Run(false);
+      return;
+    }
+
+    std::move(callback).Run(true);
+  }
+
   // Called when a response to a GetNextImage request is received from
   // lorgnette. Handles stopping the scan if the request failed.
   void OnGetNextImageResponse(std::string uuid, dbus::Response* response) {
@@ -386,6 +464,11 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
     } else if (signal_proto.state() == lorgnette::SCAN_STATE_IN_PROGRESS &&
                !state.progress_callback.is_null()) {
       state.progress_callback.Run(signal_proto.progress(), signal_proto.page());
+    } else if (signal_proto.state() == lorgnette::SCAN_STATE_CANCELLED) {
+      VLOG(1) << "Scan job " << signal_proto.scan_uuid()
+              << " has been cancelled.";
+      std::move(state.completion_callback).Run(false);
+      scan_job_state_.erase(signal_proto.scan_uuid());
     }
   }
 
