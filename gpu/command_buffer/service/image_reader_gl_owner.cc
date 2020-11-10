@@ -240,12 +240,13 @@ gl::ScopedJavaSurface ImageReaderGLOwner::CreateJavaSurface() const {
 
   // Get the java surface object from the Android native window.
   JNIEnv* env = base::android::AttachCurrentThread();
-  auto j_surface = base::android::ScopedJavaLocalRef<jobject>::Adopt(
-      env, loader_.ANativeWindow_toSurface(env, window));
+  jobject j_surface = loader_.ANativeWindow_toSurface(env, window);
   DCHECK(j_surface);
 
   // Get the scoped java surface that is owned externally.
-  return gl::ScopedJavaSurface::AcquireExternalSurface(j_surface);
+  // TODO(1146071): use of JavaParamRef temporary to try to debug crash.
+  return gl::ScopedJavaSurface::AcquireExternalSurface(
+      base::android::JavaParamRef<jobject>(env, j_surface));
 }
 
 void ImageReaderGLOwner::UpdateTexImage() {
