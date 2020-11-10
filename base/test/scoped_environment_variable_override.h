@@ -20,6 +20,8 @@ class ScopedEnvironmentVariableOverride final {
  public:
   ScopedEnvironmentVariableOverride(const std::string& variable_name,
                                     const std::string& value);
+  // Unset the variable.
+  explicit ScopedEnvironmentVariableOverride(const std::string& variable_name);
   ~ScopedEnvironmentVariableOverride();
 
   base::Environment* GetEnv() { return environment_.get(); }
@@ -27,6 +29,9 @@ class ScopedEnvironmentVariableOverride final {
   bool WasSet() { return was_set_; }
 
  private:
+  ScopedEnvironmentVariableOverride(const std::string& variable_name,
+                                    const std::string& value,
+                                    bool unset_var);
   std::unique_ptr<Environment> environment_;
   std::string variable_name_;
   bool overridden_;

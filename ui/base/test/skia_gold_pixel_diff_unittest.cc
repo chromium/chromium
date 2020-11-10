@@ -6,6 +6,7 @@
 
 #include "base/command_line.h"
 #include "base/files/file_util.h"
+#include "base/test/scoped_environment_variable_override.h"
 #include "base/test/test_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -108,6 +109,8 @@ TEST_F(SkiaGoldPixelDiffTest, LocalNoLuciAuth) {
   MockSkiaGoldPixelDiff mock_pixel;
   auto* cmd_line = base::CommandLine::ForCurrentProcess();
   cmd_line->RemoveSwitch(switches::kTestLauncherBotMode);
+  base::test::ScopedEnvironmentVariableOverride env_override(
+      "CHROMIUM_TEST_LAUNCHER_BOT_MODE");
 
   EXPECT_CALL(mock_pixel, LaunchProcess(_)).Times(AnyNumber());
   EXPECT_CALL(mock_pixel, LaunchProcess(AllOf(Property(
@@ -349,6 +352,8 @@ TEST_F(SkiaGoldPixelDiffTest, MakeGerritCommentInvalidFlag) {
 TEST_F(SkiaGoldPixelDiffTest, DryRunLocally) {
   auto* cmd_line = base::CommandLine::ForCurrentProcess();
   cmd_line->RemoveSwitch(switches::kTestLauncherBotMode);
+  base::test::ScopedEnvironmentVariableOverride env_override(
+      "CHROMIUM_TEST_LAUNCHER_BOT_MODE");
 
   MockSkiaGoldPixelDiff mock_pixel;
   EXPECT_CALL(mock_pixel, LaunchProcess(_)).Times(AnyNumber());

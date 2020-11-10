@@ -11,14 +11,27 @@ namespace test {
 
 ScopedEnvironmentVariableOverride::ScopedEnvironmentVariableOverride(
     const std::string& variable_name,
-    const std::string& value)
+    const std::string& value,
+    bool unset_var)
     : environment_(Environment::Create()),
       variable_name_(variable_name),
       overridden_(false),
       was_set_(false) {
   was_set_ = environment_->GetVar(variable_name, &old_value_);
-  overridden_ = environment_->SetVar(variable_name, value);
+  if (unset_var)
+    overridden_ = environment_->UnSetVar(variable_name);
+  else
+    overridden_ = environment_->SetVar(variable_name, value);
 }
+
+ScopedEnvironmentVariableOverride::ScopedEnvironmentVariableOverride(
+    const std::string& variable_name,
+    const std::string& value)
+    : ScopedEnvironmentVariableOverride(variable_name, value, false) {}
+
+ScopedEnvironmentVariableOverride::ScopedEnvironmentVariableOverride(
+    const std::string& variable_name)
+    : ScopedEnvironmentVariableOverride(variable_name, "", true) {}
 
 ScopedEnvironmentVariableOverride::~ScopedEnvironmentVariableOverride() {
   if (overridden_) {
