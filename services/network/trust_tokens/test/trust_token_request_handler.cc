@@ -66,6 +66,9 @@ bool HasKeyPairExpired(const IssuanceKeyPair& p) {
 
 }  // namespace
 
+TrustTokenRequestHandler::Options::Options() = default;
+TrustTokenRequestHandler::Options::~Options() = default;
+
 struct TrustTokenRequestHandler::Rep {
   // The protocol version to use.
   std::string protocol_version;

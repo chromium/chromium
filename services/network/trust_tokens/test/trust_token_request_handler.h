@@ -54,7 +54,10 @@ class TrustTokenRequestHandler {
     kUnconditionalFailure,
   };
 
-  struct Options {
+  struct Options final {
+    Options();
+    ~Options();
+
     // The number of issuance key pairs to provide via key commitment results.
     int num_keys = 1;
 
@@ -64,10 +67,11 @@ class TrustTokenRequestHandler {
     // the expected request.
     SigningOutcome client_signing_outcome = SigningOutcome::kSuccess;
 
-    // The protocol version to use.
+    // The protocol version with which to parameterize the server-side
+    // cryptographic logic. We return this value in key commitment results.
     std::string protocol_version = "TrustTokenV1";
 
-    // The commitment ID to use.
+    // The key commitment ID.
     int id = 1;
 
     // The number of tokens to sign per issuance operation; this value is also

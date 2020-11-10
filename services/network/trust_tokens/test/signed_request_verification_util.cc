@@ -16,7 +16,6 @@
 #include "net/http/http_request_headers.h"
 #include "net/http/structured_headers.h"
 #include "services/network/public/cpp/trust_token_http_headers.h"
-#include "services/network/public/mojom/trust_tokens.mojom-shared.h"
 #include "services/network/trust_tokens/ed25519_trust_token_request_signer.h"
 #include "services/network/trust_tokens/signed_redemption_record_serialization.h"
 #include "services/network/trust_tokens/trust_token_parameterization.h"
@@ -299,7 +298,8 @@ bool ReconstructSigningDataAndVerifySignatures(
                                  base::span<const uint8_t> verification_key,
                                  const std::string& sig_alg)> verifier,
     std::string* error_out,
-    std::map<std::string, std::string>* verification_keys_out) {
+    std::map<std::string, std::string>* verification_keys_out,
+    mojom::TrustTokenSignRequestData* sign_request_data_out) {
   // Make it possible to set the error without needing to check for
   // |error_out|'s presence.
   std::string dummy_error;
@@ -330,6 +330,8 @@ bool ReconstructSigningDataAndVerifySignatures(
           &sig_alg, error_out)) {
     return false;
   }
+  if (sign_request_data_out)
+    *sign_request_data_out = sign_request_data;
 
   for (net::structured_headers::ParameterizedItem& issuer_and_parameters :
        issuers_and_parameters) {
