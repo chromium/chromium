@@ -55,6 +55,10 @@ import org.chromium.base.CommandLine;
 import org.chromium.base.NativeLibraryLoadedStatus;
 import org.chromium.base.StreamUtil;
 import org.chromium.base.library_loader.LibraryLoader;
+import org.chromium.base.test.params.ParameterAnnotations;
+import org.chromium.base.test.params.ParameterProvider;
+import org.chromium.base.test.params.ParameterSet;
+import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -92,7 +96,7 @@ import org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarCoordinator;
 import org.chromium.chrome.browser.toolbar.top.TopToolbarCoordinator;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.test.ChromeActivityTestRule;
-import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
@@ -107,6 +111,8 @@ import org.chromium.ui.test.util.UiRestriction;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
@@ -114,7 +120,8 @@ import java.util.concurrent.atomic.AtomicReference;
 /**
  * Integration tests of Instant Start which requires 2-stage initialization for Clank startup.
  */
-@RunWith(ChromeJUnit4ClassRunner.class)
+@RunWith(ParameterizedRunner.class)
+@ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 // clang-format off
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @EnableFeatures({ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID,
@@ -137,6 +144,24 @@ public class InstantStartTest {
 
     @Rule
     public ErrorCollector collector = new ErrorCollector();
+
+    /**
+     * Parameter set controlling whether Feed v2 is enabled.
+     */
+    public static class FeedParams implements ParameterProvider {
+        private static List<ParameterSet> sFeedParams =
+                Arrays.asList(new ParameterSet().value(false).name("FeedV1"),
+                        new ParameterSet().value(true).name("FeedV2"));
+
+        @Override
+        public List<ParameterSet> getParameters() {
+            return sFeedParams;
+        }
+    }
+
+    private void setFeedVersion(boolean isFeedV2) {
+        CachedFeatureFlags.setForTesting(ChromeFeatureList.INTEREST_FEED_V2, isFeedV2);
+    }
 
     /**
      * Only launch Chrome without waiting for a current tab.
@@ -674,10 +699,11 @@ public class InstantStartTest {
             "/exclude_mv_tiles/true" +
             "/hide_switch_when_no_incognito_tabs/true" +
             "/show_last_active_tab_only/true"})
-    public void renderSingleAsHomepage_SingleTabNoMVTiles()
+    @ParameterAnnotations.UseMethodParameter(FeedParams.class)
+    public void renderSingleAsHomepage_SingleTabNoMVTiles(boolean isFeedV2)
         throws IOException, InterruptedException {
         // clang-format on
-        if (!FeedV1.IS_AVAILABLE) return; // Test not yet working for FeedV2.
+        setFeedVersion(isFeedV2);
 
         createTabStateFile(new int[] {0});
         createThumbnailBitmapAndWriteToFile(0);
@@ -693,7 +719,8 @@ public class InstantStartTest {
         ViewUtils.onViewWaiting(AllOf.allOf(withId(R.id.single_tab_view), isDisplayed()));
         ChromeRenderTestRule.sanitize(surface);
         // TODO(crbug.com/1065314): fix favicon.
-        mRenderTestRule.render(surface, "singlePane_singleTab_noMV3");
+        mRenderTestRule.render(
+                surface, "singlePane_singleTab_noMV3" + (isFeedV2 ? "_FeedV2" : "_FeedV1"));
 
         // Initializes native.
         startAndWaitNativeInitialization();
@@ -747,8 +774,10 @@ public class InstantStartTest {
     @CommandLineFlags.Add({ChromeSwitches.DISABLE_NATIVE_INITIALIZATION,
             "force-fieldtrials=Study/Group",
             IMMEDIATE_RETURN_PARAMS + "/start_surface_variation/single"})
-    public void testFeedLoading() {
+    @ParameterAnnotations.UseMethodParameter(FeedParams.class)
+    public void testFeedLoading(boolean isFeedV2) {
         // clang-format on
+        setFeedVersion(isFeedV2);
         startMainActivityFromLauncher();
         Assert.assertFalse(mActivityTestRule.getActivity().isTablet());
         Assert.assertTrue(CachedFeatureFlags.isEnabled(ChromeFeatureList.INSTANT_START));
@@ -769,8 +798,10 @@ public class InstantStartTest {
     // clang-format off
     @CommandLineFlags.Add({"force-fieldtrials=Study/Group",
             IMMEDIATE_RETURN_PARAMS + "/start_surface_variation/single"})
-    public void testCachedFeedVisibility() {
+    @ParameterAnnotations.UseMethodParameter(FeedParams.class)
+    public void testCachedFeedVisibility(boolean isFeedV2) {
         // clang-format on
+        setFeedVersion(isFeedV2);
         startMainActivityFromLauncher();
         mActivityTestRule.waitForActivityNativeInitializationComplete();
         // FEED_ARTICLES_LIST_VISIBLE should equal to ARTICLES_LIST_VISIBLE.
@@ -809,8 +840,10 @@ public class InstantStartTest {
     @CommandLineFlags.Add({ChromeSwitches.DISABLE_NATIVE_INITIALIZATION,
             "force-fieldtrials=Study/Group",
             IMMEDIATE_RETURN_PARAMS + "/start_surface_variation/single"})
-    public void testHidePlaceholder() {
+    @ParameterAnnotations.UseMethodParameter(FeedParams.class)
+    public void testHidePlaceholder(boolean isFeedV2) {
         // clang-format on
+        setFeedVersion(isFeedV2);
         StartSurfaceConfiguration.setFeedVisibilityForTesting(false);
         startMainActivityFromLauncher();
 
@@ -827,8 +860,10 @@ public class InstantStartTest {
     @CommandLineFlags.Add({ChromeSwitches.DISABLE_NATIVE_INITIALIZATION,
             "force-fieldtrials=Study/Group",
             IMMEDIATE_RETURN_PARAMS + "/start_surface_variation/single"})
-    public void testShowPlaceholder() {
+    @ParameterAnnotations.UseMethodParameter(FeedParams.class)
+    public void testShowPlaceholder(boolean isFeedV2) {
         // clang-format on
+        setFeedVersion(isFeedV2);
         StartSurfaceConfiguration.setFeedVisibilityForTesting(true);
         startMainActivityFromLauncher();
 
