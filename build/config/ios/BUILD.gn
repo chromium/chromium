@@ -151,10 +151,10 @@ config("ios_extension_executable_flags") {
   # On "catalyst", the bundle structure is different (uses the same structure
   # as a regular macOS app), so an additional -rpath is required.
   if (target_environment == "catalyst") {
-    ldflags += [ "-Wl,-rpath,@loader_path/../Frameworks" ]
+    ldflags += [ "-Wl,-rpath,@loader_path/../../../../Frameworks" ]
   }
 
-  ldflags += [ "-Wl,-rpath,@executable_path/Frameworks" ]
+  ldflags += [ "-Wl,-rpath,@executable_path/../../Frameworks" ]
 }
 
 config("ios_dynamic_flags") {
