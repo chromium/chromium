@@ -3908,6 +3908,7 @@ test("unit_tests") {
       "../browser/mac/exception_processor_unittest.mm",
       "../browser/mac/keystone_glue_unittest.mm",
       "../browser/notifications/notification_platform_bridge_mac_unittest.mm",
+      "../browser/notifications/notification_platform_bridge_mac_unnotification_unittest.mm",
       "../browser/notifications/notification_platform_bridge_mac_utils_unittest.mm",
       "../browser/notifications/stub_alert_dispatcher_mac.h",
       "../browser/notifications/stub_alert_dispatcher_mac.mm",

@@ -32,6 +32,7 @@ base::scoped_nsobject<UNNotificationBuilder> NewTestBuilder(
   [builder setProfileId:@"profileId"];
   [builder setIncognito:false];
   [builder setCreatorPid:@1];
+  [builder setShowSettingsButton:NO];
   [builder setNotificationType:[NSNumber numberWithInt:static_cast<int>(type)]];
   return builder;
 }
