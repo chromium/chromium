@@ -120,9 +120,8 @@ ImageDecoderExternal::ImageDecoderExternal(ScriptState* script_state,
     return;
   }
 
-  // TODO(crbug.com/1073995): Data is owned by the caller who may be free to
-  // manipulate it. We will probably need to make a copy to our own internal
-  // data or neuter the buffers as seen by JS.
+  // Since data is owned by the caller who may be free to manipulate it, we must
+  // check HasValidEncodedData() before attempting to access |decoder_|.
   segment_reader_ = SegmentReader::CreateFromSkData(
       SkData::MakeWithoutCopy(buffer.Data(), buffer.ByteLengthAsSizeT()));
   if (!segment_reader_) {
@@ -266,6 +265,7 @@ void ImageDecoderExternal::Trace(Visitor* visitor) const {
 
 void ImageDecoderExternal::CreateImageDecoder() {
   DCHECK(!decoder_);
+  DCHECK(HasValidEncodedData());
 
   // TODO(crbug.com/1073995): We should probably call
   // ImageDecoder::SetMemoryAllocator() so that we can recycle frame buffers for
@@ -316,6 +316,13 @@ void ImageDecoderExternal::MaybeSatisfyPendingDecodes() {
       // TODO(crbug.com/1073995): Include frameIndex in rejection?
       request->exception = MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kConstraintError, "Frame index out of range");
+      continue;
+    }
+
+    if (!HasValidEncodedData()) {
+      request->exception = MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kInvalidStateError,
+          "Source data has been neutered");
       continue;
     }
 
@@ -397,6 +404,7 @@ void ImageDecoderExternal::MaybeSatisfyPendingDecodes() {
 }
 
 void ImageDecoderExternal::MaybeSatisfyPendingMetadataDecodes() {
+  DCHECK(HasValidEncodedData());
   DCHECK(decoder_);
   if (!decoder_->IsSizeAvailable() && !decoder_->Failed())
     return;
@@ -408,6 +416,9 @@ void ImageDecoderExternal::MaybeSatisfyPendingMetadataDecodes() {
 }
 
 void ImageDecoderExternal::MaybeUpdateMetadata() {
+  if (!HasValidEncodedData())
+    return;
+
   // Since we always create the decoder at construction, we need to wait until
   // at least the size is available before signaling that metadata has been
   // retrieved.
@@ -458,6 +469,24 @@ void ImageDecoderExternal::MaybeUpdateMetadata() {
   }
 
   MaybeSatisfyPendingMetadataDecodes();
+}
+
+bool ImageDecoderExternal::HasValidEncodedData() const {
+  // If we keep an internal copy of the data, it's always valid.
+  if (stream_buffer_)
+    return true;
+
+  if (init_data_->data().IsArrayBuffer() &&
+      init_data_->data().GetAsArrayBuffer()->IsDetached()) {
+    return false;
+  }
+
+  if (init_data_->data().IsArrayBufferView() &&
+      !init_data_->data().GetAsArrayBufferView()->BaseAddress()) {
+    return false;
+  }
+
+  return true;
 }
 
 }  // namespace blink
