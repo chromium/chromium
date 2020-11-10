@@ -212,6 +212,17 @@ class GtestTestInstanceTests(unittest.TestCase):
     self.assertEquals(1, actual[0].GetDuration())
     self.assertEquals(base_test_result.ResultType.FAIL, actual[0].GetType())
 
+  def testParseGTestOutput_skippedTest(self):
+    raw_output = [
+        '[ RUN      ] FooTest.Bar',
+        '[  SKIPPED ] FooTest.Bar (1 ms)',
+    ]
+    actual = gtest_test_instance.ParseGTestOutput(raw_output, None, None)
+    self.assertEquals(1, len(actual))
+    self.assertEquals('FooTest.Bar', actual[0].GetName())
+    self.assertEquals(1, actual[0].GetDuration())
+    self.assertEquals(base_test_result.ResultType.SKIP, actual[0].GetType())
+
   def testParseGTestXML_none(self):
     actual = gtest_test_instance.ParseGTestXML(None)
     self.assertEquals([], actual)
