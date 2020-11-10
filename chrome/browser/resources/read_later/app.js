@@ -6,11 +6,16 @@ import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import 'chrome://resources/cr_elements/mwb_shared_style.js';
 import 'chrome://resources/cr_elements/mwb_shared_vars.js';
+import 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 
+import {assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ReadLaterApiProxy, ReadLaterApiProxyImpl} from './read_later_api_proxy.js';
 import {ReadLaterItemElement} from './read_later_item.js';
+
+/** @type {!Set<string>} */
+const navigationKeys = new Set(['ArrowDown', 'ArrowUp']);
 
 export class ReadLaterAppElement extends PolymerElement {
   static get is() {
@@ -74,6 +79,41 @@ export class ReadLaterAppElement extends PolymerElement {
       this.unreadItems_ = entries.unreadEntries;
       this.readItems_ = entries.readEntries;
     });
+  }
+
+  /**
+   * @param {!Event} e
+   * @private
+   */
+  onItemKeyDown_(e) {
+    if (e.shiftKey || !navigationKeys.has(e.key)) {
+      return;
+    }
+    const selector = /** @type {!IronSelectorElement} */ (this.$.selector);
+    switch (e.key) {
+      case 'ArrowDown':
+        selector.selectNext();
+        /** @type {!ReadLaterItemElement} */ (selector.selectedItem).focus();
+        break;
+      case 'ArrowUp':
+        selector.selectPrevious();
+        /** @type {!ReadLaterItemElement} */ (selector.selectedItem).focus();
+        break;
+      default:
+        assertNotReached();
+        return;
+    }
+    e.preventDefault();
+    e.stopPropagation();
+  }
+
+  /**
+   * @param {!Event} e
+   * @private
+   */
+  onItemFocus_(e) {
+    this.$.selector.selected =
+        /** @type {!ReadLaterItemElement} */ (e.currentTarget).dataset.url;
   }
 
   /**

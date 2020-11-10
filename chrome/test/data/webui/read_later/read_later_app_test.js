@@ -4,6 +4,7 @@
 
 import {ReadLaterAppElement} from 'chrome://read-later/app.js';
 import {ReadLaterApiProxy, ReadLaterApiProxyImpl} from 'chrome://read-later/read_later_api_proxy.js';
+import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
 import {flushTasks} from '../test_util.m.js';
@@ -23,7 +24,7 @@ suite('ReadLaterAppTest', () => {
   function assertEntryURLs(items, urls) {
     assertEquals(urls.length, items.length);
     items.forEach((item, index) => {
-      assertEquals(urls[index], item.data.url);
+      assertEquals(urls[index], item.dataset.url);
     });
   }
 
@@ -43,7 +44,7 @@ suite('ReadLaterAppTest', () => {
       unreadEntries: [
         {
           title: 'Google',
-          url: 'https://www.google.com',
+          url: {url: 'https://www.google.com'},
           displayUrl: 'google.com',
           updateTime: 0,
           read: false,
@@ -51,7 +52,7 @@ suite('ReadLaterAppTest', () => {
         },
         {
           title: 'Apple',
-          url: 'https://www.apple.com',
+          url: {url: 'https://www.apple.com'},
           displayUrl: 'apple.com',
           updateTime: 0,
           read: false,
@@ -61,7 +62,7 @@ suite('ReadLaterAppTest', () => {
       readEntries: [
         {
           title: 'Bing',
-          url: 'https://www.bing.com',
+          url: {url: 'https://www.bing.com'},
           displayUrl: 'bing.com',
           updateTime: 0,
           read: true,
@@ -69,7 +70,7 @@ suite('ReadLaterAppTest', () => {
         },
         {
           title: 'Yahoo',
-          url: 'https://www.yahoo.com',
+          url: {url: 'https://www.yahoo.com'},
           displayUrl: 'yahoo.com',
           updateTime: 0,
           read: true,
@@ -105,7 +106,7 @@ suite('ReadLaterAppTest', () => {
     const expectedUrl = 'https://www.apple.com';
     clickItem(expectedUrl);
     const url = await testProxy.whenCalled('openSavedEntry');
-    assertEquals(url, expectedUrl);
+    assertEquals(url.url, expectedUrl);
   });
 
   test('Click on item mark as read button triggers actions', async () => {
@@ -117,7 +118,7 @@ suite('ReadLaterAppTest', () => {
         readLaterItem.shadowRoot.querySelector('#updateStatusButton');
     readLaterItemUpdateStatusButton.click();
     const [url, read] = await testProxy.whenCalled('updateReadStatus');
-    assertEquals(expectedUrl, url);
+    assertEquals(expectedUrl, url.url);
     assertTrue(read);
   });
 
@@ -130,7 +131,7 @@ suite('ReadLaterAppTest', () => {
         readLaterItem.shadowRoot.querySelector('#updateStatusButton');
     readLaterItemUpdateStatusButton.click();
     const [url, read] = await testProxy.whenCalled('updateReadStatus');
-    assertEquals(expectedUrl, url);
+    assertEquals(expectedUrl, url.url);
     assertFalse(read);
   });
 
@@ -143,7 +144,7 @@ suite('ReadLaterAppTest', () => {
         readLaterItem.shadowRoot.querySelector('#deleteButton');
     readLaterItemDeleteButton.click();
     const url = await testProxy.whenCalled('removeEntry');
-    assertEquals(expectedUrl, url);
+    assertEquals(expectedUrl, url.url);
   });
 
   test('Click on menu button triggers actions', async () => {
@@ -152,4 +153,83 @@ suite('ReadLaterAppTest', () => {
     readLaterCloseButton.click();
     await testProxy.whenCalled('closeUI');
   });
+
+  test('Enter key triggers action and passes correct url', async () => {
+    const expectedUrl = 'https://www.apple.com';
+    const readLaterItem = /** @type {!Element} */
+        (readLaterApp.shadowRoot.querySelector(`[data-url="${expectedUrl}"]`));
+
+    keyDownOn(readLaterItem, 0, [], 'Enter');
+    const url = await testProxy.whenCalled('openSavedEntry');
+    assertEquals(url.url, expectedUrl);
+  });
+
+  test('Space key triggers action and passes correct url', async () => {
+    const expectedUrl = 'https://www.apple.com';
+    const readLaterItem = /** @type {!Element} */
+        (readLaterApp.shadowRoot.querySelector(`[data-url="${expectedUrl}"]`));
+
+    keyDownOn(readLaterItem, 0, [], ' ');
+    const url = await testProxy.whenCalled('openSavedEntry');
+    assertEquals(url.url, expectedUrl);
+  });
+
+  test('Keyboard navigation abides by item list range boundaries', async () => {
+    const urls = [
+      'https://www.google.com', 'https://www.apple.com', 'https://www.bing.com',
+      'https://www.yahoo.com'
+    ];
+    const selector = readLaterApp.shadowRoot.querySelector('iron-selector');
+
+    // Select first item.
+    selector.selected =
+        readLaterApp.shadowRoot.querySelector('read-later-item').dataset.url;
+
+    keyDownOn(selector, 0, [], 'ArrowUp');
+    assertEquals(urls[3], selector.selected);
+
+    keyDownOn(selector, 0, [], 'ArrowDown');
+    assertEquals(urls[0], selector.selected);
+
+    keyDownOn(selector, 0, [], 'ArrowDown');
+    assertEquals(urls[1], selector.selected);
+
+    keyDownOn(selector, 0, [], 'ArrowUp');
+    assertEquals(urls[0], selector.selected);
+  });
+
+  test(
+      'Keyboard navigation left/right cycles through list item elements',
+      async () => {
+        const firstItem =
+            readLaterApp.shadowRoot.querySelector('read-later-item');
+        // Focus first item.
+        firstItem.focus();
+
+        keyDownOn(firstItem, 0, [], 'ArrowRight');
+        assertEquals(
+            firstItem.shadowRoot.getElementById('updateStatusButton'),
+            firstItem.shadowRoot.activeElement);
+
+        keyDownOn(firstItem, 0, [], 'ArrowRight');
+        assertEquals(
+            firstItem.shadowRoot.getElementById('deleteButton'),
+            firstItem.shadowRoot.activeElement);
+
+        keyDownOn(firstItem, 0, [], 'ArrowRight');
+        assertEquals(firstItem, readLaterApp.shadowRoot.activeElement);
+
+        keyDownOn(firstItem, 0, [], 'ArrowLeft');
+        assertEquals(
+            firstItem.shadowRoot.getElementById('deleteButton'),
+            firstItem.shadowRoot.activeElement);
+
+        keyDownOn(firstItem, 0, [], 'ArrowLeft');
+        assertEquals(
+            firstItem.shadowRoot.getElementById('updateStatusButton'),
+            firstItem.shadowRoot.activeElement);
+
+        keyDownOn(firstItem, 0, [], 'ArrowLeft');
+        assertEquals(firstItem, readLaterApp.shadowRoot.activeElement);
+      });
 });

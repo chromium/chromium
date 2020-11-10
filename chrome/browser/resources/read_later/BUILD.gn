@@ -96,8 +96,10 @@ js_library("app") {
   deps = [
     ":read_later_api_proxy",
     ":read_later_item",
+    "//third_party/polymer/v3_0/components-chromium/iron-selector:iron-selector",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/cr_icon_button:cr_icon_button.m",
+    "//ui/webui/resources/js:assert.m",
   ]
 }
 
@@ -113,6 +115,7 @@ js_library("read_later_item") {
     ":read_later_api_proxy",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/cr_icon_button:cr_icon_button.m",
+    "//ui/webui/resources/js:assert.m",
   ]
 }
 

@@ -32,6 +32,14 @@
     overflow-y: auto;
   }
 
+  .mwb-list-item:focus-within {
+    background-color: var(--mwb-list-item-hover-background-color);
+  }
+
+  .mwb-list-item:active {
+    background-color: var(--mwb-list-item-selected-background-color);
+  }
+
   .sub-heading {
     align-items: center;
     border-bottom: 1px solid #dbdbdb;
@@ -52,14 +60,17 @@
   </cr-icon-button>
 </div>
 <div id="read-later-list">
-  <div class="sub-heading">$i18n{unreadHeader}</div>
-  <template id="ureadItemsList" is="dom-repeat" items="[[unreadItems_]]">
-    <read-later-item data-url$="[[item.url]]" class="mwb-list-item"
-        data="[[item]]"></read-later-item>
-  </template>
-  <div class="sub-heading">$i18n{readHeader}</div>
-  <template id="readItemsList" is="dom-repeat" items="[[readItems_]]">
-    <read-later-item data-url$="[[item.url]]" class="mwb-list-item"
-        data="[[item]]"></read-later-item>
-  </template>
+  <iron-selector id="selector" on-keydown="onItemKeyDown_"
+      attr-for-selected="data-url" selectable="read-later-item">
+    <div class="sub-heading">$i18n{unreadHeader}</div>
+    <template id="ureadItemsList" is="dom-repeat" items="[[unreadItems_]]">
+      <read-later-item data-url$="[[item.url.url]]" on-focus="onItemFocus_"
+          class="mwb-list-item" data="[[item]]" tabindex="0"></read-later-item>
+    </template>
+    <div class="sub-heading">$i18n{readHeader}</div>
+    <template id="readItemsList" is="dom-repeat" items="[[readItems_]]">
+      <read-later-item data-url$="[[item.url.url]]" on-focus="onItemFocus_"
+          class="mwb-list-item" data="[[item]]" tabindex="0"></read-later-item>
+    </template>
+  </iron-selector>
 </div>

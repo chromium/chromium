@@ -22,6 +22,7 @@ js_library("read_later_app_test") {
     ":test_read_later_api_proxy",
     "..:chai_assert",
     "//chrome/browser/resources/read_later:app",
+    "//third_party/polymer/v3_0/components-chromium/iron-test-helpers:mock-interactions",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }
