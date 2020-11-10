@@ -642,8 +642,10 @@ inline scoped_refptr<const NGLayoutResult> NGBlockLayoutAlgorithm::Layout(
       // there's a subsequent sibling that's not a spanner, we're resume right
       // in front of that one. Otherwise we'll just resume after all the
       // children.
-      for (NGLayoutInputNode sibling = child.NextSibling(); sibling;
-           sibling = sibling.NextSibling()) {
+      for (entry = child_iterator.NextChild();
+           NGLayoutInputNode sibling = entry.node;
+           entry = child_iterator.NextChild()) {
+        DCHECK(!entry.token);
         if (sibling.IsColumnSpanAll())
           continue;
         container_builder_.AddBreakBeforeChild(sibling, kBreakAppealPerfect,
