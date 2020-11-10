@@ -547,6 +547,22 @@ base::Optional<syncer::ModelError> PasswordSyncBridge::MergeSyncData(
   }
 
   metrics_util::LogPasswordSyncState(metrics_util::SYNCING_OK);
+  if (password_store_sync_->IsAccountStore()) {
+    int password_count = base::ranges::count_if(
+        entity_data,
+        [](const std::unique_ptr<syncer::EntityChange>& entity_change) {
+          return !entity_change->data()
+                      .specifics.password()
+                      .client_only_encrypted_data()
+                      .blacklisted();
+        });
+    metrics_util::LogDownloadedPasswordsCountFromAccountStoreAfterUnlock(
+        password_count);
+    metrics_util::
+        LogDownloadedBlocklistedEntriesCountFromAccountStoreAfterUnlock(
+            entity_data.size() - password_count);
+  }
+
   sync_enabled_or_disabled_cb_.Run();
   return base::nullopt;
 }

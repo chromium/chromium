@@ -248,6 +248,20 @@ void LogPasswordsCountFromAccountStoreAfterUnlock(
       account_store_passwords_count);
 }
 
+void LogDownloadedPasswordsCountFromAccountStoreAfterUnlock(
+    int account_store_passwords_count) {
+  base::UmaHistogramCounts100(
+      "PasswordManager.AccountStoreCredentialsAfterOptIn",
+      account_store_passwords_count);
+}
+
+void LogDownloadedBlocklistedEntriesCountFromAccountStoreAfterUnlock(
+    int blocklist_entries_count) {
+  base::UmaHistogramCounts100(
+      "PasswordManager.AccountStoreBlocklistedEntriesAfterOptIn",
+      blocklist_entries_count);
+}
+
 void LogPasswordSettingsReauthResult(ReauthResult result) {
   base::UmaHistogramEnumeration(
       "PasswordManager.ReauthToAccessPasswordInSettings", result);

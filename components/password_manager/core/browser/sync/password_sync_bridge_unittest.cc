@@ -1033,4 +1033,37 @@ TEST_F(PasswordSyncBridgeTest,
       "PasswordManager.AccountStorage.UnsyncedPasswordsFoundDuringSignOut", 0);
 }
 
+TEST_F(PasswordSyncBridgeTest, ShouldReportDownloadedPasswordsIfAccountStore) {
+  ON_CALL(*mock_password_store_sync(), IsAccountStore())
+      .WillByDefault(Return(true));
+  ON_CALL(mock_processor(), IsTrackingMetadata()).WillByDefault(Return(true));
+
+  syncer::EntityChangeList entity_change_list;
+  entity_change_list.push_back(syncer::EntityChange::CreateAdd(
+      /*storage_key=*/"",
+      SpecificsToEntity(CreateSpecificsWithSignonRealm(kSignonRealm1))));
+  entity_change_list.push_back(syncer::EntityChange::CreateAdd(
+      /*storage_key=*/"",
+      SpecificsToEntity(CreateSpecificsWithSignonRealm(kSignonRealm2))));
+
+  sync_pb::PasswordSpecifics blocklisted_specifics;
+  sync_pb::PasswordSpecificsData* password_data =
+      blocklisted_specifics.mutable_client_only_encrypted_data();
+  password_data->set_origin("http://www.origin.com");
+  password_data->set_signon_realm(kSignonRealm3);
+  password_data->set_blacklisted(true);
+
+  entity_change_list.push_back(syncer::EntityChange::CreateAdd(
+      /*storage_key=*/"", SpecificsToEntity(blocklisted_specifics)));
+
+  base::HistogramTester histogram_tester;
+  base::Optional<syncer::ModelError> error = bridge()->MergeSyncData(
+      bridge()->CreateMetadataChangeList(), std::move(entity_change_list));
+  EXPECT_FALSE(error);
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.AccountStoreCredentialsAfterOptIn", 2, 1);
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.AccountStoreBlocklistedEntriesAfterOptIn", 1, 1);
+}
+
 }  // namespace password_manager

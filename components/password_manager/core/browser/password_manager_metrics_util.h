@@ -596,8 +596,22 @@ void LogPasswordAcceptedSaveUpdateSubmissionIndicatorEvent(
 // Log a frame of a submitted password form.
 void LogSubmittedFormFrame(SubmittedFormFrame frame);
 
-// Logs how many account-stored passwords are available right after unlock.
-void LogPasswordsCountFromAccountStoreAfterUnlock(int account_store_passwords);
+// Logs how many account-stored passwords are available for filling in the
+// current password form right after unlock.
+void LogPasswordsCountFromAccountStoreAfterUnlock(
+    int account_store_passwords_count);
+
+// Logs how many account-stored passwords are downloaded right after unlock.
+// This is different from `LogPasswordsCountFromAccountStoreAfterUnlock` since
+// it records all the downloaded passwords not just those available for filling
+// in a specific password form.
+void LogDownloadedPasswordsCountFromAccountStoreAfterUnlock(
+    int account_store_passwords_count);
+
+// Logs how many blocklisted entries are downloaded to the account store right
+// after unlock.
+void LogDownloadedBlocklistedEntriesCountFromAccountStoreAfterUnlock(
+    int blocklist_entries_count);
 
 // Logs the result of a re-auth challenge in the password settings.
 void LogPasswordSettingsReauthResult(ReauthResult result);
