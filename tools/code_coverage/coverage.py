@@ -74,6 +74,7 @@ import json
 import logging
 import multiprocessing
 import os
+import platform
 import re
 import shlex
 import shutil
@@ -143,7 +144,6 @@ FILE_BUG_MESSAGE = (
 
 # String to replace with actual llvm profile path.
 LLVM_PROFILE_FILE_PATH_SUBSTITUTION = '<llvm_profile_file_path>'
-
 
 def _ConfigureLLVMCoverageTools(args):
   """Configures llvm coverage tools."""
@@ -397,6 +397,13 @@ def _GetEnvironmentVars(profraw_file_path):
   return env
 
 
+def _SplitCommand(command):
+  """Split a command string into parts in a platform-specific way."""
+  if coverage_utils.GetHostPlatform() == 'win':
+    return command.split()
+  return shlex.split(command)
+
+
 def _ExecuteCommand(target, command, output_file_path):
   """Runs a single command and generates a profraw data file."""
   # Per Clang "Source-based Code Coverage" doc:
@@ -431,11 +438,10 @@ def _ExecuteCommand(target, command, output_file_path):
   try:
     # Some fuzz targets or tests may write into stderr, redirect it as well.
     with open(output_file_path, 'wb') as output_file_handle:
-      subprocess.check_call(
-          shlex.split(command),
-          stdout=output_file_handle,
-          stderr=subprocess.STDOUT,
-          env=_GetEnvironmentVars(expected_profraw_file_path))
+      subprocess.check_call(_SplitCommand(command),
+                            stdout=output_file_handle,
+                            stderr=subprocess.STDOUT,
+                            env=_GetEnvironmentVars(expected_profraw_file_path))
   except subprocess.CalledProcessError as e:
     logging.warning('Command: "%s" exited with non-zero return code.', command)
 
@@ -471,11 +477,10 @@ def _ExecuteIOSCommand(command, output_file_path):
 
   try:
     with open(output_file_path, 'wb') as output_file_handle:
-      subprocess.check_call(
-          shlex.split(command),
-          stdout=output_file_handle,
-          stderr=subprocess.STDOUT,
-          env=_GetEnvironmentVars(iossim_profraw_file_path))
+      subprocess.check_call(_SplitCommand(command),
+                            stdout=output_file_handle,
+                            stderr=subprocess.STDOUT,
+                            env=_GetEnvironmentVars(iossim_profraw_file_path))
   except subprocess.CalledProcessError as e:
     # iossim emits non-zero return code even if tests run successfully, so
     # ignore the return code.
@@ -641,7 +646,7 @@ def _GetBinaryPath(command):
   """
   xvfb_script_name = os.extsep.join(['xvfb', 'py'])
 
-  command_parts = shlex.split(command)
+  command_parts = _SplitCommand(command)
   if os.path.basename(command_parts[0]) == 'python':
     assert os.path.basename(command_parts[1]) == xvfb_script_name, (
         'This tool doesn\'t understand the command: "%s".' % command)
@@ -662,7 +667,7 @@ def _GetBinaryPath(command):
 
 def _IsIOSCommand(command):
   """Returns true if command is used to run tests on iOS platform."""
-  return os.path.basename(shlex.split(command)[0]) == 'iossim'
+  return os.path.basename(_SplitCommand(command)[0]) == 'iossim'
 
 
 def _VerifyTargetExecutablesAreInBuildDirectory(commands):
