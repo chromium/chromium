@@ -4145,6 +4145,9 @@ const char kFsNosymfollowDescription[] =
     " option, so the chromuimos LSM denies symlink traversal on the"
     " filesystem.";
 
+const char kFullRestoreName[] = "Full restore";
+const char kFullRestoreDescription[] = "Chrome OS full restore";
+
 const char kHelpAppSearchServiceIntegrationName[] =
     "Help App search service integration";
 const char kHelpAppSearchServiceIntegrationDescription[] =

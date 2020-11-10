@@ -42,6 +42,9 @@ const base::Feature kDragToSnapInClamshellMode{
 const base::Feature kEnhancedDeskAnimations{"EnhancedDeskAnimations",
                                             base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kFullRestore{"FullRestore",
+                                 base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::Feature kLimitAltTabToActiveDesk{"LimitAltTabToActiveDesk",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
 
@@ -171,6 +174,10 @@ bool IsDarkLightModeEnabled() {
 
 bool IsEnhancedDeskAnimations() {
   return base::FeatureList::IsEnabled(kEnhancedDeskAnimations);
+}
+
+bool IsFullRestoreEnabled() {
+  return base::FeatureList::IsEnabled(kFullRestore);
 }
 
 bool IsHideArcMediaNotificationsEnabled() {

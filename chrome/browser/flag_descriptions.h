@@ -2422,6 +2422,9 @@ extern const char kFrameThrottleFps30[];
 extern const char kFsNosymfollowName[];
 extern const char kFsNosymfollowDescription[];
 
+extern const char kFullRestoreName[];
+extern const char kFullRestoreDescription[];
+
 extern const char kHelpAppSearchServiceIntegrationName[];
 extern const char kHelpAppSearchServiceIntegrationDescription[];
 

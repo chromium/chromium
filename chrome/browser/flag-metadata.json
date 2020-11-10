@@ -2718,6 +2718,11 @@
     "expiry_milestone": 89
   },
   {
+    "name": "full-restore",
+    "owners": [ "dominickn", "nancylingwang", "sammiequon", "xdai" ],
+    "expiry_milestone": 95
+  },
+  {
     "name": "fullscreen-controller-browser-scoped",
     "owners": [ "thegreenfrog", "bling-flags@google.com" ],
     "expiry_milestone": 87

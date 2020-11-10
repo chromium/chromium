@@ -51,6 +51,10 @@ ASH_PUBLIC_EXPORT extern const base::Feature kDragToSnapInClamshellMode;
 // TODO(crbug.com/1111445): Remove this when the feature is fully launched.
 ASH_PUBLIC_EXPORT extern const base::Feature kEnhancedDeskAnimations;
 
+// Enables the full restore feature. If this is enabled, we will restore apps
+// and app windows after a crash or reboot.
+ASH_PUBLIC_EXPORT extern const base::Feature kFullRestore;
+
 // Limits the windows listed in Alt-Tab to the ones in the currently active
 // desk.
 ASH_PUBLIC_EXPORT extern const base::Feature kLimitAltTabToActiveDesk;
@@ -199,6 +203,8 @@ ASH_PUBLIC_EXPORT bool IsCaptureModeEnabled();
 ASH_PUBLIC_EXPORT bool IsDarkLightModeEnabled();
 
 ASH_PUBLIC_EXPORT bool IsEnhancedDeskAnimations();
+
+ASH_PUBLIC_EXPORT bool IsFullRestoreEnabled();
 
 ASH_PUBLIC_EXPORT bool IsHideArcMediaNotificationsEnabled();
 
