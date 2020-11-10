@@ -219,7 +219,6 @@ void CompositingInputsUpdater::UpdateSelfAndDescendantsRecursively(
       descendant_has_direct_compositing_reason);
 
   if ((layer->IsRootLayer() || layer->NeedsReorderOverlayOverflowControls()) &&
-      layer->ScrollsOverflow() &&
       layer->DescendantHasDirectOrScrollingCompositingReason() &&
       !layer->NeedsCompositedScrolling())
     layer->GetScrollableArea()->UpdateNeedsCompositedScrolling(true);
@@ -368,7 +367,8 @@ void CompositingInputsUpdater::UpdateAncestorInfo(PaintLayer* const layer,
   // <div style="overflow:scroll;">
   //   <div style="position:relative;">Paint sibling.</div>
   // </div>
-  if (layer->ScrollsOverflow()) {
+  if (layer->ScrollsOverflow() ||
+      layer->NeedsReorderOverlayOverflowControls()) {
     info.scrolling_ancestor = layer;
     info.needs_reparent_scroll = true;
   }
