@@ -173,10 +173,7 @@ bool ExecuteCodeFunction::LoadFile(const std::string& file,
   }
   script_url_ = extension()->GetResourceURL(file);
 
-  // TODO(lazyboy): |extension_id| should not be empty(), turn this into a
-  // DCHECK.
-  bool might_require_localization =
-      (ShouldInsertCSS() || ShouldRemoveCSS()) && !extension()->id().empty();
+  bool might_require_localization = ShouldInsertCSS() || ShouldRemoveCSS();
 
   LoadAndLocalizeResource(
       *extension(), resource, might_require_localization,
