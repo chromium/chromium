@@ -17,7 +17,7 @@
 #include "net/third_party/quiche/src/quic/platform/api/quic_export.h"
 
 #define QUIC_FLAG(flag, value) QUIC_EXPORT_PRIVATE extern bool flag;
-#include "net/quic/quic_flags_list.h"
+#include "net/third_party/quiche/src/quic/core/quic_flags_list.h"
 #undef QUIC_FLAG
 
 #define QUIC_PROTOCOL_FLAG(type, flag, ...) \

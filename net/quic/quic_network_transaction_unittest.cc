@@ -8643,7 +8643,7 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyAuth) {
             packet_num++, GetNthClientInitiatedBidirectionalStreamId(0), true,
             false,
             VersionUsesHttp3(version_.transport_version)
-                ? quic::QuicStream::DefaultUrgency()
+                ? quic::QuicStream::kDefaultUrgency
                 : ConvertRequestPriorityToQuicPriority(
                       HttpProxyConnectJob::kH2QuicTunnelPriority),
             client_maker.ConnectRequestHeaders("mail.example.org:443"), 0,
@@ -8697,7 +8697,7 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyAuth) {
             packet_num++, GetNthClientInitiatedBidirectionalStreamId(1), false,
             false,
             VersionUsesHttp3(version_.transport_version)
-                ? quic::QuicStream::DefaultUrgency()
+                ? quic::QuicStream::kDefaultUrgency
                 : ConvertRequestPriorityToQuicPriority(
                       HttpProxyConnectJob::kH2QuicTunnelPriority),
             std::move(headers), GetNthClientInitiatedBidirectionalStreamId(0),
@@ -9334,7 +9334,7 @@ TEST_P(QuicNetworkTransactionTest, NetworkIsolationTunnel) {
             packet_num++, GetNthClientInitiatedBidirectionalStreamId(0), true,
             false,
             VersionUsesHttp3(version_.transport_version)
-                ? quic::QuicStream::DefaultUrgency()
+                ? quic::QuicStream::kDefaultUrgency
                 : ConvertRequestPriorityToQuicPriority(
                       HttpProxyConnectJob::kH2QuicTunnelPriority),
             ConnectRequestHeaders("mail.example.org:443"), 0, nullptr));
