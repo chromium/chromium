@@ -2219,6 +2219,21 @@
             ]
         }
     ],
+    "DirectCompositionForceFullDamage": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "DirectCompositionForceFullDamage"
+                    ]
+                }
+            ]
+        }
+    ],
     "DirectCompositionSoftwareOverlays": [
         {
             "platforms": [
