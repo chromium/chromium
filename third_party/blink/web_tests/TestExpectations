@@ -88,6 +88,8 @@ crbug.com/901056 virtual/synchronous_html_parser/http/tests/inspector-protocol/i
 crbug.com/901056 virtual/synchronous_html_parser/http/tests/inspector-protocol/network/initiator-minified.js [ Failure ]
 crbug.com/901056 virtual/synchronous_html_parser/external/wpt/signed-exchange/subresource/sxg-subresource.tentative.html [ Failure Timeout ]
 
+# Temporarily disable until linear memory inspector module is landed
+crbug.com/1110202 http/tests/devtools/modules-load-source.js [ Pass Failure ]
 
 # ====== Site Isolation failures from here ======
 # See also third_party/blink/web_tests/virtual/not-site-per-process/README.md
