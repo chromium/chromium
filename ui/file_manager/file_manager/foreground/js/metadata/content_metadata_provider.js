@@ -17,14 +17,6 @@ class ContentMetadataProvider extends MetadataProvider {
      */
     this.urlFilter_ = /.*/;
 
-    /** @private @const {!MessagePort} */
-    this.dispatcher_ = opt_messagePort ?
-        opt_messagePort :
-        new SharedWorker(ContentMetadataProvider.WORKER_SCRIPT).port;
-    this.dispatcher_.onmessage = this.onMessage_.bind(this);
-    this.dispatcher_.postMessage({verb: 'init'});
-    this.dispatcher_.start();
-
     /**
      * Initialization is not complete until the Worker sends back the
      * 'initialized' message.  See below.
@@ -39,6 +31,35 @@ class ContentMetadataProvider extends MetadataProvider {
      * @private @const {!Object<!string, !Array<function(!MetadataItem)>>}
      */
     this.callbacks_ = {};
+
+    /**
+     * Setup |this.disapatcher_|. Creates the Shared Worker if needed.
+     * @private @const {!MessagePort}
+     */
+    this.dispatcher_ = this.createSharedWorker_(opt_messagePort);
+    this.dispatcher_.onmessage = this.onMessage_.bind(this);
+    this.dispatcher_.postMessage({verb: 'init'});
+    this.dispatcher_.start();
+  }
+
+  /**
+   * Returns |opt_messagePort| if given. Otherwise creates the Shared Worker
+   * and returns its message port.
+   * @param {!MessagePort=} opt_messagePort
+   * @private
+   * @return {!MessagePort}
+   */
+  createSharedWorker_(opt_messagePort) {
+    if (opt_messagePort) {
+      return opt_messagePort;
+    }
+
+    let script = ContentMetadataProvider.WORKER_SCRIPT;
+    if (window.isSWA) {
+      script = 'foreground/js/metadata/metadata_dispatcher.js';
+    }
+
+    return new SharedWorker(script).port;
   }
 
   /**
