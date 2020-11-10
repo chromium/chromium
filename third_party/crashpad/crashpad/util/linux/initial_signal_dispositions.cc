@@ -20,9 +20,10 @@
 #include "base/logging.h"
 #include "build/build_config.h"
 
+namespace crashpad {
+
 #if __ANDROID_API__ <= 23
 
-namespace crashpad {
 namespace {
 bool LoggingSignal(int signum, sighandler_t handler) {
   sighandler_t previous = signal(signum, handler);
