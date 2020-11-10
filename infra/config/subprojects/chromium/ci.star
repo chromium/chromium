@@ -2344,6 +2344,7 @@ ci.fyi_builder(
 
 ci.fyi_builder(
     name = "android-paeverywhere-arm-fyi-dbg",
+    builderless = True,
     console_view_entry = ci.console_view_entry(
         category = "paeverywhere|android",
         short_name = "32dbg",
@@ -2353,6 +2354,7 @@ ci.fyi_builder(
 
 ci.fyi_builder(
     name = "android-paeverywhere-arm-fyi-rel",
+    builderless = True,
     console_view_entry = ci.console_view_entry(
         category = "paeverywhere|android",
         short_name = "32rel",
@@ -2362,6 +2364,7 @@ ci.fyi_builder(
 
 ci.fyi_builder(
     name = "android-paeverywhere-arm64-fyi-dbg",
+    builderless = True,
     console_view_entry = ci.console_view_entry(
         category = "paeverywhere|android",
         short_name = "64dbg",
@@ -2371,6 +2374,7 @@ ci.fyi_builder(
 
 ci.fyi_builder(
     name = "android-paeverywhere-arm64-fyi-rel",
+    builderless = True,
     console_view_entry = ci.console_view_entry(
         category = "paeverywhere|android",
         short_name = "64rel",
@@ -2710,38 +2714,46 @@ ci.fyi_builder(
 
 ci.fyi_builder(
     name = "win-paeverywhere-x86-fyi-dbg",
+    builderless = True,
     console_view_entry = ci.console_view_entry(
         category = "paeverywhere|win",
         short_name = "32dbg",
     ),
     notifies = ["chrome-memory-safety"],
+    os = os.WINDOWS_ANY,
 )
 
 ci.fyi_builder(
     name = "win-paeverywhere-x86-fyi-rel",
+    builderless = True,
     console_view_entry = ci.console_view_entry(
         category = "paeverywhere|win",
         short_name = "32rel",
     ),
     notifies = ["chrome-memory-safety"],
+    os = os.WINDOWS_ANY,
 )
 
 ci.fyi_builder(
     name = "win-paeverywhere-x64-fyi-dbg",
+    builderless = True,
     console_view_entry = ci.console_view_entry(
         category = "paeverywhere|win",
         short_name = "64dbg",
     ),
     notifies = ["chrome-memory-safety"],
+    os = os.WINDOWS_ANY,
 )
 
 ci.fyi_builder(
     name = "win-paeverywhere-x64-fyi-rel",
+    builderless = True,
     console_view_entry = ci.console_view_entry(
         category = "paeverywhere|win",
         short_name = "64rel",
     ),
     notifies = ["chrome-memory-safety"],
+    os = os.WINDOWS_ANY,
 )
 
 ci.fyi_builder(
