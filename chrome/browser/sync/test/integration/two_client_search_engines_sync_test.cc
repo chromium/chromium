@@ -41,10 +41,13 @@ class TwoClientSearchEnginesSyncTest : public SyncTest {
       return false;
     }
 
-    search_test_utils::WaitForTemplateURLServiceToLoad(
-        TemplateURLServiceFactory::GetForProfile(GetProfile(0)));
-    search_test_utils::WaitForTemplateURLServiceToLoad(
-        TemplateURLServiceFactory::GetForProfile(GetProfile(1)));
+    // In most cases this codepath should have exactly two clients, but there is
+    // an exception for E2E tests, where ResetSyncForPrimaryAccount()
+    // temporarily sets up one only.
+    for (int i = 0; i < num_clients(); ++i) {
+      search_test_utils::WaitForTemplateURLServiceToLoad(
+          TemplateURLServiceFactory::GetForProfile(GetProfile(i)));
+    }
 
     return true;
   }
