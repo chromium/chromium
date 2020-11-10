@@ -293,10 +293,11 @@ void ArcDocumentsProviderRoot::GetFileInfoFromDocument(
     base::File::Error error,
     const mojom::DocumentPtr& document) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (document.is_null()) {
-    std::move(callback).Run(base::File::FILE_ERROR_NOT_FOUND, {});
+  if (error != base::File::FILE_OK) {
+    std::move(callback).Run(error, {});
     return;
   }
+  DCHECK(document);
 
   base::File::Info info;
   info.size = document->size;
@@ -712,10 +713,12 @@ void ArcDocumentsProviderRoot::GetExtraMetadataFromDocument(
     base::File::Error error,
     const mojom::DocumentPtr& document) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (document.is_null()) {
-    std::move(callback).Run(base::File::FILE_ERROR_NOT_FOUND, {});
+  if (error != base::File::FILE_OK) {
+    std::move(callback).Run(error, {});
     return;
   }
+  DCHECK(document);
+
   ExtraFileMetadata metadata;
   metadata.supports_delete = document->supports_delete;
   metadata.supports_rename = document->supports_rename;
