@@ -237,7 +237,7 @@ void UseCounterCallback(v8::Isolate* isolate,
       blink_feature = WebFeature::kV8RegExpReplaceCalledOnSlowRegExp;
       break;
     case v8::Isolate::kSharedArrayBufferConstructed:
-      if (CurrentExecutionContext(isolate)->CrossOriginIsolatedCapability()) {
+      if (!CurrentExecutionContext(isolate)->CrossOriginIsolatedCapability()) {
         blink_feature =
             WebFeature::kV8SharedArrayBufferConstructedWithoutIsolation;
       } else {
