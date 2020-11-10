@@ -567,9 +567,9 @@ importer.RuntimeCommandWidget = class {
     this.sideButton_.onclick =
         this.onButtonClicked_.bind(this, importer.ClickSource.SIDE);
 
-    /** @private @const {!FilesToggleRipple} */
+    /** @private @const {!FilesToggleRippleElement} */
     this.sideButtonRipple_ =
-        /** @type {!FilesToggleRipple} */ (queryRequiredElement(
+        /** @type {!FilesToggleRippleElement} */ (queryRequiredElement(
             '.ripples > files-toggle-ripple', this.comboButton_));
 
     /** @private @const {!HTMLElement} */

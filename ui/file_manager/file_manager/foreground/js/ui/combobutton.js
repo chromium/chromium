@@ -177,8 +177,8 @@ cr.define('cr.ui', () => {
         ripplesLayer.setAttribute('hidden', '');
       }
 
-      /** @private {!FilesToggleRipple} */
-      this.filesToggleRipple_ = /** @type {!FilesToggleRipple} */
+      /** @private {!FilesToggleRippleElement} */
+      this.filesToggleRipple_ = /** @type {!FilesToggleRippleElement} */
           (this.ownerDocument.createElement('files-toggle-ripple'));
       ripplesLayer.appendChild(this.filesToggleRipple_);
 

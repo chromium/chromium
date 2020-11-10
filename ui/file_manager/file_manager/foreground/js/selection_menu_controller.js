@@ -9,12 +9,12 @@ class SelectionMenuController {
    */
   constructor(selectionMenuButton, menu) {
     /**
-     * @type {!FilesToggleRipple}
+     * @type {!FilesToggleRippleElement}
      * @const
      * @private
      */
     this.toggleRipple_ =
-        /** @type {!FilesToggleRipple} */ (
+        /** @type {!FilesToggleRippleElement} */ (
             queryRequiredElement('files-toggle-ripple', selectionMenuButton));
 
     /**

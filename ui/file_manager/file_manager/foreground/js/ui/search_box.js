@@ -41,11 +41,11 @@ class SearchBox extends cr.EventTarget {
 
     /**
      * Ripple effect of search button.
-     * @private {!FilesToggleRipple}
+     * @private {!FilesToggleRippleElement}
      * @const
      */
     this.searchButtonToggleRipple_ =
-        /** @type {!FilesToggleRipple} */ (
+        /** @type {!FilesToggleRippleElement} */ (
             queryRequiredElement('files-toggle-ripple', this.searchButton));
 
     /**

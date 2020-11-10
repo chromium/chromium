@@ -5,11 +5,11 @@
 class SortMenuController {
   /**
    * @param {!cr.ui.MultiMenuButton} sortButton
-   * @param {!FilesToggleRipple} toggleRipple
+   * @param {!FilesToggleRippleElement} toggleRipple
    * @param {!FileListModel} fileListModel
    */
   constructor(sortButton, toggleRipple, fileListModel) {
-    /** @private @const {!FilesToggleRipple} */
+    /** @private @const {!FilesToggleRippleElement} */
     this.toggleRipple_ = toggleRipple;
 
     /** @private @const {!FileListModel} */

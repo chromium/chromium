@@ -5,7 +5,7 @@
 class GearMenuController {
   /**
    * @param {!cr.ui.MultiMenuButton} gearButton
-   * @param {!FilesToggleRipple} toggleRipple
+   * @param {!FilesToggleRippleElement} toggleRipple
    * @param {!GearMenu} gearMenu
    * @param {!ProvidersMenu} providersMenu
    * @param {!DirectoryModel} directoryModel
@@ -18,7 +18,7 @@ class GearMenuController {
     /** @private @const {!cr.ui.MultiMenuButton} */
     this.gearButton_ = gearButton;
 
-    /** @private @const {!FilesToggleRipple} */
+    /** @private @const {!FilesToggleRippleElement} */
     this.toggleRipple_ = toggleRipple;
 
     /** @private @const {!GearMenu} */

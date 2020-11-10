@@ -391,10 +391,10 @@ class SlideMode extends cr.EventTarget {
     this.editButton_.addEventListener('click', this.toggleEditor.bind(this));
 
     /**
-     * @private {!FilesToggleRipple}
+     * @private {!FilesToggleRippleElement}
      * @const
      */
-    this.editButtonToggleRipple_ = /** @type {!FilesToggleRipple} */
+    this.editButtonToggleRipple_ = /** @type {!FilesToggleRippleElement} */
         (assert(this.editButton_.querySelector('files-toggle-ripple')));
 
     /**
