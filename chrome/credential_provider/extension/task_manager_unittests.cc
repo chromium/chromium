@@ -69,7 +69,7 @@ TEST_F(TaskManagerTest, PeriodicExecution) {
 
   task_environment()->FastForwardBy(base::TimeDelta::FromHours(5));
 
-  ASSERT_EQ(fake_task_manager()->NumOfTimesExecuted(), 2);
+  ASSERT_EQ(fake_task_manager()->NumOfTimesExecuted(), 5);
 
   ASSERT_NE(
       GetGlobalFlagOrDefault(
@@ -77,7 +77,7 @@ TEST_F(TaskManagerTest, PeriodicExecution) {
       L"");
   task_environment()->FastForwardBy(base::TimeDelta::FromHours(2));
 
-  ASSERT_EQ(fake_task_manager()->NumOfTimesExecuted(), 3);
+  ASSERT_EQ(fake_task_manager()->NumOfTimesExecuted(), 7);
 }
 
 class FakeTask : public extension::Task {
@@ -157,7 +157,7 @@ TEST_F(TaskManagerTest, TaskExecuted) {
 
   task_environment()->FastForwardBy(base::TimeDelta::FromHours(5));
 
-  ASSERT_EQ(FakeTask::number_of_times_executed_, 2);
+  ASSERT_EQ(FakeTask::number_of_times_executed_, 5);
   ASSERT_EQ(FakeTask::user_device_context_.size(), (size_t)1);
   extension::UserDeviceContext c1 = {device_resource_id1, serial_number,
                                      machine_guid, OLE2W(sid1), dm_token1};
@@ -184,7 +184,7 @@ TEST_F(TaskManagerTest, TaskExecuted) {
 
   task_environment()->FastForwardBy(base::TimeDelta::FromHours(2));
 
-  ASSERT_EQ(FakeTask::number_of_times_executed_, 3);
+  ASSERT_EQ(FakeTask::number_of_times_executed_, 7);
   ASSERT_EQ(FakeTask::user_device_context_.size(), (size_t)2);
 
   extension::UserDeviceContext c2 = {device_resource_id2, serial_number,

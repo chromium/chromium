@@ -20,7 +20,7 @@ namespace extension {
 
 namespace {
 // Specifies the period of executing tasks.
-constexpr auto kPollingInterval = base::TimeDelta::FromHours(3);
+constexpr auto kPollingInterval = base::TimeDelta::FromHours(1);
 }  // namespace
 
 LastPeriodicSyncUpdater::LastPeriodicSyncUpdater() {}
