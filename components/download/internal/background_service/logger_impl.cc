@@ -56,6 +56,8 @@ std::string ClientToString(DownloadClient client) {
       return "MountainInternal";
     case DownloadClient::PLUGIN_VM_IMAGE:
       return "PluginVmImage";
+    case DownloadClient::OPTIMIZATION_GUIDE_PREDICTION_MODELS:
+      return "OptimizationGuidePredictionModels";
     case DownloadClient::BOUNDARY:  // Intentional fallthrough.
     default:
       NOTREACHED();

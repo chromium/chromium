@@ -96,6 +96,8 @@ std::string ClientToHistogramSuffix(DownloadClient client) {
       return "MountainInternal";
     case DownloadClient::PLUGIN_VM_IMAGE:
       return "PluginVmImage";
+    case DownloadClient::OPTIMIZATION_GUIDE_PREDICTION_MODELS:
+      return "OptimizationGuidePredictionModels";
     case DownloadClient::BOUNDARY:
       NOTREACHED();
       break;

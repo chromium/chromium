@@ -5457,6 +5457,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="Debugging" label="Debugging client."/>
   <suffix name="MountainInternal" label="Mountain internal client."/>
   <suffix name="OfflinePage" label="Offline page prefetch."/>
+  <suffix name="OptimizationGuidePredictionModels"
+      label="Optimization Guide prediction models."/>
   <suffix name="PluginVmImage" label="PluginVm image."/>
   <affected-histogram name="Download.Service.Clients.InflatedFullBrowser"/>
   <affected-histogram name="Download.Service.Request.ClientAction"/>

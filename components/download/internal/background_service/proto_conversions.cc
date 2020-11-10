@@ -72,6 +72,8 @@ protodb::DownloadClient ProtoConversions::DownloadClientToProto(
       return protodb::DownloadClient::MOUNTAIN_INTERNAL;
     case DownloadClient::PLUGIN_VM_IMAGE:
       return protodb::DownloadClient::PLUGIN_VM_IMAGE;
+    case DownloadClient::OPTIMIZATION_GUIDE_PREDICTION_MODELS:
+      return protodb::DownloadClient::OPTIMIZATION_GUIDE_PREDICTION_MODELS;
     case DownloadClient::BOUNDARY:
       return protodb::DownloadClient::BOUNDARY;
   }
@@ -101,6 +103,8 @@ DownloadClient ProtoConversions::DownloadClientFromProto(
       return DownloadClient::MOUNTAIN_INTERNAL;
     case protodb::DownloadClient::PLUGIN_VM_IMAGE:
       return DownloadClient::PLUGIN_VM_IMAGE;
+    case protodb::DownloadClient::OPTIMIZATION_GUIDE_PREDICTION_MODELS:
+      return DownloadClient::OPTIMIZATION_GUIDE_PREDICTION_MODELS;
     case protodb::DownloadClient::BOUNDARY:
       return DownloadClient::BOUNDARY;
   }

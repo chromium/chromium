@@ -23,7 +23,10 @@ enum DownloadClient {
   DEBUGGING = 6;
   MOUNTAIN_INTERNAL = 7;
   PLUGIN_VM_IMAGE = 8;
-  BOUNDARY = 9;
+  OPTIMIZATION_GUIDE_PREDICTION_MODELS = 9;
+
+  // New clients should be added above here.
+  BOUNDARY = 10;
 }
 
 // Stores the request params, internal state, metrics and metadata associated
