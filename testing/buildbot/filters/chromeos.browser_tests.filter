@@ -1,9 +1,6 @@
 # TODO(crbug.com/979355): Enable this.
 -AutotestPrivateWithPolicyApiTest.PolicyAPITest
 
-# TODO(crbug.com/977738): Enable this.
--ChromePluginTest.InstalledPlugins
-
 # TODO(crbug.com/976083): Enable this.
 -MSE_Widevine/EncryptedMediaTest.*
 
