@@ -50,6 +50,12 @@
 #include "base/optional.h"
 #include "build/build_config.h"
 
+// If set to 1, enables zeroing memory on Free() with roughly 1% probability.
+// This applies only to normal buckets, as direct-map allocations are always
+// decommitted.
+// TODO(bartekn): Re-enable once PartitionAlloc-Everywhere evaluation is done.
+#define ZERO_RANDOMLY_ON_FREE 0
+
 // We use this to make MEMORY_TOOL_REPLACES_ALLOCATOR behave the same for max
 // size as other alloc code.
 #define CHECK_MAX_SIZE_OR_RETURN_NULLPTR(size, flags) \
@@ -570,7 +576,10 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooksImmediate(
   // Note: tag, ref-count and cookie can be 0-sized.
   //
   // For more context, see the other "Layout inside the slot" comment below.
+#if ENABLE_REF_COUNT_FOR_BACKUP_REF_PTR || DCHECK_IS_ON() || \
+    ZERO_RANDOMLY_ON_FREE
   const size_t utilized_slot_size = slot_span->GetUtilizedSlotSize();
+#endif
   if (allow_extras) {
 #if ENABLE_REF_COUNT_FOR_BACKUP_REF_PTR || DCHECK_IS_ON()
     size_t usable_size = internal::PartitionSizeAdjustSubtract(
@@ -623,7 +632,7 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooksImmediate(
 
 #if DCHECK_IS_ON()
   memset(ptr, kFreedByte, utilized_slot_size);
-#else
+#elif ZERO_RANDOMLY_ON_FREE
   // `memset` only once in a while: we're trading off safety for time
   // efficiency.
   if (UNLIKELY(internal::RandomPeriod()) &&
