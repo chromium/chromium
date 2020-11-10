@@ -348,6 +348,9 @@ void MediaTray::UpdateDisplayState() {
   if (bubble_ && !has_session)
     ShowEmptyState();
 
+  if (bubble_ && has_session && empty_state_view_)
+    empty_state_view_->SetVisible(false);
+
   bool should_show = has_session &&
                      !Shell::Get()->session_controller()->IsScreenLocked() &&
                      IsPinnedToShelf();
@@ -383,8 +386,10 @@ void MediaTray::OnGlobalMediaControlsPinPrefChanged() {
 
 void MediaTray::ShowEmptyState() {
   DCHECK(content_view_);
-  if (empty_state_view_)
+  if (empty_state_view_) {
+    empty_state_view_->SetVisible(true);
     return;
+  }
 
   // Create and add empty state view containing a label indicating there's no
   // active session

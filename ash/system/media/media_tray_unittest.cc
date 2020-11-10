@@ -238,12 +238,18 @@ TEST_F(MediaTrayTest, ShowEmptyStateWhenNoActiveNotification) {
   EXPECT_NE(GetBubbleWrapper(), nullptr);
   EXPECT_TRUE(media_tray()->is_active());
 
-  // Bubble should close if there's no active sessions.
+  // We should display empty state if no media is playing.
   provider()->SetHasActiveNotifications(false);
   SimulateNotificationListChanged();
   EXPECT_NE(GetBubbleWrapper(), nullptr);
   EXPECT_FALSE(media_tray()->GetVisible());
   EXPECT_NE(empty_state_view(), nullptr);
+  EXPECT_TRUE(empty_state_view()->GetVisible());
+
+  // Empty state should be hidden if a new media starts playing.
+  provider()->SetHasActiveNotifications(true);
+  SimulateNotificationListChanged();
+  EXPECT_FALSE(empty_state_view()->GetVisible());
 }
 
 TEST_F(MediaTrayTest, PinButtonTest) {
