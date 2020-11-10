@@ -6240,7 +6240,6 @@ crbug.com/1145424 [ Win ] http/tests/devtools/sources/debugger-ui/reveal-executi
 crbug.com/1145641 external/wpt/requestidlecallback/callback-invoked.html [ Pass Timeout ]
 crbug.com/1046784 http/tests/devtools/sources/debugger-ui/debugger-inline-values-frames.js [ Pass Timeout ]
 crbug.com/1145742 [ Fuchsia ] virtual/stable/http/tests/navigation/location-assign-adds-history-item.html [ Pass Crash Timeout ]
-crbug.com/1145716 fast/forms/calendar-picker/datetimelocal-picker-open-to-focused-field.html [ Pass Timeout ]
 
 # Sheriff 2020-11-05
 crbug.com/1146221 [ Linux ] http/tests/devtools/sources/debugger-ui/debugger-inline-values.js [ Pass Timeout ]
