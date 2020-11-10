@@ -8,12 +8,13 @@ import android.content.Context;
 import android.graphics.RectF;
 
 import org.chromium.base.Callback;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
-import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.layouts.CompositorModelChangeProcessor;
 import org.chromium.chrome.browser.layouts.EventFilter;
+import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.layouts.SceneOverlay;
 import org.chromium.chrome.browser.layouts.components.VirtualView;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneOverlayLayer;
@@ -37,10 +38,11 @@ public class TopToolbarOverlayCoordinator implements SceneOverlay {
     /** Business logic for this overlay. */
     private final TopToolbarOverlayMediator mMediator;
 
-    public TopToolbarOverlayCoordinator(Context context, LayoutManagerImpl layoutManager,
+    public TopToolbarOverlayCoordinator(Context context, LayoutManager layoutManager,
             Callback<ClipDrawableProgressBar.DrawingInfo> progressInfoCallback,
             ActivityTabProvider tabSupplier,
-            BrowserControlsStateProvider browserControlsStateProvider) {
+            BrowserControlsStateProvider browserControlsStateProvider,
+            Supplier<ResourceManager> resourceManagerSupplier) {
         mModel = new PropertyModel.Builder(TopToolbarOverlayProperties.ALL_KEYS)
                          .with(TopToolbarOverlayProperties.RESOURCE_ID, R.id.control_container)
                          .with(TopToolbarOverlayProperties.URL_BAR_RESOURCE_ID,
@@ -49,7 +51,7 @@ public class TopToolbarOverlayCoordinator implements SceneOverlay {
                          .with(TopToolbarOverlayProperties.CONTENT_OFFSET,
                                  browserControlsStateProvider.getContentOffset())
                          .build();
-        mSceneLayer = new TopToolbarSceneLayer(() -> layoutManager.getResourceManager());
+        mSceneLayer = new TopToolbarSceneLayer(resourceManagerSupplier);
         mChangeProcessor =
                 layoutManager.createCompositorMCP(mModel, mSceneLayer, TopToolbarSceneLayer::bind);
 

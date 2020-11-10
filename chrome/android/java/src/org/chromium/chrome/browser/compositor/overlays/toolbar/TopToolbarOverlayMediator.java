@@ -13,11 +13,9 @@ import org.chromium.base.Callback;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsUtils;
-import org.chromium.chrome.browser.compositor.layouts.Layout;
-import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
-import org.chromium.chrome.browser.compositor.layouts.SceneChangeObserver;
-import org.chromium.chrome.browser.compositor.layouts.ToolbarSwipeLayout;
-import org.chromium.chrome.browser.compositor.layouts.phone.StackLayout;
+import org.chromium.chrome.browser.layouts.LayoutStateProvider;
+import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
+import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
@@ -37,10 +35,10 @@ public class TopToolbarOverlayMediator {
     private final Context mContext;
 
     /** A handle to the layout manager for observing scene changes. */
-    private final LayoutManagerImpl mLayoutManager;
+    private final LayoutStateProvider mLayoutStateProvider;
 
     /** The observer of changes to the active layout. */
-    private final SceneChangeObserver mSceneChangeObserver;
+    private final LayoutStateObserver mSceneChangeObserver;
 
     /** A means of populating draw info for the progress bar. */
     private final Callback<ClipDrawableProgressBar.DrawingInfo> mProgressInfoCallback;
@@ -69,32 +67,29 @@ public class TopToolbarOverlayMediator {
     /** Whether the android view for this overlay is visible. */
     private boolean mIsAndroidViewVisible;
 
-    TopToolbarOverlayMediator(PropertyModel model, Context context, LayoutManagerImpl layoutManager,
+    TopToolbarOverlayMediator(PropertyModel model, Context context,
+            LayoutStateProvider layoutStateProvider,
             Callback<ClipDrawableProgressBar.DrawingInfo> progressInfoCallback,
             ActivityTabProvider tabSupplier,
             BrowserControlsStateProvider browserControlsStateProvider) {
         mContext = context;
-        mLayoutManager = layoutManager;
+        mLayoutStateProvider = layoutStateProvider;
         mProgressInfoCallback = progressInfoCallback;
         mTabSupplier = tabSupplier;
         mBrowserControlsStateProvider = browserControlsStateProvider;
         mModel = model;
 
-        mSceneChangeObserver = new SceneChangeObserver() {
+        mSceneChangeObserver = new LayoutStateObserver() {
             @Override
-            public void onTabSelectionHinted(int tabId) {}
-
-            @Override
-            public void onSceneChange(Layout layout) {
-                // TODO(1100332): Use layout IDs instead of type checking when they are available.
+            public void onStartedShowing(@LayoutType int layout, boolean showToolbar) {
                 // TODO(1100332): Once ToolbarSwipeLayout uses a SceneLayer that does not include
                 //                its own toolbar, only check for the vertical tab switcher.
                 mLayoutHasOwnToolbar =
-                        layout instanceof StackLayout || layout instanceof ToolbarSwipeLayout;
+                        layout == LayoutType.TAB_SWITCHER || layout == LayoutType.TOOLBAR_SWIPE;
                 updateVisibility();
             }
         };
-        mLayoutManager.addSceneChangeObserver(mSceneChangeObserver);
+        mLayoutStateProvider.addObserver(mSceneChangeObserver);
 
         final TabObserver currentTabObserver = new EmptyTabObserver() {
             @Override
@@ -230,7 +225,7 @@ public class TopToolbarOverlayMediator {
         mTabSupplierObserver.onActivityTabChanged(null, false);
         mLastActiveTab = null;
 
-        mLayoutManager.removeSceneChangeObserver(mSceneChangeObserver);
+        mLayoutStateProvider.removeObserver(mSceneChangeObserver);
         mBrowserControlsStateProvider.removeObserver(mBrowserControlsObserver);
     }
 

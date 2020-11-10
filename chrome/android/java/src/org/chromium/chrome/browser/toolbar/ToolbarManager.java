@@ -758,7 +758,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
                 startSurfaceSupplier, () -> {
                     NewTabPage ntp = getNewTabPageForCurrentTab();
                     if (ntp != null) mLocationBar.onTabLoadingNTP(ntp);
-                });
+                }, () -> mLayoutManager.getResourceManager());
         // clang-format on
         mHomepageStateListener = () -> {
             mHomeButtonVisibilitySupplier.set(HomepageManager.isHomepageEnabled());
