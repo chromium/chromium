@@ -30,11 +30,9 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.pseudotab.PseudoTab;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
 import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.chrome.tab_ui.R;
-import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -363,10 +361,6 @@ public class TabListCoordinator implements Destroyable {
      */
     boolean resetWithListOfTabs(
             @Nullable List<PseudoTab> tabs, boolean quickMode, boolean mruMode) {
-        if (mMode == TabListMode.STRIP && tabs != null && tabs.size() > 1) {
-            TabGroupUtils.maybeShowIPH(
-                    FeatureConstants.TAB_GROUPS_TAP_TO_SEE_ANOTHER_TAB_FEATURE, mRecyclerView);
-        }
         return mMediator.resetWithListOfTabs(tabs, quickMode, mruMode);
     }
 
