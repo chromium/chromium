@@ -1,5 +1,9 @@
 <style include="print-preview-shared action-link md-select cr-hidden-style
     throbber">
+  :host-context([dir=rtl]) #manageIcon {
+    transform: scaleX(-1);
+  }
+
   #dialog::part(dialog) {
     height: calc(100vh - 2 * var(--print-preview-dialog-margin));
     max-width: 640px;
@@ -152,7 +156,7 @@
   <div slot="button-container">
     <cr-button on-click="onManageButtonClick_">
       $i18n{manage}
-      <iron-icon icon="cr:open-in-new"></iron-icon>
+      <iron-icon icon="cr:open-in-new" id="manageIcon"></iron-icon>
     </cr-button>
     <cr-button class="cancel-button" on-click="onCancelButtonClick_">
       $i18n{cancel}
