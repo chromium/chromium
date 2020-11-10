@@ -3973,6 +3973,9 @@ if (enable_java_templates) {
       }
     }  # _has_sources
 
+    # TODO(crbug.com/1123216): Implement bytecode_rewriter_target.
+    not_needed(invoker, [ "bytecode_rewriter_target" ])
+
     if (_is_prebuilt) {
       generate_interface_jar(_header_target_name) {
         # Always used the unfiltered .jar to create the interface jar so that

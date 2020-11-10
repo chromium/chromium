@@ -1196,6 +1196,8 @@ android_aar_prebuilt("google_play_services_basement_java") {
   # https://crbug.com/989505
   jar_excluded_patterns = [ "META-INF/proguard/*" ]
   input_jars_paths = [ "$android_sdk/optional/org.apache.http.legacy.jar" ]
+  bytecode_rewriter_target =
+      "//build/android/bytecode:fragment_activity_replacer"
 }
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
