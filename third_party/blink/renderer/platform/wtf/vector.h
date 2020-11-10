@@ -2137,6 +2137,16 @@ void TraceInlinedBuffer(VisitorDispatcher visitor,
     Allocator::template Trace<T, VectorTraits<T>>(visitor, *buffer_entry);
   }
 }
+
+template <typename Allocator,
+          typename VisitorDispatcher,
+          typename T,
+          wtf_size_t inlineCapacity>
+void DeferredTraceImpl(VisitorDispatcher visitor, const void* object) {
+  internal::TraceInlinedBuffer<Allocator>(
+      visitor, reinterpret_cast<const T*>(object), inlineCapacity);
+}
+
 }  // namespace internal
 
 // Only defined for HeapAllocator. Used when visiting vector object.
@@ -2169,12 +2179,8 @@ Vector<T, inlineCapacity, Allocator>::Trace(VisitorDispatcher visitor) const {
     // Bail out for concurrent marking.
     if (!VectorTraits<T>::kCanTraceConcurrently) {
       if (visitor->DeferredTraceIfConcurrent(
-              {buffer,
-               [](blink::Visitor* visitor, const void* object) {
-                 const T* buffer = reinterpret_cast<const T*>(object);
-                 internal::TraceInlinedBuffer<Allocator>(visitor, buffer,
-                                                         inlineCapacity);
-               }},
+              {buffer, internal::DeferredTraceImpl<Allocator, VisitorDispatcher,
+                                                   T, inlineCapacity>},
               inlineCapacity * sizeof(T)))
         return;
     }
