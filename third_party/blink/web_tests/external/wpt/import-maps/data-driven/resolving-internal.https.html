@@ -3,22 +3,21 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/service-workers/service-worker/resources/test-helpers.sub.js"></script>
+<script>
+// This test file is for resolution tests that require Chromium's internal
+// methods.
+// For tests that don't use Chromium's internal methods, see
+// resolving.https.html.
+globalThis.useInternalMethods = true;
+</script>
 <body>
 <script type="module">
-import { runTestsFromJSON, setupGlobalCleanup } from "./resources/common-test-helper.js";
+import { runTestsFromJSON, setupGlobalCleanup } from "./resources/test-helper.js";
 
 const promises = [];
 
 for (const json of [
-  'resources/scopes.json',
-  'resources/empty-import-map.json',
-  'resources/packages-via-trailing-slashes.json',
-  'resources/tricky-specifiers.json',
-  'resources/url-specifiers.json',
-  'resources/data-base-url.json',
-  'resources/scopes-exact-vs-prefix.json',
-  'resources/overlapping-entries.json',
-  'resources/resolving-null.json',
+  'resources/empty-import-map-internal.json',
 ]) {
   promise_test(() => {
       const promise = runTestsFromJSON(json);

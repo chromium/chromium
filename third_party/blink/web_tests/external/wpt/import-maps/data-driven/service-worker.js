@@ -6,7 +6,7 @@ self.addEventListener('message', event => {
 });
 
 self.addEventListener('fetch', event => {
-    if (event.request.url.indexOf('common-test-helper-iframe.js') >= 0) {
+    if (event.request.url.indexOf('test-helper-iframe.js') >= 0) {
       return;
     }
     if (serveImporterScript) {

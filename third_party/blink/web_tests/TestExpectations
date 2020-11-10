@@ -4111,8 +4111,6 @@ crbug.com/825798 external/wpt/html/semantics/embedded-content/media-elements/tra
 
 crbug.com/1093188 external/wpt/html/semantics/embedded-content/media-elements/track/track-element/track-webvtt-two-cue-layout-after-first-end.html [ Pass Failure ]
 
-crbug.com/927477 external/wpt/import-maps/acquire-import-maps-flag/worker-request/* [ Skip ]
-
 # This test requires a special browser flag and seems not suitable for a wpt test, see bug.
 crbug.com/691944 external/wpt/service-workers/service-worker/update-after-oneday.https.html [ Skip ]
 

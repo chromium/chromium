@@ -7,7 +7,7 @@ const scope = './scope/';
 
 // Global setup: this must be the first promise_test.
 promise_test(async (t) => {
-  const script = 'common-test-service-worker.js';
+  const script = 'service-worker.js';
 
   registration =
       await service_worker_unregister_and_register(t, script, scope);
@@ -38,7 +38,7 @@ function parse(importMap, importMapBaseURL) {
 
     const testHTML = `
       <body>
-      <script src="${location.origin}/import-maps/common/resources/common-test-helper-iframe.js"></script>
+      <script src="${location.origin}/import-maps/data-driven/resources/test-helper-iframe.js"></script>
       <script type="importmap" onerror="onScriptError(event)">
       ${importMapString}
       </script>

@@ -2,6 +2,10 @@
 <html>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script>
+const log = [];
+new Worker('../resources/empty.js?pipe=trickle(d1)', {type: "module"});
+</script>
 <script type="importmap">
 {
   "imports": {
@@ -10,16 +14,9 @@
 }
 </script>
 <script>
-const log = [];
-
-// This test reflects the Chromium's current implementation.
-// If the import map resolution is moved into the fetch spec, the module map's
-// key will become the URL/specifier BEFORE import map resolution.
-// https://crbug.com/928435
 promise_test(() => {
   return import("../resources/log.js?pipe=sub&name=A")
-    .then(() => import("../resources/log.js?pipe=sub&name=B"))
     .then(() => assert_array_equals(log, ["log:B"]))
   },
-  "Module map's key is the URL after import map resolution");
+  'After module worker creation import maps are still effective');
 </script>

@@ -1,4 +1,4 @@
-# Import maps test JSON format
+# Data-driven import maps tests
 
 In this directory, test inputs and expectations are expressed as JSON files.
 This is in order to share the same JSON files between WPT tests and Jest-based

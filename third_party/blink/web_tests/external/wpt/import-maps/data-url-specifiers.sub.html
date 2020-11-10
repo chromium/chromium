@@ -2,7 +2,7 @@
 <meta name="timeout" content="long">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="../resources/test-helper.js"></script>
+<script src="resources/test-helper.js"></script>
 
 <script>
 // "bare/..." (i.e. without leading "./") are bare specifiers
@@ -10,9 +10,9 @@
 const importMap = `
 {
   "imports": {
-    "bare": "../resources/log.js?pipe=sub&name=bare",
+    "bare": "./resources/log.js?pipe=sub&name=bare",
 
-    "data:text/javascript,log.push('data:foo')": "../resources/log.js?pipe=sub&name=foo",
+    "data:text/javascript,log.push('data:foo')": "./resources/log.js?pipe=sub&name=foo",
     "data:text/javascript,log.push('data:cross-origin-foo')": "https://{{domains[www1]}}:{{ports[https][0]}}/import-maps/resources/log.js?pipe=sub&name=cross-origin-foo",
     "data:text/javascript,log.push('data:to-data')": "data:text/javascript,log.push('dataURL')",
 
@@ -27,11 +27,6 @@ const tests = {
   // - <script src> (classic script),
   // - static import, and
   // - dynamic import.
-
-  // Currently, Chromium's implementation resolves import maps as a part of
-  // specifier resolution, and thus failure in import map resolution causes
-  // a parse error, not fetch error. Therefore, we use Result.PARSE_ERROR
-  // below. https://crbug.com/928435
 
   // data: to HTTP(S).
   "data:text/javascript,log.push('data:foo')":

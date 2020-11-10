@@ -615,7 +615,7 @@
   },
   {
     "prefix": "import-maps-disabled",
-    "bases": ["external/wpt/import-maps/core/not-as-classic-script.html"],
+    "bases": ["external/wpt/import-maps/not-as-classic-script.html"],
     "args": ["--disable-blink-features=ExperimentalProductivityFeatures"]
   },
   {
