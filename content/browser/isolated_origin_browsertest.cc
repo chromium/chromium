@@ -3506,11 +3506,30 @@ IN_PROC_BROWSER_TEST_F(DynamicIsolatedOriginTest,
   EXPECT_NE(new_child->current_frame_host()->GetSiteInstance(),
             child->current_frame_host()->GetSiteInstance());
 
-  // Make sure the bar.com iframe in the old foo.com process can still access
-  // bar.com cookies.
+  // The old foo.com process should still be able to access bar.com data,
+  // since it isn't locked to a specific site.
+  int old_process_id = root->current_frame_host()->GetProcess()->GetID();
+  EXPECT_TRUE(policy->CanAccessDataForOrigin(old_process_id, bar_url));
+
+  // In particular, make sure the bar.com iframe in the old foo.com process can
+  // still access bar.com cookies.
   EXPECT_TRUE(ExecuteScript(
       child, "document.cookie = 'foo=bar;SameSite=None;Secure';"));
   EXPECT_EQ("foo=bar", EvalJs(child, "document.cookie"));
+
+  // Now close the first window.  This destroys the first BrowsingInstance and
+  // leaves only the newer BrowsingInstance (with a foo.com main frame) in the
+  // old process.
+  shell()->Close();
+
+  // TODO(wjmaclean, alexmos): Currently, the process retains its minimum
+  // BrowsingInstance ID even after that BrowsingInstance goes away, so the
+  // process will maintain its access to bar.com, even if it only contains
+  // BrowsingInstances where bar.com is considered isolated and cannot reuse
+  // the old process.  Once we track all BrowsingInstances in each process, we
+  // can tighten this to EXPECT_FALSE on platforms that support citadel
+  // enforcements (i.e., Android).
+  EXPECT_TRUE(policy->CanAccessDataForOrigin(old_process_id, bar_url));
 }
 
 // Verify that a process locked to foo.com is not reused for a navigation to
