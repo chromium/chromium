@@ -56,9 +56,9 @@ void SMILAnimationSandwich::Remove(SVGAnimationElement* animation) {
   auto* position = std::find(sandwich_.begin(), sandwich_.end(), animation);
   DCHECK(sandwich_.end() != position);
   sandwich_.erase(position);
-  // If the sandwich is now empty, clear any animated value if there are active
-  // animation elements.
-  if (sandwich_.IsEmpty() && !active_.IsEmpty()) {
+  // Clear the animated value when there are active animation elements but the
+  // sandwich is empty.
+  if (!active_.IsEmpty() && sandwich_.IsEmpty()) {
     animation->ClearAnimationValue();
     active_.Shrink(0);
   }
@@ -72,6 +72,7 @@ void SMILAnimationSandwich::UpdateActiveAnimationStack(
               PriorityCompare(presentation_time));
   }
 
+  const bool was_active = !active_.IsEmpty();
   active_.Shrink(0);
   active_.ReserveCapacity(sandwich_.size());
   // Build the contributing/active sandwich.
@@ -81,19 +82,15 @@ void SMILAnimationSandwich::UpdateActiveAnimationStack(
     animation->UpdateProgressState(presentation_time);
     active_.push_back(animation);
   }
+  // If the sandwich was previously active but no longer is, clear any animated
+  // value.
+  if (was_active && active_.IsEmpty())
+    sandwich_.front()->ClearAnimationValue();
 }
 
 bool SMILAnimationSandwich::ApplyAnimationValues() {
-  // For now we need an element to setup and apply an animation. Any animation
-  // element in the sandwich will do.
-  SVGAnimationElement* animation = sandwich_.front();
-
-  // If the sandwich does not have any active elements, clear any animated
-  // value.
-  if (active_.IsEmpty()) {
-    animation->ClearAnimationValue();
+  if (active_.IsEmpty())
     return false;
-  }
 
   // Animations have to be applied lowest to highest prio.
   //
@@ -109,6 +106,10 @@ bool SMILAnimationSandwich::ApplyAnimationValues() {
       break;
     }
   }
+
+  // For now we need an element to setup and apply an animation. Any animation
+  // element in the sandwich will do.
+  SVGAnimationElement* animation = sandwich_.front();
 
   // Only reset the animated type to the base value once for
   // the lowest priority animation that animates and
