@@ -101,7 +101,6 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
       initWithRootViewController:controller
                          browser:browser
                         delegate:delegate];
-  [controller navigationItem].leftBarButtonItem = [nc cancelButton];
   return nc;
 }
 
