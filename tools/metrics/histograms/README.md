@@ -548,6 +548,9 @@ usefulness. When a histogram is nearing expiry, a robot files a reminder bug in
 Monorail. It's important that somebody familiar with the histogram notices and
 triages such bugs!
 
+Tip: When removing someone from the owner list for a histogram, it's a nice
+courtesy to ask them for approval.
+
 ### Components
 
 Histograms may be associated with components, which can help make sure that
@@ -698,9 +701,119 @@ different values that you could emit.
 
 For more information, see [sparse_histograms.h](https://cs.chromium.org/chromium/src/base/metrics/sparse_histogram.h).
 
+
 # Team Documentation
 
-This section contains useful information for folks on Chrome Metrics.
+## Reviewing Metrics CLs
+
+When reviewing metrics CLs, look at the following, listed in approximate order
+of importance:
+
+### Privacy
+
+Does anything tickle your privacy senses? (Googlers, see
+[go/uma-privacy](https://goto.google.com/uma-privacy) for guidelines.)
+
+**Please escalate if there's any doubt!**
+
+### Clarity
+
+Is the metadata clear enough for [all Chromies](#Understandable-to-Everyone) to
+understand what the metric is recording? Consider the histogram name,
+description, units, enum labels, etc.
+
+It's really common for developers to forget to list [when the metric is
+recorded](#State-When-It-Is-Recorded). This is particularly important context,
+so please remind developers to clearly document it.
+
+Note: Clarity is a bit less important for very niche metrics used only by a
+couple of engineers. However, it's hard to assess the metric design and
+correctness if the metadata is especially unclear.
+
+### Metric design
+
+* Does the metric definition make sense?
+* Will the resulting data be interpretable at analysis time?
+
+### Correctness
+
+Is the histogram being recorded correctly?
+
+* Does the bucket layout look reasonable?
+
+  * The metrics APIs like base::UmaHistogram* have some sharp edges,
+    especially for the APIs that require specifying the number of
+    buckets. Check for off-by-one errors and unused buckets.
+
+  * Is the bucket layout efficient? Typically, push back if there are >50
+    buckets -- this can be ok in some cases, but make sure that the CL author
+    has consciously considered the tradeoffs here and is making a reasonable
+    choice.
+
+  * For timing metrics, do the min and max bounds make sense for the duration
+    that is being measured?
+
+* The base::UmaHistogram* functions are
+  [generally preferred](#Coding-Emitting-to-Histograms) over the
+  UMA_HISTOGRAM_* macros. If using the macros, remember that names must be
+  runtime constants!
+
+Also, related to [clarity](#Clarity): Does the client logic correctly implement
+the metric described in the XML metadata? Some common errors to watch out for:
+
+* The metric is only emitted within an if-stmt (e.g., only if some data is
+  available) and this restriction isn't mentioned in the metadata description.
+
+* The metric description states that it's recorded when X happens, but it's
+  actually recorded when X is scheduled to occur, or only emitted when X
+  succeeds (but omitted on failure), etc.
+
+When the metadata and the client logic do not match, the appropriate solution
+might be to update the metadata, or it might be to update the client
+logic. Guide this decision by considering what data will be more easily
+interpretable and what data will have hidden surprises/gotchas.
+
+### Sustainability
+
+* Is the CL adding a sustainable number of metrics?
+  * When reviewing a CL that is trying to add many metrics at once, guide the CL
+    author toward an appropriate solution for their needs. For example,
+    multidimensional metrics can be recorded via UKM, and we are currently
+    building support for structured metrics in UMA.
+
+* Are expiry dates being set
+  [appropriately](#How-to-choose-expiry-for-histograms)?
+
+### Everything Else!
+
+This document describes many other nuances that are important for defining and
+recording useful metrics. Check CLs for these other types of issues as well.
+
+And, as you would with a language style guide, periodically re-review the doc to
+stay up to date on the details.
+
+### Becoming a Metrics Owner
+
+If you would like to be listed as one of the OWNERS for metrics metadata, reach
+out to one of the existing //base/metrics/OWNERS. Similar to language
+readability review teams, we have a reverse shadow onboarding process:
+
+1. First, read through this document to get up to speed on best practices.
+
+2. Partner up with an experienced reviewer from //base/metrics/OWNERS.
+
+3. Join the cs/chrome-metrics.gwsq.
+
+   Note: This step is optional if you are not on the metrics team. Still,
+   consider temporarily joining the metrics gwsq as a quick way to get a breadth
+   of experience. You can remove yourself once your training is completed.
+
+4. Start reviewing CLs! Once you're ready to approve a CL, add a comment like "I
+   am currently ramping up as a metrics reviewer, +username for OWNERS approval"
+   and add your partner as a reviewer on the CL. Once at a point where there's
+   pretty good alignment in the code review feedback, your partner will add you
+   to the OWNERS file.
+
 
 ## Processing histograms.xml
 
