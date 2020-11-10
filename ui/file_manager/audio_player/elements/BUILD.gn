@@ -30,12 +30,63 @@ js_library("audio_player") {
   ]
 }
 
+polymer_modulizer("audio_player") {
+  js_file = "audio_player.js"
+  html_file = "audio_player.html"
+  html_type = "dom-module"
+  preserve_url_scheme = true
+
+  auto_imports = [
+    "ui/file_manager/audio_player/elements/control_panel.html|AriaLabels",
+    "ui/file_manager/audio_player/elements/track_list.html|TrackInfo",
+    "third_party/polymer/v1_0/components-chromium/iron-behaviors/iron-control-state.html|IronControlState",
+  ]
+}
+
+js_library("audio_player.m") {
+  sources = [
+    "$root_gen_dir/ui/file_manager/audio_player/elements/audio_player.m.js",
+  ]
+  deps = [
+    ":control_panel.m",
+    ":track_info_panel.m",
+    ":track_list.m",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+  extra_deps = [ ":audio_player_module" ]
+}
+
 js_library("control_panel") {
   deps = [
     ":repeat_button",
     "//ui/webui/resources/cr_elements/cr_slider:cr_slider",
     "//ui/webui/resources/js:assert",
   ]
+}
+
+polymer_modulizer("control_panel") {
+  js_file = "control_panel.js"
+  html_file = "control_panel.html"
+  html_type = "dom-module"
+  preserve_url_scheme = true
+
+  auto_imports = [ "ui/webui/resources/html/assert.html|assert" ]
+}
+
+js_library("control_panel.m") {
+  sources = [
+    "$root_gen_dir/ui/file_manager/audio_player/elements/control_panel.m.js",
+  ]
+  deps = [
+    ":repeat_button.m",
+    "//third_party/polymer/v3_0/components-chromium/font-roboto:roboto",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_elements/cr_slider:cr_slider.m",
+    "//ui/webui/resources/js:assert.m",
+
+    #TODO: Add dependency on //ui/file_manager/file_manager/elements/files_icon_button when it has Polymer3.
+  ]
+  extra_deps = [ ":control_panel_module" ]
 }
 
 js_library("repeat_button") {
@@ -48,7 +99,44 @@ js_library("repeat_button") {
 js_library("track_info_panel") {
 }
 
+polymer_modulizer("track_info_panel") {
+  js_file = "track_info_panel.js"
+  html_file = "track_info_panel.html"
+  html_type = "dom-module"
+  preserve_url_scheme = true
+}
+
+js_library("track_info_panel.m") {
+  sources = [
+    "$root_gen_dir/ui/file_manager/audio_player/elements/track_info_panel.m.js",
+  ]
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/font-roboto:roboto",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
+  ]
+  extra_deps = [ ":track_info_panel_module" ]
+}
+
 js_library("track_list") {
+}
+
+polymer_modulizer("track_list") {
+  js_file = "track_list.js"
+  html_file = "track_list.html"
+  html_type = "dom-module"
+  preserve_url_scheme = true
+}
+
+js_library("track_list.m") {
+  sources =
+      [ "$root_gen_dir/ui/file_manager/audio_player/elements/track_list.m.js" ]
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/font-roboto:roboto",
+    "//third_party/polymer/v3_0/components-chromium/paper-ripple:paper-ripple",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+  extra_deps = [ ":track_list_module" ]
 }
 
 polymer_modulizer("repeat_button") {
@@ -76,11 +164,19 @@ js_library("repeat_button.m") {
     "//third_party/polymer/v3_0/components-chromium/iron-behaviors:iron-button-state",
     "//third_party/polymer/v3_0/components-chromium/iron-behaviors:iron-control-state",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+
+    #TODO: Add dependency on //ui/file_manager/file_manager/elements/files_toggle_ripple when it has Polymer3.
   ]
   extra_deps = [ ":repeat_button_module" ]
 }
 
 js_type_check("closure_compile_jsmodules") {
   is_polymer3 = true
-  deps = [ ":repeat_button.m" ]
+  deps = [
+    ":audio_player.m",
+    ":control_panel.m",
+    ":repeat_button.m",
+    ":track_info_panel.m",
+    ":track_list.m",
+  ]
 }

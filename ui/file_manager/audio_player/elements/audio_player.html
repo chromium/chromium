@@ -10,8 +10,8 @@
 <link rel="import" href="control_panel.html">
 
 <dom-module id="audio-player">
-  <link rel="import" type="css" href="audio_player.css">
   <template>
+    <link rel="stylesheet" href="elements/audio_player.css">
     <track-info-panel id="trackInfo" expanded="{{trackInfoExpanded}}"
         aria-expand-artwork-label="[[ariaExpandArtworkLabel]]">
     </track-info-panel>
@@ -36,6 +36,5 @@
     <audio id="audio"
         volume="[[computeAudioVolume_(volume)]]"></audio>
   </template>
-
   <script src="audio_player.js"></script>
 </dom-module>

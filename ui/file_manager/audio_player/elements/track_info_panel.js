@@ -3,42 +3,42 @@
 // found in the LICENSE file.
 
 (function() {
-  'use strict';
+/* #ignore */ 'use strict';
 
-  Polymer({
-    is: 'track-info-panel',
+Polymer({
+  is: 'track-info-panel',
 
-    properties: {
-      track: {
-        type: Object,
-        value: null,
-      },
-
-      expanded: {
-        type: Boolean,
-        value: false,
-        notify: true,
-        reflectToAttribute: true,
-        observer: 'onExpandedChanged_',
-      },
-
-      artworkAvailable: {
-        type: Boolean,
-        value: false,
-        reflectToAttribute: true,
-      },
-
-      ariaExpandArtworkLabel: String,
+  properties: {
+    track: {
+      type: Object,
+      value: null,
     },
 
-    /** @private */
-    onExpandClick_: function() {
-      this.expanded = !this.expanded;
+    expanded: {
+      type: Boolean,
+      value: false,
+      notify: true,
+      reflectToAttribute: true,
+      observer: 'onExpandedChanged_',
     },
 
-    /** @private */
-    onExpandedChanged_: function() {
-      this.$.expand.setAttribute('aria-expanded', Boolean(this.expanded));
+    artworkAvailable: {
+      type: Boolean,
+      value: false,
+      reflectToAttribute: true,
     },
-  });
+
+    ariaExpandArtworkLabel: String,
+  },
+
+  /** @private */
+  onExpandClick_: function() {
+    this.expanded = !this.expanded;
+  },
+
+  /** @private */
+  onExpandedChanged_: function() {
+    this.$.expand.setAttribute('aria-expanded', Boolean(this.expanded));
+  },
+});
 })();  // Anonymous closure

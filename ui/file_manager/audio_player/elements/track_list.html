@@ -9,8 +9,8 @@
 <link rel="import" href="chrome://resources/polymer/v1_0/paper-ripple/paper-ripple.html">
 
 <dom-module id="track-list">
-  <link rel="import" type="css" href="track_list.css">
   <template>
+    <link rel="stylesheet" href="elements/track_list.css">
     <template is="dom-repeat" id="tracks" items="[[tracks]]">
       <div class="track" active$="[[item.active]]" index$="[[index]]" on-click="trackClicked">
         <div class="icon"></div>
@@ -22,6 +22,5 @@
       </div>
     </template>
   </template>
-
   <script src="track_list.js"></script>
 </dom-module>

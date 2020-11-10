@@ -422,10 +422,11 @@ Polymer({
 
   /**
    * Invoked when dragging state of seek bar on control panel is changed.
-   * During the user is dragging it, audio playback is paused temporalily.
-   * @param {!CustomEvent<{value: boolean}>} e
+   * During the user is dragging it, audio playback is paused temporarily.
+   * @param {!Event} e
    */
   onSeekingChanged_: function(e) {
+    e = /** @type {!CustomEvent<{value: boolean}>} */ (e);
     if (e.detail.value && this.playing) {
       this.$.audio.pause();
       this.wasPlayingOnDragStart_ = true;
