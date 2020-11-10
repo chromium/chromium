@@ -66,6 +66,13 @@ class ASH_PUBLIC_EXPORT AccessibilityController {
   virtual void SetSelectToSpeakEventHandlerDelegate(
       SelectToSpeakEventHandlerDelegate* delegate) = 0;
 
+  // Displays the Select-to-Speak panel.
+  virtual void ShowSelectToSpeakPanel(const gfx::Rect& anchor,
+                                      bool is_paused) = 0;
+
+  // Hides the Select-to-Speak panel.
+  virtual void HideSelectToSpeakPanel() = 0;
+
   // Hides the Switch Access back button.
   virtual void HideSwitchAccessBackButton() = 0;
 

@@ -43,6 +43,7 @@ class FloatingAccessibilityController;
 class PointScanController;
 class ScopedBacklightsForcedOff;
 class SelectToSpeakEventHandler;
+class SelectToSpeakMenuBubbleController;
 class SwitchAccessMenuBubbleController;
 
 enum AccessibilityNotificationVisibility {
@@ -350,6 +351,8 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
   void SetSelectToSpeakState(SelectToSpeakState state) override;
   void SetSelectToSpeakEventHandlerDelegate(
       SelectToSpeakEventHandlerDelegate* delegate) override;
+  void ShowSelectToSpeakPanel(const gfx::Rect& anchor, bool is_paused) override;
+  void HideSelectToSpeakPanel() override;
   void HideSwitchAccessBackButton() override;
   void HideSwitchAccessMenu() override;
   void ShowSwitchAccessBackButton(const gfx::Rect& anchor) override;
@@ -379,6 +382,10 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
     return switch_access_bubble_controller_.get();
   }
   void DisableSwitchAccessDisableConfirmationDialogTesting() override;
+  SelectToSpeakMenuBubbleController*
+  GetSelectToSpeakMenuBubbleControllerForTest() {
+    return select_to_speak_bubble_controller_.get();
+  }
 
  private:
   // Populate |features_| with the feature of the correct type.
@@ -439,6 +446,8 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
   std::unique_ptr<SelectToSpeakEventHandler> select_to_speak_event_handler_;
   SelectToSpeakEventHandlerDelegate* select_to_speak_event_handler_delegate_ =
       nullptr;
+  std::unique_ptr<SelectToSpeakMenuBubbleController>
+      select_to_speak_bubble_controller_;
 
   // List of key codes that Switch Access should capture.
   std::vector<int> switch_access_keys_to_capture_;

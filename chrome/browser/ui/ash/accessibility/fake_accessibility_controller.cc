@@ -36,6 +36,12 @@ void FakeAccessibilityController::SetSelectToSpeakState(
 void FakeAccessibilityController::SetSelectToSpeakEventHandlerDelegate(
     ash::SelectToSpeakEventHandlerDelegate* delegate) {}
 
+void FakeAccessibilityController::ShowSelectToSpeakPanel(
+    const gfx::Rect& anchor,
+    bool is_paused) {}
+
+void FakeAccessibilityController::HideSelectToSpeakPanel() {}
+
 void FakeAccessibilityController::HideSwitchAccessBackButton() {}
 
 void FakeAccessibilityController::HideSwitchAccessMenu() {}

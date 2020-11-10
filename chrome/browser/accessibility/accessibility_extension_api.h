@@ -206,6 +206,15 @@ class AccessibilityPrivateIsFeatureEnabledFunction : public ExtensionFunction {
   DECLARE_EXTENSION_FUNCTION("accessibilityPrivate.isFeatureEnabled",
                              ACCESSIBILITY_PRIVATE_ISFEATUREENABLED)
 };
+
+// API function that updates properties of the Select-to-speak panel.
+class AccessibilityPrivateUpdateSelectToSpeakPanelFunction
+    : public ExtensionFunction {
+  ~AccessibilityPrivateUpdateSelectToSpeakPanelFunction() override = default;
+  ResponseAction Run() override;
+  DECLARE_EXTENSION_FUNCTION("accessibilityPrivate.updateSelectToSpeakPanel",
+                             ACCESSIBILITY_PRIVATE_UPDATESELECTTOSPEAKPANEL)
+};
 #endif  // defined (OS_CHROMEOS)
 
 #endif  // CHROME_BROWSER_ACCESSIBILITY_ACCESSIBILITY_EXTENSION_API_H_

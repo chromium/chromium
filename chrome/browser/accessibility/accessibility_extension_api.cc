@@ -580,4 +580,28 @@ AccessibilityPrivateIsFeatureEnabledFunction::Run() {
   return RespondNow(OneArgument(base::Value(enabled)));
 }
 
+ExtensionFunction::ResponseAction
+AccessibilityPrivateUpdateSelectToSpeakPanelFunction::Run() {
+  std::unique_ptr<accessibility_private::UpdateSelectToSpeakPanel::Params>
+      params = accessibility_private::UpdateSelectToSpeakPanel::Params::Create(
+          *args_);
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  if (!params->show) {
+    ash::AccessibilityController::Get()->HideSelectToSpeakPanel();
+    return RespondNow(NoArguments());
+  }
+
+  if (!params->anchor || !params->is_paused)
+    return RespondNow(Error("Required parameters missing to show panel."));
+
+  const gfx::Rect anchor =
+      gfx::Rect(params->anchor->left, params->anchor->top,
+                params->anchor->width, params->anchor->height);
+  ash::AccessibilityController::Get()->ShowSelectToSpeakPanel(
+      anchor, *params->is_paused);
+
+  return RespondNow(NoArguments());
+}
+
 #endif  // defined (OS_CHROMEOS)

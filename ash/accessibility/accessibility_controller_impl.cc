@@ -35,6 +35,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/accessibility/accessibility_feature_disable_dialog.h"
 #include "ash/system/accessibility/floating_accessibility_controller.h"
+#include "ash/system/accessibility/select_to_speak_menu_bubble_controller.h"
 #include "ash/system/accessibility/switch_access_menu_bubble_controller.h"
 #include "ash/system/power/backlights_forced_off_setter.h"
 #include "ash/system/power/power_status.h"
@@ -999,6 +1000,27 @@ void AccessibilityControllerImpl::SetSelectToSpeakEventHandlerDelegate(
 
 SelectToSpeakState AccessibilityControllerImpl::GetSelectToSpeakState() const {
   return select_to_speak_state_;
+}
+
+void AccessibilityControllerImpl::ShowSelectToSpeakPanel(
+    const gfx::Rect& anchor,
+    bool is_paused) {
+  if (!features::IsSelectToSpeakNavigationControlEnabled()) {
+    return;
+  }
+  if (!select_to_speak_bubble_controller_) {
+    select_to_speak_bubble_controller_ =
+        std::make_unique<SelectToSpeakMenuBubbleController>();
+  }
+  select_to_speak_bubble_controller_->Show(anchor, is_paused);
+}
+
+void AccessibilityControllerImpl::HideSelectToSpeakPanel() {
+  if (!features::IsSelectToSpeakNavigationControlEnabled() ||
+      !select_to_speak_bubble_controller_) {
+    return;
+  }
+  select_to_speak_bubble_controller_->Hide();
 }
 
 bool AccessibilityControllerImpl::IsSwitchAccessRunning() const {

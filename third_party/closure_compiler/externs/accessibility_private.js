@@ -381,6 +381,17 @@ chrome.accessibilityPrivate.performAcceleratorAction = function(acceleratorActio
 chrome.accessibilityPrivate.isFeatureEnabled = function(feature, callback) {};
 
 /**
+ * Updates properties on the Select-to-speak panel.
+ * @param {boolean} show True if the panel should be shown, false otherwise
+ * @param {!chrome.accessibilityPrivate.ScreenRect=} anchor A rectangle
+ *     indicating the bounds of the object the panel should be displayed next
+ * to.
+ * @param {boolean=} isPaused Whether Select-to-speak playback is paused.
+ */
+chrome.accessibilityPrivate.updateSelectToSpeakPanel = function(
+    show, anchor, isPaused) {};
+
+/**
  * Fired whenever ChromeVox should output introduction.
  * @type {!ChromeEvent}
  */

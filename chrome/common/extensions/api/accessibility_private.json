@@ -512,6 +512,31 @@
           }
         ],
         "platforms": ["chromeos"]
+      },
+      {
+        "name": "updateSelectToSpeakPanel",
+        "type": "function",
+        "description": "Updates properties of the Select-to-speak panel.",
+        "parameters": [
+          {
+            "name": "show",
+            "type": "boolean",
+            "description": "True to show panel, false to hide it"
+          },
+          {
+            "name": "anchor",
+            "$ref": "ScreenRect",
+            "description": "A rectangle indicating the bounds of the object the panel should be displayed next to.",
+            "optional": true
+          },
+          {
+            "name": "isPaused",
+            "type": "boolean",
+            "description": "True if Select-to-speak playback is paused.",
+            "optional": true
+          }
+        ],
+        "platforms": ["chromeos"]
       }
     ],
     "events": [

@@ -776,6 +776,27 @@ This file contains the strings for ash.
       <message name="IDS_ASH_AUTOCLICK_DISABLE_CONFIRMATION_TEXT" desc="The text for the modal dialog shown when the user disables automatic clicks, to confirm they meant to disable the feature.">
         Are you sure you want to turn off automatic clicks?
       </message>
+      <message name="IDS_ASH_SELECT_TO_SPEAK_PREV_PARAGRAPH" desc="The label for the Select-to-speak previous paragraph button, that allows users to navigate to the previous paragraph.">
+        Previous paragraph
+      </message>
+      <message name="IDS_ASH_SELECT_TO_SPEAK_PREV_SENTENCE" desc="The label for the Select-to-speak previous sentence button, that allows users to navigate to the previous sentence.">
+        Previous sentence
+      </message>
+      <message name="IDS_ASH_SELECT_TO_SPEAK_NEXT_PARAGRAPH" desc="The label for the Select-to-speak next paragraph button, that allows users to navigate to the next paragraph.">
+        Next paragraph
+      </message>
+      <message name="IDS_ASH_SELECT_TO_SPEAK_NEXT_SENTENCE" desc="The label for the Select-to-speak next sentence button, that allows users to navigate to the next sentence.">
+        Next sentence
+      </message>
+      <message name="IDS_ASH_SELECT_TO_SPEAK_PAUSE" desc="The label for the Select-to-speak pause button, that allows users to pause text-to-speech playback.">
+        Pause
+      </message>
+      <message name="IDS_ASH_SELECT_TO_SPEAK_RESUME" desc="The label for the Select-to-speak resume button, that allows users to resume text-to-speech playback.">
+        Resume
+      </message>
+      <message name="IDS_ASH_SELECT_TO_SPEAK_EXIT" desc="The label for the Select-to-speak exit button, that stops Select-to-speak.">
+        Exit Select-to-speak
+      </message>
       <message name="IDS_ASH_SWITCH_ACCESS_BACK_BUTTON_DESCRIPTION" desc="The tooltip text for the Switch Access back button. The back button allows users to exit the feature's current focus area.">
         Back button
       </message>
