@@ -130,14 +130,16 @@ public class TabbedPaintPreview implements UserData {
         if (mTab == null || mPlayerManager == null || mFadingOut) return;
 
         mFadingOut = true;
+        mPlayerManager.setAcceptUserInput(false);
+        Point scrollPosition = mPlayerManager.getScrollPosition();
+        // Destroy early to free up resource, but don't null until faded out so view sticks around.
+        mPlayerManager.destroy();
         if (matchScroll) {
-            Point scrollPosition = mPlayerManager.getScrollPosition();
             if (mTab.getWebContents() != null && scrollPosition != null) {
                 mTab.getWebContents().getEventForwarder().scrollTo(
                         scrollPosition.x, scrollPosition.y);
             }
         }
-        mPlayerManager.setAcceptUserInput(false);
         mTabbedPainPreviewViewProvider.getView()
                 .animate()
                 .alpha(0f)
@@ -150,7 +152,6 @@ public class TabbedPaintPreview implements UserData {
                                     mTabbedPainPreviewViewProvider);
                         }
                         if (mPlayerManager != null) {
-                            mPlayerManager.destroy();
                             mPlayerManager = null;
                         }
                         mIsAttachedToTab = false;
