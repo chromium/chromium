@@ -1364,7 +1364,7 @@ class BBJSONGenerator(object):
       self.write_file(self.pyl_file_path(filename + suffix), jsonstr)
 
   def get_valid_bot_names(self):
-    # Extract bot names from infra/config/luci-milo.cfg.
+    # Extract bot names from infra/config/generated/luci-milo.cfg.
     # NOTE: This reference can cause issues; if a file changes there, the
     # presubmit here won't be run by default. A manually maintained list there
     # tries to run presubmit here when luci-milo.cfg is changed. If any other
