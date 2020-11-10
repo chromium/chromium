@@ -94,7 +94,6 @@ IN_PROC_BROWSER_TEST_F(FileManagerJsTest, FileOperationManagerTest) {
   RunTestURL("background/js/file_operation_manager_unittest_gen.html");
 }
 
-// TODO(crbug.com/1146484): Test is flaky.
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, FilesAppEntryTypes) {
   RunTestURL("common/js/files_app_entry_types_unittest.m_gen.html");
 }
@@ -149,7 +148,7 @@ IN_PROC_BROWSER_TEST_F(FileManagerJsTest, FileTypeFiltersController) {
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, FileType) {
-  RunTestURL("common/js/file_type_unittest_gen.html");
+  RunTestURL("common/js/file_type_unittest.m_gen.html");
 }
 
 IN_PROC_BROWSER_TEST_F(CanvasFileManagerJsTest, ImageOrientation) {
@@ -177,7 +176,7 @@ IN_PROC_BROWSER_TEST_F(FileManagerJsTest, ListThumbnailLoader) {
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, LRUCacheTest) {
-  RunTestURL("common/js/lru_cache_unittest_gen.html");
+  RunTestURL("common/js/lru_cache_unittest.m_gen.html");
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, MediaImportHandlerTest) {

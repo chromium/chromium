@@ -10,7 +10,7 @@
  * @suppress {uselessCode} Temporary suppress because of the line exporting.
  */
 
- // eslint-disable-next-line no-var
+// eslint-disable-next-line no-var
 var metrics;  // Needs to be defined in each window which uses metrics.
 const metricsBase = {};
 

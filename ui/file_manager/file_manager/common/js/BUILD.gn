@@ -42,7 +42,9 @@ js_type_check("closure_compile_jsmodules") {
   uses_js_modules = true
   deps = [
     ":async_util.m",
+    ":file_type.m",
     ":files_app_entry_types.m",
+    ":lru_cache.m",
     ":metrics.m",
     ":metrics_base.m",
     ":mock_entry.m",
@@ -104,11 +106,25 @@ js_library("file_type") {
   ]
 }
 
-js_unittest("file_type_unittest") {
+js_library("file_type.m") {
+  sources =
+      [ "$root_gen_dir/ui/file_manager/file_manager/common/js/file_type.m.js" ]
   deps = [
-    ":file_type",
-    ":mock_entry",
-    "//ui/file_manager/base/js:test_error_reporting",
+    ":files_app_entry_types.m",
+    "//ui/file_manager/base/js:volume_manager_types.m",
+    "//ui/file_manager/externs:files_app_entry_interfaces.m",
+    "//ui/webui/resources/js:assert.m",
+  ]
+
+  extra_deps = [ ":modulize" ]
+}
+
+js_unittest("file_type_unittest.m") {
+  deps = [
+    ":file_type.m",
+    ":mock_entry.m",
+    "//chrome/test/data/webui:chai_assert",
+    "//ui/file_manager/base/js:volume_manager_types.m",
   ]
 }
 
@@ -150,10 +166,17 @@ js_unittest("importer_common_unittest") {
 js_library("lru_cache") {
 }
 
-js_unittest("lru_cache_unittest") {
+js_library("lru_cache.m") {
+  sources =
+      [ "$root_gen_dir/ui/file_manager/file_manager/common/js/lru_cache.m.js" ]
+
+  extra_deps = [ ":modulize" ]
+}
+
+js_unittest("lru_cache_unittest.m") {
   deps = [
-    ":lru_cache",
-    "//ui/webui/resources/js:webui_resource_test",
+    ":lru_cache.m",
+    "//chrome/test/data/webui:chai_assert",
   ]
 }
 
@@ -282,7 +305,9 @@ js_unittest("util_unittest.m") {
 js_test_gen_html("js_test_gen_html_modules") {
   js_module = true
   deps = [
+    ":file_type_unittest.m",
     ":files_app_entry_types_unittest.m",
+    ":lru_cache_unittest.m",
     ":util_unittest.m",
   ]
 
@@ -296,17 +321,15 @@ js_test_gen_html("js_test_gen_html_modules") {
 }
 
 js_test_gen_html("js_test_gen_html") {
-  deps = [
-    ":file_type_unittest",
-    ":importer_common_unittest",
-    ":lru_cache_unittest",
-  ]
+  deps = [ ":importer_common_unittest" ]
 }
 
 js_modulizer("modulize") {
   input_files = [
     "async_util.js",
+    "file_type.js",
     "files_app_entry_types.js",
+    "lru_cache.js",
     "metrics.js",
     "metrics_base.js",
     "mock_entry.js",

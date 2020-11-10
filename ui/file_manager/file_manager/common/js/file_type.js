@@ -2,10 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
+// #import * as wrappedVolumeManagerCommon from '../../../base/js/volume_manager_types.m.js'; const {VolumeManagerCommon} = wrappedVolumeManagerCommon;
+// #import {FilesAppEntry} from '../../../externs/files_app_entry_interfaces.m.js';
+// #import {VolumeEntry} from './files_app_entry_types.m.js';
+// #import {assert} from 'chrome://resources/js/assert.m.js';
+// clang-format on
+
 /**
  * Namespace object for file type utility functions.
  */
-function FileType() {}
+/* #export */ function FileType() {}
 
 /**
  * @typedef {{
@@ -499,7 +506,7 @@ FileType.getType = (entry, opt_mimeType) => {
         name: '',
         type: 'partition',
         subtype:
-            /** @type {VolumeEntry}*/ (entry).volumeInfo.diskFileSystemType,
+            assert(/** @type {VolumeEntry}*/ (entry).volumeInfo.diskFileSystemType),
         icon: '',
       };
     }

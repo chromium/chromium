@@ -2,13 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-'use strict';
+import {FileType} from './file_type.m.js';
+import {MockFileSystem} from './mock_entry.m.js';
+import * as wrappedVolumeManagerCommon from '../../../base/js/volume_manager_types.m.js';
+const {VolumeManagerCommon} = wrappedVolumeManagerCommon;
+import {assertEquals} from 'chrome://test/chai_assert.js';
 
 /*
  * Tests that Downloads icon is customized within Downloads root, but not in
  * others.
  */
-function testDownloadsIcon() {
+export function testDownloadsIcon() {
   const fileSystem = new MockFileSystem('fake-fs');
   const filenames = [
     '/folder/',
@@ -38,7 +42,7 @@ function testDownloadsIcon() {
   assertEquals('folder', FileType.getIcon(downloads, mimetype, androidRoot));
 }
 
-function testGetTypeForName() {
+export function testGetTypeForName() {
   const testItems = [
     // Simple cases: file name only.
     {name: '/foo.amr', want: {type: 'audio', subtype: 'AMR'}},
