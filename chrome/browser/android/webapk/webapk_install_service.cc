@@ -118,7 +118,7 @@ void WebApkInstallService::ShowInstallInProgressNotification(
   base::android::ScopedJavaLocalRef<jstring> java_url =
       base::android::ConvertUTF8ToJavaString(env, shortcut_info.url.spec());
   base::android::ScopedJavaLocalRef<jobject> java_primary_icon =
-      gfx::ConvertToJavaBitmap(&primary_icon);
+      gfx::ConvertToJavaBitmap(primary_icon);
 
   Java_WebApkInstallService_showInstallInProgressNotification(
       env, java_manifest_url, java_short_name, java_url, java_primary_icon,
@@ -142,7 +142,7 @@ void WebApkInstallService::ShowInstalledNotification(
   base::android::ScopedJavaLocalRef<jstring> java_url =
       base::android::ConvertUTF8ToJavaString(env, shortcut_info.url.spec());
   base::android::ScopedJavaLocalRef<jobject> java_primary_icon =
-      gfx::ConvertToJavaBitmap(&primary_icon);
+      gfx::ConvertToJavaBitmap(primary_icon);
 
   Java_WebApkInstallService_showInstalledNotification(
       env, java_webapk_package, java_manifest_url, java_short_name, java_url,

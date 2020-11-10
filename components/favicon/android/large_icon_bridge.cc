@@ -41,10 +41,9 @@ void OnLargeIconAvailable(const JavaRef<jobject>& j_callback,
   SkBitmap bitmap;
   ScopedJavaLocalRef<jobject> j_bitmap;
   if (result.bitmap.is_valid()) {
-    gfx::PNGCodec::Decode(result.bitmap.bitmap_data->front(),
-                          result.bitmap.bitmap_data->size(), &bitmap);
-    if (!bitmap.isNull())
-      j_bitmap = gfx::ConvertToJavaBitmap(&bitmap);
+    if (gfx::PNGCodec::Decode(result.bitmap.bitmap_data->front(),
+                              result.bitmap.bitmap_data->size(), &bitmap))
+      j_bitmap = gfx::ConvertToJavaBitmap(bitmap);
   }
 
   favicon_base::FallbackIconStyle fallback;

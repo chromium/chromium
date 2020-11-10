@@ -967,9 +967,8 @@ void ThumbnailCache::DecompressionTask(
         gfx::Size(compressed_data->width(), compressed_data->height());
 
     SkBitmap raw_data;
-    raw_data.allocPixels(
-        SkImageInfo::Make(buffer_size.width(), buffer_size.height(),
-                          kRGBA_8888_SkColorType, kOpaque_SkAlphaType));
+    raw_data.allocPixels(SkImageInfo::MakeN32(
+        buffer_size.width(), buffer_size.height(), kOpaque_SkAlphaType));
     success = etc1_decode_image(
         reinterpret_cast<unsigned char*>(compressed_data->pixels()),
         reinterpret_cast<unsigned char*>(raw_data.getPixels()),
@@ -985,9 +984,8 @@ void ThumbnailCache::DecompressionTask(
     } else {
       // The content size is smaller than the buffer size (likely because of
       // a power-of-two rounding), so deep copy the bitmap.
-      raw_data_small.allocPixels(
-          SkImageInfo::Make(content_size.width(), content_size.height(),
-                            kRGBA_8888_SkColorType, kOpaque_SkAlphaType));
+      raw_data_small.allocPixels(SkImageInfo::MakeN32(
+          content_size.width(), content_size.height(), kOpaque_SkAlphaType));
       SkCanvas small_canvas(raw_data_small);
       small_canvas.drawBitmap(raw_data, 0, 0);
       raw_data_small.setImmutable();

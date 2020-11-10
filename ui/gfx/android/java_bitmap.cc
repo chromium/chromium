@@ -21,6 +21,18 @@ using base::android::JavaRef;
 
 namespace gfx {
 
+#define ASSERT_ENUM_EQ(a, b) \
+  static_assert(static_cast<int>(a) == static_cast<int>(b), "")
+
+// BitmapFormat has the same values as AndroidBitmapFormat, for simplicitly, so
+// that SkColorTypeToBitmapFormat() and the JavaBitmap::format() have the same
+// values.
+ASSERT_ENUM_EQ(BITMAP_FORMAT_NO_CONFIG, ANDROID_BITMAP_FORMAT_NONE);
+ASSERT_ENUM_EQ(BITMAP_FORMAT_ALPHA_8, ANDROID_BITMAP_FORMAT_A_8);
+ASSERT_ENUM_EQ(BITMAP_FORMAT_ARGB_4444, ANDROID_BITMAP_FORMAT_RGBA_4444);
+ASSERT_ENUM_EQ(BITMAP_FORMAT_ARGB_8888, ANDROID_BITMAP_FORMAT_RGBA_8888);
+ASSERT_ENUM_EQ(BITMAP_FORMAT_RGB_565, ANDROID_BITMAP_FORMAT_RGB_565);
+
 JavaBitmap::JavaBitmap(const JavaRef<jobject>& bitmap)
     : bitmap_(bitmap), pixels_(NULL) {
   int err =
@@ -44,52 +56,50 @@ JavaBitmap::~JavaBitmap() {
 
 static int SkColorTypeToBitmapFormat(SkColorType color_type) {
   switch (color_type) {
-    case kAlpha_8_SkColorType:
-      return BITMAP_FORMAT_ALPHA_8;
-    case kARGB_4444_SkColorType:
-      return BITMAP_FORMAT_ARGB_4444;
     case kN32_SkColorType:
       return BITMAP_FORMAT_ARGB_8888;
     case kRGB_565_SkColorType:
       return BITMAP_FORMAT_RGB_565;
-    case kUnknown_SkColorType:
     default:
-      NOTREACHED();
-      return BITMAP_FORMAT_NO_CONFIG;
+      // A bad format can cause out-of-bounds issues when copying pixels into or
+      // out of the java bitmap's pixel buffer.
+      CHECK_NE(color_type, color_type);
   }
+  return BITMAP_FORMAT_NO_CONFIG;
 }
 
-ScopedJavaLocalRef<jobject> CreateJavaBitmap(int width,
-                                             int height,
-                                             SkColorType color_type,
-                                             OomBehavior reaction) {
-  DCHECK_GT(width, 0);
-  DCHECK_GT(height, 0);
-  int java_bitmap_config = SkColorTypeToBitmapFormat(color_type);
-  return Java_BitmapHelper_createBitmap(
-      AttachCurrentThread(), width, height, java_bitmap_config,
-      reaction == OomBehavior::kReturnNullOnOom);
-}
-
-ScopedJavaLocalRef<jobject> ConvertToJavaBitmap(const SkBitmap* skbitmap,
+ScopedJavaLocalRef<jobject> ConvertToJavaBitmap(const SkBitmap& skbitmap,
                                                 OomBehavior reaction) {
-  DCHECK(skbitmap);
-  DCHECK(!skbitmap->isNull());
-  SkColorType color_type = skbitmap->colorType();
-  DCHECK((color_type == kRGB_565_SkColorType) ||
-         (color_type == kN32_SkColorType));
-  ScopedJavaLocalRef<jobject> jbitmap = CreateJavaBitmap(
-      skbitmap->width(), skbitmap->height(), color_type, reaction);
+  DCHECK(!skbitmap.isNull());
+  DCHECK_GT(skbitmap.width(), 0);
+  DCHECK_GT(skbitmap.height(), 0);
+
+  int java_bitmap_format = SkColorTypeToBitmapFormat(skbitmap.colorType());
+
+  ScopedJavaLocalRef<jobject> jbitmap = Java_BitmapHelper_createBitmap(
+      AttachCurrentThread(), skbitmap.width(), skbitmap.height(),
+      java_bitmap_format, reaction == OomBehavior::kReturnNullOnOom);
   if (!jbitmap) {
     DCHECK_EQ(OomBehavior::kReturnNullOnOom, reaction);
     return jbitmap;
   }
+
   JavaBitmap dst_lock(jbitmap);
-  void* src_pixels = skbitmap->getPixels();
-  void* dst_pixels = dst_lock.pixels();
-  CHECK_GE(base::checked_cast<size_t>(dst_lock.byte_count()),
-           skbitmap->computeByteSize());
-  memcpy(dst_pixels, src_pixels, skbitmap->computeByteSize());
+  // If java creates a bitmap with a different stride, then memcpy() will
+  // do the wrong thing below and we can end up with an out-of-bounds write.
+  CHECK_EQ(skbitmap.rowBytes(), dst_lock.stride());
+  // If java creates a bitmap with a different format, then memcpy() may
+  // do the wrong thing below since the buffer sizes may differ, and we can
+  // end up with an out-of-bounds write.
+  CHECK_EQ(java_bitmap_format, dst_lock.format());
+  // This is mostly a corrolary of the above checks, however, the max number of
+  // bytes in the JavaBitmap is less than in the SkBitmap, since it is expressed
+  // as an int, instead of a size_t. If java capped the size, then the memcpy()
+  // below can cause an out-of-bounds write.
+  CHECK_EQ(base::checked_cast<size_t>(dst_lock.byte_count()),
+           skbitmap.computeByteSize());
+
+  memcpy(dst_lock.pixels(), skbitmap.getPixels(), skbitmap.computeByteSize());
 
   return jbitmap;
 }

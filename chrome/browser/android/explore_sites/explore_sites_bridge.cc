@@ -77,7 +77,7 @@ void ImageReady(ScopedJavaGlobalRef<jobject>(j_callback_obj),
     return;
   }
 
-  ScopedJavaLocalRef<jobject> j_bitmap = gfx::ConvertToJavaBitmap(bitmap.get());
+  ScopedJavaLocalRef<jobject> j_bitmap = gfx::ConvertToJavaBitmap(*bitmap);
 
   base::android::RunObjectCallbackAndroid(j_callback_obj, j_bitmap);
 }

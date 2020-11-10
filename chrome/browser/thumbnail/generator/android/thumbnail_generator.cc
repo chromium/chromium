@@ -31,7 +31,7 @@ void ForwardJavaCallback(const ScopedJavaGlobalRef<jobject>& java_delegate,
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_ThumbnailGenerator_onThumbnailRetrieved(
       env, java_delegate, content_id, icon_size,
-      thumbnail.drawsNothing() ? nullptr : gfx::ConvertToJavaBitmap(&thumbnail),
+      thumbnail.drawsNothing() ? nullptr : gfx::ConvertToJavaBitmap(thumbnail),
       callback);
 }
 

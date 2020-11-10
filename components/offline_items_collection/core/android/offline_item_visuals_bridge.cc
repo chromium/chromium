@@ -24,7 +24,7 @@ ScopedJavaLocalRef<jobject> OfflineItemVisualsBridge::CreateOfflineItemVisuals(
   base::android::ScopedJavaLocalRef<jobject> j_icon;
 
   if (!visuals->icon.IsEmpty())
-    j_icon = gfx::ConvertToJavaBitmap(visuals->icon.ToSkBitmap());
+    j_icon = gfx::ConvertToJavaBitmap(*visuals->icon.ToSkBitmap());
 
   return Java_OfflineItemVisualsBridge_createOfflineItemVisuals(env, j_icon);
 }

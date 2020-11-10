@@ -54,7 +54,7 @@ ScopedJavaLocalRef<jobjectArray> ToJavaUnguessableTokenArray(
 
 ScopedJavaGlobalRef<jobject> ConvertToJavaBitmap(const SkBitmap& sk_bitmap) {
   return ScopedJavaGlobalRef<jobject>(
-      gfx::ConvertToJavaBitmap(&sk_bitmap, gfx::OomBehavior::kReturnNullOnOom));
+      gfx::ConvertToJavaBitmap(sk_bitmap, gfx::OomBehavior::kReturnNullOnOom));
 }
 
 }  // namespace

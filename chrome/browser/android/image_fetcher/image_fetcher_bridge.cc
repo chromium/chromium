@@ -271,7 +271,7 @@ void ImageFetcherBridge::OnImageFetched(
     const RequestMetadata& request_metadata) {
   ScopedJavaLocalRef<jobject> j_bitmap;
   if (!image.IsEmpty()) {
-    j_bitmap = gfx::ConvertToJavaBitmap(image.ToSkBitmap());
+    j_bitmap = gfx::ConvertToJavaBitmap(*image.ToSkBitmap());
   }
   RunObjectCallbackAndroid(callback, j_bitmap);
 }

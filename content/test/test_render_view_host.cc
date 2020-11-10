@@ -155,6 +155,10 @@ uint32_t TestRenderWidgetHostView::GetCaptureSequenceNumber() const {
   return latest_capture_sequence_number_;
 }
 
+void TestRenderWidgetHostView::UpdateCursor(const WebCursor& cursor) {
+  last_cursor_ = cursor;
+}
+
 void TestRenderWidgetHostView::RenderProcessGone() {
   delete this;
 }

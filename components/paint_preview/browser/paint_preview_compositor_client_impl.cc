@@ -100,13 +100,25 @@ void PaintPreviewCompositorClientImpl::BitmapForSeparatedFrame(
     float scale_factor,
     mojom::PaintPreviewCompositor::BitmapForSeparatedFrameCallback callback) {
   DCHECK(default_task_runner_->RunsTasksInCurrentSequence());
+
+  auto validate_bitmap = base::BindOnce(
+      [](mojom::PaintPreviewCompositor::BitmapForSeparatedFrameCallback
+             callback,
+         mojom::PaintPreviewCompositor::BitmapStatus status,
+         const SkBitmap& bitmap) {
+        // The paint preview service should be sending us N32 32bpp bitmaps in
+        // reply, otherwise this can lead to out-of-bounds mistakes when
+        // transferring the pixels out of the bitmap into other buffers.
+        CHECK_EQ(bitmap.colorType(), kN32_SkColorType);
+        std::move(callback).Run(status, bitmap);
+      },
+      BindToTaskRunner(default_task_runner_, std::move(callback)));
+
   compositor_task_runner_->PostTask(
       FROM_HERE,
-      base::BindOnce(
-          &mojom::PaintPreviewCompositor::BitmapForSeparatedFrame,
-          base::Unretained(compositor_.get()->get()), frame_guid, clip_rect,
-          scale_factor,
-          BindToTaskRunner(default_task_runner_, std::move(callback))));
+      base::BindOnce(&mojom::PaintPreviewCompositor::BitmapForSeparatedFrame,
+                     base::Unretained(compositor_.get()->get()), frame_guid,
+                     clip_rect, scale_factor, std::move(validate_bitmap)));
 }
 
 void PaintPreviewCompositorClientImpl::BeginMainFrameComposite(

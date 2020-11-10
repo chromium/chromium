@@ -83,7 +83,7 @@ void DisplayAgentAndroid::ShowNotification(
   for (const auto& icon : notification_data->icons) {
     Java_DisplayAgent_addIcon(env, java_notification_data,
                               static_cast<int>(icon.first /*IconType*/),
-                              gfx::ConvertToJavaBitmap(&icon.second.bitmap),
+                              gfx::ConvertToJavaBitmap(icon.second.bitmap),
                               static_cast<jint>(icon.second.resource_id));
   }
 

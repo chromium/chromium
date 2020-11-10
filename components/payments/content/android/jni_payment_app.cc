@@ -48,7 +48,7 @@ ScopedJavaLocalRef<jobject> JniPaymentApp::Create(
   ScopedJavaLocalRef<jobject> icon;
   if (app->payment_app_->icon_bitmap() &&
       !app->payment_app_->icon_bitmap()->drawsNothing()) {
-    icon = gfx::ConvertToJavaBitmap(app->payment_app_->icon_bitmap());
+    icon = gfx::ConvertToJavaBitmap(*app->payment_app_->icon_bitmap());
   }
 
   return Java_JniPaymentApp_Constructor(

@@ -481,7 +481,7 @@ void WebApkInstaller::InstallOrUpdateWebApk(const std::string& package_name,
     webapk::TrackRequestTokenDuration(install_duration_timer_->Elapsed(),
                                       package_name);
     base::android::ScopedJavaLocalRef<jobject> java_primary_icon =
-        gfx::ConvertToJavaBitmap(&install_primary_icon_);
+        gfx::ConvertToJavaBitmap(install_primary_icon_);
     Java_WebApkInstaller_installWebApkAsync(
         env, java_ref_, java_webapk_package, webapk_version_, java_title,
         java_token, install_shortcut_info_->source, java_primary_icon);

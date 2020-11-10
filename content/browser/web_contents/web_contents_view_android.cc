@@ -333,7 +333,8 @@ void WebContentsViewAndroid::StartDragging(
   ScopedJavaLocalRef<jstring> jtext =
       ConvertUTF16ToJavaString(env, *drop_data.text);
 
-  if (!native_view->StartDragAndDrop(jtext, gfx::ConvertToJavaBitmap(bitmap))) {
+  if (!native_view->StartDragAndDrop(jtext,
+                                     gfx::ConvertToJavaBitmap(*bitmap))) {
     // Need to clear drag and drop state in blink.
     OnSystemDragEnded();
     return;

@@ -26,7 +26,7 @@ void FaviconCallbackProxy::OnFaviconChanged(const gfx::Image& image) {
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_FaviconCallbackProxy_onFaviconChanged(
       env, java_proxy_,
-      favicon.empty() ? nullptr : gfx::ConvertToJavaBitmap(&favicon));
+      favicon.empty() ? nullptr : gfx::ConvertToJavaBitmap(favicon));
 }
 
 static jlong JNI_FaviconCallbackProxy_CreateFaviconCallbackProxy(

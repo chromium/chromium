@@ -102,7 +102,7 @@ class TestRenderWidgetHostView : public RenderWidgetHostViewBase,
   void InitAsFullscreen(RenderWidgetHostView* reference_host_view) override {}
   void Focus() override {}
   void SetIsLoading(bool is_loading) override {}
-  void UpdateCursor(const WebCursor& cursor) override {}
+  void UpdateCursor(const WebCursor& cursor) override;
   void RenderProcessGone() override;
   void Destroy() override;
   void SetTooltipText(const base::string16& tooltip_text) override {}
@@ -123,6 +123,8 @@ class TestRenderWidgetHostView : public RenderWidgetHostViewBase,
   void OnFirstSurfaceActivation(const viz::SurfaceInfo& surface_info) override;
   void OnFrameTokenChanged(uint32_t frame_token) override;
 
+  const WebCursor& last_cursor() const { return last_cursor_; }
+
  protected:
   // RenderWidgetHostViewBase:
   void UpdateBackgroundColor() override;
@@ -136,6 +138,7 @@ class TestRenderWidgetHostView : public RenderWidgetHostViewBase,
   bool is_showing_;
   bool is_occluded_;
   ui::DummyTextInputClient text_input_client_;
+  WebCursor last_cursor_;
 
   // Latest capture sequence number which is incremented when the caller
   // requests surfaces be synchronized via

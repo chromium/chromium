@@ -155,6 +155,7 @@
 #include "services/network/public/cpp/web_sandbox_flags.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
+#include "skia/ext/skia_utils_base.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/loader/resource_type_util.h"
 #include "third_party/blink/public/common/mime_util/mime_util.h"
@@ -7868,11 +7869,24 @@ void WebContentsImpl::OnDidDownloadImage(
     int id,
     const GURL& image_url,
     int32_t http_status_code,
-    const std::vector<SkBitmap>& images,
+    const std::vector<SkBitmap>& unsafe_images,
     const std::vector<gfx::Size>& original_image_sizes) {
   OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::OnDidDownloadImage",
                         "image_url",
                         base::trace_event::ValueToString(image_url));
+  std::vector<SkBitmap> images;
+  for (const SkBitmap& unsafe_bitmap : unsafe_images) {
+    SkBitmap bitmap;
+    // On receipt of an arbitrary bitmap from the renderer, we convert to an N32
+    // 32bpp bitmap. Other pixel sizes can lead to out-of-bounds mistakes when
+    // transferring the pixels out of the/ bitmap into other buffers.
+    if (!skia::SkBitmapToN32OpaqueOrPremul(unsafe_bitmap, &bitmap)) {
+      NOTREACHED() << "Unable to convert bitmap from download to 32bpp";
+      std::move(callback).Run(id, 400, image_url, {}, {});
+      return;
+    }
+    images.push_back(std::move(bitmap));
+  }
   std::move(callback).Run(id, http_status_code, image_url, images,
                           original_image_sizes);
 }

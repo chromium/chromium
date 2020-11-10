@@ -32,7 +32,7 @@ class ContextMenuImageRequest : public ImageDecoder::ImageRequest {
  protected:
   void OnImageDecoded(const SkBitmap& decoded_image) override {
     base::android::RunObjectCallbackAndroid(
-        jcallback_, gfx::ConvertToJavaBitmap(&decoded_image));
+        jcallback_, gfx::ConvertToJavaBitmap(decoded_image));
     delete this;
   }
 

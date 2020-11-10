@@ -57,7 +57,7 @@ JNI_NavigationControllerImpl_CreateJavaNavigationEntry(
   ScopedJavaLocalRef<jobject> j_bitmap;
   const content::FaviconStatus& status = entry->GetFavicon();
   if (status.valid && status.image.ToSkBitmap()->computeByteSize() > 0) {
-    j_bitmap = gfx::ConvertToJavaBitmap(status.image.ToSkBitmap(),
+    j_bitmap = gfx::ConvertToJavaBitmap(*status.image.ToSkBitmap(),
                                         gfx::OomBehavior::kReturnNullOnOom);
   }
   jlong j_timestamp = entry->GetTimestamp().ToJavaTime();

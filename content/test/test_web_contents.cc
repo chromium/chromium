@@ -220,8 +220,9 @@ bool TestWebContents::TestDidDownloadImage(
   ImageDownloadCallback callback =
       std::move(pending_image_downloads_[url].front().second);
   pending_image_downloads_[url].pop_front();
-  std::move(callback).Run(id, http_status_code, url, bitmaps,
-                          original_bitmap_sizes);
+  WebContentsImpl::OnDidDownloadImage(std::move(callback), id, url,
+                                      http_status_code, bitmaps,
+                                      original_bitmap_sizes);
   return true;
 }
 

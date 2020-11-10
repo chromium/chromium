@@ -55,6 +55,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "skia/ext/skia_utils_base.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/input/synthetic_web_input_event_builders.h"
@@ -2278,6 +2279,37 @@ TEST_F(RenderWidgetHostTest, OnVerticalScrollDirectionChanged) {
   EXPECT_EQ(2, delegate_->GetOnVerticalScrollDirectionChangedCallCount());
   EXPECT_EQ(viz::VerticalScrollDirection::kDown,
             delegate_->GetLastVerticalScrollDirection());
+}
+
+TEST_F(RenderWidgetHostTest, SetCursorWithBitmap) {
+  ui::Cursor cursor;
+
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(1, 1);
+  bitmap.eraseColor(SK_ColorGREEN);
+  cursor.set_custom_bitmap(bitmap);
+
+  host_->SetCursor(cursor);
+  EXPECT_EQ(WebCursor(cursor), view_->last_cursor());
+}
+
+TEST_F(RenderWidgetHostTest, SetCursorWithInvalidBitmap) {
+  ui::Cursor cursor;
+
+  SkBitmap badbitmap;
+  badbitmap.allocPixels(
+      SkImageInfo::Make(1, 1, kARGB_4444_SkColorType, kPremul_SkAlphaType));
+  badbitmap.eraseColor(SK_ColorGREEN);
+
+  SkBitmap n32bitmap;
+  EXPECT_TRUE(skia::SkBitmapToN32OpaqueOrPremul(badbitmap, &n32bitmap));
+
+  // A non-N32 32bpp bitmap will be converted on receipt from IPC.
+  cursor.set_custom_bitmap(badbitmap);
+  host_->SetCursor(cursor);
+  // Compare to the `n32bitmap`.
+  cursor.set_custom_bitmap(n32bitmap);
+  EXPECT_EQ(WebCursor(cursor), view_->last_cursor());
 }
 
 }  // namespace content

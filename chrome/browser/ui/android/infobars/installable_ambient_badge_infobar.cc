@@ -43,7 +43,7 @@ InstallableAmbientBadgeInfoBar::CreateRenderInfoBar(JNIEnv* env) {
 
   DCHECK(!delegate->GetPrimaryIcon().drawsNothing());
   base::android::ScopedJavaLocalRef<jobject> java_bitmap =
-      gfx::ConvertToJavaBitmap(&delegate->GetPrimaryIcon());
+      gfx::ConvertToJavaBitmap(delegate->GetPrimaryIcon());
 
   jboolean java_is_primary_icon_maskable = delegate->GetIsPrimaryIconMaskable();
 

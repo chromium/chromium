@@ -84,7 +84,7 @@ void OnGetIconDone(std::unique_ptr<image_fetcher::ImageFetcher> image_fetcher,
                    const image_fetcher::RequestMetadata& metadata) {
   ScopedJavaLocalRef<jobject> j_bitmap;
   if (!image.IsEmpty()) {
-    j_bitmap = gfx::ConvertToJavaBitmap(image.ToSkBitmap());
+    j_bitmap = gfx::ConvertToJavaBitmap(*image.ToSkBitmap());
   }
   base::android::RunObjectCallbackAndroid(j_callback_obj, j_bitmap);
 

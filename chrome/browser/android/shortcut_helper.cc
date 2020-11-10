@@ -106,7 +106,7 @@ void AddWebappWithSkBitmap(const ShortcutInfo& info,
                                              info.best_primary_icon_url.spec());
   ScopedJavaLocalRef<jobject> java_bitmap;
   if (!icon_bitmap.drawsNothing())
-    java_bitmap = gfx::ConvertToJavaBitmap(&icon_bitmap);
+    java_bitmap = gfx::ConvertToJavaBitmap(icon_bitmap);
 
   // The callback will need to be run after shortcut creation completes in order
   // to download the splash image and save it to the WebappDataStorage. Create a
@@ -142,7 +142,7 @@ void AddShortcutWithSkBitmap(content::WebContents* web_contents,
                                              info.best_primary_icon_url.spec());
   ScopedJavaLocalRef<jobject> java_bitmap;
   if (!icon_bitmap.drawsNothing())
-    java_bitmap = gfx::ConvertToJavaBitmap(&icon_bitmap);
+    java_bitmap = gfx::ConvertToJavaBitmap(icon_bitmap);
   Java_ShortcutHelper_addShortcut(env, java_id, java_url, java_user_title,
                                   java_bitmap, is_icon_maskable, info.source,
                                   java_best_primary_icon_url);
@@ -262,7 +262,7 @@ void ShortcutHelper::StoreWebappSplashImage(const std::string& webapp_id,
   ScopedJavaLocalRef<jstring> java_webapp_id =
       base::android::ConvertUTF8ToJavaString(env, webapp_id);
   ScopedJavaLocalRef<jobject> java_splash_image =
-      gfx::ConvertToJavaBitmap(&splash_image);
+      gfx::ConvertToJavaBitmap(splash_image);
 
   Java_ShortcutHelper_storeWebappSplashImage(env, java_webapp_id,
                                              java_splash_image);
@@ -284,7 +284,7 @@ SkBitmap ShortcutHelper::FinalizeLauncherIconInBackground(
     if (Java_ShortcutHelper_isIconLargeEnoughForLauncher(env, bitmap.width(),
                                                          bitmap.height())) {
       ScopedJavaLocalRef<jobject> java_bitmap =
-          gfx::ConvertToJavaBitmap(&bitmap);
+          gfx::ConvertToJavaBitmap(bitmap);
       result = Java_ShortcutHelper_createHomeScreenIconFromWebIcon(
           env, java_bitmap, is_icon_maskable);
     }

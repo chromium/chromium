@@ -48,14 +48,13 @@ class TestResourceManagerImpl : public ResourceManagerImpl {
 
   void SetResourceAsLoaded(AndroidResourceType res_type, int res_id) {
     SkBitmap small_bitmap;
-    small_bitmap.allocPixels(
-        SkImageInfo::Make(1, 1, kRGBA_8888_SkColorType, kOpaque_SkAlphaType));
+    small_bitmap.allocN32Pixels(1, 1, /*is_opaque=*/true);
     SkCanvas canvas(small_bitmap);
     canvas.drawColor(SK_ColorWHITE);
     small_bitmap.setImmutable();
 
     OnResourceReady(nullptr, nullptr, res_type, res_id,
-                    gfx::ConvertToJavaBitmap(&small_bitmap), 1, 1,
+                    gfx::ConvertToJavaBitmap(small_bitmap), 1, 1,
                     reinterpret_cast<intptr_t>(new Resource()));
   }
 

@@ -88,7 +88,7 @@ void OnGetServiceWorkerPaymentAppsInfo(
         ConvertUTF8ToJavaString(env, app_info.second->name),
         app_info.second->icon == nullptr
             ? nullptr
-            : gfx::ConvertToJavaBitmap(app_info.second->icon.get()));
+            : gfx::ConvertToJavaBitmap(*app_info.second->icon));
   }
 
   Java_ServiceWorkerPaymentAppBridge_onGetServiceWorkerPaymentAppsInfo(

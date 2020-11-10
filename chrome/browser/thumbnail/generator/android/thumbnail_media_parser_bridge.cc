@@ -27,7 +27,7 @@ void OnMediaParsed(const base::android::ScopedJavaGlobalRef<jobject> jcallback,
   // Copy the thumbnail bitmap to a Java Bitmap object.
   base::android::ScopedJavaLocalRef<jobject> java_bitmap;
   if (!thumbnail_bitmap.isNull())
-    java_bitmap = gfx::ConvertToJavaBitmap(&thumbnail_bitmap);
+    java_bitmap = gfx::ConvertToJavaBitmap(thumbnail_bitmap);
 
   base::android::ScopedJavaLocalRef<jobject> media_data;
   if (success) {

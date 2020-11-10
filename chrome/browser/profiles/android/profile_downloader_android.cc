@@ -83,7 +83,7 @@ class AccountInfoRetriever : public ProfileDownloaderDelegate {
     SkBitmap bitmap = downloader->GetProfilePicture();
     ScopedJavaLocalRef<jobject> jbitmap;
     if (!bitmap.isNull() && bitmap.bytesPerPixel() != 0)
-      jbitmap = gfx::ConvertToJavaBitmap(&bitmap);
+      jbitmap = gfx::ConvertToJavaBitmap(bitmap);
 
     JNIEnv* env = base::android::AttachCurrentThread();
     Java_ProfileDownloader_onProfileDownloadSuccess(
@@ -176,7 +176,7 @@ JNI_ProfileDownloader_GetCachedAvatarForPrimaryAccount(
         avatar_image.Width() > profiles::kAvatarIconSize &&
         avatar_image.Height() > profiles::kAvatarIconSize &&
         avatar_image.AsImageSkia().bitmap()) {
-      jbitmap = gfx::ConvertToJavaBitmap(avatar_image.AsImageSkia().bitmap());
+      jbitmap = gfx::ConvertToJavaBitmap(*avatar_image.AsImageSkia().bitmap());
     }
   }
 

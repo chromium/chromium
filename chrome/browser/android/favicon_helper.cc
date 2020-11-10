@@ -446,7 +446,7 @@ void FaviconHelper::OnFaviconBitmapResultAvailable(
     gfx::PNGCodec::Decode(result.bitmap_data->front(),
                           result.bitmap_data->size(), &favicon_bitmap);
     if (!favicon_bitmap.isNull())
-      j_favicon_bitmap = gfx::ConvertToJavaBitmap(&favicon_bitmap);
+      j_favicon_bitmap = gfx::ConvertToJavaBitmap(favicon_bitmap);
   }
 
   // Call java side OnFaviconBitmapResultAvailable method.
@@ -479,7 +479,7 @@ void FaviconHelper::OnFaviconBitmapResultsAvailable(
         compose_bitmaps_helper::ComposeBitmaps(std::move(result_bitmaps),
                                                desired_size_in_pixel);
     if (composed_bitmap && !composed_bitmap->isNull()) {
-      j_favicon_bitmap = gfx::ConvertToJavaBitmap(composed_bitmap.get());
+      j_favicon_bitmap = gfx::ConvertToJavaBitmap(*composed_bitmap);
     }
   }
 

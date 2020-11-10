@@ -76,7 +76,7 @@ void AvatarFetcherAndroid::OnFetchComplete(const GURL& url,
                                            const SkBitmap* bitmap) {
   if (bitmap) {
     base::android::ScopedJavaLocalRef<jobject> java_bitmap =
-        gfx::ConvertToJavaBitmap(bitmap);
+        gfx::ConvertToJavaBitmap(*bitmap);
     Java_AccountChooserDialog_imageFetchComplete(
         base::android::AttachCurrentThread(), java_dialog_, index_,
         java_bitmap);

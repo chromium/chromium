@@ -143,7 +143,7 @@ void AddToHomescreenMediator::SetIcon(const SkBitmap& display_icon,
   JNIEnv* env = base::android::AttachCurrentThread();
   DCHECK(!display_icon.drawsNothing());
   base::android::ScopedJavaLocalRef<jobject> java_bitmap =
-      gfx::ConvertToJavaBitmap(&display_icon);
+      gfx::ConvertToJavaBitmap(display_icon);
   Java_AddToHomescreenMediator_setIcon(env, java_ref_, java_bitmap,
                                        params_->has_maskable_primary_icon,
                                        need_to_add_padding);

@@ -18,12 +18,14 @@ namespace gfx {
 
 // A Java counterpart will be generated for this enum.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.ui.gfx
+// The order and values here match AndroidBitmapFormat, as verified
+// by static_asserts in java_bitmap.cc.
 enum BitmapFormat {
-  BITMAP_FORMAT_NO_CONFIG,
-  BITMAP_FORMAT_ALPHA_8,
-  BITMAP_FORMAT_ARGB_4444,
-  BITMAP_FORMAT_ARGB_8888,
-  BITMAP_FORMAT_RGB_565,
+  BITMAP_FORMAT_NO_CONFIG = 0,
+  BITMAP_FORMAT_ARGB_8888 = 1,
+  BITMAP_FORMAT_RGB_565 = 4,
+  BITMAP_FORMAT_ARGB_4444 = 7,
+  BITMAP_FORMAT_ALPHA_8 = 8,
 };
 
 // This class wraps a JNI AndroidBitmap object to make it easier to use. It
@@ -58,19 +60,11 @@ enum class OomBehavior {
   kReturnNullOnOom,
 };
 
-// Allocates a Java-backed bitmap (android.graphics.Bitmap) with the given
-// (non-empty!) size and color type.
-GFX_EXPORT base::android::ScopedJavaLocalRef<jobject> CreateJavaBitmap(
-    int width,
-    int height,
-    SkColorType color_type,
-    OomBehavior reaction = OomBehavior::kCrashOnOom);
-
 // Converts |skbitmap| to a Java-backed bitmap (android.graphics.Bitmap).
 // Note: |skbitmap| is assumed to be non-null, non-empty and one of RGBA_8888 or
 // RGB_565 formats.
 GFX_EXPORT base::android::ScopedJavaLocalRef<jobject> ConvertToJavaBitmap(
-    const SkBitmap* skbitmap,
+    const SkBitmap& skbitmap,
     OomBehavior reaction = OomBehavior::kCrashOnOom);
 
 // Converts |bitmap| to an SkBitmap of the same size and format.

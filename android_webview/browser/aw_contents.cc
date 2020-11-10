@@ -819,7 +819,7 @@ void AwContents::OnReceivedIcon(const GURL& icon_url, const SkBitmap& bitmap) {
   }
 
   ScopedJavaLocalRef<jobject> java_bitmap =
-      gfx::ConvertToJavaBitmap(&bitmap, gfx::OomBehavior::kReturnNullOnOom);
+      gfx::ConvertToJavaBitmap(bitmap, gfx::OomBehavior::kReturnNullOnOom);
   if (!java_bitmap) {
     LOG(WARNING) << "Skipping onReceivedIcon; Not enough memory to convert "
                     "icon to Bitmap.";

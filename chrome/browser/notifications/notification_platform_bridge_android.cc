@@ -65,7 +65,7 @@ ScopedJavaLocalRef<jobject> JNI_NotificationPlatformBridge_ConvertToJavaBitmap(
   SkBitmap skbitmap = icon.AsBitmap();
   ScopedJavaLocalRef<jobject> j_bitmap;
   if (!skbitmap.drawsNothing())
-    j_bitmap = gfx::ConvertToJavaBitmap(&skbitmap);
+    j_bitmap = gfx::ConvertToJavaBitmap(skbitmap);
   return j_bitmap;
 }
 
@@ -287,17 +287,17 @@ void NotificationPlatformBridgeAndroid::Display(
   ScopedJavaLocalRef<jobject> image;
   SkBitmap image_bitmap = notification.image().AsBitmap();
   if (!image_bitmap.drawsNothing())
-    image = gfx::ConvertToJavaBitmap(&image_bitmap);
+    image = gfx::ConvertToJavaBitmap(image_bitmap);
 
   ScopedJavaLocalRef<jobject> notification_icon;
   SkBitmap notification_icon_bitmap = notification.icon().AsBitmap();
   if (!notification_icon_bitmap.drawsNothing())
-    notification_icon = gfx::ConvertToJavaBitmap(&notification_icon_bitmap);
+    notification_icon = gfx::ConvertToJavaBitmap(notification_icon_bitmap);
 
   ScopedJavaLocalRef<jobject> badge;
   SkBitmap badge_bitmap = notification.small_image().AsBitmap();
   if (!badge_bitmap.drawsNothing())
-    badge = gfx::ConvertToJavaBitmap(&badge_bitmap);
+    badge = gfx::ConvertToJavaBitmap(badge_bitmap);
 
   ScopedJavaLocalRef<jobjectArray> actions =
       ConvertToJavaActionInfos(notification.buttons());
