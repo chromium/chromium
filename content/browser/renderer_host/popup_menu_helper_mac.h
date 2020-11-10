@@ -11,7 +11,7 @@
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_observer.h"
@@ -77,7 +77,8 @@ class PopupMenuHelper : public RenderWidgetHostObserver {
 
   Delegate* delegate_;  // Weak. Owns |this|.
 
-  ScopedObserver<RenderWidgetHost, RenderWidgetHostObserver> observer_{this};
+  base::ScopedObservation<RenderWidgetHost, RenderWidgetHostObserver>
+      observation_{this};
   base::WeakPtr<RenderFrameHostImpl> render_frame_host_;
   mojo::Remote<blink::mojom::PopupMenuClient> popup_client_;
   WebMenuRunner* menu_runner_ = nil;

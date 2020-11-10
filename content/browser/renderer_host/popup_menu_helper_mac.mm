@@ -35,7 +35,7 @@ PopupMenuHelper::PopupMenuHelper(
       popup_client_(std::move(popup_client)) {
   RenderWidgetHost* widget_host =
       render_frame_host->GetRenderViewHost()->GetWidget();
-  observer_.Add(widget_host);
+  observation_.Observe(widget_host);
 
   popup_client_.set_disconnect_handler(
       base::BindOnce(&PopupMenuHelper::Hide, weak_ptr_factory_.GetWeakPtr()));
@@ -159,7 +159,8 @@ void PopupMenuHelper::RenderWidgetHostVisibilityChanged(
 }
 
 void PopupMenuHelper::RenderWidgetHostDestroyed(RenderWidgetHost* widget_host) {
-  observer_.Remove(widget_host);
+  DCHECK(observation_.IsObservingSource(widget_host));
+  observation_.RemoveObservation();
 }
 
 }  // namespace content
