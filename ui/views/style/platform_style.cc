@@ -49,7 +49,6 @@ const bool PlatformStyle::kTreeViewSelectionPaintsEntireRow = false;
 const bool PlatformStyle::kUseRipples = true;
 const bool PlatformStyle::kTextfieldScrollsToStartOnFocusChange = false;
 const bool PlatformStyle::kTextfieldUsesDragCursorWhenDraggable = true;
-const bool PlatformStyle::kPreferFocusRings = true;
 const bool PlatformStyle::kInactiveWidgetControlsAppearDisabled = false;
 
 // Linux clips bubble windows that extend outside their parent window

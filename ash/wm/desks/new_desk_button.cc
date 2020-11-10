@@ -26,7 +26,6 @@
 #include "ui/views/border.h"
 #include "ui/views/controls/button/label_button_border.h"
 #include "ui/views/controls/highlight_path_generator.h"
-#include "ui/views/style/platform_style.h"
 
 namespace ash {
 
@@ -140,7 +139,7 @@ void NewDeskButton::OnPaintBackground(gfx::Canvas* canvas) {
 std::unique_ptr<views::InkDrop> NewDeskButton::CreateInkDrop() {
   auto ink_drop = CreateDefaultFloodFillInkDropImpl();
   ink_drop->SetShowHighlightOnHover(false);
-  ink_drop->SetShowHighlightOnFocus(!views::PlatformStyle::kPreferFocusRings);
+  ink_drop->SetShowHighlightOnFocus(false);
   return std::move(ink_drop);
 }
 

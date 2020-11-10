@@ -73,11 +73,6 @@ class VIEWS_EXPORT PlatformStyle {
   static const float kFocusHaloThickness;
   static const float kFocusHaloInset;
 
-  // Whether "button-like" (for example, buttons in the top chrome or Omnibox
-  // decorations) UI elements should use a focus ring, rather than show
-  // hover state on focus.
-  static const bool kPreferFocusRings;
-
   // Whether controls in inactive widgets appear disabled.
   static const bool kInactiveWidgetControlsAppearDisabled;
 

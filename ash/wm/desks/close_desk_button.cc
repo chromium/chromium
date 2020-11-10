@@ -15,7 +15,6 @@
 #include "ui/views/background.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/rect_based_targeting_utils.h"
-#include "ui/views/style/platform_style.h"
 
 namespace ash {
 
@@ -46,7 +45,7 @@ const char* CloseDeskButton::GetClassName() const {
 
 std::unique_ptr<views::InkDrop> CloseDeskButton::CreateInkDrop() {
   auto ink_drop = CreateDefaultFloodFillInkDropImpl();
-  ink_drop->SetShowHighlightOnFocus(!views::PlatformStyle::kPreferFocusRings);
+  ink_drop->SetShowHighlightOnFocus(false);
   return std::move(ink_drop);
 }
 

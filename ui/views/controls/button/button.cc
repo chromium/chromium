@@ -594,7 +594,7 @@ Button::Button(PressedCallback callback)
   SetFocusBehavior(PlatformStyle::DefaultFocusBehavior());
   SetProperty(kIsButtonProperty, true);
   hover_animation_.SetSlideDuration(base::TimeDelta::FromMilliseconds(150));
-  SetInstallFocusRingOnFocus(PlatformStyle::kPreferFocusRings);
+  SetInstallFocusRingOnFocus(true);
   button_controller_ = std::make_unique<ButtonController>(
       this, std::make_unique<DefaultButtonControllerDelegate>(this));
 }

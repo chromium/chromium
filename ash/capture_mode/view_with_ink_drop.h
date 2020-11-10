@@ -10,7 +10,6 @@
 #include "ash/capture_mode/capture_mode_constants.h"
 #include "ui/views/animation/ink_drop_host_view.h"
 #include "ui/views/animation/ink_drop_impl.h"
-#include "ui/views/style/platform_style.h"
 
 namespace ash {
 
@@ -40,7 +39,7 @@ class ViewWithInkDrop : public T {
   std::unique_ptr<views::InkDrop> CreateInkDrop() override {
     auto ink_drop = T::CreateDefaultFloodFillInkDropImpl();
     ink_drop->SetShowHighlightOnHover(false);
-    ink_drop->SetShowHighlightOnFocus(!views::PlatformStyle::kPreferFocusRings);
+    ink_drop->SetShowHighlightOnFocus(false);
     return std::move(ink_drop);
   }
 
