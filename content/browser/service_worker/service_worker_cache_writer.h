@@ -140,6 +140,8 @@ class CONTENT_EXPORT ServiceWorkerCacheWriter {
     write_observer_ = write_observer;
   }
 
+  void FlushRemotesForTesting();
+
  private:
   class ReadResponseHeadCallbackAdapter;
   class DataPipeReader;
@@ -269,6 +271,8 @@ class CONTENT_EXPORT ServiceWorkerCacheWriter {
   void OnWillWriteDataCompleted(scoped_refptr<net::IOBuffer> data,
                                 int length,
                                 net::Error error);
+
+  void OnRemoteDisconnected();
 
   // Callback used by the above helpers for their IO operations. This is only
   // run when those IO operations complete asynchronously, in which case it

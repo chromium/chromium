@@ -174,7 +174,22 @@ ServiceWorkerCacheWriter::ServiceWorkerCacheWriter(
       compare_reader_(std::move(compare_reader)),
       copy_reader_(std::move(copy_reader)),
       writer_(std::move(writer)),
-      writer_resource_id_(writer_resource_id) {}
+      writer_resource_id_(writer_resource_id) {
+  if (compare_reader_) {
+    compare_reader_.set_disconnect_handler(
+        base::BindOnce(&ServiceWorkerCacheWriter::OnRemoteDisconnected,
+                       weak_factory_.GetWeakPtr()));
+  }
+  if (copy_reader_) {
+    copy_reader_.set_disconnect_handler(
+        base::BindOnce(&ServiceWorkerCacheWriter::OnRemoteDisconnected,
+                       weak_factory_.GetWeakPtr()));
+  }
+  DCHECK(writer_);
+  writer_.set_disconnect_handler(
+      base::BindOnce(&ServiceWorkerCacheWriter::OnRemoteDisconnected,
+                     weak_factory_.GetWeakPtr()));
+}
 
 ServiceWorkerCacheWriter::~ServiceWorkerCacheWriter() {}
 
@@ -184,7 +199,9 @@ ServiceWorkerCacheWriter::CreateForCopy(
     mojo::Remote<storage::mojom::ServiceWorkerResourceWriter> writer,
     int64_t writer_resource_id) {
   DCHECK(copy_reader);
+  DCHECK(copy_reader.is_connected());
   DCHECK(writer);
+  DCHECK(writer.is_connected());
   mojo::Remote<storage::mojom::ServiceWorkerResourceReader> null_remote;
   return base::WrapUnique(new ServiceWorkerCacheWriter(
       std::move(null_remote) /* compare_reader */, std::move(copy_reader),
@@ -197,6 +214,7 @@ ServiceWorkerCacheWriter::CreateForWriteBack(
     mojo::Remote<storage::mojom::ServiceWorkerResourceWriter> writer,
     int64_t writer_resource_id) {
   DCHECK(writer);
+  DCHECK(writer.is_connected());
   return base::WrapUnique(new ServiceWorkerCacheWriter(
       /*compare_reader=*/{}, /*copy_reader=*/{}, std::move(writer),
       writer_resource_id,
@@ -213,8 +231,11 @@ ServiceWorkerCacheWriter::CreateForComparison(
   // |compare_reader| reads data for the comparison. |copy_reader| reads
   // data for copy.
   DCHECK(compare_reader);
+  DCHECK(compare_reader.is_connected());
   DCHECK(copy_reader);
+  DCHECK(copy_reader.is_connected());
   DCHECK(writer);
+  DCHECK(writer.is_connected());
   return base::WrapUnique(new ServiceWorkerCacheWriter(
       std::move(compare_reader), std::move(copy_reader), std::move(writer),
       writer_resource_id, pause_when_not_identical));
@@ -225,6 +246,9 @@ net::Error ServiceWorkerCacheWriter::MaybeWriteHeaders(
     OnWriteCompleteCallback callback) {
   DCHECK(!io_pending_);
   DCHECK(!IsCopying());
+
+  if (!writer_.is_connected())
+    return net::ERR_FAILED;
 
   response_head_to_write_ = std::move(response_head);
   pending_callback_ = std::move(callback);
@@ -254,6 +278,9 @@ net::Error ServiceWorkerCacheWriter::MaybeWriteData(
     OnWriteCompleteCallback callback) {
   DCHECK(!io_pending_);
   DCHECK(!IsCopying());
+
+  if (!writer_.is_connected())
+    return net::ERR_FAILED;
 
   data_to_write_ = buf;
   len_to_write_ = buf_size;
@@ -295,6 +322,9 @@ net::Error ServiceWorkerCacheWriter::Resume(OnWriteCompleteCallback callback) {
   DCHECK(io_pending_);
   DCHECK(!IsCopying());
 
+  if (!copy_reader_.is_connected())
+    return net::ERR_FAILED;
+
   io_pending_ = false;
   pending_callback_ = std::move(callback);
   state_ = STATE_READ_HEADERS_FOR_COPY;
@@ -326,8 +356,11 @@ net::Error ServiceWorkerCacheWriter::Resume(OnWriteCompleteCallback callback) {
 net::Error ServiceWorkerCacheWriter::StartCopy(
     OnWriteCompleteCallback callback) {
   DCHECK(IsCopying());
-  pending_callback_ = std::move(callback);
 
+  if (!copy_reader_.is_connected())
+    return net::ERR_FAILED;
+
+  pending_callback_ = std::move(callback);
   int result = DoLoop(net::OK);
 
   // Synchronous completions are always STATE_DONE.
@@ -349,6 +382,15 @@ net::Error ServiceWorkerCacheWriter::StartCopy(
 
 bool ServiceWorkerCacheWriter::IsCopying() const {
   return !compare_reader_ && copy_reader_;
+}
+
+void ServiceWorkerCacheWriter::FlushRemotesForTesting() {
+  if (copy_reader_)
+    copy_reader_.FlushForTesting();  // IN-TEST
+  if (compare_reader_)
+    compare_reader_.FlushForTesting();  // IN-TEST
+  DCHECK(writer_);
+  writer_.FlushForTesting();  // IN-TEST
 }
 
 int64_t ServiceWorkerCacheWriter::writer_resource_id() const {
@@ -377,6 +419,11 @@ int ServiceWorkerCacheWriter::DoReadHeadersForCompare(int result) {
   DCHECK(response_head_to_write_);
   DCHECK(compare_reader_);
 
+  if (!compare_reader_.is_connected()) {
+    state_ = STATE_DONE;
+    return net::ERR_FAILED;
+  }
+
   state_ = STATE_READ_HEADERS_FOR_COMPARE_DONE;
   return ReadResponseHead(compare_reader_.get());
 }
@@ -404,6 +451,10 @@ int ServiceWorkerCacheWriter::DoReadDataForCompare(int result) {
   // If this was an EOF, don't issue a read.
   if (len_to_write_ > 0) {
     DCHECK(compare_reader_);
+    if (!compare_reader_.is_connected()) {
+      state_ = STATE_DONE;
+      return net::ERR_FAILED;
+    }
     result = ReadDataHelper(compare_reader_.get(), compare_data_pipe_reader_,
                             data_to_read_.get(), len_to_read_);
   }
@@ -456,6 +507,10 @@ int ServiceWorkerCacheWriter::DoReadDataForCompareDone(int result) {
   // that this reuses the same IOBuffer.
   if (compare_offset_ < static_cast<size_t>(len_to_read_)) {
     DCHECK(compare_reader_);
+    if (!compare_reader_.is_connected()) {
+      state_ = STATE_DONE;
+      return net::ERR_FAILED;
+    }
     state_ = STATE_READ_DATA_FOR_COMPARE_DONE;
     return ReadDataHelper(compare_reader_.get(), compare_data_pipe_reader_,
                           data_to_read_.get(), len_to_read_ - compare_offset_);
@@ -478,6 +533,12 @@ int ServiceWorkerCacheWriter::DoReadDataForCompareDone(int result) {
 int ServiceWorkerCacheWriter::DoReadHeadersForCopy(int result) {
   DCHECK_GE(result, 0);
   DCHECK(copy_reader_);
+
+  if (!copy_reader_.is_connected()) {
+    state_ = STATE_DONE;
+    return net::ERR_FAILED;
+  }
+
   bytes_copied_ = 0;
   data_to_copy_ = base::MakeRefCounted<net::IOBuffer>(kCopyBufferSize);
   state_ = STATE_READ_HEADERS_FOR_COPY_DONE;
@@ -522,6 +583,12 @@ int ServiceWorkerCacheWriter::DoWriteHeadersForCopyDone(int result) {
 
 int ServiceWorkerCacheWriter::DoReadDataForCopy(int result) {
   DCHECK_GE(result, 0);
+  DCHECK(copy_reader_);
+
+  if (!copy_reader_.is_connected()) {
+    state_ = STATE_DONE;
+    return net::ERR_FAILED;
+  }
 
   // If the cache writer is only for copy, get the total size to read from
   // header data instead of |bytes_compared_| as no comparison is done.
@@ -731,6 +798,11 @@ int ServiceWorkerCacheWriter::ReadDataHelper(
 
 int ServiceWorkerCacheWriter::WriteResponseHeadToResponseWriter(
     network::mojom::URLResponseHeadPtr response_head) {
+  if (!writer_.is_connected()) {
+    state_ = STATE_DONE;
+    return net::ERR_FAILED;
+  }
+
   DCHECK(response_head);
   did_replace_ = true;
   net::CompletionOnceCallback run_callback = base::BindOnce(
@@ -762,6 +834,11 @@ int ServiceWorkerCacheWriter::WriteResponseHead(
 int ServiceWorkerCacheWriter::WriteDataToResponseWriter(
     scoped_refptr<net::IOBuffer> data,
     int length) {
+  if (!writer_.is_connected()) {
+    state_ = STATE_DONE;
+    return net::ERR_FAILED;
+  }
+
   net::CompletionOnceCallback run_callback = base::BindOnce(
       &ServiceWorkerCacheWriter::AsyncDoLoop, weak_factory_.GetWeakPtr());
   scoped_refptr<AsyncOnlyCompletionCallbackAdaptor> adaptor(
@@ -815,15 +892,28 @@ void ServiceWorkerCacheWriter::OnWillWriteDataCompleted(
     AsyncDoLoop(result);
 }
 
+void ServiceWorkerCacheWriter::OnRemoteDisconnected() {
+  if (state_ == STATE_DONE)
+    return;
+
+  state_ = STATE_DONE;
+  AsyncDoLoop(net::ERR_FAILED);
+}
+
 void ServiceWorkerCacheWriter::AsyncDoLoop(int result) {
   result = DoLoop(result);
   // If the result is ERR_IO_PENDING, the pending callback will be run by a
   // later invocation of AsyncDoLoop.
   if (result != net::ERR_IO_PENDING) {
-    OnWriteCompleteCallback callback = std::move(pending_callback_);
-    net::Error error = result >= 0 ? net::OK : static_cast<net::Error>(result);
     io_pending_ = false;
-    std::move(callback).Run(error);
+    // `pending_callback_` might be already consumed when mojo remotes are
+    // disconnected.
+    if (pending_callback_) {
+      OnWriteCompleteCallback callback = std::move(pending_callback_);
+      net::Error error =
+          result >= 0 ? net::OK : static_cast<net::Error>(result);
+      std::move(callback).Run(error);
+    }
     return;
   }
   if (state_ == STATE_PAUSING) {
