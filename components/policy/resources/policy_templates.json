@@ -5783,7 +5783,7 @@
           'caption': '''Do not allow any site to access sensors''',
         }
       ],
-      'future_on': ['chrome.*', 'chrome_os', 'android'],
+      'supported_on': ['chrome.*:88-', 'chrome_os:88-', 'android:88-'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -6918,7 +6918,7 @@
         'type': 'array',
         'items': { 'type': 'string' },
       },
-      'future_on': ['chrome.*', 'chrome_os', 'android'],
+      'supported_on': ['chrome.*:88-', 'chrome_os:88-', 'android:88-'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -6943,7 +6943,7 @@
         'type': 'array',
         'items': { 'type': 'string' },
       },
-      'future_on': ['chrome.*', 'chrome_os', 'android'],
+      'supported_on': ['chrome.*:88-', 'chrome_os:88-', 'android:88-'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
