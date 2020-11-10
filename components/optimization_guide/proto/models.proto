@@ -18,6 +18,8 @@ message Model {
   oneof model {
     DecisionTree decision_tree = 1;
     Ensemble ensemble = 2;
+    // The URL that the model can be downloaded from.
+    string download_url = 5;
   }
   // The tag number is high to allow models to be added and an uncommon number
   // in case the proto this is generated from adds a similar functionality.
