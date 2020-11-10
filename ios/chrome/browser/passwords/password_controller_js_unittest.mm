@@ -643,6 +643,39 @@ TEST_F(
                   @"document.getElementById('user').value == '%@'", password));
 }
 
+// Check that a matching and complete password form is successfully filled
+// with the generated password.
+TEST_F(PasswordControllerJsTest,
+       FillPasswordFormWithGeneratedPassword_SucceedsOutsideFormTag) {
+  LoadHtmlAndInject(@"<html>"
+                     "  <body>"
+                     "    <input type=\"text\" id=\"user\" name=\"user\">"
+                     "    <input type=\"password\" id=\"ps1\" name=\"ps1\">"
+                     "    <input type=\"password\" id=\"ps2\" name=\"ps2\">"
+                     "    <input type=\"submit\" name=\"go\">"
+                     "  </body>"
+                     "</html>");
+  SetUpUniqueIDs();
+
+  NSString* const password = @"abc";
+  uint32_t const newPasswordIdentifier = 1;
+  uint32_t const confirmPasswordIdentifier = 2;
+  EXPECT_NSEQ(@YES,
+              ExecuteJavaScriptWithFormat(
+                  @"__gCrWeb.passwords."
+                  @"fillPasswordFormWithGeneratedPassword(-1, %u, %u, '%@')",
+                  newPasswordIdentifier, confirmPasswordIdentifier, password));
+  EXPECT_NSEQ(@YES,
+              ExecuteJavaScriptWithFormat(
+                  @"document.getElementById('ps1').value == '%@'", password));
+  EXPECT_NSEQ(@YES,
+              ExecuteJavaScriptWithFormat(
+                  @"document.getElementById('ps2').value == '%@'", password));
+  EXPECT_NSEQ(@NO,
+              ExecuteJavaScriptWithFormat(
+                  @"document.getElementById('user').value == '%@'", password));
+}
+
 // Check that a form with only password field (i.e. w/o username) is filled.
 TEST_F(PasswordControllerJsTest, FillOnlyPasswordField) {
   LoadHtmlAndInject(

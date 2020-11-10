@@ -225,11 +225,15 @@ __gCrWeb.passwords['fillPasswordForm'] = function(
 __gCrWeb.passwords['fillPasswordFormWithGeneratedPassword'] = function(
     formIdentifier, newPasswordIdentifier, confirmPasswordIdentifier,
     password) {
+  const hasFormTag =
+      formIdentifier.toString() !== __gCrWeb.fill.RENDERER_ID_NOT_SET;
   const form = __gCrWeb.form.getFormElementFromUniqueFormId(formIdentifier);
-  if (!form) {
+  if (!form && hasFormTag) {
     return false;
   }
-  const inputs = getFormInputElements(form);
+  const inputs = hasFormTag ?
+      getFormInputElements(form) :
+      __gCrWeb.fill.getUnownedAutofillableFormFieldElements(document.all, []);
   const newPasswordField =
       findInputByUniqueFieldId(inputs, newPasswordIdentifier);
   if (!newPasswordField) {
