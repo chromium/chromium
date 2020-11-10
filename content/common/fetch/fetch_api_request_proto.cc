@@ -48,8 +48,8 @@ blink::mojom::FetchAPIRequestPtr DeserializeFetchRequestFromString(
   request_ptr->frame_type = blink::mojom::RequestContextFrameType::kNone;
   request_ptr->url = GURL(request_proto.url());
   request_ptr->method = request_proto.method();
-  request_ptr->headers = {request_proto.headers().begin(),
-                          request_proto.headers().end()};
+  request_ptr->headers = blink::FetchAPIRequestHeadersMap(
+      request_proto.headers().begin(), request_proto.headers().end());
   request_ptr->referrer = blink::mojom::Referrer::New(
       GURL(request_proto.referrer().url()),
 

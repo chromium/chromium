@@ -97,7 +97,8 @@ IppRequestPtr GetBasicIppRequest() {
   ret->http_version = "HTTP/1.1";
 
   // Map of Http headers.
-  ret->headers = std::vector<ipp_converter::HttpHeader>{
+  ret->headers = base::flat_map<ipp_converter::HttpHeader::first_type,
+                                ipp_converter::HttpHeader::second_type>{
       {"Content-Length", "72"},
       {"Content-Type", "application/ipp"},
       {"Date", "Thu, 04 Oct 2018 20:25:59 GMT"},

@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/optional.h"
 #include "chrome/services/cups_proxy/public/cpp/type_conversions.h"
 #include "chrome/services/ipp_parser/public/cpp/ipp_converter.h"
@@ -181,7 +182,8 @@ void IppParser::ParseIpp(const std::vector<uint8_t>& to_parse,
   parsed_request->endpoint = request_line_terms[1];
   parsed_request->http_version = request_line_terms[2];
 
-  parsed_request->headers = std::move(*headers);
+  parsed_request->headers =
+      base::flat_map<std::string, std::string>(std::move(*headers));
   parsed_request->ipp = std::move(ipp_message);
   parsed_request->data = std::move(ipp_data);
 
