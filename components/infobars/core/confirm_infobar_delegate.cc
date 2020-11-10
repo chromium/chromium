@@ -4,6 +4,7 @@
 
 #include "components/infobars/core/confirm_infobar_delegate.h"
 
+#include "build/build_config.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/strings/grit/ui_strings.h"
 
@@ -47,6 +48,12 @@ base::string16 ConfirmInfoBarDelegate::GetButtonLabel(
 bool ConfirmInfoBarDelegate::OKButtonTriggersUACPrompt() const {
   return false;
 }
+
+#if defined(OS_IOS)
+bool ConfirmInfoBarDelegate::UseIconBackgroundTint() const {
+  return true;
+}
+#endif
 
 bool ConfirmInfoBarDelegate::Accept() {
   return true;

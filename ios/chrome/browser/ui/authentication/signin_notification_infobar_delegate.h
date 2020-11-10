@@ -49,6 +49,7 @@ class SigninNotificationInfoBarDelegate : public ConfirmInfoBarDelegate {
   int GetButtons() const override;
   base::string16 GetButtonLabel(InfoBarButton button) const override;
   gfx::Image GetIcon() const override;
+  bool UseIconBackgroundTint() const override;
   bool Accept() override;
 
  private:

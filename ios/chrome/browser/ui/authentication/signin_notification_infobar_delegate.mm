@@ -120,6 +120,10 @@ gfx::Image SigninNotificationInfoBarDelegate::GetIcon() const {
   return icon_;
 }
 
+bool SigninNotificationInfoBarDelegate::UseIconBackgroundTint() const {
+  return false;
+}
+
 bool SigninNotificationInfoBarDelegate::Accept() {
   [dispatcher_ showAccountsSettingsFromViewController:base_view_controller_];
   base::RecordAction(base::UserMetricsAction(
