@@ -286,6 +286,11 @@
       },
     },
   },
+  'enable_resultdb': {
+    'resultdb': {
+      'enable': True,
+    },
+  },
   'flounder': {
     # Nexus 9
     'swarming': {

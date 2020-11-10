@@ -273,6 +273,7 @@
         'mixins': [
           'chrome-gpu-gold-service-account',
           'skia_gold_test',
+          'enable_resultdb',
         ],
         'telemetry_test_name': 'pixel',
       },
@@ -1331,16 +1332,28 @@
         'args': [
           '--extra-browser-args=--use-cmd-decoder=validating',
         ],
+        'mixins': [
+          'enable_resultdb',
+        ],
       },
       'depth_capture': {
         'isolate_name': 'fuchsia_telemetry_gpu_integration_test',
+        'mixins': [
+          'enable_resultdb',
+        ],
       },
       'gpu_process': {
         'name': 'gpu_process_launch_tests',
         'isolate_name': 'fuchsia_telemetry_gpu_integration_test',
+        'mixins': [
+          'enable_resultdb',
+        ],
       },
       'hardware_accelerated_feature': {
         'isolate_name': 'fuchsia_telemetry_gpu_integration_test',
+        'mixins': [
+          'enable_resultdb',
+        ],
       },
       'info_collection': {
         'args': [
@@ -1349,12 +1362,16 @@
           '$$MAGIC_SUBSTITUTION_GPUExpectedDeviceId',
         ],
         'isolate_name': 'fuchsia_telemetry_gpu_integration_test',
+        'mixins': [
+          'enable_resultdb',
+        ],
       },
       'maps': {
         'isolate_name': 'fuchsia_telemetry_gpu_integration_test',
         'mixins': [
           'chrome-gpu-gold-service-account',
           'skia_gold_test',
+          'enable_resultdb',
         ],
       },
       'pixel': {
@@ -1362,16 +1379,26 @@
         'mixins': [
           'chrome-gpu-gold-service-account',
           'skia_gold_test',
+          'enable_resultdb',
         ],
       },
       'screenshot_sync': {
         'isolate_name': 'fuchsia_telemetry_gpu_integration_test',
+        'mixins': [
+          'enable_resultdb',
+        ],
       },
       'trace_test': {
         'isolate_name': 'fuchsia_telemetry_gpu_integration_test',
+        'mixins': [
+          'enable_resultdb',
+        ],
       },
       'webgl_conformance': {
         'isolate_name': 'fuchsia_telemetry_gpu_integration_test',
+        'mixins': [
+          'enable_resultdb',
+        ],
         'swarming': {
           'shards': 6,
         },
@@ -2261,10 +2288,16 @@
         'chromeos_args': [
           '$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote',
         ],
+        'mixins': [
+          'enable_resultdb',
+        ],
       },
       'trace_test': {
         'chromeos_args': [
           '$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote',
+        ],
+        'mixins': [
+          'enable_resultdb',
         ],
       },
     },
@@ -2484,6 +2517,9 @@
           '--extra-browser-args=--force-online-connection-state-for-indicator',
         ],
         'telemetry_test_name': 'screenshot_sync',
+        'mixins': [
+          'enable_resultdb',
+        ],
       },
     },
 
@@ -2515,6 +2551,9 @@
           # On dual-GPU devices we want the high-performance GPU to be active
           '--extra-browser-args=--force_high_performance_gpu',
         ],
+        'mixins': [
+          'enable_resultdb',
+        ],
       },
     },
 
@@ -2542,10 +2581,16 @@
         'args': [
           '--extra-browser-args=--use-cmd-decoder=passthrough --use-gl=angle',
         ],
+        'mixins': [
+          'enable_resultdb',
+        ],
       },
       'depth_capture': {
         'chromeos_args': [
           '$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote',
+        ],
+        'mixins': [
+          'enable_resultdb',
         ],
       },
       'gpu_process': {
@@ -2553,10 +2598,16 @@
         'chromeos_args': [
           '$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote',
         ],
+        'mixins': [
+          'enable_resultdb',
+        ],
       },
       'hardware_accelerated_feature': {
         'chromeos_args': [
           '$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote',
+        ],
+        'mixins': [
+          'enable_resultdb',
         ],
       },
       'maps_passthrough': {
@@ -2578,6 +2629,7 @@
         'mixins': [
           'chrome-gpu-gold-service-account',
           'skia_gold_test',
+          'enable_resultdb',
         ],
       },
       'pixel_skia_passthrough': {
@@ -2598,6 +2650,7 @@
         'mixins': [
           'chrome-gpu-gold-service-account',
           'skia_gold_test',
+          'enable_resultdb',
         ],
         'telemetry_test_name': 'pixel',
       },
@@ -2614,6 +2667,9 @@
         ],
         'chromeos_args': [
           '$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote',
+        ],
+        'mixins': [
+          'enable_resultdb',
         ],
       },
     },
@@ -2654,6 +2710,7 @@
         'mixins': [
           'chrome-gpu-gold-service-account',
           'skia_gold_test',
+          'enable_resultdb',
         ],
         'telemetry_test_name': 'pixel',
       },
@@ -2675,6 +2732,9 @@
           '--extra-browser-args=--enable-features=UseSkiaRenderer,UiGpuRasterization,SkiaDawn --enable-gpu-rasterization --enable-oop-rasterization --use-vulkan=native',
           '--test-filter=ScreenshotSync_GPURasterWithDivs',
         ],
+        'mixins': [
+          'enable_resultdb',
+        ],
       },
     },
 
@@ -2694,6 +2754,7 @@
         'mixins': [
           'chrome-gpu-gold-service-account',
           'skia_gold_test',
+          'enable_resultdb',
         ],
         'telemetry_test_name': 'pixel',
       },
@@ -2704,10 +2765,16 @@
         'args': [
           '--extra-browser-args=--enable-features=UseSkiaRenderer',
         ],
+        'mixins': [
+          'enable_resultdb',
+        ],
       },
       'depth_capture': {
         'args': [
           '--extra-browser-args=--enable-features=UseSkiaRenderer',
+        ],
+        'mixins': [
+          'enable_resultdb',
         ],
       },
       'gpu_process': {
@@ -2715,10 +2782,16 @@
         'args': [
           '--extra-browser-args=--enable-features=UseSkiaRenderer',
         ],
+        'mixins': [
+          'enable_resultdb',
+        ],
       },
       'hardware_accelerated_feature': {
         'args': [
           '--extra-browser-args=--enable-features=UseSkiaRenderer',
+        ],
+        'mixins': [
+          'enable_resultdb',
         ],
       },
       'maps': {
@@ -2736,6 +2809,7 @@
         'mixins': [
           'chrome-gpu-gold-service-account',
           'skia_gold_test',
+          'enable_resultdb',
         ],
       },
       'screenshot_sync': {
@@ -2746,6 +2820,9 @@
         'android_args': [
           # TODO(crbug.com/1093085): Remove this once we fix the tests.
           '--extra-browser-args=--force-online-connection-state-for-indicator',
+        ],
+        'mixins': [
+          'enable_resultdb',
         ],
       },
       'skia_renderer_pixel_skia_gold_test': {
@@ -2763,6 +2840,7 @@
         'mixins': [
           'chrome-gpu-gold-service-account',
           'skia_gold_test',
+          'enable_resultdb',
         ],
         'telemetry_test_name': 'pixel',
       },
@@ -2802,6 +2880,7 @@
         'mixins': [
           'chrome-gpu-gold-service-account',
           'skia_gold_test',
+          'enable_resultdb',
         ],
         'telemetry_test_name': 'pixel',
       },
@@ -2822,10 +2901,16 @@
         'args': [
           '--extra-browser-args=--use-cmd-decoder=validating',
         ],
+        'mixins': [
+          'enable_resultdb',
+        ],
       },
       'depth_capture': {
         'chromeos_args': [
           '$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote',
+        ],
+        'mixins': [
+          'enable_resultdb',
         ],
       },
       'gpu_process': {
@@ -2833,10 +2918,16 @@
         'chromeos_args': [
           '$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote',
         ],
+        'mixins': [
+          'enable_resultdb',
+        ],
       },
       'hardware_accelerated_feature': {
         'chromeos_args': [
           '$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote',
+        ],
+        'mixins': [
+          'enable_resultdb',
         ],
       },
       'maps_validating': {
@@ -2858,6 +2949,7 @@
         'mixins': [
           'chrome-gpu-gold-service-account',
           'skia_gold_test',
+          'enable_resultdb',
         ],
       },
       'pixel_skia_validating': {
@@ -2878,6 +2970,7 @@
         'mixins': [
           'chrome-gpu-gold-service-account',
           'skia_gold_test',
+          'enable_resultdb',
         ],
         'telemetry_test_name': 'pixel',
       },
@@ -2894,6 +2987,9 @@
         ],
         'chromeos_args': [
           '$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote',
+        ],
+        'mixins': [
+          'enable_resultdb',
         ],
       },
     },
@@ -2918,6 +3014,9 @@
           # On dual-GPU devices we want the high-performance GPU to be active
           '--extra-browser-args=--use-gl=angle --use-angle=d3d11 --use-cmd-decoder=passthrough --force_high_performance_gpu',
         ],
+        'mixins': [
+          'enable_resultdb',
+        ],
         'swarming': {
           # These tests currently take about an hour and fifteen minutes
           # to run. Split them into roughly 5-minute shards.
@@ -2941,6 +3040,9 @@
         'chromeos_args': [
           '$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote',
         ],
+        'mixins': [
+          'enable_resultdb',
+        ],
         'swarming': {
           # These tests currently take about an hour and fifteen minutes
           # to run. Split them into roughly 5-minute shards.
@@ -2961,6 +3063,9 @@
           # On dual-GPU devices we want the high-performance GPU to be active
           '--extra-browser-args=--use-gl=angle --use-angle=gles --use-cmd-decoder=passthrough --force_high_performance_gpu',
         ],
+        'mixins': [
+          'enable_resultdb',
+        ],
         'swarming': {
           # These tests currently take about an hour and fifteen minutes
           # to run. Split them into roughly 5-minute shards.
@@ -2980,6 +3085,9 @@
           '--read-abbreviated-json-results-from=../../content/test/data/gpu/webgl2_conformance_tests_output.json',
           # On dual-GPU devices we want the high-performance GPU to be active
           '--extra-browser-args=--force_high_performance_gpu',
+        ],
+        'mixins': [
+          'enable_resultdb',
         ],
         'swarming': {
           # These tests currently take about an hour and fifteen minutes
@@ -3004,6 +3112,9 @@
         'chromeos_args': [
           '$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote',
         ],
+        'mixins': [
+          'enable_resultdb',
+        ],
         'swarming': {
           # These tests currently take about an hour and fifteen minutes
           # to run. Split them into roughly 5-minute shards.
@@ -3023,6 +3134,9 @@
           # it.
           '--read-abbreviated-json-results-from=../../content/test/data/gpu/webgl_conformance_tests_output.json',
         ],
+        'mixins': [
+          'enable_resultdb',
+        ],
         'swarming': {
           'shards': 2,
         },
@@ -3040,6 +3154,9 @@
           # it.
           '--read-abbreviated-json-results-from=../../content/test/data/gpu/webgl_conformance_tests_output.json',
         ],
+        'mixins': [
+          'enable_resultdb',
+        ],
         'swarming': {
           'shards': 2,
         },
@@ -3052,6 +3169,9 @@
         'args': [
           # On dual-GPU devices we want the high-performance GPU to be active
           '--extra-browser-args=--enable-unsafe-fast-js-calls --use-gl=angle --use-cmd-decoder=passthrough --force_high_performance_gpu',
+        ],
+        'mixins': [
+          'enable_resultdb',
         ],
         'swarming': {
           'shards': 2,
@@ -3073,6 +3193,9 @@
         'chromeos_args': [
           '$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote',
         ],
+        'mixins': [
+          'enable_resultdb',
+        ],
         'swarming': {
           'shards': 2,
         },
@@ -3089,6 +3212,9 @@
           # out/Debug or out/Release. Reference this file relatively to
           # it.
           '--read-abbreviated-json-results-from=../../content/test/data/gpu/webgl_conformance_tests_output.json',
+        ],
+        'mixins': [
+          'enable_resultdb',
         ],
         'swarming': {
           'shards': 6,
@@ -3107,6 +3233,9 @@
           # it.
           '--read-abbreviated-json-results-from=../../content/test/data/gpu/webgl_conformance_tests_output.json',
         ],
+        'mixins': [
+          'enable_resultdb',
+        ],
         'swarming': {
           'shards': 3,
         },
@@ -3123,6 +3252,9 @@
           # integration, not the full conformance suite.
           '--test-filter=conformance/rendering/gl-drawelements.html',
         ],
+        'mixins': [
+          'enable_resultdb',
+        ],
         'swarming': {
           'shards': 1,
         },
@@ -3136,6 +3268,9 @@
           '--extra-browser-args=--use-gl=angle --use-angle=swiftshader --use-cmd-decoder=passthrough',
           '--xvfb',
         ],
+        'mixins': [
+          'enable_resultdb',
+        ],
         'swarming': {
           'shards': 1,
         },
@@ -3148,6 +3283,9 @@
         'args': [
           '--extra-browser-args=--use-gl=swiftshader --use-cmd-decoder=validating',
           '--xvfb',
+        ],
+        'mixins': [
+          'enable_resultdb',
         ],
         'swarming': {
           'shards': 1,
@@ -3167,6 +3305,9 @@
           # out/Debug or out/Release. Reference this file relatively to
           # it.
           '--read-abbreviated-json-results-from=../../content/test/data/gpu/webgl_conformance_tests_output.json',
+        ],
+        'mixins': [
+          'enable_resultdb',
         ],
         'swarming': {
           'shards': 2,
@@ -3191,6 +3332,9 @@
           # it.
           '--read-abbreviated-json-results-from=../../content/test/data/gpu/webgl_conformance_tests_output.json',
         ],
+        'mixins': [
+          'enable_resultdb',
+        ],
         'swarming': {
           'shards': 2,
         },
@@ -3206,6 +3350,9 @@
         'args': [
           # On dual-GPU devices we want the high-performance GPU to be active
           '--extra-browser-args=--use-angle=vulkan --use-cmd-decoder=passthrough --force_high_performance_gpu',
+        ],
+        'mixins': [
+          'enable_resultdb',
         ],
         'swarming': {
           'shards': 2,
@@ -3297,6 +3444,9 @@
     'gpu_win_intel_specific_telemetry_tests': {
       'power_measurement_test': {
         'telemetry_test_name': 'power',
+        'mixins': [
+          'enable_resultdb',
+        ],
       },
     },
 
