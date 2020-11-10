@@ -47,6 +47,11 @@ export function scannerSelectTest() {
     assertTrue(!!throbber);
     assertFalse(throbber.hidden);
 
+    // Verify that scanner connection help text is not visible before load.
+    const helpLink = scannerSelect.$$('#scanHelp');
+    assertTrue(!!helpLink);
+    assertTrue(helpLink.hidden);
+
     const scannerArr = [
       createScanner(firstScannerId, firstScannerName),
       createScanner(secondScannerId, secondScannerName)
@@ -60,6 +65,7 @@ export function scannerSelectTest() {
     assertFalse(select.disabled);
     assertFalse(select.hidden);
     assertTrue(throbber.hidden);
+    assertTrue(helpLink.hidden);
     assertEquals(2, select.length);
     assertEquals(firstScannerName, select.options[0].textContent.trim());
     assertEquals(secondScannerName, select.options[1].textContent.trim());
@@ -92,9 +98,14 @@ export function scannerSelectTest() {
   test('noScanners', () => {
     const select = scannerSelect.$$('select');
     assertTrue(!!select);
+    const helpLink = scannerSelect.$$('#scanHelp');
+    assertTrue(!!helpLink);
 
     scannerSelect.loaded = true;
     flush();
+
+    // Verify that scanner connection help text is visible.
+    assertFalse(helpLink.hidden);
 
     // Verify the dropdown is disabled and displays the default option when no
     // scanners are available.

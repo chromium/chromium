@@ -468,6 +468,12 @@ Try tapping the mic to ask me anything.
       <message name="IDS_SCANNING_APP_SCANNER_DROPDOWN_LABEL" desc="The label for the dropdown that displays connected scanners.">
         Scanner
       </message>
+      <message name="IDS_SCANNING_APP_NO_SCANNERS_HELP_LINK_LABEL" desc="The help label link displayed below the scanner dropdown when no scanners are available.">
+        Learn more
+      </message>
+      <message name="IDS_SCANNING_APP_NO_SCANNERS_HELP_TEXT" desc="The help text displayed below the scanner dropdown when no scanners are available.">
+        Can't connect to scanners?
+      </message>
       <message name="IDS_SCANNING_APP_NO_SCANNERS_TEXT" desc="The text displayed in the scanner dropdown when no scanners are available.">
         No available scanners
       </message>

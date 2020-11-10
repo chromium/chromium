@@ -59,6 +59,8 @@ void AddScanningAppStrings(content::WebUIDataSource* html_source) {
       {"jpgOptionText", IDS_SCANNING_APP_JPG_OPTION_TEXT},
       {"moreSettings", IDS_SCANNING_APP_MORE_SETTINGS},
       {"myFilesSelectOption", IDS_SCANNING_APP_MY_FILES_SELECT_OPTION},
+      {"noScannersHelpLinkLabel", IDS_SCANNING_APP_NO_SCANNERS_HELP_LINK_LABEL},
+      {"noScannersHelpText", IDS_SCANNING_APP_NO_SCANNERS_HELP_TEXT},
       {"noScannersText", IDS_SCANNING_APP_NO_SCANNERS_TEXT},
       {"pdfOptionText", IDS_SCANNING_APP_PDF_OPTION_TEXT},
       {"pngOptionText", IDS_SCANNING_APP_PNG_OPTION_TEXT},

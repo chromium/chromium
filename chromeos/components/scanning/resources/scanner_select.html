@@ -1,4 +1,16 @@
-<style include="throbber scanning-shared"></style>
+<style include="throbber scanning-shared">
+  #scanHelp {
+    color: var(--google-grey-700);
+    font-size: 10px;
+    padding-top: 8px;
+  }
+
+  #scanHelpLink {
+    color: var(--google-blue-600);
+    font-size: 10px;
+    text-decoration: none;
+  }
+</style>
 <scan-settings-section>
   <span id="scannerLabel" slot="label">[[i18n('scannerDropdownLabel')]]</span>
   <div slot="settings">
@@ -22,5 +34,10 @@
         </option>
       </template>
     </select>
+    <span id="scanHelp" hidden$="[[shouldHideScanHelpLink_(loaded, scanners)]]">
+      [[i18n('noScannersHelpText')]]
+      <!-- TODO(joonbug): Add href to the help link when available -->
+      <a id="scanHelpLink" href="#">[[i18n('noScannersHelpLinkLabel')]]</a>
+    </span>
   </div>
 </scan-settings-section>
