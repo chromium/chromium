@@ -226,7 +226,7 @@
 #include "components/ntp_tiles/popular_sites_impl.h"
 #include "components/permissions/contexts/geolocation_permission_context_android.h"
 #include "components/query_tiles/tile_service_prefs.h"
-#else   // defined(OS_ANDROID)
+#else  // defined(OS_ANDROID)
 #include "chrome/browser/accessibility/caption_controller.h"
 #include "chrome/browser/enterprise/reporting/prefs.h"
 #include "chrome/browser/gcm/gcm_product_util.h"
@@ -485,6 +485,11 @@ const char kWasOnboardingFeatureCheckedBefore[] =
 // Deprecated 10/2020
 const char kHistoryMenuPromoShown[] = "history.menu_promo_shown";
 
+// Deprecated 11/2020
+#if defined(USE_X11)
+const char kMigrationToLoginDBStep[] = "profile.migration_to_logindb_step";
+#endif
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -550,6 +555,10 @@ void RegisterProfilePrefsForMigration(
   registry->RegisterBooleanPref(kWasOnboardingFeatureCheckedBefore, false);
 
   registry->RegisterBooleanPref(kHistoryMenuPromoShown, true);
+
+#if defined(USE_X11)
+  registry->RegisterIntegerPref(kMigrationToLoginDBStep, 0);
+#endif
 }
 
 }  // namespace
@@ -1139,4 +1148,9 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
 
   // Added 10/2020
   profile_prefs->ClearPref(kHistoryMenuPromoShown);
+
+  // Added 11/2020
+#if defined(USE_X11)
+  profile_prefs->ClearPref(kMigrationToLoginDBStep);
+#endif
 }

@@ -11,10 +11,6 @@ namespace prefs {
 const char kCredentialsEnableAutosignin[] = "credentials_enable_autosignin";
 const char kCredentialsEnableService[] = "credentials_enable_service";
 
-#if !defined(OS_APPLE) && !defined(OS_CHROMEOS) && defined(OS_POSIX)
-const char kMigrationToLoginDBStep[] = "profile.migration_to_logindb_step";
-#endif
-
 #if defined(OS_WIN)
 const char kOsPasswordBlank[] = "password_manager.os_password_blank";
 const char kOsPasswordLastChanged[] =

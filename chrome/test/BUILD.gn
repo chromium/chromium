@@ -3543,7 +3543,6 @@ test("unit_tests") {
     "../browser/page_load_metrics/observers/translate_page_load_metrics_observer_unittest.cc",
     "../browser/paint_preview/services/paint_preview_tab_service_unittest.cc",
     "../browser/password_manager/chrome_password_manager_client_unittest.cc",
-    "../browser/password_manager/password_store_x_unittest.cc",
     "../browser/performance_hints/performance_hints_observer_unittest.cc",
     "../browser/performance_hints/rewrite_handler_unittest.cc",
     "../browser/performance_manager/decorators/execution_context_priority_decorator_unittest.cc",
@@ -5781,8 +5780,6 @@ test("unit_tests") {
   }
   if (use_x11) {
     deps += [ "//ui/events/devices" ]
-  } else {
-    sources -= [ "../browser/password_manager/password_store_x_unittest.cc" ]
   }
   if ((is_linux || is_chromeos) && use_aura) {
     deps += [ "//ui/aura:test_support" ]

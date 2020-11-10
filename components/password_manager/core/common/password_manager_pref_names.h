@@ -24,11 +24,6 @@ extern const char kCredentialsEnableAutosignin[];
 // passwords.
 extern const char kCredentialsEnableService[];
 
-#if !defined(OS_APPLE) && !defined(OS_CHROMEOS) && defined(OS_POSIX)
-// The current state of the migration to LoginDB from Keyring/Kwallet on Linux.
-extern const char kMigrationToLoginDBStep[];
-#endif
-
 #if defined(OS_WIN)
 // Whether the password was blank, only valid if OS password was last changed
 // on or before the value contained in kOsPasswordLastChanged.
