@@ -52,17 +52,16 @@ export function fileTypeFromString(fileTypeString) {
  * @return {string}
  */
 export function getColorModeString(mojoColorMode) {
-  // TODO(jschettler): Replace with finalized i18n strings.
   switch (mojoColorMode) {
     case chromeos.scanning.mojom.ColorMode.kBlackAndWhite:
-      return 'Black and White';
+      return loadTimeData.getString('blackAndWhiteOptionText');
     case chromeos.scanning.mojom.ColorMode.kGrayscale:
-      return 'Grayscale';
+      return loadTimeData.getString('grayscaleOptionText');
     case chromeos.scanning.mojom.ColorMode.kColor:
-      return 'Color';
+      return loadTimeData.getString('colorOptionText');
     default:
       assertNotReached();
-      return 'Unknown';
+      return loadTimeData.getString('blackAndWhiteOptionText');
   }
 }
 

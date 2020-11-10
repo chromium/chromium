@@ -504,6 +504,15 @@ Try tapping the mic to ask me anything.
       <message name="IDS_SCANNING_APP_COLOR_MODE_DROPDOWN_LABEL" desc="The label for the dropdown that displays available color modes (e.g. color, grayscale, black and white, etc.).">
         Color
       </message>
+      <message name="IDS_SCANNING_APP_BLACK_AND_WHITE_OPTION_TEXT" desc="The text displayed for the black and white option in the color mode dropdown.">
+        Black and white
+      </message>
+      <message name="IDS_SCANNING_APP_COLOR_OPTION_TEXT" desc="The text displayed for the color option in the color mode dropdown.">
+        Color
+      </message>
+      <message name="IDS_SCANNING_APP_GRAYSCALE_OPTION_TEXT" desc="The text displayed for the grayscale option in the color mode dropdown.">
+        Grayscale
+      </message>
       <message name="IDS_SCANNING_APP_PAGE_SIZE_DROPDOWN_LABEL" desc="The label for the dropdown that displays available page sizes.">
         Page size
       </message>
