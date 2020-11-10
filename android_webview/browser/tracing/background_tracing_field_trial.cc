@@ -11,10 +11,12 @@
 
 namespace android_webview {
 
+const char kBackgroundTracingFieldTrial[] = "BackgroundWebviewTracing";
+
 void SetupBackgroundTracingFieldTrial() {
   std::unique_ptr<content::BackgroundTracingConfig> config =
       content::BackgroundTracingManager::GetInstance()
-          ->GetBackgroundTracingConfig();
+          ->GetBackgroundTracingConfig(kBackgroundTracingFieldTrial);
 
   if (config &&
       config->tracing_mode() == content::BackgroundTracingConfig::SYSTEM &&

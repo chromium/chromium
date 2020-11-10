@@ -31,6 +31,8 @@ namespace tracing {
 
 namespace {
 
+const char kBackgroundTracingFieldTrial[] = "BackgroundTracing";
+
 void OnBackgroundTracingUploadComplete(
     TraceCrashServiceUploader* uploader,
     content::BackgroundTracingManager::FinishedProcessingCallback done_callback,
@@ -111,13 +113,14 @@ void SetupBackgroundTracingFieldTrial() {
 
   std::unique_ptr<content::BackgroundTracingConfig> config =
       content::BackgroundTracingManager::GetInstance()
-          ->GetBackgroundTracingConfig();
+          ->GetBackgroundTracingConfig(kBackgroundTracingFieldTrial);
 
   content::BackgroundTracingManager::GetInstance()->SetActiveScenario(
       std::move(config),
-      base::BindRepeating(&BackgroundTracingUploadCallback,
-                          content::BackgroundTracingManager::GetInstance()
-                              ->GetBackgroundTracingUploadUrl()),
+      base::BindRepeating(
+          &BackgroundTracingUploadCallback,
+          content::BackgroundTracingManager::GetInstance()
+              ->GetBackgroundTracingUploadUrl(kBackgroundTracingFieldTrial)),
       content::BackgroundTracingManager::ANONYMIZE_DATA);
 }
 

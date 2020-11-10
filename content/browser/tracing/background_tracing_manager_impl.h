@@ -115,9 +115,10 @@ class BackgroundTracingManagerImpl : public BackgroundTracingManager {
   bool HasTraceToUpload() override;
   std::string GetLatestTraceToUpload() override;
   void SetTraceToUpload(std::unique_ptr<std::string> trace_data);
-  std::string GetBackgroundTracingUploadUrl() override;
-  std::unique_ptr<BackgroundTracingConfig> GetBackgroundTracingConfig()
-      override;
+  std::string GetBackgroundTracingUploadUrl(
+      const std::string& trial_name) override;
+  std::unique_ptr<BackgroundTracingConfig> GetBackgroundTracingConfig(
+      const std::string& trial_name) override;
 
   // Add/remove EnabledStateObserver.
   CONTENT_EXPORT void AddEnabledStateObserver(EnabledStateObserver* observer);

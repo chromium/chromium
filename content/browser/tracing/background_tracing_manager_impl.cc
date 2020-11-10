@@ -48,7 +48,6 @@
 
 namespace content {
 
-const char kBackgroundTracingFieldTrial[] = "BackgroundTracing";
 const char kBackgroundTracingConfig[] = "config";
 const char kBackgroundTracingUploadUrl[] = "upload_url";
 
@@ -329,15 +328,17 @@ void BackgroundTracingManagerImpl::SetTraceToUpload(
   }
 }
 
-std::string BackgroundTracingManagerImpl::GetBackgroundTracingUploadUrl() {
-  return variations::GetVariationParamValue(kBackgroundTracingFieldTrial,
+std::string BackgroundTracingManagerImpl::GetBackgroundTracingUploadUrl(
+    const std::string& trial_name) {
+  return variations::GetVariationParamValue(trial_name,
                                             kBackgroundTracingUploadUrl);
 }
 
 std::unique_ptr<content::BackgroundTracingConfig>
-BackgroundTracingManagerImpl::GetBackgroundTracingConfig() {
-  std::string config_text = variations::GetVariationParamValue(
-      kBackgroundTracingFieldTrial, kBackgroundTracingConfig);
+BackgroundTracingManagerImpl::GetBackgroundTracingConfig(
+    const std::string& trial_name) {
+  std::string config_text =
+      variations::GetVariationParamValue(trial_name, kBackgroundTracingConfig);
   if (config_text.empty())
     return nullptr;
 
