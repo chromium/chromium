@@ -248,7 +248,12 @@ void PepperFileIOHost::GotUIThreadStuffForInternalFileSystems(
     return;
   }
 
-  DCHECK(file_system_host_.get());
+  if (!file_system_host_.get()) {
+    reply_context.params.set_result(PP_ERROR_FAILED);
+    SendOpenErrorReply(reply_context);
+    return;
+  }
+
   DCHECK(file_system_host_->GetFileSystemOperationRunner());
 
   file_system_host_->GetFileSystemOperationRunner()->OpenFile(
