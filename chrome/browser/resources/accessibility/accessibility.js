@@ -350,7 +350,8 @@ function getNameForAccessibilityMode(mode) {
 
 function createModeElement(mode, data, globalStateName) {
   const currentMode = data['a11yMode'];
-  const link = document.createElement('a', 'action-link');
+  const link = document.createElement('a', {is: 'action-link'});
+  link.setAttribute('is', 'action-link');
   link.setAttribute('role', 'button');
 
   const stateText = ((currentMode & mode) != 0) ? 'true' : 'false';
