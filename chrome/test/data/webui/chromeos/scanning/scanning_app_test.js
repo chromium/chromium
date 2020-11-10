@@ -40,6 +40,30 @@ const SourceType = {
 
 const pageSizes = [PageSize.A4, PageSize.Letter, PageSize.Max];
 
+const firstScannerId =
+    /** @type {!mojoBase.mojom.UnguessableToken} */ ({high: 0, low: 1});
+const firstScannerName = 'Scanner 1';
+
+const secondScannerId =
+    /** @type {!mojoBase.mojom.UnguessableToken} */ ({high: 0, low: 2});
+const secondScannerName = 'Scanner 2';
+
+const firstCapabilities = {
+  sources: [
+    createScannerSource(SourceType.ADF_DUPLEX, 'adf duplex', pageSizes),
+    createScannerSource(SourceType.FLATBED, 'platen', pageSizes),
+  ],
+  colorModes: [ColorMode.BLACK_AND_WHITE, ColorMode.COLOR],
+  resolutions: [75, 100, 300]
+};
+
+const secondCapabilities = {
+  sources:
+      [createScannerSource(SourceType.ADF_SIMPLEX, 'adf simplex', pageSizes)],
+  colorModes: [ColorMode.GRAYSCALE],
+  resolutions: [150, 600]
+};
+
 /** @implements {chromeos.scanning.mojom.ScanServiceInterface} */
 class FakeScanService {
   constructor() {
@@ -252,33 +276,10 @@ export function scanningAppTest() {
   }
 
   test('Scan', () => {
-    const firstScannerId =
-        /** @type {!mojoBase.mojom.UnguessableToken} */ ({high: 0, low: 1});
-    const firstScannerName = 'Scanner 1';
-
-    const secondScannerId =
-        /** @type {!mojoBase.mojom.UnguessableToken} */ ({high: 0, low: 2});
-    const secondScannerName = 'Scanner 2';
-
     const expectedScanners = [
       createScanner(firstScannerId, firstScannerName),
       createScanner(secondScannerId, secondScannerName)
     ];
-
-    const firstCapabilities = {
-      sources: [
-        createScannerSource(SourceType.ADF_DUPLEX, 'adf duplex', pageSizes),
-        createScannerSource(SourceType.FLATBED, 'platen', pageSizes),
-      ],
-      colorModes: [ColorMode.BLACK_AND_WHITE, ColorMode.COLOR],
-      resolutions: [75, 100, 300]
-    };
-    const secondCapabilities = {
-      sources: [createScannerSource(
-          SourceType.ADF_SIMPLEX, 'adf simplex', pageSizes)],
-      colorModes: [ColorMode.GRAYSCALE],
-      resolutions: [150, 600]
-    };
 
     let capabilities = new Map();
     capabilities.set(firstScannerId, firstCapabilities);
@@ -409,9 +410,13 @@ export function scanningAppTest() {
   });
 
   test('MoreSettingsToggle', () => {
-    const scanners = [];
+    const scanners = [createScanner(firstScannerId, firstScannerName)];
     const capabilities = new Map();
+    capabilities.set(firstScannerId, firstCapabilities);
     return initializeScanningApp(scanners, capabilities)
+        .then(() => {
+          return fakeScanService_.whenCalled('getScannerCapabilities');
+        })
         .then(() => {
           // Verify that expandable section is closed by default.
           assertFalse(isSettingsOpen());

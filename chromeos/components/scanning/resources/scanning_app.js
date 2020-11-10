@@ -21,11 +21,12 @@ import './scanning_fonts_css.js';
 import './scanning_shared_css.js';
 import './source_select.js';
 
+import {assert} from 'chrome://resources/js/assert.m.js';
 import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getScanService} from './mojo_interface_provider.js';
-import {ScannerArr} from './scanning_app_types.js';
+import {AppState, ScannerArr} from './scanning_app_types.js';
 import {colorModeFromString, fileTypeFromString, pageSizeFromString, tokenToString} from './scanning_app_util.js';
 
 /**
@@ -91,6 +92,16 @@ Polymer({
     /** @type {string} */
     selectedResolution: String,
 
+    /**
+     * Used to determine when certain parts of the app should be shown or hidden
+     * and enabled or disabled.
+     * @private {!AppState}
+     */
+    appState_: {
+      type: Number,
+      value: AppState.GETTING_SCANNERS,
+    },
+
     /** @private {!Array<string>} */
     objectUrls_: {
       type: Array,
@@ -106,30 +117,6 @@ Polymer({
 
     /** @private {string} */
     statusText_: String,
-
-    /** @private {boolean} */
-    settingsDisabled_: {
-      type: Boolean,
-      value: false,
-    },
-
-    /** @private {boolean} */
-    scanButtonDisabled_: {
-      type: Boolean,
-      value: true,
-    },
-
-    /** @private {boolean} */
-    loaded_: {
-      type: Boolean,
-      value: false,
-    },
-
-    /** @private {boolean} */
-    isScanInProgress_: {
-      type: Boolean,
-      value: false,
-    },
   },
 
   /** @override */
@@ -143,7 +130,7 @@ Polymer({
     window.addEventListener('beforeunload', event => {
       // When the user tries to close the app while a scan is in progress,
       // show the 'Leave site' dialog.
-      if (this.isScanInProgress_) {
+      if (this.appState_ === AppState.SCANNING) {
         event.preventDefault();
         event.returnValue = '';
       }
@@ -194,9 +181,7 @@ Polymer({
     this.statusText_ = success ?
         'Scan complete! File(s) saved to ' + this.selectedFilePath + '.' :
         'Scan failed.';
-    this.settingsDisabled_ = false;
-    this.scanButtonDisabled_ = false;
-    this.isScanInProgress_ = false;
+    this.setAppState_(AppState.READY);
   },
 
   /**
@@ -233,7 +218,7 @@ Polymer({
     // supported.
     this.selectedFileType = chromeos.scanning.mojom.FileType.kPng.toString();
 
-    this.scanButtonDisabled_ = false;
+    this.setAppState_(AppState.READY);
   },
 
   /**
@@ -241,7 +226,7 @@ Polymer({
    * @private
    */
   onScannersReceived_(response) {
-    this.loaded_ = true;
+    this.setAppState_(AppState.GOT_SCANNERS);
     this.scanners_ = response.scanners;
     for (const scanner of this.scanners_) {
       this.scannerIds_.set(tokenToString(scanner.id), scanner.id);
@@ -263,7 +248,7 @@ Polymer({
       return;
     }
 
-    this.scanButtonDisabled_ = true;
+    this.setAppState_(AppState.GETTING_CAPS);
 
     this.scanService_
         .getScannerCapabilities(this.scannerIds_.get(this.selectedScannerId))
@@ -333,9 +318,7 @@ Polymer({
     }
 
     this.statusText_ = 'Scanning page 1: 0%';
-    this.settingsDisabled_ = true;
-    this.scanButtonDisabled_ = true;
-    this.isScanInProgress_ = true;
+    this.setAppState_(AppState.SCANNING);
   },
 
   /** @private */
@@ -350,5 +333,57 @@ Polymer({
    */
   getArrowIcon_(opened) {
     return opened ? 'cr:expand-less' : 'cr:expand-more';
+  },
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  areScannersLoaded_() {
+    return this.appState_ !== AppState.GETTING_SCANNERS;
+  },
+
+  /**
+   * Determines whether settings should be disabled based on the current app
+   * state. Settings should be disabled until after the selected scanner's
+   * capabilities are fetched since the capabilities determine what options are
+   * available in the settings. They should also be disabled while scanning
+   * since settings cannot be changed while a scan is in progress.
+   * @return {boolean}
+   * @private
+   */
+  areSettingsDisabled_() {
+    return this.appState_ !== AppState.READY;
+  },
+
+  /**
+   * Sets the app state if the state transition is allowed.
+   * @param {!AppState} newState
+   * @private
+   */
+  setAppState_(newState) {
+    switch (newState) {
+      case (AppState.GETTING_SCANNERS):
+        assert(this.appState_ === AppState.GETTING_SCANNERS);
+        break;
+      case (AppState.GOT_SCANNERS):
+        assert(this.appState_ === AppState.GETTING_SCANNERS);
+        break;
+      case (AppState.GETTING_CAPS):
+        assert(
+            this.appState_ === AppState.GOT_SCANNERS ||
+            this.appState_ === AppState.READY);
+        break;
+      case (AppState.READY):
+        assert(
+            this.appState_ === AppState.GETTING_CAPS ||
+            this.appState_ === AppState.SCANNING);
+        break;
+      case (AppState.SCANNING):
+        assert(this.appState_ === AppState.READY);
+        break;
+    }
+
+    this.appState_ = newState;
   },
 });

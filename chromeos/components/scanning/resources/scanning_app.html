@@ -83,20 +83,24 @@
     </div>
     <div class="right-panel">
       <h1 id="appTitle">[[i18n('appTitle')]]</h1>
-      <scanner-select id="scannerSelect" scanners="[[scanners_]]" loaded="[[loaded_]]"
-          settings-disabled="[[settingsDisabled_]]"
+      <scanner-select id="scannerSelect" scanners="[[scanners_]]"
+          loaded="[[areScannersLoaded_(appState_)]]"
+          settings-disabled="[[areSettingsDisabled_(appState_)]]"
           selected-scanner-id="{{selectedScannerId}}"></scanner-select>
       <source-select id="sourceSelect" sources="[[capabilities_.sources]]"
-          settings-disabled="[[settingsDisabled_]]"
+          settings-disabled="[[areSettingsDisabled_(appState_)]]"
           selected-source="{{selectedSource}}"></source-select>
-      <scan-to-select id="scanToSelect" settings-disabled="[[settingsDisabled_]]"
+      <scan-to-select id="scanToSelect"
+          settings-disabled="[[areSettingsDisabled_(appState_)]]"
           selected-file-path="{{selectedFilePath}}">
       </scan-to-select>
-      <file-type-select id="fileTypeSelect" settings-disabled="[[settingsDisabled_]]"
+      <file-type-select id="fileTypeSelect"
+          settings-disabled="[[areSettingsDisabled_(appState_)]]"
           selected-file-type="{{selectedFileType}}"></file-type-select>
       <div id="more-settings-line-separator"></div>
       <cr-button id="moreSettingsButton" on-click="toggleClicked_"
-          aria-expanded$="[[opened]]">
+          aria-expanded$="[[opened]]"
+          disabled="[[areSettingsDisabled_(appState_)]]">
         <span>[[i18n('moreSettings')]]</span>
         <iron-icon icon="[[getArrowIcon_(opened)]]">
         </iron-icon>
@@ -104,23 +108,23 @@
       <iron-collapse id="collapse" opened="{{opened}}">
         <color-mode-select id="colorModeSelect"
             color-modes="[[capabilities_.colorModes]]"
-            settings-disabled="[[settingsDisabled_]]"
+            settings-disabled="[[areSettingsDisabled_(appState_)]]"
             selected-color-mode="{{selectedColorMode}}">
         </color-mode-select>
         <page-size-select id="pageSizeSelect"
             page-sizes="[[selectedSourcePageSizes_]]"
-            settings-disabled="[[settingsDisabled_]]"
+            settings-disabled="[[areSettingsDisabled_(appState_)]]"
             selected-page-size="{{selectedPageSize}}">
         </page-size-select>
         <resolution-select id="resolutionSelect"
             resolutions="[[capabilities_.resolutions]]"
-            settings-disabled="[[settingsDisabled_]]"
+            settings-disabled="[[areSettingsDisabled_(appState_)]]"
             selected-resolution="{{selectedResolution}}">
         </resolution-select>
       </iron-collapse>
       <div class="scan-button-container">
         <cr-button id="scanButton" class="action-button" on-click="onScanClick_"
-            disabled$="[[scanButtonDisabled_]]">
+            disabled$="[[areSettingsDisabled_(appState_)]]">
           [[i18n('scanButtonText')]]
         </cr-button>
       </div>
