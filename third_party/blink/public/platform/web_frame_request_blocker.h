@@ -32,9 +32,6 @@ class BLINK_PLATFORM_EXPORT WebFrameRequestBlocker
   // Resumes any blocked subresource requests.
   virtual void Resume() = 0;
 
-  // Cancels any blocked subresource requests.
-  virtual void Cancel() = 0;
-
   virtual std::unique_ptr<URLLoaderThrottle> GetThrottleIfRequestsBlocked() = 0;
 };
 

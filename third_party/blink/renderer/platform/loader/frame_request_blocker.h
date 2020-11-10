@@ -25,16 +25,12 @@ class FrameRequestBlocker final : public WebFrameRequestBlocker {
   // Resumes any blocked subresource requests.
   void Resume() override;
 
-  // Cancels any blocked subresource requests.
-  void Cancel() override;
-
   std::unique_ptr<URLLoaderThrottle> GetThrottleIfRequestsBlocked() override;
 
  private:
   class Client {
    public:
     virtual void Resume() = 0;
-    virtual void Cancel() = 0;
   };
 
   friend class base::RefCountedThreadSafe<FrameRequestBlocker>;

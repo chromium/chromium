@@ -41,12 +41,6 @@ class RequestBlockerThrottle : public URLLoaderThrottle,
     delegate_->Resume();
   }
 
-  void Cancel() override {
-    frame_request_blocker_->RemoveObserver(this);
-    frame_request_blocker_ = nullptr;
-    delegate_->CancelWithError(net::ERR_FAILED);
-  }
-
  private:
   scoped_refptr<FrameRequestBlocker> frame_request_blocker_;
 };
@@ -66,12 +60,6 @@ void FrameRequestBlocker::Resume() {
 
   blocked_.Decrement();
   clients_->Notify(FROM_HERE, &Client::Resume);
-}
-
-void FrameRequestBlocker::Cancel() {
-  DCHECK(blocked_.IsOne());
-  blocked_.Decrement();
-  clients_->Notify(FROM_HERE, &Client::Cancel);
 }
 
 std::unique_ptr<URLLoaderThrottle>

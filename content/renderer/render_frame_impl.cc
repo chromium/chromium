@@ -3017,10 +3017,6 @@ void RenderFrameImpl::ResumeBlockedRequests() {
   frame_request_blocker_->Resume();
 }
 
-void RenderFrameImpl::CancelBlockedRequests() {
-  frame_request_blocker_->Cancel();
-}
-
 void RenderFrameImpl::AllowBindings(int32_t enabled_bindings_flags) {
   enabled_bindings_ |= enabled_bindings_flags;
 }

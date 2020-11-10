@@ -92,9 +92,6 @@ interface Frame {
   // It is safe to call this without calling BlockRequests.
   ResumeBlockedRequests();
 
-  // Cancels blocked requests. BlockRequests must have been called before.
-  CancelBlockedRequests();
-
   // Samsung Galaxy Note-specific "smart clip" stylus text getter.
   // Extracts the data at the given rect.
   [EnableIf=is_android]

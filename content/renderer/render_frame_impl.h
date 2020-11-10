@@ -450,7 +450,6 @@ class CONTENT_EXPORT RenderFrameImpl
       GetCanonicalUrlForSharingCallback callback) override;
   void BlockRequests() override;
   void ResumeBlockedRequests() override;
-  void CancelBlockedRequests() override;
   void UpdateBrowserControlsState(BrowserControlsState constraints,
                                   BrowserControlsState current,
                                   bool animate) override;
