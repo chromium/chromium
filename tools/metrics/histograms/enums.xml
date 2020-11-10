@@ -8724,6 +8724,15 @@ Called by update_bad_message_reasons.py.-->
   <int value="1" label="Yes"/>
 </enum>
 
+<enum name="BorealisStartupResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Cancelled"/>
+  <int value="2" label="Failed mounting DLC"/>
+  <int value="3" label="Failed creating disk image"/>
+  <int value="4" label="Failed starting VM"/>
+  <int value="5" label="Failed awaiting startup"/>
+</enum>
+
 <enum name="BoringSSLReasonCode">
   <obsolete>
     Removed in March 2016.

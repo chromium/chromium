@@ -861,6 +861,8 @@ source_set("chromeos") {
     "borealis/borealis_installer_impl.h",
     "borealis/borealis_launch_watcher.cc",
     "borealis/borealis_launch_watcher.h",
+    "borealis/borealis_metrics.cc",
+    "borealis/borealis_metrics.h",
     "borealis/borealis_prefs.cc",
     "borealis/borealis_prefs.h",
     "borealis/borealis_service.cc",
