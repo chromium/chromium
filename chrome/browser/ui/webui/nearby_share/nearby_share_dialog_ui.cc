@@ -6,12 +6,15 @@
 
 #include <string>
 
+#include "base/strings/string_split.h"
 #include "chrome/browser/nearby_sharing/contacts/nearby_share_contact_manager.h"
+#include "chrome/browser/nearby_sharing/file_attachment.h"
 #include "chrome/browser/nearby_sharing/nearby_per_session_discovery_manager.h"
 #include "chrome/browser/nearby_sharing/nearby_share_settings.h"
 #include "chrome/browser/nearby_sharing/nearby_sharing_service.h"
 #include "chrome/browser/nearby_sharing/nearby_sharing_service_factory.h"
 #include "chrome/browser/nearby_sharing/nearby_sharing_service_impl.h"
+#include "chrome/browser/nearby_sharing/text_attachment.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/nearby_share/shared_resources.h"
 #include "chrome/browser/ui/webui/webui_util.h"
@@ -66,7 +69,7 @@ NearbyShareDialogUI::NearbyShareDialogUI(content::WebUI* web_ui)
   content::WebUIDataSource::Add(profile, html_source);
 
   const GURL& url = web_ui->GetWebContents()->GetVisibleURL();
-  SetTextAttachmentFromQueryParameter(url);
+  SetAttachmentFromQueryParameter(url);
 }
 
 NearbyShareDialogUI::~NearbyShareDialogUI() = default;
@@ -115,7 +118,8 @@ void NearbyShareDialogUI::HandleClose(const base::ListValue* args) {
   }
 }
 
-void NearbyShareDialogUI::SetTextAttachmentFromQueryParameter(const GURL& url) {
+void NearbyShareDialogUI::SetAttachmentFromQueryParameter(const GURL& url) {
+  std::vector<std::unique_ptr<Attachment>> attachments;
   std::string value;
   for (auto& text_type :
        std::vector<std::pair<std::string, TextAttachment::Type>>{
@@ -124,12 +128,20 @@ void NearbyShareDialogUI::SetTextAttachmentFromQueryParameter(const GURL& url) {
            {"phone", TextAttachment::Type::kPhoneNumber},
            {"text", TextAttachment::Type::kText}}) {
     if (net::GetValueForKeyInQuery(url, text_type.first, &value)) {
-      std::vector<std::unique_ptr<Attachment>> attachments;
       attachments.push_back(
           std::make_unique<TextAttachment>(text_type.second, value));
       SetAttachments(std::move(attachments));
-      break;
+      return;
     }
+  }
+
+  if (net::GetValueForKeyInQuery(url, "file", &value)) {
+    for (std::string& path : base::SplitString(
+             value, "|", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY)) {
+      attachments.push_back(
+          std::make_unique<FileAttachment>(base::FilePath(path)));
+    }
+    SetAttachments(std::move(attachments));
   }
 }
 

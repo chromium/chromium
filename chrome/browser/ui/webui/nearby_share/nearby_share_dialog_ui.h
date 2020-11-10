@@ -51,9 +51,12 @@ class NearbyShareDialogUI : public ui::MojoWebUIController {
  private:
   void HandleClose(const base::ListValue* args);
 
-  // Search for a query parameter such as text, address, phone, or url, then use
-  // it to populate a text attachment.if found; otherwise, do nothing.
-  void SetTextAttachmentFromQueryParameter(const GURL& url);
+  // Search for a query parameter such as file, text, address, phone, or url,
+  // then use it to populate an attachment, if found; otherwise, do nothing.
+  // For text attachments, the parameter value is used as the text body. For
+  // file attachments, the parameter value is used as a pipe-delimited list
+  // of file paths.
+  void SetAttachmentFromQueryParameter(const GURL& url);
 
   std::vector<std::unique_ptr<Attachment>> attachments_;
   base::ObserverList<Observer> observers_;
