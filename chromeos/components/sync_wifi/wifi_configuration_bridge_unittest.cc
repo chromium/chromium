@@ -61,6 +61,7 @@ const char kSsidWoof[] = "woof";
 const char kSsidHonk[] = "honk";
 const char kSyncPsk[] = "sync_psk";
 const char kLocalPsk[] = "local_psk";
+const char kIsFirstRun[] = "sync_wifi.is_first_run";
 
 syncer::EntityData GenerateWifiEntityData(
     const sync_pb::WifiConfigurationSpecifics& data) {
@@ -157,6 +158,9 @@ class WifiConfigurationBridgeTest : public testing::Test {
     device_prefs_ = std::make_unique<TestingPrefServiceSimple>();
     NetworkMetadataStore::RegisterPrefs(user_prefs_->registry());
     NetworkMetadataStore::RegisterPrefs(device_prefs_->registry());
+
+    user_prefs_->registry()->RegisterBooleanPref(kIsFirstRun, true);
+
     network_metadata_store_ = std::make_unique<NetworkMetadataStore>(
         /*network_configuration_handler=*/nullptr,
         /*network_connection_handler=*/nullptr,
@@ -164,13 +168,23 @@ class WifiConfigurationBridgeTest : public testing::Test {
         user_prefs_.get(), device_prefs_.get(),
         /*is_enterprise_enrolled=*/false);
 
+    base::HistogramTester histogram_tester;
     bridge_ = std::make_unique<WifiConfigurationBridge>(
         synced_network_updater(), local_network_collector(),
         /*network_configuration_handler=*/nullptr, metrics_logger_.get(),
-        timer_factory_.get(), mock_processor_.CreateForwardingProcessor(),
+        timer_factory_.get(), user_prefs_.get(),
+        mock_processor_.CreateForwardingProcessor(),
         syncer::ModelTypeStoreTestUtil::MoveStoreToFactory(std::move(store_)));
     bridge_->SetNetworkMetadataStore(network_metadata_store_->GetWeakPtr());
     base::RunLoop().RunUntilIdle();
+
+    // Assert that an incorrect metric was not logged.
+    histogram_tester.ExpectTotalCount(kTotalCountHistogram, 0);
+  }
+
+  void TearDown() override {
+    // TODO(cvandermerwe) Put the shutdown logic into network_test_helper.
+    NetworkHandler::Shutdown();
   }
 
   void DisableBridge() {

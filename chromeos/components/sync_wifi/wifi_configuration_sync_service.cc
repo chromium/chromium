@@ -46,7 +46,7 @@ WifiConfigurationSyncService::WifiConfigurationSyncService(
   bridge_ = std::make_unique<sync_wifi::WifiConfigurationBridge>(
       updater_.get(), collector_.get(),
       network_handler->network_configuration_handler(), metrics_logger_.get(),
-      timer_factory_.get(),
+      timer_factory_.get(), pref_service,
       std::make_unique<syncer::ClientTagBasedModelTypeProcessor>(
           syncer::WIFI_CONFIGURATIONS,
           base::BindRepeating(&syncer::ReportUnrecoverableError, channel)),

@@ -24,6 +24,8 @@
 #include "chromeos/network/network_event_log.h"
 #include "chromeos/network/network_metadata_store.h"
 #include "components/device_event_log/device_event_log.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/pref_service.h"
 #include "components/sync/model/entity_change.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/metadata_change_list.h"
@@ -60,6 +62,7 @@ WifiConfigurationBridge::WifiConfigurationBridge(
     NetworkConfigurationHandler* network_configuration_handler,
     SyncedNetworkMetricsLogger* metrics_recorder,
     TimerFactory* timer_factory,
+    PrefService* pref_service,
     std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor,
     syncer::OnceModelTypeStoreFactory create_store_callback)
     : ModelTypeSyncBridge(std::move(change_processor)),
@@ -68,6 +71,7 @@ WifiConfigurationBridge::WifiConfigurationBridge(
       network_configuration_handler_(network_configuration_handler),
       metrics_recorder_(metrics_recorder),
       timer_factory_(timer_factory),
+      pref_service_(pref_service),
       network_metadata_store_(nullptr) {
   std::move(create_store_callback)
       .Run(syncer::WIFI_CONFIGURATIONS,
@@ -80,6 +84,11 @@ WifiConfigurationBridge::WifiConfigurationBridge(
 
 WifiConfigurationBridge::~WifiConfigurationBridge() {
   OnShuttingDown();
+}
+
+// static
+void WifiConfigurationBridge::RegisterPrefs(PrefRegistrySimple* registry) {
+  registry->RegisterBooleanPref(kIsFirstRun, true);
 }
 
 void WifiConfigurationBridge::OnShuttingDown() {
@@ -302,11 +311,22 @@ void WifiConfigurationBridge::OnReadAllData(
     }
     entries_[record.id] = std::move(data);
   }
-
-  metrics_recorder_->RecordTotalCount(entries_.size());
   store_->ReadAllMetadata(
       base::BindOnce(&WifiConfigurationBridge::OnReadAllMetadata,
                      weak_ptr_factory_.GetWeakPtr()));
+
+  int entries_size = entries_.size();
+  // Do not log the total network count during OOBE. It returns 0 even if there
+  // are networks synced since MergeSyncData has not executed yet.
+  if (pref_service_->GetBoolean(kIsFirstRun)) {
+    pref_service_->SetBoolean(kIsFirstRun, false);
+    // This is only meant to filter out 0's that are logged during OOBE. If the
+    // entries_size is greater than zero it should be logged.
+    if (entries_size == 0) {
+      return;
+    }
+  }
+  metrics_recorder_->RecordTotalCount(entries_size);
 }
 
 void WifiConfigurationBridge::OnReadAllMetadata(

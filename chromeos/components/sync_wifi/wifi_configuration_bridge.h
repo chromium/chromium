@@ -22,6 +22,9 @@
 #include "components/sync/model/model_type_store.h"
 #include "components/sync/model/model_type_sync_bridge.h"
 
+class PrefRegistrySimple;
+class PrefService;
+
 namespace syncer {
 class ModelTypeChangeProcessor;
 }  // namespace syncer
@@ -32,6 +35,8 @@ class NetworkConfigurationHandler;
 class NetworkMetadataStore;
 
 namespace sync_wifi {
+
+const char kIsFirstRun[] = "sync_wifi.is_first_run";
 
 class LocalNetworkCollector;
 class SyncedNetworkMetricsLogger;
@@ -50,9 +55,12 @@ class WifiConfigurationBridge : public syncer::ModelTypeSyncBridge,
       NetworkConfigurationHandler* network_configuration_handler,
       SyncedNetworkMetricsLogger* metrics_recorder,
       TimerFactory* timer_factory,
+      PrefService* pref_service,
       std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor,
       syncer::OnceModelTypeStoreFactory create_store_callback);
   ~WifiConfigurationBridge() override;
+
+  static void RegisterPrefs(PrefRegistrySimple* registry);
 
   // syncer::ModelTypeSyncBridge:
   std::unique_ptr<syncer::MetadataChangeList> CreateMetadataChangeList()
@@ -141,6 +149,7 @@ class WifiConfigurationBridge : public syncer::ModelTypeSyncBridge,
   NetworkConfigurationHandler* network_configuration_handler_;
   SyncedNetworkMetricsLogger* metrics_recorder_;
   TimerFactory* timer_factory_;
+  PrefService* pref_service_;
   base::WeakPtr<NetworkMetadataStore> network_metadata_store_;
 
   base::WeakPtrFactory<WifiConfigurationBridge> weak_ptr_factory_{this};

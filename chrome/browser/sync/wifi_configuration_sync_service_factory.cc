@@ -10,6 +10,7 @@
 #include "chrome/browser/sync/model_type_store_service_factory.h"
 #include "chrome/common/channel_info.h"
 #include "chromeos/components/sync_wifi/pending_network_configuration_tracker_impl.h"
+#include "chromeos/components/sync_wifi/wifi_configuration_bridge.h"
 #include "chromeos/components/sync_wifi/wifi_configuration_sync_service.h"
 #include "chromeos/network/network_handler.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
@@ -67,4 +68,5 @@ void WifiConfigurationSyncServiceFactory::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   chromeos::sync_wifi::PendingNetworkConfigurationTrackerImpl::
       RegisterProfilePrefs(registry);
+  chromeos::sync_wifi::WifiConfigurationBridge::RegisterPrefs(registry);
 }
