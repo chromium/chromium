@@ -462,6 +462,36 @@ void NetLogHostCacheEntry(const NetLogWithSource& net_log,
   net_log.AddEntry(type, phase, [&] { return results.NetLogParams(); });
 }
 
+void SaveMetricsForAdditionalHttpsRecord(const RecordParsed& record,
+                                         bool is_unsolicited) {
+  const HttpsRecordRdata* rdata = record.rdata<HttpsRecordRdata>();
+
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class UnsolicitedHttpsRecordStatus {
+    kMalformed = 0,
+    kAlias = 1,
+    kService = 2,
+    kMaxValue = kService
+  } status;
+
+  if (!rdata || rdata->IsMalformed()) {
+    status = UnsolicitedHttpsRecordStatus::kMalformed;
+  } else if (rdata->IsAlias()) {
+    status = UnsolicitedHttpsRecordStatus::kAlias;
+  } else {
+    status = UnsolicitedHttpsRecordStatus::kService;
+  }
+
+  if (is_unsolicited) {
+    UMA_HISTOGRAM_ENUMERATION("Net.DNS.DnsTask.AdditionalHttps.Unsolicited",
+                              status);
+  } else {
+    UMA_HISTOGRAM_ENUMERATION("Net.DNS.DnsTask.AdditionalHttps.Requested",
+                              status);
+  }
+}
+
 }  // namespace
 
 //-----------------------------------------------------------------------------
@@ -1710,6 +1740,16 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
       // record is found.
       if (!soa_found)
         out_response_ttl->reset();
+    }
+
+    for (unsigned i = 0; i < response->additional_answer_count(); ++i) {
+      std::unique_ptr<const RecordParsed> record =
+          RecordParsed::CreateFrom(&parser, base::Time::Now());
+      if (record && record->klass() == dns_protocol::kClassIN &&
+          record->type() == dns_protocol::kTypeHttps) {
+        bool is_unsolicited = filter_dns_type != dns_protocol::kTypeHttps;
+        SaveMetricsForAdditionalHttpsRecord(*record, is_unsolicited);
+      }
     }
 
     return DnsResponse::DNS_PARSE_OK;

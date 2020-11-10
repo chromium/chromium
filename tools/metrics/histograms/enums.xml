@@ -73605,6 +73605,12 @@ Full version information for the fingerprint enum values:
   <int value="14" label="I/O device error."/>
 </enum>
 
+<enum name="UnsolicitedHttpsRecordStatus">
+  <int value="0" label="Malformed"/>
+  <int value="1" label="Alias"/>
+  <int value="2" label="Service"/>
+</enum>
+
 <enum name="UnsupportedContainers">
   <int value="0" label="3GP"/>
   <int value="1" label="TS"/>

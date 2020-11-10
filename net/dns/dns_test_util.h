@@ -218,9 +218,12 @@ DnsResourceRecord BuildTestHttpsServiceRecord(
     const std::map<uint16_t, std::string>& params,
     base::TimeDelta ttl = base::TimeDelta::FromDays(1));
 
-DnsResponse BuildTestDnsResponse(std::string name,
-                                 uint16_t type,
-                                 const std::vector<DnsResourceRecord>& answers);
+DnsResponse BuildTestDnsResponse(
+    std::string name,
+    uint16_t type,
+    const std::vector<DnsResourceRecord>& answers,
+    const std::vector<DnsResourceRecord>& authority = {},
+    const std::vector<DnsResourceRecord>& additional = {});
 
 DnsResponse BuildTestDnsAddressResponse(std::string name,
                                         const IPAddress& ip,
