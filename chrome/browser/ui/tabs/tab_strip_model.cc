@@ -14,7 +14,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/numerics/ranges.h"
-#include "base/stl_util.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -973,7 +973,7 @@ void TabStripModel::AddWebContents(
   if (group.has_value()) {
     auto grouped_tabs = group_model_->GetTabGroup(group.value())->ListTabs();
     if (grouped_tabs.size() > 0) {
-      DCHECK(base::STLIsSorted(grouped_tabs));
+      DCHECK(base::ranges::is_sorted(grouped_tabs));
       index = base::ClampToRange(index, grouped_tabs.front(),
                                  grouped_tabs.back() + 1);
     }
@@ -2039,7 +2039,7 @@ void TabStripModel::AddToExistingGroupImpl(
   std::vector<int> new_indices = SetTabsPinned(indices, false);
 
   std::vector<int> tabs_in_group = group_model_->GetTabGroup(group)->ListTabs();
-  DCHECK(base::STLIsSorted(tabs_in_group));
+  DCHECK(base::ranges::is_sorted(tabs_in_group));
 
   // Split |new_indices| into |tabs_left_of_group| and |tabs_right_of_group| to
   // be moved to proper destination index. Directly set the group for indices

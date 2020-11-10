@@ -347,7 +347,7 @@ class _SchemasCCGenerator(object):
     c.Append('#include <algorithm>')
     c.Append('#include <iterator>')
     c.Append()
-    c.Append('#include "base/stl_util.h"')
+    c.Append('#include "base/ranges/algorithm.h"')
     c.Append()
     c.Append('namespace {')
     for api in self._bundle._api_defs:
@@ -393,8 +393,8 @@ class _SchemasCCGenerator(object):
       schema_constant_name = _FormatNameAsConstant(namespace)
       c.Append('{"%s", %s},' % (namespace, schema_constant_name))
     c.Eblock('};')
-    c.Append('static_assert(base::STLIsSorted(kSchemas), "|kSchemas| should be '
-             'sorted.");')
+    c.Append('static_assert(base::ranges::is_sorted(kSchemas), "|kSchemas| '
+             'should be sorted.");')
 
     c.Sblock('auto it = std::lower_bound(std::begin(kSchemas), '
              'std::end(kSchemas),')

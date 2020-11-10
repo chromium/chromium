@@ -25,6 +25,7 @@
 
 #include "base/check.h"
 #include "base/optional.h"
+#include "base/ranges/algorithm.h"
 #include "base/template_util.h"
 
 namespace base {
@@ -464,29 +465,11 @@ typename Map::iterator TryEmplace(Map& map,
                                   std::forward<Args>(args)...);
 }
 
-// Returns true if the container is sorted. Requires constexpr std::begin/end,
-// which exists for arrays in C++14.
-// Note that std::is_sorted is constexpr beginning C++20 and this should be
-// switched to use it when C++20 is supported.
-template <typename Container>
-constexpr bool STLIsSorted(const Container& cont) {
-  auto it = std::begin(cont);
-  const auto end = std::end(cont);
-  if (it == end)
-    return true;
-
-  for (auto prev = it++; it != end; prev = it++) {
-    if (*it < *prev)
-      return false;
-  }
-  return true;
-}
-
 // Returns a new ResultType containing the difference of two sorted containers.
 template <typename ResultType, typename Arg1, typename Arg2>
 ResultType STLSetDifference(const Arg1& a1, const Arg2& a2) {
-  DCHECK(STLIsSorted(a1));
-  DCHECK(STLIsSorted(a2));
+  DCHECK(ranges::is_sorted(a1));
+  DCHECK(ranges::is_sorted(a2));
   ResultType difference;
   std::set_difference(a1.begin(), a1.end(),
                       a2.begin(), a2.end(),
@@ -497,8 +480,8 @@ ResultType STLSetDifference(const Arg1& a1, const Arg2& a2) {
 // Returns a new ResultType containing the union of two sorted containers.
 template <typename ResultType, typename Arg1, typename Arg2>
 ResultType STLSetUnion(const Arg1& a1, const Arg2& a2) {
-  DCHECK(STLIsSorted(a1));
-  DCHECK(STLIsSorted(a2));
+  DCHECK(ranges::is_sorted(a1));
+  DCHECK(ranges::is_sorted(a2));
   ResultType result;
   std::set_union(a1.begin(), a1.end(),
                  a2.begin(), a2.end(),
@@ -510,8 +493,8 @@ ResultType STLSetUnion(const Arg1& a1, const Arg2& a2) {
 // containers.
 template <typename ResultType, typename Arg1, typename Arg2>
 ResultType STLSetIntersection(const Arg1& a1, const Arg2& a2) {
-  DCHECK(STLIsSorted(a1));
-  DCHECK(STLIsSorted(a2));
+  DCHECK(ranges::is_sorted(a1));
+  DCHECK(ranges::is_sorted(a2));
   ResultType result;
   std::set_intersection(a1.begin(), a1.end(),
                         a2.begin(), a2.end(),
@@ -523,8 +506,8 @@ ResultType STLSetIntersection(const Arg1& a1, const Arg2& a2) {
 // container |a2|.
 template <typename Arg1, typename Arg2>
 bool STLIncludes(const Arg1& a1, const Arg2& a2) {
-  DCHECK(STLIsSorted(a1));
-  DCHECK(STLIsSorted(a2));
+  DCHECK(ranges::is_sorted(a1));
+  DCHECK(ranges::is_sorted(a2));
   return std::includes(a1.begin(), a1.end(),
                        a2.begin(), a2.end());
 }
