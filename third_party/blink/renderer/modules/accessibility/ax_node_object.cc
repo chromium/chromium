@@ -3635,11 +3635,10 @@ Document* AXNodeObject::GetDocument() const {
   return &GetNode()->GetDocument();
 }
 
+// TODO(chrishall): consider merging this with AXObject::Language in followup.
 AtomicString AXNodeObject::Language() const {
   if (!GetNode())
     return AXObject::Language();
-
-  Vector<String> languages;
 
   // If it's the root, get the computed language for the document element,
   // because the root LayoutObject doesn't have the right value.
@@ -3655,25 +3654,13 @@ AtomicString AXNodeObject::Language() const {
     // HttpEquiv::Process from <meta> tag which does not truncate.
     // TODO(chrishall): Consider moving this comma handling to setter side.
     AtomicString lang = document_element->ComputeInheritedLanguage();
+    Vector<String> languages;
     String(lang).Split(',', languages);
     if (!languages.IsEmpty())
       return AtomicString(languages[0].StripWhiteSpace());
   }
 
-  // Uses the style engine to figure out the object's language.
-  // The style engine relies on, for example, the "lang" attribute of the
-  // current node and its ancestors, and the document's "content-language"
-  // header. See the Language of a Node Spec at
-  // https://html.spec.whatwg.org/C/#language
-  const ComputedStyle* style = GetNode()->GetComputedStyle();
-  if (!style || !style->Locale())
-    return AXObject::Language();
-
-  String(style->Locale()).Split(',', languages);
-  if (languages.IsEmpty())
-    return AXObject::Language();
-
-  return AtomicString(languages[0].StripWhiteSpace());
+  return AXObject::Language();
 }
 
 bool AXNodeObject::HasAttribute(const QualifiedName& attribute) const {

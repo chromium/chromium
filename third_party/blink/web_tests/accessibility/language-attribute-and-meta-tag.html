@@ -13,38 +13,43 @@
 
   <script>
     setup(() => {
+      window.axRoot = accessibilityController.rootElement;
       window.axBody = accessibilityController.accessibleElementById('body');
       window.axParagraph = accessibilityController.accessibleElementById('paragraph');
       window.axSpan = accessibilityController.accessibleElementById('span');
     });
 
     test(() => {
-      assert_equals(window.axBody.language, 'AXLanguage: en',
+      assert_equals(window.axRoot.language, 'AXLanguage: en',
           'The first language in the meta tag should apply.');
+      assert_equals(window.axBody.language, 'AXLanguage: ',
+          'Body should not inherit language Blink side.');
       assert_equals(window.axParagraph.language, 'AXLanguage: pl',
           'The language in the lang attribute should apply.');
-      assert_equals(window.axSpan.language, 'AXLanguage: pl',
-          'The language in the lang attribute is inherited.');
+      assert_equals(window.axSpan.language, 'AXLanguage: ',
+          'Span should not inherit language Blink side.');
     }, 'Tests if the content-language meta tag and the lang attribute are picked up by the accessibility component.');
 
     test(() => {
-      assert_equals(window.axBody.language, 'AXLanguage: en',
-          'The lang attribute has not been changed yet.');
+      assert_equals(window.axRoot.language, 'AXLanguage: en',
+          'The first language in the meta tag should apply.');
 
       document.documentElement.lang = 'ru';
-      assert_equals(window.axBody.language, 'AXLanguage: ru',
+      assert_equals(window.axRoot.language, 'AXLanguage: ru',
           'The lang attribute on the html element has changed.');
+      assert_equals(window.axBody.language, 'AXLanguage: ',
+          'Body should not inherit lanugage Blink side.');
       assert_equals(window.axParagraph.language, 'AXLanguage: pl',
           'The lang attribute on the html element should not affect the lang attribute on the paragraph.');
-      assert_equals(window.axSpan.language, 'AXLanguage: pl',
-          'The lang attribute on the html element should not affect the lang attribute on the span.');
+      assert_equals(window.axSpan.language, 'AXLanguage: ',
+          'Span should not inherit language Blink side.');
       document.documentElement.lang = '';
 
       document.getElementById('paragraph').lang = 'it';
       assert_equals(window.axParagraph.language, 'AXLanguage: it',
           'The lang attribute on the paragraph has changed.');
-      assert_equals(window.axSpan.language, 'AXLanguage: it',
-          'The lang attribute on the paragraph has changed.');
+      assert_equals(window.axSpan.language, 'AXLanguage: ',
+          'Span should not inherit language Blink side.');
       document.getElementById('paragraph').lang = 'pl';
 
       document.getElementById('span').lang = 'es';

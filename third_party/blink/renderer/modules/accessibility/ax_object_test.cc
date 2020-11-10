@@ -146,6 +146,48 @@ TEST_F(AccessibilityTest, SimpleTreeNavigation) {
             paragraph->DeepestFirstChildIncludingIgnored()->RoleValue());
 }
 
+TEST_F(AccessibilityTest, LangAttrInteresting) {
+  SetBodyInnerHTML(R"HTML(
+      <div id="A"><span>some text</span></div>
+      <div id="B"><span lang='en'>some text</span></div>
+      )HTML");
+
+  const AXObject* obj_a = GetAXObjectByElementId("A");
+  ASSERT_NE(nullptr, obj_a);
+  ASSERT_EQ(obj_a->ChildCountIncludingIgnored(), 1);
+
+  // A.span will be excluded from tree as it isn't semantically interesting.
+  // Instead its kStaticText child will be promoted.
+  const AXObject* span_1 = obj_a->ChildAtIncludingIgnored(0);
+  ASSERT_NE(nullptr, span_1);
+  EXPECT_EQ(ax::mojom::Role::kStaticText, span_1->RoleValue());
+
+  const AXObject* obj_b = GetAXObjectByElementId("B");
+  ASSERT_NE(nullptr, obj_b);
+  ASSERT_EQ(obj_b->ChildCountIncludingIgnored(), 1);
+
+  // B.span will be present as the lang attribute is semantically interesting.
+  const AXObject* span_2 = obj_b->ChildAtIncludingIgnored(0);
+  ASSERT_NE(nullptr, span_2);
+  EXPECT_EQ(ax::mojom::Role::kGenericContainer, span_2->RoleValue());
+}
+
+TEST_F(AccessibilityTest, LangAttrInterestingHidden) {
+  SetBodyInnerHTML(R"HTML(
+      <div id="A"><span lang='en' aria-hidden='true'>some text</span></div>
+      )HTML");
+
+  const AXObject* obj_a = GetAXObjectByElementId("A");
+  ASSERT_NE(nullptr, obj_a);
+  ASSERT_EQ(obj_a->ChildCountIncludingIgnored(), 1);
+
+  // A.span will be present as the lang attribute is semantically interesting.
+  const AXObject* span_1 = obj_a->ChildAtIncludingIgnored(0);
+  ASSERT_NE(nullptr, span_1);
+  EXPECT_EQ(ax::mojom::Role::kGenericContainer, span_1->RoleValue());
+  EXPECT_TRUE(span_1->AccessibilityIsIgnoredButIncludedInTree());
+}
+
 TEST_F(AccessibilityTest, TreeNavigationWithIgnoredContainer) {
   // Setup the following tree :
   // ++A

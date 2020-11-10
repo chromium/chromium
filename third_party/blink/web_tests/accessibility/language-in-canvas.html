@@ -26,10 +26,10 @@
 
       assert_equals(window.axRoot.language, 'AXLanguage: en',
           'The first language in the meta tag should apply.');
-      assert_equals(window.axCanvas.language, 'AXLanguage: en',
-          'The first language in the meta tag should apply.');
-      assert_equals(window.axParagraph.language, 'AXLanguage: en',
-          'The first language in the meta tag should apply.');
+      assert_equals(window.axCanvas.language, 'AXLanguage: ',
+          'Canvas should not inherit language blink side.');
+      assert_equals(window.axParagraph.language, 'AXLanguage: ',
+          'Paragraph should not inherit language blink side.');
       assert_equals(window.axSpan.language, 'AXLanguage: pl',
           'The language in the lang attribute should apply.');
 
@@ -40,10 +40,10 @@
       t.step_timeout(() => {
         assert_equals(window.axRoot.language, 'AXLanguage: de',
             'The browser language should apply.');
-        assert_equals(window.axCanvas.language, 'AXLanguage: de',
-            'The browser language should apply.');
-        assert_equals(window.axParagraph.language, 'AXLanguage: de',
-            'The browser language should apply.');
+        assert_equals(window.axCanvas.language, 'AXLanguage: ',
+            'Canvas should not inherit language blink side.');
+        assert_equals(window.axParagraph.language, 'AXLanguage: ',
+            'Paragraph should not inherit language blink side.');
         assert_equals(window.axSpan.language, 'AXLanguage: pl',
             'The language in the lang attribute should apply.');
         t.done();

@@ -1896,6 +1896,10 @@ bool AXObject::ComputeAccessibilityIsIgnoredButIncludedInTree() const {
   if (GetNode() && IsA<SVGGElement>(GetNode()))
     return true;
 
+  // Preserve nodes with language attributes.
+  if (HasAttribute(html_names::kLangAttr))
+    return true;
+
   return false;
 }
 
@@ -3532,37 +3536,42 @@ AtomicString AXObject::Language() const {
   if (!lang.IsEmpty())
     return lang;
 
-  AXObject* parent = ParentObject();
-  if (parent)
-    return parent->Language();
+  // Only fallback for the root node, propagating this value down the tree is
+  // handled browser side within AXNode::GetLanguage.
+  //
+  // TODO(chrishall): Consider moving this to AXNodeObject or AXLayoutObject as
+  // the kRootWebArea node is currently an AXLayoutObject.
+  if (RoleValue() == ax::mojom::blink::Role::kRootWebArea) {
+    const Document* document = GetDocument();
+    if (document) {
+      // Fall back to the first content language specified in the meta tag.
+      // This is not part of what the HTML5 Standard suggests but it still
+      // appears to be necessary.
+      if (document->ContentLanguage()) {
+        const String content_languages = document->ContentLanguage();
+        Vector<String> languages;
+        content_languages.Split(',', languages);
+        if (!languages.IsEmpty())
+          return AtomicString(languages[0].StripWhiteSpace());
+      }
 
-  const Document* document = GetDocument();
-  if (document) {
-    // Fall back to the first content language specified in the meta tag.
-    // This is not part of what the HTML5 Standard suggests but it still appears
-    // to be necessary.
-    if (document->ContentLanguage()) {
-      const String content_languages = document->ContentLanguage();
-      Vector<String> languages;
-      content_languages.Split(',', languages);
-      if (!languages.IsEmpty())
-        return AtomicString(languages[0].StripWhiteSpace());
+      if (document->GetPage()) {
+        // Use the first accept language preference if present.
+        const String accept_languages =
+            document->GetPage()->GetChromeClient().AcceptLanguages();
+        Vector<String> languages;
+        accept_languages.Split(',', languages);
+        if (!languages.IsEmpty())
+          return AtomicString(languages[0].StripWhiteSpace());
+      }
     }
 
-    if (document->GetPage()) {
-      // Use the first accept language preference if present.
-      const String accept_languages =
-          document->GetPage()->GetChromeClient().AcceptLanguages();
-      Vector<String> languages;
-      accept_languages.Split(',', languages);
-      if (!languages.IsEmpty())
-        return AtomicString(languages[0].StripWhiteSpace());
-    }
+    // As a last resort, return the default language of the browser's UI.
+    AtomicString default_language = DefaultLanguage();
+    return default_language;
   }
 
-  // As a last resort, return the default language of the browser's UI.
-  AtomicString default_language = DefaultLanguage();
-  return default_language;
+  return g_null_atom;
 }
 
 //

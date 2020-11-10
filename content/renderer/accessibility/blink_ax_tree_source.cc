@@ -560,6 +560,7 @@ void BlinkAXTreeSource::SerializeNode(WebAXObject src,
 
     WebAXObject parent = ParentObjectUnignored(src);
     if (src.Language().length()) {
+      // TODO(chrishall): should we still trim redundant languages off here?
       if (parent.IsNull() || parent.Language() != src.Language()) {
         TruncateAndAddStringAttribute(
             dst, ax::mojom::StringAttribute::kLanguage, src.Language().Utf8());
