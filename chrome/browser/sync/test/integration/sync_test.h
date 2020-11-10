@@ -355,7 +355,7 @@ class SyncTest : public PlatformBrowserTest {
 
   // Callback for MakeProfileForUISignin() method. It runs the quit_closure once
   // profile is created successfully.
-  static void CreateProfileCallback(const base::Closure& quit_closure,
+  static void CreateProfileCallback(const base::RepeatingClosure& quit_closure,
                                     Profile* profile,
                                     Profile::CreateStatus status);
 

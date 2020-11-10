@@ -51,7 +51,7 @@ namespace sync_start_util {
 
 syncer::SyncableService::StartSyncFlare GetFlareForSyncableService(
     const base::FilePath& profile_path) {
-  return base::Bind(&StartSyncProxy, profile_path);
+  return base::BindRepeating(&StartSyncProxy, profile_path);
 }
 
 }  // namespace sync_start_util

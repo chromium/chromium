@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
@@ -491,7 +492,7 @@ class DeviceInfoSyncBridgeTest : public testing::Test,
   void ForcePulse() { bridge()->ForcePulseForTest(); }
 
   void RefreshLocalDeviceInfo() {
-    bridge()->RefreshLocalDeviceInfo(base::OnceClosure());
+    bridge()->RefreshLocalDeviceInfo(base::DoNothing());
   }
 
   void CommitToStoreAndWait(std::unique_ptr<WriteBatch> batch) {

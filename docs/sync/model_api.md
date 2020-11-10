@@ -197,7 +197,7 @@ base::Optional<ModelError> DeviceInfoSyncBridge::ApplySyncChanges(
   }
 
   batch->TakeMetadataChangesFrom(std::move(metadata_change_list));
-  store_->CommitWriteBatch(std::move(batch), base::Bind(...));
+  store_->CommitWriteBatch(std::move(batch), base::BindOnce(...));
   NotifyModelOfChanges();
   return {};
 }
@@ -231,7 +231,7 @@ void WriteLocalChange(std::string key, ModelData data) {
                             batch->GetMetadataChangeList());
   }
   batch->WriteData(key, data.specifics->SerializeAsString());
-  store_->CommitWriteBatch(std::move(batch), base::Bind(...));
+  store_->CommitWriteBatch(std::move(batch), base::BindOnce(...));
 }
 ```
 

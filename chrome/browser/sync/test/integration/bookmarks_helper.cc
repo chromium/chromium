@@ -279,11 +279,11 @@ void ExpireFaviconImpl(Profile* profile, const BookmarkNode* node) {
 // Used to call FaviconService APIs synchronously by making |callback| quit a
 // RunLoop.
 void OnGotFaviconData(
-    const base::Closure& callback,
+    base::OnceClosure callback,
     favicon_base::FaviconRawBitmapResult* output_bitmap_result,
     const favicon_base::FaviconRawBitmapResult& bitmap_result) {
   *output_bitmap_result = bitmap_result;
-  callback.Run();
+  std::move(callback).Run();
 }
 
 // Deletes favicon mappings for |profile| and |node|. |profile| may be
@@ -394,9 +394,11 @@ bool NodeCantBeSynced(bookmarks::BookmarkClient* client,
 // Note: Some peripheral fields like creation times are allowed to mismatch.
 bool BookmarkModelsMatch(BookmarkModel* model_a, BookmarkModel* model_b) {
   ui::TreeNodeIterator<const BookmarkNode> iterator_a(
-      model_a->root_node(), base::Bind(&NodeCantBeSynced, model_a->client()));
+      model_a->root_node(),
+      base::BindRepeating(&NodeCantBeSynced, model_a->client()));
   ui::TreeNodeIterator<const BookmarkNode> iterator_b(
-      model_b->root_node(), base::Bind(&NodeCantBeSynced, model_b->client()));
+      model_b->root_node(),
+      base::BindRepeating(&NodeCantBeSynced, model_b->client()));
   while (iterator_a.has_next()) {
     const BookmarkNode* node_a = iterator_a.Next();
     if (!iterator_b.has_next()) {

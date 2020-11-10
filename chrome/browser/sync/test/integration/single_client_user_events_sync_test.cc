@@ -68,14 +68,14 @@ IN_PROC_BROWSER_TEST_F(SingleClientUserEventsSyncTest, RetrySequential) {
       browser_sync::UserEventServiceFactory::GetForProfile(GetProfile(0));
 
   GetFakeServer()->OverrideResponseType(
-      base::Bind(&BounceType, CommitResponse::TRANSIENT_ERROR));
+      base::BindRepeating(&BounceType, CommitResponse::TRANSIENT_ERROR));
   event_service->RecordUserEvent(specifics1);
 
   // This will block until we hit a TRANSIENT_ERROR, at which point we will
   // regain control and can switch back to SUCCESS.
   EXPECT_TRUE(ExpectUserEvents({specifics1}));
   GetFakeServer()->OverrideResponseType(
-      base::Bind(&BounceType, CommitResponse::SUCCESS));
+      base::BindRepeating(&BounceType, CommitResponse::SUCCESS));
   // Because the fake server records commits even on failure, we are able to
   // verify that the commit for this event reached the server twice.
   EXPECT_TRUE(ExpectUserEvents({specifics1, specifics1}));

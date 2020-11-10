@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/guid.h"
 #include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -60,7 +61,7 @@ void AutofillProfileSyncBridge::CreateForWebDataServiceAndBackend(
       std::make_unique<AutofillProfileSyncBridge>(
           std::make_unique<syncer::ClientTagBasedModelTypeProcessor>(
               syncer::AUTOFILL_PROFILE,
-              /*dump_stack=*/base::RepeatingClosure()),
+              /*dump_stack=*/base::DoNothing()),
           app_locale, web_data_backend));
 }
 

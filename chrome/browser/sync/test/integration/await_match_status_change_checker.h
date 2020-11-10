@@ -16,7 +16,7 @@
 // verifies the state of all the profiles involved in the test.
 class AwaitMatchStatusChangeChecker : public MultiClientStatusChangeChecker {
  public:
-  using ExitConditionCallback = base::Callback<bool(void)>;
+  using ExitConditionCallback = base::RepeatingCallback<bool(void)>;
 
   AwaitMatchStatusChangeChecker(const ExitConditionCallback& condition,
                                 const std::string& debug_message);

@@ -359,10 +359,8 @@ void ProfileSyncServiceAndroid::GetAllNodes(
     const JavaParamRef<jobject>& callback) {
   base::android::ScopedJavaGlobalRef<jobject> java_callback;
   java_callback.Reset(env, callback);
-
-  base::Callback<void(std::unique_ptr<base::ListValue>)> native_callback =
-      base::Bind(&NativeGetAllNodesCallback, java_callback);
-  sync_service_->GetAllNodesForDebugging(native_callback);
+  sync_service_->GetAllNodesForDebugging(
+      base::BindOnce(&NativeGetAllNodesCallback, java_callback));
 }
 
 jint ProfileSyncServiceAndroid::GetAuthError(JNIEnv* env,

@@ -63,9 +63,10 @@ void UseSystemTheme(Profile* profile);
 class ThemeConditionChecker : public StatusChangeChecker,
                               public content::NotificationObserver {
  public:
-  ThemeConditionChecker(Profile* profile,
-                        const std::string& debug_message_,
-                        base::Callback<bool(ThemeService*)> exit_condition);
+  ThemeConditionChecker(
+      Profile* profile,
+      const std::string& debug_message_,
+      const base::RepeatingCallback<bool(ThemeService*)>& exit_condition);
   ~ThemeConditionChecker() override;
 
   // Implementation of StatusChangeChecker.
@@ -79,7 +80,7 @@ class ThemeConditionChecker : public StatusChangeChecker,
  private:
   Profile* profile_;
   const std::string debug_message_;
-  base::Callback<bool(ThemeService*)> exit_condition_;
+  base::RepeatingCallback<bool(ThemeService*)> exit_condition_;
 
   content::NotificationRegistrar registrar_;
 };

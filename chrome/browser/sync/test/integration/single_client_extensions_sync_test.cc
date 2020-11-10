@@ -95,7 +95,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientExtensionsSyncTest, UninstallWinsConflicts) {
 
   // Expect the extension to get uninstalled locally.
   AwaitMatchStatusChangeChecker checker(
-      base::Bind(&ExtensionCountCheck, GetProfile(0), 0u),
+      base::BindRepeating(&ExtensionCountCheck, GetProfile(0), 0u),
       "Waiting for profile to have no extensions");
   EXPECT_TRUE(checker.Wait());
   EXPECT_TRUE(GetInstalledExtensions(GetProfile(0)).empty());

@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/base64.h"
+#include "base/callback_helpers.h"
 #include "base/check_op.h"
 #include "base/notreached.h"
 #include "base/optional.h"
@@ -310,7 +311,7 @@ void AutofillWalletMetadataSyncBridge::CreateForWebDataServiceAndBackend(
       std::make_unique<AutofillWalletMetadataSyncBridge>(
           std::make_unique<syncer::ClientTagBasedModelTypeProcessor>(
               syncer::AUTOFILL_WALLET_METADATA,
-              /*dump_stack=*/base::RepeatingClosure()),
+              /*dump_stack=*/base::DoNothing()),
           web_data_backend));
 }
 

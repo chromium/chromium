@@ -174,7 +174,7 @@ bool ProfileContainsSamePrintersAsVerifier(int index) {
 
 PrintersMatchChecker::PrintersMatchChecker()
     : AwaitMatchStatusChangeChecker(
-          base::Bind(&printers_helper::AllProfilesContainSamePrinters),
+          base::BindRepeating(&printers_helper::AllProfilesContainSamePrinters),
           "All printers match") {}
 
 PrintersMatchChecker::~PrintersMatchChecker() {}

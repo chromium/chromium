@@ -4,7 +4,10 @@
 
 #include "chrome/browser/sync/test/integration/sync_test.h"
 
+#include <utility>
+
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -191,8 +194,8 @@ syncer::FCMNetworkHandler* GetFCMNetworkHandler(
 class SyncProfileDelegate : public Profile::Delegate {
  public:
   explicit SyncProfileDelegate(
-      const base::Callback<void(Profile*)>& on_profile_created_callback)
-      : on_profile_created_callback_(on_profile_created_callback) {}
+      base::OnceCallback<void(Profile*)> on_profile_created_callback)
+      : on_profile_created_callback_(std::move(on_profile_created_callback)) {}
   ~SyncProfileDelegate() override = default;
 
   void OnProfileCreated(Profile* profile,
@@ -203,14 +206,14 @@ class SyncProfileDelegate : public Profile::Delegate {
 
     // Perform any custom work needed before the profile is initialized.
     if (!on_profile_created_callback_.is_null())
-      on_profile_created_callback_.Run(profile);
+      std::move(on_profile_created_callback_).Run(profile);
 
     g_browser_process->profile_manager()->OnProfileCreated(profile, success,
                                                            is_new_profile);
   }
 
  private:
-  base::Callback<void(Profile*)> on_profile_created_callback_;
+  base::OnceCallback<void(Profile*)> on_profile_created_callback_;
 
   DISALLOW_COPY_AND_ASSIGN(SyncProfileDelegate);
 };
@@ -438,7 +441,7 @@ bool SyncTest::CreateProfile(int index) {
     // For test profiles, a custom delegate needs to be used to do the
     // initialization work before the profile is registered.
     profile_delegates_[index] =
-        std::make_unique<SyncProfileDelegate>(base::Bind(
+        std::make_unique<SyncProfileDelegate>(base::BindOnce(
             &SyncTest::InitializeProfile, base::Unretained(this), index));
     Profile* profile = MakeTestProfile(profile_path, index);
 #endif
@@ -453,7 +456,7 @@ bool SyncTest::CreateProfile(int index) {
 
 // Called when the ProfileManager has created a profile.
 // static
-void SyncTest::CreateProfileCallback(const base::Closure& quit_closure,
+void SyncTest::CreateProfileCallback(const base::RepeatingClosure& quit_closure,
                                      Profile* profile,
                                      Profile::CreateStatus status) {
   EXPECT_TRUE(profile);
@@ -616,7 +619,7 @@ bool SyncTest::SetupClients() {
   // Uses a fake app list model updater to avoid interacting with Ash.
   model_updater_factory_ = std::make_unique<
       app_list::AppListSyncableService::ScopedModelUpdaterFactoryForTest>(
-      base::Bind([]() -> std::unique_ptr<AppListModelUpdater> {
+      base::BindRepeating([]() -> std::unique_ptr<AppListModelUpdater> {
         return std::make_unique<FakeAppListModelUpdater>();
       }));
 #endif
@@ -645,7 +648,7 @@ bool SyncTest::SetupClients() {
     base::FilePath user_data_dir;
     base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir);
     profile_delegates_[num_clients_] =
-        std::make_unique<SyncProfileDelegate>(base::Callback<void(Profile*)>());
+        std::make_unique<SyncProfileDelegate>(base::DoNothing());
     verifier_ = MakeTestProfile(
         user_data_dir.Append(FILE_PATH_LITERAL("Verifier")), num_clients_);
     WaitForDataModels(verifier());

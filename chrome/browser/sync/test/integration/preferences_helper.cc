@@ -157,8 +157,8 @@ void PrefMatchChecker::RegisterPrefListener(PrefService* pref_service) {
   std::unique_ptr<PrefChangeRegistrar> registrar(new PrefChangeRegistrar());
   registrar->Init(pref_service);
   registrar->Add(path_,
-                 base::Bind(&PrefMatchChecker::CheckExitCondition,
-                            base::Unretained(this)));
+                 base::BindRepeating(&PrefMatchChecker::CheckExitCondition,
+                                     base::Unretained(this)));
   pref_change_registrars_.push_back(std::move(registrar));
 }
 

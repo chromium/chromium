@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 
@@ -41,7 +42,7 @@ class DeviceInfoSyncService : public KeyedService {
   // soon as possible, without waiting for the periodic commits. |callback| will
   // be called when device info is synced.
   virtual void RefreshLocalDeviceInfo(
-      base::OnceClosure callback = base::OnceClosure()) = 0;
+      base::OnceClosure callback = base::DoNothing()) = 0;
 };
 
 }  // namespace syncer

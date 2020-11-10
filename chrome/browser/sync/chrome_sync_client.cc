@@ -324,8 +324,8 @@ sync_sessions::SessionSyncService* ChromeSyncClient::GetSessionSyncService() {
   return SessionSyncServiceFactory::GetForProfile(profile_);
 }
 
-base::Closure ChromeSyncClient::GetPasswordStateChangedCallback() {
-  return base::Bind(
+base::RepeatingClosure ChromeSyncClient::GetPasswordStateChangedCallback() {
+  return base::BindRepeating(
       &PasswordStoreFactory::OnPasswordsSyncedStatePotentiallyChanged,
       base::Unretained(profile_));
 }
