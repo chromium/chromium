@@ -7,12 +7,9 @@
 
 #include <string>
 
-#include "chrome/browser/chromeos/input_method/emoji_suggester.h"
+#include "chrome/browser/chromeos/input_method/assistive_window_controller.h"
 #include "chrome/browser/chromeos/input_method/input_method_engine.h"
 #include "chrome/browser/chromeos/input_method/input_method_engine_base.h"
-#include "chrome/browser/chromeos/input_method/personal_info_suggester.h"
-#include "chrome/browser/chromeos/input_method/suggester.h"
-#include "chrome/browser/chromeos/input_method/suggestion_enums.h"
 
 namespace chromeos {
 
@@ -54,6 +51,7 @@ class AutocorrectManager {
   int context_id_ = -1;
   InputMethodEngine* const engine_;
   std::string last_typed_word_;
+  std::string last_corrected_word_;
   bool window_visible = false;
   bool button_highlighted = false;
 };

@@ -4,10 +4,13 @@
 
 #include "chrome/browser/chromeos/input_method/autocorrect_manager.h"
 
+#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/chromeos/input_method/assistive_window_properties.h"
+#include "chrome/grit/generated_resources.h"
 #include "ui/base/ime/chromeos/ime_bridge.h"
 #include "ui/base/ime/chromeos/ime_input_context_handler_interface.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace chromeos {
 
@@ -22,6 +25,7 @@ void AutocorrectManager::MarkAutocorrectRange(const std::string& corrected_word,
   // TODO(crbug/1111135): call setAutocorrectTime() (for metrics)
   // TODO(crbug/1111135): record metric (coverage)
   last_typed_word_ = typed_word;
+  last_corrected_word_ = corrected_word;
   key_presses_until_underline_hide_ = kKeysUntilAutocorrectWindowHides;
   ClearUnderline();
 
@@ -41,6 +45,9 @@ bool AutocorrectManager::OnKeyEvent(
     auto button = ui::ime::AssistiveWindowButton();
     button.id = ui::ime::ButtonId::kUndo;
     button.window_type = ui::ime::AssistiveWindowType::kUndoWindow;
+    button.announce_string =
+        l10n_util::GetStringFUTF8(IDS_SUGGESTION_AUTOCORRECT_UNDO_BUTTON,
+                                  base::UTF8ToUTF16(last_typed_word_));
     engine_->SetButtonHighlighted(context_id_, button, true, &error);
     button_highlighted = true;
     return true;
@@ -64,6 +71,7 @@ void AutocorrectManager::ClearUnderline() {
                                /*end=*/std::numeric_limits<uint32_t>::max());
   // TODO(b/171924347): expose engine->clearAutocorrectRange() and use it here.
 }
+
 void AutocorrectManager::OnSurroundingTextChanged(const base::string16& text,
                                                   const int cursor_pos,
                                                   const int anchpr_pos) {
@@ -74,9 +82,12 @@ void AutocorrectManager::OnSurroundingTextChanged(const base::string16& text,
     chromeos::AssistiveWindowProperties properties;
     properties.type = ui::ime::AssistiveWindowType::kUndoWindow;
     properties.visible = true;
+    properties.announce_string =
+        l10n_util::GetStringFUTF8(IDS_SUGGESTION_AUTOCORRECT_UNDO_WINDOW_SHOWN,
+                                  base::UTF8ToUTF16(last_typed_word_),
+                                  base::UTF8ToUTF16(last_corrected_word_));
     window_visible = true;
     button_highlighted = false;
-
     engine_->SetAssistiveWindowProperties(context_id_, properties, &error);
     key_presses_until_underline_hide_ = kKeysUntilAutocorrectWindowHides;
   } else {
@@ -94,14 +105,16 @@ void AutocorrectManager::OnFocus(int context_id) {
 }
 
 void AutocorrectManager::UndoAutocorrect() {
-  // TODO(crbug/1111135): error handling, chromeVox and metrics
+  // TODO(crbug/1111135): error handling and metrics
   std::string error;
   chromeos::AssistiveWindowProperties properties;
   properties.type = ui::ime::AssistiveWindowType::kUndoWindow;
   properties.visible = false;
   window_visible = false;
   button_highlighted = false;
+  window_visible = false;
   engine_->SetAssistiveWindowProperties(context_id_, properties, &error);
+
   const gfx::Range range = engine_->GetAutocorrectRange();
   const ui::SurroundingTextInfo surrounding_text =
       ui::IMEBridge::Get()->GetInputContextHandler()->GetSurroundingTextInfo();
