@@ -6,10 +6,12 @@
 
 #include "ash/public/cpp/media_notification_provider.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/ash_color_provider.h"
 #include "ash/system/media/unified_media_controls_detailed_view.h"
 #include "ash/system/tray/detailed_view_delegate.h"
 #include "ash/system/tray/tray_constants.h"
 #include "base/metrics/histogram_functions.h"
+#include "components/media_message_center/media_notification_view_impl.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace ash {
@@ -34,6 +36,19 @@ UnifiedMediaControlsDetailedViewController::
 
 views::View* UnifiedMediaControlsDetailedViewController::CreateView() {
   DCHECK(MediaNotificationProvider::Get());
+
+  media_message_center::NotificationTheme theme;
+  theme.primary_text_color = AshColorProvider::Get()->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kTextColorPrimary);
+  theme.secondary_text_color = AshColorProvider::Get()->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kTextColorSecondary);
+  theme.enabled_icon_color = AshColorProvider::Get()->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kIconColorPrimary);
+  theme.disabled_icon_color = AshColorProvider::Get()->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kIconColorSecondary);
+  theme.separator_color = AshColorProvider::Get()->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kSeparatorColor);
+  MediaNotificationProvider::Get()->SetColorTheme(theme);
 
   base::UmaHistogramBoolean(
       "Media.CrosGlobalMediaControls.RepeatUsageInQuickSetting",

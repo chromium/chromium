@@ -197,7 +197,6 @@ void MediaTray::PinButton::ButtonPressed() {
 MediaTray::MediaTray(Shelf* shelf) : TrayBackgroundView(shelf) {
   if (MediaNotificationProvider::Get())
     MediaNotificationProvider::Get()->AddObserver(this);
-  SetNotificationColorTheme();
 
   Shell::Get()->session_controller()->AddObserver(this);
 
@@ -258,6 +257,7 @@ bool MediaTray::PerformAction(const ui::Event& event) {
 
 void MediaTray::ShowBubble(bool show_by_click) {
   DCHECK(MediaNotificationProvider::Get());
+  SetNotificationColorTheme();
 
   TrayBubbleView::InitParams init_params;
   init_params.delegate = this;
