@@ -692,21 +692,21 @@ bool ScriptExecutor::WaitForNavigation(
 }
 
 void ScriptExecutor::GetDocumentReadyState(
-    const Selector& optional_frame,
+    const ElementFinder::Result& optional_frame_element,
     base::OnceCallback<void(const ClientStatus&, DocumentReadyState)>
         callback) {
-  delegate_->GetWebController()->GetDocumentReadyState(optional_frame,
+  delegate_->GetWebController()->GetDocumentReadyState(optional_frame_element,
                                                        std::move(callback));
 }
 
 void ScriptExecutor::WaitForDocumentReadyState(
-    const Selector& optional_frame,
     DocumentReadyState min_ready_state,
+    const ElementFinder::Result& optional_frame_element,
     base::OnceCallback<void(const ClientStatus&,
                             DocumentReadyState,
                             base::TimeDelta)> callback) {
   delegate_->GetWebController()->WaitForDocumentReadyState(
-      optional_frame, min_ready_state, std::move(callback));
+      optional_frame_element, min_ready_state, std::move(callback));
 }
 
 void ScriptExecutor::LoadURL(const GURL& url) {

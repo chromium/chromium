@@ -9,6 +9,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "components/autofill_assistant/browser/actions/action.h"
+#include "components/autofill_assistant/browser/web/element_finder.h"
 
 namespace autofill_assistant {
 
@@ -22,7 +23,11 @@ class WaitForDocumentAction : public Action {
   // Overrides Action:
   void InternalProcessAction(ProcessActionCallback callback) override;
 
-  void OnShortWaitForElement(const ClientStatus& status);
+  void OnShortWaitForElement(const Selector& frame_selector,
+                             const ClientStatus& status);
+  void OnFindElement(const ClientStatus& status,
+                     std::unique_ptr<ElementFinder::Result> element);
+  void WaitForReadyState();
 
   void OnGetStartState(const ClientStatus& status,
                        DocumentReadyState start_state);
@@ -36,6 +41,7 @@ class WaitForDocumentAction : public Action {
 
   ProcessActionCallback callback_;
   base::OneShotTimer timer_;
+  std::unique_ptr<ElementFinder::Result> optional_frame_element_;
   base::WeakPtrFactory<WaitForDocumentAction> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(WaitForDocumentAction);

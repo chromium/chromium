@@ -298,30 +298,31 @@ class MockActionDelegate : public ActionDelegate {
 
   MOCK_METHOD2(
       OnGetDocumentReadyState,
-      void(const Selector&,
+      void(const ElementFinder::Result&,
            base::OnceCallback<void(const ClientStatus&, DocumentReadyState)>&));
 
   void GetDocumentReadyState(
-      const Selector& frame,
+      const ElementFinder::Result& optional_frame_element,
       base::OnceCallback<void(const ClientStatus&, DocumentReadyState)>
           callback) override {
-    OnGetDocumentReadyState(frame, callback);
+    OnGetDocumentReadyState(optional_frame_element, callback);
   }
 
   MOCK_METHOD3(OnWaitForDocumentReadyState,
-               void(const Selector&,
-                    DocumentReadyState min_ready_state,
+               void(DocumentReadyState,
+                    const ElementFinder::Result&,
                     base::OnceCallback<void(const ClientStatus&,
                                             DocumentReadyState,
                                             base::TimeDelta)>&));
 
   void WaitForDocumentReadyState(
-      const Selector& frame,
       DocumentReadyState min_ready_state,
+      const ElementFinder::Result& optional_frame_element,
       base::OnceCallback<void(const ClientStatus&,
                               DocumentReadyState,
                               base::TimeDelta)> callback) override {
-    OnWaitForDocumentReadyState(frame, min_ready_state, callback);
+    OnWaitForDocumentReadyState(min_ready_state, optional_frame_element,
+                                callback);
   }
 
   MOCK_METHOD0(RequireUI, void());

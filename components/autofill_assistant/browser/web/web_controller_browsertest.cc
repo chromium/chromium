@@ -2027,7 +2027,7 @@ IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest,
   DocumentReadyState end_state;
   base::RunLoop run_loop;
   web_controller_->WaitForDocumentReadyState(
-      Selector(), DOCUMENT_INTERACTIVE,
+      ElementFinder::Result(), DOCUMENT_INTERACTIVE,
       base::BindOnce(&WebControllerBrowserTest::OnClientStatusAndReadyState,
                      base::Unretained(this), run_loop.QuitClosure(), &status,
                      &end_state));
@@ -2043,7 +2043,7 @@ IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest,
   DocumentReadyState end_state;
   base::RunLoop run_loop;
   web_controller_->WaitForDocumentReadyState(
-      Selector(), DOCUMENT_COMPLETE,
+      ElementFinder::Result(), DOCUMENT_COMPLETE,
       base::BindOnce(&WebControllerBrowserTest::OnClientStatusAndReadyState,
                      base::Unretained(this), run_loop.QuitClosure(), &status,
                      &end_state));
@@ -2056,10 +2056,15 @@ IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest,
 IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest,
                        WaitFrameDocumentReadyStateComplete) {
   ClientStatus status;
+
+  ElementFinder::Result iframe_element;
+  FindElement(Selector({"#iframe"}), &status, &iframe_element);
+  ASSERT_EQ(ACTION_APPLIED, status.proto_status());
+
   DocumentReadyState end_state;
   base::RunLoop run_loop;
   web_controller_->WaitForDocumentReadyState(
-      Selector({"#iframe"}), DOCUMENT_COMPLETE,
+      iframe_element, DOCUMENT_COMPLETE,
       base::BindOnce(&WebControllerBrowserTest::OnClientStatusAndReadyState,
                      base::Unretained(this), run_loop.QuitClosure(), &status,
                      &end_state));
@@ -2072,10 +2077,15 @@ IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest,
 IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest,
                        WaitExternalFrameDocumentReadyStateComplete) {
   ClientStatus status;
+
+  ElementFinder::Result iframe_element;
+  FindElement(Selector({"#iframeExternal"}), &status, &iframe_element);
+  ASSERT_EQ(ACTION_APPLIED, status.proto_status());
+
   DocumentReadyState end_state;
   base::RunLoop run_loop;
   web_controller_->WaitForDocumentReadyState(
-      Selector({"#iframeExternal"}), DOCUMENT_COMPLETE,
+      iframe_element, DOCUMENT_COMPLETE,
       base::BindOnce(&WebControllerBrowserTest::OnClientStatusAndReadyState,
                      base::Unretained(this), run_loop.QuitClosure(), &status,
                      &end_state));

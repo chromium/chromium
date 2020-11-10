@@ -12,6 +12,7 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
+#include "components/autofill_assistant/browser/actions/action_test_utils.h"
 #include "components/autofill_assistant/browser/actions/mock_action_delegate.h"
 #include "components/autofill_assistant/browser/client_status.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -136,7 +137,7 @@ TEST_F(WaitForDocumentActionTest, WaitForDocumentInteractive) {
   EXPECT_CALL(mock_action_delegate_, OnGetDocumentReadyState(_, _))
       .WillOnce(RunOnceCallback<1>(OkClientStatus(), DOCUMENT_LOADING));
   EXPECT_CALL(mock_action_delegate_,
-              OnWaitForDocumentReadyState(_, DOCUMENT_INTERACTIVE, _))
+              OnWaitForDocumentReadyState(DOCUMENT_INTERACTIVE, _, _))
       .WillOnce(RunOnceCallback<2>(OkClientStatus(), DOCUMENT_INTERACTIVE,
                                    base::TimeDelta::FromSeconds(0)));
   proto_.set_timeout_ms(1000);
@@ -158,10 +159,11 @@ TEST_F(WaitForDocumentActionTest, WaitForDocumentInteractiveTimesOut) {
                           base::TimeDelta)>
       captured_callback;
   EXPECT_CALL(mock_action_delegate_,
-              OnWaitForDocumentReadyState(_, DOCUMENT_COMPLETE, _))
+              OnWaitForDocumentReadyState(DOCUMENT_COMPLETE, _, _))
       .WillOnce(Invoke(
           [&captured_callback](
-              const Selector& frame, DocumentReadyState min_ready_state,
+              DocumentReadyState min_ready_state,
+              const ElementFinder::Result& optional_frame_element,
               base::OnceCallback<void(const ClientStatus&, DocumentReadyState,
                                       base::TimeDelta)>& callback) {
             captured_callback = std::move(callback);
@@ -190,13 +192,16 @@ TEST_F(WaitForDocumentActionTest, WaitForDocumentInteractiveTimesOut) {
 }
 
 TEST_F(WaitForDocumentActionTest, CheckDocumentInFrame) {
+  Selector expected_frame_selector({"#frame"});
   EXPECT_CALL(mock_action_delegate_,
-              OnShortWaitForElement(Selector({"#frame"}), _))
+              OnShortWaitForElement(expected_frame_selector, _))
       .WillRepeatedly(RunOnceCallback<1>(OkClientStatus(),
                                          base::TimeDelta::FromSeconds(0)));
-
   EXPECT_CALL(mock_action_delegate_,
-              OnGetDocumentReadyState(Selector({"#frame"}), _))
+              OnGetDocumentReadyState(
+                  EqualsElement(test_util::MockFindElement(
+                      mock_action_delegate_, expected_frame_selector)),
+                  _))
       .WillOnce(RunOnceCallback<1>(OkClientStatus(), DOCUMENT_COMPLETE));
 
   proto_.set_timeout_ms(0);

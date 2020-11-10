@@ -230,12 +230,12 @@ class ScriptExecutor : public ActionDelegate,
   bool ExpectedNavigationHasStarted() override;
   bool WaitForNavigation(base::OnceCallback<void(bool)> callback) override;
   void GetDocumentReadyState(
-      const Selector& optional_frame,
+      const ElementFinder::Result& optional_frame_element,
       base::OnceCallback<void(const ClientStatus&, DocumentReadyState)>
           callback) override;
   void WaitForDocumentReadyState(
-      const Selector& optional_frame,
       DocumentReadyState min_ready_state,
+      const ElementFinder::Result& optional_frame_element,
       base::OnceCallback<void(const ClientStatus&,
                               DocumentReadyState,
                               base::TimeDelta)> callback) override;

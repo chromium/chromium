@@ -240,17 +240,17 @@ class WebController {
   virtual void WaitForWindowHeightChange(
       base::OnceCallback<void(const ClientStatus&)> callback);
 
-  // Gets the value of document.readyState for |optional_frame| or, if it is
-  // empty, in the main document.
+  // Gets the value of document.readyState for |optional_frame_element| or, if
+  // it is empty, in the main document.
   virtual void GetDocumentReadyState(
-      const Selector& optional_frame,
+      const ElementFinder::Result& optional_frame_element,
       base::OnceCallback<void(const ClientStatus&, DocumentReadyState)>
           callback);
 
   // Waits for the value of Document.readyState to satisfy |min_ready_state| in
-  // |optional_frame| or, if it is empty, in the main document.
+  // |optional_frame_element| or, if it is empty, in the main document.
   virtual void WaitForDocumentReadyState(
-      const Selector& optional_frame,
+      const ElementFinder::Result& optional_frame_element,
       DocumentReadyState min_ready_state,
       base::OnceCallback<void(const ClientStatus&,
                               DocumentReadyState,
@@ -424,13 +424,6 @@ class WebController {
       base::OnceCallback<void(bool)> callback,
       const DevtoolsClient::ReplyStatus& reply_status,
       std::unique_ptr<runtime::CallFunctionOnResult> result);
-  void OnFindElementForWaitForDocumentReadyState(
-      DocumentReadyState min_ready_state,
-      base::OnceCallback<void(const ClientStatus&,
-                              DocumentReadyState,
-                              base::TimeDelta)> callback,
-      const ClientStatus& status,
-      std::unique_ptr<ElementFinder::Result> element);
   void OnWaitForDocumentReadyState(
       base::OnceCallback<void(const ClientStatus&,
                               DocumentReadyState,

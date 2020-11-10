@@ -6,6 +6,7 @@
 
 #include "components/autofill_assistant/browser/actions/action_delegate.h"
 #include "components/autofill_assistant/browser/client_status.h"
+#include "components/autofill_assistant/browser/web/element_finder.h"
 
 namespace autofill_assistant {
 
@@ -21,29 +22,50 @@ void WaitForDocumentAction::InternalProcessAction(
     ProcessActionCallback callback) {
   callback_ = std::move(callback);
 
-  Selector selector(proto_.wait_for_document().frame());
-  if (selector.empty()) {
+  Selector frame_selector(proto_.wait_for_document().frame());
+  if (frame_selector.empty()) {
     // No element to wait for.
-    OnShortWaitForElement(ClientStatus(ACTION_APPLIED));
+    WaitForReadyState();
     return;
   }
   delegate_->ShortWaitForElement(
-      selector,
+      frame_selector,
       base::BindOnce(
           &WaitForDocumentAction::OnWaitForElementTimed,
           weak_ptr_factory_.GetWeakPtr(),
           base::BindOnce(&WaitForDocumentAction::OnShortWaitForElement,
-                         weak_ptr_factory_.GetWeakPtr())));
+                         weak_ptr_factory_.GetWeakPtr(), frame_selector)));
 }
 
 void WaitForDocumentAction::OnShortWaitForElement(
+    const Selector& frame_selector,
     const ClientStatus& element_status) {
   if (!element_status.ok()) {
     SendResult(element_status, DOCUMENT_UNKNOWN_READY_STATE);
     return;
   }
+
+  delegate_->FindElement(frame_selector,
+                         base::BindOnce(&WaitForDocumentAction::OnFindElement,
+                                        weak_ptr_factory_.GetWeakPtr()));
+}
+
+void WaitForDocumentAction::OnFindElement(
+    const ClientStatus& status,
+    std::unique_ptr<ElementFinder::Result> element) {
+  if (!status.ok()) {
+    SendResult(status, DOCUMENT_UNKNOWN_READY_STATE);
+    return;
+  }
+
+  optional_frame_element_ = std::move(element);
+  WaitForReadyState();
+}
+
+void WaitForDocumentAction::WaitForReadyState() {
   delegate_->GetDocumentReadyState(
-      Selector(proto_.wait_for_document().frame()),
+      optional_frame_element_ ? *optional_frame_element_
+                              : ElementFinder::Result(),
       base::BindOnce(&WaitForDocumentAction::OnGetStartState,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -75,8 +97,9 @@ void WaitForDocumentAction::OnGetStartState(const ClientStatus& status,
       base::BindOnce(&WaitForDocumentAction::OnTimeout,
                      weak_ptr_factory_.GetWeakPtr(), base::TimeTicks::Now()));
   delegate_->WaitForDocumentReadyState(
-      Selector(proto_.wait_for_document().frame()),
       proto_.wait_for_document().min_ready_state(),
+      optional_frame_element_ ? *optional_frame_element_
+                              : ElementFinder::Result(),
       base::BindOnce(&WaitForDocumentAction::OnWaitForStartState,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -97,7 +120,8 @@ void WaitForDocumentAction::OnTimeout(base::TimeTicks wait_time_start) {
   action_stopwatch_.TransferToWaitTime(base::TimeTicks::Now() -
                                        wait_time_start);
   delegate_->GetDocumentReadyState(
-      Selector(proto_.wait_for_document().frame()),
+      optional_frame_element_ ? *optional_frame_element_
+                              : ElementFinder::Result(),
       base::BindOnce(&WaitForDocumentAction::OnTimeoutInState,
                      weak_ptr_factory_.GetWeakPtr()));
 }

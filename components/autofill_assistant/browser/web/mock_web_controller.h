@@ -130,30 +130,31 @@ class MockWebController : public WebController {
 
   MOCK_METHOD2(
       OnGetDocumentReadyState,
-      void(const Selector&,
+      void(const ElementFinder::Result&,
            base::OnceCallback<void(const ClientStatus&, DocumentReadyState)>&));
 
   void GetDocumentReadyState(
-      const Selector& frame,
+      const ElementFinder::Result& optional_frame_element,
       base::OnceCallback<void(const ClientStatus&, DocumentReadyState)>
           callback) override {
-    OnGetDocumentReadyState(frame, callback);
+    OnGetDocumentReadyState(optional_frame_element, callback);
   }
 
   MOCK_METHOD3(OnWaitForDocumentReadyState,
-               void(const Selector&,
-                    DocumentReadyState min_ready_state,
+               void(const ElementFinder::Result&,
+                    DocumentReadyState,
                     base::OnceCallback<void(const ClientStatus&,
                                             DocumentReadyState,
                                             base::TimeDelta)>&));
 
   void WaitForDocumentReadyState(
-      const Selector& frame,
+      const ElementFinder::Result& optional_frame_element,
       DocumentReadyState min_ready_state,
       base::OnceCallback<void(const ClientStatus&,
                               DocumentReadyState,
                               base::TimeDelta)> callback) override {
-    OnWaitForDocumentReadyState(frame, min_ready_state, callback);
+    OnWaitForDocumentReadyState(optional_frame_element, min_ready_state,
+                                callback);
   }
 
   base::WeakPtr<WebController> GetWeakPtr() const override {

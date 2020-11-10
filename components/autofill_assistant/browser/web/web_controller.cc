@@ -716,45 +716,22 @@ void WebController::OnWaitForWindowHeightChange(
 }
 
 void WebController::GetDocumentReadyState(
-    const Selector& optional_frame,
+    const ElementFinder::Result& optional_frame_element,
     base::OnceCallback<void(const ClientStatus&, DocumentReadyState)>
         callback) {
   WaitForDocumentReadyState(
-      optional_frame, DOCUMENT_UNKNOWN_READY_STATE,
+      optional_frame_element, DOCUMENT_UNKNOWN_READY_STATE,
       base::BindOnce(&WrapCallbackNoWait, std::move(callback)));
 }
 
 void WebController::WaitForDocumentReadyState(
-    const Selector& optional_frame,
+    const ElementFinder::Result& optional_frame_element,
     DocumentReadyState min_ready_state,
     base::OnceCallback<void(const ClientStatus&,
                             DocumentReadyState,
                             base::TimeDelta)> callback) {
-  if (optional_frame.empty()) {
-    OnFindElementForWaitForDocumentReadyState(
-        min_ready_state, std::move(callback), OkClientStatus(), nullptr);
-    return;
-  }
-  FindElement(
-      optional_frame, /* strict= */ false,
-      base::BindOnce(&WebController::OnFindElementForWaitForDocumentReadyState,
-                     weak_ptr_factory_.GetWeakPtr(), min_ready_state,
-                     std::move(callback)));
-}
-
-void WebController::OnFindElementForWaitForDocumentReadyState(
-    DocumentReadyState min_ready_state,
-    base::OnceCallback<void(const ClientStatus&,
-                            DocumentReadyState,
-                            base::TimeDelta)> callback,
-    const ClientStatus& status,
-    std::unique_ptr<ElementFinder::Result> element) {
-  if (!status.ok()) {
-    std::move(callback).Run(status, DOCUMENT_UNKNOWN_READY_STATE,
-                            base::TimeDelta::FromSeconds(0));
-    return;
-  }
-
+  // Note: An optional frame element will have an empty node_frame_id which
+  // will be considered as operating in the main frame.
   std::string expression;
   AppendWaitForDocumentReadyStateFunction(min_ready_state, &expression);
   devtools_client_->GetRuntime()->Evaluate(
@@ -763,7 +740,7 @@ void WebController::OnFindElementForWaitForDocumentReadyState(
           .SetReturnByValue(true)
           .SetAwaitPromise(true)
           .Build(),
-      /* node_frame_id= */ element ? element->node_frame_id : std::string(),
+      optional_frame_element.node_frame_id,
       base::BindOnce(&WebController::OnWaitForDocumentReadyState,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback),
                      base::TimeTicks::Now()));

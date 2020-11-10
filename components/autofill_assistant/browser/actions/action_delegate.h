@@ -319,19 +319,19 @@ class ActionDelegate {
       base::OnceCallback<void(bool)> on_navigation_done) = 0;
 
   // Waits for the value of Document.readyState to reach at least
-  // |min_ready_state| in |optional_frame| or, if it is empty, in the main
-  // document.
+  // |min_ready_state| in |optional_frame_element| or, if it is empty, in the
+  // main document.
   virtual void WaitForDocumentReadyState(
-      const Selector& optional_frame,
       DocumentReadyState min_ready_state,
+      const ElementFinder::Result& optional_frame_element,
       base::OnceCallback<void(const ClientStatus&,
                               DocumentReadyState,
                               base::TimeDelta)> callback) = 0;
 
-  // Gets the value of Document.readyState in |optional_frame| or, if it is
-  // empty, in the main document.
+  // Gets the value of Document.readyState in |optional_frame_element| or, if
+  // it is empty, in the main document.
   virtual void GetDocumentReadyState(
-      const Selector& optional_frame,
+      const ElementFinder::Result& optional_frame_element,
       base::OnceCallback<void(const ClientStatus&, DocumentReadyState)>
           callback) = 0;
 
