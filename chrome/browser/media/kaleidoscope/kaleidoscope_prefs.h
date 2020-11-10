@@ -21,6 +21,9 @@ extern const char kKaleidoscopeAutoSelectMediaFeeds[];
 // Stores true if Kaleidoscope has been enabled/disabled by an administrator.
 extern const char kKaleidoscopePolicyEnabled[];
 
+// Stores the list of provider IDs if the user is signed out.
+extern const char kKaleidoscopeSignedOutProviders[];
+
 void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
 }  // namespace prefs

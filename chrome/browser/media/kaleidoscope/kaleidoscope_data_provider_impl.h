@@ -65,6 +65,9 @@ class KaleidoscopeDataProviderImpl
   void SendFeedback() override;
   void GetCollections(const std::string& request,
                       GetCollectionsCallback cb) override;
+  void GetSignedOutProviders(GetSignedOutProvidersCallback cb) override;
+  void SetSignedOutProviders(
+      const std::vector<std::string>& providers) override;
 
  private:
   media_history::MediaHistoryKeyedService* GetMediaHistoryService();

@@ -17,10 +17,14 @@ const char kKaleidoscopeAutoSelectMediaFeeds[] =
 
 const char kKaleidoscopePolicyEnabled[] = "kaleidoscope.enabled_by_policy";
 
+const char kKaleidoscopeSignedOutProviders[] =
+    "kaleidoscope.signed_out_providers";
+
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(kKaleidoscopeFirstRunCompleted, 0);
   registry->RegisterBooleanPref(kKaleidoscopeAutoSelectMediaFeeds, false);
   registry->RegisterBooleanPref(kKaleidoscopePolicyEnabled, true);
+  registry->RegisterListPref(kKaleidoscopeSignedOutProviders);
 }
 
 }  // namespace prefs

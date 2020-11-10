@@ -96,6 +96,16 @@ interface KaleidoscopeDataProvider {
   // contains the request to be sent to the server. The request is the
   // GetCollectionsRequest proto here: go/ks-media-proto.
   GetCollections(string request) => (GetCollectionsResponse response);
+
+  // Gets a list of stored providers that will be used to filter the
+  // recommendations on the server if the user is signed out. They are arbitary
+  // strings that are provided by the server, stored locally and then retrieved
+  // when Kaleidoscope is loaded.
+  GetSignedOutProviders() => (array<string> providers);
+
+  // Stores a list of providers that were chosen by the user. Only used if the
+  // user is signed out.
+  SetSignedOutProviders(array<string> providers);
 };
 
 enum GetCollectionsResult {
