@@ -119,4 +119,33 @@ TEST_F(PaintLayerCompositorTest, CompositingInputsUpdateStopsContainStrict) {
   EXPECT_FALSE(target->NeedsCompositingInputsUpdate());
 }
 
+TEST_F(PaintLayerCompositorTest, SubframeRebuildGraphicsLayers) {
+  GetDocument().SetBaseURLOverride(KURL("http://test.com"));
+  SetBodyInnerHTML("<iframe src='http://test.com'></iframe>");
+  SetChildFrameHTML(
+      "<div id='target' style='will-change: opacity; opacity: 0.5'></div>");
+
+  UpdateAllLifecyclePhasesForTest();
+  auto* child_layout_view = ChildDocument().GetLayoutView();
+  auto* child_root_graphics_layer =
+      child_layout_view->Layer()->GraphicsLayerBacking(child_layout_view);
+  ASSERT_TRUE(child_root_graphics_layer);
+  EXPECT_EQ(GetLayoutView().Layer()->GraphicsLayerBacking(),
+            child_root_graphics_layer->Parent());
+
+  // This simulates that the subframe rebuilds GraphicsLayer tree, while the
+  // main frame doesn't have any compositing flags set. The root GraphicsLayer
+  // of the subframe should be hooked up in the GraphicsLayer tree correctly.
+  child_root_graphics_layer->RemoveFromParent();
+  child_layout_view->Compositor()->SetNeedsCompositingUpdate(
+      kCompositingUpdateRebuildTree);
+  GetLayoutView().Compositor()->UpdateAssignmentsIfNeededRecursive(
+      DocumentLifecycle::kCompositingAssignmentsClean);
+  ASSERT_EQ(
+      child_root_graphics_layer,
+      child_layout_view->Layer()->GraphicsLayerBacking(child_layout_view));
+  EXPECT_EQ(GetLayoutView().Layer()->GraphicsLayerBacking(),
+            child_root_graphics_layer->Parent());
+}
+
 }  // namespace blink
