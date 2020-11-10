@@ -210,7 +210,7 @@ void WebContentController::OnVisible(aura::Window* window) {
 
   // Register for IME events
   input_method_observer_ = std::make_unique<WebviewInputMethodObserver>(
-      client_, window->GetHost()->GetInputMethod());
+      this, window->GetHost()->GetInputMethod());
 }
 
 void WebContentController::ProcessInputEvent(const webview::InputEvent& ev) {

@@ -68,6 +68,8 @@ class WebContentController
   // Invoked when the aura window becomes visible and is fully initialized.
   void OnVisible(aura::Window* window);
 
+  Client* client() const { return client_; }
+
  protected:
   // content::WebContentsObserver
   void RenderFrameCreated(content::RenderFrameHost* render_frame_host) override;

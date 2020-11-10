@@ -77,21 +77,22 @@ webview::TextInputType ConvertTextInputType(
 }  // namespace
 
 void WebviewInputMethodObserver::OnTextInputStateChanged(
-    const ui::TextInputClient* client) {
-  if (!client)
+    const ui::TextInputClient* text_input_client) {
+  if (!text_input_client || !controller_->client())
     return;
   std::unique_ptr<chromecast::webview::WebviewResponse> focus_event_response =
       std::make_unique<chromecast::webview::WebviewResponse>();
   auto* focus_event = focus_event_response->mutable_input_focus_event();
-  focus_event->set_flags(client->GetTextInputFlags());
-  focus_event->set_type(ConvertTextInputType(client->GetTextInputType()));
-  client_->EnqueueSend(std::move(focus_event_response));
+  focus_event->set_flags(text_input_client->GetTextInputFlags());
+  focus_event->set_type(
+      ConvertTextInputType(text_input_client->GetTextInputType()));
+  controller_->client()->EnqueueSend(std::move(focus_event_response));
 }
 
 WebviewInputMethodObserver::WebviewInputMethodObserver(
-    chromecast::WebContentController::Client* client,
+    chromecast::WebContentController* controller,
     ui::InputMethod* input_method)
-    : client_(client), input_method_(input_method) {
+    : controller_(controller), input_method_(input_method) {
   input_method_->AddObserver(this);
 }
 

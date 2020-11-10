@@ -14,7 +14,7 @@ namespace chromecast {
 // accordingly.
 class WebviewInputMethodObserver : public ui::InputMethodObserver {
  public:
-  WebviewInputMethodObserver(chromecast::WebContentController::Client* client,
+  WebviewInputMethodObserver(chromecast::WebContentController* controller,
                              ui::InputMethod* input_method);
   ~WebviewInputMethodObserver() override;
 
@@ -31,7 +31,7 @@ class WebviewInputMethodObserver : public ui::InputMethodObserver {
   void OnShowVirtualKeyboardIfEnabled() override {}
 
  private:
-  chromecast::WebContentController::Client* client_;
+  chromecast::WebContentController* controller_;
   ui::InputMethod* input_method_;
 };
 
