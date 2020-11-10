@@ -541,7 +541,7 @@ TYPED_TEST(ClipboardTest, Bitmap_F16_Premul) {
                                SkImageInfo::Make(1, 1, kRGBA_F16_SkColorType,
                                                  kPremul_SkAlphaType),
                                &kRGBAF16Premul, &kRGBAPremul),
-               "Check failed");
+               "");
 }
 
 TYPED_TEST(ClipboardTest, Bitmap_N32_Premul) {
