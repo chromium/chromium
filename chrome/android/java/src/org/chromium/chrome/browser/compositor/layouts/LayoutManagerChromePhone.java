@@ -135,8 +135,8 @@ public class LayoutManagerChromePhone extends LayoutManagerChrome {
 
     @Override
     protected void tabCreating(int sourceId, String url, boolean isIncognito) {
-        if (!getActiveLayout().isStartingToHide() && overlaysHandleTabCreating()
-                && getActiveLayout().handlesTabCreating()) {
+        if (getActiveLayout() != null && !getActiveLayout().isStartingToHide()
+                && overlaysHandleTabCreating() && getActiveLayout().handlesTabCreating()) {
             // If the current layout in the foreground, let it handle the tab creation animation.
             // This check allows us to switch from the StackLayout to the SimpleAnimationLayout
             // smoothly.
@@ -151,7 +151,9 @@ public class LayoutManagerChromePhone extends LayoutManagerChrome {
                     startShowing(mSimpleAnimationLayout, false);
                 }
             }
-            getActiveLayout().onTabCreating(sourceId);
+            if (getActiveLayout() != null) {
+                getActiveLayout().onTabCreating(sourceId);
+            }
         }
     }
 
