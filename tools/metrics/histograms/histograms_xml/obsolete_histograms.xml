@@ -7495,7 +7495,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Bluetooth.Web.Characteristic.ReadValue and
     Bluetooth.Web.Characteristic.WriteValue.
   </obsolete>
-  <owner>odejesush@chromium.org</owner>
   <owner>ortuno@chromium.org</owner>
   <owner>reillyg@chromium.org</owner>
   <summary>
@@ -7510,7 +7509,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <obsolete>
     Removed 08/2015 and replaced by Bluetooth.Web.RequestDevice.Outcome.
   </obsolete>
-  <owner>odejesush@chromium.org</owner>
   <owner>ortuno@chromium.org</owner>
   <owner>reillyg@chromium.org</owner>
   <summary>
@@ -7527,7 +7525,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Removed as of 11/2016, replaced by
     Bluetooth.Web.Blocklist.ParsedNonEmptyString.
   </obsolete>
-  <owner>odejesush@chromium.org</owner>
   <owner>ortuno@chromium.org</owner>
   <owner>reillyg@chromium.org</owner>
   <summary>
@@ -7545,7 +7542,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Removed as of 3/2017. Replaced by using blink IDL annotation MeasureAs which
     appear in Blink.UseCounter.Features.
   </obsolete>
-  <owner>odejesush@chromium.org</owner>
   <owner>ortuno@chromium.org</owner>
   <owner>reillyg@chromium.org</owner>
   <summary>
@@ -89972,7 +89968,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     main thread.
   </obsolete>
   <owner>reillyg@chromium.org</owner>
-  <owner>juncai@chromium.org</owner>
   <summary>
     Records the time spent initializing the WebUSB detector module.
   </summary>

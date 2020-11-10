@@ -11944,7 +11944,6 @@ be describing additional metrics about the same event.
 <event name="SMSReceiver">
   <owner>goto@chromium.org</owner>
   <owner>reillyg@chromium.org</owner>
-  <owner>juncai@chromium.org</owner>
   <owner>ayui@chromium.org</owner>
   <owner>yigu@chromium.org</owner>
   <summary>

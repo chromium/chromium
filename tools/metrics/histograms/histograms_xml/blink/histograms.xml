@@ -1784,7 +1784,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     expires_after="M92">
   <owner>goto@chromium.org</owner>
   <owner>reillyg@chromium.org</owner>
-  <owner>juncai@chromium.org</owner>
   <owner>yigu@chromium.org</owner>
   <owner>web-identity@google.com</owner>
   <summary>
