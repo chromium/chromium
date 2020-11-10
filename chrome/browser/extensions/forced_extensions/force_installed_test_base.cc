@@ -32,6 +32,8 @@ const char ForceInstalledTestBase::kExtensionName2[] = "name2";
 const char ForceInstalledTestBase::kExtensionUpdateUrl[] =
     "https://clients2.google.com/service/update2/crx";  // URL of Chrome Web
                                                         // Store backend.
+const char ForceInstalledTestBase::kOffStoreUpdateUrl[] =
+    "https://www.example.com/update2/crx";
 
 ForceInstalledTestBase::ForceInstalledTestBase() = default;
 ForceInstalledTestBase::~ForceInstalledTestBase() = default;
@@ -57,20 +59,22 @@ void ForceInstalledTestBase::SetUp() {
       std::make_unique<ForceInstalledTracker>(registry_, profile_);
 }
 
-void ForceInstalledTestBase::SetupForceList() {
+void ForceInstalledTestBase::SetupForceList(bool is_from_store) {
   base::Value list(base::Value::Type::LIST);
-  list.Append(base::StrCat({kExtensionId1, ";", kExtensionUpdateUrl}));
-  list.Append(base::StrCat({kExtensionId2, ";", kExtensionUpdateUrl}));
+  const std::string update_url =
+      is_from_store ? kExtensionUpdateUrl : kOffStoreUpdateUrl;
+  list.Append(base::StrCat({kExtensionId1, ";", update_url}));
+  list.Append(base::StrCat({kExtensionId2, ";", update_url}));
   std::unique_ptr<base::Value> dict =
       DictionaryBuilder()
-          .Set(kExtensionId1, DictionaryBuilder()
-                                  .Set(ExternalProviderImpl::kExternalUpdateUrl,
-                                       kExtensionUpdateUrl)
-                                  .Build())
-          .Set(kExtensionId2, DictionaryBuilder()
-                                  .Set(ExternalProviderImpl::kExternalUpdateUrl,
-                                       kExtensionUpdateUrl)
-                                  .Build())
+          .Set(kExtensionId1,
+               DictionaryBuilder()
+                   .Set(ExternalProviderImpl::kExternalUpdateUrl, update_url)
+                   .Build())
+          .Set(kExtensionId2,
+               DictionaryBuilder()
+                   .Set(ExternalProviderImpl::kExternalUpdateUrl, update_url)
+                   .Build())
           .Build();
   prefs_->SetManagedPref(pref_names::kInstallForceList, std::move(dict));
 

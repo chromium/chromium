@@ -78,15 +78,6 @@ ForceInstalledMetrics::UserType ConvertUserType(
 }
 #endif  // defined(OS_CHROMEOS)
 
-// Returns true if the extension is fetched from the cache.
-bool IsExtensionFetchedFromCache(
-    const base::Optional<ExtensionDownloaderDelegate::CacheStatus> status) {
-  DCHECK(status);
-  return status.value() == ExtensionDownloaderDelegate::CacheStatus::
-                               CACHE_HIT_ON_MANIFEST_FETCH_FAILURE ||
-         status.value() == ExtensionDownloaderDelegate::CacheStatus::CACHE_HIT;
-}
-
 // Reports time taken for force installed extension during different
 // installation stages.
 void ReportInstallationStageTimes(
@@ -251,10 +242,10 @@ void ReportDetailedFailureReasons(
         is_from_store);
     base::UmaHistogramBoolean(
         "Extensions.ForceInstalledFailureWithCrxHeaderInvalidIsFromCache",
-        IsExtensionFetchedFromCache(installation.downloading_cache_status));
+        ForceInstalledTracker::IsExtensionFetchedFromCache(
+            installation.downloading_cache_status));
   }
 }
-
 }  // namespace
 
 ForceInstalledMetrics::ForceInstalledMetrics(

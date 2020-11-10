@@ -231,7 +231,31 @@ bool ForceInstalledTracker::IsMisconfiguration(
     return true;
   }
 
+  if (installation_data.unpacker_failure_reason ==
+      SandboxedUnpackerFailureReason::CRX_HEADER_INVALID) {
+    auto extension = extensions_.find(id);
+    // Extension id may be missing from this list if there is a change in
+    // ExtensionInstallForcelist policy after the user has logged in and
+    // |IsMisconfiguration| method is called from
+    // |ExtensionInstallEventLogCollector|.
+    if (extension != extensions_.end() && !extension->second.is_from_store &&
+        !IsExtensionFetchedFromCache(
+            installation_data.downloading_cache_status)) {
+      return true;
+    }
+  }
+
   return false;
+}
+
+// static
+bool ForceInstalledTracker::IsExtensionFetchedFromCache(
+    const base::Optional<ExtensionDownloaderDelegate::CacheStatus>& status) {
+  if (!status)
+    return false;
+  return status.value() == ExtensionDownloaderDelegate::CacheStatus::
+                               CACHE_HIT_ON_MANIFEST_FETCH_FAILURE ||
+         status.value() == ExtensionDownloaderDelegate::CacheStatus::CACHE_HIT;
 }
 
 policy::PolicyService* ForceInstalledTracker::policy_service() {

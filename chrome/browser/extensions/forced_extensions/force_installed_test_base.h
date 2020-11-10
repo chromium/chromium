@@ -36,8 +36,9 @@ class ForceInstalledTestBase : public testing::Test {
   void SetUp() override;
 
   // Creates and sets value for ExtensionInstallForcelist policy and
-  // kInstallForceList preference.
-  void SetupForceList();
+  // kInstallForceList preference. |is_from_store| tells whether the extensions
+  // specified in the policy should have an update URL from CWS or not.
+  void SetupForceList(bool is_from_store);
 
   // Creates and sets empty value for ExtensionInstallForcelist policy and
   // kInstallForceList preference.
@@ -62,6 +63,7 @@ class ForceInstalledTestBase : public testing::Test {
   static const char kExtensionName1[];
   static const char kExtensionName2[];
   static const char kExtensionUpdateUrl[];
+  static const char kOffStoreUpdateUrl[];
 
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
