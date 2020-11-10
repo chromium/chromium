@@ -347,7 +347,6 @@ Chrome'i brauseri menüü avamiseks vajutage klahvikombinatsiooni Alt + F.</tran
 <translation id="352577523970648069">Muudetav tekstiväli</translation>
 <translation id="3538907380453898475">dscrplst</translation>
 <translation id="3549141990712742152">lõika tekst <ph name="TEXT" />.</translation>
-<translation id="3549680091535286226">Kõne ajutiseks peatamiseks puudutage kahe sõrmega</translation>
 <translation id="3564729643041517261">Praegu on valitud kuvastiil Kõrvuti</translation>
 <translation id="3573145950452451508">Lehe jalus</translation>
 <translation id="3587482841069643663">Kõik</translation>
@@ -595,6 +594,7 @@ Chrome'i brauseri menüü avamiseks vajutage klahvikombinatsiooni Alt + F.</tran
 <translation id="5561345396546889625">Järgmine loend</translation>
 <translation id="5562645715554321347">hdnggrp</translation>
 <translation id="5574412348552378458">ChromeVoxi õppimisrežiim</translation>
+<translation id="5582839680698949063">Peamenüü</translation>
 <translation id="5585044216466955529">Meilisõnumi teksti muutmine</translation>
 <translation id="5597170376237141345">Järgmine märkeruut</translation>
 <translation id="5598905979683743333">Raadionupp <ph name="NAME" /> ei ole valitud</translation>
@@ -828,7 +828,6 @@ Chrome'i brauseri menüü avamiseks vajutage klahvikombinatsiooni Alt + F.</tran
 <translation id="7491962110804786152">Tabulaator</translation>
 <translation id="7492497529767769458">Järgmise jaotise juurde liikumine. Näiteks olekusalv ja käivitaja.</translation>
 <translation id="7505149250476994901">Öelge enne tähte „suurtäht”</translation>
-<translation id="7518543783849163354">Vajutage klahvi Control, et ChromeVoxi kõne ajutiselt peatada.</translation>
 <translation id="7533226154149229506">Hele kuldkollane</translation>
 <translation id="7543255924852002459">Loobu sildist</translation>
 <translation id="7552432549459840808">Kasulikud Chrome'i otseteed</translation>

@@ -355,7 +355,6 @@
 <translation id="1401308693935339022">位置情報を使用するとともに、位置情報の利用を許可されているアプリやサービスがこのデバイスの位置情報を使用することを許可します。Google は、位置情報の精度と位置情報に基づくサービスを改善する目的で、位置情報を定期的に収集し、このデータを匿名で使用することがあります。</translation>
 <translation id="1403222014593521787">プロキシに接続できませんでした</translation>
 <translation id="140520891692800925"><ph name="PROFILE_DISPLAY_NAME" />（管理対象）</translation>
-<translation id="140541193409212341">Chrome によるパソコン内の有害なソフトウェアの確認中にエラーが発生しました</translation>
 <translation id="1405779994569073824">クラッシュしました。</translation>
 <translation id="1406500794671479665">確認中...</translation>
 <translation id="1407135791313364759">すべて開く</translation>
@@ -390,7 +389,6 @@
 <translation id="1433811987160647649">アクセスする前に確認する</translation>
 <translation id="1434696352799406980">起動ページ、新しいタブページ、検索エンジン、固定タブをリセットします。また、すべての拡張機能を無効にし、Cookie などの一時データを削除します。ただし、ブックマーク、履歴、保存したパスワードはそのまま残ります。</translation>
 <translation id="1434886155212424586">ホームページは新しいタブのページです</translation>
-<translation id="1435515966666225466">プラグインを使ったパソコンへのアクセスを許可するサイト</translation>
 <translation id="1436390408194692385">有効期限まであと <ph name="TICKET_TIME_LEFT" /></translation>
 <translation id="1436671784520050284">設定を続行</translation>
 <translation id="1436784010935106834">削除しました</translation>
@@ -1620,7 +1618,6 @@
 <translation id="2839032553903800133">通知がブロックされています</translation>
 <translation id="2841013758207633010">時間</translation>
 <translation id="2841837950101800123">提供元</translation>
-<translation id="2841921561399512198">{NUM_DAYS,plural, =1{お使いのパソコンに既知の有害なソフトウェアは見つかりませんでした。前回の確認: 1 日前。}other{お使いのパソコンに既知の有害なソフトウェアは見つかりませんでした。前回の確認: {NUM_DAYS} 日前。}}</translation>
 <translation id="2844169650293029770">USB-C デバイス（左手前のポート）</translation>
 <translation id="2844809857160214557">印刷ジョブの表示と管理</translation>
 <translation id="2845382757467349449">ブックマーク バーを常に表示</translation>
@@ -1789,7 +1786,6 @@
 <translation id="3036546437875325427">Flash を有効にする</translation>
 <translation id="3037754279345160234">ドメインの参加設定を解析できません。管理者にお問い合わせください。</translation>
 <translation id="3038612606416062604">プリンタを手動で追加</translation>
-<translation id="3038675903128704560">すべてのサイトに対し、プラグインを使ったパソコンへのアクセスを禁止する</translation>
 <translation id="3039491566278747710">オフライン ポリシーをデバイスにインストールできませんでした。</translation>
 <translation id="3043581297103810752"><ph name="ORIGIN" /> より</translation>
 <translation id="3045447014237878114">このサイトで複数のファイルが自動的にダウンロードされました</translation>
@@ -2108,7 +2104,6 @@
 <translation id="3439153939049640737"><ph name="HOST" /> によるマイクへのアクセスを常に許可する</translation>
 <translation id="3439970425423980614">PDF をプレビューしています</translation>
 <translation id="3440663250074896476"><ph name="BOOKMARK_NAME" /> に対するその他の操作</translation>
-<translation id="3440761377721825626">サイトがプラグインを使用してパソコンにアクセスしようとしたときに確認する</translation>
 <translation id="3441653493275994384">画面</translation>
 <translation id="3441663102605358937">もう一度 <ph name="ACCOUNT" /> にログインしてこのアカウントの確認を行ってください</translation>
 <translation id="3445047461171030979">Google アシスタントのクイック アンサー</translation>
@@ -2184,7 +2179,6 @@
 <translation id="3518985090088779359">同意して続行</translation>
 <translation id="3519564332031442870">バックエンドの印刷サービス</translation>
 <translation id="3521606918211282604">ディスクのサイズを変更</translation>
-<translation id="3523642406908660543">サイトがプラグインを使用してパソコンにアクセスしようとしたときに確認する（推奨）</translation>
 <translation id="3524965460886318643">アクティビティをエクスポート</translation>
 <translation id="3526034519184079374">サイトのデータを読み取れないか、変更できません</translation>
 <translation id="3527085408025491307">フォルダ</translation>
@@ -2514,7 +2508,6 @@
 <translation id="3873915545594852654">ARC++ で問題が発生しました。</translation>
 <translation id="3874164307099183178">Google アシスタントをオンにする</translation>
 <translation id="3877075909000773256"><ph name="USER_NAME" /> さんのデバイスのニアバイシェア設定（<ph name="USER_EMAIL" /> アカウントでの共有）</translation>
-<translation id="387771067039689031">プラグインを使ったパソコンへのアクセスを許可しないサイト</translation>
 <translation id="3879748587602334249">ダウンロード マネージャ</translation>
 <translation id="3881478300875776315">表示する行数を減らす</translation>
 <translation id="3882165008614329320">カメラやファイルに保存されている動画</translation>
@@ -2653,7 +2646,6 @@
 <translation id="4031179711345676612">マイクを使用できます</translation>
 <translation id="4031527940632463547">センサーがブロックされました</translation>
 <translation id="4033471457476425443">新しいフォルダを追加</translation>
-<translation id="4034280328082410379">プラグインによるパソコンへのアクセスをブロックする</translation>
 <translation id="4034824040120875894">プリンタ</translation>
 <translation id="4035758313003622889">タスク マネージャ(&amp;T)</translation>
 <translation id="4036778507053569103">サーバーからダウンロードされたポリシーが無効です。</translation>
@@ -2780,7 +2772,6 @@
 <translation id="4200983522494130825">新しいタブ(&amp;T)</translation>
 <translation id="4201546031411513170">同期する項目はいつでも [設定] で選択できます。</translation>
 <translation id="420283545744377356">スクリーン セーバーをオフにする</translation>
-<translation id="4205362703535890467">お使いのパソコンに既知の有害なソフトウェアは見つかりませんでした。前回の確認: 昨日。</translation>
 <translation id="4206144641569145248">エイリアン</translation>
 <translation id="4206323443866416204">ご意見の報告</translation>
 <translation id="4208390505124702064"><ph name="SITE_NAME" /> を検索</translation>
@@ -3282,7 +3273,6 @@
 <translation id="4830121310592638841">サイトから画面上にウィンドウを開いて配置することを求められたときに確認する</translation>
 <translation id="4830502475412647084">OS アップデートのインストール中</translation>
 <translation id="4830573902900904548">お使いの <ph name="DEVICE_TYPE" /> から <ph name="NETWORK_NAME" /> を使用してインターネットに接続できません。別のネットワークを選択してください。<ph name="LEARN_MORE_LINK_START" />詳細<ph name="LEARN_MORE_LINK_END" /></translation>
-<translation id="4831688036548685548">お使いのパソコンに既知の有害なソフトウェアは見つかりませんでした。前回の確認: 数秒前。</translation>
 <translation id="4833236810053292670">Chromebook の新機能のご案内</translation>
 <translation id="4833683849865011483">プリント サーバーで 1 個のプリンタが見つかりました</translation>
 <translation id="4836504898754963407">フィンガープリントの管理</translation>
@@ -4301,6 +4291,7 @@
 <translation id="6042308850641462728">もっと見る</translation>
 <translation id="6043317578411397101"><ph name="APP_NAME" /> が <ph name="TAB_NAME" /> の Chrome タブを共有しています。</translation>
 <translation id="604388835206766544">設定を解析処理できませんでした</translation>
+<translation id="6043994281159824495">ログアウト</translation>
 <translation id="6044805581023976844"><ph name="APP_NAME" /> が <ph name="TAB_NAME" /> の Chrome タブと音声を共有しています。</translation>
 <translation id="6049004884579590341">全画面表示を終了するには |<ph name="ACCELERATOR" />| キーを押し続けます</translation>
 <translation id="6051354611314852653">このデバイスの API アクセスを承認できませんでした。</translation>
@@ -4561,7 +4552,6 @@
 <translation id="6333064448949140209">ファイルはデバッグのため Google に送信されます</translation>
 <translation id="6338981933082930623">すべてのサイトであらゆる広告を表示できるようにする</translation>
 <translation id="6339668969738228384"><ph name="USER_EMAIL_ADDRESS" /> の新しいプロフィールを作成します</translation>
-<translation id="6339995243416022850">サイトがプラグインを使ったパソコンへのアクセスを要求できるようにする（推奨）</translation>
 <translation id="6340017061976355871">サーバーに接続できませんでした。ネットワーク接続を確認してもう一度お試しください。問題が解決しない場合は、Chromebook を再起動してください。</translation>
 <translation id="6340071272923955280">インターネット印刷プロトコル（IPPS）</translation>
 <translation id="6340526405444716530">カスタマイズ</translation>
@@ -4664,7 +4654,6 @@
 <translation id="6463795194797719782">編集(&amp;E)</translation>
 <translation id="6465841119675156448">インターネットを使用しない</translation>
 <translation id="6466988389784393586">すべてのブックマークを開く(&amp;O)</translation>
-<translation id="6467235653320897404">{NUM_HOURS,plural, =1{お使いのパソコンに既知の有害なソフトウェアは見つかりませんでした。前回の確認: 1 時間前。}other{お使いのパソコンに既知の有害なソフトウェアは見つかりませんでした。前回の確認: {NUM_HOURS} 時間前。}}</translation>
 <translation id="6467304607960172345">動画の全画面表示を最適化</translation>
 <translation id="6468485451923838994">フォント</translation>
 <translation id="6469557521904094793">モバイル ネットワークをオンにする</translation>
@@ -4984,7 +4973,6 @@
 <translation id="6860097299815761905">プロキシの設定...</translation>
 <translation id="686022878923628150">サイトが MIDI デバイスに接続できないようにする</translation>
 <translation id="6860427144121307915">タブで開く</translation>
-<translation id="6861451385429799394">Chrome による有害なソフトウェアの確認は、<ph name="BEGIN_LINK" />管理者<ph name="END_LINK" />によって無効にされています</translation>
 <translation id="686366188661646310">パスワードを削除しますか？</translation>
 <translation id="6865313869410766144">自動入力フォームのデータ</translation>
 <translation id="6865598234501509159"><ph name="LANGUAGE" />のページではない場合</translation>
@@ -5363,7 +5351,6 @@
 <translation id="7308002049209013926">ランチャーを使うと、新しいアプリやアクティビティにすばやく移動できます。キーボードからランチャーを表示するには、Alt+Shift+L キーを押します。</translation>
 <translation id="7309257895202129721">コントロールを表示(&amp;C)</translation>
 <translation id="7310598146671372464">ログインできませんでした。指定した Kerberos 暗号化タイプがサーバーでサポートされていません。管理者にお問い合わせください。</translation>
-<translation id="7311079019872751559">サンドボックスの無効化プラグインのアクセス</translation>
 <translation id="7320213904474460808">デフォルトのネットワーク</translation>
 <translation id="7321545336522791733">サーバーにアクセスできません</translation>
 <translation id="7324297612904500502">ベータ版フォーラム</translation>
@@ -5488,7 +5475,6 @@
 <translation id="7456847797759667638">場所を開く...</translation>
 <translation id="7457384018036134905">Chrome OS の設定で言語を管理する</translation>
 <translation id="7458168200501453431">Google 検索と同じスペルチェックを使用します。ブラウザに入力したテキストは Google に送信されます。</translation>
-<translation id="7459920164600044274">多くのサイトは、動画のストリーミングやアプリのインストールなどにプラグインを使用します。</translation>
 <translation id="7460045493116006516">インストールした現在のテーマ</translation>
 <translation id="7461729991508684543">{NUM_DAYS,plural, =1{<ph name="DOMAIN" /> が、データをバックアップして、今日中にこの <ph name="DEVICE_TYPE" />を返却するよう求めています。<ph name="LINK_BEGIN" />詳細を表示<ph name="LINK_END" />}other{<ph name="DOMAIN" /> が、データをバックアップして、{NUM_DAYS} 日以内にこの <ph name="DEVICE_TYPE" />を返却するよう求めています。<ph name="LINK_BEGIN" />詳細を表示<ph name="LINK_END" />}}</translation>
 <translation id="7461924472993315131">固定</translation>
@@ -6012,6 +5998,7 @@
 <translation id="8030852056903932865">承認</translation>
 <translation id="8032244173881942855">タブをキャストできません。</translation>
 <translation id="8033827949643255796">選択しました</translation>
+<translation id="8033958968890501070">タイムアウト</translation>
 <translation id="8037117027592400564">合成音声で読み上げたすべてのテキストの読み取り</translation>
 <translation id="8037357227543935929">確認（デフォルト）</translation>
 <translation id="803771048473350947">ファイル</translation>
@@ -6436,7 +6423,6 @@
 <translation id="8541462173655894684">プリント サーバーでプリンタが見つかりませんでした</translation>
 <translation id="8542618328173222274">サイトからバーチャル リアリティ デバイスとデータの使用を求められたときに確認する</translation>
 <translation id="8543556556237226809">ご不明な点は、プロフィールの管理担当者にお問い合わせください。</translation>
-<translation id="8545575359873600875">パスワードを確認できませんでした。この監視対象ユーザーの管理者によって最近パスワードが変更された可能性があります。パスワードが変更されている場合、新しいパスワードは次回のログインから適用されます。古いパスワードでログインをお試しください。</translation>
 <translation id="8546186510985480118">デバイスの空き領域が少なくなっています</translation>
 <translation id="8546306075665861288">画像キャッシュ</translation>
 <translation id="854655314928502177">ウェブプロキシ自動検出 URL:</translation>
@@ -6647,7 +6633,6 @@
 <translation id="8774934320277480003">上余白</translation>
 <translation id="8775144690796719618">無効なURL</translation>
 <translation id="8775163630211761057">Android スマートフォンの機能を <ph name="DEVICE_TYPE" /> で利用できるようにします</translation>
-<translation id="8776977753660889796">{NUM_MINS,plural, =1{お使いのパソコンに既知の有害なソフトウェアは見つかりませんでした。前回の確認: 1 分前。}other{お使いのパソコンに既知の有害なソフトウェアは見つかりませんでした。前回の確認: {NUM_MINS} 分前。}}</translation>
 <translation id="8777628254805677039">ルート パスワード</translation>
 <translation id="8780123805589053431">Google から画像の説明を取得</translation>
 <translation id="8780443667474968681">音声検索がオフになっています。</translation>

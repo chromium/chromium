@@ -347,7 +347,6 @@
 <translation id="352577523970648069">可編輯的文字欄位</translation>
 <translation id="3538907380453898475">dscrplst</translation>
 <translation id="3549141990712742152">剪下<ph name="TEXT" />。</translation>
-<translation id="3549680091535286226">以兩隻手指輕按即可暫停語音</translation>
 <translation id="3564729643041517261">目前的顯示樣式為並排</translation>
 <translation id="3573145950452451508">頁尾</translation>
 <translation id="3587482841069643663">全部</translation>
@@ -595,6 +594,7 @@
 <translation id="5561345396546889625">下一個清單</translation>
 <translation id="5562645715554321347">hdnggrp</translation>
 <translation id="5574412348552378458">ChromeVox 學習模式</translation>
+<translation id="5582839680698949063">主選單</translation>
 <translation id="5585044216466955529">編輯文字，電郵項目</translation>
 <translation id="5597170376237141345">下一個選框</translation>
 <translation id="5598905979683743333"><ph name="NAME" />，未選取的圓形按鈕</translation>
@@ -827,7 +827,6 @@
 <translation id="7491962110804786152">分頁</translation>
 <translation id="7492497529767769458">移至下一個部分，例如「狀態列」和「啟動器」。</translation>
 <translation id="7505149250476994901">先說「大寫」再讀出字母</translation>
-<translation id="7518543783849163354">如要暫時停止 ChromeVox 朗讀功能，請按 Control 鍵。</translation>
 <translation id="7533226154149229506">淺金菊黃色</translation>
 <translation id="7543255924852002459">捨棄標籤</translation>
 <translation id="7552432549459840808">實用的 Chrome 快速鍵</translation>

@@ -355,7 +355,6 @@
 <translation id="1401308693935339022">Utiliser la localisation. Permettez aux services et aux applications d'utiliser la position de cet appareil s'ils disposent de l'autorisation d'accès nécessaire. Google peut collecter périodiquement des données de localisation et les utiliser de manière anonyme afin d'améliorer la précision et les services de localisation.</translation>
 <translation id="1403222014593521787">Échec de connexion au serveur mandataire</translation>
 <translation id="140520891692800925"><ph name="PROFILE_DISPLAY_NAME" /> (supervisé)</translation>
-<translation id="140541193409212341">Une erreur s'est produite alors que Chrome vérifiait la présence de logiciels nuisibles sur votre ordinateur</translation>
 <translation id="1405779994569073824">Planté.</translation>
 <translation id="1406500794671479665">Vérification en cours…</translation>
 <translation id="1407135791313364759">Tout ouvrir</translation>
@@ -390,7 +389,6 @@
 <translation id="1433811987160647649">Demander avant d'accéder</translation>
 <translation id="1434696352799406980">Ceci entraînera la réinitialisation de votre page de démarrage, de votre page Nouvel onglet, de votre moteur de recherche et de vos onglets épinglés. Toutes vos extensions seront également désactivées et vos données temporaires, comme les témoins, seront supprimées. Vos favoris, votre historique et vos mots de passe enregistrés ne seront pas supprimés.</translation>
 <translation id="1434886155212424586">La page d'accueil est la page Nouvel onglet</translation>
-<translation id="1435515966666225466">Autorisés à utiliser un plugiciel pour accéder à votre ordinateur</translation>
 <translation id="1436390408194692385">Valide pendant <ph name="TICKET_TIME_LEFT" /></translation>
 <translation id="1436671784520050284">Poursuivre la configuration</translation>
 <translation id="1436784010935106834">Supprimés</translation>
@@ -1621,7 +1619,6 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2839032553903800133">Notifications bloquées</translation>
 <translation id="2841013758207633010">Heure</translation>
 <translation id="2841837950101800123">Fournisseur</translation>
-<translation id="2841921561399512198">{NUM_DAYS,plural, =1{Chrome n'a trouvé aucun logiciel nuisible connu sur votre ordinateur. Dernière vérification : il y a 1 jour.}one{Chrome n'a trouvé aucun logiciel nuisible connu sur votre ordinateur. Dernière vérification : il y a {NUM_DAYS} jour.}other{Chrome n'a trouvé aucun logiciel nuisible connu sur votre ordinateur. Dernière vérification : il y a {NUM_DAYS} jours.}}</translation>
 <translation id="2844169650293029770">Appareil USB-C (port avant-gauche)</translation>
 <translation id="2844809857160214557">Consultez et gérez les tâches d'impression</translation>
 <translation id="2845382757467349449">Toujours afficher la barre des favoris</translation>
@@ -1790,7 +1787,6 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="3036546437875325427">Activer le flash</translation>
 <translation id="3037754279345160234">Impossible d'analyser la configuration d'association à un domaine. Veuillez communiquer avec votre administrateur.</translation>
 <translation id="3038612606416062604">Ajouter une imprimante manuellement</translation>
-<translation id="3038675903128704560">N'autoriser aucun site à utiliser un plugiciel pour accéder à mon ordinateur</translation>
 <translation id="3039491566278747710">Échec de l'installation de la politique hors ligne sur l'appareil.</translation>
 <translation id="3043581297103810752">À partir de <ph name="ORIGIN" /></translation>
 <translation id="3045447014237878114">Ce site a automatiquement téléchargé plusieurs fichiers</translation>
@@ -2109,7 +2105,6 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="3439153939049640737">Toujours autoriser <ph name="HOST" /> à accéder à votre microphone</translation>
 <translation id="3439970425423980614">Ouverture du PDF en mode aperçu en cours…</translation>
 <translation id="3440663250074896476">Autres actions pour <ph name="BOOKMARK_NAME" /></translation>
-<translation id="3440761377721825626">Demander une autorisation quand un site souhaite utiliser un plugiciel pour accéder à mon ordinateur</translation>
 <translation id="3441653493275994384">Écran</translation>
 <translation id="3441663102605358937">Connectez-vous à <ph name="ACCOUNT" /> de nouveau pour vérifier ce compte</translation>
 <translation id="3445047461171030979">Réponses rapides de l'Assistant Google</translation>
@@ -2185,7 +2180,6 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="3518985090088779359">Accepter et continuer</translation>
 <translation id="3519564332031442870">Service dorsal d'impression</translation>
 <translation id="3521606918211282604">Modifier la taille du disque</translation>
-<translation id="3523642406908660543">Demander une autorisation lorsqu’un site souhaite utiliser un plugiciel pour accéder à mon ordinateur (recommandé)</translation>
 <translation id="3524965460886318643">Activités d'exportation</translation>
 <translation id="3526034519184079374">Impossible de lire ou de modifier les données du site</translation>
 <translation id="3527085408025491307">Dossier</translation>
@@ -2515,7 +2509,6 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="3873915545594852654">Un problème avec ARC++ s'est produit.</translation>
 <translation id="3874164307099183178">Activer l'Assistant Google</translation>
 <translation id="3877075909000773256">Paramètres de partage à proximité pour l'appareil de <ph name="USER_NAME" />. Partage sous le compte <ph name="USER_EMAIL" />.</translation>
-<translation id="387771067039689031">Non autorisés à utiliser un plugiciel pour accéder à votre ordinateur</translation>
 <translation id="3879748587602334249">Gestionnaire de téléchargement</translation>
 <translation id="3881478300875776315">Afficher moins de lignes</translation>
 <translation id="3882165008614329320">Vidéo existante de la caméra ou du fichier</translation>
@@ -2654,7 +2647,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4031179711345676612">Le microphone est autorisé</translation>
 <translation id="4031527940632463547">Capteurs bloqués</translation>
 <translation id="4033471457476425443">Ajouter un dossier</translation>
-<translation id="4034280328082410379">Empêcher les plugiciels d'accéder à votre ordinateur</translation>
 <translation id="4034824040120875894">Imprimante</translation>
 <translation id="4035758313003622889">Gestionnaire de &amp;tâches</translation>
 <translation id="4036778507053569103">La politique téléchargée du serveur n'est pas valide.</translation>
@@ -2781,7 +2773,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4200983522494130825">Nouvel ongle&amp;t</translation>
 <translation id="4201546031411513170">Vous pouvez toujours choisir les éléments à synchroniser dans les paramètres.</translation>
 <translation id="420283545744377356">Désactiver l'écran de veille</translation>
-<translation id="4205362703535890467">Chrome n'a trouvé aucun logiciel nuisible connu sur votre ordinateur. Dernière vérification : hier.</translation>
 <translation id="4206144641569145248">Extraterrestre</translation>
 <translation id="4206323443866416204">Rapport de commentaire</translation>
 <translation id="4208390505124702064">Rechercher sur <ph name="SITE_NAME" /></translation>
@@ -3283,7 +3274,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4830121310592638841">Demander la permission lorsqu'un site souhaite ouvrir et placer des fenêtres sur vos écrans</translation>
 <translation id="4830502475412647084">Installation d'une mise à jour du système d'exploitation en cours…</translation>
 <translation id="4830573902900904548">Votre <ph name="DEVICE_TYPE" /> ne parvient pas à se connecter à Internet en utilisant <ph name="NETWORK_NAME" />. Veuillez choisir un autre réseau. <ph name="LEARN_MORE_LINK_START" />En savoir plus<ph name="LEARN_MORE_LINK_END" /></translation>
-<translation id="4831688036548685548">Chrome n'a trouvé aucun logiciel nuisible connu sur votre ordinateur. Dernière vérification : il y a quelques instants.</translation>
 <translation id="4833236810053292670">Découvrir les nouveautés des appareils Chromebook</translation>
 <translation id="4833683849865011483">1 imprimante a été trouvée sur le serveur d'impression</translation>
 <translation id="4836504898754963407">Gérer les empreintes digitales</translation>
@@ -4302,6 +4292,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6042308850641462728">Plus</translation>
 <translation id="6043317578411397101"><ph name="APP_NAME" /> partage un onglet Chrome avec <ph name="TAB_NAME" />.</translation>
 <translation id="604388835206766544">Impossible d'analyser la configuration</translation>
+<translation id="6043994281159824495">Se déconnecter maintenant</translation>
 <translation id="6044805581023976844"><ph name="APP_NAME" /> partage un onglet Chrome et du son avec <ph name="TAB_NAME" />.</translation>
 <translation id="6049004884579590341">Maintenez le doigt sur |<ph name="ACCELERATOR" />| pour quitter le mode plein écran</translation>
 <translation id="6051354611314852653">Oups… Échec de l'autorisation d'accès à l'API pour cet appareil.</translation>
@@ -4562,7 +4553,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6333064448949140209">Le fichier sera envoyé à Google pour débogage</translation>
 <translation id="6338981933082930623">Tous les sites peuvent afficher n'importe quelle annonce</translation>
 <translation id="6339668969738228384">Créer un autre profil pour <ph name="USER_EMAIL_ADDRESS" /></translation>
-<translation id="6339995243416022850">Les sites peuvent demander à utiliser un plugiciel pour accéder à votre ordinateur (recommandé)</translation>
 <translation id="6340017061976355871">Impossible de se connecter au serveur. Veuillez vérifier votre connexion réseau et réessayer. Si le problème persiste, redémarrez votre Chromebook.</translation>
 <translation id="6340071272923955280">Protocole IPPS d'impression Internet</translation>
 <translation id="6340526405444716530">Personnalisation</translation>
@@ -4665,7 +4655,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6463795194797719782">&amp;Modifier</translation>
 <translation id="6465841119675156448">Sans Internet</translation>
 <translation id="6466988389784393586">&amp;Ouvrir tous les favoris</translation>
-<translation id="6467235653320897404">{NUM_HOURS,plural, =1{Chrome n'a trouvé aucun logiciel nuisible connu sur votre ordinateur. Dernière vérification : il y a 1 heure.}one{Chrome n'a trouvé aucun logiciel nuisible connu sur votre ordinateur. Dernière vérification : il y a {NUM_HOURS} heure.}other{Chrome n'a trouvé aucun logiciel nuisible connu sur votre ordinateur. Dernière vérification : il y a {NUM_HOURS} heures.}}</translation>
 <translation id="6467304607960172345">Optimiser les vidéos en plein écran</translation>
 <translation id="6468485451923838994">Polices</translation>
 <translation id="6469557521904094793">Activer la connexion cellulaire</translation>
@@ -4985,7 +4974,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6860097299815761905">Paramètres de mandataire...</translation>
 <translation id="686022878923628150">Empêcher les sites de se connecter à des appareils MIDI</translation>
 <translation id="6860427144121307915">Ouvrir dans un onglet</translation>
-<translation id="6861451385429799394"><ph name="BEGIN_LINK" />Votre administrateur<ph name="END_LINK" /> a désactivé la fonctionnalité de vérification de logiciels nuisibles de Chrome</translation>
 <translation id="686366188661646310">Supprimer le mot de passe?</translation>
 <translation id="6865313869410766144">Données de remplissage automatique de formulaires</translation>
 <translation id="6865598234501509159">La page n'est pas en <ph name="LANGUAGE" /></translation>
@@ -5364,7 +5352,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="7308002049209013926">Utilisez le lanceur d'applications pour accéder rapidement aux nouvelles applications et activités. Pour y accéder à l'aide du clavier, appuyez sur Alt+Maj+L.</translation>
 <translation id="7309257895202129721">Afficher les &amp;commandes</translation>
 <translation id="7310598146671372464">Échec de la connexion. Le serveur ne prend pas en charge les types de chiffrement Kerberos spécifiés. Veuillez communiquer avec votre administrateur.</translation>
-<translation id="7311079019872751559">Accès aux plugiciels hors carré de sable</translation>
 <translation id="7320213904474460808">Définir un réseau comme favori</translation>
 <translation id="7321545336522791733">Serveur inaccessible</translation>
 <translation id="7324297612904500502">Forum bêta</translation>
@@ -5489,7 +5476,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="7456847797759667638">Ouvrir une adresse...</translation>
 <translation id="7457384018036134905">Gérer les langues dans les paramètres de Chrome OS</translation>
 <translation id="7458168200501453431">Utilise le même correcteur orthographique que celui utilisé dans la recherche Google. Le texte que vous tapez dans le navigateur sera envoyé à Google.</translation>
-<translation id="7459920164600044274">Les sites utilisent généralement des plugiciels pour proposer des fonctionnalités comme la diffusion en continu de vidéos ou l'installation d'applications</translation>
 <translation id="7460045493116006516">Le thème actuel que vous avez installé</translation>
 <translation id="7461729991508684543">{NUM_DAYS,plural, =1{<ph name="DOMAIN" /> exige que vous sauvegardiez vos données et que vous retourniez cet appareil <ph name="DEVICE_TYPE" /> aujourd'hui.<ph name="LINK_BEGIN" />Voir les précisions<ph name="LINK_END" />}one{<ph name="DOMAIN" /> exige que vous sauvegardiez vos données et que vous retourniez cet appareil <ph name="DEVICE_TYPE" /> d'ici {NUM_DAYS} jour.<ph name="LINK_BEGIN" />Voir les précisions<ph name="LINK_END" />}other{<ph name="DOMAIN" /> exige que vous sauvegardiez vos données et que vous retourniez cet appareil <ph name="DEVICE_TYPE" /> d'ici {NUM_DAYS} jours.<ph name="LINK_BEGIN" />Voir les précisions<ph name="LINK_END" />}}</translation>
 <translation id="7461924472993315131">NIP</translation>
@@ -6012,6 +5998,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8030852056903932865">Approuver</translation>
 <translation id="8032244173881942855">Impossible de diffuser l'onglet.</translation>
 <translation id="8033827949643255796">caractère sélectionné</translation>
+<translation id="8033958968890501070">Délai dépassé</translation>
 <translation id="8037117027592400564">Lire tout le texte énoncé à l'aide de la synthèse vocale</translation>
 <translation id="8037357227543935929">Demander (par défaut)</translation>
 <translation id="803771048473350947">Fichier</translation>
@@ -6436,7 +6423,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8541462173655894684">Aucune imprimante n'a été trouvée sur le serveur d'impression</translation>
 <translation id="8542618328173222274">Demander une autorisation lorsqu'un site veut utiliser vos appareils et vos données de réalité virtuelle</translation>
 <translation id="8543556556237226809">Des questions? Communiquez avec la personne qui supervise votre profil.</translation>
-<translation id="8545575359873600875">Impossible de vérifier votre mot de passe. Il est possible que l'administrateur de cet utilisateur supervisé ait récemment modifié le mot de passe. Si c'est le cas, le nouveau mot de passe sera valide lors de la prochaine connexion. Essayez de vous connecter à l'aide de votre ancien mot de passe.</translation>
 <translation id="8546186510985480118">L'appareil possède peu d'espace de stockage</translation>
 <translation id="8546306075665861288">Cache d'images</translation>
 <translation id="854655314928502177">URL de découverte automatique de mandataire Web</translation>
@@ -6647,7 +6633,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8774934320277480003">Marge supérieure</translation>
 <translation id="8775144690796719618">URL non valide</translation>
 <translation id="8775163630211761057">Faites profiter votre <ph name="DEVICE_TYPE" /> du meilleur de votre téléphone Android</translation>
-<translation id="8776977753660889796">{NUM_MINS,plural, =1{Chrome n'a trouvé aucun logiciel nuisible connu sur votre ordinateur. Dernière vérification : il y a 1 minute.}one{Chrome n'a trouvé aucun logiciel nuisible connu sur votre ordinateur. Dernière vérification : il y a {NUM_MINS} minute.}other{Chrome n'a trouvé aucun logiciel nuisible connu sur votre ordinateur. Dernière vérification : il y a {NUM_MINS} minutes.}}</translation>
 <translation id="8777628254805677039">mot de passe racine</translation>
 <translation id="8780123805589053431">Obtenir les descriptions d'image de Google</translation>
 <translation id="8780443667474968681">La recherche vocale a été désactivée.</translation>

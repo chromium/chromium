@@ -347,7 +347,6 @@
 <translation id="352577523970648069">Et justerbart tekstfelt</translation>
 <translation id="3538907380453898475">bskrvlst</translation>
 <translation id="3549141990712742152">klip <ph name="TEXT" />.</translation>
-<translation id="3549680091535286226">Tryk med to fingre for midlertidigt at stoppe tale</translation>
 <translation id="3564729643041517261">Det aktuelle visningsformat er side om side</translation>
 <translation id="3573145950452451508">Sidefod</translation>
 <translation id="3587482841069643663">Alle</translation>
@@ -595,6 +594,7 @@
 <translation id="5561345396546889625">Næste liste</translation>
 <translation id="5562645715554321347">hdnggrp</translation>
 <translation id="5574412348552378458">Indlæringstilstand for ChromeVox</translation>
+<translation id="5582839680698949063">Hovedmenu</translation>
 <translation id="5585044216466955529">Rediger tekst, e-mailindtastning</translation>
 <translation id="5597170376237141345">Næste afkrydsningsfelt</translation>
 <translation id="5598905979683743333">Alternativknappen <ph name="NAME" /> er ikke valgt</translation>
@@ -828,7 +828,6 @@
 <translation id="7491962110804786152">fane</translation>
 <translation id="7492497529767769458">Gå til næste sektion. Det kan f.eks. være statusbakken eller Appliste.</translation>
 <translation id="7505149250476994901">Sig "stort" før bogstav</translation>
-<translation id="7518543783849163354">Tryk på Ctrl for midlertidigt at afbryde oplæsning i ChromeVox.</translation>
 <translation id="7533226154149229506">Lysegul gyldenris</translation>
 <translation id="7543255924852002459">Kassér etiket</translation>
 <translation id="7552432549459840808">Nyttige genveje i Chrome</translation>

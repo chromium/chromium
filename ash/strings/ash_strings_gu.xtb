@@ -36,6 +36,7 @@
 <translation id="1272079795634619415">રોકો</translation>
 <translation id="1275285675049378717"><ph name="POWER_SOURCE" />ને પાવર સપ્લાય આપી રહ્યું છે</translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
+<translation id="1285992161347843613">ફોન શોધો</translation>
 <translation id="1289185460362160437"><ph name="COME_BACK_DAY_OF_WEEK" />ના દિવસે <ph name="COME_BACK_TIME" /> વાગ્યે પાછા આવજો.</translation>
 <translation id="1290331692326790741">નબળું સિગ્નલ</translation>
 <translation id="1293264513303784526">USB-C ઉપકરણ (ડાબું પોર્ટ)</translation>
@@ -55,6 +56,7 @@
 <translation id="1420408895951708260">રાત્રિ પ્રકાશને ટૉગલ કરો. <ph name="STATE_TEXT" /></translation>
 <translation id="1420527829902822813">સ્ક્રીનશૉટ લેવાયો અને તે ક્લિપબોર્ડ પર સાચવ્યો</translation>
 <translation id="1426410128494586442">હા</translation>
+<translation id="144853431011121127">તમારા <ph name="DEVICE_TYPE" /> પર તમારા ફોનના નોટિફિકેશન મેળવો</translation>
 <translation id="1455242230282523554">ભાષા સેટિંગ બતાવો</translation>
 <translation id="1460620680449458626">વૉલ્યૂમ મ્યૂટ કરેલું છે.</translation>
 <translation id="1467432559032391204">ડાબું</translation>
@@ -125,6 +127,7 @@
 <translation id="2208323208084708176">એકીકૃત ડેસ્કટૉપ મોડ</translation>
 <translation id="2220572644011485463">PIN અથવા પાસવર્ડ</translation>
 <translation id="2222338659135520253">સાઇન ઇન આવશ્યક</translation>
+<translation id="22546648640907338">ઓવરવ્યૂમાં દાખલ થવાનો ટચપૅડનો સંકેત બદલવામાં આવ્યો છે. ઓવરવ્યૂમાં દાખલ થવા માટે, ત્રણ આંગળી વડે ઉપરની તરફ સ્વાઇપ કરો.</translation>
 <translation id="225680501294068881">ઉપકરણો માટે સ્કેન કરી રહ્યું છે...</translation>
 <translation id="2268130516524549846">Bluetooth અક્ષમ છે</translation>
 <translation id="2268813581635650749">બધાને સાઇન આઉટ કરો</translation>
@@ -141,6 +144,7 @@
 <translation id="2352467521400612932">સ્ટાઇલસની સેટિંગ</translation>
 <translation id="2354174487190027830"><ph name="NAME" /> ને સક્રિય કરી રહ્યું છે</translation>
 <translation id="2359808026110333948">આગળ વધો</translation>
+<translation id="2361223922412143600">ઓવરવ્યૂમાંથી બહાર નીકળવાનો ટચપૅડનો સંકેત બદલવામાં આવ્યો છે. ઓવરવ્યૂમાંથી બહાર નીકળવા માટે, ત્રણ આંગળી વડે નીચેની તરફ સ્વાઇપ કરો.</translation>
 <translation id="2365393535144473978">મોબાઇલ ડેટા ચાલુ કરવાથી બ્લૂટૂથ ચાલુ થશે.</translation>
 <translation id="2369165858548251131">ચીની ભાષામાં "નમસ્કાર"</translation>
 <translation id="2390318262976603432">લોકેલ સેટિંગ</translation>
@@ -259,6 +263,7 @@
 <translation id="3486220673238053218">વિવરણ</translation>
 <translation id="3510164367642747937">માઉસ કર્સરને હાઇલાઇટ કરો</translation>
 <translation id="3513798432020909783"><ph name="MANAGER_EMAIL" /> દ્વારા મેનેજ કરાતું એકાઉન્ટ</translation>
+<translation id="3563775809269155755">હૉટસ્પૉટ ચાલુ કરો</translation>
 <translation id="3571734092741541777">સેટ અપ</translation>
 <translation id="3573179567135747900">"<ph name="FROM_LOCALE" />" પર પાછા જાઓ (ફરી શરૂ કરવું જરૂરી છે)</translation>
 <translation id="3576141592585647168">ટાઇમઝોનમાં ફેરફાર કરો</translation>
@@ -338,6 +343,7 @@
 <translation id="4296136865091727875">બધા <ph name="COUNT" /> નોટિફિકેશન સાફ કરો</translation>
 <translation id="4302592941791324970">ઉપલબ્ધ નથી</translation>
 <translation id="4303223480529385476">સ્ટેટસ એરિયા વધારો</translation>
+<translation id="4315586716182276649">તમારા ફોન માટે ઇન્ટરનેટ કનેક્શનની રેંજ વધારો, 'ખલેલ પાડશો નહીં' અને 'તમારું ડિવાઇસ શોધી કાઢો'ને નિયંત્રિત કરો. તમારા <ph name="DEVICE_TYPE" /> પર તમારા ફોનની સક્રિય Chrome ટૅબ જુઓ.</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">તમે હાઇ કૉન્ટ્રાસ્ટ માટેનો કીબોર્ડ શૉર્ટકટ દબાવેલ છે. શું તમે તેને ચાલુ કરવા માગો છો?</translation>
 <translation id="4331809312908958774">Chrome OS</translation>
@@ -361,6 +367,7 @@
 <translation id="4479639480957787382">ઇથરનેટ</translation>
 <translation id="4481530544597605423">જોડીથી અલગ કરેલા ઉપકરણો</translation>
 <translation id="4485060137115666462">બટનને રાઇટ ક્લિક કરવાથી અથવા થોડીવાર દબાવી રાખવાથી, Assistant તમારી પસંદગી માટે વ્યાખ્યા, અનુવાદ અથવા એકમના રૂપાંતરણ જેવી માહિતી બતાવે છે.</translation>
+<translation id="4488735711456074171">એવું લાગે છે કે તમારો ફોન ઑનલાઇન નથી અને અમે તેનાથી કનેક્ટ કરી શકતા નથી.</translation>
 <translation id="4505050298327493054">સક્રિય ડેસ્ક.</translation>
 <translation id="4513946894732546136">પ્રતિસાદ</translation>
 <translation id="4527045527269911712">Bluetooth ડિવાઇસ "<ph name="DEVICE_NAME" />" ને જોડી બનાવવા માટે પરવાનગી જોઈએ છે.</translation>
@@ -419,6 +426,7 @@
 <translation id="4961318399572185831">સ્ક્રીનને કાસ્ટ કરો</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> કલાક <ph name="MINUTES" /> મિનિટ <ph name="SECONDS" /> સેકન્ડ</translation>
 <translation id="4975771730019223894">ઍપ બૅજિંગ</translation>
+<translation id="5019169674188023236">એવું લાગે છે કે તમારા <ph name="DEVICE_TYPE" />માં તમારું બ્લૂટૂથ કે વાઇ-ફાઇ બંધ કરેલું છે. ફોન હબનો ઉપયોગ કરવા માટે કૃપા કરીને તમારું કનેક્શન ચેક કરો.</translation>
 <translation id="5030687792513154421">સમય પૂરો થયો</translation>
 <translation id="5033299697334913360">પૂર્ણ સ્ક્રીન કૅપ્ચર કરવા માટે સ્ક્રીન પર ગમે ત્યાં ક્લિક કરો</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" />, નવા ફોન સાથે કનેક્ટ થયું</translation>
@@ -517,9 +525,11 @@
 <translation id="6043994281159824495">હવે સાઇન આઉટ કરો</translation>
 <translation id="6047696787498798094">જ્યારે તમે બીજા વપરાશકર્તા પર સ્વિચ કરો ત્યારે સ્ક્રીન શેરિંગ રોકવામાં આવશે. શું તમે ચાલુ રાખવા માંગો છો?</translation>
 <translation id="6054305421211936131">સ્માર્ટ કાર્ડ વડે સાઇન ઇન કરો</translation>
+<translation id="6059276912018042191">તાજેતરની Chrome ટૅબ</translation>
 <translation id="6062360702481658777">તમે ઑટોમૅટિક રીતે <ph name="LOGOUT_TIME_LEFT" /> માં સાઇન આઉટ થઈ જશો.</translation>
 <translation id="607652042414456612">નજીકનાં Bluetooth ડિવાઇસ માટે તમારું કમ્પ્યુટર શોધવાયોગ્ય છે અને તે સરનામાં <ph name="ADDRESS" /> સાથે "<ph name="NAME" />" તરીકે દેખાશે</translation>
 <translation id="612734058257491180">અતિથિ સત્રમાં Google આસિસ્ટંટ ઉપલબ્ધ હોતું નથી.</translation>
+<translation id="6137566720514957455"><ph name="USER_EMAIL_ADDRESS" /> માટે કાઢી નાખવાનો સંવાદ ખોલો</translation>
 <translation id="615957422585914272">ઑન-સ્ક્રીન કીબોર્ડ બતાવો</translation>
 <translation id="6164005077879661055">એકવાર આ નિરીક્ષણ કરેલ વપરાશકર્તાને દૂર કરવામાં આવે પછી નિરીક્ષણ કરેલ વપરાશકર્તા સાથે સંકળાયેલી બધી ફાઇલો અને સ્થાનિક ડેટા કાયમી રૂપે કાઢી નાંખવામાં આવશે. નિરીક્ષણ કરેલ વપરાશકર્તા માટે મુલાકાત લીધેલી વેબસાઇટ્સ અને સેટિંગ્સ <ph name="MANAGEMENT_URL" /> પરના સંચાલકને હજી પણ દૃશ્યમાન હોઈ શકે છે.</translation>
 <translation id="6165508094623778733">વધુ જાણો</translation>
@@ -538,6 +548,7 @@
 <translation id="6376931439017688372">બ્લૂટૂથ ચાલુ છે</translation>
 <translation id="6381109794406942707">ડિવાઇસને અનલૉક કરવા માટે. તમારો પિન દાખલ કરો.</translation>
 <translation id="639644700271529076">CAPS LOCK બંધ છે</translation>
+<translation id="6398771186477608158">ખાતરી કરો કે તમારો ફોન નજીકમાં હોય અને તેમાં બ્લૂટૂથ અને વાઇ-ફાઇની સુવિધા ચાલુ હોય.</translation>
 <translation id="6406704438230478924">altgr</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, સિગ્નલની સશક્તતા <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">બધા નોટિફિકેશન સાફ કરો</translation>
@@ -564,6 +575,7 @@
 <translation id="6614169507485700968">પ્રાઇવસી સ્ક્રીન ચાલુ છે</translation>
 <translation id="6627638273713273709">શોધ+Shift+K</translation>
 <translation id="6637729079642709226">સમય બદલો</translation>
+<translation id="6650072551060208490">આ તમે જ છો, તે <ph name="ORIGIN_NAME" /> કન્ફર્મ કરવા માગે છે</translation>
 <translation id="6650933572246256093">Bluetooth ડિવાઇસ "<ph name="DEVICE_NAME" />" ને જોડી બનાવવા માટે પરવાનગી જોઈએ છે. કૃપા કરીને તે ડિવાઇસ પર આ પાસકીને દાખલ કરો: <ph name="PASSKEY" /></translation>
 <translation id="6657585470893396449">પાસવર્ડ</translation>
 <translation id="6665545700722362599">સ્થાન સેવાઓ, ડિવાઇસના માઇક્રોફોન, કૅમેરા અથવા અન્ય સુવિધાઓનો ઉપયોગ કરવા માટે વેબસાઇટ, ઍપ અને એક્સ્ટેન્શનને પરવાનગી આપો</translation>
@@ -634,6 +646,7 @@
 <translation id="7377169924702866686">Caps Lock ચાલુ છે.</translation>
 <translation id="7378203170292176219">રેકોર્ડ કરવાના વિસ્તારને પસંદ કરવા માટે ખેંચો</translation>
 <translation id="7378594059915113390">મીડિયા નિયંત્રણો</translation>
+<translation id="7392563512730092880">તમે સેટિંગમાંથી કોઈપણ સમયે પછીથી સેટઅપ કરી શકશો.</translation>
 <translation id="7398254312354928459">સ્વિચ કરેલ નેટવર્ક કનેક્શન</translation>
 <translation id="7405710164030118432">ડિવાઇસને અનલૉક કરવા માટે, તમારી Family Linkનો માતાપિતા માટેનો ઍક્સેસ કોડ દાખલ કરો</translation>
 <translation id="741244894080940828">રૂપાંતરણ</translation>
@@ -645,6 +658,7 @@
 <translation id="7466449121337984263">કૃપા કરીને સેન્સરને સ્પર્શ કરો</translation>
 <translation id="7477793887173910789">તમારું મ્યુઝિક, વીડિયો અને બીજું ઘણું નિયંત્રિત કરો</translation>
 <translation id="7497767806359279797">ભાષા અને કીબોર્ડ પસંદ કરો</translation>
+<translation id="7509246181739783082">તમારી ઓળખ ચકાસો</translation>
 <translation id="7526573455193969409">નેટવર્કને મોનિટર કરવામાં આવી શકે છે</translation>
 <translation id="7536035074519304529">IP સરનામું: <ph name="ADDRESS" /></translation>
 <translation id="7548434653388805669">સૂવાનો સમય</translation>
@@ -688,6 +702,7 @@
 <translation id="788781083998633524">ઇમેઇલ મોકલો</translation>
 <translation id="7897375687985782769">તમે સ્ક્રીનને ફેરવવા માટે કીબોર્ડ શૉર્ટકટ દબાવેલ છે. શું તમે સ્ક્રીનને ફેરવવા માગો છો?</translation>
 <translation id="7901405293566323524">ફોન હબ</translation>
+<translation id="7902625623987030061">ફિંગરપ્રિન્ટ સેન્સરને ટચ કરો</translation>
 <translation id="7904094684485781019">આ એકાઉન્ટ માટે વ્યસ્થાપકે એકથી વધુ સાઇન ઇનને નામંજૂર કર્યું છે.</translation>
 <translation id="7933084174919150729">Google સહાયક માત્ર પ્રાથમિક પ્રોફાઇલ માટે જ ઉપલબ્ધ છે.</translation>
 <translation id="79341161159229895"><ph name="FIRST_PARENT_EMAIL" /> અને <ph name="SECOND_PARENT_EMAIL" /> દ્વારા મેનેજ કરાતું એકાઉન્ટ</translation>
@@ -709,6 +724,7 @@
 <translation id="8054466585765276473">બેટરી સમયની ગણના કરે છે.</translation>
 <translation id="8061464966246066292">ઉચ્ચ કોન્ટ્રાસ્ટ</translation>
 <translation id="8098591350844501178"><ph name="RECEIVER_NAME" /> પર સ્ક્રીન કાસ્ટ કરવાનું રોકો</translation>
+<translation id="8108657971283652031">તમારા ફોન માટે ઇન્ટરનેટ કનેક્શનની રેંજ વધારો, 'ખલેલ પાડશો નહીં' અને 'તમારા ફોનને શોધી કાઢો'ને નિયંત્રિત કરો. તમારા <ph name="DEVICE_TYPE" /> પર તમારા ફોનની સક્રિય Chrome ટૅબ જુઓ.</translation>
 <translation id="8113423164597455979">ચાલુ, બધી ઍપ</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">પુષ્ટિ કરો</translation>
@@ -777,6 +793,7 @@
 <translation id="8721053961083920564">વૉલ્યૂમ ટૉગલ કરો. <ph name="STATE_TEXT" /></translation>
 <translation id="8734991477317290293">તે તમારા કીસ્ટ્રોકની ચોરી કરવાનો પ્રયાસ કરતું હોઈ શકે છે</translation>
 <translation id="8735953464173050365">કીબોર્ડ સેટિંગ બતાવો. <ph name="KEYBOARD_NAME" /> પસંદ કરેલું છે</translation>
+<translation id="8755498163081687682">તમારી ઓળખની ચકાસણી કરો: આ તમે જ છો, તે <ph name="ORIGIN_NAME" /> કન્ફર્મ કરવા માગે છે</translation>
 <translation id="875593634123171288">VPN સેટિંગ બતાવો</translation>
 <translation id="8759408218731716181">બહુવિધ સાઇન-ઇન સેટ કરી શકતાં નથી</translation>
 <translation id="8785070478575117577"><ph name="NETWORK_NAME" /> સાથે કનેક્ટ કરો</translation>
@@ -791,8 +808,10 @@
 <translation id="8870509716567206129">ઍપ સ્ક્રીન-વિભાજનને સહાય કરતી નથી.</translation>
 <translation id="8871580645200179206">ઘેરી થીમ ટૉગલ કરો. <ph name="STATE_TEXT" /></translation>
 <translation id="8874184842967597500">કનેક્ટ નથી</translation>
+<translation id="8876661425082386199">તમારું કનેક્શન ચેક કરો</translation>
 <translation id="8877788021141246043">રિમાઇન્ડર સેટ કરો</translation>
 <translation id="8878886163241303700">સ્ક્રીનને વિસ્તૃત કરી રહ્યું છે</translation>
+<translation id="8894122120026866664">તમારો ફોન શોધી શકાતો નથી</translation>
 <translation id="890616557918890486">સ્રોત બદલો</translation>
 <translation id="8909138438987180327">બૅટરી <ph name="PERCENTAGE" /> ટકા પર છે.</translation>
 <translation id="8913384980486163186">થીમ આધારિત (ડિફૉલ્ટ)</translation>
@@ -812,6 +831,7 @@
 <translation id="9070640332319875144">આસિસ્ટંટ સેટિંગ</translation>
 <translation id="9072519059834302790">બૅટરી ખલાસ થવામાં <ph name="TIME_LEFT" /> બાકી છે.</translation>
 <translation id="9074739597929991885">બ્લૂટૂથ</translation>
+<translation id="9077515519330855811">મીડિયાના નિયંત્રણો, હમણાં <ph name="MEDIA_TITLE" /> ચાલી રહ્યું છે</translation>
 <translation id="9079731690316798640">વાઇ-ફાઇ: <ph name="ADDRESS" /></translation>
 <translation id="9080132581049224423">હોમ પર જવા માટે ઉપર સ્વાઇપ કરો</translation>
 <translation id="9080206825613744995">માઇકોફોન ઉપયોગમાં છે.</translation>
@@ -819,6 +839,7 @@
 <translation id="9089416786594320554">ઇનપુટ પદ્ધતિઓ</translation>
 <translation id="9091626656156419976"><ph name="DISPLAY_NAME" /> ડિસ્પ્લે કાઢી નાખ્યું</translation>
 <translation id="9092749890156285613">તાજેતરમાં કૅપ્ચર કરેલી સ્ક્રીન અને ડાઉનલોડ</translation>
+<translation id="9098969848082897657">ફોન સાઇલન્ટ રાખો</translation>
 <translation id="9151726767154816831">અપડેટ કરવા માટે પુનઃપ્રારંભ કરો અને પાવરવૉશ કરો</translation>
 <translation id="9166331175924255663">નજીકના શેરિંગની ઉચ્ચ દૃશ્યતા ટૉગલ કરો.</translation>
 <translation id="9168436347345867845">આ પછીથી કરો</translation>

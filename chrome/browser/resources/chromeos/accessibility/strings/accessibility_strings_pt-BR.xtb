@@ -347,7 +347,6 @@
 <translation id="352577523970648069">Um campo de texto editável</translation>
 <translation id="3538907380453898475">lstdscr</translation>
 <translation id="3549141990712742152">Cortar <ph name="TEXT" />.</translation>
-<translation id="3549680091535286226">Toque com dois dedos para interromper temporariamente a fala</translation>
 <translation id="3564729643041517261">O estilo de exibição atual está definido como lado a lado</translation>
 <translation id="3573145950452451508">Rodapé da página</translation>
 <translation id="3587482841069643663">Tudo</translation>
@@ -595,6 +594,7 @@
 <translation id="5561345396546889625">Próxima lista</translation>
 <translation id="5562645715554321347">hdnggrp</translation>
 <translation id="5574412348552378458">Modo de aprendizado do ChromeVox</translation>
+<translation id="5582839680698949063">Menu principal</translation>
 <translation id="5585044216466955529">Editar texto, entrada de e-mail</translation>
 <translation id="5597170376237141345">Próxima caixa de seleção</translation>
 <translation id="5598905979683743333">Botão de opção <ph name="NAME" /> desmarcado</translation>
@@ -828,7 +828,6 @@
 <translation id="7491962110804786152">tab</translation>
 <translation id="7492497529767769458">Mover para a próxima seção. Alguns exemplos são a bandeja de status e o acesso rápido.</translation>
 <translation id="7505149250476994901">Dizer "maiúsculo" depois da letra</translation>
-<translation id="7518543783849163354">Para interromper temporariamente a fala do ChromeVox, pressione a tecla Control.</translation>
 <translation id="7533226154149229506">Amarelo-dourado-claro</translation>
 <translation id="7543255924852002459">Descartar etiqueta</translation>
 <translation id="7552432549459840808">Atalhos úteis do Chrome</translation>

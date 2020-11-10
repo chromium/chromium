@@ -94,6 +94,7 @@
 Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="5222676887888702881">Déconnexion</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
+<translation id="5275828089655680674">Exécuter de nouveau les routines</translation>
 <translation id="5317780077021120954">Enregistrer</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">Choisissez-en un nouveau maintenant</translation>
@@ -102,6 +103,7 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="5431318178759467895">Couleur</translation>
 <translation id="5457599981699367932">Naviguer en tant qu'invité</translation>
 <translation id="54609108002486618">Géré</translation>
+<translation id="5493614766091057239"><ph name="VERDICT" /> : <ph name="PROBLEMS" /></translation>
 <translation id="5832805196449965646">Ajouter une personne</translation>
 <translation id="5895138241574237353">Redémarrer</translation>
 <translation id="6040143037577758943">Fermer</translation>
@@ -111,6 +113,7 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="6108689792487843350">Passerelle injoignable</translation>
 <translation id="6146993107019042706">Pour terminer, saisissez votre nouveau mot de passe</translation>
 <translation id="6147514244879357420">PNG</translation>
+<translation id="6165508094623778733">En savoir plus</translation>
 <translation id="6191293864534840972">Serveurs de noms non valides</translation>
 <translation id="6325525973963619867">Échec</translation>
 <translation id="636850387210749493">Inscription d'entreprise</translation>
@@ -133,6 +136,7 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="7690294790491645610">Confirmer le nouveau mot de passe</translation>
 <translation id="7805768142964895445">État</translation>
 <translation id="7936303884198020182">Aucun serveur de noms trouvé</translation>
+<translation id="8041089156583427627">Envoyer</translation>
 <translation id="808894953321890993">Modifier le mot de passe</translation>
 <translation id="8208861521865154048">Avantages</translation>
 <translation id="8230672074305416752">Impossible de pinguer la passerelle du réseau par défaut</translation>
@@ -146,6 +150,7 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="8723108084122415655">Seuil de latence dépassé pour le réseau non défini par défaut</translation>
 <translation id="8726019395068607495">Tâche suspendue - Capot ouvert</translation>
 <translation id="8747900814994928677">Confirmer la modification</translation>
+<translation id="8798099450830957504">Par défaut</translation>
 <translation id="8910721771319628100">Seuil de latence dépassé pour le réseau par défaut</translation>
 <translation id="8919837981463578619">Échec – Bac à papier manquant</translation>
 <translation id="8928727111548978589">Échec – À court de papier</translation>

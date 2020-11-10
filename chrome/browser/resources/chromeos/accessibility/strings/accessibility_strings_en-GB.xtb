@@ -347,7 +347,6 @@
 <translation id="352577523970648069">An editable text field</translation>
 <translation id="3538907380453898475">dscrplst</translation>
 <translation id="3549141990712742152">cut <ph name="TEXT" />.</translation>
-<translation id="3549680091535286226">Tap with 2 fingers to temporarily stop speech</translation>
 <translation id="3564729643041517261">Current display style is side by side</translation>
 <translation id="3573145950452451508">Page footer</translation>
 <translation id="3587482841069643663">All</translation>
@@ -595,6 +594,7 @@
 <translation id="5561345396546889625">Next list</translation>
 <translation id="5562645715554321347">hdnggrp</translation>
 <translation id="5574412348552378458">ChromeVox Learn Mode</translation>
+<translation id="5582839680698949063">Main menu</translation>
 <translation id="5585044216466955529">Edit text, email entry</translation>
 <translation id="5597170376237141345">Next tick box</translation>
 <translation id="5598905979683743333"><ph name="NAME" />, radio button unselected</translation>
@@ -828,7 +828,6 @@
 <translation id="7491962110804786152">tab</translation>
 <translation id="7492497529767769458">Move to next section. Examples include the Status Tray and Launcher.</translation>
 <translation id="7505149250476994901">Say 'cap' before letter</translation>
-<translation id="7518543783849163354">To temporarily stop ChromeVox from speaking, press the Control key.</translation>
 <translation id="7533226154149229506">Light Goldenrod Yellow</translation>
 <translation id="7543255924852002459">Discard label</translation>
 <translation id="7552432549459840808">Helpful Chrome Shortcuts</translation>

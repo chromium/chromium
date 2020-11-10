@@ -705,15 +705,6 @@ Jika Anda menonaktifkan kebijakan ini, scroll halaman web ke fragmen teks terten
       Jika kebijakan ditetapkan ke true atau tidak ditetapkan, pengguna akan dapat menggunakan CLI pengelolaan VM.
       Jika tidak, semua CLI pengelolaan VM akan dinonaktifkan dan disembunyikan.
       </translation>
-<translation id="2194470398825717446">Kebijakan ini sudah tidak digunakan lagi di M61, sebagai gantinya harap gunakan EcryptfsMigrationStrategy.
-
-      Menentukan perilaku perangkat yang dikirim dengan ecryptfs dan memerlukan transisi ke enkripsi ext4.
-
-      Jika Anda menyetel kebijakan ini ke 'DisallowArc', aplikasi Android akan dinonaktifkan untuk semua pengguna di perangkat (termasuk yang sudah memiliki enkripsi ext4) dan tidak akan ada migrasi dari ecryptfs ke enkripsi ext4 yang akan ditawarkan kepada semua pengguna.
-
-      Jika Anda menyetel kebijakan ini ke 'AllowMigration', pengguna dengan direktori beranda ecryptfs akan menawarkan migrasi ke enkripsi ext4 sesuai yang diperlukan (saat ini ketika Android N tersedia di perangkat).
-
-      Kebijakan ini tidak berlaku untuk aplikasi kios - kebijakan ini dimigrasi secara otomatis. Jika kebijakan ini tidak disetel, perangkat akan berperilaku seolah-olah 'DisallowArc' yang dipilih.</translation>
 <translation id="2195032660890227692">Kebijakan ini dihapus dalam <ph name="PRODUCT_NAME" /> 68 dan digantikan oleh <ph name="ARC_BR_POLICY_NAME" />.</translation>
 <translation id="2197625019569762163">Menetapkan kebijakan ke true akan menampilkan keyboard numerik secara default untuk memasukkan sandi pada layar login. Pengguna masih dapat beralih ke keyboard normal.
 
@@ -2008,19 +1999,6 @@ Jika kebijakan ini tidak disetel, setelan default-nya tidak diizinkan bagi pengg
 
       Agar tujuan <ph name="CLOUD_PRINT_NAME" /> tetap dapat ditemukan, kebijakan ini harus ditetapkan ke true dan <ph name="POLICY_ENUM_PRINTERTYPEDENYLIST_CLOUD" /> tidak boleh dimasukkan ke kebijakan <ph name="POLICY_PRINTERTYPEDENYLIST" />.</translation>
 <translation id="3915395663995367577">URL untuk proxy file .pac</translation>
-<translation id="3917288538553140422">Menetapkan kebijakan akan menentukan tindakan yang perlu dilakukan saat direktori beranda pengguna dibuat dengan enkripsi ecryptfs. Aplikasi Android mungkin berhenti berjalan, kecuali direktori beranda yang dienkripsi ecryptfs dimigrasikan ke enkripsi ext4.
-
-      Jika kebijakan ditetapkan ke:
-
-      * Migrate (atau opsi yang tidak didukung seperti AskUser atau AskForEcryptfsArcUsers), direktori akan dimigrasikan secara otomatis ke ext4 saat login, tanpa meminta persetujuan pengguna.
-
-      * Wipe atau MinimalMigrate, direktori beranda baru yang dienkripsi ext4 akan menggantikan direktori lama yang dienkripsi ecryptfs. Untuk membantu pengguna agar tidak perlu login berulang-ulang, MinimalMigrate akan mencoba menyimpan token login.
-
-      * DisallowArc atau tidak ditetapkan, migrasi tidak akan dilakukan dan aplikasi Android pengguna akan berhenti berjalan.
-
-      Kebijakan ini tidak berlaku untuk pengguna kiosk.
-
-      Peringatan: Wipe dan MinimalMigrate akan menghapus data lokal.</translation>
 <translation id="3925377537407648234">Setel faktor skala dan resolusi tampilan</translation>
 <translation id="3927137827189017535">Mengaktifkan fitur aksesibilitas tombol lekat di layar login.
 
@@ -2214,13 +2192,6 @@ Jika kebijakan ini tidak disetel, setelan default-nya tidak diizinkan bagi pengg
 <translation id="4228745249339680042">Menyetel kebijakan ini akan menentukan URL dan domain yang tidak menampilkan perintah saat sertifikat pengesahan dari Kunci Keamanan diminta. Sinyal juga dikirimkan ke Kunci Keamanan yang menunjukkan bahwa pengesahan individu dapat digunakan. Jika tidak disetel, pengguna akan dimintai pengesahan Kunci Keamanan di <ph name="PRODUCT_NAME" /> versi 65 dan yang lebih baru saat situs memintanya.
 
       URL hanya akan cocok sebagai appID U2F. Domain hanya cocok sebagai ID webauthn RP. Oleh karena itu, untuk mencakup API U2F dan webauthn, cantumkan domain dan URL appID untuk situs tertentu.</translation>
-<translation id="4238997902172035160">Mengonfigurasi direktori yang akan digunakan <ph name="PRODUCT_NAME" /> untuk menyimpan salinan roaming profil.
-
-      Jika kebijakan ini ditetapkan, <ph name="PRODUCT_NAME" /> akan menggunakan direktori yang tersedia untuk menyimpan salinan roaming profil jika kebijakan <ph name="ROAMING_PROFILE_SUPPORT_ENABLED_POLICY_NAME" /> diaktifkan. Jika kebijakan <ph name="ROAMING_PROFILE_SUPPORT_ENABLED_POLICY_NAME" /> dinonaktifkan atau tidak ditetapkan, nilai yang tersimpan dalam kebijakan ini tidak digunakan.
-
-      Buka https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables untuk melihat daftar variabel yang dapat digunakan.
-
-      Jika kebijakan ini tidak ditetapkan, jalur profil roaming default akan digunakan.</translation>
 <translation id="4239720644496144453">Cache tidak digunakan untuk aplikasi Android. Jika beberapa pengguna memasang aplikasi Android yang sama, aplikasi akan didownload lagi untuk setiap pengguna.</translation>
 <translation id="4242223728343693100">Jika kebijakan disetel, Anda akan dapat membuat daftar pola URL yang menentukan situs mana yang tidak dapat menyetel cookie.
 

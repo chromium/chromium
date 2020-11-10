@@ -347,7 +347,6 @@
 <translation id="352577523970648069">Rubrika za tekst koju je moguće uređivati</translation>
 <translation id="3538907380453898475">spskopsa</translation>
 <translation id="3549141990712742152">izreži <ph name="TEXT" />.</translation>
-<translation id="3549680091535286226">Dodirnite s dva prsta da biste privremeno zaustavili govor</translation>
 <translation id="3564729643041517261">Trenutno je aktivan uporedni način prikaza</translation>
 <translation id="3573145950452451508">Podnožje stranice</translation>
 <translation id="3587482841069643663">Sve</translation>
@@ -595,6 +594,7 @@
 <translation id="5561345396546889625">Sljedeća lista</translation>
 <translation id="5562645715554321347">hdnggrp</translation>
 <translation id="5574412348552378458">Način rada ChromeVox-a za učenje</translation>
+<translation id="5582839680698949063">Glavni meni</translation>
 <translation id="5585044216466955529">Uređivanje teksta, unos e-poruka</translation>
 <translation id="5597170376237141345">Sljedeće polje za potvrdu</translation>
 <translation id="5598905979683743333"><ph name="NAME" />, nije odabrano dugme za izbor</translation>
@@ -828,7 +828,6 @@
 <translation id="7491962110804786152">kart</translation>
 <translation id="7492497529767769458">Prelazak u sljedeći odjeljak. Primjeri uključuju Statusnu traku i Pokretač.</translation>
 <translation id="7505149250476994901">Recite "veliko" prije slova</translation>
-<translation id="7518543783849163354">Da privremeno spriječite ChromeVox da govori, pritisnite tipku Ctrl.</translation>
 <translation id="7533226154149229506">Svijetla zlatnožuta</translation>
 <translation id="7543255924852002459">Odbaci oznaku</translation>
 <translation id="7552432549459840808">Korisne prečice za Chrome</translation>

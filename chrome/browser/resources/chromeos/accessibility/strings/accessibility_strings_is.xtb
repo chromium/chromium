@@ -347,7 +347,6 @@ Til að opna vafravalmynd Chrome skal ýta á Alt+F.</translation>
 <translation id="352577523970648069">Breytanlegur textareitur</translation>
 <translation id="3538907380453898475">lýslisti</translation>
 <translation id="3549141990712742152">klippa <ph name="TEXT" />.</translation>
-<translation id="3549680091535286226">Ýttu með tveimur fingrum til að stöðva tal tímabundið</translation>
 <translation id="3564729643041517261">Núverandi birtingarstíll er hlið við hlið</translation>
 <translation id="3573145950452451508">Síðufótur</translation>
 <translation id="3587482841069643663">Allar</translation>
@@ -595,6 +594,7 @@ Til að opna vafravalmynd Chrome skal ýta á Alt+F.</translation>
 <translation id="5561345396546889625">Næsti listi</translation>
 <translation id="5562645715554321347">hdnggrp</translation>
 <translation id="5574412348552378458">Fræðslustilling ChromeVox</translation>
+<translation id="5582839680698949063">Aðalvalmynd</translation>
 <translation id="5585044216466955529">Textareitur, innsláttur netfangs</translation>
 <translation id="5597170376237141345">Næsti gátreitur</translation>
 <translation id="5598905979683743333"><ph name="NAME" />, valhnappur ekki valinn</translation>
@@ -828,7 +828,6 @@ Til að opna vafravalmynd Chrome skal ýta á Alt+F.</translation>
 <translation id="7491962110804786152">flipi</translation>
 <translation id="7492497529767769458">Fara yfir í næsta hluta. Þar eru m.a. stöðusvæði og ræsiforrit.</translation>
 <translation id="7505149250476994901">Segðu „cap“ á undan staf</translation>
-<translation id="7518543783849163354">Ýttu á Ctrl-lykilinn til að fá ChromeVox til að hætta tímabundið að tala.</translation>
 <translation id="7533226154149229506">Ljósgulur</translation>
 <translation id="7543255924852002459">Merking fyrir „Fleygja“</translation>
 <translation id="7552432549459840808">Gagnlegir flýtilyklar í Chrome</translation>

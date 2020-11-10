@@ -348,7 +348,6 @@ Chrome బ్రౌజర్ మెనూను తెరవడానికి, 
 <translation id="352577523970648069">సవరించగల వచన ఫీల్డ్</translation>
 <translation id="3538907380453898475">dscrplst</translation>
 <translation id="3549141990712742152"><ph name="TEXT" />ని కత్తిరించండి.</translation>
-<translation id="3549680091535286226">తాత్కాలికంగా ప్రసంగాన్ని ఆపడం కోసం 2 వేళ్లతో నొక్కండి</translation>
 <translation id="3564729643041517261">ప్రస్తుత ప్రదర్శన శైలి పక్కపక్కకు ఉంది</translation>
 <translation id="3573145950452451508">పేజీ ఫుటర్</translation>
 <translation id="3587482841069643663">మొత్తం</translation>
@@ -596,6 +595,7 @@ Chrome బ్రౌజర్ మెనూను తెరవడానికి, 
 <translation id="5561345396546889625">తరువాత జాబితా</translation>
 <translation id="5562645715554321347">hdnggrp</translation>
 <translation id="5574412348552378458">ChromeVox తెలుసుకునే మోడ్</translation>
+<translation id="5582839680698949063">ప్రధాన మెను</translation>
 <translation id="5585044216466955529">వచనం, ఇమెయిల్ నమోదును సవరించండి</translation>
 <translation id="5597170376237141345">తదుపరి చెక్‌బాక్స్</translation>
 <translation id="5598905979683743333"><ph name="NAME" />, రేడియో బటన్ ఎంపిక తీసివేయబడింది</translation>
@@ -829,7 +829,6 @@ Chrome బ్రౌజర్ మెనూను తెరవడానికి, 
 <translation id="7491962110804786152">tab</translation>
 <translation id="7492497529767769458">తర్వాతి విభాగానికి వెళ్లండి. ఉదాహరణలలో స్టేటస్ ట్రే, లాంచర్ ఉంటాయి.</translation>
 <translation id="7505149250476994901">క్యాపిటల్ అక్షరాన్ని పలికే ముందు "క్యాపిటల్" అని అనండి</translation>
-<translation id="7518543783849163354">ChromeVoxలో చదివి వినిపించే మోడ్‌ను తాత్కాలికంగా ఆపివేయడానికి, Control కీని నొక్కండి.</translation>
 <translation id="7533226154149229506">లేత బంగారం కడ్డీ పసుపు</translation>
 <translation id="7543255924852002459">లేబుల్‌ను విస్మరించండి</translation>
 <translation id="7552432549459840808">సహాయకరమైన Chrome సత్వరమార్గాలు</translation>

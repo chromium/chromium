@@ -347,7 +347,6 @@
 <translation id="352577523970648069">ਸੰਪਾਦਨਯੋਗ ਲਿਖਤ ਖੇਤਰ</translation>
 <translation id="3538907380453898475">ਵਰਣਨ ਸੂਚੀ</translation>
 <translation id="3549141990712742152"><ph name="TEXT" /> ਕੱਟੋ।</translation>
-<translation id="3549680091535286226">ਬੋਲੇ ਜਾਣ ਨੂੰ ਅਸਥਾਈ ਤੌਰ 'ਤੇ ਰੋਕਣ ਲਈ 2 ਉਂਗਲਾਂ ਨਾਲ ਟੈਪ ਕਰੋ</translation>
 <translation id="3564729643041517261">ਮੌਜੂਦਾ ਡਿਸਪਲੇ ਸਟਾਈਲ ਸਾਈਡ ਦਰ ਸਾਈਡ ਹੈ</translation>
 <translation id="3573145950452451508">ਪੰਨੇ ਦਾ ਪਦਲੇਖ</translation>
 <translation id="3587482841069643663">ਸਾਰੇ</translation>
@@ -595,6 +594,7 @@
 <translation id="5561345396546889625">ਅਗਲੀ ਸੂਚੀ</translation>
 <translation id="5562645715554321347">hdnggrp</translation>
 <translation id="5574412348552378458">ChromeVox ਦਾ "ਸਿੱਖਣ ਲਈ ਮੋਡ"</translation>
+<translation id="5582839680698949063">ਮੁੱਖ ਮੀਨੂ</translation>
 <translation id="5585044216466955529">ਲਿਖਤ, ਈਮੇਲ ਐਂਟਰੀ ਸੰਪਾਦਿਤ ਕਰੋ</translation>
 <translation id="5597170376237141345">ਅਗਲਾ ਚੈੱਕ-ਬਾਕਸ</translation>
 <translation id="5598905979683743333"><ph name="NAME" />, ਰੇਡੀਓ ਬਟਨ ਅਣਚੁਣਿਆ ਕੀਤਾ</translation>
@@ -828,7 +828,6 @@
 <translation id="7491962110804786152">ਟੈਬ</translation>
 <translation id="7492497529767769458">ਅਗਲੇ ਸੈਕਸ਼ਨ 'ਤੇ ਜਾਓ। ਉਦਾਹਰਨਾਂ ਵਿੱਚ ਸਥਿਤੀ ਟ੍ਰੇ ਅਤੇ ਲਾਂਚਰ ਸ਼ਾਮਲ ਹੈ।</translation>
 <translation id="7505149250476994901">ਅੱਖਰ ਤੋਂ ਪਹਿਲਾਂ "ਵੱਡਾ" ਬੋਲੋ</translation>
-<translation id="7518543783849163354">ਅਸਥਾਈ ਤੌਰ 'ਤੇ ChromeVox ਦਾ ਬੋਲਣਾ ਬੰਦ ਕਰਨ ਲਈ, ਕੰਟਰੋਲ ਕੁੰਜੀ ਦਬਾਓ।</translation>
 <translation id="7533226154149229506">ਹਲਕਾ ਸੁਨਿਹਰੀ ਪੀਲਾ</translation>
 <translation id="7543255924852002459">ਲੇਬਲ ਖਾਰਜ ਕਰੋ</translation>
 <translation id="7552432549459840808">ਲਾਭਕਾਰੀ Chrome ਸ਼ਾਰਟਕੱਟ</translation>

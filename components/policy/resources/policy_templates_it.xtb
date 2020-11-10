@@ -686,15 +686,6 @@ Questa norma viene rispettata soltanto se la norma "DefaultSearchProviderEnabled
       Se il criterio viene impostato su true o non viene impostato, l'utente potrà usare l'interfaccia a riga di comando di gestione delle macchine virtuali.
       In caso contrario, l'intera interfaccia a riga di comando di gestione delle macchine virtuali viene disattivata e nascosta.
       </translation>
-<translation id="2194470398825717446">Questa norma è stata ritirata in M61. Usa la norma EcryptfsMigrationStrategy.
-
-      Consente di specificare come deve comportarsi un dispositivo con ecryptfs e come deve passare alla crittografia ext4.
-
-      Se questa norma viene impostata su "DisallowArc", le app Android verranno disattivate per tutti gli utenti configurati sul dispositivo (inclusi quelli che hanno già la crittografia ext4) e gli utenti non avranno la possibilità di eseguire la migrazione da ecryptfs alla crittografia ext4.
-
-      Se questa norma viene impostata su "AllowMigration", gli utenti con directory principali ecryptfs avranno la possibilità di eseguire la migrazione di queste directory alla crittografia ext4, se necessario (attualmente quando Android N diventa disponibile sul dispositivo).
-
-      Questa norma non viene applicata alle app kiosk, di cui viene eseguita la migrazione automatica. Se questa norma non viene impostata, il dispositivo si comporterà come se fosse stata scelta l'opzione "DisallowArc".</translation>
 <translation id="2195032660890227692">Questa norma è stata rimossa in <ph name="PRODUCT_NAME" /> 68 e sostituita da <ph name="ARC_BR_POLICY_NAME" />.</translation>
 <translation id="2197625019569762163">Se questo criterio è impostato su True, per impostazione predefinita viene visualizzata la tastiera numerica per inserire la password nella schermata di accesso. Gli utenti possono comunque passare alla tastiera normale.
 
@@ -1987,19 +1978,6 @@ Se questa norma viene impostata su False o non viene impostata, i ritardi di ges
 
       Per mantenere rilevabili le destinazioni <ph name="CLOUD_PRINT_NAME" />, questo criterio deve essere impostato su true e il valore <ph name="POLICY_ENUM_PRINTERTYPEDENYLIST_CLOUD" /> non deve essere incluso nel criterio <ph name="POLICY_PRINTERTYPEDENYLIST" />.</translation>
 <translation id="3915395663995367577">URL di un file proxy .pac</translation>
-<translation id="3917288538553140422">L'impostazione del criterio consente di specificare l'azione da eseguire quando la home directory dell'utente è stata creata con la crittografia ecryptfs. A meno che le home directory con crittografia ecryptfs non eseguano la migrazione alla crittografia ext4, l'esecuzione delle app Android potrebbe interrompersi.
-
-      L'impostazione del criterio su:
-
-      * Migrate (o su opzioni non supportate come AskUser o AskForEcryptfsArcUsers) implica la migrazione automatica delle directory a ext4 all'accesso, senza richiedere il consenso dell'utente.
-
-      * Wipe o MinimalMigrate implica che, all'accesso, le nuove home directory con crittografia ext4 sostituiscano le vecchie directory con crittografia ecryptfs. Per aiutare l'utente a evitare di effettuare ripetuti accessi, MinimalMigrates tenta di conservare i token di accesso.
-
-      * DisallowArc o la sua mancata impostazione impedisce la migrazione e interrompe l'esecuzione delle app Android dell'utente.
-
-      Il criterio non si applica agli utenti kiosk.
-
-      Avviso: Wipe e MinimalMigrate rimuovono i dati locali.</translation>
 <translation id="3925377537407648234">Imposta fattore di scala e risoluzione del display</translation>
 <translation id="3927137827189017535">Consente di attivare la funzione di accessibilità dei tasti permanenti nella schermata di accesso.
 
@@ -2193,13 +2171,6 @@ Avviso. È consigliabile mantenere attivati gli aggiornamenti automatici per con
 <translation id="4228745249339680042">La configurazione del criterio consente di specificare gli URL e i domini per i quali non vengono visualizzati messaggi quando vengono richiesti certificati di attestazione dei token di sicurezza. Viene inoltre inviato un segnale al token di sicurezza per indicare che potrebbe essere utilizzata la singola attestazione. Senza questo segnale, gli utenti di <ph name="PRODUCT_NAME" /> 65 e versioni successive ricevono un messaggio quando i siti richiedono l'attestazione dei token di sicurezza.
 
       Gli URL corrispondono soltanto ad appID U2F. I domini corrispondono soltanto a ID RP webauthn. Di conseguenza, per includere entrambe le API U2F e webauthn per un determinato sito, devono essere elencati sia il dominio sia l'URL appID.</translation>
-<translation id="4238997902172035160">Consente di configurare la directory che <ph name="PRODUCT_NAME" /> utilizzerà per memorizzare la copia di roaming dei profili.
-
-      Se imposti questa norma, <ph name="PRODUCT_NAME" /> utilizzerà la directory indicata per memorizzare la copia di roaming dei profili se è stata attivata la norma <ph name="ROAMING_PROFILE_SUPPORT_ENABLED_POLICY_NAME" />. Se la norma <ph name="ROAMING_PROFILE_SUPPORT_ENABLED_POLICY_NAME" /> viene disattivata o non è impostata, il valore memorizzato in questa norma non viene utilizzato.
-
-      Visita https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables per consultare un elenco di variabili utilizzabili.
-
-      Se questa norma non è impostata, verrà utilizzato il percorso di profilo di roaming predefinito.</translation>
 <translation id="4239720644496144453">La cache non viene utilizzata per le app Android. Se più utenti installano la stessa app Android, questa viene scaricata per ogni utente.</translation>
 <translation id="4242223728343693100">Se il criterio viene configurato, puoi creare un elenco di pattern URL che specificano i siti che non possono impostare i cookie.
 

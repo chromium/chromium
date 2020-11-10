@@ -347,7 +347,6 @@
 <translation id="352577523970648069">編集可能なテキスト欄</translation>
 <translation id="3538907380453898475">dscrplst</translation>
 <translation id="3549141990712742152"><ph name="TEXT" /> を切り取ります。</translation>
-<translation id="3549680091535286226">読み上げを一時停止するには 2 本の指でタップします</translation>
 <translation id="3564729643041517261">現在の表示スタイルは横並びです</translation>
 <translation id="3573145950452451508">ページフッター</translation>
 <translation id="3587482841069643663">すべて</translation>
@@ -595,6 +594,7 @@
 <translation id="5561345396546889625">次のリスト</translation>
 <translation id="5562645715554321347">見出しグループ</translation>
 <translation id="5574412348552378458">ChromeVox 学習モード</translation>
+<translation id="5582839680698949063">メインメニュー</translation>
 <translation id="5585044216466955529">テキスト編集、メール エントリ</translation>
 <translation id="5597170376237141345">次のチェックボックス</translation>
 <translation id="5598905979683743333"><ph name="NAME" />、選択されていないラジオボタン</translation>
@@ -828,7 +828,6 @@
 <translation id="7491962110804786152">タブ</translation>
 <translation id="7492497529767769458">次のセクションに移動します。たとえばステータス トレイやランチャーなどです。</translation>
 <translation id="7505149250476994901">「大文字の」と言ってから文字を読み上げる</translation>
-<translation id="7518543783849163354">ChromeVox の読み上げを一時的に停止するには、Ctrl キーを押します。</translation>
 <translation id="7533226154149229506">ライト ゴールデン ロッドイエロー</translation>
 <translation id="7543255924852002459">ラベルを破棄</translation>
 <translation id="7552432549459840808">Chrome の便利なショートカット</translation>

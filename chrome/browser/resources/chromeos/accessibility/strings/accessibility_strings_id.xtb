@@ -347,7 +347,6 @@
 <translation id="352577523970648069">Kolom teks yang dapat diedit</translation>
 <translation id="3538907380453898475">dscrplst</translation>
 <translation id="3549141990712742152">memotong <ph name="TEXT" />.</translation>
-<translation id="3549680091535286226">Ketuk dengan 2 jari untuk menghentikan ucapan untuk sementara</translation>
 <translation id="3564729643041517261">Gaya tampilan saat ini adalah berdampingan</translation>
 <translation id="3573145950452451508">Footer halaman</translation>
 <translation id="3587482841069643663">Semua</translation>
@@ -595,6 +594,7 @@
 <translation id="5561345396546889625">Daftar berikutnya</translation>
 <translation id="5562645715554321347">hdnggrp</translation>
 <translation id="5574412348552378458">Mode Pembelajaran ChromeVox</translation>
+<translation id="5582839680698949063">Menu utama</translation>
 <translation id="5585044216466955529">Mengedit teks, entri email</translation>
 <translation id="5597170376237141345">Kotak centang berikutnya</translation>
 <translation id="5598905979683743333"><ph name="NAME" />, tombol radio tidak dipilih</translation>
@@ -827,7 +827,6 @@
 <translation id="7491962110804786152">tab</translation>
 <translation id="7492497529767769458">Pindah ke bagian berikutnya. Contohnya meliputi Menu Status and Peluncur.</translation>
 <translation id="7505149250476994901">Ucapkan "kapital" sebelum huruf</translation>
-<translation id="7518543783849163354">Untuk menghentikan ChromeVox berbicara sementara, tekan tombol Control.</translation>
 <translation id="7533226154149229506">Light Golden Rod Yellow</translation>
 <translation id="7543255924852002459">Hapus label</translation>
 <translation id="7552432549459840808">Pintasan Chrome Yang Berguna</translation>

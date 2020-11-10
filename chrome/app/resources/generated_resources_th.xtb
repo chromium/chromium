@@ -355,7 +355,6 @@
 <translation id="1401308693935339022">ใช้ตำแหน่ง อนุญาตแอปและบริการที่มีสิทธิ์เข้าถึงตำแหน่งให้ใช้ตำแหน่งของอุปกรณ์นี้ Google อาจรวบรวมข้อมูลตำแหน่งเป็นระยะๆ และใช้ข้อมูลนี้แบบไม่ระบุตัวตนเพื่อปรับปรุงความแม่นยำของตำแหน่งและบริการตามสถานที่</translation>
 <translation id="1403222014593521787">เชื่อมต่อพร็อกซีไม่ได้</translation>
 <translation id="140520891692800925"><ph name="PROFILE_DISPLAY_NAME" /> (อยู่ภายใต้การดูแล)</translation>
-<translation id="140541193409212341">เกิดข้อผิดพลาดขณะที่ Chrome กำลังตรวจหาซอฟต์แวร์ที่เป็นอันตรายในคอมพิวเตอร์</translation>
 <translation id="1405779994569073824">ขัดข้อง</translation>
 <translation id="1406500794671479665">กำลังยืนยันความถูกต้อง...</translation>
 <translation id="1407135791313364759">เปิดทั้งหมด</translation>
@@ -390,7 +389,6 @@
 <translation id="1433811987160647649">ถามก่อนที่จะเข้าถึง</translation>
 <translation id="1434696352799406980">การดำเนินการนี้จะรีเซ็ตหน้าเริ่มต้นใช้งาน หน้าแท็บใหม่ เครื่องมือค้นหา แท็บที่ถูกตรึง และยังปิดใช้ส่วนขยายทั้งหมด ตลอดจนล้างข้อมูลชั่วคราว เช่น คุกกี้ โดยจะไม่ล้างบุ๊กมาร์ก ประวัติ และรหัสผ่านที่บันทึกไว้</translation>
 <translation id="1434886155212424586">หน้าแรกคือหน้าแท็บใหม่</translation>
-<translation id="1435515966666225466">ได้รับอนุญาตให้ใช้ปลั๊กอินเพื่อเข้าถึงคอมพิวเตอร์ของคุณ</translation>
 <translation id="1436390408194692385">ใช้ได้เป็นเวลา <ph name="TICKET_TIME_LEFT" /></translation>
 <translation id="1436671784520050284">ตั้งค่าต่อ</translation>
 <translation id="1436784010935106834">ลบออกแล้ว</translation>
@@ -1620,7 +1618,6 @@
 <translation id="2839032553903800133">บล็อกการแจ้งเตือนอยู่</translation>
 <translation id="2841013758207633010">เวลา</translation>
 <translation id="2841837950101800123">ผู้ให้บริการ</translation>
-<translation id="2841921561399512198">{NUM_DAYS,plural, =1{Chrome ไม่พบซอฟต์แวร์ที่เป็นอันตรายในคอมพิวเตอร์ของคุณ ตรวจสอบล่าสุดเมื่อ 1 วันที่ผ่านมา}other{Chrome ไม่พบซอฟต์แวร์ที่เป็นอันตรายในคอมพิวเตอร์ของคุณ ตรวจสอบล่าสุดเมื่อ {NUM_DAYS} วันที่ผ่านมา}}</translation>
 <translation id="2844169650293029770">อุปกรณ์ USB-C (พอร์ตด้านหน้าซ้าย)</translation>
 <translation id="2844809857160214557">ดูและจัดการงานพิมพ์</translation>
 <translation id="2845382757467349449">แสดงแถบบุ๊กมาร์กเสมอ</translation>
@@ -1789,7 +1786,6 @@
 <translation id="3036546437875325427">เปิดใช้ Flash</translation>
 <translation id="3037754279345160234">แยกวิเคราะห์การกำหนดค่าเพื่อเข้าร่วมโดเมนไม่ได้ โปรดติดต่อผู้ดูแลระบบ</translation>
 <translation id="3038612606416062604">เพิ่มเครื่องพิมพ์ด้วยตนเอง</translation>
-<translation id="3038675903128704560">ไม่อนุญาตให้เว็บไซต์ทั้งหมดใช้ปลั๊กอินเพื่อเข้าถึงคอมพิวเตอร์ของคุณ</translation>
 <translation id="3039491566278747710">ติดตั้งนโยบายออฟไลน์ในอุปกรณ์นี้ไม่สำเร็จ</translation>
 <translation id="3043581297103810752">จาก <ph name="ORIGIN" /></translation>
 <translation id="3045447014237878114">เว็บไซต์นี้มีการดาวน์โหลดไฟล์หลายไฟล์โดยอัตโนมัติ</translation>
@@ -2108,7 +2104,6 @@
 <translation id="3439153939049640737">อนุญาตให้ <ph name="HOST" /> เข้าถึงไมโครโฟนของคุณเสมอ</translation>
 <translation id="3439970425423980614">กำลังเปิด PDF ในหน้าตัวอย่าง</translation>
 <translation id="3440663250074896476">การดำเนินการเพิ่มเติมสำหรับ <ph name="BOOKMARK_NAME" /></translation>
-<translation id="3440761377721825626">ถามเมื่อเว็บไซต์ต้องการใช้ปลั๊กอินเพื่อเข้าถึงคอมพิวเตอร์ของคุณ</translation>
 <translation id="3441653493275994384">หน้าจอ</translation>
 <translation id="3441663102605358937">ลงชื่อเข้าใช้ <ph name="ACCOUNT" /> อีกครั้งเพื่อยืนยันบัญชีนี้</translation>
 <translation id="3445047461171030979">คำตอบด่วนของ Google Assistant</translation>
@@ -2184,7 +2179,6 @@
 <translation id="3518985090088779359">ยอมรับและทำต่อ</translation>
 <translation id="3519564332031442870">บริการแบ็กเอนด์ของการพิมพ์</translation>
 <translation id="3521606918211282604">เปลี่ยนขนาดดิสก์</translation>
-<translation id="3523642406908660543">ถามเมื่อเว็บไซต์ต้องการใช้ปลั๊กอินเพื่อเข้าถึงคอมพิวเตอร์ของคุณ (แนะนำ)</translation>
 <translation id="3524965460886318643">ส่งออกกิจกรรม</translation>
 <translation id="3526034519184079374">อ่านหรือเปลี่ยนแปลงข้อมูลของเว็บไซต์ไม่ได้</translation>
 <translation id="3527085408025491307">โฟลเดอร์</translation>
@@ -2514,7 +2508,6 @@
 <translation id="3873915545594852654">เกิดปัญหาเกี่ยวกับ ARC++</translation>
 <translation id="3874164307099183178">เปิด Google Assistant</translation>
 <translation id="3877075909000773256">การตั้งค่าการแชร์ใกล้เคียงสำหรับอุปกรณ์ของ <ph name="USER_NAME" /> ที่แชร์โดยใช้บัญชี <ph name="USER_EMAIL" /></translation>
-<translation id="387771067039689031">ไม่ได้รับอนุญาตให้ใช้ปลั๊กอินเพื่อเข้าถึงคอมพิวเตอร์ของคุณ</translation>
 <translation id="3879748587602334249">Download Manager</translation>
 <translation id="3881478300875776315">แสดงบรรทัดน้อยลง</translation>
 <translation id="3882165008614329320">วิดีโอที่มีอยู่จากกล้องหรือไฟล์</translation>
@@ -2653,7 +2646,6 @@
 <translation id="4031179711345676612">อนุญาตให้ใช้ไมโครโฟน</translation>
 <translation id="4031527940632463547">มีการบล็อกเซ็นเซอร์</translation>
 <translation id="4033471457476425443">เพิ่มโฟลเดอร์ใหม่</translation>
-<translation id="4034280328082410379">บล็อกปลั๊กอินไม่ให้เข้าถึงคอมพิวเตอร์ของคุณ</translation>
 <translation id="4034824040120875894">เครื่องพิมพ์</translation>
 <translation id="4035758313003622889">&amp;ตัวจัดการงาน</translation>
 <translation id="4036778507053569103">นโยบายที่ดาวน์โหลดจากเซิร์ฟเวอร์ไม่ถูกต้อง</translation>
@@ -2780,7 +2772,6 @@
 <translation id="4200983522494130825">แ&amp;ท็บใหม่</translation>
 <translation id="4201546031411513170">คุณเลือกสิ่งที่ต้องการซิงค์ได้เสมอในการตั้งค่า</translation>
 <translation id="420283545744377356">ปิดโปรแกรมรักษาหน้าจอ</translation>
-<translation id="4205362703535890467">Chrome ไม่พบซอฟต์แวร์ที่เป็นอันตรายในคอมพิวเตอร์ของคุณ ตรวจสอบล่าสุดเมื่อวาน</translation>
 <translation id="4206144641569145248">มนุษย์ต่างดาว</translation>
 <translation id="4206323443866416204">รายงานความคิดเห็น</translation>
 <translation id="4208390505124702064">ค้นหา <ph name="SITE_NAME" /></translation>
@@ -3282,7 +3273,6 @@
 <translation id="4830121310592638841">ถามเมื่อเว็บไซต์ต้องการเปิดและวางหน้าต่างบนหน้าจอ</translation>
 <translation id="4830502475412647084">กำลังติดตั้งอัปเดตระบบปฏิบัติการ</translation>
 <translation id="4830573902900904548"><ph name="DEVICE_TYPE" /> ของคุณไม่สามารถเชื่อมต่ออินเทอร์เน็ตโดยใช้ <ph name="NETWORK_NAME" /> โปรดเลือกเครือข่ายอื่น <ph name="LEARN_MORE_LINK_START" />ดูข้อมูลเพิ่มเติม<ph name="LEARN_MORE_LINK_END" /></translation>
-<translation id="4831688036548685548">Chrome ไม่พบซอฟต์แวร์ที่เป็นอันตรายในคอมพิวเตอร์ของคุณ ตรวจสอบล่าสุดเมื่อสักครู่</translation>
 <translation id="4833236810053292670">ดูว่ามีอะไรใหม่ใน Chromebook</translation>
 <translation id="4833683849865011483">พบเครื่องพิมพ์ 1 เครื่องจากเซิร์ฟเวอร์การพิมพ์</translation>
 <translation id="4836504898754963407">จัดการลายนิ้วมือ</translation>
@@ -4301,6 +4291,7 @@
 <translation id="6042308850641462728">แสดงเพิ่ม</translation>
 <translation id="6043317578411397101"><ph name="APP_NAME" /> กำลังแชร์แท็บใน Chrome กับ <ph name="TAB_NAME" /></translation>
 <translation id="604388835206766544">แยกวิเคราะห์ค่ากำหนดไม่สำเร็จ</translation>
+<translation id="6043994281159824495">ออกจากระบบเลย</translation>
 <translation id="6044805581023976844"><ph name="APP_NAME" /> กำลังแชร์แท็บและเสียงใน Chrome กับ <ph name="TAB_NAME" /></translation>
 <translation id="6049004884579590341">กด |<ph name="ACCELERATOR" />| ค้างไว้เพื่อออกจากโหมดเต็มหน้าจอ</translation>
 <translation id="6051354611314852653">อ๊ะ!  ระบบล้มเหลวในการให้สิทธิ์การเข้าถึง API สำหรับอุปกรณ์นี้</translation>
@@ -4561,7 +4552,6 @@
 <translation id="6333064448949140209">ระบบจะส่งไฟล์ไปยัง Google เพื่อแก้ไขข้อบกพร่อง</translation>
 <translation id="6338981933082930623">เว็บไซต์ทั้งหมดแสดงโฆษณาใดก็ตามให้คุณเห็นได้</translation>
 <translation id="6339668969738228384">สร้างโปรไฟล์ใหม่สำหรับ <ph name="USER_EMAIL_ADDRESS" /></translation>
-<translation id="6339995243416022850">เว็บไซต์ขอใช้ปลั๊กอินเพื่อเข้าถึงคอมพิวเตอร์ของคุณได้ (แนะนำ)</translation>
 <translation id="6340017061976355871">เชื่อมต่อกับเซิร์ฟเวอร์ไม่ได้ โปรดตรวจสอบการเชื่อมต่อและลองอีกครั้ง หากยังพบปัญหาอยู่ ให้รีสตาร์ท Chromebook</translation>
 <translation id="6340071272923955280">โปรโตคอลการพิมพ์ผ่านอินเทอร์เน็ต (IPPS)</translation>
 <translation id="6340526405444716530">การปรับเปลี่ยนในแบบของคุณ</translation>
@@ -4664,7 +4654,6 @@
 <translation id="6463795194797719782">แ&amp;ก้ไข</translation>
 <translation id="6465841119675156448">ไม่ใช้อินเทอร์เน็ต</translation>
 <translation id="6466988389784393586">&amp;เปิดบุ๊กมาร์กทั้งหมด</translation>
-<translation id="6467235653320897404">{NUM_HOURS,plural, =1{Chrome ไม่พบซอฟต์แวร์ที่เป็นอันตรายในคอมพิวเตอร์ของคุณ ตรวจสอบล่าสุดเมื่อ 1 ชั่วโมงที่ผ่านมา}other{Chrome ไม่พบซอฟต์แวร์ที่เป็นอันตรายในคอมพิวเตอร์ของคุณ ตรวจสอบล่าสุดเมื่อ {NUM_HOURS} ชั่วโมงที่ผ่านมา}}</translation>
 <translation id="6467304607960172345">เพิ่มประสิทธิภาพวิดีโอเต็มหน้าจอ</translation>
 <translation id="6468485451923838994">แบบอักษร</translation>
 <translation id="6469557521904094793">เปิดเครือข่ายมือถือ</translation>
@@ -4984,7 +4973,6 @@
 <translation id="6860097299815761905">การตั้งค่าพร็อกซี...</translation>
 <translation id="686022878923628150">บล็อกเว็บไซต์ไม่ให้เชื่อมต่อกับอุปกรณ์ MIDI</translation>
 <translation id="6860427144121307915">เปิดในแท็บ</translation>
-<translation id="6861451385429799394"><ph name="BEGIN_LINK" />ผู้ดูแลระบบ<ph name="END_LINK" />ปิดใช้การตรวจหาซอฟต์แวร์ที่เป็นอันตรายของ Chrome</translation>
 <translation id="686366188661646310">ลบรหัสผ่านไหม</translation>
 <translation id="6865313869410766144">ข้อมูลแบบฟอร์มที่ป้อนอัตโนมัติ</translation>
 <translation id="6865598234501509159">หน้านี้ไม่ใช่ภาษา<ph name="LANGUAGE" /></translation>
@@ -5363,7 +5351,6 @@
 <translation id="7308002049209013926">ใช้ Launcher เพื่อเข้าถึงแอปและกิจกรรมใหม่ๆ อย่างรวดเร็ว หากต้องการมาที่นี่โดยใช้แป้นพิมพ์ ให้กด Alt + Shift + L</translation>
 <translation id="7309257895202129721">แสดงปุ่ม&amp;ควบคุม</translation>
 <translation id="7310598146671372464">เข้าสู่ระบบไม่สำเร็จ เซิร์ฟเวอร์ไม่รองรับประเภทการเข้ารหัส Kerberos ที่ระบุ โปรดติดต่อผู้ดูแลระบบ</translation>
-<translation id="7311079019872751559">การเข้าถึงปลั๊กอินที่ไม่ได้อยู่ในแซนด์บ็อกซ์</translation>
 <translation id="7320213904474460808">เครือข่ายเริ่มต้น</translation>
 <translation id="7321545336522791733">ไม่สามารถเข้าถึงเซิร์ฟเวอร์</translation>
 <translation id="7324297612904500502">ฟอรัมเบต้า</translation>
@@ -5488,7 +5475,6 @@
 <translation id="7456847797759667638">เปิดตำแหน่ง...</translation>
 <translation id="7457384018036134905">จัดการภาษาในการตั้งค่า Chrome OS</translation>
 <translation id="7458168200501453431">ใช้โปรแกรมตรวจตัวสะกดแบบเดียวกับ Google Search ข้อความที่คุณพิมพ์ในเบราว์เซอร์จะส่งไปยัง Google</translation>
-<translation id="7459920164600044274">โดยปกติแล้วเว็บไซต์จะใช้ปลั๊กอินเพื่อดำเนินการตามฟีเจอร์ เช่น การสตรีมวิดีโอหรือติดตั้งแอป</translation>
 <translation id="7460045493116006516">ธีมที่คุณติดตั้งอยู่ตอนนี้</translation>
 <translation id="7461729991508684543">{NUM_DAYS,plural, =1{<ph name="DOMAIN" /> กำหนดให้คุณสำรองข้อมูลและส่งคืน <ph name="DEVICE_TYPE" /> เครื่องนี้วันนี้ <ph name="LINK_BEGIN" />ดูรายละเอียด<ph name="LINK_END" />}other{<ph name="DOMAIN" /> กำหนดให้คุณสำรองข้อมูลและส่งคืน <ph name="DEVICE_TYPE" /> เครื่องนี้ภายใน {NUM_DAYS} วัน <ph name="LINK_BEGIN" />ดูรายละเอียด<ph name="LINK_END" />}}</translation>
 <translation id="7461924472993315131">ตรึง</translation>
@@ -6012,6 +5998,7 @@
 <translation id="8030852056903932865">อนุญาต</translation>
 <translation id="8032244173881942855">ไม่สามารถแคสต์แท็บ</translation>
 <translation id="8033827949643255796">เลือกแล้ว</translation>
+<translation id="8033958968890501070">หมดเวลา</translation>
 <translation id="8037117027592400564">อ่านข้อความทั้งหมดที่พูดโดยใช้เสียงสังเคราะห์</translation>
 <translation id="8037357227543935929">ขอ (ค่าเริ่มต้น)</translation>
 <translation id="803771048473350947">ไฟล์</translation>
@@ -6436,7 +6423,6 @@
 <translation id="8541462173655894684">ไม่พบเครื่องพิมพ์จากเซิร์ฟเวอร์การพิมพ์</translation>
 <translation id="8542618328173222274">ถามเมื่อเว็บไซต์ต้องการใช้อุปกรณ์และข้อมูล Virtual Reality ของคุณ</translation>
 <translation id="8543556556237226809">โปรดติดต่อผู้ที่ดูแลโปรไฟล์ของคุณหากมีคำถาม</translation>
-<translation id="8545575359873600875">ขออภัย ไม่สามารถยืนยันรหัสผ่านของคุณ ผู้จัดการของผู้ใช้ภายใต้การดูแลรายนี้อาจเปลี่ยนรหัสผ่านเมื่อเร็วๆ นี้ หากเป็นเช่นนั้น จะมีการใช้รหัสผ่านใหม่เมื่อคุณลงชื่อเข้าใช้ครั้งถัดไป ลองใช้รหัสผ่านเก่าของคุณ</translation>
 <translation id="8546186510985480118">อุปกรณ์มีพื้นที่เหลือน้อย</translation>
 <translation id="8546306075665861288">แคชของภาพ</translation>
 <translation id="854655314928502177">URL การค้นพบเว็บพร็อกซีโดยอัตโนมัติ:</translation>
@@ -6647,7 +6633,6 @@
 <translation id="8774934320277480003">ขอบบน</translation>
 <translation id="8775144690796719618">URL ไม่ถูกต้อง</translation>
 <translation id="8775163630211761057">เพิ่มสิ่งที่ดีที่สุดจากโทรศัพท์ Android ของคุณไปยัง <ph name="DEVICE_TYPE" /></translation>
-<translation id="8776977753660889796">{NUM_MINS,plural, =1{Chrome ไม่พบซอฟต์แวร์ที่เป็นอันตรายในคอมพิวเตอร์ของคุณ ตรวจสอบล่าสุดเมื่อ 1 นาทีที่ผ่านมา}other{Chrome ไม่พบซอฟต์แวร์ที่เป็นอันตรายในคอมพิวเตอร์ของคุณ ตรวจสอบล่าสุดเมื่อ {NUM_MINS} นาทีที่ผ่านมา}}</translation>
 <translation id="8777628254805677039">รหัสผ่านระดับรูท</translation>
 <translation id="8780123805589053431">รับคำอธิบายรูปภาพจาก Google</translation>
 <translation id="8780443667474968681">ปิดการค้นหาด้วยเสียงแล้ว</translation>

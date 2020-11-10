@@ -89,6 +89,7 @@
 <translation id="5212543919916444558">મને તમારી સ્ક્રીન પર એવી કોઈપણ વસ્તુ મળી નથી કે જેમાં હું તમારી સહાય કરી શકું. મને કંઈપણ પૂછવા માટે માઇકને ટૅપ કરી જુઓ.</translation>
 <translation id="5222676887888702881">સાઇન આઉટ</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
+<translation id="5275828089655680674">રૂટિન ફરીથી ચલાવો</translation>
 <translation id="5317780077021120954">સાચવો</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">કૃપા કરીને નવો પાસવર્ડ પસંદ કરો</translation>
@@ -97,6 +98,7 @@
 <translation id="5431318178759467895">રંગ</translation>
 <translation id="5457599981699367932">અતિથિ તરીકે બ્રાઉઝ કરો</translation>
 <translation id="54609108002486618">મેનેજ કરેલું</translation>
+<translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5832805196449965646">વ્યક્તિ ઉમેરો</translation>
 <translation id="5895138241574237353">પુનઃપ્રારંભ કરો</translation>
 <translation id="6040143037577758943">બંધ કરો</translation>
@@ -106,6 +108,7 @@
 <translation id="6108689792487843350">ગેટવેથી કનેક્ટ કરી શકાતું નથી</translation>
 <translation id="6146993107019042706">સમાપ્ત કરવા માટે, તમારો નવો પાસવર્ડ દાખલ કરો</translation>
 <translation id="6147514244879357420">PNG</translation>
+<translation id="6165508094623778733">વધુ જાણો</translation>
 <translation id="6191293864534840972">અયોગ્ય ફોર્મેટ ધરાવતા નામ સર્વર</translation>
 <translation id="6325525973963619867">નિષ્ફળ થયું</translation>
 <translation id="636850387210749493">સંગઠન નોંધણી</translation>
@@ -127,6 +130,7 @@
 <translation id="7690294790491645610">નવા પાસવર્ડની પુષ્ટિ કરો</translation>
 <translation id="7805768142964895445">સ્થિતિ</translation>
 <translation id="7936303884198020182">IP કન્ફિગ્યુરેશનમાં કોઈ નામ સર્વર મળ્યા નથી</translation>
+<translation id="8041089156583427627">પ્રતિસાદ મોકલો</translation>
 <translation id="808894953321890993">પાસવર્ડ બદલો</translation>
 <translation id="8208861521865154048">લાભ</translation>
 <translation id="8230672074305416752">ડિફૉલ્ટ નેટવર્ક ગેટવેને પિંગ કરવામાં નિષ્ફળ રહ્યાં</translation>
@@ -140,6 +144,7 @@
 <translation id="8723108084122415655">નૉન-ડિફૉલ્ટ નેટવર્ક ગેટવેની વિલંબતા જરૂરી થ્રેશોલ્ડ કરતાં વધુ છે</translation>
 <translation id="8726019395068607495">બંધ - ઢાંકણ ખુલ્લું છે</translation>
 <translation id="8747900814994928677">ફેરફાર કન્ફર્મ કરો</translation>
+<translation id="8798099450830957504">ડિફૉલ્ટ</translation>
 <translation id="8910721771319628100">ડિફૉલ્ટ નેટવર્ક ગેટવેની વિલંબતા જરૂરી થ્રેશોલ્ડ કરતાં વધુ છે</translation>
 <translation id="8919837981463578619">નિષ્ફળ થયું - ટ્રે ખૂટે છે</translation>
 <translation id="8928727111548978589">નિષ્ફળ થયું - પ્રિન્ટરમાં કાગળ પૂરા થઈ ગયા છે</translation>

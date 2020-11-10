@@ -113,6 +113,7 @@
 <translation id="6108689792487843350">Шлюз недоступен.</translation>
 <translation id="6146993107019042706">Чтобы завершить процедуру, введите новый пароль.</translation>
 <translation id="6147514244879357420">PNG</translation>
+<translation id="6165508094623778733">Подробнее</translation>
 <translation id="6191293864534840972">Некорректно указаны серверы доменных имен.</translation>
 <translation id="6325525973963619867">Ошибка</translation>
 <translation id="636850387210749493">Регистрация в корпоративном домене</translation>
@@ -135,6 +136,7 @@
 <translation id="7690294790491645610">Введите новый пароль ещё раз</translation>
 <translation id="7805768142964895445">Состояние</translation>
 <translation id="7936303884198020182">Не найдены серверы доменных имен.</translation>
+<translation id="8041089156583427627">Отправить отзыв</translation>
 <translation id="808894953321890993">Сменить пароль</translation>
 <translation id="8208861521865154048">Преимущества</translation>
 <translation id="8230672074305416752">Не удалось выполнить проверку ping сетевого шлюза, заданного по умолчанию.</translation>
@@ -148,6 +150,7 @@
 <translation id="8723108084122415655">В сети, не используемой по умолчанию, превышено пороговое значение задержки.</translation>
 <translation id="8726019395068607495">Печать прервана: открыта крышка</translation>
 <translation id="8747900814994928677">Подтверждение изменений</translation>
+<translation id="8798099450830957504">По умолчанию</translation>
 <translation id="8910721771319628100">В сети, используемой по умолчанию, превышено пороговое значение задержки.</translation>
 <translation id="8919837981463578619">Сбой: нет лотка для бумаги</translation>
 <translation id="8928727111548978589">Сбой: закончилась бумага</translation>

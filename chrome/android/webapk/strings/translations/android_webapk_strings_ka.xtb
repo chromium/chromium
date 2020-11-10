@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ka">
+<translation id="1625959690469240009">საიტის პარამეტრების გასახსნელად განაახლეთ ან ხელახლა დააინსტალირეთ <ph name="BROWSER_NAME" /></translation>
 <translation id="1700971771753530690"><ph name="APP_NAME" /> საჭიროებს შემდეგ აპს:</translation>
 <translation id="2697679025356221813"><ph name="APP_NAME" /> საჭიროებს ვებ-ბრაუზერს</translation>
 <translation id="3858759029325727987">აირჩიეთ ბრაუზერი, რომლის მიერაც მხარდაჭერილია შემდეგი აპი:</translation>

@@ -77,6 +77,7 @@
 <translation id="1513352483775369820">ዕልባቶች እና የድር ታሪክ</translation>
 <translation id="1513858653616922153">የይለፍ ቃል ሰርዝ</translation>
 <translation id="1521774566618522728">ገባሪ ዛሬ</translation>
+<translation id="1538801903729528855">በድር ላይ የተሻለ የድምፅ ተሞክሮ ያግኙ</translation>
 <translation id="1543538514740974167">እዚህ በበለጠ ፍጥነት ያግኙ</translation>
 <translation id="1544826120773021464">የGoogle መለያዎን ለማቀናበር የ«መለያን አቀናብር» አዝራሩን መታ ያድርጉት</translation>
 <translation id="1549000191223877751">ወደ ሌላ መስኮት ውሰድ</translation>
@@ -117,6 +118,7 @@
 <translation id="1877026089748256423">Chrome ጊዜው አልፎበታል</translation>
 <translation id="1883903952484604915">የእኔ ፋይሎች</translation>
 <translation id="189358972401248634">ሌሎች ቋንቋዎች</translation>
+<translation id="1918175104945982129">የረዳት ድምፅ ፍለጋ ስምምነት ዩአይን በግማሽ ቁመት ተከፍቷል</translation>
 <translation id="1919130412786645364">የChrome በመለያ መግባትን ይፍቀዱ</translation>
 <translation id="1922362554271624559">የተጠቆሙ ቋንቋዎች</translation>
 <translation id="1925021887439448749">ብጁ የድር አድራሻ ያስገቡ</translation>
@@ -147,6 +149,7 @@
 <translation id="2056878612599315956">ጣቢያ ባለበት ቆሟል</translation>
 <translation id="2067805253194386918">ጽሑፍ</translation>
 <translation id="2068748236079642969">የሚቀጥለውን ቪዲዮ ይመልከቱ</translation>
+<translation id="2074143993849053708">የረዳት ድምፅ ፍለጋ ስምምነት ዩአይ ተዘግቷል</translation>
 <translation id="2082238445998314030">ውጤት <ph name="RESULT_NUMBER" /> ከ<ph name="TOTAL_RESULTS" /></translation>
 <translation id="2096012225669085171">በመላ መሣሪያዎች ላይ ያመሳስሉ እና ግላዊነት ያላብሱ</translation>
 <translation id="2100273922101894616">በራስ-ግባ</translation>
@@ -279,6 +282,7 @@
 <translation id="3006881078666935414">ምንም የአጠቃቀም ውሂብ የለም</translation>
 <translation id="3016635187733453316">ይህ መሣሪያ ወደ በይነ መረብ እንደተገናኘ እርግጠኛ ይሁኑ</translation>
 <translation id="3029704984691124060">የይለፍ ሐረጎቹ አይዛመዱም</translation>
+<translation id="3031225630520268969">የረዳት ድምፅ ፍለጋ ስምምነት ዩአይ</translation>
 <translation id="3034163383943672781">ውርድ <ph name="DATE" /> ላይ ይጀመራል።</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />እገዛ ያግኙ<ph name="END_LINK" /></translation>
 <translation id="305593374596241526">አካባቢ ጠፍቷል፤ በ<ph name="BEGIN_LINK" />Android ቅንብሮች<ph name="END_LINK" /> ውስጥ ያብሩት።</translation>
@@ -437,6 +441,7 @@
 <translation id="4248098802131000011">የይለፍ ቃላትዎን ከውሂብ ጥሰቶች እና ሌሎች የደህንነት ችግሮች ይጠብቁ</translation>
 <translation id="4250229828105606438">ቅጽበታዊ ገጽ እይታ</translation>
 <translation id="4256782883801055595">የክፍት ምንጭ ፍቃዶች</translation>
+<translation id="4263656433980196874">የረዳት ድምፅ ፍለጋ ስምምነት ዩአይ በሙሉ ቁመት ተከፍቷል</translation>
 <translation id="4269820728363426813">የአገናኝ አድራሻ ቅዳ</translation>
 <translation id="4298388696830689168">የተገናኙ ጣቢያዎች</translation>
 <translation id="4303044213806199882">የchrome_ቅጽበታዊ ገጽ እይታ_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
@@ -623,6 +628,7 @@
 <translation id="5581519193887989363">በማንኛውም ጊዜ ምን እንደሚያሰምሩ በ<ph name="BEGIN_LINK1" />ቅንብሮች<ph name="END_LINK1" /> ውስጥ መምረጥ ይችላሉ።</translation>
 <translation id="5595485650161345191">አድራሻ አርትዕ</translation>
 <translation id="5599455543593328020">ማንነት የማያሳውቅ ሁነታ</translation>
+<translation id="5599941490345670218">የGoogle ረዳት እርምጃዎችን በመላው ድር ጣቢያዎች ለእርስዎ ሊያጠናቅቅ ይችላል</translation>
 <translation id="5620163320393916465">ምንም የተቀመጡ የይለፍ ቃላት የሉም</translation>
 <translation id="5620928963363755975">ከተጨማሪ አማራጮች አዝራር ሆነው የእርስዎን ፋይሎች እና ገጾች በውርዶች ውስጥ ያግኙ</translation>
 <translation id="5626134646977739690">ስም፦</translation>
@@ -1148,6 +1154,7 @@
 <translation id="9155898266292537608">እንዲሁም አንድ ቃል ላይ በፍጥነት መታ በማድረግ ፍለጋ ማድረግ ይችላሉ</translation>
 <translation id="9169507124922466868">የዳሰሳ ታሪክ በግማሽ ተከፍቷል</translation>
 <translation id="9191031968346938109">አክል ወደ…</translation>
+<translation id="919615279147764192">ተግባራትን እንዲያጠናቅቁ ለማገዝ፣ Google ረዳትን የሚጠቀሙባቸው የጣቢያዎች ዩአርኤሎች እና ይዘቶችን፣ እንዲሁም በረዳት በኩል የሚያስገቡት መረጃን ይቀበላል። ይህ መረጃ በGoogle መለያዎ ላይ ሊከማች ይችላል። ረዳትን በChrome ቅንብሮች ላይ ማጥፋት ይችላሉ።</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{ከ1 ደቂቃ በፊት ተፈትሿል}one{ከ# ደቂቃዎች በፊት ተፈትሿል}other{ከ# ደቂቃዎች በፊት ተፈትሿል}}</translation>
 <translation id="9204836675896933765">1 ፋይል ቀርቷል</translation>
 <translation id="9206873250291191720">አ</translation>

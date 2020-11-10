@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="si">
 <translation id="1000498691615767391">විවෘත කිරීමට ෆෝල්ඩරයක් තෝරන්න</translation>
-<translation id="1023220960495960452">අක්ෂර පරිවර්තනය (vanakkam → வணக்கம்)</translation>
 <translation id="1035094536595558507">පැති දර්ශනය</translation>
 <translation id="1047956942837015229"><ph name="COUNT" /> අයිතම මකාදමමින්...</translation>
 <translation id="1049926623896334335">Word ලේඛනය</translation>
@@ -19,6 +18,7 @@
 <translation id="115443833402798225">හැන්ගුල් ආමතේ</translation>
 <translation id="1155759005174418845">කැටලන්</translation>
 <translation id="1169885125071442573">ගුජරාටි අක්ෂර පරිවර්තනය</translation>
+<translation id="1170149495446063094">ජාත්‍යන්තර යතුරුපුවරුව සමග ඉංග්‍රීසි (එ.ජ.)</translation>
 <translation id="1172970565351728681"><ph name="REMAINING_TIME" /> පමණ ඉතිරියි</translation>
 <translation id="1173894706177603556">ප්‍රතිනම්</translation>
 <translation id="117624967391683467">පිටපත් කරන <ph name="FILE_NAME" />...</translation>
@@ -27,6 +27,7 @@
 <translation id="1201402288615127009">ඊළඟ</translation>
 <translation id="1243314992276662751">උඩුගත</translation>
 <translation id="1249250836236328755">ප්‍රහේදය</translation>
+<translation id="1251468808511160368">ක්‍රමලේඛන Dvorak යතුරු පුවරුව සමග ඉංග්‍රීසි (එ.ජ.)</translation>
 <translation id="1276362640455948667">එ.ජ. ජාත්‍යන්තර යතුරු පුවරුව සමග පෘතුගීසි</translation>
 <translation id="1293556467332435079">ගොනු</translation>
 <translation id="1297922636971898492">Google Drive මේ මොහොතේ ලබා ගත නොහැක. Google Drive නැවත ලැබුණු පසුව පැටවීම ස්වයංක්‍රීයව ආරම්භ වනු ඇත.</translation>
@@ -35,17 +36,14 @@
 <translation id="1345094301418504404">ප්‍රංශ (කැනඩාව)</translation>
 <translation id="1346748346194534595">දක්ෂිණාවර්ත</translation>
 <translation id="1351692861129622852">ගොනු <ph name="FILE_COUNT" /> ක් ආයාත කරමින්...</translation>
-<translation id="1352103415082130575">තායි යතුරු පුවරුව (පට්ටාචෝටේ)</translation>
 <translation id="1358735829858566124">ගොනුව හෝ නාමාවලිය භාවිතා කළ නොහැක.</translation>
 <translation id="1363028406613469049">ඛණ්ඩය</translation>
 <translation id="1378727793141957596">Google ධාවකයට සාදරයෙන් පිලිගැනීම !</translation>
 <translation id="1383876407941801731">සොයන්න</translation>
 <translation id="1395262318152388157">ස්ලයිඩය ලබාගන්න</translation>
-<translation id="1399648040768741453">තෙලිඟු යතුරු පුවරුව (ශබ්දිම)</translation>
 <translation id="1430915738399379752">මුද්‍රණය කරන්න</translation>
 <translation id="1435838927755162558">Parallels Desktop සමඟ ෆෝල්ඩරය බෙදා ගන්න</translation>
 <translation id="1439494416798956626"><ph name="FOLDER_NAME" /> වෙත ගෙනයන ලදි.</translation>
-<translation id="1441841714100794440">වියට්නාම යතුරු පුවරුව (ටෙලෙක්ස්)</translation>
 <translation id="1464724975715666883">දෝෂය 1.</translation>
 <translation id="1467432559032391204">වම</translation>
 <translation id="1472351751615457820">ග්‍රීක අක්ෂර පරිවර්තනය</translation>
@@ -61,7 +59,6 @@
 <translation id="1620510694547887537">කැමරාව</translation>
 <translation id="1622022025445651011">ප්‍රංශ (ප්‍රංශය)</translation>
 <translation id="1646019627374511909">ගොනු <ph name="NUMBER_OF_ITEMS" />ක් නොබැඳිව ලබා ගත හැකි බවට පත් කරමින්</translation>
-<translation id="164729547906544836">දෙමළ යතුරු පුවරුව (itrans)</translation>
 <translation id="164969095109328410">Chrome උපාංගය</translation>
 <translation id="1665611772925418501">ගොනුව වෙනස් කළ නොහැකි විය.</translation>
 <translation id="1673103856845176271">ආරක්ෂිත හේතූන් මත මෙම ගොනුවට පිවිසිය නොහැක.</translation>
@@ -79,11 +76,9 @@
 <translation id="183183971458492120">තොරතුරු පූරණ කරමින්...</translation>
 <translation id="1838709767668011582">Google අඩවිය</translation>
 <translation id="1844692022597038441">මෙම ගොනුව ඕෆ්ලයින් ලෙස ලද නොහැකිය.</translation>
-<translation id="184633654410729720">තායි යතුරු පුවරුව (කෙඩ්මානී)</translation>
 <translation id="1847880352285315359">සුරැකිණි</translation>
 <translation id="1853795129690976061">මෙම ෆෝල්ඩරය Linux සමග බෙදා ගෙන ඇත</translation>
 <translation id="1864756863218646478">ගොනුව සොයාගත නොහැකි විය.</translation>
-<translation id="1921986354447415460">තුර්කි-F යතුරු පුවරුව</translation>
 <translation id="1924372192547904021"><ph name="DRIVE_NAME" /> හැඩතල ගැන්වීය</translation>
 <translation id="1931134289871235022">ස්ලෝවැක්</translation>
 <translation id="1933345018156373194">ගෙන යාම අසාර්ථක විට, අනපේක්‍ෂිත දෝෂයයි: <ph name="ERROR_MESSAGE" /></translation>
@@ -91,7 +86,6 @@
 <translation id="1942765061641586207">රූප විභේදනය</translation>
 <translation id="1943097386230153518">නව සේවාව ස්ථාපනය කරන්න</translation>
 <translation id="1972984168337863910">ගොනු ප්‍රතිපෝෂණ පැනල් දිග හරින්න</translation>
-<translation id="1984603991036629094">ආර්මේනියානු ශබ්දිම යතුරු පුවරුව</translation>
 <translation id="1995337122023280937">ගොනු ස්ථානයට යන්න</translation>
 <translation id="2001796770603320721">Drive හි කළමනාකරණය කරන්න</translation>
 <translation id="2009067268969781306">ධාවකයක් ආකෘති කිරීම එහි ගබඩා කර ඇති සියලුම දත්ත මකා දමයි. මෙම ක්‍රියාව අස් කළ නොහැක.</translation>
@@ -101,13 +95,10 @@
 <translation id="2066433303065022982">හීබෘෘ දින අක්ෂර පරිවර්තනය</translation>
 <translation id="2070909990982335904">තිතකින් ආරම්භ වන නම් පද්ධතිය සඳහා වෙන් කෙරිණි. කරුණාකර වෙනත් නමක් තෝරන්න.</translation>
 <translation id="2079545284768500474">පසුගමනය</translation>
-<translation id="2080010875307505892">සර්බියානු යතුරු පුවරුව</translation>
 <translation id="2084108471225856927">උපාංග සැකසීම්</translation>
 <translation id="2085470240340828803"><ph name="FILENAME" /> නමැති ගොනුවක් දැනටමත් පවතී. ඔබට එය යළි පිහිටුවීමට අවශ්‍යද?</translation>
 <translation id="2121825465123208577">ප්‍රතිප්‍රමාණ කිරීම</translation>
 <translation id="2163152940313951844">අවලංගු අනුලකුණ: <ph name="CHARACTER_NAME" /></translation>
-<translation id="2164862903024139959">වියට්නාම යතුරු පුවරුව (TCVN)</translation>
-<translation id="2168214441502403371">පර්සියානු යතුරු පුවරුව</translation>
 <translation id="2198315389084035571">සරල කළ චීන</translation>
 <translation id="2208158072373999562">Zip සංරක්ෂකය</translation>
 <translation id="2225536596944493418">ඔබට අයිතම <ph name="NUMBER_OF_ITEMS" /> මැකීමට අවශ්‍ය බව ඔබට තහවුරුද?</translation>
@@ -124,7 +115,6 @@
 <translation id="2377319039870049694">ලැයිස්තු දසුනට මාරු වන්න</translation>
 <translation id="2377590462528165447">ෆෝල්ඩර <ph name="NUMBER_OF_ITEMS" />ක් ලිනක්ස් සමඟ බෙදා ගත්තා</translation>
 <translation id="2378075407703503998">ගොනු <ph name="SELCTED_FILE_COUNT" /> තෝරා ඇත</translation>
-<translation id="2384596874640104496">සිංහල යතුරු පුවරුව</translation>
 <translation id="240770291734945588"><ph name="SPACE_AVAILABLE" /> තිබේ</translation>
 <translation id="2425665904502185219">මුළු ගොනු විශාලත්වය</translation>
 <translation id="2428749644083375155">අයිතම <ph name="NUMBER_OF_ITEMS" /> ක් <ph name="FOLDER_NAME" /> වෙත පිටපත් කිරීම</translation>
@@ -134,7 +124,6 @@
 <translation id="2464079411014186876">අයිස් ක්‍රීම්</translation>
 <translation id="2468402215065996499">ටමගොචි</translation>
 <translation id="2515586267016047495">Alt</translation>
-<translation id="2529133382850673012">US යතුරු පුවරුව</translation>
 <translation id="2534155362429831547">අයිතම <ph name="NUMBER_OF_ITEMS" />ක් මකන ලදි</translation>
 <translation id="2541377937973966830">මෙම ෆෝල්ඩරයේ අන්තර්ගත කියවීමට පමණී. සමහර ක්‍රියාකාරකම් සහාය නොදක්වයි.</translation>
 <translation id="2542049655219295786">Google වගුව</translation>
@@ -152,15 +141,13 @@
 <translation id="2672394958563893062">දෝෂයක් සිදු විය. ආරම්භයේ සිට නැවත ආරම්භ කිරීමට ක්ලික් කරන්න.</translation>
 <translation id="2676946222714718093">වාදනය වෙමින්</translation>
 <translation id="2735623501230989521">Parallels Desktop හට <ph name="FOLDER_NAME" /> ෆෝල්ඩරය තුළ ඇති ගොනු වෙත ප්‍රවේශ වීමට අවසර දෙන්න</translation>
-<translation id="2735698359135166290">රුමේනියානු සම්මත යතුරු පුවරුව</translation>
 <translation id="2771816809568414714">චීස්</translation>
 <translation id="2781645665747935084">බෙල්ජියම</translation>
 <translation id="2782104745158847185">Linux යෙදුම් ස්ථාපනය කිරීමේ දෝෂයකි</translation>
 <translation id="2787047795752739979">මුල් එක මතින් ලියන්න</translation>
-<translation id="2790805296069989825">රුසියානු යතුරු පුවරුව</translation>
+<translation id="2822854841007275488">අරාබි</translation>
 <translation id="2843806747483486897">පෙරනිමිය වෙනස් කරන්න...</translation>
 <translation id="2850124913210091882">උපස්ථය</translation>
-<translation id="2870836398458454343">අක්ෂර පරිවර්තනය (marhaban ← مرحبا)</translation>
 <translation id="288024221176729610">චෙකොස්ලෝවැකියානු</translation>
 <translation id="2887525882758501333">PDF ලේඛනය</translation>
 <translation id="2888807692577297075">&lt;b&gt;"<ph name="SEARCH_STRING" />"&lt;/b&gt; වෙත කිසිඳු අයිතමයක් නොගැලපේ</translation>
@@ -175,25 +162,22 @@
 <translation id="2943503720238418293">කෙටි නමක් භාවිතා කරන්න</translation>
 <translation id="2949781154072577687"><ph name="DRIVE_NAME" /> හැඩතල ගන්වමින්...</translation>
 <translation id="2951236788251446349">ජෙලිෆිෂ්</translation>
-<translation id="2963783323012015985">තුර්කි යතුරු පුවරුව</translation>
-<translation id="2966459079597787514">ස්වීඩන යතුරු පුවරුව</translation>
 <translation id="2984337792991268709">අද <ph name="TODAY_DAYTIME" /></translation>
 <translation id="2994669386200004489"><ph name="FILE_NAME" /> උපස්ථ කළ නොහැකි විය</translation>
 <translation id="3003633581067744647">සිඟිති රූ දසුනට මාරු වන්න</translation>
 <translation id="3007214526293698309">අනුපාතය සකසන්න</translation>
 <translation id="303198083543495566">භූගෝල විද්‍යාව</translation>
 <translation id="3057861065630527966">ඔබගේ ඡායාරූප හා වීඩියෝ උපස්ථ කරන්න</translation>
-<translation id="3064388234319122767">අක්ෂර පරිවර්තනය (zdravo → здраво)</translation>
 <translation id="3067790092342515856">Windows ගොනු</translation>
 <translation id="3078461028045006476"><ph name="EXTENSION_NAME" /> සමඟ බෙදාගන්න</translation>
 <translation id="3083975830683400843">Chromebits</translation>
-<translation id="3116361045094675131">එරා යතුරු පුවරුව</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3144126448740580210">හරි</translation>
-<translation id="3157729859914172001">එ.ජ. ජාත්‍යන්තර (PC) යතුරු පුවරුව</translation>
+<translation id="3182237543071236785">ඉංග්‍රීසි (එ.රා.)</translation>
 <translation id="3188257591659621405">මගේ ගොනු</translation>
 <translation id="3197563288998582412">එ.රා. ඩ්වොරක්</translation>
 <translation id="3202131003361292969">පෙත</translation>
+<translation id="3204169104280704562">Workman යතුරු පුවරුව සමග ඉංග්‍රීසි (එ.ජ.)</translation>
 <translation id="3224239078034945833">කැනේඩියානු බහු භාෂා</translation>
 <translation id="3236289833370040187">හිමිකාරත්වය <ph name="DESTINATION_DOMAIN" /> වෙත පවරනු ලැබේ.</translation>
 <translation id="3241720467332021590">Irish</translation>
@@ -208,7 +192,6 @@
 <translation id="3296763833017966289">ජොර්ජියානු</translation>
 <translation id="3326821416087822643"><ph name="FILE_NAME" /> හකුළමින්...</translation>
 <translation id="3335337277364016868">පටිගත කළ වසර</translation>
-<translation id="3338239663705455570">ස්ලෝවේනියානු යතුරු පුවරුව</translation>
 <translation id="3353984535370177728">අපගත කිරීමට ෆෝල්ඩරය තෝරන්න</translation>
 <translation id="3356580349448036450">සම්පූර්ණ</translation>
 <translation id="3414856743105198592">ඉවත් කළ හැකි මාධ්‍යය හැඩතල ගැන්වීම සියලු දත්ත මැකීමට සුදානම් වේ. ඔබ දිගටම කරගෙන යාමට කැමතිද?</translation>
@@ -250,10 +233,8 @@
 <translation id="3809272675881623365">හාවා</translation>
 <translation id="3810973564298564668">කළමනාකරණය</translation>
 <translation id="3811494700605067549">1 ගොනුවක් තෝරන ලදී</translation>
-<translation id="3815016854028376614">ෂූයින් ආදාන ක්‍රමය</translation>
 <translation id="38275787300541712">නිම කළ විට ඇතුළු කරන්න ඔබන්න</translation>
 <translation id="3830674330436234648">පසුධාවනය ලබා ගත නොහැකිය.</translation>
-<translation id="3833761542219863804">අක්ෂර පරිවර්තනය (mausam → ਮੌਸਮ)</translation>
 <translation id="383652340667548381">සයිබීරියානු</translation>
 <translation id="385051799172605136">ආපසු</translation>
 <translation id="3855472144336161447">ජර්මානු නියෝ 2</translation>
@@ -265,20 +246,16 @@
 <translation id="3958548648197196644">කිවි</translation>
 <translation id="3966388904776714213">ශ්‍රව්‍ය වාදකය</translation>
 <translation id="4002066346123236978">සිරස්තලය</translation>
-<translation id="4070370845051020638">කැන්ටොනීස් ආදාන ක්‍රමය</translation>
-<translation id="4072248638558688893">දෙමළ යතුරු පුවරුව (ශබ්දිම)</translation>
 <translation id="4097397818890482665">කන්නඩ අක්ෂර පරිවර්තනය</translation>
 <translation id="4124935795427217608">කඟවේනා</translation>
 <translation id="4158739975813877944">ධාවන ලැයිස්තුව විවෘත කරන්න</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> ගෙන යන ලදී.</translation>
-<translation id="418179967336296930">රුසියානු ශබ්දානුකූල (YaZHert) යතුරුපුවරුව</translation>
 <translation id="4193154014135846272">Google ලේඛනය</translation>
 <translation id="4195249722193633765">Linux (Beta) සමගින් යෙදුම ස්ථාපනය කරන්න</translation>
 <translation id="4197674956721858839">Zip තේරීම</translation>
 <translation id="421017592316736757">මෙම ගොනුව වෙත පිවිසීමට ඔබ මාර්ගගතව සිටිය යුතුය.</translation>
 <translation id="4212740939091998969">"<ph name="FOLDER_NAME" />" නමැති ෆෝල්ඩරය දැනටමත් පවතියි. වෙනත් නමක් තෝරන්න.</translation>
 <translation id="4215448920900139318"><ph name="FILE_COUNT" /> උපස්ථ කරමින්</translation>
-<translation id="426015154560005552">අරාබි යතුරු පුවරුව</translation>
 <translation id="4261901459838235729">Google සමර්පණය</translation>
 <translation id="4290535918735525311">ලිනක්ස් සමඟ 1 ෆෝල්ඩරයක් බෙදා ගත්තා</translation>
 <translation id="4299729908419173967">බ්‍රසීලියානු</translation>
@@ -290,10 +267,8 @@
 <translation id="4372884569765913867">1x1</translation>
 <translation id="4394214039309501350">බාහිර සබැඳිය</translation>
 <translation id="4425149324548788773">මගේ Drive</translation>
-<translation id="4465830120256509958">බ්‍රසිලියානු යතුරු පුවරුව</translation>
 <translation id="4470564870223067757">හැන්ගුල් කට්ටල 2</translation>
 <translation id="4477219268485577442">බල්ගේරියානු ශබ්දානුකූල</translation>
-<translation id="4479812471636796472">එජ-ඩ්වොරක් යතුරු පුවරුව</translation>
 <translation id="4522570452068850558">විස්තර</translation>
 <translation id="4527800702232535228">Parallels Desktop සමග මෙම ෆෝල්ඩරය බෙදා ගෙන ඇත</translation>
 <translation id="4532112105534982530">Bépo යතුරු පුවරුව සමගින් ප්‍රංශ (ප්‍රංශය)</translation>
@@ -343,11 +318,11 @@
 <translation id="4880214202172289027">හඬ සර්පණය</translation>
 <translation id="4880520557730313061">ස්වයං-සැකසුම්</translation>
 <translation id="4881695831933465202">විවෘත කරන්න</translation>
-<translation id="4886021172213954916">දෙමළ යතුරු පුවරුව (යතුරු ලියනය)</translation>
 <translation id="4900532980794411603">Parallels Desktop සමග බෙදා ගන්න</translation>
 <translation id="4905417359854579806"><ph name="FILE_COUNT" /> උපස්ථ කිරීමට සූදානම්</translation>
 <translation id="4924638091161556692">සවි කරන ලදි</translation>
 <translation id="4935975195727477204">ගැන්සානියා මල</translation>
+<translation id="4942961016321891903">මලයාලම් ශබ්දිම</translation>
 <translation id="4943368462779413526">පාපන්දු</translation>
 <translation id="4961158930123534723">Parallels Desktop සමග එක ෆෝල්ඩරයක් බෙදා ගන්නා ලදි</translation>
 <translation id="4969785127455456148">ඇල්බමය</translation>
@@ -386,7 +361,6 @@
 <translation id="5194713942430106590">තීරුව නැඟෙන පිළිවෙළට සැකසීමට ක්ලික් කරන්න.</translation>
 <translation id="5218183485292899140">ස්විස් ප්‍රංශ</translation>
 <translation id="5234764350956374838">ඉවත් කරන්න</translation>
-<translation id="5241298539944515331">වියට්නාම යතුරු පුවරුව (VIQR)</translation>
 <translation id="5253070652067921974">සාදන ලද්දේ</translation>
 <translation id="5257456363153333584">Dragonfly</translation>
 <translation id="5262311848634918433"><ph name="MARKUP_1" />නොබැඳි විට පවා, සෑම තැනකින්ම ගොනුවලට ප්‍රවේශ වන්න.<ph name="MARKUP_2" />
@@ -408,12 +382,11 @@
 <translation id="5358764674931277">රාමු අනුපාතය</translation>
 <translation id="5368191757080475556">ලිනක්ස් සමඟ ෆෝල්ඩරය බෙදා ගන්න</translation>
 <translation id="5402367795255837559">බ්‍රේල්</translation>
-<translation id="5412637665001827670">බල්ගේරියානු යතුරු පුවරුව</translation>
 <translation id="5418923334382419584">මියන්මාර යතුරු පුවරුව</translation>
 <translation id="5428105026674456456">ස්පාඤ්ඤ</translation>
 <translation id="5438282218546237410"><ph name="SEARCH_TERM" /> සඳහා ප්‍රතිඵල නැත.</translation>
 <translation id="5449551289610225147">වලංගු නොවන මුරපදය</translation>
-<translation id="5464696796438641524">පෝලන්ත යතුරු පුවරුව</translation>
+<translation id="5468013476539915283">ඉංග්‍රීසි (එ.ජ.)</translation>
 <translation id="5469868506864199649">ඉතාලි</translation>
 <translation id="5484429245813572665">ඉන්දුනීසියානු</translation>
 <translation id="5494920125229734069">සියල්ල තෝරන්න</translation>
@@ -423,8 +396,10 @@
 <translation id="5524517123096967210">ගොනුව කියවිය නොහැක.</translation>
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" /> රූපය</translation>
 <translation id="5534520101572674276">විශාලත්වය ගණනය කෙරෙමින්</translation>
+<translation id="5551831234974556292">මොල්ටීස්</translation>
 <translation id="5583640892426849032">ආපසුයවනය</translation>
 <translation id="5605830556594064952">US Dvorak</translation>
+<translation id="5623849870004487514">ශබ්දිම යතුරුපුවරුව සහිත නේපාල</translation>
 <translation id="5649768706273821470">සවන් දෙන්න</translation>
 <translation id="5678784840044122290">Linux යෙදුම ඔබගේ පර්යන්තයෙහි ලබා ගත හැකි අතර, ඔබගේ දියත්කරණයේ ද නිරූපකයක් පෙන්වනු ඇත.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />සංරක්ෂිතයක් හෝ අතථ්‍ය තැටියක් වෙතින් විසන්ධි කළ නොහැකිය<ph name="END_BOLD" />
@@ -434,6 +409,7 @@
 <translation id="5700087501958648444">ශ්‍රව්‍ය තතු</translation>
 <translation id="570049376144986742">ප්‍රංශ (ස්විට්සර්ලන්තය)</translation>
 <translation id="5731409020711461763">අලුත් ඡායාරූප 1ක්</translation>
+<translation id="573799789564358869">Colemak යතුරුපුවරුව සමග ඉංග්‍රීසි (එ.ජ.)</translation>
 <translation id="5752453871435543420">Chrome OS Cloud උපස්ථය</translation>
 <translation id="5756666464756035725">හංගේරියානු Qwerty</translation>
 <translation id="5776325638577448643">මකන්න සහ ආකෘති කරන්න</translation>
@@ -453,10 +429,10 @@
 <translation id="5912396950572065471">ආකෘතිය</translation>
 <translation id="5913638992615760742">පිටපත් කිරීමේ ක්‍රියාව අසාර්ථක විය, අනපේක්‍ෂිත දෝෂයයි: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="5932901536148835538">Chromebit</translation>
+<translation id="5952382594224963380">මරාති</translation>
 <translation id="5955954492236143329">අයිතම <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="5957366693331451795">Chromeboxes</translation>
 <translation id="5982621672636444458">අනුපිළිවෙලට සකසන්න විකල්ප</translation>
-<translation id="6005282720244019462">ලතින් ඇමෙරිකානු යතුරු පුවරුව</translation>
 <translation id="6007237601604674381">චලනය අසාර්ථකයි. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6012987430370760224">මරාති යතුරු පුවරුව (ශබ්දිම)</translation>
 <translation id="6019169947004469866">කප්පාදු කරන්න</translation>
@@ -480,26 +456,26 @@
 <translation id="6224253798271602650"><ph name="DRIVE_NAME" /> ආකෘති කරන්න</translation>
 <translation id="6227235786875481728">මෙම ගොනුව වාදනය කළ නොහැකි විය.</translation>
 <translation id="6248400709929739064">උපසිරැසි සබල කරන්න</translation>
-<translation id="6264347891387618177">අක්ෂර පරිවර්තනය (selam → ሰላም)</translation>
 <translation id="6287852322318138013">මෙම ගොනුව විවෘත කිරීමට යෙදුමක් තෝරන්න</translation>
-<translation id="6339034549827494595">රුසියානු ශබ්දානුකූල (AATSEEL) යතුරුපුවරුව</translation>
 <translation id="6339145975392024142">එක්සත් ජනපද ජාත්‍යන්තර (PC)</translation>
 <translation id="6346310558342052870">පිවිසීම සීමා කර ඇත</translation>
 <translation id="6356685157277930264">ගොනු ප්‍රතිපෝෂණ කවුළුව</translation>
 <translation id="6358884629796491903">මකරා</translation>
 <translation id="637062427944097960">මෙම ගොනුව වෙනත් වැඩබිමක විවෘත විය. එය දර්ශනයට <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) වෙත ගෙනයන්න.</translation>
+<translation id="6374309724856959519">පුළුල් කරන ලද යතුරුපුවරුව සමග ඉංග්‍රීසි (එ.ජ)</translation>
 <translation id="6394388407447716302">කියවීමට-පමණි</translation>
 <translation id="6395575651121294044">අයිතම <ph name="NUMBER_OF_FILES" /></translation>
 <translation id="6398765197997659313">සම්පුර්ණ තිරයෙන් ඉවත් වන්න</translation>
 <translation id="6412376911804527326">ලාඕ</translation>
 <translation id="642282551015776456">මෙම නම ගොනුවක් හෝ ෆෝල්ඩර නමක් ලෙස භාවිතා නොවනු ඇත</translation>
+<translation id="647955688546403164">Dvorak යතුරුපුවරුව සමග ඉංග්‍රීසි (එ.රා.)</translation>
 <translation id="6485131920355264772">ඉඩ තතු යළි ලබා ගැනීමට අසමත් විය</translation>
-<translation id="6505918941256367791">දෙමළ යතුරු පුවරුව (InScript)</translation>
 <translation id="6509122719576673235">Norwegian</translation>
 <translation id="6527303717912515753">බෙදාගන්න</translation>
 <translation id="653019979737152879"><ph name="FILE_NAME" /> සමමු වෙමින්...</translation>
 <translation id="6549689063733911810">මෑත</translation>
 <translation id="6556866813142980365">නැවත කරන්න</translation>
+<translation id="6556932543564608391">Dvorak යතුරු පුවරුව සමග ඉංග්‍රීසි (එ.ජ.)</translation>
 <translation id="6558280019477628686">දෝෂයක් සිදු විය. සමහර අයිතම මැකී නොතිබීමට ඉඩ ඇත.</translation>
 <translation id="656398493051028875">"<ph name="FILENAME" />" මැකෙමින්...</translation>
 <translation id="6581162200855843583">Google Drive ලින්ක් එක</translation>
@@ -514,7 +490,7 @@
 <translation id="6710213216561001401">පෙර</translation>
 <translation id="6718273304615422081">zip කරමින්...</translation>
 <translation id="6751256176799620176">ෆෝල්ඩර 1ක් තෝරන ලදී</translation>
-<translation id="6760765581316020278">වියට්නාම යතුරු පුවරුව (VNI)</translation>
+<translation id="6767296108234383966">මලයාලම් අක්ෂර පරිවර්තනය</translation>
 <translation id="6790428901817661496">වාදනය කරන්න</translation>
 <translation id="6795884519221689054">පැන්ඩා</translation>
 <translation id="6806699711453372963">ලිනක්ස් බෙදාගැනීම කළමනා කරන්න</translation>
@@ -525,7 +501,6 @@
 <translation id="6827236167376090743">එළදෙනුන් නිවසට එන තෙක් මෙම වීඩියෝව වාදනය වනු ඇත.</translation>
 <translation id="6847101934483209767">තේරීමෙන් <ph name="ENTRY_NAME" /> ඉවත් කළා.</translation>
 <translation id="6862635236584086457">මෙම ෆෝල්ඩරයේ සියළු ගොනු ස්වයංක්‍රියව මාර්ගගතව උපස්ථ වේ</translation>
-<translation id="6870130893560916279">යුක්රේනියානු යතුරු පුවරුව</translation>
 <translation id="6876155724392614295">පාපැදිය</translation>
 <translation id="6878261347041253038">දේවනාගරි යතුරු පුවරුව (ශබ්දිම)</translation>
 <translation id="6885780034956018177">ගොළුබෙල්ලා</translation>
@@ -539,7 +514,6 @@
     <ph name="LINE_BREAK1" />
     <ph name="FILE_COUNT" /> හමු විය</translation>
 <translation id="6935521024859866267">යටිකුරු</translation>
-<translation id="6939777852457331078">US Workman යතුරු පුවරුව</translation>
 <translation id="696203921837389374">ජංගම දත්ත ඔස්සේ සමමුහුර්ත කිරීම සබල කරන්න</translation>
 <translation id="6965382102122355670">හරි</translation>
 <translation id="6970230597523682626">බල්ගේරියානු</translation>
@@ -551,6 +525,7 @@
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> <ph name="ROOT_SUMMARY" /></translation>
 <translation id="7014174261166285193">ස්ථාපනය අසමත් විය.</translation>
 <translation id="7040138676081995583">සමඟ විවෘත...</translation>
+<translation id="7096940708283911567">ඔඩියා</translation>
 <translation id="7100897339030255923"><ph name="COUNT" /> අයිතම තෝරා ඇත</translation>
 <translation id="7106346894903675391">තවත් ගබඩා මිල දී ගන්න...</translation>
 <translation id="7126604456862387217">'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' - &lt;em&gt;ධාවකයේ සොයන්න&lt;/em&gt;</translation>
@@ -558,29 +533,23 @@
 <translation id="7170467426996704624">අක්ෂර පරිවර්තනය (salam → ሰላም)</translation>
 <translation id="7180611975245234373">නැවුම් කරන්න</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
-<translation id="719009910964971313">එ.ජ. වැඩසටහන් සම්පාදක ඩිවොරැක් යතුරු පුවරුව</translation>
 <translation id="7191454237977785534">ගොනුව මෙලෙස සුරකින්න</translation>
-<translation id="7222624196722476520">බල්ගේරියානු ශබ්දිම යතුරු පුවරුව</translation>
 <translation id="7238097264433196391">Drive නම</translation>
 <translation id="7248671827512403053">ඉල්ලුම් පත්‍රය</translation>
 <translation id="7268659760406822741">ලබා ගත හැකි සේවා</translation>
 <translation id="7283041136720745563">ඔබේ Google Drive පංගුව ප්‍රමාණවත් තරම් විශාල නොවේ.</translation>
 <translation id="7295662345261934369">අන් අය සමඟ බෙදා ගන්න</translation>
 <translation id="7339898014177206373">නව කවුළුව</translation>
-<translation id="7348749398828259943">US Workman අන්තර්ජාතික යතුරු පුවරුව</translation>
 <translation id="7359359531237882347">අයිතම <ph name="NUMBER_OF_ITEMS" />ක් පිටපත් කෙරේ...</translation>
 <translation id="7375951387215729722">ගොනුව <ph name="COLUMN_NAME" /> ට අනුව අඩු වෙන පිළිවෙළට සකසනු ලැබේ.</translation>
-<translation id="7389722738210761877">තායි යතුරු පුවරුව (TIS 820-2531)</translation>
 <translation id="7396038720194014279">හින්දි යතුරු පුවරුව (ශබ්දිම)</translation>
 <translation id="7417453074306512035">ඉතියෝපික් යතුරු පුවරුව</translation>
 <translation id="7417705661718309329">Google සිතියම්</translation>
-<translation id="7419631653042041064">කැටලන් යතුරු පුවරුව</translation>
-<translation id="7434823369735508263">එරා-ඩ්වොරක් යතුරු පුවරුව</translation>
 <translation id="7460898608667578234">යුක්රේන</translation>
-<translation id="7474889694310679759">කනේඩියානු ඉංග්‍රීසි යතුරු පුවරුව</translation>
 <translation id="7489215562877293245"><ph name="FILE_COUNT" /> හමු විය
     <ph name="LINE_BREAK1" />
     <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /> වෙත උපස්ථ කිරීමට සූදානම්</translation>
+<translation id="7498032756958781551">ස්ක්‍රිප්ටය තුළ යතුරුපුවරුව සහිත නේපාල</translation>
 <translation id="7505167922889582512">සැඟවුණු ගොනු පෙන්වන්න</translation>
 <translation id="7508545000531937079">ස්ලයිඩ දර්ශන</translation>
 <translation id="751507702149411736">බෙලෝරුසියානු</translation>
@@ -590,6 +559,7 @@
 <translation id="7551643184018910560">රාක්කය වෙත අමුණන්න</translation>
 <translation id="7553492409867692754">Linux යෙදුම්වලට <ph name="FOLDER_NAME" /> ෆෝල්ඩරය තුළ ගොනු වෙත ප්‍රවේශ වීමට අවසරය දෙන්න</translation>
 <translation id="7576032389798113292">6x4</translation>
+<translation id="7585326627181105002">ජාත්‍යන්තර PC යතුරු පුවරුව සමග ඉංග්‍රීසි (එ.ජ.)</translation>
 <translation id="7589661784326793847">මොහොතක් රැඳී සිටින්න</translation>
 <translation id="7592775719802218421"><ph name="FILE_NAME" /> නොබැඳිව ලබා ගත හැකි බවට පත් කරමින්</translation>
 <translation id="7603724359189955920">ජාලක</translation>
@@ -602,7 +572,6 @@
 <translation id="7695430100978772476"><ph name="DRIVE_NAME" /> හැඩතල ගැන්විය නොහැකි විය</translation>
 <translation id="770015031906360009">ග්‍රීක</translation>
 <translation id="7705251383879779343"><ph name="FILE_NAME" /> පිටපත් කරන ලදි.</translation>
-<translation id="7706319470528945664">පෘතුගීසි යතුරු පුවරුව</translation>
 <translation id="7711920809702896782">රූප තතු</translation>
 <translation id="7724603315864178912">කැපීම</translation>
 <translation id="7730494089396812859">Cloud උපස්ථ තොරතුරු පෙන්වන්න</translation>
@@ -622,7 +591,6 @@
     ඔබේ Google Drive පංගුව ප්‍රමාණවත් තරම් විශාල නොවේ. අතිරේක <ph name="FILE_SIZE" /> අවශ්‍යයි.
     <ph name="LINE_BREAK2" />
     ඡායාරූප අඩුවෙන් තේරීමට උත්සාහ කරන්න.</translation>
-<translation id="7825423931463735974">දෙමළ යතුරු පුවරුව (Tamil99)</translation>
 <translation id="7827012282502221009">ටෙරාබයිට් <ph name="NUMBER_OF_TB" /></translation>
 <translation id="7839804798877833423">මෙම ගොනු සොයා ගැනීමෙන් ආසන්න වශයෙන් ජංගම දත්ත <ph name="FILE_SIZE" /> භාවිතා වේ.</translation>
 <translation id="7846076177841592234">තේරීම අවලංගු කරන්න</translation>
@@ -631,7 +599,6 @@
 <translation id="7873831373602885875"><ph name="FOLDER_NAME" /> වෙත සුරැකිය නොහැක. සංස්කරණ සියල්ල 'බාගැනීම්' ෆෝල්ඩරය තුළ <ph name="DOWNLOADS_FOLDER" /> වෙත සුරකිනු ලබයි.</translation>
 <translation id="7881969471599061635">උපසිරැසි අබල කරන්න</translation>
 <translation id="78946041517601018">බෙදාගත් ධාවක</translation>
-<translation id="7896906914454843592">US විස්තෘත යතුරු පුවරුව</translation>
 <translation id="7898607018410277265">ගුජරාටි යතුරු පුවරුව (නව ශබ්දිම)</translation>
 <translation id="7908793776359722643">කොටසක් හැඩ ගැන්වීම එහි ගබඩා කර ඇති සියලු දත්ත මකනු ඇත. මෙම ක්‍රියාව පසුගමනය කළ නොහැකිය.</translation>
 <translation id="7925686952655276919">සමමු සඳහා ජංගම දත්ත භාවිතා කරන්න</translation>
@@ -640,30 +607,25 @@
 <translation id="7953739707111622108">මෙම උපාංගයේ ගොනු පද්ධතිය හඳුනාගත නොහැකි බැවින් එය විවෘත කළ නොහැක.</translation>
 <translation id="7969525169268594403">ස්ලොවේනියානු</translation>
 <translation id="7982283708762922719">උස</translation>
-<translation id="7987485481246785146">සොරානි කුර්දි අරාබි-පදනම් යතුරු පුවරුව</translation>
 <translation id="8008366997883261463">ජැක් රසල් ටෙරියර්</translation>
 <translation id="8028993641010258682">ප්‍රමාණය</translation>
-<translation id="8031722894461705849">ස්ලෝවැක් යතුරු පුවරුව</translation>
 <translation id="803771048473350947">ගොනුව</translation>
 <translation id="8038111231936746805">(පෙරනිමි)</translation>
 <translation id="8042602468072383151"><ph name="AUDIO_TYPE" /> ශ්‍රව්‍ය</translation>
 <translation id="8045462269890919536">රොමේනියානු</translation>
 <translation id="8052887694493382350">මෙම ගොනුව Windows මෘදුකාංගය භාවිත කරන පරිගණයක් සඳහා සැලසුම් කර ඇත. මෙය Chrome OS ධාවන කරන ඔබේ උපාංගයට නොගැළපෙයි. <ph name="BEGIN_LINK_HELP" />තවත් දැන ගන්න<ph name="END_LINK_HELP" /></translation>
+<translation id="8061794649181228915">Workman ජාත්‍යන්තර යතුරු පුවරුව සමග ඉංග්‍රීසි (එ.ජ.)</translation>
 <translation id="8066773524873206594">සංස්කරණ සියල්ල <ph name="DOWNLOADS_FOLDER" /> වෙත සුරකිනු ලැබේ.</translation>
 <translation id="8079530767338315840">නැවත ධාවනය කරන්න</translation>
 <translation id="8106045200081704138">මා සමඟ හුවමාරු කළ</translation>
 <translation id="8116072619078571545">අයිස් වතුර</translation>
-<translation id="8117957376775388318">දා යී ආදාන ක්‍රමය</translation>
 <translation id="8130367958112291342">Qwerty යතුරු පුවරුව සමගින් චෙක්</translation>
 <translation id="8137331602592933310">"<ph name="FILENAME" />"ඔබ සමඟ බෙදාගෙන ඇත.එය ඔබට හිමි නොමැති බැවින් මකාදැමිය නොහැක.</translation>
-<translation id="8145409227593688472">වූබි ආදාන ක්‍රමය</translation>
-<translation id="8148264977957212129">පින්යින් ආදාන ක්‍රමය</translation>
 <translation id="8151638057146502721">වින්‍යාස කරන්න</translation>
 <translation id="8153607920959057464">මෙම ගොනුව දර්ශනය කළ නොහැකි විය.</translation>
 <translation id="8154842056504218462">සියලුම ඇතුළත් කිරීමේ තෝරන ලදි.</translation>
 <translation id="8157684860301034423">යෙදුම් තොරතුරු ලබා ගත නොහැකි විය.</translation>
 <translation id="8157939133946352716">7x5</translation>
-<translation id="8160015581537295331">ස්පාඤ්ඤ යතුරු පුවරුව</translation>
 <translation id="8179976553408161302">ඇතුළු කරන්න</translation>
 <translation id="8193175696669055101">උපාංග මාදිලිය</translation>
 <translation id="8208580316430297579">සිත්තම්</translation>
@@ -671,7 +633,6 @@
 <translation id="8249296373107784235">අහෝසි කරන්න</translation>
 <translation id="8261506727792406068">මකන්න</translation>
 <translation id="8269755669432358899">ගොනු ප්‍රතිපෝෂණ පැනල හකුළන්න</translation>
-<translation id="8279388322240498158">සොරානි කුර්දි ඉංග්‍රීසි-පදනම් යතුරු පුවරුව</translation>
 <translation id="8280151743281770066">ආර්මේනියානු ශබ්දානුකූල</translation>
 <translation id="8294431847097064396">මූලාශ්‍රය</translation>
 <translation id="8297012244086013755">හැන්ගුල් කට්ටල 3 (Shift නැති)</translation>
@@ -682,12 +643,9 @@
 <translation id="8336153091935557858">ඊයේ <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8336524887811696057">නේපාල අක්ෂර පරිවර්තනය</translation>
 <translation id="8342318071240498787">එකම නම ඇති ගොනුවක් හෝ නාමාවලියක් දැනටමත් පවතී.</translation>
+<translation id="8362125533493859258">ඉංග්‍රීසි (කැනඩාව)</translation>
 <translation id="8382450452152102026"><ph name="FOLDER_NAME" /> වෙත</translation>
-<translation id="8391950649760071442">අක්ෂර පරිවර්තනය (emandi → ఏమండీ)</translation>
 <translation id="8395901698320285466">මාන</translation>
-<translation id="8412586565681117057">ඉක්මන් ආදාන ක්‍රමය</translation>
-<translation id="8418113698656761985">රුමේනියානු යතුරු පුවරුව</translation>
-<translation id="8432745813735585631">එජ කෝල්මැක් යතුරු පුවරුව</translation>
 <translation id="8437209419043462667">එක්සත් ජනපද</translation>
 <translation id="8456681095658380701">වැරදි නමක්</translation>
 <translation id="8466234950814670489">Tar සංරක්ෂණය</translation>
@@ -708,17 +666,13 @@
 <translation id="8698464937041809063">Google ඇඳීම්</translation>
 <translation id="8714406895390098252">බයිසිකල්</translation>
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> තෝරන ලදි.</translation>
-<translation id="8722421161699219904">එජ අන්තර්ජාතික යතුරු පුවරුව</translation>
 <translation id="872537912056138402">ක්‍රොඒෂියානු</translation>
-<translation id="874420130893181774">සම්ප්‍රදායික පින්යින් ආදාන ක්‍රමය</translation>
 <translation id="8770002329960263418">එ.ජ. ජාත්‍යන්තර PC යතුරු පුවරුව සමඟ ලන්දේසි (නෙදර්ලන්තය)</translation>
 <translation id="8775404590947523323">ඔබේ සැකසුම් ස්වයංක්‍රීයව සුරැකිනි.<ph name="BREAKS" />මුල් පින්තූරයේ පිටපතක් තබා ගැනීම සඳඅ, "මූලික නැවත ලියන්න" සලකුණ ඉවත් කරන්න.</translation>
-<translation id="8803496343472038847">රුසියානු ශබ්දිම යතුරු පුවරුව</translation>
 <translation id="8808686172382650546">පූසා</translation>
 <translation id="8810671769985673465">සිප් කිරීම අසාර්ථකයි, අයිතමය පවතියි: "<ph name="FILE_NAME" />"</translation>
 <translation id="8834164572807951958">'<ph name="DESTINATION_NAME" />' හි සාමාජිකයන්ට මෙම අයිතමවල පිටපතක් වෙත ප්‍රවේශය ලැබෙනු ඇත.</translation>
 <translation id="8846896937446866962">Qwerty යතුරුපුවරුව සමගින් හංගේරියානු</translation>
-<translation id="885381502874625531">බෙලරුසියානු යතුරු පුවරුව</translation>
 <translation id="8860454412039442620">Excel පැතුරුම්පත</translation>
 <translation id="8900820606136623064">හංගේරියානු</translation>
 <translation id="8919081441417203123">ඩෙන්මාර්ක</translation>
@@ -742,9 +696,7 @@
 <translation id="9134524245363717059">මෙම ගොනුව නිර්මාණය කර ඇත්තේ Macintosh මෘදුකාංග භාවිත කරන පරිගණකයක් සඳහායි. මෙය ඔබේ Chrome OS ධාවනය වන උපාංගු සමඟ නොගැලපේ. කරුණාකර ගැලපෙන යෙදුමක් සඳහා Chrome Web Store පිරික්සන්න.</translation>
 <translation id="913758436357682283">මියන්මාර් මයන්සාන් යතුරු පුවරුව</translation>
 <translation id="9148058034647219655">ඉවත් වන්න</translation>
-<translation id="9153744823707037316">ඇරේ ආදාන ක්‍රමය</translation>
 <translation id="9154418932169119429">මෙම රූපය ඕෆ්ලයින් නැත.</translation>
-<translation id="9206487995878691001">කැන්ජි ආදාන ක්‍රමය</translation>
 <translation id="9213073329713032541">ස්ථාපනය සාර්ථකව ආරම්භ විය.</translation>
 <translation id="9219103736887031265">රූප</translation>
 <translation id="9219908252191632183">චන්ද්‍රයා</translation>

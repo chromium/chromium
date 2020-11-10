@@ -685,15 +685,6 @@ Bu politikayı devre dışı bırakırsanız web sayfasını URL yoluyla belirli
       Politika true (doğru) değerine ayarlanır veya ayarlanmadan bırakılırsa, kullanıcı sanal makine yönetici KSA'sını kullanabilir.
       Aksi takdirde tüm sanal makine yönetici KSA'ları devre dışı bırakılır veya saklanır.
       </translation>
-<translation id="2194470398825717446">Bu politika M61'de kullanımdan kaldırılmıştır, onun yerine lütfen EcryptfsMigrationStrategy'yi kullanın.
-
-      Ecryptfs koduyla gönderilen ve ext4 şifrelemesine geçmesi gereken bir cihazın nasıl davranması gerektiğini belirtir.
-
-      Bu politikayı "DisallowArc" değerine ayarlarsanız, cihazdaki tüm kullanıcılar için Android uygulamaları devre dışı bırakılır (ext4 şifrelemesine önceden sahip olanlar dahil) ve kullanıcılara, ecryptfs'den ext4 şifrelemesine geçiş yapmaları teklif edilmez.
-
-      Bu politikayı "AllowMigration" değerine ayarlarsanız, ecryptfs ana dizinlerine sahip kullanıcılara gerektiğinde (şimdilik cihazda Android N kullanılabilir hale geldiğinde) bunların ext4 şifrelemesine taşınması teklif edilir).
-
-      Bu politika kiosk uygulamaları için geçerli değildir; bunlar otomatik olarak taşınır. Bu politika ayarlanmadan bırakılırsa, cihaz "DisallowArc" değeri seçilmiş gibi davranır.</translation>
 <translation id="2195032660890227692">Bu politika <ph name="PRODUCT_NAME" /> 68 sürümünde kaldırılmış ve yerine <ph name="ARC_BR_POLICY_NAME" /> kullanılmaya başlanmıştır.</translation>
 <translation id="2197625019569762163">Bu politika true (doğru) değerine ayarlanırsa giriş ekranında şifre girilirken varsayılan olarak sayısal klavye görüntülenir. Kullanıcılar isterlerse normal klavyeye geçebilirler.
 
@@ -1982,19 +1973,6 @@ Bu politika False (Yanlış) değerine ayarlanırsa <ph name="PRODUCT_NAME" /> y
 
       <ph name="CLOUD_PRINT_NAME" /> hedeflerini bulunabilir tutmak için bu politikanın true (doğru) değerine ayarlanması ve <ph name="POLICY_PRINTERTYPEDENYLIST" /> politikasına <ph name="POLICY_ENUM_PRINTERTYPEDENYLIST_CLOUD" /> eklenmemesi gerekir.</translation>
 <translation id="3915395663995367577">Proxy .pac dosyası için URL</translation>
-<translation id="3917288538553140422">Politikanın ayarlanması, kullanıcının ana dizini ecryptfs şifrelemesiyle oluşturulduğunda gerçekleştirilecek eylemi belirtir. Ecryptfs-şifreli ana dizinler ext4-şifrelemesine taşınmadıkça Android uygulamaları çalışmayı durdurabilir.
-
-      Politikanın ayarlanması:
-
-      * Taşıma (veya AskUser ya da AskForEcryptfsArcUsers gibi desteklenmeyen bir seçenek), dizinlerin kullanıcı onayı istemeden oturum açıldığında otomatik olarak ext4'e taşındığı anlamına gelir.
-
-      * Wipe veya MinimalMigrate ayarı, oturum açma sırasında yeni ext4 şifreli ana dizinlerinin eski ecryptfs şifreli dizinlerin yerini alacağı anlamına gelir. Kullanıcının tekrarlanan oturum açma işlemlerinden kaçınmasına yardımcı olmak için MinimalMigrate, oturum açma jetonlarını korumaya çalışır.
-
-      * DisallowArc olarak ayarlanması veya ayarlanmamış olarak bırakılması taşımayı önleyeceğinden kullanıcının Android uygulamaları çalışmayı durdurur.
-
-      Bu politika kiosk kullanıcıları için geçerli değildir.
-
-      Uyarı: Wipe ve MinimalMigrate yerel verileri kaldırır.</translation>
 <translation id="3925377537407648234">Ekran çözünürlüğünü ve ölçek faktörünü ayarlama</translation>
 <translation id="3927137827189017535">Giriş ekranında yapışkan tuşlar erişilebilirlik özelliğini etkinleştirir.
 
@@ -2188,13 +2166,6 @@ False (yanlış) olarak ayarlanırsa veya hiç ayarlanmazsa, hiçbir sertifika o
 <translation id="4228745249339680042">Politikanın ayarlanması, Güvenlik Anahtarları'ndan onay sertifikaları istendiğinde kendisi için hiçbir istem gösterilmeyecek URL'leri ve alan adlarını belirtir. Ayrıca, Güvenlik Anahtarı'na bağımsız onayın kullanılabileceğini belirten bir sinyal gönderilir. Bu olmadan, siteler Güvenlik Anahtarları'nın onayını istediğinde kullanıcılar <ph name="PRODUCT_NAME" /> sürüm 65 ve sonraki sürümlerde istem alır.
 
       URL'ler yalnızca U2F appID'leri olarak eşleşir. Alan adları yalnızca webauthn RP ID'leri olarak eşleşir. Dolayısıyla, belirli bir site için hem U2F hem de webauthn API'lerini kapsamak istiyorsanız hem appID URL'sini hem de alan adını listelemeniz gerekir.</translation>
-<translation id="4238997902172035160"><ph name="PRODUCT_NAME" /> tarafından profillerin dolaşım kopyasını depolamak için kullanılan dizini yapılandırır.
-
-      Bu politikayı ayarlarsanız ve <ph name="ROAMING_PROFILE_SUPPORT_ENABLED_POLICY_NAME" /> politikası da etkinleştirildiyse <ph name="PRODUCT_NAME" />, profillerin dolaşım kopyasını depolamak için sağlanan dizini kullanır. <ph name="ROAMING_PROFILE_SUPPORT_ENABLED_POLICY_NAME" /> politikası devre dışı bırakılırsa veya ayarlanmazsa bu politikada belirlenen değer kullanılmaz.
-
-      Kullanılabilecek değişkenlerin listesi için https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables adresine bakın.
-
-      Bu politika ayarlanmazsa varsayılan dolaşım profili yolu kullanılır.</translation>
 <translation id="4239720644496144453">Önbellek, Android uygulamaları için kullanılmaz. Birden fazla kullanıcı aynı Android uygulamasını yüklerse bu uygulama her kullanıcı için yeniden indirilir.</translation>
 <translation id="4242223728343693100">Politikayı ayarlayarak çerez ayarlayamayan siteleri belirten URL kalıpları listesi oluşturabilirsiniz.
 

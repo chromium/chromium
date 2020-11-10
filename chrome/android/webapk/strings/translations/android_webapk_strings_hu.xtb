@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="hu">
+<translation id="1625959690469240009">A webhelybeállítások megnyitásához frissítse vagy telepítse újra a(z) <ph name="BROWSER_NAME" /> böngészőt</translation>
 <translation id="1700971771753530690">A(z) <ph name="APP_NAME" /> futtatásához a következő alkalmazásra van szükség:</translation>
 <translation id="2697679025356221813">A(z) <ph name="APP_NAME" /> futtatásához böngészőre van szükség</translation>
 <translation id="3858759029325727987">Válasszon ki egy olyan böngészőt, amelyik támogatja ezt az alkalmazást:</translation>

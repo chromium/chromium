@@ -355,7 +355,6 @@
 <translation id="1401308693935339022">Brug placering. Tillad, at apps og tjenester med placeringstilladelse kan bruge denne enheds placering. Google kan jævnligt indsamle placeringsdata og bruge disse data på en anonym måde for at forbedre placeringers nøjagtighed og placeringsbaserede tjenester.</translation>
 <translation id="1403222014593521787">Der kunne ikke oprettes forbindelse til proxyserveren</translation>
 <translation id="140520891692800925"><ph name="PROFILE_DISPLAY_NAME" /> (administreret)</translation>
-<translation id="140541193409212341">Der opstod en fejl under Chromes forsøg på at scanne din computer for skadelig software</translation>
 <translation id="1405779994569073824">Gået ned.</translation>
 <translation id="1406500794671479665">Bekræfter...</translation>
 <translation id="1407135791313364759">Åbn alle</translation>
@@ -390,7 +389,6 @@
 <translation id="1433811987160647649">Spørg, før der gives adgang</translation>
 <translation id="1434696352799406980">Denne funktion nulstiller din opstartsside, siden Ny fane, din søgemaskine og dine fastgjorte faner. Den deaktiverer også alle udvidelser og rydder midlertidige data, såsom cookies. Dine bogmærker, din historik og dine gemte adgangskoder slettes ikke.</translation>
 <translation id="1434886155212424586">Startsiden er siden Ny fane</translation>
-<translation id="1435515966666225466">Har tilladelse til at bruge et plugin til at få adgang til din computer</translation>
 <translation id="1436390408194692385">Gyldig i <ph name="TICKET_TIME_LEFT" /></translation>
 <translation id="1436671784520050284">Fortsæt konfiguration</translation>
 <translation id="1436784010935106834">Fjernet</translation>
@@ -1620,7 +1618,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2839032553903800133">Notifikationer blokeres</translation>
 <translation id="2841013758207633010">Tid</translation>
 <translation id="2841837950101800123">Udbyder</translation>
-<translation id="2841921561399512198">{NUM_DAYS,plural, =1{Chrome registrerede ikke nogen kendt skadelig software på din computer. Seneste tjek: For 1 dag siden.}one{Chrome registrerede ikke nogen kendt skadelig software på din computer. Seneste tjek: For {NUM_DAYS} dag siden.}other{Chrome registrerede ikke nogen kendt skadelig software på din computer. Seneste tjek: For {NUM_DAYS} dage siden.}}</translation>
 <translation id="2844169650293029770">USB-C-enhed (porten foran i venstre side)</translation>
 <translation id="2844809857160214557">Se og administrer udskriftsjobs</translation>
 <translation id="2845382757467349449">Vis altid bogmærkelinjen</translation>
@@ -1789,7 +1786,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3036546437875325427">Aktivér Flash</translation>
 <translation id="3037754279345160234">Konfigurationen for domænetilmelding kunne ikke parses. Kontakt din administrator.</translation>
 <translation id="3038612606416062604">Tilføj en printer manuelt</translation>
-<translation id="3038675903128704560">Tillad ikke, at websites anvender et plugin til at få adgang til din computer</translation>
 <translation id="3039491566278747710">Offlinepolitikken kunne ikke installeres på enheden.</translation>
 <translation id="3043581297103810752">Fra <ph name="ORIGIN" /></translation>
 <translation id="3045447014237878114">Dette website har downloadet flere filer automatisk</translation>
@@ -2108,7 +2104,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3439153939049640737">Tillad altid, at <ph name="HOST" /> har adgang til din mikrofon</translation>
 <translation id="3439970425423980614">Åbner PDF i fremviseren</translation>
 <translation id="3440663250074896476">Flere handlinger for <ph name="BOOKMARK_NAME" /></translation>
-<translation id="3440761377721825626">Spørg, når et website gerne vil anvende et plugin til at få adgang til din computer</translation>
 <translation id="3441653493275994384">Skærm</translation>
 <translation id="3441663102605358937">Log ind på <ph name="ACCOUNT" /> igen for at bekræfte denne konto</translation>
 <translation id="3445047461171030979">Hurtige svar i Google Assistent</translation>
@@ -2184,7 +2179,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3518985090088779359">Acceptér og fortsæt</translation>
 <translation id="3519564332031442870">Backendtjeneste til printer</translation>
 <translation id="3521606918211282604">Skift diskstørrelse</translation>
-<translation id="3523642406908660543">Spørg, når et website vil anvende et plugin til at få adgang til din computer (anbefales)</translation>
 <translation id="3524965460886318643">Eksportér aktiviteter</translation>
 <translation id="3526034519184079374">Kan hverken læse eller ændre websitedata</translation>
 <translation id="3527085408025491307">Mappe</translation>
@@ -2514,7 +2508,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3873915545594852654">Der opstod et problem med ARC++.</translation>
 <translation id="3874164307099183178">Slå Google Assistent til</translation>
 <translation id="3877075909000773256">Indstillingerne for Deling tæt på for enheden, der tilhører <ph name="USER_NAME" />, deles under kontoen <ph name="USER_EMAIL" />.</translation>
-<translation id="387771067039689031">Har ikke tilladelse til at bruge et plugin til at få adgang til din computer</translation>
 <translation id="3879748587602334249">Downloadadministrator</translation>
 <translation id="3881478300875776315">Vis færre linjer</translation>
 <translation id="3882165008614329320">Eksisterende video fra kamera eller fil</translation>
@@ -2653,7 +2646,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4031179711345676612">Der er givet adgang til mikrofonen</translation>
 <translation id="4031527940632463547">Der er blokeret for sensorer</translation>
 <translation id="4033471457476425443">Tilføj ny mappe</translation>
-<translation id="4034280328082410379">Bloker plugins, så de ikke kan få adgang til din computer</translation>
 <translation id="4034824040120875894">Printer</translation>
 <translation id="4035758313003622889">&amp;Jobliste</translation>
 <translation id="4036778507053569103">Den politik, der er downloadet fra serveren, er ugyldig.</translation>
@@ -2780,7 +2772,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4200983522494130825">Ny &amp;fane</translation>
 <translation id="4201546031411513170">Du kan altid vælge, hvad der skal synkroniseres, i indstillingerne.</translation>
 <translation id="420283545744377356">Deaktiver Pauseskærm</translation>
-<translation id="4205362703535890467">Chrome registrerede ikke nogen kendt skadelig software på din computer. Seneste tjek: I går.</translation>
 <translation id="4206144641569145248">Rumvæsen</translation>
 <translation id="4206323443866416204">Feedbackrapport</translation>
 <translation id="4208390505124702064">Søg på <ph name="SITE_NAME" /></translation>
@@ -3282,7 +3273,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4830121310592638841">Spørg, når et website gerne vil åbne og placere vinduer på dine skærme</translation>
 <translation id="4830502475412647084">Installerer OS-opdateringen</translation>
 <translation id="4830573902900904548">Din <ph name="DEVICE_TYPE" /> kan ikke oprette forbindelse til internettet via <ph name="NETWORK_NAME" />. Vælg et andet netværk. <ph name="LEARN_MORE_LINK_START" />Få flere oplysninger<ph name="LEARN_MORE_LINK_END" /></translation>
-<translation id="4831688036548685548">Chrome registrerede ikke nogen kendt skadelig software på din computer. Seneste tjek: For et øjeblik siden.</translation>
 <translation id="4833236810053292670">Se nyheder på din Chromebook</translation>
 <translation id="4833683849865011483">Der blev fundet 1 printer på printerserveren</translation>
 <translation id="4836504898754963407">Administrer fingeraftryk</translation>
@@ -4301,6 +4291,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6042308850641462728">Mere</translation>
 <translation id="6043317578411397101"><ph name="APP_NAME" /> deler en Chrome-fane med <ph name="TAB_NAME" />.</translation>
 <translation id="604388835206766544">Konfigurationen kunne ikke parses</translation>
+<translation id="6043994281159824495">Log ud nu</translation>
 <translation id="6044805581023976844"><ph name="APP_NAME" /> deler en Chrome-fane og lyd med <ph name="TAB_NAME" />.</translation>
 <translation id="6049004884579590341">Hold |<ph name="ACCELERATOR" />| nede for at afslutte fuld skærm</translation>
 <translation id="6051354611314852653">Ups! Systemet har ikke godkendt API-adgang for denne enhed.</translation>
@@ -4562,7 +4553,6 @@ slettes permanent, når den administrerede bruger fjernes. Besøgte websites og 
 <translation id="6333064448949140209">Filen sendes til Google til fejlretning</translation>
 <translation id="6338981933082930623">Alle websites kan vise dig alle slags annoncer</translation>
 <translation id="6339668969738228384">Opret en ny profil for <ph name="USER_EMAIL_ADDRESS" /></translation>
-<translation id="6339995243416022850">Websites kan anmode om tilladelse til at få adgang til din computer via et plugin (anbefales)</translation>
 <translation id="6340017061976355871">Der kunne ikke oprettes forbindelse til serveren. Tjek din netværksforbindelse, og prøv igen. Genstart din Chromebook, hvis problemet fortsætter.</translation>
 <translation id="6340071272923955280">Internet Printing Protocol (IPPS)</translation>
 <translation id="6340526405444716530">Tilpasning</translation>
@@ -4665,7 +4655,6 @@ slettes permanent, når den administrerede bruger fjernes. Besøgte websites og 
 <translation id="6463795194797719782">&amp;Rediger</translation>
 <translation id="6465841119675156448">Uden internet</translation>
 <translation id="6466988389784393586">Åbn alle bogmærker</translation>
-<translation id="6467235653320897404">{NUM_HOURS,plural, =1{Chrome registrerede ikke nogen kendt skadelig software på din computer. Seneste tjek: For 1 time siden.}one{Chrome registrerede ikke nogen kendt skadelig software på din computer. Seneste tjek: For {NUM_HOURS} time siden.}other{Chrome registrerede ikke nogen kendt skadelig software på din computer. Seneste tjek: For {NUM_HOURS} timer siden.}}</translation>
 <translation id="6467304607960172345">Optimer videoer i fuld skærm</translation>
 <translation id="6468485451923838994">Skrifttyper</translation>
 <translation id="6469557521904094793">Aktivér mobilnetværk</translation>
@@ -4985,7 +4974,6 @@ slettes permanent, når den administrerede bruger fjernes. Besøgte websites og 
 <translation id="6860097299815761905">Indstillinger for proxy...</translation>
 <translation id="686022878923628150">Bloker websites, så de ikke kan oprette forbindelse til MIDI-enheder</translation>
 <translation id="6860427144121307915">Åbn på en fane</translation>
-<translation id="6861451385429799394"><ph name="BEGIN_LINK" />Din administrator<ph name="END_LINK" /> har deaktiveret Chromes scanning efter skadelig software</translation>
 <translation id="686366188661646310">Vil du slette adgangskoden?</translation>
 <translation id="6865313869410766144">Formulardata for AutoFyld</translation>
 <translation id="6865598234501509159">Siden findes ikke på <ph name="LANGUAGE" /></translation>
@@ -5364,7 +5352,6 @@ slettes permanent, når den administrerede bruger fjernes. Besøgte websites og 
 <translation id="7308002049209013926">Brug Appliste til hurtigt at gå til nye apps og aktiviteter. Du kan også bruge tastaturet ved at trykke på Alt+Shift+L.</translation>
 <translation id="7309257895202129721">Vis &amp;knapper</translation>
 <translation id="7310598146671372464">Der kunne ikke logges ind. Serveren understøtter ikke de angivne Kerberos-krypteringstyper. Kontakt din administrator.</translation>
-<translation id="7311079019872751559">Adgang til plugin, der ikke er gemt i sandbox</translation>
 <translation id="7320213904474460808">Vælg som standardnetværk</translation>
 <translation id="7321545336522791733">Serveren er utilgængelig</translation>
 <translation id="7324297612904500502">Betaforum</translation>
@@ -5489,7 +5476,6 @@ slettes permanent, når den administrerede bruger fjernes. Besøgte websites og 
 <translation id="7456847797759667638">Åbn placering...</translation>
 <translation id="7457384018036134905">Administrer sprog i indstillingerne for Chrome OS</translation>
 <translation id="7458168200501453431">Bruger samme stavekontrol som Google-søgning. Tekst, som du angiver i browseren, sendes til Google.</translation>
-<translation id="7459920164600044274">Websites bruger normalt plugins for at kunne streame videoer eller installere apps</translation>
 <translation id="7460045493116006516">Det aktuelle tema, du har installeret</translation>
 <translation id="7461729991508684543">{NUM_DAYS,plural, =1{<ph name="DOMAIN" /> kræver, at du sikkerhedskopierer dine data og returnerer denne <ph name="DEVICE_TYPE" /> i dag.<ph name="LINK_BEGIN" />Se oplysninger<ph name="LINK_END" />}one{<ph name="DOMAIN" /> kræver, at du sikkerhedskopierer dine data og returnerer denne <ph name="DEVICE_TYPE" /> inden for {NUM_DAYS} dag.<ph name="LINK_BEGIN" />Se oplysninger<ph name="LINK_END" />}other{<ph name="DOMAIN" /> kræver, at du sikkerhedskopierer dine data og returnerer denne <ph name="DEVICE_TYPE" /> inden for {NUM_DAYS} dage.<ph name="LINK_BEGIN" />Se oplysninger<ph name="LINK_END" />}}</translation>
 <translation id="7461924472993315131">Fastgør</translation>
@@ -6012,6 +5998,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8030852056903932865">Godkend</translation>
 <translation id="8032244173881942855">Fanen kunne ikke castes.</translation>
 <translation id="8033827949643255796">valgt</translation>
+<translation id="8033958968890501070">Timeout</translation>
 <translation id="8037117027592400564">Læs hele teksten højt ved hjælp af talesyntese</translation>
 <translation id="8037357227543935929">Spørg (standardindstilling)</translation>
 <translation id="803771048473350947">Fil</translation>
@@ -6436,7 +6423,6 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8541462173655894684">Der blev ikke fundet nogen printere på printerserveren</translation>
 <translation id="8542618328173222274">Spørg, når et website gerne vil bruge dine virtual reality-enheder og -data</translation>
 <translation id="8543556556237226809">Har du spørgsmål? Kontakt din profiladministrator.</translation>
-<translation id="8545575359873600875">Din adgangskode kunne desværre ikke bekræftes. Administratoren for denne administrerede bruger kan have ændret adgangskoden for nylig. Hvis det er tilfældet, gælder den nye adgangskode, næste gang du logger på. Prøv at bruge din gamle adgangskode.</translation>
 <translation id="8546186510985480118">Der er næsten ikke mere plads på enheden</translation>
 <translation id="8546306075665861288">Billedcache</translation>
 <translation id="854655314928502177">Webadresse for automatisk registrering af webproxy:</translation>
@@ -6648,7 +6634,6 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8774934320277480003">Topmargen</translation>
 <translation id="8775144690796719618">Ugyldig webadresse</translation>
 <translation id="8775163630211761057">Få det bedste fra din Android-telefon på din <ph name="DEVICE_TYPE" /></translation>
-<translation id="8776977753660889796">{NUM_MINS,plural, =1{Chrome registrerede ikke nogen kendt skadelig software på din computer. Seneste tjek: For 1 minut siden.}one{Chrome registrerede ikke nogen kendt skadelig software på din computer. Seneste tjek: For {NUM_MINS} minut siden.}other{Chrome registrerede ikke nogen kendt skadelig software på din computer. Seneste tjek: For {NUM_MINS} minutter siden.}}</translation>
 <translation id="8777628254805677039">adgangskoderod</translation>
 <translation id="8780123805589053431">Hent billedbeskrivelser fra Google</translation>
 <translation id="8780443667474968681">Talesøgning er deaktiveret.</translation>

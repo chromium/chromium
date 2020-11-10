@@ -347,7 +347,6 @@
 <translation id="352577523970648069">Trường văn bản có thể chỉnh sửa</translation>
 <translation id="3538907380453898475">dsmt</translation>
 <translation id="3549141990712742152">cắt <ph name="TEXT" />.</translation>
-<translation id="3549680091535286226">Nhấn bằng 2 ngón tay để tạm thời dừng lời nói</translation>
 <translation id="3564729643041517261">Kiểu hiển thị hiện tại là song song</translation>
 <translation id="3573145950452451508">Chân trang</translation>
 <translation id="3587482841069643663">Tất cả</translation>
@@ -595,6 +594,7 @@
 <translation id="5561345396546889625">Danh sách tiếp theo</translation>
 <translation id="5562645715554321347">hdnggrp</translation>
 <translation id="5574412348552378458">Chế độ học ChromeVox</translation>
+<translation id="5582839680698949063">Menu chính</translation>
 <translation id="5585044216466955529">Chỉnh sửa văn bản, mục nhập email</translation>
 <translation id="5597170376237141345">Hộp kiểm tiếp theo</translation>
 <translation id="5598905979683743333"><ph name="NAME" />, nút radio bị bỏ chọn</translation>
@@ -828,7 +828,6 @@
 <translation id="7491962110804786152">thẻ</translation>
 <translation id="7492497529767769458">Chuyển đến phần tiếp theo. Các ví dụ bao gồm Khay trạng thái và Trình chạy.</translation>
 <translation id="7505149250476994901">Nói "hoa" sau chữ cái</translation>
-<translation id="7518543783849163354">Để ChromeVox tạm thời ngừng nói, nhấn phím Control.</translation>
 <translation id="7533226154149229506">Màu vàng nghệ nhạt</translation>
 <translation id="7543255924852002459">Nhãn hủy</translation>
 <translation id="7552432549459840808">Phím tắt hữu ích của Chrome</translation>

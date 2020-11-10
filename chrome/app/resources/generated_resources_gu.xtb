@@ -353,7 +353,6 @@
 <translation id="1401308693935339022">સ્થાનનો ઉપયોગ કરો. સ્થાનની પરવાનગી ધરાવતી ઍપ અને સેવાઓને આ ડિવાઇસના સ્થાનનો ઉપયોગ કરવાની મંજૂરી આપો. Google સ્થાનનો ડેટા સમયાંતરે એકત્રિત કરી શકે છે અને અનામી રીતે સ્થાન સચોટતા અને સ્થાન-આધારિત સેવાઓને બહેતર બનાવવા માટે તેનો ઉપયોગ કરી શકે છે.</translation>
 <translation id="1403222014593521787">પ્રૉક્સી સાથે કનેક્ટ કરી શકાયું નથી</translation>
 <translation id="140520891692800925"><ph name="PROFILE_DISPLAY_NAME" /> (નિરીક્ષિત)</translation>
-<translation id="140541193409212341">Chrome કોઈ હાનિકારક સૉફ્ટવેર માટે તમારું કમ્પ્યુટર ચેક કરી રહ્યું હતું ત્યારે કોઈ ભૂલ આવી</translation>
 <translation id="1405779994569073824">ક્રૅશ થયું</translation>
 <translation id="1406500794671479665">ચકાસી રહ્યું છે...</translation>
 <translation id="1407135791313364759">બધું ખોલો</translation>
@@ -388,7 +387,6 @@
 <translation id="1433811987160647649">ઍક્સેસ કરતાં પહેલાં પૂછો</translation>
 <translation id="1434696352799406980">આ તમારા સ્ટાર્ટઅપ પેજ, નવું ટેબ પેજ, શોધ એંજિન અને પિન કરેલ ટેબને રીસેટ કરશે. તે તમામ એક્સટેન્શનને પણ બંધ કરશે અને કુકી જેવો અસ્થાયી ડેટા પણ કાઢી નાંખશે. તમારા બુકમાર્ક, ઇતિહાસ અને સાચવેલાં પાસવર્ડ કાઢી નાંખવામાં આવશે નહિ.</translation>
 <translation id="1434886155212424586">હોમપેજ એ નવું ટેબ પૃષ્ઠ છે</translation>
-<translation id="1435515966666225466">તમારા કમ્પ્યુટરને ઍક્સેસ કરવા માટે પ્લગ-ઇનનો ઉપયોગ કરવાની મંજૂરી છે</translation>
 <translation id="1436390408194692385"><ph name="TICKET_TIME_LEFT" /> માટે માન્ય</translation>
 <translation id="1436671784520050284">સેટઅપ ચાલુ રાખો</translation>
 <translation id="1436784010935106834">દૂર કરેલું</translation>
@@ -884,6 +882,7 @@
 <translation id="2000419248597011803">ઍડ્રેસ બાર અને શોધ બૉક્સમાંથી કેટલીક કુકી અને શોધને તમારા ડિફૉલ્ટ શોધ એંજિન પર મોકલે છે</translation>
 <translation id="2002109485265116295">રિઅલ-ટાઇમ</translation>
 <translation id="2003130567827682533">'<ph name="NAME" />' ડેટાને સક્રિય કરવા માટે, પહેલા વાઇ-ફાઇ નેટવર્કથી કનેક્ટ કરો</translation>
+<translation id="2005199804247617997">અન્ય પ્રોફાઇલ</translation>
 <translation id="2006638907958895361"><ph name="APP" />માં લિંક ખોલો</translation>
 <translation id="2007404777272201486">સમસ્યાની જાણ કરો...</translation>
 <translation id="2010501376126504057">સુસંગત ડિવાઇસ</translation>
@@ -1533,6 +1532,7 @@
 <translation id="2751131328353405138">Linux કન્ટેનરનાં sshfsને માઉન્ટ કરી રહ્યાં છીએ</translation>
 <translation id="2751739896257479635">EAP તબક્કા 2 માટેનું પ્રમાણીકરણ</translation>
 <translation id="2753677631968972007">સાઇટની પરવાનગીઓને મેન્યુઅલી નિયંત્રિત કરો.</translation>
+<translation id="2755349111255270002">આ <ph name="DEVICE_TYPE" />ને રીસેટ કરો</translation>
 <translation id="2755367719610958252">ઍક્સેસિબિલિટી સુવિધાઓ મેનેજ કરો</translation>
 <translation id="275662540872599901">સ્ક્રીન બંધ છે</translation>
 <translation id="2757338480560142065"><ph name="WEBSITE" /> માટેના તમારા પાસવર્ડ સાથે, તમે સાચવી રહ્યાં છો તે પાસવર્ડ મેળ ખાતો હોવાની ખાતરી કરો</translation>
@@ -1610,7 +1610,6 @@
 <translation id="2839032553903800133">નોટિફિકેશનને બ્લૉક કરેલાં છે</translation>
 <translation id="2841013758207633010">સમય</translation>
 <translation id="2841837950101800123">પ્રદાતા</translation>
-<translation id="2841921561399512198">{NUM_DAYS,plural, =1{Chromeને તમારા કમ્પ્યુટરમાં જાણીતું હાનિકારક સૉફ્ટવેર મળ્યું નથી. છેલ્લે ચેક કર્યું: 1 દિવસ પહેલાં.}one{Chromeને તમારા કમ્પ્યુટરમાં જાણીતું હાનિકારક સૉફ્ટવેર મળ્યું નથી. છેલ્લે ચેક કર્યું: {NUM_DAYS} દિવસ પહેલાં.}other{Chromeને તમારા કમ્પ્યુટરમાં જાણીતું હાનિકારક સૉફ્ટવેર મળ્યું નથી. છેલ્લે ચેક કર્યું: {NUM_DAYS} દિવસ પહેલાં.}}</translation>
 <translation id="2844169650293029770">USB-C ઉપકરણ (ડાબી બાજુનું આગળનું પોર્ટ)</translation>
 <translation id="2844809857160214557">પ્રિન્ટ કરવાના કામો જુઓ અને મેનેજ કરો</translation>
 <translation id="2845382757467349449">બુકમાર્ક્સ બાર હંમેશા બતાવો</translation>
@@ -1689,6 +1688,7 @@
 <translation id="2932883381142163287">દુરુપયોગ જણાવો</translation>
 <translation id="2933632078076743449">છેલ્લે અપડેટ</translation>
 <translation id="2934999512438267372">MIDI ડિવાઇસનું સંપૂર્ણ નિયંત્રણ મંજૂર કરવામાં આવ્યું</translation>
+<translation id="2935225303485967257">બધી પ્રોફાઇલ મેનેજ કરો</translation>
 <translation id="2935654492420446828">પછીથી સ્કૂલનું એકાઉન્ટ ઉમેરો</translation>
 <translation id="2936851848721175671">બૅકઅપ અને પુનઃસ્થાપના</translation>
 <translation id="2938225289965773019"><ph name="PROTOCOL" /> લિંક્સ ખોલો</translation>
@@ -1778,7 +1778,6 @@
 <translation id="3036546437875325427">ફ્લૅશ ચાલુ કરો</translation>
 <translation id="3037754279345160234">ડોમેનમાં જોડાવા માટે ગોઠવણીનું વિશ્લેષણ કરી શકતાં નથી. કૃપા કરીને તમારા વ્યવસ્થાપકનો સંપર્ક કરો.</translation>
 <translation id="3038612606416062604">પ્રિન્ટરને મેન્યુઅલી ઉમેરો</translation>
-<translation id="3038675903128704560">તમારા કમ્પ્યુટરને ઍક્સેસ કરવા માટે કોઈપણ સાઇટને પ્લગ-ઇનનો ઉપયોગ કરવાની મંજૂરી આપશો નહીં</translation>
 <translation id="3039491566278747710">ડિવાઇસ પર ઇન્ટરનેટ વગર નીતિ ઇન્સ્ટૉલ કરવામાં નિષ્ફળ ગયું.</translation>
 <translation id="3043581297103810752"><ph name="ORIGIN" />માંથી</translation>
 <translation id="3045447014237878114">આ સાઇટે એકથી વધુ ફાઇલો ઑટોમૅટિક રીતે ડાઉનલોડ કરી છે</translation>
@@ -2046,6 +2045,7 @@
 <translation id="3388788256054548012">આ ફાઇલ એન્ક્રિપ્ટ કરેલી છે. તેના માલિકને તેને ડિક્રિપ્ટ કરવાનું કહો.</translation>
 <translation id="3390013585654699824">ઍપની વિગતો</translation>
 <translation id="3390741581549395454">Linux ઍપ અને ફાઇલોનું સફળતાપૂર્વક બૅકઅપ લીધું. ટૂંક સમયમાં અપગ્રેડ શરૂ થશે.</translation>
+<translation id="339178315942519818">તમારા <ph name="DEVICE_TYPE" /> પર તમારી ચૅટ ઍપના નોટિફિકેશન જુઓ</translation>
 <translation id="3396800784455899911">"સ્વીકારો અને ચાલુ રાખો" બટન પર ક્લિક કરીને, તમે આ Google સેવાઓ માટે ઉપર વર્ણવેલી પ્રક્રિયા સાથે સંમત થાઓ છો.</translation>
 <translation id="3399432415385675819">સૂચનાઓ અક્ષમ કરવામાં આવશે</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> હર્ટ્ઝ) - ઇન્ટર્લેસ</translation>
@@ -2095,7 +2095,6 @@
 <translation id="3439153939049640737"><ph name="HOST" /> ને હંમેશા તમારા માઇક્રોફોનને ઍક્સેસ કરવાની મંજૂરી આપો</translation>
 <translation id="3439970425423980614">PDFને પ્રીવ્યૂમાં ખોલી રહ્યાં છે</translation>
 <translation id="3440663250074896476"><ph name="BOOKMARK_NAME" /> માટે વધુ ક્રિયાઓ</translation>
-<translation id="3440761377721825626">જ્યારે કોઈ સાઇટ તમારા કમ્પ્યુટરને ઍક્સેસ કરવા માટે પ્લગ-ઇનનો ઉપયોગ કરવા માગે ત્યારે પૂછો</translation>
 <translation id="3441653493275994384">સ્કિન</translation>
 <translation id="3441663102605358937">આ એકાઉન્ટની ચકાસણી કરવા માટે <ph name="ACCOUNT" />માં ફરીથી સાઇન ઇ કરો</translation>
 <translation id="3445047461171030979">Google Assistantનાં ઝડપી જવાબના સેટિંગ</translation>
@@ -2170,7 +2169,6 @@
 <translation id="3518985090088779359">સ્વીકારો અને ચાલુ રાખો</translation>
 <translation id="3519564332031442870">બૅકએન્ડમાં પ્રિન્ટ કરવાની સેવા</translation>
 <translation id="3521606918211282604">ડિસ્કનું કદ બદલો</translation>
-<translation id="3523642406908660543">જ્યારે કોઈ સાઇટ તમારા કમ્પ્યુટરને ઍક્સેસ કરવા માટે પ્લગિનનો ઉપયોગ કરવા માગે, તો પૂછો (ભલામણ કરેલ)</translation>
 <translation id="3524965460886318643">પ્રવૃત્તિઓ નિકાસ કરો</translation>
 <translation id="3526034519184079374">સાઇટના ડેટાને વાંચી કે બદલી શકતા નથી</translation>
 <translation id="3527085408025491307">ફોલ્ડર</translation>
@@ -2200,6 +2198,7 @@
 <translation id="3559533181353831840">લગભગ <ph name="TIME_LEFT" /> બાકી</translation>
 <translation id="3560034655160545939">&amp;જોડણીની તપાસ</translation>
 <translation id="3562423906127931518">આ પ્રક્રિયામાં થોડો સમય લાગી શકે છે. Linux કન્ટેનર સેટઅપ કરી રહ્યાં છીએ.</translation>
+<translation id="3562655211539199254">તમારા ફોનમાંની તાજેતરની Chrome ટૅબ જુઓ</translation>
 <translation id="3563432852173030730">કિઓસ્ક ઍપ્લિકેશન ડાઉનલોડ કરી શકાઈ નથી.</translation>
 <translation id="3564334271939054422">તમે ઉપયોગમાં લઈ રહ્યા છો તે વાઇ-ફાઇ નેટવર્ક <ph name="NETWORK_ID" /> માટે, તમારે તેના લોગિન પેજની મુલાકાત લેવાની જરૂર હોઈ શકે છે.</translation>
 <translation id="3564848315152754834">USB સુરક્ષા કોડ</translation>
@@ -2499,7 +2498,6 @@
 <translation id="3873915545594852654">ARC++માં સમસ્યા આવી.</translation>
 <translation id="3874164307099183178">Google Assistant ચાલુ કરો</translation>
 <translation id="3877075909000773256"><ph name="USER_NAME" />ના ડિવાઇસ માટે નજીકના શેર સેટિંગ, <ph name="USER_EMAIL" /> એકાઉન્ટ હેઠળ શેર કરવામાં આવી રહ્યાં છે.</translation>
-<translation id="387771067039689031">તમારા કમ્પ્યુટરને ઍક્સેસ કરવા માટે પ્લગ-ઇનનો ઉપયોગ કરવાની મંજૂરી નથી</translation>
 <translation id="3879748587602334249">ડાઉનલોડ મેનેજર</translation>
 <translation id="3881478300875776315">ઓછી પંક્તિઓ બતાવો</translation>
 <translation id="3882165008614329320">કૅમેરા અથવા ફાઇલમાંથી અસ્તિત્વમાં છે તે વીડિયો</translation>
@@ -2638,7 +2636,6 @@
 <translation id="4031179711345676612">માઇક્રોફોનને મંજૂરી</translation>
 <translation id="4031527940632463547">સેન્સર બ્લૉક કરેલ છે</translation>
 <translation id="4033471457476425443">નવું ફોલ્ડર ઉમેરો</translation>
-<translation id="4034280328082410379">પ્લગ-ઇનને તમારા કમ્પ્યુટરને ઍક્સેસ કરવાથી બ્લૉક કરો</translation>
 <translation id="4034824040120875894">પ્રિન્ટર</translation>
 <translation id="4035758313003622889">&amp;કાર્ય વ્યવસ્થાપક</translation>
 <translation id="4036778507053569103">સર્વરમાંથી ડાઉનલોડ કરેલી નીતિ અમાન્ય છે.</translation>
@@ -2765,7 +2762,6 @@
 <translation id="4200983522494130825">નવું &amp;ટૅબ</translation>
 <translation id="4201546031411513170">શું સિંક કરવું તે હંમેશાં તમે સેટિંગમાં પસંદ કરી શકો છો.</translation>
 <translation id="420283545744377356">સ્ક્રીન સેવર બંધ કરો</translation>
-<translation id="4205362703535890467">Chromeને તમારા કમ્પ્યુટરમાં જાણીતું હાનિકારક સૉફ્ટવેર મળ્યું નથી. છેલ્લે ચેક કર્યું: ગઈકાલે.</translation>
 <translation id="4206144641569145248">એલિયન</translation>
 <translation id="4206323443866416204">પ્રતિસાદ રિપોર્ટ</translation>
 <translation id="4208390505124702064"><ph name="SITE_NAME" /> માં શોધો</translation>
@@ -3267,7 +3263,6 @@
 <translation id="4830121310592638841">જ્યારે સાઇટને ખુલીને તમારી સ્ક્રીન પર વિંડો મુકવી હોય ત્યારે પૂછવામાં આવે</translation>
 <translation id="4830502475412647084">OS અપડેટ ઇન્સ્ટૉલ કરી રહ્યા છીએ</translation>
 <translation id="4830573902900904548"><ph name="NETWORK_NAME" /> નો ઉપયોગ કરીને ઇન્ટરનેટથી કનેક્ટ થવામાં તમારી <ph name="DEVICE_TYPE" /> અસમર્થ છે. કૃપા કરીને બીજું નેટવર્ક પસંદ કરો. <ph name="LEARN_MORE_LINK_START" />વધુ જાણો<ph name="LEARN_MORE_LINK_END" /></translation>
-<translation id="4831688036548685548">Chromeને તમારા કમ્પ્યુટરમાં જાણીતું હાનિકારક સૉફ્ટવેર મળ્યું નથી. છેલ્લે ચેક કર્યું: એક પળ પહેલાં.</translation>
 <translation id="4833236810053292670">તમારી Chromebook પર નવું શું છે તે જુઓ</translation>
 <translation id="4833683849865011483">પ્રિન્ટ સર્વરમાંથી 1 પ્રિન્ટર મળ્યું</translation>
 <translation id="4836504898754963407">ફિંગરપ્રિન્ટને મેનેજ કરો</translation>
@@ -3830,6 +3825,7 @@
 <translation id="5503982651688210506"><ph name="HOST" />ને તમારા કૅમેરાનો ઉપયોગ કરવાની અને તેને ખસેડવાની સાથે તમારા માઇક્રોફોનનો ઉપયોગ કરવાની મંજૂરી આપવાનું ચાલુ રાખો</translation>
 <translation id="5505264765875738116">સાઇટ તમને નોટિફિકેશન મોકલવા માટે પૂછી શકશે નહીં</translation>
 <translation id="5505307013568720083">શાહી ખલાસ થઇ ગઇ છે</translation>
+<translation id="5505794066310932198">ટૉગલ કમાન્ડર</translation>
 <translation id="5507756662695126555">નૉન-રીપ્યૂડિએશન</translation>
 <translation id="5509693895992845810">આ &amp;રૂપમાં સાચવો...</translation>
 <translation id="5509914365760201064">રજૂકર્તા: <ph name="CERTIFICATE_AUTHORITY" /></translation>
@@ -4287,6 +4283,7 @@ USB ડિવાઇસ</translation>
 <translation id="6042308850641462728">વધુ</translation>
 <translation id="6043317578411397101"><ph name="APP_NAME" />, <ph name="TAB_NAME" /> સાથે Chrome ટૅબ શેર કરી રહી છે.</translation>
 <translation id="604388835206766544">ગોઠવણીનું વિશ્લેષણ કરવામાં નિષ્ફળ થયાં</translation>
+<translation id="6043994281159824495">હવે સાઇન આઉટ કરો</translation>
 <translation id="6044805581023976844"><ph name="APP_NAME" />, <ph name="TAB_NAME" /> સાથે Chrome ટૅબ અને ઑડિઓને શેર કરી રહી છે.</translation>
 <translation id="6049004884579590341">પૂર્ણ સ્ક્રીનથી બહાર નીકળવા માટે |<ph name="ACCELERATOR" />|ને દબાવી રાખો</translation>
 <translation id="6051354611314852653">અરેરે!  આ ઉપકરણ માટે અધિકૃત API ઍક્સેસ કરવા આ સિસ્ટમ નિષ્ફળ થઈ છે.</translation>
@@ -4298,6 +4295,7 @@ USB ડિવાઇસ</translation>
 <translation id="6056710589053485679">સામાન્ય રીતે ફરીથી લોડ કરો</translation>
 <translation id="6057312498756061228">આ ફાઇલનું કદ બહુ મોટું હોવાથી સુરક્ષા તપાસ કરી નહીં શકાય. તમે 50 MB સુધીના કદવાળી ફાઇલો ખોલી શકશો.</translation>
 <translation id="6057381398996433816">આ સાઇટને મોશન અને લાઇટ સેન્સરનો ઉપયોગ કરવાથી બ્લૉક કરવામાં આવી છે.</translation>
+<translation id="6059276912018042191">તાજેતરની Chrome ટૅબ</translation>
 <translation id="6059652578941944813">પ્રમાણપત્ર હાયરાર્કી</translation>
 <translation id="6059925163896151826">USB ઉપકરણો</translation>
 <translation id="6061882183774845124">તમારા ડિવાઇસ પર લિંક મોકલો</translation>
@@ -4546,7 +4544,6 @@ USB ડિવાઇસ</translation>
 <translation id="6333064448949140209">ડીબગિંગ માટે ફાઇલ Google ને મોકલવામાં આવશે</translation>
 <translation id="6338981933082930623">બધી સાઇટ તમને બધા પ્રકારની જાહેરાતો બતાવી શકે છે</translation>
 <translation id="6339668969738228384"><ph name="USER_EMAIL_ADDRESS" /> માટે એક નવી પ્રોફાઇલ બનાવો</translation>
-<translation id="6339995243416022850">સાઇટ તમારા કમ્પ્યુટરને ઍક્સેસ કરવા માટે પ્લગ-ઇનનો ઉપયોગ કરવાનું પૂછી શકે છે (ભલામણ કરવામાં આવે છે)</translation>
 <translation id="6340017061976355871">સર્વર સાથે કનેક્ટ ન કરી શક્યાં. કૃપા કરીને તમારું નેટવર્ક કનેક્શન તપાસો અને ફરી પ્રયાસ કરો. જો સમસ્યા ચાલુ રહે, તો તમારી Chromebook ફરી શરૂ કરો.</translation>
 <translation id="6340071272923955280">ઇન્ટરનેટ પ્રિંટિંગ પ્રોટોકોલ (IPPS)</translation>
 <translation id="6340526405444716530">મનગમતું બનાવવું</translation>
@@ -4649,7 +4646,6 @@ USB ડિવાઇસ</translation>
 <translation id="6463795194797719782">&amp;સંપાદિત કરો</translation>
 <translation id="6465841119675156448">ઇન્ટરનેટ વિના</translation>
 <translation id="6466988389784393586">બધાં બુકમાર્ક્સ &amp;ખોલો</translation>
-<translation id="6467235653320897404">{NUM_HOURS,plural, =1{Chromeને તમારા કમ્પ્યુટરમાં જાણીતું હાનિકારક સૉફ્ટવેર મળ્યું નથી. છેલ્લે ચેક કર્યું: 1 કલાક પહેલાં.}one{Chromeને તમારા કમ્પ્યુટરમાં જાણીતું હાનિકારક સૉફ્ટવેર મળ્યું નથી. છેલ્લે ચેક કર્યું: {NUM_HOURS} કલાક પહેલાં.}other{Chromeને તમારા કમ્પ્યુટરમાં જાણીતું હાનિકારક સૉફ્ટવેર મળ્યું નથી. છેલ્લે ચેક કર્યું: {NUM_HOURS} કલાક પહેલાં.}}</translation>
 <translation id="6467304607960172345">પૂર્ણસ્ક્રીન વીડિયો ઑપ્ટિમાઇઝ કરો</translation>
 <translation id="6468485451923838994">ફોન્ટ્સ</translation>
 <translation id="6469557521904094793">સેલ્યુલર નેટવર્ક ચાલુ કરો</translation>
@@ -4803,6 +4799,7 @@ USB ડિવાઇસ</translation>
 <translation id="6659213950629089752">"<ph name="NAME" />" એક્સ્ટેન્શન દ્વારા આ પૃષ્ઠ ઝૂમ કર્યું હતું</translation>
 <translation id="6659594942844771486">ટૅબ</translation>
 <translation id="666099631117081440">પ્રિન્ટ સર્વર</translation>
+<translation id="6663190258859265334">તમારા <ph name="DEVICE_TYPE" />ને પાવરવોશ કરો અને તેના પહેલાંના વર્ઝન પર પાછા ફરો.</translation>
 <translation id="6664237456442406323">દુર્ભાગ્યપણે, તમારું કમ્પ્યુટર ખરાબ હાર્ડવેર ID સાથે કોન્ફિગર કરાયેલું છે. આ Chrome OSને સુરક્ષા માટેના નવા ફિક્સના અપડેટથી રોકે છે અને તમારા કમ્પ્યુટરને <ph name="BEGIN_BOLD" />હાનિકાર હુમલાઓનો સમાનો કરવામાં<ph name="END_BOLD" /> અસક્ષમ બનાવી શકે.</translation>
 <translation id="6664774537677393800">તમારી પ્રોફાઇલ ખોલતી વખતે કંઈક ખોટું થયું. કૃપા કરીને સાઇન આઉટ કરો પછી ફરીથી સાઇન ઇન કરો.</translation>
 <translation id="6670142487971298264"><ph name="APP_NAME" /> હવે ઉપલબ્ધ છે</translation>
@@ -4967,7 +4964,6 @@ USB ડિવાઇસ</translation>
 <translation id="6860097299815761905">પ્રૉક્સી સેટિંગ...</translation>
 <translation id="686022878923628150">સાઇટને MIDI ડિવાઇસ સાથે કનેક્ટ થવાથી બ્લૉક કરો</translation>
 <translation id="6860427144121307915">એક ટેબમાં ખોલો</translation>
-<translation id="6861451385429799394"><ph name="BEGIN_LINK" />તમારા વ્યવસ્થાપક<ph name="END_LINK" /> દ્વારા Chromeની હાનિકારક સૉફ્ટવેર ચેક કરવાની સુવિધા બંધ કરવામાં આવી છે</translation>
 <translation id="686366188661646310">પાસવર્ડ ડિલીટ કરીએ?</translation>
 <translation id="6865313869410766144">સ્વતઃભરણ ફોર્મ ડેટા</translation>
 <translation id="6865598234501509159">પેજ <ph name="LANGUAGE" />માં નથી</translation>
@@ -5344,7 +5340,6 @@ USB ડિવાઇસ</translation>
 <translation id="7308002049209013926">નવી ઍપ અને પ્રવૃત્તિઓ પર ઝડપથી પહોંચવા માટે લૉન્ચરનો ઉપયોગ કરો. અહીં કીબોર્ડ વડે પહોંચવા માટે, Alt + Shift + L દબાવો.</translation>
 <translation id="7309257895202129721">&amp;નિયંત્રણો બતાવો</translation>
 <translation id="7310598146671372464">લૉગ ઇન કરવામાં નિષ્ફળ થયા. સર્વર આપેલ Kerberos ઍન્ક્રિપ્શન પ્રકારોનું સમર્થન કરતું નથી. કૃપા કરીને તમારા વ્યવસ્થાપકનો સપર્ક કરો.</translation>
-<translation id="7311079019872751559">અનસેન્ડબૉક્સ કરેલ પ્લગિનની ઍક્સેસ</translation>
 <translation id="7320213904474460808">ડિફૉલ્ટ કરેલું નેટવર્ક</translation>
 <translation id="7321545336522791733">સર્વર પહોંચની બહાર છે</translation>
 <translation id="7324297612904500502">બીટા ચર્ચા મંચ</translation>
@@ -5386,6 +5381,7 @@ USB ડિવાઇસ</translation>
 <translation id="7364796246159120393">ફાઇલ પસંદ કરો</translation>
 <translation id="7365076891350562061">મૉનિટરનું કદ</translation>
 <translation id="736522537010810033">સાઇટને તમારા માઇક્રોફોનનો ઉપયોગ કરવાથી બ્લૉક કરો</translation>
+<translation id="7366316827772164604">નજીકના ડિવાઇસ માટે સ્કૅન કરી રહ્યાં છીએ…</translation>
 <translation id="7366415735885268578">એક સાઇટ ઉમેરો</translation>
 <translation id="7366909168761621528">બ્રાઉઝિંગ ડેટા</translation>
 <translation id="7367714965999718019">QR કોડ જનરેટર</translation>
@@ -5467,7 +5463,6 @@ USB ડિવાઇસ</translation>
 <translation id="7456847797759667638">સ્થાન ખોલો...</translation>
 <translation id="7457384018036134905">Chrome OS સેટિંગમાં ભાષાઓને મેનેજ કરો</translation>
 <translation id="7458168200501453431">Google શોધમાં જે જોડણી તપાસનારનો ઉપયોગ થાય છે તેનો જ ઉપયોગ કરે છે. તમે બાઉઝરમાં ટાઇપ કરો છો તે ટેક્સ્ટ Googleને મોકલવામાં આવે છે.</translation>
-<translation id="7459920164600044274">વીડિયો સ્ટ્રીમ કરવા જેવી અથવા ઍપ ઇન્સ્ટૉલ કરવા જેવી સુવિધાઓ માટે, સાઇટ સામાન્ય રીતે પ્લગ-ઇનનો ઉપયોગ કરે છે</translation>
 <translation id="7460045493116006516">તમે ઇન્સ્ટૉલ કરેલી વર્તમાન થીમ</translation>
 <translation id="7461729991508684543">{NUM_DAYS,plural, =1{<ph name="DOMAIN" /> માટે જરૂરી છે કે તમે તમારા ડેટાનું બૅકઅપ લઈને આ <ph name="DEVICE_TYPE" /> આજે જ પરત કરો.<ph name="LINK_BEGIN" />વિગતો જુઓ<ph name="LINK_END" />}one{<ph name="DOMAIN" /> માટે જરૂરી છે કે તમે તમારા ડેટાનું બૅકઅપ લઈને આ <ph name="DEVICE_TYPE" /> {NUM_DAYS} દિવસની અંદર પરત કરો.<ph name="LINK_BEGIN" />વિગતો જુઓ<ph name="LINK_END" />}other{<ph name="DOMAIN" /> માટે જરૂરી છે કે તમે તમારા ડેટાનું બૅકઅપ લઈને આ <ph name="DEVICE_TYPE" /> {NUM_DAYS} દિવસની અંદર પરત કરો.<ph name="LINK_BEGIN" />વિગતો જુઓ<ph name="LINK_END" />}}</translation>
 <translation id="7461924472993315131">પિન કરો</translation>
@@ -5573,6 +5568,7 @@ USB ડિવાઇસ</translation>
 <translation id="7586498138629385861">Chrome Apps ખુલ્લી હોય ત્યારે Chrome શરૂ થવાનું ચાલુ રાખશે.</translation>
 <translation id="7589461650300748890">અરે, ત્યાં છો. સાવધ રહો.</translation>
 <translation id="7593653750169415785">ઑટોમૅટિક રીતે બ્લૉક કર્યું કારણ કે તમે કેટલીક વખત નોટિફિકેશન નકાર્યાં છે</translation>
+<translation id="7594725637786616550">તમારા <ph name="DEVICE_TYPE" />ને તદન નવા ડિવાઇસ જેવું કરવા માટે પાવરવોશ વડે રીસેટ કરો.</translation>
 <translation id="7595453277607160340">Android ઍપનો ઉપયોગ કરવા અને તમારા <ph name="DEVICE_TYPE" />ને યોગ્ય રીતે કાર્ય કરતું રાખવા માટે, ફરીથી સાઇન ઇન કરો અને અપડેટ કરો.</translation>
 <translation id="7595547011743502844"><ph name="ERROR" /> (ભૂલ કોડ <ph name="ERROR_CODE" />).</translation>
 <translation id="7598466960084663009">કમ્પ્યુટર ફરી શરૂ કરો</translation>
@@ -5938,6 +5934,7 @@ USB ડિવાઇસ</translation>
 <translation id="7973962044839454485">ખોટા વપરાશકર્તાનામ અથવા પાસવર્ડને કારણે PPP પ્રમાણીકરણ નિષ્ફળ થયું</translation>
 <translation id="7974566588408714340"><ph name="EXTENSIONNAME" /> નો ઉપયોગ કરીને ફરીથી પ્રયાસ કરો</translation>
 <translation id="7974936243149753750">ઓવરસ્કૅન</translation>
+<translation id="7975504106303186033">તમારે આ Chrome શૈક્ષણિક ડિવાઇસની નોંધણી શિક્ષણ સંબંધિત એકાઉન્ટમાં કરાવવી જરૂરી છે. નવા એકાઉન્ટ માટે સાઇન અપ કરવા, કૃપા કરીને g.co/workspace/edusignupની મુલાકાત લો.</translation>
 <translation id="7977404132325989121">વિન્ડોને &amp;નામ આપો...</translation>
 <translation id="7978412674231730200">ખાનગી કી</translation>
 <translation id="7978450511781612192">આનાથી તમે તમારા Google એકાઉન્ટમાંથી સાઇન આઉટ થઈ જશો. ત્યાર પછી તમારાં બુકમાર્ક, ઇતિહાસ, પાસવર્ડ અને ઘણું બધું સિંક કરવામાં નહીં આવે.</translation>
@@ -5982,6 +5979,7 @@ USB ડિવાઇસ</translation>
 <translation id="8030852056903932865">મંજૂર કરો</translation>
 <translation id="8032244173881942855">ટૅબને કાસ્ટ કરવામાં અસમર્થ.</translation>
 <translation id="8033827949643255796">પસંદ કરેલ</translation>
+<translation id="8033958968890501070">સમયસમાપ્તિ</translation>
 <translation id="8037117027592400564">સિન્થેસાઇઝ કરેલ વાણીનો ઉપયોગ કરીને બધી બોલાયેલ ટેક્સ્ટને વાંચો</translation>
 <translation id="8037357227543935929">પૂછો (ડિફૉલ્ટ)</translation>
 <translation id="803771048473350947">ફાઇલ</translation>
@@ -6003,6 +6001,7 @@ USB ડિવાઇસ</translation>
 <translation id="8053390638574070785">આ પૃષ્ઠને રીલોડ કરો</translation>
 <translation id="8054517699425078995">આ પ્રકારની ફાઇલ તમારા ઉપકરણને નુકસાન પહોંચાડી શકે છે. શું તમે તો પણ <ph name="FILE_NAME" /> ને રાખવા માંગો છો?</translation>
 <translation id="8054563304616131773">કૃપા કરીને માન્ય ઇમેઇલ ઍડ્રેસ દાખલ કરો</translation>
+<translation id="8054883179223321715">કોઈ ચોક્કસ વીડિયો સાઇટ માટે ઉપલબ્ધ</translation>
 <translation id="8054921503121346576">USB કીબોર્ડ કનેક્ટ કર્યું</translation>
 <translation id="8058655154417507695">સમાપ્તિ વર્ષ</translation>
 <translation id="8059417245945632445">&amp;ઉપકરણોની તપાસ કરો</translation>
@@ -6086,6 +6085,7 @@ USB ડિવાઇસ</translation>
 <translation id="8146793085009540321">સાઇન-ઇન નિષ્ફળ થયું. કૃપા કરીને તમારા વ્યવસ્થાપકનો સંપર્ક કરો અથવા ફરી પ્રયાસ કરો.</translation>
 <translation id="8147900440966275470"><ph name="NUM" /> ટૅબ મળી છે</translation>
 <translation id="8148760431881541277">સાઇન ઇન કરવાનું મર્યાદિત કરવાના સેટિંગ</translation>
+<translation id="8150259863378108853">Lacros, એક પ્રયોગાત્મક બ્રાઉઝર છે. કૃપા કરીને સહાય વિશેની કોઈપણ સમસ્યાની જાણ કરો &gt; "સમસ્યાની જાણ કરો…"</translation>
 <translation id="8151579390896831136">તમારી પ્રોફાઇલના નામ સહિત તેને કસ્ટમાઇઝ કરો</translation>
 <translation id="8151638057146502721">ગોઠવો</translation>
 <translation id="8152091997436726702">પ્રિન્ટર નોંધણીનો સમય પૂરો થયો. કોઈ પ્રિન્ટરની નોંધણી કરવા માટે, તમારે પ્રિન્ટર પર નોંધણીની ખાતરી કરવી જરૂરી છે.</translation>
@@ -6191,6 +6191,7 @@ USB ડિવાઇસ</translation>
 <translation id="8271379370373330993">આગલા કેટલાક પગલાં માતાપિતા માટે છે. એકાઉન્ટ સેટઅપ થઈ જાય તે પછી તમે બાળકને <ph name="DEVICE_TYPE" /> પાછું આપી શકો છો.</translation>
 <translation id="8272443605911821513">"વધુ સાધનો" મેનૂમાં એક્સટેન્શન્સને ક્લિક કરીને તમારા એક્સટેન્શન્સનું સંચાલન કરો.</translation>
 <translation id="8274332263553132018">ફાઇલ કાસ્ટ કરો</translation>
+<translation id="8274921654076766238">મૅગ્નિફાયર, કીબોર્ડના ફોકસને અનુસરે છે</translation>
 <translation id="8274924778568117936">અપડેટ પૂર્ણ ન થાય ત્યાં સુધી તમારું <ph name="DEVICE_TYPE" /> બંધ કરતા નહીં. ઇન્સ્ટૉલેશન પૂર્ણ થયા બાદ તમારું <ph name="DEVICE_TYPE" /> ફરી શરૂ થશે.</translation>
 <translation id="8275038454117074363">આયાત કરો</translation>
 <translation id="8275080796245127762">તમારા ડિવાઇસ પરથી કૉલ</translation>
@@ -6399,7 +6400,6 @@ USB ડિવાઇસ</translation>
 <translation id="8541462173655894684">પ્રિન્ટ સર્વરમાંથી કોઈ પ્રિન્ટર મળ્યું નથી</translation>
 <translation id="8542618328173222274">જ્યારે કોઈ સાઇટ તમારા વર્ચ્યુઅલ રિયાલિટી ડિવાઇસ અને ડેટાને ઉપયોગ કરવા માગે, ત્યારે પૂછો</translation>
 <translation id="8543556556237226809">પ્રશ્નો છે? તમારી પ્રોફાઇલનું નિરીક્ષણ કરનાર વ્યક્તિનો સંપર્ક કરો.</translation>
-<translation id="8545575359873600875">માફ કરશો, તમારો પાસવર્ડ ચકાસી શક્યાં નથી. આ નિરીક્ષિત વપરાશકર્તાના સંચાલકે તાજેતરમાં પાસવર્ડ બદલાવ્યો હોઇ શકે છે. જો આમ હોય, તો નવો પાસવર્ડ તમે આગલી વખતે સાઇન ઇન કરો ત્યારે લાગુ થશે. તમારા જૂના પાસવર્ડનો ઉપયોગ કરીને પ્રયાસ કરો.</translation>
 <translation id="8546186510985480118">ઉપકરણ પર સ્થાન ઓછું છે</translation>
 <translation id="8546306075665861288">ફોટો કૅશ મેમરી</translation>
 <translation id="854655314928502177">વેબ પ્રૉક્સીની ઑટો ખોજ URL:</translation>
@@ -6571,6 +6571,7 @@ USB ડિવાઇસ</translation>
 <translation id="8736288397686080465">પૃષ્ઠભૂમિમાં આ સાઇટ અપડેટ કરવામાં આવી છે.</translation>
 <translation id="8737685506611670901"><ph name="REPLACED_HANDLER_TITLE" /> ને બદલે <ph name="PROTOCOL" /> લિંક્સ ખોલો</translation>
 <translation id="8737709691285775803">શિલ</translation>
+<translation id="8737914367566358838">આ પેજનો અનુવાદ જે ભાષામાં કરવા ઇચ્છતા હો, તે પસંદ કરો</translation>
 <translation id="8740247629089392745">તમે આ Chromebook <ph name="SUPERVISED_USER_NAME" />ને સોંપી શકો છો. સેટઅપ કરવાનું લગભગ પૂર્ણ થઈ ગયું છે અને હવે આ શોધખોળ કરવાનો સમય છે.</translation>
 <translation id="8742998548129056176">તમારા ડિવાઇસ અને તમે તેનો કઈ રીતે ઉપયોગ કરો છો (જેમ કે બૅટરીનું લેવલ, સિસ્ટમ અને ઍપ પ્રવૃત્તિ, તેમજ ભૂલો) વિશેની આ સામાન્ય માહિતી છે. આ ડેટાનો ઉપયોગ Androidને બહેતર બનાવવા માટે કરવામાં આવશે અને અમુક એકીકૃત માહિતી, Google ઍપ અને ભાગીદારો, જેમ કે Android ડેવલપરને પણ તેઓની ઍપ અને પ્રોડક્ટને બહેતર બનાવવામાં સહાયરૂપ થશે.</translation>
 <translation id="8743390665131937741">પૂર્ણસ્ક્રીન ઝૂમ લેવલ:</translation>
@@ -6607,7 +6608,7 @@ USB ડિવાઇસ</translation>
 <translation id="8774379074441005279">પુનઃસ્થાપિત કરવાનું કન્ફર્મ કરો</translation>
 <translation id="8774934320277480003">ઉપરી હાંસિયો</translation>
 <translation id="8775144690796719618">અમાન્ય URL</translation>
-<translation id="8776977753660889796">{NUM_MINS,plural, =1{Chromeને તમારા કમ્પ્યુટરમાં જાણીતું હાનિકારક સૉફ્ટવેર મળ્યું નથી. છેલ્લે ચેક કર્યું: 1 મિનિટ પહેલાં.}one{Chromeને તમારા કમ્પ્યુટરમાં જાણીતું હાનિકારક સૉફ્ટવેર મળ્યું નથી. છેલ્લે ચેક કર્યું: {NUM_MINS} મિનિટ પહેલાં.}other{Chromeને તમારા કમ્પ્યુટરમાં જાણીતું હાનિકારક સૉફ્ટવેર મળ્યું નથી. છેલ્લે ચેક કર્યું: {NUM_MINS} મિનિટ પહેલાં.}}</translation>
+<translation id="8775163630211761057">તમારા Android ફોનની શ્રેષ્ઠ સુવિધાઓનો ઉપયોગ તમારા <ph name="DEVICE_TYPE" /> પર પણ કરો</translation>
 <translation id="8777628254805677039">રુટ પાસવર્ડ</translation>
 <translation id="8780123805589053431">Google તરફથી છબીનાં વર્ણનો મેળવો</translation>
 <translation id="8780443667474968681">વૉઇસ શોધ સેવા બંધ કરવામાં આવી છે.</translation>
@@ -6772,10 +6773,12 @@ USB ડિવાઇસ</translation>
 <translation id="8952831374766033534">ગોઠવણીના વિકલ્પની સુવિધા નથી: <ph name="ERROR_LINE" /></translation>
 <translation id="8953476467359856141">ચાર્જિંગ થતી વખતે</translation>
 <translation id="895347679606913382">પ્રારંભ કરે છે...</translation>
+<translation id="8957757410289731985">પ્રોફાઇલ કસ્ટમાઇઝ કરો</translation>
 <translation id="895944840846194039">JavaScript મેમરી</translation>
 <translation id="8962083179518285172">વિગતો છુપાવો</translation>
 <translation id="8962918469425892674">આ સાઇટ મોશન અથવા લાઇટ સેન્સરનો ઉપયોગ કરી રહી છે.</translation>
 <translation id="8965037249707889821">જૂનો પાસવર્ડ દાખલ કરો</translation>
+<translation id="8966809848145604011">અન્ય પ્રોફાઇલ</translation>
 <translation id="8966870118594285808">જો તમે ટૅબ અકસ્માતે બંધ કર્યું હોય, તો તે ફરી ખોલો</translation>
 <translation id="8967427617812342790">વાંચન સૂચિમાં ઉમેરો</translation>
 <translation id="8967866634928501045">બતાવવા માટે Alt Shift A દબાવો</translation>
@@ -6901,6 +6904,7 @@ USB ડિવાઇસ</translation>
 <translation id="9100765901046053179">વિગતવાર સેટિંગ્સ</translation>
 <translation id="9101691533782776290">ઍપ્લિકેશન લોન્ચ કરો</translation>
 <translation id="9102610709270966160">એક્સ્ટેંશન ચાલુ કરો</translation>
+<translation id="9103479157856427471">મોટી કરેલી સ્ક્રીન, કીબોર્ડ ફોકસને અનુસરે છે</translation>
 <translation id="9103868373786083162">પાછા જવા માટે દબાવો, ઇતિહાસ જોવા માટે સંદર્ભ મેનૂ પર જાઓ</translation>
 <translation id="9108072915170399168">ડેટા વપરાશના હાલના સેટિંગ ઇન્ટરનેટ વિના માટે સેટ છે</translation>
 <translation id="9108692355621501797"><ph name="LINK_BEGIN" />G Suite for Educationની પ્રાઇવસી નોટિસ<ph name="LINK_END" />નો આશય G Suite for Educationના વપરાશકર્તાઓ અને માતાપિતાની સમજણ માટે છે કે કયા પ્રકારનો ડેટા પ્રોડક્ટ એકત્રિત કરે છે, શા માટે તે એકત્રિત કરવામાં આવે છે અને તેનો શું ઉપયોગ કરવામાં આવે છે.</translation>

@@ -706,15 +706,6 @@ Nếu bạn tắt chính sách này, thì việc cuộn trang web đến các ph
       Nếu bạn không đặt hoặc đặt chính sách này thành true, thì người dùng có thể sử dụng giao diện dòng lệnh (CLI) quản lý máy ảo (VM).
       Nếu không, tất cả CLI quản lý máy ảo đều bị tắt và ẩn.
       </translation>
-<translation id="2194470398825717446">Chính sách này không dùng trong M61 nữa, vui lòng sử dụng EcryptfsMigrationStrategy.
-
-      Chỉ định cách thiết bị đã có sẵn ecryptfs sẽ hoạt động và cần chuyển đổi sang mã hóa ext4..
-
-      Nếu bạn đặt chính sách này thành 'DisallowArc', các ứng dụng Android sẽ bị tắt cho tất cả người dùng trên thiết bị (bao gồm cả những người dùng đã có mã hóa ext4) và sẽ không có người dùng nào bị đề nghị di chuyển từ ecryptfs sang mã hóa ext4.
-
-      Nếu bạn đặt chính sách này thành 'AllowMigration', người dùng có thư mục gốc ecryptf sẽ được đề nghị di chuyển các thư mục này sang mã hóa ext4 nếu cần (hiện tại, khi Android N đã có sẵn trên thiết bị).
-
-      Chính sách này không áp dụng cho các ứng dụng kiosk - các ứng dụng này sẽ được di chuyển tự động. Nếu bạn không đặt chính sách này, thiết bị sẽ hoạt động giống như khi bạn chọn 'DisallowArc'.</translation>
 <translation id="2195032660890227692">Chính sách này đã bị xóa trong <ph name="PRODUCT_NAME" /> 68 và thay thế bằng <ph name="ARC_BR_POLICY_NAME" />.</translation>
 <translation id="2197625019569762163">Khi bạn đặt chính sách này thành true, thì bàn phím số sẽ hiển thị theo mặc định để người dùng nhập mật khẩu trên màn hình đăng nhập. Người dùng vẫn có thể chuyển sang bàn phím thông thường.
 
@@ -2007,19 +1998,6 @@ Nếu đặt thành False, thì <ph name="PRODUCT_NAME" /> sẽ không sử dụ
 
       Để mọi người luôn tìm thấy đích <ph name="CLOUD_PRINT_NAME" />, bạn phải đặt chính sách này thành true và xóa <ph name="POLICY_ENUM_PRINTERTYPEDENYLIST_CLOUD" /> khỏi chính sách <ph name="POLICY_PRINTERTYPEDENYLIST" />.</translation>
 <translation id="3915395663995367577">URL tới một tệp .pac proxy</translation>
-<translation id="3917288538553140422">Việc đặt chính sách này chỉ định hành động cần thực hiện khi thư mục gốc của người dùng được tạo bằng phương thức mã hóa ecryptfs. Nếu các thư mục gốc đã mã hóa ecryptfs không di chuyển sang phương thức mã hóa ext4, thì ứng dụng Android có thể ngừng chạy.
-
-      Nếu bạn đặt chính sách này thành:
-
-      * Migrate (hoặc một tùy chọn không được hỗ trợ như AskUser hoặc AskForEcryptfsArcUsers), thì khi bạn đăng nhập, các thư mục sẽ tự động di chuyển sang phương thức mã hóa ext4 mà không cần xin phép người dùng.
-
-      * Wipe hoặc MinimalMigrate, thì khi bạn đăng nhập, các thư mục gốc mới đã mã hóa ext4 sẽ thay thế các thư mục cũ đã mã hóa ecryptfs. Để giúp người dùng không phải đăng nhập lại, tùy chọn MinimalMigrate sẽ cố bảo toàn mã đăng nhập.
-
-      * DisallowArc hoặc không đặt chính sách này, thì hệ thống sẽ ngăn quá trình di chuyển và các ứng dụng Android của người dùng sẽ ngừng chạy.
-
-      Chính sách này không áp dụng cho người dùng kiosk.
-
-      Cảnh báo: Tùy chọn Wipe và MinimalMigrate sẽ xóa dữ liệu trên máy.</translation>
 <translation id="3925377537407648234">Đặt độ phân giải màn hình và hệ số tỷ lệ</translation>
 <translation id="3927137827189017535">Bật tính năng hỗ trợ tiếp cận về phím cố định trên màn hình đăng nhập.
 
@@ -2213,13 +2191,6 @@ Nếu đặt thành False, thì <ph name="PRODUCT_NAME" /> sẽ không sử dụ
 <translation id="4228745249339680042">Việc đặt chính sách này sẽ chỉ định các URL và miền không hiển thị lời nhắc khi có yêu cầu về chứng chỉ chứng thực của Khóa bảo mật. Một tín hiệu cũng sẽ được gửi tới Khóa bảo mật để cho biết có thể sử dụng chứng thực riêng lẻ. Nếu không có tín hiệu này thì khi các trang web yêu cầu chứng thực của Khóa bảo mật, người dùng sẽ được nhắc trong <ph name="PRODUCT_NAME" /> phiên bản 65 trở lên.
 
       Các URL sẽ chỉ khớp ở dạng U2F appID. Các miền chỉ khớp ở dạng webauthn RP ID. Do đó, để bao gồm cả API U2F và API webauthn, hãy liệt kê cả miền và URL appID của một trang web cụ thể.</translation>
-<translation id="4238997902172035160">Cấu hình thư mục mà <ph name="PRODUCT_NAME" /> sẽ dùng để lưu trữ bản sao chuyển vùng của các cấu hình.
-
-      Nếu bạn đặt chính sách này, <ph name="PRODUCT_NAME" /> sẽ sử dụng thư mục được cung cấp để lưu trữ bản sao chuyển vùng của các cấu hình nếu chính sách <ph name="ROAMING_PROFILE_SUPPORT_ENABLED_POLICY_NAME" /> đã được bật. Nếu bạn tắt hoặc không đặt chính sách <ph name="ROAMING_PROFILE_SUPPORT_ENABLED_POLICY_NAME" />, giá trị lưu trữ trong chính sách này sẽ không được sử dụng.
-
-      Hãy xem https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables để biết danh sách các biến mà bạn có thể dùng.
-
-      Nếu bạn không đặt chính sách này, đường dẫn cấu hình chuyển vùng mặc định sẽ được sử dụng.</translation>
 <translation id="4239720644496144453">Bộ nhớ đệm không được sử dụng cho các ứng dụng Android. Nếu nhiều người dùng cài đặt cùng một ứng dụng Android thì ứng dụng sẽ được tải xuống lại cho từng người dùng.</translation>
 <translation id="4242223728343693100">Nếu đặt chính sách này, thì bạn có thể tạo danh sách các mẫu URL chỉ định những trang web không được đặt cookie.
 

@@ -355,7 +355,6 @@
 <translation id="1401308693935339022">Koristi lokaciju. Dozvolite aplikacijama i uslugama sa dozvolom za lokaciju da koriste lokaciju ovog uređaja. Google može povremeno da prikuplja podatke o lokaciji i da ih koristi na anoniman način za poboljšanje preciznosti lokacije i usluga zasnovanih na lokaciji.</translation>
 <translation id="1403222014593521787">Povezivanje sa proksijem nije uspelo</translation>
 <translation id="140520891692800925"><ph name="PROFILE_DISPLAY_NAME" /> (kontrolisano)</translation>
-<translation id="140541193409212341">Došlo je do greške dok je Chrome proveravao da li na računaru ima štetnog softvera</translation>
 <translation id="1405779994569073824">Kartica je otkazala.</translation>
 <translation id="1406500794671479665">Verifikovanje...</translation>
 <translation id="1407135791313364759">Otvori sve</translation>
@@ -390,7 +389,6 @@
 <translation id="1433811987160647649">Pitaj pre pristupa</translation>
 <translation id="1434696352799406980">Ovo će resetovati početnu stranicu, stranicu nove kartice, pretraživač i zakačene kartice. Takođe će onemogućiti sve dodatke i obrisati privremene podatke poput kolačića. Obeleživači, istorija i sačuvane lozinke neće biti obrisani.</translation>
 <translation id="1434886155212424586">Početna stranica je stranica Nova kartica</translation>
-<translation id="1435515966666225466">Dozvoljeno im je da koriste dodatnu komponentu za pristup računaru</translation>
 <translation id="1436390408194692385">Važi još <ph name="TICKET_TIME_LEFT" /></translation>
 <translation id="1436671784520050284">Nastavi sa podešavanjem</translation>
 <translation id="1436784010935106834">Uklonjeno</translation>
@@ -1617,7 +1615,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2839032553903800133">Obaveštenja su blokirana</translation>
 <translation id="2841013758207633010">Vreme</translation>
 <translation id="2841837950101800123">Dobavljač</translation>
-<translation id="2841921561399512198">{NUM_DAYS,plural, =1{Chrome nije pronašao poznat štetan softver na računaru. Poslednji put provereno: pre 1 dan.}one{Chrome nije pronašao poznat štetan softver na računaru. Poslednji put provereno: pre {NUM_DAYS} dan.}few{Chrome nije pronašao poznat štetan softver na računaru. Poslednji put provereno: pre {NUM_DAYS} dana.}other{Chrome nije pronašao poznat štetan softver na računaru. Poslednji put provereno: pre {NUM_DAYS} dana.}}</translation>
 <translation id="2844169650293029770">Uređaj sa USB priključkom tipa C (levi prednji port)</translation>
 <translation id="2844809857160214557">Pregledajte zadatke štampanja i upravljajte njima</translation>
 <translation id="2845382757467349449">Uvek prikazuj traku sa obeleživačima</translation>
@@ -1786,7 +1783,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3036546437875325427">Omogući Flash</translation>
 <translation id="3037754279345160234">Ne možemo da raščlanimo konfiguraciju radi pridruživanja domenu. Obratite se administratoru.</translation>
 <translation id="3038612606416062604">Ručno dodajte štampač</translation>
-<translation id="3038675903128704560">Ne dozvoljavaj nijednom sajtu da pristupa računaru pomoću dodatne komponente</translation>
 <translation id="3039491566278747710">Instaliranje oflajn smernica na uređaju nije uspelo.</translation>
 <translation id="3043581297103810752">Sa <ph name="ORIGIN" /></translation>
 <translation id="3045447014237878114">Ovaj sajt je automatski preuzeo više datoteka</translation>
@@ -2105,7 +2101,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3439153939049640737">Uvek dozvoli da <ph name="HOST" /> pristupa mikrofonu</translation>
 <translation id="3439970425423980614">Otvaranje PDF-a u pregledu</translation>
 <translation id="3440663250074896476">Još radnji za obeleživač <ph name="BOOKMARK_NAME" /></translation>
-<translation id="3440761377721825626">Pitaj kada sajt želi da pristupi mom računaru pomoću dodatne komponente</translation>
 <translation id="3441653493275994384">Ekran</translation>
 <translation id="3441663102605358937">Ponovo se prijavite na <ph name="ACCOUNT" /> da biste verifikovali ovaj nalog</translation>
 <translation id="3445047461171030979">Brzi odgovori Google pomoćnika</translation>
@@ -2182,7 +2177,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3518985090088779359">Prihvati i nastavi</translation>
 <translation id="3519564332031442870">Pozadinska usluga štampanja</translation>
 <translation id="3521606918211282604">Promenite veličinu diska</translation>
-<translation id="3523642406908660543">Pitaj kada sajt želi da pristupi mom računaru pomoću dodatne komponente (preporučeno)</translation>
 <translation id="3524965460886318643">Izvezi aktivnosti</translation>
 <translation id="3526034519184079374">Čitanje ili menjanje podataka sajta nije uspelo</translation>
 <translation id="3527085408025491307">Direktorijum</translation>
@@ -2512,7 +2506,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3873915545594852654">Došlo je do problema koji se odnosi na ARC++.</translation>
 <translation id="3874164307099183178">Uključite Google pomoćnik</translation>
 <translation id="3877075909000773256">Podešavanja deljenja u blizini za uređaj korisnika <ph name="USER_NAME" />, koji deli pomoću naloga <ph name="USER_EMAIL" />.</translation>
-<translation id="387771067039689031">Nije im dozvoljeno da koriste dodatnu komponentu za pristup računaru</translation>
 <translation id="3879748587602334249">Menadžer preuzimanja</translation>
 <translation id="3881478300875776315">Prikaži manje redova</translation>
 <translation id="3882165008614329320">Postojeći video iz kamere ili datoteke</translation>
@@ -2651,7 +2644,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="4031179711345676612">Mikrofon je dozvoljen</translation>
 <translation id="4031527940632463547">Pristup senzorima je blokiran</translation>
 <translation id="4033471457476425443">Dodaj novi direktorijum</translation>
-<translation id="4034280328082410379">Onemogući dodatnim komponentama da pristupaju računaru</translation>
 <translation id="4034824040120875894">Štampač</translation>
 <translation id="4035758313003622889">&amp;Menadžer zadataka</translation>
 <translation id="4036778507053569103">Smernice preuzete sa servera su nevažeće.</translation>
@@ -2778,7 +2770,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="4200983522494130825">Nova &amp;kartica</translation>
 <translation id="4201546031411513170">Uvek možete da odaberete šta ćete sinhronizovati u podešavanjima.</translation>
 <translation id="420283545744377356">Isključite čuvar ekrana</translation>
-<translation id="4205362703535890467">Chrome nije pronašao poznat štetan softver na računaru. Poslednji put provereno: juče.</translation>
 <translation id="4206144641569145248">Vanzemaljac</translation>
 <translation id="4206323443866416204">Izveštaj sa povratnim informacijama</translation>
 <translation id="4208390505124702064">Pretraži <ph name="SITE_NAME" /></translation>
@@ -3280,7 +3271,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="4830121310592638841">Pitaj kada sajt želi da otvara i postavlja prozore na ekrane</translation>
 <translation id="4830502475412647084">Instalira se ažuriranje OS-a</translation>
 <translation id="4830573902900904548"><ph name="DEVICE_TYPE" /> ne može da se poveže na internet pomoću mreže <ph name="NETWORK_NAME" />. Izaberite neku drugu mrežu. <ph name="LEARN_MORE_LINK_START" />Saznajte više<ph name="LEARN_MORE_LINK_END" /></translation>
-<translation id="4831688036548685548">Chrome nije pronašao poznat štetan softver na računaru. Poslednji put provereno: malopre.</translation>
 <translation id="4833236810053292670">Pogledajte šta je novo na Chromebook-u</translation>
 <translation id="4833683849865011483">Pronađen je 1 štampač sa servera za štampanje</translation>
 <translation id="4836504898754963407">Upravljajte otiscima prstiju</translation>
@@ -4303,6 +4293,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="6042308850641462728">Još</translation>
 <translation id="6043317578411397101"><ph name="APP_NAME" /> deli Chrome karticu sa <ph name="TAB_NAME" />.</translation>
 <translation id="604388835206766544">Raščlanjivanje konfiguracije nije uspelo</translation>
+<translation id="6043994281159824495">Odjavi me odmah</translation>
 <translation id="6044805581023976844"><ph name="APP_NAME" /> deli Chrome karticu i zvuk sa <ph name="TAB_NAME" />.</translation>
 <translation id="6049004884579590341">Pritisnite i zadržite |<ph name="ACCELERATOR" />| da biste izašli iz režima celog ekrana</translation>
 <translation id="6051354611314852653">Ups! Sistem nije uspeo da odobri pristup API-ju za ovaj uređaj.</translation>
@@ -4563,7 +4554,6 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="6333064448949140209">Datoteka će biti poslata Google-u radi otklanjanja grešaka</translation>
 <translation id="6338981933082930623">Svi sajtovi mogu da prikazuju sve oglase</translation>
 <translation id="6339668969738228384">Otvori novi profil za <ph name="USER_EMAIL_ADDRESS" /></translation>
-<translation id="6339995243416022850">Sajtovi mogu da traže da koriste dodatnu komponentu radi pristupa računaru (preporučuje se)</translation>
 <translation id="6340017061976355871">Povezivanje sa serverom nije uspelo. Proverite mrežnu vezu i probajte ponovo kasnije. Ako se problem nastavi, restartujte Chromebook.</translation>
 <translation id="6340071272923955280">Internet protokol za štampanje (IPPS)</translation>
 <translation id="6340526405444716530">Personalizacija</translation>
@@ -4666,7 +4656,6 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="6463795194797719782">&amp;Izmeni</translation>
 <translation id="6465841119675156448">Bez interneta</translation>
 <translation id="6466988389784393586">&amp;Otvori sve obeleživače</translation>
-<translation id="6467235653320897404">{NUM_HOURS,plural, =1{Chrome nije pronašao poznat štetan softver na računaru. Poslednji put provereno: pre 1 sat.}one{Chrome nije pronašao poznat štetan softver na računaru. Poslednji put provereno: pre {NUM_HOURS} sat.}few{Chrome nije pronašao poznat štetan softver na računaru. Poslednji put provereno: pre {NUM_HOURS} sata.}other{Chrome nije pronašao poznat štetan softver na računaru. Poslednji put provereno: pre {NUM_HOURS} sati.}}</translation>
 <translation id="6467304607960172345">Optimizujte video snimke preko celog ekrana</translation>
 <translation id="6468485451923838994">Fontovi</translation>
 <translation id="6469557521904094793">Uključi mobilnu mrežu</translation>
@@ -4986,7 +4975,6 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="6860097299815761905">Podešavanja proksija...</translation>
 <translation id="686022878923628150">Onemogući sajtovima da se povezuju sa MIDI uređajima</translation>
 <translation id="6860427144121307915">Otvori na kartici</translation>
-<translation id="6861451385429799394"><ph name="BEGIN_LINK" />Administrator<ph name="END_LINK" /> je onemogućio traženje štetnog softvera pomoću Chrome-a</translation>
 <translation id="686366188661646310">Želite da izbrišete lozinku?</translation>
 <translation id="6865313869410766144">Podaci Automatskog popunjavanja za obrasce</translation>
 <translation id="6865598234501509159">Jezik ove stranice nije <ph name="LANGUAGE" /></translation>
@@ -5366,7 +5354,6 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="7308002049209013926">Koristite Pokretač da biste brzo pristupali novim aplikacijama i aktivnostima. Da biste došli ovde pomoću tastature, pritisnite Alt + Shift + L.</translation>
 <translation id="7309257895202129721">Prikaži &amp;kontrole</translation>
 <translation id="7310598146671372464">Prijavljivanje nije uspelo. Server ne podržava navedene Kerberos tipove šifrovanja. Kontaktirajte administratora.</translation>
-<translation id="7311079019872751559">Pristup pomoću dodatne komponente van zaštićenog okruženja</translation>
 <translation id="7320213904474460808">Postavi kao podrazumevanu mrežu</translation>
 <translation id="7321545336522791733">Server nije dostupan</translation>
 <translation id="7324297612904500502">Forum za beta verziju</translation>
@@ -5491,7 +5478,6 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="7456847797759667638">Otvori lokaciju...</translation>
 <translation id="7457384018036134905">Upravljajte jezicima u podešavanjima Chrome OS-a</translation>
 <translation id="7458168200501453431">Koristi istu proveru pravopisa kao Google pretraga. Tekst koji unesete u pregledač se šalje Google-u.</translation>
-<translation id="7459920164600044274">Sajtovi obično koriste dodatne komponente za potrebe funkcija poput strimovanja video snimaka ili instaliranja aplikacija</translation>
 <translation id="7460045493116006516">Aktuelna tema koju ste instalirali</translation>
 <translation id="7461729991508684543">{NUM_DAYS,plural, =1{<ph name="DOMAIN" /> zahteva da napravite rezervnu kopiju podataka i da vratite ovaj <ph name="DEVICE_TYPE" /> danas.<ph name="LINK_BEGIN" />Pogledajte detalje<ph name="LINK_END" />}one{<ph name="DOMAIN" /> zahteva da napravite rezervnu kopiju podataka i da vratite ovaj <ph name="DEVICE_TYPE" /> roku od {NUM_DAYS} dana.<ph name="LINK_BEGIN" />Pogledajte detalje<ph name="LINK_END" />}few{<ph name="DOMAIN" /> zahteva da napravite rezervnu kopiju podataka i da vratite ovaj <ph name="DEVICE_TYPE" /> roku od {NUM_DAYS} dana.<ph name="LINK_BEGIN" />Pogledajte detalje<ph name="LINK_END" />}other{<ph name="DOMAIN" /> zahteva da napravite rezervnu kopiju podataka i da vratite ovaj <ph name="DEVICE_TYPE" /> roku od {NUM_DAYS} dana.<ph name="LINK_BEGIN" />Pogledajte detalje<ph name="LINK_END" />}}</translation>
 <translation id="7461924472993315131">Zakači</translation>
@@ -6015,6 +6001,7 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8030852056903932865">Odobri</translation>
 <translation id="8032244173881942855">Nije uspelo prebacivanje kartice.</translation>
 <translation id="8033827949643255796">izabrano</translation>
+<translation id="8033958968890501070">Vreme je isteklo</translation>
 <translation id="8037117027592400564">Čitanje svog teksta izgovorenog pomoću sintetizovanog govora</translation>
 <translation id="8037357227543935929">Pitaj (podrazumevano)</translation>
 <translation id="803771048473350947">Datoteka</translation>
@@ -6440,7 +6427,6 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8541462173655894684">Nije pronađen nijedan štampač sa servera za štampanje</translation>
 <translation id="8542618328173222274">Pitaj kada sajt želi da koristi uređaje i podatke virtuelne realnosti</translation>
 <translation id="8543556556237226809">Imate pitanja? Kontaktirajte osobu koja vam nadgleda profil.</translation>
-<translation id="8545575359873600875">Žao nam je, nije moguće verifikovati lozinku. Menadžer ovog korisnika pod nadzorom je možda nedavno promenio lozinku. Ako jeste, nova lozinka će važiti kada se sledeći put budete prijavljivali. Pokušajte da koristite staru lozinku.</translation>
 <translation id="8546186510985480118">Ponestaje prostora na uređaju</translation>
 <translation id="8546306075665861288">Keš slike</translation>
 <translation id="854655314928502177">URL za automatsko otkrivanje veb-proksija:</translation>
@@ -6651,7 +6637,6 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8774934320277480003">Gornja margina</translation>
 <translation id="8775144690796719618">Nevažeći URL</translation>
 <translation id="8775163630211761057">Prenesite najbolje sa Android telefona na <ph name="DEVICE_TYPE" /></translation>
-<translation id="8776977753660889796">{NUM_MINS,plural, =1{Chrome nije pronašao poznat štetan softver na računaru. Poslednji put provereno: pre 1 minut.}one{Chrome nije pronašao poznat štetan softver na računaru. Poslednji put provereno: pre {NUM_MINS} minut.}few{Chrome nije pronašao poznat štetan softver na računaru. Poslednji put provereno: pre {NUM_MINS} minuta.}other{Chrome nije pronašao poznat štetan softver na računaru. Poslednji put provereno: pre {NUM_MINS} minuta.}}</translation>
 <translation id="8777628254805677039">osnovna lozinka</translation>
 <translation id="8780123805589053431">Preuzimaj opise slika sa Google-a</translation>
 <translation id="8780443667474968681">Glasovna pretraga je isključena.</translation>

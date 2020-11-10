@@ -77,6 +77,7 @@
 <translation id="1513352483775369820">Oznake i Google povijest</translation>
 <translation id="1513858653616922153">Izbriši zaporku</translation>
 <translation id="1521774566618522728">Aktivan danas</translation>
+<translation id="1538801903729528855">Ostvarite bolji glasovni doživljaj na webu</translation>
 <translation id="1543538514740974167">Brže otvaranje ove stranice</translation>
 <translation id="1544826120773021464">Da biste upravljali svojim Google računom, dodirnite gumb "Upravljanje računom"</translation>
 <translation id="1549000191223877751">Premjesti u drugi prozor</translation>
@@ -117,6 +118,7 @@
 <translation id="1877026089748256423">Chrome je zastario</translation>
 <translation id="1883903952484604915">Moje datoteke</translation>
 <translation id="189358972401248634">Drugi jezici</translation>
+<translation id="1918175104945982129">Korisničko sučelje pristanka za glasovno pretraživanje putem Asistenta otvoreno je na pola visine</translation>
 <translation id="1919130412786645364">Dopusti prijavu u Chrome</translation>
 <translation id="1922362554271624559">Predloženi jezici</translation>
 <translation id="1925021887439448749">Unesite prilagođenu web-adresu</translation>
@@ -147,6 +149,7 @@
 <translation id="2056878612599315956">Web-lokacija pauzirana</translation>
 <translation id="2067805253194386918">SMS</translation>
 <translation id="2068748236079642969">Pogledaj sljedeći videozapis</translation>
+<translation id="2074143993849053708">Korisničko sučelje pristanka za glasovno pretraživanje putem Asistenta je zatvoreno</translation>
 <translation id="2082238445998314030"><ph name="RESULT_NUMBER" /> od <ph name="TOTAL_RESULTS" /> rezultata</translation>
 <translation id="2096012225669085171">Sinkronizacija i prilagodba na svim uređajima</translation>
 <translation id="2100273922101894616">Automatska prijava</translation>
@@ -279,6 +282,7 @@ Dodirnite i držite bilo koju riječ da biste pokrenuli pretraživanje. Ako žel
 <translation id="3006881078666935414">Nema podataka o potrošnji</translation>
 <translation id="3016635187733453316">Provjerite je li uređaj povezan s internetom</translation>
 <translation id="3029704984691124060">Zaporke se ne podudaraju</translation>
+<translation id="3031225630520268969">Korisničko sučelje pristanka za glasovno pretraživanje pomoću Asistenta</translation>
 <translation id="3034163383943672781">Preuzimanje će započeti <ph name="DATE" />.</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Potražite pomoć<ph name="END_LINK" /></translation>
 <translation id="305593374596241526">Lokacija je isključena. Uključite je u <ph name="BEGIN_LINK" />postavkama Androida<ph name="END_LINK" />.</translation>
@@ -437,6 +441,7 @@ Dodirnite i držite bilo koju riječ da biste pokrenuli pretraživanje. Ako žel
 <translation id="4248098802131000011">Osigurajte svoje zaporke od povreda podataka i drugih sigurnosnih problema</translation>
 <translation id="4250229828105606438">Snimka zaslona</translation>
 <translation id="4256782883801055595">Licence otvorenog koda</translation>
+<translation id="4263656433980196874">Korisničko sučelje pristanka za glasovno pretraživanje putem Asistenta otvoreno je u punoj visini</translation>
 <translation id="4269820728363426813">Kopiraj adresu veze</translation>
 <translation id="4298388696830689168">Povezane web-lokacije</translation>
 <translation id="4303044213806199882">chrome_snimka_zaslona_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
@@ -623,6 +628,7 @@ Da biste promijenili tu postavku, <ph name="BEGIN_LINK" />poništite sinkronizac
 <translation id="5581519193887989363">Uvijek možete odabrati u <ph name="BEGIN_LINK1" />postavkama<ph name="END_LINK1" /> što će se sinkronizirati.</translation>
 <translation id="5595485650161345191">Uređivanje adrese</translation>
 <translation id="5599455543593328020">Anonimni način</translation>
+<translation id="5599941490345670218">Google Assistant može dovršiti radnje na web-lokacijama za vas</translation>
 <translation id="5620163320393916465">Nema spremljenih zaporki</translation>
 <translation id="5620928963363755975">Pronađite svoje datoteke i stranice u Preuzimanjima pomoću gumba Više opcija</translation>
 <translation id="5626134646977739690">Naziv:</translation>
@@ -1148,6 +1154,7 @@ Podaci iz vaših anonimnih sesija izbrisat će se iz Chromea tek kad <ph name="B
 <translation id="9155898266292537608">Možete i kratko dodirnuti riječ da biste je pretražili</translation>
 <translation id="9169507124922466868">Povijest navigacije je poluotvorena</translation>
 <translation id="9191031968346938109">Dodaj u…</translation>
+<translation id="919615279147764192">Da bi vam pomogao sa zadacima, Google će primati URL-ove i sadržaje web-lokacija na kojima upotrebljavate Asistenta, kao i informacije koje šaljete putem Asistenta. Te se informacije mogu spremati na vaš Google račun. Asistenta možete isključiti u Chromeovim postavkama.</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Provjera je izvršena prije 1 minute}one{Provjera je izvršena prije # minute}few{Provjera je izvršena prije # minute}other{Provjera je izvršena prije # minuta}}</translation>
 <translation id="9204836675896933765">Preostala je 1 datoteka</translation>
 <translation id="9206873250291191720">A</translation>

@@ -77,6 +77,7 @@
 <translation id="1513352483775369820">Favoritos e histórico da Web</translation>
 <translation id="1513858653616922153">Excluir senha</translation>
 <translation id="1521774566618522728">Ativado hoje</translation>
+<translation id="1538801903729528855">Tenha uma experiência de voz melhor na Web</translation>
 <translation id="1543538514740974167">Acessar esta página mais rapidamente</translation>
 <translation id="1544826120773021464">Para gerenciar sua Conta do Google, toque no botão "Gerenciar conta".</translation>
 <translation id="1549000191223877751">Mover para outra janela</translation>
@@ -117,6 +118,7 @@
 <translation id="1877026089748256423">O Google Chrome está desatualizado</translation>
 <translation id="1883903952484604915">Meus arquivos</translation>
 <translation id="189358972401248634">Outros idiomas</translation>
+<translation id="1918175104945982129">IU de consentimento para a pesquisa por voz do Assistente aberta na metade da altura</translation>
 <translation id="1919130412786645364">Permitir login no Chrome</translation>
 <translation id="1922362554271624559">Idiomas sugeridos</translation>
 <translation id="1925021887439448749">Digite o endereço da Web personalizado</translation>
@@ -147,6 +149,7 @@
 <translation id="2056878612599315956">Site pausado</translation>
 <translation id="2067805253194386918">texto</translation>
 <translation id="2068748236079642969">Assistir ao próximo vídeo</translation>
+<translation id="2074143993849053708">IU de consentimento para a pesquisa por voz do Assistente fechada</translation>
 <translation id="2082238445998314030">Resultado <ph name="RESULT_NUMBER" /> de <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2096012225669085171">Sincronizar e personalizar entre dispositivos</translation>
 <translation id="2100273922101894616">Login automático</translation>
@@ -279,6 +282,7 @@ Toque em qualquer palavra e a mantenha pressionada para pesquisar. Para refinar 
 <translation id="3006881078666935414">Nenhum dado de uso</translation>
 <translation id="3016635187733453316">Verifique se o dispositivo está conectado à Internet</translation>
 <translation id="3029704984691124060">As senhas não correspondem</translation>
+<translation id="3031225630520268969">IU de consentimento para a pesquisa por voz do Assistente</translation>
 <translation id="3034163383943672781">O download será feito em <ph name="DATE" />.</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Receber ajuda<ph name="END_LINK" /></translation>
 <translation id="305593374596241526">A Localização está desativada. Ative-a nas <ph name="BEGIN_LINK" />configurações do Android<ph name="END_LINK" />.</translation>
@@ -437,6 +441,7 @@ Toque em qualquer palavra e a mantenha pressionada para pesquisar. Para refinar 
 <translation id="4248098802131000011">Manter suas senhas protegidas contra violações de dados e outros problemas de segurança</translation>
 <translation id="4250229828105606438">Captura de tela</translation>
 <translation id="4256782883801055595">Licenças de código aberto</translation>
+<translation id="4263656433980196874">IU de consentimento para a pesquisa por voz do Assistente aberta no tamanho máximo</translation>
 <translation id="4269820728363426813">Copiar endereço do link</translation>
 <translation id="4298388696830689168">Sites vinculados</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
@@ -624,6 +629,7 @@ Para alterar essa configuração, <ph name="BEGIN_LINK" />redefina a sincroniza�
 <translation id="5581519193887989363">Nas <ph name="BEGIN_LINK1" />configurações<ph name="END_LINK1" />, é possível escolher a qualquer momento o que é sincronizado.</translation>
 <translation id="5595485650161345191">Editar endereço</translation>
 <translation id="5599455543593328020">Modo de navegação anônima</translation>
+<translation id="5599941490345670218">O Google Assistente pode concluir ações em sites para você</translation>
 <translation id="5620163320393916465">Nenhuma senha salva</translation>
 <translation id="5620928963363755975">Procure seus arquivos e páginas em Downloads, usando o botão Mais opções</translation>
 <translation id="5626134646977739690">Nome:</translation>
@@ -1149,6 +1155,7 @@ Os dados da sessão anônima só serão excluídos do Chrome quando você <ph na
 <translation id="9155898266292537608">Você também pode pesquisar com um toque rápido em uma palavra</translation>
 <translation id="9169507124922466868">Histórico de navegação parcialmente aberto</translation>
 <translation id="9191031968346938109">Adicionar a…</translation>
+<translation id="919615279147764192">Para ajudar você com suas tarefas, o Google receberá os URLs e o conteúdo de sites em que você usa o Assistente, assim como as informações que você envia por ele. Essas informações poderão ser armazenadas na sua Conta do Google. É possível desativar o Assistente nas configurações do Chrome.</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Verificado 1 minuto atrás}one{Verificado # minuto atrás}other{Verificado # minutos atrás}}</translation>
 <translation id="9204836675896933765">1 arquivo restante</translation>
 <translation id="9206873250291191720">A</translation>

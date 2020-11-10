@@ -348,7 +348,6 @@
 <translation id="352577523970648069">Ένα πεδίο κειμένου με δυνατότητα επεξεργασίας</translation>
 <translation id="3538907380453898475">dscrplst</translation>
 <translation id="3549141990712742152">αποκοπή <ph name="TEXT" />.</translation>
-<translation id="3549680091535286226">Πατήστε με δύο δάκτυλα για να διακόψετε προσωρινά την ομιλία</translation>
 <translation id="3564729643041517261">Το τρέχον στιλ προβολής είναι η παράθεση.</translation>
 <translation id="3573145950452451508">Υποσέλιδο σελίδας</translation>
 <translation id="3587482841069643663">Όλες</translation>
@@ -596,6 +595,7 @@
 <translation id="5561345396546889625">Επόμενη λίστα</translation>
 <translation id="5562645715554321347">hdnggrp</translation>
 <translation id="5574412348552378458">Λειτουργία εκμάθησης ChromeVox</translation>
+<translation id="5582839680698949063">Κύριο μενού</translation>
 <translation id="5585044216466955529">Επεξεργασία κειμένου, καταχώριση διεύθυνσης ηλεκτρονικού ταχυδρομείου</translation>
 <translation id="5597170376237141345">Επόμενο πλαίσιο ελέγχου</translation>
 <translation id="5598905979683743333"><ph name="NAME" />, μη επιλεγμένο κουμπί επιλογής</translation>
@@ -829,7 +829,6 @@
 <translation id="7491962110804786152">καρτέλα</translation>
 <translation id="7492497529767769458">Μεταβείτε στην επόμενη ενότητα. Στα παραδείγματα περιλαμβάνονται η Περιοχή κατάστασης και η Εφαρμογή εκκίνησης.</translation>
 <translation id="7505149250476994901">Πείτε "κεφαλαίο" πριν από το γράμμα</translation>
-<translation id="7518543783849163354">Για προσωρινή διακοπή της εκφώνησης του ChromeVox, πατήστε το πλήκτρο Control.</translation>
 <translation id="7533226154149229506">Ανοιχτή χρυσοκίτρινη ράβδος</translation>
 <translation id="7543255924852002459">Ετικέτα απόρριψης</translation>
 <translation id="7552432549459840808">Χρήσιμες συντομεύσεις Chrome</translation>

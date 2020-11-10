@@ -355,7 +355,6 @@
 <translation id="1401308693935339022">Erabili kokapena. Baimendu kokapena atzi dezaketen aplikazio eta zerbitzuei gailuaren kokapena erabiltzea. Google-k kokapen-datu anonimoak biltzen ditu noizean behin, kokapenaren zehaztasuna eta kokapenean oinarritutako zerbitzuak hobetzeko.</translation>
 <translation id="1403222014593521787">Ezin da konektatu proxyra</translation>
 <translation id="140520891692800925"><ph name="PROFILE_DISPLAY_NAME" /> (gainbegiratua)</translation>
-<translation id="140541193409212341">Errore bat gertatu da Chrome ordenagailuan software kaltegarria bilatzen ari zenean</translation>
 <translation id="1405779994569073824">Huts egin du.</translation>
 <translation id="1406500794671479665">Egiaztatzen…</translation>
 <translation id="1407135791313364759">Ireki guztiak</translation>
@@ -390,7 +389,6 @@
 <translation id="1433811987160647649">Galdetu atzitu aurretik</translation>
 <translation id="1434696352799406980">Abioko orria, Fitxa berria orria, bilatzailea eta ainguratutako fitxak berrezarriko dira. Gainera, luzapen guztiak desgaituko dira eta aldi baterako datuak (adibidez, cookieak) garbituko dira. Laster-markak, historia eta gordetako pasahitzak ez dira garbituko.</translation>
 <translation id="1434886155212424586">Hasierako orria Fitxa berria orria da</translation>
-<translation id="1435515966666225466">Pluginak erabil ditzakete ordenagailua atzitzeko</translation>
 <translation id="1436390408194692385">Balio-aldia: <ph name="TICKET_TIME_LEFT" /></translation>
 <translation id="1436671784520050284">Jarraitu konfiguratzen</translation>
 <translation id="1436784010935106834">Kendu egin da</translation>
@@ -1618,7 +1616,6 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="2839032553903800133">Jakinarazpenak blokeatuta daude</translation>
 <translation id="2841013758207633010">Ordua</translation>
 <translation id="2841837950101800123">Hornitzailea</translation>
-<translation id="2841921561399512198">{NUM_DAYS,plural, =1{Chrome-k ez du aurkitu software kaltegarririk ordenagailuan. Duela egun bat egiaztatu du azkenengoz.}other{Chrome-k ez du aurkitu software kaltegarririk ordenagailuan. Duela {NUM_DAYS} egun egiaztatu du azkenengoz.}}</translation>
 <translation id="2844169650293029770">USB-C gailua (ezkerraldeko aurreko ataka)</translation>
 <translation id="2844809857160214557">Ikusi eta kudeatu inprimatze-lanak</translation>
 <translation id="2845382757467349449">Erakutsi beti laster-marken barra</translation>
@@ -1786,7 +1783,6 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="3036546437875325427">Gaitu Flash</translation>
 <translation id="3037754279345160234">Ezin da analizatu domeinuan sartzeko konfigurazioa. Jarri administratzailearekin harremanetan.</translation>
 <translation id="3038612606416062604">Gehitu inprimagailu bat eskuz</translation>
-<translation id="3038675903128704560">Ez baimendu inongo webguneri plugin bat erabiltzea ordenagailua atzitzeko</translation>
 <translation id="3039491566278747710">Ezin izan da instalatu konexiorik gabeko gidalerroa gailuan.</translation>
 <translation id="3043581297103810752">Jatorria: <ph name="ORIGIN" /></translation>
 <translation id="3045447014237878114">Webgune honek hainbat fitxategi deskargatu ditu automatikoki</translation>
@@ -2104,7 +2100,6 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="3439153939049640737">Eman beti mikrofonoa erabiltzeko baimena <ph name="HOST" /> webguneari</translation>
 <translation id="3439970425423980614">PDF dokumentua aurrebistan irekitzen</translation>
 <translation id="3440663250074896476"><ph name="BOOKMARK_NAME" /> laster-markarekin erlazionatutako ekintza gehiago</translation>
-<translation id="3440761377721825626">Eskatu berrespena webguneek ordenagailua atzitzeko plugin bat erabili nahi dutenean</translation>
 <translation id="3441653493275994384">Pantaila</translation>
 <translation id="3441663102605358937">Hasi saioa <ph name="ACCOUNT" /> kontuan berriro kontua egiaztatzeko</translation>
 <translation id="3445047461171030979">Google-ren Laguntzailea eginbidearen erantzun bizkorrak</translation>
@@ -2180,7 +2175,6 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="3518985090088779359">Onartu eta jarraitu</translation>
 <translation id="3519564332031442870">Inprimatzeko backend zerbitzua</translation>
 <translation id="3521606918211282604">Aldatu diskoaren tamaina</translation>
-<translation id="3523642406908660543">Galdetu webguneek plugin bat erabili nahi dutenean ordenagailua atzitzeko (gomendatua)</translation>
 <translation id="3524965460886318643">Esportatu jarduerak</translation>
 <translation id="3526034519184079374">Ezin dira irakurri edo aldatu webgunearen datuak</translation>
 <translation id="3527085408025491307">Karpeta</translation>
@@ -2509,7 +2503,6 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="3873915545594852654">Arazo bat izan da ARC++ eginbidearekin.</translation>
 <translation id="3874164307099183178">Aktibatu Google-ren Laguntzailea</translation>
 <translation id="3877075909000773256">Nearby Share-ren ezarpenak <ph name="USER_NAME" /> erabiltzailearen gailurako; <ph name="USER_EMAIL" /> kontuaren bidez partekatzen dira.</translation>
-<translation id="387771067039689031">Ezin dute erabili pluginik ordenagailua atzitzeko</translation>
 <translation id="3879748587602334249">Deskargen kudeatzailea</translation>
 <translation id="3881478300875776315">Erakutsi lerro gutxiago</translation>
 <translation id="3882165008614329320">Kamerako bideo bat edo bideo-fitxategi bat (lehendik duzuna)</translation>
@@ -2648,7 +2641,6 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="4031179711345676612">Mikrofonoa erabil daiteke</translation>
 <translation id="4031527940632463547">Blokeatuta daude sentsoreak</translation>
 <translation id="4033471457476425443">Gehitu karpeta bat</translation>
-<translation id="4034280328082410379">Ez utzi pluginei ordenagailua atzitzen</translation>
 <translation id="4034824040120875894">Inprimagailua</translation>
 <translation id="4035758313003622889">&amp;Zereginen kudeatzailea</translation>
 <translation id="4036778507053569103">Zerbitzaritik deskargatu den gidalerroak ez du balio.</translation>
@@ -2775,7 +2767,6 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="4200983522494130825">Fi&amp;txa berria</translation>
 <translation id="4201546031411513170">Zer sinkronizatu nahi duzun aukeratzeko, joan Ezarpenak atalera.</translation>
 <translation id="420283545744377356">Desaktibatu pantaila-babeslea</translation>
-<translation id="4205362703535890467">Chrome-k ez du aurkitu software kaltegarririk ordenagailuan. Atzo egiaztatu zuen azkenengoz.</translation>
 <translation id="4206144641569145248">Estralurtarra</translation>
 <translation id="4206323443866416204">Iritzi-txostena</translation>
 <translation id="4208390505124702064">Bilatu <ph name="SITE_NAME" /> webgunean</translation>
@@ -3277,7 +3268,6 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="4830121310592638841">Eskatu zure baimena webguneren batek zure pantailetan leihoak ireki eta kokatu nahi dituenean</translation>
 <translation id="4830502475412647084">Sistema eragilearen eguneratzea instalatzen</translation>
 <translation id="4830573902900904548"><ph name="DEVICE_TYPE" /> gailuak ezin du konektatu Internetera <ph name="NETWORK_NAME" /> erabilita. Aukeratu beste sare bat. <ph name="LEARN_MORE_LINK_START" />Lortu informazio gehiago<ph name="LEARN_MORE_LINK_END" /></translation>
-<translation id="4831688036548685548">Chrome-k ez du aurkitu software kaltegarririk ordenagailuan. Duela gutxi egiaztatu du azkenengoz.</translation>
 <translation id="4833236810053292670">Ikusi Chromebook gailuaren berritasunak</translation>
 <translation id="4833683849865011483">Inprimagailu bat aurkitu da inprimatze-zerbitzarian</translation>
 <translation id="4836504898754963407">Kudeatu hatz-markak</translation>
@@ -4295,6 +4285,7 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="6042308850641462728">Gehiago</translation>
 <translation id="6043317578411397101"><ph name="APP_NAME" /> Chrome-ko fitxa bat partekatzen ari da <ph name="TAB_NAME" /> fitxarekin.</translation>
 <translation id="604388835206766544">Ezin izan da analizatu konfigurazioa</translation>
+<translation id="6043994281159824495">Amaitu saioa</translation>
 <translation id="6044805581023976844"><ph name="APP_NAME" /> Chrome-ko fitxa bat eta audioa partekatzen ari da <ph name="TAB_NAME" /> fitxarekin.</translation>
 <translation id="6049004884579590341">Pantaila osotik irteteko, eduki sakatuta |<ph name="ACCELERATOR" />|</translation>
 <translation id="6051354611314852653">Sistemak ezin izan dio gailu honi APIa atzitzeko baimenik eman.</translation>
@@ -4554,7 +4545,6 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="6333064448949140209">Google-ra bidaliko da fitxategia, hura araztu ahal izateko</translation>
 <translation id="6338981933082930623">Webgune guztiek mota guztietako iragarkiak erakuts diezazkizukete</translation>
 <translation id="6339668969738228384">Sortu beste profil bat <ph name="USER_EMAIL_ADDRESS" /> helbiderako</translation>
-<translation id="6339995243416022850">Webguneek ordenagailua atzitzeko plugin bat eska dezakete (gomendatua)</translation>
 <translation id="6340017061976355871">Ezin izan da konektatu zerbitzarira. Egiaztatu sarera konektatuta zaudela eta saiatu berriro. Arazoak badirau, berrabiarazi Chromebook-a.</translation>
 <translation id="6340071272923955280">Internet bidez inprimatzeko protokoloa (IPPS)</translation>
 <translation id="6340526405444716530">Pertsonalizazioa</translation>
@@ -4657,7 +4647,6 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="6463795194797719782">&amp;Editatu</translation>
 <translation id="6465841119675156448">Internetera konektatu gabe</translation>
 <translation id="6466988389784393586">I&amp;reki laster-marka guztiak</translation>
-<translation id="6467235653320897404">{NUM_HOURS,plural, =1{Chrome-k ez du aurkitu software kaltegarririk ordenagailuan. Duela ordubete egiaztatu du azkenengoz.}other{Chrome-k ez du aurkitu software kaltegarririk ordenagailuan. Duela {NUM_HOURS} ordu egiaztatu du azkenengoz.}}</translation>
 <translation id="6467304607960172345">Optimizatu pantaila osoko bideoak</translation>
 <translation id="6468485451923838994">Letrak</translation>
 <translation id="6469557521904094793">Aktibatu sare mugikorra</translation>
@@ -4976,7 +4965,6 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="6860097299815761905">Proxy-ezarpenak…</translation>
 <translation id="686022878923628150">Ez utzi webguneei MIDI gailuetara konektatzen</translation>
 <translation id="6860427144121307915">Ireki fitxa batean</translation>
-<translation id="6861451385429799394"><ph name="BEGIN_LINK" />Administratzaileak<ph name="END_LINK" /> desgaitu egin du software kaltegarria bilatzeko Chrome-ren eginbidea</translation>
 <translation id="686366188661646310">Pasahitza ezabatu nahi duzu?</translation>
 <translation id="6865313869410766144">Bete inprimakiko datuak automatikoki</translation>
 <translation id="6865598234501509159">Orriak ez du erabiltzen <ph name="LANGUAGE" /></translation>
@@ -5355,7 +5343,6 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="7308002049209013926">Erabili abiarazlea aplikazio eta jarduera berriak bizkor atzitzeko. Hona teklatuaren bidez etortzeko, sakatu Alt + Maius + L.</translation>
 <translation id="7309257895202129721">Erakutsi &amp;kontrolak</translation>
 <translation id="7310598146671372464">Ezin izan da hasi saioa. Zerbitzariak ez ditu onartzen zehaztutako Kerberos enkriptatze motak. Jarri administratzailearekin harremanetan.</translation>
-<translation id="7311079019872751559">Proben eremuan sartu gabeko pluginetarako sarbidea</translation>
 <translation id="7320213904474460808">Lehenetsi sarea</translation>
 <translation id="7321545336522791733">Ezin da konektatu zerbitzarira</translation>
 <translation id="7324297612904500502">Beta foroa</translation>
@@ -5479,7 +5466,6 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="7456847797759667638">Ireki kokapena…</translation>
 <translation id="7457384018036134905">Kudeatu hizkuntzak Chrome OS-ren ezarpenetan</translation>
 <translation id="7458168200501453431">Google-ren bilaketetan erabiltzen den ortografia-zuzentzaile bera erabiltzen du. Arakatzailean idazten duzun testua Google-ri bidaltzen zaio.</translation>
-<translation id="7459920164600044274">Webguneek pluginak erabili ohi dituzte zuzeneko bideoak erreproduzitu edo aplikazioak instalatzeko, eta antzeko eginbideak eskaintzeko</translation>
 <translation id="7460045493116006516">Instalatuta daukazun gaia</translation>
 <translation id="7461729991508684543">{NUM_DAYS,plural, =1{Gaur Datuen babeskopia egiteko eta <ph name="DEVICE_TYPE" /> gailua itzultzeko eskatzen du <ph name="DOMAIN" /> domeinuak.<ph name="LINK_BEGIN" />Ikusi xehetasunak<ph name="LINK_END" />}other{{NUM_DAYS} eguneko epean datuen babeskopia egiteko eta <ph name="DEVICE_TYPE" /> gailua itzultzeko eskatzen du <ph name="DOMAIN" /> domeinuak.<ph name="LINK_BEGIN" />Ikusi xehetasunak<ph name="LINK_END" />}}</translation>
 <translation id="7461924472993315131">Ainguratu</translation>
@@ -6000,6 +5986,7 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8030852056903932865">Onartu</translation>
 <translation id="8032244173881942855">Ezin da igorri fitxa.</translation>
 <translation id="8033827949643255796">hautatuta</translation>
+<translation id="8033958968890501070">Gainditu egin da denbora-muga</translation>
 <translation id="8037117027592400564">Irakurri testu idatzi guztiak ahots sintetizatua erabilita</translation>
 <translation id="8037357227543935929">Galdetu (lehenetsia)</translation>
 <translation id="803771048473350947">Fitxategia</translation>
@@ -6421,7 +6408,6 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8541462173655894684">Ez da aurkitu inprimagailurik inprimatze-zerbitzarian</translation>
 <translation id="8542618328173222274">Eskatu zure baimena webguneren batek errealitate birtualeko gailuak eta datuak erabili nahi dituenean</translation>
 <translation id="8543556556237226809">Galderak dituzu? Jarri harremanetan zure profila gainbegiratzen duen pertsonarekin.</translation>
-<translation id="8545575359873600875">Ezin izan dugu egiaztatu pasahitza. Agian erabiltzaile gainbegiratuaren kudeatzaileak pasahitza duela gutxi aldatu du. Hala bada, pasahitz berria aplikatuko da saioa hasten duzun hurrengo aldian. Saiatu aurreko pasahitza erabiltzen.</translation>
 <translation id="8546186510985480118">Toki gutxi dago gailuan</translation>
 <translation id="8546306075665861288">Irudien cachea</translation>
 <translation id="854655314928502177">Web-proxyaren hautemate automatikoaren URLa:</translation>
@@ -6630,7 +6616,6 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8774379074441005279">Berretsi leheneratu nahi duzula</translation>
 <translation id="8774934320277480003">Goiko marjina</translation>
 <translation id="8775144690796719618">URLak ez du balio</translation>
-<translation id="8776977753660889796">{NUM_MINS,plural, =1{Chrome-k ez du aurkitu software kaltegarririk ordenagailuan. Duela minutu bat egiaztatu du azkenengoz.}other{Chrome-k ez du aurkitu software kaltegarririk ordenagailuan. Duela {NUM_MINS} minutu egiaztatu du azkenengoz.}}</translation>
 <translation id="8777628254805677039">erroko pasahitza</translation>
 <translation id="8780123805589053431">Lortu Google-ren irudi-azalpenak</translation>
 <translation id="8780443667474968681">Desaktibatuta dago ahozko bilaketa.</translation>

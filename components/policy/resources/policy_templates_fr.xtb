@@ -711,15 +711,6 @@ Si vous la désactivez, le défilement des pages Web vers des fragments de texte
       Si la règle est définie sur "true" ou n'est pas définie, l'utilisateur pourra se servir de l'interface de ligne de commande de gestion des machines virtuelles.
       Dans le cas contraire, l'interface de ligne de commande de gestion des machines virtuelles sera entièrement désactivée et masquée.
       </translation>
-<translation id="2194470398825717446">Cette stratégie est obsolète dans M61. Veuillez appliquer "EcryptfsMigrationStrategy" à la place.
-
-      Indique le comportement à adopter par un appareil qui a été fourni avec eCryptfs et qui doit faire la transition vers un chiffrement ext4.
-
-      Si cette règle est définie sur "DisallowArc", les applications Android seront désactivées pour tous les utilisateurs de l'appareil (y compris ceux utilisant déjà le chiffrement ext4), et la migration d'eCryptfs vers ext4 ne sera proposée à aucun utilisateur.
-
-      Si cette règle est définie sur "AllowMigration", les utilisateurs disposant d'un répertoire d'accueil eCryptfs pourront le faire migrer vers un chiffrement ext4 si nécessaire (à l'heure actuelle, proposé lorsqu'Android N est disponible sur l'appareil).
-
-      Cette règle ne s'applique pas aux applications kiosque, qui sont migrées automatiquement. Si vous ne définissez pas de valeur pour cette règle, l'appareil se comportera par défaut comme si elle était définie sur "DisallowArc".</translation>
 <translation id="2195032660890227692">Cette règle a été supprimée dans <ph name="PRODUCT_NAME" /> 68 et remplacée par <ph name="ARC_BR_POLICY_NAME" />.</translation>
 <translation id="2197625019569762163">Définissez cette règle sur "True" pour afficher le clavier numérique par défaut lors de la saisie du mot de passe sur l'écran de connexion. Les utilisateurs pourront toujours revenir au clavier normal.
 
@@ -1977,19 +1968,6 @@ Si elle est définie sur "False", <ph name="PRODUCT_NAME" /> n'utilise pas les n
 
       Pour que les destinations <ph name="CLOUD_PRINT_NAME" /> restent visibles, cette règle doit être définie sur "True", et le type "<ph name="POLICY_ENUM_PRINTERTYPEDENYLIST_CLOUD" />" ne doit pas être ajouté à la règle "<ph name="POLICY_PRINTERTYPEDENYLIST" />".</translation>
 <translation id="3915395663995367577">URL d'un fichier .pac de proxy</translation>
-<translation id="3917288538553140422">Permet de spécifier l'action à effectuer lorsque le répertoire personnel de l'utilisateur a été créé avec un chiffrement eCryptfs. À moins que les répertoires personnels chiffrés avec eCryptfs ne fassent l'objet d'une migration vers le chiffrement ext4, les applications Android risquent de cesser de fonctionner.
-
-      Notez également les points suivants :
-
-      * Si cette règle est définie sur "Migrate" (ou sur une option non acceptée, comme "AskUser" ou "AskForEcryptfsArcUsers"), les répertoires sont migrés automatiquement vers ext4 lorsque l'utilisateur se connecte, sans lui en demander l'autorisation.
-
-      * Si cette règle est définie sur "Wipe" ou sur "MinimalMigrate", les nouveaux répertoires personnels avec chiffrement ext4 remplacent les anciens, chiffrés avec eCryptfs. Pour éviter à l'utilisateur d'avoir à se reconnecter plusieurs fois, la valeur "MinimalMigrate" essaie de conserver les jetons de connexion.
-
-      * Si cette règle est définie sur "DisallowArc" ou qu'elle elle n'est pas configurée, la migration est impossible, et les applications Android de l'utilisateur cessent de fonctionner.
-
-      Cette règle ne s'applique pas aux utilisateurs de kiosque.
-
-      Avertissement : Les valeurs "Wipe" et "MinimalMigrate" entraînent la suppression des données locales.</translation>
 <translation id="3925377537407648234">Régler la résolution d'affichage et le facteur d'adaptation</translation>
 <translation id="3927137827189017535">Permet d'activer la fonctionnalité d'accessibilité de touches persistantes sur l'écran de connexion.
 
@@ -2183,13 +2161,6 @@ Si elle est définie sur "False", <ph name="PRODUCT_NAME" /> n'utilise pas les n
 <translation id="4228745249339680042">Lorsqu'elle est configurée, cette règle permet de spécifier les URL et les domaines pour lesquels aucune boîte de dialogue ne s'affiche lorsque les certificats d'attestation de la clé de sécurité sont demandés. Un signal est également envoyé à la clé de sécurité pour indiquer qu'une attestation individuelle peut être utilisée. Sans cela, dans <ph name="PRODUCT_NAME" /> 65 et versions ultérieures, les utilisateurs sont avertis lorsque des sites demandent une attestation des clés de sécurité.
 
       Les URL ne sont reconnues que comme des identifiants d'application U2F. Les domaines ne sont reconnus que comme des identifiants RP WebAuthn. Ainsi, pour couvrir à la fois les API U2F et WebAuthn d'un site donné, vous devez préciser l'URL et le domaine de l'identifiant d'application.</translation>
-<translation id="4238997902172035160">Permet de configurer le répertoire utilisé par <ph name="PRODUCT_NAME" /> pour stocker la copie itinérante des profils.
-
-      Si vous définissez cette règle, <ph name="PRODUCT_NAME" /> utilise le répertoire fourni pour stocker la copie itinérante des profils si la règle <ph name="ROAMING_PROFILE_SUPPORT_ENABLED_POLICY_NAME" /> est activée. Si la règle <ph name="ROAMING_PROFILE_SUPPORT_ENABLED_POLICY_NAME" /> est désactivée ou si elle n'est pas configurée, la valeur enregistrée dans cette règle n'est pas utilisée.
-
-      Pour connaître la liste des variables acceptées, consultez la page https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables.
-
-      Si cette règle n'est pas définie, le chemin d'accès aux profils itinérants par défaut est utilisé.</translation>
 <translation id="4239720644496144453">Le cache n'est pas utilisé pour les applications Android. Si plusieurs utilisateurs installent la même application Android, celle-ci sera à nouveau téléchargée pour chacun d'eux.</translation>
 <translation id="4242223728343693100">Permet d'établir une liste de formats d'URL indiquant les sites qui ne peuvent pas placer de cookies.
 

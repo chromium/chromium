@@ -347,7 +347,6 @@ For å åpne Chrome-menyen, trykk på Alt+F.</translation>
 <translation id="352577523970648069">Et tekstfelt som kan endres</translation>
 <translation id="3538907380453898475">beskr.liste</translation>
 <translation id="3549141990712742152">klipp ut <ph name="TEXT" />.</translation>
-<translation id="3549680091535286226">Trykk med to fingre for å stoppe høytlesningen midlertidig</translation>
 <translation id="3564729643041517261">Nåværende visningsstil er side om side</translation>
 <translation id="3573145950452451508">Bunntekst</translation>
 <translation id="3587482841069643663">Alle</translation>
@@ -595,6 +594,7 @@ For å åpne Chrome-menyen, trykk på Alt+F.</translation>
 <translation id="5561345396546889625">Neste liste</translation>
 <translation id="5562645715554321347">hdnggrp</translation>
 <translation id="5574412348552378458">Læremodus for ChromeVox</translation>
+<translation id="5582839680698949063">Hovedmeny</translation>
 <translation id="5585044216466955529">Rediger tekst – e-postinnhold</translation>
 <translation id="5597170376237141345">Neste avmerkingsrute</translation>
 <translation id="5598905979683743333">Alternativknappen <ph name="NAME" /> er ikke valgt</translation>
@@ -828,7 +828,6 @@ For å åpne Chrome-menyen, trykk på Alt+F.</translation>
 <translation id="7491962110804786152">tab</translation>
 <translation id="7492497529767769458">Gå til neste del. Eksempler på dette er statusfeltet og Appoversikt.</translation>
 <translation id="7505149250476994901">Si «stor» før bokstaven</translation>
-<translation id="7518543783849163354">For å stoppe talemeldingene fra ChromeVox midlertidig, trykk på Control-tasten.</translation>
 <translation id="7533226154149229506">Lys gullris</translation>
 <translation id="7543255924852002459">Forkast-etiketten</translation>
 <translation id="7552432549459840808">Nyttige hurtigtaster i Chrome</translation>

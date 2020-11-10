@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="pt-PT">
+<translation id="1625959690469240009">Para abrir as definições do site, atualize ou reinstale o <ph name="BROWSER_NAME" />.</translation>
 <translation id="1700971771753530690"><ph name="APP_NAME" /> necessita da seguinte aplicação:</translation>
 <translation id="2697679025356221813"><ph name="APP_NAME" /> necessita de um navegador de Internet</translation>
 <translation id="3858759029325727987">Escolha um navegador compatível com esta aplicação:</translation>

@@ -683,15 +683,6 @@ Als je dit beleid uitschakelt, wordt op de webpagina naar specifieke tekstfragme
       Als het beleid is ingesteld op 'true' of als het niet is ingesteld, kan de gebruiker CLI gebruiken voor VM-beheer.
       Zo niet, dan wordt de hele CLI voor VM-beheer uitgeschakeld en verborgen.
       </translation>
-<translation id="2194470398825717446">Dit beleid is beëindigd in M61. Gebruik EcryptfsMigrationStrategy.
-
-      Geeft aan hoe een apparaat zich moet gedragen dat is geleverd met eCryptfs en moet worden overgezet naar ext4-versleuteling.
-
-      Als je dit beleid instelt op 'DisallowArc', worden Android-apps uitgeschakeld voor alle gebruikers op het apparaat (waaronder gebruikers die al beschikken over ext4-versleuteling) en wordt er geen migratie van eCryptfs naar ext4-versleuteling aangeboden aan gebruikers.
-
-      Als je dit beleid instelt op 'AllowMigration', wordt aan gebruikers met eCryptfs-hoofdmappen aangeboden deze te migreren naar ext4-versleuteling indien nodig (momenteel is dit het geval wanneer Android N beschikbaar komt op het apparaat).
-
-      Dit beleid is niet van toepassing op kiosk-apps. Die worden automatisch gemigreerd. Als dit beleid niet wordt ingesteld, gedraagt het apparaat zich alsof 'DisallowArc' is gekozen.</translation>
 <translation id="2195032660890227692">Dit beleid is in <ph name="PRODUCT_NAME" /> 68 verwijderd en vervangen door <ph name="ARC_BR_POLICY_NAME" />.</translation>
 <translation id="2197625019569762163">Als je het beleid instelt op True, wordt het numerieke toetsenbord standaard weergegeven om het wachtwoord op te geven op het inlogscherm. Gebruikers kunnen overschakelen naar het normale toetsenbord.
 
@@ -1974,19 +1965,6 @@ Als je dit beleid instelt, kunnen gebruikers het niet wijzigen. Als je het belei
 
       Je kunt ervoor zorgen dat <ph name="CLOUD_PRINT_NAME" />-bestemmingen vindbaar blijven door dit beleid in te stellen op True en <ph name="POLICY_ENUM_PRINTERTYPEDENYLIST_CLOUD" /> niet op te nemen in het beleid <ph name="POLICY_PRINTERTYPEDENYLIST" />.</translation>
 <translation id="3915395663995367577">URL naar een PAC-bestand voor de proxy</translation>
-<translation id="3917288538553140422">Als je het beleid instelt, geef je de actie op die moet worden uitgevoerd als de homedirectory van de gebruiker is gemaakt met ecryptfs-versleuteling. Tenzij homedirectory's met ecryptfs-versleuteling worden overgezet naar ext4-versleuteling, worden Android-apps mogelijk gestopt.
-
-      Als het beleid wordt ingesteld op:
-
-      * 'Migrate' (of een niet-ondersteunde optie, zoals 'AskUser' of 'AskForEcryptfsArcUsers'), worden directory's automatisch overgezet naar ext4 zodra er wordt ingelogd, zonder de gebruiker om toestemming te vragen.
-
-      * 'Wipe' of 'MinimalMigrate', worden de oude directory's met ecryptfs-versleuteling bij het inloggen vervangen door nieuwe homedirectory's met ext4-versleuteling. 'MinimalMigrate' probeert inlogtokens te onthouden om zo herhaalde inlogacties te voorkomen.
-
-      * 'DisallowArc' of als het beleid niet wordt ingesteld, kunnen de directory's niet worden overgezet en werken de Android-apps van de gebruiker niet meer.
-
-      Dit beleid is niet van toepassing op Kiosk-gebruikers.
-
-      Waarschuwing: Met 'Wipe' en 'MinimalMigrate' worden lokale gegevens verwijderd.</translation>
 <translation id="3925377537407648234">Schermresolutie en schaalfactor instellen</translation>
 <translation id="3927137827189017535">De toegankelijkheidsfunctie voor plaktoetsen op het inlogscherm inschakelen.
 
@@ -2180,13 +2158,6 @@ Als je dit beleid instelt, kunnen gebruikers het niet wijzigen. Als je het belei
 <translation id="4228745249339680042">Als je dit beleid instelt, definieer je de URL's en domeinen waarvoor geen prompt wordt weergegeven als er bevestigingscertificaten van beveiligingssleutels worden aangevraagd. Er wordt ook een signaal naar de beveiligingssleutel gestuurd om aan te geven dat individuele bevestiging kan worden gebruikt. Zonder dit signaal krijgen gebruikers in <ph name="PRODUCT_NAME" /> versie 65 en later een prompt te zien als sites bevestiging van beveiligingssleutels aanvragen.
 
       URL's komen alleen overeen als U2F appID's. Domeinen komen alleen overeen als webauthn RP ID's. Om zowel de U2F- als webauthn-API voor een bepaalde site te omvatten, moet je dus de appID-URL en -domein vermelden.</translation>
-<translation id="4238997902172035160">Hiermee configureer je de map waarin <ph name="PRODUCT_NAME" /> het roaming-exemplaar van de profielen opslaat.
-
-      Als je dit beleid instelt, gebruikt <ph name="PRODUCT_NAME" /> de opgegeven map om het roaming-exemplaar van de profielen op te slaan als het beleid <ph name="ROAMING_PROFILE_SUPPORT_ENABLED_POLICY_NAME" /> is ingeschakeld. Als het beleid <ph name="ROAMING_PROFILE_SUPPORT_ENABLED_POLICY_NAME" /> is uitgeschakeld of niet is ingesteld, wordt de opgeslagen waarde in dit beleid niet gebruikt.
-
-      Ga naar https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables voor een lijst met variabelen die je kunt gebruiken.
-
-      Als dit beleid niet is ingesteld, wordt het standaardpad voor roaming-profielen gebruikt.</translation>
 <translation id="4239720644496144453">Het cachegeheugen wordt niet gebruikt voor Android-apps. Als meerdere gebruikers dezelfde Android-app installeren, wordt deze voor elke gebruiker opnieuw gedownload.</translation>
 <translation id="4242223728343693100">Als je het beleid instelt, kun je een lijst met URL-patronen opgeven van sites die geen cookies mogen instellen.
 

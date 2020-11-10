@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ta">
 <translation id="1000498691615767391">திறப்பதற்கு ஒரு கோப்புறையைத் தேர்ந்தெடுக்கவும்</translation>
-<translation id="1023220960495960452">ஒலிபெயர்ப்பு (vanakkam → வணக்கம்)</translation>
 <translation id="1035094536595558507">ஸ்லைடு காட்சி</translation>
 <translation id="1047956942837015229"><ph name="COUNT" /> உருப்படிகளை நீக்குகிறது...</translation>
 <translation id="1049926623896334335">Word document</translation>
@@ -18,6 +17,7 @@
 <translation id="1150565364351027703">சன்கிளாசஸ்</translation>
 <translation id="115443833402798225">ஹாங்குல் ஹமாதே</translation>
 <translation id="1155759005174418845">கேட்டலன்</translation>
+<translation id="1170149495446063094">ஆங்கிலம் (யூஎஸ்) உடன் சர்வதேசக் கீபோர்டு</translation>
 <translation id="1172970565351728681">சுமார் <ph name="REMAINING_TIME" /> மீதமுள்ளது</translation>
 <translation id="1173894706177603556">மறுபெயரிடு</translation>
 <translation id="117624967391683467"><ph name="FILE_NAME" /> ஐ நகலெடுக்கிறது...</translation>
@@ -26,6 +26,7 @@
 <translation id="1201402288615127009">அடுத்து</translation>
 <translation id="1243314992276662751">பதிவேற்று</translation>
 <translation id="1249250836236328755">ஆடியோ வகை</translation>
+<translation id="1251468808511160368">ஆங்கிலம் (யூஎஸ்) உடன் புரோகிராமர் டிவோர்க் கீபோர்டு</translation>
 <translation id="1276362640455948667">அமெரிக்க சர்வதேசத் தளவமைப்புடன் கூடிய போர்ச்சுகீஸ் கீபோர்டு</translation>
 <translation id="1293556467332435079">Files</translation>
 <translation id="1297922636971898492">Google இயக்ககம் இப்போது கிடைக்கவில்லை. Google இயக்ககம் இணைப்பு கிடைத்தவுடன் பதிவேற்றம் தானாகவே மறுதொடக்கம் செய்யப்படும்.</translation>
@@ -33,17 +34,14 @@
 <translation id="1338950911836659113">நீக்குகிறது...</translation>
 <translation id="1346748346194534595">வலது</translation>
 <translation id="1351692861129622852"><ph name="FILE_COUNT" /> கோப்புகளைப் பதிவிறக்குகிறது...</translation>
-<translation id="1352103415082130575">தாய் விசைப்பலகை (பட்டாசொட்டே)</translation>
 <translation id="1358735829858566124">கோப்பு அல்லது கோப்பகம் உபயோகிக்கக்கூடியதில்லை.</translation>
 <translation id="1363028406613469049">டிராக் எண்</translation>
 <translation id="1378727793141957596">Google இயக்ககத்திற்கு வருக!</translation>
 <translation id="1383876407941801731">Search</translation>
 <translation id="1395262318152388157">தேடுவதற்கான ஸ்லைடர்</translation>
-<translation id="1399648040768741453">தெலுங்கு விசைப்பலகை (ஒலிப்புமுறை)</translation>
 <translation id="1430915738399379752">அச்சிடுக</translation>
 <translation id="1435838927755162558">Parallels Desktop மூலம் கோப்புறையைப் பகிருங்கள்</translation>
 <translation id="1439494416798956626"><ph name="FOLDER_NAME" />க்கு நகர்த்தப்பட்டது.</translation>
-<translation id="1441841714100794440">வியட்நாமிய விசைப்பலகை (டெலெக்ஸ்)</translation>
 <translation id="1464724975715666883">1 பிழை.</translation>
 <translation id="1467432559032391204">இடது</translation>
 <translation id="1474339897586437869">"<ph name="FILENAME" />" ஏற்றப்படவில்லை. உங்கள் Google இயக்ககத்தில் போதுமான காலியிடம் இல்லை.</translation>
@@ -57,7 +55,6 @@
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> பெ.பை.</translation>
 <translation id="1620510694547887537">கேமரா</translation>
 <translation id="1646019627374511909">ஆஃப்லைனில் பயன்படுத்த <ph name="NUMBER_OF_ITEMS" /> கோப்புகளைப் பதிவிறக்குகிறது</translation>
-<translation id="164729547906544836">தமிழ் விசைப்பலகை (ஐடிரான்ஸ்)</translation>
 <translation id="164969095109328410">Chrome சாதனம்</translation>
 <translation id="1665611772925418501">கோப்பை மாற்ற முடியவில்லை.</translation>
 <translation id="1673103856845176271">பாதுகாப்பு காரணங்களுக்காக கோப்பை அணுக முடியவில்லை.</translation>
@@ -75,11 +72,9 @@
 <translation id="183183971458492120">தகவலை ஏற்றுகிறது...</translation>
 <translation id="1838709767668011582">Google தளம்</translation>
 <translation id="1844692022597038441">இந்தக் கோப்பு ஆஃப்லைனில் கிடைக்காது.</translation>
-<translation id="184633654410729720">தாய் விசைப்பலகை (கேட்மேனி)</translation>
 <translation id="1847880352285315359">சேமிக்கப்பட்டது</translation>
 <translation id="1853795129690976061">இந்தக் கோப்புறையானது Linux உடன் பகிரப்பட்டுள்ளது</translation>
 <translation id="1864756863218646478">கோப்பைக் கண்டறிய முடியவில்லை.</translation>
-<translation id="1921986354447415460">டர்கிஷ்-F விசைப்பலகை</translation>
 <translation id="1924372192547904021"><ph name="DRIVE_NAME" /> ஃபார்மேட் செய்யப்பட்டது</translation>
 <translation id="1931134289871235022">ஸ்லோவாக்</translation>
 <translation id="1933345018156373194">நகர்த்த முடியவில்லை, எதிர்பாராத பிழை: <ph name="ERROR_MESSAGE" /></translation>
@@ -87,7 +82,6 @@
 <translation id="1942765061641586207">படத் தெளிவுத்திறன்</translation>
 <translation id="1943097386230153518">புதிய சேவையை நிறுவு</translation>
 <translation id="1972984168337863910">கோப்புகள் காட்டப்படும் பேனல்களை விரிக்கும்</translation>
-<translation id="1984603991036629094">ஆர்மேனியன் ஒலிப்புமுறை விசைப்பலகை</translation>
 <translation id="1995337122023280937">கோப்பின் இடத்திற்குச் செல்</translation>
 <translation id="2001796770603320721">இயக்ககத்தில் நிர்வகி</translation>
 <translation id="2009067268969781306">இயக்ககத்தை ஃபார்மேட் செய்தால் அதில் சேமிக்கப்பட்டுள்ள தரவு அனைத்தும் நீக்கப்படும். அவற்றைத் திரும்பப் பெற முடியாது.</translation>
@@ -95,13 +89,10 @@
 <translation id="2046702855113914483">ரேமன்</translation>
 <translation id="2070909990982335904">புள்ளியுடன் தொடங்கும் பெயர்களை கணினி முன்பதிவு செய்துள்ளதால், வேறொரு பெயரைத் தேர்வுசெய்க.</translation>
 <translation id="2079545284768500474">செயல்தவிர்</translation>
-<translation id="2080010875307505892">செர்பியன் விசைப்பலகை</translation>
 <translation id="2084108471225856927">சாதன அமைப்புகள்</translation>
 <translation id="2085470240340828803">"<ph name="FILENAME" />" எனப் பெயரிடப்பட்ட கோப்பானது ஏற்கனவே உள்ளது. என்ன செய்ய விரும்புகிறீர்கள்?</translation>
 <translation id="2121825465123208577">அளவு மாற்று</translation>
 <translation id="2163152940313951844">செல்லாத எழுத்து: <ph name="CHARACTER_NAME" /></translation>
-<translation id="2164862903024139959">வியட்நாமிய விசைப்பலகை (TCVN)</translation>
-<translation id="2168214441502403371">பெர்சியன் விசைப்பலகை</translation>
 <translation id="2198315389084035571">எளிய சீன மொழி</translation>
 <translation id="2208158072373999562">ஜிப் காப்பகம்</translation>
 <translation id="2225536596944493418"><ph name="NUMBER_OF_ITEMS" /> உள்ளடக்கங்களை நிச்சயமாக நீக்க விரும்புகிறீர்களா?</translation>
@@ -117,7 +108,6 @@
 <translation id="2377319039870049694">பட்டியல் காட்சிக்கு மாறு</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> கோப்புறைகள் Linuxஸுடன் பகிரப்பட்டன</translation>
 <translation id="2378075407703503998"><ph name="SELCTED_FILE_COUNT" /> கோப்புகள் தேர்ந்தெடுக்கப்பட்டன</translation>
-<translation id="2384596874640104496">சிங்கள விசைப்பலகை</translation>
 <translation id="240770291734945588"><ph name="SPACE_AVAILABLE" /> உள்ளது</translation>
 <translation id="2425665904502185219">மொத்தக் கோப்பின் அளவு</translation>
 <translation id="2428749644083375155"><ph name="NUMBER_OF_ITEMS" /> கோப்புகள்/கோப்புறைகளை <ph name="FOLDER_NAME" />க்கு நகலெடுக்கிறது</translation>
@@ -126,7 +116,6 @@
 <translation id="2464079411014186876">ஐஸ்கிரீம்</translation>
 <translation id="2468402215065996499">தாமகோட்சி</translation>
 <translation id="2515586267016047495">Alt</translation>
-<translation id="2529133382850673012">யுஎஸ் விசைப்பலகை</translation>
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> வரலாற்று உள்ளடக்கங்கள் நீக்கப்பட்டன</translation>
 <translation id="2541377937973966830">இந்தக் கோப்புறையில் உள்ள உள்ளடக்கத்தைப் படிக்க மட்டுமே முடியும். சில செயல்பாடுகள் ஆதரிக்கப்படாது.</translation>
 <translation id="2542049655219295786">Google அட்டவணை</translation>
@@ -144,15 +133,13 @@
 <translation id="2672394958563893062">பிழை ஏற்பட்டது. ஆரம்பத்திலிருந்து மீண்டும் தொடங்க கிளிக் செய்க.</translation>
 <translation id="2676946222714718093">இதில் இயங்குகிறது</translation>
 <translation id="2735623501230989521"><ph name="FOLDER_NAME" /> கோப்புறையில் உள்ள கோப்புகளை அணுகுவதற்கான அனுமதியை Parallels Desktopபிற்கு வழங்கவும்</translation>
-<translation id="2735698359135166290">வழக்கமான ரோமானியன் விசைப்பலகை</translation>
 <translation id="2771816809568414714">பாலாடைக் கட்டி</translation>
 <translation id="2781645665747935084">பெல்ஜியன்</translation>
 <translation id="2782104745158847185">ஒரு Linux ஆப்ஸை நிறுவும்போது பிழை நேர்ந்தது</translation>
 <translation id="2787047795752739979">அசலில் மேலெழுது</translation>
-<translation id="2790805296069989825">ரஷ்யன் விசைப்பலகை</translation>
+<translation id="2822854841007275488">அரபிக்</translation>
 <translation id="2843806747483486897">இயல்புநிலைக்கு மாற்று...</translation>
 <translation id="2850124913210091882">காப்புப் பிரதியெடு</translation>
-<translation id="2870836398458454343">ஒலிபெயர்ப்பு (marhaban ← مرحبا)</translation>
 <translation id="288024221176729610">செக்</translation>
 <translation id="2887525882758501333">PDF ஆவணம்</translation>
 <translation id="2888807692577297075">&lt;b&gt;"<ph name="SEARCH_STRING" />"&lt;/b&gt; உடன் பொருந்தும் உருப்படிகள் எதுவுமில்லை</translation>
@@ -166,25 +153,22 @@
 <translation id="2943503720238418293">சிறிய பெயரைப் பயன்படுத்தவும்</translation>
 <translation id="2949781154072577687"><ph name="DRIVE_NAME" /> ஐ ஃபார்மேட் செய்கிறது...</translation>
 <translation id="2951236788251446349">ஜெல்லிஃபிஷ்</translation>
-<translation id="2963783323012015985">டர்கிஷ் விசைப்பலகை</translation>
-<translation id="2966459079597787514">ஸ்வீடிஷ் விசைப்பலகை</translation>
 <translation id="2984337792991268709">இன்று <ph name="TODAY_DAYTIME" /></translation>
 <translation id="2994669386200004489"><ph name="FILE_NAME" />ஐக் காப்புப் பிரதி எடுக்க முடியவில்லை</translation>
 <translation id="3003633581067744647">சிறு படக் காட்சிக்கு மாறு</translation>
 <translation id="3007214526293698309">விகிதத்தைச் சரிசெய்</translation>
 <translation id="303198083543495566">புவியியல்</translation>
 <translation id="3057861065630527966">உங்கள் படங்கள் மற்றும் வீடியோக்களைக் காப்புப் பிரதியெடுக்கவும்</translation>
-<translation id="3064388234319122767">ஒலிபெயர்ப்பு (zdravo → здраво)</translation>
 <translation id="3067790092342515856">Windows கோப்புகள்</translation>
 <translation id="3078461028045006476"><ph name="EXTENSION_NAME" /> மூலம் பகிர்</translation>
 <translation id="3083975830683400843">Chromebits</translation>
-<translation id="3116361045094675131">யுகே விசைப்பலகை</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3144126448740580210">முடிந்தது</translation>
-<translation id="3157729859914172001">யுஎஸ் சர்வதேச (PC) விசைப்பலகை</translation>
+<translation id="3182237543071236785">ஆங்கிலம் (யூகே)</translation>
 <translation id="3188257591659621405">எனது கோப்புகள்</translation>
 <translation id="3197563288998582412">யு.கே. டிவாரக்</translation>
 <translation id="3202131003361292969">தடம்</translation>
+<translation id="3204169104280704562">ஆங்கிலம் (யூஎஸ்) உடன் வொர்க்மேன் கீபோர்டு</translation>
 <translation id="3224239078034945833">கனடியன் பன்மொழி</translation>
 <translation id="3236289833370040187"><ph name="DESTINATION_DOMAIN" />க்கு உரிமை மாற்றப்படும்.</translation>
 <translation id="3241720467332021590">ஐரிஷ்</translation>
@@ -199,7 +183,6 @@
 <translation id="3296763833017966289">ஜார்ஜியன்</translation>
 <translation id="3326821416087822643"><ph name="FILE_NAME" /> ஐ ஜிப் செய்கிறது...</translation>
 <translation id="3335337277364016868">பதிவுசெய்த ஆண்டு</translation>
-<translation id="3338239663705455570">ஸ்லோவேனியன் விசைப்பலகை</translation>
 <translation id="3353984535370177728">பதிவேற்ற கோப்புறையைத் தேர்வுசெய்யவும்</translation>
 <translation id="3356580349448036450">முடிந்தது</translation>
 <translation id="3414856743105198592">அகற்றத்தக்க மீடியாவை வடிவமைப்பதானது எல்லா தரவையும் அழிக்கும். தொடர விரும்புகிறீர்களா?</translation>
@@ -241,10 +224,8 @@
 <translation id="3809272675881623365">முயல்</translation>
 <translation id="3810973564298564668">நிர்வகி</translation>
 <translation id="3811494700605067549">1 கோப்பு தேர்ந்தெடுக்கப்பட்டது</translation>
-<translation id="3815016854028376614">சூயின் உள்ளீட்டு முறை</translation>
 <translation id="38275787300541712">முடிந்ததும், Enter அழுத்துக</translation>
 <translation id="3830674330436234648">பிளேபேக் இல்லை</translation>
-<translation id="3833761542219863804">ஒலிபெயர்ப்பு (mausam → ਮੌਸਮ)</translation>
 <translation id="383652340667548381">செர்பியன்</translation>
 <translation id="385051799172605136">திரும்பு</translation>
 <translation id="3855472144336161447">ஜெர்மன் நியோ 2</translation>
@@ -256,19 +237,15 @@
 <translation id="3958548648197196644">கிவி</translation>
 <translation id="3966388904776714213">ஆடியோ பிளேயர்</translation>
 <translation id="4002066346123236978">தலைப்பு</translation>
-<translation id="4070370845051020638">கான்டனீஸ் உள்ளீட்டு முறை</translation>
-<translation id="4072248638558688893">தமிழ் விசைப்பலகை (ஒலிப்புமுறை)</translation>
 <translation id="4124935795427217608">கொம்புக் குதிரை</translation>
 <translation id="4158739975813877944">இயக்கப் பட்டியலைத் திற</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> நகர்த்தப்பட்டது.</translation>
-<translation id="418179967336296930">ரஷ்யன் ஒலிபெயர்ப்பு (YaZHert) விசைப்பலகை</translation>
 <translation id="4193154014135846272">Google ஆவணம்</translation>
 <translation id="4195249722193633765">Linux (பீட்டா) மூலம் ஆப்ஸை நிறுவவும்</translation>
 <translation id="4197674956721858839">ஜிப் தேர்வு</translation>
 <translation id="421017592316736757">இந்தக் கோப்பை அணுக ஆன்லைனில் இருக்க வேண்டும்.</translation>
 <translation id="4212740939091998969">"<ph name="FOLDER_NAME" />" என்ற பெயருள்ள கோப்புறை ஏற்கனவே உள்ளது. வேறொரு பெயரைத் தேர்வுசெய்யவும்.</translation>
 <translation id="4215448920900139318"><ph name="FILE_COUNT" /> கோப்புகளைக் காப்புப் பிரதி எடுக்கிறது</translation>
-<translation id="426015154560005552">அரபிக் விசைப்பலகை</translation>
 <translation id="4261901459838235729">Google விளக்கக்காட்சி</translation>
 <translation id="4290535918735525311">Linuxஸுடன் 1 கோப்புறை பகிரப்பட்டது</translation>
 <translation id="4299729908419173967">பிரேசிலியன்</translation>
@@ -280,10 +257,8 @@
 <translation id="4372884569765913867">1x1</translation>
 <translation id="4394214039309501350">வெளிப்புற இணைப்பு</translation>
 <translation id="4425149324548788773">எனது இயக்ககம்</translation>
-<translation id="4465830120256509958">பிரேசிலியன் விசைப்பலகை</translation>
 <translation id="4470564870223067757">ஹாங்குல் 2 செட்</translation>
 <translation id="4477219268485577442">பல்கேரியன் ஒலிப்புமுறை</translation>
-<translation id="4479812471636796472">அமெரிக்க துவோரக் விசைப்பலகை</translation>
 <translation id="4522570452068850558">விவரங்கள்</translation>
 <translation id="4527800702232535228">Parallels Desktopபுடன் இந்தக் கோப்புறை பகிரப்பட்டுள்ளது</translation>
 <translation id="4552678318981539154">கூடுதல் சேமிப்பிடத்தை வாங்கு</translation>
@@ -330,7 +305,6 @@
 <translation id="4880214202172289027">ஒலியளவு ஸ்லைடர்</translation>
 <translation id="4880520557730313061">தானாகச் சரிசெய்</translation>
 <translation id="4881695831933465202">திற</translation>
-<translation id="4886021172213954916">தமிழ் விசைப்பலகை (தட்டச்சுப்பொறி)</translation>
 <translation id="4900532980794411603">Parallels Desktop மூலம் பகிர்</translation>
 <translation id="4905417359854579806"><ph name="FILE_COUNT" /> கோப்புகளைக் காப்புப் பிரதி எடுக்கத் தயாராக உள்ளது</translation>
 <translation id="4924638091161556692">நிலையான</translation>
@@ -373,7 +347,6 @@
 <translation id="5194713942430106590">நெடுவரிசையை ஏறுவரிசைப்படுத்த கிளிக் செய்யவும்.</translation>
 <translation id="5218183485292899140">சுவிஸ் ஃபிரெஞ்சு</translation>
 <translation id="5234764350956374838">நிராகரி</translation>
-<translation id="5241298539944515331">வியட்நாமிய விசைப்பலகை (VIQR)</translation>
 <translation id="5253070652067921974">உருவாக்கியவர்</translation>
 <translation id="5257456363153333584">தட்டாம்பூச்சி</translation>
 <translation id="5262311848634918433"><ph name="MARKUP_1" />எங்கிருந்தும் கோப்புகளை அணுகலாம் (ஆஃப்லைனில் இருந்தாலும்).<ph name="MARKUP_2" />
@@ -396,12 +369,11 @@
 <translation id="5358764674931277">ஃப்ரேம் வீதம்</translation>
 <translation id="5368191757080475556">Linuxஸுடன் கோப்புறையைப் பகிர்தல்</translation>
 <translation id="5402367795255837559">பிரெய்ல்</translation>
-<translation id="5412637665001827670">பல்கேரியன் விசைப்பலகை</translation>
 <translation id="5418923334382419584">மியான்மர் விசைப்பலகை</translation>
 <translation id="5428105026674456456">ஸ்பானிஷ்</translation>
 <translation id="5438282218546237410"><ph name="SEARCH_TERM" /> என்பதற்கான தேடல் முடிவுகள் எதுவும் கிடைக்கவில்லை.</translation>
 <translation id="5449551289610225147">தவறான கடவுச்சொல்</translation>
-<translation id="5464696796438641524">போலிஷ் விசைப்பலகை</translation>
+<translation id="5468013476539915283">ஆங்கிலம் (யூஎஸ்)</translation>
 <translation id="5469868506864199649">இத்தாலியன்</translation>
 <translation id="5484429245813572665">இந்தோனேஷியன்</translation>
 <translation id="5494920125229734069">எல்லாவற்றையும் தேர்ந்தெடு</translation>
@@ -421,6 +393,7 @@
 <translation id="5691596662111998220">அடடா, <ph name="FILE_NAME" /> இல்லை.</translation>
 <translation id="5700087501958648444">ஆடியோ தகவல்</translation>
 <translation id="5731409020711461763">1 புதிய படம்</translation>
+<translation id="573799789564358869">ஆங்கிலம் (யூஎஸ்) உடன் கோல்மக் கீபோர்டு</translation>
 <translation id="5752453871435543420">Chrome OS கிளவுடு காப்புப் பிரதி</translation>
 <translation id="5756666464756035725">ஹங்கேரியன் QWERTY</translation>
 <translation id="5776325638577448643">அழித்து ஃபார்மேட் செய்</translation>
@@ -443,7 +416,6 @@
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> கோப்புகள்</translation>
 <translation id="5957366693331451795">Chromeboxes</translation>
 <translation id="5982621672636444458">வரிசைப்படுத்தல் விருப்பங்கள்</translation>
-<translation id="6005282720244019462">லத்தீன் அமெரிக்கன் விசைப்பலகை</translation>
 <translation id="6007237601604674381">நகர்வு தோல்வி. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6012987430370760224">மராத்தி விசைப்பலகை (ஒலிப்புமுறை)</translation>
 <translation id="6019169947004469866">செதுக்கு</translation>
@@ -466,25 +438,25 @@
 <translation id="6224253798271602650"><ph name="DRIVE_NAME" /> சாதனத்தை ஃபார்மேட் செய்</translation>
 <translation id="6227235786875481728">இந்தக் கோப்பை இயக்க முடியாது.</translation>
 <translation id="6248400709929739064">வசனங்களை இயக்கு</translation>
-<translation id="6264347891387618177">ஒலிபெயர்ப்பு (selam → ሰላም)</translation>
 <translation id="6287852322318138013">இந்தக் கோப்பை திறக்க பயன்பாட்டைத் தேர்ந்தெடுக்கவும்</translation>
-<translation id="6339034549827494595">ரஷ்யன் ஒலிப்புமுறை (AATSEEL) விசைப்பலகை</translation>
 <translation id="6339145975392024142">யுஎஸ் சர்வதேச விசைப்பலகை (PC)</translation>
 <translation id="6346310558342052870">அணுகல் கட்டுப்படுத்தப்பட்டுள்ளது</translation>
 <translation id="6356685157277930264">கோப்புகளின் கருத்துச் சாளரம்</translation>
 <translation id="6358884629796491903">டிராகன்</translation>
 <translation id="637062427944097960">இந்தக் கோப்பு மற்றொரு டெஸ்க்டாப்பில் திறக்கப்பட்டது. இதைப் பார்க்க, <ph name="USER_NAME" /> (<ph name="MAIL_ADDRESS" />) க்கு நகர்த்தவும்.</translation>
+<translation id="6374309724856959519">ஆங்கிலம் (யூஎஸ்) உடன் நீட்டிக்கப்பட்ட கீபோர்டு</translation>
 <translation id="6394388407447716302">படிக்க மட்டும்</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> கோப்புகள்</translation>
 <translation id="6398765197997659313">முழுத்திரையிலிருந்து வெளியேறு</translation>
 <translation id="642282551015776456">கோப்புறைப் பெயரின் கோப்பாக இந்தப் பெயரைப் பயன்பட முடியாமல் போகக்கூடும்</translation>
+<translation id="647955688546403164">ஆங்கிலம் (யூகே) உடன் டிவோர்க் கீபோர்டு</translation>
 <translation id="6485131920355264772">இடத் தகவலை மீட்டெடுப்பதில் தோல்வி</translation>
-<translation id="6505918941256367791">தமிழ் விசைப்பலகை (இன்ஸ்கிரிப்ட்)</translation>
 <translation id="6509122719576673235">நார்வேஜியன்</translation>
 <translation id="6527303717912515753">பகிர்</translation>
 <translation id="653019979737152879"><ph name="FILE_NAME" /> ஐ ஒத்திசைக்கிறது...</translation>
 <translation id="6549689063733911810">சமீபத்தியவை</translation>
 <translation id="6556866813142980365">மீண்டும் செய்</translation>
+<translation id="6556932543564608391">ஆங்கிலம் (யூஎஸ்) உடன் டிவோரக் கீபோர்டு</translation>
 <translation id="6558280019477628686">பிழை ஏற்பட்டது. சில உருப்படிகள் நீக்கப்படாமல் இருக்கக்கூடும்.</translation>
 <translation id="656398493051028875">"<ph name="FILENAME" />" ஐ நீக்குகிறது...</translation>
 <translation id="6581162200855843583">Google இயக்கக இணைப்பு</translation>
@@ -498,7 +470,6 @@
 <translation id="6710213216561001401">முந்தையது</translation>
 <translation id="6718273304615422081">ஜிப் செய்கிறது...</translation>
 <translation id="6751256176799620176">1 கோப்புறை தேர்ந்தெடுக்கப்பட்டது</translation>
-<translation id="6760765581316020278">வியட்நாமிய விசைப்பலகை (VNI)</translation>
 <translation id="6790428901817661496">இயக்கு</translation>
 <translation id="6795884519221689054">பாண்டா</translation>
 <translation id="6806699711453372963">Linux பகிர்வை நிர்வகி</translation>
@@ -509,7 +480,6 @@
 <translation id="6827236167376090743">இந்த வீடியோவானது தொடர்ந்து நீண்ட நேரம் இயங்கும்.</translation>
 <translation id="6847101934483209767">தேர்விலிருந்து <ph name="ENTRY_NAME" /> அகற்றப்பட்டது.</translation>
 <translation id="6862635236584086457">இந்த கோப்புறையில் சேமிக்கப்படும் எல்லாக் கோப்புகளும் ஆன்லைனில் தானாகவே காப்புப்பிரதி எடுக்கப்படுகின்றன</translation>
-<translation id="6870130893560916279">உக்ரைனியன் விசைப்பலகை</translation>
 <translation id="6876155724392614295">பைக்</translation>
 <translation id="6878261347041253038">தேவநாகரி விசைப்பலகை (ஒலிப்புமுறை)</translation>
 <translation id="6885780034956018177">நத்தை</translation>
@@ -523,7 +493,6 @@
     <ph name="LINE_BREAK1" />
     <ph name="FILE_COUNT" /> உள்ளது</translation>
 <translation id="6935521024859866267">தலைகீழ்</translation>
-<translation id="6939777852457331078">யுஎஸ் ஒர்க்மேன் விசைப்பலகை</translation>
 <translation id="696203921837389374">மொபைல் டேட்டாவுடன் ஒத்திசை</translation>
 <translation id="6965382102122355670">சரி</translation>
 <translation id="6970230597523682626">பல்கேரியன்</translation>
@@ -542,26 +511,19 @@
 <translation id="7170467426996704624">ஒலிபெயர்ப்பு (salam → ሰላም)</translation>
 <translation id="7180611975245234373">புதுப்பி</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> ஜி.பை.</translation>
-<translation id="719009910964971313">US புரோகிராமர் டிவோரக் விசைப்பலகை</translation>
 <translation id="7191454237977785534">கோப்பை இவ்வாறு சேமி </translation>
-<translation id="7222624196722476520">பல்கேரியன் ஒலிப்புமுறை விசைப்பலகை</translation>
 <translation id="7238097264433196391">இயக்ககத்தின் பெயர்</translation>
 <translation id="7248671827512403053">ஆப்ஸ்</translation>
 <translation id="7268659760406822741">கிடைக்கும் சேவைகள்</translation>
 <translation id="7283041136720745563">உங்கள் Google இயக்கக ஒதுக்கீடு போதுமானதாக இல்லை.</translation>
 <translation id="7295662345261934369">பிறருடன் பகிர்</translation>
 <translation id="7339898014177206373">புதிய சாளரம்</translation>
-<translation id="7348749398828259943">யுஎஸ் ஒர்க்மேன் இன்டர்நேஷனல் விசைப்பலகை</translation>
 <translation id="7359359531237882347"><ph name="NUMBER_OF_ITEMS" /> உள்ளடக்கங்களை நகலெடுக்கிறது...</translation>
 <translation id="7375951387215729722"><ph name="COLUMN_NAME" /> அடிப்படையில் கோப்புப் பட்டியல் இறங்கு வரிசையில் காட்டப்பட்டுள்ளது.</translation>
-<translation id="7389722738210761877">தாய் விசைப்பலகை (TIS 820-2531)</translation>
 <translation id="7396038720194014279">இந்தி விசைப்பலகை (ஒலிப்புமுறை)</translation>
 <translation id="7417453074306512035">எத்தியோபிக் விசைப்பலகை</translation>
 <translation id="7417705661718309329">Google Maps</translation>
-<translation id="7419631653042041064">கேட்டலன் விசைப்பலகை</translation>
-<translation id="7434823369735508263">யுகே துவோராக் விசைப்பலகை</translation>
 <translation id="7460898608667578234">உக்ரைனியன்</translation>
-<translation id="7474889694310679759">கனேடியன் ஆங்கில விசைப்பலகை</translation>
 <translation id="7489215562877293245"><ph name="FILE_COUNT" /> உள்ளது
     <ph name="LINE_BREAK1" />
     <ph name="BEGIN_LINK" />Google இயக்ககத்திற்குக்<ph name="END_LINK" /> காப்புப் பிரதி எடுக்கத் தயாராக உள்ளது</translation>
@@ -574,6 +536,7 @@
 <translation id="7551643184018910560">அடுக்கில் பொருத்து</translation>
 <translation id="7553492409867692754"><ph name="FOLDER_NAME" /> கோப்புறையில் உள்ள கோப்புகளை அணுகுவதற்கான அனுமதியை Linux ஆப்ஸுக்கு வழங்கவும்</translation>
 <translation id="7576032389798113292">6x4</translation>
+<translation id="7585326627181105002">ஆங்கிலம் (யூஎஸ்) உடன் சர்வதேச PC கீபோர்டு</translation>
 <translation id="7589661784326793847">ஒரு வினாடி காத்திருக்கவும்</translation>
 <translation id="7592775719802218421">ஆஃப்லைனில் பயன்படுத்த <ph name="FILE_NAME" /> கோப்பினைப் பதிவிறக்குகிறது</translation>
 <translation id="7603724359189955920">கட்டங்கள்</translation>
@@ -586,7 +549,6 @@
 <translation id="7695430100978772476"><ph name="DRIVE_NAME" /> ஐ ஃபார்மேட் செய்ய முடியவில்லை</translation>
 <translation id="770015031906360009">கிரேக்கம்</translation>
 <translation id="7705251383879779343"><ph name="FILE_NAME" /> நகலெடுக்கப்பட்டது.</translation>
-<translation id="7706319470528945664">போர்ச்சுகீஸ் விசைப்பலகை</translation>
 <translation id="7711920809702896782">படத் தகவல்</translation>
 <translation id="7724603315864178912">வெட்டு</translation>
 <translation id="7730494089396812859">கிளவுடு காப்புப் பிரதி விவரங்களைக் காட்டு</translation>
@@ -605,7 +567,6 @@
     உங்கள் Google இயக்கக ஒதுக்கீடு போதுமானதாக இல்லை. கூடுதலாக <ph name="FILE_SIZE" /> தேவை.
     <ph name="LINE_BREAK2" />
     குறைவான படங்களைத் தேர்ந்தெடுத்து முயலவும்.</translation>
-<translation id="7825423931463735974">தமிழ் விசைப்பலகை (Tamil99)</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> டெ.பை.</translation>
 <translation id="7839804798877833423">இந்த கோப்புகளைப் பெற்றால், மொபைல் டேட்டாவில் தோராயமாக <ph name="FILE_SIZE" /> ஐப் பயன்படுத்தும்.</translation>
 <translation id="7846076177841592234">தேர்வை ரத்துசெய்</translation>
@@ -614,7 +575,6 @@
 <translation id="7873831373602885875"><ph name="FOLDER_NAME" /> இல் சேமிக்க முடியவில்லை. அனைத்து மாற்றங்களும் ‘பதிவிறக்கங்கள்’ கோப்புறையில் உள்ள <ph name="DOWNLOADS_FOLDER" /> கோப்புறையில் சேமிக்கப்படும்.</translation>
 <translation id="7881969471599061635">வசனங்களை முடக்கு</translation>
 <translation id="78946041517601018">பகிர்ந்த இயக்ககங்கள்</translation>
-<translation id="7896906914454843592">விரிவாக்கப்பட்ட யுஎஸ் விசைப்பலகை</translation>
 <translation id="7898607018410277265">குஜராத்தி விசைப்பலகை (புதிய ஒலிப்புமுறை)</translation>
 <translation id="7908793776359722643">பார்ட்டிஷனை ஃபார்மேட் செய்தால் அதிலுள்ள தரவுகள் அனைத்தும் அழிக்கப்படும். இதைச் செயல்தவிர்க்க முடியாது.</translation>
 <translation id="7925686952655276919">ஒத்திசைப்பதற்கு, மொபைல் டேட்டா பயன்படுத்தாதே</translation>
@@ -623,29 +583,24 @@
 <translation id="7953739707111622108">இந்த சாதனத்தின் கோப்புமுறைமை அறியப்படாததால், இந்த சாதனத்தை திறக்க முடியவில்லை.</translation>
 <translation id="7969525169268594403">ஸ்லோவேனியன்</translation>
 <translation id="7982283708762922719">உயரம்</translation>
-<translation id="7987485481246785146">சொரானி குர்டிஷ் அரபிக் விசைப்பலகை</translation>
 <translation id="8008366997883261463">ஜாக் ரஸ்ஸல் டெர்ரியர்</translation>
 <translation id="8028993641010258682">அளவு</translation>
-<translation id="8031722894461705849">ஸ்லோவாக் விசைப்பலகை</translation>
 <translation id="803771048473350947">கோப்பு</translation>
 <translation id="8038111231936746805">(இயல்புநிலை)</translation>
 <translation id="8042602468072383151"><ph name="AUDIO_TYPE" /> ஆடியோ</translation>
 <translation id="8045462269890919536">ரோமானியன்</translation>
 <translation id="8052887694493382350">Windows மென்பொருளைப் பயன்படுத்தும் PCக்காக இந்தக் கோப்பு வடிவமைக்கப்பட்டுள்ளது. Chrome OSஸில் இயங்கும் உங்கள் சாதனத்திற்கு இது இணக்கமானதல்ல. <ph name="BEGIN_LINK_HELP" />மேலும் அறிக<ph name="END_LINK_HELP" /></translation>
+<translation id="8061794649181228915">ஆங்கிலம் (யூஎஸ்) உடன் வொர்க்மேன் சர்வதேசக் கீபோர்டு</translation>
 <translation id="8066773524873206594">அனைத்து மாற்றங்களும் <ph name="DOWNLOADS_FOLDER" /> கோப்புறையில் சேமிக்கப்படும்.</translation>
 <translation id="8079530767338315840">மீண்டும் இயக்கு</translation>
 <translation id="8106045200081704138">என்னுடன் பகிர்ந்தவை</translation>
 <translation id="8116072619078571545">குளிர்ந்த நீர்</translation>
-<translation id="8117957376775388318">டாயி உள்ளீட்டு முறை</translation>
 <translation id="8137331602592933310">உங்களுடன் "<ph name="FILENAME" />" பகிரப்பட்டுள்ளது. உங்களுக்குச் சொந்தமில்லாதது என்பதால் உங்களால் அதை நீக்க முடியாது.</translation>
-<translation id="8145409227593688472">வூபி உள்ளீட்டு முறை</translation>
-<translation id="8148264977957212129">பின்யின் உள்ளீட்டு முறை</translation>
 <translation id="8151638057146502721">உள்ளமை</translation>
 <translation id="8153607920959057464">இந்தக் கோப்பைக் காண்பிக்க முடியாது.</translation>
 <translation id="8154842056504218462">அனைத்து உள்ளீடுகளும் தேர்ந்தெடுக்கப்பட்டுள்ளன.</translation>
 <translation id="8157684860301034423">ஆப்ஸ் தகவலை மீட்டெடுக்க முடியவில்லை.</translation>
 <translation id="8157939133946352716">7x5</translation>
-<translation id="8160015581537295331">ஸ்பானிஷ் விசைப்பலகை</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8193175696669055101">சாதனத்தின் மாடல்</translation>
 <translation id="8208580316430297579">கலைப்பணி</translation>
@@ -653,7 +608,6 @@
 <translation id="8249296373107784235">கைவிடு</translation>
 <translation id="8261506727792406068">நீக்கு</translation>
 <translation id="8269755669432358899">கோப்புகள் காட்டப்படும் பேனல்களைச் சுருக்கும்</translation>
-<translation id="8279388322240498158">சொரானி குர்டிஷ் ஆங்கில விசைப்பலகை</translation>
 <translation id="8280151743281770066">ஆர்மேனியன் ஒலிப்புமுறை</translation>
 <translation id="8294431847097064396">மூலம்</translation>
 <translation id="8297012244086013755">ஹாங்குல் 3 செட் (ஷிஃப்ட் இல்லை)</translation>
@@ -664,12 +618,9 @@
 <translation id="8336153091935557858">நேற்று <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8336524887811696057">நேபாளி ஒலிபெயர்ப்பு</translation>
 <translation id="8342318071240498787">ஒரே பெயருடைய கோப்பு  அல்லது கோப்பகம் ஏற்கனவே உள்ளன.</translation>
+<translation id="8362125533493859258">ஆங்கிலம் (கனடா)</translation>
 <translation id="8382450452152102026">பெறுநர்: <ph name="FOLDER_NAME" /></translation>
-<translation id="8391950649760071442">ஒலிபெயர்ப்பு (emandi → ఏమండీ)</translation>
 <translation id="8395901698320285466">பரிமாணங்கள்</translation>
-<translation id="8412586565681117057">விரைவு உள்ளீட்டு முறை</translation>
-<translation id="8418113698656761985">ரோமானியன் விசைப்பலகை</translation>
-<translation id="8432745813735585631">யுஎஸ் கோல்மேக் விசைப்பலகை</translation>
 <translation id="8437209419043462667">யு.எஸ்.</translation>
 <translation id="8456681095658380701">தவறான பெயர்</translation>
 <translation id="8466234950814670489">Tar archive</translation>
@@ -689,16 +640,12 @@
 <translation id="8698464937041809063">Google வரைதல்</translation>
 <translation id="8714406895390098252">சைக்கிள்</translation>
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> தேர்ந்தெடுக்கப்பட்டுள்ளது.</translation>
-<translation id="8722421161699219904">யுஎஸ் சர்வதேச விசைப்பலகை</translation>
 <translation id="872537912056138402">குரோஷியன்</translation>
-<translation id="874420130893181774">பாரம்பரிய பின்யின் உள்ளீட்டு முறை</translation>
 <translation id="8770002329960263418">அமெரிக்க சர்வதேசத் தளவமைப்புடன் கூடிய டச்சு (நெதர்லாந்து) PC கீபோர்டு</translation>
 <translation id="8775404590947523323">உங்கள் திருத்தங்கள் தானாகவே சேமிக்கப்படுகின்றன.<ph name="BREAKS" />அசல் படத்தின் நகலை வைத்திருக்க, "அசலில் மேலெழுது" என்பதை நீக்கவும்</translation>
-<translation id="8803496343472038847">ரஷ்யன் ஒலிப்புமுறை விசைப்பலகை</translation>
 <translation id="8808686172382650546">பூனை</translation>
 <translation id="8810671769985673465">ஜிப் செய்தல் ரத்தானது, இருக்கும் உள்ளடக்கம்: "<ph name="FILE_NAME" />"</translation>
 <translation id="8834164572807951958">'<ph name="DESTINATION_NAME" />' இன் உறுப்பினர்கள் இந்தக் கோப்புகளின் நகலுக்கான அணுகலைப் பெறுவார்கள்.</translation>
-<translation id="885381502874625531">பெலாரஷ்யன் விசைப்பலகை</translation>
 <translation id="8860454412039442620">Excel விரிதாள்</translation>
 <translation id="8900820606136623064">ஹங்கேரியன்</translation>
 <translation id="8919081441417203123">டேனிஷ்</translation>
@@ -722,9 +669,7 @@
 <translation id="9134524245363717059">இந்தக் கோப்பு Macintosh மென்பொருளைப் பயன்படுத்தும் கம்ப்யூட்டருக்காக வடிவமைக்கப்பட்டது. இது Chrome OSஸில் இயங்கும் சாதனத்துடன் பொருந்தவில்லை. இதற்கேற்ற சரியான மாற்று ஆப்ஸை, Chrome இணைய அங்காடியில் தேடவும்.</translation>
 <translation id="913758436357682283">மியான்மர் மியான்சன் விசைப்பலகை</translation>
 <translation id="9148058034647219655">வெளியேறு</translation>
-<translation id="9153744823707037316">வரிசை உள்ளீட்டு முறை</translation>
 <translation id="9154418932169119429">இந்தப் படம் ஆஃப்லைனில் கிடைக்காது.</translation>
-<translation id="9206487995878691001">கான்ஜி உள்ளீட்டு முறை</translation>
 <translation id="9213073329713032541">நிறுவல் தொடங்கியது.</translation>
 <translation id="9219103736887031265">படங்கள்</translation>
 <translation id="9219908252191632183">லூனார்</translation>

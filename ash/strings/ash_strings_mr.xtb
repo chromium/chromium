@@ -8,6 +8,7 @@
 <translation id="1036672894875463507">मी Google Assistant आहे, तुम्हाला संपूर्ण दिवसभर मदत करण्यासाठी येथे आहे!
 सुरुवात करण्यासाठी, तुम्ही करून पाहू शकता अशा गोष्टी या आहेत.</translation>
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" /> जोडले</translation>
+<translation id="1047773237499189053">नवीन वैशिष्ट्य उपलब्ध आहे, अधिक जाणून घेण्यासाठी अप अ‍ॅरो की वापरा.</translation>
 <translation id="1056775291175587022">नेटवर्क नाहीत</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="108486256082349153">सेल्युलर: <ph name="ADDRESS" /></translation>
@@ -20,6 +21,7 @@
 <translation id="1153356358378277386">जोडलेली डिव्हाइस</translation>
 <translation id="1175572348579024023">स्क्रोल करा</translation>
 <translation id="1178581264944972037">विराम द्या</translation>
+<translation id="118532027333893379">फुल स्क्रीन कॅप्चर करण्यासाठी कुठेही टॅप करा</translation>
 <translation id="1190609913194133056">सूचना केंद्र</translation>
 <translation id="1195412055398077112">ओव्हरस्कॅन</translation>
 <translation id="119944043368869598">सर्व साफ करा</translation>
@@ -122,6 +124,7 @@
 <translation id="2127372758936585790">निम्न-उर्जेचे चार्जर</translation>
 <translation id="2132302418721800944">फुल स्क्रीन रेकॉर्ड करा</translation>
 <translation id="2135456203358955318">डॉक केलेले भिंग</translation>
+<translation id="2158971754079422508"><ph name="DESC_TEXT" />: पुन्हा प्रयत्न करा</translation>
 <translation id="2208323208084708176">एकीकृत डेस्कटॉप मोड</translation>
 <translation id="2220572644011485463">पिन किंवा पासवर्ड</translation>
 <translation id="2222338659135520253">साइन इन करणे आवश्यक आहे</translation>
@@ -133,6 +136,7 @@
 <translation id="229397294990920565">मोबाइल डेटा बंद करत आहे...</translation>
 <translation id="2295777434187870477">माइक सुरू आहे, टॉगल केल्याने इनपुट म्यूट होईल.</translation>
 <translation id="2298170939937364391">फुल-स्क्रीन मॅग्निफायर सुरू केला आहे. तो टॉगल करून बंद करण्यासाठी पुन्हा Ctrl+Search+M दाबा.</translation>
+<translation id="2301480084224169662"><ph name="DESC_TEXT" />; मध्ये परिणाम पाहण्यासाठी डायलॉगवर क्लिक करा.</translation>
 <translation id="2302092602801625023">हे खाते Family Link द्वारे व्यवस्थापित केले जाते</translation>
 <translation id="2303600792989757991">विंडो विहंगावलोकन टॉगल करा</translation>
 <translation id="2322173485024759474">एक अक्षर मागे जा</translation>
@@ -159,6 +163,7 @@
 <translation id="2484513351006226581">कीबोर्डचा लेआउट स्विच करण्यासाठी <ph name="KEYBOARD_SHORTCUT" /> दाबा.</translation>
 <translation id="2501920221385095727">स्टिकी की</translation>
 <translation id="2509468283778169019">CAPS LOCK सुरू आहे</translation>
+<translation id="2536159006530886390">इंटरनेटशी कनेक्ट करू शकत नाही.</translation>
 <translation id="2542089167727451762">तुमच्या प्रोफाइल इमेजवर टॅप करा</translation>
 <translation id="255671100581129685">सार्वजनिक सेशनमध्ये Google असिस्टंट उपलब्ध नाही.</translation>
 <translation id="256712445991462162">डॉक केलेले मॅग्निफायर</translation>
@@ -180,6 +185,7 @@
 <translation id="2727977024730340865">एका निम्न-उर्जेच्या चार्जरवर प्लग इन केले. बॅटरी चार्जिंग विश्वसनीय असू शकत नाही.</translation>
 <translation id="2792498699870441125">Alt+Search</translation>
 <translation id="2819276065543622893">आता तुम्हाला साइन आउट केले जाईल.</translation>
+<translation id="28232023175184696">इंटरनेटशी कनेक्ट करू शकत नाही. पुन्हा प्रयत्न करण्यासाठी क्लिक करा.</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> <ph name="SPECIFIED_RESOLUTION" /> ला सपोर्ट करत नाही. रेझोल्यूशन <ph name="FALLBACK_RESOLUTION" /> मध्ये बदलले.</translation>
 <translation id="2825619548187458965">शेल्फ</translation>
 <translation id="2841907151129139818">टॅबलेट मोडवर स्विच केले</translation>
@@ -319,6 +325,7 @@
 <translation id="4129129681837227511">तुमच्या लॉक स्क्रीनवर सूचना पाहाण्यासाठी, सेटिंग बदलण्याकरिता अनलॉक करा</translation>
 <translation id="4146833061457621061">म्युझिक प्ले करा</translation>
 <translation id="4149156641122542261"><ph name="DEVICE_TYPE" /> हे <ph name="DOMAIN" /> द्वारे व्यवस्थापित केले जाते</translation>
+<translation id="415719264485676252">स्क्रीन कॅप्चर ब्लॉक केले आहे</translation>
 <translation id="4157822100366708405">गडद थीम सेटिंग्ज</translation>
 <translation id="4181841719683918333">भाषा</translation>
 <translation id="4195877955194704651">आपोआप क्लिक बटण</translation>
@@ -385,6 +392,7 @@
 <translation id="4710243778082831592">IME सेटिंग्ज</translation>
 <translation id="4731797938093519117">पालक अ‍ॅक्सेस</translation>
 <translation id="4734965478015604180">आडवा</translation>
+<translation id="4744944742468440486">तुमच्या निवडीशी संबंधित माहिती</translation>
 <translation id="4759238208242260848">डाउनलोड</translation>
 <translation id="4774338217796918551"><ph name="COME_BACK_TIME" /> वाजता परत या.</translation>
 <translation id="4776917500594043016"><ph name="USER_EMAIL_ADDRESS" /> साठी पासवर्ड</translation>
@@ -502,6 +510,7 @@
 <translation id="595202126637698455">कार्यप्रदर्शन ट्रेसिंग सक्षम केले</translation>
 <translation id="5957083217255311415">मोबाइल डेटा बंद केला आहे.</translation>
 <translation id="5958529069007801266">पर्यवेक्षित वापरकर्ता</translation>
+<translation id="5960825221082587934">Assistant ला तुमच्या निवडीसाठी व्याख्या, भाषांतर किंवा एकक रूपांतर यांसारखी माहिती दाखवू द्या.</translation>
 <translation id="5977415296283489383">हेडफोन</translation>
 <translation id="5978382165065462689">दूरस्थ सहाय्याद्वारे आपल्या स्क्रीनचे नियंत्रण शेअर करत आहे.</translation>
 <translation id="5980301590375426705">अतिथी निर्गमन करा</translation>
@@ -584,6 +593,7 @@
 <translation id="6777216307882431711">कनेक्ट केलेल्या USB-C डिव्‍हाइसना चार्ज करत आहे</translation>
 <translation id="6790428901817661496">प्ले करा</translation>
 <translation id="6803622936009808957">समर्थित रिजोल्यूशन न आढळल्यामुळे प्रदर्शने मिरर करू शकली नाहीत. त्याऐवजी विस्तारित डेस्कटॉप एंटर केला.</translation>
+<translation id="6816797338148849397">तुमच्या निवडीशी संबंधित माहिती उपलब्ध आहे. अ‍ॅक्सेस करण्यासाठी अप अ‍ॅरो की वापरा.</translation>
 <translation id="6818242057446442178">एक शब्द मागे जा</translation>
 <translation id="6820676911989879663">ब्रेक घ्या!</translation>
 <translation id="6850010208275816200">तुमचे सध्याचे अ‍ॅप फुल स्क्रीन मोडमध्ये आहे. अ‍ॅपने तुमच्या पासवर्डची विनंती केल्यास, प्रथम फुल स्क्रीनमधून बाहेर पडा.</translation>
@@ -647,6 +657,7 @@
 <translation id="7497767806359279797">भाषा आणि कीबोर्ड निवडा</translation>
 <translation id="7526573455193969409">नेटवर्कचे परीक्षण केले जाऊ शकते</translation>
 <translation id="7536035074519304529">IP पत्ता: <ph name="ADDRESS" /></translation>
+<translation id="7542906349682405018">तुमच्या स्क्रीनवरील आशयाचे स्क्रीन कॅप्चर घेता येण्याची क्षमता तुमच्या अ‍ॅडमिनिस्ट्रेटरने ब्लॉक केली आहे.</translation>
 <translation id="7548434653388805669">झोपण्याची वेळ</translation>
 <translation id="7551643184018910560">शेल्फवर पिन करा</translation>
 <translation id="7561982940498449837">मेनू बंद करा</translation>
@@ -773,6 +784,7 @@
 <translation id="8673028979667498656">270°</translation>
 <translation id="8676770494376880701">निम्न-उर्जेचे चार्जर कनेक्ट केले</translation>
 <translation id="8683506306463609433">परफॉर्मंस ट्रेसिंग ॲक्टिव्ह आहे</translation>
+<translation id="8709616837707653427"><ph name="DESC_TEXT" /> हे वैशिष्ट्य व्यवस्थापित करण्यासाठी लेफ्ट किंवा राइट अ‍ॅरो की वापरा.</translation>
 <translation id="8712637175834984815">समजले</translation>
 <translation id="8721053961083920564">व्‍हॉल्‍यूम टॉगल करा. <ph name="STATE_TEXT" /></translation>
 <translation id="8734991477317290293">तो कदाचित तुमचे कीस्ट्रोक चोरण्याचा प्रयत्न करत असेल.</translation>
@@ -793,6 +805,7 @@
 <translation id="8874184842967597500">कनेक्ट नाही</translation>
 <translation id="8877788021141246043">रिमाइंडर सेट करा</translation>
 <translation id="8878886163241303700">स्क्रीन विस्तृत करत आहे</translation>
+<translation id="8883473964424809116">Google Assistant सेटिंग्ज उघडण्‍यासाठी क्‍लिक करा.</translation>
 <translation id="890616557918890486">स्रोत बदला</translation>
 <translation id="8909138438987180327">बॅटरी <ph name="PERCENTAGE" /> टक्के आहे.</translation>
 <translation id="8913384980486163186">थीम असलेले (डीफॉल्ट)</translation>

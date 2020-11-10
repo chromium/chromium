@@ -77,6 +77,7 @@
 <translation id="1513352483775369820">Könyvjelzők és webes előzmények</translation>
 <translation id="1513858653616922153">Jelszó törlése</translation>
 <translation id="1521774566618522728">Ma volt aktív</translation>
+<translation id="1538801903729528855">Jobb felhasználói élmény a weben hangalapú keresésnél</translation>
 <translation id="1543538514740974167">Gyorsabban idejuthat</translation>
 <translation id="1544826120773021464">Google-fiókjának kezeléséhez koppintson a „Fiók kezelése” gombra</translation>
 <translation id="1549000191223877751">Áthelyezés másik ablakba</translation>
@@ -117,6 +118,7 @@
 <translation id="1877026089748256423">A Chrome elavult</translation>
 <translation id="1883903952484604915">Saját fájlok</translation>
 <translation id="189358972401248634">Más nyelvek</translation>
+<translation id="1918175104945982129">A Segéd hangalapú kereséssel kapcsolatos hozzájárulási kezelőfelülete félmagasságban megnyitva</translation>
 <translation id="1919130412786645364">Chrome-bejelentkezés engedélyezése</translation>
 <translation id="1922362554271624559">Javasolt nyelvek</translation>
 <translation id="1925021887439448749">Írja be az egyéni internetcímet</translation>
@@ -147,6 +149,7 @@
 <translation id="2056878612599315956">A webhely szüneteltetve van</translation>
 <translation id="2067805253194386918">szöveg</translation>
 <translation id="2068748236079642969">Következő videó megtekintése</translation>
+<translation id="2074143993849053708">A Segéd hangalapú kereséssel kapcsolatos, bezárt hozzájárulási kezelőfelülete</translation>
 <translation id="2082238445998314030">Eredmény: <ph name="RESULT_NUMBER" />/<ph name="TOTAL_RESULTS" /></translation>
 <translation id="2096012225669085171">Szinkronizálás és személyre szabás az eszközök között</translation>
 <translation id="2100273922101894616">Automatikus bejelentkezés</translation>
@@ -279,6 +282,7 @@ A kereséshez tartsa nyomva a kívánt szót. A keresés finomításához válas
 <translation id="3006881078666935414">Nincsenek használati adatok</translation>
 <translation id="3016635187733453316">Ellenőrizze, hogy az eszköz csatlakozik-e az internethez</translation>
 <translation id="3029704984691124060">Az összetett jelszavak nem egyeznek</translation>
+<translation id="3031225630520268969">A Segéd hangalapú kereséssel kapcsolatos hozzájárulási kezelőfelülete</translation>
 <translation id="3034163383943672781">A letöltés indításának időpontja: <ph name="DATE" />.</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Kérjen segítséget<ph name="END_LINK" /></translation>
 <translation id="305593374596241526">A Helyadatok szolgáltatás ki van kapcsolva; bekapcsolhatja az <ph name="BEGIN_LINK" />Android-beállításokban<ph name="END_LINK" />.</translation>
@@ -437,6 +441,7 @@ A kereséshez tartsa nyomva a kívánt szót. A keresés finomításához válas
 <translation id="4248098802131000011">Védje meg jelszavait az adatvédelmi incidensektől és más biztonsági problémáktól</translation>
 <translation id="4250229828105606438">Képernyőkép</translation>
 <translation id="4256782883801055595">Nyílt forráskódú licencek</translation>
+<translation id="4263656433980196874">A Segéd hangalapú kereséssel kapcsolatos hozzájárulási kezelőfelülete teljes magasságban megnyitva</translation>
 <translation id="4269820728363426813">Link másolása</translation>
 <translation id="4298388696830689168">Összekapcsolt webhelyek</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
@@ -623,6 +628,7 @@ A beállítás módosításához <ph name="BEGIN_LINK" />állítsa vissza a szin
 <translation id="5581519193887989363">A <ph name="BEGIN_LINK1" />beállítások<ph name="END_LINK1" /> között bármikor módosíthatja a szinkronizálni kívánt elemeket.</translation>
 <translation id="5595485650161345191">Cím szerkesztése</translation>
 <translation id="5599455543593328020">Inkognitó mód</translation>
+<translation id="5599941490345670218">A Google Segéd elvégezhet bizonyos műveleteket Önnek a különböző webhelyeken</translation>
 <translation id="5620163320393916465">Nincsenek mentett jelszavak</translation>
 <translation id="5620928963363755975">A fájlokat és oldalakat a További lehetőségek gomb Letöltések menüpontjában találja meg</translation>
 <translation id="5626134646977739690">Név:</translation>
@@ -1148,6 +1154,7 @@ Az inkognitó-munkamenet adatai csak <ph name="BEGIN_BOLD2" />az összes inkogni
 <translation id="9155898266292537608">Úgy is végrehajthat keresést, hogy gyorsan rákoppint valamelyik szóra</translation>
 <translation id="9169507124922466868">Félmagasságban megnyitott navigációs előzmények</translation>
 <translation id="9191031968346938109">Hozzáadás…</translation>
+<translation id="919615279147764192">Annak érdekében, hogy segíteni tudjon a feladatok elvégzésében, a Google megkapja azoknak a webhelyeknek az URL-jeit és tartalmait, amelyeken Ön használta Segédjét, valamint megkapja a Segéden keresztül elküldött információkat. Ezek az információk megmaradhatnak az Ön Google-fiókjában. A Segédet a Chrome beállításai között kapcsolhatja ki.</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{1 perce ellenőrizve}other{# perce ellenőrizve}}</translation>
 <translation id="9204836675896933765">1 fájl maradt</translation>
 <translation id="9206873250291191720">A</translation>

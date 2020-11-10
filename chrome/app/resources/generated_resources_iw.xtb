@@ -355,7 +355,6 @@
 <translation id="1401308693935339022">‏שימוש במיקום. אפליקציות ושירותים עם הרשאת מיקום יכולים להשתמש במיקום של המכשיר הזה. Google עשויה לאסוף נתוני מיקום מדי פעם, ולהשתמש בנתונים האלה בצורה אנונימית כדי לשפר את הדיוק של המיקום ואת האיכות של שירותים מבוססי-מיקום.</translation>
 <translation id="1403222014593521787">‏לא ניתן להתחבר לשרת ה-proxy</translation>
 <translation id="140520891692800925"><ph name="PROFILE_DISPLAY_NAME" /> (בפיקוח)</translation>
-<translation id="140541193409212341">‏אירעה שגיאה בזמן ש-Chrome בדק אם יש במחשב תוכנה מזיקה</translation>
 <translation id="1405779994569073824">קריסה.</translation>
 <translation id="1406500794671479665">מאמת...</translation>
 <translation id="1407135791313364759">פתיחת כל הכרטיסיות</translation>
@@ -390,7 +389,6 @@
 <translation id="1433811987160647649">שאלה לפני גישה</translation>
 <translation id="1434696352799406980">‏פעולה זו תאפס את דף הפתיחה, את דף הכרטיסייה החדשה, את מנוע החיפוש ואת הכרטיסיות המוצמדות שלך. היא גם תשבית את כל התוספים ותמחק נתונים זמניים כגון קובצי Cookie. הסימניות, ההיסטוריה והסיסמאות השמורות לא יימחקו.</translation>
 <translation id="1434886155212424586">דף הבית הוא הדף 'כרטיסייה חדשה'</translation>
-<translation id="1435515966666225466">מורשים להשתמש בפלאגין כדי לגשת למחשב</translation>
 <translation id="1436390408194692385">תקף למשך <ph name="TICKET_TIME_LEFT" /></translation>
 <translation id="1436671784520050284">להמשך ההגדרה</translation>
 <translation id="1436784010935106834">הוסר</translation>
@@ -1618,7 +1616,6 @@
 <translation id="2839032553903800133">ההודעות חסומות</translation>
 <translation id="2841013758207633010">שעה</translation>
 <translation id="2841837950101800123">ספק</translation>
-<translation id="2841921561399512198">{NUM_DAYS,plural, =1{‏Chrome לא מצא תוכנות מזיקות ידועות במחשב שלך. בדיקה אחרונה: לפני יום אחד.}two{‏Chrome לא מצא תוכנות מזיקות ידועות במחשב שלך. בדיקה אחרונה: לפני {NUM_DAYS} ימים.}many{‏Chrome לא מצא תוכנות מזיקות ידועות במחשב שלך. בדיקה אחרונה: לפני {NUM_DAYS} ימים.}other{‏Chrome לא מצא תוכנות מזיקות ידועות במחשב שלך. בדיקה אחרונה: לפני {NUM_DAYS} ימים.}}</translation>
 <translation id="2844169650293029770">‏מכשיר עם יציאת USB-C (יציאה שמאלית-קדמית)</translation>
 <translation id="2844809857160214557">הצגה וניהול של משימות הדפסה</translation>
 <translation id="2845382757467349449">תמיד להציג את סרגל הסימניות</translation>
@@ -1787,7 +1784,6 @@
 <translation id="3036546437875325427">‏הפעלת Flash</translation>
 <translation id="3037754279345160234">אי אפשר לנתח את התצורה כדי להצטרף לדומיין. יש לפנות למנהל המערכת.</translation>
 <translation id="3038612606416062604">הוספה ידנית של מדפסת</translation>
-<translation id="3038675903128704560">אין לאפשר לאף אתר להשתמש בפלאגין כדי לגשת למחשב שלך</translation>
 <translation id="3039491566278747710">התקנת המדיניות במצב אופליין במכשיר נכשלה.</translation>
 <translation id="3043581297103810752">מ-<ph name="ORIGIN" /></translation>
 <translation id="3045447014237878114">האתר הזה הוריד קבצים מרובים באופן אוטומטי</translation>
@@ -2106,7 +2102,6 @@
 <translation id="3439153939049640737">לאפשר תמיד ל-<ph name="HOST" /> לגשת למיקרופון שלך</translation>
 <translation id="3439970425423980614">‏פתיחת PDF בתצוגה מקדימה</translation>
 <translation id="3440663250074896476">עוד פעולות לסימנייה <ph name="BOOKMARK_NAME" /></translation>
-<translation id="3440761377721825626">יש לשאול כשאתר רוצה להשתמש בפלאגין כדי לגשת אל המחשב שלך</translation>
 <translation id="3441653493275994384">מסך</translation>
 <translation id="3441663102605358937">יש להיכנס שוב לחשבון <ph name="ACCOUNT" /> כדי לאמת אותו.</translation>
 <translation id="3445047461171030979">‏תשובות מהירות מ-Google Assistant</translation>
@@ -2182,7 +2177,6 @@
 <translation id="3518985090088779359">בסדר, מקובל עליי</translation>
 <translation id="3519564332031442870">שירות לקצה העורפי של המדפסת</translation>
 <translation id="3521606918211282604">שינוי גודל הכונן</translation>
-<translation id="3523642406908660543">שאל כשאתר רוצה להשתמש בפלאגין כדי לגשת אל המחשב שלך (מומלץ)</translation>
 <translation id="3524965460886318643">ייצוא הפעילויות</translation>
 <translation id="3526034519184079374">אי אפשר לקרוא את נתוני האתר או לשנות אותם</translation>
 <translation id="3527085408025491307">תיקייה</translation>
@@ -2512,7 +2506,6 @@
 <translation id="3873915545594852654">‏התרחשה בעיה הקשורה ל-ARC++‎.</translation>
 <translation id="3874164307099183178">‏הפעלת Google Assistant</translation>
 <translation id="3877075909000773256">הגדרות שיתוף בקרבת מקום למכשיר של <ph name="USER_NAME" />. השיתוף יתבצע בשם <ph name="USER_EMAIL" />.</translation>
-<translation id="387771067039689031">לא מורשים להשתמש בפלאגין כדי לגשת למחשב</translation>
 <translation id="3879748587602334249">מנהל ההורדות</translation>
 <translation id="3881478300875776315">אני רוצה לראות פחות שורות</translation>
 <translation id="3882165008614329320">סרטון קיים ממצלמה או מקובץ</translation>
@@ -2651,7 +2644,6 @@
 <translation id="4031179711345676612">ניתן להשתמש במיקרופון בדף זה</translation>
 <translation id="4031527940632463547">החיישנים חסומים</translation>
 <translation id="4033471457476425443">הוספת תיקייה חדשה</translation>
-<translation id="4034280328082410379">חסימת הגישה של יישומי פלאגין למחשב</translation>
 <translation id="4034824040120875894">מדפסת</translation>
 <translation id="4035758313003622889">&amp;מנהל המשימות</translation>
 <translation id="4036778507053569103">המדיניות שהורדה מהשרת אינה חוקית.</translation>
@@ -2778,7 +2770,6 @@
 <translation id="4200983522494130825">&amp;כרטיסייה חדשה</translation>
 <translation id="4201546031411513170">אפשר לבחור מה לסנכרן בכל שלב דרך ההגדרות.</translation>
 <translation id="420283545744377356">השבתה של שומר המסך</translation>
-<translation id="4205362703535890467">‏Chrome לא גילה תוכנות מזיקות ידועות במחשב שלך. בדיקה אחרונה: אתמול.</translation>
 <translation id="4206144641569145248">חייזר</translation>
 <translation id="4206323443866416204">דוח משוב</translation>
 <translation id="4208390505124702064">חיפוש ב-<ph name="SITE_NAME" /></translation>
@@ -3280,7 +3271,6 @@
 <translation id="4830121310592638841">תוצג שאלה כשאתר ירצה לפתוח ולהציב חלונות במסכים שלך</translation>
 <translation id="4830502475412647084">‏מתקין עדכון OS</translation>
 <translation id="4830573902900904548"><ph name="DEVICE_TYPE" /> לא מצליח להתחבר אל האינטרנט באמצעות <ph name="NETWORK_NAME" />. יש לבחור רשת אחרת. <ph name="LEARN_MORE_LINK_START" />למידע נוסף<ph name="LEARN_MORE_LINK_END" /></translation>
-<translation id="4831688036548685548">‏Chrome לא גילה תוכנות מזיקות ידועות במחשב שלך. בדיקה אחרונה: לפני כמה רגעים.</translation>
 <translation id="4833236810053292670">‏מה חדש ב-Chromebook</translation>
 <translation id="4833683849865011483">נמצאה מדפסת אחת המשויכת לשרת ההדפסה</translation>
 <translation id="4836504898754963407">ניהול של טביעות אצבעות</translation>
@@ -4299,6 +4289,7 @@
 <translation id="6042308850641462728">עוד</translation>
 <translation id="6043317578411397101">‏<ph name="APP_NAME" /> משתף כרטיסיית Chrome עם <ph name="TAB_NAME" />.</translation>
 <translation id="604388835206766544">ניתוח ההגדרה נכשל</translation>
+<translation id="6043994281159824495">צא עכשיו</translation>
 <translation id="6044805581023976844">‏<ph name="APP_NAME" /> משתף כרטיסייה ואודיו של Chrome עם <ph name="TAB_NAME" />.</translation>
 <translation id="6049004884579590341">לחץ לחיצה ארוכה על |<ph name="ACCELERATOR" />| כדי לצאת ממסך מלא</translation>
 <translation id="6051354611314852653">‏אופס!  המערכת לא הצליחה לאמת את הגישה של מכשיר זה לממשק ה-API.</translation>
@@ -4559,7 +4550,6 @@
 <translation id="6333064448949140209">‏הקובץ יישלח אל Google לניפוי באגים</translation>
 <translation id="6338981933082930623">כל אתר יכול להציג לך כל מודעה</translation>
 <translation id="6339668969738228384">יצירת פרופיל חדש בשביל <ph name="USER_EMAIL_ADDRESS" /></translation>
-<translation id="6339995243416022850">אתרים יכולים לבקש הרשאה להשתמש בפלאגין כדי לגשת למחשב (מומלץ)</translation>
 <translation id="6340017061976355871">‏לא ניתן היה להתחבר אל השרת. יש לבדוק את חיבור הרשת ולנסות שוב. אם הבעיה ממשיכה, יש להפעיל מחדש את ה-Chromebook.</translation>
 <translation id="6340071272923955280">‏פרוטוקול הדפסה באינטרנט (IPPS)</translation>
 <translation id="6340526405444716530">התאמה אישית</translation>
@@ -4662,7 +4652,6 @@
 <translation id="6463795194797719782">&amp;עריכה</translation>
 <translation id="6465841119675156448">ללא אינטרנט</translation>
 <translation id="6466988389784393586">&amp;פתיחת כל הסימניות</translation>
-<translation id="6467235653320897404">{NUM_HOURS,plural, =1{‏Chrome לא מצא תוכנות מזיקות ידועות במחשב שלך. בדיקה אחרונה: לפני שעה אחת.}two{‏Chrome לא מצא תוכנות מזיקות ידועות במחשב שלך. בדיקה אחרונה: לפני {NUM_HOURS} שעות.}many{‏Chrome לא מצא תוכנות מזיקות ידועות במחשב שלך. בדיקה אחרונה: לפני {NUM_HOURS} שעות.}other{‏Chrome לא מצא תוכנות מזיקות ידועות במחשב שלך. בדיקה אחרונה: לפני {NUM_HOURS} שעות.}}</translation>
 <translation id="6467304607960172345">אופטימיזציה של סרטונים במסך מלא</translation>
 <translation id="6468485451923838994">גופנים</translation>
 <translation id="6469557521904094793">הפעלת רשת סלולרית</translation>
@@ -4982,7 +4971,6 @@
 <translation id="6860097299815761905">‏הגדרות שרת proxy...</translation>
 <translation id="686022878923628150">‏חסימת התחברות של אתרים אל מכשירי MIDI</translation>
 <translation id="6860427144121307915">פתח בכרטיסייה</translation>
-<translation id="6861451385429799394">‏<ph name="BEGIN_LINK" />מנהל המערכת<ph name="END_LINK" /> השבית את הבדיקה של Chrome לאיתור תוכנות מזיקות</translation>
 <translation id="686366188661646310">למחוק את הסיסמה?</translation>
 <translation id="6865313869410766144">נתוני טפסים למילוי אוטומטי</translation>
 <translation id="6865598234501509159">הדף לא ב<ph name="LANGUAGE" /></translation>
@@ -5361,7 +5349,6 @@
 <translation id="7308002049209013926">‏מרכז האפליקציות עוזר לך לגשת במהירות לאפליקציות ולפעילויות חדשות. כדי להגיע לכאן בעזרת המקלדת יש להקיש על Alt + Shift + L.</translation>
 <translation id="7309257895202129721">הצגת &amp;פקדים</translation>
 <translation id="7310598146671372464">‏ההתחברות נכשלה. השרת לא תומך בסוגי הצפנת Kerberos שצוינו. צריך לפנות אל מנהל המערכת.</translation>
-<translation id="7311079019872751559">גישה לפלאגין ללא ארגז חול</translation>
 <translation id="7320213904474460808">הגדרת הרשת כברירת המחדל</translation>
 <translation id="7321545336522791733">השרת אינו נגיש</translation>
 <translation id="7324297612904500502">פורום ביטא</translation>
@@ -5486,7 +5473,6 @@
 <translation id="7456847797759667638">פתח מיקום...</translation>
 <translation id="7457384018036134905">‏ניהול שפות בהגדרות Chrome OS</translation>
 <translation id="7458168200501453431">‏נעשה שימוש בבדיקת האיות של חיפוש Google. הטקסט המוקלד בדפדפן נשלח אל Google.</translation>
-<translation id="7459920164600044274">אתרים משתמשים בדרך כלל ביישומי פלאגין כדי לתמוך בתכונות כמו וידאו בסטרימינג או התקנת אפליקציות</translation>
 <translation id="7460045493116006516">העיצוב הנוכחי</translation>
 <translation id="7461729991508684543">{NUM_DAYS,plural, =1{לפי הדרישה של <ph name="DOMAIN" />, עליך לגבות את הנתונים שלך ולהחזיר את מכשיר ה-<ph name="DEVICE_TYPE" /> היום. <ph name="LINK_BEGIN" />פרטים נוספים<ph name="LINK_END" />}two{לפי הדרישה של <ph name="DOMAIN" />, עליך לגבות את הנתונים שלך ולהחזיר את מכשיר ה-<ph name="DEVICE_TYPE" /> בתוך {NUM_DAYS} ימים. <ph name="LINK_BEGIN" />פרטים נוספים<ph name="LINK_END" />}many{לפי הדרישה של <ph name="DOMAIN" />, עליך לגבות את הנתונים שלך ולהחזיר את מכשיר ה-<ph name="DEVICE_TYPE" /> בתוך {NUM_DAYS} ימים. <ph name="LINK_BEGIN" />פרטים נוספים<ph name="LINK_END" />}other{לפי הדרישה של <ph name="DOMAIN" />, עליך לגבות את הנתונים שלך ולהחזיר את מכשיר ה-<ph name="DEVICE_TYPE" /> בתוך {NUM_DAYS} ימים. <ph name="LINK_BEGIN" />פרטים נוספים<ph name="LINK_END" />}}</translation>
 <translation id="7461924472993315131">הצמדה</translation>
@@ -6009,6 +5995,7 @@
 <translation id="8030852056903932865">אישור</translation>
 <translation id="8032244173881942855">לא ניתן להעביר את הכרטיסייה.</translation>
 <translation id="8033827949643255796">מסומן</translation>
+<translation id="8033958968890501070">הזמן שהוקצב תם</translation>
 <translation id="8037117027592400564">קריאת כל הטקסט הנאמר באמצעות דיבור מסונתז</translation>
 <translation id="8037357227543935929">לשאול (ברירת מחדל)</translation>
 <translation id="803771048473350947">קובץ</translation>
@@ -6435,7 +6422,6 @@
 <translation id="8541462173655894684">לא נמצאו מדפסות המשויכות לשרת ההדפסה</translation>
 <translation id="8542618328173222274">תוצג שאלה כשאתר ירצה להשתמש במכשירי המציאות המדומה ובנתוני המציאות המדומה שלך</translation>
 <translation id="8543556556237226809">יש לך שאלות? עליך לפנות לאיש הקשר שמפקח על הפרופיל שלך.</translation>
-<translation id="8545575359873600875">מצטערים, לא ניתן לאמת את הסיסמה שלך. ייתכן שהמנהל של המשתמש בפיקוח שינה את הסיסמה לאחרונה. במצב כזה הסיסמה החדשה תחול בפעם הבאה שתבצע כניסה. נסה להשתמש בסיסמה הישנה שלך.</translation>
 <translation id="8546186510985480118">חסר שטח אחסון במכשיר</translation>
 <translation id="8546306075665861288">מטמון תמונות</translation>
 <translation id="854655314928502177">‏כתובת האתר לגילוי אוטומטי של שרת proxy באינטרנט:</translation>
@@ -6646,7 +6632,6 @@
 <translation id="8774934320277480003">שוליים עליונים</translation>
 <translation id="8775144690796719618">כתובת אתר לא חוקית</translation>
 <translation id="8775163630211761057">‏הרחבת התכונות הטובות ביותר בטלפון Android למכשיר <ph name="DEVICE_TYPE" /> שלך</translation>
-<translation id="8776977753660889796">{NUM_MINS,plural, =1{‏Chrome לא מצא תוכנות מזיקות ידועות במחשב שלך. בדיקה אחרונה: לפני דקה אחת.}two{‏Chrome לא מצא תוכנות מזיקות ידועות במחשב שלך. בדיקה אחרונה: לפני {NUM_MINS} דקות.}many{‏Chrome לא מצא תוכנות מזיקות ידועות במחשב שלך. בדיקה אחרונה: לפני {NUM_MINS} דקות.}other{‏Chrome לא מצא תוכנות מזיקות ידועות במחשב שלך. בדיקה אחרונה: לפני {NUM_MINS} דקות.}}</translation>
 <translation id="8777628254805677039">‏סיסמת root</translation>
 <translation id="8780123805589053431">‏קבלת תיאורי תמונות מ-Google</translation>
 <translation id="8780443667474968681">החיפוש הקולי הושבת.</translation>

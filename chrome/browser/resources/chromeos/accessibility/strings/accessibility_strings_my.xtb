@@ -347,7 +347,6 @@
 <translation id="352577523970648069">တည်းဖြတ်နိုင်သည့် စာသားအကွက်</translation>
 <translation id="3538907380453898475">dscrplst</translation>
 <translation id="3549141990712742152"><ph name="TEXT" /> ကို ဖြတ်ယူပါ။</translation>
-<translation id="3549680091535286226">စကားသံကို ခဏရပ်ရန် လက် ၂ ချောင်းဖြင့် တို့ပါ</translation>
 <translation id="3564729643041517261">လက်ရှိ မျက်နှာပြင်ပြသမှုပုံစံသည် ဘေးချင်းကပ်ဖြစ်သည်</translation>
 <translation id="3573145950452451508">စာမျက်နှာ အောက်ခြေမှတ်စု</translation>
 <translation id="3587482841069643663">အားလုံး</translation>
@@ -595,6 +594,7 @@
 <translation id="5561345396546889625">နောက် စာရင်း</translation>
 <translation id="5562645715554321347">hdnggrp</translation>
 <translation id="5574412348552378458">ChromeVox လေ့လာခြင်းမုဒ်</translation>
+<translation id="5582839680698949063">ပင်မမီနူး</translation>
 <translation id="5585044216466955529">စာသား ပြင်ဆင်ရန်၊ အီးမေးသို့ သွားရန်</translation>
 <translation id="5597170376237141345">နောက်ထပ် အမှန်ခြစ်ရန် အကွက်</translation>
 <translation id="5598905979683743333"><ph name="NAME" />၊ အမည်၊ ရေဒီယို ခလုပ်ကို ရွေးချယ်မထားပါ</translation>
@@ -828,7 +828,6 @@
 <translation id="7491962110804786152">တဘ်</translation>
 <translation id="7492497529767769458">နောက်အပိုင်းသို့ ရွှေ့သည်။ ဥပမာများတွင် 'အခြေအနေပြဗန်း' နှင့် Launcher တို့ ပါဝင်သည်။</translation>
 <translation id="7505149250476994901">စကားလုံးရှေ့တွင် "ကက်ပ်" ဟု ပြောပါ</translation>
-<translation id="7518543783849163354">ChromeVox စကားပြောခြင်းမှ ခေတ္တရပ်ရန် Control ခလုတ်ကို နှိပ်ပါ။</translation>
 <translation id="7533226154149229506">ရွှေချောင်းဝါ အနု</translation>
 <translation id="7543255924852002459">အညွှန်းကို ပယ်ရန်</translation>
 <translation id="7552432549459840808">အသုံးဝင်သည့် Chrome ဖြတ်လမ်းများ</translation>

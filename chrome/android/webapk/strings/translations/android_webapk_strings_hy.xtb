@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="hy">
+<translation id="1625959690469240009">Հպեք՝ կարգավորումները բացելու համար, թարմացրեք կամ նորից տեղադրեք <ph name="BROWSER_NAME" /> դիտարկիչը</translation>
 <translation id="1700971771753530690"><ph name="APP_NAME" /> հավելվածը գործարկելու համար անհրաժեշտ է հետևյալ հավելվածը՝</translation>
 <translation id="2697679025356221813"><ph name="APP_NAME" /> հավելվածը գործարկելու համար անհրաժեշտ է դիտարկիչ</translation>
 <translation id="3858759029325727987">Ընտրեք այս հավելվածն աջակցող դիտարկիչ՝</translation>

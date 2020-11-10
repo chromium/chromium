@@ -23,6 +23,7 @@
 <translation id="1591562245178063882">या महिन्यात</translation>
 <translation id="1637811476055996098">फाइल निवडा</translation>
 <translation id="1650423536718072820">पुलकोट</translation>
+<translation id="1681022320378710418">सध्याची वेळ</translation>
 <translation id="1727886345390570319">सबटायटल मेनू लपवा</translation>
 <translation id="1729654308190250600">कृपया एक रिक्त नसलेला ईमेल ॲड्रेस एंटर करा.</translation>
 <translation id="1758486001363313524">अन्य...</translation>
@@ -81,6 +82,7 @@
 <translation id="310520048233152454">कृपया एखादी URL एंटर करा.</translation>
 <translation id="3175736971608411871">टायमर</translation>
 <translation id="3199563858620722075">काँबो बॉक्स</translation>
+<translation id="3220661731597678625">सध्याची पायरी</translation>
 <translation id="3329013043687509092">संपृक्तता</translation>
 <translation id="3450233048674729344">मूल्य <ph name="MAXIMUM" /> पेक्षा कमी किंवा समान असावे.</translation>
 <translation id="3486220673238053218">परिभाषा</translation>
@@ -126,6 +128,7 @@
 <translation id="4763480195061959176">व्हिडिओ</translation>
 <translation id="479989351350248267">search</translation>
 <translation id="4812940957355064477">कृपया एक नंबर एंटर करा.</translation>
+<translation id="4912200001568447310">सध्याचा आयटम</translation>
 <translation id="4912536737030637138">ग्रंथसूची नोंद</translation>
 <translation id="4915360478455618802">वेळ पिकर दाखवा</translation>
 <translation id="492244087561876220">टिप्पणी</translation>
@@ -148,6 +151,7 @@
 <translation id="5334352251556557839">मीडिया प्ले करता आला नाही.</translation>
 <translation id="537648784377940524">आधीची तारीख (<ph name="MIN_DATE_OR_TIME" />) नंतरच्या तारखेपूर्वी (<ph name="MAX_DATE_OR_TIME" />) येणे आवश्यक आहे.</translation>
 <translation id="5406322316791861025">आकृती</translation>
+<translation id="5425179576310518467">सध्याची तारीख</translation>
 <translation id="5453733299334684579">ट्री आयटम</translation>
 <translation id="5466621249238537318">कृपया एक किंवा अधिक फाइल निवडा.</translation>
 <translation id="5468998798572797635">पूर्ण स्क्रीनमधून निर्गमन करा</translation>
@@ -177,6 +181,7 @@
 <translation id="6164829606128959761">मीटर</translation>
 <translation id="6166809985690652833">अंतिम शब्द</translation>
 <translation id="6209276755895393898">असे असल्याचे दिसत आहे: <ph name="DESCRIPTION" /></translation>
+<translation id="6212595056017402527">सध्याचे पेज</translation>
 <translation id="6213469881011901533">शब्दावली</translation>
 <translation id="6281588256137006900">फिकटपणा</translation>
 <translation id="6281763101136022427">url</translation>
@@ -211,6 +216,7 @@
 <translation id="6989848892321993519">कृपया हा मजकूर <ph name="MIN_CHARACTERS" /> वर्ण किंवा त्यापेक्षा अधिक मोठा करा (तुम्ही सध्‍या 1 वर्ण वापरत आहात).</translation>
 <translation id="7034405885550056553">सूचना</translation>
 <translation id="709897737746224366">कृपया विनंती केलेले स्वरूपन जुळवा.</translation>
+<translation id="7102274145889307184">सध्याचे स्थान</translation>
 <translation id="7118469954320184356">कोणतेही वर्णन उपलब्ध नाही.</translation>
 <translation id="7139483182332611405">प्रस्तावना</translation>
 <translation id="7214187073215825913">आशयाची माहिती</translation>

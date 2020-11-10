@@ -671,15 +671,6 @@
       如果將這項政策設為 True 或不予設定，使用者將可以使用 VM 管理 CLI。
       否則系統會停用並隱藏 VM 管理 CLI。
       </translation>
-<translation id="2194470398825717446">M61 已淘汰這項政策，請改用 EcryptfsMigrationStrategy。
-
-      針對採用 eCryptfs 檔案系統且需要轉換成 Ext4 加密系統的裝置指定相關行為。
-
-      如果將這項政策設為「DisallowArc」，裝置上的所有使用者 (包括已採用 Ext4 加密系統的使用者) 均無法使用 Android 應用程式，也無法從 eCryptfs 檔案系統遷移至 Ext4 加密系統。
-
-      如果將這項政策設為「AllowMigration」，擁有 eCryptfs 檔案系統主目錄的使用者可視需要將主目錄遷移至 Ext4 加密系統 (目前是當裝置可下載 Android N 時)。
-
-      這項政策不適用於資訊站應用程式 (這類應用程式會自動遷移)。如果未設定這項政策，裝置行為會與選擇「DisallowArc」時相同。</translation>
 <translation id="2195032660890227692">這項政策已在 <ph name="PRODUCT_NAME" /> 68 中遭到移除，並已由 <ph name="ARC_BR_POLICY_NAME" /> 取代。</translation>
 <translation id="2197625019569762163">將這項政策設為 True 時，系統預設會在登入畫面顯示數字鍵盤，方便使用者輸入密碼。使用者仍可切換為普通鍵盤。
 
@@ -1947,19 +1938,6 @@
 
       如要讓系統搜尋到 <ph name="CLOUD_PRINT_NAME" /> 目的地，這項政策必須設為 True，且「<ph name="POLICY_PRINTERTYPEDENYLIST" />」政策中不得包含「<ph name="POLICY_ENUM_PRINTERTYPEDENYLIST_CLOUD" />」。</translation>
 <translation id="3915395663995367577">Proxy .pac 檔案的網址</translation>
-<translation id="3917288538553140422">你可以透過這項政策指定當使用者的主目錄採用 eCryptfs 加密機制建立時，系統要採取的動作。除非將採用 eCryptfs 加密的主目錄遷移至 ext4 加密，否則 Android 應用程式可能會停止運作。
-
-      這項政策可設定的值：
-
-      * 設為 Migrate (或是 AskUser、AskForEcryptfsArcUsers 等不支援的選項)：系統會在使用者登入時自動將目錄遷移至 ext4，不會要求使用者同意。
-
-      * 設為 Wipe 或 MinimalMigrate：當使用者登入時，系統會以新的 ext4 加密主目錄取代舊的 eCryptfs 加密目錄。MinimalMigrate 會嘗試保留登入憑證，讓使用者免於重複登入。
-
-      * 設為 DisallowArc 或不設定：主目錄不會遷移，且使用者的 Android 應用程式會停止運作。
-
-      這項政策不適用於資訊站使用者。
-
-      警告：如果設為 Wipe 和 MinimalMigrate，系統會移除本機資料。</translation>
 <translation id="3925377537407648234">設定螢幕解析度和縮放比例</translation>
 <translation id="3927137827189017535">在登入畫面上啟用相黏鍵無障礙功能。
 
@@ -2153,13 +2131,6 @@
 <translation id="4228745249339680042">你可以透過這項政策指定網址和網域，當網站要求安全金鑰的認證憑證時，這些網址和網域不會顯示提示。系統也會傳送可能會使用個別認證的信號給安全金鑰。如果未設定這項政策，當網站要求安全金鑰的認證時，系統會向 <ph name="PRODUCT_NAME" /> 65 以上版本的使用者顯示提示。
 
       網址只會以 U2F appID 進行比對。網域只會以 webauthn RP ID 進行比對。因此，如要涵蓋 U2F API 和 webauthn API，請列出指定網站的 appID 網址和網域。</translation>
-<translation id="4238997902172035160">這項政策可設定 <ph name="PRODUCT_NAME" /> 儲存設定檔漫遊副本的目錄。
-
-      如果設定這項政策且啟用 <ph name="ROAMING_PROFILE_SUPPORT_ENABLED_POLICY_NAME" /> 政策，<ph name="PRODUCT_NAME" /> 會將設定檔的漫遊副本儲存在你所提供的目錄。如果停用 <ph name="ROAMING_PROFILE_SUPPORT_ENABLED_POLICY_NAME" /> 政策或不設定，則系統不會使用這項政策所儲存的值。
-
-      如需可用的變數清單，請參閱 https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables。
-
-      如果不設定這項政策，系統會使用預設的漫遊設定檔路徑。</translation>
 <translation id="4239720644496144453">這個快取不會供 Android 應用程式使用。如有多位使用者安裝同一個 Android 應用程式，則會針對每位使用者重新下載快取。</translation>
 <translation id="4242223728343693100">你可以透過這項政策建立網址模式清單，用於指定無法設定 Cookie 的網站。
 

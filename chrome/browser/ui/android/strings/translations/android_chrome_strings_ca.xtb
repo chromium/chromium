@@ -77,6 +77,7 @@
 <translation id="1513352483775369820">Adreces interès i historial web</translation>
 <translation id="1513858653616922153">Suprimeix la contrasenya</translation>
 <translation id="1521774566618522728">Actiu avui</translation>
+<translation id="1538801903729528855">Gaudeix d'una millor experiència de veu al web</translation>
 <translation id="1543538514740974167">Arriba fins aquí més ràpidament</translation>
 <translation id="1544826120773021464">Per gestionar el teu Compte de Google, toca el botó Gestiona el compte</translation>
 <translation id="1549000191223877751">Mou a l'altra finestra</translation>
@@ -117,6 +118,7 @@
 <translation id="1877026089748256423">Chrome no està actualitzat</translation>
 <translation id="1883903952484604915">Els meus fitxers</translation>
 <translation id="189358972401248634">Altres idiomes</translation>
+<translation id="1918175104945982129">La IU de consentiment de la cerca per veu de l'Assistent ocupa la meitat inferior de la pantalla</translation>
 <translation id="1919130412786645364">Permet l'inici de sessió a Chrome</translation>
 <translation id="1922362554271624559">Idiomes suggerits</translation>
 <translation id="1925021887439448749">Introdueix l'adreça web personalitzada</translation>
@@ -147,6 +149,7 @@
 <translation id="2056878612599315956">El lloc web s'ha posat en pausa</translation>
 <translation id="2067805253194386918">text</translation>
 <translation id="2068748236079642969">Mira el vídeo següent</translation>
+<translation id="2074143993849053708">La IU de consentiment de la cerca per veu de l'Assistent s'ha tancat</translation>
 <translation id="2082238445998314030">Resultat <ph name="RESULT_NUMBER" /> de <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2096012225669085171">Sincronitza i personalitza el contingut en tots els dispositius</translation>
 <translation id="2100273922101894616">Inici de sessió automàtic</translation>
@@ -279,6 +282,7 @@ Mantén premuda qualsevol paraula per cercar-la. Per definir millor la cerca, se
 <translation id="3006881078666935414">No hi ha dades d'ús</translation>
 <translation id="3016635187733453316">Comprova que el dispositiu estigui connectat a Internet</translation>
 <translation id="3029704984691124060">Les frases de contrasenya no coincideixen</translation>
+<translation id="3031225630520268969">IU de consentiment de la cerca per veu de l'Assistent</translation>
 <translation id="3034163383943672781">La baixada començarà el dia <ph name="DATE" />.</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Obteniu ajuda<ph name="END_LINK" /></translation>
 <translation id="305593374596241526">La ubicació està desactivada; activa-la a la <ph name="BEGIN_LINK" />configuració d'Android<ph name="END_LINK" />.</translation>
@@ -437,6 +441,7 @@ Mantén premuda qualsevol paraula per cercar-la. Per definir millor la cerca, se
 <translation id="4248098802131000011">Protegeix les contrasenyes contra les violacions de les dades i contra altres problemes de seguretat</translation>
 <translation id="4250229828105606438">Captura de pantalla</translation>
 <translation id="4256782883801055595">Llicències de programari lliure</translation>
+<translation id="4263656433980196874">La IU de consentiment de la cerca per veu de l'Assistent ocupa tota la pantalla</translation>
 <translation id="4269820728363426813">Copia l'adreça de l'enllaç</translation>
 <translation id="4298388696830689168">Llocs web enllaçats</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
@@ -623,6 +628,7 @@ Per canviar aquesta opció, <ph name="BEGIN_LINK" />restableix la sincronitzaci�
 <translation id="5581519193887989363">Sempre pots anar a la <ph name="BEGIN_LINK1" />configuració<ph name="END_LINK1" /> per decidir què vols sincronitzar.</translation>
 <translation id="5595485650161345191">Edita l'adreça</translation>
 <translation id="5599455543593328020">Mode d'incògnit</translation>
+<translation id="5599941490345670218">L'Assistent de Google pot dur a terme accions per tu en llocs web</translation>
 <translation id="5620163320393916465">No hi ha cap contrasenya desada</translation>
 <translation id="5620928963363755975">Per veure els teus fitxers i les teves pàgines, toca el botó Més opcions i ves a la secció Baixades</translation>
 <translation id="5626134646977739690">Nom:</translation>
@@ -1148,6 +1154,7 @@ Les dades de la teva sessió d'incògnit només s'esborraran de Chrome quan <ph 
 <translation id="9155898266292537608">També pots fer un toc ràpid en una paraula per fer cerques</translation>
 <translation id="9169507124922466868">L'historial de navegació està obert fins a la meitat</translation>
 <translation id="9191031968346938109">Afegeix a…</translation>
+<translation id="919615279147764192">Per ajudar-te a dur a terme tasques, Google rebrà els URL i el contingut dels llocs web en què facis servir l'Assistent, així com la informació que enviïs amb l'Assistent. Pot ser que aquesta informació s'emmagatzemi al teu Compte de Google. Pots desactivar l'Assistent a la configuració de Chrome.</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{S'ha comprovat fa 1 minut}other{S'ha comprovat fa # minuts}}</translation>
 <translation id="9204836675896933765">Queda 1 fitxer</translation>
 <translation id="9206873250291191720">A</translation>

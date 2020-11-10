@@ -688,15 +688,6 @@ Se você desativar a política, essa rolagem será desativada.</translation>
       Se a política for definida como verdadeira ou não for definida, o usuário poderá usar a CLI de administração de VM.
       Caso contrário, toda a CLI de administração de VM será desativada e oculta.
       </translation>
-<translation id="2194470398825717446">O uso desta política foi suspenso no M61. Substitua-a por EcryptfsMigrationStrategy.
-
-      Especifica como um dispositivo deve se comportar tendo sido embarcado com ecryptfs e precisando fazer a transição para criptografia ext4.
-
-      Se você configurar esta política como 'DisallowArc', os apps Android serão desativados para todos os usuários do dispositivo (incluindo aqueles que já têm criptografia ext4), e a migração da criptografia ecryptfs para ext4 não será oferecida para nenhum usuário.
-
-      Se você configurar esta política como 'AllowMigration', usuários com diretório principal com criptografia ecryptfs terão a opção de migrar para ext4 conforme necessário (atualmente, quando o Android N estiver disponível para o dispositivo).
-
-      Esta política não se aplica a aplicativos de quiosque, porque eles migram automaticamente. Se esta política é deixada como não definida, o dispositivo se comporta como se a opção 'DisallowArc' tivesse sido escolhida.</translation>
 <translation id="2195032660890227692">Esta política foi removida no <ph name="PRODUCT_NAME" /> 68 e substituída por <ph name="ARC_BR_POLICY_NAME" />.</translation>
 <translation id="2197625019569762163">Se esta política for definida como verdadeira, o teclado numérico será exibido por padrão para inserir a senha na tela de login. Os usuários ainda podem alternar para o teclado normal.
 
@@ -1983,19 +1974,6 @@ Se esta política for definida como falsa, o <ph name="PRODUCT_NAME" /> não usa
 
       Para que os destinos da <ph name="CLOUD_PRINT_NAME" /> continuem disponíveis, é necessário que esta política seja definida como verdadeira e que <ph name="POLICY_ENUM_PRINTERTYPEDENYLIST_CLOUD" /> não seja incluída na política <ph name="POLICY_PRINTERTYPEDENYLIST" />.</translation>
 <translation id="3915395663995367577">URL de um arquivo proxy .pac</translation>
-<translation id="3917288538553140422">A definição da política especifica a ação a ser tomada quando o diretório principal do usuário tiver sido criado com criptografia ecryptfs. A não ser que seja realizada a migração de diretórios principais da criptografia ecryptfs para ext4, os apps Android poderão parar de funcionar.
-
-      Definir a política como:
-
-      * Migrate (ou uma opção não compatível, como AskUser ou AskForEcryptfsArcUsers) significa que os diretórios serão automaticamente migrados para ext4 durante o login, sem necessidade da permissão do usuário;
-
-      * Wipe ou MinimalMigrate significa que novos diretórios principais com criptografia ext4 substituirão os diretórios com criptografia ecryptfs antigos durante o login. Para ajudar o usuário a evitar logins repetidos, MinimalMigrate tenta preservar os tokens de login;
-
-      * DisallowArc ou deixá-la sem definição evita a migração, e os apps Android do usuário param de funcionar.
-
-      Esta política não se aplica a usuários de quiosque.
-
-      Cuidado: Wipe e MinimalMigrate removem dados locais.</translation>
 <translation id="3925377537407648234">Define resolução de tela e fator de escala</translation>
 <translation id="3927137827189017535">Ativar o recurso de acessibilidade das teclas de aderência na tela de login.
 
@@ -2189,13 +2167,6 @@ Quando a |IdleAction| não for definida, a ação padrão de suspensão será re
 <translation id="4228745249339680042">A definição da política especifica os URLs e domínios para os quais nenhuma solicitação será exibida quando os certificados de atestado das chaves de segurança forem solicitados. Além disso, um sinal será enviado para a chave de segurança indicando que o atestado individual pode ser usado. Se a política não for definida, os usuários receberão uma solicitação no <ph name="PRODUCT_NAME" /> 65 ou versões mais recentes quando os sites solicitarem o atestado das chaves de segurança.
 
       Os URLs serão interpretados apenas como U2F appIDs. Os domínios serão interpretados apenas como webauthn RP IDs. Sendo assim, para abranger as APIs U2F e webauthn, tanto o domínio quanto o URL do appID precisam ser listados para um site.</translation>
-<translation id="4238997902172035160">Configura o diretório que o <ph name="PRODUCT_NAME" /> usará para armazenar a cópia de roaming dos perfis.
-
-      Se você definir esta política, o <ph name="PRODUCT_NAME" /> usará o diretório fornecido para armazenar a cópia em roaming dos perfis quando a política <ph name="ROAMING_PROFILE_SUPPORT_ENABLED_POLICY_NAME" /> estiver ativada. Se a política <ph name="ROAMING_PROFILE_SUPPORT_ENABLED_POLICY_NAME" /> estiver desativada ou não for definida, o valor armazenado nesta política não será usado.
-
-      Consulte https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables (link em inglês) para ver uma lista de variáveis que podem ser usadas.
-
-      Se esta política não for definida, o caminho de perfil padrão para roaming será usado.</translation>
 <translation id="4239720644496144453">O cache não é usado para apps Android. Se vários usuários instalarem o mesmo app Android, o download dele será feito novamente para cada usuário.</translation>
 <translation id="4242223728343693100">Se a política for definida, você poderá fazer uma lista de padrões de URL que especificam sites que não podem configurar cookies.
 

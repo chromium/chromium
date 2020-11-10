@@ -347,7 +347,6 @@
 <translation id="352577523970648069">एउटा सम्पादन गर्न मिल्ने पाठ क्षेत्र</translation>
 <translation id="3538907380453898475">dscrplst</translation>
 <translation id="3549141990712742152"><ph name="TEXT" />काट्नुहोस्।</translation>
-<translation id="3549680091535286226">केही समयका लागि वाक् सुविधालाई रोक्न दुई औँलाले ट्याप गर्नुहोस्</translation>
 <translation id="3564729643041517261">हालको प्रदर्शनको प्रकार पाठहरूलाई सँगसँगै राखिएको छ</translation>
 <translation id="3573145950452451508">पेज फुटर</translation>
 <translation id="3587482841069643663">सबै</translation>
@@ -595,6 +594,7 @@
 <translation id="5561345396546889625">अर्को सूची</translation>
 <translation id="5562645715554321347">hdnggrp</translation>
 <translation id="5574412348552378458">ChromeVox को सिकाइको मोड</translation>
+<translation id="5582839680698949063">मुख्य मेनु</translation>
 <translation id="5585044216466955529">पाठ सम्पदन गर्नुहोस्, इमेल प्रविष्टी</translation>
 <translation id="5597170376237141345">अर्को जाँच बाकस</translation>
 <translation id="5598905979683743333"><ph name="NAME" />, रेडियो बटन छानिएन</translation>
@@ -828,7 +828,6 @@
 <translation id="7491962110804786152">ट्याब</translation>
 <translation id="7492497529767769458">अर्को खण्डमा जानुहोस्। उदाहरणका लागि: स्ट्याटस ट्रे, लन्चर आदि।</translation>
 <translation id="7505149250476994901">अक्षर पढ्नुअघि "ठूला अक्षर" भन्नुहोस्</translation>
-<translation id="7518543783849163354">ChromeVox लाई बोल्नबाट अस्थायी रूपमा रोक्न कन्ट्रोल कुञ्जी थिच्नुहोस्।</translation>
 <translation id="7533226154149229506">सुनौलो रड जस्तो हल्का पहेँलो</translation>
 <translation id="7543255924852002459">लेबल खारेज गर्नुहोस्</translation>
 <translation id="7552432549459840808">Chrome का उपयोगी सर्टकटहरू</translation>

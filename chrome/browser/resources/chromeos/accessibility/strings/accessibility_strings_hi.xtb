@@ -347,7 +347,6 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="352577523970648069">संपादन-योग्य लेख फ़ील्ड</translation>
 <translation id="3538907380453898475">जानकारी वाली सूची</translation>
 <translation id="3549141990712742152"><ph name="TEXT" /> को काटें.</translation>
-<translation id="3549680091535286226">कुछ समय तक बोला जाना रोकने के लिए दो उंगलियों से टैप करें</translation>
 <translation id="3564729643041517261">मौजूदा डिसप्ले शैली आमने-सामने है</translation>
 <translation id="3573145950452451508">पेज फ़ुटर</translation>
 <translation id="3587482841069643663">सभी</translation>
@@ -595,6 +594,7 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="5561345396546889625">अगली सूची</translation>
 <translation id="5562645715554321347">hdnggrp</translation>
 <translation id="5574412348552378458">ChromeVox जानें मोड</translation>
+<translation id="5582839680698949063">मुख्य मेन्यू</translation>
 <translation id="5585044216466955529">लेख, टाइप किए गए ईमेल में बदलाव करें</translation>
 <translation id="5597170376237141345">अगला चेकबॉक्‍स</translation>
 <translation id="5598905979683743333"><ph name="NAME" />, रेडियो बटन अचयनित</translation>
@@ -827,7 +827,6 @@ Chrome ब्राउज़र मेन्यू खोलने के लि
 <translation id="7491962110804786152">टैब</translation>
 <translation id="7492497529767769458">अगले सेक्शन पर जाएं. जैसे कि स्टेटस ट्रे और लॉन्चर.</translation>
 <translation id="7505149250476994901">अक्षर से पहले "बड़ा" कहें</translation>
-<translation id="7518543783849163354">ChromeVox को अस्थायी रूप से बोलने से रोकने के लिए, Control कुंजी दबाएं.</translation>
 <translation id="7533226154149229506">गोल्डन रॉड जैसा हल्का पीला रंग</translation>
 <translation id="7543255924852002459">लेबल खारिज करें</translation>
 <translation id="7552432549459840808">उपयोगी Chrome शॉर्टकट</translation>

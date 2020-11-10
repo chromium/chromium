@@ -347,7 +347,6 @@
 <translation id="352577523970648069">ಎಡಿಟ್ ಮಾಡಬಹುದಾದ ಪಠ್ಯ ಕ್ಷೇತ್ರ</translation>
 <translation id="3538907380453898475">ವಿವರಣೆ ಪಟ್ಟಿ</translation>
 <translation id="3549141990712742152"><ph name="TEXT" /> ಅನ್ನು ಕತ್ತರಿಸಿ.</translation>
-<translation id="3549680091535286226">ತಾತ್ಕಾಲಿಕವಾಗಿ ಮಾತನ್ನು ನಿಲ್ಲಿಸಲು 2 ಬೆರಳುಗಳ ಮೂಲಕ ಟ್ಯಾಪ್ ಮಾಡಿ</translation>
 <translation id="3564729643041517261">ಪ್ರಸ್ತುತ ಡಿಸ್‌ಪ್ಲೇ ಶೈಲಿ ಅಕ್ಕ ಪಕ್ಕ ಆಗಿದೆ</translation>
 <translation id="3573145950452451508">ಪುಟದ ಅಡಿಲೇಖ</translation>
 <translation id="3587482841069643663">ಎಲ್ಲ</translation>
@@ -595,6 +594,7 @@
 <translation id="5561345396546889625">ಮುಂದಿನ ಪಟ್ಟಿ</translation>
 <translation id="5562645715554321347">hdnggrp</translation>
 <translation id="5574412348552378458">ChromeVox ಕಲಿಕೆ ಮೋಡ್‌</translation>
+<translation id="5582839680698949063">ಮುಖ್ಯ ಮೆನು</translation>
 <translation id="5585044216466955529">ಪಠ್ಯ ಎಡಿಟ್ ಮಾಡಿ, ಇಮೇಲ್ ನಮೂದಿಸಿ</translation>
 <translation id="5597170376237141345">ಮುಂದಿನ ಚೆಕ್‌ಬಾಕ್ಸ್</translation>
 <translation id="5598905979683743333"><ph name="NAME" />, ರೇಡಿಯೊ ಬಟನ್ ಅನ್ನು ಆಯ್ಕೆಮಾಡಲಾಗಲಿಲ್ಲ</translation>
@@ -827,7 +827,6 @@
 <translation id="7491962110804786152">ಟ್ಯಾಬ್</translation>
 <translation id="7492497529767769458">ಮುಂದಿನ ವಿಭಾಗಕ್ಕೆ ಸರಿಸಿ. ಉದಾಹರಣೆಗಳು ಸ್ಥಿತಿ ಟ್ರೇ ಮತ್ತು ಲಾಂಚರ್ ಅನ್ನು ಒಳಗೊಂಡಿವೆ.</translation>
 <translation id="7505149250476994901">ಅಕ್ಷರದ ಮೊದಲು "ದೊಡ್ಡಕ್ಷರ" ಎಂದು ಹೇಳಿ</translation>
-<translation id="7518543783849163354">ಮಾತನಾಡದಂತೆ ತಾತ್ಕಾಲಿಕವಾಗಿ ChromeVox ಅನ್ನು ನಿಲ್ಲಿಸಲು, Control ಕೀ ಒತ್ತಿ.</translation>
 <translation id="7533226154149229506">ತಿಳಿ ಗೋಲ್ಡನ್ ರಾಡ್ ಹಳದಿ</translation>
 <translation id="7543255924852002459">ತ್ಯಜಿಸಿ ಲೇಬಲ್</translation>
 <translation id="7552432549459840808">ಉಪಯುಕ್ತ Chrome ಶಾರ್ಟ್‌ಕಟ್‌ಗಳು</translation>

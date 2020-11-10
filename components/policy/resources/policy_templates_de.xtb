@@ -681,15 +681,6 @@ Ist die Richtlinie auf "False" gesetzt, können Nutzer keine eigenen Drucker hin
       Wenn diese Richtlinie auf "true" gesetzt oder nicht konfiguriert ist, kann der Nutzer die VM-Management-Befehlszeile verwenden.
       Andernfalls ist diese Befehlszeile deaktiviert und ausgeblendet.
       </translation>
-<translation id="2194470398825717446">Diese Richtlinie ist in M61 eingestellt, bitte verwenden Sie stattdessen EcryptfsMigrationStrategy.
-
-      Hiermit wird angegeben, wie sich ein Gerät verhalten soll, das mit eCryptfs geliefert wurde und nun eine ext4-Verschlüsselung benötigt.
-
-      Wenn diese Richtlinie auf "DisallowArc" gesetzt ist, werden Android-Apps für alle Nutzer des Geräts deaktiviert – einschließlich derer, die die ext4-Verschlüsselung schon haben. Außerdem wird die Migration von eCryptfs zur ext4-Verschlüsselung keinem Nutzer angeboten.
-
-      Wenn die Richtlinie auf "AllowMigration" gesetzt ist, wird Nutzern mit eCryptfs-Hauptverzeichnissen angeboten, diese je nach Bedarf in die ext4-Verschlüsselung zu migrieren (aktuell, wenn Android N für das Gerät zur Verfügung steht).
-
-      Diese Richtlinie gilt nicht für Kiosk-Apps – diese werden automatisch migriert. Wenn diese Richtlinie nicht konfiguriert ist, verhält sich das Gerät so, als wäre die Richtlinie auf "DisallowArc" gesetzt.</translation>
 <translation id="2195032660890227692">Diese Richtlinie wurde in Version 68 von <ph name="PRODUCT_NAME" /> entfernt und durch "<ph name="ARC_BR_POLICY_NAME" />" ersetzt.</translation>
 <translation id="2197625019569762163">Wenn diese Richtlinie auf "true" gesetzt ist, wird standardmäßig die numerische Tastatur zur Eingabe des Passworts auf dem Anmeldebildschirm angezeigt. Nutzer haben jedoch die Möglichkeit, zur normalen Tastatur zu wechseln.
 
@@ -1951,19 +1942,6 @@ Falls die Richtlinie nicht festgelegt wird, bleibt die Varianten-Seed-URL unver�
 
       Damit <ph name="CLOUD_PRINT_NAME" />-Ziele sichtbar sind, muss diese Richtlinie auf "true" gesetzt sein und "<ph name="POLICY_ENUM_PRINTERTYPEDENYLIST_CLOUD" />" darf nicht in der Richtlinie "<ph name="POLICY_PRINTERTYPEDENYLIST" />" stehen.</translation>
 <translation id="3915395663995367577">URL einer PAC-Proxy-Datei</translation>
-<translation id="3917288538553140422">Das Festlegen der Richtlinie gibt an, welche Aktion durchgeführt werden soll, wenn das Basisverzeichnis des Nutzers mit eCryptfs-Verschlüsselung erstellt wurde. Sofern eCryptfs-verschlüsselte Basisverzeichnisse nicht auf die ext4-Verschlüsselung umgestellt werden, wird die Ausführung von Android-Apps möglicherweise beendet.
-
-      Bei der Festlegung der Richtlinie auf
-
-      * "Migrate" oder eine nicht unterstützte Option wie etwa "AskUser" oder "AskForEcryptfsArcUsers" werden Verzeichnisse bei der Anmeldung automatisch auf ext4 umgestellt, ohne die Zustimmung des Nutzers einzuholen.
-
-      * "Wipe" oder "MinimalMigrate" werden alte eCryptfs-verschlüsselte Basisverzeichnisse bei der Anmeldung durch neue ext4-verschlüsselte Basisverzeichnisse ersetzt. Damit der Nutzer sich nicht immer wieder neu anmelden muss, versucht "MinimalMigrate", die Anmeldetoken zu übernehmen.
-
-      * "DisallowArc", oder wenn keine Einstellung festgelegt ist, erfolgt keine Migration und die Android-Apps des Nutzers werden beendet.
-
-      Diese Richtlinie gilt nicht für Kiosknutzer.
-
-      Warnung: Bei den Einstellungen "Wipe" und "MinimalMigrate" werden lokale Daten entfernt.</translation>
 <translation id="3925377537407648234">Bildschirmauflösung und Skalierungsfaktor festlegen</translation>
 <translation id="3927137827189017535">Hiermit wird die Bedienungshilfe für die Einfingerbedienung auf dem Anmeldebildschirm aktiviert.
 
@@ -2157,13 +2135,6 @@ Diese Richtlinie hat keine Auswirkungen darauf, ob die lokalen Nutzerdaten auf d
 <translation id="4228745249339680042">Mit dieser Richtlinie werden URLs und Domains angegeben, für die keine Eingabeaufforderung angezeigt wird, wenn Nachweiszertifikate von Sicherheitsschlüsseln angefordert werden. Zusätzlich wird ein Signal an den Sicherheitsschlüssel gesendet, das angibt, dass individuelle Nachweise verwendet werden können. Andernfalls erhalten Nutzer in <ph name="PRODUCT_NAME" /> ab Version 65 eine Eingabeaufforderung, wenn Websites einen Nachweis für Sicherheitsschlüssel anfordern.
 
       URLs werden nur als U2F-AppIDs interpretiert, Domains nur als Webauthn-RP-IDs. Damit sowohl U2F- als auch Webauthn-APIs genutzt werden können, müssen deshalb die AppID-URL und die Domain für eine bestimmte Website angegeben werden.</translation>
-<translation id="4238997902172035160">Hiermit wird das Verzeichnis konfiguriert, in dem <ph name="PRODUCT_NAME" /> die Roaming-Kopie der Profile speichert.
-
-      Wenn Sie diese Richtlinie konfigurieren, nutzt <ph name="PRODUCT_NAME" /> das angegebene Verzeichnis, um die Roaming-Kopie der Profile darin zu speichern, sofern die Richtlinie "<ph name="ROAMING_PROFILE_SUPPORT_ENABLED_POLICY_NAME" />" aktiviert wurde. Ist die Richtlinie "<ph name="ROAMING_PROFILE_SUPPORT_ENABLED_POLICY_NAME" />" deaktiviert oder nicht konfiguriert, wird der in dieser Richtlinie gespeicherte Wert nicht verwendet.
-
-      Unter https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables finden Sie eine Liste mit Variablen, aus denen Sie wählen können.
-
-      Wenn diese Richtlinie nicht konfiguriert wird, kommt der standardmäßige Roaming-Profilpfad zum Einsatz.</translation>
 <translation id="4239720644496144453">Der Cache wird nicht für Android-Apps verwendet. Wenn mehrere Nutzer die gleiche Android-App installieren, wird sie für jeden Nutzer neu heruntergeladen.</translation>
 <translation id="4242223728343693100">Mit dieser Richtlinie können Sie eine Liste von URL-Mustern erstellen, die Websites angeben, die keine Cookies setzen dürfen.
 

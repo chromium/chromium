@@ -355,7 +355,6 @@
 <translation id="1401308693935339022">‏استفاده از مکان. به برنامه‌ها و سرویس‌هایی که اجازه مکان دارند اجازه می‌دهید از مکان این دستگاه استفاده کنند. Google ممکن است به‌صورت دوره‌ای داده‌های مکان را جمع‌آوری کند و از این داده‌ها به شیوه‌ای ناشناس برای بهبود دقت مکان و خدمات مکان‌مبنا استفاده کند.</translation>
 <translation id="1403222014593521787">امکان اتصال به پراکسی وجود ندارد</translation>
 <translation id="140520891692800925"><ph name="PROFILE_DISPLAY_NAME" /> (تحت نظارت)</translation>
-<translation id="140541193409212341">‏هنگامی که Chrome درحال بررسی رایانه برای پیدا کردن نرم‌افزارهای مضر بود، خطایی رخ داد</translation>
 <translation id="1405779994569073824">خراب.</translation>
 <translation id="1406500794671479665">در حال تأیید...</translation>
 <translation id="1407135791313364759">باز کردن همه</translation>
@@ -390,7 +389,6 @@
 <translation id="1433811987160647649">پیش از دسترسی سؤال شود</translation>
 <translation id="1434696352799406980">این گزینه صفحه شروع، صفحه برگه جدید، موتور جستجو و برگه‌های پین‌شده شما را بازنشانی می‌کند. همچنین همه افزونه‌ها را غیرفعال می‌کند و داده‌های موقتی مانند کوکی‌ها را پاک می‌کند. نشانک‌ها، سابقه و گذرواژه‌های ذخیره‌شده شما پاک نمی‌شوند.</translation>
 <translation id="1434886155212424586">صفحه اصلی، صفحه برگه جدید است</translation>
-<translation id="1435515966666225466">اجازه دارد برای دسترسی به رایانه از افزایه استفاده کند</translation>
 <translation id="1436390408194692385">معتبر تا <ph name="TICKET_TIME_LEFT" /></translation>
 <translation id="1436671784520050284">ادامه راه‌اندازی</translation>
 <translation id="1436784010935106834">حذف شد</translation>
@@ -1617,7 +1615,6 @@
 <translation id="2839032553903800133">اعلان‌ها مسدود شدند</translation>
 <translation id="2841013758207633010">زمان</translation>
 <translation id="2841837950101800123">ارائه‌دهنده</translation>
-<translation id="2841921561399512198">{NUM_DAYS,plural, =1{‏Chrome نرم‌افزار مضر شناخته‌شده‌ای در رایانه‌تان پیدا نکرد. آخرین بررسی: ۱ روز قبل.}one{‏Chrome نرم‌افزار مضر شناخته‌شده‌ای در رایانه‌تان پیدا نکرد. آخرین بررسی: {NUM_DAYS} روز قبل.}other{‏Chrome نرم‌افزار مضر شناخته‌شده‌ای در رایانه‌تان پیدا نکرد. آخرین بررسی: {NUM_DAYS} روز قبل.}}</translation>
 <translation id="2844169650293029770">‏دستگاه USB-C (درگاه جلوی سمت چپ)</translation>
 <translation id="2844809857160214557">مشاهده و مدیریت کارهای چاپ</translation>
 <translation id="2845382757467349449">همیشه نوار نشانک‌ها نمایش داده شود</translation>
@@ -1786,7 +1783,6 @@
 <translation id="3036546437875325427">‏فعال کردن Flash</translation>
 <translation id="3037754279345160234">نمی‌توان پیکربندی پیوستن به دامنه را تجزیه کرد. لطفاً با سرپرست سیستم تماس بگیرید.</translation>
 <translation id="3038612606416062604">افزودن چاپگری به‌صورت دستی</translation>
-<translation id="3038675903128704560">به هیچ سایتی امکان داده نشود برای دسترسی به رایانه‌تان از افزایه استفاده کند</translation>
 <translation id="3039491566278747710">خط‌مشی آفلاین روی دستگاه نصب نشد.</translation>
 <translation id="3043581297103810752">از <ph name="ORIGIN" /></translation>
 <translation id="3045447014237878114">این سایت چند فایل را به‌طور خودکار بارگیری کرد</translation>
@@ -2105,7 +2101,6 @@
 <translation id="3439153939049640737">دسترسی <ph name="HOST" /> به میکروفون شما همیشه مجاز باشد</translation>
 <translation id="3439970425423980614">‏در حال باز کردن PDF در پیشنمایش</translation>
 <translation id="3440663250074896476">کنش‌های بیشتر برای <ph name="BOOKMARK_NAME" /></translation>
-<translation id="3440761377721825626">وقتی سایتی می‌خواهد از افزایه‌ای برای دسترسی به رایانه‌تان استفاده کند، سؤال شود</translation>
 <translation id="3441653493275994384">صفحه</translation>
 <translation id="3441663102605358937">برای به‌تأیید رساندن این حساب، دوباره به سیستم <ph name="ACCOUNT" /> وارد شوید</translation>
 <translation id="3445047461171030979">‏پاسخ‌های سریع «دستیار Google»</translation>
@@ -2181,7 +2176,6 @@
 <translation id="3518985090088779359">پذیرش و ادامه</translation>
 <translation id="3519564332031442870">سرویس پایانه چاپ</translation>
 <translation id="3521606918211282604">تغییر اندازه دیسک</translation>
-<translation id="3523642406908660543">اگر سایتی می‌خواهد برای دسترسی به رایانه‌تان از افزایه استفاده کند، سؤال شود (توصیه می‌شود)</translation>
 <translation id="3524965460886318643">صادر کردن فعالیت‌ها</translation>
 <translation id="3526034519184079374">خواندن داده‌های سایت یا تغییر آن‌ها امکان‌پذیر نیست</translation>
 <translation id="3527085408025491307">پوشه</translation>
@@ -2511,7 +2505,6 @@
 <translation id="3873915545594852654">‏در رابطه با ++ARC مشکلی پیش آمد.</translation>
 <translation id="3874164307099183178">‏روشن کردن «دستیار Google»</translation>
 <translation id="3877075909000773256">تنظیمات «هم‌رسانی با اطراف» برای دستگاه <ph name="USER_NAME" />، بااستفاده از حساب «<ph name="USER_EMAIL" />» هم‌رسانی می‌کند.</translation>
-<translation id="387771067039689031">اجازه ندارد برای دسترسی به رایانه از افزایه استفاده کند</translation>
 <translation id="3879748587602334249">مدیریت بارگیری</translation>
 <translation id="3881478300875776315">نمایش خطوط کمتر</translation>
 <translation id="3882165008614329320">ویدیوی موجود از دوربین یا فایل</translation>
@@ -2650,7 +2643,6 @@
 <translation id="4031179711345676612">میکروفون مجاز است</translation>
 <translation id="4031527940632463547">حسگرها مسدود شدند</translation>
 <translation id="4033471457476425443">افزودن پوشه جدید</translation>
-<translation id="4034280328082410379">افزایه‌ها نمی‌توانند به رایانه دسترسی داشته باشند</translation>
 <translation id="4034824040120875894">چاپگر</translation>
 <translation id="4035758313003622889">مدیر &amp;فعالیت ها</translation>
 <translation id="4036778507053569103">خط‌مشی بارگیری‌شده از سرور نامعتبر است.</translation>
@@ -2777,7 +2769,6 @@
 <translation id="4200983522494130825">&amp;برگه جدید</translation>
 <translation id="4201546031411513170">هرزمان خواستید می‌توانید مواردی را که می‌خواهید همگام‌سازی شود در تنظیمات انتخاب کنید.</translation>
 <translation id="420283545744377356">خاموش کردن محافظ صفحه</translation>
-<translation id="4205362703535890467">‏Chrome نرم‌افزار مضر شناخته‌شده‌ای در رایانه‌تان پیدا نکرد. آخرین بررسی: دیروز.</translation>
 <translation id="4206144641569145248">آدم فضایی</translation>
 <translation id="4206323443866416204">گزارش بازخورد</translation>
 <translation id="4208390505124702064">جستجوی <ph name="SITE_NAME" /></translation>
@@ -3279,7 +3270,6 @@
 <translation id="4830121310592638841">وقتی سایتی می‌خواهد پنجره‌ها را باز کند و در صفحه جای‌گذاری کند درخواست شود</translation>
 <translation id="4830502475412647084">درحال نصب به‌روزرسانی سیستم‌عامل</translation>
 <translation id="4830573902900904548">دستگاه <ph name="DEVICE_TYPE" /> شما نمی‌تواند با استفاده از <ph name="NETWORK_NAME" /> به اینترنت متصل شود. لطفاً شبکه دیگری انتخاب کنید. <ph name="LEARN_MORE_LINK_START" />بیشتر بدانید<ph name="LEARN_MORE_LINK_END" /></translation>
-<translation id="4831688036548685548">‏Chrome نرم‌افزار مضر شناخته‌شده‌ای در رایانه‌تان پیدا نکرد. آخرین بررسی: چند لحظه قبل.</translation>
 <translation id="4833236810053292670">‏تازه‌های Chromebook را ببینید</translation>
 <translation id="4833683849865011483">۱ چاپگر از این سرور چاپ پیدا شد</translation>
 <translation id="4836504898754963407">مدیریت اثر انگشت</translation>
@@ -4298,6 +4288,7 @@
 <translation id="6042308850641462728">بیشتر</translation>
 <translation id="6043317578411397101">‏<ph name="APP_NAME" /> در حال اشتراک‌گذاری یک برگه Chrome با <ph name="TAB_NAME" /> است.</translation>
 <translation id="604388835206766544">پیکربندی تجزیه‌وتحلیل نشد</translation>
+<translation id="6043994281159824495">خروج از سیستم هم‌اکنون</translation>
 <translation id="6044805581023976844">‏<ph name="APP_NAME" /> درحال اشتراک‌گذاری یک برگه Chrome و صوت با <ph name="TAB_NAME" /> است.</translation>
 <translation id="6049004884579590341">برای خروج از حالت تمام صفحه، |<ph name="ACCELERATOR" />| را فشار دهید و نگه‌دارید</translation>
 <translation id="6051354611314852653">‏متأسفیم! سیستم نتوانست دسترسی API را برای این دستگاه راستی‌آزمایی کند.</translation>
@@ -4558,7 +4549,6 @@
 <translation id="6333064448949140209">‏فایل برای اشکال‌زدایی به Google ارسال خواهد شد</translation>
 <translation id="6338981933082930623">همه سایت‌ها می‌توانند هرگونه آگهی را نمایش دهند</translation>
 <translation id="6339668969738228384">ایجاد نمایه جدیدی برای <ph name="USER_EMAIL_ADDRESS" /></translation>
-<translation id="6339995243416022850">سایت‌ها می‌توانند استفاده از افزایه برای دسترسی به رایانه را درخواست کنند (توصیه می‌شود)</translation>
 <translation id="6340017061976355871">‏به سرور متصل نشد. لطفاً اتصال شبکه‌تان را بررسی کرده و دوباره امتحان کنید. اگر مشکل برطرف نشد، Chromebook خود را بازراه‌اندازی کنید.</translation>
 <translation id="6340071272923955280">‏پروتکل چاپ اینترنتی (IPPS)</translation>
 <translation id="6340526405444716530">شخصی‌سازی</translation>
@@ -4661,7 +4651,6 @@
 <translation id="6463795194797719782">&amp;ویرایش</translation>
 <translation id="6465841119675156448">بدون اینترنت</translation>
 <translation id="6466988389784393586">&amp;باز کردن همه نشانک‌ها</translation>
-<translation id="6467235653320897404">{NUM_HOURS,plural, =1{‏Chrome نرم‌افزار مضر شناخته‌شده‌ای در رایانه‌تان پیدا نکرد. آخرین بررسی: ۱ ساعت قبل.}one{‏Chrome نرم‌افزار مضر شناخته‌شده‌ای در رایانه‌تان پیدا نکرد. آخرین بررسی: {NUM_HOURS} ساعت قبل.}other{‏Chrome نرم‌افزار مضر شناخته‌شده‌ای در رایانه‌تان پیدا نکرد. آخرین بررسی: {NUM_HOURS} ساعت قبل.}}</translation>
 <translation id="6467304607960172345">بهینه‌سازی ویدیوهای تمام‌صفحه</translation>
 <translation id="6468485451923838994">قلم‌ها</translation>
 <translation id="6469557521904094793">روشن کردن شبکه تلفن همراه</translation>
@@ -4981,7 +4970,6 @@
 <translation id="6860097299815761905">تنظیمات پراکسی...</translation>
 <translation id="686022878923628150">‏سایت‌ها نمی‌توانند به دستگاه‌های MIDI متصل شوند</translation>
 <translation id="6860427144121307915">باز کردن در یک برگه</translation>
-<translation id="6861451385429799394">‏<ph name="BEGIN_LINK" />سرپرستتان<ph name="END_LINK" /> بررسی وجود نرم‌افزارهای مضر توسط Chrome را غیرفعال کرده است</translation>
 <translation id="686366188661646310">گذرواژه حذف شود؟</translation>
 <translation id="6865313869410766144">تکمیل خودکار داده‌های فرم</translation>
 <translation id="6865598234501509159">صفحه به زبان <ph name="LANGUAGE" /> نیست</translation>
@@ -5360,7 +5348,6 @@
 <translation id="7308002049209013926">‏از «راه‌انداز» برای دسترسی سریع به برنامه‌ها و فعالیت‌های جدید استفاده کنید. برای اینکه ازطریق صفحه‌کلید به اینجا بیایید Alt + Shift + L را فشار دهید.</translation>
 <translation id="7309257895202129721">نمایش &amp;کنترل‌ها</translation>
 <translation id="7310598146671372464">‏ورود به سیستم انجام نشد. این سرور از رمزگذاری‌های Kerberos مشخص‌شده پشتیبانی نمی‌کند. لطفاً با سرپرست سیستم تماس بگیرید.</translation>
-<translation id="7311079019872751559">دسترسی به افزایه خارج از جعبه ایمنی</translation>
 <translation id="7320213904474460808">شبکه پیش‌فرض</translation>
 <translation id="7321545336522791733">سرور غیرقابل دسترسی است</translation>
 <translation id="7324297612904500502">تالار گفتمان بتا</translation>
@@ -5485,7 +5472,6 @@
 <translation id="7456847797759667638">باز کردن مکان...</translation>
 <translation id="7457384018036134905">‏مدیریت زبان‌ها در تنظیمات Chrome OS</translation>
 <translation id="7458168200501453431">‏از همان غلط‌گیر املایی استفاده می‌کند که در جستجوی Google استفاده می‌شود. نوشتاری که در مرورگر تایپ کرده‌اید برای Google ارسال می‌شود.</translation>
-<translation id="7459920164600044274">سایت‌ها معمولاً از افزایه‌ها برای ارائه ویژگی‌هایی مانند پخش زنده یا نصب برنامه‌ها استفاده می‌کنند</translation>
 <translation id="7460045493116006516">طرح زمینه کنونی که نصب کرده‌اید</translation>
 <translation id="7461729991508684543">{NUM_DAYS,plural, =1{<ph name="DOMAIN" /> لازم می‌داند از داده‌هایتان پشتیبان بگیرید و این <ph name="DEVICE_TYPE" /> را امروز برگردانید. <ph name="LINK_BEGIN" />مشاهده جزئیات<ph name="LINK_END" />}one{<ph name="DOMAIN" /> لازم می‌داند از داده‌هایتان پشتیبان بگیرید و این <ph name="DEVICE_TYPE" /> را ظرف {NUM_DAYS} روز آینده برگردانید. <ph name="LINK_BEGIN" />مشاهده جزئیات<ph name="LINK_END" />}other{<ph name="DOMAIN" /> لازم می‌داند از داده‌هایتان پشتیبان بگیرید و این <ph name="DEVICE_TYPE" /> را ظرف {NUM_DAYS} روز آینده برگردانید. <ph name="LINK_BEGIN" />مشاهده جزئیات<ph name="LINK_END" />}}</translation>
 <translation id="7461924472993315131">پین</translation>
@@ -6009,6 +5995,7 @@
 <translation id="8030852056903932865">تأیید</translation>
 <translation id="8032244173881942855">ارسال محتوای برگه امکان‌پذیر نیست.</translation>
 <translation id="8033827949643255796">انتخاب شد</translation>
+<translation id="8033958968890501070">پایان درنگ</translation>
 <translation id="8037117027592400564">خواندن همه نوشتار با استفاده از گفتار تجزیه و تحلیل شده</translation>
 <translation id="8037357227543935929">درخواست (پیش‌فرض)</translation>
 <translation id="803771048473350947">فایل</translation>
@@ -6433,7 +6420,6 @@
 <translation id="8541462173655894684">هیچ چاپگری از این سرور چاپ پیدا نشد</translation>
 <translation id="8542618328173222274">وقتی سایتی می‌خواهد از دستگاه‌ها و داده‌های واقعیت مجازی استفاده کند سؤال شود</translation>
 <translation id="8543556556237226809">سؤال دارید؟ با فردی که بر نمایه‌تان نظارت دارد تماس بگیرید.</translation>
-<translation id="8545575359873600875">متأسفیم، گذرواژه‌تان تأیید نشد. مدیر این کاربر نظارت شده ممکن است به تازگی گذرواژه را تغییر داده باشد. در این صورت، بار دیگر که به سیستم وارد می‌شوید، گذرواژه جدید اعمال می‌شود. گذرواژه قدیمی‌تان را امتحان کنید.</translation>
 <translation id="8546186510985480118">فضای دستگاه خیلی کم است</translation>
 <translation id="8546306075665861288">حافظهٔ پنهان تصویر</translation>
 <translation id="854655314928502177">نشانی وب کشف خودکار پروکسی وب:</translation>
@@ -6644,7 +6630,6 @@
 <translation id="8774934320277480003">حاشیه بالا</translation>
 <translation id="8775144690796719618">نشانی وب نامعتبر</translation>
 <translation id="8775163630211761057">‏بهترین‌های تلفن Android خود را به <ph name="DEVICE_TYPE" /> بیاورید</translation>
-<translation id="8776977753660889796">{NUM_MINS,plural, =1{‏Chrome نرم‌افزار مضر شناخته‌شده‌ای در رایانه‌تان پیدا نکرد. آخرین بررسی: ۱ دقیقه قبل.}one{‏Chrome نرم‌افزار مضر شناخته‌شده‌ای در رایانه‌تان پیدا نکرد. آخرین بررسی: {NUM_MINS} دقیقه قبل.}other{‏Chrome نرم‌افزار مضر شناخته‌شده‌ای در رایانه‌تان پیدا نکرد. آخرین بررسی: {NUM_MINS} دقیقه قبل.}}</translation>
 <translation id="8777628254805677039">گذرواژه کاربر ریشه</translation>
 <translation id="8780123805589053431">‏دریافت توضیحات تصویر از Google</translation>
 <translation id="8780443667474968681">جستجوی گفتاری خاموش شده است.</translation>

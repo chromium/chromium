@@ -347,7 +347,6 @@
 <translation id="352577523970648069">አርትዖት ሊደረግበት የሚችል የጽሑፍ መስክ</translation>
 <translation id="3538907380453898475">dscrplst</translation>
 <translation id="3549141990712742152"><ph name="TEXT" /> ይቁረጡ።</translation>
-<translation id="3549680091535286226">በጊዜያዊነት ንግግርን ለማቆም በ2 ጣቶች ይጎትቱ</translation>
 <translation id="3564729643041517261">የአሁኑ የማሳያ ቅጥ ጎን ለጎን ነው</translation>
 <translation id="3573145950452451508">ገጽ ግርጌ</translation>
 <translation id="3587482841069643663">ሁሉም</translation>
@@ -595,6 +594,7 @@
 <translation id="5561345396546889625">ቀጣይ ዝርዝር</translation>
 <translation id="5562645715554321347">hdnggrp</translation>
 <translation id="5574412348552378458">የChromeVox መማር ሁነታ</translation>
+<translation id="5582839680698949063">ዋና ምናሌ</translation>
 <translation id="5585044216466955529">ጽሑፍ፣ የኢሜይል ግቤት ያርትዑ</translation>
 <translation id="5597170376237141345">ቀጣይ አመልካች ሳጥን</translation>
 <translation id="5598905979683743333"><ph name="NAME" />፣ ሬዲዮ አዝራር አልተመረጠም</translation>
@@ -828,7 +828,6 @@
 <translation id="7491962110804786152">TAB</translation>
 <translation id="7492497529767769458">ወደ ቀጣይ ክፍል ውሰድ። ምሳሌዎች የሁኔታ መሳቢያውን እና ማስጀመሪያውን ያካትታሉ።</translation>
 <translation id="7505149250476994901">ከፊደል በፊት «cap» ይበሉ</translation>
-<translation id="7518543783849163354">ChromeVoxን ለጊዜው እንዳይናገር ለማስቆም የControl ቁልፉን ይጫኑ።</translation>
 <translation id="7533226154149229506">ፈዛዛ ወርቃማ በትር ቢጫ</translation>
 <translation id="7543255924852002459">መሰየሚያን አስወግድ</translation>
 <translation id="7552432549459840808">አጋዥ የChrome አቋራጮች</translation>

@@ -353,7 +353,6 @@
 <translation id="1401308693935339022">使用位置信息。允许具有位置权限的应用和服务使用此设备的位置信息。Google 可能会定期收集位置数据，并以匿名方式使用这类数据，从而提高位置信息精确度并改善基于地理位置的服务。</translation>
 <translation id="1403222014593521787">无法连接到代理</translation>
 <translation id="140520891692800925"><ph name="PROFILE_DISPLAY_NAME" />（受监管用户）</translation>
-<translation id="140541193409212341">Chrome 对您的计算机进行有害软件检查时出错</translation>
 <translation id="1405779994569073824">已崩溃。</translation>
 <translation id="1406500794671479665">正在验证...</translation>
 <translation id="1407135791313364759">全部打开</translation>
@@ -388,7 +387,6 @@
 <translation id="1433811987160647649">使用前先询问</translation>
 <translation id="1434696352799406980">这将重置您的启动页、“打开新的标签页”页面、搜索引擎和固定标签页，同时还会停用所有扩展程序并清除临时数据（例如 Cookie）。但是，系统不会清除您的书签、历史记录和保存的密码。</translation>
 <translation id="1434886155212424586">首页是新标签页</translation>
-<translation id="1435515966666225466">允许使用插件访问您的计算机</translation>
 <translation id="1436390408194692385">有效期：<ph name="TICKET_TIME_LEFT" /></translation>
 <translation id="1436671784520050284">继续设置</translation>
 <translation id="1436784010935106834">已删除</translation>
@@ -1610,7 +1608,6 @@
 <translation id="2839032553903800133">已阻止显示通知</translation>
 <translation id="2841013758207633010">时间</translation>
 <translation id="2841837950101800123">提供方</translation>
-<translation id="2841921561399512198">{NUM_DAYS,plural, =1{Chrome 在您的计算机上未发现已知有害软件。上次检查时间：1 天前。}other{Chrome 在您的计算机上未发现已知有害软件。上次检查时间：{NUM_DAYS} 天前。}}</translation>
 <translation id="2844169650293029770">USB-C 设备（左侧前端端口）</translation>
 <translation id="2844809857160214557">查看和管理打印任务</translation>
 <translation id="2845382757467349449">总是显示书签栏</translation>
@@ -1778,7 +1775,6 @@
 <translation id="3036546437875325427">启用 Flash</translation>
 <translation id="3037754279345160234">无法对加入网域的配置进行解析，请与您的管理员联系。</translation>
 <translation id="3038612606416062604">手动添加打印机</translation>
-<translation id="3038675903128704560">不允许任何网站使用插件访问您的计算机</translation>
 <translation id="3039491566278747710">未能在此设备上安装离线政策。</translation>
 <translation id="3043581297103810752">源自：<ph name="ORIGIN" /></translation>
 <translation id="3045447014237878114">此网站已自动下载多个文件</translation>
@@ -2095,7 +2091,6 @@
 <translation id="3439153939049640737">始终允许 <ph name="HOST" /> 使用您的麦克风</translation>
 <translation id="3439970425423980614">准备使用预览程序打开 PDF</translation>
 <translation id="3440663250074896476">显示可对“<ph name="BOOKMARK_NAME" />”执行的更多操作</translation>
-<translation id="3440761377721825626">当网站要使用插件访问您的计算机时询问您</translation>
 <translation id="3441653493275994384">屏幕</translation>
 <translation id="3441663102605358937">请重新登录 <ph name="ACCOUNT" /> 以验证此帐号</translation>
 <translation id="3445047461171030979">Google 助理快速解答</translation>
@@ -2170,7 +2165,6 @@
 <translation id="3518985090088779359">接受并继续</translation>
 <translation id="3519564332031442870">打印后端服务</translation>
 <translation id="3521606918211282604">更改磁盘大小</translation>
-<translation id="3523642406908660543">当网站要使用插件访问您的计算机时询问您（推荐）</translation>
 <translation id="3524965460886318643">导出活动记录</translation>
 <translation id="3526034519184079374">无法读取或更改网站的数据</translation>
 <translation id="3527085408025491307">文件夹</translation>
@@ -2499,7 +2493,6 @@
 <translation id="3873915545594852654">ARC++ 出问题了。</translation>
 <translation id="3874164307099183178">开启 Google 助理</translation>
 <translation id="3877075909000773256"><ph name="USER_NAME" />的设备的“附近分享”设置，通过帐号 <ph name="USER_EMAIL" /> 分享。</translation>
-<translation id="387771067039689031">不允许使用插件访问您的计算机</translation>
 <translation id="3879748587602334249">下载管理器</translation>
 <translation id="3881478300875776315">隐藏部分行</translation>
 <translation id="3882165008614329320">来自摄像头或文件的现有视频</translation>
@@ -2637,7 +2630,6 @@
 <translation id="4031179711345676612">已允许使用麦克风</translation>
 <translation id="4031527940632463547">已禁止使用传感器</translation>
 <translation id="4033471457476425443">添加新文件夹</translation>
-<translation id="4034280328082410379">禁止插件访问您的计算机</translation>
 <translation id="4034824040120875894">打印机</translation>
 <translation id="4035758313003622889">任务管理器(&amp;T)</translation>
 <translation id="4036778507053569103">从服务器下载的政策无效。</translation>
@@ -2764,7 +2756,6 @@
 <translation id="4200983522494130825">打开新的标签页(&amp;T)</translation>
 <translation id="4201546031411513170">您始终可在设置中选择要同步的内容。</translation>
 <translation id="420283545744377356">关闭屏保功能</translation>
-<translation id="4205362703535890467">Chrome 在您的计算机上未发现已知有害软件。上次检查时间：昨天。</translation>
 <translation id="4206144641569145248">外星人</translation>
 <translation id="4206323443866416204">反馈报告</translation>
 <translation id="4208390505124702064">使用 <ph name="SITE_NAME" /> 搜索</translation>
@@ -3266,7 +3257,6 @@
 <translation id="4830121310592638841">在网站想在您的屏幕上打开和放置窗口时询问您</translation>
 <translation id="4830502475412647084">正在安装操作系统更新</translation>
 <translation id="4830573902900904548">您的<ph name="DEVICE_TYPE" />无法通过<ph name="NETWORK_NAME" />连接到互联网，请选择其他网络。<ph name="LEARN_MORE_LINK_START" />了解详情<ph name="LEARN_MORE_LINK_END" /></translation>
-<translation id="4831688036548685548">Chrome 在您的计算机上未发现已知有害软件。上次检查时间：刚才。</translation>
 <translation id="4833236810053292670">了解 Chromebook 的新变化</translation>
 <translation id="4833683849865011483">通过打印服务器找到了 1 台打印机</translation>
 <translation id="4836504898754963407">管理指纹</translation>
@@ -4284,6 +4274,7 @@
 <translation id="6042308850641462728">展开</translation>
 <translation id="6043317578411397101"><ph name="APP_NAME" /> 正在与 <ph name="TAB_NAME" /> 共享 Chrome 标签页。</translation>
 <translation id="604388835206766544">无法解析配置</translation>
+<translation id="6043994281159824495">立即退出</translation>
 <translation id="6044805581023976844"><ph name="APP_NAME" /> 正在与 <ph name="TAB_NAME" /> 共享 Chrome 标签页和音频。</translation>
 <translation id="6049004884579590341">按住 |<ph name="ACCELERATOR" />| 即可退出全屏模式</translation>
 <translation id="6051354611314852653">糟糕！系统无法将 API 访问权限授予此设备。</translation>
@@ -4543,7 +4534,6 @@
 <translation id="6333064448949140209">文件将发送到 Google 进行调试</translation>
 <translation id="6338981933082930623">所有网站都可以向您显示任何广告</translation>
 <translation id="6339668969738228384">为 <ph name="USER_EMAIL_ADDRESS" /> 创建新的个人资料</translation>
-<translation id="6339995243416022850">网站可以请求使用插件访问您的计算机（推荐）</translation>
 <translation id="6340017061976355871">无法与此服务器建立连接。请检查您的网络连接，然后重试。如果问题仍然存在，请重新启动您的 Chromebook。</translation>
 <translation id="6340071272923955280">互联网打印协议 (IPPS)</translation>
 <translation id="6340526405444716530">个性化</translation>
@@ -4646,7 +4636,6 @@
 <translation id="6463795194797719782">修改(&amp;E)</translation>
 <translation id="6465841119675156448">不使用互联网</translation>
 <translation id="6466988389784393586">打开所有书签(&amp;O)</translation>
-<translation id="6467235653320897404">{NUM_HOURS,plural, =1{Chrome 在您的计算机上未发现已知有害软件。上次检查时间：1 小时前。}other{Chrome 在您的计算机上未发现已知有害软件。上次检查时间：{NUM_HOURS} 小时前。}}</translation>
 <translation id="6467304607960172345">优化全屏视频</translation>
 <translation id="6468485451923838994">字体</translation>
 <translation id="6469557521904094793">开启移动网络</translation>
@@ -4964,7 +4953,6 @@
 <translation id="6860097299815761905">代理设置...</translation>
 <translation id="686022878923628150">禁止网站连接到 MIDI 设备</translation>
 <translation id="6860427144121307915">在标签页中打开</translation>
-<translation id="6861451385429799394"><ph name="BEGIN_LINK" />您的管理员<ph name="END_LINK" />已停用 Chrome 的有害软件检查功能</translation>
 <translation id="686366188661646310">删除密码？</translation>
 <translation id="6865313869410766144">自动填充表单数据</translation>
 <translation id="6865598234501509159">不是<ph name="LANGUAGE" />网页</translation>
@@ -5341,7 +5329,6 @@
 <translation id="7308002049209013926">使用启动器快速访问新的应用和活动。若要通过键盘访问这些内容，请按 Alt + Shift + L 组合键。</translation>
 <translation id="7309257895202129721">显示控件(&amp;C)</translation>
 <translation id="7310598146671372464">未能成功登录。服务器不支持指定的 Kerberos 加密类型。请与您的管理员联系。</translation>
-<translation id="7311079019872751559">未经过沙盒屏蔽的插件访问</translation>
 <translation id="7320213904474460808">设置默认网络</translation>
 <translation id="7321545336522791733">无法连接到服务器</translation>
 <translation id="7324297612904500502">Chrome（测试版）论坛</translation>
@@ -5464,7 +5451,6 @@
 <translation id="7456847797759667638">打开位置...</translation>
 <translation id="7457384018036134905">在 Chrome 操作系统设置中管理语言</translation>
 <translation id="7458168200501453431">使用 Google 搜索所用的拼写检查工具。您在浏览器中输入的文字会被发送给 Google。</translation>
-<translation id="7459920164600044274">网站通常会使用插件以实现某些功能（例如在线播放视频或安装应用）</translation>
 <translation id="7460045493116006516">您已安装的当前主题背景</translation>
 <translation id="7461729991508684543">{NUM_DAYS,plural, =1{<ph name="DOMAIN" /> 要求您备份自己的数据并在今天退还此 <ph name="DEVICE_TYPE" />。<ph name="LINK_BEGIN" />查看详情<ph name="LINK_END" />}other{<ph name="DOMAIN" /> 要求您备份自己的数据并在 {NUM_DAYS} 天内退还此 <ph name="DEVICE_TYPE" />。<ph name="LINK_BEGIN" />查看详情<ph name="LINK_END" />}}</translation>
 <translation id="7461924472993315131">固定</translation>
@@ -5985,6 +5971,7 @@
 <translation id="8030852056903932865">批准</translation>
 <translation id="8032244173881942855">无法投射标签页。</translation>
 <translation id="8033827949643255796">已选中</translation>
+<translation id="8033958968890501070">已超时</translation>
 <translation id="8037117027592400564">读取使用合成语音说出的所有文字</translation>
 <translation id="8037357227543935929">询问（默认）</translation>
 <translation id="803771048473350947">文件</translation>
@@ -6401,7 +6388,6 @@
 <translation id="8541462173655894684">通过打印服务器找不到任何打印机</translation>
 <translation id="8542618328173222274">在网站想使用您的虚拟实境设备和数据时询问您</translation>
 <translation id="8543556556237226809">有问题？请与负责监管您的个人资料的人员联系。</translation>
-<translation id="8545575359873600875">抱歉，无法验证您的密码。该受监管用户的管理员可能在近期修改了密码。如果是这种情况，新密码将在您下次登录时生效。您可以尝试使用旧密码重新登录。</translation>
 <translation id="8546186510985480118">设备存储空间不足</translation>
 <translation id="8546306075665861288">图片缓存</translation>
 <translation id="854655314928502177">网络代理自动发现网址：</translation>
@@ -6609,7 +6595,6 @@
 <translation id="8774379074441005279">确认恢复</translation>
 <translation id="8774934320277480003">上边距</translation>
 <translation id="8775144690796719618">网址无效</translation>
-<translation id="8776977753660889796">{NUM_MINS,plural, =1{Chrome 在您的计算机上未发现已知有害软件。上次检查时间：1 分钟前。}other{Chrome 在您的计算机上未发现已知有害软件。上次检查时间：{NUM_MINS} 分钟前。}}</translation>
 <translation id="8777628254805677039">根密码</translation>
 <translation id="8780123805589053431">从 Google 获取图片说明</translation>
 <translation id="8780443667474968681">已关闭语音搜索功能。</translation>

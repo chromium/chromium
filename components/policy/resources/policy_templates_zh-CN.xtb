@@ -667,15 +667,6 @@
       如果此政策设为 true 或未设置，用户将能使用虚拟机管理 CLI。
       否则，所有虚拟机管理 CLI 会被停用并隐藏。
       </translation>
-<translation id="2194470398825717446">我们在 M61 中弃用了此政策，请改用 EcryptfsMigrationStrategy。
-
-      用于指定内置了 ecryptfs 且需要转换为采用 ext4 加密功能的设备的行为方式。
-
-      如果您将此政策设为“DisallowArc”，相应设备将会禁止所有用户（包括已采用 ext4 加密功能的用户）在其上使用 Android 应用，且不会主动为任何用户提供从 ecryptfs 到 ext4 加密功能的迁移服务。
-
-      如果您将此政策设为“AllowMigration”，相应设备便会在必要时（目前是指可在该设备上使用 Android N 时）主动向使用 ecryptfs 主目录的用户提供将这些主目录改为采用 ext4 加密功能的服务。
-
-      此政策不适用于自助服务终端应用 - 这类应用会自动完成迁移。如果此政策未设置，相应设备则会具有与将此政策设为“DisallowArc”时相同的行为方式。</translation>
 <translation id="2195032660890227692">此政策已在 <ph name="PRODUCT_NAME" /> 中移除，并已由 <ph name="ARC_BR_POLICY_NAME" /> 取代。</translation>
 <translation id="2197625019569762163">如果此政策设为 true，登录屏幕上会默认显示数字键盘以用于输入密码。用户仍能切换到常规键盘。
 
@@ -1891,19 +1882,6 @@
 
       若要使 <ph name="CLOUD_PRINT_NAME" />目的地能被用户发现，则必须确保此政策设为 true 且 <ph name="POLICY_PRINTERTYPEDENYLIST" /> 政策中不含“<ph name="POLICY_ENUM_PRINTERTYPEDENYLIST_CLOUD" />”。</translation>
 <translation id="3915395663995367577">代理 .pac 文件的网址</translation>
-<translation id="3917288538553140422">设置此政策可指定应该对通过 ecryptfs 加密机制创建的用户主目录执行的操作。除非通过 ecryptfs 加密的主目录迁移至 ext4 加密机制，否则 Android 应用可能会停止运行。
-
-      如果将此政策设为：
-
-      * Migrate（或者不受支持的选项，例如 AskUser 或 AskForEcryptfsArcUsers），那么只要用户登录，目录就会在不征求用户意见的情况下自动迁移到 ext4。
-
-      * Wipe 或 MinimalMigrate，那么只要用户登录，通过 ext4 加密的新主目录就会替换通过 ecryptfs 加密的旧目录。为了帮助用户避免重复登录，MinimalMigrate 会尝试保留登录令牌。
-
-      * DisallowArc 或不设置，系统会阻止迁移，并且用户的 Android 应用会停止运行。
-
-      此政策不适用于自助服务终端用户。
-
-      警告：如果设为 Wipe 和 MinimalMigrate，系统会移除本地数据。</translation>
 <translation id="3925377537407648234">设置显示屏分辨率和缩放比例</translation>
 <translation id="3927137827189017535">在登录屏幕上启用“粘滞键”无障碍功能。
 
@@ -2083,13 +2061,6 @@
 <translation id="4228745249339680042">通过设置此政策，您可以指定，当哪些网址和网域所对应的网站请求安全密钥认证证书时，系统将不会显示任何提示。此外，系统还会向安全密钥发送信号，表明可使用特定的单项认证。如果您未设置此政策，在网站请求安全密钥的认证时，<ph name="PRODUCT_NAME" /> 65 版及更高版本将向用户显示提示。
 
       网址将仅匹配为 U2F appID。网域将仅匹配为 webauthn RP ID。因此，如需全面涵盖 U2F API 和 webauthn API，请务必将相应网站的 appID 网址和网域都罗列出来。</translation>
-<translation id="4238997902172035160">配置 <ph name="PRODUCT_NAME" /> 将用于存储个人资料漫游副本的目录。
-
-      设置此政策后，如果 <ph name="ROAMING_PROFILE_SUPPORT_ENABLED_POLICY_NAME" /> 政策已启用，<ph name="PRODUCT_NAME" /> 将会使用所提供的目录来存储个人资料的漫游副本；如果 <ph name="ROAMING_PROFILE_SUPPORT_ENABLED_POLICY_NAME" /> 政策已停用或未设置，系统将不会使用存储在此政策中的值。
-
-      要查看可使用的变量列表，请参阅 https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables。
-
-      如果未设置此政策，系统会使用默认的漫游个人资料路径。</translation>
 <translation id="4239720644496144453">缓存不适用于 Android 应用。如果多个用户都想安装同一款 Android 应用，系统便会分别为每个用户重新下载相应的 Android 应用。</translation>
 <translation id="4242223728343693100">通过设置此政策，您可以创建一个网址格式列表，从而指定哪些网站不能设置 Cookie。
 

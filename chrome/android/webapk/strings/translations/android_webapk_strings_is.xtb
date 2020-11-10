@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="is">
+<translation id="1625959690469240009">Til að opna stillingar vefsvæðis skaltu uppfæra eða setja <ph name="BROWSER_NAME" /> upp aftur</translation>
 <translation id="1700971771753530690"><ph name="APP_NAME" /> krefst þessa forrits:</translation>
 <translation id="2697679025356221813"><ph name="APP_NAME" /> krefst vafra</translation>
 <translation id="3858759029325727987">Veldu vafra sem styður við þetta forrit:</translation>

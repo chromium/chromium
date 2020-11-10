@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="pa">
 <translation id="1000498691615767391">ਖੋਲ੍ਹਣ ਲਈ ਇੱਕ ਫੋਲਡਰ ਚੁਣੋ</translation>
-<translation id="1023220960495960452">ਲਿਪਾਂਤਰਨ (vanakkam → வணக்கம்)</translation>
 <translation id="1035094536595558507">ਸਲਾਈਡ ਦ੍ਰਿਸ਼</translation>
 <translation id="1047956942837015229"><ph name="COUNT" /> ਆਈਟਮਾਂ ਮਿਟਾ ਰਿਹਾ ਹੈ...</translation>
 <translation id="1049926623896334335">ਸ਼ਬਦ ਦਸਤਾਵੇਜ਼</translation>
@@ -35,17 +34,14 @@
 <translation id="1345094301418504404">ਫਰਾਂਸੀਸੀ (ਕੈਨੇਡਾ)</translation>
 <translation id="1346748346194534595">ਸੱਜਾ</translation>
 <translation id="1351692861129622852"><ph name="FILE_COUNT" /> ਫਾਈਲਾਂ ਆਯਾਤ ਕਰ  ਰਿਹਾ ਹੈ...</translation>
-<translation id="1352103415082130575">ਥਾਈ ਕੀ-ਬੋਰਡ (Pattachote)</translation>
 <translation id="1358735829858566124">ਫਾਈਲ ਜਾਂ ਡਾਇਰੈਕਟਰੀ ਵਰਤੋਂ ਯੋਗ ਨਹੀਂ ਹੈ।</translation>
 <translation id="1363028406613469049">ਟਰੈਕ</translation>
 <translation id="1378727793141957596">Google Drive ਵਿੱਚ ਸੁਆਗਤ ਹੈ!</translation>
 <translation id="1383876407941801731">ਖੋਜੋ</translation>
 <translation id="1395262318152388157">ਸੀਕ ਸਲਾਈਡਰ</translation>
-<translation id="1399648040768741453">ਤੇਲਗੂ ਕੀ-ਬੋਰਡ (ਧੁਨੀਆਤਮਿਕ)</translation>
 <translation id="1430915738399379752">ਪ੍ਰਿੰਟ ਕਰੋ</translation>
 <translation id="1435838927755162558">Parallels Desktop ਨਾਲ ਫੋਲਡਰ ਸਾਂਝਾ ਕਰੋ</translation>
 <translation id="1439494416798956626"><ph name="FOLDER_NAME" /> ਵਿੱਚ ਲਿਜਾਈ ਗਈ।</translation>
-<translation id="1441841714100794440">ਵੀਅਤਨਾਮੀ ਕੀ-ਬੋਰਡ (Telex)</translation>
 <translation id="1464724975715666883">1 ਗੜਬੜ।</translation>
 <translation id="1467432559032391204">ਖੱਬੇ ਪਾਸੇ</translation>
 <translation id="1472351751615457820">ਯੂਨਾਨੀ ਲਿਪੀਅੰਤਰਨ</translation>
@@ -61,7 +57,6 @@
 <translation id="1620510694547887537">ਕੈਮਰਾ</translation>
 <translation id="1622022025445651011">ਫਰਾਂਸੀਸੀ (ਫ਼ਰਾਂਸ)</translation>
 <translation id="1646019627374511909"><ph name="NUMBER_OF_ITEMS" /> ਫ਼ਾਈਲਾਂ ਨੂੰ ਆਫ਼ਲਾਈਨ ਉਪਲਬਧ ਕਰਵਾਇਆ ਜਾ ਰਿਹਾ ਹੈ</translation>
-<translation id="164729547906544836">ਤਮਿਲ ਕੀ-ਬੋਰਡ (itrans)</translation>
 <translation id="164969095109328410">Chrome ਡੀਵਾਈਸ</translation>
 <translation id="1665611772925418501">ਫਾਈਲ ਸੰਸ਼ੋਧਿਤ ਨਹੀਂ ਕੀਤੀ ਜਾ ਸਕੇਗੀ।</translation>
 <translation id="1673103856845176271">ਸੁਰੱਖਿਆ ਕਾਰਨਾਂ ਕਰਕੇ ਫਾਈਲ ਤੱਕ ਪਹੁੰਚ ਪ੍ਰਾਪਤ ਨਹੀਂ ਕੀਤੀ ਜਾ ਸਕੀ।</translation>
@@ -79,11 +74,9 @@
 <translation id="183183971458492120">ਜਾਣਕਾਰੀ ਲੋਡ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ...</translation>
 <translation id="1838709767668011582">Google ਸਾਈਟ</translation>
 <translation id="1844692022597038441">ਇਹ ਫ਼ਾਈਲ ਆਫ਼ਲਾਈਨ ਉਪਲਬਧ ਨਹੀਂ ਹੈ।</translation>
-<translation id="184633654410729720">ਥਾਈ ਕੀ-ਬੋਰਡ (Kedmanee)</translation>
 <translation id="1847880352285315359">ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="1853795129690976061">ਇਹ ਫੋਲਡਰ Linux ਨਾਲ ਸਾਂਝਾ ਕੀਤਾ ਗਿਆ ਹੈ</translation>
 <translation id="1864756863218646478">ਫਾਈਲ ਨਹੀਂ ਲੱਭੀ ਜਾ ਸਕੀ।</translation>
-<translation id="1921986354447415460">ਤੁਰਕੀ-F ਕੀ-ਬੋਰਡ</translation>
 <translation id="1924372192547904021"><ph name="DRIVE_NAME" /> ਨੂੰ ਫਾਰਮੈਟ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="1931134289871235022">ਸਲੋਵਾਕ</translation>
 <translation id="1933345018156373194">ਜਗ੍ਹਾ ਬਦਲਣਾ ਅਸਫਲ ਰਿਹਾ, ਅਣਕਿਆਸੀ ਗੜਬੜ: <ph name="ERROR_MESSAGE" /></translation>
@@ -91,7 +84,6 @@
 <translation id="1942765061641586207">ਚਿੱਤਰ ਰੈਜ਼ੋਲਿਊਸ਼ਨ</translation>
 <translation id="1943097386230153518">ਨਵੀਂ ਸੇਵਾ ਸਥਾਪਤ ਕਰੋ</translation>
 <translation id="1972984168337863910">ਫ਼ਾਈਲਾਂ ਦੇ ਪ੍ਰਤੀਕਰਮ ਪੈਨਲਾਂ ਦਾ ਵਿਸਤਾਰ ਕਰੋ</translation>
-<translation id="1984603991036629094">ਆਰਮੀਨੀਅਨ ਧੁਨੀਆਤਮਿਕ ਕੀ-ਬੋਰਡ</translation>
 <translation id="1995337122023280937">ਫ਼ਾਈਲ ਟਿਕਾਣੇ 'ਤੇ ਜਾਓ</translation>
 <translation id="2001796770603320721">'ਡਰਾਈਵ' ਵਿੱਚ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="2009067268969781306">ਕਿਸੇ ਡਰਾਈਵ ਨੂੰ ਫਾਰਮੈਟ ਕਰਨ ਨਾਲ ਇਸ 'ਤੇ ਸਟੋਰ ਕੀਤਾ ਸਾਰਾ ਡਾਟਾ ਮਿਟ ਜਾਵੇਗਾ। ਇਸ ਕਾਰਵਾਈ ਨੂੰ ਅਣਕੀਤਾ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ।</translation>
@@ -101,13 +93,10 @@
 <translation id="2066433303065022982">ਹਿਬਰੂ ਲਿਪੀਅੰਤਰਨ</translation>
 <translation id="2070909990982335904">ਬਿੰਦੀ ਨਾਲ ਸ਼ੁਰੂ ਹੋਣ ਵਾਲੇ ਨਾਮ ਸਿਸਟਮ ਲਈ ਰਾਖਵੇਂ ਹਨ। ਕਿਰਪਾ ਕਰਕੇ ਦੂਜਾ ਨਾਮ ਚੁਣੋ।</translation>
 <translation id="2079545284768500474">ਅਣਕੀਤਾ ਕਰੋ</translation>
-<translation id="2080010875307505892">ਸਰਬੀਅਨ ਕੀ-ਬੋਰਡ</translation>
 <translation id="2084108471225856927">ਡੀਵਾਈਸ ਸੈਟਿੰਗਾਂ</translation>
 <translation id="2085470240340828803">"<ph name="FILENAME" />" ਨਾਮਕ ਫਾਈਲ ਪਹਿਲਾਂ ਹੀ ਮੌਜੂਦ ਹੈ। ਤੁਸੀਂ ਕੀ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ?</translation>
 <translation id="2121825465123208577">ਆਕਾਰ ਬਦਲੋ</translation>
 <translation id="2163152940313951844">ਅਵੈਧ ਅੱਖਰ-ਚਿੰਨ੍ਹ: <ph name="CHARACTER_NAME" /></translation>
-<translation id="2164862903024139959">ਵੀਅਤਨਾਮੀ ਕੀ-ਬੋਰਡ (TCVN)</translation>
-<translation id="2168214441502403371">ਫ਼ਾਰਸੀ ਕੀ-ਬੋਰਡ</translation>
 <translation id="2198315389084035571">ਸਰਲੀਕ੍ਰਿਤ ਚੀਨੀ</translation>
 <translation id="2208158072373999562">ਜ਼ਿਪ ਪੁਰਾਲੇਖ</translation>
 <translation id="2225536596944493418">ਕੀ ਤੁਸੀਂ ਪੱਕਾ <ph name="NUMBER_OF_ITEMS" /> ਆਈਟਮਾਂ ਨੂੰ ਮਿਟਾਉਣਾ ਚਾਹੁੰਦੇ ਹੋ?</translation>
@@ -124,7 +113,6 @@
 <translation id="2377319039870049694">ਸੂਚੀ ਦ੍ਰਿਸ਼ 'ਤੇ ਸਵਿੱਚ ਕਰੋ</translation>
 <translation id="2377590462528165447"><ph name="NUMBER_OF_ITEMS" /> ਫੋਲਡਰ Linux ਨਾਲ ਸਾਂਝੇ ਕੀਤੇ ਗਏ</translation>
 <translation id="2378075407703503998"><ph name="SELCTED_FILE_COUNT" /> ਫਾਈਲਾਂ ਚੁਣੀਆਂ</translation>
-<translation id="2384596874640104496">ਸਿੰਹਾਲਾ ਕੀ-ਬੋਰਡ</translation>
 <translation id="240770291734945588"><ph name="SPACE_AVAILABLE" /> ਉਪਲਬਧ ਹੈ</translation>
 <translation id="2425665904502185219">ਕੁੱਲ ਫ਼ਾਈਲ ਆਕਾਰ</translation>
 <translation id="2428749644083375155"><ph name="NUMBER_OF_ITEMS" /> ਆਈਟਮਾਂ ਨੂੰ <ph name="FOLDER_NAME" /> ਵਿੱਚ ਕਾਪੀ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
@@ -134,7 +122,6 @@
 <translation id="2464079411014186876">ਆਈਸ ਕ੍ਰੀਮ</translation>
 <translation id="2468402215065996499">ਤਾਮਾਗੋਚੀ</translation>
 <translation id="2515586267016047495">Alt</translation>
-<translation id="2529133382850673012">US ਕੀ-ਬੋਰਡ</translation>
 <translation id="2534155362429831547"><ph name="NUMBER_OF_ITEMS" /> ਆਈਟਮਾਂ ਮਿਟਾਈਆਂ ਗਈਆਂ</translation>
 <translation id="2541377937973966830">ਇਸ ਫੋਲਡਰ ਦੀਆਂ ਸਮੱਗਰੀਆਂ ਸਿਰਫ਼ ਪੜ੍ਹਨ ਲਈ ਹਨ। ਕੁਝ ਸਰਗਰਮੀਆਂ ਸਮਰਥਿਤ ਨਹੀਂ ਹਨ।</translation>
 <translation id="2542049655219295786">Google ਸਾਰਨੀ</translation>
@@ -152,15 +139,13 @@
 <translation id="2672394958563893062">ਕੋਈ ਗੜਬੜ ਹੋ ਗਈ। ਮੁੱਢ ਤੋਂ ਮੁੜ-ਸ਼ੁਰੂ ਕਰਨ ਲਈ ਕਲਿੱਕ ਕਰੋ।</translation>
 <translation id="2676946222714718093">ਤੇ ਪਲੇ ਹੋ ਰਿਹਾ ਹੈ</translation>
 <translation id="2735623501230989521">Parallels Desktop ਨੂੰ <ph name="FOLDER_NAME" /> ਫੋਲਡਰ ਵਿਚਲੀਆਂ ਫ਼ਾਈਲਾਂ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਦਿਓ</translation>
-<translation id="2735698359135166290">ਰੋਮਾਨੀਅਨ ਸਟੈਂਡਰਡ ਕੀ-ਬੋਰਡ</translation>
 <translation id="2771816809568414714">ਪਨੀਰ</translation>
 <translation id="2781645665747935084">ਬੈਲਜ਼ੀਅਨ</translation>
 <translation id="2782104745158847185">Linux ਐਪਲੀਕੇਸ਼ਨ ਨੂੰ ਸਥਾਪਤ ਕਰਨ ਵਿੱਚ ਗੜਬੜ ਹੋ ਗਈ</translation>
 <translation id="2787047795752739979">ਮੂਲ ਨੂੰ ਓਵਰਰਾਈਟ ਕਰੋ</translation>
-<translation id="2790805296069989825">ਰੂਸੀ ਕੀ-ਬੋਰਡ</translation>
+<translation id="2822854841007275488">ਅਰਬੀ</translation>
 <translation id="2843806747483486897">ਪੂਰਵ-ਨਿਰਧਾਰਤ ਬਦਲੋ...</translation>
 <translation id="2850124913210091882">ਬੈਕਅੱਪ ਲਓ</translation>
-<translation id="2870836398458454343">ਲਿਪਾਂਤਰਨ (marhaban ← مرحبا)</translation>
 <translation id="288024221176729610">Czech</translation>
 <translation id="2887525882758501333">PDF ਦਸਤਾਵੇਜ਼</translation>
 <translation id="2888807692577297075">ਕੋਈ ਆਈਟਮਾਂ ਮੇਲ ਨਹੀਂ ਖਾਂਦੀਆਂ &lt;b&gt;"<ph name="SEARCH_STRING" />"&lt;/b&gt;</translation>
@@ -175,22 +160,17 @@
 <translation id="2943503720238418293">ਵਧੇਰੇ ਛੋਟਾ ਨਾਮ ਵਰਤੋ</translation>
 <translation id="2949781154072577687"><ph name="DRIVE_NAME" /> ਨੂੰ ਫਾਰਮੈਟ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ…</translation>
 <translation id="2951236788251446349">ਜੈਲੀਫ਼ਿਸ਼</translation>
-<translation id="2963783323012015985">ਤੁਰਕੀ ਕੀ-ਬੋਰਡ</translation>
-<translation id="2966459079597787514">ਸਵੀਡਿਸ਼ ਕੀ-ਬੋਰਡ</translation>
 <translation id="2984337792991268709">ਅੱਜ <ph name="TODAY_DAYTIME" /></translation>
 <translation id="2994669386200004489"><ph name="FILE_NAME" /> ਦਾ ਬੈਕਅੱਪ ਨਹੀਂ ਲਿਆ ਜਾ ਸਕਿਆ</translation>
 <translation id="3003633581067744647">ਲਘੂ-ਚਿੱਤਰ ਦ੍ਰਿਸ਼ 'ਤੇ ਸਵਿੱਚ ਕਰੋ</translation>
 <translation id="3007214526293698309">ਅਨੁਪਾਤ ਠੀਕ ਕਰੋ</translation>
 <translation id="303198083543495566">ਭੂਗੋਲ</translation>
 <translation id="3057861065630527966">ਆਪਣੀਆਂ ਫ਼ੋਟੋਆਂ ਅਤੇ ਵੀਡੀਓ ਦਾ ਬੈਕਅੱਪ ਲਵੋ</translation>
-<translation id="3064388234319122767">ਲਿਪਾਂਤਰਨ (zdravo → здраво)</translation>
 <translation id="3067790092342515856">Windows ਫ਼ਾਈਲਾਂ</translation>
 <translation id="3078461028045006476"><ph name="EXTENSION_NAME" /> ਨਾਲ ਸਾਂਝੀ ਕਰੋ</translation>
 <translation id="3083975830683400843">Chromebits</translation>
-<translation id="3116361045094675131">ਯੂ.ਕੇ. ਕੀ-ਬੋਰਡ</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3144126448740580210">ਹੋ ਗਿਆ</translation>
-<translation id="3157729859914172001">ਅਮਰੀਕੀ ਅੰਤਰਰਾਸ਼ਟਰੀ (PC) ਕੀ-ਬੋਰਡ</translation>
 <translation id="3188257591659621405">ਮੇਰੀਆਂ ਫ਼ਾਈਲਾਂ</translation>
 <translation id="3197563288998582412">UK Dvorak</translation>
 <translation id="3202131003361292969">ਪਾਥ</translation>
@@ -208,7 +188,6 @@
 <translation id="3296763833017966289">Georgian</translation>
 <translation id="3326821416087822643"><ph name="FILE_NAME" /> ਨੂੰ ਜ਼ਿਪ ਕਰ ਰਿਹਾ ਹੈ...</translation>
 <translation id="3335337277364016868">ਰਿਕਾਰਡ ਕਰਨ ਦਾ ਸਾਲ</translation>
-<translation id="3338239663705455570">ਸਲੋਵੇਨੀਅਨ ਕੀ-ਬੋਰਡ</translation>
 <translation id="3353984535370177728">ਅਪਲੋਡ ਕਰਨ ਲਈ ਇੱਕ ਫੋਲਡਰ ਚੁਣੋ</translation>
 <translation id="3356580349448036450">ਪੂਰਾ</translation>
 <translation id="3414856743105198592">ਹਟਾਉਣਯੋਗ ਮੀਡੀਆ ਨੂੰ ਫੌਰਮੈਟ ਕਰਨ ਨਾਲ ਸਾਰਾ ਡਾਟਾ ਮਿਟ ਜਾਏਗਾ। ਕੀ ਤੁਸੀਂ ਜਾਰੀ ਰੱਖਣਾ ਚਾਹੁੰਦੇ ਹੋ?</translation>
@@ -250,10 +229,8 @@
 <translation id="3809272675881623365">ਖਰਗੋਸ਼</translation>
 <translation id="3810973564298564668">ਵਿਵਸਥਿਤ ਕਰੋ</translation>
 <translation id="3811494700605067549">1 ਫ਼ਾਈਲ ਨੂੰ ਚੁਣਿਆ ਗਿਆ</translation>
-<translation id="3815016854028376614">Zhuyin ਇਨਪੁੱਟ ਵਿਧੀ</translation>
 <translation id="38275787300541712">ਜਦੋਂ ਹੋ ਜਾਏ ਤਾਂ Enter ਦਬਾਓ</translation>
 <translation id="3830674330436234648">ਕੋਈ ਪਲੇਬੈਕ ਉਪਲਬਧ ਨਹੀਂ</translation>
-<translation id="3833761542219863804">ਲਿਪਾਂਤਰਨ (mausam → ਮੌਸਮ)</translation>
 <translation id="383652340667548381">Serbian</translation>
 <translation id="385051799172605136">ਪਿੱਛੇ</translation>
 <translation id="3855472144336161447">ਜਰਮਨ Neo 2</translation>
@@ -265,20 +242,16 @@
 <translation id="3958548648197196644">ਕੀਵੀ</translation>
 <translation id="3966388904776714213">ਆਡੀਓ ਪਲੇਅਰ</translation>
 <translation id="4002066346123236978">ਸਿਰਲੇਖ</translation>
-<translation id="4070370845051020638">Cantonese ਇਨਪੁੱਟ ਵਿਧੀ</translation>
-<translation id="4072248638558688893">ਤਾਮਿਲ ਕੀ-ਬੋਰਡ (ਧੁਨੀਆਤਮਿਕ)</translation>
 <translation id="4097397818890482665">ਕੰਨੜ ਲਿਪੀਅੰਤਰਨ</translation>
 <translation id="4124935795427217608">ਇੱਕ ਸਿੰਗ ਵਾਲਾ ਘੋੜਾ</translation>
 <translation id="4158739975813877944">ਪਲੇ ਲਿਸਟ ਖੋਲ੍ਹੋ</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> ਨੂੰ ਲਿਜਾਇਆ ਗਿਆ।</translation>
-<translation id="418179967336296930">ਰੂਸੀ ਧੁਨੀਆਤਮਿਕ (YaZHert) ਕੀ-ਬੋਰਡ</translation>
 <translation id="4193154014135846272">Google ਦਸਤਾਵੇਜ਼</translation>
 <translation id="4195249722193633765">Linux (ਬੀਟਾ) ਨਾਲ ਐਪ ਸਥਾਪਤ ਕਰੋ</translation>
 <translation id="4197674956721858839">Zip ਚੋਣ</translation>
 <translation id="421017592316736757">ਤੁਹਾਨੂੰ ਇਸ ਫ਼ਾਈਲ ਤੱਕ ਪਹੁੰਚ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ ਆਨਲਾਈਨ ਹੋਣਾ ਪਵੇਗਾ।</translation>
 <translation id="4212740939091998969">"<ph name="FOLDER_NAME" />" ਨਾਮਕ ਫੋਲਡਰ ਪਹਿਲਾਂ ਹੀ ਮੌਜੂਦ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਕੋਈ ਵੱਖਰਾ ਨਾਮ ਚੁਣੋ।</translation>
 <translation id="4215448920900139318"><ph name="FILE_COUNT" /> ਦਾ ਬੈਕਅੱਪ ਲਿਆ ਜਾ ਰਿਹਾ ਹੈ</translation>
-<translation id="426015154560005552">ਅਰਬੀ ਕੀ-ਬੋਰਡ</translation>
 <translation id="4261901459838235729">Google ਪ੍ਰਸਤੁਤੀ</translation>
 <translation id="4290535918735525311">Linux ਨਾਲ ਇੱਕ ਫੋਲਡਰ ਸਾਂਝਾ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="4299729908419173967">ਬ੍ਰਾਜ਼ਿਲਿਆਈ</translation>
@@ -290,10 +263,8 @@
 <translation id="4372884569765913867">1x1</translation>
 <translation id="4394214039309501350">ਬਾਹਰੀ ਲਿੰਕ</translation>
 <translation id="4425149324548788773">My Drive</translation>
-<translation id="4465830120256509958">ਬ੍ਰਾਜ਼ੀਲੀਅਨ ਕੀ-ਬੋਰਡ</translation>
 <translation id="4470564870223067757">Hangul 2 ਸੈਟ</translation>
 <translation id="4477219268485577442">ਬਲਗੇਰੀਅਨ ਧੁਨੀਆਤਮਿਕ</translation>
-<translation id="4479812471636796472">US Dvorak ਕੀ-ਬੋਰਡ</translation>
 <translation id="4522570452068850558">ਵੇਰਵੇ</translation>
 <translation id="4527800702232535228">ਇਹ ਫੋਲਡਰ Parallels Desktop ਨਾਲ ਸਾਂਝਾ ਕੀਤਾ ਗਿਆ ਹੈ</translation>
 <translation id="4532112105534982530">Bépo ਕੀ-ਬੋਰਡ ਨਾਲ ਫ਼ਰਾਂਸੀਸੀ (ਫ਼ਰਾਂਸ)</translation>
@@ -343,7 +314,6 @@
 <translation id="4880214202172289027">ਵੌਲਿਊਮ ਸਲਾਈਡਰ</translation>
 <translation id="4880520557730313061">ਆਟੋ-ਫਿਕਸ ਕਰੋ</translation>
 <translation id="4881695831933465202">ਖੋਲ੍ਹੋ</translation>
-<translation id="4886021172213954916">ਤਮਿਲ ਕੀ-ਬੋਰਡ (ਟਾਈਪਰਾਈਟਰ)</translation>
 <translation id="4900532980794411603">Parallels Desktop ਨਾਲ ਸਾਂਝਾ ਕਰੋ</translation>
 <translation id="4905417359854579806"><ph name="FILE_COUNT" /> ਦਾ ਬੈਕਅੱਪ ਲੈਣ ਲਈ ਤਿਆਰ</translation>
 <translation id="4924638091161556692">ਫਿਕਸਡ</translation>
@@ -386,7 +356,6 @@
 <translation id="5194713942430106590">ਕਾਲਮ ਨੂੰ ਵਧਦੇ ਕ੍ਰਮ ਵਿੱਚ ਕ੍ਰਮ-ਬੱਧ ਕਰਨ ਲਈ ਕਲਿੱਕ ਕਰੋ।</translation>
 <translation id="5218183485292899140">ਸਵਿਸ ਫ੍ਰੈਂਚ</translation>
 <translation id="5234764350956374838">ਬਰਖ਼ਾਸਤ ਕਰੋ</translation>
-<translation id="5241298539944515331">ਵੀਅਤਨਾਮੀ ਕੀ-ਬੋਰਡ (VIQR)</translation>
 <translation id="5253070652067921974">ਇਸ ਵੱਲੋਂ ਬਣਾਈ ਗਈ</translation>
 <translation id="5257456363153333584">ਡ੍ਰੈਗਨਫਲਾਈ</translation>
 <translation id="5262311848634918433"><ph name="MARKUP_1" />ਕਿਤੋਂ ਵੀ ਫ਼ਾਈਲਾਂ 'ਤੇ ਪਹੁੰਚ ਕਰੋ, ਭਾਵੇਂ ਆਫ਼ਲਾਈਨ ਹੋਵੋ।<ph name="MARKUP_2" />
@@ -408,12 +377,10 @@
 <translation id="5358764674931277">ਫ੍ਰੇਮ ਰੇਟ</translation>
 <translation id="5368191757080475556">Linux ਨਾਲ ਫੋਲਡਰ ਸਾਂਝਾ ਕਰੋ</translation>
 <translation id="5402367795255837559">ਬ੍ਰੇਲ</translation>
-<translation id="5412637665001827670">ਬਲਗੇਰੀਅਨ ਕੀ-ਬੋਰਡ</translation>
 <translation id="5418923334382419584">ਮਿਆਂਮਾਰ ਕੀ-ਬੋਰਡ</translation>
 <translation id="5428105026674456456">ਸਪੇਨਿਸ਼</translation>
 <translation id="5438282218546237410"><ph name="SEARCH_TERM" /> ਲਈ ਕੋਈ ਵੀ ਨਤੀਜੇ ਨਹੀਂ ਹਨ।</translation>
 <translation id="5449551289610225147">ਅਵੈਧ ਪਾਸਵਰਡ</translation>
-<translation id="5464696796438641524">ਪੋਲੈਂਡੀ ਕੀ-ਬੋਰਡ</translation>
 <translation id="5469868506864199649">ਇਤਾਲਵੀ</translation>
 <translation id="5484429245813572665">ਇੰਡੋਨੇਸ਼ੀਆਈ</translation>
 <translation id="5494920125229734069">ਸਾਰੇ ਚੁਣੋ</translation>
@@ -456,7 +423,6 @@
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> ਆਈਟਮਾਂ</translation>
 <translation id="5957366693331451795">Chromeboxes</translation>
 <translation id="5982621672636444458">ਵਿਕਲਪ ਕ੍ਰਮਬੱਧ ਕਰੋ</translation>
-<translation id="6005282720244019462">ਲਾਤੀਨੀ ਅਮਰੀਕਨ ਕੀ-ਬੋਰਡ</translation>
 <translation id="6007237601604674381">ਮੂਵ ਅਸਫਲ। <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6012987430370760224">ਮਰਾਠੀ ਕੀ-ਬੋਰਡ (ਧੁਨੀਆਤਮਕ)</translation>
 <translation id="6019169947004469866">ਕੱਟੋ</translation>
@@ -480,9 +446,7 @@
 <translation id="6224253798271602650"><ph name="DRIVE_NAME" /> ਨੂੰ ਫਾਰਮੈਟ ਕਰੋ</translation>
 <translation id="6227235786875481728">ਇਹ ਫਾਈਲ ਪਲੇ ਨਹੀਂ ਕੀਤੀ ਜਾ ਸਕੀ।</translation>
 <translation id="6248400709929739064">ਉਪਸਿਰਲੇਖਾਂ ਨੂੰ ਚਾਲੂ ਕਰੋ</translation>
-<translation id="6264347891387618177">ਲਿਪਾਂਤਰਨ (selam → ሰላም)</translation>
 <translation id="6287852322318138013">ਇਸ ਫ਼ਾਈਲ ਨੂੰ ਖੋਲ੍ਹਣ ਲਈ ਇੱਕ ਐਪ ਚੁਣੋ</translation>
-<translation id="6339034549827494595">ਰੂਸੀ ਧੁਨੀਆਤਮਿਕ (AATSEEL) ਕੀ-ਬੋਰਡ</translation>
 <translation id="6339145975392024142">ਅਮਰੀਕੀ ਅੰਤਰਰਾਸ਼ਟਰੀ (PC)</translation>
 <translation id="6346310558342052870">ਪਹੁੰਚ ਪ੍ਰਤਿਬੰਧਿਤ ਕੀਤੀ ਗਈ</translation>
 <translation id="6356685157277930264">Files ਸੰਬੰਧੀ ਵਿਚਾਰ ਵਾਲੀ ਵਿੰਡੋ</translation>
@@ -494,7 +458,6 @@
 <translation id="6412376911804527326">ਲਾਓ</translation>
 <translation id="642282551015776456">ਇਹ ਨਾਮ ਫੋਲਡਰ ਨਾਮ ਦੀ ਇੱਕ ਫਾਈਲ ਦੇ ਤੌਰ ਤੇ ਨਹੀਂ ਵਰਤਿਆ ਜਾ ਸਕਦਾ</translation>
 <translation id="6485131920355264772">ਸਪੇਸ ਜਾਣਕਾਰੀ ਮੁੜ ਪ੍ਰਾਪਤ ਕਰਨ ਵਿੱਚ ਅਸਫਲ</translation>
-<translation id="6505918941256367791">ਤਾਮਿਲ ਕੀ-ਬੋਰਡ (InScript)</translation>
 <translation id="6509122719576673235">ਨਾਰਵੇਜੀਅਨ</translation>
 <translation id="6527303717912515753">ਸ਼ੇਅਰ ਕਰੋ</translation>
 <translation id="653019979737152879"><ph name="FILE_NAME" /> ਨੂੰ ਸਿੰਕ ਕਰ ਰਿਹਾ ਹੈ...</translation>
@@ -514,7 +477,6 @@
 <translation id="6710213216561001401">ਪਿਛਲਾ</translation>
 <translation id="6718273304615422081">ਜ਼ਿਪ ਕਰ ਰਿਹਾ ਹੈ...</translation>
 <translation id="6751256176799620176">1 ਫੋਲਡਰ ਚੁਣਿਆ ਗਿਆ</translation>
-<translation id="6760765581316020278">ਵੀਅਤਨਾਮੀ ਕੀ-ਬੋਰਡ (VNI)</translation>
 <translation id="6790428901817661496">ਪਲੇ ਕਰੋ</translation>
 <translation id="6795884519221689054">ਪਾਂਡਾ</translation>
 <translation id="6806699711453372963">Linux ਸਾਂਝਾਕਰਨ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
@@ -525,7 +487,6 @@
 <translation id="6827236167376090743">ਇਹ ਵੀਡੀਓ ਲੰਮੇ ਸਮੇਂ ਤੱਕ ਪਲੇ ਹੁੰਦਾ ਰਹੇਗਾ।</translation>
 <translation id="6847101934483209767"><ph name="ENTRY_NAME" /> ਨੂੰ ਚੋਣ ਵਿੱਚੋਂ ਹਟਾਇਆ ਗਿਆ।</translation>
 <translation id="6862635236584086457">ਇਸ ਫੋਲਡਰ ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤੀਆਂ ਸਾਰੀਆਂ ਫ਼ਾਈਲਾਂ ਆਨਲਾਈਨ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਬੈਕ ਅੱਪ ਕੀਤੀਆਂ ਜਾਂਦੀਆਂ ਹਨ</translation>
-<translation id="6870130893560916279">ਯੁਕਰੇਨੀਅਨ ਕੀ-ਬੋਰਡ</translation>
 <translation id="6876155724392614295">ਸਾਈਕਲ</translation>
 <translation id="6878261347041253038">ਦੇਵਨਾਗਰੀ ਕੀ-ਬੋਰਡ (ਧੁਨੀਆਤਮਿਕ)</translation>
 <translation id="6885780034956018177">ਘੋਗਾ</translation>
@@ -539,7 +500,6 @@
     <ph name="LINE_BREAK1" />
     <ph name="FILE_COUNT" /> ਮਿਲੀਆਂ</translation>
 <translation id="6935521024859866267">ਉਲਟਾ</translation>
-<translation id="6939777852457331078">ਅਮਰੀਕੀ ਵਰਕਮੈਨ ਕੀ-ਬੋਰਡ</translation>
 <translation id="696203921837389374">ਮੋਬਾਈਲ ਡਾਟਾ ਤੋਂ ਸਿੰਕ ਕਰਨਾ ਬੰਦ ਕਰੋ</translation>
 <translation id="6965382102122355670">ਠੀਕ</translation>
 <translation id="6970230597523682626">Bulgarian</translation>
@@ -558,26 +518,19 @@
 <translation id="7170467426996704624">ਲਿਪਾਂਤਰਨ (salam → ሰላም)</translation>
 <translation id="7180611975245234373">ਰਿਫ੍ਰੈਸ਼ ਕਰੋ</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
-<translation id="719009910964971313">US Programmer Dvorak ਕੀ-ਬੋਰਡ</translation>
 <translation id="7191454237977785534">ਫ਼ਾਈਲ ਨੂੰ ਇਸ ਵਜੋਂ ਰੱਖਿਅਤ ਕਰੋ</translation>
-<translation id="7222624196722476520">ਬਲਗੇਰੀਅਨ ਧੁਨੀਆਤਮਿਕ ਕੀ-ਬੋਰਡ</translation>
 <translation id="7238097264433196391">ਡਰਾਈਵ ਦਾ ਨਾਮ</translation>
 <translation id="7248671827512403053">ਐਪਲੀਕੇਸ਼ਨ</translation>
 <translation id="7268659760406822741">ਉਪਲਬਧ ਸੇਵਾਵਾਂ</translation>
 <translation id="7283041136720745563">ਤੁਹਾਡਾ Google ਡਰਾਈਵ ਕੋਟਾ ਜ਼ਿਆਦਾ ਵੱਡਾ ਨਹੀਂ ਹੈ।</translation>
 <translation id="7295662345261934369">ਹੋਰਾਂ ਨਾਲ ਸਾਂਝਾ ਕਰੋ</translation>
 <translation id="7339898014177206373">ਨਵੀਂ window</translation>
-<translation id="7348749398828259943">ਅਮਰੀਕੀ ਵਰਕਮੈਨ ਅੰਤਰਰਾਸ਼ਟਰੀ ਕੀ-ਬੋਰਡ</translation>
 <translation id="7359359531237882347"><ph name="NUMBER_OF_ITEMS" /> ਆਈਟਮਾਂ ਨੂੰ ਕਾਪੀ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ...</translation>
 <translation id="7375951387215729722"><ph name="COLUMN_NAME" /> ਮੁਤਾਬਕ ਘੱਟਦੇ ਕ੍ਰਮ ਵਿੱਚ ਕ੍ਰਮ-ਬੱਧ ਕੀਤੀ ਫ਼ਾਈਲ ਸੂਚੀ।</translation>
-<translation id="7389722738210761877">ਥਾਈ ਕੀ-ਬੋਰਡ (TIS 820-2531)</translation>
 <translation id="7396038720194014279">ਹਿੰਦੀ ਕੀ-ਬੋਰਡ (ਧੁਨੀਆਤਮਕ)</translation>
 <translation id="7417453074306512035">ਐਥੀਓਪਿਕ ਕੀ-ਬੋਰਡ</translation>
 <translation id="7417705661718309329">Google ਨਕਸ਼ਾ</translation>
-<translation id="7419631653042041064">ਕੈਟਲਨ ਕੀ-ਬੋਰਡ</translation>
-<translation id="7434823369735508263">UK Dvorak ਕੀ-ਬੋਰਡ</translation>
 <translation id="7460898608667578234">Ukrainian</translation>
-<translation id="7474889694310679759">ਕੈਨੇਡੀਅਨ ਅੰਗਰੇਜ਼ੀ ਕੀ-ਬੋਰਡ</translation>
 <translation id="7489215562877293245"><ph name="FILE_COUNT" /> ਮਿਲੀਆਂ
     <ph name="LINE_BREAK1" />
     <ph name="BEGIN_LINK" />Google ਡਰਾਈਵ<ph name="END_LINK" /> ਵਿੱਚ ਬੈਕਅੱਪ ਲੈਣ ਲਈ ਤਿਆਰ</translation>
@@ -602,7 +555,6 @@
 <translation id="7695430100978772476"><ph name="DRIVE_NAME" /> ਨੂੰ ਫਾਰਮੈਟ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ</translation>
 <translation id="770015031906360009">Greek</translation>
 <translation id="7705251383879779343"><ph name="FILE_NAME" /> ਨੂੰ ਕਾਪੀ ਕੀਤਾ ਗਿਆ।</translation>
-<translation id="7706319470528945664">ਪੁਰਤਗਾਲੀ ਕੀ-ਬੋਰਡ</translation>
 <translation id="7711920809702896782">ਚਿੱਤਰ ਦੀ ਜਾਣਕਾਰੀ</translation>
 <translation id="7724603315864178912">ਕੱਟੋ</translation>
 <translation id="7730494089396812859">ਕਲਾਊਡ ਬੈਕਅੱਪ ਵੇਰਵੇ ਦਿਖਾਓ</translation>
@@ -622,7 +574,6 @@
     ਤੁਹਾਡਾ Google ਡਰਾਈਵ ਕੋਟਾ ਜ਼ਿਆਦਾ ਵੱਡਾ ਨਹੀਂ ਹੈ। ਵਧੀਕ <ph name="FILE_SIZE" /> ਲੋੜੀਂਦਾ ਹੈ।
     <ph name="LINE_BREAK2" />
     ਘੱਟ ਫ਼ੋਟੋਆਂ ਚੁਣਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
-<translation id="7825423931463735974">ਤਮਿਲ ਕੀ-ਬੋਰਡ (ਤਮਿਲ99)</translation>
 <translation id="7827012282502221009"><ph name="NUMBER_OF_TB" /> TB</translation>
 <translation id="7839804798877833423">ਇਹਨਾਂ ਫਾਈਲਾਂ ਨੂੰ ਪ੍ਰਾਪਤ ਕਰਨ ਨਾਲ ਇਹ ਲਗਭਗ <ph name="FILE_SIZE" /> ਮੋਬਾਈਲ ਡਾਟਾ ਵਰਤਣਗੀਆਂ।</translation>
 <translation id="7846076177841592234">ਚੋਣ ਰੱਦ ਕਰੋ</translation>
@@ -631,7 +582,6 @@
 <translation id="7873831373602885875"><ph name="FOLDER_NAME" /> ਵਿੱਚ ਰੱਖਿਅਤ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ। ਸਾਰੇ ਸੰਪਾਦਨ ਡਾਊਨਲੋਡ ਫੋਲਡਰ ਵਿੱਚ <ph name="DOWNLOADS_FOLDER" /> ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤੇ ਜਾਣਗੇ।</translation>
 <translation id="7881969471599061635">ਉਪਸਿਰਲੇਖਾਂ ਨੂੰ ਬੰਦ ਕਰੋ</translation>
 <translation id="78946041517601018">ਸਾਂਝੇ ਡਰਾਈਵ</translation>
-<translation id="7896906914454843592">US Extended ਕੀ-ਬੋਰਡ</translation>
 <translation id="7898607018410277265">ਗੁਜਰਾਤੀ ਕੀ-ਬੋਰਡ (ਨਵਾਂ ਧੁਨੀਆਤਮਕ)</translation>
 <translation id="7908793776359722643">ਕਿਸੇ ਭਾਗ ਨੂੰ ਫਾਰਮੈਟ ਕਰਨ ਨਾਲ ਇਸ 'ਤੇ ਸਟੋਰ ਕੀਤਾ ਸਾਰਾ ਡਾਟਾ ਮਿਟ ਜਾਵੇਗਾ। ਇਸ ਕਾਰਵਾਈ ਨੂੰ ਅਣਕੀਤਾ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ।</translation>
 <translation id="7925686952655276919">ਸਿੰਕ ਕਰਨ ਲਈ ਮੋਬਾਈਲ ਡਾਟਾ ਨਾ ਵਰਤੋ</translation>
@@ -640,10 +590,8 @@
 <translation id="7953739707111622108">ਇਹ ਡੀਵਾਈਸ ਨਹੀਂ ਖੋਲ੍ਹੀ ਜਾ ਸਕਦੀ ਕਿਉਂਕਿ ਇਸਦਾ ਫਾਈਲਸਿਸਟਮ ਪਛਾਣਿਆ ਨਹੀਂ ਗਿਆ ਸੀ।</translation>
 <translation id="7969525169268594403">Slovenian</translation>
 <translation id="7982283708762922719">ਉਚਾਈ</translation>
-<translation id="7987485481246785146">ਸਰੋਨੀ ਕਰਦਿਸ਼ ਅਰਬੀ-ਆਧਾਰਿਤ ਕੀ-ਬੋਰਡ</translation>
 <translation id="8008366997883261463">ਜੈਕ ਰੂਸੈਲ ਟੈਰੀਅਰ</translation>
 <translation id="8028993641010258682">ਆਕਾਰ</translation>
-<translation id="8031722894461705849">ਸਲੋਵਾਕ ਕੀ-ਬੋਰਡ</translation>
 <translation id="803771048473350947">ਫਾਈਲ</translation>
 <translation id="8038111231936746805">(ਪੂਰਵ-ਨਿਰਧਾਰਤ)</translation>
 <translation id="8042602468072383151"><ph name="AUDIO_TYPE" /> ਆਡੀਓ</translation>
@@ -653,17 +601,13 @@
 <translation id="8079530767338315840">ਦੋਹਰਾਓ</translation>
 <translation id="8106045200081704138">ਮੇਰੇ ਨਾਲ ਸ਼ੇਅਰ ਕੀਤਾ</translation>
 <translation id="8116072619078571545">ਠੰਡਾ ਪਾਣੀ</translation>
-<translation id="8117957376775388318">Dayi ਇਨਪੁੱਟ ਵਿਧੀ</translation>
 <translation id="8130367958112291342">QWERTY ਕੀ-ਬੋਰਡ ਨਾਲ ਚੈੱਕ</translation>
 <translation id="8137331602592933310">"<ph name="FILENAME" />" ਤੁਹਾਡੇ ਨਾਲ ਸ਼ੇਅਰ ਕੀਤੀ ਗਈ ਹੈ। ਤੁਸੀਂ ਇਸਨੂੰ ਮਿਟਾ ਨਹੀਂ ਸਕਦੇ ਕਿਉਂਕਿ ਇਹ ਤੁਹਾਡੀ ਨਹੀਂ ਹੈ।</translation>
-<translation id="8145409227593688472">Wubi ਇਨਪੁੱਟ ਵਿਧੀ</translation>
-<translation id="8148264977957212129">Pinyin ਇਨਪੁੱਟ ਵਿਧੀ</translation>
 <translation id="8151638057146502721">ਸੰਰੂਪਿਤ ਕਰੋ</translation>
 <translation id="8153607920959057464">ਇਹ ਫਾਈਲ ਡਿਸਪਲੇ ਨਹੀਂ ਕੀਤੀ ਜਾ ਸਕੀ।</translation>
 <translation id="8154842056504218462">ਸਾਰੇ ਇੰਦਰਾਜ ਚੁਣੇ ਗਏ।</translation>
 <translation id="8157684860301034423">ਐਪ ਜਾਣਕਾਰੀ ਨੂੰ ਮੁੜ-ਪ੍ਰਾਪਤ ਕਰਨਾ ਅਸਫਲ ਰਿਹਾ।</translation>
 <translation id="8157939133946352716">7x5</translation>
-<translation id="8160015581537295331">ਸਪੇਨੀ ਕੀ-ਬੋਰਡ</translation>
 <translation id="8179976553408161302">ਦਰਜ ਕਰੋ</translation>
 <translation id="8193175696669055101">ਡੀਵਾਈਸ ਮਾਡਲ</translation>
 <translation id="8208580316430297579">ਆਰਟਵਰਕ</translation>
@@ -671,7 +615,6 @@
 <translation id="8249296373107784235">ਰੋਕੋ</translation>
 <translation id="8261506727792406068">ਮਿਟਾਓ</translation>
 <translation id="8269755669432358899">ਫ਼ਾਈਲਾਂ ਦੇ ਪ੍ਰਤੀਕਰਮ ਪੈਨਲਾਂ ਨੂੰ ਸਮੇਟੋ</translation>
-<translation id="8279388322240498158">ਸਰੋਨੀ ਕਰਦਿਸ਼ ਅੰਗਰੇਜ਼ੀ-ਆਧਾਰਿਤ ਕੀ-ਬੋਰਡ</translation>
 <translation id="8280151743281770066">ਅਰਮੀਨੀਅਨ ਫੋਨੈਟਿਕ</translation>
 <translation id="8294431847097064396">ਸ੍ਰੋਤ</translation>
 <translation id="8297012244086013755">Hangul 3 ਸੈਟ (ਕੋਈ Shift ਨਹੀਂ)</translation>
@@ -683,11 +626,7 @@
 <translation id="8336524887811696057">ਨੇਪਾਲੀ ਲਿਪੀਅੰਤਰਨ</translation>
 <translation id="8342318071240498787">ਸਮਾਨ ਨਾਮ ਵਾਲੀ ਇੱਕ ਫਾਈਲ ਜਾਂ ਡਾਇਰੈਕਟਰੀ ਪਹਿਲਾਂ ਹੀ ਮੌਜੂਦ ਹੈ।</translation>
 <translation id="8382450452152102026"><ph name="FOLDER_NAME" /> ਵਿੱਚ</translation>
-<translation id="8391950649760071442">ਲਿਪਾਂਤਰਨ (emandi → ఏమండీ)</translation>
 <translation id="8395901698320285466">ਮਾਪ</translation>
-<translation id="8412586565681117057">ਤਤਕਾਲ ਇਨਪੁੱਟ ਵਿਧੀ</translation>
-<translation id="8418113698656761985">ਰੋਮਾਨੀਅਨ ਕੀ-ਬੋਰਡ</translation>
-<translation id="8432745813735585631">US Colemak ਕੀ-ਬੋਰਡ</translation>
 <translation id="8437209419043462667">US</translation>
 <translation id="8456681095658380701">ਅਵੈਧ ਨਾਮ</translation>
 <translation id="8466234950814670489">Tar ਪੁਰਾਲੇਖ</translation>
@@ -708,17 +647,13 @@
 <translation id="8698464937041809063">Google ਡਰਾਇੰਗ</translation>
 <translation id="8714406895390098252">ਸਾਈਕਲ</translation>
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> ਨੂੰ ਚੁਣਿਆ ਗਿਆ।</translation>
-<translation id="8722421161699219904">US ਅੰਤਰਰਾਸ਼ਟਰੀ ਕੀ-ਬੋਰਡ</translation>
 <translation id="872537912056138402">Croatian</translation>
-<translation id="874420130893181774">ਰਵਾਇਤੀ Pinyin ਇਨਪੁੱਟ ਵਿਧੀ</translation>
 <translation id="8770002329960263418">ਸੰਯੁਕਤ ਰਾਜ ਅੰਤਰਰਾਸ਼ਟਰੀ PC ਕੀ-ਬੋਰਡ ਨਾਲ ਡੱਚ (ਨੀਦਰਲੈਂਡ)</translation>
 <translation id="8775404590947523323">ਤੁਹਾਡੇ ਸੰਪਾਦਨ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਸੁਰੱਖਿਅਤ ਕੀਤੇ ਗਏ ਹਨ।<ph name="BREAKS" />ਅਸਲ ਚਿੱਤਰ ਦੀ ਇੱਕ ਕਾਪੀ ਰੱਖਣ ਲਈ, "ਅਸਲ 'ਤੇ ਓਵਰਰਾਈਟ ਕਰੋ" 'ਤੇ ਨਿਸ਼ਾਨ ਹਟਾਓ।</translation>
-<translation id="8803496343472038847">ਰੂਸੀ ਧੁਨੀਆਤਮਿਕ ਕੀ-ਬੋਰਡ</translation>
 <translation id="8808686172382650546">ਬਿੱਲੀ</translation>
 <translation id="8810671769985673465">ਜ਼ਿਪ ਕਰਨਾ ਅਸਫਲ ਰਿਹਾ, ਆਈਟਮ ਮੌਜੂਦ ਹੈ: "<ph name="FILE_NAME" />"</translation>
 <translation id="8834164572807951958">'<ph name="DESTINATION_NAME" />' ਦੇ ਮੈਂਬਰ ਇਹਨਾਂ ਆਈਟਮਾਂ ਦੀ ਕਾਪੀ ਤੱਕ ਪਹੁੰਚ ਪ੍ਰਾਪਤ ਕਰਨਗੇ।</translation>
 <translation id="8846896937446866962">QWERTY ਕੀ-ਬੋਰਡ ਨਾਲ ਹੰਗੇਰੀਅਨ</translation>
-<translation id="885381502874625531">ਬੈਲਾਰੂਸੀਅਨ ਕੀ-ਬੋਰਡ</translation>
 <translation id="8860454412039442620">Excel spreadsheet</translation>
 <translation id="8900820606136623064">Hungarian</translation>
 <translation id="8919081441417203123">ਡੈਨਿਸ਼</translation>
@@ -742,9 +677,7 @@
 <translation id="9134524245363717059">ਇਹ ਫ਼ਾਈਲ Macintosh ਸਾਫ਼ਟਵੇਅਰ ਵਰਤਣ ਵਾਲੇ ਕੰਪਿਊਟਰ ਲਈ ਤਿਆਰ ਕੀਤੀ ਗਈ ਹੈ। ਇਹ ਤੁਹਾਡੇ Chrome OS ਨਾਲ ਚਲਣ ਵਾਲੇ ਡੀਵਾਈਸ ਦੇ ਅਨੁਕੂਲ ਨਹੀਂ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਇਸ ਦੇ ਬਦਲਾਅ ਵਜੋਂ ਕਿਸੇ ਅਨੁਕੂਲ ਐਪ ਲਈ 'Chrome ਵੈੱਬ ਸਟੋਰ' ਖੋਜੋ।</translation>
 <translation id="913758436357682283">ਮਿਆਂਮਾਰ ਮਿਆਂਸਾਨ ਕੀ-ਬੋਰਡ</translation>
 <translation id="9148058034647219655">ਬਾਹਰ ਜਾਓ</translation>
-<translation id="9153744823707037316">Array ਇਨਪੁੱਟ ਵਿਧੀ</translation>
 <translation id="9154418932169119429">ਇਹ ਚਿੱਤਰ ਆਫ਼ਲਾਈਨ ਉਪਲਬਧ ਨਹੀਂ ਹੈ।</translation>
-<translation id="9206487995878691001">Cangjie ਇਨਪੁੱਟ ਵਿਧੀ</translation>
 <translation id="9213073329713032541">ਸਥਾਪਨਾ ਸਫਲਤਾਪੂਰਵਕ ਸ਼ੁਰੂ ਹੋਈ।</translation>
 <translation id="9219103736887031265">ਚਿੱਤਰ</translation>
 <translation id="9219908252191632183">ਚੰਨ ਦਾ ਦ੍ਰਿਸ਼</translation>

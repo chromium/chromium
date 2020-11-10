@@ -355,7 +355,6 @@
 <translation id="1401308693935339022">Sử dụng vị trí. Cho phép các ứng dụng và dịch vụ có quyền vị trí sử dụng thông tin vị trí của thiết bị này. Google có thể định kỳ thu thập dữ liệu vị trí và sử dụng dữ liệu này theo cách ẩn danh để cải thiện độ chính xác của vị trí và các dịch vụ dựa trên vị trí.</translation>
 <translation id="1403222014593521787">Không thể kết nối với proxy này</translation>
 <translation id="140520891692800925"><ph name="PROFILE_DISPLAY_NAME" /> (Được giám sát)</translation>
-<translation id="140541193409212341">Đã xảy ra lỗi khi Chrome kiểm tra máy tính của bạn để tìm phần mềm gây hại</translation>
 <translation id="1405779994569073824">Đã bị lỗi.</translation>
 <translation id="1406500794671479665">Đang xác minh...</translation>
 <translation id="1407135791313364759">Mở tất cả</translation>
@@ -390,7 +389,6 @@
 <translation id="1433811987160647649">Hỏi trước khi truy cập</translation>
 <translation id="1434696352799406980">Thao tác này sẽ đặt lại trang khởi động, trang thẻ mới, công cụ tìm kiếm và thẻ được ghim. Thao tác này cũng sẽ vô hiệu hóa tất cả các tiện ích và xóa dữ liệu tạm thời như cookie. Dấu trang, lịch sử và mật khẩu đã lưu của bạn sẽ không bị xóa.</translation>
 <translation id="1434886155212424586">Trang chủ là trang Thẻ mới</translation>
-<translation id="1435515966666225466">Được phép sử dụng trình bổ trợ để truy cập vào máy tính của bạn</translation>
 <translation id="1436390408194692385">Có hiệu lực trong <ph name="TICKET_TIME_LEFT" /></translation>
 <translation id="1436671784520050284">Tiếp tục thiết lập</translation>
 <translation id="1436784010935106834">Đã xóa</translation>
@@ -1620,7 +1618,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2839032553903800133">Đã chặn thông báo</translation>
 <translation id="2841013758207633010">Thời gian</translation>
 <translation id="2841837950101800123">Nhà cung cấp</translation>
-<translation id="2841921561399512198">{NUM_DAYS,plural, =1{Chrome không tìm thấy phần mềm gây hại đã biết trên máy tính của bạn. Lần kiểm tra gần đây nhất: 1 ngày trước.}other{Chrome không tìm thấy phần mềm gây hại đã biết trên máy tính của bạn. Lần kiểm tra gần đây nhất: {NUM_DAYS} ngày trước.}}</translation>
 <translation id="2844169650293029770">Thiết bị USB-C (cổng phía trước, bên trái)</translation>
 <translation id="2844809857160214557">Xem và quản lý các lệnh in</translation>
 <translation id="2845382757467349449">Luôn Hiển thị Thanh Dấu trang</translation>
@@ -1789,7 +1786,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3036546437875325427">Bật Flash</translation>
 <translation id="3037754279345160234">Không thể phân tích cú pháp cấu hình để tham gia miền. Vui lòng liên hệ với quản trị viên của bạn.</translation>
 <translation id="3038612606416062604">Thêm máy in theo cách thủ công</translation>
-<translation id="3038675903128704560">Không cho phép bất kỳ trang web nào sử dụng plugin để truy cập máy tính của bạn</translation>
 <translation id="3039491566278747710">Không cài đặt được chính sách ngoại tuyến trên thiết bị.</translation>
 <translation id="3043581297103810752">Từ <ph name="ORIGIN" /></translation>
 <translation id="3045447014237878114">Trang web này đã tự động tải nhiều tệp xuống</translation>
@@ -2108,7 +2104,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3439153939049640737">Luôn cho phép <ph name="HOST" /> truy cập micrô của bạn</translation>
 <translation id="3439970425423980614">Mở PDF ở chế độ xem trước</translation>
 <translation id="3440663250074896476">Thao tác khác cho <ph name="BOOKMARK_NAME" /></translation>
-<translation id="3440761377721825626">Hỏi khi một trang web muốn sử dụng plugin để truy cập máy tính của bạn</translation>
 <translation id="3441653493275994384">Màn hình</translation>
 <translation id="3441663102605358937">Đăng nhập lại vào <ph name="ACCOUNT" /> để xác minh tài khoản này</translation>
 <translation id="3445047461171030979">Các câu trả lời nhanh của Trợ lý Google</translation>
@@ -2184,7 +2179,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3518985090088779359">Chấp nhận và tiếp tục</translation>
 <translation id="3519564332031442870">Dịch vụ phụ trợ in</translation>
 <translation id="3521606918211282604">Thay đổi dung lượng ổ đĩa</translation>
-<translation id="3523642406908660543">Hỏi khi một trang web muốn sử dụng plugin để truy cập vào máy tính của bạn (được khuyến nghị)</translation>
 <translation id="3524965460886318643">Xuất hoạt động</translation>
 <translation id="3526034519184079374">Không thể đọc hoặc thay đổi dữ liệu của trang web</translation>
 <translation id="3527085408025491307">Thư mục</translation>
@@ -2514,7 +2508,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3873915545594852654">Đã xảy ra lỗi với ARC++.</translation>
 <translation id="3874164307099183178">Bật Trợ lý Google</translation>
 <translation id="3877075909000773256">Các tùy chọn cài đặt Chia sẻ lân cận cho thiết bị của <ph name="USER_NAME" />, chia sẻ bằng tài khoản <ph name="USER_EMAIL" />.</translation>
-<translation id="387771067039689031">Không được phép sử dụng trình bổ trợ để truy cập vào máy tính của bạn</translation>
 <translation id="3879748587602334249">Trình quản lý tải xuống</translation>
 <translation id="3881478300875776315">Ẩn bớt dòng</translation>
 <translation id="3882165008614329320">Video hiện có từ camera hoặc tệp</translation>
@@ -2653,7 +2646,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="4031179711345676612">Cho phép micrô</translation>
 <translation id="4031527940632463547">Đã chặn sử dụng cảm biến</translation>
 <translation id="4033471457476425443">Thêm thư mục mới</translation>
-<translation id="4034280328082410379">Không cho các trình bổ trợ truy cập vào máy tính của bạn</translation>
 <translation id="4034824040120875894">Máy in</translation>
 <translation id="4035758313003622889">&amp;Trình quản lý tác vụ</translation>
 <translation id="4036778507053569103">Chính sách được tải xuống từ máy chủ là không hợp lệ.</translation>
@@ -2780,7 +2772,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="4200983522494130825">&amp;Tab mới</translation>
 <translation id="4201546031411513170">Bạn luôn có thể chọn nội dung muốn đồng bộ hóa trong phần cài đặt.</translation>
 <translation id="420283545744377356">Tắt trình bảo vệ màn hình</translation>
-<translation id="4205362703535890467">Chrome không tìm thấy phần mềm gây hại đã biết trên máy tính của bạn. Lần kiểm tra gần đây nhất: hôm qua.</translation>
 <translation id="4206144641569145248">Người ngoài hành tinh</translation>
 <translation id="4206323443866416204">Báo cáo phản hồi</translation>
 <translation id="4208390505124702064">Tìm kiếm <ph name="SITE_NAME" /></translation>
@@ -3282,7 +3273,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="4830121310592638841">Hỏi khi có một trang web muốn mở và đặt các cửa sổ trên màn hình của bạn</translation>
 <translation id="4830502475412647084">Đang cài đặt bản cập nhật hệ điều hành</translation>
 <translation id="4830573902900904548"><ph name="DEVICE_TYPE" /> của bạn không thể kết nối Internet bằng cách sử dụng <ph name="NETWORK_NAME" />. Vui lòng chọn mạng khác. <ph name="LEARN_MORE_LINK_START" />Tìm hiểu thêm<ph name="LEARN_MORE_LINK_END" /></translation>
-<translation id="4831688036548685548">Chrome không tìm thấy phần mềm gây hại đã biết trên máy tính của bạn. Lần kiểm tra gần đây nhất: vài phút trước.</translation>
 <translation id="4833236810053292670">Xem những nội dung mới trên Chromebook</translation>
 <translation id="4833683849865011483">Tìm thấy 1 máy in trên máy chủ máy in</translation>
 <translation id="4836504898754963407">Quản lý vân tay số</translation>
@@ -4301,6 +4291,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="6042308850641462728">Xem thêm</translation>
 <translation id="6043317578411397101"><ph name="APP_NAME" /> đang chia sẻ một thẻ trong Chrome với <ph name="TAB_NAME" />.</translation>
 <translation id="604388835206766544">Không thể phân tích cú pháp cấu hình</translation>
+<translation id="6043994281159824495">Đăng xuất bây giờ</translation>
 <translation id="6044805581023976844"><ph name="APP_NAME" /> đang chia sẻ âm thanh và một thẻ trong Chrome với <ph name="TAB_NAME" />.</translation>
 <translation id="6049004884579590341">Hãy nhấn và giữ |<ph name="ACCELERATOR" />| để thoát khỏi toàn màn hình</translation>
 <translation id="6051354611314852653">Rất tiếc! Hệ thống không cho phép truy cập API cho thiết bị này.</translation>
@@ -4561,7 +4552,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="6333064448949140209">Tệp sẽ được gửi tới Google để được gỡ lỗi</translation>
 <translation id="6338981933082930623">Mọi trang web đều có thể hiển thị quảng cáo bất kỳ cho bạn</translation>
 <translation id="6339668969738228384">Tạo hồ sơ mới cho <ph name="USER_EMAIL_ADDRESS" /></translation>
-<translation id="6339995243416022850">Các trang web có thể yêu cầu sử dụng một trình bổ trợ để truy cập vào máy tính của bạn (khuyến nghị)</translation>
 <translation id="6340017061976355871">Không thể kết nối với máy chủ. Vui lòng kiểm tra kết nối mạng của bạn và thử lại. Nếu sự cố vẫn tiếp diễn, hãy khởi động lại Chromebook.</translation>
 <translation id="6340071272923955280">Giao thức in qua Internet (IPPS)</translation>
 <translation id="6340526405444716530">Cá nhân hóa</translation>
@@ -4664,7 +4654,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="6463795194797719782">&amp;Chỉnh sửa</translation>
 <translation id="6465841119675156448">Không dùng Internet</translation>
 <translation id="6466988389784393586">&amp;Mở tất cả dấu trang</translation>
-<translation id="6467235653320897404">{NUM_HOURS,plural, =1{Chrome không tìm thấy phần mềm gây hại đã biết trên máy tính của bạn. Lần kiểm tra gần đây nhất: 1 giờ trước.}other{Chrome không tìm thấy phần mềm gây hại đã biết trên máy tính của bạn. Lần kiểm tra gần đây nhất: {NUM_HOURS} giờ trước.}}</translation>
 <translation id="6467304607960172345">Tối ưu hóa các video ở chế độ toàn màn hình</translation>
 <translation id="6468485451923838994">Phông chữ</translation>
 <translation id="6469557521904094793">Bật Mạng di động</translation>
@@ -4984,7 +4973,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="6860097299815761905">Cài đặt proxy...</translation>
 <translation id="686022878923628150">Không cho các trang web kết nối với thiết bị MIDI</translation>
 <translation id="6860427144121307915">Mở trong một thẻ</translation>
-<translation id="6861451385429799394"><ph name="BEGIN_LINK" />Quản trị viên của bạn<ph name="END_LINK" /> đã tắt tính năng kiểm tra của Chrome để tìm phần mềm gây hại</translation>
 <translation id="686366188661646310">Xóa mật khẩu?</translation>
 <translation id="6865313869410766144">Dữ liệu tự động điền vào biểu mẫu</translation>
 <translation id="6865598234501509159">Trang không viết bằng <ph name="LANGUAGE" /></translation>
@@ -5363,7 +5351,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="7308002049209013926">Sử dụng Trình khởi chạy để nhanh chóng truy cập vào ứng dụng và hoạt động mới. Để truy cập vào đây bằng bàn phím, hãy nhấn tổ hợp phím Alt + Shift + L.</translation>
 <translation id="7309257895202129721">Hiển thị &amp;các điều khiển</translation>
 <translation id="7310598146671372464">Không đăng nhập được. Máy chủ không hỗ trợ loại mã hóa Kerberos đã chỉ định. Vui lòng liên hệ với quản trị viên của bạn.</translation>
-<translation id="7311079019872751559">Truy cập plugin không có hộp cát</translation>
 <translation id="7320213904474460808">Đặt mạng mặc định</translation>
 <translation id="7321545336522791733">Máy chủ không truy cập được</translation>
 <translation id="7324297612904500502">Diễn đàn beta</translation>
@@ -5488,7 +5475,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="7456847797759667638">Mở Vị trí...</translation>
 <translation id="7457384018036134905">Quản lý ngôn ngữ trong phần cài đặt của Chrome OS</translation>
 <translation id="7458168200501453431">Sử dụng chính trình kiểm tra chính tả được dùng trong tính năng tìm kiếm của Google. Thông tin bạn nhập vào trình duyệt sẽ được gửi tới Google.</translation>
-<translation id="7459920164600044274">Các trang web thường sử dụng trình bổ trợ cho những tính năng như phát trực tuyến video hoặc cài đặt ứng dụng</translation>
 <translation id="7460045493116006516">Giao diện hiện tại mà bạn đã cài đặt</translation>
 <translation id="7461729991508684543">{NUM_DAYS,plural, =1{<ph name="DOMAIN" /> yêu cầu bạn sao lưu dữ liệu và trả lại thiết bị <ph name="DEVICE_TYPE" /> này ngay hôm nay.<ph name="LINK_BEGIN" />Xem thông tin chi tiết<ph name="LINK_END" />}other{<ph name="DOMAIN" /> yêu cầu bạn sao lưu dữ liệu và trả lại thiết bị <ph name="DEVICE_TYPE" /> này trong vòng {NUM_DAYS} ngày.<ph name="LINK_BEGIN" />Xem thông tin chi tiết<ph name="LINK_END" />}}</translation>
 <translation id="7461924472993315131">Ghim</translation>
@@ -6012,6 +5998,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8030852056903932865">Phê duyệt</translation>
 <translation id="8032244173881942855">Không thể truyền thẻ.</translation>
 <translation id="8033827949643255796">đã chọn</translation>
+<translation id="8033958968890501070">Hết giờ</translation>
 <translation id="8037117027592400564">Đọc tất cả văn bản được nói bằng giọng nói tổng hợp</translation>
 <translation id="8037357227543935929">Yêu cầu (mặc định)</translation>
 <translation id="803771048473350947">Tệp</translation>
@@ -6436,7 +6423,6 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8541462173655894684">Không tìm thấy máy in nào trên máy chủ máy in</translation>
 <translation id="8542618328173222274">Hỏi ý bạn khi có trang web muốn sử dụng dữ liệu và thiết bị thực tế ảo của bạn</translation>
 <translation id="8543556556237226809">Bạn có câu hỏi? Hãy liên hệ với người giám sát hồ sơ của bạn.</translation>
-<translation id="8545575359873600875">Rất tiếc, không thể xác minh mật khẩu của bạn. Người quản lý của người dùng được giám sát này gần đây có thể đã thay đổi mật khẩu. Nếu vậy, mật khẩu mới sẽ được áp dụng vào lần tới khi bạn đăng nhập Hãy thử sử dụng mật khẩu cũ của bạn.</translation>
 <translation id="8546186510985480118">Thiết bị sắp hết dung lượng</translation>
 <translation id="8546306075665861288">Bộ nhớ đệm hình ảnh</translation>
 <translation id="854655314928502177">URL tự động phát hiện proxy web:</translation>
@@ -6647,7 +6633,6 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8774934320277480003">Lề trên</translation>
 <translation id="8775144690796719618">URL không hợp lệ</translation>
 <translation id="8775163630211761057">Sử dụng mọi thứ có trên chiếc điện thoại Android của bạn thông qua <ph name="DEVICE_TYPE" /></translation>
-<translation id="8776977753660889796">{NUM_MINS,plural, =1{Chrome không tìm thấy phần mềm gây hại đã biết trên máy tính của bạn. Lần kiểm tra gần đây nhất: 1 phút trước.}other{Chrome không tìm thấy phần mềm gây hại đã biết trên máy tính của bạn. Lần kiểm tra gần đây nhất: {NUM_MINS} phút trước.}}</translation>
 <translation id="8777628254805677039">mật khẩu gốc</translation>
 <translation id="8780123805589053431">Tải nội dung mô tả hình ảnh của Google</translation>
 <translation id="8780443667474968681">Tính năng tìm kiếm bằng giọng nói đã bị tắt.</translation>

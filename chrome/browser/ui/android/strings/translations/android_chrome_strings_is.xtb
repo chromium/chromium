@@ -77,6 +77,7 @@
 <translation id="1513352483775369820">Bókamerki og vefferill</translation>
 <translation id="1513858653616922153">Eyða aðgangsorði</translation>
 <translation id="1521774566618522728">Virkt í dag</translation>
+<translation id="1538801903729528855">Láttu röddina þjóna þér betur á vefnum</translation>
 <translation id="1543538514740974167">Fljótari leið hingað</translation>
 <translation id="1544826120773021464">Til að hafa umsjón með Google reikningnum þínum skaltu velja hnappinn „Stjórna reikningi“</translation>
 <translation id="1549000191223877751">Færa í annan glugga</translation>
@@ -117,6 +118,7 @@
 <translation id="1877026089748256423">Chrome er úrelt</translation>
 <translation id="1883903952484604915">Skrárnar mínar</translation>
 <translation id="189358972401248634">Önnur tungumál</translation>
+<translation id="1918175104945982129">Samþykkisviðmót raddleitar Hjálpara opið á hálfum skjánum</translation>
 <translation id="1919130412786645364">Leyfa innskráningu í Chrome</translation>
 <translation id="1922362554271624559">Tillögur að tungumálum</translation>
 <translation id="1925021887439448749">Færðu inn sérsniðna vefslóð</translation>
@@ -147,6 +149,7 @@
 <translation id="2056878612599315956">Hlé gert á vefsvæði</translation>
 <translation id="2067805253194386918">texti</translation>
 <translation id="2068748236079642969">Horfa á næsta myndskeið</translation>
+<translation id="2074143993849053708">Samþykkisviðmót raddleitar Hjálpara lokað</translation>
 <translation id="2082238445998314030">Niðurstaða <ph name="RESULT_NUMBER" /> af <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2096012225669085171">Samstilltu á milli tækja og gerðu að þínu</translation>
 <translation id="2100273922101894616">Sjálfvirk innskráning</translation>
@@ -279,6 +282,7 @@ Haltu fingri á hvaða orði sem er til að leita að því. Veldu fleiri eða f
 <translation id="3006881078666935414">Engin notkunargögn</translation>
 <translation id="3016635187733453316">Gakktu úr skugga um að tækið sé tengt við internetið</translation>
 <translation id="3029704984691124060">Aðgangsorð stemma ekki</translation>
+<translation id="3031225630520268969">Samþykkisviðmót raddleitar Hjálpara</translation>
 <translation id="3034163383943672781">Niðurhal hefst <ph name="DATE" />.</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Fá aðstoð<ph name="END_LINK" /></translation>
 <translation id="305593374596241526">Slökkt er á staðsetningum. Kveiktu á þeim í <ph name="BEGIN_LINK" />stillingum Android<ph name="END_LINK" />.</translation>
@@ -437,6 +441,7 @@ Haltu fingri á hvaða orði sem er til að leita að því. Veldu fleiri eða f
 <translation id="4248098802131000011">Tryggðu öryggi aðgangsorðanna gagnvart öryggisbrotum og öðrum öryggisvandamálum</translation>
 <translation id="4250229828105606438">Skjámynd</translation>
 <translation id="4256782883801055595">Leyfi opins kóða</translation>
+<translation id="4263656433980196874">Samþykkisviðmót raddleitar Hjálpara opið á öllum skjánum</translation>
 <translation id="4269820728363426813">Afrita slóð tengils</translation>
 <translation id="4298388696830689168">Tengd vefsvæði</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
@@ -623,6 +628,7 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />endurstilla sam
 <translation id="5581519193887989363">Þú getur alltaf valið hvað á að samstilla í <ph name="BEGIN_LINK1" />stillingunum<ph name="END_LINK1" />.</translation>
 <translation id="5595485650161345191">Breyta heimilisfangi</translation>
 <translation id="5599455543593328020">Huliðsstilling</translation>
+<translation id="5599941490345670218">Google hjálparinn getur lokið aðgerðum á ýmsum vefsvæðum fyrir þig</translation>
 <translation id="5620163320393916465">Engin vistuð aðgangsorð</translation>
 <translation id="5620928963363755975">Þú finnur skrár og síður í Niðurhali undir hnappinum „Fleiri valkostir“</translation>
 <translation id="5626134646977739690">Nafn:</translation>
@@ -1148,6 +1154,7 @@ Gögnum úr huliðslotum verður aðeins eytt úr Chrome þegar þú <ph name="B
 <translation id="9155898266292537608">Þú getur einnig leitað með því að ýta á orð</translation>
 <translation id="9169507124922466868">Ferill er hálfopinn</translation>
 <translation id="9191031968346938109">Bæta við…</translation>
+<translation id="919615279147764192">Til að hjálpa þér að ljúka við verkefni fær Google vefslóðir og innihald vefsvæða þar sem þú notar Hjálparann, auk upplýsinga sem þú sendir með Hjálparanum. Þessar upplýsingar gætu verið vistaðar á Google reikningnum þínum. Þú getur slökkt á Hjálparanum í stillingum Chrome.</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Athugað fyrir 1 mínútu}one{Athugað fyrir # mínútu}other{Athugað fyrir # mínútum}}</translation>
 <translation id="9204836675896933765">Ein skrá eftir</translation>
 <translation id="9206873250291191720">A</translation>

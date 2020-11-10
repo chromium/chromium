@@ -94,6 +94,7 @@
 Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="5222676887888702881">Pechar sesión</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
+<translation id="5275828089655680674">Volver executar rutinas</translation>
 <translation id="5317780077021120954">Gardar</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">Escolle un novo agora</translation>
@@ -102,6 +103,7 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="5431318178759467895">Cor</translation>
 <translation id="5457599981699367932">Navegar como invitado</translation>
 <translation id="54609108002486618">Dispositivo xestionado</translation>
+<translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5832805196449965646">Engadir unha persoa</translation>
 <translation id="5895138241574237353">Reiniciar</translation>
 <translation id="6040143037577758943">Pechar</translation>
@@ -111,6 +113,7 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="6108689792487843350">Non se puido acceder á pasarela</translation>
 <translation id="6146993107019042706">Para finalizar, introduce o teu novo contrasinal</translation>
 <translation id="6147514244879357420">PNG</translation>
+<translation id="6165508094623778733">Máis información</translation>
 <translation id="6191293864534840972">Os servidores de nomes teñen un formato incorrecto</translation>
 <translation id="6325525973963619867">Produciuse un erro</translation>
 <translation id="636850387210749493">Inscrición corporativa</translation>
@@ -133,6 +136,7 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="7690294790491645610">Confirmar contrasinal novo</translation>
 <translation id="7805768142964895445">Estado</translation>
 <translation id="7936303884198020182">Non se atoparon servidores de nomes</translation>
+<translation id="8041089156583427627">Enviar comentarios</translation>
 <translation id="808894953321890993">Cambiar contrasinal</translation>
 <translation id="8208861521865154048">Vantaxes</translation>
 <translation id="8230672074305416752">Produciuse un erro ao facer ping na pasarela de rede predeterminada</translation>
@@ -146,6 +150,7 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="8723108084122415655">A rede non predeterminada supera o límite de latencia</translation>
 <translation id="8726019395068607495">Detívose (a tapa está aberta)</translation>
 <translation id="8747900814994928677">Confirmar o cambio</translation>
+<translation id="8798099450830957504">Predeterminado</translation>
 <translation id="8910721771319628100">A rede predeterminada supera o límite de latencia</translation>
 <translation id="8919837981463578619">Produciuse un erro: falta a bandexa</translation>
 <translation id="8928727111548978589">Produciuse un erro: a impresora quedou sen papel</translation>

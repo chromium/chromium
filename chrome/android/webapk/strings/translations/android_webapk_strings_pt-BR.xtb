@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="pt-BR">
+<translation id="1625959690469240009">Para abrir as configurações do site, atualize ou reinstale o <ph name="BROWSER_NAME" /></translation>
 <translation id="1700971771753530690"><ph name="APP_NAME" /> requer o seguinte app:</translation>
 <translation id="2697679025356221813"><ph name="APP_NAME" /> requer um navegador da Web</translation>
 <translation id="3858759029325727987">Escolha um navegador que seja compatível com este app:</translation>

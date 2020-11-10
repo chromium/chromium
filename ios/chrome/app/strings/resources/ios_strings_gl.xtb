@@ -18,6 +18,7 @@
 <translation id="1112015203684611006">Erro impresión</translation>
 <translation id="1125564390852150847">Crear pestana nova</translation>
 <translation id="1145536944570833626">Elimina os datos existentes.</translation>
+<translation id="1147031633655575115">Tes a sesión iniciada como <ph name="USER" /></translation>
 <translation id="1154690515305205900">Non se puido crear unha ligazón ao texto destacado.</translation>
 <translation id="1157749421655780457">Permitir uso da localización...</translation>
 <translation id="1165039591588034296">Erro</translation>
@@ -268,6 +269,7 @@ Sigue os pasos indicados a continuación:</translation>
 <translation id="385051799172605136">Atrás</translation>
 <translation id="3892144330757387737">Aquí atoparás o teu historial</translation>
 <translation id="3897092660631435901">Menú</translation>
+<translation id="3913386780052199712">Sesión iniciada en Chrome</translation>
 <translation id="3915450441834151894">Información sobre o sitio</translation>
 <translation id="3922310737605261887">Buscar texto copiado</translation>
 <translation id="3928666092801078803">Combinar os meus datos</translation>
