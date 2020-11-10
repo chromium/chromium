@@ -208,6 +208,13 @@ class PolymerModulizerTest(unittest.TestCase):
             'import \'chrome://resources/js/bar.m.js\';',
         ],
 
+        # chrome-extension:// paths cases.
+        [
+            'chrome-extension://path/to/folder/foo.html',
+            'import \'//path/to/folder/foo.m.js\';',
+            'import \'chrome-extension://path/to/folder/foo.m.js\';',
+        ],
+
         # Scheme-relative paths cases.
         # Case where absolute path to a Polymer UI element is used.
         [

@@ -172,6 +172,7 @@ js_library("repeat_button.m") {
 
 js_type_check("closure_compile_jsmodules") {
   is_polymer3 = true
+  closure_flags = default_closure_args + [ "browser_resolver_prefix_replacements=\"chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/=../../ui/file_manager/file_manager/\"" ]
   deps = [
     ":audio_player.m",
     ":control_panel.m",
