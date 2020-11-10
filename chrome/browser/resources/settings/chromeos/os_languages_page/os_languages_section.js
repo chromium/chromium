@@ -91,20 +91,28 @@ Polymer({
   },
 
   /**
-   * @param {string} uiLanguage Current UI language fully specified, e.g.
-   *     "English (United States)".
+   * @param {string|undefined} uiLanguage Current UI language fully specified,
+   *     e.g. "English (United States)".
    * @param {string} id The input method ID, e.g. "US Keyboard".
+   * @param {!Array<!chrome.languageSettingsPrivate.InputMethod>}
+   *     enabledInputMethods The list of currently enabled input methods.
+   * @param {!LanguageHelper} languageHelper The LanguageHelper object.
    * @return {string} A sublabel for the 'Languages and input' row
    * @private
    */
-  getSubLabel_(uiLanguage, id) {
+  getSubLabel_(uiLanguage, id, enabledInputMethods, languageHelper) {
+    if (uiLanguage === undefined) {
+      return '';
+    }
     const languageDisplayName =
-        this.languageHelper.getLanguage(uiLanguage).displayName;
-    const inputMethod =
-        this.languages.inputMethods.enabled.find(function(inputMethod) {
-          return inputMethod.id === id;
-        });
+        languageHelper.getLanguage(uiLanguage).displayName;
+    const inputMethod = enabledInputMethods.find(function(inputMethod) {
+      return inputMethod.id === id;
+    });
     const inputMethodDisplayName = inputMethod ? inputMethod.displayName : '';
+    if (!inputMethodDisplayName) {
+      return languageDisplayName;
+    }
     // It is OK to use string concatenation here because it is just joining a 2
     // element list (i.e. it's a standard format).
     return languageDisplayName + ', ' + inputMethodDisplayName;

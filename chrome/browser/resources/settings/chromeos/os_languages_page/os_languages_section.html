@@ -35,7 +35,8 @@
               id="languagesSubpageTrigger"
               label="$i18n{osLanguagesPageTitle}"
               sub-label="[[getSubLabel_(languages.prospectiveUILanguage,
-                  languages.inputMethods.currentId)]]"
+                  languages.inputMethods.currentId,
+                  languages.inputMethods.enabled, languageHelper)]]"
               on-click="onLanguagesTap_"
               role-description="$i18n{subpageArrowRoleDescription}">
           </cr-link-row>
