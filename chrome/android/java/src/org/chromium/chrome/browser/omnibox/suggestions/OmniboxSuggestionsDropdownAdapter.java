@@ -15,14 +15,12 @@ import org.chromium.base.TraceEvent;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
-/**
- * ModelListAdapter for SuggestionList.
- */
-class OmniboxSuggestionsRecyclerViewAdapter extends SimpleRecyclerViewAdapter {
+/** ModelListAdapter for OmniboxSuggestionsDropdown (RecyclerView version). */
+class OmniboxSuggestionsDropdownAdapter extends SimpleRecyclerViewAdapter {
     private int mSelectedItem = RecyclerView.NO_POSITION;
     private LayoutManager mLayoutManager;
 
-    OmniboxSuggestionsRecyclerViewAdapter(ModelList data) {
+    OmniboxSuggestionsDropdownAdapter(ModelList data) {
         super(data);
     }
 

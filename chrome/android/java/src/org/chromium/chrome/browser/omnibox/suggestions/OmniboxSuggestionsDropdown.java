@@ -13,25 +13,76 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.Px;
 import androidx.core.view.ViewCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.TraceEvent;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.WindowDelegate;
 import org.chromium.chrome.browser.util.KeyNavigationUtil;
 
 /**
  * A widget for showing a list of omnibox suggestions.
  */
-public class OmniboxSuggestionsRecyclerView
-        extends RecyclerView implements OmniboxSuggestionsDropdown {
+public class OmniboxSuggestionsDropdown extends RecyclerView {
     private final @NonNull OmniboxSuggestionsDropdownDelegate mDropdownDelegate;
     private final @NonNull SuggestionScrollListener mScrollListener;
     private @Nullable OmniboxSuggestionsDropdown.Observer mObserver;
-    private @Nullable OmniboxSuggestionsRecyclerViewAdapter mAdapter;
+    private @Nullable OmniboxSuggestionsDropdownAdapter mAdapter;
 
     private final int[] mTempMeasureSpecs = new int[2];
+
+    /** Provides the capabilities required to embed the omnibox suggestion list into the UI. */
+    public interface Embedder {
+        /** Return the anchor view the suggestion list should be drawn below. */
+        View getAnchorView();
+
+        /**
+         * Return the view that the omnibox suggestions should be aligned horizontally to.  The
+         * view must be a descendant of {@link #getAnchorView()}.  If null, the suggestions will
+         * be aligned to the start of {@link #getAnchorView()}.
+         */
+        @Nullable
+        View getAlignmentView();
+
+        /** Return the delegate used to interact with the Window. */
+        WindowDelegate getWindowDelegate();
+
+        /** Return whether the suggestions are being rendered in the tablet UI. */
+        boolean isTablet();
+    }
+
+    /** Interface that will receive notifications and callbacks from OmniboxSuggestionList. */
+    public interface Observer {
+        /**
+         * Invoked whenever the height of suggestion list changes.
+         * The height may change as a result of eg. soft keyboard popping up.
+         *
+         * @param newHeightPx New height of the suggestion list in pixels.
+         */
+        void onSuggestionDropdownHeightChanged(@Px int newHeightPx);
+
+        /**
+         * Invoked whenever the User scrolls the list.
+         */
+        void onSuggestionDropdownScroll();
+
+        /**
+         * Invoked whenever the User scrolls the list to the top.
+         */
+        void onSuggestionDropdownOverscrolledToTop();
+
+        /**
+         * Notify that the user is interacting with an item on the Suggestions list.
+         *
+         * @param isGestureUp Whether user pressed (false) or depressed (true) the element on the
+         *         list.
+         * @param timestamp The timestamp associated with the event.
+         */
+        void onGesture(boolean isGestureUp, long timestamp);
+    }
 
     /** Scroll listener that propagates scroll event notification to registered observers. */
     private class SuggestionScrollListener extends RecyclerView.OnScrollListener {
@@ -82,7 +133,7 @@ public class OmniboxSuggestionsRecyclerView
      * Constructs a new list designed for containing omnibox suggestions.
      * @param context Context used for contained views.
      */
-    public OmniboxSuggestionsRecyclerView(Context context) {
+    public OmniboxSuggestionsDropdown(Context context) {
         super(context, null, android.R.attr.dropDownListViewStyle);
         setFocusable(true);
         setFocusableInTouchMode(true);
@@ -113,43 +164,49 @@ public class OmniboxSuggestionsRecyclerView
         mDropdownDelegate = new OmniboxSuggestionsDropdownDelegate(resources, this);
     }
 
-    @Override
+    /** Get the Android View implementing suggestion list. */
     public ViewGroup getViewGroup() {
         return this;
     }
 
-    @Override
+    /**
+     * Sets the embedder for the list view.
+     * @param embedder the embedder of this list.
+     */
     public void setEmbedder(OmniboxSuggestionsDropdown.Embedder embedder) {
         mDropdownDelegate.setEmbedder(embedder);
     }
 
-    @Override
+    /**
+     * Sets the observer of suggestion list.
+     * @param observer an observer of this list.
+     */
     public void setObserver(OmniboxSuggestionsDropdown.Observer observer) {
         mObserver = observer;
         mScrollListener.setObserver(observer);
         mDropdownDelegate.setObserver(observer);
     }
 
-    @Override
+    /** Resets selection typically in response to changes to the list. */
     public void resetSelection() {
         if (mAdapter == null) return;
         mAdapter.resetSelection();
     }
 
-    @Override
+    /** @return The number of items in the list. */
     public int getDropdownItemViewCountForTest() {
         if (mAdapter == null) return 0;
         return mAdapter.getItemCount();
     }
 
-    @Override
+    /** @return The Suggestion view at specific index. */
     public View getDropdownItemViewForTest(int index) {
         final LayoutManager manager = getLayoutManager();
         manager.scrollToPosition(index);
         return manager.findViewByPosition(index);
     }
 
-    @Override
+    /** Show (and properly size) the suggestions list. */
     public void show() {
         if (getVisibility() == VISIBLE) return;
 
@@ -159,21 +216,21 @@ public class OmniboxSuggestionsRecyclerView
         }
     }
 
-    @Override
+    /** Hide the suggestions list and release any cached resources. */
     public void hide() {
         if (getVisibility() != VISIBLE) return;
         setVisibility(GONE);
         getRecycledViewPool().clear();
     }
 
-    @Override
+    /** Update the suggestion popup background to reflect the current state. */
     public void refreshPopupBackground(boolean isIncognito) {
         setBackground(mDropdownDelegate.getPopupBackground(isIncognito));
     }
 
     @Override
     public void setAdapter(Adapter adapter) {
-        mAdapter = (OmniboxSuggestionsRecyclerViewAdapter) adapter;
+        mAdapter = (OmniboxSuggestionsDropdownAdapter) adapter;
         super.setAdapter(mAdapter);
     }
 

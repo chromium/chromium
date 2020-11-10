@@ -111,9 +111,9 @@ public class AutocompleteCoordinator implements UrlFocusChangeListener, UrlTextC
 
             @Override
             public void inflate() {
-                OmniboxSuggestionsRecyclerView dropdown;
+                OmniboxSuggestionsDropdown dropdown;
                 try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
-                    dropdown = new OmniboxSuggestionsRecyclerView(context);
+                    dropdown = new OmniboxSuggestionsDropdown(context);
                 }
 
                 // Start with visibility GONE to ensure that show() is called.
@@ -121,8 +121,8 @@ public class AutocompleteCoordinator implements UrlFocusChangeListener, UrlTextC
                 dropdown.getViewGroup().setVisibility(View.GONE);
                 dropdown.getViewGroup().setClipToPadding(false);
 
-                OmniboxSuggestionsRecyclerViewAdapter adapter =
-                        new OmniboxSuggestionsRecyclerViewAdapter(modelList);
+                OmniboxSuggestionsDropdownAdapter adapter =
+                        new OmniboxSuggestionsDropdownAdapter(modelList);
                 dropdown.setAdapter(adapter);
 
                 // Note: clang-format does a bad job formatting lambdas so we turn it off here.
