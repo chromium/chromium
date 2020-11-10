@@ -828,9 +828,8 @@ TYPED_TEST(ClipboardTest, ReadAvailablePlatformSpecificFormatNamesTest) {
 #elif defined(OS_WIN)
   EXPECT_THAT(raw_types, Contains(ASCIIToUTF16("CF_UNICODETEXT")));
   EXPECT_THAT(raw_types, Contains(ASCIIToUTF16("CF_TEXT")));
-  EXPECT_THAT(raw_types, Contains(ASCIIToUTF16("CF_LOCALE")));
   EXPECT_THAT(raw_types, Contains(ASCIIToUTF16("CF_OEMTEXT")));
-  EXPECT_EQ(raw_types.size(), static_cast<uint64_t>(4));
+  EXPECT_EQ(raw_types.size(), static_cast<uint64_t>(3));
 #elif defined(USE_AURA) || defined(OS_ANDROID)
   EXPECT_THAT(raw_types, Contains(ASCIIToUTF16(kMimeTypeText)));
   EXPECT_EQ(raw_types.size(), static_cast<uint64_t>(1));

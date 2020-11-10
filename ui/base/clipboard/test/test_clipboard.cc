@@ -117,7 +117,6 @@ TestClipboard::ReadAvailablePlatformSpecificFormatNames(
     types.push_back(base::ASCIIToUTF16("STRING"));
     types.push_back(base::ASCIIToUTF16("UTF8_STRING"));
 #elif defined(OS_WIN)
-    types.push_back(base::ASCIIToUTF16("CF_LOCALE"));
     types.push_back(base::ASCIIToUTF16("CF_OEMTEXT"));
 #elif defined(OS_APPLE)
     types.push_back(base::ASCIIToUTF16("NSStringPboardType"));

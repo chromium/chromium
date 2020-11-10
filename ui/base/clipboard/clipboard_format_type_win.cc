@@ -23,35 +23,37 @@ const base::flat_map<UINT, std::string>& PredefinedFormatToNameMap() {
   static const base::NoDestructor<base::flat_map<UINT, std::string>>
       format_to_name({
           {CF_TEXT, "CF_TEXT"},
-          {CF_BITMAP, "CF_BITMAP"},
-          {CF_METAFILEPICT, "CF_METAFILEPICT"},
-          {CF_SYLK, "CF_SYLK"},
           {CF_DIF, "CF_DIF"},
           {CF_TIFF, "CF_TIFF"},
           {CF_OEMTEXT, "CF_OEMTEXT"},
           {CF_DIB, "CF_DIB"},
-          {CF_PALETTE, "CF_PALETTE"},
           {CF_PENDATA, "CF_PENDATA"},
           {CF_RIFF, "CF_RIFF"},
           {CF_WAVE, "CF_WAVE"},
           {CF_UNICODETEXT, "CF_UNICODETEXT"},
-          {CF_ENHMETAFILE, "CF_ENHMETAFILE"},
-          {CF_HDROP, "CF_HDROP"},
-          {CF_LOCALE, "CF_LOCALE"},
           {CF_DIBV5, "CF_DIBV5"},
           {CF_OWNERDISPLAY, "CF_OWNERDISPLAY"},
-          {CF_DSPTEXT, "CF_DSPTEXT"},
-          {CF_DSPBITMAP, "CF_DSPBITMAP"},
-          {CF_DSPMETAFILEPICT, "CF_DSPMETAFILEPICT"},
-          {CF_DSPENHMETAFILE, "CF_DSPENHMETAFILE"},
 
-          // These formats are predefined but explicitly blocked from use.
-          // TODO(huangdarwin): Which other formats should always be disallowed?
-          //  {CF_MAX, "CF_MAX"},
-          //  {CF_PRIVATEFIRST, "CF_PRIVATEFIRST"},
-          //  {CF_PRIVATELAST, "CF_PRIVATELAST"},
-          //  {CF_GDIOBJFIRST, "CF_GDIOBJFIRST"},
-          //  {CF_GDIOBJLAST, "CF_GDIOBJLAST"},
+          // These formats are predefined but explicitly blocked from use,
+          // either due to passing along handles, or concerns regarding exposing
+          // private information.
+          // {CF_MAX, "CF_MAX"},
+          // {CF_PRIVATEFIRST, "CF_PRIVATEFIRST"},
+          // {CF_PRIVATELAST, "CF_PRIVATELAST"},
+          // {CF_GDIOBJFIRST, "CF_GDIOBJFIRST"},
+          // {CF_GDIOBJLAST, "CF_GDIOBJLAST"},
+          // {CF_BITMAP, "CF_BITMAP"},
+          // {CF_SYLK, "CF_SYLK"},
+          // {CF_METAFILEPICT, "CF_METAFILEPICT"},
+          // {CF_DSPTEXT, "CF_DSPTEXT"},
+          // {CF_DSPBITMAP, "CF_DSPBITMAP"},
+          // {CF_DSPMETAFILEPICT, "CF_DSPMETAFILEPICT"},
+          // {CF_DSPENHMETAFILE, "CF_DSPENHMETAFILE"},
+          // {CF_ENHMETAFILE, "CF_ENHMETAFILE"},
+          // {CF_HDROP, "CF_HDROP"},
+          // {CF_LOCALE, "CF_LOCALE"},
+          // {CF_PALETTE, "CF_PALETTE"},
+
       });
   return *format_to_name;
 }
