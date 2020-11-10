@@ -7,7 +7,7 @@
  *
  * Circle ripple effect with burst animation.
  */
-const FilesRipple = Polymer({
+Polymer({
   is: 'files-ripple',
 
   properties: {
@@ -27,8 +27,8 @@ const FilesRipple = Polymer({
   pressAnimationPromise_: null,
 
   ready: function() {
-    /** @type {HTMLElement} */
-    this.ripple_ = this.$.ripple;
+    /** @type {!HTMLElement} */
+    this.ripple_ = assertInstanceof(this.$.ripple, HTMLElement);
   },
 
   attached: function() {

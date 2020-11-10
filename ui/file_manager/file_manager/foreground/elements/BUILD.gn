@@ -5,6 +5,7 @@
 import("//third_party/closure_compiler/compile_js.gni")
 import("//third_party/closure_compiler/js_unit_tests.gni")
 import("//ui/file_manager/base/gn/js_test_gen_html.gni")
+import("//tools/polymer/polymer.gni")
 
 visibility = [ "//ui/file_manager/file_manager/foreground/*" ]
 
@@ -12,12 +13,13 @@ group("closure_compile") {
   testonly = true
   visibility += [ "//ui/file_manager:closure_compile" ]
   deps = [
-    ":closure_compile_module",
+    ":closure_compile_internal",
+    ":closure_compile_jsmodules",
     ":js_test_gen_html_type_check_auto",
   ]
 }
 
-js_type_check("closure_compile_module") {
+js_type_check("closure_compile_internal") {
   deps = [
     ":files_format_dialog",
     ":files_icon_button",
@@ -40,6 +42,15 @@ js_type_check("closure_compile_module") {
   ]
 }
 
+js_type_check("closure_compile_jsmodules") {
+  is_polymer3 = true
+  deps = [
+    ":files_icon_button.m",
+    ":files_toggle_ripple.m",
+    ":files_ripple.m",
+  ]
+}
+
 js_library("files_format_dialog") {
   deps = [
     "//ui/file_manager/file_manager/common/js:util",
@@ -55,6 +66,37 @@ js_library("files_icon_button") {
     "//third_party/polymer/v1_0/components-chromium/iron-behaviors:iron-button-state-extracted",
     "//third_party/polymer/v1_0/components-chromium/iron-behaviors:iron-control-state-extracted",
   ]
+}
+
+polymer_modulizer("files_icon_button") {
+  js_file = "files_icon_button.js"
+  html_file = "files_icon_button.html"
+  html_type = "dom-module"
+  preserve_url_scheme = true
+
+  namespace_rewrites = [
+    "Polymer.IronButtonState|IronButtonState",
+    "Polymer.IronControlState|IronControlState",
+  ]
+
+  auto_imports = [
+    "third_party/polymer/v1_0/components-chromium/iron-behaviors/iron-button-state.html|IronButtonState",
+    "third_party/polymer/v1_0/components-chromium/iron-behaviors/iron-control-state.html|IronControlState",
+  ]
+}
+
+js_library("files_icon_button.m") {
+  visibility += [ "//ui/file_manager/audio_player/*" ]
+  sources = [
+    "$root_gen_dir/ui/file_manager/file_manager/foreground/elements/files_icon_button.m.js",
+  ]
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/iron-behaviors:iron-button-state",
+    "//third_party/polymer/v3_0/components-chromium/iron-behaviors:iron-control-state",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    ":files_toggle_ripple.m",
+  ]
+  extra_deps = [ ":files_icon_button_module" ]
 }
 
 js_library("files_message") {
@@ -110,6 +152,26 @@ js_library("files_ripple") {
   deps = [ "//ui/webui/resources/js:assert" ]
 }
 
+polymer_modulizer("files_ripple") {
+  js_file = "files_ripple.js"
+  html_file = "files_ripple.html"
+  html_type = "dom-module"
+  preserve_url_scheme = true
+
+  auto_imports = [ "ui/webui/resources/html/assert.html|assert,assertInstanceof" ]
+}
+
+js_library("files_ripple.m") {
+  sources = [
+    "$root_gen_dir/ui/file_manager/file_manager/foreground/elements/files_ripple.m.js",
+  ]
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:assert.m",
+  ]
+  extra_deps = [ ":files_ripple_module" ]
+}
+
 js_library("files_safe_media") {
 }
 
@@ -131,6 +193,24 @@ js_library("files_toast") {
 # TODO(tapted): Move this to //ui/file_manager/base.
 js_library("files_toggle_ripple") {
   visibility += [ "//ui/file_manager/gallery/*" ]
+}
+
+polymer_modulizer("files_toggle_ripple") {
+  js_file = "files_toggle_ripple.js"
+  html_file = "files_toggle_ripple.html"
+  html_type = "dom-module"
+  preserve_url_scheme = true
+}
+
+js_library("files_toggle_ripple.m") {
+  visibility += [ "//ui/file_manager/audio_player/*" ]
+  sources = [
+    "$root_gen_dir/ui/file_manager/file_manager/foreground/elements/files_toggle_ripple.m.js",
+  ]
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+  extra_deps = [ ":files_toggle_ripple_module" ]
 }
 
 # TODO(tapted): Move this to //ui/file_manager/base.

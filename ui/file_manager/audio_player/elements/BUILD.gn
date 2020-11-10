@@ -83,8 +83,7 @@ js_library("control_panel.m") {
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_elements/cr_slider:cr_slider.m",
     "//ui/webui/resources/js:assert.m",
-
-    #TODO: Add dependency on //ui/file_manager/file_manager/elements/files_icon_button when it has Polymer3.
+    "//ui/file_manager/file_manager/foreground/elements:files_icon_button.m",
   ]
   extra_deps = [ ":control_panel_module" ]
 }
@@ -164,8 +163,7 @@ js_library("repeat_button.m") {
     "//third_party/polymer/v3_0/components-chromium/iron-behaviors:iron-button-state",
     "//third_party/polymer/v3_0/components-chromium/iron-behaviors:iron-control-state",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-
-    #TODO: Add dependency on //ui/file_manager/file_manager/elements/files_toggle_ripple when it has Polymer3.
+    "//ui/file_manager/file_manager/foreground/elements:files_toggle_ripple.m",
   ]
   extra_deps = [ ":repeat_button_module" ]
 }
