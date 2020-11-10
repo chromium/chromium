@@ -217627,7 +217627,7 @@
      []
     ],
     "feature-policy-gamepad.html": [
-     "8ee0c719216904c8d46319ab552d1d8f1ca247a5",
+     "2747a04b34f427b4a27a536dcfcdeae800d652b0",
      []
     ],
     "gamepad-default-feature-policy.https.sub-expected.txt": [
@@ -217635,7 +217635,7 @@
      []
     ],
     "gamepad-secure-context-expected.txt": [
-     "30e28ffa1172e2793ce26feeb3f79494a33203d9",
+     "7a5d798d7734c280a42a57dabae0f161716b6b8f",
      []
     ],
     "idlharness-extensions.window-expected.txt": [
@@ -337874,14 +337874,14 @@
    },
    "gamepad": {
     "gamepad-default-feature-policy.https.sub.html": [
-     "fce0eaffee308992f29d626438ef6002f0f69aef",
+     "347f40b2a4e56ea11d743270512dadfdafe67983",
      [
       null,
       {}
      ]
     ],
     "gamepad-secure-context.html": [
-     "97b4ea2967eed3fbb5588ac0010b1dbf42ba19c8",
+     "034595ebdb627313c29532c7ecd1d647031ff049",
      [
       null,
       {}

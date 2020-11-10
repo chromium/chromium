@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL When in a non-secure context, getGamepad() should throw an error. promise_test: Unhandled rejection with value: "getGamepads should throw an error when being called in non-secure contexts."
+Harness: the test ran to completion.
+
