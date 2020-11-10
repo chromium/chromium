@@ -1002,7 +1002,7 @@ message SelectorProto {
       //
       // This is the equivalent of the old MUST_BE_VISIBLE flag. It's been
       // renamed as having a bounding box is not enough to imply visibility.
-      EmptyFilter bounding_box = 6;
+      BoundingBoxFilter bounding_box = 6;
 
       // Take the nth match. Fails with ELEMENT_RESOLUTION_FAILED if there are
       // not enough matches.
@@ -1194,6 +1194,16 @@ message SelectorProto {
     // just to allow that one slow selector. This is a value that must be
     // maintained by the team responsible for keeping clients running properly.
     optional int32 max_pairs = 5 [default = 50];
+  }
+
+  // Only keep elements that have a bounding box.
+  message BoundingBoxFilter {
+    // If require_nonempty=false, which is the default, require elements to have
+    // at least one bounding rect returned by Element.getClientRects()
+    //
+    // If require_nonempty=true, additionally require the element's bounding
+    // client rect to have a nonzero width and height.
+    optional bool require_nonempty = 1;
   }
 
   // Filter out elements covered by other elements, such as overlays.

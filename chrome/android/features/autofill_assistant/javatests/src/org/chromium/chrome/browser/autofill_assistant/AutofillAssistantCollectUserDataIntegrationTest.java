@@ -189,7 +189,7 @@ public class AutofillAssistantCollectUserDataIntegrationTest {
                                                         "#js_dropdown_options li"))
                                         .addFilters(
                                                 SelectorProto.Filter.newBuilder().setBoundingBox(
-                                                        SelectorProto.EmptyFilter
+                                                        SelectorProto.BoundingBoxFilter
                                                                 .getDefaultInstance())))
                         .setClickType(ClickType.TAP)
                         .build();
@@ -373,7 +373,7 @@ public class AutofillAssistantCollectUserDataIntegrationTest {
                                                         "div#toggle_on"))
                                         .addFilters(
                                                 SelectorProto.Filter.newBuilder().setBoundingBox(
-                                                        SelectorProto.EmptyFilter
+                                                        SelectorProto.BoundingBoxFilter
                                                                 .getDefaultInstance()))))
                         .build();
         list.add((ActionProto) ActionProto.newBuilder()

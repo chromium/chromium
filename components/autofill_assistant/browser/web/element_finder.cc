@@ -128,8 +128,16 @@ bool ElementFinder::JsFilterBuilder::AddFilter(
       return true;
 
     case SelectorProto::Filter::kBoundingBox:
-      AddLine(
-          "elements = elements.filter((e) => e.getClientRects().length > 0);");
+      if (filter.bounding_box().require_nonempty()) {
+        AddLine("elements = elements.filter((e) => {");
+        AddLine("  const rect = e.getBoundingClientRect();");
+        AddLine("  return rect.width != 0 && rect.height != 0;");
+        AddLine("});");
+      } else {
+        AddLine(
+            "elements = elements.filter((e) => e.getClientRects().length > "
+            "0);");
+      }
       return true;
 
     case SelectorProto::Filter::kPseudoElementContent: {

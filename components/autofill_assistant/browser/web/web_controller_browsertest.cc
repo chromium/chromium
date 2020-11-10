@@ -1056,6 +1056,32 @@ IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, VisibilityRequirementCheck) {
                      true);
 }
 
+IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, RequireNonemptyBoundingBox) {
+  Selector button = Selector({"#button"});
+  button.proto.add_filters()->mutable_bounding_box()->set_require_nonempty(
+      true);
+  RunLaxElementCheck(button, true);
+
+  Selector hidden = Selector({"#hidden"});
+  RunLaxElementCheck(hidden, true);
+  hidden.proto.add_filters()->mutable_bounding_box()->set_require_nonempty(
+      true);
+  RunLaxElementCheck(hidden, false);
+
+  Selector emptydiv = Selector({"#emptydiv"});
+  RunLaxElementCheck(emptydiv, true);
+  auto* emptydiv_box = emptydiv.proto.add_filters()->mutable_bounding_box();
+  emptydiv_box->set_require_nonempty(true);
+  RunLaxElementCheck(emptydiv, false);
+  emptydiv_box->set_require_nonempty(false);
+  RunLaxElementCheck(emptydiv, true);
+
+  EXPECT_TRUE(content::ExecJs(shell(), R"(
+  document.getElementById("emptydiv").style.height = '100px';
+)"));
+  RunLaxElementCheck(emptydiv, true);
+}
+
 IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, MultipleVisibleElementCheck) {
   // both visible
   RunLaxElementCheck(Selector({"#button,#select"}).MustBeVisible(), true);

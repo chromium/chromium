@@ -70,6 +70,9 @@ bool operator<(const SelectorProto::Filter& a, const SelectorProto::Filter& b) {
                              b.on_top().accept_element_if_not_in_view());
 
     case SelectorProto::Filter::kBoundingBox:
+      return a.bounding_box().require_nonempty() <
+             b.bounding_box().require_nonempty();
+
     case SelectorProto::Filter::kEnterFrame:
     case SelectorProto::Filter::kLabelled:
       return false;
@@ -351,7 +354,11 @@ std::ostream& operator<<(std::ostream& out, const SelectorProto::Filter& f) {
       return out;
 
     case SelectorProto::Filter::kBoundingBox:
-      out << "bounding_box";
+      if (f.bounding_box().require_nonempty()) {
+        out << "bounding_box (nonempty)";
+      } else {
+        out << "bounding_box (any)";
+      }
       return out;
 
     case SelectorProto::Filter::kNthMatch:

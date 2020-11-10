@@ -76,6 +76,25 @@ TEST(SelectorTest, Comparison_Visibility) {
               Selector({"a"}).MustBeVisible());
 }
 
+TEST(SelectorTest, Comparison_NonEmptyBoundingBox) {
+  Selector has_bounding_box_default = Selector({"a"});
+  has_bounding_box_default.proto.add_filters()->mutable_bounding_box();
+
+  Selector has_bounding_box_explicit = Selector({"a"});
+  has_bounding_box_explicit.proto.add_filters()
+      ->mutable_bounding_box()
+      ->set_require_nonempty(false);
+
+  Selector has_nonempty_bounding_box = Selector({"a"});
+  has_nonempty_bounding_box.proto.add_filters()
+      ->mutable_bounding_box()
+      ->set_require_nonempty(true);
+
+  EXPECT_FALSE(has_bounding_box_default == has_nonempty_bounding_box);
+  EXPECT_FALSE(has_bounding_box_explicit == has_nonempty_bounding_box);
+  EXPECT_TRUE(has_bounding_box_default == has_bounding_box_explicit);
+}
+
 TEST(SelectorTest, Comparison_InnerText) {
   EXPECT_FALSE(Selector({"a"}).MatchingInnerText("a") ==
                Selector({"a"}).MatchingInnerText("b"));
