@@ -10,6 +10,7 @@
 #include "base/component_export.h"
 
 struct _XDisplay;
+class XlibLoader;
 
 namespace x11 {
 
@@ -25,12 +26,6 @@ enum class XlibDisplayType {
   kSyncing,
 };
 
-// Loads Xlib, initializes threads, and sets a default error handler.
-COMPONENT_EXPORT(X11) void InitXlib();
-
-// Sets an async error handler which only logs an error message.
-COMPONENT_EXPORT(X11) void SetXlibErrorHandler();
-
 // A scoped Xlib display.
 class COMPONENT_EXPORT(X11) XlibDisplay {
  public:
@@ -43,6 +38,7 @@ class COMPONENT_EXPORT(X11) XlibDisplay {
   explicit XlibDisplay(const std::string& address);
 
   struct _XDisplay* display_ = nullptr;
+  std::unique_ptr<XlibLoader> xlib_loader_;
 };
 
 // A temporary wrapper around an unowned Xlib display that adds behavior
@@ -60,10 +56,13 @@ class COMPONENT_EXPORT(X11) XlibDisplayWrapper {
   XlibDisplayWrapper& operator=(XlibDisplayWrapper&& other);
 
  private:
-  XlibDisplayWrapper(struct _XDisplay* display, XlibDisplayType type);
+  XlibDisplayWrapper(XlibLoader* xlib_loader,
+                     struct _XDisplay* display,
+                     XlibDisplayType type);
 
   friend class Connection;
 
+  XlibLoader* xlib_loader_;
   struct _XDisplay* display_;
   XlibDisplayType type_;
 };
