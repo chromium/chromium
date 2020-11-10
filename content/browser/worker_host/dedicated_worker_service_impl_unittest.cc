@@ -8,7 +8,7 @@
 #include <utility>
 
 #include "base/run_loop.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/test/scoped_feature_list.h"
 #include "content/browser/site_instance_impl.h"
 #include "content/browser/worker_host/dedicated_worker_host.h"
@@ -211,9 +211,11 @@ class TestDedicatedWorkerServiceObserver
 TEST_P(DedicatedWorkerServiceImplTest, DedicatedWorkerServiceObserver) {
   // Set up the observer.
   TestDedicatedWorkerServiceObserver observer;
-  ScopedObserver<DedicatedWorkerService, DedicatedWorkerService::Observer>
-      scoped_dedicated_worker_service_observer_(&observer);
-  scoped_dedicated_worker_service_observer_.Add(GetDedicatedWorkerService());
+  base::ScopedObservation<DedicatedWorkerService,
+                          DedicatedWorkerService::Observer>
+      scoped_dedicated_worker_service_observation_(&observer);
+  scoped_dedicated_worker_service_observation_.Observe(
+      GetDedicatedWorkerService());
 
   std::unique_ptr<TestWebContents> web_contents =
       CreateWebContents(GURL("http://example.com/"));

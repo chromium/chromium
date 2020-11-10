@@ -13,7 +13,7 @@
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/strings/string16.h"
 #include "base/unguessable_token.h"
 #include "content/browser/browser_interface_broker_impl.h"
@@ -227,8 +227,8 @@ class CONTENT_EXPORT SharedWorkerHost : public blink::mojom::SharedWorkerHost,
   std::unique_ptr<ScopedProcessHostRef> scoped_process_host_ref_;
 
   // Observe the destruction of |worker_process_host_|.
-  ScopedObserver<RenderProcessHost, RenderProcessHostObserver>
-      scoped_process_host_observer_;
+  base::ScopedObservation<RenderProcessHost, RenderProcessHostObserver>
+      scoped_process_host_observation_{this};
 
   int next_connection_request_id_;
 

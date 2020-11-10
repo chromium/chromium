@@ -113,7 +113,6 @@ SharedWorkerHost::SharedWorkerHost(SharedWorkerServiceImpl* service,
       worker_process_host_(worker_process_host),
       scoped_process_host_ref_(
           std::make_unique<ScopedProcessHostRef>(worker_process_host)),
-      scoped_process_host_observer_(this),
       next_connection_request_id_(1),
       devtools_handle_(std::make_unique<ScopedDevToolsHandle>(this)),
       ukm_source_id_(ukm::ConvertToSourceId(ukm::AssignNewSourceId(),
@@ -126,7 +125,7 @@ SharedWorkerHost::SharedWorkerHost(SharedWorkerServiceImpl* service,
   // when two clients call new SharedWorker() at around the same time.
   worker_receiver_ = worker_.BindNewPipeAndPassReceiver();
 
-  scoped_process_host_observer_.Add(worker_process_host_);
+  scoped_process_host_observation_.Observe(worker_process_host_);
 
   service_->NotifyWorkerCreated(token_, worker_process_host_->GetID(),
                                 devtools_handle_->dev_tools_token());

@@ -52,7 +52,6 @@ DedicatedWorkerHost::DedicatedWorkerHost(
     : service_(service),
       token_(token),
       worker_process_host_(worker_process_host),
-      scoped_process_host_observer_(this),
       creator_render_frame_host_id_(creator_render_frame_host_id),
       ancestor_render_frame_host_id_(ancestor_render_frame_host_id),
       creator_origin_(creator_origin),
@@ -66,7 +65,7 @@ DedicatedWorkerHost::DedicatedWorkerHost(
   DCHECK(worker_process_host_->IsInitializedAndNotDead());
   DCHECK(coep_reporter_);
 
-  scoped_process_host_observer_.Add(worker_process_host_);
+  scoped_process_host_observation_.Observe(worker_process_host_);
 
   service_->NotifyWorkerCreated(token_, worker_process_host_->GetID(),
                                 ancestor_render_frame_host_id_, this);

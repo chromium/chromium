@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/optional.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "content/browser/browser_interface_broker_impl.h"
 #include "content/public/browser/global_routing_id.h"
@@ -168,8 +168,8 @@ class DedicatedWorkerHost final : public RenderProcessHostObserver {
   // The RenderProcessHost that hosts this worker.
   RenderProcessHost* const worker_process_host_;
 
-  ScopedObserver<RenderProcessHost, RenderProcessHostObserver>
-      scoped_process_host_observer_;
+  base::ScopedObservation<RenderProcessHost, RenderProcessHostObserver>
+      scoped_process_host_observation_{this};
 
   // The ID of the frame that directly starts this worker. This is base::nullopt
   // when this worker is nested.
