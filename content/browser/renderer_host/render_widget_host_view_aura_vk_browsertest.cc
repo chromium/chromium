@@ -277,7 +277,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraBrowserMockIMETest,
   const char kVirtualKeyboardDataURL[] =
       "data:text/html,<!DOCTYPE html>"
       "<script>"
-      "  let VKRect, numEvents = 0;"
+      "  let VKRect = navigator.virtualKeyboard.boundingRect, numEvents = 0;"
       "  navigator.virtualKeyboard.overlaysContent = true;"
       "  navigator.virtualKeyboard.addEventListener('geometrychange',"
       "   evt => {"
@@ -287,6 +287,11 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraBrowserMockIMETest,
       "</script>";
   EXPECT_TRUE(NavigateToURL(shell(), GURL(kVirtualKeyboardDataURL)));
 
+  // Check the boundingRect property so it's not null when queried.
+  EXPECT_EQ(0, EvalJs(shell(), "VKRect.x"));
+  EXPECT_EQ(0, EvalJs(shell(), "VKRect.y"));
+  EXPECT_EQ(0, EvalJs(shell(), "VKRect.width"));
+  EXPECT_EQ(0, EvalJs(shell(), "VKRect.height"));
   // Send a touch event so that RenderWidgetHostViewAura will create the
   // keyboard observer (requires last_pointer_type_ to be TOUCH).
   ui::TouchEvent press(ui::ET_TOUCH_PRESSED, gfx::Point(30, 30),

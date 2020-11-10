@@ -37,6 +37,7 @@ VirtualKeyboard::VirtualKeyboard(Navigator& navigator)
     : Supplement<Navigator>(navigator),
       VirtualKeyboardOverlayChangedObserver(
           navigator.DomWindow() ? navigator.DomWindow()->GetFrame() : nullptr) {
+  bounding_rect_ = DOMRect::Create();
 }
 
 ExecutionContext* VirtualKeyboard::GetExecutionContext() const {

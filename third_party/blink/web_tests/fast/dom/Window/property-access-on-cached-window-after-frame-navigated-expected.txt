@@ -67,7 +67,14 @@ PASS oldChildWindow.navigator.userAgentData.brands[0].version is newChildWindow.
 PASS oldChildWindow.navigator.userAgentData.mobile is newChildWindow.navigator.userAgentData.mobile
 PASS oldChildWindow.navigator.vendor is newChildWindow.navigator.vendor
 PASS oldChildWindow.navigator.vendorSub is newChildWindow.navigator.vendorSub
-PASS oldChildWindow.navigator.virtualKeyboard.boundingRect is newChildWindow.navigator.virtualKeyboard.boundingRect
+PASS oldChildWindow.navigator.virtualKeyboard.boundingRect.bottom is newChildWindow.navigator.virtualKeyboard.boundingRect.bottom
+PASS oldChildWindow.navigator.virtualKeyboard.boundingRect.height is newChildWindow.navigator.virtualKeyboard.boundingRect.height
+PASS oldChildWindow.navigator.virtualKeyboard.boundingRect.left is newChildWindow.navigator.virtualKeyboard.boundingRect.left
+PASS oldChildWindow.navigator.virtualKeyboard.boundingRect.right is newChildWindow.navigator.virtualKeyboard.boundingRect.right
+PASS oldChildWindow.navigator.virtualKeyboard.boundingRect.top is newChildWindow.navigator.virtualKeyboard.boundingRect.top
+PASS oldChildWindow.navigator.virtualKeyboard.boundingRect.width is newChildWindow.navigator.virtualKeyboard.boundingRect.width
+PASS oldChildWindow.navigator.virtualKeyboard.boundingRect.x is newChildWindow.navigator.virtualKeyboard.boundingRect.x
+PASS oldChildWindow.navigator.virtualKeyboard.boundingRect.y is newChildWindow.navigator.virtualKeyboard.boundingRect.y
 PASS oldChildWindow.navigator.virtualKeyboard.ongeometrychange is newChildWindow.navigator.virtualKeyboard.ongeometrychange
 PASS oldChildWindow.navigator.virtualKeyboard.overlaysContent is newChildWindow.navigator.virtualKeyboard.overlaysContent
 PASS oldChildWindow.navigator.xr.ondevicechange is newChildWindow.navigator.xr.ondevicechange

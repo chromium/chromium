@@ -57,7 +57,14 @@ PASS window.cached_navigator_userActivation.isActive is false
 PASS window.cached_navigator_userAgentData.brands[0].brand is ''
 PASS window.cached_navigator_userAgentData.brands[0].version is ''
 PASS window.cached_navigator_userAgentData.mobile is false
-PASS window.cached_navigator_virtualKeyboard.boundingRect is null
+PASS window.cached_navigator_virtualKeyboard.boundingRect.bottom is 0
+PASS window.cached_navigator_virtualKeyboard.boundingRect.height is 0
+PASS window.cached_navigator_virtualKeyboard.boundingRect.left is 0
+PASS window.cached_navigator_virtualKeyboard.boundingRect.right is 0
+PASS window.cached_navigator_virtualKeyboard.boundingRect.top is 0
+PASS window.cached_navigator_virtualKeyboard.boundingRect.width is 0
+PASS window.cached_navigator_virtualKeyboard.boundingRect.x is 0
+PASS window.cached_navigator_virtualKeyboard.boundingRect.y is 0
 PASS window.cached_navigator_virtualKeyboard.ongeometrychange is null
 PASS window.cached_navigator_virtualKeyboard.overlaysContent is false
 PASS window.cached_navigator_xr.ondevicechange is null

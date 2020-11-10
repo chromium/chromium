@@ -33,7 +33,14 @@ PASS childWindow.navigator.userActivation.isActive is false
 PASS childWindow.navigator.userAgent is ''
 PASS childWindow.navigator.vendor is window.navigator.vendor
 PASS childWindow.navigator.vendorSub is ''
-PASS childWindow.navigator.virtualKeyboard.boundingRect is null
+PASS childWindow.navigator.virtualKeyboard.boundingRect.bottom is 0
+PASS childWindow.navigator.virtualKeyboard.boundingRect.height is 0
+PASS childWindow.navigator.virtualKeyboard.boundingRect.left is 0
+PASS childWindow.navigator.virtualKeyboard.boundingRect.right is 0
+PASS childWindow.navigator.virtualKeyboard.boundingRect.top is 0
+PASS childWindow.navigator.virtualKeyboard.boundingRect.width is 0
+PASS childWindow.navigator.virtualKeyboard.boundingRect.x is 0
+PASS childWindow.navigator.virtualKeyboard.boundingRect.y is 0
 PASS childWindow.navigator.virtualKeyboard.ongeometrychange is null
 PASS childWindow.navigator.virtualKeyboard.overlaysContent is false
 PASS childWindow.onabort is null
