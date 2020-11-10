@@ -176,20 +176,22 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.AccountChooserDialogMultipleAccounts"
-    enum="AccountChooserDismissalReason" expires_after="2020-12-12">
+    enum="AccountChooserDismissalReason" expires_after="2021-06-01">
   <owner>vasilii@chromium.org</owner>
   <owner>jdoerrie@chromium.org</owner>
   <summary>
-    The dismissal reason of the account chooser with multiple accounts.
+    The dismissal reason of the account chooser with multiple accounts. Recorded
+    when the account chooser is dismissed.
   </summary>
 </histogram>
 
 <histogram name="PasswordManager.AccountChooserDialogOneAccount"
-    enum="AccountChooserDismissalReason" expires_after="2020-12-12">
+    enum="AccountChooserDismissalReason" expires_after="2021-06-01">
   <owner>vasilii@chromium.org</owner>
   <owner>jdoerrie@chromium.org</owner>
   <summary>
-    The dismissal reason of the account chooser with one account.
+    The dismissal reason of the account chooser with one account. Recorded when
+    the account chooser is dismissed.
   </summary>
 </histogram>
 
