@@ -428,6 +428,7 @@ class NearbySharingServiceImplTest : public testing::Test {
 
   std::unique_ptr<NearbySharingServiceImpl> CreateService() {
     profile_ = profile_manager_.CreateTestingProfile(kProfileName);
+    prefs_.SetBoolean(prefs::kNearbySharingEnabledPrefName, true);
 
     fake_nearby_connections_manager_ = new FakeNearbyConnectionsManager();
     notification_tester_ =

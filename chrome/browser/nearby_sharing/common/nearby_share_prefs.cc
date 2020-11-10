@@ -56,10 +56,8 @@ const char kNearbySharingSchedulerUploadLocalDeviceCertificatesPrefName[] =
 void RegisterNearbySharingPrefs(PrefRegistrySimple* registry) {
   // These prefs are not synced across devices on purpose.
 
-  // TODO(vecore): Change the default to false after the settings ui is
-  // available.
   registry->RegisterBooleanPref(prefs::kNearbySharingEnabledPrefName,
-                                /*default_value=*/true);
+                                /*default_value=*/false);
   registry->RegisterBooleanPref(prefs::kNearbySharingOnboardingCompletePrefName,
                                 /*default_value=*/false);
   registry->RegisterIntegerPref(
