@@ -336,6 +336,8 @@ try_.chromium_android_builder(
     ssd = True,
     use_java_coverage = True,
     tryjob = try_.job(),
+    # Due to mirroring chromium.gpu's "Android Release (Nexus 5X)".
+    resultdb_bigquery_exports = try_.gpu_try_resultdb_exports,
 )
 
 try_.chromium_android_builder(
@@ -934,6 +936,8 @@ try_.chromium_linux_builder(
 
 try_.chromium_linux_builder(
     name = "linux-dcheck-off-rel",
+    # Due to mirroring chromium.gpu's "Linux Release (NVIDIA)".
+    resultdb_bigquery_exports = try_.gpu_try_resultdb_exports,
 )
 
 try_.chromium_linux_builder(
@@ -993,6 +997,8 @@ try_.chromium_linux_builder(
     main_list_view = "try",
     tryjob = try_.job(),
     use_clang_coverage = True,
+    # Due to mirroring chromium.gpu's "Linux Release (NVIDIA)".
+    resultdb_bigquery_exports = try_.gpu_try_resultdb_exports,
 )
 
 try_.chromium_linux_builder(
@@ -1001,6 +1007,8 @@ try_.chromium_linux_builder(
     goma_jobs = goma.jobs.J150,
     tryjob = try_.job(experiment_percentage = 10),
     use_clang_coverage = True,
+    # Due to mirroring chromium.gpu's "Linux Release (NVIDIA)".
+    resultdb_bigquery_exports = try_.gpu_try_resultdb_exports,
 )
 
 try_.chromium_linux_builder(
@@ -1216,6 +1224,9 @@ try_.chromium_mac_builder(
     main_list_view = "try",
     os = os.MAC_DEFAULT,
     tryjob = try_.job(),
+    # Due to mirroring chromium.gpu's "Mac Release (Intel)" and
+    # "Mac Retina Release (AMD)".
+    resultdb_bigquery_exports = try_.gpu_try_resultdb_exports,
 )
 
 try_.chromium_mac_builder(
@@ -1486,6 +1497,8 @@ try_.chromium_win_builder(
     # of stale tryjobs gracefully, resulting in longer average build times.
     # Windows is particularly susceptible to this.
     tryjob = try_.job(cancel_stale = False),
+    # Due to mirroring chromium.gpu's "Win10 x64 Release (NVIDIA)".
+    resultdb_bigquery_exports = try_.gpu_try_resultdb_exports,
 )
 
 try_.chromium_win_builder(
