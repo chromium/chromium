@@ -167,7 +167,6 @@ views::Widget::InitParams CreateWidgetParams(aura::Window* parent,
   // Use a popup widget to get transient properties, such as not needing to
   // click on the widget first to get capture before receiving events.
   views::Widget::InitParams params(views::Widget::InitParams::TYPE_POPUP);
-  params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   params.parent = parent;
   params.bounds = bounds;
@@ -270,12 +269,12 @@ CaptureModeSession::CaptureModeSession(CaptureModeController* controller)
   parent->layer()->Add(layer());
   layer()->SetBounds(parent->bounds());
 
-  capture_mode_bar_widget_.Init(
+  capture_mode_bar_widget_->Init(
       CreateWidgetParams(parent, CaptureModeBarView::GetBounds(current_root_),
                          "CaptureModeBarWidget"));
-  capture_mode_bar_view_ = capture_mode_bar_widget_.SetContentsView(
+  capture_mode_bar_view_ = capture_mode_bar_widget_->SetContentsView(
       std::make_unique<CaptureModeBarView>());
-  capture_mode_bar_widget_.Show();
+  capture_mode_bar_widget_->Show();
 
   UpdateCaptureLabelWidget();
   RefreshStackingOrder(parent);
@@ -320,7 +319,7 @@ void CaptureModeSession::OnCaptureSourceChanged(CaptureModeSource new_source) {
 
   if (new_source == CaptureModeSource::kRegion) {
     cursor_setter_ = std::make_unique<ScopedCursorSetter>(
-        capture_mode_bar_widget_.GetWindowBoundsInScreen().Contains(
+        capture_mode_bar_widget_->GetWindowBoundsInScreen().Contains(
             previous_location_in_root_)
             ? ui::mojom::CursorType::kPointer
             : ui::mojom::CursorType::kCell);
@@ -351,7 +350,7 @@ void CaptureModeSession::StartCountDown(
   UpdateCaptureLabelWidgetBounds(/*animate=*/true);
 
   // Fade out toolbar.
-  ui::Layer* toolbar_layer = capture_mode_bar_widget_.GetLayer();
+  ui::Layer* toolbar_layer = capture_mode_bar_widget_->GetLayer();
   ui::ScopedLayerAnimationSettings toolbar_settings(
       toolbar_layer->GetAnimator());
   toolbar_settings.SetTransitionDuration(kCaptureBarFadeOutDuration);
@@ -419,11 +418,11 @@ void CaptureModeSession::OnMouseEvent(ui::MouseEvent* event) {
   if (event->type() == ui::ET_MOUSE_RELEASED &&
       source == CaptureModeSource::kRegion &&
       current_root_ !=
-          capture_mode_bar_widget_.GetNativeWindow()->GetRootWindow()) {
-    capture_mode_bar_widget_.SetBounds(
+          capture_mode_bar_widget_->GetNativeWindow()->GetRootWindow()) {
+    capture_mode_bar_widget_->SetBounds(
         CaptureModeBarView::GetBounds(current_root_));
     auto* parent = GetParentContainer(current_root_);
-    parent->StackChildAtTop(capture_mode_bar_widget_.GetNativeWindow());
+    parent->StackChildAtTop(capture_mode_bar_widget_->GetNativeWindow());
   }
 
   OnLocatedEvent(event, /*is_touch=*/false);
@@ -453,7 +452,7 @@ gfx::Rect CaptureModeSession::GetSelectedWindowBounds() const {
 
 void CaptureModeSession::RefreshStackingOrder(aura::Window* parent_container) {
   DCHECK(parent_container);
-  auto* capture_mode_bar_layer = capture_mode_bar_widget_.GetLayer();
+  auto* capture_mode_bar_layer = capture_mode_bar_widget_->GetLayer();
   auto* overlay_layer = layer();
   auto* parent_container_layer = parent_container->layer();
 
@@ -555,7 +554,7 @@ void CaptureModeSession::OnLocatedEvent(ui::LocatedEvent* event,
   wm::ConvertPointToScreen(event_target, &screen_location);
 
   const bool is_event_on_capture_bar =
-      capture_mode_bar_widget_.GetWindowBoundsInScreen().Contains(
+      capture_mode_bar_widget_->GetWindowBoundsInScreen().Contains(
           screen_location);
 
   if (capture_source == CaptureModeSource::kWindow) {
@@ -868,9 +867,9 @@ void CaptureModeSession::UpdateDimensionsLabelWidget(bool is_resizing) {
     // When moving to a new display, the dimensions label gets created/moved
     // onto the new display on press, while the capture bar gets moved on
     // release. In this case, we do not have to stack the dimensions label.
-    if (parent == capture_mode_bar_widget_.GetNativeWindow()->parent()) {
+    if (parent == capture_mode_bar_widget_->GetNativeWindow()->parent()) {
       parent->StackChildBelow(dimensions_label_widget_->GetNativeWindow(),
-                              capture_mode_bar_widget_.GetNativeWindow());
+                              capture_mode_bar_widget_->GetNativeWindow());
     }
   }
 
@@ -1132,7 +1131,7 @@ void CaptureModeSession::MaybeChangeRoot(aura::Window* new_root) {
   // capture, the capture bar will move at a later time, when the mouse is
   // released.
   if (controller_->source() != CaptureModeSource::kRegion) {
-    capture_mode_bar_widget_.SetBounds(
+    capture_mode_bar_widget_->SetBounds(
         CaptureModeBarView::GetBounds(current_root_));
   }
 

@@ -25,6 +25,7 @@
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_state.h"
 #include "base/run_loop.h"
+#include "base/scoped_observation.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -35,6 +36,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/views/view.h"
+#include "ui/views/widget/widget_observer.h"
 
 namespace ash {
 
@@ -90,6 +92,10 @@ class CaptureModeSessionTestApi {
     return session_->capture_mode_bar_view_;
   }
 
+  views::Widget* capture_mode_bar_widget() const {
+    return session_->capture_mode_bar_widget_.get();
+  }
+
   views::Widget* capture_label_widget() const {
     return session_->capture_label_widget_.get();
   }
@@ -123,6 +129,12 @@ class CaptureModeTest : public AshTestBase {
     auto* session = CaptureModeController::Get()->capture_mode_session();
     DCHECK(session);
     return CaptureModeSessionTestApi(session).capture_mode_bar_view();
+  }
+
+  views::Widget* GetCaptureModeBarWidget() const {
+    auto* session = CaptureModeController::Get()->capture_mode_session();
+    DCHECK(session);
+    return CaptureModeSessionTestApi(session).capture_mode_bar_widget();
   }
 
   CaptureModeToggleButton* GetImageToggleButton() const {
@@ -255,6 +267,29 @@ class CaptureModeTest : public AshTestBase {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+class CaptureSessionWidgetObserver : public views::WidgetObserver {
+ public:
+  explicit CaptureSessionWidgetObserver(views::Widget* widget) {
+    DCHECK(widget);
+    observer_.Observe(widget);
+  }
+  CaptureSessionWidgetObserver(const CaptureSessionWidgetObserver&) = delete;
+  CaptureSessionWidgetObserver& operator=(const CaptureSessionWidgetObserver&) =
+      delete;
+  ~CaptureSessionWidgetObserver() override = default;
+
+  bool GetWidgetDestroyed() const { return !observer_.IsObserving(); }
+
+  // views::WidgetObserver
+  void OnWidgetClosing(views::Widget* widget) override {
+    DCHECK(observer_.IsObservingSource(widget));
+    observer_.RemoveObservation();
+  }
+
+ private:
+  base::ScopedObservation<views::Widget, views::WidgetObserver> observer_{this};
+};
+
 TEST_F(CaptureModeTest, StartStop) {
   auto* controller = CaptureModeController::Get();
   controller->Start(CaptureModeEntryType::kQuickSettings);
@@ -264,6 +299,20 @@ TEST_F(CaptureModeTest, StartStop) {
   EXPECT_TRUE(controller->IsActive());
   controller->Stop();
   EXPECT_FALSE(controller->IsActive());
+}
+
+TEST_F(CaptureModeTest, CheckWidgetClosed) {
+  auto* controller = CaptureModeController::Get();
+  controller->Start(CaptureModeEntryType::kQuickSettings);
+  EXPECT_TRUE(controller->IsActive());
+  EXPECT_TRUE(GetCaptureModeBarWidget());
+  CaptureSessionWidgetObserver observer(GetCaptureModeBarWidget());
+  EXPECT_FALSE(observer.GetWidgetDestroyed());
+  controller->Stop();
+  EXPECT_FALSE(controller->IsActive());
+  EXPECT_FALSE(controller->capture_mode_session());
+  // The Widget should have been destroyed by now.
+  EXPECT_TRUE(observer.GetWidgetDestroyed());
 }
 
 TEST_F(CaptureModeTest, StartWithMostRecentTypeAndSource) {

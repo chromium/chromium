@@ -608,6 +608,11 @@ void CaptureModeController::RecordNumberOfScreenshotsTakenInLastWeek() {
 }
 
 void CaptureModeController::OnVideoRecordCountDownFinished() {
+  // If this event is dispatched after the capture session was cancelled or
+  // destroyed, this should be a no-op.
+  if (!IsActive())
+    return;
+
   const base::Optional<CaptureParams> capture_params = GetCaptureParams();
   // Stop the capture session now, so the bar doesn't show up in the captured
   // video.
