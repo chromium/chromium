@@ -20,9 +20,11 @@
 #include "chrome/grit/nearby_share_dialog_resources.h"
 #include "chrome/grit/nearby_share_dialog_resources_map.h"
 #include "chrome/grit/theme_resources.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "net/base/url_util.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/webui/web_ui_util.h"
@@ -62,6 +64,9 @@ NearbyShareDialogUI::NearbyShareDialogUI(content::WebUI* web_ui)
                                    base::Unretained(this)));
 
   content::WebUIDataSource::Add(profile, html_source);
+
+  const GURL& url = web_ui->GetWebContents()->GetVisibleURL();
+  SetTextAttachmentFromQueryParameter(url);
 }
 
 NearbyShareDialogUI::~NearbyShareDialogUI() = default;
@@ -107,6 +112,24 @@ void NearbyShareDialogUI::BindInterface(
 void NearbyShareDialogUI::HandleClose(const base::ListValue* args) {
   for (auto& observer : observers_) {
     observer.OnClose();
+  }
+}
+
+void NearbyShareDialogUI::SetTextAttachmentFromQueryParameter(const GURL& url) {
+  std::string value;
+  for (auto& text_type :
+       std::vector<std::pair<std::string, TextAttachment::Type>>{
+           {"address", TextAttachment::Type::kAddress},
+           {"url", TextAttachment::Type::kUrl},
+           {"phone", TextAttachment::Type::kPhoneNumber},
+           {"text", TextAttachment::Type::kText}}) {
+    if (net::GetValueForKeyInQuery(url, text_type.first, &value)) {
+      std::vector<std::unique_ptr<Attachment>> attachments;
+      attachments.push_back(
+          std::make_unique<TextAttachment>(text_type.second, value));
+      SetAttachments(std::move(attachments));
+      break;
+    }
   }
 }
 
