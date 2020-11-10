@@ -128,9 +128,6 @@ Polymer({
   onBeforeShow() {
     this.$$('#lazy').get();
     this.observeScrolling_();
-    var isOobe = window.hasOwnProperty('Oobe') &&
-        window.hasOwnProperty('DISPLAY_TYPE') && Oobe.getInstance() &&
-        Oobe.getInstance().displayType == DISPLAY_TYPE.OOBE;
   },
 
   /**
