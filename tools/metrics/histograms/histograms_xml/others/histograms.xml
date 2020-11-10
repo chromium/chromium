@@ -3802,6 +3802,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Discarding.OnlineOnReload" enum="Boolean" expires_after="M85">
+  <obsolete>
+    Removed 11/2020.
+  </obsolete>
 <!-- Name completed by histogram_suffixes name="DiscardReason" -->
 
   <owner>fdoray@chromium.org</owner>
