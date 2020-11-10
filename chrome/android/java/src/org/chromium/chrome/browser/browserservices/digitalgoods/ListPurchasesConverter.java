@@ -78,7 +78,7 @@ class ListPurchasesConverter {
                 PurchaseDetails[] details = convertParcelableArray(
                         array, ListPurchasesConverter::convertPurchaseDetails)
                                                     .toArray(new PurchaseDetails[0]);
-                callback.call(convertResponseCode(code), details);
+                callback.call(convertResponseCode(code, args), details);
             }
         };
     }

@@ -26,6 +26,8 @@ import java.util.List;
 public class DigitalGoodsConverter {
     private static final String TAG = "DigitalGoods";
 
+    static final String KEY_VERSION = "digitalgoods.version";
+
     // These values are copied from the Play Billing library since Chrome cannot depend on it.
     // https://developer.android.com/reference/com/android/billingclient/api/BillingClient.BillingResponseCode
     static final int PLAY_BILLING_OK = 0;
@@ -35,7 +37,35 @@ public class DigitalGoodsConverter {
 
     private DigitalGoodsConverter() {}
 
-    static int convertResponseCode(int responseCode) {
+    /** Converts the given response code to one suitable for mojo. */
+    static int convertResponseCode(int responseCode, Bundle bundle) {
+        // In the initial development, the TWA shell provided a Play Billing response code, so it
+        // needs to be converted to a Mojo one. Later on (but still before the feature was publicly
+        // launched), we decided that the TWA shell should provide data to Chrome already converted
+        // to a Mojo format. This is because the TWA shell may not be using Play Billing, so it
+        // doesn't make sense to standardise on that.
+
+        // We kept support for the older version just to make testing and development easier. It may
+        // be removed once the feature has launched.
+        int version = bundle.getInt(KEY_VERSION);
+        if (version == 0) {
+            return playBillingToMojoResponseCode(responseCode);
+        }
+
+        if (BillingResponseCode.isKnownValue(responseCode)) {
+            return responseCode;
+        }
+
+        Log.w(TAG, "Unexpected response code: " + responseCode);
+        return BillingResponseCode.ERROR;
+    }
+
+    /** Convenience method for legacy callers. */
+    static int convertResponseCodeV0(int responseCode) {
+        return convertResponseCode(responseCode, new Bundle());
+    }
+
+    private static int playBillingToMojoResponseCode(int responseCode) {
         switch (responseCode) {
             case PLAY_BILLING_OK:
                 return BillingResponseCode.OK;

@@ -89,7 +89,7 @@ public class GetDetailsConverter {
                 ItemDetails[] details =
                         convertParcelableArray(array, GetDetailsConverter::convertItemDetails)
                                 .toArray(new ItemDetails[0]);
-                callback.call(convertResponseCode(code), details);
+                callback.call(convertResponseCode(code, args), details);
             }
         };
     }

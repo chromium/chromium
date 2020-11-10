@@ -60,7 +60,7 @@ class AcknowledgeConverter {
                 }
 
                 int code = args.getInt(RESPONSE_ACKNOWLEDGE_RESPONSE_CODE);
-                callback.call(convertResponseCode(code));
+                callback.call(convertResponseCode(code, args));
             }
         };
     }
