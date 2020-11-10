@@ -93,6 +93,10 @@ enum class PrefetchProxyPrefetchStatus {
   // The position of the link in the navigation prediction was not eligible to
   // be prefetch due to experiment controls.
   kPrefetchPositionIneligible = 26,
+
+  // A previous prefetch to the origin got a HTTP 503 response with an
+  // Retry-After header that has no elapsed yet.
+  kPrefetchIneligibleRetryAfter = 27,
 };
 
 #endif  // CHROME_BROWSER_PREFETCH_PREFETCH_PROXY_PREFETCH_PROXY_PREFETCH_STATUS_H_

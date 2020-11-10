@@ -1,0 +1,44 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_PREFETCH_PREFETCH_PROXY_PREFETCH_PROXY_ORIGIN_DECIDER_H_
+#define CHROME_BROWSER_PREFETCH_PREFETCH_PROXY_PREFETCH_PROXY_ORIGIN_DECIDER_H_
+
+#include <map>
+
+#include "base/time/clock.h"
+#include "base/time/time.h"
+#include "url/gurl.h"
+#include "url/origin.h"
+
+// A browser-scoped class that maintains persistent logic for when origins
+// should not be prefetched.
+class PrefetchProxyOriginDecider {
+ public:
+  PrefetchProxyOriginDecider();
+  ~PrefetchProxyOriginDecider();
+
+  // This should be called anytime browsing data is cleared by the user so that
+  // the persistent data store can be cleared as well.
+  void OnBrowsingDataCleared();
+
+  // Returns true if the given |url|'s origin is eligible to be prefetched, with
+  // respect to any previous 503 responses with a retry-after header.
+  bool IsOriginOutsideRetryAfterWindow(const GURL& url) const;
+
+  // Records that the given |url| got a 503 response with the given
+  // |retry_after| value. Note that the passed |retry_after| value is subject to
+  // a maximum value provided by experiment params.
+  void ReportOriginRetryAfter(const GURL& url, base::TimeDelta retry_after);
+
+  void SetClockForTesting(const base::Clock* clock);
+
+ private:
+  const base::Clock* clock_;
+
+  // Maps origins to their last known retry_after time.
+  std::map<url::Origin, base::Time> origin_retry_afters_;
+};
+
+#endif  // CHROME_BROWSER_PREFETCH_PREFETCH_PROXY_PREFETCH_PROXY_ORIGIN_DECIDER_H_

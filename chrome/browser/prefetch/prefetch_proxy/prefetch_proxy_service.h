@@ -17,6 +17,7 @@
 class Profile;
 class PrefetchProxyProxyConfigurator;
 class PrefetchProxyOriginProber;
+class PrefetchProxyOriginDecider;
 class PrefetchProxySubresourceManager;
 class PrefetchedMainframeResponseContainer;
 
@@ -35,6 +36,8 @@ class PrefetchProxyService : public KeyedService {
   }
 
   PrefetchProxyOriginProber* origin_prober() { return origin_prober_.get(); }
+
+  PrefetchProxyOriginDecider* origin_decider() { return origin_decider_.get(); }
 
   // This call is forwarded to all |PrefetchProxySubresourceManager| in
   // |subresource_managers_| see documentation there for more detail.
@@ -79,6 +82,10 @@ class PrefetchProxyService : public KeyedService {
 
   // The origin prober class which manages all logic for origin probing.
   std::unique_ptr<PrefetchProxyOriginProber> origin_prober_;
+
+  // The origin decider class which maintains persistent origin eligibility
+  // logic.
+  std::unique_ptr<PrefetchProxyOriginDecider> origin_decider_;
 
   // Map of prerender URL to its manager. Kept at the browser level since NSPs
   // are done in a separate WebContents from the one they are created in.

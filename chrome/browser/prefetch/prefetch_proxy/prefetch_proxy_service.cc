@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "chrome/browser/data_reduction_proxy/data_reduction_proxy_chrome_settings.h"
 #include "chrome/browser/data_reduction_proxy/data_reduction_proxy_chrome_settings_factory.h"
+#include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_origin_decider.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_origin_prober.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_params.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_proxy_configurator.h"
@@ -20,7 +21,8 @@
 PrefetchProxyService::PrefetchProxyService(Profile* profile)
     : profile_(profile),
       proxy_configurator_(std::make_unique<PrefetchProxyProxyConfigurator>()),
-      origin_prober_(std::make_unique<PrefetchProxyOriginProber>(profile)) {}
+      origin_prober_(std::make_unique<PrefetchProxyOriginProber>(profile)),
+      origin_decider_(std::make_unique<PrefetchProxyOriginDecider>()) {}
 
 PrefetchProxyService::~PrefetchProxyService() = default;
 

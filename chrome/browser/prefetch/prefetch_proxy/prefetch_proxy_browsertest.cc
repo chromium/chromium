@@ -1396,6 +1396,82 @@ IN_PROC_BROWSER_TEST_F(PrefetchProxyBrowserTest,
           ukm::builders::PrefetchProxy_AfterSRPClick::kProbeLatencyMsName));
 }
 
+IN_PROC_BROWSER_TEST_F(PrefetchProxyBrowserTest,
+                       DISABLE_ON_WIN_MAC_CHROMEOS(Origin503RetryAfter)) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      "isolated-prerender-unlimited-prefetches");
+
+  GURL starting_page = GetOriginServerURL("/simple.html");
+  SetDataSaverEnabled(true);
+  ui_test_utils::NavigateToURL(browser(), starting_page);
+  WaitForUpdatedCustomProxyConfig();
+
+  base::HistogramTester histogram_tester;
+
+  PrefetchProxyTabHelper* tab_helper =
+      PrefetchProxyTabHelper::FromWebContents(GetWebContents());
+
+  GURL eligible_link_ok = GetOriginServerURL("/title1.html");
+  GURL eligible_link_503 =
+      GetOriginServerURL("/prefetch/prefetch_proxy/page503.html");
+
+  // Do a prefetch with 503 Service Unavailable, Retry After 10s.
+  {
+    base::HistogramTester histogram_tester;
+    TestTabHelperObserver tab_helper_observer(tab_helper);
+    tab_helper_observer.SetExpectedPrefetchErrors(
+        {{eligible_link_503, net::HTTP_SERVICE_UNAVAILABLE}});
+
+    base::RunLoop run_loop;
+    tab_helper_observer.SetOnPrefetchErrorClosure(run_loop.QuitClosure());
+
+    GURL doc_url("https://www.google.com/search?q=test");
+    MakeNavigationPrediction(doc_url, {eligible_link_503});
+    run_loop.Run();
+
+    histogram_tester.ExpectUniqueSample(
+        "IsolatedPrerender.Prefetch.Mainframe.RespCode",
+        net::HTTP_SERVICE_UNAVAILABLE, 1);
+    EXPECT_EQ(1U, tab_helper->srp_metrics().predicted_urls_count_);
+    EXPECT_EQ(1U, tab_helper->srp_metrics().prefetch_attempted_count_);
+    EXPECT_EQ(0U, tab_helper->srp_metrics().prefetch_successful_count_);
+  }
+
+  // Expect that another request is not sent to the origin.
+  GURL doc_url("https://www.google.com/search?q=test");
+  MakeNavigationPrediction(doc_url, {eligible_link_ok});
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(2U, tab_helper->srp_metrics().predicted_urls_count_);
+  EXPECT_EQ(1U, tab_helper->srp_metrics().prefetch_attempted_count_);
+  EXPECT_EQ(0U, tab_helper->srp_metrics().prefetch_successful_count_);
+
+  // Navigate to the ineligible prefetch page to verify the status.
+  ui_test_utils::NavigateToURL(browser(), eligible_link_ok);
+  EXPECT_EQ(PrefetchProxyPrefetchStatus::kPrefetchIneligibleRetryAfter,
+            *tab_helper->after_srp_metrics()->prefetch_status_);
+
+  // Wait 10s and verify we do prefetch afterwards.
+  {
+    base::RunLoop run_loop;
+    content::GetUIThreadTaskRunner({})->PostDelayedTask(
+        FROM_HERE, run_loop.QuitClosure(), base::TimeDelta::FromSeconds(10));
+    run_loop.Run();
+  }
+  {
+    base::RunLoop run_loop;
+    TestTabHelperObserver tab_helper_observer(tab_helper);
+    tab_helper_observer.SetExpectedSuccessfulURLs({eligible_link_ok});
+    tab_helper_observer.SetOnPrefetchSuccessfulClosure(run_loop.QuitClosure());
+    MakeNavigationPrediction(doc_url, {eligible_link_ok});
+    run_loop.Run();
+  }
+
+  EXPECT_EQ(1U, tab_helper->srp_metrics().predicted_urls_count_);
+  EXPECT_EQ(1U, tab_helper->srp_metrics().prefetch_attempted_count_);
+  EXPECT_EQ(1U, tab_helper->srp_metrics().prefetch_successful_count_);
+}
+
 // 204's don't commit so this is used to test that the AfterSRPMetrics UKM event
 // is recorded if the page does not commit. In the wild, we expect this to
 // normally occur due to aborted navigations but the end result is the same.

@@ -22,6 +22,7 @@
 #include "chrome/browser/prefetch/no_state_prefetch/prerender_manager_factory.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_features.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_network_context_client.h"
+#include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_origin_decider.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_params.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_prefetch_metrics_collector.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_proxy_configurator.h"
@@ -394,6 +395,7 @@ PrefetchProxyTabHelper::MaybeUpdatePrefetchStatusWithNSPContext(
     case PrefetchProxyPrefetchStatus::kNavigatedToLinkNotOnSRP:
     case PrefetchProxyPrefetchStatus::kSubresourceThrottled:
     case PrefetchProxyPrefetchStatus::kPrefetchPositionIneligible:
+    case PrefetchProxyPrefetchStatus::kPrefetchIneligibleRetryAfter:
       return status;
     // These statuses we are going to update to, and this is the only place that
     // they are set so they are not expected to be passed in.
@@ -873,6 +875,20 @@ void PrefetchProxyTabHelper::HandlePrefetchResponse(
     for (auto& observer : observer_list_) {
       observer.OnPrefetchCompletedWithError(url, response_code);
     }
+
+    if (response_code == net::HTTP_SERVICE_UNAVAILABLE) {
+      base::TimeDelta retry_after;
+      std::string retry_after_string;
+      if (head->headers->EnumerateHeader(nullptr, "Retry-After",
+                                         &retry_after_string) &&
+          net::HttpUtil::ParseRetryAfterHeader(
+              retry_after_string, base::Time::Now(), &retry_after)) {
+        PrefetchProxyService* service =
+            PrefetchProxyServiceFactory::GetForProfile(profile_);
+        service->origin_decider()->ReportOriginRetryAfter(url, retry_after);
+      }
+    }
+
     return;
   }
 
@@ -1182,6 +1198,14 @@ void PrefetchProxyTabHelper::CheckEligibilityOfURL(
       PrefetchProxyServiceFactory::GetForProfile(profile);
   if (!prefetch_proxy_service) {
     std::move(result_callback).Run(url, false, base::nullopt);
+    return;
+  }
+
+  if (!prefetch_proxy_service->origin_decider()
+           ->IsOriginOutsideRetryAfterWindow(url)) {
+    std::move(result_callback)
+        .Run(url, false,
+             PrefetchProxyPrefetchStatus::kPrefetchIneligibleRetryAfter);
     return;
   }
 

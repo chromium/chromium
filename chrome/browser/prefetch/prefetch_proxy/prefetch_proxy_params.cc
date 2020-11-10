@@ -215,3 +215,10 @@ bool PrefetchProxyShouldPrefetchPosition(size_t position) {
                                           base::SPLIT_WANT_NONEMPTY),
                         base::NumberToString(position));
 }
+
+base::TimeDelta PrefetchProxyMaxRetryAfterDelta() {
+  int max_seconds = base::GetFieldTrialParamByFeatureAsInt(
+      features::kIsolatePrerenders, "max_retry_after_duration_secs",
+      1 * 60 * 60 * 24 * 7 /* 1 week */);
+  return base::TimeDelta::FromSeconds(max_seconds);
+}

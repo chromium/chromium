@@ -88,4 +88,7 @@ bool PrefetchProxyStartsSpareRenderer();
 // Whether the given position of a predicted link should be prefetched.
 bool PrefetchProxyShouldPrefetchPosition(size_t position);
 
+// The maximum retry-after header value that will be persisted.
+base::TimeDelta PrefetchProxyMaxRetryAfterDelta();
+
 #endif  // CHROME_BROWSER_PREFETCH_PREFETCH_PROXY_PREFETCH_PROXY_PARAMS_H_
