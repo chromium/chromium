@@ -4,7 +4,9 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import static org.chromium.chrome.browser.multiwindow.MultiWindowTestHelper.moveActivityToFront;
@@ -234,6 +236,38 @@ public class TabSwitcherMultiWindowTest {
         verifyTabStripFaviconCount(cta1, 3);
         verifyTabModelTabCount(cta1, 3, 3);
         verifyTabModelTabCount(cta2, 2, 2);
+    }
+
+    @Test
+    @MediumTest
+    @TargetApi(Build.VERSION_CODES.N)
+    // clang-format off
+    @Features.EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID,
+        ChromeFeatureList.TAB_REPARENTING})
+    public void testMoveLastIncognitoTab() {
+        // clang-format on
+        // Initially, we have 1 normal tab and 1 incognito tab in cta1.
+        final ChromeTabbedActivity cta1 = mActivityTestRule.getActivity();
+        createTabs(cta1, false, 1);
+        createTabs(cta1, true, 1);
+        verifyTabModelTabCount(cta1, 1, 1);
+
+        // Move the incognito tab to cta2.
+        assertTrue(cta1.getTabModelSelector().getCurrentModel().isIncognito());
+        MenuUtils.invokeCustomMenuActionSync(InstrumentationRegistry.getInstrumentation(), cta1,
+                org.chromium.chrome.R.id.move_to_other_window_menu_id);
+        final ChromeTabbedActivity cta2 = waitForSecondChromeTabbedActivity();
+
+        assertThat(cta1.getTabModelSelector()
+                           .getTabModelFilterProvider()
+                           .getTabModelFilter(true)
+                           .getCount(),
+                is(0));
+        assertThat(cta2.getTabModelSelector()
+                           .getTabModelFilterProvider()
+                           .getTabModelFilter(true)
+                           .getCount(),
+                is(1));
     }
 
     private void moveTabsToOtherWindow(ChromeTabbedActivity cta, int number) {
