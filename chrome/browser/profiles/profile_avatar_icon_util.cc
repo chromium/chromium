@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/format_macros.h"
 #include "base/macros.h"
@@ -35,6 +36,7 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
+#include "ui/gfx/favicon_size.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/image/canvas_image_source.h"
 #include "ui/gfx/image/image.h"
@@ -48,6 +50,12 @@
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/grit/chrome_unscaled_resources.h"  // nogncheck crbug.com/1125897
 #include "ui/gfx/icon_util.h"  // For Iconutil::kLargeIconSize.
+#endif
+
+#if defined(OS_MAC)
+#include "chrome/browser/profiles/profile_attributes_entry.h"
+#include "chrome/browser/profiles/profile_attributes_storage.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #endif
 
 // Helper methods for transforming and drawing avatar icons.
@@ -419,12 +427,26 @@ gfx::Image GetAvatarIconForTitleBar(const gfx::Image& image,
 
 #if defined(OS_MAC)
 gfx::Image GetAvatarIconForNSMenu(const base::FilePath& profile_path) {
-  // TODO(crbug.com/857064): Call ProfileAttributesEntry::GetAvatarIcon()
-  // directly and pass in in larger desired size so that it can be smoothly
-  // clipped to a circle.
+  ProfileAttributesEntry* entry;
+  if (!g_browser_process->profile_manager()
+           ->GetProfileAttributesStorage()
+           .GetProfileAttributesWithPath(profile_path, &entry)) {
+    // This can happen if the user deletes the current profile.
+    return gfx::Image();
+  }
+
+  if (base::FeatureList::IsEnabled(features::kNewProfilePicker)) {
+    // Get a higher res than 16px so it looks good after cropping to a circle.
+    gfx::Image icon =
+        entry->GetAvatarIcon(kAvatarIconSize, /*download_high_res=*/false);
+    return profiles::GetSizedAvatarIcon(icon, /*is_rectangle=*/true,
+                                        gfx::kFaviconSize, gfx::kFaviconSize,
+                                        profiles::SHAPE_CIRCLE);
+  }
+
   constexpr int kMenuAvatarIconSize = 38;
-  gfx::Image icon;
-  AvatarMenu::GetImageForMenuButton(profile_path, &icon, kMenuAvatarIconSize);
+  gfx::Image icon =
+      entry->GetAvatarIcon(kMenuAvatarIconSize, /*download_high_res=*/false);
 
   // The image might be too large and need to be resized, e.g. if this is a
   // signed-in user using the GAIA profile photo.
