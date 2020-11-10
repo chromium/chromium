@@ -3658,6 +3658,19 @@
       "features": [
         "max_msaa_sample_count_4"
       ]
+    },
+    {
+      "id": 361,
+      "description": "VP9 Profile 2 decoding doesn't work on ChromeOS AMDs",
+      "cr_bugs": [1147466],
+      "os": {
+        "type": "chromeos"
+      },
+      "vendor_id": "0x1002",
+      "driver_vendor": "Mesa",
+      "features": [
+        "disable_accelerated_vp9_profile2_decode"
+      ]
     }
   ]
 }
