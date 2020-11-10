@@ -10,6 +10,7 @@ modules_idl_files = [
   "media_stream_event.idl",
   "media_stream_track.idl",
   "media_stream_track_event.idl",
+  "media_stream_track_generator.idl",
   "overconstrained_error.idl",
 ]
 

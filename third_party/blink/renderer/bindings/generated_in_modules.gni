@@ -1677,6 +1677,8 @@ generated_interface_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_media_stream_track.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_media_stream_track_event.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_media_stream_track_event.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_media_stream_track_generator.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_media_stream_track_generator.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_merchant_validation_event.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_merchant_validation_event.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_metadata.cc",

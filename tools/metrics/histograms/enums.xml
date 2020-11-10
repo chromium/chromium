@@ -30228,6 +30228,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3725" label="V8HTMLDialogElement_Show_Method"/>
   <int value="3726" label="V8HTMLDialogElement_ShowModal_Method"/>
   <int value="3727" label="AdFrameDetected"/>
+  <int value="3728" label="MediaStreamTrackGenerator"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

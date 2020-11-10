@@ -1225,6 +1225,10 @@
       name: "MediaSourceStable",
       status: "stable",
     },
+    {
+      name: "MediaStreamInsertableStreams",
+      status: "experimental",
+    },
     // This is enabled by default on Windows only. The only part that's
     // "experimental" is the support on other platforms.
     {

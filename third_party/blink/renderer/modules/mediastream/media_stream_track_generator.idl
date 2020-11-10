@@ -1,0 +1,20 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// See spec in developement at
+// https://w3c.github.io/mediacapture-insertable-streams/
+[
+    Exposed=Window,
+    RuntimeEnabled=MediaStreamInsertableStreams
+]
+interface MediaStreamTrackGenerator : MediaStreamTrack {
+  [CallWith=ScriptState, RaisesException, MeasureAs=MediaStreamTrackGenerator]
+  constructor(DOMString kind);
+
+  // TODO(crbug.com/1142955): Add |readable| attribute giving control signals.
+
+  // This streams takes VideoFrame objects.
+  // TODO(crbug.com/1142955): Add support for audio.
+  [CallWith=ScriptState] readonly attribute WritableStream writable;
+};

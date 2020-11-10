@@ -3054,6 +3054,7 @@ enum WebFeature {
   kV8HTMLDialogElement_Show_Method = 3725,
   kV8HTMLDialogElement_ShowModal_Method = 3726,
   kAdFrameDetected = 3727,
+  kMediaStreamTrackGenerator = 3728,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
