@@ -120,7 +120,7 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
       NGBlockNode,
       const NGConstraintSpace&,
       const NGLogicalStaticPosition&,
-      LogicalSize container_content_size,
+      PhysicalSize container_physical_content_size,
       const ContainingBlockInfo&,
       const WritingDirectionMode,
       const LayoutBox* only_layout,

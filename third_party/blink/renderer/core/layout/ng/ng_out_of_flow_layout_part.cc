@@ -601,7 +601,7 @@ scoped_refptr<const NGLayoutResult> NGOutOfFlowLayoutPart::LayoutCandidate(
   do {
     scoped_refptr<const NGLayoutResult> layout_result =
         Layout(node, candidate_constraint_space, candidate_static_position,
-               container_content_size, container_info,
+               container_physical_content_size, container_info,
                default_writing_direction, only_layout);
 
     if (!freeze_scrollbars.has_value()) {
@@ -703,8 +703,8 @@ void NGOutOfFlowLayoutPart::LayoutFragmentainerDescendant(
   NGConstraintSpace descendant_constraint_space = builder.ToConstraintSpace();
 
   Layout(node, descendant_constraint_space, descendant_static_position,
-         container_content_size, container_info, default_writing_direction,
-         /* only_layout */ nullptr,
+         container_physical_content_size, container_info,
+         default_writing_direction, /* only_layout */ nullptr,
          /* is_fragmentainer_descendant */ true);
 }
 
@@ -712,7 +712,7 @@ scoped_refptr<const NGLayoutResult> NGOutOfFlowLayoutPart::Layout(
     NGBlockNode node,
     const NGConstraintSpace& candidate_constraint_space,
     const NGLogicalStaticPosition& candidate_static_position,
-    LogicalSize container_content_size,
+    PhysicalSize container_physical_content_size,
     const ContainingBlockInfo& container_info,
     const WritingDirectionMode default_writing_direction,
     const LayoutBox* only_layout,
@@ -722,8 +722,6 @@ scoped_refptr<const NGLayoutResult> NGOutOfFlowLayoutPart::Layout(
       candidate_style.GetWritingDirection();
   const auto container_writing_direction = container_info.writing_direction;
 
-  PhysicalSize container_physical_content_size = ToPhysicalSize(
-      container_content_size, default_writing_direction.GetWritingMode());
   LogicalSize container_content_size_in_candidate_writing_mode =
       container_physical_content_size.ConvertToLogical(
           candidate_writing_direction.GetWritingMode());
