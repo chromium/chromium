@@ -56,7 +56,8 @@ constexpr int kUpdateFetchModelAndFeaturesTimeSecs = 24 * 60 * 60;  // 24 hours.
 
 namespace optimization_guide {
 
-std::unique_ptr<proto::PredictionModel> CreatePredictionModel() {
+std::unique_ptr<proto::PredictionModel> CreatePredictionModel(
+    bool output_model_as_download_url = false) {
   std::unique_ptr<optimization_guide::proto::PredictionModel> prediction_model =
       std::make_unique<optimization_guide::proto::PredictionModel>();
 
@@ -71,13 +72,17 @@ std::unique_ptr<proto::PredictionModel> CreatePredictionModel() {
       proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD);
   model_info->add_supported_model_types(
       proto::ModelType::MODEL_TYPE_DECISION_TREE);
-  prediction_model->mutable_model()->mutable_threshold()->set_value(5.0);
+  if (output_model_as_download_url)
+    prediction_model->mutable_model()->set_download_url("someurl");
+  else
+    prediction_model->mutable_model()->mutable_threshold()->set_value(5.0);
   return prediction_model;
 }
 
 std::unique_ptr<proto::GetModelsResponse> BuildGetModelsResponse(
     const std::vector<std::string>& hosts,
-    const std::vector<proto::ClientModelFeature>& client_model_features) {
+    const std::vector<proto::ClientModelFeature>& client_model_features,
+    bool output_model_as_download_url = false) {
   std::unique_ptr<proto::GetModelsResponse> get_models_response =
       std::make_unique<proto::GetModelsResponse>();
 
@@ -92,7 +97,7 @@ std::unique_ptr<proto::GetModelsResponse> BuildGetModelsResponse(
   }
 
   std::unique_ptr<proto::PredictionModel> prediction_model =
-      CreatePredictionModel();
+      CreatePredictionModel(output_model_as_download_url);
   for (const auto& client_model_feature : client_model_features) {
     prediction_model->mutable_model_info()->add_supported_model_features(
         client_model_feature);
@@ -165,6 +170,7 @@ enum class PredictionModelFetcherEndState {
   kFetchFailed = 0,
   kFetchSuccessWithModelsAndHostsModelFeatures = 1,
   kFetchSuccessWithEmptyResponse = 2,
+  kFetchSuccessWithModelDownloadUrls = 3,
 };
 
 // A mock class implementation of PredictionModelFetcher.
@@ -205,6 +211,12 @@ class TestPredictionModelFetcher : public PredictionModelFetcher {
         std::move(models_fetched_callback)
             .Run(BuildGetModelsResponse({} /* hosts */,
                                         {} /* client model features */));
+        return true;
+      case PredictionModelFetcherEndState::kFetchSuccessWithModelDownloadUrls:
+        models_fetched_ = true;
+        std::move(models_fetched_callback)
+            .Run(BuildGetModelsResponse(hosts, {},
+                                        /*output_model_as_download_url=*/true));
         return true;
     }
     return true;
@@ -1128,6 +1140,42 @@ TEST_P(PredictionManagerMLServiceTest,
                   proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD, {}));
     EXPECT_FALSE(test_prediction_model->WasModelEvaluated());
   }
+}
+
+TEST_P(PredictionManagerMLServiceTest, UpdateModelWithDownloadUrl) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  if (UsingMLService()) {
+    scoped_feature_list.InitWithFeatures(
+        {optimization_guide::features::
+             kOptimizationTargetPredictionUsingMLService},
+        {});
+
+    SetLoadModelResult(machine_learning::mojom::LoadModelResult::kOk);
+  }
+
+  base::HistogramTester histogram_tester;
+  std::unique_ptr<content::MockNavigationHandle> navigation_handle =
+      CreateMockNavigationHandleWithOptimizationGuideWebContentsObserver(
+          GURL("https://foo.com"));
+
+  CreatePredictionManager({});
+  prediction_manager()->SetPredictionModelFetcherForTesting(
+      BuildTestPredictionModelFetcher(
+          PredictionModelFetcherEndState::kFetchSuccessWithModelDownloadUrls));
+
+  prediction_manager()->RegisterOptimizationTargets(
+      {proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD});
+
+  SetStoreInitialized();
+  EXPECT_TRUE(prediction_model_fetcher()->models_fetched());
+
+  models_and_features_store()->RunUpdateHostModelFeaturesCallback();
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.PredictionManager.HostModelFeaturesStored", true, 1);
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.PredictionManager.PredictionModelsStored", 0);
+
+  // TODO(crbug/1146151): Update test to incorporate downloading of model.
 }
 
 TEST_P(PredictionManagerMLServiceTest,

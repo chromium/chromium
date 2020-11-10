@@ -824,7 +824,17 @@ void PredictionManager::UpdatePredictionModels(
   SEQUENCE_CHECKER(sequence_checker_);
   std::unique_ptr<StoreUpdateData> prediction_model_update_data =
       StoreUpdateData::CreatePredictionModelStoreUpdateData();
+  bool has_models_to_update = false;
   for (const auto& model : prediction_models) {
+    if (model.has_model() && !model.model().download_url().empty()) {
+      // Skip over models that have a download URL since they will be updated
+      // out-of-band.
+
+      // TODO(crbug/1146151): Download model from URL.
+      continue;
+    }
+
+    has_models_to_update = true;
     // Storing the model regardless of whether the model is valid or not. Model
     // will be removed from store if it fails to load.
     prediction_model_update_data->CopyPredictionModelIntoUpdateData(model);
@@ -835,10 +845,13 @@ void PredictionManager::UpdatePredictionModels(
         model.model_info().version());
     OnLoadPredictionModel(std::make_unique<proto::PredictionModel>(model));
   }
-  model_and_features_store_->UpdatePredictionModels(
-      std::move(prediction_model_update_data),
-      base::BindOnce(&PredictionManager::OnPredictionModelsStored,
-                     ui_weak_ptr_factory_.GetWeakPtr()));
+
+  if (has_models_to_update) {
+    model_and_features_store_->UpdatePredictionModels(
+        std::move(prediction_model_update_data),
+        base::BindOnce(&PredictionManager::OnPredictionModelsStored,
+                       ui_weak_ptr_factory_.GetWeakPtr()));
+  }
 }
 
 void PredictionManager::OnPredictionModelsStored() {
