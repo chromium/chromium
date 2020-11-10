@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.lens;
 import android.net.Uri;
 
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.base.WindowAndroid;
 
 /**
  * A wrapper class for the Lens image query params (e.g. used in LensController.queryImage)
@@ -18,6 +19,9 @@ public class LensQueryParams {
     private String mImageTitleOrAltText;
     private String mPageTitle;
     private WebContents mWebContents;
+    private String mSrcUrl;
+    private boolean mIsIncognito;
+    private WindowAndroid mWindow;
 
     /**
      * Builder class for LensQueryParams.
@@ -28,6 +32,8 @@ public class LensQueryParams {
         private String mImageTitleOrAltText;
         private String mPageTitle;
         private WebContents mWebContents;
+        private String mSrcUrl;
+        private boolean mIsIncognito;
 
         public Builder() {}
 
@@ -56,6 +62,16 @@ public class LensQueryParams {
             return this;
         }
 
+        public Builder withSrcUrl(String srcUrl) {
+            this.mSrcUrl = srcUrl;
+            return this;
+        }
+
+        public Builder withIsIncognito(boolean isIncognito) {
+            this.mIsIncognito = isIncognito;
+            return this;
+        }
+
         public LensQueryParams build() {
             LensQueryParams lensQueryParams = new LensQueryParams();
             lensQueryParams.mImageUri = this.mImageUri;
@@ -63,8 +79,14 @@ public class LensQueryParams {
             lensQueryParams.mImageTitleOrAltText = this.mImageTitleOrAltText;
             lensQueryParams.mPageTitle = this.mPageTitle;
             lensQueryParams.mWebContents = this.mWebContents;
+            lensQueryParams.mSrcUrl = this.mSrcUrl;
+            lensQueryParams.mIsIncognito = this.mIsIncognito;
             return lensQueryParams;
         }
+    }
+
+    public void setImageUri(Uri imageUri) {
+        mImageUri = imageUri;
     }
 
     public Uri getImageUri() {
@@ -85,5 +107,13 @@ public class LensQueryParams {
 
     public WebContents getWebContents() {
         return mWebContents;
+    }
+
+    public String getSrcUrl() {
+        return mSrcUrl;
+    }
+
+    public boolean getIsIncognito() {
+        return mIsIncognito;
     }
 }
