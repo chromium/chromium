@@ -7,6 +7,8 @@
 
 #include <memory>
 
+#include "components/signin/public/identity_manager/account_info.h"
+
 namespace infobars {
 class InfoBar;
 }
@@ -15,9 +17,12 @@ namespace autofill {
 
 class AutofillSaveCardInfoBarDelegateMobile;
 
-// Creates an infobar for saving a credit card on a mobile device.
+// Creates an Infobar for saving a credit card on a mobile device. If
+// AccountInfo contains the user's data, an account indication footer will be
+// shown at the bottom of the Infobar.
 std::unique_ptr<infobars::InfoBar> CreateSaveCardInfoBarMobile(
-    std::unique_ptr<AutofillSaveCardInfoBarDelegateMobile> delegate);
+    std::unique_ptr<AutofillSaveCardInfoBarDelegateMobile> delegate,
+    base::Optional<AccountInfo> accountInfo);
 
 }  // namespace autofill
 
