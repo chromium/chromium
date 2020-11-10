@@ -73,7 +73,7 @@ void SimplifyMarkupCommand::DoApply(EditingState* editing_state) {
 
       if (!current_node->GetLayoutObject() ||
           !current_node->GetLayoutObject()->IsLayoutInline() ||
-          ToLayoutInline(current_node->GetLayoutObject())
+          To<LayoutInline>(current_node->GetLayoutObject())
               ->AlwaysCreateLineBoxes())
         continue;
 

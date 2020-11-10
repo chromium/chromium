@@ -3081,7 +3081,7 @@ PhysicalOffset LayoutBox::OffsetFromContainerInternal(
 
   if (IsOutOfFlowPositioned() && o->IsLayoutInline() &&
       o->CanContainOutOfFlowPositionedElement(StyleRef().GetPosition())) {
-    offset += ToLayoutInline(o)->OffsetForInFlowPositionedInline(*this);
+    offset += To<LayoutInline>(o)->OffsetForInFlowPositionedInline(*this);
   }
 
   return offset;
@@ -3859,7 +3859,7 @@ bool LayoutBox::MapToVisualRectInAncestorSpaceInternal(
   if (IsOutOfFlowPositioned() && container->IsLayoutInline() &&
       container->CanContainOutOfFlowPositionedElement(position)) {
     container_offset +=
-        ToLayoutInline(container)->OffsetForInFlowPositionedInline(*this);
+        To<LayoutInline>(container)->OffsetForInFlowPositionedInline(*this);
   } else if (style_to_use.HasInFlowPosition() && Layer()) {
     // Apply the relative position offset when invalidating a rectangle. The
     // layer is translated, but the layout box isn't, so we need to do this to
@@ -5467,7 +5467,7 @@ LayoutUnit LayoutBox::ContainingBlockLogicalWidthForPositioned(
   DCHECK(containing_block->CanContainOutOfFlowPositionedElement(
       StyleRef().GetPosition()));
 
-  const LayoutInline* flow = ToLayoutInline(containing_block);
+  const auto* flow = To<LayoutInline>(containing_block);
   InlineFlowBox* first = flow->FirstLineBox();
   InlineFlowBox* last = flow->LastLineBox();
 
@@ -5523,7 +5523,7 @@ LayoutUnit LayoutBox::ContainingBlockLogicalHeightForPositioned(
   DCHECK(containing_block->CanContainOutOfFlowPositionedElement(
       StyleRef().GetPosition()));
 
-  const LayoutInline* flow = ToLayoutInline(containing_block);
+  const auto* flow = To<LayoutInline>(containing_block);
   // If the containing block is empty, return a height of 0.
   if (!flow->HasInlineFragments())
     return LayoutUnit();
@@ -6062,7 +6062,7 @@ void LayoutBox::ComputePositionedLogicalWidthUsing(
   // last line box. When this is fixed elsewhere, this block should be removed.
   if (container_block->IsLayoutInline() &&
       !container_block->StyleRef().IsLeftToRightDirection()) {
-    const LayoutInline* flow = ToLayoutInline(container_block);
+    const auto* flow = To<LayoutInline>(container_block);
     InlineFlowBox* first_line = flow->FirstLineBox();
     InlineFlowBox* last_line = flow->LastLineBox();
     if (first_line && last_line && first_line != last_line) {

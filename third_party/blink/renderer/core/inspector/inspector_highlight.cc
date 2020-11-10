@@ -1197,7 +1197,7 @@ bool InspectorHighlightBase::BuildNodeQuads(Node* node,
                               border_box.Width() + layout_box->MarginWidth(),
                               border_box.Height() + layout_box->MarginHeight());
   } else {
-    LayoutInline* layout_inline = ToLayoutInline(layout_object);
+    auto* layout_inline = To<LayoutInline>(layout_object);
 
     // LayoutInline's bounding box includes paddings and borders, excludes
     // margins.

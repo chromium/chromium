@@ -156,7 +156,7 @@ class LayoutInlineCollector final : public NGPhysicalFragmentCollectorBase {
       }
       if (!node->IsLayoutInline())
         continue;
-      CollectInclusiveDescendants(ToLayoutInline(*node));
+      CollectInclusiveDescendants(To<LayoutInline>(*node));
     }
   }
 
@@ -169,11 +169,11 @@ class LayoutInlineCollector final : public NGPhysicalFragmentCollectorBase {
 Vector<Result> NGInlineFragmentTraversal::SelfFragmentsOf(
     const NGPhysicalContainerFragment& container,
     const LayoutObject* layout_object) {
-  if (const LayoutInline* layout_inline = ToLayoutInlineOrNull(layout_object)) {
+  if (const auto* layout_inline = DynamicTo<LayoutInline>(layout_object)) {
     // TODO(crbug.com/874361): Stop partial culling of inline boxes, so that we
     // can simply check existence of paint fragments below.
     if (!layout_inline->HasSelfPaintingLayer()) {
-      return LayoutInlineCollector(ToLayoutInline(*layout_object))
+      return LayoutInlineCollector(To<LayoutInline>(*layout_object))
           .CollectFrom(container);
     }
   }

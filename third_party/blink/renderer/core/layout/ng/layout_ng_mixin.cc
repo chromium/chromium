@@ -269,7 +269,8 @@ void LayoutNGMixin<Base>::UpdateOutOfFlowBlockLayout() {
       LayoutBoxUtils::ComputeStaticPositionFromLegacy(*this, border_scrollbar);
   // Set correct container for inline containing blocks.
   container_builder.AddOutOfFlowLegacyCandidate(
-      NGBlockNode(this), static_position, ToLayoutInlineOrNull(css_container));
+      NGBlockNode(this), static_position,
+      DynamicTo<LayoutInline>(css_container));
 
   base::Optional<LogicalSize> initial_containing_block_fixed_size;
   auto* layout_view = DynamicTo<LayoutView>(container);

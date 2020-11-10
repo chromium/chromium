@@ -225,7 +225,7 @@ void PseudoElement::AttachLayoutTree(AttachContext& context) {
       if (layout_object->IsChildAllowed(child, style)) {
         layout_object->AddChild(child);
         if (child->IsQuote())
-          ToLayoutQuote(child)->AttachQuote();
+          To<LayoutQuote>(child)->AttachQuote();
       } else {
         child->Destroy();
       }

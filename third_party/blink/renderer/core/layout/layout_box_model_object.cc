@@ -647,7 +647,7 @@ void LayoutBoxModelObject::AddOutlineRectsForDescendant(
     // for its RootOutlineBoxes which cover the line boxes of this LayoutInline.
     // So the LayoutInline needs to add rects for children and continuations
     // only.
-    ToLayoutInline(descendant)
+    To<LayoutInline>(descendant)
         .AddOutlineRectsForChildrenAndContinuations(rects, additional_offset,
                                                     include_block_overflows);
     return;
@@ -1024,7 +1024,7 @@ void LayoutBoxModelObject::UpdateStickyPositionConstraints() const {
 
   PhysicalRect sticky_box_rect;
   if (IsLayoutInline()) {
-    sticky_box_rect = ToLayoutInline(this)->PhysicalLinesBoundingBox();
+    sticky_box_rect = To<LayoutInline>(this)->PhysicalLinesBoundingBox();
   } else {
     sticky_box_rect =
         containing_block->FlipForWritingMode(ToLayoutBox(this)->FrameRect());
@@ -1243,7 +1243,7 @@ PhysicalOffset LayoutBoxModelObject::AdjustedPositionRelativeTo(
     }
 
     if (offset_parent_object->IsLayoutInline()) {
-      const LayoutInline* inline_parent = ToLayoutInline(offset_parent_object);
+      const auto* inline_parent = To<LayoutInline>(offset_parent_object);
 
       if (IsBox() && IsOutOfFlowPositioned() &&
           inline_parent->CanContainOutOfFlowPositionedElement(

@@ -3720,7 +3720,7 @@ void LayoutObject::DestroyAndCleanupAnonymousWrappers() {
       if (sibling)
         break;
       DCHECK(destroy_root->IsLayoutInline());
-      DCHECK(ToLayoutInline(destroy_root)->Continuation());
+      DCHECK(To<LayoutInline>(destroy_root)->Continuation());
     }
   }
 

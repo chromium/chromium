@@ -447,7 +447,7 @@ void LayoutReplaced::ComputePositionedLogicalWidth(
   // should be removed.
   if (container_block->IsLayoutInline() &&
       !container_block->StyleRef().IsLeftToRightDirection()) {
-    const LayoutInline* flow = ToLayoutInline(container_block);
+    const auto* flow = To<LayoutInline>(container_block);
     InlineFlowBox* first_line = flow->FirstLineBox();
     InlineFlowBox* last_line = flow->LastLineBox();
     if (first_line && last_line && first_line != last_line) {

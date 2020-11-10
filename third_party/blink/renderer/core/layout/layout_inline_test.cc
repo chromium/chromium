@@ -49,19 +49,19 @@ TEST_P(ParameterizedLayoutInlineTest, PhysicalLinesBoundingBox) {
     <p class=vertical><span id=vertical>abc<br>xyz</span></p>
   )HTML");
   EXPECT_EQ(PhysicalRect(0, 0, 30, 20),
-            ToLayoutInline(GetLayoutObjectByElementId("ltr1"))
+            To<LayoutInline>(GetLayoutObjectByElementId("ltr1"))
                 ->PhysicalLinesBoundingBox());
   EXPECT_EQ(PhysicalRect(0, 0, 110, 10),
-            ToLayoutInline(GetLayoutObjectByElementId("ltr2"))
+            To<LayoutInline>(GetLayoutObjectByElementId("ltr2"))
                 ->PhysicalLinesBoundingBox());
   EXPECT_EQ(PhysicalRect(270, 0, 30, 20),
-            ToLayoutInline(GetLayoutObjectByElementId("rtl1"))
+            To<LayoutInline>(GetLayoutObjectByElementId("rtl1"))
                 ->PhysicalLinesBoundingBox());
   EXPECT_EQ(PhysicalRect(190, 0, 110, 10),
-            ToLayoutInline(GetLayoutObjectByElementId("rtl2"))
+            To<LayoutInline>(GetLayoutObjectByElementId("rtl2"))
                 ->PhysicalLinesBoundingBox());
   EXPECT_EQ(PhysicalRect(280, 0, 20, 30),
-            ToLayoutInline(GetLayoutObjectByElementId("vertical"))
+            To<LayoutInline>(GetLayoutObjectByElementId("vertical"))
                 ->PhysicalLinesBoundingBox());
 }
 
@@ -70,8 +70,8 @@ TEST_F(LayoutInlineTest, SimpleContinuation) {
       "<span id='splitInline'><i id='before'></i><h1 id='blockChild'></h1><i "
       "id='after'></i></span>");
 
-  LayoutInline* split_inline_part1 =
-      ToLayoutInline(GetLayoutObjectByElementId("splitInline"));
+  auto* split_inline_part1 =
+      To<LayoutInline>(GetLayoutObjectByElementId("splitInline"));
   ASSERT_TRUE(split_inline_part1);
   ASSERT_TRUE(split_inline_part1->FirstChild());
   EXPECT_EQ(split_inline_part1->FirstChild(),
@@ -84,7 +84,7 @@ TEST_F(LayoutInlineTest, SimpleContinuation) {
   EXPECT_EQ(block->FirstChild(), GetLayoutObjectByElementId("blockChild"));
   EXPECT_FALSE(block->FirstChild()->NextSibling());
 
-  LayoutInline* split_inline_part2 = ToLayoutInline(block->Continuation());
+  auto* split_inline_part2 = To<LayoutInline>(block->Continuation());
   ASSERT_TRUE(split_inline_part2);
   ASSERT_TRUE(split_inline_part2->FirstChild());
   EXPECT_EQ(split_inline_part2->FirstChild(),
@@ -107,8 +107,8 @@ TEST_F(LayoutInlineTest, RegionHitTest) {
 
   UpdateAllLifecyclePhasesForTest();
 
-  LayoutInline* lots_of_boxes =
-      ToLayoutInline(GetLayoutObjectByElementId("lotsOfBoxes"));
+  auto* lots_of_boxes =
+      To<LayoutInline>(GetLayoutObjectByElementId("lotsOfBoxes"));
   ASSERT_TRUE(lots_of_boxes);
 
   HitTestRequest hit_request(HitTestRequest::kTouchEvent |
@@ -327,7 +327,7 @@ TEST_P(ParameterizedLayoutInlineTest, VisualRectInDocument) {
     </div>
   )HTML");
 
-  LayoutInline* target = ToLayoutInline(GetLayoutObjectByElementId("target"));
+  auto* target = To<LayoutInline>(GetLayoutObjectByElementId("target"));
   EXPECT_EQ(PhysicalRect(0, 20, 111, 222 + 20 * 2),
             target->VisualRectInDocument());
   EXPECT_EQ(PhysicalRect(0, 20, 111, 222 + 20 * 2),
@@ -353,7 +353,7 @@ TEST_P(ParameterizedLayoutInlineTest, VisualRectInDocumentVerticalRL) {
     </div>
   )HTML");
 
-  LayoutInline* target = ToLayoutInline(GetLayoutObjectByElementId("target"));
+  auto* target = To<LayoutInline>(GetLayoutObjectByElementId("target"));
   PhysicalRect expected(400 - 111 - 20 * 3, 0, 111 + 20 * 2, 222);
   EXPECT_EQ(expected, target->VisualRectInDocument());
   EXPECT_EQ(expected, target->VisualRectInDocument(kUseGeometryMapper));
@@ -375,7 +375,7 @@ TEST_P(ParameterizedLayoutInlineTest, VisualRectInDocumentSVGTspan) {
     </svg>
   )HTML");
 
-  LayoutInline* target = ToLayoutInline(GetLayoutObjectByElementId("target"));
+  auto* target = To<LayoutInline>(GetLayoutObjectByElementId("target"));
   const int ascent = 16;
   PhysicalRect expected(10 + 15, 50 + 25 - ascent, 20 * 5, 20);
   EXPECT_EQ(expected, target->VisualRectInDocument());
@@ -398,7 +398,7 @@ TEST_P(ParameterizedLayoutInlineTest, VisualRectInDocumentSVGTspanTB) {
     </svg>
   )HTML");
 
-  LayoutInline* target = ToLayoutInline(GetLayoutObjectByElementId("target"));
+  auto* target = To<LayoutInline>(GetLayoutObjectByElementId("target"));
   PhysicalRect expected(50 + 15 - 20 / 2, 10 + 25, 20, 20 * 5);
   EXPECT_EQ(expected, target->VisualRectInDocument());
   EXPECT_EQ(expected, target->VisualRectInDocument(kUseGeometryMapper));
@@ -730,7 +730,7 @@ TEST_P(ParameterizedLayoutInlineTest, VisualOverflowRecalcLegacyLayout) {
     </div>
   )HTML");
 
-  auto* span = ToLayoutInline(GetLayoutObjectByElementId("span"));
+  auto* span = To<LayoutInline>(GetLayoutObjectByElementId("span"));
   auto* span_element = GetDocument().getElementById("span");
   auto* span2_element = GetDocument().getElementById("span2");
 
@@ -774,7 +774,7 @@ TEST_P(ParameterizedLayoutInlineTest, VisualOverflowRecalcLayoutNG) {
     </div>
   )HTML");
 
-  auto* span = ToLayoutInline(GetLayoutObjectByElementId("span"));
+  auto* span = To<LayoutInline>(GetLayoutObjectByElementId("span"));
   auto* span_element = GetDocument().getElementById("span");
   auto* span2_element = GetDocument().getElementById("span2");
 
@@ -816,7 +816,7 @@ TEST_P(ParameterizedLayoutInlineTest,
     <span id="span">SPAN</span>
   )HTML");
 
-  auto* span = ToLayoutInline(GetLayoutObjectByElementId("span"));
+  auto* span = To<LayoutInline>(GetLayoutObjectByElementId("span"));
   auto* span_element = GetDocument().getElementById("span");
 
   span_element->setAttribute(html_names::kStyleAttr, "outline: 50px solid red");

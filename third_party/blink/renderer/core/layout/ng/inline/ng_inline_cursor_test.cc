@@ -201,8 +201,7 @@ TEST_P(NGInlineCursorTest, ContainingLine) {
   cursor.MoveToContainingLine();
   EXPECT_EQ(line1, cursor);
 
-  const LayoutInline& target =
-      ToLayoutInline(*GetLayoutObjectByElementId("target"));
+  const auto& target = To<LayoutInline>(*GetLayoutObjectByElementId("target"));
   cursor.MoveTo(target);
   cursor.MoveToContainingLine();
   EXPECT_EQ(line1, cursor);

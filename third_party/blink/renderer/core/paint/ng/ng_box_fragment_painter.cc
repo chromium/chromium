@@ -159,7 +159,7 @@ bool HitTestCulledInlineAncestors(
         previous_sibling.GetLayoutObject()->IsDescendantOf(parent))
       break;
 
-    if (auto* parent_layout_inline = ToLayoutInlineOrNull(parent)) {
+    if (auto* parent_layout_inline = DynamicTo<LayoutInline>(parent)) {
       if (parent_layout_inline->HitTestCulledInline(result, hit_test_location,
                                                     fallback_accumulated_offset,
                                                     &parent_cursor))
@@ -2256,7 +2256,7 @@ bool NGBoxFragmentPainter::HitTestChildBoxItem(
   }
 
   DCHECK(item.GetLayoutObject()->IsLayoutInline());
-  DCHECK(!ToLayoutInline(item.GetLayoutObject())->ShouldCreateBoxFragment());
+  DCHECK(!To<LayoutInline>(item.GetLayoutObject())->ShouldCreateBoxFragment());
   if (NGInlineCursor descendants = cursor.CursorForDescendants()) {
     if (HitTestItemsChildren(hit_test, container, descendants))
       return true;

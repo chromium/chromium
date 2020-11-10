@@ -2978,8 +2978,9 @@ void LayoutBlockFlow::SetStaticInlinePositionForChild(
 LayoutInline* LayoutBlockFlow::InlineElementContinuation() const {
   NOT_DESTROYED();
   LayoutBoxModelObject* continuation = Continuation();
-  return continuation && continuation->IsInline() ? ToLayoutInline(continuation)
-                                                  : nullptr;
+  return continuation && continuation->IsInline()
+             ? To<LayoutInline>(continuation)
+             : nullptr;
 }
 
 void LayoutBlockFlow::AddChild(LayoutObject* new_child,
@@ -3151,7 +3152,7 @@ void LayoutBlockFlow::RemoveChild(LayoutObject* old_child) {
         // |this|'s next continuation.
         LayoutBoxModelObject* next_continuation = Continuation();
         if (curr->IsLayoutInline())
-          ToLayoutInline(curr)->SetContinuation(next_continuation);
+          To<LayoutInline>(curr)->SetContinuation(next_continuation);
         else if (auto* curr_block_flow = DynamicTo<LayoutBlockFlow>(curr))
           curr_block_flow->SetContinuation(next_continuation);
         else
@@ -4187,7 +4188,7 @@ PhysicalOffset LayoutBlockFlow::AccumulateRelativePositionOffsets() const {
   for (const LayoutObject* p = InlineElementContinuation();
        p && p->IsLayoutInline(); p = p->Parent()) {
     if (p->IsInFlowPositioned())
-      offset += ToLayoutInline(p)->RelativePositionOffset();
+      offset += To<LayoutInline>(p)->RelativePositionOffset();
   }
   return offset;
 }
@@ -4862,7 +4863,7 @@ void LayoutBlockFlow::AddOutlineRects(
     // FIXME: This is wrong for vertical writing-modes.
     // https://bugs.webkit.org/show_bug.cgi?id=46781
     bool prev_inline_has_line_box =
-        ToLayoutInline(inline_element_continuation->ContinuationRoot())
+        To<LayoutInline>(inline_element_continuation->ContinuationRoot())
             ->FirstLineBox();
     LayoutUnit top_margin =
         prev_inline_has_line_box ? CollapsedMarginBefore() : LayoutUnit();

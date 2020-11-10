@@ -102,13 +102,13 @@ class CORE_EXPORT NGInlineItem {
   // optimization if this is false.
   bool ShouldCreateBoxFragment() const {
     if (Type() == kOpenTag || Type() == kCloseTag)
-      return ToLayoutInline(layout_object_)->ShouldCreateBoxFragment();
+      return To<LayoutInline>(layout_object_)->ShouldCreateBoxFragment();
     DCHECK_EQ(Type(), kAtomicInline);
     return false;
   }
   void SetShouldCreateBoxFragment() {
     DCHECK(Type() == kOpenTag || Type() == kCloseTag);
-    ToLayoutInline(layout_object_)->SetShouldCreateBoxFragment();
+    To<LayoutInline>(layout_object_)->SetShouldCreateBoxFragment();
   }
 
   unsigned StartOffset() const { return start_offset_; }
@@ -160,7 +160,7 @@ class CORE_EXPORT NGInlineItem {
     DCHECK(Type() == kOpenTag || Type() == kCloseTag);
     // TODO(kojii): Should use break token when NG has its own tree building.
     return !GetLayoutObject()->IsLayoutInline() ||
-           !ToLayoutInline(GetLayoutObject())->Continuation();
+           !To<LayoutInline>(GetLayoutObject())->Continuation();
   }
 
   void SetStyleVariant(NGStyleVariant style_variant) {

@@ -321,7 +321,7 @@ void CollectInlinesInternal(ItemsBuilder* builder,
       // should not appear. LayoutObject tree should have created an anonymous
       // box to prevent having inline/block-mixed children.
       DCHECK(node->IsInline());
-      LayoutInline* layout_inline = ToLayoutInline(node);
+      auto* layout_inline = To<LayoutInline>(node);
       builder->UpdateShouldCreateBoxFragment(layout_inline);
 
       builder->EnterInline(layout_inline);

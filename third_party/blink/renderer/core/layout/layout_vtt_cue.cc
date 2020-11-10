@@ -69,9 +69,9 @@ class SnapToLinesLayouter {
 };
 
 InlineFlowBox* SnapToLinesLayouter::FindFirstLineBox() const {
-  if (!cue_box_.FirstChild()->IsLayoutInline())
-    return nullptr;
-  return ToLayoutInline(cue_box_.FirstChild())->FirstLineBox();
+  if (auto* first_inline = DynamicTo<LayoutInline>(cue_box_.FirstChild()))
+    return first_inline->FirstLineBox();
+  return nullptr;
 }
 
 LayoutUnit SnapToLinesLayouter::ComputeInitialPositionAdjustment(

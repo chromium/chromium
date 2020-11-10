@@ -293,12 +293,12 @@ void NGContainerFragmentBuilder::
     // the given descendant.
     if (!candidate.inline_container &&
         IsInlineContainerForNode(candidate.node, layout_object_))
-      candidate.inline_container = ToLayoutInline(layout_object_);
+      candidate.inline_container = To<LayoutInline>(layout_object_);
 
     // Ensure that the inline_container is a continuation root.
     if (candidate.inline_container) {
       candidate.inline_container =
-          ToLayoutInline(candidate.inline_container->ContinuationRoot());
+          To<LayoutInline>(candidate.inline_container->ContinuationRoot());
     }
   }
 }

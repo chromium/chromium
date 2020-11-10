@@ -63,8 +63,7 @@ FloatRect ClipPathClipper::LocalReferenceBox(const LayoutObject& object) {
   if (object.IsBox())
     return FloatRect(To<LayoutBox>(object).BorderBoxRect());
 
-  SECURITY_DCHECK(object.IsLayoutInline());
-  return FloatRect(ToLayoutInline(object).ReferenceBoxForClipPath());
+  return FloatRect(To<LayoutInline>(object).ReferenceBoxForClipPath());
 }
 
 base::Optional<FloatRect> ClipPathClipper::LocalClipPathBoundingBox(

@@ -48,7 +48,7 @@ void InvalidateInlineItems(LayoutObject* object) {
 
   if (auto* layout_text = DynamicTo<LayoutText>(object)) {
     layout_text->InvalidateInlineItems();
-  } else if (auto* layout_inline = ToLayoutInlineOrNull(object)) {
+  } else if (auto* layout_inline = DynamicTo<LayoutInline>(object)) {
     // In some cases, only top-level objects are moved, when |SplitFlow()| moves
     // subtree, or when moving without |notify_layout_object|. Ensure to
     // invalidate all descendants in this inline formatting context.

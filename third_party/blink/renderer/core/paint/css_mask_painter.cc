@@ -50,8 +50,7 @@ base::Optional<IntRect> CSSMaskPainter::MaskBoundingBox(
     // For inline elements, depends on the value of box-decoration-break
     // there could be one box in multiple fragments or multiple boxes.
     // Either way here we are only interested in the bounding box of them.
-    DCHECK(object.IsLayoutInline());
-    maximum_mask_region = ToLayoutInline(object).PhysicalLinesBoundingBox();
+    maximum_mask_region = To<LayoutInline>(object).PhysicalLinesBoundingBox();
   }
   if (style.HasMaskBoxImageOutsets())
     maximum_mask_region.Expand(style.MaskBoxImageOutsets());

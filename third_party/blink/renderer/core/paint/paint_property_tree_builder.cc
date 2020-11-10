@@ -2477,7 +2477,7 @@ void FragmentPaintPropertyTreeBuilder::UpdatePaintOffset() {
         } else {
           do {
             relative_offset +=
-                ToLayoutInline(container)->OffsetForInFlowPosition();
+                To<LayoutInline>(container)->OffsetForInFlowPosition();
             container = container->Container();
           } while (container->IsLayoutInline());
         }
@@ -2515,7 +2515,7 @@ void FragmentPaintPropertyTreeBuilder::UpdatePaintOffset() {
                   box_model_object.IsInsideFlowThread()));
           DCHECK(box_model_object.IsBox());
           context_.current.paint_offset +=
-              ToLayoutInline(container)->OffsetForInFlowPositionedInline(
+              To<LayoutInline>(container)->OffsetForInFlowPositionedInline(
                   To<LayoutBox>(box_model_object));
         }
         break;
@@ -2540,7 +2540,7 @@ void FragmentPaintPropertyTreeBuilder::UpdatePaintOffset() {
           DCHECK(container->CanContainFixedPositionObjects());
           DCHECK(box_model_object.IsBox());
           context_.current.paint_offset +=
-              ToLayoutInline(container)->OffsetForInFlowPositionedInline(
+              To<LayoutInline>(container)->OffsetForInFlowPositionedInline(
                   To<LayoutBox>(box_model_object));
         }
         break;

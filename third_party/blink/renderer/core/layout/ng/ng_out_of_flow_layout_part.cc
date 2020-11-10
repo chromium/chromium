@@ -78,9 +78,8 @@ const LayoutInline* GetOOFContainingBlockFromAnonymous(
     absolute_containing_block =
         To<LayoutBoxModelObject>(absolute_containing_block->Container());
   }
-  DCHECK(absolute_containing_block->IsLayoutInline());
   // Make absolute_containing_block continuation root.
-  return ToLayoutInline(absolute_containing_block->ContinuationRoot());
+  return To<LayoutInline>(absolute_containing_block->ContinuationRoot());
 }
 
 }  // namespace
@@ -277,7 +276,7 @@ bool NGOutOfFlowLayoutPart::SweepLegacyCandidates(
 
     container_builder_->AddOutOfFlowLegacyCandidate(
         NGBlockNode(layout_box), static_position,
-        ToLayoutInlineOrNull(css_container));
+        DynamicTo<LayoutInline>(css_container));
   }
   return true;
 }

@@ -164,7 +164,7 @@ static inline void DirtyLineBoxesForObject(LayoutObject* o, bool full_layout) {
   if (o->IsText()) {
     To<LayoutText>(o)->DirtyOrDeleteLineBoxesIfNeeded(full_layout);
   } else {
-    ToLayoutInline(o)->DirtyLineBoxes(full_layout);
+    To<LayoutInline>(o)->DirtyLineBoxes(full_layout);
   }
 }
 
@@ -1603,7 +1603,7 @@ static inline void AdjustMinMaxForInlineFlow(LayoutObject* child,
   // Add in padding/border/margin from the appropriate side of
   // the element.
   LayoutUnit bpm =
-      GetBorderPaddingMargin(ToLayoutInline(*child), end_of_inline);
+      GetBorderPaddingMargin(To<LayoutInline>(*child), end_of_inline);
   child_min += bpm;
   child_max += bpm;
 }
@@ -1954,7 +1954,7 @@ void LayoutBlockFlow::ComputeInlinePreferredLogicalWidths(
 
 static bool IsInlineWithOutlineAndContinuation(const LayoutObject& o) {
   return o.IsLayoutInline() && o.StyleRef().HasOutline() &&
-         !o.IsElementContinuation() && ToLayoutInline(o).Continuation();
+         !o.IsElementContinuation() && To<LayoutInline>(o).Continuation();
 }
 
 bool LayoutBlockFlow::ShouldTruncateOverflowingText() const {
@@ -2044,7 +2044,7 @@ void LayoutBlockFlow::LayoutInlineChildren(bool relayout_children,
       } else if (o->IsText() ||
                  (o->IsLayoutInline() && !walker.AtEndOfInline())) {
         if (!o->IsText())
-          ToLayoutInline(o)->UpdateAlwaysCreateLineBoxes(
+          To<LayoutInline>(o)->UpdateAlwaysCreateLineBoxes(
               layout_state.IsFullLayout());
         if (layout_state.IsFullLayout() || o->SelfNeedsLayout()) {
           // In full layout mode, line boxes are deleted at the beginning of
@@ -2476,7 +2476,7 @@ void LayoutBlockFlow::AddVisualOverflowFromInlineChildren() {
       continue;
 
     Vector<PhysicalRect> outline_rects;
-    ToLayoutInline(o).AddOutlineRectsForContinuations(
+    To<LayoutInline>(o).AddOutlineRectsForContinuations(
         outline_rects, PhysicalOffset(),
         o.OutlineRectsShouldIncludeBlockVisualOverflow());
     if (!outline_rects.IsEmpty()) {

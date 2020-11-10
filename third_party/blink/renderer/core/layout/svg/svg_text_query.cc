@@ -65,7 +65,7 @@ static inline InlineFlowBox* FlowBoxForLayoutObject(
   if (layout_object->IsLayoutInline()) {
     // We're given a LayoutSVGInline or objects that derive from it
     // (LayoutSVGTSpan / LayoutSVGTextPath)
-    LayoutInline* layout_inline = ToLayoutInline(layout_object);
+    auto* layout_inline = To<LayoutInline>(layout_object);
 
     // LayoutSVGInline only ever contains a single line box.
     InlineFlowBox* flow_box = layout_inline->FirstLineBox();

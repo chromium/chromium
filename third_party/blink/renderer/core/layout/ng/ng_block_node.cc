@@ -1392,7 +1392,7 @@ void NGBlockNode::CopyFragmentDataToLayoutBoxForInlineChildren(
       if (layout_object && layout_object->IsLayoutInline() &&
           layout_object->StyleRef().HasOutline() &&
           !layout_object->IsElementContinuation() &&
-          ToLayoutInline(layout_object)->Continuation()) {
+          To<LayoutInline>(layout_object)->Continuation()) {
         box_->SetContainsInlineWithOutlineAndContinuation(true);
       }
 
@@ -1447,7 +1447,7 @@ void NGBlockNode::CopyFragmentItemsToLayoutBox(
 
       // Legacy compatibility. This flag is used in paint layer for
       // invalidation.
-      if (LayoutInline* layout_inline = ToLayoutInlineOrNull(layout_object)) {
+      if (auto* layout_inline = DynamicTo<LayoutInline>(layout_object)) {
         if (layout_inline->StyleRef().HasOutline() &&
             !layout_inline->IsElementContinuation() &&
             layout_inline->Continuation()) {

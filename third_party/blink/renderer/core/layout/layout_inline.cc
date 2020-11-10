@@ -216,7 +216,7 @@ LayoutInline* LayoutInline::InlineElementContinuation() const {
   NOT_DESTROYED();
   LayoutBoxModelObject* continuation = Continuation();
   if (!continuation || continuation->IsInline())
-    return ToLayoutInline(continuation);
+    return To<LayoutInline>(continuation);
   return To<LayoutBlockFlow>(continuation)->InlineElementContinuation();
 }
 
@@ -384,8 +384,7 @@ void LayoutInline::UpdateAlwaysCreateLineBoxes(bool full_layout) {
     return;
 
   const ComputedStyle& parent_style = Parent()->StyleRef();
-  LayoutInline* parent_layout_inline =
-      Parent()->IsLayoutInline() ? ToLayoutInline(Parent()) : nullptr;
+  auto* parent_layout_inline = DynamicTo<LayoutInline>(Parent());
   bool check_fonts = GetDocument().InNoQuirksMode();
   bool always_create_line_boxes_new =
       (parent_layout_inline && parent_layout_inline->AlwaysCreateLineBoxes()) ||
@@ -517,7 +516,7 @@ void LayoutInline::AddChild(LayoutObject* new_child,
 
 static LayoutBoxModelObject* NextContinuation(LayoutObject* layout_object) {
   if (layout_object->IsInline() && !layout_object->IsAtomicInlineLevel())
-    return ToLayoutInline(layout_object)->Continuation();
+    return To<LayoutInline>(layout_object)->Continuation();
   return To<LayoutBlockFlow>(layout_object)->InlineElementContinuation();
 }
 
@@ -616,7 +615,7 @@ void LayoutInline::SplitInlines(LayoutBlockFlow* from_block,
   for (LayoutObject* o = this; o != from_block; o = o->Parent()) {
     if (o->IsLayoutNGInsideListMarker())
       continue;
-    top_most_inline = ToLayoutInline(o);
+    top_most_inline = To<LayoutInline>(o);
     if (inlines_to_clone.size() < kCMaxSplitDepth)
       inlines_to_clone.push_back(top_most_inline);
     // Keep walking up the chain to ensure |topMostInline| is a child of
@@ -948,7 +947,7 @@ void LayoutInline::CollectCulledLineBoxRectsInFlippedBlocksDirection(
       }
     } else if (curr->IsLayoutInline()) {
       // If the child doesn't need line boxes either, then we can recur.
-      LayoutInline* curr_inline = ToLayoutInline(curr);
+      auto* curr_inline = To<LayoutInline>(curr);
       if (!curr_inline->AlwaysCreateLineBoxes()) {
         curr_inline->CollectCulledLineBoxRectsInFlippedBlocksDirection(
             yield, container);
@@ -1033,14 +1032,14 @@ PhysicalOffset LayoutInline::AnchorPhysicalLocation() const {
   // sibling is not in the same line).
   if (const auto* sibling = NextSibling()) {
     if (sibling->IsLayoutInline())
-      return ToLayoutInline(sibling)->AnchorPhysicalLocation();
+      return To<LayoutInline>(sibling)->AnchorPhysicalLocation();
     if (sibling->IsText())
       return To<LayoutText>(sibling)->FirstLineBoxTopLeft();
     if (sibling->IsBox())
       return ToLayoutBox(sibling)->PhysicalLocation();
   }
   if (Parent()->IsLayoutInline())
-    return ToLayoutInline(Parent())->AnchorPhysicalLocation();
+    return To<LayoutInline>(Parent())->AnchorPhysicalLocation();
   return PhysicalOffset();
 }
 
@@ -1317,7 +1316,7 @@ InlineBox* LayoutInline::CulledInlineFirstLineBox() const {
     if (curr->IsBox())
       return ToLayoutBox(curr)->InlineBoxWrapper();
     if (curr->IsLayoutInline()) {
-      LayoutInline* curr_inline = ToLayoutInline(curr);
+      auto* curr_inline = To<LayoutInline>(curr);
       InlineBox* result = curr_inline->FirstLineBoxIncludingCulling();
       if (result)
         return result;
@@ -1342,7 +1341,7 @@ InlineBox* LayoutInline::CulledInlineLastLineBox() const {
     if (curr->IsBox())
       return ToLayoutBox(curr)->InlineBoxWrapper();
     if (curr->IsLayoutInline()) {
-      LayoutInline* curr_inline = ToLayoutInline(curr);
+      auto* curr_inline = To<LayoutInline>(curr);
       InlineBox* result = curr_inline->LastLineBoxIncludingCulling();
       if (result)
         return result;
@@ -1387,7 +1386,7 @@ PhysicalRect LayoutInline::CulledInlineVisualOverflowBoundingBox() const {
       }
     } else if (curr->IsLayoutInline()) {
       // If the child doesn't need line boxes either, then we can recur.
-      LayoutInline* curr_inline = ToLayoutInline(curr);
+      auto* curr_inline = To<LayoutInline>(curr);
       if (!curr_inline->AlwaysCreateLineBoxes()) {
         result.UniteIfNonZero(
             curr_inline->CulledInlineVisualOverflowBoundingBox());
@@ -1652,7 +1651,7 @@ void LayoutInline::DirtyLineBoxes(bool full_layout) {
           curr_box->InlineBoxWrapper()->Root().MarkDirty();
       } else if (!curr->SelfNeedsLayout()) {
         if (curr->IsLayoutInline()) {
-          LayoutInline* curr_inline = ToLayoutInline(curr);
+          auto* curr_inline = To<LayoutInline>(curr);
           for (InlineFlowBox* child_line : *curr_inline->LineBoxes())
             child_line->Root().MarkDirty();
         } else if (curr->IsText()) {

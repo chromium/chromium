@@ -1789,7 +1789,7 @@ const LayoutObject* NGInlineCursor::CulledInlineTraversal::Find(
       continue;
     }
 
-    if (const LayoutInline* child_layout_inline = ToLayoutInlineOrNull(child)) {
+    if (const auto* child_layout_inline = DynamicTo<LayoutInline>(child)) {
       if (child_layout_inline->ShouldCreateBoxFragment())
         return child;
 
@@ -1876,8 +1876,7 @@ void NGInlineCursor::MoveToIncludingCulledInline(
 
   // If this is a culled inline, find fragments for descendant |LayoutObject|s
   // that contribute to the culled inline.
-  if (const LayoutInline* layout_inline =
-          ToLayoutInlineOrNull(&layout_object)) {
+  if (const auto* layout_inline = DynamicTo<LayoutInline>(layout_object)) {
     if (!layout_inline->ShouldCreateBoxFragment())
       MoveToFirstForCulledInline(*layout_inline);
   }

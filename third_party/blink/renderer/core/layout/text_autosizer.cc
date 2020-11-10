@@ -451,7 +451,7 @@ float TextAutosizer::Inflate(LayoutObject* parent,
              (parent->ChildrenInline() || behavior == kDescendToInnerBlocks)) {
     child = To<LayoutBlock>(parent)->FirstChild();
   } else if (parent->IsLayoutInline()) {
-    child = ToLayoutInline(parent)->FirstChild();
+    child = To<LayoutInline>(parent)->FirstChild();
   }
 
   while (child) {

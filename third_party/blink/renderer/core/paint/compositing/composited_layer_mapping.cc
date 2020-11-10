@@ -481,7 +481,7 @@ void CompositedLayerMapping::ComputeBoundsOfOwningLayer(
   PhysicalOffset local_representative_point_for_fragmentation;
   if (owning_layer_.GetLayoutObject().IsLayoutInline()) {
     local_representative_point_for_fragmentation =
-        ToLayoutInline(owning_layer_.GetLayoutObject()).FirstLineBoxTopLeft();
+        To<LayoutInline>(owning_layer_.GetLayoutObject()).FirstLineBoxTopLeft();
   }
   // Blink will already have applied any necessary offset for sticky positioned
   // elements. If the compositor is handling sticky offsets for this layer, we

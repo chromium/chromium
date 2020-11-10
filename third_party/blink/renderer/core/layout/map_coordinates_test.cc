@@ -214,7 +214,7 @@ TEST_F(MapCoordinatesTest, RelposInlineInRelposInline) {
   )HTML");
 
   LayoutObject* target = GetLayoutObjectByElementId("target");
-  LayoutInline* parent = ToLayoutInline(target->Parent());
+  auto* parent = To<LayoutInline>(target->Parent());
   auto* containing_block = To<LayoutBlockFlow>(parent->Parent());
 
   PhysicalOffset mapped_point =
@@ -1774,7 +1774,7 @@ TEST_F(MapCoordinatesTest, IgnoreScrollOffsetForInline) {
   )HTML");
 
   LayoutBox* scroller = ToLayoutBox(GetLayoutObjectByElementId("scroller"));
-  LayoutInline* box = ToLayoutInline(GetLayoutObjectByElementId("box"));
+  auto* box = To<LayoutInline>(GetLayoutObjectByElementId("box"));
 
   EXPECT_EQ(PhysicalOffset(0, 10),
             MapLocalToAncestor(box, scroller, PhysicalOffset()));

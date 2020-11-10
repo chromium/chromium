@@ -303,7 +303,7 @@ void NGBoxFragmentBuilder::AddOutOfFlowLegacyCandidate(
     const LayoutInline* inline_container) {
   oof_positioned_candidates_.emplace_back(
       node, static_position,
-      inline_container ? ToLayoutInline(inline_container->ContinuationRoot())
+      inline_container ? To<LayoutInline>(inline_container->ContinuationRoot())
                        : nullptr);
 }
 

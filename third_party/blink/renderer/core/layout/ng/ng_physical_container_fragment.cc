@@ -341,9 +341,8 @@ void NGPhysicalContainerFragment::AddOutlineRectsForDescendant(
     }
 
     DCHECK(descendant_layout_object);
-    DCHECK(descendant_layout_object->IsLayoutInline());
-    const LayoutInline* descendant_layout_inline =
-        ToLayoutInline(descendant_layout_object);
+    const auto* descendant_layout_inline =
+        To<LayoutInline>(descendant_layout_object);
     // As an optimization, an ancestor has added rects for its line boxes
     // covering descendants' line boxes, so descendants don't need to add line
     // boxes again. For example, if the parent is a LayoutBlock, it adds rects
@@ -375,8 +374,8 @@ void NGPhysicalContainerFragment::AddOutlineRectsForDescendant(
       // the suppression makes such continuation not reachable. Check the
       // continuation from LayoutInline in such case.
       DCHECK(GetLayoutObject());
-      if (LayoutInline* first_layout_inline =
-              ToLayoutInlineOrNull(GetLayoutObject()->SlowFirstChild())) {
+      if (auto* first_layout_inline =
+              DynamicTo<LayoutInline>(GetLayoutObject()->SlowFirstChild())) {
         if (!first_layout_inline->IsElementContinuation()) {
           first_layout_inline->AddOutlineRectsForChildrenAndContinuations(
               *outline_rects, additional_offset, outline_type);

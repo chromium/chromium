@@ -356,7 +356,7 @@ TEST_F(NGFragmentItemTest, SelfPaintingInlineBox) {
 
   // Invalidate the ink overflow of a child in `#self_painting_inline_box`.
   auto* self_painting_inline_box =
-      ToLayoutInline(GetLayoutObjectByElementId("self_painting_inline_box"));
+      To<LayoutInline>(GetLayoutObjectByElementId("self_painting_inline_box"));
   ASSERT_TRUE(self_painting_inline_box->HasSelfPaintingLayer());
   auto* text = To<LayoutText>(self_painting_inline_box->FirstChild());
   text->InvalidateVisualOverflow();

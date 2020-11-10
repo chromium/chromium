@@ -104,7 +104,10 @@ class LayoutQuote final : public LayoutInline {
   String text_;
 };
 
-DEFINE_LAYOUT_OBJECT_TYPE_CASTS(LayoutQuote, IsQuote());
+template <>
+struct DowncastTraits<LayoutQuote> {
+  static bool AllowFrom(const LayoutObject& object) { return object.IsQuote(); }
+};
 
 }  // namespace blink
 

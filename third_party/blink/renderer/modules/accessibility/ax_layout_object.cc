@@ -809,7 +809,7 @@ bool AXLayoutObject::CanIgnoreSpaceNextTo(LayoutObject* layout,
   }
 
   // Test against the appropriate child text node.
-  LayoutInline* layout_inline = ToLayoutInline(layout);
+  auto* layout_inline = To<LayoutInline>(layout);
   LayoutObject* child =
       is_after ? layout_inline->FirstChild() : layout_inline->LastChild();
   return CanIgnoreSpaceNextTo(child, is_after);
@@ -1127,7 +1127,7 @@ AXObject* AXLayoutObject::NextOnLine() const {
       // layout. This is known as "culled inline". We have to recursively look
       // to the LayoutInline's children via "LastLineBoxIncludingCulling".
       inline_box =
-          ToLayoutInline(GetLayoutObject())->LastLineBoxIncludingCulling();
+          To<LayoutInline>(GetLayoutObject())->LastLineBoxIncludingCulling();
     } else if (GetLayoutObject()->IsText()) {
       inline_box = To<LayoutText>(GetLayoutObject())->LastTextBox();
     }
@@ -1244,7 +1244,7 @@ AXObject* AXLayoutObject::PreviousOnLine() const {
       // layout. This is known as "culled inline". We have to recursively look
       // to the LayoutInline's children via "FirstLineBoxIncludingCulling".
       inline_box =
-          ToLayoutInline(GetLayoutObject())->FirstLineBoxIncludingCulling();
+          To<LayoutInline>(GetLayoutObject())->FirstLineBoxIncludingCulling();
     } else if (GetLayoutObject()->IsText()) {
       inline_box = To<LayoutText>(GetLayoutObject())->FirstTextBox();
     }
@@ -1612,17 +1612,17 @@ static inline LayoutInline* StartOfContinuations(LayoutObject* layout_object) {
   // For inline elements, if it's a continuation, the start of the chain
   // is always the primary layout object associated with the node.
   if (layout_object->IsInlineElementContinuation())
-    return ToLayoutInline(layout_object->GetNode()->GetLayoutObject());
+    return To<LayoutInline>(layout_object->GetNode()->GetLayoutObject());
 
   // Blocks with a previous continuation always have a next continuation,
   // so we can get the next continuation and do the same trick to get
   // the primary layout object associated with the node.
   auto* layout_block_flow = DynamicTo<LayoutBlockFlow>(layout_object);
   if (layout_block_flow && layout_block_flow->InlineElementContinuation()) {
-    LayoutInline* result =
-        ToLayoutInline(layout_block_flow->InlineElementContinuation()
-                           ->GetNode()
-                           ->GetLayoutObject());
+    auto* result =
+        To<LayoutInline>(layout_block_flow->InlineElementContinuation()
+                             ->GetNode()
+                             ->GetLayoutObject());
     DCHECK_NE(result, layout_object);
     return result;
   }
@@ -1663,7 +1663,7 @@ static bool IsContinuation(LayoutObject* layout_object) {
 // have one.
 LayoutObject* GetContinuation(LayoutObject* layout_object) {
   if (layout_object->IsLayoutInline())
-    return ToLayoutInline(layout_object)->Continuation();
+    return To<LayoutInline>(layout_object)->Continuation();
 
   if (auto* block_flow = DynamicTo<LayoutBlockFlow>(layout_object))
     return block_flow->Continuation();
