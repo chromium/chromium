@@ -91,8 +91,6 @@ WebGraphicsContext3DProviderImpl::GetWebglPreferences() const {
 
     if (gpu_feature_info.IsWorkaroundEnabled(MAX_MSAA_SAMPLE_COUNT_2))
       prefs.msaa_sample_count = 2;
-    else if (gpu_feature_info.IsWorkaroundEnabled(MAX_MSAA_SAMPLE_COUNT_4))
-      prefs.msaa_sample_count = 4;
 
     if (command_line->HasSwitch(switches::kWebglMSAASampleCount)) {
       std::string sample_count =
