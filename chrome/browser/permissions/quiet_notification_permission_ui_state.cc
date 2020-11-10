@@ -5,6 +5,7 @@
 #include "chrome/browser/permissions/quiet_notification_permission_ui_state.h"
 
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -27,6 +28,9 @@ void QuietNotificationPermissionUiState::RegisterProfilePrefs(
   registry->RegisterBooleanPref(
       prefs::kHadThreeConsecutiveNotificationPermissionDenies,
       false /* default_value */);
+  registry->RegisterIntegerPref(
+      prefs::kQuietNotificationPermissionUiEnablingMethod,
+      static_cast<int>(EnablingMethod::kUnspecified));
 }
 
 // static
@@ -43,4 +47,20 @@ bool QuietNotificationPermissionUiState::ShouldShowPromo(Profile* profile) {
 void QuietNotificationPermissionUiState::PromoWasShown(Profile* profile) {
   profile->GetPrefs()->SetBoolean(
       prefs::kQuietNotificationPermissionPromoWasShown, true /* value */);
+}
+
+// static
+QuietNotificationPermissionUiState::EnablingMethod
+QuietNotificationPermissionUiState::GetQuietUiEnablingMethod(Profile* profile) {
+  // Since the `kEnableQuietNotificationPermissionUi` pref is not reset if the
+  // `kQuietNotificationPrompts` is disabled, we have to check both values to
+  // ensure that the quiet UI is enabled.
+  if (!base::FeatureList::IsEnabled(features::kQuietNotificationPrompts) ||
+      !profile->GetPrefs()->GetBoolean(
+          prefs::kEnableQuietNotificationPermissionUi)) {
+    return EnablingMethod::kUnspecified;
+  }
+
+  return static_cast<EnablingMethod>(profile->GetPrefs()->GetInteger(
+      prefs::kQuietNotificationPermissionUiEnablingMethod));
 }

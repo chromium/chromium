@@ -65,6 +65,7 @@ extern const char kManagedSerialBlockedForUrls[];
 extern const char kManagedInsecurePrivateNetworkAllowedForUrls[];
 
 extern const char kEnableQuietNotificationPermissionUi[];
+extern const char kQuietNotificationPermissionUiEnablingMethod[];
 
 #if defined(OS_ANDROID)
 extern const char kNotificationsVibrateEnabled[];

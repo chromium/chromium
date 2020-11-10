@@ -111,10 +111,17 @@ const char kManagedSerialBlockedForUrls[] =
 const char kManagedInsecurePrivateNetworkAllowedForUrls[] =
     "profile.managed_insecure_private_network_allowed_for_urls";
 
-// Boolean indicating whether the quiet UX is enabled for notification
+// Boolean indicating whether the quiet UI is enabled for notification
 // permission requests.
 const char kEnableQuietNotificationPermissionUi[] =
     "profile.content_settings.enable_quiet_permission_ui.notifications";
+
+// Enum indicating by which method the quiet UI has been enabled for
+// notification permission requests. This is stored as of M88 and will be
+// backfilled if the quiet UI is enabled but this preference has no value.
+const char kQuietNotificationPermissionUiEnablingMethod[] =
+    "profile.content_settings.enable_quiet_permission_ui_enabling_method."
+    "notifications";
 
 #if defined(OS_ANDROID)
 // Enable vibration for web notifications.

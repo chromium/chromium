@@ -21,6 +21,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/permissions/quiet_notification_permission_ui_config.h"
+#include "chrome/browser/permissions/quiet_notification_permission_ui_state.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
@@ -33,6 +34,8 @@
 #include "components/prefs/scoped_user_pref_update.h"
 
 namespace {
+
+using EnablingMethod = QuietNotificationPermissionUiState::EnablingMethod;
 
 // Enable the quiet UX after 3 consecutive denies in adapative activation mode.
 constexpr int kConsecutiveDeniesThresholdForActivation = 3u;
@@ -195,6 +198,9 @@ void AdaptiveQuietNotificationPermissionUiEnabler::
     base::AutoReset<bool> enabling_adaptively(&is_enabling_adaptively_, true);
     profile_->GetPrefs()->SetBoolean(
         prefs::kEnableQuietNotificationPermissionUi, true /* value */);
+    // TODO(crbug.com/1147467): If `kQuietNotificationPermissionShouldShowPromo`
+    // stops being a good indicator as to how the quiet UI pref was enabled,
+    // remove the |BackfillEnablingMethodIfMissing| logic.
     profile_->GetPrefs()->SetBoolean(
         prefs::kQuietNotificationPermissionShouldShowPromo, true /* value */);
   }
@@ -245,6 +251,8 @@ AdaptiveQuietNotificationPermissionUiEnabler::
     base::UmaHistogramBoolean(kIsQuietUiEnabledInPrefs,
                               is_quiet_ui_enabled_in_prefs);
   }
+
+  BackfillEnablingMethodIfMissing();
 }
 
 AdaptiveQuietNotificationPermissionUiEnabler::
@@ -259,17 +267,43 @@ void AdaptiveQuietNotificationPermissionUiEnabler::OnQuietUiStateChanged() {
   if (is_quiet_ui_enabled_in_prefs) {
     base::UmaHistogramBoolean(kDidAdaptivelyEnableQuietUiInPrefs,
                               is_enabling_adaptively_);
+    profile_->GetPrefs()->SetInteger(
+        prefs::kQuietNotificationPermissionUiEnablingMethod,
+        static_cast<int>(is_enabling_adaptively_ ? EnablingMethod::kAdaptive
+                                                 : EnablingMethod::kManual));
   } else {
     // Reset the promo state so that if the quiet UI is enabled adaptively
     // again, the promo will be shown again.
-    profile_->GetPrefs()->SetBoolean(
-        prefs::kQuietNotificationPermissionShouldShowPromo, false /* value */);
-    profile_->GetPrefs()->SetBoolean(
-        prefs::kQuietNotificationPermissionPromoWasShown, false /* value */);
+    profile_->GetPrefs()->ClearPref(
+        prefs::kQuietNotificationPermissionShouldShowPromo);
+    profile_->GetPrefs()->ClearPref(
+        prefs::kQuietNotificationPermissionPromoWasShown);
+    profile_->GetPrefs()->ClearPref(
+        prefs::kQuietNotificationPermissionUiEnablingMethod);
 
     // If the users has just turned off the quiet UI, clear interaction history
     // so that if we are in adaptive mode, and the triggering conditions are
     // met, we won't turn it back on immediately.
     ClearInteractionHistory(base::Time(), base::Time::Max());
   }
+}
+
+void AdaptiveQuietNotificationPermissionUiEnabler::
+    BackfillEnablingMethodIfMissing() {
+  if (QuietNotificationPermissionUiState::GetQuietUiEnablingMethod(profile_) !=
+      EnablingMethod::kUnspecified) {
+    return;
+  }
+
+  // `kQuietNotificationPermissionUiEnablingMethod` was not populated prior to
+  // M88, but `kQuietNotificationPermissionShouldShowPromo` is a solid indicator
+  // as to how the setting was enabled in the first place because it's only set
+  // to true when the quiet UI has been enabled adaptively.
+  const bool has_enabled_adaptively = profile_->GetPrefs()->GetBoolean(
+      prefs::kQuietNotificationPermissionShouldShowPromo);
+
+  profile_->GetPrefs()->SetInteger(
+      prefs::kQuietNotificationPermissionUiEnablingMethod,
+      static_cast<int>(has_enabled_adaptively ? EnablingMethod::kAdaptive
+                                              : EnablingMethod::kManual));
 }

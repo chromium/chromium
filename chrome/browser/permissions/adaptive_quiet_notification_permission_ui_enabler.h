@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_PERMISSIONS_ADAPTIVE_QUIET_NOTIFICATION_PERMISSION_UI_ENABLER_H_
 #define CHROME_BROWSER_PERMISSIONS_ADAPTIVE_QUIET_NOTIFICATION_PERMISSION_UI_ENABLER_H_
 
+#include <memory>
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/singleton.h"
@@ -61,12 +62,21 @@ class AdaptiveQuietNotificationPermissionUiEnabler : public KeyedService {
   // The |clock| must outlive this instance.
   void set_clock_for_testing(base::Clock* clock) { clock_ = clock; }
 
+  // Only used for testing.
+  void BackfillEnablingMethodIfMissingForTesting() {
+    BackfillEnablingMethodIfMissing();
+  }
+
  private:
   explicit AdaptiveQuietNotificationPermissionUiEnabler(Profile* profile);
   ~AdaptiveQuietNotificationPermissionUiEnabler() override;
 
   // Called when the quiet UI state is updated in preferences.
   void OnQuietUiStateChanged();
+
+  // Retroactively backfills the enabling method, which was not populated
+  // before M88.
+  void BackfillEnablingMethodIfMissing();
 
   Profile* profile_;
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
