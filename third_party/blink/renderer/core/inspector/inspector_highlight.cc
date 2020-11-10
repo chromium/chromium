@@ -320,20 +320,6 @@ std::unique_ptr<protocol::DictionaryValue> BuildElementInfo(Element* element) {
   if (!layout_object || !containing_view)
     return element_info;
 
-  // if (auto* context = element->GetDisplayLockContext()) {
-  //  if (context->IsLocked()) {
-  //    // If it's a locked element, use the values from the locked frame rect.
-  //    // TODO(vmpstr): Verify that these values are correct here.
-  //    element_info->setString(
-  //        "nodeWidth",
-  //        String::Number(context->GetLockedContentLogicalWidth().ToDouble()));
-  //    element_info->setString(
-  //        "nodeHeight",
-  //        String::Number(context->GetLockedContentLogicalHeight().ToDouble()));
-  //  }
-  //  return element_info;
-  //}
-
   // layoutObject the getBoundingClientRect() data in the tooltip
   // to be consistent with the rulers (see http://crbug.com/262338).
   DOMRect* bounding_box = element->getBoundingClientRect();
@@ -1476,6 +1462,13 @@ void InspectorHighlight::AppendNodeHighlight(
   AppendQuad(padding, highlight_config.padding, Color::kTransparent, "padding");
   AppendQuad(border, highlight_config.border, Color::kTransparent, "border");
   AppendQuad(margin, highlight_config.margin, Color::kTransparent, "margin");
+
+  // Don't append node's grid / flex info if it's locked since those values may
+  // not be generated yet.
+  if (auto* context = layout_object->GetDisplayLockContext()) {
+    if (context->IsLocked())
+      return;
+  }
 
   if (highlight_config.css_grid != Color::kTransparent ||
       highlight_config.grid_highlight_config) {
