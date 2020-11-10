@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/core/dom/container_node.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/frame/event_handler_registry.h"
@@ -43,6 +44,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
+#include "third_party/blink/renderer/core/html/forms/html_field_set_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_text_area_element.h"
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
@@ -685,6 +687,20 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
 
     AdjustStyleForDisplay(style, layout_parent_style, element,
                           element ? &element->GetDocument() : nullptr);
+
+    // TOOD(crbug.com/1146925): Sticky content in a scrollable FIELDSET triggers
+    // a DHCECK failure in |StickyPositionScrollingConstraints::
+    // AncestorContainingBlockOffset()|. We disable it until the root cause is
+    // fixed.
+    if (style.GetPosition() == EPosition::kSticky && element) {
+      for (const Node& ancestor : FlatTreeTraversal::AncestorsOf(*element)) {
+        if (const auto* fieldset = DynamicTo<HTMLFieldSetElement>(ancestor)) {
+          if (!fieldset->ComputedStyleRef().IsOverflowVisibleAlongBothAxes())
+            style.SetPosition(EPosition::kStatic);
+          break;
+        }
+      }
+    }
 
     // If this is a child of a LayoutNGCustom, we need the name of the parent
     // layout function for invalidation purposes.
