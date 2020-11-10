@@ -11,7 +11,7 @@
     [CallWith=ScriptState, RaisesException, MeasureAs=WebCodecsVideoEncoder]
     constructor(VideoEncoderInit init);
 
-    // The number of pending decode requests. This does not include requests that
+    // The number of pending encode requests. This does not include requests that
     // have been sent to the underlying codec.
     //
     // Applications can minimize underflow by enqueueing encode requests until
@@ -55,6 +55,6 @@
     [RaisesException]
     void close();
 
-    // Which state the decoder is in, indicating which methods can be called.
+    // Which state the encoder is in, indicating which methods can be called.
     readonly attribute CodecState state;
 };
