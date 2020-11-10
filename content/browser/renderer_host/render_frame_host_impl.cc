@@ -3885,21 +3885,6 @@ bool RenderFrameHostImpl::IsFeatureEnabled(
                                 feature, GetLastCommittedOrigin());
 }
 
-bool RenderFrameHostImpl::IsFeatureEnabled(
-    blink::mojom::DocumentPolicyFeature feature) {
-  blink::mojom::PolicyValueType feature_type =
-      blink::GetDocumentPolicyFeatureInfoMap().at(feature).default_value.Type();
-  return IsFeatureEnabled(
-      feature, blink::PolicyValue::CreateMaxPolicyValue(feature_type));
-}
-
-bool RenderFrameHostImpl::IsFeatureEnabled(
-    blink::mojom::DocumentPolicyFeature feature,
-    blink::PolicyValue threshold_value) {
-  return document_policy_ &&
-         document_policy_->IsFeatureEnabled(feature, threshold_value);
-}
-
 void RenderFrameHostImpl::ViewSource() {
   delegate_->ViewSource(this);
 }
@@ -7047,30 +7032,11 @@ void RenderFrameHostImpl::ClearFocusedElement() {
   GetAssociatedLocalFrame()->ClearFocusedElement();
 }
 
-void RenderFrameHostImpl::BlockRequestsForFrame() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  ForEachFrame(this,
-               base::BindRepeating([](RenderFrameHostImpl* render_frame_host) {
-                 if (render_frame_host->frame_)
-                   render_frame_host->frame_->BlockRequests();
-               }));
-}
-
 void RenderFrameHostImpl::ResumeBlockedRequestsForFrame() {
   ForEachFrame(this,
                base::BindRepeating([](RenderFrameHostImpl* render_frame_host) {
                  if (render_frame_host->frame_)
                    render_frame_host->frame_->ResumeBlockedRequests();
-               }));
-}
-
-void RenderFrameHostImpl::CancelBlockedRequestsForFrame() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  ForEachFrame(this,
-               base::BindRepeating([](RenderFrameHostImpl* render_frame_host) {
-                 if (render_frame_host->frame_)
-                   render_frame_host->frame_->CancelBlockedRequests();
                }));
 }
 
@@ -8205,29 +8171,6 @@ RenderFrameHostImpl::CreateNavigationRequestForCommit(
       is_same_document, std::move(web_bundle_navigation_info));
 }
 
-bool RenderFrameHostImpl::NavigationRequestWasIntendedForPendingEntry(
-    NavigationRequest* request,
-    const FrameHostMsg_DidCommitProvisionalLoad_Params& params,
-    bool same_document) {
-  NavigationEntryImpl* pending_entry = NavigationEntryImpl::FromNavigationEntry(
-      frame_tree()->controller()->GetPendingEntry());
-  if (!pending_entry)
-    return false;
-  if (request->nav_entry_id() != pending_entry->GetUniqueID())
-    return false;
-  if (!same_document) {
-    // Make sure that the pending entry was really loaded via
-    // LoadDataWithBaseURL and that it matches this handle.
-    // TODO(csharrison): The pending entry's base url should equal
-    // |params.base_url|. This is not the case for loads with invalid base urls.
-    if (request->common_params().url != params.base_url ||
-        pending_entry->GetBaseURLForDataURL().is_empty()) {
-      return false;
-    }
-  }
-  return true;
-}
-
 void RenderFrameHostImpl::BeforeUnloadTimeout() {
   if (render_view_host_->GetDelegate()->ShouldIgnoreUnresponsiveRenderer())
     return;
@@ -9353,12 +9296,6 @@ void RenderFrameHostImpl::EnsureDescendantsAreUnloading() {
   }
   for (RenderFrameHostImpl* document : rfhs_to_be_checked)
     document->parent_->RemoveChild(document->frame_tree_node());
-}
-
-void RenderFrameHostImpl::AddUniqueMessageToConsole(
-    blink::mojom::ConsoleMessageLevel level,
-    const std::string& message) {
-  AddMessageToConsoleImpl(level, message, true /* discard_duplicates */);
 }
 
 void RenderFrameHostImpl::AddMessageToConsoleImpl(

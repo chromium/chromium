@@ -120,16 +120,6 @@ void TestRenderFrameHost::ReportHeavyAdIssue(
   RenderFrameHostImpl::ReportHeavyAdIssue(resolution, reason);
 }
 
-void TestRenderFrameHost::AddUniqueMessageToConsole(
-    blink::mojom::ConsoleMessageLevel level,
-    const std::string& message) {
-  if (std::find(console_messages_.begin(), console_messages_.end(), message) ==
-      console_messages_.end()) {
-    console_messages_.push_back(message);
-  }
-  RenderFrameHostImpl::AddUniqueMessageToConsole(level, message);
-}
-
 bool TestRenderFrameHost::IsTestRenderFrameHost() const {
   return true;
 }

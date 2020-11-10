@@ -69,8 +69,6 @@ class TestRenderFrameHost : public RenderFrameHostImpl,
                            const std::string& message) override;
   void ReportHeavyAdIssue(blink::mojom::HeavyAdResolutionStatus resolution,
                           blink::mojom::HeavyAdReason reason) override;
-  void AddUniqueMessageToConsole(blink::mojom::ConsoleMessageLevel level,
-                                 const std::string& message) override;
   bool IsTestRenderFrameHost() const override;
 
   // Public overrides to expose RenderFrameHostImpl's mojo methods to tests.

@@ -478,18 +478,6 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // feature policy.
   virtual bool IsFeatureEnabled(blink::mojom::FeaturePolicyFeature feature) = 0;
 
-  // Returns true if the given |threshold_value| is below the threshold value
-  // specified in the policy for |feature| for this RenderFrameHost. See
-  // third_party/blink/public/common/feature_policy/document_policy.h for how to
-  // compare values of different types. Use this in the browser process to
-  // determine whether access to a feature is allowed.
-  virtual bool IsFeatureEnabled(blink::mojom::DocumentPolicyFeature feature,
-                                blink::PolicyValue threshold_value) = 0;
-  // Same as above, with |threshold_value| set to the max value the given
-  // |feature| can have.
-  virtual bool IsFeatureEnabled(
-      blink::mojom::DocumentPolicyFeature feature) = 0;
-
   // Opens view-source tab for the document last committed in this
   // RenderFrameHost.
   virtual void ViewSource() = 0;

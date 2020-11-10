@@ -357,9 +357,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   bool GetSuddenTerminationDisablerState(
       blink::mojom::SuddenTerminationDisablerType disabler_type) override;
   bool IsFeatureEnabled(blink::mojom::FeaturePolicyFeature feature) override;
-  bool IsFeatureEnabled(blink::mojom::DocumentPolicyFeature feature) override;
-  bool IsFeatureEnabled(blink::mojom::DocumentPolicyFeature feature,
-                        blink::PolicyValue threshold_value) override;
   void ViewSource() override;
   void ExecuteMediaPlayerActionAtLocation(
       const gfx::Point&,
@@ -1036,21 +1033,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
     return has_focused_editable_element_;
   }
 
-  // Note: The methods for blocking / resuming / cancelling requests per
-  // RenderFrameHost are deprecated and will not work in the network service,
-  // please avoid using them.
-  //
-  // Causes all new requests for the root RenderFrameHost and its children to
-  // be blocked (not being started) until ResumeBlockedRequestsForFrame is
-  // called.
-  void BlockRequestsForFrame();
-
   // Resumes any blocked request for the specified root RenderFrameHost and
   // child frame hosts.
   void ResumeBlockedRequestsForFrame();
-
-  // Cancels any blocked request for the frame and its subframes.
-  void CancelBlockedRequestsForFrame();
 
   // Binds a DevToolsAgent interface for debugging.
   void BindDevToolsAgent(
@@ -1316,12 +1301,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Creates a WebBundleHandleTracker from WebBundleHandles which are attached
   // |this| or the parent frame or the opener frame.
   std::unique_ptr<WebBundleHandleTracker> MaybeCreateWebBundleHandleTracker();
-
-  // Adds |message| to the DevTools console only if it is unique (i.e. has not
-  // been added to the console previously from this frame).
-  virtual void AddUniqueMessageToConsole(
-      blink::mojom::ConsoleMessageLevel level,
-      const std::string& message);
 
   // Notify the scheduler that this frame used a feature which impacts the
   // scheduling policy (e.g. whether the frame can be frozen or put into the
@@ -2306,18 +2285,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   std::unique_ptr<NavigationRequest> CreateNavigationRequestForCommit(
       const FrameHostMsg_DidCommitProvisionalLoad_Params& params,
       bool is_same_document);
-
-  // Whether the |request| corresponds to a navigation to the pending
-  // NavigationEntry. This is used at commit time, when the NavigationRequest
-  // does not match the data sent by the renderer to re-create a
-  // NavigationRequest and associate it with the pending NavigationEntry if
-  // needed.
-  // TODO(clamy): We should handle the mismatches gracefully without deleting
-  // the NavigationRequest and having to re-create one.
-  bool NavigationRequestWasIntendedForPendingEntry(
-      NavigationRequest* request,
-      const FrameHostMsg_DidCommitProvisionalLoad_Params& params,
-      bool same_document);
 
   // Helper to process the beforeunload completion callback. |proceed| indicates
   // whether the navigation or tab close should be allowed to proceed.  If
