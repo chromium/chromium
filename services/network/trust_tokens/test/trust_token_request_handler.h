@@ -43,7 +43,7 @@ class TrustTokenRequestHandler {
 
   // See |Options::client_signing_outcome| below.
   enum class SigningOutcome {
-    // Expect a well-formed SRR and possibly a Sec-Signature header.
+    // Expect a well-formed RR and possibly a Sec-Signature header.
     kSuccess,
     // Expect an empty Sec-Signed-Redemption-Record header and no Sec-Signature
     // header.
@@ -101,16 +101,16 @@ class TrustTokenRequestHandler {
 
   // Given a base64-encoded redemption request, processes the
   // request and returns either nullopt (on error) or a base64-encoded response.
-  // On success, the response's signed redemption record will have a lifetime of
-  // |kSrrLifetime|. We use a ludicrously long lifetime because there's no way
-  // to mock time in browser tests, and we don't want the SRR expiring
+  // On success, the response's redemption record will have a lifetime of
+  // |kRRLifetime|. We use a ludicrously long lifetime because there's no way
+  // to mock time in browser tests, and we don't want the RR expiring
   // unexpectedly.
   //
   // TODO(davidvc): This needs to be expanded to be able to provide
-  // SRRs that have already expired. (This seems like the easiest way of
-  // exercising client-side SRR expiry logic in end-to-end tests, because
+  // RRs that have already expired. (This seems like the easiest way of
+  // exercising client-side RR expiry logic in end-to-end tests, because
   // there's no way to fast-forward a clock past an expiry time.)
-  static const base::TimeDelta kSrrLifetime;
+  static const base::TimeDelta kRrLifetime;
   base::Optional<std::string> Redeem(base::StringPiece redemption_request);
 
   // Stores a representation of a signed request with the given destination and

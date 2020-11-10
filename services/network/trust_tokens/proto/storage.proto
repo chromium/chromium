@@ -32,6 +32,6 @@ message TrustTokenIssuerToplevelPairConfig {
   // The time of the most recent redemption for this pair. Used for
   // rate-limiting.
   optional string last_redemption = 1;
-  // The signed redemption record cached for this pair, if any.
-  optional SignedTrustTokenRedemptionRecord signed_redemption_record = 2;
+  // The redemption record cached for this pair, if any.
+  optional TrustTokenRedemptionRecord redemption_record = 2;
 }

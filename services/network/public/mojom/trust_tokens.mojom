@@ -70,37 +70,37 @@ enum TrustTokenOperationType {
   // tokens signed by an issuing server.
   kIssuance,
   // In "redemption", clients exchange single-use server-signed tokens for
-  // multi-use Signed Redemption Records.
+  // multi-use Redemption Records.
   kRedemption,
-  // The "signing" operation involves attaching Signed Redemption Records to
-  // outgoing requests, and potentially signing the requests with a key bound to
-  // the attached SRR, to represent trust from the issuer.
+  // The "signing" operation involves attaching Redemption Records to outgoing
+  // requests, and potentially signing the requests with a key bound to the
+  // attached RR, to represent trust from the issuer.
   kSigning,
 };
 
 // TrustTokenRefreshPolicy specifies, during redemption, whether to respect or
-// ignore cached Signed Redemption Records.
+// ignore cached Redemption Records.
 enum TrustTokenRefreshPolicy {
-  // If there's a valid SRR already stored, return early and don't attempt to
-  // redeem a token for a new SRR.
+  // If there's a valid RR already stored, return early and don't attempt to
+  // redeem a token for a new RR.
   kUseCached,
-  // Even there's a valid SRR already stored, attempt to redeem a token for a
-  // new SRR, overwriting the stored SRR.
+  // Even there's a valid RR already stored, attempt to redeem a token for a
+  // new RR, overwriting the stored RR.
   kRefresh,
 };
 
 // TrustTokenSignRequestData specifies how to construct a request signature (or
-// none) during the "signed redemption record attachment and request signing"
-// protocol step.
+// none) during the "redemption record attachment and request signing" protocol
+// step.
 enum TrustTokenSignRequestData {
-  // Just attach a Signed Redemption Record (SRR), not an additional signature
-  // over request data.
+  // Just attach a Redemption Record (RR), not an additional signature over
+  // request data.
   kOmit,
-  // In addition to an SRR, attach a signature over a canonical request data
+  // In addition to an RR, attach a signature over a canonical request data
   // structure comprising  a collection of request headers and some additional
   // metadata (see the explainer).
   kHeadersOnly,
-  // In addition to an SRR, attach a signature over a canonical request data
+  // In addition to an RR, attach a signature over a canonical request data
   // structure comprising a collection of request headers, some additional
   // contents of the request, and some additional metadata (see the explainer).
   kInclude,
@@ -112,9 +112,9 @@ struct TrustTokenParams {
   // Required.
   TrustTokenOperationType type;
 
-  // Required exactly when "type" is "kRedemption"; specifies whether the
-  // caller wishes to use a cached Signed Redemption Record (SRR) if available
-  // or redeem a new token, evicting the SRR currently stored.
+  // Required exactly when "type" is "kRedemption"; specifies whether the caller
+  // wishes to use a cached Redemption Record (RR) if available or redeem a new
+  // token, evicting the RR currently stored.
   TrustTokenRefreshPolicy refresh_policy = kUseCached;
 
   // The remaining members are used only when "type" is "kSigning": these
@@ -190,10 +190,10 @@ struct TrustTokenKeyCommitmentResult {
   // keys.
   array<TrustTokenVerificationKey> keys;
 
-  // |signed_redemption_record_verification_key| is an Ed25519 public key that
-  // can be used to verify Signed Redemption Record (SRR) signatures
+  // |redemption_record_verification_key| is an Ed25519 public key that
+  // can be used to verify Redemption Record (RR) signatures
   // subsequently provided by the issuer.
-  string signed_redemption_record_verification_key;
+  string redemption_record_verification_key;
 
   // |request_issuance_locally_on| specifies operating systems on which to
   // divert issuance requests for this issuer to the system (i.e. to request

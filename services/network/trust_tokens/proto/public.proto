@@ -22,14 +22,13 @@ message TrustToken {
   optional bytes signing_key = 2;  // required
 }
 
-// A SignedTrustTokenRedemptionRecord message stores state associated with a
-// single Trust Tokens signed redemption record ("SRR"). The "body" field is the
-// contents of the SRR itself; when the protocol is configured to use
-// SRR-bound key pairs, "public_key" and "signing_key" are the keys associated
-// with the SRR.
-message SignedTrustTokenRedemptionRecord {
-  // The body of an SRR encodes information such as its top-level
-  // origin and its expiration time.
+// A TrustTokenRedemptionRecord message stores state associated with a single
+// Trust Token's redemption record ("RR"). The "body" field is the contents of
+// the RR itself; when the protocol is configured to use RR-bound key pairs,
+// "public_key" and "signing_key" are the keys associated with the RR.
+message TrustTokenRedemptionRecord {
+  // The body of an RR encodes information such as its top-level origin and
+  // its expiration time.
   optional bytes body = 1;  // required
 
   // If one of public_key or signing_key is present, the other must also be
@@ -37,6 +36,6 @@ message SignedTrustTokenRedemptionRecord {
   optional bytes public_key = 2;
   optional bytes signing_key = 3;
 
-  // The token verification key for the token redeemed to obtain this SRR.
+  // The token verification key for the token redeemed to obtain this RR.
   optional bytes token_verification_key = 4;  // required
 }

@@ -11,12 +11,12 @@ namespace network {
 
 namespace {
 
-const char kSignedRedemptionRecordBodyKey[] = "body";
-const char kSignedRedemptionRecordSignatureKey[] = "signature";
+const char kRedemptionRecordBodyKey[] = "body";
+const char kRedemptionRecordSignatureKey[] = "signature";
 
 }  // namespace
 
-base::Optional<std::string> ConstructSignedRedemptionRecord(
+base::Optional<std::string> ConstructRedemptionRecord(
     base::span<const uint8_t> body,
     base::span<const uint8_t> signature) {
   net::structured_headers::Dictionary dictionary;
@@ -32,16 +32,15 @@ base::Optional<std::string> ConstructSignedRedemptionRecord(
         net::structured_headers::Parameters{});
   };
 
-  dictionary[kSignedRedemptionRecordBodyKey] = make_value_for_dict(body);
-  dictionary[kSignedRedemptionRecordSignatureKey] =
-      make_value_for_dict(signature);
+  dictionary[kRedemptionRecordBodyKey] = make_value_for_dict(body);
+  dictionary[kRedemptionRecordSignatureKey] = make_value_for_dict(signature);
 
   return net::structured_headers::SerializeDictionary(dictionary);
 }
 
-bool ParseTrustTokenSignedRedemptionRecord(base::StringPiece record,
-                                           std::string* body_out,
-                                           std::string* signature_out) {
+bool ParseTrustTokenRedemptionRecord(base::StringPiece record,
+                                     std::string* body_out,
+                                     std::string* signature_out) {
   base::Optional<net::structured_headers::Dictionary> maybe_dictionary =
       net::structured_headers::ParseDictionary(record);
   if (!maybe_dictionary)

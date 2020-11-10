@@ -34,18 +34,18 @@ base::Optional<std::vector<std::string>> ParseTrustTokenSignedHeadersHeader(
 }  // namespace internal
 
 class TrustTokenStore;
-class SignedTrustTokenRedemptionRecord;
+class TrustTokenRedemptionRecord;
 
 // Class TrustTokenRequestSigningHelper executes a single trust token signing
 // operation (https://github.com/wicg/trust-token-api): it searches storage for
-// a Signed Redemption Record (SRR), attaches the SRR to the request, and,
-// depending on how the operation is parameterized, potentially also computes
-// and attaches a signature over the SRR, a canonical representation of some
-// of the request's data (for instance, a collection of the request's headers),
-// and some additional metadata.
-// To compute this signature, it uses a signing key associated with the SRR
+// a Redemption Record (RR), attaches the RR to the request, and, depending on
+// how the operation is parameterized, potentially also computes and attaches a
+// signature over the RR, a canonical representation of some of the request's
+// data (for instance, a collection of the request's headers), and some
+// additional metadata.
+// To compute this signature, it uses a signing key associated with the RR
 // and generated during the previous Trust Tokens redemption operation that
-// yielded the SRR.
+// yielded the RR.
 class TrustTokenRequestSigningHelper : public TrustTokenRequestHelper {
  public:
   // The list of headers that callers are allowed to specify
@@ -92,7 +92,7 @@ class TrustTokenRequestSigningHelper : public TrustTokenRequestHelper {
     Params& operator=(Params&&);
 
     // |issuers| contains the Trust Tokens issuer origins for which to retrieve
-    // Signed Redemption Records and matching signing keys. These must be both
+    // Redemption Records and matching signing keys. These must be both
     // (1) HTTP or HTTPS and (2) "potentially trustworthy". This precondition is
     // slightly involved because there are two needs:
     //   1. HTTP or HTTPS so that the scheme serializes in a sensible manner in
@@ -173,13 +173,13 @@ class TrustTokenRequestSigningHelper : public TrustTokenRequestHelper {
   TrustTokenRequestSigningHelper& operator=(
       const TrustTokenRequestSigningHelper&) = delete;
 
-  // Attempts to attach Signed Redemption Records (SRRs) corresponding
-  // to |request|'s initiating top-level origin and the provided issuer origins.
+  // Attempts to attach Redemption Records (RRs) corresponding to |request|'s
+  // initiating top-level origin and the provided issuer origins.
   //
   // ATTACHING THE REDEMPTION RECORD:
-  // In the case that an SRR is found for at least one provided issuer and the
+  // In the case that an RR is found for at least one provided issuer and the
   // requested headers to sign are well-formed, attaches a
-  // Sec-Signed-Redemption-Record header bearing the SRRs and:
+  // Sec-Signed-Redemption-Record header bearing the RRs and:
   // 1. if the request is configured for adding a Trust Tokens timestamp,
   // adds a timestamp header;
   // 2. if the request is configured for signing, computes the request's
@@ -190,7 +190,7 @@ class TrustTokenRequestSigningHelper : public TrustTokenRequestHelper {
   // 1. The caller specified headers for signing other than those in
   // kSignableRequestHeaders (or if the request has a malformed or otherwise
   // invalid signed issuers list in its Signed-Headers header); or
-  // 2. none of the provided issuers has an SRR corresponding to this top-level
+  // 2. none of the provided issuers has an RR corresponding to this top-level
   // origin in |token_store_|; or
   // 3. an internal error occurs during signing or header serialization.
   //
@@ -226,12 +226,11 @@ class TrustTokenRequestSigningHelper : public TrustTokenRequestHelper {
   // empty.
   //
   // REQUIRES: Every issuer in |signatures_per_issuer| must have a corresponding
-  // signed redemption record in |records_per_issuer|.
+  // redemption record in |records_per_issuer|.
   base::Optional<std::string>
   BuildSignatureHeaderIfAtLeastOneSignatureIsPresent(
       const base::flat_map<SuitableTrustTokenOrigin,
-                           SignedTrustTokenRedemptionRecord>&
-          records_per_issuer,
+                           TrustTokenRedemptionRecord>& records_per_issuer,
       const base::flat_map<SuitableTrustTokenOrigin, std::vector<uint8_t>>&
           signatures_per_issuer);
 
@@ -240,7 +239,7 @@ class TrustTokenRequestSigningHelper : public TrustTokenRequestHelper {
   // of internal error.
   base::Optional<std::vector<uint8_t>> GetSignature(
       net::URLRequest* request,
-      const SignedTrustTokenRedemptionRecord& record,
+      const TrustTokenRedemptionRecord& record,
       const std::vector<std::string>& headers_to_sign);
 
   TrustTokenStore* token_store_;

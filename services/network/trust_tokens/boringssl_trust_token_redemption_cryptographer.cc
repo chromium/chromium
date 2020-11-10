@@ -27,7 +27,7 @@ BoringsslTrustTokenRedemptionCryptographer::
 bool BoringsslTrustTokenRedemptionCryptographer::Initialize(
     mojom::TrustTokenProtocolVersion issuer_configured_version,
     int issuer_configured_batch_size,
-    base::StringPiece signed_redemption_record_verification_key) {
+    base::StringPiece redemption_record_verification_key) {
   if (!base::IsValueInRangeForNumericType<size_t>(issuer_configured_batch_size))
     return false;
 
@@ -43,17 +43,16 @@ bool BoringsslTrustTokenRedemptionCryptographer::Initialize(
   if (!ctx_)
     return false;
 
-  bssl::UniquePtr<EVP_PKEY> srr_verification_pkey(EVP_PKEY_new_raw_public_key(
+  bssl::UniquePtr<EVP_PKEY> rr_verification_pkey(EVP_PKEY_new_raw_public_key(
       EVP_PKEY_ED25519,
       /*unused=*/nullptr,  // Yes, this parameter is called "unused".
-      base::as_bytes(base::make_span(signed_redemption_record_verification_key))
+      base::as_bytes(base::make_span(redemption_record_verification_key))
           .data(),
-      signed_redemption_record_verification_key.size()));
-  if (!srr_verification_pkey)
+      redemption_record_verification_key.size()));
+  if (!rr_verification_pkey)
     return false;
 
-  if (!TRUST_TOKEN_CLIENT_set_srr_key(ctx_.get(),
-                                      srr_verification_pkey.get())) {
+  if (!TRUST_TOKEN_CLIENT_set_srr_key(ctx_.get(), rr_verification_pkey.get())) {
     return false;
   }
 
@@ -109,8 +108,8 @@ BoringsslTrustTokenRedemptionCryptographer::ConfirmRedemption(
     return base::nullopt;
 
   // |srr_body| and |srr_signature| together provide the information in the
-  // signed redemption record (see ConstructSignedRedemptionRecord's function
-  // comment for more information).
+  // redemption record (see ConstructRedemptionRecord's function comment for
+  // more information).
   ScopedBoringsslBytes srr_body;
   ScopedBoringsslBytes srr_signature;
   if (!TRUST_TOKEN_CLIENT_finish_redemption(
@@ -121,8 +120,7 @@ BoringsslTrustTokenRedemptionCryptographer::ConfirmRedemption(
     return base::nullopt;
   }
 
-  return ConstructSignedRedemptionRecord(srr_body.as_span(),
-                                         srr_signature.as_span());
+  return ConstructRedemptionRecord(srr_body.as_span(), srr_signature.as_span());
 }
 
 }  // namespace network

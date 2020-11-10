@@ -34,18 +34,18 @@ class URLResponseHead;
 // Class TrustTokenRequestRedemptionHelper performs a single trust token
 // redemption operation (https://github.com/wicg/trust-token-api): it attaches a
 // single signed, unblinded token to an outgoing request, hands it to the
-// token's issuer, and expects a signed redemption record (SRR) in response. The
-// normal case involves a total of two network requests: one to get an
-// up-to-date view of a key set the issuer provides for verifying that it's safe
-// to perform the redemption, and another to send the token to the issuer.
+// token's issuer, and expects a redemption record (RR) in response. The normal
+// case involves a total of two network requests: one to get an up-to-date view
+// of a key set the issuer provides for verifying that it's safe to perform the
+// redemption, and another to send the token to the issuer.
 class TrustTokenRequestRedemptionHelper : public TrustTokenRequestHelper {
  public:
   // Class KeyPairGenerator generates a signing and verification key pair.
   // These are not used for any cryptographic operations during redemption
   // itself. Instead, a digest of the verification key goes into the redemption
   // request and, on redemption success, we store the key pair alongside the
-  // Signed Redemption Record obtained from the server; the key pair can
-  // subsequently be used to sign outgoing requests as part of the Trust Tokens
+  // Redemption Record obtained from the server; the key pair can subsequently
+  // be used to sign outgoing requests as part of the Trust Tokens
   // "request signing" operation.
   class KeyPairGenerator {
    public:
@@ -70,7 +70,7 @@ class TrustTokenRequestRedemptionHelper : public TrustTokenRequestHelper {
 
     // Initializes the delegate. |issuer_configured_version| and
     // |issuer_configured_batch_size| must be the "protocol_version" and
-    // "batchsize" values, and |signed_redemption_record_verification_key| the
+    // "batchsize" values, and |redemption_record_verification_key| the
     // "srrkey" value, from an issuer-provided key commitment result.
     //
     // Returns true on success and false if the batch size or key is
@@ -79,7 +79,7 @@ class TrustTokenRequestRedemptionHelper : public TrustTokenRequestHelper {
     virtual bool Initialize(
         mojom::TrustTokenProtocolVersion issuer_configured_version,
         int issuer_configured_batch_size,
-        base::StringPiece signed_redemption_record_verification_key) = 0;
+        base::StringPiece redemption_record_verification_key) = 0;
 
     // Given a trust token to redeem and parameters to encode in the redemption
     // request, returns a base64-encoded string suitable for attachment in the
@@ -97,11 +97,11 @@ class TrustTokenRequestRedemptionHelper : public TrustTokenRequestHelper {
         const url::Origin& top_level_origin) = 0;
 
     // Given a base64-encoded Sec-Trust-Token redemption response header,
-    // validates and extracts the signed redemption record (SRR) contained in
-    // the header. If successful, returns the SRR. Otherwise, returns nullopt.
+    // validates and extracts the redemption record (RR) contained in the
+    // header. If successful, returns the RR. Otherwise, returns nullopt.
     //
     // The Trust Tokens design doc is currently the normative source for the
-    // SRR's format.
+    // RR's format.
     virtual base::Optional<std::string> ConfirmRedemption(
         base::StringPiece response_header) = 0;
   };
@@ -117,7 +117,7 @@ class TrustTokenRequestRedemptionHelper : public TrustTokenRequestHelper {
   //   2. potentially trustworthy origin to satisfy Web security requirements.
   //
   // - |refresh_policy| controls whether to attempt to overwrite the cached
-  // SRR stored for the request's (issuer, top-level) origin pair. This is
+  // RR stored for the request's (issuer, top-level) origin pair. This is
   // permitted to have value |kRefresh| only when the redemption
   // request's initiator equals its issuer origin.
   //
@@ -151,7 +151,7 @@ class TrustTokenRequestRedemptionHelper : public TrustTokenRequestHelper {
   //   object's constructor has already reached its number-of-issuers limit,
   //   or if the (issuer, top-level) pair has no tokens to redeem
   // * kAlreadyExists if the (issuer, top-level) pair already has a current
-  //   SRR and this helper was not parameterized with |kRefresh|.
+  //   RR and this helper was not parameterized with |kRefresh|.
   // * kFailedPrecondition if preconditions fail, including receiving a
   //   malformed or otherwise invalid key commitment record from the issuer,
   //   or if |kRefresh| was provided and the request was not initiated
@@ -209,7 +209,7 @@ class TrustTokenRequestRedemptionHelper : public TrustTokenRequestHelper {
   // |token_verification_key_| is the token issuance verification key
   // corresponding to the token being redeemed. It's stored here speculatively
   // when beginning redemption so that it can be placed in persistent storage
-  // alongside the SRR if redemption succeeds.
+  // alongside the RR if redemption succeeds.
   std::string token_verification_key_;
 
   TrustTokenStore* const token_store_;

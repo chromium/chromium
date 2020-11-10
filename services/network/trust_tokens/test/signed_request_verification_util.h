@@ -23,17 +23,17 @@ namespace test {
 // extracts the signature and body, and uses the given verification key to
 // verify the signature.
 //
-// On success, if |srr_body_out| is non-null, sets |srr_body_out| to the
-// obtained SRR body.
-enum class SrrVerificationStatus {
+// On success, if |rr_body_out| is non-null, sets |rr_body_out| to the
+// obtained RR body.
+enum class RrVerificationStatus {
   kParseError,
   kSignatureVerificationError,
   kSuccess
 };
-SrrVerificationStatus VerifyTrustTokenSignedRedemptionRecord(
+RrVerificationStatus VerifyTrustTokenRedemptionRecord(
     base::StringPiece record,
     base::StringPiece verification_key,
-    std::string* srr_body_out = nullptr);
+    std::string* rr_body_out = nullptr);
 
 // Reconstructs a request's canonical request data, extracts the signatures from
 // its Sec-Signature header, checks that the Sec-Signature header's contained
@@ -58,11 +58,11 @@ bool ReconstructSigningDataAndVerifySignatures(
     std::string* error_out = nullptr,
     std::map<std::string, std::string>* verification_keys_out = nullptr);
 
-// Returns true if |srr_body| a valid CBOR encoding of an "SRR body" struct, as
+// Returns true if |rr_body| a valid CBOR encoding of an "SRR body" struct, as
 // defined in the design doc. Otherwise, returns false and, if |error_out| is
 // non-null, sets |error_out| to a helpful error message.
-bool ConfirmSrrBodyIntegrity(base::StringPiece srr_body,
-                             std::string* error_out = nullptr);
+bool ConfirmRrBodyIntegrity(base::StringPiece rr_body,
+                            std::string* error_out = nullptr);
 
 // Parses a Sec-Signed-Redemption-Record header and extracts the (issuer,
 // redemption record) pairs the header contains. On success, returns true. On

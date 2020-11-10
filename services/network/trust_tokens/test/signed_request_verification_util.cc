@@ -223,26 +223,26 @@ bool ValidateSignatureHeaderMapAndExtractFields(
 
 // From the design doc:
 //
-// The SRR is a two-item Structured Headers Draft 15 dictionary with “byte
+// The RR is a two-item Structured Headers Draft 15 dictionary with “byte
 // sequence”-typed fields body and signature:
-// - body is the serialization of the below CBOR-encoded structure (the “SRR
+// - body is the serialization of the below CBOR-encoded structure (the “RR
 // body”)
-// - signature is the Ed25519 signature, over the SRR body, by the issuer’s
-// SRR signing key corresponding to the verification key in the issuer’s key
+// - signature is the Ed25519 signature, over the RR body, by the issuer’s
+// RR signing key corresponding to the verification key in the issuer’s key
 // commitment registry.
-SrrVerificationStatus VerifyTrustTokenSignedRedemptionRecord(
+RrVerificationStatus VerifyTrustTokenRedemptionRecord(
     base::StringPiece record,
     base::StringPiece verification_key,
-    std::string* srr_body_out) {
+    std::string* rr_body_out) {
   std::string body, signature;
-  if (!ParseTrustTokenSignedRedemptionRecord(record, &body, &signature))
-    return SrrVerificationStatus::kParseError;
+  if (!ParseTrustTokenRedemptionRecord(record, &body, &signature))
+    return RrVerificationStatus::kParseError;
 
   if (verification_key.size() != ED25519_PUBLIC_KEY_LEN)
-    return SrrVerificationStatus::kSignatureVerificationError;
+    return RrVerificationStatus::kSignatureVerificationError;
 
   if (signature.size() != ED25519_SIGNATURE_LEN)
-    return SrrVerificationStatus::kSignatureVerificationError;
+    return RrVerificationStatus::kSignatureVerificationError;
 
   if (!ED25519_verify(
           base::as_bytes(base::make_span(body)).data(), body.size(),
@@ -251,12 +251,12 @@ SrrVerificationStatus VerifyTrustTokenSignedRedemptionRecord(
           base::as_bytes(
               base::make_span<ED25519_PUBLIC_KEY_LEN>(verification_key))
               .data())) {
-    return SrrVerificationStatus::kSignatureVerificationError;
+    return RrVerificationStatus::kSignatureVerificationError;
   }
 
-  if (srr_body_out)
-    srr_body_out->swap(body);
-  return SrrVerificationStatus::kSuccess;
+  if (rr_body_out)
+    rr_body_out->swap(body);
+  return RrVerificationStatus::kSuccess;
 }
 
 bool ReconstructSigningDataAndVerifySignatures(
@@ -312,28 +312,27 @@ bool ReconstructSigningDataAndVerifySignatures(
   return true;
 }
 
-bool ConfirmSrrBodyIntegrity(base::StringPiece srr_body,
-                             std::string* error_out) {
+bool ConfirmRrBodyIntegrity(base::StringPiece rr_body, std::string* error_out) {
   std::string dummy_error;
   std::string& error = error_out ? *error_out : dummy_error;
 
   base::Optional<cbor::Value> maybe_map =
-      cbor::Reader::Read(base::as_bytes(base::make_span(srr_body)));
+      cbor::Reader::Read(base::as_bytes(base::make_span(rr_body)));
 
   if (!maybe_map) {
-    error = "SRR body wasn't valid CBOR";
+    error = "RR body wasn't valid CBOR";
     return false;
   }
 
   if (!maybe_map->is_map()) {
-    error = "SRR body wasn't a CBOR map";
+    error = "RR body wasn't a CBOR map";
     return false;
   }
 
   const cbor::Value::MapValue& map = maybe_map->GetMap();
 
   if (map.size() != 4) {
-    error = "SRR body is a map of unexpected size";
+    error = "RR body is a map of unexpected size";
     return false;
   }
 
@@ -403,7 +402,7 @@ bool ExtractRedemptionRecordsFromHeader(
     net::structured_headers::Item& issuer_item =
         issuer_and_params.member.front().item;
     if (!issuer_item.is_string()) {
-      *error_out = "Non-string item in the SRR header's list";
+      *error_out = "Non-string item in the RR header's list";
       return false;
     }
 
@@ -411,14 +410,14 @@ bool ExtractRedemptionRecordsFromHeader(
         issuer_and_params.params;
     if (params_for_issuer.size() != 1) {
       *error_out =
-          base::StrCat({"Unexpected number of parameters for SRR header list "
+          base::StrCat({"Unexpected number of parameters for RR header list "
                         "item; expected 1 parameter but there were ",
                         base::NumberToString(params_for_issuer.size())});
       return false;
     }
     if (params_for_issuer.front().first != "redemption-record") {
       *error_out = base::ReplaceStringPlaceholders(
-          "Unexpected parameter key $1 for SRR header list item",
+          "Unexpected parameter key $1 for RR header list item",
           {params_for_issuer.front().first}, /*offsets=*/nullptr);
       return false;
     }
@@ -426,14 +425,14 @@ bool ExtractRedemptionRecordsFromHeader(
     const net::structured_headers::Item& redemption_record_item =
         params_for_issuer.front().second;
     if (!redemption_record_item.is_byte_sequence()) {
-      *error_out = "Unexpected parameter value type for SRR header list item";
+      *error_out = "Unexpected parameter value type for RR header list item";
       return false;
     }
 
     base::Optional<SuitableTrustTokenOrigin> maybe_issuer =
         SuitableTrustTokenOrigin::Create(GURL(issuer_item.GetString()));
     if (!maybe_issuer) {
-      *error_out = "Unsuitable Trust Tokens issuer origin in SRR header item";
+      *error_out = "Unsuitable Trust Tokens issuer origin in RR header item";
       return false;
     }
 

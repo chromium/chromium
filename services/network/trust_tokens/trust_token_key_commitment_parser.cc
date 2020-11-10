@@ -200,7 +200,7 @@ mojom::TrustTokenKeyCommitmentResultPtr ParseSingleIssuer(
   if (!maybe_srrkey)
     return nullptr;
   if (!base::Base64Decode(*maybe_srrkey,
-                          &result->signed_redemption_record_verification_key)) {
+                          &result->redemption_record_verification_key)) {
     return nullptr;
   }
 
@@ -254,8 +254,8 @@ mojom::TrustTokenKeyCommitmentResultPtr& commitment(Entry& e) {
 //   "protocol_version" : ..., // Protocol Version; value of type string.
 //   "id" : ...,               // ID; value of type int.
 //   "batchsize" : ...,        // Batch size; value of type int.
-//   "srrkey" : ...,           // Required Signed Redemption Record (SRR)
-//                             // verification key, in base64.
+//   "srrkey" : ...,           // Required Redemption Record (RR) verification
+//                             // key, in base64.
 //
 //   // Optional operating systems on which to request issuance via system
 //   // mediation (valid values are: "android"), and (required if at least one

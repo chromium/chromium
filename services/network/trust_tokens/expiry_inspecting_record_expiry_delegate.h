@@ -12,8 +12,8 @@ namespace network {
 
 class SynchronousTrustTokenKeyCommitmentGetter;
 
-// ExpiryInspectingRecordExpiryDelegate considers a signed redemption record
-// (SRR) to have expired if:
+// ExpiryInspectingRecordExpiryDelegate considers a redemption record (RR) to
+// have expired if:
 // - its expiry timestamp is not in the future, or
 // - its associated trust token verification key is not present in the token's
 // issuer's most recent key commitment, or
@@ -24,7 +24,7 @@ class ExpiryInspectingRecordExpiryDelegate
     : public TrustTokenStore::RecordExpiryDelegate {
  public:
   // Constructs a new expiry delegate using |key_commitment_getter|, which must
-  // outlive this object, to inspect the most recent key commitment of each SRR.
+  // outlive this object, to inspect the most recent key commitment of each RR.
   explicit ExpiryInspectingRecordExpiryDelegate(
       const SynchronousTrustTokenKeyCommitmentGetter* key_commitment_getter);
 
@@ -34,7 +34,7 @@ class ExpiryInspectingRecordExpiryDelegate
       const ExpiryInspectingRecordExpiryDelegate&) = delete;
 
   // TrustTokenStore::RecordExpiryDelegate implementation:
-  bool IsRecordExpired(const SignedTrustTokenRedemptionRecord& record,
+  bool IsRecordExpired(const TrustTokenRedemptionRecord& record,
                        const SuitableTrustTokenOrigin& issuer) override;
 
  private:

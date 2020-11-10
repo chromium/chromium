@@ -362,8 +362,8 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest,
   GURL start_url = server_.GetURL("a.test", "/title1.html");
   ASSERT_TRUE(NavigateToURL(shell(), start_url));
 
-  // This sign operation will fail, because we don't have a signed redemption
-  // record in storage, a prerequisite. However, the failure shouldn't be fatal.
+  // This sign operation will fail, because we don't have a redemption record in
+  // storage, a prerequisite. However, the failure shouldn't be fatal.
   std::string command = JsReplace(R"((async () => {
       await fetch("/sign", {trustToken: {type: 'send-redemption-record',
                                          signRequestData: 'include',
@@ -1151,7 +1151,7 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest,
 }
 
 // After a successful issuance and redemption, a subsequent redemption against
-// the same issuer should hit the signed redemption record (SRR) cache.
+// the same issuer should hit the redemption record (RR) cache.
 IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest,
                        RedemptionHitsRedemptionRecordCache) {
   ProvideRequestHandlerKeyCommitmentsToNetworkService({"a.test"});
@@ -1178,7 +1178,7 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest,
 }
 
 // Redemption with `refresh-policy: 'refresh'` from an issuer context should
-// succeed, overwriting the existing SRR.
+// succeed, overwriting the existing RR.
 IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest,
                        RefreshPolicyRefreshWorksInIssuerContext) {
   ProvideRequestHandlerKeyCommitmentsToNetworkService({"a.test"});
@@ -1296,14 +1296,14 @@ IN_PROC_BROWSER_TEST_F(
           signRequestData: 'headers-only' } }).then(()=>'Success');)",
                                       IssuanceOriginFromHost("a.test"))));
 
-  // There shouldn't have been an a.test SRR attached to the request.
+  // There shouldn't have been an a.test RR attached to the request.
   EXPECT_THAT(request_handler_.last_incoming_signed_request(),
               Optional(ReflectsSigningFailure()));
 }
 
 // When a redemption request is made in no-cors mode, a cross-origin redirect
 // from issuer A to issuer B should result in recycling the original redemption
-// request, obtaining an issuer A SRR on success.
+// request, obtaining an issuer A RR on success.
 //
 // Note: This isn't necessarily the behavior we'll end up wanting here; the test
 // serves to document how redemption and redirects currently interact.  For more
@@ -1356,7 +1356,7 @@ IN_PROC_BROWSER_TEST_F(
         .then(()=>'Success'); )",
                                       IssuanceOriginFromHost("b.test"))));
 
-  // There shouldn't have been a b.test SRR attached to the request.
+  // There shouldn't have been a b.test RR attached to the request.
   EXPECT_THAT(request_handler_.last_incoming_signed_request(),
               Optional(ReflectsSigningFailure()));
 }
@@ -1385,8 +1385,8 @@ IN_PROC_BROWSER_TEST_F(
         { trustToken: { type: 'token-request' } })
         .then(()=>'Success'); )"));
 
-  // The redemption should succeed after the redirect, yielding an a.test SRR
-  // (the SRR correctly corresponding to a.test is covered by a prior test
+  // The redemption should succeed after the redirect, yielding an a.test RR
+  // (the RR correctly corresponding to a.test is covered by a prior test
   // case).
   EXPECT_EQ("Success", EvalJs(shell(), R"(
       fetch('/cross-site/b.test/redeem',

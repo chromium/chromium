@@ -65,11 +65,10 @@ base::NoDestructor<FixedKeyCommitmentGetter> g_fixed_key_commitment_getter{};
 class MockCryptographer
     : public TrustTokenRequestRedemptionHelper::Cryptographer {
  public:
-  MOCK_METHOD3(
-      Initialize,
-      bool(mojom::TrustTokenProtocolVersion issuer_configured_version,
-           int issuer_configured_batch_size,
-           base::StringPiece signed_redemption_record_verification_key));
+  MOCK_METHOD3(Initialize,
+               bool(mojom::TrustTokenProtocolVersion issuer_configured_version,
+                    int issuer_configured_batch_size,
+                    base::StringPiece redemption_record_verification_key));
 
   MOCK_METHOD3(
       BeginRedemption,
@@ -588,7 +587,7 @@ TEST_F(TrustTokenRequestRedemptionHelperTest, Success) {
   EXPECT_CALL(*cryptographer, BeginRedemption(_, _, _))
       .WillOnce(Return("well-formed redemption request"));
   EXPECT_CALL(*cryptographer, ConfirmRedemption(_))
-      .WillOnce(Return("a successfully-extracted SRR"));
+      .WillOnce(Return("a successfully-extracted RR"));
 
   TrustTokenRequestRedemptionHelper helper(
       *SuitableTrustTokenOrigin::Create(GURL("https://toplevel.com/")),
@@ -682,7 +681,7 @@ TEST_F(TrustTokenRequestRedemptionHelperTest, AssociatesIssuerWithToplevel) {
 }
 
 // Check that a successful end-to-end Begin/Finalize flow stores the obtained
-// signed redemption record (and associated key pair) in the trust token store.
+// redemption record (and associated key pair) in the trust token store.
 TEST_F(TrustTokenRequestRedemptionHelperTest, StoresObtainedRedemptionRecord) {
   // Establish the following state:
   // * One key commitment returned from the key commitment registry, with one
@@ -714,7 +713,7 @@ TEST_F(TrustTokenRequestRedemptionHelperTest, StoresObtainedRedemptionRecord) {
   EXPECT_CALL(*cryptographer, BeginRedemption(_, _, _))
       .WillOnce(Return("well-formed redemption request"));
   EXPECT_CALL(*cryptographer, ConfirmRedemption(_))
-      .WillOnce(Return("a successfully-extracted SRR"));
+      .WillOnce(Return("a successfully-extracted RR"));
 
   TrustTokenRequestRedemptionHelper helper(
       *SuitableTrustTokenOrigin::Create(GURL("https://toplevel.com/")),
@@ -736,21 +735,19 @@ TEST_F(TrustTokenRequestRedemptionHelperTest, StoresObtainedRedemptionRecord) {
   EXPECT_EQ(ExecuteFinalizeAndWaitForResult(&helper, response_head.get()),
             mojom::TrustTokenOperationStatus::kOk);
 
-  // After the operation has successfully finished, the SRR parsed from the
+  // After the operation has successfully finished, the RR parsed from the
   // server response should be in the store.
   EXPECT_THAT(
       store->RetrieveNonstaleRedemptionRecord(
           *SuitableTrustTokenOrigin::Create(GURL("https://issuer.com/")),
           *SuitableTrustTokenOrigin::Create(GURL("https://toplevel.com/"))),
       Optional(AllOf(
-          Property(&SignedTrustTokenRedemptionRecord::body,
-                   "a successfully-extracted SRR"),
-          Property(&SignedTrustTokenRedemptionRecord::public_key,
-                   "verification key"),
-          Property(&SignedTrustTokenRedemptionRecord::token_verification_key,
+          Property(&TrustTokenRedemptionRecord::body,
+                   "a successfully-extracted RR"),
+          Property(&TrustTokenRedemptionRecord::public_key, "verification key"),
+          Property(&TrustTokenRedemptionRecord::token_verification_key,
                    "token verification key"),
-          Property(&SignedTrustTokenRedemptionRecord::signing_key,
-                   "signing key"))));
+          Property(&TrustTokenRedemptionRecord::signing_key, "signing key"))));
 }
 
 // Check that a "refresh" refresh mode is rejected unless the request's
@@ -777,7 +774,7 @@ TEST_F(TrustTokenRequestRedemptionHelperTest,
   EXPECT_EQ(result, mojom::TrustTokenOperationStatus::kFailedPrecondition);
 }
 
-// On a redemption operation parameterized by kUseCachedSrr, if there's an SRR
+// On a redemption operation parameterized by kUseCachedRr, if there's an RR
 // present in the store for the given issuer-toplevel pair, the request should
 // return early with kAlreadyExists.
 TEST_F(TrustTokenRequestRedemptionHelperTest, RedemptionRecordCacheHit) {
@@ -785,7 +782,7 @@ TEST_F(TrustTokenRequestRedemptionHelperTest, RedemptionRecordCacheHit) {
   store->SetRedemptionRecord(
       *SuitableTrustTokenOrigin::Create(GURL("https://issuer.com")),
       *SuitableTrustTokenOrigin::Create(GURL("https://toplevel.com")),
-      SignedTrustTokenRedemptionRecord());
+      TrustTokenRedemptionRecord());
 
   TrustTokenRequestRedemptionHelper helper(
       *SuitableTrustTokenOrigin::Create(GURL("https://toplevel.com/")),
@@ -804,13 +801,13 @@ TEST_F(TrustTokenRequestRedemptionHelperTest, RedemptionRecordCacheHit) {
 }
 
 // Check that a successful end-to-end Begin/Finalize flow with kRefresh
-// overwrites the previously stored signed redemption record (and associated key
-// pair) in the trust token store.
+// overwrites the previously stored redemption record (and associated key pair)
+// in the trust token store.
 TEST_F(TrustTokenRequestRedemptionHelperTest,
-       SuccessUsingRefreshSrrOverwritesStoredSrr) {
+       SuccessUsingRefreshRrOverwritesStoredRr) {
   // Establish the following state:
-  // * A signed redemption record is already stored for the issuer, toplevel
-  // pair at hand.
+  // * A redemption record is already stored for the issuer, toplevel pair at
+  // hand.
   // * One key commitment returned from the key commitment registry, with one
   // key, with body "".
   // * One token stored corresponding to the key "" (this will be the token
@@ -821,7 +818,7 @@ TEST_F(TrustTokenRequestRedemptionHelperTest,
   store->SetRedemptionRecord(
       *SuitableTrustTokenOrigin::Create(GURL("https://issuer.com")),
       *SuitableTrustTokenOrigin::Create(GURL("https://toplevel.com")),
-      SignedTrustTokenRedemptionRecord());
+      TrustTokenRedemptionRecord());
   store->AddTokens(
       *SuitableTrustTokenOrigin::Create(GURL("https://issuer.com/")),
       std::vector<std::string>{"a token"},
@@ -844,7 +841,7 @@ TEST_F(TrustTokenRequestRedemptionHelperTest,
   EXPECT_CALL(*cryptographer, BeginRedemption(_, _, _))
       .WillOnce(Return("well-formed redemption request"));
   EXPECT_CALL(*cryptographer, ConfirmRedemption(_))
-      .WillOnce(Return("a successfully-extracted SRR"));
+      .WillOnce(Return("a successfully-extracted RR"));
 
   TrustTokenRequestRedemptionHelper helper(
       *SuitableTrustTokenOrigin::Create(GURL("https://toplevel.com/")),
@@ -872,18 +869,17 @@ TEST_F(TrustTokenRequestRedemptionHelperTest,
   EXPECT_EQ(ExecuteFinalizeAndWaitForResult(&helper, response_head.get()),
             mojom::TrustTokenOperationStatus::kOk);
 
-  // After the operation has successfully finished, the SRR parsed from the
+  // After the operation has successfully finished, the RR parsed from the
   // server response should be in the store.
   EXPECT_THAT(
       store->RetrieveNonstaleRedemptionRecord(
           *SuitableTrustTokenOrigin::Create(GURL("https://issuer.com/")),
           *SuitableTrustTokenOrigin::Create(GURL("https://toplevel.com/"))),
-      Optional(AllOf(Property(&SignedTrustTokenRedemptionRecord::body,
-                              "a successfully-extracted SRR"),
-                     Property(&SignedTrustTokenRedemptionRecord::public_key,
-                              "verification key"),
-                     Property(&SignedTrustTokenRedemptionRecord::signing_key,
-                              "signing key"))));
+      Optional(AllOf(
+          Property(&TrustTokenRedemptionRecord::body,
+                   "a successfully-extracted RR"),
+          Property(&TrustTokenRedemptionRecord::public_key, "verification key"),
+          Property(&TrustTokenRedemptionRecord::signing_key, "signing key"))));
 }
 
 TEST_F(TrustTokenRequestRedemptionHelperTest, RejectsUnsuitableInsecureIssuer) {
@@ -915,7 +911,7 @@ TEST_F(TrustTokenRequestRedemptionHelperTest,
             mojom::TrustTokenOperationStatus::kInvalidArgument);
 }
 
-TEST_F(TrustTokenRequestRedemptionHelperTest, RequiresInitiatorForSrrRefresh) {
+TEST_F(TrustTokenRequestRedemptionHelperTest, RequiresInitiatorForRrRefresh) {
   // Refresh mode "refresh" requires that the request's initiator to
   // be same-origin with the request's issuer. Test that, in this case, the
   // redemption helper requires that the request have an initiator.

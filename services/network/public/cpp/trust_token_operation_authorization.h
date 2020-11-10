@@ -23,7 +23,7 @@ namespace network {
 //  records") are persistent first-party identifiers in the context of the top
 //  frame at redemption time. Since embedded third-party frames are on the other
 //  side of a privacy boundary, we’d like to prohibit these third-party frames
-//  from having access to the redeeming-context SRRs without the top-level
+//  from having access to the redeeming-context RRs without the top-level
 //  frame's explicit consent.
 constexpr bool DoesTrustTokenOperationRequireFeaturePolicy(
     mojom::TrustTokenOperationType type) {

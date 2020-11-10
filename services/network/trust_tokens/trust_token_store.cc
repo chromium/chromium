@@ -28,7 +28,7 @@ namespace {
 class NeverExpiringExpiryDelegate
     : public TrustTokenStore::RecordExpiryDelegate {
  public:
-  bool IsRecordExpired(const SignedTrustTokenRedemptionRecord& record,
+  bool IsRecordExpired(const TrustTokenRedemptionRecord& record,
                        const SuitableTrustTokenOrigin& issuer) override {
     return false;
   }
@@ -244,15 +244,15 @@ void TrustTokenStore::DeleteToken(const SuitableTrustTokenOrigin& issuer,
 void TrustTokenStore::SetRedemptionRecord(
     const SuitableTrustTokenOrigin& issuer,
     const SuitableTrustTokenOrigin& top_level,
-    const SignedTrustTokenRedemptionRecord& record) {
+    const TrustTokenRedemptionRecord& record) {
   auto config = persister_->GetIssuerToplevelPairConfig(issuer, top_level);
   if (!config)
     config = std::make_unique<TrustTokenIssuerToplevelPairConfig>();
-  *config->mutable_signed_redemption_record() = record;
+  *config->mutable_redemption_record() = record;
   persister_->SetIssuerToplevelPairConfig(issuer, top_level, std::move(config));
 }
 
-base::Optional<SignedTrustTokenRedemptionRecord>
+base::Optional<TrustTokenRedemptionRecord>
 TrustTokenStore::RetrieveNonstaleRedemptionRecord(
     const SuitableTrustTokenOrigin& issuer,
     const SuitableTrustTokenOrigin& top_level) {
@@ -260,14 +260,14 @@ TrustTokenStore::RetrieveNonstaleRedemptionRecord(
   if (!config)
     return base::nullopt;
 
-  if (!config->has_signed_redemption_record())
+  if (!config->has_redemption_record())
     return base::nullopt;
 
-  if (record_expiry_delegate_->IsRecordExpired(
-          config->signed_redemption_record(), issuer))
+  if (record_expiry_delegate_->IsRecordExpired(config->redemption_record(),
+                                               issuer))
     return base::nullopt;
 
-  return config->signed_redemption_record();
+  return config->redemption_record();
 }
 
 bool TrustTokenStore::ClearDataForFilter(mojom::ClearDataFilterPtr filter) {

@@ -1215,7 +1215,7 @@ TEST_F(NetworkServiceTestWithService, SetsTrustTokenKeyCommitments) {
 
   auto expectation = mojom::TrustTokenKeyCommitmentResult::New();
   ASSERT_TRUE(base::Base64Decode(
-      "aaaa", &expectation->signed_redemption_record_verification_key));
+      "aaaa", &expectation->redemption_record_verification_key));
   expectation->protocol_version =
       mojom::TrustTokenProtocolVersion::kTrustTokenV1;
   expectation->id = 1;

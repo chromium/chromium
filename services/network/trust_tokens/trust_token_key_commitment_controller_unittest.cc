@@ -47,7 +47,7 @@ class FixedKeyCommitmentParser
   static mojom::TrustTokenKeyCommitmentResultPtr
   DeterministicallyReturnedValue() {
     auto result = mojom::TrustTokenKeyCommitmentResult::New();
-    result->signed_redemption_record_verification_key = "key";
+    result->redemption_record_verification_key = "key";
     return result;
   }
 };

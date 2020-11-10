@@ -80,9 +80,9 @@ struct TrustTokenRequestHandler::Rep {
   // the value of this field.
   SigningOutcome client_signing_outcome;
 
-  // Signed redemption record (SRR) signing and verification keys:
-  std::vector<uint8_t> srr_signing;
-  std::vector<uint8_t> srr_verification;
+  // Redemption record (RR) signing and verification keys:
+  std::vector<uint8_t> rr_signing;
+  std::vector<uint8_t> rr_verification;
   std::vector<IssuanceKeyPair> issuance_keys;
 
   // Whether to peremptorily reject issuance and redemption or whether to
@@ -137,14 +137,14 @@ TrustTokenRequestHandler::Rep::CreateIssuerContextFromUnexpiredKeys() const {
   // Copying the comment from evp.h:
   // The [Ed25519] RFC 8032 private key format is the 32-byte prefix of
   // |ED25519_sign|'s 64-byte private key.
-  bssl::UniquePtr<EVP_PKEY> issuer_srr_key(EVP_PKEY_new_raw_private_key(
-      EVP_PKEY_ED25519, /*unused=*/nullptr, srr_signing.data(),
+  bssl::UniquePtr<EVP_PKEY> issuer_rr_key(EVP_PKEY_new_raw_private_key(
+      EVP_PKEY_ED25519, /*unused=*/nullptr, rr_signing.data(),
       /*len=*/32));
 
-  if (!issuer_srr_key)
+  if (!issuer_rr_key)
     return nullptr;
 
-  if (!TRUST_TOKEN_ISSUER_set_srr_key(ret.get(), issuer_srr_key.get()))
+  if (!TRUST_TOKEN_ISSUER_set_srr_key(ret.get(), issuer_rr_key.get()))
     return nullptr;
 
   return ret;
@@ -224,7 +224,7 @@ std::string TrustTokenRequestHandler::GetKeyCommitmentRecord() const {
 
   base::Value value(base::Value::Type::DICTIONARY);
   value.SetStringKey(
-      "srrkey", base::Base64Encode(base::make_span(rep_->srr_verification)));
+      "srrkey", base::Base64Encode(base::make_span(rep_->rr_verification)));
   value.SetStringKey("protocol_version", rep_->protocol_version);
   value.SetIntKey("id", rep_->id);
   value.SetIntKey("batchsize", rep_->batch_size);
@@ -290,7 +290,7 @@ base::Optional<std::string> TrustTokenRequestHandler::Issue(
   return base::Base64Encode(decoded_issuance_response.as_span());
 }
 
-constexpr base::TimeDelta TrustTokenRequestHandler::kSrrLifetime =
+constexpr base::TimeDelta TrustTokenRequestHandler::kRrLifetime =
     base::TimeDelta::FromDays(100);
 base::Optional<std::string> TrustTokenRequestHandler::Redeem(
     base::StringPiece redemption_request) {
@@ -318,7 +318,7 @@ base::Optional<std::string> TrustTokenRequestHandler::Redeem(
           redeemed_client_data.mutable_ptr(),
           redeemed_client_data.mutable_len(), &received_redemption_timestamp,
           base::as_bytes(base::make_span(decoded_redemption_request)).data(),
-          decoded_redemption_request.size(), kSrrLifetime.InSeconds())) {
+          decoded_redemption_request.size(), kRrLifetime.InSeconds())) {
     return base::nullopt;
   }
 
@@ -365,9 +365,9 @@ void TrustTokenRequestHandler::UpdateOptions(Options options) {
   rep_->issuance_outcome = options.issuance_outcome;
   rep_->redemption_outcome = options.redemption_outcome;
 
-  rep_->srr_signing.resize(ED25519_PRIVATE_KEY_LEN);
-  rep_->srr_verification.resize(ED25519_PUBLIC_KEY_LEN);
-  ED25519_keypair(rep_->srr_verification.data(), rep_->srr_signing.data());
+  rep_->rr_signing.resize(ED25519_PRIVATE_KEY_LEN);
+  rep_->rr_verification.resize(ED25519_PUBLIC_KEY_LEN);
+  ED25519_keypair(rep_->rr_verification.data(), rep_->rr_signing.data());
 
   for (int i = 0; i < options.num_keys; ++i) {
     rep_->issuance_keys.push_back(GenerateIssuanceKeyPair(i));

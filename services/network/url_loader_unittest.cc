@@ -5705,11 +5705,11 @@ TEST_P(URLLoaderSyncOrAsyncTrustTokenOperationTest,
 // the load.
 //
 // (This is the case exactly when the request is for token redemption, and the
-// Trust Tokens logic determines that there is already a cached signed
-// redemption record stored locally, obviating the need to execute a redemption
+// Trust Tokens logic determines that there is already a cached redemption
+// record stored locally, obviating the need to execute a redemption
 // operation.)
 TEST_P(URLLoaderSyncOrAsyncTrustTokenOperationTest,
-       HandlesTrustTokenSignedRedemptionRecordCacheHit) {
+       HandlesTrustTokenRedemptionRecordCacheHit) {
   ResourceRequest request =
       CreateResourceRequest("GET", test_server()->GetURL("/simple_page.html"));
   request.trust_token_params =

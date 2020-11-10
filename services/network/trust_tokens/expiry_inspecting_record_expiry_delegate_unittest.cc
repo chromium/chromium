@@ -21,21 +21,20 @@ namespace network {
 
 namespace {
 
-// Overwrites |record| with a serialized signed redemption record with
-// just enough structure to have a well-formed expiry time of |expiry|.
+// Overwrites |record| with a serialized redemption record with just enough
+// structure to have a well-formed expiry time of |expiry|.
 //
-// Reference: Trust Tokens design doc (currently the normative source for SRR
+// Reference: Trust Tokens design doc (currently the normative source for RR
 // structure),
 // https://docs.google.com/document/d/1TNnya6B8pyomDK2F1R9CL3dY10OAmqWlnCxsWyOBDVQ/edit#heading=h.7mkzvhpqb8l5
 const char kExpiryTimestampKey[] = "expiry-timestamp";
-void SetRecordExpiry(SignedTrustTokenRedemptionRecord* record,
-                     base::Time expiry) {
+void SetRecordExpiry(TrustTokenRedemptionRecord* record, base::Time expiry) {
   cbor::Value::MapValue map;
   map[cbor::Value(kExpiryTimestampKey, cbor::Value::Type::STRING)] =
       cbor::Value((expiry - base::Time::UnixEpoch()).InSeconds());
 
   std::vector<uint8_t> empty_signature;
-  record->set_body(*ConstructSignedRedemptionRecord(
+  record->set_body(*ConstructRedemptionRecord(
       *cbor::Writer::Write(cbor::Value(std::move(map))), empty_signature));
 }
 
@@ -67,7 +66,7 @@ TEST(ExpiryInspectingRecordExpiryDelegate, ExpiresRecordWhenNoKeys) {
   FixedKeyCommitmentGetter getter(nullptr);  // return no keys
   ExpiryInspectingRecordExpiryDelegate delegate(&getter);
 
-  SignedTrustTokenRedemptionRecord record;
+  TrustTokenRedemptionRecord record;
 
   SetRecordExpiry(&record, base::Time::Now() + base::TimeDelta::FromMinutes(1));
   EXPECT_TRUE(delegate.IsRecordExpired(
@@ -86,7 +85,7 @@ TEST(ExpiryInspectingRecordExpiryDelegate, ExpiresRecordWithPastExpiry) {
   FixedKeyCommitmentGetter getter(std::move(commitment_result));
   ExpiryInspectingRecordExpiryDelegate delegate(&getter);
 
-  SignedTrustTokenRedemptionRecord record;
+  TrustTokenRedemptionRecord record;
   record.set_token_verification_key("key");
   SetRecordExpiry(&record, base::Time::Now() - base::TimeDelta::FromMinutes(1));
 
@@ -107,7 +106,7 @@ TEST(ExpiryInspectingRecordExpiryDelegate, ExpiresRecordExpiringRightNow) {
   FixedKeyCommitmentGetter getter(std::move(commitment_result));
   ExpiryInspectingRecordExpiryDelegate delegate(&getter);
 
-  SignedTrustTokenRedemptionRecord record;
+  TrustTokenRedemptionRecord record;
   record.set_token_verification_key("key");
   SetRecordExpiry(&record, base::Time::Now());
 
@@ -128,7 +127,7 @@ TEST(ExpiryInspectingRecordExpiryDelegate, ExpiresRecordWithNoMatchingKey) {
   FixedKeyCommitmentGetter getter(std::move(commitment_result));
   ExpiryInspectingRecordExpiryDelegate delegate(&getter);
 
-  SignedTrustTokenRedemptionRecord record;
+  TrustTokenRedemptionRecord record;
   // "key" is not present in the commitment
   record.set_token_verification_key("key");
   SetRecordExpiry(&record, base::Time::Now() + base::TimeDelta::FromMinutes(1));
@@ -151,7 +150,7 @@ TEST(ExpiryInspectingRecordExpiryDelegate, DoesntExpireUnexpiredRecord) {
   FixedKeyCommitmentGetter getter(std::move(commitment_result));
   ExpiryInspectingRecordExpiryDelegate delegate(&getter);
 
-  SignedTrustTokenRedemptionRecord record;
+  TrustTokenRedemptionRecord record;
   record.set_token_verification_key("key");
   SetRecordExpiry(&record, base::Time::Now() + base::TimeDelta::FromMinutes(1));
 
@@ -170,9 +169,9 @@ TEST(ExpiryInspectingRecordExpiryDelegate, ExpiresRecordWithMalformedBody) {
   FixedKeyCommitmentGetter getter(std::move(commitment_result));
   ExpiryInspectingRecordExpiryDelegate delegate(&getter);
 
-  // This SRR has an empty (and, consequently, invalid) body; it should be
+  // This RR has an empty (and, consequently, invalid) body; it should be
   // marked as expired.
-  SignedTrustTokenRedemptionRecord record;
+  TrustTokenRedemptionRecord record;
   record.set_token_verification_key("key");
 
   EXPECT_TRUE(delegate.IsRecordExpired(
@@ -190,13 +189,13 @@ TEST(ExpiryInspectingRecordExpiryDelegate, RespectsDefaultTimestamp) {
   FixedKeyCommitmentGetter getter(std::move(commitment_result));
   ExpiryInspectingRecordExpiryDelegate delegate(&getter);
 
-  SignedTrustTokenRedemptionRecord record;
+  TrustTokenRedemptionRecord record;
   record.set_token_verification_key("key");
 
-  // Construct an SRR body missing the (optional) expiry timestamp field.
+  // Construct an RR body missing the (optional) expiry timestamp field.
   std::vector<uint8_t> empty_signature;
   cbor::Value::MapValue map;
-  record.set_body(*ConstructSignedRedemptionRecord(
+  record.set_body(*ConstructRedemptionRecord(
       *cbor::Writer::Write(cbor::Value(std::move(map))), empty_signature));
 
   // The record's expiry should depend on whether the default expiry is in the
@@ -223,14 +222,14 @@ TEST(ExpiryInspectingRecordExpiryDelegate, ExpiresRecordWithTypeUnsafeExpiry) {
   FixedKeyCommitmentGetter getter(std::move(commitment_result));
   ExpiryInspectingRecordExpiryDelegate delegate(&getter);
 
-  SignedTrustTokenRedemptionRecord record;
+  TrustTokenRedemptionRecord record;
   record.set_token_verification_key("key");
 
   std::vector<uint8_t> empty_signature;
   cbor::Value::MapValue map;
   map[cbor::Value(kExpiryTimestampKey, cbor::Value::Type::STRING)] =
       cbor::Value("oops! not an int", cbor::Value::Type::STRING);
-  record.set_body(*ConstructSignedRedemptionRecord(
+  record.set_body(*ConstructRedemptionRecord(
       *cbor::Writer::Write(cbor::Value(std::move(map))), empty_signature));
 
   // Since the expiry is of the wrong type, the record should be marked as

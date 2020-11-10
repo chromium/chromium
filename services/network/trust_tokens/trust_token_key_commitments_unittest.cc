@@ -175,7 +175,7 @@ TEST(TrustTokenKeyCommitments, KeysFromCommandLine) {
       commitments,
       *SuitableTrustTokenOrigin::Create(GURL("https://issuer.example")));
   ASSERT_TRUE(result);
-  EXPECT_EQ(result->signed_redemption_record_verification_key, expected_srrkey);
+  EXPECT_EQ(result->redemption_record_verification_key, expected_srrkey);
   EXPECT_EQ(result->protocol_version,
             mojom::TrustTokenProtocolVersion::kTrustTokenV1);
   EXPECT_EQ(result->id, 1);

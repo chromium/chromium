@@ -20,8 +20,8 @@ enum class WithBody { kValid, kInvalid, kAbsent };
 enum class WithSignature { kValid, kInvalid, kAbsent };
 enum class WithAdditionalMember { kYes, kNo };
 
-// Returns a minimal signed redemption record-like Structured Headers dictionary
-// to help with  error handling in the SRR deserialization code.
+// Returns a minimal redemption record-like Structured Headers dictionary to
+// help with error handling in the RR deserialization code.
 //
 // |with_body| specifies whether to include a valid "body" field, a type-unsafe
 // one, or none at all; |with_signature| does the same for the "signature"
@@ -84,43 +84,41 @@ TEST(SignedRedemptionRecordSerialization, SerializeAndParse) {
   std::string body = "body";
   std::string signature = "example signature";
   base::Optional<std::string> maybe_serialized =
-      ConstructSignedRedemptionRecord(
-          base::as_bytes(base::make_span(body)),
-          base::as_bytes(base::make_span(signature)));
+      ConstructRedemptionRecord(base::as_bytes(base::make_span(body)),
+                                base::as_bytes(base::make_span(signature)));
   ASSERT_TRUE(maybe_serialized);
 
   std::string obtained_body;
   std::string obtained_signature;
-  EXPECT_TRUE(ParseTrustTokenSignedRedemptionRecord(
-      *maybe_serialized, &obtained_body, &obtained_signature));
+  EXPECT_TRUE(ParseTrustTokenRedemptionRecord(*maybe_serialized, &obtained_body,
+                                              &obtained_signature));
   EXPECT_EQ(obtained_body, body);
   EXPECT_EQ(obtained_signature, signature);
 }
 
 TEST(SignedRedemptionRecordSerialization, SerializeAndParseNullptrParams) {
-  // Make sure ParseTrustTokenSignedRedemptionRecord doesn't blow up (i.e.,
+  // Make sure ParseTrustTokenRedemptionRecord doesn't blow up (i.e.,
   // dereference a null pointer) when its optional params aren't provided.
   std::string body = "example body";
   std::string signature = "example signature";
   base::Optional<std::string> maybe_serialized =
-      ConstructSignedRedemptionRecord(
-          base::as_bytes(base::make_span(body)),
-          base::as_bytes(base::make_span(signature)));
+      ConstructRedemptionRecord(base::as_bytes(base::make_span(body)),
+                                base::as_bytes(base::make_span(signature)));
   ASSERT_TRUE(maybe_serialized);
 
-  EXPECT_TRUE(ParseTrustTokenSignedRedemptionRecord(*maybe_serialized, nullptr,
-                                                    nullptr));
+  EXPECT_TRUE(
+      ParseTrustTokenRedemptionRecord(*maybe_serialized, nullptr, nullptr));
 }
 
 TEST(SignedRedemptionRecordSerialization, ParseNotDictionary) {
   // Parse should reject objects that aren't Structured Headers dictionaries.
-  EXPECT_FALSE(ParseTrustTokenSignedRedemptionRecord(
+  EXPECT_FALSE(ParseTrustTokenRedemptionRecord(
       "Not a Structured Headers dictionary", nullptr, nullptr));
 }
 
 TEST(SignedRedemptionRecordSerialization, ParseTooSmallDictionary) {
   // Parse should reject Structured Headers dictionaries that aren't size 2.
-  EXPECT_FALSE(ParseTrustTokenSignedRedemptionRecord(
+  EXPECT_FALSE(ParseTrustTokenRedemptionRecord(
       CreateSerializedDictionary(WithBody::kAbsent, WithSignature::kAbsent,
                                  WithAdditionalMember::kNo),
       nullptr, nullptr));
@@ -130,7 +128,7 @@ TEST(SignedRedemptionRecordSerialization,
      ParseDictionaryWithTypeUnsafeSignature) {
   // Parse should reject size 2 structured headers dictionaries with members of
   // the wrong type.
-  EXPECT_FALSE(ParseTrustTokenSignedRedemptionRecord(
+  EXPECT_FALSE(ParseTrustTokenRedemptionRecord(
       CreateSerializedDictionary(WithBody::kValid, WithSignature::kInvalid,
                                  WithAdditionalMember::kNo),
       nullptr, nullptr));
@@ -139,7 +137,7 @@ TEST(SignedRedemptionRecordSerialization,
 TEST(SignedRedemptionRecordSerialization, ParseDictionaryWithTypeUnsafeBody) {
   // Parse should reject size 2 structured headers dictionaries with members of
   // the wrong type.
-  EXPECT_FALSE(ParseTrustTokenSignedRedemptionRecord(
+  EXPECT_FALSE(ParseTrustTokenRedemptionRecord(
       CreateSerializedDictionary(WithBody::kInvalid, WithSignature::kValid,
                                  WithAdditionalMember::kNo),
       nullptr, nullptr));
@@ -147,7 +145,7 @@ TEST(SignedRedemptionRecordSerialization, ParseDictionaryWithTypeUnsafeBody) {
 
 TEST(SignedRedemptionRecordSerialization, ParseDictionaryWithExtraMembers) {
   // Parse should reject size >2 structured headers dictionaries.
-  EXPECT_FALSE(ParseTrustTokenSignedRedemptionRecord(
+  EXPECT_FALSE(ParseTrustTokenRedemptionRecord(
       CreateSerializedDictionary(WithBody::kValid, WithSignature::kValid,
                                  WithAdditionalMember::kYes),
       nullptr, nullptr));

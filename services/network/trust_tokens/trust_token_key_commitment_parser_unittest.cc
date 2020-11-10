@@ -80,8 +80,7 @@ TEST(TrustTokenKeyCommitmentParser, AcceptsMinimal) {
       mojom::TrustTokenProtocolVersion::kTrustTokenV1;
   expectation->id = 1;
   expectation->batch_size = 5;
-  base::Base64Decode("aaaa",
-                     &expectation->signed_redemption_record_verification_key);
+  base::Base64Decode("aaaa", &expectation->redemption_record_verification_key);
 
   EXPECT_THAT(TrustTokenKeyCommitmentParser().Parse(input),
               EqualsMojo(expectation));
@@ -372,8 +371,7 @@ TEST(TrustTokenKeyCommitmentParser, IgnoreKeyWithExpiryInThePast) {
   ASSERT_TRUE(base::JSONReader::Read(input));
 
   auto expectation = mojom::TrustTokenKeyCommitmentResult::New();
-  base::Base64Decode("aaaa",
-                     &expectation->signed_redemption_record_verification_key);
+  base::Base64Decode("aaaa", &expectation->redemption_record_verification_key);
   expectation->protocol_version =
       mojom::TrustTokenProtocolVersion::kTrustTokenV1;
   expectation->id = 1;
