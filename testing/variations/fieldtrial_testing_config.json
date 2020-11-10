@@ -1533,7 +1533,8 @@
                     "enable_features": [
                         "ChromeShareQRCode",
                         "ChromeShareScreenshot",
-                        "ChromeSharingHub"
+                        "ChromeSharingHub",
+                        "ChromeSharingHubV15"
                     ],
                     "min_os_version": "5.1"
                 }
