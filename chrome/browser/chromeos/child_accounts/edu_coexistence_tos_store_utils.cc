@@ -16,10 +16,7 @@ namespace chromeos {
 
 namespace edu_coexistence {
 
-// TODO(yilkal): Update the "0" below to the terms of service version number
-// that will first be sent via policy inorder to ensure that we will not
-// invalidate pre-existing edu-coexistence accounts.
-const char kMinTOSVersionNumber[] = "0";
+const char kMinTOSVersionNumber[] = "337351677";
 
 UserConsentInfo::UserConsentInfo(const std::string& gaia_id,
                                  const std::string& version)
@@ -27,15 +24,15 @@ UserConsentInfo::UserConsentInfo(const std::string& gaia_id,
 
 bool IsConsentVersionLessThan(const std::string& lhs_version,
                               const std::string& rhs_version) {
-  int lhs_version_int;
-  if (!base::StringToInt(lhs_version, &lhs_version_int)) {
+  uint64_t lhs_version_int;
+  if (!base::StringToUint64(lhs_version, &lhs_version_int)) {
     LOG(ERROR) << " TermsOfService |lhs_version| string is not a number"
                << lhs_version;
     return false;
   }
 
-  int rhs_version_int;
-  if (!base::StringToInt(rhs_version, &rhs_version_int)) {
+  uint64_t rhs_version_int;
+  if (!base::StringToUint64(rhs_version, &rhs_version_int)) {
     LOG(ERROR) << " TermsOfService |rhs_version| string is not a number"
                << rhs_version;
     return false;

@@ -166,13 +166,12 @@ TEST_F(AccountManagerEducoexistenceControllerTest,
   EXPECT_FALSE(HasInvalidGaiaToken(
       GetAccountFor(kSecondaryAccount2, kSecondaryAccount2GaiaId)));
 
+  UpdateEduCoexistenceToSVersion("5");
+
   EduCoexistenceConsentInvalidationController
       edu_coexistence_invalidation_controller(profile(), account_manager(),
                                               kDeviceAccount);
   edu_coexistence_invalidation_controller.Init();
-
-  UpdateEduCoexistenceToSVersion("5");
-  base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(HasInvalidGaiaToken(
       GetAccountFor(kSecondaryAccount1, kSecondaryAccount1GaiaId)));
