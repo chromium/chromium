@@ -42244,6 +42244,7 @@ from previous Chrome versions.
   <int value="-1641832607" label="DragToPinTabs:enabled"/>
   <int value="-1639050182" label="NavigationPredictorRendererWarmup:enabled"/>
   <int value="-1638815914" label="enable-experimental-productivity-features"/>
+  <int value="-1635048938" label="DetectFormSubmissionOnFormClear:disabled"/>
   <int value="-1634878515" label="ChromeHomeModernLayout:enabled"/>
   <int value="-1634490190"
       label="AutofillCreditCardLocalCardMigration:disabled"/>
@@ -44842,6 +44843,7 @@ from previous Chrome versions.
   <int value="902839593" label="WebContentsForceDark:disabled"/>
   <int value="903267263" label="disable-offline-pages"/>
   <int value="904811479" label="query-tiles-enable-trending"/>
+  <int value="907056713" label="DetectFormSubmissionOnFormClear:enabled"/>
   <int value="908302031"
       label="OmniboxUIExperimentElideSuggestionUrlAfterHost:enabled"/>
   <int value="908370794" label="UserActivityPredictionMlService:enabled"/>

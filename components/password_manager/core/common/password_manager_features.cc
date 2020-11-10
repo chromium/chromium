@@ -21,6 +21,11 @@ const base::Feature kBiometricTouchToFill = {"BiometricTouchToFill",
 const base::Feature kChangePasswordAffiliationInfo = {
     "ChangePasswordAffiliationInfo", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables submission detection for forms dynamically cleared but not removed
+// from the page.
+const base::Feature kDetectFormSubmissionOnFormClear = {
+    "DetectFormSubmissionOnFormClear", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables the editing of passwords in Chrome settings.
 const base::Feature kEditPasswordsInSettings = {
     "EditPasswordsInSettings", base::FEATURE_DISABLED_BY_DEFAULT};

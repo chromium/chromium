@@ -6676,6 +6676,11 @@ const FeatureEntry kFeatureEntries[] = {
          autofill::features::
              kAutofillEnableSaveCardInfoBarAccountIndicationFooter)},
 #endif
+    {"detect-form-submission-on-form-clear",
+     flag_descriptions::kDetectFormSubmissionOnFormClearName,
+     flag_descriptions::kDetectFormSubmissionOnFormClearDescription, kOsAll,
+     FEATURE_VALUE_TYPE(
+         password_manager::features::kDetectFormSubmissionOnFormClear)},
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

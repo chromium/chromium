@@ -78,6 +78,9 @@ extern const char kConversionMeasurementApiDescription[];
 extern const char kConversionMeasurementDebugModeName[];
 extern const char kConversionMeasurementDebugModeDescription[];
 
+extern const char kDetectFormSubmissionOnFormClearName[];
+extern const char kDetectFormSubmissionOnFormClearDescription[];
+
 extern const char kEditPasswordsInSettingsName[];
 extern const char kEditPasswordsInSettingsDescription[];
 

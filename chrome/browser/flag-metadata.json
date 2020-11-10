@@ -833,6 +833,11 @@
     "expiry_milestone": 93
   },
   {
+    "name": "detect-form-submission-on-form-clear",
+    "owners": [ "kazinova", "jdoerrie"],
+    "expiry_milestone": 93
+  },
+  {
     "name": "detect-target-embedding-lookalikes",
     "owners": [ "jdeblasio", "meacer" ],
     "expiry_milestone": 89
