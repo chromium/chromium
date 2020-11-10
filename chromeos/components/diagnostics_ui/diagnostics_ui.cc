@@ -96,6 +96,14 @@ DiagnosticsUI::DiagnosticsUI(content::WebUI* web_ui)
                                          kChromeosDiagnosticsAppResourcesSize);
   SetUpWebUIDataSource(html_source.get(), resources, kGeneratedPath,
                        IDR_DIAGNOSTICS_APP_INDEX_HTML);
+
+  html_source->AddResourcePath(
+      "system_data_provider.mojom-lite.js",
+      IDR_DIAGNOSTICS_SYSTEM_DATA_PROVIDER_MOJO_LITE_JS);
+  html_source->AddResourcePath(
+      "system_routine_controller.mojom-lite.js",
+      IDR_DIAGNOSTICS_SYSTEM_ROUTINE_CONTROLLER_MOJO_LITE_JS);
+
   AddDiagnosticsStrings(html_source.get());
   content::WebUIDataSource::Add(web_ui->GetWebContents()->GetBrowserContext(),
                                 html_source.release());

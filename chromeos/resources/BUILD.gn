@@ -309,7 +309,10 @@ grit("diagnostics_app_resources") {
   source =
       "../components/diagnostics_ui/resources/diagnostics_app_resources.grd"
 
-  deps = [ "../components/diagnostics_ui/resources:web_components" ]
+  deps = [
+    "../components/diagnostics_ui/mojom:mojom_js",
+    "../components/diagnostics_ui/resources:web_components",
+  ]
 
   outputs = [
     "chromeos_diagnostics_app_resources.pak",

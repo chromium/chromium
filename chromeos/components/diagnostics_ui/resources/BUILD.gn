@@ -116,6 +116,7 @@ js_library("mojo_interface_provider") {
     ":fake_data",
     ":fake_system_data_provider",
     ":fake_system_routine_controller",
+    "//chromeos/components/diagnostics_ui/mojom:mojom_js_library_for_compile",
     "//ui/webui/resources/js:cr.m",
   ]
 }
