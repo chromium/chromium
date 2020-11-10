@@ -602,8 +602,11 @@ void CastBrowserMainParts::PreMainMessageLoopRun() {
       CAST_IS_DEBUG_BUILD() ||
       GetSwitchValueBoolean(switches::kEnableInput, false));
   window_manager_->Setup();
-  rounded_window_corners_manager_ =
-      std::make_unique<RoundedWindowCornersManager>(window_manager_.get());
+
+  if (GetSwitchValueBoolean(switches::kEnableRoundedWindowCorners, false)) {
+    rounded_window_corners_manager_ =
+        std::make_unique<RoundedWindowCornersManager>(window_manager_.get());
+  }
 
 #if BUILDFLAG(ENABLE_CHROMECAST_EXTENSIONS)
   cast_browser_process_->SetAccessibilityManager(

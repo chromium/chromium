@@ -183,6 +183,9 @@ const char kBackGestureHorizontalThreshold[] =
 // Whether to enable detection and dispatch of a 'drag from the top' gesture.
 const char kEnableTopDragGesture[] = "enable-top-drag-gesture";
 
+// Whether to enable the drawing of rounded window corners in the root window.
+const char kEnableRoundedWindowCorners[] = "enable-rounded-window-corners";
+
 // Endpoint that the mixer service listens on. This is a path for a UNIX domain
 // socket (default is /tmp/mixer-service).
 const char kMixerServiceEndpoint[] = "mixer-service-endpoint";
