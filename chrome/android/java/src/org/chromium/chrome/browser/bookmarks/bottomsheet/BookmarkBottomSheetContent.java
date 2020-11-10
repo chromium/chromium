@@ -66,22 +66,21 @@ class BookmarkBottomSheetContent implements BottomSheetContent {
 
     @Override
     public int getSheetContentDescriptionStringId() {
-        // TODO(xingliu): Add the correct accessibility strings.
-        return R.string.reading_list_title;
+        return R.string.bookmarks_bottom_sheet_content_description;
     }
 
     @Override
     public int getSheetHalfHeightAccessibilityStringId() {
-        return R.string.reading_list_title;
+        return R.string.bookmarks_bottom_sheet_opened_half;
     }
 
     @Override
     public int getSheetFullHeightAccessibilityStringId() {
-        return R.string.reading_list_title;
+        return R.string.bookmarks_bottom_sheet_opened_full;
     }
 
     @Override
     public int getSheetClosedAccessibilityStringId() {
-        return R.string.reading_list_title;
+        return R.string.bookmarks_bottom_sheet_closed;
     }
 }

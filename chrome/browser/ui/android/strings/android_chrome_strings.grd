@@ -3034,6 +3034,18 @@ Data from your Incognito session will only be cleared from Chrome when you <ph n
       <message name="IDS_BOOKMARKS_BOTTOM_SHEET_TITLE" desc="The title for the bookmark bottom sheet, shown when trying to add a bookmark. Translation should match TC ID 9191031968346938109.">
         Add to
       </message>
+      <message name="IDS_BOOKMARKS_BOTTOM_SHEET_CONTENT_DESCRIPTION" desc="The content description for the bookmark bottom sheet. Read as accessibility string when tapping on the bottom sheet.">
+        List of bookmark folders
+      </message>
+      <message name="IDS_BOOKMARKS_BOTTOM_SHEET_OPENED_HALF" desc="The accessibility string read when the bookmark bottom sheet is half opened.">
+        List of bookmark folders opened at half height
+      </message>
+      <message name="IDS_BOOKMARKS_BOTTOM_SHEET_OPENED_FULL" desc="The accessibility string read when the bookmark bottom sheet is fully opened.">
+        List of bookmark folders opened at full height
+      </message>
+      <message name="IDS_BOOKMARKS_BOTTOM_SHEET_CLOSED" desc="The accessibility string read when the bookmark bottom sheet is closed.">
+        List of bookmark folders is closed
+      </message>
       <message name="IDS_EDIT_BOOKMARK" desc='The string prompting the user to edit the content of a bookmark. [CHAR-LIMIT=30]'>
         Edit bookmark
       </message>
