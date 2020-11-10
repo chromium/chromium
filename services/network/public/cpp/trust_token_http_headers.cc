@@ -12,7 +12,7 @@ namespace network {
 const std::vector<base::StringPiece>& TrustTokensRequestHeaders() {
   static base::NoDestructor<std::vector<base::StringPiece>> headers{
       {kTrustTokensRequestHeaderSecSignature,
-       kTrustTokensRequestHeaderSecSignedRedemptionRecord,
+       kTrustTokensRequestHeaderSecRedemptionRecord,
        kTrustTokensRequestHeaderSecTime, kTrustTokensSecTrustTokenHeader,
        kTrustTokensSecTrustTokenVersionHeader,
        kTrustTokensRequestHeaderSecTrustTokensAdditionalSigningData}};

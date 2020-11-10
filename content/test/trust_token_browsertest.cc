@@ -127,7 +127,7 @@ MATCHER(
     "an empty redemption record and no other request-signing headers.") {
   return ::testing::ExplainMatchResult(
       AllOf(
-          HasHeader(network::kTrustTokensRequestHeaderSecSignedRedemptionRecord,
+          HasHeader(network::kTrustTokensRequestHeaderSecRedemptionRecord,
                     StrEq("")),
           Not(HasHeader(network::kTrustTokensRequestHeaderSecTime)),
           Not(HasHeader(
@@ -223,8 +223,7 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, FetchEndToEnd) {
       request_handler_.last_incoming_signed_request(),
       Optional(AllOf(
           Not(HasHeader(network::kTrustTokensRequestHeaderSecTime)),
-          HasHeader(
-              network::kTrustTokensRequestHeaderSecSignedRedemptionRecord),
+          HasHeader(network::kTrustTokensRequestHeaderSecRedemptionRecord),
           SignaturesAreWellFormedAndVerify(),
           SecSignatureHeaderKeyHashes(IsSubsetOf(
               request_handler_.hashes_of_redemption_bound_public_keys())))));
@@ -286,8 +285,7 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, XhrEndToEnd) {
       request_handler_.last_incoming_signed_request(),
       Optional(AllOf(
           Not(HasHeader(network::kTrustTokensRequestHeaderSecTime)),
-          HasHeader(
-              network::kTrustTokensRequestHeaderSecSignedRedemptionRecord),
+          HasHeader(network::kTrustTokensRequestHeaderSecRedemptionRecord),
           SignaturesAreWellFormedAndVerify(),
           SecSignatureHeaderKeyHashes(IsSubsetOf(
               request_handler_.hashes_of_redemption_bound_public_keys())))));
@@ -324,8 +322,7 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, IframeEndToEnd) {
       request_handler_.last_incoming_signed_request(),
       Optional(AllOf(
           Not(HasHeader(network::kTrustTokensRequestHeaderSecTime)),
-          HasHeader(
-              network::kTrustTokensRequestHeaderSecSignedRedemptionRecord),
+          HasHeader(network::kTrustTokensRequestHeaderSecRedemptionRecord),
           SignaturesAreWellFormedAndVerify(),
           SecSignatureHeaderKeyHashes(IsSubsetOf(
               request_handler_.hashes_of_redemption_bound_public_keys())))));
@@ -412,8 +409,7 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, FetchEndToEndInIsolatedWorld) {
       request_handler_.last_incoming_signed_request(),
       Optional(AllOf(
           Not(HasHeader(network::kTrustTokensRequestHeaderSecTime)),
-          HasHeader(
-              network::kTrustTokensRequestHeaderSecSignedRedemptionRecord),
+          HasHeader(network::kTrustTokensRequestHeaderSecRedemptionRecord),
           SignaturesAreWellFormedAndVerify(),
           SecSignatureHeaderKeyHashes(IsSubsetOf(
               request_handler_.hashes_of_redemption_bound_public_keys())))));
@@ -1283,8 +1279,7 @@ IN_PROC_BROWSER_TEST_F(
       request_handler_.last_incoming_signed_request(),
       Optional(AllOf(
           Not(HasHeader(network::kTrustTokensRequestHeaderSecTime)),
-          HasHeader(
-              network::kTrustTokensRequestHeaderSecSignedRedemptionRecord),
+          HasHeader(network::kTrustTokensRequestHeaderSecRedemptionRecord),
           SignaturesAreWellFormedAndVerify(),
           SecSignatureHeaderKeyHashes(IsSubsetOf(
               request_handler_.hashes_of_redemption_bound_public_keys())))));
@@ -1342,8 +1337,7 @@ IN_PROC_BROWSER_TEST_F(
       request_handler_.last_incoming_signed_request(),
       Optional(AllOf(
           Not(HasHeader(network::kTrustTokensRequestHeaderSecTime)),
-          HasHeader(
-              network::kTrustTokensRequestHeaderSecSignedRedemptionRecord),
+          HasHeader(network::kTrustTokensRequestHeaderSecRedemptionRecord),
           SignaturesAreWellFormedAndVerify(),
           SecSignatureHeaderKeyHashes(IsSubsetOf(
               request_handler_.hashes_of_redemption_bound_public_keys())))));

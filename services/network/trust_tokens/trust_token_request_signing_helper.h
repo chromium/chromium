@@ -179,7 +179,7 @@ class TrustTokenRequestSigningHelper : public TrustTokenRequestHelper {
   // ATTACHING THE REDEMPTION RECORD:
   // In the case that an RR is found for at least one provided issuer and the
   // requested headers to sign are well-formed, attaches a
-  // Sec-Signed-Redemption-Record header bearing the RRs and:
+  // Sec-Redemption-Record header bearing the RRs and:
   // 1. if the request is configured for adding a Trust Tokens timestamp,
   // adds a timestamp header;
   // 2. if the request is configured for signing, computes the request's
@@ -199,7 +199,7 @@ class TrustTokenRequestSigningHelper : public TrustTokenRequestHelper {
   // failure during signing; see the Trust Tokens design doc for more
   // discussion.
   // - On failure, the request will contain an empty
-  // Sec-Signed-Redemption-Record header and no Sec-Time, Sec-Signature, or
+  // Sec-Redemption-Record header and no Sec-Time, Sec-Signature, or
   // Signed-Headers headers.
   void Begin(
       net::URLRequest* request,

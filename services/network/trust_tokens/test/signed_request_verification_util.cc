@@ -382,12 +382,12 @@ bool ConfirmRrBodyIntegrity(base::StringPiece rr_body, std::string* error_out) {
 }
 
 bool ExtractRedemptionRecordsFromHeader(
-    base::StringPiece sec_signed_redemption_record_header,
+    base::StringPiece sec_redemption_record_header,
     std::map<SuitableTrustTokenOrigin, std::string>*
         redemption_records_per_issuer_out,
     std::string* error_out) {
   base::Optional<net::structured_headers::List> maybe_list =
-      net::structured_headers::ParseList(sec_signed_redemption_record_header);
+      net::structured_headers::ParseList(sec_redemption_record_header);
 
   std::string dummy;
   if (!error_out)

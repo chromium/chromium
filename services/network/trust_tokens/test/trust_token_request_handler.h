@@ -45,8 +45,7 @@ class TrustTokenRequestHandler {
   enum class SigningOutcome {
     // Expect a well-formed RR and possibly a Sec-Signature header.
     kSuccess,
-    // Expect an empty Sec-Signed-Redemption-Record header and no Sec-Signature
-    // header.
+    // Expect an empty Sec-Redemption-Record header and no Sec-Signature header.
     kFailure,
   };
 

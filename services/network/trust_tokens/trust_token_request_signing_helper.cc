@@ -76,7 +76,7 @@ base::Optional<std::vector<std::string>> ParseTrustTokenSignedHeadersHeader(
 }  // namespace internal
 
 const char* const TrustTokenRequestSigningHelper::kSignableRequestHeaders[]{
-    kTrustTokensRequestHeaderSecSignedRedemptionRecord,
+    kTrustTokensRequestHeaderSecRedemptionRecord,
     kTrustTokensRequestHeaderSecTime,
     kTrustTokensRequestHeaderSecTrustTokensAdditionalSigningData,
 };
@@ -185,7 +185,7 @@ GetHeadersToSignAndUpdateSignedHeadersHeader(
 
 void AttachRedemptionRecordHeader(net::URLRequest* request, std::string value) {
   request->SetExtraRequestHeaderByName(
-      kTrustTokensRequestHeaderSecSignedRedemptionRecord, value,
+      kTrustTokensRequestHeaderSecRedemptionRecord, value,
       /*overwrite=*/true);
 }
 
@@ -271,8 +271,8 @@ void TrustTokenRequestSigningHelper::Begin(
         const auto& headers = request->extra_request_headers();
 
         std::string rr_header;
-        DCHECK(headers.GetHeader(
-            kTrustTokensRequestHeaderSecSignedRedemptionRecord, &rr_header));
+        DCHECK(headers.GetHeader(kTrustTokensRequestHeaderSecRedemptionRecord,
+                                 &rr_header));
         if (rr_header.empty()) {
           DCHECK(!headers.HasHeader(kTrustTokensRequestHeaderSecTime));
           DCHECK(!headers.HasHeader(kTrustTokensRequestHeaderSecSignature));
@@ -286,7 +286,7 @@ void TrustTokenRequestSigningHelper::Begin(
   // This class is responsible for adding these headers; callers should not add
   // them.
   DCHECK(!request->extra_request_headers().HasHeader(
-      kTrustTokensRequestHeaderSecSignedRedemptionRecord));
+      kTrustTokensRequestHeaderSecRedemptionRecord));
   DCHECK(!request->extra_request_headers().HasHeader(
       kTrustTokensRequestHeaderSecTime));
   DCHECK(!request->extra_request_headers().HasHeader(
@@ -390,7 +390,7 @@ void TrustTokenRequestSigningHelper::Begin(
     return;
   }
 
-  // 2.c. Attach the RRs in a Sec-Signed-Redemption-Record header.
+  // 2.c. Attach the RRs in a Sec-Redemption-Record header.
   if (base::Optional<std::string> maybe_redemption_record_header =
           ConstructRedemptionRecordHeader(records_per_issuer)) {
     AttachRedemptionRecordHeader(request,
@@ -398,10 +398,9 @@ void TrustTokenRequestSigningHelper::Begin(
   } else {
     AttachRedemptionRecordHeader(request, std::string());
 
-    LogOutcome(
-        net_log_,
-        "Unexpected internal error serializing Sec-Signed-Redemption-Record"
-        " header.");
+    LogOutcome(net_log_,
+               "Unexpected internal error serializing Sec-Redemption-Record"
+               " header.");
     std::move(done).Run(mojom::TrustTokenOperationStatus::kOk);
     return;
   }

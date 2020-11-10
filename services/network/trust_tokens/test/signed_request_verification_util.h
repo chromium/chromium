@@ -64,12 +64,12 @@ bool ReconstructSigningDataAndVerifySignatures(
 bool ConfirmRrBodyIntegrity(base::StringPiece rr_body,
                             std::string* error_out = nullptr);
 
-// Parses a Sec-Signed-Redemption-Record header and extracts the (issuer,
-// redemption record) pairs the header contains. On success, returns true. On
-// failure, returns false and, if |error_out| is not null, stores a
-// helpful error message in |error_out| for debugging.
+// Parses a Sec-Redemption-Record header and extracts the (issuer, redemption
+// record) pairs the header contains. On success, returns true. On failure,
+// returns false and, if |error_out| is not null, stores a helpful error
+// message in |error_out| for debugging.
 bool ExtractRedemptionRecordsFromHeader(
-    base::StringPiece sec_signed_redemption_record_header,
+    base::StringPiece sec_redemption_record_header,
     std::map<SuitableTrustTokenOrigin, std::string>*
         redemption_records_per_issuer_out,
     std::string* error_out);
