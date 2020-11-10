@@ -152,9 +152,14 @@ MEDIA_EXPORT Status OkStatus();
 
 // TODO(liberato): Add more helper functions for common error returns.
 
-// Helper class to allow returning a |T| or a Status.  Typical usage:
+// Helper class to allow returning a `T` or a Status.
 //
-// ErrorOr<std::unique_ptr<MyObject>> FactoryFn() {
+// It is not okay to send a StatusOr with a status code of `kOk`.  `kOk` is
+// reserved for cases where there is a `T` rather than a Status.
+//
+// Typical usage:
+//
+// StatusOr<std::unique_ptr<MyObject>> FactoryFn() {
 //   if (success)
 //     return std::make_unique<MyObject>();
 //   return Status(StatusCodes::kSomethingBadHappened);
@@ -164,12 +169,24 @@ MEDIA_EXPORT Status OkStatus();
 // if (result.has_error())  return std::move(result.error());
 // my_object_ = std::move(result.value());
 //
+// Can also be combined into a single switch using `code()`:
+//
+// switch (result.code()) {
+//  case StatusCode::kOk:
+//    // `kOk` is special; it means the StatusOr has a `T`.
+//    // Do something with result.value()
+//    break;
+//  // Maybe switch on specific non-kOk codes for special processing.
+//  default:  // Send unknown errors upwards.
+//    return std::move(result.error());
+// }
+//
 // Also useful if one would like to get an enum class return value, unless an
 // error occurs:
 //
 // enum class ResultType { kNeedMoreInput, kOutputIsReady, kFormatChanged };
 //
-// ErrorOr<ResultType> Foo() { ... }
+// StatusOr<ResultType> Foo() { ... }
 //
 // auto result = Foo();
 // if (result.has_error()) return std::move(result.error());
@@ -178,26 +195,32 @@ MEDIA_EXPORT Status OkStatus();
 //   ...
 // }
 template <typename T>
-class ErrorOr {
+class StatusOr {
  public:
   // All of these may be implicit, so that one may just return Status or
   // the value in question.
-  ErrorOr(Status&& error) : error_(std::move(error)) {}
-  ErrorOr(const Status& error) : error_(error) {}
-  ErrorOr(StatusCode code,
-          const base::Location& location = base::Location::Current())
-      : error_(Status(code, "", location)) {}
+  StatusOr(Status&& error) : error_(std::move(error)) {
+    DCHECK(!this->error().is_ok());
+  }
+  StatusOr(const Status& error) : error_(error) {
+    DCHECK(!this->error().is_ok());
+  }
+  StatusOr(StatusCode code,
+           const base::Location& location = base::Location::Current())
+      : error_(Status(code, "", location)) {
+    DCHECK(!error().is_ok());
+  }
 
-  ErrorOr(T&& value) : value_(std::move(value)) {}
-  ErrorOr(const T& value) : value_(value) {}
+  StatusOr(T&& value) : value_(std::move(value)) {}
+  StatusOr(const T& value) : value_(value) {}
 
-  ~ErrorOr() = default;
+  ~StatusOr() = default;
 
   // Move- and copy- construction and assignment are okay.
-  ErrorOr(const ErrorOr&) = default;
-  ErrorOr(ErrorOr&&) = default;
-  ErrorOr& operator=(ErrorOr&) = default;
-  ErrorOr& operator=(ErrorOr&&) = default;
+  StatusOr(const StatusOr&) = default;
+  StatusOr(StatusOr&&) = default;
+  StatusOr& operator=(StatusOr&) = default;
+  StatusOr& operator=(StatusOr&&) = default;
 
   // Do we have a value?
   bool has_value() const { return value_.has_value(); }
@@ -209,9 +232,17 @@ class ErrorOr {
   // have one via |!has_value()|.
   Status& error() { return *error_; }
 
+  const Status& error() const { return *error_; }
+
   // Return a ref to the value.  It's up to the caller to verify that we have a
   // value before calling this.
   T& value() { return std::get<0>(*value_); }
+
+  // Returns the error code we have, if any, or `kOk` if we have a value.  If
+  // this returns `kOk`, then it is equivalent to has_value().
+  StatusCode code() const {
+    return has_error() ? error().code() : StatusCode::kOk;
+  }
 
  private:
   base::Optional<Status> error_;

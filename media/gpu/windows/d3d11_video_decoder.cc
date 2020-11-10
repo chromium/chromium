@@ -187,7 +187,7 @@ HRESULT D3D11VideoDecoder::InitializeAcceleratedDecoder(
   return hr;
 }
 
-ErrorOr<std::tuple<ComD3D11VideoDecoder>>
+StatusOr<std::tuple<ComD3D11VideoDecoder>>
 D3D11VideoDecoder::CreateD3D11Decoder() {
   HRESULT hr;
 

@@ -73,7 +73,7 @@ bool D3D11DecoderConfigurator::SupportsDevice(
   return false;
 }
 
-ErrorOr<ComD3D11Texture2D> D3D11DecoderConfigurator::CreateOutputTexture(
+StatusOr<ComD3D11Texture2D> D3D11DecoderConfigurator::CreateOutputTexture(
     ComD3D11Device device,
     gfx::Size size,
     uint32_t array_size) {

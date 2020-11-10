@@ -65,8 +65,8 @@ class StatusTest : public testing::Test {
     return me;
   }
 
-  // Make sure that the typical usage of ErrorOr actually compiles.
-  ErrorOr<std::unique_ptr<int>> TypicalErrorOrUsage(bool succeed) {
+  // Make sure that the typical usage of StatusOr actually compiles.
+  StatusOr<std::unique_ptr<int>> TypicalStatusOrUsage(bool succeed) {
     if (succeed)
       return std::make_unique<int>(123);
     return Status(StatusCode::kCodeOnlyForTesting);
@@ -192,16 +192,16 @@ TEST_F(StatusTest, CanCopyEasily) {
   ASSERT_EQ(actual.FindDictPath("data")->DictSize(), 1ul);
 }
 
-TEST_F(StatusTest, ErrorOrTypicalUsage) {
+TEST_F(StatusTest, StatusOrTypicalUsage) {
   // Mostly so we have some code coverage on the default usage.
-  EXPECT_TRUE(TypicalErrorOrUsage(true).has_value());
-  EXPECT_FALSE(TypicalErrorOrUsage(true).has_error());
-  EXPECT_FALSE(TypicalErrorOrUsage(false).has_value());
-  EXPECT_TRUE(TypicalErrorOrUsage(false).has_error());
+  EXPECT_TRUE(TypicalStatusOrUsage(true).has_value());
+  EXPECT_FALSE(TypicalStatusOrUsage(true).has_error());
+  EXPECT_FALSE(TypicalStatusOrUsage(false).has_value());
+  EXPECT_TRUE(TypicalStatusOrUsage(false).has_error());
 }
 
-TEST_F(StatusTest, ErrorOrWithMoveOnlyType) {
-  ErrorOr<std::unique_ptr<int>> error_or(std::make_unique<int>(123));
+TEST_F(StatusTest, StatusOrWithMoveOnlyType) {
+  StatusOr<std::unique_ptr<int>> error_or(std::make_unique<int>(123));
   EXPECT_TRUE(error_or.has_value());
   EXPECT_FALSE(error_or.has_error());
   std::unique_ptr<int> result = std::move(error_or.value());
@@ -210,8 +210,8 @@ TEST_F(StatusTest, ErrorOrWithMoveOnlyType) {
   EXPECT_EQ(*result, 123);
 }
 
-TEST_F(StatusTest, ErrorOrWithCopyableType) {
-  ErrorOr<int> error_or(123);
+TEST_F(StatusTest, StatusOrWithCopyableType) {
+  StatusOr<int> error_or(123);
   EXPECT_TRUE(error_or.has_value());
   EXPECT_FALSE(error_or.has_error());
   int result = std::move(error_or.value());
@@ -220,14 +220,14 @@ TEST_F(StatusTest, ErrorOrWithCopyableType) {
   EXPECT_EQ(error_or.value(), 123);
 }
 
-TEST_F(StatusTest, ErrorOrMoveConstructionAndAssignment) {
+TEST_F(StatusTest, StatusOrMoveConstructionAndAssignment) {
   // Make sure that we can move-construct and move-assign a move-only value.
-  ErrorOr<std::unique_ptr<int>> error_or_0(std::make_unique<int>(123));
+  StatusOr<std::unique_ptr<int>> error_or_0(std::make_unique<int>(123));
 
-  ErrorOr<std::unique_ptr<int>> error_or_1(std::move(error_or_0));
+  StatusOr<std::unique_ptr<int>> error_or_1(std::move(error_or_0));
   EXPECT_EQ(error_or_0.value(), nullptr);
 
-  ErrorOr<std::unique_ptr<int>> error_or_2 = std::move(error_or_1);
+  StatusOr<std::unique_ptr<int>> error_or_2 = std::move(error_or_1);
   EXPECT_EQ(error_or_1.value(), nullptr);
 
   // |error_or_2| should have gotten the original.
@@ -235,12 +235,22 @@ TEST_F(StatusTest, ErrorOrMoveConstructionAndAssignment) {
   EXPECT_EQ(*value, 123);
 }
 
-TEST_F(StatusTest, ErrorOrCopyWorks) {
+TEST_F(StatusTest, StatusOrCopyWorks) {
   // Make sure that we can move-construct and move-assign a move-only value.
-  ErrorOr<int> error_or_0(123);
-  ErrorOr<int> error_or_1(std::move(error_or_0));
-  ErrorOr<int> error_or_2 = std::move(error_or_1);
+  StatusOr<int> error_or_0(123);
+  StatusOr<int> error_or_1(std::move(error_or_0));
+  StatusOr<int> error_or_2 = std::move(error_or_1);
   EXPECT_EQ(error_or_2.value(), 123);
+}
+
+TEST_F(StatusTest, StatusOrCodeIsOkWithValue) {
+  StatusOr<int> error_or(123);
+  EXPECT_EQ(error_or.code(), StatusCode::kOk);
+}
+
+TEST_F(StatusTest, StatusOrCodeIsNotOkWithoutValue) {
+  StatusOr<int> error_or(StatusCode::kCodeOnlyForTesting);
+  EXPECT_EQ(error_or.code(), StatusCode::kCodeOnlyForTesting);
 }
 
 }  // namespace media
