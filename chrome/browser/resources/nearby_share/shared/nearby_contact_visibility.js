@@ -348,7 +348,18 @@ Polymer({
   },
 
   /**
+   * @param {string} contactsState
+   * @return {boolean} true when the radio group should be disabled
+   * @private
+   */
+  disableRadioGroup_(contactsState) {
+    return contactsState === ContactsState.PENDING ||
+        contactsState === ContactsState.FAILED;
+  },
+
+  /**
    * @param {string} selectedVisibility
+   * @param {string} contactsState
    * @return {boolean} true when zero state should be shown
    * @private
    */

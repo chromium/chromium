@@ -218,6 +218,7 @@
     <div id="main">
 
       <cr-radio-group id="visibilityRadioGroup"
+          disabled="[[disableRadioGroup_(contactsState)]]"
           selected="{{selectedVisibility}}">
         <cr-card-radio-button id="allContacts" class="flex" name="all">
           <div class="card-contents">

@@ -86,6 +86,13 @@ suite('nearby-contact-visibility', () => {
   }
 
   /**
+   * @return {boolean} true when visibility selection radio group is disabled
+   */
+  function isRadioGroupDisabled() {
+    return visibilityElement.$$('#visibilityRadioGroup').disabled;
+  }
+
+  /**
    * Checks the state of the contacts toggle button group
    * @param {boolean} all is allContacts checked?
    * @param {boolean} some is someContacts checked?
@@ -127,6 +134,25 @@ suite('nearby-contact-visibility', () => {
     assertTrue(areContactCheckBoxesVisible());
     const list = visibilityElement.$$('#contactList');
     assertEquals(fakeContactManager.contactRecords.length, list.items.length);
+  });
+
+  test('Radio group disabled until successful download', async function() {
+    // Radio group disabled after download failure
+    fakeContactManager.failDownload();
+    await test_util.waitAfterNextRender(visibilityElement);
+    assertTrue(isDownloadContactsFailedVisible());
+    assertTrue(isRadioGroupDisabled());
+
+    // Radio group disabled while downloading
+    visibilityElement.$$('#tryAgainLink').click();
+    await test_util.waitAfterNextRender(visibilityElement);
+    assertTrue(isDownloadContactsPendingVisible());
+    assertTrue(isRadioGroupDisabled());
+
+    // Radio group enabled after successful download
+    succeedContactDownload();
+    await test_util.waitAfterNextRender(visibilityElement);
+    assertFalse(isRadioGroupDisabled());
   });
 
   test('Visibility component shows zero state for kUnknown', async function() {
