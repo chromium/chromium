@@ -52,6 +52,7 @@ void SetUpWebUIDataSource(content::WebUIDataSource* source,
 
 void AddScanningAppStrings(content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
+      {"a4OptionText", IDS_SCANNING_APP_A4_OPTION_TEXT},
       {"appTitle", IDS_SCANNING_APP_TITLE},
       {"blackAndWhiteOptionText", IDS_SCANNING_APP_BLACK_AND_WHITE_OPTION_TEXT},
       {"colorModeDropdownLabel", IDS_SCANNING_APP_COLOR_MODE_DROPDOWN_LABEL},
@@ -59,8 +60,11 @@ void AddScanningAppStrings(content::WebUIDataSource* html_source) {
       {"defaultSourceOptionText", IDS_SCANNING_APP_DEFAULT_SOURCE_OPTION_TEXT},
       {"flatbedOptionText", IDS_SCANNING_APP_FLATBED_OPTION_TEXT},
       {"fileTypeDropdownLabel", IDS_SCANNING_APP_FILE_TYPE_DROPDOWN_LABEL},
+      {"fitToScanAreaOptionText",
+       IDS_SCANNING_APP_FIT_TO_SCAN_AREA_OPTION_TEXT},
       {"grayscaleOptionText", IDS_SCANNING_APP_GRAYSCALE_OPTION_TEXT},
       {"jpgOptionText", IDS_SCANNING_APP_JPG_OPTION_TEXT},
+      {"letterOptionText", IDS_SCANNING_APP_LETTER_OPTION_TEXT},
       {"moreSettings", IDS_SCANNING_APP_MORE_SETTINGS},
       {"myFilesSelectOption", IDS_SCANNING_APP_MY_FILES_SELECT_OPTION},
       {"noScannersHelpLinkLabel", IDS_SCANNING_APP_NO_SCANNERS_HELP_LINK_LABEL},

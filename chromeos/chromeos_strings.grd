@@ -516,6 +516,15 @@ Try tapping the mic to ask me anything.
       <message name="IDS_SCANNING_APP_PAGE_SIZE_DROPDOWN_LABEL" desc="The label for the dropdown that displays available page sizes.">
         Page size
       </message>
+      <message name="IDS_SCANNING_APP_A4_OPTION_TEXT" desc="The text displayed for the A4 option in the page size dropdown.">
+        A4
+      </message>
+      <message name="IDS_SCANNING_APP_LETTER_OPTION_TEXT" desc="The text displayed for the Letter option in the page size dropdown.">
+        Letter
+      </message>
+      <message name="IDS_SCANNING_APP_FIT_TO_SCAN_AREA_OPTION_TEXT" desc="The text displayed for the fit to scan area option in the page size dropdown.">
+        Fit to scan area
+      </message>
       <message name="IDS_SCANNING_APP_RESOLUTION_DROPDOWN_LABEL" desc="The label for the dropdown that displays available resolutions (e.g. 150 dpi, 300 dpi, etc.).">
         Resolution
       </message>

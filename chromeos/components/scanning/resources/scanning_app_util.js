@@ -72,17 +72,16 @@ export function getColorModeString(mojoColorMode) {
  * @return {string}
  */
 export function getPageSizeString(pageSize) {
-  // TODO(jschettler): Replace with finalized i18n strings.
   switch (pageSize) {
     case chromeos.scanning.mojom.PageSize.kIsoA4:
-      return 'A4';
+      return loadTimeData.getString('a4OptionText');
     case chromeos.scanning.mojom.PageSize.kNaLetter:
-      return 'Letter';
+      return loadTimeData.getString('letterOptionText');
     case chromeos.scanning.mojom.PageSize.kMax:
-      return 'Fit to scan area';
+      return loadTimeData.getString('fitToScanAreaOptionText');
     default:
       assertNotReached();
-      return 'Unknown';
+      return loadTimeData.getString('letterOptionText');
   }
 }
 
