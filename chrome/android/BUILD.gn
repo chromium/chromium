@@ -2944,15 +2944,6 @@ template("monochrome_or_trichrome_public_bundle_tmpl") {
       if (!_is_trichrome) {
         chrome_deps += [ "//chrome/android:monochrome_java" ]
       }
-
-      # These will be defined in the base module, and cause conflicts when the
-      # APK package name matches the resource package name from :chrome_java.
-      if (chrome_public_manifest_package == "org.chromium.chrome") {
-        chrome_jar_excluded_patterns = [
-          "org/chromium/chrome/R\$*.class",
-          "org/chromium/chrome/R.class",
-        ]
-      }
     }
 
     if (!is_java_debug) {

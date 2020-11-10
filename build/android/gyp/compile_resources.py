@@ -238,6 +238,10 @@ def _ParseArgs(args):
       action='store_true',
       help='Whether resources are being generated for a bundle module.')
 
+  input_opts.add_argument(
+      '--uses-split',
+      help='Value to set uses-split to in the AndroidManifest.xml.')
+
   diff_utils.AddCommandLineFlags(parser)
   options = parser.parse_args(args)
 
@@ -468,6 +472,11 @@ def _FixManifest(options, temp_dir):
   if options.debuggable:
     app_node.set('{%s}%s' % (manifest_utils.ANDROID_NAMESPACE, 'debuggable'),
                  'true')
+
+  if options.uses_split:
+    uses_split = ElementTree.SubElement(manifest_node, 'uses-split')
+    uses_split.set('{%s}name' % manifest_utils.ANDROID_NAMESPACE,
+                   options.uses_split)
 
   manifest_utils.SaveManifest(doc, debug_manifest_path)
   return debug_manifest_path, orig_package

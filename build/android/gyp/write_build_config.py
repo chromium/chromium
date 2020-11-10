@@ -1219,6 +1219,12 @@ def main(argv):
     # for java libraries, we only care about resources that are directly
     # reachable without going through another java_library.
     all_resources_deps = java_library_deps.All('android_resources')
+  if options.type == 'android_resources' and options.recursive_resource_deps:
+    # android_resources targets that want recursive resource deps also need to
+    # collect package_names from all library deps. This ensures the R.java files
+    # for these libraries will get pulled in along with the resources.
+    android_resources_library_deps = _DepsFromPathsWithFilters(
+        deps_configs_paths, allowlist=['java_library']).All('java_library')
 
   base_module_build_config = None
   if options.base_module_build_config:
@@ -1437,6 +1443,12 @@ def main(argv):
       extra_package_names = [
           c['package_name'] for c in all_resources_deps if 'package_name' in c
       ]
+
+      # android_resources targets which specified recursive_resource_deps may
+      # have extra_package_names.
+      for resources_dep in all_resources_deps:
+        extra_package_names.extend(resources_dep['extra_package_names'])
+
       # In final types (i.e. apks and modules) that create real R.java files,
       # they must collect package names from java_libraries as well.
       # https://crbug.com/1073476
@@ -1444,6 +1456,13 @@ def main(argv):
         extra_package_names.extend([
             c['package_name'] for c in all_library_deps if 'package_name' in c
         ])
+    elif options.recursive_resource_deps:
+      # Pull extra_package_names from library deps if recursive resource deps
+      # are required.
+      extra_package_names = [
+          c['package_name'] for c in android_resources_library_deps
+          if 'package_name' in c
+      ]
 
     # For feature modules, remove any resources that already exist in the base
     # module.

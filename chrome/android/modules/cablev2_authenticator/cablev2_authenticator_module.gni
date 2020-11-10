@@ -5,4 +5,5 @@ cablev2_authenticator_module_desc = {
   native_deps =
       [ "//chrome/android/modules/cablev2_authenticator/internal:native" ]
   load_native_on_get_impl = true
+  uses_split = "chrome"
 }

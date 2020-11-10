@@ -105,8 +105,8 @@ template("chrome_feature_module") {
     if (defined(_module_desc.java_deps)) {
       deps += _module_desc.java_deps
     }
-    if (defined(_module_desc.jar_excluded_patterns)) {
-      jar_excluded_patterns = _module_desc.jar_excluded_patterns
+    if (defined(_module_desc.uses_split)) {
+      uses_split = _module_desc.uses_split
     }
 
     # Don't embed more translations than required (http://crbug.com/932017).

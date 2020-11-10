@@ -44,8 +44,13 @@ template("chrome_bundle") {
     _paks = []
     _pak_deps = []
     foreach(_module_desc, invoker.module_descs) {
-      if (defined(_module_desc.supports_isolated_split) &&
-          _module_desc.supports_isolated_split) {
+      _supports_isolated_split =
+          defined(_module_desc.supports_isolated_split) &&
+          _module_desc.supports_isolated_split
+      _uses_chrome_split =
+          defined(_module_desc.uses_split) &&
+          _module_desc.uses_split == "chrome" && enable_chrome_child_modules
+      if (_supports_isolated_split || _uses_chrome_split) {
         _module_descs += [ _module_desc ]
       } else {
         _shared_libraries = []
@@ -99,9 +104,6 @@ template("chrome_bundle") {
       if (defined(invoker.chrome_deps)) {
         java_deps += invoker.chrome_deps
       }
-      if (defined(invoker.chrome_jar_excluded_patterns)) {
-        jar_excluded_patterns = invoker.chrome_jar_excluded_patterns
-      }
 
       # Native code for all DFMs is moved to the base module's library, and paks
       # for DFMs will use the value of load_native_on_get_impl from the module
@@ -115,6 +117,10 @@ template("chrome_bundle") {
     android_resources("${_base_target_name}__all_chrome_resources") {
       recursive_resource_deps = true
       deps = []
+
+      # Java library deps are added to this target because the
+      # recursive_resource_deps arg allows pulling all the android_resources
+      # deps from them. The actual java library targets are not used.
       foreach(_module_desc, _module_descs) {
         if (defined(_module_desc.java_deps)) {
           deps += _module_desc.java_deps
@@ -124,8 +130,21 @@ template("chrome_bundle") {
   } else {
     _module_descs = invoker.module_descs
   }
-  foreach(_module_desc, _module_descs) {
+  foreach(_tmp_module_desc, _module_descs) {
     assert(_package_id > 2, "Too many modules, ran out of package IDs!")
+
+    # Need to reset _module_desc on each loop iteration, otherwise the
+    # "Replacing nonempty scope" error is thrown.
+    _module_desc = {
+    }
+    if (_enable_chrome_module && enable_chrome_child_modules) {
+      _module_desc = _tmp_module_desc
+    } else {
+      # Remove uses_split if child modules are not enabled.
+      _module_desc = {
+        forward_variables_from(_tmp_module_desc, "*", [ "uses_split" ])
+      }
+    }
 
     # Assert that |load_native_on_get_impl| is defined iff native libraries or
     # resources are defined.

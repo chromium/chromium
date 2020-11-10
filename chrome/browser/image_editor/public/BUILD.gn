@@ -8,6 +8,7 @@ android_library("java") {
   sources = [ "android/java/src/org/chromium/chrome/browser/image_editor/ImageEditorDialogCoordinator.java" ]
 
   deps = [
+    "//base:base_java",
     "//chrome/browser/share:java",
     "//chrome/browser/tab:java",
     "//third_party/android_deps:android_support_v7_appcompat_java",

@@ -5,6 +5,7 @@
 # found in the LICENSE file.
 
 import argparse
+from collections import defaultdict
 import logging
 import os
 import re
@@ -106,6 +107,11 @@ def _ParseOptions():
       action='append',
       dest='feature_names',
       help='The name of the feature module.')
+  parser.add_argument(
+      '--uses-split',
+      action='append',
+      help='List of name pairs separated by : mapping a feature module to a '
+      'dependent feature module.')
   parser.add_argument('--warnings-as-errors',
                       action='store_true',
                       help='Treat all warnings as errors.')
@@ -145,6 +151,16 @@ def _ParseOptions():
     options.feature_jars = [
         build_utils.ParseGnList(x) for x in options.feature_jars
     ]
+
+  split_map = {}
+  if options.uses_split:
+    for split_pair in options.uses_split:
+      child, parent = split_pair.split(':')
+      for name in (child, parent):
+        if name not in options.feature_names:
+          parser.error('"%s" referenced in --uses-split not present.' % name)
+      split_map[child] = parent
+  options.uses_split = split_map
 
   return options
 
@@ -262,17 +278,28 @@ def _OptimizeWithR8(options,
         cmd += ['--main-dex-rules', main_dex_rule]
 
     base_jars = set(base_dex_context.input_paths)
+    input_path_map = defaultdict(set)
+    for feature in feature_contexts:
+      parent = options.uses_split.get(feature.name, feature.name)
+      input_path_map[parent].update(feature.input_paths)
+
     # If a jar is present in multiple features, it should be moved to the base
     # module.
     all_feature_jars = set()
-    for feature in feature_contexts:
-      base_jars.update(all_feature_jars.intersection(feature.input_paths))
-      all_feature_jars.update(feature.input_paths)
+    for input_paths in input_path_map.values():
+      base_jars.update(all_feature_jars.intersection(input_paths))
+      all_feature_jars.update(input_paths)
 
     module_input_jars = base_jars.copy()
     for feature in feature_contexts:
+      input_paths = input_path_map.get(feature.name)
+      # Input paths can be missing for a child feature present in the uses_split
+      # map. These features get their input paths added to the parent, and are
+      # split out later with DexSplitter.
+      if input_paths is None:
+        continue
       feature_input_jars = [
-          p for p in feature.input_paths if p not in module_input_jars
+          p for p in input_paths if p not in module_input_jars
       ]
       module_input_jars.update(feature_input_jars)
       for in_jar in feature_input_jars:
@@ -297,6 +324,10 @@ def _OptimizeWithR8(options,
           'android/docs/java_optimization.md#Debugging-common-failures\n'))
       raise build_utils.CalledProcessError(err.cwd, err.args,
                                            err.output + debugging_link)
+
+    if options.uses_split:
+      _SplitChildFeatures(options, feature_contexts, tmp_dir, tmp_mapping_path,
+                          print_stdout)
 
     base_has_imported_lib = False
     if options.desugar_jdk_libs_json:
@@ -419,6 +450,65 @@ out/Release/apks/YourApk.apk > dex.txt
                           print_stdout=True,
                           stderr_filter=stderr_filter,
                           fail_on_output=warnings_as_errors)
+
+
+def _SplitChildFeatures(options, feature_contexts, tmp_dir, mapping_path,
+                        print_stdout):
+  feature_map = {f.name: f for f in feature_contexts}
+  parent_to_child = defaultdict(list)
+  for child, parent in options.uses_split.items():
+    parent_to_child[parent].append(child)
+  for parent, children in parent_to_child.items():
+    split_output = os.path.join(tmp_dir, 'split_%s' % parent)
+    os.mkdir(split_output)
+    # DexSplitter is not perfect and can cause issues related to inlining and
+    # class merging (see crbug.com/1032609). If strange class loading errors
+    # happen in DFMs specifying uses_split, this may be the cause.
+    split_cmd = build_utils.JavaCmd(options.warnings_as_errors) + [
+        '-cp',
+        options.r8_path,
+        'com.android.tools.r8.dexsplitter.DexSplitter',
+        '--output',
+        split_output,
+        '--proguard-map',
+        mapping_path,
+    ]
+
+    parent_jars = set(feature_map[parent].input_paths)
+    for base_jar in sorted(parent_jars):
+      split_cmd += ['--base-jar', base_jar]
+
+    for child in children:
+      for feature_jar in feature_map[child].input_paths:
+        if feature_jar not in parent_jars:
+          split_cmd += ['--feature-jar', '%s:%s' % (feature_jar, child)]
+
+    # The inputs are the outputs for the parent from the original R8 call.
+    parent_dir = feature_map[parent].staging_dir
+    for file_name in os.listdir(parent_dir):
+      split_cmd += ['--input', os.path.join(parent_dir, file_name)]
+    logging.debug('Running R8 DexSplitter')
+    build_utils.CheckOutput(split_cmd,
+                            print_stdout=print_stdout,
+                            fail_on_output=options.warnings_as_errors)
+
+    # Copy the parent dex back into the parent's staging dir.
+    base_split_output = os.path.join(split_output, 'base')
+    shutil.rmtree(parent_dir)
+    os.mkdir(parent_dir)
+    for dex_file in os.listdir(base_split_output):
+      shutil.move(os.path.join(base_split_output, dex_file),
+                  os.path.join(parent_dir, dex_file))
+
+    # Copy each child dex back into the child's staging dir.
+    for child in children:
+      child_split_output = os.path.join(split_output, child)
+      child_staging_dir = feature_map[child].staging_dir
+      shutil.rmtree(child_staging_dir)
+      os.mkdir(child_staging_dir)
+      for dex_file in os.listdir(child_split_output):
+        shutil.move(os.path.join(child_split_output, dex_file),
+                    os.path.join(child_staging_dir, dex_file))
 
 
 def _CombineConfigs(configs, dynamic_config_data, exclude_generated=False):

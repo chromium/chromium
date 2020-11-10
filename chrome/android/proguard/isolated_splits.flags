@@ -1,0 +1,9 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Isolated splits currently use DexSplitter for splitting out some DFMs.
+# DexSplitter has some issues with certain R8 optimizations, so we need to keep
+# ModuleInterface classes to make sure they aren't inlined.
+-keep @interface org.chromium.components.module_installer.builder.ModuleInterface
+-keep @org.chromium.components.module_installer.builder.ModuleInterface class ** {}

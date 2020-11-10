@@ -1221,6 +1221,9 @@ if (enable_java_templates) {
           "--dex-dest=@FileArg($_rebased_module_build_config:final_dex:path)",
           "--feature-jars=@FileArg($_rebased_module_build_config:deps_info:device_classpath)",
         ]
+        if (defined(_feature_module.uses_split)) {
+          _args += [ "--uses-split=${_feature_module.name}:${_feature_module.uses_split}" ]
+        }
         _deps += [ _feature_module.build_config_target ]
       }
       _stamp = "${target_gen_dir}/${target_name}.r8.stamp"
@@ -2733,6 +2736,11 @@ if (enable_java_templates) {
 
     if (defined(invoker.is_bundle_module) && invoker.is_bundle_module) {
       _args += [ "--is-bundle-module" ]
+    }
+
+    if (defined(invoker.uses_split)) {
+      assert(invoker.is_bundle_module)
+      _args += [ "--uses-split=${invoker.uses_split}" ]
     }
 
     if (defined(invoker.expected_android_manifest)) {

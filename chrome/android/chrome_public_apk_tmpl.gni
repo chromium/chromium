@@ -72,6 +72,9 @@ template("chrome_public_common_apk_or_module_tmpl") {
   _is_trichrome = defined(invoker.is_trichrome) && invoker.is_trichrome
   _is_64_bit_browser =
       defined(invoker.is_64_bit_browser) && invoker.is_64_bit_browser
+  _is_bundle = invoker.target_type == "android_app_bundle_module"
+  _enable_chrome_module =
+      _is_bundle && enable_chrome_module && (_is_monochrome || _is_trichrome)
   not_needed([ "_is_64_bit_browser" ])
   assert(!(_is_monochrome && _is_trichrome),
          "Cannot be both trichrome and monochrome!")
@@ -328,6 +331,10 @@ template("chrome_public_common_apk_or_module_tmpl") {
         proguard_configs +=
             [ "//base/android/proguard/disable_all_obfuscation.flags" ]
       }
+      if (_enable_chrome_module) {
+        proguard_configs +=
+            [ "//chrome/android/proguard/isolated_splits.flags" ]
+      }
     }
 
     if (use_chromium_linker) {
@@ -362,9 +369,7 @@ template("chrome_public_common_apk_or_module_tmpl") {
       deps += [ ":$_unwind_asset_target" ]
     }
 
-    _is_bundle = invoker.target_type == "android_app_bundle_module"
-    if (!_is_bundle || !enable_chrome_module ||
-        (!_is_monochrome && !_is_trichrome)) {
+    if (!_enable_chrome_module) {
       deps += [ "//chrome/android:chrome_all_java" ]
     }
 

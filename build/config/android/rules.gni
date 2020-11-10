@@ -2507,6 +2507,7 @@ if (enable_java_templates) {
                                "shared_resources",
                                "shared_resources_allowlist_locales",
                                "support_zh_hk",
+                               "uses_split",
                              ])
       short_resource_paths = _short_resource_paths
       strip_resource_names = _strip_resource_names
@@ -3676,6 +3677,7 @@ if (enable_java_templates) {
                                "library_renames",
                                "use_chromium_linker",
                                "use_modern_linker",
+                               "uses_split",
                                "version_code",
                                "version_name",
                              ])

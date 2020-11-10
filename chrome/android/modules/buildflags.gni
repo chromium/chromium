@@ -15,6 +15,10 @@ declare_args() {
   # DFM code before this can be enabled on stable.
   enable_chrome_module =
       android_channel == "default" || android_channel == "canary"
+
+  # Whether to enable DFMs which depend on the chrome DFM. These will be split
+  # out of the chrome DFM using DexSplitter.
+  enable_chrome_child_modules = true
 }
 
 # If true, lld is used to partition feature code into separate libraries, which

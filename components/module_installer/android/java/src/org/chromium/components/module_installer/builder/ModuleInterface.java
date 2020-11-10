@@ -14,7 +14,7 @@ import java.lang.annotation.Target;
  * annotation will generate a class FooModule that offers the same functionality as {@link Module}.
  */
 @Target(ElementType.TYPE)
-@Retention(RetentionPolicy.SOURCE)
+@Retention(RetentionPolicy.CLASS)
 public @interface ModuleInterface {
     /** The name of the module. */
     String module();
