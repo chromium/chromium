@@ -608,6 +608,24 @@ class ClipboardHistoryTextfieldBrowserTest
   views::Textfield* textfield_ = nullptr;
 };
 
+// Verifies that the clipboard history menu responses to the gesture tap
+// correctly (https://crbug.com/1142088).
+IN_PROC_BROWSER_TEST_F(ClipboardHistoryTextfieldBrowserTest,
+                       VerifyResponseToGestures) {
+  SetClipboardText("A");
+  SetClipboardText("B");
+  ShowContextMenuViaAccelerator();
+  ASSERT_TRUE(GetClipboardHistoryController()->IsMenuShowing());
+
+  // Tap at the second menu item view. Verify that "A" is pasted.
+  const views::MenuItemView* second_menu_item_view =
+      GetMenuItemViewForIndex(/*index=*/1);
+  GetEventGenerator()->GestureTapAt(
+      second_menu_item_view->GetBoundsInScreen().CenterPoint());
+  EXPECT_FALSE(GetClipboardHistoryController()->IsMenuShowing());
+  EXPECT_EQ("A", base::UTF16ToUTF8(textfield_->GetText()));
+}
+
 IN_PROC_BROWSER_TEST_F(ClipboardHistoryTextfieldBrowserTest,
                        ShouldPasteHistoryViaKeyboard) {
   base::HistogramTester histogram_tester;

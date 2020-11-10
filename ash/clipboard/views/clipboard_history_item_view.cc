@@ -191,6 +191,18 @@ void ClipboardHistoryItemView::Init() {
   main_button_ = AddChildView(std::make_unique<MainButton>(this));
   main_button_->SetCallback(base::BindRepeating(
       [](ClipboardHistoryItemView* item, const ui::Event& event) {
+        // Note that the callback may be triggered through the ENTER key when
+        // the delete button is under the pseudo focus. Because the delete
+        // button is not hot-tracked by the menu controller. Meanwhile, the menu
+        // controller always sends the key event to the hot-tracked view.
+        // TODO(https://crbug.com/1144994): Modify this part after the clipboard
+        // history menu code is refactored.
+
+        // When an item view is under gesture tap, it may be not under pseudo
+        // focus yet.
+        if (event.type() == ui::ET_GESTURE_TAP)
+          item->pseudo_focus_ = PseudoFocus::kMainButton;
+
         item->ExecuteCommand(item->CalculateCommandId(), event);
       },
       base::Unretained(this)));
