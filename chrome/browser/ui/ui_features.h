@@ -39,6 +39,8 @@ extern const base::Feature kProminentDarkModeActiveTabTitle;
 
 extern const base::Feature kScrollableTabStrip;
 
+extern const base::Feature kScrollableTabStripButtons;
+
 extern const base::Feature kSidePanel;
 
 extern const base::Feature kProfilesUIRevamp;

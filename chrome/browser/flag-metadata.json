@@ -4139,6 +4139,11 @@
     "expiry_milestone": 90
   },
   {
+    "name": "scrollable-tabstrip-buttons",
+    "owners": [ "chrome-desktop-ui-sea@google.com", "tbergquist" ],
+    "expiry_milestone": 90
+  },
+  {
     "name": "sct-auditing",
     "owners": [ "cthomp", "estark", "jdeblasio" ],
     "expiry_milestone": 92

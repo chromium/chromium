@@ -116,7 +116,7 @@ TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip) {
 
   UpdateNewTabButtonBorder();
 
-  if (base::FeatureList::IsEnabled(features::kScrollableTabStrip)) {
+  if (base::FeatureList::IsEnabled(features::kScrollableTabStripButtons)) {
     leading_scroll_button_ = AddChildView(CreateScrollButton(
         base::BindRepeating(&TabStripRegionView::ScrollTowardsLeadingTab,
                             base::Unretained(this))));
@@ -184,7 +184,7 @@ void TabStripRegionView::FrameColorsChanged() {
   new_tab_button_->FrameColorsChanged();
   if (tab_search_button_)
     tab_search_button_->FrameColorsChanged();
-  if (base::FeatureList::IsEnabled(features::kScrollableTabStrip)) {
+  if (base::FeatureList::IsEnabled(features::kScrollableTabStripButtons)) {
     const SkColor background_color = tab_strip_->GetTabBackgroundColor(
         TabActive::kInactive, BrowserFrameActiveState::kUseCurrent);
     SkColor foreground_color = tab_strip_->GetTabForegroundColor(

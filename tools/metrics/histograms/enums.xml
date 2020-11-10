@@ -41988,6 +41988,7 @@ from previous Chrome versions.
   <int value="-1882330924" label="NTPArticleSuggestions:enabled"/>
   <int value="-1880355454" label="disable-topchrome-md"/>
   <int value="-1879877238" label="disable-cancel-all-touches"/>
+  <int value="-1878958319" label="ScrollableTabStripButtons:disabled"/>
   <int value="-1876881908"
       label="disable-infobar-for-protected-media-identifier"/>
   <int value="-1875383510" label="UseGoogleLocalNtp:disabled"/>
@@ -43110,6 +43111,7 @@ from previous Chrome versions.
   <int value="-823165021" label="MaterialDesignUserMenu:enabled"/>
   <int value="-821635312" label="EyeDropper:enabled"/>
   <int value="-820041355" label="enable-transition-compositing"/>
+  <int value="-819165158" label="ScrollableTabStripButtons:enabled"/>
   <int value="-816984237" label="OfflinePagesAsyncDownload:enabled"/>
   <int value="-816895294" label="DiscoverApp:disabled"/>
   <int value="-816404462" label="TabGroupsAutoCreate:disabled"/>

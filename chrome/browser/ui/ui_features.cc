@@ -51,6 +51,11 @@ const base::Feature kProminentDarkModeActiveTabTitle{
 const base::Feature kScrollableTabStrip{"ScrollableTabStrip",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables buttons to permanently appear on the tabstrip when
+// scrollable-tabstrip is enabled. https://crbug.com/1116118
+const base::Feature kScrollableTabStripButtons{
+    "ScrollableTabStripButtons", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Hosts some content in a side panel. https://crbug.com/1141224
 const base::Feature kSidePanel{"SidePanel", base::FEATURE_DISABLED_BY_DEFAULT};
 
