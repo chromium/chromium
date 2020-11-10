@@ -26,6 +26,8 @@ class Ed25519TrustTokenRequestSigner
   bool Verify(base::span<const uint8_t> data,
               base::span<const uint8_t> signature,
               base::span<const uint8_t> verification_key) override;
+
+  std::string GetAlgorithmIdentifier() override;
 };
 
 }  // namespace network

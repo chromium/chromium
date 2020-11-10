@@ -69,6 +69,8 @@ class FakeSigner : public TrustTokenRequestSigningHelper::Signer {
     NOTREACHED();
     return false;
   }
+
+  std::string GetAlgorithmIdentifier() override { return "fake-signer"; }
 };
 
 // IdentitySigner returns a "signature" over given signing data whose value
@@ -87,6 +89,7 @@ class IdentitySigner : public TrustTokenRequestSigningHelper::Signer {
               base::span<const uint8_t> verification_key) override {
     return std::equal(data.begin(), data.end(), signature.begin());
   }
+  std::string GetAlgorithmIdentifier() override { return "identity-signer"; }
 };
 
 // FailingSigner always fails the Sign and Verify options.
@@ -102,6 +105,7 @@ class FailingSigner : public TrustTokenRequestSigningHelper::Signer {
               base::span<const uint8_t> verification_key) override {
     return false;
   }
+  std::string GetAlgorithmIdentifier() override { return "failing-signer"; }
 };
 
 // Reconstructs |request|'s canonical request data, extracts the signatures from
@@ -119,8 +123,10 @@ void ReconstructSigningDataAndAssertSignaturesVerify(
       request->url(), request->extra_request_headers(),
       base::BindRepeating([](base::span<const uint8_t> data,
                              base::span<const uint8_t> signature,
-                             base::span<const uint8_t> verification_key) {
-        return Signer().Verify(data, signature, verification_key);
+                             base::span<const uint8_t> verification_key,
+                             const std::string& signing_alg) {
+        return Signer().Verify(data, signature, verification_key) &&
+               signing_alg == Signer().GetAlgorithmIdentifier();
       }),
       &error, &verification_keys_per_issuer);
 

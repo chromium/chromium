@@ -97,6 +97,7 @@ const char kSignatureHeaderSignRequestDataIncludeValue[] = "include";
 const char kSignatureHeaderSignRequestDataHeadersOnlyValue[] = "headers-only";
 const char kSignatureHeaderSignaturesKey[] = "signatures";
 const char kSignatureHeaderSignRequestDataKey[] = "sign-request-data";
+const char kSignatureHeaderAlgorithmKey[] = "alg";
 const char kSignatureHeaderPublicKeyKey[] = "public-key";
 const char kSignatureHeaderSignatureKey[] = "sig";
 const char kRedemptionRecordHeaderRedemptionRecordKey[] = "redemption-record";
@@ -516,6 +517,10 @@ base::Optional<std::string> TrustTokenRequestSigningHelper::
     return base::nullopt;
 
   net::structured_headers::Dictionary header_items;
+
+  header_items[kSignatureHeaderAlgorithmKey] =
+      net::structured_headers::ParameterizedMember(
+          net::structured_headers::Item(signer_->GetAlgorithmIdentifier()), {});
 
   std::vector<net::structured_headers::ParameterizedItem> keys_and_signatures;
   for (const auto& kv : signatures_per_issuer) {

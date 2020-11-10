@@ -38,4 +38,8 @@ bool Ed25519TrustTokenRequestSigner::Verify(
                         verification_key.data());
 }
 
+std::string Ed25519TrustTokenRequestSigner::GetAlgorithmIdentifier() {
+  return "ed25519";
+}
+
 }  // namespace network

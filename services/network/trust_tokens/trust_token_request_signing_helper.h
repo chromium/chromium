@@ -150,6 +150,10 @@ class TrustTokenRequestSigningHelper : public TrustTokenRequestHelper {
     virtual bool Verify(base::span<const uint8_t> data,
                         base::span<const uint8_t> signature,
                         base::span<const uint8_t> verification_key) = 0;
+
+    // Returns the short-form name of the signing algorithm that this Signer
+    // uses.
+    virtual std::string GetAlgorithmIdentifier() = 0;
   };
 
   // Creates a request signing helper with behavior determined by |params|,

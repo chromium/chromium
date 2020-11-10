@@ -53,8 +53,9 @@ bool ReconstructSigningDataAndVerifySignatures(
     const net::HttpRequestHeaders& headers,
     base::RepeatingCallback<bool(base::span<const uint8_t> data,
                                  base::span<const uint8_t> signature,
-                                 base::span<const uint8_t> verification_key)>
-        verifier = {},  // defaults to Ed25519
+                                 base::span<const uint8_t> verification_key,
+                                 const std::string& sig_alg)> verifier =
+        {},  // defaults to Ed25519
     std::string* error_out = nullptr,
     std::map<std::string, std::string>* verification_keys_out = nullptr);
 
