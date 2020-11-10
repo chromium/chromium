@@ -9,7 +9,7 @@
 
 #include "base/macros.h"
 #include "base/run_loop.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/sequenced_task_runner.h"
 #include "content/public/browser/browsing_data_remover.h"
 
@@ -47,7 +47,8 @@ class BrowsingDataRemoverCompletionObserver
   uint64_t failed_data_types_ = 0;
 
   base::RunLoop run_loop_;
-  ScopedObserver<BrowsingDataRemover, BrowsingDataRemover::Observer> observer_;
+  base::ScopedObservation<BrowsingDataRemover, BrowsingDataRemover::Observer>
+      observation_{this};
   scoped_refptr<base::SequencedTaskRunner> origin_task_runner_;
 
   DISALLOW_COPY_AND_ASSIGN(BrowsingDataRemoverCompletionObserver);
