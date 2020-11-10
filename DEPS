@@ -159,9 +159,6 @@ vars = {
   # qemu on linux-arm64 machines.
   'checkout_fuchsia_for_arm64_host': False,
 
-  # Download prebuilt ash-chrome to test lacros build.
-  'checkout_prebuilt_ash_chrome': False,
-
   # By default, download the fuchsia sdk from the fuchsia GCS bucket.
   'fuchsia_sdk_bucket': 'fuchsia',
 
@@ -5012,16 +5009,6 @@ hooks = [
                 '--target=linux',
                 'update',
                 '--gs-url-base=chromium-optimization-profiles/pgo_profiles',
-    ],
-  },
-
-  {
-    'name': 'Download prebuilt ash-chrome',
-    'pattern': '.',
-    'condition': 'checkout_prebuilt_ash_chrome',
-    'action': [ 'vpython',
-                'src/build/lacros/test_runner.py',
-                'download_for_bots',
     ],
   },
 

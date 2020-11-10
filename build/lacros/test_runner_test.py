@@ -25,16 +25,6 @@ class TestRunnerTest(unittest.TestCase):
   def tearDown(self):
     logging.disable(logging.NOTSET)
 
-  @mock.patch.object(test_runner, '_DownloadAshChromeIfNecessary')
-  # Tests 'download_for_bots' to download ash-chrome for bots to isolate.
-  # TODO(crbug.com/1107010): remove this test once ash-chrome version is pinned
-  # to chromium/src.
-  def test_download_for_bots(self, mock_download):
-    args = ['script_name', 'download_for_bots']
-    with mock.patch.object(sys, 'argv', args):
-      test_runner.Main()
-      mock_download.assert_called_with('for_bots', True)
-
   @parameterized.expand([
       'url_unittests',
       './url_unittests',

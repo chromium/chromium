@@ -158,23 +158,9 @@ def _GsutilCopyWithRetry(gs_path, local_name, retry_times=3):
   if exit_code:
     raise RuntimeError('Failed to download: "%s"' % gs_path)
 
-def _DownloadAshChromeIfNecessary(version, is_download_for_bots=False):
-  """Download a given version of ash-chrome if not already exists.
 
-  Currently, a special constant version value is support: "for_bots", the reason
-  is that version number is still not pinned to chromium/src, so a constant
-  value is needed to make sure that after the builder who downloads and isolates
-  ash-chrome, the tester knows where to look for the binary to use.
-  Additionally, a is_download_for_bots boolean argument is introduced to
-  indicate whether this function is downloading for bots specifically or
-  downloading while running tests, and it is needed because when version is
-  "for_bots", the expected behavior is different in the 2 scenarios: when
-  downloading for bots to isolate, we always want to update for_bots/ to reflect
-  the latest version; however, when downloading while running tests, we want to
-  skip updating to latest because swarming testers aren't supposed to have
-  external network access.
-  TODO(crbug.com/1107010): remove the support once ash-chrome version is pinned
-  to chromium/src.
+def _DownloadAshChromeIfNecessary(version):
+  """Download a given version of ash-chrome if not already exists.
 
   Args:
     version: A string representing the version, such as "793554".
@@ -193,16 +179,14 @@ def _DownloadAshChromeIfNecessary(version, is_download_for_bots=False):
         os.path.join(ash_chrome_dir, 'chrome'))
 
   ash_chrome_dir = _GetAshChromeDirPath(version)
-  if not is_download_for_bots and IsAshChromeDirValid(ash_chrome_dir):
+  if IsAshChromeDirValid(ash_chrome_dir):
     return
 
   shutil.rmtree(ash_chrome_dir, ignore_errors=True)
   os.makedirs(ash_chrome_dir)
   with tempfile.NamedTemporaryFile() as tmp:
-    gs_version = (_GetLatestVersionOfAshChrome()
-                  if is_download_for_bots else version)
-    logging.info('Ash-chrome version: %s', gs_version)
-    gs_path = _GS_URL_BASE + '/' + gs_version + '/' + _GS_ASH_CHROME_PATH
+    logging.info('Ash-chrome version: %s', version)
+    gs_path = _GS_URL_BASE + '/' + version + '/' + _GS_ASH_CHROME_PATH
     _GsutilCopyWithRetry(gs_path, tmp.name)
 
     # https://bugs.python.org/issue15795. ZipFile doesn't preserve permissions.
@@ -440,13 +424,6 @@ def Main():
   arg_parser.usage = __doc__
 
   subparsers = arg_parser.add_subparsers()
-
-  download_parser = subparsers.add_parser(
-      'download_for_bots',
-      help='Download prebuilt ash-chrome for bots so that tests are hermetic '
-      'during execution')
-  download_parser.set_defaults(
-      func=lambda *_: _DownloadAshChromeIfNecessary('for_bots', True))
 
   test_parser = subparsers.add_parser('test', help='Run tests')
   test_parser.set_defaults(func=_RunTest)
