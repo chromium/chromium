@@ -19,10 +19,10 @@ bool ParseType(const String& in, network::mojom::TrustTokenOperationType* out) {
   if (in == "token-request") {
     *out = network::mojom::TrustTokenOperationType::kIssuance;
     return true;
-  } else if (in == "srr-token-redemption") {
+  } else if (in == "token-redemption") {
     *out = network::mojom::TrustTokenOperationType::kRedemption;
     return true;
-  } else if (in == "send-srr") {
+  } else if (in == "send-redemption-record") {
     *out = network::mojom::TrustTokenOperationType::kSigning;
     return true;
   } else {

@@ -17,7 +17,7 @@
   const redemptionRequest = `
     fetch('https://trusttoken.test', {
       trustToken: {
-        type: 'srr-token-redemption'
+        type: 'token-redemption'
       }
     });
   `;
@@ -25,7 +25,7 @@
   const signingRequest = `
     fetch('https://destination.test', {
       trustToken: {
-        type: 'send-srr',
+        type: 'send-redemption-record',
         issuers: ['https://issuer.test']
       }
     });

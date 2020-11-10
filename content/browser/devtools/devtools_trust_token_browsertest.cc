@@ -28,7 +28,7 @@ class DevToolsTrustTokenBrowsertest : public DevToolsProtocolTest,
 };
 
 // After a successful issuance and redemption, a subsequent redemption against
-// the same issuer should hit the signed redemption record (SRR) cache.
+// the same issuer should hit the redemption record (RR) cache.
 IN_PROC_BROWSER_TEST_F(DevToolsTrustTokenBrowsertest,
                        RedemptionRecordCacheHitIsReportedAsLoadingFinished) {
   ProvideRequestHandlerKeyCommitmentsToNetworkService({"a.test"});
@@ -44,7 +44,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsTrustTokenBrowsertest,
 
   EXPECT_EQ("Success",
             EvalJs(shell(), JsReplace(R"(fetch($1,
-        { trustToken: { type: 'srr-token-redemption' } })
+        { trustToken: { type: 'token-redemption' } })
         .then(()=>'Success'); )",
                                       server_.GetURL("a.test", "/redeem"))));
 
@@ -58,7 +58,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsTrustTokenBrowsertest,
   // 3) Issue another redemption, and verify its served from cache.
   EXPECT_EQ("NoModificationAllowedError",
             EvalJs(shell(), JsReplace(R"(fetch($1,
-        { trustToken: { type: 'srr-token-redemption' } })
+        { trustToken: { type: 'token-redemption' } })
         .catch(err => err.name); )",
                                       server_.GetURL("a.test", "/redeem"))));
 

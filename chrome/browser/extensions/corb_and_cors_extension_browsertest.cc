@@ -1313,7 +1313,7 @@ IN_PROC_BROWSER_TEST_P(
     content::DOMMessageQueue message_queue;
 
     base::Value request_init(base::Value::Type::DICTIONARY);
-    request_init.SetStringPath("trustToken.type", "srr-token-redemption");
+    request_init.SetStringPath("trustToken.type", "token-redemption");
 
     EXPECT_TRUE(ExecuteContentScript(
         active_web_contents(),
@@ -1336,7 +1336,7 @@ IN_PROC_BROWSER_TEST_P(
     content::DOMMessageQueue message_queue;
 
     base::Value request_init(base::Value::Type::DICTIONARY);
-    request_init.SetStringPath("trustToken.type", "srr-token-redemption");
+    request_init.SetStringPath("trustToken.type", "token-redemption");
 
     EXPECT_TRUE(ExecuteContentScript(
         active_web_contents(),

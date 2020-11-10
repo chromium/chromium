@@ -71,9 +71,9 @@ std::string TrustTokenEnumToString(mojom::TrustTokenOperationType type) {
     case mojom::TrustTokenOperationType::kIssuance:
       return "token-request";
     case mojom::TrustTokenOperationType::kRedemption:
-      return "srr-token-redemption";
+      return "token-redemption";
     case mojom::TrustTokenOperationType::kSigning:
-      return "send-srr";
+      return "send-redemption-record";
   }
 }
 

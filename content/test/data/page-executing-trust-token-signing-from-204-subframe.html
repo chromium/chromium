@@ -16,7 +16,7 @@
     const childDocument = child.contentDocument;
     const myFrame = childDocument.createElement('iframe');
     myFrame.trustToken = JSON.stringify({
-      type: 'send-srr',
+      type: 'send-redemption-record',
       issuers: ['https://issuer.example']
     });
     myFrame.src = '/title1.html'; // arbitrary URL, no need for handling logic

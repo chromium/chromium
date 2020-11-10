@@ -28,7 +28,7 @@
       });
       return fetch('https://trusttoken.test', {
         trustToken: {
-          type: 'srr-token-redemption'
+          type: 'token-redemption'
         }
       });
     })(), 'Trust Token redemption should error.'),
@@ -41,11 +41,11 @@
       });
       return fetch('https://destination.test', {
         trustToken: {
-          type: 'send-srr',
+          type: 'send-redemption-record',
           issuers: ['https://issuer.test']
         }
       });
     })(), 'Trust Token signing should not fail a request.'),
-    'No SRR for the issuer -> expect signing to fail, but an error while' +
+    'No RR for the issuer -> expect signing to fail, but an error while' +
     ' signing shouldn\'t result in the request being aborted');
 </script>

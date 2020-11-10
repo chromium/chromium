@@ -207,8 +207,8 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, FetchEndToEnd) {
   std::string command = R"(
   (async () => {
     await fetch("/issue", {trustToken: {type: 'token-request'}});
-    await fetch("/redeem", {trustToken: {type: 'srr-token-redemption'}});
-    await fetch("/sign", {trustToken: {type: 'send-srr',
+    await fetch("/redeem", {trustToken: {type: 'token-redemption'}});
+    await fetch("/sign", {trustToken: {type: 'send-redemption-record',
                                   signRequestData: 'include',
                                   issuers: [$1]}});
     return "Success"; })(); )";
@@ -253,7 +253,7 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, XhrEndToEnd) {
     request = new XMLHttpRequest();
     request.open('GET', '/redeem');
     request.setTrustToken({
-      type: 'srr-token-redemption'
+      type: 'token-redemption'
     });
     promise = new Promise((res, rej) => {
       request.onload = res; request.onerror = rej;
@@ -264,7 +264,7 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, XhrEndToEnd) {
     request = new XMLHttpRequest();
     request.open('GET', '/sign');
     request.setTrustToken({
-      type: 'send-srr',
+      type: 'send-redemption-record',
       signRequestData: 'include',
       issuers: [$1]
     });
@@ -314,12 +314,11 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, IframeEndToEnd) {
   };
 
   execute_op_via_iframe("/issue", R"({"type": "token-request"})");
-  execute_op_via_iframe("/redeem", R"({"type": "srr-token-redemption"})");
-  execute_op_via_iframe(
-      "/sign", JsReplace(
-                   R"({"type": "send-srr", "signRequestData": "include",
-                       "issuers": [$1]})",
-                   IssuanceOriginFromHost("a.test")));
+  execute_op_via_iframe("/redeem", R"({"type": "token-redemption"})");
+  execute_op_via_iframe("/sign", JsReplace(
+                                     R"({"type": "send-redemption-record",
+              "signRequestData": "include", "issuers": [$1]})",
+                                     IssuanceOriginFromHost("a.test")));
 
   EXPECT_THAT(
       request_handler_.last_incoming_signed_request(),
@@ -366,7 +365,7 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest,
   // This sign operation will fail, because we don't have a signed redemption
   // record in storage, a prerequisite. However, the failure shouldn't be fatal.
   std::string command = JsReplace(R"((async () => {
-      await fetch("/sign", {trustToken: {type: 'send-srr',
+      await fetch("/sign", {trustToken: {type: 'send-redemption-record',
                                          signRequestData: 'include',
                                          issuers: [$1]}});
       return "Success";
@@ -395,8 +394,8 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, FetchEndToEndInIsolatedWorld) {
   std::string command = R"(
   (async () => {
     await fetch("/issue", {trustToken: {type: 'token-request'}});
-    await fetch("/redeem", {trustToken: {type: 'srr-token-redemption'}});
-    await fetch("/sign", {trustToken: {type: 'send-srr',
+    await fetch("/redeem", {trustToken: {type: 'token-redemption'}});
+    await fetch("/sign", {trustToken: {type: 'send-redemption-record',
                                   signRequestData: 'include',
                                   issuers: [$1]}});
     return "Success"; })(); )";
@@ -431,8 +430,8 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, RecordsTimers) {
   std::string command = R"(
   (async () => {
     await fetch("/issue", {trustToken: {type: 'token-request'}});
-    await fetch("/redeem", {trustToken: {type: 'srr-token-redemption'}});
-    await fetch("/sign", {trustToken: {type: 'send-srr',
+    await fetch("/redeem", {trustToken: {type: 'token-redemption'}});
+    await fetch("/sign", {trustToken: {type: 'send-redemption-record',
                                   signRequestData: 'include',
                                   issuers: [$1]}});
     return "Success"; })(); )";
@@ -485,12 +484,13 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, RecordsNetErrorCodes) {
       HasSubstr("Failed to fetch"));
 
   EXPECT_THAT(
-      EvalJs(shell(), JsReplace(
-                          R"(fetch($1, {trustToken: {type: 'send-srr',
+      EvalJs(shell(),
+             JsReplace(
+                 R"(fetch($1, {trustToken: {type: 'send-redemption-record',
                  issuers: ['https://nonexistent-issuer.example']}})
                    .then(() => "Unexpected success!")
                    .catch(err => err.message);)",
-                          IssuanceOriginFromHost("no-cert-for-this.domain")))
+                 IssuanceOriginFromHost("no-cert-for-this.domain")))
           .ExtractString(),
       HasSubstr("Failed to fetch"));
 
@@ -511,12 +511,11 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, RecordsNetErrorCodes) {
   // domain, so it should fail.
   EXPECT_EQ(
       "InvalidStateError",
-      EvalJs(shell(),
-             JsReplace(
-                 R"(fetch($1, {trustToken: {type: 'srr-token-redemption'}})
+      EvalJs(shell(), JsReplace(
+                          R"(fetch($1, {trustToken: {type: 'token-redemption'}})
                    .then(() => "Unexpected success!")
                    .catch(err => err.name);)",
-                 IssuanceOriginFromHost("a.test"))));
+                          IssuanceOriginFromHost("a.test"))));
 
   content::FetchHistogramsFromChildProcesses();
 
@@ -558,10 +557,9 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, RecordsFetchFailureReasons) {
 
   // Since issuance failed, there should be no tokens to redeem, so redemption
   // should fail:
-  EXPECT_EQ(
-      "OperationError",
-      EvalJs(shell(),
-             R"(fetch("/redeem", {trustToken: {type: 'srr-token-redemption'}})
+  EXPECT_EQ("OperationError",
+            EvalJs(shell(),
+                   R"(fetch("/redeem", {trustToken: {type: 'token-redemption'}})
                    .then(() => "Unexpected success!")
                    .catch(err => err.name);)"));
 
@@ -653,8 +651,8 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, AdditionalSigningData) {
   std::string cmd = R"(
   (async () => {
     await fetch("/issue", {trustToken: {type: 'token-request'}});
-    await fetch("/redeem", {trustToken: {type: 'srr-token-redemption'}});
-    await fetch("/sign", {trustToken: {type: 'send-srr',
+    await fetch("/redeem", {trustToken: {type: 'token-redemption'}});
+    await fetch("/sign", {trustToken: {type: 'send-redemption-record',
       signRequestData: 'include',
       issuers: [$1],
       additionalSigningData: 'some additional data to sign'}});
@@ -694,7 +692,7 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, OverlongAdditionalSigningData) {
   std::string cmd = R"(
   (async () => {
     await fetch("/issue", {trustToken: {type: 'token-request'}});
-    await fetch("/redeem", {trustToken: {type: 'srr-token-redemption'}});
+    await fetch("/redeem", {trustToken: {type: 'token-redemption'}});
     return "Success"; })(); )";
 
   // We use EvalJs here, not ExecJs, because EvalJs waits for promises to
@@ -712,7 +710,7 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, OverlongAdditionalSigningData) {
             network::kTrustTokenAdditionalSigningDataMaxSizeBytes);
 
   cmd = R"(
-    fetch("/sign", {trustToken: {type: 'send-srr',
+    fetch("/sign", {trustToken: {type: 'send-redemption-record',
       signRequestData: 'include',
       issuers: [$1],
       additionalSigningData: $2}}).then(()=>"Success");)";
@@ -734,7 +732,7 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest,
   std::string command = R"(
   (async () => {
     await fetch("/issue", {trustToken: {type: 'token-request'}});
-    await fetch("/redeem", {trustToken: {type: 'srr-token-redemption'}});
+    await fetch("/redeem", {trustToken: {type: 'token-redemption'}});
     return "Success"; })(); )";
 
   // We use EvalJs here, not ExecJs, because EvalJs waits for promises to
@@ -742,7 +740,7 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest,
   EXPECT_EQ("Success", EvalJs(shell(), command));
 
   command = R"(
-    fetch("/sign", {trustToken: {type: 'send-srr',
+    fetch("/sign", {trustToken: {type: 'send-redemption-record',
       signRequestData: 'include',
       issuers: [$1],
       additionalSigningData: '\r'}}).then(()=>"Success");)";
@@ -965,7 +963,7 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest,
   ASSERT_TRUE(NavigateToURL(shell(), file_url));
 
   // Redemption from a page with a file:// top frame origin should fail.
-  command = R"(fetch($1, {trustToken: {type: 'srr-token-redemption'}})
+  command = R"(fetch($1, {trustToken: {type: 'token-redemption'}})
                  .catch(error => error.name);)";
   EXPECT_EQ(
       "InvalidStateError",
@@ -1074,10 +1072,11 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest,
   EXPECT_EQ("Success", EvalJs(root->child_at(0)->current_frame_host(),
                               JsReplace(R"(
                               fetch($1, {mode: 'no-cors',
-                                         trustToken: {type: 'send-srr',
-                                                      issuers: [
-                                                        'https://issuer.example'
-                                                      ]}
+                                         trustToken: {
+                                             type: 'send-redemption-record',
+                                             issuers: [
+                                                 'https://issuer.example'
+                                             ]}
                                          }).then(()=>'Success');)",
                                         server_.GetURL("a.test", "/issue"))));
 }
@@ -1088,7 +1087,7 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, RedemptionRequiresKeys) {
 
   EXPECT_EQ("InvalidStateError",
             EvalJs(shell(), JsReplace(R"(fetch($1,
-        { trustToken: { type: 'srr-token-redemption' } })
+        { trustToken: { type: 'token-redemption' } })
         .then(() => 'Success')
         .catch(err => err.name); )",
                                       server_.GetURL("a.test", "/redeem"))));
@@ -1102,7 +1101,7 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest, RedemptionRequiresTokens) {
 
   EXPECT_EQ("OperationError",
             EvalJs(shell(), JsReplace(R"(fetch($1,
-        { trustToken: { type: 'srr-token-redemption' } })
+        { trustToken: { type: 'token-redemption' } })
         .then(() => 'Success')
         .catch(err => err.name); )",
                                       server_.GetURL("a.test", "/redeem"))));
@@ -1124,7 +1123,7 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest,
 
   EXPECT_EQ("OperationError",
             EvalJs(shell(), JsReplace(R"(fetch($1,
-        { trustToken: { type: 'srr-token-redemption' } })
+        { trustToken: { type: 'token-redemption' } })
         .then(() => 'Success')
         .catch(err => err.name); )",
                                       server_.GetURL("b.test", "/redeem"))));
@@ -1146,7 +1145,7 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest,
   // Send a redemption request to the issuance endpoint, which should error out
   // for the obvious reason that it isn't an issuance request:
   EXPECT_EQ("OperationError", EvalJs(shell(), R"(fetch('/issue',
-        { trustToken: { type: 'srr-token-redemption' } })
+        { trustToken: { type: 'token-redemption' } })
         .then(() => 'Success')
         .catch(err => err.name); )"));
 }
@@ -1167,13 +1166,13 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest,
 
   EXPECT_EQ("Success",
             EvalJs(shell(), JsReplace(R"(fetch($1,
-        { trustToken: { type: 'srr-token-redemption' } })
+        { trustToken: { type: 'token-redemption' } })
         .then(()=>'Success'); )",
                                       server_.GetURL("a.test", "/redeem"))));
 
   EXPECT_EQ("NoModificationAllowedError",
             EvalJs(shell(), JsReplace(R"(fetch($1,
-        { trustToken: { type: 'srr-token-redemption' } })
+        { trustToken: { type: 'token-redemption' } })
         .catch(err => err.name); )",
                                       server_.GetURL("a.test", "/redeem"))));
 }
@@ -1194,13 +1193,13 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest,
 
   EXPECT_EQ("Success",
             EvalJs(shell(), JsReplace(R"(fetch($1,
-        { trustToken: { type: 'srr-token-redemption' } })
+        { trustToken: { type: 'token-redemption' } })
         .then(()=>'Success'); )",
                                       server_.GetURL("a.test", "/redeem"))));
 
   EXPECT_EQ("Success",
             EvalJs(shell(), JsReplace(R"(fetch($1,
-        { trustToken: { type: 'srr-token-redemption',
+        { trustToken: { type: 'token-redemption',
                         refreshPolicy: 'refresh' } })
         .then(()=>'Success'); )",
                                       server_.GetURL("a.test", "/redeem"))));
@@ -1224,13 +1223,13 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest,
 
   EXPECT_EQ("Success",
             EvalJs(shell(), JsReplace(R"(fetch($1,
-        { trustToken: { type: 'srr-token-redemption' } })
+        { trustToken: { type: 'token-redemption' } })
         .then(()=>'Success'); )",
                                       server_.GetURL("b.test", "/redeem"))));
 
   EXPECT_EQ("InvalidStateError",
             EvalJs(shell(), JsReplace(R"(fetch($1,
-        { trustToken: { type: 'srr-token-redemption',
+        { trustToken: { type: 'token-redemption',
                         refreshPolicy: 'refresh' } })
         .then(()=>'Success').catch(err => err.name); )",
                                       server_.GetURL("b.test", "/redeem"))));
@@ -1270,13 +1269,13 @@ IN_PROC_BROWSER_TEST_F(
   // that redirecting a request will renew the request's Trust Tokens state.
   EXPECT_EQ("Success", EvalJs(shell(), R"(
       fetch('/cross-site/b.test/redeem',
-        { trustToken: { mode: 'cors', type: 'srr-token-redemption' } })
+        { trustToken: { mode: 'cors', type: 'token-redemption' } })
         .then(()=>'Success'); )"));
 
   EXPECT_EQ("Success",
             EvalJs(shell(), JsReplace(R"(
       fetch('/sign',
-        { trustToken: { type: 'send-srr', issuers: [$1],
+        { trustToken: { type: 'send-redemption-record', issuers: [$1],
           signRequestData: 'headers-only' } }).then(()=>'Success');)",
                                       IssuanceOriginFromHost("b.test"))));
 
@@ -1293,7 +1292,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ("Success",
             EvalJs(shell(), JsReplace(R"(
       fetch('/sign',
-        { trustToken: { type: 'send-srr', issuers: [$1],
+        { trustToken: { type: 'send-redemption-record', issuers: [$1],
           signRequestData: 'headers-only' } }).then(()=>'Success');)",
                                       IssuanceOriginFromHost("a.test"))));
 
@@ -1328,13 +1327,13 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ("Success", EvalJs(shell(), R"(
       fetch('/cross-site/b.test/redeem',
         { mode: 'no-cors',
-          trustToken: { type: 'srr-token-redemption' } })
+          trustToken: { type: 'token-redemption' } })
         .then(()=>'Success'); )"));
 
   EXPECT_EQ("Success",
             EvalJs(shell(), JsReplace(R"(
       fetch('/sign',
-        { trustToken: { type: 'send-srr', issuers: [$1],
+        { trustToken: { type: 'send-redemption-record', issuers: [$1],
           signRequestData: 'headers-only' } })
         .then(()=>'Success'); )",
                                       IssuanceOriginFromHost("a.test"))));
@@ -1352,7 +1351,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ("Success",
             EvalJs(shell(), JsReplace(R"(
       fetch('/sign',
-        { trustToken: { type: 'send-srr', issuers: [$1],
+        { trustToken: { type: 'send-redemption-record', issuers: [$1],
           signRequestData: 'headers-only' } })
         .then(()=>'Success'); )",
                                       IssuanceOriginFromHost("b.test"))));
@@ -1392,7 +1391,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ("Success", EvalJs(shell(), R"(
       fetch('/cross-site/b.test/redeem',
         { mode: 'no-cors',
-          trustToken: { type: 'srr-token-redemption' } })
+          trustToken: { type: 'token-redemption' } })
         .then(()=>'Success'); )"));
 }
 

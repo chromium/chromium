@@ -10,7 +10,7 @@ Included trustTokenParams in request: {"type":"Issuance","refreshPolicy":"UseCac
 Sending request: 
     fetch('https://trusttoken.test', {
       trustToken: {
-        type: 'srr-token-redemption'
+        type: 'token-redemption'
       }
     });
   
@@ -18,7 +18,7 @@ Included trustTokenParams in request: {"type":"Redemption","refreshPolicy":"UseC
 Sending request: 
     fetch('https://destination.test', {
       trustToken: {
-        type: 'send-srr',
+        type: 'send-redemption-record',
         issuers: ['https://issuer.test']
       }
     });

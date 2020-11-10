@@ -16,7 +16,7 @@ bool ConvertTrustTokenToMojom(const TrustToken& in,
     return true;
   }
 
-  if (in.type() == "srr-token-redemption") {
+  if (in.type() == "token-redemption") {
     out->type = network::mojom::blink::TrustTokenOperationType::kRedemption;
 
     DCHECK(in.hasRefreshPolicy());  // default is defined
@@ -32,7 +32,9 @@ bool ConvertTrustTokenToMojom(const TrustToken& in,
     return true;
   }
 
-  DCHECK_EQ(in.type(), "send-srr");  // final possible value of the input enum
+  DCHECK_EQ(
+      in.type(),
+      "send-redemption-record");  // final possible value of the input enum
   out->type = network::mojom::blink::TrustTokenOperationType::kSigning;
 
   if (in.hasSignRequestData()) {
@@ -65,7 +67,8 @@ bool ConvertTrustTokenToMojom(const TrustToken& in,
       KURL parsed_url = KURL(issuer);
       if (!parsed_url.ProtocolIsInHTTPFamily()) {
         exception_state->ThrowTypeError(
-            "trustToken: operation type 'send-srr' requires that the 'issuers' "
+            "trustToken: operation type 'send-redemption-record' requires that "
+            "the 'issuers' "
             "fields' members parse to HTTP(S) origins, but one did not: " +
             issuer);
         return false;
@@ -75,7 +78,8 @@ bool ConvertTrustTokenToMojom(const TrustToken& in,
       DCHECK(out->issuers.back());  // SecurityOrigin::Create cannot fail.
       if (!out->issuers.back()->IsPotentiallyTrustworthy()) {
         exception_state->ThrowTypeError(
-            "trustToken: operation type 'send-srr' requires that the 'issuers' "
+            "trustToken: operation type 'send-redemption-record' requires that "
+            "the 'issuers' "
             "fields' members parse to secure origins, but one did not: " +
             issuer);
         return false;
@@ -83,7 +87,8 @@ bool ConvertTrustTokenToMojom(const TrustToken& in,
     }
   } else {
     exception_state->ThrowTypeError(
-        "trustToken: operation type 'send-srr' requires that the 'issuers' "
+        "trustToken: operation type 'send-redemption-record' requires that the "
+        "'issuers' "
         "field be present and contain at least one secure, HTTP(S) URL, but it "
         "was missing or empty.");
     return false;

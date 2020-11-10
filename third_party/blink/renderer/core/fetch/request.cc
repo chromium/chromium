@@ -539,8 +539,9 @@ Request* Request::CreateRequestWithRequestOrString(
         !execution_context->IsFeatureEnabled(
             mojom::blink::FeaturePolicyFeature::kTrustTokenRedemption)) {
       exception_state.ThrowTypeError(
-          "trustToken: Redemption ('srr-token-redemption') and signing "
-          "('send-srr') operations require that the trust-token-redemption "
+          "trustToken: Redemption ('token-redemption') and signing "
+          "('send-redemption-record') operations require that the "
+          "trust-token-redemption "
           "Feature Policy feature be enabled.");
       return nullptr;
     }
