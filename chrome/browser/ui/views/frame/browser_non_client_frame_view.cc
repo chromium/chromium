@@ -141,7 +141,9 @@ bool BrowserNonClientFrameView::EverHasVisibleBackgroundTabShapes() const {
 }
 
 bool BrowserNonClientFrameView::CanDrawStrokes() const {
-  return true;
+  // Web apps should not draw strokes if they don't have a tab strip.
+  return !browser_view_->browser()->app_controller() ||
+         browser_view_->browser()->app_controller()->has_tab_strip();
 }
 
 SkColor BrowserNonClientFrameView::GetCaptionColor(
