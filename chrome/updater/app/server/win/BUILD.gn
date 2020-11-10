@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/toolchain/win/midl.gni")
+import("//build/util/version.gni")
 
 UpdaterClass_replaceable_uuid =
     "PLACEHOLDER-GUID-158428a4-6014-4978-83ba-9fad0dabe791"
@@ -12,12 +13,13 @@ IUpdater_replaceable_uuid =
 # TODO(crbug.com/1099904): this CLSID needs to be regenerated for every build.
 # TODO(crbug.com/1099904): we need to use an indirection mechanism for the
 # common GUIDs in the SxS versions.
-updater_clsid = "3d852661-c795-4d20-9b95-5561e9a1d2d9"
+#updater_clsid = "3d852661-c795-4d20-9b95-5561e9a1d2d9"
 IUPDATER_IID = "D0E1CACC-C63C-4192-94AB-BF8EAD0E3B83"
 
 midl("updater_idl_idl") {
-  dynamic_guids = "$UpdaterClass_replaceable_uuid=$updater_clsid," +
-                  "$IUpdater_replaceable_uuid=$IUPDATER_IID"
+  dynamic_guids = "ignore_proxy_stub," +
+                  "$UpdaterClass_replaceable_uuid=uuid5:$chrome_version_full," +
+                  "$IUpdater_replaceable_uuid=uuid5:$chrome_version_full"
 
   header_file = "updater_idl.h"
   sources = [ "updater_idl.template" ]

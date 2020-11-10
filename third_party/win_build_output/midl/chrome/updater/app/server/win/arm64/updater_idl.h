@@ -1649,7 +1649,7 @@ EXTERN_C const IID IID_IUpdater;
 
 #if defined(__cplusplus) && !defined(CINTERFACE)
     
-    MIDL_INTERFACE("D0E1CACC-C63C-4192-94AB-BF8EAD0E3B83")
+    MIDL_INTERFACE("63B8FFB1-5314-48C9-9C57-93EC8BC6184B")
     IUpdater : public IUnknown
     {
     public:
@@ -1788,7 +1788,7 @@ EXTERN_C const CLSID CLSID_UpdaterClass;
 
 #ifdef __cplusplus
 
-class DECLSPEC_UUID("3d852661-c795-4d20-9b95-5561e9a1d2d9")
+class DECLSPEC_UUID("158428a4-6014-4978-83ba-9fad0dabe791")
 UpdaterClass;
 #endif
 #endif /* __UpdaterLib_LIBRARY_DEFINED__ */
