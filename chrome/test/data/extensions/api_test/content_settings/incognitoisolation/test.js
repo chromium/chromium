@@ -24,7 +24,6 @@ var settings = [
   'notifications',
   'microphone',
   'camera',
-  'unsandboxedPlugins',
   'automaticDownloads'
 ];
 

@@ -25,9 +25,10 @@ document.addEventListener('DOMContentLoaded', function () {
     var current = tabs[0];
     incognito = current.incognito;
     url = current.url;
-    var types = ['cookies', 'images', 'javascript', 'location', 'plugins',
-                 'popups', 'notifications', 'microphone', 'camera',
-                 'unsandboxedPlugins', 'automaticDownloads'];
+    var types = [
+      'cookies', 'images', 'javascript', 'location', 'popups', 'notifications',
+      'microphone', 'camera', 'automaticDownloads'
+    ];
     types.forEach(function(type) {
       // HACK: [type] is not recognised by the docserver's sample crawler, so
       // mention an explicit

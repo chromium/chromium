@@ -276,14 +276,6 @@ function getCategoryItemMap() {
       disabledLabel: 'siteSettingsSoundBlock',
     },
     {
-      route: routes.SITE_SETTINGS_UNSANDBOXED_PLUGINS,
-      id: Id.UNSANDBOXED_PLUGINS,
-      label: 'siteSettingsUnsandboxedPlugins',
-      icon: 'cr:extension',
-      enabledLabel: 'siteSettingsUnsandboxedPluginsAsk',
-      disabledLabel: 'siteSettingsUnsandboxedPluginsBlock',
-    },
-    {
       route: routes.SITE_SETTINGS_USB_DEVICES,
       id: Id.USB_DEVICES,
       label: 'siteSettingsUsbDevices',
@@ -366,7 +358,6 @@ Polymer({
           permissionsAdvanced: buildItemListFromIds([
             Id.SENSORS,
             Id.AUTOMATIC_DOWNLOADS,
-            Id.UNSANDBOXED_PLUGINS,
             Id.PROTOCOL_HANDLERS,
             Id.MIDI_DEVICES,
             Id.USB_DEVICES,

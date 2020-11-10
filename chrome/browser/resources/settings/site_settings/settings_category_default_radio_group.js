@@ -101,7 +101,6 @@ Polymer({
       case ContentSettingsTypes.GEOLOCATION:
       case ContentSettingsTypes.MIC:
       case ContentSettingsTypes.NOTIFICATIONS:
-      case ContentSettingsTypes.UNSANDBOXED_PLUGINS:
       case ContentSettingsTypes.MIDI_DEVICES:
       case ContentSettingsTypes.USB_DEVICES:
       case ContentSettingsTypes.SERIAL_PORTS:

@@ -114,9 +114,6 @@ class ExtensionContentSettingsApiTest : public ExtensionApiTest {
                                      ContentSettingsType::MEDIASTREAM_CAMERA));
     EXPECT_EQ(CONTENT_SETTING_ASK,
               map->GetContentSetting(example_url, example_url,
-                                     ContentSettingsType::PPAPI_BROKER));
-    EXPECT_EQ(CONTENT_SETTING_ASK,
-              map->GetContentSetting(example_url, example_url,
                                      ContentSettingsType::AUTOMATIC_DOWNLOADS));
     EXPECT_EQ(CONTENT_SETTING_ALLOW,
               map->GetContentSetting(example_url, example_url,
@@ -146,9 +143,6 @@ class ExtensionContentSettingsApiTest : public ExtensionApiTest {
     EXPECT_EQ(CONTENT_SETTING_BLOCK,
               map->GetContentSetting(url, url,
                                      ContentSettingsType::MEDIASTREAM_CAMERA));
-    EXPECT_EQ(
-        CONTENT_SETTING_BLOCK,
-        map->GetContentSetting(url, url, ContentSettingsType::PPAPI_BROKER));
     EXPECT_EQ(CONTENT_SETTING_BLOCK,
               map->GetContentSetting(url, url,
                                      ContentSettingsType::AUTOMATIC_DOWNLOADS));
@@ -187,9 +181,6 @@ class ExtensionContentSettingsApiTest : public ExtensionApiTest {
     EXPECT_EQ(CONTENT_SETTING_ASK,
               map->GetContentSetting(url, url,
                                      ContentSettingsType::MEDIASTREAM_CAMERA));
-    EXPECT_EQ(
-        CONTENT_SETTING_ASK,
-        map->GetContentSetting(url, url, ContentSettingsType::PPAPI_BROKER));
     EXPECT_EQ(CONTENT_SETTING_ASK,
               map->GetContentSetting(url, url,
                                      ContentSettingsType::AUTOMATIC_DOWNLOADS));
@@ -225,8 +216,6 @@ class ExtensionContentSettingsApiTest : public ExtensionApiTest {
         map->GetContentSetting(url, url, ContentSettingsType::MEDIASTREAM_MIC));
     content_settings.push_back(map->GetContentSetting(
         url, url, ContentSettingsType::MEDIASTREAM_CAMERA));
-    content_settings.push_back(
-        map->GetContentSetting(url, url, ContentSettingsType::PPAPI_BROKER));
     content_settings.push_back(map->GetContentSetting(
         url, url, ContentSettingsType::AUTOMATIC_DOWNLOADS));
     content_settings.push_back(

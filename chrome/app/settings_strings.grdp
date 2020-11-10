@@ -1965,21 +1965,6 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_SOUND_BLOCKED_EXCEPTIONS" desc="Label for the blocked exceptions site list of the sound content setting.">
     Not allowed to play sound
   </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_UNSANDBOXED_PLUGINS_DESCRIPTION" desc="Description of the unsandboxed plugins content setting.">
-    Sites usually use plugins for features like streaming videos or installing apps
-  </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_UNSANDBOXED_PLUGINS_ALLOWED" desc="Label for the enabled option of the unsandboxed plugins content setting.">
-    Sites can ask to use a plugin to access your computer (recommended)
-  </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_UNSANDBOXED_PLUGINS_BLOCKED" desc="Label for the disabled option of the unsandboxed plugins content setting.">
-    Block plugins from accessing your computer
-  </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_UNSANDBOXED_PLUGINS_ALLOWED_EXCEPTIONS" desc="Label for the allowed exceptions site list of the unsandboxed plugins content setting.">
-    Allowed to use a plugin to access your computer
-  </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_UNSANDBOXED_PLUGINS_BLOCKED_EXCEPTIONS" desc="Label for the blocked exceptions site list of the unsandboxed plugins content setting.">
-    Not allowed to use a plugin to access your computer
-  </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_USB_DESCRIPTION" desc="Description of the USB devices content setting.">
     Sites usually connect to USB devices for features like printing a document or saving to a storage device
   </message>
@@ -2201,9 +2186,6 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_RECENT_ACTIVITY" desc="Label for the section which contains the user's recent permissions changes">
     Recent activity
   </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_UNSANDBOXED_PLUGINS" desc="Label for the unsandboxed plugin access site settings.">
-    Unsandboxed plugin access
-  </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_MIDI_DEVICES" desc="Label for the MIDI devices in site settings.">
     MIDI devices
   </message>
@@ -2404,15 +2386,6 @@
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_AUTOMATIC_DOWNLOAD_BLOCK" desc="The block label for automatic download in site settings.">
     Do not allow any site to download multiple files automatically
-  </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_UNSANDBOXED_PLUGINS_ASK" desc="The allow label for unsandboxed plugins in site settings.">
-    Ask when a site wants to use a plugin to access your computer
-  </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_UNSANDBOXED_PLUGINS_ASK_RECOMMENDED" desc="The allow label for unsandboxed plugins in site settings (with the 'recommended' suffix).">
-    Ask when a site wants to use a plugin to access your computer (recommended)
-  </message>
-  <message name="IDS_SETTINGS_SITE_SETTINGS_UNSANDBOXED_PLUGINS_BLOCK" desc="The block label for unsandboxed plugins in site settings.">
-    Do not allow any site to use a plugin to access your computer
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_WINDOW_PLACEMENT" desc="Label for the window placement site settings.">
     Window placement

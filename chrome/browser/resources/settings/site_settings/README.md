@@ -36,9 +36,9 @@ localized to the language settings of the user. Examples:
 
 ```
 <site-details-permission
-  category="{{ContentSettingsTypes.UNSANDBOXED_PLUGINS}}"
-  icon="cr:extension" id="unsandboxedPlugins"
-  label="$i18n{siteSettingsUnsandboxedPlugins}">
+  category="{{ContentSettingsTypes.SITE_SETTINGS_SOUND}}"
+  icon="settings:volume-up" id="siteSettingsSound"
+  label="$i18n{siteSettingsSound}">
 </site-details-permission>
 ```
 

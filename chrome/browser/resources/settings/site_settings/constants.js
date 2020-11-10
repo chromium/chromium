@@ -38,7 +38,6 @@ export const ContentSettingsTypes = {
   SENSORS: 'sensors',
   SERIAL_PORTS: 'serial-ports',
   SOUND: 'sound',
-  UNSANDBOXED_PLUGINS: 'ppapi-broker',
   USB_DEVICES: 'usb-devices',
   VR: 'vr',
   WINDOW_PLACEMENT: 'window-placement',

@@ -17,7 +17,6 @@ var default_content_settings = {
   "mouselock": "ask",
   "microphone": "ask",
   "camera": "ask",
-  "unsandboxedPlugins": "ask",
   "automaticDownloads": "ask"
 };
 
@@ -32,7 +31,6 @@ var settings = {
   "mouselock": "block",  // Should be ignored.
   "microphone": "block",
   "camera": "block",
-  "unsandboxedPlugins": "block",
   "automaticDownloads": "block"
 };
 

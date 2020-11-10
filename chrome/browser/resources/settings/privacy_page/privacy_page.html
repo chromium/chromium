@@ -706,48 +706,6 @@
           </settings-subpage>
        </template>
      </template>
-     <template is="dom-if" route-path="/content/unsandboxedPlugins" no-search>
-        <settings-subpage page-title="$i18n{siteSettingsUnsandboxedPlugins}"
-            search-label="$i18n{siteSettingsAllSitesSearch}"
-            search-term="{{searchFilter_}}">
-          <template is="dom-if" if="[[enableContentSettingsRedesign_]]">
-            <div class="content-settings-header">
-              <h2>$i18n{siteSettingsUnsandboxedPluginsDescription}</h2>
-            </div>
-            <settings-category-default-radio-group
-                category="[[ContentSettingsTypes.UNSANDBOXED_PLUGINS]]"
-                allow-option-label=
-                    "$i18n{siteSettingsUnsandboxedPluginsAllowed}"
-                allow-option-icon="cr:extension"
-                block-option-label=
-                    "$i18n{siteSettingsUnsandboxedPluginsBlocked}"
-                block-option-icon="settings:block">
-            </settings-category-default-radio-group>
-            <category-setting-exceptions
-                category="[[ContentSettingsTypes.UNSANDBOXED_PLUGINS]]"
-                allow-header=
-                    "$i18n{siteSettingsUnsandboxedPluginsAllowedExceptions}"
-                block-header=
-                    "$i18n{siteSettingsUnsandboxedPluginsBlockedExceptions}"
-                search-filter="[[searchFilter_]]">
-            </category-setting-exceptions>
-          </template>
-          <template is="dom-if" if="[[!enableContentSettingsRedesign_]]">
-            <category-default-setting
-                toggle-off-label="$i18n{siteSettingsUnsandboxedPluginsBlock}"
-                toggle-on-label=
-                    "$i18n{siteSettingsUnsandboxedPluginsAskRecommended}"
-                category="[[ContentSettingsTypes.UNSANDBOXED_PLUGINS]]">
-            </category-default-setting>
-            <category-setting-exceptions
-                category="[[ContentSettingsTypes.UNSANDBOXED_PLUGINS]]"
-                block-header="$i18n{siteSettingsBlock}"
-                allow-header="$i18n{siteSettingsAllow}"
-                search-filter="[[searchFilter_]]">
-            </category-setting-exceptions>
-          </template>
-        </settings-subpage>
-      </template>
       <template is="dom-if" route-path="/content/midiDevices" no-search>
         <settings-subpage page-title="$i18n{siteSettingsMidiDevices}"
             search-label="$i18n{siteSettingsAllSitesSearch}"

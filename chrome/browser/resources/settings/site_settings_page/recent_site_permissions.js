@@ -136,8 +136,6 @@ Polymer({
         return this.i18n('siteSettingsCamera');
       case ContentSettingsTypes.PROTOCOL_HANDLERS:
         return this.i18n('siteSettingsHandlers');
-      case ContentSettingsTypes.UNSANDBOXED_PLUGINS:
-        return this.i18n('siteSettingsUnsandboxedPlugins');
       case ContentSettingsTypes.AUTOMATIC_DOWNLOADS:
         return this.i18n('siteSettingsAutomaticDownloads');
       case ContentSettingsTypes.BACKGROUND_SYNC:
