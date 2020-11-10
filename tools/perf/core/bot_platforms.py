@@ -491,9 +491,9 @@ WIN_10 = PerfPlatform(
     'Windows Intel HD 630 towers, Core i7-7700 3.6 GHz, 16GB RAM,'
     ' Intel Kaby Lake HD Graphics 630', _WIN_10_BENCHMARK_CONFIGS,
     26, 'win', executables=_WIN_10_EXECUTABLE_CONFIGS)
-WIN_7 = PerfPlatform('Win 7 Perf', 'N/A', _WIN_7_BENCHMARK_CONFIGS, 4, 'win')
+WIN_7 = PerfPlatform('Win 7 Perf', 'N/A', _WIN_7_BENCHMARK_CONFIGS, 3, 'win')
 WIN_7_GPU = PerfPlatform('Win 7 Nvidia GPU Perf', 'N/A',
-                         _WIN_7_GPU_BENCHMARK_CONFIGS, 4, 'win')
+                         _WIN_7_GPU_BENCHMARK_CONFIGS, 3, 'win')
 
 # Android
 ANDROID_GO = PerfPlatform(

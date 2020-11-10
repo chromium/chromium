@@ -1,42 +1,42 @@
 [
     {
-        "duration": "54.0",
+        "duration": "56.0",
         "name": "loading.desktop/AirBnB_warm"
     },
     {
-        "duration": "34.0",
+        "duration": "36.0",
         "name": "loading.desktop/Aljayyash_cold"
     },
     {
-        "duration": "12.0",
+        "duration": "13.0",
         "name": "loading.desktop/AllRecipes_cold"
     },
     {
-        "duration": "44.0",
+        "duration": "48.0",
         "name": "loading.desktop/Baidu_warm"
     },
     {
-        "duration": "28.0",
+        "duration": "45.0",
         "name": "loading.desktop/Naver_cold"
     },
     {
-        "duration": "7.0",
+        "duration": "8.0",
         "name": "loading.desktop/Orange_cold"
     },
     {
-        "duration": "7.0",
+        "duration": "8.0",
         "name": "loading.desktop/Orange_warm"
     },
     {
-        "duration": "54.0",
+        "duration": "40.0",
         "name": "loading.desktop/Taobao_warm"
     },
     {
-        "duration": "29.0",
+        "duration": "31.0",
         "name": "loading.desktop/TheOnion_cold"
     },
     {
-        "duration": "23.0",
+        "duration": "24.0",
         "name": "loading.desktop/ru.wikipedia_warm"
     }
 ]
