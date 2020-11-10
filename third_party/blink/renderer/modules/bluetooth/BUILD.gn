@@ -36,8 +36,6 @@ blink_modules_sources("bluetooth") {
     "bluetooth_service_data_map.h",
     "bluetooth_uuid.cc",
     "bluetooth_uuid.h",
-    "navigator_bluetooth.cc",
-    "navigator_bluetooth.h",
   ]
 
   deps = [
