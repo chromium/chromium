@@ -4419,6 +4419,7 @@ if (enable_java_templates) {
         }
         supports_android = true
         jar_path = "$_output_path/classes.jar"
+        aar_path = invoker.aar_path
         output_name = invoker.target_name
 
         if (!_ignore_proguard_configs) {

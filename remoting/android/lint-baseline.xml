@@ -1,152 +1,75 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<issues format="5" by="lint 4.0.1" client="cli" variant="all" version="4.0.1">
+<issues format="5" by="lint 4.1.0" client="cli" variant="all" version="4.1.0">
 
     <issue
-        id="AppCompatResource"
-        message="Should use `android:showAsAction` when not using the appcompat library"
-        errorLine1="        app:showAsAction=&quot;ifRoom&quot;/>"
-        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~">
+        id="WrongConstant"
+        message="Must be one or more of: Gravity.LEFT, Gravity.RIGHT, GravityCompat.START, GravityCompat.END"
+        errorLine1="        if (mDrawerLayout.isDrawerOpen(Gravity.START)) {"
+        errorLine2="                                       ~~~~~~~~~~~~~">
         <location
-            file="../../remoting/android/java/res/menu/chromoting_actionbar.xml"
-            line="15"
+            file="../../remoting/android/java/src/org/chromium/chromoting/Chromoting.java"
+            line="204"
+            column="40"/>
+    </issue>
+
+    <issue
+        id="WrongConstant"
+        message="Must be one or more of: Gravity.LEFT, Gravity.RIGHT, GravityCompat.START, GravityCompat.END"
+        errorLine1="            mDrawerLayout.closeDrawer(Gravity.START);"
+        errorLine2="                                      ~~~~~~~~~~~~~">
+        <location
+            file="../../remoting/android/java/src/org/chromium/chromoting/Chromoting.java"
+            line="205"
+            column="39"/>
+    </issue>
+
+    <issue
+        id="WrongConstant"
+        message="Must be one or more of: Gravity.LEFT, Gravity.RIGHT, GravityCompat.START, GravityCompat.END"
+        errorLine1="                        if (mDrawerLayout.isDrawerOpen(Gravity.START)) {"
+        errorLine2="                                                       ~~~~~~~~~~~~~">
+        <location
+            file="../../remoting/android/java/src/org/chromium/chromoting/Chromoting.java"
+            line="292"
+            column="56"/>
+    </issue>
+
+    <issue
+        id="WrongConstant"
+        message="Must be one or more of: Gravity.LEFT, Gravity.RIGHT, GravityCompat.START, GravityCompat.END"
+        errorLine1="                            mDrawerLayout.closeDrawer(Gravity.START);"
+        errorLine2="                                                      ~~~~~~~~~~~~~">
+        <location
+            file="../../remoting/android/java/src/org/chromium/chromoting/Chromoting.java"
+            line="293"
+            column="55"/>
+    </issue>
+
+    <issue
+        id="WrongConstant"
+        message="Must be one or more of: Gravity.LEFT, Gravity.RIGHT, GravityCompat.START, GravityCompat.END"
+        errorLine1="                            mDrawerLayout.openDrawer(Gravity.START);"
+        errorLine2="                                                     ~~~~~~~~~~~~~">
+        <location
+            file="../../remoting/android/java/src/org/chromium/chromoting/Chromoting.java"
+            line="295"
+            column="54"/>
+    </issue>
+
+    <issue
+        id="UseCompatTextViewDrawableXml"
+        message="Use `app:drawableStartCompat` instead of `android:drawableStart`"
+        errorLine1="        android:drawableStart=&quot;@drawable/ic_host_online&quot;"
+        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../remoting/android/java/res/layout/host_online.xml"
+            line="28"
             column="9"/>
-    </issue>
-
-    <issue
-        id="AppCompatResource"
-        message="Should use `android:showAsAction` when not using the appcompat library"
-        errorLine1="            app:showAsAction=&quot;ifRoom&quot;/>"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../remoting/android/java/res/menu/desktop_actionbar.xml"
-            line="14"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="AppCompatResource"
-        message="Should use `android:showAsAction` when not using the appcompat library"
-        errorLine1="            app:showAsAction=&quot;ifRoom&quot;/>"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../remoting/android/java/res/menu/desktop_actionbar.xml"
-            line="18"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="AppCompatResource"
-        message="Should use `android:showAsAction` when not using the appcompat library"
-        errorLine1="            app:showAsAction=&quot;ifRoom&quot;/>"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../remoting/android/java/res/menu/desktop_actionbar.xml"
-            line="22"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="AppCompatResource"
-        message="Should use `android:showAsAction` when not using the appcompat library"
-        errorLine1="            app:showAsAction=&quot;ifRoom&quot;/>"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../remoting/android/java/res/menu/desktop_actionbar.xml"
-            line="26"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="AppCompatResource"
-        message="Should use `android:showAsAction` when not using the appcompat library"
-        errorLine1="            app:showAsAction=&quot;withText&quot;/>"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../remoting/android/java/res/menu/desktop_actionbar.xml"
-            line="29"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="AppCompatResource"
-        message="Should use `android:showAsAction` when not using the appcompat library"
-        errorLine1="        app:showAsAction=&quot;never|withText&quot;/>"
-        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../remoting/android/java/res/menu/desktop_actionbar.xml"
-            line="33"
-            column="9"/>
-    </issue>
-
-    <issue
-        id="AppCompatResource"
-        message="Should use `android:showAsAction` when not using the appcompat library"
-        errorLine1="            app:showAsAction=&quot;withText&quot;/>"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../remoting/android/java/res/menu/desktop_actionbar.xml"
-            line="36"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="AppCompatResource"
-        message="Should use `android:showAsAction` when not using the appcompat library"
-        errorLine1="            app:showAsAction=&quot;never&quot;/>"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../remoting/android/java/res/menu/desktop_actionbar.xml"
-            line="43"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="AppCompatResource"
-        message="Should use `android:showAsAction` when not using the appcompat library"
-        errorLine1="        app:showAsAction=&quot;ifRoom|withText&quot;/>"
-        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../remoting/android/java/res/menu/help_actionbar.xml"
-            line="13"
-            column="9"/>
-    </issue>
-
-    <issue
-        id="AppCompatResource"
-        message="Should use `android:showAsAction` when not using the appcompat library"
-        errorLine1="        app:showAsAction=&quot;never&quot;/>"
-        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../remoting/android/java/res/menu/help_actionbar.xml"
-            line="17"
-            column="9"/>
-    </issue>
-
-    <issue
-        id="AppCompatResource"
-        message="Should use `android:showAsAction` when not using the appcompat library"
-        errorLine1="        app:showAsAction=&quot;never&quot;/>"
-        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../remoting/android/java/res/menu/help_actionbar.xml"
-            line="21"
-            column="9"/>
-    </issue>
-
-    <issue
-        id="InflateParams"
-        message="Avoid passing `null` as the view root (needed to resolve layout parameters on the inflated layout&apos;s root element)"
-        errorLine1="                (ListView) chromoting.getLayoutInflater().inflate(R.layout.navigation_list, null);"
-        errorLine2="                                                                                            ~~~~">
-        <location
-            file="../../remoting/android/java/src/org/chromium/chromoting/NavigationMenuAdapter.java"
-            line="47"
-            column="93"/>
     </issue>
 
     <issue
         id="SetJavaScriptEnabled"
-        message="Using `setJavaScriptEnabled` can introduce XSS vulnerabilities into your application, review carefully."
+        message="Using `setJavaScriptEnabled` can introduce XSS vulnerabilities into your application, review carefully"
         errorLine1="        mWebView.getSettings().setJavaScriptEnabled(true);"
         errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
@@ -157,7 +80,7 @@
 
     <issue
         id="SetJavaScriptEnabled"
-        message="Using `setJavaScriptEnabled` can introduce XSS vulnerabilities into your application, review carefully."
+        message="Using `setJavaScriptEnabled` can introduce XSS vulnerabilities into your application, review carefully"
         errorLine1="        webView.getSettings().setJavaScriptEnabled(true);"
         errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
