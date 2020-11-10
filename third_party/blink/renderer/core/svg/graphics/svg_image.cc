@@ -421,8 +421,7 @@ void SVGImage::DrawForContainer(cc::PaintCanvas* canvas,
 }
 
 PaintImage SVGImage::PaintImageForCurrentFrame() {
-  auto builder =
-      CreatePaintImageBuilder().set_completion_state(completion_state());
+  auto builder = CreatePaintImageBuilder();
   PopulatePaintRecordForCurrentFrameForContainer(builder, Size(), 1, NullURL());
   return builder.TakePaintImage();
 }
@@ -485,6 +484,10 @@ void SVGImage::PopulatePaintRecordForCurrentFrameForContainer(
     const IntSize& zoomed_container_size,
     float zoom,
     const KURL& url) {
+  builder.set_completion_state(
+      load_state_ == LoadState::kLoadCompleted
+          ? PaintImage::CompletionState::DONE
+          : PaintImage::CompletionState::PARTIALLY_DONE);
   if (!page_)
     return;
 
