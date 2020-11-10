@@ -859,6 +859,11 @@
       'filepath': 'chrome/browser/page_load_metrics/observers/core/|' \
                   'components/page_load_metrics/browser/observers/core/',
     },
+    'core_web_vitals_wpt': {
+      'filepath': 'third_party/blink/web_tests/external/wpt/event-timing/|' \
+                  'third_party/blink/web_tests/external/wpt/largest-contentful-paint/|' \
+                  'third_party/blink/web_tests/external/wpt/layout-instability/',
+    },
     'courgette': {
       'filepath': 'courgette/',
     },
@@ -2437,6 +2442,8 @@
     'contextual_search': ['donnd+watch@chromium.org',
                           'twellington+watch@chromium.org'],
     'core_web_vitals_plm': ['core-web-vitals-plm-reviews@chromium.org'],
+    'core_web_vitals_wpt': ['chrome-speed-metrics-core+watchlist@google.com',
+                            'lighthouse-eng-external+watch-speed-metrics@google.com'],
     'courgette': ['huangs+watch@chromium.org',
                   'wfh+watch@chromium.org'],
     'cq': ['cq-config-changes@chromium.org',
@@ -2769,6 +2776,7 @@
     'source_idls': ['jmedley+watch@chromium.org'],
     'speed_metrics_changelog': ['igrigorik@chromium.org',
                                 'kayce@chromium.org',
+                                'lighthouse-eng-external+watch-speed-metrics@google.com',
                                 'lighthouse-eng+watch-speed-metrics@google.com',
                                 'rviscomi@chromium.org',
                                 'sullivan@chromium.org'],
