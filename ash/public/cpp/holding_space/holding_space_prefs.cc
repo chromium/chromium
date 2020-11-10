@@ -4,8 +4,10 @@
 
 #include "ash/public/cpp/holding_space/holding_space_prefs.h"
 
+#include "ash/public/cpp/ash_features.h"
 #include "base/time/time.h"
 #include "base/util/values/values_util.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 
@@ -13,6 +15,9 @@ namespace ash {
 namespace holding_space_prefs {
 
 namespace {
+
+// Boolean preference storing if holding space previews are enabled.
+constexpr char kPreviewsEnabled[] = "ash.holding_space.previews_enabled";
 
 // Time preference storing when holding space first became available.
 constexpr char kTimeOfFirstAvailability[] =
@@ -27,9 +32,25 @@ constexpr char kTimeOfFirstPin[] = "ash.holding_space.time_of_first_pin";
 }  // namespace
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
+  registry->RegisterBooleanPref(
+      kPreviewsEnabled,
+      features::IsTemporaryHoldingSpaceContentForwardEntryPointEnabled());
   registry->RegisterTimePref(kTimeOfFirstAvailability, base::Time::UnixEpoch());
   registry->RegisterTimePref(kTimeOfFirstEntry, base::Time::UnixEpoch());
   registry->RegisterTimePref(kTimeOfFirstPin, base::Time::UnixEpoch());
+}
+
+void AddPreviewsEnabledChangedCallback(PrefChangeRegistrar* registrar,
+                                       base::RepeatingClosure callback) {
+  registrar->Add(kPreviewsEnabled, std::move(callback));
+}
+
+bool IsPreviewsEnabled(PrefService* prefs) {
+  return prefs->GetBoolean(kPreviewsEnabled);
+}
+
+void SetPreviewsEnabled(PrefService* prefs, bool enabled) {
+  prefs->SetBoolean(kPreviewsEnabled, enabled);
 }
 
 base::Optional<base::Time> GetTimeOfFirstAvailability(PrefService* prefs) {

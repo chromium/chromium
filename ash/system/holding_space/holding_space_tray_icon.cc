@@ -7,14 +7,17 @@
 #include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
+#include "ash/public/cpp/holding_space/holding_space_prefs.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shelf/shelf.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/holding_space/holding_space_tray_icon_preview.h"
 #include "ash/system/tray/tray_constants.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/stl_util.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/controls/image_view.h"
@@ -23,22 +26,33 @@
 
 namespace ash {
 
+namespace {
+
+// Helpers ---------------------------------------------------------------------
+
+// Returns whether previews are enabled.
+bool IsPreviewsEnabled() {
+  auto* prefs = Shell::Get()->session_controller()->GetActivePrefService();
+  return features::IsTemporaryHoldingSpaceContentForwardEntryPointEnabled() &&
+         prefs && holding_space_prefs::IsPreviewsEnabled(prefs);
+}
+
+}  // namespace
+
+// HoldingSpaceTrayIcon --------------------------------------------------------
+
 HoldingSpaceTrayIcon::HoldingSpaceTrayIcon(Shelf* shelf) : shelf_(shelf) {
+  SetID(kHoldingSpaceTrayIconId);
   InitLayout();
 
   if (features::IsTemporaryHoldingSpaceContentForwardEntryPointEnabled()) {
     controller_observer_.Add(HoldingSpaceController::Get());
     shell_observer_.Add(Shell::Get());
+    session_observer_.Add(Shell::Get()->session_controller());
   }
 }
 
 HoldingSpaceTrayIcon::~HoldingSpaceTrayIcon() = default;
-
-int HoldingSpaceTrayIcon::GetPreferredMainAxisMargin() const {
-  return features::IsTemporaryHoldingSpaceContentForwardEntryPointEnabled()
-             ? 0
-             : kHoldingSpaceTrayIconMainAxisMargin;
-}
 
 void HoldingSpaceTrayIcon::OnLocaleChanged() {
   TooltipTextChanged();
@@ -49,10 +63,19 @@ base::string16 HoldingSpaceTrayIcon::GetTooltipText(
   return l10n_util::GetStringUTF16(IDS_ASH_HOLDING_SPACE_TITLE);
 }
 
-void HoldingSpaceTrayIcon::InitLayout() {
-  if (features::IsTemporaryHoldingSpaceContentForwardEntryPointEnabled()) {
-    SetPreferredSize(gfx::Size(kTrayItemSize, kTrayItemSize));
+int HoldingSpaceTrayIcon::GetHeightForWidth(int width) const {
+  // The parent for this view (`TrayContainer`) uses a `BoxLayout` for its
+  // `LayoutManager`. When the shelf orientation is vertical, the `BoxLayout`
+  // will also have vertical orientation and will invoke `GetHeightForWidth()`
+  // instead of `GetPreferredSize()` when determining preferred size.
+  return GetPreferredSize().height();
+}
 
+void HoldingSpaceTrayIcon::InitLayout() {
+  SetLayoutManager(std::make_unique<views::FillLayout>());
+  SetPreferredSize(gfx::Size(kTrayItemSize, kTrayItemSize));
+
+  if (features::IsTemporaryHoldingSpaceContentForwardEntryPointEnabled()) {
     // As holding space items are added to the model, child layers will be added
     // to `this` view's layer to represent them.
     SetPaintToLayer();
@@ -60,18 +83,8 @@ void HoldingSpaceTrayIcon::InitLayout() {
     return;
   }
 
-  SetLayoutManager(std::make_unique<views::FillLayout>());
-
-  // Image.
-  auto* image_view = AddChildView(std::make_unique<views::ImageView>());
-  image_view->SetImage(
-      gfx::CreateVectorIcon(kHoldingSpaceIcon, kHoldingSpaceTrayIconSize,
-                            ShelfConfig::Get()->shelf_icon_color()));
-
-  // Disallow events on `image_view` so that tooltips will be retrieved from
-  // `this`. Moving forward, `image_view` will not exist as we transition to a
-  // more content forward tray icon.
-  image_view->SetCanProcessEventsWithinSubtree(false);
+  // Force hide previews to initialize view state.
+  HidePreviews(/*force=*/true);
 }
 
 void HoldingSpaceTrayIcon::OnHoldingSpaceModelAttached(
@@ -96,6 +109,9 @@ void HoldingSpaceTrayIcon::OnHoldingSpaceItemAdded(
     const HoldingSpaceItem* item) {
   DCHECK(features::IsTemporaryHoldingSpaceContentForwardEntryPointEnabled());
 
+  if (!previews_enabled_)
+    return;
+
   if (!item->IsFinalized())
     return;
 
@@ -112,6 +128,9 @@ void HoldingSpaceTrayIcon::OnHoldingSpaceItemAdded(
 void HoldingSpaceTrayIcon::OnHoldingSpaceItemRemoved(
     const HoldingSpaceItem* item) {
   DCHECK(features::IsTemporaryHoldingSpaceContentForwardEntryPointEnabled());
+
+  if (!previews_enabled_)
+    return;
 
   if (!item->IsFinalized())
     return;
@@ -144,6 +163,9 @@ void HoldingSpaceTrayIcon::OnHoldingSpaceItemFinalized(
     const HoldingSpaceItem* item) {
   DCHECK(features::IsTemporaryHoldingSpaceContentForwardEntryPointEnabled());
 
+  if (!previews_enabled_)
+    return;
+
   if (previews_.empty()) {
     OnHoldingSpaceItemAdded(item);
     return;
@@ -175,6 +197,9 @@ void HoldingSpaceTrayIcon::OnShelfAlignmentChanged(
     ShelfAlignment old_alignment) {
   DCHECK(features::IsTemporaryHoldingSpaceContentForwardEntryPointEnabled());
 
+  if (!previews_enabled_)
+    return;
+
   removed_previews_.clear();
 
   for (const auto& preview : previews_)
@@ -183,7 +208,28 @@ void HoldingSpaceTrayIcon::OnShelfAlignmentChanged(
   UpdatePreferredSize();
 }
 
+void HoldingSpaceTrayIcon::OnActiveUserPrefServiceChanged(PrefService* prefs) {
+  DCHECK(features::IsTemporaryHoldingSpaceContentForwardEntryPointEnabled());
+
+  pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
+  pref_change_registrar_->Init(prefs);
+
+  // NOTE: The callback being bound is scoped to `pref_change_registrar_` which
+  // is owned by `this` so it is safe to bind with an unretained raw pointer.
+  holding_space_prefs::AddPreviewsEnabledChangedCallback(
+      pref_change_registrar_.get(),
+      base::BindRepeating(&HoldingSpaceTrayIcon::UpdatePreviewsEnabled,
+                          base::Unretained(this)));
+
+  UpdatePreviewsEnabled();
+}
+
 void HoldingSpaceTrayIcon::UpdatePreferredSize() {
+  if (!previews_enabled_) {
+    SetPreferredSize(gfx::Size(kTrayItemSize, kTrayItemSize));
+    return;
+  }
+
   const int num_visible_previews =
       std::min(kHoldingSpaceTrayIconMaxVisiblePreviews,
                static_cast<int>(previews_.size()));
@@ -198,6 +244,54 @@ void HoldingSpaceTrayIcon::UpdatePreferredSize() {
 
   if (preferred_size != GetPreferredSize())
     SetPreferredSize(preferred_size);
+}
+
+void HoldingSpaceTrayIcon::UpdatePreviewsEnabled() {
+  DCHECK(features::IsTemporaryHoldingSpaceContentForwardEntryPointEnabled());
+
+  const bool previews_enabled = IsPreviewsEnabled();
+  if (previews_enabled_ == previews_enabled)
+    return;
+
+  if (previews_enabled)
+    ShowPreviews();
+  else
+    HidePreviews();
+}
+
+void HoldingSpaceTrayIcon::ShowPreviews() {
+  if (previews_enabled_)
+    return;
+
+  previews_enabled_ = true;
+
+  RemoveAllChildViews(/*delete_children=*/true);
+
+  if (HoldingSpaceController::Get()->model()) {
+    for (const auto& item : HoldingSpaceController::Get()->model()->items())
+      OnHoldingSpaceItemAdded(item.get());
+  }
+}
+
+void HoldingSpaceTrayIcon::HidePreviews(bool force) {
+  if (!previews_enabled_ && !force)
+    return;
+
+  previews_enabled_ = false;
+
+  previews_.clear();
+  removed_previews_.clear();
+
+  // Image.
+  // NOTE: Events are disallowed on the `image_view` subtree so that tooltips
+  // will be retrieved from `this` instead.
+  auto* image_view = AddChildView(std::make_unique<views::ImageView>());
+  image_view->SetCanProcessEventsWithinSubtree(false);
+  image_view->SetImage(
+      gfx::CreateVectorIcon(kHoldingSpaceIcon, kHoldingSpaceTrayIconSize,
+                            ShelfConfig::Get()->shelf_icon_color()));
+
+  UpdatePreferredSize();
 }
 
 void HoldingSpaceTrayIcon::OnHoldingSpaceTrayIconPreviewAnimatedOut(

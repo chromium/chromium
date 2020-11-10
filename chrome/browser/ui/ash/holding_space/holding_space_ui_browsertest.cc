@@ -17,6 +17,7 @@
 #include "ui/aura/window.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/views/controls/menu/menu_controller.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
@@ -68,6 +69,14 @@ void PressAndReleaseKey(ui::KeyboardCode key_code, int flags = ui::EF_NONE) {
   ui::test::EventGenerator event_generator(root_window);
   event_generator.PressKey(key_code, flags);
   event_generator.ReleaseKey(key_code, flags);
+}
+
+// Performs a right click on `view`.
+void RightClick(const views::View* view) {
+  auto* root_window = view->GetWidget()->GetNativeWindow()->GetRootWindow();
+  ui::test::EventGenerator event_generator(root_window);
+  event_generator.MoveMouseTo(view->GetBoundsInScreen().CenterPoint());
+  event_generator.ClickRightButton();
 }
 
 // Mocks -----------------------------------------------------------------------
@@ -275,6 +284,84 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceUiBrowserTest, OpenItem) {
     testing::Mock::VerifyAndClearExpectations(&mock);
     activation_client->DeactivateWindow(activation_client->GetActiveWindow());
   }
+}
+
+// Base class for holding space UI browser tests that test previews.
+class HoldingSpaceUiPreviewsBrowserTest : public HoldingSpaceUiBrowserTest {
+ public:
+  HoldingSpaceUiPreviewsBrowserTest() {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kTemporaryHoldingSpace,
+        /*field_trial_params=*/{
+            {"content-forward-entry-point-enabled", "true"}});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Verifies that previews can be toggled via context menu.
+IN_PROC_BROWSER_TEST_F(HoldingSpaceUiPreviewsBrowserTest, TogglePreviews) {
+  ASSERT_TRUE(IsShowingInShelf());
+
+  auto* tray_icon = GetTrayIcon();
+  ASSERT_TRUE(tray_icon);
+  ASSERT_TRUE(tray_icon->layer());
+
+  // Initially the tray icon should be empty.
+  EXPECT_EQ(0u, tray_icon->children().size());
+  EXPECT_EQ(0u, tray_icon->layer()->children().size());
+
+  // After pinning a file, we should have a single preview in the tray icon.
+  AddPinnedFile();
+  EXPECT_EQ(0u, tray_icon->children().size());
+  EXPECT_EQ(1u, tray_icon->layer()->children().size());
+  EXPECT_EQ(gfx::Size(32, 32), tray_icon->size());
+
+  // After downloading a file, we should have two previews in the tray icon.
+  AddDownloadFile();
+  EXPECT_EQ(0u, tray_icon->children().size());
+  EXPECT_EQ(2u, tray_icon->layer()->children().size());
+  EXPECT_EQ(gfx::Size(48, 32), tray_icon->size());
+
+  // After taking a screenshot, we should have three previews in the tray icon.
+  AddScreenshotFile();
+  EXPECT_EQ(0u, tray_icon->children().size());
+  EXPECT_EQ(3u, tray_icon->layer()->children().size());
+  EXPECT_EQ(gfx::Size(64, 32), tray_icon->size());
+
+  // Right click the tray icon, and expect a context menu to be shown which will
+  // allow the user to hide previews.
+  RightClick(tray_icon);
+  ASSERT_TRUE(views::MenuController::GetActiveInstance());
+
+  // Use the keyboard to select the context menu item to hide previews. Doing so
+  // should dismiss the context menu.
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_DOWN);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
+  EXPECT_FALSE(views::MenuController::GetActiveInstance());
+
+  // The tray icon should now contain no previews, but have a single child which
+  // contains the static image to show when previews are disabled.
+  EXPECT_EQ(1u, tray_icon->children().size());
+  EXPECT_EQ(0u, tray_icon->layer()->children().size());
+  EXPECT_EQ(gfx::Size(32, 32), tray_icon->size());
+
+  // Right click the tray icon, and expect a context menu to be shown which will
+  // allow the user to show previews.
+  RightClick(tray_icon);
+  ASSERT_TRUE(views::MenuController::GetActiveInstance());
+
+  // Use the keyboard to select the context menu item to show previews. Doing so
+  // should dismiss the context menu.
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_DOWN);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
+  EXPECT_FALSE(views::MenuController::GetActiveInstance());
+
+  // The tray icon should once again show three previews.
+  EXPECT_EQ(0u, tray_icon->children().size());
+  EXPECT_EQ(3u, tray_icon->layer()->children().size());
+  EXPECT_EQ(gfx::Size(64, 32), tray_icon->size());
 }
 
 // Base class for holding space UI browser tests that take screenshots.

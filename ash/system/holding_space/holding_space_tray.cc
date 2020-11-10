@@ -30,11 +30,6 @@ namespace {
 
 // Helpers ---------------------------------------------------------------------
 
-// TODO(crbug.com/1142572): Read state from prefs.
-bool IsShowingPreviews() {
-  return features::IsTemporaryHoldingSpaceContentForwardEntryPointEnabled();
-}
-
 // Returns whether the holding space model contains any finalized items.
 bool ModelContainsFinalizedItems(HoldingSpaceModel* model) {
   for (const auto& item : model->items()) {
@@ -59,7 +54,6 @@ HoldingSpaceTray::HoldingSpaceTray(Shelf* shelf) : TrayBackgroundView(shelf) {
   // Icon.
   icon_ = tray_container()->AddChildView(
       std::make_unique<HoldingSpaceTrayIcon>(shelf));
-  tray_container()->SetMargin(icon_->GetPreferredMainAxisMargin(), 0);
 }
 
 HoldingSpaceTray::~HoldingSpaceTray() = default;
@@ -206,10 +200,21 @@ void HoldingSpaceTray::OnHoldingSpaceItemFinalized(
   UpdateVisibility();
 }
 
-// TODO(crbug.com/1142572): Implement.
 void HoldingSpaceTray::ExecuteCommand(int command_id, int event_flags) {
   DCHECK(features::IsTemporaryHoldingSpaceContentForwardEntryPointEnabled());
-  NOTIMPLEMENTED();
+  switch (command_id) {
+    case HoldingSpaceCommandId::kHidePreviews:
+      holding_space_prefs::SetPreviewsEnabled(
+          Shell::Get()->session_controller()->GetActivePrefService(), false);
+      break;
+    case HoldingSpaceCommandId::kShowPreviews:
+      holding_space_prefs::SetPreviewsEnabled(
+          Shell::Get()->session_controller()->GetActivePrefService(), true);
+      break;
+    default:
+      NOTREACHED();
+      break;
+  }
 }
 
 void HoldingSpaceTray::ShowContextMenuForViewImpl(
@@ -220,7 +225,10 @@ void HoldingSpaceTray::ShowContextMenuForViewImpl(
 
   context_menu_model_ = std::make_unique<ui::SimpleMenuModel>(this);
 
-  if (IsShowingPreviews()) {
+  const bool previews_enabled = holding_space_prefs::IsPreviewsEnabled(
+      Shell::Get()->session_controller()->GetActivePrefService());
+
+  if (previews_enabled) {
     context_menu_model_->AddItemWithIcon(
         HoldingSpaceCommandId::kHidePreviews,
         l10n_util::GetStringUTF16(

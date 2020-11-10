@@ -205,6 +205,10 @@ std::vector<views::View*> HoldingSpaceBrowserTestBase::GetScreenCaptureViews() {
   return test_api_->GetScreenCaptureViews();
 }
 
+views::View* HoldingSpaceBrowserTestBase::GetTrayIcon() {
+  return test_api_->GetTrayIcon();
+}
+
 void HoldingSpaceBrowserTestBase::RequestAndAwaitLockScreen() {
   if (session_manager::SessionManager::Get()->IsScreenLocked())
     return;

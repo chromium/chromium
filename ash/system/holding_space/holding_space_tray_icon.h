@@ -13,11 +13,15 @@
 #include "ash/public/cpp/holding_space/holding_space_controller_observer.h"
 #include "ash/public/cpp/holding_space/holding_space_model.h"
 #include "ash/public/cpp/holding_space/holding_space_model_observer.h"
+#include "ash/public/cpp/session/session_controller.h"
+#include "ash/public/cpp/session/session_observer.h"
 #include "ash/shell.h"
 #include "ash/shell_observer.h"
 #include "base/scoped_observer.h"
 #include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
+
+class PrefChangeRegistrar;
 
 namespace ash {
 
@@ -29,7 +33,8 @@ class Shelf;
 class ASH_EXPORT HoldingSpaceTrayIcon : public views::View,
                                         public HoldingSpaceControllerObserver,
                                         public HoldingSpaceModelObserver,
-                                        public ShellObserver {
+                                        public ShellObserver,
+                                        public SessionObserver {
  public:
   METADATA_HEADER(HoldingSpaceTrayIcon);
 
@@ -37,9 +42,6 @@ class ASH_EXPORT HoldingSpaceTrayIcon : public views::View,
   HoldingSpaceTrayIcon(const HoldingSpaceTrayIcon&) = delete;
   HoldingSpaceTrayIcon& operator=(const HoldingSpaceTrayIcon&) = delete;
   ~HoldingSpaceTrayIcon() override;
-
-  // Returns the preferred main axis margin for this view.
-  int GetPreferredMainAxisMargin() const;
 
   // Invoked when the system locale has changed.
   void OnLocaleChanged();
@@ -50,6 +52,7 @@ class ASH_EXPORT HoldingSpaceTrayIcon : public views::View,
  private:
   // views::View:
   base::string16 GetTooltipText(const gfx::Point& point) const override;
+  int GetHeightForWidth(int width) const override;
 
   // HoldingSpaceControllerObserver:
   void OnHoldingSpaceModelAttached(HoldingSpaceModel* model) override;
@@ -64,8 +67,15 @@ class ASH_EXPORT HoldingSpaceTrayIcon : public views::View,
   void OnShelfAlignmentChanged(aura::Window* root_window,
                                ShelfAlignment old_alignment) override;
 
+  // SessionController:
+  void OnActiveUserPrefServiceChanged(PrefService* prefs) override;
+
   void InitLayout();
   void UpdatePreferredSize();
+  void UpdatePreviewsEnabled();
+
+  void ShowPreviews();
+  void HidePreviews(bool force = false);
 
   // Invoked when the specified preview has completed animating out. At this
   // point it is owned by `removed_previews_` and should be destroyed.
@@ -74,6 +84,11 @@ class ASH_EXPORT HoldingSpaceTrayIcon : public views::View,
   // The shelf associated with this holding space tray icon.
   Shelf* const shelf_;
 
+  // Whether previews are currently enabled. Note that if the content forward
+  // entry point feature is disabled, this will always be false. Otherwise,
+  // previews can be enabled/disabled by the user at runtime.
+  bool previews_enabled_ = false;
+
   // A preview is added to the tray icon to visually represent each holding
   // space item. Upon creation, previews are added to `previews_` where they
   // are owned until being animated out. Upon being animated out, previews are
@@ -81,6 +96,12 @@ class ASH_EXPORT HoldingSpaceTrayIcon : public views::View,
   // completes and they are subsequently destroyed.
   std::vector<std::unique_ptr<HoldingSpaceTrayIconPreview>> previews_;
   std::vector<std::unique_ptr<HoldingSpaceTrayIconPreview>> removed_previews_;
+
+  // When the holding space content forward entry point is enabled, the user
+  // can enable/disable previews. This registrar is associated with the active
+  // user pref service and notifies the holding space tray icon of changes to
+  // the user's preference.
+  std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
 
   ScopedObserver<HoldingSpaceController, HoldingSpaceControllerObserver>
       controller_observer_{this};
@@ -91,6 +112,7 @@ class ASH_EXPORT HoldingSpaceTrayIcon : public views::View,
                  &Shell::AddShellObserver,
                  &Shell::RemoveShellObserver>
       shell_observer_{this};
+  ScopedObserver<SessionController, SessionObserver> session_observer_{this};
 };
 
 }  // namespace ash

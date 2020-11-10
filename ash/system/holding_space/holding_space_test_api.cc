@@ -130,6 +130,10 @@ views::View* HoldingSpaceTestApi::GetTray() {
   return holding_space_tray_;
 }
 
+views::View* HoldingSpaceTestApi::GetTrayIcon() {
+  return holding_space_tray_->GetViewByID(kHoldingSpaceTrayIconId);
+}
+
 bool HoldingSpaceTestApi::PinnedFilesContainerShown() const {
   if (!holding_space_tray_->GetBubbleView())
     return false;

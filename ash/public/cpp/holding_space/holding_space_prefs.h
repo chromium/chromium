@@ -6,8 +6,10 @@
 #define ASH_PUBLIC_CPP_HOLDING_SPACE_HOLDING_SPACE_PREFS_H_
 
 #include "ash/public/cpp/ash_public_export.h"
+#include "base/callback_forward.h"
 #include "base/optional.h"
 
+class PrefChangeRegistrar;
 class PrefRegistrySimple;
 class PrefService;
 
@@ -20,6 +22,17 @@ namespace holding_space_prefs {
 
 // Registers holding space profile preferences to `registry`.
 ASH_PUBLIC_EXPORT void RegisterProfilePrefs(PrefRegistrySimple* registry);
+
+// Adds `callback` to `registrar` to be invoked on changes to previews enabled.
+ASH_PUBLIC_EXPORT void AddPreviewsEnabledChangedCallback(
+    PrefChangeRegistrar* registrar,
+    base::RepeatingClosure callback);
+
+// Returns whether previews are enabled.
+ASH_PUBLIC_EXPORT bool IsPreviewsEnabled(PrefService* prefs);
+
+// Sets whether previews are `enabled`.
+ASH_PUBLIC_EXPORT void SetPreviewsEnabled(PrefService* prefs, bool enabled);
 
 // Returns the time when holding space first became available. Note that if the
 // time of first availability is unmarked, `base::nullopt` is returned.

@@ -36,7 +36,6 @@ constexpr int kHoldingSpaceScreenCaptureSpacing = 8;
 constexpr gfx::Size kHoldingSpaceScreenCaptureSize(104, 80);
 constexpr gfx::Insets kHoldingSpaceScreenCapturesContainerPadding(8, 0);
 constexpr float kHoldingSpaceSelectedOverlayOpacity = 0.24f;
-constexpr int kHoldingSpaceTrayIconMainAxisMargin = 6;
 constexpr int kHoldingSpaceTrayIconMaxVisiblePreviews = 3;
 constexpr int kHoldingSpaceTrayIconSize = 20;
 
@@ -54,6 +53,7 @@ enum HoldingSpaceCommandId {
 // View IDs.
 constexpr int kHoldingSpacePinnedFilesContainerId = 1;
 constexpr int kHoldingSpaceRecentFilesContainerId = 2;
+constexpr int kHoldingSpaceTrayIconId = 3;
 
 // The maximum allowed age for files restored into the holding space model.
 // Note that this is not enforced for pinned items.
