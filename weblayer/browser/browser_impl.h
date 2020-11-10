@@ -63,6 +63,10 @@ class BrowserImpl : public Browser {
 #if defined(OS_ANDROID)
   bool CompositorHasSurface();
 
+  base::android::ScopedJavaGlobalRef<jobject> java_browser() {
+    return java_impl_;
+  }
+
   void AddTab(JNIEnv* env,
               long native_tab);
   base::android::ScopedJavaLocalRef<jobjectArray> GetTabs(JNIEnv* env);

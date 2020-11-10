@@ -10,6 +10,10 @@
 #include "weblayer/browser/browser_impl.h"
 #include "weblayer/browser/browser_list_observer.h"
 
+#if defined(OS_ANDROID)
+#include "weblayer/browser/browser_list_proxy.h"
+#endif
+
 namespace weblayer {
 
 // static
@@ -33,9 +37,18 @@ void BrowserList::RemoveObserver(BrowserListObserver* observer) {
   observers_.RemoveObserver(observer);
 }
 
-BrowserList::BrowserList() = default;
+BrowserList::BrowserList() {
+#if defined(OS_ANDROID)
+  browser_list_proxy_ = std::make_unique<BrowserListProxy>();
+  AddObserver(browser_list_proxy_.get());
+#endif
+}
 
-BrowserList::~BrowserList() = default;
+BrowserList::~BrowserList() {
+#if defined(OS_ANDROID)
+  RemoveObserver(browser_list_proxy_.get());
+#endif
+}
 
 void BrowserList::AddBrowser(BrowserImpl* browser) {
   DCHECK(!browsers_.contains(browser));
@@ -44,6 +57,8 @@ void BrowserList::AddBrowser(BrowserImpl* browser) {
   DCHECK(!browser->fragment_resumed());
 #endif
   browsers_.insert(browser);
+  for (BrowserListObserver& observer : observers_)
+    observer.OnBrowserCreated(browser);
 }
 
 void BrowserList::RemoveBrowser(BrowserImpl* browser) {
@@ -53,6 +68,9 @@ void BrowserList::RemoveBrowser(BrowserImpl* browser) {
   DCHECK(!browser->fragment_resumed());
 #endif
   browsers_.erase(browser);
+
+  for (BrowserListObserver& observer : observers_)
+    observer.OnBrowserDestroyed(browser);
 }
 
 #if defined(OS_ANDROID)

@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "build/build_config.h"
+#include "weblayer/browser/browser_list_observer.h"
 #include "weblayer/browser/i18n_util.h"
 #include "weblayer/browser/profile_disk_operations.h"
 #include "weblayer/public/profile.h"
@@ -84,6 +85,8 @@ class ProfileImpl : public Profile {
   const std::string& name() const { return info_.name; }
   DownloadDelegate* download_delegate() { return download_delegate_; }
 
+  void MarkAsDeleted();
+
   // Profile implementation:
   void ClearBrowsingData(const std::vector<BrowsingDataType>& data_types,
                          base::Time from_time,
@@ -142,6 +145,7 @@ class ProfileImpl : public Profile {
       JNIEnv* env,
       const base::android::JavaRef<jstring>& j_page_url,
       const base::android::JavaRef<jobject>& j_callback);
+  void MarkAsDeleted(JNIEnv* env) { MarkAsDeleted(); }
 #endif
 
   const base::FilePath& download_directory() { return download_directory_; }
