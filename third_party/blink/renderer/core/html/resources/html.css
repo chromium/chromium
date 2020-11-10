@@ -1174,13 +1174,23 @@ dialog {
     position: absolute;
     left: 0;
     right: 0;
-    width: -webkit-fit-content;
-    height: -webkit-fit-content;
+    width: fit-content;
+    height: fit-content;
     margin: auto;
     border: solid;
     padding: 1em;
     background: -internal-light-dark(white, black);
     color: -internal-light-dark(black, white);
+}
+
+dialog:-internal-modal {
+    position: fixed;
+    overflow: auto;
+    top: 0;
+    bottom: 0;
+    /* 6px + 2em = border + padding, as by default box-sizing is content-box. */
+    max-width: calc(100% - 6px - 2em);
+    max-height: calc(100% - 6px - 2em);
 }
 
 /* TODO(foolip): In the Fullscreen spec, there's a ::backdrop block with the

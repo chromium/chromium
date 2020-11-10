@@ -53,6 +53,7 @@
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_option_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
+#include "third_party/blink/renderer/core/html/html_dialog_element.h"
 #include "third_party/blink/renderer/core/html/html_document.h"
 #include "third_party/blink/renderer/core/html/html_frame_element_base.h"
 #include "third_party/blink/renderer/core/html/html_slot_element.h"
@@ -1169,6 +1170,11 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
     case CSSSelector::kPseudoSingleButton:
     case CSSSelector::kPseudoNoButton:
     case CSSSelector::kPseudoCornerPresent:
+      return false;
+    case CSSSelector::kPseudoModal:
+      DCHECK(is_ua_rule_);
+      if (const auto* dialog_element = DynamicTo<HTMLDialogElement>(element))
+        return dialog_element->IsModal();
       return false;
     case CSSSelector::kPseudoUnknown:
     default:

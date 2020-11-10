@@ -533,9 +533,6 @@ void LayoutBlockFlow::UpdateBlockLayout(bool relayout_children) {
 
   UpdateAfterLayout();
 
-  if (IsA<HTMLDialogElement>(GetNode()) && IsOutOfFlowPositioned())
-    PositionDialog();
-
   ClearNeedsLayout();
   is_self_collapsing_ = CheckIfIsSelfCollapsingBlock();
 }
@@ -4538,14 +4535,6 @@ LayoutBlockFlow::LayoutBlockFlowRareData& LayoutBlockFlow::EnsureRareData() {
 
   rare_data_ = MakeGarbageCollected<LayoutBlockFlowRareData>(this);
   return *rare_data_;
-}
-
-void LayoutBlockFlow::PositionDialog() {
-  NOT_DESTROYED();
-  base::Optional<LayoutUnit> y =
-      ComputeAbsoluteDialogYPosition(*this, Size().Height());
-  if (y.has_value())
-    SetY(y.value());
 }
 
 void LayoutBlockFlow::SimplifiedNormalFlowInlineLayout() {

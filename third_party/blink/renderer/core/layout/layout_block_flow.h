@@ -1094,9 +1094,6 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
   void MarkLinesDirtyInBlockRange(LayoutUnit logical_top,
                                   LayoutUnit logical_bottom,
                                   RootInlineBox* highest = nullptr);
-  // Positions new floats and also adjust all floats encountered on the line if
-  // any of them have to move to the next page/column.
-  void PositionDialog();
 
   // END METHODS DEFINED IN LayoutBlockFlowLine
 };

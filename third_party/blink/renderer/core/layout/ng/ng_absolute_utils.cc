@@ -5,14 +5,10 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_absolute_utils.h"
 
 #include <algorithm>
-#include "third_party/blink/renderer/core/frame/local_frame_view.h"
-#include "third_party/blink/renderer/core/html/html_dialog_element.h"
-#include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/ng/geometry/ng_static_position.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_node.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_length_utils.h"
-#include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/geometry/length_functions.h"
 
@@ -368,56 +364,6 @@ bool IsInlineSizeComputableFromBlockSize(const NGBlockNode& node) {
   // insets.
   return !AbsoluteNeedsChildBlockSize(node) &&
          AbsoluteNeedsChildInlineSize(node);
-}
-
-base::Optional<LayoutUnit> ComputeAbsoluteDialogYPosition(
-    const LayoutObject& dialog,
-    LayoutUnit height) {
-  auto* dialog_node = DynamicTo<HTMLDialogElement>(dialog.GetNode());
-  if (!dialog_node)
-    return base::nullopt;
-
-  // This code implements <dialog> static-position spec.
-  //
-  // https://html.spec.whatwg.org/C/#the-dialog-element
-  if (dialog_node->GetCenteringMode() == HTMLDialogElement::kNotCentered)
-    return base::nullopt;
-
-  bool can_center_dialog =
-      (dialog.Style()->GetPosition() == EPosition::kAbsolute ||
-       dialog.Style()->GetPosition() == EPosition::kFixed) &&
-      dialog.Style()->HasAutoTopAndBottom();
-
-  if (dialog_node->GetCenteringMode() == HTMLDialogElement::kCentered) {
-    if (can_center_dialog)
-      return dialog_node->CenteredPosition();
-    return base::nullopt;
-  }
-
-  DCHECK_EQ(dialog_node->GetCenteringMode(),
-            HTMLDialogElement::kNeedsCentering);
-  if (!can_center_dialog) {
-    dialog_node->SetNotCentered();
-    return base::nullopt;
-  }
-
-  auto& document = dialog.GetDocument();
-  auto* scrollable_area = document.View()->LayoutViewport();
-  LayoutUnit top =
-      LayoutUnit((dialog.Style()->GetPosition() == EPosition::kFixed)
-                     ? 0
-                     : scrollable_area->ScrollOffsetInt().Height());
-
-  if (top)
-    UseCounter::Count(document, WebFeature::kDialogWithNonZeroScrollOffset);
-
-  int visible_height = document.View()->Height();
-  if (height < visible_height)
-    top += (visible_height - height) / 2;
-  else if (height > visible_height)
-    UseCounter::Count(document, WebFeature::kDialogHeightLargerThanViewport);
-  dialog_node->SetCentered(top);
-  return top;
 }
 
 void ComputeOutOfFlowInlineDimensions(

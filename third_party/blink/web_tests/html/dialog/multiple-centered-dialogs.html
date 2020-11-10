@@ -7,7 +7,6 @@ body {
 
 dialog {
     padding: 0;
-    margin: 0;
     height: 50px;
     width: 50px;
 }
@@ -24,11 +23,10 @@ dialog {
 </body>
 <script src="../../resources/js-test.js"></script>
 <script>
-debug('Test that multiple dialogs are centered properly. You should see four ' +
-      'boxes: one on the top row, two on the middle, and one on the bottom.');
+debug('Test that multiple dialogs are centered properly.');
 
 function expectedTop(dialog) {
-    return window.scrollY + Math.floor((document.documentElement.clientHeight - dialog.offsetHeight) / 2);
+    return Math.floor((document.documentElement.clientHeight - dialog.offsetHeight) / 2);
 }
 
 function showAndTest(id) {

@@ -1,4 +1,4 @@
-Test that multiple dialogs are centered properly. You should see four boxes: one on the top row, two on the middle, and one on the bottom.
+Test that multiple dialogs are centered properly.
 showing top-dialog
 PASS dialog.offsetTop is expectedTop(dialog)
 showing first-middle-dialog

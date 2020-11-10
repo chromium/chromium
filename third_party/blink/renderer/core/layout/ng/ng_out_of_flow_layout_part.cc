@@ -998,20 +998,6 @@ scoped_refptr<const NGLayoutResult> NGOutOfFlowLayoutPart::Layout(
     }
   } while (break_token);
 
-  // Adjusting the offset for a dialog after layout is fine, since we cannot
-  // have dialogs needing alignment inside block fragmentation.
-  base::Optional<LayoutUnit> y = ComputeAbsoluteDialogYPosition(
-      *node.GetLayoutBox(), layout_result->PhysicalFragment().Size().height);
-  if (y.has_value()) {
-    DCHECK(!container_space_.HasBlockFragmentation());
-    if (default_writing_direction.IsHorizontal())
-      offset.block_offset = *y;
-    else
-      offset.inline_offset = *y;
-
-    layout_result->GetMutableForOutOfFlow().SetOutOfFlowPositionedOffset(
-        offset, allow_first_tier_oof_cache_);
-  }
   return layout_result;
 }
 

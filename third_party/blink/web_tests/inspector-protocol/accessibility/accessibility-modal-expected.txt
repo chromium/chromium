@@ -23,6 +23,13 @@ Tests accessibility values in modal dialog.
     nodeId : <string>
     properties : [
         [0] : {
+            name : focused
+            value : {
+                type : booleanOrUndefined
+                value : true
+            }
+        }
+        [1] : {
             name : modal
             value : {
                 type : boolean

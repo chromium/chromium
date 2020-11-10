@@ -108,8 +108,7 @@ static void InertSubtreesChanged(Document& document) {
 
 HTMLDialogElement::HTMLDialogElement(Document& document)
     : HTMLElement(html_names::kDialogTag, document),
-      centering_mode_(kNotCentered),
-      centered_position_(0),
+      is_modal_(false),
       return_value_("") {
   UseCounter::Count(document, WebFeature::kDialogElement);
 }
@@ -120,6 +119,7 @@ void HTMLDialogElement::close(const String& return_value) {
   if (!FastHasAttribute(html_names::kOpenAttr))
     return;
   SetBooleanAttribute(html_names::kOpenAttr, false);
+  SetIsModal(false);
 
   HTMLDialogElement* active_modal_dialog = GetDocument().ActiveModalDialog();
   GetDocument().RemoveFromTopLayer(this);
@@ -132,11 +132,10 @@ void HTMLDialogElement::close(const String& return_value) {
   ScheduleCloseEvent();
 }
 
-void HTMLDialogElement::ForceLayoutForCentering() {
-  centering_mode_ = kNeedsCentering;
-  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kJavaScript);
-  if (centering_mode_ == kNeedsCentering)
-    SetNotCentered();
+void HTMLDialogElement::SetIsModal(bool is_modal) {
+  if (is_modal != is_modal_)
+    PseudoStateChanged(CSSSelector::kPseudoModal);
+  is_modal_ = is_modal;
 }
 
 void HTMLDialogElement::ScheduleCloseEvent() {
@@ -180,7 +179,8 @@ void HTMLDialogElement::showModal(ExceptionState& exception_state) {
   GetDocument().AddToTopLayer(this);
   SetBooleanAttribute(html_names::kOpenAttr, true);
 
-  ForceLayoutForCentering();
+  SetIsModal(true);
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kJavaScript);
 
   // Throw away the AX cache first, so the subsequent steps don't have a chance
   // of queuing up AX events on objects that would be invalidated when the cache
@@ -192,7 +192,6 @@ void HTMLDialogElement::showModal(ExceptionState& exception_state) {
 
 void HTMLDialogElement::RemovedFrom(ContainerNode& insertion_point) {
   HTMLElement::RemovedFrom(insertion_point);
-  SetNotCentered();
 
   // TODO(671907): Calling UpdateDistributionForFlatTreeTraversal here is a
   // workaround for https://crbug.com/895511. This shouldn't be done during DOM
@@ -201,16 +200,6 @@ void HTMLDialogElement::RemovedFrom(ContainerNode& insertion_point) {
   GetDocument().UpdateDistributionForFlatTreeTraversal();
 
   InertSubtreesChanged(GetDocument());
-}
-
-void HTMLDialogElement::SetCentered(LayoutUnit centered_position) {
-  DCHECK_EQ(centering_mode_, kNeedsCentering);
-  centered_position_ = centered_position;
-  centering_mode_ = kCentered;
-}
-
-void HTMLDialogElement::SetNotCentered() {
-  centering_mode_ = kNotCentered;
 }
 
 bool HTMLDialogElement::IsPresentationAttribute(
