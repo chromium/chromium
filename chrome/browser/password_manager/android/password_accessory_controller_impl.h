@@ -114,10 +114,9 @@ class PasswordAccessoryControllerImpl
                             bool is_password,
                             const url::Origin& origin) const;
 
-  // Returns true if `field_type` and `origin` of a focused field allow to show
+  // Returns true if the `origin` of a focused field allows to show
   // the option toggle to recover from a "never save" state.
-  bool ShouldShowRecoveryToggle(autofill::mojom::FocusedFieldType field_type,
-                                const url::Origin& origin) const;
+  bool ShouldShowRecoveryToggle(const url::Origin& origin) const;
 
   // Lazy-initializes and returns the ManualFillingController for the current
   // |web_contents_|. The lazy initialization allows injecting mocks for tests.

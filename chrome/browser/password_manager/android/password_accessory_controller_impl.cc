@@ -314,7 +314,7 @@ void PasswordAccessoryControllerImpl::RefreshSuggestionsForField(
       autofill::AccessoryTabType::PASSWORDS, GetTitle(has_suggestions, origin),
       std::move(info_to_add), std::move(footer_commands_to_add));
 
-  if (ShouldShowRecoveryToggle(focused_field_type, origin)) {
+  if (ShouldShowRecoveryToggle(origin)) {
     BlacklistedStatus blacklisted_status =
         credential_cache_->GetCredentialStore(origin).GetBlacklistedStatus();
     if (blacklisted_status == BlacklistedStatus::kWasBlacklisted ||
@@ -392,7 +392,6 @@ bool PasswordAccessoryControllerImpl::AppearsInSuggestions(
 }
 
 bool PasswordAccessoryControllerImpl::ShouldShowRecoveryToggle(
-    autofill::mojom::FocusedFieldType field_type,
     const url::Origin& origin) const {
   if (!base::FeatureList::IsEnabled(
           password_manager::features::kRecoverFromNeverSaveAndroid)) {
@@ -402,10 +401,7 @@ bool PasswordAccessoryControllerImpl::ShouldShowRecoveryToggle(
           autofill::features::kAutofillKeyboardAccessory)) {
     return false;
   }
-  if (!password_client_->IsSavingAndFillingEnabled(origin.GetURL()))
-    return false;
-  return field_type == FocusedFieldType::kFillablePasswordField ||
-         field_type == FocusedFieldType::kFillableUsernameField;
+  return password_client_->IsSavingAndFillingEnabled(origin.GetURL());
 }
 
 base::WeakPtr<ManualFillingController>

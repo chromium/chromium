@@ -745,7 +745,7 @@ TEST_F(PasswordAccessoryControllerTest, AddsSaveToggleIfWasBlacklisted) {
       /*is_manual_generation_available=*/false);
 }
 
-TEST_F(PasswordAccessoryControllerTest, AddsSaveToggleOnUsernameIfBlacklisted) {
+TEST_F(PasswordAccessoryControllerTest, AddsSaveToggleOnAnyFieldIfBlocked) {
   CreateSheetController();
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
@@ -768,7 +768,7 @@ TEST_F(PasswordAccessoryControllerTest, AddsSaveToggleOnUsernameIfBlacklisted) {
   EXPECT_CALL(mock_manual_filling_controller_,
               RefreshSuggestions(std::move(data_builder).Build()));
   controller()->RefreshSuggestionsForField(
-      FocusedFieldType::kFillableUsernameField,
+      FocusedFieldType::kFillableNonSearchField,
       /*is_manual_generation_available=*/false);
 }
 
