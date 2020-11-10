@@ -9,7 +9,7 @@
         "properties": {
           "event_callback": {
             "type": "function",
-            "parameters": { }
+            "parameters": []
           }
         }
       },
@@ -20,7 +20,30 @@
           "event_callback": {
             "type": "function",
             "optional": true,
-            "parameters": { }
+            "parameters": []
+          }
+        }
+      },
+      {
+        "id": "SerializableFunctionType",
+        "type": "object",
+        "properties": {
+          "functionProperty": {
+            "type": "function",
+            "serializableFunction": true,
+            "parameters": []
+          }
+        }
+      },
+      {
+        "id": "OptionalSerializableFunctionType",
+        "type": "object",
+        "properties": {
+          "functionProperty": {
+            "type": "function",
+            "serializableFunction": true,
+            "optional": true,
+            "parameters": []
           }
         }
       }

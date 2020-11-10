@@ -11,6 +11,8 @@
 
 using test::api::functions_as_parameters::FunctionType;
 using test::api::functions_as_parameters::OptionalFunctionType;
+using test::api::functions_as_parameters::OptionalSerializableFunctionType;
+using test::api::functions_as_parameters::SerializableFunctionType;
 
 TEST(JsonSchemaCompilerFunctionsAsParametersTest, PopulateRequiredFunction) {
   // The expectation is that if any value is set for the function, then
@@ -94,5 +96,47 @@ TEST(JsonSchemaCompilerFunctionsAsParametersTest, OptionalFunctionToValue) {
     OptionalFunctionType out;
     ASSERT_TRUE(OptionalFunctionType::Populate(value, &out));
     EXPECT_TRUE(value.Equals(out.ToValue().get()));
+  }
+}
+
+TEST(JsonSchemaCompilerFunctionsAsParametersTest, SerializableFunctionTypes) {
+  constexpr char kFunction[] = "function() {}";
+  SerializableFunctionType serializable_type;
+  serializable_type.function_property = kFunction;
+  std::unique_ptr<base::DictionaryValue> serialized =
+      serializable_type.ToValue();
+  ASSERT_TRUE(serialized);
+  SerializableFunctionType deserialized;
+  ASSERT_TRUE(SerializableFunctionType::Populate(*serialized, &deserialized));
+  EXPECT_EQ(kFunction, serializable_type.function_property);
+}
+
+TEST(JsonSchemaCompilerFunctionsAsParametersTest,
+     OptionalSerializableFunctionTypes) {
+  constexpr char kFunction[] = "function() {}";
+  {
+    // Test with the optional property set.
+    OptionalSerializableFunctionType serializable_type;
+    serializable_type.function_property =
+        std::make_unique<std::string>(kFunction);
+    std::unique_ptr<base::DictionaryValue> serialized =
+        serializable_type.ToValue();
+    ASSERT_TRUE(serialized);
+    OptionalSerializableFunctionType deserialized;
+    ASSERT_TRUE(
+        OptionalSerializableFunctionType::Populate(*serialized, &deserialized));
+    ASSERT_TRUE(serializable_type.function_property);
+    EXPECT_EQ(kFunction, *serializable_type.function_property);
+  }
+  {
+    // Test without the property set.
+    OptionalSerializableFunctionType serializable_type;
+    std::unique_ptr<base::DictionaryValue> serialized =
+        serializable_type.ToValue();
+    ASSERT_TRUE(serialized);
+    OptionalSerializableFunctionType deserialized;
+    ASSERT_TRUE(
+        OptionalSerializableFunctionType::Populate(*serialized, &deserialized));
+    EXPECT_FALSE(serializable_type.function_property);
   }
 }

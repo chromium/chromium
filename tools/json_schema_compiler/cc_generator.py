@@ -772,7 +772,8 @@ class _Generator(object):
       else:
         return '(%s).ToValue()' % var
     elif (underlying_type.property_type == PropertyType.ANY or
-          underlying_type.property_type == PropertyType.FUNCTION):
+          (underlying_type.property_type == PropertyType.FUNCTION and
+               not underlying_type.is_serializable_function)):
       if is_ptr:
         vardot = '(%s)->' % var
       else:
@@ -790,7 +791,8 @@ class _Generator(object):
       return 'std::make_unique<base::Value>(%s)' % var
     elif underlying_type.property_type == PropertyType.ARRAY:
       return '%s' % self._util_cc_helper.CreateValueFromArray(var, is_ptr)
-    elif underlying_type.property_type.is_fundamental:
+    elif (underlying_type.property_type.is_fundamental or
+              underlying_type.is_serializable_function):
       if is_ptr:
         var = '*%s' % var
       return 'std::make_unique<base::Value>(%s)' % var
@@ -906,7 +908,8 @@ class _Generator(object):
 
     underlying_type = self._type_helper.FollowRef(type_)
 
-    if underlying_type.property_type.is_fundamental:
+    if (underlying_type.property_type.is_fundamental or
+        underlying_type.is_serializable_function):
       if is_ptr:
         (c.Append('%(cpp_type)s temp;')
           .Sblock('if (!%s) {' % cpp_util.GetAsFundamentalValue(
@@ -970,7 +973,9 @@ class _Generator(object):
           .Append('}')
         )
     elif underlying_type.property_type == PropertyType.FUNCTION:
-      if is_ptr:
+      assert not underlying_type.is_serializable_function, \
+          'Serializable functions should have been handled above.'
+      if is_ptr: # Non-serializable functions are just represented as dicts.
         c.Append('%(dst_var)s = std::make_unique<base::DictionaryValue>();')
     elif underlying_type.property_type == PropertyType.ANY:
       c.Append('%(dst_var)s = %(src_var)s->CreateDeepCopy();')

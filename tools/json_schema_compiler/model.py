@@ -227,6 +227,7 @@ class Type(object):
 
     self.parent = parent
     self.instance_of = json.get('isInstanceOf', None)
+    self.is_serializable_function = json.get('serializableFunction', False)
     # TODO(kalman): Only objects need functions/events/properties, but callers
     # assume that all types have them. Fix this.
     self.functions = _GetFunctions(self, json, namespace)
