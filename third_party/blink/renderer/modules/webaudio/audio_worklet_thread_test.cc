@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/core/origin_trials/origin_trial_context.h"
 #include "third_party/blink/renderer/core/script/js_module_script.h"
 #include "third_party/blink/renderer/core/script/script.h"
+#include "third_party/blink/renderer/core/testing/module_test_base.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/core/workers/global_scope_creation_params.h"
 #include "third_party/blink/renderer/core/workers/worker_backing_thread.h"
@@ -46,9 +47,14 @@
 
 namespace blink {
 
-class AudioWorkletThreadTest : public PageTestBase {
+class AudioWorkletThreadTestBase : public PageTestBase,
+                                   public ParametrizedModuleTestBase {
  public:
+  explicit AudioWorkletThreadTestBase(bool use_top_level_await)
+      : use_top_level_await_(use_top_level_await) {}
+
   void SetUp() override {
+    ParametrizedModuleTestBase::SetUp(use_top_level_await_);
     PageTestBase::SetUp(IntSize());
     NavigateTo(KURL("https://example.com/"));
     reporting_proxy_ = std::make_unique<WorkerReportingProxy>();
@@ -58,6 +64,7 @@ class AudioWorkletThreadTest : public PageTestBase {
     OfflineAudioWorkletThread::ClearSharedBackingThread();
     RealtimeAudioWorkletThread::ClearSharedBackingThread();
     SemiRealtimeAudioWorkletThread::ClearSharedBackingThread();
+    ParametrizedModuleTestBase::TearDown();
   }
 
   std::unique_ptr<WorkerThread> CreateAudioWorkletThread(
@@ -77,7 +84,7 @@ class AudioWorkletThreadTest : public PageTestBase {
     PostCrossThreadTask(
         *thread->GetWorkerBackingThread().BackingThread().GetTaskRunner(),
         FROM_HERE,
-        CrossThreadBindOnce(&AudioWorkletThreadTest::ExecuteScriptInWorklet,
+        CrossThreadBindOnce(&AudioWorkletThreadTestBase::ExecuteScriptInWorklet,
                             CrossThreadUnretained(this),
                             CrossThreadUnretained(thread),
                             CrossThreadUnretained(&wait_event)));
@@ -131,9 +138,16 @@ class AudioWorkletThreadTest : public PageTestBase {
   }
 
   std::unique_ptr<WorkerReportingProxy> reporting_proxy_;
+  bool use_top_level_await_;
 };
 
-TEST_F(AudioWorkletThreadTest, Basic) {
+class AudioWorkletThreadTest : public AudioWorkletThreadTestBase,
+                               public testing::WithParamInterface<bool> {
+ public:
+  AudioWorkletThreadTest() : AudioWorkletThreadTestBase(GetParam()) {}
+};
+
+TEST_P(AudioWorkletThreadTest, Basic) {
   std::unique_ptr<WorkerThread> audio_worklet_thread =
       CreateAudioWorkletThread(true, true);
   CheckWorkletCanExecuteScript(audio_worklet_thread.get());
@@ -143,7 +157,7 @@ TEST_F(AudioWorkletThreadTest, Basic) {
 
 // Creates 2 different AudioWorkletThreads with different RT constraints.
 // Checks if they are running on a different thread.
-TEST_F(AudioWorkletThreadTest, CreateDifferentWorkletThreadsAndTerminate_1) {
+TEST_P(AudioWorkletThreadTest, CreateDifferentWorkletThreadsAndTerminate_1) {
   // Create RealtimeAudioWorkletThread.
   std::unique_ptr<WorkerThread> first_worklet_thread =
       CreateAudioWorkletThread(true, true);
@@ -170,7 +184,7 @@ TEST_F(AudioWorkletThreadTest, CreateDifferentWorkletThreadsAndTerminate_1) {
 
 // Creates 2 AudioWorkletThreads with RT constraint from 2 different
 // originating frames. Checks if they are running on a different thread.
-TEST_F(AudioWorkletThreadTest, CreateDifferentWorkletThreadsAndTerminate_2) {
+TEST_P(AudioWorkletThreadTest, CreateDifferentWorkletThreadsAndTerminate_2) {
   // Create an AudioWorkletThread from a main frame with RT constraint.
   std::unique_ptr<WorkerThread> first_worklet_thread =
       CreateAudioWorkletThread(true, true);
@@ -195,17 +209,24 @@ TEST_F(AudioWorkletThreadTest, CreateDifferentWorkletThreadsAndTerminate_2) {
   second_worklet_thread->WaitForShutdownForTesting();
 }
 
+// Instantiate tests once with TLA and once without:
+INSTANTIATE_TEST_SUITE_P(AudioWorkletThreadTestGroup,
+                         AudioWorkletThreadTest,
+                         testing::Bool(),
+                         ParametrizedModuleTestParamName());
+
 class AudioWorkletThreadInteractionTest
-    : public AudioWorkletThreadTest,
-      public testing::WithParamInterface<std::tuple<bool, bool>> {
+    : public AudioWorkletThreadTestBase,
+      public testing::WithParamInterface<std::tuple<bool, bool, bool>> {
  public:
   AudioWorkletThreadInteractionTest()
-      : has_realtime_constraint_(std::get<0>(GetParam())),
-        is_top_level_frame_(std::get<1>(GetParam())) {}
+      : AudioWorkletThreadTestBase(std::get<0>(GetParam())),
+        has_realtime_constraint_(std::get<1>(GetParam())),
+        is_top_level_frame_(std::get<2>(GetParam())) {}
 
-  protected:
-    const bool has_realtime_constraint_;
-    const bool is_top_level_frame_;
+ protected:
+  const bool has_realtime_constraint_;
+  const bool is_top_level_frame_;
 };
 
 TEST_P(AudioWorkletThreadInteractionTest, CreateSecondAndTerminateFirst) {
@@ -296,11 +317,14 @@ TEST_P(AudioWorkletThreadInteractionTest,
   second_worklet_thread->WaitForShutdownForTesting();
 }
 
-INSTANTIATE_TEST_SUITE_P(AudioWorkletThreadInteractionTest,
+INSTANTIATE_TEST_SUITE_P(AudioWorkletThreadInteractionTestGroup,
                          AudioWorkletThreadInteractionTest,
-                         testing::Combine(testing::Bool(), testing::Bool()));
+                         testing::Combine(testing::Bool(),
+                                          testing::Bool(),
+                                          testing::Bool()));
 
 struct ThreadPriorityTestParam {
+  const bool use_top_level_await;
   const bool has_realtime_constraint;
   const bool is_top_level_frame;
   const bool is_flag_enabled;
@@ -311,30 +335,43 @@ constexpr ThreadPriorityTestParam kThreadPriorityTestParams[] = {
     // A real-time priority thread is guaranteed when the context has real-time
     // constraint and is spawned from a top-level frame. The flag setting
     // is ignored.
-    {true, true, true, base::ThreadPriority::REALTIME_AUDIO},
-    {true, true, false, base::ThreadPriority::REALTIME_AUDIO},
+    {false, true, true, true, base::ThreadPriority::REALTIME_AUDIO},
+    {false, true, true, false, base::ThreadPriority::REALTIME_AUDIO},
+    // With top-level-await module:
+    {true, true, true, true, base::ThreadPriority::REALTIME_AUDIO},
+    {true, true, true, false, base::ThreadPriority::REALTIME_AUDIO},
 
     // A DISPLAY priority thread is given when the context has real-time
     // constraint but is spawned from a sub frame.
-    {true, false, false, base::ThreadPriority::DISPLAY},
+    {false, true, false, false, base::ThreadPriority::DISPLAY},
+    // With top-level-await module:
+    {true, true, false, false, base::ThreadPriority::DISPLAY},
 
     // Enabling the real-time thread flag will override thread priority logic
     // for a real-time context.
-    {true, false, true, base::ThreadPriority::REALTIME_AUDIO},
+    {false, true, false, true, base::ThreadPriority::REALTIME_AUDIO},
+    // With top-level-await module:
+    {true, true, false, true, base::ThreadPriority::REALTIME_AUDIO},
 
     // OfflineAudioWorkletThread is always a NORMAL priority no matter what
     // the flag setting or the originating frame level is.
-    {false, true, true, base::ThreadPriority::NORMAL},
-    {false, true, false, base::ThreadPriority::NORMAL},
-    {false, false, true, base::ThreadPriority::NORMAL},
-    {false, false, false, base::ThreadPriority::NORMAL},
+    {false, false, true, true, base::ThreadPriority::NORMAL},
+    {false, false, true, false, base::ThreadPriority::NORMAL},
+    {false, false, false, true, base::ThreadPriority::NORMAL},
+    {false, false, false, false, base::ThreadPriority::NORMAL},
+    // With top-level-await module:
+    {true, false, true, true, base::ThreadPriority::NORMAL},
+    {true, false, true, false, base::ThreadPriority::NORMAL},
+    {true, false, false, true, base::ThreadPriority::NORMAL},
+    {true, false, false, false, base::ThreadPriority::NORMAL},
 };
 
 class AudioWorkletThreadPriorityTest
-    : public AudioWorkletThreadTest,
+    : public AudioWorkletThreadTestBase,
       public testing::WithParamInterface<ThreadPriorityTestParam> {
  public:
-  AudioWorkletThreadPriorityTest() = default;
+  AudioWorkletThreadPriorityTest()
+      : AudioWorkletThreadTestBase(GetParam().use_top_level_await) {}
 
   void InitAndSetRealtimePriorityFlag(bool is_flag_enabled) {
     if (is_flag_enabled) {
@@ -394,7 +431,6 @@ class AudioWorkletThreadPriorityTest
 
     wait_event->Signal();
   }
-
   base::test::ScopedFeatureList feature_list_;
 };
 
@@ -406,7 +442,7 @@ TEST_P(AudioWorkletThreadPriorityTest, CheckThreadPriority) {
                             test_param.expected_priority);
 }
 
-INSTANTIATE_TEST_SUITE_P(AudioWorkletThreadPriorityTest,
+INSTANTIATE_TEST_SUITE_P(AudioWorkletThreadPriorityTestGroup,
                          AudioWorkletThreadPriorityTest,
                          testing::ValuesIn(kThreadPriorityTestParams));
 
