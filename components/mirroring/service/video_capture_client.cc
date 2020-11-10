@@ -235,7 +235,7 @@ void VideoCaptureClient::OnBufferReady(int32_t buffer_id,
   }
   frame->AddDestructionObserver(
       base::BindOnce(&VideoCaptureClient::DidFinishConsumingFrame,
-                     frame->feedback(), std::move(buffer_finished_callback)));
+                     std::move(buffer_finished_callback)));
 
   frame->set_metadata(info->metadata);
   if (info->color_space.has_value())
@@ -258,8 +258,7 @@ void VideoCaptureClient::OnBufferDestroyed(int32_t buffer_id) {
 
 void VideoCaptureClient::OnClientBufferFinished(
     int buffer_id,
-    base::ReadOnlySharedMemoryMapping mapping,
-    media::VideoFrameFeedback feedback) {
+    base::ReadOnlySharedMemoryMapping mapping) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOG(3) << __func__ << ": buffer_id=" << buffer_id;
 
@@ -269,17 +268,23 @@ void VideoCaptureClient::OnClientBufferFinished(
     return;
   }
 
-  video_capture_host_->ReleaseBuffer(DeviceId(), buffer_id, feedback);
+  video_capture_host_->ReleaseBuffer(DeviceId(), buffer_id, feedback_);
+  feedback_ = media::VideoFrameFeedback();
 }
 
 // static
 void VideoCaptureClient::DidFinishConsumingFrame(
-    const media::VideoFrameFeedback* feedback,
     BufferFinishedCallback callback) {
   // Note: This function may be called on any thread by the VideoFrame
-  // destructor.  |feedback| is still valid for read-access at this point.
+  // destructor.
   DCHECK(!callback.is_null());
-  std::move(callback).Run(*feedback);
+  std::move(callback).Run();
+}
+
+void VideoCaptureClient::ProcessFeedback(
+    const media::VideoFrameFeedback& feedback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  feedback_ = feedback;
 }
 
 }  // namespace mirroring

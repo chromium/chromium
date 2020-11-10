@@ -93,7 +93,8 @@ VideoSender::VideoSender(
     const CreateVideoEncodeAcceleratorCallback& create_vea_cb,
     const CreateVideoEncodeMemoryCallback& create_video_encode_mem_cb,
     CastTransport* const transport_sender,
-    PlayoutDelayChangeCB playout_delay_change_cb)
+    PlayoutDelayChangeCB playout_delay_change_cb,
+    media::VideoCaptureFeedbackCB feedback_callback)
     : FrameSender(
           cast_environment,
           transport_sender,
@@ -108,6 +109,7 @@ VideoSender::VideoSender(
       frames_in_encoder_(0),
       last_bitrate_(0),
       playout_delay_change_cb_(std::move(playout_delay_change_cb)),
+      feedback_cb_(feedback_callback),
       low_latency_mode_(false),
       last_reported_encoder_utilization_(-1.0),
       last_reported_lossy_utilization_(-1.0) {
@@ -326,10 +328,13 @@ void VideoSender::OnEncodedVideoFrame(
     // Key frames are artificially capped to 1.0 because their actual
     // utilization is atypical compared to the other frames in the stream, and
     // this can misguide the producer of the input video frames.
-    video_frame->feedback()->resource_utilization =
+    VideoFrameFeedback feedback;
+    feedback.resource_utilization =
         encoded_frame->dependency == EncodedFrame::KEY
             ? std::min(1.0, attenuated_utilization)
             : attenuated_utilization;
+    if (feedback_cb_)
+      feedback_cb_.Run(feedback);
   }
 
   SendEncodedFrame(encoder_bitrate, std::move(encoded_frame));

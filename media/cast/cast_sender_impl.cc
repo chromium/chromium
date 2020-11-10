@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/bind_helpers.h"
 #include "base/callback.h"
 #include "base/logging.h"
 #include "base/macros.h"
@@ -131,13 +132,15 @@ void CastSenderImpl::InitializeVideo(
 
   VLOG(1) << "CastSenderImpl@" << this << "::InitializeVideo()";
 
+  // No feedback callback, since it's ignored for CastSender.
   video_sender_ = std::make_unique<VideoSender>(
       cast_environment_, video_config,
       base::BindRepeating(&CastSenderImpl::OnVideoStatusChange,
                           weak_factory_.GetWeakPtr(), status_change_cb),
       create_vea_cb, create_video_encode_mem_cb, transport_sender_,
       base::BindRepeating(&CastSenderImpl::SetTargetPlayoutDelay,
-                          weak_factory_.GetWeakPtr()));
+                          weak_factory_.GetWeakPtr()),
+      media::VideoCaptureFeedbackCB());
   if (audio_sender_) {
     DCHECK(audio_sender_->GetTargetPlayoutDelay() ==
            video_sender_->GetTargetPlayoutDelay());

@@ -771,6 +771,8 @@ void Session::OnAnswer(const std::vector<FrameSenderConfig>& audio_configs,
                               weak_factory_.GetWeakPtr()),
           cast_transport_.get(),
           base::BindRepeating(&Session::SetTargetPlayoutDelay,
+                              weak_factory_.GetWeakPtr()),
+          base::BindRepeating(&Session::ProcessFeedback,
                               weak_factory_.GetWeakPtr()));
       video_stream_ = std::make_unique<VideoRtpStream>(
           std::move(video_sender), weak_factory_.GetWeakPtr());
@@ -832,6 +834,12 @@ void Session::SetTargetPlayoutDelay(base::TimeDelta playout_delay) {
     audio_stream_->SetTargetPlayoutDelay(playout_delay);
   if (video_stream_)
     video_stream_->SetTargetPlayoutDelay(playout_delay);
+}
+
+void Session::ProcessFeedback(const media::VideoFrameFeedback& feedback) {
+  if (video_capture_client_) {
+    video_capture_client_->ProcessFeedback(feedback);
+  }
 }
 
 // TODO(issuetracker.google.com/159352836): Refactor to use libcast's

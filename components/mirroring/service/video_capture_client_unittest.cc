@@ -61,7 +61,7 @@ class VideoCaptureClientTest : public ::testing::Test,
 
   MOCK_METHOD1(OnFrameReceived, void(const gfx::Size&));
   void OnFrameReady(scoped_refptr<media::VideoFrame> video_frame) {
-    *video_frame->feedback() = kFeedback;
+    client_->ProcessFeedback(kFeedback);
     OnFrameReceived(video_frame->coded_size());
   }
 

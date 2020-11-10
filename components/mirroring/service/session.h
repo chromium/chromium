@@ -20,6 +20,7 @@
 #include "components/mirroring/service/rtp_stream.h"
 #include "components/mirroring/service/wifi_status_monitor.h"
 #include "gpu/config/gpu_info.h"
+#include "media/base/video_frame_feedback.h"
 #include "media/cast/cast_environment.h"
 #include "media/cast/net/cast_transport_defines.h"
 #include "media/mojo/mojom/video_encode_accelerator.mojom.h"
@@ -140,6 +141,9 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) Session final
 
   // Callback by media::cast::VideoSender to set a new target playout delay.
   void SetTargetPlayoutDelay(base::TimeDelta playout_delay);
+
+  // Callback by media::cast::VideoSender to report resource utilization.
+  void ProcessFeedback(const media::VideoFrameFeedback& feedback);
 
   media::VideoEncodeAccelerator::SupportedProfiles GetSupportedVeaProfiles();
 

@@ -92,7 +92,7 @@ TEST_F(RtpStreamTest, VideoStreaming) {
   auto video_sender = std::make_unique<media::cast::VideoSender>(
       cast_environment_, media::cast::GetDefaultVideoSenderConfig(),
       base::DoNothing(), base::DoNothing(), base::DoNothing(), &transport_,
-      base::DoNothing());
+      base::DoNothing(), base::DoNothing());
   VideoRtpStream video_stream(std::move(video_sender), client_.GetWeakPtr());
   {
     base::RunLoop run_loop;
