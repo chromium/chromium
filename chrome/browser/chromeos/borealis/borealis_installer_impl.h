@@ -44,7 +44,7 @@ class BorealisInstallerImpl : public BorealisInstaller {
   ~BorealisInstallerImpl() override;
 
   void StartDlcInstallation();
-  void InstallationEnded(InstallationResult result);
+  void InstallationEnded(BorealisInstallResult result);
 
   void UpdateProgress(double state_progress);
   void UpdateInstallingState(InstallingState installing_state);
@@ -56,6 +56,7 @@ class BorealisInstallerImpl : public BorealisInstaller {
   State state_;
   InstallingState installing_state_;
   double progress_;
+  base::TimeTicks installation_start_tick_;
   Profile* profile_;
 
   base::WeakPtrFactory<BorealisInstallerImpl> weak_ptr_factory_;

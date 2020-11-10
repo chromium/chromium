@@ -21,6 +21,43 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histograms>
 
+<histogram name="Borealis.Install.NumAttempts" enum="BooleanAttempted"
+    expires_after="2021-11-01">
+  <owner>danielng@google.com</owner>
+  <owner>src/chrome/browser/chromeos/borealis/OWNERS</owner>
+  <summary>
+    The number of Borealis installation attempts. This is recorded each time a
+    user tries to install Borealis. Specifically, this metric is recorded when a
+    user clicks on the install or retry button in the Borealis installer. It is
+    intended that this metric is compared against the sum of
+    Borealis.Install.Result as a way to measure silent failures.
+  </summary>
+</histogram>
+
+<histogram name="Borealis.Install.OverallTime" units="ms"
+    expires_after="2021-11-01">
+  <owner>danielng@google.com</owner>
+  <owner>src/chrome/browser/chromeos/borealis/OWNERS</owner>
+  <summary>
+    Time taken for a successful installation. An install starts when the
+    &quot;install&quot; or &quot;retry&quot; installer buttons are clicked and
+    ends when the install completes successfully, at which point this metric is
+    recorded. Note that retries are considered as their own individual
+    installation attempts.
+  </summary>
+</histogram>
+
+<histogram name="Borealis.Install.Result" enum="BorealisInstallResult"
+    expires_after="2021-11-01">
+  <owner>danielng@google.com</owner>
+  <owner>src/chrome/browser/chromeos/borealis/OWNERS</owner>
+  <summary>
+    The installation result, for example, a successful install, a cancelled
+    install, or an error. This is recorded after an installation attempt has
+    ended.
+  </summary>
+</histogram>
+
 <histogram name="Borealis.Stability" enum="GuestOsFailureClasses"
     expires_after="2021-10-09">
   <owner>cpelling@google.com</owner>

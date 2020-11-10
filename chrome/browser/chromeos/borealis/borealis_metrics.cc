@@ -3,14 +3,34 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/chromeos/borealis/borealis_metrics.h"
+#include "base/metrics/histogram_functions.h"
 
 namespace borealis {
 
+const char kBorealisInstallNumAttemptsHistogram[] =
+    "Borealis.Install.NumAttempts";
+const char kBorealisInstallResultHistogram[] = "Borealis.Install.Result";
+const char kBorealisInstallOverallTimeHistogram[] =
+    "Borealis.Install.OverallTime";
 const char kBorealisStartupNumAttemptsHistogram[] =
     "Borealis.Startup.NumAttempts";
 const char kBorealisStartupResultHistogram[] = "Borealis.Startup.Result";
 const char kBorealisStartupOverallTimeHistogram[] =
     "Borealis.Startup.OverallTime";
+
+void RecordBorealisInstallNumAttemptsHistogram() {
+  base::UmaHistogramBoolean(kBorealisInstallNumAttemptsHistogram, true);
+}
+
+void RecordBorealisInstallResultHistogram(
+    BorealisInstallResult install_result) {
+  base::UmaHistogramEnumeration(kBorealisInstallResultHistogram,
+                                install_result);
+}
+
+void RecordBorealisInstallOverallTimeHistogram(base::TimeDelta install_time) {
+  base::UmaHistogramTimes(kBorealisInstallOverallTimeHistogram, install_time);
+}
 
 void RecordBorealisStartupNumAttemptsHistogram() {
   base::UmaHistogramBoolean(kBorealisStartupNumAttemptsHistogram, true);

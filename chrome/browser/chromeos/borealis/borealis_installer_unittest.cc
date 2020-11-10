@@ -6,9 +6,11 @@
 
 #include <memory>
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/chromeos/borealis/borealis_features.h"
 #include "chrome/browser/chromeos/borealis/borealis_installer_factory.h"
+#include "chrome/browser/chromeos/borealis/borealis_metrics.h"
 #include "chrome/browser/chromeos/borealis/borealis_prefs.h"
 #include "chrome/browser/chromeos/borealis/borealis_service.h"
 #include "chrome/browser/chromeos/borealis/borealis_util.h"
@@ -28,13 +30,13 @@ using ::testing::_;
 using ::testing::Mock;
 using ::testing::StrictMock;
 using InstallingState = BorealisInstaller::InstallingState;
-using InstallationResult = BorealisInstaller::InstallationResult;
+using BorealisInstallResult = BorealisInstallResult;
 
 class MockObserver : public BorealisInstaller::Observer {
  public:
   MOCK_METHOD1(OnProgressUpdated, void(double));
   MOCK_METHOD1(OnStateUpdated, void(InstallingState));
-  MOCK_METHOD1(OnInstallationEnded, void(InstallationResult));
+  MOCK_METHOD1(OnInstallationEnded, void(BorealisInstallResult));
   MOCK_METHOD0(OnCancelInitiated, void());
 };
 
@@ -46,6 +48,7 @@ class BorealisInstallerTest : public testing::Test {
  protected:
   void SetUp() override {
     chromeos::DBusThreadManager::Initialize();
+    histogram_tester_ = std::make_unique<base::HistogramTester>();
     CreateProfile();
 
     installer_ = BorealisInstallerFactory::GetForProfile(profile_.get());
@@ -64,6 +67,7 @@ class BorealisInstallerTest : public testing::Test {
   void TearDown() override {
     observer_.reset();
     profile_.reset();
+    histogram_tester_.reset();
 
     chromeos::DBusThreadManager::Shutdown();
     chromeos::DlcserviceClient::Shutdown();
@@ -103,6 +107,7 @@ class BorealisInstallerTest : public testing::Test {
   }
 
   std::unique_ptr<TestingProfile> profile_;
+  std::unique_ptr<base::HistogramTester> histogram_tester_;
   BorealisInstaller* installer_;
   std::unique_ptr<MockObserver> observer_;
   content::BrowserTaskEnvironment task_environment_;
@@ -127,12 +132,13 @@ class BorealisInstallerTest : public testing::Test {
 class BorealisInstallerTestDlc
     : public BorealisInstallerTest,
       public testing::WithParamInterface<
-          std::pair<std::string, InstallationResult>> {};
+          std::pair<std::string, BorealisInstallResult>> {};
 
 TEST_F(BorealisInstallerTest, BorealisNotAllowed) {
   feature_list_.InitAndDisableFeature(features::kBorealis);
 
-  EXPECT_CALL(*observer_, OnInstallationEnded(InstallationResult::kNotAllowed));
+  EXPECT_CALL(*observer_,
+              OnInstallationEnded(BorealisInstallResult::kBorealisNotAllowed));
 
   StartAndRunToCompletion();
   UpdateCurrentDlcs();
@@ -146,7 +152,7 @@ TEST_F(BorealisInstallerTest, SucessfulInstallation) {
   fake_dlcservice_client_->set_install_error(dlcservice::kErrorNone);
 
   ExpectObserverEventsUntil(InstallingState::kInstallingDlc);
-  EXPECT_CALL(*observer_, OnInstallationEnded(InstallationResult::kCompleted));
+  EXPECT_CALL(*observer_, OnInstallationEnded(BorealisInstallResult::kSuccess));
 
   StartAndRunToCompletion();
 
@@ -163,7 +169,8 @@ TEST_F(BorealisInstallerTest, CancelledInstallation) {
 
   ExpectObserverEventsUntil(InstallingState::kInstallingDlc);
   EXPECT_CALL(*observer_, OnCancelInitiated());
-  EXPECT_CALL(*observer_, OnInstallationEnded(InstallationResult::kCancelled));
+  EXPECT_CALL(*observer_,
+              OnInstallationEnded(BorealisInstallResult::kCancelled));
 
   installer_->Start();
   installer_->Cancel();
@@ -181,9 +188,10 @@ TEST_F(BorealisInstallerTest, InstallationInProgess) {
   fake_dlcservice_client_->set_install_error(dlcservice::kErrorNone);
 
   ExpectObserverEventsUntil(InstallingState::kInstallingDlc);
-  EXPECT_CALL(*observer_,
-              OnInstallationEnded(InstallationResult::kOperationInProgress));
-  EXPECT_CALL(*observer_, OnInstallationEnded(InstallationResult::kCompleted));
+  EXPECT_CALL(
+      *observer_,
+      OnInstallationEnded(BorealisInstallResult::kBorealisInstallInProgress));
+  EXPECT_CALL(*observer_, OnInstallationEnded(BorealisInstallResult::kSuccess));
 
   installer_->Start();
   installer_->Start();
@@ -211,7 +219,7 @@ TEST_F(BorealisInstallerTest, CancelledThenSuccessfulInstallation) {
       BorealisService::GetForProfile(profile_.get())->Features().IsEnabled());
 
   ExpectObserverEventsUntil(InstallingState::kInstallingDlc);
-  EXPECT_CALL(*observer_, OnInstallationEnded(InstallationResult::kCompleted));
+  EXPECT_CALL(*observer_, OnInstallationEnded(BorealisInstallResult::kSuccess));
 
   installer_->Start();
   task_environment_.RunUntilIdle();
@@ -221,6 +229,37 @@ TEST_F(BorealisInstallerTest, CancelledThenSuccessfulInstallation) {
   EXPECT_EQ(current_dlcs_.dlc_infos(0).id(), borealis::kBorealisDlcName);
   EXPECT_TRUE(
       BorealisService::GetForProfile(profile_.get())->Features().IsEnabled());
+}
+
+TEST_F(BorealisInstallerTest, SucessfulInstallationRecordMetrics) {
+  feature_list_.InitAndEnableFeature(features::kBorealis);
+  fake_dlcservice_client_->set_install_error(dlcservice::kErrorNone);
+
+  ExpectObserverEventsUntil(InstallingState::kInstallingDlc);
+  EXPECT_CALL(*observer_, OnInstallationEnded(BorealisInstallResult::kSuccess));
+  StartAndRunToCompletion();
+
+  histogram_tester_->ExpectTotalCount(kBorealisInstallNumAttemptsHistogram, 1);
+  histogram_tester_->ExpectUniqueSample(kBorealisInstallResultHistogram,
+                                        BorealisInstallResult::kSuccess, 1);
+  histogram_tester_->ExpectTotalCount(kBorealisInstallOverallTimeHistogram, 1);
+}
+
+TEST_F(BorealisInstallerTest, IncompleteInstallationRecordMetrics) {
+  feature_list_.InitAndEnableFeature(features::kBorealis);
+  // This error is arbitrarily chosen for simplicity.
+  fake_dlcservice_client_->set_install_error(dlcservice::kErrorInternal);
+
+  ExpectObserverEventsUntil(InstallingState::kInstallingDlc);
+  EXPECT_CALL(*observer_,
+              OnInstallationEnded(BorealisInstallResult::kDlcInternalError));
+  StartAndRunToCompletion();
+
+  histogram_tester_->ExpectTotalCount(kBorealisInstallNumAttemptsHistogram, 1);
+  histogram_tester_->ExpectUniqueSample(
+      kBorealisInstallResultHistogram, BorealisInstallResult::kDlcInternalError,
+      1);
+  histogram_tester_->ExpectTotalCount(kBorealisInstallOverallTimeHistogram, 0);
 }
 
 // Note that we don't check if the DLC has/hasn't been installed, since the
@@ -239,22 +278,22 @@ TEST_P(BorealisInstallerTestDlc, DlcError) {
 INSTANTIATE_TEST_SUITE_P(
     BorealisInstallerTestDlcErrors,
     BorealisInstallerTestDlc,
-    testing::Values(std::pair<std::string, InstallationResult>(
+    testing::Values(std::pair<std::string, BorealisInstallResult>(
                         dlcservice::kErrorInternal,
-                        InstallationResult::kDlcInternal),
-                    std::pair<std::string, InstallationResult>(
+                        BorealisInstallResult::kDlcInternalError),
+                    std::pair<std::string, BorealisInstallResult>(
                         dlcservice::kErrorInvalidDlc,
-                        InstallationResult::kDlcUnsupported),
-                    std::pair<std::string, InstallationResult>(
+                        BorealisInstallResult::kDlcUnsupportedError),
+                    std::pair<std::string, BorealisInstallResult>(
                         dlcservice::kErrorBusy,
-                        InstallationResult::kDlcBusy),
-                    std::pair<std::string, InstallationResult>(
+                        BorealisInstallResult::kDlcBusyError),
+                    std::pair<std::string, BorealisInstallResult>(
                         dlcservice::kErrorNeedReboot,
-                        InstallationResult::kDlcNeedReboot),
-                    std::pair<std::string, InstallationResult>(
+                        BorealisInstallResult::kDlcNeedRebootError),
+                    std::pair<std::string, BorealisInstallResult>(
                         dlcservice::kErrorAllocation,
-                        InstallationResult::kDlcNeedSpace),
-                    std::pair<std::string, InstallationResult>(
+                        BorealisInstallResult::kDlcNeedSpaceError),
+                    std::pair<std::string, BorealisInstallResult>(
                         "unkown",
-                        InstallationResult::kDlcUnknown)));
+                        BorealisInstallResult::kDlcUnknownError)));
 }  // namespace borealis

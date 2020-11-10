@@ -11,25 +11,13 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "chrome/browser/chromeos/borealis/borealis_metrics.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace borealis {
 
 class BorealisInstaller : public KeyedService {
  public:
-  enum class InstallationResult {
-    kCompleted,
-    kCancelled,
-    kNotAllowed,
-    kOperationInProgress,
-    kDlcInternal,
-    kDlcUnsupported,
-    kDlcBusy,
-    kDlcNeedReboot,
-    kDlcNeedSpace,
-    kDlcUnknown,
-  };
-
   enum class InstallingState {
     kInactive,
     kInstallingDlc,
@@ -40,7 +28,7 @@ class BorealisInstaller : public KeyedService {
    public:
     virtual void OnProgressUpdated(double fraction_complete) = 0;
     virtual void OnStateUpdated(InstallingState new_state) = 0;
-    virtual void OnInstallationEnded(InstallationResult result) = 0;
+    virtual void OnInstallationEnded(BorealisInstallResult result) = 0;
     virtual void OnCancelInitiated() = 0;
   };
 

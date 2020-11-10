@@ -8,6 +8,7 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "chrome/browser/chromeos/borealis/borealis_installer_impl.h"
+#include "chrome/browser/chromeos/borealis/borealis_metrics.h"
 #include "ui/views/window/dialog_delegate.h"
 
 namespace views {
@@ -45,8 +46,7 @@ class BorealisInstallerView : public views::DialogDelegateView,
   void OnStateUpdated(
       borealis::BorealisInstaller::InstallingState new_state) override;
   void OnProgressUpdated(double fraction_complete) override;
-  void OnInstallationEnded(
-      borealis::BorealisInstaller::InstallationResult result) override;
+  void OnInstallationEnded(borealis::BorealisInstallResult result) override;
   void OnCancelInitiated() override {}
 
   // Public for testing purposes.
@@ -96,7 +96,7 @@ class BorealisInstallerView : public views::DialogDelegateView,
   borealis::BorealisInstaller* borealis_installer_ = nullptr;
   State state_ = State::kConfirmInstall;
   InstallingState installing_state_ = InstallingState::kInactive;
-  base::Optional<borealis::BorealisInstaller::InstallationResult> result_;
+  base::Optional<borealis::BorealisInstallResult> result_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_BOREALIS_BOREALIS_INSTALLER_VIEW_H_

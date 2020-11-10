@@ -8724,6 +8724,21 @@ Called by update_bad_message_reasons.py.-->
   <int value="1" label="Yes"/>
 </enum>
 
+<enum name="BorealisInstallResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="User cancelled installation"/>
+  <int value="2" label="Borealis is not allowed"/>
+  <int value="3" label="Installation already in progress"/>
+  <int value="4" label="DLC reported an internal error"/>
+  <int value="5" label="Borealis DLC is not supported"/>
+  <int value="6" label="DLC service is busy"/>
+  <int value="7"
+      label="Device has a pending update and needs to be restarted to use
+             Borealis DLC"/>
+  <int value="8" label="Device needs more space to use Borealis DLC"/>
+  <int value="9" label="DLC faced an unknown error"/>
+</enum>
+
 <enum name="BorealisStartupResult">
   <int value="0" label="Success"/>
   <int value="1" label="Cancelled"/>
