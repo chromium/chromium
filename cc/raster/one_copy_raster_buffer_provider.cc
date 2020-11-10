@@ -16,6 +16,8 @@
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/process_memory_dump.h"
 #include "base/trace_event/trace_event.h"
+#include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "cc/base/histograms.h"
 #include "cc/base/math_util.h"
 #include "components/viz/common/gpu/context_provider.h"
@@ -423,7 +425,7 @@ gpu::SyncToken OneCopyRasterBufferProvider::CopyOnWorkerThread(
     query_target = GL_COMMANDS_COMPLETED_CHROMIUM;
   }
 
-#if defined(OS_CHROMEOS) && defined(ARCH_CPU_ARM_FAMILY)
+#if BUILDFLAG(IS_CHROMEOS_ASH) && defined(ARCH_CPU_ARM_FAMILY)
   // TODO(reveman): This avoids a performance problem on ARM ChromeOS devices.
   // https://crbug.com/580166
   query_target = GL_COMMANDS_ISSUED_CHROMIUM;

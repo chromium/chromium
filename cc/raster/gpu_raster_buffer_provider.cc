@@ -17,6 +17,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/process_memory_dump.h"
 #include "base/trace_event/trace_event.h"
+#include "build/chromeos_buildflags.h"
 #include "cc/base/histograms.h"
 #include "cc/paint/display_item_list.h"
 #include "cc/paint/paint_canvas.h"
@@ -310,7 +311,7 @@ GpuRasterBufferProvider::RasterBufferImpl::RasterBufferImpl(
       texture_target_(backing->texture_target),
       texture_is_overlay_candidate_(backing->overlay_candidate),
       mailbox_(backing->mailbox) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Only do this in Chrome OS with OOP-R because:
   //   1) We will use this timestamp to measure raster scheduling delay and we
   //      only need to collect that data to assess the impact of hardware
@@ -554,7 +555,7 @@ gpu::SyncToken GpuRasterBufferProvider::PlaybackOnWorkerThreadInternal(
       << "Why are we rastering a tile that's not dirty?";
 
   if (measure_raster_metric) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     // Use a query to detect when the GPU side is ready to start issuing raster
     // work to the driver. We will use the resulting timestamp to measure raster
     // scheduling delay. We only care about this in Chrome OS and when OOP-R is

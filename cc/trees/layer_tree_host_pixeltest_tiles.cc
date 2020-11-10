@@ -5,6 +5,7 @@
 #include <stddef.h>
 
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "cc/layers/content_layer_client.h"
 #include "cc/layers/picture_layer.h"
 #include "cc/paint/display_item_list.h"
@@ -239,7 +240,7 @@ INSTANTIATE_TEST_SUITE_P(All,
                          ::testing::ValuesIn(kTestCases),
                          ::testing::PrintToStringParamName());
 
-#if defined(OS_CHROMEOS) || defined(MEMORY_SANITIZER) || \
+#if BUILDFLAG(IS_CHROMEOS_ASH) || defined(MEMORY_SANITIZER) || \
     defined(ADDRESS_SANITIZER) || defined(OS_FUCHSIA)
 // TODO(crbug.com/1045521): Flakes on all slower bots.
 #define MAYBE_PartialRaster DISABLED_PartialRaster
@@ -286,7 +287,7 @@ INSTANTIATE_TEST_SUITE_P(All,
 #if (defined(OS_LINUX) || defined(OS_CHROMEOS)) && defined(THREAD_SANITIZER)
 // Flaky on Linux TSAN. https://crbug.com/707711
 #define MAYBE_PartialRaster DISABLED_PartialRaster
-#elif defined(OS_CHROMEOS) || defined(MEMORY_SANITIZER) || \
+#elif BUILDFLAG(IS_CHROMEOS_ASH) || defined(MEMORY_SANITIZER) || \
     defined(ADDRESS_SANITIZER) || defined(OS_FUCHSIA)
 // TODO(crbug.com/1045521): Flakes on all slower bots.
 #define MAYBE_PartialRaster DISABLED_PartialRaster

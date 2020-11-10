@@ -417,6 +417,7 @@ cc_component("cc") {
   deps = [
     "//base",
     "//base/third_party/dynamic_annotations",
+    "//build:chromeos_buildflags",
     "//components/viz/client",
     "//device/base/synchronization",
     "//gpu",
@@ -800,6 +801,7 @@ cc_test("cc_unittests") {
     ":cc",
     ":test_support",
     "//base/test:test_support",
+    "//build:chromeos_buildflags",
     "//cc/mojo_embedder",
     "//cc/paint",
     "//components/ukm:test_support",
