@@ -46,15 +46,6 @@ class AshChromeServiceImpl : public mojom::AshChromeService {
       mojo::PendingReceiver<device::mojom::HidManager> receiver) override;
   void BindFeedback(mojo::PendingReceiver<mojom::Feedback> receiver) override;
   void OnLacrosStartup(mojom::LacrosInfoPtr lacros_info) override;
-  void BindMediaSessionController(
-      mojo::PendingReceiver<media_session::mojom::MediaControllerManager>
-          receiver) override;
-  void BindMediaSessionAudioFocus(
-      mojo::PendingReceiver<media_session::mojom::AudioFocusManager> receiver)
-      override;
-  void BindMediaSessionAudioFocusDebug(
-      mojo::PendingReceiver<media_session::mojom::AudioFocusManagerDebug>
-          receiver) override;
 
  private:
   mojo::Receiver<mojom::AshChromeService> receiver_;

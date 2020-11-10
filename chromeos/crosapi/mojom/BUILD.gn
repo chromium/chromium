@@ -39,7 +39,6 @@ mojom("mojom") {
   public_deps = [
     "//mojo/public/mojom/base",
     "//services/device/public/mojom:mojom",
-    "//services/media_session/public/mojom:mojom",
     "//ui/gfx/image/mojom",
     "//url/mojom:url_mojom_gurl",
   ]

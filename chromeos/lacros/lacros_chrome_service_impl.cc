@@ -180,30 +180,6 @@ class LacrosChromeServiceNeverBlockingState
     ash_chrome_service_->BindFileManager(std::move(pending_receiver));
   }
 
-  void BindMediaSessionAudioFocusReceiver(
-      mojo::PendingReceiver<media_session::mojom::AudioFocusManager>
-          pending_receiver) {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    ash_chrome_service_->BindMediaSessionAudioFocus(
-        std::move(pending_receiver));
-  }
-
-  void BindMediaSessionAudioFocusDebugReceiver(
-      mojo::PendingReceiver<media_session::mojom::AudioFocusManagerDebug>
-          pending_receiver) {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    ash_chrome_service_->BindMediaSessionAudioFocusDebug(
-        std::move(pending_receiver));
-  }
-
-  void BindMediaSessionControllerReceiver(
-      mojo::PendingReceiver<media_session::mojom::MediaControllerManager>
-          pending_receiver) {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    ash_chrome_service_->BindMediaSessionController(
-        std::move(pending_receiver));
-  }
-
   base::WeakPtr<LacrosChromeServiceNeverBlockingState> GetWeakPtr() {
     return weak_factory_.GetWeakPtr();
   }
@@ -419,53 +395,6 @@ bool LacrosChromeServiceImpl::IsFileManagerAvailable() {
 
 bool LacrosChromeServiceImpl::IsScreenManagerAvailable() {
   return AshChromeServiceVersion() >= 0;
-}
-
-bool LacrosChromeServiceImpl::IsMediaSessionAudioFocusAvailable() {
-  return AshChromeServiceVersion() >= 6;
-}
-
-void LacrosChromeServiceImpl::BindAudioFocusManager(
-    mojo::PendingReceiver<media_session::mojom::AudioFocusManager> remote) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(affine_sequence_checker_);
-  DCHECK(IsMediaSessionAudioFocusAvailable());
-
-  never_blocking_sequence_->PostTask(
-      FROM_HERE, base::BindOnce(&LacrosChromeServiceNeverBlockingState::
-                                    BindMediaSessionAudioFocusReceiver,
-                                weak_sequenced_state_, std::move(remote)));
-}
-
-bool LacrosChromeServiceImpl::IsMediaSessionAudioFocusDebugAvailable() {
-  return AshChromeServiceVersion() >= 6;
-}
-
-void LacrosChromeServiceImpl::BindAudioFocusManagerDebug(
-    mojo::PendingReceiver<media_session::mojom::AudioFocusManagerDebug>
-        remote) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(affine_sequence_checker_);
-  DCHECK(IsMediaSessionAudioFocusAvailable());
-
-  never_blocking_sequence_->PostTask(
-      FROM_HERE, base::BindOnce(&LacrosChromeServiceNeverBlockingState::
-                                    BindMediaSessionAudioFocusDebugReceiver,
-                                weak_sequenced_state_, std::move(remote)));
-}
-
-bool LacrosChromeServiceImpl::IsMediaSessionControllerAvailable() {
-  return AshChromeServiceVersion() >= 6;
-}
-
-void LacrosChromeServiceImpl::BindMediaControllerManager(
-    mojo::PendingReceiver<media_session::mojom::MediaControllerManager>
-        remote) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(affine_sequence_checker_);
-  DCHECK(IsMediaSessionAudioFocusAvailable());
-
-  never_blocking_sequence_->PostTask(
-      FROM_HERE, base::BindOnce(&LacrosChromeServiceNeverBlockingState::
-                                    BindMediaSessionControllerReceiver,
-                                weak_sequenced_state_, std::move(remote)));
 }
 
 bool LacrosChromeServiceImpl::IsOnLacrosStartupAvailable() {
