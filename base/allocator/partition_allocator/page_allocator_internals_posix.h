@@ -19,6 +19,7 @@
 #include "base/mac/mac_util.h"
 #include "base/mac/scoped_cftyperef.h"
 
+#include <Availability.h>
 #include <Security/Security.h>
 #include <mach/mach.h>
 #endif
@@ -36,6 +37,24 @@
 #ifndef MAP_ANONYMOUS
 #define MAP_ANONYMOUS MAP_ANON
 #endif
+
+#if defined(OS_APPLE)
+
+// SecTaskGetCodeSignStatus is marked as unavailable on macOS, although it’s
+// available on iOS and other Apple operating systems. It is, in fact, present
+// on the system since macOS 10.12.
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wavailability"
+uint32_t SecTaskGetCodeSignStatus(SecTaskRef task)
+#if __MAC_OS_X_VERSION_MIN_REQUIRED < __MAC_10_12
+    // When redeclaring something previously declared as unavailable, the
+    // weak_import attribute won’t be applied unless manually set.
+    __attribute__((weak_import))
+#endif  // DT < 10.12
+    API_AVAILABLE(macos(10.12));
+#pragma clang diagnostic pop
+
+#endif  // OS_APPLE
 
 namespace base {
 
@@ -67,19 +86,50 @@ const char* PageTagToName(PageTag tag) {
 
 #if defined(OS_APPLE)
 // Tests whether the version of macOS supports the MAP_JIT flag and if the
-// current process is signed with the allow-jit entitlement.
+// current process is signed with the hardened runtime and the allow-jit
+// entitlement, returning whether MAP_JIT should be used to allocate regions
+// that will contain JIT-compiled executable code.
 bool UseMapJit() {
-  if (!mac::IsAtLeastOS10_14())
+  if (!mac::IsAtLeastOS10_14()) {
+    // MAP_JIT existed before macOS 10.14, but had somewhat different semantics.
+    // Only one MAP_JIT region was permitted per process, but calling code here
+    // will very likely require more than one such region. Since MAP_JIT is not
+    // strictly necessary to write code to a region and then execute it on these
+    // older OSes, don’t use it at all.
     return false;
+  }
+
+  // Until determining that the hardened runtime is enabled, early returns will
+  // return true, so that MAP_JIT will be used. This is important on arm64,
+  // which only allows pages to be simultaneously writable and executable when
+  // in a region allocated with MAP_JIT, regardless of code signing options. On
+  // arm64, an attempt to set a non-MAP_JIT page as simultaneously writable and
+  // executable fails with EPERM. Although this is not enforced on x86_64,
+  // MAP_JIT is harmless in that case.
 
   ScopedCFTypeRef<SecTaskRef> task(SecTaskCreateFromSelf(kCFAllocatorDefault));
-  ScopedCFTypeRef<CFErrorRef> error;
-  ScopedCFTypeRef<CFTypeRef> value(SecTaskCopyValueForEntitlement(
-      task.get(), CFSTR("com.apple.security.cs.allow-jit"),
-      error.InitializeInto()));
-  if (error)
+  if (!task) {
+    return true;
+  }
+
+  uint32_t flags = SecTaskGetCodeSignStatus(task);
+  if ((flags & kSecCodeSignatureRuntime) != 0) {
+    // The hardened runtime is not enabled. Note that kSecCodeSignatureRuntime
+    // == CS_RUNTIME.
+    return true;
+  }
+
+  // The hardened runtime is enabled. From this point on, early returns must
+  // return false, indicating that MAP_JIT is not to be used. It’s an error
+  // (EINVAL) to use MAP_JIT with the hardened runtime unless the JIT
+  // entitlement is specified.
+
+  ScopedCFTypeRef<CFTypeRef> jit_entitlement(SecTaskCopyValueForEntitlement(
+      task.get(), CFSTR("com.apple.security.cs.allow-jit"), nullptr));
+  if (!jit_entitlement)
     return false;
-  return mac::CFCast<CFBooleanRef>(value.get()) == kCFBooleanTrue;
+
+  return mac::CFCast<CFBooleanRef>(jit_entitlement.get()) == kCFBooleanTrue;
 }
 #endif  // defined(OS_APPLE)
 
