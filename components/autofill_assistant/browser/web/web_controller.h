@@ -431,6 +431,13 @@ class WebController {
                               base::TimeDelta)> callback,
       const ClientStatus& status,
       std::unique_ptr<ElementFinder::Result> element);
+  void OnWaitForDocumentReadyState(
+      base::OnceCallback<void(const ClientStatus&,
+                              DocumentReadyState,
+                              base::TimeDelta)> callback,
+      base::TimeTicks wait_start_time,
+      const DevtoolsClient::ReplyStatus& reply_status,
+      std::unique_ptr<runtime::EvaluateResult> result);
 
   // Wrapper for calling the |callback| after re-enabling the keyboard by
   // setting the assistant action state to "not running".

@@ -223,18 +223,20 @@ std::string DocumentReadyStateToQuotedJsString(int state) {
 
 // Appends to |out| the definition of a function that'll wait for a
 // ready state, expressed as a DocumentReadyState enum value.
-void AppendWaitForDocumentReadyStateFunction(std::string* out) {
+void AppendWaitForDocumentReadyStateFunction(DocumentReadyState min_ready_state,
+                                             std::string* out) {
   // quoted_names covers all possible DocumentReadyState values.
   std::vector<std::string> quoted_names(DOCUMENT_MAX_READY_STATE + 1);
   for (int i = 0; i <= DOCUMENT_MAX_READY_STATE; i++) {
     quoted_names[i] = DocumentReadyStateToQuotedJsString(i);
   }
-  base::StrAppend(out, {R"(function (minReadyStateNum) {
+  base::StrAppend(
+      out, {R"((function (minReadyStateNum) {
   return new Promise((fulfill, reject) => {
     let handler = function(event) {
       let readyState = document.readyState;
       let readyStates = [)",
-                        base::JoinString(quoted_names, ", "), R"(];
+            base::JoinString(quoted_names, ", "), R"(];
       let readyStateNum = readyStates.indexOf(readyState);
       if (readyStateNum == -1) readyStateNum = 0;
       if (readyStateNum >= minReadyStateNum) {
@@ -245,27 +247,8 @@ void AppendWaitForDocumentReadyStateFunction(std::string* out) {
     document.addEventListener('readystatechange', handler)
     handler();
   })
-})"});
-}
-
-// Forward the result of WaitForDocumentReadyState to the callback. The same
-// code work on both EvaluateResult and CallFunctionOnResult.
-template <typename T>
-void OnWaitForDocumentReadyState(
-    base::OnceCallback<void(const ClientStatus&,
-                            DocumentReadyState,
-                            base::TimeDelta)> callback,
-    base::TimeTicks wait_start_time,
-    const DevtoolsClient::ReplyStatus& reply_status,
-    std::unique_ptr<T> result) {
-  ClientStatus status =
-      CheckJavaScriptResult(reply_status, result.get(), __FILE__, __LINE__);
-  VLOG_IF(1, !status.ok()) << __func__
-                           << " Failed to get document ready state.";
-  int ready_state;
-  SafeGetIntValue(result->GetResult(), &ready_state);
-  std::move(callback).Run(status, static_cast<DocumentReadyState>(ready_state),
-                          base::TimeTicks::Now() - wait_start_time);
+}))",
+            base::StringPrintf("(%d)", static_cast<int>(min_ready_state))});
 }
 
 void WrapCallbackNoWait(
@@ -748,20 +731,8 @@ void WebController::WaitForDocumentReadyState(
                             DocumentReadyState,
                             base::TimeDelta)> callback) {
   if (optional_frame.empty()) {
-    std::string expression;
-    expression.append("(");
-    AppendWaitForDocumentReadyStateFunction(&expression);
-    base::StringAppendF(&expression, ")(%d)",
-                        static_cast<int>(min_ready_state));
-    devtools_client_->GetRuntime()->Evaluate(
-        runtime::EvaluateParams::Builder()
-            .SetExpression(expression)
-            .SetReturnByValue(true)
-            .SetAwaitPromise(true)
-            .Build(),
-        /* node_frame_id= */ std::string(),
-        base::BindOnce(&OnWaitForDocumentReadyState<runtime::EvaluateResult>,
-                       std::move(callback), base::TimeTicks::Now()));
+    OnFindElementForWaitForDocumentReadyState(
+        min_ready_state, std::move(callback), OkClientStatus(), nullptr);
     return;
   }
   FindElement(
@@ -784,23 +755,35 @@ void WebController::OnFindElementForWaitForDocumentReadyState(
     return;
   }
 
-  std::string function_declaration;
-  AppendWaitForDocumentReadyStateFunction(&function_declaration);
-
-  std::vector<std::unique_ptr<runtime::CallArgument>> arguments;
-  AddRuntimeCallArgument(static_cast<int>(min_ready_state), &arguments);
-  devtools_client_->GetRuntime()->CallFunctionOn(
-      runtime::CallFunctionOnParams::Builder()
-          .SetObjectId(element ? element->object_id : "")
-          .SetFunctionDeclaration(function_declaration)
-          .SetArguments(std::move(arguments))
+  std::string expression;
+  AppendWaitForDocumentReadyStateFunction(min_ready_state, &expression);
+  devtools_client_->GetRuntime()->Evaluate(
+      runtime::EvaluateParams::Builder()
+          .SetExpression(expression)
           .SetReturnByValue(true)
           .SetAwaitPromise(true)
           .Build(),
-      element->node_frame_id,
-      base::BindOnce(
-          &OnWaitForDocumentReadyState<runtime::CallFunctionOnResult>,
-          std::move(callback), base::TimeTicks::Now()));
+      /* node_frame_id= */ element ? element->node_frame_id : std::string(),
+      base::BindOnce(&WebController::OnWaitForDocumentReadyState,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                     base::TimeTicks::Now()));
+}
+
+void WebController::OnWaitForDocumentReadyState(
+    base::OnceCallback<void(const ClientStatus&,
+                            DocumentReadyState,
+                            base::TimeDelta)> callback,
+    base::TimeTicks wait_start_time,
+    const DevtoolsClient::ReplyStatus& reply_status,
+    std::unique_ptr<runtime::EvaluateResult> result) {
+  ClientStatus status =
+      CheckJavaScriptResult(reply_status, result.get(), __FILE__, __LINE__);
+  VLOG_IF(1, !status.ok()) << __func__
+                           << " Failed to get document ready state.";
+  int ready_state;
+  SafeGetIntValue(result->GetResult(), &ready_state);
+  std::move(callback).Run(status, static_cast<DocumentReadyState>(ready_state),
+                          base::TimeTicks::Now() - wait_start_time);
 }
 
 void WebController::FindElement(const Selector& selector,

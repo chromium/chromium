@@ -2054,20 +2054,35 @@ IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest,
-                       WaitFrameDocumentReadyStateLoaded) {
+                       WaitFrameDocumentReadyStateComplete) {
   ClientStatus status;
   DocumentReadyState end_state;
   base::RunLoop run_loop;
   web_controller_->WaitForDocumentReadyState(
-      Selector({"#iframe"}), DOCUMENT_LOADED,
+      Selector({"#iframe"}), DOCUMENT_COMPLETE,
       base::BindOnce(&WebControllerBrowserTest::OnClientStatusAndReadyState,
                      base::Unretained(this), run_loop.QuitClosure(), &status,
                      &end_state));
   run_loop.Run();
 
   EXPECT_EQ(ACTION_APPLIED, status.proto_status()) << "Status: " << status;
-  EXPECT_THAT(end_state,
-              AnyOf(DOCUMENT_LOADED, DOCUMENT_INTERACTIVE, DOCUMENT_COMPLETE));
+  EXPECT_THAT(end_state, DOCUMENT_COMPLETE);
+}
+
+IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest,
+                       WaitExternalFrameDocumentReadyStateComplete) {
+  ClientStatus status;
+  DocumentReadyState end_state;
+  base::RunLoop run_loop;
+  web_controller_->WaitForDocumentReadyState(
+      Selector({"#iframeExternal"}), DOCUMENT_COMPLETE,
+      base::BindOnce(&WebControllerBrowserTest::OnClientStatusAndReadyState,
+                     base::Unretained(this), run_loop.QuitClosure(), &status,
+                     &end_state));
+  run_loop.Run();
+
+  EXPECT_EQ(ACTION_APPLIED, status.proto_status()) << "Status: " << status;
+  EXPECT_THAT(end_state, DOCUMENT_COMPLETE);
 }
 
 IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, GetElementRect) {
