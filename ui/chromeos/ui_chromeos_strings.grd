@@ -740,7 +740,7 @@
         German (Belgium)
       </message>
       <message name="IDS_IME_NAME_KEYBOARD_BRAZILIAN" desc="The input method name shows in system tray menu and settings page.">
-        Brazilian keyboard
+        Portuguese (Brazil)
       </message>
       <message name="IDS_IME_NAME_KEYBOARD_BULGARIAN" desc="The input method name shows in system tray menu and settings page.">
         Bulgarian
@@ -860,10 +860,10 @@
         Norwegian
       </message>
       <message name="IDS_IME_NAME_KEYBOARD_POLISH" desc="The input method name shows in system tray menu and settings page.">
-        Polish keyboard
+        Polish
       </message>
       <message name="IDS_IME_NAME_KEYBOARD_PORTUGUESE" desc="The input method name shows in system tray menu and settings page.">
-        Portuguese keyboard
+        Portuguese (Portugal)
       </message>
       <message name="IDS_IME_NAME_KEYBOARD_PORTUGUESE_US_INTERNATIONAL" desc="The input method name shows in system tray menu and settings page.">
         Portuguese with US International keyboard
@@ -872,22 +872,22 @@
         Portuguese with US International PC keyboard
       </message>
       <message name="IDS_IME_NAME_KEYBOARD_ROMANIAN" desc="The input method name shows in system tray menu and settings page.">
-        Romanian keyboard
+        Romanian
       </message>
       <message name="IDS_IME_NAME_KEYBOARD_ROMANIAN_STANDARD" desc="The input method name shows in system tray menu and settings page.">
-        Romanian standard keyboard
+        Romanian with Standard keyboard
       </message>
       <message name="IDS_IME_NAME_KEYBOARD_RUSSIAN" desc="The input method name shows in system tray menu and settings page.">
-        Russian keyboard
+        Russian
       </message>
       <message name="IDS_IME_NAME_KEYBOARD_RUSSIAN_PHONETIC" desc="The input method name shows in system tray menu and settings page.">
-        Russian Phonetic keyboard
+        Russian with Phonetic keyboard
       </message>
       <message name="IDS_IME_NAME_KEYBOARD_RUSSIAN_PHONETIC_AATSEEL" desc="The input method name shows in system tray menu and settings page.">
-        Russian Phonetic (AATSEEL) keyboard
+        Russian with Phonetic AATSEEL keyboard
       </message>
       <message name="IDS_IME_NAME_KEYBOARD_RUSSIAN_PHONETIC_YAZHERT" desc="The input method name shows in system tray menu and settings page.">
-        Russian Phonetic (YaZHert) keyboard
+        Russian with Phonetic YaZHert keyboard
       </message>
       <message name="IDS_IME_NAME_KEYBOARD_SERBIAN" desc="The input method name shows in system tray menu and settings page.">
         Serbian
@@ -1057,7 +1057,7 @@
         Nepali with Phonetic keyboard
       </message>
       <message name="IDS_IME_NAME_KEYBOARD_PERSIAN" desc="The input method name shows in system tray menu and settings page.">
-        Persian keyboard
+        Persian
       </message>
       <message name="IDS_IME_NAME_KEYBOARD_SINHALA" desc="The input method name shows in system tray menu and settings page.">
         Sinhala
@@ -1147,8 +1147,8 @@
       <message name="IDS_IME_NAME_TRANSLITERATION_OR" desc="The input method name shows in system tray menu and settings page.">
         Odia
       </message>
-      <message name="IDS_IME_NAME_TRANSLITERATION_PA" desc="The input method name shows in system tray menu and settings page. Please translate only for 'transliteration'.">
-        Transliteration (mausam &#x2192; &#x0a2e;&#x0a4c;&#x0a38;&#x0a2e;)
+      <message name="IDS_IME_NAME_TRANSLITERATION_PA" desc="The input method name shows in system tray menu and settings page.">
+        Punjabi
       </message>
       <message name="IDS_IME_NAME_TRANSLITERATION_SA" desc="The input method name shows in system tray menu and settings page.">
         Sanskrit
