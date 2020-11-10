@@ -55,6 +55,20 @@ suite('InternetSubpage', function() {
     internetSubpage.deviceState = mojoApi_.getDeviceStateForTest(type);
   }
 
+  function setCellularNetworks() {
+    const mojom = chromeos.networkConfig.mojom;
+    mojoApi_.setNetworkTypeEnabledState(mojom.NetworkType.kTether);
+    setNetworksForTest(mojom.NetworkType.kCellular, [
+      OncMojo.getDefaultNetworkState(mojom.NetworkType.kCellular, 'cellular1'),
+      OncMojo.getDefaultNetworkState(mojom.NetworkType.kTether, 'tether1'),
+      OncMojo.getDefaultNetworkState(mojom.NetworkType.kTether, 'tether2'),
+    ]);
+    internetSubpage.tetherDeviceState = {
+      type: mojom.NetworkType.kTether,
+      deviceState: mojom.DeviceStateType.kEnabled
+    };
+  }
+
   function initSubpage(isUpdatedCellularUiEnabled) {
     if (isUpdatedCellularUiEnabled !== undefined) {
       loadTimeData.overrideValues(
@@ -118,7 +132,7 @@ suite('InternetSubpage', function() {
     });
 
     test('Tether', function() {
-      initSubpage();
+      initSubpage(false);
       const mojom = chromeos.networkConfig.mojom;
       setNetworksForTest(mojom.NetworkType.kTether, [
         OncMojo.getDefaultNetworkState(mojom.NetworkType.kTether, 'tether1'),
@@ -167,7 +181,7 @@ suite('InternetSubpage', function() {
     });
 
     test('Fire show cellular setup event on add cellular clicked', () => {
-      initSubpage();
+      initSubpage(true);
       const mojom = chromeos.networkConfig.mojom;
       mojoApi_.setNetworkTypeEnabledState(mojom.NetworkType.kCellular);
       setNetworksForTest(mojom.NetworkType.kCellular, [
@@ -193,33 +207,45 @@ suite('InternetSubpage', function() {
       });
     });
 
-    test('Tether plus Cellular', function() {
-      initSubpage(false /* isUpdatedCellularUiEnabled */);
-      const mojom = chromeos.networkConfig.mojom;
-      mojoApi_.setNetworkTypeEnabledState(mojom.NetworkType.kTether);
-      setNetworksForTest(mojom.NetworkType.kCellular, [
-        OncMojo.getDefaultNetworkState(
-            mojom.NetworkType.kCellular, 'cellular1'),
-        OncMojo.getDefaultNetworkState(mojom.NetworkType.kTether, 'tether1'),
-        OncMojo.getDefaultNetworkState(mojom.NetworkType.kTether, 'tether2'),
-      ]);
-      internetSubpage.tetherDeviceState = {
-        type: mojom.NetworkType.kTether,
-        deviceState: mojom.DeviceStateType.kEnabled
-      };
-      return flushAsync().then(() => {
-        assertEquals(3, internetSubpage.networkStateList_.length);
-        const toggle = internetSubpage.$$('#deviceEnabledButton');
-        assertTrue(!!toggle);
-        assertFalse(toggle.disabled);
-        const networkList = internetSubpage.$$('#networkList');
-        assertTrue(!!networkList);
-        assertEquals(3, networkList.networks.length);
-        const tetherToggle = internetSubpage.$$('#tetherEnabledButton');
-        assertTrue(!!tetherToggle);
-        assertFalse(tetherToggle.disabled);
-      });
-    });
+    test(
+        'Tether plus Cellular with updatedCellularActivationUi false',
+        function() {
+          initSubpage(false /* isUpdatedCellularUiEnabled */);
+          const mojom = chromeos.networkConfig.mojom;
+          setCellularNetworks();
+          return flushAsync().then(() => {
+            assertEquals(3, internetSubpage.networkStateList_.length);
+            const toggle = internetSubpage.$$('#deviceEnabledButton');
+            assertTrue(!!toggle);
+            assertFalse(toggle.disabled);
+            const networkList = internetSubpage.$$('#networkList');
+            assertTrue(!!networkList);
+            assertEquals(3, networkList.networks.length);
+            const tetherToggle = internetSubpage.$$('#tetherEnabledButton');
+            assertTrue(!!tetherToggle);
+            assertFalse(tetherToggle.disabled);
+          });
+        });
+
+    test(
+        'Tether plus Cellular with updatedCellularActivationUi true',
+        function() {
+          initSubpage(true /* isUpdatedCellularUiEnabled */);
+          const mojom = chromeos.networkConfig.mojom;
+          setCellularNetworks();
+          return flushAsync().then(() => {
+            assertEquals(3, internetSubpage.networkStateList_.length);
+            const toggle = internetSubpage.$$('#deviceEnabledButton');
+            assertTrue(!!toggle);
+            assertFalse(toggle.disabled);
+            const cellularNetworkList =
+                internetSubpage.$$('#cellularNetworkList');
+            assertTrue(!!cellularNetworkList);
+            assertEquals(3, cellularNetworkList.networks.length);
+            const tetherToggle = internetSubpage.$$('#tetherEnabledButton');
+            assertFalse(!!tetherToggle);
+          });
+        });
 
     test('Deep link to tether on/off toggle w/ cellular', async () => {
       initSubpage(false /* isUpdatedCellularUiEnabled */);

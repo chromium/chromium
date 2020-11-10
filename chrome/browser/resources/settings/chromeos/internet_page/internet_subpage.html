@@ -22,6 +22,7 @@
 <link rel="import" href="../localized_link/localized_link.html">
 <link rel="import" href="../metrics_recorder.html">
 <link rel="import" href="../os_route.html">
+<link rel="import" href="./cellular_networks_list.html">
 <link rel="import" href="../route_origin_behavior.html">
 <link rel="import" href="internet_page_browser_proxy.html">
 
@@ -165,6 +166,17 @@
           </network-list>
         </template>
 
+        <!-- List of cellular and instant tethering networks -->
+        <template is="dom-if"
+            if="[[shouldShowCellularNetworkList_(networkStateList_)]]">
+          <cellular-networks-list id="cellularNetworkList"
+              networks="[[networkStateList_]]"
+              show-technology-badge="[[showTechnologyBadge_]]"
+              on-selected="onNetworkSelected_"
+              device-state="[[deviceState]]">
+          </cellular-networks-list>
+        </template>
+
         <!-- Instructions for how to enable "Google Play Services" notifications
             (needed for Instant Tethering). -->
         <template is="dom-if" if="[[showGmsCoreNotificationsSection_(
@@ -190,7 +202,7 @@
         <!-- Text shown if no networks exist. -->
         <settings-localized-link
             class="no-networks"
-            hidden="[[shouldShowNetworkList_(networkStateList_)]]"
+            hidden="[[hideNoNetworksMessage_(networkStateList_)]]"
             localized-string=
                 "[[getNoNetworksInnerHtml_(deviceState, tetherDeviceState)]]">
         </settings-localized-link>

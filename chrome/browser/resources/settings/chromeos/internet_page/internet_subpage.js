@@ -415,8 +415,7 @@ Polymer({
         networkType: mojom.NetworkType.kTether,
       };
       this.networkConfig_.getNetworkStateList(filter).then(response => {
-        const tetherNetworkStates = response.result;
-        this.networkStateList_ = networkStates.concat(tetherNetworkStates);
+        this.set('networkStateList_', networkStates.concat(response.result));
       });
       return;
     }
@@ -449,7 +448,7 @@ Polymer({
       this.thirdPartyVpns_ = thirdPartyVpns;
     }
 
-    this.networkStateList_ = networkStates;
+    this.set('networkStateList_', networkStates);
   },
 
   /**
@@ -825,26 +824,58 @@ Polymer({
   },
 
   /**
-   * @param {!Array<!OncMojo.NetworkStateProperties>} networkStateList
+   * @param {!Array<!OncMojo.NetworkStateProperties>}
+   *     networkStateList
    * @return {boolean}
    * @private
    */
   shouldShowNetworkList_(networkStateList) {
+    if (this.shouldShowCellularNetworkList_()) {
+      return false;
+    }
+
     if (!!this.deviceState &&
         this.deviceState.type === mojom.NetworkType.kVPN) {
-      return this.shouldShowVpnList_(networkStateList);
+      return this.shouldShowVpnList_();
     }
-    return networkStateList.length > 0;
+    return this.networkStateList_.length > 0;
   },
 
   /**
-   * @param {!Array<!OncMojo.NetworkStateProperties>} networkStateList
    * @return {boolean} True if native VPN is not disabled by policy and there
    *     are more than one VPN network configured.
    * @private
    */
-  shouldShowVpnList_(networkStateList) {
-    return this.vpnIsEnabled_ && networkStateList.length > 0;
+  shouldShowVpnList_() {
+    return this.vpnIsEnabled_ && this.networkStateList_.length > 0;
+  },
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  shouldShowCellularNetworkList_() {
+    if (!this.isUpdatedCellularUiEnabled_) {
+      return false;
+    }
+
+    if (this.deviceState.type === mojom.NetworkType.kCellular ||
+        this.deviceState.type === mojom.NetworkType.kTether) {
+      return this.networkStateList_.length > 0;
+    }
+
+    return false;
+  },
+
+  /**
+   * @param {!Array<!OncMojo.NetworkStateProperties>}
+   *     networkStateList
+   * @return {boolean}
+   * @private
+   */
+  hideNoNetworksMessage_(networkStateList) {
+    return this.shouldShowCellularNetworkList_() ||
+        this.shouldShowNetworkList_(networkStateList);
   },
 
   /**

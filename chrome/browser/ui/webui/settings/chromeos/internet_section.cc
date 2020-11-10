@@ -694,6 +694,13 @@ void InternetSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       {"tetherConnectionConnectButton",
        IDS_SETTINGS_INTERNET_TETHER_CONNECTION_CONNECT_BUTTON},
       {"tetherEnableBluetooth", IDS_ENABLE_BLUETOOTH},
+      {"cellularNetworkEsimLabel", IDS_SETTINGS_INTERNET_ESIM_LABEL},
+      {"cellularNetworkPsimLabel", IDS_SETTINGS_INTERNET_PSIM_LABEL},
+      {"pSimNetworkNotSetup",
+       IDS_SETTINGS_INTERNET_PSIM_NOT_SETUP_WITH_SETUP_LINK},
+      {"eSimNetworkNotSetup",
+       IDS_SETTINGS_INTERNET_ESIM_NOT_SETUP_WITH_SETUP_LINK},
+      {"cellularNetworkTetherLabel", IDS_SETTINGS_INTERNET_TETHER_LABEL},
   };
   AddLocalizedStringsBulk(html_source, kLocalizedStrings);
 
@@ -739,6 +746,11 @@ void InternetSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       "internetNoNetworksMobileData",
       l10n_util::GetStringFUTF16(
           IDS_SETTINGS_INTERNET_LOOKING_FOR_MOBILE_NETWORK,
+          GetHelpUrlWithBoard(chrome::kInstantTetheringLearnMoreURL)));
+  html_source->AddString(
+      "tetherNetworkNotSetup",
+      l10n_util::GetStringFUTF16(
+          IDS_SETTINGS_INTERNET_TETHER_NOT_SETUP_WITH_LEARN_MORE_LINK,
           GetHelpUrlWithBoard(chrome::kInstantTetheringLearnMoreURL)));
 }
 
