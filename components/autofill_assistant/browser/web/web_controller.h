@@ -22,6 +22,7 @@
 #include "components/autofill_assistant/browser/rectf.h"
 #include "components/autofill_assistant/browser/selector.h"
 #include "components/autofill_assistant/browser/top_padding.h"
+#include "components/autofill_assistant/browser/web/check_on_top_worker.h"
 #include "components/autofill_assistant/browser/web/element_finder.h"
 #include "components/autofill_assistant/browser/web/element_position_getter.h"
 #include "components/autofill_assistant/browser/web/element_rect_getter.h"
@@ -310,9 +311,9 @@ class WebController {
   void OnWaitForDocumentToBecomeInteractive(
       base::OnceCallback<void(const ClientStatus&)> callback,
       bool result);
-  void OnCheckOnTop(base::OnceCallback<void(const ClientStatus&)> callback,
-                    const DevtoolsClient::ReplyStatus& reply_status,
-                    std::unique_ptr<runtime::CallFunctionOnResult> result);
+  void OnCheckOnTop(CheckOnTopWorker* worker,
+                    base::OnceCallback<void(const ClientStatus&)> callback,
+                    const ClientStatus& status);
   void OnWaitUntilElementIsStable(
       ElementPositionGetter* getter_to_release,
       base::OnceCallback<void(const ClientStatus&)> callback,

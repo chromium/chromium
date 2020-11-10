@@ -444,51 +444,28 @@ void WebController::OnWaitForDocumentToBecomeInteractive(
 void WebController::CheckOnTop(
     const ElementFinder::Result& element,
     base::OnceCallback<void(const ClientStatus&)> callback) {
-  JsSnippet js_snippet;
-  js_snippet.AddLine("function(element) {");
-  AddReturnIfOnTop(&js_snippet, "element",
-                   /* on_top= */ "true",
-                   /* not_on_top= */ "false",
-                   /* not_in_view= */ "false");
-  js_snippet.AddLine("}");
-
-  std::vector<std::unique_ptr<runtime::CallArgument>> arguments;
-  AddRuntimeCallArgumentObjectId(element.object_id, &arguments);
-  devtools_client_->GetRuntime()->CallFunctionOn(
-      runtime::CallFunctionOnParams::Builder()
-          .SetObjectId(element.object_id)
-          .SetArguments(std::move(arguments))
-          .SetFunctionDeclaration(js_snippet.ToString())
-          .SetReturnByValue(true)
-          .Build(),
-      element.node_frame_id,
-      base::BindOnce(&WebController::OnCheckOnTop,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     base::BindOnce(&DecorateWebControllerStatus,
-                                    WebControllerErrorInfoProto::ON_TOP,
-                                    std::move(callback))));
+  auto worker = std::make_unique<CheckOnTopWorker>(devtools_client_.get());
+  auto* ptr = worker.get();
+  pending_workers_.emplace_back(std::move(worker));
+  ptr->Start(element,
+             base::BindOnce(&WebController::OnCheckOnTop,
+                            weak_ptr_factory_.GetWeakPtr(), ptr,
+                            base::BindOnce(&DecorateWebControllerStatus,
+                                           WebControllerErrorInfoProto::ON_TOP,
+                                           std::move(callback))));
 }
 
 void WebController::OnCheckOnTop(
+    CheckOnTopWorker* worker_to_release,
     base::OnceCallback<void(const ClientStatus&)> callback,
-    const DevtoolsClient::ReplyStatus& reply_status,
-    std::unique_ptr<runtime::CallFunctionOnResult> result) {
-  ClientStatus status =
-      CheckJavaScriptResult(reply_status, result.get(), __FILE__, __LINE__);
+    const ClientStatus& status) {
+  base::EraseIf(pending_workers_, [worker_to_release](const auto& worker) {
+    return worker.get() == worker_to_release;
+  });
   if (!status.ok()) {
-    VLOG(1) << __func__ << " Failed JavaScript with status: " << status;
-    std::move(callback).Run(status);
-    return;
+    VLOG(1) << __func__ << " Element is not on top: " << status;
   }
-
-  bool onTop = false;
-  if (!SafeGetBool(result->GetResult(), &onTop)) {
-    VLOG(1) << __func__ << " JavaScript function failed to return a boolean.";
-    std::move(callback).Run(UnexpectedErrorStatus(__FILE__, __LINE__));
-    return;
-  }
-  std::move(callback).Run(
-      ClientStatus(onTop ? ACTION_APPLIED : ELEMENT_NOT_ON_TOP));
+  std::move(callback).Run(status);
 }
 
 void WebController::WaitUntilElementIsStable(

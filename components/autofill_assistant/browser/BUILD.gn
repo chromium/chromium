@@ -205,6 +205,8 @@ static_library("browser") {
     "value_util.cc",
     "value_util.h",
     "viewport_mode.h",
+    "web/check_on_top_worker.cc",
+    "web/check_on_top_worker.h",
     "web/element_finder.cc",
     "web/element_finder.h",
     "web/element_position_getter.cc",
