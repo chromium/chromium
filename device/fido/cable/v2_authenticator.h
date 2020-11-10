@@ -16,6 +16,7 @@
 #include "device/fido/cable/v2_constants.h"
 #include "device/fido/fido_constants.h"
 #include "services/network/public/mojom/network_context.mojom-forward.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace device {
 namespace cablev2 {
@@ -34,6 +35,23 @@ class Platform {
   };
 
   virtual ~Platform();
+
+  enum class Status {
+    TUNNEL_SERVER_CONNECT = 1,
+    HANDSHAKE_COMPLETE = 2,
+    REQUEST_RECEIVED = 3,
+  };
+
+  enum class Error {
+    UNEXPECTED_EOF = 100,
+    TUNNEL_SERVER_CONNECT_FAILED = 101,
+    HANDSHAKE_FAILED = 102,
+    DECRYPT_FAILURE = 103,
+    INVALID_CBOR = 104,
+    INVALID_CTAP = 105,
+    UNKNOWN_COMMAND = 106,
+    INTERNAL_ERROR = 107,
+  };
 
   using MakeCredentialCallback =
       base::OnceCallback<void(uint32_t status,
@@ -82,10 +100,13 @@ class Platform {
 
   virtual void GetAssertion(std::unique_ptr<GetAssertionParams> params) = 0;
 
+  // OnStatus is called when a new informative status is available.
+  virtual void OnStatus(Status) = 0;
+
   // OnCompleted is called when the transaction has completed. Note that calling
   // this may result in the |Transaction| that owns this |Platform| being
   // deleted.
-  virtual void OnCompleted(bool success) = 0;
+  virtual void OnCompleted(base::Optional<Error>) = 0;
 
   virtual std::unique_ptr<BLEAdvert> SendBLEAdvert(
       base::span<const uint8_t, kAdvertSize> payload) = 0;
@@ -95,13 +116,23 @@ class Platform {
 // The framing of messages must be preserved.
 class Transport {
  public:
+  // Disconnected is a fresh type in order to be distinguishable in |Update|.
+  enum class Disconnected { kDisconnected = 200 };
+
+  // Update is a sum type of all the possible signals that a transport can
+  // report. The first element is a message from the peer. |Disconnected| is
+  // handled separately because it's context dependent whether that is an error
+  // or not.
+  using Update = absl::variant<std::vector<uint8_t>,
+                               Platform::Error,
+                               Platform::Status,
+                               Disconnected>;
   virtual ~Transport();
 
   // StartReading requests that the given callback be called whenever a message
-  // arrives from the peer.
+  // arrives from the peer, an error occurs, or the status of the link changes.
   virtual void StartReading(
-      base::RepeatingCallback<void(base::Optional<std::vector<uint8_t>>)>
-          read_callback) = 0;
+      base::RepeatingCallback<void(Update)> update_callback) = 0;
   virtual void Write(std::vector<uint8_t> data) = 0;
 };
 

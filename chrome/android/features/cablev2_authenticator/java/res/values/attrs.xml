@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="header">
+        <attr name="phone_stroke" format="color" />
+        <attr name="laptop_stroke" format="color" />
+        <attr name="link1_alpha" format="float" />
+        <attr name="link2_alpha" format="float" />
+    </declare-styleable>
+</resources>

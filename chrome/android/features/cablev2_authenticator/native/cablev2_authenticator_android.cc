@@ -235,7 +235,18 @@ class AndroidPlatform : public device::cablev2::authenticator::Platform {
     NeedInteractive();
   }
 
-  void OnCompleted(bool success) override {
+  void OnStatus(Status status) override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+    if (!cable_authenticator_) {
+      return;
+    }
+
+    Java_CableAuthenticator_onStatus(env_, cable_authenticator_,
+                                     static_cast<int>(status));
+  }
+
+  void OnCompleted(base::Optional<Error> maybe_error) override {
     // The transaction might fail before interactive mode, thus
     // |cable_authenticator_| may be empty.
     if (cable_authenticator_) {
@@ -357,9 +368,8 @@ class USBTransport : public device::cablev2::authenticator::Transport {
 
   // Transport:
   void StartReading(
-      base::RepeatingCallback<void(base::Optional<std::vector<uint8_t>>)>
-          read_callback) override {
-    callback_ = read_callback;
+      base::RepeatingCallback<void(Update)> update_callback) override {
+    callback_ = update_callback;
     Java_USBHandler_startReading(env_, usb_device_);
   }
 
@@ -370,7 +380,7 @@ class USBTransport : public device::cablev2::authenticator::Transport {
  private:
   void OnData(base::Optional<base::span<const uint8_t>> data) {
     if (!data) {
-      callback_.Run(base::nullopt);
+      callback_.Run(Disconnected::kDisconnected);
     } else {
       callback_.Run(device::fido_parsing_utils::Materialize(*data));
     }
@@ -378,7 +388,7 @@ class USBTransport : public device::cablev2::authenticator::Transport {
 
   JNIEnv* const env_;
   const ScopedJavaGlobalRef<jobject> usb_device_;
-  base::RepeatingCallback<void(base::Optional<std::vector<uint8_t>>)> callback_;
+  base::RepeatingCallback<void(Update)> callback_;
   base::WeakPtrFactory<USBTransport> weak_factory_{this};
 };
 

@@ -1,0 +1,36 @@
+<resources>
+    <style name="idle">
+        <item name="phone_stroke">@color/modern_grey_500</item>
+        <item name="laptop_stroke">@color/modern_grey_500</item>
+        <item name="link1_alpha">0</item>
+        <item name="link2_alpha">0</item>
+    </style>
+
+    <style name="step1">
+        <item name="phone_stroke">@color/modern_blue_800</item>
+        <item name="laptop_stroke">@color/modern_grey_500</item>
+        <item name="link1_alpha">0</item>
+        <item name="link2_alpha">0</item>
+    </style>
+
+    <style name="step2">
+        <item name="phone_stroke">@color/modern_blue_800</item>
+        <item name="laptop_stroke">@color/modern_grey_500</item>
+        <item name="link1_alpha">1</item>
+        <item name="link2_alpha">0</item>
+    </style>
+
+    <style name="step3">
+        <item name="phone_stroke">@color/modern_blue_800</item>
+        <item name="laptop_stroke">@color/modern_grey_500</item>
+        <item name="link1_alpha">1</item>
+        <item name="link2_alpha">1</item>
+    </style>
+
+    <style name="step4">
+        <item name="phone_stroke">@color/modern_blue_800</item>
+        <item name="laptop_stroke">@color/modern_blue_800</item>
+        <item name="link1_alpha">1</item>
+        <item name="link2_alpha">1</item>
+    </style>
+</resources>

@@ -378,7 +378,8 @@ class TestPlatform : public authenticator::Platform {
     NOTREACHED();
   }
 
-  void OnCompleted(bool success) override {}
+  void OnStatus(Status status) override {}
+  void OnCompleted(base::Optional<Error> maybe_error) override {}
 
   std::unique_ptr<authenticator::Platform::BLEAdvert> SendBLEAdvert(
       base::span<const uint8_t, kAdvertSize> payload) override {

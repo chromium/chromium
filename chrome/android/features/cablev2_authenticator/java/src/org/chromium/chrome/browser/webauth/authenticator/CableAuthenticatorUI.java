@@ -10,15 +10,19 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.drawable.Drawable;
 import android.hardware.usb.UsbAccessory;
 import android.hardware.usb.UsbManager;
 import android.os.Bundle;
+import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 
+import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 
 import org.chromium.ui.base.ActivityAndroidPermissionDelegate;
@@ -41,6 +45,7 @@ public class CableAuthenticatorUI extends Fragment
     private AndroidPermissionDelegate mPermissionDelegate;
     private CableAuthenticator mAuthenticator;
     private LinearLayout mQRButton;
+    private ImageView mHeader;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -94,11 +99,26 @@ public class CableAuthenticatorUI extends Fragment
                 mQRButton = v.findViewById(R.id.qr_scan);
                 mQRButton.setOnClickListener(this);
 
+                mHeader = v.findViewById(R.id.qr_image);
+                setHeader(R.style.idle);
+
                 return v;
         }
 
         assert false;
         return null;
+    }
+
+    /**
+     * Updates the header image to be shown in a new "style". The Android
+     * style system is used to make certain elements appear as a QR handshake
+     * progresses.
+     */
+    private void setHeader(int style) {
+        ContextThemeWrapper theme = new ContextThemeWrapper(getContext(), style);
+        Drawable drawable =
+                ResourcesCompat.getDrawable(getResources(), R.drawable.header, theme.getTheme());
+        mHeader.setImageDrawable(drawable);
     }
 
     /**
@@ -135,7 +155,26 @@ public class CableAuthenticatorUI extends Fragment
     @Override
     @SuppressLint("SetTextI18n")
     public void onQRCode(String value) {
+        setHeader(R.style.step1);
         mAuthenticator.onQRCode(value);
+    }
+
+    @Override
+    public void onStatus(int code) {
+        if (mMode != Mode.QR) {
+            // In FCM mode, the handshake is done before the UI appears. For
+            // USB everything should happen immediately.
+            return;
+        }
+
+        // These values must match up with the Status enum in v2_authenticator.h
+        if (code == 1) {
+            setHeader(R.style.step2);
+        } else if (code == 2) {
+            setHeader(R.style.step3);
+        } else if (code == 3) {
+            setHeader(R.style.step4);
+        }
     }
 
     /**

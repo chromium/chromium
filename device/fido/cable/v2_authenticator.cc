@@ -283,12 +283,11 @@ class TunnelTransport : public Transport {
   // Transport:
 
   void StartReading(
-      base::RepeatingCallback<void(base::Optional<std::vector<uint8_t>>)>
-          read_callback) override {
+      base::RepeatingCallback<void(Update)> update_callback) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    DCHECK(!read_callback_);
+    DCHECK(!update_callback_);
 
-    read_callback_ = std::move(read_callback);
+    update_callback_ = std::move(update_callback);
 
     network_context_->CreateWebSocket(
         target_, {device::kCableWebSocketProtocol}, net::SiteForCookies(),
@@ -336,7 +335,7 @@ class TunnelTransport : public Transport {
 
     if (!ok) {
       FIDO_LOG(ERROR) << "Failed to connect to tunnel server";
-      read_callback_.Run(base::nullopt);
+      update_callback_.Run(Platform::Error::TUNNEL_SERVER_CONNECT_FAILED);
       return;
     }
 
@@ -363,6 +362,8 @@ class TunnelTransport : public Transport {
     std::vector<uint8_t> msg =
         handshaker_->BuildInitialMessage(BuildGetInfoResponse());
     websocket_client_->Write(msg);
+
+    update_callback_.Run(Platform::Status::TUNNEL_SERVER_CONNECT);
   }
 
   void OnTunnelData(base::Optional<base::span<const uint8_t>> msg) {
@@ -370,7 +371,7 @@ class TunnelTransport : public Transport {
 
     if (!msg) {
       FIDO_LOG(DEBUG) << "WebSocket tunnel closed";
-      read_callback_.Run(base::nullopt);
+      update_callback_.Run(Disconnected::kDisconnected);
       return;
     }
 
@@ -383,10 +384,11 @@ class TunnelTransport : public Transport {
         handshaker_.reset();
         if (!result) {
           FIDO_LOG(ERROR) << "caBLE handshake failure";
-          read_callback_.Run(base::nullopt);
+          update_callback_.Run(Platform::Error::HANDSHAKE_FAILED);
           return;
         }
         FIDO_LOG(DEBUG) << "caBLE handshake complete";
+        update_callback_.Run(Platform::Status::HANDSHAKE_COMPLETE);
         crypter_ = std::move(result->first);
 
         if (state_ == State::kConnected) {
@@ -409,11 +411,15 @@ class TunnelTransport : public Transport {
         std::vector<uint8_t> plaintext;
         if (!crypter_->Decrypt(*msg, &plaintext)) {
           FIDO_LOG(ERROR) << "failed to decrypt caBLE message";
-          read_callback_.Run(base::nullopt);
+          update_callback_.Run(Platform::Error::DECRYPT_FAILURE);
           return;
         }
 
-        read_callback_.Run(plaintext);
+        if (first_message_) {
+          update_callback_.Run(Platform::Status::REQUEST_RECEIVED);
+          first_message_ = false;
+        }
+        update_callback_.Run(std::move(plaintext));
         break;
       }
 
@@ -450,8 +456,8 @@ class TunnelTransport : public Transport {
   bssl::UniquePtr<EC_KEY> local_identity_;
   GURL target_;
   std::unique_ptr<Platform::BLEAdvert> ble_advert_;
-  base::RepeatingCallback<void(base::Optional<std::vector<uint8_t>>)>
-      read_callback_;
+  base::RepeatingCallback<void(Update)> update_callback_;
+  bool first_message_ = true;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };
@@ -461,25 +467,34 @@ class CTAP2Processor : public Transaction {
   CTAP2Processor(std::unique_ptr<Transport> transport,
                  std::unique_ptr<Platform> platform)
       : transport_(std::move(transport)), platform_(std::move(platform)) {
-    transport_->StartReading(
-        base::BindRepeating(&CTAP2Processor::OnData, base::Unretained(this)));
+    transport_->StartReading(base::BindRepeating(
+        &CTAP2Processor::OnTransportUpdate, base::Unretained(this)));
   }
 
  private:
-  void OnData(base::Optional<std::vector<uint8_t>> msg) {
+  void OnTransportUpdate(Transport::Update update) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-    if (!msg) {
-      FIDO_LOG(ERROR) << "Closing transaction due to transport EOF";
-      platform_->OnCompleted(transaction_done_);
+    if (auto* error = absl::get_if<Platform::Error>(&update)) {
+      platform_->OnCompleted(*error);
+      return;
+    } else if (auto* status = absl::get_if<Platform::Status>(&update)) {
+      platform_->OnStatus(*status);
+      return;
+    } else if (absl::get_if<Transport::Disconnected>(&update)) {
+      base::Optional<Platform::Error> maybe_error;
+      if (!transaction_done_) {
+        maybe_error = Platform::Error::UNEXPECTED_EOF;
+      }
+      platform_->OnCompleted(maybe_error);
       return;
     }
 
-    base::Optional<std::vector<uint8_t>> response = ProcessCTAPMessage(*msg);
+    std::vector<uint8_t>& msg = absl::get<std::vector<uint8_t>>(update);
+    base::Optional<std::vector<uint8_t>> response = ProcessCTAPMessage(msg);
     if (!response) {
-      // Fatal error.
-      // TODO: need to signal this to the UI.
-      platform_->OnCompleted(false);
+      // TODO(agl): expose more error information from |ProcessCTAPMessage|.
+      platform_->OnCompleted(Platform::Error::INVALID_CTAP);
       return;
     }
 

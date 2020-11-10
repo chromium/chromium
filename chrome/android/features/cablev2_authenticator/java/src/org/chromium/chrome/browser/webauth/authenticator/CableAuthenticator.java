@@ -104,6 +104,9 @@ class CableAuthenticator {
         void onAuthenticatorResult(Result result);
         // Invoked when the authenticator has finished. The UI should be dismissed at this point.
         void onComplete();
+        // Called when an informative status update is available. The argument has the same values
+        // as the Status enum from v2_authenticator.h.
+        void onStatus(int code);
     }
 
     public CableAuthenticator(Context context, CableAuthenticatorUI ui, long networkContext,
@@ -161,6 +164,13 @@ class CableAuthenticator {
     }
 
     // Calls from native code.
+
+    // Called when an informative status update is available. The argument has the same values
+    // as the Status enum from v2_authenticator.h.
+    @CalledByNative
+    public void onStatus(int code) {
+        mCallback.onStatus(code);
+    }
 
     @CalledByNative
     public static BLEAdvert newBLEAdvert(byte[] payload) {

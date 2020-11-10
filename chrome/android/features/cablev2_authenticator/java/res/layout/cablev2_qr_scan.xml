@@ -13,8 +13,7 @@
       android:layout_width="match_parent"
       android:layout_height="100dp"
       android:layout_marginBottom="24dp"
-      android:background ="@color/modern_grey_50"
-      android:src="@drawable/header" />
+      android:background ="@color/modern_grey_50" />
 
   <LinearLayout
       android:id="@+id/qr_scan"
