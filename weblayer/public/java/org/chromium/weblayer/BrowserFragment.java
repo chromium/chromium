@@ -81,8 +81,8 @@ public final class BrowserFragment extends RemoteFragment {
         // want to trigger loading WebLayer.
         if (args.getBoolean(BrowserFragmentArgs.IS_INCOGNITO, false)) {
             String name = args.getString(BrowserFragmentArgs.PROFILE_NAME);
-            if (!"".equals(name) && WebLayer.getSupportedMajorVersionInternal() < 88) {
-                throw new UnsupportedOperationException("Named incognito profile requires 88");
+            if (!"".equals(name) && WebLayer.getSupportedMajorVersionInternal() < 87) {
+                throw new UnsupportedOperationException("Named incognito profile requires 87");
             }
         }
         try {

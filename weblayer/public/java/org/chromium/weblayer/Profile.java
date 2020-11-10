@@ -47,7 +47,7 @@ public class Profile {
             throw new APICallException(e);
         }
         boolean isIncognito;
-        if (WebLayer.getSupportedMajorVersionInternal() < 88) {
+        if (WebLayer.getSupportedMajorVersionInternal() < 87) {
             isIncognito = "".equals(name);
         } else {
             try {
@@ -114,7 +114,7 @@ public class Profile {
             sProfiles.put(name, this);
         }
 
-        if (WebLayer.getSupportedMajorVersionInternal() >= 88) {
+        if (WebLayer.getSupportedMajorVersionInternal() >= 87) {
             try {
                 mImpl.setClient(new ProfileClientImpl());
             } catch (RemoteException e) {
@@ -124,11 +124,11 @@ public class Profile {
     }
 
     /**
-     * Returns the name of the profile. While added in 88, this can be used with any version.
+     * Returns the name of the profile. While added in 87, this can be used with any version.
      *
      * @return The name of the profile.
      *
-     * @since 88
+     * @since 87
      */
     @NonNull
     public String getName() {
@@ -136,12 +136,12 @@ public class Profile {
     }
 
     /**
-     * Returns true if the profile is incognito. While added in 88, this can be used with any
+     * Returns true if the profile is incognito. While added in 87, this can be used with any
      * version.
      *
      * @return True if the profile is incognito.
      *
-     * @since 88
+     * @since 87
      */
     public boolean isIncognito() {
         return mIsIncognito;
@@ -213,11 +213,11 @@ public class Profile {
      * @param completionCallback Callback this is notified when destruction is complete. This may
      *         never be called.
      *
-     * @since 88
+     * @since 87
      */
     public void destroyAndDeleteDataFromDiskSoon(@Nullable Runnable completionCallback) {
         ThreadCheck.ensureOnUiThread();
-        if (WebLayer.getSupportedMajorVersionInternal() < 88) {
+        if (WebLayer.getSupportedMajorVersionInternal() < 87) {
             throw new UnsupportedOperationException();
         }
         throwIfDestroyed();

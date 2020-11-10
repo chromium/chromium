@@ -430,12 +430,12 @@ public class WebLayer {
      *
      * @param profileName The name of the profile. Null is mapped to an empty string.
      *
-     * @since 88
+     * @since 87
      */
     @NonNull
     public Profile getIncognitoProfile(@Nullable String profileName) {
         ThreadCheck.ensureOnUiThread();
-        if (WebLayer.getSupportedMajorVersionInternal() < 88) {
+        if (WebLayer.getSupportedMajorVersionInternal() < 87) {
             throw new UnsupportedOperationException();
         }
         IProfile iprofile;
@@ -544,10 +544,10 @@ public class WebLayer {
      * state.
      *
      * @throws UnsupportedOperationException If {@link params} is incognito and name is not empty
-     *         and <= 88. In order for this function not to trigger loading of WebLayer the
+     *         and <= 87. In order for this function not to trigger loading of WebLayer the
      *         exception is thrown later on.
      *
-     * @since 88
+     * @since 87
      */
     @NonNull
     public static Fragment createBrowserFragmentWithIncognitoProfile(
@@ -558,7 +558,7 @@ public class WebLayer {
     private static Fragment createBrowserFragmentImpl(
             @NonNull String profileName, @Nullable String persistenceId, boolean isIncognito) {
         ThreadCheck.ensureOnUiThread();
-        // Support for named incognito profiles was added in 88. Checking is done in
+        // Support for named incognito profiles was added in 87. Checking is done in
         // BrowserFragment, as this code should not trigger loading WebLayer.
         Bundle args = new Bundle();
         args.putString(BrowserFragmentArgs.PROFILE_NAME, profileName);

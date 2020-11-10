@@ -104,9 +104,12 @@ interface IWebLayer {
   IObjectWrapper getApplicationContext() = 20;
   IMediaRouteDialogFragment createMediaRouteDialogFragmentImpl(
       in IRemoteFragmentClient remoteFragmentClient) = 21;
+  IProfile getIncognitoProfile(in String profileName) = 24;
 
   // Added in Version 88.
   void onRemoteMediaServiceStarted(in IObjectWrapper sessionService, in Intent intent) = 22;
   void onRemoteMediaServiceDestroyed(int id) = 23;
-  IProfile getIncognitoProfile(in String profileName) = 24;
+
+  // WARNING: when choosing next value make sure you look back for the max, as
+  // merges may mean the last function does not have the max value.
 }

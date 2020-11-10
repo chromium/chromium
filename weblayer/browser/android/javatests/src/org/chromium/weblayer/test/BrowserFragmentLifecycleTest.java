@@ -387,7 +387,7 @@ public class BrowserFragmentLifecycleTest {
 
     @Test
     @SmallTest
-    @MinWebLayerVersion(88)
+    @MinWebLayerVersion(87)
     public void twoFragmentsDifferentIncognitoProfiles() throws Throwable {
         // This test creates two browsers with different profile names and persistence ids.
         final String persistenceId1 = "x";
@@ -467,7 +467,7 @@ public class BrowserFragmentLifecycleTest {
 
     @Test
     @SmallTest
-    @MinWebLayerVersion(88)
+    @MinWebLayerVersion(87)
     public void twoFragmentsSameIncognitoProfile() throws Throwable {
         // This test creates two browsers with the same profile, but different persistence ids.
         final String persistenceId1 = "x";

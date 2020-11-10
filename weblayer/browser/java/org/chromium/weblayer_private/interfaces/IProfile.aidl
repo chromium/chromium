@@ -47,8 +47,6 @@ interface IProfile {
   // Added in Version 87.
   void setUserIdentityCallbackClient(IUserIdentityCallbackClient client) = 13;
   IPrerenderController getPrerenderController() = 15;
-
-  // Added in Version 88.
   boolean isIncognito() = 16;
   void setClient(in IProfileClient client) = 17;
   void destroyAndDeleteDataFromDiskSoon(in IObjectWrapper completeCallback) = 18;

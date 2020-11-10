@@ -45,7 +45,7 @@ public class SiteSettingsActivity extends AppCompatActivity {
      * @param profileName The name of the profile.
      * @param isIncognito If the profile is incognito.
      *
-     * @since 88
+     * @since 87
      */
     public static Intent createIntentForCategoryList(
             Context context, String profileName, boolean isIncognito) {
