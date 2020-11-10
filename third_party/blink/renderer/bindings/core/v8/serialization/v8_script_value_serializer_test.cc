@@ -1934,8 +1934,8 @@ TEST(V8ScriptValueSerializerTest, TransformStreamIntegerOverflow) {
 
   auto corrupted_serialized_script_value =
       SerializedScriptValue::Create(serialized_value, sizeof(serialized_value));
-  corrupted_serialized_script_value->GetStreamChannels() =
-      serialized_script_value->GetStreamChannels();
+  corrupted_serialized_script_value->GetStreams() =
+      std::move(serialized_script_value->GetStreams());
 
   // Entangle the message ports.
   MessagePortArray* transferred_message_ports = MessagePort::EntanglePorts(

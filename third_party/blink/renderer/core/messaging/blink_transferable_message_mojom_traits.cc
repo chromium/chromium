@@ -48,9 +48,10 @@ bool StructTraits<blink::mojom::blink::TransferableMessage::DataView,
   out->ports.ReserveInitialCapacity(ports.size());
   out->ports.AppendRange(std::make_move_iterator(ports.begin()),
                          std::make_move_iterator(ports.end()));
-  out->message->GetStreamChannels().AppendRange(
-      std::make_move_iterator(stream_channels.begin()),
-      std::make_move_iterator(stream_channels.end()));
+  for (auto& channel : stream_channels) {
+    out->message->GetStreams().push_back(
+        blink::SerializedScriptValue::Stream(std::move(channel)));
+  }
 
   out->message->SetArrayBufferContentsArray(
       std::move(array_buffer_contents_array));

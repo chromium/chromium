@@ -183,9 +183,12 @@ void V8ScriptValueDeserializer::Transfer() {
     // TODO(ricea): Make ExtendableMessageEvent store an
     // UnpackedSerializedScriptValue like MessageEvent does, and then this
     // special case won't be necessary.
+    Vector<MessagePortChannel> channels;
+    for (auto& stream : serialized_script_value_->GetStreams()) {
+      channels.push_back(stream.channel);
+    }
     transferred_stream_ports_ = MessagePort::EntanglePorts(
-        *ExecutionContext::From(script_state_),
-        serialized_script_value_->GetStreamChannels());
+        *ExecutionContext::From(script_state_), channels);
   }
 
   // There's nothing else to transfer if the deserializer was not given an

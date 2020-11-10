@@ -37,11 +37,14 @@
 #include "base/optional.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/common/messaging/message_port_channel.h"
+#include "third_party/blink/public/common/messaging/message_port_descriptor.h"
 #include "third_party/blink/public/mojom/file_system_access/native_file_system_transfer_token.mojom-blink-forward.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/transferables.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/mojo/mojo_handle.h"
+#include "third_party/blink/renderer/core/streams/readable_stream_transferring_optimizer.h"
+#include "third_party/blink/renderer/core/streams/writable_stream_transferring_optimizer.h"
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer/array_buffer_contents.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/partitions.h"
@@ -73,11 +76,32 @@ class CORE_EXPORT SerializedScriptValue
   USING_FAST_MALLOC(SerializedScriptValue);
 
  public:
+  class Stream final {
+    DISALLOW_NEW();
+
+   public:
+    explicit Stream(MessagePortDescriptor descriptor)
+        : channel(std::move(descriptor)) {}
+    Stream(MessagePortDescriptor descriptor,
+           std::unique_ptr<ReadableStreamTransferringOptimizer> optimizer)
+        : channel(std::move(descriptor)),
+          readable_optimizer(std::move(optimizer)) {}
+    Stream(MessagePortDescriptor descriptor,
+           std::unique_ptr<WritableStreamTransferringOptimizer> optimizer)
+        : channel(std::move(descriptor)),
+          writable_optimizer(std::move(optimizer)) {}
+
+    MessagePortChannel channel;
+    std::unique_ptr<ReadableStreamTransferringOptimizer> readable_optimizer;
+    std::unique_ptr<WritableStreamTransferringOptimizer> writable_optimizer;
+  };
+
   using ArrayBufferContentsArray = Vector<ArrayBufferContents, 1>;
   using SharedArrayBufferContentsArray = Vector<ArrayBufferContents, 1>;
   using ImageBitmapContentsArray = Vector<scoped_refptr<StaticBitmapImage>, 1>;
   using TransferredWasmModulesArray = WTF::Vector<v8::CompiledWasmModule>;
   using MessagePortChannelArray = Vector<MessagePortChannel>;
+  using StreamArray = Vector<Stream>;
   using NativeFileSystemTokensArray =
       Vector<mojo::PendingRemote<mojom::blink::NativeFileSystemTransferToken>>;
 
@@ -266,7 +290,7 @@ class CORE_EXPORT SerializedScriptValue
   }
   void SetImageBitmapContentsArray(ImageBitmapContentsArray contents);
 
-  MessagePortChannelArray& GetStreamChannels() { return stream_channels_; }
+  StreamArray& GetStreams() { return streams_; }
 
   bool IsLockedToAgentCluster() const {
     return !wasm_modules_.IsEmpty() ||
@@ -363,9 +387,9 @@ class CORE_EXPORT SerializedScriptValue
   ArrayBufferContentsArray array_buffer_contents_array_;
   ImageBitmapContentsArray image_bitmap_contents_array_;
 
-  // |stream_channels_| is also single-use but is special-cased because it works
+  // |streams_| is also single-use but is special-cased because it works
   // with ServiceWorkers.
-  MessagePortChannelArray stream_channels_;
+  StreamArray streams_;
 
   // These do not have one-use transferred contents, like the above.
   TransferredWasmModulesArray wasm_modules_;

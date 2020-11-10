@@ -452,7 +452,7 @@ void SerializedScriptValue::TransferTransformStreams(
   }
 }
 
-// Creates an entangled pair of channels. Adds one end to |stream_channels_| as
+// Creates an entangled pair of channels. Adds one end to |streams_| as
 // a MessagePortChannel, and returns the other end as a MessagePort.
 MessagePort* SerializedScriptValue::AddStreamChannel(
     ExecutionContext* execution_context) {
@@ -468,7 +468,7 @@ MessagePort* SerializedScriptValue::AddStreamChannel(
 
   // 9. Set dataHolder.[[port]] to ! StructuredSerializeWithTransfer(port2,
   //    « port2 »).
-  stream_channels_.push_back(MessagePortChannel(pipe.TakePort1()));
+  streams_.push_back(Stream(pipe.TakePort1()));
   return local_port;
 }
 

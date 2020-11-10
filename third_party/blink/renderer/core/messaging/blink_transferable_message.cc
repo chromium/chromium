@@ -57,9 +57,9 @@ BlinkTransferableMessage BlinkTransferableMessage::FromMessageEvent(
   }
 
   // Stream channels.
-  auto& stream_channels = serialized_script_value->GetStreamChannels();
-  result.message->GetStreamChannels().AppendRange(stream_channels.begin(),
-                                                  stream_channels.end());
+  for (auto& stream : serialized_script_value->GetStreams()) {
+    result.message->GetStreams().push_back(std::move(stream));
+  }
   // Array buffer contents array.
   auto& source_array_buffer_contents_array =
       serialized_script_value->GetArrayBufferContentsArray();
@@ -149,8 +149,10 @@ BlinkTransferableMessage BlinkTransferableMessage::FromTransferableMessage(
       message.stack_trace_should_pause);
   result.locked_agent_cluster_id = message.locked_agent_cluster_id;
   result.ports.AppendRange(message.ports.begin(), message.ports.end());
-  result.message->GetStreamChannels().AppendRange(
-      message.stream_channels.begin(), message.stream_channels.end());
+  for (auto& channel : message.stream_channels) {
+    result.message->GetStreams().push_back(
+        SerializedScriptValue::Stream(channel.ReleaseHandle()));
+  }
   if (message.user_activation) {
     result.user_activation = mojom::blink::UserActivationSnapshot::New(
         message.user_activation->has_been_active,
