@@ -518,8 +518,11 @@ H265Parser::Result H265Parser::ParseSPS(int* sps_id) {
 
   // Equation A-2: Calculate max_dpb_size.
   int max_luma_ps = sps->profile_tier_level.GetMaxLumaPs();
-  int pic_size_in_samples_y =
-      sps->pic_height_in_luma_samples * sps->pic_width_in_luma_samples;
+  base::CheckedNumeric<int> pic_size = sps->pic_height_in_luma_samples;
+  pic_size *= sps->pic_width_in_luma_samples;
+  if (!pic_size.IsValid())
+    return kInvalidStream;
+  int pic_size_in_samples_y = pic_size.ValueOrDefault(0);
   size_t max_dpb_pic_buf = sps->profile_tier_level.GetDpbMaxPicBuf();
   if (pic_size_in_samples_y <= (max_luma_ps >> 2))
     sps->max_dpb_size = std::min(4 * max_dpb_pic_buf, size_t{16});
@@ -605,6 +608,7 @@ H265Parser::Result H265Parser::ParseSPS(int* sps_id) {
   int min_cb_log2_size_y = sps->log2_min_luma_coding_block_size_minus3 + 3;
   sps->ctb_log2_size_y =
       min_cb_log2_size_y + sps->log2_diff_max_min_luma_coding_block_size;
+  TRUE_OR_RETURN(min_cb_log2_size_y <= 31 && sps->ctb_log2_size_y <= 31);
   int min_cb_size_y = 1 << min_cb_log2_size_y;
   int ctb_size_y = 1 << sps->ctb_log2_size_y;
   sps->pic_width_in_ctbs_y = base::ClampCeil(
@@ -1458,12 +1462,6 @@ H265Parser::Result H265Parser::ParseStRefPicSet(
       if (!used_by_curr_pic_flag[j]) {
         READ_BOOL_OR_RETURN(&use_delta_flag[j]);
       }
-      // The spec does not define how to calculate NumDeltaPocs when
-      // inter_ref_pic_set_prediction_flag is set. FFMPEG does it by counting
-      // the number of entries with flags set.
-      if (used_by_curr_pic_flag[j] || use_delta_flag[j]) {
-        st_ref_pic_set->num_delta_pocs++;
-      }
     }
     // Calculate delta_poc_s{0,1}, used_by_curr_pic_s{0,1}, num_negative_pics
     // and num_positive_pics.
@@ -1545,10 +1543,10 @@ H265Parser::Result H265Parser::ParseStRefPicSet(
       }
       READ_BOOL_OR_RETURN(&st_ref_pic_set->used_by_curr_pic_s1[i]);
     }
-    // Calculate num_delta_pocs.
-    st_ref_pic_set->num_delta_pocs =
-        st_ref_pic_set->num_negative_pics + st_ref_pic_set->num_positive_pics;
   }
+  // Calculate num_delta_pocs.
+  st_ref_pic_set->num_delta_pocs =
+      st_ref_pic_set->num_negative_pics + st_ref_pic_set->num_positive_pics;
   return kOk;
 }
 
