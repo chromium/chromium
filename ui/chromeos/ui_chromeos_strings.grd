@@ -911,10 +911,10 @@
         German (Switzerland)
       </message>
       <message name="IDS_IME_NAME_KEYBOARD_TURKISH" desc="The input method name shows in system tray menu and settings page.">
-        Turkish keyboard
+        Turkish
       </message>
       <message name="IDS_IME_NAME_KEYBOARD_TURKISH_F" desc="The input method name shows in system tray menu and settings page.">
-        Turkish-F keyboard
+        Turkish with F-keyboard
       </message>
       <message name="IDS_IME_NAME_KEYBOARD_UK_DVORAK" desc="The input method name shows in system tray menu and settings page.">
         UK Dvorak keyboard
@@ -923,7 +923,7 @@
         UK keyboard
       </message>
       <message name="IDS_IME_NAME_KEYBOARD_UKRAINIAN" desc="The input method name shows in system tray menu and settings page.">
-        Ukrainian keyboard
+        Ukrainian
       </message>
       <message name="IDS_IME_NAME_KEYBOARD_US_COLEMAK" desc="The input method name shows in system tray menu and settings page.">
         US Colemak keyboard
@@ -1069,43 +1069,43 @@
         Sorani Kurdish with English-based keyboard
       </message>
       <message name="IDS_IME_NAME_KEYBOARD_TAMIL_INSCRIPT" desc="The input method name shows in system tray menu and settings page.">
-        Tamil keyboard (InScript)
+        Tamil with InScript keyboard
       </message>
       <message name="IDS_IME_NAME_KEYBOARD_TAMIL_ITRANS" desc="The input method name shows in system tray menu and settings page.">
-        Tamil keyboard (itrans)
+        Tamil ITRANS
       </message>
       <message name="IDS_IME_NAME_KEYBOARD_TAMIL_PHONETIC" desc="The input method name shows in system tray menu and settings page.">
-        Tamil keyboard (Phonetic)
+        Tamil Phonetic
       </message>
       <message name="IDS_IME_NAME_KEYBOARD_TAMIL_TAMIL99" desc="The input method name shows in system tray menu and settings page.">
-        Tamil keyboard (Tamil99)
+        Tamil with Tamil99 keyboard
       </message>
       <message name="IDS_IME_NAME_KEYBOARD_TAMIL_TYPEWRITER" desc="The input method name shows in system tray menu and settings page.">
-        Tamil keyboard (Typewriter)
+        Tamil with Typewriter keyboard
       </message>
       <message name="IDS_IME_NAME_KEYBOARD_TELUGU_PHONETIC" desc="The input method name shows in system tray menu and settings page.">
-        Telugu keyboard (Phonetic)
+        Telugu Phonetic
       </message>
       <message name="IDS_IME_NAME_KEYBOARD_THAI_KEDMANEE" desc="The input method name shows in system tray menu and settings page.">
-        Thai keyboard (Kedmanee)
+        Thai with Kedmanee keyboard
       </message>
       <message name="IDS_IME_NAME_KEYBOARD_THAI_PATTACHOTE" desc="The input method name shows in system tray menu and settings page.">
-        Thai keyboard (Pattachote)
+        Thai with Pattachote keyboard
       </message>
       <message name="IDS_IME_NAME_KEYBOARD_THAI_TIS" desc="The input method name shows in system tray menu and settings page.">
-        Thai keyboard (TIS 820-2531)
+        Thai with TIS 820-2531 keyboard
       </message>
       <message name="IDS_IME_NAME_KEYBOARD_VIETNAMESE_TCVN" desc="The input method name shows in system tray menu and settings page.">
-        Vietnamese keyboard (TCVN)
+        Vietnamese with TCVN keyboard
       </message>
       <message name="IDS_IME_NAME_KEYBOARD_VIETNAMESE_TELEX" desc="The input method name shows in system tray menu and settings page.">
-        Vietnamese keyboard (Telex)
+        Vietnamese Telex
       </message>
       <message name="IDS_IME_NAME_KEYBOARD_VIETNAMESE_VIQR" desc="The input method name shows in system tray menu and settings page.">
-        Vietnamese keyboard (VIQR)
+        Vietnamese VIQR
       </message>
       <message name="IDS_IME_NAME_KEYBOARD_VIETNAMESE_VNI" desc="The input method name shows in system tray menu and settings page.">
-        Vietnamese keyboard (VNI)
+        Vietnamese VNI
       </message>
 
       <message name="IDS_IME_NAME_TRANSLITERATION_AM" desc="The input method name shows in system tray menu and settings page. Please translate only for 'transliteration'.">
@@ -1156,14 +1156,14 @@
       <message name="IDS_IME_NAME_TRANSLITERATION_SR" desc="The input method name shows in system tray menu and settings page.">
         Serbian Transliteration
       </message>
-      <message name="IDS_IME_NAME_TRANSLITERATION_TA" desc="The input method name shows in system tray menu and settings page. Please translate only for 'transliteration'.">
-        Transliteration (vanakkam &#x2192; &#x0bb5;&#x0ba3;&#x0b95;&#x0bcd;&#x0b95;&#x0bae;&#x0bcd;)
+      <message name="IDS_IME_NAME_TRANSLITERATION_TA" desc="The input method name shows in system tray menu and settings page.">
+        Tamil Transliteration
       </message>
-      <message name="IDS_IME_NAME_TRANSLITERATION_TE" desc="The input method name shows in system tray menu and settings page. Please translate only for 'transliteration'.">
-        Transliteration (emandi &#x2192; &#x0c0f;&#x0c2e;&#x0c02;&#x0c21;&#x0c40;)
+      <message name="IDS_IME_NAME_TRANSLITERATION_TE" desc="The input method name shows in system tray menu and settings page.">
+        Telugu Transliteration
       </message>
-      <message name="IDS_IME_NAME_TRANSLITERATION_TI" desc="The input method name shows in system tray menu and settings page. Please translate only for 'transliteration'.">
-        Transliteration (selam &#x2192; &#x1230;&#x120b;&#x121d;)
+      <message name="IDS_IME_NAME_TRANSLITERATION_TI" desc="The input method name shows in system tray menu and settings page.">
+        Tigrinya
       </message>
       <message name="IDS_IME_NAME_TRANSLITERATION_UR" desc="The input method name shows in system tray menu and settings page.">
         Urdu
