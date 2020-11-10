@@ -1952,6 +1952,50 @@ TEST_P(RenderTextTestWithElideTextCase, ElideText) {
   EXPECT_EQ(elided_width, expected_width);
 }
 
+const ElideTextCase kElideHeadTextCases[] = {
+    {"empty", L"", L""},
+    {"letter_m_tail0", L"M", L""},
+    {"letter_m_tail1", L"M", L"M"},
+    {"no_eliding", L"012ab", L"012ab"},
+    {"ltr_3", L"abc", L"abc"},
+    {"ltr_2", L"abc", L"\u2026c"},
+    {"ltr_1", L"abc", L"\u2026"},
+    {"ltr_0", L"abc", L""},
+    {"rtl_3", L"\u05d0\u05d1\u05d2", L"\u05d0\u05d1\u05d2"},
+    {"rtl_2", L"\u05d0\u05d1\u05d2", L"\u2026\u05d2"},
+    {"rtl_1", L"\u05d0\u05d1\u05d2", L"\u2026"},
+    {"rtl_0", L"\u05d0\u05d1\u05d2", L""},
+    {"ltr_rtl_5", L"abc\u05d0\u05d1\u05d2", L"\u2026c\u05d0\u05d1\u05d2"},
+    {"ltr_rtl_4", L"abc\u05d0\u05d1\u05d2", L"\u2026\u05d0\u05d1\u05d2"},
+    {"ltr_rtl_3", L"abc\u05d0\u05d1\u05d2", L"\u2026\u05d1\u05d2"},
+    {"rtl_ltr_5", L"\u05d0\u05d1\u05d2abc", L"\u2026\u05d2abc"},
+    {"rtl_ltr_4", L"\u05d0\u05d1\u05d2abc", L"\u2026abc"},
+    {"rtl_ltr_3", L"\u05d0\u05d1\u05d2abc", L"\u2026bc"},
+    {"bidi_1", L"a\u05d1b\u05d1c012", L"\u2026b\u05d1c012"},
+    {"bidi_2", L"a\u05d1b\u05d1c012", L"\u2026\u05d1c012"},
+    {"bidi_3", L"a\u05d1b\u05d1c012", L"\u2026c012"},
+    // Test surrogate pairs. No surrogate pair should be partially elided.
+    {"surrogate1", L"abc\U0001D11E\U0001D122x", L"\u2026\U0001D11E\U0001D122x"},
+    {"surrogate2", L"abc\U0001D11E\U0001D122x", L"\u2026\U0001D122x"},
+    {"surrogate3", L"abc\U0001D11E\U0001D122x", L"\u2026x"},
+    // Test combining character sequences. U+0915 U+093F forms a compound
+    // glyph, as does U+0915 U+0942. No combining sequence should be partially
+    // elided.
+    {"combining1", L"0123\u0915\u093f\u0915\u0942456",
+     L"\u2026\u0915\u0942456"},
+    {"combining2", L"0123\u0915\u093f\u0915\u0942456", L"\u2026456"},
+    // 𝄞 (U+1D11E, MUSICAL SYMBOL G CLEF) should be fully elided.
+    {"emoji1", L"012\U0001D11Ex", L"\u2026\U0001D11Ex"},
+    {"emoji2", L"012\U0001D11Ex", L"\u2026x"},
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    ElideHead,
+    RenderTextTestWithElideTextCase,
+    testing::Combine(testing::Values(ElideTextTestOptions{ELIDE_HEAD}),
+                     testing::ValuesIn(kElideHeadTextCases)),
+    RenderTextTestWithElideTextCase::ParamInfoToString);
+
 const ElideTextCase kElideTailTextCases[] = {
     {"empty", L"", L""},
     {"letter_m_tail0", L"M", L""},
