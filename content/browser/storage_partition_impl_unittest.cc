@@ -15,6 +15,7 @@
 #include "base/files/file_util.h"
 #include "base/location.h"
 #include "base/run_loop.h"
+#include "base/scoped_observation.h"
 #include "base/single_thread_task_runner.h"
 #include "base/stl_util.h"
 #include "base/test/bind.h"
@@ -593,7 +594,7 @@ class RemovePluginPrivateDataTester {
 class MockDataRemovalObserver : public StoragePartition::DataRemovalObserver {
  public:
   explicit MockDataRemovalObserver(StoragePartition* partition) {
-    observer_.Add(partition);
+    observation_.Observe(partition);
   }
 
   MOCK_METHOD4(OnOriginDataCleared,
@@ -603,8 +604,9 @@ class MockDataRemovalObserver : public StoragePartition::DataRemovalObserver {
                     base::Time));
 
  private:
-  ScopedObserver<StoragePartition, StoragePartition::DataRemovalObserver>
-      observer_{this};
+  base::ScopedObservation<StoragePartition,
+                          StoragePartition::DataRemovalObserver>
+      observation_{this};
 };
 
 bool IsWebSafeSchemeForTest(const std::string& scheme) {
