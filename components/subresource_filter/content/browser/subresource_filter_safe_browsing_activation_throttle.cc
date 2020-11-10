@@ -229,12 +229,8 @@ void SubresourceFilterSafeBrowsingActivationThrottle::
     builder.SetDryRun(true);
   }
 
-  if (auto optional_position = GetEnforcementRedirectPosition(check_results_)) {
-    RedirectPosition position = *optional_position;
-    UMA_HISTOGRAM_ENUMERATION(
-        "SubresourceFilter.PageLoad.Activation.RedirectPosition2.Enforcement",
-        position);
-    builder.SetEnforcementRedirectPosition(static_cast<int64_t>(position));
+  if (auto position = GetEnforcementRedirectPosition(check_results_)) {
+    builder.SetEnforcementRedirectPosition(static_cast<int64_t>(*position));
   }
 
   builder.Record(ukm::UkmRecorder::Get());

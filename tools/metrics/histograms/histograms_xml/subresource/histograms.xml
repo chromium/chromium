@@ -23,8 +23,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="SubresourceFilter.Actions2" enum="SubresourceFilterActions2"
     expires_after="2021-04-18">
-  <owner>csharrison@chromium.org</owner>
+  <owner>ericrobinson@google.com</owner>
   <owner>jkarlin@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
   <summary>
     Counts of various UI and user action events related to the
     SubresourceFilter. This will be triggered when portions of the UI are shown
@@ -82,42 +83,46 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SubresourceFilter.DocumentLoad.SubframeFilteringDelay.Allowed"
-    units="microseconds" expires_after="M87">
-  <owner>csharrison@chromium.org</owner>
+    units="microseconds" expires_after="M92">
+  <owner>ericrobinson@google.com</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
   <summary>
     Records the total time a subframe navigation was delayed while calculating
     whether it should be disallowed or not. Logged for all navigations that were
     allowed.
 
-    Warning: This metric may include reports from clients with low-resolution
-    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
-    will cause this metric to have an abnormal distribution. When considering
-    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
-    solution.
+    This metric uses UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES to acccount for
+    clients with low-resolution clocks.
   </summary>
 </histogram>
 
 <histogram
     name="SubresourceFilter.DocumentLoad.SubframeFilteringDelay.Disallowed2"
-    units="microseconds" expires_after="M87">
-  <owner>csharrison@chromium.org</owner>
-  <owner>justinmiron@google.com</owner>
+    units="microseconds" expires_after="M92">
+  <owner>ericrobinson@google.com</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
   <summary>
     Records the total time a subframe navigation was delayed while calculating
     whether it should be disallowed or not. Logged for all navigations with the
     disallowed load policy.
+
+    This metric uses UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES to acccount for
+    clients with low-resolution clocks.
   </summary>
 </histogram>
 
 <histogram
     name="SubresourceFilter.DocumentLoad.SubframeFilteringDelay.WouldDisallow"
-    units="microseconds" expires_after="M87">
-  <owner>csharrison@chromium.org</owner>
-  <owner>justinmiron@google.com</owner>
+    units="microseconds" expires_after="M92">
+  <owner>ericrobinson@google.com</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
   <summary>
     Records the total time a subframe navigation was delayed while calculating
     whether it should be disallowed or not. Logged for all navigations with the
     would_disallow load policy.
+
+    This metric uses UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES to acccount for
+    clients with low-resolution clocks.
   </summary>
 </histogram>
 
@@ -134,43 +139,47 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="SubresourceFilter.IndexRuleset.NumUnsupportedRules"
     units="rules" expires_after="M90">
-  <owner>csharrison@chromium.org</owner>
   <owner>jkarlin@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
   <summary>
     The number of rules that could be not be successfully indexed and therefore
     have been ignored. Recorded every time the RulesetService kicks off a
     ruleset indexing process and it reaches the point where rules are getting
-    indexed.
+    indexed. This is logged when a new ruleset is indexed for the first time on
+    Chrome start.
   </summary>
 </histogram>
 
 <histogram name="SubresourceFilter.IndexRuleset.Verify.Status"
     enum="SubresourceFilterVerifyStatus" expires_after="2021-04-04">
   <owner>ericrobinson@chromium.org</owner>
-  <owner>csharrison@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
   <summary>
     The result of the IndexRulesetMatcher Verify method. Either pass if both the
     checksum and verifier succeeded, or a value indicating which combination of
     them failed. Note that a zero checksum indicates that the checksum has not
     yet been stored during indexing (for rulesets indexed prior to the
-    checksumming code).
+    checksumming code). This is logged when the indexed ruleset is loaded on
+    Chrome start.
   </summary>
 </histogram>
 
 <histogram name="SubresourceFilter.IndexRuleset.Verify2.WallDuration"
-    units="ms" expires_after="M85">
-  <owner>csharrison@chromium.org</owner>
+    units="ms" expires_after="M92">
+  <owner>ericrobinson@google.com</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
   <summary>
     The total time it took to verify the indexed ruleset in the browser process.
     Logged every time verification occurs, which usually occurs when the first
-    page with activation is navigated to.
+    page with activation is navigated to. This is logged when the indexed
+    ruleset is loaded on Chrome start.
   </summary>
 </histogram>
 
 <histogram name="SubresourceFilter.IndexRuleset.WallDuration" units="ms"
-    expires_after="M90">
-  <owner>csharrison@chromium.org</owner>
+    expires_after="M92">
   <owner>jkarlin@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
   <summary>
     The total time it took to read and index all rules. Includes I/O time for
     reading the unindexed rules, but not for writing the indexed ruleset.
@@ -192,6 +201,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="SubresourceFilter.PageLoad.Activation.CPUDuration"
     units="microseconds" expires_after="2018-08-30">
+  <obsolete>
+    Removed in 10/2020 after being expired two years. Presumably not used.
+  </obsolete>
   <owner>csharrison@chromium.org</owner>
   <summary>
     Records how much thread CPU time it takes to decide whether subresource
@@ -208,6 +220,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram
     name="SubresourceFilter.PageLoad.Activation.RedirectPosition2.Enforcement"
     enum="RedirectPosition" expires_after="M78">
+  <obsolete>
+    Removed in 10/2020 after being expired over a year. Presumably not used.
+  </obsolete>
   <owner>ericrobinson@chromium.org</owner>
   <owner>csharrison@chromium.org</owner>
   <summary>
@@ -218,6 +233,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="SubresourceFilter.PageLoad.Activation.WallDuration"
     units="microseconds" expires_after="2018-08-30">
+  <obsolete>
+    Removed in 10/2020 after being expired two years. Presumably not used.
+  </obsolete>
   <owner>csharrison@chromium.org</owner>
   <summary>
     Records how long it takes to decide whether subresource filtering should be
@@ -233,8 +251,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="SubresourceFilter.PageLoad.ActivationDecision"
     enum="SubresourceFilterActivationDecision" expires_after="M90">
-  <owner>csharrison@chromium.org</owner>
   <owner>jkarlin@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
   <summary>
     Records the policy decision to activate subresource filtering for a page
     load. 'Activated' indicates that subresource filtering was activated. All
@@ -244,7 +262,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="SubresourceFilter.PageLoad.ActivationList"
     enum="ActivationList" expires_after="2021-03-07">
-  <owner>csharrison@chromium.org</owner>
+  <owner>ericrobinson@google.com</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
   <summary>
     The ActivationList or NONE that the main frame navigation matched with.
     Recorded at WillProcessResponse time for a main frame navigation.
@@ -253,8 +272,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="SubresourceFilter.PageLoad.ActivationState"
     enum="SubresourceFilterActivationState" expires_after="2021-03-07">
-  <owner>csharrison@chromium.org</owner>
-  <owner>chrome-ads-uma@google.com</owner>
+  <owner>ericrobinson@google.com</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
   <summary>
     Whenever a document load is committed in a main frame, records whether
     subresource filtering should be activated for that load. Also records the
@@ -285,9 +304,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SubresourceFilter.PageLoad.NumSubresourceLoads.Disallowed"
-    units="resource loads" expires_after="M85">
-  <owner>csharrison@chromium.org</owner>
+    units="resource loads" expires_after="M92">
   <owner>jkarlin@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
   <summary>
     Whenever a page load is finished with subresource filtering activated,
     records the total number of subresource loads that have been disallowed.
@@ -297,9 +316,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SubresourceFilter.PageLoad.NumSubresourceLoads.Evaluated"
-    units="resource loads" expires_after="M85">
-  <owner>csharrison@chromium.org</owner>
+    units="resource loads" expires_after="M92">
   <owner>jkarlin@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
   <summary>
     Whenever a page load is finished with subresource filtering activated,
     records the total number of subresource loads that have been evaluated. This
@@ -309,9 +328,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SubresourceFilter.PageLoad.NumSubresourceLoads.MatchedRules"
-    units="resource loads" expires_after="M85">
-  <owner>csharrison@chromium.org</owner>
+    units="resource loads" expires_after="M92">
   <owner>jkarlin@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
   <summary>
     Whenever a page load is finished with subresource filtering activated,
     records the total number of subresource loads that have matched filtering
@@ -321,9 +340,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SubresourceFilter.PageLoad.NumSubresourceLoads.Total"
-    units="resource loads" expires_after="M85">
-  <owner>csharrison@chromium.org</owner>
+    units="resource loads" expires_after="M92">
   <owner>jkarlin@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
   <summary>
     Whenever a page load is finished with subresource filtering activated,
     records the total number of subresource loads that have gone through the
@@ -332,11 +351,15 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SubresourceFilter.PageLoad.SafeBrowsingDelay" units="ms"
-    expires_after="M81">
-  <owner>csharrison@chromium.org</owner>
+    expires_after="M92">
+  <owner>ericrobinson@google.com</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
   <summary>
     The navigation delay imposed by the subresource filter on a given navigation
     due to Safe Browsing checks.
+
+    This metric expired after M83 and was renewed in M88, so it has incomplete
+    data between M84 and M87 inclusively.
   </summary>
 </histogram>
 
@@ -396,13 +419,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SubresourceFilter.SafeBrowsing.TotalCheckTime" units="ms"
-    expires_after="M81">
-  <owner>csharrison@chromium.org</owner>
+    expires_after="M92">
   <owner>ericrobinson@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
   <summary>
     The time an individual Safe Browsing URL check took before finishing,
-    including posting tasks to and from the IO thread. Measured on the UI
-    thread.
+    including posting tasks to and from the IO thread. Measured on the UI thread
+    on navigation.
+
+    This metric expired after M83 and was renewed in M88, so it has incomplete
+    data between M84 and M87 inclusively.
   </summary>
 </histogram>
 
@@ -440,18 +466,19 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="SubresourceFilter.WriteRuleset.ReplaceFileError"
     enum="PlatformFileError" expires_after="M90">
-  <owner>csharrison@chromium.org</owner>
   <owner>jkarlin@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
   <summary>
     Records the exact error whenever writing a ruleset fails at the step where
     the ruleset would be moved from the scratch directory to its final location.
+    Recorded every time the RulesetService kicks off a ruleset indexing process.
   </summary>
 </histogram>
 
 <histogram name="SubresourceFilter.WriteRuleset.Result"
     enum="SubresourceFilterWriteRulesetResult" expires_after="M88">
   <owner>ericrobinson@chromium.org</owner>
-  <owner>csharrison@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
   <summary>
     Whether indexing a version of the ruleset and writing it to disk succeeded,
     or failed at a particular step. Recorded every time the RulesetService kicks

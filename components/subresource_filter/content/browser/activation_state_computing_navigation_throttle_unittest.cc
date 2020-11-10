@@ -33,19 +33,6 @@
 
 namespace subresource_filter {
 
-namespace {
-
-// Histogram name on thread timers. Please, use |ExpectThreadTimers| for
-// expectation calls corrections.
-constexpr char kActivationCPU[] =
-    "SubresourceFilter.DocumentLoad.Activation.CPUDuration";
-
-int ExpectThreadTimers(int expected) {
-  return ScopedThreadTimers::IsSupported() ? expected : 0;
-}
-
-}  // namespace
-
 namespace proto = url_pattern_index::proto;
 
 // The tests are parameterized by a bool which enables speculative main frame
@@ -484,33 +471,26 @@ TEST_P(ActivationStateComputingThrottleSubFrameTest, DisabledStatePropagated2) {
   EXPECT_TRUE(state.generic_blocking_rules_disabled);
 }
 
-TEST_P(ActivationStateComputingThrottleSubFrameTest, Speculation) {
-  // Use the activation performance metric as a proxy for how many times
-  // activation computation occurred.
-  base::HistogramTester main_histogram_tester;
-
+// TODO(crbug.com/1143730): This test needs to verify that
+// ComputeActivationState was called appropriately.  Previously this was done
+// via looking at performance histograms, but those are now obsolete.
+TEST_P(ActivationStateComputingThrottleSubFrameTest, DISABLED_Speculation) {
   // Main frames don't do speculative lookups, a navigation commit should only
   // trigger a single ruleset lookup.
   CreateTestNavigationForMainFrame(GURL("http://example.test/"));
   SimulateStartAndExpectToProceed();
   base::RunLoop().RunUntilIdle();
-  int main_frame_checks = dryrun_speculation() ? 1 : 0;
-  main_histogram_tester.ExpectTotalCount(kActivationCPU,
-                                         ExpectThreadTimers(main_frame_checks));
+  // Check that there was one activation decision.
 
   SimulateRedirectAndExpectToProceed(GURL("http://example.test2/"));
   base::RunLoop().RunUntilIdle();
-  main_frame_checks += dryrun_speculation() ? 1 : 0;
-  main_histogram_tester.ExpectTotalCount(kActivationCPU,
-                                         ExpectThreadTimers(main_frame_checks));
+  // Check that there was one additional activation decision.
 
   mojom::ActivationState state;
   state.activation_level = mojom::ActivationLevel::kEnabled;
   NotifyPageActivation(state);
   SimulateCommitAndExpectToProceed();
-  main_frame_checks += dryrun_speculation() ? 0 : 1;
-  main_histogram_tester.ExpectTotalCount(kActivationCPU,
-                                         ExpectThreadTimers(main_frame_checks));
+  // Check that there was one additional activation decision.
 
   base::HistogramTester sub_histogram_tester;
   CreateSubframeAndInitTestNavigation(GURL("http://example.test/"),
@@ -519,16 +499,16 @@ TEST_P(ActivationStateComputingThrottleSubFrameTest, Speculation) {
   // For subframes, do a ruleset lookup at the start and every redirect.
   SimulateStartAndExpectToProceed();
   base::RunLoop().RunUntilIdle();
-  sub_histogram_tester.ExpectTotalCount(kActivationCPU, ExpectThreadTimers(1));
+  // Check that there was one additional activation decision.
 
   SimulateRedirectAndExpectToProceed(GURL("http://example.test2/"));
   base::RunLoop().RunUntilIdle();
-  sub_histogram_tester.ExpectTotalCount(kActivationCPU, ExpectThreadTimers(2));
+  // Check that there was one additional activation decision.
 
   // No ruleset lookup required at commit because we've already checked the
   // latest URL.
   SimulateCommitAndExpectToProceed();
-  sub_histogram_tester.ExpectTotalCount(kActivationCPU, ExpectThreadTimers(2));
+  // Check that there were no additional activation decisions.
 }
 
 TEST_P(ActivationStateComputingThrottleSubFrameTest, SpeculationWithDelay) {
@@ -545,11 +525,9 @@ TEST_P(ActivationStateComputingThrottleSubFrameTest, SpeculationWithDelay) {
 
   simulator->Start();
   EXPECT_FALSE(simulator->IsDeferred());
-  main_histogram_tester.ExpectTotalCount(kActivationCPU, 0);
 
   simulator->Redirect(GURL("http://example.test2/"));
   EXPECT_FALSE(simulator->IsDeferred());
-  main_histogram_tester.ExpectTotalCount(kActivationCPU, 0);
 
   mojom::ActivationState state;
   state.activation_level = mojom::ActivationLevel::kEnabled;
@@ -559,17 +537,12 @@ TEST_P(ActivationStateComputingThrottleSubFrameTest, SpeculationWithDelay) {
   EXPECT_TRUE(simulator->IsDeferred());
   EXPECT_LT(0u, simple_task_runner()->NumPendingTasks());
   simple_task_runner()->RunPendingTasks();
-  // If speculation was enabled for this test, will do a lookup at start and
-  // redirect.
-  main_histogram_tester.ExpectTotalCount(
-      kActivationCPU, ExpectThreadTimers(dryrun_speculation() ? 2 : 1));
   simulator->Wait();
   EXPECT_FALSE(simulator->IsDeferred());
   EXPECT_EQ(content::NavigationThrottle::PROCEED,
             simulator->GetLastThrottleCheckResult());
   simulator->Commit();
 
-  base::HistogramTester sub_histogram_tester;
   auto subframe_simulator =
       content::NavigationSimulator::CreateRendererInitiated(
           GURL("http://example.test"),
@@ -582,14 +555,12 @@ TEST_P(ActivationStateComputingThrottleSubFrameTest, SpeculationWithDelay) {
   // navigation until commit time.
   subframe_simulator->Start();
   EXPECT_FALSE(subframe_simulator->IsDeferred());
-  sub_histogram_tester.ExpectTotalCount(kActivationCPU, 0);
 
   // Calling redirect should ensure that the throttle does not receive the
   // results of the check, but the task to actually perform the check will still
   // happen.
   subframe_simulator->Redirect(GURL("http://example.test2/"));
   EXPECT_FALSE(subframe_simulator->IsDeferred());
-  sub_histogram_tester.ExpectTotalCount(kActivationCPU, 0);
 
   // Finish the checks dispatched in the start and redirect phase when the
   // navigation is ready to commit.
@@ -601,7 +572,6 @@ TEST_P(ActivationStateComputingThrottleSubFrameTest, SpeculationWithDelay) {
   EXPECT_FALSE(subframe_simulator->IsDeferred());
   EXPECT_EQ(content::NavigationThrottle::PROCEED,
             simulator->GetLastThrottleCheckResult());
-  sub_histogram_tester.ExpectTotalCount(kActivationCPU, ExpectThreadTimers(2));
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

@@ -100,10 +100,6 @@ constexpr const char kSubresourceLoadsDisallowedForPage[] =
     "SubresourceFilter.PageLoad.NumSubresourceLoads.Disallowed";
 
 // Names of the performance measurement histograms.
-constexpr const char kActivationWallDuration[] =
-    "SubresourceFilter.DocumentLoad.Activation.WallDuration";
-constexpr const char kActivationCPUDuration[] =
-    "SubresourceFilter.DocumentLoad.Activation.CPUDuration";
 constexpr const char kEvaluationTotalWallDurationForPage[] =
     "SubresourceFilter.PageLoad.SubresourceEvaluation.TotalWallDuration";
 constexpr const char kEvaluationTotalCPUDurationForPage[] =
@@ -1024,14 +1020,6 @@ void ExpectHistogramsAreRecordedForTestFrameSet(
   tester.ExpectTotalCount(kEvaluationCPUDuration,
                           time_recorded ? num_subresource_checks : 0);
 
-  // Activation WallDuration histogram is always recorded.
-  tester.ExpectTotalCount(kActivationWallDuration, 6);
-
-  // Activation CPUDuration histogram is recorded only if base::ThreadTicks is
-  // supported.
-  tester.ExpectTotalCount(kActivationCPUDuration,
-                          ScopedThreadTimers::IsSupported() ? 6 : 0);
-
   tester.ExpectUniqueSample(
       kDocumentLoadActivationLevel,
       static_cast<base::Histogram::Sample>(mojom::ActivationLevel::kEnabled),
@@ -1094,9 +1082,6 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTestWithoutAdTagging,
   // But they still should not be recorded as the filtering is not activated.
   tester.ExpectTotalCount(kEvaluationWallDuration, 0);
   tester.ExpectTotalCount(kEvaluationCPUDuration, 0);
-
-  tester.ExpectTotalCount(kActivationWallDuration, 0);
-  tester.ExpectTotalCount(kActivationCPUDuration, 0);
 
   // Although SubresourceFilterAgents still record the activation decision.
   tester.ExpectUniqueSample(

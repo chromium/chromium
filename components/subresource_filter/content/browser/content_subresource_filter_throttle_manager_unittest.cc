@@ -938,13 +938,6 @@ TEST_F(ContentSubresourceFilterThrottleManagerTest, LogActivation) {
   ExpectActivationSignalForFrame(subframe1, true /* expect_activation */);
 
   tester.ExpectTotalCount(kActivationStateHistogram, 3);
-  // Only those with page level activation do ruleset lookups.
-  tester.ExpectTotalCount("SubresourceFilter.PageLoad.Activation.WallDuration",
-                          2);
-  // The *.CPUDuration histograms are recorded only if base::ThreadTicks is
-  // supported.
-  tester.ExpectTotalCount("SubresourceFilter.PageLoad.Activation.CPUDuration",
-                          base::ThreadTicks::IsSupported() ? 2 : 0);
 }
 
 // Check to make sure we don't send an IPC with the ad tag bit for ad frames
