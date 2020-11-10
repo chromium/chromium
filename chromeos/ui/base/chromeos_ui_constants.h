@@ -9,6 +9,9 @@
 
 namespace chromeos {
 
+// Radius of the header's top corners when the window is restored.
+constexpr int kTopCornerRadiusWhenRestored = 2;
+
 // In the window corners, the resize areas don't actually expand bigger, but the
 // 16 px at the end of each edge triggers diagonal resizing.
 constexpr int kResizeAreaCornerSize = 16;

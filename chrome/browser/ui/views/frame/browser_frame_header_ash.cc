@@ -4,10 +4,10 @@
 
 #include "chrome/browser/ui/views/frame/browser_frame_header_ash.h"
 
-#include "ash/public/cpp/ash_constants.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "base/check.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chromeos/ui/base/chromeos_ui_constants.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
@@ -180,7 +180,7 @@ void BrowserFrameHeaderAsh::PaintFrameImages(gfx::Canvas* canvas) {
       target_widget()->GetNativeWindow()->GetProperty(
           chromeos::kWindowStateTypeKey);
   int corner_radius = chromeos::IsNormalWindowStateType(state_type)
-                          ? ash::kTopCornerRadiusWhenRestored
+                          ? chromeos::kTopCornerRadiusWhenRestored
                           : 0;
 
   PaintFrameImagesInRoundRect(canvas, frame_image, frame_overlay_image,

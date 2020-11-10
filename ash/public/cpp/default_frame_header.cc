@@ -4,9 +4,9 @@
 
 #include "ash/public/cpp/default_frame_header.h"
 
-#include "ash/public/cpp/ash_constants.h"
 #include "ash/public/cpp/window_properties.h"
 #include "base/logging.h"  // DCHECK
+#include "chromeos/ui/base/chromeos_ui_constants.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "chromeos/ui/frame/caption_buttons/caption_button_model.h"
@@ -109,7 +109,7 @@ void DefaultFrameHeader::UpdateFrameColors() {
 void DefaultFrameHeader::DoPaintHeader(gfx::Canvas* canvas) {
   int corner_radius = IsNormalWindowStateType(GetTargetWindow()->GetProperty(
                           chromeos::kWindowStateTypeKey))
-                          ? kTopCornerRadiusWhenRestored
+                          ? chromeos::kTopCornerRadiusWhenRestored
                           : 0;
 
   cc::PaintFlags flags;

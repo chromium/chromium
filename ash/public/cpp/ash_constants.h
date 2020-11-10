@@ -14,9 +14,6 @@ typedef unsigned int SkColor;
 
 namespace ash {
 
-// Radius of the header's top corners when the window is restored.
-constexpr int kTopCornerRadiusWhenRestored = 2;
-
 // Background color used for the Chrome OS boot splash screen.
 constexpr SkColor kChromeOsBootColor = SkColorSetRGB(0xfe, 0xfe, 0xfe);
 
