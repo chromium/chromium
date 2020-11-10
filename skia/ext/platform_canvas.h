@@ -93,11 +93,6 @@ static inline std::unique_ptr<SkCanvas> TryCreateBitmapCanvas(int width,
 #endif
 }
 
-// Return the stride (length of a line in bytes) for the given width. Because
-// we use 32-bits per pixel, this will be roughly 4*width. However, for
-// alignment reasons we may wish to increase that.
-SK_API size_t PlatformCanvasStrideForWidth(unsigned width);
-
 // Copies pixels from the SkCanvas into an SkBitmap, fetching pixels from
 // GPU memory if necessary.
 //

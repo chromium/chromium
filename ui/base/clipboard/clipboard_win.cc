@@ -653,48 +653,16 @@ void ClipboardWin::WriteWebSmartPaste() {
       nullptr);
 }
 
-void ClipboardWin::WriteBitmap(const SkBitmap& in_bitmap) {
-  HDC dc = ::GetDC(nullptr);
-
-  SkBitmap bitmap;
-  // Either points bitmap at in_bitmap, or allocates and converts pixels.
-  if (!skia::SkBitmapToN32OpaqueOrPremul(in_bitmap, &bitmap)) {
-    NOTREACHED() << "Unable to convert bitmap for clipboard";
-    return;
-  }
-
+void ClipboardWin::WriteBitmap(const SkBitmap& bitmap) {
   // This doesn't actually cost us a memcpy when the bitmap comes from the
   // renderer as we load it into the bitmap using setPixels which just sets a
   // pointer.  Someone has to memcpy it into GDI, it might as well be us here.
-
-  // TODO(darin): share data in gfx/bitmap_header.cc somehow
-  BITMAPINFO bm_info = {};
-  bm_info.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
-  bm_info.bmiHeader.biWidth = bitmap.width();
-  bm_info.bmiHeader.biHeight = -bitmap.height();  // sets vertical orientation
-  bm_info.bmiHeader.biPlanes = 1;
-  bm_info.bmiHeader.biBitCount = 32;
-  bm_info.bmiHeader.biCompression = BI_RGB;
-
-  // ::CreateDIBSection allocates memory for us to copy our bitmap into.
-  // Unfortunately, we can't write the created bitmap to the clipboard,
-  // (see
-  // https://docs.microsoft.com/en-us/windows/win32/api/wingdi/nf-wingdi-createdibsection)
-  void* bits;
-  HBITMAP source_hbitmap =
-      ::CreateDIBSection(dc, &bm_info, DIB_RGB_COLORS, &bits, nullptr, 0);
-
-  if (bits && source_hbitmap) {
-    // Copy the bitmap out of shared memory and into GDI
-    memcpy(bits, bitmap.getPixels(), bitmap.computeByteSize());
-
+  base::win::ScopedBitmap hbitmap = skia::CreateHBitmapFromN32SkBitmap(bitmap);
+  if (hbitmap.is_valid()) {
     // Now we have an HBITMAP, we can write it to the clipboard
-    WriteBitmapFromHandle(source_hbitmap,
+    WriteBitmapFromHandle(hbitmap.get(),
                           gfx::Size(bitmap.width(), bitmap.height()));
   }
-
-  ::DeleteObject(source_hbitmap);
-  ::ReleaseDC(nullptr, dc);
 }
 
 void ClipboardWin::WriteData(const ClipboardFormatType& format,
@@ -802,14 +770,13 @@ SkBitmap ClipboardWin::ReadImageInternal(ClipboardBuffer buffer) const {
 
   void* dst_bits;
   // dst_hbitmap is freed by the release_proc in skia_bitmap (below)
-  HBITMAP dst_hbitmap =
-      skia::CreateHBitmap(bitmap->bmiHeader.biWidth, bitmap->bmiHeader.biHeight,
-                          false, 0, &dst_bits);
+  base::win::ScopedBitmap dst_hbitmap = skia::CreateHBitmapXRGB8888(
+      bitmap->bmiHeader.biWidth, bitmap->bmiHeader.biHeight, 0, &dst_bits);
 
   {
     base::win::ScopedCreateDC hdc(CreateCompatibleDC(nullptr));
     HBITMAP old_hbitmap =
-        static_cast<HBITMAP>(SelectObject(hdc.Get(), dst_hbitmap));
+        static_cast<HBITMAP>(SelectObject(hdc.Get(), dst_hbitmap.get()));
     ::SetDIBitsToDevice(hdc.Get(), 0, 0, bitmap->bmiHeader.biWidth,
                         bitmap->bmiHeader.biHeight, 0, 0, 0,
                         bitmap->bmiHeader.biHeight, bitmap_bits, bitmap,
@@ -844,7 +811,7 @@ SkBitmap ClipboardWin::ReadImageInternal(ClipboardBuffer buffer) const {
       [](void* pixels, void* hbitmap) {
         DeleteObject(static_cast<HBITMAP>(hbitmap));
       },
-      dst_hbitmap);
+      dst_hbitmap.release());
   return skia_bitmap;
 }
 

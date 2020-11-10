@@ -36,10 +36,6 @@ bool GetWritablePixels(SkCanvas* canvas, SkPixmap* result) {
   return true;
 }
 
-size_t PlatformCanvasStrideForWidth(unsigned width) {
-  return 4 * width;
-}
-
 #if !defined(WIN32)
 
 std::unique_ptr<SkCanvas> CreatePlatformCanvasWithPixels(

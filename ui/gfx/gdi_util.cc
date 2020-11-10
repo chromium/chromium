@@ -13,11 +13,13 @@
 
 namespace gfx {
 
-void CreateBitmapV4Header(int width, int height, BITMAPV4HEADER* hdr) {
+void CreateBitmapV4HeaderForARGB888(int width,
+                                    int height,
+                                    BITMAPV4HEADER* hdr) {
   // Because bmp v4 header is just an extension, we just create a v3 header and
   // copy the bits over to the v4 header.
   BITMAPINFOHEADER header_v3;
-  skia::CreateBitmapHeader(width, height, &header_v3);
+  skia::CreateBitmapHeaderForXRGB888(width, height, &header_v3);
   memset(hdr, 0, sizeof(BITMAPV4HEADER));
   memcpy(hdr, &header_v3, sizeof(BITMAPINFOHEADER));
 
