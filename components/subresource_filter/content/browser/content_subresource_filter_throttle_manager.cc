@@ -279,8 +279,9 @@ void ContentSubresourceFilterThrottleManager::DidFinishNavigation(
     return;
   }
 
-  AsyncDocumentSubresourceFilter* filter =
-      FilterForFinishedNavigation(navigation_handle, throttle, frame_host);
+  bool did_inherit_opener_activation;
+  AsyncDocumentSubresourceFilter* filter = FilterForFinishedNavigation(
+      navigation_handle, throttle, frame_host, did_inherit_opener_activation);
 
   if (navigation_handle->IsInMainFrame()) {
     current_committed_load_has_notified_disallowed_load_ = false;
@@ -296,11 +297,11 @@ void ContentSubresourceFilterThrottleManager::DidFinishNavigation(
             kActivationConsoleMessage);
       }
     }
-    mojom::ActivationLevel level =
+    RecordUmaHistogramsForMainFrameNavigation(
+        navigation_handle,
         filter ? filter->activation_state().activation_level
-               : mojom::ActivationLevel::kDisabled;
-    UMA_HISTOGRAM_ENUMERATION("SubresourceFilter.PageLoad.ActivationState",
-                              level);
+               : mojom::ActivationLevel::kDisabled,
+        did_inherit_opener_activation);
   }
 
   DestroyRulesetHandleIfNoLongerUsed();
@@ -310,11 +311,13 @@ AsyncDocumentSubresourceFilter*
 ContentSubresourceFilterThrottleManager::FilterForFinishedNavigation(
     content::NavigationHandle* navigation_handle,
     ActivationStateComputingNavigationThrottle* throttle,
-    content::RenderFrameHost* frame_host) {
+    content::RenderFrameHost* frame_host,
+    bool& did_inherit_opener_activation) {
   DCHECK(navigation_handle);
   DCHECK(frame_host);
 
   std::unique_ptr<AsyncDocumentSubresourceFilter> filter;
+  did_inherit_opener_activation = false;
 
   if (navigation_handle->HasCommitted() && throttle) {
     CHECK_EQ(navigation_handle, throttle->navigation_handle());
@@ -334,6 +337,7 @@ ContentSubresourceFilterThrottleManager::FilterForFinishedNavigation(
                 content::WebContents::FromRenderFrameHost(opener_rfh))) {
       opener_activation =
           opener_throttle_manager->GetFrameActivationState(opener_rfh);
+      did_inherit_opener_activation = true;
     }
 
     if (opener_activation && opener_activation->activation_level !=
@@ -374,6 +378,22 @@ ContentSubresourceFilterThrottleManager::FilterForFinishedNavigation(
   frame_host_filter_map_[frame_host] = std::move(filter);
 
   return raw_ptr;
+}
+
+void ContentSubresourceFilterThrottleManager::
+    RecordUmaHistogramsForMainFrameNavigation(
+        content::NavigationHandle* navigation_handle,
+        const mojom::ActivationLevel& activation_level,
+        bool did_inherit_opener_activation) {
+  DCHECK(navigation_handle->IsInMainFrame());
+
+  UMA_HISTOGRAM_ENUMERATION("SubresourceFilter.PageLoad.ActivationState",
+                            activation_level);
+  if (did_inherit_opener_activation) {
+    UMA_HISTOGRAM_ENUMERATION(
+        "SubresourceFilter.PageLoad.ActivationState.DidInherit",
+        activation_level);
+  }
 }
 
 void ContentSubresourceFilterThrottleManager::DidFinishLoad(

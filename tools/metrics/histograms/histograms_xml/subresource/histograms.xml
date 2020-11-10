@@ -254,9 +254,23 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="SubresourceFilter.PageLoad.ActivationState"
     enum="SubresourceFilterActivationState" expires_after="2021-03-07">
   <owner>csharrison@chromium.org</owner>
+  <owner>chrome-ads-uma@google.com</owner>
   <summary>
     Whenever a document load is committed in a main frame, records whether
-    subresource filtering should be activated for that load.
+    subresource filtering should be activated for that load. Also records the
+    same for the initial document load, even if it was not committed.
+  </summary>
+</histogram>
+
+<histogram name="SubresourceFilter.PageLoad.ActivationState.DidInherit"
+    enum="SubresourceFilterActivationState" expires_after="2021-11-02">
+  <owner>alexmt@chromium.org</owner>
+  <owner>chrome-ads-uma@google.com</owner>
+  <summary>
+    Whenever a document load is committed in a main frame that inherits from its
+    same-origin opener, records whether subresource filtering should be
+    activated for that load. Also records the same for the initial document load
+    (if it inherits its activation) even if it was not committed.
   </summary>
 </histogram>
 

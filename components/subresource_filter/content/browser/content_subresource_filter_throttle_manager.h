@@ -220,10 +220,18 @@ class ContentSubresourceFilterThrottleManager
   // filter, or returns |nullptr|. Also updates |frame_host_filter_map_| as
   // appropriate. |frame_host| is provided as |navigation_handle|'s getter
   // cannot be used when the navigation has not committed.
+  // `did_inherit_opener_activation` will be set according to whether the
+  // activation was inherited from the frame's same-origin opener.
   AsyncDocumentSubresourceFilter* FilterForFinishedNavigation(
       content::NavigationHandle* navigation_handle,
       ActivationStateComputingNavigationThrottle* throttle,
-      content::RenderFrameHost* frame_host);
+      content::RenderFrameHost* frame_host,
+      bool& did_inherit_opener_activation);
+
+  void RecordUmaHistogramsForMainFrameNavigation(
+      content::NavigationHandle* navigation_handle,
+      const mojom::ActivationLevel& activation_level,
+      bool did_inherit_opener_activation);
 
   // For each RenderFrameHost where the last committed load has subresource
   // filtering activated, owns the corresponding AsyncDocumentSubresourceFilter.
