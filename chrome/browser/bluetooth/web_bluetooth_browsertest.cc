@@ -625,8 +625,9 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothTestWithNewPermissionsBackendEnabled,
   EXPECT_TRUE(blink::WebBluetoothDeviceId::IsValid(scan_id));
 }
 
+// TODO(crbug.com/1147575) Test failure on Mac10.15
 IN_PROC_BROWSER_TEST_F(WebBluetoothTestWithNewPermissionsBackendEnabled,
-                       WebBluetoothScanningIdsNotPersistent) {
+                       DISABLED_WebBluetoothScanningIdsNotPersistent) {
   // Grant permission to scan for Bluetooth devices again, and compare the ID
   // assigned to the scanned device against the one that was stored previously.
   ASSERT_TRUE(content::ExecJs(web_contents_, R"(
