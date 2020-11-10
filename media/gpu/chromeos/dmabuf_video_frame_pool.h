@@ -47,7 +47,8 @@ class MEDIA_GPU_EXPORT DmabufVideoFramePool {
       const gfx::Size& coded_size,
       const gfx::Rect& visible_rect,
       const gfx::Size& natural_size,
-      size_t max_num_frames) = 0;
+      size_t max_num_frames,
+      bool use_protected) = 0;
 
   // Returns a frame from the pool with the parameters assigned by
   // SetFrameFormat() and zero timestamp. Returns nullptr if the pool is

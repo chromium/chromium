@@ -347,7 +347,8 @@ bool V4L2VideoDecoder::SetupOutputFormat(const gfx::Size& size,
   if (pool) {
     base::Optional<GpuBufferLayout> layout = pool->Initialize(
         fourcc, adjusted_size, visible_rect,
-        GetNaturalSize(visible_rect, pixel_aspect_ratio_), num_output_frames_);
+        GetNaturalSize(visible_rect, pixel_aspect_ratio_), num_output_frames_,
+        /*use_protected=*/false);
     if (!layout) {
       VLOGF(1) << "Failed to setup format to VFPool";
       return false;

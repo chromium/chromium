@@ -152,7 +152,8 @@ void DrmThread::CreateBuffer(gfx::AcceleratedWidget widget,
   // explicitly set via kms on a CRTC (e.g: BufferQueue buffers), therefore
   // allocation should fail if it's not possible to allocate a BO_USE_SCANOUT
   // buffer in that case.
-  if (!*buffer && usage != gfx::BufferUsage::SCANOUT) {
+  if (!*buffer && usage != gfx::BufferUsage::SCANOUT &&
+      usage != gfx::BufferUsage::PROTECTED_SCANOUT_VDA_WRITE) {
     flags &= ~GBM_BO_USE_SCANOUT;
     CreateBufferWithGbmFlags(drm, fourcc_format, size, framebuffer_size, flags,
                              modifiers, buffer, framebuffer);

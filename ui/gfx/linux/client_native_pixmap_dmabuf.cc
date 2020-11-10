@@ -159,7 +159,8 @@ bool ClientNativePixmapDmaBuf::IsConfigurationSupported(
           format == gfx::BufferFormat::BGRA_8888 ||
           format == gfx::BufferFormat::RGBX_8888 ||
           format == gfx::BufferFormat::RGBA_8888;
-    case gfx::BufferUsage::SCANOUT_VDA_WRITE:
+    case gfx::BufferUsage::SCANOUT_VDA_WRITE:  // fallthrough
+    case gfx::BufferUsage::PROTECTED_SCANOUT_VDA_WRITE:
       return false;
 
     case gfx::BufferUsage::GPU_READ_CPU_READ_WRITE:

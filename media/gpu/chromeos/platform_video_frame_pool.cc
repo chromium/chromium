@@ -13,6 +13,7 @@
 #include "media/gpu/chromeos/gpu_buffer_layout.h"
 #include "media/gpu/chromeos/platform_video_frame_utils.h"
 #include "media/gpu/macros.h"
+#include "media/media_buildflags.h"
 
 namespace media {
 
@@ -25,10 +26,20 @@ scoped_refptr<VideoFrame> DefaultCreateFrame(
     const gfx::Size& coded_size,
     const gfx::Rect& visible_rect,
     const gfx::Size& natural_size,
+    bool use_protected,
     base::TimeDelta timestamp) {
-  return CreateGpuMemoryBufferVideoFrame(
+  scoped_refptr<VideoFrame> frame = CreateGpuMemoryBufferVideoFrame(
       gpu_memory_buffer_factory, format, coded_size, visible_rect, natural_size,
-      timestamp, gfx::BufferUsage::SCANOUT_VDA_WRITE);
+      timestamp,
+      use_protected ? gfx::BufferUsage::PROTECTED_SCANOUT_VDA_WRITE
+                    : gfx::BufferUsage::SCANOUT_VDA_WRITE);
+  if (frame && use_protected) {
+    media::VideoFrameMetadata frame_metadata;
+    frame_metadata.protected_video = true;
+    frame_metadata.hw_protected = true;
+    frame->set_metadata(frame_metadata);
+  }
+  return frame;
 }
 
 }  // namespace
@@ -89,7 +100,7 @@ scoped_refptr<VideoFrame> PlatformVideoFramePool::GetFrame() {
     scoped_refptr<VideoFrame> new_frame =
         create_frame_cb_.Run(gpu_memory_buffer_factory_, format, coded_size,
                              gfx::Rect(GetRectSizeFromOrigin(visible_rect_)),
-                             coded_size, base::TimeDelta());
+                             coded_size, use_protected_, base::TimeDelta());
     if (!new_frame)
       return nullptr;
 
@@ -114,6 +125,16 @@ scoped_refptr<VideoFrame> PlatformVideoFramePool::GetFrame() {
   // Clear all metadata before returning to client, in case origin frame has any
   // unrelated metadata.
   wrapped_frame->clear_metadata();
+
+  // We need to put this metadata in the wrapped frame if we are in protected
+  // mode.
+  if (use_protected_) {
+    media::VideoFrameMetadata frame_metadata;
+    frame_metadata.protected_video = true;
+    frame_metadata.hw_protected = true;
+    wrapped_frame->set_metadata(frame_metadata);
+  }
+
   return wrapped_frame;
 }
 
@@ -122,7 +143,8 @@ base::Optional<GpuBufferLayout> PlatformVideoFramePool::Initialize(
     const gfx::Size& coded_size,
     const gfx::Rect& visible_rect,
     const gfx::Size& natural_size,
-    size_t max_num_frames) {
+    size_t max_num_frames,
+    bool use_protected) {
   DVLOGF(4);
   base::AutoLock auto_lock(lock_);
 
@@ -132,6 +154,13 @@ base::Optional<GpuBufferLayout> PlatformVideoFramePool::Initialize(
     VLOGF(1) << "Unsupported fourcc: " << fourcc.ToString();
     return base::nullopt;
   }
+
+#if !BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
+  if (use_protected) {
+    VLOGF(1) << "Protected buffers unsupported";
+    return base::nullopt;
+  }
+#endif
 
   // If the frame layout changed we need to allocate new frames so we will clear
   // the pool here. If only the visible rect or natural size changed, we don't
@@ -145,15 +174,15 @@ base::Optional<GpuBufferLayout> PlatformVideoFramePool::Initialize(
   // hardware overlay purposes. The caveat is that different visible rectangles
   // can map to the same framebuffer size, i.e., all the visible rectangles with
   // the same bottom-right corner map to the same framebuffer size.
-  if (!IsSameFormat_Locked(format, coded_size, visible_rect)) {
+  if (!IsSameFormat_Locked(format, coded_size, visible_rect, use_protected)) {
     DVLOGF(4) << "The video frame format is changed. Clearing the pool.";
     free_frames_.clear();
 
     // Create a temporary frame in order to know VideoFrameLayout that
     // VideoFrame that will be allocated in GetFrame() has.
-    auto frame =
-        create_frame_cb_.Run(gpu_memory_buffer_factory_, format, coded_size,
-                             visible_rect, natural_size, base::TimeDelta());
+    auto frame = create_frame_cb_.Run(gpu_memory_buffer_factory_, format,
+                                      coded_size, visible_rect, natural_size,
+                                      use_protected, base::TimeDelta());
     if (!frame) {
       VLOGF(1) << "Failed to create video frame " << format << " (fourcc "
                << fourcc.ToString() << ")";
@@ -167,6 +196,7 @@ base::Optional<GpuBufferLayout> PlatformVideoFramePool::Initialize(
   visible_rect_ = visible_rect;
   natural_size_ = natural_size;
   max_num_frames_ = max_num_frames;
+  use_protected_ = use_protected;
 
   // The pool might become available because of |max_num_frames_| increased.
   // Notify the client if so.
@@ -236,7 +266,8 @@ void PlatformVideoFramePool::OnFrameReleased(
   frames_in_use_.erase(it);
 
   if (IsSameFormat_Locked(origin_frame->format(), origin_frame->coded_size(),
-                          origin_frame->visible_rect())) {
+                          origin_frame->visible_rect(),
+                          origin_frame->metadata()->hw_protected)) {
     InsertFreeFrame_Locked(std::move(origin_frame));
   }
 
@@ -261,10 +292,10 @@ size_t PlatformVideoFramePool::GetTotalNumFrames_Locked() const {
   return free_frames_.size() + frames_in_use_.size();
 }
 
-bool PlatformVideoFramePool::IsSameFormat_Locked(
-    VideoPixelFormat format,
-    const gfx::Size& coded_size,
-    const gfx::Rect& visible_rect) const {
+bool PlatformVideoFramePool::IsSameFormat_Locked(VideoPixelFormat format,
+                                                 const gfx::Size& coded_size,
+                                                 const gfx::Rect& visible_rect,
+                                                 bool use_protected) const {
   DVLOGF(4);
   lock_.AssertAcquired();
 
@@ -272,7 +303,8 @@ bool PlatformVideoFramePool::IsSameFormat_Locked(
          frame_layout_->fourcc().ToVideoPixelFormat() == format &&
          frame_layout_->size() == coded_size &&
          GetRectSizeFromOrigin(visible_rect_) ==
-             GetRectSizeFromOrigin(visible_rect);
+             GetRectSizeFromOrigin(visible_rect) &&
+         use_protected_ == use_protected;
 }
 
 size_t PlatformVideoFramePool::GetPoolSizeForTesting() {

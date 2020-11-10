@@ -52,7 +52,8 @@ class MEDIA_GPU_EXPORT PlatformVideoFramePool : public DmabufVideoFramePool {
                                              const gfx::Size& coded_size,
                                              const gfx::Rect& visible_rect,
                                              const gfx::Size& natural_size,
-                                             size_t max_num_frames) override;
+                                             size_t max_num_frames,
+                                             bool use_protected) override;
   scoped_refptr<VideoFrame> GetFrame() override;
   bool IsExhausted() override;
   void NotifyWhenFrameAvailable(base::OnceClosure cb) override;
@@ -87,7 +88,8 @@ class MEDIA_GPU_EXPORT PlatformVideoFramePool : public DmabufVideoFramePool {
   size_t GetTotalNumFrames_Locked() const EXCLUSIVE_LOCKS_REQUIRED(lock_);
   bool IsSameFormat_Locked(VideoPixelFormat format,
                            const gfx::Size& coded_size,
-                           const gfx::Rect& visible_rect) const
+                           const gfx::Rect& visible_rect,
+                           bool use_protected) const
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
   bool IsExhausted_Locked() EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
@@ -98,6 +100,7 @@ class MEDIA_GPU_EXPORT PlatformVideoFramePool : public DmabufVideoFramePool {
       const gfx::Size& coded_size,
       const gfx::Rect& visible_rect,
       const gfx::Size& natural_size,
+      bool use_protected,
       base::TimeDelta timestamp)>;
   CreateFrameCB create_frame_cb_;
 
@@ -127,6 +130,9 @@ class MEDIA_GPU_EXPORT PlatformVideoFramePool : public DmabufVideoFramePool {
 
   // The maximum number of frames created by the pool.
   size_t max_num_frames_ GUARDED_BY(lock_) = 0;
+
+  // If we are using HW protected buffers.
+  bool use_protected_ GUARDED_BY(lock_) = false;
 
   // Callback which is called when the pool is not exhausted.
   base::OnceClosure frame_available_cb_ GUARDED_BY(lock_);

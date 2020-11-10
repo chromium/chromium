@@ -35,12 +35,13 @@ class MockVideoFramePool : public DmabufVideoFramePool {
   ~MockVideoFramePool() override = default;
 
   // DmabufVideoFramePool implementation.
-  MOCK_METHOD5(Initialize,
+  MOCK_METHOD6(Initialize,
                base::Optional<GpuBufferLayout>(const Fourcc&,
                                                const gfx::Size&,
                                                const gfx::Rect&,
                                                const gfx::Size&,
-                                               size_t));
+                                               size_t,
+                                               bool));
   MOCK_METHOD0(GetFrame, scoped_refptr<VideoFrame>());
   MOCK_METHOD0(IsExhausted, bool());
   MOCK_METHOD1(NotifyWhenFrameAvailable, void(base::OnceClosure));

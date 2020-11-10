@@ -36,6 +36,8 @@ enum class BufferFormat {
 // by the CPU. SCANOUT implies GPU_READ_WRITE.
 // *_VDA_WRITE is for cases where a video decode accellerator writes into
 // the buffers.
+// PROTECTED_* are for HW protected buffers that cannot be read by the CPU and
+// can only be read in protected GPU contexts or scanned out to overlays.
 
 // TODO(reveman): Add GPU_READ_WRITE for use-cases where SCANOUT is not
 // required.
@@ -47,6 +49,7 @@ enum class BufferUsage {
   CAMERA_AND_CPU_READ_WRITE,
   SCANOUT_CPU_READ_WRITE,
   SCANOUT_VDA_WRITE,
+  PROTECTED_SCANOUT_VDA_WRITE,
   GPU_READ_CPU_READ_WRITE,
   SCANOUT_VEA_CPU_READ,
   SCANOUT_VEA_READ_CAMERA_AND_CPU_READ_WRITE,

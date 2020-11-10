@@ -468,9 +468,11 @@ void VaapiVideoDecoder::ApplyResolutionChange() {
   CHECK(format);
   auto format_fourcc = Fourcc::FromVideoPixelFormat(*format);
   CHECK(format_fourcc);
-  if (!frame_pool_->Initialize(*format_fourcc, pic_size, visible_rect,
-                               natural_size,
-                               decoder_->GetRequiredNumOfPictures())) {
+  // TODO(jkardatzke): Pass true for the last argument when we are in protected
+  // mode.
+  if (!frame_pool_->Initialize(
+          *format_fourcc, pic_size, visible_rect, natural_size,
+          decoder_->GetRequiredNumOfPictures(), /*use_protected=*/false)) {
     DLOG(WARNING) << "Failed Initialize()ing the frame pool.";
     SetState(State::kError);
     return;

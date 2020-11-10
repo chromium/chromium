@@ -34,9 +34,15 @@ base::Optional<GpuBufferLayout> VdaVideoFramePool::Initialize(
     const gfx::Size& coded_size,
     const gfx::Rect& visible_rect,
     const gfx::Size& natural_size,
-    size_t max_num_frames) {
+    size_t max_num_frames,
+    bool use_protected) {
   DVLOGF(3);
   DCHECK_CALLED_ON_VALID_SEQUENCE(parent_sequence_checker_);
+
+  if (use_protected) {
+    LOG(ERROR) << "Cannot allocated protected buffers for VDA";
+    return base::nullopt;
+  }
 
   visible_rect_ = visible_rect;
   natural_size_ = natural_size;

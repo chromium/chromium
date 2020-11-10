@@ -66,6 +66,7 @@ class ClientNativePixmapFactoryDmabuf : public ClientNativePixmapFactory {
       case gfx::BufferUsage::GPU_READ:
       case gfx::BufferUsage::SCANOUT:
       case gfx::BufferUsage::SCANOUT_VDA_WRITE:
+      case gfx::BufferUsage::PROTECTED_SCANOUT_VDA_WRITE:
         return base::WrapUnique(new ClientNativePixmapOpaque);
     }
     NOTREACHED();
