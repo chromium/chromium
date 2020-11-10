@@ -11,6 +11,7 @@
 
 #include "base/callback_list.h"
 #include "base/macros.h"
+#include "base/scoped_observer.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 
 class ChromeBrowserState;
