@@ -44,6 +44,20 @@ namespace {
 
 namespace im = chromeos::input_method;
 
+mojom::ImeInfoPtr GenerateImeInfo(const std::string& id,
+                                  const std::string& name,
+                                  const std::string& url,
+                                  bool enabled,
+                                  bool always_allowed) {
+  mojom::ImeInfoPtr info = mojom::ImeInfo::New();
+  info->ime_id = id;
+  info->display_name = name;
+  info->settings_url = url;
+  info->enabled = enabled;
+  info->is_allowed_in_clamshell_mode = always_allowed;
+  return info;
+}
+
 class FakeTabletMode : public ash::TabletMode {
  public:
   FakeTabletMode() = default;
@@ -440,6 +454,18 @@ TEST_F(ArcInputMethodManagerServiceTest, OnImeDisabled) {
       ceiu::GetArcInputMethodID(proxy_ime_extension_id, kArcImeX);
   const std::string arc_ime_y_component =
       ceiu::GetArcInputMethodID(proxy_ime_extension_id, kArcImeY);
+  mojom::ImeInfoPtr arc_ime_x = GenerateImeInfo(kArcImeX, "", "", false, false);
+  mojom::ImeInfoPtr arc_ime_y = GenerateImeInfo(kArcImeY, "", "", false, false);
+
+  ToggleTabletMode(true);
+
+  // Adding two ARC IMEs.
+  {
+    std::vector<mojom::ImeInfoPtr> info_array;
+    info_array.emplace_back(arc_ime_x.Clone());
+    info_array.emplace_back(arc_ime_y.Clone());
+    service()->OnImeInfoChanged(std::move(info_array));
+  }
 
   // Enable one non-ARC IME, then remove an ARC IME. This usually does not
   // happen, but confirm that OnImeDisabled() does not do anything bad even
@@ -451,18 +477,35 @@ TEST_F(ArcInputMethodManagerServiceTest, OnImeDisabled) {
 
   // Enable two IMEs (one non-ARC and one ARC), remove the ARC IME, and then
   // confirm the non-ARC one remains.
+  arc_ime_x->enabled = true;
+  {
+    std::vector<mojom::ImeInfoPtr> info_array;
+    info_array.emplace_back(arc_ime_x.Clone());
+    info_array.emplace_back(arc_ime_y.Clone());
+    service()->OnImeInfoChanged(std::move(info_array));
+  }
   std::string pref_str =
       base::StringPrintf("%s,%s", kNonArcIme, arc_ime_x_component.c_str());
-  profile()->GetPrefs()->SetString(prefs::kLanguageEnabledImes, pref_str);
+  EXPECT_EQ(pref_str,
+            profile()->GetPrefs()->GetString(prefs::kLanguageEnabledImes));
   service()->OnImeDisabled(kArcImeX);
   EXPECT_EQ(kNonArcIme,
             profile()->GetPrefs()->GetString(prefs::kLanguageEnabledImes));
 
   // Enable two ARC IMEs along with one non-ARC one, remove one of two ARC IMEs,
   // then confirm one non-ARC IME and one ARC IME still remain.
-  pref_str = base::StringPrintf("%s,%s,%s", arc_ime_x_component.c_str(),
-                                kNonArcIme, arc_ime_y_component.c_str());
-  profile()->GetPrefs()->SetString(prefs::kLanguageEnabledImes, pref_str);
+  arc_ime_y->enabled = true;
+  {
+    std::vector<mojom::ImeInfoPtr> info_array;
+    info_array.emplace_back(arc_ime_x.Clone());
+    info_array.emplace_back(arc_ime_y.Clone());
+    service()->OnImeInfoChanged(std::move(info_array));
+  }
+  pref_str =
+      base::StringPrintf("%s,%s,%s", kNonArcIme, arc_ime_x_component.c_str(),
+                         arc_ime_y_component.c_str());
+  EXPECT_EQ(pref_str,
+            profile()->GetPrefs()->GetString(prefs::kLanguageEnabledImes));
   service()->OnImeDisabled(kArcImeX);
   pref_str =
       base::StringPrintf("%s,%s", kNonArcIme, arc_ime_y_component.c_str());
@@ -479,20 +522,14 @@ TEST_F(ArcInputMethodManagerServiceTest, OnImeInfoChanged) {
   const std::string android_ime_id1 = "test.arc.ime";
   const std::string display_name1 = "DisplayName";
   const std::string settings_url1 = "url_to_settings";
-  mojom::ImeInfoPtr info1 = mojom::ImeInfo::New();
-  info1->ime_id = android_ime_id1;
-  info1->display_name = display_name1;
-  info1->enabled = false;
-  info1->settings_url = settings_url1;
+  mojom::ImeInfoPtr info1 = GenerateImeInfo(android_ime_id1, display_name1,
+                                            settings_url1, false, false);
 
   const std::string android_ime_id2 = "test.arc.ime2";
   const std::string display_name2 = "DisplayName2";
   const std::string settings_url2 = "url_to_settings2";
-  mojom::ImeInfoPtr info2 = mojom::ImeInfo::New();
-  info2->ime_id = android_ime_id2;
-  info2->display_name = display_name2;
-  info2->enabled = true;
-  info2->settings_url = settings_url2;
+  mojom::ImeInfoPtr info2 = GenerateImeInfo(android_ime_id2, display_name2,
+                                            settings_url2, true, false);
 
   std::vector<
       std::tuple<std::string, chromeos::input_method::InputMethodDescriptors,
@@ -595,9 +632,8 @@ TEST_F(ArcInputMethodManagerServiceTest, EnableArcIMEsOnlyInTabletMode) {
 
   // Enable the ARC IME.
   {
-    mojom::ImeInfoPtr info = mojom::ImeInfo::New();
-    info->ime_id = android_ime_id;
-    info->enabled = true;
+    mojom::ImeInfoPtr info =
+        GenerateImeInfo(android_ime_id, "", "", true, false);
     std::vector<mojom::ImeInfoPtr> info_array{};
     info_array.emplace_back(info.Clone());
     service()->OnImeInfoChanged(std::move(info_array));
@@ -706,9 +742,8 @@ TEST_F(ArcInputMethodManagerServiceTest,
   // All IMEs are allowed to use.
   // Enable the ARC IME.
   {
-    mojom::ImeInfoPtr info = mojom::ImeInfo::New();
-    info->ime_id = android_ime_id;
-    info->enabled = true;
+    mojom::ImeInfoPtr info =
+        GenerateImeInfo(android_ime_id, "", "", true, false);
     std::vector<mojom::ImeInfoPtr> info_array{};
     info_array.emplace_back(info.Clone());
     service()->OnImeInfoChanged(std::move(info_array));
@@ -809,9 +844,8 @@ TEST_F(ArcInputMethodManagerServiceTest,
 
   // Enable the ARC IME.
   {
-    mojom::ImeInfoPtr info = mojom::ImeInfo::New();
-    info->ime_id = android_ime_id;
-    info->enabled = true;
+    mojom::ImeInfoPtr info =
+        GenerateImeInfo(android_ime_id, "", "", true, false);
     std::vector<mojom::ImeInfoPtr> info_array{};
     info_array.emplace_back(info.Clone());
     service()->OnImeInfoChanged(std::move(info_array));
@@ -853,11 +887,8 @@ TEST_F(ArcInputMethodManagerServiceTest, FocusAndBlur) {
     const std::string android_ime_id = "test.arc.ime";
     const std::string display_name = "DisplayName";
     const std::string settings_url = "url_to_settings";
-    mojom::ImeInfoPtr info = mojom::ImeInfo::New();
-    info->ime_id = android_ime_id;
-    info->display_name = display_name;
-    info->enabled = false;
-    info->settings_url = settings_url;
+    mojom::ImeInfoPtr info = GenerateImeInfo(android_ime_id, display_name,
+                                             settings_url, false, false);
 
     std::vector<mojom::ImeInfoPtr> info_array;
     info_array.emplace_back(std::move(info));
@@ -947,11 +978,8 @@ TEST_F(ArcInputMethodManagerServiceTest, ShowVirtualKeyboard) {
     const std::string android_ime_id = "test.arc.ime";
     const std::string display_name = "DisplayName";
     const std::string settings_url = "url_to_settings";
-    mojom::ImeInfoPtr info = mojom::ImeInfo::New();
-    info->ime_id = android_ime_id;
-    info->display_name = display_name;
-    info->enabled = false;
-    info->settings_url = settings_url;
+    mojom::ImeInfoPtr info = GenerateImeInfo(android_ime_id, display_name,
+                                             settings_url, false, false);
 
     std::vector<mojom::ImeInfoPtr> info_array;
     info_array.emplace_back(std::move(info));
@@ -1017,7 +1045,8 @@ TEST_F(ArcInputMethodManagerServiceTest, VisibilityObserver) {
     const std::string android_ime_id = "test.arc.ime";
     const std::string display_name = "DisplayName";
     const std::string settings_url = "url_to_settings";
-    mojom::ImeInfoPtr info = mojom::ImeInfo::New();
+    mojom::ImeInfoPtr info = GenerateImeInfo(android_ime_id, display_name,
+                                             settings_url, false, false);
     info->ime_id = android_ime_id;
     info->display_name = display_name;
     info->enabled = false;
