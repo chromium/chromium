@@ -18,13 +18,6 @@ ShellPlatformDelegate::CreateJavaScriptDialogManager(Shell* shell) {
   return nullptr;
 }
 
-std::unique_ptr<BluetoothChooser> ShellPlatformDelegate::RunBluetoothChooser(
-    Shell* shell,
-    RenderFrameHost* frame,
-    const BluetoothChooser::EventHandler& event_handler) {
-  return nullptr;
-}
-
 bool ShellPlatformDelegate::HandleRequestToLockMouse(
     Shell* shell,
     WebContents* web_contents,

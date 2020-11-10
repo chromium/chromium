@@ -10,6 +10,8 @@
 
 #include "base/containers/flat_set.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/bluetooth_chooser.h"
+#include "content/public/browser/bluetooth_scanning_prompt.h"
 #include "third_party/blink/public/mojom/bluetooth/web_bluetooth.mojom-forward.h"
 
 namespace blink {
@@ -34,6 +36,18 @@ class RenderFrameHost;
 class CONTENT_EXPORT BluetoothDelegate {
  public:
   virtual ~BluetoothDelegate() = default;
+
+  // Shows a chooser for the user to select a nearby Bluetooth device. The
+  // EventHandler should live at least as long as the returned chooser object.
+  virtual std::unique_ptr<BluetoothChooser> RunBluetoothChooser(
+      RenderFrameHost* frame,
+      const BluetoothChooser::EventHandler& event_handler) = 0;
+
+  // Shows a prompt for the user to allow/block Bluetooth scanning. The
+  // EventHandler should live at least as long as the returned prompt object.
+  virtual std::unique_ptr<BluetoothScanningPrompt> ShowBluetoothScanningPrompt(
+      RenderFrameHost* frame,
+      const BluetoothScanningPrompt::EventHandler& event_handler) = 0;
 
   // This should return the WebBluetoothDeviceId that corresponds to the device
   // with |device_address| in the current |frame|. If there is not a

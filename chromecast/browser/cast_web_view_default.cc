@@ -305,19 +305,6 @@ void CastWebViewDefault::RequestMediaAccessPermission(
                           std::unique_ptr<content::MediaStreamUI>());
 }
 
-std::unique_ptr<content::BluetoothChooser>
-CastWebViewDefault::RunBluetoothChooser(
-    content::RenderFrameHost* frame,
-    const content::BluetoothChooser::EventHandler& event_handler) {
-  std::unique_ptr<content::BluetoothChooser> chooser;
-  if (delegate_) {
-    chooser = delegate_->RunBluetoothChooser(frame, event_handler);
-  }
-  return chooser
-             ? std::move(chooser)
-             : WebContentsDelegate::RunBluetoothChooser(frame, event_handler);
-}
-
 bool CastWebViewDefault::ShouldAllowRunningInsecureContent(
     content::WebContents* /* web_contents */,
     bool allowed_per_prefs,

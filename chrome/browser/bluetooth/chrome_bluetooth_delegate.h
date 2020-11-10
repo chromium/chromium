@@ -37,6 +37,13 @@ class ChromeBluetoothDelegate : public content::BluetoothDelegate {
   ChromeBluetoothDelegate& operator=(const ChromeBluetoothDelegate&) = delete;
 
   // BluetoothDelegate implementation:
+  std::unique_ptr<content::BluetoothChooser> RunBluetoothChooser(
+      content::RenderFrameHost* frame,
+      const content::BluetoothChooser::EventHandler& event_handler) override;
+  std::unique_ptr<content::BluetoothScanningPrompt> ShowBluetoothScanningPrompt(
+      content::RenderFrameHost* frame,
+      const content::BluetoothScanningPrompt::EventHandler& event_handler)
+      override;
   blink::WebBluetoothDeviceId GetWebBluetoothDeviceId(
       content::RenderFrameHost* frame,
       const std::string& device_address) override;

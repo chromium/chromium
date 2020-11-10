@@ -5,6 +5,7 @@
 #include "content/web_test/browser/fake_bluetooth_delegate.h"
 
 #include "content/public/browser/web_contents.h"
+#include "content/web_test/browser/web_test_control_host.h"
 #include "device/bluetooth/bluetooth_device.h"
 #include "third_party/blink/public/common/bluetooth/web_bluetooth_device_id.h"
 #include "third_party/blink/public/mojom/bluetooth/web_bluetooth.mojom.h"
@@ -16,9 +17,35 @@ using device::BluetoothUUID;
 
 namespace content {
 
+namespace {
+
+class AlwaysAllowBluetoothScanning : public BluetoothScanningPrompt {
+ public:
+  explicit AlwaysAllowBluetoothScanning(const EventHandler& event_handler) {
+    event_handler.Run(BluetoothScanningPrompt::Event::kAllow);
+  }
+};
+
+}  // namespace
+
 // public
 FakeBluetoothDelegate::FakeBluetoothDelegate() = default;
 FakeBluetoothDelegate::~FakeBluetoothDelegate() = default;
+
+std::unique_ptr<BluetoothChooser> FakeBluetoothDelegate::RunBluetoothChooser(
+    RenderFrameHost* frame,
+    const BluetoothChooser::EventHandler& event_handler) {
+  if (auto* web_test_control_host = WebTestControlHost::Get())
+    return web_test_control_host->RunBluetoothChooser(frame, event_handler);
+  return nullptr;
+}
+
+std::unique_ptr<BluetoothScanningPrompt>
+FakeBluetoothDelegate::ShowBluetoothScanningPrompt(
+    RenderFrameHost* frame,
+    const BluetoothScanningPrompt::EventHandler& event_handler) {
+  return std::make_unique<AlwaysAllowBluetoothScanning>(event_handler);
+}
 
 WebBluetoothDeviceId FakeBluetoothDelegate::GetWebBluetoothDeviceId(
     RenderFrameHost* frame,

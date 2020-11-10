@@ -34,14 +34,6 @@ WebTestShellPlatformDelegate::CreateJavaScriptDialogManager(Shell* shell) {
   return std::make_unique<WebTestJavaScriptDialogManager>();
 }
 
-std::unique_ptr<BluetoothChooser>
-WebTestShellPlatformDelegate::RunBluetoothChooser(
-    Shell* shell,
-    RenderFrameHost* frame,
-    const BluetoothChooser::EventHandler& event_handler) {
-  return WebTestControlHost::Get()->RunBluetoothChooser(frame, event_handler);
-}
-
 bool WebTestShellPlatformDelegate::HandleRequestToLockMouse(
     Shell* shell,
     WebContents* web_contents,

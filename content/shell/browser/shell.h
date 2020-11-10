@@ -139,12 +139,6 @@ class Shell : public WebContentsDelegate,
                               InvalidateTypes changed_flags) override;
   JavaScriptDialogManager* GetJavaScriptDialogManager(
       WebContents* source) override;
-  std::unique_ptr<BluetoothChooser> RunBluetoothChooser(
-      RenderFrameHost* frame,
-      const BluetoothChooser::EventHandler& event_handler) override;
-  std::unique_ptr<BluetoothScanningPrompt> ShowBluetoothScanningPrompt(
-      RenderFrameHost* frame,
-      const BluetoothScanningPrompt::EventHandler& event_handler) override;
 #if defined(OS_MAC)
   void DidNavigateMainFramePostCommit(WebContents* contents) override;
   bool HandleKeyboardEvent(WebContents* source,

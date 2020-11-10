@@ -18,11 +18,12 @@
 #include "content/browser/bluetooth/bluetooth_blocklist.h"
 #include "content/browser/bluetooth/bluetooth_metrics.h"
 #include "content/browser/bluetooth/web_bluetooth_service_impl.h"
+#include "content/public/browser/bluetooth_delegate.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/browser/web_contents_delegate.h"
+#include "content/public/common/content_client.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_common.h"
 #include "device/bluetooth/bluetooth_discovery_session.h"
@@ -291,7 +292,7 @@ void BluetoothDeviceChooserController::GetDevice(
       &BluetoothDeviceChooserController::OnBluetoothChooserEvent,
       base::Unretained(this));
 
-  if (WebContentsDelegate* delegate = web_contents_->GetDelegate()) {
+  if (auto* delegate = GetContentClient()->browser()->GetBluetoothDelegate()) {
     chooser_ = delegate->RunBluetoothChooser(render_frame_host_,
                                              std::move(chooser_event_handler));
   }

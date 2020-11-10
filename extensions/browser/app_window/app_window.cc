@@ -429,13 +429,6 @@ bool AppWindow::PreHandleGestureEvent(WebContents* source,
   return AppWebContentsHelper::ShouldSuppressGestureEvent(event);
 }
 
-std::unique_ptr<content::BluetoothChooser> AppWindow::RunBluetoothChooser(
-    content::RenderFrameHost* frame,
-    const content::BluetoothChooser::EventHandler& event_handler) {
-  return ExtensionsBrowserClient::Get()->CreateBluetoothChooser(frame,
-                                                                event_handler);
-}
-
 bool AppWindow::TakeFocus(WebContents* source, bool reverse) {
   return app_delegate_->TakeFocus(source, reverse);
 }

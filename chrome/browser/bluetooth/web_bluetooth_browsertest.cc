@@ -9,6 +9,7 @@
 #include "base/command_line.h"
 #include "base/metrics/field_trial.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/bluetooth/chrome_bluetooth_delegate.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -20,6 +21,7 @@
 #include "components/variations/variations_associated_data.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
@@ -242,8 +244,13 @@ class FakeBluetoothScanningPrompt : public content::BluetoothScanningPrompt {
   content::BluetoothScanningPrompt::EventHandler event_handler_;
 };
 
-class TestWebContentsDelegate : public content::WebContentsDelegate {
+class TestBluetoothDelegate : public ChromeBluetoothDelegate {
  public:
+  TestBluetoothDelegate() = default;
+  ~TestBluetoothDelegate() override = default;
+  TestBluetoothDelegate(const TestBluetoothDelegate&) = delete;
+  TestBluetoothDelegate& operator=(const TestBluetoothDelegate&) = delete;
+
   void SetDeviceToSelect(const std::string& device_address) {
     device_to_select_ = device_address;
   }
@@ -253,13 +260,15 @@ class TestWebContentsDelegate : public content::WebContentsDelegate {
   // will timeout if |navigator.bluetooth.requestLEScan()| has not been called
   // in JavaScript.
   void RunPromptEventHandler(content::BluetoothScanningPrompt::Event event) {
-    if (!scanning_prompt_)
-      scanning_prompt_creation_loop_.Run();
+    if (!scanning_prompt_) {
+      scanning_prompt_creation_loop_.emplace();
+      scanning_prompt_creation_loop_->Run();
+    }
     scanning_prompt_->RunPromptEventHandler(event);
   }
 
  protected:
-  // content::WebContentsDelegate implementation:
+  // content::BluetoothDelegate implementation:
   std::unique_ptr<content::BluetoothChooser> RunBluetoothChooser(
       content::RenderFrameHost* frame,
       const content::BluetoothChooser::EventHandler& event_handler) override {
@@ -274,7 +283,8 @@ class TestWebContentsDelegate : public content::WebContentsDelegate {
     auto scanning_prompt =
         std::make_unique<FakeBluetoothScanningPrompt>(event_handler);
     scanning_prompt_ = scanning_prompt.get();
-    scanning_prompt_creation_loop_.Quit();
+    if (scanning_prompt_creation_loop_)
+      scanning_prompt_creation_loop_->Quit();
     return scanning_prompt;
   }
 
@@ -283,7 +293,26 @@ class TestWebContentsDelegate : public content::WebContentsDelegate {
 
   // This RunLoop is used to ensure that |scanning_prompt_| is not nullptr when
   // RunPromptEventHandler() is called.
-  base::RunLoop scanning_prompt_creation_loop_;
+  base::Optional<base::RunLoop> scanning_prompt_creation_loop_;
+};
+
+class TestContentBrowserClient : public ChromeContentBrowserClient {
+ public:
+  TestContentBrowserClient() = default;
+  ~TestContentBrowserClient() override = default;
+  TestContentBrowserClient(const TestContentBrowserClient&) = delete;
+  TestContentBrowserClient& operator=(const TestContentBrowserClient&) = delete;
+
+  TestBluetoothDelegate* bluetooth_delegate() { return &bluetooth_delegate_; }
+
+ protected:
+  // ChromeContentBrowserClient:
+  content::BluetoothDelegate* GetBluetoothDelegate() override {
+    return &bluetooth_delegate_;
+  }
+
+ private:
+  TestBluetoothDelegate bluetooth_delegate_;
 };
 
 class WebBluetoothTest : public InProcessBrowserTest {
@@ -335,9 +364,13 @@ class WebBluetoothTest : public InProcessBrowserTest {
         device::BluetoothAdapterFactory::Get()->InitGlobalValuesForTesting();
     global_values_->SetLESupported(true);
     device::BluetoothAdapterFactory::SetAdapterForTesting(adapter_);
+    old_browser_client_ = content::SetBrowserClientForTesting(&browser_client_);
   }
 
-  void TearDownOnMainThread() override { url_loader_interceptor_.reset(); }
+  void TearDownOnMainThread() override {
+    content::SetBrowserClientForTesting(old_browser_client_);
+    url_loader_interceptor_.reset();
+  }
 
   void AddFakeDevice(const std::string& device_address) {
     auto fake_device =
@@ -356,23 +389,21 @@ class WebBluetoothTest : public InProcessBrowserTest {
     adapter_->SimulateDeviceAdvertisementReceived(device_address);
   }
 
-  TestWebContentsDelegate* UseAndGetTestWebContentsDelegate() {
-    if (!test_delegate_)
-      test_delegate_ = std::make_unique<TestWebContentsDelegate>();
-    web_contents_->SetDelegate(test_delegate_.get());
-    return test_delegate_.get();
+  void SetDeviceToSelect(const std::string& device_address) {
+    browser_client_.bluetooth_delegate()->SetDeviceToSelect(device_address);
   }
 
-  void SetDeviceToSelect(const std::string& device_address) {
-    test_delegate_->SetDeviceToSelect(device_address);
+  void RunPromptEventHandler(content::BluetoothScanningPrompt::Event event) {
+    browser_client_.bluetooth_delegate()->RunPromptEventHandler(event);
   }
 
   std::unique_ptr<device::BluetoothAdapterFactory::GlobalValuesForTesting>
       global_values_;
   scoped_refptr<FakeBluetoothAdapter> adapter_;
+  TestContentBrowserClient browser_client_;
+  content::ContentBrowserClient* old_browser_client_ = nullptr;
 
   content::WebContents* web_contents_ = nullptr;
-  std::unique_ptr<TestWebContentsDelegate> test_delegate_;
   std::unique_ptr<content::URLLoaderInterceptor> url_loader_interceptor_;
 };
 
@@ -513,9 +544,8 @@ class WebBluetoothTestWithNewPermissionsBackendEnabled
 
 IN_PROC_BROWSER_TEST_F(WebBluetoothTestWithNewPermissionsBackendEnabled,
                        PRE_WebBluetoothPersistentIds) {
-  auto* delegate = UseAndGetTestWebContentsDelegate();
   AddFakeDevice(kDeviceAddress);
-  delegate->SetDeviceToSelect(kDeviceAddress);
+  SetDeviceToSelect(kDeviceAddress);
 
   // Grant permission for the device with address |kDeviceAddress| and store its
   // WebBluetoothDeviceId in localStorage to retrieve it after the browser
@@ -536,9 +566,8 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothTestWithNewPermissionsBackendEnabled,
 
 IN_PROC_BROWSER_TEST_F(WebBluetoothTestWithNewPermissionsBackendEnabled,
                        WebBluetoothPersistentIds) {
-  auto* delegate = UseAndGetTestWebContentsDelegate();
   AddFakeDevice(kDeviceAddress);
-  delegate->SetDeviceToSelect(kDeviceAddress);
+  SetDeviceToSelect(kDeviceAddress);
 
   // At the moment, there is not a way for Web Bluetooth to return a list of the
   // previously granted Bluetooth devices, so use requestDevice here.
@@ -567,8 +596,6 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothTestWithNewPermissionsBackendEnabled,
 
 IN_PROC_BROWSER_TEST_F(WebBluetoothTestWithNewPermissionsBackendEnabled,
                        PRE_WebBluetoothScanningIdsNotPersistent) {
-  auto* delegate = UseAndGetTestWebContentsDelegate();
-
   // Grant permission to scan for Bluetooth devices and store the detected
   // device's WebBluetoothDeviceId in localStorage to retrieve it after the
   // browser restarts.
@@ -576,8 +603,7 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothTestWithNewPermissionsBackendEnabled,
       var requestLEScanPromise = navigator.bluetooth.requestLEScan({
         acceptAllAdvertisements: true});
   )"));
-  delegate->RunPromptEventHandler(
-      content::BluetoothScanningPrompt::Event::kAllow);
+  RunPromptEventHandler(content::BluetoothScanningPrompt::Event::kAllow);
   ASSERT_TRUE(content::ExecJs(web_contents_, "requestLEScanPromise"));
 
   ASSERT_TRUE(content::ExecJs(web_contents_, R"(
@@ -601,16 +627,13 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothTestWithNewPermissionsBackendEnabled,
 
 IN_PROC_BROWSER_TEST_F(WebBluetoothTestWithNewPermissionsBackendEnabled,
                        WebBluetoothScanningIdsNotPersistent) {
-  auto* delegate = UseAndGetTestWebContentsDelegate();
-
   // Grant permission to scan for Bluetooth devices again, and compare the ID
   // assigned to the scanned device against the one that was stored previously.
   ASSERT_TRUE(content::ExecJs(web_contents_, R"(
       var requestLEScanPromise = navigator.bluetooth.requestLEScan({
         acceptAllAdvertisements: true});
   )"));
-  delegate->RunPromptEventHandler(
-      content::BluetoothScanningPrompt::Event::kAllow);
+  RunPromptEventHandler(content::BluetoothScanningPrompt::Event::kAllow);
   ASSERT_TRUE(content::ExecJs(web_contents_, "requestLEScanPromise"));
 
   ASSERT_TRUE(content::ExecJs(web_contents_, R"(
@@ -639,9 +662,8 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothTestWithNewPermissionsBackendEnabled,
 
 IN_PROC_BROWSER_TEST_F(WebBluetoothTestWithNewPermissionsBackendEnabled,
                        PRE_WebBluetoothIdsUsedInWebBluetoothScanning) {
-  auto* delegate = UseAndGetTestWebContentsDelegate();
   AddFakeDevice(kDeviceAddress);
-  delegate->SetDeviceToSelect(kDeviceAddress);
+  SetDeviceToSelect(kDeviceAddress);
 
   // Grant permission for the device with address |kDeviceAddress| and store its
   // WebBluetoothDeviceId in localStorage to retrieve it after the browser
@@ -662,16 +684,13 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothTestWithNewPermissionsBackendEnabled,
 
 IN_PROC_BROWSER_TEST_F(WebBluetoothTestWithNewPermissionsBackendEnabled,
                        WebBluetoothIdsUsedInWebBluetoothScanning) {
-  auto* delegate = UseAndGetTestWebContentsDelegate();
-
   // Grant permission to scan for Bluetooth devices again, and compare the ID
   // assigned to the scanned device against the one that was stored previously.
   ASSERT_TRUE(content::ExecJs(web_contents_, R"(
       var requestLEScanPromise = navigator.bluetooth.requestLEScan({
         acceptAllAdvertisements: true});
   )"));
-  delegate->RunPromptEventHandler(
-      content::BluetoothScanningPrompt::Event::kAllow);
+  RunPromptEventHandler(content::BluetoothScanningPrompt::Event::kAllow);
   ASSERT_TRUE(content::ExecJs(web_contents_, "requestLEScanPromise"));
 
   ASSERT_TRUE(content::ExecJs(web_contents_, R"(
@@ -699,9 +718,8 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothTestWithNewPermissionsBackendEnabled,
 
 IN_PROC_BROWSER_TEST_F(WebBluetoothTestWithNewPermissionsBackendEnabled,
                        PRE_WebBluetoothPersistentServices) {
-  auto* delegate = UseAndGetTestWebContentsDelegate();
   AddFakeDevice(kDeviceAddress);
-  delegate->SetDeviceToSelect(kDeviceAddress);
+  SetDeviceToSelect(kDeviceAddress);
 
   // Grant permission for the device with address |kDeviceAddress| and store its
   // WebBluetoothDeviceId in localStorage to retrieve it after the browser
@@ -722,9 +740,8 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothTestWithNewPermissionsBackendEnabled,
 
 IN_PROC_BROWSER_TEST_F(WebBluetoothTestWithNewPermissionsBackendEnabled,
                        WebBluetoothPersistentServices) {
-  auto* delegate = UseAndGetTestWebContentsDelegate();
   AddFakeDevice(kDeviceAddress);
-  delegate->SetDeviceToSelect(kDeviceAddress);
+  SetDeviceToSelect(kDeviceAddress);
 
   // At the moment, there is not a way for Web Bluetooth to return a list of the
   // previously granted Bluetooth devices, so use requestDevice here without

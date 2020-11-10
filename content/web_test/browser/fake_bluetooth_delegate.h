@@ -44,6 +44,12 @@ class FakeBluetoothDelegate : public BluetoothDelegate {
   FakeBluetoothDelegate& operator=(const FakeBluetoothDelegate&) = delete;
 
   // BluetoothDelegate implementation:
+  std::unique_ptr<BluetoothChooser> RunBluetoothChooser(
+      RenderFrameHost* frame,
+      const BluetoothChooser::EventHandler& event_handler) override;
+  std::unique_ptr<BluetoothScanningPrompt> ShowBluetoothScanningPrompt(
+      RenderFrameHost* frame,
+      const BluetoothScanningPrompt::EventHandler& event_handler) override;
   blink::WebBluetoothDeviceId GetWebBluetoothDeviceId(
       RenderFrameHost* frame,
       const std::string& device_address) override;

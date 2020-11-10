@@ -7,9 +7,11 @@
 #include "base/bind.h"
 #include "base/bind_helpers.h"
 #include "content/browser/bluetooth/web_bluetooth_service_impl.h"
+#include "content/public/browser/bluetooth_delegate.h"
+#include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/browser/web_contents_delegate.h"
+#include "content/public/common/content_client.h"
 
 namespace content {
 
@@ -32,9 +34,8 @@ void BluetoothDeviceScanningPromptController::ShowPermissionPrompt() {
       base::BindRepeating(&BluetoothDeviceScanningPromptController::
                               OnBluetoothScanningPromptEvent,
                           weak_ptr_factory_.GetWeakPtr());
-  WebContentsDelegate* delegate =
-      WebContents::FromRenderFrameHost(render_frame_host_)->GetDelegate();
-  if (delegate) {
+
+  if (auto* delegate = GetContentClient()->browser()->GetBluetoothDelegate()) {
     prompt_ = delegate->ShowBluetoothScanningPrompt(
         render_frame_host_, std::move(prompt_event_handler));
   }

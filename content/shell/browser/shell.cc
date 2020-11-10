@@ -537,25 +537,6 @@ JavaScriptDialogManager* Shell::GetJavaScriptDialogManager(
   return dialog_manager_.get();
 }
 
-std::unique_ptr<BluetoothChooser> Shell::RunBluetoothChooser(
-    RenderFrameHost* frame,
-    const BluetoothChooser::EventHandler& event_handler) {
-  return g_platform->RunBluetoothChooser(this, frame, event_handler);
-}
-
-class AlwaysAllowBluetoothScanning : public BluetoothScanningPrompt {
- public:
-  explicit AlwaysAllowBluetoothScanning(const EventHandler& event_handler) {
-    event_handler.Run(content::BluetoothScanningPrompt::Event::kAllow);
-  }
-};
-
-std::unique_ptr<BluetoothScanningPrompt> Shell::ShowBluetoothScanningPrompt(
-    RenderFrameHost* frame,
-    const BluetoothScanningPrompt::EventHandler& event_handler) {
-  return std::make_unique<AlwaysAllowBluetoothScanning>(event_handler);
-}
-
 #if defined(OS_MAC)
 void Shell::DidNavigateMainFramePostCommit(WebContents* contents) {
   g_platform->DidNavigateMainFramePostCommit(this, contents);

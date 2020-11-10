@@ -6,13 +6,6 @@
 
 namespace chromecast {
 
-std::unique_ptr<content::BluetoothChooser>
-CastWebView::Delegate::RunBluetoothChooser(
-    content::RenderFrameHost* frame,
-    const content::BluetoothChooser::EventHandler& event_handler) {
-  return nullptr;
-}
-
 CastWebView::CreateParams::CreateParams() = default;
 
 CastWebView::CreateParams::CreateParams(const CreateParams& other) = default;
