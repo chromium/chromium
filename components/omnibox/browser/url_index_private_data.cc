@@ -863,9 +863,8 @@ bool URLIndexPrivateData::IndexRow(
   // as appropriate.
   if (got_visits) {
     UpdateRecentVisits(row_id, recent_visits);
-  } else {
+  } else if (history_service) {
     DCHECK(tracker);
-    DCHECK(history_service);
     ScheduleUpdateRecentVisits(history_service, row_id, tracker);
   }
 
