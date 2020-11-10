@@ -304,9 +304,18 @@ void GPUQueue::WriteTextureImpl(
     GPUTextureDataLayout* data_layout,
     UnsignedLongEnforceRangeSequenceOrGPUExtent3DDict& write_size,
     ExceptionState& exception_state) {
-  WGPUTextureCopyView dawn_destination = AsDawnType(destination, device_);
-  WGPUTextureDataLayout dawn_data_layout = AsDawnType(data_layout);
   WGPUExtent3D dawn_write_size = AsDawnType(&write_size);
+  WGPUTextureCopyView dawn_destination = AsDawnType(destination, device_);
+
+  WGPUTextureDataLayout dawn_data_layout = {};
+  {
+    const char* error =
+        ValidateTextureDataLayout(data_layout, &dawn_data_layout);
+    if (error) {
+      device_->InjectError(WGPUErrorType_Validation, error);
+      return;
+    }
+  }
 
   GetProcs().queueWriteTexture(GetHandle(), &dawn_destination, data, data_size,
                                &dawn_data_layout, &dawn_write_size);

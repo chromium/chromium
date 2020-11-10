@@ -109,6 +109,7 @@ class GPUDevice final : public EventTargetWithInlineData,
   const AtomicString& InterfaceName() const override;
   ExecutionContext* GetExecutionContext() const override;
 
+  void InjectError(WGPUErrorType type, const char* message);
   void AddConsoleWarning(const char* message);
 
  private:

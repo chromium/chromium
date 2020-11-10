@@ -95,6 +95,10 @@ GPUDevice::~GPUDevice() {
   GetProcs().deviceRelease(GetHandle());
 }
 
+void GPUDevice::InjectError(WGPUErrorType type, const char* message) {
+  GetProcs().deviceInjectError(GetHandle(), type, message);
+}
+
 void GPUDevice::AddConsoleWarning(const char* message) {
   ExecutionContext* execution_context = GetExecutionContext();
   if (execution_context && allowed_console_warnings_remaining_ > 0) {

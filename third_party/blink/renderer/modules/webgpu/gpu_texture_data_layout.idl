@@ -6,6 +6,6 @@
 
 dictionary GPUTextureDataLayout {
     GPUSize64 offset = 0;
-    required GPUSize32 bytesPerRow;
-    GPUSize32 rowsPerImage = 0;
+    GPUSize32 bytesPerRow;
+    GPUSize32 rowsPerImage;
 };

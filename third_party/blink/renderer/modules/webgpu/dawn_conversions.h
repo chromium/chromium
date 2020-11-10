@@ -49,7 +49,8 @@ WGPUOrigin3D AsDawnType(
     const UnsignedLongEnforceRangeSequenceOrGPUOrigin3DDict*);
 WGPUTextureCopyView AsDawnType(const GPUTextureCopyView* webgpu_view,
                                GPUDevice* device);
-WGPUTextureDataLayout AsDawnType(const GPUTextureDataLayout* webgpu_layout);
+const char* ValidateTextureDataLayout(const GPUTextureDataLayout* webgpu_layout,
+                                      WGPUTextureDataLayout* layout);
 using OwnedProgrammableStageDescriptor =
     std::tuple<WGPUProgrammableStageDescriptor, std::unique_ptr<char[]>>;
 OwnedProgrammableStageDescriptor AsDawnType(

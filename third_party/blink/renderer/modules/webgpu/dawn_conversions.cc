@@ -857,15 +857,40 @@ WGPUTextureCopyView AsDawnType(const GPUTextureCopyView* webgpu_view,
   return dawn_view;
 }
 
-WGPUTextureDataLayout AsDawnType(const GPUTextureDataLayout* webgpu_layout) {
+// Dawn represents `undefined` as the special uint32_t value
+// WGPU_STRIDE_UNDEFINED (0xFFFF'FFFF). Blink must make sure that an actual
+// value of 0xFFFF'FFFF coming in from JS is not treated as
+// WGPU_STRIDE_UNDEFINED, so it injects an error in that case.
+const char* ValidateTextureDataLayout(const GPUTextureDataLayout* webgpu_layout,
+                                      WGPUTextureDataLayout* dawn_layout) {
   DCHECK(webgpu_layout);
 
-  WGPUTextureDataLayout dawn_layout = {};
-  dawn_layout.offset = webgpu_layout->offset();
-  dawn_layout.bytesPerRow = webgpu_layout->bytesPerRow();
-  dawn_layout.rowsPerImage = webgpu_layout->rowsPerImage();
+  uint32_t bytesPerRow = 0;
+  if (webgpu_layout->hasBytesPerRow()) {
+    bytesPerRow = webgpu_layout->bytesPerRow();
+    if (bytesPerRow == WGPU_STRIDE_UNDEFINED) {
+      return "bytesPerRow must be a multiple of 256";
+    }
+  } else {
+    bytesPerRow = WGPU_STRIDE_UNDEFINED;
+  }
 
-  return dawn_layout;
+  uint32_t rowsPerImage = 0;
+  if (webgpu_layout->hasRowsPerImage()) {
+    rowsPerImage = webgpu_layout->rowsPerImage();
+    if (rowsPerImage == WGPU_STRIDE_UNDEFINED) {
+      return "rowsPerImage is too large";
+    }
+  } else {
+    rowsPerImage = WGPU_STRIDE_UNDEFINED;
+  }
+
+  *dawn_layout = {};
+  dawn_layout->offset = webgpu_layout->offset();
+  dawn_layout->bytesPerRow = bytesPerRow;
+  dawn_layout->rowsPerImage = rowsPerImage;
+
+  return nullptr;
 }
 
 OwnedProgrammableStageDescriptor AsDawnType(
