@@ -59,8 +59,8 @@ class AppShortcutManager : public KeyedService,
   void DeleteApplicationShortcuts(const extensions::Extension* extension);
 
   Profile* profile_;
-  bool is_profile_attributes_storage_observer_;
-
+  ScopedObserver<ProfileAttributesStorage, ProfileAttributesStorage::Observer>
+      profile_storage_observer_{this};
   ScopedObserver<extensions::ExtensionRegistry,
                  extensions::ExtensionRegistryObserver>
       extension_registry_observer_{this};

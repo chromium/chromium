@@ -89,8 +89,7 @@ void AppShortcutManager::RegisterProfilePrefs(
   registry->RegisterStringPref(prefs::kAppShortcutsArch, "");
 }
 
-AppShortcutManager::AppShortcutManager(Profile* profile)
-    : profile_(profile), is_profile_attributes_storage_observer_(false) {
+AppShortcutManager::AppShortcutManager(Profile* profile) : profile_(profile) {
   // Use of g_browser_process requires that we are either on the UI thread, or
   // there are no threads initialized (such as in unit tests).
   DCHECK(!content::BrowserThread::IsThreadInitialized(
@@ -109,19 +108,12 @@ AppShortcutManager::AppShortcutManager(Profile* profile)
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   // profile_manager might be NULL in testing environments.
   if (profile_manager) {
-    profile_manager->GetProfileAttributesStorage().AddObserver(this);
-    is_profile_attributes_storage_observer_ = true;
+    profile_storage_observer_.Add(
+        &profile_manager->GetProfileAttributesStorage());
   }
 }
 
-AppShortcutManager::~AppShortcutManager() {
-  if (g_browser_process && is_profile_attributes_storage_observer_) {
-    ProfileManager* profile_manager = g_browser_process->profile_manager();
-    // profile_manager might be NULL in testing environments or during shutdown.
-    if (profile_manager)
-      profile_manager->GetProfileAttributesStorage().RemoveObserver(this);
-  }
-}
+AppShortcutManager::~AppShortcutManager() = default;
 
 void AppShortcutManager::OnExtensionWillBeInstalled(
     content::BrowserContext* browser_context,
