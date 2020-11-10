@@ -10,6 +10,12 @@
 namespace credential_provider {
 namespace extension {
 
+namespace {
+const unsigned int kServiceQueryWaitTimeMs = 100;
+// The number of iterations to poll if a service is stopped correctly.
+const unsigned int kMaxServiceQueryIterations = 100;
+}  // namespace
+
 OSServiceManager** OSServiceManager::GetInstanceStorage() {
   static OSServiceManager* instance = new OSServiceManager();
 
@@ -112,9 +118,48 @@ DWORD OSServiceManager::StartGCPWService() {
   return ERROR_SUCCESS;
 }
 
-DWORD OSServiceManager::ControlService(DWORD control,
-                                       SERVICE_STATUS* service_status) {
-  DCHECK(service_status);
+DWORD OSServiceManager::WaitForServiceStopped() {
+  LOGFN(VERBOSE);
+
+  ScopedScHandle scm_handle(
+      ::OpenSCManager(nullptr, nullptr, SC_MANAGER_ALL_ACCESS));
+  if (scm_handle.Get() == nullptr)
+    return ::GetLastError();
+
+  ScopedScHandle s_handle(::OpenService(
+      scm_handle.Get(), kGCPWExtensionServiceName, SERVICE_QUERY_STATUS));
+  if (s_handle.Get() == nullptr)
+    return ::GetLastError();
+
+  // Wait until the service is completely stopped.
+  for (unsigned int iteration = 0; iteration < kMaxServiceQueryIterations;
+       ++iteration) {
+    SERVICE_STATUS service_status;
+    if (!QueryServiceStatus(s_handle.Get(), &service_status)) {
+      DWORD error = ::GetLastError();
+      LOGFN(ERROR) << "QueryServiceStatus failed error=" << error;
+      return error;
+    }
+    if (service_status.dwCurrentState == SERVICE_STOPPED)
+      return ERROR_SUCCESS;
+
+    if (service_status.dwCurrentState != SERVICE_STOP_PENDING &&
+        service_status.dwCurrentState != SERVICE_RUNNING) {
+      LOGFN(ERROR) << "Cannot stop service state="
+                   << service_status.dwCurrentState;
+      return E_FAIL;
+    }
+    ::Sleep(kServiceQueryWaitTimeMs);
+  }
+
+  // The service didn't terminate.
+  LOGFN(ERROR) << "Stopping service timed out";
+
+  return E_FAIL;
+}
+
+DWORD OSServiceManager::ControlService(DWORD control) {
+  LOGFN(VERBOSE);
 
   ScopedScHandle scm_handle(
       ::OpenSCManager(nullptr, nullptr, SC_MANAGER_ALL_ACCESS));
@@ -128,9 +173,36 @@ DWORD OSServiceManager::ControlService(DWORD control,
   if (!s_handle.IsValid())
     return ::GetLastError();
 
-  if (!::ControlService(s_handle.Get(), control,
-                        (LPSERVICE_STATUS)&service_status))
+  SERVICE_STATUS service_status;
+  if (!::ControlService(s_handle.Get(), control, &service_status)) {
+    DWORD error = ::GetLastError();
+    LOGFN(ERROR) << "ControlService failed with error=" << error;
+    return error;
+  }
+
+  return ERROR_SUCCESS;
+}
+
+DWORD OSServiceManager::ChangeServiceConfig(DWORD dwServiceType,
+                                            DWORD dwStartType,
+                                            DWORD dwErrorControl) {
+  LOGFN(VERBOSE);
+
+  ScopedScHandle scm_handle(
+      ::OpenSCManager(nullptr, nullptr, SC_MANAGER_ALL_ACCESS));
+  if (!scm_handle.IsValid())
     return ::GetLastError();
+
+  ScopedScHandle s_handle(::OpenService(
+      scm_handle.Get(), kGCPWExtensionServiceName, SERVICE_CHANGE_CONFIG));
+  if (!s_handle.IsValid())
+    return ::GetLastError();
+
+  if (!::ChangeServiceConfig(s_handle.Get(), dwServiceType, dwStartType,
+                             dwErrorControl, nullptr, nullptr, nullptr,
+                             nullptr, nullptr, nullptr, nullptr)) {
+    return ::GetLastError();
+  }
 
   return ERROR_SUCCESS;
 }
