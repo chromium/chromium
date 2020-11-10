@@ -39,7 +39,7 @@ Polymer({
 
   observers: [
     'onNumOptionsChange(sources.length)',
-    'sortSources_(sources.*)',
+    'onSourcesChange_(sources.*)',
   ],
 
   /**
@@ -53,33 +53,33 @@ Polymer({
 
   /**
    * "Flatbed" should always be the default option if it exists. If not, use
-   * the first source in the sorted sources array.
-   * @param {!Array<!chromeos.scanning.mojom.ScanSource>} sources
+   * the first source in the sources array.
    * @return {string}
    * @private
    */
-  getDefaultSelectedSource_(sources) {
-    const flatbedSourceIndex = sources.findIndex((source) => {
+  getDefaultSelectedSource_() {
+    const flatbedSourceIndex = this.sources.findIndex((source) => {
       return source.type === chromeos.scanning.mojom.SourceType.kFlatbed;
     });
 
-    return flatbedSourceIndex === -1 ? sources[0].name :
-                                       sources[flatbedSourceIndex].name;
+    return flatbedSourceIndex === -1 ? this.sources[0].name :
+                                       this.sources[flatbedSourceIndex].name;
   },
 
-  /** @private */
-  sortSources_() {
-    if (this.sources.length <= 1) {
-      return;
+  /**
+   * Sorts the sources and sets the selected source when sources change.
+   * @private
+   */
+  onSourcesChange_() {
+    if (this.sources.length > 1) {
+      this.sources = this.customSort(
+          this.sources, alphabeticalCompare,
+          (source) => getSourceTypeString(source.type));
     }
 
-    const sortedSources = this.customSort(
-        this.sources, alphabeticalCompare,
-        (source) => getSourceTypeString(source.type));
-
-    const defaultSelectedSource = this.getDefaultSelectedSource_(sortedSources);
-    this.setProperties(
-        {sources: sortedSources, selectedSource: defaultSelectedSource});
+    if (this.sources.length > 0) {
+      this.selectedSource = this.getDefaultSelectedSource_();
+    }
   },
 
   /**
