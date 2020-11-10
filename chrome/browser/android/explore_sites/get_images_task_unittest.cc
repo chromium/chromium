@@ -195,7 +195,7 @@ TEST_F(ExploreSitesGetImagesTaskTest, SitesExistAndBlocked) {
   PopulateTestingCatalog();
   ExecuteSync(base::BindLambdaForTesting([&](sql::Database* db) {
     sql::Statement insert(db->GetUniqueStatement(R"(
-INSERT INTO site_blacklist
+INSERT INTO site_blocklist
 (url, date_removed)
 VALUES
 ("https://www.example.com/1", 123);)"));

@@ -1,5 +1,5 @@
 INSERT OR REPLACE INTO meta (key, value)
-VALUES ("version", 2), ("last_compatible_version", 1);
+VALUES ("version", 3), ("last_compatible_version", 1);
 
 CREATE TABLE IF NOT EXISTS categories (
 category_id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -36,10 +36,10 @@ time INTEGER NOT NULL,
 category_type INTEGER NOT NULL,
 url TEXT NOT NULL);
 
-CREATE TABLE IF NOT EXISTS site_blacklist (
+CREATE TABLE IF NOT EXISTS site_blocklist (
 url TEXT NOT NULL UNIQUE,
 date_removed INTEGER NOT NULL);
 
-INSERT INTO site_blacklist
+INSERT INTO site_blocklist
 (url, date_removed)
 VALUES ('http://www.example.com', 1);

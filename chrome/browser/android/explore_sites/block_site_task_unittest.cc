@@ -100,7 +100,7 @@ TEST_F(ExploreSitesBlockSiteTest, EmptyUrlTask) {
   // and that activity table is not modified.
   ExecuteSync(base::BindLambdaForTesting([&](sql::Database* db) {
     sql::Statement cat_count_s(
-        db->GetUniqueStatement("SELECT COUNT(*) FROM site_blacklist"));
+        db->GetUniqueStatement("SELECT COUNT(*) FROM site_blocklist"));
     cat_count_s.Step();
     EXPECT_EQ(0, cat_count_s.ColumnInt(0));
 
@@ -126,12 +126,12 @@ TEST_F(ExploreSitesBlockSiteTest, ValidUrlTask) {
   // kGoogleUrl-related activity is removed from the activity table.
   ExecuteSync(base::BindLambdaForTesting([&](sql::Database* db) {
     sql::Statement cat_count_s(
-        db->GetUniqueStatement("SELECT COUNT(*) FROM site_blacklist"));
+        db->GetUniqueStatement("SELECT COUNT(*) FROM site_blocklist"));
     cat_count_s.Step();
     EXPECT_EQ(1, cat_count_s.ColumnInt(0));
 
     sql::Statement cat_data_s(
-        db->GetUniqueStatement("SELECT url FROM site_blacklist"));
+        db->GetUniqueStatement("SELECT url FROM site_blocklist"));
     cat_data_s.Step();
     EXPECT_EQ(kGoogleUrl, cat_data_s.ColumnString(0));
 

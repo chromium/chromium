@@ -19,18 +19,18 @@ namespace {
 
 const char kSelectCategoryImagesSql[] = R"(SELECT favicon
 FROM sites
-LEFT JOIN site_blacklist ON (sites.url = site_blacklist.url)
+LEFT JOIN site_blocklist ON (sites.url = site_blocklist.url)
 WHERE category_id = ? AND LENGTH(favicon) > 0 AND NOT removed
-AND site_blacklist.url IS NULL
+AND site_blocklist.url IS NULL
 LIMIT ?;)";
 
 const char kSelectSummaryImagesSql[] = R"(SELECT favicon
 FROM sites
 INNER JOIN categories ON (sites.category_id = categories.category_id)
-LEFT JOIN site_blacklist ON (sites.url = site_blacklist.url)
+LEFT JOIN site_blocklist ON (sites.url = site_blocklist.url)
 WHERE LENGTH(favicon) > 0 AND NOT removed
 AND version_token = ?
-AND site_blacklist.url IS NULL
+AND site_blocklist.url IS NULL
 ORDER BY sites.category_id ASC, sites.site_id ASC
 LIMIT ?;)";
 

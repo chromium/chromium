@@ -16,7 +16,7 @@
 namespace explore_sites {
 namespace {
 
-static const char kBlockSiteSql[] = R"(INSERT INTO site_blacklist
+static const char kBlockSiteSql[] = R"(INSERT INTO site_blocklist
 (url, date_removed)
 VALUES
 (?, ?);)";

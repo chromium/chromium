@@ -112,6 +112,7 @@ std::string TableSql(sql::Database* db, const std::string& table_name) {
   base::ReplaceSubstringsAfterOffset(&sql, 0, ", ", ",");
   base::ReplaceSubstringsAfterOffset(&sql, 0, ",", ",\n");
   base::ReplaceSubstringsAfterOffset(&sql, 0, " (", "(");
+  base::ReplaceSubstringsAfterOffset(&sql, 0, "\"", "");
   return sql;
 }
 
@@ -173,7 +174,7 @@ class ExploreSitesSchemaTest : public testing::Test {
   void CheckTablesExistence() {
     EXPECT_TRUE(db_->DoesTableExist("sites"));
     EXPECT_TRUE(db_->DoesTableExist("categories"));
-    EXPECT_TRUE(db_->DoesTableExist("site_blacklist"));
+    EXPECT_TRUE(db_->DoesTableExist("site_blocklist"));
     EXPECT_TRUE(db_->DoesTableExist("activity"));
   }
 
@@ -217,7 +218,7 @@ TEST_F(ExploreSitesSchemaTest, TestMissingTablesAreRecreated) {
   EXPECT_TRUE(ExploreSitesSchema::CreateOrUpgradeIfNeeded(db_.get()));
   CheckTablesExistence();
 
-  EXPECT_TRUE(db_->Execute("DROP TABLE site_blacklist"));
+  EXPECT_TRUE(db_->Execute("DROP TABLE site_blocklist"));
   EXPECT_TRUE(ExploreSitesSchema::CreateOrUpgradeIfNeeded(db_.get()));
   CheckTablesExistence();
 

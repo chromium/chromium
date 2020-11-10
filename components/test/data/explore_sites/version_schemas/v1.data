@@ -9,7 +9,10 @@ image: ""
 ntp_click_count: "0"
 esp_site_click_count: "0"
 ntp_shown_count: "0"
--- TABLE site_blacklist --
+-- TABLE site_blocklist --
+--- ROW 0 ---
+url: "http://www.example.com"
+date_removed: "1"
 -- TABLE sites --
 --- ROW 0 ---
 site_id: "1"

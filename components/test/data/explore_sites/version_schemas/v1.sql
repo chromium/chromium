@@ -35,3 +35,7 @@ url TEXT NOT NULL);
 CREATE TABLE IF NOT EXISTS site_blacklist
 (url TEXT NOT NULL UNIQUE,
 date_removed INTEGER NOT NULL);
+
+INSERT INTO site_blacklist
+(url, date_removed)
+VALUES ('http://www.example.com', 1);

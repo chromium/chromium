@@ -26,9 +26,9 @@ ORDER BY category_id ASC;)";
 
 static const char kSelectSiteSql[] =
     R"(SELECT site_id, sites.url, title,
-    site_blacklist.url IS NOT NULL as blacklisted
+    site_blocklist.url IS NOT NULL as blocked
 FROM sites
-LEFT JOIN site_blacklist ON (sites.url = site_blacklist.url)
+LEFT JOIN site_blocklist ON (sites.url = site_blocklist.url)
 WHERE category_id = ? ;)";
 
 const char kDeleteSiteSql[] = R"(DELETE FROM sites
