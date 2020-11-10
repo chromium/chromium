@@ -582,8 +582,7 @@ void SiteSettingsHandler::OnPrefEnableDrmChanged() {
 void SiteSettingsHandler::OnContentSettingChanged(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
-    ContentSettingsType content_type,
-    const std::string& resource_identifier) {
+    ContentSettingsType content_type) {
   if (!site_settings::HasRegisteredGroupName(content_type))
     return;
 

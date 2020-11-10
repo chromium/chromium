@@ -97,7 +97,7 @@ TEST_F(PolicyProviderTest, ObserveManagedSettingsChange) {
 
   MockObserver mock_observer;
   EXPECT_CALL(mock_observer,
-              OnContentSettingChanged(_, _, ContentSettingsType::DEFAULT, ""));
+              OnContentSettingChanged(_, _, ContentSettingsType::DEFAULT));
   provider.AddObserver(&mock_observer);
 
   // Set the managed default-content-setting.
@@ -105,7 +105,7 @@ TEST_F(PolicyProviderTest, ObserveManagedSettingsChange) {
                         std::make_unique<base::Value>(CONTENT_SETTING_BLOCK));
   ::testing::Mock::VerifyAndClearExpectations(&mock_observer);
   EXPECT_CALL(mock_observer,
-              OnContentSettingChanged(_, _, ContentSettingsType::DEFAULT, ""));
+              OnContentSettingChanged(_, _, ContentSettingsType::DEFAULT));
   // Remove the managed default-content-setting.
   prefs->RemoveManagedPref(prefs::kManagedDefaultCookiesSetting);
   provider.ShutdownOnUIThread();

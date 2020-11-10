@@ -72,8 +72,7 @@ bool CameraPanTiltZoomPermissionContext::IsRestrictedToSecureOrigins() const {
 void CameraPanTiltZoomPermissionContext::OnContentSettingChanged(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
-    ContentSettingsType content_type,
-    const std::string& resource_identifier) {
+    ContentSettingsType content_type) {
   if (content_type != ContentSettingsType::MEDIASTREAM_CAMERA &&
       content_type != ContentSettingsType::CAMERA_PAN_TILT_ZOOM) {
     return;

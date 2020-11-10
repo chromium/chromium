@@ -346,8 +346,7 @@ void AccountReconcilor::RemoveObserver(Observer* observer) {
 void AccountReconcilor::OnContentSettingChanged(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
-    ContentSettingsType content_type,
-    const std::string& resource_identifier) {
+    ContentSettingsType content_type) {
   // If this is not a change to cookie settings, just ignore.
   if (content_type != ContentSettingsType::COOKIES)
     return;

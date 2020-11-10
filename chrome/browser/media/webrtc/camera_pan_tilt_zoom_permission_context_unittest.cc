@@ -33,11 +33,9 @@ class ContentSettingsChangeWaiter : public content_settings::Observer {
         this);
   }
 
-  void OnContentSettingChanged(
-      const ContentSettingsPattern& primary_pattern,
-      const ContentSettingsPattern& secondary_pattern,
-      ContentSettingsType content_type,
-      const std::string& resource_identifier) override {
+  void OnContentSettingChanged(const ContentSettingsPattern& primary_pattern,
+                               const ContentSettingsPattern& secondary_pattern,
+                               ContentSettingsType content_type) override {
     if (content_type == content_type_)
       Proceed();
   }

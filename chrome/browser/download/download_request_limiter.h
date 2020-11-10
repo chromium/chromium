@@ -161,8 +161,7 @@ class DownloadRequestLimiter
     void OnContentSettingChanged(
         const ContentSettingsPattern& primary_pattern,
         const ContentSettingsPattern& secondary_pattern,
-        ContentSettingsType content_type,
-        const std::string& resource_identifier) override;
+        ContentSettingsType content_type) override;
 
     // Remember to either block or allow automatic downloads from
     // |request_origin|.

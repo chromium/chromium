@@ -343,8 +343,7 @@ TEST_F(SBNavigationObserverTest, TestContentSettingChange) {
   // Simulate content setting change via page info UI.
   navigation_observer_->OnContentSettingChanged(
       ContentSettingsPattern::FromURL(web_content->GetLastCommittedURL()),
-      ContentSettingsPattern::Wildcard(), ContentSettingsType::NOTIFICATIONS,
-      std::string());
+      ContentSettingsPattern::Wildcard(), ContentSettingsType::NOTIFICATIONS);
 
   // A user gesture should be recorded.
   ASSERT_EQ(1U, user_gesture_map()->size());
@@ -356,8 +355,7 @@ TEST_F(SBNavigationObserverTest, TestContentSettingChange) {
   // Simulate content setting change that cannot be changed via page info UI.
   navigation_observer_->OnContentSettingChanged(
       ContentSettingsPattern::FromURL(web_content->GetLastCommittedURL()),
-      ContentSettingsPattern::Wildcard(), ContentSettingsType::SITE_ENGAGEMENT,
-      std::string());
+      ContentSettingsPattern::Wildcard(), ContentSettingsType::SITE_ENGAGEMENT);
   // No user gesture should be recorded.
   EXPECT_EQ(0U, user_gesture_map()->size());
 }

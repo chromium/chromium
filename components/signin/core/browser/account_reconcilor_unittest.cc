@@ -397,9 +397,9 @@ void AccountReconcilorTest::SimulateLogOutFromCookieCompleted(
 void AccountReconcilorTest::SimulateCookieContentSettingsChanged(
     content_settings::Observer* observer,
     const ContentSettingsPattern& primary_pattern) {
-  observer->OnContentSettingChanged(
-      primary_pattern, ContentSettingsPattern::Wildcard(),
-      ContentSettingsType::COOKIES, std::string());
+  observer->OnContentSettingChanged(primary_pattern,
+                                    ContentSettingsPattern::Wildcard(),
+                                    ContentSettingsType::COOKIES);
 }
 
 void AccountReconcilorTest::SetAccountConsistency(

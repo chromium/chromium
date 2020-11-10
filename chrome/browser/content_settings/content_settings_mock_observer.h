@@ -18,11 +18,10 @@ class MockObserver : public Observer {
   MockObserver();
   ~MockObserver() override;
 
-  MOCK_METHOD4(OnContentSettingChanged,
+  MOCK_METHOD3(OnContentSettingChanged,
                void(const ContentSettingsPattern& primary_pattern,
                     const ContentSettingsPattern& secondary_pattern,
-                    ContentSettingsType content_type,
-                    const std::string& resource_identifier));
+                    ContentSettingsType content_type));
 
  private:
   DISALLOW_COPY_AND_ASSIGN(MockObserver);

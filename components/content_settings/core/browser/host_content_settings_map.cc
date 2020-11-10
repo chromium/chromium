@@ -315,7 +315,7 @@ void HostContentSettingsMap::RegisterProvider(
 #endif
 
   OnContentSettingChanged(ContentSettingsPattern(), ContentSettingsPattern(),
-                          ContentSettingsType::DEFAULT, std::string());
+                          ContentSettingsType::DEFAULT);
 }
 
 ContentSetting HostContentSettingsMap::GetDefaultContentSettingFromProvider(
@@ -787,11 +787,10 @@ void HostContentSettingsMap::ClearSettingsForOneTypeWithPredicate(
 void HostContentSettingsMap::OnContentSettingChanged(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
-    ContentSettingsType content_type,
-    const std::string& resource_identifier) {
+    ContentSettingsType content_type) {
   for (content_settings::Observer& observer : observers_) {
     observer.OnContentSettingChanged(primary_pattern, secondary_pattern,
-                                     content_type, std::string());
+                                     content_type);
   }
 }
 

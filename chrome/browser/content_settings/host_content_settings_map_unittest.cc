@@ -1337,7 +1337,7 @@ TEST_F(HostContentSettingsMapTest, AddContentSettingsObserver) {
       ContentSettingsPattern::FromString("[*.]example.com");
   EXPECT_CALL(mock_observer, OnContentSettingChanged(
                                  pattern, ContentSettingsPattern::Wildcard(),
-                                 ContentSettingsType::COOKIES, ""));
+                                 ContentSettingsType::COOKIES));
 
   host_content_settings_map->AddObserver(&mock_observer);
 

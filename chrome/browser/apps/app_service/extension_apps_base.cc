@@ -724,8 +724,7 @@ void ExtensionAppsBase::OpenNativeSettings(const std::string& app_id) {
 void ExtensionAppsBase::OnContentSettingChanged(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
-    ContentSettingsType content_type,
-    const std::string& resource_identifier) {
+    ContentSettingsType content_type) {
   // If content_type is not one of the supported permissions, do nothing.
   if (!base::Contains(kSupportedPermissionTypes, content_type)) {
     return;

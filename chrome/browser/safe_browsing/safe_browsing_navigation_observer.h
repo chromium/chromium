@@ -140,8 +140,7 @@ class SafeBrowsingNavigationObserver : public base::SupportsUserData::Data,
   // content_settings::Observer overrides.
   void OnContentSettingChanged(const ContentSettingsPattern& primary_pattern,
                                const ContentSettingsPattern& secondary_pattern,
-                               ContentSettingsType content_type,
-                               const std::string& resource_identifier) override;
+                               ContentSettingsType content_type) override;
 
   // Map keyed on NavigationHandle* to keep track of all the ongoing navigation
   // events. NavigationHandle pointers are owned by RenderFrameHost. Since a

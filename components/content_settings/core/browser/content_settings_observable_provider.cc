@@ -31,7 +31,7 @@ void ObservableProvider::NotifyObservers(
     const std::string& resource_identifier) {
   for (Observer& observer : observer_list_) {
     observer.OnContentSettingChanged(primary_pattern, secondary_pattern,
-                                     content_type, resource_identifier);
+                                     content_type);
   }
 }
 

@@ -607,8 +607,7 @@ bool PermissionManager::IsPermissionKillSwitchOn(
 void PermissionManager::OnContentSettingChanged(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
-    ContentSettingsType content_type,
-    const std::string& resource_identifier) {
+    ContentSettingsType content_type) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   std::vector<base::OnceClosure> callbacks;
   callbacks.reserve(subscriptions_.size());

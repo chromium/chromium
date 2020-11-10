@@ -95,15 +95,15 @@ TEST_F(ContentSettingsDefaultProviderTest, IgnoreNonDefaultSettings) {
 TEST_F(ContentSettingsDefaultProviderTest, Observer) {
   MockObserver mock_observer;
   EXPECT_CALL(mock_observer,
-              OnContentSettingChanged(_, _, ContentSettingsType::COOKIES, ""));
+              OnContentSettingChanged(_, _, ContentSettingsType::COOKIES));
   provider_.AddObserver(&mock_observer);
   provider_.SetWebsiteSetting(
       ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
       ContentSettingsType::COOKIES, std::string(),
       std::make_unique<base::Value>(CONTENT_SETTING_BLOCK));
 
-  EXPECT_CALL(mock_observer, OnContentSettingChanged(
-                                 _, _, ContentSettingsType::GEOLOCATION, ""));
+  EXPECT_CALL(mock_observer,
+              OnContentSettingChanged(_, _, ContentSettingsType::GEOLOCATION));
   provider_.SetWebsiteSetting(
       ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
       ContentSettingsType::GEOLOCATION, std::string(),

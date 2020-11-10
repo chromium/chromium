@@ -102,15 +102,13 @@ void SoundContentSettingObserver::OnAudioStateChanged(bool audible) {
 void SoundContentSettingObserver::OnContentSettingChanged(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
-    ContentSettingsType content_type,
-    const std::string& resource_identifier) {
+    ContentSettingsType content_type) {
   if (content_type != ContentSettingsType::SOUND)
     return;
 
 #if !defined(OS_ANDROID)
   if (primary_pattern == ContentSettingsPattern() &&
-      secondary_pattern == ContentSettingsPattern() &&
-      resource_identifier.empty()) {
+      secondary_pattern == ContentSettingsPattern()) {
     UpdateAutoplayPolicy();
   }
 #endif

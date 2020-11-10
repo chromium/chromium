@@ -1229,8 +1229,7 @@ void PushMessagingServiceImpl::SetServiceWorkerDatabaseWipedCallbackForTesting(
 void PushMessagingServiceImpl::OnContentSettingChanged(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
-    ContentSettingsType content_type,
-    const std::string& resource_identifier) {
+    ContentSettingsType content_type) {
   if (content_type != ContentSettingsType::NOTIFICATIONS)
     return;
 

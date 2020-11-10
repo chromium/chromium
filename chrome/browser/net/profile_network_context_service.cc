@@ -858,8 +858,7 @@ base::FilePath ProfileNetworkContextService::GetPartitionPath(
 void ProfileNetworkContextService::OnContentSettingChanged(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
-    ContentSettingsType content_type,
-    const std::string& resource_identifier) {
+    ContentSettingsType content_type) {
   switch (content_type) {
     case ContentSettingsType::COOKIES:
       UpdateCookieSettings(profile_);

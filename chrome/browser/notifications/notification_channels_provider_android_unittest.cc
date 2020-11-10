@@ -340,7 +340,7 @@ TEST_F(NotificationChannelsProviderAndroidTest,
 
   // Create channel as enabled initially - this should notify the mock observer.
   EXPECT_CALL(mock_observer, OnContentSettingChanged(
-                                 _, _, ContentSettingsType::NOTIFICATIONS, ""));
+                                 _, _, ContentSettingsType::NOTIFICATIONS));
   channels_provider_->SetWebsiteSetting(
       ContentSettingsPattern::FromString("https://example.com"),
       ContentSettingsPattern(), ContentSettingsType::NOTIFICATIONS,
@@ -353,7 +353,7 @@ TEST_F(NotificationChannelsProviderAndroidTest,
 
   // Observer should be notified on first invocation of GetRuleIterator.
   EXPECT_CALL(mock_observer, OnContentSettingChanged(
-                                 _, _, ContentSettingsType::NOTIFICATIONS, ""));
+                                 _, _, ContentSettingsType::NOTIFICATIONS));
   channels_provider_->GetRuleIterator(ContentSettingsType::NOTIFICATIONS,
                                       std::string(), false /* incognito */);
   content::RunAllTasksUntilIdle();
@@ -388,9 +388,9 @@ TEST_F(NotificationChannelsProviderAndroidTest,
                 ContentSettingsType::NOTIFICATIONS, std::string()));
 
   EXPECT_CALL(mock_observer,
-              OnContentSettingChanged(
-                  ContentSettingsPattern(), ContentSettingsPattern(),
-                  ContentSettingsType::NOTIFICATIONS, std::string()));
+              OnContentSettingChanged(ContentSettingsPattern(),
+                                      ContentSettingsPattern(),
+                                      ContentSettingsType::NOTIFICATIONS));
 
   channels_provider_->ClearAllContentSettingsRules(
       ContentSettingsType::NOTIFICATIONS);

@@ -142,8 +142,7 @@ class PushMessagingServiceImpl : public content::PushMessagingService,
   // content_settings::Observer implementation.
   void OnContentSettingChanged(const ContentSettingsPattern& primary_pattern,
                                const ContentSettingsPattern& secondary_pattern,
-                               ContentSettingsType content_type,
-                               const std::string& resource_identifier) override;
+                               ContentSettingsType content_type) override;
 
   // Fires the `pushsubscriptionchange` event to the associated service worker
   // of |app_identifier|, which is the app identifier for |old_subscription|

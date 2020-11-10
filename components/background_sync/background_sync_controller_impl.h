@@ -108,8 +108,7 @@ class BackgroundSyncControllerImpl : public content::BackgroundSyncController,
   // content_settings::Observer overrides.
   void OnContentSettingChanged(const ContentSettingsPattern& primary_pattern,
                                const ContentSettingsPattern& secondary_pattern,
-                               ContentSettingsType content_type,
-                               const std::string& resource_identifier) override;
+                               ContentSettingsType content_type) override;
 
   bool IsOriginTracked(const url::Origin& origin) {
     return periodic_sync_origins_.find(origin) != periodic_sync_origins_.end();

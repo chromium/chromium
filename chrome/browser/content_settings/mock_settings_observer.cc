@@ -18,10 +18,9 @@ MockSettingsObserver::~MockSettingsObserver() {}
 void MockSettingsObserver::OnContentSettingChanged(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
-    ContentSettingsType content_type,
-    const std::string& resource_identifier) {
-  const ContentSettingsDetails details(
-      primary_pattern, secondary_pattern, content_type, resource_identifier);
+    ContentSettingsType content_type) {
+  const ContentSettingsDetails details(primary_pattern, secondary_pattern,
+                                       content_type, std::string());
   OnContentSettingsChanged(map_,
                            details.type(),
                            details.update_all_types(),

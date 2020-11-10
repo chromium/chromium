@@ -149,7 +149,7 @@ TEST_F(PrefProviderTest, Observer) {
   MockObserver mock_observer;
   EXPECT_CALL(mock_observer, OnContentSettingChanged(
                                  pattern, ContentSettingsPattern::Wildcard(),
-                                 ContentSettingsType::COOKIES, ""));
+                                 ContentSettingsType::COOKIES));
 
   pref_content_settings_provider.AddObserver(&mock_observer);
 

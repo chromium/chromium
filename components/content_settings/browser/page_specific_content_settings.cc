@@ -813,10 +813,9 @@ void PageSpecificContentSettings::SetPepperBrokerAllowed(bool allowed) {
 void PageSpecificContentSettings::OnContentSettingChanged(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
-    ContentSettingsType content_type,
-    const std::string& resource_identifier) {
+    ContentSettingsType content_type) {
   const ContentSettingsDetails details(primary_pattern, secondary_pattern,
-                                       content_type, resource_identifier);
+                                       content_type, std::string());
   if (!details.update_all() &&
       // The visible URL is the URL in the URL field of a tab.
       // Currently this should be matched by the |primary_pattern|.

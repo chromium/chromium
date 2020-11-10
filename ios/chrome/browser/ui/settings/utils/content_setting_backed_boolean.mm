@@ -43,8 +43,7 @@ class ContentSettingsObserverBridge : public content_settings::Observer {
   // content_settings::Observer implementation.
   void OnContentSettingChanged(const ContentSettingsPattern& primary_pattern,
                                const ContentSettingsPattern& secondary_pattern,
-                               ContentSettingsType content_type,
-                               const std::string& resource_identifier) override;
+                               ContentSettingsType content_type) override;
 
  private:
   ContentSettingBackedBoolean* setting_;  // weak
@@ -59,15 +58,15 @@ ContentSettingsObserverBridge::~ContentSettingsObserverBridge() {}
 void ContentSettingsObserverBridge::OnContentSettingChanged(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
-    ContentSettingsType content_type,
-    const std::string& resource_identifier) {
+    ContentSettingsType content_type) {
   // Ignore when it's the ContentSettingBackedBoolean that is changing the
   // content setting.
   if (setting_.isModifyingContentSetting) {
     return;
   }
   const ContentSettingsDetails settings_details(
-      primary_pattern, secondary_pattern, content_type, resource_identifier);
+      primary_pattern, secondary_pattern, content_type,
+      /*resource_identifier=*/std::string());
   ContentSettingsType settingID = settings_details.type();
   // Unfortunately, because the ContentSettingsPolicyProvider doesn't publish
   // the specific content setting on policy updates, we must refresh on every
