@@ -3864,6 +3864,7 @@ test("unit_tests") {
       "../browser/notifications/notification_channels_provider_android_unittest.cc",
       "../browser/search/contextual_search_policy_handler_android_unittest.cc",
       "../browser/translate/android/translate_bridge_unittest.cc",
+      "../browser/ui/android/autofill_assistant/autofill_assistant_tab_helper_unittest.cc",
       "../browser/ui/android/tab_model/tab_model_list_unittest.cc",
       "../browser/ui/android/toolbar/location_bar_model_android_unittest.cc",
     ]
