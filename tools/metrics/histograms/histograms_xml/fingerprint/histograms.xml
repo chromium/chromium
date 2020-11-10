@@ -114,7 +114,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Fingerprint.Unlock.MatchIgnoredDueToPowerButtonPress"
-    enum="BooleanIgnored" expires_after="2020-11-02">
+    enum="BooleanIgnored" expires_after="2021-02-02">
   <owner>ravisadineni@chromium.org</owner>
   <owner>chromeos-fingerprint@google.com</owner>
   <summary>
