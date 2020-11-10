@@ -10,7 +10,6 @@
 
 #include "ash/frame/header_view.h"
 #include "ash/public/cpp/ash_constants.h"
-#include "ash/public/cpp/default_frame_header.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
@@ -23,6 +22,7 @@
 #include "base/bind.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
+#include "chromeos/ui/frame/default_frame_header.h"
 #include "chromeos/ui/frame/frame_utils.h"
 #include "chromeos/ui/frame/immersive/immersive_fullscreen_controller.h"
 #include "ui/aura/client/aura_constants.h"

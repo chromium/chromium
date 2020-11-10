@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/public/cpp/default_frame_header.h"
+#include "chromeos/ui/frame/default_frame_header.h"
 
 #include <memory>
 
@@ -25,6 +25,7 @@
 #include "ui/views/window/non_client_view.h"
 #include "ui/wm/core/window_util.h"
 
+using chromeos::DefaultFrameHeader;
 using chromeos::FrameBackButton;
 using chromeos::FrameCaptionButtonContainerView;
 using chromeos::FrameHeader;
