@@ -262,11 +262,19 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator {
   // space.
   void AddSurfaceDamageToDamageList(
       const gfx::Rect& damage_rect,
-      const gfx::Transform& parent_root_target_transform,
-      const ClipData& clip_rect);
+      const gfx::Transform& parent_target_transform,
+      const ClipData& clip_rect,
+      const CompositorRenderPass* source_pass,
+      AggregatedRenderPass* dest_pass,
+      Surface* surface);
 
-  // Determine the overlay occluding damage.
-  const DrawQuad* ProcessOverlayDamageList(
+  void AddRenderPassFilterDamageToDamageList(
+      const gfx::Transform& parent_target_transform,
+      const CompositorRenderPass* source_pass,
+      AggregatedRenderPass* dest_pass);
+
+  // Determine the overlay damage and location in the surface damage list.
+  const DrawQuad* FindQuadWithOverlayDamage(
       const CompositorRenderPass& source_pass,
       AggregatedRenderPass* dest_pass,
       const gfx::Transform& parent_target_transform,
@@ -467,6 +475,11 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator {
   // target damage or not, because that allows a frame to be drawn after inking
   // is finished to remove the last drawn ink trail.
   bool last_frame_had_delegated_ink_ = false;
+
+  // The current surface has zero_damage_rect and is not recorded in
+  // surface_damage_rect_list_ . Set by AddSurfaceDamageToDamageList() and read
+  // by FindQuadWithOverlayDamage().
+  bool current_zero_damage_rect_is_not_recorded_ = false;
 
   // A helper class used to remap render pass IDs from the surface namespace to
   // a common space, to avoid collisions.

@@ -259,79 +259,108 @@ gfx::Rect SurfaceAggregator::DamageRectForSurface(
   return full_rect;
 }
 
-// In CopyPasses(), surfaces are processed from top to bottom.
-// |surface_damage_rect_list_| is saved in the same order.
-void SurfaceAggregator::AddSurfaceDamageToDamageList(
-    const gfx::Rect& damage_rect,
-    const gfx::Transform& parent_to_root_target_transform,
-    const ClipData& clip_rect) {
-  if (damage_rect.IsEmpty()) {
-    surface_damage_rect_list_->push_back(gfx::Rect());
+// This function is called at each render pass - CopyQuadsToPass().
+void SurfaceAggregator::AddRenderPassFilterDamageToDamageList(
+    const gfx::Transform& parent_target_transform,
+    const CompositorRenderPass* source_pass,
+    AggregatedRenderPass* dest_pass) {
+  // Add damages from render passes with pixel-moving foreground filters or
+  // backdrop filters to the surface damage list.
+  if (!source_pass->filters.HasFilterThatMovesPixels() &&
+      !source_pass->backdrop_filters.HasFilterThatMovesPixels()) {
     return;
+  }
+
+  gfx::Transform parent_to_root_target_transform = gfx::Transform(
+      dest_pass->transform_to_root_target, parent_target_transform);
+
+  gfx::Rect damage_rect = source_pass->output_rect;
+  if (source_pass->filters.HasFilterThatMovesPixels()) {
+    float max_pixel_movement = source_pass->filters.MaximumPixelMovement();
+    damage_rect.Inset(-max_pixel_movement, -max_pixel_movement);
   }
 
   gfx::Rect damage_rect_in_root_target_space =
       cc::MathUtil::MapEnclosingClippedRect(parent_to_root_target_transform,
                                             damage_rect);
 
-  if (clip_rect.is_clipped)
-    damage_rect_in_root_target_space.Intersect(clip_rect.rect);
+  // The whole render pass rect with pixel-moving foreground filters or
+  // backdrop filters is considered damaged if it intersects with the other
+  // damages.
+  if (damage_rect_in_root_target_space.Intersects(root_damage_rect_)) {
+    AddSurfaceDamageToDamageList(damage_rect, gfx::Transform(), {}, source_pass,
+                                 dest_pass, /*surface=*/nullptr);
+  }
+}
+
+// This is different from the |root_damage_rect_| which is the union of all
+// surface damages. This function records per-surface damage rects to
+// |surface_damage_rect_list_| in a top-to-bottom order.
+// it's called at each surface in the frame.
+void SurfaceAggregator::AddSurfaceDamageToDamageList(
+    const gfx::Rect& default_damage_rect,
+    const gfx::Transform& parent_target_transform,
+    const ClipData& clip_rect,
+    const CompositorRenderPass* source_pass,
+    AggregatedRenderPass* dest_pass,
+    Surface* surface) {
+  gfx::Rect damage_rect;
+  if (!surface) {
+    // When the surface is null, it's either the surface is lost or it comes
+    // from a render pass with filters.
+    damage_rect = default_damage_rect;
+  } else {
+    if (RenderPassNeedsFullDamage(dest_pass->id,
+                                  dest_pass->cache_render_pass)) {
+      damage_rect = source_pass->output_rect;
+    } else {
+      damage_rect =
+          DamageRectForSurface(surface, *source_pass, source_pass->output_rect);
+    }
+  }
+
+  if (damage_rect.IsEmpty()) {
+    current_zero_damage_rect_is_not_recorded_ = true;
+    return;
+  }
+  current_zero_damage_rect_is_not_recorded_ = false;
+
+  gfx::Transform parent_to_root_target_transform = gfx::Transform(
+      dest_pass->transform_to_root_target, parent_target_transform);
+
+  gfx::Rect damage_rect_in_root_target_space =
+      cc::MathUtil::MapEnclosingClippedRect(parent_to_root_target_transform,
+                                            damage_rect);
+
+  if (clip_rect.is_clipped) {
+    gfx::Rect root_clip_rect = cc::MathUtil::MapEnclosingClippedRect(
+        dest_pass->transform_to_root_target, clip_rect.rect);
+    damage_rect_in_root_target_space.Intersect(root_clip_rect);
+  }
 
   surface_damage_rect_list_->push_back(damage_rect_in_root_target_space);
 }
 
-// Different from the root damage rect which is the union of all surface
-// damages, this functions saves per-surface damage rects to
-// |surface_damage_rect_list_| in a top-to-bottom order and returns the
-// overlay_damage_index pointing the damage rect in the list for overlay
-// candidates. overlay_damage_index will be saved in the shared quad state.
-const DrawQuad* SurfaceAggregator::ProcessOverlayDamageList(
+// This function returns the overlay candidate quad ptr which has an
+// overlay_damage_index pointing to the its damage rect in
+// surface_damage_rect_list_. |overlay_damage_index| will be saved in the shared
+// quad state later.
+// This function is called at CopyQuadsToPass().
+const DrawQuad* SurfaceAggregator::FindQuadWithOverlayDamage(
     const CompositorRenderPass& source_pass,
     AggregatedRenderPass* dest_pass,
     const gfx::Transform& parent_target_transform,
     const SurfaceId& surface_id,
     const ClipData& clip_rect,
     size_t* overlay_damage_index) {
-  if (!needs_surface_damage_rect_list_)
-    return nullptr;
-
-  // Add the damage from a non-root render pass with pixel-moving filters to the
-  // damage list.
-  if (source_pass.filters.HasFilterThatMovesPixels() ||
-      source_pass.backdrop_filters.HasFilterThatMovesPixels()) {
-    gfx::Transform parent_quad_to_root_target_transform = gfx::Transform(
-        dest_pass->transform_to_root_target, parent_target_transform);
-
-    gfx::Rect surface_damage_rect = source_pass.output_rect;
-    if (source_pass.filters.HasFilterThatMovesPixels()) {
-      float max_pixel_movement = source_pass.filters.MaximumPixelMovement();
-      surface_damage_rect.Inset(-max_pixel_movement, -max_pixel_movement);
-    }
-
-    gfx::Rect damage_rect_in_root_target_space =
-        cc::MathUtil::MapEnclosingClippedRect(
-            parent_quad_to_root_target_transform, surface_damage_rect);
-
-    // The whole render pass rect with pixel-moving filters is considered
-    // damaged if it intersects with the other damages.
-    if (damage_rect_in_root_target_space.Intersects(root_damage_rect_)) {
-      AddSurfaceDamageToDamageList(damage_rect_in_root_target_space,
-                                   gfx::Transform(), clip_rect);
-    }
-    return nullptr;
-  }
-
   Surface* surface = manager_->GetSurfaceForId(surface_id);
-  // Only process the damage rect once per surface.
+
+  // Only process the damage rect at the root render pass, once per surface.
   const CompositorFrame& frame = surface->GetActiveFrame();
   bool is_last_pass_on_src_surface =
       &source_pass == frame.render_pass_list.back().get();
   if (!is_last_pass_on_src_surface)
     return nullptr;
-
-  // Transform from the parent quad space to the root target space.
-  gfx::Transform parent_quad_to_root_target_transform = gfx::Transform(
-      dest_pass->transform_to_root_target, parent_target_transform);
 
   // The occluding damage optimization currently relies on two things - there
   // can't be any damage above the quad within the surface, and the quad needs
@@ -360,35 +389,20 @@ const DrawQuad* SurfaceAggregator::ProcessOverlayDamageList(
     }
   }
 
-  if (target_quad)
-    *overlay_damage_index = surface_damage_rect_list_->size();
+  // No overlay candidate is found.
+  if (!target_quad)
+    return nullptr;
 
-  gfx::Rect surface_damage_rect;
-  if (RenderPassNeedsFullDamage(dest_pass->id, dest_pass->cache_render_pass)) {
-    surface_damage_rect = source_pass.output_rect;
-  } else {
-    surface_damage_rect =
-        DamageRectForSurface(surface, source_pass, source_pass.output_rect);
+  // Zero damage is not recorded in the surface_damage_rect_list_.
+  // In this case, add an empty damage rect to the list so
+  // |overlay_damage_index| can save this index.
+  if (current_zero_damage_rect_is_not_recorded_) {
+    current_zero_damage_rect_is_not_recorded_ = false;
+    surface_damage_rect_list_->push_back(gfx::Rect());
   }
 
-  // Add the current surface damage to the list if it's not empty.
-  // For the case of overlay surface with empty damage rect, we need to add it
-  // to the list too. The overlay_damage_index is based on where the
-  // overlay's surface damage rect is located in the list. Without adding this
-  // empty damage rect to the list, the overlay_damage_index we set above will
-  // be wrong.
-  if (!surface_damage_rect.IsEmpty() || target_quad != nullptr) {
-    ClipData root_clip_rect;
-    if (clip_rect.is_clipped) {
-      // root_clip_rect is in the root target space.
-      root_clip_rect.rect = cc::MathUtil::MapEnclosingClippedRect(
-          dest_pass->transform_to_root_target, clip_rect.rect);
-      root_clip_rect.is_clipped = true;
-    }
-    AddSurfaceDamageToDamageList(surface_damage_rect,
-                                 parent_quad_to_root_target_transform,
-                                 root_clip_rect);
-  }
+  // The latest surface damage rect.
+  *overlay_damage_index = surface_damage_rect_list_->size() - 1;
 
   return target_quad;
 }
@@ -439,8 +453,10 @@ void SurfaceAggregator::HandleSurfaceQuad(
     gfx::Transform transform(
         target_transform,
         surface_quad->shared_quad_state->quad_to_target_transform);
-    transform.ConcatTransform(dest_pass->transform_to_root_target);
-    AddSurfaceDamageToDamageList(surface_quad->rect, transform, clip_rect);
+
+    AddSurfaceDamageToDamageList(
+        /*default_damage_rect=*/surface_quad->rect, transform, clip_rect,
+        /*source_pass =*/nullptr, dest_pass, /*surface=*/nullptr);
   }
 
   // If there's no fallback surface ID available, then simply emit a
@@ -578,6 +594,27 @@ void SurfaceAggregator::EmitSurfaceContent(
       copy_requests.empty() && combined_transform.Preserves2dAxisAlignment() &&
       CanMergeMaskFilterInfo(mask_filter_info, *render_pass_list.back());
 
+  ClipData quads_clip;
+  if (merge_pass) {
+    // Intersect the transformed visible rect and the clip rect to create a
+    // smaller cliprect for the quad.
+    ClipData surface_quad_clip_rect = {
+        true, cc::MathUtil::MapEnclosingClippedRect(
+                  source_sqs->quad_to_target_transform, source_visible_rect)};
+    if (source_sqs->is_clipped) {
+      surface_quad_clip_rect.rect.Intersect(source_sqs->clip_rect);
+    }
+
+    quads_clip =
+        CalculateClipRect(clip_rect, surface_quad_clip_rect, target_transform);
+  }
+
+  if (needs_surface_damage_rect_list_) {
+    AddSurfaceDamageToDamageList(
+        /*default_damage_rect=*/gfx::Rect(), combined_transform, quads_clip,
+        /*source_pass =*/render_pass_list.back().get(), dest_pass, surface);
+  }
+
   if (frame.metadata.delegated_ink_metadata) {
     // The metadata must be taken off of the surface, rather than a copy being
     // made, in order to ensure that the delegated ink metadata is used for
@@ -662,18 +699,6 @@ void SurfaceAggregator::EmitSurfaceContent(
            .IsEmpty();
 
   if (merge_pass) {
-    // Intersect the transformed visible rect and the clip rect to create a
-    // smaller cliprect for the quad.
-    ClipData surface_quad_clip_rect = {
-        true, cc::MathUtil::MapEnclosingClippedRect(
-                  source_sqs->quad_to_target_transform, source_visible_rect)};
-    if (source_sqs->is_clipped) {
-      surface_quad_clip_rect.rect.Intersect(source_sqs->clip_rect);
-    }
-
-    ClipData quads_clip =
-        CalculateClipRect(clip_rect, surface_quad_clip_rect, target_transform);
-
     CopyQuadsToPass(last_pass, dest_pass, frame.device_scale_factor(),
                     child_to_parent_map, combined_transform, quads_clip,
                     surface_id, mask_filter_info);
@@ -1019,10 +1044,15 @@ void SurfaceAggregator::CopyQuadsToPass(
   }
 #endif
 
-  size_t overlay_damage_index;
-  const DrawQuad* quad_with_overlay_damage_index =
-      ProcessOverlayDamageList(source_pass, dest_pass, target_transform,
-                               surface_id, clip_rect, &overlay_damage_index);
+  size_t overlay_damage_index = 0;
+  const DrawQuad* quad_with_overlay_damage_index = nullptr;
+  if (needs_surface_damage_rect_list_) {
+    AddRenderPassFilterDamageToDamageList(target_transform, &source_pass,
+                                          dest_pass);
+    quad_with_overlay_damage_index =
+        FindQuadWithOverlayDamage(source_pass, dest_pass, target_transform,
+                                  surface_id, clip_rect, &overlay_damage_index);
+  }
 
   MaskFilterInfoExt new_mask_filter_info_ext = parent_mask_filter_info_ext;
   for (auto* quad : source_quad_list) {
@@ -1213,6 +1243,12 @@ void SurfaceAggregator::CopyPasses(const CompositorFrame& frame,
         root_content_color_usage_, source.has_transparent_background,
         source.cache_render_pass, source.has_damage_from_contributing_content,
         source.generate_mipmap);
+
+    if (needs_surface_damage_rect_list_ && is_root_pass) {
+      AddSurfaceDamageToDamageList(
+          /*default_damage_rect=*/gfx::Rect(), surface_transform,
+          /*clip_rect=*/{}, &source, copy_pass.get(), surface);
+    }
 
     CopyQuadsToPass(source, copy_pass.get(), frame.device_scale_factor(),
                     child_to_parent_map,
@@ -1881,6 +1917,7 @@ AggregatedFrame SurfaceAggregator::Aggregate(
 void SurfaceAggregator::ResetAfterAggregate() {
   dest_pass_list_ = nullptr;
   surface_damage_rect_list_ = nullptr;
+  current_zero_damage_rect_is_not_recorded_ = false;
   expected_display_time_ = base::TimeTicks();
   valid_surfaces_.clear();
   has_cached_render_passes_ = false;
