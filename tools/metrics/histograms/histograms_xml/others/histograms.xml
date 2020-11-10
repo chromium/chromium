@@ -315,6 +315,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram base="true" name="Ads.ResourceUsage.Size.Cache2" units="KB"
     expires_after="2020-10-02">
+  <obsolete>
+    Removed 11/2020.
+  </obsolete>
   <owner>johnidel@chromium.org</owner>
   <owner>jkarlin@chromium.org</owner>
   <summary>
@@ -330,6 +333,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram base="true" name="Ads.ResourceUsage.Size.Network" units="KB"
     expires_after="2020-10-02">
+  <obsolete>
+    Removed 11/2020.
+  </obsolete>
   <owner>johnidel@chromium.org</owner>
   <owner>jkarlin@chromium.org</owner>
   <summary>
