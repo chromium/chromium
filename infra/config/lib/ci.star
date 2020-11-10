@@ -375,8 +375,10 @@ def ci_builder(
       notifies - Any extra notifiers to attach to this builder.
       resultdb_bigquery_exports - a list of resultdb.export_test_results(...)
         specifying additional parameters for exporting test results to BigQuery.
-        Will always upload to the luci-resultdb.chromium.ci_test_results table
-        in addition to any tables specified by the list's elements.
+        Will always upload to the following tables in addition to any tables
+        specified by the list's elements:
+          luci-resultdb.chromium.ci_test_results
+          luci-resultdb.chromium.gpu_ci_test_results
       experiments - a dict of experiment name to the percentage chance (0-100)
         that it will apply to builds generated from this builder.
     """
@@ -392,6 +394,14 @@ def ci_builder(
     merged_resultdb_bigquery_exports = [
         resultdb.export_test_results(
             bq_table = "luci-resultdb.chromium.ci_test_results",
+        ),
+        resultdb.export_test_results(
+            bq_table = "luci-resultdb.chromium.gpu_ci_test_results",
+            predicate = resultdb.test_result_predicate(
+                # Only match the telemetry_gpu_integration_test and
+                # fuchsia_telemetry_gpu_integration_test targets.
+                test_id_regexp = "ninja://(chrome/test:|content/test:fuchsia_)telemetry_gpu_integration_test/.+",
+            ),
         ),
     ]
     merged_resultdb_bigquery_exports.extend(resultdb_bigquery_exports or [])
@@ -704,15 +714,6 @@ def fyi_windows_builder(
         **kwargs
     )
 
-gpu_ci_resultdb_exports = [
-    resultdb.export_test_results(
-        bq_table = "luci-resultdb.chromium.gpu_ci_test_results",
-        predicate = resultdb.test_result_predicate(
-            test_id_regexp = "ninja://chrome/test:telemetry_gpu_integration_test/.+",
-        ),
-    ),
-]
-
 def gpu_fyi_builder(*, name, **kwargs):
     return ci.builder(
         name = name,
@@ -722,7 +723,6 @@ def gpu_fyi_builder(*, name, **kwargs):
         properties = {
             "perf_dashboard_machine_group": "ChromiumGPUFYI",
         },
-        resultdb_bigquery_exports = gpu_ci_resultdb_exports,
         **kwargs
     )
 
@@ -787,7 +787,6 @@ def gpu_builder(*, name, tree_closing = True, notifies = None, **kwargs):
         builder_group = "chromium.gpu",
         tree_closing = tree_closing,
         notifies = notifies,
-        resultdb_bigquery_exports = gpu_ci_resultdb_exports,
         **kwargs
     )
 

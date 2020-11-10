@@ -155,8 +155,10 @@ def try_builder(
         that it will apply to builds generated from this builder.
       resultdb_bigquery_exports - a list of resultdb.export_test_results(...)
         specifying additional parameters for exporting test results to BigQuery.
-        Will always upload to the luci-resultdb.chromium.try_test_results table
-        in addition to any tables specified by the list's elements.
+        Will always upload to the following tables in addition to any tables
+        specified by the list's elements:
+          luci-resultdb.chromium.try_test_results
+          luci-resultdb.chromium.gpu_try_test_results
     """
     if not branches.matches(branch_selector):
         return
@@ -168,6 +170,14 @@ def try_builder(
     merged_resultdb_bigquery_exports = [
         resultdb.export_test_results(
             bq_table = "luci-resultdb.chromium.try_test_results",
+        ),
+        resultdb.export_test_results(
+            bq_table = "luci-resultdb.chromium.gpu_try_test_results",
+            predicate = resultdb.test_result_predicate(
+                # Only match the telemetry_gpu_integration_test and
+                # fuchsia_telemetry_gpu_integration_test targets.
+                test_id_regexp = "ninja://(chrome/test:|content/test:fuchsia_)telemetry_gpu_integration_test/.+",
+            ),
         ),
     ]
     merged_resultdb_bigquery_exports.extend(
@@ -416,22 +426,12 @@ def chromium_win_builder(
         **kwargs
     )
 
-gpu_try_resultdb_exports = [
-    resultdb.export_test_results(
-        bq_table = "luci-resultdb.chromium.gpu_try_test_results",
-        predicate = resultdb.test_result_predicate(
-            test_id_regexp = "ninja://chrome/test:telemetry_gpu_integration_test/.+",
-        ),
-    ),
-]
-
 def gpu_try_builder(*, name, builderless = False, execution_timeout = 6 * time.hour, **kwargs):
     return try_builder(
         name = name,
         builderless = builderless,
         execution_timeout = execution_timeout,
         service_account = "chromium-try-gpu-builder@chops-service-accounts.iam.gserviceaccount.com",
-        resultdb_bigquery_exports = gpu_try_resultdb_exports,
         **kwargs
     )
 
@@ -500,5 +500,4 @@ try_ = struct(
     gpu_chromium_linux_builder = gpu_chromium_linux_builder,
     gpu_chromium_mac_builder = gpu_chromium_mac_builder,
     gpu_chromium_win_builder = gpu_chromium_win_builder,
-    gpu_try_resultdb_exports = gpu_try_resultdb_exports,
 )
