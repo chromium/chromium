@@ -872,6 +872,8 @@
   },
   'components_unittests': {
     'remove_from': [
+      # https://crbug.com/1147531 - covered on lollipop
+      'android-marshmallow-arm64-rel',
       'Fuchsia ARM64',  # https://crbug.com/961457
       'Fuchsia x64', # https://crbug.com/961457
       'android-code-coverage-native', # crbug/1018431
@@ -2996,6 +2998,8 @@
       # from android-marshmallow-arm64-rel-swarming).
       'android-lollipop-arm-rel-swarming',
       'android-code-coverage-native', # https://crbug.com/1018431
+      # https://crbug.com/1147531 - covered on pie
+      'android-marshmallow-arm64-rel',
     ],
     'modifications': {
       # chromium.android.fyi
