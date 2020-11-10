@@ -94,7 +94,7 @@ class WPTTestAdapter(wpt_common.BaseWptScriptAdapter):
             # See if multi-processing affects timeouts.
             # TODO(lpz): Consider removing --processes and compute automatically
             # from multiprocessing.cpu_count()
-            #"--processes=5",
+            "--processes=" + self.options.child_processes,
             "--mojojs-path=" + MOJO_JS_PATH.format(self.options.target),
         ])
         return rest_args
@@ -103,6 +103,9 @@ class WPTTestAdapter(wpt_common.BaseWptScriptAdapter):
         target_help = "Specify the target build subdirectory under src/out/"
         parser.add_argument("-t", "--target", dest="target", default="Release",
                             help=target_help)
+        child_processes_help = "Number of drivers to run in parallel"
+        parser.add_argument("-j", "--child-processes", dest="child_processes",
+                            default="1", help=child_processes_help)
         parser.add_argument("test_list", nargs="*",
                             help="List of tests or test directories to run")
 

@@ -54708,7 +54708,9 @@
   "linux-wpt-fyi-rel": {
     "isolated_scripts": [
       {
-        "args": [],
+        "args": [
+          "--child-processes=3"
+        ],
         "isolate_name": "wpt_tests_isolate",
         "merge": {
           "args": [

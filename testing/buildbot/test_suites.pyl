@@ -4593,6 +4593,7 @@
     'wpt_web_tests': {
       'wpt_tests_suite': {
         'args': [
+          '--child-processes=3',
         ],
         'merge': {
           'args': [
