@@ -10,6 +10,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
@@ -69,6 +70,22 @@ Profile* GetFeedbackProfile(const Browser* browser) {
     profile = multi_user_util::GetProfileFromAccountId(display_account_id);
 #endif
   return profile;
+}
+
+void ShowFeedbackDialogForWebUI(WebUIFeedbackSource webui_source,
+                                const std::string& extra_diagnostics) {
+  FeedbackSource source;
+  std::string category;
+  switch (webui_source) {
+    case WebUIFeedbackSource::kConnectivityDiagnostics:
+      source = FeedbackSource::kFeedbackSourceNetworkHealthPage;
+      category = "connectivity-diagnostics";
+      break;
+  }
+
+  ShowFeedbackPage(nullptr, source, /*description_template=*/std::string(),
+                   /*description_template_placeholder=*/std::string(), category,
+                   extra_diagnostics);
 }
 
 }  // namespace chrome

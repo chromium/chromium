@@ -22,6 +22,8 @@ js_library("connectivity_diagnostics") {
     "//ui/webui/resources/cr_components/chromeos/network_health:network_diagnostics_mojo.m",
     "//ui/webui/resources/js:i18n_behavior.m",
   ]
+
+  externs_list = [ "$externs_path/chrome_send.js" ]
 }
 
 generate_grd("build_grd") {

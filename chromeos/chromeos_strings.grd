@@ -613,6 +613,9 @@ Try tapping the mic to ask me anything.
       <message name="IDS_CONNECTIVITY_DIAGNOSTICS_CLOSE" desc="Label for connectivity diagnostics application close button">
         Close
       </message>
+      <message name="IDS_CONNECTIVITY_DIAGNOSTICS_SEND_FEEDBACK" desc="Label for connectivity diagnostics application send feedback button">
+        Send Feedback
+      </message>
       <message name="IDS_NETWORK_DIAGNOSTICS_LAN_CONNECTIVITY" desc="Label for Network diagnostics `LAN connectivity` test. This test determines if the device is connected to a Local Area Network (LAN)">
         Lan Connectivity
       </message>

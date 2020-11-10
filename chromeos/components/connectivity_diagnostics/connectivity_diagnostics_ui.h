@@ -5,6 +5,10 @@
 #ifndef CHROMEOS_COMPONENTS_CONNECTIVITY_DIAGNOSTICS_CONNECTIVITY_DIAGNOSTICS_UI_H_
 #define CHROMEOS_COMPONENTS_CONNECTIVITY_DIAGNOSTICS_CONNECTIVITY_DIAGNOSTICS_UI_H_
 
+#include <string>
+
+#include "base/memory/weak_ptr.h"
+#include "base/values.h"
 #include "chromeos/services/network_health/public/mojom/network_diagnostics.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/webui/mojo_web_ui_controller.h"
@@ -17,9 +21,13 @@ class ConnectivityDiagnosticsUI : public ui::MojoWebUIController {
       mojo::PendingReceiver<
           network_diagnostics::mojom::NetworkDiagnosticsRoutines>)>;
 
+  using SendFeedbackReportCallback =
+      base::RepeatingCallback<void(const std::string& extra_diagnostics)>;
+
   explicit ConnectivityDiagnosticsUI(
       content::WebUI* web_ui,
-      BindNetworkDiagnosticsServiceCallback bind_network_diagnostics_callback);
+      BindNetworkDiagnosticsServiceCallback bind_network_diagnostics_callback,
+      SendFeedbackReportCallback send_feeback_report_callback);
   ~ConnectivityDiagnosticsUI() override;
   ConnectivityDiagnosticsUI(const ConnectivityDiagnosticsUI&) = delete;
   ConnectivityDiagnosticsUI& operator=(const ConnectivityDiagnosticsUI&) =
@@ -31,9 +39,15 @@ class ConnectivityDiagnosticsUI : public ui::MojoWebUIController {
       mojo::PendingReceiver<
           network_diagnostics::mojom::NetworkDiagnosticsRoutines> receiver);
 
+  void SendFeedbackReportRequest(const base::ListValue* value);
+
  private:
   const BindNetworkDiagnosticsServiceCallback
       bind_network_diagnostics_service_callback_;
+
+  const SendFeedbackReportCallback send_feedback_report_callback_;
+
+  base::WeakPtrFactory<ConnectivityDiagnosticsUI> weak_factory_{this};
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };

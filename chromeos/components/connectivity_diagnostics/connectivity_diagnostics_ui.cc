@@ -43,10 +43,16 @@ void SetUpWebUIDataSource(content::WebUIDataSource* source,
 
 ConnectivityDiagnosticsUI::ConnectivityDiagnosticsUI(
     content::WebUI* web_ui,
-    BindNetworkDiagnosticsServiceCallback bind_network_diagnostics_callback)
-    : ui::MojoWebUIController(web_ui),
+    BindNetworkDiagnosticsServiceCallback bind_network_diagnostics_callback,
+    SendFeedbackReportCallback send_feedback_report_callback)
+    : ui::MojoWebUIController(web_ui, /*enable_chrome_send=*/true),
       bind_network_diagnostics_service_callback_(
-          std::move(bind_network_diagnostics_callback)) {
+          std::move(bind_network_diagnostics_callback)),
+      send_feedback_report_callback_(std::move(send_feedback_report_callback)) {
+  web_ui->RegisterMessageCallback(
+      "sendFeedbackReport",
+      base::BindRepeating(&ConnectivityDiagnosticsUI::SendFeedbackReportRequest,
+                          weak_factory_.GetWeakPtr()));
   content::WebUIDataSource* source =
       content::WebUIDataSource::Create(kChromeUIConnectivityDiagnosticsHost);
   source->OverrideContentSecurityPolicy(
@@ -65,6 +71,8 @@ ConnectivityDiagnosticsUI::ConnectivityDiagnosticsUI(
   source->AddLocalizedString("rerunRoutinesBtn",
                              IDS_CONNECTIVITY_DIAGNOSTICS_RERUN_ROUTINES);
   source->AddLocalizedString("closeBtn", IDS_CONNECTIVITY_DIAGNOSTICS_CLOSE);
+  source->AddLocalizedString("sendFeedbackBtn",
+                             IDS_CONNECTIVITY_DIAGNOSTICS_SEND_FEEDBACK);
   network_diagnostics::AddResources(source);
 
   content::WebUIDataSource::Add(web_ui->GetWebContents()->GetBrowserContext(),
@@ -76,7 +84,20 @@ ConnectivityDiagnosticsUI::~ConnectivityDiagnosticsUI() = default;
 void ConnectivityDiagnosticsUI::BindInterface(
     mojo::PendingReceiver<
         network_diagnostics::mojom::NetworkDiagnosticsRoutines> receiver) {
-  bind_network_diagnostics_service_callback_.Run(std::move(receiver));
+  if (bind_network_diagnostics_service_callback_)
+    bind_network_diagnostics_service_callback_.Run(std::move(receiver));
+}
+
+void ConnectivityDiagnosticsUI::SendFeedbackReportRequest(
+    const base::ListValue* value) {
+  if (!send_feedback_report_callback_)
+    return;
+
+  std::string extra_diagnostics = "";
+  auto values = value->GetList();
+  if (values.size() && values[0].is_string())
+    extra_diagnostics = values[0].GetString();
+  send_feedback_report_callback_.Run(extra_diagnostics);
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(ConnectivityDiagnosticsUI)

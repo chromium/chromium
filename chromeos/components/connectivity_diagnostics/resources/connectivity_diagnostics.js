@@ -50,4 +50,15 @@ Polymer({
   onRunAllRoutinesClick_() {
     this.runAllRoutines_();
   },
+
+  /**
+   * Handles requests to open the feedback report dialog. The provided string
+   * in the event will be sent as a part of the feedback report.
+   * @private
+   */
+  onSendFeedbackClick_() {
+    chrome.send(
+        'sendFeedbackReport',
+        [this.getNetworkDiagnosticsElement_().getResults()]);
+  }
 });
