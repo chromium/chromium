@@ -63,7 +63,6 @@
 #import "ios/chrome/browser/external_files/external_file_remover_impl.h"
 #include "ios/chrome/browser/feature_engagement/tracker_factory.h"
 #import "ios/chrome/browser/first_run/first_run.h"
-#include "ios/chrome/browser/geolocation/omnibox_geolocation_controller.h"
 #include "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/main/browser_list.h"
 #import "ios/chrome/browser/main/browser_list_factory.h"
@@ -275,8 +274,6 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 - (void)cleanupSnapshots;
 // Cleanup discarded sessions on disk.
 - (void)cleanupDiscardedSessions;
-// Sets a LocalState pref marking the TOS EULA as accepted.
-- (void)markEulaAsAccepted;
 // Sends any feedback that happens to still be on local storage.
 - (void)sendQueuedFeedback;
 // Called whenever an orientation change is received.
@@ -316,10 +313,6 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 - (void)scheduleDeleteTempPasswordsDirectory;
 // Crashes the application if requested.
 - (void)crashIfRequested;
-// Handles the notification that first run modal dialog UI is about to complete.
-- (void)handleFirstRunUIWillFinish;
-// Handles the notification that first run modal dialog UI completed.
-- (void)handleFirstRunUIDidFinish;
 // Performs synchronous browser state initialization steps.
 - (void)initializeBrowserState:(ChromeBrowserState*)browserState;
 // Helper methods to initialize the application to a specific stage.
@@ -579,27 +572,6 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
   search_engines::UpdateSearchEnginesIfNeeded(
       browserState->GetPrefs(),
       ios::TemplateURLServiceFactory::GetForBrowserState(browserState));
-}
-
-- (void)handleFirstRunUIWillFinish {
-  [[NSNotificationCenter defaultCenter]
-      removeObserver:self
-                name:kChromeFirstRunUIWillFinishNotification
-              object:nil];
-
-  [self markEulaAsAccepted];
-}
-
-- (void)handleFirstRunUIDidFinish {
-  [[NSNotificationCenter defaultCenter]
-      removeObserver:self
-                name:kChromeFirstRunUIDidFinishNotification
-              object:nil];
-
-  // As soon as First Run has finished, give OmniboxGeolocationController an
-  // opportunity to present the iOS system location alert.
-  [[OmniboxGeolocationController sharedInstance]
-      triggerSystemPromptForNewUser:YES];
 }
 
 #pragma mark - AppStateObserver
@@ -1073,22 +1045,6 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
   }
 }
 
-- (void)prepareForFirstRunUI {
-  // Register for notification when First Run is completed.
-  // Some initializations are held back until First Run modal dialog
-  // is dismissed.
-  [[NSNotificationCenter defaultCenter]
-      addObserver:self
-         selector:@selector(handleFirstRunUIWillFinish)
-             name:kChromeFirstRunUIWillFinishNotification
-           object:nil];
-  [[NSNotificationCenter defaultCenter]
-      addObserver:self
-         selector:@selector(handleFirstRunUIDidFinish)
-             name:kChromeFirstRunUIDidFinishNotification
-           object:nil];
-}
-
 - (void)crashIfRequested {
   if (experimental_flags::IsStartupCrashEnabled()) {
     // Flush out the value cached for breakpad::SetUploadingEnabled().
@@ -1164,15 +1120,6 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
       ->RemoveSessionsData(sessionIDs);
   sessions_storage_util::ResetDiscardedSessions();
 }
-
-- (void)markEulaAsAccepted {
-  PrefService* prefs = GetApplicationContext()->GetLocalState();
-  if (!prefs->GetBoolean(prefs::kEulaAccepted))
-    prefs->SetBoolean(prefs::kEulaAccepted, true);
-  prefs->CommitPendingWrite();
-}
-
-
 
 #pragma mark - BrowsingDataCommands
 
