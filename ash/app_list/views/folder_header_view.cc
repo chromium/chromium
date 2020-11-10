@@ -26,6 +26,7 @@
 #include "ui/views/border.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/textfield/textfield.h"
+#include "ui/views/native_cursor.h"
 #include "ui/views/painter.h"
 #include "ui/views/view_targeter_delegate.h"
 
@@ -69,6 +70,10 @@ class FolderHeaderView::FolderNameView : public views::Textfield,
     SetSelectionTextColor(text_color);
     SetSelectionBackgroundColor(color_provider->GetFolderNameSelectionColor());
     SetNameViewBorderAndBackground(is_active);
+  }
+
+  gfx::NativeCursor GetCursor(const ui::MouseEvent& event) override {
+    return views::GetNativeIBeamCursor();
   }
 
   void SetNameViewBorderAndBackground(bool is_active) {

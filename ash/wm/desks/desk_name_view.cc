@@ -17,6 +17,7 @@
 #include "ui/gfx/text_elider.h"
 #include "ui/views/background.h"
 #include "ui/views/focus/focus_manager.h"
+#include "ui/views/native_cursor.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
@@ -138,6 +139,10 @@ void DeskNameView::OnThemeChanged() {
       AshColorProvider::ControlsLayerType::kFocusAuraColor);
   SetSelectionBackgroundColor(selection_color);
   UpdateBorderState();
+}
+
+gfx::NativeCursor DeskNameView::GetCursor(const ui::MouseEvent& event) {
+  return views::GetNativeIBeamCursor();
 }
 
 views::View* DeskNameView::GetView() {

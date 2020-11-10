@@ -47,6 +47,7 @@ class ASH_EXPORT DeskNameView
   void OnMouseEntered(const ui::MouseEvent& event) override;
   void OnMouseExited(const ui::MouseEvent& event) override;
   void OnThemeChanged() override;
+  gfx::NativeCursor GetCursor(const ui::MouseEvent& event) override;
 
   // OverviewHighlightController::OverviewHighlightableView:
   views::View* GetView() override;
