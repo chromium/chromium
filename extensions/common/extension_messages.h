@@ -32,6 +32,7 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/extensions_client.h"
 #include "extensions/common/host_id.h"
+#include "extensions/common/message_bundle.h"
 #include "extensions/common/permissions/permission_set.h"
 #include "extensions/common/permissions/socket_permission_data.h"
 #include "extensions/common/permissions/usb_device_permission_data.h"
@@ -328,11 +329,6 @@ IPC_STRUCT_END()
 // Singly-included section for custom IPC traits.
 #ifndef INTERNAL_EXTENSIONS_COMMON_EXTENSION_MESSAGES_H_
 #define INTERNAL_EXTENSIONS_COMMON_EXTENSION_MESSAGES_H_
-
-// IPC_MESSAGE macros choke on extra , in the std::map, when expanding. We need
-// to typedef it to avoid that.
-// Substitution map for l10n messages.
-typedef std::map<std::string, std::string> SubstitutionMap;
 
 // Map of extensions IDs to the executing script paths.
 typedef std::map<std::string, std::set<std::string> > ExecutingScriptsMap;
@@ -863,9 +859,10 @@ IPC_MESSAGE_CONTROL2(ExtensionHostMsg_PostMessage,
                      extensions::Message)
 
 // Used to get the extension message bundle.
-IPC_SYNC_MESSAGE_CONTROL1_1(ExtensionHostMsg_GetMessageBundle,
-                            std::string /* extension id */,
-                            SubstitutionMap /* message bundle */)
+IPC_SYNC_MESSAGE_CONTROL1_1(
+    ExtensionHostMsg_GetMessageBundle,
+    std::string /* extension id */,
+    extensions::MessageBundle::SubstitutionMap /* message bundle */)
 
 // Sent from the renderer to the browser to return the script running result.
 IPC_MESSAGE_ROUTED4(
