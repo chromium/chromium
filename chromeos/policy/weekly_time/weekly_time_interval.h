@@ -21,6 +21,10 @@ namespace policy {
 // Both WeeklyTimes need to have the same timezone_offset.
 class CHROMEOS_EXPORT WeeklyTimeInterval {
  public:
+  // Dictionary value key constants for testing.
+  static const char kStart[];
+  static const char kEnd[];
+
   WeeklyTimeInterval(const WeeklyTime& start, const WeeklyTime& end);
 
   WeeklyTimeInterval(const WeeklyTimeInterval& rhs);
@@ -58,6 +62,20 @@ class CHROMEOS_EXPORT WeeklyTimeInterval {
   // nullptr if the proto contains an invalid interval.
   static std::unique_ptr<WeeklyTimeInterval> ExtractFromProto(
       const enterprise_management::WeeklyTimeIntervalProto& container,
+      base::Optional<int> timezone_offset);
+
+  // Return time interval made from Value in format:
+  // { "start" : WeeklyTime,
+  //   "end" : WeeklyTime }
+  // WeeklyTime dictionary format:
+  // { "day_of_week" : int # value is from 1 to 7 (1 = Monday, 2 = Tuesday,
+  // etc.)
+  //   "time" : int # in milliseconds from the beginning of the day.
+  //   "timezone_offset" : int # in milliseconds, how much time ahead of GMT.
+  // }
+  // Return nullptr if value contains an invalid interval.
+  static std::unique_ptr<WeeklyTimeInterval> ExtractFromValue(
+      const base::Value* value,
       base::Optional<int> timezone_offset);
 
   WeeklyTime start() const { return start_; }

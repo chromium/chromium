@@ -259,7 +259,8 @@ bool FakeUserManager::IsLoggedInAsUserWithGaiaAccount() const {
 }
 
 bool FakeUserManager::IsLoggedInAsPublicAccount() const {
-  return false;
+  const User* active_user = GetActiveUser();
+  return active_user && active_user->GetType() == USER_TYPE_PUBLIC_ACCOUNT;
 }
 
 bool FakeUserManager::IsLoggedInAsGuest() const {

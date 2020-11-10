@@ -11,6 +11,10 @@ namespace em = enterprise_management;
 
 namespace policy {
 
+// static
+const char WeeklyTimeInterval::kStart[] = "start";
+const char WeeklyTimeInterval::kEnd[] = "end";
+
 WeeklyTimeInterval::WeeklyTimeInterval(const WeeklyTime& start,
                                        const WeeklyTime& end)
     : start_(start), end_(end) {
@@ -25,8 +29,8 @@ WeeklyTimeInterval& WeeklyTimeInterval::operator=(
 
 std::unique_ptr<base::DictionaryValue> WeeklyTimeInterval::ToValue() const {
   auto interval = std::make_unique<base::DictionaryValue>();
-  interval->SetDictionary("start", start_.ToValue());
-  interval->SetDictionary("end", end_.ToValue());
+  interval->SetDictionary(kStart, start_.ToValue());
+  interval->SetDictionary(kEnd, end_.ToValue());
   return interval;
 }
 
@@ -49,6 +53,23 @@ std::unique_ptr<WeeklyTimeInterval> WeeklyTimeInterval::ExtractFromProto(
   }
   auto start = WeeklyTime::ExtractFromProto(container.start(), timezone_offset);
   auto end = WeeklyTime::ExtractFromProto(container.end(), timezone_offset);
+  if (!start || !end)
+    return nullptr;
+  return std::make_unique<WeeklyTimeInterval>(*start, *end);
+}
+
+// static
+std::unique_ptr<WeeklyTimeInterval> WeeklyTimeInterval::ExtractFromValue(
+    const base::Value* value,
+    base::Optional<int> timezone_offset) {
+  if (!value || !value->FindDictKey(kStart) || !value->FindDictKey(kEnd)) {
+    LOG(WARNING) << "Interval without start or/and end.";
+    return nullptr;
+  }
+  auto start =
+      WeeklyTime::ExtractFromValue(value->FindDictKey(kStart), timezone_offset);
+  auto end =
+      WeeklyTime::ExtractFromValue(value->FindDictKey(kEnd), timezone_offset);
   if (!start || !end)
     return nullptr;
   return std::make_unique<WeeklyTimeInterval>(*start, *end);

@@ -79,10 +79,11 @@ TEST_P(SingleWeeklyTimeTest, ToValue) {
   std::unique_ptr<base::DictionaryValue> weekly_time_value =
       weekly_time.ToValue();
   base::DictionaryValue expected_weekly_time;
-  expected_weekly_time.SetInteger("day_of_week", day_of_week());
-  expected_weekly_time.SetInteger("time", minutes() * kMinute.InMilliseconds());
+  expected_weekly_time.SetInteger(WeeklyTime::kDayOfWeek, day_of_week());
+  expected_weekly_time.SetInteger(WeeklyTime::kTime,
+                                  minutes() * kMinute.InMilliseconds());
   if (timezone_offset()) {
-    expected_weekly_time.SetInteger("timezone_offset",
+    expected_weekly_time.SetInteger(WeeklyTime::kTimezoneOffset,
                                     timezone_offset().value());
   }
   EXPECT_EQ(*weekly_time_value, expected_weekly_time);
@@ -111,6 +112,50 @@ TEST_P(SingleWeeklyTimeTest, ExtractFromProto_Valid) {
   proto.set_day_of_week(kWeekdays[day_of_week()]);
   proto.set_time(milliseconds);
   auto result = WeeklyTime::ExtractFromProto(proto, timezone_offset());
+  ASSERT_TRUE(result);
+  EXPECT_EQ(result->day_of_week(), day_of_week());
+  EXPECT_EQ(result->milliseconds(), milliseconds);
+  EXPECT_EQ(result->timezone_offset(), timezone_offset());
+}
+
+TEST_P(SingleWeeklyTimeTest, ExtractFromValue_UnspecifiedDay) {
+  int milliseconds = minutes() * kMinute.InMilliseconds();
+  base::DictionaryValue value;
+  EXPECT_TRUE(value.SetIntKey(WeeklyTime::kDayOfWeek, kWeekdays[0]));
+  EXPECT_TRUE(value.SetIntKey(WeeklyTime::kTime, milliseconds));
+  auto result = WeeklyTime::ExtractFromValue(&value, timezone_offset());
+  ASSERT_FALSE(result);
+}
+
+TEST_P(SingleWeeklyTimeTest, ExtractFromValue_InvalidDay) {
+  int milliseconds = minutes() * kMinute.InMilliseconds();
+  base::DictionaryValue value;
+  EXPECT_TRUE(value.SetIntKey(WeeklyTime::kDayOfWeek, -1));
+  EXPECT_TRUE(value.SetIntKey(WeeklyTime::kTime, milliseconds));
+  auto result = WeeklyTime::ExtractFromValue(&value, timezone_offset());
+  ASSERT_FALSE(result);
+
+  EXPECT_TRUE(value.SetIntKey(WeeklyTime::kDayOfWeek, 8));
+  result = WeeklyTime::ExtractFromValue(&value, timezone_offset());
+  ASSERT_FALSE(result);
+}
+
+TEST_P(SingleWeeklyTimeTest, ExtractFromValue_InvalidTime) {
+  base::DictionaryValue value;
+  EXPECT_TRUE(
+      value.SetIntKey(WeeklyTime::kDayOfWeek, kWeekdays[day_of_week()]));
+  EXPECT_TRUE(value.SetIntKey(WeeklyTime::kTime, -1));
+  auto result = WeeklyTime::ExtractFromValue(&value, timezone_offset());
+  ASSERT_FALSE(result);
+}
+
+TEST_P(SingleWeeklyTimeTest, ExtractFromValue_Valid) {
+  int milliseconds = minutes() * kMinute.InMilliseconds();
+  base::DictionaryValue value;
+  EXPECT_TRUE(
+      value.SetIntKey(WeeklyTime::kDayOfWeek, kWeekdays[day_of_week()]));
+  EXPECT_TRUE(value.SetIntKey(WeeklyTime::kTime, milliseconds));
+  auto result = WeeklyTime::ExtractFromValue(&value, timezone_offset());
   ASSERT_TRUE(result);
   EXPECT_EQ(result->day_of_week(), day_of_week());
   EXPECT_EQ(result->milliseconds(), milliseconds);

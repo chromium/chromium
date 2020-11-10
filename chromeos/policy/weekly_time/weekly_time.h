@@ -21,6 +21,11 @@ namespace policy {
 // beginning of the day.
 class CHROMEOS_EXPORT WeeklyTime {
  public:
+  // Dictionary value key constants for testing.
+  static const char kDayOfWeek[];
+  static const char kTime[];
+  static const char kTimezoneOffset[];
+
   WeeklyTime(int day_of_week,
              int milliseconds,
              base::Optional<int> timezone_offset);
@@ -75,6 +80,16 @@ class CHROMEOS_EXPORT WeeklyTime {
   // WeeklyTime structure isn't correct.
   static std::unique_ptr<WeeklyTime> ExtractFromProto(
       const enterprise_management::WeeklyTimeProto& container,
+      base::Optional<int> timezone_offset);
+
+  // Return WeeklyTime structure from Value in format:
+  // { "day_of_week" : int # value is from 1 to 7 (1 = Monday, 2 = Tuesday,
+  // etc.)
+  //   "time" : int # in milliseconds from the beginning of the day.
+  // }.
+  // Return nullptr if WeeklyTime structure isn't correct.
+  static std::unique_ptr<WeeklyTime> ExtractFromValue(
+      const base::Value* value,
       base::Optional<int> timezone_offset);
 
   // Return the current time in GMT in WeeklyTime structure.

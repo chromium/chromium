@@ -1,0 +1,186 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "components/arc/enterprise/snapshot_hours_policy_service.h"
+
+#include <utility>
+
+#include "base/bind.h"
+#include "base/callback_helpers.h"
+#include "base/logging.h"
+#include "base/macros.h"
+#include "base/time/default_clock.h"
+#include "base/time/tick_clock.h"
+#include "base/values.h"
+#include "chromeos/policy/weekly_time/time_utils.h"
+#include "components/arc/arc_prefs.h"
+#include "components/prefs/pref_service.h"
+#include "components/user_manager/user_manager.h"
+
+namespace arc {
+namespace data_snapshotd {
+
+SnapshotHoursPolicyService::SnapshotHoursPolicyService(PrefService* local_state)
+    : local_state_(local_state) {
+  DCHECK(local_state_);
+  pref_change_registrar_.Init(local_state_);
+  pref_change_registrar_.Add(
+      prefs::kArcSnapshotHours,
+      base::BindRepeating(&SnapshotHoursPolicyService::UpdatePolicy,
+                          weak_ptr_factory_.GetWeakPtr()));
+  UpdatePolicy();
+}
+
+SnapshotHoursPolicyService::~SnapshotHoursPolicyService() = default;
+
+void SnapshotHoursPolicyService::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void SnapshotHoursPolicyService::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
+
+void SnapshotHoursPolicyService::StartObservingPrimaryProfilePrefs(
+    PrefService* profile_prefs) {
+  if (!user_manager::UserManager::Get() ||
+      !user_manager::UserManager::Get()->IsLoggedInAsPublicAccount()) {
+    // Do not care about ArcEnabled policy for other than MGS.
+    return;
+  }
+  profile_prefs_ = profile_prefs;
+  profile_pref_change_registrar_.Init(profile_prefs_);
+  profile_pref_change_registrar_.Add(
+      prefs::kArcEnabled,
+      base::BindRepeating(&SnapshotHoursPolicyService::UpdatePolicy,
+                          weak_ptr_factory_.GetWeakPtr()));
+  UpdatePolicy();
+}
+
+void SnapshotHoursPolicyService::StopObservingPrimaryProfilePrefs() {
+  if (!profile_prefs_)
+    return;
+  profile_pref_change_registrar_.RemoveAll();
+  profile_prefs_ = nullptr;
+  UpdatePolicy();
+}
+
+void SnapshotHoursPolicyService::UpdatePolicy() {
+  intervals_.clear();
+  base::ScopedClosureRunner snapshot_disabler(
+      base::BindOnce(&SnapshotHoursPolicyService::DisableSnapshots,
+                     weak_ptr_factory_.GetWeakPtr()));
+  if (!IsArcEnabled())
+    return;
+
+  const auto* dict = local_state_->GetDictionary(prefs::kArcSnapshotHours);
+  if (!dict)
+    return;
+
+  const auto* timezone = dict->FindStringKey("timezone");
+  if (!timezone)
+    return;
+
+  int offset;
+  if (!policy::weekly_time_utils::GetOffsetFromTimezoneToGmt(
+          *timezone, base::DefaultClock::GetInstance(), &offset)) {
+    return;
+  }
+
+  const auto* intervals = dict->FindListKey("intervals");
+  if (!intervals)
+    return;
+
+  for (const auto& entry : intervals->GetList()) {
+    if (!entry.is_dict())
+      continue;
+    auto interval =
+        policy::WeeklyTimeInterval::ExtractFromValue(&entry, -offset);
+    if (interval)
+      intervals_.push_back(*interval);
+  }
+  intervals_ = policy::weekly_time_utils::ConvertIntervalsToGmt(intervals_);
+  if (intervals_.empty())
+    return;
+
+  ignore_result(snapshot_disabler.Release());
+  EnableSnapshots();
+}
+
+void SnapshotHoursPolicyService::DisableSnapshots() {
+  if (!is_snapshot_enabled_)
+    return;
+
+  is_snapshot_enabled_ = false;
+  StopTimer();
+  SetEndTime(base::Time());
+  NotifySnapshotsDisabled();
+}
+
+void SnapshotHoursPolicyService::EnableSnapshots() {
+  if (is_snapshot_enabled_)
+    return;
+  is_snapshot_enabled_ = true;
+
+  UpdateTimer();
+  NotifySnapshotsEnabled();
+}
+
+void SnapshotHoursPolicyService::UpdateTimer() {
+  auto current_time = policy::WeeklyTime::GetCurrentGmtWeeklyTime(
+      base::DefaultClock::GetInstance());
+  for (const auto& interval : intervals_) {
+    if (interval.Contains(current_time)) {
+      auto remaining_timer_duration =
+          current_time.GetDurationTo(interval.end());
+      SetEndTime(base::Time::Now() + remaining_timer_duration);
+      StartTimer(remaining_timer_duration);
+      return;
+    }
+  }
+  StartTimer(policy::weekly_time_utils::GetDeltaTillNextTimeInterval(
+      current_time, intervals_));
+  SetEndTime(base::Time());
+}
+
+void SnapshotHoursPolicyService::StartTimer(base::TimeDelta delay) {
+  DCHECK_GT(delay, base::TimeDelta());
+  timer_.Start(FROM_HERE, base::DefaultClock::GetInstance()->Now() + delay,
+               base::BindOnce(&SnapshotHoursPolicyService::UpdateTimer,
+                              weak_ptr_factory_.GetWeakPtr()));
+}
+
+void SnapshotHoursPolicyService::StopTimer() {
+  timer_.Stop();
+}
+
+void SnapshotHoursPolicyService::SetEndTime(base::Time end_time) {
+  if (snapshot_update_end_time_ == end_time)
+    return;
+  snapshot_update_end_time_ = end_time;
+  NotifySnapshotUpdateEndTimeChanged();
+}
+
+void SnapshotHoursPolicyService::NotifySnapshotsDisabled() {
+  for (auto& observer : observers_)
+    observer.OnSnapshotsDisabled();
+}
+
+void SnapshotHoursPolicyService::NotifySnapshotsEnabled() {
+  for (auto& observer : observers_)
+    observer.OnSnapshotsEnabled();
+}
+
+void SnapshotHoursPolicyService::NotifySnapshotUpdateEndTimeChanged() {
+  for (auto& observer : observers_)
+    observer.OnSnapshotUpdateEndTimeChanged();
+}
+
+bool SnapshotHoursPolicyService::IsArcEnabled() const {
+  // Assume ARC is enabled if there is no profile prefs.
+  return !profile_prefs_ || profile_prefs_->GetBoolean(prefs::kArcEnabled);
+}
+
+}  // namespace data_snapshotd
+}  // namespace arc

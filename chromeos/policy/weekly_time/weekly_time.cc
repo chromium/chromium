@@ -12,6 +12,7 @@ namespace em = enterprise_management;
 namespace policy {
 
 namespace {
+
 constexpr base::TimeDelta kWeek = base::TimeDelta::FromDays(7);
 constexpr base::TimeDelta kDay = base::TimeDelta::FromDays(1);
 constexpr base::TimeDelta kHour = base::TimeDelta::FromHours(1);
@@ -31,6 +32,11 @@ WeeklyTime GetWeeklyTimeFromExploded(
 
 }  // namespace
 
+// static
+const char WeeklyTime::kDayOfWeek[] = "day_of_week";
+const char WeeklyTime::kTime[] = "time";
+const char WeeklyTime::kTimezoneOffset[] = "timezon_offset";
+
 WeeklyTime::WeeklyTime(int day_of_week,
                        int milliseconds,
                        base::Optional<int> timezone_offset)
@@ -49,10 +55,10 @@ WeeklyTime& WeeklyTime::operator=(const WeeklyTime& rhs) = default;
 
 std::unique_ptr<base::DictionaryValue> WeeklyTime::ToValue() const {
   auto weekly_time = std::make_unique<base::DictionaryValue>();
-  weekly_time->SetInteger("day_of_week", day_of_week_);
-  weekly_time->SetInteger("time", milliseconds_);
+  weekly_time->SetInteger(kDayOfWeek, day_of_week_);
+  weekly_time->SetInteger(kTime, milliseconds_);
   if (timezone_offset_)
-    weekly_time->SetInteger("timezone_offset", timezone_offset_.value());
+    weekly_time->SetInteger(kTimezoneOffset, timezone_offset_.value());
   return weekly_time;
 }
 
@@ -134,6 +140,37 @@ std::unique_ptr<WeeklyTime> WeeklyTime::ExtractFromProto(
     return nullptr;
   }
   return std::make_unique<WeeklyTime>(container.day_of_week(), time_of_day,
+                                      timezone_offset);
+}
+
+// static
+std::unique_ptr<WeeklyTime> WeeklyTime::ExtractFromValue(
+    const base::Value* value,
+    base::Optional<int> timezone_offset) {
+  if (!value) {
+    LOG(ERROR) << "Passed nullptr value.";
+    return nullptr;
+  }
+  auto day_of_week = value->FindIntKey(kDayOfWeek);
+  if (!day_of_week.has_value() || day_of_week.value() < 1 ||
+      day_of_week.value() > 7) {
+    LOG(ERROR) << "Day of week is absent or invalid";
+    return nullptr;
+  }
+  auto time_of_day = value->FindIntKey(kTime);
+  if (!time_of_day.has_value()) {
+    LOG(ERROR) << "Time is absent";
+    return nullptr;
+  }
+
+  if (!(time_of_day.value() >= 0 &&
+        time_of_day.value() < kDay.InMilliseconds())) {
+    LOG(ERROR) << "Invalid time value: " << time_of_day.value()
+               << ", the value should be in [0; " << kDay.InMilliseconds()
+               << ").";
+    return nullptr;
+  }
+  return std::make_unique<WeeklyTime>(day_of_week.value(), time_of_day.value(),
                                       timezone_offset);
 }
 
