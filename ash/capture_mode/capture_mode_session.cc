@@ -139,7 +139,7 @@ bool SetMouseWarpEnabled(bool enable) {
 aura::Window* GetParentContainer(aura::Window* root) {
   DCHECK(root);
   DCHECK(root->IsRootWindow());
-  return root->GetChildById(kShellWindowId_OverlayContainer);
+  return root->GetChildById(kShellWindowId_MenuContainer);
 }
 
 // Returns the smallest rect that contains all of |points|.

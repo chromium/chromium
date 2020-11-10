@@ -233,6 +233,7 @@ void ReparentAllWindows(aura::Window* src, aura::Window* dst) {
       kShellWindowId_UnparentedControlContainer,
       kShellWindowId_OverlayContainer,
       kShellWindowId_LockActionHandlerContainer,
+      kShellWindowId_MenuContainer,
   };
   constexpr int kExtraContainerIdsToMoveInUnifiedMode[] = {
       kShellWindowId_LockScreenContainer,
