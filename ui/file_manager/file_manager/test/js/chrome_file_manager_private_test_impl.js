@@ -296,21 +296,6 @@ chrome.fileManagerPrivate = {
 };
 
 /**
- * Suppress compiler warning for overwriting chrome.mediaGalleries.
- * @suppress {checkTypes}
- */
-chrome.mediaGalleries = {
-  getMetadata: (mediaFile, options, callback) => {
-    // Returns metdata {mimeType: ..., ...}.
-    setTimeout(() => {
-      webkitResolveLocalFileSystemURL(mediaFile.name, entry => {
-        callback({mimeType: entry.metadata.contentMimeType});
-      }, 0);
-    });
-  },
-};
-
-/**
  * Suppress compiler warning for overwriting chrome.fileSystem.
  * @suppress {checkTypes}
  */
