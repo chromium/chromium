@@ -52,10 +52,16 @@ namespace media {
 
 namespace {
 
-// Maximum number of frames we expect to keep while playing video. Higher values
-// require more memory for output buffers. Lower values make it more likely that
-// renderer will stall because decoded frames are not available on time.
-const uint32_t kMaxUsedOutputFrames = 6;
+// Number of output buffers allocated "for camping". This value is passed to
+// sysmem to ensure that we get one output buffer for the frame currently
+// displayed on the screen.
+const uint32_t kOutputBuffersForCamping = 1;
+
+// Maximum number of frames we expect to have queued up while playing video.
+// Higher values require more memory for output buffers. Lower values make it
+// more likely that renderer will stall because decoded frames are not available
+// on time.
+const uint32_t kMaxUsedOutputBuffers = 5;
 
 // Use 2 buffers for decoder input. Limiting total number of buffers to 2 allows
 // to minimize required memory without significant effect on performance.
@@ -314,8 +320,7 @@ class FuchsiaVideoDecoder : public VideoDecoder,
   gfx::SysmemBufferCollectionId output_buffer_collection_id_;
   std::vector<OutputMailbox*> output_mailboxes_;
 
-  int num_used_output_buffers_ = 0;
-  int max_used_output_buffers_ = 0;
+  size_t num_used_output_buffers_ = 0;
 
   base::WeakPtr<FuchsiaVideoDecoder> weak_this_;
   base::WeakPtrFactory<FuchsiaVideoDecoder> weak_factory_;
@@ -506,7 +511,7 @@ bool FuchsiaVideoDecoder::NeedsBitstreamConversion() const {
 }
 
 bool FuchsiaVideoDecoder::CanReadWithoutStalling() const {
-  return num_used_output_buffers_ < max_used_output_buffers_;
+  return num_used_output_buffers_ < kMaxUsedOutputBuffers;
 }
 
 int FuchsiaVideoDecoder::GetMaxDecodeRequests() const {
@@ -747,31 +752,11 @@ void FuchsiaVideoDecoder::OnOutputConstraints(
     return;
   }
 
-  if (!output_constraints.has_buffer_constraints()) {
-    DLOG(ERROR) << "Received OnOutputConstraints() which requires buffer "
-                   "constraints action, but without buffer constraints.";
-    OnError();
-    return;
-  }
-
-  const fuchsia::media::StreamBufferConstraints& buffer_constraints =
-      output_constraints.buffer_constraints();
-
-  if (!buffer_constraints.has_packet_count_for_client_max()) {
-    DLOG(ERROR)
-        << "Received OnOutputConstraints() with missing required fields.";
-    OnError();
-    return;
-  }
-
   ReleaseOutputBuffers();
 
   // mediacodec API expects odd buffer lifetime ordinal, which is incremented by
   // 2 for each buffer generation.
   output_buffer_lifetime_ordinal_ += 2;
-
-  max_used_output_buffers_ = std::min(
-      kMaxUsedOutputFrames, buffer_constraints.packet_count_for_client_max());
 
   // Create a new sysmem buffer collection token for the output buffers.
   fuchsia::sysmem::BufferCollectionTokenPtr collection_token;
@@ -1032,7 +1017,9 @@ void FuchsiaVideoDecoder::InitializeOutputBufferCollection(
     fuchsia::sysmem::BufferCollectionTokenPtr collection_token_for_gpu) {
   fuchsia::sysmem::BufferCollectionConstraints buffer_constraints;
   buffer_constraints.usage.none = fuchsia::sysmem::noneUsage;
-  buffer_constraints.min_buffer_count_for_camping = max_used_output_buffers_;
+  buffer_constraints.min_buffer_count_for_camping = kOutputBuffersForCamping;
+  buffer_constraints.min_buffer_count_for_shared_slack =
+      kMaxUsedOutputBuffers - kOutputBuffersForCamping;
   output_buffer_collection_->SetConstraints(
       /*has_constraints=*/true, std::move(buffer_constraints));
 
@@ -1051,9 +1038,6 @@ void FuchsiaVideoDecoder::InitializeOutputBufferCollection(
   settings.set_buffer_lifetime_ordinal(output_buffer_lifetime_ordinal_);
   settings.set_buffer_constraints_version_ordinal(
       constraints.buffer_constraints_version_ordinal());
-  settings.set_packet_count_for_client(max_used_output_buffers_);
-  settings.set_packet_count_for_server(
-      constraints.packet_count_for_server_recommended());
   settings.set_sysmem_token(std::move(collection_token_for_codec));
   decoder_->SetOutputBufferPartialSettings(std::move(settings));
   decoder_->CompleteOutputBufferPartialSettings(
@@ -1103,7 +1087,7 @@ void FuchsiaVideoDecoder::OnReuseMailbox(uint32_t buffer_index,
                                          uint32_t packet_index) {
   DCHECK(decoder_);
 
-  DCHECK_GT(num_used_output_buffers_, 0);
+  DCHECK_GT(num_used_output_buffers_, 0U);
   num_used_output_buffers_--;
 
   fuchsia::media::PacketHeader header;
