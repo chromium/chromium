@@ -480,6 +480,15 @@ Try tapping the mic to ask me anything.
       <message name="IDS_SCANNING_APP_SOURCE_DROPDOWN_LABEL" desc="The label for the dropdown that displays available scan sources (e.g. flatbed, document feeder, etc.).">
         Source
       </message>
+      <message name="IDS_SCANNING_APP_ONE_SIDED_DOC_FEEDER_OPTION_TEXT" desc="The text displayed for the one-sided document feeder source option.">
+        Document Feeder (One-sided)
+      </message>
+      <message name="IDS_SCANNING_APP_TWO_SIDED_DOC_FEEDER_OPTION_TEXT" desc="The text displayed for the two-sided document feeder source option.">
+        Document Feeder (Two-sided)
+      </message>
+      <message name="IDS_SCANNING_APP_FLATBED_OPTION_TEXT" desc="The text displayed for the flatbed source option.">
+        Flatbed
+      </message>
       <message name="IDS_SCANNING_APP_FILE_TYPE_DROPDOWN_LABEL" desc="The label for the dropdown that displays available file types.">
         File type
       </message>

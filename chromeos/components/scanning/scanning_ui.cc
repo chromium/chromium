@@ -55,6 +55,7 @@ void AddScanningAppStrings(content::WebUIDataSource* html_source) {
       {"appTitle", IDS_SCANNING_APP_TITLE},
       {"colorModeDropdownLabel", IDS_SCANNING_APP_COLOR_MODE_DROPDOWN_LABEL},
       {"defaultSourceOptionText", IDS_SCANNING_APP_DEFAULT_SOURCE_OPTION_TEXT},
+      {"flatbedOptionText", IDS_SCANNING_APP_FLATBED_OPTION_TEXT},
       {"fileTypeDropdownLabel", IDS_SCANNING_APP_FILE_TYPE_DROPDOWN_LABEL},
       {"jpgOptionText", IDS_SCANNING_APP_JPG_OPTION_TEXT},
       {"moreSettings", IDS_SCANNING_APP_MORE_SETTINGS},
@@ -62,6 +63,8 @@ void AddScanningAppStrings(content::WebUIDataSource* html_source) {
       {"noScannersHelpLinkLabel", IDS_SCANNING_APP_NO_SCANNERS_HELP_LINK_LABEL},
       {"noScannersHelpText", IDS_SCANNING_APP_NO_SCANNERS_HELP_TEXT},
       {"noScannersText", IDS_SCANNING_APP_NO_SCANNERS_TEXT},
+      {"oneSidedDocFeederOptionText",
+       IDS_SCANNING_APP_ONE_SIDED_DOC_FEEDER_OPTION_TEXT},
       {"pdfOptionText", IDS_SCANNING_APP_PDF_OPTION_TEXT},
       {"pngOptionText", IDS_SCANNING_APP_PNG_OPTION_TEXT},
       {"pageSizeDropdownLabel", IDS_SCANNING_APP_PAGE_SIZE_DROPDOWN_LABEL},
@@ -72,7 +75,9 @@ void AddScanningAppStrings(content::WebUIDataSource* html_source) {
       {"scanToDropdownLabel", IDS_SCANNING_APP_SCAN_TO_DROPDOWN_LABEL},
       {"scannerDropdownLabel", IDS_SCANNING_APP_SCANNER_DROPDOWN_LABEL},
       {"selectFolderOption", IDS_SCANNING_APP_SELECT_FOLDER_OPTION},
-      {"sourceDropdownLabel", IDS_SCANNING_APP_SOURCE_DROPDOWN_LABEL}};
+      {"sourceDropdownLabel", IDS_SCANNING_APP_SOURCE_DROPDOWN_LABEL},
+      {"twoSidedDocFeederOptionText",
+       IDS_SCANNING_APP_TWO_SIDED_DOC_FEEDER_OPTION_TEXT}};
 
   for (const auto& str : kLocalizedStrings)
     html_source->AddLocalizedString(str.name, str.id);

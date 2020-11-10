@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {assertNotReached} from 'chrome://resources/js/assert.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
 /**
  * Converts a chromeos.scanning.mojom.ColorMode string to the corresponding enum
@@ -93,20 +94,19 @@ export function getPageSizeString(pageSize) {
  * @return {string}
  */
 export function getSourceTypeString(mojoSourceType) {
-  // TODO(jschettler): Replace with finalized i18n strings.
   switch (mojoSourceType) {
     case chromeos.scanning.mojom.SourceType.kFlatbed:
-      return 'Flatbed';
+      return loadTimeData.getString('flatbedOptionText');
     case chromeos.scanning.mojom.SourceType.kAdfSimplex:
-      return 'Document Feeder (Simplex)';
+      return loadTimeData.getString('oneSidedDocFeederOptionText');
     case chromeos.scanning.mojom.SourceType.kAdfDuplex:
-      return 'Document Feeder (Duplex)';
+      return loadTimeData.getString('twoSidedDocFeederOptionText');
     case chromeos.scanning.mojom.SourceType.kDefault:
-      return 'Default';
+      return loadTimeData.getString('defaultSourceOptionText');
     case chromeos.scanning.mojom.SourceType.kUnknown:
     default:
       assertNotReached();
-      return 'Unknown';
+      return loadTimeData.getString('defaultSourceOptionText');
   }
 }
 
