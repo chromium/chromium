@@ -830,7 +830,7 @@
         Kazakh
       </message>
       <message name="IDS_IME_NAME_KEYBOARD_LATIN_AMERICAN" desc="The input method name shows in system tray menu and settings page.">
-        Latin American keyboard
+        Spanish (Latin America)
       </message>
       <message name="IDS_IME_NAME_KEYBOARD_LATVIAN" desc="The input method name shows in system tray menu and settings page.">
         Latvian
@@ -890,19 +890,19 @@
         Russian Phonetic (YaZHert) keyboard
       </message>
       <message name="IDS_IME_NAME_KEYBOARD_SERBIAN" desc="The input method name shows in system tray menu and settings page.">
-        Serbian keyboard
+        Serbian
       </message>
       <message name="IDS_IME_NAME_KEYBOARD_SLOVAK" desc="The input method name shows in system tray menu and settings page.">
-        Slovak keyboard
+        Slovak
       </message>
       <message name="IDS_IME_NAME_KEYBOARD_SLOVENIAN" desc="The input method name shows in system tray menu and settings page.">
-        Slovenian keyboard
+        Slovenian
       </message>
       <message name="IDS_IME_NAME_KEYBOARD_SPANISH" desc="The input method name shows in system tray menu and settings page.">
-        Spanish keyboard
+        Spanish (Spain)
       </message>
       <message name="IDS_IME_NAME_KEYBOARD_SWEDISH" desc="The input method name shows in system tray menu and settings page.">
-        Swedish keyboard
+        Swedish
       </message>
       <message name="IDS_IME_NAME_KEYBOARD_SWISS_FRENCH" desc="The input method name shows in system tray menu and settings page.">
         French (Switzerland)
@@ -1060,13 +1060,13 @@
         Persian keyboard
       </message>
       <message name="IDS_IME_NAME_KEYBOARD_SINHALA" desc="The input method name shows in system tray menu and settings page.">
-        Sinhala keyboard
+        Sinhala
       </message>
       <message name="IDS_IME_NAME_KEYBOARD_SORANIKURDISH_AR" desc="The input method name shows in system tray menu and settings page.">
-        Sorani Kurdish Arabic-based keyboard
+        Sorani Kuridsh with Arabic-based keyboard
       </message>
       <message name="IDS_IME_NAME_KEYBOARD_SORANIKURDISH_EN" desc="The input method name shows in system tray menu and settings page.">
-        Sorani Kurdish English-based keyboard
+        Sorani Kurdish with English-based keyboard
       </message>
       <message name="IDS_IME_NAME_KEYBOARD_TAMIL_INSCRIPT" desc="The input method name shows in system tray menu and settings page.">
         Tamil keyboard (InScript)
@@ -1153,8 +1153,8 @@
       <message name="IDS_IME_NAME_TRANSLITERATION_SA" desc="The input method name shows in system tray menu and settings page.">
         Sanskrit
       </message>
-      <message name="IDS_IME_NAME_TRANSLITERATION_SR" desc="The input method name shows in system tray menu and settings page. Please translate only for 'transliteration'.">
-        Transliteration (zdravo &#x2192; &#x0437;&#x0434;&#x0440;&#x0430;&#x0432;&#x043e;)
+      <message name="IDS_IME_NAME_TRANSLITERATION_SR" desc="The input method name shows in system tray menu and settings page.">
+        Serbian Transliteration
       </message>
       <message name="IDS_IME_NAME_TRANSLITERATION_TA" desc="The input method name shows in system tray menu and settings page. Please translate only for 'transliteration'.">
         Transliteration (vanakkam &#x2192; &#x0bb5;&#x0ba3;&#x0b95;&#x0bcd;&#x0b95;&#x0bae;&#x0bcd;)
