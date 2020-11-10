@@ -95,6 +95,7 @@
 <translation id="1680919990519905526">Google レンズで画像を購入 <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
 <translation id="1682195225331129001">今すぐ試す</translation>
 <translation id="1692118695553449118">同期は有効です</translation>
+<translation id="1697284962337958118">追加先</translation>
 <translation id="1718835860248848330">1 時間以内</translation>
 <translation id="1736419249208073774">詳しく見る</translation>
 <translation id="1749561566933687563">ブックマークの同期</translation>
@@ -314,6 +315,7 @@
 <translation id="3285080554353377245">Chrome の使い方に関する動画</translation>
 <translation id="3288003805934695103">ページを再読み込みする</translation>
 <translation id="32895400574683172">通知が許可されています</translation>
+<translation id="3290991969712132877">このページにすばやくアクセスするには、[その他のオプション] からこのページをホーム画面に追加してください</translation>
 <translation id="3295530008794733555">高速ブラウジングで、データ使用量も抑えることができます。</translation>
 <translation id="3298243779924642547">軽量版</translation>
 <translation id="3303414029551471755">コンテンツのダウンロードに進みますか？</translation>
@@ -470,6 +472,7 @@
 <translation id="4532845899244822526">フォルダの選択</translation>
 <translation id="4538018662093857852">ライトモードをオンにする</translation>
 <translation id="4550003330909367850">ここでパスワードを表示またはコピーするには、このデバイスに画面ロックを設定してください。</translation>
+<translation id="4557685098773234337">このページにすばやくアクセスするには、ホーム画面に追加してください</translation>
 <translation id="4558311620361989323">ウェブページのショートカット</translation>
 <translation id="4561979708150884304">接続されていません</translation>
 <translation id="4565377596337484307">パスワードを表示しない</translation>
@@ -499,6 +502,7 @@
 <translation id="4720982865791209136">Chrome の品質向上にご協力ください。<ph name="BEGIN_LINK" />アンケートに回答する<ph name="END_LINK" /></translation>
 <translation id="47217992755561375">よく使用するサイトを表示します</translation>
 <translation id="4732120983431207637">スタック アンワインダー</translation>
+<translation id="4732693703583195378">このサイトをタブレットのホーム画面に追加すると簡単にアクセスできるようになります</translation>
 <translation id="4738836084190194332">最終同期: <ph name="WHEN" /></translation>
 <translation id="4749960740855309258">新しいタブを開く</translation>
 <translation id="4759238208242260848">ダウンロード</translation>
@@ -536,6 +540,7 @@
 <translation id="4925120120285606924">スクリーンショット <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">パスワードはエクスポートされ、テキスト ファイルとしてダウンロードされます。このファイルは、ダウンロード先のフォルダにアクセス可能なすべてのユーザーおよびアプリが閲覧できます。</translation>
 <translation id="4932247056774066048"><ph name="DOMAIN_NAME" /> で管理されているアカウントからログアウトするにあたり、Chrome データはこのデバイスから削除されます。Google アカウントからはデータは削除されません。</translation>
+<translation id="4936039914467572121">このサイトにすばやくアクセス</translation>
 <translation id="4943703118917034429">バーチャル リアリティ</translation>
 <translation id="4943872375798546930">結果はありません</translation>
 <translation id="4961107849584082341">このページを任意の言語に翻訳できます</translation>
@@ -647,6 +652,7 @@
 <translation id="5763382633136178763">シークレット タブ</translation>
 <translation id="5763514718066511291">タップすると、このアプリの URL がコピーされます</translation>
 <translation id="5765780083710877561">説明:</translation>
+<translation id="5767013862801005129"><ph name="TAB_TITLE" /> タブを復元しました</translation>
 <translation id="5776970333778123608">重要度の低いデータ</translation>
 <translation id="5793665092639000975"><ph name="SPACE_AVAILABLE" /> 中 <ph name="SPACE_USED" /> を使用中</translation>
 <translation id="5795872532621730126">検索とブラウジング</translation>
@@ -952,6 +958,7 @@
 <translation id="7774809984919390718">{PAYMENT_METHOD,plural, =1{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 他 <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> 件}other{<ph name="PAYMENT_METHOD_PREVIEW" />\u2026 他 <ph name="NUMBER_OF_ADDITIONAL_PAYMENT_METHODS" /> 件}}</translation>
 <translation id="7778840695157240389">しばらくしてからご確認ください</translation>
 <translation id="7791543448312431591">追加</translation>
+<translation id="7798392620021911922"><ph name="TAB_COUNT" /> 個のタブを復元しました</translation>
 <translation id="780301667611848630">いいえ</translation>
 <translation id="7810647596859435254">アプリで開く…</translation>
 <translation id="7821588508402923572">データ節約量がここに表示されます</translation>
@@ -1137,6 +1144,7 @@
 <translation id="9133703968756164531"><ph name="ITEM_NAME" />（<ph name="ITEM_ID" />）</translation>
 <translation id="9137013805542155359">原文のページを表示</translation>
 <translation id="9148126808321036104">もう一度ログインする</translation>
+<translation id="9149286894143103695">このサイトをスマートフォンのホーム画面に追加すると簡単にアクセスできるようになります</translation>
 <translation id="9155898266292537608">単語をタップするだけでも検索できます</translation>
 <translation id="9169507124922466868">ナビゲーション履歴が半分開いています</translation>
 <translation id="9191031968346938109">追加先…</translation>

@@ -77,6 +77,7 @@
 <translation id="1513352483775369820">Bookmarks and web history</translation>
 <translation id="1513858653616922153">Delete password</translation>
 <translation id="1521774566618522728">Active today</translation>
+<translation id="1538801903729528855">Get a better voice experience on the web</translation>
 <translation id="1543538514740974167">Get here quicker</translation>
 <translation id="1544826120773021464">To manage your Google Account, tap the 'Manage account' button</translation>
 <translation id="1549000191223877751">Move to other window</translation>
@@ -95,6 +96,7 @@
 <translation id="1680919990519905526">Shop image with Google Lens <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
 <translation id="1682195225331129001">Try now</translation>
 <translation id="1692118695553449118">Sync is on</translation>
+<translation id="1697284962337958118">Add to</translation>
 <translation id="1718835860248848330">Last hour</translation>
 <translation id="1736419249208073774">Explore</translation>
 <translation id="1749561566933687563">Sync your bookmarks</translation>
@@ -116,6 +118,7 @@
 <translation id="1877026089748256423">Chrome is out of date</translation>
 <translation id="1883903952484604915">My files</translation>
 <translation id="189358972401248634">Other languages</translation>
+<translation id="1918175104945982129">Assistant voice search consent UI opened at half height</translation>
 <translation id="1919130412786645364">Allow Chrome sign-in</translation>
 <translation id="1922362554271624559">Suggested languages</translation>
 <translation id="1925021887439448749">Enter custom web address</translation>
@@ -146,6 +149,7 @@
 <translation id="2056878612599315956">Site paused</translation>
 <translation id="2067805253194386918">text</translation>
 <translation id="2068748236079642969">Watch next video</translation>
+<translation id="2074143993849053708">Assistant voice search consent UI closed</translation>
 <translation id="2082238445998314030">Result <ph name="RESULT_NUMBER" /> of <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2096012225669085171">Sync and personalise across devices</translation>
 <translation id="2100273922101894616">Auto Sign-in</translation>
@@ -278,6 +282,7 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="3006881078666935414">No usage data</translation>
 <translation id="3016635187733453316">Make sure that this device is connected to the Internet</translation>
 <translation id="3029704984691124060">Passphrases do not match</translation>
+<translation id="3031225630520268969">Assistant voice search consent UI</translation>
 <translation id="3034163383943672781">Download will start on <ph name="DATE" />.</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Get help<ph name="END_LINK" /></translation>
 <translation id="305593374596241526">Location is off; turn it on in <ph name="BEGIN_LINK" />Android Settings<ph name="END_LINK" />.</translation>
@@ -436,6 +441,7 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="4248098802131000011">Keep your passwords safe from data breaches and other security issues</translation>
 <translation id="4250229828105606438">Screenshot</translation>
 <translation id="4256782883801055595">Open-source licences</translation>
+<translation id="4263656433980196874">Assistant voice search consent UI opened at full height</translation>
 <translation id="4269820728363426813">Copy link address</translation>
 <translation id="4298388696830689168">Linked sites</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
@@ -622,6 +628,7 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="5581519193887989363">You can always choose what to sync in <ph name="BEGIN_LINK1" />settings<ph name="END_LINK1" />.</translation>
 <translation id="5595485650161345191">Edit address</translation>
 <translation id="5599455543593328020">Incognito mode</translation>
+<translation id="5599941490345670218">Google Assistant can complete actions across websites for you</translation>
 <translation id="5620163320393916465">No saved passwords</translation>
 <translation id="5620928963363755975">Find your files and pages in Downloads from the More Options button</translation>
 <translation id="5626134646977739690">Name:</translation>
@@ -1147,6 +1154,7 @@ Data from your Incognito session will only be cleared from Chrome when you <ph n
 <translation id="9155898266292537608">You can also search with a quick tap on a word</translation>
 <translation id="9169507124922466868">Navigation history is half-opened</translation>
 <translation id="9191031968346938109">Add to…</translation>
+<translation id="919615279147764192">To help you complete tasks, Google will receive the URLs and contents of sites on which you use Assistant, as well as information that you submit though Assistant. This information may be stored in your Google Account. You can turn off Assistant in Chrome settings.</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Checked 1 minute ago}other{Checked # minutes ago}}</translation>
 <translation id="9204836675896933765">1 file left</translation>
 <translation id="9206873250291191720">A</translation>

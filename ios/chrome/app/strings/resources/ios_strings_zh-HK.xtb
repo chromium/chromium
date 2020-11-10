@@ -18,6 +18,7 @@
 <translation id="1112015203684611006">無法列印。</translation>
 <translation id="1125564390852150847">新增分頁。</translation>
 <translation id="1145536944570833626">刪除現有資料。</translation>
+<translation id="1147031633655575115">已使用「<ph name="USER" />」的身分登入</translation>
 <translation id="1154690515305205900">無法建立突顯文字的連結。</translation>
 <translation id="1157749421655780457">允許存取位置…</translation>
 <translation id="1165039591588034296">錯誤</translation>
@@ -268,6 +269,7 @@
 <translation id="385051799172605136">返回</translation>
 <translation id="3892144330757387737">您可在此查看記錄</translation>
 <translation id="3897092660631435901">選單</translation>
+<translation id="3913386780052199712">已登入 Chrome</translation>
 <translation id="3915450441834151894">網站資料</translation>
 <translation id="3922310737605261887">搜尋複製的文字</translation>
 <translation id="3928666092801078803">合併我的資料</translation>

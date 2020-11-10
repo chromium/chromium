@@ -312,6 +312,7 @@
 <translation id="214556005048008348">支払いをキャンセル</translation>
 <translation id="2147827593068025794">バックグラウンド同期</translation>
 <translation id="2148613324460538318">カードを追加</translation>
+<translation id="2149968176347646218">接続は安全ではありません</translation>
 <translation id="2154054054215849342">お使いのドメインでは同期機能をご利用いただけません</translation>
 <translation id="2154484045852737596">カードを編集</translation>
 <translation id="2161656808144014275">テキスト</translation>
@@ -1158,6 +1159,7 @@
 <translation id="5571083550517324815">この住所での受け取りはできません。別の住所を選択してください。</translation>
 <translation id="5580958916614886209">有効期限の「月」を確認してもう一度お試しください</translation>
 <translation id="5586446728396275693">保存されている住所がありません</translation>
+<translation id="5593349413089863479">接続は完全には保護されていません</translation>
 <translation id="5595485650161345191">住所の編集</translation>
 <translation id="5598944008576757369">お支払い方法を選択</translation>
 <translation id="560412284261940334">管理はサポートされていません</translation>

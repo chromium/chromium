@@ -17,6 +17,7 @@
 <translation id="1369915414381695676">Se agregó el sitio <ph name="SITE_NAME" />.</translation>
 <translation id="1383876407941801731">Buscar</translation>
 <translation id="1384959399684842514">Descarga detenida</translation>
+<translation id="1415402041810619267">URL acortada</translation>
 <translation id="1431402976894535801">No permitir que los sitios sepan cuando estás presente</translation>
 <translation id="1446450296470737166">Control de dispositivos MIDI</translation>
 <translation id="1509960214886564027">Es posible que las características de muchos sitios no funcionen de forma correcta</translation>
@@ -121,6 +122,7 @@
 <translation id="445467742685312942">Permitir que los sitios reproduzcan contenido protegido</translation>
 <translation id="4468959413250150279">Silenciar un sitio específico.</translation>
 <translation id="4479647676395637221">Preguntar primero antes de permitir que los sitios usen tu cámara (recomendado)</translation>
+<translation id="4505788138578415521">URL expandida</translation>
 <translation id="4534723447064627427">Para permitir que <ph name="APP_NAME" /> acceda a tu micrófono, actívalo también en la <ph name="BEGIN_LINK" />Configuración de Android<ph name="END_LINK" />.</translation>
 <translation id="4570913071927164677">Detalles</translation>
 <translation id="4645575059429386691">Administrado por tus padres</translation>

@@ -94,6 +94,7 @@
 請嘗試輕按麥克風並發問。</translation>
 <translation id="5222676887888702881">登出</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />，<ph name="PRINTER_NAME" />，<ph name="CREATION_TIME" />，<ph name="ERROR_STATUS" /></translation>
+<translation id="5275828089655680674">返回日常診斷</translation>
 <translation id="5317780077021120954">儲存</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />、<ph name="PRINTER_NAME" />、<ph name="CREATION_TIME" />、<ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">立即選擇新密碼</translation>
@@ -102,6 +103,7 @@
 <translation id="5431318178759467895">顏色</translation>
 <translation id="5457599981699367932">以訪客身分瀏覽</translation>
 <translation id="54609108002486618">受管理</translation>
+<translation id="5493614766091057239"><ph name="VERDICT" />：<ph name="PROBLEMS" /></translation>
 <translation id="5832805196449965646">新增使用者</translation>
 <translation id="5895138241574237353">重新啟動</translation>
 <translation id="6040143037577758943">關閉</translation>

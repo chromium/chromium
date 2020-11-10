@@ -3202,6 +3202,7 @@ Als dit beleid wordt gebruikt, zijn alleen de printers met ID's die overeenkomen
       Als het beleid is ingesteld op True, worden de VPD-gegevens van het apparaat gerapporteerd.
       VPD (Vital Product Data) is een verzameling configuratiegegevens en informatie, zoals onderdeel- en serienummers, die bij het apparaat horen.</translation>
 <translation id="5765780083710877561">Beschrijving:</translation>
+<translation id="5766438888216077649"><ph name="WINDOW_OPENER_PROPERTY" /> niet instellen voor links die <ph name="BLANK_PAGE_NAME" /> targeten</translation>
 <translation id="5770738360657678870">Ontwikkelaarskanaal (mogelijk instabiel)</translation>
 <translation id="5774856474228476867">Zoek-URL voor standaardzoekprovider</translation>
 <translation id="5775235485119094648">Laad de batterij op wanneer de lading zich binnen een bepaald bereik bevindt.</translation>
@@ -5087,6 +5088,13 @@ De aanbevolen manier om beleidsregels te configureren op Windows, is via GPO, ma
       Als het beleid is ingesteld op 'true' of niet is ingesteld, krijgt de gebruiker toestemming voor roottoegang tot Crostini-containers.
       Als het beleid is ingesteld op 'false', krijgt de gebruiker geen toestemming voor toegang tot zowel bestaande als nieuwe Crostini-containers.</translation>
 <translation id="8417305981081876834">De maximumlengte van de pincode voor het vergrendelscherm instellen</translation>
+<translation id="8417750118762775739">Als je het beleid uitschakelt, hebben pop-ups die <ph name="BLANK_PAGE_NAME" /> targeten, (via JavaScript) toegang tot de pagina die het openen van de pop-up heeft aangevraagd.
+
+      Als je het beleid inschakelt of niet instelt, wordt de eigenschap <ph name="WINDOW_OPENER_PROPERTY" /> ingesteld op <ph name="NULL_VALUE" />, tenzij het anker <ph name="REL_OPENER_ATTRIBUTE" /> opgeeft.
+
+      Dit beleid wordt verwijderd in <ph name="PRODUCT_NAME" />-versie 95.
+
+      Zie https://chromestatus.com/feature/6140064063029248.</translation>
 <translation id="841853753509411428">Dit beleid is beëindigd. Gebruik in plaats daarvan het beleid <ph name="NATIVE_MESSAGING_ALLOWLIST_POLICY_NAME" />.
 
       Als je het beleid instelt, geef je aan welke hosts voor systeemeigen berichten niet onder de weigeringslijst vallen. Een weigeringslijst met de waarde <ph name="WILDCARD_VALUE" /> betekent dat alle hosts voor systeemeigen berichten worden geweigerd, tenzij ze expliciet zijn toegestaan.

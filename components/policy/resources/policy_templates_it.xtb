@@ -1797,6 +1797,32 @@ Se questa norma viene impostata su False o non viene impostata, i ritardi di ges
 <translation id="3701121231485832347">Consente di gestire le impostazioni specifiche dei dispositivi <ph name="PRODUCT_OS_NAME" /> gestiti da <ph name="MS_AD_NAME" />.</translation>
 <translation id="3702518095257671450">Attestazione da remoto</translation>
 <translation id="3702647575225525306"><ph name="POLICY_NAME" /> (Il campo a una sola riga è obsoleto e sarà rimosso a breve. Inizia a usare la casella di testo multiriga qui sotto).</translation>
+<translation id="3704727923488731211">Consente di configurare un elenco di regole per prevenire la fuga di dati su <ph name="PRODUCT_OS_NAME" />.
+      La fuga di dati può verificarsi tramite le operazioni di copia e incolla dei dati, il trasferimento di file, la stampa, la condivisione schermo o l'acquisizione di screenshot.
+
+      Ciascuna regola prevede quanto segue:
+      - Un elenco di origini definite come URL. Tutti i dati delle origini saranno considerati dati riservati, a cui verranno applicate limitazioni.
+      - Un elenco di destinazioni definite come URL o componenti, con i quali la condivisione dei dati riservati è consentita o non consentita.
+      - Un elenco di limitazioni da applicare ai dati delle origini.
+
+      È possibile aggiungere regole per:
+      - Controllare i dati degli appunti condivisi tra le origini e le destinazioni.
+      - Controllare l'acquisizione di screenshot di tutte le origini.
+      - Controllare la stampa di tutte le origini.
+      - Controllare la Schermata privata quando una delle origini è visibile.
+      - Controllare la condivisione schermo di tutte le origini.
+
+      Il livello di limitazione può essere impostato su BLOCK o su ALLOW.
+      - Se la limitazione è impostata su BLOCK, l'azione non sarà consentita.
+      - Se la limitazione è imposta su ALLOW, l'azione sarà consentita.
+
+      Note:
+      - La limitazione PRIVACY_SCREEN non blocca la capacità di attivare la Schermata privata, ma la applica quando la classe della limitazione è impostata su BLOCK.
+      - Le destinazioni non possono essere vuote nel caso in cui una delle limitazioni sia CLIPBOARD, ma questo non fa alcuna differenza per le altre limitazioni.
+      - Per la limitazione CLIPBOARD non viene fatta distinzione tra CROSTINI e PLUGIN_VM. Se uno di questi criteri viene selezionato per bloccare/consentire la condivisione dei dati, la regola si applica a entrambi.
+      - I pattern URL devono avere il formato indicato all'indirizzo https://www.chromium.org/administrators/url-blacklist-filter-format.
+
+      Se il criterio non viene configurato, non sarà applicata alcuna limitazione.</translation>
 <translation id="3709266154059827597">Configura blacklist per l'installazione delle estensioni</translation>
 <translation id="3711895659073496551">Sospensione</translation>
 <translation id="3715569262675717862">Autenticazione basata su certificati client</translation>

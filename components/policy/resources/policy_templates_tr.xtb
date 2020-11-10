@@ -1792,6 +1792,32 @@ Bu politika False (Yanlış) değerine ayarlanırsa <ph name="PRODUCT_NAME" /> y
 <translation id="3701121231485832347"><ph name="MS_AD_NAME" /> tarafından yönetilen <ph name="PRODUCT_OS_NAME" /> cihazlara özgü ayarları kontrol eder.</translation>
 <translation id="3702518095257671450">Uzaktan onay</translation>
 <translation id="3702647575225525306"><ph name="POLICY_NAME" /> (Tek satırlı alanlar artık kullanılmamaktadır ve yakında kaldırılacaktır. Lütfen aşağıdaki çok satırlı metin kutusunu kullanın.)</translation>
+<translation id="3704727923488731211"><ph name="PRODUCT_OS_NAME" /> ürününde veri sızıntısı önleme kuralları listesini yapılandırır.
+      Veri sızıntısı verileri kopyalayıp yapıştırma, dosya aktarma, yazdırma, ekran paylaşma, ekran görüntüsü alma vb. sonucunda meydana gelebilir.
+
+      Her kural aşağıdakilerden oluşur:
+      - URL'ler tarafından tanımlanan kaynakların listesi. Kaynaklardaki tüm veriler, kısıtlamaların uygulanacağı gizli veriler olarak kabul edilir.
+      - Gizli verilerin paylaşılmasına izin verilen ya da verilmeyen URL veya bileşen olarak tanımlanan hedeflerin listesi.
+      - Kaynakların verilerine uygulanan kısıtlamaların listesi.
+
+      Kurallar şunları yapmak için eklenebilir:
+      - Kaynaklar ve hedefler arasında paylaşılan pano verilerini kontrol etme.
+      - Herhangi bir kaynağın ekran görüntüsünün alınmasını kontrol etme.
+      - Herhangi bir kaynağın yazdırılmasını kontrol etme.
+      - Herhangi bir kaynak görünür haldeyken gizlilik ekranını kontrol etme.
+      - Herhangi bir kaynağın ekran paylaşımını kontrol etme.
+
+      Kısıtlama seviyesi, BLOCK (ENGELLE) veya ALLOW (İZİN VER) değerine ayarlanabilir.
+      - Kısıtlama, BLOCK (ENGELLE) değerine ayarlanırsa işleme izin verilmez.
+      - Kısıtlama, ALLOW (İZİN VER) değerine ayarlanırsa işleme izin verilir.
+
+      Notlar:
+      - PRIVACY_SCREEN kısıtlaması, gizlilik ekranını açabilmeyi engellemez, ancak kısıtlama sınıfı BLOCK (ENGELLE) değerine ayarlandığında gizlilik ekranını zorunlu kılar.
+      - Kısıtlamalardan birinin CLIPBOARD (PANO) olması durumunda hedefler boş olamaz, ancak kalan kısıtlamalar açısından bir fark yaratmaz.
+      - CLIPBOARD (PANO) kısıtlaması, CROSTINI ile PLUGIN_VM'yi birbirinden ayırt edemez. Veri paylaşımını engellemek/izin vermek için ikisinden biri seçildiğinde kural her ikisine de uygulanır.
+      - URL kalıplarını şuna göre biçimlendirin: https://www.chromium.org/administrators/url-blacklist-filter-format
+
+      Politika ayarlanmazsa hiçbir kısıtlama uygulanmaz.</translation>
 <translation id="3709266154059827597">Uzantı kurulum kara listesini yapılandır</translation>
 <translation id="3711895659073496551">Askıya al</translation>
 <translation id="3715569262675717862">İstemci sertifikalarına dayalı kimlik doğrulama</translation>

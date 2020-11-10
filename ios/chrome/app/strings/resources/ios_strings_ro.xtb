@@ -18,6 +18,7 @@
 <translation id="1112015203684611006">Printarea nu a reușit.</translation>
 <translation id="1125564390852150847">Creează o filă nouă.</translation>
 <translation id="1145536944570833626">Șterge datele existente.</translation>
+<translation id="1147031633655575115">Te-ai conectat ca <ph name="USER" /></translation>
 <translation id="1154690515305205900">Nu se poate crea un link spre textul evidențiat.</translation>
 <translation id="1157749421655780457">Permite accesul la locație...</translation>
 <translation id="1165039591588034296">Eroare</translation>
@@ -268,6 +269,7 @@ Urmează pașii de mai jos:</translation>
 <translation id="385051799172605136">Înapoi</translation>
 <translation id="3892144330757387737">Aici vei vedea istoricul</translation>
 <translation id="3897092660631435901">Meniu</translation>
+<translation id="3913386780052199712">Te-ai conectat la Chrome</translation>
 <translation id="3915450441834151894">Informații despre site</translation>
 <translation id="3922310737605261887">Caută textul copiat</translation>
 <translation id="3928666092801078803">Combină datele</translation>

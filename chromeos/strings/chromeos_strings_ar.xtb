@@ -94,6 +94,7 @@
 يُرجى تجربة النقر على الميكروفون لمطالبتي بأي شيء.</translation>
 <translation id="5222676887888702881">تسجيل الخروج</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />، <ph name="PRINTER_NAME" />، <ph name="CREATION_TIME" />، <ph name="ERROR_STATUS" /></translation>
+<translation id="5275828089655680674">إعادة تشغيل سلاسل الإجراءات</translation>
 <translation id="5317780077021120954">حفظ</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />، <ph name="PRINTER_NAME" />، <ph name="CREATION_TIME" />، <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">اختيار كلمة مرور جديدة الآن</translation>
@@ -102,6 +103,7 @@
 <translation id="5431318178759467895">بالألوان</translation>
 <translation id="5457599981699367932">تصفَّح كزائر</translation>
 <translation id="54609108002486618">تتم إدارته</translation>
+<translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5832805196449965646">إضافة شخص</translation>
 <translation id="5895138241574237353">إعادة التشغيل</translation>
 <translation id="6040143037577758943">إغلاق</translation>

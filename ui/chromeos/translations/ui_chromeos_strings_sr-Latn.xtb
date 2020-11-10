@@ -348,6 +348,7 @@
 <translation id="4905417359854579806">Sve je spremno za pravljenje rezervnih kopija (<ph name="FILE_COUNT" />)</translation>
 <translation id="4924638091161556692">Fiksirana</translation>
 <translation id="4935975195727477204">Cvet gazanije</translation>
+<translation id="4942961016321891903">fonetski malajalam</translation>
 <translation id="4943368462779413526">Fudbalska lopta</translation>
 <translation id="4961158930123534723">1 direktorijum se deli sa Parallels Desktop-om</translation>
 <translation id="4969785127455456148">Album</translation>
@@ -424,8 +425,10 @@
 <translation id="5524517123096967210">Nije moguće pročitati datoteku.</translation>
 <translation id="5533102081734025921">Slika <ph name="IMAGE_TYPE" /></translation>
 <translation id="5534520101572674276">Izračunavanje veličine</translation>
+<translation id="5551831234974556292">malteški</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5605830556594064952">američka Dvorak</translation>
+<translation id="5623849870004487514">nepalski sa fonetskom tastaturom</translation>
 <translation id="5649768706273821470">Slušaj</translation>
 <translation id="5678784840044122290">Linux aplikacija će biti dostupna na terminalu, a možda će prikazivati i ikonu u Pokretaču.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Nije uspeo prekid veze sa arhivskim ili virtuelnim diskom<ph name="END_BOLD" />
@@ -454,6 +457,7 @@
 <translation id="5912396950572065471">Format</translation>
 <translation id="5913638992615760742">Operacija kopiranja nije uspela, neočekivana greška: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="5932901536148835538">Chromebit</translation>
+<translation id="5952382594224963380">marati</translation>
 <translation id="5955954492236143329">Stavki: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="5957366693331451795">Chromebox-ovi</translation>
 <translation id="5982621672636444458">Opcije sortiranja</translation>
@@ -516,6 +520,7 @@
 <translation id="6718273304615422081">Pravljenje zip datoteke...</translation>
 <translation id="6751256176799620176">Izabran je 1 direktorijum</translation>
 <translation id="6760765581316020278">Vijetnamska tastatura (VNI)</translation>
+<translation id="6767296108234383966">transliteracija malajalama</translation>
 <translation id="6790428901817661496">Pusti</translation>
 <translation id="6795884519221689054">Panda</translation>
 <translation id="6806699711453372963">Upravljajte Linux deljenjem</translation>
@@ -552,6 +557,7 @@
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
 <translation id="7014174261166285193">Instalacija nije uspela.</translation>
 <translation id="7040138676081995583">Otvori pomoću aplikacije...</translation>
+<translation id="7096940708283911567">orija</translation>
 <translation id="7100897339030255923">Izabranih stavki: <ph name="COUNT" /></translation>
 <translation id="7106346894903675391">Kupi još memorijskog prostora...</translation>
 <translation id="7126604456862387217">„&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;“ – &lt;em&gt;pretraži Disk&lt;/em&gt;</translation>
@@ -582,6 +588,7 @@
 <translation id="7489215562877293245">Pronađene su datoteke (<ph name="FILE_COUNT" />)
     <ph name="LINE_BREAK1" />
     Sve je spremno za pravljenje rezervnih kopija na <ph name="BEGIN_LINK" />Google disku<ph name="END_LINK" /></translation>
+<translation id="7498032756958781551">nepalski sa indijskom tastaturom</translation>
 <translation id="7505167922889582512">Prikaži skrivene datoteke</translation>
 <translation id="7508545000531937079">Projekcija slajdova</translation>
 <translation id="751507702149411736">beloruski</translation>

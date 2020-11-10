@@ -18,6 +18,7 @@
 <translation id="1150565364351027703">Saulesbrilles</translation>
 <translation id="115443833402798225">Hangils (Ahnmatae)</translation>
 <translation id="1155759005174418845">Kataloniešu valoda</translation>
+<translation id="1169885125071442573">Gudžaratu, transliterācija</translation>
 <translation id="1172970565351728681">Aptuvens atlikušais laiks: <ph name="REMAINING_TIME" /></translation>
 <translation id="1173894706177603556">Pārdēvēt</translation>
 <translation id="117624967391683467">Notiek faila “<ph name="FILE_NAME" />” kopēšana...</translation>
@@ -31,6 +32,7 @@
 <translation id="1297922636971898492">Google disks pašlaik nav pieejams. Augšupielāde tiks automātiski atsākta, tiklīdz Google disks atkal būs pieejams.</translation>
 <translation id="1307931752636661898">Nevar skatīt Linux failus</translation>
 <translation id="1338950911836659113">Notiek dzēšana...</translation>
+<translation id="1345094301418504404">Franču (Kanāda)</translation>
 <translation id="1346748346194534595">Pa labi</translation>
 <translation id="1351692861129622852">Notiek <ph name="FILE_COUNT" /> failu importēšana...</translation>
 <translation id="1352103415082130575">Taju valodas tastatūra (Pattachote)</translation>
@@ -46,6 +48,7 @@
 <translation id="1441841714100794440">Vjetnamiešu valodas tastatūra (telekss)</translation>
 <translation id="1464724975715666883">1 kļūda.</translation>
 <translation id="1467432559032391204">Pa kreisi</translation>
+<translation id="1472351751615457820">Grieķu, transliterācija</translation>
 <translation id="1474339897586437869">Fails “<ph name="FILENAME" />” netika augšupielādēts. Jūsu Google diskā nepietiek vietas.</translation>
 <translation id="148466539719134488">Šveices</translation>
 <translation id="1497522201463361063">Failu <ph name="FILE_NAME" /> nevar pārdēvēt. <ph name="ERROR_MESSAGE" /></translation>
@@ -56,6 +59,7 @@
 <translation id="1572585716423026576">Iestatīt kā fona tapeti</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
 <translation id="1620510694547887537">Kamera</translation>
+<translation id="1622022025445651011">Franču (Francija)</translation>
 <translation id="1646019627374511909">Vairāki faili tiek padarīti pieejami bezsaistē (skaits: <ph name="NUMBER_OF_ITEMS" />)</translation>
 <translation id="164729547906544836">Tamilu valodas tastatūra (itrans)</translation>
 <translation id="164969095109328410">Chrome ierīce</translation>
@@ -93,6 +97,8 @@
 <translation id="2009067268969781306">Formatējot disku, tiks dzēsti visi tajā uzglabātie dati. Šo darbību nevar atsaukt.</translation>
 <translation id="2028997212275086731">RAR arhīvs</translation>
 <translation id="2046702855113914483">Nūdeļu zupa</translation>
+<translation id="2060251957438343874">Vācu (Vācija)</translation>
+<translation id="2066433303065022982">Ivrits, transliterācija</translation>
 <translation id="2070909990982335904">Nosaukumi, kas sākas ar punktu, tiek rezervēti sistēmai. Izvēlieties citu nosaukumu.</translation>
 <translation id="2079545284768500474">Atsaukt</translation>
 <translation id="2080010875307505892">Serbu valodas tastatūra</translation>
@@ -106,6 +112,7 @@
 <translation id="2208158072373999562">Zip arhīvs</translation>
 <translation id="2225536596944493418">Vai tiešām vēlaties dzēst <ph name="NUMBER_OF_ITEMS" /> vienumus?</translation>
 <translation id="2230062665678605299">Mapi “<ph name="FOLDER_NAME" />” nevar izveidot. <ph name="ERROR_MESSAGE" /></translation>
+<translation id="2258078827108167865">Khmeru</translation>
 <translation id="2275059641601412272">Pārvietots.</translation>
 <translation id="2287742181953707290">Portugāļu valoda ar ASV starptautisko datora tastatūru</translation>
 <translation id="2288278176040912387">Ierakstu atskaņotājs</translation>
@@ -121,6 +128,7 @@
 <translation id="240770291734945588">Pieejams: <ph name="SPACE_AVAILABLE" /></translation>
 <translation id="2425665904502185219">Failu kopējais lielums</translation>
 <translation id="2428749644083375155">Notiek kopēšana uz mapi <ph name="FOLDER_NAME" />. Kopējamo vienumu skaits: <ph name="NUMBER_OF_ITEMS" />.</translation>
+<translation id="2445471348947930094">Gudžaratu, fonētiskā</translation>
 <translation id="2448312741937722512">Tips</translation>
 <translation id="2453576648990281505">Fails jau eksistē</translation>
 <translation id="2464079411014186876">Saldējums</translation>
@@ -157,6 +165,7 @@
 <translation id="2887525882758501333">PDF dokuments</translation>
 <translation id="2888807692577297075">Neviens vienums neatbilst vaicājumam &lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;.</translation>
 <translation id="2894654529758326923">Informācija</translation>
+<translation id="2899393425226141282">Vācu (Vācija), ar Neo 2 tastatūru</translation>
 <translation id="2902312830803030883">Citas darbības</translation>
 <translation id="2902734494705624966">ASV paplašinātā</translation>
 <translation id="2923240520113693977">Igauņu valoda</translation>
@@ -258,6 +267,7 @@
 <translation id="4002066346123236978">Nosaukums</translation>
 <translation id="4070370845051020638">Kantonas dialekta ievades metode</translation>
 <translation id="4072248638558688893">Tamilu valodas tastatūra (fonētiskā)</translation>
+<translation id="4097397818890482665">Kannadu, transliterācija</translation>
 <translation id="4124935795427217608">Vienradzis</translation>
 <translation id="4158739975813877944">Atvērt atskaņošanas sarakstu</translation>
 <translation id="4159731583141908892">Pārvietots vienums: <ph name="FILE_NAME" />.</translation>
@@ -286,6 +296,7 @@
 <translation id="4479812471636796472">ASV Dvoraka tastatūra</translation>
 <translation id="4522570452068850558">Informācija</translation>
 <translation id="4527800702232535228">Šī mape ir kopīgota ar Parallels Desktop</translation>
+<translation id="4532112105534982530">Franču (Francija), ar BÉPO tastatūru</translation>
 <translation id="4552678318981539154">Iegādāties papildu vietu krātuvē</translation>
 <translation id="4559318885353833501">Fails <ph name="FILE_NAME" /> ir izdzēsts</translation>
 <translation id="4559767610552730302">Izplūduma efekts</translation>
@@ -294,6 +305,7 @@
 <translation id="4579744207439506346">Vienums “<ph name="ENTRY_NAME" />” ir pievienots atlasei.</translation>
 <translation id="4582497162516204941">Instalēt operētājsistēmā Linux (Beta)</translation>
 <translation id="4594543368593301662">Tiek rādīti rezultāti šādam vaicājumam: <ph name="SEARCH_TERM" />.</translation>
+<translation id="4598673198033263991">Burtciparu, ar japāņu valodas tastatūru</translation>
 <translation id="4603392156942865207">Fails “<ph name="FILE_NAME" />” tiek kopēts uz mapi “<ph name="FOLDER_NAME" />”</translation>
 <translation id="4627439232948440198">Sanskrits</translation>
 <translation id="4631887759990505102">Izpildītājs</translation>
@@ -313,6 +325,7 @@
 <translation id="4737050008115666127">Ielidošana</translation>
 <translation id="4747271164117300400">Maķedoniešu</translation>
 <translation id="4759238208242260848">Lejupielādes</translation>
+<translation id="4763055924467562718">Kannadu, fonētiskā</translation>
 <translation id="4779136857077979611">Onigiri</translation>
 <translation id="4784330909746505604">PowerPoint prezentācija</translation>
 <translation id="4788401404269709922"><ph name="NUMBER_OF_KB" /> KB</translation>
@@ -420,6 +433,7 @@
    Aizveriet visus arhīvā vai virtuālajā diskā atvērtos failus un mēģiniet vēlreiz.</translation>
 <translation id="5691596662111998220">Diemžēl fails <ph name="FILE_NAME" /> vairs nepastāv.</translation>
 <translation id="5700087501958648444">Audio informācija</translation>
+<translation id="570049376144986742">Franču (Šveice)</translation>
 <translation id="5731409020711461763">1 jauns fotoattēls</translation>
 <translation id="5752453871435543420">Chrome OS dublēšana mākonī</translation>
 <translation id="5756666464756035725">Ungāru valodas QWERTY tastatūra</translation>
@@ -454,6 +468,7 @@
 <translation id="6096979789310008754">Meklēšanas teksts ir notīrīts; tiek rādīti visi faili un mapes.</translation>
 <translation id="610101264611565198">Fails “<ph name="FILE_NAME" />” tiek pārvietots uz mapi “<ph name="FOLDER_NAME" />”</translation>
 <translation id="6111770213269631447">Transliterācija (namaskar → নমস্কার)</translation>
+<translation id="6113836390962820517">Japāņu, ar ASV tastatūru</translation>
 <translation id="6129953537138746214">Atstarpe</translation>
 <translation id="6133173853026656527">Notiek faila “<ph name="FILE_NAME" />” pārvietošana...</translation>
 <translation id="6146563240635539929">Videoklipi</translation>
@@ -477,6 +492,7 @@
 <translation id="6394388407447716302">Tikai lasāma</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> vienumi</translation>
 <translation id="6398765197997659313">Iziet no pilnekrāna režīma</translation>
+<translation id="6412376911804527326">Laosiešu</translation>
 <translation id="642282551015776456">Šo nosaukumu nedrīkst izmantot kā mapes nosaukuma failu</translation>
 <translation id="6485131920355264772">Neizdevās izgūt informāciju par brīvo vietu</translation>
 <translation id="6505918941256367791">Tamilu valodas tastatūra (InScript)</translation>
@@ -495,6 +511,7 @@
 <translation id="6643016212128521049">Notīrīt</translation>
 <translation id="6650726141019353908">Rozā tauriņš</translation>
 <translation id="6657585470893396449">Parole</translation>
+<translation id="6680841910911617814">Holandiešu (Nīderlande)</translation>
 <translation id="6710213216561001401">Iepriekšējais</translation>
 <translation id="6718273304615422081">Notiek tilpsaspiešana...</translation>
 <translation id="6751256176799620176">Atlasīta 1 mape</translation>
@@ -591,6 +608,7 @@
 <translation id="7724603315864178912">Izgriezt</translation>
 <translation id="7730494089396812859">Rādīt detalizētu informāciju par dublēšanu mākonī</translation>
 <translation id="7748626145866214022">Vairāk pieejamu opciju darbību joslā. Lai izceltu darbību joslu, nospiediet taustiņu kombināciju Alt+A.</translation>
+<translation id="7756956835689272676">Franču (Kanāda), ar vairākvalodu tastatūru</translation>
 <translation id="7765158879357617694">Pārvietot</translation>
 <translation id="7774365994322694683">Putns</translation>
 <translation id="7788080748068240085">Lai failu “<ph name="FILE_NAME" />” saglabātu bezsaistē, jums ir jāatbrīvo <ph name="TOTAL_FILE_SIZE" /> vietas.<ph name="MARKUP_1" />
@@ -637,6 +655,7 @@
 <translation id="8106045200081704138">Kopīgots ar mani</translation>
 <translation id="8116072619078571545">Ūdens ar ledu</translation>
 <translation id="8117957376775388318">Dayi ievades metode</translation>
+<translation id="8130367958112291342">Čehu, ar QWERTY tastatūru</translation>
 <translation id="8137331602592933310">Fails “<ph name="FILENAME" />” tika kopīgots ar jums. Jūs nevarat to dzēst, jo tas nepieder jums.</translation>
 <translation id="8145409227593688472">Vubi ievades metode</translation>
 <translation id="8148264977957212129">Pinyin valodas ievades metode</translation>
@@ -685,6 +704,7 @@
 <translation id="8600173386174225982">Failu saraksts ir mainīts uz sīktēlu skatu.</translation>
 <translation id="8601932370724196034">Crostini attēla fails</translation>
 <translation id="8669949407341943408">Notiek pārvietošana...</translation>
+<translation id="8688649574682805922">Vācu (Šveice)</translation>
 <translation id="8694836330346852143">Urdu</translation>
 <translation id="8698464937041809063">Google zīmējums</translation>
 <translation id="8714406895390098252">Velosipēds</translation>
@@ -698,6 +718,7 @@
 <translation id="8808686172382650546">Kaķis</translation>
 <translation id="8810671769985673465">Tilpsaspiešana neizdevās, vienums pastāv: <ph name="FILE_NAME" />.</translation>
 <translation id="8834164572807951958">“<ph name="DESTINATION_NAME" />” dalībnieki iegūs piekļuvi šo vienumu kopijām.</translation>
+<translation id="8846896937446866962">Ungāru, ar QWERTY tastatūru</translation>
 <translation id="885381502874625531">Baltkrievu tastatūra</translation>
 <translation id="8860454412039442620">Excel izklājlapa</translation>
 <translation id="8900820606136623064">Ungāru</translation>

@@ -3199,6 +3199,7 @@ Quando a |IdleAction| não for definida, a ação padrão de suspensão será re
       Se ela for definida como verdadeira, as informações sobre os VPD do dispositivo serão enviadas.
       Os VPD são um conjunto de dados informativos e de configuração, como números de série e peças, associados ao dispositivo.</translation>
 <translation id="5765780083710877561">Descrição:</translation>
+<translation id="5766438888216077649">Não defina a propriedade <ph name="WINDOW_OPENER_PROPERTY" /> para links direcionados a <ph name="BLANK_PAGE_NAME" /></translation>
 <translation id="5770738360657678870">Canal de desenvolvedores (pode ser instável)</translation>
 <translation id="5774856474228476867">URL de pesquisa do provedor de pesquisa padrão</translation>
 <translation id="5775235485119094648">Carregar a bateria enquanto ela estiver dentro de um intervalo fixo.</translation>
@@ -5074,6 +5075,13 @@ O modo recomendado para configurar políticas no Windows é por meio de GPO, emb
       Se a política for definida como verdadeira ou não for definida, o acesso root aos contêineres do Crostini será concedido ao usuário.
       Se a política for definida como falsa, o acesso root aos contêineres do Crostini novos e já existentes não será concedido ao usuário.</translation>
 <translation id="8417305981081876834">Definir o tamanho máximo do PIN da tela de bloqueio</translation>
+<translation id="8417750118762775739">Se a política for definida como "Desativada", os pop-ups direcionados a <ph name="BLANK_PAGE_NAME" /> poderão acessar (via JavaScript) a página que solicitou a abertura do pop-up.
+
+      Se a política for definida como "Ativada" ou não for definida, a propriedade <ph name="WINDOW_OPENER_PROPERTY" /> será <ph name="NULL_VALUE" />, a menos que a âncora especifique <ph name="REL_OPENER_ATTRIBUTE" />.
+
+      Esta política será removida na versão 95 do <ph name="PRODUCT_NAME" />.
+
+      Consulte https://chromestatus.com/feature/6140064063029248 (link em inglês).</translation>
 <translation id="841853753509411428">Esta política está obsoleta. Use a <ph name="NATIVE_MESSAGING_ALLOWLIST_POLICY_NAME" />.
 
       A definição da política especifica quais hosts de mensagens nativas não estão sujeitos à lista de proibições. Um valor de <ph name="WILDCARD_VALUE" /> da lista de proibições significa que todos os hosts de mensagens nativas serão proibidos, a menos que tenham permissão explícita.

@@ -2153,6 +2153,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3487007233252413104">anonimna funkcija</translation>
 <translation id="348780365869651045">Čeka se AppCache...</translation>
 <translation id="3488065109653206955">Delimično aktivirano</translation>
+<translation id="3490695139702884919">Preuzima se... <ph name="PERCENT" />%</translation>
 <translation id="3491669675709357988">Nalog deteta nije podešen za Family Link roditeljski nadzor. Možete da dodate roditeljski nadzor kada dovršite podešavanje. Pronaći ćete informacije o roditeljskom nadzoru u aplikaciji Istražite.</translation>
 <translation id="3491678231052507920">Sajtovi obično koriste uređaje i podatke virtuelne realnosti da biste mogli da ulazite u sesije virtuelne realnosti</translation>
 <translation id="3492788708641132712">Sinhronizacija ne funkcioniše. Probajte ponovo da se prijavite.</translation>
@@ -3671,6 +3672,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="5301954838959518834">Važi</translation>
 <translation id="5302048478445481009">Jezik</translation>
 <translation id="5302932258331363306">Prikaži zamene</translation>
+<translation id="5304276686222516262">Preuzimanje liste kontakata nije uspelo. Proverite mrežnu vezu ili &lt;a href="#" id="tryAgainLink"&gt;probajte ponovo&lt;/a&gt;.</translation>
 <translation id="5305688511332277257">Ništa nije instalirano</translation>
 <translation id="5307030433605830021">Izvor nije podržan</translation>
 <translation id="5308380583665731573">Povezivanje</translation>
@@ -3726,6 +3728,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="5370819323174483825">&amp;Učitaj ponovo</translation>
 <translation id="5372529912055771682">Ova verzija operativnog sistema ne podržava navedeni režim prijavljivanja. Proverite da li koristite najnoviju verziju i pokušajte ponovo.</translation>
 <translation id="5372579129492968947">Otkačite dodatak</translation>
+<translation id="5375318608039113175">Da biste koristili Deljenje u blizini sa ovim kontaktima, dodajte imejl adrese povezane sa Google nalozima tih osoba u kontakte.</translation>
 <translation id="5376169624176189338">Kliknite da biste otišli nazad, kliknite zadržite se da biste videli istoriju</translation>
 <translation id="5376931455988532197">Datoteka je prevelika</translation>
 <translation id="5377721922656071359">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> je poslata na <ph name="DEVICE_NAME" />}one{<ph name="ATTACHMENTS" /> je poslata na <ph name="DEVICE_NAME" />}few{<ph name="ATTACHMENTS" /> su poslate na <ph name="DEVICE_NAME" />}other{<ph name="ATTACHMENTS" /> je poslato na <ph name="DEVICE_NAME" />}}</translation>
@@ -3887,6 +3890,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="5554403733534868102">Posle ovoga nema više čekanja na ažuriranja</translation>
 <translation id="5554489410841842733">Ova ikona će biti vidljiva kada dodatak može da deluje na trenutnoj stranici.</translation>
 <translation id="5554720593229208774">Autoritet za izdavanje sertifikata e-pošte</translation>
+<translation id="5555363196923735206">Obrni kameru</translation>
 <translation id="5556459405103347317">Učitaj ponovo</translation>
 <translation id="5558125320634132440">Ovaj sajt je blokiran jer verovatno ima sadržaj za stariju publiku</translation>
 <translation id="5558129378926964177">Zoom &amp;In (Uvećaj)</translation>
@@ -5203,6 +5207,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="7113502843173351041">Otkrivanje vaše imejl adrese</translation>
 <translation id="7114054701490058191">Lozinke se ne podudaraju</translation>
 <translation id="7114648273807173152">Da biste koristili Smart Lock za prijavljivanje na Google nalog, idite na Podešavanja &gt; Povezani uređaji &gt; Telefon &gt; Smart Lock.</translation>
+<translation id="7115361495406486998">Nema dostupnih kontakata</translation>
 <translation id="7117228822971127758">Probajte ponovo kasnije</translation>
 <translation id="7117247127439884114">Prijavi me ponovo...</translation>
 <translation id="711840821796638741">Prikaži upravljane obeleživače</translation>
@@ -6081,6 +6086,7 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="810728361871746125">Rezolucija ekrana</translation>
 <translation id="8108526232944491552">{COUNT,plural, =0{Nema kolačića treće strane}=1{1 kolačić treće strane je blokiran}one{# kolačić treće strane je blokiran}few{# kolačića treće strane su blokirana}other{# kolačića treće strane je blokirano}}</translation>
 <translation id="810875025413331850">Nije pronađen nijedan uređaj u blizini.</translation>
+<translation id="8110489095782891123">Preuzima se lista kontakata...</translation>
 <translation id="8113476325385351118">Nastavi da blokiraš potpunu kontrolu nad MIDI uređajima za ovaj sajt</translation>
 <translation id="8114199541033039755">Idite na početnu stranicu ili nazad i menjajte aplikacije pomoću dugmadi u režimu tableta. Uključeno je kada su ChromeVox ili Automatski klikovi omogućeni.</translation>
 <translation id="8114875720387900039">Podeli horizontalno</translation>

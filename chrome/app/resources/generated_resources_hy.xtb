@@ -892,6 +892,7 @@
 <translation id="2000419248597011803">Ձեր կանխադրված որոնիչին է ուղարկում հասցեագոտու և որոնման դաշտի հարցումները, ինչպես նաև որոշ քուքիներ</translation>
 <translation id="2002109485265116295">Իրական ժամանակում</translation>
 <translation id="2003130567827682533">Միացեք Wi-Fi ցանցի՝ տվյալների փոխանցման «<ph name="NAME" />» ծառայությունն ակտիվացնելու համար</translation>
+<translation id="2005199804247617997">Այլ պրոֆիլներ</translation>
 <translation id="2006638907958895361">Բացել հղումը <ph name="APP" /> հավելվածում</translation>
 <translation id="2007404777272201486">Report an Issue...</translation>
 <translation id="2010501376126504057">Համատեղելի սարքեր</translation>
@@ -1542,6 +1543,7 @@
 <translation id="2751131328353405138">Լինուքսի կոնտեյները միանում է SSHFS-ի միջոցով</translation>
 <translation id="2751739896257479635">EAP նույնականացման փուլ 2</translation>
 <translation id="2753677631968972007">Ձեռքով կառավարեք կայքի թույլտվությունները։</translation>
+<translation id="2755349111255270002">Վերակայեք <ph name="DEVICE_TYPE" /> սարքը</translation>
 <translation id="2755367719610958252">Կառավարել մատչելիության գործառույթները</translation>
 <translation id="275662540872599901">էկրանն անջատված է</translation>
 <translation id="2757338480560142065">Ստուգեք՝ արդյոք գաղտնաբառը, որը պահում եք, համընկնում է <ph name="WEBSITE" /> ծառայության ձեր գաղտնաբառի հետ։</translation>
@@ -1698,6 +1700,7 @@
 <translation id="2932883381142163287">Հաղորդել չարաշահման մասին</translation>
 <translation id="2933632078076743449">Վերջին թարմացումը</translation>
 <translation id="2934999512438267372">MIDI սարքերի նկատմամբ ամբողջական վերահսկողությունը թույլատրված է</translation>
+<translation id="2935225303485967257">Կառավարել պրոֆիլները</translation>
 <translation id="2935654492420446828">Ավելացնել դպրոցական հաշիվ ավելի ուշ</translation>
 <translation id="2936851848721175671">Պահուստավորում և վերականգնում</translation>
 <translation id="2938225289965773019">Բացել <ph name="PROTOCOL" /> հղումները</translation>
@@ -2055,6 +2058,7 @@
 <translation id="3388788256054548012">Այս ֆայլը գաղտնագրված է։ Խնդրեք սեփականատիրոջը վերծանել այն։</translation>
 <translation id="3390013585654699824">Հավելվածի մասին</translation>
 <translation id="3390741581549395454">Լինուքսի հավելվածներն ու ֆայլերը պահուստավորվեցին։ Նորացումը շուտով կսկսվի։</translation>
+<translation id="339178315942519818">Դիտեք զրույցի հավելվածների ծանուցումները <ph name="DEVICE_TYPE" /> սարքում</translation>
 <translation id="3396800784455899911">Սեղմելով «Ընդունել և շարունակել» կոճակը՝ դուք ընդունում եք Google-ի վերոնշյալ ծառայությունների մշակման պայմանները։</translation>
 <translation id="3399432415385675819">Ծանուցումները կանջատվեն</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" />x<ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> Հց), միահյուսված</translation>
@@ -2211,6 +2215,7 @@
 <translation id="3559533181353831840">Լիցքը կբավարարի մոտ <ph name="TIME_LEFT" /></translation>
 <translation id="3560034655160545939">&amp;Ուղղագրության ստուգում</translation>
 <translation id="3562423906127931518">Այս գործընթացը կարող է տևել մի քանի րոպե: Linux-ի կոնտեյները կարգավորվում է:</translation>
+<translation id="3562655211539199254">Դիտեք Chrome-ի վերջին բացված ներդիրները ձեր հեռախոսում</translation>
 <translation id="3563432852173030730">Չհաջողվեց ներբեռնել kiosk ծրագիրը:</translation>
 <translation id="3564334271939054422">Wi-Fi ցանցը, որից օգտվում եք, (<ph name="NETWORK_ID" />) կարող է պահանջել, որ այցելեք նրա մուտքի էջը:</translation>
 <translation id="3564848315152754834">USB անվտանգության բանալի</translation>
@@ -3844,6 +3849,7 @@
 <translation id="5503982651688210506">Թույլատրել <ph name="HOST" /> կայքին օգտագործել և տեղաշարժել տեսախցիկը և օգտագործել խոսափողը</translation>
 <translation id="5505264765875738116">Կայքերը չեն կարող խնդրել ծանուցումներ ուղարկել</translation>
 <translation id="5505307013568720083">Թանաքը վերջացել է</translation>
+<translation id="5505794066310932198">Միացնել/անջատել Commander-ը</translation>
 <translation id="5507756662695126555">Առանց մերժման</translation>
 <translation id="5509693895992845810">Պահել &amp;որպես…</translation>
 <translation id="5509914365760201064">Թողարկող` <ph name="CERTIFICATE_AUTHORITY" /></translation>
@@ -4310,6 +4316,7 @@
 <translation id="6056710589053485679">Սովորական վերաբեռնում</translation>
 <translation id="6057312498756061228">Այս ֆայլը չափազանց մեծ է անվտանգության ստուգման համար։ Դուք կարող եք բացել մինչև 50 ՄԲ չափի ֆայլեր։</translation>
 <translation id="6057381398996433816">Այս կայքին արգելվել է օգտագործել շարժման և լուսավորության տվիչները:</translation>
+<translation id="6059276912018042191">Վերջերս բացված Chrome-ի ներդիրներ</translation>
 <translation id="6059652578941944813">Վկայագրերի աստիճանակարգություն</translation>
 <translation id="6059925163896151826">USB սարքեր</translation>
 <translation id="6061882183774845124">Ուղարկել հղումը իմ սարքերին</translation>
@@ -4816,6 +4823,7 @@
 <translation id="6659213950629089752">Այս էջի չափերը փոփոխել է <ph name="NAME" /> ընդլայնումը</translation>
 <translation id="6659594942844771486">Ներդիր</translation>
 <translation id="666099631117081440">Տպման սերվերներ</translation>
+<translation id="6663190258859265334">Կիրառեք Powerwash <ph name="DEVICE_TYPE" /> սարքի համար և վերադարձեք նախորդ տարբերակին։</translation>
 <translation id="6664237456442406323">Ձեր համակարգիչը կազմաձևված է սարքակազմի սխալ ID-ով: Սա թույլ չի տալիս, որպեսզի Chrome OS-ը թարմացվի անվտանգության վերջին նորացումներով և ձեր համակարգիչը <ph name="BEGIN_BOLD" />կարող է խոցելի դառնալ վնասարար հարձակումների համար<ph name="END_BOLD" />:</translation>
 <translation id="6664774537677393800">Պրոֆիլը բացելիս սխալ առաջացավ: Դուրս եկեք հաշվից ու նորից մուտք գործեք:</translation>
 <translation id="6670142487971298264"><ph name="APP_NAME" /> հավելվածն այժմ հասանելի է</translation>
@@ -5401,6 +5409,7 @@
 <translation id="7364796246159120393">Ընտրել ֆայլ</translation>
 <translation id="7365076891350562061">Էկրանի չափը</translation>
 <translation id="736522537010810033">Արգելել կայքերին օգտագործել խոսափողը</translation>
+<translation id="7366316827772164604">Մոտակա սարքերի որոնում…</translation>
 <translation id="7366415735885268578">Ավելացրեք կայք</translation>
 <translation id="7366909168761621528">Տվյալներ այցելությունների մասին</translation>
 <translation id="7367714965999718019">QR կոդի գեներատոր</translation>
@@ -5589,6 +5598,7 @@
 <translation id="7586498138629385861">Chrome-ը կշարունակի աշխատել, երբ հավելվածները բաց են:</translation>
 <translation id="7589461650300748890">Զգո՛ւյշ եղեք:</translation>
 <translation id="7593653750169415785">Ավտոմատ արգելափակվում են, քանի որ դուք դրանք մի քանի անգամ մերժել եք</translation>
+<translation id="7594725637786616550">Powerwash գործառույթը կվերականգնի <ph name="DEVICE_TYPE" /> սարքի գործարանային կարգավորումները։</translation>
 <translation id="7595453277607160340">Android հավելվածներն օգտագործելու և <ph name="DEVICE_TYPE" /> սարքի պատշաճ աշխատանքի համար նորից մուտք գործեք ու թարմացրեք համակարգը:</translation>
 <translation id="7595547011743502844"><ph name="ERROR" /> (սխալի կոդ՝ <ph name="ERROR_CODE" />):</translation>
 <translation id="7598466960084663009">Վերագործարկել համակարգիչը</translation>
@@ -5955,6 +5965,7 @@
 <translation id="7973962044839454485">PPP իսկորոշումը չհաջողվեց: Օգտանունը կամ գաղտնաբառը սխալ են</translation>
 <translation id="7974566588408714340">Կրկնել՝ օգտագործելով <ph name="EXTENSIONNAME" />-ը</translation>
 <translation id="7974936243149753750">էկրանի շրջանակ</translation>
+<translation id="7975504106303186033">Գրանցեք Chrome Education լիցենզիայով այս սարքը ուսումնական հաշվում։ Նոր հաշիվ ստեղծելու համար անցեք g.co/workspace/edusignup էջ։</translation>
 <translation id="7977404132325989121">&amp;Անվանել պատուհանը…</translation>
 <translation id="7978412674231730200">Մասնավոր բանալի</translation>
 <translation id="7978450511781612192">Դուք դուրս կգաք Google հաշվից: Ձեր էջանիշները, այցելությունների պատմությունը, գաղտնաբառերը և մյուս կարգավորումներն այլևս չեն համաժամացվի:</translation>
@@ -6024,6 +6035,7 @@
 <translation id="8053390638574070785">Reload This Page</translation>
 <translation id="8054517699425078995">Այս ֆայլը կարող է վնասել ձեր համակարգիչը: Ներբեռնե՞լ <ph name="FILE_NAME" />-ը:</translation>
 <translation id="8054563304616131773">Մուտքագրեք վավեր էլ․ հասցե</translation>
+<translation id="8054883179223321715">Սարքը համատեղելի է միայն որոշակի կայքերի հետ</translation>
 <translation id="8054921503121346576">USB ստեղնաշարը միացված է</translation>
 <translation id="8058655154417507695">Ժամկետի սպառման տարեթիվը</translation>
 <translation id="8059417245945632445">&amp;Հետազոտել սարքերը</translation>
@@ -6108,6 +6120,7 @@
 <translation id="8146793085009540321">Չհաջողվեց մուտք գործել: Կապվեք ադմինիստրատորի հետ կամ նորից փորձեք:</translation>
 <translation id="8147900440966275470">Գտնվել է <ph name="NUM" /> ներդիր</translation>
 <translation id="8148760431881541277">Մուտքի սահմանափակում</translation>
+<translation id="8150259863378108853">Lacros-ը փորձնական դիտարկիչ է։ Խնդիրների մասին կարող եք հաղորդել՝ սեղմելով Օգնություն &gt; «Հաղորդել խնդրի մասին»։</translation>
 <translation id="8151579390896831136">Անհատականացրեք պրոֆիլը, այդ թվում՝ դրա անունը</translation>
 <translation id="8151638057146502721">Կազմաձևել</translation>
 <translation id="8152091997436726702">Տպիչի գրանցումը ժամասպառվեց: Տպիչ գրանցելու համար դուք պետք է հաստատեք գրանցումը տպիչի վրա:</translation>
@@ -6215,6 +6228,7 @@
 <translation id="8271379370373330993">Հաջորդ մի քանի քայլերը ծնողների համար են։ Հաշիվը կարգավորելուց հետո կարող եք վերադարձնել <ph name="DEVICE_TYPE" /> սարքը երեխային։</translation>
 <translation id="8272443605911821513">Կառավարեք ձեր ընդլայնումները՝ «Լրացուցիչ գործիքներում» սեղմելով Ընդլայնումներ:</translation>
 <translation id="8274332263553132018">Հեռարձակել ֆայլը</translation>
+<translation id="8274921654076766238">Խոշորացույցի տեղափոխում ստեղնաշարի միջոցով</translation>
 <translation id="8274924778568117936">Տեղադրման ժամանակ <ph name="DEVICE_TYPE" /> սարքը չանջատեք և չփակեք: Թարմացումից հետո <ph name="DEVICE_TYPE" />-ն ավտոմատ կվերագործարկվի:</translation>
 <translation id="8275038454117074363">Ներմուծել</translation>
 <translation id="8275080796245127762">Զանգել սարքից</translation>
@@ -6597,6 +6611,7 @@
 <translation id="8736288397686080465">Այս կայքը թարմացվել է հետին պլանում:</translation>
 <translation id="8737685506611670901">Բացել <ph name="PROTOCOL" /> -ի հղումները <ph name="REPLACED_HANDLER_TITLE" />-ի փոխարեն</translation>
 <translation id="8737709691285775803">Shill</translation>
+<translation id="8737914367566358838">Ընտրեք լեզու, որով պետք է թարգմանել էջը</translation>
 <translation id="8740247629089392745">Դուք կարող եք տալ այս Chromebook-ը <ph name="SUPERVISED_USER_NAME" />-ին։ Կարգավորումը գրեթե ավարտված է։ Սարքը շուտով պատրաստ կլինի օգտագործման։</translation>
 <translation id="8742998548129056176">Սրանք ընդհանուր տեղեկություններ են ձեր սարքի և դրա օգտագործման (օրինակ՝ մարտկոցի լիցքի, համակարգի ու հավելվածների օգտագործման և սխալների) մասին։ Տեղեկություններն օգտագործվելու են Android-ի ծառայությունների աշխատանքը բարելավելու համար։ Տվյալների մի մասը օգտակար կլինի մեր գործընկերների, օրինակ, Android ծրագրավորողների համար և կօգնի բարելավել նաև նրանց հավելվածներն ու արտադրանքները։</translation>
 <translation id="8743390665131937741">Լիաէկրան խոշորացույցի մասշտաբը՝</translation>
@@ -6633,6 +6648,7 @@
 <translation id="8774379074441005279">Հաստատեք վերականգնումը</translation>
 <translation id="8774934320277480003">Վերին լուսանցք</translation>
 <translation id="8775144690796719618">URL-ն անվավեր է</translation>
+<translation id="8775163630211761057">Օգտագործեք ձեր Android հեռախոսի հնարավորությունները <ph name="DEVICE_TYPE" /> սարքում</translation>
 <translation id="8776977753660889796">{NUM_MINS,plural, =1{Chrome-ը ձեր համակարգչում վնասաբեր ծրագրեր չի հայտնաբերել։ Վերջին անգամ ստուգվել է 1 րոպե առաջ։}one{Chrome-ը ձեր համակարգչում վնասաբեր ծրագրեր չի հայտնաբերել։ Վերջին անգամ ստուգվել է {NUM_MINS} րոպե առաջ։}other{Chrome-ը ձեր համակարգչում վնասաբեր ծրագրեր չի հայտնաբերել։ Վերջին անգամ ստուգվել է {NUM_MINS} րոպե առաջ։}}</translation>
 <translation id="8777628254805677039">արմատային գաղտնաբառ</translation>
 <translation id="8780123805589053431">Ստացեք պատկերների նկարագրությունները Google-ից</translation>
@@ -6798,10 +6814,12 @@
 <translation id="8952831374766033534">Կազմաձևումը չի աջակցվում՝ <ph name="ERROR_LINE" /></translation>
 <translation id="8953476467359856141">Լիցքավորման ընթացքում</translation>
 <translation id="895347679606913382">Մեկնարկ…</translation>
+<translation id="8957757410289731985">Կարգավորել պրոֆիլը</translation>
 <translation id="895944840846194039">JavaScript հիշողություն</translation>
 <translation id="8962083179518285172">Թաքցնել մանրամասները</translation>
 <translation id="8962918469425892674">Այս կայքն օգտագործում է շարժման և լուսավորության տվիչներ:</translation>
 <translation id="8965037249707889821">Մուտքագրեք հին գաղտնաբառը</translation>
+<translation id="8966809848145604011">Այլ պրոֆիլներ</translation>
 <translation id="8966870118594285808">Նորից բացեք ներդիրը, եթե այն պատահաբար փակել եք</translation>
 <translation id="8967427617812342790">Ավելացնել ընթերցանության ցանկում</translation>
 <translation id="8967866634928501045">Ցուցադրելու համար սեղմեք Alt + Shift + A ստեղները</translation>
@@ -6927,6 +6945,7 @@
 <translation id="9100765901046053179">Լրացուցիչ կարգավորումներ</translation>
 <translation id="9101691533782776290">Գործարկել հավելվածը</translation>
 <translation id="9102610709270966160">Միացնել ընդլայնումը</translation>
+<translation id="9103479157856427471">Մեծացված էկրանի տեղափոխում ստեղնաշարի միջոցով</translation>
 <translation id="9103868373786083162">Սեղմեք՝ հետ գնալու համար, բացեք տեղային ընտրացանկը՝ պատմությունը տեսնելու համար</translation>
 <translation id="9108072915170399168">Տվյալների փոխանցման ընթացիկ կարգավորումը՝ «Առանց ինտերնետի»</translation>
 <translation id="9108692355621501797"><ph name="LINK_BEGIN" />G Suite for Education-ի գաղտնիության ծանուցագրի<ph name="LINK_END" /> մեջ օգտատերերին և ծնողներին տրամադրվում է տեղեկություն այն մասին, թե ծառայությունն ինչպիսի տվյալներ է հավաքում և ինչպես է դրանք օգտագործում։</translation>

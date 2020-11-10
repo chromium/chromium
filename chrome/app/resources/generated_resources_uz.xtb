@@ -2154,6 +2154,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3487007233252413104">anonim funksiya</translation>
 <translation id="348780365869651045">AppCache kutilmoqda...</translation>
 <translation id="3488065109653206955">Qisman faollashtirilgan</translation>
+<translation id="3490695139702884919">Yuklab olinmoqda... <ph name="PERCENT" />%</translation>
 <translation id="3491669675709357988">Farzandingizning hisobi Family Link ota-ona nazorati uchun sozlanmagan. Sozlash tugashi bilan ota-ona nazoratini kirtishingiz mumkin. Ota-ona nazorati haqidagi axborotini “Tanishuv” ilovasi orqali topish mumkin.</translation>
 <translation id="3491678231052507920">Saytlar odatda VR seanslarga kirishingizda virtual reallik qurilmalari va maʼlumotlaridan foydalanadi</translation>
 <translation id="3492788708641132712">Sinxronizatsiya ishlamayapti. Qaytadan hisobingizga kiring.</translation>
@@ -3672,6 +3673,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="5301954838959518834">OK</translation>
 <translation id="5302048478445481009">Til</translation>
 <translation id="5302932258331363306">Almashtiruv panelini ochish</translation>
+<translation id="5304276686222516262">Kontaktlar roʻyxati yuklab olinmadi. Tarmoq aloqasini tekshiring yoki &lt;a href="#" id="tryAgainLink"&gt;qayta urining&lt;/a&gt;.</translation>
 <translation id="5305688511332277257">O‘rnatilmagan</translation>
 <translation id="5307030433605830021">Manba bilan mos emas</translation>
 <translation id="5308380583665731573">Ulanish</translation>
@@ -3727,6 +3729,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="5370819323174483825">&amp;Qayta yuklash</translation>
 <translation id="5372529912055771682">Taqdim etilgan ro‘yxatdan o‘tish rejimi joriy operatsion tizim versiyasida qo‘llab-quvvatlanmaydi. OT versiyasini yangilab, qayta urinib ko‘ring.</translation>
 <translation id="5372579129492968947">Kengaytmani yechib olish</translation>
+<translation id="5375318608039113175">Atrofga yuborish funksiyasini ishlatish uchun kontaktlaringizga ularning Google hisobidagi email manzilini kiriting.</translation>
 <translation id="5376169624176189338">Orqaga qaytish uchun bosing, tarixini ko‘rish uchun bosing va ushlab turing</translation>
 <translation id="5376931455988532197">Fayl juda katta</translation>
 <translation id="5377721922656071359">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> qurilmasiga <ph name="ATTACHMENTS" /> yuborildi}other{<ph name="DEVICE_NAME" /> qurilmasiga <ph name="ATTACHMENTS" /> yuborildi}}</translation>
@@ -3888,6 +3891,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="5554403733534868102">Bundan keyin yangilanishlar kutilmaydi</translation>
 <translation id="5554489410841842733">Agar kengaytma joriy sahifada ishlay olsa, uning nishochasi ko‘rinadi.</translation>
 <translation id="5554720593229208774">Email sertifikatlash markasi</translation>
+<translation id="5555363196923735206">Kamerani almashtirish</translation>
 <translation id="5556459405103347317">Qayta yuklash</translation>
 <translation id="5558125320634132440">Bu sayt tarkibida voyaga yetganlar uchun kontent borligi sababli bloklandi</translation>
 <translation id="5558129378926964177">&amp;Kattalashtirish</translation>
@@ -5203,6 +5207,7 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="7113502843173351041">Email manzilingizni bilish</translation>
 <translation id="7114054701490058191">Parollar bir-biriga mos kelmadi</translation>
 <translation id="7114648273807173152">Google hisobingizda Smart Lock himoyasini yoqish uchun Sozlamalar &gt; Ulangan qurilmalar &gt; Telefoningiz &gt; Smart Lock sahifasini oching.</translation>
+<translation id="7115361495406486998">Hech qanday kontakt atrofda emas</translation>
 <translation id="7117228822971127758">Keyinroq qaytadan urining</translation>
 <translation id="7117247127439884114">Tizimga qayta kiring...</translation>
 <translation id="711840821796638741">Boshqariladigan xatcho‘plarni ko‘rsatish</translation>
@@ -6079,6 +6084,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="810728361871746125">Ekran oʻlchami:</translation>
 <translation id="8108526232944491552">{COUNT,plural, =0{Tashqi cookie fayllar yoʻq}=1{1 ta tashqi cookie fayl bloklandi}other{# ta tashqi cookie fayl bloklandi}}</translation>
 <translation id="810875025413331850">Yaqin-atrofda hech qanday qurilma topilmadi.</translation>
+<translation id="8110489095782891123">Kontaktlar roʻyxati yuklab olinmoqda...</translation>
 <translation id="8113476325385351118">Bu sayt uchun MIDI qurilmalarini toʻliq boshqarishga hali ham ruxsat berilmasin</translation>
 <translation id="8114199541033039755">Planshet rejimida bosh ekranga oʻtish, oldingi ekranga qaytish va ilovalararo almashish uchun tugmalar chiqadi. ChromeVox (teskari aloqa) yoki avtomatik kliklar yoniqligida ishlaydi.</translation>
 <translation id="8114875720387900039">Gorizontal ajratish</translation>

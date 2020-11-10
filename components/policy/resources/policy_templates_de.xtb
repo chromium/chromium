@@ -330,6 +330,11 @@ Wenn Sie diese Richtlinie deaktivieren, wird das Scrollen zu bestimmten Textfrag
 <translation id="1523774894176285446">Für konfigurierte Websites soll ein alternativer Browser geöffnet werden.</translation>
 <translation id="152657506688053119">Liste alternativer URLs für den Standardsuchanbieter</translation>
 <translation id="1530812829012954197">Immer die folgenden URL-Muster im Host-Browser darstellen</translation>
+<translation id="1552418937045050762">Wenn diese Einstellung aktiviert ist, können Nutzer der Verwendung von Nearby Share zustimmen und Dateien mit Personen austauschen, die sich in der Nähe befinden.
+
+      Ist diese Einstellung deaktiviert, können Nutzer der Verwendung von Nearby Share nicht zustimmen.
+
+      Wenn diese Richtlinie nicht konfiguriert ist, gilt die Standardeinstellung: Vom Unternehmen verwaltete Nutzer können die Funktion nicht verwenden, während sie für nicht verwaltete Nutzer zur Verfügung steht.</translation>
 <translation id="1553532014072799546">Zulassungsliste für App-Zeitbeschränkungen</translation>
 <translation id="1553956579506604198">Installation externer Erweiterungen blockieren</translation>
 <translation id="1555248923316727072">SAML-Einstellungen zur Verwaltung der Nutzeridentität</translation>
@@ -539,6 +544,9 @@ Ist die Richtlinie auf "False" gesetzt, können Nutzer keine eigenen Drucker hin
 
           Der Wert wird als JSON-Wörterbuch für die Verknüpfung zwischen Richtliniennamen und Richtlinienwerten geparst.</translation>
 <translation id="1969808853498848952">Führt Plug-ins, die eine Autorisierung erfordern, immer aus (eingestellt)</translation>
+<translation id="1971991630422430420">Wenn die Richtlinie aktiviert ist, wird „Fast Transition“ verwendet, wenn dies vom WLAN-Zugangspunkt unterstützt wird. Sie gilt für alle Nutzer und alle Oberflächen auf diesem Gerät.
+
+      Wenn die Richtlinie deaktiviert oder nicht konfiguriert ist, wird „Fast Transition“ nicht verwendet.</translation>
 <translation id="1988345404999458987">Mit dieser Richtlinie können Konfigurationen verfügbarer Druckserver zur Verfügung gestellt werden.
 
       So können Sie <ph name="PRODUCT_OS_NAME" />-Geräten Konfigurationen externer Druckserver als JSON-Datei zur Verfügung stellen.
@@ -917,6 +925,9 @@ Ist sie nicht konfiguriert, ist der Datenschutzbildschirm anfangs deaktiviert, N
           Statt das Textfeld anzuzeigen, das auch für die Eingabe des Passworts verwendet wird, zeigt diese Funktion eine spezielle UI, an der Nutzer erkennen, wie viele Ziffern für die PIN benötigt werden. In der Folge wird die Länge der jeweiligen PIN außerhalb der verschlüsselten Nutzerdaten gespeichert. Es werden nur PINs mit mindestens 6 und höchstens 12 Ziffern unterstützt.
 
           Wenn diese Richtlinie auf „False“ gesetzt ist, können Nutzer diese Funktion nicht in den Einstellungen aktivieren.</translation>
+<translation id="250151283451228612">Wenn „<ph name="DEVICE_POWER_PEAK_SHIFT_ENABLED_POLICY_NAME" />“ aktiviert ist, wird durch das Konfigurieren von „<ph name="DEVICE_POWER_PEAK_SHIFT_BATTERY_THRESHOLD_POLICY_NAME" />“ der Schwellenwert des Akkus (%) für das Umschalten bei Leistungsspitzen festgelegt.
+
+       Wenn die Richtlinie nicht konfiguriert ist, ist das Umschalten bei Leistungsspitzen immer deaktiviert.</translation>
 <translation id="2502467045153796624">Verhalten zum Versionsdowngrade</translation>
 <translation id="250670737672448119">Mit dieser Richtlinie wird die Bedienungshilfe "Textcursor hervorheben" aktiviert.
 
@@ -999,10 +1010,22 @@ Ist sie nicht konfiguriert, ist der Datenschutzbildschirm anfangs deaktiviert, N
       Ist diese Richtlinie nicht konfiguriert, verwendet <ph name="PRODUCT_NAME" /> den Standardwert von 10.000 Millisekunden.</translation>
 <translation id="257788512393330403">Passworteingabe alle sechs Stunden erforderlich</translation>
 <translation id="2587719089023392205"><ph name="PRODUCT_NAME" /> als Standardbrowser festlegen</translation>
+<translation id="2588252329503406673">Mit dieser Richtlinie konfigurieren Sie, wie <ph name="PRODUCT_OS_NAME" /> sich verhalten soll, wenn auf dem Anmeldebildschirm eine Zeit lang keine Nutzeraktivität erfolgt. Durch die Richtlinie werden mehrere Einstellungen festgelegt. Deren Semantik und zulässige Wertebereiche finden Sie unter den entsprechenden Richtlinien zur Steuerung der Energieverwaltung innerhalb einer Sitzung.
+
+      Diese Richtlinie unterscheidet sich nur in folgenden Punkten:
+
+      * Bei Inaktivität oder Schließen des Deckels kann als Aktion nicht die Beendigung der Sitzung ausgeführt werden.
+
+      * Als Standardaktion bei Inaktivität wird das Gerät bei Netzanschluss heruntergefahren.
+
+      Wenn die Richtlinie oder deren Einstellungen nicht konfiguriert wird, gelten für alle Einstellungen für die Ein-/Aus-Taste Standardwerte.</translation>
 <translation id="2592091433672667839">Dauer der Inaktivität, bevor im Händlermodus der Bildschirmschoner auf der Anmeldeseite erscheint</translation>
 <translation id="2592162121850992309">Wenn diese Richtlinie auf "true" gesetzt oder nicht konfiguriert ist, wird die Hardwarebeschleunigung aktiviert, sofern eine bestimmte GPU-Funktion nicht auf die Sperrliste gesetzt wurde.
 
       Wenn diese Richtlinie auf "false" gesetzt ist, wird die Hardwarebeschleunigung deaktiviert.</translation>
+<translation id="259289618675490104">Wenn die Richtlinie auf „All“ (Alle) gesetzt (Wert 0) oder nicht konfiguriert ist, können Nutzer Zertifikate verwalten. Ist sie auf „None“ (Keine) (Wert 2) gesetzt, können Nutzer Zertifikate nur ansehen und nicht verwalten.
+
+      Wenn die Richtlinie auf „UserOnly“ (Nur Nutzer) (Wert 1) gesetzt ist, können Nutzer Nutzerzertifikate, aber keine Zertifikate für das gesamte Gerät verwalten.</translation>
 <translation id="2593762551209145088">Safe Browsing ist nie aktiv.</translation>
 <translation id="26023406105317310">Kerberos-Konten konfigurieren</translation>
 <translation id="2604182581880595781">Richtlinien für Netzwerkfreigaben konfigurieren.</translation>
@@ -1070,6 +1093,11 @@ Ist sie nicht konfiguriert, ist der Datenschutzbildschirm anfangs deaktiviert, N
 <translation id="2716623398185506073">Wenn die Richtlinie aktiviert ist, werden über registrierte Geräte Hardwarestatistiken und Kennzeichnungen im Zusammenhang mit der Stromversorgung gemeldet.
 
       Ist sie deaktiviert oder nicht konfiguriert, melden registrierte Geräte keine Statistiken zur Stromversorgung.</translation>
+<translation id="2723692978495226412">Wenn diese Richtlinie aktiviert ist, erhält der Nutzer Empfehlungen für Apps, die er schon auf anderen Geräten installiert hat. Sie werden im Launcher nach den lokalen App-Empfehlungen angezeigt, wenn kein Suchtext eingegeben wurde.
+
+      Wenn die Richtlinie deaktiviert oder nicht konfiguriert ist, werden diese Empfehlungen nicht angezeigt.
+
+      Wenn diese Richtlinie konfiguriert ist, kann sie von Nutzern nicht geändert werden.</translation>
 <translation id="2725855586003209701">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, werden über registrierte Geräte alle Gerätenutzer gemeldet, die sich vor Kurzem angemeldet haben.
 
       Ist die Richtlinie deaktiviert, melden die registrierten Geräte keine Nutzer.</translation>
@@ -1122,6 +1150,9 @@ Ist sie nicht konfiguriert, ist der Datenschutzbildschirm anfangs deaktiviert, N
 <translation id="2787774054174244402">Wenn die Richtlinie auf "True" festgelegt ist, können Nutzer nicht auf externe Speichergeräte schreiben.
 
       Sofern der externe Speicher nicht blockiert ist, können, wenn Sie "ExternalStorageReadOnly" auf "False" oder keinen Wert festlegen, Nutzer Dateien auf physisch beschreibbaren externen Speichergeräten erstellen und ändern. Sie können externen Speicher dadurch blockieren, dass Sie "ExternalStorageDisable" auf "True" festlegen.</translation>
+<translation id="2791750069439339908">Wenn „<ph name="DEVICE_BATTERY_CHARGE_MODE_POLICY_NAME" />“ auf „<ph name="DEVICE_BATTERY_CHARGE_CUSTOM_MODE_NAME" />“ gesetzt ist, passt „<ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" />“ an, wann der Ladevorgang endet. Die Grundlage bildet der Akkustand in %. „<ph name="DEVICE_BATTERY_CHARGE_CUSTOM_START_CHARGING_POLICY_NAME" />“ muss mindestens fünf Prozentpunkte unter „<ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" />“ liegen.
+
+      Wenn die Richtlinie nicht konfiguriert ist, wird der <ph name="DEVICE_BATTERY_CHARGE_STANDARD_MODE_NAME" />-Akkulademodus verwendet.</translation>
 <translation id="2796714419743648316">Zulassungsliste für App-Zeitbeschränkungen</translation>
 <translation id="2796896367838042659">Mit dieser Richtlinie wird festgelegt, welche Apps und URLs in Bezug auf Nutzungsbeschränkungen auf die Zulassungsliste gesetzt werden sollen.
         Für Apps, die unter <ph name="PRODUCT_OS_NAME" /> installiert sind und auf der Zulassungsliste stehen, gelten für den jeweiligen Nutzer keine Zeitbeschränkungen.
@@ -1736,6 +1767,11 @@ Wird die Richtlinie auf "False" gesetzt , verwendet <ph name="PRODUCT_NAME" /> k
       Ist die Richtlinie auf "true" gesetzt oder nicht konfiguriert, dürfen neue Nutzerkonten erstellt werden, falls die Nutzer nicht durch <ph name="DEVICE_USER_ALLOWLIST_POLICY_NAME" /> an einer Anmeldung gehindert werden.</translation>
 <translation id="3653237928288822292">Symbol der Standardsuchmaschine</translation>
 <translation id="3654906736796256792">Ausführen der Audio-Sandbox zulassen</translation>
+<translation id="3659542706175323490">Wenn die Richtlinie aktiviert ist, ist das Starten bei anliegender Netzspannung aktiviert, sofern die Funktion vom Gerät unterstützt wird. Diese Energieverwaltungsrichtlinie erlaubt den Neustart des Systems aus dem abgeschalteten oder dem Ruhezustand bei Verbindung mit einer Netzspannungsquelle.
+
+      Wenn die Richtlinie deaktiviert ist, dann ist das Starten bei anliegender Netzspannung immer deaktiviert.
+
+      Wenn Sie diese Richtlinie konfigurieren, kann sie vom Nutzer nicht geändert werden. Wird die Richtlinie nicht konfiguriert, ist das Starten bei anliegender Netzspannung deaktiviert und kann vom Nutzer nicht aktiviert werden.</translation>
 <translation id="3660510274595679517">
         Wenn diese Richtlinie auf "true" gesetzt ist, ist die Registrierung für Cloud Management erforderlich und blockiert bei Nichterfüllung den Startprozess von Chrome.
 
@@ -1755,6 +1791,9 @@ Wird die Richtlinie auf "False" gesetzt , verwendet <ph name="PRODUCT_NAME" /> k
 <translation id="3709266154059827597">Sperrliste für Installation von Erweiterungen konfigurieren</translation>
 <translation id="3711895659073496551">Suspend-Modus</translation>
 <translation id="3715569262675717862">Authentifizierung auf Grundlage von Clientzertifikaten</translation>
+<translation id="3727476641336727380">Es sei denn, für „<ph name="ALLOW_WAKE_LOCKS_POLICY_NAME" />“ ist „Deaktiviert“ festgelegt, sind durch das Aktivieren oder Nichtkonfigurieren von „<ph name="ALLOW_SCREEN_WAKE_LOCKS_POLICY_NAME" />“ Bildschirm-Wakelocks für die Energieverwaltung zulässig. Bildschirm-Wakelocks können von Erweiterungen über die Power Management Extension API oder ARC-Apps angefordert werden.
+
+      Ist diese Richtlinie deaktiviert, werden Bildschirm-Wakelock-Anfragen auf den Status von System-Wakelocks zurückgestuft.</translation>
 <translation id="3727675072430693164">Wenn die Richtlinie aktiviert ist, werden über registrierte Geräte Hardwarestatistiken für SoC-Komponenten gemeldet.
 
       Ist sie deaktiviert oder nicht konfiguriert, melden registrierte Geräte keine Statistiken.</translation>
@@ -1781,6 +1820,9 @@ Wird die Richtlinie auf "False" gesetzt , verwendet <ph name="PRODUCT_NAME" /> k
       Sind diese Richtlinien nicht konfiguriert, so können Nutzer ihre eigenen Proxy-Einstellungen wählen.</translation>
 <translation id="3758249152301468420">Entwickler-Tools deaktivieren</translation>
 <translation id="3760231600118073732">Aktuelle Sitzung sperren.</translation>
+<translation id="3762520180381586267">Wenn die Richtlinie aktiviert ist, löst <ph name="PRODUCT_OS_NAME" /> einen Neustart aus, wenn der Nutzer das Gerät herunterfährt. <ph name="PRODUCT_OS_NAME" /> ersetzt alle Schaltflächen zum Herunterfahren in der Benutzeroberfläche durch Schaltflächen zum Neustarten. Wenn der Nutzer das Gerät über die Ein-/Aus-Taste herunterfährt, wird es nicht automatisch neu gestartet, auch wenn die Richtlinie aktiviert ist.
+
+      Wenn diese Richtlinie deaktiviert oder nicht konfiguriert ist, erlaubt <ph name="PRODUCT_OS_NAME" /> dem Nutzer, das Gerät herunterzufahren.</translation>
 <translation id="3765260570442823273">Dauer der Warnmeldung zur Abmeldung bei Inaktivität</translation>
 <translation id="377044054160169374">Zwingende Maßnahmen bei irreführenden Inhalten</translation>
 <translation id="3780152581321609624">Nicht-Standard-Port in Kerberos-SPN einschließen</translation>
@@ -1814,6 +1856,11 @@ Wenn diese Richtlinie nicht festgelegt ist, gilt die Standardeinstellung: Vom Un
       Wenn diese Richtlinie nicht konfiguriert oder als "false" festgelegt ist, wird für <ph name="PRODUCT_NAME" /> der offizielle Beendigungszeitplan herangezogen.
 
       Weitere Informationen zu dem Beendigungszeitplan finden Sie unter https://g.co/chrome/symantecpkicerts.</translation>
+<translation id="3831836327853123066">Wenn diese Richtlinie konfiguriert ist, wird die Betriebsdauer des Geräts durch das Planen automatischer Neustarts begrenzt. Das kann bis zu 24 Stunden verzögert werden, wenn ein Nutzer das Gerät gerade verwendet. Der Wert sollte in Sekunden angegeben werden. Der Mindestwert beträgt 3.600 (eine Stunde).
+
+      Wenn Sie diese Richtlinie konfigurieren, kann sie von Nutzern nicht geändert werden. Wenn diese Richtlinie nicht konfiguriert ist, wird die Betriebsdauer des Geräts nicht begrenzt.
+
+      Hinweis: Automatische Neustarts sind nur aktiviert, wenn die Anmeldeseite angezeigt wird oder eine Kiosk-App-Sitzung läuft.</translation>
 <translation id="3835692988507803626">Deaktivierung von Sprachen für die Rechtschreibprüfung erzwingen</translation>
 <translation id="3837424079837455272">Diese Richtlinie steuert, ob <ph name="PRODUCT_OS_NAME" /> neue Nutzer hinzugefügt werden dürfen. Sie verhindert nicht, dass sich Nutzer in weiteren Google-Konten innerhalb von Android anmelden. Wenn Sie dies verhindern möchten, konfigurieren Sie die Android-spezifische Richtlinie "<ph name="ACCOUNT_TYPES_WITH_MANAGEMENT_DISABLED_CLOUDDPC_POLICY_NAME" />" im Rahmen von "<ph name="ARC_POLICY_POLICY_NAME" />".</translation>
 <translation id="3838094946886335701">Wenn diese Richtlinie konfiguriert ist – jedoch nur wie empfohlen –, können Sie eine Liste mit Protokoll-Handlern registrieren, die mit den vom Nutzer registrierten zusammengeführt werden. Nachfolgend werden beide Handler-Gruppen verwendet. Setzen Sie die Eigenschaft "protocol" auf das Schema, z. B. "mailto", und die Eigenschaft "URL" auf das URL-Muster der Anwendung, die das im Feld "protocol" angegebene Schema bearbeitet. In dem Muster kann es einen "%s"-Platzhalter geben, der von der verarbeiteten URL ersetzt wird.
@@ -1930,6 +1977,11 @@ Falls die Richtlinie nicht festgelegt wird, bleibt die Varianten-Seed-URL unver�
 <translation id="3942041691320538491">Wenn die Richtlinie auf "0" gesetzt ist (Standardeinstellung), kann generell auf die Entwicklertools und die JavaScript-Konsole zugegriffen werden. Für Erweiterungen, die über die Unternehmensrichtlinie installiert wurden, ist der Zugriff aber nicht möglich. Ist die Richtlinie auf "1" gesetzt, können die Entwicklertools und die JavaScript-Konsole in allen Kontexten aufgerufen und verwendet werden, also auch von Erweiterungen, die über die Unternehmensrichtlinie installiert wurden. Wenn die Richtlinie auf "2" gesetzt ist, kann nicht auf die Entwicklertools zugegriffen werden und Websiteelemente können nicht mehr geprüft werden.
 
       Alle Tastenkombinationen und Einträge im Menü oder Kontextmenü, mit denen die Entwicklertools oder die JavaScript-Konsole aufgerufen werden, werden deaktiviert.</translation>
+<translation id="3947431236979598549">Ermöglicht die Aktivierung oder Deaktivierung einer Benachrichtigung, wenn nur noch wenig Speicherplatz verfügbar ist. Dies gilt für alle Nutzer auf diesem Gerät.
+
+      Diese Richtlinie wird ignoriert und die Benachrichtigung wird immer angezeigt, wenn das Gerät nicht verwaltet wird oder es nur einen Nutzer gibt.
+
+      Gibt es auf einem verwalteten Gerät mehrere Nutzerkonten, wird die Benachrichtigung nur angezeigt, wenn diese Richtlinie aktiviert ist.</translation>
 <translation id="3950110092991281616">Aktiviert die passive Authentifizierung nur für reguläre Sitzungen.</translation>
 <translation id="3950239119790560549">Zeitbeschränkungen aktualisieren</translation>
 <translation id="3956686688560604829">Richtlinie "SiteList" von Internet Explorer zur Unterstützung älterer Browser verwenden.</translation>
@@ -1945,6 +1997,9 @@ Wird die Richtlinie auf "false" gesetzt oder nicht konfiguriert, wird kein Zerti
       Wenn die Richtlinie für den Gerätehintergrund nicht konfiguriert ist, wird über die Hintergrundrichtlinie des Nutzers bestimmt, was angezeigt werden soll, sofern diese festgelegt ist.</translation>
 <translation id="3964298692570794635">Unsichere Inhalte auf diesen Websites zulassen</translation>
 <translation id="3965339130942650562">Zeitlimit bis zur Abmeldung eines inaktiven Nutzers</translation>
+<translation id="3971673686578912106">Wenn die Richtlinie aktiviert ist, ist <ph name="PLUGIN_VM_NAME" /> für das Gerät aktiviert, solange andere Einstellungen dies ebenfalls zulassen. „<ph name="PLUGIN_VM_ALLOWED_POLICY_NAME" />“ und „<ph name="USER_PLUGIN_VM_ALLOWED_POLICY_NAME" />“ müssen „True“ sein und entweder „<ph name="PLUGIN_VM_LICENSE_KEY_POLICY_NAME" />“ oder „<ph name="PLUGIN_VM_USER_ID_POLICY_NAME" />“ muss für <ph name="PLUGIN_VM_NAME" /> aktiviert sein.
+
+      Wenn die Richtlinie deaktiviert oder nicht konfiguriert ist, ist <ph name="PLUGIN_VM_NAME" /> für das Gerät nicht aktiviert.</translation>
 <translation id="3973371701361892765">Ablage nie automatisch ausblenden</translation>
 <translation id="3979738908158213640">URLs, die während der SAML-Authentifizierung Zugriff zur Durchführung der Geräteattestierung erhalten</translation>
 <translation id="3980024487013511975">Gibt die Drucker an, die ein Nutzer nicht verwenden kann.
@@ -1963,6 +2018,9 @@ Wird die Richtlinie auf "false" gesetzt oder nicht konfiguriert, wird kein Zerti
 Ist die Richtlinie auf "false" gesetzt, werden in <ph name="PRODUCT_OS_NAME" /> keine vorhandenen Nutzer auf der Anmeldeseite angezeigt. Stattdessen wird die normale Anmeldeseite, auf der der Nutzer seine E-Mail-Adresse und sein Passwort bzw. seine Telefonnummer eingeben muss, oder der SAML-Interstitialbildschirm angezeigt, wenn dieser über die Richtlinie "<ph name="LOGIN_AUTHENTICATION_BEHAVIOR_POLICY_NAME" />" aktiviert wurde. Falls eine verwaltete Sitzung konfiguriert ist, werden nur die entsprechenden Konten angezeigt, von denen der Nutzer eins auswählen kann.
 
 Diese Richtlinie hat keine Auswirkungen darauf, ob die lokalen Nutzerdaten auf dem Gerät gespeichert oder verworfen werden.</translation>
+<translation id="4009527123617846557">Wenn „<ph name="DEVICE_BATTERY_CHARGE_MODE_NAME" />“ auf „<ph name="DEVICE_BATTERY_CHARGE_CUSTOM_MODE_NAME" />“ gesetzt ist, passt „<ph name="DEVICE_BATTERY_CHARGE_CUSTOM_START_CHARGING_POLICY_NAME" />“ an, wann der Ladevorgang beginnt. Die Grundlage bildet der Akkustand in %. Der Wert muss mindestens fünf Prozentpunkte unter „<ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" />“ liegen.
+
+      Wenn die Richtlinie nicht konfiguriert ist, wird der Standardakkulademodus verwendet.</translation>
 <translation id="4010738624545340900">Aufrufen von Dialogfeldern zur Dateiauswahl zulassen</translation>
 <translation id="401260868452018796">Ablage im unteren Bereich des Bildschirms anzeigen</translation>
 <translation id="4012737788880122133">Bei Festlegung auf "true" werden automatische Updates deaktiviert.
@@ -2001,6 +2059,9 @@ Diese Richtlinie hat keine Auswirkungen darauf, ob die lokalen Nutzerdaten auf d
 
       Wenn Sie diese Richtlinie konfigurieren, kann sie von Nutzern nicht geändert werden. Wird sie nicht konfiguriert, ist die Lupe erst einmal deaktiviert, kann aber jederzeit von Nutzern aktiviert werden.</translation>
 <translation id="410068710490553233">Anmeldung in zusätzlichen Google-Konten zulassen</translation>
+<translation id="4103177213841380258">Diese Richtlinie definiert den Zugriff auf steuerbare Funktionen in der Benutzeroberfläche der lokalen Erkennung (<ph name="CHROME_DEVICES_LINK" />), die sichtbare Geräte in der Umgebung des Nutzers und dessen registrierte Cloud-Geräte zeigt. Unter allen Betriebssystemen (mit Ausnahme von <ph name="PRODUCT_OS_NAME" />) können Nutzer über die Benutzeroberfläche für die lokale Erkennung <ph name="CLOUD_PRINT_NAME" /> auch klassische Drucker hinzufügen, die ihren Computern zugeordnet sind.
+
+      Wenn diese Richtlinie nicht konfiguriert ist, bleibt diese Funktion aktiviert.</translation>
 <translation id="4103289232974211388">Nach Bestätigung durch Nutzer an SAML-IdP weiterleiten</translation>
 <translation id="4105884561459127998">Hiermit wird der Typ der Authentifizierung für SAML-Anmeldungen konfiguriert.
 
@@ -2206,6 +2267,11 @@ Diese Richtlinie hat keine Auswirkungen darauf, ob die lokalen Nutzerdaten auf d
 <translation id="4447668084338250480">Verhalten zur Intranet-Weiterleitung</translation>
 <translation id="4449469846627734399">Tageskonfiguration für das Umschalten bei Leistungsspitzen festlegen</translation>
 <translation id="4449545651113180484">Bildschirm um 270 Grad im Uhrzeigersinn drehen</translation>
+<translation id="4450005376189179872">Wenn „<ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_ENABLED_POLICY_NAME" />“ aktiviert und „<ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_DAY_CONFIG_POLICY_NAME" />“ konfiguriert ist, kann der intelligente Akkulademodus eingerichtet werden. Der Wert für <ph name="CHARGE_START_TIME_FIELD_NAME" /> muss kleiner als <ph name="CHARGE_END_TIME_FIELD_NAME" /> sein.
+
+      Wenn die Richtlinie nicht konfiguriert ist, ist der intelligente Akkulademodus immer deaktiviert.
+
+      Zulässige Werte für das Feld „<ph name="MINUTE_FIELD_NAME" />“ in „<ph name="CHARGE_START_TIME_FIELD_NAME" />“ und „<ph name="CHARGE_END_TIME_FIELD_NAME" />“ sind 0, 15, 30 und 45.</translation>
 <translation id="445270821089253489">Legt fest, welche Art von Nutzer- und Geräteinformationen gesendet wird.</translation>
 <translation id="4453913621209182880">Drucken nur mit Hintergrundgrafiken zulassen</translation>
 <translation id="4454820008017317557">Symbol von <ph name="PRODUCT_NAME" /> in der Symbolleiste anzeigen</translation>
@@ -3133,6 +3199,11 @@ Wenn die Richtlinie auf "True" gesetzt oder nicht konfiguriert ist, können Nutz
 
       Dieses Verhalten wird nicht ausgelöst, wenn Safe Browsing durch eine Richtlinie oder den Nutzer deaktiviert wurde. Wenn Sie die Aktivierung von Safe Browsing erzwingen möchten, verwenden Sie die Richtlinie „<ph name="SAFE_BROWSING_ENABLED_POLICY_NAME" />“ oder „<ph name="SAFE_BROWSING_PROTETION_LEVEL_POLICY_NAME" />“.</translation>
 <translation id="5836064773277134605">Vom Host für den Remotezugriff verwendeten UDP-Portbereich einschränken</translation>
+<translation id="5837898601525273156">Wenn „<ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_DAY_CONFIG_POLICY_NAME" />“ konfiguriert und „<ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_ENABLED_POLICY_NAME" />“ aktiviert ist, ist der intelligente Akkulademodus immer aktiviert, sofern diese Funktion vom Gerät unterstützt wird. Dieser Modus verwendet außerhalb der Arbeitszeit den Standardladealgorithmus und weitere Verfahren, um die Lebensdauer des Akkus zu maximieren. Während der Arbeitszeit wird dagegen das Schnellladen verwendet. Für jeden Tag wird die Zeit, in der das System am intensivsten genutzt wird, durch einen Startzeitpunkt und eine Dauer angegeben.
+
+      Wenn die Richtlinie deaktiviert oder nicht konfiguriert ist, ist der intelligente Akkulademodus immer deaktiviert.
+
+      Nutzer können diese Einstellung nicht ändern.</translation>
 <translation id="5845686745936515940">Hiermit kann für alle Cookies das alte "<ph name="ATTRIBUTE_SAMESITE_NAME" />"-Verhalten wiederhergestellt werden. Wird es wiederhergestellt, werden Cookies, für die kein "<ph name="ATTRIBUTE_SAMESITE_NAME" />"-Attribut angegeben ist, so behandelt, als würden sie "<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />" enthalten. Außerdem wird nicht mehr vorausgesetzt, dass Cookies mit dem Attribut "<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />" auch das Attribut "<ph name="ATTRIBUTE_SECURE_NAME" />" enthalten müssen, und bei der Auswertung, ob zwei Websites identisch sind, werden die Schemata nicht verglichen. Eine vollständige Beschreibung steht unter https://www.chromium.org/administrators/policy-list-3/cookie-legacy-samesite-policies zur Verfügung.
 
           Wenn diese Richtlinie nicht konfiguriert ist, hängt das Standardverhalten von "<ph name="ATTRIBUTE_SAMESITE_NAME" />" für Cookies von der jeweiligen Konfiguration der "<ph name="FEATURE_NAME_SAMESITE_BY_DEFAULT_COOKIES" />"-, "<ph name="FEATURE_NAME_SAMESITE_NONE_MUST_BE_SECURE" />"- und "<ph name="FEATURE_NAME_SCHEMEFUL_SAME_SITE" />"-Funktion ab. Dies kann im Rahmen einer Testphase oder durch Aktivieren oder Deaktivieren des "<ph name="FLAG_NAME_SAMESITE_BY_DEFAULT_COOKIES" />"-, "<ph name="FLAG_NAME_SAMESITE_NONE_MUST_BE_SECURE" />"- oder "<ph name="FLAG_NAME_SCHEMEFUL_SAME_SITE" />"-Status festgelegt werden.</translation>
@@ -3279,6 +3350,11 @@ Wenn der Wert für <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> bei keinem Eintr
 
       Wenn diese Richtlinie verwendet wird, stehen dem Nutzer nur die Drucker zur Verfügung, deren IDs mit den Werten in dieser Richtlinie übereinstimmen. Die IDs müssen den Feldern "id" oder "guid" in der Datei entsprechen, die in <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> angegeben ist.
       </translation>
+<translation id="6058879286588763839">Es sei denn, „<ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_ENABLED_POLICY_NAME" />“ ist festgelegt, wodurch „<ph name="DEVICE_BATTERY_CHARGE_MODE_POLICY_NAME" />“ überschrieben wird, wird durch das Konfigurieren von „<ph name="DEVICE_BATTERY_CHARGE_MODE_POLICY_NAME" />“ die Energieverwaltungsrichtlinie für den Akkulademodus festgelegt, sofern die Funktion vom Gerät unterstützt wird. Mit dieser Richtlinie können Sie das Aufladen des Akkus dynamisch steuern. So lässt sich der durch unnötige Belastung entstehende Akkuverschleiß verringern und die Lebensdauer des Akkus verlängern.
+
+      Wenn die Richtlinie nicht konfiguriert ist (sofern die Funktion vom Gerät unterstützt wird), wird der Standardakkulademodus verwendet und Nutzer können sie nicht ändern.
+
+      Hinweis: Wenn der benutzerdefinierte Akkulademodus ausgewählt wird, müssen „<ph name="DEVICE_BATTERY_CHARGE_CUSTOM_START_CHARGING_POLICY_NAME" />“ und „<ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" />“ konfiguriert sein.</translation>
 <translation id="6066761914755798079">Wenn "<ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" />" aktiviert ist, gibt "<ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POLICY_NAME" />" die URL der Suchmaschine für Suchvorschläge an. Die URL sollte den String <ph name="SEARCH_TERM_MARKER" /> enthalten, der während des Suchvorgangs durch die Suchbegriffe des Nutzers ersetzt wird.
 
       Sie können die Such-URL von Google so angeben: <ph name="GOOGLE_SUGGEST_SEARCH_URL" />.</translation>
@@ -3540,6 +3616,7 @@ Durch Festlegen dieser Richtlinie bestimmen Sie, ob sich ein Nutzer in <ph name=
 <translation id="6467613372414922590">Hosts für natives Messaging, die ohne Berechtigung des Administrators installiert wurden, auf Nutzerebene zulassen</translation>
 <translation id="6473623140202114570">Hiermit wird die Liste der Domains konfiguriert, auf denen durch Safe Browsing keine Warnungen ausgelöst werden.</translation>
 <translation id="647698599569353771">Aktivieren von Nearby Share zulassen.</translation>
+<translation id="6478261301433199402">Wenn diese Richtlinie konfiguriert ist, wird das <ph name="PLUGIN_VM_NAME" />-Bild für den Nutzer festgelegt. Geben Sie diese Richtlinie als String im JSON-Format an, wobei <ph name="URL_PLUGIN_VM_IMAGE_FIELD" /> angibt, wo das Bild heruntergeladen werden kann. Zusätzlich wird <ph name="HASH_PLUGIN_VM_IMAGE_FIELD" /> als ein SHA-256-Hash-Wert festgelegt, mit dem die Integrität des Downloads bestätigt wird.</translation>
 <translation id="6485813825811798133">Wenn diese Richtlinie konfiguriert ist, können Sie eine Liste mit URL-Mustern erstellen, die angeben, welche Websites Nutzer nicht um Lesezugriff auf Dateien oder Verzeichnisse im Dateisystem des Host-Betriebssystems über die File System API bitten dürfen.
 
       Wenn die Richtlinie nicht konfiguriert ist, gilt "<ph name="DEFAULT_FILE_SYSTEM_READ_GUARD_SETTING_POLICY_NAME" />" für alle Websites, sofern konfiguriert. Falls nicht, werden die persönlichen Einstellungen des Nutzers verwendet.
@@ -3613,6 +3690,7 @@ Durch Festlegen dieser Richtlinie bestimmen Sie, ob sich ein Nutzer in <ph name=
 
           Genaue Informationen zu gültigen URL-Mustern finden Sie unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
 <translation id="6553143066970470539">Displayhelligkeit in %</translation>
+<translation id="6558362593755624474">Mit dieser Richtlinie wird der <ph name="PLUGIN_VM_NAME" />-Lizenzschlüssel für dieses Gerät angegeben.</translation>
 <translation id="6559057113164934677">Keine Website darf auf meine Kamera oder mein Mikrofon zugreifen</translation>
 <translation id="6559475864956112261">Diese Richtlinie wurde eingestellt. Bitte verwenden Sie stattdessen die Richtlinie „<ph name="PROXY_SETTINGS_POLICY_NAME" />“.
 
@@ -3824,6 +3902,7 @@ Ist die Richtlinie deaktiviert oder nicht konfiguriert, werden Nutzer durch den 
 
       Wenn die Richtlinie deaktiviert ist, wird stattdessen eine Fehlermeldung angezeigt,</translation>
 <translation id="6821268164692776674"><ph name="CLOUD_PRINT_NAME" />- und "In Google Drive speichern"-Ziele</translation>
+<translation id="6823711520976094072">Wenn Sie einen Wert unter 1 MB oder gar keinen Wert festlegen, verwendet <ph name="PRODUCT_OS_NAME" /> beim Installieren durch mehrere Nutzer auf demselben Gerät die Standardgröße von 256 MiB zum Speichern von Apps und Erweiterungen im Cache. Hierdurch wird ein nochmaliges Herunterladen für jeden Nutzer vermieden.</translation>
 <translation id="682408981080798691">Ist die Richtlinie aktiviert oder nicht konfiguriert, wird die Renderer-Codeintegrität aktiviert.
 
       Wird die Richtlinie deaktiviert, hat dies negative Auswirkungen auf die Sicherheit und Stabilität von <ph name="PRODUCT_NAME" />, da dann unbekannter und potenziell schädlicher Code in den Rendererprozessen von <ph name="PRODUCT_NAME" /> geladen werden kann. Die Richtlinie sollte nur deaktiviert werden, wenn Kompatibilitätsprobleme mit Drittanbieter-Software auftreten, die innerhalb der Rendererprozesse von <ph name="PRODUCT_NAME" /> ausgeführt werden muss.
@@ -4097,6 +4176,9 @@ Hinweis: Nutzer können Cookies blockieren und so auf Google-Dienste zugreifen, 
 
       Wenn die Richtlinie nicht festgelegt ist, kann der Nutzer selbst wählen.</translation>
 <translation id="7145335384492396213">Standardmodus PIN-Druck</translation>
+<translation id="7146198347561863646">Wenn die Richtlinie aktiviert ist oder nicht konfiguriert wird, sind Wakelocks für die Energieverwaltung zugelassen. Wakelocks können von Erweiterungen über die Power Management Extension API oder ARC-Apps angefordert werden.
+
+      Wenn die Richtlinie deaktiviert wird, werden Wakelock-Anfragen ignoriert.</translation>
 <translation id="7149042336307555519"> Verbindungstypen, die für Betriebssystem-Updates verwendet werden können. Betriebssystem-Updates stellen für Verbindungen aufgrund ihrer Größe eine starke Belastung dar und können zusätzliche Kosten verursachen. Aus diesem Grund sind sie für teure Verbindungstypen (derzeit nur "cellular") standardmäßig nicht aktiviert.
 
       Die unterstützten Verbindungstypen sind <ph name="CONNECTION_TYPE_ETHERNET_NAME" />, <ph name="CONNECTION_TYPE_WIFI_NAME" /> und <ph name="CONNECTION_TYPE_CELLULAR_NAME" />.</translation>
@@ -4464,6 +4546,9 @@ Die Richtlinienwerte sollten in % angegeben werden und zwischen 0 und 100 liegen
           Hinweis: Sofern konfiguriert, überschreibt "<ph name="DEVICE_LOGIN_SCREEN_LARGE_CURSOR_ENABLED" />" diese Richtlinie.</translation>
 <translation id="7632147323011514740">Zeiträume, in denen die Aktualisierung des ARC-Datenschnappschusses für verwaltete Gastsitzungen gestartet werden kann</translation>
 <translation id="7632724434767231364">Name der GSSAPI-Bibliothek</translation>
+<translation id="7635106595080609261">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, kann Chrome Dialogfelder zur Dateiauswahl anzeigen und Nutzer können diese öffnen.
+
+      Wird die Richtlinie deaktiviert, erscheint stattdessen eine Meldung, wenn Nutzer mit einer Aktion ein Dialogfeld zur Dateiauswahl öffnen würden, etwa beim Importieren von Lesezeichen, Hochladen von Dateien und Speichern von Links. Es wird angenommen, dass der Nutzer im Dialogfeld zur Dateiauswahl auf „Abbrechen“ geklickt hat.</translation>
 <translation id="7643883929273267746">Sichtbarkeit von Konten in <ph name="PRODUCT_NAME" /> einschränken</translation>
 <translation id="7648907905084499629">Verhalten "<ph name="FEATURE_NAME_SAMESITE_BY_DEFAULT_COOKIES" />" für alle Cookies auf allen Websites verwenden</translation>
 <translation id="7657261947024629645">Für eine optimale Leistung.</translation>
@@ -4578,6 +4663,11 @@ Die Richtlinienwerte sollten in % angegeben werden und zwischen 0 und 100 liegen
 
           Wird sie nicht konfiguriert, werden die Tastenkombinationen für Bedienungshilfen auf dem Anmeldebildschirm standardmäßig aktiviert.</translation>
 <translation id="7777535871204167559">Externe Speichergeräte nur schreibgeschützt verwenden</translation>
+<translation id="7781853854781306082">Wenn die Richtlinie aktiviert ist, fragt <ph name="PRODUCT_OS_NAME" /> den Nutzer nach einem Passwort zum Entsperren des Geräts bei Inaktivität.
+
+      Wenn die Richtlinie deaktiviert ist, wird der Nutzer nicht nach einem Passwort zum Entsperren des Geräts aus dem Ruhemodus gefragt.
+
+      Wenn die Richtlinie nicht konfiguriert ist, kann der Nutzer festlegen, ob er nach einem Passwort zum Entsperren des Geräts bei Inaktivität gefragt werden möchte.</translation>
 <translation id="7788511847830146438">Nach Profil</translation>
 <translation id="780629758750905699">Hinzufügen von Family Link-Konten auf diesem Gerät erlauben</translation>
 <translation id="7807139251387225825">Liste von Typen, die von der Synchronisierung ausgeschlossen werden sollen</translation>
@@ -4594,6 +4684,11 @@ Die Richtlinienwerte sollten in % angegeben werden und zwischen 0 und 100 liegen
       Diese Richtlinie existiert nicht mehr. Bitte verwenden Sie stattdessen die Richtlinie <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" />.
       </translation>
 <translation id="782661371433719637">Websites dürfen den Nutzer nicht um Lesezugriff auf Dateien und Verzeichnisse über die File System API bitten</translation>
+<translation id="7839180815400079700">Wenn „<ph name="DEVICE_POWER_PEAK_SHIFT_ENABLED_POLICY_NAME" />“ aktiviert ist, wird durch das Konfigurieren von „<ph name="DEVICE_POWER_PEAK_SHIFT_DAY_CONFIG_POLICY_NAME" />“ die Tageskonfiguration für das Umschalten bei Leistungsspitzen aktiviert.
+
+      Wenn die Richtlinie nicht konfiguriert ist, ist das Umschalten bei Leistungsspitzen immer deaktiviert.
+
+      Zulässige Werte für das Feld „<ph name="MINUTE_FIELD_NAME" />“ in „<ph name="START_TIME_FIELD_NAME" />“, „<ph name="END_TIME_FIELD_NAME" />“ und „<ph name="CHARGE_START_TIME_FIELD_NAME" />“ sind 0, 15, 30 und 45.</translation>
 <translation id="7841880500990419427">TLS-Mindestversion für Fallback</translation>
 <translation id="7846952520291088817">URLs, für die lokale IPs in WebRTC ICE Candidates offengelegt sind</translation>
 <translation id="7848641140449742406">Einstellungen des Betriebssystems</translation>
@@ -4735,6 +4830,9 @@ Die Richtlinienwerte sollten in % angegeben werden und zwischen 0 und 100 liegen
 <translation id="8053580360728293758">Dadurch wird der standardmäßige Farbdruckmodus überschrieben. Wenn der Modus nicht verfügbar ist, wird die Richtlinie ignoriert.</translation>
 <translation id="8056237304861875584">Aktivieren der Aufgabenfortsetzung für Phone Hub zulassen.</translation>
 <translation id="8059164285174960932">URL, unter der Remotezugriff-Clients ihr Authentifizierungs-Token abrufen sollten</translation>
+<translation id="8076521374016204899">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, können Nutzer, die sich mit einem Passwort authentifizieren, den Bildschirm sperren.
+
+      Wenn die Richtlinie deaktiviert ist, können Nutzer den Bildschirm nicht sperren, sondern sich lediglich von der Nutzersitzung abmelden.</translation>
 <translation id="8077245272412229388">Damit werden vorausgefüllte Kerberos-Konten hinzugefügt. Wenn die Kerberos-Anmeldedaten mit den für die Kontoanmeldung verwendeten Daten übereinstimmen, kann ein Konto so konfiguriert werden, dass die Anmeldedaten wiederverwendet werden. Dazu müssen <ph name="LOGIN_EMAIL_PLACEHOLDER" /> und <ph name="PASSWORD_PLACEHOLDER" /> jeweils als Hauptkonto und Passwort festgelegt werden, sodass das Kerberos-Ticket automatisch abgerufen werden kann. Das ist jedoch nicht möglich, wenn die Bestätigung in zwei Schritten konfiguriert ist. Nutzer können über diese Richtlinie hinzugefügte Konten nicht ändern.
 
           Ist die Richtlinie aktiviert, wird die Liste der Konten, die durch die Richtlinie definiert ist, den Einstellungen für Kerberos-Konten hinzugefügt.
@@ -5081,6 +5179,15 @@ Ist die Richtlinie auf "false" gesetzt oder nicht konfiguriert, kann der Nutzer 
           Wenn die Richtlinie nicht konfiguriert ist, wird ein Standardwert verwendet.
 
           Der Wert für die Richtlinie muss in Millisekunden angegeben werden.</translation>
+<translation id="8603454805657060638">Wenn die Richtlinie konfiguriert ist, kann der Administrator beim Verbinden eines Geräts mit dem Dock die MAC (Media Access Control)-Adresse ändern. Beim Verbinden bestimmter Gerätemodelle mit einem Dock wird standardmäßig die eingetragene Dock-MAC-Adresse des Geräts zur Identifikation des Geräts im Ethernet-Netzwerk verwendet.
+
+      Wenn „DeviceDockMacAddress“ ausgewählt ist oder die Richtlinie nicht festgelegt wurde, wird die eingetragene Dock-MAC-Adresse des Geräts verwendet.
+
+      Ist „DeviceNicMacAddress“ festgelegt, wird die MAC-Adresse der NIC (Netzwerkkarte) des Geräts verwendet.
+
+      Ist „DockNicMacAddress“ ausgewählt, wird die MAC-Adresse der Dock-NIC verwendet.
+
+      Nutzer können diese Einstellung nicht ändern.</translation>
 <translation id="8604178325750278068">Wenn die Richtlinie aktiviert ist, erhält Google Assistant die Berechtigung, bei Gesprächen zuzuhören und so zu prüfen, ob das Aktivierungswort genannt wird. Ist die Richtlinie deaktiviert, hört Google Assistant nicht zu.
 
       Ist die Richtlinie nicht konfiguriert, können Nutzer diese Funktion aktivieren oder deaktivieren.</translation>

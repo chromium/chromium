@@ -312,6 +312,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="214556005048008348">Cancelar pago</translation>
 <translation id="2147827593068025794">Sincronización en segundo plano</translation>
 <translation id="2148613324460538318">Agregar tarjeta</translation>
+<translation id="2149968176347646218">La conexión no es segura</translation>
 <translation id="2154054054215849342">El servicio de sincronización no está disponible para tu dominio</translation>
 <translation id="2154484045852737596">Editar tarjeta</translation>
 <translation id="2161656808144014275">Texto</translation>
@@ -1159,6 +1160,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5571083550517324815">No se puede retirar el artículo en esta dirección. Selecciona una diferente.</translation>
 <translation id="5580958916614886209">Comprueba el mes de vencimiento y vuelve a intentarlo</translation>
 <translation id="5586446728396275693">No hay direcciones guardadas</translation>
+<translation id="5593349413089863479">La conexión no es totalmente segura</translation>
 <translation id="5595485650161345191">Editar dirección</translation>
 <translation id="5598944008576757369">Seleccionar forma de pago</translation>
 <translation id="560412284261940334">No se admite la administración.</translation>

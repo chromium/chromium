@@ -348,6 +348,7 @@
 <translation id="4905417359854579806">Klaar om back-up van <ph name="FILE_COUNT" /> te maken</translation>
 <translation id="4924638091161556692">Bewerkt</translation>
 <translation id="4935975195727477204">Bloem</translation>
+<translation id="4942961016321891903">Malayalam (fonetisch)</translation>
 <translation id="4943368462779413526">Amerikaanse voetbal</translation>
 <translation id="4961158930123534723">1 map gedeeld met Parallels Desktop</translation>
 <translation id="4969785127455456148">Album</translation>
@@ -425,8 +426,10 @@
 <translation id="5524517123096967210">Het bestand kan niet worden gelezen.</translation>
 <translation id="5533102081734025921"><ph name="IMAGE_TYPE" />-afbeelding</translation>
 <translation id="5534520101572674276">Grootte berekenen</translation>
+<translation id="5551831234974556292">Maltees</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5605830556594064952">Amerikaans Dvorak</translation>
+<translation id="5623849870004487514">Nepalees met fonetisch toetsenbord</translation>
 <translation id="5649768706273821470">Luisteren</translation>
 <translation id="5678784840044122290">De Linux-app is beschikbaar in je terminal. Mogelijk staat er ook een icoon van de app in de Launcher.</translation>
 <translation id="5686799162999241776"><ph name="BEGIN_BOLD" />Kan een archiveringsschijf of virtuele schijf niet deactiveren<ph name="END_BOLD" />
@@ -455,6 +458,7 @@
 <translation id="5912396950572065471">Indeling</translation>
 <translation id="5913638992615760742">Kopiëren mislukt. Onverwachte fout: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="5932901536148835538">Chromebit</translation>
+<translation id="5952382594224963380">Marathi</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> items</translation>
 <translation id="5957366693331451795">Chromeboxes</translation>
 <translation id="5982621672636444458">Sorteeropties</translation>
@@ -517,6 +521,7 @@
 <translation id="6718273304615422081">Inpakken...</translation>
 <translation id="6751256176799620176">1 map geselecteerd</translation>
 <translation id="6760765581316020278">Vietnamees toetsenbord (VNI)</translation>
+<translation id="6767296108234383966">Malayalam (transliteratie)</translation>
 <translation id="6790428901817661496">Spelen</translation>
 <translation id="6795884519221689054">Panda</translation>
 <translation id="6806699711453372963">Delen met Linux beheren</translation>
@@ -553,6 +558,7 @@
 <translation id="7012943028104619157"><ph name="ROOT_TITLE" /> (<ph name="ROOT_SUMMARY" />)</translation>
 <translation id="7014174261166285193">Installatie mislukt.</translation>
 <translation id="7040138676081995583">Openen met...</translation>
+<translation id="7096940708283911567">Odia</translation>
 <translation id="7100897339030255923"><ph name="COUNT" /> items geselecteerd</translation>
 <translation id="7106346894903675391">Meer opslagruimte kopen...</translation>
 <translation id="7126604456862387217">'&lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt;' - &lt;em&gt;zoeken in Google Drive&lt;/em&gt;</translation>
@@ -583,6 +589,7 @@
 <translation id="7489215562877293245"><ph name="FILE_COUNT" /> gevonden
     <ph name="LINE_BREAK1" />
     Klaar om back-up te maken in <ph name="BEGIN_LINK" />Google Drive<ph name="END_LINK" /></translation>
+<translation id="7498032756958781551">Nepalees met InScript-toetsenbord</translation>
 <translation id="7505167922889582512">Verborgen bestanden weergeven</translation>
 <translation id="7508545000531937079">Diavoorstelling</translation>
 <translation id="751507702149411736">Wit-Russisch</translation>

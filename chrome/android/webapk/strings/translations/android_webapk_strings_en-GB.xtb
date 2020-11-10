@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="en-GB">
+<translation id="1625959690469240009">To open site settings, update or reinstall <ph name="BROWSER_NAME" /></translation>
 <translation id="1700971771753530690"><ph name="APP_NAME" /> requires the following app:</translation>
 <translation id="2697679025356221813"><ph name="APP_NAME" /> requires a web browser</translation>
 <translation id="3858759029325727987">Choose a browser that supports this app:</translation>

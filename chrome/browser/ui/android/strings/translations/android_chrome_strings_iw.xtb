@@ -60,7 +60,7 @@
 <translation id="1360432990279830238">לצאת ולהשבית את הסנכרון?</translation>
 <translation id="1373696734384179344">אין מספיק זיכרון להורדת התוכן הנבחר.</translation>
 <translation id="1376578503827013741">מחשב...</translation>
-<translation id="1383876407941801731">חפש</translation>
+<translation id="1383876407941801731">חיפוש</translation>
 <translation id="1386674309198842382">פעילות אחרונה: לפני <ph name="LAST_UPDATED" /> ימים</translation>
 <translation id="1397811292916898096">חיפוש באמצעות <ph name="PRODUCT_NAME" /></translation>
 <translation id="1406000523432664303">‏'לא לעקוב (DNT)'</translation>
@@ -79,7 +79,7 @@
 <translation id="1521774566618522728">סנכרון אחרון: היום</translation>
 <translation id="1543538514740974167">רוצה להגיע לכאן מהר יותר?</translation>
 <translation id="1544826120773021464">‏כדי לנהל את חשבון Google, יש להקיש על הלחצן "ניהול החשבון"</translation>
-<translation id="1549000191223877751">העבר לחלון האחר</translation>
+<translation id="1549000191223877751">העברה לחלון האחר</translation>
 <translation id="1553358976309200471">‏כדאי לעדכן את Chrome</translation>
 <translation id="1569387923882100876">מכשיר מחובר</translation>
 <translation id="1571304935088121812">העתקת שם משתמש</translation>
@@ -95,6 +95,7 @@
 <translation id="1680919990519905526">‏קניית מוצר עם Google Lens <ph name="BEGIN_NEW" />חדש<ph name="END_NEW" /></translation>
 <translation id="1682195225331129001">אני רוצה לנסות</translation>
 <translation id="1692118695553449118">סנכרון מופעל</translation>
+<translation id="1697284962337958118">הוספה אל</translation>
 <translation id="1718835860248848330">מהשעה האחרונה</translation>
 <translation id="1736419249208073774">מידע נוסף</translation>
 <translation id="1749561566933687563">סנכרון הסימניות שלך</translation>
@@ -306,7 +307,7 @@
 <translation id="3236059992281584593">נותרה דקה אחת</translation>
 <translation id="3244271242291266297">MM</translation>
 <translation id="3254409185687681395">הוספת הדף לסימניות</translation>
-<translation id="3259831549858767975">הקטן את כל מה שמופיע בדף</translation>
+<translation id="3259831549858767975">הקטנת כל מה שמופיע בדף</translation>
 <translation id="3264124641674805320">איך להוריד תוכן שסומן לקריאה מאוחר יותר</translation>
 <translation id="3269093882174072735">טעינת תמונה</translation>
 <translation id="3269956123044984603">‏כדי לקבל את הכרטיסיות מהמכשירים האחרים שלך, הפעל את האפשרות 'סנכרון אוטומטי של נתונים' בהגדרות של חשבון Android.</translation>
@@ -333,7 +334,7 @@
 <translation id="3389286852084373014">הטקסט ארוך מדי</translation>
 <translation id="3398320232533725830">פתיחת מנהל הסימניות</translation>
 <translation id="3414952576877147120">גודל:</translation>
-<translation id="3443221991560634068">טען מחדש את הדף הנוכחי</translation>
+<translation id="3443221991560634068">טעינה מחדש של הדף הנוכחי</translation>
 <translation id="3478363558367712427">אפשר לבחור את מנוע החיפוש</translation>
 <translation id="3492207499832628349">כרטיסייה חדשה לגלישה בסתר</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /> על הצעות לתוכן</translation>
@@ -405,7 +406,7 @@
 <translation id="397583555483684758">הסנכרון הפסיק לפעול</translation>
 <translation id="3976396876660209797">הסרה ויצירה מחדש של מקש הקיצור הזה</translation>
 <translation id="3985215325736559418">האם להוריד שוב את <ph name="FILE_NAME" />?</translation>
-<translation id="3987993985790029246">העתק קישור</translation>
+<translation id="3987993985790029246">העתקת קישור</translation>
 <translation id="3988213473815854515">ניתנה הרשאת מיקום</translation>
 <translation id="3988466920954086464">בחלונית הזו אפשר לראות תוצאות חיפוש מיידי</translation>
 <translation id="4000212216660919741">דף הבית במצב לא מקוון</translation>
@@ -478,7 +479,7 @@
 <translation id="4572422548854449519">כניסה אל חשבון מנוהל</translation>
 <translation id="4583164079174244168">{MINUTES,plural, =1{לפני דקה}two{לפני # דקות}many{לפני # דקות}other{לפני # דקות}}</translation>
 <translation id="4587589328781138893">אתרים</translation>
-<translation id="4594952190837476234">הדף הלא מקוון הזה נוצר ב-<ph name="CREATION_TIME" /> ויכול להיות שהגירסה המקוונת שלו שונה.</translation>
+<translation id="4594952190837476234">הדף האופליין הזה נוצר ב-<ph name="CREATION_TIME" /> ויכול להיות שהגרסה המקוונת שלו שונה.</translation>
 <translation id="4605958867780575332">פריטים שהוסרו: <ph name="ITEM_TITLE" /></translation>
 <translation id="4616150815774728855">פתיחה של <ph name="WEBAPK_NAME" /></translation>
 <translation id="4634124774493850572">שימוש בסיסמה</translation>
@@ -493,7 +494,7 @@
 <translation id="4684427112815847243">סנכרון הכל</translation>
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{‏<ph name="SHIPPING_OPTION_PREVIEW" />‎\u2026‎ ו-<ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> נוספת}two{‏<ph name="SHIPPING_OPTION_PREVIEW" />‎\u2026‎ ו-<ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> נוספות}many{‏<ph name="SHIPPING_OPTION_PREVIEW" />‎\u2026‎ ו-<ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> נוספות}other{‏<ph name="SHIPPING_OPTION_PREVIEW" />‎\u2026‎ ו-<ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> נוספות}}</translation>
 <translation id="4696983787092045100">שליחת הטקסט למכשירים שלך</translation>
-<translation id="4698034686595694889">הצגה לא מקוונת ב-<ph name="APP_NAME" /></translation>
+<translation id="4698034686595694889">הצגה אופליין ב-<ph name="APP_NAME" /></translation>
 <translation id="4699172675775169585">תמונות וקבצים במטמון</translation>
 <translation id="4714588616299687897">חיסכון של עד 60% בשימוש בחבילת הגלישה</translation>
 <translation id="4719927025381752090">הצגת הצעות לתרגום</translation>
@@ -533,7 +534,7 @@
 <translation id="4908869848243824489">Discover by Google</translation>
 <translation id="4910889077668685004">אפליקציות תשלום</translation>
 <translation id="4913161338056004800">איפוס הנתונים הסטטיסטיים</translation>
-<translation id="4913169188695071480">הפסק לרענן</translation>
+<translation id="4913169188695071480">הפסקת הרענון</translation>
 <translation id="4915549754973153784"><ph name="BEGIN_LINK" />קבלת עזרה<ph name="END_LINK" /> בזמן חיפוש מכשירים…</translation>
 <translation id="4921180162323349895">{FILE_COUNT,plural, =1{דף אחד (#)}two{# דפים}many{# דפים}other{# דפים}}</translation>
 <translation id="4925120120285606924">צילום מסך <ph name="CURRENT_DATE_ISO" /></translation>
@@ -567,7 +568,7 @@
 <translation id="5152843274749979095">לא מותקנות אפליקציות נתמכות</translation>
 <translation id="5161254044473106830">יש להזין כותרת</translation>
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{הורדה אחת נכשלה.}two{# הורדות נכשלו.}many{# הורדות נכשלו.}other{# הורדות נכשלו.}}</translation>
-<translation id="5170568018924773124">הצג בתיקייה</translation>
+<translation id="5170568018924773124">הצגה בתיקייה</translation>
 <translation id="5184329579814168207">‏פתח ב-Chrome</translation>
 <translation id="5193988420012215838">הועתק אל הלוח</translation>
 <translation id="5199929503336119739">פרופיל עבודה</translation>
@@ -625,7 +626,7 @@
 <translation id="5620163320393916465">אין סיסמאות שמורות</translation>
 <translation id="5620928963363755975">איתור הקבצים והדפים שלך ב'הורדות' דרך הלחצן 'אפשרויות נוספות'</translation>
 <translation id="5626134646977739690">שם:</translation>
-<translation id="5639724618331995626">התר גישה לכל האתרים</translation>
+<translation id="5639724618331995626">התרת גישה לכל האתרים</translation>
 <translation id="5648166631817621825">מהשבוע האחרון</translation>
 <translation id="5655963694829536461">חיפוש ההורדות שלך</translation>
 <translation id="5659593005791499971">אימייל</translation>
@@ -641,7 +642,7 @@
 <translation id="570347048394355941">מעבר לכרטיסייה</translation>
 <translation id="572328651809341494">כרטיסיות אחרונות</translation>
 <translation id="5723735397759933332">‏מצב הטעינה המהירה מאפשר לך לשפר את החיסכון בנתונים על ידי אופטימיזציה של התמונות בדפי HTTPS.</translation>
-<translation id="5726692708398506830">הגדל את כל מה שמופיע בדף</translation>
+<translation id="5726692708398506830">הגדלת כל מה שמופיע בדף</translation>
 <translation id="5732819098735351888">‏ההורדה תתחיל בחיבור Wi-Fi.</translation>
 <translation id="5733983706093266635">‏לא ניתן ליצור קוד אימות. כתובת ה-URL מכילה יותר מ-<ph name="CHARACTER_LIMIT" /> תווים.</translation>
 <translation id="5748802427693696783">הוחלף לכרטיסיות רגילות</translation>
@@ -659,7 +660,7 @@
 <translation id="5809361687334836369">{HOURS,plural, =1{לפני שעה}two{לפני שעתיים}many{לפני # שעות}other{לפני # שעות}}</translation>
 <translation id="5810288467834065221">‏Copyright <ph name="YEAR" /> Google LLC.‎ כל הזכויות שמורות.</translation>
 <translation id="5814131985548525293">כדי להתחיל, יש להקליד כאן או להקיש על סמל המיקרופון</translation>
-<translation id="5817918615728894473">התאם</translation>
+<translation id="5817918615728894473">התאמה</translation>
 <translation id="583281660410589416">לא ידוע</translation>
 <translation id="5833984609253377421">שיתוף קישור</translation>
 <translation id="5836192821815272682">‏המערכת מורידה עדכון של Chrome…</translation>
@@ -668,7 +669,7 @@
 <translation id="5854790677617711513">לפני יותר מ-30 ימים</translation>
 <translation id="5855546874025048181">צמצום: <ph name="REFINE_TEXT" /></translation>
 <translation id="5858741533101922242">‏לא ניתן להפעיל ב-Chrome את מתאם Bluetooth</translation>
-<translation id="5860491529813859533">הפעל</translation>
+<translation id="5860491529813859533">הפעלה</translation>
 <translation id="5862731021271217234">כדי לקבל את הכרטיסיות מהמכשירים האחרים שלך, יש להפעיל את הסנכרון</translation>
 <translation id="5864174910718532887">פרטים: ממוינות לפי שם האתר</translation>
 <translation id="5864419784173784555">ממתין להורדה נוספת…</translation>
@@ -764,12 +765,12 @@
 <translation id="6437478888915024427">פרטי דף</translation>
 <translation id="6441734959916820584">השם ארוך מדי</translation>
 <translation id="6444421004082850253">{FILE_COUNT,plural, =1{תמונה אחת (#)}two{# תמונות}many{# תמונות}other{# תמונות}}</translation>
-<translation id="6447558397796644647">לא ניתן למצוא את הסימניה הזו. יש לוודא שהאיות נכון או להוסיף סימניה חדשה.</translation>
+<translation id="6447558397796644647">לא ניתן למצוא את הסימנייה הזו. יש לוודא שהאיות נכון או להוסיף סימנייה חדשה.</translation>
 <translation id="6461962085415701688">לא ניתן לפתוח את הקובץ</translation>
 <translation id="6464977750820128603">‏אפשר לראות אתרים שמבקרים בהם ב-Chrome ולהגדיר טיימרים בשבילם.\n\n‏Google מקבלת מידע על האתרים שמוגדרים בשבילם טיימרים ומשך השהייה שלך באתרים האלה. המידע עוזר לשפר את 'שימוש חכם בדיגיטל'.</translation>
 <translation id="6475951671322991020">הורדת סרטון</translation>
 <translation id="6477928892249167417">נראה שהאתרים האלה חשובים לך:</translation>
-<translation id="6482749332252372425">הורדת <ph name="FILE_NAME" /> נכשלה מאחר שחסר מקום אחסון.</translation>
+<translation id="6482749332252372425">הורדת <ph name="FILE_NAME" /> נכשלה מאחר שחסר נפח אחסון.</translation>
 <translation id="6496823230996795692">כדי להשתמש באפליקציה <ph name="APP_NAME" /> בפעם הראשונה יש להתחבר לאינטרנט.</translation>
 <translation id="6508722015517270189">‏הפעלה מחדש של Chrome</translation>
 <translation id="6527303717912515753">שיתוף</translation>
@@ -829,7 +830,7 @@
 <translation id="6864459304226931083">הורדת תמונה</translation>
 <translation id="6865313869410766144">נתוני טפסים למילוי אוטומטי</translation>
 <translation id="6882836635272038266">הגנה רגילה מפני אתרים, הורדות ותוספים שידועים כמסוכנים.</translation>
-<translation id="688738109438487280">הוסף נתונים קיימים אל <ph name="TO_ACCOUNT" />.</translation>
+<translation id="688738109438487280">הוספת נתונים קיימים אל <ph name="TO_ACCOUNT" />.</translation>
 <translation id="6891726759199484455">ביטול הנעילה יאפשר להעתיק את הסיסמה</translation>
 <translation id="6896758677409633944">העתקה</translation>
 <translation id="6900532703269623216">הגנה משופרת</translation>
@@ -913,7 +914,7 @@
 <translation id="7482656565088326534">כרטיסיית תצוגה מקדימה</translation>
 <translation id="7484997419527351112">‏Discover – כבוי</translation>
 <translation id="7493994139787901920"><ph name="VERSION" /> (עודכן <ph name="TIME_SINCE_UPDATE" />)</translation>
-<translation id="7494974237137038751">חסכון בחבילת הגלישה</translation>
+<translation id="7494974237137038751">חיסכון בחבילת הגלישה</translation>
 <translation id="7498271377022651285">המתן…</translation>
 <translation id="7507207699631365376">הצגת <ph name="BEGIN_LINK" />מדיניות הפרטיות<ph name="END_LINK" /> של הספק הזה</translation>
 <translation id="7514365320538308">הורדה</translation>
@@ -967,7 +968,7 @@
 <translation id="7851858861565204677">מכשירים אחרים</translation>
 <translation id="7857691613771368249">תוצג שאלה מתי יש לשמור קבצים</translation>
 <translation id="7875915731392087153">הודעת אימייל חדשה</translation>
-<translation id="7876243839304621966">הסר הכל</translation>
+<translation id="7876243839304621966">הסרת הכול</translation>
 <translation id="7882131421121961860">לא נמצאה היסטוריה</translation>
 <translation id="7886917304091689118">‏פועל ב-Chrome</translation>
 <translation id="789763218334337857">‏איך להשתמש ב-Chrome</translation>
@@ -1052,7 +1053,7 @@
 <translation id="8461694314515752532">הצפנת נתונים מסונכרנים בעזרת ביטוי סיסמה אישי לסנכרון</translation>
 <translation id="8466613982764129868">יש לוודא ש-<ph name="TARGET_DEVICE_NAME" /> מחובר לאינטרנט</translation>
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
-<translation id="8487700953926739672">זמין במצב לא מקוון</translation>
+<translation id="8487700953926739672">זמין אופליין</translation>
 <translation id="8489271220582375723">פתיחת דף ההיסטוריה</translation>
 <translation id="8493948351860045254">פינוי נפח אחסון</translation>
 <translation id="8497726226069778601">אין מה לראות כאן… בינתיים</translation>
@@ -1097,7 +1098,7 @@
 <translation id="881688628773363275">לא ניתן לצפות בתוכן של כרטיסיית 'התצוגה המקדימה'.</translation>
 <translation id="8820817407110198400">סימניות</translation>
 <translation id="883806473910249246">אירעה שגיאה בזמן הורדת התוכן.</translation>
-<translation id="8840953339110955557">ייתכן שהדף הזה שונה מהגירסה המקוונת.</translation>
+<translation id="8840953339110955557">ייתכן שהדף הזה שונה מהגרסה באינטרנט.</translation>
 <translation id="8853345339104747198"><ph name="TAB_TITLE" />, כרטיסייה</translation>
 <translation id="8854223127042600341">הצגת הקבצים שזמינים ללא חיבור לאינטרנט.</translation>
 <translation id="8856607253650333758">ליצירת תיאורים</translation>
@@ -1141,8 +1142,8 @@
 <translation id="9108808586816295166">‏ה-DNS המאובטח לא יהיה בהכרח זמין תמיד</translation>
 <translation id="9133397713400217035">הצעות לתוכן במצב לא מקוון</translation>
 <translation id="9133703968756164531"><ph name="ITEM_NAME" /> (<ph name="ITEM_ID" />)</translation>
-<translation id="9137013805542155359">הצג מקור</translation>
-<translation id="9148126808321036104">היכנס שוב</translation>
+<translation id="9137013805542155359">הצגת מקור</translation>
+<translation id="9148126808321036104">כניסה חוזרת</translation>
 <translation id="9149286894143103695">ניתן להוסיף את האתר הזה למסך הבית של הטלפון כדי להגיע אליו בקלות</translation>
 <translation id="9155898266292537608">אפשר גם להתחיל חיפוש על-ידי הקשה קצרה על מילה</translation>
 <translation id="9169507124922466868">היסטוריית הניווט פתוחה למחצה</translation>

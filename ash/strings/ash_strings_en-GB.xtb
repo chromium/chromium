@@ -38,6 +38,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="1272079795634619415">Stop</translation>
 <translation id="1275285675049378717">Powering <ph name="POWER_SOURCE" /></translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
+<translation id="1285992161347843613">Locate phone</translation>
 <translation id="1289185460362160437">Come back <ph name="COME_BACK_DAY_OF_WEEK" /> at <ph name="COME_BACK_TIME" />.</translation>
 <translation id="1290331692326790741">Weak signal</translation>
 <translation id="1293264513303784526">USB-C device (left port)</translation>
@@ -57,6 +58,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="1420408895951708260">Toggle Night Light. <ph name="STATE_TEXT" /></translation>
 <translation id="1420527829902822813">Screenshot taken and saved to clipboard</translation>
 <translation id="1426410128494586442">Yes</translation>
+<translation id="144853431011121127">Get notifications from your phone on your <ph name="DEVICE_TYPE" /></translation>
 <translation id="1455242230282523554">Show language settings</translation>
 <translation id="1460620680449458626">Volume is muted.</translation>
 <translation id="1467432559032391204">Left</translation>
@@ -128,6 +130,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="2208323208084708176">Unified desktop mode</translation>
 <translation id="2220572644011485463">PIN or password</translation>
 <translation id="2222338659135520253">Sign-in required</translation>
+<translation id="22546648640907338">The touchpad gesture to enter Overview has changed. Swipe up with three fingers to enter Overview.</translation>
 <translation id="225680501294068881">Scanning for devices...</translation>
 <translation id="2268130516524549846">Bluetooth disabled</translation>
 <translation id="2268813581635650749">Sign out all</translation>
@@ -145,6 +148,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="2352467521400612932">Stylus settings</translation>
 <translation id="2354174487190027830">Activating <ph name="NAME" /></translation>
 <translation id="2359808026110333948">Continue</translation>
+<translation id="2361223922412143600">The touchpad gesture to exit Overview has changed. Swipe down with three fingers to exit Overview.</translation>
 <translation id="2365393535144473978">Enabling mobile data will enable Bluetooth.</translation>
 <translation id="2369165858548251131">"Hello" in Chinese</translation>
 <translation id="2390318262976603432">Locale settings</translation>
@@ -265,6 +269,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="3486220673238053218">definition</translation>
 <translation id="3510164367642747937">Highlight mouse cursor</translation>
 <translation id="3513798432020909783">Account managed by <ph name="MANAGER_EMAIL" /></translation>
+<translation id="3563775809269155755">Enable hotspot</translation>
 <translation id="3571734092741541777">Set up</translation>
 <translation id="3573179567135747900">Change back to "<ph name="FROM_LOCALE" />" (requires restart)</translation>
 <translation id="3576141592585647168">Change timezone</translation>
@@ -345,6 +350,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="4296136865091727875">Clear all <ph name="COUNT" /> notifications</translation>
 <translation id="4302592941791324970">Not available</translation>
 <translation id="4303223480529385476">Expand status area</translation>
+<translation id="4315586716182276649">Extend your phone’s Internet connection, control Do Not Disturb and locate your device. View active Chrome tabs from your phone on your <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4321179778687042513">ctrl</translation>
 <translation id="4321776623976362024">You pressed the keyboard shortcut for high contrast. Do you want to turn it on?</translation>
 <translation id="4331809312908958774">Chrome OS</translation>
@@ -368,6 +374,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4481530544597605423">Unpaired devices</translation>
 <translation id="4485060137115666462">With a right-click or a long press, Assistant shows info such as the definition, translation or unit conversion for your selection.</translation>
+<translation id="4488735711456074171">It looks like your phone is not online and we are not able to connect to it.</translation>
 <translation id="4505050298327493054">Active desk.</translation>
 <translation id="4513946894732546136">Feedback</translation>
 <translation id="4527045527269911712">Bluetooth device "<ph name="DEVICE_NAME" />" would like permission to pair.</translation>
@@ -427,6 +434,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="4961318399572185831">Cast screen</translation>
 <translation id="4969092041573468113"><ph name="HOURS" />h <ph name="MINUTES" />m <ph name="SECONDS" />s</translation>
 <translation id="4975771730019223894">App badging</translation>
+<translation id="5019169674188023236">It looks like your Bluetooth or Wi-Fi is turned off on your <ph name="DEVICE_TYPE" />. Please check your connection to use Phone Hub.</translation>
 <translation id="5030687792513154421">Time is up</translation>
 <translation id="5033299697334913360">Click anywhere to capture full screen</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> connected to a new phone</translation>
@@ -526,9 +534,11 @@ Here are some things that you can try to get started.</translation>
 <translation id="6043994281159824495">Sign out now</translation>
 <translation id="6047696787498798094">Screen sharing will stop when you switch to another user. Do you want to continue?</translation>
 <translation id="6054305421211936131">Sign in with smart card</translation>
+<translation id="6059276912018042191">Recent Chrome tabs</translation>
 <translation id="6062360702481658777">You will automatically be signed out in <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="607652042414456612">Your computer is discoverable to nearby Bluetooth devices and will appear as "<ph name="NAME" />" with address <ph name="ADDRESS" /></translation>
 <translation id="612734058257491180">The Google Assistant is not available in a guest session.</translation>
+<translation id="6137566720514957455">Open remove dialogue for <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="615957422585914272">Show on-screen keyboard</translation>
 <translation id="6164005077879661055">All files and local data associated with the supervised user will be permanently deleted once this supervised user is removed. Visited websites and settings for this supervised user may still be visible by the manager at <ph name="MANAGEMENT_URL" />.</translation>
 <translation id="6165508094623778733">Learn more</translation>
@@ -547,6 +557,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="6376931439017688372">Bluetooth is on</translation>
 <translation id="6381109794406942707">To unlock the device, enter your PIN.</translation>
 <translation id="639644700271529076">CAPS LOCK is off</translation>
+<translation id="6398771186477608158">Make sure that your phone is nearby with Bluetooth and Wi-Fi turned on.</translation>
 <translation id="6406704438230478924">altgr</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, signal strength <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">Clear all notifications</translation>
@@ -573,6 +584,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="6614169507485700968">Privacy screen is on</translation>
 <translation id="6627638273713273709">Search+Shift+K</translation>
 <translation id="6637729079642709226">Change time</translation>
+<translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> would like to confirm that it's you</translation>
 <translation id="6650933572246256093">Bluetooth device "<ph name="DEVICE_NAME" />" would like permission to pair. Please enter this passkey on that device: <ph name="PASSKEY" /></translation>
 <translation id="6657585470893396449">Password</translation>
 <translation id="6665545700722362599">Grant websites, apps and extensions permission to use location services, the device’s microphone, camera or other features</translation>
@@ -606,6 +618,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="6910714959251846841">This update requires powerwashing of your device. Learn more about the latest <ph name="SYSTEM_APP_NAME" /> update.</translation>
 <translation id="6919251195245069855">Couldn’t recognise your smart card. Try again.</translation>
 <translation id="6945221475159498467">Select</translation>
+<translation id="6953890208095195458">Screen recording has been stopped by your administrator due to content on your screen.</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6972754398087986839">Get Started</translation>
 <translation id="6981982820502123353">Accessibility</translation>
@@ -644,6 +657,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="7377169924702866686">Caps Lock is on.</translation>
 <translation id="7378203170292176219">Drag to select an area to record</translation>
 <translation id="7378594059915113390">Media controls</translation>
+<translation id="7392563512730092880">You can always perform setup later from Settings.</translation>
 <translation id="7398254312354928459">Switched network connection</translation>
 <translation id="7405710164030118432">To unlock the device, enter your Family Link parent access code</translation>
 <translation id="741244894080940828">conversion</translation>
@@ -655,6 +669,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="7466449121337984263">Please touch the sensor</translation>
 <translation id="7477793887173910789">Control your music, videos and more</translation>
 <translation id="7497767806359279797">Choose language and keyboard</translation>
+<translation id="7509246181739783082">Verify your identity</translation>
 <translation id="7526573455193969409">Network may be monitored</translation>
 <translation id="7536035074519304529">IP address: <ph name="ADDRESS" /></translation>
 <translation id="7542906349682405018">The ability to take a screen capture of the content on your screen is blocked by your administrator.</translation>
@@ -699,6 +714,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="788781083998633524">Send an email</translation>
 <translation id="7897375687985782769">You pressed the keyboard shortcut for screen rotation. Do you want to rotate the screen?</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
+<translation id="7902625623987030061">Touch the fingerprint sensor</translation>
 <translation id="7904094684485781019">The administrator for this account has disallowed multiple sign-in.</translation>
 <translation id="7933084174919150729">The Google Assistant is only available for primary profile.</translation>
 <translation id="79341161159229895">Account managed by <ph name="FIRST_PARENT_EMAIL" /> and <ph name="SECOND_PARENT_EMAIL" /></translation>
@@ -720,6 +736,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="8054466585765276473">Calculating battery time.</translation>
 <translation id="8061464966246066292">High contrast</translation>
 <translation id="8098591350844501178">Stop casting screen to <ph name="RECEIVER_NAME" /></translation>
+<translation id="8108657971283652031">Extend your phone’s Internet connection, control Do Not Disturb and locate your phone. View active Chrome tabs from your phone on your <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8113423164597455979">On, all apps</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">Confirm</translation>
@@ -789,6 +806,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="8721053961083920564">Toggle volume. <ph name="STATE_TEXT" /></translation>
 <translation id="8734991477317290293">It may be attempting to steal your keystrokes</translation>
 <translation id="8735953464173050365">Show keyboard settings. <ph name="KEYBOARD_NAME" /> is selected</translation>
+<translation id="8755498163081687682">Verify your identity: <ph name="ORIGIN_NAME" /> would like to confirm that it's you</translation>
 <translation id="875593634123171288">Show VPN settings</translation>
 <translation id="8759408218731716181">Can't set up multiple sign-in</translation>
 <translation id="8785070478575117577">Connect to <ph name="NETWORK_NAME" /></translation>
@@ -803,9 +821,11 @@ Here are some things that you can try to get started.</translation>
 <translation id="8870509716567206129">App does not support split-screen.</translation>
 <translation id="8871580645200179206">Toggle Dark theme. <ph name="STATE_TEXT" /></translation>
 <translation id="8874184842967597500">Not connected</translation>
+<translation id="8876661425082386199">Check your connection</translation>
 <translation id="8877788021141246043">Set a reminder</translation>
 <translation id="8878886163241303700">Extending screen</translation>
 <translation id="8883473964424809116">Click to open Google Assistant settings.</translation>
+<translation id="8894122120026866664">Can’t find your phone</translation>
 <translation id="890616557918890486">Change source</translation>
 <translation id="8909138438987180327">Battery at <ph name="PERCENTAGE" /> per cent.</translation>
 <translation id="8913384980486163186">Themed (default)</translation>
@@ -825,6 +845,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="9070640332319875144">Assistant settings</translation>
 <translation id="9072519059834302790"><ph name="TIME_LEFT" /> until battery is empty.</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
+<translation id="9077515519330855811">Media controls, now playing <ph name="MEDIA_TITLE" /></translation>
 <translation id="9079731690316798640">Wi-Fi: <ph name="ADDRESS" /></translation>
 <translation id="9080132581049224423">Swipe up to go home</translation>
 <translation id="9080206825613744995">Microphone is in use.</translation>
@@ -832,6 +853,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="9089416786594320554">Input methods</translation>
 <translation id="9091626656156419976">Removed display <ph name="DISPLAY_NAME" /></translation>
 <translation id="9092749890156285613">Recent screen captures and downloads</translation>
+<translation id="9098969848082897657">Silence phone</translation>
 <translation id="9151726767154816831">Restart and powerwash to update</translation>
 <translation id="9166331175924255663">Toggle Nearby Share high visibility.</translation>
 <translation id="9168436347345867845">Do it later</translation>

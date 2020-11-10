@@ -1817,6 +1817,32 @@ Jika ditetapkan ke False, <ph name="PRODUCT_NAME" /> tidak akan menggunakan noti
 <translation id="3701121231485832347">Mengontrol setelan khusus perangkat <ph name="PRODUCT_OS_NAME" />.yang dikelola <ph name="MS_AD_NAME" />.</translation>
 <translation id="3702518095257671450">Pengesahan jarak jauh</translation>
 <translation id="3702647575225525306"><ph name="POLICY_NAME" /> (Kolom 1 baris sudah tidak digunakan lagi dan akan dihapus di masa mendatang. Mulai gunakan kotak teks multibaris di bawah.)</translation>
+<translation id="3704727923488731211">Mengonfigurasi daftar aturan untuk mencegah kebocoran data di <ph name="PRODUCT_OS_NAME" />.
+      Kebocoran data dapat terjadi dengan menyalin dan menempelkan data, mentransfer file, mencetak, berbagi layar, atau mengambil screenshot ...dll.
+
+      Setiap aturan terdiri dari hal-hal berikut:
+      - Daftar sumber yang ditentukan sebagai URL. Setiap data dalam sumber akan dianggap sebagai data rahasia. Pembatasan akan diterapkan terhadap data tersebut.
+      - Daftar tujuan yang ditentukan sebagai URL atau komponen. Data rahasia akan diizinkan atau tidak diizinkan untuk dibagikan ke daftar tujuan tersebut.
+      - Daftar batasan yang akan diterapkan pada data sumber.
+
+      Aturan dapat ditambahkan untuk:
+      - Mengontrol data papan klip yang dibagikan antara sumber dan tujuan.
+      - Mengontrol pengambilan screenshot dari sumber mana pun.
+      - Mengontrol pencetakan dari sumber mana pun.
+      - Mengontrol layar privasi saat sumber mana pun terlihat.
+      - Mengontrol berbagi layar dari sumber mana pun.
+
+      Level batasan dapat disetel ke BLOCK atau ALLOW.
+      - Jika batasan disetel ke BLOCK, tindakan tidak akan diizinkan.
+      - Jika batasan disetel ke ALLOW, tindakan akan diizinkan.
+
+      Catatan:
+      - Batasan PRIVACY_SCREEN tidak memblokir kemampuan untuk mengaktifkan layar privasi, tetapi menerapkannya saat class batasan disetel ke BLOCK.
+      - Tujuan tidak boleh kosong jika salah satu batasannya adalah CLIPBOARD, tetapi hal ini tidak membuat perbedaan apa pun untuk batasan lainnya.
+      - Batasan CLIPBOARD tidak dapat membedakan antara CROSTINI dan PLUGIN_VM. Jika salah satu dipilih untuk memblokir/mengizinkan berbagi data, aturan akan diterapkan untuk keduanya.
+      - Format pola URL sesuai dengan format ini (https://www.chromium.org/administrators/url-blacklist-filter-format).
+
+      Jika kebijakan tidak disetel, tidak akan ada batasan yang diterapkan.</translation>
 <translation id="3709266154059827597">Konfigurasikan daftar penginstalan ekstensi yang tidak diizinkan</translation>
 <translation id="3711895659073496551">Tangguhkan</translation>
 <translation id="3715569262675717862">Autentikasi berdasarkan sertifikat klien</translation>

@@ -18,6 +18,7 @@
 <translation id="1150565364351027703">Sluneční brýle</translation>
 <translation id="115443833402798225">Hangul Ahnmatae</translation>
 <translation id="1155759005174418845">katalánština</translation>
+<translation id="1169885125071442573">gudžarátština (přepis)</translation>
 <translation id="1172970565351728681">Zbývá přibližně: <ph name="REMAINING_TIME" /></translation>
 <translation id="1173894706177603556">Přejmenovat</translation>
 <translation id="117624967391683467">Kopírování souboru <ph name="FILE_NAME" />...</translation>
@@ -31,6 +32,7 @@
 <translation id="1297922636971898492">Disk Google aktuálně není k dispozici. Jakmile bude Disk Google opět dostupný, nahrávání se automaticky obnoví.</translation>
 <translation id="1307931752636661898">Soubory systému Linux nelze zobrazit</translation>
 <translation id="1338950911836659113">Mazání...</translation>
+<translation id="1345094301418504404">francouzština (Kanada)</translation>
 <translation id="1346748346194534595">Doprava</translation>
 <translation id="1351692861129622852">Importování <ph name="FILE_COUNT" /> souborů...</translation>
 <translation id="1352103415082130575">Thajská klávesnice (Pattachote)</translation>
@@ -46,6 +48,7 @@
 <translation id="1441841714100794440">Vietnamská klávesnice (Telex)</translation>
 <translation id="1464724975715666883">1 chyba.</translation>
 <translation id="1467432559032391204">Doleva</translation>
+<translation id="1472351751615457820">řečtina (přepis)</translation>
 <translation id="1474339897586437869">Soubor <ph name="FILENAME" /> nelze nahrát. Na Disku Google je nedostatek místa.</translation>
 <translation id="148466539719134488">Švýcarská klávesnice</translation>
 <translation id="1497522201463361063">Soubor „<ph name="FILE_NAME" />“ se nepodařilo přejmenovat. <ph name="ERROR_MESSAGE" /></translation>
@@ -56,6 +59,7 @@
 <translation id="1572585716423026576">Nastavit jako tapetu</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
 <translation id="1620510694547887537">Kamera</translation>
+<translation id="1622022025445651011">francouzština (Francie)</translation>
 <translation id="1646019627374511909">Zpřístupňování <ph name="NUMBER_OF_ITEMS" /> souborů offline</translation>
 <translation id="164729547906544836">Tamilská klávesnice (itrans)</translation>
 <translation id="164969095109328410">Zařízení Chrome</translation>
@@ -93,6 +97,8 @@
 <translation id="2009067268969781306">Naformátováním jednotky smažete všechna na ní uložená data. Tuto akci nelze vrátit zpět.</translation>
 <translation id="2028997212275086731">Archiv ve formátu RAR</translation>
 <translation id="2046702855113914483">Polévka ramen</translation>
+<translation id="2060251957438343874">němčina (Německo)</translation>
+<translation id="2066433303065022982">hebrejština (přepis)</translation>
 <translation id="2070909990982335904">Názvy začínající tečkou jsou vyhrazeny pro systém. Zvolte prosím jiný název.</translation>
 <translation id="2079545284768500474">Vrátit zpět</translation>
 <translation id="2080010875307505892">Srbská klávesnice</translation>
@@ -106,6 +112,7 @@
 <translation id="2208158072373999562">Archiv ZIP</translation>
 <translation id="2225536596944493418">Opravdu chcete tyto položky (<ph name="NUMBER_OF_ITEMS" />) smazat?</translation>
 <translation id="2230062665678605299">Složku „<ph name="FOLDER_NAME" />“ se nepodařilo vytvořit. <ph name="ERROR_MESSAGE" /></translation>
+<translation id="2258078827108167865">khmerština</translation>
 <translation id="2275059641601412272">Přesunuto.</translation>
 <translation id="2287742181953707290">portugalština s klávesnicí USA – mezinárodní (PC)</translation>
 <translation id="2288278176040912387">Gramofon</translation>
@@ -121,6 +128,7 @@
 <translation id="240770291734945588">K dispozici: <ph name="SPACE_AVAILABLE" /></translation>
 <translation id="2425665904502185219">Celková velikost souborů</translation>
 <translation id="2428749644083375155">Kopírování <ph name="NUMBER_OF_ITEMS" /> položek do složky <ph name="FOLDER_NAME" /></translation>
+<translation id="2445471348947930094">gudžarátština (fonetická)</translation>
 <translation id="2448312741937722512">Typ</translation>
 <translation id="2453576648990281505">Soubor již existuje</translation>
 <translation id="2464079411014186876">Zmrzlina</translation>
@@ -157,6 +165,7 @@
 <translation id="2887525882758501333">Dokumenty PDF</translation>
 <translation id="2888807692577297075">Vyhledávacímu dotazu &lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt; neodpovídají žádné soubory.</translation>
 <translation id="2894654529758326923">Informace</translation>
+<translation id="2899393425226141282">němčina (Německo) s klávesnicí Neo 2</translation>
 <translation id="2902312830803030883">Další akce</translation>
 <translation id="2902734494705624966">Americká klávesnice (rozšířená)</translation>
 <translation id="2923240520113693977">estonština</translation>
@@ -258,6 +267,7 @@
 <translation id="4002066346123236978">Název</translation>
 <translation id="4070370845051020638">Metoda zadávání kantonštiny</translation>
 <translation id="4072248638558688893">Tamilská klávesnice (fonetická)</translation>
+<translation id="4097397818890482665">kannadština (přepis)</translation>
 <translation id="4124935795427217608">Jednorožec</translation>
 <translation id="4158739975813877944">Otevřít seznam přehrávání</translation>
 <translation id="4159731583141908892">Přesunutá položka: <ph name="FILE_NAME" />.</translation>
@@ -286,6 +296,7 @@
 <translation id="4479812471636796472">Americká klávesnice s rozložením Dvorak</translation>
 <translation id="4522570452068850558">Podrobnosti</translation>
 <translation id="4527800702232535228">Tato složka je sdílena s nástrojem Parallels Desktop</translation>
+<translation id="4532112105534982530">francouzština (Francie) s klávesnicí Bépo</translation>
 <translation id="4552678318981539154">Koupit větší úložiště</translation>
 <translation id="4559318885353833501">Soubor <ph name="FILE_NAME" /> byl smazán</translation>
 <translation id="4559767610552730302">Rozostření</translation>
@@ -294,6 +305,7 @@
 <translation id="4579744207439506346">Do výběru byla přidána položka <ph name="ENTRY_NAME" />.</translation>
 <translation id="4582497162516204941">Instalovat pomocí Linuxu (beta)</translation>
 <translation id="4594543368593301662">Zobrazují se výsledky pro dotaz <ph name="SEARCH_TERM" />.</translation>
+<translation id="4598673198033263991">alfanumerické znaky s japonskou klávesnicí</translation>
 <translation id="4603392156942865207">Kopírování souboru <ph name="FILE_NAME" /> do složky <ph name="FOLDER_NAME" /></translation>
 <translation id="4627439232948440198">Sanskrt</translation>
 <translation id="4631887759990505102">Interpret</translation>
@@ -313,6 +325,7 @@
 <translation id="4737050008115666127">Přistání</translation>
 <translation id="4747271164117300400">makedonština</translation>
 <translation id="4759238208242260848">Stažené soubory</translation>
+<translation id="4763055924467562718">kannadština (fonetická)</translation>
 <translation id="4779136857077979611">Rýže onigiri</translation>
 <translation id="4784330909746505604">Prezentace aplikace PowerPoint</translation>
 <translation id="4788401404269709922"><ph name="NUMBER_OF_KB" /> kB</translation>
@@ -419,6 +432,7 @@
    Zavřete všechny soubory v archivu nebo na virtuálním disku a poté to zkuste znovu.</translation>
 <translation id="5691596662111998220">Jejda, soubor <ph name="FILE_NAME" /> již neexistuje.</translation>
 <translation id="5700087501958648444">Informace o zvuku</translation>
+<translation id="570049376144986742">francouzština (Švýcarsko)</translation>
 <translation id="5731409020711461763">1 nová fotka</translation>
 <translation id="5752453871435543420">Zálohování Chrome OS do cloudu</translation>
 <translation id="5756666464756035725">Maďarská klávesnice QWERTY</translation>
@@ -453,6 +467,7 @@
 <translation id="6096979789310008754">Text vyhledávání byl vymazán, zobrazeny jsou všechny soubory a složky.</translation>
 <translation id="610101264611565198">Přesouvání souboru <ph name="FILE_NAME" /> do složky <ph name="FOLDER_NAME" /></translation>
 <translation id="6111770213269631447">Přepis (namaskar → নমস্কার)</translation>
+<translation id="6113836390962820517">japonština s americkou klávesnicí</translation>
 <translation id="6129953537138746214">Mezera</translation>
 <translation id="6133173853026656527">Přesouvání souboru <ph name="FILE_NAME" />...</translation>
 <translation id="6146563240635539929">Videa</translation>
@@ -476,6 +491,7 @@
 <translation id="6394388407447716302">Pouze pro čtení</translation>
 <translation id="6395575651121294044">Počet položek: <ph name="NUMBER_OF_FILES" /></translation>
 <translation id="6398765197997659313">Ukončit režim celé obrazovky</translation>
+<translation id="6412376911804527326">laoština</translation>
 <translation id="642282551015776456">Tento název nelze použít k pojmenování souboru ani složky.</translation>
 <translation id="6485131920355264772">Informace o volném místě se nepodařilo načíst</translation>
 <translation id="6505918941256367791">Tamilská klávesnice (InScript)</translation>
@@ -494,6 +510,7 @@
 <translation id="6643016212128521049">Vymazat</translation>
 <translation id="6650726141019353908">Růžový motýl</translation>
 <translation id="6657585470893396449">Heslo</translation>
+<translation id="6680841910911617814">nizozemština (Nizozemsko)</translation>
 <translation id="6710213216561001401">Předchozí</translation>
 <translation id="6718273304615422081">Komprimování...</translation>
 <translation id="6751256176799620176">Je vybrána 1 složka</translation>
@@ -590,6 +607,7 @@
 <translation id="7724603315864178912">Vyjmout</translation>
 <translation id="7730494089396812859">Zobrazit podrobnosti zálohování do cloudu</translation>
 <translation id="7748626145866214022">Další možnosti jsou k dispozici na panelu akcí. Na panel akcí přejdete stisknutím kláves Alt + A.</translation>
+<translation id="7756956835689272676">francouzština (Kanada) s vícejazyčnou klávesnicí</translation>
 <translation id="7765158879357617694">Přesunout</translation>
 <translation id="7774365994322694683">Pták</translation>
 <translation id="7788080748068240085">Chcete-li soubor <ph name="FILE_NAME" /> uložit offline, je třeba uvolnit <ph name="TOTAL_FILE_SIZE" /> dalšího místa:<ph name="MARKUP_1" />
@@ -636,6 +654,7 @@
 <translation id="8106045200081704138">Sdíleno se mnou</translation>
 <translation id="8116072619078571545">Ledová voda</translation>
 <translation id="8117957376775388318">Metoda zadávání Dayi</translation>
+<translation id="8130367958112291342">čeština s klávesnicí Qwerty</translation>
 <translation id="8137331602592933310">Soubor <ph name="FILENAME" /> s vámi někdo sdílí. Nemůžete ho smazat, protože ho nevlastníte.</translation>
 <translation id="8145409227593688472">Metoda zadávání textu Wu-pi</translation>
 <translation id="8148264977957212129">Metoda zadávání textu Pinyin</translation>
@@ -684,6 +703,7 @@
 <translation id="8600173386174225982">Seznam souborů se změnil na zobrazení miniatur.</translation>
 <translation id="8601932370724196034">Soubor obrazu Crostini</translation>
 <translation id="8669949407341943408">Přesouvání...</translation>
+<translation id="8688649574682805922">němčina (Švýcarsko)</translation>
 <translation id="8694836330346852143">urdština</translation>
 <translation id="8698464937041809063">Nákres Google</translation>
 <translation id="8714406895390098252">Kolo</translation>
@@ -697,6 +717,7 @@
 <translation id="8808686172382650546">Kočka</translation>
 <translation id="8810671769985673465">Komprimace se nezdařila, položka existuje: <ph name="FILE_NAME" /></translation>
 <translation id="8834164572807951958">Členové týmu <ph name="DESTINATION_NAME" /> získají přístup ke kopii těchto položek.</translation>
+<translation id="8846896937446866962">maďarština s klávesnicí Qwerty</translation>
 <translation id="885381502874625531">Běloruská klávesnice</translation>
 <translation id="8860454412039442620">Tabulka aplikace Excel</translation>
 <translation id="8900820606136623064">maďarština</translation>

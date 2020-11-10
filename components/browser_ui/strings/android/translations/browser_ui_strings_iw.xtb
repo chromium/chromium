@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="iw">
-<translation id="1006017844123154345">פתח גרסה מקוונת</translation>
+<translation id="1006017844123154345">פתיחת גרסה אונליין</translation>
 <translation id="1044891598689252897">אתרים יפעלו כרגיל</translation>
 <translation id="1124090076051167250">‏הפעולה הזאת תמחק <ph name="DATASIZE" /> של נתונים וקובצי cookie שאתרים ואפליקציות שמרו במסך הבית.</translation>
 <translation id="1124772482545689468">משתמש</translation>
@@ -10,16 +10,16 @@
 <translation id="1195941046451948919">ההרשאות שניתנו לאתר הזה יאופסו להגדרת ברירת המחדל. להמשיך?</translation>
 <translation id="1201402288615127009">הבא</translation>
 <translation id="1242008676835033345">מוטמע ב-<ph name="WEBSITE_URL" /></translation>
-<translation id="1272079795634619415">הפסק</translation>
+<translation id="1272079795634619415">הפסקה</translation>
 <translation id="1289742167380433257">‏כדי לחסוך לך נתונים, התמונות בדף הזה עברו אופטימיזציה על ידי Google.</translation>
 <translation id="129382876167171263">קבצים שנשמרו על ידי אתרים מופיעים כאן</translation>
 <translation id="1364532808393826295"><ph name="APP_NAME" /> ‏– <ph name="NOTIFICATION_MESSAGE" /></translation>
 <translation id="1369915414381695676">האתר <ph name="SITE_NAME" /> נוסף</translation>
-<translation id="1383876407941801731">חפש</translation>
+<translation id="1383876407941801731">חיפוש</translation>
 <translation id="1384959399684842514">ההורדה הושהתה</translation>
 <translation id="1415402041810619267">‏כתובת ה-URL קוצרה</translation>
 <translation id="1431402976894535801">אתרים לא יוכלו לדעת על זמני הנוכחות שלך</translation>
-<translation id="1446450296470737166">‏התר שליטה מלאה על מכשירי MIDI</translation>
+<translation id="1446450296470737166">‏התרת שליטה מלאה על מכשירי MIDI</translation>
 <translation id="1509960214886564027">ייתכן שהתכונות של חלק גדול מהאתרים לא יפעלו כראוי</translation>
 <translation id="1620510694547887537">מצלמה</translation>
 <translation id="1660204651932907780">מתן הרשאה לאתרים להשמיע צלילים (מומלץ)</translation>
@@ -104,7 +104,7 @@
 <translation id="385051799172605136">חזרה</translation>
 <translation id="3859306556332390985">הרצה קדימה</translation>
 <translation id="3955193568934677022">אתרים יוכלו להפעיל תוכן מוגן (מומלץ)</translation>
-<translation id="3987993985790029246">העתק קישור</translation>
+<translation id="3987993985790029246">העתקת קישור</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / ?</translation>
 <translation id="4002066346123236978">כותרת</translation>
 <translation id="4008040567710660924">‏אישור קובצי Cookie של אתר מסוים.</translation>

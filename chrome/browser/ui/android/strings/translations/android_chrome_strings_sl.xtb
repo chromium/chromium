@@ -77,6 +77,7 @@
 <translation id="1513352483775369820">Zaznamki in spletna zgodovina</translation>
 <translation id="1513858653616922153">Izbris gesla</translation>
 <translation id="1521774566618522728">Aktivno danes</translation>
+<translation id="1538801903729528855">Boljša glasovna izkušnja v spletu</translation>
 <translation id="1543538514740974167">Hitrejši pomik sem</translation>
 <translation id="1544826120773021464">Če želite upravljati račun Google, se dotaknite gumba »Upravljanje računa«</translation>
 <translation id="1549000191223877751">Premik v drugo okno</translation>
@@ -117,6 +118,7 @@
 <translation id="1877026089748256423">Chrome je zastarel</translation>
 <translation id="1883903952484604915">Moje datoteke</translation>
 <translation id="189358972401248634">Drugi jeziki</translation>
+<translation id="1918175104945982129">Uporabniški vmesnik za soglasje za glasovno iskanje v Pomočniku, odprt pri polovični višini.</translation>
 <translation id="1919130412786645364">Omogočanje prijave v Chrome</translation>
 <translation id="1922362554271624559">Predlagani jeziki</translation>
 <translation id="1925021887439448749">Vnesite spletni naslov po meri</translation>
@@ -147,6 +149,7 @@
 <translation id="2056878612599315956">Spletno mesto začasno ustavljeno</translation>
 <translation id="2067805253194386918">besedilo</translation>
 <translation id="2068748236079642969">Ogled naslednjega videoposnetka</translation>
+<translation id="2074143993849053708">Uporabniški vmesnik za soglasje za glasovno iskanje v Pomočniku zaprt.</translation>
 <translation id="2082238445998314030"><ph name="RESULT_NUMBER" />. rezultat od <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2096012225669085171">Sinhronizacija in prilagajanje med napravami</translation>
 <translation id="2100273922101894616">Samodejna prijava</translation>
@@ -279,6 +282,7 @@ Dotaknite se poljubne besede in jo pridržite, če želite iskati. Če želite i
 <translation id="3006881078666935414">Ni podatkov o uporabi</translation>
 <translation id="3016635187733453316">Naprava mora biti povezana z internetom</translation>
 <translation id="3029704984691124060">Gesli se ne ujemata</translation>
+<translation id="3031225630520268969">Uporabniški vmesnik za soglasje za glasovno iskanje v Pomočniku</translation>
 <translation id="3034163383943672781">Prenos se bo začel <ph name="DATE" />.</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Poiščite pomoč<ph name="END_LINK" /></translation>
 <translation id="305593374596241526">Lokacija je izklopljena. Vklopite jo lahko v <ph name="BEGIN_LINK" />nastavitvah za Android<ph name="END_LINK" />.</translation>
@@ -437,6 +441,7 @@ Dotaknite se poljubne besede in jo pridržite, če želite iskati. Če želite i
 <translation id="4248098802131000011">Varuje gesla pred podatkovnimi kršitvami in drugimi varnostnimi težavami</translation>
 <translation id="4250229828105606438">Posnetek zaslona</translation>
 <translation id="4256782883801055595">Odprtokodne licence</translation>
+<translation id="4263656433980196874">Uporabniški vmesnik za soglasje za glasovno iskanje v Pomočniku, odprt pri polni višini.</translation>
 <translation id="4269820728363426813">Kopiraj naslov povezave</translation>
 <translation id="4298388696830689168">Povezana spletna mesta</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
@@ -623,6 +628,7 @@ V Google Računu so morda druge vrste zgodovine brskanja, kot so iskanja in deja
 <translation id="5581519193887989363">V <ph name="BEGIN_LINK1" />nastavitvah<ph name="END_LINK1" /> lahko kadar koli izberete, kaj želite sinhronizirati.</translation>
 <translation id="5595485650161345191">Uredi naslov</translation>
 <translation id="5599455543593328020">Način brez beleženja zgodovine</translation>
+<translation id="5599941490345670218">Pomočnik Google lahko dokonča dejanja na spletnih mestih namesto vas.</translation>
 <translation id="5620163320393916465">Ni shranjenih gesel</translation>
 <translation id="5620928963363755975">Poiščite datoteke in strani v Prenosih z gumbom »Več možnosti«</translation>
 <translation id="5626134646977739690">Ime:</translation>
@@ -1148,6 +1154,7 @@ Podatki seje brez beleženja dejavnosti se iz Chroma izbrišejo šele, ko <ph na
 <translation id="9155898266292537608">Prav tako lahko iščete, tako da se hitro dotaknete besede</translation>
 <translation id="9169507124922466868">Zgodovina krmarjenja je napol odprta</translation>
 <translation id="9191031968346938109">Dodajanje …</translation>
+<translation id="919615279147764192">Zaradi zagotavljanja pomoči pri dokončanju opravil bo Google prejel URL-je in vsebino spletnih mest, na katerih uporabljate Pomočnika, ter podatke, ki jih pošljete prek Pomočnika. Ti podatki se bodo morda shranili v računu Google. Pomočnika lahko izklopite v nastavitvah Chroma.</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Preverjeno pred 1 minuto}one{Preverjeno pred # minuto}two{Preverjeno pred # minutama}few{Preverjeno pred # minutami}other{Preverjeno pred # minutami}}</translation>
 <translation id="9204836675896933765">Še 1 datoteka</translation>
 <translation id="9206873250291191720">A</translation>

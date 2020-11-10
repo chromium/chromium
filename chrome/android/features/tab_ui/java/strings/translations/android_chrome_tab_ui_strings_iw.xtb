@@ -46,7 +46,7 @@
 <translation id="7885132941432959125">העברת הכרטיסייה שמאלה</translation>
 <translation id="7966321538264951561">סגירת ההצעות.</translation>
 <translation id="814503310257431685">הצגת הכול</translation>
-<translation id="8205266828577616993">העברת הכרטיסיה למעלה</translation>
+<translation id="8205266828577616993">העברת הכרטיסייה למעלה</translation>
 <translation id="8304833501377495048">לא להציג שוב את שורת הכרטיסיות בעתיד?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{סגירה של כרטיסייה אחת (<ph name="TABS_COUNT_ONE" />) שנבחרה}two{סגירה של <ph name="TABS_COUNT_MANY" /> כרטיסיות שנבחרו}many{סגירה של <ph name="TABS_COUNT_MANY" /> כרטיסיות שנבחרו}other{סגירה של <ph name="TABS_COUNT_MANY" /> כרטיסיות שנבחרו}}</translation>
 <translation id="8557923272772633250">הרחבת קבוצת הכרטיסיות שיש בה <ph name="NUMBER_OF_TABS" /> כרטיסיות.</translation>

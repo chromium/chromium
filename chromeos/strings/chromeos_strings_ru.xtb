@@ -94,6 +94,7 @@
 Попробуйте озвучить запрос, нажав на значок микрофона.</translation>
 <translation id="5222676887888702881">Выйти</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
+<translation id="5275828089655680674">Запустить заново</translation>
 <translation id="5317780077021120954">Сохранить</translation>
 <translation id="5326394068492324457">Файл "<ph name="DOCUMENT_TITLE" />", принтер "<ph name="PRINTER_NAME" />", дата – <ph name="CREATION_TIME" />, состояние: "<ph name="COMPLETION_STATUS" />"</translation>
 <translation id="5332948983412042822">Смените пароль как можно скорее.</translation>
@@ -102,6 +103,7 @@
 <translation id="5431318178759467895">Цветная печать</translation>
 <translation id="5457599981699367932">Войти в гостевой режим</translation>
 <translation id="54609108002486618">Автоматическое управление</translation>
+<translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5832805196449965646">Добавить пользователя</translation>
 <translation id="5895138241574237353">Перезапустить</translation>
 <translation id="6040143037577758943">Закрыть</translation>

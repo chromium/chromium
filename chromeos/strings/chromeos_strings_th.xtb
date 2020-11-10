@@ -94,6 +94,7 @@
 ลองแตะไมโครโฟนเพื่อถามเรื่องอะไรก็ได้</translation>
 <translation id="5222676887888702881">ออกจากระบบ</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
+<translation id="5275828089655680674">เรียกใช้กิจวัตรอีกครั้ง</translation>
 <translation id="5317780077021120954">บันทึก</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">เลือกรหัสผ่านใหม่เลย</translation>
@@ -102,6 +103,7 @@
 <translation id="5431318178759467895">สี</translation>
 <translation id="5457599981699367932">ท่องเว็บในฐานะผู้มาเยือน</translation>
 <translation id="54609108002486618">มีการจัดการ</translation>
+<translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5832805196449965646">เพิ่มบุคคล</translation>
 <translation id="5895138241574237353">ปิดแล้วเปิดอีกครั้ง</translation>
 <translation id="6040143037577758943">ปิด</translation>

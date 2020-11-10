@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="uz">
+<translation id="1625959690469240009">Sayt sozlamalarini ochish uchun <ph name="BROWSER_NAME" /> yangilanishi yoki qayta oʻrnatilishi lozim</translation>
 <translation id="1700971771753530690"><ph name="APP_NAME" /> quyidagi ilovani talab qilmoqda:</translation>
 <translation id="2697679025356221813"><ph name="APP_NAME" /> brazuerni talab qilmoqda</translation>
 <translation id="3858759029325727987">Bu ilovani ochadigan brauzerni tanlang:</translation>

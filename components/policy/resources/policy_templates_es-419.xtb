@@ -340,6 +340,11 @@ Si la inhabilitas, se inhabilitará el desplazamiento de la página web a fragme
 <translation id="1523774894176285446">Navegador alternativo que se inicia para sitios web configurados</translation>
 <translation id="152657506688053119">Lista de las URL alternativas para el proveedor de búsqueda predeterminado</translation>
 <translation id="1530812829012954197">Siempre procesar los siguientes patrones de direcciones URL en el navegador del host</translation>
+<translation id="1552418937045050762">Si habilitas esta configuración, los usuarios podrán habilitar la función Compartir con Nearby, lo que les permitirá enviar y recibir archivos de personas cercanas.
+
+      Si inhabilitas esta configuración, los usuarios no podrán habilitar la función Compartir con Nearby.
+
+      Si no la estableces, la acción predeterminada no se permite para los usuarios administrados por empresas y sí se permite para los usuarios no administrados.</translation>
 <translation id="1553532014072799546">Lista blanca de límites de tiempo por app</translation>
 <translation id="1553956579506604198">Impide la instalación de extensiones externas</translation>
 <translation id="1555248923316727072">Configuración de la administración de identidades de usuarios con Saml</translation>
@@ -549,6 +554,9 @@ Si la inhabilitas, se inhabilitará el desplazamiento de la página web a fragme
 
           El valor se analiza como un diccionario JSON de asignaciones de nombre de política a valor de política.</translation>
 <translation id="1969808853498848952">Siempre se ejecutan complementos que requieren autorización (dejó de estar disponible)</translation>
+<translation id="1971991630422430420">Si habilitas esta política, significa que se usará la Transición rápida cuando el punto de acceso inalámbrico lo admita. Se aplica a todos los usuarios y las interfaces del dispositivo.
+
+      Si la inhabilitas o no la estableces, no se podrá usar la Transición rápida.</translation>
 <translation id="1988345404999458987">Ofrece opciones de configuración de servidores de impresión disponibles.
 
       Esta política permite ofrecer archivos JSON de configuración de servidores de impresión externos para dispositivos con el <ph name="PRODUCT_OS_NAME" />.
@@ -942,6 +950,9 @@ Si habilitas la política, Limpiar Chrome podrá enviar los metadatos de anális
 
           Si estableces esta política como falsa, los usuarios no podrán habilitar
           la función en la página Configuración.</translation>
+<translation id="250151283451228612">Si habilitas <ph name="DEVICE_POWER_PEAK_SHIFT_ENABLED_POLICY_NAME" /> y, luego, estableces <ph name="DEVICE_POWER_PEAK_SHIFT_BATTERY_THRESHOLD_POLICY_NAME" />, se establecerá en porcentaje el umbral de la batería para la carga fuera del horario pico.
+
+       Si no estableces la política, se mantendrá desactivada la carga fuera del horario pico.</translation>
 <translation id="2502467045153796624">Comportamiento del cambio a una versión inferior del canal</translation>
 <translation id="250670737672448119">Habilita la función de accesibilidad de resaltar el signo de intercalación.
 
@@ -1024,10 +1035,22 @@ Si habilitas la política, Limpiar Chrome podrá enviar los metadatos de anális
       Si no se establece esta política, <ph name="PRODUCT_NAME" /> utilizará el valor predeterminado de 10,000 milisegundos.</translation>
 <translation id="257788512393330403">Se requiere el ingreso de la contraseña cada 6 horas</translation>
 <translation id="2587719089023392205">Establecer <ph name="PRODUCT_NAME" /> como navegador predeterminado</translation>
+<translation id="2588252329503406673">Si estableces la política, podrás establecer el comportamiento de <ph name="PRODUCT_OS_NAME" /> cuando no hay actividad del usuario durante cierta cantidad de tiempo mientras se muestra la pantalla de acceso. La política controla múltiples opciones de configuración. Si deseas obtener información sobre su semántica individual y los rangos de valores, consulta las políticas correspondientes que controlan la administración de energía en una sesión.
+
+      Las únicas desviaciones de estas políticas son las siguientes:
+
+      * Las acciones que se deben realizar durante la inactividad o cuando la tapa esté cerrada no pueden consistir en el cierre de la sesión.
+
+      * La acción predeterminada realizada durante la inactividad mientras el dispositivo funciona con alimentación de corriente consiste en cerrar el dispositivo.
+
+      Si no estableces la política o alguna de sus opciones de configuración, se aplicarán los valores predeterminados para varias de las opciones de configuración de la energía.</translation>
 <translation id="2592091433672667839">Duración de la inactividad antes de que se muestre el protector de pantalla en el modo de venta</translation>
 <translation id="2592162121850992309">Si esta política se configura como verdadera o no se configura, se habilitará la aceleración de hardware a menos que una función determinada de la GPU esté en la lista negra.
 
       Si se configura como falsa, se inhabilitará la aceleración de hardware.</translation>
+<translation id="259289618675490104">Si la estableces en "All" (valor 0) o no la estableces, los usuarios podrán administrar los certificados. Si estableces la política en "None" (valor 2), los usuarios solo podrán ver los certificados (pero no podrán administrarlos).
+
+      Si la estableces en "UserOnly" (valor 1), los usuarios podrán administrar certificados de usuarios, pero así certificados para todo el dispositivo.</translation>
 <translation id="2593762551209145088">La Navegación segura nunca está activa.</translation>
 <translation id="26023406105317310">Configura las cuentas de Kerberos</translation>
 <translation id="2604182581880595781">Configura las políticas relacionadas con la función "Network File Shares".</translation>
@@ -1093,6 +1116,11 @@ Si habilitas la política, Limpiar Chrome podrá enviar los metadatos de anális
 <translation id="2716623398185506073">Si habilitas la política, los dispositivos inscritos informarán sobre las estadísticas de hardware y los identificadores relacionados con la energía.
 
       Si la inhabilitas o no la estableces, los dispositivos inscritos no informarán sobre las estadísticas de energía.</translation>
+<translation id="2723692978495226412">Si habilitas esta política, se mostrarán recomendaciones de apps que el usuario haya instalado anteriormente en otros dispositivos. Se mostrarán estas recomendaciones en el Selector después de las recomendaciones locales de apps (en caso de que no se haya ingresado texto de búsqueda).
+
+      Si inhabilitas esta política o no la estableces, no se mostrarán estas recomendaciones.
+
+      Si la estableces, los usuarios no podrán cambiarla.</translation>
 <translation id="2725855586003209701">Si habilitas la política o no la estableces, los dispositivos inscritos informarán la lista de usuarios que accedieron recientemente.
 
       Si inhabilitas la política, los dispositivos inscritos no informarán la lista de usuarios.</translation>
@@ -1145,6 +1173,9 @@ Si habilitas la política, Limpiar Chrome podrá enviar los metadatos de anális
 <translation id="2787774054174244402">Si estableces la política como verdadera, los usuarios no tendrán permiso de escritura en los dispositivos de almacenamiento externo.
 
       A menos que esté bloqueado el almacenamiento externo, si estableces ExternalStorageReadOnly como falsa o no la estableces, los usuarios podrán crear y modificar archivos de dispositivos de almacenamiento externo que permitan la escritura de forma física. (Para bloquear el almacenamiento externo, establece ExternalStorageDisable como verdadera).</translation>
+<translation id="2791750069439339908">Si estableces <ph name="DEVICE_BATTERY_CHARGE_MODE_POLICY_NAME" /> como <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_MODE_NAME" />, la configuración <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" /> personalizará cuándo la batería deja de cargarse. Se basará en un porcentaje de la carga de la batería. <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_START_CHARGING_POLICY_NAME" /> debe estar al menos 5 puntos porcentuales por debajo de <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" />.
+
+      Si no estableces la política, se aplicará el modo de carga de la batería <ph name="DEVICE_BATTERY_CHARGE_STANDARD_MODE_NAME" />.</translation>
 <translation id="2796714419743648316">Lista de límites de tiempo por app permitidos</translation>
 <translation id="2796896367838042659">Esta política especifica qué apps y URL deben incluirse en la lista de elementos permitidos para las restricciones de uso por app.
         Se aplica la lista de elementos permitidos configurada a las apps instaladas en <ph name="PRODUCT_OS_NAME" /> para un usuario determinado con límites de tiempo por app.
@@ -1757,6 +1788,11 @@ Si se establece como falsa, <ph name="PRODUCT_NAME" /> no podrá usar notificaci
       Si la estableces como verdadera o no la configuras, se permitirá la creación de nuevas cuentas de usuario, siempre que <ph name="DEVICE_USER_ALLOWLIST_POLICY_NAME" /> no impida el acceso del usuario.</translation>
 <translation id="3653237928288822292">Ícono del proveedor de búsqueda predeterminado</translation>
 <translation id="3654906736796256792">Permite que se ejecute la zona de pruebas de audio</translation>
+<translation id="3659542706175323490">Si habilitas la política, se permitirá el inicio mediante CA (cuando lo admita el dispositivo). El inicio mediante CA permite que el sistema se reinicie desde el estado Apagado/Hibernación cuando se inserta el cable eléctrico.
+
+      Si la inhabilitas, se desactivará el inicio mediante CA.
+
+      Si la estableces, los usuarios no podrán cambiar esta acción. Si no la estableces, se desactivará el inicio mediante CA, y los usuarios no podrán activarlo.</translation>
 <translation id="3660510274595679517">
         Si se configura esta política como verdadera, la inscripción en la administración de nube será obligatoria y bloqueará el proceso de ejecución de Chrome en caso de que falle.
 
@@ -1773,9 +1809,38 @@ Si se establece como falsa, <ph name="PRODUCT_NAME" /> no podrá usar notificaci
 <translation id="3701121231485832347">Controla la configuración específica de los dispositivos <ph name="PRODUCT_OS_NAME" /> administrados por <ph name="MS_AD_NAME" />.</translation>
 <translation id="3702518095257671450">Certificación remota</translation>
 <translation id="3702647575225525306"><ph name="POLICY_NAME" /> (Pronto dejará de estar disponible el campo de una línea y desaparecerá. Empieza a usar el cuadro de texto de varias líneas que se encuentra a continuación).</translation>
+<translation id="3704727923488731211">Configura una lista de reglas para prevenir la filtración de datos de <ph name="PRODUCT_OS_NAME" />.
+      Se pueden filtrar datos cuando se copia y pega información, se transfieren archivos, se imprime contenido, se comparten pantallas, se realizan capturas de pantalla, etc.
+
+      Cada regla consiste en lo siguiente:
+      - Una lista de orígenes definidos como URL (los datos de los orígenes se considerarán confidenciales y se les aplicarán restricciones conforme a esta condición)
+      - Una lista de destinos definidos como URL o componentes (se podrá determinar si se comparten o no los datos confidenciales con estos destinos)
+      - Una lista de restricciones que se aplicarán en los datos de los orígenes
+
+      Se pueden definir reglas para lo siguiente:
+      - Controlar los datos del portapapeles que se comparten entre los orígenes y los destinos
+      - Controlar si se realizan capturas de pantalla de los orígenes
+      - Controlar si se imprime contenido de los orígenes
+      - Controlar la pantalla de privacidad cuando alguno de los orígenes está visible
+      - Controlar la función compartir pantalla de los orígenes
+
+      Puedes establecer BLOCK o ALLOW como nivel de restricción.
+      - Si estableces la restricción como BLOCK, no se permitirá la acción.
+      - Si estableces la restricción como ALLOW, se permitirá la acción.
+
+      Notas:
+      - La restricción de PRIVACY_SCREEN no impide que se active la pantalla de privacidad, pero sí lo hace cuando se establece la restricción como BLOCK.
+      - Los campos de destino no pueden estar vacíos cuando una de las restricciones es CLIPBOARD; sin embargo, sí pueden quedar vacíos con el resto de las restricciones.
+      - La restricción de CLIPBOARD no puede diferenciar entre CROSTINI y PLUGIN_VM. Si se selecciona cualquiera de los dos para bloquear o permitir el uso compartido de datos, la regla se aplicará para ambos.
+      - Los patrones de las URL deben presentar un formato conforme a lo especificado en https://www.chromium.org/administrators/url-blacklist-filter-format.
+
+      Si no estableces la política, no se aplicarán restricciones.</translation>
 <translation id="3709266154059827597">Configurar la lista negra de instalación de extensiones</translation>
 <translation id="3711895659073496551">Suspender</translation>
 <translation id="3715569262675717862">Autenticación basada en certificados de clientes</translation>
+<translation id="3727476641336727380">A menos que inhabilites <ph name="ALLOW_WAKE_LOCKS_POLICY_NAME" />, si habilitas <ph name="ALLOW_SCREEN_WAKE_LOCKS_POLICY_NAME" /> o no la estableces, se permitirá el uso de bloqueos de activación de pantalla para la administración de energía. Las extensiones pueden solicitar estos bloqueos mediante la API de extensión de administración de energía. Las apps de ARC también pueden solicitarlos.
+
+      Si inhabilitas la política, se relegarán las solicitudes de bloqueo de activación de pantalla a solicitudes de bloqueo de activación del sistema.</translation>
 <translation id="3727675072430693164">Si habilitas la política, los dispositivos inscritos informarán sobre las estadísticas de hardware de los componentes de SoC.
 
       Si la inhabilitas o no la estableces, los dispositivos inscritos no informarán sobre estas estadísticas.</translation>
@@ -1802,6 +1867,9 @@ Si se establece como falsa, <ph name="PRODUCT_NAME" /> no podrá usar notificaci
       Si no se establecen estas políticas, los usuarios podrán elegir la configuración de proxy.</translation>
 <translation id="3758249152301468420">Inhabilitar herramientas para desarrolladores</translation>
 <translation id="3760231600118073732">Bloquea la sesión actual</translation>
+<translation id="3762520180381586267">Si habilitas la política, <ph name="PRODUCT_OS_NAME" /> activará un reinicio cuando los usuarios apaguen el dispositivo. <ph name="PRODUCT_OS_NAME" /> reemplazará todos los botones de apagado de la IU por botones de reinicio. Si los usuarios apagan los dispositivos con el botón de encendido, estos no se reiniciarán de forma automática, incluso si la política está habilitada.
+
+      Si inhabilitas la política o no la estableces, <ph name="PRODUCT_OS_NAME" /> permitirá apagar el dispositivo.</translation>
 <translation id="3765260570442823273">Duración del mensaje que advierte al usuario que saldrá del navegador porque se encuentra inactivo</translation>
 <translation id="377044054160169374">Intervención ante experiencias abusivas</translation>
 <translation id="3780152581321609624">Incluir puerto no estándar en el SPN de Kerberos</translation>
@@ -1836,6 +1904,11 @@ Si se establece como falsa, <ph name="PRODUCT_NAME" /> no podrá usar notificaci
       Si esta política no se establece o se establece en "falsa", <ph name="PRODUCT_NAME" /> seguirá el programa de baja anunciado públicamente.
 
       Para obtener más información sobre esta baja, consulta https://g.co/chrome/symantecpkicerts.</translation>
+<translation id="3831836327853123066">Si estableces la política, se limitará el tiempo de actividad del dispositivo mediante la programación de reinicios automáticos. Podrás retrasarlos hasta 24 horas si alguien está utilizando el dispositivo. El valor de la política debe especificarse en segundos. los valores deben ser de al menos 3,600 s (una hora).
+
+      Si estableces la política, los usuarios no podrán cambiarla. Si no la estableces, no se limitará el tiempo de actividad del dispositivo.
+
+      Nota: Se activan los reinicios automáticos solo cuando se muestra la pantalla de acceso o durante una sesión de la Aplicación de kiosko.</translation>
 <translation id="3835692988507803626">Inhabilitar a la fuerza los idiomas de corrección ortográfica</translation>
 <translation id="3837424079837455272">Esta política controla si se pueden agregar nuevos usuarios a <ph name="PRODUCT_OS_NAME" />, pero no impide que los usuarios accedan a otras Cuentas de Google en Android. Si quieres impedirlo, configura la política <ph name="ACCOUNT_TYPES_WITH_MANAGEMENT_DISABLED_CLOUDDPC_POLICY_NAME" /> específica de Android como parte de la política <ph name="ARC_POLICY_POLICY_NAME" />.</translation>
 <translation id="3838094946886335701">Si estableces la política (solo como recomendada), podrás registrar una lista de controladores de protocolo, que se combinarán con los que registre el usuario; así, ambos conjuntos de controladores estarán en uso. Asigna a la propiedad "protocolo" el esquema (p. ej. mailto) y a la propiedad "URL" el patrón de URL de la aplicación que controla el esquema especificado en el campo "protocolo". El patrón puede incluir el marcador de posición "%s", que se reemplazará por la URL controlada.
@@ -1952,6 +2025,11 @@ Si se establece como falsa, <ph name="PRODUCT_NAME" /> no podrá usar notificaci
 <translation id="3942041691320538491">Si le asignas a la política el valor "0" (la opción predeterminada), podrás acceder a las herramientas para desarrolladores y la Consola de JavaScript, aunque no podrás hacerlo en el contexto de extensiones instaladas por una política empresarial. Si le asignas a la política el valor "1", podrás acceder a las herramientas para desarrolladores y la Consola de JavaScript en todos los contextos, incluido el de extensiones instaladas por una política empresarial. Si le asignas a la política el valor "2", no podrás acceder a las herramientas para desarrolladores ni inspeccionar elementos de sitios web.
 
       Esta configuración también desactivará las combinaciones de teclas y las entradas del menú contextual o de cualquier menú que permiten abrir las herramientas para desarrolladores o la Consola de JavaScript.</translation>
+<translation id="3947431236979598549">Permite habilitar o inhabilitar una notificación cuando hay poco espacio disponible en el disco. Se aplica a todos los usuarios del dispositivo.
+
+      Se ignorará esta política y se mostrará la notificación siempre si el dispositivo no está administrado o hay solo un usuario.
+
+      Si hay múltiples cuentas de usuario en un dispositivo administrado, se mostrará la notificación solo cuando esté habilitada la política.</translation>
 <translation id="3950110092991281616">Permite la autenticación ambiental solo en sesiones comunes.</translation>
 <translation id="3950239119790560549">Actualizar las restricciones de tiempo</translation>
 <translation id="3956686688560604829">Usar la política SiteList de Internet Explorer para la extensión Compatibilidad con navegadores heredados</translation>
@@ -1967,6 +2045,9 @@ Si se establece como falsa, <ph name="PRODUCT_NAME" /> no podrá usar notificaci
       Si no se establece la política de fondo de pantalla del dispositivo, la política de fondo de pantalla del usuario, en caso de establecerse, decidirá lo que se muestra.</translation>
 <translation id="3964298692570794635">Permite contenido no seguro en estos sitios</translation>
 <translation id="3965339130942650562">Está ejecutado el tiempo de espera para salir del navegador cuando el usuario se encuentre inactivo</translation>
+<translation id="3971673686578912106">Si habilitas la política, se activará <ph name="PLUGIN_VM_NAME" /> para el dispositivo, siempre y cuando lo permitan otras opciones de configuración. Para ejecutar <ph name="PLUGIN_VM_NAME" />, se deben establecer <ph name="PLUGIN_VM_ALLOWED_POLICY_NAME" /> y <ph name="USER_PLUGIN_VM_ALLOWED_POLICY_NAME" /> como verdaderas, y establecer <ph name="PLUGIN_VM_LICENSE_KEY_POLICY_NAME" /> o <ph name="PLUGIN_VM_USER_ID_POLICY_NAME" />.
+
+      Si inhabilitas la política o no la estableces, no se activará <ph name="PLUGIN_VM_NAME" /> para el dispositivo.</translation>
 <translation id="3973371701361892765">Nunca ocultar automáticamente los archivos</translation>
 <translation id="3979738908158213640">URL a las que se les concede acceso para realizar la certificación de los dispositivos durante la autenticación de SAML</translation>
 <translation id="3980024487013511975">Especifica las impresoras que no puede utilizar el usuario.
@@ -1985,6 +2066,9 @@ Si se establece como falsa, <ph name="PRODUCT_NAME" /> no podrá usar notificaci
       Si se establece como falsa, <ph name="PRODUCT_OS_NAME" /> no mostrará a los usuarios existentes en la pantalla de acceso. Se mostrará la pantalla de acceso normal (en la que se solicita el correo electrónico y la contraseña o el teléfono del usuario) o la pantalla intersticial SAML (si se habilita a través de la política <ph name="LOGIN_AUTHENTICATION_BEHAVIOR_POLICY_NAME" />), a menos que se configure una sesión administrada. Si ese es el caso, solo se mostrarán las cuentas de la sesión administrada, donde se podrá elegir una.
 
       Hay que tener en cuenta que esta política no afecta si el dispositivo conserva o descarga los datos de usuario locales.</translation>
+<translation id="4009527123617846557">Si estableces <ph name="DEVICE_BATTERY_CHARGE_MODE_NAME" /> como <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_MODE_NAME" />, la configuración <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_START_CHARGING_POLICY_NAME" /> personalizará cuándo la batería comienza a cargarse. Se basará en un porcentaje de la descarga de la batería. El valor debe estar al menos 5 puntos porcentuales por debajo de <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" />.
+
+      Si no estableces la política, se aplicará el modo estándar para la carga de la batería.</translation>
 <translation id="4010738624545340900">Permitir la invocación de los diálogos de selección de archivos</translation>
 <translation id="401260868452018796">Ubicar la biblioteca en la parte inferior de la pantalla</translation>
 <translation id="4012737788880122133">Cuando esta política se establece como verdadera, desactiva las actualizaciones automáticas.
@@ -2023,6 +2107,9 @@ Si se establece como falsa, <ph name="PRODUCT_NAME" /> no podrá usar notificaci
 
       Si estableces la política, los usuarios no podrán cambiarla. Si no la estableces, la lupa estará desactivada al principio, pero los usuarios podrán activarla en cualquier momento.</translation>
 <translation id="410068710490553233">Permite acceder en más Cuentas de Google</translation>
+<translation id="4103177213841380258">Esta política regula el acceso a las funciones controlables de la IU de descubrimiento local (<ph name="CHROME_DEVICES_LINK" />) que muestra cuáles son los dispositivos detectables cerca del usuario y los dispositivos en la nube que están registrados con él. En todos los sistemas operativos, excepto en <ph name="PRODUCT_OS_NAME" />, la IU de descubrimiento local también permite que los usuarios agreguen a <ph name="CLOUD_PRINT_NAME" /> impresoras clásicas conectadas a sus computadoras.
+
+      Si no estableces esta política, se habilitará esta función.</translation>
 <translation id="4103289232974211388">Redireccionar al IdP de SAML después de la confirmación del usuario</translation>
 <translation id="4105884561459127998">Configura el tipo de autenticación para los accesos SAML.
 
@@ -2228,6 +2315,11 @@ Si se establece como falsa, <ph name="PRODUCT_NAME" /> no podrá usar notificaci
 <translation id="4447668084338250480">Comportamiento de la redirección de intranet</translation>
 <translation id="4449469846627734399">Establecer la configuración diurna para el cambio de pico de consumo de energía</translation>
 <translation id="4449545651113180484">Rotar la pantalla hacia la derecha 270 grados</translation>
+<translation id="4450005376189179872">Si habilitas <ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_ENABLED_POLICY_NAME" /> y, luego, estableces <ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_DAY_CONFIG_POLICY_NAME" />, podrán configurar un modo avanzado para la carga de la batería. El valor de <ph name="CHARGE_START_TIME_FIELD_NAME" /> debe ser inferior a <ph name="CHARGE_END_TIME_FIELD_NAME" />.
+
+      Si no estableces la política, el modo avanzado para la carga de la batería se mantendrá desactivado.
+
+      Los valores válidos para el campo <ph name="MINUTE_FIELD_NAME" /> en <ph name="CHARGE_START_TIME_FIELD_NAME" /> y <ph name="CHARGE_END_TIME_FIELD_NAME" /> son 0, 15, 30 y 45.</translation>
 <translation id="445270821089253489">Controla el tipo de información sobre el dispositivo y el usuario que se envía.</translation>
 <translation id="4453913621209182880">Habilitar la impresión solo con los gráficos de fondo</translation>
 <translation id="4454820008017317557">Mostrar el ícono de la barra de herramientas de <ph name="PRODUCT_NAME" /></translation>
@@ -3146,6 +3238,11 @@ Si se establece como falsa, <ph name="PRODUCT_NAME" /> no podrá usar notificaci
 
       No se activará este comportamiento si la Navegación segura está inhabilitada (ya sea por la política o el usuario). Si quieres forzar la Navegación segura, usa la política <ph name="SAFE_BROWSING_ENABLED_POLICY_NAME" /> o <ph name="SAFE_BROWSING_PROTETION_LEVEL_POLICY_NAME" />.</translation>
 <translation id="5836064773277134605">Restringir el intervalo de puertos UDP que utiliza el host de acceso remoto</translation>
+<translation id="5837898601525273156">Si estableces <ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_DAY_CONFIG_POLICY_NAME" /> y habilitas <ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_ENABLED_POLICY_NAME" />, se mantendrá activada la política para administrar la energía en el modo avanzado de carga de la batería (cuando lo admita el dispositivo). Gracias a un algoritmo para la carga estándar y otras técnicas durante las horas en que no se utilice el dispositivo, este modo permite que los usuarios optimicen el estado de la batería. Durante las horas de funcionamiento, el sistema utiliza una carga rápida, la cual permite que la batería se cargue en menos tiempo. Se especifica el período en que el sistema tendrá más actividad cada día, mediante la hora de inicio y la duración.
+
+      Si se inhabilita la política o no se establece, se mantendrá desactivado el modo avanzado de carga de la batería.
+
+      Los usuarios no podrán cambiar esta configuración.</translation>
 <translation id="5845686745936515940">Permite revertir el comportamiento de todas las cookies conforme al atributo heredado <ph name="ATTRIBUTE_SAMESITE_NAME" />. Si se revierte el comportamiento conforme al atributo heredado, las cookies que no tengan un atributo <ph name="ATTRIBUTE_SAMESITE_NAME" /> especificado se tratarán según el atributo "<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />", las cookies con el atributo "<ph name="ATTRIBUTE_VALUE_SAMESITE_NONE" />" ya no necesitarán el atributo "<ph name="ATTRIBUTE_SECURE_NAME" />", y se omitirá la comparación de esquemas cuando se evalúa si dos sitios son el mismo sitio. Para obtener la descripción completa, consulta https://www.chromium.org/administrators/policy-list-3/cookie-legacy-samesite-policies.
 
           Si no se establece esta política, el comportamiento predeterminado <ph name="ATTRIBUTE_SAMESITE_NAME" /> para las cookies dependerá de la configuración personal del usuario para las funciones <ph name="FEATURE_NAME_SAMESITE_BY_DEFAULT_COOKIES" />, <ph name="FEATURE_NAME_SAMESITE_NONE_MUST_BE_SECURE" /> y <ph name="FEATURE_NAME_SCHEMEFUL_SAME_SITE" />, las cuales pueden establecerse con una prueba pública o si se habilitan o inhabilitan las marcas <ph name="FLAG_NAME_SAMESITE_BY_DEFAULT_COOKIES" />, <ph name="FLAG_NAME_SAMESITE_NONE_MUST_BE_SECURE" /> o <ph name="FLAG_NAME_SCHEMEFUL_SAME_SITE" />, respectivamente.</translation>
@@ -3292,6 +3389,11 @@ Si ninguna de las entradas tiene un valor de <ph name="CHROMEOS_VERSION_PROPERTY
 
       Si se usa esta política, el usuario solo podrá acceder a las impresoras con ID que coincidan con los valores en esta política. Los ID deben coincidir con los valores de los campos "id" o "guid" en el archivo que se especifica en <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" />.
       </translation>
+<translation id="6058879286588763839">A menos que especifiques <ph name="DEVICE_ADVANCED_BATTERY_CHARGE_MODE_ENABLED_POLICY_NAME" /> (que anula <ph name="DEVICE_BATTERY_CHARGE_MODE_POLICY_NAME" />), si estableces <ph name="DEVICE_BATTERY_CHARGE_MODE_POLICY_NAME" />, se especificará la política de administración de energía en el modo de carga de la batería (cuando lo admita el dispositivo). Para extender la duración de la batería, la política controlará de forma dinámica la carga de la batería reduciendo su desgaste debido al uso.
+
+      Si no estableces la política (cuando lo admita el dispositivo), se aplicará el modo estándar de carga de la batería. Los usuarios no podrán cambiar esta configuración.
+
+      Nota: Si seleccionas el modo personalizado de carga de la batería, también se especificará <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_START_CHARGING_POLICY_NAME" /> y <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" />.</translation>
 <translation id="6066761914755798079">Si activas <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" />, establecer <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POLICY_NAME" /> especificará la URL del motor de búsqueda para proporcionar sugerencias de búsqueda. La URL debe incluir la string <ph name="SEARCH_TERM_MARKER" />, que se reemplazará en la búsqueda por los términos del usuario.
 
       Puedes especificar la URL de búsqueda de Google de la siguiente manera: <ph name="GOOGLE_SUGGEST_SEARCH_URL" />.</translation>
@@ -3553,6 +3655,7 @@ En <ph name="MS_WIN_NAME" />, esta funcionalidad solo está disponible en instan
 <translation id="6467613372414922590">Permite el uso de hosts de mensajería nativa en el nivel de usuario (instalados sin permisos de administrador).</translation>
 <translation id="6473623140202114570">Configura la lista de dominios donde la Navegación segura no activa advertencias.</translation>
 <translation id="647698599569353771">Permite habilitar Compartir con Nearby.</translation>
+<translation id="6478261301433199402">Si estableces la política, se especificará la imagen de <ph name="PLUGIN_VM_NAME" /> para un usuario. Especifica esta política como una cadena de formato JSON que incluye <ph name="URL_PLUGIN_VM_IMAGE_FIELD" /> (establece dónde se descarga la imagen) y <ph name="HASH_PLUGIN_VM_IMAGE_FIELD" /> (como un hash SHA-256 para verificar la integridad de la descarga).</translation>
 <translation id="6485813825811798133">Si estableces la política, podrás definir una lista de patrones de URL donde se especifiquen los sitios que no pueden pedirle a los usuarios, mediante la API de File System, acceso de lectura a los archivos o directorios que se encuentren en el sistema de archivos del sistema operativo del host.
 
       Si no estableces la política, se aplicará <ph name="DEFAULT_FILE_SYSTEM_READ_GUARD_SETTING_POLICY_NAME" /> (si se establece) para todos los sitios. De lo contrario, se aplicará la configuración personal de los usuarios.
@@ -3626,6 +3729,7 @@ En <ph name="MS_WIN_NAME" />, esta funcionalidad solo está disponible en instan
 
           Para obtener información detallada sobre los patrones de URL válidos, consulta: https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
 <translation id="6553143066970470539">Porcentaje del brillo de pantalla</translation>
+<translation id="6558362593755624474">Si estableces la política, se especificará la clave de licencia <ph name="PLUGIN_VM_NAME" /> para este dispositivo.</translation>
 <translation id="6559057113164934677">No permitir que ningún sitio acceda a la cámara ni al micrófono</translation>
 <translation id="6559475864956112261">Esta política dejó de estar disponible. Usa <ph name="PROXY_SETTINGS_POLICY_NAME" /> en su lugar.
 
@@ -3838,6 +3942,7 @@ Si desactivas la política o no la estableces, el servicio enviará a los usuari
 
       Si inhabilitas la política, se mostrará un mensaje de error en lugar de la solicitud de configuración de red.</translation>
 <translation id="6821268164692776674">Destinos <ph name="CLOUD_PRINT_NAME" /> y "Guardar en Google Drive"</translation>
+<translation id="6823711520976094072">Si la estableces en menos de 1 MB o no la estableces, <ph name="PRODUCT_OS_NAME" /> usará el tamaño predeterminado (256 MiB) para almacenar en caché las apps y extensiones cuando las instalan varios usuarios del mismo dispositivo. Esta acción evitará que cada usuario las tenga que volver a descargar.</translation>
 <translation id="682408981080798691">Si habilitas la política o no la estableces, se activará la Integridad del código del renderizador.
 
       Si la inhabilitas, se reducirá la estabilidad y la seguridad de <ph name="PRODUCT_NAME" />, ya que se permitirá cargar código desconocido y potencialmente hostil en los procesos del renderizador de <ph name="PRODUCT_NAME" />. Desactiva la política solo si hay problemas de compatibilidad con software de terceros que deba ejecutarse en los procesos del renderizador de <ph name="PRODUCT_NAME" />.
@@ -4108,6 +4213,9 @@ Si se selecciona "U2F_EXTENDED", el segundo factor integrado proporcionará func
 
       Si la política no se configura, el usuario puede tomar su propia decisión.</translation>
 <translation id="7145335384492396213">Modo de impresión con PIN predeterminado</translation>
+<translation id="7146198347561863646">Si habilitas la política o no la estableces, se permitirán los bloqueos de activación para la administración de energía. Las extensiones pueden solicitar estos bloqueos mediante la API de extensión de administración de energía. Las apps de ARC también pueden solicitarlos.
+
+      Si inhabilitas la política, se ignorarán las solicitudes de bloqueos de activación.</translation>
 <translation id="7149042336307555519"> Esta política controla los tipos de conexiones permitidos en las actualizaciones del SO. Es posible que el tamaño de las actualizaciones del SO sobrecargue la conexión, lo que podría generar costos adicionales para el usuario. Por lo tanto, no están habilitadas de forma predeterminada en conexiones que se consideren costosas (actualmente, solo "celular").
 
       Los identificadores de tipos de conexión son <ph name="CONNECTION_TYPE_ETHERNET_NAME" />, <ph name="CONNECTION_TYPE_WIFI_NAME" /> y <ph name="CONNECTION_TYPE_CELLULAR_NAME" />.</translation>
@@ -4476,6 +4584,9 @@ Si estableces la política <ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME"
           Nota: Si se especifica <ph name="DEVICE_LOGIN_SCREEN_LARGE_CURSOR_ENABLED" />, anulará esta política.</translation>
 <translation id="7632147323011514740">Los intervalos cuando se puede iniciar el proceso de actualización de instantáneas de los datos de ARC en sesiones de invitados administrados</translation>
 <translation id="7632724434767231364">Nombre de la biblioteca GSSAPI</translation>
+<translation id="7635106595080609261">Si habilitas la política o no la estableces, Chrome podrá mostrar diálogos de selección de archivos, y los usuarios podrán abrirlos.
+
+      Si inhabilitas la política, cuando los usuarios realicen acciones que generen un diálogo de selección de archivos, como importar favoritos, subir archivos o guardar vínculos, se mostrará en su lugar un mensaje. Se considerará como si el usuario hubiera hecho clic en Cancelar en el diálogo de selección de archivos.</translation>
 <translation id="7643883929273267746">Restringir las cuentas visibles en <ph name="PRODUCT_NAME" /></translation>
 <translation id="7648907905084499629">Usar el atributo <ph name="FEATURE_NAME_SAMESITE_BY_DEFAULT_COOKIES" /> para el comportamiento de las cookies en todos los sitios</translation>
 <translation id="7657261947024629645">Optimiza el rendimiento.</translation>
@@ -4590,6 +4701,11 @@ Si estableces la política <ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME"
 
           De lo contrario, las combinaciones de teclas para las funciones de accesibilidad estarán habilitadas de forma predeterminada en la pantalla de acceso.</translation>
 <translation id="7777535871204167559">Tratar los dispositivos de almacenamiento externo como de solo lectura</translation>
+<translation id="7781853854781306082">Si habilitas la política, <ph name="PRODUCT_OS_NAME" /> solicitará que los usuarios ingresen una contraseña para desbloquear el dispositivo cuando está inactivo.
+
+      Si la inhabilitas, los usuarios no tendrán que ingresar una contraseña para desbloquear el dispositivo cuando está suspendido.
+
+      Si no la estableces, los usuarios podrán elegir si reciben una solicitud de contraseña para desbloquear el dispositivo cuando está suspendido.</translation>
 <translation id="7788511847830146438">Por perfil</translation>
 <translation id="780629758750905699">Permitir agregar cuentas de Family Link al dispositivo</translation>
 <translation id="7807139251387225825">Lista de tipos que deben excluirse de la sincronización</translation>
@@ -4606,6 +4722,11 @@ Si estableces la política <ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME"
       Esta política es obsoleta; usa la política <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" /> en su lugar.
       </translation>
 <translation id="782661371433719637">No permite que ningún sitio solicite acceso de lectura a archivos y directorios a través de la API de File System</translation>
+<translation id="7839180815400079700">Si habilitas <ph name="DEVICE_POWER_PEAK_SHIFT_ENABLED_POLICY_NAME" /> y estableces <ph name="DEVICE_POWER_PEAK_SHIFT_DAY_CONFIG_POLICY_NAME" />, se establecerá la configuración diaria de la carga fuera del horario pico.
+
+      Si no estableces la política, la carga fuera del horario pico permanecerá desactivada.
+
+      Los valores válidos para el campo <ph name="MINUTE_FIELD_NAME" /> en <ph name="START_TIME_FIELD_NAME" />, <ph name="END_TIME_FIELD_NAME" /> y <ph name="CHARGE_START_TIME_FIELD_NAME" /> son 0, 15, 30 y 45.</translation>
 <translation id="7841880500990419427">Versión mínima de TLS para resguardo</translation>
 <translation id="7846952520291088817">Las URL para las que se exponen las IP locales en los candidatos ICE de WebRTC</translation>
 <translation id="7848641140449742406">Configuración del SO</translation>
@@ -4747,6 +4868,9 @@ Si estableces la política <ph name="SAFE_BROWSING_PROTECTION_LEVEL_POLICY_NAME"
 <translation id="8053580360728293758">Anula el modo predeterminado de impresión a color. Si el modo no está disponible, se ignorará esta política.</translation>
 <translation id="8056237304861875584">Permite habilitar la continuación de tareas en Phone Hub</translation>
 <translation id="8059164285174960932">URL donde los clientes de acceso remoto deben obtener el token de autenticación</translation>
+<translation id="8076521374016204899">Si habilitas la política o no la estableces, los usuarios que se autentiquen con una contraseña podrán bloquear la pantalla.
+
+      Si inhabilitas la política, los usuarios no podrán bloquear la pantalla (solo podrán salir de la sesión de usuario).</translation>
 <translation id="8077245272412229388">Agrega cuentas de Kerberos completadas automáticamente. Si las credenciales de Kerberos coinciden con las de acceso, se podrá configurar una cuenta para que las reutilice. Para hacerlo, se debe especificar "<ph name="LOGIN_EMAIL_PLACEHOLDER" />" y "<ph name="PASSWORD_PLACEHOLDER" />" para el correo principal y la contraseña respectivamente, a fin de que pueda recuperarse el ticket de Kerberos automáticamente (a menos que se configure la autenticación de dos factores). Los usuarios no podrán modificar las cuentas que se agreguen a través de esta política.
 
           Si se habilita esta política, se agregará la lista de cuentas definida por la política a la configuración de cuentas de Kerberos.
@@ -5118,6 +5242,15 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
           Si no se establece, se utilizará un período predeterminado.
 
           El valor de la política debe especificarse en milisegundos.</translation>
+<translation id="8603454805657060638">Si estableces la política, el administrador podrá cambiar la dirección MAC (control de acceso al medio) cuando enchufes un dispositivo al conector. Cuando un conector está enchufado a algunos modelos de dispositivos, la dirección MAC designada para el conector del dispositivo ayuda a identificar el dispositivo de forma predeterminada en Ethernet.
+
+      Si seleccionas "DeviceDockMacAddress" o no estableces la política, se usará la dirección MAC designada para el conector del dispositivo.
+
+      Si seleccionas "DeviceNicMacAddress", se usará la dirección MAC para el NIC (controlador de interfaz de red) del dispositivo.
+
+      Si seleccionas "DockNicMacAddress", se usará la dirección MAC para el NIC del conector.
+
+      Los usuarios no pueden cambiar esta configuración.</translation>
 <translation id="8604178325750278068">Si habilitas la política, el Asistente de Google escuchará la frase de activación de voz. Si la inhabilitas, el Asistente de Google no escuchará la frase.
 
       Si no la estableces, los usuarios podrán activar o desactivar esta función.</translation>

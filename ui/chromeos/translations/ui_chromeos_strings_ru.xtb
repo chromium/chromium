@@ -18,6 +18,7 @@
 <translation id="1150565364351027703">Солнцезащитные очки</translation>
 <translation id="115443833402798225">Корейская раскладка (Ahnmatae)</translation>
 <translation id="1155759005174418845">Каталанский</translation>
+<translation id="1169885125071442573">гуджарати (транслитерация)</translation>
 <translation id="1172970565351728681">Осталось около <ph name="REMAINING_TIME" /></translation>
 <translation id="1173894706177603556">Переименовать</translation>
 <translation id="117624967391683467">Копирование файла "<ph name="FILE_NAME" />"…</translation>
@@ -31,6 +32,7 @@
 <translation id="1297922636971898492">Google Диск временно недоступен. Когда доступ будет восстановлен, загрузка автоматически возобновится.</translation>
 <translation id="1307931752636661898">Нет доступа к файлам Linux</translation>
 <translation id="1338950911836659113">Удаление…</translation>
+<translation id="1345094301418504404">французский (Канада)</translation>
 <translation id="1346748346194534595">Справа</translation>
 <translation id="1351692861129622852">Импорт файлов (<ph name="FILE_COUNT" />)...</translation>
 <translation id="1352103415082130575">Тайская раскладка (Pattachote)</translation>
@@ -46,6 +48,7 @@
 <translation id="1441841714100794440">Вьетнамская раскладка (TELEX)</translation>
 <translation id="1464724975715666883">1 ошибка.</translation>
 <translation id="1467432559032391204">Слева</translation>
+<translation id="1472351751615457820">греческий (транслитерация)</translation>
 <translation id="1474339897586437869">Не удалось загрузить <ph name="FILENAME" />. Не хватает пространства на Google Диске.</translation>
 <translation id="148466539719134488">Швейцарская</translation>
 <translation id="1497522201463361063">Не удалось переименовать "<ph name="FILE_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
@@ -56,6 +59,7 @@
 <translation id="1572585716423026576">Установить как обои</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> ПБ</translation>
 <translation id="1620510694547887537">Камера</translation>
+<translation id="1622022025445651011">французский (Франция)</translation>
 <translation id="1646019627374511909">Скачивание файлов (<ph name="NUMBER_OF_ITEMS" />) для офлайн-доступа…</translation>
 <translation id="164729547906544836">Тамильская раскладка (itrans)</translation>
 <translation id="164969095109328410">Устройство Chrome</translation>
@@ -93,6 +97,8 @@
 <translation id="2009067268969781306">При форматировании диска все хранящиеся на нем данные будут удалены. Это действие нельзя отменить.</translation>
 <translation id="2028997212275086731">Архив RAR</translation>
 <translation id="2046702855113914483">Рамен</translation>
+<translation id="2060251957438343874">немецкий (Германия)</translation>
+<translation id="2066433303065022982">иврит (транслитерация)</translation>
 <translation id="2070909990982335904">Названия, начинающиеся с точки, зарезервированы для системных файлов. Выберите другое название.</translation>
 <translation id="2079545284768500474">Отмена</translation>
 <translation id="2080010875307505892">Сербская раскладка</translation>
@@ -106,6 +112,7 @@
 <translation id="2208158072373999562">ZIP-архив</translation>
 <translation id="2225536596944493418">Вы действительно хотите удалить объекты (<ph name="NUMBER_OF_ITEMS" />)?</translation>
 <translation id="2230062665678605299">Не удалось создать папку "<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
+<translation id="2258078827108167865">кхмерский</translation>
 <translation id="2275059641601412272">Перемещено.</translation>
 <translation id="2287742181953707290">Португальский в американской международной раскладке (ПК)</translation>
 <translation id="2288278176040912387">Патефон</translation>
@@ -121,6 +128,7 @@
 <translation id="240770291734945588">Свободно <ph name="SPACE_AVAILABLE" /></translation>
 <translation id="2425665904502185219">Общий размер файлов</translation>
 <translation id="2428749644083375155">Копирование объектов (<ph name="NUMBER_OF_ITEMS" />) в папку "<ph name="FOLDER_NAME" />"…</translation>
+<translation id="2445471348947930094">гуджарати (фонетическая)</translation>
 <translation id="2448312741937722512">Тип</translation>
 <translation id="2453576648990281505">Файл уже существует</translation>
 <translation id="2464079411014186876">Мороженое</translation>
@@ -157,6 +165,7 @@
 <translation id="2887525882758501333">Документ PDF</translation>
 <translation id="2888807692577297075">Запросу &lt;b&gt;<ph name="SEARCH_STRING" />&lt;/b&gt; не соответствует ни один файл.</translation>
 <translation id="2894654529758326923">Подробные сведения</translation>
+<translation id="2899393425226141282">немецкий (Германия) в раскладке Neo 2</translation>
 <translation id="2902312830803030883">Другие действия</translation>
 <translation id="2902734494705624966">США (расширенная)</translation>
 <translation id="2923240520113693977">Эстонский</translation>
@@ -258,6 +267,7 @@
 <translation id="4002066346123236978">Название</translation>
 <translation id="4070370845051020638">Кантонская раскладка</translation>
 <translation id="4072248638558688893">Тамильская раскладка (фонетическая)</translation>
+<translation id="4097397818890482665">каннада (транслитерация)</translation>
 <translation id="4124935795427217608">Единорог</translation>
 <translation id="4158739975813877944">Открыть плейлист</translation>
 <translation id="4159731583141908892">Перемещено: <ph name="FILE_NAME" />.</translation>
@@ -286,6 +296,7 @@
 <translation id="4479812471636796472">Американская раскладка (Дворак)</translation>
 <translation id="4522570452068850558">Подробнее</translation>
 <translation id="4527800702232535228">Доступ к этой папке предоставлен Parallels Desktop.</translation>
+<translation id="4532112105534982530">французский (Франция) в раскладке Bépo</translation>
 <translation id="4552678318981539154">Приобретите дополнительное пространство</translation>
 <translation id="4559318885353833501">Файл "<ph name="FILE_NAME" />" удален.</translation>
 <translation id="4559767610552730302">Боке</translation>
@@ -294,6 +305,7 @@
 <translation id="4579744207439506346">Выбран объект "<ph name="ENTRY_NAME" />".</translation>
 <translation id="4582497162516204941">Установить с помощью ОС Linux (бета-версия)</translation>
 <translation id="4594543368593301662">Результаты поиска по запросу "<ph name="SEARCH_TERM" />".</translation>
+<translation id="4598673198033263991">японский (буквенно-цифровая)</translation>
 <translation id="4603392156942865207">Копирование файла "<ph name="FILE_NAME" />" в папку "<ph name="FOLDER_NAME" />"…</translation>
 <translation id="4627439232948440198">Санскрит</translation>
 <translation id="4631887759990505102">Исполнитель</translation>
@@ -313,6 +325,7 @@
 <translation id="4737050008115666127">Взлет</translation>
 <translation id="4747271164117300400">Македонская</translation>
 <translation id="4759238208242260848">Скачанные файлы</translation>
+<translation id="4763055924467562718">каннада (фонетическая)</translation>
 <translation id="4779136857077979611">Онигири</translation>
 <translation id="4784330909746505604">Презентация PowerPoint</translation>
 <translation id="4788401404269709922"><ph name="NUMBER_OF_KB" /> КБ</translation>
@@ -420,6 +433,7 @@
    Закройте все файлы в архиве или на электронном диске и повторите попытку.</translation>
 <translation id="5691596662111998220">Элемент "<ph name="FILE_NAME" />" удален</translation>
 <translation id="5700087501958648444">Информация об аудиофайле</translation>
+<translation id="570049376144986742">французский (Швейцария)</translation>
 <translation id="5731409020711461763">новых фото: 1</translation>
 <translation id="5752453871435543420">Резервное копирование в облаке Chrome</translation>
 <translation id="5756666464756035725">Венгерская QWERTY-клавиатура</translation>
@@ -454,6 +468,7 @@
 <translation id="6096979789310008754">Поисковый запрос удален. Показаны все файлы и папки.</translation>
 <translation id="610101264611565198">Перемещение файла "<ph name="FILE_NAME" />" в папку "<ph name="FOLDER_NAME" />"…</translation>
 <translation id="6111770213269631447">Транслитерация (namaskar → নমস্কার)</translation>
+<translation id="6113836390962820517">японский в американской раскладке</translation>
 <translation id="6129953537138746214">Пробел</translation>
 <translation id="6133173853026656527">Перемещение файла "<ph name="FILE_NAME" />"…</translation>
 <translation id="6146563240635539929">Видео</translation>
@@ -477,6 +492,7 @@
 <translation id="6394388407447716302">Только чтение</translation>
 <translation id="6395575651121294044">Объектов: <ph name="NUMBER_OF_FILES" /></translation>
 <translation id="6398765197997659313">Обычный режим</translation>
+<translation id="6412376911804527326">лаосский</translation>
 <translation id="642282551015776456">Недопустимое название для файла или папки</translation>
 <translation id="6485131920355264772">Не удалось получить информацию о свободном месте.</translation>
 <translation id="6505918941256367791">Тамильская раскладка (InScript)</translation>
@@ -495,6 +511,7 @@
 <translation id="6643016212128521049">Удалить</translation>
 <translation id="6650726141019353908">Розовая бабочка</translation>
 <translation id="6657585470893396449">Пароль</translation>
+<translation id="6680841910911617814">нидерландский (Нидерланды)</translation>
 <translation id="6710213216561001401">Назад</translation>
 <translation id="6718273304615422081">Архивирование…</translation>
 <translation id="6751256176799620176">1 папка выбрана</translation>
@@ -591,6 +608,7 @@
 <translation id="7724603315864178912">Вырезать</translation>
 <translation id="7730494089396812859">Показать данные о резервных копиях в облаке</translation>
 <translation id="7748626145866214022">Больше возможностей доступно на панели действий. Чтобы перейти на нее, нажмите клавиши Alt + A.</translation>
+<translation id="7756956835689272676">французский (Канада) в мультиязычной раскладке</translation>
 <translation id="7765158879357617694">Переместить</translation>
 <translation id="7774365994322694683">Птица</translation>
 <translation id="7788080748068240085">Чтобы сохранить файл "<ph name="FILE_NAME" />" для работы в автономном режиме, необходимо освободить <ph name="TOTAL_FILE_SIZE" />.<ph name="MARKUP_1" />
@@ -637,6 +655,7 @@
 <translation id="8106045200081704138">Доступные мне</translation>
 <translation id="8116072619078571545">Вода со льдом</translation>
 <translation id="8117957376775388318">Даи</translation>
+<translation id="8130367958112291342">чешский (QWERTY-клавиатура)</translation>
 <translation id="8137331602592933310">Вы не можете удалить файл "<ph name="FILENAME" />", так как не являетесь его владельцем.</translation>
 <translation id="8145409227593688472">Уби</translation>
 <translation id="8148264977957212129">раскладка пиньинь</translation>
@@ -685,6 +704,7 @@
 <translation id="8600173386174225982">Файлы отображаются в виде значков.</translation>
 <translation id="8601932370724196034">Графический файл Crostini</translation>
 <translation id="8669949407341943408">Перемещение...</translation>
+<translation id="8688649574682805922">немецкий (Швейцария)</translation>
 <translation id="8694836330346852143">Урду</translation>
 <translation id="8698464937041809063">Рисунок Google</translation>
 <translation id="8714406895390098252">Велосипед</translation>
@@ -698,6 +718,7 @@
 <translation id="8808686172382650546">Кот</translation>
 <translation id="8810671769985673465">Не удалось выполнить архивирование. Объект "<ph name="FILE_NAME" />" уже есть в архиве.</translation>
 <translation id="8834164572807951958">Пользователи общего диска "<ph name="DESTINATION_NAME" />" получат доступ к копиям этих объектов.</translation>
+<translation id="8846896937446866962">венгерский (QWERTY-клавиатура)</translation>
 <translation id="885381502874625531">Белорусская раскладка клавиатуры</translation>
 <translation id="8860454412039442620">Электронные таблицы Excel</translation>
 <translation id="8900820606136623064">Венгерский</translation>

@@ -18,6 +18,7 @@
 <translation id="1150565364351027703">የጸሐይ መነጽሮች</translation>
 <translation id="115443833402798225">ሃንጉል አንማቴ</translation>
 <translation id="1155759005174418845">ካታላን</translation>
+<translation id="1169885125071442573">የጉጃራቲ በቋንቋ ፊደል መጻፍ</translation>
 <translation id="1172970565351728681"><ph name="REMAINING_TIME" /> ገደማ ይቀራል</translation>
 <translation id="1173894706177603556">ዳግም ሰይም</translation>
 <translation id="117624967391683467"><ph name="FILE_NAME" />ን በመቅዳት ላይ</translation>
@@ -31,6 +32,7 @@
 <translation id="1297922636971898492">Google Drive አሁን አይገኝም። Google Drive ተመልሶ እንደመጣ መስቀል በራስ-ሰር ዳግም ይጀመራል።</translation>
 <translation id="1307931752636661898">የLinux ፋይሎችን መመልከት አልተቻለም</translation>
 <translation id="1338950911836659113">በመሰረዝ ላይ...</translation>
+<translation id="1345094301418504404">ፈረንሳይኛ (ካናዳ)</translation>
 <translation id="1346748346194534595">ቀኝ</translation>
 <translation id="1351692861129622852"><ph name="FILE_COUNT" /> ፋይሎችን በማስመጣት ላይ...</translation>
 <translation id="1352103415082130575">የታይ ቁልፍ ሰሌዳ (ፓታቾት)</translation>
@@ -46,6 +48,7 @@
 <translation id="1441841714100794440">የቪዬትናምኛ የቁልፍ ሰሌዳ (ቴለክስ)</translation>
 <translation id="1464724975715666883">1 ስህተት።</translation>
 <translation id="1467432559032391204">ግራ</translation>
+<translation id="1472351751615457820">የግሪክ በቋንቋ ፊደል መጻፍ</translation>
 <translation id="1474339897586437869">«<ph name="FILENAME" />» አልተሰቀለም። በእርስዎ Google Drive ውስጥ በቂ የሆነ ነፃ ቦታ የለም።</translation>
 <translation id="148466539719134488">ስዊስ</translation>
 <translation id="1497522201463361063">«<ph name="FILE_NAME" />»ን ዳግም መሰየም አልተቻለም። <ph name="ERROR_MESSAGE" /></translation>
@@ -56,6 +59,7 @@
 <translation id="1572585716423026576">እንደ ልጣፍ አዘጋጅ</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> ፔባ</translation>
 <translation id="1620510694547887537">ካሜራ</translation>
+<translation id="1622022025445651011">ፈረንሳይኛ (ፈረንሳይ)</translation>
 <translation id="1646019627374511909"><ph name="NUMBER_OF_ITEMS" /> ፋይሎች ከመስመር ውጪ እንዲገኙ በመደረግ ላይ</translation>
 <translation id="164729547906544836">የታሚል ቁልፍ ሰሌዳ (itrans)</translation>
 <translation id="164969095109328410">የChrome መሣሪያ</translation>
@@ -93,6 +97,8 @@
 <translation id="2009067268969781306">አንጻፊን መቅረጽ በላዩ ላይ ያለን ሁሉንም ውሂብ ይሰርዛል። ይህ እርምጃ ሊቀለበስ አይችልም።</translation>
 <translation id="2028997212275086731">RAR ማህደር</translation>
 <translation id="2046702855113914483">ራመን</translation>
+<translation id="2060251957438343874">ጀርመንኛ (ጀርመን)</translation>
+<translation id="2066433303065022982">የዕብራይስጥ በቋንቋ ፊደል መጻፍ</translation>
 <translation id="2070909990982335904">በነጥብ የሚጀምሩ ስሞች ለስርዓቱ የተቀመጡ ናቸው። እባክዎ ሌላ ስም ይምረጡ።</translation>
 <translation id="2079545284768500474">ቀልብስ</translation>
 <translation id="2080010875307505892">የሰርቢያኛ ቁልፍ ሰሌዳ</translation>
@@ -106,6 +112,7 @@
 <translation id="2208158072373999562">የZip ማህደር</translation>
 <translation id="2225536596944493418">እርግጠኛ ነዎት <ph name="NUMBER_OF_ITEMS" /> ንጥሎችን መሰረዝ ይፈልጋሉ?</translation>
 <translation id="2230062665678605299">የ«<ph name="FOLDER_NAME" />» አቃፊን መፍጠር አልተቻለም። <ph name="ERROR_MESSAGE" /></translation>
+<translation id="2258078827108167865">ክመርኛ</translation>
 <translation id="2275059641601412272">ተወስደዋል።</translation>
 <translation id="2287742181953707290">ፖርቱጋልኛ በአሜሪካ ዓለም አቀፍ ፒሲ ቁልፍ ሰሌዳ አማካኝነት</translation>
 <translation id="2288278176040912387">የሙዚቃ ማጫወቻ</translation>
@@ -121,6 +128,7 @@
 <translation id="240770291734945588"><ph name="SPACE_AVAILABLE" /> ይገኛል</translation>
 <translation id="2425665904502185219">ጠቅላላ የፋይል መጠን</translation>
 <translation id="2428749644083375155"><ph name="NUMBER_OF_ITEMS" />ንጥሎችን ወደ <ph name="FOLDER_NAME" /> በመቅዳት ላይ</translation>
+<translation id="2445471348947930094">የጉጅራቲ ፎነቲክ</translation>
 <translation id="2448312741937722512">አይነት</translation>
 <translation id="2453576648990281505">ፋይል አስቀድሞ አለ</translation>
 <translation id="2464079411014186876">አይስክሬም</translation>
@@ -157,6 +165,7 @@
 <translation id="2887525882758501333">የፒ ዲ ኤፍ ሰነድ</translation>
 <translation id="2888807692577297075">ምንም ፋይሎች ከ&lt;b&gt;«<ph name="SEARCH_STRING" />»&lt;/b&gt; ጋር አይዛመዱም</translation>
 <translation id="2894654529758326923">መረጃ</translation>
+<translation id="2899393425226141282">ጀርመንኛ (ጀርመን) ከNeo 2 ቁልፍ ሰሌዳ ጋር</translation>
 <translation id="2902312830803030883">ተጨማሪ እርምጃዎች</translation>
 <translation id="2902734494705624966">የአሜሪካ ተቀጥሎ</translation>
 <translation id="2923240520113693977">ኤስቶኒአን</translation>
@@ -258,6 +267,7 @@
 <translation id="4002066346123236978">ርዕስ</translation>
 <translation id="4070370845051020638">የካንቶኒዝ ግቤት ስልት</translation>
 <translation id="4072248638558688893">የታሚል ቁልፍ ሰሌዳ (ፎነቲክ)</translation>
+<translation id="4097397818890482665">የከናዳ በቋንቋ ፊደል መጻፍ</translation>
 <translation id="4124935795427217608">ዩኒኮርን</translation>
 <translation id="4158739975813877944">የአጫውት ዝርዝሩን ክፈት</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> ተወስደዋል።</translation>
@@ -286,6 +296,7 @@
 <translation id="4479812471636796472">የአሜሪካ ድቮራክ ቁልፍ ሰሌዳ</translation>
 <translation id="4522570452068850558">ዝርዝሮች</translation>
 <translation id="4527800702232535228">ይህ አቃፊ ለParallels ዴስክቶፕ ተጋርቷል</translation>
+<translation id="4532112105534982530">ፈረንሳይኛ (ፈረንሳይ) ከBépo ቁልፍ ሰሌዳ ጋር</translation>
 <translation id="4552678318981539154">ተጨማሪ ማከማቻ ይግዙ</translation>
 <translation id="4559318885353833501"><ph name="FILE_NAME" /> ተሰርዟል</translation>
 <translation id="4559767610552730302">Bokeh</translation>
@@ -294,6 +305,7 @@
 <translation id="4579744207439506346"><ph name="ENTRY_NAME" /> ወደ ምርጫ ታክለዋል።</translation>
 <translation id="4582497162516204941">ከLinux (ቅድመ ይሁንታ ሙከራ) ጋር ጫን</translation>
 <translation id="4594543368593301662">ለ <ph name="SEARCH_TERM" /> ውጤቶችን በማሳየት ላይ።</translation>
+<translation id="4598673198033263991">ፊደልቁጥራዊ ከጃፓንኛ የቁልፍ ሰሌዳ ጋር</translation>
 <translation id="4603392156942865207"><ph name="FILE_NAME" /> ወደ <ph name="FOLDER_NAME" /> በመቅዳት ላይ</translation>
 <translation id="4627439232948440198">ሳንስክሪት</translation>
 <translation id="4631887759990505102">አርቲስት</translation>
@@ -313,6 +325,7 @@
 <translation id="4737050008115666127">ማረፊያ</translation>
 <translation id="4747271164117300400">መቄዶኒያኛ</translation>
 <translation id="4759238208242260848">የወረዱ</translation>
+<translation id="4763055924467562718">ከናዳ ፎነቲክ</translation>
 <translation id="4779136857077979611">ኦኒጊሪ</translation>
 <translation id="4784330909746505604">PowerPoint ማቅረቢያ</translation>
 <translation id="4788401404269709922"><ph name="NUMBER_OF_KB" /> ኪባ</translation>
@@ -420,6 +433,7 @@
    በማህደር ወይም ምናባዊ ዲስክ ላይ ያሉ ሁሉንም ፋይሎች ይዝጉ፣ ከዚያ እንደገና ይሞክሩ።</translation>
 <translation id="5691596662111998220">ውይ፣ <ph name="FILE_NAME" /> ከአሁን በኋላ የለም።</translation>
 <translation id="5700087501958648444">የኦዲዮ መረጃ</translation>
+<translation id="570049376144986742">ፈረንሳይኛ (ስዊዘርላንድ)</translation>
 <translation id="5731409020711461763">1 አዲስ ፎቶ</translation>
 <translation id="5752453871435543420">የChrome OS የክላውድ ምትኬ</translation>
 <translation id="5756666464756035725">የሃንጋሪኛ QWERTY</translation>
@@ -453,6 +467,7 @@
 <translation id="6096979789310008754">የፍለጋ ጽሑፍ ጸድቷል፣ ሁሉንም ፋይሎች እና አቃፊዎች በማሳየት ላይ።</translation>
 <translation id="610101264611565198"><ph name="FILE_NAME" />ን ወደ <ph name="FOLDER_NAME" /> በመውሰድ ላይ</translation>
 <translation id="6111770213269631447">በቋንቋ ፊደል መጻፍ (namaskar → নমস্কার)</translation>
+<translation id="6113836390962820517">ጃፓንኛ ከአሜሪካ ቁልፍ ሰሌዳ ጋር</translation>
 <translation id="6129953537138746214">ባዶ ቦታ</translation>
 <translation id="6133173853026656527"><ph name="FILE_NAME" />ን በመውሰድ ላይ...</translation>
 <translation id="6146563240635539929">ቪዲዮዎች</translation>
@@ -476,6 +491,7 @@
 <translation id="6394388407447716302">ተነባቢ-ብቻ</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> ንጥሎች</translation>
 <translation id="6398765197997659313">ከሙሉ ማሳያ መስኮት ይውጡ</translation>
+<translation id="6412376911804527326">ላኦኛ</translation>
 <translation id="642282551015776456">ይህ ስም የፋይል ወይም አቃፊ ስም ሆኖ ሊያገለግል አይችልም።</translation>
 <translation id="6485131920355264772">የቦታ መረጃን ማምጣት አልተቻለም</translation>
 <translation id="6505918941256367791">የታሚል ቁልፍ ሰሌዳ (InScript)</translation>
@@ -494,6 +510,7 @@
 <translation id="6643016212128521049">አጽዳ</translation>
 <translation id="6650726141019353908">ሮዝ ቢራቢሮ</translation>
 <translation id="6657585470893396449">የይለፍ ቃል፦</translation>
+<translation id="6680841910911617814">ደች (ኔዘርላንድስ)</translation>
 <translation id="6710213216561001401">ቀዳሚ</translation>
 <translation id="6718273304615422081">በማጨቅ ላይ...</translation>
 <translation id="6751256176799620176">1 አቃፊ ተመርጧል</translation>
@@ -590,6 +607,7 @@
 <translation id="7724603315864178912">ቁረጥ</translation>
 <translation id="7730494089396812859">የክላውድ ምትኬ ዝርዝሮችን አሳይ</translation>
 <translation id="7748626145866214022">ተጨማሪ አማራጮች በእርምጃ አሞሌው ላይ ይገኛሉ። በእርምጃ አሞሌው ላይ ለማተኮር Alt + A ይጫኑ።</translation>
+<translation id="7756956835689272676">ፈረንሳይኛ (ካናዳ) ከባለብዙ ቋንቋ ቁልፍ ሰሌዳ</translation>
 <translation id="7765158879357617694">ውሰድ</translation>
 <translation id="7774365994322694683">ወፍ</translation>
 <translation id="7788080748068240085">«<ph name="FILE_NAME" />»ን ከመስመር ውጪ ለማስቀመጥ ተጨማሪ የሆነ <ph name="TOTAL_FILE_SIZE" /> የማከማቻ ቦታ ነጻ ማስለቀቅ አለብዎት፦<ph name="MARKUP_1" />
@@ -636,6 +654,7 @@
 <translation id="8106045200081704138">ከእኔ ጋር የተጋሩ</translation>
 <translation id="8116072619078571545">በረዶ ውሃ</translation>
 <translation id="8117957376775388318">የDayi ግቤት ስልት</translation>
+<translation id="8130367958112291342">ቼክኛ ከQwerty ቁልፍ ሰሌዳ ጋር</translation>
 <translation id="8137331602592933310">«<ph name="FILENAME" />» ለእርስዎ ተጋርቷል። እርስዎ ባለቤቱ ስላልሆኑ ሊሰርዙት አይችሉም።</translation>
 <translation id="8145409227593688472">የዉቢ ግቤት ስልት</translation>
 <translation id="8148264977957212129">የፒንዪን ግቤት ስልት</translation>
@@ -684,6 +703,7 @@
 <translation id="8600173386174225982">የፋይል ዝርዝር ወደ ድንክየ ዕይታ ተለውጧል።</translation>
 <translation id="8601932370724196034">የCrostini ምስል ፋይል</translation>
 <translation id="8669949407341943408">በመውሰድ ላይ...</translation>
+<translation id="8688649574682805922">ጀርመንኛ (ስዊዘርላንድ)</translation>
 <translation id="8694836330346852143">ኡርዱ</translation>
 <translation id="8698464937041809063">Google ስዕል</translation>
 <translation id="8714406895390098252">ቢስክሌት</translation>
@@ -697,6 +717,7 @@
 <translation id="8808686172382650546">ድመት</translation>
 <translation id="8810671769985673465">መጭመቅ አልተሳካም፣ ንጥል አለ፦ «<ph name="FILE_NAME" />»</translation>
 <translation id="8834164572807951958">የ«<ph name="DESTINATION_NAME" />» አባላት የእነዚህ ንጥሎች ቅጂ መዳረሻ ያገኛሉ።</translation>
+<translation id="8846896937446866962">የሃንጋሪኛ Qwerty የቁልፍ ሰሌዳ</translation>
 <translation id="885381502874625531">የቤላሩስ ቁልፍ ሰሌዳ</translation>
 <translation id="8860454412039442620">የExcel ተመን ሉህ</translation>
 <translation id="8900820606136623064">ሀንጋሪኛ</translation>

@@ -26,7 +26,7 @@
 <translation id="1068672505746868501">אף פעם אין לתרגם דפים ב<ph name="SOURCE_LANGUAGE" /></translation>
 <translation id="1070901266639972381">לילה</translation>
 <translation id="1074497978438210769">לא מאובטח</translation>
-<translation id="1080116354587839789">התאם לרוחב</translation>
+<translation id="1080116354587839789">התאמה לרוחב</translation>
 <translation id="1086953900555227778">Index-5x8</translation>
 <translation id="1088860948719068836">הוספת השם שמופיע בכרטיס</translation>
 <translation id="1089439967362294234">שינוי סיסמה</translation>
@@ -145,7 +145,7 @@
 <translation id="1462951478840426066">להשתמש בגופנים שמותקנים במחשב כדי ליצור תוכן באיכות גבוהה</translation>
 <translation id="1463543813647160932">5x7</translation>
 <translation id="1467432559032391204">שמאלה</translation>
-<translation id="1472675084647422956">הצג יותר</translation>
+<translation id="1472675084647422956">הצגת יותר מידע</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="147358896496811705">2A0</translation>
 <translation id="1476595624592550506">עליך לשנות את הסיסמה</translation>
@@ -470,7 +470,7 @@
 <translation id="2784949926578158345">החיבור עבר איפוס.</translation>
 <translation id="2792012897584536778">מנהלי מערכת של המכשיר הזה הגדירו אישורי אבטחה שעשויים לאפשר להם לראות את התוכן של אתרים שביקרת בהם.</translation>
 <translation id="2799020568854403057">האתר הבא מכיל יישומים מזיקים</translation>
-<translation id="2799223571221894425">הפעל מחדש</translation>
+<translation id="2799223571221894425">הפעלה מחדש</translation>
 <translation id="2803306138276472711">‏לאחרונה, 'גלישה בטוחה של Google‏' <ph name="BEGIN_LINK" />זיהתה תוכנה זדונית<ph name="END_LINK" /> באתר <ph name="SITE" />. אתרים שבדרך כלל נחשבים לבטוחים נדבקים לעתים בתוכנה זדונית.</translation>
 <translation id="2807052079800581569">‏מיקום תמונה על ציר Y</translation>
 <translation id="2824775600643448204">שורת חיפוש וכתובות אתרים</translation>
@@ -517,8 +517,8 @@
 <translation id="2991571918955627853">‏נכון לעכשיו אי אפשר לבקר באתר <ph name="SITE" /> מאחר שנעשה בו שימוש ב-HSTS. שגיאות רשת ומתקפות הן בדרך כלל זמניות, כך שהדף הזה יחזור כנראה לפעול מאוחר יותר.</translation>
 <translation id="2996674880327704673">‏הצעות מאת Google</translation>
 <translation id="3002501248619246229">בדיקת מדיה במגש קלט</translation>
-<translation id="3005723025932146533">הצג עותק שמור</translation>
-<translation id="3008447029300691911">הזן את קוד האימות של הכרטיס <ph name="CREDIT_CARD" />. ברגע שתאשר, פרטי הכרטיס שלך ישותפו עם האתר הזה.</translation>
+<translation id="3005723025932146533">הצגת עותק שמור</translation>
+<translation id="3008447029300691911">יש להזין את קוד האימות של הכרטיס <ph name="CREDIT_CARD" />. לאחר האישור, פרטי הכרטיס שלך ישותפו עם האתר הזה.</translation>
 <translation id="3010559122411665027">רשומה ברשימה "<ph name="ENTRY_INDEX" />": <ph name="ERROR" /></translation>
 <translation id="301521992641321250">נחסמה אוטומטית</translation>
 <translation id="3016780570757425217">לדעת מה המיקום שלך</translation>
@@ -652,7 +652,7 @@
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
 <translation id="3576616784287504635">דף מוטמע באתר <ph name="SITE" /> אומר</translation>
 <translation id="3581089476000296252">‏כשהדף יהיה מוכן, מערכת Chrome תודיע לך על כך. &lt;a&gt;ביטול&lt;/a&gt;</translation>
-<translation id="3582930987043644930">הוסף שם</translation>
+<translation id="3582930987043644930">הוספת שם</translation>
 <translation id="3583757800736429874">&amp;ביצוע מחדש של העברה</translation>
 <translation id="3584299510153766161">שני ניקובים בחלק התחתון</translation>
 <translation id="3586931643579894722">הסתרת הפרטים</translation>
@@ -765,7 +765,7 @@
 <translation id="4058922952496707368">מפתח "<ph name="SUBKEY" />": <ph name="ERROR" /></translation>
 <translation id="4067263367174615723">C1 (Envelope)‎</translation>
 <translation id="4067947977115446013">הוספה של כתובת חוקית</translation>
-<translation id="4072486802667267160">התרחשה שגיאה במהלך עיבוד התשלום שלך. נסה שוב.</translation>
+<translation id="4072486802667267160">התרחשה שגיאה במהלך עיבוד התשלום שלך. יש לנסות שוב.</translation>
 <translation id="4075732493274867456">‏הלקוח והשרת אינם תומכים בגרסה נפוצה של פרוטוקול SSL או בחבילת הצפנה.</translation>
 <translation id="4075941231477579656">Touch ID</translation>
 <translation id="4079302484614802869">‏תצורת ה-Proxy מוגדרת להשתמש בכתובת אתר של סקריפט מסוג ‎.Pac ולא בשרתי Proxy קבועים.</translation>
@@ -948,7 +948,7 @@
 <translation id="4744603770635761495">נתיב להפעלה</translation>
 <translation id="4750917950439032686">הפרטים שלך (כמו סיסמאות או מספרי כרטיסי אשראי) נשלחים לאתר הזה במצב פרטי.</translation>
 <translation id="4756388243121344051">&amp;היסטוריה</translation>
-<translation id="4758311279753947758">הוסף פרטים ליצירת קשר</translation>
+<translation id="4758311279753947758">הוספת פרטים ליצירת קשר</translation>
 <translation id="4761104368405085019">להשתמש במיקרופון</translation>
 <translation id="4764776831041365478">ייתכן שדף האינטרנט בכתובת <ph name="URL" /> אינו פעיל זמנית, או שהועבר לכתובת אינטרנט חדשה לצמיתות.</translation>
 <translation id="4766713847338118463">שתי סיכות הידוק בחלק התחתון</translation>
@@ -1008,7 +1008,7 @@ Del</translation>
 <translation id="4955242332710481440">A5-Extra</translation>
 <translation id="4958444002117714549">הרחבת רשימה</translation>
 <translation id="4973922308112707173">שני ניקובים בחלק העליון</translation>
-<translation id="4974590756084640048">הפעל מחדש אזהרות</translation>
+<translation id="4974590756084640048">הפעלה מחדש של אזהרות</translation>
 <translation id="4984088539114770594">להשתמש במיקרופון?</translation>
 <translation id="4984339528288761049">Prc5 (Envelope)‎</translation>
 <translation id="4989163558385430922">אני רוצה לראות הכול</translation>
@@ -1131,7 +1131,7 @@ Del</translation>
 <translation id="5421136146218899937">ניקוי נתוני גלישה...</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> רוצה לשלוח לך הודעות</translation>
 <translation id="542872847390508405">גלישה כאורח</translation>
-<translation id="5430298929874300616">הסר סימניה</translation>
+<translation id="5430298929874300616">הסרת סימנייה</translation>
 <translation id="5439770059721715174">שגיאת אימות סכימה ב-"<ph name="ERROR_PATH" />"‏: <ph name="ERROR" /></translation>
 <translation id="5443468954631487277">בסדר הפוך עם הפנים כלפי מעלה</translation>
 <translation id="5447765697759493033">האתר הזה לא יתורגם</translation>
@@ -1263,7 +1263,7 @@ Del</translation>
 <translation id="5963413905009737549">קטע</translation>
 <translation id="5967592137238574583">עריכת הפרטים ליצירת קשר</translation>
 <translation id="5967867314010545767">הסרה מההיסטוריה</translation>
-<translation id="5975083100439434680">התרחק</translation>
+<translation id="5975083100439434680">התרחקות</translation>
 <translation id="5979084224081478209">בדיקת הסיסמאות</translation>
 <translation id="5980920751713728343">Index-3x5</translation>
 <translation id="5984570616552610254">לחות בתא</translation>
@@ -1424,7 +1424,7 @@ Del</translation>
 <translation id="6612358246767739896">תוכן מוגן</translation>
 <translation id="6615297766614333076">מערים 2</translation>
 <translation id="6624427990725312378">פרטי איש קשר</translation>
-<translation id="6626291197371920147">הוסף מספר כרטיס חוקי</translation>
+<translation id="6626291197371920147">הוספת מספר כרטיס חוקי</translation>
 <translation id="6628463337424475685"><ph name="ENGINE" /> חיפוש</translation>
 <translation id="6630809736994426279">‏תוקפים שנמצאים כרגע באתר <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> עלולים להתקין במחשב ה-MAC שלך תוכנות מסוכנות שגונבות מידע או מוחקות אותו (לדוגמה, תמונות, סיסמאות, הודעות וכרטיסי אשראי). <ph name="BEGIN_LEARN_MORE_LINK" />מידע נוסף<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="6631202559048444592">במדיניות הזו קיים יותר ממקור אחד, אבל הערכים זהים.</translation>
@@ -1680,7 +1680,7 @@ Del</translation>
 <translation id="7648992873808071793">לאחסן קבצים במכשיר הזה</translation>
 <translation id="7653957176542370971">גיליון פרטי התשלום סגור</translation>
 <translation id="7654909834015434372">המסמך הזה יחזור למצב הסיבוב המקורי שלו בזמן עריכת ההערות</translation>
-<translation id="765676359832457558">הסתר הגדרות מתקדמות...</translation>
+<translation id="765676359832457558">הסתרת הגדרות מתקדמות...</translation>
 <translation id="7658239707568436148">ביטול</translation>
 <translation id="7662298039739062396">ההגדרה נשלטת על-ידי תוסף</translation>
 <translation id="7663736086183791259">אישור <ph name="CERTIFICATE_VALIDITY" /></translation>
@@ -1779,7 +1779,7 @@ Del</translation>
 <translation id="8037357227543935929">לשאול (ברירת מחדל)</translation>
 <translation id="803771048473350947">קובץ</translation>
 <translation id="8041089156583427627"> שליחת משוב</translation>
-<translation id="8041940743680923270">השתמש בברירת המחדל הכללית (שאל)</translation>
+<translation id="8041940743680923270">שימוש בברירת המחדל הכללית (יש לשאול)</translation>
 <translation id="8042918947222776840">בחירת שיטת איסוף</translation>
 <translation id="8057711352706143257">יש בעיה בהגדרה של "<ph name="SOFTWARE_NAME" />". בדרך כלל, הסרת ההתקנה של "<ph name="SOFTWARE_NAME" />" פותרת את הבעיה. <ph name="FURTHER_EXPLANATION" /></translation>
 <translation id="8066955247577885446">מצטערים, משהו השתבש.</translation>
@@ -1823,8 +1823,8 @@ Del</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8232343881378637145">טמפרטורת פלטפורמה</translation>
 <translation id="8238581221633243064">פתיחת הדף בכרטיסייה חדשה של גלישה בסתר</translation>
-<translation id="8241707690549784388">הדף שאתה מחפש השתמש במידע שהזנת. החזרה לדף זה עלולה לגרום לכפילות בפעולות שביצעת. האם ברצונך להמשיך?</translation>
-<translation id="8241712895048303527">חסום באתר הזה</translation>
+<translation id="8241707690549784388">הדף שחיפשת השתמש במידע שהזנת. החזרה לדף זה עלולה לגרום לכפילות בפעולות שביצעת. האם ברצונך להמשיך?</translation>
+<translation id="8241712895048303527">חסימה באתר הזה</translation>
 <translation id="8242426110754782860">המשך</translation>
 <translation id="8249296373107784235">ביטול</translation>
 <translation id="8249320324621329438">בוצע אחזור אחרון:</translation>
@@ -1911,8 +1911,7 @@ Del</translation>
           <ph name="LIST_ITEM" />קובצי cookie ונתוני אתר
         <ph name="END_LIST" /></translation>
 <translation id="8574899947864779331">‏שימוש ב-Touch ID כדי לאשר כרטיסים מהר יותר</translation>
-<translation id="858637041960032120">הוסף מספר טלפון
-</translation>
+<translation id="858637041960032120">הוספת מספר טלפון</translation>
 <translation id="8589998999637048520">האיכות הטובה ביותר</translation>
 <translation id="860043288473659153">שם בעל הכרטיס</translation>
 <translation id="8606726445206553943">‏להשתמש במכשירי ה-MIDI שלך</translation>
@@ -2036,8 +2035,8 @@ Del</translation>
 <translation id="9114524666733003316">אישור הכרטיס מתבצע...</translation>
 <translation id="9114581008513152754">‏הדפדפן הזה לא מנוהל על ידי חברה או ארגון אחר. ייתכן שהפעילות במכשיר הזה מנוהלת מחוץ ל-Chrome. <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="9119042192571987207">הועלה</translation>
-<translation id="9128870381267983090">התחבר לרשת</translation>
-<translation id="9137013805542155359">הצג מקור</translation>
+<translation id="9128870381267983090">התחברות לרשת</translation>
+<translation id="9137013805542155359">הצגת מקור</translation>
 <translation id="9141013498910525015">ניהול כתובות</translation>
 <translation id="9148088599418889305">בחירת שיטת משלוח</translation>
 <translation id="9148507642005240123">&amp;ביטול עריכה</translation>

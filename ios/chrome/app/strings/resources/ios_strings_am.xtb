@@ -18,6 +18,7 @@
 <translation id="1112015203684611006">ማተም አልተሳካም።</translation>
 <translation id="1125564390852150847">አዲስ ትር ፍጠር።</translation>
 <translation id="1145536944570833626">ነባሩን ውሂብ ይሰርዙ።</translation>
+<translation id="1147031633655575115">እንደ <ph name="USER" /> ሆነው ገብተዋል</translation>
 <translation id="1154690515305205900">ወደ የደመቀው ጽሑፍ አገናኝ ሊፈጠር አይችልም።</translation>
 <translation id="1157749421655780457">አካባቢን ፍቀድ...</translation>
 <translation id="1165039591588034296">ስህተት</translation>
@@ -268,6 +269,7 @@
 <translation id="385051799172605136">ተመለስ</translation>
 <translation id="3892144330757387737">ታሪክዎን እዚህ ያገኛሉ</translation>
 <translation id="3897092660631435901">ምናሌ</translation>
+<translation id="3913386780052199712">Chrome ውስጥ ገብተዋል</translation>
 <translation id="3915450441834151894">የጣቢያ መረጃ</translation>
 <translation id="3922310737605261887">የቀዱትን ጽሑፍ ይፈልጉ</translation>
 <translation id="3928666092801078803">የእኔን ውሂብ አጣምር</translation>

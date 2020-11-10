@@ -17,7 +17,7 @@
 <translation id="1293699935367580298">Esc</translation>
 <translation id="1306549533752902673">אפליקציות מומלצות</translation>
 <translation id="1368832886055348810">משמאל לימין</translation>
-<translation id="1383876407941801731">חפש</translation>
+<translation id="1383876407941801731">חיפוש</translation>
 <translation id="1398853756734560583">הגדלת החלון</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />, אפליקציה מותקנת</translation>
 <translation id="1450753235335490080">לא ניתן לשתף את ה<ph name="CONTENT_TYPE" /></translation>
@@ -99,7 +99,7 @@
 <translation id="3600566671520689681">{DAYS,plural, =1{נותר יום אחד}two{נותרו יומיים}many{נותרו # ימים}other{נותרו # ימים}}</translation>
 <translation id="3600969208114796418">קובץ <ph name="SAVEAS_EXTENSION_TYPE" /></translation>
 <translation id="3608915363409716668"><ph name="MAXIMUM_VALUE" />+</translation>
-<translation id="3618849550573277856">חפש “<ph name="LOOKUP_STRING" />”</translation>
+<translation id="3618849550573277856">חיפוש “<ph name="LOOKUP_STRING" />”</translation>
 <translation id="364720409959344976">בחירת תיקייה להעלאה</translation>
 <translation id="3660179305079774227">חץ למעלה</translation>
 <translation id="3670030362669914947">מספר</translation>
@@ -129,7 +129,7 @@
 <translation id="4888938634149558681">התקשרות</translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{שנייה אחת}two{# שניות}many{# שניות}other{# שניות}}</translation>
 <translation id="4971687151119236543">טראק קודם במדיה</translation>
-<translation id="5046499563572181734">הקש כאן</translation>
+<translation id="5046499563572181734">יש להקיש כאן</translation>
 <translation id="5076340679995252485">&amp;הדבקה</translation>
 <translation id="5198715732953550718">האפליקציה <ph name="MOVED_APP_NAME" /> משולבת ביחד עם האפליקציה <ph name="IN_PLACE_APP" /> ליצירת תיקייה חדשה.</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" />PB</translation>

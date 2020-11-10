@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sl">
+<translation id="1625959690469240009">Če želite odpreti nastavitve spletnega mesta, posodobite ali znova namestite brskalnik <ph name="BROWSER_NAME" />.</translation>
 <translation id="1700971771753530690"><ph name="APP_NAME" /> zahteva naslednjo aplikacijo:</translation>
 <translation id="2697679025356221813"><ph name="APP_NAME" /> zahteva brskalnik</translation>
 <translation id="3858759029325727987">Izberite brskalnik, ki podpira to aplikacijo:</translation>

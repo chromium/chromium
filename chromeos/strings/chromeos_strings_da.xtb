@@ -93,6 +93,7 @@
 <translation id="5212543919916444558">Jeg kan ikke finde noget på skærmen, jeg kan hjælpe med. Prøv at trykke på mikrofonen for at spørge mig om noget.</translation>
 <translation id="5222676887888702881">Log ud</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
+<translation id="5275828089655680674">Kør rutiner igen</translation>
 <translation id="5317780077021120954">Gem</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">Vælg en ny adgangskode nu</translation>
@@ -101,6 +102,7 @@
 <translation id="5431318178759467895">Farve</translation>
 <translation id="5457599981699367932">Anvend som gæst</translation>
 <translation id="54609108002486618">Administreret</translation>
+<translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5832805196449965646">Tilføj person</translation>
 <translation id="5895138241574237353">Genstart</translation>
 <translation id="6040143037577758943">Luk</translation>

@@ -17,6 +17,7 @@
 <translation id="1369915414381695676">サイト <ph name="SITE_NAME" /> を追加しました</translation>
 <translation id="1383876407941801731">検索</translation>
 <translation id="1384959399684842514">ダウンロードを一時停止しました</translation>
+<translation id="1415402041810619267">URL の短縮バージョンです</translation>
 <translation id="1431402976894535801">サイトによるユーザーのアクティブ状態の検出をブロックする</translation>
 <translation id="1446450296470737166">MIDI機器のフルコントロールを許可</translation>
 <translation id="1509960214886564027">多くサイトで機能を使用できなくなる可能性があります</translation>
@@ -121,6 +122,7 @@
 <translation id="445467742685312942">保護されたコンテンツの再生をサイトに許可する</translation>
 <translation id="4468959413250150279">特定のサイトの音声をミュートします。</translation>
 <translation id="4479647676395637221">サイトにカメラの使用を許可する前に確認する（推奨）</translation>
+<translation id="4505788138578415521">URL のフルバージョンです</translation>
 <translation id="4534723447064627427"><ph name="APP_NAME" /> にマイクへのアクセスを許可するには、<ph name="BEGIN_LINK" />Android の設定<ph name="END_LINK" />でもマイクをオンにしてください。</translation>
 <translation id="4570913071927164677">詳細</translation>
 <translation id="4645575059429386691">保護者により管理されています</translation>

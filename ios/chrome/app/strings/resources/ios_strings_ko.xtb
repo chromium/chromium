@@ -18,6 +18,7 @@
 <translation id="1112015203684611006">인쇄 실패</translation>
 <translation id="1125564390852150847">새 탭 만들기</translation>
 <translation id="1145536944570833626">기존 데이터 삭제</translation>
+<translation id="1147031633655575115"><ph name="USER" />님의 계정으로 로그인됨</translation>
 <translation id="1154690515305205900">강조표시된 텍스트로 연결되는 링크를 생성할 수 없습니다.</translation>
 <translation id="1157749421655780457">위치 권한 허용...</translation>
 <translation id="1165039591588034296">오류</translation>
@@ -268,6 +269,7 @@
 <translation id="385051799172605136">뒤로</translation>
 <translation id="3892144330757387737">여기에서 방문 기록을 확인할 수 있습니다</translation>
 <translation id="3897092660631435901">메뉴</translation>
+<translation id="3913386780052199712">Chrome에 로그인됨</translation>
 <translation id="3915450441834151894">사이트 정보</translation>
 <translation id="3922310737605261887">복사한 텍스트 검색</translation>
 <translation id="3928666092801078803">내 데이터 결합하기</translation>

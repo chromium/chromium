@@ -10,7 +10,7 @@
 <translation id="1290373024480130896"><ph name="MODIFIER1" /><ph name="SEPARATOR1" /><ph name="MODIFIER2" /><ph name="SEPARATOR2" /><ph name="MODIFIER3" /><ph name="SEPARATOR3" /><ph name="KEY" /></translation>
 <translation id="1293699935367580298">Esc</translation>
 <translation id="1299858300159559687">הדפסת הדף הנוכחי</translation>
-<translation id="1383876407941801731">חפש</translation>
+<translation id="1383876407941801731">חיפוש</translation>
 <translation id="1454364489140280055"><ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="SHIFT1" /><ph name="SEPARATOR2" /><ph name="G" /> או <ph name="SHIFT2" /><ph name="SEPARATOR3" /><ph name="ENTER" /></translation>
 <translation id="1477442857810932985">מעבר לסוף השורה</translation>
 <translation id="1499072997694708844">סגירה של כל חלונות החיפוש הפתוחים או הפסקת הטעינה של הדף הנוכחי</translation>
@@ -93,7 +93,7 @@
 <translation id="4090342722461256974">הקשה ארוכה על <ph name="ALT" /><ph name="SEPARATOR" /><ph name="SHIFT" />, הקשה על <ph name="TAB" /> עד ההגעה לחלון שרוצים לפתוח, ושחרור.</translation>
 <translation id="4092538597492297615">העתקת התוכן שנבחר אל לוח העריכה</translation>
 <translation id="4101772068965291327">פתיחה של דף הבית</translation>
-<translation id="4123108089450197101">שמירת הקישור כסימניה</translation>
+<translation id="4123108089450197101">שמירת הקישור כסימנייה</translation>
 <translation id="4141203561740478845">הדגשת הסרגל של שורת כתובת האתר</translation>
 <translation id="4148761611071495477"><ph name="CTRL" /><ph name="SEPARATOR" /><ph name="G" /> או <ph name="ENTER" /></translation>
 <translation id="4240486403425279990">מצב סקירה כללית</translation>
@@ -207,7 +207,7 @@
 <translation id="9005984960510803406">‏פתיחת חלון Crosh</translation>
 <translation id="9041599225465145264">הדבקת התוכן מהלוח</translation>
 <translation id="9052808072970550123">מעבר למשתמש הבא</translation>
-<translation id="906458777597946297">הגדל את החלון</translation>
+<translation id="906458777597946297">הגדלת החלון</translation>
 <translation id="9072882242928138086"><ph name="CTRL" /><ph name="SEPARATOR" /><ph name="SHIFT" /> ולאחר מכן <ph name="LEFT" /> או <ph name="RIGHT" /> או <ph name="UP" /> או <ph name="DOWN" /></translation>
 <translation id="9091855755813503076">מעבר לתחילת השורה</translation>
 <translation id="9106898733795143799">דפים ודפדפן אינטרנט</translation>

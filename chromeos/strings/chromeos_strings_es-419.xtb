@@ -37,6 +37,7 @@
 <translation id="2805756323405976993">Aplicaciones</translation>
 <translation id="2872961005593481000">Apagar</translation>
 <translation id="3008341117444806826">ACTUALIZAR</translation>
+<translation id="3009958530611748826">Seleccionar una carpeta de destino</translation>
 <translation id="3083667275341675831">Diagnóstico de conectividad</translation>
 <translation id="3091839911843451378">Error: La impresora se detuvo</translation>
 <translation id="3188257591659621405">Mis archivos</translation>
@@ -49,6 +50,7 @@
 <translation id="3515615323037921860">Trabajos de impresión</translation>
 <translation id="3527036260304016759">Error: Problema desconocido</translation>
 <translation id="360565022852130722">la red Wi-Fi está protegida con el protocolo WEP 802.1x (poco seguro)</translation>
+<translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> opiniones)</translation>
 <translation id="3749289110408117711">Nombre del archivo</translation>
 <translation id="38114475217616659">Borrar todo el historial</translation>
 <translation id="3820172043799983114">PIN no válido</translation>
@@ -80,16 +82,19 @@
 <translation id="4731797938093519117">Acceso parental</translation>
 <translation id="4773299976671772492">Detenida</translation>
 <translation id="4808449224298348341">Se canceló el trabajo de impresión <ph name="DOCUMENT_TITLE" /></translation>
+<translation id="4832079907277790330">Seleccionar carpeta en la app de Archivos…</translation>
 <translation id="4890353053343094602">Elige una nueva de inmediato</translation>
 <translation id="4917889632206600977">Se detuvo: no hay papel</translation>
 <translation id="4932733599132424254">Fecha</translation>
 <translation id="4985509611418653372">Ejecutar</translation>
+<translation id="4991056862642197104">Para comenzar, coloca el documento y haz clic en Escanear</translation>
 <translation id="5094480857972195099"><ph name="ENROLLMENT_DOMAIN" /> administra a este usuario y puede administrar la configuración y supervisar la actividad del usuario de forma remota.</translation>
 <translation id="520299634122159966">No hay escáneres disponibles</translation>
 <translation id="5212543919916444558">No hay nada en la pantalla con lo que pueda ayudarte.
 Intenta presionar el micrófono para hacerme una pregunta.</translation>
 <translation id="5222676887888702881">Salir</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
+<translation id="5275828089655680674">Volver a ejecutar las rutinas</translation>
 <translation id="5317780077021120954">Guardar</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">Elige una nueva ahora</translation>
@@ -98,6 +103,7 @@ Intenta presionar el micrófono para hacerme una pregunta.</translation>
 <translation id="5431318178759467895">Color</translation>
 <translation id="5457599981699367932">Navegar como invitado</translation>
 <translation id="54609108002486618">Gestionado</translation>
+<translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5832805196449965646">Agregar a una persona</translation>
 <translation id="5895138241574237353">Reiniciar</translation>
 <translation id="6040143037577758943">Cerrar</translation>
@@ -124,6 +130,7 @@ Intenta presionar el micrófono para hacerme una pregunta.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7359657277149375382">Tipo de archivo</translation>
 <translation id="7561454561030345039">El administrador controla esta acción</translation>
+<translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7658239707568436148">Cancelar</translation>
 <translation id="7690294790491645610">Confirmar contraseña nueva</translation>
 <translation id="7805768142964895445">Estado</translation>

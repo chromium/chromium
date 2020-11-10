@@ -18,6 +18,7 @@
 <translation id="1112015203684611006">Ошибка печати</translation>
 <translation id="1125564390852150847">Создать вкладку</translation>
 <translation id="1145536944570833626">Удалить сохраненные данные.</translation>
+<translation id="1147031633655575115">Вы вошли как <ph name="USER" /></translation>
 <translation id="1154690515305205900">Создать ссылку на выделенный текст нельзя.</translation>
 <translation id="1157749421655780457">Разрешить передачу геоданных</translation>
 <translation id="1165039591588034296">Ошибка</translation>
@@ -268,6 +269,7 @@
 <translation id="385051799172605136">Назад</translation>
 <translation id="3892144330757387737">Здесь вы найдете свою историю</translation>
 <translation id="3897092660631435901">Меню</translation>
+<translation id="3913386780052199712">Вы вошли в Chrome</translation>
 <translation id="3915450441834151894">Информация о сайте</translation>
 <translation id="3922310737605261887">Поиск по скопированному тексту</translation>
 <translation id="3928666092801078803">Объединить данные</translation>

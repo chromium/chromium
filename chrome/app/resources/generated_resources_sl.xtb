@@ -2156,6 +2156,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="3487007233252413104">anonimna funkcija</translation>
 <translation id="348780365869651045">Čakanje na AppCache ...</translation>
 <translation id="3488065109653206955">Delno aktivirano</translation>
+<translation id="3490695139702884919">Prenašanje ... <ph name="PERCENT" /> %</translation>
 <translation id="3491669675709357988">Otrokov račun ni nastavljen za starševski nadzor Family Linka. Starševski nadzor lahko dodate po koncu nastavitve. Informacije o starševskem nadzoru so na voljo v aplikaciji Raziskovanje.</translation>
 <translation id="3491678231052507920">Spletna mesta običajno uporabljajo naprave in podatke za navidezno resničnost, da vam lahko omogočijo zagon sej navidezne resničnosti.</translation>
 <translation id="3492788708641132712">Sinhronizacija ne deluje. Poskusite se znova prijaviti.</translation>
@@ -3674,6 +3675,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="5301954838959518834">V redu, razumem</translation>
 <translation id="5302048478445481009">Jezik</translation>
 <translation id="5302932258331363306">Prikaz zamenjav</translation>
+<translation id="5304276686222516262">Seznama stikov ni bilo mogoče prenesti. Preverite omrežno povezavo ali &lt;a href="#" id="tryAgainLink"&gt;poskusite znova&lt;/a&gt;.</translation>
 <translation id="5305688511332277257">Ni nameščenih</translation>
 <translation id="5307030433605830021">Vir ni podprt</translation>
 <translation id="5308380583665731573">Povezovanje</translation>
@@ -3729,6 +3731,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="5370819323174483825">&amp;Znova naloži</translation>
 <translation id="5372529912055771682">Ta različica operacijskega sistema ne podpira navedenega načina včlanitve. Poskrbite, da imate nameščeno najnovejšo različico, in poskusite znova.</translation>
 <translation id="5372579129492968947">Odpenjanje razširitve</translation>
+<translation id="5375318608039113175">Če želite s temi stiki uporabljati funkcijo Deljenje v bližini, vsakemu od njih dodajte e-poštni naslov, povezan z njegovim računom Google.</translation>
 <translation id="5376169624176189338">Kliknite, če se želite vrniti nazaj, za ogled zgodovine pa zadržite</translation>
 <translation id="5376931455988532197">Datoteka je prevelika</translation>
 <translation id="5377721922656071359">{COUNT,plural, =1{Priloge (<ph name="ATTACHMENTS" />) so bile uspešno poslane v napravo <ph name="DEVICE_NAME" />}one{Priloge (<ph name="ATTACHMENTS" />) so bile uspešno poslane v napravo <ph name="DEVICE_NAME" />}two{Priloge (<ph name="ATTACHMENTS" />) so bile uspešno poslane v napravo <ph name="DEVICE_NAME" />}few{Priloge (<ph name="ATTACHMENTS" />) so bile uspešno poslane v napravo <ph name="DEVICE_NAME" />}other{Priloge (<ph name="ATTACHMENTS" />) so bile uspešno poslane v napravo <ph name="DEVICE_NAME" />}}</translation>
@@ -3890,6 +3893,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="5554403733534868102">Po tem ne bo treba več čakati na posodobitve</translation>
 <translation id="5554489410841842733">Ta ikona bo vidna, ko lahko razširitev deluje na trenutni strani.</translation>
 <translation id="5554720593229208774">Overitelj potrdil za e-pošto</translation>
+<translation id="5555363196923735206">Obrni fotoaparat</translation>
 <translation id="5556459405103347317">Znova naloži</translation>
 <translation id="5558125320634132440">To spletno mesto je blokirano, ker morda vsebuje neprimerno vsebino za otroke</translation>
 <translation id="5558129378926964177">Po&amp;večaj</translation>
@@ -5207,6 +5211,7 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="7113502843173351041">Poznati morate svoj e-poštni naslov</translation>
 <translation id="7114054701490058191">Gesli se ne ujemata</translation>
 <translation id="7114648273807173152">Če se želite v račun za Google prijaviti s funkcijo Smart Lock, odprite »Nastavitve &gt; Povezane naprave &gt; Vaš telefon &gt; Smart Lock«.</translation>
+<translation id="7115361495406486998">Ni dosegljivih stikov</translation>
 <translation id="7117228822971127758">Poskusite znova pozneje</translation>
 <translation id="7117247127439884114">Prijavite se znova ...</translation>
 <translation id="711840821796638741">Prikaz upravljanih zaznamkov</translation>
@@ -6085,6 +6090,7 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="810728361871746125">Ločljivost zaslona</translation>
 <translation id="8108526232944491552">{COUNT,plural, =0{Ni piškotkov drugih spletnih mest}=1{1 piškotek drugega spletnega mesta je blokiran}one{# piškotek drugih spletnih mest je blokiran}two{# piškotka drugih spletnih mest sta blokirana}few{# piškotki drugih spletnih mest so blokirani}other{# piškotkov drugih spletnih mest je blokiranih}}</translation>
 <translation id="810875025413331850">Ni naprav v bližini.</translation>
+<translation id="8110489095782891123">Prenašanje seznama stikov …</translation>
 <translation id="8113476325385351118">Še naprej prepreči temu spletnemu popoln nadzor nad napravami MIDI</translation>
 <translation id="8114199541033039755">Premikanje na začetni zaslon in nazaj ter preklop med aplikacijami z gumbi v načinu tabličnega računalnika. Ta možnost je vklopljena, če je omogočen ChromeVox ali je omogočena možnost samodejnih klikov.</translation>
 <translation id="8114875720387900039">Razdeli vodoravno</translation>

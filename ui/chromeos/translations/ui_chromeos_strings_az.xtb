@@ -18,6 +18,7 @@
 <translation id="1150565364351027703">Gün eynəyi</translation>
 <translation id="115443833402798225">Hangul Ahnmatae</translation>
 <translation id="1155759005174418845">Katalan</translation>
+<translation id="1169885125071442573">Qucarat dilində Transliterasiya</translation>
 <translation id="1172970565351728681">Təxminən <ph name="REMAINING_TIME" /> qalıb</translation>
 <translation id="1173894706177603556">Adını dəyişin</translation>
 <translation id="117624967391683467"><ph name="FILE_NAME" /> kopyalanır...</translation>
@@ -31,6 +32,7 @@
 <translation id="1297922636971898492">Google Disk hazırda əlçatmazdır. Google Disk əlçatan olan kimi yükləmə avtomatik yenidən başlayacaq.</translation>
 <translation id="1307931752636661898">Linux fayllarını göstərmək alınmadı</translation>
 <translation id="1338950911836659113">Silinir...</translation>
+<translation id="1345094301418504404">Fransız (Kanada)</translation>
 <translation id="1346748346194534595">Sağ</translation>
 <translation id="1351692861129622852"><ph name="FILE_COUNT" /> fayl import olunur...</translation>
 <translation id="1352103415082130575">Tay klaviaturası (Pattachote)</translation>
@@ -46,6 +48,7 @@
 <translation id="1441841714100794440">Vyetnam klaviaturası (Telex)</translation>
 <translation id="1464724975715666883">1 xəta.</translation>
 <translation id="1467432559032391204">Sol</translation>
+<translation id="1472351751615457820">Yunan dilində Transliterasiya</translation>
 <translation id="1474339897586437869">"<ph name="FILENAME" />" yüklənmədi. Google Diskdə kifayət qədər boş yer yoxdur.</translation>
 <translation id="148466539719134488">İsveçrəyə aid</translation>
 <translation id="1497522201463361063">"<ph name="FILE_NAME" />" faylını adlandırmaq mümkün deyil. <ph name="ERROR_MESSAGE" /></translation>
@@ -56,6 +59,7 @@
 <translation id="1572585716423026576">Divar kağızı kimi ayarlayın</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
 <translation id="1620510694547887537">Kamera</translation>
+<translation id="1622022025445651011">Fransız (Fransa)</translation>
 <translation id="1646019627374511909"><ph name="NUMBER_OF_ITEMS" /> fayl oflayn əlçatan edilir</translation>
 <translation id="164729547906544836">Tamil klaviaturası (itrans)</translation>
 <translation id="164969095109328410">Chrome cihazı</translation>
@@ -93,6 +97,8 @@
 <translation id="2009067268969781306">Formatdan sonra diskdə saxlanılan bütün data silinəcək. Bu əməliyyat geri qaytarıla bilməz.</translation>
 <translation id="2028997212275086731">RAR arxivi</translation>
 <translation id="2046702855113914483">Ramen</translation>
+<translation id="2060251957438343874">Alman (Almaniya)</translation>
+<translation id="2066433303065022982">İvrit dilində Transliterasiya</translation>
 <translation id="2070909990982335904">Nöqtə ilə başlayan adlar sistem üçündür. Lütfən, başqa ad seçin.</translation>
 <translation id="2079545284768500474">Geri qaytarın</translation>
 <translation id="2080010875307505892">Serb klaviaturası</translation>
@@ -106,6 +112,7 @@
 <translation id="2208158072373999562">Zip arxivi</translation>
 <translation id="2225536596944493418"><ph name="NUMBER_OF_ITEMS" /> elementi silmək istədiyinizə əminsiniz?</translation>
 <translation id="2230062665678605299">Qovluq yaratmaq alınmadı "<ph name="FOLDER_NAME" />". <ph name="ERROR_MESSAGE" /></translation>
+<translation id="2258078827108167865">Xmer</translation>
 <translation id="2275059641601412272">Köçürülüb.</translation>
 <translation id="2287742181953707290">ABŞ Beynəlxalq kompüter klaviaturası ilə Portuqal dili</translation>
 <translation id="2288278176040912387">Rekord oyunçu</translation>
@@ -121,6 +128,7 @@
 <translation id="240770291734945588"><ph name="SPACE_AVAILABLE" /> əlçatandır</translation>
 <translation id="2425665904502185219">Ümumi fayl ölçüsü</translation>
 <translation id="2428749644083375155"><ph name="NUMBER_OF_ITEMS" /> element <ph name="FOLDER_NAME" /> qovluğuna kopyalanır</translation>
+<translation id="2445471348947930094">Qucarat Fonetikası</translation>
 <translation id="2448312741937722512">Növ</translation>
 <translation id="2453576648990281505">Fayl artıq mövcuddur</translation>
 <translation id="2464079411014186876">Dondurma</translation>
@@ -157,6 +165,7 @@
 <translation id="2887525882758501333">PDF sənəd</translation>
 <translation id="2888807692577297075">Heç bir element &lt;b&gt;"<ph name="SEARCH_STRING" />"&lt;/b&gt; məhsuluna uyğun gəlmədi.</translation>
 <translation id="2894654529758326923">Məlumat</translation>
+<translation id="2899393425226141282">Neo 2 klaviaturası ilə Alman (Almaniya)</translation>
 <translation id="2902312830803030883">Daha çox əməliyyatlar</translation>
 <translation id="2902734494705624966">Genişlənmiş ABŞ klaviaturası</translation>
 <translation id="2923240520113693977">Eston</translation>
@@ -258,6 +267,7 @@
 <translation id="4002066346123236978">Başlıq</translation>
 <translation id="4070370845051020638">Cənubi Çin dili daxil etmə üsulu</translation>
 <translation id="4072248638558688893">Tamil klaviaturası (fonetik)</translation>
+<translation id="4097397818890482665">Kannada dilində Transliterasiya</translation>
 <translation id="4124935795427217608">Tək buynuzlu at</translation>
 <translation id="4158739975813877944">Oxunma siyahısını açın</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> köçürülüb.</translation>
@@ -286,6 +296,7 @@
 <translation id="4479812471636796472">ABŞ Dvorak klaviaturası</translation>
 <translation id="4522570452068850558">Detallar</translation>
 <translation id="4527800702232535228">Bu qovluq Parallels Desktop ilə paylaşılır</translation>
+<translation id="4532112105534982530">Bépo klaviaturası ilə Fransız (Fransa)</translation>
 <translation id="4552678318981539154">Əlavə yaddaş ehtiyatı alın</translation>
 <translation id="4559318885353833501"><ph name="FILE_NAME" /> silindi</translation>
 <translation id="4559767610552730302">Bokeh</translation>
@@ -294,6 +305,7 @@
 <translation id="4579744207439506346"><ph name="ENTRY_NAME" /> seçimə əlavə edildi.</translation>
 <translation id="4582497162516204941">Linux (Beta) ilə quraşdırın</translation>
 <translation id="4594543368593301662"><ph name="SEARCH_TERM" /> üçün nəticələr göstərilir.</translation>
+<translation id="4598673198033263991">Yapon dili klaviaturası ilə hərf-rəqəm</translation>
 <translation id="4603392156942865207"><ph name="FILE_NAME" /> faylı <ph name="FOLDER_NAME" /> qovluğuna kopyalanır</translation>
 <translation id="4627439232948440198">Sanskrit</translation>
 <translation id="4631887759990505102">Artist</translation>
@@ -313,6 +325,7 @@
 <translation id="4737050008115666127">Eniş</translation>
 <translation id="4747271164117300400">Makedoniya</translation>
 <translation id="4759238208242260848">Endirmələr</translation>
+<translation id="4763055924467562718">Kannada Fonetikası</translation>
 <translation id="4779136857077979611">Oniqiri</translation>
 <translation id="4784330909746505604">PowerPoint təqdimatı</translation>
 <translation id="4788401404269709922"><ph name="NUMBER_OF_KB" /> KB</translation>
@@ -419,6 +432,7 @@
    Arxiv və ya virtual diskdə bütün faylları bağlayın və yenidən cəhd edin.</translation>
 <translation id="5691596662111998220"><ph name="FILE_NAME" /> artıq mövcud deyil.</translation>
 <translation id="5700087501958648444">Audio məlumatı</translation>
+<translation id="570049376144986742">Fransız (İsveçrə)</translation>
 <translation id="5731409020711461763">1 yeni foto</translation>
 <translation id="5752453871435543420">Chrome OS Bulud yedəyi</translation>
 <translation id="5756666464756035725">Macar QWERTY</translation>
@@ -453,6 +467,7 @@
 <translation id="6096979789310008754">Bütün fayl və qovluqları göstərən axtarış mətni silindi.</translation>
 <translation id="610101264611565198"><ph name="FILE_NAME" /> faylı <ph name="FOLDER_NAME" /> qovluğuna köçürülür</translation>
 <translation id="6111770213269631447">Transliterasiya (namaskar →  নমস্কার)</translation>
+<translation id="6113836390962820517">ABŞ klaviaturası ilə Yapon dili</translation>
 <translation id="6129953537138746214">Boşluq</translation>
 <translation id="6133173853026656527"><ph name="FILE_NAME" /> daşınır...</translation>
 <translation id="6146563240635539929">Videolar</translation>
@@ -476,6 +491,7 @@
 <translation id="6394388407447716302">Yalnız oxunan</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> element</translation>
 <translation id="6398765197997659313">Tam ekrandan çıxın</translation>
+<translation id="6412376911804527326">Laos</translation>
 <translation id="642282551015776456">Bu ad qovluq adının faylı kimi istifadə edilə bilməz</translation>
 <translation id="6485131920355264772">Boşluq infosunu əldə etmək alınmadı</translation>
 <translation id="6505918941256367791">Tamil klaviaturası (InScript)</translation>
@@ -494,6 +510,7 @@
 <translation id="6643016212128521049">Silin</translation>
 <translation id="6650726141019353908">Çəhrayı kəpənək</translation>
 <translation id="6657585470893396449">Parol</translation>
+<translation id="6680841910911617814">Holland (Niderland)</translation>
 <translation id="6710213216561001401">Əvvəlki</translation>
 <translation id="6718273304615422081">Sıxılır...</translation>
 <translation id="6751256176799620176">1 qovluq seçildi</translation>
@@ -590,6 +607,7 @@
 <translation id="7724603315864178912">Kəsin</translation>
 <translation id="7730494089396812859">Bulud yedəklənməsi detallarını göstərin</translation>
 <translation id="7748626145866214022">Əməliyyat panelində daha çox seçim əlçatandır. Əməliyyat panelinə fokuslanmaq üçün Alt + A düymələrinə basın.</translation>
+<translation id="7756956835689272676">Çoxdilli klaviatura ilə Fransız (Kanada)</translation>
 <translation id="7765158879357617694">Daşıyın</translation>
 <translation id="7774365994322694683">Quş</translation>
 <translation id="7788080748068240085">"<ph name="FILE_NAME" />" faylını oflayn saxlamaq üçün əlavə <ph name="TOTAL_FILE_SIZE" /> yer boşatlmalısınız:<ph name="MARKUP_1" />     <ph name="MARKUP_2" />oflayn əldə etmək istəmədiyiniz faylları çıxarın<ph name="MARKUP_3" />     <ph name="MARKUP_4" />Endirilənlər qovluğundan faylları silin<ph name="MARKUP_5" /></translation>
@@ -634,6 +652,7 @@
 <translation id="8106045200081704138">Mənimlə Paylaşılan</translation>
 <translation id="8116072619078571545">Buzlu su</translation>
 <translation id="8117957376775388318">Dayi daxiletmə metodu</translation>
+<translation id="8130367958112291342">Qwerty klaviaturası ilə Çex dili</translation>
 <translation id="8137331602592933310">"<ph name="FILENAME" />" Sizinlə paylaşılıb. Onun sahibi olmadığınız üçün onu silə bilməzsiniz.</translation>
 <translation id="8145409227593688472">Wubi giriş metodu</translation>
 <translation id="8148264977957212129">Pinyin giriş metodu</translation>
@@ -682,6 +701,7 @@
 <translation id="8600173386174225982">Fayl siyahısı miniatür görünüşünə dəyişdirilib.</translation>
 <translation id="8601932370724196034">Crostini şəkil faylı</translation>
 <translation id="8669949407341943408">Daşınır...</translation>
+<translation id="8688649574682805922">Alman (İsveçrə)</translation>
 <translation id="8694836330346852143">Urdu dili</translation>
 <translation id="8698464937041809063">Google çertyoj</translation>
 <translation id="8714406895390098252">Velosiped</translation>
@@ -695,6 +715,7 @@
 <translation id="8808686172382650546">Pişik</translation>
 <translation id="8810671769985673465">Arxiv etmək alınmadı, element mövcuddur: "<ph name="FILE_NAME" />"</translation>
 <translation id="8834164572807951958">"<ph name="DESTINATION_NAME" />" üzvləri bu elementlərin kopyasına daxil olacaqlar.</translation>
+<translation id="8846896937446866962">Qwerty klaviaturası ilə Macar dili</translation>
 <translation id="885381502874625531">Belarusiya klaviaturası</translation>
 <translation id="8860454412039442620">Excel cədvəli</translation>
 <translation id="8900820606136623064">Macar</translation>

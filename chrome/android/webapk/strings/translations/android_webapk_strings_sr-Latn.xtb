@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sr-Latn">
+<translation id="1625959690469240009">Da biste otvorili podešavanja sajta, ažurirajte ili ponovo instalirajte <ph name="BROWSER_NAME" /></translation>
 <translation id="1700971771753530690"><ph name="APP_NAME" /> zahteva sledeću aplikaciju:</translation>
 <translation id="2697679025356221813"><ph name="APP_NAME" /> zahteva veb-pregledač</translation>
 <translation id="3858759029325727987">Odaberite pregledač koji podržava ovu aplikaciju:</translation>

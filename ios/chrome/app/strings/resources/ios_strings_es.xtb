@@ -18,6 +18,7 @@
 <translation id="1112015203684611006">Error al imprimir.</translation>
 <translation id="1125564390852150847">Crear nueva pestaña.</translation>
 <translation id="1145536944570833626">Elimina los datos actuales.</translation>
+<translation id="1147031633655575115">Has iniciado sesión como <ph name="USER" /></translation>
 <translation id="1154690515305205900">No se puede crear un enlace al texto destacado.</translation>
 <translation id="1157749421655780457">Permitir acceso a tu ubicación...</translation>
 <translation id="1165039591588034296">Error</translation>
@@ -268,6 +269,7 @@ Sigue los pasos que se indican a continuación:</translation>
 <translation id="385051799172605136">Volver</translation>
 <translation id="3892144330757387737">Aquí verás tu historial</translation>
 <translation id="3897092660631435901">Menú</translation>
+<translation id="3913386780052199712">Has iniciado sesión en Chrome</translation>
 <translation id="3915450441834151894">Información del sitio web</translation>
 <translation id="3922310737605261887">Buscar el texto copiado</translation>
 <translation id="3928666092801078803">Combinar mis datos</translation>

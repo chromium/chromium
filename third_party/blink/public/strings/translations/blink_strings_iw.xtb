@@ -58,7 +58,7 @@
 <translation id="2507943997699731163">זהו שדה חובה.</translation>
 <translation id="2508569020611168319">רשימת כרטיסיות</translation>
 <translation id="2530182415807757784">ניתן לבחור יותר מאפשרות אחת, לא נבחרה אף אפשרות.</translation>
-<translation id="2561842179657104141">הצג עוד פקדי מדיה</translation>
+<translation id="2561842179657104141">הצגת עוד פקדי מדיה</translation>
 <translation id="2572483411312390101">הפעלה</translation>
 <translation id="2613802280814924224">יש להזין ערך חוקי. הערך החוקי הקרוב ביותר הוא <ph name="VALID_VALUE" /></translation>
 <translation id="2634240155926812724">הערוץ הירוק</translation>
@@ -79,7 +79,7 @@
 <translation id="3075154866155599887">יש להזין ערך חוקי. השדה ריק או שהוא מכיל תאריך לא חוקי.</translation>
 <translation id="3078740164268491126">טבלה</translation>
 <translation id="3086746722712840547">note</translation>
-<translation id="310520048233152454">הזן כתובת אתר.</translation>
+<translation id="310520048233152454">הזנת כתובת אתר.</translation>
 <translation id="3175736971608411871">טיימר</translation>
 <translation id="3199563858620722075">תיבה משולבת</translation>
 <translation id="3220661731597678625">השלב הנוכחי</translation>
@@ -105,11 +105,11 @@
 <translation id="4151657705144244502">פריט גרפי</translation>
 <translation id="4160057747563657758">טלפון</translation>
 <translation id="4193965531860883258">מבוא</translation>
-<translation id="4201051445878709314">הצג חודש קודם</translation>
+<translation id="4201051445878709314">הצגת חודש קודם</translation>
 <translation id="421884353938374759">color picker</translation>
 <translation id="4248100235867064564">שורת תפריטים</translation>
 <translation id="4293574643247337246">הכותרת העליונה של הדף</translation>
-<translation id="4360991593054037559">הזן ערך חוקי. שני הערכים החוקיים הקרובים ביותר הם <ph name="VALID_VALUE_LOW" /> ו-<ph name="VALID_VALUE_HIGHER" />.</translation>
+<translation id="4360991593054037559">יש להזין ערך חוקי. שני הערכים החוקיים הקרובים ביותר הם <ph name="VALID_VALUE_LOW" /> ו-<ph name="VALID_VALUE_HIGHER" />.</translation>
 <translation id="4384249794467006333">לתמונה הזו לא נוספה תווית. ניתן לפתוח את תפריט האפשרויות הנוספות בפינה השמאלית העליונה כדי לקבל תיאורי תמונה.</translation>
 <translation id="4384583879834880242">שאלות ותשובות</translation>
 <translation id="4444765639179266822">נראה שכתובים כאן הדברים הבאים: <ph name="OCR_TEXT" /></translation>
@@ -243,7 +243,7 @@
 <translation id="7745230546936012372">כדי לקבל תיאורים חסרים של תמונות, יש לפתוח את תפריט ההקשר.</translation>
 <translation id="7750228210027921155">תמונה בתוך תמונה</translation>
 <translation id="775297008183122718">ערך לא חוקי</translation>
-<translation id="7789962463072032349">השהה</translation>
+<translation id="7789962463072032349">השהיה</translation>
 <translation id="7802800022689234070">משולש הצגה/הסתרה</translation>
 <translation id="7852167693871241274">מחוון לבחירת גוון</translation>
 <translation id="7888071071722539607">כלול '<ph name="ATSIGN" />' בכתובת האימייל. ב-'<ph name="INVALIDADDRESS" />' חסר '<ph name="ATSIGN" />'.</translation>

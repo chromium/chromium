@@ -18,6 +18,7 @@
 <translation id="1150565364351027703">선글라스</translation>
 <translation id="115443833402798225">한글 안마태 키보드</translation>
 <translation id="1155759005174418845">카탈로니아어</translation>
+<translation id="1169885125071442573">구자라트어(음역)</translation>
 <translation id="1172970565351728681">약 <ph name="REMAINING_TIME" /> 남음</translation>
 <translation id="1173894706177603556">이름 바꾸기</translation>
 <translation id="117624967391683467"><ph name="FILE_NAME" /> 복사 중...</translation>
@@ -31,6 +32,7 @@
 <translation id="1297922636971898492">현재 Google 드라이브를 사용할 수 없습니다. Google 드라이브를 다시 사용할 수 있게 되면 자동으로 업로드가 다시 시작됩니다.</translation>
 <translation id="1307931752636661898">Linux 파일을 볼 수 없음</translation>
 <translation id="1338950911836659113">삭제 중...</translation>
+<translation id="1345094301418504404">프랑스어(캐나다)</translation>
 <translation id="1346748346194534595">오른쪽</translation>
 <translation id="1351692861129622852">파일 <ph name="FILE_COUNT" />개를 가져오는 중...</translation>
 <translation id="1352103415082130575">태국어 키보드(Pattachote)</translation>
@@ -46,6 +48,7 @@
 <translation id="1441841714100794440">베트남어 키보드(텔렉스)</translation>
 <translation id="1464724975715666883">오류가 1개 있습니다.</translation>
 <translation id="1467432559032391204">왼쪽</translation>
+<translation id="1472351751615457820">그리스어(음역)</translation>
 <translation id="1474339897586437869">'<ph name="FILENAME" />'이(가) 업로드되지 않았습니다. Google 드라이브에 충분한 여유 공간이 없습니다.</translation>
 <translation id="148466539719134488">스위스어</translation>
 <translation id="1497522201463361063">'<ph name="FILE_NAME" />'의 이름을 변경할 수 없습니다. <ph name="ERROR_MESSAGE" /></translation>
@@ -56,6 +59,7 @@
 <translation id="1572585716423026576">배경화면으로 설정</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" />PB</translation>
 <translation id="1620510694547887537">카메라</translation>
+<translation id="1622022025445651011">프랑스어(프랑스)</translation>
 <translation id="1646019627374511909">파일 <ph name="NUMBER_OF_ITEMS" />개를 오프라인에서 사용하도록 설정 중</translation>
 <translation id="164729547906544836">타밀어 키보드(itrans)</translation>
 <translation id="164969095109328410">Chrome 기기</translation>
@@ -93,6 +97,8 @@
 <translation id="2009067268969781306">드라이브를 포맷하면 드라이브에 저장된 데이터가 모두 삭제됩니다. 이 작업은 취소할 수 없습니다.</translation>
 <translation id="2028997212275086731">RAR 압축 파일</translation>
 <translation id="2046702855113914483">라면</translation>
+<translation id="2060251957438343874">독일어(독일)</translation>
+<translation id="2066433303065022982">히브리어(음역)</translation>
 <translation id="2070909990982335904">점(.)으로 시작하는 이름은 시스템 전용입니다. 다른 이름을 선택하세요.</translation>
 <translation id="2079545284768500474">실행취소</translation>
 <translation id="2080010875307505892">세르비아어 키보드</translation>
@@ -106,6 +112,7 @@
 <translation id="2208158072373999562">Zip 아카이브</translation>
 <translation id="2225536596944493418">선택한 <ph name="NUMBER_OF_ITEMS" />개의 항목을 삭제하시겠습니까?</translation>
 <translation id="2230062665678605299">'<ph name="FOLDER_NAME" />' 폴더를 생성할 수 없습니다. <ph name="ERROR_MESSAGE" /></translation>
+<translation id="2258078827108167865">크메르어</translation>
 <translation id="2275059641601412272">이동했습니다.</translation>
 <translation id="2287742181953707290">영어(미국식) 국제 PC 키보드로 포르투갈어 입력</translation>
 <translation id="2288278176040912387">레코드 플레이어</translation>
@@ -121,6 +128,7 @@
 <translation id="240770291734945588"><ph name="SPACE_AVAILABLE" /> 사용 가능</translation>
 <translation id="2425665904502185219">전체 파일 크기</translation>
 <translation id="2428749644083375155">항목 <ph name="NUMBER_OF_ITEMS" />개를 <ph name="FOLDER_NAME" /> 폴더에 복사 중</translation>
+<translation id="2445471348947930094">구자라트어(표음)</translation>
 <translation id="2448312741937722512">유형</translation>
 <translation id="2453576648990281505">이미 존재하는 파일입니다.</translation>
 <translation id="2464079411014186876">아이스크림</translation>
@@ -157,6 +165,7 @@
 <translation id="2887525882758501333">PDF 문서</translation>
 <translation id="2888807692577297075">&lt;b&gt;'<ph name="SEARCH_STRING" />'&lt;/b&gt;와(과) 일치하는 항목 없음</translation>
 <translation id="2894654529758326923">정보</translation>
+<translation id="2899393425226141282">독일어(독일, Neo 2 키보드)</translation>
 <translation id="2902312830803030883">추가 작업</translation>
 <translation id="2902734494705624966">영어(미국) 확장</translation>
 <translation id="2923240520113693977">에스토니아어</translation>
@@ -258,6 +267,7 @@
 <translation id="4002066346123236978">제목</translation>
 <translation id="4070370845051020638">광둥어 입력 방법</translation>
 <translation id="4072248638558688893">타밀어 키보드(음역)</translation>
+<translation id="4097397818890482665">칸나다어(음역)</translation>
 <translation id="4124935795427217608">유니콘</translation>
 <translation id="4158739975813877944">재생목록 열기</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> 항목을 이동했습니다.</translation>
@@ -286,6 +296,7 @@
 <translation id="4479812471636796472">영어(미국식) 드보락 키보드</translation>
 <translation id="4522570452068850558">세부정보</translation>
 <translation id="4527800702232535228">Parallels Desktop과 공유된 폴더</translation>
+<translation id="4532112105534982530">프랑스어(프랑스, Bépo 키보드)</translation>
 <translation id="4552678318981539154">추가 저장용량 구입</translation>
 <translation id="4559318885353833501"><ph name="FILE_NAME" /> 파일이 삭제됨</translation>
 <translation id="4559767610552730302">흐리게 처리</translation>
@@ -294,6 +305,7 @@
 <translation id="4579744207439506346"><ph name="ENTRY_NAME" /> 항목이 선택되었습니다.</translation>
 <translation id="4582497162516204941">Linux(베타)로 설치</translation>
 <translation id="4594543368593301662"><ph name="SEARCH_TERM" />에 관한 검색결과를 표시합니다.</translation>
+<translation id="4598673198033263991">영숫자(일본어 키보드)</translation>
 <translation id="4603392156942865207"><ph name="FILE_NAME" /> 파일을 <ph name="FOLDER_NAME" /> 폴더에 복사 중</translation>
 <translation id="4627439232948440198">산스크리트어</translation>
 <translation id="4631887759990505102">아티스트</translation>
@@ -313,6 +325,7 @@
 <translation id="4737050008115666127">착륙</translation>
 <translation id="4747271164117300400">마케도니아어</translation>
 <translation id="4759238208242260848">다운로드</translation>
+<translation id="4763055924467562718">칸나다어(표음)</translation>
 <translation id="4779136857077979611">오니기리</translation>
 <translation id="4784330909746505604">PowerPoint 프레젠테이션</translation>
 <translation id="4788401404269709922"><ph name="NUMBER_OF_KB" />KB</translation>
@@ -420,6 +433,7 @@
    아카이브 또는 가상 디스크에 있는 모든 파일을 닫은 다음 다시 시도해 보세요.</translation>
 <translation id="5691596662111998220"><ph name="FILE_NAME" />이(가) 더 이상 존재하지 않습니다.</translation>
 <translation id="5700087501958648444">오디오 정보</translation>
+<translation id="570049376144986742">프랑스어(스위스)</translation>
 <translation id="5731409020711461763">새로운 사진 1장</translation>
 <translation id="5752453871435543420">Chrome OS 클라우드 백업</translation>
 <translation id="5756666464756035725">헝가리어 QWERTY</translation>
@@ -454,6 +468,7 @@
 <translation id="6096979789310008754">검색어가 삭제되었으며, 모든 파일과 폴더가 표시됩니다.</translation>
 <translation id="610101264611565198"><ph name="FILE_NAME" /> 파일을 <ph name="FOLDER_NAME" /> 폴더로 이동 중</translation>
 <translation id="6111770213269631447">음역(namaskar → নমস্কার)</translation>
+<translation id="6113836390962820517">일본어(미국 키보드)</translation>
 <translation id="6129953537138746214">Space</translation>
 <translation id="6133173853026656527"><ph name="FILE_NAME" /> 이동 중...</translation>
 <translation id="6146563240635539929">동영상</translation>
@@ -477,6 +492,7 @@
 <translation id="6394388407447716302">읽기 전용</translation>
 <translation id="6395575651121294044">항목 <ph name="NUMBER_OF_FILES" />개</translation>
 <translation id="6398765197997659313">전체화면 닫기</translation>
+<translation id="6412376911804527326">라오어</translation>
 <translation id="642282551015776456">폴더 이름의 파일으로 사용할 수 없는 이름입니다.</translation>
 <translation id="6485131920355264772">남은 용량을 알 수 없습니다.</translation>
 <translation id="6505918941256367791">타밀어 키보드(InScript)</translation>
@@ -495,6 +511,7 @@
 <translation id="6643016212128521049">삭제</translation>
 <translation id="6650726141019353908">분홍 나비</translation>
 <translation id="6657585470893396449">비밀번호</translation>
+<translation id="6680841910911617814">네덜란드어(네덜란드)</translation>
 <translation id="6710213216561001401">이전</translation>
 <translation id="6718273304615422081">압축 중...</translation>
 <translation id="6751256176799620176">폴더 1개 선택됨</translation>
@@ -591,6 +608,7 @@
 <translation id="7724603315864178912">잘라내기</translation>
 <translation id="7730494089396812859">클라우드 백업 상세정보를 표시합니다.</translation>
 <translation id="7748626145866214022">작업 표시줄에서 더 많은 옵션을 사용할 수 있습니다. 작업 표시줄에 초점을 맞추려면 Alt + A를 누르세요.</translation>
+<translation id="7756956835689272676">프랑스어(캐나다, 다국어 키보드)</translation>
 <translation id="7765158879357617694">이동</translation>
 <translation id="7774365994322694683">새</translation>
 <translation id="7788080748068240085">'<ph name="FILE_NAME" />'을(를) 오프라인에 저장하려면 다음 방법을 통해 <ph name="TOTAL_FILE_SIZE" />의 추가 여유 공간을 확보해야 합니다.<ph name="MARKUP_1" />
@@ -637,6 +655,7 @@
 <translation id="8106045200081704138">공유 문서함</translation>
 <translation id="8116072619078571545">얼음물</translation>
 <translation id="8117957376775388318">Dayi 입력 방법</translation>
+<translation id="8130367958112291342">체코어(Qwerty 키보드)</translation>
 <translation id="8137331602592933310">다른 사용자가 '<ph name="FILENAME" />'을(를) 나와 공유했습니다. 내가 소유자가 아니므로 삭제할 수 없습니다.</translation>
 <translation id="8145409227593688472">Wubi 입력 방법</translation>
 <translation id="8148264977957212129">병음 입력 방법</translation>
@@ -685,6 +704,7 @@
 <translation id="8600173386174225982">파일 목록을 미리보기 이미지 뷰로 변경했습니다.</translation>
 <translation id="8601932370724196034">Crostini 이미지 파일</translation>
 <translation id="8669949407341943408">이동 중...</translation>
+<translation id="8688649574682805922">독일어(스위스)</translation>
 <translation id="8694836330346852143">우르두어</translation>
 <translation id="8698464937041809063">Google 드로잉</translation>
 <translation id="8714406895390098252">자전거</translation>
@@ -698,6 +718,7 @@
 <translation id="8808686172382650546">고양이</translation>
 <translation id="8810671769985673465">압축에 실패했습니다. 남은 항목: '<ph name="FILE_NAME" />'</translation>
 <translation id="8834164572807951958">'<ph name="DESTINATION_NAME" />' 멤버에게 이 항목의 사본에 액세스할 수 있는 권한이 부여됩니다.</translation>
+<translation id="8846896937446866962">헝가리어(Qwerty 키보드)</translation>
 <translation id="885381502874625531">벨라루스어 키보드</translation>
 <translation id="8860454412039442620">Excel 스프레드시트</translation>
 <translation id="8900820606136623064">헝가리어</translation>

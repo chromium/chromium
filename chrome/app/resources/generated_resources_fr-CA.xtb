@@ -891,6 +891,7 @@
 <translation id="2000419248597011803">Envoie des témoins et des recherches à partir de la barre d'adresse et du champ de recherche à votre moteur de recherche par défaut</translation>
 <translation id="2002109485265116295">En temps réel</translation>
 <translation id="2003130567827682533">Pour activer les données « <ph name="NAME" /> », connectez-vous d'abord à un réseau Wi-Fi</translation>
+<translation id="2005199804247617997">Autres profils</translation>
 <translation id="2006638907958895361">Ouvrir le lien dans <ph name="APP" /></translation>
 <translation id="2007404777272201486">Signaler un problème...</translation>
 <translation id="2010501376126504057">Appareils compatibles</translation>
@@ -1542,6 +1543,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2751131328353405138">Montage des fichiers système SSH du conteneur Linux en cours…</translation>
 <translation id="2751739896257479635">Authentification EAP phase 2</translation>
 <translation id="2753677631968972007">Gérer manuellement les autorisations des sites.</translation>
+<translation id="2755349111255270002">Réinitialiser ce <ph name="DEVICE_TYPE" /></translation>
 <translation id="2755367719610958252">Gérer les fonctionnalités d'accessibilité</translation>
 <translation id="275662540872599901">écran désactivé</translation>
 <translation id="2757338480560142065">Assurez-vous que le mot de passe que vous enregistrez correspond à celui pour <ph name="WEBSITE" /></translation>
@@ -1698,6 +1700,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2932883381142163287">Signaler un abus</translation>
 <translation id="2933632078076743449">Dernière mise à jour</translation>
 <translation id="2934999512438267372">Plein contrôle des appareils MIDI autorisé</translation>
+<translation id="2935225303485967257">Gérer les profils</translation>
 <translation id="2935654492420446828">Ajouter un compte scolaire plus tard</translation>
 <translation id="2936851848721175671">Sauvegarde et restauration</translation>
 <translation id="2938225289965773019">Ouvrir des liens <ph name="PROTOCOL" /></translation>
@@ -2055,6 +2058,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="3388788256054548012">Ce fichier est chiffré. Demandez à son propriétaire de le déchiffrer.</translation>
 <translation id="3390013585654699824">Renseignements sur l'application</translation>
 <translation id="3390741581549395454">Les applications et les fichiers Linux ont été sauvegardés. La mise à niveau commencera bientôt.</translation>
+<translation id="339178315942519818">Affichez les notifications de vos applications de clavardage sur votre <ph name="DEVICE_TYPE" /></translation>
 <translation id="3396800784455899911">En cliquant sur le bouton « Accepter et continuer », vous acceptez le traitement décrit ci-dessus pour ces services Google.</translation>
 <translation id="3399432415385675819">Les notifications seront désactivées</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> Hertz), entrelacé</translation>
@@ -2211,6 +2215,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="3559533181353831840">Il reste environ <ph name="TIME_LEFT" /></translation>
 <translation id="3560034655160545939">&amp;Correction orthographique</translation>
 <translation id="3562423906127931518">Ce processus peut prendre quelques minutes. Configuration du conteneur Linux.</translation>
+<translation id="3562655211539199254">Consultez les onglets Chrome récents de votre téléphone.</translation>
 <translation id="3563432852173030730">Impossible de télécharger l'application Kiosque.</translation>
 <translation id="3564334271939054422">Le réseau Wi-Fi que vous utilisez (<ph name="NETWORK_ID" />) peut vous demander de consulter sa page de connexion.</translation>
 <translation id="3564848315152754834">Clé de sécurité USB</translation>
@@ -3841,6 +3846,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5503982651688210506">Continuer d'autoriser <ph name="HOST" /> à utiliser et à déplacer votre caméra et à utiliser votre microphone</translation>
 <translation id="5505264765875738116">Les sites ne peuvent pas vous demander l'autorisation d'envoyer des notifications</translation>
 <translation id="5505307013568720083">À court d'encre</translation>
+<translation id="5505794066310932198">Activer ou désactiver Commander</translation>
 <translation id="5507756662695126555">Non-répudiation</translation>
 <translation id="5509693895992845810">Enreg&amp;istrer sous...</translation>
 <translation id="5509914365760201064">Émetteur : <ph name="CERTIFICATE_AUTHORITY" /></translation>
@@ -4307,6 +4313,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6056710589053485679">Actualisation normale</translation>
 <translation id="6057312498756061228">Impossible d'effectuer la vérification de sécurité de ce fichier parce qu'il est trop volumineux. Vous ne pouvez pas ouvrir de fichiers de plus de 50 Mo.</translation>
 <translation id="6057381398996433816">L'utilisation de capteurs de mouvement et de luminosité a été bloquée pour ce site.</translation>
+<translation id="6059276912018042191">Onglets Chrome récents</translation>
 <translation id="6059652578941944813">Hiérarchie des certificats</translation>
 <translation id="6059925163896151826">Appareils USB</translation>
 <translation id="6061882183774845124">Envoyer le lien à vos appareils</translation>
@@ -4813,6 +4820,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6659213950629089752">Zoom effectué par l'extension « <ph name="NAME" /> » sur cette page</translation>
 <translation id="6659594942844771486">Onglet</translation>
 <translation id="666099631117081440">Serveurs d'impression</translation>
+<translation id="6663190258859265334">Utilisez la fonction Powerwash sur votre <ph name="DEVICE_TYPE" /> et revenez à la version précédente.</translation>
 <translation id="6664237456442406323">Malheureusement, votre ordinateur est configuré avec un identifiant de matériel invalide, ce qui empêche l'installation des derniers correctifs de sécurité pour Chrome OS. Votre ordinateur <ph name="BEGIN_BOLD" />peut ainsi être vulnérable aux attaques malveillantes<ph name="END_BOLD" />.</translation>
 <translation id="6664774537677393800">Un problème est survenu lors de l'ouverture de votre profil. Veuillez vous déconnecter, puis vous reconnecter.</translation>
 <translation id="6670142487971298264">L'application <ph name="APP_NAME" /> est maintenant accessible</translation>
@@ -5398,6 +5406,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="7364796246159120393">Sélectionner un fichier</translation>
 <translation id="7365076891350562061">Taille du moniteur</translation>
 <translation id="736522537010810033">Empêcher les sites d'utiliser votre micro</translation>
+<translation id="7366316827772164604">Recherche d'appareils à proximité en cours…</translation>
 <translation id="7366415735885268578">Ajouter un site</translation>
 <translation id="7366909168761621528">Données de navigation</translation>
 <translation id="7367714965999718019">Générateur de code QR</translation>
@@ -5586,6 +5595,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="7586498138629385861">Chrome continuera à fonctionner tant que des applications Chrome seront ouvertes.</translation>
 <translation id="7589461650300748890">Attention!</translation>
 <translation id="7593653750169415785">Automatiquement bloquée parce que vous avez refusé les notifications à quelques reprises</translation>
+<translation id="7594725637786616550">La fonctionnalité Powerwash réinitialise votre <ph name="DEVICE_TYPE" />, qui redevient comme neuf.</translation>
 <translation id="7595453277607160340">Pour utiliser des applications Android et assurer le bon fonctionnement de votre <ph name="DEVICE_TYPE" />, reconnectez-vous et effectuez une mise à jour.</translation>
 <translation id="7595547011743502844"><ph name="ERROR" /> (code d'erreur <ph name="ERROR_CODE" />).</translation>
 <translation id="7598466960084663009">Redémarrer l'ordinateur</translation>
@@ -5953,6 +5963,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="7973962044839454485">L'authentification PPP a échoué en raison d'un nom d'utilisateur ou d'un mot de passe incorrect</translation>
 <translation id="7974566588408714340">Réessayer à l’aide de <ph name="EXTENSIONNAME" /></translation>
 <translation id="7974936243149753750">Surbalayage</translation>
+<translation id="7975504106303186033">Vous devez inscrire cet appareil Chrome Education dans un compte pour le secteur de l'éducation. Pour créer un compte, veuillez visiter la page g.co/workspace/edusignup.</translation>
 <translation id="7977404132325989121">&amp;Nommer la fenêtre…</translation>
 <translation id="7978412674231730200">Clé privée</translation>
 <translation id="7978450511781612192">Cela vous déconnectera de vos comptes Google. Vos favoris, votre historique, vos mots de passe et autres ne seront plus synchronisés.</translation>
@@ -6022,6 +6033,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8053390638574070785">Recharger la page</translation>
 <translation id="8054517699425078995">Ce type de fichier peut endommager votre appareil. Voulez-vous vraiment conserver le fichier <ph name="FILE_NAME" />?</translation>
 <translation id="8054563304616131773">Veuillez entrer une adresse de courriel valide</translation>
+<translation id="8054883179223321715">Compatible avec certains sites de vidéos</translation>
 <translation id="8054921503121346576">Clavier USB connecté</translation>
 <translation id="8058655154417507695">Année d'expiration</translation>
 <translation id="8059417245945632445">&amp;Inspecter les appareils</translation>
@@ -6106,6 +6118,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8146793085009540321">Échec de la connexion. Veuillez communiquer avec votre administrateur ou essayer de nouveau.</translation>
 <translation id="8147900440966275470"><ph name="NUM" /> onglet trouvé</translation>
 <translation id="8148760431881541277">Limiter les connexions</translation>
+<translation id="8150259863378108853">Lacros est un navigateur expérimental. Veuillez signaler tout problème en sélectionnant Aide &gt; « Signaler un problème… »</translation>
 <translation id="8151579390896831136">Personnalisez votre profil, y compris son nom</translation>
 <translation id="8151638057146502721">Configurer</translation>
 <translation id="8152091997436726702">L'enregistrement de l'imprimante a expiré. Pour enregistrer une imprimante, vous devez confirmer l'enregistrement sur l'imprimante.</translation>
@@ -6213,6 +6226,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8271379370373330993">Parents, les prochaines étapes sont pour vous. Vous pourrez redonner l'appareil <ph name="DEVICE_TYPE" /> à l'enfant une fois que son compte aura été configuré.</translation>
 <translation id="8272443605911821513">Pour gérer les extensions, cliquer sur « Extensions » dans le menu « Autres outils ».</translation>
 <translation id="8274332263553132018">Diffuser un fichier</translation>
+<translation id="8274921654076766238">La loupe suit les actions au clavier</translation>
 <translation id="8274924778568117936">N'éteignez pas votre <ph name="DEVICE_TYPE" /> et ne le fermez pas tant que la mise à jour n'est pas terminée. Votre <ph name="DEVICE_TYPE" /> redémarrera une fois l'installation terminée.</translation>
 <translation id="8275038454117074363">Importer</translation>
 <translation id="8275080796245127762">Appeler à partir de votre appareil</translation>
@@ -6595,6 +6609,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8736288397686080465">Ce site a été mis à jour en arrière-plan.</translation>
 <translation id="8737685506611670901">Ouvrir les liens <ph name="PROTOCOL" /> à la place de <ph name="REPLACED_HANDLER_TITLE" /></translation>
 <translation id="8737709691285775803">Shill</translation>
+<translation id="8737914367566358838">Choisissez la langue dans laquelle traduire la page</translation>
 <translation id="8740247629089392745">Vous pouvez remettre ce Chromebook à <ph name="SUPERVISED_USER_NAME" />. La configuration est presque terminée. Après cela, c'est l'heure d'explorer.</translation>
 <translation id="8742998548129056176">Il s'agit de données générales concernant votre appareil et l'usage que vous en faites (comme le niveau de la pile, l'activité système, l'activité des applications et les erreurs). Ces données seront utilisées pour améliorer Android, et certaines données collectées contribueront aussi à améliorer les applications Google et aideront nos partenaires, comme les concepteurs Android, à améliorer leurs applications et leurs produits.</translation>
 <translation id="8743390665131937741">Niveau de zoom en mode plein écran :</translation>
@@ -6631,6 +6646,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8774379074441005279">Confirmez la restauration</translation>
 <translation id="8774934320277480003">Marge supérieure</translation>
 <translation id="8775144690796719618">URL non valide</translation>
+<translation id="8775163630211761057">Faites profiter votre <ph name="DEVICE_TYPE" /> du meilleur de votre téléphone Android</translation>
 <translation id="8776977753660889796">{NUM_MINS,plural, =1{Chrome n'a trouvé aucun logiciel nuisible connu sur votre ordinateur. Dernière vérification : il y a 1 minute.}one{Chrome n'a trouvé aucun logiciel nuisible connu sur votre ordinateur. Dernière vérification : il y a {NUM_MINS} minute.}other{Chrome n'a trouvé aucun logiciel nuisible connu sur votre ordinateur. Dernière vérification : il y a {NUM_MINS} minutes.}}</translation>
 <translation id="8777628254805677039">mot de passe racine</translation>
 <translation id="8780123805589053431">Obtenir les descriptions d'image de Google</translation>
@@ -6796,10 +6812,12 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8952831374766033534">Cette option de configuration n'est pas prise en charge : <ph name="ERROR_LINE" /></translation>
 <translation id="8953476467359856141">Pendant la charge</translation>
 <translation id="895347679606913382">Début du téléchargement...</translation>
+<translation id="8957757410289731985">Personnaliser le profil</translation>
 <translation id="895944840846194039">Mémoire pour JavaScript</translation>
 <translation id="8962083179518285172">Masquer les détails</translation>
 <translation id="8962918469425892674">Ce site utilise des capteurs de mouvement ou de luminosité.</translation>
 <translation id="8965037249707889821">Entrez l'ancien mot de passe</translation>
+<translation id="8966809848145604011">Autres profils</translation>
 <translation id="8966870118594285808">Rouvrir un onglet fermé par accident</translation>
 <translation id="8967427617812342790">Ajouter à liste lecture</translation>
 <translation id="8967866634928501045">Appuyez sur Alt+Maj+A pour afficher</translation>
@@ -6925,6 +6943,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="9100765901046053179">Paramètres avancés</translation>
 <translation id="9101691533782776290">Lancer l'application</translation>
 <translation id="9102610709270966160">Activer l'extension</translation>
+<translation id="9103479157856427471">L'écran zoomé vers l'avant suit les actions au clavier</translation>
 <translation id="9103868373786083162">Appuyez pour revenir en arrière, menu contextuel pour voir l'historique</translation>
 <translation id="9108072915170399168">Le paramètre actuel d'utilisation de données est Sans Internet</translation>
 <translation id="9108692355621501797">L'<ph name="LINK_BEGIN" />avis de confidentialité de G Suite for Education<ph name="LINK_END" /> est conçu pour aider les utilisateurs de G Suite for Education et leurs parents à comprendre quelles données le service collecte, pour quelles raisons et l'usage qu'il en fait.</translation>

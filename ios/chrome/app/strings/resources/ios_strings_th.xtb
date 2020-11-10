@@ -18,6 +18,7 @@
 <translation id="1112015203684611006">การพิมพ์ล้มเหลว</translation>
 <translation id="1125564390852150847">สร้างแท็บใหม่</translation>
 <translation id="1145536944570833626">ลบข้อมูลที่มีอยู่</translation>
+<translation id="1147031633655575115">ลงชื่อเข้าใช้ด้วย <ph name="USER" /></translation>
 <translation id="1154690515305205900">สร้างลิงก์ไปยังข้อความที่ไฮไลต์ไม่สำเร็จ</translation>
 <translation id="1157749421655780457">อนุญาตให้ใช้ตำแหน่ง...</translation>
 <translation id="1165039591588034296">ข้อผิดพลาด</translation>
@@ -268,6 +269,7 @@
 <translation id="385051799172605136">กลับ</translation>
 <translation id="3892144330757387737">คุณจะเห็นประวัติการเข้าชมที่นี่</translation>
 <translation id="3897092660631435901">เมนู</translation>
+<translation id="3913386780052199712">ลงชื่อเข้าใช้ Chrome แล้ว</translation>
 <translation id="3915450441834151894">ข้อมูลเว็บไซต์</translation>
 <translation id="3922310737605261887">ค้นหาข้อความที่คัดลอก</translation>
 <translation id="3928666092801078803">รวมข้อมูลของฉัน</translation>

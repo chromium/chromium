@@ -891,6 +891,7 @@
 <translation id="2000419248597011803">Skickar vissa cookies och sökningar från adressfältet och sökrutan till standardsökmotorn</translation>
 <translation id="2002109485265116295">Realtid</translation>
 <translation id="2003130567827682533">Om du vill aktivera data från <ph name="NAME" /> ansluter du först till ett Wi-Fi-nätverk</translation>
+<translation id="2005199804247617997">Andra profiler</translation>
 <translation id="2006638907958895361">Öppna länken i <ph name="APP" /></translation>
 <translation id="2007404777272201486">Rapportera ett problem...</translation>
 <translation id="2010501376126504057">Kompatibla enheter</translation>
@@ -1541,6 +1542,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2751131328353405138">Linux-behållarens SSHFS monteras</translation>
 <translation id="2751739896257479635">Fas 2 i EAP-autentisering</translation>
 <translation id="2753677631968972007">Styr webbplatsbehörigheter manuellt.</translation>
+<translation id="2755349111255270002">Återställ denna <ph name="DEVICE_TYPE" /></translation>
 <translation id="2755367719610958252">Hantera tillgänglighetsfunktioner</translation>
 <translation id="275662540872599901">skärm av</translation>
 <translation id="2757338480560142065">Kontrollera att lösenordet som du sparar överensstämmer med lösenordet för <ph name="WEBSITE" /></translation>
@@ -1697,6 +1699,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2932883381142163287">Anmäl otillåten användning</translation>
 <translation id="2933632078076743449">Senast uppdaterat</translation>
 <translation id="2934999512438267372">Fullständig kontroll över MIDI-enheter tillåts</translation>
+<translation id="2935225303485967257">Hantera profiler</translation>
 <translation id="2935654492420446828">Lägg till ett skolkonto senare</translation>
 <translation id="2936851848721175671">Säkerhetskopiera och återställ</translation>
 <translation id="2938225289965773019">Öppna <ph name="PROTOCOL" />-länkar</translation>
@@ -2054,6 +2057,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3388788256054548012">Den här filen är krypterad. Be ägaren att dekryptera den.</translation>
 <translation id="3390013585654699824">Information om appen</translation>
 <translation id="3390741581549395454">Säkerhetskopieringen av Linux-appar och Linux-filer är klar. Uppgraderingen startar snart.</translation>
+<translation id="339178315942519818">Se aviseringar från chattappar på din <ph name="DEVICE_TYPE" /></translation>
 <translation id="3396800784455899911">När du klickar på Godkänn och fortsätt samtycker du till att dessa tjänster från Google får bearbeta data enligt beskrivningen ovan.</translation>
 <translation id="3399432415385675819">Aviseringar inaktiveras</translation>
 <translation id="3400390787768057815"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (<ph name="REFRESH_RATE" /> Hertz) – flätade</translation>
@@ -2210,6 +2214,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3559533181353831840">Cirka <ph name="TIME_LEFT" /> kvar</translation>
 <translation id="3560034655160545939">&amp;Stavningskontroll</translation>
 <translation id="3562423906127931518">Detta kan ta några minuter. Linux-containern konfigureras.</translation>
+<translation id="3562655211539199254">Se de senaste flikarna som du har öppna i Chrome på telefonen</translation>
 <translation id="3563432852173030730">Det gick inte att ladda ned kioskappen.</translation>
 <translation id="3564334271939054422">Wi-Fi-nätverket du använder (<ph name="NETWORK_ID" />) kanske kräver att du besöker dess inloggningssida.</translation>
 <translation id="3564848315152754834">USB-säkerhetsnyckel</translation>
@@ -3840,6 +3845,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="5503982651688210506">Tillåt <ph name="HOST" /> att använda och röra din kamera och använda mikrofonen även i fortsättningen</translation>
 <translation id="5505264765875738116">Webbplatser får inte be om tillåtelse att skicka aviseringar</translation>
 <translation id="5505307013568720083">Slut på bläck</translation>
+<translation id="5505794066310932198">Aktivera och inaktivera Commander</translation>
 <translation id="5507756662695126555">Ej avvisande</translation>
 <translation id="5509693895992845810">Spara so&amp;m...</translation>
 <translation id="5509914365760201064">Utfärdare: <ph name="CERTIFICATE_AUTHORITY" /></translation>
@@ -4306,6 +4312,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="6056710589053485679">Normal inläsning</translation>
 <translation id="6057312498756061228">Den här filen är så stor att den inte går genom säkerhetskontrollen. Du kan öppna filer som är upp till 50 MB stora.</translation>
 <translation id="6057381398996433816">Den här webbplatsen får inte använda enhetens rörelse- och ljussensor.</translation>
+<translation id="6059276912018042191">Senaste flikarna i Chrome</translation>
 <translation id="6059652578941944813">Certifikathierarki</translation>
 <translation id="6059925163896151826">USB-enheter</translation>
 <translation id="6061882183774845124">Skicka länken till dina enheter</translation>
@@ -4812,6 +4819,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="6659213950629089752">Den här sidan har zoomats in med tillägget <ph name="NAME" /></translation>
 <translation id="6659594942844771486">Flik</translation>
 <translation id="666099631117081440">Utskriftsservrar</translation>
+<translation id="6663190258859265334">Använd Powerwash på din <ph name="DEVICE_TYPE" /> och återgå till föregående version.</translation>
 <translation id="6664237456442406323">Tyvärr är din dator konfigurerad med ett felaktigt maskinvaru-ID. Detta förhindrar att Chrome OS uppdateras med de senaste säkerhetskorrigeringarna och datorn <ph name="BEGIN_BOLD" />kan vara utsatt för skadlig programvara<ph name="END_BOLD" />.</translation>
 <translation id="6664774537677393800">Något gick snett när profilen skulle öppnas. Logga ut och sedan in igen.</translation>
 <translation id="6670142487971298264"><ph name="APP_NAME" /> är tillgängligt</translation>
@@ -5397,6 +5405,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="7364796246159120393">Välj fil</translation>
 <translation id="7365076891350562061">Skärmstorlek</translation>
 <translation id="736522537010810033">Förhindra att webbplatser använder mikrofonen</translation>
+<translation id="7366316827772164604">Söker efter enheter i närheten …</translation>
 <translation id="7366415735885268578">Lägg till en webbplats</translation>
 <translation id="7366909168761621528">Webbinformation</translation>
 <translation id="7367714965999718019">QR-kodgenerator</translation>
@@ -5585,6 +5594,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="7586498138629385861">Chrome fortsätter köras när Chrome-appar är öppna.</translation>
 <translation id="7589461650300748890">Ta det försiktigt.</translation>
 <translation id="7593653750169415785">Aviseringen blockerades automatiskt eftersom du har avvisat aviseringar flera gånger</translation>
+<translation id="7594725637786616550">Gör en Powerwash för att återställa <ph name="DEVICE_TYPE" /> så att den blir som ny.</translation>
 <translation id="7595453277607160340">Logga in igen och uppdatera om du vill använda Android-appar och säkerställa att <ph name="DEVICE_TYPE" /> fungerar korrekt.</translation>
 <translation id="7595547011743502844"><ph name="ERROR" /> (felkod <ph name="ERROR_CODE" />).</translation>
 <translation id="7598466960084663009">Starta om datorn</translation>
@@ -5952,6 +5962,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="7973962044839454485">PPP-autentisering misslyckades på grund av felaktigt användarnamn eller lösenord</translation>
 <translation id="7974566588408714340">Försök igen med <ph name="EXTENSIONNAME" /></translation>
 <translation id="7974936243149753750">Överskanning</translation>
+<translation id="7975504106303186033">Du måste registrera den här Chrome Education-enheten i ett utbildningskonto. Du kan registrera dig för ett nytt konto på g.co/workspace/edusignup.</translation>
 <translation id="7977404132325989121">&amp;Namnge fönstret …</translation>
 <translation id="7978412674231730200">Privat nyckel</translation>
 <translation id="7978450511781612192">Du loggas ut från dina Google-konton. Bokmärken, historik, lösenord och annan information synkroniseras inte längre.</translation>
@@ -6022,6 +6033,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8053390638574070785">Hämta sidan igen</translation>
 <translation id="8054517699425078995">Den här typen av fil kan skada enheten. Vill du behålla <ph name="FILE_NAME" /> ändå?</translation>
 <translation id="8054563304616131773">Ange en giltig e-postadress</translation>
+<translation id="8054883179223321715">Tillgänglig för vissa videowebbplatser</translation>
 <translation id="8054921503121346576">USB-tangentbord har anslutits</translation>
 <translation id="8058655154417507695">Utgångsår</translation>
 <translation id="8059417245945632445">&amp;Inspektera enheter</translation>
@@ -6106,6 +6118,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8146793085009540321">Inloggningen misslyckades. Kontakta administratören eller försök igen.</translation>
 <translation id="8147900440966275470"><ph name="NUM" /> flikar hittades</translation>
 <translation id="8148760431881541277">Begränsa inloggning</translation>
+<translation id="8150259863378108853">Lacros är en experimentell webbläsare. Rapportera eventuella problem via Hjälp &gt; Rapportera ett problem …</translation>
 <translation id="8151579390896831136">Anpassa profilen, inklusive namnet på den</translation>
 <translation id="8151638057146502721">Konfigurera</translation>
 <translation id="8152091997436726702">Tidsfristen för skrivarregistrering har gått ut. Om du vill registrera en skrivare måste du bekräfta registreringen på skrivaren.</translation>
@@ -6213,6 +6226,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8271379370373330993">Nästa steg är till för dig som är förälder. Du kan lämna tillbaka <ph name="DEVICE_TYPE" /> till barnet när konfigureringen av kontot är klar.</translation>
 <translation id="8272443605911821513">Hantera dina tillägg genom att klicka på Tillägg i menyn Fler verktyg.</translation>
 <translation id="8274332263553132018">Casta fil</translation>
+<translation id="8274921654076766238">Förstoringsglaset följer tangentbordsfokus</translation>
 <translation id="8274924778568117936">Stäng inte av eller stäng <ph name="DEVICE_TYPE" /> förrän uppdateringen har slutförts. <ph name="DEVICE_TYPE" /> startas om när installationen är slutförd.</translation>
 <translation id="8275038454117074363">Importera</translation>
 <translation id="8275080796245127762">Ring från din enhet</translation>
@@ -6595,6 +6609,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8736288397686080465">Den här webbplatsen har uppdaterats i bakgrunden.</translation>
 <translation id="8737685506611670901">Öppna <ph name="PROTOCOL" />-länkar i stället för <ph name="REPLACED_HANDLER_TITLE" /></translation>
 <translation id="8737709691285775803">Shill</translation>
+<translation id="8737914367566358838">Välj vilket språk som sidan ska översättas till</translation>
 <translation id="8740247629089392745">Du kan lämna över denna Chromebook till <ph name="SUPERVISED_USER_NAME" />. Konfigureringen är nästan klar. Sedan är det dags att utforska.</translation>
 <translation id="8742998548129056176">Detta är allmän information om din enhet och hur du använder den (till exempel batterinivå, system- och appaktivitet samt fel). Med hjälp av dessa uppgifter kan vi förbättra Android och vissa samlade uppgifter kan även hjälpa Googles appar och partner, till exempel Android-utvecklare, att förbättra sina appar och produkter.</translation>
 <translation id="8743390665131937741">Zoomnivå för helskärmsförstorare</translation>
@@ -6631,6 +6646,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8774379074441005279">Bekräfta återställning</translation>
 <translation id="8774934320277480003">Övre marginal</translation>
 <translation id="8775144690796719618">Ogiltig webbadress</translation>
+<translation id="8775163630211761057">Ta med det bästa i Android-telefonen till din <ph name="DEVICE_TYPE" /></translation>
 <translation id="8776977753660889796">{NUM_MINS,plural, =1{Chrome har inte upptäckt skadlig programvara på datorn. Senaste genomsökning: 1 minut sedan.}other{Chrome har inte upptäckt skadlig programvara på datorn. Senaste genomsökning: {NUM_MINS} minuter sedan.}}</translation>
 <translation id="8777628254805677039">rotlösenord</translation>
 <translation id="8780123805589053431">Hämta bildbeskrivningar från Google</translation>
@@ -6796,10 +6812,12 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8952831374766033534">Konfigurationsalternativet stöds inte: <ph name="ERROR_LINE" /></translation>
 <translation id="8953476467359856141">Vid laddning</translation>
 <translation id="895347679606913382">Startar...</translation>
+<translation id="8957757410289731985">Anpassa profil</translation>
 <translation id="895944840846194039">JavaScript-minne</translation>
 <translation id="8962083179518285172">Dölj detaljer</translation>
 <translation id="8962918469425892674">Den här webbplatsen använder enhetens rörelse- eller ljussensor.</translation>
 <translation id="8965037249707889821">Ange det gamla lösenordet</translation>
+<translation id="8966809848145604011">Andra profiler</translation>
 <translation id="8966870118594285808">Öppna en flik på nytt om du stängde den av misstag</translation>
 <translation id="8967427617812342790">Lägg till i läslistan</translation>
 <translation id="8967866634928501045">Visa med alt+skift+A</translation>
@@ -6925,6 +6943,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="9100765901046053179">Avancerade inställningar</translation>
 <translation id="9101691533782776290">Starta appen</translation>
 <translation id="9102610709270966160">Aktivera tillägget</translation>
+<translation id="9103479157856427471">Helskärmsförstoringen följer tangentbordsfokus</translation>
 <translation id="9103868373786083162">Tryck här om du vill återgå till föregående, visa historiken med snabbmenyn</translation>
 <translation id="9108072915170399168">Den aktuella inställningen för dataanvändning är Utan internet</translation>
 <translation id="9108692355621501797">I <ph name="LINK_BEGIN" />sekretessmeddelandet för G Suite for Education<ph name="LINK_END" /> förklarar vi för användare av G Suite for Education och föräldrar vilken data produkten samlar in, varför den samlas in och vad som händer med den.</translation>

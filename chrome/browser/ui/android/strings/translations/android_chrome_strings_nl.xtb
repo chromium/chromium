@@ -77,6 +77,7 @@
 <translation id="1513352483775369820">Bookmarks en webgeschiedenis</translation>
 <translation id="1513858653616922153">Wachtwoord verwijderen</translation>
 <translation id="1521774566618522728">Vandaag actief</translation>
+<translation id="1538801903729528855">Betere spraakfunctionaliteit op internet</translation>
 <translation id="1543538514740974167">Sneller terugkeren</translation>
 <translation id="1544826120773021464">Tik op de knop 'Account beheren' om je Google-account te beheren</translation>
 <translation id="1549000191223877751">Naar ander venster</translation>
@@ -117,6 +118,7 @@
 <translation id="1877026089748256423">Chrome is verouderd</translation>
 <translation id="1883903952484604915">Mijn bestanden</translation>
 <translation id="189358972401248634">Andere talen</translation>
+<translation id="1918175104945982129">UI om toestemming voor gesproken zoekopdrachten via de Assistent te geven is op halve hoogte geopend</translation>
 <translation id="1919130412786645364">Inloggen bij Chrome toestaan</translation>
 <translation id="1922362554271624559">Voorgestelde talen</translation>
 <translation id="1925021887439448749">Aangepast webadres opgeven</translation>
@@ -147,6 +149,7 @@
 <translation id="2056878612599315956">Site onderbroken</translation>
 <translation id="2067805253194386918">sms</translation>
 <translation id="2068748236079642969">Volgende video bekijken</translation>
+<translation id="2074143993849053708">UI om toestemming voor gesproken zoekopdrachten via de Assistent te geven is gesloten</translation>
 <translation id="2082238445998314030">Resultaat <ph name="RESULT_NUMBER" /> van <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2096012225669085171">Synchronisatie en personalisatie op meerdere apparaten</translation>
 <translation id="2100273922101894616">Automatisch inloggen</translation>
@@ -279,6 +282,7 @@ Tik op een woord en houd dit vast om te zoeken. Selecteer meer of minder woorden
 <translation id="3006881078666935414">Geen gebruiksgegevens</translation>
 <translation id="3016635187733453316">Controleer of dit apparaat verbinding heeft met internet</translation>
 <translation id="3029704984691124060">Wachtwoordzinnen komen niet overeen</translation>
+<translation id="3031225630520268969">UI om toestemming voor gesproken zoekopdrachten via de Assistent te geven</translation>
 <translation id="3034163383943672781">Download wordt gestart op <ph name="DATE" />.</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Hulp krijgen<ph name="END_LINK" /></translation>
 <translation id="305593374596241526">Locatie is uitgeschakeld. Je kunt dit inschakelen in de <ph name="BEGIN_LINK" />instellingen van Android<ph name="END_LINK" />.</translation>
@@ -437,6 +441,7 @@ Tik op een woord en houd dit vast om te zoeken. Selecteer meer of minder woorden
 <translation id="4248098802131000011">Bescherm je wachtwoorden tegen gegevenslekken en andere beveiligingsproblemen</translation>
 <translation id="4250229828105606438">Screenshot</translation>
 <translation id="4256782883801055595">Open-sourcelicenties</translation>
+<translation id="4263656433980196874">UI om toestemming voor gesproken zoekopdrachten via de Assistent te geven is op volledige hoogte geopend</translation>
 <translation id="4269820728363426813">Linkadres kopiëren</translation>
 <translation id="4298388696830689168">Gekoppelde sites</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
@@ -623,6 +628,7 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="5581519193887989363">Je kunt altijd in de <ph name="BEGIN_LINK1" />instellingen<ph name="END_LINK1" /> bepalen wat je wilt synchroniseren.</translation>
 <translation id="5595485650161345191">Adres bewerken</translation>
 <translation id="5599455543593328020">Incognitomodus</translation>
+<translation id="5599941490345670218">De Google Assistent kan acties voor je afronden op websites</translation>
 <translation id="5620163320393916465">Geen opgeslagen wachtwoorden</translation>
 <translation id="5620928963363755975">Vind je bestanden en pagina's in 'Downloads' via de knop 'Meer opties'</translation>
 <translation id="5626134646977739690">Naam:</translation>
@@ -1148,6 +1154,7 @@ Gegevens van je incognitosessie in Chrome worden alleen gewist als je <ph name="
 <translation id="9155898266292537608">Je kunt ook zoeken door kort op een woord te tikken</translation>
 <translation id="9169507124922466868">Navigatiegeschiedenis is half geopend</translation>
 <translation id="9191031968346938109">Toevoegen aan…</translation>
+<translation id="919615279147764192">Google kan je helpen taken sneller af te ronden en ontvangt daarom de URL's en content van sites waarop je de Assistent gebruikt en informatie die je via de Assistent indient. Deze informatie kan worden opgeslagen in je Google-account. Je kunt de Assistent uitschakelen in de instellingen van Chrome.</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{1 minuut geleden gecheckt}other{# minuten geleden gecheckt}}</translation>
 <translation id="9204836675896933765">1 bestand over</translation>
 <translation id="9206873250291191720">A</translation>

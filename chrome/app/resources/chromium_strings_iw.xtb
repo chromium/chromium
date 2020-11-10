@@ -32,7 +32,7 @@
 <translation id="2294245788148774212">‏אופציונלי: שליחה אוטומטית של נתוני אבחון ושימוש אל Google תעזור לשפר את התכונות ואת הביצועים של Chromium OS.</translation>
 <translation id="2343156876103232566">‏כדי לשלוח מספר מכאן לטלפון Android, יש להיכנס ל-Chromium בשני המכשירים.</translation>
 <translation id="2347108572062610441">‏התוסף שינה את הדף שמוצג כשמפעילים את Chromium.</translation>
-<translation id="2396765026452590966">‏התוסף "<ph name="EXTENSION_NAME" />" שינה את הדף שמוצג כשאתה מפעיל את Chromium.</translation>
+<translation id="2396765026452590966">‏התוסף "<ph name="EXTENSION_NAME" />" שינה את הדף שמוצג כשמפעילים את Chromium.</translation>
 <translation id="2483889755041906834">‏ב-Chromium</translation>
 <translation id="2485422356828889247">הסרת התקנה</translation>
 <translation id="2527042973354814951">‏צריך להפעיל מחדש את Chromium כדי להפעיל את <ph name="PLUGIN_NAME" /></translation>
@@ -45,7 +45,7 @@
 <translation id="2711502716910134313">‏כרטיסייה של Chromium</translation>
 <translation id="2718390899429598676">‏לשיפור האבטחה, Chromium יצפין את הנתונים.</translation>
 <translation id="2770231113462710648">שנה את דפדפן ברירת המחדל ל:</translation>
-<translation id="2799223571221894425">הפעל מחדש</translation>
+<translation id="2799223571221894425">הפעלה מחדש</translation>
 <translation id="2847479871509788944">‏הסרה מ-Chromium...</translation>
 <translation id="2885378588091291677">מנהל המשימות</translation>
 <translation id="2910007522516064972">‏מידע על &amp;Chromium‏</translation>
@@ -56,7 +56,7 @@
 <translation id="3068515742935458733">‏עזרה בשיפור Chromium על ידי שליחת <ph name="UMA_LINK" /> ודוחות קריסה אל Google</translation>
 <translation id="3103660991484857065">‏המתקין לא הצליח לבטל את דחיסת הארכיון. יש להוריד שוב את Chromium.</translation>
 <translation id="3130323860337406239">‏Chromium משתמש במיקרופון שלך.</translation>
-<translation id="3155163173539279776">‏הפעל מחדש את Chromium</translation>
+<translation id="3155163173539279776">‏הפעלה מחדש של Chromium</translation>
 <translation id="3179665906251668410">‏פתיחת הקישור בחלון &amp;אנונימי של Chromium</translation>
 <translation id="3190315855212034486">‏וואו! Chromium קרס. להפעיל מחדש עכשיו?</translation>
 <translation id="3229526316128325841">‏Chromium רוצה לייצא את הסיסמאות שלך.</translation>
@@ -91,7 +91,7 @@
 <translation id="4285930937574705105">‏ההתקנה נכשלה בשל שגיאה לא צפויה. אם Chromium פועל כעת, יש לסגור אותו ולנסות שוב.</translation>
 <translation id="4407044323746248786">‏לסגור את Chromium בכל זאת?</translation>
 <translation id="4415566066719264597">‏Chromium יכול לפעול ברקע</translation>
-<translation id="4423735387467980091">‏התאם אישית ושלוט ב-Chromium</translation>
+<translation id="4423735387467980091">‏התאמה אישית ושליטה ב-Chromium</translation>
 <translation id="4544142686420020088">‏Chromium לא התעדכן, משהו השתבש. <ph name="BEGIN_LINK" />לטיפול בבעיות בעדכון של Chromium ובעדכונים שנכשלו<ph name="END_LINK" /></translation>
 <translation id="4567424176335768812">נכנסת למערכת בתור <ph name="USER_EMAIL_ADDRESS" />. כעת אתה יכול לגשת אל הסימניות, ההיסטוריה והגדרות אחרות שלך בכל המכשירים שבהם אתה מחובר לחשבון.</translation>
 <translation id="459535195905078186">‏יישומי Chromium</translation>
@@ -126,7 +126,7 @@
 <translation id="5631814766731275228">‏שם ותמונה ב-Chromium</translation>
 <translation id="5634636535844844681">‏כדי להשתמש ב-Chromium יש צורך ב-Windows מגרסה 7 ואילך.</translation>
 <translation id="5653831366781983928">‏יש להפעיל מחדש את Chromium</translation>
-<translation id="5698481217667032250">‏הצג את Chromium בשפה זו</translation>
+<translation id="5698481217667032250">‏הצגת Chromium בשפה זו</translation>
 <translation id="5820394555380036790">‏מערכת ההפעלה של Chromium</translation>
 <translation id="5862307444128926510">‏ברוכים הבאים ל-Chromium‏</translation>
 <translation id="5895138241574237353">הפעלה מחדש</translation>
@@ -157,7 +157,7 @@
 <translation id="6403826409255603130">‏Chromium הוא דפדפן אינטרנט המפעיל דפי אינטרנט ואפליקציות במהירות הבזק. זהו דפדפן מהיר, יציב וקל לשימוש שמאפשר לך לגלוש באינטרנט בצורה מאובטחת יותר הודות להגנה מפני תוכנות זדוניות ופישינג המובנית ב-Chromium.</translation>
 <translation id="6434250628340475518">‏מערכת Chromium OS</translation>
 <translation id="6457450909262716557">{SECONDS,plural, =1{‏Chromium יבצע אתחול בעוד שנייה אחת}two{‏Chromium יבצע אתחול בעוד # שניות}many{‏Chromium יבצע אתחול בעוד # שניות}other{‏Chromium יבצע אתחול בעוד # שניות}}</translation>
-<translation id="6475912303565314141">‏הגדרה זו גם קובעת איזה דף מוצג כשאתה מפעיל את Chromium.</translation>
+<translation id="6475912303565314141">‏הגדרה זו גם קובעת איזה דף מוצג כשמפעילים את Chromium.</translation>
 <translation id="6510925080656968729">‏הסרה של התקנת Chromium</translation>
 <translation id="6570579332384693436">‏Chromium שולח את הטקסט שמוקלד בשדות טקסט ל-Google כדי לתקן שגיאות כתיב</translation>
 <translation id="6598877126913850652">‏מעבר אל הגדרות ההודעות של Chromium</translation>
@@ -208,7 +208,7 @@ Chromium לא יכול לשחזר את ההגדרות שלך.</translation>
 <translation id="7689606757190482937">‏סנכרון והתאמה אישית של Chromium בכל המכשירים שברשותך</translation>
 <translation id="7729447699958282447">‏Chromium לא הצליח לסנכרן את הנתונים שלך מפני שסנכרון אינו זמין עבור הדומיין שלך.</translation>
 <translation id="7745317241717453663">‏פעולה זו תמחק את נתוני הגלישה מהמכשיר. כדי לשחזר את הנתונים מאוחר יותר, היכנס אל Chromium עם <ph name="USER_EMAIL" />.</translation>
-<translation id="7747138024166251722">המתקין לא הצליח ליצור ספריה זמנית. בדוק את המקום הפנוי בדיסק ואת האישור להתקנת תוכנה.</translation>
+<translation id="7747138024166251722">המתקין לא הצליח ליצור ספרייה זמנית. יש לבדוק את המקום הפנוי בדיסק ואת האישור להתקנת תוכנה.</translation>
 <translation id="7773960292263897147">‏אזהרה: Chromium לא יכול למנוע מתוספים לתעד את היסטוריית הגלישה שלך. כדי להשבית את התוסף הזה במצב גלישה בסתר, צריך לבטל את הבחירה של האפשרות הזו.</translation>
 <translation id="7790626492778995050">‏<ph name="PAGE_TITLE" /> – Chromium בגרסת Canary</translation>
 <translation id="7827169012280634081">‏קובצי ה-Cookie ונתוני האתר ינוקו בכל יציאה מ-Chromium</translation>
@@ -217,7 +217,7 @@ Chromium לא יכול לשחזר את ההגדרות שלך.</translation>
 <translation id="7898472181347242998">‏כדי לראות אם המכשיר שלך מעודכן, יש לעבור אל <ph name="LINK_BEGIN" />הגדרות Chromium OS<ph name="LINK_END" /></translation>
 <translation id="7937630085815544518">‏נכנסת ל-Chromium כ-<ph name="USER_EMAIL_ADDRESS" />. יש להשתמש באותו חשבון כדי להיכנס שוב.</translation>
 <translation id="7975919845073681630">‏זוהי התקנה משנית של Chromium, ולא ניתן להפוך אותו לדפדפן ברירת המחדל שלך.</translation>
-<translation id="7979877361127045932">‏הסתר בתפריט Chromium</translation>
+<translation id="7979877361127045932">‏הסתרה בתפריט Chromium</translation>
 <translation id="8013436988911883588">‏אחרי מתן גישה ל-Chromium, אתרים יוכלו לבקש ממך גישה.</translation>
 <translation id="81770708095080097">‏Chromium‏ חסם את הקובץ הזה כי הוא מסוכן.</translation>
 <translation id="8248265253516264921">‏אם אין לתמונה תיאור מועיל, Chromium ינסה לספק לך תיאור. כדי ליצור תיאורים, התמונות נשלחות אל Google. אפשר להשבית את האפשרות הזו בכל זמן דרך ההגדרות.</translation>
@@ -234,7 +234,7 @@ Chromium לא יכול לשחזר את ההגדרות שלך.</translation>
 <translation id="8586442755830160949">‏Copyright <ph name="YEAR" /> The Chromium Authors. כל הזכויות שמורות.</translation>
 <translation id="8619360774459241877">‏הפעלת Chromium מתבצעת...</translation>
 <translation id="8621669128220841554">‏ההתקנה נכשלה בשל שגיאה לא מזוהה. יש להוריד שוב את Chromium.</translation>
-<translation id="8697124171261953979">‏הגדרה זו גם קובעת איזה דף מוצג כשאתה מפעיל את Chromium או מבצע חיפוש מסרגל הכתובות.</translation>
+<translation id="8697124171261953979">‏הגדרה זו גם קובעת איזה דף מוצג כשמפעילים את Chromium או מבצעים חיפוש מסרגל הכתובות.</translation>
 <translation id="8704119203788522458">‏זהו ה-Chromium שלך</translation>
 <translation id="8796602469536043152">‏Chromium זקוק להרשאת גישה אל המצלמה והמיקרופון בשביל האתר הזה</translation>
 <translation id="8803635938069941624">‏תנאים עבור מערכת ההפעלה של Chromium</translation>

@@ -2156,6 +2156,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="3487007233252413104">anonieme functie</translation>
 <translation id="348780365869651045">Wachten op AppCache...</translation>
 <translation id="3488065109653206955">Gedeeltelijk geactiveerd</translation>
+<translation id="3490695139702884919">Downloaden… <ph name="PERCENT" />%</translation>
 <translation id="3491669675709357988">Het account van je kind is niet ingesteld voor ouderlijk toezicht in Family Link. Je kunt ouderlijk toezicht toevoegen nadat je klaar bent met instellen. In de app Ontdekken vind je meer informatie over ouderlijk toezicht.</translation>
 <translation id="3491678231052507920">Sites gebruiken je apparaten en gegevens voor virtual reality meestal om je te laten deelnemen aan VR-sessies</translation>
 <translation id="3492788708641132712">Synchronisatie werkt niet. Probeer opnieuw in te loggen.</translation>
@@ -3674,6 +3675,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="5301954838959518834">OK, begrepen</translation>
 <translation id="5302048478445481009">Taal</translation>
 <translation id="5302932258331363306">Vervangingen weergeven</translation>
+<translation id="5304276686222516262">Kan contactenlijst niet downloaden. Check de netwerkverbinding of &lt;a href="#" id="tryAgainLink"&gt;probeer het opnieuw&lt;/a&gt;.</translation>
 <translation id="5305688511332277257">Geen certificaten geïnstalleerd</translation>
 <translation id="5307030433605830021">Bron niet ondersteund</translation>
 <translation id="5308380583665731573">Verbinding maken</translation>
@@ -3729,6 +3731,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="5370819323174483825">&amp;Opnieuw laden</translation>
 <translation id="5372529912055771682">De geleverde inschrijvingsmodus wordt niet ondersteund door deze versie van het besturingssysteem. Zorg ervoor dat je de nieuwste versie gebruikt en probeer het opnieuw.</translation>
 <translation id="5372579129492968947">Extensie losmaken</translation>
+<translation id="5375318608039113175">Als je 'Dichtbij delen' met deze contacten wilt gebruiken, voeg je het e-mailadres dat bij hun Google-account hoort aan je contacten toe.</translation>
 <translation id="5376169624176189338">Klik om terug te gaan, houd ingedrukt om de geschiedenis weer te geven</translation>
 <translation id="5376931455988532197">Bestand is te groot</translation>
 <translation id="5377721922656071359">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> naar <ph name="DEVICE_NAME" /> gestuurd}other{<ph name="ATTACHMENTS" /> naar <ph name="DEVICE_NAME" /> gestuurd}}</translation>
@@ -3890,6 +3893,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="5554403733534868102">Hierna hoef je niet meer te wachten op updates</translation>
 <translation id="5554489410841842733">Dit icoon wordt weergegeven wanneer de extensie een actie kan uitvoeren op de huidige pagina.</translation>
 <translation id="5554720593229208774">Certificeringsinstantie voor e-mail</translation>
+<translation id="5555363196923735206">Camera omdraaien</translation>
 <translation id="5556459405103347317">Opnieuw laden</translation>
 <translation id="5558125320634132440">Deze site is geblokkeerd omdat deze mogelijk niet-gezinsvriendelijke content bevat</translation>
 <translation id="5558129378926964177">&amp;Inzoomen</translation>
@@ -5205,6 +5209,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="7113502843173351041">Toegang krijgen tot je e-mailadres</translation>
 <translation id="7114054701490058191">Wachtwoorden komen niet overeen</translation>
 <translation id="7114648273807173152">Als je Smart Lock wilt gebruiken om in te loggen op je Google-account, ga je naar Instellingen &gt; Verbonden apparaten &gt; Je telefoon &gt; Smart Lock.</translation>
+<translation id="7115361495406486998">Geen bereikbare contacten</translation>
 <translation id="7117228822971127758">Probeer het later opnieuw</translation>
 <translation id="7117247127439884114">Opnieuw inloggen...</translation>
 <translation id="711840821796638741">Beheerde bookmarks weergeven</translation>
@@ -6082,6 +6087,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="810728361871746125">Schermresolutie</translation>
 <translation id="8108526232944491552">{COUNT,plural, =0{Geen cookies van derden}=1{1 cookie van derden is geblokkeerd}other{# cookies van derden zijn geblokkeerd}}</translation>
 <translation id="810875025413331850">Geen apparaten in de buurt gevonden.</translation>
+<translation id="8110489095782891123">Contactenlijst downloaden...</translation>
 <translation id="8113476325385351118">Volledig beheer van MIDI-apparaten blijven blokkeren voor deze site</translation>
 <translation id="8114199541033039755">Ga terug of naar de homepage en schakel tussen apps met knoppen in de tabletmodus. Dit is ingeschakeld als ChromeVox of 'Automatische klikken' is ingeschakeld.</translation>
 <translation id="8114875720387900039">Horizontaal splitsen</translation>
