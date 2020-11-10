@@ -79,36 +79,25 @@ If you want speech, you just need to copy the speech synthesis data files to
 /usr/share like it would be on a Chrome OS device:
 
 ```
-gsutil ls gs://chromeos-localmirror/distfiles/googletts*
+gsutil ls gs://chromeos-localmirror/distfiles/espeak*
 ```
 
 Pick the latest version and
 
 ```
-gsutil cp gs://chromeos-localmirror/distfiles/googletts-13.1.tar.xz /usr/share/chromeos-assets/speech_synthesis/patts/
-tar xvf /usr/share/chromeos-assets/speech_synthesis/patts/googletts-13.1.tar.xz
-rm /usr/share/chromeos-assets/speech_synthesis/patts/googletts-13.1.tar.xz
+gsutil cp gs://chromeos-localmirror/distfiles/espeak-ng-20180801.tar.gz /usr/share/chromeos-assets/speech_synthesis/espeak-ng/
+tar xvf /usr/share/chromeos-assets/speech_synthesis/espeak-ng/espeak-ng-20180801.tar.gz
+rm /usr/share/chromeos-assets/speech_synthesis/espeak-ng/espeak-ng-20180801.tar.gz
 ```
 
 **Be sure to check permissions of /usr/share/chromeos-assets, some users report
 they need to chmod or chown too, it really depends on your system.**
 
+**Note that the default Google tts engine is now only available on an actual
+Chrome OS device. **
+
 After you do that, just run "chrome" as above (e.g. out/cros/chrome) and press
 Ctrl+Alt+Z, and you should hear it speak! If not, check the logs.
-
-### eSpeak
-
-To get [eSpeak](espeak.md) on Chrome OS on Desktop Linux, copy the eSpeak
-extension (chrome branch) to the same place:
-
-```
-cd ~
-git clone https://chromium.googlesource.com/chromiumos/third_party/espeak-ng
-cd espeak-ng
-git checkout chrome
-sudo mkdir -p /usr/share/chromeos-assets/speech_synthesis/espeak-ng
-sudo cp -r chrome-extension/* /usr/share/chromeos-assets/speech_synthesis/espeak-ng
-```
 
 ## Braille
 
