@@ -14,6 +14,7 @@ source_set("views") {
   ]
 
   deps = [
+    "//build:chromeos_buildflags",
     "//cc/paint",
     "//chrome/app/theme:theme_resources",
     "//extensions/browser",

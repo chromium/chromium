@@ -18,6 +18,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "build/chromeos_buildflags.h"
 #include "components/services/app_service/public/cpp/file_handler_info.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -47,7 +48,7 @@
 #include "net/base/filename_util.h"
 #include "url/gurl.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "components/user_manager/user_manager.h"
 #endif
 
@@ -385,7 +386,7 @@ void LaunchPlatformAppWithCommandLineAndLaunchId(
   // check in case this scenario does occur.
   if (extensions::KioskModeInfo::IsKioskOnly(app)) {
     bool in_kiosk_mode = false;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     user_manager::UserManager* user_manager = user_manager::UserManager::Get();
     in_kiosk_mode = user_manager && user_manager->IsLoggedInAsKioskApp();
 #endif

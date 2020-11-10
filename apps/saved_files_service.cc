@@ -14,6 +14,7 @@
 
 #include "apps/saved_files_service_factory.h"
 #include "base/util/values/values_util.h"
+#include "build/chromeos_buildflags.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/notification_service.h"
 #include "extensions/browser/api/file_system/saved_file_entry.h"
@@ -310,7 +311,7 @@ void SavedFilesService::SavedFiles::EnqueueFileEntry(const std::string& id) {
   SavedFileEntry* file_entry = it->second.get();
   int old_sequence_number = file_entry->sequence_number;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // crbug.com/983844 Convert path from legacy Download/ to MyFiles/Downloads/
   // so entries saved before MyFiles don't fail. TODO(lucmult): Remove this
   // after M-83.
