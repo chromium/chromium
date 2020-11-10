@@ -6349,6 +6349,21 @@
             ]
         }
     ],
+    "SharedHighlightingIOS": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SharedHighlightingIOS"
+                    ]
+                }
+            ]
+        }
+    ],
     "SharingFilterDevices": [
         {
             "platforms": [
