@@ -511,6 +511,7 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
 - (void)performActionForShortcutItem:(UIApplicationShortcutItem*)shortcutItem
                    completionHandler:(void (^)(BOOL succeeded))completionHandler
     API_AVAILABLE(ios(13)) {
+  self.sceneState.startupHadExternalIntent = YES;
   [UserActivityHandler
       performActionForShortcutItem:shortcutItem
                  completionHandler:completionHandler
@@ -531,6 +532,7 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
       self.sceneState.presentingModalOverlay) {
     sceneIsActive = NO;
   }
+  self.sceneState.startupHadExternalIntent = YES;
   [UserActivityHandler
        continueUserActivity:userActivity
         applicationIsActive:sceneIsActive

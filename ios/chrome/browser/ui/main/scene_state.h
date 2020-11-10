@@ -89,6 +89,10 @@ typedef NS_ENUM(NSUInteger, SceneActivationLevel) {
 // When this is YES, the scene is showing the modal overlay.
 @property(nonatomic, assign) BOOL presentingModalOverlay;
 
+// When this is YES, the scene either resumed or started up in response to an
+// external intent.
+@property(nonatomic, assign) BOOL startupHadExternalIntent;
+
 // URLs passed to |UIWindowSceneDelegate scene:openURLContexts:| that needs to
 // be open next time the scene is activated.
 // Setting the property to not nil will add the new URL contexts to the set.
