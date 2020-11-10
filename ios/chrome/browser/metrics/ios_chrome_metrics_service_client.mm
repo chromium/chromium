@@ -34,6 +34,7 @@
 #include "components/metrics/cpu_metrics_provider.h"
 #include "components/metrics/demographics/demographic_metrics_provider.h"
 #include "components/metrics/drive_metrics_provider.h"
+#include "components/metrics/entropy_state_provider.h"
 #include "components/metrics/field_trials_provider.h"
 #include "components/metrics/metrics_log_uploader.h"
 #include "components/metrics/metrics_pref_names.h"
@@ -264,6 +265,8 @@ void IOSChromeMetricsServiceClient::Initialize() {
 }
 
 void IOSChromeMetricsServiceClient::RegisterMetricsServiceProviders() {
+  PrefService* local_state = GetApplicationContext()->GetLocalState();
+
   metrics_service_->RegisterMetricsProvider(
       std::make_unique<metrics::NetworkMetricsProvider>(
           base::BindRepeating(&GetNetworkConnectionTrackerAsync)));
@@ -272,8 +275,7 @@ void IOSChromeMetricsServiceClient::RegisterMetricsServiceProviders() {
       std::make_unique<OmniboxMetricsProvider>());
 
   auto stability_metrics_provider =
-      std::make_unique<IOSChromeStabilityMetricsProvider>(
-          GetApplicationContext()->GetLocalState());
+      std::make_unique<IOSChromeStabilityMetricsProvider>(local_state);
   stability_metrics_provider_ = stability_metrics_provider.get();
   metrics_service_->RegisterMetricsProvider(
       std::move(stability_metrics_provider));
@@ -286,6 +288,9 @@ void IOSChromeMetricsServiceClient::RegisterMetricsServiceProviders() {
   // MetricsServiceAccessor::IsMetricsReportingEnabled() to return true.
   metrics_service_->RegisterMetricsProvider(CreateFileMetricsProvider(
       metrics_state_manager_->IsMetricsReportingEnabled()));
+
+  metrics_service_->RegisterMetricsProvider(
+        std::make_unique<metrics::EntropyStateProvider>(local_state));
 
   metrics_service_->RegisterMetricsProvider(
       std::make_unique<metrics::ScreenInfoMetricsProvider>());

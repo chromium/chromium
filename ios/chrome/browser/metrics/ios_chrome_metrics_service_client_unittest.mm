@@ -95,7 +95,7 @@ TEST_F(IOSChromeMetricsServiceClientTest, TestRegisterMetricsServiceProviders) {
 
   // This is the number of metrics providers that are registered inside
   // IOSChromeMetricsServiceClient::Initialize().
-  expected_providers += 13;
+  expected_providers += 14;
 
   std::unique_ptr<IOSChromeMetricsServiceClient> chrome_metrics_service_client =
       IOSChromeMetricsServiceClient::Create(metrics_state_manager_.get());
