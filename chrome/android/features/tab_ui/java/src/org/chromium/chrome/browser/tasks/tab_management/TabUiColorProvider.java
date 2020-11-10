@@ -225,6 +225,6 @@ public class TabUiColorProvider {
     public static ColorStateList getMessageCardCloseButtonTintList(
             Context context, boolean isIncognito) {
         return AppCompatResources.getColorStateList(context,
-                isIncognito ? R.color.default_icon_color_inverse : R.color.default_icon_color);
+                isIncognito ? R.color.default_icon_color_light : R.color.default_icon_color);
     }
 }
