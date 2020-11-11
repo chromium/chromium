@@ -17,6 +17,7 @@
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/containers/mru_cache.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/optional.h"
@@ -954,6 +955,9 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   // Notifies client about the custom tracker results.
   void NotifyThroughputTrackerResults(const CustomTrackerResults& results);
 
+  // Wrapper for checking and updating |contains_srgb_cache_|.
+  bool CheckColorSpaceContainsSrgb(const gfx::ColorSpace& color_space) const;
+
   // Once bound, this instance owns the InputHandler. However, an InputHandler
   // need not be bound so this should be null-checked before dereferencing.
   std::unique_ptr<InputDelegateForCompositor> input_delegate_;
@@ -1196,6 +1200,12 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   bool is_measuring_smoothness_ = false;
 
   base::WritableSharedMemoryMapping ukm_smoothness_mapping_;
+
+  // Cache for the results of calls to gfx::ColorSpace::Contains() on sRGB. This
+  // computation is deterministic for a given color space, can be called
+  // multiple times per frame, and incurs a non-trivial cost.
+  // mutable because |contains_srgb_cache_| is accessed in a const method.
+  mutable base::MRUCache<gfx::ColorSpace, bool> contains_srgb_cache_;
 
   // Must be the last member to ensure this is destroyed first in the
   // destruction order and invalidates all weak pointers.

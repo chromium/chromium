@@ -38,6 +38,8 @@ enum class ContentColorUsage : uint8_t {
 // opposed to in ui/display because it is used directly by components/viz.
 class COLOR_SPACE_EXPORT DisplayColorSpaces {
  public:
+  static constexpr size_t kConfigCount = 6;
+
   // Initialize as sRGB-only.
   DisplayColorSpaces();
 
@@ -111,7 +113,6 @@ class COLOR_SPACE_EXPORT DisplayColorSpaces {
   friend struct mojo::StructTraits<gfx::mojom::DisplayColorSpacesDataView,
                                    gfx::DisplayColorSpaces>;
 
-  static constexpr size_t kConfigCount = 6;
   gfx::ColorSpace color_spaces_[kConfigCount];
   gfx::BufferFormat buffer_formats_[kConfigCount];
   float sdr_white_level_ = ColorSpace::kDefaultSDRWhiteLevel;

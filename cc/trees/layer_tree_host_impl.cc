@@ -149,6 +149,13 @@ const float kMobileViewportWidthEpsilon = 0.15f;
 // kHitTestAsk after the threshold is reached.
 const size_t kAssumeOverlapThreshold = 100;
 
+// gfx::DisplayColorSpaces stores up to 3 different color spaces. This should be
+// updated to match any size changes in DisplayColorSpaces.
+constexpr size_t kContainsSrgbCacheSize = 3;
+static_assert(kContainsSrgbCacheSize ==
+                  gfx::DisplayColorSpaces::kConfigCount / 2,
+              "sRGB cache must match the size of DisplayColorSpaces");
+
 bool HasFixedPageScale(LayerTreeImpl* active_tree) {
   return active_tree->min_page_scale_factor() ==
          active_tree->max_page_scale_factor();
@@ -425,7 +432,8 @@ LayerTreeHostImpl::LayerTreeHostImpl(
       frame_trackers_(settings.single_thread_proxy_scheduler,
                       compositor_frame_reporting_controller_.get()),
       lcd_text_metrics_reporter_(LCDTextMetricsReporter::CreateIfNeeded(this)),
-      frame_rate_estimator_(GetTaskRunner()) {
+      frame_rate_estimator_(GetTaskRunner()),
+      contains_srgb_cache_(kContainsSrgbCacheSize) {
   DCHECK(mutator_host_);
   mutator_host_->SetMutatorHostClient(this);
   mutator_events_ = mutator_host_->CreateEvents();
@@ -1800,9 +1808,27 @@ gfx::ColorSpace LayerTreeHostImpl::GetRasterColorSpace(
 
   // The raster color space should contain sRGB to avoid artifacts during
   // rasterization.
-  if (!result.Contains(srgb))
+  if (!CheckColorSpaceContainsSrgb(result))
     return srgb;
 
+  return result;
+}
+
+bool LayerTreeHostImpl::CheckColorSpaceContainsSrgb(
+    const gfx::ColorSpace& color_space) const {
+  constexpr gfx::ColorSpace srgb = gfx::ColorSpace::CreateSRGB();
+
+  // Color spaces without a custom primary matrix are cheap to compute, so the
+  // cache can be bypassed.
+  if (color_space.GetPrimaryID() != gfx::ColorSpace::PrimaryID::CUSTOM)
+    return color_space.Contains(srgb);
+
+  auto it = contains_srgb_cache_.Get(color_space);
+  if (it != contains_srgb_cache_.end())
+    return it->second;
+
+  bool result = color_space.Contains(srgb);
+  contains_srgb_cache_.Put(color_space, result);
   return result;
 }
 
