@@ -82,10 +82,19 @@ public class AwWebContentsObserver extends WebContentsObserver {
         String unreachableWebDataUrl = AwContentsStatics.getUnreachableWebDataUrl();
         boolean isErrorUrl =
                 unreachableWebDataUrl != null && unreachableWebDataUrl.equals(failingUrl);
-        if (isMainFrame && !isErrorUrl && errorCode == NetError.ERR_ABORTED) {
-            // Need to call onPageFinished for backwards compatibility with the classic webview.
-            // See also AwContents.IoThreadClientImpl.onReceivedError.
-            client.getCallbackHelper().postOnPageFinished(failingUrl);
+        if (isMainFrame && !isErrorUrl) {
+            if (errorCode == NetError.ERR_ABORTED) {
+                // Need to call onPageFinished for backwards compatibility with the classic webview.
+                // See also AwContentsClientBridge.onReceivedError.
+                client.getCallbackHelper().postOnPageFinished(failingUrl);
+            } else if (errorCode == NetError.ERR_HTTP_RESPONSE_CODE_FAILURE) {
+                // This is a HTTP error that results in an error page. We need to call onPageStarted
+                // and onPageFinished to have the same behavior with HTTP error navigations that
+                // don't result in an error page. See also
+                // AwContentsClientBridge.onReceivedHttpError.
+                client.getCallbackHelper().postOnPageStarted(failingUrl);
+                client.getCallbackHelper().postOnPageFinished(failingUrl);
+            }
         }
     }
 

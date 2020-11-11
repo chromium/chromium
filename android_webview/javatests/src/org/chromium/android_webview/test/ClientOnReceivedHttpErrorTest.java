@@ -23,6 +23,7 @@ import org.chromium.android_webview.test.util.AwTestTouchUtils;
 import org.chromium.android_webview.test.util.CommonResources;
 import org.chromium.base.test.util.Feature;
 import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
+import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer;
 import org.chromium.net.test.util.TestWebServer;
 
 import java.util.ArrayList;
@@ -261,5 +262,90 @@ public class ClientOnReceivedHttpErrorTest {
         Assert.assertTrue(response.getResponseHeaders().containsKey("Content-Type"));
         Assert.assertEquals(
                 "text/html; charset=utf-8", response.getResponseHeaders().get("Content-Type"));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testOnPageStartedAndFinishedEmpty() throws Throwable {
+        useDefaultTestAwContentsClient();
+        TestCallbackHelperContainer.OnPageStartedHelper onPageStartedHelper =
+                mContentsClient.getOnPageStartedHelper();
+        TestCallbackHelperContainer.OnPageFinishedHelper onPageFinishedHelper =
+                mContentsClient.getOnPageFinishedHelper();
+        TestAwContentsClient.OnReceivedHttpErrorHelper onReceivedHttpErrorHelper =
+                mContentsClient.getOnReceivedHttpErrorHelper();
+        final String badUrl = mWebServer.getResponseUrl("/404.html");
+        final String goodUrl =
+                mWebServer.setResponse("/good.html", CommonResources.ABOUT_HTML, null);
+        final int initialOnHttpErrorCount = onReceivedHttpErrorHelper.getCallCount();
+        final int initialOnPageStartedCount = onPageStartedHelper.getCallCount();
+        final int initialOnPageFinishedCount = onPageFinishedHelper.getCallCount();
+
+        // Navigate to a URL that doesn't exist.
+        mActivityTestRule.loadUrlSync(mAwContents, onPageFinishedHelper, badUrl);
+        Assert.assertEquals("onReceivedHttpErrorHelper should be called once",
+                initialOnHttpErrorCount + 1, onReceivedHttpErrorHelper.getCallCount());
+        AwWebResourceRequest request = onReceivedHttpErrorHelper.getRequest();
+        Assert.assertNotNull("onReceivedHttpError should have a non-null request", request);
+        Assert.assertEquals(badUrl, request.url);
+        Assert.assertEquals("onPageStartedHelper should be called once",
+                initialOnPageStartedCount + 1, onPageStartedHelper.getCallCount());
+        Assert.assertEquals(badUrl, onPageStartedHelper.getUrl());
+        Assert.assertEquals("onPageFinishedHelper should be called once",
+                initialOnPageFinishedCount + 1, onPageFinishedHelper.getCallCount());
+        Assert.assertEquals(badUrl, onPageFinishedHelper.getUrl());
+
+        // Rather than wait a fixed time to see that additional callbacks for badUrl aren't
+        // called, we load another valid page since callbacks arrive sequentially.
+        mActivityTestRule.loadUrlSync(mAwContents, onPageFinishedHelper, goodUrl);
+        Assert.assertEquals(initialOnHttpErrorCount + 1, onReceivedHttpErrorHelper.getCallCount());
+        Assert.assertEquals(initialOnPageStartedCount + 2, onPageStartedHelper.getCallCount());
+        Assert.assertEquals(goodUrl, onPageStartedHelper.getUrl());
+        Assert.assertEquals(initialOnPageFinishedCount + 2, onPageFinishedHelper.getCallCount());
+        Assert.assertEquals(goodUrl, onPageFinishedHelper.getUrl());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testOnPageStartedAndFinishedNonEmpty() throws Throwable {
+        useDefaultTestAwContentsClient();
+        TestCallbackHelperContainer.OnPageStartedHelper onPageStartedHelper =
+                mContentsClient.getOnPageStartedHelper();
+        TestCallbackHelperContainer.OnPageFinishedHelper onPageFinishedHelper =
+                mContentsClient.getOnPageFinishedHelper();
+        TestAwContentsClient.OnReceivedHttpErrorHelper onReceivedHttpErrorHelper =
+                mContentsClient.getOnReceivedHttpErrorHelper();
+        final String badUrl = mWebServer.setResponseWithNotFoundStatus("/404.html");
+        final String goodUrl =
+                mWebServer.setResponse("/good.html", CommonResources.ABOUT_HTML, null);
+        final int initialOnHttpErrorCount = onReceivedHttpErrorHelper.getCallCount();
+        final int initialOnPageStartedCount = onPageStartedHelper.getCallCount();
+        final int initialOnPageFinishedCount = onPageFinishedHelper.getCallCount();
+
+        // Navigate to a URL that 404s but has a non-empty body (because
+        // setResponseWithNotFoundStatus will add some content to 404 responses).
+        mActivityTestRule.loadUrlSync(mAwContents, onPageFinishedHelper, badUrl);
+        Assert.assertEquals("onReceivedHttpErrorHelper should be called once",
+                initialOnHttpErrorCount + 1, onReceivedHttpErrorHelper.getCallCount());
+        AwWebResourceRequest request = onReceivedHttpErrorHelper.getRequest();
+        Assert.assertNotNull("onReceivedHttpError should have a non-null request", request);
+        Assert.assertEquals(badUrl, request.url);
+        Assert.assertEquals("onPageStartedHelper should be called once",
+                initialOnPageStartedCount + 1, onPageStartedHelper.getCallCount());
+        Assert.assertEquals(badUrl, onPageStartedHelper.getUrl());
+        Assert.assertEquals("onPageFinishedHelper should be called once",
+                initialOnPageFinishedCount + 1, onPageFinishedHelper.getCallCount());
+        Assert.assertEquals(badUrl, onPageFinishedHelper.getUrl());
+
+        // Rather than wait a fixed time to see that additional callbacks for badUrl aren't
+        // called, we load another valid page since callbacks arrive sequentially.
+        mActivityTestRule.loadUrlSync(mAwContents, onPageFinishedHelper, goodUrl);
+        Assert.assertEquals(initialOnHttpErrorCount + 1, onReceivedHttpErrorHelper.getCallCount());
+        Assert.assertEquals(initialOnPageStartedCount + 2, onPageStartedHelper.getCallCount());
+        Assert.assertEquals(goodUrl, onPageStartedHelper.getUrl());
+        Assert.assertEquals(initialOnPageFinishedCount + 2, onPageFinishedHelper.getCallCount());
+        Assert.assertEquals(goodUrl, onPageFinishedHelper.getUrl());
     }
 }
