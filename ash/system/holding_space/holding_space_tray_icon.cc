@@ -37,6 +37,15 @@ bool IsPreviewsEnabled() {
          prefs && holding_space_prefs::IsPreviewsEnabled(prefs);
 }
 
+// Sets `view`'s visibility to the specified value. Note that this method will
+// only update visibility if necessary. This is to avoid propagating an event
+// up the view tree when visibility is not changed that could otherwise result
+// in layout invalidation.
+void SetVisibility(views::View* view, bool visible) {
+  if (view->GetVisible() != visible)
+    view->SetVisible(visible);
+}
+
 }  // namespace
 
 // HoldingSpaceTrayIcon --------------------------------------------------------
@@ -75,6 +84,15 @@ void HoldingSpaceTrayIcon::InitLayout() {
   SetLayoutManager(std::make_unique<views::FillLayout>());
   SetPreferredSize(gfx::Size(kTrayItemSize, kTrayItemSize));
 
+  // No previews image.
+  // NOTE: Events are disallowed on the `no_previews_image_view_` subtree so
+  // that tooltips will be retrieved from `this` instead.
+  no_previews_image_view_ = AddChildView(std::make_unique<views::ImageView>());
+  no_previews_image_view_->SetCanProcessEventsWithinSubtree(false);
+  no_previews_image_view_->SetImage(
+      gfx::CreateVectorIcon(kHoldingSpaceIcon, kHoldingSpaceTrayIconSize,
+                            ShelfConfig::Get()->shelf_icon_color()));
+
   if (features::IsTemporaryHoldingSpaceContentForwardEntryPointEnabled()) {
     // As holding space items are added to the model, child layers will be added
     // to `this` view's layer to represent them.
@@ -82,9 +100,6 @@ void HoldingSpaceTrayIcon::InitLayout() {
     layer()->SetFillsBoundsOpaquely(false);
     return;
   }
-
-  // Force hide previews to initialize view state.
-  HidePreviews(/*force=*/true);
 }
 
 void HoldingSpaceTrayIcon::OnHoldingSpaceModelAttached(
@@ -114,6 +129,8 @@ void HoldingSpaceTrayIcon::OnHoldingSpaceItemAdded(
 
   if (!item->IsFinalized())
     return;
+
+  SetVisibility(no_previews_image_view_, false);
 
   for (std::unique_ptr<HoldingSpaceTrayIconPreview>& preview : previews_)
     preview->AnimateShift();
@@ -170,6 +187,8 @@ void HoldingSpaceTrayIcon::OnHoldingSpaceItemFinalized(
     OnHoldingSpaceItemAdded(item);
     return;
   }
+
+  SetVisibility(no_previews_image_view_, false);
 
   size_t index = 0;
   for (const auto& candidate :
@@ -265,16 +284,14 @@ void HoldingSpaceTrayIcon::ShowPreviews() {
 
   previews_enabled_ = true;
 
-  RemoveAllChildViews(/*delete_children=*/true);
-
   if (HoldingSpaceController::Get()->model()) {
     for (const auto& item : HoldingSpaceController::Get()->model()->items())
       OnHoldingSpaceItemAdded(item.get());
   }
 }
 
-void HoldingSpaceTrayIcon::HidePreviews(bool force) {
-  if (!previews_enabled_ && !force)
+void HoldingSpaceTrayIcon::HidePreviews() {
+  if (!previews_enabled_)
     return;
 
   previews_enabled_ = false;
@@ -282,14 +299,7 @@ void HoldingSpaceTrayIcon::HidePreviews(bool force) {
   previews_.clear();
   removed_previews_.clear();
 
-  // Image.
-  // NOTE: Events are disallowed on the `image_view` subtree so that tooltips
-  // will be retrieved from `this` instead.
-  auto* image_view = AddChildView(std::make_unique<views::ImageView>());
-  image_view->SetCanProcessEventsWithinSubtree(false);
-  image_view->SetImage(
-      gfx::CreateVectorIcon(kHoldingSpaceIcon, kHoldingSpaceTrayIconSize,
-                            ShelfConfig::Get()->shelf_icon_color()));
+  SetVisibility(no_previews_image_view_, true);
 
   UpdatePreferredSize();
 }
@@ -297,6 +307,9 @@ void HoldingSpaceTrayIcon::HidePreviews(bool force) {
 void HoldingSpaceTrayIcon::OnHoldingSpaceTrayIconPreviewAnimatedOut(
     HoldingSpaceTrayIconPreview* preview) {
   base::EraseIf(removed_previews_, base::MatchesUniquePtr(preview));
+
+  if (previews_.empty() && removed_previews_.empty())
+    SetVisibility(no_previews_image_view_, true);
 }
 
 BEGIN_METADATA(HoldingSpaceTrayIcon, views::View)

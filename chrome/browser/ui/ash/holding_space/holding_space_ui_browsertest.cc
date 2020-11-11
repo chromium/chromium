@@ -363,24 +363,29 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceUiPreviewsBrowserTest, TogglePreviews) {
   ASSERT_TRUE(tray_icon->layer());
 
   // Initially the tray icon should be empty.
-  EXPECT_EQ(0u, tray_icon->children().size());
   EXPECT_EQ(0u, tray_icon->layer()->children().size());
+
+  // It should have a single visible child which is the image view shown when
+  // previews are disabled or unavailable.
+  ASSERT_EQ(1u, tray_icon->children().size());
+  const views::View* no_previews_image_view = tray_icon->children()[0];
+  EXPECT_TRUE(no_previews_image_view->GetVisible());
 
   // After pinning a file, we should have a single preview in the tray icon.
   AddPinnedFile();
-  EXPECT_EQ(0u, tray_icon->children().size());
+  EXPECT_FALSE(no_previews_image_view->GetVisible());
   EXPECT_EQ(1u, tray_icon->layer()->children().size());
   EXPECT_EQ(gfx::Size(32, 32), tray_icon->size());
 
   // After downloading a file, we should have two previews in the tray icon.
   AddDownloadFile();
-  EXPECT_EQ(0u, tray_icon->children().size());
+  EXPECT_FALSE(no_previews_image_view->GetVisible());
   EXPECT_EQ(2u, tray_icon->layer()->children().size());
   EXPECT_EQ(gfx::Size(48, 32), tray_icon->size());
 
   // After taking a screenshot, we should have three previews in the tray icon.
   AddScreenshotFile();
-  EXPECT_EQ(0u, tray_icon->children().size());
+  EXPECT_FALSE(no_previews_image_view->GetVisible());
   EXPECT_EQ(3u, tray_icon->layer()->children().size());
   EXPECT_EQ(gfx::Size(64, 32), tray_icon->size());
 
@@ -397,7 +402,7 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceUiPreviewsBrowserTest, TogglePreviews) {
 
   // The tray icon should now contain no previews, but have a single child which
   // contains the static image to show when previews are disabled.
-  EXPECT_EQ(1u, tray_icon->children().size());
+  EXPECT_TRUE(no_previews_image_view->GetVisible());
   EXPECT_EQ(0u, tray_icon->layer()->children().size());
   EXPECT_EQ(gfx::Size(32, 32), tray_icon->size());
 
@@ -413,7 +418,7 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceUiPreviewsBrowserTest, TogglePreviews) {
   EXPECT_FALSE(views::MenuController::GetActiveInstance());
 
   // The tray icon should once again show three previews.
-  EXPECT_EQ(0u, tray_icon->children().size());
+  EXPECT_FALSE(no_previews_image_view->GetVisible());
   EXPECT_EQ(3u, tray_icon->layer()->children().size());
   EXPECT_EQ(gfx::Size(64, 32), tray_icon->size());
 }

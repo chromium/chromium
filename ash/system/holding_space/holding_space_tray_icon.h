@@ -23,6 +23,10 @@
 
 class PrefChangeRegistrar;
 
+namespace views {
+class ImageView;
+}  // namespace views
+
 namespace ash {
 
 class HoldingSpaceTrayIconPreview;
@@ -75,7 +79,7 @@ class ASH_EXPORT HoldingSpaceTrayIcon : public views::View,
   void UpdatePreviewsEnabled();
 
   void ShowPreviews();
-  void HidePreviews(bool force = false);
+  void HidePreviews();
 
   // Invoked when the specified preview has completed animating out. At this
   // point it is owned by `removed_previews_` and should be destroyed.
@@ -83,6 +87,10 @@ class ASH_EXPORT HoldingSpaceTrayIcon : public views::View,
 
   // The shelf associated with this holding space tray icon.
   Shelf* const shelf_;
+
+  // The child of this holding space tray icon which should be visible only if
+  // previews are disabled or there are no previews available.
+  views::ImageView* no_previews_image_view_ = nullptr;
 
   // Whether previews are currently enabled. Note that if the content forward
   // entry point feature is disabled, this will always be false. Otherwise,
