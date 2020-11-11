@@ -20,7 +20,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.TraceEvent;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.WindowDelegate;
 import org.chromium.chrome.browser.util.KeyNavigationUtil;
 
 /**
@@ -33,26 +32,6 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
     private @Nullable OmniboxSuggestionsDropdownAdapter mAdapter;
 
     private final int[] mTempMeasureSpecs = new int[2];
-
-    /** Provides the capabilities required to embed the omnibox suggestion list into the UI. */
-    public interface Embedder {
-        /** Return the anchor view the suggestion list should be drawn below. */
-        View getAnchorView();
-
-        /**
-         * Return the view that the omnibox suggestions should be aligned horizontally to.  The
-         * view must be a descendant of {@link #getAnchorView()}.  If null, the suggestions will
-         * be aligned to the start of {@link #getAnchorView()}.
-         */
-        @Nullable
-        View getAlignmentView();
-
-        /** Return the delegate used to interact with the Window. */
-        WindowDelegate getWindowDelegate();
-
-        /** Return whether the suggestions are being rendered in the tablet UI. */
-        boolean isTablet();
-    }
 
     /** Interface that will receive notifications and callbacks from OmniboxSuggestionList. */
     public interface Observer {
@@ -173,7 +152,7 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
      * Sets the embedder for the list view.
      * @param embedder the embedder of this list.
      */
-    public void setEmbedder(OmniboxSuggestionsDropdown.Embedder embedder) {
+    public void setEmbedder(OmniboxSuggestionsDropdownEmbedder embedder) {
         mDropdownDelegate.setEmbedder(embedder);
     }
 

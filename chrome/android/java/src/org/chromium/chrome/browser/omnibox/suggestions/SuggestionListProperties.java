@@ -17,7 +17,7 @@ public class SuggestionListProperties {
     public static final WritableBooleanPropertyKey VISIBLE = new WritableBooleanPropertyKey();
 
     /** The embedder for the suggestion list. */
-    public static final WritableObjectPropertyKey<OmniboxSuggestionsDropdown.Embedder> EMBEDDER =
+    public static final WritableObjectPropertyKey<OmniboxSuggestionsDropdownEmbedder> EMBEDDER =
             new WritableObjectPropertyKey<>();
 
     /**

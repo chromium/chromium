@@ -30,7 +30,7 @@ import org.chromium.ui.base.ViewUtils;
 /** Common functionality of the Omnibox suggestions dropdown. */
 class OmniboxSuggestionsDropdownDelegate implements View.OnAttachStateChangeListener {
     private ViewGroup mSuggestionsDropdown;
-    private OmniboxSuggestionsDropdown.Embedder mEmbedder;
+    private OmniboxSuggestionsDropdownEmbedder mEmbedder;
     private OmniboxSuggestionsDropdown.Observer mObserver;
     private View mAnchorView;
     private View mAlignmentView;
@@ -60,7 +60,7 @@ class OmniboxSuggestionsDropdownDelegate implements View.OnAttachStateChangeList
     }
 
     /** Sets the embedder of the dropdown and creates necessary listeners. */
-    public void setEmbedder(OmniboxSuggestionsDropdown.Embedder embedder) {
+    public void setEmbedder(OmniboxSuggestionsDropdownEmbedder embedder) {
         assert mEmbedder == null;
         mEmbedder = embedder;
         mAnchorView = mEmbedder.getAnchorView();

@@ -58,7 +58,7 @@ import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
 import org.chromium.chrome.browser.omnibox.status.StatusView;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteDelegate;
-import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsDropdown;
+import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsDropdownEmbedder;
 import org.chromium.chrome.browser.omnibox.voice.AssistantVoiceSearchService;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
@@ -209,7 +209,7 @@ public class LocationBarLayout
         mUrlCoordinator = new UrlBarCoordinator((UrlBar) mUrlBar);
         mUrlCoordinator.setDelegate(this);
 
-        OmniboxSuggestionsDropdown.Embedder embedder = new OmniboxSuggestionsDropdown.Embedder() {
+        OmniboxSuggestionsDropdownEmbedder embedder = new OmniboxSuggestionsDropdownEmbedder() {
             @Override
             public boolean isTablet() {
                 return mIsTablet;

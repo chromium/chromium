@@ -64,7 +64,7 @@ public class AutocompleteCoordinator implements UrlFocusChangeListener, UrlTextC
     private OmniboxSuggestionsDropdown mDropdown;
 
     public AutocompleteCoordinator(ViewGroup parent, AutocompleteDelegate delegate,
-            OmniboxSuggestionsDropdown.Embedder dropdownEmbedder,
+            OmniboxSuggestionsDropdownEmbedder dropdownEmbedder,
             UrlBarEditingTextStateProvider urlBarEditingTextProvider) {
         mParent = parent;
         Context context = parent.getContext();

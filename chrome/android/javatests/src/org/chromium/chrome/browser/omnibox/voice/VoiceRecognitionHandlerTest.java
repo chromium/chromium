@@ -40,7 +40,7 @@ import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController.On
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteDelegate;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteResult;
-import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsDropdown;
+import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsDropdownEmbedder;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler.VoiceInteractionSource;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler.VoiceResult;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -302,7 +302,7 @@ public class VoiceRecognitionHandlerTest {
      */
     private class TestAutocompleteCoordinator extends AutocompleteCoordinator {
         public TestAutocompleteCoordinator(ViewGroup parent, AutocompleteDelegate delegate,
-                OmniboxSuggestionsDropdown.Embedder dropdownEmbedder,
+                OmniboxSuggestionsDropdownEmbedder dropdownEmbedder,
                 UrlBarEditingTextStateProvider urlBarEditingTextProvider) {
             super(parent, delegate, dropdownEmbedder, urlBarEditingTextProvider);
         }
