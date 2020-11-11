@@ -234,7 +234,7 @@ IN_PROC_BROWSER_TEST_F(CardUnmaskPromptViewBrowserTest,
   ShowUi(kExpiryExpired);
   controller()->OnUnmaskPromptAccepted(
       base::ASCIIToUTF16("123"), base::ASCIIToUTF16("10"),
-      base::ASCIIToUTF16("2020"), /*should_store_locally=*/false,
+      base::ASCIIToUTF16(test::NextYear()), /*should_store_locally=*/false,
       /*enable_fido_auth=*/false);
   EXPECT_EQ(base::ASCIIToUTF16("123"), delegate()->details().cvc);
   controller()->OnVerificationResult(AutofillClient::SUCCESS);
