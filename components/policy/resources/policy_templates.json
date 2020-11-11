@@ -7112,13 +7112,11 @@
       'id': 56,
       'caption': '''Refresh rate for user policy''',
       'tags': [],
-      'desc': '''Specifies the period in milliseconds at which the device management service is queried for user policy information.
+      'desc': '''Setting the policy specifies the period in milliseconds at which the device management service is queried for user policy information. Valid values range from 1,800,000 (30 minutes) to 86,400,000 (1 day). Values outside this range will be clamped to the respective boundary.
 
-      Setting this policy overrides the default value of 3 hours. Valid values for this policy are in the range from 1800000 (30 minutes) to 86400000 (1 day). Any values not in this range will be clamped to the respective boundary. If the platform supports policy notifications, the refresh delay will be set to 24 hours because it is expected that policy notifications will force a refresh automatically whenever policy changes.
+      Leaving the policy unset uses the default value of 3 hours.
 
-      Leaving this policy not set will make <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> use the default value of 3 hours.
-
-      Note that if the platform supports policy notifications, the refresh delay will be set to 24 hours (ignoring all defaults and the value of this policy) because it is expected that policy notifications will force a refresh automatically whenever policy changes, making more frequent refreshes unnecessary.''',
+      Note: Policy notifications force a refresh when the policy changes, making frequent refreshes unnecessary. So, if the platform supports these notifications, the refresh delay is 24 hours (ignoring defaults and the value of this policy).''',
     },
     {
       'name': 'MaxInvalidationFetchDelay',
@@ -7135,11 +7133,9 @@
       'id': 228,
       'caption': '''Maximum fetch delay after a policy invalidation''',
       'tags': [],
-      'desc': '''Specifies the maximum delay in milliseconds between receiving a policy invalidation and fetching the new policy from the device management service.
+      'desc': '''Setting the policy specifies the maximum delay in milliseconds between receiving a policy invalidation and fetching the new policy from the device management service. Valid values range from 1,000 (1 second) to 300,000 (5 minutes). Values outside this range will be clamped to the respective boundary.
 
-      Setting this policy overrides the default value of 10000 milliseconds. Valid values for this policy are in the range from 1000 (1 second) to 300000 (5 minutes). Any values not in this range will be clamped to the respective boundary.
-
-      Leaving this policy not set will make <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> use the default value of 10000 milliseconds.''',
+      Leaving the policy unset means <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> uses the default value of 10 seconds.''',
     },
     {
       'name': 'ChromeFrameRendererSettings',
@@ -7744,13 +7740,11 @@
       'id': 90,
       'caption': '''Refresh rate for Device Policy''',
       'tags': [],
-      'desc': '''Specifies the period in milliseconds at which the device management service is queried for device policy information.
+      'desc': '''Setting the policy specifies the period in milliseconds at which the device management service is queried for device policy information. Valid values range from 1,800,000 (30 minutes) to 86,400,000 (1 day). Values outside this range will be clamped to the respective boundary.
 
-      Setting this policy overrides the default value of 3 hours. Valid values for this policy are in the range from 1800000 (30 minutes) to 86400000 (1 day). Any values not in this range will be clamped to the respective boundary.
+      Leaving the policy unset means <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> uses the default value of 3 hours.
 
-      Leaving this policy not set will make <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> use the default value of 3 hours.
-
-      Note that if the platform supports policy notifications, the refresh delay will be set to 24 hours (ignoring all defaults and the value of this policy) because it is expected that policy notifications will force a refresh automatically whenever policy changes, making more frequent refreshes unnecessary.''',
+      Note: Policy notifications force a refresh when the policy changes, making frequent refreshes unnecessary. So, if the platform supports these notifications, the refresh delay is 24 hours (ignoring defaults and the value of this policy).''',
     },
     {
       'name': 'ImportBookmarks',
@@ -8075,13 +8069,15 @@
       'id': 554,
       'caption': '''Allow merging list policies from different sources''',
       'tags': [],
-      'desc': '''Allows the selected policies to be merged when they come from different sources, with the same scopes and level.
+      'desc': '''Setting the policy allows merging of selected policies when they come from different sources, with the same scopes and level.
 
-        If a policy is in the list, in case there is conflict between two sources, given that they have the same scopes and level, the values will be merged into a new policy list.
+      If a policy is in the list and there's conflict between sources with:
 
-        If a policy is in the list, in case there is conflict between two sources but also between different scopes and/or level, the policy with the highest priority will be applied.
+      * The same scopes and level: The values merge into a new policy list.
 
-        If a policy is not in the list, in case there is any conflict between sources, scopes and/or level, the policy with the highest priority will be applied.''',
+      * Different scopes or level: The policy with the highest priority applies.
+
+      If a policy isn't in the list and there's conflict between sources, scopes, or level, the policy with the highest priority applies.''',
       'label': '''Allow merging list policies from different sources''',
     },
     {
@@ -8141,15 +8137,15 @@
       'id': 565,
       'caption': '''Allow merging dictionary policies from different sources''',
       'tags': [],
-      'desc': '''Allows the selected policies to be merged when they come from different sources, with the same scopes and level.
+      'desc': '''Setting the policy allows merging of selected policies when they come from different sources, with the same scopes and level. This merging is in the first level keys of the dictionary from each source. The key coming from the highest priority source takes precedence.
 
-        The merging consists in merging the first level keys of the dictionary from each source. In case of conflict between keys, the key coming from the highest priority source will be applied.
+      If a policy is in the list and there's conflict between sources with:
 
-        If a policy is in the list, in case there is conflict between two sources, given that they have the same scopes and level, the values will be merged into a new policy dictionary.
+      * The same scopes and level: The values merge into a new policy dictionary.
 
-        If a policy is in the list, in case there is conflict between two sources but also between different scopes and/or level, the policy with the highest priority will be applied.
+      * Different scopes or level: The policy with the highest priority applies.
 
-        If a policy is not in the list, in case there is any conflict between sources, scopes and/or level, the policy with the highest priority will be applied.''',
+      If a policy isn't in the list and there's conflict between sources, scopes, or level, the policy with the highest priority applies.''',
       'label': '''Allow merging dictionary policies from different sources''',
     },
     {
@@ -16788,7 +16784,7 @@
       'id': 380,
       'caption': '''Off hours intervals when the specified device policies are released''',
       'tags': [],
-      'desc': '''If "OffHours" policy is set, then the specified device policies are ignored (use the default settings of these policies) during the defined time intervals. Device policies are re-applied by Chrome on every event when "OffHours" period starts or ends. User will be notified and forced to sign out when "OffHours" time end and device policy settings are changed (e.g. when user is logged in not with an allowed account).''',
+      'desc': '''Setting the policy means the specified device policies are ignored (use these policies' default settings) during the specified intervals. Device policies are reapplied by <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> when the policy period starts or ends. The user is notified and forced to sign out when this period changes and device policy settings change (for example, when a user signs in with a disallowed account).''',
     },
     {
       'name': 'CloudPolicyOverridesPlatformPolicy',
@@ -16806,12 +16802,11 @@
       'id': 381,
       'caption': '''<ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> cloud policy overrides Platform policy.''',
       'tags': [],
-      'desc': '''
-      If the policy is set to true, cloud policy takes precedence if it conflicts with platform policy.
-      If the policy is set to false or not configured, platform policy takes precedence if it conflicts with cloud policy.
+      'desc': '''Setting the policy to Enabled means cloud policy takes precedence if it conflicts with platform policy.
 
-      This policy is only available as a mandatory machine platform policy and it only affects machine scope cloud policies.
-      ''',
+      Setting the policy to Disabled or leaving it unset means platform policy takes precedence if it conflicts with cloud policy.
+
+      This mandatory policy affects machine scope cloud policies.''',
     },
     {
       'name': 'PromptForDownloadLocation',
@@ -17867,10 +17862,9 @@
       'id': 510,
       'caption': '''The enrollment token of cloud policy on desktop''',
       'tags': [],
-      'desc': '''
-        If this policy is set, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> will try to register itself and apply associated cloud policy for all profiles.
+      'desc': '''Setting the policy means <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> tries to register itself with <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME">Chrome Browser Cloud Management</ph>. The value of this policy is an enrollment token you can retrieve from the <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME">Google Admin console</ph>.
 
-        The value of this policy is an Enrollment token that can be retrieved from the Google Admin console.''',
+      See https://support.google.com/chrome/a/answer/9301891?ref_topic=9301744 for details.''',
     },
     {
       'name': 'CloudManagementEnrollmentMandatory',
@@ -17887,12 +17881,11 @@
       'id': 505,
       'caption': '''Enable mandatory cloud management enrollment''',
       'tags': [],
-      'desc': '''
-        If this policy is set to True, cloud management enrollment is mandatory and blocks Chrome launch process if failed.
+      'desc': '''Setting the policy to Enabled mandates <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME">Chrome Browser Cloud Management</ph> enrollment and blocks <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> launch process if failed.
 
-        If this policy is left unset or set to False, cloud management enrollment is optional and does not blocks Chrome launch process if failed.
+      Setting the policy to Disabled or leaving it unset renders <ph name="CHROME_BROWSER_CLOUSE_MANAGEMENT_NAME">Chrome Browser Cloud Management</ph> optional and doesn't block <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> launch process if failed.
 
-        This policy is used by machine scope cloud policy enrollment on desktop and can be set by Registry or GPO on Windows, plist on Mac and JSON policy file on Linux.''',
+      Machine scope cloud policy enrollment on desktop uses this policy. See https://support.google.com/chrome/a/answer/9301891?ref_topic=9301744 for details.''',
     },
     {
       'name': 'AutoplayAllowed',
