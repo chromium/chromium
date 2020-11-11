@@ -161,10 +161,6 @@ bool FlexCodeInput::HandleKeyEvent(views::Textfield* sender,
     return true;
   }
 
-  // We only expect digits in the PIN, so we swallow all letters.
-  if (key_code >= ui::VKEY_A && key_code <= ui::VKEY_Z)
-    return true;
-
   return false;
 }
 

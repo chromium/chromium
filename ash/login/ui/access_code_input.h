@@ -55,11 +55,11 @@ class FlexCodeInput : public AccessCodeInput {
   using OnEscape = base::RepeatingClosure;
 
   // Builds the view for an access code that consists out of an unknown number
-  // of digits. |on_input_change| will be called upon digit insertion, deletion
-  // or change. |on_enter| will be called when code is complete and user presses
-  // enter to submit it for validation. |on_escape| will be called when pressing
-  // the escape key. |obscure_pin| determines whether the entered pin is
-  // displayed as clear text or as bullet points.
+  // of characters. |on_input_change| will be called upon character insertion,
+  // deletion or change. |on_enter| will be called when code is complete and
+  // user presses enter to submit it for validation. |on_escape| will be called
+  // when pressing the escape key. |obscure_pin| determines whether the entered
+  // pin is displayed as clear text or as bullet points.
   FlexCodeInput(OnInputChange on_input_change,
                 OnEnter on_enter,
                 OnEscape on_escape,
@@ -104,8 +104,8 @@ class FlexCodeInput : public AccessCodeInput {
  private:
   views::Textfield* code_field_;
 
-  // To be called when access input code changes (digit is inserted, deleted or
-  // updated). Passes true when code non-empty.
+  // To be called when access input code changes (character is inserted, deleted
+  // or updated). Passes true when code non-empty.
   OnInputChange on_input_change_;
 
   // To be called when user pressed enter to submit.

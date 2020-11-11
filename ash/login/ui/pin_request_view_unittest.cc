@@ -356,7 +356,7 @@ TEST_F(PinRequestViewTest, Backspace) {
   EXPECT_EQ("012323", last_code_submitted_);
 }
 
-// Tests input with unknown pin length.
+// Tests digit-only input with unknown pin length.
 TEST_F(PinRequestViewTest, FlexCodeInput) {
   StartView(base::nullopt);
   PinRequestView::TestApi test_api(view_);
@@ -379,6 +379,36 @@ TEST_F(PinRequestViewTest, FlexCodeInput) {
   SimulateMouseClickAt(GetEventGenerator(), test_api.submit_button());
   EXPECT_EQ(2, pin_submitted_);
   EXPECT_EQ("0123456", last_code_submitted_);
+}
+
+// Tests non-digit input with unknown pin length.
+TEST_F(PinRequestViewTest, FlexCodeInputCharacters) {
+  StartView(base::nullopt);
+  PinRequestView::TestApi test_api(view_);
+  ui::test::EventGenerator* generator = GetEventGenerator();
+  will_authenticate_ = false;
+
+  EXPECT_FALSE(test_api.submit_button()->GetEnabled());
+
+  for (int i = 0; i < 3; ++i) {
+    generator->PressKey(ui::KeyboardCode(ui::KeyboardCode::VKEY_A + i),
+                        ui::EF_NONE);
+    base::RunLoop().RunUntilIdle();
+  }
+  for (int i = 0; i < 3; ++i) {
+    generator->PressKey(ui::KeyboardCode(ui::KeyboardCode::VKEY_A + i),
+                        ui::EF_SHIFT_DOWN);
+    base::RunLoop().RunUntilIdle();
+  }
+  generator->PressKey(ui::KeyboardCode(ui::KeyboardCode::VKEY_ADD),
+                      ui::EF_NONE);
+  generator->PressKey(ui::KeyboardCode(ui::KeyboardCode::VKEY_SUBTRACT),
+                      ui::EF_NONE);
+
+  EXPECT_TRUE(test_api.submit_button()->GetEnabled());
+  SimulateMouseClickAt(GetEventGenerator(), test_api.submit_button());
+  EXPECT_EQ(1, pin_submitted_);
+  EXPECT_EQ("abcABC+-", last_code_submitted_);
 }
 
 // Tests input with virtual pin keyboard.
