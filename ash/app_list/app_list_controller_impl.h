@@ -302,10 +302,6 @@ class ASH_EXPORT AppListControllerImpl
 
   bool onscreen_keyboard_shown() const { return onscreen_keyboard_shown_; }
 
-  HomeLauncherTransitionState home_launcher_transition_state() const {
-    return home_launcher_transition_state_;
-  }
-
   // Performs the 'back' action for the active page.
   void Back();
 

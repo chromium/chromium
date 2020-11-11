@@ -837,14 +837,14 @@ ShelfBackgroundType ShelfLayoutManager::GetShelfBackgroundType() const {
       in_split_view_mode ||
       state_.window_state == WorkspaceWindowState::kFullscreen ||
       state_.window_state == WorkspaceWindowState::kMaximized;
-  const bool app_list_is_visible =
-      Shell::Get()->app_list_controller() &&
-      Shell::Get()->app_list_controller()->IsVisible(display_.id());
   const bool in_overview =
       Shell::Get()->overview_controller() &&
       Shell::Get()->overview_controller()->InOverviewSession();
   if (Shell::Get()->IsInTabletMode()) {
-    if (app_list_is_visible) {
+    const bool app_list_target_visibility =
+        Shell::Get()->app_list_controller() &&
+        Shell::Get()->app_list_controller()->GetTargetVisibility(display_.id());
+    if (app_list_target_visibility) {
       // TODO(https://crbug.com/1058205): Test this behavior.
       // If the IME virtual keyboard is showing, the shelf should appear in-app.
       // The workspace area in tablet mode is always the in-app workspace area,
@@ -852,26 +852,18 @@ ShelfBackgroundType ShelfLayoutManager::GetShelfBackgroundType() const {
       // area.
       if (ShelfConfig::Get()->is_virtual_keyboard_shown())
         return ShelfBackgroundType::kInApp;
-      // If the home launcher is shown or mostly shown, show the home launcher
-      // background. If it is mostly hidden, show the in-app or overview
-      // background.
-      if (!Shell::Get()->app_list_controller()->GetTargetVisibility(
-              display_.id())) {
-        return in_overview ? shelf_background_type_
-                           : ShelfBackgroundType::kInApp;
-      }
+
       return ShelfBackgroundType::kHomeLauncher;
-    } else if (Shell::Get()
-                   ->app_list_controller()
-                   ->home_launcher_transition_state() !=
-               AppListControllerImpl::HomeLauncherTransitionState::kFinished) {
-      return ShelfBackgroundType::kHomeLauncher;
-    } else if (maximized) {
-      // If the home launcher is not shown but it is maximized, show the
-      // in-app shelf.
-      return ShelfBackgroundType::kInApp;
     }
-  } else if (app_list_is_visible) {
+
+    return in_overview ? ShelfBackgroundType::kOverview
+                       : ShelfBackgroundType::kInApp;
+  }
+
+  const bool app_list_is_visible =
+      Shell::Get()->app_list_controller() &&
+      Shell::Get()->app_list_controller()->IsVisible(display_.id());
+  if (app_list_is_visible) {
     // When auto-hide shelf is enabled, shelf cannot be considered maximized.
     if (maximized && state_.visibility_state != SHELF_AUTO_HIDE)
       return ShelfBackgroundType::kMaximizedWithAppList;
@@ -883,8 +875,7 @@ ShelfBackgroundType ShelfLayoutManager::GetShelfBackgroundType() const {
     // When a window is maximized, if the auto-hide shelf is enabled and we are
     // in clamshell mode, the shelf will keep the default transparent
     // background.
-    if (!Shell::Get()->IsInTabletMode() &&
-        state_.visibility_state == SHELF_AUTO_HIDE)
+    if (state_.visibility_state == SHELF_AUTO_HIDE)
       return ShelfBackgroundType::kDefaultBg;
 
     return ShelfBackgroundType::kMaximized;
@@ -1319,7 +1310,7 @@ HotseatState ShelfLayoutManager::CalculateHotseatState(
       ((overview_controller && overview_controller->InOverviewSession()) ||
        overview_mode_will_start_) &&
       !overview_controller->IsCompletingShutdownAnimations();
-  const bool app_list_visible =
+  const bool app_list_target_visibility =
       app_list_controller->GetTargetVisibility(display_.id()) ||
       app_list_controller->ShouldHomeLauncherBeVisible();
 
@@ -1329,8 +1320,8 @@ HotseatState ShelfLayoutManager::CalculateHotseatState(
 
   // Only force to show if there is not a pending drag operation.
   if (shelf_widget_->is_hotseat_forced_to_show() && drag_status_ == kDragNone)
-    return app_list_visible ? HotseatState::kShownHomeLauncher
-                            : HotseatState::kExtended;
+    return app_list_target_visibility ? HotseatState::kShownHomeLauncher
+                                      : HotseatState::kExtended;
 
   bool in_split_view = false;
   if (in_overview) {
@@ -1343,49 +1334,41 @@ HotseatState ShelfLayoutManager::CalculateHotseatState(
   switch (drag_status_) {
     case kDragNone:
     case kDragHomeToOverviewInProgress: {
-      switch (app_list_controller->home_launcher_transition_state()) {
-        case AppListControllerImpl::HomeLauncherTransitionState::kMostlyShown:
+      if (app_list_target_visibility)
+        return HotseatState::kShownHomeLauncher;
+
+      // Show the hotseat if the shelf view's context menu is showing.
+      if (shelf_->hotseat_widget()->IsShowingShelfMenu())
+        return HotseatState::kExtended;
+
+      if (in_overview && !in_split_view) {
+        // Maintain the ShownHomeLauncher state if we enter overview mode
+        // from it.
+        if (hotseat_state() == HotseatState::kShownHomeLauncher)
           return HotseatState::kShownHomeLauncher;
-        case AppListControllerImpl::HomeLauncherTransitionState::kMostlyHidden:
-          return in_overview ? HotseatState::kExtended : HotseatState::kHidden;
-        case AppListControllerImpl::HomeLauncherTransitionState::kFinished:
-          if (app_list_visible)
-            return HotseatState::kShownHomeLauncher;
-
-          // Show the hotseat if the shelf view's context menu is showing.
-          if (shelf_->hotseat_widget()->IsShowingShelfMenu())
-            return HotseatState::kExtended;
-
-          if (in_overview && !in_split_view) {
-            // Maintain the ShownHomeLauncher state if we enter overview mode
-            // from it.
-            if (hotseat_state() == HotseatState::kShownHomeLauncher)
-              return HotseatState::kShownHomeLauncher;
-            return HotseatState::kExtended;
-          }
-
-          if (state_forced_by_back_gesture_)
-            return HotseatState::kExtended;
-
-          if (visibility_state == SHELF_AUTO_HIDE) {
-            if (auto_hide_state == SHELF_AUTO_HIDE_HIDDEN ||
-                should_hide_hotseat_) {
-              return HotseatState::kHidden;
-            }
-            return HotseatState::kExtended;
-          }
-          if (shelf_->hotseat_widget()->is_manually_extended() &&
-              !should_hide_hotseat_) {
-            return HotseatState::kExtended;
-          }
-
-          // If none of the conditions above were met means that the state
-          // changed because of an action other than a user intervention.
-          // We should hide the hotseat and reset the |is_manually extended|
-          // flag to false.
-          shelf_->hotseat_widget()->set_manually_extended(false);
-          return HotseatState::kHidden;
+        return HotseatState::kExtended;
       }
+
+      if (state_forced_by_back_gesture_)
+        return HotseatState::kExtended;
+
+      if (visibility_state == SHELF_AUTO_HIDE) {
+        if (auto_hide_state == SHELF_AUTO_HIDE_HIDDEN || should_hide_hotseat_)
+          return HotseatState::kHidden;
+
+        return HotseatState::kExtended;
+      }
+      if (shelf_->hotseat_widget()->is_manually_extended() &&
+          !should_hide_hotseat_) {
+        return HotseatState::kExtended;
+      }
+
+      // If none of the conditions above were met means that the state
+      // changed because of an action other than a user intervention.
+      // We should hide the hotseat and reset the |is_manually extended|
+      // flag to false.
+      shelf_->hotseat_widget()->set_manually_extended(false);
+      return HotseatState::kHidden;
     }
     case kDragCompleteInProgress:
       if (visibility_state == SHELF_AUTO_HIDE) {
@@ -1403,7 +1386,7 @@ HotseatState ShelfLayoutManager::CalculateHotseatState(
       if (!hotseat_is_in_drag_)
         return hotseat_state();
 
-      if (app_list_visible)
+      if (app_list_target_visibility)
         return HotseatState::kShownHomeLauncher;
 
       if (in_overview && !in_split_view)
@@ -1451,11 +1434,8 @@ HotseatState ShelfLayoutManager::CalculateHotseatState(
       return HotseatState::kExtended;
     }
     case kDragAppListInProgress:
-      return app_list_controller->home_launcher_transition_state() ==
-                     AppListControllerImpl::HomeLauncherTransitionState::
-                         kMostlyHidden
-                 ? HotseatState::kHidden
-                 : HotseatState::kShownHomeLauncher;
+      return app_list_target_visibility ? HotseatState::kShownHomeLauncher
+                                        : HotseatState::kHidden;
     default:
       // Do not change the hotseat state until the drag is complete or
       // canceled.
@@ -1981,12 +1961,14 @@ void ShelfLayoutManager::UpdateShelfVisibilityAfterLoginUIChange() {
 }
 
 float ShelfLayoutManager::ComputeTargetOpacity(const State& state) const {
-  // The shelf should not become transparent during the animation to or from
-  // HomeLauncher.
-  if (Shell::Get()->IsInTabletMode() &&
-      Shell::Get()->app_list_controller()->home_launcher_transition_state() !=
-          AppListControllerImpl::HomeLauncherTransitionState::kFinished) {
-    return 1.0f;
+  if (Shell::Get()->IsInTabletMode()) {
+    // The shelf should not become transparent during the animation to or from
+    // HomeLauncher.
+    auto* app_list_controller = Shell::Get()->app_list_controller();
+    if (app_list_controller->GetTargetVisibility(display_.id()) !=
+        app_list_controller->IsVisible(display_.id())) {
+      return 1.0f;
+    }
   }
 
   float opacity_when_visible = kDefaultShelfOpacity;

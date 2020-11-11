@@ -758,9 +758,11 @@ void ShelfWidget::CalculateTargetBounds() {
       WorkAreaInsets::ForWindow(GetNativeWindow());
 
   if (layout_manager->is_shelf_auto_hidden()) {
+    const display::Display display =
+        display::Screen::GetScreen()->GetDisplayNearestWindow(
+            GetNativeWindow());
     shelf_in_screen_portion =
-        Shell::Get()->app_list_controller()->home_launcher_transition_state() ==
-                AppListControllerImpl::HomeLauncherTransitionState::kMostlyShown
+        Shell::Get()->app_list_controller()->GetTargetVisibility(display.id())
             ? shelf_size
             : ShelfConfig::Get()->hidden_shelf_in_screen_portion();
   } else if (layout_manager->visibility_state() == SHELF_HIDDEN ||
