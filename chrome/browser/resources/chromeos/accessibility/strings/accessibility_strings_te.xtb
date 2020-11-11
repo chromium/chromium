@@ -267,7 +267,7 @@ Chrome బ్రౌజర్ మెనూను తెరవడానికి, 
 <translation id="3037392361165431467">{COUNT,plural, =1{సంగ్రాహక గుర్తు}other{# సంగ్రాహక గుర్తులు}}</translation>
 <translation id="3040901448410802366">ప్రోగ్రెస్ సూచిక</translation>
 <translation id="3046838483509668188">ChromeVox ఎంపికలు</translation>
-<translation id="3060756054951570867"><ph name="TITLE" /> మెను తెరవబడింది</translation>
+<translation id="3060756054951570867"><ph name="TITLE" /> మెనూ తెరవబడింది</translation>
 <translation id="3060880924447482063">అంశాల వారీగా మారడం కోసం ఎడమకు లేదా కుడికి స్వైప్ చేయండి</translation>
 <translation id="3070245424257836917">మూడు వేళ్లతో పైకి స్వైప్ చేయండి</translation>
 <translation id="3078345202707391975">తరువాత స్థాయి 2 శీర్షిక</translation>
@@ -383,7 +383,7 @@ Chrome బ్రౌజర్ మెనూను తెరవడానికి, 
 <translation id="3857141338659865495">మధ్యస్థ నీలమణి రంగు</translation>
 <translation id="3870295413168340326">మునుపటి స్థాయి 3 శీర్షిక లేదు</translation>
 <translation id="3887576927692165210">ed</translation>
-<translation id="3897092660631435901">మెను</translation>
+<translation id="3897092660631435901">మెనూ</translation>
 <translation id="3907138069015388678">lstgrd</translation>
 <translation id="3909320334364316587">మునుపటి స్థాయి 6 శీర్షిక</translation>
 <translation id="3914173277599553213">అవసరమైనవి</translation>
@@ -583,7 +583,7 @@ Chrome బ్రౌజర్ మెనూను తెరవడానికి, 
 <translation id="5455441614648621694">బహుమానపూర్వకం</translation>
 <translation id="5462510922370980473">పేజీ జాబితా</translation>
 <translation id="549602578321198708">పదం</translation>
-<translation id="5513242761114685513">సందర్భ మెను</translation>
+<translation id="5513242761114685513">సందర్భ మెనూ</translation>
 <translation id="551361796444814639">మధ్యస్థ నీలి రంగు</translation>
 <translation id="552195134157544755">రేడియో బటన్</translation>
 <translation id="5534303576632885660">hdr</translation>
@@ -867,7 +867,7 @@ Chrome బ్రౌజర్ మెనూను తెరవడానికి, 
 <translation id="7800558923657349506">ఉపసంహారం</translation>
 <translation id="7805768142964895445">స్థితి</translation>
 <translation id="7810781339813764006">తరువాత గ్రూప్</translation>
-<translation id="7813616274030162878">స్విచ్ యాక్సెస్ మెను</translation>
+<translation id="7813616274030162878">స్విచ్ యాక్సెస్ మెనూ</translation>
 <translation id="7839679365527550018">మునుపటి పదం</translation>
 <translation id="7846634333498149051">కీబోర్డ్</translation>
 <translation id="7851816175263618915">కొన్ని విరామచిహ్నాలు</translation>
@@ -885,7 +885,7 @@ Chrome బ్రౌజర్ మెనూను తెరవడానికి, 
 <translation id="7965147473449754028">మెనూను మూసివేసారు</translation>
 <translation id="7968340748835037139">ముదురు ఆకుపచ్చ</translation>
 <translation id="7972507042926081808">చాక్లెట్ రంగు</translation>
-<translation id="7974390230414479278">మెను అంశం</translation>
+<translation id="7974390230414479278">మెనూ అంశం</translation>
 <translation id="8004507136466386272">పదాలు</translation>
 <translation id="8004512796067398576">పెరుగుదల</translation>
 <translation id="8007540374018858731">h3</translation>

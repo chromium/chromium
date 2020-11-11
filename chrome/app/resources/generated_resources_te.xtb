@@ -255,7 +255,7 @@
 <translation id="1280965841156951489">ఎడిటింగ్‌ను అనుమతించు</translation>
 <translation id="1285320974508926690">ఈ సైట్‌ను ఎప్పటికీ అనువదించవద్దు</translation>
 <translation id="1285484354230578868">మీ Google డిస్క్ ఖాతాలో డేటాను నిల్వ చేయండి</translation>
-<translation id="1288037062697528143">సూర్యాస్తమయ సమయానికి రాత్రి కాంతి స్వయంచాలకంగా ఆన్ అవుతుంది</translation>
+<translation id="1288037062697528143">రాత్రి కాంతి, సూర్యాస్తమయ సమయానికి ఆటోమేటిక్‌గా ఆన్ అవుతుంది</translation>
 <translation id="1288300545283011870">ప్రసంగ లక్షణాలు</translation>
 <translation id="1290331692326790741">సిగ్నల్ బలహీనంగా ఉంది</translation>
 <translation id="1293264513303784526">USB-C పరికరం (ఎడమ పోర్ట్)</translation>
@@ -2617,7 +2617,7 @@
 <translation id="4010917659463429001">మీ బుక్‌మార్క్‌లను మీ మొబైల్ పరికరంలో పొందడానికి, <ph name="GET_IOS_APP_LINK" />.</translation>
 <translation id="4014432863917027322">"<ph name="EXTENSION_NAME" />"ని సరి చేయాలా?</translation>
 <translation id="4015163439792426608">ఎక్స్‌టెన్షన్‌లను ఇన్‌స్టాల్ చేశారా? ఒక సులభమైన స్థలంలో <ph name="BEGIN_LINK" />మీ ఎక్స్‌టెన్షన్‌లను నిర్వహించండి<ph name="END_LINK" />.</translation>
-<translation id="4020327272915390518">ఎంపికల మెను</translation>
+<translation id="4020327272915390518">ఎంపికల మెనూ</translation>
 <translation id="4021279097213088397">–</translation>
 <translation id="402184264550408568">(TCP)</translation>
 <translation id="4021909830315618592">బిల్డ్ వివరాలను కాపీ చేయండి</translation>
@@ -3769,7 +3769,7 @@
 <translation id="546322474339998983">Chrome బ్రౌజర్, <ph name="DEVICE_TYPE" /> లాంచర్ ఉపయోగిస్తాయి</translation>
 <translation id="5463231940765244860">నమోదు చేయండి</translation>
 <translation id="5463275305984126951"><ph name="LOCATION" /> యొక్క సూచిక</translation>
-<translation id="5463856536939868464">దాచిపెట్టిన బుక్‌మార్క్‌లు ఉన్న మెను</translation>
+<translation id="5463856536939868464">దాచిపెట్టిన బుక్‌మార్క్‌లు ఉన్న మెనూ</translation>
 <translation id="5464632865477611176">ఈ సమయాన్ని అమలు చేయి</translation>
 <translation id="5464660706533281090">ఈ సెట్టింగ్‌ను చిన్నారి వినియోగదారు మార్చలేరు.</translation>
 <translation id="5466374726908360271">అతికించి “<ph name="SEARCH_TERMS" />” కోసం వెతకండి</translation>
@@ -3874,7 +3874,7 @@
 <translation id="5578059481725149024">ఆటోమేటిక్ సైన్-ఇన్</translation>
 <translation id="558170650521898289">Microsoft Windows హార్డ్‌వేర్ డ్రైవర్ ధృవీకరణ</translation>
 <translation id="5581972110672966454">పరికరాన్ని డొమైన్‌కు చేర్చడం సాధ్యపడదు. దయచేసి మళ్లీ ట్రై చేయండి లేదా మీ పరికర ఓనర్‌ను లేదా అడ్మినిస్ట్రేట‌ర్‌ను సంప్రదించండి. ఎర్రర్ కోడ్: <ph name="ERROR_CODE" />.</translation>
-<translation id="5582839680698949063">ప్రధాన మెను</translation>
+<translation id="5582839680698949063">ప్రధాన మెనూ</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5584088138253955452">వినియోగదారు పేరుని సేవ్ చేయాలా?</translation>
 <translation id="5584915726528712820"><ph name="BEGIN_PARAGRAPH1" />ఇది, ఈ పరికరం మరియు మీరు దీనిని ఉపయోగించే పద్ధతిని (బ్యాటరీ స్థాయి, సిస్టమ్ మరియు యాప్ కార్యకలాపం మరియు ఎర్రర్‌లు వంటివి) గురించిన సాధారణ సమాచారం. Androidని మెరుగుపరచడం కోసం డేటా ఉపయోగించబడుతుంది మరియు కొంత ఏకీకృత సమాచారం Google యాప్‌లు మరియు Android డెవలపర్‌ల వంటి భాగస్వాములకు వారి యాప్‌లు మరియు ఉత్పత్తులను మెరుగుపరచడంలో సహాయపడుతుంది.<ph name="END_PARAGRAPH1" />
@@ -4313,7 +4313,7 @@
 <translation id="6097600385983390082">వాయిస్ శోధన మూసివేయబడింది</translation>
 <translation id="6098793583803863900">ప్రమాదకరమైన కంటెంట్ ఉంటే కనుగొనడానికి, ఒక తెలియని ఫైల్ స్కాన్ చేయబడుతోంది.</translation>
 <translation id="609942571968311933"><ph name="DEVICE_NAME" /> నుండి కాపీ చేసిన వచనం</translation>
-<translation id="6100736666660498114">ప్రారంభ మెను</translation>
+<translation id="6100736666660498114">ప్రారంభ మెనూ</translation>
 <translation id="6101226222197207147">కొత్త యాప్ జోడించబడింది (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="6102043788063419338">అధునాతన రక్షణ ప్రోగ్రామ్ ద్వారా ఈ ఫైల్ బ్లాక్ చేయబడింది.</translation>
 <translation id="6103681770816982672">హెచ్చరిక: మీరు డెవలపర్ ఛానెల్‌కు మారుతున్నారు</translation>
@@ -5343,7 +5343,7 @@
 <translation id="7356908624372060336">నెట్‌వర్క్ లాగ్స్</translation>
 <translation id="735745346212279324">VPN డిస్‌కనెక్ట్ చేయబడింది</translation>
 <translation id="7359588939039777303">ప్రకటనలు బ్లాక్ చేయబడ్డాయి.</translation>
-<translation id="7360183604634508679">బుక్‌మార్క్‌ల మెను</translation>
+<translation id="7360183604634508679">బుక్‌మార్క్‌ల మెనూ</translation>
 <translation id="7360233684753165754"><ph name="PRINTER_NAME" />కు <ph name="PAGE_NUMBER" /> పేజీలు</translation>
 <translation id="7361297102842600584"><ph name="PLUGIN_NAME" />ను అమలు చేయడానికి కుడి క్లిక్ చేయండి</translation>
 <translation id="7363117941401515667"><ph name="HOURS" /> గంటల క్రితం అప్‌డేట్ చేయబడింది</translation>
@@ -6246,7 +6246,7 @@
 <translation id="8390449457866780408">సర్వర్ అందుబాటులో లేదు.</translation>
 <translation id="8391218455464584335">వినైల్</translation>
 <translation id="8392364544846746346">మీ పరికరంలోని ఫైల్‌లు లేదా ఫోల్డర్‌లను సైట్ సవరించాలనుకున్నప్పుడు అనుమతిని అడుగుతుంది</translation>
-<translation id="8392451568018454956"><ph name="USER_EMAIL_ADDRESS" /> కోసం ఎంపికల మెను</translation>
+<translation id="8392451568018454956"><ph name="USER_EMAIL_ADDRESS" /> కోసం ఎంపికల మెనూ</translation>
 <translation id="8393511274964623038">ప్లగ్ఇన్‌‌ను ఆపివేయి</translation>
 <translation id="8393700583063109961">సందేశాన్ని పంపండి</translation>
 <translation id="839736845446313156">నమోదు చేయి</translation>
@@ -6492,7 +6492,7 @@
 <translation id="8695139659682234808">సెటప్ పూర్తి అయ్యాక తల్లిదండ్రుల నియంత్రణలను జోడించండి</translation>
 <translation id="8695825812785969222">స్థానాన్ని &amp;తెరువు...</translation>
 <translation id="8698269656364382265">మునుపటి స్క్రీన్‌కు తిరిగి వెళ్లడానికి, ఎడమ వైపు నుండి స్వైప్ చేయండి.</translation>
-<translation id="869884720829132584">అప్లికేషన్‌ల మెను</translation>
+<translation id="869884720829132584">అప్లికేషన్‌ల మెనూ</translation>
 <translation id="869891660844655955">గడువు తేదీ</translation>
 <translation id="8703346390800944767">ప్రకటనను దాటవేయి</translation>
 <translation id="8705331520020532516">క్రమ సంఖ్య</translation>
