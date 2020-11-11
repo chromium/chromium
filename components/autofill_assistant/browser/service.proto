@@ -518,7 +518,39 @@ message TriggerScriptConditionsProto {
 }
 
 message TriggerScriptUIProto {
-  // stub. TODO(b/171776026) Add fields as per the design doc.
+  message ProgressBar {
+    repeated DrawableProto step_icons = 1;
+    optional int32 active_step = 2;
+  }
+
+  message TriggerChip {
+    optional ChipProto chip = 1;
+    optional TriggerScriptProto.TriggerScriptAction behavior = 2;
+  }
+  message Popup {
+    message Choice {
+      // The text to display.
+      optional string text = 1;
+      // The action to execute if this popup item is selected.
+      optional TriggerScriptProto.TriggerScriptAction action = 2;
+    }
+    // The available popup items.
+    repeated Choice choices = 1;
+  }
+
+  // The status message to display.
+  optional string status_message = 1;
+  // The callout to display. If not specified, no callout will be shown.
+  optional string callout_message = 2;
+  // The progress bar to display. If not specified, no progress bar will be
+  // shown.
+  optional ProgressBar progress_bar = 3;
+  // The cancel popup, usually associated with a particular chip.
+  optional Popup cancel_popup = 4;
+  // The available left-aligned chips, specified in order from left to right.
+  repeated TriggerChip left_aligned_chips = 5;
+  // The available right-aligned chips, specified in order from left to right.
+  repeated TriggerChip right_aligned_chips = 6;
 }
 
 enum KeyboardValueFillStrategy {
