@@ -67,7 +67,7 @@ IN_PROC_BROWSER_TEST_F(FileManagerJsTest, ExifParser) {
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, ExternalMetadataProvider) {
   RunTestURL(
-      "foreground/js/metadata/external_metadata_provider_unittest.m_gen.html");
+      "foreground/js/metadata/external_metadata_provider_unittest_gen.html");
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, FileListModel) {
@@ -120,8 +120,7 @@ IN_PROC_BROWSER_TEST_F(FileManagerJsTest, FilesToolTip) {
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, FileSystemMetadataProvider) {
   RunTestURL(
-      "foreground/js/metadata/"
-      "file_system_metadata_provider_unittest.m_gen.html");
+      "foreground/js/metadata/file_system_metadata_provider_unittest_gen.html");
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, FileTableList) {
@@ -189,7 +188,7 @@ IN_PROC_BROWSER_TEST_F(FileManagerJsTest, MediaScannerTest) {
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, MetadataCacheItem) {
-  RunTestURL("foreground/js/metadata/metadata_cache_item_unittest.m_gen.html");
+  RunTestURL("foreground/js/metadata/metadata_cache_item_unittest_gen.html");
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, MetadataCacheSet) {

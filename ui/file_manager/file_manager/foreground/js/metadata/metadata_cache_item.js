@@ -2,13 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// #import {MetadataItem} from './metadata_item.m.js';
-// #import {assert} from 'chrome://resources/js/assert.m.js';
-
 /**
  * Cache of metadata for a FileEntry.
  */
-/* #export */ class MetadataCacheItem {
+class MetadataCacheItem {
   constructor() {
     /**
      * Map of property name and MetadataCacheItemProperty.
@@ -170,7 +167,7 @@ const MetadataCacheItemPropertyState = {
 /**
  * Cache of metadata for a property.
  */
-/* #export */ class MetadataCacheItemProperty {
+class MetadataCacheItemProperty {
   constructor() {
     /**
      * Cached value of property.

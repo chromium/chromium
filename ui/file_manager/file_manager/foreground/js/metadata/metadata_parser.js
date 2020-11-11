@@ -2,15 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import {ByteReader} from './byte_reader.m.js';
-// #import {MetadataParserLogger} from '../../../../externs/metadata_worker_window.m.js';
-// clang-format on
-
 /**
  * @implements {MetadataParserLogger}
  */
-/* #export */ class MetadataParser {
+class MetadataParser {
   /**
    * @param {!MetadataParserLogger} parent Parent object.
    * @param {string} type Parser type.
@@ -88,7 +83,7 @@
 /**
  * Base class for image metadata parsers.
  */
-/* #export */ class ImageParser extends MetadataParser {
+class ImageParser extends MetadataParser {
   /**
    * @param {!MetadataParserLogger} parent Parent object.
    * @param {string} type Image type.

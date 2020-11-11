@@ -2,18 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import {ByteReader} from './byte_reader.m.js';
-// #import {ImageParser, MetadataParser} from './metadata_parser.m.js';
-// #import {MetadataParserLogger} from '../../../../externs/metadata_worker_window.m.js';
-// clang-format on
-
 /**
  * Base class for image metadata parsers that only need to look at a short
  * fragment at the start of the file.
  * @abstract
  */
-/* #export */ class SimpleImageParser extends ImageParser {
+class SimpleImageParser extends ImageParser {
   /**
    * @param {!MetadataParserLogger} parent Parent object.
    * @param {string} type Image type.
@@ -57,7 +51,7 @@
  * Parser for the header of png files.
  * @final
  */
-/* #export */ class PngParser extends SimpleImageParser {
+class PngParser extends SimpleImageParser {
   /**
    * @param {!MetadataParserLogger} parent Parent object.
    */
@@ -91,7 +85,7 @@
  * Parser for the header of bmp files.
  * @final
  */
-/* #export */ class BmpParser extends SimpleImageParser {
+class BmpParser extends SimpleImageParser {
   /**
    * @param {!MetadataParserLogger} parent Parent object.
    */
@@ -120,7 +114,7 @@
  * Parser for the header of gif files.
  * @final
  */
-/* #export */ class GifParser extends SimpleImageParser {
+class GifParser extends SimpleImageParser {
   /**
    * @param {!MetadataParserLogger} parent Parent object.
    */
@@ -148,7 +142,7 @@
  * Parser for the header of webp files.
  * @final
  */
-/* #export */ class WebpParser extends SimpleImageParser {
+class WebpParser extends SimpleImageParser {
   /**
    * @param {!MetadataParserLogger} parent Parent object.
    */
@@ -223,7 +217,7 @@
  * Parser for the header of .ico icon files.
  * @final
  */
-/* #export */ class IcoParser extends SimpleImageParser {
+class IcoParser extends SimpleImageParser {
   /**
    * @param {!MetadataParserLogger} parent Parent metadata dispatcher object.
    */

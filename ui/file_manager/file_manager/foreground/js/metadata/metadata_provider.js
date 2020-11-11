@@ -9,7 +9,7 @@
 /**
  * @abstract
  */
-/* #export */ class MetadataProvider {
+class MetadataProvider {
   /**
    * @param {!Array<string>} validPropertyNames
    */

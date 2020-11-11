@@ -5,7 +5,7 @@
 /**
  * @interface
  */
-/* #export */ class MetadataParserLogger {
+class MetadataParserLogger {
   constructor() {
     /**
      * Verbose logging for the dispatcher.
@@ -43,5 +43,5 @@
  * @param {function(!Entry)} successCallback
  * @param {function(!FileError)=} opt_errorCallback
  */
-/* #export */ const webkitResolveLocalFileSystemURL = function(
+var webkitResolveLocalFileSystemURL = function(
     url, successCallback, opt_errorCallback) {};
