@@ -19,8 +19,8 @@ class UrlAllowlistTest(ChromeEnterpriseTestCase):
 
   @before_all
   def setup(self):
-    client = 'client2019'
-    dc = 'win2019-dc'
+    client = self.win_config['client']
+    dc = self.win_config['dc']
     self.InstallChrome(client)
     self.InstallWebDriver(client)
 
@@ -36,7 +36,7 @@ class UrlAllowlistTest(ChromeEnterpriseTestCase):
 
     dir = os.path.dirname(os.path.abspath(__file__))
     logging.info('Opening page: %s' % url)
-    output = self.RunWebDriverTest('client2019',
+    output = self.RunWebDriverTest(self.win_config['client'],
                                    os.path.join(dir, '../open_page.py'), args)
     return output
 

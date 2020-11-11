@@ -24,6 +24,23 @@ flags.DEFINE_string(
 
 class ChromeEnterpriseTestCase(EnterpriseTestCase):
   """Base class for Chrome enterprise test cases."""
+  # dc is the domain controller host
+  win_2012_config = {
+      'client': 'client2012',
+      'dc': 'win2012-dc',
+  }
+
+  win_2016_config = {
+      'client': 'client2016',
+      'dc': 'win2016-dc',
+  }
+
+  win_2019_config = {
+      'client': 'client2019',
+      'dc': 'win2019-dc',
+  }
+  # Current Win Server version for testing
+  win_config = win_2019_config
 
   def InstallChrome(self, instance_name):
     """Installs chrome.

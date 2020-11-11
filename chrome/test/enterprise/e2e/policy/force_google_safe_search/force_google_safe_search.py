@@ -16,18 +16,18 @@ class ForceGoogleSafeSearchTest(ChromeEnterpriseTestCase):
 
   @before_all
   def setup(self):
-    self.InstallChrome('client2019')
-    self.InstallWebDriver('client2019')
+    self.InstallChrome(self.win_config['client'])
+    self.InstallWebDriver(self.win_config['client'])
 
   @test
   def test_ForceGoogleSafeSearchEnabled(self):
     # enable policy ForceGoogleSafeSearch
-    self.SetPolicy('win2019-dc', 'ForceGoogleSafeSearch', 1, 'DWORD')
-    self.RunCommand('client2019', 'gpupdate /force')
+    self.SetPolicy(self.win_config['dc'], 'ForceGoogleSafeSearch', 1, 'DWORD')
+    self.RunCommand(self.win_config['client'], 'gpupdate /force')
     logging.info('ForceGoogleSafeSearch ENABLED')
     d = os.path.dirname(os.path.abspath(__file__))
     output = self.RunWebDriverTest(
-        'client2019',
+        self.win_config['client'],
         os.path.join(d, 'force_google_safe_search_webdriver_test.py'))
     logging.info('url used: %s', output)
 
@@ -38,12 +38,12 @@ class ForceGoogleSafeSearchTest(ChromeEnterpriseTestCase):
   @test
   def test_ForceGoogleSafeSearchDisabled(self):
     # disable policy ForceGoogleSafeSearch
-    self.SetPolicy('win2019-dc', 'ForceGoogleSafeSearch', 0, 'DWORD')
-    self.RunCommand('client2019', 'gpupdate /force')
+    self.SetPolicy(self.win_config['dc'], 'ForceGoogleSafeSearch', 0, 'DWORD')
+    self.RunCommand(self.win_config['client'], 'gpupdate /force')
     d = os.path.dirname(os.path.abspath(__file__))
     logging.info('ForceGoogleSafeSearch DISABLED')
     output = self.RunWebDriverTest(
-        'client2019',
+        self.win_config['client'],
         os.path.join(d, 'force_google_safe_search_webdriver_test.py'))
     logging.info('url used: %s', output)
 

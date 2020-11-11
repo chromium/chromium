@@ -15,9 +15,9 @@ class ExtensionInstallAllowlistTest(ChromeEnterpriseTestCase):
 
   @before_all
   def setup(self):
-    self.InstallChrome('client2019')
-    self.EnableUITest('client2019')
-    self.InstallWebDriver('client2019')
+    self.InstallChrome(self.win_config['client'])
+    self.EnableUITest(self.win_config['client'])
+    self.InstallWebDriver(self.win_config['client'])
 
   def installExtension(self, url):
     args = ['--url', url]
@@ -25,16 +25,19 @@ class ExtensionInstallAllowlistTest(ChromeEnterpriseTestCase):
     dir = os.path.dirname(os.path.abspath(__file__))
     logging.info('Opening page: %s' % url)
     output = self.RunUITest(
-        'client2019', os.path.join(dir, '../install_extension.py'), args=args)
+        self.win_config['client'],
+        os.path.join(dir, '../install_extension.py'),
+        args=args)
     return output
 
   @test
   def test_ExtensionAllowlist_hangout(self):
     extension = 'nckgahadagoaajjgafhacjanaoiihapd'
-    self.SetPolicy('win2019-dc', r'ExtensionInstallBlocklist\1', '*', 'String')
-    self.SetPolicy('win2019-dc', r'ExtensionInstallAllowlist\1', extension,
+    self.SetPolicy(self.win_config['dc'], r'ExtensionInstallBlocklist\1', '*',
                    'String')
-    self.RunCommand('client2019', 'gpupdate /force')
+    self.SetPolicy(self.win_config['dc'], r'ExtensionInstallAllowlist\1',
+                   extension, 'String')
+    self.RunCommand(self.win_config['client'], 'gpupdate /force')
     logging.info('Allowlist extension install for ' + extension +
                  ' while disabling others')
 

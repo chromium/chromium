@@ -15,29 +15,29 @@ class TranslateEnabledTest(ChromeEnterpriseTestCase):
 
   @before_all
   def setup(self):
-    self.InstallChrome('client2019')
-    self.EnableUITest('client2019')
+    self.InstallChrome(self.win_config['client'])
+    self.EnableUITest(self.win_config['client'])
 
   def isChromeTranslateEnabled(self, incognito=False):
     dir = os.path.dirname(os.path.abspath(__file__))
     output = self.RunUITest(
-        'client2019',
+        self.win_config['client'],
         os.path.join(dir, 'translate_enabled_webdriver_test.py'),
         args=['--incognito'] if incognito else [])
     return "TRUE" in output
 
   @test
   def test_TranslatedDisabled(self, incognito=False):
-    self.SetPolicy('win2019-dc', 'TranslateEnabled', 0, 'DWORD')
-    self.RunCommand('client2019', 'gpupdate /force')
+    self.SetPolicy(self.win_config['dc'], 'TranslateEnabled', 0, 'DWORD')
+    self.RunCommand(self.win_config['client'], 'gpupdate /force')
 
     enabled = self.isChromeTranslateEnabled()
     self.assertFalse(enabled)
 
   @test
   def test_TranslatedEnabled(self, incognito=False):
-    self.SetPolicy('win2019-dc', 'TranslateEnabled', 1, 'DWORD')
-    self.RunCommand('client2019', 'gpupdate /force')
+    self.SetPolicy(self.win_config['dc'], 'TranslateEnabled', 1, 'DWORD')
+    self.RunCommand(self.win_config['client'], 'gpupdate /force')
 
     enabled = self.isChromeTranslateEnabled()
     self.assertTrue(enabled)

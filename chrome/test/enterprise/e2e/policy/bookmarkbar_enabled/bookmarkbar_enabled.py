@@ -24,8 +24,8 @@ class BookmarkBarEnabledTest(ChromeEnterpriseTestCase):
 
   @before_all
   def setup(self):
-    self.InstallChrome('client2019')
-    self.EnableUITest('client2019')
+    self.InstallChrome(self.win_config['client'])
+    self.EnableUITest(self.win_config['client'])
 
   def _getUIStructure(self, instance_name):
     local_dir = os.path.dirname(os.path.abspath(__file__))
@@ -36,19 +36,19 @@ class BookmarkBarEnabledTest(ChromeEnterpriseTestCase):
   @test
   def test_bookmark_bar_enabled(self):
     # Enable bookmark bar
-    self.SetPolicy('win2019-dc', r'BookmarkBarEnabled', 1, 'DWORD')
-    self.RunCommand('client2019', 'gpupdate /force')
+    self.SetPolicy(self.win_config['dc'], r'BookmarkBarEnabled', 1, 'DWORD')
+    self.RunCommand(self.win_config['client'], 'gpupdate /force')
     logging.info('Enabled bookmark bar')
 
-    output = self._getUIStructure('client2019')
+    output = self._getUIStructure(self.win_config['client'])
     self.assertIn('Bookmarkbar is found', output)
 
   @test
   def test_bookmark_bar_disabled(self):
     # Disable bookmark bar
-    self.SetPolicy('win2019-dc', r'BookmarkBarEnabled', 0, 'DWORD')
-    self.RunCommand('client2019', 'gpupdate /force')
+    self.SetPolicy(self.win_config['dc'], r'BookmarkBarEnabled', 0, 'DWORD')
+    self.RunCommand(self.win_config['client'], 'gpupdate /force')
     logging.info('Disabled bookmark bar')
 
-    output = self._getUIStructure('client2019')
+    output = self._getUIStructure(self.win_config['client'])
     self.assertIn('Bookmarkbar is missing', output)

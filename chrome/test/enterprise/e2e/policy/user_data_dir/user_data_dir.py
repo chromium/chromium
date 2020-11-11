@@ -19,21 +19,22 @@ class UserDataDirTest(ChromeEnterpriseTestCase):
 
   @before_all
   def setup(self):
-    self.InstallChrome('client2019')
-    self.InstallWebDriver('client2019')
+    self.InstallChrome(self.win_config['client'])
+    self.InstallWebDriver(self.win_config['client'])
 
   @test
   def test_user_data_dir(self):
     user_data_dir = r'C:\Temp\Browser\Google\Chrome\UserData'
-    self.SetPolicy('win2019-dc', r'UserDataDir', user_data_dir, 'String')
-    self.RunCommand('client2019', 'gpupdate /force')
+    self.SetPolicy(self.win_config['dc'], r'UserDataDir', user_data_dir,
+                   'String')
+    self.RunCommand(self.win_config['client'], 'gpupdate /force')
     logging.info('Updated User data dir to: ' + user_data_dir)
 
     local_dir = os.path.dirname(os.path.abspath(__file__))
     args = ['--user_data_dir', user_data_dir]
     output = self.RunWebDriverTest(
-        'client2019', os.path.join(local_dir, 'user_data_dir_webdriver.py'),
-        args)
+        self.win_config['client'],
+        os.path.join(local_dir, 'user_data_dir_webdriver.py'), args)
 
     # Verify user data dir not existing before chrome launch
     self.assertIn('User data before running chrome is False', output)
