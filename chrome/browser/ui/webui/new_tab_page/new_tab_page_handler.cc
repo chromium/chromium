@@ -64,6 +64,7 @@
 #include "components/search_provider_logos/switches.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/browser/storage_partition.h"
+#include "net/cookies/cookie_util.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
@@ -1095,6 +1096,14 @@ void NewTabPageHandler::OpenAutocompleteMatch(
   if (ui::PageTransitionTypeIncludingQualifiersIs(match.transition,
                                                   ui::PAGE_TRANSITION_TYPED)) {
     navigation_metrics::RecordOmniboxURLNavigation(match.destination_url);
+  }
+  // The following histogram should be recorded for both TYPED and pasted
+  // URLs, but should still exclude reloads.
+  if (ui::PageTransitionTypeIncludingQualifiersIs(match.transition,
+                                                  ui::PAGE_TRANSITION_TYPED) ||
+      ui::PageTransitionTypeIncludingQualifiersIs(match.transition,
+                                                  ui::PAGE_TRANSITION_LINK)) {
+    net::cookie_util::RecordCookiePortOmniboxHistograms(match.destination_url);
   }
 
   SuggestionAnswer::LogAnswerUsed(match.answer);

@@ -95,6 +95,125 @@ enum class CookieSourceScheme {
   kMaxValue = kSecure  // Keep as the last value.
 };
 
+enum class CookiePort {
+  // DO NOT REORDER OR RENUMBER. These are used for histograms.
+
+  // Potentially interesting port values for cookies for use with histograms.
+
+  // Not a port explicitly listed below, including invalid ports (-1, 65536,
+  // etc).
+  kOther = 0,
+  // HTTP
+  k80 = 1,
+  k81 = 2,
+  k82 = 3,
+  k83 = 4,
+  k84 = 5,
+  k85 = 6,
+  // HTTPS
+  k443 = 7,
+  k444 = 8,
+  k445 = 9,
+  k446 = 10,
+  k447 = 11,
+  k448 = 12,
+  // JS Framework
+  k3000 = 13,
+  k3001 = 14,
+  k3002 = 15,
+  k3003 = 16,
+  k3004 = 17,
+  k3005 = 18,
+  // JS Framework
+  k4200 = 19,
+  k4201 = 20,
+  k4202 = 21,
+  k4203 = 22,
+  k4204 = 23,
+  k4205 = 24,
+  // JS Framework
+  k5000 = 25,
+  k5001 = 26,
+  k5002 = 27,
+  k5003 = 28,
+  k5004 = 29,
+  k5005 = 30,
+  // Common Dev Ports
+  k7000 = 31,
+  k7001 = 32,
+  k7002 = 33,
+  k7003 = 34,
+  k7004 = 35,
+  k7005 = 36,
+  // HTTP
+  k8000 = 37,
+  k8001 = 38,
+  k8002 = 39,
+  k8003 = 40,
+  k8004 = 41,
+  k8005 = 42,
+  // HTTP
+  k8080 = 43,
+  k8081 = 44,
+  k8082 = 45,
+  k8083 = 46,
+  k8084 = 47,
+  k8085 = 48,
+  // HTTP
+  k8090 = 49,
+  k8091 = 50,
+  k8092 = 51,
+  k8093 = 52,
+  k8094 = 53,
+  k8095 = 54,
+  // JS Framework
+  k8100 = 55,
+  k8101 = 56,
+  k8102 = 57,
+  k8103 = 58,
+  k8104 = 59,
+  k8105 = 60,
+  // JS Framework
+  k8200 = 61,
+  k8201 = 62,
+  k8202 = 63,
+  k8203 = 64,
+  k8204 = 65,
+  k8205 = 66,
+  // HTTP(S)
+  k8443 = 67,
+  k8444 = 68,
+  k8445 = 69,
+  k8446 = 70,
+  k8447 = 71,
+  k8448 = 72,
+  // HTTP
+  k8888 = 73,
+  k8889 = 74,
+  k8890 = 75,
+  k8891 = 76,
+  k8892 = 77,
+  k8893 = 78,
+  // Common Dev Ports
+  k9000 = 79,
+  k9001 = 80,
+  k9002 = 81,
+  k9003 = 82,
+  k9004 = 83,
+  k9005 = 84,
+  // HTTP
+  k9090 = 85,
+  k9091 = 86,
+  k9092 = 87,
+  k9093 = 88,
+  k9094 = 89,
+  k9095 = 90,
+
+  // Keep as last value.
+  kMaxValue = k9095
+
+};
+
 // Returns the Set-Cookie header priority token corresponding to |priority|.
 NET_EXPORT std::string CookiePriorityToString(CookiePriority priority);
 
@@ -118,6 +237,11 @@ StringToCookieSameSite(const std::string& same_site,
 NET_EXPORT void RecordCookieSameSiteAttributeValueHistogram(
     CookieSameSiteString value,
     bool is_cookie_same_party = false);
+
+// This function reduces the 65535 available TCP port values down to a <100
+// potentially interesting values that cookies could be set by or sent to. This
+// is because UMA cannot handle the full range.
+NET_EXPORT CookiePort ReducePortRangeForCookieHistogram(const int port);
 
 }  // namespace net
 

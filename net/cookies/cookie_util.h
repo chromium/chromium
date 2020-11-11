@@ -245,6 +245,9 @@ AdaptCookieAccessResultToBool(base::OnceCallback<void(bool)> callback);
 NET_EXPORT CookieList
 StripAccessResults(const CookieAccessResultList& cookie_access_result_list);
 
+// Records port related metrics from Omnibox navigations.
+NET_EXPORT void RecordCookiePortOmniboxHistograms(const GURL& url);
+
 }  // namespace cookie_util
 }  // namespace net
 

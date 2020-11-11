@@ -217,6 +217,48 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Cookie.Port.OmniboxURLNavigation.Localhost"
+    enum="InterestingCookiePorts" expires_after="2021-11-04">
+  <owner>bingler@chromium.org</owner>
+  <owner>chlily@chromium.org</owner>
+  <summary>
+    The port of the destination for a URL omnibox navigation when the
+    destination is localhost. Excludes navigations that are effectively reloads.
+    Also does not take into account any redirects that destination URL may do
+    before finally serving a page. In other words, it's the port of the first
+    request in a possible chain. Note that the effective port is recorded which
+    includes the default port, so if https://google.com is typed then 443 will
+    be recorded.
+
+    Cookie.Port.OmniboxURLNavigation.RemoteHost records the non-localhost
+    version of this histogram.
+
+    While the intent of this histogram is to inform cookie related design
+    decisions, the metric itself does not depend on cookies being sent or set.
+  </summary>
+</histogram>
+
+<histogram name="Cookie.Port.OmniboxURLNavigation.RemoteHost"
+    enum="InterestingCookiePorts" expires_after="2021-11-04">
+  <owner>bingler@chromium.org</owner>
+  <owner>chlily@chromium.org</owner>
+  <summary>
+    The port of the destination for a URL omnibox navigation when the
+    destination is anything but localhost. Excludes navigations that are
+    effectively reloads. Also does not take into account any redirects that
+    destination URL may do before finally serving a page. In other words, it's
+    the port of the first request in a possible chain. Note that the effective
+    port is recorded which includes the default port, so if https://google.com
+    is typed then 443 will be recorded.
+
+    Cookie.Port.OmniboxURLNavigation.Localhost records the localhost version of
+    this histogram.
+
+    While the intent of this histogram is to inform cookie related design
+    decisions, the metric itself does not depend on cookies being sent or set.
+  </summary>
+</histogram>
+
 <histogram name="Cookie.PriorityBlockingTime" units="ms"
     expires_after="2020-05-10">
   <owner>pwnall@chromium.org</owner>

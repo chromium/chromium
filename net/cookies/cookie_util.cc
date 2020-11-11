@@ -651,5 +651,20 @@ CookieList StripAccessResults(
   return cookies;
 }
 
+NET_EXPORT void RecordCookiePortOmniboxHistograms(const GURL& url) {
+  int port = url.EffectiveIntPort();
+
+  if (port == url::PORT_UNSPECIFIED)
+    return;
+
+  if (IsLocalhost(url)) {
+    UMA_HISTOGRAM_ENUMERATION("Cookie.Port.OmniboxURLNavigation.Localhost",
+                              ReducePortRangeForCookieHistogram(port));
+  } else {
+    UMA_HISTOGRAM_ENUMERATION("Cookie.Port.OmniboxURLNavigation.RemoteHost",
+                              ReducePortRangeForCookieHistogram(port));
+  }
+}
+
 }  // namespace cookie_util
 }  // namespace net

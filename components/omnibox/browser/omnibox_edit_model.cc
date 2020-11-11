@@ -48,6 +48,7 @@
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_prepopulate_data.h"
 #include "components/search_engines/template_url_service.h"
+#include "net/cookies/cookie_util.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "ui/gfx/image/image.h"
 #include "url/url_util.h"
@@ -895,9 +896,20 @@ void OmniboxEditModel::OpenMatch(AutocompleteMatch match,
     // omnibox suggestion system, i.e., TYPED navigations.  That is, exclude
     // omnibox URL interactions that are treated as reloads or link-following
     // (i.e., cut-and-paste of URLs).
-    if (ui::PageTransitionTypeIncludingQualifiersIs(match.transition,
-                                                    ui::PAGE_TRANSITION_TYPED))
+    if (ui::PageTransitionTypeIncludingQualifiersIs(
+            match.transition, ui::PAGE_TRANSITION_TYPED)) {
       navigation_metrics::RecordOmniboxURLNavigation(match.destination_url);
+    }
+
+    // The following histogram should be recorded for both TYPED and pasted
+    // URLs, but should still exclude reloads.
+    if (ui::PageTransitionTypeIncludingQualifiersIs(
+            match.transition, ui::PAGE_TRANSITION_TYPED) ||
+        ui::PageTransitionTypeIncludingQualifiersIs(match.transition,
+                                                    ui::PAGE_TRANSITION_LINK)) {
+      net::cookie_util::RecordCookiePortOmniboxHistograms(
+          match.destination_url);
+    }
   }
 
   if (disposition != WindowOpenDisposition::NEW_BACKGROUND_TAB) {
