@@ -755,8 +755,34 @@ void NewTabPageHandler::OnPromoRendered(double time,
 
 void NewTabPageHandler::OnMostVisitedTileNavigation(
     new_tab_page::mojom::MostVisitedTilePtr tile,
-    uint32_t index) {
+    uint32_t index,
+    uint8_t mouse_button,
+    bool alt_key,
+    bool ctrl_key,
+    bool meta_key,
+    bool shift_key) {
   logger_->LogMostVisitedNavigation(MakeNTPTileImpression(*tile, index));
+
+  if (!base::FeatureList::IsEnabled(
+          ntp_features::kNtpHandleMostVisitedNavigationExplicitly))
+    return;
+
+  WindowOpenDisposition disposition = ui::DispositionFromClick(
+      /*middle_button=*/mouse_button == 1, alt_key, ctrl_key, meta_key,
+      shift_key);
+  // Clicks on the MV tiles should be treated as if the user clicked on a
+  // bookmark. This is consistent with Android's native implementation and
+  // ensures the visit count for the MV entry is updated.
+  // Use a link transition for query tiles, e.g., repeatable queries, so that
+  // their visit count is not updated by this navigation. Otherwise duplicate
+  // query tiles could also be offered as most visited.
+  // |is_query_tile| can be true only when ntp_features::kNtpRepeatableQueries
+  // is enabled.
+  web_contents_->OpenURL(content::OpenURLParams(
+      tile->url, content::Referrer(), disposition,
+      tile->is_query_tile ? ui::PAGE_TRANSITION_LINK
+                          : ui::PAGE_TRANSITION_AUTO_BOOKMARK,
+      false));
 }
 
 void NewTabPageHandler::OnCustomizeDialogAction(

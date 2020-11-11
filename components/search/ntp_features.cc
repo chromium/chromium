@@ -55,6 +55,14 @@ const base::Feature kSearchSuggestChips{"SearchSuggestChips",
 const base::Feature kDisableSearchSuggestChips{
     "DisableSearchSuggestChips", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// If enabled, handles navigations from the Most Visited tiles explicitly and
+// overrides the navigation's transition type to bookmark navigation before the
+// navigation is issued.
+// TODO(crbug.com/1147589): When removing this flag, also remove the workaround
+// in ChromeContentBrowserClient::OverrideNavigationParams.
+extern const base::Feature kNtpHandleMostVisitedNavigationExplicitly{
+    "HandleMostVisitedNavigationExplicitly", base::FEATURE_ENABLED_BY_DEFAULT};
+
 // If enabled, the WebUI new tab page will load when a new tab is created
 // instead of the local NTP.
 const base::Feature kWebUI{"NtpWebUI", base::FEATURE_ENABLED_BY_DEFAULT};

@@ -359,7 +359,15 @@ interface PageHandler {
   OnPromoRendered(double time, url.mojom.Url? log_url);
   // Logs that |tile| at position |index| was triggered to navigate to that
   // most visited entry.
-  OnMostVisitedTileNavigation(MostVisitedTile tile, uint32 index);
+  // |mouse_button| indicates which mouse button was pressed on the entry. See
+  // https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent/button
+  OnMostVisitedTileNavigation(MostVisitedTile tile,
+                        uint32 index,
+                        uint8 mouse_button,
+                        bool alt_key,
+                        bool ctrl_key,
+                        bool meta_key,
+                        bool shift_key);
   // Logs an action performed in the customize dialog.
   OnCustomizeDialogAction(CustomizeDialogAction action);
   // Logs that the |type| image of an image doodle has been clicked. If set, the

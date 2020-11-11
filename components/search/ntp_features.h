@@ -32,6 +32,8 @@ extern const base::Feature kNtpShoppingTasksModule;
 extern const base::Feature kSearchSuggestChips;
 extern const base::Feature kDisableSearchSuggestChips;
 
+extern const base::Feature kNtpHandleMostVisitedNavigationExplicitly;
+
 // Parameter name determining the age threshold in days for local history
 // repeatable queries.
 // The value of this parameter should be parsable as an unsigned integer.

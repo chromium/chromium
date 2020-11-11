@@ -85,6 +85,11 @@ content::WebUIDataSource* CreateNewTabPageUiHtmlSource(Profile* profile) {
           : omnibox::kSearchIconResourceName);
 
   source->AddBoolean(
+      "handleMostVisitedNavigationExplicitly",
+      base::FeatureList::IsEnabled(
+          ntp_features::kNtpHandleMostVisitedNavigationExplicitly));
+
+  source->AddBoolean(
       "iframeOneGoogleBarEnabled",
       base::FeatureList::IsEnabled(ntp_features::kIframeOneGoogleBar));
   source->AddBoolean(

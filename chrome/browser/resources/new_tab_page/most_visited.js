@@ -704,9 +704,14 @@ class MostVisitedElement extends PolymerElement {
    * @private
    */
   onTileClick_(e) {
+    if (loadTimeData.getBoolean('handleMostVisitedNavigationExplicitly')) {
+      e.preventDefault();  // Prevents default browser action (navigation).
+    }
+
     this.pageHandler_.onMostVisitedTileNavigation(
         this.$.tiles.itemForElement(e.target),
-        this.$.tiles.indexForElement(e.target));
+        this.$.tiles.indexForElement(e.target), e.button || 0, e.altKey,
+        e.ctrlKey, e.metaKey, e.shiftKey);
   }
 
   /**

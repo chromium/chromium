@@ -116,7 +116,12 @@ class NewTabPageHandler : public new_tab_page::mojom::PageHandler,
   void OnPromoRendered(double time,
                        const base::Optional<GURL>& log_url) override;
   void OnMostVisitedTileNavigation(new_tab_page::mojom::MostVisitedTilePtr tile,
-                                   uint32_t index) override;
+                                   uint32_t index,
+                                   uint8_t mouse_button,
+                                   bool alt_key,
+                                   bool ctrl_key,
+                                   bool meta_key,
+                                   bool shift_key) override;
   void OnCustomizeDialogAction(
       new_tab_page::mojom::CustomizeDialogAction action) override;
   void OnDoodleImageClicked(new_tab_page::mojom::DoodleImageType type,
