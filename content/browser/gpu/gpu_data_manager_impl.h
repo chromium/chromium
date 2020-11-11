@@ -164,6 +164,9 @@ class CONTENT_EXPORT GpuDataManagerImpl : public GpuDataManager,
   // on Android and Chrome OS.
   void FallBackToNextGpuMode();
 
+  // Check if there is at least one fallback option available.
+  bool CanFallback() const;
+
   // Returns false if the latest GPUInfo gl_renderer is from SwiftShader or
   // Disabled (in the viz case).
   bool IsGpuProcessUsingHardwareGpu() const;

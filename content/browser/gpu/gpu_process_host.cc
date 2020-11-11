@@ -1004,8 +1004,10 @@ void GpuProcessHost::DidInitialize(
 #if defined(OS_ANDROID)
   // Android may kill the GPU process to free memory, especially when the app
   // is the background, so Android cannot have a hard limit on GPU starts.
-  // Reset crash count on Android when context creation succeeds.
-  recent_crash_count_ = 0;
+  // Reset crash count on Android when context creation succeeds, but only if no
+  // fallback option is available.
+  if (!GpuDataManagerImpl::GetInstance()->CanFallback())
+    recent_crash_count_ = 0;
 #endif
 }
 
@@ -1019,8 +1021,10 @@ void GpuProcessHost::DidCreateContextSuccessfully() {
 #if defined(OS_ANDROID)
   // Android may kill the GPU process to free memory, especially when the app
   // is the background, so Android cannot have a hard limit on GPU starts.
-  // Reset crash count on Android when context creation succeeds.
-  recent_crash_count_ = 0;
+  // Reset crash count on Android when context creation succeeds, but only if no
+  // fallback option is available.
+  if (!GpuDataManagerImpl::GetInstance()->CanFallback())
+    recent_crash_count_ = 0;
 #endif
 }
 
