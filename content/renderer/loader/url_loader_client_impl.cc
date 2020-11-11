@@ -441,8 +441,15 @@ void URLLoaderClientImpl::OnStartLoadingResponseBody(
     mojo::ScopedDataPipeConsumerHandle new_body_consumer;
     MojoResult result =
         mojo::CreateDataPipe(nullptr, &new_body_producer, &new_body_consumer);
-    // If we fail to make a pipe, we'll treat it as an OOM error.
-    CHECK_EQ(result, MOJO_RESULT_OK);
+    if (result != MOJO_RESULT_OK) {
+      // We failed to make a new pipe, close the connections and dispatch an
+      // OnComplete message instead.
+      url_loader_.reset();
+      url_loader_client_receiver_.reset();
+      OnComplete(
+          network::URLLoaderCompletionStatus(net::ERR_INSUFFICIENT_RESOURCES));
+      return;
+    }
     body_buffer_ = std::make_unique<BodyBuffer>(
         this, std::move(body), std::move(new_body_producer), task_runner_);
 
