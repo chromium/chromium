@@ -137,7 +137,9 @@ export class TabSearchAppElement extends PolymerElement {
     const callbackRouter = this.apiProxy_.getCallbackRouter();
     this.listenerIds_.push(
         callbackRouter.tabsChanged.addListener(() => this.updateTabs_()),
-        callbackRouter.tabUpdated.addListener(tab => this.onTabUpdated_(tab)));
+        callbackRouter.tabUpdated.addListener(tab => this.onTabUpdated_(tab)),
+        callbackRouter.tabsRemoved.addListener(
+            tabIds => this.onTabsRemoved_(tabIds)));
     this.updateTabs_();
   }
 
@@ -203,6 +205,21 @@ export class TabSearchAppElement extends PolymerElement {
           }
         }
       }
+    }
+  }
+
+  /**
+   * @param {!Array<number>} tabIds
+   * @private
+   */
+  onTabsRemoved_(tabIds) {
+    const windows = this.openTabs_;
+    if (windows) {
+      const ids = new Set(tabIds);
+      for (const window of windows) {
+        window.tabs = window.tabs.filter(tab => (!ids.has(tab.tabId)));
+      }
+      this.openTabs_ = windows.concat();
     }
   }
 

@@ -105,10 +105,13 @@ interface PageHandler {
 // WebUI-side handler for requests from the browser.
 interface Page {
   // Callback when any tabs in the current profile are
-  // selected/inserted/removed/moved/replaced
+  // selected/inserted/moved/replaced
   TabsChanged();
 
   // Callback when a tab is updated within the same web contents.
   // e.g. url, title or favicon changed.
   TabUpdated(Tab tab);
+
+  // Callback when tabs are removed.
+  TabsRemoved(array<int32> tab_ids);
 };

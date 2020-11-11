@@ -229,6 +229,14 @@ suite('TabSearchAppTest', () => {
     assertEquals('example.com', tabSearchItem.data.hostname);
   });
 
+  test('refresh on tabs removed', async () => {
+    await setupTest(sampleData());
+    verifyTabIds(queryRows(), [1, 5, 6, 2, 3, 4]);
+    testProxy.getCallbackRouterRemote().tabsRemoved([1, 2]);
+    await flushTasks();
+    verifyTabIds(queryRows(), [5, 6, 3, 4]);
+  });
+
   test('Verify initial tab render time is logged correctly', async () => {
     // |metricNames| tracks thow many times recordTime() has been called for
     // a metric.

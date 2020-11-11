@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/tabs/tab_renderer_data.h"
+#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/webui/util/image_util.h"
 
 namespace {
@@ -207,8 +208,18 @@ void TabSearchPageHandler::OnTabStripModelChanged(
     TabStripModel* tab_strip_model,
     const TabStripModelChange& change,
     const TabStripSelectionChange& selection) {
-  if (!browser_tab_strip_tracker_.is_processing_initial_browsers())
-    ScheduleDebounce();
+  if (browser_tab_strip_tracker_.is_processing_initial_browsers())
+    return;
+  if (change.type() == TabStripModelChange::kRemoved) {
+    std::vector<int> tab_ids;
+    for (auto& content_with_index : change.GetRemove()->contents) {
+      tab_ids.push_back(
+          extensions::ExtensionTabUtil::GetTabId(content_with_index.contents));
+    }
+    page_->TabsRemoved(tab_ids);
+    return;
+  }
+  ScheduleDebounce();
 }
 
 void TabSearchPageHandler::TabChangedAt(content::WebContents* contents,
