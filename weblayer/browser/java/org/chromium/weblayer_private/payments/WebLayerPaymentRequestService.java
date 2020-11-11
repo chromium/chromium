@@ -24,7 +24,8 @@ public class WebLayerPaymentRequestService implements BrowserPaymentRequest {
     }
 
     @Override
-    public void updateWith(PaymentDetails details) {
+    public void onPaymentDetailsUpdated(
+            PaymentDetails details, boolean hasNotifiedInvokedPaymentApp) {
         assert false : "Not implemented yet";
     }
 

@@ -941,7 +941,50 @@ public class PaymentRequestService
      */
     /* package */ void updateWith(PaymentDetails details) {
         if (mBrowserPaymentRequest == null) return;
-        mBrowserPaymentRequest.updateWith(details);
+        if (mIsShowWaitingForUpdatedDetails) {
+            // Under this condition, updateWith() is called in response to the resolution of
+            // show()'s PaymentDetailsUpdate promise.
+            mBrowserPaymentRequest.continueShow(details);
+            return;
+        }
+
+        if (!mIsCurrentPaymentRequestShowing) {
+            mJourneyLogger.setAborted(AbortReason.INVALID_DATA_FROM_RENDERER);
+            disconnectFromClientWithDebugMessage(
+                    ErrorStrings.CANNOT_UPDATE_WITHOUT_SHOW, PaymentErrorReason.USER_CANCEL);
+            return;
+        }
+
+        if (!PaymentOptionsUtils.requestAnyInformation(mPaymentOptions)
+                && (mInvokedPaymentApp == null
+                        || !mInvokedPaymentApp.isWaitingForPaymentDetailsUpdate())) {
+            mJourneyLogger.setAborted(AbortReason.INVALID_DATA_FROM_RENDERER);
+            disconnectFromClientWithDebugMessage(
+                    ErrorStrings.INVALID_STATE, PaymentErrorReason.USER_CANCEL);
+            return;
+        }
+
+        if (!PaymentValidator.validatePaymentDetails(details)
+                || !mBrowserPaymentRequest.parseAndValidateDetailsFurtherIfNeeded(details)) {
+            mJourneyLogger.setAborted(AbortReason.INVALID_DATA_FROM_RENDERER);
+            disconnectFromClientWithDebugMessage(
+                    ErrorStrings.INVALID_PAYMENT_DETAILS, PaymentErrorReason.USER_CANCEL);
+            return;
+        }
+        mSpec.updateWith(details);
+
+        boolean hasNotifiedInvokedPaymentApp =
+                mInvokedPaymentApp != null && mInvokedPaymentApp.isWaitingForPaymentDetailsUpdate();
+        if (hasNotifiedInvokedPaymentApp) {
+            // After a payment app has been invoked, all of the merchant's calls to update the price
+            // via updateWith() should be forwarded to the invoked app, so it can reflect the
+            // updated price in its UI.
+            mInvokedPaymentApp.updateWith(
+                    PaymentDetailsConverter.convertToPaymentRequestDetailsUpdate(details,
+                            /*methodChecker=*/mBrowserPaymentRequest.getMethodChecker(),
+                            mInvokedPaymentApp));
+        }
+        mBrowserPaymentRequest.onPaymentDetailsUpdated(details, hasNotifiedInvokedPaymentApp);
     }
 
     /**

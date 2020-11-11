@@ -6,6 +6,7 @@ package org.chromium.components.payments;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.components.payments.PaymentDetailsConverter.MethodChecker;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.payments.mojom.PaymentDetails;
 import org.chromium.payments.mojom.PaymentMethodData;
@@ -36,10 +37,13 @@ public interface BrowserPaymentRequest {
     }
 
     /**
-     * The browser part of the {@link PaymentRequest#updateWith} implementation.
+     * The client of the interface calls this when it has received the payment details update
+     * from the merchant and has updated the PaymentRequestSpec.
      * @param details The details that the merchant provides to update the payment request.
+     * @param hasNotifiedInvokedPaymentApp Whether the client has notified the invoked
+     *      payment app of the updated details.
      */
-    void updateWith(PaymentDetails details);
+    void onPaymentDetailsUpdated(PaymentDetails details, boolean hasNotifiedInvokedPaymentApp);
 
     /** The browser part of the {@link PaymentRequest#onPaymentDetailsNotUpdated} implementation. */
     void onPaymentDetailsNotUpdated();
@@ -186,5 +190,29 @@ public interface BrowserPaymentRequest {
     /** @return Whether any payment UI is being shown. */
     default boolean isShowingUi() {
         return false;
+    }
+
+    /**
+     * Continues the unfinished part of show() that was blocked for the payment details that was
+     * pending to be updated.
+     * @param details The updated payment details that show() is waiting for.
+     */
+    default void continueShow(PaymentDetails details) {}
+
+    /**
+     * If needed, do extra parsing and validation for details.
+     * @param details The details specified by the merchant.
+     * @return True if the validation pass.
+     */
+    default boolean parseAndValidateDetailsFurtherIfNeeded(PaymentDetails details) {
+        return true;
+    }
+
+    /**
+     * @return The {@link MethodChecker} that can check whether the invoked payment app is valid for
+     *         the given payment method identifier.
+     */
+    default MethodChecker getMethodChecker() {
+        return null;
     }
 }
