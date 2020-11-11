@@ -1,0 +1,88 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module recording.mojom;
+
+import "mojo/public/mojom/base/big_string.mojom";
+import "services/audio/public/mojom/stream_factory.mojom";
+import "services/viz/privileged/mojom/compositing/frame_sink_video_capture.mojom";
+import "services/viz/public/mojom/compositing/frame_sink_id.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
+
+// Defines the interface for the recording service client (e.g. ash), which
+// lives in a remote process other than that of the recording service itself.
+// The recording services consumes this interface to communicate with the client
+// during video recording and to send over the video chunks.
+interface RecordingServiceClient {
+  // Called by the service to ask the client to create a video capturer for it
+  // via the client's access to the host FrameSinkManager.
+  // TODO(https://crbug.com/1147989): This will be removed.
+  BindVideoCapturer(
+      pending_receiver<viz.mojom.FrameSinkVideoCapturer> receiver);
+
+  // Called by the service to ask the client to bind the given pending audio
+  // StreamFactory receiver to the audio service.
+  // TODO(https://crbug.com/1147989): This will be removed.
+  BindAudioStreamFactory(pending_receiver<audio.mojom.StreamFactory> receiver);
+
+  // Called repeatedly by the service while video recording is in progress,
+  // to provide the client with final encoded and webm-muxed video and audio
+  // frames. Frames will continue to be provided until OnRecordingEnded() is
+  // called.
+  OnMuxerOutput(mojo_base.mojom.BigString chunk);
+
+  // Called by the service to inform the client that an in-progress video
+  // recording ended, and no further frames will be provided. If |success| is
+  // false, then recording is being terminated by the service itself due to an
+  // internal failure.
+  OnRecordingEnded(bool success);
+};
+
+// Defines the interface of the recording service which is implemented by
+// |recording::RecordingService| and runs in its own utility process. It is
+// launched by the process on which the |RecordingServiceClient| resides, and is
+// used to perform audio/video recording of the whole screen, a partial region
+// of it, or an individual window. The service captures, encodes, and muxes the
+// audio and video frames, and sends the WebM muxed video chunks to the client.
+// Note that a maximum of one screen recording can be done at any time.
+// TODO(https://crbug.com/1147989): This interface will change so that Record*()
+// APIs will take a client, a video capturer, and an audio stream factory.
+interface RecordingService {
+  // Sets the single client of this service.
+  SetClient(pending_remote<RecordingServiceClient> client);
+
+  // Starts a fullscreen recording of a root window which has the given
+  // |frame_sink_id|. The resulting video will have a resolution equal to the
+  // given |video_size| in DIPs. Note that if the aspect ratio of |video_size|
+  // is different than that of the captured source, the content will letterbox
+  // or pillarbox as needed.
+  // |frame_sink_id| must be valid.
+  RecordFullscreen(viz.mojom.FrameSinkId frame_sink_id,
+      gfx.mojom.Size video_size);
+
+  // Starts a recording of a window which has the given |frame_sink_id|.
+  // |initial_video_size| and |max_video_size| specify a range of acceptable
+  // capture resolutions in DIPs. The resolution of the output will adapt
+  // dynamically as the window being recorded gets resized by the end user (e.g.
+  // resized, maximized, fullscreened, ... etc.).
+  // Note that if the aspect ratio of |max_video_size| is different than that of
+  // the captured source, the content will letterbox  or pillarbox as needed.
+  // |frame_sink_id| must be valid.
+  RecordWindow(viz.mojom.FrameSinkId frame_sink_id,
+      gfx.mojom.Size initial_video_size,
+      gfx.mojom.Size max_video_size);
+
+  // Starts a recording of a partial region of a root window which has the given
+  // |frame_sink_id|. The video will be captured at a resolution equal to the
+  // given |full_capture_size| in DIPs, but the resulting video frames will be
+  // cropped to the given |crop_region| in DIPs.
+  // |frame_sink_id| must be valid.
+  RecordRegion(viz.mojom.FrameSinkId frame_sink_id,
+      gfx.mojom.Size full_capture_size,
+      gfx.mojom.Rect crop_region);
+
+  // Stops an on-going video recording. The remaining frames will continue being
+  // provided to the client until OnRecordingEnded() is called.
+  StopRecording();
+};

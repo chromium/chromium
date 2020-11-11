@@ -5,17 +5,21 @@
 #ifndef ASH_CAPTURE_MODE_TEST_CAPTURE_MODE_DELEGATE_H_
 #define ASH_CAPTURE_MODE_TEST_CAPTURE_MODE_DELEGATE_H_
 
+#include <memory>
+
 #include "ash/public/cpp/capture_mode_delegate.h"
 #include "base/callback.h"
 
 namespace ash {
 
+class FakeRecordingService;
+
 class TestCaptureModeDelegate : public CaptureModeDelegate {
  public:
-  TestCaptureModeDelegate() = default;
+  TestCaptureModeDelegate();
   TestCaptureModeDelegate(const TestCaptureModeDelegate&) = delete;
   TestCaptureModeDelegate& operator=(const TestCaptureModeDelegate&) = delete;
-  ~TestCaptureModeDelegate() override = default;
+  ~TestCaptureModeDelegate() override;
 
   // CaptureModeDelegate:
   base::FilePath GetActiveUserDownloadsDir() const override;
@@ -32,6 +36,13 @@ class TestCaptureModeDelegate : public CaptureModeDelegate {
       base::OnceClosure stop_callback) override;
   void StopObservingRestrictedContent() override;
   void OpenFeedbackDialog() override;
+  mojo::Remote<recording::mojom::RecordingService> LaunchRecordingService()
+      const override;
+  void BindAudioStreamFactory(
+      mojo::PendingReceiver<audio::mojom::StreamFactory> receiver) override;
+
+ private:
+  std::unique_ptr<FakeRecordingService> fake_service_;
 };
 
 }  // namespace ash

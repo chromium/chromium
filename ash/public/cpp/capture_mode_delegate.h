@@ -6,7 +6,15 @@
 #define ASH_PUBLIC_CPP_CAPTURE_MODE_DELEGATE_H_
 
 #include "ash/public/cpp/ash_public_export.h"
+#include "ash/services/recording/public/mojom/recording_service.mojom-forward.h"
 #include "base/callback.h"
+#include "mojo/public/cpp/bindings/remote.h"
+
+namespace audio {
+namespace mojom {
+class StreamFactory;
+}  // namespace mojom
+}  // namespace audio
 
 namespace aura {
 class Window;
@@ -69,6 +77,14 @@ class ASH_PUBLIC_EXPORT CaptureModeDelegate {
 
   // Called when the feedback button is pressed.
   virtual void OpenFeedbackDialog() = 0;
+
+  // Launches the Recording Service into a separate utility process.
+  virtual mojo::Remote<recording::mojom::RecordingService>
+  LaunchRecordingService() const = 0;
+
+  // Binds the given audio StreamFactory |receiver| to the audio service.
+  virtual void BindAudioStreamFactory(
+      mojo::PendingReceiver<audio::mojom::StreamFactory> receiver) = 0;
 };
 
 }  // namespace ash

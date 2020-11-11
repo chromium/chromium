@@ -153,4 +153,22 @@ content::GetServiceSandboxType<sharing::mojom::Sharing>() {
 }
 #endif  // !defined(OS_MAC)
 
+#if defined(OS_CHROMEOS)
+// recording::mojom::RecordingService
+namespace recording {
+namespace mojom {
+class RecordingService;
+}  // namespace mojom
+}  // namespace recording
+
+// This is needed to prevent the service from crashing on a sandbox seccomp-bpf
+// failure when the audio capturer tries to open a stream.
+// TODO(https://crbug.com/1147991): Explore alternatives if any.
+template <>
+inline sandbox::policy::SandboxType
+content::GetServiceSandboxType<recording::mojom::RecordingService>() {
+  return sandbox::policy::SandboxType::kVideoCapture;
+}
+#endif  // defined(OS_CHROMEOS)
+
 #endif  // CHROME_BROWSER_SERVICE_SANDBOX_TYPE_H_

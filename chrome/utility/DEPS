@@ -1,4 +1,5 @@
 include_rules = [
+  "+ash/services/recording/recording_service.h",
   "+chrome/grit",
   "+chrome/installer/util",
   "+chrome/services/ipp_parser/ipp_parser.h",

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/ash/chrome_capture_mode_delegate.h"
 
+#include "ash/services/recording/public/mojom/recording_service.mojom.h"
+#include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/i18n/time_formatting.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -14,11 +16,14 @@
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/service_sandbox_type.h"
 #include "chrome/browser/ui/ash/screenshot_area.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/login/login_state/login_state.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/browser/audio_service.h"
+#include "content/public/browser/service_process_host.h"
 #include "ui/aura/window.h"
 #include "ui/base/window_open_disposition.h"
 
@@ -110,4 +115,18 @@ void ChromeCaptureModeDelegate::OpenFeedbackDialog() {
   chrome::OpenFeedbackDialog(/*browser=*/nullptr,
                              chrome::kFeedbackSourceCaptureMode,
                              /*description_template=*/"#ScreenCapture\n\n");
+}
+
+mojo::Remote<recording::mojom::RecordingService>
+ChromeCaptureModeDelegate::LaunchRecordingService() const {
+  return content::ServiceProcessHost::Launch<
+      recording::mojom::RecordingService>(
+      content::ServiceProcessHost::Options()
+          .WithDisplayName("Recording Service")
+          .Pass());
+}
+
+void ChromeCaptureModeDelegate::BindAudioStreamFactory(
+    mojo::PendingReceiver<audio::mojom::StreamFactory> receiver) {
+  content::GetAudioService().BindStreamFactory(std::move(receiver));
 }

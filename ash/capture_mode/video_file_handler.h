@@ -24,10 +24,11 @@ namespace ash {
 // file and appending those chunks to it must be done on a blocking thread,
 // whose |blocking_task_runner| is given to |Create()|.
 //
-// Depending on the audio/video contents and their encoding, there can be
-// hundreds of chunks received every second. Therefore, it would be very
-// expensive to write to the file system every time we receive a chunk, so this
-// object also takes care of caching those chunks by std::move()'ing them into
+// Depending on the audio/video contents and their encoding, and the amount of
+// muxed chunks buffering done in the recording service itself, there can be
+// many chunks received every second. Therefore, it would be very expensive to
+// write to the file system every time we receive a chunk, so this object also
+// takes care of caching those chunks by std::move()'ing them into
 // |buffered_chunks_| until the total size of the cached chunks |current_size_|
 // is nearing the maximum allowed |max_buffered_bytes_|, at which point, the
 // buffered chunks will be appended to the file, and |buffered_chunks_| will be

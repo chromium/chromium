@@ -2571,6 +2571,7 @@ static_library("ui") {
       "//ash/public/cpp",
       "//ash/public/cpp/app_list/vector_icons",
       "//ash/public/cpp/resources:ash_public_unscaled_resources",
+      "//ash/services/recording/public/mojom",
       "//ash/shortcut_viewer",
       "//build:chromeos_buildflags",
       "//chrome/app:generated_resources",

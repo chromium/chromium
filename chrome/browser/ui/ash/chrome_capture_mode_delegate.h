@@ -33,6 +33,10 @@ class ChromeCaptureModeDelegate : public ash::CaptureModeDelegate {
       base::OnceClosure stop_callback) override;
   void StopObservingRestrictedContent() override;
   void OpenFeedbackDialog() override;
+  mojo::Remote<recording::mojom::RecordingService> LaunchRecordingService()
+      const override;
+  void BindAudioStreamFactory(
+      mojo::PendingReceiver<audio::mojom::StreamFactory> receiver) override;
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_CHROME_CAPTURE_MODE_DELEGATE_H_

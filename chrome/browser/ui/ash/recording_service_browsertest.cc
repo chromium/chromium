@@ -1,0 +1,209 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include <memory>
+#include <string>
+
+#include "ash/public/cpp/ash_features.h"
+#include "ash/public/cpp/capture_mode_test_api.h"
+#include "ash/public/cpp/test/shell_test_api.h"
+#include "base/bind.h"
+#include "base/check.h"
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
+#include "base/location.h"
+#include "base/run_loop.h"
+#include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/threading/thread_restrictions.h"
+#include "base/threading/thread_task_runner_handle.h"
+#include "base/time/time.h"
+#include "chrome/browser/ui/ash/chrome_capture_mode_delegate.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window.h"
+#include "chrome/test/base/in_process_browser_test.h"
+#include "content/public/test/browser_test.h"
+#include "media/base/media_tracks.h"
+#include "media/base/mock_media_log.h"
+#include "media/formats/webm/webm_stream_parser.h"
+#include "ui/aura/window.h"
+#include "ui/display/test/display_manager_test_api.h"
+#include "ui/events/test/event_generator.h"
+#include "ui/gfx/geometry/point.h"
+
+namespace {
+
+// Runs a loop for the given |milliseconds| duration.
+void WaitForMilliseconds(int milliseconds) {
+  base::RunLoop loop;
+  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE, loop.QuitClosure(),
+      base::TimeDelta::FromMilliseconds(milliseconds));
+  loop.Run();
+}
+
+// Wait for the service to flush all the video chunks to ash, and waits for the
+// file contents to be fully saved, and returns the path where the video file
+// was saved.
+base::FilePath WaitForVideoFileToBeSaved() {
+  base::FilePath result;
+  base::RunLoop run_loop;
+  ash::CaptureModeTestApi().SetOnCaptureFileSavedCallback(
+      base::BindLambdaForTesting([&](const base::FilePath& path) {
+        result = path;
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+  return result;
+}
+
+// Verifies the contents of a WebM file by parsing it.
+class WebmVerifier {
+ public:
+  WebmVerifier() {
+    webm_parser_.Init(
+        base::BindOnce(&WebmVerifier::OnInit, base::Unretained(this)),
+        base::BindRepeating(&WebmVerifier::OnNewConfig, base::Unretained(this)),
+        base::BindRepeating(&WebmVerifier::OnNewBuffers,
+                            base::Unretained(this)),
+        /*ignore_text_tracks=*/true,
+        base::BindRepeating(&WebmVerifier::OnEncryptedMediaInitData,
+                            base::Unretained(this)),
+        base::BindRepeating(&WebmVerifier::OnNewMediaSegment,
+                            base::Unretained(this)),
+        base::BindRepeating(&WebmVerifier::OnEndMediaSegment,
+                            base::Unretained(this)),
+        &media_log_);
+  }
+  WebmVerifier(const WebmVerifier&) = delete;
+  WebmVerifier& operator=(const WebmVerifier&) = delete;
+  ~WebmVerifier() = default;
+
+  // Parses the given |webm_file_content| and returns true on success.
+  bool Verify(const std::string& webm_file_content) {
+    return webm_parser_.Parse(
+        reinterpret_cast<const uint8_t*>(webm_file_content.data()),
+        webm_file_content.size());
+  }
+
+ private:
+  void OnInit(const media::StreamParser::InitParameters&) {}
+  bool OnNewConfig(std::unique_ptr<media::MediaTracks> tracks,
+                   const media::StreamParser::TextTrackConfigMap&) {
+    return true;
+  }
+  bool OnNewBuffers(const media::StreamParser::BufferQueueMap& map) {
+    return true;
+  }
+  void OnEncryptedMediaInitData(media::EmeInitDataType,
+                                const std::vector<uint8_t>&) {}
+  void OnNewMediaSegment() {}
+  void OnEndMediaSegment() {}
+
+  media::WebMStreamParser webm_parser_;
+  media::MockMediaLog media_log_;
+};
+
+}  // namespace
+
+class RecordingServiceBrowserTest : public InProcessBrowserTest {
+ public:
+  RecordingServiceBrowserTest() = default;
+  RecordingServiceBrowserTest(const RecordingServiceBrowserTest&) = delete;
+  RecordingServiceBrowserTest& operator=(const RecordingServiceBrowserTest&) =
+      delete;
+  ~RecordingServiceBrowserTest() override = default;
+
+  // InProcessBrowserTest:
+  void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeature(ash::features::kCaptureMode);
+    InProcessBrowserTest::SetUp();
+  }
+
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+    aura::Window* browser_window = GetBrowserWindow();
+    event_generator_ = std::make_unique<ui::test::EventGenerator>(
+        browser_window->GetRootWindow(), browser_window);
+    // To improve the test efficiency, we set the display to a small size.
+    display::test::DisplayManagerTestApi(ash::ShellTestApi().display_manager())
+        .UpdateDisplay("300x200");
+  }
+
+  aura::Window* GetBrowserWindow() const {
+    return browser()->window()->GetNativeWindow();
+  }
+
+  ui::test::EventGenerator* GetEventGenerator() {
+    return event_generator_.get();
+  }
+
+  // Reads the video file at the given |path| and verifies its WebM contents. At
+  // the end it deletes the file to save space, since video files can be big.
+  void VerifyVideoFileAndDelete(const base::FilePath& path) const {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    ASSERT_TRUE(base::PathExists(path));
+    std::string file_content;
+    EXPECT_TRUE(base::ReadFileToString(path, &file_content));
+    EXPECT_FALSE(file_content.empty());
+    EXPECT_TRUE(WebmVerifier().Verify(file_content));
+    EXPECT_TRUE(base::DeleteFile(path));
+  }
+
+  void FinishVideoRecordingTest(ash::CaptureModeTestApi* test_api) {
+    test_api->PerformCapture();
+    // Record a 1.5-second long video to give it enough time to produce and send
+    // video frames in order to exercise all the code paths of the service and
+    // its client.
+    WaitForMilliseconds(1500);
+    test_api->StopVideoRecording();
+    const base::FilePath video_path = WaitForVideoFileToBeSaved();
+    VerifyVideoFileAndDelete(video_path);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  std::unique_ptr<ui::test::EventGenerator> event_generator_;
+};
+
+IN_PROC_BROWSER_TEST_F(RecordingServiceBrowserTest, RecordFullscreen) {
+  ash::CaptureModeTestApi test_api;
+  test_api.StartForFullscreen(/*for_video=*/true);
+  FinishVideoRecordingTest(&test_api);
+}
+
+// This test is currently disabled since it will always fail on the bots for
+// now, since audio is not captured on the bots, and currently window recording
+// captures no video frames, so the resulting video file will always be empty.
+// TODO(crbug.com/1143930): Re-enable this once window capture is working.
+IN_PROC_BROWSER_TEST_F(RecordingServiceBrowserTest, DISABLED_RecordWindow) {
+  ash::CaptureModeTestApi test_api;
+  test_api.StartForWindow(/*for_video=*/true);
+  auto* generator = GetEventGenerator();
+  // Move the mouse cursor above the browser window to select it for window
+  // capture.
+  generator->MoveMouseTo(GetBrowserWindow()->GetBoundsInScreen().CenterPoint());
+  FinishVideoRecordingTest(&test_api);
+}
+
+IN_PROC_BROWSER_TEST_F(RecordingServiceBrowserTest, RecordRegion) {
+  ash::CaptureModeTestApi test_api;
+  test_api.StartForRegion(/*for_video=*/true);
+  // Select a random partial region of the screen.
+  test_api.SetUserSelectedRegion(gfx::Rect(10, 20, 100, 50));
+  FinishVideoRecordingTest(&test_api);
+}
+
+// Doing multiple recordings one after the other should produce non-corrupt webm
+// files (i.e. the recording service should send webm chunks that are not
+// affected by buffered chunks from a previous recording).
+IN_PROC_BROWSER_TEST_F(RecordingServiceBrowserTest, SuccessiveRecording) {
+  ash::CaptureModeTestApi test_api;
+  // Do a fullscreen recording, followed by a region recording.
+  test_api.StartForFullscreen(/*for_video=*/true);
+  FinishVideoRecordingTest(&test_api);
+  test_api.StartForRegion(/*for_video=*/true);
+  test_api.SetUserSelectedRegion(gfx::Rect(50, 200));
+  FinishVideoRecordingTest(&test_api);
+}

@@ -89,6 +89,7 @@
 #include "components/services/paint_preview_compositor/public/mojom/paint_preview_compositor.mojom.h"
 
 #if defined(OS_CHROMEOS)
+#include "ash/services/recording/recording_service.h"
 #include "chrome/services/sharing/sharing_impl.h"
 #include "chromeos/assistant/buildflags.h"  // nogncheck
 #include "chromeos/services/ime/ime_service.h"
@@ -246,6 +247,11 @@ auto RunImeService(
   return std::make_unique<chromeos::ime::ImeService>(std::move(receiver));
 }
 
+auto RunRecordingService(
+    mojo::PendingReceiver<recording::mojom::RecordingService> receiver) {
+  return std::make_unique<recording::RecordingService>(std::move(receiver));
+}
+
 auto RunSharing(mojo::PendingReceiver<sharing::mojom::Sharing> receiver) {
   return std::make_unique<sharing::SharingImpl>(
       std::move(receiver), content::UtilityThread::Get()->GetIOTaskRunner());
@@ -332,6 +338,7 @@ void RegisterMainThreadServices(mojo::ServiceFactory& services) {
 
 #if defined(OS_CHROMEOS)
   services.Add(RunImeService);
+  services.Add(RunRecordingService);
   services.Add(RunSharing);
   services.Add(RunTtsService);
 #if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)

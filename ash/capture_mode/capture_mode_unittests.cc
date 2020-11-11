@@ -1098,7 +1098,6 @@ TEST_F(CaptureModeTest, DoNotHandleEventDuringCountDown) {
   EXPECT_NE(capture_mode_session->GetSelectedWindow(), window2.get());
 
   WaitForCountDownToFinish();
-  controller->Stop();
 }
 
 // Tests that metrics are recorded properly for capture mode entry points.

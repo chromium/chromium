@@ -39,6 +39,9 @@ specific_include_rules = {
   "chrome_browser_main_extra_parts_ash\.cc": [
     "+ash/shell.h",
   ],
+  "chrome_capture_mode_delegate.cc": [
+    "+ash/services/recording/public/mojom/recording_service.mojom.h",
+  ],
   # https://crbug.com/124222
   "chrome_new_window_client\.cc": [
     "+ash/content/keyboard_overlay/keyboard_overlay_view.h",

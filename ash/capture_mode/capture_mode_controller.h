@@ -6,26 +6,34 @@
 #define ASH_CAPTURE_MODE_CAPTURE_MODE_CONTROLLER_H_
 
 #include <memory>
+#include <string>
 
 #include "ash/ash_export.h"
 #include "ash/capture_mode/capture_mode_metrics.h"
 #include "ash/capture_mode/capture_mode_types.h"
 #include "ash/capture_mode/video_file_handler.h"
 #include "ash/public/cpp/capture_mode_delegate.h"
+#include "ash/services/recording/public/mojom/recording_service.mojom.h"
+#include "base/callback_forward.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
-#include "base/single_thread_task_runner.h"
 #include "base/threading/sequence_bound.h"
 #include "base/timer/timer.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/image/image.h"
 
 namespace base {
 class FilePath;
 class Time;
+class SequencedTaskRunner;
 }  // namespace base
+
+namespace cc {
+class LayerTreeFrameSink;
+}  // namespace cc
 
 namespace ash {
 
@@ -33,12 +41,13 @@ class CaptureModeSession;
 class VideoRecordingWatcher;
 
 // Controls starting and ending a Capture Mode session and its behavior.
-class ASH_EXPORT CaptureModeController {
+class ASH_EXPORT CaptureModeController
+    : public recording::mojom::RecordingServiceClient {
  public:
   explicit CaptureModeController(std::unique_ptr<CaptureModeDelegate> delegate);
   CaptureModeController(const CaptureModeController&) = delete;
   CaptureModeController& operator=(const CaptureModeController&) = delete;
-  ~CaptureModeController();
+  ~CaptureModeController() override;
 
   // Convenience function to get the controller instance, which is created and
   // owned by Shell.
@@ -80,14 +89,35 @@ class ASH_EXPORT CaptureModeController {
   // Called when the feedback button on the capture bar is pressed.
   void OpenFeedbackDialog();
 
+  // recording::mojom::RecordingServiceClient:
+  void BindVideoCapturer(
+      mojo::PendingReceiver<viz::mojom::FrameSinkVideoCapturer> receiver)
+      override;
+  void BindAudioStreamFactory(
+      mojo::PendingReceiver<audio::mojom::StreamFactory> receiver) override;
+  void OnMuxerOutput(const std::string& chunk) override;
+  void OnRecordingEnded(bool success) override;
+
   // Skips the 3-second count down, and IsCaptureAllowed() checks, and starts
   // video recording right away for testing purposes.
   void StartVideoRecordingImmediatelyForTesting();
 
  private:
+  friend class CaptureModeTestApi;
+
+  // Launches the mojo service that handles audio and video recording.
+  void LaunchRecordingService();
+
+  // Called back when the mojo pipe to the recording service gets disconnected.
+  void OnRecordingServiceDisconnected();
+
   // Returns true if doing a screen capture is currently allowed, false
   // otherwise.
   bool IsCaptureAllowed() const;
+
+  // Called to terminate |is_recording_in_progress_|, the stop-recording shelf
+  // pod button, and the |video_recording_watcher_| when recording ends.
+  void TerminateRecordingUiElements();
 
   // Returns the capture parameters for the capture operation that is about to
   // be performed (i.e. the window to be captured, and the capture bounds). If
@@ -98,9 +128,7 @@ class ASH_EXPORT CaptureModeController {
     aura::Window* window = nullptr;
     // The capture bounds, either in root coordinates (in kFullscreen or kRegion
     // capture sources), or window-local coordinates (in a kWindow capture
-    // source). The bounds are never empty when in kImage capture type. However,
-    // in kVideo capture type, they're non-empty only in a kRegion capture
-    // source, since the recording service needs them to crop the frame.
+    // source).
     gfx::Rect bounds;
   };
   base::Optional<CaptureParams> GetCaptureParams() const;
@@ -129,10 +157,10 @@ class ASH_EXPORT CaptureModeController {
                         const base::FilePath& path,
                         bool success);
 
-  // Called on the UI thread, when |video_file_handler_| initializes the video
-  // file whose path is |current_video_file_path_|. If initialization fails,
-  // i.e. |success| is false, video recording should not continue.
-  void OnVideoFileInitialized(bool success);
+  // Called on the UI thread, when |video_file_handler_| finishes a video file
+  // IO operation. If an IO failure occurs, i.e. |success| is false, video
+  // recording should not continue.
+  void OnVideoFileStatus(bool success);
 
   // Called back when the |video_file_handler_| flushes the remaining cached
   // video chunks in its buffer. Called on the UI thread.
@@ -175,6 +203,15 @@ class ASH_EXPORT CaptureModeController {
   // A blocking task runner for file IO operations.
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
+  mojo::Remote<recording::mojom::RecordingService> recording_service_remote_;
+  mojo::Receiver<recording::mojom::RecordingServiceClient>
+      recording_service_client_receiver_;
+
+  // Callback bound to OnVideoFileStatus() that is triggered repeatedly by
+  // |video_file_handler_| to tell us about the status of video file IO
+  // operations, so we can end video recording if a failure occurs.
+  base::RepeatingCallback<void(bool success)> on_video_file_status_;
+
   // This is the file path of the video file currently being recorded. It is
   // empty when no video recording is in progress.
   base::FilePath current_video_file_path_;
@@ -193,8 +230,21 @@ class ASH_EXPORT CaptureModeController {
   // True when video recording is in progress.
   bool is_recording_in_progress_ = false;
 
+  // If true, the 3-second countdown UI will be skipped, and video recording
+  // will start immediately.
+  bool skip_count_down_ui_ = false;
+
   // Watches events that lead to ending video recording.
   std::unique_ptr<VideoRecordingWatcher> video_recording_watcher_;
+
+  // If set, it will be called when either an image or video file is saved.
+  base::OnceCallback<void(const base::FilePath&)> on_file_saved_callback_;
+
+  // Recording non-root windows require sending their FrameSinkIds to the
+  // recording service. Those windows won't have a valid ID unless we create
+  // LayerTreeFrameSinks for them. This remains alive while the window is being
+  // recorded.
+  std::unique_ptr<cc::LayerTreeFrameSink> window_frame_sink_;
 
   // Timers used to schedule recording of the number of screenshots taken.
   base::RepeatingTimer num_screenshots_taken_in_last_day_scheduler_;
