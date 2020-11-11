@@ -3714,6 +3714,31 @@ TEST_P(PasswordManagerTest, GenerationOnChangedForm) {
             form_generation_data.new_password_renderer_id);
 }
 
+TEST_P(PasswordManagerTest, IsFormManagerPendingPasswordUpdate) {
+  PasswordForm form(MakeSimpleForm());
+  std::vector<FormData> observed = {form.form_data};
+  EXPECT_CALL(client_, IsSavingAndFillingEnabled).WillRepeatedly(Return(true));
+  EXPECT_CALL(*store_, GetLogins)
+      .WillOnce(WithArg<1>(InvokeConsumer(store_.get(), form)));
+  manager()->OnPasswordFormsParsed(&driver_, observed);
+  manager()->OnPasswordFormsRendered(&driver_, observed, true);
+
+  // Password was not updated yet.
+  EXPECT_FALSE(manager()->IsFormManagerPendingPasswordUpdate());
+
+  // The user updates the password.
+  FormData updated_data(form.form_data);
+  updated_data.fields[1].value = ASCIIToUTF16("new_password");
+  manager()->OnInformAboutUserInput(&driver_, updated_data);
+  EXPECT_TRUE(manager()->IsFormManagerPendingPasswordUpdate());
+
+  // The user submits the form.
+  OnPasswordFormSubmitted(updated_data);
+  EXPECT_TRUE(manager()->GetSubmittedManagerForTest());
+  // OnFormManagerPendingPasswordUpdate() still returns true after submission.
+  EXPECT_TRUE(manager()->IsFormManagerPendingPasswordUpdate());
+}
+
 INSTANTIATE_TEST_SUITE_P(, PasswordManagerTest, testing::Bool());
 
 }  // namespace password_manager

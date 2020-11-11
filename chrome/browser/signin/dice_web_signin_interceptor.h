@@ -68,8 +68,11 @@ enum class SigninInterceptionHeuristicOutcome {
   // A password update is required for the account, and this takes priority over
   // signin interception.
   kAbortPasswordUpdate = 12,
+  // A password update will be required for the account: the password used on
+  // the form does not match the stored password.
+  kAbortPasswordUpdatePending = 13,
 
-  kMaxValue = kAbortPasswordUpdate,
+  kMaxValue = kAbortPasswordUpdatePending,
 };
 
 // Returns whether the heuristic outcome is a success (the signin should be
