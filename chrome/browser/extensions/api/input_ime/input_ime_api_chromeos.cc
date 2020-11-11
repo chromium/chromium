@@ -586,14 +586,22 @@ bool InputImeEventRouter::RegisterImeExtension(
   }
 
   Profile* profile = GetProfile();
-
   // TODO(https://crbug.com/1140236): Investigate whether profile selection
   // is really needed.
-  if (chromeos::input_method::InputMethodManager::Get()
-              ->GetActiveIMEState()
-              ->GetUIStyle() ==
-          chromeos::input_method::InputMethodManager::UIStyle::kLogin &&
-      profile->HasPrimaryOTRProfile()) {
+  bool is_login = false;
+  // When Chrome starts with the Login screen, sometimes active IME State was
+  // not set yet. It's asynchronous process. So we need a fallback for that.
+  scoped_refptr<chromeos::input_method::InputMethodManager::State>
+      active_state = chromeos::input_method::InputMethodManager::Get()
+                         ->GetActiveIMEState();
+  if (active_state) {
+    is_login = active_state->GetUIStyle() ==
+               chromeos::input_method::InputMethodManager::UIStyle::kLogin;
+  } else {
+    is_login = chromeos::ProfileHelper::IsSigninProfile(profile);
+  }
+
+  if (is_login && profile->HasPrimaryOTRProfile()) {
     profile = profile->GetPrimaryOTRProfile();
   }
 
