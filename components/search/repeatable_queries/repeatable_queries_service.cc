@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/json/json_writer.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/scoped_observer.h"
 #include "base/stl_util.h"
 #include "base/values.h"
@@ -69,6 +70,12 @@ bool JsonToRepeatableQueriesData(const base::Value& root_value,
   return !data->empty();
 }
 }  // namespace
+
+// static
+const char RepeatableQueriesService::kExtractedCountHistogram[] =
+    "NewTabPage.RepeatableQueries.ExtractedCount";
+const char RepeatableQueriesService::kExtractionDurationHistogram[] =
+    "NewTabPage.RepeatableQueries.ExtractionDuration";
 
 class RepeatableQueriesService::SigninObserver
     : public signin::IdentityManager::Observer {
@@ -353,6 +360,7 @@ void RepeatableQueriesService::GetRepeatableQueriesFromURLDatabase() {
   if (!url_db)
     return;
 
+  const base::TimeTicks db_query_time = base::TimeTicks::Now();
   auto results = url_db->GetMostRecentNormalizedKeywordSearchTerms(
       template_url_service_->GetDefaultSearchProvider()->id(),
       ntp_features::GetLocalHistoryRepeatableQueriesAgeThreshold());
@@ -379,6 +387,10 @@ void RepeatableQueriesService::GetRepeatableQueriesFromURLDatabase() {
     if (repeatable_queries_.size() >= kMaxQueries)
       break;
   }
+
+  base::UmaHistogramTimes(kExtractionDurationHistogram,
+                          base::TimeTicks::Now() - db_query_time);
+  base::UmaHistogramCounts10000(kExtractedCountHistogram, results.size());
 
   NotifyObservers();
 }

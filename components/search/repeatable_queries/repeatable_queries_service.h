@@ -73,6 +73,10 @@ class RepeatableQueriesService : public KeyedService {
   RepeatableQueriesService(const RepeatableQueriesService&) = delete;
   RepeatableQueriesService& operator=(const RepeatableQueriesService&) = delete;
 
+  // Histograms recorded by this class.
+  static const char kExtractedCountHistogram[];
+  static const char kExtractionDurationHistogram[];
+
   // KeyedService:
   void Shutdown() override;
 

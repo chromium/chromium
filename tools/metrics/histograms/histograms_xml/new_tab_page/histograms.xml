@@ -1062,6 +1062,30 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="NewTabPage.RepeatableQueries.ExtractedCount" units="count"
+    expires_after="M90">
+  <owner>mahmadi@chromium.org</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    The number of normalized search queries extracted from the in-memory URL DB
+    and examined (e.g., sorted) to produce repeatable query suggestions for
+    signed-out users. Triggered every time a signed-out user opens a new tab
+    when the repeatable queries are enabled.
+  </summary>
+</histogram>
+
+<histogram name="NewTabPage.RepeatableQueries.ExtractionDuration" units="ms"
+    expires_after="M90">
+  <owner>mahmadi@chromium.org</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    The length of time it takes to extract normalized search queries from the
+    in-memory URL DB and examine (e.g., sort) them to produce repeatable query
+    suggestions for signed-out users. Triggered every time a signed-out user
+    opens a new tab when the repeatable queries are enabled.
+  </summary>
+</histogram>
+
 <histogram name="NewTabPage.RequestThrottler.PerDay" units="requests"
     expires_after="2021-07-01">
   <owner>freedjm@chromium.org</owner>

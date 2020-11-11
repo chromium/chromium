@@ -12,6 +12,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/optional.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
@@ -429,6 +430,8 @@ TEST_F(RepeatableQueriesServiceTest, SignedIn_DefaultSearchProviderChanged) {
 }
 
 TEST_F(RepeatableQueriesServiceTest, SignedIn_SigninStatusChanged) {
+  base::HistogramTester histogram_tester;
+
   SignIn();
   test_url_loader_factory()->AddResponse(service()->GetRequestURL().spec(),
                                          GoodServerResponse());
@@ -470,6 +473,13 @@ TEST_F(RepeatableQueriesServiceTest, SignedIn_SigninStatusChanged) {
       {base::ASCIIToUTF16("less recent local query"),
        GetQueryDestinationURL("less recent local query"), ""}};
   EXPECT_EQ(expected_local_queries, service()->repeatable_queries());
+
+  histogram_tester.ExpectTotalCount(
+      RepeatableQueriesService::kExtractionDurationHistogram, 1);
+  histogram_tester.ExpectTotalCount(
+      RepeatableQueriesService::kExtractedCountHistogram, 1);
+  histogram_tester.ExpectUniqueSample(
+      RepeatableQueriesService::kExtractedCountHistogram, 2, 1);
 }
 
 TEST_F(RepeatableQueriesServiceTest, SignedIn_Deletion) {
