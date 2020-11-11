@@ -612,7 +612,14 @@
   },
   'browser_tests_wayland': {
     'modifications': {
+      # CQ tester.
       'Linux Ozone Tester (Wayland)': {
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/ozone-linux.wayland_browser_tests.filter',
+        ],
+      },
+      # CI tester.
+      'Linux Tester (Ozone Wayland)': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/ozone-linux.wayland_browser_tests.filter',
         ],
@@ -2745,7 +2752,14 @@
   },
   'views_unittests_wayland': {
     'modifications': {
+      # CQ tester.
       'Linux Ozone Tester (Wayland)': {
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/ozone-linux.wayland_views_unittests.filter',
+        ],
+      },
+      # CI tester.
+      'Linux Tester (Ozone Wayland)': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/ozone-linux.wayland_views_unittests.filter',
         ],

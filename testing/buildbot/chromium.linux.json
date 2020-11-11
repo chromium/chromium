@@ -5349,7 +5349,8 @@
           "--no-xvfb",
           "--use-weston",
           "--ozone-platform=wayland",
-          "--enable-features=UseOzonePlatform"
+          "--enable-features=UseOzonePlatform",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/ozone-linux.wayland_browser_tests.filter"
         ],
         "merge": {
           "args": [],
@@ -5519,7 +5520,8 @@
           "--no-xvfb",
           "--use-weston",
           "--ozone-platform=wayland",
-          "--enable-features=UseOzonePlatform"
+          "--enable-features=UseOzonePlatform",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/ozone-linux.wayland_views_unittests.filter"
         ],
         "merge": {
           "args": [],
