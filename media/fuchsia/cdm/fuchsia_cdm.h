@@ -73,6 +73,7 @@ class FuchsiaCdm : public ContentDecryptionModule,
   // FuchsiaCdmContext implementation:
   std::unique_ptr<FuchsiaSecureStreamDecryptor> CreateVideoDecryptor(
       FuchsiaSecureStreamDecryptor::Client* client) override;
+  std::unique_ptr<FuchsiaClearStreamDecryptor> CreateAudioDecryptor() override;
 
  private:
   class CdmSession;

@@ -11,18 +11,14 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/video_frame.h"
+#include "media/fuchsia/cdm/fuchsia_cdm_context.h"
 #include "media/fuchsia/cdm/fuchsia_stream_decryptor.h"
 
 namespace media {
 
-// Audio packets are normally smaller than 128kB (more than enough for 2 seconds
-// at 320kb/s).
-const size_t kAudioStreamBufferSize = 128 * 1024;
-
-FuchsiaDecryptor::FuchsiaDecryptor(
-    fuchsia::media::drm::ContentDecryptionModule* cdm)
-    : cdm_(cdm) {
-  DCHECK(cdm_);
+FuchsiaDecryptor::FuchsiaDecryptor(FuchsiaCdmContext* cdm_context)
+    : cdm_context_(cdm_context) {
+  DCHECK(cdm_context_);
 }
 
 FuchsiaDecryptor::~FuchsiaDecryptor() {
@@ -42,8 +38,7 @@ void FuchsiaDecryptor::Decrypt(StreamType stream_type,
 
   if (!audio_decryptor_) {
     audio_decryptor_task_runner_ = base::ThreadTaskRunnerHandle::Get();
-    audio_decryptor_ =
-        FuchsiaClearStreamDecryptor::Create(cdm_, kAudioStreamBufferSize);
+    audio_decryptor_ = cdm_context_->CreateAudioDecryptor();
   }
 
   audio_decryptor_->Decrypt(std::move(encrypted), std::move(decrypt_cb));

@@ -24,6 +24,10 @@ namespace media {
 
 namespace {
 
+// Audio packets are normally smaller than 128kB (more than enough for 2 seconds
+// at 320kb/s).
+const size_t kAudioStreamBufferSize = 128 * 1024;
+
 std::string GetInitDataTypeName(EmeInitDataType type) {
   switch (type) {
     case EmeInitDataType::WEBM:
@@ -245,7 +249,7 @@ FuchsiaCdm::FuchsiaCdm(fuchsia::media::drm::ContentDecryptionModulePtr cdm,
     : cdm_(std::move(cdm)),
       ready_cb_(std::move(ready_cb)),
       session_callbacks_(std::move(callbacks)),
-      decryptor_(cdm_.get()) {
+      decryptor_(this) {
   DCHECK(cdm_);
   cdm_.events().OnProvisioned =
       fit::bind_member(this, &FuchsiaCdm::OnProvisioned);
@@ -290,6 +294,18 @@ std::unique_ptr<FuchsiaSecureStreamDecryptor> FuchsiaCdm::CreateVideoDecryptor(
   }
 
   return decryptor;
+}
+
+std::unique_ptr<FuchsiaClearStreamDecryptor>
+FuchsiaCdm::CreateAudioDecryptor() {
+  fuchsia::media::drm::DecryptorParams params;
+  params.set_require_secure_mode(false);
+  params.mutable_input_details()->set_format_details_version_ordinal(0);
+  fuchsia::media::StreamProcessorPtr stream_processor;
+  cdm_->CreateDecryptor(std::move(params), stream_processor.NewRequest());
+
+  return std::make_unique<FuchsiaClearStreamDecryptor>(
+      std::move(stream_processor), kAudioStreamBufferSize);
 }
 
 void FuchsiaCdm::SetServerCertificate(

@@ -216,22 +216,6 @@ void FuchsiaStreamDecryptorBase::ProcessEndOfStream() {
   processor_.ProcessEos();
 }
 
-std::unique_ptr<FuchsiaClearStreamDecryptor>
-FuchsiaClearStreamDecryptor::Create(
-    fuchsia::media::drm::ContentDecryptionModule* cdm,
-    size_t min_buffer_size) {
-  DCHECK(cdm);
-
-  fuchsia::media::drm::DecryptorParams params;
-  params.set_require_secure_mode(false);
-  params.mutable_input_details()->set_format_details_version_ordinal(0);
-  fuchsia::media::StreamProcessorPtr stream_processor;
-  cdm->CreateDecryptor(std::move(params), stream_processor.NewRequest());
-
-  return std::make_unique<FuchsiaClearStreamDecryptor>(
-      std::move(stream_processor), min_buffer_size);
-}
-
 FuchsiaClearStreamDecryptor::FuchsiaClearStreamDecryptor(
     fuchsia::media::StreamProcessorPtr processor,
     size_t min_buffer_size)
