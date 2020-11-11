@@ -130,11 +130,6 @@ base::Optional<DOMHighResTimeStamp> Sensor::timestamp(
   DCHECK(performance);
   DCHECK(sensor_proxy_);
 
-  if (WebTestSupport::IsRunningWebTest()) {
-    // In web tests performance.now() * 0.001 is passed to the shared buffer.
-    return sensor_proxy_->GetReading().timestamp() * 1000;
-  }
-
   return performance->MonotonicTimeToDOMHighResTimeStamp(
       base::TimeTicks() +
       base::TimeDelta::FromSecondsD(sensor_proxy_->GetReading().timestamp()));
