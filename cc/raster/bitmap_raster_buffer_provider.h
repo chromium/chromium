@@ -7,6 +7,9 @@
 
 #include <stdint.h>
 
+#include <memory>
+#include <vector>
+
 #include "base/values.h"
 #include "cc/raster/raster_buffer_provider.h"
 

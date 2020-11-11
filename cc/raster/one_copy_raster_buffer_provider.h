@@ -7,6 +7,9 @@
 
 #include <stdint.h>
 
+#include <memory>
+#include <vector>
+
 #include "base/sequenced_task_runner.h"
 #include "cc/raster/raster_buffer_provider.h"
 #include "cc/raster/staging_buffer_pool.h"

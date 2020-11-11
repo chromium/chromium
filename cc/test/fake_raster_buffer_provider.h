@@ -5,6 +5,9 @@
 #ifndef CC_TEST_FAKE_RASTER_BUFFER_PROVIDER_H_
 #define CC_TEST_FAKE_RASTER_BUFFER_PROVIDER_H_
 
+#include <memory>
+#include <vector>
+
 #include "cc/raster/raster_buffer_provider.h"
 
 namespace cc {

@@ -4,6 +4,8 @@
 
 #include "cc/test/fake_raster_buffer_provider.h"
 
+#include <utility>
+
 #include "cc/resources/resource_pool.h"
 
 namespace cc {

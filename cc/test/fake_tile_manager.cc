@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <limits>
+#include <memory>
 
 #include "base/stl_util.h"
 #include "base/threading/thread_task_runner_handle.h"
