@@ -279,8 +279,8 @@ class Xcode11LogParser(object):
       # For some crashed tests info about error contained only in root node.
       test_results['failed'] = Xcode11LogParser._list_of_failed_tests(root)
       Xcode11LogParser._get_test_statuses(xcresult, test_results)
-    Xcode11LogParser.export_diagnostic_data(xcresult)
-    Xcode11LogParser.copy_artifacts(xcresult)
+    Xcode11LogParser.export_diagnostic_data(output_path)
+    Xcode11LogParser.copy_artifacts(output_path)
     # Remove the symbol link file.
     if os.path.islink(output_path):
       os.unlink(output_path)

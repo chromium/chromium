@@ -583,6 +583,21 @@ class XCode11LogParserTest(test_runner_test.TestCase):
     self.assertEqual(['TestCase1/method1', 'TestCase2/method1'],
                      res['passed'])
 
+  @mock.patch('file_util.zip_and_remove_folder')
+  @mock.patch('xcode_log_parser.Xcode11LogParser.copy_artifacts')
+  @mock.patch('xcode_log_parser.Xcode11LogParser.export_diagnostic_data')
+  @mock.patch('os.path.exists', autospec=True)
+  @mock.patch('xcode_log_parser.Xcode11LogParser._xcresulttool_get')
+  @mock.patch('xcode_log_parser.Xcode11LogParser._list_of_failed_tests')
+  def testArtifactsDiagnosticLogsExportedInCollectTestTesults(
+      self, mock_get_failed_tests, mock_root, mock_exist_file,
+      mock_export_diagnostic_data, mock_copy_artifacts, mock_zip):
+    mock_root.side_effect = _xcresulttool_get_side_effect
+    mock_exist_file.return_value = True
+    xcode_log_parser.Xcode11LogParser().collect_test_results(OUTPUT_PATH, [])
+    mock_export_diagnostic_data.assert_called_with(OUTPUT_PATH)
+    mock_copy_artifacts.assert_called_with(OUTPUT_PATH)
+
 
 if __name__ == '__main__':
   unittest.main()
