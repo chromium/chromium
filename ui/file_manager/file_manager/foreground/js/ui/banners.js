@@ -165,6 +165,12 @@ class Banners extends cr.EventTarget {
     this.offlineInfoBanner_ = queryRequiredElement('#offline-info-banner');
     util.setClampLine(
         queryRequiredElement('.body2-primary', this.offlineInfoBanner_), '2');
+    queryRequiredElement('#offline-learn-more').addEventListener('click', e => {
+      util.visitURL(str('GOOGLE_DRIVE_OFFLINE_HELP_URL'));
+      this.setOfflineInfoBannerCounter_(OFFLINE_INFO_BANNER_COUNTER_LIMIT);
+      this.offlineInfoBanner_.hidden = true;
+      e.preventDefault();
+    });
   }
 
   /**

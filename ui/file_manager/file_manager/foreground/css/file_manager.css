@@ -1854,10 +1854,6 @@ body:not(.files-ng) .downloads-warning .warning-message {
   margin-inline-end: 40px;
 }
 
-body.files-ng .downloads-warning .warning-message {
-  margin-inline-end: 20px;
-}
-
 body.files-ng .warning-message .link-wrapper {
   display: inline;
 }
@@ -1963,8 +1959,10 @@ body:not(.files-ng) .volume-warning .drive-text {
 
 body.files-ng .button-group {
   display: flex;
+  flex: 0 0 auto;
   flex-direction: row-reverse;
   margin-inline-start: auto;
+  padding-inline-start: 48px;
 }
 
 body.files-ng .button-group > a {

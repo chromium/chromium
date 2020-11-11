@@ -62,6 +62,8 @@ testcase.tabindexFocus = async () => {
     chrome.test.assertTrue(
         await remoteCall.checkNextTabFocus(appId, 'drive-welcome-link'));
     chrome.test.assertTrue(
+        await remoteCall.checkNextTabFocus(appId, 'offline-learn-more'));
+    chrome.test.assertTrue(
         await remoteCall.checkNextTabFocus(appId, 'file-list'));
   } else {
     chrome.test.assertTrue(
@@ -206,6 +208,8 @@ testcase.tabindexFocusDirectorySelected = async () => {
     chrome.test.assertTrue(
         await remoteCall.checkNextTabFocus(appId, 'welcome-dismiss'));
     chrome.test.assertTrue(
+        await remoteCall.checkNextTabFocus(appId, 'offline-learn-more'));
+    chrome.test.assertTrue(
         await remoteCall.checkNextTabFocus(appId, 'file-list'));
   } else {
     chrome.test.assertTrue(
@@ -289,6 +293,8 @@ testcase.tabindexFocusDirectorySelectedSharesheetEnabled = async () => {
       await remoteCall.checkNextTabFocus(appId, 'drive-welcome-link'));
   chrome.test.assertTrue(
       await remoteCall.checkNextTabFocus(appId, 'welcome-dismiss'));
+  chrome.test.assertTrue(
+      await remoteCall.checkNextTabFocus(appId, 'offline-learn-more'));
   chrome.test.assertTrue(
       await remoteCall.checkNextTabFocus(appId, 'file-list'));
 
@@ -450,8 +456,8 @@ testcase.tabindexSaveFileDialogDriveFilesNg = async () => {
       },
       'drive', BASIC_DRIVE_ENTRY_SET, null, ['#ok-button:not([disabled])'], [
         'cancel-button', 'ok-button', 'directory-tree', 'search-button',
-        'view-button', 'sort-button', 'gear-button', 'file-list',
-        'new-folder-button', 'filename-input-textbox'
+        'view-button', 'sort-button', 'gear-button', 'offline-learn-more',
+        'file-list', 'new-folder-button', 'filename-input-textbox'
       ]);
 };
 

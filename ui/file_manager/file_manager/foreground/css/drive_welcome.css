@@ -116,7 +116,6 @@ body:not(.files-ng) .drive-welcome.header .drive-welcome-message {
 }
 
 body.files-ng .drive-welcome.header .drive-welcome-message {
-  margin-inline-end: 50px;
   z-index: 1;
 }
 

@@ -38,6 +38,10 @@ const char kGoogleDriveOverviewUrl[] =
 const char kGoogleDriveHelpUrl[] =
     "https://support.google.com/chromebook/?p=filemanager_drivehelp";
 
+// Location of the help page about making Google Drive files available offline.
+const char kGoogleDriveOfflineHelpUrl[] =
+    "http://support.google.com/chromebook/?p=offline_files";
+
 // Location of Google Drive root.
 const char kGoogleDriveRootUrl[] = "https://drive.google.com";
 
@@ -999,6 +1003,7 @@ std::unique_ptr<base::DictionaryValue> GetFileManagerStrings() {
       "GOOGLE_DRIVE_ERROR_HELP_URL",
       base::StringPrintf(kHelpURLFormat, kGoogleDriveErrorHelpNumber));
   dict->SetString("GOOGLE_DRIVE_HELP_URL", kGoogleDriveHelpUrl);
+  dict->SetString("GOOGLE_DRIVE_OFFLINE_HELP_URL", kGoogleDriveOfflineHelpUrl);
   dict->SetString("GOOGLE_DRIVE_OVERVIEW_URL", kGoogleDriveOverviewUrl);
   dict->SetString("GOOGLE_DRIVE_ROOT_URL", kGoogleDriveRootUrl);
   dict->SetString(
