@@ -546,6 +546,9 @@ void WebFrameWidgetBase::HandleMouseDown(LocalFrame& main_frame,
   }
 
   PageWidgetEventHandler::HandleMouseDown(main_frame, event);
+  // PageWidgetEventHandler may have detached the frame.
+  if (!LocalRootImpl())
+    return;
 
   if (view_impl->GetPagePopup() && page_popup &&
       view_impl->GetPagePopup()->HasSamePopupClient(page_popup.get())) {
@@ -606,6 +609,9 @@ WebInputEventResult WebFrameWidgetBase::HandleMouseUp(
     const WebMouseEvent& event) {
   WebInputEventResult result =
       PageWidgetEventHandler::HandleMouseUp(main_frame, event);
+  // PageWidgetEventHandler may have detached the frame.
+  if (!LocalRootImpl())
+    return result;
 
   if (GetPage()->GetSettings().GetShowContextMenuOnMouseUp()) {
     // Dispatch the contextmenu event regardless of if the click was swallowed.
@@ -621,6 +627,7 @@ WebInputEventResult WebFrameWidgetBase::HandleMouseWheel(
     const WebMouseWheelEvent& event) {
   View()->CancelPagePopup();
   return PageWidgetEventHandler::HandleMouseWheel(frame, event);
+  // PageWidgetEventHandler may have detached the frame.
 }
 
 WebInputEventResult WebFrameWidgetBase::HandleCharEvent(
