@@ -345,6 +345,7 @@ void VideoEncoder::configure(const VideoEncoderConfig* config,
   state_ = V8CodecState(V8CodecState::Enum::kConfigured);
 
   Request* request = MakeGarbageCollected<Request>();
+  request->reset_count = reset_count_;
   request->type = Request::Type::kConfigure;
   active_config_ = std::move(parsed_config);
   EnqueueRequest(request);
@@ -390,11 +391,12 @@ void VideoEncoder::encode(VideoFrame* frame,
   frame->destroy();
 
   Request* request = MakeGarbageCollected<Request>();
+  request->reset_count = reset_count_;
   request->type = Request::Type::kEncode;
   request->frame = internal_frame;
   request->encodeOpts = opts;
   ++requested_encodes_;
-  return EnqueueRequest(request);
+  EnqueueRequest(request);
 }
 
 void VideoEncoder::close(ExceptionState& exception_state) {
@@ -405,7 +407,7 @@ void VideoEncoder::close(ExceptionState& exception_state) {
 
   state_ = V8CodecState(V8CodecState::Enum::kClosed);
 
-  ClearRequests();
+  ResetInternal();
   media_encoder_.reset();
   output_callback_.Clear();
   error_callback_.Clear();
@@ -422,6 +424,7 @@ ScriptPromise VideoEncoder::flush(ExceptionState& exception_state) {
   Request* request = MakeGarbageCollected<Request>();
   request->resolver =
       MakeGarbageCollected<ScriptPromiseResolver>(script_state_);
+  request->reset_count = reset_count_;
   request->type = Request::Type::kFlush;
   EnqueueRequest(request);
   return request->resolver->Promise();
@@ -429,17 +432,17 @@ ScriptPromise VideoEncoder::flush(ExceptionState& exception_state) {
 
 void VideoEncoder::reset(ExceptionState& exception_state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // TODO: Not fully implemented yet
   if (ThrowIfCodecStateClosed(state_, "reset", exception_state))
     return;
 
-  ClearRequests();
+  ResetInternal();
 
   state_ = V8CodecState(V8CodecState::Enum::kUnconfigured);
 }
 
-void VideoEncoder::ClearRequests() {
+void VideoEncoder::ResetInternal() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  reset_count_++;
   while (!requests_.empty()) {
     Request* pending_req = requests_.TakeFirst();
     DCHECK(pending_req);
@@ -449,6 +452,7 @@ void VideoEncoder::ClearRequests() {
       pending_req->resolver.Release()->Reject(ex);
     }
   }
+  stall_request_processing_ = false;
 }
 
 void VideoEncoder::HandleError(DOMException* ex) {
@@ -457,7 +461,7 @@ void VideoEncoder::HandleError(DOMException* ex) {
 
   state_ = V8CodecState(V8CodecState::Enum::kClosed);
 
-  ClearRequests();
+  ResetInternal();
 
   // Errors are permanent. Shut everything down.
   error_callback_.Clear();
@@ -510,7 +514,7 @@ void VideoEncoder::ProcessEncode(Request* request) {
 
   auto done_callback = [](VideoEncoder* self, Request* req,
                           media::Status status) {
-    if (!self)
+    if (!self || self->reset_count_ != req->reset_count)
       return;
     DCHECK_CALLED_ON_VALID_SEQUENCE(self->sequence_checker_);
     if (!status.is_ok()) {
@@ -556,11 +560,11 @@ void VideoEncoder::ProcessConfigure(Request* request) {
   }
 
   auto output_cb = WTF::BindRepeating(&VideoEncoder::CallOutputCallback,
-                                      WrapWeakPersistent(this));
+                                      WrapWeakPersistent(this), reset_count_);
 
   auto done_callback = [](VideoEncoder* self, Request* req,
                           media::Status status) {
-    if (!self)
+    if (!self || self->reset_count_ != req->reset_count)
       return;
     DCHECK_CALLED_ON_VALID_SEQUENCE(self->sequence_checker_);
     DCHECK(self->active_config_);
@@ -589,9 +593,9 @@ void VideoEncoder::ProcessFlush(Request* request) {
 
   auto done_callback = [](VideoEncoder* self, Request* req,
                           media::Status status) {
-    DCHECK(req->resolver);
-    if (!self)
+    if (!self || self->reset_count_ != req->reset_count)
       return;
+    DCHECK(req->resolver);
     DCHECK_CALLED_ON_VALID_SEQUENCE(self->sequence_checker_);
     if (status.is_ok()) {
       req->resolver.Release()->Resolve();
@@ -612,10 +616,12 @@ void VideoEncoder::ProcessFlush(Request* request) {
 }
 
 void VideoEncoder::CallOutputCallback(
+    uint32_t reset_count,
     media::VideoEncoderOutput output,
     base::Optional<media::VideoEncoder::CodecDescription> codec_desc) {
   if (!script_state_->ContextIsValid() || !output_callback_ ||
-      state_.AsEnum() != V8CodecState::Enum::kConfigured)
+      state_.AsEnum() != V8CodecState::Enum::kConfigured ||
+      reset_count != reset_count_)
     return;
 
   EncodedVideoMetadata metadata;

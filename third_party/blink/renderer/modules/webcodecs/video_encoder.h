@@ -90,12 +90,15 @@ class MODULES_EXPORT VideoEncoder final : public ScriptWrappable {
     void Trace(Visitor*) const;
 
     Type type;
+    // Current value of VideoEncoder.reset_count_ when request was created.
+    uint32_t reset_count = 0;
     Member<VideoFrame> frame;                            // used by kEncode
     Member<const VideoEncoderEncodeOptions> encodeOpts;  // used by kEncode
     Member<ScriptPromiseResolver> resolver;              // used by kFlush
   };
 
   void CallOutputCallback(
+      uint32_t reset_count,
       media::VideoEncoderOutput output,
       base::Optional<media::VideoEncoder::CodecDescription> codec_desc);
   void HandleError(DOMException* ex);
@@ -106,7 +109,7 @@ class MODULES_EXPORT VideoEncoder final : public ScriptWrappable {
   void ProcessConfigure(Request* request);
   void ProcessFlush(Request* request);
 
-  void ClearRequests();
+  void ResetInternal();
 
   std::unique_ptr<ParsedConfig> ParseConfig(const VideoEncoderConfig*,
                                             ExceptionState&);
@@ -124,6 +127,10 @@ class MODULES_EXPORT VideoEncoder final : public ScriptWrappable {
   Member<V8WebCodecsErrorCallback> error_callback_;
   HeapDeque<Member<Request>> requests_;
   int32_t requested_encodes_ = 0;
+  // How many times reset() was called on the encoder. It's used to decide
+  // when a callback needs to be dismissed because reset() was called between
+  // an operation and its callback.
+  uint32_t reset_count_ = 0;
 
   // Some kConfigure and kFlush requests can't be executed in parallel with
   // kEncode. This flag stops processing of new requests in the requests_ queue
