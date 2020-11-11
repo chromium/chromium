@@ -3524,9 +3524,10 @@ IN_PROC_BROWSER_TEST_F(
                           result_id)));
 }
 
+// Flaky. crbug.com/1147804
 IN_PROC_BROWSER_TEST_F(
     DownloadExtensionTest,
-    DownloadExtensionTest_OnDeterminingFilename_EmptyBasenameInvalid) {
+    DISABLED_DownloadExtensionTest_OnDeterminingFilename_EmptyBasenameInvalid) {
   GoOnTheRecord();
   LoadExtension("downloads_split");
   AddFilenameDeterminer();
