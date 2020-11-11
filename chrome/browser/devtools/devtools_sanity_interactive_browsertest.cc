@@ -26,7 +26,7 @@
 // asynchronously as an event received from a different process.
 class CheckWaiter {
  public:
-  explicit CheckWaiter(base::Callback<bool()> callback, bool expected)
+  CheckWaiter(base::RepeatingCallback<bool()> callback, bool expected)
       : callback_(callback),
         expected_(expected),
         timeout_(base::Time::NowFromSystemTime() +
@@ -59,11 +59,11 @@ class CheckWaiter {
     return true;
   }
 
-  base::Callback<bool()> callback_;
+  base::RepeatingCallback<bool()> callback_;
   bool expected_;
   base::Time timeout_;
   // The waiter's RunLoop quit closure.
-  base::Closure quit_;
+  base::RepeatingClosure quit_;
 
   DISALLOW_COPY_AND_ASSIGN(CheckWaiter);
 };
@@ -90,24 +90,24 @@ class DevToolsManagerDelegateTest : public InProcessBrowserTest {
   }
 
   void CheckIsMaximized(bool maximized) {
-    CheckWaiter(base::Bind(&BrowserWindow::IsMaximized,
-                           base::Unretained(browser()->window())),
+    CheckWaiter(base::BindRepeating(&BrowserWindow::IsMaximized,
+                                    base::Unretained(browser()->window())),
                 maximized)
         .Wait();
     EXPECT_EQ(maximized, browser()->window()->IsMaximized());
   }
 
   void CheckIsMinimized(bool minimized) {
-    CheckWaiter(base::Bind(&BrowserWindow::IsMinimized,
-                           base::Unretained(browser()->window())),
+    CheckWaiter(base::BindRepeating(&BrowserWindow::IsMinimized,
+                                    base::Unretained(browser()->window())),
                 minimized)
         .Wait();
     EXPECT_EQ(minimized, browser()->window()->IsMinimized());
   }
 
   void CheckIsFullscreen(bool fullscreen) {
-    CheckWaiter(base::Bind(&BrowserWindow::IsFullscreen,
-                           base::Unretained(browser()->window())),
+    CheckWaiter(base::BindRepeating(&BrowserWindow::IsFullscreen,
+                                    base::Unretained(browser()->window())),
                 fullscreen)
         .Wait();
     EXPECT_EQ(fullscreen, browser()->window()->IsFullscreen());
@@ -118,9 +118,10 @@ class DevToolsManagerDelegateTest : public InProcessBrowserTest {
   }
 
   void CheckWindowBounds(gfx::Rect expected) {
-    CheckWaiter(base::Bind(&DevToolsManagerDelegateTest::IsWindowBoundsEqual,
-                           base::Unretained(this), expected),
-                true)
+    CheckWaiter(
+        base::BindRepeating(&DevToolsManagerDelegateTest::IsWindowBoundsEqual,
+                            base::Unretained(this), expected),
+        true)
         .Wait();
     EXPECT_EQ(expected, browser()->window()->GetBounds());
   }

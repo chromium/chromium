@@ -153,12 +153,12 @@ void TCPDeviceProvider::OpenSocket(const std::string& serial,
 
 void TCPDeviceProvider::ReleaseDevice(const std::string& serial) {
   if (!release_callback_.is_null())
-    release_callback_.Run();
+    std::move(release_callback_).Run();
 }
 
 void TCPDeviceProvider::set_release_callback_for_test(
-    const base::Closure& callback) {
-  release_callback_ = callback;
+    base::OnceClosure callback) {
+  release_callback_ = std::move(callback);
 }
 
 TCPDeviceProvider::~TCPDeviceProvider() {

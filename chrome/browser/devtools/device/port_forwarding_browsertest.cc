@@ -172,10 +172,10 @@ IN_PROC_BROWSER_TEST_F(PortForwardingDisconnectTest, DisconnectOnRelease) {
 
   base::RunLoop run_loop;
 
-  self_provider->set_release_callback_for_test(
-      base::Bind(base::IgnoreResult(&base::SingleThreadTaskRunner::PostTask),
-                 base::ThreadTaskRunnerHandle::Get(), FROM_HERE,
-                 run_loop.QuitWhenIdleClosure()));
+  self_provider->set_release_callback_for_test(base::BindOnce(
+      base::IgnoreResult(&base::SingleThreadTaskRunner::PostTask),
+      base::ThreadTaskRunnerHandle::Get(), FROM_HERE,
+      run_loop.QuitWhenIdleClosure()));
   wait_for_port_forwarding.reset();
 
   content::RunThisRunLoop(&run_loop);

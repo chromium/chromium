@@ -33,7 +33,7 @@ class TCPDeviceProvider : public AndroidDeviceManager::DeviceProvider {
 
   void ReleaseDevice(const std::string& serial) override;
 
-  void set_release_callback_for_test(const base::Closure& callback);
+  void set_release_callback_for_test(base::OnceClosure callback);
 
   HostPortSet get_targets_for_test() { return targets_; }
 
@@ -41,7 +41,7 @@ class TCPDeviceProvider : public AndroidDeviceManager::DeviceProvider {
   ~TCPDeviceProvider() override;
 
   HostPortSet targets_;
-  base::Closure release_callback_;
+  base::OnceClosure release_callback_;
 };
 
 #endif  // CHROME_BROWSER_DEVTOOLS_DEVICE_TCP_DEVICE_PROVIDER_H_
