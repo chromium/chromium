@@ -154,6 +154,8 @@ public class PaymentRequestService
         void onAbortCalled();
         void onCompleteCalled();
         void onMinimalUIReady();
+        void onPaymentUiServiceCreated(PaymentUiServiceTestInterface uiService);
+        void onClosed();
     }
 
     /**
@@ -989,6 +991,10 @@ public class PaymentRequestService
         }
 
         mOnClosedListener.run();
+
+        if (sNativeObserverForTest != null) {
+            sNativeObserverForTest.onClosed();
+        }
     }
 
     /** @return An observer for the payment request service, if any; otherwise, null. */

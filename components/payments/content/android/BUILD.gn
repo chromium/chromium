@@ -135,6 +135,7 @@ android_library("all_java") {
     "java/src/org/chromium/components/payments/PaymentRequestSpec.java",
     "java/src/org/chromium/components/payments/PaymentResponseHelperInterface.java",
     "java/src/org/chromium/components/payments/PaymentUIsObserver.java",
+    "java/src/org/chromium/components/payments/PaymentUiServiceTestInterface.java",
     "java/src/org/chromium/components/payments/PaymentValidator.java",
     "java/src/org/chromium/components/payments/SkipToGPayHelper.java",
     "java/src/org/chromium/components/payments/SupportedDelegations.java",

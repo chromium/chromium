@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.payments;
 import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 import androidx.collection.ArrayMap;
 
 import org.chromium.base.metrics.RecordHistogram;
@@ -154,6 +153,10 @@ public class ChromePaymentRequestService implements BrowserPaymentRequest,
                 /*params=*/mPaymentRequestService, mWebContents,
                 paymentRequestService.isOffTheRecord(), mJourneyLogger, topLevelOrigin,
                 /*observer=*/this);
+        if (PaymentRequestService.getNativeObserverForTest() != null) {
+            PaymentRequestService.getNativeObserverForTest().onPaymentUiServiceCreated(
+                    mPaymentUiService);
+        }
     }
 
     // Implements BrowserPaymentRequest:
@@ -495,89 +498,6 @@ public class ChromePaymentRequestService implements BrowserPaymentRequest,
         }
         methodDataMap.clear();
         methodDataMap.putAll(result);
-    }
-
-    /**
-     * Get the WebContents of the Expandable Payment Handler for testing purpose; return null if
-     * nonexistent.
-     *
-     * @return The WebContents of the Expandable Payment Handler.
-     */
-    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
-    public static WebContents getPaymentHandlerWebContentsForTest() {
-        if (sShowingPaymentRequest == null) return null;
-        return sShowingPaymentRequest.getPaymentHandlerWebContentsForTestInternal();
-    }
-
-    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
-    private WebContents getPaymentHandlerWebContentsForTestInternal() {
-        return mPaymentUiService.getPaymentHandlerWebContentsForTest();
-    }
-
-    /**
-     * Clicks the security icon of the Expandable Payment Handler for testing purpose; return false
-     * if failed.
-     *
-     * @return Whether the click is successful.
-     */
-    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
-    public static boolean clickPaymentHandlerSecurityIconForTest() {
-        if (sShowingPaymentRequest == null) return false;
-        return sShowingPaymentRequest.clickPaymentHandlerSecurityIconForTestInternal();
-    }
-
-    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
-    private boolean clickPaymentHandlerSecurityIconForTestInternal() {
-        return mPaymentUiService.clickPaymentHandlerSecurityIconForTest();
-    }
-
-    /**
-     * Simulates a click on the close button of the Payment Handler for testing purpose; return
-     * false if failed.
-     *
-     * @return Whether the click is successful.
-     */
-    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
-    public static boolean clickPaymentHandlerCloseButtonForTest() {
-        if (sShowingPaymentRequest == null) return false;
-        return sShowingPaymentRequest.clickPaymentHandlerCloseButtonForTestInternal();
-    }
-
-    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
-    private boolean clickPaymentHandlerCloseButtonForTestInternal() {
-        return mPaymentUiService.clickPaymentHandlerCloseButtonForTest();
-    }
-
-    /**
-     * Confirms payment in minimal UI. Used only in test.
-     *
-     * @return Whether the payment was confirmed successfully.
-     */
-    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
-    public static boolean confirmMinimalUIForTest() {
-        return sShowingPaymentRequest != null
-                && sShowingPaymentRequest.confirmMinimalUIForTestInternal();
-    }
-
-    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
-    private boolean confirmMinimalUIForTestInternal() {
-        return mPaymentUiService.confirmMinimalUIForTest();
-    }
-
-    /**
-     * Dismisses the minimal UI. Used only in test.
-     *
-     * @return Whether the dismissal was successful.
-     */
-    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
-    public static boolean dismissMinimalUIForTest() {
-        return sShowingPaymentRequest != null
-                && sShowingPaymentRequest.dismissMinimalUIForTestInternal();
-    }
-
-    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
-    private boolean dismissMinimalUIForTestInternal() {
-        return mPaymentUiService.dismissMinimalUIForTest();
     }
 
     /**

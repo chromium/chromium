@@ -64,6 +64,7 @@ import org.chromium.components.payments.PaymentFeatureList;
 import org.chromium.components.payments.PaymentOptionsUtils;
 import org.chromium.components.payments.PaymentRequestParams;
 import org.chromium.components.payments.PaymentUIsObserver;
+import org.chromium.components.payments.PaymentUiServiceTestInterface;
 import org.chromium.components.payments.Section;
 import org.chromium.components.security_state.SecurityStateModel;
 import org.chromium.content_public.browser.WebContents;
@@ -99,6 +100,7 @@ import java.util.Set;
  */
 public class PaymentUiService implements SettingsAutofillAndPaymentsObserver.Observer,
                                          PaymentHandlerUiObserver, FocusChangedObserver,
+                                         PaymentUiServiceTestInterface,
                                          NormalizedAddressRequestDelegate, PaymentRequestUI.Client {
     /** Limit in the number of suggested items in a section. */
     /* package */ static final int SUGGESTIONS_LIMIT = 4;
@@ -393,11 +395,8 @@ public class PaymentUiService implements SettingsAutofillAndPaymentsObserver.Obs
         return mPaymentRequestUI != null || mMinimalUi != null;
     }
 
-    /**
-     * Confirms payment in minimal UI. Used only in test.
-     *
-     * @return Whether the payment was confirmed successfully.
-     */
+    // Implements PaymentUiServiceTestInterface:
+    @Override
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     public boolean confirmMinimalUIForTest() {
         if (mMinimalUi == null) return false;
@@ -405,11 +404,8 @@ public class PaymentUiService implements SettingsAutofillAndPaymentsObserver.Obs
         return true;
     }
 
-    /**
-     * Dismisses the minimal UI. Used only in test.
-     *
-     * @return Whether the dismissal was successful.
-     */
+    // Implements PaymentUiServiceTestInterface:
+    @Override
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     public boolean dismissMinimalUIForTest() {
         if (mMinimalUi == null) return false;
@@ -945,12 +941,16 @@ public class PaymentUiService implements SettingsAutofillAndPaymentsObserver.Obs
         return paymentHandlerWebContents;
     }
 
+    // Implements PaymentUiServiceTestInterface:
+    @Override
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     public WebContents getPaymentHandlerWebContentsForTest() {
         if (mPaymentHandlerUi == null) return null;
         return mPaymentHandlerUi.getWebContentsForTest();
     }
 
+    // Implements PaymentUiServiceTestInterface:
+    @Override
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     public boolean clickPaymentHandlerSecurityIconForTest() {
         if (mPaymentHandlerUi == null) return false;
@@ -958,6 +958,8 @@ public class PaymentUiService implements SettingsAutofillAndPaymentsObserver.Obs
         return true;
     }
 
+    // Implements PaymentUiServiceTestInterface:
+    @Override
     @VisibleForTesting(otherwise = VisibleForTesting.NONE)
     public boolean clickPaymentHandlerCloseButtonForTest() {
         if (mPaymentHandlerUi == null) return false;
