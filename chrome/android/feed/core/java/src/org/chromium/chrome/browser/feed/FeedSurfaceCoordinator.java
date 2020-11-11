@@ -81,7 +81,7 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
                 SnackbarManager snackbarManager,
                 NativePageNavigationDelegate pageNavigationDelegate, UiConfig uiConfig,
                 boolean placeholderShown, BottomSheetController bottomSheetController,
-                FeedV1ActionOptions v1ActionOptions);
+                Supplier<Tab> tabSupplier, FeedV1ActionOptions v1ActionOptions);
 
         /**
          * Called after the stream returned by createStream() is no longer needed.
@@ -105,6 +105,7 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
     private final FeedSurfaceMediator mMediator;
     private final BottomSheetController mBottomSheetController;
     private final FeedV1ActionOptions mV1ActionOptions;
+    private final Supplier<Tab> mTabSupplier;
 
     private UiConfig mUiConfig;
     private FrameLayout mRootView;
@@ -275,6 +276,7 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
         mBottomSheetController = bottomSheetController;
         mProfile = profile;
         mV1ActionOptions = actionOptions;
+        mTabSupplier = tabProvider;
 
         Resources resources = mActivity.getResources();
         mDefaultMarginPixels = mStreamWrapper.defaultMarginPixels(activity);
@@ -376,7 +378,7 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
         mStreamCreatedTimeMs = SystemClock.elapsedRealtime();
         mStream = mStreamWrapper.createStream(mProfile, mActivity, mShowDarkBackground,
                 mSnackbarManager, mPageNavigationDelegate, mUiConfig, mIsPlaceholderShownInitially,
-                mBottomSheetController, mV1ActionOptions);
+                mBottomSheetController, mTabSupplier, mV1ActionOptions);
 
         mStreamLifecycleManager = mDelegate.createStreamLifecycleManager(mStream, mActivity);
 

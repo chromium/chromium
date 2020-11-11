@@ -6,12 +6,14 @@ package org.chromium.chrome.browser.feed.v2;
 
 import android.app.Activity;
 
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feed.FeedSurfaceCoordinator;
 import org.chromium.chrome.browser.feed.FeedV1ActionOptions;
 import org.chromium.chrome.browser.feed.shared.stream.Stream;
 import org.chromium.chrome.browser.native_page.NativePageNavigationDelegate;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
@@ -37,9 +39,10 @@ public class FeedStreamWrapper implements FeedSurfaceCoordinator.StreamWrapper {
     public Stream createStream(Profile profile, Activity activity, boolean showDarkBackground,
             SnackbarManager snackbarManager, NativePageNavigationDelegate pageNavigationDelegate,
             UiConfig uiConfig, boolean placeholderShown,
-            BottomSheetController bottomSheetController, FeedV1ActionOptions v1ActionOptions) {
+            BottomSheetController bottomSheetController, Supplier<Tab> tabSupplier,
+            FeedV1ActionOptions v1ActionOptions) {
         mStream = new FeedStream(activity, showDarkBackground, snackbarManager,
-                pageNavigationDelegate, bottomSheetController, placeholderShown);
+                pageNavigationDelegate, bottomSheetController, placeholderShown, tabSupplier);
         return mStream;
     }
 

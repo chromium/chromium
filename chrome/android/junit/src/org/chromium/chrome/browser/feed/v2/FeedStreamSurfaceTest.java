@@ -119,6 +119,8 @@ public class FeedStreamSurfaceTest {
     Profile mProfileMock;
     @Mock
     private FeedServiceBridge.Natives mFeedServiceBridgeJniMock;
+    @Mock
+    private FeedStreamSurface.ShareHelperWrapper mShareHelper;
 
     @Captor
     private ArgumentCaptor<Map<String, String>> mMapCaptor;
@@ -156,7 +158,7 @@ public class FeedStreamSurfaceTest {
         Profile.setLastUsedProfileForTesting(mProfileMock);
         mFeedStreamSurface = Mockito.spy(new FeedStreamSurface(mActivity, false, mSnackbarManager,
                 mPageNavigationDelegate, mBottomSheetController, mHelpAndFeedbackLauncherImpl,
-                /* isPlaceholderShown= */ false));
+                /* isPlaceholderShown= */ false, mShareHelper));
         mContentManager = mFeedStreamSurface.getFeedListContentManagerForTesting();
         mFeedStreamSurface.mRootView = Mockito.spy(mFeedStreamSurface.mRootView);
         mRecyclerView = mFeedStreamSurface.mRootView;
@@ -553,6 +555,15 @@ public class FeedStreamSurfaceTest {
         mFeedStreamSurface.showBottomSheet(new TextView(mActivity));
         mFeedStreamSurface.dismissBottomSheet();
         verify(mBottomSheetController).hideContent(any(), anyBoolean());
+    }
+
+    @Test
+    @SmallTest
+    public void testShare() {
+        String url = "http://www.foo.com";
+        String title = "fooTitle";
+        mFeedStreamSurface.share(url, title);
+        verify(mShareHelper).share(url, title);
     }
 
     @Test

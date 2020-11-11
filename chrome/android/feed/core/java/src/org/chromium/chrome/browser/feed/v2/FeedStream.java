@@ -18,11 +18,13 @@ import org.json.JSONObject;
 
 import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feed.shared.stream.Header;
 import org.chromium.chrome.browser.feed.shared.stream.Stream;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
 import org.chromium.chrome.browser.native_page.NativePageNavigationDelegate;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 
@@ -53,12 +55,14 @@ public class FeedStream implements Stream {
 
     public FeedStream(Activity activity, boolean isBackgroundDark, SnackbarManager snackbarManager,
             NativePageNavigationDelegate nativePageNavigationDelegate,
-            BottomSheetController bottomSheetController, boolean isPlaceholderShown) {
+            BottomSheetController bottomSheetController, boolean isPlaceholderShown,
+            Supplier<Tab> tabSupplier) {
         // TODO(petewil): Use isBackgroundDark to turn on dark theme.
         this.mActivity = activity;
         this.mFeedStreamSurface = new FeedStreamSurface(activity, isBackgroundDark, snackbarManager,
                 nativePageNavigationDelegate, bottomSheetController,
-                HelpAndFeedbackLauncherImpl.getInstance(), isPlaceholderShown);
+                HelpAndFeedbackLauncherImpl.getInstance(), isPlaceholderShown,
+                new FeedStreamSurface.ShareHelperWrapper(tabSupplier));
     }
 
     @Override

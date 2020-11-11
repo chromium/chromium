@@ -33,9 +33,11 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLog;
 
 import org.chromium.base.Callback;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.native_page.NativePageNavigationDelegate;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 
@@ -59,6 +61,8 @@ public class FeedStreamTest {
     private FeedStreamSurface.Natives mFeedStreamSurfaceJniMock;
     @Mock
     private FeedServiceBridge.Natives mFeedServiceBridgeJniMock;
+    @Mock
+    private Supplier<Tab> mTabSupplier;
 
     @Rule
     public JniMocker mocker = new JniMocker();
@@ -75,7 +79,7 @@ public class FeedStreamTest {
         // Surfaces won't open until after startup.
         FeedStreamSurface.startup();
         mFeedStream = new FeedStream(mActivity, false, mSnackbarManager, mPageNavigationDelegate,
-                mBottomSheetController, /* isPlaceholderShown= */ false);
+                mBottomSheetController, /* isPlaceholderShown= */ false, mTabSupplier);
         mFeedStream.onCreate(null);
         mRecyclerView = (RecyclerView) mFeedStream.getView();
         mLayoutManager = new FakeLinearLayoutManager(mActivity);
