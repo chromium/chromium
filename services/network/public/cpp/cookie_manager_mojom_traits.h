@@ -13,7 +13,12 @@
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_inclusion_status.h"
 #include "net/cookies/cookie_options.h"
+#include "services/network/public/cpp/schemeful_site_mojom_traits.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
+
+namespace net {
+class SchemefulSite;
+}  // namespace net
 
 namespace mojo {
 
@@ -108,6 +113,11 @@ struct StructTraits<network::mojom::CookieOptionsDataView, net::CookieOptions> {
   }
   static bool return_excluded_cookies(const net::CookieOptions& o) {
     return o.return_excluded_cookies();
+  }
+
+  static const base::Optional<std::set<net::SchemefulSite>>& full_party_context(
+      const net::CookieOptions& o) {
+    return o.full_party_context();
   }
 
   static bool Read(network::mojom::CookieOptionsDataView mojo_options,

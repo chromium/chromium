@@ -219,6 +219,34 @@ mojom("url_loader_base") {
   blink_cpp_typemaps = shared_typemaps
 }
 
+# Make this a separate target to avoid a circular dependency.
+mojom("mojom_schemeful_site") {
+  generate_java = true
+  sources = [ "schemeful_site.mojom" ]
+
+  public_deps = [ "//url/mojom:url_mojom_origin" ]
+
+  if (!is_ios) {
+    export_class_attribute_blink = "BLINK_PLATFORM_EXPORT"
+    export_define_blink = "BLINK_PLATFORM_IMPLEMENTATION=1"
+    export_header_blink = "third_party/blink/public/platform/web_common.h"
+  }
+
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "network.mojom.SchemefulSite"
+          cpp = "::net::SchemefulSite"
+        },
+      ]
+      traits_headers =
+          [ "//services/network/public/cpp/schemeful_site_mojom_traits.h" ]
+      traits_public_deps = [ "//net" ]
+    },
+  ]
+}
+
 # This target is split from "mojom" target as the lazy serialization may
 # cause problems. See https://crbug.com/822732.
 mojom("websocket_mojom") {
@@ -313,6 +341,7 @@ mojom("cookies_mojom") {
   ]
 
   public_deps = [
+    ":mojom_schemeful_site",
     "//components/content_settings/core/common:mojo_bindings",
     "//mojo/public/mojom/base",
     "//url/mojom:url_mojom_gurl",
@@ -471,7 +500,6 @@ mojom("mojom") {
     "proxy_resolving_socket.mojom",
     "quic_transport.mojom",
     "referrer_policy.mojom",
-    "schemeful_site.mojom",
     "source_location.mojom",
     "ssl_config.mojom",
     "supports_loading_mode.mojom",
@@ -489,6 +517,7 @@ mojom("mojom") {
     ":cookies_mojom",
     ":mojom_ip_address",
     ":mojom_network_isolation_key",
+    ":mojom_schemeful_site",
     ":url_loader_base",
     ":websocket_mojom",
     "//mojo/public/mojom/base",
@@ -855,17 +884,6 @@ mojom("mojom") {
         "//mojo/public/cpp/base",
         "//net",
       ]
-    },
-    {
-      types = [
-        {
-          mojom = "network.mojom.SchemefulSite"
-          cpp = "::net::SchemefulSite"
-        },
-      ]
-      traits_headers =
-          [ "//services/network/public/cpp/schemeful_site_mojom_traits.h" ]
-      traits_public_deps = [ "//net" ]
     },
   ]
   cpp_typemaps += shared_cpp_typemaps

@@ -51,12 +51,20 @@ CookieOptions::CookieOptions()
       update_access_time_(true),
       return_excluded_cookies_(false) {}
 
+CookieOptions::CookieOptions(const CookieOptions& other) = default;
+CookieOptions::CookieOptions(CookieOptions&& other) = default;
+CookieOptions::~CookieOptions() = default;
+
+CookieOptions& CookieOptions::operator=(const CookieOptions&) = default;
+CookieOptions& CookieOptions::operator=(CookieOptions&&) = default;
+
 // static
 CookieOptions CookieOptions::MakeAllInclusive() {
   CookieOptions options;
   options.set_include_httponly();
   options.set_same_site_cookie_context(SameSiteCookieContext::MakeInclusive());
   options.set_do_not_update_access_time();
+  options.set_full_party_context(std::set<net::SchemefulSite>());
   return options;
 }
 

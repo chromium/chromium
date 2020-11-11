@@ -6,6 +6,7 @@ module network.mojom;
 
 import "components/content_settings/core/common/content_settings.mojom";
 import "mojo/public/mojom/base/time.mojom";
+import "services/network/public/mojom/schemeful_site.mojom";
 import "url/mojom/url.mojom";
 
 // Parameters for constructing a cookie manager.
@@ -114,6 +115,7 @@ struct CookieOptions {
   CookieSameSiteContext same_site_cookie_context;
   bool update_access_time = true;
   bool return_excluded_cookies = false;
+  array<SchemefulSite>? full_party_context;
 };
 
 // See net/cookies/canonical_cookie.{h,cc} for documentation.

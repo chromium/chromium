@@ -7,8 +7,12 @@
 #ifndef NET_COOKIES_COOKIE_OPTIONS_H_
 #define NET_COOKIES_COOKIE_OPTIONS_H_
 
+#include <set>
+
+#include "base/optional.h"
 #include "base/time/time.h"
 #include "net/base/net_export.h"
+#include "net/base/schemeful_site.h"
 #include "net/cookies/cookie_constants.h"
 #include "url/gurl.h"
 
@@ -88,13 +92,21 @@ class NET_EXPORT CookieOptions {
   // * Excludes SameSite cookies
   // * Updates last-accessed time.
   // * Does not report excluded cookies in APIs that can do so.
+  // * Excludes SameParty cookies.
   //
   // These settings can be altered by calling:
   //
   // * |set_{include,exclude}_httponly()|
   // * |set_same_site_cookie_context()|
   // * |set_do_not_update_access_time()|
+  // * |set_full_party_context()|
   CookieOptions();
+  CookieOptions(const CookieOptions& other);
+  CookieOptions(CookieOptions&& other);
+  ~CookieOptions();
+
+  CookieOptions& operator=(const CookieOptions&);
+  CookieOptions& operator=(CookieOptions&&);
 
   void set_exclude_httponly() { exclude_httponly_ = true; }
   void set_include_httponly() { exclude_httponly_ = false; }
@@ -118,6 +130,15 @@ class NET_EXPORT CookieOptions {
   void unset_return_excluded_cookies() { return_excluded_cookies_ = false; }
   bool return_excluded_cookies() const { return return_excluded_cookies_; }
 
+  void set_full_party_context(
+      const base::Optional<std::set<net::SchemefulSite>>& full_party_context) {
+    full_party_context_ = full_party_context;
+  }
+  const base::Optional<std::set<net::SchemefulSite>>& full_party_context()
+      const {
+    return full_party_context_;
+  }
+
   // Convenience method for where you need a CookieOptions that will
   // work for getting/setting all types of cookies, including HttpOnly and
   // SameSite cookies. Also specifies not to update the access time, because
@@ -130,7 +151,8 @@ class NET_EXPORT CookieOptions {
   bool exclude_httponly_;
   SameSiteCookieContext same_site_cookie_context_;
   bool update_access_time_;
-  bool return_excluded_cookies_;
+  bool return_excluded_cookies_ = false;
+  base::Optional<std::set<net::SchemefulSite>> full_party_context_;
 };
 
 }  // namespace net

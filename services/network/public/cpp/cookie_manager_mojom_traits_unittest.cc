@@ -4,11 +4,13 @@
 
 #include "services/network/public/cpp/cookie_manager_mojom_traits.h"
 
+#include <set>
 #include <vector>
 
 #include "base/test/gtest_util.h"
 #include "mojo/public/cpp/base/time_mojom_traits.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
+#include "net/base/schemeful_site.h"
 #include "services/network/public/cpp/cookie_manager_mojom_traits.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -271,6 +273,7 @@ TEST(CookieManagerTraitsTest, Roundtrips_CookieOptions) {
   {
     net::CookieOptions least_trusted, copy;
     EXPECT_FALSE(least_trusted.return_excluded_cookies());
+
     least_trusted.set_return_excluded_cookies();  // differ from default.
 
     EXPECT_TRUE(mojo::test::SerializeAndDeserialize<mojom::CookieOptions>(
@@ -285,9 +288,12 @@ TEST(CookieManagerTraitsTest, Roundtrips_CookieOptions) {
 
   {
     net::CookieOptions very_trusted, copy;
+    auto kPartyContext = std::set<net::SchemefulSite>{
+        net::SchemefulSite(url::Origin::Create(GURL("https://a.test")))};
     very_trusted.set_include_httponly();
     very_trusted.set_same_site_cookie_context(
         net::CookieOptions::SameSiteCookieContext::MakeInclusive());
+    very_trusted.set_full_party_context(kPartyContext);
 
     EXPECT_TRUE(mojo::test::SerializeAndDeserialize<mojom::CookieOptions>(
         &very_trusted, &copy));
@@ -295,6 +301,38 @@ TEST(CookieManagerTraitsTest, Roundtrips_CookieOptions) {
     EXPECT_EQ(net::CookieOptions::SameSiteCookieContext::MakeInclusive(),
               copy.same_site_cookie_context());
     EXPECT_FALSE(copy.return_excluded_cookies());
+    EXPECT_EQ(kPartyContext, copy.full_party_context());
+  }
+}
+
+TEST(CookieManagerTraitsTest, Roundtrips_FullPartyContext) {
+  {
+    std::vector<std::set<net::SchemefulSite>> kTestCases = {
+        std::set<net::SchemefulSite>(),
+        std::set<net::SchemefulSite>{net::SchemefulSite()},
+        std::set<net::SchemefulSite>{
+            net::SchemefulSite(url::Origin::Create(GURL("https://a.test")))},
+        std::set<net::SchemefulSite>{
+            net::SchemefulSite(url::Origin::Create(GURL("http://a.test"))),
+            net::SchemefulSite(url::Origin::Create(GURL("http://b.test")))},
+    };
+
+    for (const std::set<net::SchemefulSite>& fpc : kTestCases) {
+      net::CookieOptions options, copy;
+      options.set_full_party_context(fpc);
+      EXPECT_TRUE(mojo::test::SerializeAndDeserialize<mojom::CookieOptions>(
+          &options, &copy));
+      EXPECT_EQ(fpc, copy.full_party_context());
+    }
+  }
+  {
+    base::Optional<std::set<net::SchemefulSite>> kFullPartyContext =
+        base::nullopt;
+    net::CookieOptions options, copy;
+    options.set_full_party_context(kFullPartyContext);
+    EXPECT_TRUE(mojo::test::SerializeAndDeserialize<mojom::CookieOptions>(
+        &options, &copy));
+    EXPECT_EQ(kFullPartyContext, copy.full_party_context());
   }
 }
 

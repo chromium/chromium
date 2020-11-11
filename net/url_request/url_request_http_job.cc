@@ -204,6 +204,15 @@ void MarkSameSiteCompatPairs(
   }
 }
 
+net::CookieOptions CreateCookieOptions(
+    net::CookieOptions::SameSiteCookieContext cookie_context) {
+  net::CookieOptions options;
+  options.set_return_excluded_cookies();
+  options.set_include_httponly();
+  options.set_same_site_cookie_context(cookie_context);
+  return options;
+}
+
 }  // namespace
 
 namespace net {
@@ -566,9 +575,6 @@ void URLRequestHttpJob::AddCookieHeaderAndStart() {
   // is being overridden by NetworkDelegate and will eventually block them, as
   // blocked cookies still need to be logged in that case.
   if (cookie_store && request_->allow_credentials()) {
-    CookieOptions options;
-    options.set_return_excluded_cookies();
-    options.set_include_httponly();
     bool force_ignore_site_for_cookies =
         request_->force_ignore_site_for_cookies();
     if (cookie_store->cookie_access_delegate() &&
@@ -577,10 +583,13 @@ void URLRequestHttpJob::AddCookieHeaderAndStart() {
                                                request_->site_for_cookies())) {
       force_ignore_site_for_cookies = true;
     }
-    options.set_same_site_cookie_context(
+    CookieOptions::SameSiteCookieContext same_site_context =
         net::cookie_util::ComputeSameSiteContextForRequest(
             request_->method(), request_->url(), request_->site_for_cookies(),
-            request_->initiator(), force_ignore_site_for_cookies));
+            request_->initiator(), force_ignore_site_for_cookies);
+
+    CookieOptions options = CreateCookieOptions(same_site_context);
+
     cookie_store->GetCookieListWithOptionsAsync(
         request_->url(), options,
         base::BindOnce(&URLRequestHttpJob::SetCookieHeaderAndStart,
@@ -711,8 +720,6 @@ void URLRequestHttpJob::SaveCookiesAndNotifyHeadersComplete(int result) {
   if (GetResponseHeaders()->GetDateValue(&response_date))
     server_time = base::make_optional(response_date);
 
-  CookieOptions options;
-  options.set_include_httponly();
   bool force_ignore_site_for_cookies =
       request_->force_ignore_site_for_cookies();
   if (cookie_store->cookie_access_delegate() &&
@@ -720,12 +727,12 @@ void URLRequestHttpJob::SaveCookiesAndNotifyHeadersComplete(int result) {
           request_->url(), request_->site_for_cookies())) {
     force_ignore_site_for_cookies = true;
   }
-  options.set_same_site_cookie_context(
+  CookieOptions::SameSiteCookieContext same_site_context =
       net::cookie_util::ComputeSameSiteContextForResponse(
           request_->url(), request_->site_for_cookies(), request_->initiator(),
-          force_ignore_site_for_cookies));
+          force_ignore_site_for_cookies);
 
-  options.set_return_excluded_cookies();
+  CookieOptions options = CreateCookieOptions(same_site_context);
 
   // Set all cookies, without waiting for them to be set. Any subsequent read
   // will see the combined result of all cookie operation.
