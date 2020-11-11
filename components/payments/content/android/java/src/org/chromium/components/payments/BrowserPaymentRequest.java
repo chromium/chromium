@@ -44,8 +44,11 @@ public interface BrowserPaymentRequest {
      */
     void onPaymentDetailsUpdated(PaymentDetails details, boolean hasNotifiedInvokedPaymentApp);
 
-    /** The browser part of the {@link PaymentRequest#onPaymentDetailsNotUpdated} implementation. */
-    void onPaymentDetailsNotUpdated();
+    /**
+     * The browser part of the {@link PaymentRequest#onPaymentDetailsNotUpdated} implementation.
+     * @param selectedShippingOptionError The selected shipping option error, can be null.
+     */
+    void onPaymentDetailsNotUpdated(@Nullable String selectedShippingOptionError);
 
     /** The browser part of the {@link PaymentRequest#complete} implementation. */
     void complete(int result);

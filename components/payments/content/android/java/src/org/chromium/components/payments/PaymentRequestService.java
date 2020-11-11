@@ -1025,7 +1025,18 @@ public class PaymentRequestService
      */
     /* package */ void onPaymentDetailsNotUpdated() {
         if (mBrowserPaymentRequest == null) return;
-        mBrowserPaymentRequest.onPaymentDetailsNotUpdated();
+        if (!mIsCurrentPaymentRequestShowing) {
+            mJourneyLogger.setAborted(AbortReason.INVALID_DATA_FROM_RENDERER);
+            disconnectFromClientWithDebugMessage(
+                    ErrorStrings.CANNOT_UPDATE_WITHOUT_SHOW, PaymentErrorReason.USER_CANCEL);
+            return;
+        }
+        mSpec.recomputeSpecForDetails();
+        if (mInvokedPaymentApp != null && mInvokedPaymentApp.isWaitingForPaymentDetailsUpdate()) {
+            mInvokedPaymentApp.onPaymentDetailsNotUpdated();
+            return;
+        }
+        mBrowserPaymentRequest.onPaymentDetailsNotUpdated(mSpec.selectedShippingOptionError());
     }
 
     /** The component part of the {@link PaymentRequest#abort} implementation. */

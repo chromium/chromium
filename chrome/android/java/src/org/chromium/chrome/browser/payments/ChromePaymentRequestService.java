@@ -545,30 +545,10 @@ public class ChromePaymentRequestService implements BrowserPaymentRequest,
     }
 
     // Implement BrowserPaymentRequest:
-    /**
-     * Called when the merchant received a new shipping address, shipping option, or payment method
-     * info, but did not update the payment details in response.
-     */
     @Override
-    public void onPaymentDetailsNotUpdated() {
-        if (mPaymentRequestService == null) return;
-        // mSpec.recomputeSpecForDetails(), mSpec.selectedShippingOptionError() can be used only
-        // when mSpec has not been destroyed.
-        assert !mSpec.isDestroyed();
-
-        if (mPaymentUiService.getPaymentRequestUI() == null) {
-            mJourneyLogger.setAborted(AbortReason.INVALID_DATA_FROM_RENDERER);
-            disconnectFromClientWithDebugMessage(ErrorStrings.CANNOT_UPDATE_WITHOUT_SHOW);
-            return;
-        }
-
-        mSpec.recomputeSpecForDetails();
-
-        PaymentApp invokedPaymentApp = mPaymentRequestService.getInvokedPaymentApp();
-        if (invokedPaymentApp != null && invokedPaymentApp.isWaitingForPaymentDetailsUpdate()) {
-            invokedPaymentApp.onPaymentDetailsNotUpdated();
-            return;
-        }
+    public void onPaymentDetailsNotUpdated(@Nullable String selectedShippingOptionError) {
+        // This method is only supposed to be called by mPaymentRequestService.
+        assert mPaymentRequestService != null;
 
         if (mPaymentUiService.shouldShowShippingSection()
                 && (mPaymentUiService.getUiShippingOptions().isEmpty()
@@ -578,7 +558,7 @@ public class ChromePaymentRequestService implements BrowserPaymentRequest,
             mPaymentUiService.getShippingAddressesSection().setSelectedItemIndex(
                     SectionInformation.INVALID_SELECTION);
             mPaymentUiService.getShippingAddressesSection().setErrorMessage(
-                    mSpec.selectedShippingOptionError());
+                    selectedShippingOptionError);
         }
 
         boolean providedInformationToPaymentRequestUI =

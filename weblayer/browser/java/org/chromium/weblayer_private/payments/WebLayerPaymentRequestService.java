@@ -30,7 +30,7 @@ public class WebLayerPaymentRequestService implements BrowserPaymentRequest {
     }
 
     @Override
-    public void onPaymentDetailsNotUpdated() {
+    public void onPaymentDetailsNotUpdated(String selectedShippingOptionError) {
         assert false : "Not implemented yet";
     }
 
