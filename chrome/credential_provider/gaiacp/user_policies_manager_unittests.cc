@@ -7,6 +7,7 @@
 #include "base/base_paths_win.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/json/json_writer.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_path_override.h"
 #include "chrome/credential_provider/extension/user_device_context.h"
@@ -23,6 +24,7 @@ namespace testing {
 class GcpUserPoliciesBaseTest : public GlsRunnerTestBase {
  protected:
   void SetUp() override;
+  base::string16 CreateUser();
 };
 
 void GcpUserPoliciesBaseTest::SetUp() {
@@ -34,6 +36,16 @@ void GcpUserPoliciesBaseTest::SetUp() {
   UserPoliciesManager::Get()->SetFakesForTesting(&fakes);  // IN-TEST
 }
 
+base::string16 GcpUserPoliciesBaseTest::CreateUser() {
+  // Create a fake user associated to a gaia id.
+  CComBSTR sid_str;
+  EXPECT_EQ(S_OK, fake_os_user_manager()->CreateTestOSUser(
+                      kDefaultUsername, L"password", L"Full Name", L"comment",
+                      base::UTF8ToUTF16(kDefaultGaiaId), L"user@company.com",
+                      &sid_str));
+  return OLE2W(sid_str);
+}
+
 TEST_F(GcpUserPoliciesBaseTest, NonExistentUser) {
   ASSERT_TRUE(FAILED(UserPoliciesManager::Get()->FetchAndStoreCloudUserPolicies(
       L"not-valid-sid", "not-valid-token")));
@@ -43,18 +55,41 @@ TEST_F(GcpUserPoliciesBaseTest, NonExistentUser) {
 }
 
 TEST_F(GcpUserPoliciesBaseTest, NoAccessToken) {
-  // Create a fake user associated to a gaia id.
-  CComBSTR sid_str;
-  ASSERT_EQ(S_OK, fake_os_user_manager()->CreateTestOSUser(
-                      kDefaultUsername, L"password", L"Full Name", L"comment",
-                      base::UTF8ToUTF16(kDefaultGaiaId), L"user@company.com",
-                      &sid_str));
-  base::string16 sid = OLE2W(sid_str);
+  base::string16 sid = CreateUser();
 
   ASSERT_TRUE(FAILED(
       UserPoliciesManager::Get()->FetchAndStoreCloudUserPolicies(sid, "")));
   UserPolicies policies;
   ASSERT_FALSE(UserPoliciesManager::Get()->GetUserPolicies(sid, &policies));
+}
+
+TEST_F(GcpUserPoliciesBaseTest, DetectMissingAndStalePolicies) {
+  base::string16 sid = CreateUser();
+  ASSERT_TRUE(UserPoliciesManager::Get()->IsUserPolicyStaleOrMissing(sid));
+
+  UserPolicies policies;
+  base::Value expected_response_value(base::Value::Type::DICTIONARY);
+  expected_response_value.SetKey("policies", policies.ToValue());
+  std::string expected_response;
+  base::JSONWriter::Write(expected_response_value, &expected_response);
+
+  fake_http_url_fetcher_factory()->SetFakeResponse(
+      UserPoliciesManager::Get()->GetGcpwServiceUserPoliciesUrl(sid),
+      FakeWinHttpUrlFetcher::Headers(), expected_response);
+
+  ASSERT_TRUE(
+      SUCCEEDED(UserPoliciesManager::Get()->FetchAndStoreCloudUserPolicies(
+          sid, "access_token")));
+
+  ASSERT_FALSE(UserPoliciesManager::Get()->IsUserPolicyStaleOrMissing(sid));
+
+  base::string16 fetch_time_millis = base::NumberToString16(
+      base::Time::Now().ToDeltaSinceWindowsEpoch().InMilliseconds() -
+      kMaxTimeDeltaSinceLastUserPolicyRefresh.InMilliseconds() - 1);
+
+  ASSERT_EQ(S_OK, SetUserProperty(sid, L"last_policy_refresh_time",
+                                  fetch_time_millis));
+  ASSERT_TRUE(UserPoliciesManager::Get()->IsUserPolicyStaleOrMissing(sid));
 }
 
 // Tests effective user policy under various scenarios of cloud policy values.
@@ -87,13 +122,7 @@ void GcpUserPoliciesFetchAndReadTest::SetUp() {
   policies_.enable_multi_user_login = std::get<3>(GetParam());
   policies_.validity_period_days = std::get<4>(GetParam());
 
-  // Create a fake user associated to a gaia id.
-  CComBSTR sid;
-  ASSERT_EQ(S_OK,
-            fake_os_user_manager()->CreateTestOSUser(
-                kDefaultUsername, L"password", L"Full Name", L"comment",
-                base::UTF8ToUTF16(kDefaultGaiaId), L"user@company.com", &sid));
-  sid_ = OLE2W(sid);
+  sid_ = CreateUser();
 
   // Remove the mdm_url value which exists by default as it's added in
   // InitializeRegistryOverrideForTesting and set to an empty value disabling
@@ -152,6 +181,7 @@ TEST_P(GcpUserPoliciesFetchAndReadTest, CloudPoliciesWin) {
   UserPolicies policies_fetched;
   ASSERT_TRUE(
       UserPoliciesManager::Get()->GetUserPolicies(sid_, &policies_fetched));
+  ASSERT_FALSE(UserPoliciesManager::Get()->IsUserPolicyStaleOrMissing(sid_));
 
   ASSERT_EQ(policies_, policies_fetched);
 }

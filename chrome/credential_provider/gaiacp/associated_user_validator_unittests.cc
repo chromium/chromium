@@ -4,6 +4,7 @@
 
 #include "chrome/credential_provider/gaiacp/stdafx.h"
 
+#include "base/guid.h"
 #include "base/stl_util.h"
 #include "base/strings/string16.h"
 #include "base/strings/string_number_conversions.h"
@@ -516,6 +517,7 @@ TEST_P(AssociatedUserValidatorUserAccessBlockingTest, BlockUserAccessAsNeeded) {
 
   GoogleMdmEnrolledStatusForTesting forced_status(mdm_enrolled);
   FakeUserPoliciesManager fake_user_policies_manager(cloud_policies_enabled);
+  FakeTokenGenerator fake_token_generator;
 
   UserPolicies user_policies;
   user_policies.enable_dm_enrollment = user_allowed_dm_enrollment;
@@ -586,6 +588,9 @@ TEST_P(AssociatedUserValidatorUserAccessBlockingTest, BlockUserAccessAsNeeded) {
 
   if (cloud_policies_enabled) {
     fake_user_policies_manager.SetUserPolicies((BSTR)sid, user_policies);
+    std::string dm_token = base::GenerateGUID();
+    fake_token_generator.SetTokensForTesting({dm_token});
+    ASSERT_EQ(S_OK, GenerateGCPWDmToken((BSTR)sid));
   }
 
   ASSERT_EQ(S_OK, SetUserProperty((BSTR)sid, kRegDeviceDetailsUploadStatus,
@@ -655,6 +660,142 @@ INSTANTIATE_TEST_SUITE_P(
                        ::testing::Bool(),
                        ::testing::Bool(),
                        ::testing::Bool()));
+
+// Tests new scenarios where user access is blocked due to either cloud policies
+// being missing for users or when GCPW tokens are not found.
+// Parameters are:
+// 1. CREDENTIAL_PROVIDER_USAGE_SCENARIO - Usage scenario.
+// 2. bool - User association exists.
+// 3. int : 0 - Device details upload failed.
+//          1 - Device details uploaded but GCPW token missing.
+//          2 - Device details uploaded along with GCPW token.
+// 4. int : 0 - Cloud policies disabled.
+//          1 - Cloud policies enabled but user policies are missing.
+//          2 - Cloud policies enabled and user policies are up to date.
+class AssociatedUserValidatorCloudPolicyLoginEnforcedTest
+    : public AssociatedUserValidatorTest,
+      public ::testing::WithParamInterface<
+          std::tuple<CREDENTIAL_PROVIDER_USAGE_SCENARIO, bool, int, int>> {
+ private:
+  FakeScopedLsaPolicyFactory fake_scoped_lsa_policy_factory_;
+};
+
+TEST_P(AssociatedUserValidatorCloudPolicyLoginEnforcedTest,
+       BlockUserAccessAsNeeded) {
+  const CREDENTIAL_PROVIDER_USAGE_SCENARIO cpus = std::get<0>(GetParam());
+  const bool is_user_associated = std::get<1>(GetParam());
+  const int upload_device_details_state = std::get<2>(GetParam());
+  const int cloud_policies_state = std::get<3>(GetParam());
+
+  GoogleMdmEnrolledStatusForTesting forced_status(true);
+  FakeUserPoliciesManager fake_user_policies_manager(cloud_policies_state != 0);
+  FakeTokenGenerator fake_token_generator;
+
+  FakeAssociatedUserValidator validator;
+  fake_internet_checker()->SetHasInternetConnection(
+      FakeInternetAvailabilityChecker::kHicForceYes);
+
+  // Set MDM url for enrollment.
+  ASSERT_EQ(S_OK, SetGlobalFlagForTesting(kRegMdmUrl,
+                                          L"https://mdm.com"));  // IN-TEST
+  // Enable password sync.
+  ASSERT_EQ(S_OK,
+            SetGlobalFlagForTesting(kRegDisablePasswordSync, 0));  // IN-TEST
+
+  bool should_user_locking_be_enabled =
+      CGaiaCredentialProvider::IsUsageScenarioSupported(cpus);
+  EXPECT_EQ(should_user_locking_be_enabled,
+            validator.IsUserAccessBlockingEnforced(cpus));
+
+  CComBSTR sid;
+  constexpr wchar_t username[] = L"username";
+  ASSERT_EQ(S_OK, fake_os_user_manager()->CreateTestOSUser(
+                      username, L"password", L"fullname", L"comment",
+                      L"gaia-id", base::string16(), &sid));
+  std::vector<base::string16> reauth_sids;
+  reauth_sids.push_back((BSTR)sid);
+
+  // Store password.
+  base::string16 store_key = GetUserPasswordLsaStoreKey(OLE2W(sid));
+  auto policy = ScopedLsaPolicy::Create(POLICY_ALL_ACCESS);
+  EXPECT_TRUE(SUCCEEDED(
+      policy->StorePrivateData(store_key.c_str(), L"encrypted_data")));
+  EXPECT_TRUE(policy->PrivateDataExists(store_key.c_str()));
+
+  if (upload_device_details_state == 2) {
+    std::string dm_token = base::GenerateGUID();
+    fake_token_generator.SetTokensForTesting({dm_token});
+    ASSERT_EQ(S_OK, GenerateGCPWDmToken((BSTR)sid));
+  }
+
+  if (cloud_policies_state > 0) {
+    if (cloud_policies_state == 1) {
+      fake_user_policies_manager.SetUserPolicyStaleOrMissing((BSTR)sid, true);
+    } else {
+      UserPolicies user_policies;
+      // user_policies.enable_dm_enrollment = true;
+      fake_user_policies_manager.SetUserPolicies((BSTR)sid, user_policies);
+    }
+  }
+
+  ASSERT_EQ(S_OK, SetUserProperty((BSTR)sid, kRegDeviceDetailsUploadStatus,
+                                  (upload_device_details_state > 0) ? 1 : 0));
+
+  // Remove all user properties associated with the sid if the
+  // user isn't associated.
+  if (!is_user_associated)
+    RemoveAllUserProperties((BSTR)sid);
+
+  // Set valid token handle fetch result.
+  fake_http_url_fetcher_factory()->SetFakeResponse(
+      GURL(AssociatedUserValidator::kTokenInfoUrl),
+      FakeWinHttpUrlFetcher::Headers(), "{\"expires_in\":1}");
+
+  validator.StartRefreshingTokenHandleValidity();
+  validator.DenySigninForUsersWithInvalidTokenHandles(cpus, reauth_sids);
+
+  DWORD reg_value = 0;
+
+  bool uploaded_device_details = upload_device_details_state > 0;
+  bool reauth_for_missing_policy = false;
+
+  if (cloud_policies_state > 0) {
+    uploaded_device_details = upload_device_details_state == 2;
+    if (cloud_policies_state == 1) {
+      reauth_for_missing_policy = true;
+    }
+  }
+
+  bool is_get_auth_enforced = is_user_associated && (!uploaded_device_details ||
+                                                     reauth_for_missing_policy);
+
+  bool should_user_be_blocked =
+      should_user_locking_be_enabled && is_get_auth_enforced;
+
+  EXPECT_EQ(should_user_be_blocked,
+            validator.IsUserAccessBlockedForTesting(OLE2W(sid)));  // IN-TEST
+  EXPECT_EQ(is_get_auth_enforced, validator.IsAuthEnforcedForUser(OLE2W(sid)));
+
+  // Unlock the user.
+  validator.AllowSigninForUsersWithInvalidTokenHandles();
+
+  EXPECT_EQ(false,
+            validator.IsUserAccessBlockedForTesting(OLE2W(sid)));  // IN-TEST
+  EXPECT_NE(S_OK,
+            GetMachineRegDWORD(kWinlogonUserListRegKey, username, &reg_value));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    AssociatedUserValidatorCloudPolicyLoginEnforcedTest,
+    ::testing::Combine(::testing::Values(CPUS_INVALID,
+                                         CPUS_LOGON,
+                                         CPUS_UNLOCK_WORKSTATION,
+                                         CPUS_CHANGE_PASSWORD,
+                                         CPUS_CREDUI),
+                       ::testing::Bool(),
+                       ::testing::Values(0, 1, 2),
+                       ::testing::Values(0, 1, 2)));
 
 // Tests auth enforcement when multiple number of device details uploads fail
 // consecutively.
