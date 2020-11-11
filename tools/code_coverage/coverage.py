@@ -594,6 +594,9 @@ def _GeneratePerFileCoverageSummary(binary_paths, profdata_file_path, filters,
   # and the rest are specified as keyword argument.
   logging.debug('Generating per-file code coverage summary using "llvm-cov '
                 'export -summary-only" command.')
+  for path in binary_paths:
+    if not os.path.exists(path):
+      logging.error("Binary %s does not exist", path)
   subprocess_cmd = [
       LLVM_COV_PATH, 'export', '-summary-only',
       '-instr-profile=' + profdata_file_path, binary_paths[0]
@@ -661,6 +664,10 @@ def _GetBinaryPath(command):
     app_path = command_parts[1].rstrip(os.path.sep)
     app_name = os.path.splitext(os.path.basename(app_path))[0]
     return os.path.join(app_path, app_name)
+
+  if coverage_utils.GetHostPlatform() == 'win' \
+     and not command_parts[0].endswith('.exe'):
+    return command_parts[0] + '.exe'
 
   return command_parts[0]
 
