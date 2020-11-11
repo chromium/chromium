@@ -194,9 +194,8 @@ public interface BrowserPaymentRequest {
     /**
      * Continues the unfinished part of show() that was blocked for the payment details that was
      * pending to be updated.
-     * @param details The updated payment details that show() is waiting for.
      */
-    default void continueShow(PaymentDetails details) {}
+    default void continueShow() {}
 
     /**
      * If needed, do extra parsing and validation for details.

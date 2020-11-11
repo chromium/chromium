@@ -504,28 +504,7 @@ public class ChromePaymentRequestService implements BrowserPaymentRequest,
 
     // Implements BrowserPaymentRequest:
     @Override
-    public void continueShow(PaymentDetails details) {
-        assert mPaymentRequestService.isShowWaitingForUpdatedDetails();
-        // mSpec.updateWith() can be used only when mSpec has not been destroyed.
-        assert !mSpec.isDestroyed();
-
-        if (!PaymentValidator.validatePaymentDetails(details)
-                || !parseAndValidateDetailsFurtherIfNeeded(details)) {
-            mJourneyLogger.setAborted(AbortReason.INVALID_DATA_FROM_RENDERER);
-            disconnectFromClientWithDebugMessage(ErrorStrings.INVALID_PAYMENT_DETAILS);
-            return;
-        }
-
-        if (!TextUtils.isEmpty(details.error)) {
-            mJourneyLogger.setNotShown(NotShownReason.OTHER);
-            disconnectFromClientWithDebugMessage(ErrorStrings.INVALID_STATE);
-            return;
-        }
-
-        mSpec.updateWith(details);
-
-        mPaymentRequestService.resetWaitingForUpdatedDetails();
-
+    public void continueShow() {
         ChromeActivity chromeActivity = ChromeActivity.fromWebContents(mWebContents);
         if (chromeActivity == null) {
             mJourneyLogger.setNotShown(NotShownReason.OTHER);

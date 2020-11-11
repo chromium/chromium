@@ -943,6 +943,32 @@ public class PaymentRequestService
                 && invokedPaymentApp.isValidForPaymentMethodData(methodName, null);
     }
 
+    private void continueShow(PaymentDetails details) {
+        assert mIsShowWaitingForUpdatedDetails;
+        // mSpec.updateWith() can be used only when mSpec has not been destroyed.
+        assert !mSpec.isDestroyed();
+
+        if (!PaymentValidator.validatePaymentDetails(details)
+                || !mBrowserPaymentRequest.parseAndValidateDetailsFurtherIfNeeded(details)) {
+            mJourneyLogger.setAborted(AbortReason.INVALID_DATA_FROM_RENDERER);
+            disconnectFromClientWithDebugMessage(
+                    ErrorStrings.INVALID_PAYMENT_DETAILS, PaymentErrorReason.USER_CANCEL);
+            return;
+        }
+
+        if (!TextUtils.isEmpty(details.error)) {
+            mJourneyLogger.setNotShown(NotShownReason.OTHER);
+            disconnectFromClientWithDebugMessage(
+                    ErrorStrings.INVALID_STATE, PaymentErrorReason.USER_CANCEL);
+            return;
+        }
+
+        mSpec.updateWith(details);
+
+        mIsShowWaitingForUpdatedDetails = false;
+        mBrowserPaymentRequest.continueShow();
+    }
+
     /**
      * The component part of the {@link PaymentRequest#updateWith} implementation.
      * @param details The details that the merchant provides to update the payment request.
@@ -952,7 +978,7 @@ public class PaymentRequestService
         if (mIsShowWaitingForUpdatedDetails) {
             // Under this condition, updateWith() is called in response to the resolution of
             // show()'s PaymentDetailsUpdate promise.
-            mBrowserPaymentRequest.continueShow(details);
+            continueShow(details);
             return;
         }
 
