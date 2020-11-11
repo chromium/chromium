@@ -16,7 +16,7 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "content/browser/accessibility/accessibility_buildflags.h"
 #include "content/browser/accessibility/browser_accessibility_position.h"
@@ -612,7 +612,8 @@ class CONTENT_EXPORT BrowserAccessibilityManager : public ui::AXTreeObserver,
   // This member needs to be destructed before any observed AXTrees. Since
   // destructors for non-static member fields are called in the reverse order of
   // declaration, do not move this member above other members.
-  ScopedObserver<ui::AXTree, ui::AXTreeObserver> tree_observer_{this};
+  base::ScopedObservation<ui::AXTree, ui::AXTreeObserver> tree_observation_{
+      this};
 
   DISALLOW_COPY_AND_ASSIGN(BrowserAccessibilityManager);
 };

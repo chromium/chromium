@@ -160,7 +160,7 @@ BrowserAccessibilityManager::BrowserAccessibilityManager(
       use_custom_device_scale_factor_for_testing_(false),
       tree_(std::make_unique<ui::AXSerializableTree>()),
       event_generator_(ax_tree()) {
-  tree_observer_.Add(ax_tree());
+  tree_observation_.Observe(ax_tree());
 }
 
 BrowserAccessibilityManager::BrowserAccessibilityManager(
@@ -175,7 +175,7 @@ BrowserAccessibilityManager::BrowserAccessibilityManager(
       use_custom_device_scale_factor_for_testing_(false),
       tree_(std::make_unique<ui::AXSerializableTree>()),
       event_generator_(ax_tree()) {
-  tree_observer_.Add(ax_tree());
+  tree_observation_.Observe(ax_tree());
   Initialize(initial_tree);
 }
 
