@@ -267,6 +267,25 @@ void SVGElement::ClearAnimatedAttribute(const QualifiedName& attribute) {
   });
 }
 
+void SVGElement::SetAnimatedMotionTransform(
+    const AffineTransform& motion_transform) {
+  ForSelfAndInstances(this, [&motion_transform](SVGElement* element) {
+    AffineTransform* transform = element->AnimateMotionTransform();
+    DCHECK(transform);
+    *transform = motion_transform;
+    if (LayoutObject* layout_object = element->GetLayoutObject()) {
+      layout_object->SetNeedsTransformUpdate();
+      // The transform paint property relies on the SVG transform value.
+      layout_object->SetNeedsPaintPropertyUpdate();
+      MarkForLayoutAndParentResourceInvalidation(*layout_object);
+    }
+  });
+}
+
+void SVGElement::ClearAnimatedMotionTransform() {
+  SetAnimatedMotionTransform(AffineTransform());
+}
+
 bool SVGElement::HasNonCSSPropertyAnimations() const {
   if (HasSVGRareData() && !SvgRareData()->WebAnimatedAttributes().IsEmpty())
     return true;

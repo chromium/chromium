@@ -106,6 +106,8 @@ class CORE_EXPORT SVGElement : public Element {
 
   void SetAnimatedAttribute(const QualifiedName&, SVGPropertyBase*);
   void ClearAnimatedAttribute(const QualifiedName&);
+  void SetAnimatedMotionTransform(const AffineTransform&);
+  void ClearAnimatedMotionTransform();
 
   bool HasNonCSSPropertyAnimations() const;
 

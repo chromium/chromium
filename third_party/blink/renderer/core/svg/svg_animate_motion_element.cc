@@ -22,7 +22,6 @@
 #include "third_party/blink/renderer/core/svg/svg_animate_motion_element.h"
 
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
-#include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/svg/animation/smil_animation_effect_parameters.h"
 #include "third_party/blink/renderer/core/svg/animation/smil_animation_value.h"
 #include "third_party/blink/renderer/core/svg/svg_mpath_element.h"
@@ -164,12 +163,7 @@ SMILAnimationValue SVGAnimateMotionElement::CreateAnimationValue(
 void SVGAnimateMotionElement::ClearAnimationValue() {
   SVGElement* target_element = targetElement();
   DCHECK(target_element);
-  AffineTransform* transform = target_element->AnimateMotionTransform();
-  DCHECK(transform);
-  transform->MakeIdentity();
-
-  if (LayoutObject* target_layout_object = target_element->GetLayoutObject())
-    InvalidateForAnimateMotionTransformChange(*target_layout_object);
+  target_element->ClearAnimatedMotionTransform();
 }
 
 bool SVGAnimateMotionElement::CalculateToAtEndOfDurationValue(
@@ -249,28 +243,9 @@ void SVGAnimateMotionElement::CalculateAnimationValue(
 
 void SVGAnimateMotionElement::ApplyResultsToTarget(
     const SMILAnimationValue& animation_value) {
-  // We accumulate to the target element transform list so there is not much to
-  // do here.
   SVGElement* target_element = targetElement();
   DCHECK(target_element);
-  AffineTransform* target_transform = target_element->AnimateMotionTransform();
-  DCHECK(target_transform);
-  *target_transform = animation_value.motion_transform;
-
-  if (LayoutObject* target_layout_object = target_element->GetLayoutObject())
-    InvalidateForAnimateMotionTransformChange(*target_layout_object);
-
-  // ...except in case where we have additional instances in <use> trees.
-  const auto& instances = target_element->InstancesForElement();
-  for (SVGElement* shadow_tree_element : instances) {
-    DCHECK(shadow_tree_element);
-    AffineTransform* shadow_transform =
-        shadow_tree_element->AnimateMotionTransform();
-    DCHECK(shadow_transform);
-    shadow_transform->SetTransform(*target_transform);
-    if (LayoutObject* layout_object = shadow_tree_element->GetLayoutObject())
-      InvalidateForAnimateMotionTransformChange(*layout_object);
-  }
+  target_element->SetAnimatedMotionTransform(animation_value.motion_transform);
 }
 
 float SVGAnimateMotionElement::CalculateDistance(const String& from_string,
@@ -290,14 +265,6 @@ void SVGAnimateMotionElement::UpdateAnimationMode() {
     SetAnimationMode(kPathAnimation);
   else
     SVGAnimationElement::UpdateAnimationMode();
-}
-
-void SVGAnimateMotionElement::InvalidateForAnimateMotionTransformChange(
-    LayoutObject& object) {
-  object.SetNeedsTransformUpdate();
-  // The transform paint property relies on the SVG transform value.
-  object.SetNeedsPaintPropertyUpdate();
-  MarkForLayoutAndParentResourceInvalidation(object);
 }
 
 }  // namespace blink
