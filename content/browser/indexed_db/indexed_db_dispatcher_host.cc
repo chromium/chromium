@@ -117,7 +117,7 @@ class IndexedDBDataItemReader : public storage::mojom::BlobDataItemReader {
             ReadCallback callback) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-    auto reader = storage::FileStreamReader::CreateForFilesystemProxy(
+    auto reader = storage::FileStreamReader::CreateForIndexedDBDataItemReader(
         file_task_runner_.get(), file_path_, storage::CreateFilesystemProxy(),
         offset, expected_modification_time_);
     auto adapter = std::make_unique<FileStreamReaderToDataPipe>(
