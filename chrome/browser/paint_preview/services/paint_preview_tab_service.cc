@@ -251,12 +251,14 @@ void PaintPreviewTabService::CaptureTabInternal(
       content::WebContents::FromFrameTreeNodeId(frame_tree_node_id);
   auto* rfh = content::RenderFrameHost::FromID(frame_routing_id);
   if (!contents || !rfh || contents->IsBeingDestroyed() ||
-      contents->GetMainFrame() != rfh || !rfh->IsCurrent()) {
+      contents->GetMainFrame() != rfh || !rfh->IsCurrent() ||
+      !rfh->IsRenderFrameCreated() || !rfh->IsRenderFrameLive()) {
     std::move(callback).Run(Status::kWebContentsGone);
     return;
   }
   CapturePaintPreview(
-      contents, file_path.value(), gfx::Rect(), true, kMaxPerCaptureSizeBytes,
+      contents, rfh, file_path.value(), gfx::Rect(), true,
+      kMaxPerCaptureSizeBytes,
       base::BindOnce(&PaintPreviewTabService::OnCaptured,
                      weak_ptr_factory_.GetWeakPtr(), tab_id, key,
                      frame_tree_node_id, std::move(callback)));
