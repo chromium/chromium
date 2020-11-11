@@ -66,9 +66,9 @@ bool IsInRemoveFirstRunPromptGroup() {
              kLocationRemoveFirstRunPromptGroup;
 }
 
-// Creates a trial for the first run (when there is no variations seed) and
-// enables the feature based on the randomly selected trial group. Returns the
-// group number.
+// Creates a trial for the first run (when there is no variations seed) if
+// necessary and enables the feature based on the randomly selected trial group.
+// Returns the group number.
 int CreateFirstRunTrial(
     base::FieldTrial::EntropyProvider const& low_entropy_provider,
     base::FeatureList* feature_list) {
@@ -126,7 +126,18 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
 void Create(const base::FieldTrial::EntropyProvider& low_entropy_provider,
             base::FeatureList* feature_list,
             PrefService* local_state) {
-  // TODO(crbug.com/1138603): Setup trial on First Run.
+  int trial_group = local_state->GetInteger(kTrialGroupPrefName);
+  if (trial_group == kDefaultPrefValue && !FirstRun::IsChromeFirstRun()) {
+    // Do not bucket existing users that have not been already been grouped. The
+    // experiment wants to only add users who have not seen the First Run
+    // Experience yet.
+    return;
+  }
+  // Create trial and group user for the first time, or tag users again to
+  // ensure the experiment can be used to filter UMA metrics.
+  trial_group = CreateFirstRunTrial(low_entropy_provider, feature_list);
+  // Persist the assigned group for subsequent runs.
+  local_state->SetInteger(kTrialGroupPrefName, trial_group);
 }
 
 }  // namespace location_permissions_field_trial
