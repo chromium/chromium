@@ -268,25 +268,7 @@ void MessagePumpForUI::DoIdleWork() {
 }
 
 void MessagePumpForUI::Run(Delegate* delegate) {
-  DCHECK(IsTestImplementation());
-  // This function is only called in tests. We manually pump the native looper
-  // which won't run any java tasks.
-  quit_ = false;
-
-  SetDelegate(delegate);
-
-  // Pump the loop once in case we're starting off idle as ALooper_pollOnce will
-  // never return in that case.
-  ScheduleWork();
-  while (true) {
-    // Waits for either the delayed, or non-delayed fds to be signalled, calling
-    // either OnDelayedLooperCallback, or OnNonDelayedLooperCallback,
-    // respectively. This uses Android's Looper implementation, which is based
-    // off of epoll.
-    ALooper_pollOnce(-1, nullptr, nullptr, nullptr);
-    if (quit_)
-      break;
-  }
+  CHECK(false) << "Unexpected call to Run()";
 }
 
 void MessagePumpForUI::Attach(Delegate* delegate) {
@@ -368,10 +350,6 @@ void MessagePumpForUI::QuitWhenIdle(base::OnceClosure callback) {
   run_loop_->QuitWhenIdle();
   // Pump the loop in case we're already idle.
   ScheduleWork();
-}
-
-bool MessagePumpForUI::IsTestImplementation() const {
-  return false;
 }
 
 }  // namespace base
