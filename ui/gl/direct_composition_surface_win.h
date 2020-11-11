@@ -145,6 +145,7 @@ class GL_EXPORT DirectCompositionSurfaceWin : public GLSurfaceEGL,
   void OnGpuSwitched(gl::GpuPreference active_gpu_heuristic) override;
   void OnDisplayAdded() override;
   void OnDisplayRemoved() override;
+  void OnDisplayMetricsChanged() override;
 
   HWND window() const { return window_; }
 

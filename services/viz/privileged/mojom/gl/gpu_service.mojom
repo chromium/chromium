@@ -124,6 +124,9 @@ interface GpuService {
   // Tells GPU that host has seen a monitor being unplugged.
   DisplayRemoved();
 
+  // Tells GPU that host has seen the display metrics changed.
+  DisplayMetricsChanged();
+
   // Tells GPU that all GPU channels are to be destroyed.
   DestroyAllChannels();
 

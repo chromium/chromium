@@ -20,6 +20,9 @@ class GL_EXPORT GpuSwitchingObserver {
 
   // Called for any observer when a monitor is unplugged.
   virtual void OnDisplayRemoved() {}
+
+  // Called for any observer when the display metrics changed.
+  virtual void OnDisplayMetricsChanged() {}
 };
 
 }  // namespace ui

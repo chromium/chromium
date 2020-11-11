@@ -369,6 +369,13 @@ void GpuDataManagerImpl::OnDisplayRemoved(const display::Display& old_display) {
   private_->OnDisplayRemoved(old_display);
 }
 
+void GpuDataManagerImpl::OnDisplayMetricsChanged(
+    const display::Display& display,
+    uint32_t changed_metrics) {
+  base::AutoLock auto_lock(lock_);
+  private_->OnDisplayMetricsChanged(display, changed_metrics);
+}
+
 // static
 void GpuDataManagerImpl::BindReceiver(
     mojo::PendingReceiver<blink::mojom::GpuDataManager> receiver) {

@@ -178,6 +178,8 @@ class CONTENT_EXPORT GpuDataManagerImpl : public GpuDataManager,
   // DisplayObserver overrides.
   void OnDisplayAdded(const display::Display& new_display) override;
   void OnDisplayRemoved(const display::Display& old_display) override;
+  void OnDisplayMetricsChanged(const display::Display& display,
+                               uint32_t changed_metrics) override;
 
   // Binds a new Mojo receiver to handle requests from a renderer.
   static void BindReceiver(

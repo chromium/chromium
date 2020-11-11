@@ -40,6 +40,10 @@ class GL_EXPORT GpuSwitchingManager {
   // Called when a monitor is unplugged.  Only Windows is supported for now.
   void NotifyDisplayRemoved();
 
+  // Called when the display metrics changed.  Only Windows is supported for
+  // now.
+  void NotifyDisplayMetricsChanged();
+
  private:
   friend struct base::DefaultSingletonTraits<GpuSwitchingManager>;
 

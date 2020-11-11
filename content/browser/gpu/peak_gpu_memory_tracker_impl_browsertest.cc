@@ -107,6 +107,7 @@ class TestGpuService : public viz::mojom::GpuService {
   void GpuSwitched(gl::GpuPreference active_gpu_heuristic) override {}
   void DisplayAdded() override {}
   void DisplayRemoved() override {}
+  void DisplayMetricsChanged() override {}
   void DestroyAllChannels() override {}
   void OnBackgroundCleanup() override {}
   void OnBackgrounded() override {}

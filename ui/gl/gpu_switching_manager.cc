@@ -39,4 +39,9 @@ void GpuSwitchingManager::NotifyDisplayRemoved() {
     observer.OnDisplayRemoved();
 }
 
+void GpuSwitchingManager::NotifyDisplayMetricsChanged() {
+  for (GpuSwitchingObserver& observer : observer_list_)
+    observer.OnDisplayMetricsChanged();
+}
+
 }  // namespace ui

@@ -849,6 +849,8 @@ void DirectCompositionSurfaceWin::OnDisplayRemoved() {
   RunOverlayHdrGpuInfoUpdateCallback();
 }
 
+void DirectCompositionSurfaceWin::OnDisplayMetricsChanged() {}
+
 scoped_refptr<base::TaskRunner>
 DirectCompositionSurfaceWin::GetWindowTaskRunnerForTesting() {
   return child_window_.GetTaskRunnerForTesting();

@@ -996,6 +996,19 @@ void GpuServiceImpl::DisplayRemoved() {
     ui::GpuSwitchingManager::GetInstance()->NotifyDisplayRemoved();
 }
 
+void GpuServiceImpl::DisplayMetricsChanged() {
+  if (io_runner_->BelongsToCurrentThread()) {
+    main_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&GpuServiceImpl::DisplayMetricsChanged, weak_ptr_));
+    return;
+  }
+  DVLOG(1) << "GPU: Display Metrics changed";
+
+  if (!in_host_process())
+    ui::GpuSwitchingManager::GetInstance()->NotifyDisplayMetricsChanged();
+}
+
 void GpuServiceImpl::DestroyAllChannels() {
   if (io_runner_->BelongsToCurrentThread()) {
     main_runner_->PostTask(

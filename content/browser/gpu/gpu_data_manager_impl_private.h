@@ -129,6 +129,8 @@ class CONTENT_EXPORT GpuDataManagerImplPrivate {
 
   void OnDisplayAdded(const display::Display& new_display);
   void OnDisplayRemoved(const display::Display& old_display);
+  void OnDisplayMetricsChanged(const display::Display& display,
+                               uint32_t changed_metrics);
 
  private:
   friend class GpuDataManagerImplPrivateTest;
