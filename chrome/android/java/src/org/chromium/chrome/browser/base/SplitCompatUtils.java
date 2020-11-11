@@ -5,6 +5,8 @@
 package org.chromium.chrome.browser.base;
 
 import android.content.Context;
+import android.content.ContextWrapper;
+import android.view.LayoutInflater;
 
 import org.chromium.base.BundleUtils;
 import org.chromium.base.ContextUtils;
@@ -42,5 +44,33 @@ public class SplitCompatUtils {
         } catch (ReflectiveOperationException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    /**
+     * Creates a context which can access classes from the specified split, but inherits theme
+     * resources from the passed in context. This is useful if a context is needed to inflate
+     * layouts which reference classes from a split.
+     */
+    public static Context createContextForInflation(Context context, String splitName) {
+        if (!BundleUtils.isIsolatedSplitInstalled(context, splitName)) {
+            return context;
+        }
+        ClassLoader splitClassLoader =
+                BundleUtils.createIsolatedSplitContext(context, splitName).getClassLoader();
+        return new ContextWrapper(context) {
+            @Override
+            public ClassLoader getClassLoader() {
+                return splitClassLoader;
+            }
+
+            @Override
+            public Object getSystemService(String name) {
+                Object ret = super.getSystemService(name);
+                if (Context.LAYOUT_INFLATER_SERVICE.equals(name)) {
+                    ret = ((LayoutInflater) ret).cloneInContext(this);
+                }
+                return ret;
+            }
+        };
     }
 }

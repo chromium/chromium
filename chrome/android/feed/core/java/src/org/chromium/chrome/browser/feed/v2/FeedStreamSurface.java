@@ -32,6 +32,7 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.AppHooks;
+import org.chromium.chrome.browser.base.SplitCompatUtils;
 import org.chromium.chrome.browser.feed.shared.ScrollTracker;
 import org.chromium.chrome.browser.feed.shared.stream.Stream.ContentChangedListener;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
@@ -1062,10 +1063,7 @@ public class FeedStreamSurface implements SurfaceActionsHandler, FeedActionsHand
     }
 
     private static Context createFeedContext(Context context) {
-        if (!BundleUtils.isIsolatedSplitInstalled(context, FEED_SPLIT_NAME)) {
-            return context;
-        }
-        return BundleUtils.createIsolatedSplitContext(context, FEED_SPLIT_NAME);
+        return SplitCompatUtils.createContextForInflation(context, FEED_SPLIT_NAME);
     }
 
     // Detects animation finishes in RecyclerView.
