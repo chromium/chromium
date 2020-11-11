@@ -5,7 +5,7 @@
 #include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 
 #include "base/memory/scoped_refptr.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"

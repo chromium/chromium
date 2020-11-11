@@ -227,9 +227,9 @@ InsecureCredentialsManager::InsecureCredentialsManager(
       account_store_(std::move(account_store)),
       compromised_credentials_reader_(profile_store_.get(),
                                       account_store_.get()) {
-  observed_compromised_credentials_reader_.Add(
+  observed_compromised_credentials_reader_.Observe(
       &compromised_credentials_reader_);
-  observed_saved_password_presenter_.Add(presenter_);
+  observed_saved_password_presenter_.Observe(presenter_);
 }
 
 InsecureCredentialsManager::~InsecureCredentialsManager() = default;

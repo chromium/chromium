@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/timer/elapsed_timer.h"
 #include "components/password_manager/core/browser/password_account_storage_settings_watcher.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
@@ -52,8 +52,8 @@ class PasswordSessionDurationsMetricsRecorder
 
   PasswordAccountStorageSettingsWatcher settings_watcher_;
 
-  ScopedObserver<syncer::SyncService, syncer::SyncServiceObserver>
-      sync_observer_{this};
+  base::ScopedObservation<syncer::SyncService, syncer::SyncServiceObserver>
+      sync_observation_{this};
 
   // Tracks the elapsed active session time while the browser is open. The timer
   // is null if there's no active session.

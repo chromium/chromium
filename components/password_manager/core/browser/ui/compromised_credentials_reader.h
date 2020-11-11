@@ -6,7 +6,7 @@
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_UI_COMPROMISED_CREDENTIALS_READER_H_
 
 #include "base/observer_list.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_multi_source_observation.h"
 #include "components/password_manager/core/browser/compromised_credentials_consumer.h"
 #include "components/password_manager/core/browser/password_store.h"
 
@@ -68,11 +68,12 @@ class CompromisedCredentialsReader
 
   // A scoped observer for |profile_store_|, and |account_store_| that listens
   // to changes related to CompromisedCredentials only.
-  ScopedObserver<PasswordStore,
-                 PasswordStore::DatabaseCompromisedCredentialsObserver,
-                 &PasswordStore::AddDatabaseCompromisedCredentialsObserver,
-                 &PasswordStore::RemoveDatabaseCompromisedCredentialsObserver>
-      observed_password_store_{this};
+  base::ScopedMultiSourceObservation<
+      PasswordStore,
+      PasswordStore::DatabaseCompromisedCredentialsObserver,
+      &PasswordStore::AddDatabaseCompromisedCredentialsObserver,
+      &PasswordStore::RemoveDatabaseCompromisedCredentialsObserver>
+      observed_password_stores_{this};
 
   base::ObserverList<Observer, /*check_empty=*/true> observers_;
   std::vector<GetCompromisedCredentialsCallback>

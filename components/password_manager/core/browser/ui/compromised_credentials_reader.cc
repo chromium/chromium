@@ -16,9 +16,9 @@ CompromisedCredentialsReader::CompromisedCredentialsReader(
     PasswordStore* account_store)
     : profile_store_(profile_store), account_store_(account_store) {
   DCHECK(profile_store_);
-  observed_password_store_.Add(profile_store_);
+  observed_password_stores_.AddObservation(profile_store_);
   if (account_store_) {
-    observed_password_store_.Add(account_store_);
+    observed_password_stores_.AddObservation(account_store_);
   } else {
     // Since we aren't expecting any response from the account store, mark it as
     // responded not to block responses from the the profile waiting for the
