@@ -17,7 +17,9 @@
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "base/i18n/number_formatting.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string16.h"
+#include "base/strings/string_number_conversions.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/insets.h"
@@ -200,13 +202,18 @@ void PhoneStatusView::UpdateMobileStatus() {
       AshColorProvider::ContentLayerType::kIconColorPrimary);
 
   gfx::ImageSkia signal_image;
+  base::string16 tooltip_text;
   switch (phone_status.mobile_status()) {
     case PhoneStatusModel::MobileStatus::kNoSim:
       signal_image = CreateVectorIcon(kPhoneHubMobileNoSimIcon, primary_color);
+      tooltip_text =
+          l10n_util::GetStringUTF16(IDS_ASH_PHONE_HUB_MOBILE_STATUS_NO_SIM);
       break;
     case PhoneStatusModel::MobileStatus::kSimButNoReception:
       signal_image =
           CreateVectorIcon(kPhoneHubMobileNoConnectionIcon, primary_color);
+      tooltip_text =
+          l10n_util::GetStringUTF16(IDS_ASH_PHONE_HUB_MOBILE_STATUS_NO_NETWORK);
       break;
     case PhoneStatusModel::MobileStatus::kSimWithReception:
       const PhoneStatusModel::MobileConnectionMetadata& metadata =
@@ -216,11 +223,15 @@ void PhoneStatusView::UpdateMobileStatus() {
           network_icon::SignalStrengthImageSource>(
           network_icon::ImageType::BARS, primary_color, kStatusIconSize,
           signal_strength);
+      tooltip_text = l10n_util::GetStringFUTF16(
+          IDS_ASH_PHONE_HUB_MOBILE_STATUS_NETWORK_STRENGTH,
+          base::NumberToString16(signal_strength));
       break;
   }
 
   signal_icon_->SetImage(signal_image);
   signal_icon_->SetImageSize(kStatusIconSize);
+  signal_icon_->SetTooltipText(tooltip_text);
 }
 
 void PhoneStatusView::UpdateBatteryStatus() {
@@ -243,6 +254,7 @@ void PhoneStatusView::UpdateBatteryStatus() {
                                                 in_battery_saver_mode);
   battery_icon_->SetImage(
       gfx::ImageSkia(base::WrapUnique(source), source->size()));
+  SetBatteryTooltipText();
   battery_label_->SetText(
       base::FormatPercent(phone_status.battery_percentage()));
 }
@@ -274,6 +286,37 @@ PowerStatus::BatteryImageInfo PhoneStatusView::CalculateBatteryInfo() {
   }
 
   return info;
+}
+
+void PhoneStatusView::SetBatteryTooltipText() {
+  const PhoneStatusModel& phone_status =
+      phone_model_->phone_status_model().value();
+
+  int charging_tooltip_id;
+  switch (phone_status.charging_state()) {
+    case PhoneStatusModel::ChargingState::kNotCharging:
+      charging_tooltip_id = IDS_ASH_PHONE_HUB_BATTERY_STATUS_NOT_CHARGING;
+      break;
+    case PhoneStatusModel::ChargingState::kChargingAc:
+      charging_tooltip_id = IDS_ASH_PHONE_HUB_BATTERY_STATUS_CHARGING_AC;
+      break;
+    case PhoneStatusModel::ChargingState::kChargingUsb:
+      charging_tooltip_id = IDS_ASH_PHONE_HUB_BATTERY_STATUS_CHARGING_USB;
+      break;
+  }
+  base::string16 charging_tooltip =
+      l10n_util::GetStringUTF16(charging_tooltip_id);
+
+  bool battery_saver_on = phone_status.battery_saver_state() ==
+                          PhoneStatusModel::BatterySaverState::kOn;
+  base::string16 batter_saver_tooltip =
+      battery_saver_on
+          ? l10n_util::GetStringUTF16(IDS_ASH_PHONE_HUB_BATTERY_SAVER_ON)
+          : l10n_util::GetStringUTF16(IDS_ASH_PHONE_HUB_BATTERY_SAVER_OFF);
+
+  battery_icon_->SetTooltipText(
+      l10n_util::GetStringFUTF16(IDS_ASH_PHONE_HUB_BATTERY_TOOLTIP,
+                                 charging_tooltip, batter_saver_tooltip));
 }
 
 void PhoneStatusView::ClearExistingStatus() {

@@ -91,6 +91,8 @@ ContinueBrowsingChip::ContinueBrowsingChip(
   title_label->SetMaxLines(kTitleMaxLines);
   title_label->SetFontList(
       title_label->font_list().DeriveWithWeight(gfx::Font::Weight::BOLD));
+
+  SetTooltipText(metadata.title);
 }
 
 void ContinueBrowsingChip::OnPaintBackground(gfx::Canvas* canvas) {

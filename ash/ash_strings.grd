@@ -1027,6 +1027,33 @@ This file contains the strings for ash.
       <message name="IDS_ASH_PHONE_HUB_TRAY_ACCESSIBLE_NAME" desc="The accessible name of the Phone Hub tray bubble for screen readers.">
         Phone Hub
       </message>
+      <message name="IDS_ASH_PHONE_HUB_MOBILE_STATUS_NO_SIM" desc="The tooltip text indicating the phone does not have a physical SIM inserted or an eSIM profile set up.">
+        No SIM
+      </message>
+      <message name="IDS_ASH_PHONE_HUB_MOBILE_STATUS_NO_NETWORK" desc="The tooltip text indicating the phone has a SIM, but it is not connected to a mobile network.">
+        No mobile network
+      </message>
+      <message name="IDS_ASH_PHONE_HUB_MOBILE_STATUS_NETWORK_STRENGTH" desc="The tooltip text indicating the strength of the phone's mobile network">
+        Mobile network. Signal strength of <ph name="SIGNAL_STRENGTH">$1<ex>1</ex></ph>
+      </message>
+      <message name="IDS_ASH_PHONE_HUB_BATTERY_STATUS_NOT_CHARGING" desc="The tooltip text indicating the phone is currently not charging">
+        Not charging
+      </message>
+      <message name="IDS_ASH_PHONE_HUB_BATTERY_STATUS_CHARGING_AC" desc="The tooltip text indicating the phone is currently charging via AC adapter.">
+        Charging via adapter
+      </message>
+      <message name="IDS_ASH_PHONE_HUB_BATTERY_STATUS_CHARGING_USB" desc="The tooltip text indicating the phone is currently charging via a USB connection.">
+        Charging via USB
+      </message>
+      <message name="IDS_ASH_PHONE_HUB_BATTERY_SAVER_ON" desc="The tooltip text indicating the phone is currently in battery saver mode.">
+        Battery saver mode is on
+      </message>
+      <message name="IDS_ASH_PHONE_HUB_BATTERY_SAVER_OFF" desc="The tooltip text indicating the phone is currently not in battery saver mode.">
+        Battery saver mode is off
+      </message>
+      <message name="IDS_ASH_PHONE_HUB_BATTERY_TOOLTIP" desc="The tooltip text describing the state of the phone's battery.">
+        <ph name="CHARGING_STATE">$1<ex>Not charging</ex></ph>. <ph name="BATTERY_SAVER_STATE">$2<ex>Battery saver mode is on</ex></ph>
+      </message>
       <message name="IDS_ASH_PHONE_HUB_ENABLE_HOTSPOT_TITLE" desc="Title of the enable hotspot toggle in the phone hub bubble.">
         Enable hotspot
       </message>

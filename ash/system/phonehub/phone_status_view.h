@@ -51,6 +51,7 @@ class ASH_EXPORT PhoneStatusView
   void UpdateMobileStatus();
   void UpdateBatteryStatus();
   PowerStatus::BatteryImageInfo CalculateBatteryInfo();
+  void SetBatteryTooltipText();
 
   // Clear the existing labels and icons for the phone status.
   void ClearExistingStatus();
