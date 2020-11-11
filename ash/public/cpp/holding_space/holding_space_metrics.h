@@ -26,7 +26,10 @@ enum class PodAction {
   // kClick (Deprecated) = 0,
   kShow = 1,
   kClose = 2,
-  kMaxValue = kClose,
+  kShowContextMenu = 3,
+  kShowPreviews = 4,
+  kHidePreviews = 5,
+  kMaxValue = kHidePreviews,
 };
 
 // Records the specified `action` taken on the holding space pod in the shelf.

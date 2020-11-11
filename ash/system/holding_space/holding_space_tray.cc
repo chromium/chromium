@@ -204,10 +204,16 @@ void HoldingSpaceTray::ExecuteCommand(int command_id, int event_flags) {
   DCHECK(features::IsTemporaryHoldingSpaceContentForwardEntryPointEnabled());
   switch (command_id) {
     case HoldingSpaceCommandId::kHidePreviews:
+      holding_space_metrics::RecordPodAction(
+          holding_space_metrics::PodAction::kHidePreviews);
+
       holding_space_prefs::SetPreviewsEnabled(
           Shell::Get()->session_controller()->GetActivePrefService(), false);
       break;
     case HoldingSpaceCommandId::kShowPreviews:
+      holding_space_metrics::RecordPodAction(
+          holding_space_metrics::PodAction::kShowPreviews);
+
       holding_space_prefs::SetPreviewsEnabled(
           Shell::Get()->session_controller()->GetActivePrefService(), true);
       break;
@@ -222,6 +228,9 @@ void HoldingSpaceTray::ShowContextMenuForViewImpl(
     const gfx::Point& point,
     ui::MenuSourceType source_type) {
   DCHECK(features::IsTemporaryHoldingSpaceContentForwardEntryPointEnabled());
+
+  holding_space_metrics::RecordPodAction(
+      holding_space_metrics::PodAction::kShowContextMenu);
 
   context_menu_model_ = std::make_unique<ui::SimpleMenuModel>(this);
 
