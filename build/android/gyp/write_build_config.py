@@ -282,10 +282,6 @@ The list of all `deps_info['java_sources_file']` entries for all library
 dependencies that are chromium code. Note: this is a list of files, where each
 file contains a list of Java source files. This is used for lint.
 
-* `deps_info['lint_aars']`:
-List of all aars from transitive java dependencies. This allows lint to collect
-their custom annotations.zip and run checks like @IntDef on their annotations.
-
 * `deps_info['lint_srcjars']`:
 List of all bundled srcjars of all transitive java library targets. Excludes
 non-chromium java libraries.
@@ -946,7 +942,6 @@ def main(argv):
       help='Consider the assets as locale paks in BuildConfig.java')
 
   # java library options
-  parser.add_option('--aar-path', help='Path to containing .aar file.')
   parser.add_option('--device-jar-path', help='Path to .jar for dexing.')
   parser.add_option('--host-jar-path', help='Path to .jar for java_binary.')
   parser.add_option('--unprocessed-jar-path',
@@ -1352,8 +1347,6 @@ def main(argv):
   if is_java_target:
     # Classpath values filled in below (after applying tested_apk_config).
     config['javac'] = {}
-    if options.aar_path:
-      deps_info['aar_path'] = options.aar_path
     if options.unprocessed_jar_path:
       deps_info['unprocessed_jar_path'] = options.unprocessed_jar_path
       deps_info['interface_jar_path'] = options.interface_jar_path
@@ -1611,7 +1604,6 @@ def main(argv):
   # de-duplicate these lint artifacts.
   if options.type in ('android_app_bundle_module', 'android_apk'):
     # Collect all sources and resources at the apk/bundle_module level.
-    lint_aars = set()
     lint_srcjars = set()
     lint_java_sources = set()
     lint_resource_sources = set()
@@ -1626,8 +1618,6 @@ def main(argv):
         if 'java_sources_file' in c:
           lint_java_sources.add(c['java_sources_file'])
         lint_srcjars.update(c['bundled_srcjars'])
-      if 'aar_path' in c:
-        lint_aars.add(c['aar_path'])
 
     if options.res_sources_path:
       lint_resource_sources.add(options.res_sources_path)
@@ -1642,7 +1632,6 @@ def main(argv):
         else:
           lint_resource_zips.add(c['resources_zip'])
 
-    deps_info['lint_aars'] = sorted(lint_aars)
     deps_info['lint_srcjars'] = sorted(lint_srcjars)
     deps_info['lint_java_sources'] = sorted(lint_java_sources)
     deps_info['lint_resource_sources'] = sorted(lint_resource_sources)
@@ -1659,7 +1648,6 @@ def main(argv):
         for c in build_utils.ParseGnList(options.module_build_configs)
     ]
     jni_all_source = set()
-    lint_aars = set()
     lint_srcjars = set()
     lint_java_sources = set()
     lint_resource_sources = set()
@@ -1675,13 +1663,11 @@ def main(argv):
       else:
         lint_extra_android_manifests.add(c['android_manifest'])
       jni_all_source.update(c['jni']['all_source'])
-      lint_aars.update(c['lint_aars'])
       lint_srcjars.update(c['lint_srcjars'])
       lint_java_sources.update(c['lint_java_sources'])
       lint_resource_sources.update(c['lint_resource_sources'])
       lint_resource_zips.update(c['lint_resource_zips'])
     deps_info['jni'] = {'all_source': sorted(jni_all_source)}
-    deps_info['lint_aars'] = sorted(lint_aars)
     deps_info['lint_srcjars'] = sorted(lint_srcjars)
     deps_info['lint_java_sources'] = sorted(lint_java_sources)
     deps_info['lint_resource_sources'] = sorted(lint_resource_sources)
