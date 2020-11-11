@@ -278,6 +278,9 @@ void LiteVideoObserver::MediaBufferUnderflow(const content::MediaPlayerId& id) {
 void LiteVideoObserver::MediaPlayerSeek(const content::MediaPlayerId& id) {
   content::RenderFrameHost* render_frame_host = id.render_frame_host;
 
+  if (!lite_video::features::DisableLiteVideoOnMediaPlayerSeek())
+    return;
+
   if (!render_frame_host || !render_frame_host->GetProcess())
     return;
 
@@ -296,6 +299,8 @@ void LiteVideoObserver::MediaPlayerSeek(const content::MediaPlayerId& id) {
 
   render_frame_host->GetRemoteAssociatedInterfaces()->GetInterface(
       &loading_hints_agent);
+
+  LOCAL_HISTOGRAM_BOOLEAN("LiteVideo.MediaPlayerSeek.StopThrottling", true);
 
   loading_hints_agent->StopThrottlingMediaRequests();
 }

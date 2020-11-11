@@ -65,16 +65,19 @@ class LiteVideoBrowserTest : public InProcessBrowserTest {
  public:
   explicit LiteVideoBrowserTest(bool enable_lite_mode = true,
                                 bool enable_lite_video_feature = true,
-                                int max_rebuffers_before_stop = 1)
+                                int max_rebuffers_before_stop = 1,
+                                bool should_disable_lite_videos_on_seek = false)
       : enable_lite_mode_(enable_lite_mode) {
     std::vector<base::test::ScopedFeatureList::FeatureAndParams>
         enabled_features;
-    if (enable_lite_video_feature) {
-      enabled_features.push_back(
-          {features::kLiteVideo,
-           {{"max_rebuffers_per_frame",
-             base::NumberToString(max_rebuffers_before_stop)}}});
-    }
+    base::FieldTrialParams params;
+    params["max_rebuffers_per_frame"] =
+        base::NumberToString(max_rebuffers_before_stop);
+    params["disable_on_media_player_seek"] =
+        should_disable_lite_videos_on_seek ? "true" : "false";
+
+    if (enable_lite_video_feature)
+      enabled_features.emplace_back(features::kLiteVideo, params);
 
     std::vector<base::Feature> disabled_features = {
         // Disable fallback after decode error to avoid unexpected test pass on
@@ -160,7 +163,8 @@ class LiteVideoBrowserTest : public InProcessBrowserTest {
 // Need to make tests more reliable but feature only targeted
 // for Android. Currently there are potential race conditions
 // on throttle timing and counts
-#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_CHROMEOS)
+#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_CHROMEOS) || \
+    defined(OS_LINUX)
 #define DISABLE_ON_WIN_MAC_CHROMEOS(x) DISABLED_##x
 #else
 #define DISABLE_ON_WIN_MAC_CHROMEOS(x) x
@@ -308,8 +312,26 @@ IN_PROC_BROWSER_TEST_F(LiteVideoBrowserTest,
           lite_video::LiteVideoThrottleResult::kThrottleStoppedOnRebuffer));
 }
 
+class LiteVideoStopThrottlingOnPlaybackSeekBrowserTest
+    : public ::testing::WithParamInterface<bool>,
+      public LiteVideoBrowserTest {
+ public:
+  LiteVideoStopThrottlingOnPlaybackSeekBrowserTest()
+      : LiteVideoBrowserTest(true /*enable_lite_mode*/,
+                             true /*enable_lite_video_feature*/,
+                             1 /* max_rebuffers_before_stop */,
+                             should_disable_lite_videos_on_seek()) {}
+
+  bool should_disable_lite_videos_on_seek() const { return GetParam(); }
+};
+
+INSTANTIATE_TEST_SUITE_P(,
+                         LiteVideoStopThrottlingOnPlaybackSeekBrowserTest,
+                         ::testing::Bool());
+
 // When video is seeked throttling is stopped.
-IN_PROC_BROWSER_TEST_F(LiteVideoBrowserTest, StopsThrottlingOnPlaybackSeek) {
+IN_PROC_BROWSER_TEST_P(LiteVideoStopThrottlingOnPlaybackSeekBrowserTest,
+                       StopsThrottlingOnPlaybackSeek) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   TestMSEPlayback("bear-vp9.webm", "2000", "2000", false);
 
@@ -324,14 +346,18 @@ IN_PROC_BROWSER_TEST_F(LiteVideoBrowserTest, StopsThrottlingOnPlaybackSeek) {
       "document.querySelector('video').currentTime = 1"));
 
   // Verify some responses were throttled and then throttling is stopped.
-  RetryForHistogramUntilCountReached(histogram_tester(),
-                                     "LiteVideo.HintsAgent.StopThrottling", 1);
+  if (should_disable_lite_videos_on_seek()) {
+    RetryForHistogramUntilCountReached(
+        histogram_tester(), "LiteVideo.MediaPlayerSeek.StopThrottling", 1);
+  }
+
   EXPECT_GE(1U, histogram_tester()
                     .GetAllSamples("LiteVideo.URLLoader.ThrottleLatency")
                     .size());
-  EXPECT_EQ(1U, histogram_tester()
-                    .GetAllSamples("LiteVideo.HintsAgent.StopThrottling")
-                    .size());
+  EXPECT_EQ(should_disable_lite_videos_on_seek() ? 1U : 0U,
+            histogram_tester()
+                .GetAllSamples("LiteVideo.MediaPlayerSeek.StopThrottling")
+                .size());
   EXPECT_GE(
       1U, histogram_tester()
               .GetAllSamples("LiteVideo.NavigationMetrics.FrameRebufferMapSize")

@@ -140,5 +140,10 @@ int GetMaxRebuffersPerFrame() {
                                           "max_rebuffers_per_frame", 1);
 }
 
+bool DisableLiteVideoOnMediaPlayerSeek() {
+  return GetFieldTrialParamByFeatureAsBool(
+      ::features::kLiteVideo, "disable_on_media_player_seek", false);
+}
+
 }  // namespace features
 }  // namespace lite_video
