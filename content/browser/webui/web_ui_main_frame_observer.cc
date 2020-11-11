@@ -11,7 +11,7 @@
 #include "content/public/browser/navigation_handle.h"
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/strings/strcat.h"
