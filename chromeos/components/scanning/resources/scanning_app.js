@@ -247,19 +247,11 @@ Polymer({
    */
   onScannersReceived_(response) {
     this.setAppState_(AppState.GOT_SCANNERS);
-    this.scanners_ = response.scanners;
-    for (const scanner of this.scanners_) {
+    for (const scanner of response.scanners) {
       this.scannerIds_.set(tokenToString(scanner.id), scanner.id);
     }
 
-    if (!this.scanners_.length) {
-      return;
-    }
-
-    // Since the first scanner is the default option in the dropdown, set the
-    // selected ID to the fist scanner's ID until a different scanner is
-    // selected.
-    this.selectedScannerId = tokenToString(this.scanners_[0].id);
+    this.scanners_ = response.scanners;
   },
 
   /** @private */

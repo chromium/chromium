@@ -14,7 +14,7 @@ import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ScannerArr} from './scanning_app_types.js';
-import {tokenToString} from './scanning_app_util.js';
+import {alphabeticalCompare, getScannerDisplayName, tokenToString} from './scanning_app_util.js';
 import {SelectBehavior} from './select_behavior.js';
 
 /**
@@ -44,7 +44,8 @@ Polymer({
     loaded: Boolean,
   },
 
-  observers: ['onNumOptionsChange(scanners.length)'],
+  observers:
+      ['onNumOptionsChange(scanners.length)', 'onScannersChange_(scanners.*)'],
 
   /**
    * @param {!chromeos.scanning.mojom.Scanner} scanner
@@ -52,8 +53,7 @@ Polymer({
    * @private
    */
   getScannerDisplayName_(scanner) {
-    return scanner.displayName.data.map(ch => String.fromCodePoint(ch))
-        .join('');
+    return getScannerDisplayName(scanner);
   },
 
   /**
@@ -65,6 +65,24 @@ Polymer({
    */
   getTokenAsString_(scanner) {
     return tokenToString(scanner.id);
+  },
+
+  /**
+   * Sorts the scanners and sets the selected scanner when the scanners array
+   * changes.
+   * @private
+   */
+  onScannersChange_() {
+    if (this.scanners.length > 1) {
+      this.scanners = this.customSort(
+          this.scanners, alphabeticalCompare,
+          (scanner) => getScannerDisplayName(scanner));
+    }
+
+    // If it exists, select the first option in the sorted array as the default.
+    if (this.scanners.length > 0) {
+      this.selectedScannerId = tokenToString(this.scanners[0].id);
+    }
   },
 
   /**

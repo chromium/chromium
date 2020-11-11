@@ -129,6 +129,15 @@ export function pageSizeFromString(pageSizeString) {
 }
 
 /**
+ * Converts a scanner's display name from UTF-16 to a displayable string.
+ * @param {!chromeos.scanning.mojom.Scanner} scanner
+ * @return {string}
+ */
+export function getScannerDisplayName(scanner) {
+  return scanner.displayName.data.map(ch => String.fromCodePoint(ch)).join('');
+}
+
+/**
  * Converts an unguessable token to a string by combining the high and low
  * values as strings with a hashtag as the separator.
  * @param {!mojoBase.mojom.UnguessableToken} token
