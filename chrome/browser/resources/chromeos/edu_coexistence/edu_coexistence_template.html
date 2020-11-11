@@ -23,25 +23,25 @@
     width: 100%;
   }
 
-  @media (orientation: landscape) {
-    .content-container {
+  .content-container {
       align-items: stretch;
       height: 100%;
-      max-height: 900px;
-      max-width: 1400px;
+      max-width: 768px;
       width: 100%;
+  }
+
+  @media (orientation: landscape) {
+    .content-container {
+       max-height: 640px;
     }
   }
-  
+
   @media (orientation: portrait) {
     .content-container {
-      align-items: stretch;
-      height: 50%;
-      max-height: 900px;
-      max-width: 1400px;
-      width: 100%;
+      max-height: 768px;
     }
   }
+
 
   .main[scrollable].can-scroll:not(.is-scrolled):not(.scrolled-to-bottom) {
     background: var(--background-gradient-0);

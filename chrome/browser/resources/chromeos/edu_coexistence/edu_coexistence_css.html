@@ -62,9 +62,11 @@
     }
 
     .main-padding {
+      height: calc(100% - calc(64px -var(--dialog-top-border-size)));
       padding-inline-end: 64px;
       padding-inline-start: 64px;
       padding-top: calc(64px - var(--dialog-top-border-size));
+      width: 100%;
     }
 
     .text-elide {
@@ -94,14 +96,21 @@
       flex-shrink: 0;
     }
 
+    .buttons-layout {
+      align-items: center;
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+    }
+
     span[slot='buttons'] {
       display: flex;
       width: 100%;
     }
 
-    edu-login-button[button-type='ok'],
-    edu-login-button[button-type='back'] {
+    edu-coexistence-button[button-type='back'] {
       margin-inline-start: auto;
     }
+
   </style>
 </template>

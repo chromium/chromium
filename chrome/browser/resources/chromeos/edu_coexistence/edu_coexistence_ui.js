@@ -93,18 +93,13 @@ Polymer({
    */
   configureUiForGaiaFlow(currentUrl) {
     var mainDiv = this.$$('edu-coexistence-template').$$('div.main');
-    var contentDiv =
-        this.$$('edu-coexistence-template').$$('div.content-container');
 
     if (currentUrl.hostname !== this.controller_.getFlowOriginHostname()) {
       // Show the GAIA Buttons.
       this.showGaiaButtons_ = true;
       // Shrink the main div so that the buttons line up more closely with the
       // server rendered buttons.
-      mainDiv.style.height = '80%';
-
-      // GAIA login renders better with this width constraint.
-      contentDiv.style.maxWidth = '900px';
+      mainDiv.style.height = 'calc(100% - 90px)';
 
       // Don't show the "Next" button if the EDU authentication got forwarded to
       // a non-Google SSO page.
@@ -116,9 +111,6 @@ Polymer({
 
       // Hide the GAIA Next button.
       this.showGaiaNextButton_ = false;
-
-      // Undo the GAIA login width constraint set above.
-      contentDiv.style.maxWidth = '1400px';
 
       // Restore the main div to 100%
       mainDiv.style.height = '100%';
