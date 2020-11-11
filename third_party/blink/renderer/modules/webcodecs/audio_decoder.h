@@ -9,7 +9,6 @@
 #include <memory>
 
 #include "media/base/audio_decoder.h"
-#include "media/base/media_log.h"
 #include "media/base/status.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -60,6 +59,9 @@ class MODULES_EXPORT AudioDecoderTraits {
                                 MediaDecoderType::InitCB init_cb,
                                 MediaDecoderType::OutputCB output_cb);
   static int GetMaxDecodeRequests(const MediaDecoderType& decoder);
+  static void UpdateDecoderLog(const MediaDecoderType& decoder,
+                               const MediaConfigType& media_config,
+                               media::MediaLog* media_log);
 };
 
 class MODULES_EXPORT AudioDecoder : public DecoderTemplate<AudioDecoderTraits> {

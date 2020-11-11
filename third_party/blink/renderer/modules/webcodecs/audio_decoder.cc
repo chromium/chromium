@@ -30,7 +30,21 @@ namespace blink {
 std::unique_ptr<AudioDecoderTraits::MediaDecoderType>
 AudioDecoderTraits::CreateDecoder(ExecutionContext& execution_context,
                                   media::MediaLog* media_log) {
-  return std::make_unique<AudioDecoderBroker>(execution_context);
+  return std::make_unique<AudioDecoderBroker>(media_log, execution_context);
+}
+
+// static
+void AudioDecoderTraits::UpdateDecoderLog(const MediaDecoderType& decoder,
+                                          const MediaConfigType& media_config,
+                                          media::MediaLog* media_log) {
+  media_log->SetProperty<media::MediaLogProperty::kFrameTitle>(
+      std::string("AudioDecoder(WebCodecs)"));
+  media_log->SetProperty<media::MediaLogProperty::kAudioDecoderName>(
+      decoder.GetDisplayName());
+  media_log->SetProperty<media::MediaLogProperty::kIsPlatformAudioDecoder>(
+      decoder.IsPlatformDecoder());
+  media_log->SetProperty<media::MediaLogProperty::kAudioTracks>(
+      std::vector<MediaConfigType>{media_config});
 }
 
 // static

@@ -13,7 +13,7 @@
 #include "build/buildflag.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/decoder_factory.h"
-#include "media/base/media_util.h"
+#include "media/base/media_log.h"
 #include "media/base/status_codes.h"
 #include "media/mojo/buildflags.h"
 #include "media/mojo/clients/mojo_decoder_factory.h"
@@ -72,11 +72,13 @@ class MediaAudioTaskWrapper {
   MediaAudioTaskWrapper(
       base::WeakPtr<CrossThreadAudioDecoderClient> weak_client,
       ExecutionContext& execution_context,
+      media::MediaLog* media_log,
       scoped_refptr<base::SequencedTaskRunner> media_task_runner,
       scoped_refptr<base::SequencedTaskRunner> main_task_runner)
       : weak_client_(std::move(weak_client)),
         media_task_runner_(std::move(media_task_runner)),
-        main_task_runner_(std::move(main_task_runner)) {
+        main_task_runner_(std::move(main_task_runner)),
+        media_log_(media_log) {
     DVLOG(2) << __func__;
     DETACH_FROM_SEQUENCE(sequence_checker_);
 
@@ -177,7 +179,7 @@ class MediaAudioTaskWrapper {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
     std::vector<std::unique_ptr<media::AudioDecoder>> audio_decoders;
-    decoder_factory_->CreateAudioDecoders(media_task_runner_, &null_media_log_,
+    decoder_factory_->CreateAudioDecoders(media_task_runner_, media_log_,
                                           &audio_decoders);
 
     return audio_decoders;
@@ -246,8 +248,7 @@ class MediaAudioTaskWrapper {
   std::unique_ptr<media::AudioDecoder> decoder_;
   gfx::ColorSpace target_color_space_;
 
-  // TODO(chcunningham): Route MEDIA_LOG for WebCodecs.
-  media::NullMediaLog null_media_log_;
+  media::MediaLog* media_log_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
@@ -259,13 +260,15 @@ class MediaAudioTaskWrapper {
 
 constexpr char AudioDecoderBroker::kDefaultDisplayName[];
 
-AudioDecoderBroker::AudioDecoderBroker(ExecutionContext& execution_context)
+AudioDecoderBroker::AudioDecoderBroker(media::MediaLog* media_log,
+                                       ExecutionContext& execution_context)
     // Use a worker task runner to avoid scheduling decoder
     // work on the main thread.
     : media_task_runner_(worker_pool::CreateSequencedTaskRunner({})) {
   DVLOG(2) << __func__;
   media_tasks_ = std::make_unique<MediaAudioTaskWrapper>(
-      weak_factory_.GetWeakPtr(), execution_context, media_task_runner_,
+      weak_factory_.GetWeakPtr(), execution_context, media_log,
+      media_task_runner_,
       execution_context.GetTaskRunner(TaskType::kInternalMedia));
 }
 

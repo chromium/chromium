@@ -25,6 +25,10 @@ namespace base {
 class SequencedTaskRunner;
 }  // namespace base
 
+namespace media {
+class MediaLog;
+}
+
 namespace blink {
 
 // Implementation detail of AudioDecoderBroker. Helps safely perform decoder
@@ -66,7 +70,8 @@ class MODULES_EXPORT AudioDecoderBroker : public media::AudioDecoder,
  public:
   static constexpr char kDefaultDisplayName[] = "EmptyWebCodecsAudioDecoder";
 
-  explicit AudioDecoderBroker(ExecutionContext& execution_context);
+  explicit AudioDecoderBroker(media::MediaLog* media_log,
+                              ExecutionContext& execution_context);
   ~AudioDecoderBroker() override;
 
   // Disallow copy and assign.

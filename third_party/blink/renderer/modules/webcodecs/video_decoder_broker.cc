@@ -78,12 +78,14 @@ class MediaVideoTaskWrapper {
       base::WeakPtr<CrossThreadVideoDecoderClient> weak_client,
       ExecutionContext& execution_context,
       media::GpuVideoAcceleratorFactories* gpu_factories,
+      media::MediaLog* media_log,
       scoped_refptr<base::SequencedTaskRunner> media_task_runner,
       scoped_refptr<base::SequencedTaskRunner> main_task_runner)
       : weak_client_(std::move(weak_client)),
         media_task_runner_(std::move(media_task_runner)),
         main_task_runner_(std::move(main_task_runner)),
-        gpu_factories_(gpu_factories) {
+        gpu_factories_(gpu_factories),
+        media_log_(media_log) {
     DVLOG(2) << __func__;
     DETACH_FROM_SEQUENCE(sequence_checker_);
 
@@ -207,7 +209,7 @@ class MediaVideoTaskWrapper {
 
     std::vector<std::unique_ptr<media::VideoDecoder>> video_decoders;
     decoder_factory_->CreateVideoDecoders(
-        media_task_runner_, gpu_factories_, &null_media_log_,
+        media_task_runner_, gpu_factories_, media_log_,
         WTF::BindRepeating(&MediaVideoTaskWrapper::OnRequestOverlayInfo,
                            weak_factory_.GetWeakPtr()),
         target_color_space_, &video_decoders);
@@ -282,8 +284,7 @@ class MediaVideoTaskWrapper {
   std::unique_ptr<media::VideoDecoder> decoder_;
   gfx::ColorSpace target_color_space_;
 
-  // TODO(chcunningham): Route MEDIA_LOG for WebCodecs.
-  media::NullMediaLog null_media_log_;
+  media::MediaLog* media_log_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
@@ -297,7 +298,8 @@ constexpr char VideoDecoderBroker::kDefaultDisplayName[];
 
 VideoDecoderBroker::VideoDecoderBroker(
     ExecutionContext& execution_context,
-    media::GpuVideoAcceleratorFactories* gpu_factories)
+    media::GpuVideoAcceleratorFactories* gpu_factories,
+    media::MediaLog* media_log)
     : media_task_runner_(
           gpu_factories
               // GpuFactories requires we use its task runner when available.
@@ -307,7 +309,7 @@ VideoDecoderBroker::VideoDecoderBroker(
               : worker_pool::CreateSequencedTaskRunner({})) {
   DVLOG(2) << __func__;
   media_tasks_ = std::make_unique<MediaVideoTaskWrapper>(
-      weak_factory_.GetWeakPtr(), execution_context, gpu_factories,
+      weak_factory_.GetWeakPtr(), execution_context, gpu_factories, media_log,
       media_task_runner_,
       execution_context.GetTaskRunner(TaskType::kInternalMedia));
 }

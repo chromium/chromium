@@ -11,6 +11,7 @@
 #include "gpu/command_buffer/common/mailbox_holder.h"
 #include "media/base/decode_status.h"
 #include "media/base/decoder_buffer.h"
+#include "media/base/media_util.h"
 #include "media/base/test_data_util.h"
 #include "media/base/test_helpers.h"
 #include "media/base/video_frame.h"
@@ -219,7 +220,7 @@ class VideoDecoderBrokerTest : public testing::Test {
 
   void ConstructDecoder(ExecutionContext& execution_context) {
     decoder_broker_ = std::make_unique<VideoDecoderBroker>(
-        execution_context, gpu_factories_.get());
+        execution_context, gpu_factories_.get(), &null_media_log_);
   }
 
   void InitializeDecoder(media::VideoDecoderConfig config) {
@@ -273,6 +274,7 @@ class VideoDecoderBrokerTest : public testing::Test {
   int GetMaxDecodeRequests() { return decoder_broker_->GetMaxDecodeRequests(); }
 
  protected:
+  media::NullMediaLog null_media_log_;
   std::unique_ptr<VideoDecoderBroker> decoder_broker_;
   std::vector<scoped_refptr<media::VideoFrame>> output_frames_;
   std::unique_ptr<media::MockGpuVideoAcceleratorFactories> gpu_factories_;

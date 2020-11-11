@@ -67,6 +67,9 @@ DecoderTemplate<Traits>::DecoderTemplate(ScriptState* script_state,
   // without causing problems to |media_log_| users.
   media_log_ = parent_media_log_->Clone();
 
+  media_log_->SetProperty<media::MediaLogProperty::kFrameUrl>(
+      GetExecutionContext()->Url().GetString().Ascii());
+
   output_cb_ = init->output();
   error_cb_ = init->error();
 }
@@ -465,6 +468,9 @@ void DecoderTemplate<Traits>::OnInitializeDone(media::Status status) {
     HandleError("Decoder initialization error", status);
     return;
   }
+
+  Traits::UpdateDecoderLog(*decoder_, *pending_request_->media_config,
+                           media_log_.get());
 
   pending_request_.Release();
 

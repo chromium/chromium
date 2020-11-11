@@ -44,7 +44,7 @@ std::unique_ptr<VideoDecoderTraits::MediaDecoderType>
 VideoDecoderTraits::CreateDecoder(ExecutionContext& execution_context,
                                   media::MediaLog* media_log) {
   return std::make_unique<VideoDecoderBroker>(
-      execution_context, Platform::Current()->GetGpuFactories());
+      execution_context, Platform::Current()->GetGpuFactories(), media_log);
 }
 
 // static
@@ -56,6 +56,20 @@ void VideoDecoderTraits::InitializeDecoder(
   decoder.Initialize(media_config, false /* low_delay */,
                      nullptr /* cdm_context */, std::move(init_cb), output_cb,
                      media::WaitingCB());
+}
+
+// static
+void VideoDecoderTraits::UpdateDecoderLog(const MediaDecoderType& decoder,
+                                          const MediaConfigType& media_config,
+                                          media::MediaLog* media_log) {
+  media_log->SetProperty<media::MediaLogProperty::kFrameTitle>(
+      std::string("VideoDecoder(WebCodecs)"));
+  media_log->SetProperty<media::MediaLogProperty::kVideoDecoderName>(
+      decoder.GetDisplayName());
+  media_log->SetProperty<media::MediaLogProperty::kIsPlatformVideoDecoder>(
+      decoder.IsPlatformDecoder());
+  media_log->SetProperty<media::MediaLogProperty::kVideoTracks>(
+      std::vector<MediaConfigType>{media_config});
 }
 
 // static

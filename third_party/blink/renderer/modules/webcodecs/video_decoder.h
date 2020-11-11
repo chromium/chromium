@@ -8,7 +8,6 @@
 #include <stdint.h>
 #include <memory>
 
-#include "media/base/media_log.h"
 #include "media/base/status.h"
 #include "media/base/video_decoder.h"
 #include "media/base/video_decoder_config.h"
@@ -69,6 +68,9 @@ class MODULES_EXPORT VideoDecoderTraits {
                                 MediaDecoderType::InitCB init_cb,
                                 MediaDecoderType::OutputCB output_cb);
   static int GetMaxDecodeRequests(const MediaDecoderType& decoder);
+  static void UpdateDecoderLog(const MediaDecoderType& decoder,
+                               const MediaConfigType& media_config,
+                               media::MediaLog* media_log);
 };
 
 class MODULES_EXPORT VideoDecoder : public DecoderTemplate<VideoDecoderTraits> {

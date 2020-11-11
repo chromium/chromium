@@ -79,7 +79,8 @@ class MODULES_EXPORT VideoDecoderBroker : public media::VideoDecoder,
   // |gpu_factories| may be null when GPU accelerated decoding is not available.
   explicit VideoDecoderBroker(
       ExecutionContext& execution_context,
-      media::GpuVideoAcceleratorFactories* gpu_factories);
+      media::GpuVideoAcceleratorFactories* gpu_factories,
+      media::MediaLog* media_log);
   ~VideoDecoderBroker() override;
 
   // Disallow copy and assign.
