@@ -535,6 +535,10 @@ NSString* ColumnIdentifier(int id) {
   return _tableModel->RowCount();
 }
 
+- (CGFloat)tableView:(NSTableView*)tableView heightOfRow:(NSInteger)row {
+  return 16;
+}
+
 - (NSString*)modelTextForRow:(int)row column:(int)columnId {
   DCHECK_LT(static_cast<size_t>(row), _viewToModelMap.size());
   return base::SysUTF16ToNSString(
