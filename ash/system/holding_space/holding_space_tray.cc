@@ -145,7 +145,7 @@ const char* HoldingSpaceTray::GetClassName() const {
 void HoldingSpaceTray::UpdateVisibility() {
   HoldingSpaceModel* model = HoldingSpaceController::Get()->model();
 
-  bool logged_in =
+  const bool logged_in =
       shelf()->GetStatusAreaWidget()->login_status() == LoginStatus::USER;
 
   if (!model || !logged_in) {
@@ -153,15 +153,20 @@ void HoldingSpaceTray::UpdateVisibility() {
     return;
   }
 
-  PrefService* active_pref_service =
+  PrefService* prefs =
       Shell::Get()->session_controller()->GetActivePrefService();
-  bool has_ever_pinned_item =
-      active_pref_service
-          ? holding_space_prefs::GetTimeOfFirstPin(active_pref_service)
-                .has_value()
-          : false;
+  const bool has_ever_added_item =
+      prefs ? holding_space_prefs::GetTimeOfFirstAdd(prefs).has_value() : false;
+  const bool has_ever_pinned_item =
+      prefs ? holding_space_prefs::GetTimeOfFirstPin(prefs).has_value() : false;
 
-  SetVisiblePreferred(!has_ever_pinned_item ||
+  // The holding space tray should not be visible in the shelf until the user
+  // has added their first item to holding space. Once an item has been added,
+  // the holding space tray will continue to be visible until the user has
+  // pinned their first file. After the user has pinned their first file, the
+  // holding space tray will only be visible in the shelf if their holding space
+  // contains finalized items.
+  SetVisiblePreferred((has_ever_added_item && !has_ever_pinned_item) ||
                       ModelContainsFinalizedItems(model));
 }
 

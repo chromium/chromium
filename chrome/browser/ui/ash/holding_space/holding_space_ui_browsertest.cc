@@ -9,13 +9,16 @@
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "ash/public/cpp/holding_space/holding_space_model.h"
 #include "ash/public/cpp/holding_space/holding_space_model_observer.h"
+#include "ash/public/cpp/holding_space/holding_space_prefs.h"
 #include "base/scoped_observer.h"
 #include "base/test/bind.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/aura/window.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
+#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/controls/menu/menu_controller.h"
@@ -178,11 +181,35 @@ class DropTargetView : public views::WidgetDelegateView {
   base::FilePath copied_file_path_;
 };
 
+// HoldingSpaceUiBrowserTest ---------------------------------------------------
+
+// Base class for holding space UI browser tests.
+class HoldingSpaceUiBrowserTest : public HoldingSpaceBrowserTestBase {
+ public:
+  // HoldingSpaceBrowserTestBase:
+  void SetUpOnMainThread() override {
+    HoldingSpaceBrowserTestBase::SetUpOnMainThread();
+
+    ui::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
+        ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+
+    // The holding space tray will not show until the user has added a file to
+    // holding space. Holding space UI browser tests don't need to assert that
+    // behavior since it is already asserted in ash_unittests. As a convenience,
+    // add and remove a holding space item so that the holding space tray will
+    // already be showing during test execution.
+    ASSERT_FALSE(IsShowingInShelf());
+    RemoveItem(AddDownloadFile());
+    ASSERT_TRUE(IsShowingInShelf());
+
+    // Confirm that holding space model has been emptied for test execution.
+    ASSERT_TRUE(HoldingSpaceController::Get()->model()->items().empty());
+  }
+};
+
 }  // namespace
 
 // Tests -----------------------------------------------------------------------
-
-using HoldingSpaceUiBrowserTest = HoldingSpaceBrowserTestBase;
 
 // Base class for holding space UI browser tests that test drag-and-drop.
 // Parameterized by a callback to invoke to perform a drag-and-drop.

@@ -77,6 +77,9 @@ class HoldingSpaceBrowserTestBase : public InProcessBrowserTest {
                             HoldingSpaceItem::Type type,
                             const base::FilePath& file_path);
 
+  // Removes the specified holding space `item`.
+  void RemoveItem(const HoldingSpaceItem* item);
+
   // Returns the collection of download chips in holding space UI.
   // If holding space UI is not visible, an empty collection is returned.
   std::vector<views::View*> GetDownloadChips();

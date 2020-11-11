@@ -104,9 +104,22 @@ class HoldingSpaceTrayTest : public AshTestBase,
     return deserialized_item_ptr;
   }
 
-  void StartSession() {
+  // The holding space tray is only visible in the shelf after the first holding
+  // space item has been added. Most tests do not care about this so, as a
+  // convenience, the time of first add will be marked prior to starting the
+  // session when `pre_mark_time_of_first_add` is true.
+  void StartSession(bool pre_mark_time_of_first_add = true) {
+    if (pre_mark_time_of_first_add)
+      MarkTimeOfFirstAdd();
+
     AccountId user_account = AccountId::FromUserEmail(kTestUser);
     GetSessionControllerClient()->SwitchActiveUser(user_account);
+  }
+
+  void MarkTimeOfFirstAdd() {
+    AccountId user_account = AccountId::FromUserEmail(kTestUser);
+    holding_space_prefs::MarkTimeOfFirstAdd(
+        GetSessionControllerClient()->GetUserPrefService(user_account));
   }
 
   void MarkTimeOfFirstPin() {
@@ -128,24 +141,27 @@ class HoldingSpaceTrayTest : public AshTestBase,
 };
 
 TEST_P(HoldingSpaceTrayTest, ShowTrayButtonOnFirstUse) {
-  StartSession();
+  StartSession(/*pre_mark_time_of_first_add=*/false);
 
-  // Tray item should be shown for users that have never added anything to the
-  // holding space.
-  EXPECT_TRUE(test_api()->IsShowingInShelf());
+  // The tray button should *not* be shown for users that have never added
+  // anything to the holding space.
+  EXPECT_FALSE(test_api()->IsShowingInShelf());
 
-  // Show the bubble - only pinned container should be shown.
-  test_api()->Show();
-  EXPECT_TRUE(test_api()->PinnedFilesContainerShown());
-  EXPECT_FALSE(test_api()->RecentFilesContainerShown());
-
-  // Add and remove a download item.
+  // Add a download item. This should cause the tray button to show.
   HoldingSpaceItem* item =
       AddItem(HoldingSpaceItem::Type::kDownload, base::FilePath("/tmp/fake"));
-  EXPECT_TRUE(test_api()->RecentFilesContainerShown());
-  model()->RemoveItem(item->id());
+  MarkTimeOfFirstAdd();
+  EXPECT_TRUE(test_api()->IsShowingInShelf());
 
-  // Verify the pinned files container, and the tray button are still shown.
+  // Show the bubble - both the pinned container and recent files container
+  // should be shown.
+  test_api()->Show();
+  EXPECT_TRUE(test_api()->PinnedFilesContainerShown());
+  EXPECT_TRUE(test_api()->RecentFilesContainerShown());
+
+  // Remove the download item and verify the pinned files container, and the
+  // tray button are still shown.
+  model()->RemoveItem(item->id());
   EXPECT_TRUE(test_api()->PinnedFilesContainerShown());
   EXPECT_FALSE(test_api()->RecentFilesContainerShown());
 

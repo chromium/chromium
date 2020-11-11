@@ -214,6 +214,11 @@ void HoldingSpaceKeyedService::AddScreenRecording(
 }
 
 void HoldingSpaceKeyedService::AddItem(std::unique_ptr<HoldingSpaceItem> item) {
+  // Mark the time when the user's first item was added to holding space. Note
+  // that this no-ops if this is not the user's first time adding an item.
+  // TODO(crbug.com/1131266): Record histogram.
+  holding_space_prefs::MarkTimeOfFirstAdd(profile_->GetPrefs());
+
   holding_space_model_.AddItem(std::move(item));
 }
 

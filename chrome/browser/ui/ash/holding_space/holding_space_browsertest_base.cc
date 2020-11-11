@@ -19,6 +19,8 @@
 #include "chrome/browser/chromeos/file_manager/path_util.h"
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service.h"
+#include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_factory.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_util.h"
 #include "chromeos/dbus/session_manager/session_manager_client.h"
 #include "components/session_manager/core/session_manager.h"
@@ -199,8 +201,19 @@ HoldingSpaceItem* HoldingSpaceBrowserTestBase::AddItem(
           /*async_bitmap_resolver=*/base::DoNothing()));
 
   auto* item_ptr = item.get();
-  HoldingSpaceController::Get()->model()->AddItem(std::move(item));
+
+  // Add holding space items through the holding space keyed service so that the
+  // time of first add will be marked in preferences. The time of first add
+  // contributes to deciding when the holding space tray is visible.
+  HoldingSpaceKeyedServiceFactory::GetInstance()
+      ->GetService(GetProfile())
+      ->AddItem(std::move(item));
+
   return item_ptr;
+}
+
+void HoldingSpaceBrowserTestBase::RemoveItem(const HoldingSpaceItem* item) {
+  HoldingSpaceController::Get()->model()->RemoveItem(item->id());
 }
 
 std::vector<views::View*> HoldingSpaceBrowserTestBase::GetDownloadChips() {

@@ -34,6 +34,15 @@ ASH_PUBLIC_EXPORT bool IsPreviewsEnabled(PrefService* prefs);
 // Sets whether previews are `enabled`.
 ASH_PUBLIC_EXPORT void SetPreviewsEnabled(PrefService* prefs, bool enabled);
 
+// Returns the time when a holding space item was first added. Note that if the
+// time of first add is unmarked, `base::nullopt` is returned.
+ASH_PUBLIC_EXPORT base::Optional<base::Time> GetTimeOfFirstAdd(
+    PrefService* prefs);
+
+// Marks the time when the first holding space item was added. If the time of
+// first add was previously marked, this no-ops and returns false.
+ASH_PUBLIC_EXPORT bool MarkTimeOfFirstAdd(PrefService* prefs);
+
 // Returns the time when holding space first became available. Note that if the
 // time of first availability is unmarked, `base::nullopt` is returned.
 ASH_PUBLIC_EXPORT base::Optional<base::Time> GetTimeOfFirstAvailability(
