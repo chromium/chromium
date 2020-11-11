@@ -144,7 +144,8 @@ class TemplateURLService : public WebDataServiceConsumer,
 
   // Adds to |matches| all TemplateURLs whose keywords begin with |prefix|,
   // sorted shortest-keyword-first. If |supports_replacement_only| is true, only
-  // TemplateURLs that support replacement are returned.
+  // TemplateURLs that support replacement are returned. This method must be
+  // efficient, since it's run roughly once per omnibox keystroke.
   void AddMatchingKeywords(const base::string16& prefix,
                            bool supports_replacement_only,
                            TURLsAndMeaningfulLengths* matches);
@@ -461,11 +462,14 @@ class TemplateURLService : public WebDataServiceConsumer,
   using GUIDToTURL = std::map<std::string, TemplateURL*>;
 
   // A mapping from keywords to the corresponding TemplateURLs and their
-  // meaningful keyword lengths.  A keyword can appear only once here because
-  // there can be only one active TemplateURL associated with a given keyword.
+  // meaningful keyword lengths.  This is a multimap, so the system can
+  // efficiently tolerate multiple engines with the same keyword, like from
+  // extensions.  The values are not sorted from best to worst for each keyword,
+  // since multimaps don't sort on value. Users that want the best value for
+  // each key must traverse through all matching items, but we expect there to
+  // be below three values per key.
   using KeywordToTURLAndMeaningfulLength =
-      std::map<base::string16, TURLAndMeaningfulLength>;
-
+      std::multimap<base::string16, TURLAndMeaningfulLength>;
   // Declaration of values to be used in an enumerated histogram to tally
   // changes to the default search provider from various entry points. In
   // particular, we use this to see what proportion of changes are from Sync
@@ -529,7 +533,6 @@ class TemplateURLService : public WebDataServiceConsumer,
   // Applies a DSE change and reports metrics if appropriate.
   void ApplyDefaultSearchChange(const TemplateURLData* new_dse_data,
                                 DefaultSearchManager::Source source);
-
 
   // Applies a DSE change. May be called at startup or after transitioning to
   // the loaded state. Returns true if a change actually occurred.

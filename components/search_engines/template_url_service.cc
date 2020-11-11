@@ -398,9 +398,19 @@ TemplateURL* TemplateURLService::GetTemplateURLForKeyword(
 
 const TemplateURL* TemplateURLService::GetTemplateURLForKeyword(
     const base::string16& keyword) const {
-  auto elem(keyword_to_turl_and_length_.find(keyword));
-  if (elem != keyword_to_turl_and_length_.end())
-    return elem->second.first;
+  // Finds and returns the best match for |keyword|.
+  const auto match_range = keyword_to_turl_and_length_.equal_range(keyword);
+  if (match_range.first != match_range.second) {
+    // Among the matches for |keyword| in the multimap, return the best one.
+    return std::min_element(
+               match_range.first, match_range.second,
+               [](const auto& a, const auto& b) {
+                 return a.second.first
+                     ->IsBetterThanEngineWithConflictingKeyword(b.second.first);
+               })
+        ->second.first;
+  }
+
   return (!loaded_ && initial_default_search_provider_ &&
           (initial_default_search_provider_->keyword() == keyword))
              ? initial_default_search_provider_.get()
@@ -1080,7 +1090,6 @@ base::Optional<syncer::ModelError> TemplateURLService::ProcessSyncChanges(
       MaybeUpdateDSEViaPrefs(existing_turl);
   }
 
-
   // If something went wrong, we want to prematurely exit to avoid pushing
   // inconsistent data to Sync. We return the last error we received.
   if (error.IsSet())
@@ -1462,28 +1471,15 @@ void TemplateURLService::Init(const Initializer* initializers,
 
 void TemplateURLService::RemoveFromMaps(const TemplateURL* template_url) {
   const base::string16& keyword = template_url->keyword();
-  auto iter = keyword_to_turl_and_length_.find(keyword);
-  CHECK(iter != keyword_to_turl_and_length_.end());
-  // The entry at |iter| may not be |template_url| if it's an extension-created
-  // entry with the same keyword.
-  if (iter->second.first == template_url) {
-    // We need to check whether the keyword can now be provided by another
-    // TemplateURL. See the comments for BestEngineForKeyword() for more
-    // information on extension keywords and how they can coexist with
-    // non-extension keywords.
-    TemplateURL* best_fallback = nullptr;
-    for (const auto& turl : template_urls_) {
-      if ((turl.get() != template_url) && (turl->keyword() == keyword)) {
-        if (!best_fallback ||
-            turl->IsBetterThanEngineWithConflictingKeyword(best_fallback)) {
-          best_fallback = turl.get();
-        }
-      }
-    }
-    if (best_fallback) {
-      AddToMap(best_fallback);
+
+  // Remove from |keyword_to_turl_and_length_|. No need to find the best
+  // fallback. We choose the best one as-needed from the multimap.
+  const auto match_range = keyword_to_turl_and_length_.equal_range(keyword);
+  for (auto it = match_range.first; it != match_range.second;) {
+    if (it->second.first == template_url) {
+      it = keyword_to_turl_and_length_.erase(it);
     } else {
-      keyword_to_turl_and_length_.erase(iter);
+      ++it;
     }
   }
 
@@ -1499,22 +1495,13 @@ void TemplateURLService::RemoveFromMaps(const TemplateURL* template_url) {
 }
 
 void TemplateURLService::AddToMaps(TemplateURL* template_url) {
-  bool template_url_is_omnibox_api =
-      template_url->type() == TemplateURL::OMNIBOX_API_EXTENSION;
   const base::string16& keyword = template_url->keyword();
-  KeywordToTURLAndMeaningfulLength::const_iterator i =
-      keyword_to_turl_and_length_.find(keyword);
-  if (i == keyword_to_turl_and_length_.end()) {
-    AddToMap(template_url);
-  } else {
-    TemplateURL* existing_url = i->second.first;
-    CHECK_NE(existing_url, template_url);
-    if (template_url->IsBetterThanEngineWithConflictingKeyword(existing_url)) {
-      AddToMap(template_url);
-    }
-  }
+  keyword_to_turl_and_length_.insert(std::make_pair(
+      keyword,
+      TURLAndMeaningfulLength(
+          template_url, GetMeaningfulKeywordLength(keyword, template_url))));
 
-  if (template_url_is_omnibox_api)
+  if (template_url->type() == TemplateURL::OMNIBOX_API_EXTENSION)
     return;
 
   if (!template_url->sync_guid().empty())
@@ -1522,13 +1509,6 @@ void TemplateURLService::AddToMaps(TemplateURL* template_url) {
   // |provider_map_| is only initialized after loading has completed.
   if (loaded_)
     provider_map_->Add(template_url, search_terms_data());
-}
-
-void TemplateURLService::AddToMap(TemplateURL* template_url) {
-  const base::string16& keyword = template_url->keyword();
-  keyword_to_turl_and_length_[keyword] =
-      TURLAndMeaningfulLength(
-          template_url, GetMeaningfulKeywordLength(keyword, template_url));
 }
 
 void TemplateURLService::SetTemplateURLs(
