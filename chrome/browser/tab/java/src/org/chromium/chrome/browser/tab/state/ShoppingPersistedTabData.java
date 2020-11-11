@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.tab.state;
 
 import android.os.SystemClock;
-import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -49,16 +48,21 @@ public class ShoppingPersistedTabData extends PersistedTabData {
 
     private static final Class<ShoppingPersistedTabData> USER_DATA_KEY =
             ShoppingPersistedTabData.class;
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     public static final long ONE_HOUR_MS = TimeUnit.HOURS.toMillis(1);
+    private static final int MICROS_TO_UNITS = 1000000;
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     public static final long NO_TRANSITIONS_OCCURRED = -1;
 
+    @VisibleForTesting
+    public static final long NO_PRICE_KNOWN = -1;
+
     private long mTimeToLiveMs = ONE_HOUR_MS;
-    private String mPriceString = "";
-    private String mPreviousPriceString = "";
     public long mLastPriceChangeTimeMs = NO_TRANSITIONS_OCCURRED;
+
+    private long mPriceMicros = NO_PRICE_KNOWN;
+    private long mPreviousPriceMicros = NO_PRICE_KNOWN;
 
     /**
      * A price drop for the offer {@link ShoppingPersistedTabData}
@@ -127,11 +131,9 @@ public class ShoppingPersistedTabData extends PersistedTabData {
             JSONArray representations = jsonObject.getJSONArray(REPRESENTATIONS_KEY);
             for (int i = 0; i < representations.length(); i++) {
                 JSONObject representation = representations.getJSONObject(i);
-                // TODO(crbug.com/1130068) support all currencies
                 if (SHOPPING_ID.equals(representation.getString(TYPE_KEY))) {
-                    res.setPriceString(
-                            String.format(Locale.US, "$%.2f", representation.getDouble(PRICE_KEY)),
-                            previousShoppingPersistedTabData);
+                    res.setPriceMicros(
+                            representation.getLong(PRICE_KEY), previousShoppingPersistedTabData);
                     break;
                 }
             }
@@ -152,39 +154,35 @@ public class ShoppingPersistedTabData extends PersistedTabData {
      * @param previousShoppingPersistedTabData {@link ShoppingPersistedTabData} from previous fetch
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
-    public void setPriceString(
-            String priceString, ShoppingPersistedTabData previousShoppingPersistedTabData) {
-        mPriceString = priceString;
+    public void setPriceMicros(
+            long priceMicros, ShoppingPersistedTabData previousShoppingPersistedTabData) {
+        mPriceMicros = priceMicros;
         // Detect price transition
-        if (previousShoppingPersistedTabData != null && !TextUtils.isEmpty(priceString)
-                && !TextUtils.isEmpty(previousShoppingPersistedTabData.getPriceString())
-                && !priceString.equals(previousShoppingPersistedTabData.getPriceString())) {
-            mPreviousPriceString = previousShoppingPersistedTabData.getPriceString();
+        if (previousShoppingPersistedTabData != null && priceMicros != NO_PRICE_KNOWN
+                && previousShoppingPersistedTabData.getPriceMicros() != NO_PRICE_KNOWN
+                && priceMicros != previousShoppingPersistedTabData.getPriceMicros()) {
+            mPreviousPriceMicros = previousShoppingPersistedTabData.getPriceMicros();
             mLastPriceChangeTimeMs = SystemClock.uptimeMillis();
         } else if (previousShoppingPersistedTabData != null) {
-            mPreviousPriceString = previousShoppingPersistedTabData.getPreviousPriceString();
+            mPreviousPriceMicros = previousShoppingPersistedTabData.getPreviousPriceMicros();
             mLastPriceChangeTimeMs = previousShoppingPersistedTabData.getLastPriceChangeTimeMs();
         }
         save();
     }
 
-    /**
-     * @return a price representing the price of the shopping offer
-     * TODO(crbug.com/1130067) add timeouts to {@link ShoppingPersistedTabData}
-     * properties so they stay in sync with the actual price.
-     * Or should we have a push model?
-     */
-    public String getPriceString() {
-        return mPriceString;
+    @VisibleForTesting
+    protected void setPreviousPriceMicros(long previousPriceMicros) {
+        mPreviousPriceMicros = previousPriceMicros;
     }
 
-    /**
-     * @return the price string of the {@link ShoppingPersistedTabDta}
-     * before the refetch occurred because of a timeout. This enables
-     * the consumer to determine if the price changed during the fetch.
-     */
-    public String getPreviousPriceString() {
-        return mPreviousPriceString;
+    @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
+    public long getPriceMicros() {
+        return mPriceMicros;
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
+    public long getPreviousPriceMicros() {
+        return mPreviousPriceMicros;
     }
 
     /**
@@ -196,14 +194,25 @@ public class ShoppingPersistedTabData extends PersistedTabData {
      */
     public PriceDrop getPriceDrop() {
         // TODO(crbug.com/1146609) only show price drops above certain thresholds
-        return new PriceDrop(mPriceString, mPreviousPriceString);
+        if (mPriceMicros != NO_PRICE_KNOWN && mPreviousPriceMicros != NO_PRICE_KNOWN
+                && mPriceMicros < mPreviousPriceMicros) {
+            return new PriceDrop(getIntegerPriceString(mPriceMicros),
+                    getIntegerPriceString(mPreviousPriceMicros));
+        }
+        return null;
+    }
+
+    private static String getIntegerPriceString(long priceMicros) {
+        // TODO(crbug.com/1130068) support all currencies
+        return String.format(Locale.US, "$%d",
+                (int) Math.floor((double) (priceMicros + MICROS_TO_UNITS / 2) / MICROS_TO_UNITS));
     }
 
     @Override
     public byte[] serialize() {
         return ShoppingPersistedTabDataProto.newBuilder()
-                .setPriceString(mPriceString)
-                .setPreviousPriceString(mPreviousPriceString)
+                .setPriceMicros(mPriceMicros)
+                .setPreviousPriceMicros(mPreviousPriceMicros)
                 .setLastUpdatedMs(getLastUpdatedMs())
                 .setLastPriceChangeTimeMs(mLastPriceChangeTimeMs)
                 .build()
@@ -216,8 +225,8 @@ public class ShoppingPersistedTabData extends PersistedTabData {
         try {
             ShoppingPersistedTabDataProto shoppingPersistedTabDataProto =
                     ShoppingPersistedTabDataProto.parseFrom(bytes);
-            mPriceString = shoppingPersistedTabDataProto.getPriceString();
-            mPreviousPriceString = shoppingPersistedTabDataProto.getPreviousPriceString();
+            mPriceMicros = shoppingPersistedTabDataProto.getPriceMicros();
+            mPreviousPriceMicros = shoppingPersistedTabDataProto.getPreviousPriceMicros();
             setLastUpdatedMs(shoppingPersistedTabDataProto.getLastUpdatedMs());
             mLastPriceChangeTimeMs = shoppingPersistedTabDataProto.getLastPriceChangeTimeMs();
             return true;
@@ -244,12 +253,12 @@ public class ShoppingPersistedTabData extends PersistedTabData {
         return mTimeToLiveMs;
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     public void setTimeToLiveMs(long timeToLiveMs) {
         mTimeToLiveMs = timeToLiveMs;
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     public long getLastPriceChangeTimeMs() {
         return mLastPriceChangeTimeMs;
     }

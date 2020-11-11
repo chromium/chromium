@@ -104,6 +104,7 @@ import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 import org.chromium.chrome.browser.tab.state.PersistedTabDataConfiguration;
+import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
 import org.chromium.chrome.browser.tabmodel.EmptyTabModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
@@ -179,7 +180,7 @@ public class TabListMediatorUnitTest {
     private static final String EMPTY_ENDPOINT_RESPONSE = "{}";
     private static final String ENDPOINT_RESPONSE =
             "{\"representations\" : [{\"type\" : \"SHOPPING\", \"productTitle\" : \"Book of Pie\","
-            + "\"price\" : 3.14, \"currency\" : \"USD\"}]}";
+            + "\"price\" : 123456789012345, \"currency\" : \"USD\"}]}";
 
     @IntDef({TabListMediatorType.TAB_SWITCHER, TabListMediatorType.TAB_STRIP,
             TabListMediatorType.TAB_GRID_DIALOG})
@@ -1864,12 +1865,14 @@ public class TabListMediatorUnitTest {
         mModel.get(0)
                 .model.get(TabProperties.SHOPPING_PERSISTED_TAB_DATA_FETCHER)
                 .fetch((shoppingPersistedTabData) -> {
-                    assertThat(shoppingPersistedTabData.getPriceString(), equalTo("$3.14"));
+                    assertThat(
+                            shoppingPersistedTabData.getPriceMicros(), equalTo(123456789012345L));
                 });
         mModel.get(1)
                 .model.get(TabProperties.SHOPPING_PERSISTED_TAB_DATA_FETCHER)
                 .fetch((shoppingPersistedTabData) -> {
-                    assertThat(shoppingPersistedTabData.getPriceString(), equalTo(""));
+                    assertThat(shoppingPersistedTabData.getPriceMicros(),
+                            equalTo(ShoppingPersistedTabData.NO_PRICE_KNOWN));
                 });
     }
 

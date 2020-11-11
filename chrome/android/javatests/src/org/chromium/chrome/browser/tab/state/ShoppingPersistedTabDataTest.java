@@ -24,8 +24,8 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 import org.chromium.base.Callback;
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
+import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.endpoint_fetcher.EndpointFetcher;
 import org.chromium.chrome.browser.endpoint_fetcher.EndpointFetcherJni;
@@ -53,7 +53,6 @@ public class ShoppingPersistedTabDataTest {
 
     private static final int TAB_ID = 1;
     private static final boolean IS_INCOGNITO = false;
-    private static final String PRICE_STRING = "$2.87";
 
     @Mock
     EndpointFetcher.Natives mEndpointFetcherJniMock;
@@ -61,19 +60,22 @@ public class ShoppingPersistedTabDataTest {
     // Tracks if the endpoint fetcher has been called once or not
     private boolean mCalledOnce;
 
-    private static final String PRICE = "3.14";
-    private static final String UPDATED_PRICE = "2.87";
-    private static final String PRICE_FORMATTED = String.format(Locale.US, "$%s", PRICE);
-    private static final String UPDATED_PRICE_FORMATTED =
-            String.format(Locale.US, "$%s", UPDATED_PRICE);
+    private static final long PRICE_MICROS = 123456789012345L;
+    private static final long UPDATED_PRICE_MICROS = 287000000L;
+    private static final long HIGH_PRICE_MICROS = 141000000L;
+    private static final long LOW_PRICE_MICROS = 100000000L;
+    private static final String HIGH_PRICE_FORMATTED = "$141";
+    private static final String LOW_PRICE_FORMATTED = "$100";
+
     private static final String EMPTY_PRICE = "";
     private static final String ENDPOINT_RESPONSE_INITIAL =
             "{\"representations\" : [{\"type\" : \"SHOPPING\", \"productTitle\" : \"Book of Pie\","
-            + String.format(Locale.US, "\"price\" : %s, \"currency\" : \"USD\"}]}", PRICE);
+            + String.format(Locale.US, "\"price\" : %d, \"currency\" : \"USD\"}]}", PRICE_MICROS);
 
     private static final String ENDPOINT_RESPONSE_UPDATE =
             "{\"representations\" : [{\"type\" : \"SHOPPING\", \"productTitle\" : \"Book of Pie\","
-            + String.format(Locale.US, "\"price\" : %s, \"currency\" : \"USD\"}]}", UPDATED_PRICE);
+            + String.format(
+                    Locale.US, "\"price\" : %d, \"currency\" : \"USD\"}]}", UPDATED_PRICE_MICROS);
 
     @Before
     public void setUp() {
@@ -81,19 +83,19 @@ public class ShoppingPersistedTabDataTest {
         mMocker.mock(EndpointFetcherJni.TEST_HOOKS, mEndpointFetcherJniMock);
     }
 
+    @UiThreadTest
     @SmallTest
     @Test
     public void testShoppingProto() {
-        ThreadUtils.runOnUiThreadBlocking(() -> {
-            Tab tab = new MockTab(TAB_ID, IS_INCOGNITO);
-            ShoppingPersistedTabData shoppingPersistedTabData = new ShoppingPersistedTabData(tab);
-            shoppingPersistedTabData.setPriceString(PRICE_STRING, null);
-            byte[] serialized = shoppingPersistedTabData.serialize();
-            ShoppingPersistedTabData deserialized = new ShoppingPersistedTabData(tab);
-            deserialized.deserialize(serialized);
-            Assert.assertEquals(PRICE_STRING, deserialized.getPriceString());
-            Assert.assertEquals(EMPTY_PRICE, deserialized.getPreviousPriceString());
-        });
+        Tab tab = new MockTab(TAB_ID, IS_INCOGNITO);
+        ShoppingPersistedTabData shoppingPersistedTabData = new ShoppingPersistedTabData(tab);
+        shoppingPersistedTabData.setPriceMicros(PRICE_MICROS, null);
+        byte[] serialized = shoppingPersistedTabData.serialize();
+        ShoppingPersistedTabData deserialized = new ShoppingPersistedTabData(tab);
+        deserialized.deserialize(serialized);
+        Assert.assertEquals(PRICE_MICROS, deserialized.getPriceMicros());
+        Assert.assertEquals(
+                ShoppingPersistedTabData.NO_PRICE_KNOWN, deserialized.getPreviousPriceMicros());
     }
 
     @SmallTest
@@ -119,9 +121,9 @@ public class ShoppingPersistedTabDataTest {
             ShoppingPersistedTabData.from(tab, (shoppingPersistedTabData) -> {
                 verifyEndpointFetcherCalled(3);
                 Assert.assertEquals(
-                        UPDATED_PRICE_FORMATTED, shoppingPersistedTabData.getPriceString());
+                        UPDATED_PRICE_MICROS, shoppingPersistedTabData.getPriceMicros());
                 Assert.assertEquals(
-                        PRICE_FORMATTED, shoppingPersistedTabData.getPreviousPriceString());
+                        PRICE_MICROS, shoppingPersistedTabData.getPreviousPriceMicros());
                 Assert.assertEquals(mLastPriceChangeTimeMs,
                         shoppingPersistedTabData.getLastPriceChangeTimeMs());
                 semaphore.release();
@@ -137,8 +139,9 @@ public class ShoppingPersistedTabDataTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             ShoppingPersistedTabData.from(tab, (shoppingPersistedTabData) -> {
                 verifyEndpointFetcherCalled(1);
-                Assert.assertEquals(PRICE_FORMATTED, shoppingPersistedTabData.getPriceString());
-                Assert.assertEquals(EMPTY_PRICE, shoppingPersistedTabData.getPreviousPriceString());
+                Assert.assertEquals(PRICE_MICROS, shoppingPersistedTabData.getPriceMicros());
+                Assert.assertEquals(ShoppingPersistedTabData.NO_PRICE_KNOWN,
+                        shoppingPersistedTabData.getPreviousPriceMicros());
                 Assert.assertEquals(ShoppingPersistedTabData.NO_TRANSITIONS_OCCURRED,
                         shoppingPersistedTabData.getLastPriceChangeTimeMs());
                 // By setting time to live to be a negative number, an update
@@ -153,9 +156,9 @@ public class ShoppingPersistedTabDataTest {
             ShoppingPersistedTabData.from(tab, (updatedShoppingPersistedTabData) -> {
                 verifyEndpointFetcherCalled(2);
                 Assert.assertEquals(
-                        UPDATED_PRICE_FORMATTED, updatedShoppingPersistedTabData.getPriceString());
+                        UPDATED_PRICE_MICROS, updatedShoppingPersistedTabData.getPriceMicros());
                 Assert.assertEquals(
-                        PRICE_FORMATTED, updatedShoppingPersistedTabData.getPreviousPriceString());
+                        PRICE_MICROS, updatedShoppingPersistedTabData.getPreviousPriceMicros());
                 Assert.assertTrue(firstUpdateTime
                         < updatedShoppingPersistedTabData.getLastPriceChangeTimeMs());
                 updateSemaphore.release();
@@ -174,8 +177,9 @@ public class ShoppingPersistedTabDataTest {
         mockEndpointResponse();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             ShoppingPersistedTabData.from(tab, (shoppingPersistedTabData) -> {
-                Assert.assertEquals(PRICE_FORMATTED, shoppingPersistedTabData.getPriceString());
-                Assert.assertEquals(EMPTY_PRICE, shoppingPersistedTabData.getPreviousPriceString());
+                Assert.assertEquals(PRICE_MICROS, shoppingPersistedTabData.getPriceMicros());
+                Assert.assertEquals(ShoppingPersistedTabData.NO_PRICE_KNOWN,
+                        shoppingPersistedTabData.getPreviousPriceMicros());
                 // By setting time to live to be a negative number, an update
                 // will be forced in the subsequent call
                 initialSemaphore.release();
@@ -185,8 +189,9 @@ public class ShoppingPersistedTabDataTest {
         verifyEndpointFetcherCalled(1);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             ShoppingPersistedTabData.from(tab, (shoppingPersistedTabData) -> {
-                Assert.assertEquals(PRICE_FORMATTED, shoppingPersistedTabData.getPriceString());
-                Assert.assertEquals(EMPTY_PRICE, shoppingPersistedTabData.getPreviousPriceString());
+                Assert.assertEquals(PRICE_MICROS, shoppingPersistedTabData.getPriceMicros());
+                Assert.assertEquals(ShoppingPersistedTabData.NO_PRICE_KNOWN,
+                        shoppingPersistedTabData.getPreviousPriceMicros());
 
                 // By setting time to live to be a negative number, an update
                 // will be forced in the subsequent call
@@ -197,6 +202,33 @@ public class ShoppingPersistedTabDataTest {
         // EndpointFetcher should not have been called a second time - because we haven't passed the
         // time to live
         verifyEndpointFetcherCalled(1);
+    }
+
+    @UiThreadTest
+    @SmallTest
+    @Test
+    public void testPriceDrop() {
+        Tab tab = createTabOnUiThread(TAB_ID, IS_INCOGNITO);
+        ShoppingPersistedTabData shoppingPersistedTabData = new ShoppingPersistedTabData(tab);
+        // Prices unknown is not a price drop
+        Assert.assertNull(shoppingPersistedTabData.getPriceDrop());
+
+        // Same price is not a price drop
+        shoppingPersistedTabData.setPriceMicros(HIGH_PRICE_MICROS, null);
+        shoppingPersistedTabData.setPreviousPriceMicros(HIGH_PRICE_MICROS);
+        Assert.assertNull(shoppingPersistedTabData.getPriceDrop());
+
+        // Lower -> Higher price is not a price drop
+        shoppingPersistedTabData.setPriceMicros(HIGH_PRICE_MICROS, null);
+        shoppingPersistedTabData.setPreviousPriceMicros(LOW_PRICE_MICROS);
+        Assert.assertNull(shoppingPersistedTabData.getPriceDrop());
+
+        // Actual price drop (Higher -> Lower)
+        shoppingPersistedTabData.setPriceMicros(LOW_PRICE_MICROS, null);
+        shoppingPersistedTabData.setPreviousPriceMicros(HIGH_PRICE_MICROS);
+        ShoppingPersistedTabData.PriceDrop priceDrop = shoppingPersistedTabData.getPriceDrop();
+        Assert.assertEquals(LOW_PRICE_FORMATTED, priceDrop.integerPrice);
+        Assert.assertEquals(HIGH_PRICE_FORMATTED, priceDrop.previousIntegerPrice);
     }
 
     private void verifyEndpointFetcherCalled(int numTimes) {
