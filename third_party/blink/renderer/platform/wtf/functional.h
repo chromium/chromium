@@ -36,6 +36,13 @@
 #include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
 #include "third_party/blink/renderer/platform/wtf/type_traits.h"
 
+namespace blink {
+template <typename T>
+class Member;
+template <typename T>
+class WeakMember;
+}
+
 namespace WTF {
 
 // Functional.h provides a very simple way to bind a function pointer and
@@ -193,7 +200,8 @@ struct CheckGCedTypeRestriction {
                 "it with either WrapPersistent, WrapWeakPersistent, "
                 "WrapCrossThreadPersistent, WrapCrossThreadWeakPersistent, "
                 "RefPtr or unretained.");
-  static_assert(!WTF::IsMemberOrWeakMemberType<T>::value,
+  static_assert(!IsSubclassOfTemplate<T, blink::Member>::value &&
+                    !IsSubclassOfTemplate<T, blink::WeakMember>::value,
                 "Member and WeakMember are not allowed to bind into "
                 "WTF::Function. Wrap it with either WrapPersistent, "
                 "WrapWeakPersistent, WrapCrossThreadPersistent or "

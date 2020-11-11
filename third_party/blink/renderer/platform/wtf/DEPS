@@ -32,6 +32,4 @@ include_rules = [
     "-third_party/blink/renderer/platform",
     "+third_party/blink/renderer/platform/wtf",
     "-v8",
-    # Allow pulling in cppgc for Oilpan use.
-    "+v8/include/cppgc",
 ]
