@@ -295,7 +295,8 @@ class BASE_EXPORT TimeDelta {
     // (they are almost certainly not intentional, and result in NaN, which
     // turns into 0 if clamped to an integer; this makes introducing subtle bugs
     // too easy).
-    CHECK((!is_zero() || !a.is_zero()) && (!is_inf() || !a.is_inf()));
+    CHECK(!is_zero() || !a.is_zero());
+    CHECK(!is_inf() || !a.is_inf());
 
     return ToDouble() / a.ToDouble();
   }
@@ -305,7 +306,8 @@ class BASE_EXPORT TimeDelta {
 
     // For consistency, use the same edge case CHECKs and behavior as the code
     // above.
-    CHECK((!is_zero() || !a.is_zero()) && (!is_inf() || !a.is_inf()));
+    CHECK(!is_zero() || !a.is_zero());
+    CHECK(!is_inf() || !a.is_inf());
     return ((delta_ < 0) == (a.delta_ < 0))
                ? std::numeric_limits<int64_t>::max()
                : std::numeric_limits<int64_t>::min();

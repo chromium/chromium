@@ -46,7 +46,8 @@ base::TimeDelta TransformedAnimationTime(
     base::TimeDelta duration =
         (keyframes.back()->Time() - keyframes.front()->Time()) *
         scaled_duration;
-    const double progress = (time - start_time) / duration;
+    const double progress =
+        duration.is_zero() ? 1.0 : ((time - start_time) / duration);
 
     time = (duration * timing_function->GetValue(progress)) + start_time;
   }
@@ -61,10 +62,9 @@ size_t GetActiveKeyframe(
     base::TimeDelta time) {
   DCHECK_GE(keyframes.size(), 2ul);
   size_t i = 0;
-  for (; i < keyframes.size() - 2; ++i) {  // Last keyframe is never active.
-    if (time < (keyframes[i + 1]->Time() * scaled_duration))
-      break;
-  }
+  while ((i < keyframes.size() - 2) &&  // Last keyframe is never active.
+         (time >= (keyframes[i + 1]->Time() * scaled_duration)))
+    ++i;
 
   return i;
 }
@@ -75,16 +75,15 @@ double TransformedKeyframeProgress(
     double scaled_duration,
     base::TimeDelta time,
     size_t i) {
-  base::TimeDelta time1 = keyframes[i]->Time() * scaled_duration;
-  base::TimeDelta time2 = keyframes[i + 1]->Time() * scaled_duration;
+  const base::TimeDelta start_time = keyframes[i]->Time() * scaled_duration;
+  const base::TimeDelta duration =
+      keyframes[i + 1]->Time() * scaled_duration - start_time;
+  const double progress =
+      duration.is_zero() ? 1.0 : ((time - start_time) / duration);
 
-  double progress = (time - time1) / (time2 - time1);
-
-  if (keyframes[i]->timing_function()) {
-    progress = keyframes[i]->timing_function()->GetValue(progress);
-  }
-
-  return progress;
+  return keyframes[i]->timing_function()
+             ? keyframes[i]->timing_function()->GetValue(progress)
+             : progress;
 }
 
 }  // namespace
