@@ -12,6 +12,7 @@ specific_include_rules = {
     "+chrome/browser/ui/views/frame",
     "+components/captive_portal",
     "+components/web_package/test_support",
+    "+skia/public/mojom/bitmap.mojom.h",
   ],
   "tls_socket_unittest\.cc": [
     "+services/network/network_context.h",

@@ -18,6 +18,7 @@ include_rules = [
   "+extensions/test",
   "+mojo/public",
   "+services/service_manager/public",
+  "+skia/public/mojom",
   "+testing",
   "+third_party/blink/public/common/loader/url_loader_throttle.h",
   "+third_party/skia/include",

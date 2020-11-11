@@ -13,10 +13,9 @@
 #include "base/bind.h"
 #include "base/macros.h"
 #include "base/strings/string_number_conversions.h"
-#include "content/public/common/common_param_traits.h"
 #include "extensions/renderer/script_context.h"
 #include "gin/data_object_builder.h"
-#include "ipc/ipc_message_utils.h"
+#include "skia/public/mojom/bitmap.mojom.h"
 #include "third_party/blink/public/web/web_array_buffer_converter.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
@@ -144,11 +143,9 @@ bool SetIconNatives::ConvertImageDataToBitmapValue(
   }
 
   // Construct the Value object.
-  IPC::Message bitmap_pickle;
-  IPC::WriteParam(&bitmap_pickle, bitmap);
-  blink::WebArrayBuffer buffer =
-      blink::WebArrayBuffer::Create(bitmap_pickle.size(), 1);
-  memcpy(buffer.Data(), bitmap_pickle.data(), bitmap_pickle.size());
+  std::vector<uint8_t> s = skia::mojom::InlineBitmap::Serialize(&bitmap);
+  blink::WebArrayBuffer buffer = blink::WebArrayBuffer::Create(s.size(), 1);
+  memcpy(buffer.Data(), s.data(), s.size());
   *image_data_bitmap = blink::WebArrayBufferConverter::ToV8Value(
       &buffer, context()->v8_context()->Global(), isolate);
 

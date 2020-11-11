@@ -8,8 +8,6 @@
 #include <tuple>
 #include <vector>
 
-#include "ui/gfx/ipc/skia/gfx_skia_param_traits.h"
-
 class SkBitmap;
 
 namespace base {

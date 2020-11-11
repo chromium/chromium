@@ -1,0 +1,24 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+function getImageData() {
+  var canvas = document.createElement("canvas");
+  var ctx = canvas.getContext("2d");
+
+  ctx.fillStyle = "green";
+  ctx.fillRect(10, 10, 100, 100);
+
+  return ctx.getImageData(50, 50, 100, 100);
+}
+
+chrome.tabs.getSelected(null, function(tab) {
+  // When the browser action is clicked, add an icon.
+  chrome.browserAction.onClicked.addListener(function(tab) {
+    chrome.browserAction.setIcon({
+      imageData: getImageData()
+    });
+    chrome.test.notifyPass();
+  });
+  chrome.test.notifyPass();
+});
