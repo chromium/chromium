@@ -38,9 +38,10 @@ using PendingInvalidationMap =
 // InvalidationLists obtained from RuleFeatureSet.
 //
 // When we next read computed styles, for example from
-// user script or to render a frame, Invalidate(Document&)
-// is called to traverse the DOM and perform all
-// the pending style invalidations.
+// user script or to render a frame,
+// StyleInvalidator::Invalidate(Document&) is called to
+// traverse the DOM and perform all the pending style
+// invalidations.
 //
 // If an element is removed from the DOM tree, we call
 // ClearInvalidation(ContainerNode&).
@@ -68,7 +69,6 @@ class CORE_EXPORT PendingInvalidations {
   PendingInvalidations(const PendingInvalidations&) = delete;
   PendingInvalidations& operator=(const PendingInvalidations&) = delete;
   ~PendingInvalidations() {}
-  void Invalidate(Document&);
   // May immediately invalidate the node and/or add pending invalidation sets to
   // this node.
   void ScheduleInvalidationSetsForNode(const InvalidationLists&,
