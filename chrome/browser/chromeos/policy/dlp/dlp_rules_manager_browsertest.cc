@@ -2,12 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_test_utils.h"
 #include "chrome/browser/policy/policy_test_utils.h"
-#include "chrome/common/chrome_features.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
 #include "content/public/test/browser_test.h"
@@ -20,13 +18,7 @@ constexpr char kUrlStr1[] = "https://wwww.example.com";
 
 class DlpRulesPolicyTest : public PolicyTest {
  public:
-  DlpRulesPolicyTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kDataLeakPreventionPolicy);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  DlpRulesPolicyTest() = default;
 };
 
 IN_PROC_BROWSER_TEST_F(DlpRulesPolicyTest, ParsePolicyPref) {

@@ -4,7 +4,6 @@
 
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_manager.h"
 
-#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_test_utils.h"
@@ -14,7 +13,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/policy/core/common/policy_map.h"
@@ -275,13 +273,7 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest,
 
 class DlpContentManagerPolicyBrowserTest : public PolicyTest {
  public:
-  DlpContentManagerPolicyBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kDataLeakPreventionPolicy);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  DlpContentManagerPolicyBrowserTest() = default;
 };
 
 IN_PROC_BROWSER_TEST_F(DlpContentManagerPolicyBrowserTest,

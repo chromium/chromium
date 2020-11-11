@@ -62,9 +62,6 @@ class DlpRulesManagerTest : public testing::Test {
   void SetUp() override {
     testing::Test::SetUp();
 
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kDataLeakPreventionPolicy);
-
     DlpRulesManager::Init();
     dlp_rules_manager_ = DlpRulesManager::Get();
   }
@@ -81,7 +78,6 @@ class DlpRulesManagerTest : public testing::Test {
   }
 
   DlpRulesManager* dlp_rules_manager_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 
  private:
   ScopedTestingLocalState testing_local_state_;
@@ -417,8 +413,8 @@ TEST_F(DlpRulesManagerTest, DisabledByFeature) {
                 GURL(kUrlStr1), DlpRulesManager::Restriction::kScreenshot));
 
   // Disable feature
-  scoped_feature_list_.Reset();
-  scoped_feature_list_.InitAndDisableFeature(
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
       features::kDataLeakPreventionPolicy);
   UpdatePolicyPref(std::move(rules));
 

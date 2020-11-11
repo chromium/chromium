@@ -215,8 +215,8 @@ const base::Feature kCryptohomeUserDataAuthKillswitch{
 // Enables parsing and enforcing Data Leak Prevention policy rules that
 // restricts usage of some system features, e.g.clipboard, screenshot, etc.
 // for confidential content.
-const base::Feature kDataLeakPreventionPolicy{
-    "DataLeakPreventionPolicy", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kDataLeakPreventionPolicy{"DataLeakPreventionPolicy",
+                                              base::FEATURE_ENABLED_BY_DEFAULT};
 #endif
 
 #if defined(OS_CHROMEOS)
