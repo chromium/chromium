@@ -219,7 +219,7 @@ This file contains the strings for ash.
         Dark Theme Settings
       </message>
       <message name="IDS_ASH_QUICK_SETTINGS_BUBBLE_IME_SETTINGS_ACCESSIBLE_DESCRIPTION" desc="The accessible description for IME settings accessed through the IME feature pod.">
-        IME Settings
+        Input Methods Settings
       </message>
       <message name="IDS_ASH_QUICK_SETTINGS_BUBBLE_LOCALE_SETTINGS_ACCESSIBLE_DESCRIPTION" desc="The accessible description for locale settings accessed through the locale feature pod.">
         Locale Settings
