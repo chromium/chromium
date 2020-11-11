@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/location.h"
+#include "chrome/browser/net/prediction_options.h"
 #include "chrome/browser/prefetch/search_prefetch/field_trial_settings.h"
 #include "chrome/browser/prefetch/search_prefetch/prefetched_response_container.h"
 #include "chrome/browser/profiles/profile.h"
@@ -147,6 +148,10 @@ SearchPrefetchService::~SearchPrefetchService() = default;
 bool SearchPrefetchService::MaybePrefetchURL(const GURL& url) {
   if (!SearchPrefetchServicePrefetchingIsEnabled())
     return false;
+
+  if (!chrome_browser_net::CanPreresolveAndPreconnectUI(profile_->GetPrefs())) {
+    return false;
+  }
 
   auto* template_url_service =
       TemplateURLServiceFactory::GetForProfile(profile_);
