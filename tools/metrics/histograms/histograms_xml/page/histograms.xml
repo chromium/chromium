@@ -1565,37 +1565,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="PageLoad.Internal.PaintTiming.ExperimentalLargestContentfulPaint.ContentType"
-    enum="LargestContentType" expires_after="2020-12-11">
-  <owner>npm@chromium.org</owner>
-  <owner>speed-metrics-dev@chromium.org</owner>
-  <summary>
-    Measures whether the largest contentful paint, whose timestamp is measured
-    by PageLoad.PaintTiming.NavigationToExperimentalLargestContentfulPaint,
-    comes from text or image. This value is recorded whenever
-    PageLoad.PaintTiming.NavigationToExperimentalLargestContentfulPaint is
-    recorded.
-  </summary>
-</histogram>
-
-<histogram
-    name="PageLoad.Internal.PaintTiming.ExperimentalLargestContentfulPaint.MainFrame.ContentType"
-    enum="LargestContentType" expires_after="2020-12-11">
-  <owner>npm@chromium.org</owner>
-  <owner>speed-metrics-dev@chromium.org</owner>
-  <summary>
-    Measures whether the largest content paint in the main frame, whose
-    timestamp is measured by
-    PageLoad.PaintTiming.NavigationToExperimentalLargestContentfulPaint.MainFrame,
-    comes from text or image. This value is recorded whenever
-    PageLoad.PaintTiming.NavigationToExperimentalLargestContentfulPaint.MainFrame
-    is recorded.
-  </summary>
-</histogram>
-
-<histogram
-    name="PageLoad.Internal.PaintTiming.LargestContentfulPaint.ContentType"
-    enum="LargestContentType" expires_after="2021-04-04">
-  <owner>maxlg@chromium.org</owner>
+    enum="LargestContentType" expires_after="2021-12-11">
   <owner>npm@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
@@ -1607,17 +1577,46 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram
+    name="PageLoad.Internal.PaintTiming.ExperimentalLargestContentfulPaint.MainFrame.ContentType"
+    enum="LargestContentType" expires_after="2021-12-11">
+  <owner>npm@chromium.org</owner>
+  <owner>speed-metrics-dev@chromium.org</owner>
+  <summary>
+    Measures whether the largest contentful paint in the main frame, whose
+    timestamp is measured by
+    PageLoad.PaintTiming.NavigationToLargestContentfulPaint.MainFrame, comes
+    from text or image. This value is recorded whenever
+    PageLoad.PaintTiming.NavigationToLargestContentfulPaint.MainFrame is
+    recorded.
+  </summary>
+</histogram>
+
+<histogram
+    name="PageLoad.Internal.PaintTiming.LargestContentfulPaint.ContentType"
+    enum="LargestContentType" expires_after="2021-04-04">
+  <owner>maxlg@chromium.org</owner>
+  <owner>npm@chromium.org</owner>
+  <owner>speed-metrics-dev@chromium.org</owner>
+  <summary>
+    Measures whether the largest contentful paint, whose timestamp is measured
+    by PageLoad.PaintTiming.NavigationToLargestContentfulPaint2, comes from text
+    or image. This value is recorded whenever
+    PageLoad.PaintTiming.NavigationToLargestContentfulPaint2 is recorded.
+  </summary>
+</histogram>
+
+<histogram
     name="PageLoad.Internal.PaintTiming.LargestContentfulPaint.MainFrame.ContentType"
     enum="LargestContentType" expires_after="2021-04-04">
   <owner>maxlg@chromium.org</owner>
   <owner>npm@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
-    Measures whether the largest content paint in the main frame, whose
+    Measures whether the largest contentful paint in the main frame, whose
     timestamp is measured by
-    PageLoad.PaintTiming.NavigationToLargestContentPaint.MainFrame, comes from
-    text or image. This value is recorded whenever
-    PageLoad.PaintTiming.NavigationToLargestContentfulPaint.MainFrame is
+    PageLoad.PaintTiming.NavigationToLargestContentfulPaint2.MainFrame, comes
+    from text or image. This value is recorded whenever
+    PageLoad.PaintTiming.NavigationToLargestContentfulPaint2.MainFrame is
     recorded.
   </summary>
 </histogram>
