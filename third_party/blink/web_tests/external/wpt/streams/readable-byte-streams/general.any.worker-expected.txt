@@ -14,7 +14,7 @@ FAIL ReadableStream with byte source: Test that closing a stream does not releas
 FAIL ReadableStream with byte source: Test that closing a stream does not release a BYOB reader automatically Failed to construct 'ReadableStream': bytes type is not yet implemented
 FAIL ReadableStream with byte source: Test that erroring a stream does not release a reader automatically Failed to construct 'ReadableStream': bytes type is not yet implemented
 FAIL ReadableStream with byte source: Test that erroring a stream does not release a BYOB reader automatically Failed to construct 'ReadableStream': bytes type is not yet implemented
-FAIL ReadableStream with byte source: releaseLock() on ReadableStreamReader with pending read() must throw Failed to construct 'ReadableStream': bytes type is not yet implemented
+FAIL ReadableStream with byte source: releaseLock() on ReadableStreamDefaultReader with pending read() must throw Failed to construct 'ReadableStream': bytes type is not yet implemented
 FAIL ReadableStream with byte source: Automatic pull() after start() Failed to construct 'ReadableStream': bytes type is not yet implemented
 FAIL ReadableStream with byte source: Automatic pull() after start() and read() Failed to construct 'ReadableStream': bytes type is not yet implemented
 FAIL ReadableStream with byte source: autoAllocateChunkSize Failed to construct 'ReadableStream': bytes type is not yet implemented

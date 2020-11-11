@@ -382,7 +382,7 @@ TEST(BidirectionalStreamTest, IncomingStreamCleanClose) {
   scoped_quic_transport.Stub()->InputProducer().reset();
 
   auto* script_state = scope.GetScriptState();
-  auto* reader = bidirectional_stream->readable()->getReader(
+  auto* reader = bidirectional_stream->readable()->GetDefaultReaderForTesting(
       script_state, ASSERT_NO_EXCEPTION);
 
   ScriptPromise read_promise = reader->read(script_state, ASSERT_NO_EXCEPTION);

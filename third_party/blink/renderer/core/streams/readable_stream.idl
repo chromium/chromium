@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 // https://streams.spec.whatwg.org/#rs-class
+typedef (ReadableStreamDefaultReader or ReadableStreamBYOBReader) ReadableStreamReader;
+
 enum ReadableStreamReaderMode { "byob" };
 
 [
@@ -13,7 +15,7 @@ enum ReadableStreamReaderMode { "byob" };
 
     // TODO(yhirano): function length is different from what's specced. Fix it.
     [RaisesException, CallWith=ScriptState] Promise<any> cancel(optional any reason);
-    [RaisesException, CallWith=ScriptState, MeasureAs=ReadableStreamGetReader] ReadableStreamDefaultReader getReader(optional ReadableStreamGetReaderOptions options);
+    [RaisesException, CallWith=ScriptState, MeasureAs=ReadableStreamGetReader] ReadableStreamReader getReader(optional ReadableStreamGetReaderOptions options);
     [RaisesException, CallWith=ScriptState, MeasureAs=ReadableStreamPipeThrough] ReadableStream pipeThrough(
         ReadableWritablePair transform, optional StreamPipeOptions options);
     [RaisesException, CallWith=ScriptState, MeasureAs=ReadableStreamPipeTo] Promise<any> pipeTo(

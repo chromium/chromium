@@ -11,7 +11,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_iterator_result_value.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
-#include "third_party/blink/renderer/core/streams/readable_stream_reader.h"
+#include "third_party/blink/renderer/core/streams/readable_stream_generic_reader.h"
 
 namespace blink {
 
@@ -35,7 +35,8 @@ bool CreateDataPipeForWebTransportTests(
 v8::Local<v8::Value> ReadValueFromStream(const V8TestingScope& scope,
                                          ReadableStream* stream) {
   auto* script_state = scope.GetScriptState();
-  auto* reader = stream->getReader(script_state, ASSERT_NO_EXCEPTION);
+  auto* reader =
+      stream->GetDefaultReaderForTesting(script_state, ASSERT_NO_EXCEPTION);
 
   ScriptPromise read_promise = reader->read(script_state, ASSERT_NO_EXCEPTION);
 

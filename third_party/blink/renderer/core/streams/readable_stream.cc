@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
 
 #include "base/stl_util.h"
+#include "third_party/blink/renderer/bindings/core/v8/readable_stream_default_reader_or_readable_stream_byob_reader.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_abort_signal.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_iterator_result_value.h"
@@ -17,8 +18,8 @@
 #include "third_party/blink/renderer/core/streams/miscellaneous_operations.h"
 #include "third_party/blink/renderer/core/streams/promise_handler.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_default_controller.h"
+#include "third_party/blink/renderer/core/streams/readable_stream_generic_reader.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_get_reader_options.h"
-#include "third_party/blink/renderer/core/streams/readable_stream_reader.h"
 #include "third_party/blink/renderer/core/streams/readable_writable_pair.h"
 #include "third_party/blink/renderer/core/streams/stream_algorithms.h"
 #include "third_party/blink/renderer/core/streams/stream_pipe_options.h"
@@ -359,7 +360,7 @@ class ReadableStream::PipeToEngine final
     }
 
     is_reading_ = true;
-    ThenPromise(ReadableStreamReader::Read(script_state_, reader_)
+    ThenPromise(ReadableStreamDefaultReader::Read(script_state_, reader_)
                     ->V8Promise(script_state_->GetIsolate()),
                 &PipeToEngine::ReadFulfilled, &PipeToEngine::ReadRejected);
     return Undefined();
@@ -590,7 +591,7 @@ class ReadableStream::PipeToEngine final
     WritableStreamDefaultWriter::Release(script_state_, writer_);
 
     // b. Perform ! ReadableStreamReaderGenericRelease(reader).
-    ReadableStreamReader::GenericRelease(script_state_, reader_);
+    ReadableStreamGenericReader::GenericRelease(script_state_, reader_);
 
     // TODO(ricea): Implement signal.
     // c. If signal is not undefined, remove abortAlgorithm from signal.
@@ -688,7 +689,7 @@ class ReadableStream::PipeToEngine final
 
   Member<ScriptState> script_state_;
   Member<PipeOptions> pipe_options_;
-  Member<ReadableStreamReader> reader_;
+  Member<ReadableStreamGenericReader> reader_;
   Member<WritableStreamDefaultWriter> writer_;
   Member<StreamPromiseResolver> promise_;
   TraceWrapperV8Reference<v8::Promise> last_write_;
@@ -728,7 +729,7 @@ class ReadableStream::TeeEngine final : public GarbageCollected<TeeEngine> {
   class CancelAlgorithm;
 
   Member<ReadableStream> stream_;
-  Member<ReadableStreamReader> reader_;
+  Member<ReadableStreamGenericReader> reader_;
   Member<StreamPromiseResolver> cancel_promise_;
   bool closed_ = false;
 
@@ -758,7 +759,7 @@ class ReadableStream::TeeEngine::PullAlgorithm final : public StreamAlgorithm {
     //      and performs the following steps:
     return StreamThenPromise(
         script_state->GetContext(),
-        ReadableStreamReader::Read(script_state, engine_->reader_)
+        ReadableStreamGenericReader::Read(script_state, engine_->reader_)
             ->V8Promise(script_state->GetIsolate()),
         MakeGarbageCollected<ResolveFunction>(script_state, engine_));
   }
@@ -1206,18 +1207,21 @@ ScriptPromise ReadableStream::cancel(ScriptState* script_state,
   return ScriptPromise(script_state, result);
 }
 
-ReadableStreamDefaultReader* ReadableStream::getReader(
+void ReadableStream::getReader(
     ScriptState* script_state,
+    ReadableStreamDefaultReaderOrReadableStreamBYOBReader& return_value,
     ExceptionState& exception_state) {
   // https://streams.spec.whatwg.org/#rs-get-reader
   // 1. If options["mode"] does not exist, return ?
   // AcquireReadableStreamDefaultReader(this).
-  return AcquireDefaultReader(script_state, this, true, exception_state);
+  return_value.SetReadableStreamDefaultReader(
+      AcquireDefaultReader(script_state, this, true, exception_state));
 }
 
-ReadableStreamReader* ReadableStream::getReader(
+void ReadableStream::getReader(
     ScriptState* script_state,
     ReadableStreamGetReaderOptions* options,
+    ReadableStreamDefaultReaderOrReadableStreamBYOBReader& return_value,
     ExceptionState& exception_state) {
   // https://streams.spec.whatwg.org/#rs-get-reader
   // Since byob readers are not completely implemented yet, this function should
@@ -1228,9 +1232,17 @@ ReadableStreamReader* ReadableStream::getReader(
   if (options->hasMode()) {
     DCHECK_EQ(options->mode(), "byob");
     exception_state.ThrowTypeError("byob not implemented");
-    return nullptr;
+    return;
   }
-  return getReader(script_state, exception_state);
+  getReader(script_state, return_value, exception_state);
+}
+
+ReadableStreamDefaultReader* ReadableStream::GetDefaultReaderForTesting(
+    ScriptState* script_state,
+    ExceptionState& exception_state) {
+  ReadableStreamDefaultReaderOrReadableStreamBYOBReader return_value;
+  getReader(script_state, return_value, exception_state);
+  return return_value.GetAsReadableStreamDefaultReader();
 }
 
 ReadableStream* ReadableStream::pipeThrough(ScriptState* script_state,
@@ -1421,26 +1433,25 @@ void ReadableStream::InitInternal(ScriptState* script_state,
 //
 // Readable stream abstract operations
 //
-ReadableStreamReader* ReadableStream::AcquireDefaultReader(
+ReadableStreamDefaultReader* ReadableStream::AcquireDefaultReader(
     ScriptState* script_state,
     ReadableStream* stream,
     bool for_author_code,
     ExceptionState& exception_state) {
   // https://streams.spec.whatwg.org/#acquire-readable-stream-reader
   // for_author_code is compulsory in this implementation
-  // 1. If forAuthorCode was not passed, set it to false.
 
-  // 2. Let reader be ? Construct(ReadableStreamDefaultReader, « stream »).
-  auto* reader = MakeGarbageCollected<ReadableStreamReader>(
+  // 1. Let reader by a new ReadableStreamDefaultReader.
+  // 2. Perform ? SetUpReadableStreamReader(reader, stream).
+  auto* reader = MakeGarbageCollected<ReadableStreamDefaultReader>(
       script_state, stream, exception_state);
   if (exception_state.HadException()) {
     return nullptr;
   }
 
-  // 3. Set reader.[[forAuthorCode]] to forAuthorCode.
   reader->for_author_code_ = for_author_code;
 
-  // 4. Return reader.
+  // 3. Return reader.
   return reader;
 }
 
@@ -1479,7 +1490,7 @@ void ReadableStream::LockAndDisturb(ScriptState* script_state) {
     return;
   }
 
-  ReadableStreamReader* reader = GetReaderNotForAuthorCode(script_state);
+  ReadableStreamGenericReader* reader = GetReaderNotForAuthorCode(script_state);
   DCHECK(reader);
 
   is_disturbed_ = true;
@@ -1659,7 +1670,7 @@ void ReadableStream::Close(ScriptState* script_state, ReadableStream* stream) {
   stream->state_ = kClosed;
 
   // 3. Let reader be stream.[[reader]].
-  ReadableStreamReader* reader = stream->reader_;
+  ReadableStreamGenericReader* reader = stream->reader_;
 
   // 4. If reader is undefined, return.
   if (!reader) {
@@ -1750,7 +1761,7 @@ void ReadableStream::Error(ScriptState* script_state,
   stream->stored_error_.Set(isolate, e);
 
   // 5. Let reader be stream.[[reader]].
-  ReadableStreamReader* reader = stream->reader_;
+  ReadableStreamGenericReader* reader = stream->reader_;
 
   // 6. If reader is undefined, return.
   if (!reader) {
@@ -1782,7 +1793,7 @@ void ReadableStream::FulfillReadRequest(ScriptState* script_state,
                                         bool done) {
   // https://streams.spec.whatwg.org/#readable-stream-fulfill-read-request
   // 1. Let reader be stream.[[reader]].
-  ReadableStreamReader* reader = stream->reader_;
+  ReadableStreamGenericReader* reader = stream->reader_;
 
   // 2. Let readRequest be the first element of reader.[[readRequests]].
   StreamPromiseResolver* read_request = reader->read_requests_.front();

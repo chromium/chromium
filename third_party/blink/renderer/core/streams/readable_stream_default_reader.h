@@ -5,14 +5,14 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_STREAMS_READABLE_STREAM_DEFAULT_READER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_STREAMS_READABLE_STREAM_DEFAULT_READER_H_
 
-#include "third_party/blink/renderer/core/streams/readable_stream_reader.h"
+#include "third_party/blink/renderer/core/streams/readable_stream_generic_reader.h"
 
 namespace blink {
 
 // ReadableStreamDefaultReader is implemented by the ReadableStreamReader class.
 // See the header file for the reasoning.
 
-using ReadableStreamDefaultReader = ReadableStreamReader;
+using ReadableStreamDefaultReader = ReadableStreamGenericReader;
 
 }  // namespace blink
 

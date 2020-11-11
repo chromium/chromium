@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/streams/readable_stream_reader.h"
+#include "third_party/blink/renderer/core/streams/readable_stream_generic_reader.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
@@ -15,11 +15,11 @@
 
 namespace blink {
 
-ReadableStreamReader* ReadableStreamReader::Create(
+ReadableStreamGenericReader* ReadableStreamGenericReader::Create(
     ScriptState* script_state,
     ReadableStream* stream,
     ExceptionState& exception_state) {
-  auto* reader = MakeGarbageCollected<ReadableStreamReader>(
+  auto* reader = MakeGarbageCollected<ReadableStreamGenericReader>(
       script_state, stream, exception_state);
   if (exception_state.HadException()) {
     return nullptr;
@@ -27,15 +27,17 @@ ReadableStreamReader* ReadableStreamReader::Create(
   return reader;
 }
 
-ReadableStreamReader::ReadableStreamReader(ScriptState* script_state,
-                                           ReadableStream* stream,
-                                           ExceptionState& exception_state) {
+ReadableStreamGenericReader::ReadableStreamGenericReader(
+    ScriptState* script_state,
+    ReadableStream* stream,
+    ExceptionState& exception_state) {
   // https://streams.spec.whatwg.org/#default-reader-constructor
   // 2. If ! IsReadableStreamLocked(stream) is true, throw a TypeError
   //    exception.
   if (ReadableStream::IsLocked(stream)) {
     exception_state.ThrowTypeError(
-        "ReadableStreamReader constructor can only accept readable streams "
+        "ReadableStreamDefaultReader constructor can only accept readable "
+        "streams "
         "that are not yet locked to a reader");
     return;
   }
@@ -47,25 +49,28 @@ ReadableStreamReader::ReadableStreamReader(ScriptState* script_state,
   DCHECK_EQ(read_requests_.size(), 0u);
 }
 
-ReadableStreamReader::~ReadableStreamReader() = default;
+ReadableStreamGenericReader::~ReadableStreamGenericReader() = default;
 
-ScriptPromise ReadableStreamReader::closed(ScriptState* script_state) const {
+ScriptPromise ReadableStreamGenericReader::closed(
+    ScriptState* script_state) const {
   // https://streams.spec.whatwg.org/#default-reader-closed
   //  2. Return this.[[closedPromise]].
   return closed_promise_->GetScriptPromise(script_state);
 }
 
-ScriptPromise ReadableStreamReader::cancel(ScriptState* script_state,
-                                           ExceptionState& exception_state) {
+ScriptPromise ReadableStreamGenericReader::cancel(
+    ScriptState* script_state,
+    ExceptionState& exception_state) {
   return cancel(script_state,
                 ScriptValue(script_state->GetIsolate(),
                             v8::Undefined(script_state->GetIsolate())),
                 exception_state);
 }
 
-ScriptPromise ReadableStreamReader::cancel(ScriptState* script_state,
-                                           ScriptValue reason,
-                                           ExceptionState& exception_state) {
+ScriptPromise ReadableStreamGenericReader::cancel(
+    ScriptState* script_state,
+    ScriptValue reason,
+    ExceptionState& exception_state) {
   // https://streams.spec.whatwg.org/#default-reader-cancel
   // 2. If this.[[ownerReadableStream]] is undefined, return a promise rejected
   //    with a TypeError exception.
@@ -82,8 +87,9 @@ ScriptPromise ReadableStreamReader::cancel(ScriptState* script_state,
   return ScriptPromise(script_state, result);
 }
 
-ScriptPromise ReadableStreamReader::read(ScriptState* script_state,
-                                         ExceptionState& exception_state) {
+ScriptPromise ReadableStreamGenericReader::read(
+    ScriptState* script_state,
+    ExceptionState& exception_state) {
   // https://streams.spec.whatwg.org/#default-reader-read
   // 2. If this.[[ownerReadableStream]] is undefined, return a promise rejected
   //  with a TypeError exception.
@@ -95,12 +101,12 @@ ScriptPromise ReadableStreamReader::read(ScriptState* script_state,
   }
 
   // 3. Return ! ReadableStreamReaderRead(this).
-  return ReadableStreamReader::Read(script_state, this)
+  return ReadableStreamGenericReader::Read(script_state, this)
       ->GetScriptPromise(script_state);
 }
 
-void ReadableStreamReader::releaseLock(ScriptState* script_state,
-                                       ExceptionState& exception_state) {
+void ReadableStreamGenericReader::releaseLock(ScriptState* script_state,
+                                              ExceptionState& exception_state) {
   // https://streams.spec.whatwg.org/#default-reader-release-lock
   // 2. If this.[[ownerReadableStream]] is undefined, return.
   if (!owner_readable_stream_) {
@@ -119,9 +125,9 @@ void ReadableStreamReader::releaseLock(ScriptState* script_state,
   GenericRelease(script_state, this);
 }
 
-StreamPromiseResolver* ReadableStreamReader::Read(
+StreamPromiseResolver* ReadableStreamGenericReader::Read(
     ScriptState* script_state,
-    ReadableStreamReader* reader) {
+    ReadableStreamGenericReader* reader) {
   auto* isolate = script_state->GetIsolate();
   // https://streams.spec.whatwg.org/#readable-stream-default-reader-read
   // 1. Let stream be reader.[[ownerReadableStream]].
@@ -158,8 +164,9 @@ StreamPromiseResolver* ReadableStreamReader::Read(
   }
 }
 
-void ReadableStreamReader::GenericRelease(ScriptState* script_state,
-                                          ReadableStreamReader* reader) {
+void ReadableStreamGenericReader::GenericRelease(
+    ScriptState* script_state,
+    ReadableStreamGenericReader* reader) {
   // https://streams.spec.whatwg.org/#readable-stream-reader-generic-release
   // 1. Assert: reader.[[ownerReadableStream]] is not undefined.
   DCHECK(reader->owner_readable_stream_);
@@ -198,16 +205,16 @@ void ReadableStreamReader::GenericRelease(ScriptState* script_state,
   reader->owner_readable_stream_ = nullptr;
 }
 
-void ReadableStreamReader::Trace(Visitor* visitor) const {
+void ReadableStreamGenericReader::Trace(Visitor* visitor) const {
   visitor->Trace(closed_promise_);
   visitor->Trace(owner_readable_stream_);
   visitor->Trace(read_requests_);
   ScriptWrappable::Trace(visitor);
 }
 
-v8::Local<v8::Promise> ReadableStreamReader::GenericCancel(
+v8::Local<v8::Promise> ReadableStreamGenericReader::GenericCancel(
     ScriptState* script_state,
-    ReadableStreamReader* reader,
+    ReadableStreamGenericReader* reader,
     v8::Local<v8::Value> reason) {
   // https://streams.spec.whatwg.org/#readable-stream-reader-generic-cancel
   // 1. Let stream be reader.[[ownerReadableStream]].
@@ -220,9 +227,10 @@ v8::Local<v8::Promise> ReadableStreamReader::GenericCancel(
   return ReadableStream::Cancel(script_state, stream, reason);
 }
 
-void ReadableStreamReader::GenericInitialize(ScriptState* script_state,
-                                             ReadableStreamReader* reader,
-                                             ReadableStream* stream) {
+void ReadableStreamGenericReader::GenericInitialize(
+    ScriptState* script_state,
+    ReadableStreamGenericReader* reader,
+    ReadableStream* stream) {
   auto* isolate = script_state->GetIsolate();
 
   // https://streams.spec.whatwg.org/#readable-stream-reader-generic-initialize

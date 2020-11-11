@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_STREAMS_READABLE_STREAM_READER_H_
-#define THIRD_PARTY_BLINK_RENDERER_CORE_STREAMS_READABLE_STREAM_READER_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_STREAMS_READABLE_STREAM_GENERIC_READER_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_STREAMS_READABLE_STREAM_GENERIC_READER_H_
 
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -23,19 +23,21 @@ class Visitor;
 // ReadableStreamBYOBReader generically. Currently ReadableStreamBYOBReader
 // isn't implemented in Blink. In order to make the generic operations align
 // with the standard, ReadableStreamDefaultReader is implemented by the
-// ReadableStreamReader class.
+// ReadableStreamGenericReader class.
 // TODO(ricea): Refactor this when implementing ReadableStreamBYOBReader.
-class CORE_EXPORT ReadableStreamReader : public ScriptWrappable {
+class CORE_EXPORT ReadableStreamGenericReader : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static ReadableStreamReader* Create(ScriptState*,
-                                      ReadableStream* stream,
-                                      ExceptionState&);
+  static ReadableStreamGenericReader* Create(ScriptState*,
+                                             ReadableStream* stream,
+                                             ExceptionState&);
 
   // https://streams.spec.whatwg.org/#default-reader-constructor
-  ReadableStreamReader(ScriptState*, ReadableStream* stream, ExceptionState&);
-  ~ReadableStreamReader() override;
+  ReadableStreamGenericReader(ScriptState*,
+                              ReadableStream* stream,
+                              ExceptionState&);
+  ~ReadableStreamGenericReader() override;
 
   // https://streams.spec.whatwg.org/#default-reader-closed
   ScriptPromise closed(ScriptState*) const;
@@ -56,10 +58,10 @@ class CORE_EXPORT ReadableStreamReader : public ScriptWrappable {
 
   // https://streams.spec.whatwg.org/#readable-stream-default-reader-read
   static StreamPromiseResolver* Read(ScriptState* script_state,
-                                     ReadableStreamReader* reader);
+                                     ReadableStreamGenericReader* reader);
 
   // https://streams.spec.whatwg.org/#readable-stream-reader-generic-release
-  static void GenericRelease(ScriptState*, ReadableStreamReader*);
+  static void GenericRelease(ScriptState*, ReadableStreamGenericReader*);
 
   StreamPromiseResolver* ClosedPromise() { return closed_promise_; }
 
@@ -71,12 +73,12 @@ class CORE_EXPORT ReadableStreamReader : public ScriptWrappable {
 
   // https://streams.spec.whatwg.org/#readable-stream-reader-generic-cancel
   static v8::Local<v8::Promise> GenericCancel(ScriptState*,
-                                              ReadableStreamReader*,
+                                              ReadableStreamGenericReader*,
                                               v8::Local<v8::Value> reason);
 
   // https://streams.spec.whatwg.org/#readable-stream-reader-generic-initialize
   static void GenericInitialize(ScriptState*,
-                                ReadableStreamReader*,
+                                ReadableStreamGenericReader*,
                                 ReadableStream*);
 
   Member<StreamPromiseResolver> closed_promise_;
@@ -87,4 +89,4 @@ class CORE_EXPORT ReadableStreamReader : public ScriptWrappable {
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_STREAMS_READABLE_STREAM_READER_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_STREAMS_READABLE_STREAM_GENERIC_READER_H_

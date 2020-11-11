@@ -138,8 +138,8 @@ TEST_F(IncomingStreamTest, AbortReading) {
 
   auto* incoming_stream = CreateIncomingStream(scope);
   auto* script_state = scope.GetScriptState();
-  auto* reader =
-      incoming_stream->Readable()->getReader(script_state, ASSERT_NO_EXCEPTION);
+  auto* reader = incoming_stream->Readable()->GetDefaultReaderForTesting(
+      script_state, ASSERT_NO_EXCEPTION);
   ScriptPromise reading_aborted = incoming_stream->ReadingAborted();
 
   EXPECT_CALL(mock_on_abort_, Run());
@@ -183,8 +183,8 @@ TEST_F(IncomingStreamTest, ReadArrayBuffer) {
 
   auto* incoming_stream = CreateIncomingStream(scope);
   auto* script_state = scope.GetScriptState();
-  auto* reader =
-      incoming_stream->Readable()->getReader(script_state, ASSERT_NO_EXCEPTION);
+  auto* reader = incoming_stream->Readable()->GetDefaultReaderForTesting(
+      script_state, ASSERT_NO_EXCEPTION);
   WriteToPipe({'A'});
 
   Iterator result = Read(scope, reader);
@@ -198,8 +198,8 @@ TEST_F(IncomingStreamTest, ReadThenClosedWithFin) {
 
   auto* incoming_stream = CreateIncomingStream(scope);
   auto* script_state = scope.GetScriptState();
-  auto* reader =
-      incoming_stream->Readable()->getReader(script_state, ASSERT_NO_EXCEPTION);
+  auto* reader = incoming_stream->Readable()->GetDefaultReaderForTesting(
+      script_state, ASSERT_NO_EXCEPTION);
   WriteToPipe({'B'});
   incoming_stream->OnIncomingStreamClosed(true);
 
@@ -226,8 +226,8 @@ TEST_F(IncomingStreamTest, ReadThenClosedWithoutFin) {
 
   auto* incoming_stream = CreateIncomingStream(scope);
   auto* script_state = scope.GetScriptState();
-  auto* reader =
-      incoming_stream->Readable()->getReader(script_state, ASSERT_NO_EXCEPTION);
+  auto* reader = incoming_stream->Readable()->GetDefaultReaderForTesting(
+      script_state, ASSERT_NO_EXCEPTION);
   WriteToPipe({'B'});
   incoming_stream->OnIncomingStreamClosed(false);
 
@@ -265,8 +265,8 @@ TEST_F(IncomingStreamTest, DataPipeResetBeforeClosedWithFin) {
 
   auto* incoming_stream = CreateIncomingStream(scope);
   auto* script_state = scope.GetScriptState();
-  auto* reader =
-      incoming_stream->Readable()->getReader(script_state, ASSERT_NO_EXCEPTION);
+  auto* reader = incoming_stream->Readable()->GetDefaultReaderForTesting(
+      script_state, ASSERT_NO_EXCEPTION);
   WriteToPipe({'E'});
   ClosePipe();
   incoming_stream->OnIncomingStreamClosed(true);
@@ -284,8 +284,8 @@ TEST_F(IncomingStreamTest, DataPipeResetBeforeClosedWithoutFin) {
 
   auto* incoming_stream = CreateIncomingStream(scope);
   auto* script_state = scope.GetScriptState();
-  auto* reader =
-      incoming_stream->Readable()->getReader(script_state, ASSERT_NO_EXCEPTION);
+  auto* reader = incoming_stream->Readable()->GetDefaultReaderForTesting(
+      script_state, ASSERT_NO_EXCEPTION);
   WriteToPipe({'F'});
   ClosePipe();
   incoming_stream->OnIncomingStreamClosed(false);
@@ -312,8 +312,8 @@ TEST_F(IncomingStreamTest, WriteToPipeWithPendingRead) {
 
   auto* incoming_stream = CreateIncomingStream(scope);
   auto* script_state = scope.GetScriptState();
-  auto* reader =
-      incoming_stream->Readable()->getReader(script_state, ASSERT_NO_EXCEPTION);
+  auto* reader = incoming_stream->Readable()->GetDefaultReaderForTesting(
+      script_state, ASSERT_NO_EXCEPTION);
   ScriptPromise read_promise = reader->read(script_state, ASSERT_NO_EXCEPTION);
   ScriptPromiseTester tester(script_state, read_promise);
 

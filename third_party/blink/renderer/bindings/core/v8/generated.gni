@@ -76,6 +76,8 @@ bindings_core_generated_union_type_files = [
   "$bindings_core_v8_output_dir/node_or_string_or_trusted_script.h",
   "$bindings_core_v8_output_dir/radio_node_list_or_element.cc",
   "$bindings_core_v8_output_dir/radio_node_list_or_element.h",
+  "$bindings_core_v8_output_dir/readable_stream_default_reader_or_readable_stream_byob_reader.cc",
+  "$bindings_core_v8_output_dir/readable_stream_default_reader_or_readable_stream_byob_reader.h",
   "$bindings_core_v8_output_dir/request_or_usv_string.cc",
   "$bindings_core_v8_output_dir/request_or_usv_string.h",
   "$bindings_core_v8_output_dir/scroll_into_view_options_or_boolean.cc",

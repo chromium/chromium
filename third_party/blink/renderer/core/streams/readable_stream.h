@@ -21,6 +21,7 @@ class AbortSignal;
 class ExceptionState;
 class MessagePort;
 class ReadableStreamDefaultController;
+class ReadableStreamDefaultReaderOrReadableStreamBYOBReader;
 class ReadableStreamGetReaderOptions;
 class ReadableWritablePair;
 class ScriptPromise;
@@ -110,12 +111,20 @@ class CORE_EXPORT ReadableStream : public ScriptWrappable {
   // https://streams.spec.whatwg.org/#rs-cancel
   ScriptPromise cancel(ScriptState*, ScriptValue reason, ExceptionState&);
 
-  ReadableStreamDefaultReader* getReader(ScriptState*, ExceptionState&);
+  void getReader(
+      ScriptState*,
+      ReadableStreamDefaultReaderOrReadableStreamBYOBReader& return_value,
+      ExceptionState&);
 
   // https://streams.spec.whatwg.org/#rs-get-reader
-  ReadableStreamReader* getReader(ScriptState*,
-                                  ReadableStreamGetReaderOptions* options,
-                                  ExceptionState&);
+  void getReader(
+      ScriptState*,
+      ReadableStreamGetReaderOptions* options,
+      ReadableStreamDefaultReaderOrReadableStreamBYOBReader& return_value,
+      ExceptionState&);
+
+  ReadableStreamDefaultReader* GetDefaultReaderForTesting(ScriptState*,
+                                                          ExceptionState&);
 
   ReadableStream* pipeThrough(ScriptState*,
                               ReadableWritablePair* transform,
@@ -215,7 +224,7 @@ class CORE_EXPORT ReadableStream : public ScriptWrappable {
 
  private:
   friend class ReadableStreamDefaultController;
-  friend class ReadableStreamReader;
+  friend class ReadableStreamGenericReader;
 
   class PipeToEngine;
   class ReadHandleImpl;
@@ -232,10 +241,10 @@ class CORE_EXPORT ReadableStream : public ScriptWrappable {
   static void Initialize(ReadableStream*);
 
   // https://streams.spec.whatwg.org/#acquire-readable-stream-reader
-  static ReadableStreamReader* AcquireDefaultReader(ScriptState*,
-                                                    ReadableStream*,
-                                                    bool for_author_code,
-                                                    ExceptionState&);
+  static ReadableStreamDefaultReader* AcquireDefaultReader(ScriptState*,
+                                                           ReadableStream*,
+                                                           bool for_author_code,
+                                                           ExceptionState&);
 
   // https://streams.spec.whatwg.org/#readable-stream-add-read-request
   static StreamPromiseResolver* AddReadRequest(ScriptState*, ReadableStream*);
@@ -280,7 +289,7 @@ class CORE_EXPORT ReadableStream : public ScriptWrappable {
   bool is_disturbed_ = false;
   State state_ = kReadable;
   Member<ReadableStreamDefaultController> readable_stream_controller_;
-  Member<ReadableStreamReader> reader_;
+  Member<ReadableStreamGenericReader> reader_;
   TraceWrapperV8Reference<v8::Value> stored_error_;
 };
 

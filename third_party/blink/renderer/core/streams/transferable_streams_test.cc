@@ -41,7 +41,8 @@ TEST(TransferableStreamsTest, SmokeTest) {
   ASSERT_TRUE(readable);
 
   auto* writer = writable->getWriter(script_state, ASSERT_NO_EXCEPTION);
-  auto* reader = readable->getReader(script_state, ASSERT_NO_EXCEPTION);
+  auto* reader =
+      readable->GetDefaultReaderForTesting(script_state, ASSERT_NO_EXCEPTION);
 
   writer->write(script_state, ScriptValue::CreateNull(scope.GetIsolate()),
                 ASSERT_NO_EXCEPTION);

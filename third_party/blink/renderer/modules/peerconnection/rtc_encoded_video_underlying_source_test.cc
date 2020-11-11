@@ -38,7 +38,8 @@ TEST_F(RTCEncodedVideoUnderlyingSourceTest,
       ReadableStream::CreateWithCountQueueingStrategy(script_state, source, 0);
 
   NonThrowableExceptionState exception_state;
-  auto* reader = stream->getReader(script_state, exception_state);
+  auto* reader =
+      stream->GetDefaultReaderForTesting(script_state, exception_state);
 
   ScriptPromiseTester read_tester(script_state,
                                   reader->read(script_state, exception_state));

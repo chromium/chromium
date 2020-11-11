@@ -179,7 +179,7 @@ TEST_F(ReadableStreamTest, GetReader) {
   EXPECT_FALSE(stream->IsDisturbed());
 
   ReadableStreamDefaultReader* reader =
-      stream->getReader(script_state, ASSERT_NO_EXCEPTION);
+      stream->GetDefaultReaderForTesting(script_state, ASSERT_NO_EXCEPTION);
 
   EXPECT_TRUE(stream->locked());
   EXPECT_TRUE(stream->IsLocked());
