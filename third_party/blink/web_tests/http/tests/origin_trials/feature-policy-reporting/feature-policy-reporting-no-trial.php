@@ -20,7 +20,7 @@ const check_report_format = ([reports, observer]) => {
 promise_test(async t => {
   const report = new Promise(resolve => {
       new ReportingObserver((reports, observer) => resolve([reports, observer]),
-                            {types: ['feature-policy-violation','intervention']}).observe();
+                            {types: ['permissions-policy-violation','intervention']}).observe();
         });
 
   const xhr = new XMLHttpRequest();

@@ -6203,6 +6203,23 @@ crbug.com/1123116 external/wpt/permissions-policy/permissions-policy-frame-polic
 crbug.com/1123116 external/wpt/permissions-policy/permissions-policy-frame-policy-allowed-for-some-override.https.sub.html [ Failure ]
 crbug.com/1123116 external/wpt/permissions-policy/permissions-policy-frame-policy-allowed-for-some.https.sub.html [ Failure ]
 crbug.com/1123116 external/wpt/permissions-policy/permissions-policy-frame-policy-disallowed-for-all.https.sub.html [ Failure ]
+
+# Rename "feature-policy-violation" report type to "permissions-policy-violation" report type.
+crbug.com/1123116 external/wpt/feature-policy/reporting/camera-reporting.https.html [ Timeout ]
+crbug.com/1123116 external/wpt/feature-policy/reporting/encrypted-media-reporting.https.html [ Timeout ]
+crbug.com/1123116 external/wpt/feature-policy/reporting/fullscreen-reporting.html [ Timeout ]
+crbug.com/1123116 external/wpt/feature-policy/reporting/generic-sensor-reporting.https.html [ Timeout ]
+crbug.com/1123116 external/wpt/feature-policy/reporting/geolocation-reporting.https.html [ Timeout ]
+crbug.com/1123116 external/wpt/feature-policy/reporting/microphone-reporting.https.html [ Timeout ]
+crbug.com/1123116 external/wpt/feature-policy/reporting/midi-reporting.https.html [ Timeout ]
+crbug.com/1123116 external/wpt/feature-policy/reporting/payment-reporting.https.html [ Timeout ]
+crbug.com/1123116 external/wpt/feature-policy/reporting/picture-in-picture-reporting.html [ Timeout ]
+crbug.com/1123116 external/wpt/feature-policy/reporting/screen-wake-lock-reporting.https.html [ Timeout ]
+crbug.com/1123116 external/wpt/feature-policy/reporting/serial-reporting.https.html [ Timeout ]
+crbug.com/1123116 external/wpt/feature-policy/reporting/sync-xhr-reporting.html [ Timeout ]
+crbug.com/1123116 external/wpt/feature-policy/reporting/usb-reporting.https.html [ Timeout ]
+crbug.com/1123116 external/wpt/feature-policy/reporting/xr-reporting.https.html [ Timeout ]
+
 crbug.com/1140329 http/tests/devtools/network/network-filter-service-worker.js [ Pass Timeout Failure ]
 crbug.com/1140329 virtual/threaded/external/wpt/web-animations/timing-model/animations/updating-the-finished-state.html [ Pass Failure Timeout ]
 
