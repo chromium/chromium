@@ -27,7 +27,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_SPEECH_SPEECH_SYNTHESIS_H_
 
 #include "third_party/blink/public/mojom/speech/speech_synthesis.mojom-blink-forward.h"
-#include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/event_target_modules.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/speech/speech_synthesis_utterance.h"
@@ -43,7 +42,6 @@ class LocalDOMWindow;
 
 class MODULES_EXPORT SpeechSynthesis final
     : public EventTargetWithInlineData,
-      public ExecutionContextClient,
       public Supplement<LocalDOMWindow>,
       public mojom::blink::SpeechSynthesisVoiceListObserver {
   DEFINE_WRAPPERTYPEINFO();
@@ -71,9 +69,7 @@ class MODULES_EXPORT SpeechSynthesis final
 
   DEFINE_ATTRIBUTE_EVENT_LISTENER(voiceschanged, kVoiceschanged)
 
-  ExecutionContext* GetExecutionContext() const override {
-    return ExecutionContextClient::GetExecutionContext();
-  }
+  ExecutionContext* GetExecutionContext() const override;
 
   // GarbageCollected
   void Trace(Visitor*) const override;

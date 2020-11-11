@@ -30,8 +30,7 @@ using AppInstalledCallbacks =
 
 class MODULES_EXPORT InstalledAppController final
     : public GarbageCollected<InstalledAppController>,
-      public Supplement<LocalDOMWindow>,
-      public ExecutionContextClient {
+      public Supplement<LocalDOMWindow> {
  public:
   static const char kSupplementName[];
 

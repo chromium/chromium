@@ -36,7 +36,6 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_speech_synthesis_error_event_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_speech_synthesis_event_init.h"
 #include "third_party/blink/renderer/core/dom/document.h"
-#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/deprecation.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
@@ -81,7 +80,7 @@ void SpeechSynthesis::CreateForTesting(
 }
 
 SpeechSynthesis::SpeechSynthesis(LocalDOMWindow& window)
-    : ExecutionContextClient(&window),
+    : Supplement<LocalDOMWindow>(window),
       receiver_(this, &window),
       mojom_synthesis_(&window) {}
 
@@ -108,8 +107,7 @@ void SpeechSynthesis::RecordVoicesForIdentifiability() const {
       WebFeature::kSpeechSynthesis_GetVoices_Method);
   if (!IdentifiabilityStudySettings::Get()->ShouldSample(surface))
     return;
-  ExecutionContext* context = GetExecutionContext();
-  if (!context)
+  if (!GetSupplementable()->GetFrame())
     return;
 
   IdentifiableTokenBuilder builder;
@@ -119,9 +117,9 @@ void SpeechSynthesis::RecordVoicesForIdentifiability() const {
     builder.AddToken(IdentifiabilityBenignStringToken(voice->name()));
     builder.AddToken(voice->localService());
   }
-  IdentifiabilityMetricBuilder(context->UkmSourceID())
+  IdentifiabilityMetricBuilder(GetSupplementable()->UkmSourceID())
       .Set(surface, builder.GetToken())
-      .Record(context->UkmRecorder());
+      .Record(GetSupplementable()->UkmRecorder());
 }
 
 bool SpeechSynthesis::speaking() const {
@@ -149,13 +147,13 @@ void SpeechSynthesis::speak(ScriptState* script_state,
 
   // Note: Non-UseCounter based TTS metrics are of the form TextToSpeech.* and
   // are generally global, whereas these are scoped to a single page load.
-  LocalDOMWindow* window = To<LocalDOMWindow>(GetExecutionContext());
-  UseCounter::Count(window, WebFeature::kTextToSpeech_Speak);
-  window->CountUseOnlyInCrossOriginIframe(
+  UseCounter::Count(GetSupplementable(), WebFeature::kTextToSpeech_Speak);
+  GetSupplementable()->CountUseOnlyInCrossOriginIframe(
       WebFeature::kTextToSpeech_SpeakCrossOrigin);
   if (!IsAllowedToStartByAutoplay()) {
     Deprecation::CountDeprecation(
-        window, WebFeature::kTextToSpeech_SpeakDisallowedByAutoplay);
+        GetSupplementable(),
+        WebFeature::kTextToSpeech_SpeakDisallowedByAutoplay);
     FireErrorEvent(utterance, 0 /* char_index */, "not-allowed");
     return;
   }
@@ -238,7 +236,7 @@ void SpeechSynthesis::SentenceBoundaryEventOccurred(
 }
 
 void SpeechSynthesis::VoicesDidChange() {
-  if (GetExecutionContext())
+  if (GetSupplementable()->GetFrame())
     DispatchEvent(*Event::Create(event_type_names::kVoiceschanged));
 }
 
@@ -328,29 +326,31 @@ SpeechSynthesisUtterance* SpeechSynthesis::CurrentSpeechUtterance() const {
   return utterance_queue_.front();
 }
 
+ExecutionContext* SpeechSynthesis::GetExecutionContext() const {
+  return GetSupplementable();
+}
+
 void SpeechSynthesis::Trace(Visitor* visitor) const {
   visitor->Trace(receiver_);
   visitor->Trace(mojom_synthesis_);
   visitor->Trace(voice_list_);
   visitor->Trace(utterance_queue_);
-  ExecutionContextClient::Trace(visitor);
   Supplement<LocalDOMWindow>::Trace(visitor);
   EventTargetWithInlineData::Trace(visitor);
 }
 
 bool SpeechSynthesis::GetElapsedTimeMillis(double* millis) {
-  if (!GetExecutionContext())
+  if (!GetSupplementable()->GetFrame())
     return false;
-  LocalDOMWindow* window = To<LocalDOMWindow>(GetExecutionContext());
-  if (window->document()->IsStopped())
+  if (GetSupplementable()->document()->IsStopped())
     return false;
 
-  *millis = DOMWindowPerformance::performance(*window)->now();
+  *millis = DOMWindowPerformance::performance(*GetSupplementable())->now();
   return true;
 }
 
 bool SpeechSynthesis::IsAllowedToStartByAutoplay() const {
-  Document* document = To<LocalDOMWindow>(GetExecutionContext())->document();
+  Document* document = GetSupplementable()->document();
   DCHECK(document);
 
   // Note: could check the utterance->volume here, but that could be overriden
@@ -366,10 +366,10 @@ void SpeechSynthesis::SetMojomSynthesisForTesting(
     mojo::PendingRemote<mojom::blink::SpeechSynthesis> mojom_synthesis) {
   mojom_synthesis_.Bind(
       std::move(mojom_synthesis),
-      GetExecutionContext()->GetTaskRunner(TaskType::kMiscPlatformAPI));
+      GetSupplementable()->GetTaskRunner(TaskType::kMiscPlatformAPI));
   receiver_.reset();
   mojom_synthesis_->AddVoiceListObserver(receiver_.BindNewPipeAndPassRemote(
-      GetExecutionContext()->GetTaskRunner(TaskType::kMiscPlatformAPI)));
+      GetSupplementable()->GetTaskRunner(TaskType::kMiscPlatformAPI)));
 }
 
 mojom::blink::SpeechSynthesis* SpeechSynthesis::TryEnsureMojomSynthesis() {
@@ -379,18 +379,17 @@ mojom::blink::SpeechSynthesis* SpeechSynthesis::TryEnsureMojomSynthesis() {
   // The frame could be detached. In that case, calls on mojom_synthesis_ will
   // just get dropped. That's okay and is simpler than having to null-check
   // mojom_synthesis_ before each use.
-  ExecutionContext* context = GetExecutionContext();
-
-  if (!context)
+  LocalDOMWindow* window = GetSupplementable();
+  if (!window->GetFrame())
     return nullptr;
 
   auto receiver = mojom_synthesis_.BindNewPipeAndPassReceiver(
-      context->GetTaskRunner(TaskType::kMiscPlatformAPI));
+      window->GetTaskRunner(TaskType::kMiscPlatformAPI));
 
-  context->GetBrowserInterfaceBroker().GetInterface(std::move(receiver));
+  window->GetBrowserInterfaceBroker().GetInterface(std::move(receiver));
 
   mojom_synthesis_->AddVoiceListObserver(receiver_.BindNewPipeAndPassRemote(
-      context->GetTaskRunner(TaskType::kMiscPlatformAPI)));
+      window->GetTaskRunner(TaskType::kMiscPlatformAPI)));
   return mojom_synthesis_.get();
 }
 

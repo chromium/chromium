@@ -23,7 +23,7 @@ InstalledAppController::~InstalledAppController() = default;
 void InstalledAppController::GetInstalledRelatedApps(
     std::unique_ptr<AppInstalledCallbacks> callbacks) {
   // When detached, the fetch logic is no longer valid.
-  if (!GetExecutionContext()) {
+  if (!GetSupplementable()->GetFrame()) {
     // TODO(mgiuca): AbortError rather than simply undefined.
     // https://crbug.com/687846
     callbacks->OnError();
@@ -53,14 +53,13 @@ const char InstalledAppController::kSupplementName[] = "InstalledAppController";
 
 InstalledAppController::InstalledAppController(LocalDOMWindow& window)
     : Supplement<LocalDOMWindow>(window),
-      ExecutionContextClient(&window),
       provider_(&window) {}
 
 void InstalledAppController::OnGetManifestForRelatedApps(
     std::unique_ptr<AppInstalledCallbacks> callbacks,
     const KURL& url,
     mojom::blink::ManifestPtr manifest) {
-  if (!GetExecutionContext()) {
+  if (!GetSupplementable()->GetFrame()) {
     callbacks->OnError();
     return;
   }
@@ -78,7 +77,7 @@ void InstalledAppController::OnGetManifestForRelatedApps(
     // See https://bit.ly/2S0zRAS for task types.
     GetSupplementable()->GetBrowserInterfaceBroker().GetInterface(
         provider_.BindNewPipeAndPassReceiver(
-            GetExecutionContext()->GetTaskRunner(TaskType::kMiscPlatformAPI)));
+            GetSupplementable()->GetTaskRunner(TaskType::kMiscPlatformAPI)));
     // TODO(mgiuca): Set a connection error handler. This requires a refactor to
     // work like NavigatorShare.cpp (retain a persistent list of clients to
     // reject all of their promises).
@@ -112,7 +111,6 @@ void InstalledAppController::OnFilterInstalledApps(
 void InstalledAppController::Trace(Visitor* visitor) const {
   visitor->Trace(provider_);
   Supplement<LocalDOMWindow>::Trace(visitor);
-  ExecutionContextClient::Trace(visitor);
 }
 
 }  // namespace blink
