@@ -40,7 +40,7 @@ namespace {
 
 class MockLogManager : public autofill::StubLogManager {
  public:
-  MOCK_CONST_METHOD0(IsLoggingActive, bool(void));
+  MOCK_METHOD(bool, IsLoggingActive, (), (const override));
 };
 
 class MockPasswordManagerClient : public StubPasswordManagerClient {
@@ -48,9 +48,12 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
   MockPasswordManagerClient() = default;
   ~MockPasswordManagerClient() override = default;
 
-  MOCK_CONST_METHOD0(GetLogManager, const autofill::LogManager*());
+  MOCK_METHOD(const autofill::LogManager*, GetLogManager, (), (const override));
 #if BUILDFLAG(SAFE_BROWSING_DB_LOCAL)
-  MOCK_METHOD2(CheckSafeBrowsingReputation, void(const GURL&, const GURL&));
+  MOCK_METHOD(void,
+              CheckSafeBrowsingReputation,
+              (const GURL&, const GURL&),
+              (override));
 #endif
 
  private:
@@ -76,13 +79,20 @@ class FakePasswordAutofillAgent
   }
 
   // autofill::mojom::PasswordAutofillAgent:
-  MOCK_METHOD1(FillPasswordForm, void(const PasswordFormFillData&));
-  MOCK_METHOD1(InformNoSavedCredentials, void(bool));
-  MOCK_METHOD2(FillIntoFocusedField, void(bool, const base::string16&));
-  MOCK_METHOD1(TouchToFillClosed, void(bool));
-  MOCK_METHOD1(AnnotateFieldsWithParsingResult, void(const ParsingResult&));
-
-  MOCK_METHOD0(BlacklistedFormFound, void());
+  MOCK_METHOD(void,
+              FillPasswordForm,
+              (const PasswordFormFillData&),
+              (override));
+  MOCK_METHOD(void, InformNoSavedCredentials, (bool), (override));
+  MOCK_METHOD(void,
+              FillIntoFocusedField,
+              (bool, const base::string16&),
+              (override));
+  MOCK_METHOD(void, TouchToFillClosed, (bool), (override));
+  MOCK_METHOD(void,
+              AnnotateFieldsWithParsingResult,
+              (const ParsingResult&),
+              (override));
 
  private:
   void SetLoggingState(bool active) override {
@@ -223,16 +233,6 @@ TEST_F(ContentPasswordManagerDriverTest, ClearPasswordsOnAutofill) {
   EXPECT_CALL(fake_agent_, FillPasswordForm(WerePasswordsCleared()));
   driver->FillPasswordForm(fill_data);
   base::RunLoop().RunUntilIdle();
-}
-
-TEST_F(ContentPasswordManagerDriverTest, NotInformAboutBlacklistedForm) {
-  std::unique_ptr<ContentPasswordManagerDriver> driver(
-      new ContentPasswordManagerDriver(main_rfh(), &password_manager_client_,
-                                       &autofill_client_));
-
-  PasswordFormFillData fill_data = GetTestPasswordFormFillData();
-  EXPECT_CALL(fake_agent_, BlacklistedFormFound()).Times(0);
-  driver->FillPasswordForm(fill_data);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
