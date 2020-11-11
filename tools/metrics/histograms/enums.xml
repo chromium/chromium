@@ -68576,6 +68576,7 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="33" label="UMA_TWA_PRIVACY_DISCLOSURE_V2"/>
   <int value="34" label="UMA_HOMEPAGE_PROMO_CHANGED_UNDO"/>
   <int value="35" label="UMA_CONDITIONAL_TAB_STRIP_DISMISS_UNDO"/>
+  <int value="37" label="UMA_READING_LIST_BOOKMARK_ADDED"/>
 </enum>
 
 <enum name="SnapshotItemId">

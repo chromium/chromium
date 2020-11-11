@@ -831,6 +831,22 @@ public class BookmarkBridge {
                 mNativeBookmarkBridge, BookmarkBridge.this, parent, newOrder);
     }
 
+    /**
+     * Adds an article to the reading list. If the article was already bookmarked, the existing
+     * bookmark ID will be returned.
+     * @param title The title to be used for the reading list item.
+     * @param url The URL of the reading list item.
+     * @return The bookmark ID created after saving the article to the reading list.
+     */
+    public BookmarkId addToReadingList(String title, String url) {
+        ThreadUtils.assertOnUiThread();
+        assert title != null;
+        assert url != null;
+
+        return BookmarkBridgeJni.get().addToReadingList(
+                mNativeBookmarkBridge, BookmarkBridge.this, title, url);
+    }
+
     @VisibleForTesting
     BookmarkId getPartnerFolderId() {
         ThreadUtils.assertOnUiThread();
@@ -1054,6 +1070,8 @@ public class BookmarkBridge {
                 BookmarkId newParentId, int index);
         BookmarkId addBookmark(long nativeBookmarkBridge, BookmarkBridge caller, BookmarkId parent,
                 int index, String title, String url);
+        BookmarkId addToReadingList(
+                long nativeBookmarkBridge, BookmarkBridge caller, String title, String url);
         void undo(long nativeBookmarkBridge, BookmarkBridge caller);
         void startGroupingUndos(long nativeBookmarkBridge, BookmarkBridge caller);
         void endGroupingUndos(long nativeBookmarkBridge, BookmarkBridge caller);

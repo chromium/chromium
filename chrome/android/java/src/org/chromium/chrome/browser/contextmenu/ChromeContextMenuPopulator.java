@@ -694,7 +694,12 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                     linkShareParams, new ChromeShareExtras.Builder().setSaveLastUsed(true).build());
         } else if (itemId == R.id.contextmenu_read_later) {
             recordContextMenuSelection(ContextMenuUma.Action.READ_LATER);
-            // TODO(crbug/1145825): Implement backend action.
+            // TODO(crbug.com/1147475): Download the page to offline page backend.
+            String title = mParams.getTitleText();
+            if (TextUtils.isEmpty(title)) {
+                title = mParams.getLinkText();
+            }
+            mItemDelegate.onReadLater(mParams.getUrl(), title);
         } else if (itemId == R.id.contextmenu_direct_share_link) {
             recordContextMenuSelection(ContextMenuUma.Action.DIRECT_SHARE_LINK);
             final ShareParams shareParams =

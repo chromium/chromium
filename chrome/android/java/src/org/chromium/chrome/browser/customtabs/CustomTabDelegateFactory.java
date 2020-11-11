@@ -475,8 +475,9 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
                 mActivity != null ? mActivity.getTabModelSelector() : null;
         return new ChromeContextMenuPopulatorFactory(
                 new TabContextMenuItemDelegate(tab, tabModelSelector,
-                        EphemeralTabCoordinator.isSupported() ? mEphemeralTabCoordinator::get
-                                                              : () -> null),
+                        EphemeralTabCoordinator.isSupported() ? mEphemeralTabCoordinator::get : ()
+                                -> null,
+                        mActivity == null ? null : mActivity::getSnackbarManager),
                 shareDelegateSupplier, contextMenuMode, AppHooks.get().getExternalAuthUtils());
     }
 

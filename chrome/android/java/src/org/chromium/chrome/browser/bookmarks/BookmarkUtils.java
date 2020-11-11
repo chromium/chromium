@@ -113,6 +113,30 @@ public class BookmarkUtils {
     }
 
     /**
+     * Add an article to the reading list. If the article was already loaded, the entry will be
+     * overwritten. After successful addition, a snackbar will be shown notifying the user about the
+     * result of the operation.
+     * @param url The associated URL.
+     * @param title The title of the reading list item being added.
+     * @param snackbarManager The snackbar manager that will be used to show a snackbar.
+     * @param context The associated context.
+     */
+    public static void addToReadingList(
+            String url, String title, SnackbarManager snackbarManager, Context context) {
+        BookmarkModel bookmarkModel = new BookmarkModel();
+        bookmarkModel.finishLoadingBookmarkModel(() -> {
+            BookmarkId bookmarkId = bookmarkModel.addToReadingList(title, url);
+
+            if (bookmarkId != null) {
+                Snackbar snackbar = Snackbar.make(context.getString(R.string.reading_list_saved),
+                        new SnackbarController() {}, Snackbar.TYPE_ACTION,
+                        Snackbar.UMA_READING_LIST_BOOKMARK_ADDED);
+                snackbarManager.showSnackbar(snackbar);
+            }
+        });
+    }
+
+    /**
      * An internal version of {@link #addBookmarkSilently(Context, BookmarkModel, String, String)}.
      * Will reset last used parent if it fails to add a bookmark
      */
