@@ -84,6 +84,10 @@ const base::Feature kPasswordsWeaknessCheck = {
 const base::Feature kRecoverFromNeverSaveAndroid = {
     "RecoverFromNeverSaveAndroid", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables considering secondary server field predictions during form parsing.
+const base::Feature kSecondaryServerFieldPredictions = {
+    "SecondaryServerFieldPredictions", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Treat heuritistics to find new password fields as reliable. This enables
 // password generation on more forms, but could lead to false positives.
 const base::Feature kTreatNewPasswordHeuristicsAsReliable = {

@@ -4,9 +4,11 @@
 
 #include "components/password_manager/core/browser/form_parsing/password_field_prediction.h"
 
+#include "base/feature_list.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/signatures.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 
 using autofill::AutofillField;
 using autofill::FieldSignature;
@@ -18,22 +20,36 @@ namespace password_manager {
 
 namespace {
 
+bool AreSecondaryPredictionsEnabled() {
+  return base::FeatureList::IsEnabled(
+      features::kSecondaryServerFieldPredictions);
+}
+
 ServerFieldType GetServerType(const AutofillField& field) {
-  // The main server predictions is in |field.server_type()| but the server can
-  // send additional predictions in |field.server_predictions()|. This function
-  // chooses relevant for Password Manager predictions.
+  // The main server predictions is in `field.server_type()` but the server can
+  // send additional predictions in `field.server_predictions()`. This function
+  // chooses relevant for Password Manager predictions. Choosing additional
+  // predictions from `field.server_predictions()` is gated on the
+  // `kSecondaryServerFieldPredictions` flag. This is because the server only
+  // recently started to send down these predictions (http://cl/340884706).
+  // Having a feature flag here allows us to run experiments to measure the
+  // impact of these new predictions.
 
   // 1. If there is cvc prediction returns it.
   for (const auto& predictions : field.server_predictions()) {
-    if (predictions.type() == autofill::CREDIT_CARD_VERIFICATION_CODE)
-      return ServerFieldType(predictions.type());
+    if (predictions.type() == autofill::CREDIT_CARD_VERIFICATION_CODE &&
+        AreSecondaryPredictionsEnabled()) {
+      return autofill::CREDIT_CARD_VERIFICATION_CODE;
+    }
   }
 
   // 2. If there is password related prediction returns it.
   for (const auto& predictions : field.server_predictions()) {
-    ServerFieldType type = ServerFieldType(predictions.type());
-    if (DeriveFromServerFieldType(type) != CredentialFieldType::kNone)
+    auto type = static_cast<ServerFieldType>(predictions.type());
+    if (DeriveFromServerFieldType(type) != CredentialFieldType::kNone &&
+        AreSecondaryPredictionsEnabled()) {
       return type;
+    }
   }
 
   // 3. Returns the main prediction.
