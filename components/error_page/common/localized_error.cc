@@ -43,6 +43,10 @@ namespace error_page {
 
 namespace {
 
+// Hardcode these constants to avoid dependences on //chrome and //content.
+const char kChromeUIScheme[] = "chrome";
+const char kChromeUIDinoHost[] = "dino";
+
 static const char kRedirectLoopLearnMoreUrl[] =
     "https://support.google.com/chrome?p=rl_error";
 
@@ -906,6 +910,9 @@ LocalizedError::PageState LocalizedError::GetPageState(
 
   webui::SetLoadTimeDataDefaults(locale, &result.strings);
 
+  bool show_game_instructions = failed_url.host() == kChromeUIDinoHost &&
+                                failed_url.scheme() == kChromeUIScheme;
+
   // Grab the strings and settings that depend on the error type.  Init
   // options with default values.
   LocalizedErrorMap options = {
@@ -956,19 +963,14 @@ LocalizedError::PageState LocalizedError::GetPageState(
   result.strings.SetString("iconClass", icon_class);
 
   auto heading = std::make_unique<base::DictionaryValue>();
-  heading->SetString("msg",
-                     l10n_util::GetStringUTF16(options.heading_resource_id));
+
+  int msg_id = show_game_instructions ? IDS_ERRORPAGES_GAME_INSTRUCTIONS
+                                      : options.heading_resource_id;
+  heading->SetString("msg", l10n_util::GetStringUTF16(msg_id));
   heading->SetString("hostName", host_name);
   result.strings.Set("heading", std::move(heading));
 
-  auto summary = std::make_unique<base::DictionaryValue>();
-
-  // Set summary message under the heading.
-  summary->SetString(
-      "msg", l10n_util::GetStringUTF16(options.summary_resource_id));
-
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-
   // Check if easter egg should be disabled.
   if (command_line->HasSwitch(
           error_page::switches::kDisableDinosaurEasterEgg)) {
@@ -978,6 +980,19 @@ LocalizedError::PageState LocalizedError::GetPageState(
         l10n_util::GetStringUTF16(IDS_ERRORPAGE_FUN_DISABLED));
   }
 
+  // Return early and don't add suggestions or other information when showing
+  // game instructions.
+  if (show_game_instructions) {
+    // When showing instructions, set an empty error to prevent a "NULL" string.
+    result.strings.SetString("errorCode", "");
+    return result;
+  }
+
+  auto summary = std::make_unique<base::DictionaryValue>();
+
+  // Set summary message under the heading.
+  summary->SetString("msg",
+                     l10n_util::GetStringUTF16(options.summary_resource_id));
   summary->SetString("failedUrl", failed_url_string);
   summary->SetString("hostName", host_name);
 

@@ -369,5 +369,15 @@
       If spelling is correct, <ph name="BEGIN_LINK">&lt;a href="javascript:diagnoseErrors()" id="diagnose-link"&gt;</ph>try running Connectivity Diagnostics<ph name="END_LINK">&lt;/a&gt;</ph>.
     </message>
   </if>
+  <if expr="is_android or is_ios">
+    <message name="IDS_ERRORPAGES_GAME_INSTRUCTIONS" desc="Mobile: Instructions on how to start playing the offline game. 'dino' is an acceptable English nickname that refers to 'dinosaur'">
+      Tap the dino to play
+    </message>
+  </if>
+  <if expr="not is_android and not is_ios">
+    <message name="IDS_ERRORPAGES_GAME_INSTRUCTIONS" desc="Instructions on how to start playing the offline game.">
+      Press space to play
+    </message>
+  </if>
 
 </grit-part>
