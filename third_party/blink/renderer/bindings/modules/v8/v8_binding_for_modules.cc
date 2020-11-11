@@ -197,7 +197,7 @@ static std::unique_ptr<IDBKey> CreateIDBKeyFromSimpleValue(
       return IDBKey::CreateInvalid();
     }
     const char* start = static_cast<const char*>(buffer->Data());
-    size_t length = buffer->ByteLengthAsSizeT();
+    size_t length = buffer->ByteLength();
     return IDBKey::CreateBinary(SharedBuffer::Create(start, length));
   }
 
@@ -209,7 +209,7 @@ static std::unique_ptr<IDBKey> CreateIDBKeyFromSimpleValue(
       return IDBKey::CreateInvalid();
     }
     const char* start = static_cast<const char*>(view->BaseAddress());
-    size_t length = view->byteLengthAsSizeT();
+    size_t length = view->byteLength();
     return IDBKey::CreateBinary(SharedBuffer::Create(start, length));
   }
 

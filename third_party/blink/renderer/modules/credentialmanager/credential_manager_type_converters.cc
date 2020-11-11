@@ -184,12 +184,12 @@ Vector<uint8_t> ConvertFixedSizeArray(
     const blink::ArrayBufferOrArrayBufferView& buffer,
     unsigned length) {
   if (buffer.IsArrayBuffer() &&
-      (buffer.GetAsArrayBuffer()->ByteLengthAsSizeT() != length)) {
+      (buffer.GetAsArrayBuffer()->ByteLength() != length)) {
     return Vector<uint8_t>();
   }
 
   if (buffer.IsArrayBufferView() &&
-      buffer.GetAsArrayBufferView().View()->byteLengthAsSizeT() != length) {
+      buffer.GetAsArrayBufferView().View()->byteLength() != length) {
     return Vector<uint8_t>();
   }
 
@@ -205,14 +205,13 @@ TypeConverter<Vector<uint8_t>, blink::ArrayBufferOrArrayBufferView>::Convert(
   if (buffer.IsArrayBuffer()) {
     vector.Append(static_cast<uint8_t*>(buffer.GetAsArrayBuffer()->Data()),
                   base::checked_cast<wtf_size_t>(
-                      buffer.GetAsArrayBuffer()->ByteLengthAsSizeT()));
+                      buffer.GetAsArrayBuffer()->ByteLength()));
   } else {
     DCHECK(buffer.IsArrayBufferView());
-    vector.Append(
-        static_cast<uint8_t*>(
-            buffer.GetAsArrayBufferView().View()->BaseAddress()),
-        base::checked_cast<wtf_size_t>(
-            buffer.GetAsArrayBufferView().View()->byteLengthAsSizeT()));
+    vector.Append(static_cast<uint8_t*>(
+                      buffer.GetAsArrayBufferView().View()->BaseAddress()),
+                  base::checked_cast<wtf_size_t>(
+                      buffer.GetAsArrayBufferView().View()->byteLength()));
   }
   return vector;
 }

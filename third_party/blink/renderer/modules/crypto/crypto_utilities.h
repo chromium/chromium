@@ -11,7 +11,7 @@
 namespace blink {
 inline WebVector<uint8_t> CopyBytes(const DOMArrayPiece& source) {
   return WebVector<uint8_t>(static_cast<const uint8_t*>(source.Data()),
-                            source.ByteLengthAsSizeT());
+                            source.ByteLength());
 }
 }  // namespace blink
 

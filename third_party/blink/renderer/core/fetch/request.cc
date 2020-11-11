@@ -131,7 +131,7 @@ static BodyStreamBuffer* ExtractBody(ScriptState* script_state,
     // Avoid calling into V8 from the following constructor parameters, which
     // is potentially unsafe.
     DOMArrayBuffer* array_buffer = V8ArrayBuffer::ToImpl(body.As<v8::Object>());
-    if (!base::CheckedNumeric<wtf_size_t>(array_buffer->ByteLengthAsSizeT())
+    if (!base::CheckedNumeric<wtf_size_t>(array_buffer->ByteLength())
              .IsValid()) {
       exception_state.ThrowRangeError(
           "The provided ArrayBuffer exceeds the maximum supported size");
@@ -145,8 +145,7 @@ static BodyStreamBuffer* ExtractBody(ScriptState* script_state,
     // is potentially unsafe.
     DOMArrayBufferView* array_buffer_view =
         V8ArrayBufferView::ToImpl(body.As<v8::Object>());
-    if (!base::CheckedNumeric<wtf_size_t>(
-             array_buffer_view->byteLengthAsSizeT())
+    if (!base::CheckedNumeric<wtf_size_t>(array_buffer_view->byteLength())
              .IsValid()) {
       exception_state.ThrowRangeError(
           "The provided ArrayBufferView exceeds the maximum supported size");

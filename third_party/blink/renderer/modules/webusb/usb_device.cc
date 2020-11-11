@@ -152,15 +152,14 @@ bool ConvertBufferSource(const ArrayBufferOrArrayBufferView& buffer_source,
           DOMExceptionCode::kInvalidStateError, kDetachedBuffer));
       return false;
     }
-    if (array_buffer->ByteLengthAsSizeT() >
-        std::numeric_limits<wtf_size_t>::max()) {
+    if (array_buffer->ByteLength() > std::numeric_limits<wtf_size_t>::max()) {
       resolver->Reject(MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kDataError, kBufferTooBig));
       return false;
     }
 
     vector->Append(static_cast<uint8_t*>(array_buffer->Data()),
-                   static_cast<wtf_size_t>(array_buffer->ByteLengthAsSizeT()));
+                   static_cast<wtf_size_t>(array_buffer->ByteLength()));
   } else {
     DOMArrayBufferView* view = buffer_source.GetAsArrayBufferView().View();
     if (!view->buffer() || view->buffer()->IsDetached()) {
@@ -168,14 +167,14 @@ bool ConvertBufferSource(const ArrayBufferOrArrayBufferView& buffer_source,
           DOMExceptionCode::kInvalidStateError, kDetachedBuffer));
       return false;
     }
-    if (view->byteLengthAsSizeT() > std::numeric_limits<wtf_size_t>::max()) {
+    if (view->byteLength() > std::numeric_limits<wtf_size_t>::max()) {
       resolver->Reject(MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kDataError, kBufferTooBig));
       return false;
     }
 
     vector->Append(static_cast<uint8_t*>(view->BaseAddress()),
-                   static_cast<wtf_size_t>(view->byteLengthAsSizeT()));
+                   static_cast<wtf_size_t>(view->byteLength()));
   }
   return true;
 }

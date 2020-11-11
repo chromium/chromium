@@ -180,7 +180,7 @@ void GPUQueue::writeBuffer(GPUBuffer* buffer,
                            const MaybeShared<DOMArrayBufferView>& data,
                            uint64_t data_byte_offset,
                            ExceptionState& exception_state) {
-  WriteBufferImpl(buffer, buffer_offset, data->byteLengthAsSizeT(),
+  WriteBufferImpl(buffer, buffer_offset, data->byteLength(),
                   data->BaseAddressMaybeShared(), data->TypeSize(),
                   data_byte_offset, {}, exception_state);
 }
@@ -191,7 +191,7 @@ void GPUQueue::writeBuffer(GPUBuffer* buffer,
                            uint64_t data_byte_offset,
                            uint64_t byte_size,
                            ExceptionState& exception_state) {
-  WriteBufferImpl(buffer, buffer_offset, data->byteLengthAsSizeT(),
+  WriteBufferImpl(buffer, buffer_offset, data->byteLength(),
                   data->BaseAddressMaybeShared(), data->TypeSize(),
                   data_byte_offset, byte_size, exception_state);
 }
@@ -201,7 +201,7 @@ void GPUQueue::writeBuffer(GPUBuffer* buffer,
                            const DOMArrayBufferBase* data,
                            uint64_t data_byte_offset,
                            ExceptionState& exception_state) {
-  WriteBufferImpl(buffer, buffer_offset, data->ByteLengthAsSizeT(),
+  WriteBufferImpl(buffer, buffer_offset, data->ByteLength(),
                   data->DataMaybeShared(), 1, data_byte_offset, {},
                   exception_state);
 }
@@ -212,7 +212,7 @@ void GPUQueue::writeBuffer(GPUBuffer* buffer,
                            uint64_t data_byte_offset,
                            uint64_t byte_size,
                            ExceptionState& exception_state) {
-  WriteBufferImpl(buffer, buffer_offset, data->ByteLengthAsSizeT(),
+  WriteBufferImpl(buffer, buffer_offset, data->ByteLength(),
                   data->DataMaybeShared(), 1, data_byte_offset, byte_size,
                   exception_state);
 }
@@ -282,7 +282,7 @@ void GPUQueue::writeTexture(
     UnsignedLongEnforceRangeSequenceOrGPUExtent3DDict& write_size,
     ExceptionState& exception_state) {
   WriteTextureImpl(destination, data->BaseAddressMaybeShared(),
-                   data->byteLengthAsSizeT(), data_layout, write_size,
+                   data->byteLength(), data_layout, write_size,
                    exception_state);
 }
 
@@ -292,9 +292,8 @@ void GPUQueue::writeTexture(
     GPUTextureDataLayout* data_layout,
     UnsignedLongEnforceRangeSequenceOrGPUExtent3DDict& write_size,
     ExceptionState& exception_state) {
-  WriteTextureImpl(destination, data->DataMaybeShared(),
-                   data->ByteLengthAsSizeT(), data_layout, write_size,
-                   exception_state);
+  WriteTextureImpl(destination, data->DataMaybeShared(), data->ByteLength(),
+                   data_layout, write_size, exception_state);
 }
 
 void GPUQueue::WriteTextureImpl(

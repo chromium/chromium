@@ -23,10 +23,9 @@ bool VerifySubRange(const DOMArrayBufferBase* buffer,
     return false;
   if (sizeof(T) > 1 && byte_offset % sizeof(T))
     return false;
-  if (byte_offset > buffer->ByteLengthAsSizeT())
+  if (byte_offset > buffer->ByteLength())
     return false;
-  size_t remaining_elements =
-      (buffer->ByteLengthAsSizeT() - byte_offset) / sizeof(T);
+  size_t remaining_elements = (buffer->ByteLength() - byte_offset) / sizeof(T);
   if (num_elements > remaining_elements)
     return false;
   return true;
@@ -82,11 +81,9 @@ class DOMTypedArray final : public DOMArrayBufferView {
     return reinterpret_cast<ValueType*>(BaseAddressMaybeShared());
   }
 
-  size_t lengthAsSizeT() const { return !IsDetached() ? raw_length_ : 0; }
+  size_t length() const { return !IsDetached() ? raw_length_ : 0; }
 
-  size_t byteLengthAsSizeT() const final {
-    return lengthAsSizeT() * sizeof(ValueType);
-  }
+  size_t byteLength() const final { return length() * sizeof(ValueType); }
 
   unsigned TypeSize() const final { return sizeof(ValueType); }
 
@@ -95,7 +92,7 @@ class DOMTypedArray final : public DOMArrayBufferView {
   // Invoked by the indexed getter. Does not perform range checks; caller
   // is responsible for doing so and returning undefined as necessary.
   ValueType Item(size_t index) const {
-    SECURITY_DCHECK(index < lengthAsSizeT());
+    SECURITY_DCHECK(index < length());
     return Data()[index];
   }
 
@@ -103,7 +100,7 @@ class DOMTypedArray final : public DOMArrayBufferView {
                             v8::Local<v8::Object> creation_context) override;
 
  private:
-  // It may be stale after Detach. Use lengthAsSizeT() instead.
+  // It may be stale after Detach. Use length() instead.
   size_t raw_length_;
 };
 

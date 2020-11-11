@@ -88,7 +88,7 @@ bool NavigatorBeacon::SendBeaconImpl(
   LocalFrame* frame = GetSupplementable()->DomWindow()->GetFrame();
   if (data.IsArrayBuffer()) {
     auto* data_buffer = data.GetAsArrayBuffer();
-    if (!base::CheckedNumeric<wtf_size_t>(data_buffer->ByteLengthAsSizeT())
+    if (!base::CheckedNumeric<wtf_size_t>(data_buffer->ByteLength())
              .IsValid()) {
       // At the moment the PingLoader::SendBeacon implementation cannot deal
       // with huge ArrayBuffers.
@@ -100,8 +100,7 @@ bool NavigatorBeacon::SendBeaconImpl(
     allowed = PingLoader::SendBeacon(*script_state, frame, url, data_buffer);
   } else if (data.IsArrayBufferView()) {
     auto* data_view = data.GetAsArrayBufferView().View();
-    if (!base::CheckedNumeric<wtf_size_t>(data_view->byteLengthAsSizeT())
-             .IsValid()) {
+    if (!base::CheckedNumeric<wtf_size_t>(data_view->byteLength()).IsValid()) {
       // At the moment the PingLoader::SendBeacon implementation cannot deal
       // with huge ArrayBuffers.
       exception_state.ThrowRangeError(

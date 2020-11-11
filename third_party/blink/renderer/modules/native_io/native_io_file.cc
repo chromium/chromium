@@ -40,7 +40,7 @@ namespace {
 // Extracts the read/write operation size from the buffer size.
 int OperationSize(const DOMArrayBufferView& buffer) {
   // On 32-bit platforms, clamp operation sizes to 2^31-1.
-  return base::saturated_cast<int>(buffer.byteLengthAsSizeT());
+  return base::saturated_cast<int>(buffer.byteLength());
 }
 
 }  // namespace

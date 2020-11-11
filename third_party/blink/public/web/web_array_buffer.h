@@ -57,7 +57,7 @@ class WebArrayBuffer {
 
   bool IsNull() const { return private_.IsNull(); }
   BLINK_EXPORT void* Data() const;
-  BLINK_EXPORT size_t ByteLengthAsSizeT() const;
+  BLINK_EXPORT size_t ByteLength() const;
 
 #if INSIDE_BLINK
   BLINK_EXPORT WebArrayBuffer(DOMArrayBuffer*);

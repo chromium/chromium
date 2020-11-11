@@ -183,15 +183,15 @@ TEST_F(ImageDataTest, TestGetImageDataInCanvasColorSettings) {
   NotShared<DOMUint8ClampedArray> data_u8(
       DOMUint8ClampedArray::Create(u8_pixels, data_length));
   DCHECK(data_u8);
-  EXPECT_EQ(data_length, data_u8->lengthAsSizeT());
+  EXPECT_EQ(data_length, data_u8->length());
   NotShared<DOMUint16Array> data_u16(
       DOMUint16Array::Create(u16_pixels, data_length));
   DCHECK(data_u16);
-  EXPECT_EQ(data_length, data_u16->lengthAsSizeT());
+  EXPECT_EQ(data_length, data_u16->length());
   NotShared<DOMFloat32Array> data_f32(
       DOMFloat32Array::Create(f32_pixels, data_length));
   DCHECK(data_f32);
-  EXPECT_EQ(data_length, data_f32->lengthAsSizeT());
+  EXPECT_EQ(data_length, data_f32->length());
 
   ImageData* image_data = nullptr;
   ImageDataColorSettings* color_settings = ImageDataColorSettings::Create();
@@ -430,15 +430,15 @@ TEST_F(ImageDataTest, TestCropRect) {
   NotShared<DOMUint8ClampedArray> data_u8(
       DOMUint8ClampedArray::Create(u8_pixels, data_length));
   DCHECK(data_u8);
-  EXPECT_EQ(data_length, data_u8->lengthAsSizeT());
+  EXPECT_EQ(data_length, data_u8->length());
   NotShared<DOMUint16Array> data_u16(
       DOMUint16Array::Create(u16_pixels, data_length));
   DCHECK(data_u16);
-  EXPECT_EQ(data_length, data_u16->lengthAsSizeT());
+  EXPECT_EQ(data_length, data_u16->length());
   NotShared<DOMFloat32Array> data_f32(
       DOMFloat32Array::Create(f32_pixels, data_length));
   DCHECK(data_f32);
-  EXPECT_EQ(data_length, data_f32->lengthAsSizeT());
+  EXPECT_EQ(data_length, data_f32->length());
 
   ImageData* image_data = nullptr;
   ImageData* cropped_image_data = nullptr;

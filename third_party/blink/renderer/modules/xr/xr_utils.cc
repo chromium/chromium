@@ -30,7 +30,7 @@ DOMFloat32Array* transformationMatrixToDOMFloat32Array(
 }
 
 TransformationMatrix DOMFloat32ArrayToTransformationMatrix(DOMFloat32Array* m) {
-  DCHECK_EQ(m->lengthAsSizeT(), 16u);
+  DCHECK_EQ(m->length(), 16u);
 
   auto* data = m->Data();
 

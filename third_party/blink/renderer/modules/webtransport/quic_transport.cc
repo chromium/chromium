@@ -90,8 +90,8 @@ class QuicTransport::DatagramUnderlyingSink final : public UnderlyingSinkBase {
     if (v8chunk->IsArrayBuffer()) {
       DOMArrayBuffer* data =
           V8ArrayBuffer::ToImpl(v8chunk.As<v8::ArrayBuffer>());
-      return SendDatagram({static_cast<const uint8_t*>(data->Data()),
-                           data->ByteLengthAsSizeT()});
+      return SendDatagram(
+          {static_cast<const uint8_t*>(data->Data()), data->ByteLength()});
     }
 
     auto* isolate = script_state->GetIsolate();
@@ -105,8 +105,8 @@ class QuicTransport::DatagramUnderlyingSink final : public UnderlyingSinkBase {
 
       return SendDatagram(
           {static_cast<const uint8_t*>(data.View()->buffer()->Data()) +
-               data.View()->byteOffsetAsSizeT(),
-           data.View()->byteLengthAsSizeT()});
+               data.View()->byteOffset(),
+           data.View()->byteLength()});
     }
 
     exception_state.ThrowTypeError(

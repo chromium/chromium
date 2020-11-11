@@ -114,7 +114,7 @@ ImageDecoderExternal::ImageDecoderExternal(ScriptState* script_state,
     return;
   }
 
-  if (!buffer.ByteLengthAsSizeT()) {
+  if (!buffer.ByteLength()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kConstraintError,
                                       "No image data provided");
     return;
@@ -123,7 +123,7 @@ ImageDecoderExternal::ImageDecoderExternal(ScriptState* script_state,
   // Since data is owned by the caller who may be free to manipulate it, we must
   // check HasValidEncodedData() before attempting to access |decoder_|.
   segment_reader_ = SegmentReader::CreateFromSkData(
-      SkData::MakeWithoutCopy(buffer.Data(), buffer.ByteLengthAsSizeT()));
+      SkData::MakeWithoutCopy(buffer.Data(), buffer.ByteLength()));
   if (!segment_reader_) {
     exception_state.ThrowDOMException(DOMExceptionCode::kConstraintError,
                                       "Failed to read image data");

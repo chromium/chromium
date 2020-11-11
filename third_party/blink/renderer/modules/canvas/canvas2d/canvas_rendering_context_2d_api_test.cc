@@ -235,8 +235,8 @@ TEST_F(CanvasRenderingContext2DAPITest, CreateImageData) {
   EXPECT_EQ(100, image_data->width());
   EXPECT_EQ(50, image_data->height());
 
-  for (size_t i = 0;
-       i < image_data->data().GetAsUint8ClampedArray()->lengthAsSizeT(); ++i) {
+  for (size_t i = 0; i < image_data->data().GetAsUint8ClampedArray()->length();
+       ++i) {
     image_data->data().GetAsUint8ClampedArray()->Data()[i] = 255;
   }
 
@@ -265,10 +265,10 @@ TEST_F(CanvasRenderingContext2DAPITest, CreateImageData) {
   ImageData* imgdata4 = Context2D()->createImageData(-10, -20, exception_state);
   EXPECT_FALSE(exception_state.HadException());
 
-  EXPECT_EQ(800u, imgdata1->data().GetAsUint8ClampedArray()->lengthAsSizeT());
-  EXPECT_EQ(800u, imgdata2->data().GetAsUint8ClampedArray()->lengthAsSizeT());
-  EXPECT_EQ(800u, imgdata3->data().GetAsUint8ClampedArray()->lengthAsSizeT());
-  EXPECT_EQ(800u, imgdata4->data().GetAsUint8ClampedArray()->lengthAsSizeT());
+  EXPECT_EQ(800u, imgdata1->data().GetAsUint8ClampedArray()->length());
+  EXPECT_EQ(800u, imgdata2->data().GetAsUint8ClampedArray()->length());
+  EXPECT_EQ(800u, imgdata3->data().GetAsUint8ClampedArray()->length());
+  EXPECT_EQ(800u, imgdata4->data().GetAsUint8ClampedArray()->length());
 }
 
 TEST_F(CanvasRenderingContext2DAPITest, CreateImageDataTooBig) {

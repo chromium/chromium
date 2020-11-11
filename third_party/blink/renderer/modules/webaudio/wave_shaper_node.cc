@@ -117,8 +117,7 @@ void WaveShaperNode::setCurve(NotShared<DOMFloat32Array> curve,
   DCHECK(IsMainThread());
 
   if (curve) {
-    SetCurveImpl(curve.View()->Data(), curve.View()->lengthAsSizeT(),
-                 exception_state);
+    SetCurveImpl(curve.View()->Data(), curve.View()->length(), exception_state);
   } else {
     SetCurveImpl(nullptr, 0, exception_state);
   }

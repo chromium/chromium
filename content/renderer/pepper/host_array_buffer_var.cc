@@ -55,7 +55,7 @@ void HostArrayBufferVar::Unmap() {
 }
 
 uint32_t HostArrayBufferVar::ByteLength() {
-  return base::checked_cast<uint32_t>(buffer_.ByteLengthAsSizeT());
+  return base::checked_cast<uint32_t>(buffer_.ByteLength());
 }
 
 bool HostArrayBufferVar::CopyToNewShmem(

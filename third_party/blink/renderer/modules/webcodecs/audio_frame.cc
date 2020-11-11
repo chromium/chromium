@@ -30,7 +30,7 @@ AudioFrame::AudioFrame(scoped_refptr<media::AudioBuffer> buffer)
   auto media_bus_wrapper =
       media::AudioBus::CreateWrapper(buffer->channel_count());
   for (int i = 0; i < media_bus_wrapper->channels(); ++i) {
-    DCHECK_EQ(buffer_->getChannelData(i)->byteLengthAsSizeT(),
+    DCHECK_EQ(buffer_->getChannelData(i)->byteLength(),
               buffer->frame_count() * sizeof(float));
     float* channel_data = buffer_->getChannelData(i)->Data();
     media_bus_wrapper->SetChannelData(i, channel_data);

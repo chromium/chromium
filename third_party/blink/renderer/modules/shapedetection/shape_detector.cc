@@ -129,7 +129,7 @@ ScriptPromise ShapeDetector::DetectShapesOnImageData(
   }
 
   size_t byte_size = sk_bitmap.computeByteSize();
-  CHECK_EQ(byte_size, image_data->BufferBase()->ByteLengthAsSizeT());
+  CHECK_EQ(byte_size, image_data->BufferBase()->ByteLength());
   memcpy(sk_bitmap.getPixels(), image_data->BufferBase()->Data(), byte_size);
 
   return DoDetect(resolver, std::move(sk_bitmap));

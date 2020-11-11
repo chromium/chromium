@@ -2798,7 +2798,7 @@ ScriptValue Internals::deserializeBuffer(v8::Isolate* isolate,
                                          DOMArrayBuffer* buffer) const {
   scoped_refptr<SerializedScriptValue> serialized_value =
       SerializedScriptValue::Create(static_cast<const char*>(buffer->Data()),
-                                    buffer->ByteLengthAsSizeT());
+                                    buffer->ByteLength());
   return ScriptValue(isolate, serialized_value->Deserialize(isolate));
 }
 

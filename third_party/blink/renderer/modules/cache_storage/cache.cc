@@ -725,7 +725,7 @@ class Cache::CodeCacheHandleCallbackForPut final
     return V8CodeCache::GenerateFullCodeCache(
         script_state_,
         text_decoder->Decode(static_cast<const char*>(array_buffer->Data()),
-                             array_buffer->ByteLengthAsSizeT()),
+                             array_buffer->ByteLength()),
         url_, text_decoder->Encoding(), opaque_mode_);
   }
 

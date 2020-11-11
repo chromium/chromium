@@ -21,8 +21,7 @@ class USBIsochronousInTransferResult final : public ScriptWrappable {
   static USBIsochronousInTransferResult* Create(
       DOMArrayBuffer* data,
       const HeapVector<Member<USBIsochronousInTransferPacket>>& packets) {
-    DOMDataView* data_view =
-        DOMDataView::Create(data, 0, data->ByteLengthAsSizeT());
+    DOMDataView* data_view = DOMDataView::Create(data, 0, data->ByteLength());
     return MakeGarbageCollected<USBIsochronousInTransferResult>(data_view,
                                                                 packets);
   }

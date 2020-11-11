@@ -508,23 +508,22 @@ void SourceBuffer::SetAppendWindowEnd_Locked(
 
 void SourceBuffer::appendBuffer(DOMArrayBuffer* data,
                                 ExceptionState& exception_state) {
-  DVLOG(2) << __func__ << " this=" << this
-           << " size=" << data->ByteLengthAsSizeT();
+  DVLOG(2) << __func__ << " this=" << this << " size=" << data->ByteLength();
   // Section 3.2 appendBuffer()
   // https://dvcs.w3.org/hg/html-media/raw-file/default/media-source/media-source.html#widl-SourceBuffer-appendBuffer-void-ArrayBufferView-data
   AppendBufferInternal(static_cast<const unsigned char*>(data->Data()),
-                       data->ByteLengthAsSizeT(), exception_state);
+                       data->ByteLength(), exception_state);
 }
 
 void SourceBuffer::appendBuffer(NotShared<DOMArrayBufferView> data,
                                 ExceptionState& exception_state) {
   DVLOG(3) << __func__ << " this=" << this
-           << " size=" << data.View()->byteLengthAsSizeT();
+           << " size=" << data.View()->byteLength();
   // Section 3.2 appendBuffer()
   // https://dvcs.w3.org/hg/html-media/raw-file/default/media-source/media-source.html#widl-SourceBuffer-appendBuffer-void-ArrayBufferView-data
   AppendBufferInternal(
       static_cast<const unsigned char*>(data.View()->BaseAddress()),
-      data.View()->byteLengthAsSizeT(), exception_state);
+      data.View()->byteLength(), exception_state);
 }
 
 void SourceBuffer::abort(ExceptionState& exception_state) {

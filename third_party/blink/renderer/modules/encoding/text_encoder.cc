@@ -90,13 +90,13 @@ TextEncoderEncodeIntoResult* TextEncoder::encodeInto(
   TextCodec::EncodeIntoResult encode_into_result_data;
   unsigned char* destination_buffer = destination.View()->Data();
   if (source.Is8Bit()) {
-    encode_into_result_data = codec_->EncodeInto(
-        source.Characters8(), source.length(), destination_buffer,
-        destination.View()->lengthAsSizeT());
+    encode_into_result_data =
+        codec_->EncodeInto(source.Characters8(), source.length(),
+                           destination_buffer, destination.View()->length());
   } else {
-    encode_into_result_data = codec_->EncodeInto(
-        source.Characters16(), source.length(), destination_buffer,
-        destination.View()->lengthAsSizeT());
+    encode_into_result_data =
+        codec_->EncodeInto(source.Characters16(), source.length(),
+                           destination_buffer, destination.View()->length());
   }
 
   encode_into_result->setRead(encode_into_result_data.code_units_read);

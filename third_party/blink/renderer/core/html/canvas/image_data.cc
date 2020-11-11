@@ -118,7 +118,7 @@ bool ImageData::ValidateConstructorArguments(
             std::numeric_limits<uint32_t>::max(),
         "We use UINT32_MAX as the upper bound of the input size and expect "
         "that the result fits into an `unsigned`.");
-    if (!base::CheckedNumeric<uint32_t>(data->byteLengthAsSizeT())
+    if (!base::CheckedNumeric<uint32_t>(data->byteLength())
              .AssignIfValid(&data_length)) {
       return RaiseDOMExceptionAndReturnFalse(
           exception_state, DOMExceptionCode::kNotSupportedError,
@@ -195,7 +195,7 @@ NotShared<DOMArrayBufferView> ImageData::AllocateAndValidateDataArray(
   size_t expected_size;
   if (!data_array || (!base::CheckMul(length, data_array->TypeSize())
                            .AssignIfValid(&expected_size) &&
-                      expected_size != data_array->byteLengthAsSizeT())) {
+                      expected_size != data_array->byteLength())) {
     if (exception_state)
       exception_state->ThrowRangeError("Out of memory at ImageData creation");
     return NotShared<DOMArrayBufferView>();
@@ -388,8 +388,7 @@ ImageData* ImageData::Create(NotShared<DOMUint8ClampedArray> data,
                                                &exception_state))
     return nullptr;
 
-  unsigned height =
-      base::checked_cast<unsigned>(data->lengthAsSizeT()) / (width * 4);
+  unsigned height = base::checked_cast<unsigned>(data->length()) / (width * 4);
   return MakeGarbageCollected<ImageData>(IntSize(width, height), data);
 }
 
@@ -412,7 +411,7 @@ ImageData* ImageData::Create(NotShared<DOMUint16Array> data,
                                                nullptr, width, 0, data, nullptr,
                                                &exception_state))
     return nullptr;
-  unsigned height = base::checked_cast<unsigned>(data->lengthAsSizeT()) /
+  unsigned height = base::checked_cast<unsigned>(data->length()) /
                     (width * ImageData::StorageFormatBytesPerPixel(
                                  kUint16ArrayStorageFormatName));
   ImageDataColorSettings* image_setting = ImageDataColorSettings::Create();
@@ -444,7 +443,7 @@ ImageData* ImageData::Create(NotShared<DOMFloat32Array> data,
                                                &exception_state))
     return nullptr;
 
-  unsigned height = base::checked_cast<unsigned>(data->lengthAsSizeT()) /
+  unsigned height = base::checked_cast<unsigned>(data->length()) /
                     (width * ImageData::StorageFormatBytesPerPixel(
                                  kFloat32ArrayStorageFormatName));
   ImageDataColorSettings* image_setting = ImageDataColorSettings::Create();
@@ -726,7 +725,7 @@ ImageData::ConvertPixelsFromCanvasPixelFormatToImageDataStorageFormat(
       storage_format == kUint8ClampedArrayStorageFormat) {
     DOMArrayBuffer* array_buffer = DOMArrayBuffer::Create(content);
     return NotShared<DOMArrayBufferView>(DOMUint8ClampedArray::Create(
-        array_buffer, 0, array_buffer->ByteLengthAsSizeT()));
+        array_buffer, 0, array_buffer->ByteLength()));
   }
 
   skcms_PixelFormat src_format = skcms_PixelFormat_RGBA_8888;
@@ -941,7 +940,7 @@ ImageData::ImageData(const IntSize& size,
       data_.SetUint8ClampedArray(data_u8_);
       SECURITY_CHECK(
           (base::CheckedNumeric<size_t>(size.Width()) * size.Height() * 4)
-              .ValueOrDie() <= data_.GetAsUint8ClampedArray()->lengthAsSizeT());
+              .ValueOrDie() <= data_.GetAsUint8ClampedArray()->length());
       break;
 
     case kUint16ArrayStorageFormat:
@@ -951,7 +950,7 @@ ImageData::ImageData(const IntSize& size,
       data_.SetUint16Array(data_u16_);
       SECURITY_CHECK(
           (base::CheckedNumeric<size_t>(size.Width()) * size.Height() * 4)
-              .ValueOrDie() <= data_.GetAsUint16Array()->lengthAsSizeT());
+              .ValueOrDie() <= data_.GetAsUint16Array()->length());
       break;
 
     case kFloat32ArrayStorageFormat:
@@ -961,7 +960,7 @@ ImageData::ImageData(const IntSize& size,
       data_.SetFloat32Array(data_f32_);
       SECURITY_CHECK(
           (base::CheckedNumeric<size_t>(size.Width()) * size.Height() * 4)
-              .ValueOrDie() <= data_.GetAsFloat32Array()->lengthAsSizeT());
+              .ValueOrDie() <= data_.GetAsFloat32Array()->length());
       break;
 
     default:

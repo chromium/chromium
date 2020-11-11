@@ -685,7 +685,7 @@ Vector<uint8_t> GetValueAsVector(ScriptState* script_state,
   }
 
   Vector<uint8_t> result;
-  result.Append(array->Data(), array->lengthAsSizeT());
+  result.Append(array->Data(), array->length());
   return result;
 }
 
@@ -1143,7 +1143,7 @@ TEST_F(QuicTransportTest, CreateReceiveStream) {
       V8Uint8Array::ToImplWithTypeCheck(scope.GetIsolate(), value);
   ASSERT_TRUE(u8array);
   EXPECT_THAT(base::make_span(static_cast<uint8_t*>(u8array->Data()),
-                              u8array->byteLengthAsSizeT()),
+                              u8array->byteLength()),
               ElementsAre('w', 'h', 'a', 't'));
 }
 

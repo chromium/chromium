@@ -115,14 +115,14 @@ CodecConfigEval VideoDecoder::MakeMediaConfig(const ConfigType& config,
     if (config.description().IsArrayBuffer()) {
       DOMArrayBuffer* buffer = config.description().GetAsArrayBuffer();
       uint8_t* start = static_cast<uint8_t*>(buffer->Data());
-      size_t size = buffer->ByteLengthAsSizeT();
+      size_t size = buffer->ByteLength();
       extra_data.assign(start, start + size);
     } else {
       DCHECK(config.description().IsArrayBufferView());
       DOMArrayBufferView* view =
           config.description().GetAsArrayBufferView().Get();
       uint8_t* start = static_cast<uint8_t*>(view->BaseAddress());
-      size_t size = view->byteLengthAsSizeT();
+      size_t size = view->byteLength();
       extra_data.assign(start, start + size);
     }
   }
@@ -171,7 +171,7 @@ CodecConfigEval VideoDecoder::MakeMediaConfig(const ConfigType& config,
 media::StatusOr<scoped_refptr<media::DecoderBuffer>>
 VideoDecoder::MakeDecoderBuffer(const InputType& chunk) {
   uint8_t* src = static_cast<uint8_t*>(chunk.data()->Data());
-  size_t src_size = chunk.data()->ByteLengthAsSizeT();
+  size_t src_size = chunk.data()->ByteLength();
 
   scoped_refptr<media::DecoderBuffer> decoder_buffer;
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)

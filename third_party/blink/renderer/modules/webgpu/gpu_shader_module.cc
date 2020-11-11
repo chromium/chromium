@@ -36,7 +36,7 @@ GPUShaderModule* GPUShaderModule::Create(
     NotShared<DOMUint32Array> code = wgsl_or_spirv.GetAsUint32Array();
 
     uint32_t length_words = 0;
-    if (!base::CheckedNumeric<uint32_t>(code.View()->lengthAsSizeT())
+    if (!base::CheckedNumeric<uint32_t>(code.View()->length())
              .AssignIfValid(&length_words)) {
       exception_state.ThrowRangeError(
           "The provided ArrayBuffer exceeds the maximum supported size "

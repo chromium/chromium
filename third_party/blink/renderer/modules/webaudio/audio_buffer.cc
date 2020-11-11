@@ -235,7 +235,7 @@ void AudioBuffer::copyFromChannel(NotShared<DOMFloat32Array> destination,
 
   DOMFloat32Array* channel_data = channels_[channel_number].Get();
 
-  size_t data_length = channel_data->lengthAsSizeT();
+  size_t data_length = channel_data->length();
 
   if (buffer_offset >= data_length) {
     // Nothing to copy if the buffer offset is past the end of the AudioBuffer.
@@ -244,7 +244,7 @@ void AudioBuffer::copyFromChannel(NotShared<DOMFloat32Array> destination,
 
   size_t count = data_length - buffer_offset;
 
-  count = std::min(destination.View()->lengthAsSizeT(), count);
+  count = std::min(destination.View()->length(), count);
 
   const float* src = channel_data->Data();
   float* dst = destination.View()->Data();
@@ -281,21 +281,21 @@ void AudioBuffer::copyToChannel(NotShared<DOMFloat32Array> source,
 
   DOMFloat32Array* channel_data = channels_[channel_number].Get();
 
-  if (buffer_offset >= channel_data->lengthAsSizeT()) {
+  if (buffer_offset >= channel_data->length()) {
     // Nothing to copy if the buffer offset is past the end of the AudioBuffer.
     return;
   }
 
-  size_t count = channel_data->lengthAsSizeT() - buffer_offset;
+  size_t count = channel_data->length() - buffer_offset;
 
-  count = std::min(source.View()->lengthAsSizeT(), count);
+  count = std::min(source.View()->length(), count);
   const float* src = source.View()->Data();
   float* dst = channel_data->Data();
 
   DCHECK(src);
   DCHECK(dst);
-  DCHECK_LE(buffer_offset + count, channel_data->lengthAsSizeT());
-  DCHECK_LE(count, source.View()->lengthAsSizeT());
+  DCHECK_LE(buffer_offset + count, channel_data->length());
+  DCHECK_LE(count, source.View()->length());
 
   memmove(dst + buffer_offset, src, count * sizeof(*dst));
 }

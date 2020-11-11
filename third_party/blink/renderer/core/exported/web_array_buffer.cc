@@ -54,9 +54,9 @@ void* WebArrayBuffer::Data() const {
   return nullptr;
 }
 
-size_t WebArrayBuffer::ByteLengthAsSizeT() const {
+size_t WebArrayBuffer::ByteLength() const {
   if (!IsNull())
-    return private_->ByteLengthAsSizeT();
+    return private_->ByteLength();
   return 0;
 }
 

@@ -43,7 +43,7 @@ mojom::blink::PresentationConnectionMessagePtr MakeBinaryMessage(
       WTF::Vector<uint8_t>());
   WTF::Vector<uint8_t>& data = message->get_data();
   data.Append(static_cast<const uint8_t*>(buffer->Data()),
-              base::checked_cast<wtf_size_t>(buffer->ByteLengthAsSizeT()));
+              base::checked_cast<wtf_size_t>(buffer->ByteLength()));
   return message;
 }
 
@@ -458,8 +458,7 @@ void PresentationConnection::send(DOMArrayBuffer* array_buffer,
   DCHECK(array_buffer);
   if (!CanSendMessage(exception_state))
     return;
-  if (!base::CheckedNumeric<wtf_size_t>(array_buffer->ByteLengthAsSizeT())
-           .IsValid()) {
+  if (!base::CheckedNumeric<wtf_size_t>(array_buffer->ByteLength()).IsValid()) {
     static_assert(
         4294967295 == std::numeric_limits<wtf_size_t>::max(),
         "Change the error message below if this static_assert fails.");
@@ -478,8 +477,7 @@ void PresentationConnection::send(
   DCHECK(array_buffer_view);
   if (!CanSendMessage(exception_state))
     return;
-  if (!base::CheckedNumeric<wtf_size_t>(
-           array_buffer_view.View()->byteLengthAsSizeT())
+  if (!base::CheckedNumeric<wtf_size_t>(array_buffer_view.View()->byteLength())
            .IsValid()) {
     static_assert(
         4294967295 == std::numeric_limits<wtf_size_t>::max(),
@@ -648,8 +646,7 @@ void PresentationConnection::DidFinishLoadingBlob(DOMArrayBuffer* buffer) {
   DCHECK(!messages_.IsEmpty());
   DCHECK_EQ(messages_.front()->type, kMessageTypeBlob);
   DCHECK(buffer);
-  if (!base::CheckedNumeric<wtf_size_t>(buffer->ByteLengthAsSizeT())
-           .IsValid()) {
+  if (!base::CheckedNumeric<wtf_size_t>(buffer->ByteLength()).IsValid()) {
     // TODO(crbug.com/1036565): generate error message? The problem is that the
     // content of {buffer} is copied into a WTF::Vector, but a DOMArrayBuffer
     // has a bigger maximum size than a WTF::Vector. Ignore the current failed

@@ -151,12 +151,11 @@ ScriptPromise NativeFileSystemUnderlyingSink::WriteData(
   Blob* blob = nullptr;
   if (data.IsArrayBuffer()) {
     DOMArrayBuffer* array_buffer = data.GetAsArrayBuffer();
-    blob_data->AppendBytes(array_buffer->Data(),
-                           array_buffer->ByteLengthAsSizeT());
+    blob_data->AppendBytes(array_buffer->Data(), array_buffer->ByteLength());
   } else if (data.IsArrayBufferView()) {
     DOMArrayBufferView* array_buffer_view = data.GetAsArrayBufferView().View();
     blob_data->AppendBytes(array_buffer_view->BaseAddress(),
-                           array_buffer_view->byteLengthAsSizeT());
+                           array_buffer_view->byteLength());
   } else if (data.IsBlob()) {
     blob = data.GetAsBlob();
   } else if (data.IsUSVString()) {

@@ -70,7 +70,7 @@ void DoPopulateMatrix(DOMMatrix* target_matrix,
 
 template <typename T>
 bool CheckBufferLength(T* buffer) {
-  return buffer->lengthAsSizeT() >= 16;
+  return buffer->length() >= 16;
 }
 
 template <>

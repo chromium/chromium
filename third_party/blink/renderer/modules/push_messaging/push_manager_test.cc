@@ -35,13 +35,12 @@ void IsApplicationServerKeyValid(PushSubscriptionOptions* output) {
     sender_key[i] = kApplicationServerKey[i];
   sender_key[kApplicationServerKeyLength] = 0x0;
 
-  ASSERT_EQ(output->applicationServerKey()->ByteLengthAsSizeT(),
+  ASSERT_EQ(output->applicationServerKey()->ByteLength(),
             kApplicationServerKeyLength);
 
   String application_server_key(
       reinterpret_cast<const char*>(output->applicationServerKey()->Data()),
-      static_cast<unsigned>(
-          output->applicationServerKey()->ByteLengthAsSizeT()));
+      static_cast<unsigned>(output->applicationServerKey()->ByteLength()));
 
   ASSERT_EQ(reinterpret_cast<const char*>(sender_key),
             application_server_key.Latin1());

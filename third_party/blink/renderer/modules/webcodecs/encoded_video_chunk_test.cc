@@ -22,7 +22,7 @@ class EncodedVideoChunkTest : public testing::Test {
 
   std::string BufferToString(DOMArrayBuffer* buffer) {
     return std::string(static_cast<char*>(buffer->Data()),
-                       buffer->ByteLengthAsSizeT());
+                       buffer->ByteLength());
   }
 };
 

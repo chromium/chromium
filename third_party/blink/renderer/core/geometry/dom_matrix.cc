@@ -68,8 +68,8 @@ DOMMatrix* DOMMatrix::CreateForSerialization(double sequence[], int size) {
 
 DOMMatrix* DOMMatrix::fromFloat32Array(NotShared<DOMFloat32Array> float32_array,
                                        ExceptionState& exception_state) {
-  if (float32_array.View()->lengthAsSizeT() != 6 &&
-      float32_array.View()->lengthAsSizeT() != 16) {
+  if (float32_array.View()->length() != 6 &&
+      float32_array.View()->length() != 16) {
     exception_state.ThrowTypeError(
         "The sequence must contain 6 elements for a 2D matrix or 16 elements "
         "for a 3D matrix.");
@@ -77,13 +77,13 @@ DOMMatrix* DOMMatrix::fromFloat32Array(NotShared<DOMFloat32Array> float32_array,
   }
   return MakeGarbageCollected<DOMMatrix>(
       float32_array.View()->Data(),
-      static_cast<int>(float32_array.View()->lengthAsSizeT()));
+      static_cast<int>(float32_array.View()->length()));
 }
 
 DOMMatrix* DOMMatrix::fromFloat64Array(NotShared<DOMFloat64Array> float64_array,
                                        ExceptionState& exception_state) {
-  if (float64_array.View()->lengthAsSizeT() != 6 &&
-      float64_array.View()->lengthAsSizeT() != 16) {
+  if (float64_array.View()->length() != 6 &&
+      float64_array.View()->length() != 16) {
     exception_state.ThrowTypeError(
         "The sequence must contain 6 elements for a 2D matrix or 16 elements "
         "for a 3D matrix.");
@@ -91,7 +91,7 @@ DOMMatrix* DOMMatrix::fromFloat64Array(NotShared<DOMFloat64Array> float64_array,
   }
   return MakeGarbageCollected<DOMMatrix>(
       float64_array.View()->Data(),
-      static_cast<int>(float64_array.View()->lengthAsSizeT()));
+      static_cast<int>(float64_array.View()->length()));
 }
 
 template <typename T>

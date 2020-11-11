@@ -1502,7 +1502,7 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
       return false;
     }
     GLuint array_length;
-    if (!base::CheckedNumeric<GLuint>(v.lengthAsSizeT())
+    if (!base::CheckedNumeric<GLuint>(v.length())
              .AssignIfValid(&array_length)) {
       SynthesizeGLError(GL_INVALID_VALUE, function_name, "array is too big");
       return false;
@@ -1575,7 +1575,7 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
   bool ExtractDataLengthIfValid(const char* function_name,
                                 MaybeShared<DOMArrayBufferView> data,
                                 T* data_length) {
-    if (base::CheckedNumeric<T>(data.View()->byteLengthAsSizeT())
+    if (base::CheckedNumeric<T>(data.View()->byteLength())
             .AssignIfValid(data_length)) {
       return true;
     }

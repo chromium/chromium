@@ -293,7 +293,7 @@ ScriptPromise MediaKeys::setServerCertificate(
   //
   // 2. If serverCertificate is an empty array, return a promise rejected
   //    with a new a newly created TypeError.
-  if (!server_certificate.ByteLengthAsSizeT()) {
+  if (!server_certificate.ByteLength()) {
     exception_state.ThrowTypeError("The serverCertificate parameter is empty.");
     return ScriptPromise();
   }
@@ -301,7 +301,7 @@ ScriptPromise MediaKeys::setServerCertificate(
   // 3. Let certificate be a copy of the contents of the serverCertificate
   //    parameter.
   DOMArrayBuffer* server_certificate_buffer = DOMArrayBuffer::Create(
-      server_certificate.Data(), server_certificate.ByteLengthAsSizeT());
+      server_certificate.Data(), server_certificate.ByteLength());
 
   // 4. Let promise be a new promise.
   SetCertificateResultPromise* result =
@@ -338,7 +338,7 @@ void MediaKeys::SetServerCertificateTask(
   // 5.2 Use the cdm to process certificate.
   cdm->SetServerCertificate(
       static_cast<unsigned char*>(server_certificate->Data()),
-      server_certificate->ByteLengthAsSizeT(), result->Result());
+      server_certificate->ByteLength(), result->Result());
 
   // 5.3 If any of the preceding steps failed, reject promise with a
   //     new DOMException whose name is the appropriate error name.

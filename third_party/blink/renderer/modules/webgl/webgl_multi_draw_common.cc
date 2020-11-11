@@ -41,9 +41,8 @@ bool WebGLMultiDrawCommon::ValidateArray(WebGLExtensionScopedContext* scoped,
 base::span<const int32_t> WebGLMultiDrawCommon::MakeSpan(
     const Int32ArrayOrLongSequence& array) {
   if (array.IsInt32Array()) {
-    return base::span<const int32_t>(
-        array.GetAsInt32Array().View()->Data(),
-        array.GetAsInt32Array().View()->lengthAsSizeT());
+    return base::span<const int32_t>(array.GetAsInt32Array().View()->Data(),
+                                     array.GetAsInt32Array().View()->length());
   }
   return base::span<const int32_t>(array.GetAsLongSequence().data(),
                                    array.GetAsLongSequence().size());
@@ -55,7 +54,7 @@ base::span<const uint32_t> WebGLMultiDrawCommon::MakeSpan(
   if (array.IsUint32Array()) {
     return base::span<const uint32_t>(
         array.GetAsUint32Array().View()->Data(),
-        array.GetAsUint32Array().View()->lengthAsSizeT());
+        array.GetAsUint32Array().View()->length());
   }
   return base::span<const uint32_t>(array.GetAsUnsignedLongSequence().data(),
                                     array.GetAsUnsignedLongSequence().size());

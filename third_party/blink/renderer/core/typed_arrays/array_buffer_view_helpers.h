@@ -17,7 +17,7 @@ namespace blink {
 // backed by a SharedArrayBuffer.  It is usable like a smart pointer.
 //
 //   void Foo(NotShared<DOMUint32Array> param) {
-//     size_t length = param->lengthAsSizeT();
+//     size_t length = param->length();
 //     ...
 //   }
 template <typename T>

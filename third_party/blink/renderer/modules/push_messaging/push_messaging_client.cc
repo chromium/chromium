@@ -69,7 +69,7 @@ void PushMessagingClient::Subscribe(
 
   // If a developer provided an application server key in |options|, skip
   // fetching the manifest.
-  if (!options->applicationServerKey()->ByteLengthAsSizeT()) {
+  if (!options->applicationServerKey()->ByteLength()) {
     ManifestManager* manifest_manager =
         ManifestManager::From(*GetSupplementable());
     manifest_manager->RequestManifest(

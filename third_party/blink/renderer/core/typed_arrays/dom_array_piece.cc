@@ -49,14 +49,14 @@ unsigned char* DOMArrayPiece::Bytes() const {
   return static_cast<unsigned char*>(Data());
 }
 
-size_t DOMArrayPiece::ByteLengthAsSizeT() const {
+size_t DOMArrayPiece::ByteLength() const {
   DCHECK(!IsNull());
   return byte_length_;
 }
 
 void DOMArrayPiece::InitWithArrayBuffer(DOMArrayBuffer* buffer) {
   if (buffer) {
-    InitWithData(buffer->Data(), buffer->ByteLengthAsSizeT());
+    InitWithData(buffer->Data(), buffer->ByteLength());
     is_detached_ = buffer->IsDetached();
   } else {
     InitNull();
@@ -65,7 +65,7 @@ void DOMArrayPiece::InitWithArrayBuffer(DOMArrayBuffer* buffer) {
 
 void DOMArrayPiece::InitWithArrayBufferView(DOMArrayBufferView* buffer) {
   if (buffer) {
-    InitWithData(buffer->BaseAddress(), buffer->byteLengthAsSizeT());
+    InitWithData(buffer->BaseAddress(), buffer->byteLength());
     is_detached_ = buffer->buffer() ? buffer->buffer()->IsDetached() : true;
   } else {
     InitNull();

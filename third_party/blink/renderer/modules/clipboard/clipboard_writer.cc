@@ -54,8 +54,8 @@ class ClipboardImageWriter final : public ClipboardWriter {
       scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
     DCHECK(!IsMainThread());
     std::unique_ptr<ImageDecoder> decoder = ImageDecoder::Create(
-        SegmentReader::CreateFromSkData(SkData::MakeWithoutCopy(
-            png_data->Data(), png_data->ByteLengthAsSizeT())),
+        SegmentReader::CreateFromSkData(
+            SkData::MakeWithoutCopy(png_data->Data(), png_data->ByteLength())),
         true, ImageDecoder::kAlphaPremultiplied, ImageDecoder::kDefaultBitDepth,
         ColorBehavior::Tag());
     sk_sp<SkImage> image = nullptr;
@@ -109,7 +109,7 @@ class ClipboardTextWriter final : public ClipboardWriter {
 
     String wtf_string =
         String::FromUTF8(reinterpret_cast<const LChar*>(raw_data->Data()),
-                         raw_data->ByteLengthAsSizeT());
+                         raw_data->ByteLength());
     DCHECK(wtf_string.IsSafeToSendToAnotherThread());
     PostCrossThreadTask(*task_runner, FROM_HERE,
                         CrossThreadBindOnce(&ClipboardTextWriter::Write,
@@ -142,7 +142,7 @@ class ClipboardHtmlWriter final : public ClipboardWriter {
 
     String html_string =
         String::FromUTF8(reinterpret_cast<const LChar*>(html_data->Data()),
-                         html_data->ByteLengthAsSizeT());
+                         html_data->ByteLength());
 
     // Sanitizing on the main thread because HTML DOM nodes can only be used
     // on the main thread.
@@ -182,7 +182,7 @@ class ClipboardSvgWriter final : public ClipboardWriter {
 
     String svg_string =
         String::FromUTF8(reinterpret_cast<const LChar*>(svg_data->Data()),
-                         svg_data->ByteLengthAsSizeT());
+                         svg_data->ByteLength());
 
     // Now sanitize the SVG string.
     KURL url;
@@ -226,7 +226,7 @@ class ClipboardRawDataWriter final : public ClipboardWriter {
   void Write(DOMArrayBuffer* raw_data) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-    if (raw_data->ByteLengthAsSizeT() >=
+    if (raw_data->ByteLength() >=
         mojom::blink::RawClipboardHost::kMaxDataSize) {
       promise_->RejectFromReadOrDecodeFailure();
       return;
@@ -234,7 +234,7 @@ class ClipboardRawDataWriter final : public ClipboardWriter {
 
     uint8_t* raw_data_pointer = static_cast<uint8_t*>(raw_data->Data());
     mojo_base::BigBuffer buffer(std::vector<uint8_t>(
-        raw_data_pointer, raw_data_pointer + raw_data->ByteLengthAsSizeT()));
+        raw_data_pointer, raw_data_pointer + raw_data->ByteLength()));
 
     raw_system_clipboard()->Write(mime_type_, std::move(buffer));
 

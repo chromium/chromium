@@ -81,7 +81,7 @@ String RTCEncodedVideoFrame::toString() const {
   sb.Append("RTCEncodedVideoFrame{timestamp: ");
   sb.AppendNumber(timestamp());
   sb.Append("us, size: ");
-  sb.AppendNumber(data()->ByteLengthAsSizeT());
+  sb.AppendNumber(data()->ByteLength());
   sb.Append(" bytes, type: ");
   sb.Append(type());
   sb.Append("}");

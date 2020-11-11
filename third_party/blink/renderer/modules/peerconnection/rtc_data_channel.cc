@@ -398,7 +398,7 @@ void RTCDataChannel::send(DOMArrayBuffer* data,
     return;
   }
 
-  size_t data_length = data->ByteLengthAsSizeT();
+  size_t data_length = data->ByteLength();
   if (!data_length)
     return;
 
@@ -418,14 +418,14 @@ void RTCDataChannel::send(DOMArrayBuffer* data,
 void RTCDataChannel::send(NotShared<DOMArrayBufferView> data,
                           ExceptionState& exception_state) {
   if (!(base::CheckedNumeric<unsigned>(buffered_amount_) +
-        data.View()->byteLengthAsSizeT())
+        data.View()->byteLength())
            .IsValid()) {
     ThrowBufferOverflowException(&exception_state);
     return;
   }
-  buffered_amount_ += data.View()->byteLengthAsSizeT();
+  buffered_amount_ += data.View()->byteLength();
   if (!SendRawData(static_cast<const char*>(data.View()->BaseAddress()),
-                   data.View()->byteLengthAsSizeT())) {
+                   data.View()->byteLength())) {
     // TODO(https://crbug.com/937848): Don't throw an exception if data is
     // queued.
     ThrowCouldNotSendDataException(&exception_state);

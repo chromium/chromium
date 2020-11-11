@@ -26,9 +26,9 @@ class TypedFlexibleArrayBufferView final : public FlexibleArrayBufferView {
     return static_cast<ValueType*>(BaseAddressMaybeOnStack());
   }
 
-  size_t lengthAsSizeT() const {
-    DCHECK_EQ(ByteLengthAsSizeT() % sizeof(ValueType), 0u);
-    return ByteLengthAsSizeT() / sizeof(ValueType);
+  size_t length() const {
+    DCHECK_EQ(ByteLength() % sizeof(ValueType), 0u);
+    return ByteLength() / sizeof(ValueType);
   }
 };
 

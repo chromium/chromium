@@ -58,7 +58,7 @@ size_t MessageEvent::SizeOfExternalMemoryInBytes() {
       size_t result = 0;
       for (auto const& array_buffer :
            data_as_serialized_script_value_->ArrayBuffers()) {
-        result += array_buffer->ByteLengthAsSizeT();
+        result += array_buffer->ByteLength();
       }
 
       return result;
@@ -68,7 +68,7 @@ size_t MessageEvent::SizeOfExternalMemoryInBytes() {
     case kDataTypeBlob:
       return static_cast<size_t>(data_as_blob_->size());
     case kDataTypeArrayBuffer:
-      return data_as_array_buffer_->ByteLengthAsSizeT();
+      return data_as_array_buffer_->ByteLength();
   }
 }
 

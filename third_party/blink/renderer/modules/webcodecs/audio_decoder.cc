@@ -92,14 +92,14 @@ CodecConfigEval AudioDecoder::MakeMediaConfig(const ConfigType& config,
     if (config.description().IsArrayBuffer()) {
       DOMArrayBuffer* buffer = config.description().GetAsArrayBuffer();
       uint8_t* start = static_cast<uint8_t*>(buffer->Data());
-      size_t size = buffer->ByteLengthAsSizeT();
+      size_t size = buffer->ByteLength();
       extra_data.assign(start, start + size);
     } else {
       DCHECK(config.description().IsArrayBufferView());
       DOMArrayBufferView* view =
           config.description().GetAsArrayBufferView().Get();
       uint8_t* start = static_cast<uint8_t*>(view->BaseAddress());
-      size_t size = view->byteLengthAsSizeT();
+      size_t size = view->byteLength();
       extra_data.assign(start, start + size);
     }
   }
@@ -122,8 +122,7 @@ CodecConfigEval AudioDecoder::MakeMediaConfig(const ConfigType& config,
 media::StatusOr<scoped_refptr<media::DecoderBuffer>>
 AudioDecoder::MakeDecoderBuffer(const InputType& chunk) {
   auto decoder_buffer = media::DecoderBuffer::CopyFrom(
-      static_cast<uint8_t*>(chunk.data()->Data()),
-      chunk.data()->ByteLengthAsSizeT());
+      static_cast<uint8_t*>(chunk.data()->Data()), chunk.data()->ByteLength());
   decoder_buffer->set_timestamp(
       base::TimeDelta::FromMicroseconds(chunk.timestamp()));
   decoder_buffer->set_is_key_frame(chunk.type() == "key");

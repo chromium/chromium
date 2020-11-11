@@ -261,7 +261,7 @@ WebVector<unsigned char> ConvertCryptoResult<WebVector<unsigned char>>(
   if (DOMArrayBuffer* buffer =
           V8ArrayBuffer::ToImplWithTypeCheck(isolate, value.V8Value())) {
     vector.Assign(reinterpret_cast<const unsigned char*>(buffer->Data()),
-                  buffer->ByteLengthAsSizeT());
+                  buffer->ByteLength());
   }
   return vector;
 }

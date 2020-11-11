@@ -100,11 +100,9 @@ class CORE_EXPORT DOMArrayBufferView : public ScriptWrappable {
     return BaseAddressMaybeShared();
   }
 
-  size_t byteOffsetAsSizeT() const {
-    return !IsDetached() ? raw_byte_offset_ : 0;
-  }
+  size_t byteOffset() const { return !IsDetached() ? raw_byte_offset_ : 0; }
 
-  virtual size_t byteLengthAsSizeT() const = 0;
+  virtual size_t byteLength() const = 0;
 
   virtual unsigned TypeSize() const = 0;
   bool IsShared() const { return dom_array_buffer_->IsShared(); }

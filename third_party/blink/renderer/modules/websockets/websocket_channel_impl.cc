@@ -810,7 +810,7 @@ void WebSocketChannelImpl::DidFinishLoadingBlob(DOMArrayBuffer* buffer) {
   // We replace it with the loaded blob.
   messages_.front() =
       Message(base::make_span(static_cast<const char*>(buffer->Data()),
-                              buffer->ByteLengthAsSizeT()),
+                              buffer->ByteLength()),
               base::OnceClosure(), Message::DidCallSendMessage(false));
 
   ProcessSendQueue();

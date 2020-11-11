@@ -403,7 +403,7 @@ TEST_F(FetchDataLoaderTest, LoadAsArrayBuffer) {
 
   ASSERT_TRUE(array_buffer);
   ASSERT_EQ(kQuickBrownFoxLengthWithTerminatingNull,
-            array_buffer->ByteLengthAsSizeT());
+            array_buffer->ByteLength());
   EXPECT_STREQ(kQuickBrownFox, static_cast<const char*>(array_buffer->Data()));
 }
 

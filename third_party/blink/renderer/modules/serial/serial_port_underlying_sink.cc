@@ -175,11 +175,11 @@ void SerialPortUnderlyingSink::WriteData() {
   size_t byte_size = 0;
   if (buffer_source_.IsArrayBuffer()) {
     DOMArrayBuffer* array = buffer_source_.GetAsArrayBuffer();
-    byte_size = array->ByteLengthAsSizeT();
+    byte_size = array->ByteLength();
     data = static_cast<const uint8_t*>(array->Data());
   } else {
     DOMArrayBufferView* view = buffer_source_.GetAsArrayBufferView().View();
-    byte_size = view->byteLengthAsSizeT();
+    byte_size = view->byteLength();
     data = static_cast<const uint8_t*>(view->BaseAddress());
   }
   if (byte_size > std::numeric_limits<uint32_t>::max()) {

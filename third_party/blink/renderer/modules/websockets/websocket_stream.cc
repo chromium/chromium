@@ -308,7 +308,7 @@ void WebSocketStream::UnderlyingSink::SendAny(ScriptState* script_state,
   auto* isolate = script_state->GetIsolate();
   if (v8chunk->IsArrayBuffer()) {
     DOMArrayBuffer* data = V8ArrayBuffer::ToImpl(v8chunk.As<v8::ArrayBuffer>());
-    SendArrayBuffer(script_state, data, 0, data->ByteLengthAsSizeT(), resolver,
+    SendArrayBuffer(script_state, data, 0, data->ByteLength(), resolver,
                     std::move(callback));
     return;
   }
@@ -323,9 +323,9 @@ void WebSocketStream::UnderlyingSink::SendAny(ScriptState* script_state,
       return;
     }
 
-    SendArrayBuffer(
-        script_state, data.View()->buffer(), data.View()->byteOffsetAsSizeT(),
-        data.View()->byteLengthAsSizeT(), resolver, std::move(callback));
+    SendArrayBuffer(script_state, data.View()->buffer(),
+                    data.View()->byteOffset(), data.View()->byteLength(),
+                    resolver, std::move(callback));
     return;
   }
 

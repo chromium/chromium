@@ -15,7 +15,7 @@ DOMDataView* DOMDataView::Create(DOMArrayBufferBase* buffer,
                                  size_t byte_length) {
   base::CheckedNumeric<size_t> checked_max = byte_offset;
   checked_max += byte_length;
-  CHECK_LE(checked_max.ValueOrDie(), buffer->ByteLengthAsSizeT());
+  CHECK_LE(checked_max.ValueOrDie(), buffer->ByteLength());
   return MakeGarbageCollected<DOMDataView>(buffer, byte_offset, byte_length);
 }
 
@@ -29,9 +29,8 @@ v8::Local<v8::Value> DOMDataView::Wrap(v8::Isolate* isolate,
     return v8::Local<v8::Object>();
   DCHECK(v8_buffer->IsArrayBuffer());
 
-  v8::Local<v8::Object> wrapper =
-      v8::DataView::New(v8_buffer.As<v8::ArrayBuffer>(), byteOffsetAsSizeT(),
-                        byteLengthAsSizeT());
+  v8::Local<v8::Object> wrapper = v8::DataView::New(
+      v8_buffer.As<v8::ArrayBuffer>(), byteOffset(), byteLength());
 
   return AssociateWithWrapper(isolate, wrapper_type_info, wrapper);
 }

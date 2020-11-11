@@ -92,11 +92,10 @@ void Dactyloscoper::RecordDirectSurface(ExecutionContext* context,
                                         const DOMArrayBufferView* buffer) {
   if (!context || !ShouldSample(feature))
     return;
-  if (!buffer || buffer->byteLengthAsSizeT() == 0)
+  if (!buffer || buffer->byteLength() == 0)
     return;
-  IdentifiableTokenBuilder builder(
-      base::make_span(static_cast<uint8_t*>(buffer->BaseAddress()),
-                      buffer->byteLengthAsSizeT()));
+  IdentifiableTokenBuilder builder(base::make_span(
+      static_cast<uint8_t*>(buffer->BaseAddress()), buffer->byteLength()));
   Dactyloscoper::RecordDirectSurface(context, feature, builder.GetToken());
 }
 

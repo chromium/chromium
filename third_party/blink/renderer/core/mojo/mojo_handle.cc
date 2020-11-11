@@ -70,11 +70,11 @@ MojoResult MojoHandle::writeMessage(
   if (buffer.IsArrayBuffer()) {
     DOMArrayBuffer* array = buffer.GetAsArrayBuffer();
     bytes = array->Data();
-    num_bytes = array->ByteLengthAsSizeT();
+    num_bytes = array->ByteLength();
   } else {
     DOMArrayBufferView* view = buffer.GetAsArrayBufferView().View();
     bytes = view->BaseAddress();
-    num_bytes = view->byteLengthAsSizeT();
+    num_bytes = view->byteLength();
   }
 
   auto message = mojo::Message(
@@ -154,11 +154,11 @@ MojoWriteDataResult* MojoHandle::writeData(
   if (buffer.IsArrayBuffer()) {
     DOMArrayBuffer* array = buffer.GetAsArrayBuffer();
     elements = array->Data();
-    checked_num_bytes = array->ByteLengthAsSizeT();
+    checked_num_bytes = array->ByteLength();
   } else {
     DOMArrayBufferView* view = buffer.GetAsArrayBufferView().View();
     elements = view->BaseAddress();
-    checked_num_bytes = view->byteLengthAsSizeT();
+    checked_num_bytes = view->byteLength();
   }
 
   ::MojoWriteDataOptions options;
@@ -220,11 +220,11 @@ MojoReadDataResult* MojoHandle::readData(
   if (buffer.IsArrayBuffer()) {
     DOMArrayBuffer* array = buffer.GetAsArrayBuffer();
     elements = array->Data();
-    checked_num_bytes = array->ByteLengthAsSizeT();
+    checked_num_bytes = array->ByteLength();
   } else {
     DOMArrayBufferView* view = buffer.GetAsArrayBufferView().View();
     elements = view->BaseAddress();
-    checked_num_bytes = view->byteLengthAsSizeT();
+    checked_num_bytes = view->byteLength();
   }
 
   ::MojoReadDataOptions options;

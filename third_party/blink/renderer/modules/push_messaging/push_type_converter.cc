@@ -22,7 +22,7 @@ TypeConverter<blink::mojom::blink::PushSubscriptionOptionsPtr,
   application_server_key.Append(
       reinterpret_cast<uint8_t*>(input->applicationServerKey()->Data()),
       base::checked_cast<wtf_size_t>(
-          input->applicationServerKey()->ByteLengthAsSizeT()));
+          input->applicationServerKey()->ByteLength()));
 
   return blink::mojom::blink::PushSubscriptionOptions::New(
       input->userVisibleOnly(), std::move(application_server_key));

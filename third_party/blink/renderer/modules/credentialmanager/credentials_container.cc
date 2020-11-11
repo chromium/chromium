@@ -239,13 +239,13 @@ bool IsArrayBufferOrViewBelowSizeLimit(
 
   if (buffer_or_view.IsArrayBuffer()) {
     return base::CheckedNumeric<wtf_size_t>(
-               buffer_or_view.GetAsArrayBuffer()->ByteLengthAsSizeT())
+               buffer_or_view.GetAsArrayBuffer()->ByteLength())
         .IsValid();
   }
 
   DCHECK(buffer_or_view.IsArrayBufferView());
   return base::CheckedNumeric<wtf_size_t>(
-             buffer_or_view.GetAsArrayBufferView()->byteLengthAsSizeT())
+             buffer_or_view.GetAsArrayBufferView()->byteLength())
       .IsValid();
 }
 

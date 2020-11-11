@@ -45,7 +45,7 @@ void RTCEncodedAudioFrameDelegate::SetData(const DOMArrayBuffer* data) {
   MutexLocker lock(mutex_);
   if (webrtc_frame_ && data) {
     webrtc_frame_->SetData(rtc::ArrayView<const uint8_t>(
-        static_cast<const uint8_t*>(data->Data()), data->ByteLengthAsSizeT()));
+        static_cast<const uint8_t*>(data->Data()), data->ByteLength()));
   }
 }
 

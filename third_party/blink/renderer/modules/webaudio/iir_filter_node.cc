@@ -245,25 +245,25 @@ void IIRFilterNode::getFrequencyResponse(
     NotShared<DOMFloat32Array> mag_response,
     NotShared<DOMFloat32Array> phase_response,
     ExceptionState& exception_state) {
-  size_t frequency_hz_length = frequency_hz.View()->lengthAsSizeT();
+  size_t frequency_hz_length = frequency_hz.View()->length();
 
   // All the arrays must have the same length.  Just verify that all
   // the arrays have the same length as the |frequency_hz| array.
-  if (mag_response.View()->lengthAsSizeT() != frequency_hz_length) {
+  if (mag_response.View()->length() != frequency_hz_length) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidAccessError,
         ExceptionMessages::IndexOutsideRange(
-            "magResponse length", mag_response.View()->lengthAsSizeT(),
+            "magResponse length", mag_response.View()->length(),
             frequency_hz_length, ExceptionMessages::kInclusiveBound,
             frequency_hz_length, ExceptionMessages::kInclusiveBound));
     return;
   }
 
-  if (phase_response.View()->lengthAsSizeT() != frequency_hz_length) {
+  if (phase_response.View()->length() != frequency_hz_length) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidAccessError,
         ExceptionMessages::IndexOutsideRange(
-            "phaseResponse length", phase_response.View()->lengthAsSizeT(),
+            "phaseResponse length", phase_response.View()->length(),
             frequency_hz_length, ExceptionMessages::kInclusiveBound,
             frequency_hz_length, ExceptionMessages::kInclusiveBound));
     return;

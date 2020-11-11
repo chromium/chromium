@@ -768,8 +768,8 @@ TEST(V8ScriptValueSerializerTest, RoundTripImageData) {
   ImageData* new_image_data = V8ImageData::ToImpl(result.As<v8::Object>());
   EXPECT_NE(image_data, new_image_data);
   EXPECT_EQ(image_data->Size(), new_image_data->Size());
-  EXPECT_EQ(image_data->data().GetAsUint8ClampedArray()->lengthAsSizeT(),
-            new_image_data->data().GetAsUint8ClampedArray()->lengthAsSizeT());
+  EXPECT_EQ(image_data->data().GetAsUint8ClampedArray()->length(),
+            new_image_data->data().GetAsUint8ClampedArray()->length());
   EXPECT_EQ(200, new_image_data->data().GetAsUint8ClampedArray()->Data()[0]);
 }
 
@@ -794,8 +794,8 @@ TEST(V8ScriptValueSerializerTest, RoundTripImageDataWithColorSpaceInfo) {
       new_image_data->getColorSettings();
   EXPECT_EQ("p3", new_color_settings->colorSpace());
   EXPECT_EQ("float32", new_color_settings->storageFormat());
-  EXPECT_EQ(image_data->BufferBase()->ByteLengthAsSizeT(),
-            new_image_data->BufferBase()->ByteLengthAsSizeT());
+  EXPECT_EQ(image_data->BufferBase()->ByteLength(),
+            new_image_data->BufferBase()->ByteLength());
   EXPECT_EQ(200, static_cast<unsigned char*>(
                      new_image_data->BufferBase()->Data())[0]);
 }
@@ -814,8 +814,7 @@ TEST(V8ScriptValueSerializerTest, DecodeImageDataV9) {
   ASSERT_TRUE(V8ImageData::HasInstance(result, scope.GetIsolate()));
   ImageData* new_image_data = V8ImageData::ToImpl(result.As<v8::Object>());
   EXPECT_EQ(IntSize(2, 1), new_image_data->Size());
-  EXPECT_EQ(8u,
-            new_image_data->data().GetAsUint8ClampedArray()->lengthAsSizeT());
+  EXPECT_EQ(8u, new_image_data->data().GetAsUint8ClampedArray()->length());
   EXPECT_EQ(200, new_image_data->data().GetAsUint8ClampedArray()->Data()[0]);
 }
 
@@ -830,8 +829,7 @@ TEST(V8ScriptValueSerializerTest, DecodeImageDataV16) {
   ASSERT_TRUE(V8ImageData::HasInstance(result, scope.GetIsolate()));
   ImageData* new_image_data = V8ImageData::ToImpl(result.As<v8::Object>());
   EXPECT_EQ(IntSize(2, 1), new_image_data->Size());
-  EXPECT_EQ(8u,
-            new_image_data->data().GetAsUint8ClampedArray()->lengthAsSizeT());
+  EXPECT_EQ(8u, new_image_data->data().GetAsUint8ClampedArray()->length());
   EXPECT_EQ(200, new_image_data->data().GetAsUint8ClampedArray()->Data()[0]);
 }
 
@@ -852,7 +850,7 @@ TEST(V8ScriptValueSerializerTest, DecodeImageDataV18) {
       new_image_data->getColorSettings();
   EXPECT_EQ("p3", new_color_settings->colorSpace());
   EXPECT_EQ("float32", new_color_settings->storageFormat());
-  EXPECT_EQ(32u, new_image_data->BufferBase()->ByteLengthAsSizeT());
+  EXPECT_EQ(32u, new_image_data->BufferBase()->ByteLength());
   EXPECT_EQ(200, static_cast<unsigned char*>(
                      new_image_data->BufferBase()->Data())[0]);
 }

@@ -31,7 +31,7 @@ String ToBase64URLWithoutPadding(DOMArrayBuffer* buffer) {
       static_cast<const char*>(buffer->Data()),
       // The size of {buffer} should always fit into into {wtf_size_t}, because
       // the buffer content itself origins from a WTF::Vector.
-      base::checked_cast<wtf_size_t>(buffer->ByteLengthAsSizeT()));
+      base::checked_cast<wtf_size_t>(buffer->ByteLength()));
   DCHECK_GT(value.length(), 0u);
 
   unsigned padding_to_remove = 0;

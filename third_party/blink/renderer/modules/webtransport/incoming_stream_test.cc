@@ -80,7 +80,7 @@ class IncomingStreamTest : public ::testing::Test {
       return ret;
     }
     ret.Append(static_cast<uint8_t*>(value->Data()),
-               static_cast<wtf_size_t>(value->byteLengthAsSizeT()));
+               static_cast<wtf_size_t>(value->byteLength()));
     return ret;
   }
 

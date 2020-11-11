@@ -26,8 +26,7 @@ PushEvent::PushEvent(const AtomicString& type,
           message_data.IsArrayBufferView()
               ? message_data.GetAsArrayBufferView().View()->buffer()
               : message_data.GetAsArrayBuffer();
-      if (!base::CheckedNumeric<uint32_t>(buffer->ByteLengthAsSizeT())
-               .IsValid()) {
+      if (!base::CheckedNumeric<uint32_t>(buffer->ByteLength()).IsValid()) {
         exception_state.ThrowRangeError(
             "The provided ArrayBuffer exceeds the maximum supported size "
             "(4294967295)");

@@ -61,17 +61,16 @@ NotShared<DOMArrayBufferView> Crypto::getRandomValues(
                        array.View()->TypeName()));
     return NotShared<DOMArrayBufferView>(nullptr);
   }
-  if (array.View()->byteLengthAsSizeT() > 65536) {
+  if (array.View()->byteLength() > 65536) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kQuotaExceededError,
         String::Format("The ArrayBufferView's byte length (%zu) exceeds the "
                        "number of bytes of entropy available via this API "
                        "(65536).",
-                       array.View()->byteLengthAsSizeT()));
+                       array.View()->byteLength()));
     return NotShared<DOMArrayBufferView>(nullptr);
   }
-  crypto::RandBytes(array.View()->BaseAddress(),
-                    array.View()->byteLengthAsSizeT());
+  crypto::RandBytes(array.View()->BaseAddress(), array.View()->byteLength());
   return array;
 }
 

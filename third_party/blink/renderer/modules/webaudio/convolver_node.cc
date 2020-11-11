@@ -159,7 +159,7 @@ void ConvolverHandler::SetBuffer(AudioBuffer* buffer,
   bool any_buffer_detached = false;
   for (unsigned i = 0; i < number_of_channels; ++i) {
     for (unsigned i = 0; i < number_of_channels; ++i) {
-      if (buffer->getChannelData(i)->lengthAsSizeT() == 0) {
+      if (buffer->getChannelData(i)->length() == 0) {
         any_buffer_detached = true;
         break;
       }

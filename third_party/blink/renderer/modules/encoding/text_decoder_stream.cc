@@ -54,7 +54,7 @@ class TextDecoderStream::Transformer final : public TransformStreamTransformer {
     if (bufferSource.IsArrayBufferView()) {
       const auto* view = bufferSource.GetAsArrayBufferView().View();
       const char* start = static_cast<const char*>(view->BaseAddress());
-      size_t length = view->byteLengthAsSizeT();
+      size_t length = view->byteLength();
       if (length > std::numeric_limits<uint32_t>::max()) {
         exception_state.ThrowRangeError(
             "Buffer size exceeds maximum heap object size.");
@@ -68,7 +68,7 @@ class TextDecoderStream::Transformer final : public TransformStreamTransformer {
     DCHECK(bufferSource.IsArrayBuffer());
     const auto* array_buffer = bufferSource.GetAsArrayBuffer();
     const char* start = static_cast<const char*>(array_buffer->Data());
-    size_t length = array_buffer->ByteLengthAsSizeT();
+    size_t length = array_buffer->ByteLength();
     if (length > std::numeric_limits<uint32_t>::max()) {
       exception_state.ThrowRangeError(
           "Buffer size exceeds maximum heap object size.");

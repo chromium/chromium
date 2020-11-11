@@ -66,7 +66,7 @@ ScriptPromise DeflateTransformer::Transform(
   if (buffer_source.IsArrayBufferView()) {
     const auto* view = buffer_source.GetAsArrayBufferView().View();
     const uint8_t* start = static_cast<const uint8_t*>(view->BaseAddress());
-    size_t length = view->byteLengthAsSizeT();
+    size_t length = view->byteLength();
     if (length > std::numeric_limits<wtf_size_t>::max()) {
       exception_state.ThrowRangeError(
           "Buffer size exceeds maximum heap object size.");
@@ -79,7 +79,7 @@ ScriptPromise DeflateTransformer::Transform(
   DCHECK(buffer_source.IsArrayBuffer());
   const auto* array_buffer = buffer_source.GetAsArrayBuffer();
   const uint8_t* start = static_cast<const uint8_t*>(array_buffer->Data());
-  size_t length = array_buffer->ByteLengthAsSizeT();
+  size_t length = array_buffer->ByteLength();
   if (length > std::numeric_limits<wtf_size_t>::max()) {
     exception_state.ThrowRangeError(
         "Buffer size exceeds maximum heap object size.");

@@ -32,15 +32,15 @@ class CORE_EXPORT DOMArrayPiece {
   DOMArrayPiece(const ArrayBufferOrArrayBufferView&);
 
   bool operator==(const DOMArrayBuffer& other) const {
-    return ByteLengthAsSizeT() == other.ByteLengthAsSizeT() &&
-           memcmp(Data(), other.Data(), ByteLengthAsSizeT()) == 0;
+    return ByteLength() == other.ByteLength() &&
+           memcmp(Data(), other.Data(), ByteLength()) == 0;
   }
 
   bool IsNull() const;
   bool IsDetached() const;
   void* Data() const;
   unsigned char* Bytes() const;
-  size_t ByteLengthAsSizeT() const;
+  size_t ByteLength() const;
 
  private:
   void InitWithArrayBuffer(DOMArrayBuffer*);

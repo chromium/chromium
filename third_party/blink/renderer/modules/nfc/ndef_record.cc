@@ -49,12 +49,12 @@ bool GetBytesOfBufferSource(const NDEFRecordDataSource& buffer_source,
   if (buffer_source.IsArrayBuffer()) {
     DOMArrayBuffer* array_buffer = buffer_source.GetAsArrayBuffer();
     data = reinterpret_cast<uint8_t*>(array_buffer->Data());
-    data_length = array_buffer->ByteLengthAsSizeT();
+    data_length = array_buffer->ByteLength();
   } else if (buffer_source.IsArrayBufferView()) {
     const DOMArrayBufferView* array_buffer_view =
         buffer_source.GetAsArrayBufferView().View();
     data = reinterpret_cast<uint8_t*>(array_buffer_view->BaseAddress());
-    data_length = array_buffer_view->byteLengthAsSizeT();
+    data_length = array_buffer_view->byteLength();
   } else {
     NOTREACHED();
     return false;

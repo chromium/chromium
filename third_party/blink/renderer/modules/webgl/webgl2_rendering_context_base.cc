@@ -67,11 +67,11 @@ bool ValidateSubSourceAndGetData(DOMArrayBufferView* view,
   }
   base::CheckedNumeric<int64_t> total = byte_offset;
   total += byte_length;
-  if (!total.IsValid() || total.ValueOrDie() > view->byteLengthAsSizeT()) {
+  if (!total.IsValid() || total.ValueOrDie() > view->byteLength()) {
     return false;
   }
   if (!byte_length) {
-    byte_length = view->byteLengthAsSizeT() - byte_offset;
+    byte_length = view->byteLength() - byte_offset;
   }
   uint8_t* data = static_cast<uint8_t*>(view->BaseAddressMaybeShared());
   data += byte_offset;
@@ -2508,7 +2508,7 @@ void WebGL2RenderingContextBase::uniform1fv(
   ContextGL()->Uniform1fv(
       location->Location(),
       src_length ? src_length
-                 : (base::checked_cast<GLuint>(v.lengthAsSizeT()) - src_offset),
+                 : (base::checked_cast<GLuint>(v.length()) - src_offset),
       v.DataMaybeOnStack() + src_offset);
 }
 
@@ -2538,9 +2538,8 @@ void WebGL2RenderingContextBase::uniform2fv(
 
   ContextGL()->Uniform2fv(
       location->Location(),
-      (src_length
-           ? src_length
-           : (base::checked_cast<GLuint>(v.lengthAsSizeT()) - src_offset)) >>
+      (src_length ? src_length
+                  : (base::checked_cast<GLuint>(v.length()) - src_offset)) >>
           1,
       v.DataMaybeOnStack() + src_offset);
 }
@@ -2572,9 +2571,8 @@ void WebGL2RenderingContextBase::uniform3fv(
 
   ContextGL()->Uniform3fv(
       location->Location(),
-      (src_length
-           ? src_length
-           : (base::checked_cast<GLuint>(v.lengthAsSizeT()) - src_offset)) /
+      (src_length ? src_length
+                  : (base::checked_cast<GLuint>(v.length()) - src_offset)) /
           3,
       v.DataMaybeOnStack() + src_offset);
 }
@@ -2606,9 +2604,8 @@ void WebGL2RenderingContextBase::uniform4fv(
 
   ContextGL()->Uniform4fv(
       location->Location(),
-      (src_length
-           ? src_length
-           : (base::checked_cast<GLuint>(v.lengthAsSizeT()) - src_offset)) >>
+      (src_length ? src_length
+                  : (base::checked_cast<GLuint>(v.length()) - src_offset)) >>
           2,
       v.DataMaybeOnStack() + src_offset);
 }
@@ -2641,7 +2638,7 @@ void WebGL2RenderingContextBase::uniform1iv(
   ContextGL()->Uniform1iv(
       location->Location(),
       src_length ? src_length
-                 : (base::checked_cast<GLuint>(v.lengthAsSizeT()) - src_offset),
+                 : (base::checked_cast<GLuint>(v.length()) - src_offset),
       v.DataMaybeOnStack() + src_offset);
 }
 
@@ -2671,9 +2668,8 @@ void WebGL2RenderingContextBase::uniform2iv(
 
   ContextGL()->Uniform2iv(
       location->Location(),
-      (src_length
-           ? src_length
-           : (base::checked_cast<GLuint>(v.lengthAsSizeT()) - src_offset)) >>
+      (src_length ? src_length
+                  : (base::checked_cast<GLuint>(v.length()) - src_offset)) >>
           1,
       v.DataMaybeOnStack() + src_offset);
 }
@@ -2705,9 +2701,8 @@ void WebGL2RenderingContextBase::uniform3iv(
 
   ContextGL()->Uniform3iv(
       location->Location(),
-      (src_length
-           ? src_length
-           : (base::checked_cast<GLuint>(v.lengthAsSizeT()) - src_offset)) /
+      (src_length ? src_length
+                  : (base::checked_cast<GLuint>(v.length()) - src_offset)) /
           3,
       v.DataMaybeOnStack() + src_offset);
 }
@@ -2739,9 +2734,8 @@ void WebGL2RenderingContextBase::uniform4iv(
 
   ContextGL()->Uniform4iv(
       location->Location(),
-      (src_length
-           ? src_length
-           : (base::checked_cast<GLuint>(v.lengthAsSizeT()) - src_offset)) >>
+      (src_length ? src_length
+                  : (base::checked_cast<GLuint>(v.length()) - src_offset)) >>
           2,
       v.DataMaybeOnStack() + src_offset);
 }
@@ -2774,7 +2768,7 @@ void WebGL2RenderingContextBase::uniform1uiv(
   ContextGL()->Uniform1uiv(
       location->Location(),
       src_length ? src_length
-                 : (base::checked_cast<GLuint>(v.lengthAsSizeT()) - src_offset),
+                 : (base::checked_cast<GLuint>(v.length()) - src_offset),
       v.DataMaybeOnStack() + src_offset);
 }
 
@@ -2805,9 +2799,8 @@ void WebGL2RenderingContextBase::uniform2uiv(
 
   ContextGL()->Uniform2uiv(
       location->Location(),
-      (src_length
-           ? src_length
-           : (base::checked_cast<GLuint>(v.lengthAsSizeT()) - src_offset)) >>
+      (src_length ? src_length
+                  : (base::checked_cast<GLuint>(v.length()) - src_offset)) >>
           1,
       v.DataMaybeOnStack() + src_offset);
 }
@@ -2839,9 +2832,8 @@ void WebGL2RenderingContextBase::uniform3uiv(
 
   ContextGL()->Uniform3uiv(
       location->Location(),
-      (src_length
-           ? src_length
-           : (base::checked_cast<GLuint>(v.lengthAsSizeT()) - src_offset)) /
+      (src_length ? src_length
+                  : (base::checked_cast<GLuint>(v.length()) - src_offset)) /
           3,
       v.DataMaybeOnStack() + src_offset);
 }
@@ -2873,9 +2865,8 @@ void WebGL2RenderingContextBase::uniform4uiv(
 
   ContextGL()->Uniform4uiv(
       location->Location(),
-      (src_length
-           ? src_length
-           : (base::checked_cast<GLuint>(v.lengthAsSizeT()) - src_offset)) >>
+      (src_length ? src_length
+                  : (base::checked_cast<GLuint>(v.length()) - src_offset)) >>
           2,
       v.DataMaybeOnStack() + src_offset);
 }
@@ -2908,9 +2899,9 @@ void WebGL2RenderingContextBase::uniformMatrix2fv(
     return;
   ContextGL()->UniformMatrix2fv(
       location->Location(),
-      (src_length ? src_length
-                  : (base::checked_cast<GLuint>(v.View()->lengthAsSizeT()) -
-                     src_offset)) >>
+      (src_length
+           ? src_length
+           : (base::checked_cast<GLuint>(v.View()->length()) - src_offset)) >>
           2,
       transpose, v.View()->DataMaybeShared() + src_offset);
 }
@@ -2943,9 +2934,9 @@ void WebGL2RenderingContextBase::uniformMatrix3fv(
     return;
   ContextGL()->UniformMatrix3fv(
       location->Location(),
-      (src_length ? src_length
-                  : (base::checked_cast<GLuint>(v.View()->lengthAsSizeT()) -
-                     src_offset)) /
+      (src_length
+           ? src_length
+           : (base::checked_cast<GLuint>(v.View()->length()) - src_offset)) /
           9,
       transpose, v.View()->DataMaybeShared() + src_offset);
 }
@@ -2978,9 +2969,9 @@ void WebGL2RenderingContextBase::uniformMatrix4fv(
     return;
   ContextGL()->UniformMatrix4fv(
       location->Location(),
-      (src_length ? src_length
-                  : (base::checked_cast<GLuint>(v.View()->lengthAsSizeT()) -
-                     src_offset)) >>
+      (src_length
+           ? src_length
+           : (base::checked_cast<GLuint>(v.View()->length()) - src_offset)) >>
           4,
       transpose, v.View()->DataMaybeShared() + src_offset);
 }
@@ -3014,7 +3005,7 @@ void WebGL2RenderingContextBase::uniformMatrix2x3fv(
   ContextGL()->UniformMatrix2x3fv(
       location->Location(),
       (src_length ? src_length
-                  : (base::checked_cast<GLuint>(value.View()->lengthAsSizeT()) -
+                  : (base::checked_cast<GLuint>(value.View()->length()) -
                      src_offset)) /
           6,
       transpose, value.View()->DataMaybeShared() + src_offset);
@@ -3050,7 +3041,7 @@ void WebGL2RenderingContextBase::uniformMatrix3x2fv(
   ContextGL()->UniformMatrix3x2fv(
       location->Location(),
       (src_length ? src_length
-                  : (base::checked_cast<GLuint>(value.View()->lengthAsSizeT()) -
+                  : (base::checked_cast<GLuint>(value.View()->length()) -
                      src_offset)) /
           6,
       transpose, value.View()->DataMaybeShared() + src_offset);
@@ -3086,7 +3077,7 @@ void WebGL2RenderingContextBase::uniformMatrix2x4fv(
   ContextGL()->UniformMatrix2x4fv(
       location->Location(),
       (src_length ? src_length
-                  : (base::checked_cast<GLuint>(value.View()->lengthAsSizeT()) -
+                  : (base::checked_cast<GLuint>(value.View()->length()) -
                      src_offset)) >>
           3,
       transpose, value.View()->DataMaybeShared() + src_offset);
@@ -3122,7 +3113,7 @@ void WebGL2RenderingContextBase::uniformMatrix4x2fv(
   ContextGL()->UniformMatrix4x2fv(
       location->Location(),
       (src_length ? src_length
-                  : (base::checked_cast<GLuint>(value.View()->lengthAsSizeT()) -
+                  : (base::checked_cast<GLuint>(value.View()->length()) -
                      src_offset)) >>
           3,
       transpose, value.View()->DataMaybeShared() + src_offset);
@@ -3158,7 +3149,7 @@ void WebGL2RenderingContextBase::uniformMatrix3x4fv(
   ContextGL()->UniformMatrix3x4fv(
       location->Location(),
       (src_length ? src_length
-                  : (base::checked_cast<GLuint>(value.View()->lengthAsSizeT()) -
+                  : (base::checked_cast<GLuint>(value.View()->length()) -
                      src_offset)) /
           12,
       transpose, value.View()->DataMaybeShared() + src_offset);
@@ -3194,7 +3185,7 @@ void WebGL2RenderingContextBase::uniformMatrix4x3fv(
   ContextGL()->UniformMatrix4x3fv(
       location->Location(),
       (src_length ? src_length
-                  : (base::checked_cast<GLuint>(value.View()->lengthAsSizeT()) -
+                  : (base::checked_cast<GLuint>(value.View()->length()) -
                      src_offset)) /
           12,
       transpose, value.View()->DataMaybeShared() + src_offset);
@@ -3371,7 +3362,7 @@ void WebGL2RenderingContextBase::vertexAttribI4iv(
     MaybeShared<const DOMInt32Array> v) {
   if (isContextLost())
     return;
-  if (!v.View() || v.View()->lengthAsSizeT() < 4) {
+  if (!v.View() || v.View()->length() < 4) {
     SynthesizeGLError(GL_INVALID_VALUE, "vertexAttribI4iv", "invalid array");
     return;
   }
@@ -3407,7 +3398,7 @@ void WebGL2RenderingContextBase::vertexAttribI4uiv(
     MaybeShared<const DOMUint32Array> v) {
   if (isContextLost())
     return;
-  if (!v.View() || v.View()->lengthAsSizeT() < 4) {
+  if (!v.View() || v.View()->length() < 4) {
     SynthesizeGLError(GL_INVALID_VALUE, "vertexAttribI4uiv", "invalid array");
     return;
   }
@@ -3637,8 +3628,8 @@ void WebGL2RenderingContextBase::clearBufferiv(GLenum buffer,
                                                MaybeShared<DOMInt32Array> value,
                                                GLuint src_offset) {
   if (isContextLost() ||
-      !ValidateClearBuffer("clearBufferiv", buffer,
-                           value.View()->lengthAsSizeT(), src_offset))
+      !ValidateClearBuffer("clearBufferiv", buffer, value.View()->length(),
+                           src_offset))
     return;
 
   ScopedRGBEmulationColorMask emulation_color_mask(this, color_mask_,
@@ -3670,8 +3661,8 @@ void WebGL2RenderingContextBase::clearBufferuiv(
     MaybeShared<DOMUint32Array> value,
     GLuint src_offset) {
   if (isContextLost() ||
-      !ValidateClearBuffer("clearBufferuiv", buffer,
-                           value.View()->lengthAsSizeT(), src_offset))
+      !ValidateClearBuffer("clearBufferuiv", buffer, value.View()->length(),
+                           src_offset))
     return;
 
   ScopedRGBEmulationColorMask emulation_color_mask(this, color_mask_,
@@ -3703,8 +3694,8 @@ void WebGL2RenderingContextBase::clearBufferfv(
     MaybeShared<DOMFloat32Array> value,
     GLuint src_offset) {
   if (isContextLost() ||
-      !ValidateClearBuffer("clearBufferfv", buffer,
-                           value.View()->lengthAsSizeT(), src_offset))
+      !ValidateClearBuffer("clearBufferfv", buffer, value.View()->length(),
+                           src_offset))
     return;
 
   // As of this writing the default back buffer will always have an

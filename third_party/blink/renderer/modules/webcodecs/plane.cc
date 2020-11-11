@@ -79,7 +79,7 @@ void Plane::readInto(MaybeShared<DOMArrayBufferView> dst,
                                       "Destination buffer is not valid.");
     return;
   }
-  if (total_size > view->byteLengthAsSizeT()) {
+  if (total_size > view->byteLength()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         "Destination buffer is not large enough.");

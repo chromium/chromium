@@ -346,7 +346,7 @@ void TestRead(const V8TestingScope& scope,
       V8Uint8Array::ToImplWithTypeCheck(scope.GetIsolate(), v8array);
   ASSERT_TRUE(u8array);
 
-  ASSERT_EQ(u8array->byteLengthAsSizeT(), 1u);
+  ASSERT_EQ(u8array->byteLength(), 1u);
   EXPECT_EQ(reinterpret_cast<char*>(u8array->Data())[0], 'B');
 }
 

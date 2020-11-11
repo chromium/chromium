@@ -43,8 +43,7 @@ bool DOMArrayBuffer::Transfer(v8::Isolate* isolate,
                               ArrayBufferContents& result) {
   DOMArrayBuffer* to_transfer = this;
   if (!IsDetachable(isolate)) {
-    to_transfer =
-        DOMArrayBuffer::Create(Content()->Data(), ByteLengthAsSizeT());
+    to_transfer = DOMArrayBuffer::Create(Content()->Data(), ByteLength());
   }
 
   if (IsDetached()) {
@@ -149,8 +148,8 @@ DOMArrayBuffer* DOMArrayBuffer::Create(
 }
 
 DOMArrayBuffer* DOMArrayBuffer::Slice(size_t begin, size_t end) const {
-  begin = std::min(begin, ByteLengthAsSizeT());
-  end = std::min(end, ByteLengthAsSizeT());
+  begin = std::min(begin, ByteLength());
+  end = std::min(end, ByteLength());
   size_t size = begin <= end ? end - begin : 0;
   return Create(static_cast<const char*>(Data()) + begin, size);
 }
