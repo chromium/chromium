@@ -3846,10 +3846,20 @@ void AXNodeObject::ChildrenChanged() {
   // because unignored nodes recursively include all children of ignored
   // nodes. This method is called during layout, so we need to be careful to
   // only explore existing objects.
-  AXObject* node_to_update =
-      LastKnownIsIncludedInTreeValue() ? this : ParentObjectIncludedInTree();
-  if (node_to_update)  // Can be null, e.g. if <title> contents change.
-    node_to_update->SetNeedsToUpdateChildren();
+  if (!LastKnownIsIncludedInTreeValue()) {
+    // The first object (this or ancestor) that is included in the tree is the
+    // one whose children may have changed.
+    // Can be null, e.g. if <title> contents change
+    if (ParentObjectIncludedInTree())
+      ParentObjectIncludedInTree()->SetNeedsToUpdateChildren();
+  }
+
+  // Also update the current object, in case it wasn't included in the tree but
+  // now is. In that case, the LastKnownIsIncludedInTreeValue() won't have been
+  // updated yet, so we can't use that. Unfortunately, this is not a safe time
+  // to get the current included in tree value, therefore, we'll play it safe
+  // and update the children in two places sometimes.
+  SetNeedsToUpdateChildren();
 
   // If this node's children are not part of the accessibility tree then
   // skip notification and walking up the ancestors.
