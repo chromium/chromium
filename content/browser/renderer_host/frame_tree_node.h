@@ -93,12 +93,19 @@ class CONTENT_EXPORT FrameTreeNode {
 
   bool IsMainFrame() const;
 
+  struct ResetForNavigationResult {
+    bool changed_frame_policy = false;
+  };
+
   // Clears any state in this node which was set by the document itself (CSP
   // Headers, Feature Policy Headers, and CSP-set sandbox flags), and notifies
   // proxies as appropriate. Invoked after committing navigation to a new
   // document (since the new document comes with a fresh set of CSP and
   // Feature-Policy HTTP headers).
-  void ResetForNavigation();
+  // Returns the details of the reset result — whether any important state (e.g.
+  // frame policy headers) was lost during the update.
+  ResetForNavigationResult ResetForNavigation(
+      bool was_served_from_back_forward_cache);
 
   FrameTree* frame_tree() const { return frame_tree_; }
   Navigator& navigator() { return frame_tree()->navigator(); }
@@ -380,7 +387,9 @@ class CONTENT_EXPORT FrameTreeNode {
   // Feature-Policy header being set. Note that on navigation, these updates
   // will be cleared, and the flags in the pending frame policy will be applied
   // to the frame.
-  void UpdateFramePolicyHeaders(
+  // Returns true iff this operation has changed state of either sandbox flags
+  // or feature policy.
+  bool UpdateFramePolicyHeaders(
       network::mojom::WebSandboxFlags sandbox_flags,
       const blink::ParsedFeaturePolicy& parsed_header);
 

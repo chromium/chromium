@@ -8119,4 +8119,90 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   EXPECT_EQ(EvalJs(root, "pageshowLength").ExtractInt(), 2);
 }
 
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
+                       MainDocumentCSPHeadersAreRestored) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  GURL url_a(embedded_test_server()->GetURL(
+      "a.com",
+      "/set-header?"
+      "Content-Security-Policy: frame-src 'none'"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+
+  // 1) Navigate to A, which should set CSP.
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+  RenderFrameHostImpl* rfh_a = current_frame_host();
+
+  // Check that CSP was set.
+  {
+    const std::vector<network::mojom::ContentSecurityPolicyHeader>& root_csp =
+        current_frame_host()
+            ->frame_tree_node()
+            ->current_replication_state()
+            .accumulated_csp_headers;
+    EXPECT_EQ(1u, root_csp.size());
+    EXPECT_EQ("frame-src 'none'", root_csp[0].header_value);
+  }
+
+  // 2) Navigate to B.
+  EXPECT_TRUE(NavigateToURL(shell(), url_b));
+
+  // 3) Navigate back and expect that the CSP headers are present on the main
+  // frame.
+  web_contents()->GetController().GoBack();
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  EXPECT_EQ(rfh_a, current_frame_host());
+  ExpectOutcome(BackForwardCacheMetrics::HistoryNavigationOutcome::kRestored,
+                FROM_HERE);
+
+  // Check that CSP was restored.
+  {
+    const std::vector<network::mojom::ContentSecurityPolicyHeader>& root_csp =
+        current_frame_host()
+            ->frame_tree_node()
+            ->current_replication_state()
+            .accumulated_csp_headers;
+    EXPECT_EQ(1u, root_csp.size());
+    EXPECT_EQ("frame-src 'none'", root_csp[0].header_value);
+  }
+}
+
+// Sandboxed documents are not cached because we don't properly restore sandbox
+// flags at the moment.
+// TODO(altimin, carlscab): Remove this after sandbox flags will move to RFH /
+// BrowsingInstanceFrameState.
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, SandboxedFramesNotCached) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  GURL url_a(
+      embedded_test_server()->GetURL("a.com",
+                                     "/set-header?"
+                                     "Content-Security-Policy: sandbox"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+
+  // 1) Navigate to A, which should set CSP.
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+
+  // Check that CSP was set.
+  {
+    const std::vector<network::mojom::ContentSecurityPolicyHeader>& root_csp =
+        current_frame_host()
+            ->frame_tree_node()
+            ->current_replication_state()
+            .accumulated_csp_headers;
+    EXPECT_EQ(1u, root_csp.size());
+    EXPECT_EQ("sandbox", root_csp[0].header_value);
+  }
+
+  // 2) Navigate to B.
+  EXPECT_TRUE(NavigateToURL(shell(), url_b));
+
+  // 3) Navigate back and expect that the page wasn't restored from bfcache.
+  web_contents()->GetController().GoBack();
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ExpectNotRestored(
+      {BackForwardCacheMetrics::NotRestoredReason::kFrameTreeNodeStateReset},
+      FROM_HERE);
+}
+
 }  // namespace content

@@ -231,21 +231,42 @@ bool FrameTreeNode::IsMainFrame() const {
   return frame_tree_->root() == this;
 }
 
-void FrameTreeNode::ResetForNavigation() {
-  // Discard any CSP headers from the previous document.
+FrameTreeNode::ResetForNavigationResult FrameTreeNode::ResetForNavigation(
+    bool was_served_from_back_forward_cache) {
+  // TODO(altimin,carlscab): Remove this logic after the relevant states are
+  // moved to RenderFrameHost or BrowsingInstanceFrameState.
+  ResetForNavigationResult result;
+
   replication_state_.accumulated_csp_headers.clear();
-  render_manager_.OnDidResetContentSecurityPolicy();
+  if (!was_served_from_back_forward_cache) {
+    render_manager_.OnDidResetContentSecurityPolicy();
+  } else {
+    for (auto& policy : current_frame_host()->ContentSecurityPolicies()) {
+      replication_state_.accumulated_csp_headers.push_back(*policy->header);
+    }
+    // Note: there is no need to call OnDidResetContentSecurityPolicy or any
+    // other update as the proxies are being restored from bfcache as well and
+    // they already have the correct value.
+  }
 
   // Clear any CSP-set sandbox flags, and the declared feature policy for the
   // frame.
-  UpdateFramePolicyHeaders(network::mojom::WebSandboxFlags::kNone, {});
+  // TODO(https://crbug.com/1145886): Remove this.
+  result.changed_frame_policy =
+      UpdateFramePolicyHeaders(network::mojom::WebSandboxFlags::kNone, {});
 
   // This frame has had its user activation bits cleared in the renderer
   // before arriving here. We just need to clear them here and in the other
   // renderer processes that may have a reference to this frame.
+  //
+  // We do not take user activation into account when calculating
+  // |ResetForNavigationResult|, as we are using it to determine bfcache
+  // eligibility and the page can get another user gesture after restore.
   UpdateUserActivationState(
       blink::mojom::UserActivationUpdateType::kClearActivation,
       blink::mojom::UserActivationNotificationType::kNone);
+
+  return result;
 }
 
 size_t FrameTreeNode::GetFrameTreeSize() const {
@@ -711,7 +732,7 @@ FrameTreeNode* FrameTreeNode::GetSibling(int relative_offset) const {
   return nullptr;
 }
 
-void FrameTreeNode::UpdateFramePolicyHeaders(
+bool FrameTreeNode::UpdateFramePolicyHeaders(
     network::mojom::WebSandboxFlags sandbox_flags,
     const blink::ParsedFeaturePolicy& parsed_header) {
   bool changed = false;
@@ -730,6 +751,7 @@ void FrameTreeNode::UpdateFramePolicyHeaders(
   // Notify any proxies if the policies have been changed.
   if (changed)
     render_manager()->OnDidSetFramePolicyHeaders();
+  return changed;
 }
 
 void FrameTreeNode::PruneChildFrameNavigationEntries(
