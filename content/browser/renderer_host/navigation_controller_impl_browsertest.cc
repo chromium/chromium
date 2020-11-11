@@ -10859,16 +10859,9 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTestNoServer,
 // 2) same-document
 // 3) to a http URL with port 0.
 // This is the scenario behind https://crbug.com/1065532.
-// TODO(crbug.com/1138540): Flaky on Chrome OS.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#define MAYBE_SameDocumentNavigationToHttpPortZero \
-  DISABLED_SameDocumentNavigationToHttpPortZero
-#else
-#define MAYBE_SameDocumentNavigationToHttpPortZero \
-  SameDocumentNavigationToHttpPortZero
-#endif
+// TODO(crbug.com/1138540): Flakes.
 IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
-                       MAYBE_SameDocumentNavigationToHttpPortZero) {
+                       DISABLED_SameDocumentNavigationToHttpPortZero) {
   GURL page_url(embedded_test_server()->GetURL(
       "foo.com", "/navigation_controller/simple_page_1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), page_url));
