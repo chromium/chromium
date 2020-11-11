@@ -872,12 +872,14 @@ class RenderWidgetHostDelegatedInkMetadataTest
 IN_PROC_BROWSER_TEST_F(RenderWidgetHostDelegatedInkMetadataTest,
                        FlagGetsSetFromRenderFrameMetadata) {
   ASSERT_TRUE(ExecJs(shell()->web_contents(), R"(
-      let presenter = navigator.ink.requestPresenter('delegated-ink-trail');
+      let presenter = null;
+      navigator.ink.requestPresenter('delegated-ink-trail').then(e => {
+        presenter = e;
+      });
       let style = { color: 'green', diameter: 21 };
+
       window.addEventListener('pointermove' , evt => {
-        presenter.then( function(v) {
-          v.updateInkTrailStartPoint(evt, style);
-        });
+        presenter.updateInkTrailStartPoint(evt, style);
       });
       )"));
   SimulateRoutedMouseEvent(blink::WebInputEvent::Type::kMouseMove, 10, 10, 0,
