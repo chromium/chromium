@@ -349,6 +349,8 @@ class CORE_EXPORT WebFrameWidgetBase
 
   // WidgetBaseClient methods.
   void BeginMainFrame(base::TimeTicks last_frame_time) override;
+  void BeginCommitCompositorFrame() override;
+  void EndCommitCompositorFrame(base::TimeTicks commit_start_time) override;
   void RecordDispatchRafAlignedInputTime(
       base::TimeTicks raf_aligned_input_start_time) override;
   void SetSuppressFrameRequestsWorkaroundFor704763Only(bool) override;
@@ -799,6 +801,9 @@ class CORE_EXPORT WebFrameWidgetBase
 
   // Set when a measurement begins, reset when the measurement is taken.
   base::Optional<base::TimeTicks> update_layers_start_time_;
+
+  // Metrics for gathering time for commit of compositor frame.
+  base::Optional<base::TimeTicks> commit_compositor_frame_start_time_;
 
   friend class WebViewImpl;
   friend class ReportTimeSwapPromise;

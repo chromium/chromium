@@ -107,11 +107,8 @@ class CORE_EXPORT WebViewFrameWidget : public WebFrameWidgetBase {
   float GetEmulatorScale() override;
 
   // WidgetBaseClient overrides:
-  void DidBeginMainFrame() override;
   void ApplyViewportChanges(const cc::ApplyViewportChangesArgs& args) override;
   void RecordManipulationTypeCounts(cc::ManipulationInfo info) override;
-  void BeginCommitCompositorFrame() override;
-  void EndCommitCompositorFrame(base::TimeTicks commit_start_time) override;
   void FocusChanged(bool enabled) override;
   float GetDeviceScaleFactorForTesting() override;
   gfx::Rect ViewportVisibleRect() override;
@@ -152,7 +149,6 @@ class CORE_EXPORT WebViewFrameWidget : public WebFrameWidgetBase {
   void SetWindowRectSynchronously(const gfx::Rect& new_window_rect);
 
   scoped_refptr<WebViewImpl> web_view_;
-  base::Optional<base::TimeTicks> commit_compositor_frame_start_time_;
 
   // Web tests override the zoom factor in the renderer with this. We store it
   // to keep the override if the browser passes along VisualProperties with the

@@ -308,15 +308,6 @@ void WebFrameWidgetImpl::UpdateMainFrameLayoutSize() {
   view->SetLayoutSize(WebSize(layout_size));
 }
 
-void WebFrameWidgetImpl::DidBeginMainFrame() {
-  DCHECK(LocalRootImpl()->GetFrame());
-  WebFrameWidgetBase::DidBeginMainFrame();
-  // TODO(szager): Investigate why WebViewFrameWidget::DidBeginMainFrame
-  // instantiates AllowThrottlingScope before calling
-  // PageWidgetDeleget::DidBeginFrame, but this method doesn't.
-  PageWidgetDelegate::DidBeginFrame(*LocalRootImpl()->GetFrame());
-}
-
 bool WebFrameWidgetImpl::ShouldHandleImeEvents() {
   // TODO(ekaramad): WebViewWidgetImpl returns true only if it has focus.
   // We track page focus in all RenderViews on the page but
@@ -326,25 +317,6 @@ bool WebFrameWidgetImpl::ShouldHandleImeEvents() {
   // focus. We should revisit this after page focus for OOPIFs has been fully
   // resolved (https://crbug.com/689777).
   return LocalRootImpl();
-}
-
-void WebFrameWidgetImpl::BeginCommitCompositorFrame() {
-  if (LocalRootImpl()) {
-    commit_compositor_frame_start_time_.emplace(base::TimeTicks::Now());
-  }
-}
-
-void WebFrameWidgetImpl::EndCommitCompositorFrame(
-    base::TimeTicks commit_start_time) {
-  if (LocalRootImpl()) {
-    LocalRootImpl()
-        ->GetFrame()
-        ->View()
-        ->EnsureUkmAggregator()
-        .RecordImplCompositorSample(commit_compositor_frame_start_time_.value(),
-                                    commit_start_time, base::TimeTicks::Now());
-  }
-  commit_compositor_frame_start_time_.reset();
 }
 
 void WebFrameWidgetImpl::UpdateLifecycle(WebLifecycleUpdate requested_update,

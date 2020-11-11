@@ -24,6 +24,7 @@
 #include "third_party/blink/public/web/web_local_frame_client.h"
 #include "third_party/blink/public/web/web_plugin.h"
 #include "third_party/blink/public/web/web_settings.h"
+#include "third_party/blink/public/web/web_view_client.h"
 #include "third_party/blink/public/web/web_widget_client.h"
 #include "third_party/blink/renderer/core/content_capture/content_capture_manager.h"
 #include "third_party/blink/renderer/core/dom/element.h"
@@ -878,6 +879,8 @@ WebFrameWidgetBase::AllocateNewLayerTreeFrameSink() {
 
 void WebFrameWidgetBase::DidBeginMainFrame() {
   Client()->DidBeginMainFrame();
+  DCHECK(LocalRootImpl()->GetFrame());
+  PageWidgetDelegate::DidBeginFrame(*LocalRootImpl()->GetFrame());
 }
 
 void WebFrameWidgetBase::WillBeginMainFrame() {
@@ -1260,6 +1263,32 @@ void WebFrameWidgetBase::BeginMainFrame(base::TimeTicks last_frame_time) {
     return;
 
   GetPage()->GetValidationMessageClient().LayoutOverlay();
+}
+
+void WebFrameWidgetBase::BeginCommitCompositorFrame() {
+  commit_compositor_frame_start_time_.emplace(base::TimeTicks::Now());
+}
+
+void WebFrameWidgetBase::EndCommitCompositorFrame(
+    base::TimeTicks commit_start_time) {
+  DCHECK(commit_compositor_frame_start_time_.has_value());
+  CHECK(LocalRootImpl());
+  CHECK(LocalRootImpl()->GetFrame());
+  CHECK(LocalRootImpl()->GetFrame()->View());
+
+  if (ForMainFrame()) {
+    View()->Client()->DidCommitCompositorFrameForLocalMainFrame(
+        commit_start_time);
+    View()->UpdatePreferredSize();
+  }
+
+  LocalRootImpl()
+      ->GetFrame()
+      ->View()
+      ->EnsureUkmAggregator()
+      .RecordImplCompositorSample(commit_compositor_frame_start_time_.value(),
+                                  commit_start_time, base::TimeTicks::Now());
+  commit_compositor_frame_start_time_.reset();
 }
 
 void WebFrameWidgetBase::RecordDispatchRafAlignedInputTime(

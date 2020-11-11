@@ -141,9 +141,6 @@ class WebFrameWidgetImpl final : public WebFrameWidgetBase {
   bool ShouldHandleImeEvents() override;
 
   // WidgetBaseClient overrides:
-  void BeginCommitCompositorFrame() override;
-  void EndCommitCompositorFrame(base::TimeTicks commit_start_time) override;
-  void DidBeginMainFrame() override;
   void FocusChanged(bool enable) override;
   gfx::Rect ViewportVisibleRect() override;
   void DidCompletePageScaleAnimation() override;
@@ -181,7 +178,6 @@ class WebFrameWidgetImpl final : public WebFrameWidgetBase {
 
   // Metrics gathering timing information
   base::Optional<base::TimeTicks> update_layers_start_time_;
-  base::Optional<base::TimeTicks> commit_compositor_frame_start_time_;
 
   bool did_suspend_parsing_ = false;
 
