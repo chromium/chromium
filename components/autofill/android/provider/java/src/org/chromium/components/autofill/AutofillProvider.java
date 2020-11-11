@@ -29,6 +29,7 @@ import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.annotations.VerifiesOnO;
 import org.chromium.base.metrics.ScopedSysTraceEvent;
 import org.chromium.components.version_info.VersionConstants;
+import org.chromium.content_public.browser.RenderCoordinates;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsAccessibility;
 import org.chromium.ui.DropdownItem;
@@ -715,8 +716,16 @@ public class AutofillProvider {
         return mDatalistPopup;
     }
 
+    private Rect transformToWindowBounds(RectF rect) {
+        // Refer to crbug.com/1085294 for the reason of offset.
+        // The current version of Mockito didn't support mock static method, adding extra method so
+        // the transform can be tested.
+        return transformToWindowBoundsWithOffsetY(
+                rect, RenderCoordinates.fromWebContents(mWebContents).getContentOffsetYPixInt());
+    }
+
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    public Rect transformToWindowBounds(RectF rect) {
+    public Rect transformToWindowBoundsWithOffsetY(RectF rect, int offsetY) {
         // Convert bounds to device pixel.
         WindowAndroid windowAndroid = mWebContents.getTopLevelNativeWindow();
         DisplayAndroid displayAndroid = windowAndroid.getDisplay();
@@ -726,6 +735,7 @@ public class AutofillProvider {
         matrix.setScale(dipScale, dipScale);
         int[] location = new int[2];
         mContainerView.getLocationOnScreen(location);
+        location[1] += offsetY;
         matrix.postTranslate(location[0], location[1]);
         matrix.mapRect(bounds);
         return new Rect(

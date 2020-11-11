@@ -106,10 +106,11 @@ public class AutofillProviderTest {
     @Test
     public void testTransformToWindowBounds() {
         RectF source = new RectF(10, 20, 300, 400);
-        Rect result = mAutofillProvider.transformToWindowBounds(source);
+        final int offsetY = 10;
+        Rect result = mAutofillProvider.transformToWindowBoundsWithOffsetY(source, offsetY);
         assertEquals(10 * EXPECTED_DIP_SCALE + LOCATION_X, result.left, 0);
-        assertEquals(20 * EXPECTED_DIP_SCALE + LOCATION_Y, result.top, 0);
+        assertEquals(20 * EXPECTED_DIP_SCALE + LOCATION_Y + offsetY, result.top, 0);
         assertEquals(300 * EXPECTED_DIP_SCALE + LOCATION_X, result.right, 0);
-        assertEquals(400 * EXPECTED_DIP_SCALE + LOCATION_Y, result.bottom, 0);
+        assertEquals(400 * EXPECTED_DIP_SCALE + LOCATION_Y + offsetY, result.bottom, 0);
     }
 }

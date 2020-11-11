@@ -60,6 +60,11 @@ public class RenderCoordinatesImpl implements RenderCoordinates {
     }
 
     @Override
+    public int getContentOffsetYPixInt() {
+        return (int) Math.floor(getContentOffsetYPix());
+    }
+
+    @Override
     public int getContentWidthPixInt() {
         return (int) Math.ceil(getContentWidthPix());
     }
