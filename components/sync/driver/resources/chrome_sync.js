@@ -104,14 +104,14 @@ cr.define('chrome.sync', function() {
   }
 
   /**
-   * Triggers a RequestStop(KEEP_DATA) call on the SyncService.
+   * Stops the SyncService while keeping the sync data around.
    */
   function requestStopKeepData() {
     chrome.send('requestStopKeepData');
   }
 
   /**
-   * Triggers a RequestStop(CLEAR_DATA) call on the SyncService.
+   * Stops the SyncService and clears the sync data.
    */
   function requestStopClearData() {
     chrome.send('requestStopClearData');

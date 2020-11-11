@@ -350,10 +350,10 @@ IN_PROC_BROWSER_TEST_F(EnableDisableSingleClientTest, FastEnableDisableEnable) {
   }
 }
 
-// This test makes sure that after a RequestStop(CLEAR_DATA), Sync data gets
-// redownloaded when Sync is started again. This does not actually verify that
-// the data is gone from disk (which seems infeasible); it's mostly here as a
-// baseline for the following tests.
+// This test makes sure that after a StopAndClear(), Sync data gets redownloaded
+// when Sync is started again. This does not actually verify that the data is
+// gone from disk (which seems infeasible); it's mostly here as a baseline for
+// the following tests.
 IN_PROC_BROWSER_TEST_F(EnableDisableSingleClientTest,
                        RedownloadsAfterClearData) {
   ASSERT_TRUE(SetupClients());

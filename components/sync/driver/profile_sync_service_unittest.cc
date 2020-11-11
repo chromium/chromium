@@ -648,36 +648,81 @@ TEST_F(ProfileSyncServiceTest, DisableAndEnableSyncTemporarily) {
 }
 
 // Certain ProfileSyncService tests don't apply to Chrome OS, for example
-// things that deal with concepts like "signing out" and policy.
+// things that deal with concepts like "signing out".
 #if !defined(OS_CHROMEOS)
-TEST_F(ProfileSyncServiceTest, EnableSyncSignOutAndChangeAccount) {
+TEST_F(ProfileSyncServiceTest, SignOutDisablesSyncTransportAndSyncFeature) {
+  // Sign-in and enable sync.
   CreateService(ProfileSyncService::AUTO_START);
   SignIn();
   InitializeForNthSync();
-
-  EXPECT_EQ(SyncService::DisableReasonSet(), service()->GetDisableReasons());
-  EXPECT_EQ(SyncService::TransportState::ACTIVE,
+  ASSERT_EQ(SyncService::DisableReasonSet(), service()->GetDisableReasons());
+  ASSERT_EQ(SyncService::TransportState::ACTIVE,
             service()->GetTransportState());
-  EXPECT_EQ(identity_manager()->GetPrimaryAccountId(),
-            identity_provider()->GetActiveAccountId());
 
+  // Sign-out.
   auto* account_mutator = identity_manager()->GetPrimaryAccountMutator();
-
-  // GetPrimaryAccountMutator() returns nullptr on ChromeOS only.
-  DCHECK(account_mutator);
+  DCHECK(account_mutator) << "Account mutator should only be null on ChromeOS.";
   account_mutator->ClearPrimaryAccount(
       signin::PrimaryAccountMutator::ClearAccountsAction::kDefault,
       signin_metrics::SIGNOUT_TEST,
       signin_metrics::SignoutDelete::IGNORE_METRIC);
-  // Wait for PSS to be notified that the primary account has gone away.
+  // Wait for ProfileSyncService to be notified.
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(
       SyncService::DisableReasonSet(SyncService::DISABLE_REASON_NOT_SIGNED_IN),
       service()->GetDisableReasons());
   EXPECT_EQ(SyncService::TransportState::DISABLED,
             service()->GetTransportState());
+}
+
+TEST_F(ProfileSyncServiceTest,
+       SignOutClearsSyncTransportDataAndSyncTheFeaturePrefs) {
+  // Sign-in and enable sync.
+  CreateService(ProfileSyncService::AUTO_START);
+  SignIn();
+  InitializeForNthSync();
+  ASSERT_TRUE(service()->GetUserSettings()->IsFirstSetupComplete());
+  ASSERT_TRUE(service()->GetUserSettings()->IsSyncRequested());
+
+  // Sign-out.
+  auto* account_mutator = identity_manager()->GetPrimaryAccountMutator();
+  DCHECK(account_mutator) << "Account mutator should only be null on ChromeOS.";
+  EXPECT_CALL(*sync_client(), OnLocalSyncTransportDataCleared())
+      .Times(testing::AtLeast(1));
+  account_mutator->ClearPrimaryAccount(
+      signin::PrimaryAccountMutator::ClearAccountsAction::kDefault,
+      signin_metrics::SIGNOUT_TEST,
+      signin_metrics::SignoutDelete::IGNORE_METRIC);
+  // Wait for ProfileSyncService to be notified.
+  base::RunLoop().RunUntilIdle();
+  // These are specific to sync-the-feature and should be cleared.
+  EXPECT_FALSE(service()->GetUserSettings()->IsFirstSetupComplete());
+  // TODO(crbug.com/1147026): Add expectation for IsSyncRequested when it's
+  // being cleared.
+}
+
+TEST_F(ProfileSyncServiceTest, IdentityProvider_GetActiveAccountId) {
+  // Sign-in and enable sync.
+  CreateService(ProfileSyncService::AUTO_START);
+  SignIn();
+  InitializeForNthSync();
+  EXPECT_EQ(identity_manager()->GetPrimaryAccountId(),
+            identity_provider()->GetActiveAccountId());
+
+  // Sign out.
+  auto* account_mutator = identity_manager()->GetPrimaryAccountMutator();
+  DCHECK(account_mutator) << "Account mutator should only be null on ChromeOS.";
+  account_mutator->ClearPrimaryAccount(
+      signin::PrimaryAccountMutator::ClearAccountsAction::kDefault,
+      signin_metrics::SIGNOUT_TEST,
+      signin_metrics::SignoutDelete::IGNORE_METRIC);
+  // Wait for ProfileSyncService to be notified.
+  base::RunLoop().RunUntilIdle();
+
+  // The identity provider should show no active account.
   EXPECT_EQ(CoreAccountId(), identity_provider()->GetActiveAccountId());
 
+  // Change account.
   identity_test_env()->MakePrimaryAccountAvailable("new_user@gmail.com");
   EXPECT_EQ(identity_manager()->GetPrimaryAccountId(),
             identity_provider()->GetActiveAccountId());
@@ -938,8 +983,8 @@ TEST_F(ProfileSyncServiceTest, SignOutRevokeAccessToken) {
 }
 #endif
 
-// Verify that prefs are cleared on sign-out.
-TEST_F(ProfileSyncServiceTest, ClearDataOnSignOut) {
+TEST_F(ProfileSyncServiceTest,
+       StopAndClearWillClearDataAndSwitchToTransportMode) {
   SignIn();
   CreateService(ProfileSyncService::AUTO_START);
   InitializeForNthSync();
@@ -949,15 +994,14 @@ TEST_F(ProfileSyncServiceTest, ClearDataOnSignOut) {
   ASSERT_LT(base::Time::Now() - last_synced_time,
             base::TimeDelta::FromMinutes(1));
 
-  // Local transport data should be cleared and the client notified.
   EXPECT_CALL(*sync_client(), OnLocalSyncTransportDataCleared())
       .Times(testing::AtLeast(1));
 
-  // Sign out.
   service()->StopAndClear();
 
-  // Even though Sync-the-feature is disabled, Sync-the-transport should still
-  // be running, and should have updated the last synced time.
+  // Even though Sync-the-feature is disabled, there's still an (unconsented)
+  // signed-in account, so Sync-the-transport should still be running and
+  // should have updated the last synced time.
   EXPECT_EQ(SyncService::TransportState::ACTIVE,
             service()->GetTransportState());
   EXPECT_FALSE(service()->IsSyncFeatureEnabled());
@@ -978,7 +1022,7 @@ TEST_F(ProfileSyncServiceTest, ClearDemographicsOnInitializeWhenSignedOut) {
   InitializeForNthSync();
 }
 
-TEST_F(ProfileSyncServiceTest, CancelSyncAfterSignOut) {
+TEST_F(ProfileSyncServiceTest, StopSyncAndClearTwiceDoesNotCrash) {
   SignIn();
   CreateService(ProfileSyncService::AUTO_START);
   InitializeForNthSync();

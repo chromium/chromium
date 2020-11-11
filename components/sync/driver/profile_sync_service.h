@@ -319,9 +319,10 @@ class ProfileSyncService : public SyncService,
                                 const std::string& message,
                                 UnrecoverableErrorReason reason);
 
-  // Stops the sync engine. Does NOT set IsSyncRequested to false. Use
-  // RequestStop for that. |data_fate| controls whether the local sync data is
+  // Stops the sync engine. |data_fate| controls whether the local sync data is
   // deleted or kept when the engine shuts down.
+  // Does NOT set IsSyncRequested to false, use StopAndClear() or
+  // SyncUserSettings::SetSyncRequested() for that.
   void StopImpl(SyncStopDataFate data_fate);
 
   // Puts the engine's sync scheduler into NORMAL mode.

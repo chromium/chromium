@@ -319,10 +319,8 @@ class SyncService : public KeyedService {
   // ACTIONS / STATE CHANGE REQUESTS
   //////////////////////////////////////////////////////////////////////////////
 
-  // Stops sync and clears all local data. This usually gets called when the
-  // user fully signs out (i.e. removes the primary account).
-  // Note: This refers to Sync-the-feature. Sync-the-transport may remain active
-  // after calling this.
+  // Stops sync-the-feature and clears all local data. Sync-the-transport may
+  // remain active after calling this.
   virtual void StopAndClear() = 0;
 
   // Called when a datatype (SyncableService) has a need for sync to start
