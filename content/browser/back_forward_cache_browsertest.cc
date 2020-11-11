@@ -2021,7 +2021,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
       FROM_HERE);
 }
 
-IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, DoesNotCacheIfWebGL) {
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, CacheIfWebGL) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // 1) Navigate to a page with WebGL usage
@@ -2029,23 +2029,18 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, DoesNotCacheIfWebGL) {
       "example.com", "/back_forward_cache/page_with_webgl.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
-  RenderFrameDeletedObserver delete_observer_rfh_a(current_frame_host());
-
   // 2) Navigate away.
-  shell()->LoadURL(embedded_test_server()->GetURL("b.com", "/title1.html"));
-  delete_observer_rfh_a.WaitUntilDeleted();
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("b.com", "/title1.html")));
 
   // The page had an active WebGL context when we navigated away,
-  // so it shouldn't have been cached.
+  // but it should be cached.
 
   // 3) Go back.
   web_contents()->GetController().GoBack();
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
-  ExpectNotRestored(
-      {BackForwardCacheMetrics::NotRestoredReason::kBlocklistedFeatures},
-      FROM_HERE);
-  ExpectBlocklistedFeature(blink::scheduler::WebSchedulerTrackedFeature::kWebGL,
-                           FROM_HERE);
+  ExpectOutcome(BackForwardCacheMetrics::HistoryNavigationOutcome::kRestored,
+                FROM_HERE);
 }
 
 // Since blink::mojom::HidService binder is not added in
@@ -3798,9 +3793,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   // cached.
   EXPECT_TRUE(ExecJs(rfh_a, R"(
     document.addEventListener('freeze', event => {
-      let canvas = document.createElement('canvas');
-      document.body.appendChild(canvas);
-      gl = canvas.getContext('webgl');
+      new RTCPeerConnection();
     });
   )"));
 

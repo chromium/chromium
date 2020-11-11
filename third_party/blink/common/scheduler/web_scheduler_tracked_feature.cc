@@ -67,8 +67,6 @@ const char* FeatureToString(WebSchedulerTrackedFeature feature) {
       return "requested broadcast channel permission";
     case WebSchedulerTrackedFeature::kIndexedDBConnection:
       return "IndexedDB connection present";
-    case WebSchedulerTrackedFeature::kWebGL:
-      return "WebGL";
     case WebSchedulerTrackedFeature::kWebVR:
       return "WebVR";
     case WebSchedulerTrackedFeature::kWebXR:

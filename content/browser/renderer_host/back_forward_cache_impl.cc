@@ -147,7 +147,6 @@ uint64_t GetDisallowedFeatures(RenderFrameHostImpl* rfh,
       FeatureToBit(WebSchedulerTrackedFeature::kWakeLock) |
       FeatureToBit(WebSchedulerTrackedFeature::kWebDatabase) |
       FeatureToBit(WebSchedulerTrackedFeature::kWebFileSystem) |
-      FeatureToBit(WebSchedulerTrackedFeature::kWebGL) |
       FeatureToBit(WebSchedulerTrackedFeature::kWebHID) |
       FeatureToBit(WebSchedulerTrackedFeature::kWebLocks) |
       FeatureToBit(WebSchedulerTrackedFeature::kWebRTC) |

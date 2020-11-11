@@ -1102,10 +1102,6 @@ WebGLRenderingContextBase::WebGLRenderingContextBase(
       context_type_(context_type),
       program_completion_queries_(
           base::MRUCache<WebGLProgram*, GLuint>::NO_AUTO_EVICT),
-      feature_handle_for_scheduler_(
-          host->GetTopExecutionContext()->GetScheduler()->RegisterFeature(
-              SchedulingPolicy::Feature::kWebGL,
-              {SchedulingPolicy::RecordMetricsForBackForwardCache()})),
       number_of_user_allocated_multisampled_renderbuffers_(0) {
   DCHECK(context_provider);
 

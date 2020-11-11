@@ -1836,9 +1836,6 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
   static constexpr unsigned int kMaxProgramCompletionQueries = 128u;
   base::MRUCache<WebGLProgram*, GLuint> program_completion_queries_;
 
-  FrameOrWorkerScheduler::SchedulingAffectingFeatureHandle
-      feature_handle_for_scheduler_;
-
   int number_of_user_allocated_multisampled_renderbuffers_;
 
   friend class WebGLFastCallHelper;

@@ -67,7 +67,7 @@ enum class WebSchedulerTrackedFeature {
 
   kIndexedDBConnection = 28,
 
-  kWebGL = 29,
+  // kWebGL = 29. Removed after implementing WebGL support.
   kWebVR = 30,
   kWebXR = 31,
 
