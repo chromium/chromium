@@ -17,9 +17,13 @@
 #include "chromeos/dbus/kerberos/kerberos_service.pb.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 
+namespace content {
+class WebUIDataSource;
+}  // namespace content
+
 namespace kerberos {
 class ListAccountsResponse;
-}
+}  // namespace kerberos
 
 class Profile;
 
@@ -31,6 +35,11 @@ class KerberosAccountsHandler : public ::settings::SettingsPageUIHandler,
  public:
   static std::unique_ptr<KerberosAccountsHandler> CreateIfKerberosEnabled(
       Profile* profile);
+
+  // Adds load time strings to Kerberos settings UI.
+  static void AddLoadTimeKerberosStrings(
+      content::WebUIDataSource* html_source,
+      KerberosCredentialsManager* kerberos_credentials_manager);
 
   ~KerberosAccountsHandler() override;
 

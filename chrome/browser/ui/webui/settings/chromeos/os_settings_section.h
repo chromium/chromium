@@ -142,8 +142,9 @@ class OsSettingsSection {
   mojom::SearchResultPtr GenerateSectionSearchResult(
       double relevance_score) const;
 
- protected:
   static base::string16 GetHelpUrlWithBoard(const std::string& original_url);
+
+ protected:
   static void RegisterNestedSettingBulk(
       mojom::Subpage,
       const base::span<const mojom::Setting>& settings,

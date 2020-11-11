@@ -77,8 +77,6 @@ class PeopleSection : public OsSettingsSection,
   // KerberosCredentialsManager::Observer:
   void OnKerberosEnabledStateChanged() override;
 
-  void AddKerberosAccountsPageStrings(
-      content::WebUIDataSource* html_source) const;
   bool AreFingerprintSettingsAllowed();
   void FetchAccounts();
   void UpdateAccountManagerSearchTags(
