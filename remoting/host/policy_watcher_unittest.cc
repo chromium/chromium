@@ -320,6 +320,7 @@ class PolicyWatcherTest : public testing::Test {
                     false);
 #if !defined(OS_CHROMEOS)
     dict.SetBoolean(key::kRemoteAccessHostAllowFileTransfer, true);
+    dict.SetBoolean(key::kRemoteAccessHostEnableUserInterface, true);
 #endif
 
     ASSERT_THAT(&dict, IsPolicies(&GetDefaultValues()))

@@ -183,6 +183,7 @@ std::unique_ptr<base::DictionaryValue> PolicyWatcher::GetDefaultPolicies() {
                      false);
 #if !defined(OS_CHROMEOS)
   result->SetBoolean(key::kRemoteAccessHostAllowFileTransfer, true);
+  result->SetBoolean(key::kRemoteAccessHostEnableUserInterface, true);
 #endif
   return result;
 }
