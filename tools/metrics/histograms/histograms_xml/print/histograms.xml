@@ -128,7 +128,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PrintPreview.PrintSettings" enum="PrintSettings"
-    expires_after="2021-03-07">
+    expires_after="2021-05-09">
   <owner>thestig@chromium.org</owner>
   <summary>
     Track the popularity of print settings. (Settings when printing to PDF are

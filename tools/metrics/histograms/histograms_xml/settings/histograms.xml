@@ -343,7 +343,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Settings.StartupPageLoadSettings" enum="SessionStartupPref"
-    expires_after="2021-03-07">
+    expires_after="2021-05-09">
   <owner>mpearson@chromium.org</owner>
   <owner>ramyan@chromium.org</owner>
   <owner>tiborg@chromium.org</owner>

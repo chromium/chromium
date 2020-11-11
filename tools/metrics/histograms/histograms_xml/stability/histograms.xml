@@ -46,7 +46,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Stability.Android.ProcessedCrashCounts"
-    enum="AndroidProcessedCrashCounts" expires_after="2021-03-07">
+    enum="AndroidProcessedCrashCounts" expires_after="2021-05-09">
   <owner>boliu@chromium.org</owner>
   <summary>
     Individual enum counts specific conditions of child process terminations.
@@ -60,7 +60,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Stability.Android.ProcessedRealMinidumps"
-    enum="AndroidProcessedMinidumps" expires_after="2021-03-07">
+    enum="AndroidProcessedMinidumps" expires_after="2021-05-09">
   <owner>mheikal@chromium.org</owner>
   <owner>smaier@chromium.org</owner>
   <owner>wnwen@chromium.org</owner>
@@ -261,7 +261,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Stability.Experimental.PageLoads" enum="StabilityPageLoadType"
-    expires_after="2021-01-15">
+    expires_after="2021-05-09">
   <owner>fdoray@chromium.org</owner>
   <owner>chrome-catan@google.com</owner>
   <summary>
