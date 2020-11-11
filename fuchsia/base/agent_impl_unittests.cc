@@ -176,7 +176,7 @@ TEST_F(AgentImplTest, DifferentComponentIdSameService) {
   base::testfidl::TestInterfacePtr test_interface2;
   component_services2->ConnectToService(
       base::testfidl::TestInterface::Name_,
-      test_interface1.NewRequest().TakeChannel());
+      test_interface2.NewRequest().TakeChannel());
 
   // Both TestInterface pointers should remain valid until we are done.
   test_interface1.set_error_handler([](zx_status_t status) {
@@ -196,6 +196,7 @@ TEST_F(AgentImplTest, DifferentComponentIdSameService) {
                            EXPECT_EQ(result, 3);
                            quit_loop.Run();
                          });
+    loop.RunUntilIdle();
   }
 
   // Call Add() via the second TestInterface, and verify that first Add() call's
@@ -207,10 +208,20 @@ TEST_F(AgentImplTest, DifferentComponentIdSameService) {
                            EXPECT_EQ(result, 7);
                            quit_loop.Run();
                          });
+    loop.RunUntilIdle();
   }
 
-  test_interface1.set_error_handler(nullptr);
-  test_interface2.set_error_handler(nullptr);
+  // Cleanly unbind the test interfaces now that we're done with them.
+  test_interface1 = nullptr;
+  test_interface2 = nullptr;
+
+  // Tear down connections to the agent and let the error handlers unwind.
+  {
+    base::RunLoop loop;
+    component_services1.Unbind();
+    component_services2.Unbind();
+    loop.RunUntilIdle();
+  }
 }
 
 // Verify that multiple connection attempts with the same component Id connect
@@ -232,7 +243,7 @@ TEST_F(AgentImplTest, SameComponentIdSameService) {
   base::testfidl::TestInterfacePtr test_interface2;
   component_services2->ConnectToService(
       base::testfidl::TestInterface::Name_,
-      test_interface1.NewRequest().TakeChannel());
+      test_interface2.NewRequest().TakeChannel());
 
   // Both TestInterface pointers should remain valid until we are done.
   test_interface1.set_error_handler([](zx_status_t status) {
@@ -252,6 +263,7 @@ TEST_F(AgentImplTest, SameComponentIdSameService) {
                            EXPECT_EQ(result, 3);
                            quit_loop.Run();
                          });
+    loop.RunUntilIdle();
   }
 
   // Call Add() via the other TestInterface, and verify that the result of the
@@ -263,10 +275,20 @@ TEST_F(AgentImplTest, SameComponentIdSameService) {
                            EXPECT_EQ(result, 10);
                            quit_loop.Run();
                          });
+    loop.RunUntilIdle();
   }
 
-  test_interface1.set_error_handler(nullptr);
-  test_interface2.set_error_handler(nullptr);
+  // Cleanly unbind the test interfaces now that we're done with them.
+  test_interface1 = nullptr;
+  test_interface2 = nullptr;
+
+  // Tear down connections to the agent and let the error handlers unwind.
+  {
+    base::RunLoop loop;
+    component_services1.Unbind();
+    component_services2.Unbind();
+    loop.RunUntilIdle();
+  }
 }
 
 // Verify that connections to a service registered to keep-alive the
