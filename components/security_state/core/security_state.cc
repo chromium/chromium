@@ -330,6 +330,8 @@ bool ShouldShowDangerTriangleForWarningLevel() {
 
 bool IsSafetyTipUIFeatureEnabled() {
   return base::FeatureList::IsEnabled(features::kSafetyTipUI) ||
+         base::FeatureList::IsEnabled(
+             features::kSafetyTipUIForSimplifiedDomainDisplay) ||
          base::FeatureList::IsEnabled(features::kSafetyTipUIOnDelayedWarning);
 }
 

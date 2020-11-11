@@ -1305,3 +1305,49 @@ IN_PROC_BROWSER_TEST_P(
   CheckHeuristicsUkmRecord({kNavigatedUrl, {true, false, false}}, 0);
   CheckHeuristicsUkmRecord({kNavigatedUrl, {true, false, false}}, 1);
 }
+
+// Test fixture that enables the |kSafetyTipUIForSimplifiedDomainDisplay|
+// feature and disables other Safety Tips features.
+class SafetyTipSimplifiedDomainPageInfoBubbleViewBrowserTest
+    : public InProcessBrowserTest {
+ protected:
+  void SetUp() override {
+    feature_list_.InitWithFeatures(
+        {security_state::features::kSafetyTipUIForSimplifiedDomainDisplay},
+        {security_state::features::kSafetyTipUI,
+         security_state::features::kSafetyTipUIOnDelayedWarning});
+    reputation::InitializeSafetyTipConfig();
+    InProcessBrowserTest::SetUp();
+  }
+
+  void SetUpOnMainThread() override {
+    host_resolver()->AddRule("*", "127.0.0.1");
+    ASSERT_TRUE(embedded_test_server()->Start());
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Tests that the Safety Tips for simplified domains feature enables lookalike
+// Safety Tips.
+IN_PROC_BROWSER_TEST_F(SafetyTipSimplifiedDomainPageInfoBubbleViewBrowserTest,
+                       SafetyTipForSimplifiedDomain) {
+  // This domain is a lookalike of a top domain not in the top 500.
+  const GURL url = embedded_test_server()->GetURL("googlé.sk", "/title1.html");
+  SetEngagementScore(browser(), url, kLowEngagement);
+  NavigateToURL(browser(), url, WindowOpenDisposition::CURRENT_TAB);
+  EXPECT_TRUE(IsUIShowing());
+}
+
+// Tests that the Safety Tips for simplified domains feature does not enable the
+// bad reputation Safety Tip.
+IN_PROC_BROWSER_TEST_F(SafetyTipSimplifiedDomainPageInfoBubbleViewBrowserTest,
+                       SafetyTipForSimplifiedDomainNoBadRep) {
+  GURL url = embedded_test_server()->GetURL("site1.com", "/title1.html");
+  reputation::SetSafetyTipPatternsWithFlagType(
+      {"site1.com/"}, reputation::FlaggedPage::BAD_REP);
+  SetEngagementScore(browser(), url, kLowEngagement);
+  NavigateToURL(browser(), url, WindowOpenDisposition::CURRENT_TAB);
+  EXPECT_FALSE(IsUIShowing());
+}

@@ -199,17 +199,22 @@ bool IsSafetyTipEnabled(security_state::SafetyTipStatus status) {
   if (!security_state::IsSafetyTipUIFeatureEnabled()) {
     return false;
   }
-  // Safety Tips can be enabled for Safe Browsing delayed warnings
-  // (https://crbug.com/1146471) or independently. When enabled independently,
-  // there are a variety of triggers that can be toggled: a suspicious site
-  // check and various lookalike URL checks. We check the suspicious site
-  // trigger here; lookalike URL parameters are checked when computing whether
-  // the URL is a lookalike.
-  if (status == security_state::SafetyTipStatus::kBadReputation &&
-      base::FeatureList::IsEnabled(security_state::features::kSafetyTipUI)) {
+
+  if (status != security_state::SafetyTipStatus::kBadReputation) {
+    return true;
+  }
+
+  // Safety Tips can be enabled with a few different features that have slightly
+  // different behavior. "Suspicious site" Safety Tips are enabled for the main
+  // Safety Tip feature, |kSafetyTipUI|, by a parameter, and they are always
+  // enabled for the delayed warnings Safety Tip feature (which uses "Suspicious
+  // site" Safety Tips on phishing pages blocking by Safe Browsing.)
+  if (base::FeatureList::IsEnabled(security_state::features::kSafetyTipUI)) {
     return kEnableSuspiciousSiteChecks.Get();
   }
-  return true;
+
+  return base::FeatureList::IsEnabled(
+      security_state::features::kSafetyTipUIOnDelayedWarning);
 }
 
 }  // namespace

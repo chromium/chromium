@@ -21,6 +21,9 @@ const base::Feature kLegacyTLSWarnings{"LegacyTLSWarnings",
 const base::Feature kSafetyTipUI{"SafetyTip",
                                  base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kSafetyTipUIForSimplifiedDomainDisplay{
+    "SafetyTipForSimplifiedDomainDisplay", base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::Feature kSafetyTipUIOnDelayedWarning{
     "SafetyTipUIOnDelayedWarning", base::FEATURE_DISABLED_BY_DEFAULT};
 
