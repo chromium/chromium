@@ -102,7 +102,13 @@ std::vector<Frame> CaptureScenario(
 }
 
 // Checks that the expected information is present in sampled frames.
-TEST(NativeUnwinderAndroidTest, PlainFunction) {
+#if defined(ADDRESS_SANITIZER)
+// TODO(https://crbug.com/1147315): Fix, re-enable.
+#define MAYBE_PlainFunction DISABLED_PlainFunction
+#else
+#define MAYBE_PlainFunction PlainFunction
+#endif
+TEST(NativeUnwinderAndroidTest, MAYBE_PlainFunction) {
   UnwindScenario scenario(BindRepeating(&CallWithPlainFunction));
 
   std::unique_ptr<unwindstack::Maps> maps = NativeUnwinderAndroid::CreateMaps();
@@ -136,7 +142,13 @@ TEST(NativeUnwinderAndroidTest, PlainFunction) {
 
 // Checks that the unwinder handles stacks containing dynamically-allocated
 // stack memory.
-TEST(NativeUnwinderAndroidTest, Alloca) {
+#if defined(ADDRESS_SANITIZER)
+// TODO(https://crbug.com/1147315): Fix, re-enable.
+#define MAYBE_Alloca DISABLED_Alloca
+#else
+#define MAYBE_Alloca Alloca
+#endif
+TEST(NativeUnwinderAndroidTest, MAYBE_Alloca) {
   UnwindScenario scenario(BindRepeating(&CallWithAlloca));
 
   std::unique_ptr<unwindstack::Maps> maps = NativeUnwinderAndroid::CreateMaps();
@@ -170,7 +182,13 @@ TEST(NativeUnwinderAndroidTest, Alloca) {
 
 // Checks that a stack that runs through another library produces a stack with
 // the expected functions.
-TEST(NativeUnwinderAndroidTest, OtherLibrary) {
+#if defined(ADDRESS_SANITIZER)
+// TODO(https://crbug.com/1147315): Fix, re-enable.
+#define MAYBE_OtherLibrary DISABLED_OtherLibrary
+#else
+#define MAYBE_OtherLibrary OtherLibrary
+#endif
+TEST(NativeUnwinderAndroidTest, MAYBE_OtherLibrary) {
   NativeLibrary other_library = LoadOtherLibrary();
   UnwindScenario scenario(
       BindRepeating(&CallThroughOtherLibrary, Unretained(other_library)));
@@ -234,7 +252,13 @@ TEST(NativeUnwinderAndroidTest, ExcludeOtherLibrary) {
 }
 
 // Check that unwinding can be resumed after an incomplete unwind.
-TEST(NativeUnwinderAndroidTest, ResumeUnwinding) {
+#if defined(ADDRESS_SANITIZER)
+// TODO(https://crbug.com/1147315): Fix, re-enable.
+#define MAYBE_ResumeUnwinding DISABLED_ResumeUnwinding
+#else
+#define MAYBE_ResumeUnwinding ResumeUnwinding
+#endif
+TEST(NativeUnwinderAndroidTest, MAYBE_ResumeUnwinding) {
   NativeLibrary other_library = LoadOtherLibrary();
   UnwindScenario scenario(
       BindRepeating(&CallThroughOtherLibrary, Unretained(other_library)));
