@@ -120,19 +120,9 @@ class PDFViewerPPElement extends PDFViewerBaseElement {
           e.preventDefault();
         }
         return;
-      case '[':
-        if (e.ctrlKey) {
-          this.rotateCounterclockwise();
-        }
-        return;
       case '\\':
         if (e.ctrlKey) {
           this.getZoomToolbar_().fitToggleFromHotKey();
-        }
-        return;
-      case ']':
-        if (e.ctrlKey) {
-          this.rotateClockwise();
         }
         return;
     }

@@ -1961,10 +1961,8 @@ bool PepperPluginInstanceImpl::IsPdfPlugin() {
 }
 
 bool PepperPluginInstanceImpl::CanRotateView() {
-  if (!LoadPdfInterface() || module()->is_crashed())
-    return false;
-
-  return true;
+  return LoadPdfInterface() && !module()->is_crashed() &&
+         !IsPrintPreviewUrl(document_url_);
 }
 
 void PepperPluginInstanceImpl::RotateView(WebPlugin::RotationType type) {
