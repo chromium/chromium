@@ -36,6 +36,7 @@
 #include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/scroll_view.h"
+#include "ui/views/controls/separator.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/grid_layout.h"
@@ -145,10 +146,10 @@ void SharesheetBubbleView::ShowBubble(
     auto scroll_view = std::make_unique<views::ScrollView>();
     scroll_view->SetContents(MakeScrollableTargetView(std::move(targets)));
     scroll_view->ClipHeightTo(kTargetViewHeight, kTargetViewExpandedHeight);
-    scroll_view->SetProperty(views::kMarginsKey, gfx::Insets(0, kSpacing));
-
-    // TODO(crbug.com/1097623) Update grey border lines.
     main_view_->AddChildView(std::move(scroll_view));
+
+    expand_button_separator_ =
+        main_view_->AddChildView(std::make_unique<views::Separator>());
     expand_button_ =
         main_view_->AddChildView(std::make_unique<SharesheetExpandButton>(
             base::BindRepeating(&SharesheetBubbleView::ExpandButtonPressed,
@@ -171,6 +172,7 @@ void SharesheetBubbleView::ShowBubble(
     width_ = kDefaultBubbleWidth;
     height_ = kNoExtensionBubbleHeight;
     expand_button_->SetVisible(false);
+    expand_button_separator_->SetVisible(false);
   }
   UpdateAnchorPosition();
 }
@@ -179,11 +181,13 @@ std::unique_ptr<views::View> SharesheetBubbleView::MakeScrollableTargetView(
     std::vector<TargetInfo> targets) {
   // Set up default and expanded views.
   auto default_view = std::make_unique<views::View>();
+  default_view->SetProperty(views::kMarginsKey, gfx::Insets(0, kSpacing));
   auto* default_layout =
       default_view->SetLayoutManager(std::make_unique<views::GridLayout>());
   SetUpTargetColumnSet(default_layout);
 
   auto expanded_view = std::make_unique<views::View>();
+  expanded_view->SetProperty(views::kMarginsKey, gfx::Insets(0, kSpacing));
   auto* expanded_layout =
       expanded_view->SetLayoutManager(std::make_unique<views::GridLayout>());
   SetUpTargetColumnSet(expanded_layout);
@@ -194,19 +198,18 @@ std::unique_ptr<views::View> SharesheetBubbleView::MakeScrollableTargetView(
                               /* resize_percent */ kStretchy,
                               views::GridLayout::ColumnSize::kUsePreferred,
                               /* fixed_width */ 0, /* min_width */ 0);
-
   // Add Extended View Title
   expanded_layout->AddPaddingRow(views::GridLayout::kFixedSize,
                                  kExpandViewPaddingTop);
   expanded_layout->StartRow(views::GridLayout::kFixedSize, kColumnSetIdTitle,
                             kExpandViewTitleLabelHeight);
-  auto* app_list_label =
+  auto* apps_list_label =
       expanded_layout->AddView(std::make_unique<views::Label>(
           l10n_util::GetStringUTF16(IDS_SHARESHEET_APPS_LIST_LABEL)));
-  app_list_label->SetFontList(gfx::FontList(kExpandViewTitleFont));
-  app_list_label->SetLineHeight(kExpandViewTitleLabelHeight);
-  app_list_label->SetEnabledColor(kShareTargetTitleColor);
-  app_list_label->SetHorizontalAlignment(gfx::ALIGN_CENTER);
+  apps_list_label->SetFontList(gfx::FontList(kExpandViewTitleFont));
+  apps_list_label->SetLineHeight(kExpandViewTitleLabelHeight);
+  apps_list_label->SetEnabledColor(kShareTargetTitleColor);
+  apps_list_label->SetHorizontalAlignment(gfx::ALIGN_CENTER);
   expanded_layout->AddPaddingRow(views::GridLayout::kFixedSize,
                                  kExpandViewPaddingBottom);
 
@@ -220,10 +223,15 @@ std::unique_ptr<views::View> SharesheetBubbleView::MakeScrollableTargetView(
           views::BoxLayout::Orientation::kVertical));
   layout->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kCenter);
   default_view_ = scrollable_view->AddChildView(std::move(default_view));
+  expanded_view_separator_ =
+      scrollable_view->AddChildView(std::make_unique<views::Separator>());
+  expanded_view_separator_->SetProperty(views::kMarginsKey,
+                                        gfx::Insets(0, kSpacing));
   expanded_view_ = scrollable_view->AddChildView(std::move(expanded_view));
 
   // Expanded view is not visible by default.
   expanded_view_->SetVisible(false);
+  expanded_view_separator_->SetVisible(false);
 
   return scrollable_view;
 }
@@ -399,7 +407,12 @@ void SharesheetBubbleView::ExpandButtonPressed() {
     expand_button_->SetExpandedView();
   else
     expand_button_->SetDefaultView();
+  // Scrollview has separators that overlaps with |expand_button_separator_|
+  // to create a double line when both are visible, so when scrollview is
+  // expanded we hide our separator.
+  expand_button_separator_->SetVisible(!show_expanded_view_);
   expanded_view_->SetVisible(show_expanded_view_);
+  expanded_view_separator_->SetVisible(show_expanded_view_);
   ResizeBubble(kDefaultBubbleWidth, show_expanded_view_ ? kExpandedBubbleHeight
                                                         : kDefaultBubbleHeight);
 }

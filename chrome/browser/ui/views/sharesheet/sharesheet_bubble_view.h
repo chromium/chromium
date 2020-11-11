@@ -13,6 +13,7 @@
 
 namespace views {
 class GridLayout;
+class Separator;
 }
 
 namespace sharesheet {
@@ -86,6 +87,10 @@ class SharesheetBubbleView : public views::BubbleDialogDelegateView {
   views::View* default_view_ = nullptr;
   views::View* expanded_view_ = nullptr;
   views::View* share_action_view_ = nullptr;
+  // Separator that appears above the expand button.
+  views::Separator* expand_button_separator_ = nullptr;
+  // Separator between the default_view and the expanded_view.
+  views::Separator* expanded_view_separator_ = nullptr;
   views::View* parent_view_ = nullptr;
   SharesheetExpandButton* expand_button_ = nullptr;
 };
