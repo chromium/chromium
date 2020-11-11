@@ -14,6 +14,7 @@
 #include "ash/system/holding_space/holding_space_item_view_delegate.h"
 #include "base/bind.h"
 #include "ui/base/class_property.h"
+#include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -25,6 +26,7 @@
 #include "ui/views/painter.h"
 #include "ui/views/style/platform_style.h"
 #include "ui/views/vector_icons.h"
+#include "ui/views/widget/widget.h"
 
 namespace ash {
 
@@ -195,6 +197,27 @@ bool HoldingSpaceItemView::OnMousePressed(const ui::MouseEvent& event) {
 
 void HoldingSpaceItemView::OnMouseReleased(const ui::MouseEvent& event) {
   delegate_->OnHoldingSpaceItemViewMouseReleased(this, event);
+}
+
+void HoldingSpaceItemView::StartDrag(const ui::LocatedEvent& event,
+                                     ui::mojom::DragEventSource source) {
+  int drag_operations = GetDragOperations(event.location());
+  if (drag_operations == ui::DragDropTypes::DRAG_NONE)
+    return;
+
+  views::Widget* widget = GetWidget();
+  DCHECK(widget);
+
+  if (widget->dragged_view())
+    return;
+
+  auto data = std::make_unique<ui::OSExchangeData>();
+  WriteDragData(event.location(), data.get());
+
+  gfx::Point widget_location(event.location());
+  views::View::ConvertPointToWidget(this, &widget_location);
+  widget->RunShellDrag(this, std::move(data), widget_location, drag_operations,
+                       source);
 }
 
 void HoldingSpaceItemView::SetSelected(bool selected) {

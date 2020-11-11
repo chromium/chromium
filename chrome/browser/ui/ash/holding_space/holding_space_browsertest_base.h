@@ -33,6 +33,10 @@ class HoldingSpaceBrowserTestBase : public InProcessBrowserTest {
   HoldingSpaceBrowserTestBase();
   ~HoldingSpaceBrowserTestBase() override;
 
+  // InProcessBrowserTest:
+  void SetUpInProcessBrowserTestFixture() override;
+  void SetUpOnMainThread() override;
+
   // Returns the root window that newly created windows should be added to.
   static aura::Window* GetRootWindowForNewWindows();
 
@@ -92,10 +96,6 @@ class HoldingSpaceBrowserTestBase : public InProcessBrowserTest {
   void RequestAndAwaitLockScreen();
 
  private:
-  // InProcessBrowserTest:
-  void SetUpInProcessBrowserTestFixture() override;
-  void SetUpOnMainThread() override;
-
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<HoldingSpaceTestApi> test_api_;
 };

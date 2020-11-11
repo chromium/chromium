@@ -16,6 +16,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/aura/window.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
+#include "ui/events/base_event_utils.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/controls/menu/menu_controller.h"
 #include "ui/views/view.h"
@@ -44,6 +45,24 @@ void DoubleClick(const views::View* view) {
   ui::test::EventGenerator event_generator(root_window);
   event_generator.MoveMouseTo(view->GetBoundsInScreen().CenterPoint());
   event_generator.DoubleClickLeftButton();
+}
+
+// Performs a gesture drag between `from` and `to`.
+void GestureDrag(const views::View* from, const views::View* to) {
+  auto* root_window = HoldingSpaceBrowserTestBase::GetRootWindowForNewWindows();
+  ui::test::EventGenerator event_generator(root_window);
+  event_generator.PressTouch(from->GetBoundsInScreen().CenterPoint());
+
+  // Gesture drag is initiated only after an `ui::ET_GESTURE_LONG_PRESS` event.
+  ui::GestureEvent long_press(
+      event_generator.current_screen_location().x(),
+      event_generator.current_screen_location().y(), ui::EF_NONE,
+      ui::EventTimeForNow(),
+      ui::GestureEventDetails(ui::ET_GESTURE_LONG_PRESS));
+  event_generator.Dispatch(&long_press);
+
+  event_generator.MoveTouch(to->GetBoundsInScreen().CenterPoint());
+  event_generator.ReleaseTouch();
 }
 
 // Performs a gesture tap on `view`.
@@ -165,12 +184,42 @@ class DropTargetView : public views::WidgetDelegateView {
 
 using HoldingSpaceUiBrowserTest = HoldingSpaceBrowserTestBase;
 
-// Verifies that drag-and-drop of holding space items works.
-IN_PROC_BROWSER_TEST_F(HoldingSpaceUiBrowserTest, DragAndDrop) {
-  auto* drop_target_view = DropTargetView::Create(GetRootWindowForNewWindows());
-  drop_target_view->GetWidget()->SetBounds(gfx::Rect(0, 0, 100, 100));
-  drop_target_view->GetWidget()->ShowInactive();
+// Base class for holding space UI browser tests that test drag-and-drop.
+// Parameterized by a callback to invoke to perform a drag-and-drop.
+class HoldingSpaceUiDragAndDropBrowserTest
+    : public HoldingSpaceUiBrowserTest,
+      public testing::WithParamInterface<base::RepeatingCallback<
+          void(const views::View* from, const views::View* to)>> {
+ public:
+  // Performs a drag-and-drop between `from` and `to`.
+  void PerformDragAndDrop(const views::View* from, const views::View* to) {
+    GetParam().Run(from, to);
+  }
 
+  // Returns the view serving as the drop target for tests.
+  const DropTargetView* target() const { return drop_target_view_; }
+
+ private:
+  // HoldingSpaceUiBrowserTest:
+  void SetUpOnMainThread() override {
+    HoldingSpaceUiBrowserTest::SetUpOnMainThread();
+
+    // Initialize `drop_target_view_`.
+    drop_target_view_ = DropTargetView::Create(GetRootWindowForNewWindows());
+    drop_target_view_->GetWidget()->SetBounds(gfx::Rect(0, 0, 100, 100));
+    drop_target_view_->GetWidget()->ShowInactive();
+  }
+
+  void TearDownOnMainThread() override {
+    drop_target_view_->GetWidget()->Close();
+    HoldingSpaceUiBrowserTest::TearDownOnMainThread();
+  }
+
+  DropTargetView* drop_target_view_ = nullptr;
+};
+
+// Verifies that drag-and-drop of holding space items works.
+IN_PROC_BROWSER_TEST_P(HoldingSpaceUiDragAndDropBrowserTest, DragAndDrop) {
   // Verify drag-and-drop of download items.
   HoldingSpaceItem* const download_file = AddDownloadFile();
 
@@ -180,8 +229,8 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceUiBrowserTest, DragAndDrop) {
   std::vector<views::View*> download_chips = GetDownloadChips();
   ASSERT_EQ(1u, download_chips.size());
 
-  MouseDrag(/*from=*/download_chips[0], /*to=*/drop_target_view);
-  EXPECT_EQ(download_file->file_path(), drop_target_view->copied_file_path());
+  PerformDragAndDrop(/*from=*/download_chips[0], /*to=*/target());
+  EXPECT_EQ(download_file->file_path(), target()->copied_file_path());
 
   // Drag-and-drop should close holding space UI.
   FlushMessageLoop();
@@ -201,8 +250,8 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceUiBrowserTest, DragAndDrop) {
   std::vector<views::View*> pinned_file_chips = GetPinnedFileChips();
   ASSERT_EQ(3u, pinned_file_chips.size());
 
-  MouseDrag(/*from=*/pinned_file_chips.back(), /*to=*/drop_target_view);
-  EXPECT_EQ(pinned_file->file_path(), drop_target_view->copied_file_path());
+  PerformDragAndDrop(/*from=*/pinned_file_chips.back(), /*to=*/target());
+  EXPECT_EQ(pinned_file->file_path(), target()->copied_file_path());
 
   // Drag-and-drop should close holding space UI.
   FlushMessageLoop();
@@ -217,15 +266,20 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceUiBrowserTest, DragAndDrop) {
   std::vector<views::View*> screen_capture_views = GetScreenCaptureViews();
   ASSERT_EQ(1u, screen_capture_views.size());
 
-  MouseDrag(/*from=*/screen_capture_views[0], /*to=*/drop_target_view);
-  EXPECT_EQ(screenshot_file->file_path(), drop_target_view->copied_file_path());
+  PerformDragAndDrop(/*from=*/screen_capture_views[0], /*to=*/target());
+  EXPECT_EQ(screenshot_file->file_path(), target()->copied_file_path());
 
   // Drag-and-drop should close holding space UI.
   FlushMessageLoop();
   ASSERT_FALSE(IsShowing());
-
-  drop_target_view->GetWidget()->Close();
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         HoldingSpaceUiDragAndDropBrowserTest,
+                         testing::ValuesIn({
+                             base::BindRepeating(&MouseDrag),
+                             base::BindRepeating(&GestureDrag),
+                         }));
 
 // Verifies that the holding space tray does not appear on the lock screen.
 IN_PROC_BROWSER_TEST_F(HoldingSpaceUiBrowserTest, LockScreen) {
