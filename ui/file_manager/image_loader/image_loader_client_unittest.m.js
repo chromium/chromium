@@ -2,10 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-'use strict';
+import {assertFalse, assertTrue} from 'chrome://test/chai_assert.js';
+import {reportPromise} from '../base/js/test_error_reporting.m.js';
+import {ImageLoaderClient} from './image_loader_client.m.js';
+import {LoadImageRequest, LoadImageResponse, LoadImageResponseStatus} from './load_image_request.m.js';
 
 /** @suppress {const|checkTypes} */
-function setUp() {
+export function setUp() {
   chrome.metricsPrivate = {
     MetricTypeType:
         {HISTOGRAM_LOG: 'histogram-log', HISTOGRAM_LINEAR: 'histogram-linear'},
@@ -50,7 +53,7 @@ function loadAndCheckCacheUsed(client, url, cache) {
   });
 }
 
-function testCache(callback) {
+export function testCache(callback) {
   const client = new ImageLoaderClient();
   reportPromise(
       loadAndCheckCacheUsed(client, 'http://example.com/image.jpg', true)
@@ -65,7 +68,7 @@ function testCache(callback) {
       callback);
 }
 
-function testNoCache(callback) {
+export function testNoCache(callback) {
   const client = new ImageLoaderClient();
   reportPromise(
       loadAndCheckCacheUsed(client, 'http://example.com/image.jpg', false)
@@ -80,7 +83,7 @@ function testNoCache(callback) {
       callback);
 }
 
-function testDataURLCache(callback) {
+export function testDataURLCache(callback) {
   const client = new ImageLoaderClient();
   reportPromise(
       loadAndCheckCacheUsed(client, 'data:URI', true)

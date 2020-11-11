@@ -7,7 +7,7 @@
  *
  * @typedef {{scaleX: number, scaleY: number, rotate90: number}}
  */
-let ImageTransformParam;
+/* #export */ let ImageTransformParam;
 
 /**
  * Class representing image orientation.

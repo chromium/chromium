@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
+// #import {LRUCache} from '../file_manager/common/js/lru_cache.m.js';
+// #import {LoadImageRequest, LoadImageResponse, LoadImageResponseStatus} from './load_image_request.m.js';
+// clang-format on
+
 /**
  * Client used to connect to the remote ImageLoader extension. Client class runs
  * in the extension, where the client.js is included (eg. Files app).
@@ -12,7 +17,7 @@
  *
  * @constructor
  */
-function ImageLoaderClient() {
+/* #export */ function ImageLoaderClient() {
   /**
    * @type {number}
    * @private
