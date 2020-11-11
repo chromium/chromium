@@ -346,11 +346,6 @@ namespace internal {
 template <typename T>
 constexpr bool IsMember = WTF::IsSubclassOfTemplate<T, Member>::value;
 
-template <typename T>
-constexpr bool IsMemberOrWeakMemberType =
-    WTF::IsSubclassOfTemplate<T, Member>::value ||
-    WTF::IsSubclassOfTemplate<T, WeakMember>::value;
-
 }  // namespace internal
 
 template <typename KeyArg,
@@ -380,11 +375,11 @@ class HeapHashMap : public HashMap<KeyArg,
         WTF::IsTraceable<KeyArg>::value || WTF::IsTraceable<MappedArg>::value,
         "For hash maps without traceable elements, use HashMap<> "
         "instead of HeapHashMap<>.");
-    static_assert(internal::IsMemberOrWeakMemberType<KeyArg> ||
+    static_assert(WTF::IsMemberOrWeakMemberType<KeyArg>::value ||
                       !WTF::IsTraceable<KeyArg>::value,
                   "HeapHashMap supports only Member, WeakMember and "
                   "non-traceable types as keys.");
-    static_assert(internal::IsMemberOrWeakMemberType<MappedArg> ||
+    static_assert(WTF::IsMemberOrWeakMemberType<MappedArg>::value ||
                       !WTF::IsTraceable<MappedArg>::value ||
                       WTF::IsSubclassOfTemplate<MappedArg,
                                                 TraceWrapperV8Reference>::value,
@@ -417,7 +412,7 @@ class HeapHashSet
   DISALLOW_NEW();
 
   static void CheckType() {
-    static_assert(internal::IsMemberOrWeakMemberType<ValueArg>,
+    static_assert(WTF::IsMemberOrWeakMemberType<ValueArg>::value,
                   "HeapHashSet supports only Member and WeakMember.");
     static_assert(std::is_trivially_destructible<HeapHashSet>::value,
                   "HeapHashSet must be trivially destructible.");
@@ -450,7 +445,7 @@ class HeapLinkedHashSet
   DISALLOW_NEW();
 
   static void CheckType() {
-    static_assert(internal::IsMemberOrWeakMemberType<ValueArg>,
+    static_assert(WTF::IsMemberOrWeakMemberType<ValueArg>::value,
                   "HeapLinkedHashSet supports only Member and WeakMember.");
     // If not trivially destructible, we have to add a destructor which will
     // hinder performance.
@@ -490,7 +485,7 @@ class HeapListHashSet
   DISALLOW_NEW();
 
   static void CheckType() {
-    static_assert(internal::IsMemberOrWeakMemberType<ValueArg>,
+    static_assert(WTF::IsMemberOrWeakMemberType<ValueArg>::value,
                   "HeapListHashSet supports only Member and WeakMember.");
     static_assert(std::is_trivially_destructible<HeapListHashSet>::value,
                   "HeapListHashSet must be trivially destructible.");
@@ -529,7 +524,7 @@ class HeapHashCountedSet
   DISALLOW_NEW();
 
   static void CheckType() {
-    static_assert(internal::IsMemberOrWeakMemberType<Value>,
+    static_assert(WTF::IsMemberOrWeakMemberType<Value>::value,
                   "HeapHashCountedSet supports only Member and WeakMember.");
     static_assert(std::is_trivially_destructible<HeapHashCountedSet>::value,
                   "HeapHashCountedSet must be trivially destructible.");
