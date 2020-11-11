@@ -225,6 +225,12 @@ export class PDFViewerElement extends PDFViewerBaseElement {
       },
 
       /** @private */
+      presentationModeEnabled_: {
+        type: Boolean,
+        value: false,
+      },
+
+      /** @private */
       pdfViewerUpdateEnabled_: Boolean,
 
       /** @private */
@@ -681,6 +687,7 @@ export class PDFViewerElement extends PDFViewerBaseElement {
 
   /** @private */
   onFullscreenClick_() {
+    assert(this.presentationModeEnabled_);
     this.shadowRoot.querySelector('#main').requestFullscreen();
   }
 
@@ -777,6 +784,8 @@ export class PDFViewerElement extends PDFViewerBaseElement {
     this.pdfAnnotationsEnabled_ =
         loadTimeData.getBoolean('pdfAnnotationsEnabled');
     this.pdfFormSaveEnabled_ = loadTimeData.getBoolean('pdfFormSaveEnabled');
+    this.presentationModeEnabled_ =
+        loadTimeData.getBoolean('presentationModeEnabled');
     this.printingEnabled_ = loadTimeData.getBoolean('printingEnabled');
     const presetZoomFactors = this.viewport.presetZoomFactors;
     this.zoomBounds_.min = Math.round(presetZoomFactors[0] * 100);

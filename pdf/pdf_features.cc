@@ -28,6 +28,9 @@ const base::Feature kPdfPartialLoading = {"PdfPartialLoading",
 const base::Feature kPDFViewerUpdate = {"PDFViewerUpdate",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kPdfViewerPresentationMode = {
+    "PdfViewerPresentationMode", base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::Feature kSaveEditedPDFForm = {"SaveEditedPDFForm",
 #if BUILDFLAG(IS_ASH)
                                           base::FEATURE_ENABLED_BY_DEFAULT

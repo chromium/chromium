@@ -179,6 +179,9 @@ void AddAdditionalData(base::Value* dict) {
       base::FeatureList::IsEnabled(chrome_pdf::features::kPDFViewerUpdate)
           ? "pdf-viewer-update-enabled"
           : "");
+  dict->SetKey("presentationModeEnabled",
+               base::Value(base::FeatureList::IsEnabled(
+                   chrome_pdf::features::kPdfViewerPresentationMode)));
 
   bool enable_printing = true;
   bool enable_annotations = false;

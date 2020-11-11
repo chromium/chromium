@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {eventToPromise} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/_test_resources/webui/test_util.m.js';
+import {eventToPromise, flushTasks} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/_test_resources/webui/test_util.m.js';
 import {FittingType} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/constants.js';
 import {ViewerPdfToolbarNewElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/elements/viewer-pdf-toolbar-new.js';
 
@@ -298,12 +298,20 @@ const tests = [
     toggleButton.click();
   },
 
-  function testEnterFullscreenButton() {
+  async function testEnterFullscreenButton() {
     const toolbar = createToolbar();
-    const button = toolbar.shadowRoot.querySelector('#fullscreen-button');
+    let button = toolbar.shadowRoot.querySelector('#fullscreen-button');
+    chrome.test.assertEq(null, button);
+
+    toolbar.presentationModeEnabled = true;
+    await flushTasks();
+    button = toolbar.shadowRoot.querySelector('#fullscreen-button');
+    chrome.test.assertTrue(button !== null);
+
     const whenFired = eventToPromise('fullscreen-click', toolbar);
     button.click();
-    whenFired.then(() => chrome.test.succeed());
+    await whenFired;
+    chrome.test.succeed();
   },
 ];
 

@@ -272,12 +272,14 @@
     $i18n{annotationsShowToggle}
   </button>
 
-  <hr>
-  <button id="fullscreen-button" class="dropdown-item"
-      on-click="onFullscreenClick_">
-    <span class="check-container" aria-hidden="true"></span>
-    $i18n{fullscreen}
-  </button>
+  <template is="dom-if" if="[[presentationModeEnabled]]">
+    <hr>
+    <button id="fullscreen-button" class="dropdown-item"
+        on-click="onFullscreenClick_">
+      <span class="check-container" aria-hidden="true"></span>
+      $i18n{fullscreen}
+    </button>
+  </template>
 </cr-action-menu>
 
 <if expr="chromeos">

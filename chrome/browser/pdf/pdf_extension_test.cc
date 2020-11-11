@@ -378,21 +378,32 @@ class PDFExtensionTest : public extensions::ExtensionApiTest {
   // Hooks to set up feature flags. Defaults to setting the kPDFViewerUpdate
   // flag based on the value returned by ShouldEnablePDFViewerUpdate().
   virtual const std::vector<base::Feature> GetEnabledFeatures() const {
+    std::vector<base::Feature> enabled;
     if (ShouldEnablePDFViewerUpdate()) {
-      return {chrome_pdf::features::kPDFViewerUpdate};
+      enabled.push_back(chrome_pdf::features::kPDFViewerUpdate);
     }
-    return {};
+    if (ShouldEnablePdfViewerPresentationMode()) {
+      enabled.push_back(chrome_pdf::features::kPdfViewerPresentationMode);
+    }
+    return enabled;
   }
 
   virtual const std::vector<base::Feature> GetDisabledFeatures() const {
-    if (ShouldEnablePDFViewerUpdate()) {
-      return {};
+    std::vector<base::Feature> disabled;
+    if (!ShouldEnablePDFViewerUpdate()) {
+      disabled.push_back(chrome_pdf::features::kPDFViewerUpdate);
     }
-    return {chrome_pdf::features::kPDFViewerUpdate};
+    if (!ShouldEnablePdfViewerPresentationMode()) {
+      disabled.push_back(chrome_pdf::features::kPdfViewerPresentationMode);
+    }
+    return disabled;
   }
 
   // Hook to set up whether the PDFViewerUpdate feature is enabled.
   virtual bool ShouldEnablePDFViewerUpdate() const { return false; }
+
+  // Hook to set up whether the PdfViewerPresentationMode feature is enabled.
+  virtual bool ShouldEnablePdfViewerPresentationMode() const { return false; }
 
  private:
   WebContents* LoadPdfGetGuestContentsHelper(const GURL& url, bool new_tab) {
@@ -912,7 +923,16 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionJSUpdatesEnabledTest, ViewerThumbnail) {
   RunTestsInJsModule("viewer_thumbnail_test.js", "test.pdf");
 }
 
-IN_PROC_BROWSER_TEST_F(PDFExtensionJSUpdatesEnabledTest, Fullscreen) {
+class PDFExtensionPresentationModeEnabledTest : public PDFExtensionJSTestBase {
+ public:
+  ~PDFExtensionPresentationModeEnabledTest() override = default;
+
+ protected:
+  bool ShouldEnablePDFViewerUpdate() const override { return true; }
+  bool ShouldEnablePdfViewerPresentationMode() const override { return true; }
+};
+
+IN_PROC_BROWSER_TEST_F(PDFExtensionPresentationModeEnabledTest, Fullscreen) {
   // Although this test file does not require a PDF to be loaded, loading the
   // elements without loading a PDF is difficult.
   RunTestsInJsModule("fullscreen_test.js", "test.pdf");

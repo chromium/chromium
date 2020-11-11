@@ -17,6 +17,7 @@ import './shared-css.js';
 import './shared-vars.js';
 
 import {AnchorAlignment} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.m.js';
+import {assert} from 'chrome://resources/js/assert.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {FittingType} from '../constants.js';
@@ -70,6 +71,7 @@ export class ViewerPdfToolbarNewElement extends PolymerElement {
       pageNo: Number,
       pdfAnnotationsEnabled: Boolean,
       pdfFormSaveEnabled: Boolean,
+      presentationModeEnabled: Boolean,
       printingEnabled: Boolean,
       rotated: Boolean,
       viewportZoom: Number,
@@ -225,6 +227,7 @@ export class ViewerPdfToolbarNewElement extends PolymerElement {
 
   /** @private */
   onFullscreenClick_() {
+    assert(this.presentationModeEnabled);
     this.getMenu_().close();
     this.dispatchEvent(new CustomEvent('fullscreen-click'));
   }
