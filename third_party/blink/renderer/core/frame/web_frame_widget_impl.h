@@ -141,7 +141,6 @@ class WebFrameWidgetImpl final : public WebFrameWidgetBase {
   bool ShouldHandleImeEvents() override;
 
   // WidgetBaseClient overrides:
-  void BeginMainFrame(base::TimeTicks last_frame_time) override;
   void BeginCommitCompositorFrame() override;
   void EndCommitCompositorFrame(base::TimeTicks commit_start_time) override;
   void DidBeginMainFrame() override;

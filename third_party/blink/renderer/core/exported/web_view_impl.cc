@@ -145,7 +145,6 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/page_popup_client.h"
 #include "third_party/blink/renderer/core/page/pointer_lock_controller.h"
-#include "third_party/blink/renderer/core/page/scrolling/fragment_anchor.h"
 #include "third_party/blink/renderer/core/page/scrolling/scrolling_coordinator.h"
 #include "third_party/blink/renderer/core/page/scrolling/top_document_root_scroller_controller.h"
 #include "third_party/blink/renderer/core/paint/compositing/paint_layer_compositor.h"
@@ -1332,35 +1331,6 @@ void WebViewImpl::SetKeyboardFocusURL(const KURL& url) {
 
 WebViewFrameWidget* WebViewImpl::MainFrameViewWidget() {
   return web_widget_;
-}
-
-void WebViewImpl::BeginFrame(base::TimeTicks last_frame_time) {
-  TRACE_EVENT1("blink", "WebViewImpl::beginFrame", "frameTime",
-               last_frame_time);
-  DCHECK(!last_frame_time.is_null());
-
-  if (!MainFrameImpl())
-    return;
-
-  MainFrameImpl()
-      ->GetFrame()
-      ->GetEventHandler()
-      .RecomputeMouseHoverStateIfNeeded();
-
-  if (LocalFrameView* view = MainFrameImpl()->GetFrameView()) {
-    if (FragmentAnchor* anchor = view->GetFragmentAnchor())
-      anchor->PerformPreRafActions();
-  }
-
-  base::Optional<LocalFrameUkmAggregator::ScopedUkmHierarchicalTimer> ukm_timer;
-  if (WidgetBase::ShouldRecordBeginMainFrameMetrics()) {
-    ukm_timer.emplace(MainFrameImpl()
-                          ->GetFrame()
-                          ->View()
-                          ->EnsureUkmAggregator()
-                          .GetScopedTimer(LocalFrameUkmAggregator::kAnimate));
-  }
-  PageWidgetDelegate::Animate(*page_, last_frame_time);
 }
 
 void WebViewImpl::UpdateLifecycle(WebLifecycleUpdate requested_update,

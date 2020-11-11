@@ -79,7 +79,6 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/page_popup.h"
 #include "third_party/blink/renderer/core/page/pointer_lock_controller.h"
-#include "third_party/blink/renderer/core/page/validation_message_client.h"
 #include "third_party/blink/renderer/core/paint/compositing/paint_layer_compositor.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
@@ -307,34 +306,6 @@ void WebFrameWidgetImpl::UpdateMainFrameLayoutSize() {
   gfx::Size layout_size = *size_;
 
   view->SetLayoutSize(WebSize(layout_size));
-}
-
-void WebFrameWidgetImpl::BeginMainFrame(base::TimeTicks last_frame_time) {
-  TRACE_EVENT1("blink", "WebFrameWidgetImpl::beginFrame", "frameTime",
-               last_frame_time);
-  DCHECK(!last_frame_time.is_null());
-
-  if (!LocalRootImpl())
-    return;
-
-  // Dirty bit on MouseEventManager is not cleared in OOPIFs after scroll
-  // or layout changes. Ensure the hover state is recomputed if necessary.
-  LocalRootImpl()
-      ->GetFrame()
-      ->GetEventHandler()
-      .RecomputeMouseHoverStateIfNeeded();
-
-  if (WidgetBase::ShouldRecordBeginMainFrameMetrics()) {
-    SCOPED_UMA_AND_UKM_TIMER(
-        LocalRootImpl()->GetFrame()->View()->EnsureUkmAggregator(),
-        LocalFrameUkmAggregator::kAnimate);
-    PageWidgetDelegate::Animate(*GetPage(), last_frame_time);
-  } else {
-    PageWidgetDelegate::Animate(*GetPage(), last_frame_time);
-  }
-  // Animate can cause the local frame to detach.
-  if (LocalRootImpl())
-    GetPage()->GetValidationMessageClient().LayoutOverlay();
 }
 
 void WebFrameWidgetImpl::DidBeginMainFrame() {

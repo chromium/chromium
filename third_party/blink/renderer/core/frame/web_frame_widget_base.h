@@ -348,6 +348,7 @@ class CORE_EXPORT WebFrameWidgetBase
   WebString GetLastToolTipTextForTesting() const override;
 
   // WidgetBaseClient methods.
+  void BeginMainFrame(base::TimeTicks last_frame_time) override;
   void RecordDispatchRafAlignedInputTime(
       base::TimeTicks raf_aligned_input_start_time) override;
   void SetSuppressFrameRequestsWorkaroundFor704763Only(bool) override;

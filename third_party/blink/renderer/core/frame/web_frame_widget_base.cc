@@ -59,6 +59,8 @@
 #include "third_party/blink/renderer/core/page/focus_controller.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/pointer_lock_controller.h"
+#include "third_party/blink/renderer/core/page/scrolling/fragment_anchor.h"
+#include "third_party/blink/renderer/core/page/validation_message_client.h"
 #include "third_party/blink/renderer/core/paint/first_meaningful_paint_detector.h"
 #include "third_party/blink/renderer/core/paint/paint_timing_detector.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
@@ -1220,6 +1222,44 @@ cc::LayerTreeHost* WebFrameWidgetBase::InitializeCompositing(
 
 void WebFrameWidgetBase::SetCompositorVisible(bool visible) {
   widget_base_->SetCompositorVisible(visible);
+}
+
+void WebFrameWidgetBase::BeginMainFrame(base::TimeTicks last_frame_time) {
+  TRACE_EVENT1("blink", "WebFrameWidgetBase::BeginMainFrame", "frameTime",
+               last_frame_time);
+  DCHECK(!last_frame_time.is_null());
+  CHECK(LocalRootImpl());
+
+  // Dirty bit on MouseEventManager is not cleared in OOPIFs after scroll
+  // or layout changes. Ensure the hover state is recomputed if necessary.
+  LocalRootImpl()
+      ->GetFrame()
+      ->GetEventHandler()
+      .RecomputeMouseHoverStateIfNeeded();
+
+  // Adjusting frame anchor only happens on the main frame.
+  if (ForMainFrame()) {
+    if (LocalFrameView* view = LocalRootImpl()->GetFrameView()) {
+      if (FragmentAnchor* anchor = view->GetFragmentAnchor())
+        anchor->PerformPreRafActions();
+    }
+  }
+
+  base::Optional<LocalFrameUkmAggregator::ScopedUkmHierarchicalTimer> ukm_timer;
+  if (WidgetBase::ShouldRecordBeginMainFrameMetrics()) {
+    ukm_timer.emplace(LocalRootImpl()
+                          ->GetFrame()
+                          ->View()
+                          ->EnsureUkmAggregator()
+                          .GetScopedTimer(LocalFrameUkmAggregator::kAnimate));
+  }
+
+  PageWidgetDelegate::Animate(*GetPage(), last_frame_time);
+  // Animate can cause the local frame to detach.
+  if (!LocalRootImpl())
+    return;
+
+  GetPage()->GetValidationMessageClient().LayoutOverlay();
 }
 
 void WebFrameWidgetBase::RecordDispatchRafAlignedInputTime(

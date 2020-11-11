@@ -107,7 +107,6 @@ class CORE_EXPORT WebViewFrameWidget : public WebFrameWidgetBase {
   float GetEmulatorScale() override;
 
   // WidgetBaseClient overrides:
-  void BeginMainFrame(base::TimeTicks last_frame_time) override;
   void DidBeginMainFrame() override;
   void ApplyViewportChanges(const cc::ApplyViewportChangesArgs& args) override;
   void RecordManipulationTypeCounts(cc::ManipulationInfo info) override;

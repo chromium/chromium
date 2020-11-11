@@ -92,10 +92,6 @@ void WebViewFrameWidget::Resize(const gfx::Size& size) {
   web_view_->Resize(size);
 }
 
-void WebViewFrameWidget::BeginMainFrame(base::TimeTicks last_frame_time) {
-  web_view_->BeginFrame(last_frame_time);
-}
-
 void WebViewFrameWidget::DidBeginMainFrame() {
   WebFrameWidgetBase::DidBeginMainFrame();
 
