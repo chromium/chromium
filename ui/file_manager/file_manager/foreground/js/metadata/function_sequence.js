@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// #import {MetadataParser} from './metadata_parser.m.js';
+
 /**
  * @class FunctionSequence to invoke steps in sequence.
  */
-class FunctionSequence {
+/* #export */ class FunctionSequence {
   /**
    * @param {string} name Name of the function.
    * @param {Array} steps Array of functions to invoke in sequence.

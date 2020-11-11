@@ -2,8 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
+// #import {ByteReader} from './byte_reader.m.js';
+// #import {MetadataParser} from './metadata_parser.m.js';
+// #import {MetadataParserLogger} from '../../../../externs/metadata_worker_window.m.js';
+// clang-format on
+
 /** @final */
-class MpegParser extends MetadataParser {
+/* #export */ class MpegParser extends MetadataParser {
   /**
    * @param {!MetadataParserLogger} parent Parent object.
    */

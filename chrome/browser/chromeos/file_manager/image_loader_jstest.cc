@@ -12,7 +12,7 @@ class ImageLoaderJsTest : public FileManagerJsTestBase {
 };
 
 IN_PROC_BROWSER_TEST_F(ImageLoaderJsTest, ImageLoaderClientTest) {
-  RunTestURL("image_loader_client_unittest_gen.html");
+  RunTestURL("image_loader_client_unittest.m_gen.html");
 }
 
 IN_PROC_BROWSER_TEST_F(ImageLoaderJsTest, CacheTest) {

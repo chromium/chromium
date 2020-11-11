@@ -39,6 +39,13 @@ js_library("files_app_entry_interfaces.m") {
   extra_deps = [ ":modulize" ]
 }
 
+js_library("metadata_worker_window.m") {
+  sources =
+      [ "$root_gen_dir/ui/file_manager/externs/metadata_worker_window.m.js" ]
+
+  extra_deps = [ ":modulize" ]
+}
+
 js_library("volume_manager") {
   sources = []
 
@@ -90,6 +97,7 @@ js_modulizer("modulize") {
   input_files = [
     "entry_location.js",
     "files_app_entry_interfaces.js",
+    "metadata_worker_window.js",
     "volume_info.js",
     "volume_info_list.js",
     "volume_manager.js",
