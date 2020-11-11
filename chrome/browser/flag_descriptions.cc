@@ -1562,11 +1562,6 @@ const char kOmniboxSpareRendererDescription[] =
     "When the omnibox is focused, start an empty spare renderer. This can "
     "speed up the load of the navigation from the omnibox.";
 
-const char kOmniboxSuggestionsWrapAroundName[] =
-    "Omnibox Suggestions Wrap-Around";
-const char kOmniboxSuggestionsWrapAroundDescription[] =
-    "Allow long search suggestions to wrap around to reveal their content";
-
 const char kOmniboxTabSwitchSuggestionsName[] =
     "Omnibox switch to tab suggestions";
 const char kOmniboxTabSwitchSuggestionsDescription[] =

@@ -42,7 +42,6 @@ import org.chromium.chrome.browser.omnibox.suggestions.base.SuggestionDrawableSt
 import org.chromium.chrome.browser.omnibox.suggestions.basic.SuggestionViewProperties.SuggestionIcon;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.favicon.LargeIconBridge.LargeIconCallback;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
@@ -170,8 +169,7 @@ public class BasicSuggestionProcessorUnitTest {
     @Test
     @SmallTest
     @UiThreadTest
-    @DisableFeatures({ChromeFeatureList.OMNIBOX_COMPACT_SUGGESTIONS,
-            ChromeFeatureList.OMNIBOX_SUGGESTIONS_WRAP_AROUND})
+    @DisableFeatures(ChromeFeatureList.OMNIBOX_COMPACT_SUGGESTIONS)
     public void getSuggestionIconTypeForSearch_Default() {
         int[][] testCases = {
                 {OmniboxSuggestionType.URL_WHAT_YOU_TYPED, SuggestionIcon.MAGNIFIER},
@@ -205,8 +203,7 @@ public class BasicSuggestionProcessorUnitTest {
     @Test
     @SmallTest
     @UiThreadTest
-    @DisableFeatures({ChromeFeatureList.OMNIBOX_COMPACT_SUGGESTIONS,
-            ChromeFeatureList.OMNIBOX_SUGGESTIONS_WRAP_AROUND})
+    @DisableFeatures(ChromeFeatureList.OMNIBOX_COMPACT_SUGGESTIONS)
     public void getSuggestionIconTypeForUrl_Default() {
         int[][] testCases = {
                 {OmniboxSuggestionType.URL_WHAT_YOU_TYPED, SuggestionIcon.GLOBE},
@@ -240,8 +237,7 @@ public class BasicSuggestionProcessorUnitTest {
     @Test
     @SmallTest
     @UiThreadTest
-    @DisableFeatures({ChromeFeatureList.OMNIBOX_COMPACT_SUGGESTIONS,
-            ChromeFeatureList.OMNIBOX_SUGGESTIONS_WRAP_AROUND})
+    @DisableFeatures(ChromeFeatureList.OMNIBOX_COMPACT_SUGGESTIONS)
     public void getSuggestionIconTypeForBookmarks_Default() {
         int[][] testCases = {
                 {OmniboxSuggestionType.URL_WHAT_YOU_TYPED, SuggestionIcon.BOOKMARK},
@@ -275,10 +271,8 @@ public class BasicSuggestionProcessorUnitTest {
     @Test
     @SmallTest
     @UiThreadTest
-    @DisableFeatures({ChromeFeatureList.OMNIBOX_COMPACT_SUGGESTIONS,
-            ChromeFeatureList.OMNIBOX_SUGGESTIONS_WRAP_AROUND})
-    public void
-    getSuggestionIconTypeForTrendingQueries() {
+    @DisableFeatures(ChromeFeatureList.OMNIBOX_COMPACT_SUGGESTIONS)
+    public void getSuggestionIconTypeForTrendingQueries() {
         int[][] testCases = {
                 {OmniboxSuggestionType.URL_WHAT_YOU_TYPED, SuggestionIcon.TRENDS},
                 {OmniboxSuggestionType.SEARCH_HISTORY, SuggestionIcon.HISTORY},
@@ -357,8 +351,7 @@ public class BasicSuggestionProcessorUnitTest {
     @Test
     @SmallTest
     @UiThreadTest
-    @DisableFeatures({ChromeFeatureList.OMNIBOX_COMPACT_SUGGESTIONS,
-            ChromeFeatureList.OMNIBOX_SUGGESTIONS_WRAP_AROUND})
+    @DisableFeatures(ChromeFeatureList.OMNIBOX_COMPACT_SUGGESTIONS)
     public void suggestionFavicons_showFaviconWhenAvailable() {
         final ArgumentCaptor<LargeIconCallback> callback =
                 ArgumentCaptor.forClass(LargeIconCallback.class);
@@ -380,8 +373,7 @@ public class BasicSuggestionProcessorUnitTest {
     @Test
     @SmallTest
     @UiThreadTest
-    @DisableFeatures({ChromeFeatureList.OMNIBOX_COMPACT_SUGGESTIONS,
-            ChromeFeatureList.OMNIBOX_SUGGESTIONS_WRAP_AROUND})
+    @DisableFeatures(ChromeFeatureList.OMNIBOX_COMPACT_SUGGESTIONS)
     public void suggestionFavicons_doNotReplaceFallbackIconWhenNoFaviconIsAvailable() {
         final ArgumentCaptor<LargeIconCallback> callback =
                 ArgumentCaptor.forClass(LargeIconCallback.class);
@@ -403,25 +395,10 @@ public class BasicSuggestionProcessorUnitTest {
     @SmallTest
     @UiThreadTest
     @DisableFeatures(ChromeFeatureList.OMNIBOX_COMPACT_SUGGESTIONS)
-    @EnableFeatures(ChromeFeatureList.OMNIBOX_SUGGESTIONS_WRAP_AROUND)
     public void searchSuggestions_searchQueriesCanWrapAroundWithFeatureEnabled() {
         mProcessor.onNativeInitialized();
         createSearchSuggestion(OmniboxSuggestionType.SEARCH_WHAT_YOU_TYPED, "");
         Assert.assertEquals(mModel.get(SuggestionViewProperties.ALLOW_WRAP_AROUND), true);
-
-        createUrlSuggestion(OmniboxSuggestionType.URL_WHAT_YOU_TYPED, "");
-        Assert.assertEquals(mModel.get(SuggestionViewProperties.ALLOW_WRAP_AROUND), false);
-    }
-
-    @Test
-    @SmallTest
-    @UiThreadTest
-    @DisableFeatures({ChromeFeatureList.OMNIBOX_COMPACT_SUGGESTIONS,
-            ChromeFeatureList.OMNIBOX_SUGGESTIONS_WRAP_AROUND})
-    public void searchSuggestions_searchQueriesDontWrapAroundWithFeatureDisabled() {
-        mProcessor.onNativeInitialized();
-        createSearchSuggestion(OmniboxSuggestionType.SEARCH_WHAT_YOU_TYPED, "");
-        Assert.assertEquals(mModel.get(SuggestionViewProperties.ALLOW_WRAP_AROUND), false);
 
         createUrlSuggestion(OmniboxSuggestionType.URL_WHAT_YOU_TYPED, "");
         Assert.assertEquals(mModel.get(SuggestionViewProperties.ALLOW_WRAP_AROUND), false);

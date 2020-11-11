@@ -11,7 +11,6 @@ import androidx.annotation.DrawableRes;
 
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.MatchClassificationStyle;
 import org.chromium.chrome.browser.omnibox.OmniboxSuggestionType;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
@@ -33,7 +32,6 @@ public class BasicSuggestionProcessor extends BaseSuggestionViewProcessor {
     private final UrlBarEditingTextStateProvider mUrlBarEditingTextProvider;
     private final Supplier<LargeIconBridge> mIconBridgeSupplier;
     private final int mDesiredFaviconWidthPx;
-    private boolean mEnableSuggestionsWrapAround;
 
     /**
      * @param context An Android context.
@@ -142,13 +140,6 @@ public class BasicSuggestionProcessor extends BaseSuggestionViewProcessor {
     }
 
     @Override
-    public void onNativeInitialized() {
-        super.onNativeInitialized();
-        mEnableSuggestionsWrapAround =
-                ChromeFeatureList.isEnabled(ChromeFeatureList.OMNIBOX_SUGGESTIONS_WRAP_AROUND);
-    }
-
-    @Override
     public void populateModel(OmniboxSuggestion suggestion, PropertyModel model, int position) {
         super.populateModel(suggestion, model, position);
         final @OmniboxSuggestionType int suggestionType = suggestion.getType();
@@ -177,8 +168,7 @@ public class BasicSuggestionProcessor extends BaseSuggestionViewProcessor {
         fetchSuggestionFavicon(model, suggestion.getUrl(), mIconBridgeSupplier.get(), () -> {
             model.set(SuggestionViewProperties.SUGGESTION_ICON_TYPE, SuggestionIcon.FAVICON);
         });
-        model.set(SuggestionViewProperties.ALLOW_WRAP_AROUND,
-                isSearchSuggestion && mEnableSuggestionsWrapAround);
+        model.set(SuggestionViewProperties.ALLOW_WRAP_AROUND, isSearchSuggestion);
 
         if (!mUrlBarEditingTextProvider.getTextWithoutAutocomplete().trim().equalsIgnoreCase(
                     suggestion.getDisplayText())) {

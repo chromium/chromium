@@ -913,9 +913,6 @@ extern const char kOmniboxSearchReadyIncognitoDescription[];
 extern const char kOmniboxSpareRendererName[];
 extern const char kOmniboxSpareRendererDescription[];
 
-extern const char kOmniboxSuggestionsWrapAroundName[];
-extern const char kOmniboxSuggestionsWrapAroundDescription[];
-
 extern const char kOmniboxTabSwitchSuggestionsName[];
 extern const char kOmniboxTabSwitchSuggestionsDescription[];
 

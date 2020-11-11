@@ -3569,11 +3569,6 @@
     "expiry_milestone": 89
   },
   {
-    "name": "omnibox-suggestions-wrap-around",
-    "owners": [ "ender", "chrome-omnibox-team@google.com" ],
-    "expiry_milestone": 90
-  },
-  {
     "name": "omnibox-tab-switch-suggestions",
     "owners": [ "orinj", "chrome-omnibox-team@google.com" ],
     "expiry_milestone": 92

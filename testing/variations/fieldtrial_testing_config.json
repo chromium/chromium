@@ -4886,21 +4886,6 @@
             ]
         }
     ],
-    "OmniboxSuggestionsWrapAround": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "OmniboxSuggestionsWrapAround"
-                    ]
-                }
-            ]
-        }
-    ],
     "OneCopyRasterBufferPlaybackNormalThreadPriority": [
         {
             "platforms": [

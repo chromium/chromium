@@ -315,10 +315,6 @@ const base::Feature kOmniboxKeywordSearchButton{
 const base::Feature kOmniboxRefinedFocusState{
     "OmniboxRefinedFocusState", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Allows long Omnibox suggestions to wrap around to next line.
-const base::Feature kOmniboxSuggestionsWrapAround{
-    "OmniboxSuggestionsWrapAround", base::FEATURE_DISABLED_BY_DEFAULT};
-
 // If enabled, uses WebUI to render the omnibox suggestions popup, similar to
 // how the NTP "realbox" is implemented.
 const base::Feature kWebUIOmniboxPopup{"WebUIOmniboxPopup",
