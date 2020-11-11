@@ -881,14 +881,22 @@ bool AwContentBrowserClient::ShouldEnableStrictSiteIsolation() {
   // TODO(lukasza): When/if we eventually add OOPIF support for AW we should
   // consider running AW tests with and without site-per-process (and this might
   // require returning true below).  Adding OOPIF support for AW is tracked by
-  // https://crbug.com/869494.
+  // https://crbug.com/806404.
   return false;
+}
+
+bool AwContentBrowserClient::ShouldDisableSiteIsolation() {
+  // Since AW does not yet support OOPIFs, we must return true here to disable
+  // features that may trigger OOPIFs, such as origin isolation.
+  //
+  // Adding OOPIF support for AW is tracked by https://crbug.com/806404.
+  return true;
 }
 
 bool AwContentBrowserClient::ShouldLockProcessToSite(
     content::BrowserContext* browser_context,
     const GURL& effective_url) {
-  // TODO(lukasza): https://crbug.cmo/869494: Once Android WebView supports
+  // TODO(lukasza): https://crbug.com/806404: Once Android WebView supports
   // OOPIFs, we should remove this ShouldLockProcess overload.  Till then,
   // returning false helps avoid accidentally applying citadel-style Site
   // Isolation enforcement to Android WebView (and causing incorrect renderer

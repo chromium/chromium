@@ -552,14 +552,17 @@ class CONTENT_EXPORT ContentBrowserClient {
   virtual std::vector<url::Origin> GetOriginsRequiringDedicatedProcess();
 
   // Allows the embedder to programmatically control whether the
-  // --site-per-process mode of Site Isolation should be used.
+  // --site-per-process mode of Site Isolation should be used.  Note that
+  // returning true here will only take effect if ShouldDisableSiteIsolation()
+  // below returns false.
   //
   // Note that for correctness, the same value should be consistently returned.
   // See also https://crbug.com/825369
   virtual bool ShouldEnableStrictSiteIsolation();
 
   // Allows the embedder to programmatically control whether Site Isolation
-  // should be disabled.
+  // should be disabled.  Note that this takes precedence over
+  // ShouldEnableStrictSiteIsolation() if both return true.
   //
   // Note that for correctness, the same value should be consistently returned.
   virtual bool ShouldDisableSiteIsolation();
