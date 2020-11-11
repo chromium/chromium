@@ -27,21 +27,25 @@ class NearbyShareLocalDeviceDataManager;
 // after the user has enabled Nearby Sharing in prefs.
 class NearbySharingService : public KeyedService {
  public:
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused. If entries are added, kMaxValue
+  // should be updated.
   enum class StatusCodes {
-    // The operation failed, without any more information.
-    kError,
     // The operation was successful.
-    kOk,
+    kOk = 0,
+    // The operation failed, without any more information.
+    kError = 1,
     // The operation failed since it was called in an invalid order.
-    kOutOfOrderApiCall,
+    kOutOfOrderApiCall = 2,
     // Tried to stop something that was already stopped.
-    kStatusAlreadyStopped,
+    kStatusAlreadyStopped = 3,
     // Tried to register an opposite foreground surface in the midst of a
     // transfer or connection.
     // (Tried to register Send Surface when receiving a file or tried to
     // register Receive Surface when
     // sending a file.)
-    kTransferAlreadyInProgress,
+    kTransferAlreadyInProgress = 4,
+    kMaxValue = kTransferAlreadyInProgress
   };
 
   enum class ReceiveSurfaceState {

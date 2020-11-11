@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/bind_helpers.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/optional.h"
 #include "base/stl_util.h"
 #include "chrome/browser/nearby_sharing/attachment.h"
@@ -104,6 +105,8 @@ NearbyPerSessionDiscoveryManager::NearbyPerSessionDiscoveryManager(
 
 NearbyPerSessionDiscoveryManager::~NearbyPerSessionDiscoveryManager() {
   UnregisterSendSurface();
+  base::UmaHistogramEnumeration(
+      "Nearby.Share.Discovery.FurthestDiscoveryProgress", furthest_progress_);
 }
 
 void NearbyPerSessionDiscoveryManager::OnTransferUpdate(
@@ -139,6 +142,8 @@ void NearbyPerSessionDiscoveryManager::OnTransferUpdate(
 
 void NearbyPerSessionDiscoveryManager::OnShareTargetDiscovered(
     ShareTarget share_target) {
+  UpdateFurthestDiscoveryProgressIfNecessary(
+      DiscoveryProgress::kDiscoveredShareTargetNothingSent);
   base::InsertOrAssign(discovered_share_targets_, share_target.id,
                        share_target);
   share_target_listener_->OnShareTargetDiscovered(share_target);
@@ -161,14 +166,23 @@ void NearbyPerSessionDiscoveryManager::StartDiscovery(
   // to the UI. Instead, we rely on the destructor's call to
   // UnregisterSendSurface which will trigger when the share sheet goes away.
 
-  if (nearby_sharing_service_->RegisterSendSurface(
-          this, this, NearbySharingService::SendSurfaceState::kForeground) !=
-      NearbySharingService::StatusCodes::kOk) {
-    NS_LOG(WARNING) << "Failed to register send surface";
+  NearbySharingService::StatusCodes status =
+      nearby_sharing_service_->RegisterSendSurface(
+          this, this, NearbySharingService::SendSurfaceState::kForeground);
+  base::UmaHistogramEnumeration("Nearby.Share.Discovery.StartDiscovery",
+                                status);
+  if (status != NearbySharingService::StatusCodes::kOk) {
+    NS_LOG(WARNING) << __func__ << ": Failed to register send surface";
+    UpdateFurthestDiscoveryProgressIfNecessary(
+        DiscoveryProgress::kFailedToStartDiscovery);
     share_target_listener_.reset();
     std::move(callback).Run(/*success=*/false);
     return;
   }
+
+  UpdateFurthestDiscoveryProgressIfNecessary(
+      DiscoveryProgress::kStartedDiscoveryNothingFound);
+
   // Once this object is registered as send surface, we stay registered until
   // UnregisterSendSurface is called so that the transfer update listeners can
   // get updates even if Discovery is stopped.
@@ -183,8 +197,14 @@ void NearbyPerSessionDiscoveryManager::SelectShareTarget(
   DCHECK(!transfer_update_listener_.is_bound());
 
   auto iter = discovered_share_targets_.find(share_target_id);
-  if (iter == discovered_share_targets_.end()) {
-    NS_LOG(VERBOSE) << "Unknown share target selected: id=" << share_target_id;
+  bool look_up_share_target_success = iter != discovered_share_targets_.end();
+  base::UmaHistogramBoolean("Nearby.Share.Discovery.LookUpSelectedShareTarget",
+                            look_up_share_target_success);
+  if (!look_up_share_target_success) {
+    NS_LOG(VERBOSE) << __func__ << ": Unknown share target selected: id="
+                    << share_target_id;
+    UpdateFurthestDiscoveryProgressIfNecessary(
+        DiscoveryProgress::kFailedToLookUpSelectedShareTarget);
     std::move(callback).Run(
         nearby_share::mojom::SelectShareTargetResult::kInvalidShareTarget,
         mojo::NullReceiver(), mojo::NullRemote());
@@ -199,20 +219,23 @@ void NearbyPerSessionDiscoveryManager::SelectShareTarget(
   NearbySharingService::StatusCodes status =
       nearby_sharing_service_->SendAttachments(iter->second,
                                                std::move(attachments_));
+  base::UmaHistogramEnumeration("Nearby.Share.Discovery.StartSend", status);
 
   // If the send call succeeded, we expect OnTransferUpdate() to be called next.
   if (status == NearbySharingService::StatusCodes::kOk) {
+    UpdateFurthestDiscoveryProgressIfNecessary(DiscoveryProgress::kStartedSend);
     mojo::PendingRemote<nearby_share::mojom::ConfirmationManager> remote;
     mojo::MakeSelfOwnedReceiver(std::make_unique<NearbyConfirmationManager>(
                                     nearby_sharing_service_, iter->second),
                                 remote.InitWithNewPipeAndPassReceiver());
-
     std::move(callback).Run(nearby_share::mojom::SelectShareTargetResult::kOk,
                             std::move(receiver), std::move(remote));
     return;
   }
 
-  NS_LOG(VERBOSE) << "Failed to select share target";
+  NS_LOG(VERBOSE) << __func__ << ": Failed to start send to share target";
+  UpdateFurthestDiscoveryProgressIfNecessary(
+      DiscoveryProgress::kFailedToStartSend);
   transfer_update_listener_.reset();
   std::move(callback).Run(nearby_share::mojom::SelectShareTargetResult::kError,
                           mojo::NullReceiver(), mojo::NullRemote());
@@ -257,12 +280,21 @@ void NearbyPerSessionDiscoveryManager::GetSendPreview(
 
 void NearbyPerSessionDiscoveryManager::UnregisterSendSurface() {
   if (registered_as_send_surface_) {
-    if (nearby_sharing_service_->UnregisterSendSurface(this, this) !=
-        NearbySharingService::StatusCodes::kOk) {
-      NS_LOG(WARNING) << "Failed to unregister send surface";
+    NearbySharingService::StatusCodes status =
+        nearby_sharing_service_->UnregisterSendSurface(this, this);
+    base::UmaHistogramEnumeration(
+        "Nearby.Share.Discovery.UnregisterSendSurface", status);
+    if (status != NearbySharingService::StatusCodes::kOk) {
+      NS_LOG(WARNING) << __func__ << ": Failed to unregister send surface";
     }
     registered_as_send_surface_ = false;
   }
 
   share_target_listener_.reset();
+}
+
+void NearbyPerSessionDiscoveryManager::
+    UpdateFurthestDiscoveryProgressIfNecessary(DiscoveryProgress progress) {
+  if (static_cast<int>(progress) > static_cast<int>(furthest_progress_))
+    furthest_progress_ = progress;
 }

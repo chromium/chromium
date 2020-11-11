@@ -9224,6 +9224,47 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </token>
 </histogram>
 
+<histogram name="Nearby.Share.Discovery.FurthestDiscoveryProgress"
+    enum="NearbyShareDiscoveryProgress" expires_after="2021-08-19">
+  <owner>nohle@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records the furthest state reached in a single Nearby Share discovery
+    session. Emitted when the per-session discovery manager is destroyed.
+  </summary>
+</histogram>
+
+<histogram name="Nearby.Share.Discovery.LookUpSelectedShareTarget"
+    enum="BooleanFound" expires_after="2021-08-19">
+  <owner>nohle@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records whether or not the selected share target on the Nearby Share
+    discovery page can be found in the per-session discovery manager's map of
+    discovered share targets. Emitted when the user selects a share target from
+    the discovery page and tries to proceed to the next step in the UI.
+  </summary>
+</histogram>
+
+<histogram name="Nearby.Share.Discovery.{Operation}"
+    enum="NearbyShareServiceStatusCode" expires_after="2021-08-19">
+  <owner>nohle@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records the result of {Operation}. Emitted immediately after the operation
+    is attempted for each discovery session.
+  </summary>
+  <token key="Operation">
+    <variant name="StartDiscovery" summary="starting a discovery session"/>
+    <variant name="StartSend"
+        summary="beginning a transfer of an attachment to the selected share
+                 target on the discovery page"/>
+    <variant name="UnregisterSendSurface"
+        summary="unregistering the per-session discovery manager with the
+                 Nearby Share service"/>
+  </token>
+</histogram>
+
 <histogram name="Nearby.Share.LocalDeviceData.DeviceDataUpdater.HttpResult"
     enum="NearbyShareHttpResult" expires_after="2021-08-19">
   <owner>cclem@chromium.org</owner>

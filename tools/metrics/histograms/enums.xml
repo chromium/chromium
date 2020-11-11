@@ -50241,6 +50241,16 @@ Called by update_use_counter_css.py.-->
   <int value="4" label="Invalid Operation"/>
 </enum>
 
+<enum name="NearbyShareDiscoveryProgress">
+  <int value="0" label="Discovery not attempted"/>
+  <int value="1" label="Failed to start discovery"/>
+  <int value="2" label="Started discovery; nothing found"/>
+  <int value="3" label="Discovered share target; nothing sent"/>
+  <int value="4" label="Failed to look up selected share target"/>
+  <int value="5" label="Failed to start send"/>
+  <int value="6" label="Started send"/>
+</enum>
+
 <enum name="NearbyShareHttpResult">
   <int value="0" label="Success"/>
   <int value="1" label="Timeout"/>
@@ -50251,6 +50261,14 @@ Called by update_use_counter_css.py.-->
   <int value="6" label="Response Malformed"/>
   <int value="7" label="Internal Server Error"/>
   <int value="8" label="Unknown"/>
+</enum>
+
+<enum name="NearbyShareServiceStatusCode">
+  <int value="0" label="Ok"/>
+  <int value="1" label="Error"/>
+  <int value="2" label="Out-of-order API call"/>
+  <int value="3" label="Already stopped"/>
+  <int value="4" label="Transfer already in progress"/>
 </enum>
 
 <enum name="NearOomDetectionEndReason">
