@@ -150,14 +150,8 @@ class AppViewTest : public AppShellTest {
   TestGuestViewManagerFactory factory_;
 };
 
-#if defined(OS_WIN)
-#define MAYBE_TestAppViewGoodDataShouldSucceed \
-  DISABLED_TestAppViewGoodDataShouldSucceed
-#else
-#define MAYBE_TestAppViewGoodDataShouldSucceed TestAppViewGoodDataShouldSucceed
-#endif
 // Tests that <appview> correctly processes parameters passed on connect.
-IN_PROC_BROWSER_TEST_F(AppViewTest, MAYBE_TestAppViewGoodDataShouldSucceed) {
+IN_PROC_BROWSER_TEST_F(AppViewTest, TestAppViewGoodDataShouldSucceed) {
   RunTest("testAppViewGoodDataShouldSucceed",
           "app_view/apitest",
           "app_view/apitest/skeleton");
@@ -179,23 +173,14 @@ IN_PROC_BROWSER_TEST_F(AppViewTest, TestAppViewMediaRequest) {
 // Tests that <appview> correctly processes parameters passed on connect.
 // This test should fail to connect because the embedded app (skeleton) will
 // refuse the data passed by the embedder app and deny the request.
-// Disabled for flakiness on multiple platforms. See https://crbug.com/875908.
-IN_PROC_BROWSER_TEST_F(AppViewTest, DISABLED_TestAppViewRefusedDataShouldFail) {
+IN_PROC_BROWSER_TEST_F(AppViewTest, TestAppViewRefusedDataShouldFail) {
   RunTest("testAppViewRefusedDataShouldFail",
           "app_view/apitest",
           "app_view/apitest/skeleton");
 }
 
-#if defined(OS_WIN) || defined(OS_CHROMEOS)
-#define MAYBE_TestAppViewWithUndefinedDataShouldSucceed \
-  DISABLED_TestAppViewWithUndefinedDataShouldSucceed
-#else
-#define MAYBE_TestAppViewWithUndefinedDataShouldSucceed \
-  TestAppViewWithUndefinedDataShouldSucceed
-#endif
 // Tests that <appview> is able to navigate to another installed app.
-IN_PROC_BROWSER_TEST_F(AppViewTest,
-                       MAYBE_TestAppViewWithUndefinedDataShouldSucceed) {
+IN_PROC_BROWSER_TEST_F(AppViewTest, TestAppViewWithUndefinedDataShouldSucceed) {
   RunTest("testAppViewWithUndefinedDataShouldSucceed",
           "app_view/apitest",
           "app_view/apitest/skeleton");
