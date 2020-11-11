@@ -9122,13 +9122,12 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerNoSiteIsolationTest,
   // Both should use the same process.
   EXPECT_EQ(old_instance->GetProcess(), new_instance->GetProcess());
 
+  // Make sure the BrowsingInstanceId is cleaned up immediately.
+  ChildProcessSecurityPolicyImpl::GetInstance()
+      ->SetBrowsingInstanceCleanupDelayForTesting(0);
+
   // Close the test's initial window.  This should destroy the initial
   // BrowsingInstance and remove it from ChildProcessSecurityPolicy.
-  //
-  // TODO(wjmaclean): Update this to handle timeouts once
-  // ChildProcessSecurityPolicy is updated to keep track of multiple
-  // BrowsingInstances per process, and BrowsingInstance removal uses a
-  // timeout.
   shell()->Close();
 
   // Navigate to a web URL in the second window.  This shouldn't crash.

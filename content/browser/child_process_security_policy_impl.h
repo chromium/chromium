@@ -364,9 +364,9 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
                                  url::Origin* result);
 
   // Removes any origin isolation opt-in entries associated with the
-  // |isolation_context| of the BrowsingInstance.
+  // |browsing_instance_id| of the BrowsingInstance.
   void RemoveOptInIsolatedOriginsForBrowsingInstance(
-      const IsolationContext& isolation_context);
+      const BrowsingInstanceId& browsing_instance_id);
 
   // Registers |origin|'s isolation status with respect to the BrowsingInstance
   // associated with |isolation_context|. If it has already been registered,
@@ -606,6 +606,12 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
                                     const url::Origin& origin,
                                     bool is_global_walk_or_frame_removal);
 
+  // Allows tests to modify the delay in cleaning up BrowsingInstanceIds. If the
+  // delay is set to zero, cleanup happens immediately.
+  void SetBrowsingInstanceCleanupDelayForTesting(int64_t delay_in_seconds) {
+    browsing_instance_cleanup_delay_in_seconds_ = delay_in_seconds;
+  }
+
  private:
   friend class ChildProcessSecurityPolicyInProcessBrowserTest;
   friend class ChildProcessSecurityPolicyTest;
@@ -784,6 +790,10 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
   void RemoveProcessReferenceLocked(int child_id)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
+  // Internal helper for RemoveOptInIsolatedOriginsForBrowsingInstance().
+  void RemoveOptInIsolatedOriginsForBrowsingInstanceInternal(
+      const BrowsingInstanceId browsing_instance_id);
+
   // Creates the value to place in the "killed_process_origin_lock" crash key
   // based on the contents of |security_state|.
   static std::string GetKilledProcessOriginLock(
@@ -896,6 +906,11 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
   base::flat_map<BrowsingInstanceId, std::vector<url::Origin>>
       origin_isolation_non_isolated_by_browsing_instance_
           GUARDED_BY(origins_isolation_opt_in_lock_);
+
+  // When we are notified a BrowsingInstance has destructed, delay cleanup by
+  // this amount to allow outstanding IO thread requests to complete. May be set
+  // to different values in tests.
+  int64_t browsing_instance_cleanup_delay_in_seconds_ = 10;
 
   DISALLOW_COPY_AND_ASSIGN(ChildProcessSecurityPolicyImpl);
 };

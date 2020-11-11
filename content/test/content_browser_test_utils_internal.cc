@@ -295,18 +295,33 @@ std::string FrameTreeVisualizer::GetName(SiteInstance* site_instance) {
 Shell* OpenPopup(const ToRenderFrameHost& opener,
                  const GURL& url,
                  const std::string& name) {
+  return OpenPopup(opener, url, name, "", true);
+}
+
+Shell* OpenPopup(const ToRenderFrameHost& opener,
+                 const GURL& url,
+                 const std::string& name,
+                 const std::string& features,
+                 bool expect_return_from_window_open) {
   TestNavigationObserver observer(url);
   observer.StartWatchingNewWebContents();
 
   ShellAddedObserver new_shell_observer;
   bool did_create_popup = false;
-  bool did_execute_script = ExecuteScriptAndExtractBool(
-      opener,
+  std::string popup_script =
       "window.domAutomationController.send("
-      "    !!window.open('" + url.spec() + "', '" + name + "'));",
-      &did_create_popup);
-  if (!did_execute_script || !did_create_popup)
+      "    !!window.open('" +
+      url.spec() + "', '" + name + "', '" + features + "'));";
+  bool did_execute_script =
+      ExecuteScriptAndExtractBool(opener, popup_script, &did_create_popup);
+
+  // Don't check the value of |did_create_popup| since there are valid reasons
+  // for it to be false, e.g. |features| specifies 'noopener', or 'noreferrer'
+  // or others.
+  if (!did_execute_script ||
+      !(did_create_popup || !expect_return_from_window_open)) {
     return nullptr;
+  }
 
   observer.Wait();
 
