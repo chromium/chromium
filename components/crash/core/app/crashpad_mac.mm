@@ -56,10 +56,16 @@ std::map<std::string, std::string> GetProcessSimpleAnnotations() {
 #endif
       NSString* channel = base::mac::ObjCCast<NSString>(
           [outer_bundle objectForInfoDictionaryKey:@"KSChannelID"]);
-      if (channel) {
+      if (!channel || [channel isEqual:@"arm64"] ||
+          [channel isEqual:@"universal"]) {
+        if (allow_empty_channel)
+          process_annotations["channel"] = "";
+      } else {
+        if ([channel hasPrefix:@"arm64-"])
+          channel = [channel substringFromIndex:[@"arm64-" length]];
+        else if ([channel hasPrefix:@"universal-"])
+          channel = [channel substringFromIndex:[@"universal-" length]];
         process_annotations["channel"] = base::SysNSStringToUTF8(channel);
-      } else if (allow_empty_channel) {
-        process_annotations["channel"] = "";
       }
 
       NSString* version =
