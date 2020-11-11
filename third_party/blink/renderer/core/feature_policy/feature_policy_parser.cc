@@ -25,16 +25,6 @@
 
 namespace blink {
 namespace {
-namespace internal {
-// Following is the intermediate represetnation(IR) of feature policy.
-// Parsing of syntax structures is done in this IR, but semantic checks, e.g.
-// whether feature_name is valid, are not yet performed.
-struct FeaturePolicyDeclarationNode {
-  String feature_name;
-  Vector<String> allowlist;
-};
-using FeaturePolicyNode = Vector<FeaturePolicyDeclarationNode>;
-}  // namespace internal
 
 class ParsedFeaturePolicies final
     : public GarbageCollected<ParsedFeaturePolicies>,
@@ -74,6 +64,17 @@ class ParsedFeaturePolicies final
 
 const char ParsedFeaturePolicies::kSupplementName[] = "ParsedFeaturePolicies";
 
+class FeatureObserver {
+ public:
+  // Returns whether the feature has been observed before or not.
+  bool FeatureObserved(mojom::blink::FeaturePolicyFeature feature);
+
+ private:
+  std::bitset<
+      static_cast<size_t>(mojom::blink::FeaturePolicyFeature::kMaxValue) + 1>
+      features_specified_;
+};
+
 class ParsingContext {
   STACK_ALLOCATED();
 
@@ -91,17 +92,29 @@ class ParsingContext {
 
   ~ParsingContext() = default;
 
-  ParsedFeaturePolicy ParseIR(const internal::FeaturePolicyNode& root);
-  internal::FeaturePolicyNode ParseFeaturePolicyToIR(const String& policy);
-  internal::FeaturePolicyNode ParsePermissionsPolicyToIR(const String& policy);
+  ParsedFeaturePolicy ParseFeaturePolicy(const String& policy);
+  ParsedFeaturePolicy ParsePermissionsPolicy(const String& policy);
 
  private:
+  // Following is the intermediate represetnation(IR) of feature policy.
+  // Parsing of syntax structures is done in this IR, but semantic checks, e.g.
+  // whether feature_name is valid, are not yet performed.
+  struct FeaturePolicyDeclarationNode {
+    String feature_name;
+    Vector<String> allowlist;
+  };
+  using FeaturePolicyNode = Vector<FeaturePolicyDeclarationNode>;
+
+  ParsedFeaturePolicy ParseIR(const FeaturePolicyNode& root);
+  FeaturePolicyNode ParseFeaturePolicyToIR(const String& policy);
+  FeaturePolicyNode ParsePermissionsPolicyToIR(const String& policy);
+
   // normally 1 char = 1 byte
   // max length to parse = 2^16 = 64 kB
   static constexpr wtf_size_t MAX_LENGTH_PARSE = 1 << 16;
 
   base::Optional<ParsedFeaturePolicyDeclaration> ParseFeature(
-      const internal::FeaturePolicyDeclarationNode&);
+      const FeaturePolicyDeclarationNode&);
 
   struct ParsedAllowlist {
     std::vector<url::Origin> allowed_origins;
@@ -116,8 +129,6 @@ class ParsingContext {
 
   // Parse allowlist for feature.
   ParsedAllowlist ParseAllowlist(const Vector<String>& origin_strings);
-
-  bool FeatureObserved(mojom::blink::FeaturePolicyFeature feature);
 
   void ReportFeatureUsage(mojom::blink::FeaturePolicyFeature feature);
 
@@ -146,12 +157,11 @@ class ParsingContext {
   bool allowlist_includes_origin_ = false;
 
   HashSet<FeaturePolicyAllowlistType> allowlist_types_used_;
-  std::bitset<
-      static_cast<size_t>(mojom::blink::FeaturePolicyFeature::kMaxValue) + 1>
-      features_specified_;
+
+  FeatureObserver feature_observer_;
 };
 
-bool ParsingContext::FeatureObserved(
+bool FeatureObserver::FeatureObserved(
     mojom::blink::FeaturePolicyFeature feature) {
   if (features_specified_[static_cast<size_t>(feature)]) {
     return true;
@@ -341,7 +351,7 @@ ParsingContext::ParsedAllowlist ParsingContext::ParseAllowlist(
 }
 
 base::Optional<ParsedFeaturePolicyDeclaration> ParsingContext::ParseFeature(
-    const internal::FeaturePolicyDeclarationNode& declaration_node) {
+    const FeaturePolicyDeclarationNode& declaration_node) {
   base::Optional<mojom::blink::FeaturePolicyFeature> feature =
       ParseFeatureName(declaration_node.feature_name);
   if (!feature)
@@ -350,7 +360,7 @@ base::Optional<ParsedFeaturePolicyDeclaration> ParsingContext::ParseFeature(
   ParsedAllowlist parsed_allowlist = ParseAllowlist(declaration_node.allowlist);
 
   // If same feature appeared more than once, only the first one counts.
-  if (FeatureObserved(*feature))
+  if (feature_observer_.FeatureObserved(*feature))
     return base::nullopt;
 
   ParsedFeaturePolicyDeclaration parsed_feature(*feature);
@@ -361,10 +371,20 @@ base::Optional<ParsedFeaturePolicyDeclaration> ParsingContext::ParseFeature(
   return parsed_feature;
 }
 
+ParsedFeaturePolicy ParsingContext::ParseFeaturePolicy(const String& policy) {
+  return ParseIR(ParseFeaturePolicyToIR(policy));
+}
+
+ParsedFeaturePolicy ParsingContext::ParsePermissionsPolicy(
+    const String& policy) {
+  return ParseIR(ParsePermissionsPolicyToIR(policy));
+}
+
 ParsedFeaturePolicy ParsingContext::ParseIR(
-    const internal::FeaturePolicyNode& root) {
+    const ParsingContext::FeaturePolicyNode& root) {
   ParsedFeaturePolicy parsed_policy;
-  for (const internal::FeaturePolicyDeclarationNode& declaration_node : root) {
+  for (const ParsingContext::FeaturePolicyDeclarationNode& declaration_node :
+       root) {
     base::Optional<ParsedFeaturePolicyDeclaration> parsed_feature =
         ParseFeature(declaration_node);
     if (parsed_feature) {
@@ -376,9 +396,9 @@ ParsedFeaturePolicy ParsingContext::ParseIR(
   return parsed_policy;
 }
 
-internal::FeaturePolicyNode ParsingContext::ParseFeaturePolicyToIR(
+ParsingContext::FeaturePolicyNode ParsingContext::ParseFeaturePolicyToIR(
     const String& policy) {
-  internal::FeaturePolicyNode root;
+  ParsingContext::FeaturePolicyNode root;
 
   if (policy.length() > MAX_LENGTH_PARSE) {
     logger_.Error("Feature policy declaration exceeds size limit(" +
@@ -418,7 +438,7 @@ internal::FeaturePolicyNode ParsingContext::ParseFeaturePolicyToIR(
       if (tokens.IsEmpty())
         continue;
 
-      internal::FeaturePolicyDeclarationNode declaration_node;
+      ParsingContext::FeaturePolicyDeclarationNode declaration_node;
       // Break tokens into head & tail, where
       // head = feature_name
       // tail = allowlist
@@ -434,7 +454,7 @@ internal::FeaturePolicyNode ParsingContext::ParseFeaturePolicyToIR(
   return root;
 }
 
-internal::FeaturePolicyNode ParsingContext::ParsePermissionsPolicyToIR(
+ParsingContext::FeaturePolicyNode ParsingContext::ParsePermissionsPolicyToIR(
     const String& policy) {
   if (policy.length() > MAX_LENGTH_PARSE) {
     logger_.Error("Permissions policy declaration exceeds size limit(" +
@@ -451,7 +471,7 @@ internal::FeaturePolicyNode ParsingContext::ParsePermissionsPolicyToIR(
     return {};
   }
 
-  internal::FeaturePolicyNode ir_root;
+  ParsingContext::FeaturePolicyNode ir_root;
   for (const auto& feature_entry : root.value()) {
     const auto& key = feature_entry.first;
     const char* feature_name = key.c_str();
@@ -503,7 +523,7 @@ internal::FeaturePolicyNode ParsingContext::ParsePermissionsPolicyToIR(
       allowlist.push_back("'none'");
 
     ir_root.push_back(
-        internal::FeaturePolicyDeclarationNode{feature_name, allowlist});
+        ParsingContext::FeaturePolicyDeclarationNode{feature_name, allowlist});
   }
 
   return ir_root;
@@ -515,14 +535,37 @@ ParsedFeaturePolicy FeaturePolicyParser::ParseHeader(
     const String& feature_policy_header,
     const String& permissions_policy_header,
     scoped_refptr<const SecurityOrigin> origin,
-    PolicyParserMessageBuffer& logger,
+    PolicyParserMessageBuffer& feature_policy_logger,
+    PolicyParserMessageBuffer& permissions_policy_logger,
     ExecutionContext* execution_context) {
-  ParsingContext context(logger, origin, nullptr, GetDefaultFeatureNameMap(),
-                         execution_context);
-  auto policy_ir =
-      context.ParsePermissionsPolicyToIR(permissions_policy_header);
-  policy_ir.AppendVector(context.ParseFeaturePolicyToIR(feature_policy_header));
-  return context.ParseIR(policy_ir);
+  ParsedFeaturePolicy permissions_policy =
+      ParsingContext(permissions_policy_logger, origin, nullptr,
+                     GetDefaultFeatureNameMap(), execution_context)
+          .ParsePermissionsPolicy(permissions_policy_header);
+  ParsedFeaturePolicy feature_policy =
+      ParsingContext(feature_policy_logger, origin, nullptr,
+                     GetDefaultFeatureNameMap(), execution_context)
+          .ParseFeaturePolicy(feature_policy_header);
+
+  FeatureObserver observer;
+  for (const auto& policy_declaration : permissions_policy) {
+    bool feature_observed =
+        observer.FeatureObserved(policy_declaration.feature);
+    DCHECK(!feature_observed);
+  }
+  for (const auto& policy_declaration : feature_policy) {
+    if (!observer.FeatureObserved(policy_declaration.feature)) {
+      permissions_policy.push_back(policy_declaration);
+    } else {
+      feature_policy_logger.Warn(String::Format(
+          "Feature %s has been specified in both Feature-Policy and "
+          "Permissions-Policy header. Value defined in Permissions-Policy "
+          "header will be used.",
+          GetNameForFeature(policy_declaration.feature).Ascii().c_str()));
+    }
+  }
+
+  return permissions_policy;
 }
 
 ParsedFeaturePolicy FeaturePolicyParser::ParseAttribute(
@@ -531,9 +574,9 @@ ParsedFeaturePolicy FeaturePolicyParser::ParseAttribute(
     scoped_refptr<const SecurityOrigin> src_origin,
     PolicyParserMessageBuffer& logger,
     ExecutionContext* execution_context) {
-  ParsingContext context(logger, self_origin, src_origin,
-                         GetDefaultFeatureNameMap(), execution_context);
-  return context.ParseIR(context.ParseFeaturePolicyToIR(policy));
+  return ParsingContext(logger, self_origin, src_origin,
+                        GetDefaultFeatureNameMap(), execution_context)
+      .ParseFeaturePolicy(policy);
 }
 
 ParsedFeaturePolicy FeaturePolicyParser::ParseFeaturePolicyForTest(
@@ -543,9 +586,9 @@ ParsedFeaturePolicy FeaturePolicyParser::ParseFeaturePolicyForTest(
     PolicyParserMessageBuffer& logger,
     const FeatureNameMap& feature_names,
     ExecutionContext* execution_context) {
-  ParsingContext context(logger, self_origin, src_origin, feature_names,
-                         execution_context);
-  return context.ParseIR(context.ParseFeaturePolicyToIR(policy));
+  return ParsingContext(logger, self_origin, src_origin, feature_names,
+                        execution_context)
+      .ParseFeaturePolicy(policy);
 }
 
 ParsedFeaturePolicy FeaturePolicyParser::ParsePermissionsPolicyForTest(
@@ -555,9 +598,9 @@ ParsedFeaturePolicy FeaturePolicyParser::ParsePermissionsPolicyForTest(
     PolicyParserMessageBuffer& logger,
     const FeatureNameMap& feature_names,
     ExecutionContext* execution_context) {
-  ParsingContext context(logger, self_origin, src_origin, feature_names,
-                         execution_context);
-  return context.ParseIR(context.ParsePermissionsPolicyToIR(policy));
+  return ParsingContext(logger, self_origin, src_origin, feature_names,
+                        execution_context)
+      .ParsePermissionsPolicy(policy);
 }
 
 bool IsFeatureDeclared(mojom::blink::FeaturePolicyFeature feature,

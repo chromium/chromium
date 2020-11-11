@@ -148,7 +148,12 @@ void SecurityContextInit::ApplyFeaturePolicy(
   PolicyParserMessageBuffer feature_policy_logger(
       "Error with Feature-Policy header: ");
   PolicyParserMessageBuffer report_only_feature_policy_logger(
-      "Error with Report-Only-Feature-Policy header: ");
+      "Error with Feature-Policy-Report-Only header: ");
+
+  PolicyParserMessageBuffer permissions_policy_logger(
+      "Error with Permissions-Policy header: ");
+  PolicyParserMessageBuffer report_only_permissions_policy_logger(
+      "Error with Permissions-Policy-Report-Only header: ");
 
   WTF::StringBuilder policy_builder;
   policy_builder.Append(response.HttpHeaderField(http_names::kFeaturePolicy));
@@ -161,26 +166,28 @@ void SecurityContextInit::ApplyFeaturePolicy(
   feature_policy_header_ = FeaturePolicyParser::ParseHeader(
       feature_policy_header, permissions_policy_header,
       execution_context_->GetSecurityOrigin(), feature_policy_logger,
-      execution_context_);
+      permissions_policy_logger, execution_context_);
 
   ParsedFeaturePolicy report_only_feature_policy_header =
       FeaturePolicyParser::ParseHeader(
           response.HttpHeaderField(http_names::kFeaturePolicyReportOnly),
           report_only_permissions_policy_header,
           execution_context_->GetSecurityOrigin(),
-          report_only_feature_policy_logger, execution_context_);
+          report_only_feature_policy_logger,
+          report_only_permissions_policy_logger, execution_context_);
 
   if (!report_only_feature_policy_header.empty()) {
     UseCounter::Count(execution_context_,
                       WebFeature::kFeaturePolicyReportOnlyHeader);
   }
 
-  for (const auto& message : feature_policy_logger.GetMessages()) {
-    execution_context_->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-        mojom::blink::ConsoleMessageSource::kSecurity, message.level,
-        message.content));
-  }
-  for (const auto& message : report_only_feature_policy_logger.GetMessages()) {
+  auto messages = Vector<PolicyParserMessageBuffer::Message>();
+  messages.AppendVector(feature_policy_logger.GetMessages());
+  messages.AppendVector(report_only_feature_policy_logger.GetMessages());
+  messages.AppendVector(permissions_policy_logger.GetMessages());
+  messages.AppendVector(report_only_permissions_policy_logger.GetMessages());
+
+  for (const auto& message : messages) {
     execution_context_->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::blink::ConsoleMessageSource::kSecurity, message.level,
         message.content));

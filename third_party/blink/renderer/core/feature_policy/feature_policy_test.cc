@@ -106,7 +106,7 @@ class FeaturePolicyParserTest : public ::testing::Test {
       PolicyParserMessageBuffer& logger,
       ExecutionContext* context = nullptr) {
     return FeaturePolicyParser::ParseHeader(
-        feature_policy_header, g_empty_string, origin, logger, context);
+        feature_policy_header, g_empty_string, origin, logger, logger, context);
   }
 };
 
@@ -190,6 +190,15 @@ class FeaturePolicyParserParsingTest
         EXPECT_TRUE(actual_declaration.allowed_origins[j].IsSameOriginWith(
             url::Origin::Create(GURL(expected_declaration.origins[j]))));
       }
+    }
+  }
+
+  void CheckConsoleMessage(
+      const Vector<PolicyParserMessageBuffer::Message>& actual,
+      const std::vector<String> expected) {
+    ASSERT_EQ(actual.size(), expected.size());
+    for (size_t i = 0; i < actual.size(); ++i) {
+      EXPECT_EQ(actual[i].content, expected[i]);
     }
   }
 
@@ -550,16 +559,64 @@ TEST_P(FeaturePolicyParserParsingTest, PermissionsPolicyParsedCorrectly) {
 }
 
 TEST_F(FeaturePolicyParserParsingTest,
-       FeaturePolicyHeaderPermissionsPolicyHeaderCoExist) {
+       FeaturePolicyDuplicatedFeatureDeclaration) {
   PolicyParserMessageBuffer logger;
-  // When there is conflict take the value from permission policy.
-  // Non-conflicting entries will be merged.
+
+  // For Feature-Policy header, if there are multiple declaration for same
+  // feature, the allowlist value from *FIRST* declaration will be taken.
+  CheckParsedPolicy(FeaturePolicyParser::ParseHeader(
+                        "geolocation 'none', geolocation 'self'", "",
+                        origin_a_.get(), logger, logger, nullptr /* context */),
+                    {
+                        {
+                            // allowlist value 'none' is expected.
+                            mojom::blink::FeaturePolicyFeature::kGeolocation,
+                            /* matches_all_origins */ false,
+                            /* matches_opaque_src */ false,
+                            {},
+                        },
+                    });
+
+  EXPECT_TRUE(logger.GetMessages().IsEmpty());
+}
+
+TEST_F(FeaturePolicyParserParsingTest,
+       PermissionsPolicyDuplicatedFeatureDeclaration) {
+  PolicyParserMessageBuffer logger;
+
+  // For Permissions-Policy header, if there are multiple declaration for same
+  // feature, the allowlist value from *LAST* declaration will be taken.
+  CheckParsedPolicy(FeaturePolicyParser::ParseHeader(
+                        "", "geolocation=(), geolocation=self", origin_a_.get(),
+                        logger, logger, nullptr /* context */),
+                    {
+                        {
+                            // allowlist value 'self' is expected.
+                            mojom::blink::FeaturePolicyFeature::kGeolocation,
+                            /* matches_all_origins */ false,
+                            /* matches_opaque_src */ false,
+                            {ORIGIN_A},
+                        },
+                    });
+
+  EXPECT_TRUE(logger.GetMessages().IsEmpty());
+}
+
+TEST_F(FeaturePolicyParserParsingTest,
+       FeaturePolicyHeaderPermissionsPolicyHeaderCoExistConflictEntry) {
+  PolicyParserMessageBuffer logger;
+
+  // When there is conflict take the value from permission policy,
+  // non-conflicting entries will be merged.
   CheckParsedPolicy(FeaturePolicyParser::ParseHeader(
                         "geolocation 'none', fullscreen 'self'",
                         "geolocation=self, payment=*", origin_a_.get(), logger,
-                        nullptr /* context */),
+                        logger, nullptr /* context */),
                     {
                         {
+                            // With geolocation appearing in both headers,
+                            // the value should be taken from permissions policy
+                            // header, which is 'self' here.
                             mojom::blink::FeaturePolicyFeature::kGeolocation,
                             /* matches_all_origins */ false,
                             /* matches_opaque_src */ false,
@@ -578,6 +635,49 @@ TEST_F(FeaturePolicyParserParsingTest,
                             {ORIGIN_A},
                         },
                     });
+}
+
+TEST_F(FeaturePolicyParserParsingTest,
+       FeaturePolicyHeaderPermissionsPolicyHeaderCoExistSeparateLogger) {
+  PolicyParserMessageBuffer feature_policy_logger("Feature Policy: ");
+  PolicyParserMessageBuffer permissions_policy_logger("Permissions Policy: ");
+
+  // 'geolocation' in permissions policy has a invalid allowlist item, which
+  // results in an empty allowlist, which is equivalent to 'none' in feature
+  // policy syntax.
+  CheckParsedPolicy(
+      FeaturePolicyParser::ParseHeader(
+          "worse-feature 'none', geolocation 'self'" /* feature_policy_header */
+          ,
+          "bad-feature=*, geolocation=\"data://bad-origin\"" /* permissions_policy_header
+                                                              */
+          ,
+          origin_a_.get(), feature_policy_logger, permissions_policy_logger,
+          nullptr /* context */
+          ),
+      {
+          {
+              mojom::blink::FeaturePolicyFeature::kGeolocation,
+              /* matches_all_origins */ false,
+              /* matches_opaque_src */ false,
+              {},
+          },
+      });
+
+  CheckConsoleMessage(
+      feature_policy_logger.GetMessages(),
+      {
+          "Feature Policy: Unrecognized feature: 'worse-feature'.",
+          "Feature Policy: Feature geolocation has been specified in both "
+          "Feature-Policy and Permissions-Policy header. Value defined in "
+          "Permissions-Policy header will be used.",
+      });
+  CheckConsoleMessage(
+      permissions_policy_logger.GetMessages(),
+      {
+          "Permissions Policy: Unrecognized feature: 'bad-feature'.",
+          "Permissions Policy: Unrecognized origin: 'data://bad-origin'.",
+      });
 }
 
 TEST_F(FeaturePolicyParserTest, ParseValidPolicy) {

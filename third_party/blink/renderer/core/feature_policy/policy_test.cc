@@ -35,7 +35,7 @@ class PolicyTest : public testing::Test {
         "fullscreen *; payment 'self'; midi 'none'; camera 'self' "
         "https://example.com https://example.net",
         /* permissions_policy_header */ g_empty_string, origin.get(),
-        dummy_logger_);
+        dummy_logger_, dummy_logger_);
     feature_policy->SetHeaderPolicy(header);
 
     auto& security_context =
