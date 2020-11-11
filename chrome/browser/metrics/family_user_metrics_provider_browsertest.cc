@@ -117,8 +117,7 @@ class FamilyUserMetricsProviderTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// TODO(crbug/1144651): Test disabled due to flaky failures.
-IN_PROC_BROWSER_TEST_P(FamilyUserMetricsProviderTest, DISABLED_UserCategory) {
+IN_PROC_BROWSER_TEST_P(FamilyUserMetricsProviderTest, UserCategory) {
   base::HistogramTester histogram_tester;
   // Simulate calling ProvideCurrentSessionData() prior to logging in.
   // This call should return prematurely.
@@ -154,10 +153,10 @@ IN_PROC_BROWSER_TEST_P(FamilyUserMetricsProviderTest, DISABLED_UserCategory) {
 INSTANTIATE_TEST_SUITE_P(
     ,
     FamilyUserMetricsProviderTest,
-    testing::Values(FamilyUserMetricsProvider::LogSegment::kSupervisedUser,
+    testing::Values(FamilyUserMetricsProvider::LogSegment::kOther,
+                    FamilyUserMetricsProvider::LogSegment::kSupervisedUser,
                     FamilyUserMetricsProvider::LogSegment::kSupervisedStudent,
-                    FamilyUserMetricsProvider::LogSegment::kStudentAtHome,
-                    FamilyUserMetricsProvider::LogSegment::kOther));
+                    FamilyUserMetricsProvider::LogSegment::kStudentAtHome));
 
 class FamilyUserMetricsProviderGuestModeTest
     : public MixinBasedInProcessBrowserTest {
