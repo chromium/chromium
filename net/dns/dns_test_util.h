@@ -203,6 +203,11 @@ DnsResourceRecord BuildTestAddressRecord(
     const IPAddress& ip,
     base::TimeDelta ttl = base::TimeDelta::FromDays(1));
 
+DnsResourceRecord BuildTestTextRecord(
+    std::string name,
+    std::vector<std::string> text_strings,
+    base::TimeDelta ttl = base::TimeDelta::FromDays(1));
+
 DnsResourceRecord BuildTestHttpsAliasRecord(
     std::string name,
     base::StringPiece alias_name,
