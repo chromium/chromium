@@ -214,6 +214,8 @@ class MediaNotificationContainerImplView
 
   MediaNotificationService* const service_;
 
+  const bool is_cros_;
+
   DISALLOW_COPY_AND_ASSIGN(MediaNotificationContainerImplView);
 };
 

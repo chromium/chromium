@@ -117,6 +117,11 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaNotificationViewImpl
   void CreateMediaButton(media_session::mojom::MediaSessionAction action,
                          const base::string16& accessible_name);
 
+  void CreateHeaderRow(std::unique_ptr<views::View> header_row_controls_view,
+                       bool should_show_icon);
+  void CreateCrOSHeaderRow(
+      std::unique_ptr<views::View> header_row_controls_view);
+
   void UpdateActionButtonsVisibility();
   void UpdateViewForExpandedState();
 
@@ -167,6 +172,7 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaNotificationViewImpl
 
   // Container views directly attached to this view.
   message_center::NotificationHeaderView* header_row_ = nullptr;
+  views::Label* cros_header_label_ = nullptr;
   views::View* button_row_ = nullptr;
   views::View* playback_button_container_ = nullptr;
   views::View* pip_button_separator_view_ = nullptr;
@@ -182,6 +188,8 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaNotificationViewImpl
   const gfx::VectorIcon* vector_header_icon_ = nullptr;
 
   base::Optional<NotificationTheme> theme_;
+
+  const bool is_cros_;
 
   DISALLOW_COPY_AND_ASSIGN(MediaNotificationViewImpl);
 };

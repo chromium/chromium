@@ -50,6 +50,8 @@ constexpr float kDragImageOpacity = 0.7f;
 constexpr gfx::Insets kStopCastButtonStripInsets{6, 15};
 constexpr gfx::Size kStopCastButtonStripSize{400, 30};
 constexpr gfx::Insets kStopCastButtonBorderInsets{4, 8};
+constexpr gfx::Size kCrOSDismissButtonSize = gfx::Size(20, 20);
+constexpr int kCrOSDismissButtonIconSize = 12;
 
 // The minimum number of enabled and visible user actions such that we should
 // force the MediaNotificationView to be expanded.
@@ -94,7 +96,8 @@ MediaNotificationContainerImplView::MediaNotificationContainerImplView(
       id_(id),
       foreground_color_(kDefaultForegroundColor),
       background_color_(kDefaultBackgroundColor),
-      service_(service) {
+      service_(service),
+      is_cros_(theme.has_value()) {
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
   SetPreferredSize(kNormalSize);
@@ -109,14 +112,17 @@ MediaNotificationContainerImplView::MediaNotificationContainerImplView(
   swipeable_container->layer()->SetFillsBoundsOpaquely(false);
   swipeable_container_ = AddChildView(std::move(swipeable_container));
 
+  gfx::Size dismiss_button_size =
+      is_cros_ ? kCrOSDismissButtonSize : kDismissButtonSize;
+
   auto dismiss_button_placeholder = std::make_unique<views::View>();
-  dismiss_button_placeholder->SetPreferredSize(kDismissButtonSize);
+  dismiss_button_placeholder->SetPreferredSize(dismiss_button_size);
   dismiss_button_placeholder->SetLayoutManager(
       std::make_unique<views::FillLayout>());
   dismiss_button_placeholder_ = dismiss_button_placeholder.get();
 
   auto dismiss_button_container = std::make_unique<views::View>();
-  dismiss_button_container->SetPreferredSize(kDismissButtonSize);
+  dismiss_button_container->SetPreferredSize(dismiss_button_size);
   dismiss_button_container->SetLayoutManager(
       std::make_unique<views::FillLayout>());
   dismiss_button_container->SetVisible(false);
@@ -126,7 +132,7 @@ MediaNotificationContainerImplView::MediaNotificationContainerImplView(
   auto dismiss_button = std::make_unique<DismissButton>(base::BindRepeating(
       &MediaNotificationContainerImplView::DismissNotification,
       base::Unretained(this)));
-  dismiss_button->SetPreferredSize(kDismissButtonSize);
+  dismiss_button->SetPreferredSize(dismiss_button_size);
   dismiss_button->SetTooltipText(l10n_util::GetStringUTF16(
       IDS_GLOBAL_MEDIA_CONTROLS_DISMISS_ICON_TOOLTIP_TEXT));
   dismiss_button_ =
@@ -512,7 +518,8 @@ MediaNotificationContainerImplView::GetStopCastingButtonForTesting() {
 
 void MediaNotificationContainerImplView::UpdateDismissButtonIcon() {
   views::SetImageFromVectorIconWithColor(
-      dismiss_button_, vector_icons::kCloseRoundedIcon, kDismissButtonIconSize,
+      dismiss_button_, vector_icons::kCloseRoundedIcon,
+      is_cros_ ? kCrOSDismissButtonIconSize : kDismissButtonIconSize,
       foreground_color_);
 }
 

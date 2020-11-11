@@ -38,6 +38,8 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaNotificationBackgroundAshImpl
 
   gfx::Rect GetArtworkBounds(const gfx::Rect& view_bounds) const;
 
+  SkPath GetArtworkClipPath(const gfx::Rect& view_bounds) const;
+
   gfx::ImageSkia artwork_;
 };
 
