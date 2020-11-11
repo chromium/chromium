@@ -9,6 +9,11 @@
 #include "base/path_service.h"
 #include "build/build_config.h"
 
+#if defined(OS_CHROMEOS)
+#include "base/system/sys_info.h"
+#include "chrome/browser/download/download_prefs.h"
+#endif
+
 #if defined(OS_ANDROID)
 #include "base/android/path_utils.h"
 #endif
@@ -58,6 +63,11 @@ bool IsAccessAllowedInternal(const base::FilePath& path,
     const base::FilePath webrtc_logs = profile_path.AppendASCII("WebRTC Logs");
     allowlist.push_back(webrtc_logs);
   }
+
+  // In linux-chromeos, MyFiles dir is at $HOME/Downloads.
+  if (!base::SysInfo::IsRunningOnChromeOS())
+    allowlist.push_back(DownloadPrefs::GetDefaultDownloadDirectory());
+
 #elif defined(OS_ANDROID)
   // Access to files in external storage is allowed.
   base::FilePath external_storage_path;

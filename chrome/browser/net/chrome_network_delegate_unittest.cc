@@ -10,6 +10,13 @@
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if defined(OS_CHROMEOS)
+#include "base/system/sys_info.h"
+#include "base/time/time.h"
+#include "chrome/browser/chromeos/scoped_set_running_on_chromeos_for_testing.h"
+#include "chrome/browser/download/download_prefs.h"
+#endif
+
 #if defined(OS_ANDROID)
 #include "base/base_paths_android.h"
 #endif
@@ -23,6 +30,12 @@ bool IsAccessAllowed(const std::string& path,
       base::FilePath::FromUTF8Unsafe(path),
       base::FilePath::FromUTF8Unsafe(profile_path));
 }
+
+#if defined(OS_CHROMEOS)
+const char kLsbRelease[] =
+    "CHROMEOS_RELEASE_NAME=Chrome OS\n"
+    "CHROMEOS_RELEASE_VERSION=1.2.3.4\n";
+#endif
 
 }  // namespace
 
@@ -79,6 +92,16 @@ TEST(ChromeNetworkDelegateStaticTest, IsAccessAllowed) {
   EXPECT_FALSE(IsAccessAllowed("/profile/GCache/v2/id", "/profile"));
   EXPECT_FALSE(IsAccessAllowed("/profile/GCache/v2", "/profile"));
   EXPECT_FALSE(IsAccessAllowed("/home/chronos/user/GCache/v2/id/Logs", ""));
+
+  // $HOME/Downloads is allowed for linux-chromeos, but not on devices.
+  const std::string& home_downloads =
+      DownloadPrefs::GetDefaultDownloadDirectory().value();
+  EXPECT_TRUE(IsAccessAllowed(home_downloads, ""));
+  {
+    chromeos::ScopedSetRunningOnChromeOSForTesting fake_release(kLsbRelease,
+                                                                base::Time());
+    EXPECT_FALSE(IsAccessAllowed(home_downloads, ""));
+  }
 
 #elif defined(OS_ANDROID)
   // Android allows the following directories.
