@@ -775,7 +775,7 @@ interpretable and what data will have hidden surprises/gotchas.
 
 ### Sustainability
 
-* Is the CL adding a sustainable number of metrics?
+* Is the CL adding a reasonable number of metrics?
   * When reviewing a CL that is trying to add many metrics at once, guide the CL
     author toward an appropriate solution for their needs. For example,
     multidimensional metrics can be recorded via UKM, and we are currently
