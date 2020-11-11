@@ -7,7 +7,7 @@
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
-#include "ash/wallpaper/wallpaper_property.h"
+#include "ash/wallpaper/wallpaper_constants.h"
 #include "ash/wallpaper/wallpaper_widget_controller.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_test_util.h"
@@ -17,15 +17,15 @@ namespace ash {
 
 namespace {
 
-WallpaperProperty GetWallpaperProperty(const aura::Window* window) {
+float GetWallpaperBlur(const aura::Window* window) {
   return RootWindowController::ForWindow(window)
       ->wallpaper_widget_controller()
-      ->GetWallpaperProperty();
+      ->GetWallpaperBlur();
 }
 
-void CheckWallpaperProperty(WallpaperProperty expected) {
+void CheckWallpaperBlur(float expected) {
   for (aura::Window* root : Shell::Get()->GetAllRootWindows())
-    EXPECT_EQ(expected, GetWallpaperProperty(root));
+    EXPECT_EQ(expected, GetWallpaperBlur(root));
 }
 
 }  // namespace
@@ -33,34 +33,34 @@ void CheckWallpaperProperty(WallpaperProperty expected) {
 using OverviewWallpaperControllerTest = AshTestBase;
 
 // Tests that entering overview in clamshell mode and toggling to tablet mode
-// updates the wallpaper window property correctly.
+// updates the wallpaper window blur correctly.
 TEST_F(OverviewWallpaperControllerTest, OverviewToggleEnterTabletMode) {
-  CheckWallpaperProperty(wallpaper_constants::kClear);
+  CheckWallpaperBlur(wallpaper_constants::kClear);
 
   ToggleOverview();
-  CheckWallpaperProperty(wallpaper_constants::kOverviewState);
+  CheckWallpaperBlur(wallpaper_constants::kOverviewBlur);
 
   TabletModeControllerTestApi().EnterTabletMode();
-  CheckWallpaperProperty(wallpaper_constants::kOverviewInTabletState);
+  CheckWallpaperBlur(wallpaper_constants::kOverviewBlur);
 
   ToggleOverview();
-  CheckWallpaperProperty(wallpaper_constants::kClear);
+  CheckWallpaperBlur(wallpaper_constants::kClear);
 }
 
 // Tests that entering overview in tablet mode and toggling to clamshell mode
-// updates the wallpaper window property correctly.
+// updates the wallpaper window blur correctly.
 TEST_F(OverviewWallpaperControllerTest, OverviewToggleLeaveTabletMode) {
   TabletModeControllerTestApi().EnterTabletMode();
-  CheckWallpaperProperty(wallpaper_constants::kClear);
+  CheckWallpaperBlur(wallpaper_constants::kClear);
 
   ToggleOverview();
-  CheckWallpaperProperty(wallpaper_constants::kOverviewInTabletState);
+  CheckWallpaperBlur(wallpaper_constants::kOverviewBlur);
 
   TabletModeControllerTestApi().LeaveTabletMode();
-  CheckWallpaperProperty(wallpaper_constants::kOverviewState);
+  CheckWallpaperBlur(wallpaper_constants::kOverviewBlur);
 
   ToggleOverview();
-  CheckWallpaperProperty(wallpaper_constants::kClear);
+  CheckWallpaperBlur(wallpaper_constants::kClear);
 }
 
 }  // namespace ash

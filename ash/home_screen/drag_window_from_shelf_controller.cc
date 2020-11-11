@@ -18,7 +18,7 @@
 #include "ash/shelf/hotseat_widget.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
-#include "ash/wallpaper/wallpaper_property.h"
+#include "ash/wallpaper/wallpaper_constants.h"
 #include "ash/wallpaper/wallpaper_view.h"
 #include "ash/wallpaper/wallpaper_widget_controller.h"
 #include "ash/wm/mru_window_tracker.h"
@@ -369,7 +369,7 @@ void DragWindowFromShelfController::OnDragStarted(
   // Use the same dim and blur as in overview during dragging.
   RootWindowController::ForWindow(window_->GetRootWindow())
       ->wallpaper_widget_controller()
-      ->SetWallpaperProperty(wallpaper_constants::kOverviewInTabletState);
+      ->SetWallpaperBlur(wallpaper_constants::kOverviewBlur);
 
   // If the dragged window is one of the snapped window in splitview, it needs
   // to be detached from splitview before start dragging.
@@ -427,7 +427,7 @@ void DragWindowFromShelfController::OnDragEnded(
   if (!overview_controller->InOverviewSession()) {
     RootWindowController::ForWindow(window_->GetRootWindow())
         ->wallpaper_widget_controller()
-        ->SetWallpaperProperty(wallpaper_constants::kClear);
+        ->SetWallpaperBlur(wallpaper_constants::kClear);
   }
 
   DCHECK(window_drag_result_.has_value());

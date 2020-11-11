@@ -42,7 +42,6 @@ struct ColorProfile;
 namespace ash {
 
 class WallpaperColorCalculator;
-struct WallpaperProperty;
 class WallpaperResizer;
 class WallpaperWindowStateManager;
 
@@ -169,8 +168,8 @@ class ASH_EXPORT WallpaperControllerImpl
   // existing blur is removed.
   void UpdateWallpaperBlurForLockState(bool blur);
 
-  // Restores the wallpaper property from lock state.
-  void RestoreWallpaperPropertyForLockState(const WallpaperProperty& property);
+  // Restores the wallpaper blur from lock state.
+  void RestoreWallpaperBlurForLockState(float blur);
 
   // A color filter should be applied on the wallpaper for overview, login,
   // lock, OOBE and add user screens.

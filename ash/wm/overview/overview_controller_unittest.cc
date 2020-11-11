@@ -221,7 +221,7 @@ TEST_F(OverviewControllerTest, AnimationCallbacksForCrossFadeWallpaper) {
             observer.starting_animation_state());
   auto* wallpaper_widget_controller =
       Shell::GetPrimaryRootWindowController()->wallpaper_widget_controller();
-  EXPECT_GT(wallpaper_widget_controller->GetWallpaperProperty().blur_sigma, 0);
+  EXPECT_GT(wallpaper_widget_controller->GetWallpaperBlur(), 0);
   EXPECT_TRUE(wallpaper_widget_controller->IsAnimating());
   wallpaper_widget_controller->StopAnimating();
 
@@ -230,12 +230,14 @@ TEST_F(OverviewControllerTest, AnimationCallbacksForCrossFadeWallpaper) {
   overview_controller->EndOverview();
   EXPECT_FALSE(overview_controller->InOverviewSession());
   EXPECT_EQ(TestOverviewObserver::UNKNOWN, observer.ending_animation_state());
-  EXPECT_EQ(30, wallpaper_widget_controller->GetWallpaperProperty().blur_sigma);
+  EXPECT_EQ(wallpaper_constants::kOverviewBlur,
+            wallpaper_widget_controller->GetWallpaperBlur());
   EXPECT_FALSE(wallpaper_widget_controller->IsAnimating());
 
   observer.WaitForEndingAnimationComplete();
   EXPECT_EQ(TestOverviewObserver::COMPLETED, observer.ending_animation_state());
-  EXPECT_EQ(0, wallpaper_widget_controller->GetWallpaperProperty().blur_sigma);
+  EXPECT_EQ(wallpaper_constants::kClear,
+            wallpaper_widget_controller->GetWallpaperBlur());
   EXPECT_TRUE(wallpaper_widget_controller->IsAnimating());
   wallpaper_widget_controller->StopAnimating();
 
@@ -254,7 +256,8 @@ TEST_F(OverviewControllerTest, AnimationCallbacksForCrossFadeWallpaper) {
   EXPECT_TRUE(overview_controller->InOverviewSession());
   EXPECT_EQ(TestOverviewObserver::UNKNOWN, observer.starting_animation_state());
   EXPECT_EQ(TestOverviewObserver::UNKNOWN, observer.ending_animation_state());
-  EXPECT_EQ(wallpaper_widget_controller->GetWallpaperProperty().blur_sigma, 0);
+  EXPECT_EQ(wallpaper_constants::kClear,
+            wallpaper_widget_controller->GetWallpaperBlur());
   EXPECT_FALSE(wallpaper_widget_controller->IsAnimating());
 
   // Exit with windows before starting animation ends.
@@ -264,7 +267,8 @@ TEST_F(OverviewControllerTest, AnimationCallbacksForCrossFadeWallpaper) {
             observer.starting_animation_state());
   EXPECT_EQ(TestOverviewObserver::UNKNOWN, observer.ending_animation_state());
   // Blur animation never started.
-  EXPECT_EQ(wallpaper_widget_controller->GetWallpaperProperty().blur_sigma, 0);
+  EXPECT_EQ(wallpaper_constants::kClear,
+            wallpaper_widget_controller->GetWallpaperBlur());
   EXPECT_FALSE(wallpaper_widget_controller->IsAnimating());
 
   observer.Reset();
@@ -275,7 +279,8 @@ TEST_F(OverviewControllerTest, AnimationCallbacksForCrossFadeWallpaper) {
   EXPECT_EQ(TestOverviewObserver::UNKNOWN, observer.starting_animation_state());
   EXPECT_EQ(TestOverviewObserver::CANCELED, observer.ending_animation_state());
   // Blur animation will start when animation is completed.
-  EXPECT_EQ(wallpaper_widget_controller->GetWallpaperProperty().blur_sigma, 0);
+  EXPECT_EQ(wallpaper_constants::kClear,
+            wallpaper_widget_controller->GetWallpaperBlur());
   EXPECT_FALSE(wallpaper_widget_controller->IsAnimating());
 
   observer.Reset();
@@ -286,7 +291,8 @@ TEST_F(OverviewControllerTest, AnimationCallbacksForCrossFadeWallpaper) {
   EXPECT_EQ(TestOverviewObserver::CANCELED,
             observer.starting_animation_state());
   // Blur animation never started.
-  EXPECT_EQ(wallpaper_widget_controller->GetWallpaperProperty().blur_sigma, 0);
+  EXPECT_EQ(wallpaper_constants::kClear,
+            wallpaper_widget_controller->GetWallpaperBlur());
   EXPECT_FALSE(wallpaper_widget_controller->IsAnimating());
 }
 
@@ -576,7 +582,7 @@ TEST_F(OverviewControllerTest, WallpaperAnimationTiming) {
       OverviewEnterExitType::kFadeInEnter);
   auto* wallpaper_widget_controller =
       Shell::GetPrimaryRootWindowController()->wallpaper_widget_controller();
-  EXPECT_GT(wallpaper_widget_controller->GetWallpaperProperty().blur_sigma, 0);
+  EXPECT_GT(wallpaper_widget_controller->GetWallpaperBlur(), 0);
   EXPECT_TRUE(wallpaper_widget_controller->IsAnimating());
 }
 

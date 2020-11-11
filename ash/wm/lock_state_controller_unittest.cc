@@ -21,7 +21,6 @@
 #include "ash/wallpaper/wallpaper_view.h"
 #include "ash/wallpaper/wallpaper_widget_controller.h"
 #include "ash/wm/lock_state_controller_test_api.h"
-#include "ash/wm/overview/overview_constants.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/session_state_animator.h"
 #include "ash/wm/test_session_state_animator.h"
@@ -702,7 +701,7 @@ TEST_F(LockStateControllerTest, ShutDownAfterShowPowerMenu) {
   EXPECT_EQ(1, NumShutdownRequests());
 }
 
-TEST_F(LockStateControllerTest, CancelShouldResetWallpaperProperty) {
+TEST_F(LockStateControllerTest, CancelShouldResetWallpaperBlur) {
   Initialize(ButtonType::NORMAL, LoginStatus::USER);
 
   ExpectUnlockedState();
@@ -715,15 +714,12 @@ TEST_F(LockStateControllerTest, CancelShouldResetWallpaperProperty) {
   auto* overview_controller = Shell::Get()->overview_controller();
   // Enter Overview and verify wallpaper properties.
   overview_controller->StartOverview();
-  EXPECT_EQ(overview_constants::kBlurSigma,
-            wallpaper_view->property().blur_sigma);
-  EXPECT_EQ(overview_constants::kOpacity, wallpaper_view->property().opacity);
+  EXPECT_EQ(wallpaper_constants::kOverviewBlur, wallpaper_view->blur_sigma());
 
   // Start lock animation and verify wallpaper properties.
   PressLockButton();
   ExpectPreLockAnimationStarted();
-  EXPECT_EQ(login_constants::kBlurSigma, wallpaper_view->property().blur_sigma);
-  EXPECT_EQ(1.f, wallpaper_view->property().opacity);
+  EXPECT_EQ(login_constants::kBlurSigma, wallpaper_view->blur_sigma());
 
   // Cancel lock animation.
   AdvancePartially(SessionStateAnimator::ANIMATION_SPEED_UNDOABLE, 0.5f);
@@ -732,10 +728,8 @@ TEST_F(LockStateControllerTest, CancelShouldResetWallpaperProperty) {
   Advance(SessionStateAnimator::ANIMATION_SPEED_MOVE_WINDOWS);
   ExpectUnlockedState();
 
-  // Verify walpaper properties are restored to overview's.
-  EXPECT_EQ(overview_constants::kBlurSigma,
-            wallpaper_view->property().blur_sigma);
-  EXPECT_EQ(overview_constants::kOpacity, wallpaper_view->property().opacity);
+  // Verify wallpaper blur are restored to overview's.
+  EXPECT_EQ(wallpaper_constants::kOverviewBlur, wallpaper_view->blur_sigma());
 }
 
 }  // namespace ash

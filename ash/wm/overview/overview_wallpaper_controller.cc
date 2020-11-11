@@ -7,7 +7,7 @@
 #include "ash/root_window_controller.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
-#include "ash/wallpaper/wallpaper_property.h"
+#include "ash/wallpaper/wallpaper_constants.h"
 #include "ash/wallpaper/wallpaper_widget_controller.h"
 #include "ash/wm/overview/overview_constants.h"
 #include "ash/wm/overview/overview_controller.h"
@@ -32,17 +32,10 @@ WallpaperWidgetController* GetWallpaperWidgetController(aura::Window* root) {
   return RootWindowController::ForWindow(root)->wallpaper_widget_controller();
 }
 
-// Returns the wallpaper property based on the current configuration.
-WallpaperProperty GetProperty(bool blur) {
-  if (!blur)
-    return wallpaper_constants::kClear;
-
-  // Tablet mode wallpaper is already dimmed, so no need to change the
-  // opacity.
-  if (Shell::Get()->tablet_mode_controller()->InTabletMode())
-    return wallpaper_constants::kOverviewInTabletState;
-
-  return wallpaper_constants::kOverviewState;
+// Returns the wallpaper blur based on the current configuration.
+float GetBlur(bool should_blur) {
+  return should_blur ? wallpaper_constants::kOverviewBlur
+                     : wallpaper_constants::kClear;
 }
 
 }  // namespace
@@ -86,16 +79,16 @@ void OverviewWallpaperController::UpdateWallpaper(
   if (Shell::Get()->session_controller()->IsUserSessionBlocked())
     return;
 
-  WallpaperProperty property = GetProperty(should_blur);
+  float blur = GetBlur(should_blur);
 
   for (aura::Window* root : Shell::Get()->GetAllRootWindows()) {
     auto* wallpaper_widget_controller = GetWallpaperWidgetController(root);
 
-    if (property == wallpaper_widget_controller->GetWallpaperProperty())
+    if (blur == wallpaper_widget_controller->GetWallpaperBlur())
       continue;
 
     if (!animate.has_value()) {
-      wallpaper_widget_controller->SetWallpaperProperty(property);
+      wallpaper_widget_controller->SetWallpaperBlur(blur);
       continue;
     }
 
@@ -108,8 +101,8 @@ void OverviewWallpaperController::UpdateWallpaper(
     if (should_blur && should_animate != animate.value())
       continue;
 
-    wallpaper_widget_controller->SetWallpaperProperty(
-        property, should_animate ? kBlurSlideDuration : base::TimeDelta());
+    wallpaper_widget_controller->SetWallpaperBlur(
+        blur, should_animate ? kBlurSlideDuration : base::TimeDelta());
   }
 
   wallpaper_blurred_ = should_blur;

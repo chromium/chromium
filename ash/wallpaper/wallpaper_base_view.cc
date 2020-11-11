@@ -22,6 +22,8 @@ namespace ash {
 
 namespace {
 
+// Gets the color filter based on the state. This is used for the login, lock,
+// overview and tablet mode.
 SkColor GetWallpaperFilterColor() {
   return AshColorProvider::Get()->GetShieldLayerColor(
       Shell::Get()->overview_controller()->InOverviewSession()

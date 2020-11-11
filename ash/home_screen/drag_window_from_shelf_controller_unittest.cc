@@ -17,10 +17,10 @@
 #include "ash/shelf/shelf_metrics.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/wallpaper/wallpaper_constants.h"
 #include "ash/wallpaper/wallpaper_view.h"
 #include "ash/wallpaper/wallpaper_widget_controller.h"
 #include "ash/wm/mru_window_tracker.h"
-#include "ash/wm/overview/overview_constants.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_item.h"
@@ -553,13 +553,11 @@ TEST_F(DragWindowFromShelfControllerTest, WallpaperBlurDuringDragging) {
       RootWindowController::ForWindow(window->GetRootWindow())
           ->wallpaper_widget_controller()
           ->wallpaper_view();
-  EXPECT_EQ(wallpaper_view->property().blur_sigma,
-            overview_constants::kBlurSigma);
+  EXPECT_EQ(wallpaper_view->blur_sigma(), wallpaper_constants::kOverviewBlur);
 
   EndDrag(shelf_bounds.CenterPoint(),
           /*velocity_y=*/base::nullopt);
-  EXPECT_EQ(wallpaper_view->property().blur_sigma,
-            wallpaper_constants::kClear.blur_sigma);
+  EXPECT_EQ(wallpaper_view->blur_sigma(), wallpaper_constants::kClear);
 }
 
 // Test overview is hidden during dragging and shown when drag slows down or

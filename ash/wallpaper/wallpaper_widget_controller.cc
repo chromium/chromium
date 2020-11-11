@@ -72,13 +72,13 @@ bool WallpaperWidgetController::Reparent(int container) {
   return true;
 }
 
-bool WallpaperWidgetController::SetWallpaperProperty(
-    const WallpaperProperty& property,
+bool WallpaperWidgetController::SetWallpaperBlur(
+    float blur,
     const base::TimeDelta& animation_duration) {
   StopAnimating();
-  bool property_changed = !(wallpaper_view_->property() == property);
+  bool blur_changed = wallpaper_view_->blur_sigma() != blur;
 
-  wallpaper_view_->set_wallpaper_property(property);
+  wallpaper_view_->set_blur_sigma(blur);
   // Show the widget when we have something to show.
   if (!widget_->IsVisible())
     widget_->Show();
@@ -89,12 +89,11 @@ bool WallpaperWidgetController::SetWallpaperProperty(
     // Since there is no actual animation scheduled, just call completed method.
     OnImplicitAnimationsCompleted();
   }
-  return property_changed;
+  return blur_changed;
 }
 
-const WallpaperProperty& WallpaperWidgetController::GetWallpaperProperty()
-    const {
-  return wallpaper_view_->property();
+float WallpaperWidgetController::GetWallpaperBlur() const {
+  return wallpaper_view_->blur_sigma();
 }
 
 void WallpaperWidgetController::OnImplicitAnimationsCompleted() {
@@ -129,7 +128,7 @@ void WallpaperWidgetController::ApplyCrossFadeAnimation(
   // Fade out the old layer. When clearing the blur, use the opposite tween so
   // that the animations are mirrors of each other.
   const bool clearing =
-      wallpaper_view_->property() == wallpaper_constants::kClear;
+      wallpaper_view_->blur_sigma() == wallpaper_constants::kClear;
   ui::ScopedLayerAnimationSettings settings(old_layer->GetAnimator());
   settings.SetTransitionDuration(duration);
   settings.SetTweenType(clearing ? gfx::Tween::EASE_IN : gfx::Tween::EASE_OUT);

@@ -28,18 +28,6 @@ constexpr int kHeaderHeightDp = WindowMiniView::kHeaderHeightDp;
 // slightly differently in overview mode.
 constexpr float kExtremeWindowRatioThreshold = 2.f;
 
-namespace overview_constants {
-
-// The opacity of the wallpaper in overview mode.
-constexpr float kOpacity = 1.0f;
-
-// Amount of blur to apply on the wallpaper when we enter or exit overview
-// mode.
-constexpr float kBlurSigma =
-    static_cast<float>(AshColorProvider::LayerBlurSigma::kBlurDefault);
-
-}  // namespace overview_constants
-
 }  // namespace ash
 
 #endif  // ASH_WM_OVERVIEW_OVERVIEW_CONSTANTS_H_

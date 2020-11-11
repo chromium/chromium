@@ -60,7 +60,7 @@ TabletModeBrowserWindowDragSessionWindowsHider::
   // Blurs the wallpaper background.
   RootWindowController::ForWindow(root_window_)
       ->wallpaper_widget_controller()
-      ->SetWallpaperProperty(wallpaper_constants::kOverviewState);
+      ->SetWallpaperBlur(wallpaper_constants::kOverviewBlur);
 }
 
 TabletModeBrowserWindowDragSessionWindowsHider::
@@ -87,7 +87,7 @@ TabletModeBrowserWindowDragSessionWindowsHider::
   // Clears the background wallpaper blur.
   RootWindowController::ForWindow(root_window_)
       ->wallpaper_widget_controller()
-      ->SetWallpaperProperty(wallpaper_constants::kClear);
+      ->SetWallpaperBlur(wallpaper_constants::kClear);
 }
 
 void TabletModeBrowserWindowDragSessionWindowsHider::OnWindowDestroying(

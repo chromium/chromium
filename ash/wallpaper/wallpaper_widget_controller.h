@@ -9,7 +9,7 @@
 #include <memory>
 
 #include "ash/ash_export.h"
-#include "ash/wallpaper/wallpaper_property.h"
+#include "ash/wallpaper/wallpaper_constants.h"
 #include "base/callback.h"
 #include "base/macros.h"
 #include "ui/compositor/layer_animation_observer.h"
@@ -63,13 +63,13 @@ class ASH_EXPORT WallpaperWidgetController
   // Returns true if there was something to reparent.
   bool Reparent(int container);
 
-  // Sets/Gets the properties (blur and opacity) used to draw wallpaper.
-  // |animation_duration| specifies the animation to apply the change.
-  // If its zero duration, then no animation will be applied.
-  bool SetWallpaperProperty(
-      const WallpaperProperty& property,
+  // Sets/Gets the blur used to draw wallpaper. |animation_duration| specifies
+  // the animation to apply the change. If its zero duration, then no animation
+  // will be applied.
+  bool SetWallpaperBlur(
+      float blur,
       const base::TimeDelta& animation_duration = base::TimeDelta());
-  const WallpaperProperty& GetWallpaperProperty() const;
+  float GetWallpaperBlur() const;
 
   // ui::ImplicitAnimationObserver:
   void OnImplicitAnimationsCompleted() override;
