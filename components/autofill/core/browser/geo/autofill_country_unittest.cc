@@ -24,8 +24,6 @@ TEST(AutofillCountryTest, AutofillCountry) {
   AutofillCountry united_states_en("US", "en_US");
   EXPECT_EQ("US", united_states_en.country_code());
   EXPECT_EQ(ASCIIToUTF16("United States"), united_states_en.name());
-  EXPECT_EQ(ASCIIToUTF16("ZIP code"), united_states_en.postal_code_label());
-  EXPECT_EQ(ASCIIToUTF16("State"), united_states_en.state_label());
 
   AutofillCountry united_states_es("US", "es");
   EXPECT_EQ("US", united_states_es.country_code());
@@ -39,8 +37,6 @@ TEST(AutofillCountryTest, AutofillCountry) {
   AutofillCountry canada_en("CA", "en_US");
   EXPECT_EQ("CA", canada_en.country_code());
   EXPECT_EQ(ASCIIToUTF16("Canada"), canada_en.name());
-  EXPECT_EQ(ASCIIToUTF16("Postal code"), canada_en.postal_code_label());
-  EXPECT_EQ(ASCIIToUTF16("Province"), canada_en.state_label());
 
   AutofillCountry canada_hu("CA", "hu");
   EXPECT_EQ("CA", canada_hu.country_code());
@@ -124,7 +120,7 @@ TEST(AutofillCountryTest, AliasMappingsForCountryData) {
   CountryDataMap* country_data_map = CountryDataMap::GetInstance();
 
   // There should be country data for the "GB".
-  EXPECT_TRUE(country_data_map->HasCountryData("GB"));
+  EXPECT_TRUE(country_data_map->HasRequiredFieldsForAddressImport("GB"));
 
   // Check the correctness of the alias definitions.
   EXPECT_TRUE(country_data_map->HasCountryCodeAlias("UK"));

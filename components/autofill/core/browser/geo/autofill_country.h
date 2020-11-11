@@ -31,33 +31,32 @@ class AutofillCountry {
 
   const std::string& country_code() const { return country_code_; }
   const base::string16& name() const { return name_; }
-  const base::string16& postal_code_label() const { return postal_code_label_; }
-  const base::string16& state_label() const { return state_label_; }
 
   // City is expected in a complete address for this country.
   bool requires_city() const {
-    return (address_required_fields_ & ADDRESS_REQUIRES_CITY) != 0;
+    return (required_fields_for_address_import_ & ADDRESS_REQUIRES_CITY) != 0;
   }
 
   // State is expected in a complete address for this country.
   bool requires_state() const {
-    return (address_required_fields_ & ADDRESS_REQUIRES_STATE) != 0;
+    return (required_fields_for_address_import_ & ADDRESS_REQUIRES_STATE) != 0;
   }
 
   // Zip is expected in a complete address for this country.
   bool requires_zip() const {
-    return (address_required_fields_ & ADDRESS_REQUIRES_ZIP) != 0;
+    return (required_fields_for_address_import_ & ADDRESS_REQUIRES_ZIP) != 0;
   }
 
   // An address line1 is expected in a complete address for this country.
   bool requires_line1() const {
-    return (address_required_fields_ & ADDRESS_REQUIRES_LINE1) != 0;
+    return (required_fields_for_address_import_ & ADDRESS_REQUIRES_LINE1) != 0;
   }
 
   // True if a complete address is expected to either contain a state or a ZIP
   // code. Not true if the address explicitly needs both.
   bool requires_zip_or_state() const {
-    return (address_required_fields_ & ADDRESS_REQUIRES_ZIP_OR_STATE) != 0;
+    return (required_fields_for_address_import_ &
+            ADDRESS_REQUIRES_ZIP_OR_STATE) != 0;
   }
 
  private:
@@ -72,14 +71,8 @@ class AutofillCountry {
   // The country's name, localized to the app locale.
   base::string16 name_;
 
-  // The localized label for the postal code (or zip code) field.
-  base::string16 postal_code_label_;
-
-  // The localized label for the state (or province, district, etc.) field.
-  base::string16 state_label_;
-
-  // Address requirement field codes for the country.
-  AddressRequiredFields address_required_fields_;
+  // Required fields for an address import for the country.
+  RequiredFieldsForAddressImport required_fields_for_address_import_;
 
   DISALLOW_COPY_AND_ASSIGN(AutofillCountry);
 };

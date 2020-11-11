@@ -37,20 +37,16 @@ AutofillCountry::AutofillCountry(const std::string& country_code,
   // If there is no entry in the |CountryDataMap| for the
   // |country_code_for_country_data| use the country code  derived from the
   // locale. This reverts to US.
-  country_data_map->HasCountryData(country_code_)
+  country_data_map->HasRequiredFieldsForAddressImport(country_code_)
       ? country_code_
       : CountryCodeForLocale(locale);
 
   // Acquire the country address data.
-  const CountryData& data = country_data_map->GetCountryData(country_code_);
+  required_fields_for_address_import_ =
+      country_data_map->GetRequiredFieldsForAddressImport(country_code_);
 
   // Translate the country name by the supplied local.
   name_ = l10n_util::GetDisplayNameForCountry(country_code_, locale);
-
-  // Get the localized strings associate with the address fields.
-  postal_code_label_ = l10n_util::GetStringUTF16(data.postal_code_label_id);
-  state_label_ = l10n_util::GetStringUTF16(data.state_label_id);
-  address_required_fields_ = data.address_required_fields;
 }
 
 AutofillCountry::~AutofillCountry() {}
@@ -82,10 +78,7 @@ AutofillCountry::AutofillCountry(const std::string& country_code,
                                  const base::string16& name,
                                  const base::string16& postal_code_label,
                                  const base::string16& state_label)
-    : country_code_(country_code),
-      name_(name),
-      postal_code_label_(postal_code_label),
-      state_label_(state_label) {}
+    : country_code_(country_code), name_(name) {}
 
 // Prints a formatted log of a |AutofillCountry| to a |LogBuffer|.
 LogBuffer& operator<<(LogBuffer& buffer, const AutofillCountry& country) {
@@ -97,8 +90,6 @@ LogBuffer& operator<<(LogBuffer& buffer, const AutofillCountry& country) {
   buffer << Tr{} << "State required:" << country.requires_state();
   buffer << Tr{} << "Zip required:" << country.requires_zip();
   buffer << Tr{} << "City required:" << country.requires_city();
-  buffer << Tr{} << "State label:" << country.state_label();
-  buffer << Tr{} << "Postal code label:" << country.postal_code_label();
   buffer << CTag{"table"};
   buffer << CTag{"div"};
   buffer << CTag{};
