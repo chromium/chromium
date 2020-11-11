@@ -406,6 +406,10 @@ def _CheckForMissingSymbols(r8_path, dex_files, classpath, warnings_as_errors):
         'ink_sdk/com/google/protobuf/MessageLite',
         'com/google/protobuf/GeneratedMessageLite$GeneratedExtension',
 
+        # Definition and usage in currently unused lens sdk in doubledown.
+        ('com/google/android/apps/gsa/search/shared/service/proto/'
+         'PublicStopClientEvent'),
+
         # Referenced from GeneratedExtensionRegistryLite.
         # Exists only for Chrome Modern (not Monochrome nor Trichrome).
         # TODO(agrieve): Figure out why. Perhaps related to Feed V2.
