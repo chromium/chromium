@@ -5,7 +5,8 @@
    "version": "0.1",
    "manifest_version": 2,
    "background": {
-     "scripts": ["background.js"]
+     "scripts": ["background.js"],
+     "persistent": true
    },
    "content_scripts": [{
      "matches": ["http://contentscript.com/*"],

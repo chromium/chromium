@@ -60,6 +60,17 @@ class PermissionsApiTestWithContextType
     }
   }
 
+ protected:
+  bool RunTest(const std::string& extension_name) {
+    // TODO(https://crbug.com/1146173): Change this to kFlagNone once the bug is
+    // fixed.
+    int browser_test_flags = kFlagEnableFileAccess;
+    if (GetParam() == ContextType::kServiceWorker)
+      browser_test_flags |= kFlagRunAsServiceWorkerBasedExtension;
+    return RunExtensionTestWithFlags(extension_name, browser_test_flags,
+                                     kFlagNone);
+  }
+
  private:
   std::unique_ptr<extensions::ScopedWorkerBasedExtensionsChannel>
       current_channel_;
@@ -132,7 +143,7 @@ IN_PROC_BROWSER_TEST_P(PermissionsApiTestWithContextType,
 
   PermissionsRequestFunction::SetIgnoreUserGestureForTests(true);
   ASSERT_TRUE(StartEmbeddedTestServer());
-  EXPECT_TRUE(RunExtensionTest("permissions/optional")) << message_;
+  EXPECT_TRUE(RunTest("permissions/optional")) << message_;
 }
 
 // Tests that the optional permissions API works correctly.
@@ -143,7 +154,7 @@ IN_PROC_BROWSER_TEST_P(PermissionsApiTestWithContextType,
   PermissionsRequestFunction::SetAutoConfirmForTests(true);
   PermissionsRequestFunction::SetIgnoreUserGestureForTests(true);
   ASSERT_TRUE(StartEmbeddedTestServer());
-  EXPECT_TRUE(RunExtensionTest("permissions/optional")) << message_;
+  EXPECT_TRUE(RunTest("permissions/optional")) << message_;
 }
 
 // Test that denying the optional permissions confirmation dialog works.
