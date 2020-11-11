@@ -993,6 +993,9 @@ Because your account is managed by <ph name="HOSTED_DOMAIN">$1<ex>google.com</ex
       <message name="IDS_IOS_INTENTS_SEARCH_IN_CHROME_TITLE" desc="Siri Shortcut for search in chrome title [iOS only].">
           Search in Chrome
       </message>
+      <message name="IDS_IOS_INTENTS_SEARCH_IN_CHROME_SUGGEST_TITLE" desc="Siri Shortcut for search in chrome title [iOS only].">
+        Search in Chrome
+      </message>
       <message name="IDS_IOS_INTENTS_SEARCH_IN_CHROME_PARAMETER_COMBINATION_TITLE" desc="Apple Shortcuts App's format for displaying the user search phrase input, shown by the Siri Shortcut app when the
           user is adding or editing a Search in Chrome shortcut[iOS only].">
           Search ${searchPhrase} in Chrome

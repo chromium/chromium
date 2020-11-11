@@ -138,6 +138,7 @@ source_set("omnibox_internal") {
     "//components/search_engines",
     "//components/security_state/core",
     "//components/strings",
+    "//ios/chrome/app/intents",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser",
     "//ios/chrome/browser/autocomplete",

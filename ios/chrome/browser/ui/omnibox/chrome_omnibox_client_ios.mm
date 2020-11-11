@@ -6,11 +6,14 @@
 
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/post_task.h"
 #include "components/favicon/ios/web_favicon_driver.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_result.h"
 #include "components/omnibox/browser/omnibox_edit_controller.h"
+#include "components/omnibox/browser/omnibox_log.h"
 #include "components/search_engines/template_url_service.h"
+#include "ios/chrome/app/intents/SearchInChromeIntent.h"
 #include "ios/chrome/browser/autocomplete/autocomplete_classifier_factory.h"
 #include "ios/chrome/browser/autocomplete/autocomplete_provider_client_impl.h"
 #include "ios/chrome/browser/bookmarks/bookmark_model_factory.h"
@@ -22,9 +25,11 @@
 #include "ios/chrome/browser/search_engines/template_url_service_factory.h"
 #include "ios/chrome/browser/sessions/ios_chrome_session_tab_helper.h"
 #include "ios/chrome/browser/ui/omnibox/web_omnibox_edit_controller.h"
+#include "ios/chrome/grit/ios_strings.h"
 #include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -161,6 +166,34 @@ void ChromeOmniboxClientIOS::OnResultChanged(
                             controller_->GetWebState(), is_inline_autocomplete);
   } else {
     service->CancelPrerender();
+  }
+}
+
+void ChromeOmniboxClientIOS::OnURLOpenedFromOmnibox(OmniboxLog* log) {
+  // If a search was done, donate the Search In Chrome intent to the OS for
+  // future Siri suggestions.
+  if (!browser_state_->IsOffTheRecord() &&
+      (log->input_type == metrics::OmniboxInputType::QUERY ||
+       log->input_type == metrics::OmniboxInputType::UNKNOWN)) {
+    base::ThreadPool::PostTask(
+        FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+        base::BindOnce(^{
+          SearchInChromeIntent* searchInChromeIntent =
+              [[SearchInChromeIntent alloc] init];
+
+          // SiriKit requires the intent parameter to be set to a non-empty
+          // string in order to accept the intent donation. Set it to a single
+          // space, to be later trimmed by the intent handler, which will result
+          // in the shortcut being treated as if no search phrase was supplied.
+          searchInChromeIntent.searchPhrase = @" ";
+          searchInChromeIntent.suggestedInvocationPhrase =
+              l10n_util::GetNSString(
+                  IDS_IOS_INTENTS_SEARCH_IN_CHROME_INVOCATION_PHRASE);
+          INInteraction* interaction =
+              [[INInteraction alloc] initWithIntent:searchInChromeIntent
+                                           response:nil];
+          [interaction donateInteractionWithCompletion:nil];
+        }));
   }
 }
 

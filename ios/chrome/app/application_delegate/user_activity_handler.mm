@@ -177,7 +177,10 @@ std::vector<GURL> createGURLVectorFromIntentURLs(NSArray<NSURL*>* intentURLs) {
     id searchPhrase = [intent valueForKey:@"searchPhrase"];
 
     if ([searchPhrase isKindOfClass:[NSString class]] &&
-        [searchPhrase length]) {
+        [searchPhrase
+            stringByTrimmingCharactersInSet:[NSCharacterSet
+                                                whitespaceCharacterSet]]
+                .length > 0) {
       startupParams.textQuery = searchPhrase;
     } else {
       startupParams.postOpeningAction = FOCUS_OMNIBOX;

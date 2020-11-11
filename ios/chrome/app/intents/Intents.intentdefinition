@@ -9,11 +9,11 @@
 	<key>INIntentDefinitionNamespace</key>
 	<string>Oi5136</string>
 	<key>INIntentDefinitionSystemVersion</key>
-	<string>19F101</string>
+	<string>19H2</string>
 	<key>INIntentDefinitionToolsBuildVersion</key>
-	<string>11E608c</string>
+	<string>11E708</string>
 	<key>INIntentDefinitionToolsVersion</key>
-	<string>11.5</string>
+	<string>11.6</string>
 	<key>INIntents</key>
 	<array>
 		<dict>
@@ -110,14 +110,12 @@
 		</dict>
 		<dict>
 			<key>INIntentCategory</key>
-			<string>information</string>
+			<string>search</string>
 			<key>INIntentConfigurable</key>
 			<true/>
 			<key>INIntentDescriptionID</key>
 			<string>k0Ho6W</string>
 			<key>INIntentEligibleForWidgets</key>
-			<true/>
-			<key>INIntentIneligibleForSuggestions</key>
 			<true/>
 			<key>INIntentInput</key>
 			<string>searchPhrase</string>
@@ -139,6 +137,20 @@
 			</dict>
 			<key>INIntentName</key>
 			<string>SearchInChrome</string>
+			<key>INIntentParameterCombinations</key>
+			<dict>
+				<key>searchPhrase</key>
+				<dict>
+					<key>INIntentParameterCombinationIsPrimary</key>
+					<true/>
+					<key>INIntentParameterCombinationSupportsBackgroundExecution</key>
+					<false/>
+					<key>INIntentParameterCombinationTitle</key>
+					<string>Search in Chrome</string>
+					<key>INIntentParameterCombinationTitleID</key>
+					<string>1Ukwhx</string>
+				</dict>
+			</dict>
 			<key>INIntentParameters</key>
 			<array>
 				<dict>
@@ -201,7 +213,7 @@
 			<key>INIntentType</key>
 			<string>Custom</string>
 			<key>INIntentVerb</key>
-			<string>Open</string>
+			<string>Search</string>
 		</dict>
 		<dict>
 			<key>INIntentCategory</key>
