@@ -200,6 +200,9 @@ void TtsEngineExtensionObserverChromeOS::OnExtensionLoaded(
   if (extension->permissions_data()->HasAPIPermission(
           extensions::APIPermission::kTtsEngine)) {
     engine_extension_ids_.insert(extension->id());
+
+    if (extension->id() == extension_misc::kGoogleSpeechSynthesisExtensionId)
+      UpdateGoogleSpeechSynthesisKeepAliveCountOnReload(browser_context);
   }
 }
 
