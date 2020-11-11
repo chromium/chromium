@@ -25,6 +25,19 @@
     width: 100%;
   }
 
+  .chip {
+    background-color: var(--google-blue-50);
+    border-radius: 100px;
+    box-sizing: border-box;
+    color: var(--google-blue-700);
+    display: inline-block;
+    height: 32px;
+    margin-inline-start: 12px;
+    padding: 8px;
+    text-align: center;
+    white-space: nowrap;
+  }
+
   ::-webkit-scrollbar {
     display: none;
   }
@@ -36,6 +49,9 @@
 </style>
 <div id="input-row">
   <iron-icon icon="cr:search"></iron-icon>
+  <template is="dom-if" if="[[computeShowChip_(promptText_)]]">
+    <div class="chip">[[promptText_]]</div>
+  </template>
   <input id="input" type="text" on-input="onInput_"
       on-keydown="onKeydown_" autofocus></input>
 </div>

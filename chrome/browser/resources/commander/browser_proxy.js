@@ -31,6 +31,12 @@ export class BrowserProxy {
    * Notifies the backend that the user wants to dismiss the UI.
    */
   dismiss() {}
+
+  /**
+   * Notifies the backend that the user has cancelled entering a composite
+   * command.
+   */
+  promptCancelled() {}
 }
 
 /** @implements {BrowserProxy} */
@@ -53,6 +59,11 @@ export class BrowserProxyImpl {
   /** @override */
   dismiss() {
     chrome.send('dismiss');
+  }
+
+  /** @override */
+  promptCancelled() {
+    chrome.send('compositeCommandCancelled');
   }
 }
 

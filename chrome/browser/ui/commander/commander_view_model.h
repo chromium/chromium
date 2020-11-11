@@ -57,8 +57,11 @@ struct CommanderViewModel {
   // commander_backend.h for more details.
   int result_set_id;
   // A pre-ranked list of items to display. Can be empty if there are
-  // no results, or |action| is not kDisplayResults.
+  // no results, or `action` is not kDisplayResults.
   std::vector<CommandItemViewModel> items;
+  // Prompt text to be shown when entering a composite command. Should only
+  // be populated if and only if `action` is kPrompt.
+  base::string16 prompt_text;
   // The action the view should take in response to receiving this view model.
   Action action;
 };

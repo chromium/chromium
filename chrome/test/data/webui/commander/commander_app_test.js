@@ -81,7 +81,7 @@ suite('CommanderWebUIBrowserTest', () => {
     assertEquals(expectedText, actualText);
   });
 
-  test('view model change renders options', async () => {
+  test('display results view model change renders options', async () => {
     const titles = ['William of Orange', 'Orangutan', 'Orange Juice'];
     webUIListenerCallback(
         'view-model-updated', createStubViewModel(42, titles));
@@ -98,7 +98,7 @@ suite('CommanderWebUIBrowserTest', () => {
     assertDeepEquals(titles, actualTitles);
   });
 
-  test('view model change sends heightChanged', async () => {
+  test('display results view model change sends heightChanged', async () => {
     webUIListenerCallback('view-model-updated', createStubViewModel(42, [
                             'William of Orange', 'Orangutan', 'Orange Juice'
                           ]));
@@ -171,5 +171,39 @@ suite('CommanderWebUIBrowserTest', () => {
         await testProxy.whenCalled('optionSelected');
     assertEquals(0, optionIndex);
     assertEquals(expectedResultSetId, resultID);
+  });
+
+  test('prompt view model draws chip', async () => {
+    const expectedPrompt = 'Select fruit';
+    webUIListenerCallback(
+        'view-model-updated',
+        {resultSetId: 42, action: Action.PROMPT, promptText: expectedPrompt});
+    await flushTasks();
+
+    const chips = app.shadowRoot.querySelectorAll('.chip');
+    assertEquals(1, chips.length);
+    assertEquals(expectedPrompt, chips[0].innerText);
+  });
+
+  test('backspacing over chip cancels prompt', async () => {
+    const expectedPrompt = 'Select fruit';
+    webUIListenerCallback(
+        'view-model-updated',
+        {resultSetId: 42, action: Action.PROMPT, promptText: expectedPrompt});
+    await flushTasks();
+
+    const input = app.$.input;
+    input.value = 'A';
+    // await flushTasks();
+
+    // Backspace over text doesn't delete the chip.
+    keyDownOn(input, 0, [], 'Backspace');
+    // await flushTasks();
+    assertEquals(0, testProxy.getCallCount('promptCancelled'));
+
+    input.value = '';
+    keyDownOn(input, 0, [], 'Backspace');
+    // await flushTasks();
+    assertEquals(1, testProxy.getCallCount('promptCancelled'));
   });
 });

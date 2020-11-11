@@ -4,6 +4,7 @@
 import './option.js';
 import 'chrome://resources/cr_elements/icons.m.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
+import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 
 import {addWebUIListener} from 'chrome://resources/js/cr.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -27,6 +28,8 @@ export class CommanderAppElement extends PolymerElement {
       options_: Array,
       /** @private */
       focusedIndex_: Number,
+      /** @private {?string} */
+      promptText_: String,
     };
   }
 
@@ -37,6 +40,9 @@ export class CommanderAppElement extends PolymerElement {
 
     /** @type {?number} */
     this.resultSetId_ = null;
+
+    /** @type {!string} */
+    this.savedInput_ = '';
   }
 
   /** @override */
@@ -55,6 +61,8 @@ export class CommanderAppElement extends PolymerElement {
     this.$.input.value = '';
     this.focusedIndex_ = -1;
     this.resultSetId_ = null;
+    this.promptText_ = null;
+    this.savedInput_ = '';
   }
 
   /**
@@ -78,6 +86,12 @@ export class CommanderAppElement extends PolymerElement {
           this.focusedIndex_ < this.options_.length) {
         this.notifySelectedAtIndex_(this.focusedIndex_);
       }
+    } else if (
+        this.promptText_ && e.key === 'Backspace' &&
+        this.$.input.value === '') {
+      this.browserProxy_.promptCancelled();
+      this.promptText_ = null;
+      this.$.input.value = this.savedInput_;
     }
   }
 
@@ -99,8 +113,13 @@ export class CommanderAppElement extends PolymerElement {
       if (this.options_.length > 0) {
         this.focusedIndex_ = 0;
       }
+    } else if (viewModel.action === Action.PROMPT) {
+      this.options_ = [];
+      this.resultSetId_ = viewModel.resultSetId;
+      this.promptText_ = viewModel.promptText || null;
+      this.savedInput_ = this.$.input.value;
+      this.$.input.value = '';
     }
-    // TODO(lgrey): Handle Action.PROMPT
   }
 
   /** @private */
@@ -135,6 +154,13 @@ export class CommanderAppElement extends PolymerElement {
    */
   getOptionClass_(index) {
     return index === this.focusedIndex_ ? 'focused' : '';
+  }
+
+  /**
+   * @return {boolean}
+   */
+  computeShowChip_() {
+    return this.promptText_ !== null;
   }
 }
 customElements.define(CommanderAppElement.is, CommanderAppElement);

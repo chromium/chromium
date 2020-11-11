@@ -13,6 +13,7 @@ export class TestCommanderBrowserProxy extends TestBrowserProxy {
       'optionSelected',
       'heightChanged',
       'dismiss',
+      'promptCancelled',
     ]);
   }
 
@@ -34,5 +35,10 @@ export class TestCommanderBrowserProxy extends TestBrowserProxy {
   /** @override */
   dismiss() {
     this.methodCalled('dismiss');
+  }
+
+  /** @override */
+  promptCancelled() {
+    this.methodCalled('promptCancelled');
   }
 }

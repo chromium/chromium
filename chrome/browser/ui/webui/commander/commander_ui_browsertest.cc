@@ -134,7 +134,7 @@ IN_PROC_BROWSER_TEST_F(CommanderUITest, CompositeCommandCancelled) {
   EXPECT_EQ(composite_command_cancelled_invocation_count(), 1);
 }
 
-TEST(CommanderHandlerTest, ViewModelPassed) {
+TEST(CommanderHandlerTest, DisplayResultsViewModelPassed) {
   content::TestWebUI test_web_ui;
   auto handler = std::make_unique<TestCommanderHandler>(&test_web_ui);
 
@@ -168,6 +168,27 @@ TEST(CommanderHandlerTest, ViewModelPassed) {
                    ->GetList()[0]
                    .GetList()[1]
                    .GetInt());
+  EXPECT_EQ(42, arg->FindPath("resultSetId")->GetInt());
+}
+
+TEST(CommanderHandlerTest, PromptViewModelPassed) {
+  content::TestWebUI test_web_ui;
+  auto handler = std::make_unique<TestCommanderHandler>(&test_web_ui);
+
+  commander::CommanderViewModel vm;
+  vm.action = commander::CommanderViewModel::Action::kPrompt;
+  vm.result_set_id = 42;
+  vm.prompt_text = base::ASCIIToUTF16("Select fruit");
+
+  handler->AllowJavascriptForTesting();
+  handler->ViewModelUpdated(std::move(vm));
+  const content::TestWebUI::CallData& call_data =
+      *test_web_ui.call_data().back();
+  EXPECT_EQ("cr.webUIListenerCallback", call_data.function_name());
+  EXPECT_EQ("view-model-updated", call_data.arg1()->GetString());
+
+  const base::Value* arg = call_data.arg2();
+  EXPECT_EQ("Select fruit", arg->FindPath("promptText")->GetString());
   EXPECT_EQ(42, arg->FindPath("resultSetId")->GetInt());
 }
 

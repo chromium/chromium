@@ -45,6 +45,7 @@ export let Option;
  *   action : Action,
  *   resultSetId : number,
  *   options : ?Array<Option>,
+ *   promptText : (string|undefined),
  * }}
  */
 export let ViewModel;

@@ -27,6 +27,7 @@ constexpr char kEntityKey[] = "entity";
 constexpr char kAnnotationKey[] = "annotation";
 constexpr char kMatchedRangesKey[] = "matchedRanges";
 constexpr char kOptionsKey[] = "options";
+constexpr char kPromptTextKey[] = "promptText";
 }  // namespace
 
 CommanderHandler::CommanderHandler() = default;
@@ -103,11 +104,11 @@ void CommanderHandler::HandleHeightChanged(const base::ListValue* args) {
 
 void CommanderHandler::ViewModelUpdated(
     commander::CommanderViewModel view_model) {
+  base::DictionaryValue vm;
+  vm.SetIntKey(kActionKey, view_model.action);
+  vm.SetIntKey(kResultSetIdKey, view_model.result_set_id);
   if (view_model.action ==
       commander::CommanderViewModel::Action::kDisplayResults) {
-    base::DictionaryValue vm;
-    vm.SetIntKey(kActionKey, view_model.action);
-    vm.SetIntKey(kResultSetIdKey, view_model.result_set_id);
     base::ListValue option_list;
     for (commander::CommandItemViewModel& item : view_model.items) {
       base::DictionaryValue option;
@@ -126,12 +127,13 @@ void CommanderHandler::ViewModelUpdated(
       option_list.Append(std::move(option));
     }
     vm.SetKey(kOptionsKey, std::move(option_list));
-    FireWebUIListener(kViewModelUpdatedEvent, vm);
   } else {
+    // kDismiss is handled higher in the stack.
     DCHECK_EQ(view_model.action,
               commander::CommanderViewModel::Action::kPrompt);
-    // TODO(lgrey): Handle kPrompt. kDismiss is handled higher up the stack.
+    vm.SetStringKey(kPromptTextKey, view_model.prompt_text);
   }
+  FireWebUIListener(kViewModelUpdatedEvent, vm);
 }
 
 void CommanderHandler::PrepareToShow(Delegate* delegate) {
