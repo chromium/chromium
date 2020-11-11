@@ -354,7 +354,9 @@ config("cfi_linker") {
   # ASan and CFG leads to slow process startup. Chromium's test runner uses
   # lots of child processes, so this means things are really slow. Disable CFG
   # for now. https://crbug.com/846966
-  if (!is_debug && !is_asan) {
+  # TODO(thakis): Re-enable in release component builds once they work again,
+  # https://crbug.com/1147194
+  if (!is_debug && !is_asan && !is_component_build) {
     # Turn on CFG bitmap generation and CFG load config.
     if (target_cpu == "arm64") {
       # longjmp protection is temporarily disabled on Windows on Arm64 due to
