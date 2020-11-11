@@ -120,7 +120,6 @@ chromevox_modules = [
   "panel/panel.js",
   "panel/panel_menu.js",
   "panel/panel_menu_item.js",
-  "panel/tutorial.js",
   "third_party/tamachiyomi/ja_phonetic_data.js",
 ]
 

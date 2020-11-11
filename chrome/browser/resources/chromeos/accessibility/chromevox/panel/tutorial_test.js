@@ -11,24 +11,6 @@ GEN_INCLUDE(['../testing/mock_feedback.js']);
  */
 ChromeVoxTutorialTest = class extends ChromeVoxNextE2ETest {
   /** @override */
-  testGenCppIncludes() {
-    super.testGenCppIncludes();
-    GEN(`
-  #include "base/command_line.h"
-  #include "ui/accessibility/accessibility_switches.h"
-      `);
-  }
-
-  /** @override */
-  testGenPreamble() {
-    GEN(`
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      ::switches::kEnableExperimentalAccessibilityChromeVoxTutorial);
-      `);
-    super.testGenPreamble();
-  }
-
-  /** @override */
   setUp() {
     window.doCmd = this.doCmd;
   }
@@ -56,7 +38,6 @@ ChromeVoxTutorialTest = class extends ChromeVoxNextE2ETest {
   }
 
   async launchAndWaitForTutorial() {
-    assertTrue(this.getPanel().iTutorialEnabled_);
     new PanelCommand(PanelCommandType.TUTORIAL).send();
     await this.waitForTutorial();
     return new Promise(resolve => {

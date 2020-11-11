@@ -3625,12 +3625,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kKernelnextVMsName,
      flag_descriptions::kKernelnextVMsDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(features::kKernelnextVMs)},
-    {"enable-experimental-accessibility-chromevox-tutorial",
-     flag_descriptions::kExperimentalAccessibilityChromeVoxTutorialName,
-     flag_descriptions::kExperimentalAccessibilityChromeVoxTutorialDescription,
-     kOsCrOS,
-     SINGLE_VALUE_TYPE(
-         ::switches::kEnableExperimentalAccessibilityChromeVoxTutorial)},
     {"enable-magnifier-new-focus-following",
      flag_descriptions::kMagnifierNewFocusFollowingName,
      flag_descriptions::kMagnifierNewFocusFollowingDescription, kOsCrOS,

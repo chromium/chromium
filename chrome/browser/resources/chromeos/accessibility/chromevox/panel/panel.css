@@ -305,86 +305,8 @@ button:disabled,
   text-align: end;
 }
 
-#tutorial {
-  background: linear-gradient(to bottom,
-                              rgba(255, 255, 255, 1) 40%,
-                              rgba(215, 215, 215, 1) 100%);
-  bottom: 0;
-  left: 0;
-  position: fixed;
-  right: 0;
-  top: 0;
-}
-
-#tutorial_logo {
-  background-image: url(/images/chromevox.svg);
-  background-repeat: no-repeat;
-  background-size: contain;
-  bottom: 15%;
-  left: 10%;
-  position: fixed;
-  right: 70%;
-  top: 15%;
-}
-
-#close_tutorial {
-  background-image: url(/chromevox/images/close-19.png);
-  height: 19px;
-  position: fixed;
-  right: 0;
-  top: 0;
-  width: 19px;
-}
-
 #close:hover {
   background-image: url(/chromevox/images/close-hover-19.png);
-}
-
-#tutorial_main {
-  bottom: 30%;
-  left: 35%;
-  overflow-x: hidden;
-  overflow-y: auto;
-  position: fixed;
-  right: 15%;
-  top: 15%;
-}
-
-#tutorial_main h2 {
-  font-family: 'Roboto', sans-serif;
-  font-size: 30pt;
-  font-weight: bold;
-}
-
-#tutorial_main h2:focus {
-  outline: none
-}
-
-#tutorial_main p,
-#tutorial_main a {
-  display: block;
-  font-family: 'Roboto', sans-serif;
-  font-size: 16pt;
-  line-height: 150%;
-}
-
-#tutorial_footer {
-  display: flex;
-  justify-content: center;
-  left: 35%;
-  position: fixed;
-  right: 15%;
-  top: 75%;
-}
-
-#tutorial_footer button {
-  background-color: #fff;
-  border: 1px solid #000;
-  font-family: 'Roboto', sans-serif;
-  font-size: 20pt;
-  height: 2em;
-  margin: 0 24px;
-  width: 8em;
 }
 
 .highlighted-cell {

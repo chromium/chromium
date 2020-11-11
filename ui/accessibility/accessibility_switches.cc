@@ -36,10 +36,6 @@ const char kEnableExperimentalAccessibilitySwitchAccessText[] =
 const char kEnableExperimentalAccessibilityChromeVoxAnnotations[] =
     "enable-experimental-accessibility-chromevox-annotations";
 
-// Enables interactive tutorial for ChromeVox.
-const char kEnableExperimentalAccessibilityChromeVoxTutorial[] =
-    "enable-experimental-accessibility-chromevox-tutorial";
-
 // Enables Switch Access point scanning. This feature hasn't launched yet.
 const char kEnableSwitchAccessPointScanning[] =
     "enable-switch-access-point-scanning";

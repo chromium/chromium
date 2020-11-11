@@ -26,7 +26,6 @@ goog.require('PanelCommand');
 goog.require('PanelMenu');
 goog.require('PanelMenuItem');
 goog.require('QueueMode');
-goog.require('Tutorial');
 goog.require('UserAnnotationHandler');
 
 /**
@@ -122,12 +121,6 @@ Panel = class {
     Panel.activeMenu_ = null;
 
     /**
-     * @type {Tutorial}
-     * @private
-     */
-    Panel.tutorial_ = new Tutorial();
-
-    /**
      * @type {Object}
      * @private
      */
@@ -160,11 +153,6 @@ Panel = class {
     $('menus_button').addEventListener('mousedown', Panel.onOpenMenus, false);
     $('options').addEventListener('click', Panel.onOptions, false);
     $('close').addEventListener('click', Panel.onClose, false);
-
-    $('tutorial_next').addEventListener('click', Panel.onTutorialNext, false);
-    $('tutorial_previous')
-        .addEventListener('click', Panel.onTutorialPrevious, false);
-    $('close_tutorial').addEventListener('click', Panel.onCloseTutorial, false);
     $('discard-annotation')
         .addEventListener('click', Panel.closeMenusAndRestoreFocus, false);
     $('save-annotation').addEventListener('click', Panel.saveAnnotation, false);
@@ -183,18 +171,7 @@ Panel = class {
     Panel.ownerWindow = window;
 
     /** @private {boolean} */
-    Panel.iTutorialEnabled_ = false;
-    chrome.commandLinePrivate.hasSwitch(
-        'enable-experimental-accessibility-chromevox-tutorial', (enabled) => {
-          Panel.iTutorialEnabled_ = enabled;
-        });
-
-    /** @private {boolean} */
     Panel.iTutorialReadyForTesting_ = false;
-
-    const background = chrome.extension.getBackgroundPage()['ChromeVoxState'];
-    Panel.observer_ = new Panel.PanelStateObserver();
-    background.addObserver(Panel.observer_);
   }
 
   /**
@@ -284,7 +261,6 @@ Panel = class {
         Panel.onTutorial();
         break;
       case PanelCommandType.UPDATE_NOTES:
-        Panel.onTutorial('updateNotes');
         break;
       case PanelCommandType.OPEN_ANNOTATIONS_UI:
         if (typeof command.data === 'string') {
@@ -317,17 +293,14 @@ Panel = class {
         chrome.extension.getURL('chromevox/panel/panel.html') +
         Panel.ModeInfo[Panel.mode_].location;
 
-    $('main').hidden =
-        (Panel.mode_ === Panel.Mode.FULLSCREEN_TUTORIAL ||
-         Panel.mode_ === Panel.Mode.FULLSCREEN_I_TUTORIAL);
+    $('main').hidden = (Panel.mode_ === Panel.Mode.FULLSCREEN_TUTORIAL);
     $('menus_background').hidden =
         (Panel.mode_ !== Panel.Mode.FULLSCREEN_MENUS);
-    $('tutorial').hidden = (Panel.mode_ !== Panel.Mode.FULLSCREEN_TUTORIAL);
     // Interactive tutorial elements may not have been loaded yet.
     const iTutorialContainer = $('i-tutorial-container');
     if (iTutorialContainer) {
       iTutorialContainer.hidden =
-          (Panel.mode_ !== Panel.Mode.FULLSCREEN_I_TUTORIAL);
+          (Panel.mode_ !== Panel.Mode.FULLSCREEN_TUTORIAL);
     }
 
     Panel.updateFromPrefs();
@@ -976,12 +949,6 @@ Panel = class {
       return;
     }
 
-    // Events don't propagate correctly because blur places focus on body.
-    if (Panel.mode_ === Panel.Mode.FULLSCREEN_TUTORIAL &&
-        !Panel.tutorial_.onKeyDown(event)) {
-      return;
-    }
-
     if (!Panel.activeMenu_) {
       return;
     }
@@ -1139,29 +1106,17 @@ Panel = class {
    * @param {string=} opt_page Show a specific page.
    */
   static onTutorial(opt_page) {
-    if (Panel.iTutorialEnabled_) {
-      if (!$('i-tutorial')) {
-        const curriculum = Panel.sessionState ===
-                chrome.loginState.SessionState.IN_OOBE_SCREEN ?
-            'quick_orientation' :
-            null;
-        Panel.createITutorial(curriculum);
-      }
-
-      Panel.setMode(Panel.Mode.FULLSCREEN_I_TUTORIAL);
-      if (Panel.iTutorial.show) {
-        Panel.iTutorial.show();
-      }
-      return;
+    if (!$('i-tutorial')) {
+      const curriculum =
+          Panel.sessionState === chrome.loginState.SessionState.IN_OOBE_SCREEN ?
+          'quick_orientation' :
+          null;
+      Panel.createITutorial(curriculum);
     }
 
     Panel.setMode(Panel.Mode.FULLSCREEN_TUTORIAL);
-    switch (opt_page) {
-      case 'updateNotes':
-        Panel.tutorial_.updateNotes();
-        break;
-      default:
-        Panel.tutorial_.lastViewedPage();
+    if (Panel.iTutorial.show) {
+      Panel.iTutorial.show();
     }
   }
 
@@ -1193,15 +1148,16 @@ Panel = class {
     Panel.iTutorial = tutorialElement;
 
     // Add listeners. These are custom events fired from custom components.
+    const backgroundPage = chrome.extension.getBackgroundPage();
+    const chromeVoxState = backgroundPage['ChromeVoxState'];
+    const chromeVoxStateInstance = chromeVoxState['instance'];
+
     $('i-tutorial').addEventListener('closetutorial', (evt) => {
       // Ensure UserActionMonitor is destroyed before closing tutorial.
-      const background =
-          chrome.extension.getBackgroundPage()['ChromeVoxState']['instance'];
-      background.destroyUserActionMonitor();
+      chromeVoxStateInstance.destroyUserActionMonitor();
       Panel.onCloseTutorial();
     });
     $('i-tutorial').addEventListener('requestspeech', (evt) => {
-      const background = chrome.extension.getBackgroundPage();
       /**
        * @type {{
        * text: string,
@@ -1217,32 +1173,26 @@ Panel = class {
             `Must specify text and queueMode when requesting speech from the
                 tutorial`);
       }
-      const cvox = background['ChromeVox'];
+      const cvox = backgroundPage['ChromeVox'];
       cvox.tts.speak(text, queueMode, properties);
     });
     $('i-tutorial').addEventListener('startinteractivemode', (evt) => {
       const actions = evt.detail.actions;
-      const background =
-          chrome.extension.getBackgroundPage()['ChromeVoxState']['instance'];
-      background.createUserActionMonitor(actions, () => {
-        background.destroyUserActionMonitor();
+      chromeVoxStateInstance.createUserActionMonitor(actions, () => {
+        chromeVoxStateInstance.destroyUserActionMonitor();
         Panel.iTutorial.showNextLesson();
       });
     });
     $('i-tutorial').addEventListener('stopinteractivemode', (evt) => {
-      const background =
-          chrome.extension.getBackgroundPage()['ChromeVoxState']['instance'];
-      background.destroyUserActionMonitor();
+      chromeVoxStateInstance.destroyUserActionMonitor();
     });
     $('i-tutorial').addEventListener('requestfullydescribe', (evt) => {
-      const commandHandler =
-          chrome.extension.getBackgroundPage()['CommandHandler'];
+      const commandHandler = backgroundPage['CommandHandler'];
       commandHandler.onCommand('fullyDescribe');
     });
     $('i-tutorial').addEventListener('requestearcon', (evt) => {
       const earconId = evt.detail.earconId;
-      chrome.extension
-          .getBackgroundPage()['ChromeVox']['earcons']['playEarcon'](earconId);
+      backgroundPage['ChromeVox']['earcons']['playEarcon'](earconId);
     });
     $('i-tutorial').addEventListener('readyfortesting', () => {
       Panel.iTutorialReadyForTesting_ = true;
@@ -1250,26 +1200,13 @@ Panel = class {
     $('i-tutorial').addEventListener('openUrl', (evt) => {
       const url = evt.detail.url;
       // Ensure UserActionMonitor is destroyed before closing tutorial.
-      const background =
-          chrome.extension.getBackgroundPage()['ChromeVoxState']['instance'];
-      background.destroyUserActionMonitor();
+      chromeVoxStateInstance.destroyUserActionMonitor();
       Panel.onCloseTutorial();
       chrome.tabs.create({url});
     });
-  }
 
-  /**
-   * Move to the next page in the tutorial.
-   */
-  static onTutorialNext() {
-    Panel.tutorial_.nextPage();
-  }
-
-  /**
-   * Move to the previous page in the tutorial.
-   */
-  static onTutorialPrevious() {
-    Panel.tutorial_.previousPage();
+    Panel.observer_ = new Panel.PanelStateObserver();
+    chromeVoxState.addObserver(Panel.observer_);
   }
 
   /**
@@ -1352,7 +1289,7 @@ Panel.PanelStateObserver = class {
   constructor() {}
 
   onCurrentRangeChanged(range) {
-    if (Panel.mode_ === Panel.Mode.FULLSCREEN_I_TUTORIAL) {
+    if (Panel.mode_ === Panel.Mode.FULLSCREEN_TUTORIAL) {
       if (Panel.iTutorial && Panel.iTutorial.restartNudges) {
         Panel.iTutorial.restartNudges();
       }
@@ -1368,7 +1305,6 @@ Panel.Mode = {
   COLLAPSED: 'collapsed',
   FOCUSED: 'focused',
   FULLSCREEN_MENUS: 'menus',
-  FULLSCREEN_I_TUTORIAL: 'i_tutorial',
   FULLSCREEN_TUTORIAL: 'tutorial',
   SEARCH: 'search',
 };
@@ -1380,7 +1316,6 @@ Panel.ModeInfo = {
   annotation: {title: 'panel_title', location: '#focus'},
   collapsed: {title: 'panel_title', location: '#'},
   focused: {title: 'panel_title', location: '#focus'},
-  i_tutorial: {title: 'panel_tutorial_title', location: '#fullscreen'},
   menus: {title: 'panel_menus_title', location: '#fullscreen'},
   tutorial: {title: 'panel_tutorial_title', location: '#fullscreen'},
   search: {title: 'panel_title', location: '#focus'},

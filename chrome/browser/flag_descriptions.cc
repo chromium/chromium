@@ -4048,11 +4048,6 @@ const char kExperimentalAccessibilityChromeVoxAnnotationsName[] =
 const char kExperimentalAccessibilityChromeVoxAnnotationsDescription[] =
     "Allows users to create custom annotations for elements using ChromeVox.";
 
-const char kExperimentalAccessibilityChromeVoxTutorialName[] =
-    "Enable experimental ChromeVox interactive tutorial.";
-const char kExperimentalAccessibilityChromeVoxTutorialDescription[] =
-    "A comprehensive and interactive tutorial for the ChromeVox screen reader.";
-
 const char kExperimentalAccessibilitySwitchAccessTextName[] =
     "Enable enhanced Switch Access text input.";
 const char kExperimentalAccessibilitySwitchAccessTextDescription[] =

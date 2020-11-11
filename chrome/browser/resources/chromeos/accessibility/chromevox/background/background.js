@@ -185,30 +185,19 @@ Background = class extends ChromeVoxState {
     };
     new ProgressPlayer();
 
-    chrome.commandLinePrivate.hasSwitch(
-        'enable-experimental-accessibility-chromevox-tutorial', (enabled) => {
+    chrome.loginState.getSessionState((sessionState) => {
+      // If starting ChromeVox from OOBE, start the tutorial.
+      if (sessionState === chrome.loginState.SessionState.IN_OOBE_SCREEN) {
+        chrome.chromeosInfoPrivate.isTabletModeEnabled((enabled) => {
+          // Only start the tutorial if we are not in tablet mode. This
+          // is a temporary workaround until we implement a touch-specific
+          // tutorial.
           if (!enabled) {
-            return;
+            (new PanelCommand(PanelCommandType.TUTORIAL)).send();
           }
-
-          chrome.loginState.getSessionState((sessionState) => {
-            // If starting ChromeVox from OOBE, start the tutorial.
-            // Use a timeout to allow ChromeVox to initialize first.
-            if (sessionState ===
-                chrome.loginState.SessionState.IN_OOBE_SCREEN) {
-              chrome.chromeosInfoPrivate.isTabletModeEnabled((enabled) => {
-                // Only start the tutorial if we are not in tablet mode. This
-                // is a temporary workaround until we implement a touch-specific
-                // tutorial.
-                if (!enabled) {
-                  setTimeout(() => {
-                    (new PanelCommand(PanelCommandType.TUTORIAL)).send();
-                  }, 1000);
-                }
-              });
-            }
-          });
         });
+      }
+    });
   }
 
   /**

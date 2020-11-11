@@ -947,6 +947,18 @@ IN_PROC_BROWSER_TEST_F(OobeSpokenFeedbackTest, SpokenFeedbackInOobe) {
   ASSERT_FALSE(AccessibilityManager::Get()->IsSpokenFeedbackEnabled());
   AccessibilityManager::Get()->EnableSpokenFeedback(true);
 
+  // If ChromeVox is started in OOBE, the tutorial is automatically opened.
+  sm_.ExpectSpeech("Welcome to ChromeVox!");
+  sm_.ExpectSpeechPattern(
+      "Welcome to the ChromeVox tutorial*When you're ready, use the spacebar "
+      "to move to the next lesson.");
+
+  // The tutorial can be exited by pressing Escape.
+  sm_.Call([]() {
+    ASSERT_TRUE(ui_test_utils::SendKeyPressToWindowSync(
+        nullptr, ui::VKEY_ESCAPE, false, false, false, false));
+  });
+
   // The Let's go button gets initial focus.
   sm_.ExpectSpeech("Let's go");
 
