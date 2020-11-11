@@ -63,6 +63,9 @@ TabSearchUI::TabSearchUI(content::WebUI* web_ui)
                                  features::kTabSearchSearchThresholdMax));
   source->AddDouble("searchTitleToHostnameWeightRatio",
                     features::kTabSearchTitleToHostnameWeightRatio.Get());
+
+  source->AddBoolean("moveActiveTabToBottom",
+                     features::kTabSearchMoveActiveTabToBottom.Get());
   source->AddLocalizedString("close", IDS_CLOSE);
 
   ui::Accelerator accelerator(ui::VKEY_A,

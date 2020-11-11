@@ -83,6 +83,12 @@ export class TabSearchAppElement extends PolymerElement {
         type: Boolean,
         value: () => loadTimeData.getBoolean('submitFeedbackEnabled'),
       },
+
+      /** @private {boolean} */
+      moveActiveTabToBottom_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('moveActiveTabToBottom'),
+      },
     };
   }
 
@@ -387,15 +393,27 @@ export class TabSearchAppElement extends PolymerElement {
     windowTabs.forEach(window => {
       window.tabs.forEach(tab => {
         const hostname = new URL(tab.url).hostname;
-        result.push({hostname, tab});
+        const inActiveWindow = window.active;
+        result.push({hostname, inActiveWindow, tab});
       });
     });
-    result.sort(
-        (a, b) => (b.tab.lastActiveTimeTicks && a.tab.lastActiveTimeTicks) ?
-            Number(
-                b.tab.lastActiveTimeTicks.internalValue -
-                a.tab.lastActiveTimeTicks.internalValue) :
-            0);
+    result.sort((a, b) => {
+      // Move the active tab to the bottom of the list
+      // because it's not likely users want to click on it.
+      if (this.moveActiveTabToBottom_) {
+        if (a.inActiveWindow && a.tab.active) {
+          return 1;
+        }
+        if (b.inActiveWindow && b.tab.active) {
+          return -1;
+        }
+      }
+      return (b.tab.lastActiveTimeTicks && a.tab.lastActiveTimeTicks) ?
+          Number(
+              b.tab.lastActiveTimeTicks.internalValue -
+              a.tab.lastActiveTimeTicks.internalValue) :
+          0;
+    });
     this.filteredOpenTabs_ =
         fuzzySearch(this.searchText_, result, this.fuzzySearchOptions_);
   }

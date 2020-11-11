@@ -374,6 +374,7 @@ suite('TabSearchAppTest', () => {
         title: 'Bing',
         url: 'https://www.bing.com',
         lastActiveTimeTicks: {internalValue: BigInt(4)},
+        active: true,
       },
       {
         index: 2,
@@ -384,7 +385,12 @@ suite('TabSearchAppTest', () => {
       }
     ];
 
+    // Move active tab to the bottom of the list.
     await setupTest({windows: [{active: true, tabs}]});
+    verifyTabIds(queryRows(), [3, 1, 2]);
+
+    await setupTest(
+        {windows: [{active: true, tabs}]}, {'moveActiveTabToBottom': false});
     verifyTabIds(queryRows(), [2, 3, 1]);
   });
 

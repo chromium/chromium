@@ -22,5 +22,8 @@ export class TabData {
 
     /** @type {!Array<!{start: number, length: number}>|undefined} */
     this.hostnameHighlightRanges;
+
+    /** @type {boolean} */
+    this.inActiveWindow;
   }
 }

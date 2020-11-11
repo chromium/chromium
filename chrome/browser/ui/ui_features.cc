@@ -117,6 +117,9 @@ const base::FeatureParam<double> kTabSearchSearchThreshold{
 const base::FeatureParam<double> kTabSearchTitleToHostnameWeightRatio{
     &kTabSearch, "TabSearchTitleToHostnameWeightRatio", 2.0};
 
+const base::FeatureParam<bool> kTabSearchMoveActiveTabToBottom{
+    &kTabSearch, "TabSearchMoveActiveTabToBottom", true};
+
 // Enables a web-based separator that's only used for performance testing. See
 // https://crbug.com/993502.
 const base::Feature kWebFooterExperiment{"WebFooterExperiment",

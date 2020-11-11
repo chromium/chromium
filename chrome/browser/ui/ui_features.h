@@ -86,6 +86,9 @@ constexpr double kTabSearchSearchThresholdMax = 1.0;
 // Controls how heavily weighted the tab's title is relative to the hostname.
 extern const base::FeatureParam<double> kTabSearchTitleToHostnameWeightRatio;
 
+// Whether to move the active tab to the bottom of the list.
+extern const base::FeatureParam<bool> kTabSearchMoveActiveTabToBottom;
+
 extern const base::Feature kWebFooterExperiment;
 
 extern const base::Feature kWebUITabStrip;
