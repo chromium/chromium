@@ -16,7 +16,6 @@ import org.chromium.chrome.autofill_assistant.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.autofill_assistant.carousel.AssistantChip;
-import org.chromium.chrome.browser.autofill_assistant.carousel.AssistantChip.Type;
 import org.chromium.chrome.browser.autofill_assistant.metrics.DropOutReason;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -339,8 +338,10 @@ public class AutofillAssistantUiController {
     @CalledByNative
     private AssistantChip createActionButton(int icon, String text, int actionIndex,
             boolean disabled, boolean sticky, boolean visible) {
-        return new AssistantChip(AssistantChip.Type.BUTTON_HAIRLINE, icon, text, disabled, sticky,
-                visible, () -> safeNativeOnUserActionSelected(actionIndex));
+        AssistantChip chip =
+                AssistantChip.createHairlineAssistantChip(icon, text, disabled, sticky, visible);
+        chip.setSelectedListener(() -> safeNativeOnUserActionSelected(actionIndex));
+        return chip;
     }
 
     /**
@@ -349,8 +350,10 @@ public class AutofillAssistantUiController {
     @CalledByNative
     private AssistantChip createHighlightedActionButton(int icon, String text, int actionIndex,
             boolean disabled, boolean sticky, boolean visible) {
-        return new AssistantChip(Type.BUTTON_FILLED_BLUE, icon, text, disabled, sticky, visible,
-                () -> safeNativeOnUserActionSelected(actionIndex));
+        AssistantChip chip =
+                AssistantChip.createHighlightedAssistantChip(icon, text, disabled, sticky, visible);
+        chip.setSelectedListener(() -> safeNativeOnUserActionSelected(actionIndex));
+        return chip;
     }
 
     /**
@@ -361,8 +364,10 @@ public class AutofillAssistantUiController {
     @CalledByNative
     private AssistantChip createCancelButton(int icon, String text, int actionIndex,
             boolean disabled, boolean sticky, boolean visible) {
-        return new AssistantChip(AssistantChip.Type.BUTTON_HAIRLINE, icon, text, disabled, sticky,
-                visible, () -> safeNativeOnCancelButtonClicked(actionIndex));
+        AssistantChip chip =
+                AssistantChip.createHairlineAssistantChip(icon, text, disabled, sticky, visible);
+        chip.setSelectedListener(() -> safeNativeOnCancelButtonClicked(actionIndex));
+        return chip;
     }
 
     /**
@@ -371,8 +376,10 @@ public class AutofillAssistantUiController {
     @CalledByNative
     private AssistantChip createCloseButton(
             int icon, String text, boolean disabled, boolean sticky, boolean visible) {
-        return new AssistantChip(AssistantChip.Type.BUTTON_HAIRLINE, icon, text, disabled, sticky,
-                visible, this::safeNativeOnCloseButtonClicked);
+        AssistantChip chip =
+                AssistantChip.createHairlineAssistantChip(icon, text, disabled, sticky, visible);
+        chip.setSelectedListener(() -> safeNativeOnCloseButtonClicked());
+        return chip;
     }
 
     @CalledByNative
