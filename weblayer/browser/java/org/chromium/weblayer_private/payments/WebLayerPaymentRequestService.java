@@ -24,11 +24,6 @@ public class WebLayerPaymentRequestService implements BrowserPaymentRequest {
     }
 
     @Override
-    public void show(boolean isUserGesture, boolean waitForUpdatedDetails) {
-        assert false : "Not implemented yet";
-    }
-
-    @Override
     public void updateWith(PaymentDetails details) {
         assert false : "Not implemented yet";
     }

@@ -21,7 +21,6 @@ import org.chromium.components.autofill.EditableOption;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.payments.AbortReason;
 import org.chromium.components.payments.BrowserPaymentRequest;
-import org.chromium.components.payments.CheckoutFunnelStep;
 import org.chromium.components.payments.ErrorStrings;
 import org.chromium.components.payments.Event;
 import org.chromium.components.payments.JourneyLogger;
@@ -92,7 +91,6 @@ public class ChromePaymentRequestService implements BrowserPaymentRequest,
 
     private PaymentRequestSpec mSpec;
     private boolean mHideServerAutofillCards;
-    private boolean mWaitForUpdatedDetails;
     private PaymentHandlerHost mPaymentHandlerHost;
 
     /**
@@ -261,11 +259,11 @@ public class ChromePaymentRequestService implements BrowserPaymentRequest,
     }
 
     /** @return Whether the UI was built. */
-    private boolean buildUI(ChromeActivity activity) {
+    private boolean buildUI(ChromeActivity activity, boolean waitForUpdatedDetails) {
         String error = mPaymentUiService.buildPaymentRequestUI(activity,
                 /*isWebContentsActive=*/
                 PaymentRequestServiceUtil.isWebContentsActive(mRenderFrameHost),
-                /*waitForUpdatedDetails=*/mWaitForUpdatedDetails);
+                /*waitForUpdatedDetails=*/waitForUpdatedDetails);
         if (error != null) {
             mJourneyLogger.setNotShown(NotShownReason.OTHER);
             disconnectFromClientWithDebugMessage(error);
@@ -277,43 +275,14 @@ public class ChromePaymentRequestService implements BrowserPaymentRequest,
         return true;
     }
 
-    // Implement BrowserPaymentRequest:
-    /**
-     * Called by the merchant website to show the payment request to the user.
-     */
     @Override
-    public void show(boolean isUserGesture, boolean waitForUpdatedDetails) {
-        if (mPaymentRequestService == null) return;
-
-        if (mPaymentUiService.isShowingUI()) {
-            // Can be triggered only by a compromised renderer. In normal operation, calling show()
-            // twice on the same instance of PaymentRequest in JavaScript is rejected at the
-            // renderer level.
-            mJourneyLogger.setAborted(AbortReason.INVALID_DATA_FROM_RENDERER);
-            disconnectFromClientWithDebugMessage(ErrorStrings.CANNOT_SHOW_TWICE);
-            return;
-        }
-        mJourneyLogger.recordCheckoutStep(CheckoutFunnelStep.SHOW_CALLED);
-        mPaymentRequestService.setCurrentPaymentRequestShowing(true);
-        mPaymentRequestService.setUserGestureShow(isUserGesture);
-        mWaitForUpdatedDetails = waitForUpdatedDetails;
-
-        mJourneyLogger.setTriggerTime();
-        if (mPaymentRequestService.disconnectIfNoPaymentMethodsSupported(hasAvailableApps())) {
-            return;
-        }
-        if (mPaymentRequestService.isFinishedQueryingPaymentApps() && !showAppSelector()) return;
-
-        triggerPaymentAppUiSkipIfApplicable();
+    public boolean isShowingUi() {
+        return mPaymentUiService.isShowingUI();
     }
 
-    /**
-     * Shows the payment apps selector.
-     * @return Whether the showing is successful.
-     */
     // Implements BrowserPaymentRequest:
     @Override
-    public boolean showAppSelector() {
+    public boolean showAppSelector(boolean waitForUpdatedDetails) {
         // Send AppListReady signal when all apps are created and request.show() is called.
         if (PaymentRequestService.getNativeObserverForTest() != null) {
             PaymentRequestService.getNativeObserverForTest().onAppListReady(
@@ -325,9 +294,12 @@ public class ChromePaymentRequestService implements BrowserPaymentRequest,
                 mPaymentRequestService.isUserGestureShow(), mURLPaymentMethodIdentifiersSupported,
                 mDelegate.skipUiForBasicCard(), mPaymentOptions);
         ChromeActivity chromeActivity = ChromeActivity.fromWebContents(mWebContents);
-        if (quitShowIfActivityNotFound(chromeActivity) || !buildUI(chromeActivity)) return false;
+        if (quitShowIfActivityNotFound(chromeActivity)
+                || !buildUI(chromeActivity, waitForUpdatedDetails)) {
+            return false;
+        }
         if (!mPaymentUiService.shouldSkipShowingPaymentRequestUi() && mSkipToGPayHelper == null) {
-            mPaymentUiService.getPaymentRequestUI().show(mWaitForUpdatedDetails);
+            mPaymentUiService.getPaymentRequestUI().show(waitForUpdatedDetails);
         }
         return true;
     }
@@ -369,7 +341,7 @@ public class ChromePaymentRequestService implements BrowserPaymentRequest,
         if ((mPaymentUiService.shouldSkipShowingPaymentRequestUi() || mSkipToGPayHelper != null)
                 && mPaymentRequestService.isFinishedQueryingPaymentApps()
                 && mPaymentRequestService.isCurrentPaymentRequestShowing()
-                && !mWaitForUpdatedDetails) {
+                && !mPaymentRequestService.waitForUpdatedDetails()) {
             assert !mPaymentUiService.getPaymentMethodsSection().isEmpty();
             assert mPaymentUiService.getPaymentRequestUI() != null;
 
@@ -399,7 +371,7 @@ public class ChromePaymentRequestService implements BrowserPaymentRequest,
             assert mSpec.getRawTotal() != null;
             // The total amount in details should be finalized at this point. So it is safe to
             // record the triggered transaction amount.
-            assert !mWaitForUpdatedDetails;
+            assert !mPaymentRequestService.waitForUpdatedDetails();
             mJourneyLogger.recordTransactionAmount(mSpec.getRawTotal().amount.currency,
                     mSpec.getRawTotal().amount.value, false /*completed*/);
             invokePaymentApp(null /* selectedShippingAddress */, null /* selectedShippingOption */,
@@ -522,7 +494,7 @@ public class ChromePaymentRequestService implements BrowserPaymentRequest,
         // mSpec.updateWith() can be used only when mSpec has not been destroyed.
         assert !mSpec.isDestroyed();
 
-        if (mWaitForUpdatedDetails) {
+        if (mPaymentRequestService.waitForUpdatedDetails()) {
             initializeWithUpdatedDetails(details);
             return;
         }
@@ -578,7 +550,7 @@ public class ChromePaymentRequestService implements BrowserPaymentRequest,
     }
 
     private void initializeWithUpdatedDetails(PaymentDetails details) {
-        assert mWaitForUpdatedDetails;
+        assert mPaymentRequestService.waitForUpdatedDetails();
         // mSpec.updateWith() can be used only when mSpec has not been destroyed.
         assert !mSpec.isDestroyed();
 
@@ -612,7 +584,7 @@ public class ChromePaymentRequestService implements BrowserPaymentRequest,
             mPaymentUiService.createShippingSectionForPaymentRequestUI(chromeActivity);
         }
 
-        mWaitForUpdatedDetails = false;
+        mPaymentRequestService.resetWaitForUpdatedDetails();
         // Triggered transaction amount gets recorded when both of the following conditions are met:
         // 1- Either Event.Shown or Event.SKIPPED_SHOW bits are set showing that transaction is
         // triggered (mDidRecordShowEvent == true). 2- The total amount in details won't change
@@ -696,7 +668,7 @@ public class ChromePaymentRequestService implements BrowserPaymentRequest,
         // Record the triggered transaction amount only when the total amount in details is
         // finalized (i.e. mWaitForUpdatedDetails == false). Otherwise it will get recorded when
         // the updated details become available.
-        if (!mWaitForUpdatedDetails) {
+        if (!mPaymentRequestService.waitForUpdatedDetails()) {
             assert mSpec.getRawTotal() != null;
             mJourneyLogger.recordTransactionAmount(mSpec.getRawTotal().amount.currency,
                     mSpec.getRawTotal().amount.value, false /*completed*/);
