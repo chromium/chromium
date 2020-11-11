@@ -114,6 +114,17 @@ class MODULES_EXPORT ManifestParser {
   // Returns the parsed string if any, a null string if the parsing failed.
   String ParseShortName(const JSONObject* object);
 
+  // Parses the 'description' field of the manifest, as defined in:
+  // https://w3c.github.io/manifest/#description-member-0
+  // Returns the parsed string if any, a null string if the parsing failed.
+  String ParseDescription(const JSONObject* object);
+
+  // Parses the 'categories' field of the manifest, as defined in:
+  // https://w3c.github.io/manifest/#dfn-processing-the-categories-member
+  // Returns a vector of the parsed strings if any, or empty if the parsing
+  // failed.
+  Vector<String> ParseCategories(const JSONObject* object);
+
   // Parses the 'scope' field of the manifest, as defined in:
   // https://w3c.github.io/manifest/#scope-member. Returns the parsed KURL if
   // any, or start URL (falling back to document URL) without filename, path,
@@ -175,6 +186,18 @@ class MODULES_EXPORT ManifestParser {
   // Returns a vector of ManifestImageResourcePtr with the successfully parsed
   // icons, if any. An empty vector if the field was not present or empty.
   Vector<mojom::blink::ManifestImageResourcePtr> ParseIcons(
+      const JSONObject* object);
+
+  // Parses the 'screenshots' field of a Manifest, as defined in:
+  // https://w3c.github.io/manifest/#screenshots-member
+  // Returns a vector of ManifestImageResourcePtr with the successfully parsed
+  // screenshots, if any. An empty vector if the field was not present or empty.
+  Vector<mojom::blink::ManifestImageResourcePtr> ParseScreenshots(
+      const JSONObject* object);
+
+  // A helper function for parsing ImageResources under |key| in the manifest.
+  Vector<mojom::blink::ManifestImageResourcePtr> ParseImageResource(
+      const String& key,
       const JSONObject* object);
 
   // Parses the 'name' field of a shortcut, as defined in:

@@ -171,6 +171,89 @@ TEST_F(ManifestParserTest, NameParseRules) {
   }
 }
 
+TEST_F(ManifestParserTest, DescriptionParseRules) {
+  // Smoke test.
+  {
+    auto& manifest =
+        ParseManifest(R"({ "description": "foo is the new black" })");
+    ASSERT_EQ(manifest->description, "foo is the new black");
+    ASSERT_FALSE(IsManifestEmpty(manifest));
+    EXPECT_EQ(0u, GetErrorCount());
+  }
+
+  // Trim whitespaces.
+  {
+    auto& manifest = ParseManifest(R"({ "description": "  foo  " })");
+    ASSERT_EQ(manifest->description, "foo");
+    EXPECT_EQ(0u, GetErrorCount());
+  }
+
+  // Don't parse if description isn't a string.
+  {
+    auto& manifest = ParseManifest(R"({ "description": {} })");
+    ASSERT_TRUE(manifest->description.IsNull());
+    ASSERT_EQ(1u, GetErrorCount());
+    EXPECT_EQ("property 'description' ignored, type string expected.",
+              errors()[0]);
+  }
+
+  // Don't parse if description isn't a string.
+  {
+    auto& manifest = ParseManifest(R"({ "description": 42 })");
+    ASSERT_TRUE(manifest->description.IsNull());
+    ASSERT_EQ(1u, GetErrorCount());
+    EXPECT_EQ("property 'description' ignored, type string expected.",
+              errors()[0]);
+  }
+}
+
+TEST_F(ManifestParserTest, CategoriesParseRules) {
+  // Smoke test.
+  {
+    auto& manifest = ParseManifest(R"({ "categories": ["cats", "memes"] })");
+    ASSERT_EQ(2u, manifest->categories.size());
+    ASSERT_EQ(manifest->categories[0], "cats");
+    ASSERT_EQ(manifest->categories[1], "memes");
+    ASSERT_FALSE(IsManifestEmpty(manifest));
+    EXPECT_EQ(0u, GetErrorCount());
+  }
+
+  // Trim whitespaces.
+  {
+    auto& manifest =
+        ParseManifest(R"({ "categories": ["  cats  ", "  memes  "] })");
+    ASSERT_EQ(2u, manifest->categories.size());
+    ASSERT_EQ(manifest->categories[0], "cats");
+    ASSERT_EQ(manifest->categories[1], "memes");
+    EXPECT_EQ(0u, GetErrorCount());
+  }
+
+  // Categories should be lower-cased.
+  {
+    auto& manifest = ParseManifest(R"({ "categories": ["CaTs", "Memes"] })");
+    ASSERT_EQ(2u, manifest->categories.size());
+    ASSERT_EQ(manifest->categories[0], "cats");
+    ASSERT_EQ(manifest->categories[1], "memes");
+    EXPECT_EQ(0u, GetErrorCount());
+  }
+
+  // Empty array.
+  {
+    auto& manifest = ParseManifest(R"({ "categories": [] })");
+    ASSERT_EQ(0u, manifest->categories.size());
+    EXPECT_EQ(0u, GetErrorCount());
+  }
+
+  // Detect error if categories isn't an array.
+  {
+    auto& manifest = ParseManifest(R"({ "categories": {} })");
+    ASSERT_EQ(0u, manifest->categories.size());
+    ASSERT_EQ(1u, GetErrorCount());
+    EXPECT_EQ("property 'categories' ignored, type array expected.",
+              errors()[0]);
+  }
+}
+
 TEST_F(ManifestParserTest, ShortNameParseRules) {
   // Smoke test.
   {
@@ -872,6 +955,55 @@ TEST_F(ManifestParserTest, IconsParseRules) {
     auto& icons = manifest->icons;
     EXPECT_EQ(icons.size(), 1u);
     EXPECT_EQ(icons[0]->src.GetString(), "http://foo.com/foo.jpg");
+    EXPECT_FALSE(IsManifestEmpty(manifest));
+    EXPECT_EQ(0u, GetErrorCount());
+  }
+}
+
+TEST_F(ManifestParserTest, ScreenshotsParseRules) {
+  // Smoke test: if no screenshot, no value.
+  {
+    auto& manifest = ParseManifest(R"({ "screenshots": [] })");
+    EXPECT_TRUE(manifest->screenshots.IsEmpty());
+    EXPECT_EQ(0u, GetErrorCount());
+  }
+
+  // Smoke test: if empty screenshot, no value.
+  {
+    auto& manifest = ParseManifest(R"({ "screenshots": [ {} ] })");
+    EXPECT_TRUE(manifest->screenshots.IsEmpty());
+    EXPECT_EQ(0u, GetErrorCount());
+  }
+
+  // Smoke test: screenshot with invalid src, no value.
+  {
+    auto& manifest =
+        ParseManifest(R"({ "screenshots": [ { "screenshots": [] } ] })");
+    EXPECT_TRUE(manifest->screenshots.IsEmpty());
+    EXPECT_EQ(0u, GetErrorCount());
+  }
+
+  // Smoke test: if screenshot with empty src, it will be present in the list.
+  {
+    auto& manifest = ParseManifest(R"({ "screenshots": [ { "src": "" } ] })");
+    EXPECT_FALSE(manifest->screenshots.IsEmpty());
+
+    auto& screenshots = manifest->screenshots;
+    EXPECT_EQ(screenshots.size(), 1u);
+    EXPECT_EQ(screenshots[0]->src.GetString(), "http://foo.com/manifest.json");
+    EXPECT_FALSE(IsManifestEmpty(manifest));
+    EXPECT_EQ(0u, GetErrorCount());
+  }
+
+  // Smoke test: if one icons has valid src, it will be present in the list.
+  {
+    auto& manifest =
+        ParseManifest(R"({ "screenshots": [{ "src": "foo.jpg" }] })");
+    EXPECT_FALSE(manifest->screenshots.IsEmpty());
+
+    auto& screenshots = manifest->screenshots;
+    EXPECT_EQ(screenshots.size(), 1u);
+    EXPECT_EQ(screenshots[0]->src.GetString(), "http://foo.com/foo.jpg");
     EXPECT_FALSE(IsManifestEmpty(manifest));
     EXPECT_EQ(0u, GetErrorCount());
   }
@@ -1679,6 +1811,7 @@ TEST_F(ManifestParserTest, ShortcutIconsParseRules) {
     EXPECT_EQ(0u, GetErrorCount());
   }
 }
+
 TEST_F(ManifestParserTest, FileHandlerParseRules) {
   // Does not contain file_handlers field.
   {

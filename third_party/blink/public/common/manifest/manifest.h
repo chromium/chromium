@@ -154,6 +154,13 @@ struct BLINK_COMMON_EXPORT Manifest {
   // Null if the parsing failed or the field was not present.
   base::Optional<base::string16> short_name;
 
+  // Null if the parsing failed or the field was not present.
+  base::Optional<base::string16> description;
+
+  // Empty if the parsing failed, the field was not present, or all the
+  // values inside the JSON array were invalid.
+  std::vector<base::string16> categories;
+
   // Empty if the parsing failed or the field was not present.
   GURL start_url;
 
@@ -173,6 +180,10 @@ struct BLINK_COMMON_EXPORT Manifest {
   // Empty if the parsing failed, the field was not present, or all the
   // icons inside the JSON array were invalid.
   std::vector<ImageResource> icons;
+
+  // Empty if the parsing failed, the field was not present, or all the
+  // screenshots inside the JSON array were invalid.
+  std::vector<ImageResource> screenshots;
 
   // Empty if the parsing failed, the field was not present, or all the
   // icons inside the JSON array were invalid.

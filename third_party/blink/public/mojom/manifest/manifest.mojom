@@ -21,6 +21,10 @@ struct Manifest {
 
   mojo_base.mojom.String16? short_name;
 
+  mojo_base.mojom.String16? description;
+
+  array<mojo_base.mojom.String16> categories;
+
   url.mojom.Url start_url;
 
   DisplayMode display;
@@ -30,6 +34,8 @@ struct Manifest {
   device.mojom.ScreenOrientationLockType orientation;
 
   array<ManifestImageResource> icons;
+
+  array<ManifestImageResource> screenshots;
 
   array<ManifestShortcutItem> shortcuts;
 

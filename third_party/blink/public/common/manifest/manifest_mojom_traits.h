@@ -55,6 +55,16 @@ struct BLINK_COMMON_EXPORT
     return internal::TruncateOptionalString16(manifest.short_name);
   }
 
+  static base::Optional<base::StringPiece16> description(
+      const ::blink::Manifest& manifest) {
+    return internal::TruncateOptionalString16(manifest.description);
+  }
+
+  static const std::vector<base::string16>& categories(
+      const ::blink::Manifest& manifest) {
+    return manifest.categories;
+  }
+
   static base::Optional<base::StringPiece16> gcm_sender_id(
       const ::blink::Manifest& manifest) {
     return internal::TruncateOptionalString16(manifest.gcm_sender_id);
@@ -101,6 +111,11 @@ struct BLINK_COMMON_EXPORT
   static const std::vector<::blink::Manifest::ImageResource>& icons(
       const ::blink::Manifest& manifest) {
     return manifest.icons;
+  }
+
+  static const std::vector<::blink::Manifest::ImageResource>& screenshots(
+      const ::blink::Manifest& manifest) {
+    return manifest.screenshots;
   }
 
   static const std::vector<::blink::Manifest::ShortcutItem>& shortcuts(

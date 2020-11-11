@@ -55,6 +55,13 @@ bool StructTraits<blink::mojom::ManifestDataView, ::blink::Manifest>::Read(
     return false;
   out->short_name = std::move(string.string);
 
+  if (!data.ReadDescription(&string))
+    return false;
+  out->description = std::move(string.string);
+
+  if (!data.ReadCategories(&out->categories))
+    return false;
+
   if (!data.ReadGcmSenderId(&string))
     return false;
   out->gcm_sender_id = std::move(string.string);
@@ -63,6 +70,9 @@ bool StructTraits<blink::mojom::ManifestDataView, ::blink::Manifest>::Read(
     return false;
 
   if (!data.ReadIcons(&out->icons))
+    return false;
+
+  if (!data.ReadScreenshots(&out->screenshots))
     return false;
 
   if (!data.ReadShortcuts(&out->shortcuts))
