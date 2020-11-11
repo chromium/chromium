@@ -23,10 +23,12 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "content/browser/site_instance_impl.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/render_view_host.h"
+#include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
@@ -1615,6 +1617,19 @@ IN_PROC_BROWSER_TEST_F(CrossSiteDocumentBlockingIsolatedOriginTest,
   ASSERT_TRUE(ExecuteScriptAndExtractBool(
       shell(), "sendRequest(\"valid.html\");", &was_blocked));
   EXPECT_TRUE(was_blocked);
+}
+
+IN_PROC_BROWSER_TEST_F(ContentBrowserTest, CorpVsBrowserInitiatedRequest) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL test_url =
+      embedded_test_server()->GetURL("/site_isolation/png-corp.png");
+
+  BrowserContext* browser_context =
+      shell()->web_contents()->GetBrowserContext();
+  StoragePartition* partition =
+      BrowserContext::GetDefaultStoragePartition(browser_context);
+  ASSERT_EQ(net::OK,
+            LoadBasicRequest(partition->GetNetworkContext(), test_url));
 }
 
 }  // namespace content

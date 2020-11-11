@@ -145,6 +145,18 @@ base::Optional<mojom::BlockedByResponseReason> IsBlockedInternal(
     mojom::RequestMode request_mode,
     base::Optional<url::Origin> request_initiator_origin_lock,
     mojom::CrossOriginEmbedderPolicyValue embedder_policy) {
+  // Browser-initiated requests are not subject to Cross-Origin-Resource-Policy.
+  if (!request_initiator.has_value()) {
+    // The DCHECK further confirm that this is a browser-initiated request.
+    // Note also CorsURLLoaderFactory::IsValidRequest which rejects
+    // renderer-initiated requests without a |request_initiator| and/or without
+    // a |request_initiator_origin_lock| via
+    // InitiatorLockCompatibility::kNoInitiator and
+    // InitiatorLockCompatibility::kNoLock cases.
+    DCHECK(!request_initiator_origin_lock.has_value());
+    return base::nullopt;
+  }
+
   // COEP https://mikewest.github.io/corpp/#corp-check
   bool upgrade_to_same_origin = false;
   if ((policy == CrossOriginResourcePolicy::kNoHeader ||
