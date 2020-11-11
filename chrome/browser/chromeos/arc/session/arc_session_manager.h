@@ -25,6 +25,7 @@
 #include "components/arc/mojom/auth.mojom.h"
 #include "components/arc/session/arc_session_runner.h"
 #include "components/arc/session/arc_stop_reason.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 class ArcAppLauncher;
 class PrefService;
@@ -44,6 +45,7 @@ class ArcTermsOfServiceNegotiator;
 class ArcUiAvailabilityReporter;
 
 enum class ProvisioningResult : int;
+enum class ArcStopReason;
 
 // This class is responsible for handing stages of ARC life-cycle.
 class ArcSessionManager : public ArcSessionRunner::Observer,
@@ -210,8 +212,12 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
   // On provisioning completion (regardless of whether successfully done or
   // not), this is called with its status. On success, called with
   // ProvisioningResult::SUCCESS, otherwise |result| is the error reason.
-  void OnProvisioningFinished(ProvisioningResult result,
-                              mojom::ArcSignInErrorPtr error);
+  // |error| either contains the sign-in error that came from ARC or it may
+  // indicate that ARC stopped prematurely and provisioning could not finish
+  // successfully.
+  void OnProvisioningFinished(
+      ProvisioningResult result,
+      absl::variant<mojom::ArcSignInErrorPtr, ArcStopReason> error);
 
   // A helper function that calls ArcSessionRunner's SetUserInfo.
   void SetUserInfo();

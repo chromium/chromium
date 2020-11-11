@@ -158,41 +158,28 @@ std::ostream& operator<<(std::ostream& os, ArcSupportHost::UIPage ui_page) {
 }
 
 std::ostream& operator<<(std::ostream& os, ArcSupportHost::Error error) {
+#define MAP_ERROR(name)             \
+  case ArcSupportHost::Error::name: \
+    return os << #name
   switch (error) {
-    case ArcSupportHost::Error::SIGN_IN_NETWORK_ERROR:
-      return os << "SIGN_IN_NETWORK_ERROR";
-    case ArcSupportHost::Error::SIGN_IN_SERVICE_UNAVAILABLE_ERROR:
-      return os << "SIGN_IN_SERVICE_UNAVAILABLE_ERROR";
-    case ArcSupportHost::Error::SIGN_IN_BAD_AUTHENTICATION_ERROR:
-      return os << "SIGN_IN_BAD_AUTHENTICATION_ERROR";
-    case ArcSupportHost::Error::SIGN_IN_GMS_NOT_AVAILABLE_ERROR:
-      return os << "SIGN_IN_GMS_NOT_AVAILABLE_ERROR";
-    case ArcSupportHost::Error::
-        SIGN_IN_CLOUD_PROVISION_FLOW_ACCOUNT_MISSING_ERROR:
-      return os << "SIGN_IN_CLOUD_PROVISION_FLOW_ACCOUNT_MISSING_ERROR";
-    case ArcSupportHost::Error::
-        SIGN_IN_CLOUD_PROVISION_FLOW_DOMAIN_JOIN_FAIL_ERROR:
-      return os << "SIGN_IN_CLOUD_PROVISION_FLOW_DOMAIN_JOIN_FAIL_ERROR";
-    case ArcSupportHost::Error::
-        SIGN_IN_CLOUD_PROVISION_FLOW_ENROLLMENT_TOKEN_INVALID:
-      return os << "SIGN_IN_CLOUD_PROVISION_FLOW_ENROLLMENT_TOKEN_INVALID";
-    case ArcSupportHost::Error::SIGN_IN_CLOUD_PROVISION_FLOW_INTERRUPTED_ERROR:
-      return os << "SIGN_IN_CLOUD_PROVISION_FLOW_INTERRUPTED_ERROR";
-    case ArcSupportHost::Error::SIGN_IN_CLOUD_PROVISION_FLOW_NETWORK_ERROR:
-      return os << "SIGN_IN_CLOUD_PROVISION_FLOW_NETWORK_ERROR";
-    case ArcSupportHost::Error::SIGN_IN_CLOUD_PROVISION_FLOW_PERMANENT_ERROR:
-      return os << "SIGN_IN_CLOUD_PROVISION_FLOW_PERMANENT_ERROR";
-    case ArcSupportHost::Error::SIGN_IN_CLOUD_PROVISION_FLOW_TRANSIENT_ERROR:
-      return os << "SIGN_IN_CLOUD_PROVISION_FLOW_TRANSIENT_ERROR";
-    case ArcSupportHost::Error::SIGN_IN_UNKNOWN_ERROR:
-      return os << "SIGN_IN_UNKNOWN_ERROR";
-    case ArcSupportHost::Error::SERVER_COMMUNICATION_ERROR:
-      return os << "SERVER_COMMUNICATION_ERROR";
-    case ArcSupportHost::Error::ANDROID_MANAGEMENT_REQUIRED_ERROR:
-      return os << "ANDROID_MANAGEMENT_REQUIRED_ERROR";
-    case ArcSupportHost::Error::NETWORK_UNAVAILABLE_ERROR:
-      return os << "NETWORK_UNAVAILABLE_ERROR";
+    MAP_ERROR(SIGN_IN_NETWORK_ERROR);
+    MAP_ERROR(SIGN_IN_SERVICE_UNAVAILABLE_ERROR);
+    MAP_ERROR(SIGN_IN_BAD_AUTHENTICATION_ERROR);
+    MAP_ERROR(SIGN_IN_GMS_NOT_AVAILABLE_ERROR);
+    MAP_ERROR(SIGN_IN_CLOUD_PROVISION_FLOW_ACCOUNT_MISSING_ERROR);
+    MAP_ERROR(SIGN_IN_CLOUD_PROVISION_FLOW_DOMAIN_JOIN_FAIL_ERROR);
+    MAP_ERROR(SIGN_IN_CLOUD_PROVISION_FLOW_ENROLLMENT_TOKEN_INVALID);
+    MAP_ERROR(SIGN_IN_CLOUD_PROVISION_FLOW_INTERRUPTED_ERROR);
+    MAP_ERROR(SIGN_IN_CLOUD_PROVISION_FLOW_NETWORK_ERROR);
+    MAP_ERROR(SIGN_IN_CLOUD_PROVISION_FLOW_PERMANENT_ERROR);
+    MAP_ERROR(SIGN_IN_CLOUD_PROVISION_FLOW_TRANSIENT_ERROR);
+    MAP_ERROR(SIGN_IN_UNKNOWN_ERROR);
+    MAP_ERROR(SERVER_COMMUNICATION_ERROR);
+    MAP_ERROR(ANDROID_MANAGEMENT_REQUIRED_ERROR);
+    MAP_ERROR(NETWORK_UNAVAILABLE_ERROR);
+    MAP_ERROR(LOW_DISK_SPACE_ERROR);
   }
+#undef MAP_STATE
 
   // Some compiler reports an error even if all values of an enum-class are
   // covered indivisually in a switch statement.
@@ -393,7 +380,8 @@ void ArcSupportHost::ShowError(Error error,
           base::NumberToString16(error_code));
       break;
     case Error::SIGN_IN_UNKNOWN_ERROR:
-      message = l10n_util::GetStringUTF16(IDS_ARC_SIGN_IN_UNKNOWN_ERROR);
+      message = l10n_util::GetStringFUTF16(IDS_ARC_SIGN_IN_UNKNOWN_ERROR,
+                                           base::NumberToString16(error_code));
       break;
     case Error::SERVER_COMMUNICATION_ERROR:
       message = l10n_util::GetStringUTF16(IDS_ARC_SERVER_COMMUNICATION_ERROR);
@@ -404,6 +392,9 @@ void ArcSupportHost::ShowError(Error error,
       break;
     case Error::NETWORK_UNAVAILABLE_ERROR:
       message = l10n_util::GetStringUTF16(IDS_ARC_NETWORK_UNAVAILABLE_ERROR);
+      break;
+    case Error::LOW_DISK_SPACE_ERROR:
+      message = l10n_util::GetStringUTF16(IDS_ARC_LOW_DISK_SPACE_ERROR);
       break;
   }
   message_args.SetString(kErrorMessage, message);

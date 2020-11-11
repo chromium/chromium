@@ -4122,8 +4122,11 @@
   <message name="IDS_ARC_SIGN_IN_CLOUD_PROVISION_FLOW_TRANSIENT_ERROR" desc="Android transient sign-in error because of cloud provision flow failed">
     Something went wrong. Please try again or contact your device owner or administrator. Error code: <ph name="ERROR_CODE">$1<ex>7</ex></ph>.
   </message>
+  <message name="IDS_ARC_LOW_DISK_SPACE_ERROR" desc="Android sign-in failed due to low disk space">
+    Disk space is critically low. Please free up disk space.
+  </message>
   <message name="IDS_ARC_SIGN_IN_UNKNOWN_ERROR" desc="Android sign-in error because of unknown error">
-    Something went wrong
+    Something went wrong. Error code: <ph name="ERROR_CODE">$1<ex>7</ex></ph>.
   </message>
   <message name="IDS_ARC_SERVER_COMMUNICATION_ERROR" desc="Android sign-in error because of server communication error">
     Couldn’t connect with the server. Please check your network connection and try again. If the problem persists, restart your Chromebook.

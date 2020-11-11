@@ -125,8 +125,7 @@ TEST_F(ArcProvisionNotificationServiceTest,
   EXPECT_EQ(ArcSessionManager::State::ACTIVE, arc_session_manager_->state());
 
   // Emulate successful provisioning. The notification gets removed.
-  arc_session_manager_->OnProvisioningFinished(ProvisioningResult::SUCCESS,
-                                               nullptr);
+  arc_session_manager_->OnProvisioningFinished(ProvisioningResult::SUCCESS, {});
   EXPECT_FALSE(
       display_service_->GetNotification(kArcManagedProvisionNotificationId));
 }
@@ -157,8 +156,7 @@ TEST_F(ArcProvisionNotificationServiceTest,
   EXPECT_FALSE(
       display_service_->GetNotification(kArcManagedProvisionNotificationId));
   EXPECT_EQ(ArcSessionManager::State::ACTIVE, arc_session_manager_->state());
-  arc_session_manager_->OnProvisioningFinished(ProvisioningResult::SUCCESS,
-                                               nullptr);
+  arc_session_manager_->OnProvisioningFinished(ProvisioningResult::SUCCESS, {});
   EXPECT_FALSE(
       display_service_->GetNotification(kArcManagedProvisionNotificationId));
 }
@@ -190,7 +188,7 @@ TEST_F(ArcProvisionNotificationServiceTest,
   // Emulate provisioning failure that leads to stopping ARC. The notification
   // gets removed.
   arc_session_manager_->OnProvisioningFinished(
-      ProvisioningResult::CHROME_SERVER_COMMUNICATION_ERROR, nullptr);
+      ProvisioningResult::CHROME_SERVER_COMMUNICATION_ERROR, {});
   EXPECT_FALSE(
       display_service_->GetNotification(kArcManagedProvisionNotificationId));
 }
@@ -222,7 +220,7 @@ TEST_F(ArcProvisionNotificationServiceTest,
   // Emulate provisioning failure that leads to showing an error screen without
   // shutting ARC down. The notification gets removed.
   arc_session_manager_->OnProvisioningFinished(
-      ProvisioningResult::NO_NETWORK_CONNECTION, nullptr);
+      ProvisioningResult::NO_NETWORK_CONNECTION, {});
   EXPECT_FALSE(
       display_service_->GetNotification(kArcManagedProvisionNotificationId));
 }
@@ -253,8 +251,7 @@ TEST_F(ArcProvisionNotificationServiceTest,
   // Emulate successful provisioning.
   EXPECT_FALSE(
       display_service_->GetNotification(kArcManagedProvisionNotificationId));
-  arc_session_manager_->OnProvisioningFinished(ProvisioningResult::SUCCESS,
-                                               nullptr);
+  arc_session_manager_->OnProvisioningFinished(ProvisioningResult::SUCCESS, {});
   EXPECT_FALSE(
       display_service_->GetNotification(kArcManagedProvisionNotificationId));
 }
@@ -317,8 +314,7 @@ TEST_F(ArcProvisionNotificationServiceOobeTest,
   // Emulate successful provisioning.
   EXPECT_FALSE(
       display_service_->GetNotification(kArcManagedProvisionNotificationId));
-  arc_session_manager_->OnProvisioningFinished(ProvisioningResult::SUCCESS,
-                                               nullptr);
+  arc_session_manager_->OnProvisioningFinished(ProvisioningResult::SUCCESS, {});
   EXPECT_FALSE(
       display_service_->GetNotification(kArcManagedProvisionNotificationId));
 }

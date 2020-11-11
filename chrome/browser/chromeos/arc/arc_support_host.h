@@ -50,6 +50,7 @@ class ArcSupportHost : public arc::ArcSupportMessageHost::Observer,
     SIGN_IN_NETWORK_ERROR,
     SIGN_IN_SERVICE_UNAVAILABLE_ERROR,
     SIGN_IN_UNKNOWN_ERROR,
+    LOW_DISK_SPACE_ERROR
   };
 
   // Delegate to handle authentication related events. Currently used for Active

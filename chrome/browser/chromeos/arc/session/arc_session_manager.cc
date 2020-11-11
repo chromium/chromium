@@ -295,11 +295,24 @@ int GetSignInErrorCode(arc::mojom::ArcSignInErrorPtr signin_error) {
   if (!signin_error)
     return 0;
 
-  if (signin_error->is_cloud_provision_flow_error())
-    return static_cast<std::underlying_type_t<mojom::CloudProvisionFlowError>>(
-        signin_error->get_cloud_provision_flow_error());
+#define IF_ERROR_RETURN_CODE(name, type)                          \
+  if (signin_error->is_##name()) {                                \
+    return static_cast<std::underlying_type_t<arc::mojom::type>>( \
+        signin_error->get_##name());                              \
+  }
 
-  return 0;
+  IF_ERROR_RETURN_CODE(cloud_provision_flow_error, CloudProvisionFlowError)
+  IF_ERROR_RETURN_CODE(general_error, GeneralSignInError)
+  IF_ERROR_RETURN_CODE(checkin_error, DeviceCheckInError)
+  IF_ERROR_RETURN_CODE(gms_error, GMSError)
+#undef IF_ERROR_RETURN_CODE
+
+  LOG(ERROR) << "Unknown sign-in error "
+             << std::underlying_type_t<arc::mojom::ArcSignInError::Tag>(
+                    signin_error->which())
+             << ".";
+
+  return -1;
 }
 
 ArcSupportHost::Error GetCloudProvisionFlowError(
@@ -535,9 +548,8 @@ void ArcSessionManager::OnSessionStopped(ArcStopReason reason,
   DCHECK(state_ == State::ACTIVE || state_ == State::STOPPING) << state_;
   state_ = State::STOPPED;
 
-  // TODO(crbug.com/625923): Use |reason| to report more detailed errors.
   if (arc_sign_in_timer_.IsRunning())
-    OnProvisioningFinished(ProvisioningResult::ARC_STOPPED, nullptr);
+    OnProvisioningFinished(ProvisioningResult::ARC_STOPPED, reason);
 
   for (auto& observer : observer_list_)
     observer.OnArcSessionStopped(reason);
@@ -552,19 +564,24 @@ void ArcSessionManager::OnSessionRestarting() {
 
 void ArcSessionManager::OnProvisioningFinished(
     ProvisioningResult result,
-    mojom::ArcSignInErrorPtr signin_error) {
+    absl::variant<mojom::ArcSignInErrorPtr, ArcStopReason> error) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   // If the Mojo message to notify finishing the provisioning is already sent
   // from the container, it will be processed even after requesting to stop the
   // container. Ignore all |result|s arriving while ARC is disabled, in order to
   // avoid popping up an error message triggered below. This code intentionally
-  // does not support the case of reenabling.
+  // does not support the case of re-enabling.
   if (!enable_requested_) {
     LOG(WARNING) << "Provisioning result received after ARC was disabled. "
                  << "Ignoring result " << static_cast<int>(result) << ".";
     return;
   }
+
+  mojom::ArcSignInErrorPtr signin_error =
+      absl::holds_alternative<mojom::ArcSignInErrorPtr>(error)
+          ? std::move(absl::get<mojom::ArcSignInErrorPtr>(error))
+          : nullptr;
 
   // Due asynchronous nature of stopping the ARC instance,
   // OnProvisioningFinished may arrive after setting the |State::STOPPED| state
@@ -612,9 +629,10 @@ void ArcSessionManager::OnProvisioningFinished(
     UpdateProvisioningTiming(base::TimeTicks::Now() - sign_in_start_time_,
                              provisioning_successful, profile_);
     UpdateProvisioningResultUMA(result, profile_);
-    if (signin_error && signin_error->is_cloud_provision_flow_error())
+    if (signin_error && signin_error->is_cloud_provision_flow_error()) {
       UpdateCloudProvisionFlowErrorUMA(
           signin_error->get_cloud_provision_flow_error(), profile_);
+    }
 
     if (!provisioning_successful)
       UpdateOptInCancelUMA(OptInCancelReason::PROVISIONING_FAILED);
@@ -654,42 +672,49 @@ void ArcSessionManager::OnProvisioningFinished(
     return;
   }
 
-  ArcSupportHost::Error error;
+  ArcSupportHost::Error support_error;
   VLOG(1) << "ARC provisioning failed: " << result << ".";
   switch (result) {
     case ProvisioningResult::GMS_NETWORK_ERROR:
-      error = ArcSupportHost::Error::SIGN_IN_NETWORK_ERROR;
+      support_error = ArcSupportHost::Error::SIGN_IN_NETWORK_ERROR;
       break;
     case ProvisioningResult::GMS_SERVICE_UNAVAILABLE:
     case ProvisioningResult::GMS_SIGN_IN_FAILED:
     case ProvisioningResult::GMS_SIGN_IN_TIMEOUT:
     case ProvisioningResult::GMS_SIGN_IN_INTERNAL_ERROR:
-      error = ArcSupportHost::Error::SIGN_IN_SERVICE_UNAVAILABLE_ERROR;
+      support_error = ArcSupportHost::Error::SIGN_IN_SERVICE_UNAVAILABLE_ERROR;
       break;
     case ProvisioningResult::GMS_BAD_AUTHENTICATION:
-      error = ArcSupportHost::Error::SIGN_IN_BAD_AUTHENTICATION_ERROR;
+      support_error = ArcSupportHost::Error::SIGN_IN_BAD_AUTHENTICATION_ERROR;
       break;
     case ProvisioningResult::DEVICE_CHECK_IN_FAILED:
     case ProvisioningResult::DEVICE_CHECK_IN_TIMEOUT:
     case ProvisioningResult::DEVICE_CHECK_IN_INTERNAL_ERROR:
-      error = ArcSupportHost::Error::SIGN_IN_GMS_NOT_AVAILABLE_ERROR;
+      support_error = ArcSupportHost::Error::SIGN_IN_GMS_NOT_AVAILABLE_ERROR;
       break;
     case ProvisioningResult::CLOUD_PROVISION_FLOW_ERROR:
       DCHECK(signin_error && signin_error->is_cloud_provision_flow_error());
-      error = GetCloudProvisionFlowError(
+      support_error = GetCloudProvisionFlowError(
           signin_error->get_cloud_provision_flow_error());
       break;
     case ProvisioningResult::CHROME_SERVER_COMMUNICATION_ERROR:
-      error = ArcSupportHost::Error::SERVER_COMMUNICATION_ERROR;
+      support_error = ArcSupportHost::Error::SERVER_COMMUNICATION_ERROR;
       break;
     case ProvisioningResult::NO_NETWORK_CONNECTION:
-      error = ArcSupportHost::Error::NETWORK_UNAVAILABLE_ERROR;
+      support_error = ArcSupportHost::Error::NETWORK_UNAVAILABLE_ERROR;
       break;
     case ProvisioningResult::ARC_DISABLED:
-      error = ArcSupportHost::Error::ANDROID_MANAGEMENT_REQUIRED_ERROR;
+      support_error = ArcSupportHost::Error::ANDROID_MANAGEMENT_REQUIRED_ERROR;
+      break;
+    case ProvisioningResult::ARC_STOPPED:
+      DCHECK(absl::holds_alternative<ArcStopReason>(error));
+      support_error =
+          absl::get<ArcStopReason>(error) == ArcStopReason::LOW_DISK_SPACE
+              ? ArcSupportHost::Error::LOW_DISK_SPACE_ERROR
+              : ArcSupportHost::Error::SIGN_IN_UNKNOWN_ERROR;
       break;
     default:
-      error = ArcSupportHost::Error::SIGN_IN_UNKNOWN_ERROR;
+      support_error = ArcSupportHost::Error::SIGN_IN_UNKNOWN_ERROR;
       break;
   }
 
@@ -703,8 +728,6 @@ void ArcSessionManager::OnProvisioningFinished(
       profile_->GetPrefs()->SetBoolean(prefs::kArcSignedIn, false);
     VLOG(1) << "Stopping ARC due to provisioning failure";
     ShutdownSession();
-    ShowArcSupportHostError(error, 0 /* error_code */, true);
-    return;
   }
 
   if (result == ProvisioningResult::CLOUD_PROVISION_FLOW_ERROR ||
@@ -717,10 +740,18 @@ void ArcSessionManager::OnProvisioningFinished(
     RequestArcDataRemoval();
   }
 
-  // We'll delay shutting down the ARC instance in this case to allow people
-  // to send feedback.
-  int error_code = GetSignInErrorCode(std::move(signin_error));
-  ShowArcSupportHostError(error, error_code,
+  int error_code;
+  if (support_error == ArcSupportHost::Error::SIGN_IN_UNKNOWN_ERROR) {
+    error_code =
+        static_cast<std::underlying_type_t<ProvisioningResult>>(result);
+  } else if (signin_error) {
+    error_code = GetSignInErrorCode(std::move(signin_error));
+  } else {
+    error_code = 0;
+  }
+  // TODO(mhasank): Introduce a struct that encapsulates error with an optional
+  // argument
+  ShowArcSupportHostError(support_error, error_code,
                           true /* = show send feedback button */);
 }
 
@@ -904,7 +935,7 @@ void ArcSessionManager::StopAndEnableArc() {
 
 void ArcSessionManager::OnArcSignInTimeout() {
   LOG(ERROR) << "Timed out waiting for first sign in.";
-  OnProvisioningFinished(ProvisioningResult::OVERALL_SIGN_IN_TIMEOUT, nullptr);
+  OnProvisioningFinished(ProvisioningResult::OVERALL_SIGN_IN_TIMEOUT, {});
 }
 
 void ArcSessionManager::CancelAuthCode() {
@@ -1558,7 +1589,7 @@ void ArcSessionManager::ShowArcSupportHostError(
   if (support_host_)
     support_host_->ShowError(error, error_code, should_show_send_feedback);
   for (auto& observer : observer_list_)
-    observer.OnArcErrorShowRequested(error);
+    observer.OnArcErrorShowRequested(error, error_code);
 }
 
 void ArcSessionManager::EmitLoginPromptVisibleCalled() {
