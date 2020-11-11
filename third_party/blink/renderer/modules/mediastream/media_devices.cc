@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/navigator.h"
 #include "third_party/blink/renderer/modules/mediastream/identifiability_metrics.h"
 #include "third_party/blink/renderer/modules/mediastream/input_device_info.h"
 #include "third_party/blink/renderer/modules/mediastream/media_error_state.h"
@@ -64,10 +65,23 @@ class PromiseResolverCallbacks final : public UserMediaRequest::Callbacks {
 
 }  // namespace
 
-MediaDevices::MediaDevices(ExecutionContext* context)
-    : ExecutionContextLifecycleObserver(context),
+const char MediaDevices::kSupplementName[] = "MediaDevices";
+
+MediaDevices* MediaDevices::mediaDevices(Navigator& navigator) {
+  MediaDevices* supplement =
+      Supplement<Navigator>::From<MediaDevices>(navigator);
+  if (!supplement) {
+    supplement = MakeGarbageCollected<MediaDevices>(navigator);
+    ProvideTo(navigator, supplement);
+  }
+  return supplement;
+}
+
+MediaDevices::MediaDevices(Navigator& navigator)
+    : Supplement<Navigator>(navigator),
+      ExecutionContextLifecycleObserver(navigator.DomWindow()),
       stopped_(false),
-      receiver_(this, context) {}
+      receiver_(this, navigator.DomWindow()) {}
 
 MediaDevices::~MediaDevices() = default;
 
@@ -420,6 +434,7 @@ void MediaDevices::Trace(Visitor* visitor) const {
   visitor->Trace(receiver_);
   visitor->Trace(scheduled_events_);
   visitor->Trace(requests_);
+  Supplement<Navigator>::Trace(visitor);
   EventTargetWithInlineData::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
 }

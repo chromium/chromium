@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_stream_constraints.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/testing/null_execution_context.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
@@ -166,9 +167,9 @@ class MediaDevicesTest : public testing::Test {
     dispatcher_host_ = std::make_unique<MockMediaDevicesDispatcherHost>();
   }
 
-  MediaDevices* GetMediaDevices(ExecutionContext* context) {
+  MediaDevices* GetMediaDevices(LocalDOMWindow& window) {
     if (!media_devices_) {
-      media_devices_ = MakeGarbageCollected<MediaDevices>(context);
+      media_devices_ = MakeGarbageCollected<MediaDevices>(*window.navigator());
       media_devices_->SetDispatcherHostForTesting(
           dispatcher_host_->CreatePendingRemoteAndBind());
     }
@@ -239,7 +240,7 @@ TEST_F(MediaDevicesTest, GetUserMediaCanBeCalled) {
   V8TestingScope scope;
   MediaStreamConstraints* constraints = MediaStreamConstraints::Create();
   ScriptPromise promise =
-      GetMediaDevices(scope.GetExecutionContext())
+      GetMediaDevices(scope.GetWindow())
           ->getUserMedia(scope.GetScriptState(), constraints,
                          scope.GetExceptionState());
   ASSERT_TRUE(promise.IsEmpty());
@@ -251,7 +252,7 @@ TEST_F(MediaDevicesTest, GetUserMediaCanBeCalled) {
 
 TEST_F(MediaDevicesTest, EnumerateDevices) {
   V8TestingScope scope;
-  auto* media_devices = GetMediaDevices(scope.GetExecutionContext());
+  auto* media_devices = GetMediaDevices(scope.GetWindow());
   media_devices->SetEnumerateDevicesCallbackForTesting(
       WTF::Bind(&MediaDevicesTest::DevicesEnumerated, WTF::Unretained(this)));
   ScriptPromise promise = media_devices->enumerateDevices(
@@ -304,7 +305,7 @@ TEST_F(MediaDevicesTest, EnumerateDevices) {
 
 TEST_F(MediaDevicesTest, EnumerateDevicesAfterConnectionError) {
   V8TestingScope scope;
-  auto* media_devices = GetMediaDevices(scope.GetExecutionContext());
+  auto* media_devices = GetMediaDevices(scope.GetWindow());
   media_devices->SetEnumerateDevicesCallbackForTesting(
       WTF::Bind(&MediaDevicesTest::DevicesEnumerated, WTF::Unretained(this)));
   media_devices->SetConnectionErrorCallbackForTesting(
@@ -326,7 +327,7 @@ TEST_F(MediaDevicesTest, EnumerateDevicesAfterConnectionError) {
 
 TEST_F(MediaDevicesTest, EnumerateDevicesBeforeConnectionError) {
   V8TestingScope scope;
-  auto* media_devices = GetMediaDevices(scope.GetExecutionContext());
+  auto* media_devices = GetMediaDevices(scope.GetWindow());
   media_devices->SetEnumerateDevicesCallbackForTesting(
       WTF::Bind(&MediaDevicesTest::DevicesEnumerated, WTF::Unretained(this)));
   media_devices->SetConnectionErrorCallbackForTesting(
@@ -348,7 +349,7 @@ TEST_F(MediaDevicesTest, EnumerateDevicesBeforeConnectionError) {
 
 TEST_F(MediaDevicesTest, ObserveDeviceChangeEvent) {
   V8TestingScope scope;
-  auto* media_devices = GetMediaDevices(scope.GetExecutionContext());
+  auto* media_devices = GetMediaDevices(scope.GetWindow());
   media_devices->SetDeviceChangeCallbackForTesting(
       WTF::Bind(&MediaDevicesTest::OnDevicesChanged, WTF::Unretained(this)));
   EXPECT_FALSE(listener());

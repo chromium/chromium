@@ -74,8 +74,6 @@ blink_modules_sources("mediastream") {
     "media_stream_video_track_underlying_source.h",
     "navigator_media_stream.cc",
     "navigator_media_stream.h",
-    "navigator_user_media.cc",
-    "navigator_user_media.h",
     "overconstrained_error.cc",
     "overconstrained_error.h",
     "processed_local_audio_source.cc",
