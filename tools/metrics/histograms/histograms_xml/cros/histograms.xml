@@ -84,7 +84,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="CrosDisksClient.FormatCompletedError"
-    enum="CrosDisksClientFormatError" expires_after="2021-03-07">
+    enum="CrosDisksClientFormatError" expires_after="2021-05-09">
   <owner>austinct@chromium.org</owner>
   <summary>
     The error code of disk format signals received from the Chrome OS cros-disks

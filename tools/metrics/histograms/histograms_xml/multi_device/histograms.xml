@@ -86,7 +86,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="MultiDevice.DeviceSyncService.SetSoftwareFeatureState.Result"
-    enum="BooleanSuccess" expires_after="2021-02-02">
+    enum="BooleanSuccess" expires_after="2021-05-09">
   <owner>vecore@google.com</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>Result of enabling and disabling features for devices.</summary>
