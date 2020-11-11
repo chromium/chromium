@@ -48,6 +48,41 @@
 // Records metrics for when a user opens the Send Feedback form.
 - (void)recordTapSendFeedback;
 
+// Records metrics for when a user opens the back of card menu.
+- (void)recordOpenBackOfCardMenu;
+
+// Records metrics for when a user closes the back of card menu.
+- (void)recordCloseBackOfCardMenu;
+
+// Records metrics for when a user opens the native back of card menu.
+- (void)recordOpenNativeBackOfCardMenu;
+
+// Records metrics for when a user displayed a Dialog (e.g. Report content
+// dialog.)
+- (void)recordShowDialog;
+
+// Records metrics for when a user dismissed a Dialog (e.g. Report content
+// dialog.)
+- (void)recordDismissDialog;
+
+// Records metrics for when a user dismissed a card (e.g. Hide story, not
+// interested in, etc.)
+- (void)recordDismissCard;
+
+// Records metrics for when a user undos a dismissed card (e.g. Tapping Undo in
+// the Snackbar)
+- (void)recordUndoDismissCard;
+
+// Records metrics for when a user committs to a dismissed card (e.g. Undo
+// snackbar was dismissed, so Undo can no longer happen.)
+- (void)recordCommittDismissCard;
+
+// Records metrics for when a Snackbar has been shown.
+- (void)recordShowSnackbar;
+
+// Records an unknown |commandID| performed by the Feed.
+- (void)recordCommandID:(int)commandID;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_DISCOVER_FEED_METRICS_RECORDER_H_

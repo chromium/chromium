@@ -62,11 +62,14 @@ enum class FeedUserActionType {
   kTappedDownload = 7,
   // User opened the article in a new tab from the back of card menu.
   kTappedOpenInNewTab = 8,
+  // User opened the back of card menu.
   kOpenedContextMenu = 9,
   kOpenedFeedSurface = 10,
   // User opened the article in an incognito tab from the back of card menu.
   kTappedOpenInNewIncognitoTab = 11,
+  // Ephemeral change, likely due to hide story or not interested in.
   kEphemeralChange = 12,
+  // Ephemeral change undone, likely due to pressing 'undo' on the snackbar.
   kEphemeralChangeRejected = 13,
   // Discover feed visibility toggled from header menu.
   kTappedTurnOn = 14,
@@ -120,6 +123,10 @@ const char kDiscoverFeedUserActionReadLaterTapped[] =
     "ContentSuggestions.Feed.CardAction.ReadLater";
 const char kDiscoverFeedUserActionSendFeedbackOpened[] =
     "ContentSuggestions.Feed.CardAction.SendFeedback";
+const char kDiscoverFeedUserActionContextMenuOpened[] =
+    "ContentSuggestions.Feed.CardAction.ContextMenu";
+const char kDiscoverFeedUserActionHideStory[] =
+    "ContentSuggestions.Feed.CardAction.HideStory";
 
 // User action names for feed header menu.
 const char kDiscoverFeedUserActionManageActivityTapped[] =
@@ -245,6 +252,52 @@ const int kMinutesBetweenSessions = 5;
                                                   kTappedSendFeedback];
   base::RecordAction(
       base::UserMetricsAction(kDiscoverFeedUserActionSendFeedbackOpened));
+}
+
+- (void)recordOpenBackOfCardMenu {
+  [self recordDiscoverFeedUserActionHistogram:FeedUserActionType::
+                                                  kOpenedContextMenu];
+  base::RecordAction(
+      base::UserMetricsAction(kDiscoverFeedUserActionContextMenuOpened));
+}
+
+- (void)recordCloseBackOfCardMenu {
+  // TODO(crbug.com/1145379): Create metrics and log them.
+}
+
+- (void)recordOpenNativeBackOfCardMenu {
+  // TODO(crbug.com/1145379): Create metrics and log them.
+}
+
+- (void)recordShowDialog {
+  // TODO(crbug.com/1145379): Create metrics and log them.
+}
+
+- (void)recordDismissDialog {
+  // TODO(crbug.com/1145379): Create metrics and log them.
+}
+
+- (void)recordDismissCard {
+  [self recordDiscoverFeedUserActionHistogram:FeedUserActionType::
+                                                  kEphemeralChange];
+  base::RecordAction(base::UserMetricsAction(kDiscoverFeedUserActionHideStory));
+}
+
+- (void)recordUndoDismissCard {
+  [self recordDiscoverFeedUserActionHistogram:FeedUserActionType::
+                                                  kEphemeralChangeRejected];
+}
+
+- (void)recordCommittDismissCard {
+  // TODO(crbug.com/1145379): Create metrics and log them.
+}
+
+- (void)recordShowSnackbar {
+  // TODO(crbug.com/1145379): Create metrics and log them.
+}
+
+- (void)recordCommandID:(int)commandID {
+  // TODO(crbug.com/1145379): Create metrics and log them.
 }
 
 #pragma mark - Private
