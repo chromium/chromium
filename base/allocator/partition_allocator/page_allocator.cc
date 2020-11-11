@@ -100,7 +100,10 @@ void* SystemAllocPages(void* hint,
   PA_DCHECK(!(length & PageAllocationGranularityOffsetMask()));
   PA_DCHECK(!(reinterpret_cast<uintptr_t>(hint) &
               PageAllocationGranularityOffsetMask()));
+  // TODO(bartekn): Remove the commit functionality, as it is equivalent to
+  // |accessibility != PageInaccessible|.
   PA_DCHECK(commit || accessibility == PageInaccessible);
+  PA_DCHECK(!commit || accessibility != PageInaccessible);
   void* ptr =
       SystemAllocPagesInternal(hint, length, accessibility, page_tag, commit);
   if (ptr)

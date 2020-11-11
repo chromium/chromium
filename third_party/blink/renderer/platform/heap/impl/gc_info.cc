@@ -129,7 +129,7 @@ void GCInfoTable::Resize() {
 GCInfoTable::GCInfoTable() {
   table_ = reinterpret_cast<GCInfo const**>(base::AllocPages(
       nullptr, MaxTableSize(), base::PageAllocationGranularity(),
-      base::PageInaccessible, base::PageTag::kBlinkGC));
+      base::PageInaccessible, base::PageTag::kBlinkGC, false));
   CHECK(table_);
   Resize();
 }

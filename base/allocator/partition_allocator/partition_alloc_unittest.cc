@@ -1294,13 +1294,15 @@ TEST_F(PartitionAllocTest, MappingCollision) {
   page_base -= PartitionPageSize() - ReservedTagBitmapSize();
   // Map a single system page either side of the mapping for our allocations,
   // with the goal of tripping up alignment of the next mapping.
-  void* map1 = AllocPages(
-      page_base - PageAllocationGranularity(), PageAllocationGranularity(),
-      PageAllocationGranularity(), PageInaccessible, PageTag::kPartitionAlloc);
+  void* map1 =
+      AllocPages(page_base - PageAllocationGranularity(),
+                 PageAllocationGranularity(), PageAllocationGranularity(),
+                 PageInaccessible, PageTag::kPartitionAlloc, false);
   EXPECT_TRUE(map1);
-  void* map2 = AllocPages(
-      page_base + kSuperPageSize, PageAllocationGranularity(),
-      PageAllocationGranularity(), PageInaccessible, PageTag::kPartitionAlloc);
+  void* map2 =
+      AllocPages(page_base + kSuperPageSize, PageAllocationGranularity(),
+                 PageAllocationGranularity(), PageInaccessible,
+                 PageTag::kPartitionAlloc, false);
   EXPECT_TRUE(map2);
 
   for (i = 0; i < num_partition_pages_needed; ++i)

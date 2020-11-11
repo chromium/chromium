@@ -67,7 +67,7 @@ PageMemoryRegion* PageMemoryRegion::Allocate(size_t size,
   size = base::RoundUpToPageAllocationGranularity(size);
   Address base = static_cast<Address>(
       base::AllocPages(nullptr, size, kBlinkPageSize, base::PageInaccessible,
-                       base::PageTag::kBlinkGC));
+                       base::PageTag::kBlinkGC, false));
   if (!base)
     BlinkGCOutOfMemory();
   return new PageMemoryRegion(base, size, num_pages, region_tree);

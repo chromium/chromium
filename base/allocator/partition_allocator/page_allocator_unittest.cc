@@ -188,7 +188,7 @@ void SignalHandler(int signal, siginfo_t* info, void*) {
 TEST(PageAllocatorTest, InaccessiblePages) {
   void* buffer = AllocPages(nullptr, PageAllocationGranularity(),
                             PageAllocationGranularity(), PageInaccessible,
-                            PageTag::kChromium, true);
+                            PageTag::kChromium, false);
   EXPECT_TRUE(buffer);
 
   FAULT_TEST_BEGIN()
@@ -232,7 +232,7 @@ TEST(PageAllocatorTest, ReadExecutePages) {
 TEST(PageAllocatorTest, PageTagging) {
   void* buffer = AllocPages(nullptr, PageAllocationGranularity(),
                             PageAllocationGranularity(), PageInaccessible,
-                            PageTag::kChromium, true);
+                            PageTag::kChromium, false);
   EXPECT_TRUE(buffer);
 
   std::string proc_maps;
@@ -285,7 +285,7 @@ TEST(PageAllocatorTest, MappedPagesAccounting) {
   // Ask for a large alignment to make sure that trimming doesn't change the
   // accounting.
   void* data = AllocPages(nullptr, size, 128 * PageAllocationGranularity(),
-                          PageInaccessible, PageTag::kChromium, true);
+                          PageInaccessible, PageTag::kChromium, false);
   ASSERT_TRUE(data);
 
   EXPECT_EQ(mapped_size_before + size, GetTotalMappedSize());

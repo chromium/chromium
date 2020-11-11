@@ -40,6 +40,12 @@ void* SystemAllocPagesInternal(void* hint,
                                PageTag page_tag,
                                bool commit) {
   DWORD access_flag = GetAccessFlags(accessibility);
+  if (commit) {
+    PA_DCHECK(access_flag != PAGE_NOACCESS);
+  } else {
+    PA_DCHECK(access_flag == PAGE_NOACCESS);
+  }
+
   const DWORD type_flags = commit ? (MEM_RESERVE | MEM_COMMIT) : MEM_RESERVE;
   void* ret = VirtualAlloc(hint, length, type_flags, access_flag);
   if (ret == nullptr) {
