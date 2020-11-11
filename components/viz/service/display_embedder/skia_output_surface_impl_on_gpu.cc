@@ -905,6 +905,9 @@ void SkiaOutputSurfaceImplOnGpu::BeginAccessImages(
     std::vector<GrBackendSemaphore>* end_semaphores) {
   TRACE_EVENT0("viz", "SkiaOutputSurfaceImplOnGpu::BeginAccessImages");
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
+  bool is_gl = gpu_preferences_.gr_context_type == gpu::GrContextType::kGL;
+
   for (auto* context : image_contexts) {
     // Prepare for accessing render pass.
     if (context->render_pass_id()) {
@@ -924,6 +927,14 @@ void SkiaOutputSurfaceImplOnGpu::BeginAccessImages(
           dependency_->GetMailboxManager(), begin_semaphores, end_semaphores);
       if (context->end_access_state())
         image_contexts_with_end_access_state_.emplace(context);
+
+      // Texture parameters can be modified by concurrent reads so reset them
+      // before compositing from the texture. See https://crbug.com/1092080.
+      if (is_gl) {
+        GrBackendTexture backend_texture =
+            context->promise_image_texture()->backendTexture();
+        backend_texture.glTextureParametersModified();
+      }
     }
   }
 }

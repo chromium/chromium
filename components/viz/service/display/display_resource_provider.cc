@@ -586,11 +586,12 @@ GLenum DisplayResourceProvider::BindForSampling(ResourceId resource_id,
   ScopedSetActiveTexture scoped_active_tex(gl, unit);
   GLenum target = resource->transferable.mailbox_holder.texture_target;
   gl->BindTexture(target, resource->gl_id);
-  if (filter != resource->filter) {
-    gl->TexParameteri(target, GL_TEXTURE_MIN_FILTER, filter);
-    gl->TexParameteri(target, GL_TEXTURE_MAG_FILTER, filter);
-    resource->filter = filter;
-  }
+
+  // Texture parameters can be modified by concurrent reads so reset them
+  // before binding the texture. See https://crbug.com/1092080.
+  gl->TexParameteri(target, GL_TEXTURE_MIN_FILTER, filter);
+  gl->TexParameteri(target, GL_TEXTURE_MAG_FILTER, filter);
+  resource->filter = filter;
 
   return target;
 }
