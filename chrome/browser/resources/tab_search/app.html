@@ -1,6 +1,13 @@
 <style include="mwb-shared-style">
-  #tabsList {
-    --list-max-height: 280px;
+  #tabs {
+    max-height: 280px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    position: relative;
+  }
+
+  #tabsContainer {
+    height: calc(var(--mwb-item-height) * var(--item-count, 0));
   }
 
   #no-results {
@@ -55,17 +62,20 @@
     label="$i18n{searchTabs}" on-focus="onSearchFocus_"
     on-keydown="onSearchKeyDown_" on-search-changed="onSearchChanged_">
 </tab-search-search-field>
-<div hidden="[[!filteredOpenTabs_.length]]">
-  <infinite-list id="tabsList" items="[[filteredOpenTabs_]]" >
-    <template>
-      <tab-search-item id="[[item.tab.tabId]]" aria-label="[[ariaLabel_(item)]]"
-          class="mwb-list-item" data="[[item]]"
-          on-click="onItemClick_" on-close="onItemClose_"
-          on-focus="onItemFocus_" on-keydown="onItemKeyDown_" tabindex="0"
-          role="option">
-      </tab-search-item>
-    </template>
-  </infinite-list>
+<div id="tabs">
+  <div id="tabsContainer">
+    <iron-selector id="selector" on-keydown="onItemKeyDown_"
+        selected="{{selectedIndex_}}" selected-class="selected" role="listbox">
+      <template id="tabsList" is="dom-repeat" items="[[filteredOpenTabs_]]"
+          initial-count="[[chunkingItemCount_]]">
+        <tab-search-item id="[[item.tab.tabId]]" aria-label="[[ariaLabel_(item)]]"
+            class="mwb-list-item" data="[[item]]"
+            on-click="onItemClick_" on-close="onItemClose_"
+            on-focus="onItemFocus_" tabindex="0" role="option">
+        </tab-search-item>
+      </template>
+    </iron-selector>
+  </div>
 </div>
 <div id="no-results" hidden="[[filteredOpenTabs_.length]]">
   $i18n{noResultsFound}

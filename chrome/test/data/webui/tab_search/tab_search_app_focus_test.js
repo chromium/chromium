@@ -55,8 +55,7 @@ suite('TabSearchAppFocusTest', () => {
     assertEquals(searchInput, getDeepActiveElement());
 
     const tabSearchItems = /** @type {!NodeList<!HTMLElement>} */
-        (tabSearchApp.shadowRoot.querySelector('#tabsList')
-             .shadowRoot.querySelectorAll('tab-search-item'));
+        (tabSearchApp.shadowRoot.querySelectorAll('tab-search-item'));
 
     tabSearchItems[0].focus();
     // Once an item is focused, arrow keys should change focus too.
@@ -89,8 +88,7 @@ suite('TabSearchAppFocusTest', () => {
     await setupTest(sampleData());
 
     const tabSearchItem = /** @type {!HTMLElement} */
-        (tabSearchApp.shadowRoot.querySelector('#tabsList')
-             .shadowRoot.querySelector('tab-search-item'));
+        (tabSearchApp.shadowRoot.querySelector('tab-search-item'));
     tabSearchItem.focus();
 
     keyDownOn(tabSearchItem, 0, [], 'Enter');
@@ -107,14 +105,12 @@ suite('TabSearchAppFocusTest', () => {
     await setupTest(generateSampleDataFromSiteNames(sampleSiteNames()));
 
     const tabsDiv = /** @type {!HTMLElement} */
-        (tabSearchApp.shadowRoot.querySelector('#tabsList')
-             .shadowRoot.querySelector('#container'));
+        (tabSearchApp.shadowRoot.querySelector('#tabs'));
     // Assert that the tabs are in a overflowing state.
     assertGT(tabsDiv.scrollHeight, tabsDiv.clientHeight);
 
     const tabItems = /** @type {!NodeList<HTMLElement>} */
-        (tabSearchApp.shadowRoot.querySelector('#tabsList')
-             .shadowRoot.querySelectorAll('tab-search-item'));
+        (tabSearchApp.shadowRoot.querySelectorAll('tab-search-item'));
     for (let i = 0; i < tabItems.length; i++) {
       tabItems[i].focus();
 

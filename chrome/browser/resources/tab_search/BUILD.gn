@@ -54,7 +54,6 @@ preprocess_grit("preprocess_web_components") {
   out_manifest = "$target_gen_dir/$preprocess_web_components_manifest"
   in_files = [
     "app.js",
-    "infinite_list.js",
     "tab_search_item.js",
     "tab_search_search_field.js",
   ]
@@ -104,7 +103,6 @@ js_type_check("closure_compile") {
   deps = [
     ":app",
     ":fuzzy_search",
-    ":infinite_list",
     ":tab_data",
     ":tab_search_api_proxy",
     ":tab_search_item",
@@ -120,6 +118,7 @@ js_library("app") {
     ":tab_search_item",
     ":tab_search_search_field",
     "//third_party/polymer/v3_0/components-chromium/iron-a11y-announcer",
+    "//third_party/polymer/v3_0/components-chromium/iron-selector:iron-selector",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:cr.m",
     "//ui/webui/resources/js:load_time_data.m",
@@ -132,13 +131,6 @@ js_library("fuzzy_search") {
   deps = [
     ":tab_data",
     "//ui/webui/resources/js:util.m",
-  ]
-}
-
-js_library("infinite_list") {
-  deps = [
-    "//third_party/polymer/v3_0/components-chromium/iron-selector:iron-selector",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }
 
@@ -174,7 +166,6 @@ js_library("tab_search_search_field") {
 html_to_js("web_components") {
   js_files = [
     "app.js",
-    "infinite_list.js",
     "tab_search_item.js",
     "tab_search_search_field.js",
   ]

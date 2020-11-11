@@ -21,7 +21,6 @@ js_type_check("closure_compile") {
       ]
   deps = [
     ":fuzzy_search_test",
-    ":infinite_list_test",
     ":tab_search_app_focus_test",
     ":tab_search_app_test",
     ":tab_search_item_test",
@@ -36,17 +35,11 @@ js_library("fuzzy_search_test") {
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }
 
-js_library("infinite_list_test") {
-  deps = [ "..:chai_assert" ]
-  externs_list = [ "$externs_path/mocha-2.5.js" ]
-}
-
 js_library("tab_search_app_test") {
   deps = [
     ":test_tab_search_api_proxy",
     "..:chai_assert",
     "//chrome/browser/resources/tab_search:app",
-    "//chrome/browser/resources/tab_search:infinite_list",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }

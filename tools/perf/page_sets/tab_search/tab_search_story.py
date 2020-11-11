@@ -174,8 +174,7 @@ class TabSearchStoryTop100(TabSearchStory):
 
 
 SCROLL_ELEMENT_FUNCTION = '''
-document.querySelector('tab-search-app').shadowRoot.getElementById('tabsList')
-.shadowRoot.getElementById('container')
+document.querySelector('tab-search-app').shadowRoot.querySelector('#tabs')
 '''
 
 MEASURE_FRAME_TIME_SCRIPT = '''

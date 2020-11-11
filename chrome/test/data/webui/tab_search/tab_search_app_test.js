@@ -9,11 +9,11 @@ import {TabSearchApiProxy, TabSearchApiProxyImpl} from 'chrome://tab-search/tab_
 import {TabSearchItem} from 'chrome://tab-search/tab_search_item.js';
 import {TabSearchSearchField} from 'chrome://tab-search/tab_search_search_field.js';
 
-import {assertEquals, assertFalse, assertNotEquals, assertTrue} from '../../chai_assert.js';
+import {assertEquals, assertFalse, assertGT, assertNotEquals, assertTrue} from '../../chai_assert.js';
 import {flushTasks, waitAfterNextRender} from '../../test_util.m.js';
 
-import {sampleData} from './tab_search_test_data.js';
-import {initLoadTimeDataWithDefaults} from './tab_search_test_helper.js';
+import {generateSampleDataFromSiteNames, sampleData, sampleSiteNames} from './tab_search_test_data.js';
+import {assertTabItemAndNeighborsInViewBounds, assertTabItemInViewBounds, disableScrollIntoViewAnimations, initLoadTimeDataWithDefaults} from './tab_search_test_helper.js';
 import {TestTabSearchApiProxy} from './test_tab_search_api_proxy.js';
 
 suite('TabSearchAppTest', () => {
@@ -21,6 +21,8 @@ suite('TabSearchAppTest', () => {
   let tabSearchApp;
   /** @type {!TestTabSearchApiProxy} */
   let testProxy;
+
+  disableScrollIntoViewAnimations(TabSearchItem);
 
   /**
    * @param {!NodeList<!Element>} rows
@@ -37,8 +39,7 @@ suite('TabSearchAppTest', () => {
    * @return {!NodeList<!Element>}
    */
   function queryRows() {
-    return tabSearchApp.shadowRoot.querySelector('#tabsList')
-        .shadowRoot.querySelectorAll('tab-search-item');
+    return tabSearchApp.shadowRoot.querySelectorAll('tab-search-item');
   }
 
   /**
@@ -101,8 +102,7 @@ suite('TabSearchAppTest', () => {
     await setupTest({windows: [{active: true, tabs: [tabData]}]});
 
     const tabSearchItem = /** @type {!HTMLElement} */
-        (tabSearchApp.shadowRoot.querySelector('#tabsList')
-             .shadowRoot.querySelector('tab-search-item'));
+        (tabSearchApp.shadowRoot.querySelector('tab-search-item'));
     tabSearchItem.click();
     const [tabInfo] = await testProxy.whenCalled('switchToTab');
     assertEquals(tabData.tabId, tabInfo.tabId);
@@ -208,8 +208,7 @@ suite('TabSearchAppTest', () => {
     await setupTest(sampleData());
     verifyTabIds(queryRows(), [1, 5, 6, 2, 3, 4]);
     let tabSearchItem = /** @type {!HTMLElement} */
-        (tabSearchApp.shadowRoot.querySelector('#tabsList')
-             .shadowRoot.querySelector('tab-search-item[id="1"]'));
+        (tabSearchApp.shadowRoot.querySelector('tab-search-item[id="1"]'));
     assertEquals('Google', tabSearchItem.data.tab.title);
     assertEquals('https://www.google.com', tabSearchItem.data.tab.url);
     const updatedTab = /** @type {!Tab} */ ({
@@ -224,8 +223,7 @@ suite('TabSearchAppTest', () => {
     // tabIds are not changed after tab updated.
     verifyTabIds(queryRows(), [1, 5, 6, 2, 3, 4]);
     tabSearchItem = /** @type {!HTMLElement} */
-        (tabSearchApp.shadowRoot.querySelector('#tabsList')
-             .shadowRoot.querySelector('tab-search-item[id="1"]'));
+        (tabSearchApp.shadowRoot.querySelector('tab-search-item[id="1"]'));
     assertEquals(updatedTab.title, tabSearchItem.data.tab.title);
     assertEquals(updatedTab.url, tabSearchItem.data.tab.url);
     assertEquals('example.com', tabSearchItem.data.hostname);
@@ -283,8 +281,7 @@ suite('TabSearchAppTest', () => {
 
     // Click the first element with tabId 1.
     let tabSearchItem = /** @type {!HTMLElement} */
-        (tabSearchApp.shadowRoot.querySelector('#tabsList')
-             .shadowRoot.querySelector('tab-search-item[id="1"]'));
+        (tabSearchApp.shadowRoot.querySelector('tab-search-item[id="1"]'));
     tabSearchItem.click();
 
     // Assert switchToTab() was called appropriately for an unfiltered tab list.
@@ -305,8 +302,7 @@ suite('TabSearchAppTest', () => {
     testProxy.reset();
     // Click the only remaining element with tabId 2.
     tabSearchItem = /** @type {!HTMLElement} */
-        (tabSearchApp.shadowRoot.querySelector('#tabsList')
-             .shadowRoot.querySelector('tab-search-item[id="2"]'));
+        (tabSearchApp.shadowRoot.querySelector('tab-search-item[id="2"]'));
     tabSearchItem.click();
 
     // Assert switchToTab() was called appropriately for a tab list fitlered by
@@ -399,9 +395,8 @@ suite('TabSearchAppTest', () => {
 
     const elements = [
       tabSearchApp.shadowRoot.querySelector('#searchField'),
-      tabSearchApp.shadowRoot.querySelector('#tabsList'),
-      tabSearchApp.shadowRoot.querySelector('#tabsList')
-          .shadowRoot.querySelector('tab-search-item'),
+      tabSearchApp.shadowRoot.querySelector('#tabs'),
+      tabSearchApp.shadowRoot.querySelector('tab-search-item'),
       tabSearchApp.shadowRoot.querySelector('#feedback-footer'),
     ];
 
@@ -410,5 +405,40 @@ suite('TabSearchAppTest', () => {
     }
 
     assertEquals(4, testProxy.getCallCount('closeUI'));
+  });
+
+  test('Scrollbar updates show previous and following list items', async () => {
+    await setupTest(generateSampleDataFromSiteNames(sampleSiteNames()));
+
+    const tabsDiv = /** @type {!HTMLElement} */
+        (tabSearchApp.shadowRoot.querySelector('#tabs'));
+    // Assert that the tabs are in a overflowing state.
+    assertGT(tabsDiv.scrollHeight, tabsDiv.clientHeight);
+
+    const tabItems = /** @type {!NodeList<!HTMLElement>}*/ (queryRows());
+    const searchField = /** @type {!TabSearchSearchField} */
+        (tabSearchApp.shadowRoot.querySelector('#searchField'));
+
+    for (let i = 0; i < tabItems.length; i++) {
+      keyDownOn(searchField, 0, [], 'ArrowDown');
+      const selectedIndex = ((i + 1) % tabItems.length);
+
+      assertEquals(selectedIndex, tabSearchApp.getSelectedIndex());
+      assertTabItemAndNeighborsInViewBounds(tabsDiv, tabItems, selectedIndex);
+    }
+
+    keyDownOn(searchField, 0, [], 'End');
+    assertTabItemInViewBounds(tabsDiv, tabItems[tabItems.length - 1]);
+
+    for (let i = tabItems.length - 1; i >= 0; i--) {
+      keyDownOn(searchField, 0, [], 'ArrowUp');
+      const selectedIndex = (i - 1 + tabItems.length) % tabItems.length;
+
+      assertEquals(selectedIndex, tabSearchApp.getSelectedIndex());
+      assertTabItemAndNeighborsInViewBounds(tabsDiv, tabItems, selectedIndex);
+    }
+
+    keyDownOn(searchField, 0, [], 'Home');
+    assertTabItemInViewBounds(tabsDiv, tabItems[0]);
   });
 });
