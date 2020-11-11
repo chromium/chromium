@@ -1541,8 +1541,10 @@ crbug.com/766135 fast/dom/Window/redirect-with-timer.html [ Timeout Pass ]
 crbug.com/404597 fast/forms/long-text-in-input.html [ Skip ]
 crbug.com/552494 virtual/prefer_compositing_to_lcd_text/scrollbars/overflow-scrollbar-combinations.html [ Pass Failure ]
 
-crbug.com/1056027 [ Fuchsia ] virtual/text-antialias/small-caps-aat.html [ Skip ]
+crbug.com/1146486 [ Fuchsia ] virtual/text-antialias/international/bidi-neutral-directionality-paragraph-start.html [ Skip ]
 crbug.com/1057339 [ Fuchsia ] virtual/text-antialias/international/rtl-mark.html [ Skip ]
+crbug.com/1056027 [ Fuchsia ] virtual/text-antialias/small-caps-aat.html [ Skip ]
+crbug.com/1146486 [ Fuchsia ] virtual/text-antialias/stroking-decorations.html [ Skip ]
 
 crbug.com/305376 external/wpt/css/css-overflow/webkit-line-clamp-018.html [ Failure ]
 crbug.com/305376 external/wpt/css/css-overflow/webkit-line-clamp-024.html [ Failure ]
