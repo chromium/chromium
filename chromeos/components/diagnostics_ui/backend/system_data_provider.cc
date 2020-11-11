@@ -173,6 +173,18 @@ void PopulateCpuUsagePercentages(const CpuUsageData& new_usage,
   out_cpu_usage.percent_usage_free = 100 * delta.GetIdleTime() / total_delta;
 }
 
+void PopulateAverageCpuTemperature(const healthd::CpuInfo& cpu_info,
+                                   mojom::CpuUsage& out_cpu_usage) {
+  uint32_t cumulative_total = 0;
+  for (const auto& temp_channel_ptr : cpu_info.temperature_channels) {
+    cumulative_total += temp_channel_ptr->temperature_celsius;
+  }
+
+  // Integer divison.
+  out_cpu_usage.average_cpu_temp_celsius =
+      cumulative_total / cpu_info.temperature_channels.size();
+}
+
 }  // namespace
 
 SystemDataProvider::SystemDataProvider() {
@@ -511,9 +523,11 @@ void SystemDataProvider::OnCpuUsageUpdated(healthd::TelemetryInfoPtr info_ptr) {
   }
 
   ComputeAndPopulateCpuUsage(*cpu_info, *cpu_usage.get());
+  PopulateAverageCpuTemperature(*cpu_info, *cpu_usage.get());
 
   NotifyCpuUsageObservers(cpu_usage);
 }
+
 void SystemDataProvider::ComputeAndPopulateCpuUsage(
     const healthd::CpuInfo& cpu_info,
     mojom::CpuUsage& out_cpu_usage) {

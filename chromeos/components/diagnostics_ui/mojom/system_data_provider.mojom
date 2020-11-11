@@ -75,6 +75,7 @@ struct CpuUsage {
   uint8 percent_usage_user;
   uint8 percent_usage_system;
   uint8 percent_usage_free;
+  uint16 average_cpu_temp_celsius;
 };
 
 // Implemented by clients that wish to be updated periodically about changes to

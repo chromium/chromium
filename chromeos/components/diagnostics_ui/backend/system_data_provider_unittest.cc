@@ -221,10 +221,8 @@ void SetCrosHealthdMemoryUsageResponse(uint32_t total_memory_kib,
                                 /*system_info=*/nullptr);
 }
 
-// Sets the CpuUsage response on cros_healthd. |usage_data| should contain one
-// entry for each logical cpu.
-void SetCrosHealthdCpuUsageResponse(
-    const std::vector<CpuUsageData>& usage_data) {
+void SetCrosHealthdCpuResponse(const std::vector<CpuUsageData>& usage_data,
+                               const std::vector<int32_t>& cpu_temps) {
   auto cpu_info_ptr = cros_healthd::mojom::CpuInfo::New();
   auto physical_cpu_info_ptr = cros_healthd::mojom::PhysicalCpuInfo::New();
 
@@ -239,12 +237,33 @@ void SetCrosHealthdCpuUsageResponse(
         std::move(logical_cpu_info_ptr));
   }
 
-  cpu_info_ptr->physical_cpus.emplace_back(std::move(physical_cpu_info_ptr));
+  cpu_info_ptr->physical_cpus.push_back(std::move(physical_cpu_info_ptr));
+  for (const auto& cpu_temp : cpu_temps) {
+    auto cpu_temp_channel_ptr =
+        cros_healthd::mojom::CpuTemperatureChannel::New();
+    cpu_temp_channel_ptr->temperature_celsius = cpu_temp;
+    cpu_info_ptr->temperature_channels.emplace_back(
+        std::move(cpu_temp_channel_ptr));
+  }
 
   SetProbeTelemetryInfoResponse(/*battery_info=*/nullptr,
                                 std::move(cpu_info_ptr),
                                 /*memory_info=*/nullptr,
                                 /*system_info=*/nullptr);
+}
+
+// Sets the CpuUsage response on cros_healthd. |usage_data| should contain one
+// entry for each logical cpu.
+void SetCrosHealthdCpuUsageResponse(
+    const std::vector<CpuUsageData>& usage_data) {
+  // Use fake temp data since none was supplied.
+  SetCrosHealthdCpuResponse(usage_data, {50});
+}
+
+void SetCrosHealthdCpuTemperatureResponse(
+    const std::vector<int32_t>& cpu_temps) {
+  // Use fake usage_data data since none was supplied.
+  SetCrosHealthdCpuResponse({CpuUsageData(1000, 1000, 1000)}, cpu_temps);
 }
 
 bool AreValidPowerTimes(int64_t time_to_full, int64_t time_to_empty) {
@@ -372,6 +391,11 @@ void VerifyCpuUsageResult(const mojom::CpuUsagePtr& update,
   EXPECT_EQ(expected_percent_user, update->percent_usage_user);
   EXPECT_EQ(expected_percent_system, update->percent_usage_system);
   EXPECT_EQ(expected_percent_free, update->percent_usage_free);
+}
+
+void VerifyCpuTempResult(const mojom::CpuUsagePtr& update,
+                         uint32_t expected_average_temp) {
+  EXPECT_EQ(expected_average_temp, update->average_cpu_temp_celsius);
 }
 
 }  // namespace
@@ -780,6 +804,57 @@ TEST_F(SystemDataProviderTest, CpuUsageObserverTwoProcessor) {
   EXPECT_EQ(2u, cpu_usage_observer.updates.size());
   VerifyCpuUsageResult(cpu_usage_observer.updates[1], expected_percent_user,
                        expected_percent_system, expected_percent_free);
+}
+
+TEST_F(SystemDataProviderTest, CpuUsageObserverTemp) {
+  // Setup Timer
+  auto timer = std::make_unique<base::MockRepeatingTimer>();
+  auto* timer_ptr = timer.get();
+  system_data_provider_->SetCpuUsageTimerForTesting(std::move(timer));
+
+  // Setup initial data
+  uint32_t temp_1 = 40;
+  uint32_t temp_2 = 50;
+  uint32_t temp_3 = 15;
+
+  SetCrosHealthdCpuTemperatureResponse({temp_1, temp_2, temp_3});
+
+  // Registering as an observer should trigger one update.
+  FakeCpuUsageObserver cpu_usage_observer;
+  system_data_provider_->ObserveCpuUsage(
+      cpu_usage_observer.receiver.BindNewPipeAndPassRemote());
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(1u, cpu_usage_observer.updates.size());
+  VerifyCpuTempResult(cpu_usage_observer.updates[0],
+                      /*expected_average_temp=*/35);
+
+  temp_1 = 20;
+  temp_2 = 25;
+  temp_3 = 45;
+
+  SetCrosHealthdCpuTemperatureResponse({temp_1, temp_2, temp_3});
+
+  timer_ptr->Fire();
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(2u, cpu_usage_observer.updates.size());
+  VerifyCpuTempResult(cpu_usage_observer.updates[1],
+                      /*expected_average_temp=*/30);
+
+  temp_1 = 20;
+  temp_2 = 26;
+  temp_3 = 46;
+
+  SetCrosHealthdCpuTemperatureResponse({temp_1, temp_2, temp_3});
+
+  timer_ptr->Fire();
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(3u, cpu_usage_observer.updates.size());
+  // Integer division so `expected_average_temp` should still be 30.
+  VerifyCpuTempResult(cpu_usage_observer.updates[2],
+                      /*expected_average_temp=*/30);
 }
 
 }  // namespace diagnostics
