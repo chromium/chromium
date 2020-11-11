@@ -141,7 +141,7 @@ bool LayoutReplaced::HasReplacedLogicalHeight() const {
     return true;
   }
 
-  if (StyleRef().LogicalHeight().IsIntrinsic())
+  if (StyleRef().LogicalHeight().IsContentOrIntrinsicOrFillAvailable())
     return true;
 
   return false;
@@ -764,12 +764,12 @@ LayoutUnit LayoutReplaced::ComputeConstrainedLogicalWidth(
 LayoutUnit LayoutReplaced::ComputeReplacedLogicalWidth(
     ShouldComputePreferred should_compute_preferred) const {
   NOT_DESTROYED();
-  if (StyleRef().LogicalWidth().IsSpecified() ||
-      StyleRef().LogicalWidth().IsIntrinsic())
+  if (!StyleRef().LogicalWidth().IsAuto()) {
     return ComputeReplacedLogicalWidthRespectingMinMaxWidth(
         ComputeReplacedLogicalWidthUsing(kMainOrPreferredSize,
                                          StyleRef().LogicalWidth()),
         should_compute_preferred);
+  }
 
   // 10.3.2 Inline, replaced elements:
   // http://www.w3.org/TR/CSS21/visudet.html#inline-replaced-width

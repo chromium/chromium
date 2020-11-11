@@ -33,12 +33,9 @@ class NGLayoutInputNode;
 enum class LengthResolvePhase { kIntrinsic, kLayout };
 
 inline bool NeedMinMaxSize(const ComputedStyle& style) {
-  // This check is technically too broad (fill-available does not need intrinsic
-  // size computation) but that's a rare case and only affects performance, not
-  // correctness.
-  return style.LogicalWidth().IsIntrinsic() ||
-         style.LogicalMinWidth().IsIntrinsic() ||
-         style.LogicalMaxWidth().IsIntrinsic();
+  return style.LogicalWidth().IsContentOrIntrinsic() ||
+         style.LogicalMinWidth().IsContentOrIntrinsic() ||
+         style.LogicalMaxWidth().IsContentOrIntrinsic();
 }
 
 LayoutUnit InlineSizeFromAspectRatio(const NGBoxStrut& border_padding,
@@ -101,7 +98,7 @@ inline LayoutUnit ResolveMinInlineLength(
     return border_padding.InlineSum();
 
   base::Optional<MinMaxSizes> min_max_sizes;
-  if (length.IsIntrinsic()) {
+  if (length.IsContentOrIntrinsic()) {
     min_max_sizes =
         min_max_sizes_func(length.IsMinIntrinsic() ? MinMaxSizesType::kIntrinsic
                                                    : MinMaxSizesType::kContent)
@@ -140,7 +137,7 @@ inline LayoutUnit ResolveMaxInlineLength(
     return LayoutUnit::Max();
 
   base::Optional<MinMaxSizes> min_max_sizes;
-  if (length.IsIntrinsic()) {
+  if (length.IsContentOrIntrinsic()) {
     min_max_sizes =
         min_max_sizes_func(length.IsMinIntrinsic() ? MinMaxSizesType::kIntrinsic
                                                    : MinMaxSizesType::kContent)
@@ -175,7 +172,7 @@ inline LayoutUnit ResolveMainInlineLength(
     const MinMaxSizesFunc& min_max_sizes_func,
     const Length& length) {
   base::Optional<MinMaxSizes> min_max_sizes;
-  if (length.IsIntrinsic()) {
+  if (length.IsContentOrIntrinsic()) {
     min_max_sizes =
         min_max_sizes_func(length.IsMinIntrinsic() ? MinMaxSizesType::kIntrinsic
                                                    : MinMaxSizesType::kContent)
@@ -273,7 +270,7 @@ inline LayoutUnit ResolveMainBlockLength(
     return intrinsic_block_size_func();
 
   LayoutUnit intrinsic_block_size = kIndefiniteSize;
-  if (length.IsIntrinsicOrAuto())
+  if (length.IsAutoOrContentOrIntrinsic())
     intrinsic_block_size = intrinsic_block_size_func();
 
   return ResolveBlockLengthInternal(

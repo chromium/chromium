@@ -1651,7 +1651,7 @@ void LayoutBlockFlow::ComputeInlinePreferredLogicalWidths(
   // sites. (See Bugzilla 10517.)
   bool allow_images_to_break = !GetDocument().InQuirksMode() ||
                                !IsTableCell() ||
-                               !style_to_use.LogicalWidth().IsIntrinsicOrAuto();
+                               style_to_use.LogicalWidth().IsSpecified();
 
   bool auto_wrap, old_auto_wrap;
   auto_wrap = old_auto_wrap = style_to_use.AutoWrap();

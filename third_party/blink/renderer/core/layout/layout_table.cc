@@ -319,7 +319,7 @@ bool LayoutTable::IsLogicalWidthAuto() const {
   const Length& style_logical_width = StyleRef().LogicalWidth();
   return (!style_logical_width.IsSpecified() ||
           !style_logical_width.IsPositive()) &&
-         !style_logical_width.IsIntrinsic();
+         !style_logical_width.IsContentOrIntrinsicOrFillAvailable();
 }
 
 void LayoutTable::UpdateLogicalWidth() {
@@ -408,7 +408,7 @@ void LayoutTable::UpdateLogicalWidth() {
   const Length& style_max_logical_width = StyleRef().LogicalMaxWidth();
   if ((style_max_logical_width.IsSpecified() &&
        !style_max_logical_width.IsNegative()) ||
-      style_max_logical_width.IsIntrinsic()) {
+      style_max_logical_width.IsContentOrIntrinsicOrFillAvailable()) {
     LayoutUnit computed_max_logical_width =
         ConvertStyleLogicalWidthToComputedWidth(style_max_logical_width,
                                                 available_logical_width);
@@ -426,7 +426,7 @@ void LayoutTable::UpdateLogicalWidth() {
   const Length& style_min_logical_width = StyleRef().LogicalMinWidth();
   if ((style_min_logical_width.IsSpecified() &&
        !style_min_logical_width.IsNegative()) ||
-      style_min_logical_width.IsIntrinsic()) {
+      style_min_logical_width.IsContentOrIntrinsicOrFillAvailable()) {
     LayoutUnit computed_min_logical_width =
         ConvertStyleLogicalWidthToComputedWidth(style_min_logical_width,
                                                 available_logical_width);
@@ -459,7 +459,7 @@ LayoutUnit LayoutTable::ConvertStyleLogicalWidthToComputedWidth(
     const Length& style_logical_width,
     LayoutUnit available_width) const {
   NOT_DESTROYED();
-  if (style_logical_width.IsIntrinsic()) {
+  if (style_logical_width.IsContentOrIntrinsicOrFillAvailable()) {
     return ComputeIntrinsicLogicalWidthUsing(style_logical_width,
                                              available_width);
   }
@@ -505,7 +505,7 @@ LayoutUnit LayoutTable::ConvertStyleLogicalHeightToComputedHeight(
   } else if (style_logical_height.IsPercentOrCalc()) {
     computed_logical_height =
         ComputePercentageLogicalHeight(style_logical_height);
-  } else if (style_logical_height.IsIntrinsic()) {
+  } else if (style_logical_height.IsContentOrIntrinsicOrFillAvailable()) {
     computed_logical_height = ComputeIntrinsicLogicalContentHeightUsing(
         kMainOrPreferredSize, style_logical_height,
         LogicalHeight() - border_and_padding, border_and_padding);
@@ -575,7 +575,7 @@ LayoutUnit LayoutTable::LogicalHeightFromStyle() const {
   NOT_DESTROYED();
   LayoutUnit computed_logical_height;
   const Length& logical_height_length = StyleRef().LogicalHeight();
-  if (logical_height_length.IsIntrinsic() ||
+  if (logical_height_length.IsContentOrIntrinsicOrFillAvailable() ||
       (logical_height_length.IsSpecified() &&
        logical_height_length.IsPositive())) {
     computed_logical_height =
@@ -603,7 +603,7 @@ LayoutUnit LayoutTable::LogicalHeightFromStyle() const {
       logical_min_height_length.IsFitContent())
     logical_min_height_length = Length::Auto();
 
-  if (logical_min_height_length.IsIntrinsic() ||
+  if (logical_min_height_length.IsContentOrIntrinsicOrFillAvailable() ||
       (logical_min_height_length.IsSpecified() &&
        !logical_min_height_length.IsNegative())) {
     LayoutUnit computed_min_logical_height =

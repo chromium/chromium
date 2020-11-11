@@ -200,10 +200,10 @@ bool GridTrackSizingAlgorithmStrategy::HasRelativeOrIntrinsicSizeForChild(
       GridLayoutUtils::FlowAwareDirectionForChild(grid, child, kForColumns);
   if (direction == child_inline_direction) {
     return child.HasRelativeLogicalWidth() ||
-           child.StyleRef().LogicalWidth().IsIntrinsicOrAuto();
+           !child.StyleRef().LogicalWidth().IsSpecified();
   }
   return child.HasRelativeLogicalHeight() ||
-         child.StyleRef().LogicalHeight().IsIntrinsicOrAuto();
+         !child.StyleRef().LogicalHeight().IsSpecified();
 }
 
 bool GridTrackSizingAlgorithmStrategy::

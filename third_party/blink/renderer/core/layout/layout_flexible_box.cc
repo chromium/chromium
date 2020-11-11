@@ -855,7 +855,7 @@ bool LayoutFlexibleBox::MainAxisLengthIsDefinite(const LayoutBox& child,
   NOT_DESTROYED();
   if (flex_basis.IsAuto())
     return false;
-  if (IsColumnFlow() && flex_basis.IsIntrinsic())
+  if (IsColumnFlow() && flex_basis.IsContentOrIntrinsicOrFillAvailable())
     return false;
   if (flex_basis.IsPercentOrCalc()) {
     if (!IsColumnFlow() || has_definite_height_ == SizeDefiniteness::kDefinite)
@@ -1158,7 +1158,7 @@ MinMaxSizes LayoutFlexibleBox::ComputeMinAndMaxSizesForChild(
 
   const Length& max = IsHorizontalFlow() ? child.StyleRef().MaxWidth()
                                          : child.StyleRef().MaxHeight();
-  if (max.IsSpecifiedOrIntrinsic()) {
+  if (!max.IsNone()) {
     sizes.max_size =
         ComputeMainAxisExtentForChild(child, kMaxSize, max, border_and_padding);
     if (sizes.max_size == -1)
@@ -1168,7 +1168,7 @@ MinMaxSizes LayoutFlexibleBox::ComputeMinAndMaxSizesForChild(
 
   const Length& min = IsHorizontalFlow() ? child.StyleRef().MinWidth()
                                          : child.StyleRef().MinHeight();
-  if (min.IsSpecifiedOrIntrinsic()) {
+  if (!min.IsAuto()) {
     sizes.min_size =
         ComputeMainAxisExtentForChild(child, kMinSize, min, border_and_padding);
     // computeMainAxisExtentForChild can return -1 when the child has a
@@ -1578,7 +1578,8 @@ bool LayoutFlexibleBox::ChildHasIntrinsicMainAxisSize(
                                        ? child.StyleRef().MaxWidth()
                                        : child.StyleRef().MaxHeight();
     if (!MainAxisLengthIsDefinite(child, child_flex_basis) ||
-        child_min_size.IsIntrinsic() || child_max_size.IsIntrinsic()) {
+        child_min_size.IsContentOrIntrinsic() ||
+        child_max_size.IsContentOrIntrinsic()) {
       result = true;
     } else if (algorithm.ShouldApplyMinSizeAutoForChild(child)) {
       result = true;

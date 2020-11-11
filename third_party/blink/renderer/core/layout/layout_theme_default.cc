@@ -154,19 +154,20 @@ void LayoutThemeDefault::SetSelectionColors(Color active_background_color,
 namespace {
 
 void SetSizeIfAuto(const IntSize& size, ComputedStyle& style) {
-  if (style.Width().IsIntrinsicOrAuto())
+  if (style.Width().IsAutoOrContentOrIntrinsic())
     style.SetWidth(Length::Fixed(size.Width()));
-  if (style.Height().IsIntrinsicOrAuto())
+  if (style.Height().IsAutoOrContentOrIntrinsic())
     style.SetHeight(Length::Fixed(size.Height()));
 }
 
 void SetMinimumSizeIfAuto(const IntSize& size, ComputedStyle& style) {
   // We only want to set a minimum size if no explicit size is specified, to
   // avoid overriding author intentions.
-  if (style.MinWidth().IsIntrinsicOrAuto() && style.Width().IsIntrinsicOrAuto())
+  if (style.MinWidth().IsAutoOrContentOrIntrinsic() &&
+      style.Width().IsAutoOrContentOrIntrinsic())
     style.SetMinWidth(Length::Fixed(size.Width()));
-  if (style.MinHeight().IsIntrinsicOrAuto() &&
-      style.Height().IsIntrinsicOrAuto())
+  if (style.MinHeight().IsAutoOrContentOrIntrinsic() &&
+      style.Height().IsAutoOrContentOrIntrinsic())
     style.SetMinHeight(Length::Fixed(size.Height()));
 }
 
@@ -174,7 +175,8 @@ void SetMinimumSizeIfAuto(const IntSize& size, ComputedStyle& style) {
 
 void LayoutThemeDefault::SetCheckboxSize(ComputedStyle& style) const {
   // If the width and height are both specified, then we have nothing to do.
-  if (!style.Width().IsIntrinsicOrAuto() && !style.Height().IsAuto())
+  if (!style.Width().IsAutoOrContentOrIntrinsic() &&
+      !style.Height().IsAutoOrContentOrIntrinsic())
     return;
 
   IntSize size = IntSize(Platform::Current()->ThemeEngine()->GetSize(
@@ -188,7 +190,8 @@ void LayoutThemeDefault::SetCheckboxSize(ComputedStyle& style) const {
 
 void LayoutThemeDefault::SetRadioSize(ComputedStyle& style) const {
   // If the width and height are both specified, then we have nothing to do.
-  if (!style.Width().IsIntrinsicOrAuto() && !style.Height().IsAuto())
+  if (!style.Width().IsAutoOrContentOrIntrinsic() &&
+      !style.Height().IsAutoOrContentOrIntrinsic())
     return;
 
   IntSize size = IntSize(

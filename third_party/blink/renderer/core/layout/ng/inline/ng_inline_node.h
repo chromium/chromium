@@ -185,7 +185,7 @@ inline bool NGInlineNode::IsStickyImagesQuirkForContentSize() const {
   if (UNLIKELY(GetDocument().InQuirksMode())) {
     const ComputedStyle& style = Style();
     if (UNLIKELY(style.Display() == EDisplay::kTableCell &&
-                 style.LogicalWidth().IsIntrinsicOrAuto()))
+                 !style.LogicalWidth().IsSpecified()))
       return true;
   }
   return false;

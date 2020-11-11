@@ -225,22 +225,30 @@ class PLATFORM_EXPORT Length {
   }
 
   // For the layout purposes, if this |Length| is a block-axis size, see
-  // |IsIntrinsicOrAuto()|, it is usually a better choice.
+  // |IsAutoOrContentOrIntrinsic()|, it is usually a better choice.
   bool IsAuto() const { return GetType() == kAuto; }
   bool IsFixed() const { return GetType() == kFixed; }
+
   // For the block axis, intrinsic sizes such as `min-content` behave the same
   // as `auto`. https://www.w3.org/TR/css-sizing-3/#valdef-width-min-content
-  bool IsIntrinsicOrAuto() const { return GetType() == kAuto || IsIntrinsic(); }
-  bool IsIntrinsic() const {
+  bool IsContentOrIntrinsic() const {
     return GetType() == kMinContent || GetType() == kMaxContent ||
-           GetType() == kMinIntrinsic || GetType() == kFillAvailable ||
-           GetType() == kFitContent;
+           GetType() == kFitContent || GetType() == kMinIntrinsic;
   }
+  bool IsAutoOrContentOrIntrinsic() const {
+    return GetType() == kAuto || IsContentOrIntrinsic();
+  }
+
+  // NOTE: This shouldn't be use in NG code.
+  bool IsContentOrIntrinsicOrFillAvailable() const {
+    return IsContentOrIntrinsic() || GetType() == kFillAvailable;
+  }
+
   bool IsSpecified() const {
     return GetType() == kFixed || GetType() == kPercent ||
            GetType() == kCalculated;
   }
-  bool IsSpecifiedOrIntrinsic() const { return IsSpecified() || IsIntrinsic(); }
+
   bool IsCalculated() const { return GetType() == kCalculated; }
   bool IsCalculatedEqual(const Length&) const;
   bool IsMinContent() const { return GetType() == kMinContent; }

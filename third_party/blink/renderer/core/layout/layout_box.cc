@@ -1272,7 +1272,8 @@ LayoutUnit LayoutBox::ConstrainLogicalWidthByMinMax(
   }
 
   if (!style_to_use.LogicalMaxWidth().IsNone() &&
-      (allow_intrinsic || !style_to_use.LogicalMaxWidth().IsIntrinsic())) {
+      (allow_intrinsic ||
+       !style_to_use.LogicalMaxWidth().IsContentOrIntrinsic())) {
     logical_width = std::min(
         logical_width,
         ComputeLogicalWidthUsing(kMaxSize, style_to_use.LogicalMaxWidth(),
@@ -1288,7 +1289,7 @@ LayoutUnit LayoutBox::ConstrainLogicalWidthByMinMax(
     if (ShouldComputeLogicalWidthFromAspectRatio())
       min_length = Length::MinIntrinsic();
   }
-  if (!allow_intrinsic && style_to_use.LogicalMinWidth().IsIntrinsic())
+  if (!allow_intrinsic && style_to_use.LogicalMinWidth().IsContentOrIntrinsic())
     return logical_width;
   return std::max(logical_width, ComputeLogicalWidthUsing(kMinSize, min_length,
                                                           available_width, cb));
@@ -4262,14 +4263,14 @@ LayoutUnit LayoutBox::ComputeLogicalWidthUsing(
   if (width_type == kMinSize && logical_width.IsAuto())
     return AdjustBorderBoxLogicalWidthForBoxSizing(0);
 
-  if (!logical_width.IsIntrinsicOrAuto()) {
+  if (logical_width.IsSpecified()) {
     // FIXME: If the containing block flow is perpendicular to our direction we
     // need to use the available logical height instead.
     return AdjustBorderBoxLogicalWidthForBoxSizing(
         ValueForLength(logical_width, available_logical_width));
   }
 
-  if (logical_width.IsIntrinsic()) {
+  if (logical_width.IsContentOrIntrinsicOrFillAvailable()) {
     return ComputeIntrinsicLogicalWidthUsing(logical_width,
                                              available_logical_width);
   }
@@ -4819,7 +4820,7 @@ LayoutUnit LayoutBox::ComputeContentAndScrollbarLogicalHeightUsing(
   // FIXME(cbiesinger): The css-sizing spec is considering changing what
   // min-content/max-content should resolve to.
   // If that happens, this code will have to change.
-  if (height.IsIntrinsic()) {
+  if (height.IsContentOrIntrinsicOrFillAvailable()) {
     if (intrinsic_content_height == -1)
       return LayoutUnit(-1);  // Intrinsic height isn't available.
     return ComputeIntrinsicLogicalContentHeightUsing(
@@ -5086,7 +5087,7 @@ LayoutUnit LayoutBox::ComputeReplacedLogicalWidthUsing(
           ContainingBlock()->StyleRef().LogicalWidth();
       // FIXME: Handle cases when containing block width is calculated or
       // viewport percent. https://bugs.webkit.org/show_bug.cgi?id=91071
-      if (logical_width.IsIntrinsic())
+      if (logical_width.IsContentOrIntrinsicOrFillAvailable())
         return ComputeIntrinsicLogicalWidthUsing(logical_width, cw) -
                BorderAndPaddingLogicalWidth();
       if (cw > 0 || (!cw && (container_logical_width.IsFixed() ||
@@ -5768,7 +5769,7 @@ void LayoutBox::ComputePositionedLogicalWidth(
   LogicalExtentComputedValues min_values;
   // Calculate constraint equation values for 'min-width' case.
   if (!StyleRef().LogicalMinWidth().IsZero() ||
-      StyleRef().LogicalMinWidth().IsIntrinsic()) {
+      StyleRef().LogicalMinWidth().IsContentOrIntrinsicOrFillAvailable()) {
     ComputePositionedLogicalWidthUsing(
         kMinSize, StyleRef().LogicalMinWidth(), container_block,
         container_direction, container_logical_width, borders_plus_padding,
@@ -5867,7 +5868,7 @@ void LayoutBox::ComputePositionedLogicalWidthUsing(
              logical_width.IsAuto() &&
              ComputeLogicalWidthFromAspectRatio(&logical_width_value)) {
     // We're good.
-  } else if (logical_width.IsIntrinsic()) {
+  } else if (logical_width.IsContentOrIntrinsicOrFillAvailable()) {
     logical_width_value = ComputeIntrinsicLogicalWidthUsing(
                               logical_width, container_logical_width) -
                           borders_plus_padding;
@@ -6330,7 +6331,7 @@ void LayoutBox::ComputePositionedLogicalHeightUsing(
     resolved_logical_height = content_logical_height;
     logical_height_is_auto = false;
   } else {
-    if (logical_height_length.IsIntrinsic()) {
+    if (logical_height_length.IsContentOrIntrinsicOrFillAvailable()) {
       resolved_logical_height = ComputeIntrinsicLogicalContentHeightUsing(
           height_size_type, logical_height_length, content_logical_height,
           borders_plus_padding);
@@ -7128,13 +7129,11 @@ bool LayoutBox::HasUnsplittableScrollingOverflow() const {
   // under these conditions, but it should work out to be good enough for common
   // cases. Paginating overflow with scrollbars present is not the end of the
   // world and is what we used to do in the old model anyway.
-  return !StyleRef().LogicalHeight().IsIntrinsicOrAuto() ||
-         (!StyleRef().LogicalMaxHeight().IsIntrinsicOrAuto() &&
-          !StyleRef().LogicalMaxHeight().IsNone() &&
+  return StyleRef().LogicalHeight().IsSpecified() ||
+         (StyleRef().LogicalMaxHeight().IsSpecified() &&
           (!StyleRef().LogicalMaxHeight().IsPercentOrCalc() ||
            PercentageLogicalHeightIsResolvable())) ||
-         (!StyleRef().LogicalMinHeight().IsIntrinsicOrAuto() &&
-          StyleRef().LogicalMinHeight().IsPositive() &&
+         (StyleRef().LogicalMinHeight().IsSpecified() &&
           (!StyleRef().LogicalMinHeight().IsPercentOrCalc() ||
            PercentageLogicalHeightIsResolvable()));
 }

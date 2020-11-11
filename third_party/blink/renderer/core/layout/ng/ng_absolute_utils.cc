@@ -328,9 +328,9 @@ bool AbsoluteNeedsChildInlineSize(const NGBlockNode& node) {
   if (node.IsTable())
     return true;
   const auto& style = node.Style();
-  return style.LogicalWidth().IsIntrinsic() ||
-         style.LogicalMinWidth().IsIntrinsic() ||
-         style.LogicalMaxWidth().IsIntrinsic() ||
+  return style.LogicalWidth().IsContentOrIntrinsic() ||
+         style.LogicalMinWidth().IsContentOrIntrinsic() ||
+         style.LogicalMaxWidth().IsContentOrIntrinsic() ||
          (style.LogicalWidth().IsAuto() &&
           (style.LogicalLeft().IsAuto() || style.LogicalRight().IsAuto()));
 }
@@ -339,9 +339,9 @@ bool AbsoluteNeedsChildBlockSize(const NGBlockNode& node) {
   if (node.IsTable())
     return true;
   const auto& style = node.Style();
-  return style.LogicalHeight().IsIntrinsic() ||
-         style.LogicalMinHeight().IsIntrinsic() ||
-         style.LogicalMaxHeight().IsIntrinsic() ||
+  return style.LogicalHeight().IsContentOrIntrinsic() ||
+         style.LogicalMinHeight().IsContentOrIntrinsic() ||
+         style.LogicalMaxHeight().IsContentOrIntrinsic() ||
          (style.LogicalHeight().IsAuto() &&
           (style.LogicalTop().IsAuto() || style.LogicalBottom().IsAuto()));
 }

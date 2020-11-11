@@ -97,7 +97,7 @@ int LayoutCustomScrollbarPart::ComputeSize(SizeType size_type,
                                            const Length& length,
                                            int container_size) const {
   NOT_DESTROYED();
-  if (!length.IsIntrinsicOrAuto() || (size_type == kMinSize && length.IsAuto()))
+  if (length.IsSpecified() || (size_type == kMinSize && length.IsAuto()))
     return MinimumValueForLength(length, LayoutUnit(container_size)).ToInt();
   return CustomScrollbarTheme::GetCustomScrollbarTheme()->ScrollbarThickness(
       scrollbar_->ScaleFromDIP());

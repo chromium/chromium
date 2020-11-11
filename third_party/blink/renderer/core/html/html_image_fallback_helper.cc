@@ -164,30 +164,25 @@ void HTMLImageFallbackHelper::CustomStyleForAltText(Element& element,
   if (element.GetDocument().InQuirksMode()) {
     // Mimic the behaviour of the image host by setting symmetric dimensions if
     // only one dimension is specified.
-    if (new_style.Width().IsSpecifiedOrIntrinsic() &&
-        new_style.Height().IsAuto())
+    if (!new_style.Width().IsAuto() && new_style.Height().IsAuto())
       new_style.SetHeight(new_style.Width());
-    else if (new_style.Height().IsSpecifiedOrIntrinsic() &&
-             new_style.Width().IsAuto())
+    else if (!new_style.Height().IsAuto() && new_style.Width().IsAuto())
       new_style.SetWidth(new_style.Height());
-    if (new_style.Width().IsSpecifiedOrIntrinsic() &&
-        new_style.Height().IsSpecifiedOrIntrinsic()) {
+
+    if (!new_style.Width().IsAuto() && !new_style.Height().IsAuto())
       fallback.AlignToBaseline();
-    }
   }
 
-  bool image_has_intrinsic_dimensions =
-      new_style.Width().IsSpecifiedOrIntrinsic() &&
-      new_style.Height().IsSpecifiedOrIntrinsic();
-  bool image_has_dimensions_from_ar =
+  bool has_intrinsic_dimensions =
+      !new_style.Width().IsAuto() && !new_style.Height().IsAuto();
+  bool has_dimensions_from_ar =
       !new_style.AspectRatio().IsAuto() &&
-      (new_style.Width().IsSpecifiedOrIntrinsic() ||
-       new_style.Height().IsSpecifiedOrIntrinsic());
-  bool image_has_no_alt_attribute =
+      (!new_style.Width().IsAuto() || !new_style.Height().IsAuto());
+  bool has_no_alt_attribute =
       element.getAttribute(html_names::kAltAttr).IsEmpty();
   bool treat_as_replaced =
-      (image_has_intrinsic_dimensions || image_has_dimensions_from_ar) &&
-      (element.GetDocument().InQuirksMode() || image_has_no_alt_attribute);
+      (has_intrinsic_dimensions || has_dimensions_from_ar) &&
+      (element.GetDocument().InQuirksMode() || has_no_alt_attribute);
   if (treat_as_replaced) {
     // https://html.spec.whatwg.org/C/#images-3:
     // "If the element does not represent an image, but the element already has

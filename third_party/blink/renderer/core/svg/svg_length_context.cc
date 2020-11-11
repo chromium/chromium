@@ -266,9 +266,8 @@ float SVGLengthContext::ValueForLength(const Length& length,
                                        float zoom,
                                        float dimension) {
   DCHECK_NE(zoom, 0);
-  // isIntrinsic can occur for 'width' and 'height', but has no
-  // real meaning for svg.
-  if (length.IsIntrinsic())
+  // Only "specified" lengths have meaning for SVG.
+  if (!length.IsSpecified())
     return 0;
   return FloatValueForLength(length, dimension * zoom) / zoom;
 }

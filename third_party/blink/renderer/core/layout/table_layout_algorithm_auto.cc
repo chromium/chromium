@@ -282,7 +282,7 @@ static bool ShouldScaleColumnsForSelf(LayoutNGTableInterface* table) {
         table->ToLayoutObject()->StyleRef().LogicalWidth();
     bool width_is_auto = (!table_logical_width.IsSpecified() ||
                           !table_logical_width.IsPositive()) &&
-                         !table_logical_width.IsIntrinsic();
+                         !table_logical_width.IsContentOrIntrinsic();
     if (cell->ColSpan() > 1 || width_is_auto)
       return false;
   }

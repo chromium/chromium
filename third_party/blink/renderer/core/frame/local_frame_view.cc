@@ -1630,8 +1630,7 @@ static inline void RemoveFloatingObjectsForSubtreeRoot(LayoutObject& root) {
 static bool PrepareOrthogonalWritingModeRootForLayout(LayoutObject& root) {
   DCHECK(root.IsBox() && ToLayoutBox(root).IsOrthogonalWritingModeRoot());
   if (!root.NeedsLayout() || root.IsOutOfFlowPositioned() ||
-      root.IsColumnSpanAll() ||
-      !root.StyleRef().LogicalHeight().IsIntrinsicOrAuto() ||
+      root.IsColumnSpanAll() || root.StyleRef().LogicalHeight().IsSpecified() ||
       ToLayoutBox(root).IsGridItem() || root.IsTablePart())
     return false;
 

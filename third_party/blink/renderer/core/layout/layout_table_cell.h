@@ -175,9 +175,7 @@ class CORE_EXPORT LayoutTableCell : public LayoutBlockFlow,
     NOT_DESTROYED();
     const Length& height = StyleRef().LogicalHeight();
     int style_logical_height =
-        height.IsIntrinsicOrAuto()
-            ? 0
-            : ValueForLength(height, LayoutUnit()).ToInt();
+        height.IsSpecified() ? ValueForLength(height, LayoutUnit()).ToInt() : 0;
 
     // In strict mode, box-sizing: content-box do the right thing and actually
     // add in the border and padding.

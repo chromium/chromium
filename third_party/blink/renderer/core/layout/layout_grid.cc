@@ -360,7 +360,7 @@ void LayoutGrid::UpdateBlockLayout(bool relayout_children) {
     // LayoutBox::ComputeContentAndScrollbarLogicalHeightUsing() is adding the
     // ScrollbarLogicalHeight() for the intrinsic height cases. But that's
     // causing more problems as described in the bug linked before.
-    if (!StyleRef().LogicalHeight().IsIntrinsic())
+    if (!StyleRef().LogicalHeight().IsContentOrIntrinsic())
       track_based_logical_height += ComputeLogicalScrollbars().BlockSum();
 
     SetLogicalHeight(track_based_logical_height);
