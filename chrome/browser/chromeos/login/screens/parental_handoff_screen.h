@@ -14,16 +14,17 @@ namespace chromeos {
 
 class ParentalHandoffScreenView;
 class WizardContext;
-class ScreenManager;
 
 class ParentalHandoffScreen : public BaseScreen {
  public:
+  using TView = ParentalHandoffScreenView;
+
   enum class Result { DONE, SKIPPED };
 
-  static ParentalHandoffScreen* Get(ScreenManager* screen_manager);
   static std::string GetResultString(Result result);
 
   using ScreenExitCallback = base::RepeatingCallback<void(Result)>;
+
   ParentalHandoffScreen(ParentalHandoffScreenView* view,
                         const ScreenExitCallback& exit_callback);
   ParentalHandoffScreen(const ParentalHandoffScreen&) = delete;

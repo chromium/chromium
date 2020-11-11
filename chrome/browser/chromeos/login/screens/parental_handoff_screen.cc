@@ -8,7 +8,6 @@
 
 #include "base/strings/string16.h"
 #include "chrome/browser/chromeos/login/oobe_screen.h"
-#include "chrome/browser/chromeos/login/screen_manager.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -35,13 +34,6 @@ base::string16 GetActiveUserName() {
 }
 
 }  // namespace
-
-// static
-ParentalHandoffScreen* ParentalHandoffScreen::Get(
-    ScreenManager* screen_manager) {
-  return static_cast<ParentalHandoffScreen*>(
-      screen_manager->GetScreen(ParentalHandoffScreenView::kScreenId));
-}
 
 // static
 std::string ParentalHandoffScreen::GetResultString(

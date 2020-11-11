@@ -80,8 +80,9 @@ class EncryptionMigrationTest : public OobeBaseTest {
     FakeCryptohomeClient::Get()->set_run_default_dircrypto_migration(false);
 
     // Configure encryption migration screen for test.
-    EncryptionMigrationScreen* screen = EncryptionMigrationScreen::Get(
-        WizardController::default_controller()->screen_manager());
+    EncryptionMigrationScreen* screen =
+        WizardController::default_controller()
+            ->GetScreen<EncryptionMigrationScreen>();
     screen->set_free_disk_space_fetcher_for_testing(base::BindRepeating(
         &EncryptionMigrationTest::GetFreeSpace, base::Unretained(this)));
   }

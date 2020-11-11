@@ -24,6 +24,8 @@ class Key;
 // Controller for the active directory password change screen.
 class ActiveDirectoryPasswordChangeScreen : public BaseScreen {
  public:
+  using TView = ActiveDirectoryPasswordChangeView;
+
   explicit ActiveDirectoryPasswordChangeScreen(
       ActiveDirectoryPasswordChangeView* view,
       const base::RepeatingClosure& exit_callback);
@@ -32,8 +34,6 @@ class ActiveDirectoryPasswordChangeScreen : public BaseScreen {
   ActiveDirectoryPasswordChangeScreen& operator=(
       const ActiveDirectoryPasswordChangeScreen&) = delete;
   ~ActiveDirectoryPasswordChangeScreen() override;
-
-  static ActiveDirectoryPasswordChangeScreen* Get(ScreenManager* manager);
 
   // Called when the screen is being destroyed. This should call Unbind() on the
   // associated View if this class is destroyed before that.

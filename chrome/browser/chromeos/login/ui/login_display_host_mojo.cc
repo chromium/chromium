@@ -329,8 +329,7 @@ void LoginDisplayHostMojo::HideOobeDialog() {
   const bool no_users =
       !login_display_->IsSigninInProgress() && user_count_ == 0;
   if (no_users || GetOobeUI()->current_screen() == GaiaView::kScreenId) {
-    GaiaScreen* gaia_screen =
-        GaiaScreen::Get(GetWizardController()->screen_manager());
+    GaiaScreen* gaia_screen = GetWizardController()->GetScreen<GaiaScreen>();
     gaia_screen->LoadOnline(EmptyAccountId());
     if (no_users)
       return;

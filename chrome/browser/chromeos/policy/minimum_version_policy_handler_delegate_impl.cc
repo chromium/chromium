@@ -87,7 +87,7 @@ void MinimumVersionPolicyHandlerDelegateImpl::
   if (!wizard_controller)
     return;
   chromeos::UpdateRequiredScreen* screen =
-      chromeos::UpdateRequiredScreen::Get(wizard_controller->screen_manager());
+      wizard_controller->GetScreen<chromeos::UpdateRequiredScreen>();
   if (screen->is_hidden())
     return;
   screen->Exit();

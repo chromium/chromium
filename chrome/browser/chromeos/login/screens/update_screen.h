@@ -26,7 +26,6 @@ class TickClock;
 namespace chromeos {
 
 class ErrorScreensHistogramHelper;
-class ScreenManager;
 class UpdateView;
 class WizardContext;
 
@@ -60,13 +59,13 @@ class UpdateScreen : public BaseScreen,
                      public VersionUpdater::Delegate,
                      public PowerManagerClient::Observer {
  public:
+  using TView = UpdateView;
   using Result = VersionUpdater::Result;
 
   static std::string GetResultString(Result result);
 
-  static UpdateScreen* Get(ScreenManager* manager);
-
   using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
+
   UpdateScreen(UpdateView* view,
                ErrorScreen* error_screen,
                const ScreenExitCallback& exit_callback);

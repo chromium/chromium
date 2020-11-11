@@ -72,8 +72,8 @@ void ExitUpdateScreenNoUpdate() {
   update_engine::StatusResult status;
   status.set_current_operation(update_engine::Operation::ERROR);
 
-  UpdateScreen* screen = UpdateScreen::Get(
-      WizardController::default_controller()->screen_manager());
+  UpdateScreen* screen =
+      WizardController::default_controller()->GetScreen<UpdateScreen>();
   screen->GetVersionUpdaterForTesting()->UpdateStatusChangedForTesting(status);
 }
 

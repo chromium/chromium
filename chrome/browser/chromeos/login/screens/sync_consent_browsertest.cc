@@ -31,6 +31,7 @@
 #include "chrome/browser/ui/webui/chromeos/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/marketing_opt_in_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/signin_screen_handler.h"
+#include "chrome/browser/ui/webui/chromeos/login/welcome_screen_handler.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -177,8 +178,8 @@ class SyncConsentTest : public OobeBaseTest {
   }
 
   void SwitchLanguage(const std::string& language) {
-    WelcomeScreen* welcome_screen = WelcomeScreen::Get(
-        WizardController::default_controller()->screen_manager());
+    WelcomeScreen* welcome_screen =
+        WizardController::default_controller()->GetScreen<WelcomeScreen>();
     test::LanguageReloadObserver observer(welcome_screen);
     test::OobeJS().SelectElementInPath(language,
                                        {"connect", "languageSelect", "select"});

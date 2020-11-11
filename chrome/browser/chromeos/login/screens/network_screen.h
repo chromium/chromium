@@ -20,7 +20,6 @@
 namespace chromeos {
 
 class NetworkScreenView;
-class ScreenManager;
 
 namespace login {
 class NetworkStateHelper;
@@ -29,17 +28,17 @@ class NetworkStateHelper;
 // Controls network selection screen shown during OOBE.
 class NetworkScreen : public BaseScreen, public NetworkStateHandlerObserver {
  public:
+  using TView = NetworkScreenView;
+
   enum class Result { CONNECTED, OFFLINE_DEMO_SETUP, BACK };
 
   static std::string GetResultString(Result result);
 
   using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
+
   NetworkScreen(NetworkScreenView* view,
                 const ScreenExitCallback& exit_callback);
   ~NetworkScreen() override;
-
-  // Returns instance of NetworkScreen.
-  static NetworkScreen* Get(ScreenManager* manager);
 
   // Called when `view` has been destroyed. If this instance is destroyed before
   // the `view` it should call view->Unbind().

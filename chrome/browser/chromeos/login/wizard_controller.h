@@ -179,6 +179,12 @@ class WizardController {
   // Returns the current ScreenManager instance.
   ScreenManager* screen_manager() const { return screen_manager_.get(); }
 
+  template <typename TScreen>
+  TScreen* GetScreen() const {
+    return static_cast<TScreen*>(
+        screen_manager()->GetScreen(TScreen::TView::kScreenId));
+  }
+
   // Returns the current WizardContext instance.
   WizardContext* get_wizard_context_for_testing() const {
     return wizard_context_.get();

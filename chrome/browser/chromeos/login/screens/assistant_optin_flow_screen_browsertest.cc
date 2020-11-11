@@ -366,8 +366,8 @@ class AssistantOptInFlowTest : public OobeBaseTest {
     assistant_settings_ = std::make_unique<ScopedAssistantSettings>();
 
     AssistantOptInFlowScreen* assistant_optin_flow_screen =
-        AssistantOptInFlowScreen::Get(
-            WizardController::default_controller()->screen_manager());
+        WizardController::default_controller()
+            ->GetScreen<AssistantOptInFlowScreen>();
     original_callback_ =
         assistant_optin_flow_screen->get_exit_callback_for_testing();
     assistant_optin_flow_screen->set_exit_callback_for_testing(

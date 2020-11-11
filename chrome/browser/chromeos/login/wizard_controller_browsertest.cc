@@ -2837,8 +2837,8 @@ class WizardControllerOobeConfigurationTest : public WizardControllerTest {
 IN_PROC_BROWSER_TEST_F(WizardControllerOobeConfigurationTest,
                        ConfigurationIsLoaded) {
   OobeScreenWaiter(WelcomeView::kScreenId).Wait();
-  WelcomeScreen* screen = WelcomeScreen::Get(
-      WizardController::default_controller()->screen_manager());
+  WelcomeScreen* screen =
+      WizardController::default_controller()->GetScreen<WelcomeScreen>();
   base::Value* configuration = screen->GetConfigurationForTesting();
   ASSERT_NE(configuration, nullptr);
   EXPECT_FALSE(configuration->DictEmpty());

@@ -21,6 +21,7 @@
 #include "chrome/browser/chromeos/login/ui/login_display_host.h"
 #include "chrome/browser/chromeos/login/wizard_controller.h"
 #include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
+#include "chrome/browser/ui/webui/chromeos/login/welcome_screen_handler.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/system/fake_statistics_provider.h"
@@ -33,9 +34,9 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
 #include "ui/base/ime/chromeos/extension_ime_util.h"
+#include "ui/base/ime/chromeos/input_method_allowlist.h"
 #include "ui/base/ime/chromeos/input_method_manager.h"
 #include "ui/base/ime/chromeos/input_method_util.h"
-#include "ui/base/ime/chromeos/input_method_allowlist.h"
 
 namespace base {
 class TaskRunner;
@@ -58,8 +59,8 @@ const char kUSLayout[] = "xkb:us::eng";
 class LanguageListWaiter : public WelcomeScreen::Observer {
  public:
   LanguageListWaiter()
-      : welcome_screen_(WelcomeScreen::Get(
-            WizardController::default_controller()->screen_manager())) {
+      : welcome_screen_(WizardController::default_controller()
+                            ->GetScreen<WelcomeScreen>()) {
     welcome_screen_->AddObserver(this);
     CheckLanguageList();
   }

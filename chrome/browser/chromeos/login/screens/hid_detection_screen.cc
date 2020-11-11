@@ -99,12 +99,6 @@ HIDDetectionScreen::~HIDDetectionScreen() {
 }
 
 // static
-HIDDetectionScreen* HIDDetectionScreen::Get(ScreenManager* manager) {
-  return static_cast<HIDDetectionScreen*>(
-      manager->GetScreen(HIDDetectionView::kScreenId));
-}
-
-// static
 void HIDDetectionScreen::OverrideInputDeviceManagerBinderForTesting(
     InputDeviceManagerBinder binder) {
   GetInputDeviceManagerBinderOverride() = std::move(binder);

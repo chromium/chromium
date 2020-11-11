@@ -4,7 +4,6 @@
 
 #include "chrome/browser/chromeos/login/screens/gaia_screen.h"
 
-#include "chrome/browser/chromeos/login/screen_manager.h"
 #include "chrome/browser/chromeos/login/ui/login_display_host.h"
 #include "chrome/browser/chromeos/login/wizard_context.h"
 #include "chrome/browser/ui/webui/chromeos/login/gaia_screen_handler.h"
@@ -33,11 +32,6 @@ GaiaScreen::GaiaScreen(const ScreenExitCallback& exit_callback)
 GaiaScreen::~GaiaScreen() {
   if (view_)
     view_->Unbind();
-}
-
-// static
-GaiaScreen* GaiaScreen::Get(ScreenManager* manager) {
-  return static_cast<GaiaScreen*>(manager->GetScreen(GaiaView::kScreenId));
 }
 
 void GaiaScreen::SetView(GaiaView* view) {

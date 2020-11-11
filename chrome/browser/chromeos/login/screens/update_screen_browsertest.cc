@@ -136,8 +136,8 @@ class UpdateScreenTest : public OobeBaseTest {
     tick_clock_.Advance(kTimeAdvanceSeconds60);
 
     error_screen_ = GetOobeUI()->GetErrorScreen();
-    update_screen_ = UpdateScreen::Get(
-        WizardController::default_controller()->screen_manager());
+    update_screen_ =
+        WizardController::default_controller()->GetScreen<UpdateScreen>();
     update_screen_->set_exit_callback_for_testing(base::BindRepeating(
         &UpdateScreenTest::HandleScreenExit, base::Unretained(this)));
     version_updater_ = update_screen_->GetVersionUpdaterForTesting();

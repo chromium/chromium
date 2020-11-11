@@ -21,7 +21,6 @@
 #include "chrome/browser/chromeos/login/configuration_keys.h"
 #include "chrome/browser/chromeos/login/demo_mode/demo_setup_controller.h"
 #include "chrome/browser/chromeos/login/oobe_screen.h"
-#include "chrome/browser/chromeos/login/screen_manager.h"
 #include "chrome/browser/chromeos/login/ui/input_events_blocker.h"
 #include "chrome/browser/chromeos/login/wizard_controller.h"
 #include "chrome/browser/chromeos/policy/enrollment_requisition_manager.h"
@@ -147,12 +146,6 @@ std::string WelcomeScreen::GetResultString(Result result) {
     case Result::ENABLE_DEBUGGING:
       return "EnableDebugging";
   }
-}
-
-// static
-WelcomeScreen* WelcomeScreen::Get(ScreenManager* manager) {
-  return static_cast<WelcomeScreen*>(
-      manager->GetScreen(WelcomeView::kScreenId));
 }
 
 WelcomeScreen::WelcomeScreen(WelcomeView* view,

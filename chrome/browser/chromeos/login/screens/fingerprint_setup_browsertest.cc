@@ -57,8 +57,9 @@ class FingerprintSetupTest : public OobeBaseTest {
     quick_unlock::EnabledForTesting(true);
 
     // Override the screen exit callback with our own method.
-    FingerprintSetupScreen* fingerprint_screen = FingerprintSetupScreen::Get(
-        WizardController::default_controller()->screen_manager());
+    FingerprintSetupScreen* fingerprint_screen =
+        WizardController::default_controller()
+            ->GetScreen<FingerprintSetupScreen>();
     original_callback_ = fingerprint_screen->get_exit_callback_for_testing();
     fingerprint_screen->set_exit_callback_for_testing(
         base::BindRepeating(&FingerprintSetupTest::OnFingerprintSetupScreenExit,

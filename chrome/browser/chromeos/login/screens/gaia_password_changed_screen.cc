@@ -5,7 +5,6 @@
 #include "chrome/browser/chromeos/login/screens/gaia_password_changed_screen.h"
 
 #include "chrome/browser/chromeos/login/reauth_stats.h"
-#include "chrome/browser/chromeos/login/screen_manager.h"
 #include "chrome/browser/chromeos/login/ui/login_display_host.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/ui/webui/chromeos/login/gaia_password_changed_screen_handler.h"
@@ -17,13 +16,6 @@ constexpr const char kUserActionCancelLogin[] = "cancel";
 constexpr const char kUserActionResyncData[] = "resync";
 
 }  // namespace
-
-// static
-GaiaPasswordChangedScreen* GaiaPasswordChangedScreen::Get(
-    ScreenManager* manager) {
-  return static_cast<GaiaPasswordChangedScreen*>(
-      manager->GetScreen(GaiaPasswordChangedView::kScreenId));
-}
 
 GaiaPasswordChangedScreen::GaiaPasswordChangedScreen(
     GaiaPasswordChangedView* view)

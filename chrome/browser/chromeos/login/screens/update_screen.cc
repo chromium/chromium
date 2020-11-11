@@ -17,7 +17,6 @@
 #include "build/branding_buildflags.h"
 #include "chrome/browser/chromeos/login/configuration_keys.h"
 #include "chrome/browser/chromeos/login/error_screens_histogram_helper.h"
-#include "chrome/browser/chromeos/login/screen_manager.h"
 #include "chrome/browser/chromeos/login/screens/network_error.h"
 #include "chrome/browser/chromeos/login/wizard_context.h"
 #include "chrome/browser/chromeos/policy/enrollment_requisition_manager.h"
@@ -101,11 +100,6 @@ std::string UpdateScreen::GetResultString(Result result) {
     case Result::UPDATE_SKIPPED:
       return chromeos::BaseScreen::kNotApplicable;
   }
-}
-
-// static
-UpdateScreen* UpdateScreen::Get(ScreenManager* manager) {
-  return static_cast<UpdateScreen*>(manager->GetScreen(UpdateView::kScreenId));
 }
 
 UpdateScreen::UpdateScreen(UpdateView* view,

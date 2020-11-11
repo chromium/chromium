@@ -56,8 +56,8 @@ class NetworkScreenTest : public InProcessBrowserTest {
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
     ShowLoginWizard(NetworkScreenView::kScreenId);
-    network_screen_ = NetworkScreen::Get(
-        WizardController::default_controller()->screen_manager());
+    network_screen_ =
+        WizardController::default_controller()->GetScreen<NetworkScreen>();
     ASSERT_EQ(WizardController::default_controller()->current_screen(),
               network_screen_);
     network_screen_->set_exit_callback_for_testing(base::BindRepeating(

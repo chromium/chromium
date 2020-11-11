@@ -20,7 +20,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/accessibility/accessibility_manager.h"
 #include "chrome/browser/chromeos/login/marketing_backend_connector.h"
-#include "chrome/browser/chromeos/login/screen_manager.h"
 #include "chrome/browser/chromeos/login/test/fake_gaia_mixin.h"
 #include "chrome/browser/chromeos/login/test/js_checker.h"
 #include "chrome/browser/chromeos/login/test/local_policy_test_server_mixin.h"
@@ -192,8 +191,8 @@ void MarketingOptInScreenTest::SetUpOnMainThread() {
 }
 
 MarketingOptInScreen* MarketingOptInScreenTest::GetScreen() {
-  return MarketingOptInScreen::Get(
-      WizardController::default_controller()->screen_manager());
+  return WizardController::default_controller()
+      ->GetScreen<MarketingOptInScreen>();
 }
 
 void MarketingOptInScreenTest::ShowMarketingOptInScreen() {

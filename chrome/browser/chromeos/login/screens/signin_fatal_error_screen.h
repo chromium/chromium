@@ -20,6 +20,8 @@ class SignInFatalErrorView;
 // Controller for the gaia fatal error screen.
 class SignInFatalErrorScreen : public BaseScreen {
  public:
+  using TView = SignInFatalErrorView;
+
   // Sets the error information to be shown on the screen
   enum class Error {
     UNKNOWN = 0,
@@ -33,8 +35,6 @@ class SignInFatalErrorScreen : public BaseScreen {
   SignInFatalErrorScreen(const SignInFatalErrorScreen&) = delete;
   SignInFatalErrorScreen& operator=(const SignInFatalErrorScreen&) = delete;
   ~SignInFatalErrorScreen() override;
-
-  static SignInFatalErrorScreen* Get(ScreenManager* manager);
 
   // Called when the screen is being destroyed. This should call Unbind() on the
   // associated View if this class is destroyed before that.

@@ -100,12 +100,6 @@ MarketingOptInScreen::~MarketingOptInScreen() {
   view_->Bind(nullptr);
 }
 
-// static
-MarketingOptInScreen* MarketingOptInScreen::Get(ScreenManager* manager) {
-  return static_cast<MarketingOptInScreen*>(
-      manager->GetScreen(MarketingOptInScreenView::kScreenId));
-}
-
 bool MarketingOptInScreen::MaybeSkip(WizardContext* context) {
   if (!base::FeatureList::IsEnabled(features::kOobeMarketingScreen) ||
       chrome_user_manager_util::IsPublicSessionOrEphemeralLogin() ||

@@ -8,6 +8,7 @@
 #include "chrome/browser/chromeos/login/screens/welcome_screen.h"
 #include "chrome/browser/chromeos/login/wizard_controller.h"
 #include "chrome/browser/ui/webui/chromeos/login/demo_preferences_screen_handler.h"
+#include "chrome/browser/ui/webui/chromeos/login/welcome_screen_handler.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "ui/base/ime/chromeos/input_method_descriptor.h"
@@ -23,7 +24,7 @@ WelcomeScreen* GetWelcomeScreen() {
   const WizardController* wizard_controller =
       WizardController::default_controller();
   DCHECK(wizard_controller);
-  return WelcomeScreen::Get(wizard_controller->screen_manager());
+  return wizard_controller->GetScreen<WelcomeScreen>();
 }
 
 // Sets locale and input method. If `locale` or `input_method` is empty then

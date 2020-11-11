@@ -30,11 +30,6 @@ SignInFatalErrorScreen::~SignInFatalErrorScreen() {
     view_->Unbind();
 }
 
-SignInFatalErrorScreen* SignInFatalErrorScreen::Get(ScreenManager* manager) {
-  return static_cast<SignInFatalErrorScreen*>(
-      manager->GetScreen(SignInFatalErrorView::kScreenId));
-}
-
 void SignInFatalErrorScreen::OnViewDestroyed(SignInFatalErrorView* view) {
   if (view_ == view)
     view_ = nullptr;

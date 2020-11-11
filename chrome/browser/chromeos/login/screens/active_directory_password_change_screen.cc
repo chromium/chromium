@@ -48,12 +48,6 @@ ActiveDirectoryPasswordChangeScreen::~ActiveDirectoryPasswordChangeScreen() {
     view_->Unbind();
 }
 
-ActiveDirectoryPasswordChangeScreen* ActiveDirectoryPasswordChangeScreen::Get(
-    ScreenManager* manager) {
-  return static_cast<ActiveDirectoryPasswordChangeScreen*>(
-      manager->GetScreen(ActiveDirectoryPasswordChangeView::kScreenId));
-}
-
 void ActiveDirectoryPasswordChangeScreen::OnViewDestroyed(
     ActiveDirectoryPasswordChangeView* view) {
   if (view_ == view)

@@ -28,7 +28,6 @@
 namespace chromeos {
 
 class HIDDetectionView;
-class ScreenManager;
 class WizardContext;
 
 // Representation independent class that controls screen showing warning about
@@ -39,6 +38,7 @@ class HIDDetectionScreen : public BaseScreen,
                            public device::mojom::InputDeviceManagerClient,
                            public DemoModeDetector::Observer {
  public:
+  using TView = HIDDetectionView;
   using InputDeviceInfoPtr = device::mojom::InputDeviceInfoPtr;
   using DeviceMap = std::map<std::string, InputDeviceInfoPtr>;
 
@@ -49,8 +49,6 @@ class HIDDetectionScreen : public BaseScreen,
   HIDDetectionScreen(HIDDetectionView* view,
                      const ScreenExitCallback& exit_callback);
   ~HIDDetectionScreen() override;
-
-  static HIDDetectionScreen* Get(ScreenManager* manager);
 
   static std::string GetResultString(Result result);
 

@@ -15,12 +15,13 @@
 namespace chromeos {
 
 class GaiaView;
-class ScreenManager;
 
 // This class represents GAIA screen: login screen that is responsible for
 // GAIA-based sign-in.
 class GaiaScreen : public BaseScreen {
  public:
+  using TView = GaiaView;
+
   enum class Result {
     BACK,
     CLOSE_DIALOG,
@@ -29,10 +30,9 @@ class GaiaScreen : public BaseScreen {
   static std::string GetResultString(Result result);
 
   using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
+
   explicit GaiaScreen(const ScreenExitCallback& exit_callback);
   ~GaiaScreen() override;
-
-  static GaiaScreen* Get(ScreenManager* manager);
 
   void SetView(GaiaView* view);
 

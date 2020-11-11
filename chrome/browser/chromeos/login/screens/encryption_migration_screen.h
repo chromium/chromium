@@ -33,20 +33,19 @@ namespace chromeos {
 
 class EncryptionMigrationScreenView;
 class LoginFeedback;
-class ScreenManager;
 class UserContext;
 
 class EncryptionMigrationScreen : public BaseScreen,
                                   public PowerManagerClient::Observer,
                                   public CryptohomeClient::Observer {
  public:
+  using TView = EncryptionMigrationScreenView;
+
   using ContinueLoginCallback = base::OnceCallback<void(const UserContext&)>;
   using RestartLoginCallback = base::OnceCallback<void(const UserContext&)>;
 
   // Callback that can be used to check free disk space.
   using FreeDiskSpaceFetcher = base::RepeatingCallback<int64_t()>;
-
-  static EncryptionMigrationScreen* Get(ScreenManager* manager);
 
   explicit EncryptionMigrationScreen(EncryptionMigrationScreenView* view);
   ~EncryptionMigrationScreen() override;

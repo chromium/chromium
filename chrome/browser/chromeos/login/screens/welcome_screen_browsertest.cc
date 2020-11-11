@@ -91,8 +91,8 @@ class WelcomeScreenBrowserTest : public OobeBaseTest {
 
   WelcomeScreen* welcome_screen() {
     EXPECT_NE(WizardController::default_controller(), nullptr);
-    WelcomeScreen* welcome_screen = WelcomeScreen::Get(
-        WizardController::default_controller()->screen_manager());
+    WelcomeScreen* welcome_screen =
+        WizardController::default_controller()->GetScreen<WelcomeScreen>();
     EXPECT_NE(welcome_screen, nullptr);
     return welcome_screen;
   }

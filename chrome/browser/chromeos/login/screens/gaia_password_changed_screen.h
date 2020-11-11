@@ -14,18 +14,17 @@
 namespace chromeos {
 
 class GaiaPasswordChangedView;
-class ScreenManager;
 
 // Controller for the tpm error screen.
 class GaiaPasswordChangedScreen : public BaseScreen {
  public:
+  using TView = GaiaPasswordChangedView;
+
   explicit GaiaPasswordChangedScreen(GaiaPasswordChangedView* view);
   GaiaPasswordChangedScreen(const GaiaPasswordChangedScreen&) = delete;
   GaiaPasswordChangedScreen& operator=(const GaiaPasswordChangedScreen&) =
       delete;
   ~GaiaPasswordChangedScreen() override;
-
-  static GaiaPasswordChangedScreen* Get(ScreenManager* manager);
 
   // Called when the screen is being destroyed. This should call Unbind() on the
   // associated View if this class is destroyed before that.

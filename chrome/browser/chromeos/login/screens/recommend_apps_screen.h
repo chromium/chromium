@@ -21,20 +21,20 @@ namespace chromeos {
 
 class RecommendAppsFetcher;
 class RecommendAppsScreenView;
-class ScreenManager;
 
 // This is Recommend Apps screen that is displayed as a part of user first
 // sign-in flow.
 class RecommendAppsScreen : public BaseScreen,
                             public RecommendAppsFetcherDelegate {
  public:
+  using TView = RecommendAppsScreenView;
+
   enum class Result { SELECTED, SKIPPED, NOT_APPLICABLE, LOAD_ERROR };
 
   static std::string GetResultString(Result result);
 
-  static RecommendAppsScreen* Get(ScreenManager* manager);
-
   using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
+
   RecommendAppsScreen(RecommendAppsScreenView* view,
                       const ScreenExitCallback& exit_callback);
   ~RecommendAppsScreen() override;

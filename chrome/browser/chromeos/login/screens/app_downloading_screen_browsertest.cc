@@ -51,8 +51,8 @@ class AppDownloadingScreenTest : public OobeBaseTest {
   // OobeBaseTest:
   void SetUpOnMainThread() override {
     OobeBaseTest::SetUpOnMainThread();
-    app_downloading_screen_ = AppDownloadingScreen::Get(
-        WizardController::default_controller()->screen_manager());
+    app_downloading_screen_ = WizardController::default_controller()
+                                  ->GetScreen<AppDownloadingScreen>();
     app_downloading_screen_->set_exit_callback_for_testing(base::BindRepeating(
         &AppDownloadingScreenTest::HandleScreenExit, base::Unretained(this)));
   }

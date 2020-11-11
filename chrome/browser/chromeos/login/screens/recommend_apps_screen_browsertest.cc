@@ -124,8 +124,8 @@ class RecommendAppsScreenTest : public OobeBaseTest {
                 &RecommendAppsScreenTest::CreateRecommendAppsFetcher,
                 base::Unretained(this)));
 
-    recommend_apps_screen_ = RecommendAppsScreen::Get(
-        WizardController::default_controller()->screen_manager());
+    recommend_apps_screen_ = WizardController::default_controller()
+                                 ->GetScreen<RecommendAppsScreen>();
     recommend_apps_screen_->set_exit_callback_for_testing(base::BindRepeating(
         &RecommendAppsScreenTest::HandleScreenExit, base::Unretained(this)));
   }

@@ -26,7 +26,6 @@ class Clock;
 namespace chromeos {
 
 class ErrorScreensHistogramHelper;
-class ScreenManager;
 class UpdateRequiredView;
 
 // Controller for the update required screen.
@@ -35,7 +34,7 @@ class UpdateRequiredScreen : public BaseScreen,
                              public NetworkStateHandlerObserver,
                              public user_manager::RemoveUserDelegate {
  public:
-  static UpdateRequiredScreen* Get(ScreenManager* manager);
+  using TView = UpdateRequiredView;
 
   UpdateRequiredScreen(UpdateRequiredView* view,
                        ErrorScreen* error_screen,

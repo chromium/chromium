@@ -437,7 +437,7 @@ void WizardController::Init(OobeScreenId first_screen) {
     base::Callback<void(bool)> on_check =
         base::Bind(&WizardController::OnHIDScreenNecessityCheck,
                    weak_factory_.GetWeakPtr());
-    HIDDetectionScreen::Get(screen_manager())->CheckIsScreenRequired(on_check);
+    GetScreen<HIDDetectionScreen>()->CheckIsScreenRequired(on_check);
     return;
   }
 
@@ -710,7 +710,7 @@ void WizardController::OnOwnershipStatusCheckDone(
 void WizardController::ShowSignInFatalErrorScreen(
     SignInFatalErrorScreen::Error error,
     const base::Value* params) {
-  SignInFatalErrorScreen::Get(screen_manager())->SetErrorState(error, params);
+  GetScreen<SignInFatalErrorScreen>()->SetErrorState(error, params);
   AdvanceToScreen(SignInFatalErrorView::kScreenId);
 }
 
@@ -737,8 +737,7 @@ void WizardController::ShowLoginScreen() {
 void WizardController::ShowGaiaPasswordChangedScreen(
     const AccountId& account_id,
     bool has_error) {
-  GaiaPasswordChangedScreen* screen =
-      GaiaPasswordChangedScreen::Get(screen_manager());
+  GaiaPasswordChangedScreen* screen = GetScreen<GaiaPasswordChangedScreen>();
   screen->Configure(account_id, has_error);
   if (current_screen_ != screen) {
     SetCurrentScreen(screen);
@@ -887,8 +886,7 @@ void WizardController::ShowParentalHandoffScreen() {
 
 void WizardController::ShowActiveDirectoryPasswordChangeScreen(
     const std::string& username) {
-  ActiveDirectoryPasswordChangeScreen::Get(screen_manager())
-      ->SetUsername(username);
+  GetScreen<ActiveDirectoryPasswordChangeScreen>()->SetUsername(username);
   AdvanceToScreen(ActiveDirectoryPasswordChangeView::kScreenId);
 }
 
@@ -910,16 +908,16 @@ void WizardController::OnUserCreationScreenExit(
               ->GetDeviceMode() == policy::DEVICE_MODE_ENTERPRISE_AD) {
         AdvanceToScreen(ActiveDirectoryLoginView::kScreenId);
       } else {
-        GaiaScreen::Get(screen_manager())->LoadOnline(EmptyAccountId());
+        GetScreen<GaiaScreen>()->LoadOnline(EmptyAccountId());
         AdvanceToScreen(GaiaView::kScreenId);
       }
       break;
     case UserCreationScreen::Result::CHILD_SIGNIN:
-      GaiaScreen::Get(screen_manager())->LoadOnlineForChildSignin();
+      GetScreen<GaiaScreen>()->LoadOnlineForChildSignin();
       AdvanceToScreen(GaiaView::kScreenId);
       break;
     case UserCreationScreen::Result::CHILD_ACCOUNT_CREATE:
-      GaiaScreen::Get(screen_manager())->LoadOnlineForChildSignup();
+      GetScreen<GaiaScreen>()->LoadOnlineForChildSignup();
       AdvanceToScreen(GaiaView::kScreenId);
       break;
     case UserCreationScreen::Result::ENTERPRISE_ENROLL:

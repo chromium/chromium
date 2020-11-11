@@ -97,11 +97,6 @@ std::string FingerprintSetupScreen::GetResultString(Result result) {
   }
 }
 
-FingerprintSetupScreen* FingerprintSetupScreen::Get(ScreenManager* manager) {
-  return static_cast<FingerprintSetupScreen*>(
-      manager->GetScreen(FingerprintSetupScreenView::kScreenId));
-}
-
 FingerprintSetupScreen::FingerprintSetupScreen(
     FingerprintSetupScreenView* view,
     const ScreenExitCallback& exit_callback)

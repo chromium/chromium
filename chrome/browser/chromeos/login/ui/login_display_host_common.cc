@@ -324,8 +324,7 @@ void LoginDisplayHostCommon::ShowGaiaDialogCommon(
   }
 
   DCHECK(GetWizardController());
-  GaiaScreen* gaia_screen =
-      GaiaScreen::Get(GetWizardController()->screen_manager());
+  GaiaScreen* gaia_screen = GetWizardController()->GetScreen<GaiaScreen>();
   gaia_screen->LoadOnline(prefilled_account);
 
   if (chromeos::features::IsChildSpecificSigninEnabled() &&

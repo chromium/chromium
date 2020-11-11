@@ -16,7 +16,6 @@
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/chromeos/login/error_screens_histogram_helper.h"
 #include "chrome/browser/chromeos/login/helper.h"
-#include "chrome/browser/chromeos/login/screen_manager.h"
 #include "chrome/browser/chromeos/login/ui/login_display.h"
 #include "chrome/browser/chromeos/login/ui/login_display_host.h"
 #include "chrome/browser/chromeos/login/wizard_controller.h"
@@ -45,12 +44,6 @@ constexpr const base::TimeDelta kDelayErrorMessage =
 }  // namespace
 
 namespace chromeos {
-
-// static
-UpdateRequiredScreen* UpdateRequiredScreen::Get(ScreenManager* manager) {
-  return static_cast<UpdateRequiredScreen*>(
-      manager->GetScreen(UpdateRequiredView::kScreenId));
-}
 
 UpdateRequiredScreen::UpdateRequiredScreen(UpdateRequiredView* view,
                                            ErrorScreen* error_screen,

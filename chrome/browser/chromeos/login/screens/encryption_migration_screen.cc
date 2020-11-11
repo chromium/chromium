@@ -250,13 +250,6 @@ FirstScreen GetFirstScreenForMode(chromeos::EncryptionMigrationMode mode) {
 
 namespace chromeos {
 
-// static
-EncryptionMigrationScreen* EncryptionMigrationScreen::Get(
-    ScreenManager* manager) {
-  return static_cast<EncryptionMigrationScreen*>(
-      manager->GetScreen(EncryptionMigrationScreenView::kScreenId));
-}
-
 EncryptionMigrationScreen::EncryptionMigrationScreen(
     EncryptionMigrationScreenView* view)
     : BaseScreen(EncryptionMigrationScreenView::kScreenId,

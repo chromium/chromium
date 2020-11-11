@@ -865,8 +865,8 @@ void SigninScreenHandler::OnPreferencesChanged() {
     // We need to reload GAIA if UI_STATE_UNKNOWN or the allow new user setting
     // has changed so that reloaded GAIA shows/hides the option to create a new
     // account.
-    GaiaScreen* gaia_screen = GaiaScreen::Get(
-        WizardController::default_controller()->screen_manager());
+    GaiaScreen* gaia_screen =
+        WizardController::default_controller()->GetScreen<GaiaScreen>();
     gaia_screen->LoadOnline(EmptyAccountId());
   }
 }
@@ -1056,7 +1056,7 @@ void SigninScreenHandler::HandleOfflineLogin(const base::ListValue* args) {
   args->GetString(0, &email);
 
   GaiaScreen* gaia_screen =
-      GaiaScreen::Get(WizardController::default_controller()->screen_manager());
+      WizardController::default_controller()->GetScreen<GaiaScreen>();
   gaia_screen->LoadOffline(AccountId::FromUserEmail(email));
   HideOfflineMessage(NetworkStateInformer::OFFLINE,
                      NetworkError::ERROR_REASON_NONE);

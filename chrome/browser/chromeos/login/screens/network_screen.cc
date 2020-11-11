@@ -9,7 +9,6 @@
 #include "chrome/browser/chromeos/login/demo_mode/demo_setup_controller.h"
 #include "chrome/browser/chromeos/login/helper.h"
 #include "chrome/browser/chromeos/login/oobe_screen.h"
-#include "chrome/browser/chromeos/login/screen_manager.h"
 #include "chrome/browser/chromeos/login/wizard_context.h"
 #include "chrome/browser/chromeos/login/wizard_controller.h"
 #include "chrome/browser/ui/webui/chromeos/login/network_screen_handler.h"
@@ -41,12 +40,6 @@ std::string NetworkScreen::GetResultString(Result result) {
     case Result::BACK:
       return "Back";
   }
-}
-
-// static
-NetworkScreen* NetworkScreen::Get(ScreenManager* manager) {
-  return static_cast<NetworkScreen*>(
-      manager->GetScreen(NetworkScreenView::kScreenId));
 }
 
 NetworkScreen::NetworkScreen(NetworkScreenView* view,

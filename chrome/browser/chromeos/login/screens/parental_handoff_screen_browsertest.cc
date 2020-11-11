@@ -130,8 +130,8 @@ void ParentalHandoffScreenBrowserTest::WaitForScreenExit() {
 
 ParentalHandoffScreen*
 ParentalHandoffScreenBrowserTest::GetParentalHandoffScreen() {
-  return ParentalHandoffScreen::Get(
-      WizardController::default_controller()->screen_manager());
+  return WizardController::default_controller()
+      ->GetScreen<ParentalHandoffScreen>();
 }
 
 void ParentalHandoffScreenBrowserTest::ExitSyncConsentScreen() {
