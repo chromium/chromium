@@ -189,6 +189,8 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   // Deprecated prefs registered for migration.
   registry->RegisterBooleanPref(kAutofillJapanCityFieldMigratedDeprecated,
                                 false);
+  // Deprecated in profile prefs.
+  registry->RegisterStringPref(prefs::kAutofillStatesDataDir, "");
 }
 
 void MigrateDeprecatedAutofillPrefs(PrefService* prefs) {
@@ -222,6 +224,11 @@ void MigrateDeprecatedAutofillPrefs(PrefService* prefs) {
 
   // Added 10/2019.
   prefs->ClearPref(kAutofillJapanCityFieldMigratedDeprecated);
+
+  // Added 11/2020
+  // TODO(crbug.com/1147852): Remove deprecated kAutofillStatesDataDir from
+  // autofill profile prefs.
+  prefs->ClearPref(kAutofillStatesDataDir);
 }
 
 bool IsAutocompleteEnabled(const PrefService* prefs) {
