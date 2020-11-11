@@ -19,7 +19,6 @@
 #include "base/task_runner_util.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/download/download_prefs.h"
-#include "chrome/browser/nearby_sharing/bluetooth_advertising_interval_client.h"
 #include "chrome/browser/nearby_sharing/certificates/common.h"
 #include "chrome/browser/nearby_sharing/certificates/nearby_share_certificate_manager_impl.h"
 #include "chrome/browser/nearby_sharing/certificates/nearby_share_encrypted_metadata_key.h"
@@ -313,8 +312,11 @@ void NearbySharingServiceImpl::Shutdown() {
 
   power_client_->RemoveObserver(this);
 
-  if (bluetooth_advertising_interval_client_)
-    bluetooth_advertising_interval_client_->RestoreDefaultInterval();
+  // TODO(crbug/1147652): The call to update the advertising interval is
+  // removed to prevent a Bluez crash. We need to either reduce the global
+  // advertising interval asynchronously and wait for the result or use the
+  // updated API referenced in the bug which allows setting a per-advertisement
+  // interval.
 
   if (bluetooth_adapter_)
     bluetooth_adapter_->RemoveObserver(this);
@@ -1046,8 +1048,11 @@ void NearbySharingServiceImpl::OnGetBluetoothAdapter(
   bluetooth_adapter_ = adapter;
   bluetooth_adapter_->AddObserver(this);
 
-  bluetooth_advertising_interval_client_ =
-      std::make_unique<BluetoothAdvertisingIntervalClient>(bluetooth_adapter_);
+  // TODO(crbug/1147652): The call to update the advertising interval is
+  // removed to prevent a Bluez crash. We need to either reduce the global
+  // advertising interval asynchronously and wait for the result or use the
+  // updated API referenced in the bug which allows setting a per-advertisement
+  // interval.
 
   // TODO(crbug.com/1132469): This was added to fix an issue where advertising
   // was not starting on sign-in. Add a unit test to cover this case.
@@ -1057,13 +1062,14 @@ void NearbySharingServiceImpl::OnGetBluetoothAdapter(
 void NearbySharingServiceImpl::StartFastInitiationAdvertising() {
   NS_LOG(VERBOSE) << __func__ << ": Starting fast initiation advertising.";
 
-  // This will asynchronously reduce the advertising interval to allow for
-  // faster discovery. Existing advertisements will be updated, so we don't have
-  // to wait for this to complete.
-  bluetooth_advertising_interval_client_->ReduceInterval();
-
   fast_initiation_manager_ =
       FastInitiationManager::Factory::Create(bluetooth_adapter_);
+
+  // TODO(crbug/1147652): The call to update the advertising interval is
+  // removed to prevent a Bluez crash. We need to either reduce the global
+  // advertising interval asynchronously and wait for the result or use the
+  // updated API referenced in the bug which allows setting a per-advertisement
+  // interval.
 
   // TODO(crbug.com/1100686): Determine whether to call StartAdvertising() with
   // kNotify or kSilent.
@@ -1103,10 +1109,13 @@ void NearbySharingServiceImpl::StopFastInitiationAdvertising() {
 
 void NearbySharingServiceImpl::OnStopFastInitiationAdvertising() {
   fast_initiation_manager_.reset();
-  if (ShouldRestoreAdvertisingInterval())
-    bluetooth_advertising_interval_client_->RestoreDefaultInterval();
-
   NS_LOG(VERBOSE) << "Stopped advertising FastInitiation";
+
+  // TODO(crbug/1147652): The call to update the advertising interval is
+  // removed to prevent a Bluez crash. We need to either reduce the global
+  // advertising interval asynchronously and wait for the result or use the
+  // updated API referenced in the bug which allows setting a per-advertisement
+  // interval.
 }
 
 void NearbySharingServiceImpl::OnOutgoingAdvertisementDecoded(
@@ -1515,10 +1524,11 @@ void NearbySharingServiceImpl::InvalidateAdvertisingState() {
     return;
   }
 
-  // This will asynchronously reduce the advertising interval to allow for
-  // faster discovery. Existing advertisements will be updated, so we don't have
-  // to wait for this to complete.
-  bluetooth_advertising_interval_client_->ReduceInterval();
+  // TODO(crbug/1147652): The call to update the advertising interval is
+  // removed to prevent a Bluez crash. We need to either reduce the global
+  // advertising interval asynchronously and wait for the result or use the
+  // updated API referenced in the bug which allows setting a per-advertisement
+  // interval.
 
   nearby_connections_manager_->StartAdvertising(
       *endpoint_info,
@@ -1549,8 +1559,11 @@ void NearbySharingServiceImpl::StopAdvertising() {
   nearby_connections_manager_->StopAdvertising();
   advertising_power_level_ = PowerLevel::kUnknown;
 
-  if (ShouldRestoreAdvertisingInterval())
-    bluetooth_advertising_interval_client_->RestoreDefaultInterval();
+  // TODO(crbug/1147652): The call to update the advertising interval is
+  // removed to prevent a Bluez crash. We need to either reduce the global
+  // advertising interval asynchronously and wait for the result or use the
+  // updated API referenced in the bug which allows setting a per-advertisement
+  // interval.
 
   NS_LOG(VERBOSE) << __func__ << ": Advertising has stopped";
 }
@@ -1665,16 +1678,6 @@ void NearbySharingServiceImpl::RemoveOutgoingShareTargetWithEndpointId(
   }
 
   NS_LOG(VERBOSE) << __func__ << ": Reported OnShareTargetLost";
-}
-
-bool NearbySharingServiceImpl::ShouldRestoreAdvertisingInterval() {
-  if (advertising_power_level_ != PowerLevel::kUnknown)
-    return false;
-
-  if (fast_initiation_manager_)
-    return false;
-
-  return true;
 }
 
 void NearbySharingServiceImpl::OnTransferComplete() {

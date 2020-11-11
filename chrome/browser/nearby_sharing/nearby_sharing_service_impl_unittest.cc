@@ -204,9 +204,6 @@ const char kTextPayload[] = "Test text payload";
 
 constexpr int64_t kFreeDiskSpace = 10000;
 
-const int64_t kAdjustedAdvertisingInterval = 100;
-const int64_t kDefaultAdvertisingInterval = 0;
-
 const std::vector<uint8_t> kValidV1EndpointInfo = {
     0, 0, 0, 0,  0,   0,   0,   0,   0,  0,   0,  0,  0,   0,
     0, 0, 0, 10, 100, 101, 118, 105, 99, 101, 78, 97, 109, 101};
@@ -1050,9 +1047,6 @@ TEST_F(NearbySharingServiceImplTest, StartFastInitiationAdvertising) {
       service_->RegisterSendSurface(&transfer_callback, &discovery_callback,
                                     SendSurfaceState::kForeground));
   EXPECT_EQ(1u, fast_initiation_manager_factory_->StartAdvertisingCount());
-  EXPECT_EQ(1u, set_advertising_interval_call_count());
-  EXPECT_EQ(kAdjustedAdvertisingInterval, last_advertising_interval_min());
-  EXPECT_EQ(kAdjustedAdvertisingInterval, last_advertising_interval_max());
 
   // Call RegisterSendSurface a second time and make sure StartAdvertising is
   // not called again.
@@ -1061,9 +1055,6 @@ TEST_F(NearbySharingServiceImplTest, StartFastInitiationAdvertising) {
       service_->RegisterSendSurface(&transfer_callback, &discovery_callback,
                                     SendSurfaceState::kForeground));
   EXPECT_EQ(1u, fast_initiation_manager_factory_->StartAdvertisingCount());
-  EXPECT_EQ(1u, set_advertising_interval_call_count());
-  EXPECT_EQ(kAdjustedAdvertisingInterval, last_advertising_interval_min());
-  EXPECT_EQ(kAdjustedAdvertisingInterval, last_advertising_interval_max());
 }
 
 TEST_F(NearbySharingServiceImplTest, StartFastInitiationAdvertisingError) {
@@ -1122,17 +1113,11 @@ TEST_F(NearbySharingServiceImplTest, StopFastInitiationAdvertising) {
       service_->RegisterSendSurface(&transfer_callback, &discovery_callback,
                                     SendSurfaceState::kForeground));
   EXPECT_EQ(1u, fast_initiation_manager_factory_->StartAdvertisingCount());
-  EXPECT_EQ(1u, set_advertising_interval_call_count());
-  EXPECT_EQ(kAdjustedAdvertisingInterval, last_advertising_interval_min());
-  EXPECT_EQ(kAdjustedAdvertisingInterval, last_advertising_interval_max());
   EXPECT_EQ(
       NearbySharingService::StatusCodes::kOk,
       service_->UnregisterSendSurface(&transfer_callback, &discovery_callback));
   EXPECT_TRUE(fast_initiation_manager_factory_
                   ->StopAdvertisingCalledAndManagerDestroyed());
-  EXPECT_EQ(2u, set_advertising_interval_call_count());
-  EXPECT_EQ(kDefaultAdvertisingInterval, last_advertising_interval_min());
-  EXPECT_EQ(kDefaultAdvertisingInterval, last_advertising_interval_max());
 }
 
 TEST_F(NearbySharingServiceImplTest,
@@ -1865,33 +1850,6 @@ TEST_F(NearbySharingServiceImplTest,
   service_->FlushMojoForTesting();
   EXPECT_FALSE(fake_nearby_connections_manager_->IsAdvertising());
   EXPECT_TRUE(fake_nearby_connections_manager_->is_shutdown());
-}
-
-TEST_F(NearbySharingServiceImplTest,
-       SetIntervalForNearbyConnectionsAdvertising) {
-  SetConnectionType(net::NetworkChangeNotifier::CONNECTION_WIFI);
-  MockTransferUpdateCallback transfer_callback;
-  MockShareTargetDiscoveredCallback discovery_callback;
-  EXPECT_EQ(
-      NearbySharingService::StatusCodes::kOk,
-      service_->RegisterSendSurface(&transfer_callback, &discovery_callback,
-                                    SendSurfaceState::kForeground));
-  EXPECT_TRUE(fake_nearby_connections_manager_->IsDiscovering());
-  EXPECT_EQ(1u, set_advertising_interval_call_count());
-  EXPECT_EQ(kAdjustedAdvertisingInterval, last_advertising_interval_min());
-  EXPECT_EQ(kAdjustedAdvertisingInterval, last_advertising_interval_max());
-
-  power_client_->SetSuspended(true);
-  EXPECT_FALSE(fake_nearby_connections_manager_->IsDiscovering());
-  EXPECT_EQ(2u, set_advertising_interval_call_count());
-  EXPECT_EQ(kDefaultAdvertisingInterval, last_advertising_interval_min());
-  EXPECT_EQ(kDefaultAdvertisingInterval, last_advertising_interval_max());
-
-  power_client_->SetSuspended(false);
-  EXPECT_TRUE(fake_nearby_connections_manager_->IsDiscovering());
-  EXPECT_EQ(3u, set_advertising_interval_call_count());
-  EXPECT_EQ(kAdjustedAdvertisingInterval, last_advertising_interval_min());
-  EXPECT_EQ(kAdjustedAdvertisingInterval, last_advertising_interval_max());
 }
 
 TEST_F(NearbySharingServiceImplTest,

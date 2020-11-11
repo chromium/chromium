@@ -43,7 +43,6 @@
 #include "chromeos/services/nearby/public/mojom/nearby_decoder_types.mojom.h"
 #include "components/prefs/pref_change_registrar.h"
 
-class BluetoothAdvertisingIntervalClient;
 class FastInitiationManager;
 class NearbyConnectionsManager;
 class NearbyShareContactManager;
@@ -189,7 +188,6 @@ class NearbySharingServiceImpl
   void ScheduleRotateBackgroundAdvertisementTimer();
   void OnRotateBackgroundAdvertisementTimerFired();
   void RemoveOutgoingShareTargetWithEndpointId(const std::string& endpoint_id);
-  bool ShouldRestoreAdvertisingInterval();
 
   void OnTransferComplete();
   void OnTransferStarted(bool is_incoming);
@@ -327,8 +325,6 @@ class NearbySharingServiceImpl
   ScopedObserver<NearbyProcessManager, NearbyProcessManager::Observer>
       nearby_process_observer_{this};
   scoped_refptr<device::BluetoothAdapter> bluetooth_adapter_;
-  std::unique_ptr<BluetoothAdvertisingIntervalClient>
-      bluetooth_advertising_interval_client_;
   std::unique_ptr<FastInitiationManager> fast_initiation_manager_;
   std::unique_ptr<NearbyNotificationManager> nearby_notification_manager_;
   NearbyShareHttpNotifier nearby_share_http_notifier_;
