@@ -72,7 +72,6 @@ const char* const kPersistentPrefsAllowlist[] = {
     metrics::prefs::kStabilityPageLoadCount,
     metrics::prefs::kStabilityRendererHangCount,
     metrics::prefs::kStabilityRendererLaunchCount,
-    metrics::prefs::kUninstallMetricsPageLoadCount,
     // Unsent logs.
     metrics::prefs::kMetricsInitialLogs,
     metrics::prefs::kMetricsOngoingLogs,
