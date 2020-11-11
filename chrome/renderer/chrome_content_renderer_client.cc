@@ -788,9 +788,20 @@ WebPlugin* ChromeContentRendererClient::CreatePlugin(
   // OverrideCreatePlugin.
   if (status == chrome::mojom::PluginStatus::kNotFound ||
       orig_mime_type == content::kBrowserPluginMimeType) {
-    PluginUMAReporter::GetInstance()->ReportPluginMissing(orig_mime_type, url);
-    placeholder = ChromePluginPlaceholder::CreateLoadableMissingPlugin(
-        render_frame, original_params);
+    // Flash has been thoroughly removed in M88+, so we need to have a special
+    // case here to display a deprecated message instead of a generic
+    // plugin-missing message.
+    if (orig_mime_type == "application/x-shockwave-flash" ||
+        orig_mime_type == "application/futuresplash") {
+      return NonLoadablePluginPlaceholder::CreateFlashDeprecatedPlaceholder(
+                 render_frame, original_params)
+          ->plugin();
+    } else {
+      PluginUMAReporter::GetInstance()->ReportPluginMissing(orig_mime_type,
+                                                            url);
+      placeholder = ChromePluginPlaceholder::CreateLoadableMissingPlugin(
+          render_frame, original_params);
+    }
   } else {
     // TODO(bauerb): This should be in content/.
     WebPluginParams params(original_params);

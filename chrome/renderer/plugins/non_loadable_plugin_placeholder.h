@@ -30,6 +30,10 @@ class NonLoadablePluginPlaceholder {
       content::RenderFrame* render_frame,
       const blink::WebPluginParams& params);
 
+  static plugins::PluginPlaceholder* CreateFlashDeprecatedPlaceholder(
+      content::RenderFrame* render_frame,
+      const blink::WebPluginParams& params);
+
   static plugins::PluginPlaceholder* CreateErrorPlugin(
       content::RenderFrame* render_frame,
       const base::FilePath& file_path);
