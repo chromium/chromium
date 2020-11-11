@@ -7,6 +7,9 @@ package org.chromium.chrome.browser.omnibox.voice;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 
+import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.ASSISTANT_LAST_VERSION;
+import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.ASSISTANT_VOICE_SEARCH_SUPPORTED;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageInfo;
@@ -14,6 +17,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.drawable.Drawable;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -26,9 +30,11 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.BaseSwitches;
 import org.chromium.base.metrics.test.ShadowRecordHistogram;
 import org.chromium.base.task.test.CustomShadowAsyncTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.DeferredStartupHandler;
 import org.chromium.chrome.browser.IntentHandler;
@@ -46,6 +52,7 @@ import org.chromium.components.search_engines.TemplateUrlService;
 @Config(manifest = Config.NONE,
         shadows = {CustomShadowAsyncTask.class, ShadowRecordHistogram.class})
 @Features.EnableFeatures(ChromeFeatureList.OMNIBOX_ASSISTANT_VOICE_SEARCH)
+@CommandLineFlags.Add(BaseSwitches.DISABLE_LOW_END_DEVICE_MODE)
 public class AssistantVoiceSearchServiceUnitTest {
     AssistantVoiceSearchService mAssistantVoiceSearchService;
 
@@ -61,6 +68,7 @@ public class AssistantVoiceSearchServiceUnitTest {
     @Mock
     ExternalAuthUtils mExternalAuthUtils;
 
+    SharedPreferencesManager mSharedPreferencesManager;
     PackageInfo mPackageInfo;
     Context mContext;
 
@@ -76,20 +84,29 @@ public class AssistantVoiceSearchServiceUnitTest {
         ShadowRecordHistogram.reset();
         MockitoAnnotations.initMocks(this);
         DeferredStartupHandler.setInstanceForTests(new TestDeferredStartupHandler());
+        mSharedPreferencesManager = SharedPreferencesManager.getInstance();
 
         mContext = Mockito.spy(Robolectric.buildActivity(Activity.class).setup().get());
 
         doReturn(true).when(mExternalAuthUtils).isChromeGoogleSigned();
         doReturn(true).when(mExternalAuthUtils).isGoogleSigned(IntentHandler.PACKAGE_GSA);
-
         doReturn(true).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
         doReturn(false).when(mGsaState).isAgsaVersionBelowMinimum(any(), any());
         doReturn(true).when(mGsaState).canAgsaHandleIntent(any());
         doReturn(true).when(mGsaState).agsaSupportsAssistantVoiceSearch();
+        doReturn(true).when(mGsaState).doesGsaAccountMatchChrome();
 
         mAssistantVoiceSearchService = new AssistantVoiceSearchService(mContext, mExternalAuthUtils,
-                mTemplateUrlService, mGsaState, null, SharedPreferencesManager.getInstance());
+                mTemplateUrlService, mGsaState, null, mSharedPreferencesManager);
     }
+
+    @After
+    public void tearDown() {
+        mSharedPreferencesManager.removeKey(ASSISTANT_VOICE_SEARCH_SUPPORTED);
+        mSharedPreferencesManager.removeKey(ASSISTANT_LAST_VERSION);
+        AssistantVoiceSearchService.setAgsaSupportsAssistantVoiceSearchForTesting(null);
+    }
+
     @Test
     @Feature("OmniboxAssistantVoiceSearch")
     public void testStartVoiceRecognition_StartsAssistantVoiceSearch() {
@@ -125,7 +142,7 @@ public class AssistantVoiceSearchServiceUnitTest {
     @Test
     @Feature("OmniboxAssistantVoiceSearch")
     public void testStartVoiceRecognition_StartsAssistantVoiceSearch_AGSARotiChromeNotEnabled() {
-        mAssistantVoiceSearchService.setAgsaSupportsAssistantVoiceSearchForTesting(false);
+        AssistantVoiceSearchService.setAgsaSupportsAssistantVoiceSearchForTesting(false);
 
         Assert.assertFalse(mAssistantVoiceSearchService.shouldRequestAssistantVoiceSearch());
         Assert.assertEquals(1,
@@ -139,7 +156,7 @@ public class AssistantVoiceSearchServiceUnitTest {
     @Feature("OmniboxAssistantVoiceSearch")
     public void
     testStartVoiceRecognition_StartsAssistantVoiceSearch_AGSARotiChromeNotEnabledNotComplete() {
-        mAssistantVoiceSearchService.setAgsaSupportsAssistantVoiceSearchForTesting(null);
+        AssistantVoiceSearchService.setAgsaSupportsAssistantVoiceSearchForTesting(null);
 
         Assert.assertFalse(mAssistantVoiceSearchService.shouldRequestAssistantVoiceSearch());
         Assert.assertEquals(1,
@@ -147,6 +164,18 @@ public class AssistantVoiceSearchServiceUnitTest {
                         AssistantVoiceSearchService.USER_ELIGIBILITY_FAILURE_REASON_HISTOGRAM,
                         AssistantVoiceSearchService.EligibilityFailureReason
                                 .AGSA_DOESNT_SUPPORT_VOICE_SEARCH_CHECK_NOT_COMPLETE));
+    }
+
+    @Test
+    @Feature("OmniboxAssistantVoiceSearch")
+    public void testStartVoiceRecognition_StartsAssistantVoiceSearch_AccountMismatch() {
+        doReturn(false).when(mGsaState).doesGsaAccountMatchChrome();
+
+        Assert.assertFalse(mAssistantVoiceSearchService.shouldRequestAssistantVoiceSearch());
+        Assert.assertEquals(1,
+                ShadowRecordHistogram.getHistogramValueCountForTesting(
+                        AssistantVoiceSearchService.USER_ELIGIBILITY_FAILURE_REASON_HISTOGRAM,
+                        AssistantVoiceSearchService.EligibilityFailureReason.ACCOUNT_MISMATCH));
     }
 
     @Test

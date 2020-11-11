@@ -61,7 +61,8 @@ public class AssistantVoiceSearchService implements TemplateUrlService.TemplateU
             EligibilityFailureReason.AGSA_DOESNT_SUPPORT_VOICE_SEARCH_CHECK_NOT_COMPLETE,
             EligibilityFailureReason.AGSA_DOESNT_SUPPORT_VOICE_SEARCH,
             EligibilityFailureReason.CHROME_NOT_GOOGLE_SIGNED,
-            EligibilityFailureReason.AGSA_NOT_GOOGLE_SIGNED, EligibilityFailureReason.MAX_VALUE})
+            EligibilityFailureReason.AGSA_NOT_GOOGLE_SIGNED,
+            EligibilityFailureReason.ACCOUNT_MISMATCH, EligibilityFailureReason.MAX_VALUE})
     @Retention(RetentionPolicy.SOURCE)
     @interface EligibilityFailureReason {
         int AGSA_CANT_HANDLE_INTENT = 0;
@@ -70,9 +71,10 @@ public class AssistantVoiceSearchService implements TemplateUrlService.TemplateU
         int AGSA_DOESNT_SUPPORT_VOICE_SEARCH = 3;
         int CHROME_NOT_GOOGLE_SIGNED = 4;
         int AGSA_NOT_GOOGLE_SIGNED = 5;
+        int ACCOUNT_MISMATCH = 6;
 
         // STOP: When updating this, also update values in enums.xml.
-        int MAX_VALUE = 6;
+        int MAX_VALUE = 7;
     }
 
     /** Allows outside classes to listen for changes in this service. */
@@ -286,6 +288,12 @@ public class AssistantVoiceSearchService implements TemplateUrlService.TemplateU
             return false;
         }
 
+        if (!mGsaState.doesGsaAccountMatchChrome()) {
+            RecordHistogram.recordEnumeratedHistogram(USER_ELIGIBILITY_FAILURE_REASON_HISTOGRAM,
+                    EligibilityFailureReason.ACCOUNT_MISMATCH, EligibilityFailureReason.MAX_VALUE);
+            return false;
+        }
+
         return true;
     }
 
@@ -309,7 +317,7 @@ public class AssistantVoiceSearchService implements TemplateUrlService.TemplateU
     }
 
     // Allows testing the NULL case for Boolean.
-    void setAgsaSupportsAssistantVoiceSearchForTesting(Boolean value) {
+    static void setAgsaSupportsAssistantVoiceSearchForTesting(Boolean value) {
         sAgsaSupportsAssistantVoiceSearch = value;
     }
 }
