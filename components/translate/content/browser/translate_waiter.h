@@ -9,7 +9,7 @@
 
 #include "base/macros.h"
 #include "base/run_loop.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "components/translate/content/browser/content_translate_driver.h"
 #include "components/translate/core/common/translate_errors.h"
 
@@ -42,8 +42,9 @@ class TranslateWaiter : ContentTranslateDriver::Observer {
 
  private:
   WaitEvent wait_event_;
-  ScopedObserver<ContentTranslateDriver, ContentTranslateDriver::Observer>
-      scoped_observer_{this};
+  base::ScopedObservation<ContentTranslateDriver,
+                          ContentTranslateDriver::Observer>
+      scoped_observation_{this};
   base::RunLoop run_loop_;
 
   DISALLOW_COPY_AND_ASSIGN(TranslateWaiter);

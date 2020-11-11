@@ -9,7 +9,7 @@ namespace translate {
 TranslateWaiter::TranslateWaiter(ContentTranslateDriver* translate_driver,
                                  WaitEvent wait_event)
     : wait_event_(wait_event) {
-  scoped_observer_.Add(translate_driver);
+  scoped_observation_.Observe(translate_driver);
 }
 
 TranslateWaiter::~TranslateWaiter() = default;
