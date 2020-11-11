@@ -9936,7 +9936,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "cpu": "arm64",
               "device_type": "walleye",
               "os": "Android"
             }
@@ -9959,7 +9958,6 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "cpu": "arm64",
               "device_type": "walleye",
               "os": "Android"
             }
@@ -61005,7 +61003,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "cpu": "x86-32",
+              "cpu": "x86-64",
               "os": "Windows-10-18363"
             }
           ],
@@ -61027,7 +61025,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "cpu": "x86-32",
+              "cpu": "x86-64",
               "os": "Windows-10-18363"
             }
           ],

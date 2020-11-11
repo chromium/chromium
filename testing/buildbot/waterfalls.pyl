@@ -2168,7 +2168,6 @@
         },
         'mixins': [
           'walleye',
-          'arm64',
         ],
       },
       'android-paeverywhere-arm64-fyi-rel': {
@@ -2177,7 +2176,6 @@
         },
         'mixins': [
           'walleye',
-          'arm64',
         ],
       },
       'chromeos-amd64-generic-lacros-rel': {
@@ -2777,7 +2775,7 @@
         },
         'mixins': [
           'win10',
-          'x86-32',
+          'x86-64',
         ],
       },
       'win-paeverywhere-x86-fyi-rel': {
@@ -2786,7 +2784,7 @@
         },
         'mixins': [
           'win10',
-          'x86-32',
+          'x86-64',
         ],
       },
       'win-pixel-tester-rel': {
