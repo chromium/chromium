@@ -32,7 +32,8 @@ using multidevice_setup::mojom::HostStatus;
 bool IsEligibleForFeature(
     const base::Optional<multidevice::RemoteDeviceRef>& local_device,
     const RemoteDeviceRefList& remote_devices,
-    FeatureState feature_state) {
+    FeatureState feature_state,
+    HostStatus host_status) {
   // If the feature is prohibited by policy, we don't initialize Phone Hub
   // classes at all. But, there is an edge case where a user session starts up
   // normally, then an administrator prohibits the policy during the user
@@ -56,6 +57,10 @@ bool IsEligibleForFeature(
   // If the local device does not have an enrolled Bluetooth address, no phone
   // can serve as its host.
   if (local_device->bluetooth_public_address().empty())
+    return false;
+
+  // If the host device is not an eligible host, do not initialize Phone Hub.
+  if (host_status == HostStatus::kNoEligibleHosts)
     return false;
 
   for (const RemoteDeviceRef& device : remote_devices) {
@@ -241,20 +246,21 @@ FeatureStatus FeatureStatusProviderImpl::ComputeStatus() {
   FeatureState feature_state =
       multidevice_setup_client_->GetFeatureState(Feature::kPhoneHub);
 
+  HostStatus host_status = multidevice_setup_client_->GetHostStatus().first;
+
   // Note: If |device_sync_client_| is not yet ready, it has not initialized
   // itself with device metadata, so we assume that we are ineligible for the
   // feature until proven otherwise.
   if (!device_sync_client_->is_ready() ||
       !IsEligibleForFeature(device_sync_client_->GetLocalDeviceMetadata(),
                             device_sync_client_->GetSyncedDevices(),
-                            feature_state)) {
+                            feature_state, host_status)) {
     return FeatureStatus::kNotEligibleForFeature;
   }
 
   if (session_manager_->IsScreenLocked() || is_suspended_)
     return FeatureStatus::kLockOrSuspended;
 
-  HostStatus host_status = multidevice_setup_client_->GetHostStatus().first;
 
   if (host_status == HostStatus::kEligibleHostExistsButNoHostSet)
     return FeatureStatus::kEligiblePhoneButNotSetUp;

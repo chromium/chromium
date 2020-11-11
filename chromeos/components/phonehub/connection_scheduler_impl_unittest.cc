@@ -189,5 +189,21 @@ TEST_F(ConnectionSchedulerImplTest, ScheduleConnectionSuspended) {
   EXPECT_EQ(1u, fake_connection_manager_->num_attempt_connection_calls());
 }
 
+TEST_F(ConnectionSchedulerImplTest, HostsNotEligible) {
+  // Simulate no eligible hosts available. Expect no scheduled connections.
+  fake_feature_status_provider_->SetStatus(
+      FeatureStatus::kNotEligibleForFeature);
+  CreateConnectionScheduler();
+
+  EXPECT_EQ(0, GetBackoffFailureCount());
+  EXPECT_EQ(0u, fake_connection_manager_->num_attempt_connection_calls());
+
+  fake_feature_status_provider_->SetStatus(
+      FeatureStatus::kEnabledButDisconnected);
+  // Flip to have eligble hosts available. Expect a scheduled connection.
+  EXPECT_EQ(0, GetBackoffFailureCount());
+  EXPECT_EQ(1u, fake_connection_manager_->num_attempt_connection_calls());
+}
+
 }  // namespace phonehub
 }  // namespace chromeos

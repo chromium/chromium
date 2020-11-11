@@ -295,6 +295,12 @@ TEST_F(FeatureStatusProviderImplTest, EligiblePhoneButNotSetUp) {
   EXPECT_EQ(FeatureStatus::kEligiblePhoneButNotSetUp, GetStatus());
 }
 
+TEST_F(FeatureStatusProviderImplTest, NoEligiblePhones) {
+  SetMultiDeviceState(HostStatus::kNoEligibleHosts,
+                      FeatureState::kUnavailableNoVerifiedHost);
+  EXPECT_EQ(FeatureStatus::kNotEligibleForFeature, GetStatus());
+}
+
 TEST_F(FeatureStatusProviderImplTest, PhoneSelectedAndPendingSetup) {
   SetEligibleSyncedDevices();
 
@@ -345,6 +351,10 @@ TEST_F(FeatureStatusProviderImplTest, UnavailableBluetoothOff) {
 }
 
 TEST_F(FeatureStatusProviderImplTest, TransitionBetweenAllStatuses) {
+  EXPECT_EQ(FeatureStatus::kNotEligibleForFeature, GetStatus());
+
+  SetMultiDeviceState(HostStatus::kNoEligibleHosts,
+                      FeatureState::kUnavailableNoVerifiedHost);
   EXPECT_EQ(FeatureStatus::kNotEligibleForFeature, GetStatus());
 
   SetMultiDeviceState(HostStatus::kEligibleHostExistsButNoHostSet,
