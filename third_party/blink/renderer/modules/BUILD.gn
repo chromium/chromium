@@ -349,7 +349,6 @@ source_set("unit_tests") {
     "mediastream/media_stream_constraints_util_video_device_test.cc",
     "mediastream/media_stream_device_observer_test.cc",
     "mediastream/media_stream_track_generator_test.cc",
-    "mediastream/media_stream_track_processor_test.cc",
     "mediastream/media_stream_video_capturer_source_test.cc",
     "mediastream/media_stream_video_renderer_sink_test.cc",
     "mediastream/media_stream_video_source_test.cc",

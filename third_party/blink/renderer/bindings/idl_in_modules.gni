@@ -384,7 +384,6 @@ static_idl_files_in_modules = get_path_info(
           "//third_party/blink/renderer/modules/mediastream/media_stream_track_event.idl",
           "//third_party/blink/renderer/modules/mediastream/media_stream_track_event_init.idl",
           "//third_party/blink/renderer/modules/mediastream/media_stream_track_generator.idl",
-          "//third_party/blink/renderer/modules/mediastream/media_stream_track_processor.idl",
           "//third_party/blink/renderer/modules/mediastream/media_track_capabilities.idl",
           "//third_party/blink/renderer/modules/mediastream/media_track_constraint_set.idl",
           "//third_party/blink/renderer/modules/mediastream/media_track_constraints.idl",
