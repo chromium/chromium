@@ -68,6 +68,7 @@ import org.chromium.chrome.browser.omnibox.LocationBar;
 import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
 import org.chromium.chrome.browser.omnibox.OmniboxFocusReason;
 import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
+import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.previews.Previews;
 import org.chromium.chrome.browser.previews.PreviewsAndroidBridge;
 import org.chromium.chrome.browser.previews.PreviewsUma;
@@ -1578,6 +1579,11 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
     public FakeboxDelegate getFakeboxDelegate() {
         // TODO(crbug.com/1000295): Split fakebox component out of ntp package.
         return mLocationBar.getFakeboxDelegate();
+    }
+
+    @Nullable
+    public VoiceRecognitionHandler getVoiceRecognitionHandler() {
+        return mLocationBar.getVoiceRecognitionHandler();
     }
 
     private boolean shouldShowCursorInLocationBar() {

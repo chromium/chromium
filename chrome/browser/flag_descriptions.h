@@ -1823,6 +1823,9 @@ extern const char kVideoTutorialsDescription[];
 extern const char kVideoTutorialsInstantFetchName[];
 extern const char kVideoTutorialsInstantFetchDescription[];
 
+extern const char kVoiceButtonInTopToolbarName[];
+extern const char kVoiceButtonInTopToolbarDescription[];
+
 extern const char kPrefetchNotificationSchedulingIntegrationName[];
 extern const char kPrefetchNotificationSchedulingIntegrationDescription[];
 

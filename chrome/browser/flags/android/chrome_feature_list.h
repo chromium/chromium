@@ -135,6 +135,7 @@ extern const base::Feature kUpdateNotificationSchedulingIntegration;
 extern const base::Feature
     kUpdateNotificationScheduleServiceImmediateShowOption;
 extern const base::Feature kUserMediaScreenCapturing;
+extern const base::Feature kVoiceButtonInTopToolbar;
 extern const base::Feature kVrBrowsingFeedback;
 extern const base::Feature kWebApkAdaptiveIcon;
 extern const base::Feature kPrefetchNotificationSchedulingIntegration;

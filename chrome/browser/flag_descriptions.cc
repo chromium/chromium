@@ -3166,6 +3166,10 @@ const char kVideoTutorialsInstantFetchName[] =
 const char kVideoTutorialsInstantFetchDescription[] =
     "Fetch video tutorials on startup";
 
+const char kVoiceButtonInTopToolbarName[] = "Voice button in top toolbar";
+const char kVoiceButtonInTopToolbarDescription[] =
+    "Enables showing the voice search button in the top toolbar";
+
 const char kInlineUpdateFlowName[] = "Enable Google Play inline update flow";
 const char kInlineUpdateFlowDescription[] =
     "When this flag is set, instead of taking the user to the Google Play "

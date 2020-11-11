@@ -12,6 +12,7 @@ import androidx.annotation.Nullable;
 import org.chromium.chrome.browser.lifecycle.Destroyable;
 import org.chromium.chrome.browser.ntp.FakeboxDelegate;
 import org.chromium.chrome.browser.ntp.NewTabPage;
+import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.tab.Tab;
 
 /**
@@ -77,6 +78,12 @@ public interface LocationBar extends Destroyable {
 
     /** Updates the state of the mic button if there is one. */
     void updateMicButtonState();
+
+    /** Returns the {@link VoiceRecognitionHandler} associated with this LocationBar. */
+    @Nullable
+    default VoiceRecognitionHandler getVoiceRecognitionHandler() {
+        return null;
+    }
 
     /**
      * Returns a (@link FakeboxDelegate}.

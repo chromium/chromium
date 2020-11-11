@@ -7458,6 +7458,24 @@
             ]
         }
     ],
+    "VoiceButtonInTopToolbar": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "minimum_width": "360"
+                    },
+                    "enable_features": [
+                        "VoiceButtonInTopToolbar"
+                    ]
+                }
+            ]
+        }
+    ],
     "Vulkan": [
         {
             "platforms": [

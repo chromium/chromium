@@ -224,6 +224,7 @@ const base::Feature* kFeaturesExposedToJava[] = {
     &kUmaBackgroundSessions,
     &kUpdateNotificationSchedulingIntegration,
     &kUpdateNotificationScheduleServiceImmediateShowOption,
+    &kVoiceButtonInTopToolbar,
     &kVrBrowsingFeedback,
     &kWebApkAdaptiveIcon,
     &kPrefetchNotificationSchedulingIntegration,
@@ -661,6 +662,9 @@ const base::Feature kUpdateNotificationScheduleServiceImmediateShowOption{
 
 const base::Feature kUserMediaScreenCapturing{
     "UserMediaScreenCapturing", base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kVoiceButtonInTopToolbar{"VoiceButtonInTopToolbar",
+                                             base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kVrBrowsingFeedback{"VrBrowsingFeedback",
                                         base::FEATURE_ENABLED_BY_DEFAULT};

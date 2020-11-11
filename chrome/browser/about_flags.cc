@@ -3008,6 +3008,10 @@ const FeatureEntry kFeatureEntries[] = {
      MULTI_VALUE_TYPE(kReaderModeHeuristicsChoices)},
 #endif  // OS_ANDROID
 #if defined(OS_ANDROID)
+    {"voice-button-in-top-toolbar",
+     flag_descriptions::kVoiceButtonInTopToolbarName,
+     flag_descriptions::kVoiceButtonInTopToolbarDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kVoiceButtonInTopToolbar)},
     {"share-button-in-top-toolbar",
      flag_descriptions::kShareButtonInTopToolbarName,
      flag_descriptions::kShareButtonInTopToolbarDescription, kOsAndroid,

@@ -14,6 +14,7 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
@@ -56,6 +57,8 @@ import org.chromium.chrome.browser.messages.MessageContainerCoordinator;
 import org.chromium.chrome.browser.metrics.UkmRecorder;
 import org.chromium.chrome.browser.omnibox.OmniboxFocusReason;
 import org.chromium.chrome.browser.omnibox.geo.GeolocationHeader;
+import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
+import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler.VoiceInteractionSource;
 import org.chromium.chrome.browser.paint_preview.DemoPaintPreview;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
@@ -68,6 +71,7 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.ButtonDataProvider;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
+import org.chromium.chrome.browser.toolbar.VoiceToolbarButtonController;
 import org.chromium.chrome.browser.toolbar.top.ToolbarActionModeCallback;
 import org.chromium.chrome.browser.toolbar.top.ToolbarControlContainer;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuBlocker;
@@ -566,7 +570,32 @@ public class RootUiCoordinator
                     mActivityTabProvider, mShareDelegateSupplier, new ShareUtils(),
                     mActivity.getLifecycleDispatcher(), mActivity.getModalDialogManager(),
                     () -> mToolbarManager.setUrlBarFocus(false, OmniboxFocusReason.UNFOCUS));
-            mButtonDataProviders = Arrays.asList(mIdentityDiscController, shareButtonController);
+            VoiceToolbarButtonController.VoiceSearchDelegate voiceSearchDelegate =
+                    new VoiceToolbarButtonController.VoiceSearchDelegate() {
+                        @Override
+                        public boolean isVoiceSearchEnabled() {
+                            VoiceRecognitionHandler voiceRecognitionHandler =
+                                    mToolbarManager.getVoiceRecognitionHandler();
+                            if (voiceRecognitionHandler == null) return false;
+                            return voiceRecognitionHandler.isVoiceSearchEnabled();
+                        }
+
+                        @Override
+                        public void startVoiceRecognition() {
+                            VoiceRecognitionHandler voiceRecognitionHandler =
+                                    mToolbarManager.getVoiceRecognitionHandler();
+                            if (voiceRecognitionHandler == null) return;
+                            voiceRecognitionHandler.startVoiceRecognition(
+                                    VoiceInteractionSource.TOOLBAR);
+                        }
+                    };
+            VoiceToolbarButtonController voiceToolbarButtonController =
+                    new VoiceToolbarButtonController(mActivity,
+                            AppCompatResources.getDrawable(mActivity, R.drawable.btn_mic),
+                            mActivityTabProvider, mActivity.getLifecycleDispatcher(),
+                            mActivity.getModalDialogManager(), voiceSearchDelegate);
+            mButtonDataProviders = Arrays.asList(
+                    mIdentityDiscController, shareButtonController, voiceToolbarButtonController);
             mToolbarManager = new ToolbarManager(mActivity, mActivity.getBrowserControlsManager(),
                     mActivity.getFullscreenManager(), toolbarContainer,
                     mActivity.getCompositorViewHolder(), urlFocusChangedCallback,

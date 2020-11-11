@@ -45536,6 +45536,7 @@ from previous Chrome versions.
   <int value="1584536816" label="LimitAltTabToActiveDesk:enabled"/>
   <int value="1585990408" label="AImageReader:disabled"/>
   <int value="1586022426" label="AutofillCreditCardAssist:enabled"/>
+  <int value="1586251544" label="VoiceButtonInTopToolbar:disabled"/>
   <int value="1587521886" label="SSLCommittedInterstitials:enabled"/>
   <int value="1589341623" label="disable-easy-unlock"/>
   <int value="1590278995"
@@ -45640,6 +45641,7 @@ from previous Chrome versions.
   <int value="1678866761" label="SystemLatinPhysicalTyping:disabled"/>
   <int value="1679558835" label="ArcAvailableForChildAccount:enabled"/>
   <int value="1680248931" label="use-fake-device-for-media-stream:enabled"/>
+  <int value="1681219077" label="VoiceButtonInTopToolbar:enabled"/>
   <int value="1683560662" label="ChromeShareHighlightsAndroid:disabled"/>
   <int value="1684043382" label="AssistantKeyRemapping:enabled"/>
   <int value="1685280468" label="AppServiceShelf:enabled"/>
@@ -75638,6 +75640,7 @@ Full version information for the fingerprint enum values:
   <int value="1" label="NTP"/>
   <int value="2" label="Search widget"/>
   <int value="3" label="Tasks surface"/>
+  <int value="4" label="Toolbar button"/>
 </enum>
 
 <enum name="VPNDriver">
