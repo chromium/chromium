@@ -161,8 +161,14 @@ class IncognitoBackgroundSyncBrowserTest : public BackgroundSyncBrowserTest {
   IncognitoBackgroundSyncBrowserTest() { SetShellStartsInIncognitoMode(); }
 };
 
+#if defined(OS_ANDROID)
+// https://crbug.com/1147754
+#define MAYBE_OffTheRecordProfile DISABLED_OffTheRecordProfile
+#else
+#define MAYBE_OffTheRecordProfile OffTheRecordProfile
+#endif
 IN_PROC_BROWSER_TEST_F(IncognitoBackgroundSyncBrowserTest,
-                       OffTheRecordProfile) {
+                       MAYBE_OffTheRecordProfile) {
   // TODO(crbug.com/1087486, 1091211): Make this use
   // BackgroundSyncController::ScheduleBrowserWakeup() once we support waking
   // the browser up.
