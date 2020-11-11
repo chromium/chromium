@@ -3,8 +3,14 @@
 // found in the LICENSE file.
 
 /**
+ * @fileoverview
+ * @suppress {uselessCode} Temporary suppress because of the line exporting.
+ */
+
+/**
  * Namespace for test related things.
  */
+// eslint-disable-next-line no-var
 var test = test || {};
 
 /**
@@ -84,7 +90,7 @@ test.util.registerRemoteTestUtils = () => {
         }
 
         // Asynchronously load the testing functions.
-        let script = document.createElement('script');
+        const script = document.createElement('script');
         document.body.appendChild(script);
 
         script.onload = () => {
@@ -110,3 +116,6 @@ test.util.registerRemoteTestUtils = () => {
         return true;
       });
 };
+
+// eslint-disable-next-line semi,no-extra-semi
+/* #export */ {test};

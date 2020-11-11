@@ -76,6 +76,7 @@ js_type_check("closure_compile_jsmodules") {
     ":app_windows.m",
     ":background_base.m",
     ":entry_location_impl.m",
+    ":test_util_base.m",
     ":volume_info_impl.m",
     ":volume_info_list_impl.m",
     ":volume_manager_factory.m",
@@ -628,6 +629,12 @@ js_unittest("task_queue_unittest") {
 js_library("test_util_base") {
 }
 
+js_library("test_util_base.m") {
+  visibility += related_apps
+  sources = [ "$root_gen_dir/ui/file_manager/file_manager/background/js/test_util_base.m.js" ]
+  extra_deps = [ ":modulize" ]
+}
+
 js_library("test_import_history") {
   testonly = true
   deps = [
@@ -787,6 +794,7 @@ js_modulizer("modulize") {
     "background_base.js",
     "entry_location_impl.js",
     "mock_volume_manager.js",
+    "test_util_base.js",
     "volume_info_impl.js",
     "volume_info_list_impl.js",
     "volume_manager_factory.js",

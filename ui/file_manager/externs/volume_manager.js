@@ -138,4 +138,4 @@
  * Event object which is dispached with 'externally-unmounted' event.
  * @typedef {!CustomEvent<!VolumeInfo>}
  */
-let ExternallyUnmountedEvent;
+/* #export */ let ExternallyUnmountedEvent;

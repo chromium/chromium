@@ -2,6 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
+// #import {assert} from 'chrome://resources/js/assert.m.js';
+// #import {VolumeInfo} from '../../externs/volume_info.m.js';
+// #import {VolumeInfoList} from '../../externs/volume_info_list.m.js';
+// #import {VolumeManager, ExternallyUnmountedEvent} from '../../externs/volume_manager.m.js';
+// #import {FilesAppEntry} from '../../externs/files_app_entry_interfaces.m.js';
+// #import {EntryLocation} from '../../externs/entry_location.m.js';
+// #import * as wrappedVolumeManagerCommon from './volume_manager_types.m.js'; const {VolumeManagerCommon, AllowedPaths} = wrappedVolumeManagerCommon;
+// #import {dispatchSimpleEvent} from 'chrome://resources/js/cr.m.js';
+// #import {ArrayDataModel} from 'chrome://resources/js/cr/ui/array_data_model.m.js';
+// #import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
+// clang-format on
+
 /**
  * Implementation of VolumeInfoList for FilteredVolumeManager.
  * In foreground/ we want to enforce this list to be filtered, so we forbid
@@ -12,7 +25,7 @@
  * @final
  * @implements {VolumeInfoList}
  */
-class FilteredVolumeInfoList {
+/* #export */ class FilteredVolumeInfoList {
   /**
    * @param {!cr.ui.ArrayDataModel} list
    */
@@ -60,7 +73,7 @@ class FilteredVolumeInfoList {
  *
  * @implements {VolumeManager}
  */
-class FilteredVolumeManager extends cr.EventTarget {
+/* #export */ class FilteredVolumeManager extends cr.EventTarget {
   /**
    *
    * @param {!AllowedPaths} allowedPaths Which paths are supported in the Files
@@ -117,7 +130,7 @@ class FilteredVolumeManager extends cr.EventTarget {
       case AllowedPaths.ANY_PATH_OR_URL:
         return true;
       case AllowedPaths.NATIVE_PATH:
-        return VolumeManagerCommon.VolumeType.isNative(volumeType);
+        return VolumeManagerCommon.VolumeType.isNative(assert(volumeType));
     }
     return false;
   }

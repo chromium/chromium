@@ -4,6 +4,7 @@
 
 import("//chrome/browser/resources/optimize_webui.gni")
 import("//third_party/closure_compiler/compile_js.gni")
+import("//ui/webui/resources/tools/js_modulizer.gni")
 
 group("closure_compile") {
   testonly = true
@@ -25,7 +26,11 @@ js_type_check("closure_compile_legacy") {
 
 js_type_check("closure_compile_jsmodules") {
   uses_js_modules = true
-  deps = [ ":main.m" ]
+  deps = [
+    ":background.m",
+    ":error_util.m",
+    ":main.m",
+  ]
 }
 
 js_library("closure_compile_externs") {
@@ -60,7 +65,24 @@ js_library("background") {
   ]
 }
 
+js_library("background.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/audio_player/js/background.m.js" ]
+  deps = [
+    "//ui/file_manager/file_manager/background/js:app_window_wrapper.m",
+    "//ui/file_manager/file_manager/background/js:background_base.m",
+    "//ui/file_manager/file_manager/common/js:file_type.m",
+    "//ui/file_manager/file_manager/common/js:util.m",
+  ]
+
+  extra_deps = [ ":modulize" ]
+}
+
 js_library("error_util") {
+}
+
+js_library("error_util.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/audio_player/js/error_util.m.js" ]
+  extra_deps = [ ":modulize" ]
 }
 
 js_library("metadata_worker") {
@@ -69,10 +91,34 @@ js_library("metadata_worker") {
   ]
 }
 
+js_library("test_util") {
+}
+
+js_library("test_util.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/audio_player/js/test_util.m.js" ]
+  extra_deps = [ ":modulize" ]
+}
+
 js_library("main.m") {
   deps = [
     "//ui/file_manager/base/js:app_util.m",
     "//ui/file_manager/base/js:volume_manager_types.m",
+  ]
+}
+
+js_library("main_background.m") {
+  deps = [
+    ":background.m",
+    ":error_util.m",
+    "//ui/file_manager/file_manager/background/js:test_util_base.m",
+  ]
+}
+
+js_modulizer("modulize") {
+  input_files = [
+    "background.js",
+    "error_util.js",
+    "test_util.js",
   ]
 }
 

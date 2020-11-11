@@ -2,6 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
+// #import {BackgroundBase} from '../../file_manager/background/js/background_base.m.js';
+// #import {SingletonAppWindowWrapper} from '../../file_manager/background/js/app_window_wrapper.m.js';
+// #import * as wrappedUtil from '../../file_manager/common/js/util.m.js'; const {util} = wrappedUtil;
+// #import {FileType} from '../../file_manager/common/js/file_type.m.js';
+// clang-format on
+
 /**
  * Icon of the audio player.
  * Use maximum size and let ash downsample the icon.
@@ -56,7 +63,7 @@ class AudioPlayerBackground extends BackgroundBase {
  * @type {!AudioPlayerBackground}
  */
 // eslint-disable-next-line no-var
-var background = new AudioPlayerBackground();
+/* #export */ var background = new AudioPlayerBackground();
 
 /**
  * Audio player app window wrapper.
@@ -71,7 +78,7 @@ const audioPlayer = new SingletonAppWindowWrapper(
  *     playing.
  * @return {!Promise} Promise to be fulfilled on success, or rejected on error.
  */
-function open(urls) {
+/* #export */ function open(urls) {
   let position = 0;
   const startUrl = (position < urls.length) ? urls[position] : '';
 
