@@ -1490,6 +1490,10 @@ InspectorOverlayAgent::ToFlexContainerHighlightConfig(
       std::make_unique<InspectorFlexContainerHighlightConfig>();
   highlight_config->container_border =
       InspectorOverlayAgent::ToLineStyle(config->getContainerBorder(nullptr));
+  highlight_config->line_separator =
+      InspectorOverlayAgent::ToLineStyle(config->getLineSeparator(nullptr));
+  highlight_config->item_separator =
+      InspectorOverlayAgent::ToLineStyle(config->getItemSeparator(nullptr));
 
   return highlight_config;
 }

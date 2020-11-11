@@ -22,10 +22,12 @@
 #include "third_party/blink/renderer/core/layout/adjust_for_absolute_zoom.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_offset.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
+#include "third_party/blink/renderer/core/layout/layout_flexible_box.h"
 #include "third_party/blink/renderer/core/layout/layout_grid.h"
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/shapes/shape_outside_info.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
@@ -351,23 +353,32 @@ std::unique_ptr<protocol::DictionaryValue> BuildTextNodeInfo(Text* text_node) {
   return text_info;
 }
 
+void AppendLineStyleConfig(
+    const std::unique_ptr<LineStyle>& line_style,
+    std::unique_ptr<protocol::DictionaryValue>& parent_config,
+    String line_name) {
+  if (line_style && line_style->color != Color::kTransparent) {
+    std::unique_ptr<protocol::DictionaryValue> config =
+        protocol::DictionaryValue::create();
+    config->setString("color", line_style->color.Serialized());
+    config->setString("pattern", line_style->pattern);
+
+    parent_config->setValue(line_name, std::move(config));
+  }
+}
+
 std::unique_ptr<protocol::DictionaryValue>
 BuildFlexContainerHighlightConfigInfo(
     const InspectorFlexContainerHighlightConfig& flex_config) {
   std::unique_ptr<protocol::DictionaryValue> flex_config_info =
       protocol::DictionaryValue::create();
 
-  // Container border style
-  if (flex_config.container_border &&
-      flex_config.container_border->color != Color::kTransparent) {
-    std::unique_ptr<protocol::DictionaryValue> border_config =
-        protocol::DictionaryValue::create();
-    border_config->setString("color",
-                             flex_config.container_border->color.Serialized());
-    border_config->setString("pattern", flex_config.container_border->pattern);
-
-    flex_config_info->setValue("containerBorder", std::move(border_config));
-  }
+  AppendLineStyleConfig(flex_config.container_border, flex_config_info,
+                        "containerBorder");
+  AppendLineStyleConfig(flex_config.line_separator, flex_config_info,
+                        "lineSeparator");
+  AppendLineStyleConfig(flex_config.item_separator, flex_config_info,
+                        "itemSeparator");
 
   return flex_config_info;
 }
@@ -814,6 +825,52 @@ Vector<String> GetAuthoredGridTrackSizes(const CSSValue* value,
   return result;
 }
 
+bool IsHorizontalFlex(LayoutObject* layout_flex) {
+  return layout_flex->StyleRef().IsHorizontalWritingMode() !=
+         layout_flex->StyleRef().ResolvedIsColumnFlexDirection();
+}
+
+Vector<Vector<PhysicalRect>> GetFlexLinesAndItems(LayoutBox* layout_box,
+                                                  bool is_horizontal) {
+  Vector<Vector<PhysicalRect>> flex_lines;
+
+  // Flex containers can't get fragmented yet, but this may change in the
+  // future.
+  for (const auto& fragment : layout_box->PhysicalFragments()) {
+    LayoutUnit progression;
+    for (const auto& child : fragment.Children()) {
+      const NGPhysicalFragment* child_fragment = child.get();
+      if (!child_fragment || child_fragment->IsOutOfFlowPositioned())
+        continue;
+
+      PhysicalSize fragment_size = child_fragment->Size();
+      PhysicalOffset fragment_offset = child.Offset();
+
+      const LayoutObject* object = child_fragment->GetLayoutObject();
+      const LayoutBox* box = ToLayoutBox(object);
+      PhysicalRect item_rect =
+          PhysicalRect(fragment_offset.left - box->MarginLeft(),
+                       fragment_offset.top - box->MarginTop(),
+                       fragment_size.width + box->MarginWidth(),
+                       fragment_size.height + box->MarginHeight());
+
+      LayoutUnit item_start = is_horizontal ? item_rect.X() : item_rect.Y();
+      LayoutUnit item_end = is_horizontal ? item_rect.X() + item_rect.Width()
+                                          : item_rect.Y() + item_rect.Height();
+
+      if (flex_lines.IsEmpty() || item_start < progression) {
+        flex_lines.emplace_back();
+      }
+
+      flex_lines.back().push_back(item_rect);
+
+      progression = item_end;
+    }
+  }
+
+  return flex_lines;
+}
+
 std::unique_ptr<protocol::DictionaryValue> BuildFlexInfo(
     Node* node,
     const InspectorFlexContainerHighlightConfig&
@@ -821,20 +878,45 @@ std::unique_ptr<protocol::DictionaryValue> BuildFlexInfo(
     float scale) {
   LocalFrameView* containing_view = node->GetDocument().View();
   LayoutObject* layout_object = node->GetLayoutObject();
+  LayoutBox* layout_box = ToLayoutBox(layout_object);
   DCHECK(layout_object);
+  bool is_horizontal = IsHorizontalFlex(layout_object);
 
   std::unique_ptr<protocol::DictionaryValue> flex_info =
       protocol::DictionaryValue::create();
 
-  // For now, we're only drawing a path around the container's content area.
-  PathBuilder container_border_builder;
-  LayoutBox* layout_box = ToLayoutBox(layout_object);
+  // Create the path for the flex container
+  PathBuilder container_builder;
   PhysicalRect content_box = layout_box->PhysicalContentBoxRect();
   FloatQuad content_quad = layout_object->LocalRectToAbsoluteQuad(content_box);
   FrameQuadToViewport(containing_view, content_quad);
-  container_border_builder.AppendPath(QuadToPath(content_quad), scale);
-  flex_info->setValue("containerBorder", container_border_builder.Release());
+  container_builder.AppendPath(QuadToPath(content_quad), scale);
 
+  // Gather all flex items, sorted by flex line.
+  Vector<Vector<PhysicalRect>> flex_lines =
+      GetFlexLinesAndItems(layout_box, is_horizontal);
+
+  // Send the offset information for each item to the frontend.
+  std::unique_ptr<protocol::ListValue> lines_info =
+      protocol::ListValue::create();
+  for (auto line : flex_lines) {
+    std::unique_ptr<protocol::ListValue> items_info =
+        protocol::ListValue::create();
+    for (auto item_rect : line) {
+      FloatQuad item_margin_quad =
+          layout_object->LocalRectToAbsoluteQuad(item_rect);
+      FrameQuadToViewport(containing_view, item_margin_quad);
+      PathBuilder item_builder;
+      item_builder.AppendPath(QuadToPath(item_margin_quad), scale);
+
+      items_info->pushValue(item_builder.Release());
+    }
+    lines_info->pushValue(std::move(items_info));
+  }
+
+  flex_info->setValue("containerBorder", container_builder.Release());
+  flex_info->setArray("lines", std::move(lines_info));
+  flex_info->setBoolean("isHorizontalFlow", is_horizontal);
   flex_info->setValue(
       "flexContainerHighlightConfig",
       BuildFlexContainerHighlightConfigInfo(flex_container_highlight_config));
@@ -1736,6 +1818,10 @@ InspectorFlexContainerHighlightConfig
 InspectorHighlight::DefaultFlexContainerConfig() {
   InspectorFlexContainerHighlightConfig config;
   config.container_border =
+      std::make_unique<LineStyle>(InspectorHighlight::DefaultLineStyle());
+  config.line_separator =
+      std::make_unique<LineStyle>(InspectorHighlight::DefaultLineStyle());
+  config.item_separator =
       std::make_unique<LineStyle>(InspectorHighlight::DefaultLineStyle());
   return config;
 }

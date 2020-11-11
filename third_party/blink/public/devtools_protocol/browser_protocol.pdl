@@ -5636,6 +5636,10 @@ experimental domain Overlay
     properties
       # The style of the container border
       optional LineStyle containerBorder
+      # The style of the separator between lines
+      optional LineStyle lineSeparator
+      # The style of the separator between items
+      optional LineStyle itemSeparator
 
   # Style information for drawing a line.
   type LineStyle extends object

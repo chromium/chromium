@@ -73,6 +73,8 @@ struct CORE_EXPORT InspectorFlexContainerHighlightConfig {
   InspectorFlexContainerHighlightConfig();
 
   std::unique_ptr<LineStyle> container_border;
+  std::unique_ptr<LineStyle> line_separator;
+  std::unique_ptr<LineStyle> item_separator;
 };
 
 struct CORE_EXPORT InspectorHighlightConfig {
