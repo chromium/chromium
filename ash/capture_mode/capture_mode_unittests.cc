@@ -1345,4 +1345,87 @@ TEST_F(CaptureModeTest, CancelCaptureDuringCountDown) {
   SendKey(ui::VKEY_ESCAPE, event_generator);
 }
 
+// Tests that metrics are recorded properly for capture region adjustments.
+TEST_F(CaptureModeTest, NumberOfCaptureRegionAdjustmentsHistogram) {
+  constexpr char kClamshellHistogram[] =
+      "Ash.CaptureModeController.CaptureRegionAdjusted.ClamshellMode";
+  constexpr char kTabletHistogram[] =
+      "Ash.CaptureModeController.CaptureRegionAdjusted.TabletMode";
+  base::HistogramTester histogram_tester;
+  UpdateDisplay("800x800");
+
+  auto* controller = StartImageRegionCapture();
+  // Create the initial region.
+  const gfx::Rect target_region(gfx::Rect(200, 200, 400, 400));
+  SelectRegion(target_region);
+
+  auto resize_and_reset_region = [](ui::test::EventGenerator* event_generator,
+                                    const gfx::Point& top_right) {
+    // Enlarges the region and then resize it back to its original size.
+    event_generator->set_current_screen_location(top_right);
+    event_generator->DragMouseTo(top_right + gfx::Vector2d(50, 50));
+    event_generator->DragMouseTo(top_right);
+  };
+
+  auto move_and_reset_region = [](ui::test::EventGenerator* event_generator,
+                                  const gfx::Point& drag_point) {
+    // Moves the region and then moves it back to its original position.
+    event_generator->set_current_screen_location(drag_point);
+    event_generator->DragMouseTo(drag_point + gfx::Vector2d(-50, -50));
+    event_generator->DragMouseTo(drag_point);
+  };
+
+  // Resize the region twice by dragging the top right of the region out and
+  // then back again.
+  auto* event_generator = GetEventGenerator();
+  auto top_right = target_region.top_right();
+  resize_and_reset_region(event_generator, top_right);
+
+  // Move the region twice by dragging within the region.
+  const gfx::Point drag_point(300, 300);
+  move_and_reset_region(event_generator, drag_point);
+
+  // Perform a capture to record the count.
+  controller->PerformCapture();
+  histogram_tester.ExpectBucketCount(kClamshellHistogram, 4, 1);
+
+  // Create a new image region capture. Move the region twice then change
+  // sources to fullscreen and back to region. This toggle should reset the
+  // count. Perform a capture to record the count.
+  StartImageRegionCapture();
+  move_and_reset_region(event_generator, drag_point);
+  controller->SetSource(CaptureModeSource::kFullscreen);
+  controller->SetSource(CaptureModeSource::kRegion);
+  controller->PerformCapture();
+  histogram_tester.ExpectBucketCount(kClamshellHistogram, 0, 1);
+
+  // Enter tablet mode and restart the capture session. The capture region
+  // should be remembered.
+  auto* tablet_mode_controller = Shell::Get()->tablet_mode_controller();
+  tablet_mode_controller->SetEnabledForTest(true);
+  ASSERT_TRUE(tablet_mode_controller->InTabletMode());
+  StartImageRegionCapture();
+  ASSERT_EQ(target_region, controller->user_capture_region());
+
+  // Resize the region twice by dragging the top right of the region out and
+  // then back again.
+  resize_and_reset_region(event_generator, top_right);
+
+  // Move the region twice by dragging within the region.
+  move_and_reset_region(event_generator, drag_point);
+
+  // Perform a capture to record the count.
+  controller->PerformCapture();
+  histogram_tester.ExpectBucketCount(kTabletHistogram, 4, 1);
+
+  // Restart the region capture and resize it. Then create a new region by
+  // dragging outside of the existing capture region. This should reset the
+  // counter. Change source to record a sample.
+  StartImageRegionCapture();
+  resize_and_reset_region(event_generator, top_right);
+  SelectRegion(gfx::Rect(0, 0, 100, 100));
+  controller->PerformCapture();
+  histogram_tester.ExpectBucketCount(kTabletHistogram, 0, 1);
+}
+
 }  // namespace ash

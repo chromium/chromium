@@ -38,6 +38,13 @@ void RecordCaptureModeBarButtonType(CaptureModeBarButtonType button_type);
 // Records the method the user enters capture mode given by |entry_type|.
 void RecordCaptureModeEntryType(CaptureModeEntryType entry_type);
 
+// Records the number of times a user adjusts a capture region. This includes
+// moving and resizing. The count is started when a user sets the capture source
+// as a region. The count is recorded and reset when a user performs a capture.
+// The count is just reset when a user selects a new region or the user switches
+// capture sources.
+void RecordNumberOfCaptureRegionAdjustments(int num_adjustments);
+
 }  // namespace ash
 
 #endif  // ASH_CAPTURE_MODE_CAPTURE_MODE_METRICS_H_

@@ -11,9 +11,11 @@ namespace ash {
 
 namespace {
 
-constexpr char kEntryHistogramName[] = "Ash.CaptureModeController.EntryPoint";
+constexpr char kCaptureRegionAdjustmentHistogramName[] =
+    "Ash.CaptureModeController.CaptureRegionAdjusted";
 constexpr char kBarButtonHistogramName[] =
     "Ash.CaptureModeController.BarButtons";
+constexpr char kEntryHistogramName[] = "Ash.CaptureModeController.EntryPoint";
 
 // Appends the proper suffix to |prefix| based on whether the user is in tablet
 // mode or not.
@@ -33,6 +35,12 @@ void RecordCaptureModeBarButtonType(CaptureModeBarButtonType button_type) {
 void RecordCaptureModeEntryType(CaptureModeEntryType entry_type) {
   base::UmaHistogramEnumeration(
       GetCaptureModeHistogramName(kEntryHistogramName), entry_type);
+}
+
+void RecordNumberOfCaptureRegionAdjustments(int num_adjustments) {
+  base::UmaHistogramCounts100(
+      GetCaptureModeHistogramName(kCaptureRegionAdjustmentHistogramName),
+      num_adjustments);
 }
 
 }  // namespace ash

@@ -199,6 +199,24 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </token>
 </histogram>
 
+<histogram
+    name="Ash.CaptureModeController.CaptureRegionAdjusted.{TabletOrClamshell}"
+    units="adjustments" expires_after="2021-11-06">
+  <owner>chinsenj@chromium.org</owner>
+  <owner>gzadina@google.com</owner>
+  <summary>
+    Recorded whenever a user is in a region capture session in
+    {TabletOrClamshell} and performs a capture or they switch the capture
+    source. The recorded count indicates the number of times the user adjusts
+    the region. This counts each time they move the region or resize it. It is
+    reset whenever a user creates a new region or the count is recorded.
+  </summary>
+  <token key="TabletOrClamshell">
+    <variant name="ClamshellMode" summary="Clamshell mode"/>
+    <variant name="TabletMode" summary="Tablet mode"/>
+  </token>
+</histogram>
+
 <histogram name="Ash.CaptureModeController.EntryPoint.{TabletOrClamshell}"
     enum="CaptureModeEntryType" expires_after="2021-09-29">
   <owner>chinsenj@chromium.org</owner>

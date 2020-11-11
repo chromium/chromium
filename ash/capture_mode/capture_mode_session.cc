@@ -323,6 +323,7 @@ void CaptureModeSession::OnCaptureSourceChanged(CaptureModeSource new_source) {
             previous_location_in_root_)
             ? ui::mojom::CursorType::kPointer
             : ui::mojom::CursorType::kCell);
+    num_capture_region_adjusted_ = 0;
   } else {
     cursor_setter_.reset();
   }
@@ -338,6 +339,12 @@ void CaptureModeSession::OnCaptureTypeChanged(CaptureModeType new_type) {
     capture_window_observer_->OnCaptureTypeChanged(new_type);
   capture_mode_bar_view_->OnCaptureTypeChanged(new_type);
   UpdateCaptureLabelWidget();
+}
+
+void CaptureModeSession::ReportRegionCaptureHistograms() {
+  DCHECK_EQ(controller_->source(), CaptureModeSource::kRegion);
+  RecordNumberOfCaptureRegionAdjustments(num_capture_region_adjusted_);
+  num_capture_region_adjusted_ = 0;
 }
 
 void CaptureModeSession::StartCountDown(
@@ -715,8 +722,12 @@ void CaptureModeSession::OnLocatedEventPressed(
     // restart to the select phase.
     is_selecting_region_ = true;
     UpdateCaptureRegion(gfx::Rect(), /*is_resizing=*/true);
+    num_capture_region_adjusted_ = 0;
     return;
   }
+
+  if (fine_tune_position_ != FineTunePosition::kNone)
+    ++num_capture_region_adjusted_;
 
   // In order to hide the drag affordance circles on click, we need to repaint
   // the capture region.

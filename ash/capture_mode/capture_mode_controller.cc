@@ -313,6 +313,9 @@ void CaptureModeController::PerformCapture() {
     return;
   }
 
+  if (source_ == CaptureModeSource::kRegion)
+    capture_mode_session_->ReportRegionCaptureHistograms();
+
   if (type_ == CaptureModeType::kImage)
     CaptureImage();
   else
