@@ -8,6 +8,7 @@
 
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/histogram_macros_local.h"
+#include "chrome/renderer/subresource_redirect/subresource_redirect_hints_agent.h"
 #include "content/public/renderer/render_frame.h"
 #include "third_party/blink/public/platform/web_loading_hints_provider.h"
 #include "third_party/blink/public/platform/web_string.h"
@@ -35,9 +36,7 @@ const blink::WebVector<blink::WebString> convert_to_web_vector(
 ResourceLoadingHintsAgent::ResourceLoadingHintsAgent(
     blink::AssociatedInterfaceRegistry* associated_interfaces,
     content::RenderFrame* render_frame)
-    : content::RenderFrameObserver(render_frame),
-      content::RenderFrameObserverTracker<ResourceLoadingHintsAgent>(
-          render_frame) {
+    : content::RenderFrameObserver(render_frame) {
   DCHECK(render_frame);
   associated_interfaces->AddInterface(base::BindRepeating(
       &ResourceLoadingHintsAgent::SetReceiver, base::Unretained(this)));
@@ -45,23 +44,6 @@ ResourceLoadingHintsAgent::ResourceLoadingHintsAgent(
 
 GURL ResourceLoadingHintsAgent::GetDocumentURL() const {
   return render_frame()->GetWebFrame()->GetDocument().Url();
-}
-
-void ResourceLoadingHintsAgent::DidStartNavigation(
-    const GURL& url,
-    base::Optional<blink::WebNavigationType> navigation_type) {
-  if (!IsMainFrame())
-    return;
-  subresource_redirect_hints_agent_.DidStartNavigation();
-}
-
-void ResourceLoadingHintsAgent::ReadyToCommitNavigation(
-    blink::WebDocumentLoader* document_loader) {
-  if (!IsMainFrame())
-    return;
-
-  subresource_redirect_hints_agent_.ReadyToCommitNavigation(
-      render_frame()->GetRoutingID());
 }
 
 void ResourceLoadingHintsAgent::DidCreateNewDocument() {
@@ -144,20 +126,12 @@ void ResourceLoadingHintsAgent::SetResourceLoadingHints(
 
 void ResourceLoadingHintsAgent::SetCompressPublicImagesHints(
     blink::mojom::CompressPublicImagesHintsPtr images_hints) {
-  if (!IsMainFrame())
-    return;
-  subresource_redirect_hints_agent_.SetCompressPublicImagesHints(
-      std::move(images_hints));
-}
-
-void ResourceLoadingHintsAgent::NotifyHttpsImageCompressionFetchFailed(
-    base::TimeDelta retry_after) {
-  if (!subresource_redirect_service_remote_) {
-    render_frame()->GetRemoteAssociatedInterfaces()->GetInterface(
-        &subresource_redirect_service_remote_);
+  if (auto* subresource_redirect_hints_agent =
+          subresource_redirect::SubresourceRedirectHintsAgent::Get(
+              render_frame())) {
+    subresource_redirect_hints_agent->SetCompressPublicImagesHints(
+        std::move(images_hints));
   }
-  subresource_redirect_service_remote_->NotifyCompressedImageFetchFailed(
-      retry_after);
 }
 
 void ResourceLoadingHintsAgent::SetLiteVideoHint(
