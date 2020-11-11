@@ -720,7 +720,7 @@ public class InstantStartTest {
         ChromeRenderTestRule.sanitize(surface);
         // TODO(crbug.com/1065314): fix favicon.
         mRenderTestRule.render(
-                surface, "singlePane_singleTab_noMV3" + (isFeedV2 ? "_FeedV2" : "_FeedV1"));
+                surface, "singlePane_singleTab_noMV4" + (isFeedV2 ? "_FeedV2" : "_FeedV1"));
 
         // Initializes native.
         startAndWaitNativeInitialization();

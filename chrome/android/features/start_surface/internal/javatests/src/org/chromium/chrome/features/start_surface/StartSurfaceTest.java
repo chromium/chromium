@@ -1339,6 +1339,47 @@ public class StartSurfaceTest {
         assertEquals(4, cta.getTabModelSelector().getCurrentModel().getCount());
         assertEquals(1, filter.getTabGroupCount());
     }
+
+    @Test
+    @MediumTest
+    @Feature({"StartSurface"})
+    // clang-format off
+    @CommandLineFlags.Add({BASE_PARAMS + "/single/exclude_mv_tiles/true"
+            + "/show_last_active_tab_only/true/show_stack_tab_switcher/true"})
+    public void testShow_SingleAsHomepageV2_VoiceSearchButtonShown() {
+        // clang-format on
+        if (!mImmediateReturn) {
+            onView(withId(org.chromium.chrome.tab_ui.R.id.home_button)).perform(click());
+        }
+
+        CriteriaHelper.pollUiThread(
+                ()
+                        -> mActivityTestRule.getActivity().getLayoutManager() != null
+                        && mActivityTestRule.getActivity().getLayoutManager().overviewVisible());
+
+        onView(withId(R.id.primary_tasks_surface_view)).check(matches(isDisplayed()));
+        onView(withId(R.id.search_box_text)).check(matches(isDisplayed()));
+        onView(withId(R.id.voice_search_button)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"StartSurface"})
+    @CommandLineFlags.Add({BASE_PARAMS + "/single"})
+    public void testShow_SingleAsHomepage_VoiceSearchButtonShown() {
+        if (!mImmediateReturn) {
+            onView(withId(org.chromium.chrome.tab_ui.R.id.home_button)).perform(click());
+        }
+
+        CriteriaHelper.pollUiThread(
+                ()
+                        -> mActivityTestRule.getActivity().getLayoutManager() != null
+                        && mActivityTestRule.getActivity().getLayoutManager().overviewVisible());
+
+        onView(withId(R.id.primary_tasks_surface_view)).check(matches(isDisplayed()));
+        onView(withId(R.id.search_box_text)).check(matches(isDisplayed()));
+        onView(withId(R.id.voice_search_button)).check(matches(isDisplayed()));
+    }
 }
 
 // TODO(crbug.com/1033909): Add more integration tests.

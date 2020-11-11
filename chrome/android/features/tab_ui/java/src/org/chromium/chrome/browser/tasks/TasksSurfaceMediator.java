@@ -60,6 +60,8 @@ class TasksSurfaceMediator implements OverviewModeObserver {
 
         // Set the initial state.
         mModel.set(IS_SURFACE_BODY_VISIBLE, true);
+        mModel.set(IS_FAKE_SEARCH_BOX_VISIBLE, true);
+        mModel.set(IS_VOICE_RECOGNITION_BUTTON_VISIBLE, false);
     }
 
     public void initWithNative(FakeboxDelegate fakeboxDelegate) {
@@ -112,10 +114,6 @@ class TasksSurfaceMediator implements OverviewModeObserver {
         mModel.set(
                 INCOGNITO_COOKIE_CONTROLS_TOGGLE_CHECKED_LISTENER, mIncognitoCookieControlsManager);
         mModel.set(INCOGNITO_COOKIE_CONTROLS_ICON_CLICK_LISTENER, mIncognitoCookieControlsManager);
-
-        // Set the initial state.
-        mModel.set(IS_FAKE_SEARCH_BOX_VISIBLE, true);
-        mModel.set(IS_VOICE_RECOGNITION_BUTTON_VISIBLE, false);
     }
 
     /**
