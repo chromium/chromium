@@ -113,7 +113,7 @@ bool UseMapJit() {
   }
 
   uint32_t flags = SecTaskGetCodeSignStatus(task);
-  if ((flags & kSecCodeSignatureRuntime) != 0) {
+  if (!(flags & kSecCodeSignatureRuntime)) {
     // The hardened runtime is not enabled. Note that kSecCodeSignatureRuntime
     // == CS_RUNTIME.
     return true;
