@@ -126,28 +126,6 @@ LayoutNGTableRowInterface* LayoutNGTableSection::LastRowInterface() const {
   return ToInterface<LayoutNGTableRowInterface>(LastChild());
 }
 
-const LayoutNGTableCellInterface* LayoutNGTableSection::PrimaryCellInterfaceAt(
-    unsigned row,
-    unsigned column) const {
-  NOT_DESTROYED();
-  unsigned current_row = 0;
-  for (LayoutObject* layout_row = FirstChild(); layout_row;
-       layout_row = layout_row->NextSibling()) {
-    DCHECK(layout_row->IsTableRow());
-    if (current_row++ == row) {
-      unsigned current_column = 0;
-      for (LayoutObject* layout_cell = layout_row->SlowFirstChild();
-           layout_cell; layout_cell = layout_cell->NextSibling()) {
-        if (current_column++ == column) {
-          return ToInterface<LayoutNGTableCellInterface>(layout_cell);
-        }
-      }
-      return nullptr;
-    }
-  }
-  return nullptr;
-}
-
 // TODO(crbug.com/1079133): Used by AXLayoutObject::IsDataTable, verify
 // behaviour is correct. Consider removing these methods.
 unsigned LayoutNGTableSection::NumEffectiveColumns() const {

@@ -117,11 +117,6 @@ class CORE_EXPORT LayoutNGTableSection : public LayoutNGMixin<LayoutBlock>,
 
   LayoutNGTableRowInterface* LastRowInterface() const final;
 
-  // Called by ax_layout_object.cc.
-  const LayoutNGTableCellInterface* PrimaryCellInterfaceAt(
-      unsigned row,
-      unsigned column) const final;
-
   // LayoutNGTableSectionInterface methods end.
 
  protected:

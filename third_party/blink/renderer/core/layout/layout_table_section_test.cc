@@ -86,6 +86,10 @@ TEST_F(LayoutTableSectionTest, BackgroundIsKnownToBeOpaqueWithEmptyCell) {
 }
 
 TEST_F(LayoutTableSectionTest, EmptySectionDirtiedRowsAndEffeciveColumns) {
+  // TablesNG does not support the API.
+  if (RuntimeEnabledFeatures::LayoutNGTableEnabled())
+    return;
+
   SetBodyInnerHTML(R"HTML(
     <table style='border: 100px solid red'>
       <thead id='section'></thead>
@@ -107,6 +111,9 @@ TEST_F(LayoutTableSectionTest, EmptySectionDirtiedRowsAndEffeciveColumns) {
 }
 
 TEST_F(LayoutTableSectionTest, PrimaryCellAtAndOriginatingCellAt) {
+  // TablesNG does not support the API.
+  if (RuntimeEnabledFeatures::LayoutNGTableEnabled())
+    return;
   SetBodyInnerHTML(R"HTML(
     <table>
       <tbody id='section'>
@@ -142,6 +149,9 @@ TEST_F(LayoutTableSectionTest, PrimaryCellAtAndOriginatingCellAt) {
 }
 
 TEST_F(LayoutTableSectionTest, DirtiedRowsAndEffectiveColumnsWithSpans) {
+  // TablesNG does not support the API.
+  if (RuntimeEnabledFeatures::LayoutNGTableEnabled())
+    return;
   SetBodyInnerHTML(R"HTML(
     <style>
       td { width: 100px; height: 100px; padding: 0 }
@@ -230,6 +240,9 @@ TEST_F(LayoutTableSectionTest, DirtiedRowsAndEffectiveColumnsWithSpans) {
 
 TEST_F(LayoutTableSectionTest,
        DirtiedRowsAndEffectiveColumnsWithCollapsedBorders) {
+  // TablesNG does not support DirtiedRowsAndEffectiveColumns.
+  if (RuntimeEnabledFeatures::LayoutNGTableEnabled())
+    return;
   SetBodyInnerHTML(R"HTML(
     <style>
       td { width: 100px; height: 100px; padding: 0; border: 2px solid; }
@@ -324,6 +337,9 @@ static void SetCellsOverflowInRow(LayoutTableRow* row) {
 }
 
 TEST_F(LayoutTableSectionTest, OverflowingCells) {
+  // TablesNG does not support the API.
+  if (RuntimeEnabledFeatures::LayoutNGTableEnabled())
+    return;
   SetBodyInnerHTML(R"HTML(
     <style>
       td { width: 10px; height: 10px }

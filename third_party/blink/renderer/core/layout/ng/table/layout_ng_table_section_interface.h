@@ -10,7 +10,6 @@
 namespace blink {
 
 class LayoutNGTableRowInterface;
-class LayoutNGTableCellInterface;
 class LayoutTableSection;
 class LayoutObject;
 
@@ -34,9 +33,6 @@ class LayoutNGTableSectionInterface {
   virtual unsigned NumEffectiveColumns() const = 0;
   virtual LayoutNGTableRowInterface* FirstRowInterface() const = 0;
   virtual LayoutNGTableRowInterface* LastRowInterface() const = 0;
-  virtual const LayoutNGTableCellInterface* PrimaryCellInterfaceAt(
-      unsigned row,
-      unsigned effective_column) const = 0;
 };
 
 template <>

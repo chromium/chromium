@@ -31,7 +31,7 @@
 namespace blink {
 
 class LayoutTableCellDeathTest : public RenderingTest,
-                                 public ScopedLayoutNGTableForTest {
+                                 private ScopedLayoutNGTableForTest {
  protected:
   // These tests test Legacy behavior only.
   LayoutTableCellDeathTest() : ScopedLayoutNGTableForTest(false) {}
@@ -84,30 +84,33 @@ class LayoutTableCellTest : public RenderingTest {
   bool IsInEndColumn(const LayoutTableCell* cell) {
     return cell->IsInEndColumn();
   }
-  // TODO(958381) Make this code TableNG compatible.
   LayoutTableCell* GetCellByElementId(const char* id) {
     return To<LayoutTableCell>(GetLayoutObjectByElementId(id));
+  }
+  LayoutNGTableCellInterface* GetCellInterfaceByElementId(const char* id) {
+    return ToInterface<LayoutNGTableCellInterface>(
+        GetLayoutObjectByElementId(id));
   }
 };
 
 TEST_F(LayoutTableCellTest, ResetColspanIfTooBig) {
   SetBodyInnerHTML("<table><td id='cell' colspan='14000'></td></table>");
-  ASSERT_EQ(GetCellByElementId("cell")->ColSpan(), 1000U);
+  ASSERT_EQ(GetCellInterfaceByElementId("cell")->ColSpan(), 1000U);
 }
 
 TEST_F(LayoutTableCellTest, DoNotResetColspanJustBelowBoundary) {
   SetBodyInnerHTML("<table><td id='cell' colspan='1000'></td></table>");
-  ASSERT_EQ(GetCellByElementId("cell")->ColSpan(), 1000U);
+  ASSERT_EQ(GetCellInterfaceByElementId("cell")->ColSpan(), 1000U);
 }
 
 TEST_F(LayoutTableCellTest, ResetRowspanIfTooBig) {
   SetBodyInnerHTML("<table><td id='cell' rowspan='70000'></td></table>");
-  ASSERT_EQ(GetCellByElementId("cell")->ResolvedRowSpan(), 65534U);
+  ASSERT_EQ(GetCellInterfaceByElementId("cell")->ResolvedRowSpan(), 65534U);
 }
 
 TEST_F(LayoutTableCellTest, DoNotResetRowspanJustBelowBoundary) {
   SetBodyInnerHTML("<table><td id='cell' rowspan='65534'></td></table>");
-  ASSERT_EQ(GetCellByElementId("cell")->ResolvedRowSpan(), 65534U);
+  ASSERT_EQ(GetCellInterfaceByElementId("cell")->ResolvedRowSpan(), 65534U);
 }
 
 TEST_F(LayoutTableCellTest,
@@ -119,8 +122,10 @@ TEST_F(LayoutTableCellTest,
       </td>
     </table>
   )HTML");
-  EXPECT_FALSE(GetCellByElementId("cell")->BackgroundIsKnownToBeOpaqueInRect(
-      PhysicalRect(0, 0, 1, 1)));
+
+  EXPECT_FALSE(
+      To<LayoutBoxModelObject>(GetLayoutObjectByElementId("cell"))
+          ->BackgroundIsKnownToBeOpaqueInRect(PhysicalRect(0, 0, 1, 1)));
 }
 
 TEST_F(LayoutTableCellTest, RepaintContentInTableCell) {
@@ -148,6 +153,10 @@ TEST_F(LayoutTableCellTest, RepaintContentInTableCell) {
 }
 
 TEST_F(LayoutTableCellTest, IsInStartAndEndColumn) {
+  // TablesNG does not have Start/End column API.
+  if (RuntimeEnabledFeatures::LayoutNGTableEnabled())
+    return;
+
   SetBodyInnerHTML(R"HTML(
     <table id='table'>
       <tr>
@@ -197,6 +206,10 @@ TEST_F(LayoutTableCellTest, IsInStartAndEndColumn) {
 }
 
 TEST_F(LayoutTableCellTest, IsInStartAndEndColumnRTL) {
+  // TablesNG does not have Start/End column API.
+  if (RuntimeEnabledFeatures::LayoutNGTableEnabled())
+    return;
+
   SetBodyInnerHTML(R"HTML(
     <style>
       table { direction: rtl }
@@ -256,7 +269,7 @@ TEST_F(LayoutTableCellTest, BorderWidthsWithCollapsedBorders) {
       td { border: 0px solid blue; padding: 0 }
       div { width: 100px; height: 100px }
     </style>
-    <table>
+    <table id="table">
       <tr>
         <td id='cell1' style='border-bottom-width: 10px;
             outline: 3px solid blue'><div></div></td>
@@ -265,71 +278,114 @@ TEST_F(LayoutTableCellTest, BorderWidthsWithCollapsedBorders) {
     </table>
   )HTML");
 
-  auto* cell1 = GetCellByElementId("cell1");
-  auto* cell2 = GetCellByElementId("cell2");
-  EXPECT_TRUE(cell1->Table()->ShouldCollapseBorders());
+  LayoutNGTableInterface* table_interface =
+      ToInterface<LayoutNGTableInterface>(GetLayoutObjectByElementId("table"));
+  LayoutBoxModelObject* cell1box =
+      To<LayoutBoxModelObject>(GetLayoutObjectByElementId("cell1"));
+  LayoutBoxModelObject* cell2box =
+      To<LayoutBoxModelObject>(GetLayoutObjectByElementId("cell2"));
 
-  EXPECT_EQ(0, cell1->BorderLeft());
-  EXPECT_EQ(7, cell1->BorderRight());
-  EXPECT_EQ(0, cell1->BorderTop());
-  EXPECT_EQ(5, cell1->BorderBottom());
-  EXPECT_EQ(8, cell2->BorderLeft());
-  EXPECT_EQ(7, cell2->BorderRight());
-  EXPECT_EQ(2, cell2->BorderTop());
-  EXPECT_EQ(1, cell2->BorderBottom());
+  EXPECT_TRUE(table_interface->ShouldCollapseBorders());
 
-  EXPECT_EQ(0u, cell1->CollapsedInnerBorderStart());
-  EXPECT_EQ(7u, cell1->CollapsedInnerBorderEnd());
-  EXPECT_EQ(0u, cell1->CollapsedInnerBorderBefore());
-  EXPECT_EQ(5u, cell1->CollapsedInnerBorderAfter());
-  EXPECT_EQ(8u, cell2->CollapsedInnerBorderStart());
-  EXPECT_EQ(7u, cell2->CollapsedInnerBorderEnd());
-  EXPECT_EQ(2u, cell2->CollapsedInnerBorderBefore());
-  EXPECT_EQ(1u, cell2->CollapsedInnerBorderAfter());
+  LayoutUnit border_right = RuntimeEnabledFeatures::LayoutNGTableEnabled()
+                                ? LayoutUnit(7.5)
+                                : LayoutUnit(7);
+  LayoutUnit border_left = RuntimeEnabledFeatures::LayoutNGTableEnabled()
+                               ? LayoutUnit(7.5)
+                               : LayoutUnit(8);
+  LayoutUnit border_top = RuntimeEnabledFeatures::LayoutNGTableEnabled()
+                              ? LayoutUnit(1.5)
+                              : LayoutUnit(2);
+  LayoutUnit border_bottom = RuntimeEnabledFeatures::LayoutNGTableEnabled()
+                                 ? LayoutUnit(1.5)
+                                 : LayoutUnit(1);
 
-  EXPECT_EQ(0u, cell1->CollapsedOuterBorderStart());
-  EXPECT_EQ(8u, cell1->CollapsedOuterBorderEnd());
-  EXPECT_EQ(0u, cell1->CollapsedOuterBorderBefore());
-  EXPECT_EQ(5u, cell1->CollapsedOuterBorderAfter());
-  EXPECT_EQ(7u, cell2->CollapsedOuterBorderStart());
-  EXPECT_EQ(8u, cell2->CollapsedOuterBorderEnd());
-  EXPECT_EQ(1u, cell2->CollapsedOuterBorderBefore());
-  EXPECT_EQ(2u, cell2->CollapsedOuterBorderAfter());
+  EXPECT_EQ(0, cell1box->BorderLeft());
+  EXPECT_EQ(border_right, cell1box->BorderRight());
+  EXPECT_EQ(0, cell1box->BorderTop());
+  EXPECT_EQ(5, cell1box->BorderBottom());
+  EXPECT_EQ(border_left, cell2box->BorderLeft());
+  EXPECT_EQ(border_right, cell2box->BorderRight());
+  EXPECT_EQ(border_top, cell2box->BorderTop());
+  EXPECT_EQ(border_bottom, cell2box->BorderBottom());
 
-  To<Element>(cell1->Table()->GetNode())
+  // TablesNG do not have CollapsedBorder APIs.
+  if (!RuntimeEnabledFeatures::LayoutNGTableEnabled()) {
+    auto* cell1 = GetCellByElementId("cell1");
+    auto* cell2 = GetCellByElementId("cell2");
+    EXPECT_EQ(0u, cell1->CollapsedInnerBorderStart());
+    EXPECT_EQ(7u, cell1->CollapsedInnerBorderEnd());
+    EXPECT_EQ(0u, cell1->CollapsedInnerBorderBefore());
+    EXPECT_EQ(5u, cell1->CollapsedInnerBorderAfter());
+    EXPECT_EQ(8u, cell2->CollapsedInnerBorderStart());
+    EXPECT_EQ(7u, cell2->CollapsedInnerBorderEnd());
+    EXPECT_EQ(2u, cell2->CollapsedInnerBorderBefore());
+    EXPECT_EQ(1u, cell2->CollapsedInnerBorderAfter());
+
+    EXPECT_EQ(0u, cell1->CollapsedOuterBorderStart());
+    EXPECT_EQ(8u, cell1->CollapsedOuterBorderEnd());
+    EXPECT_EQ(0u, cell1->CollapsedOuterBorderBefore());
+    EXPECT_EQ(5u, cell1->CollapsedOuterBorderAfter());
+    EXPECT_EQ(7u, cell2->CollapsedOuterBorderStart());
+    EXPECT_EQ(8u, cell2->CollapsedOuterBorderEnd());
+    EXPECT_EQ(1u, cell2->CollapsedOuterBorderBefore());
+    EXPECT_EQ(2u, cell2->CollapsedOuterBorderAfter());
+  }
+
+  To<Element>(table_interface->ToLayoutObject()->GetNode())
       ->setAttribute(html_names::kStyleAttr,
                      "writing-mode: vertical-rl; direction: rtl");
   UpdateAllLifecyclePhasesForTest();
 
-  EXPECT_EQ(5, cell1->BorderLeft());
-  EXPECT_EQ(0, cell1->BorderRight());
-  EXPECT_EQ(8, cell1->BorderTop());
-  EXPECT_EQ(0, cell1->BorderBottom());
-  EXPECT_EQ(2, cell2->BorderLeft());
-  EXPECT_EQ(1, cell2->BorderRight());
-  EXPECT_EQ(8, cell2->BorderTop());
-  EXPECT_EQ(7, cell2->BorderBottom());
+  border_right = RuntimeEnabledFeatures::LayoutNGTableEnabled()
+                     ? LayoutUnit(1.5)
+                     : LayoutUnit(1);
+  border_left = RuntimeEnabledFeatures::LayoutNGTableEnabled() ? LayoutUnit(1.5)
+                                                               : LayoutUnit(2);
+  border_top = RuntimeEnabledFeatures::LayoutNGTableEnabled() ? LayoutUnit(7.5)
+                                                              : LayoutUnit(8);
+  border_bottom = RuntimeEnabledFeatures::LayoutNGTableEnabled()
+                      ? LayoutUnit(7.5)
+                      : LayoutUnit(7);
 
-  EXPECT_EQ(0u, cell1->CollapsedInnerBorderStart());
-  EXPECT_EQ(8u, cell1->CollapsedInnerBorderEnd());
-  EXPECT_EQ(0u, cell1->CollapsedInnerBorderBefore());
-  EXPECT_EQ(5u, cell1->CollapsedInnerBorderAfter());
-  EXPECT_EQ(7u, cell2->CollapsedInnerBorderStart());
-  EXPECT_EQ(8u, cell2->CollapsedInnerBorderEnd());
-  EXPECT_EQ(1u, cell2->CollapsedInnerBorderBefore());
-  EXPECT_EQ(2u, cell2->CollapsedInnerBorderAfter());
+  EXPECT_EQ(5, cell1box->BorderLeft());
+  EXPECT_EQ(0, cell1box->BorderRight());
+  EXPECT_EQ(border_top, cell1box->BorderTop());
+  EXPECT_EQ(0, cell1box->BorderBottom());
+  EXPECT_EQ(border_left, cell2box->BorderLeft());
+  EXPECT_EQ(border_right, cell2box->BorderRight());
+  EXPECT_EQ(border_top, cell2box->BorderTop());
+  EXPECT_EQ(border_bottom, cell2box->BorderBottom());
 
-  EXPECT_EQ(0u, cell1->CollapsedOuterBorderStart());
-  EXPECT_EQ(7u, cell1->CollapsedOuterBorderEnd());
-  EXPECT_EQ(0u, cell1->CollapsedOuterBorderBefore());
-  EXPECT_EQ(5u, cell1->CollapsedOuterBorderAfter());
-  EXPECT_EQ(8u, cell2->CollapsedOuterBorderStart());
-  EXPECT_EQ(7u, cell2->CollapsedOuterBorderEnd());
-  EXPECT_EQ(2u, cell2->CollapsedOuterBorderBefore());
-  EXPECT_EQ(1u, cell2->CollapsedOuterBorderAfter());
+  // TablesNG do not have CollapsedBorder APIs.
+  if (!RuntimeEnabledFeatures::LayoutNGTableEnabled()) {
+    auto* cell1 = GetCellByElementId("cell1");
+    auto* cell2 = GetCellByElementId("cell2");
+    EXPECT_EQ(0u, cell1->CollapsedInnerBorderStart());
+    EXPECT_EQ(8u, cell1->CollapsedInnerBorderEnd());
+    EXPECT_EQ(0u, cell1->CollapsedInnerBorderBefore());
+    EXPECT_EQ(5u, cell1->CollapsedInnerBorderAfter());
+    EXPECT_EQ(7u, cell2->CollapsedInnerBorderStart());
+    EXPECT_EQ(8u, cell2->CollapsedInnerBorderEnd());
+    EXPECT_EQ(1u, cell2->CollapsedInnerBorderBefore());
+    EXPECT_EQ(2u, cell2->CollapsedInnerBorderAfter());
+
+    EXPECT_EQ(0u, cell1->CollapsedOuterBorderStart());
+    EXPECT_EQ(7u, cell1->CollapsedOuterBorderEnd());
+    EXPECT_EQ(0u, cell1->CollapsedOuterBorderBefore());
+    EXPECT_EQ(5u, cell1->CollapsedOuterBorderAfter());
+    EXPECT_EQ(8u, cell2->CollapsedOuterBorderStart());
+    EXPECT_EQ(7u, cell2->CollapsedOuterBorderEnd());
+    EXPECT_EQ(2u, cell2->CollapsedOuterBorderBefore());
+    EXPECT_EQ(1u, cell2->CollapsedOuterBorderAfter());
+  }
 }
 
 TEST_F(LayoutTableCellTest, HasNonCollapsedBorderDecoration) {
+  // TablesNG does not use HasNonCollapsedBorderDecoration.
+  // It has been replaced by HasCollapsedBorders flag on PhysicalFragment.
+  if (RuntimeEnabledFeatures::LayoutNGTableEnabled())
+    return;
   SetBodyInnerHTML(R"HTML(
     <table>
       <tr><td id="cell"></td></tr>

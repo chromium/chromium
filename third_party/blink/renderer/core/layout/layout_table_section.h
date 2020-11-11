@@ -369,9 +369,6 @@ class CORE_EXPORT LayoutTableSection final
   }
   LayoutNGTableRowInterface* FirstRowInterface() const final;
   LayoutNGTableRowInterface* LastRowInterface() const final;
-  const LayoutNGTableCellInterface* PrimaryCellInterfaceAt(
-      unsigned row,
-      unsigned effective_column) const final;
 
   // LayoutNGTableSectionInterface methods end.
  protected:

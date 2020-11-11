@@ -1468,12 +1468,6 @@ LayoutNGTableRowInterface* LayoutTableSection::LastRowInterface() const {
   NOT_DESTROYED();
   return LastRow();
 }
-const LayoutNGTableCellInterface* LayoutTableSection::PrimaryCellInterfaceAt(
-    unsigned row,
-    unsigned effective_column) const {
-  NOT_DESTROYED();
-  return PrimaryCellAt(row, effective_column);
-}
 
 RecalcLayoutOverflowResult LayoutTableSection::RecalcLayoutOverflow() {
   NOT_DESTROYED();
