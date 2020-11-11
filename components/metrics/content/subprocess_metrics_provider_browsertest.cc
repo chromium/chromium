@@ -66,10 +66,10 @@ class SubprocessMetricsProviderBrowserTest
     return provider_->allocators_by_id_;
   }
 
-  ScopedObserver<content::RenderProcessHost,
-                 content::RenderProcessHostObserver>&
-  get_scoped_observer() {
-    return provider_->scoped_observer_;
+  base::ScopedMultiSourceObservation<content::RenderProcessHost,
+                                     content::RenderProcessHostObserver>&
+  get_scoped_observations() {
+    return provider_->scoped_observations_;
   }
 
   base::PersistentHistogramAllocator* GetMainFrameAllocator() {
@@ -114,7 +114,7 @@ IN_PROC_BROWSER_TEST_F(SubprocessMetricsProviderBrowserTest,
                        RegisterExistingNotReadyRenderProcesses) {
   ASSERT_TRUE(GetRenderProcessHostCount() > 0);
   CreateSubprocessMetricsProvider();
-  EXPECT_EQ(get_scoped_observer().GetSourcesCount(),
+  EXPECT_EQ(get_scoped_observations().GetSourcesCount(),
             GetRenderProcessHostCount());
   EXPECT_EQ(get_allocators_by_id().size(), 0u);
 
@@ -123,7 +123,7 @@ IN_PROC_BROWSER_TEST_F(SubprocessMetricsProviderBrowserTest,
 
   // Verify that the number of scoped observer matches the number of
   // RenderProcessHost and the main frame allocator exists.
-  EXPECT_EQ(get_scoped_observer().GetSourcesCount(),
+  EXPECT_EQ(get_scoped_observations().GetSourcesCount(),
             GetRenderProcessHostCount());
   auto* main_frame_allocator = GetMainFrameAllocator();
   EXPECT_TRUE(main_frame_allocator);
@@ -156,7 +156,8 @@ IN_PROC_BROWSER_TEST_F(SubprocessMetricsProviderBrowserTest,
       shell()->web_contents()->GetMainFrame()->GetProcess();
   SimulateRenderProcessHostDestroyed();
   // Verify the observer removed.
-  EXPECT_FALSE(get_scoped_observer().IsObserving(main_frame_process_host));
+  EXPECT_FALSE(
+      get_scoped_observations().IsObservingSource(main_frame_process_host));
 }
 
 IN_PROC_BROWSER_TEST_F(SubprocessMetricsProviderBrowserTest,
@@ -169,7 +170,7 @@ IN_PROC_BROWSER_TEST_F(SubprocessMetricsProviderBrowserTest,
 
   // Verify that the number of scoped observer matches the number of
   // RenderProcessHost and the main frame allocator exists.
-  EXPECT_EQ(get_scoped_observer().GetSourcesCount(),
+  EXPECT_EQ(get_scoped_observations().GetSourcesCount(),
             GetRenderProcessHostCount());
   auto* main_frame_allocator = GetMainFrameAllocator();
   EXPECT_TRUE(main_frame_allocator);
@@ -202,7 +203,8 @@ IN_PROC_BROWSER_TEST_F(SubprocessMetricsProviderBrowserTest,
       shell()->web_contents()->GetMainFrame()->GetProcess();
   SimulateRenderProcessHostDestroyed();
   // Verify the observer removed.
-  EXPECT_FALSE(get_scoped_observer().IsObserving(main_frame_process_host));
+  EXPECT_FALSE(
+      get_scoped_observations().IsObservingSource(main_frame_process_host));
 }
 
 }  // namespace metrics

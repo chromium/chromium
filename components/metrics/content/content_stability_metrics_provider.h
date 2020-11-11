@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/gtest_prod_util.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "components/metrics/metrics_provider.h"
 #include "components/metrics/stability_metrics_helper.h"
@@ -84,9 +84,9 @@ class ContentStabilityMetricsProvider
       const crash_reporter::CrashMetricsReporter::ReportedCrashTypeSet&
           reported_counts) override;
 
-  ScopedObserver<crash_reporter::CrashMetricsReporter,
-                 crash_reporter::CrashMetricsReporter::Observer>
-      scoped_observer_;
+  base::ScopedObservation<crash_reporter::CrashMetricsReporter,
+                          crash_reporter::CrashMetricsReporter::Observer>
+      scoped_observation_{this};
 #endif  // defined(OS_ANDROID)
 
   StabilityMetricsHelper helper_;

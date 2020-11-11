@@ -28,12 +28,7 @@ namespace metrics {
 ContentStabilityMetricsProvider::ContentStabilityMetricsProvider(
     PrefService* local_state,
     std::unique_ptr<ExtensionsHelper> extensions_helper)
-    :
-#if defined(OS_ANDROID)
-      scoped_observer_(this),
-#endif  // defined(OS_ANDROID)
-      helper_(local_state),
-      extensions_helper_(std::move(extensions_helper)) {
+    : helper_(local_state), extensions_helper_(std::move(extensions_helper)) {
   BrowserChildProcessObserver::Add(this);
 
   registrar_.Add(this, content::NOTIFICATION_LOAD_START,
@@ -48,7 +43,7 @@ ContentStabilityMetricsProvider::ContentStabilityMetricsProvider(
 #if defined(OS_ANDROID)
   auto* crash_manager = crash_reporter::CrashMetricsReporter::GetInstance();
   DCHECK(crash_manager);
-  scoped_observer_.Add(crash_manager);
+  scoped_observation_.Observe(crash_manager);
 #endif  // defined(OS_ANDROID)
 }
 

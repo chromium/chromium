@@ -162,8 +162,8 @@ void SubprocessMetricsProvider::OnRenderProcessHostCreated(
     content::RenderProcessHost* host) {
   // Sometimes, the same host will cause multiple notifications in tests so
   // could possibly do the same in a release build.
-  if (!scoped_observer_.IsObserving(host))
-    scoped_observer_.Add(host);
+  if (!scoped_observations_.IsObservingSource(host))
+    scoped_observations_.AddObservation(host);
 }
 
 void SubprocessMetricsProvider::RenderProcessReady(
@@ -198,7 +198,7 @@ void SubprocessMetricsProvider::RenderProcessHostDestroyed(
   // destruction of the host. If both get called, no harm is done.
 
   DeregisterSubprocessAllocator(host->GetID());
-  scoped_observer_.Remove(host);
+  scoped_observations_.RemoveObservation(host);
 }
 
 // static
