@@ -60,24 +60,25 @@ CancelCallbackOnce DummyDriveService::GetAllTeamDriveList(
 
 CancelCallbackOnce DummyDriveService::GetAllFileList(
     const std::string& team_drive_id,
-    const FileListCallback& callback) {
+    FileListCallback callback) {
   return CancelCallbackOnce();
 }
 
 CancelCallbackOnce DummyDriveService::GetFileListInDirectory(
     const std::string& directory_resource_id,
-    const FileListCallback& callback) {
+    FileListCallback callback) {
   return CancelCallbackOnce();
 }
 
-CancelCallback DummyDriveService::Search(
-    const std::string& search_query,
-    const FileListCallback& callback) { return CancelCallback(); }
+CancelCallback DummyDriveService::Search(const std::string& search_query,
+                                         FileListCallback callback) {
+  return CancelCallback();
+}
 
 CancelCallbackOnce DummyDriveService::SearchByTitle(
     const std::string& title,
     const std::string& directory_resource_id,
-    const FileListCallback& callback) {
+    FileListCallback callback) {
   return CancelCallbackOnce();
 }
 
@@ -107,7 +108,7 @@ CancelCallback DummyDriveService::GetRemainingTeamDriveList(
 
 CancelCallbackOnce DummyDriveService::GetRemainingFileList(
     const GURL& next_link,
-    const FileListCallback& callback) {
+    FileListCallback callback) {
   return CancelCallback();
 }
 

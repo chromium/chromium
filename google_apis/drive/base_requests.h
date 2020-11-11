@@ -61,8 +61,8 @@ typedef base::RepeatingCallback<void(int64_t progress, int64_t total)>
     ProgressCallback;
 
 // Callback used to get the content from DownloadFileRequest.
-typedef base::Callback<void(DriveApiErrorCode error,
-                            std::unique_ptr<std::string> content)>
+typedef base::RepeatingCallback<void(DriveApiErrorCode error,
+                                     std::unique_ptr<std::string> content)>
     GetContentCallback;
 
 // Parses JSON passed in |json|. Returns NULL on failure.

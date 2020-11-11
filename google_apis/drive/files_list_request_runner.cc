@@ -29,15 +29,15 @@ CancelCallback FilesListRequestRunner::CreateAndStartWithSizeBackoff(
     const std::string& team_drive_id,
     const std::string& q,
     const std::string& fields,
-    const FileListCallback& callback) {
+    FileListCallback callback) {
   base::Closure* const cancel_callback = new base::Closure;
   std::unique_ptr<drive::FilesListRequest> request =
       std::make_unique<drive::FilesListRequest>(
           request_sender_, url_generator_,
-          base::Bind(&FilesListRequestRunner::OnCompleted,
-                     weak_ptr_factory_.GetWeakPtr(), max_results, corpora,
-                     team_drive_id, q, fields, callback,
-                     base::Owned(cancel_callback)));
+          base::BindOnce(&FilesListRequestRunner::OnCompleted,
+                         weak_ptr_factory_.GetWeakPtr(), max_results, corpora,
+                         team_drive_id, q, fields, std::move(callback),
+                         base::Owned(cancel_callback)));
   request->set_max_results(max_results);
   request->set_q(q);
   request->set_fields(fields);
@@ -62,7 +62,7 @@ void FilesListRequestRunner::OnCompleted(int max_results,
                                          const std::string& team_drive_id,
                                          const std::string& q,
                                          const std::string& fields,
-                                         const FileListCallback& callback,
+                                         FileListCallback callback,
                                          CancelCallback* cancel_callback,
                                          DriveApiErrorCode error,
                                          std::unique_ptr<FileList> entry) {
@@ -71,11 +71,11 @@ void FilesListRequestRunner::OnCompleted(int max_results,
 
   if (error == google_apis::DRIVE_RESPONSE_TOO_LARGE && max_results > 1) {
     CreateAndStartWithSizeBackoff(max_results / 2, corpora, team_drive_id, q,
-                                  fields, callback);
+                                  fields, std::move(callback));
     return;
   }
 
-  callback.Run(error, std::move(entry));
+  std::move(callback).Run(error, std::move(entry));
 }
 
 void FilesListRequestRunner::SetRequestCompletedCallbackForTesting(

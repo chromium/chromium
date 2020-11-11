@@ -125,12 +125,12 @@ void ScheduleUploadRangeCallback(UploadRangeCallback callback,
                      std::move(entry)));
 }
 
-void FileListCallbackAdapter(const FileListCallback& callback,
+void FileListCallbackAdapter(FileListCallback callback,
                              DriveApiErrorCode error,
                              std::unique_ptr<ChangeList> change_list) {
   std::unique_ptr<FileList> file_list;
   if (!change_list) {
-    callback.Run(error, std::move(file_list));
+    std::move(callback).Run(error, std::move(file_list));
     return;
   }
 
@@ -142,7 +142,7 @@ void FileListCallbackAdapter(const FileListCallback& callback,
       file_list->mutable_items()->push_back(
           std::make_unique<FileResource>(*entry.file()));
   }
-  callback.Run(error, std::move(file_list));
+  std::move(callback).Run(error, std::move(file_list));
 }
 
 bool UserHasWriteAccess(google_apis::drive::PermissionRole user_permission) {
@@ -404,76 +404,74 @@ CancelCallbackOnce FakeDriveService::GetAllTeamDriveList(
 
 CancelCallbackOnce FakeDriveService::GetAllFileList(
     const std::string& team_drive_id,
-    const FileListCallback& callback) {
+    FileListCallback callback) {
   DCHECK(thread_checker_.CalledOnValidThread());
-  DCHECK(callback);
 
   if (never_return_all_file_list_) {
     ++blocked_file_list_load_count_;
     return CancelCallback();
   }
 
-  GetChangeListInternal(0,              // start changestamp
-                        std::string(),  // empty search query
-                        std::string(),  // no directory resource id,
-                        team_drive_id,
-                        0,  // start offset
-                        default_max_results_, &file_list_load_count_,
-                        base::BindOnce(&FileListCallbackAdapter, callback));
+  GetChangeListInternal(
+      0,              // start changestamp
+      std::string(),  // empty search query
+      std::string(),  // no directory resource id,
+      team_drive_id,
+      0,  // start offset
+      default_max_results_, &file_list_load_count_,
+      base::BindOnce(&FileListCallbackAdapter, std::move(callback)));
   return CancelCallbackOnce();
 }
 
 CancelCallbackOnce FakeDriveService::GetFileListInDirectory(
     const std::string& directory_resource_id,
-    const FileListCallback& callback) {
+    FileListCallback callback) {
   DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK(!directory_resource_id.empty());
-  DCHECK(callback);
 
-  GetChangeListInternal(0,              // start changestamp
-                        std::string(),  // empty search query
-                        directory_resource_id,
-                        std::string(),  // empty team drive id.
-                        0,              // start offset
-                        default_max_results_, &directory_load_count_,
-                        base::BindOnce(&FileListCallbackAdapter, callback));
+  GetChangeListInternal(
+      0,              // start changestamp
+      std::string(),  // empty search query
+      directory_resource_id,
+      std::string(),  // empty team drive id.
+      0,              // start offset
+      default_max_results_, &directory_load_count_,
+      base::BindOnce(&FileListCallbackAdapter, std::move(callback)));
   return CancelCallbackOnce();
 }
 
-CancelCallback FakeDriveService::Search(
-    const std::string& search_query,
-    const FileListCallback& callback) {
+CancelCallback FakeDriveService::Search(const std::string& search_query,
+                                        FileListCallback callback) {
   DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK(!search_query.empty());
-  DCHECK(callback);
 
-  GetChangeListInternal(0,  // start changestamp
-                        search_query,
-                        std::string(),  // no directory resource id,
-                        std::string(),  // empty team drive id.
-                        0,              // start offset
-                        default_max_results_, nullptr,
-                        base::BindOnce(&FileListCallbackAdapter, callback));
+  GetChangeListInternal(
+      0,  // start changestamp
+      search_query,
+      std::string(),  // no directory resource id,
+      std::string(),  // empty team drive id.
+      0,              // start offset
+      default_max_results_, nullptr,
+      base::BindOnce(&FileListCallbackAdapter, std::move(callback)));
   return CancelCallback();
 }
 
 CancelCallbackOnce FakeDriveService::SearchByTitle(
     const std::string& title,
     const std::string& directory_resource_id,
-    const FileListCallback& callback) {
+    FileListCallback callback) {
   DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK(!title.empty());
-  DCHECK(callback);
 
   // Note: the search implementation here doesn't support quotation unescape,
   // so don't escape here.
-  GetChangeListInternal(0,  // start changestamp
-                        base::StringPrintf("title:'%s'", title.c_str()),
-                        directory_resource_id,
-                        std::string(),  // empty team drive id.
-                        0,              // start offset
-                        default_max_results_, nullptr,
-                        base::BindOnce(&FileListCallbackAdapter, callback));
+  GetChangeListInternal(
+      0,  // start changestamp
+      base::StringPrintf("title:'%s'", title.c_str()), directory_resource_id,
+      std::string(),  // empty team drive id.
+      0,              // start offset
+      default_max_results_, nullptr,
+      base::BindOnce(&FileListCallbackAdapter, std::move(callback)));
   return CancelCallbackOnce();
 }
 
@@ -579,13 +577,12 @@ CancelCallback FakeDriveService::GetRemainingTeamDriveList(
 
 CancelCallbackOnce FakeDriveService::GetRemainingFileList(
     const GURL& next_link,
-    const FileListCallback& callback) {
+    FileListCallback callback) {
   DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK(!next_link.is_empty());
-  DCHECK(callback);
 
   return GetRemainingChangeList(
-      next_link, base::Bind(&FileListCallbackAdapter, callback));
+      next_link, base::BindOnce(&FileListCallbackAdapter, std::move(callback)));
 }
 
 CancelCallback FakeDriveService::GetFileResource(

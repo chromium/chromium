@@ -84,7 +84,7 @@ class DriveServiceOnWorker : public drive::DriveServiceInterface {
 
   google_apis::CancelCallbackOnce GetRemainingFileList(
       const GURL& next_link,
-      const google_apis::FileListCallback& callback) override;
+      google_apis::FileListCallback callback) override;
 
   google_apis::CancelCallback GetFileResource(
       const std::string& resource_id,
@@ -92,7 +92,7 @@ class DriveServiceOnWorker : public drive::DriveServiceInterface {
 
   google_apis::CancelCallbackOnce GetFileListInDirectory(
       const std::string& directory_resource_id,
-      const google_apis::FileListCallback& callback) override;
+      google_apis::FileListCallback callback) override;
 
   google_apis::CancelCallbackOnce RemoveResourceFromDirectory(
       const std::string& parent_resource_id,
@@ -102,7 +102,7 @@ class DriveServiceOnWorker : public drive::DriveServiceInterface {
   google_apis::CancelCallbackOnce SearchByTitle(
       const std::string& title,
       const std::string& directory_resource_id,
-      const google_apis::FileListCallback& callback) override;
+      google_apis::FileListCallback callback) override;
 
   bool HasRefreshToken() const override;
 
@@ -119,10 +119,10 @@ class DriveServiceOnWorker : public drive::DriveServiceInterface {
       google_apis::TeamDriveListCallback callback) override;
   google_apis::CancelCallbackOnce GetAllFileList(
       const std::string& team_drive_id,
-      const google_apis::FileListCallback& callback) override;
+      google_apis::FileListCallback callback) override;
   google_apis::CancelCallback Search(
       const std::string& search_query,
-      const google_apis::FileListCallback& callback) override;
+      google_apis::FileListCallback callback) override;
   google_apis::CancelCallback TrashResource(
       const std::string& resource_id,
       google_apis::EntryActionCallback callback) override;

@@ -157,9 +157,8 @@ void AppendProgressCallbackResult(std::vector<ProgressInfo>* progress_values,
 }
 
 TestGetContentCallback::TestGetContentCallback()
-    : callback_(base::Bind(&TestGetContentCallback::OnGetContent,
-                           base::Unretained(this))) {
-}
+    : callback_(base::BindRepeating(&TestGetContentCallback::OnGetContent,
+                                    base::Unretained(this))) {}
 
 TestGetContentCallback::~TestGetContentCallback() {
 }

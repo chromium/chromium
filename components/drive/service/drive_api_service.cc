@@ -298,13 +298,13 @@ CancelCallbackOnce DriveAPIService::GetAllTeamDriveList(
 
 CancelCallbackOnce DriveAPIService::GetAllFileList(
     const std::string& team_drive_id,
-    const FileListCallback& callback) {
+    FileListCallback callback) {
   DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK(!callback.is_null());
 
   std::unique_ptr<FilesListRequest> request =
       std::make_unique<FilesListRequest>(sender_.get(), url_generator_,
-                                         callback);
+                                         std::move(callback));
   request->set_max_results(kMaxNumFilesResourcePerRequest);
   request->set_q("trashed = false");  // Exclude trashed files.
   request->set_fields(kFileListFields);
@@ -319,7 +319,7 @@ CancelCallbackOnce DriveAPIService::GetAllFileList(
 
 CancelCallbackOnce DriveAPIService::GetFileListInDirectory(
     const std::string& directory_resource_id,
-    const FileListCallback& callback) {
+    FileListCallback callback) {
   DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK(!directory_resource_id.empty());
   DCHECK(!callback.is_null());
@@ -341,12 +341,11 @@ CancelCallbackOnce DriveAPIService::GetFileListInDirectory(
       base::StringPrintf(
           "'%s' in parents and trashed = false",
           util::EscapeQueryStringValue(directory_resource_id).c_str()),
-      kFileListFields, callback);
+      kFileListFields, std::move(callback));
 }
 
-CancelCallback DriveAPIService::Search(
-    const std::string& search_query,
-    const FileListCallback& callback) {
+CancelCallback DriveAPIService::Search(const std::string& search_query,
+                                       FileListCallback callback) {
   DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK(!search_query.empty());
   DCHECK(!callback.is_null());
@@ -360,13 +359,13 @@ CancelCallback DriveAPIService::Search(
 
   return files_list_request_runner_->CreateAndStartWithSizeBackoff(
       kMaxNumFilesResourcePerRequestForSearch, corpora, std::string(), query,
-      kFileListFields, callback);
+      kFileListFields, std::move(callback));
 }
 
 CancelCallbackOnce DriveAPIService::SearchByTitle(
     const std::string& title,
     const std::string& directory_resource_id,
-    const FileListCallback& callback) {
+    FileListCallback callback) {
   DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK(!title.empty());
   DCHECK(!callback.is_null());
@@ -383,7 +382,7 @@ CancelCallbackOnce DriveAPIService::SearchByTitle(
 
   std::unique_ptr<FilesListRequest> request =
       std::make_unique<FilesListRequest>(sender_.get(), url_generator_,
-                                         callback);
+                                         std::move(callback));
   request->set_max_results(kMaxNumFilesResourcePerRequest);
   request->set_q(query);
   request->set_fields(kFileListFields);
@@ -454,13 +453,14 @@ CancelCallback DriveAPIService::GetRemainingTeamDriveList(
 
 CancelCallbackOnce DriveAPIService::GetRemainingFileList(
     const GURL& next_link,
-    const FileListCallback& callback) {
+    FileListCallback callback) {
   DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK(!next_link.is_empty());
   DCHECK(!callback.is_null());
 
   std::unique_ptr<FilesListNextPageRequest> request =
-      std::make_unique<FilesListNextPageRequest>(sender_.get(), callback);
+      std::make_unique<FilesListNextPageRequest>(sender_.get(),
+                                                 std::move(callback));
   request->set_next_link(next_link);
   request->set_fields(kFileListFields);
   return sender_->StartRequestWithAuthRetry(std::move(request));

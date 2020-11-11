@@ -29,7 +29,7 @@ RequestSender::~RequestSender() {
   DCHECK(thread_checker_.CalledOnValidThread());
 }
 
-base::Closure RequestSender::StartRequestWithAuthRetry(
+base::RepeatingClosure RequestSender::StartRequestWithAuthRetry(
     std::unique_ptr<AuthenticatedRequestInterface> request) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
@@ -39,13 +39,13 @@ base::Closure RequestSender::StartRequestWithAuthRetry(
   return StartRequestWithAuthRetryInternal(request_ptr);
 }
 
-base::Closure RequestSender::StartRequestWithAuthRetryInternal(
+base::RepeatingClosure RequestSender::StartRequestWithAuthRetryInternal(
     AuthenticatedRequestInterface* request) {
   // TODO(kinaba): Stop relying on weak pointers. Move lifetime management
   // of the requests to request sender.
-  base::Closure cancel_closure =
-      base::Bind(&RequestSender::CancelRequest, weak_ptr_factory_.GetWeakPtr(),
-                 request->GetWeakPtr());
+  base::RepeatingClosure cancel_closure = base::BindRepeating(
+      &RequestSender::CancelRequest, weak_ptr_factory_.GetWeakPtr(),
+      request->GetWeakPtr());
 
   if (!auth_service_->HasAccessToken()) {
     // Fetch OAuth2 access token from the refresh token first.

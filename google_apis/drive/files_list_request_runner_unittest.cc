@@ -111,8 +111,8 @@ class FilesListRequestRunnerTest : public testing::Test {
         TRAFFIC_ANNOTATION_FOR_TESTS);
 
     test_server_.RegisterRequestHandler(
-        base::Bind(&FilesListRequestRunnerTest::OnFilesListRequest,
-                   base::Unretained(this), test_server_.base_url()));
+        base::BindRepeating(&FilesListRequestRunnerTest::OnFilesListRequest,
+                            base::Unretained(this), test_server_.base_url()));
     ASSERT_TRUE(test_server_.Start());
 
     runner_.reset(new FilesListRequestRunner(
@@ -181,8 +181,8 @@ TEST_F(FilesListRequestRunnerTest, Success_NoBackoff) {
   SetFakeServerResponse(net::HTTP_OK, kSuccessResource);
   runner_->CreateAndStartWithSizeBackoff(
       kMaxResults, FilesListCorpora::DEFAULT, std::string(), kQuery, kFields,
-      base::Bind(&FilesListRequestRunnerTest::OnCompleted,
-                 base::Unretained(this)));
+      base::BindOnce(&FilesListRequestRunnerTest::OnCompleted,
+                     base::Unretained(this)));
 
   base::RunLoop run_loop;
   on_completed_callback_ = run_loop.QuitClosure();
@@ -204,8 +204,8 @@ TEST_F(FilesListRequestRunnerTest, Success_Backoff) {
                         kResponseTooLargeErrorResource);
   runner_->CreateAndStartWithSizeBackoff(
       kMaxResults, FilesListCorpora::DEFAULT, std::string(), kQuery, kFields,
-      base::Bind(&FilesListRequestRunnerTest::OnCompleted,
-                 base::Unretained(this)));
+      base::BindOnce(&FilesListRequestRunnerTest::OnCompleted,
+                     base::Unretained(this)));
   {
     base::RunLoop run_loop;
     runner_->SetRequestCompletedCallbackForTesting(run_loop.QuitClosure());
@@ -244,8 +244,8 @@ TEST_F(FilesListRequestRunnerTest, Failure_TooManyBackoffs) {
                         kResponseTooLargeErrorResource);
   runner_->CreateAndStartWithSizeBackoff(
       kMaxResults, FilesListCorpora::DEFAULT, std::string(), kQuery, kFields,
-      base::Bind(&FilesListRequestRunnerTest::OnCompleted,
-                 base::Unretained(this)));
+      base::BindOnce(&FilesListRequestRunnerTest::OnCompleted,
+                     base::Unretained(this)));
   {
     base::RunLoop run_loop;
     runner_->SetRequestCompletedCallbackForTesting(run_loop.QuitClosure());
@@ -303,8 +303,8 @@ TEST_F(FilesListRequestRunnerTest, Failure_AnotherError) {
                         kQuotaExceededErrorResource);
   runner_->CreateAndStartWithSizeBackoff(
       kMaxResults, FilesListCorpora::DEFAULT, std::string(), kQuery, kFields,
-      base::Bind(&FilesListRequestRunnerTest::OnCompleted,
-                 base::Unretained(this)));
+      base::BindOnce(&FilesListRequestRunnerTest::OnCompleted,
+                     base::Unretained(this)));
 
   base::RunLoop run_loop;
   on_completed_callback_ = run_loop.QuitClosure();

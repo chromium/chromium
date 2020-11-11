@@ -95,9 +95,9 @@ void DriveServiceWrapper::GetRemainingTeamDriveList(
 
 void DriveServiceWrapper::GetRemainingFileList(
     const GURL& next_link,
-    const google_apis::FileListCallback& callback) {
+    google_apis::FileListCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  drive_service_->GetRemainingFileList(next_link, callback);
+  drive_service_->GetRemainingFileList(next_link, std::move(callback));
 }
 
 void DriveServiceWrapper::GetFileResource(
@@ -109,9 +109,10 @@ void DriveServiceWrapper::GetFileResource(
 
 void DriveServiceWrapper::GetFileListInDirectory(
     const std::string& directory_resource_id,
-    const google_apis::FileListCallback& callback) {
+    google_apis::FileListCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  drive_service_->GetFileListInDirectory(directory_resource_id, callback);
+  drive_service_->GetFileListInDirectory(directory_resource_id,
+                                         std::move(callback));
 }
 
 void DriveServiceWrapper::RemoveResourceFromDirectory(
@@ -126,10 +127,10 @@ void DriveServiceWrapper::RemoveResourceFromDirectory(
 void DriveServiceWrapper::SearchByTitle(
     const std::string& title,
     const std::string& directory_resource_id,
-    const google_apis::FileListCallback& callback) {
+    google_apis::FileListCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  drive_service_->SearchByTitle(
-      title, directory_resource_id, callback);
+  drive_service_->SearchByTitle(title, directory_resource_id,
+                                std::move(callback));
 }
 
 }  // namespace drive_backend

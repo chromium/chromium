@@ -219,7 +219,7 @@ class DriveServiceInterface : public DriveServiceBatchOperationsInterface {
   // |callback| must not be null.
   virtual google_apis::CancelCallbackOnce GetAllFileList(
       const std::string& team_drive_id,
-      const google_apis::FileListCallback& callback) = 0;
+      google_apis::FileListCallback callback) = 0;
 
   // Fetches a file list in the directory with |directory_resource_id|.
   // |callback| will be called upon completion.
@@ -231,7 +231,7 @@ class DriveServiceInterface : public DriveServiceBatchOperationsInterface {
   // |callback| must not be null.
   virtual google_apis::CancelCallbackOnce GetFileListInDirectory(
       const std::string& directory_resource_id,
-      const google_apis::FileListCallback& callback) = 0;
+      google_apis::FileListCallback callback) = 0;
 
   // Searches the resources for the |search_query| from all the user's
   // resources. |callback| will be called upon completion.
@@ -243,7 +243,7 @@ class DriveServiceInterface : public DriveServiceBatchOperationsInterface {
   // |callback| must not be null.
   virtual google_apis::CancelCallback Search(
       const std::string& search_query,
-      const google_apis::FileListCallback& callback) = 0;
+      google_apis::FileListCallback callback) = 0;
 
   // Searches the resources with the |title|.
   // |directory_resource_id| is an optional parameter. If it is empty,
@@ -257,7 +257,7 @@ class DriveServiceInterface : public DriveServiceBatchOperationsInterface {
   virtual google_apis::CancelCallbackOnce SearchByTitle(
       const std::string& title,
       const std::string& directory_resource_id,
-      const google_apis::FileListCallback& callback) = 0;
+      google_apis::FileListCallback callback) = 0;
 
   // Fetches change list since |start_changestamp|. |callback| will be
   // called upon completion.
@@ -311,7 +311,7 @@ class DriveServiceInterface : public DriveServiceBatchOperationsInterface {
   // |next_link| must not be empty. |callback| must not be null.
   virtual google_apis::CancelCallbackOnce GetRemainingFileList(
       const GURL& next_link,
-      const google_apis::FileListCallback& callback) = 0;
+      google_apis::FileListCallback callback) = 0;
 
   // Fetches single entry metadata from server. The entry's file id equals
   // |resource_id|.

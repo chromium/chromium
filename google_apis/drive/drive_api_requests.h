@@ -36,8 +36,8 @@ using TeamDriveListCallback =
 
 // Callback used for requests that the server returns FileList data
 // formatted into JSON value.
-typedef base::Callback<void(DriveApiErrorCode error,
-                            std::unique_ptr<FileList> entry)>
+typedef base::OnceCallback<void(DriveApiErrorCode error,
+                                std::unique_ptr<FileList> entry)>
     FileListCallback;
 
 // DEPRECATED: Please use ChangeListOnceCallback instead
@@ -530,7 +530,7 @@ class FilesListRequest : public DriveApiDataRequest<FileList> {
  public:
   FilesListRequest(RequestSender* sender,
                    const DriveApiUrlGenerator& url_generator,
-                   const FileListCallback& callback);
+                   FileListCallback callback);
   ~FilesListRequest() override;
 
   // Optional parameter
@@ -576,8 +576,7 @@ class FilesListRequest : public DriveApiDataRequest<FileList> {
 // This class implements 2)'s request.
 class FilesListNextPageRequest : public DriveApiDataRequest<FileList> {
  public:
-  FilesListNextPageRequest(RequestSender* sender,
-                           const FileListCallback& callback);
+  FilesListNextPageRequest(RequestSender* sender, FileListCallback callback);
   ~FilesListNextPageRequest() override;
 
   const GURL& next_link() const { return next_link_; }

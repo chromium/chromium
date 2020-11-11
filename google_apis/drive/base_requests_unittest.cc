@@ -154,8 +154,8 @@ class BaseRequestsTest : public testing::Test {
                                     std::string(), /* custom user agent */
                                     TRAFFIC_ANNOTATION_FOR_TESTS));
 
-    test_server_.RegisterRequestHandler(
-        base::Bind(&BaseRequestsTest::HandleRequest, base::Unretained(this)));
+    test_server_.RegisterRequestHandler(base::BindRepeating(
+        &BaseRequestsTest::HandleRequest, base::Unretained(this)));
     ASSERT_TRUE(test_server_.Start());
   }
 

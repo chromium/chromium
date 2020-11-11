@@ -174,32 +174,28 @@ class DriveApiRequestsTest : public testing::Test {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
 
     test_server_.RegisterRequestHandler(
-        base::Bind(&DriveApiRequestsTest::HandleChildrenDeleteRequest,
-                   base::Unretained(this)));
+        base::BindRepeating(&DriveApiRequestsTest::HandleChildrenDeleteRequest,
+                            base::Unretained(this)));
+    test_server_.RegisterRequestHandler(base::BindRepeating(
+        &DriveApiRequestsTest::HandleDataFileRequest, base::Unretained(this)));
+    test_server_.RegisterRequestHandler(base::BindRepeating(
+        &DriveApiRequestsTest::HandleDeleteRequest, base::Unretained(this)));
+    test_server_.RegisterRequestHandler(base::BindRepeating(
+        &DriveApiRequestsTest::HandlePreconditionFailedRequest,
+        base::Unretained(this)));
     test_server_.RegisterRequestHandler(
-        base::Bind(&DriveApiRequestsTest::HandleDataFileRequest,
-                   base::Unretained(this)));
+        base::BindRepeating(&DriveApiRequestsTest::HandleResumeUploadRequest,
+                            base::Unretained(this)));
     test_server_.RegisterRequestHandler(
-        base::Bind(&DriveApiRequestsTest::HandleDeleteRequest,
-                   base::Unretained(this)));
+        base::BindRepeating(&DriveApiRequestsTest::HandleInitiateUploadRequest,
+                            base::Unretained(this)));
+    test_server_.RegisterRequestHandler(base::BindRepeating(
+        &DriveApiRequestsTest::HandleContentResponse, base::Unretained(this)));
+    test_server_.RegisterRequestHandler(base::BindRepeating(
+        &DriveApiRequestsTest::HandleDownloadRequest, base::Unretained(this)));
     test_server_.RegisterRequestHandler(
-        base::Bind(&DriveApiRequestsTest::HandlePreconditionFailedRequest,
-                   base::Unretained(this)));
-    test_server_.RegisterRequestHandler(
-        base::Bind(&DriveApiRequestsTest::HandleResumeUploadRequest,
-                   base::Unretained(this)));
-    test_server_.RegisterRequestHandler(
-        base::Bind(&DriveApiRequestsTest::HandleInitiateUploadRequest,
-                   base::Unretained(this)));
-    test_server_.RegisterRequestHandler(
-        base::Bind(&DriveApiRequestsTest::HandleContentResponse,
-                   base::Unretained(this)));
-    test_server_.RegisterRequestHandler(
-        base::Bind(&DriveApiRequestsTest::HandleDownloadRequest,
-                   base::Unretained(this)));
-    test_server_.RegisterRequestHandler(
-        base::Bind(&DriveApiRequestsTest::HandleBatchUploadRequest,
-                   base::Unretained(this)));
+        base::BindRepeating(&DriveApiRequestsTest::HandleBatchUploadRequest,
+                            base::Unretained(this)));
     ASSERT_TRUE(test_server_.Start());
 
     GURL test_base_url = test_util::GetBaseUrlForTesting(test_server_.port());
@@ -1992,7 +1988,7 @@ TEST_F(DriveApiRequestsTest, DownloadFileRequest_GetContentCallback) {
             test_util::CreateQuitCallback(
                 &run_loop,
                 test_util::CreateCopyResultCallback(&result_code, &temp_file)),
-            base::Bind(&AppendContent, &contents), ProgressCallback());
+            base::BindRepeating(&AppendContent, &contents), ProgressCallback());
     request_sender_->StartRequestWithAuthRetry(std::move(request));
     run_loop.Run();
   }

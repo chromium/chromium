@@ -81,10 +81,9 @@ class BaseRequestsServerTest : public testing::Test {
         TRAFFIC_ANNOTATION_FOR_TESTS);
 
     ASSERT_TRUE(test_server_.InitializeAndListen());
-    test_server_.RegisterRequestHandler(
-        base::Bind(&test_util::HandleDownloadFileRequest,
-                   test_server_.base_url(),
-                   base::Unretained(&http_request_)));
+    test_server_.RegisterRequestHandler(base::BindRepeating(
+        &test_util::HandleDownloadFileRequest, test_server_.base_url(),
+        base::Unretained(&http_request_)));
     test_server_.StartAcceptingConnections();
   }
 

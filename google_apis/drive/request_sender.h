@@ -65,7 +65,7 @@ class RequestSender {
   //
   // Returns a closure to cancel the request. The closure cancels the request
   // if it is in-flight, and does nothing if it is already terminated.
-  base::Closure StartRequestWithAuthRetry(
+  base::RepeatingClosure StartRequestWithAuthRetry(
       std::unique_ptr<AuthenticatedRequestInterface> request);
 
   // Notifies to this RequestSender that |request| has finished.
@@ -78,7 +78,7 @@ class RequestSender {
   }
 
  private:
-  base::Closure StartRequestWithAuthRetryInternal(
+  base::RepeatingClosure StartRequestWithAuthRetryInternal(
       AuthenticatedRequestInterface* request);
 
   // Called when the access token is fetched.

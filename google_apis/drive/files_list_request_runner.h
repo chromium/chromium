@@ -29,13 +29,12 @@ class FilesListRequestRunner {
 
   // Creates a FilesListRequest instance and starts the request with a backoff
   // retry in case of DRIVE_RESPONSE_TOO_LARGE error code.
-  CancelCallback CreateAndStartWithSizeBackoff(
-      int max_results,
-      FilesListCorpora corpora,
-      const std::string& team_drive_id,
-      const std::string& q,
-      const std::string& fields,
-      const FileListCallback& callback);
+  CancelCallback CreateAndStartWithSizeBackoff(int max_results,
+                                               FilesListCorpora corpora,
+                                               const std::string& team_drive_id,
+                                               const std::string& q,
+                                               const std::string& fields,
+                                               FileListCallback callback);
 
   ~FilesListRequestRunner();
 
@@ -55,7 +54,7 @@ class FilesListRequestRunner {
                    const std::string& team_drive_id,
                    const std::string& q,
                    const std::string& fields,
-                   const FileListCallback& callback,
+                   FileListCallback callback,
                    CancelCallback* cancel_callback,
                    DriveApiErrorCode error,
                    std::unique_ptr<FileList> entry);
