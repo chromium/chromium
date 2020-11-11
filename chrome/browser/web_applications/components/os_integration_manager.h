@@ -57,6 +57,9 @@ using UninstallOsHooksCallback =
 // Used to suppress OS hooks within this object's lifetime.
 using ScopedOsHooksSuppress = std::unique_ptr<base::AutoReset<bool>>;
 
+using BarrierCallback =
+    base::RepeatingCallback<void(OsHookType::Type os_hook, bool completed)>;
+
 // OsIntegrationManager is responsible of creating/updating/deleting
 // all OS hooks during Web App lifecycle.
 // It contains individual OS integration managers and takes
@@ -128,6 +131,9 @@ class OsIntegrationManager {
 
   static ScopedOsHooksSuppress ScopedSuppressOsHooksForTesting();
 
+  // Suppress calling individual OS managers for testing.
+  void SuppressOsManagersForTesting();
+
  protected:
   AppShortcutManager* shortcut_manager() { return shortcut_manager_.get(); }
   FileHandlerManager* file_handler_manager() {
@@ -142,22 +148,37 @@ class OsIntegrationManager {
     file_handler_manager_ = std::move(file_handler_manager);
   }
 
+  virtual void CreateShortcuts(const AppId& app_id,
+                               bool add_to_desktop,
+                               CreateShortcutsCallback callback);
+
+  virtual void RegisterFileHandlers(
+      const AppId& app_id,
+      base::OnceCallback<void(bool success)> callback);
+  virtual void RegisterShortcutsMenu(
+      const AppId& app_id,
+      const std::vector<WebApplicationShortcutsMenuItemInfo>&
+          shortcuts_menu_item_infos,
+      const ShortcutsMenuIconsBitmaps& shortcuts_menu_icons_bitmaps,
+      base::OnceCallback<void(bool success)> callback);
+  virtual void ReadAllShortcutsMenuIconsAndRegisterShortcutsMenu(
+      const AppId& app_id,
+      base::OnceCallback<void(bool success)> callback);
+  virtual void RegisterRunOnOsLogin(const AppId& app_id,
+                                    RegisterRunOnOsLoginCallback callback);
+  virtual void MacAppShimOnAppInstalledForProfile(const AppId& app_id);
+  virtual void AddAppToQuickLaunchBar(const AppId& app_id);
+
  private:
   void OnShortcutsCreated(const AppId& app_id,
                           std::unique_ptr<WebApplicationInfo> web_app_info,
                           InstallOsHooksOptions options,
-                          base::RepeatingCallback<void(OsHookType::Type os_hook,
-                                                       bool created)> callback,
+                          BarrierCallback barrier,
                           bool shortcuts_created);
 
-  void OnShortcutsDeleted(
-      const AppId& app_id,
-      base::RepeatingCallback<void(OsHookType::Type os_hook, bool deleted)>
-          barrier_callback,
-      bool shortcuts_deleted);
-
-  void RegisterRunOnOsLogin(const AppId& app_id,
-                            RegisterRunOnOsLoginCallback callback);
+  void OnShortcutsDeleted(const AppId& app_id,
+                          DeleteShortcutsCallback callback,
+                          bool shortcuts_deleted);
 
   void OnShortcutInfoRetrievedRegisterRunOnOsLogin(
       RegisterRunOnOsLoginCallback callback,
@@ -169,6 +190,7 @@ class OsIntegrationManager {
 
   std::unique_ptr<AppShortcutManager> shortcut_manager_;
   std::unique_ptr<FileHandlerManager> file_handler_manager_;
+  bool suppress_os_managers_for_testing_ = false;
 
   base::WeakPtrFactory<OsIntegrationManager> weak_ptr_factory_{this};
 };
