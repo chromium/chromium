@@ -46,6 +46,7 @@ class GpuArcVideoDecodeAccelerator
   ~GpuArcVideoDecodeAccelerator() override;
 
   // Implementation of media::VideoDecodeAccelerator::Client interface.
+  void NotifyInitializationComplete(media::Status status) override;
   void ProvidePictureBuffers(uint32_t requested_num_of_buffers,
                              media::VideoPixelFormat format,
                              uint32_t textures_per_buffer,
@@ -87,10 +88,11 @@ class GpuArcVideoDecodeAccelerator
   using PendingRequest =
       base::OnceCallback<void(PendingCallback, media::VideoDecodeAccelerator*)>;
 
-  // Initialize GpuArcVDA and create VDA. It returns SUCCESS if they are
-  // successful. Otherwise, returns an error status.
-  mojom::VideoDecodeAccelerator::Result InitializeTask(
-      mojom::VideoDecodeAcceleratorConfigPtr config);
+  // Initialize GpuArcVDA and create VDA. OnInitializeDone() will be called with
+  // the result of the initialization.
+  void InitializeTask(mojom::VideoDecodeAcceleratorConfigPtr config);
+  // Called when initialization is done.
+  void OnInitializeDone(mojom::VideoDecodeAccelerator::Result result);
 
   // Execute all pending requests until a VDA::Reset() request is encountered.
   // When that happens, we need to explicitly wait for NotifyResetDone().
@@ -138,6 +140,7 @@ class GpuArcVideoDecodeAccelerator
   // In |pending_requests_|, PendingRequest is Reset/Flush/DecodeRequest().
   // PendingCallback is null in the case of Decode().
   // Otherwise, it isn't nullptr and will have to be called eventually.
+  InitializeCallback pending_init_callback_;
   std::queue<std::pair<PendingRequest, PendingCallback>> pending_requests_;
   std::queue<FlushCallback> pending_flush_callbacks_;
   ResetCallback pending_reset_callback_;

@@ -4,18 +4,23 @@
 
 #include "components/arc/video_accelerator/gpu_arc_video_decode_accelerator.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/files/scoped_file.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/posix/eintr_wrapper.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "build/build_config.h"
+#include "components/arc/arc_features.h"
 #include "components/arc/video_accelerator/arc_video_accelerator_util.h"
 #include "components/arc/video_accelerator/protected_buffer_manager.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_types.h"
 #include "media/gpu/buffer_validation.h"
+#include "media/gpu/chromeos/chromeos_video_decoder_factory.h"
+#include "media/gpu/chromeos/vd_video_decode_accelerator.h"
 #include "media/gpu/gpu_video_decode_accelerator_factory.h"
 #include "media/gpu/macros.h"
 #include "mojo/public/cpp/system/platform_handle.h"
@@ -293,51 +298,93 @@ void GpuArcVideoDecodeAccelerator::Initialize(
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   CHECK(!client_);
   client_.Bind(std::move(client));
+  DCHECK(!pending_init_callback_);
+  pending_init_callback_ = std::move(callback);
 
-  auto result = InitializeTask(std::move(config));
-
-  // Report initialization status to UMA.
-  UMA_HISTOGRAM_ENUMERATION(
-      "Media.GpuArcVideoDecodeAccelerator.InitializeResult", result);
-  std::move(callback).Run(result);
+  InitializeTask(std::move(config));
 }
 
-mojom::VideoDecodeAccelerator::Result
-GpuArcVideoDecodeAccelerator::InitializeTask(
+void GpuArcVideoDecodeAccelerator::InitializeTask(
     mojom::VideoDecodeAcceleratorConfigPtr config) {
+  DVLOGF(4);
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
   if (vda_) {
     VLOGF(1) << "Re-initialization not allowed.";
-    return mojom::VideoDecodeAccelerator::Result::ILLEGAL_STATE;
+    return OnInitializeDone(
+        mojom::VideoDecodeAccelerator::Result::ILLEGAL_STATE);
   }
 
   if (client_count_ >= kMaxConcurrentClients) {
     VLOGF(1) << "Reject to Initialize() due to too many clients: "
              << client_count_;
-    return mojom::VideoDecodeAccelerator::Result::INSUFFICIENT_RESOURCES;
+    return OnInitializeDone(
+        mojom::VideoDecodeAccelerator::Result::INSUFFICIENT_RESOURCES);
   }
 
   media::VideoDecodeAccelerator::Config vda_config(config->profile);
+#if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
   vda_config.output_mode =
       media::VideoDecodeAccelerator::Config::OutputMode::IMPORT;
 
-  auto vda_factory = media::GpuVideoDecodeAcceleratorFactory::Create(
-      media::GpuVideoDecodeGLClient());
-  vda_ = vda_factory->CreateVDA(this, vda_config, gpu_workarounds_,
-                                gpu_preferences_);
+  if (base::FeatureList::IsEnabled(arc::kVideoDecoder)) {
+    VLOGF(2) << "Using VideoDecoder-backed VdVideoDecodeAccelerator.";
+    vda_config.is_deferred_initialization_allowed = true;
+    vda_ = media::VdVideoDecodeAccelerator::Create(
+        base::BindRepeating(&media::ChromeosVideoDecoderFactory::Create), this,
+        vda_config, base::SequencedTaskRunnerHandle::Get());
+  } else {
+    VLOGF(2) << "Using original VDA";
+    auto vda_factory = media::GpuVideoDecodeAcceleratorFactory::Create(
+        media::GpuVideoDecodeGLClient());
+    vda_ = vda_factory->CreateVDA(this, vda_config, gpu_workarounds_,
+                                  gpu_preferences_);
+  }
+#endif
+
   if (!vda_) {
     VLOGF(1) << "Failed to create VDA.";
-    return mojom::VideoDecodeAccelerator::Result::PLATFORM_FAILURE;
+    return OnInitializeDone(
+        mojom::VideoDecodeAccelerator::Result::PLATFORM_FAILURE);
   }
 
-  client_count_++;
   secure_mode_ = base::nullopt;
   error_state_ = false;
   pending_requests_ = {};
   pending_flush_callbacks_ = {};
   pending_reset_callback_.Reset();
   protected_input_buffer_count_ = 0;
-  VLOGF(2) << "Number of concurrent clients: " << client_count_;
-  return mojom::VideoDecodeAccelerator::Result::SUCCESS;
+
+  if (!vda_config.is_deferred_initialization_allowed)
+    return OnInitializeDone(mojom::VideoDecodeAccelerator::Result::SUCCESS);
+}
+
+void GpuArcVideoDecodeAccelerator::NotifyInitializationComplete(
+    media::Status status) {
+  DVLOGF(4) << "status: " << status.code();
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
+  OnInitializeDone(
+      status.is_ok() ? mojom::VideoDecodeAccelerator::Result::SUCCESS
+                     : mojom::VideoDecodeAccelerator::Result::PLATFORM_FAILURE);
+}
+
+void GpuArcVideoDecodeAccelerator::OnInitializeDone(
+    mojom::VideoDecodeAccelerator::Result result) {
+  DVLOGF(4);
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
+  if (result == mojom::VideoDecodeAccelerator::Result::SUCCESS) {
+    client_count_++;
+    VLOGF(2) << "Number of concurrent clients: " << client_count_;
+  } else {
+    error_state_ = true;
+  }
+
+  // Report initialization status to UMA.
+  UMA_HISTOGRAM_ENUMERATION(
+      "Media.GpuArcVideoDecodeAccelerator.InitializeResult", result);
+  std::move(pending_init_callback_).Run(result);
 }
 
 void GpuArcVideoDecodeAccelerator::Decode(
