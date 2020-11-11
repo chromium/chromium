@@ -19,6 +19,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feed.v1.DataFilePath;
 import org.chromium.chrome.browser.feed.v1.FeedDataInjectRule;
@@ -33,6 +34,7 @@ import org.chromium.chrome.test.util.browser.suggestions.SuggestionsDependencies
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.RecyclerViewTestUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.ui.test.util.UiRestriction;
 
 /**
  * Tests for colors used in UI components in the native android New Tab Page.
@@ -75,6 +77,7 @@ public class NewTabPageColorTest {
     // clang-format off
     @Test
     @MediumTest
+    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
     @Feature({"NewTabPage", "FeedNewTabPage"})
     @Features.EnableFeatures({ChromeFeatureList.INTEREST_FEED_CONTENT_SUGGESTIONS,
                               ChromeFeatureList.OMNIBOX_SEARCH_ENGINE_LOGO})
