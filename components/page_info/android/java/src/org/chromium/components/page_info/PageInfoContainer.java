@@ -42,7 +42,6 @@ public class PageInfoContainer extends FrameLayout {
         public Runnable urlTitleClickCallback;
         public Runnable urlTitleLongClickCallback;
         public Runnable backButtonClickCallback;
-        public Runnable beginHeightChangeAnimationCallback;
     }
     private PageInfoView.ElidedUrlTextView mExpandedUrlTitle;
     private TextView mTruncatedUrlTitle;
@@ -54,8 +53,6 @@ public class PageInfoContainer extends FrameLayout {
 
     private final View mSubpageHeader;
     private final TextView mSubpageTitle;
-
-    private Runnable mBeginHeightChangeAnimationCallback;
 
     public PageInfoContainer(Context context) {
         super(context);
@@ -91,8 +88,6 @@ public class PageInfoContainer extends FrameLayout {
 
         ChromeImageButton backButton = findViewById(R.id.subpage_back_button);
         backButton.setOnClickListener(v -> params.backButtonClickCallback.run());
-
-        mBeginHeightChangeAnimationCallback = params.beginHeightChangeAnimationCallback;
     }
 
     private void initializeUrlView(View view, Params params) {
@@ -126,16 +121,13 @@ public class PageInfoContainer extends FrameLayout {
             replaceContentView(view, subPageTitle);
             return;
         }
-
         // Create "fade-through" animation.
+        // TODO(crbug.com/1077766): Animate height change and set correct interpolator.
         mWrapper.animate()
                 .setDuration(sOutDuration)
                 .alpha(0)
                 .setInterpolator(new AccelerateInterpolator())
                 .withEndAction(() -> {
-                    if (mBeginHeightChangeAnimationCallback != null) {
-                        mBeginHeightChangeAnimationCallback.run();
-                    }
                     replaceContentView(view, subPageTitle);
                     mWrapper.setScaleX(sScale);
                     mWrapper.setScaleY(sScale);
