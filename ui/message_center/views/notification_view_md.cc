@@ -113,28 +113,14 @@ const int kMinPixelsPerTitleCharacterMD = 4;
 constexpr size_t kMessageCharacterLimitMD =
     kNotificationWidth * kMessageExpandedLineLimit / 3;
 
-// The default is 12, so this normally come out to 13.
-constexpr int kTextFontSizeDelta = 1;
-
 // In progress notification, if both the title and the message are long, the
 // message would be prioritized and the title would be elided.
 // However, it is not preferable that we completely omit the title, so
 // the ratio of the message width is limited to this value.
 constexpr double kProgressNotificationMessageRatio = 0.7;
 
-// Line height of title and message views.
-constexpr int kLineHeightMD = 17;
-
 // This key/property allows tagging the textfield with its index.
 DEFINE_UI_CLASS_PROPERTY_KEY(int, kTextfieldIndexKey, 0U)
-
-// FontList for the texts except for the header.
-gfx::FontList GetTextFontList() {
-  gfx::Font default_font;
-  gfx::Font font = default_font.Derive(kTextFontSizeDelta, gfx::Font::NORMAL,
-                                       gfx::Font::Weight::NORMAL);
-  return gfx::FontList(font);
-}
 
 class ClickActivator : public ui::EventHandler {
  public:
@@ -162,20 +148,16 @@ std::unique_ptr<views::View> CreateItemView(const NotificationItem& item) {
   view->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal, gfx::Insets(), 0));
 
-  const gfx::FontList font_list = GetTextFontList();
-
-  auto* title = new views::Label(item.title);
-  title->SetFontList(font_list);
+  auto* title = view->AddChildView(std::make_unique<views::Label>(
+      item.title, views::style::CONTEXT_DIALOG_BODY_TEXT));
   title->SetCollapseWhenHidden(true);
   title->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  view->AddChildView(title);
 
-  views::Label* message = view->AddChildView(std::make_unique<views::Label>(
+  auto* message = view->AddChildView(std::make_unique<views::Label>(
       l10n_util::GetStringFUTF16(
           IDS_MESSAGE_CENTER_LIST_NOTIFICATION_MESSAGE_WITH_DIVIDER,
           item.message),
-      views::style::CONTEXT_LABEL, views::style::STYLE_DISABLED));
-  message->SetFontList(font_list);
+      views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_SECONDARY));
   message->SetCollapseWhenHidden(true);
   message->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   return view;
@@ -211,17 +193,13 @@ const char* CompactTitleMessageView::GetClassName() const {
 }
 
 CompactTitleMessageView::CompactTitleMessageView() {
-  const gfx::FontList& font_list = GetTextFontList();
-
-  title_ = new views::Label();
-  title_->SetFontList(font_list);
+  title_ = AddChildView(std::make_unique<views::Label>(
+      base::string16(), views::style::CONTEXT_DIALOG_BODY_TEXT));
   title_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  AddChildView(title_);
 
   message_ = AddChildView(std::make_unique<views::Label>(
-      base::string16(), views::style::CONTEXT_LABEL,
-      views::style::STYLE_DISABLED));
-  message_->SetFontList(font_list);
+      base::string16(), views::style::CONTEXT_DIALOG_BODY_TEXT,
+      views::style::STYLE_SECONDARY));
   message_->SetHorizontalAlignment(gfx::ALIGN_RIGHT);
 }
 
@@ -489,7 +467,7 @@ class InlineSettingsRadioButton : public views::RadioButton {
  public:
   explicit InlineSettingsRadioButton(const base::string16& label_text)
       : views::RadioButton(label_text, 1 /* group */) {
-    label()->SetFontList(GetTextFontList());
+    label()->SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT);
     label()->SetSubpixelRenderingEnabled(false);
   }
 
@@ -863,12 +841,9 @@ void NotificationViewMD::CreateOrUpdateTitleView(
   base::string16 title = gfx::TruncateString(
       notification.title(), title_character_limit, gfx::WORD_BREAK);
   if (!title_view_) {
-    const gfx::FontList& font_list = GetTextFontList();
-
-    title_view_ = new views::Label(title);
-    title_view_->SetFontList(font_list);
+    title_view_ =
+        new views::Label(title, views::style::CONTEXT_DIALOG_BODY_TEXT);
     title_view_->SetHorizontalAlignment(gfx::ALIGN_TO_HEAD);
-    title_view_->SetLineHeight(kLineHeightMD);
     // TODO(knollr): multiline should not be required, but we need to set the
     // width of |title_view_| (because of crbug.com/682266), which only works in
     // multiline mode.
@@ -897,15 +872,12 @@ void NotificationViewMD::CreateOrUpdateMessageView(
       notification.message(), kMessageCharacterLimitMD, gfx::WORD_BREAK);
 
   if (!message_view_) {
-    const gfx::FontList& font_list = GetTextFontList();
-
     message_view_ = left_content_->AddChildViewAt(
-        std::make_unique<views::Label>(text, views::style::CONTEXT_LABEL,
-                                       views::style::STYLE_DISABLED),
+        std::make_unique<views::Label>(text,
+                                       views::style::CONTEXT_DIALOG_BODY_TEXT,
+                                       views::style::STYLE_SECONDARY),
         left_content_count_);
-    message_view_->SetFontList(font_list);
     message_view_->SetHorizontalAlignment(gfx::ALIGN_TO_HEAD);
-    message_view_->SetLineHeight(kLineHeightMD);
     message_view_->SetMultiLine(true);
     message_view_->SetMaxLines(kMaxLinesForMessageView);
     message_view_->SetAllowCharacterBreak(true);
@@ -979,13 +951,11 @@ void NotificationViewMD::CreateOrUpdateProgressStatusView(
   }
 
   if (!status_view_) {
-    const gfx::FontList& font_list = GetTextFontList();
     status_view_ = left_content_->AddChildViewAt(
         std::make_unique<views::Label>(base::string16(),
-                                       views::style::CONTEXT_LABEL,
-                                       views::style::STYLE_DISABLED),
+                                       views::style::CONTEXT_DIALOG_BODY_TEXT,
+                                       views::style::STYLE_SECONDARY),
         left_content_count_);
-    status_view_->SetFontList(font_list);
     status_view_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
     status_view_->SetBorder(views::CreateEmptyBorder(kStatusTextPadding));
   }
