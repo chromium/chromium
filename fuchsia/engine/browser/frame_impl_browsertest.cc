@@ -1491,18 +1491,15 @@ IN_PROC_BROWSER_TEST_F(FrameImplTest, PostMessageBadOriginDropped) {
   navigation_listener_.RunUntilUrlAndTitleEquals(post_message_url,
                                                  "messageport");
 
-  fuchsia::web::MessagePortPtr bad_origin_incoming_message_port;
-  fuchsia::web::WebMessage msg;
-
   // PostMessage() to invalid origins should be ignored. We pass in a
   // MessagePort but nothing should happen to it.
-  fuchsia::web::MessagePortPtr unused_message_port;
+  fuchsia::web::MessagePortPtr bad_origin_incoming_message_port;
   cr_fuchsia::ResultReceiver<fuchsia::web::Frame_PostMessage_Result>
       unused_post_result;
   frame->PostMessage(
       "https://example.com",
       cr_fuchsia::CreateWebMessageWithMessagePortRequest(
-          unused_message_port.NewRequest(),
+          bad_origin_incoming_message_port.NewRequest(),
           cr_fuchsia::MemBufferFromString("bad origin, bad!", "test")),
       cr_fuchsia::CallbackToFitFunction(
           unused_post_result.GetReceiveCallback()));
