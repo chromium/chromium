@@ -36,6 +36,7 @@ import org.chromium.payments.mojom.PaymentResponse;
 import org.chromium.payments.mojom.PaymentShippingOption;
 import org.chromium.payments.mojom.PaymentShippingType;
 import org.chromium.payments.mojom.PaymentValidationErrors;
+import org.chromium.url.GURL;
 import org.chromium.url.Origin;
 
 import java.util.ArrayList;
@@ -62,6 +63,12 @@ public class PaymentRequestService
                    PaymentApp.InstrumentDetailsCallback,
                    PaymentResponseHelperInterface.PaymentResponseResultCallback {
     private static final String TAG = "PaymentRequestServ";
+    /**
+     * Hold the currently showing PaymentRequest. Used to prevent showing more than one
+     * PaymentRequest UI per browser process.
+     */
+    private static PaymentRequestService sShowingPaymentRequest;
+
     private static PaymentRequestServiceObserverForTest sObserverForTest;
     private static NativeObserverForTest sNativeObserverForTest;
     private static boolean sIsLocalHasEnrolledInstrumentQueryQuotaEnforcedForTest;
@@ -349,6 +356,18 @@ public class PaymentRequestService
         PaymentAppService service = PaymentAppService.getInstance();
         mBrowserPaymentRequest.addPaymentAppFactories(service);
         service.create(/*delegate=*/this);
+    }
+
+    /**
+     * Called to open a new PaymentHandler UI on the showing PaymentRequest.
+     * @param url The url of the payment app to be displayed in the UI.
+     * @return The WebContents of the payment handler that's just opened when the opening is
+     *         successful; null if failed.
+     */
+    @Nullable
+    public static WebContents openPaymentHandlerWindow(GURL url) {
+        if (sShowingPaymentRequest == null) return null;
+        return sShowingPaymentRequest.mBrowserPaymentRequest.openPaymentHandlerWindow(url);
     }
 
     /**
@@ -857,6 +876,19 @@ public class PaymentRequestService
      */
     /* package */ void show(boolean isUserGesture, boolean waitForUpdatedDetails) {
         if (mBrowserPaymentRequest == null) return;
+        if (sShowingPaymentRequest != null) {
+            // The renderer can create multiple instances of PaymentRequest and call show() on each
+            // one. Only the first one will be shown. This also prevents multiple tabs and windows
+            // from showing PaymentRequest UI at the same time.
+            mJourneyLogger.setNotShown(NotShownReason.CONCURRENT_REQUESTS);
+            disconnectFromClientWithDebugMessage(
+                    ErrorStrings.ANOTHER_UI_SHOWING, PaymentErrorReason.ALREADY_SHOWING);
+            if (sObserverForTest != null) {
+                sObserverForTest.onPaymentRequestServiceShowFailed();
+            }
+            return;
+        }
+        sShowingPaymentRequest = this;
         mBrowserPaymentRequest.show(isUserGesture, waitForUpdatedDetails);
     }
 
@@ -977,6 +1009,7 @@ public class PaymentRequestService
         mHasClosed = true;
 
         mIsCurrentPaymentRequestShowing = false;
+        sShowingPaymentRequest = null;
 
         if (mBrowserPaymentRequest != null) {
             mBrowserPaymentRequest.close();

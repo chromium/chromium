@@ -71,11 +71,6 @@ import java.util.Set;
 public class ChromePaymentRequestService implements BrowserPaymentRequest,
                                                     PaymentDetailsConverter.MethodChecker,
                                                     PaymentUiService.Delegate, PaymentUIsObserver {
-    /**
-     * Hold the currently showing PaymentRequest. Used to prevent showing more than one
-     * PaymentRequest UI per browser process.
-     */
-    private static ChromePaymentRequestService sShowingPaymentRequest;
 
     // Null-check is necessary because retainers of ChromePaymentRequestService could still
     // reference ChromePaymentRequestService after mPaymentRequestService is set null, e.g.,
@@ -298,22 +293,7 @@ public class ChromePaymentRequestService implements BrowserPaymentRequest,
             disconnectFromClientWithDebugMessage(ErrorStrings.CANNOT_SHOW_TWICE);
             return;
         }
-
-        if (getIsAnyPaymentRequestShowing()) {
-            // The renderer can create multiple instances of PaymentRequest and call show() on each
-            // one. Only the first one will be shown. This also prevents multiple tabs and windows
-            // from showing PaymentRequest UI at the same time.
-            mJourneyLogger.setNotShown(NotShownReason.CONCURRENT_REQUESTS);
-            disconnectFromClientWithDebugMessage(
-                    ErrorStrings.ANOTHER_UI_SHOWING, PaymentErrorReason.ALREADY_SHOWING);
-            if (PaymentRequestService.getObserverForTest() != null) {
-                PaymentRequestService.getObserverForTest().onPaymentRequestServiceShowFailed();
-            }
-            return;
-        }
-
         mJourneyLogger.recordCheckoutStep(CheckoutFunnelStep.SHOW_CALLED);
-        setShowingPaymentRequest(this);
         mPaymentRequestService.setCurrentPaymentRequestShowing(true);
         mPaymentRequestService.setUserGestureShow(isUserGesture);
         mWaitForUpdatedDetails = waitForUpdatedDetails;
@@ -500,26 +480,10 @@ public class ChromePaymentRequestService implements BrowserPaymentRequest,
         methodDataMap.putAll(result);
     }
 
-    /**
-     * Called to open a new PaymentHandler UI on the showing PaymentRequest.
-     * @param url The url of the payment app to be displayed in the UI.
-     * @return The WebContents of the payment handler that's just opened when the opening is
-     *         successful; null if failed.
-     */
+    // Implements BrowserPaymentRequest:
+    @Override
     @Nullable
-    public static WebContents openPaymentHandlerWindow(GURL url) {
-        if (sShowingPaymentRequest == null) return null;
-        return sShowingPaymentRequest.openPaymentHandlerWindowInternal(url);
-    }
-
-    /**
-     * Called to open a new PaymentHandler UI on this PaymentRequest.
-     * @param url The url of the payment app to be displayed in the UI.
-     * @return The WebContents of the payment handler that's just opened when the opening is
-     *         successful; null if failed.
-     */
-    @Nullable
-    private WebContents openPaymentHandlerWindowInternal(GURL url) {
+    public WebContents openPaymentHandlerWindow(GURL url) {
         if (mPaymentRequestService == null) return null;
         PaymentApp invokedPaymentApp = mPaymentRequestService.getInvokedPaymentApp();
         assert invokedPaymentApp != null;
@@ -1001,8 +965,6 @@ public class ChromePaymentRequestService implements BrowserPaymentRequest,
         mPaymentUiService.close();
         SettingsAutofillAndPaymentsObserver.getInstance().unregisterObserver(mPaymentUiService);
 
-        setShowingPaymentRequest(null);
-
         // Destroy native objects.
         mJourneyLogger.destroy();
         if (mPaymentHandlerHost != null) {
@@ -1021,21 +983,6 @@ public class ChromePaymentRequestService implements BrowserPaymentRequest,
     public void dispatchPayerDetailChangeEventIfNeeded(PayerDetail detail) {
         if (mPaymentRequestService == null || !mWasRetryCalled) return;
         mPaymentRequestService.onPayerDetailChange(detail);
-    }
-
-    /**
-     * @return Whether any instance of PaymentRequest has received a show() call.
-     *         Don't use this function to check whether the current instance has
-     *         received a show() call.
-     */
-    private static boolean getIsAnyPaymentRequestShowing() {
-        return sShowingPaymentRequest != null;
-    }
-
-    /** @param paymentRequest The currently showing ChromePaymentRequestService. */
-    private static void setShowingPaymentRequest(ChromePaymentRequestService paymentRequest) {
-        assert sShowingPaymentRequest == null || paymentRequest == null;
-        sShowingPaymentRequest = paymentRequest;
     }
 
     // Implement PaymentUIsObserver:

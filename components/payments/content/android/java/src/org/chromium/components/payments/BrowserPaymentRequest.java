@@ -13,6 +13,7 @@ import org.chromium.payments.mojom.PaymentOptions;
 import org.chromium.payments.mojom.PaymentRequest;
 import org.chromium.payments.mojom.PaymentResponse;
 import org.chromium.payments.mojom.PaymentValidationErrors;
+import org.chromium.url.GURL;
 
 import java.util.List;
 import java.util.Map;
@@ -180,4 +181,13 @@ public interface BrowserPaymentRequest {
      *                     returned from PaymentRequest.show().
      */
     default void onInstrumentDetailsError(String errorMessage) {}
+
+    /**
+     * Opens a payment handler window and creates a WebContents with the given url to display in it.
+     * @param url The url of the page to be opened in the window.
+     * @return The created WebContents.
+     */
+    default WebContents openPaymentHandlerWindow(GURL url) {
+        return null;
+    }
 }
