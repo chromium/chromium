@@ -342,20 +342,8 @@ void InputDeviceFactoryEvdev::ApplyInputDeviceSettings() {
   SetBoolPropertyForOneType(DT_MULTITOUCH, "Australian Scrolling",
                             input_device_settings_.natural_scroll_enabled);
 
-  SetIntPropertyForOneType(DT_MOUSE, "Pointer Sensitivity",
-                           input_device_settings_.mouse_sensitivity);
-  SetIntPropertyForOneType(DT_MOUSE, "Mouse Scroll Sensitivity",
-                           input_device_settings_.mouse_scroll_sensitivity);
-  SetBoolPropertyForOneType(DT_MOUSE, "Pointer Acceleration",
-                            input_device_settings_.mouse_acceleration_enabled);
-  SetBoolPropertyForOneType(
-      DT_MOUSE, "Mouse Scroll Acceleration",
-      input_device_settings_.mouse_scroll_acceleration_enabled);
-  SetBoolPropertyForOneType(
-      DT_MOUSE, "Mouse Reverse Scrolling",
-      input_device_settings_.mouse_reverse_scroll_enabled);
-  SetBoolPropertyForOneType(DT_MOUSE, "Mouse High Resolution Scrolling", true);
-  SetBoolPropertyForOneType(DT_MOUSE, "Output Mouse Wheel Gestures", true);
+  ApplyRelativePointingDeviceSettings(DT_MOUSE);
+  ApplyRelativePointingDeviceSettings(DT_POINTING_STICK);
 
   SetBoolPropertyForOneType(DT_TOUCHPAD, "Tap Paused",
                             input_device_settings_.tap_to_click_paused);
@@ -385,6 +373,24 @@ void InputDeviceFactoryEvdev::ApplyInputDeviceSettings() {
   }
 
   NotifyDevicesUpdated();
+}
+
+void InputDeviceFactoryEvdev::ApplyRelativePointingDeviceSettings(
+    EventDeviceType type) {
+  SetIntPropertyForOneType(type, "Pointer Sensitivity",
+                           input_device_settings_.mouse_sensitivity);
+  SetIntPropertyForOneType(type, "Mouse Scroll Sensitivity",
+                           input_device_settings_.mouse_scroll_sensitivity);
+  SetBoolPropertyForOneType(type, "Pointer Acceleration",
+                            input_device_settings_.mouse_acceleration_enabled);
+  SetBoolPropertyForOneType(
+      type, "Mouse Scroll Acceleration",
+      input_device_settings_.mouse_scroll_acceleration_enabled);
+  SetBoolPropertyForOneType(
+      type, "Mouse Reverse Scrolling",
+      input_device_settings_.mouse_reverse_scroll_enabled);
+  SetBoolPropertyForOneType(type, "Mouse High Resolution Scrolling", true);
+  SetBoolPropertyForOneType(type, "Output Mouse Wheel Gestures", true);
 }
 
 void InputDeviceFactoryEvdev::ApplyCapsLockLed() {

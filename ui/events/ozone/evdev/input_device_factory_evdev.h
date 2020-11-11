@@ -86,6 +86,7 @@ class COMPONENT_EXPORT(EVDEV) InputDeviceFactoryEvdev {
 
   // Sync input_device_settings_ to attached devices.
   void ApplyInputDeviceSettings();
+  void ApplyRelativePointingDeviceSettings(EventDeviceType type);
   void ApplyCapsLockLed();
 
   // Policy for device enablement.

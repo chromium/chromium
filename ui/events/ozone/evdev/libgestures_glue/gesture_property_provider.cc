@@ -450,6 +450,8 @@ bool IsDeviceOfType(const ui::GesturePropertyProvider::DevicePtr device,
       return (evdev_class == EvdevClassKeyboard);
     case ui::DT_MOUSE:
       return is_mouse;
+    case ui::DT_POINTING_STICK:
+      return (evdev_class == EvdevClassPointingStick);
     case ui::DT_TOUCHPAD:
       return (!is_mouse) && is_touchpad;
     case ui::DT_TOUCHSCREEN:
@@ -809,6 +811,7 @@ bool MatchIsPointer::Match(const DevicePtr device) {
   if (!is_valid_)
     return true;
   return (value_ == (device->info.evdev_class == EvdevClassMouse ||
+                     device->info.evdev_class == EvdevClassPointingStick ||
                      device->info.evdev_class == EvdevClassMultitouchMouse));
 }
 

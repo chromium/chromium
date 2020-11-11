@@ -99,6 +99,7 @@ class COMPONENT_EXPORT(EVDEV) GestureInterpreterLibevdevCros
   // True if the device may be regarded as a mouse. This includes normal mice
   // and multi-touch mice.
   bool is_mouse_ = false;
+  bool is_pointing_stick_ = false;
 
   // Shared cursor state.
   CursorDelegateEvdev* cursor_;
