@@ -692,7 +692,10 @@ mojom("mojo_bindings") {
       "sandbox_support_mac.mojom",
       "web_contents_ns_view_bridge.mojom",
     ]
-    public_deps += [ "//ui/display/mojom" ]
+    public_deps += [
+      "//ui/base/cursor/mojom",
+      "//ui/display/mojom",
+    ]
     cpp_typemaps += [
       {
         types = [

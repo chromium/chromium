@@ -29,8 +29,6 @@
 #include "tools/ipc_fuzzer/fuzzer/rand_util.h"
 #include "tools/ipc_fuzzer/message_lib/message_cracker.h"
 #include "tools/ipc_fuzzer/message_lib/message_file.h"
-#include "ui/base/cursor/cursor.h"
-#include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/gfx/geometry/point.h"
 
 #if defined(OS_POSIX)
@@ -737,34 +735,6 @@ struct FuzzTraits<device::mojom::ScreenOrientationLockType> {
         static_cast<int>(device::mojom::ScreenOrientationLockType::kMaxValue) +
         1);
     *p = static_cast<device::mojom::ScreenOrientationLockType>(value);
-    return true;
-  }
-};
-
-template <>
-struct FuzzTraits<content::WebCursor> {
-  static bool Fuzz(content::WebCursor* p, Fuzzer* fuzzer) {
-    // |type| enum is not validated on de-serialization, so pick random value.
-    ui::mojom::CursorType type;
-    gfx::Point hotspot;
-    float image_scale_factor;
-    SkBitmap bitmap;
-    if (!FuzzParam(reinterpret_cast<int*>(&type), fuzzer) ||
-        !FuzzParam(&hotspot, fuzzer) ||
-        !FuzzParam(&image_scale_factor, fuzzer) || !FuzzParam(&bitmap, fuzzer))
-      return false;
-
-    ui::Cursor cursor(type);
-    cursor.set_custom_hotspot(hotspot);
-    cursor.set_custom_bitmap(bitmap);
-    // Scale factor is expected to be greater than 0, otherwise we hit
-    // a check failure.
-    image_scale_factor = fabs(image_scale_factor);
-    if (image_scale_factor <= 0.0)
-      image_scale_factor = 1;
-    cursor.set_image_scale_factor(fabs(image_scale_factor));
-
-    *p = content::WebCursor(cursor);
     return true;
   }
 };

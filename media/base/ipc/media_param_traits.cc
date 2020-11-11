@@ -13,7 +13,6 @@
 #include "media/base/limits.h"
 #include "ui/gfx/ipc/geometry/gfx_param_traits.h"
 #include "ui/gfx/ipc/gfx_param_traits.h"
-#include "ui/gfx/ipc/skia/gfx_skia_param_traits.h"
 
 using media::AudioParameters;
 using media::AudioLatency;

@@ -30,7 +30,6 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 #include "ui/gfx/ipc/gfx_param_traits.h"
-#include "ui/gfx/ipc/skia/gfx_skia_param_traits.h"
 #include "ui/gfx/range/range.h"
 #include "ui/latency/ipc/latency_info_param_traits.h"
 

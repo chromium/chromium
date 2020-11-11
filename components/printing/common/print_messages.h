@@ -25,7 +25,6 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/ipc/geometry/gfx_param_traits.h"
-#include "ui/gfx/ipc/skia/gfx_skia_param_traits.h"
 
 #ifndef INTERNAL_COMPONENTS_PRINTING_COMMON_PRINT_MESSAGES_H_
 #define INTERNAL_COMPONENTS_PRINTING_COMMON_PRINT_MESSAGES_H_

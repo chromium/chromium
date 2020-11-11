@@ -17,7 +17,6 @@
 #include "base/memory/ref_counted.h"
 #include "cc/ipc/cc_param_traits_macros.h"
 #include "content/common/content_param_traits_macros.h"
-#include "content/common/cursors/webcursor.h"
 #include "ipc/ipc_mojo_param_traits.h"
 #include "net/base/hash_value.h"
 #include "ui/accessibility/ax_mode.h"
@@ -36,16 +35,6 @@ class SurfaceInfo;
 }  // namespace viz
 
 namespace IPC {
-
-template <>
-struct CONTENT_EXPORT ParamTraits<content::WebCursor> {
-  typedef content::WebCursor param_type;
-  static void Write(base::Pickle* m, const param_type& p);
-  static bool Read(const base::Pickle* m,
-                   base::PickleIterator* iter,
-                   param_type* r);
-  static void Log(const param_type& p, std::string* l);
-};
 
 template <>
 struct CONTENT_EXPORT ParamTraits<blink::MessagePortChannel> {

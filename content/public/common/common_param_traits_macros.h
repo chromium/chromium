@@ -32,7 +32,6 @@
 #include "ui/base/window_open_disposition.h"
 #include "ui/gfx/ipc/geometry/gfx_param_traits.h"
 #include "ui/gfx/ipc/gfx_param_traits.h"
-#include "ui/gfx/ipc/skia/gfx_skia_param_traits.h"
 #include "ui/gfx/transform.h"
 
 #undef IPC_MESSAGE_EXPORT

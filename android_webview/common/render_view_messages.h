@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Multiply-included file, no traditional include guard.
+// no-include-guard-because-multiply-included
+
 #include "android_webview/common/aw_hit_test_data.h"
 #include "content/public/common/common_param_traits.h"
 #include "ipc/ipc_channel_handle.h"
@@ -13,18 +14,6 @@
 #include "ui/gfx/geometry/size_f.h"
 #include "ui/gfx/ipc/geometry/gfx_param_traits.h"
 #include "ui/gfx/ipc/skia/gfx_skia_param_traits.h"
-
-// Singly-included section for enums and custom IPC traits.
-#ifndef ANDROID_WEBVIEW_COMMON_RENDER_VIEW_MESSAGES_H_
-#define ANDROID_WEBVIEW_COMMON_RENDER_VIEW_MESSAGES_H_
-
-namespace IPC {
-
-// TODO - add enums and custom IPC traits here when needed.
-
-}  // namespace IPC
-
-#endif  // ANDROID_WEBVIEW_COMMON_RENDER_VIEW_MESSAGES_H_
 
 IPC_STRUCT_TRAITS_BEGIN(android_webview::AwHitTestData)
   IPC_STRUCT_TRAITS_MEMBER(type)

@@ -4,10 +4,10 @@
 
 module remote_cocoa.mojom;
 
-import "content/common/native_types.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 import "third_party/blink/public/mojom/input/input_handler.mojom";
 import "ui/base/mojom/attributed_string.mojom";
+import "ui/base/cursor/mojom/cursor.mojom";
 import "ui/base/ime/mojom/ime_types.mojom";
 import "ui/display/mojom/display.mojom";
 import "ui/events/mojom/event.mojom";
@@ -69,7 +69,7 @@ interface RenderWidgetHostNSView {
   SetShowingContextMenu(bool showing);
 
   // Set the cursor type to display.
-  DisplayCursor(content.mojom.WebCursor cursor);
+  DisplayCursor(ui.mojom.Cursor cursor);
 
   // Lock or unlock the cursor.
   SetCursorLocked(bool locked);

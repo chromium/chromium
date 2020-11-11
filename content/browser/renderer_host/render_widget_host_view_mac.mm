@@ -538,7 +538,7 @@ void RenderWidgetHostViewMac::UpdateCursor(const WebCursor& cursor) {
 }
 
 void RenderWidgetHostViewMac::DisplayCursor(const WebCursor& cursor) {
-  ns_view_->DisplayCursor(cursor);
+  ns_view_->DisplayCursor(cursor.cursor());
 }
 
 CursorManager* RenderWidgetHostViewMac::GetCursorManager() {

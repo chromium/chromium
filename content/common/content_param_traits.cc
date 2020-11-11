@@ -23,51 +23,8 @@
 #include "third_party/blink/public/common/messaging/transferable_message.h"
 #include "third_party/blink/public/mojom/feature_policy/policy_value.mojom.h"
 #include "ui/accessibility/ax_mode.h"
-#include "ui/base/cursor/cursor.h"
-#include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
-#include "ui/gfx/ipc/skia/gfx_skia_param_traits.h"
 
 namespace IPC {
-
-void ParamTraits<content::WebCursor>::Write(base::Pickle* m,
-                                            const param_type& p) {
-  WriteParam(m, p.cursor().type());
-  if (p.cursor().type() == ui::mojom::CursorType::kCustom) {
-    WriteParam(m, p.cursor().custom_hotspot());
-    WriteParam(m, p.cursor().image_scale_factor());
-    WriteParam(m, p.cursor().custom_bitmap());
-  }
-}
-
-bool ParamTraits<content::WebCursor>::Read(const base::Pickle* m,
-                                           base::PickleIterator* iter,
-                                           param_type* r) {
-  ui::mojom::CursorType type;
-  if (!ReadParam(m, iter, &type))
-    return false;
-
-  ui::Cursor cursor(type);
-  if (cursor.type() == ui::mojom::CursorType::kCustom) {
-    gfx::Point hotspot;
-    float image_scale_factor;
-    SkBitmap bitmap;
-    if (!ReadParam(m, iter, &hotspot) ||
-        !ReadParam(m, iter, &image_scale_factor) ||
-        !ReadParam(m, iter, &bitmap)) {
-      return false;
-    }
-
-    cursor.set_custom_hotspot(hotspot);
-    cursor.set_image_scale_factor(image_scale_factor);
-    cursor.set_custom_bitmap(bitmap);
-  }
-
-  return r->SetCursor(cursor);
-}
-
-void ParamTraits<content::WebCursor>::Log(const param_type& p, std::string* l) {
-  l->append("<WebCursor>");
-}
 
 void ParamTraits<blink::MessagePortChannel>::Write(base::Pickle* m,
                                                    const param_type& p) {
