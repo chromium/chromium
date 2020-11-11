@@ -4,6 +4,8 @@
 
 #include <stdint.h>
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
@@ -22,8 +24,8 @@ class BlockingUrlProtocolTest : public testing::Test {
   BlockingUrlProtocolTest()
       : url_protocol_(new BlockingUrlProtocol(
             &data_source_,
-            base::Bind(&BlockingUrlProtocolTest::OnDataSourceError,
-                       base::Unretained(this)))) {
+            base::BindRepeating(&BlockingUrlProtocolTest::OnDataSourceError,
+                                base::Unretained(this)))) {
     CHECK(data_source_.Initialize(GetTestDataFilePath("bear-320x240.webm")));
   }
 
@@ -113,9 +115,10 @@ TEST_F(BlockingUrlProtocolTest, IsStreaming) {
   EXPECT_FALSE(url_protocol_->IsStreaming());
 
   data_source_.force_streaming_for_testing();
-  url_protocol_.reset(new BlockingUrlProtocol(
-      &data_source_, base::Bind(&BlockingUrlProtocolTest::OnDataSourceError,
-                                base::Unretained(this))));
+  url_protocol_ = std::make_unique<BlockingUrlProtocol>(
+      &data_source_,
+      base::BindRepeating(&BlockingUrlProtocolTest::OnDataSourceError,
+                          base::Unretained(this)));
   EXPECT_TRUE(data_source_.IsStreaming());
   EXPECT_TRUE(url_protocol_->IsStreaming());
 }

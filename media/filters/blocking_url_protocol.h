@@ -25,7 +25,8 @@ class MEDIA_EXPORT BlockingUrlProtocol : public FFmpegURLProtocol {
  public:
   // Implements FFmpegURLProtocol using the given |data_source|. |error_cb| is
   // fired any time DataSource::Read() returns an error.
-  BlockingUrlProtocol(DataSource* data_source, const base::Closure& error_cb);
+  BlockingUrlProtocol(DataSource* data_source,
+                      const base::RepeatingClosure& error_cb);
   virtual ~BlockingUrlProtocol();
 
   // Aborts any pending reads by returning a read error. After this method
@@ -51,7 +52,7 @@ class MEDIA_EXPORT BlockingUrlProtocol : public FFmpegURLProtocol {
   base::Lock data_source_lock_;
   DataSource* data_source_;
 
-  base::Closure error_cb_;
+  base::RepeatingClosure error_cb_;
   const bool is_streaming_;
 
   // Used to unblock the thread during shutdown and when reads complete.

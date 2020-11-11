@@ -47,7 +47,7 @@ class MEDIA_EXPORT FrameBufferPool
 
   // Generates a "no_longer_needed" closure that holds a reference to this pool;
   // |fb_priv| must be a value previously returned by GetFrameBuffer().
-  base::Closure CreateFrameCallback(void* fb_priv);
+  base::OnceClosure CreateFrameCallback(void* fb_priv);
 
   size_t get_pool_size_for_testing() const { return frame_buffers_.size(); }
 

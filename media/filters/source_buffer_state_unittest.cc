@@ -84,16 +84,17 @@ class SourceBufferStateTest : public ::testing::Test {
                       auto ignore_text_track, auto encrypted_media_init_data_cb,
                       auto new_segment_cb, auto end_of_segment_cb,
                       auto media_log) { new_config_cb_ = config_cb; });
-    sbs->Init(base::BindOnce(&SourceBufferStateTest::SourceInitDone,
-                             base::Unretained(this)),
-              expected_codecs,
-              base::BindRepeating(
-                  &SourceBufferStateTest::StreamParserEncryptedInitData,
-                  base::Unretained(this)),
-              base::Bind(&SourceBufferStateTest::StreamParserNewTextTrack,
-                         base::Unretained(this)));
+    sbs->Init(
+        base::BindOnce(&SourceBufferStateTest::SourceInitDone,
+                       base::Unretained(this)),
+        expected_codecs,
+        base::BindRepeating(
+            &SourceBufferStateTest::StreamParserEncryptedInitData,
+            base::Unretained(this)),
+        base::BindRepeating(&SourceBufferStateTest::StreamParserNewTextTrack,
+                            base::Unretained(this)));
 
-    sbs->SetTracksWatcher(base::Bind(
+    sbs->SetTracksWatcher(base::BindRepeating(
         &SourceBufferStateTest::OnMediaTracksUpdated, base::Unretained(this)));
 
     // These tests are not expected to issue any parse warnings.

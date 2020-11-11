@@ -47,7 +47,7 @@ bool MediaFileChecker::Start(base::TimeDelta check_time) {
 
   bool read_ok = true;
   media::BlockingUrlProtocol protocol(
-      &source, base::Bind(&OnMediaFileCheckerError, &read_ok));
+      &source, base::BindRepeating(&OnMediaFileCheckerError, &read_ok));
   media::FFmpegGlue glue(&protocol);
   AVFormatContext* format_context = glue.format_context();
 

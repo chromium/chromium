@@ -15,7 +15,7 @@
 namespace media {
 
 BlockingUrlProtocol::BlockingUrlProtocol(DataSource* data_source,
-                                         const base::Closure& error_cb)
+                                         const base::RepeatingClosure& error_cb)
     : data_source_(data_source),
       error_cb_(error_cb),
       is_streaming_(data_source_->IsStreaming()),

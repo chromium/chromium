@@ -78,7 +78,8 @@ bool AudioVideoMetadataExtractor::Extract(DataSource* source,
   DCHECK(!extracted_);
 
   bool read_ok = true;
-  media::BlockingUrlProtocol protocol(source, base::Bind(&OnError, &read_ok));
+  media::BlockingUrlProtocol protocol(source,
+                                      base::BindRepeating(&OnError, &read_ok));
   media::FFmpegGlue glue(&protocol);
   AVFormatContext* format_context = glue.format_context();
 

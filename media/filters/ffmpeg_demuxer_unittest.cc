@@ -338,7 +338,7 @@ class FFmpegDemuxerTest : public testing::Test {
         base::BindRepeating(&FFmpegDemuxerTest::OnEncryptedMediaInitData,
                             base::Unretained(this));
 
-    Demuxer::MediaTracksUpdatedCB tracks_updated_cb = base::Bind(
+    Demuxer::MediaTracksUpdatedCB tracks_updated_cb = base::BindRepeating(
         &FFmpegDemuxerTest::OnMediaTracksUpdated, base::Unretained(this));
 
     demuxer_.reset(new FFmpegDemuxer(

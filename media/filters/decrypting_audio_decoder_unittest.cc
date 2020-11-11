@@ -83,16 +83,17 @@ class DecryptingAudioDecoderTest : public testing::Test {
         kNoTimestamp);
     decoded_frame_list_.push_back(decoded_frame_);
 
-    decoder_->Initialize(config, cdm_context_.get(),
-                         base::BindOnce(
-                             [](bool success, Status status) {
-                               EXPECT_EQ(status.is_ok(), success);
-                             },
-                             success),
-                         base::Bind(&DecryptingAudioDecoderTest::FrameReady,
-                                    base::Unretained(this)),
-                         base::Bind(&DecryptingAudioDecoderTest::OnWaiting,
-                                    base::Unretained(this)));
+    decoder_->Initialize(
+        config, cdm_context_.get(),
+        base::BindOnce(
+            [](bool success, Status status) {
+              EXPECT_EQ(status.is_ok(), success);
+            },
+            success),
+        base::BindRepeating(&DecryptingAudioDecoderTest::FrameReady,
+                            base::Unretained(this)),
+        base::BindRepeating(&DecryptingAudioDecoderTest::OnWaiting,
+                            base::Unretained(this)));
     base::RunLoop().RunUntilIdle();
   }
 
@@ -129,17 +130,18 @@ class DecryptingAudioDecoderTest : public testing::Test {
     decoder_->Initialize(
         new_config, cdm_context_.get(),
         base::BindOnce([](Status status) { EXPECT_TRUE(status.is_ok()); }),
-        base::Bind(&DecryptingAudioDecoderTest::FrameReady,
-                   base::Unretained(this)),
-        base::Bind(&DecryptingAudioDecoderTest::OnWaiting,
-                   base::Unretained(this)));
+        base::BindRepeating(&DecryptingAudioDecoderTest::FrameReady,
+                            base::Unretained(this)),
+        base::BindRepeating(&DecryptingAudioDecoderTest::OnWaiting,
+                            base::Unretained(this)));
   }
 
   // Decode |buffer| and expect DecodeDone to get called with |status|.
   void DecodeAndExpect(scoped_refptr<DecoderBuffer> buffer, StatusCode status) {
     EXPECT_CALL(*this, DecodeDone(HasStatusCode(status)));
-    decoder_->Decode(buffer, base::Bind(&DecryptingAudioDecoderTest::DecodeDone,
-                                        base::Unretained(this)));
+    decoder_->Decode(buffer,
+                     base::BindOnce(&DecryptingAudioDecoderTest::DecodeDone,
+                                    base::Unretained(this)));
     base::RunLoop().RunUntilIdle();
   }
 
@@ -190,8 +192,8 @@ class DecryptingAudioDecoderTest : public testing::Test {
         .WillOnce(SaveArg<1>(&pending_audio_decode_cb_));
 
     decoder_->Decode(encrypted_buffer_,
-                     base::Bind(&DecryptingAudioDecoderTest::DecodeDone,
-                                base::Unretained(this)));
+                     base::BindOnce(&DecryptingAudioDecoderTest::DecodeDone,
+                                    base::Unretained(this)));
     base::RunLoop().RunUntilIdle();
     // Make sure the Decode() on the decoder triggers a DecryptAndDecode() on
     // the decryptor.
@@ -204,8 +206,8 @@ class DecryptingAudioDecoderTest : public testing::Test {
             RunCallback<1>(Decryptor::kNoKey, Decryptor::AudioFrames()));
     EXPECT_CALL(*this, OnWaiting(WaitingReason::kNoDecryptionKey));
     decoder_->Decode(encrypted_buffer_,
-                     base::Bind(&DecryptingAudioDecoderTest::DecodeDone,
-                                base::Unretained(this)));
+                     base::BindOnce(&DecryptingAudioDecoderTest::DecodeDone,
+                                    base::Unretained(this)));
 
     base::RunLoop().RunUntilIdle();
   }

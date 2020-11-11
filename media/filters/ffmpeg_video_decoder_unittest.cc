@@ -80,7 +80,8 @@ class FFmpegVideoDecoderTest : public testing::Test {
               EXPECT_EQ(status.is_ok(), success);
             },
             success),
-        base::Bind(&FFmpegVideoDecoderTest::FrameReady, base::Unretained(this)),
+        base::BindRepeating(&FFmpegVideoDecoderTest::FrameReady,
+                            base::Unretained(this)),
         base::NullCallback());
     base::RunLoop().RunUntilIdle();
   }

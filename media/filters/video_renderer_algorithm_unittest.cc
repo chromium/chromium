@@ -73,8 +73,8 @@ class VideoRendererAlgorithmTest : public testing::Test {
  public:
   VideoRendererAlgorithmTest()
       : tick_clock_(new base::SimpleTestTickClock()),
-        algorithm_(base::Bind(&WallClockTimeSource::GetWallClockTimes,
-                              base::Unretained(&time_source_)),
+        algorithm_(base::BindRepeating(&WallClockTimeSource::GetWallClockTimes,
+                                       base::Unretained(&time_source_)),
                    &media_log_) {
     // Always start the TickClock at a non-zero value since null values have
     // special connotations.

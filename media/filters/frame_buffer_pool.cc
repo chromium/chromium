@@ -108,14 +108,14 @@ uint8_t* FrameBufferPool::AllocateAlphaPlaneForFrameBuffer(size_t min_size,
   return frame_buffer->alpha_data.get();
 }
 
-base::Closure FrameBufferPool::CreateFrameCallback(void* fb_priv) {
+base::OnceClosure FrameBufferPool::CreateFrameCallback(void* fb_priv) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   auto* frame_buffer = static_cast<FrameBuffer*>(fb_priv);
   ++frame_buffer->held_by_frame;
 
-  return base::Bind(&FrameBufferPool::OnVideoFrameDestroyed, this,
-                    base::SequencedTaskRunnerHandle::Get(), frame_buffer);
+  return base::BindOnce(&FrameBufferPool::OnVideoFrameDestroyed, this,
+                        base::SequencedTaskRunnerHandle::Get(), frame_buffer);
 }
 
 bool FrameBufferPool::OnMemoryDump(

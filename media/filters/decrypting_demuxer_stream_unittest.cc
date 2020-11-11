@@ -77,8 +77,8 @@ class DecryptingDemuxerStreamTest : public testing::Test {
       : demuxer_stream_(new DecryptingDemuxerStream(
             task_environment_.GetMainThreadTaskRunner(),
             &media_log_,
-            base::Bind(&DecryptingDemuxerStreamTest::OnWaiting,
-                       base::Unretained(this)))),
+            base::BindRepeating(&DecryptingDemuxerStreamTest::OnWaiting,
+                                base::Unretained(this)))),
         cdm_context_(new StrictMock<MockCdmContext>()),
         decryptor_(new StrictMock<MockDecryptor>()),
         is_initialized_(false),

@@ -177,8 +177,8 @@ class AudioDecoderTest
     base::RunLoop run_loop;
     decoder_->Decode(
         std::move(buffer),
-        base::Bind(&AudioDecoderTest::DecodeFinished, base::Unretained(this),
-                   run_loop.QuitClosure()));
+        base::BindOnce(&AudioDecoderTest::DecodeFinished,
+                       base::Unretained(this), run_loop.QuitClosure()));
     run_loop.Run();
     ASSERT_FALSE(pending_decode_);
   }
@@ -246,15 +246,15 @@ class AudioDecoderTest
 
   void InitializeDecoderWithResult(const AudioDecoderConfig& config,
                                    bool success) {
-    decoder_->Initialize(
-        config, nullptr,
-        base::BindOnce(
-            [](bool success, Status status) {
-              EXPECT_EQ(status.is_ok(), success);
-            },
-            success),
-        base::Bind(&AudioDecoderTest::OnDecoderOutput, base::Unretained(this)),
-        base::DoNothing());
+    decoder_->Initialize(config, nullptr,
+                         base::BindOnce(
+                             [](bool success, Status status) {
+                               EXPECT_EQ(status.is_ok(), success);
+                             },
+                             success),
+                         base::BindRepeating(&AudioDecoderTest::OnDecoderOutput,
+                                             base::Unretained(this)),
+                         base::DoNothing());
     base::RunLoop().RunUntilIdle();
   }
 

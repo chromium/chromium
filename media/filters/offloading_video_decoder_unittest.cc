@@ -91,8 +91,8 @@ class OffloadingVideoDecoderTest : public testing::Test {
   VideoDecoder::OutputCB ExpectOutputCB() {
     EXPECT_CALL(*this, OutputDone(_))
         .WillOnce(VerifyOn(task_env_.GetMainThreadTaskRunner()));
-    return base::Bind(&OffloadingVideoDecoderTest::OutputDone,
-                      base::Unretained(this));
+    return base::BindRepeating(&OffloadingVideoDecoderTest::OutputDone,
+                               base::Unretained(this));
   }
 
   VideoDecoder::DecodeCB ExpectDecodeCB(StatusCode status) {
@@ -131,7 +131,7 @@ class OffloadingVideoDecoderTest : public testing::Test {
     // Verify decode works and is called on the right thread.
     EXPECT_CALL(*decoder_, Decode_(_, _))
         .WillOnce(DoAll(VerifyOn(task_env_.GetMainThreadTaskRunner()),
-                        RunClosure(base::Bind(output_cb, nullptr)),
+                        RunOnceClosure(base::BindOnce(output_cb, nullptr)),
                         RunOnceCallback<1>(DecodeStatus::OK)));
     offloading_decoder_->Decode(DecoderBuffer::CreateEOSBuffer(),
                                 ExpectDecodeCB(DecodeStatus::OK));
@@ -176,7 +176,7 @@ class OffloadingVideoDecoderTest : public testing::Test {
                                 ExpectDecodeCB(DecodeStatus::OK));
     EXPECT_CALL(*decoder_, Decode_(_, _))
         .WillOnce(DoAll(VerifyNotOn(task_env_.GetMainThreadTaskRunner()),
-                        RunClosure(base::Bind(output_cb, nullptr)),
+                        RunOnceClosure(base::BindOnce(output_cb, nullptr)),
                         RunOnceCallback<1>(DecodeStatus::OK)));
     task_env_.RunUntilIdle();
 
@@ -242,8 +242,8 @@ TEST_F(OffloadingVideoDecoderTest, OffloadingAfterNoOffloading) {
   VideoDecoder::OutputCB output_cb;
   offloading_decoder_->Initialize(
       TestVideoConfig::Normal(kCodecVP9), false, nullptr, ExpectInitCB(true),
-      base::Bind(&OffloadingVideoDecoderTest::OutputDone,
-                 base::Unretained(this)),
+      base::BindRepeating(&OffloadingVideoDecoderTest::OutputDone,
+                          base::Unretained(this)),
       base::NullCallback());
   EXPECT_CALL(*decoder_, Detach())
       .WillOnce(VerifyNotOn(task_env_.GetMainThreadTaskRunner()));

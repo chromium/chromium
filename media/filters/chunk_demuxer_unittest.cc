@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <memory>
 #include <queue>
 #include <utility>
 
@@ -177,22 +178,23 @@ class ChunkDemuxerTest : public ::testing::Test {
   ChunkDemuxerTest()
       : did_progress_(false),
         append_window_end_for_next_append_(kInfiniteDuration) {
-    init_segment_received_cb_ = base::Bind(
+    init_segment_received_cb_ = base::BindRepeating(
         &ChunkDemuxerTest::InitSegmentReceived, base::Unretained(this));
     CreateNewDemuxer();
   }
 
   void CreateNewDemuxer() {
-    base::Closure open_cb =
-        base::Bind(&ChunkDemuxerTest::DemuxerOpened, base::Unretained(this));
-    base::Closure progress_cb =
-        base::Bind(&ChunkDemuxerTest::OnProgress, base::Unretained(this));
+    base::OnceClosure open_cb = base::BindOnce(&ChunkDemuxerTest::DemuxerOpened,
+                                               base::Unretained(this));
+    base::RepeatingClosure progress_cb = base::BindRepeating(
+        &ChunkDemuxerTest::OnProgress, base::Unretained(this));
     Demuxer::EncryptedMediaInitDataCB encrypted_media_init_data_cb =
         base::BindRepeating(&ChunkDemuxerTest::OnEncryptedMediaInitData,
                             base::Unretained(this));
     EXPECT_MEDIA_LOG(ChunkDemuxerCtor());
-    demuxer_.reset(new ChunkDemuxer(open_cb, progress_cb,
-                                    encrypted_media_init_data_cb, &media_log_));
+    demuxer_ = std::make_unique<ChunkDemuxer>(std::move(open_cb), progress_cb,
+                                              encrypted_media_init_data_cb,
+                                              &media_log_);
   }
 
   virtual ~ChunkDemuxerTest() {
@@ -4428,7 +4430,7 @@ void DisableAndEnableDemuxerTracks(
 
   task_environment->RunUntilIdle();
 }
-}
+}  // namespace
 
 TEST_F(ChunkDemuxerTest, StreamStatusNotifications) {
   ASSERT_TRUE(InitDemuxer(HAS_AUDIO | HAS_VIDEO));
