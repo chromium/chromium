@@ -6,39 +6,116 @@
 <link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_dialog/cr_dialog.html">
 <link rel="import" href="chrome://resources/cr_elements/shared_style_css.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
 <link rel="import" href="multidevice_browser_proxy.html">
+<link rel="import" href="../os_icons.html">
 <link rel="import" href="../../settings_shared_css.html">
 
 <dom-module id="settings-multidevice-notification-access-setup-dialog">
   <template>
     <style include="cr-shared-style settings-shared">
       cr-dialog::part(dialog) {
-        width: 320px;
+        width: 512px;
+      }
+
+      div[slot='title'] {
+        flex-direction: column;
+        height: auto;
       }
 
       div[slot='body'] {
-        height: 100px;
+        align-items: center;
+        display: flex;
+        flex-direction: column;
+        height: auto;
+        justify-content: center;
+        margin-bottom: 16px;
+        width: 464px;
+      }
+
+      iron-icon {
+        --iron-icon-fill-color: var(--google-red-600);
+        padding-bottom: 13px;
+      }
+
+      #description {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      #illustration {
+        background-position: center center;
+        background-repeat: no-repeat;
+        background-size: contain;
+        height: 200px;
+        margin-bottom: 24px;
+        margin-top: 24px;
+        width: 100%;
+      }
+
+      :host([has-not-started-setup-attempt_]) #illustration {
+        background-image:
+            url(chrome://os-settings/images/notification_access_setup.svg);
+      }
+
+      :host([is-setup-attempt-in-progress_]) #illustration {
+        background-image:
+            url(chrome://os-settings/images/notification_access_connecting.svg);
+      }
+
+      :host([did-setup-attempt-fail_]) #illustration {
+        background-image:
+            url(chrome://os-settings/images/notification_access_error.svg);
+      }
+
+      :host([has-completed-setup-successfully_]) #illustration {
+        background-image:
+            url(chrome://os-settings/images/notification_access_finished.svg);
       }
     </style>
     <cr-dialog id="dialog" close-text="$i18n{close}">
-      <div id="dialogTitle" slot="title">[[title_]]</div>
-      <div id="dialogBody" slot="body">[[description_]]</div>
+      <div id="dialogTitle" slot="title">
+        <template is="dom-if" if="[[didSetupAttemptFail_]]" restamp>
+          <iron-icon id="failureIcon" icon="os-settings:failure-alert">
+          </iron-icon>
+        </template>
+        <div id="title">[[title_]]</div>
+      </div>
+      <div id="dialogBody" slot="body">
+        <div id="illustration"></div>
+        <div id="description">
+          <div hidden="[[isSetupAttemptInProgress_]]">
+            [[description_]]
+          </div>
+          <div hidden="[[!shouldShowSetupInstructionsSeparately_]]">
+            $i18n{multideviceNotificationAccessSetupInstructions}
+          </div>
+        </div>
+      </div>
       <div id="buttonContainer" slot="button-container">
-        <template is="dom-if" if="[[showCancelButton_(setupState_)]]" restamp>
+        <template is="dom-if" if="[[!hasCompletedSetupSuccessfully_]]" restamp>
           <cr-button id="cancelButton" class="cancel-button"
               on-click="onCancelClicked_">
             $i18n{cancel}
           </cr-button>
         </template>
-        <template is="dom-if" if="[[showOkButton_(setupState_)]]" restamp>
-          <cr-button id="okButton" on-click="onOkayButtonClicked_">
-            $i18n{ok}
+        <template is="dom-if" if="[[hasCompletedSetupSuccessfully_]]" restamp>
+          <cr-button id="doneButton" class="action-button"
+              on-click="onDoneButtonClicked_">
+            $i18n{done}
           </cr-button>
         </template>
-        <template is="dom-if" if="[[showConfirmButton_(setupState_)]]" restamp>
-          <cr-button id="confirmButton" class="action-button"
-              on-click="onConfirmButtonClicked_">
-            $i18n{confirm}
+        <template is="dom-if" if="[[hasNotStartedSetupAttempt_]]" restamp>
+          <cr-button id="getStartedButton" class="action-button"
+              on-click="attemptNotificationSetup_">
+            $i18n{multideviceNotificationAccessSetupGetStarted}
+          </cr-button>
+        </template>
+        <template is="dom-if" if="[[didSetupAttemptFail_]]" restamp>
+          <cr-button id="tryAgainButton" class="action-button"
+              on-click="attemptNotificationSetup_">
+            $i18n{multideviceNotificationAccessSetupTryAgain}
           </cr-button>
         </template>
       </div>

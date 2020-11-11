@@ -2353,20 +2353,41 @@
   <message name="IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_TASK_CONTINUATION_SUMMARY" desc="Description of for the 'Phone Hub Task Continuation' setting. This feature lets users resume in-app actions and chrome tabs that are open on a connected Android phone from Chrome OS devices.">
     View recent Chrome tabs from your phone
   </message>
-  <message name="IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_ACK_TITLE" translateable="false" desc="The title of the dialog containing the Phone Hub notification opt-in flow shown when the Phone Hub 'Notifications' toggle is switched on.">
-    Turn on notifications on Android phone
+  <message name="IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_ACK_TITLE" desc="The title of the dialog containing the Phone Hub notification opt-in flow shown when the Phone Hub 'Notifications' toggle is switched on.">
+    Turn on notifications on your phone
   </message>
-  <message name="IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_CONNECTING_TITLE" translateable="false" desc="The title of the dialog containing the Phone Hub notification opt-in flow shown when the user has confirmed to enable the feature that will mirror phone notifications to their Chromebook.">
-    Connecting to your Phone
+  <message name="IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_ACK_SUMMARY" desc="The summary of the dialog containing the Phone Hub notification opt-in flow shown when the Phone Hub 'Notifications' toggle is switched on.">
+    Receive notifications from your phone on your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>
   </message>
-  <message name="IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_INSTRUCTIONS" translateable="false" desc="The body text of the dialog containing the Phone Hub notification opt-in flow when the Phone Hub 'Notifications' toggle is switched on, and when the user has confirmed to turn on the feature.">
-    Make sure your phone is nearby, unlocked and has Bluetooth and Wi-Fi turned on. Turn on notifications toggle under Google Play Services&gt;Chromebook Phone Hub from your phone.
+  <message name="IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_CONNECTING_TITLE" desc="The title of the dialog containing the Phone Hub notification opt-in flow shown when the user has confirmed to enable the feature that will mirror phone notifications to their Chromebook.">
+    Connecting to your phone
   </message>
-  <message name="IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_COMPLETED_TITLE" translateable="false" desc="The title of the dialog containing the Phone Hub notification opt-in flow when the feature is successfully turned on and notifications on their phone will now be mirrored to their Chromebook.">
+  <message name="IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_INSTRUCTIONS" desc="The body text of the dialog containing the Phone Hub notification opt-in flow when the Phone Hub 'Notifications' toggle is switched on, and when the user has confirmed to turn on the feature.">
+    Make sure your phone is nearby, unlocked, and has Bluetooth and Wi-Fi turned on.
+  </message>
+  <message name="IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_COMPLETED_TITLE" desc="The title of the dialog containing the Phone Hub notification opt-in flow when the feature is successfully turned on and notifications on their phone will now be mirrored to their Chromebook.">
     Notifications turned on
   </message>
-  <message name="IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_COMPLETED_SUMMARY" translateable="false" desc="The body text of the dialog containing the Phone Hub notification opt-in flow when the feature is successfully turned on and notifications on their phone will now be mirrored to their Chromebook.">
-    You will receive your phone notifications on your Chromebook
+  <message name="IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_COMPLETED_SUMMARY" desc="The body text of the dialog containing the Phone Hub notification opt-in flow when the feature is successfully turned on and notifications on their phone will now be mirrored to their Chromebook.">
+    You can now receive notifications from your phone on your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>. Dismissing notifications on your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> will also dismiss them on your phone. Make sure your phone is nearby, unlocked, and has Bluetooth and Wi-Fi turned on.
+  </message>
+  <message name="IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_COULD_NOT_ESTABLISH_CONNECTION_TITLE" desc="The title of the dialog containing the Phone Hub notification opt-in flow when the device is unable to establish a connection to the phone.">
+    Could not establish connection
+  </message>
+  <message name="IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_COULD_NOT_ESTABLISH_CONNECTION_SUMMARY" desc="The title of the dialog containing the Phone Hub notification opt-in flow when the device is unable to establish a connection to the phone.">
+    We were unable to establish a connection with your phone. Make sure your phone is nearby, unlocked, and has Bluetooth and Wi-Fi turned on.
+  </message>
+  <message name="IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_CONNECTION_LOST_WITH_PHONE_TITLE" desc="The title of the dialog containing the Phone Hub notification opt-in flow when the device loses its connection to the phone.">
+    Connection lost with your phone
+  </message>
+  <message name="IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_CONNECTION_LOST_WITH_PHONE_SUMMARY" desc="The body text of the dialog containing the Phone Hub notification opt-in flow when the device loses its connection to the phone.">
+    We were unable to maintain a connection with your phone. Make sure your phone is nearby, unlocked, and has Bluetooth and Wi-Fi turned on.
+  </message>
+  <message name="IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_GET_STARTED_BUTTON_LABEL" desc="The label to a button in the Phone Hub notification opt-in flow that appears when the dialog first opens. Clicking the button will allow the user to try enabling the feature.">
+    Get started
+  </message>
+  <message name="IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_TRY_AGAIN_BUTTON_LABEL" desc="The label to a button in the Phone Hub notification opt-in flow that appears when the first attempt to enable feature fails. Clicking the button will allow the user to try enabling the feature again.">
+    Try again
   </message>
   <message name="IDS_SETTINGS_MULTIDEVICE_WIFI_SYNC_SECTION_TITLE"  desc="The title of the Wifi Sync section on the settings page. Wi-Fi Sync V2 allows user to sync network configurations between Chrome OS devices and a connected Android phone.">
     Wi-Fi Sync

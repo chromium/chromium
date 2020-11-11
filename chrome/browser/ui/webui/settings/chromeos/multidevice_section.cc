@@ -289,8 +289,18 @@ void MultiDeviceSection::AddLoadTimeData(
        IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_INSTRUCTIONS},
       {"multideviceNotificationAccessSetupCompletedTitle",
        IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_COMPLETED_TITLE},
-      {"multideviceNotificationAccessSetupCompletedSummary",
-       IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_COMPLETED_SUMMARY},
+      {"multideviceNotificationAccessSetupConnectionLostWithPhoneTitle",
+       IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_CONNECTION_LOST_WITH_PHONE_TITLE},
+      {"multideviceNotificationAccessSetupCouldNotEstablishConnectionTitle",
+       IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_COULD_NOT_ESTABLISH_CONNECTION_TITLE},
+      {"multideviceNotificationAccessSetupGetStarted",
+       IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_GET_STARTED_BUTTON_LABEL},
+      {"multideviceNotificationAccessSetupTryAgain",
+       IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_TRY_AGAIN_BUTTON_LABEL},
+      {"multideviceNotificationAccessSetupMaintainFailureSummary",
+       IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_CONNECTION_LOST_WITH_PHONE_SUMMARY},
+      {"multideviceNotificationAccessSetupEstablishFailureSummary",
+       IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_COULD_NOT_ESTABLISH_CONNECTION_SUMMARY},
       {"multideviceInstantTetheringItemTitle",
        IDS_SETTINGS_MULTIDEVICE_INSTANT_TETHERING},
       {"multideviceInstantTetheringItemSummary",
@@ -309,7 +319,14 @@ void MultiDeviceSection::AddLoadTimeData(
       "multideviceAllowedByPolicy",
       chromeos::multidevice_setup::AreAnyMultiDeviceFeaturesAllowed(
           profile()->GetPrefs()));
-
+  html_source->AddString(
+      "multideviceNotificationAccessSetupAckSummary",
+      ui::SubstituteChromeOSDeviceType(
+          IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_ACK_SUMMARY));
+  html_source->AddString(
+      "multideviceNotificationAccessSetupCompletedSummary",
+      ui::SubstituteChromeOSDeviceType(
+          IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_COMPLETED_SUMMARY));
   html_source->AddString(
       "multideviceForgetDeviceSummary",
       ui::SubstituteChromeOSDeviceType(

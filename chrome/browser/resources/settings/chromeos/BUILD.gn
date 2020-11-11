@@ -200,6 +200,10 @@ generate_grd("build_grd") {
     "images/icon_add_circle.svg",
     "images/icon_add_wifi.svg",
     "images/icon_add_cellular.svg",
+    "images/notification_access_connecting.svg",
+    "images/notification_access_error.svg",
+    "images/notification_access_finished.svg",
+    "images/notification_access_setup.svg",
     "../../nearby_share/shared/nearby_share_pulse_animation.json",
   ]
   input_files_base_dir = rebase_path(".", "//")

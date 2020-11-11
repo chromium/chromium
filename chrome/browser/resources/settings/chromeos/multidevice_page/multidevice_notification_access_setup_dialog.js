@@ -52,7 +52,43 @@ Polymer({
     description_: {
       type: String,
       computed: 'getDescription_(setupState_)',
-    }
+    },
+
+    /** @private */
+    hasNotStartedSetupAttempt_: {
+      type: Boolean,
+      computed: 'computeHasNotStartedSetupAttempt_(setupState_)',
+      reflectToAttribute: true,
+    },
+
+    /** @private */
+    isSetupAttemptInProgress_: {
+      type: Boolean,
+      computed: 'computeIsSetupAttemptInProgress_(setupState_)',
+      reflectToAttribute: true,
+    },
+
+    /** @private */
+    didSetupAttemptFail_: {
+      type: Boolean,
+      computed: 'computeDidSetupAttemptFail_(setupState_)',
+      reflectToAttribute: true,
+    },
+
+    /** @private */
+    hasCompletedSetupSuccessfully_: {
+      type: Boolean,
+      computed: 'computeHasCompletedSetupSuccessfully_(setupState_)',
+      reflectToAttribute: true,
+    },
+
+    /** @private */
+    shouldShowSetupInstructionsSeparately_: {
+      type: Boolean,
+      computed: 'computeShouldShowSetupInstructionsSeparately_(' +
+          'hasNotStartedSetupAttempt_, isSetupAttemptInProgress_)',
+      reflectToAttribute: true,
+    },
   },
 
   /** @private {?settings.MultiDeviceBrowserProxy} */
@@ -79,31 +115,58 @@ Polymer({
     this.setupState_ = setupState;
   },
 
-  /** @private */
-  showCancelButton_() {
-    return this.setupState_ === null ||
-        this.setupState_ ===
-        NotificationAccessSetupOperationStatus.CONNECTION_REQUESTED ||
-        this.setupState_ ===
-        NotificationAccessSetupOperationStatus.CONNECTING ||
-        this.setupState_ ===
-        NotificationAccessSetupOperationStatus
-            .SENT_MESSAGE_TO_PHONE_AND_WAITING_FOR_RESPONSE;
-  },
-
-  /** @private */
-  showConfirmButton_() {
+  /**
+   * @return {boolean}
+   * @private
+   */
+  computeHasNotStartedSetupAttempt_() {
     return this.setupState_ === null;
   },
 
-  /** @private */
-  showOkButton_() {
+  /**
+   * @return {boolean}
+   * @private
+   */
+  computeIsSetupAttemptInProgress_() {
+    return this.setupState_ ===
+        NotificationAccessSetupOperationStatus
+            .SENT_MESSAGE_TO_PHONE_AND_WAITING_FOR_RESPONSE ||
+        this.setupState_ ===
+        NotificationAccessSetupOperationStatus.CONNECTING ||
+        this.setupState_ ===
+        NotificationAccessSetupOperationStatus.CONNECTION_REQUESTED;
+  },
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  computeHasCompletedSetupSuccessfully_() {
     return this.setupState_ ===
         NotificationAccessSetupOperationStatus.COMPLETED_SUCCESSFULLY;
   },
 
+  /**
+   * @return {boolean}
+   * @private
+   * */
+  computeDidSetupAttemptFail_() {
+    return this.setupState_ ===
+        NotificationAccessSetupOperationStatus.TIMED_OUT_CONNECTING ||
+        this.setupState_ ===
+        NotificationAccessSetupOperationStatus.CONNECTION_DISCONNECTED;
+  },
+
+  /**
+   * @return {boolean} Whether to show setup instructions in its own section.
+   * @private
+   */
+  computeShouldShowSetupInstructionsSeparately_() {
+    return this.isSetupAttemptInProgress_ || this.hasNotStartedSetupAttempt_;
+  },
+
   /** @private */
-  onConfirmButtonClicked_() {
+  attemptNotificationSetup_() {
     this.browserProxy_.attemptNotificationSetup();
     this.setupState_ =
         NotificationAccessSetupOperationStatus.CONNECTION_REQUESTED;
@@ -116,7 +179,7 @@ Polymer({
   },
 
   /** @private */
-  onOkayButtonClicked_() {
+  onDoneButtonClicked_() {
     this.$.dialog.close();
   },
 
@@ -138,39 +201,40 @@ Polymer({
       case Status.COMPLETED_SUCCESSFULLY:
         return this.i18n('multideviceNotificationAccessSetupCompletedTitle');
       case Status.TIMED_OUT_CONNECTING:
-        // TODO(hsuregan): Get the appropriate strings.
-        return 'Timed out connecting title';
+        return this.i18n(
+            'multideviceNotificationAccessSetupCouldNotEstablishConnectionTitle');
       case Status.CONNECTION_DISCONNECTED:
-        // TODO(hsuregan): Get the appropriate strings.
-        return 'Connection disconnected title';
+        return this.i18n(
+            'multideviceNotificationAccessSetupConnectionLostWithPhoneTitle');
       default:
         return '';
     }
   },
 
   /**
-   * @return {string} The body text of the dialog.
+   * @return {string} A description about the connection attempt state.
    * @private
    */
   getDescription_() {
     if (this.setupState_ === null) {
-      return this.i18n('multideviceNotificationAccessSetupInstructions');
+      return this.i18n('multideviceNotificationAccessSetupAckSummary');
     }
 
     const Status = NotificationAccessSetupOperationStatus;
     switch (this.setupState_) {
-      case Status.CONNECTION_REQUESTED:
-      case Status.CONNECTING:
-      case Status.SENT_MESSAGE_TO_PHONE_AND_WAITING_FOR_RESPONSE:
-        return this.i18n('multideviceNotificationAccessSetupInstructions');
       case Status.COMPLETED_SUCCESSFULLY:
         return this.i18n('multideviceNotificationAccessSetupCompletedSummary');
       case Status.TIMED_OUT_CONNECTING:
-        // TODO(hsuregan): Get the appropriate strings.
-        return 'Timed out connecting body';
+        return this.i18n(
+            'multideviceNotificationAccessSetupEstablishFailureSummary');
       case Status.CONNECTION_DISCONNECTED:
-        // TODO(hsuregan): Get the appropriate strings.
-        return 'Connection disconnected body';
+        return this.i18n(
+            'multideviceNotificationAccessSetupMaintainFailureSummary');
+
+      // Only setup instructions will be shown.
+      case Status.CONNECTION_REQUESTED:
+      case Status.CONNECTING:
+      case Status.SENT_MESSAGE_TO_PHONE_AND_WAITING_FOR_RESPONSE:
       default:
         return '';
     }
