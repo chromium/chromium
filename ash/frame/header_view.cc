@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "ash/public/cpp/default_frame_header.h"
 #include "ash/shell.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_state.h"
@@ -15,6 +14,7 @@
 #include "chromeos/ui/frame/caption_buttons/caption_button_model.h"
 #include "chromeos/ui/frame/caption_buttons/frame_back_button.h"
 #include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
+#include "chromeos/ui/frame/default_frame_header.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/views/controls/image_view.h"
@@ -24,6 +24,7 @@
 
 namespace ash {
 
+using ::chromeos::DefaultFrameHeader;
 using ::chromeos::kFrameActiveColorKey;
 using ::chromeos::kFrameInactiveColorKey;
 

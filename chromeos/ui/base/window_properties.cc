@@ -12,6 +12,8 @@
 
 DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(COMPONENT_EXPORT(CHROMEOS_UI_BASE),
                                        chromeos::WindowPinType)
+DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(COMPONENT_EXPORT(CHROMEOS_UI_BASE),
+                                       chromeos::WindowStateType)
 
 namespace chromeos {
 

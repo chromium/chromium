@@ -22,6 +22,8 @@ source_set("frame") {
     "caption_buttons/frame_size_button_delegate.h",
     "caption_buttons/snap_controller.cc",
     "caption_buttons/snap_controller.h",
+    "default_frame_header.cc",
+    "default_frame_header.h",
     "frame_header.cc",
     "frame_header.h",
     "frame_utils.cc",
