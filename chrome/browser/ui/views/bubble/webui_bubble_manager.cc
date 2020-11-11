@@ -40,6 +40,10 @@ bool WebUIBubbleManagerBase::ShowBubble() {
   cache_timer_->Stop();
 
   if (cached_web_view_) {
+    // The cached WebView's WebContents may not necessarily be in a visible
+    // state. Lie to WebContents so it starts rendering and eventually calls
+    // ShowUI().
+    cached_web_view_->GetWebContents()->WasShown();
     cached_web_view_->GetWebContents()->ReloadFocusedFrame();
     bubble_using_cached_webview_ = true;
   } else {
