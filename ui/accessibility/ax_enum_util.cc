@@ -121,16 +121,16 @@ const char* ToString(ax::mojom::Event event) {
       return "tooltipClosed";
     case ax::mojom::Event::kTooltipOpened:
       return "tooltipOpened";
+    case ax::mojom::Event::kTreeChanged:
+      return "treeChanged";
+    case ax::mojom::Event::kValueChanged:
+      return "valueChanged";
     case ax::mojom::Event::kWindowActivated:
       return "windowActivated";
     case ax::mojom::Event::kWindowDeactivated:
       return "windowDeactivated";
     case ax::mojom::Event::kWindowVisibilityChanged:
       return "windowVisibilityChanged";
-    case ax::mojom::Event::kTreeChanged:
-      return "treeChanged";
-    case ax::mojom::Event::kValueChanged:
-      return "valueChanged";
   }
 
   return "";

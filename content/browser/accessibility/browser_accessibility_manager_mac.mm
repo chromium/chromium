@@ -191,7 +191,7 @@ bool BrowserAccessibilityManagerMac::IsInGeneratedEventBatch(
     ui::AXEventGenerator::Event event_type) const {
   for (const auto& event : event_generator()) {
     if (event.event_params.event == event_type)
-      return true;  // Announcement will already be handled via this event.
+      return true;  // Any side effects will have already been handled.
   }
   return false;
 }
@@ -221,58 +221,23 @@ void BrowserAccessibilityManagerMac::FireGeneratedEvent(
         return;
       }
       break;
-    case ui::AXEventGenerator::Event::LOAD_COMPLETE:
-      // On MacOS 10.15, firing AXLoadComplete causes focus to move to the
-      // webpage and read content, despite the "Automatically speak the webpage"
-      // checkbox in Voiceover utility being unchecked. The checkbox is
-      // unchecked by default in 10.15 so we don't fire AXLoadComplete events to
-      // support the default behavior.
-      if (base::mac::IsOS10_15())
-        return;
-      // |NSAccessibilityLoadCompleteNotification| should only be fired on the
-      // top document and when the document is not Chrome's new tab page.
-      if (IsRootTree() && !IsChromeNewTabPage()) {
-        mac_notification = NSAccessibilityLoadCompleteNotification;
-      } else {
-        // Voiceover moves focus to the web content when it receives an
-        // AXLoadComplete event. On Chrome's new tab page, focus should stay
-        // in the omnibox, so we purposefully do not fire the AXLoadComplete
-        // event in this case.
-        return;
-      }
+    case ui::AXEventGenerator::Event::ALERT:
+      NSAccessibilityPostNotification(
+          native_node, NSAccessibilityLiveRegionCreatedNotification);
+      // Voiceover requires a live region changed notification to actually
+      // announce the live region.
+      FireGeneratedEvent(ui::AXEventGenerator::Event::LIVE_REGION_CHANGED,
+                         node);
+      return;
+    case ui::AXEventGenerator::Event::CHECKED_STATE_CHANGED:
+      mac_notification = NSAccessibilityValueChangedNotification;
       break;
-    case ui::AXEventGenerator::Event::INVALID_STATUS_CHANGED:
-      mac_notification = NSAccessibilityInvalidStatusChangedNotification;
-      break;
-    case ui::AXEventGenerator::Event::SELECTED_CHILDREN_CHANGED:
-      if (ui::IsTableLike(node->GetRole())) {
-        mac_notification = NSAccessibilitySelectedRowsChangedNotification;
+    case ui::AXEventGenerator::Event::COLLAPSED:
+      if (node->GetRole() == ax::mojom::Role::kRow ||
+          node->GetRole() == ax::mojom::Role::kTreeItem) {
+        mac_notification = NSAccessibilityRowCollapsedNotification;
       } else {
-        // VoiceOver does not read anything if selection changes on the
-        // currently focused object, and the focus did not move. Fire a
-        // selection change if the focus did not change.
-        BrowserAccessibility* focus = GetFocus();
-        BrowserAccessibility* container =
-            focus->PlatformGetSelectionContainer();
-
-        if (focus && node == container &&
-            container->HasState(ax::mojom::State::kMultiselectable) &&
-            !IsInGeneratedEventBatch(
-                ui::AXEventGenerator::Event::ACTIVE_DESCENDANT_CHANGED) &&
-            !IsInGeneratedEventBatch(
-                ui::AXEventGenerator::Event::FOCUS_CHANGED)) {
-          // Force announcement of current focus / activedescendant, even though
-          // it's not changing. This way, the user can hear the new selection
-          // state of the current object. Because VoiceOver ignores focus events
-          // to an already focused object, this is done by destroying the native
-          // object and creating a new one that receives focus.
-          static_cast<BrowserAccessibilityMac*>(focus)->ReplaceNativeObject();
-          // Don't fire selected children change, it will sometimes override
-          // announcement of current focus.
-          return;
-        }
-
-        mac_notification = NSAccessibilitySelectedChildrenChangedNotification;
+        mac_notification = NSAccessibilityExpandedChanged;
       }
       break;
     case ui::AXEventGenerator::Event::DOCUMENT_SELECTION_CHANGED: {
@@ -309,51 +274,17 @@ void BrowserAccessibilityManagerMac::FireGeneratedEvent(
       }
       break;
     }
-    case ui::AXEventGenerator::Event::CHECKED_STATE_CHANGED:
-      mac_notification = NSAccessibilityValueChangedNotification;
-      break;
-    case ui::AXEventGenerator::Event::RANGE_VALUE_CHANGED:
-    case ui::AXEventGenerator::Event::SELECTED_VALUE_CHANGED:
-    case ui::AXEventGenerator::Event::VALUE_IN_TEXT_FIELD_CHANGED:
-      mac_notification = NSAccessibilityValueChangedNotification;
-      if (base::mac::IsAtLeastOS10_11() && !text_edits_.empty()) {
-        base::string16 deleted_text;
-        base::string16 inserted_text;
-        int32_t node_id = node->GetId();
-        const auto iterator = text_edits_.find(node_id);
-        id edit_text_marker = nil;
-        if (iterator != text_edits_.end()) {
-          AXTextEdit text_edit = iterator->second;
-          deleted_text = text_edit.deleted_text;
-          inserted_text = text_edit.inserted_text;
-          edit_text_marker = text_edit.edit_text_marker;
-        }
-
-        NSDictionary* user_info = GetUserInfoForValueChangedNotification(
-            native_node, deleted_text, inserted_text, edit_text_marker);
-
-        BrowserAccessibility* root = GetRoot();
-        if (!root)
-          return;
-
-        NSAccessibilityPostNotificationWithUserInfo(
-            native_node, mac_notification, user_info);
-        NSAccessibilityPostNotificationWithUserInfo(
-            ToBrowserAccessibilityCocoa(root), mac_notification, user_info);
-        return;
+    case ui::AXEventGenerator::Event::EXPANDED:
+      if (node->GetRole() == ax::mojom::Role::kRow ||
+          node->GetRole() == ax::mojom::Role::kTreeItem) {
+        mac_notification = NSAccessibilityRowExpandedNotification;
+      } else {
+        mac_notification = NSAccessibilityExpandedChanged;
       }
       break;
-    case ui::AXEventGenerator::Event::LIVE_REGION_CREATED:
-      mac_notification = NSAccessibilityLiveRegionCreatedNotification;
+    case ui::AXEventGenerator::Event::INVALID_STATUS_CHANGED:
+      mac_notification = NSAccessibilityInvalidStatusChangedNotification;
       break;
-    case ui::AXEventGenerator::Event::ALERT:
-      NSAccessibilityPostNotification(
-          native_node, NSAccessibilityLiveRegionCreatedNotification);
-      // Voiceover requires a live region changed notification to actually
-      // announce the live region.
-      FireGeneratedEvent(ui::AXEventGenerator::Event::LIVE_REGION_CHANGED,
-                         node);
-      return;
     case ui::AXEventGenerator::Event::LIVE_REGION_CHANGED: {
       // Voiceover seems to drop live region changed notifications if they come
       // too soon after a live region created notification.
@@ -392,28 +323,107 @@ void BrowserAccessibilityManagerMac::FireGeneratedEvent(
           base::TimeDelta::FromMilliseconds(kLiveRegionChangeIntervalMS));
       return;
     }
-    case ui::AXEventGenerator::Event::ROW_COUNT_CHANGED:
-      mac_notification = NSAccessibilityRowCountChangedNotification;
+    case ui::AXEventGenerator::Event::LIVE_REGION_CREATED:
+      mac_notification = NSAccessibilityLiveRegionCreatedNotification;
       break;
-    case ui::AXEventGenerator::Event::EXPANDED:
-      if (node->GetRole() == ax::mojom::Role::kRow ||
-          node->GetRole() == ax::mojom::Role::kTreeItem) {
-        mac_notification = NSAccessibilityRowExpandedNotification;
+    case ui::AXEventGenerator::Event::LOAD_COMPLETE:
+      // On MacOS 10.15, firing AXLoadComplete causes focus to move to the
+      // webpage and read content, despite the "Automatically speak the webpage"
+      // checkbox in Voiceover utility being unchecked. The checkbox is
+      // unchecked by default in 10.15 so we don't fire AXLoadComplete events to
+      // support the default behavior.
+      if (base::mac::IsOS10_15())
+        return;
+
+      // |NSAccessibilityLoadCompleteNotification| should only be fired on the
+      // top document and when the document is not Chrome's new tab page.
+      if (IsRootTree() && !IsChromeNewTabPage()) {
+        mac_notification = NSAccessibilityLoadCompleteNotification;
       } else {
-        mac_notification = NSAccessibilityExpandedChanged;
-      }
-      break;
-    case ui::AXEventGenerator::Event::COLLAPSED:
-      if (node->GetRole() == ax::mojom::Role::kRow ||
-          node->GetRole() == ax::mojom::Role::kTreeItem) {
-        mac_notification = NSAccessibilityRowCollapsedNotification;
-      } else {
-        mac_notification = NSAccessibilityExpandedChanged;
+        // Voiceover moves focus to the web content when it receives an
+        // AXLoadComplete event. On Chrome's new tab page, focus should stay
+        // in the omnibox, so we purposefully do not fire the AXLoadComplete
+        // event in this case.
+        return;
       }
       break;
     case ui::AXEventGenerator::Event::MENU_ITEM_SELECTED:
       mac_notification = NSAccessibilityMenuItemSelectedNotification;
       break;
+    case ui::AXEventGenerator::Event::RANGE_VALUE_CHANGED:
+      DCHECK(node->GetData().IsRangeValueSupported());
+      mac_notification = NSAccessibilityValueChangedNotification;
+      break;
+    case ui::AXEventGenerator::Event::ROW_COUNT_CHANGED:
+      mac_notification = NSAccessibilityRowCountChangedNotification;
+      break;
+    case ui::AXEventGenerator::Event::SELECTED_CHILDREN_CHANGED:
+      if (ui::IsTableLike(node->GetRole())) {
+        mac_notification = NSAccessibilitySelectedRowsChangedNotification;
+      } else {
+        // VoiceOver does not read anything if selection changes on the
+        // currently focused object, and the focus did not move. Fire a
+        // selection change if the focus did not change.
+        BrowserAccessibility* focus = GetFocus();
+        BrowserAccessibility* container =
+            focus->PlatformGetSelectionContainer();
+
+        if (focus && node == container &&
+            container->HasState(ax::mojom::State::kMultiselectable) &&
+            !IsInGeneratedEventBatch(
+                ui::AXEventGenerator::Event::ACTIVE_DESCENDANT_CHANGED) &&
+            !IsInGeneratedEventBatch(
+                ui::AXEventGenerator::Event::FOCUS_CHANGED)) {
+          // Force announcement of current focus / activedescendant, even though
+          // it's not changing. This way, the user can hear the new selection
+          // state of the current object. Because VoiceOver ignores focus events
+          // to an already focused object, this is done by destroying the native
+          // object and creating a new one that receives focus.
+          static_cast<BrowserAccessibilityMac*>(focus)->ReplaceNativeObject();
+          // Don't fire selected children change, it will sometimes override
+          // announcement of current focus.
+          return;
+        }
+
+        mac_notification = NSAccessibilitySelectedChildrenChangedNotification;
+      }
+      break;
+    case ui::AXEventGenerator::Event::SELECTED_VALUE_CHANGED:
+      DCHECK(ui::IsSelectElement(node->GetRole()));
+      mac_notification = NSAccessibilityValueChangedNotification;
+      break;
+    case ui::AXEventGenerator::Event::VALUE_IN_TEXT_FIELD_CHANGED:
+      DCHECK(node->IsTextField());
+      mac_notification = NSAccessibilityValueChangedNotification;
+      if (base::mac::IsAtLeastOS10_11() && !text_edits_.empty()) {
+        base::string16 deleted_text;
+        base::string16 inserted_text;
+        int32_t node_id = node->GetId();
+        const auto iterator = text_edits_.find(node_id);
+        id edit_text_marker = nil;
+        if (iterator != text_edits_.end()) {
+          AXTextEdit text_edit = iterator->second;
+          deleted_text = text_edit.deleted_text;
+          inserted_text = text_edit.inserted_text;
+          edit_text_marker = text_edit.edit_text_marker;
+        }
+
+        NSDictionary* user_info = GetUserInfoForValueChangedNotification(
+            native_node, deleted_text, inserted_text, edit_text_marker);
+
+        BrowserAccessibility* root = GetRoot();
+        if (!root)
+          return;
+
+        NSAccessibilityPostNotificationWithUserInfo(
+            native_node, mac_notification, user_info);
+        NSAccessibilityPostNotificationWithUserInfo(
+            ToBrowserAccessibilityCocoa(root), mac_notification, user_info);
+        return;
+      }
+      break;
+
+    // Currently unused events on this platform.
     case ui::AXEventGenerator::Event::ACCESS_KEY_CHANGED:
     case ui::AXEventGenerator::Event::ATK_TEXT_OBJECT_ATTRIBUTE_CHANGED:
     case ui::AXEventGenerator::Event::ATOMIC_CHANGED:
@@ -453,6 +463,9 @@ void BrowserAccessibilityManagerMac::FireGeneratedEvent(
     case ui::AXEventGenerator::Event::PLACEHOLDER_CHANGED:
     case ui::AXEventGenerator::Event::PORTAL_ACTIVATED:
     case ui::AXEventGenerator::Event::POSITION_IN_SET_CHANGED:
+    case ui::AXEventGenerator::Event::RANGE_VALUE_MAX_CHANGED:
+    case ui::AXEventGenerator::Event::RANGE_VALUE_MIN_CHANGED:
+    case ui::AXEventGenerator::Event::RANGE_VALUE_STEP_CHANGED:
     case ui::AXEventGenerator::Event::READONLY_CHANGED:
     case ui::AXEventGenerator::Event::RELATED_NODE_CHANGED:
     case ui::AXEventGenerator::Event::REQUIRED_STATE_CHANGED:
@@ -466,12 +479,7 @@ void BrowserAccessibilityManagerMac::FireGeneratedEvent(
     case ui::AXEventGenerator::Event::STATE_CHANGED:
     case ui::AXEventGenerator::Event::SUBTREE_CREATED:
     case ui::AXEventGenerator::Event::TEXT_ATTRIBUTE_CHANGED:
-    case ui::AXEventGenerator::Event::RANGE_VALUE_MAX_CHANGED:
-    case ui::AXEventGenerator::Event::RANGE_VALUE_MIN_CHANGED:
-    case ui::AXEventGenerator::Event::RANGE_VALUE_STEP_CHANGED:
     case ui::AXEventGenerator::Event::WIN_IACCESSIBLE_STATE_CHANGED:
-      // There are some notifications that aren't meaningful on Mac.
-      // It's okay to skip them.
       return;
   }
 

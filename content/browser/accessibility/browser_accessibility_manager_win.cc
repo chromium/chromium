@@ -229,7 +229,8 @@ void BrowserAccessibilityManagerWin::FireGeneratedEvent(
       break;
     case ui::AXEventGenerator::Event::DOCUMENT_SELECTION_CHANGED: {
       // Fire the event on the object where the focus of the selection is.
-      int32_t focus_id = ax_tree()->GetUnignoredSelection().focus_object_id;
+      ui::AXNode::AXID focus_id =
+          ax_tree()->GetUnignoredSelection().focus_object_id;
       BrowserAccessibility* focus_object = GetFromID(focus_id);
       if (focus_object && focus_object->HasVisibleCaretOrSelection())
         FireWinAccessibilityEvent(IA2_EVENT_TEXT_CARET_MOVED, focus_object);
@@ -309,6 +310,9 @@ void BrowserAccessibilityManagerWin::FireGeneratedEvent(
       FireWinAccessibilityEvent(EVENT_OBJECT_LIVEREGIONCHANGED, node);
       FireUiaAccessibilityEvent(UIA_LiveRegionChangedEventId, node);
       break;
+    case ui::AXEventGenerator::Event::LIVE_RELEVANT_CHANGED:
+      HandleAriaPropertiesChangedEvent(*node);
+      break;
     case ui::AXEventGenerator::Event::LIVE_STATUS_CHANGED:
       FireUiaPropertyChangedEvent(UIA_LiveSettingPropertyId, node);
       HandleAriaPropertiesChangedEvent(*node);
@@ -319,7 +323,6 @@ void BrowserAccessibilityManagerWin::FireGeneratedEvent(
     case ui::AXEventGenerator::Event::LAYOUT_INVALIDATED:
       FireUiaAccessibilityEvent(UIA_LayoutInvalidatedEventId, node);
       break;
-    case ui::AXEventGenerator::Event::LIVE_RELEVANT_CHANGED:
     case ui::AXEventGenerator::Event::MULTILINE_STATE_CHANGED:
       HandleAriaPropertiesChangedEvent(*node);
       break;
@@ -329,10 +332,11 @@ void BrowserAccessibilityManagerWin::FireGeneratedEvent(
       HandleAriaPropertiesChangedEvent(*node);
       break;
     case ui::AXEventGenerator::Event::NAME_CHANGED:
-      if (ui::IsText(node->GetRole()))
+      if (ui::IsText(node->GetRole())) {
         HandleTextChangedEvent(*node);
-      else
+      } else {
         FireUiaPropertyChangedEvent(UIA_NamePropertyId, node);
+      }
       // Only fire name changes when the name comes from an attribute, otherwise
       // name changes are redundant with text removed/inserted events.
       if (node->GetData().GetNameFrom() != ax::mojom::NameFrom::kContents)
@@ -347,6 +351,28 @@ void BrowserAccessibilityManagerWin::FireGeneratedEvent(
       break;
     case ui::AXEventGenerator::Event::POSITION_IN_SET_CHANGED:
       FireUiaPropertyChangedEvent(UIA_PositionInSetPropertyId, node);
+      HandleAriaPropertiesChangedEvent(*node);
+      break;
+    case ui::AXEventGenerator::Event::RANGE_VALUE_CHANGED:
+      DCHECK(node->GetData().IsRangeValueSupported());
+      FireWinAccessibilityEvent(EVENT_OBJECT_VALUECHANGE, node);
+      FireUiaPropertyChangedEvent(UIA_RangeValueValuePropertyId, node);
+      HandleAriaPropertiesChangedEvent(*node);
+      break;
+    case ui::AXEventGenerator::Event::RANGE_VALUE_MAX_CHANGED:
+      DCHECK(node->GetData().IsRangeValueSupported());
+      FireUiaPropertyChangedEvent(UIA_RangeValueMaximumPropertyId, node);
+      HandleAriaPropertiesChangedEvent(*node);
+      break;
+    case ui::AXEventGenerator::Event::RANGE_VALUE_MIN_CHANGED:
+      DCHECK(node->GetData().IsRangeValueSupported());
+      FireUiaPropertyChangedEvent(UIA_RangeValueMinimumPropertyId, node);
+      HandleAriaPropertiesChangedEvent(*node);
+      break;
+    case ui::AXEventGenerator::Event::RANGE_VALUE_STEP_CHANGED:
+      DCHECK(node->GetData().IsRangeValueSupported());
+      FireUiaPropertyChangedEvent(UIA_RangeValueSmallChangePropertyId, node);
+      FireUiaPropertyChangedEvent(UIA_RangeValueLargeChangePropertyId, node);
       HandleAriaPropertiesChangedEvent(*node);
       break;
     case ui::AXEventGenerator::Event::READONLY_CHANGED:
@@ -383,6 +409,14 @@ void BrowserAccessibilityManagerWin::FireGeneratedEvent(
     case ui::AXEventGenerator::Event::SELECTED_CHILDREN_CHANGED:
       FireWinAccessibilityEvent(EVENT_OBJECT_SELECTIONWITHIN, node);
       break;
+    case ui::AXEventGenerator::Event::SELECTED_VALUE_CHANGED:
+      DCHECK(ui::IsSelectElement(node->GetRole()));
+      FireWinAccessibilityEvent(EVENT_OBJECT_VALUECHANGE, node);
+      FireUiaPropertyChangedEvent(UIA_ValueValuePropertyId, node);
+      // By changing the value of a combo box, the document's text contents will
+      // also have changed.
+      HandleTextChangedEvent(*node);
+      break;
     case ui::AXEventGenerator::Event::SET_SIZE_CHANGED:
       FireUiaPropertyChangedEvent(UIA_SizeOfSetPropertyId, node);
       HandleAriaPropertiesChangedEvent(*node);
@@ -403,58 +437,31 @@ void BrowserAccessibilityManagerWin::FireGeneratedEvent(
       FireWinAccessibilityEvent(IA2_EVENT_TEXT_ATTRIBUTE_CHANGED, node);
       HandleTextChangedEvent(*node);
       break;
-    case ui::AXEventGenerator::Event::RANGE_VALUE_CHANGED:
-    case ui::AXEventGenerator::Event::SELECTED_VALUE_CHANGED:
     case ui::AXEventGenerator::Event::VALUE_IN_TEXT_FIELD_CHANGED:
+      DCHECK(node->IsTextField());
       FireWinAccessibilityEvent(EVENT_OBJECT_VALUECHANGE, node);
-      if (node->GetData().IsRangeValueSupported()) {
-        FireUiaPropertyChangedEvent(UIA_RangeValueValuePropertyId, node);
-        HandleAriaPropertiesChangedEvent(*node);
-      } else if (ui::IsValuePatternSupported(node)) {
-        FireUiaPropertyChangedEvent(UIA_ValueValuePropertyId, node);
-        HandleTextChangedEvent(*node);
-      } else if (node->GetData().GetBoolAttribute(
-                     ax::mojom::BoolAttribute::kEditableRoot)) {
-        HandleTextChangedEvent(*node);
-      }
-      break;
-    case ui::AXEventGenerator::Event::RANGE_VALUE_MAX_CHANGED:
-      if (node->GetData().IsRangeValueSupported()) {
-        FireUiaPropertyChangedEvent(UIA_RangeValueMaximumPropertyId, node);
-        HandleAriaPropertiesChangedEvent(*node);
-      }
-      break;
-    case ui::AXEventGenerator::Event::RANGE_VALUE_MIN_CHANGED:
-      if (node->GetData().IsRangeValueSupported()) {
-        FireUiaPropertyChangedEvent(UIA_RangeValueMinimumPropertyId, node);
-        HandleAriaPropertiesChangedEvent(*node);
-      }
-      break;
-    case ui::AXEventGenerator::Event::RANGE_VALUE_STEP_CHANGED:
-      if (node->GetData().IsRangeValueSupported()) {
-        FireUiaPropertyChangedEvent(UIA_RangeValueSmallChangePropertyId, node);
-        FireUiaPropertyChangedEvent(UIA_RangeValueLargeChangePropertyId, node);
-      }
+      FireUiaPropertyChangedEvent(UIA_ValueValuePropertyId, node);
+      HandleTextChangedEvent(*node);
       break;
     case ui::AXEventGenerator::Event::WIN_IACCESSIBLE_STATE_CHANGED:
       FireWinAccessibilityEvent(EVENT_OBJECT_STATECHANGE, node);
       break;
+
+    // Currently unused events on this platform.
     case ui::AXEventGenerator::Event::ATK_TEXT_OBJECT_ATTRIBUTE_CHANGED:
     case ui::AXEventGenerator::Event::AUTO_COMPLETE_CHANGED:
     case ui::AXEventGenerator::Event::DOCUMENT_TITLE_CHANGED:
     case ui::AXEventGenerator::Event::FOCUS_CHANGED:
     case ui::AXEventGenerator::Event::LIVE_REGION_NODE_CHANGED:
     case ui::AXEventGenerator::Event::LOAD_START:
-    case ui::AXEventGenerator::Event::PARENT_CHANGED:
-    case ui::AXEventGenerator::Event::PORTAL_ACTIVATED:
     case ui::AXEventGenerator::Event::MENU_ITEM_SELECTED:
     case ui::AXEventGenerator::Event::OTHER_ATTRIBUTE_CHANGED:
+    case ui::AXEventGenerator::Event::PARENT_CHANGED:
+    case ui::AXEventGenerator::Event::PORTAL_ACTIVATED:
     case ui::AXEventGenerator::Event::RELATED_NODE_CHANGED:
     case ui::AXEventGenerator::Event::ROW_COUNT_CHANGED:
-    case ui::AXEventGenerator::Event::STATE_CHANGED:
     case ui::AXEventGenerator::Event::SELECTION_IN_TEXT_FIELD_CHANGED:
-      // There are some notifications that aren't meaningful on Windows.
-      // It's okay to skip them.
+    case ui::AXEventGenerator::Event::STATE_CHANGED:
       break;
   }
 }

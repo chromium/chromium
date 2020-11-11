@@ -77,16 +77,16 @@ enum Event {
   kShow,                     // Native / Automation
   kStateChanged,             // Native / Automation
   kTextChanged,
-  kWindowActivated,             // Native
-  kWindowDeactivated,           // Native
-  kWindowVisibilityChanged,     // Native
+  // TODO(nektar): Remove kTextSelectionChanged.
   kTextSelectionChanged,
   kTooltipClosed,
   kTooltipOpened,
-  kTreeChanged,  // Accessibility tree changed. Don't
-                 // explicitly fire an accessibility event,
-                 // only implicitly due to the change.
+  kTreeChanged,  // Don't explicitly fire this event.
+  // TODO(nektar): Remove kValueChanged.
   kValueChanged,
+  kWindowActivated,             // Native
+  kWindowDeactivated,           // Native
+  kWindowVisibilityChanged,     // Native
 };
 
 // Accessibility object roles.
