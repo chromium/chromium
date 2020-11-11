@@ -25,10 +25,11 @@ namespace autofill_assistant {
 
 ElementPositionGetter::ElementPositionGetter(
     DevtoolsClient* devtools_client,
-    const ClientSettings& settings,
+    int max_rounds,
+    base::TimeDelta check_interval,
     const std::string& optional_node_frame_id)
-    : check_interval_(settings.box_model_check_interval),
-      max_rounds_(settings.box_model_check_count),
+    : check_interval_(check_interval),
+      max_rounds_(max_rounds),
       devtools_client_(devtools_client),
       node_frame_id_(optional_node_frame_id),
       weak_ptr_factory_(this) {}

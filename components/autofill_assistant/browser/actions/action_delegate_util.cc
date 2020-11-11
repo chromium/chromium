@@ -6,6 +6,7 @@
 
 #include "base/callback.h"
 #include "components/autofill_assistant/browser/actions/action_delegate.h"
+#include "components/autofill_assistant/browser/client_settings.h"
 #include "components/autofill_assistant/browser/selector.h"
 #include "components/autofill_assistant/browser/service.pb.h"
 #include "components/autofill_assistant/browser/string_conversions_util.h"
@@ -111,27 +112,13 @@ void AddClickOrTapSequence(const ActionDelegate* delegate,
       base::BindOnce(&ActionDelegate::ScrollIntoView, delegate->GetWeakPtr()));
   if (click_type != ClickType::JAVASCRIPT) {
     actions->emplace_back(base::BindOnce(
-        &ActionDelegate::WaitUntilElementIsStable, delegate->GetWeakPtr()));
-
-    switch (on_top) {
-      case STEP_UNSPECIFIED:
-        NOTREACHED() << __func__ << " unspecified on_top step";
-        FALLTHROUGH;
-
-      case SKIP_STEP:
-        break;
-
-      case REPORT_STEP_RESULT:
-        actions->emplace_back(base::BindOnce(
-            &SkipIfFail, base::BindOnce(&ActionDelegate::CheckOnTop,
-                                        delegate->GetWeakPtr())));
-        break;
-
-      case REQUIRE_STEP_SUCCESS:
-        actions->emplace_back(base::BindOnce(&ActionDelegate::CheckOnTop,
-                                             delegate->GetWeakPtr()));
-        break;
-    }
+        &ActionDelegate::WaitUntilElementIsStable, delegate->GetWeakPtr(),
+        delegate->GetSettings().box_model_check_count,
+        delegate->GetSettings().box_model_check_interval));
+    AddOptionalStep(
+        on_top,
+        base::BindOnce(&ActionDelegate::CheckOnTop, delegate->GetWeakPtr()),
+        actions);
   }
   actions->emplace_back(base::BindOnce(&ActionDelegate::ClickOrTapElement,
                                        delegate->GetWeakPtr(), click_type));
@@ -146,6 +133,27 @@ void PerformAll(std::unique_ptr<ElementActionVector> perform_actions,
       std::move(perform_actions),
       std::make_unique<ProcessedActionStatusDetailsProto>(), 0, element,
       std::move(done), OkClientStatus());
+}
+
+void AddOptionalStep(OptionalStep optional_step,
+                     ElementActionCallback step,
+                     ElementActionVector* actions) {
+  switch (optional_step) {
+    case STEP_UNSPECIFIED:
+      NOTREACHED() << __func__ << " unspecified optional_step";
+      FALLTHROUGH;
+
+    case SKIP_STEP:
+      break;
+
+    case REPORT_STEP_RESULT:
+      actions->emplace_back(base::BindOnce(&SkipIfFail, std::move(step)));
+      break;
+
+    case REQUIRE_STEP_SUCCESS:
+      actions->emplace_back(std::move(step));
+      break;
+  }
 }
 
 void FindElementAndPerform(const ActionDelegate* delegate,

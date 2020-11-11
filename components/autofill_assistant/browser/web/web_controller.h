@@ -12,6 +12,7 @@
 #include "base/callback_forward.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "components/autofill_assistant/browser/batch_element_checker.h"
 #include "components/autofill_assistant/browser/client_status.h"
 #include "components/autofill_assistant/browser/devtools/devtools/domains/types_dom.h"
@@ -44,7 +45,6 @@ class RenderFrameHost;
 }  // namespace content
 
 namespace autofill_assistant {
-struct ClientSettings;
 
 // Controller to interact with the web pages.
 //
@@ -60,13 +60,11 @@ class WebController {
   // Create web controller for a given |web_contents|. |settings| must be valid
   // for the lifetime of the controller.
   static std::unique_ptr<WebController> CreateForWebContents(
-      content::WebContents* web_contents,
-      const ClientSettings* settings);
+      content::WebContents* web_contents);
 
   // |web_contents| and |settings| must outlive this web controller.
   WebController(content::WebContents* web_contents,
-                std::unique_ptr<DevtoolsClient> devtools_client,
-                const ClientSettings* settings);
+                std::unique_ptr<DevtoolsClient> devtools_client);
   virtual ~WebController();
 
   // Load |url| in the current tab. Returns immediately, before the new page has
@@ -103,6 +101,8 @@ class WebController {
   // the element position doesn't stabilize quickly enough.
   virtual void WaitUntilElementIsStable(
       const ElementFinder::Result& element,
+      int max_rounds,
+      base::TimeDelta check_interval,
       base::OnceCallback<void(const ClientStatus&)> callback);
 
   // Check whether the center given element is on top. Fail with
@@ -450,7 +450,6 @@ class WebController {
   // is guaranteed by the owner of this object.
   content::WebContents* web_contents_;
   std::unique_ptr<DevtoolsClient> devtools_client_;
-  const ClientSettings* const settings_;
 
   // Currently running workers.
   std::vector<std::unique_ptr<WebControllerWorker>> pending_workers_;

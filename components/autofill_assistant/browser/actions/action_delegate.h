@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/callback_forward.h"
+#include "base/time/time.h"
 #include "components/autofill_assistant/browser/batch_element_checker.h"
 #include "components/autofill_assistant/browser/details.h"
 #include "components/autofill_assistant/browser/info_box.h"
@@ -127,6 +128,8 @@ class ActionDelegate {
   // Wait for the |element| to stop moving on the page. Fails with
   // ELEMENT_UNSTABLE.
   virtual void WaitUntilElementIsStable(
+      int max_rounds,
+      base::TimeDelta check_interval,
       const ElementFinder::Result& element,
       base::OnceCallback<void(const ClientStatus&)> callback) = 0;
 
@@ -431,7 +434,7 @@ class ActionDelegate {
       base::OnceCallback<void(const ClientStatus&)> callback) = 0;
 
   // Returns the current client settings.
-  virtual const ClientSettings& GetSettings() = 0;
+  virtual const ClientSettings& GetSettings() const = 0;
 
   // Show a form to the user and call |changed_callback| with its values
   // whenever there is a change. |changed_callback| will be called directly with

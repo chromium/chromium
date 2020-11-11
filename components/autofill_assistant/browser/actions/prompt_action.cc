@@ -13,7 +13,6 @@
 #include "base/callback.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/autofill_assistant/browser/actions/action_delegate.h"
-#include "components/autofill_assistant/browser/client_settings.h"
 #include "components/autofill_assistant/browser/element_precondition.h"
 #include "url/gurl.h"
 

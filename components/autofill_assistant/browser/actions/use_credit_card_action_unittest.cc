@@ -417,8 +417,8 @@ TEST_F(UseCreditCardActionTest, ForcedFallbackWithKeystrokes) {
   EXPECT_CALL(mock_action_delegate_,
               ScrollIntoView(EqualsElement(expected_element), _))
       .WillOnce(RunOnceCallback<1>(OkClientStatus()));
-  EXPECT_CALL(mock_action_delegate_, WaitUntilElementIsStable(_, _))
-      .WillOnce(RunOnceCallback<1>(OkClientStatus()));
+  EXPECT_CALL(mock_action_delegate_, WaitUntilElementIsStable(_, _, _, _))
+      .WillOnce(RunOnceCallback<3>(OkClientStatus()));
   EXPECT_CALL(
       mock_action_delegate_,
       ClickOrTapElement(ClickType::CLICK, EqualsElement(expected_element), _))

@@ -8,6 +8,7 @@
 #include "components/autofill_assistant/browser/actions/action.h"
 #include "components/autofill_assistant/browser/top_padding.h"
 
+#include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 
@@ -24,12 +25,14 @@ class ShowCastAction : public Action {
   // Overrides Action:
   void InternalProcessAction(ProcessActionCallback callback) override;
 
-  void OnWaitForElement(ProcessActionCallback callback,
-                        const Selector& selector,
+  void OnWaitForElement(const Selector& selector,
                         const TopPadding& top_padding,
                         const ClientStatus& element_status);
-  void OnScrollToElementPosition(ProcessActionCallback callback,
-                                 const ClientStatus& status);
+  void OnScrollToElementPosition(const ClientStatus& status);
+
+  void EndAction(const ClientStatus& status);
+
+  ProcessActionCallback process_action_callback_;
 
   base::WeakPtrFactory<ShowCastAction> weak_ptr_factory_{this};
 

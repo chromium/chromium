@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/time/time.h"
 #include "components/autofill_assistant/browser/top_padding.h"
 #include "components/autofill_assistant/browser/web/element_finder.h"
 #include "components/autofill_assistant/browser/web/element_rect_getter.h"
@@ -43,8 +44,10 @@ class MockWebController : public WebController {
                void(const ElementFinder::Result&,
                     base::OnceCallback<void(const ClientStatus&)>&));
 
-  MOCK_METHOD2(WaitUntilElementIsStable,
+  MOCK_METHOD4(WaitUntilElementIsStable,
                void(const ElementFinder::Result& element,
+                    int,
+                    base::TimeDelta,
                     base::OnceCallback<void(const ClientStatus&)> callback));
 
   void ClickOrTapElement(

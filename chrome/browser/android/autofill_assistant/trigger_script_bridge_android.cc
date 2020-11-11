@@ -62,9 +62,7 @@ void TriggerScriptBridgeAndroid::StartTriggerScript(
 
   ServerUrlFetcher url_fetcher{ServerUrlFetcher::GetDefaultServerUrl()};
   trigger_script_coordinator_ = std::make_unique<TriggerScriptCoordinator>(
-      client,
-      WebController::CreateForWebContents(client->GetWebContents(),
-                                          &client_settings_),
+      client, WebController::CreateForWebContents(client->GetWebContents()),
       std::move(service_request_sender),
       url_fetcher.GetTriggerScriptsEndpoint(),
       std::make_unique<StaticTriggerConditions>(),

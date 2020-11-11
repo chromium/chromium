@@ -136,6 +136,8 @@ class ScriptExecutor : public ActionDelegate,
       const ElementFinder::Result& element,
       base::OnceCallback<void(const ClientStatus&)> callback) override;
   void WaitUntilElementIsStable(
+      int max_rounds,
+      base::TimeDelta check_interval,
       const ElementFinder::Result& element,
       base::OnceCallback<void(const ClientStatus&)> callback) override;
   void CheckOnTop(
@@ -276,7 +278,7 @@ class ScriptExecutor : public ActionDelegate,
   void CollapseBottomSheet() override;
   void WaitForWindowHeightChange(
       base::OnceCallback<void(const ClientStatus&)> callback) override;
-  const ClientSettings& GetSettings() override;
+  const ClientSettings& GetSettings() const override;
   bool SetForm(
       std::unique_ptr<FormProto> form,
       base::RepeatingCallback<void(const FormProto::Result*)> changed_callback,

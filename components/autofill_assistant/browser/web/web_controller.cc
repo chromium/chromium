@@ -23,7 +23,6 @@
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/form_data.h"
-#include "components/autofill_assistant/browser/client_settings.h"
 #include "components/autofill_assistant/browser/client_status.h"
 #include "components/autofill_assistant/browser/rectf.h"
 #include "components/autofill_assistant/browser/string_conversions_util.h"
@@ -286,21 +285,17 @@ void DecorateControllerStatusWithValue(
 
 // static
 std::unique_ptr<WebController> WebController::CreateForWebContents(
-    content::WebContents* web_contents,
-    const ClientSettings* settings) {
+    content::WebContents* web_contents) {
   return std::make_unique<WebController>(
       web_contents,
       std::make_unique<DevtoolsClient>(
-          content::DevToolsAgentHost::GetOrCreateFor(web_contents)),
-      settings);
+          content::DevToolsAgentHost::GetOrCreateFor(web_contents)));
 }
 
 WebController::WebController(content::WebContents* web_contents,
-                             std::unique_ptr<DevtoolsClient> devtools_client,
-                             const ClientSettings* settings)
+                             std::unique_ptr<DevtoolsClient> devtools_client)
     : web_contents_(web_contents),
-      devtools_client_(std::move(devtools_client)),
-      settings_(settings) {}
+      devtools_client_(std::move(devtools_client)) {}
 
 WebController::~WebController() {}
 
@@ -436,13 +431,16 @@ void WebController::OnCheckOnTop(
 
 void WebController::WaitUntilElementIsStable(
     const ElementFinder::Result& element,
+    int max_rounds,
+    base::TimeDelta check_interval,
     base::OnceCallback<void(const ClientStatus&)> callback) {
   auto wrapped_callback = GetAssistantActionRunningStateRetainingCallback(
       element, std::move(callback));
 
   std::unique_ptr<ElementPositionGetter> getter =
-      std::make_unique<ElementPositionGetter>(
-          devtools_client_.get(), *settings_, element.node_frame_id);
+      std::make_unique<ElementPositionGetter>(devtools_client_.get(),
+                                              max_rounds, check_interval,
+                                              element.node_frame_id);
   auto* ptr = getter.get();
   pending_workers_.emplace_back(std::move(getter));
   ptr->Start(element.container_frame_host, element.object_id,
@@ -495,8 +493,9 @@ void WebController::ClickOrTapElement(
 
   std::unique_ptr<ElementPositionGetter> getter =
       std::make_unique<ElementPositionGetter>(
-          devtools_client_.get(), *settings_, element.node_frame_id);
-  getter->DisableWaitForElementStable();
+          devtools_client_.get(), /* max_rounds= */ 1,
+          /* check_interval= */ base::TimeDelta::FromMilliseconds(0),
+          element.node_frame_id);
   auto* ptr = getter.get();
   pending_workers_.emplace_back(std::move(getter));
   ptr->Start(

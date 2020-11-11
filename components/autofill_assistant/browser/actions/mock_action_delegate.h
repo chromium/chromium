@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/time/time.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill_assistant/browser/actions/action_delegate.h"
@@ -90,8 +91,10 @@ class MockActionDelegate : public ActionDelegate {
                void(const ElementFinder::Result& element,
                     base::OnceCallback<void(const ClientStatus&)> callback));
 
-  MOCK_METHOD2(WaitUntilElementIsStable,
-               void(const ElementFinder::Result& element,
+  MOCK_METHOD4(WaitUntilElementIsStable,
+               void(int,
+                    base::TimeDelta,
+                    const ElementFinder::Result& element,
                     base::OnceCallback<void(const ClientStatus&)> callback));
 
   MOCK_METHOD2(CheckOnTop,
@@ -362,7 +365,9 @@ class MockActionDelegate : public ActionDelegate {
     return weak_ptr_factory_.GetWeakPtr();
   }
 
-  const ClientSettings& GetSettings() override { return client_settings_; }
+  const ClientSettings& GetSettings() const override {
+    return client_settings_;
+  }
 
   ClientSettings client_settings_;
 

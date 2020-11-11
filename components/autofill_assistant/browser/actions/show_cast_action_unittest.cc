@@ -68,10 +68,9 @@ TEST_F(ShowCastActionTest, ActionFailsForNonExistentElement) {
 TEST_F(ShowCastActionTest, CheckExpectedCallChain) {
   InSequence sequence;
 
-  Selector selector({"#focus"});
-  *proto_.mutable_element_to_present() = selector.proto;
+  Selector expected_selector({"#focus"});
+  *proto_.mutable_element_to_present() = expected_selector.proto;
 
-  Selector expected_selector = selector;
   EXPECT_CALL(mock_action_delegate_,
               OnShortWaitForElement(expected_selector, _))
       .WillOnce(RunOnceCallback<1>(OkClientStatus(),
@@ -81,6 +80,38 @@ TEST_F(ShowCastActionTest, CheckExpectedCallChain) {
   EXPECT_CALL(mock_action_delegate_, WaitForDocumentToBecomeInteractive(
                                          EqualsElement(expected_element), _))
       .WillOnce(RunOnceCallback<1>(OkClientStatus()));
+  EXPECT_CALL(mock_action_delegate_,
+              ScrollToElementPosition(expected_selector, _,
+                                      EqualsElement(expected_element), _))
+      .WillOnce(RunOnceCallback<3>(OkClientStatus()));
+  EXPECT_CALL(mock_action_delegate_, SetTouchableElementArea(_));
+
+  EXPECT_CALL(
+      callback_,
+      Run(Pointee(Property(&ProcessedActionProto::status, ACTION_APPLIED))));
+  Run();
+}
+
+TEST_F(ShowCastActionTest, WaitsForStableElementIfSpecified) {
+  InSequence sequence;
+
+  Selector expected_selector({"#focus"});
+  *proto_.mutable_element_to_present() = expected_selector.proto;
+  proto_.set_wait_for_stable_element(REQUIRE_STEP_SUCCESS);
+
+  EXPECT_CALL(mock_action_delegate_,
+              OnShortWaitForElement(expected_selector, _))
+      .WillOnce(RunOnceCallback<1>(OkClientStatus(),
+                                   base::TimeDelta::FromSeconds(0)));
+  auto expected_element =
+      test_util::MockFindElement(mock_action_delegate_, expected_selector);
+  EXPECT_CALL(mock_action_delegate_, WaitForDocumentToBecomeInteractive(
+                                         EqualsElement(expected_element), _))
+      .WillOnce(RunOnceCallback<1>(OkClientStatus()));
+  EXPECT_CALL(
+      mock_action_delegate_,
+      WaitUntilElementIsStable(_, _, EqualsElement(expected_element), _))
+      .WillOnce(RunOnceCallback<3>(OkClientStatus()));
   EXPECT_CALL(mock_action_delegate_,
               ScrollToElementPosition(expected_selector, _,
                                       EqualsElement(expected_element), _))

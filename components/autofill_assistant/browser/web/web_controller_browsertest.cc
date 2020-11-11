@@ -8,7 +8,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
-#include "components/autofill_assistant/browser/client_settings.h"
 #include "components/autofill_assistant/browser/service.pb.h"
 #include "components/autofill_assistant/browser/string_conversions_util.h"
 #include "components/autofill_assistant/browser/top_padding.h"
@@ -59,8 +58,8 @@ class WebControllerBrowserTest : public content::ContentBrowserTest,
     ASSERT_TRUE(http_server_->Start(8080));
     ASSERT_TRUE(
         NavigateToURL(shell(), http_server_->GetURL(kTargetWebsitePath)));
-    web_controller_ = WebController::CreateForWebContents(
-        shell()->web_contents(), &settings_);
+    web_controller_ =
+        WebController::CreateForWebContents(shell()->web_contents());
     Observe(shell()->web_contents());
   }
 
@@ -1003,7 +1002,6 @@ document.getElementById("overlay_in_frame").style.visibility='hidden';
 
  protected:
   std::unique_ptr<WebController> web_controller_;
-  ClientSettings settings_;
 
  private:
   std::unique_ptr<net::EmbeddedTestServer> http_server_;

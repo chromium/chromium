@@ -1354,6 +1354,20 @@ message ShowCastProto {
 
   // The padding that will be added between the focused element and the top.
   optional TopPadding top_padding = 7;
+
+  // Configure whether the scrolling should wait for the element to be stable
+  // before scrolling.
+  //
+  // If set to REQUIRE_STEP_SUCCESS, scrolling may fail with ELEMENT_UNSTABLE.
+  optional OptionalStep wait_for_stable_element = 9;
+
+  // Maximum rounds to stable check.
+  optional int32 stable_check_max_rounds = 10 [default = 50];
+
+  // Interval for stable check in ms.
+  optional int32 stable_check_interval_ms = 11 [default = 200];
+
+  reserved 3, 4, 8;
 }
 
 // An area made up of rectangles whole border are made defined by the position

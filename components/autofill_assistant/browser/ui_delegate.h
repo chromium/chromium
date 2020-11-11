@@ -11,6 +11,7 @@
 
 #include "base/optional.h"
 #include "bottom_sheet_state.h"
+#include "components/autofill_assistant/browser/client_settings.h"
 #include "components/autofill_assistant/browser/event_handler.h"
 #include "components/autofill_assistant/browser/metrics.h"
 #include "components/autofill_assistant/browser/rectf.h"
@@ -24,7 +25,6 @@ class ControllerObserver;
 class Details;
 class InfoBox;
 class BasicInteractions;
-struct ClientSettings;
 
 // UI delegate called for script executions.
 class UiDelegate {

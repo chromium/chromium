@@ -347,10 +347,12 @@ void ScriptExecutor::ScrollIntoView(
 }
 
 void ScriptExecutor::WaitUntilElementIsStable(
+    int max_rounds,
+    base::TimeDelta check_interval,
     const ElementFinder::Result& element,
     base::OnceCallback<void(const ClientStatus&)> callback) {
-  delegate_->GetWebController()->WaitUntilElementIsStable(element,
-                                                          std::move(callback));
+  delegate_->GetWebController()->WaitUntilElementIsStable(
+      element, max_rounds, check_interval, std::move(callback));
 }
 
 void ScriptExecutor::CheckOnTop(
@@ -822,7 +824,7 @@ void ScriptExecutor::WaitForWindowHeightChange(
   delegate_->GetWebController()->WaitForWindowHeightChange(std::move(callback));
 }
 
-const ClientSettings& ScriptExecutor::GetSettings() {
+const ClientSettings& ScriptExecutor::GetSettings() const {
   return delegate_->GetSettings();
 }
 

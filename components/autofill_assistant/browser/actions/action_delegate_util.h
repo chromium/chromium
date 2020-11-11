@@ -9,6 +9,7 @@
 #include "components/autofill_assistant/browser/actions/action_delegate.h"
 #include "components/autofill_assistant/browser/selector.h"
 #include "components/autofill_assistant/browser/service.pb.h"
+#include "components/autofill_assistant/browser/web/element_finder.h"
 
 namespace autofill_assistant {
 namespace action_delegate_util {
@@ -79,6 +80,13 @@ void TakeElementAndGetProperty(
 void PerformAll(std::unique_ptr<ElementActionVector> perform_actions,
                 const ElementFinder::Result& element,
                 base::OnceCallback<void(const ClientStatus&)> done);
+
+// Adds an optional step to the |actions|. If the step is |SKIP_STEP|, it does
+// not add it. For |REPORT_STEP_RESULT| it adds the step ignoring a potential
+// failure. For |REQUIRE_STEP_SUCCESS| it binds the step as is.
+void AddOptionalStep(OptionalStep optional_step,
+                     ElementActionCallback step,
+                     ElementActionVector* actions);
 
 void ClickOrTapElement(const ActionDelegate* delegate,
                        const Selector& selector,

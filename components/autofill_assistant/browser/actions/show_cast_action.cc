@@ -25,6 +25,8 @@ ShowCastAction::ShowCastAction(ActionDelegate* delegate,
 ShowCastAction::~ShowCastAction() {}
 
 void ShowCastAction::InternalProcessAction(ProcessActionCallback callback) {
+  process_action_callback_ = std::move(callback);
+
   const ShowCastProto& show_cast = proto_.show_cast();
   if (show_cast.has_title()) {
     // TODO(crbug.com/806868): Deprecate and remove message from this action and
@@ -34,8 +36,7 @@ void ShowCastAction::InternalProcessAction(ProcessActionCallback callback) {
   Selector selector = Selector(show_cast.element_to_present());
   if (selector.empty()) {
     VLOG(1) << __func__ << ": empty selector";
-    UpdateProcessedAction(INVALID_SELECTOR);
-    std::move(callback).Run(std::move(processed_action_proto_));
+    EndAction(ClientStatus(INVALID_SELECTOR));
     return;
   }
 
@@ -60,17 +61,14 @@ void ShowCastAction::InternalProcessAction(ProcessActionCallback callback) {
                                weak_ptr_factory_.GetWeakPtr(),
                                base::BindOnce(&ShowCastAction::OnWaitForElement,
                                               weak_ptr_factory_.GetWeakPtr(),
-                                              std::move(callback), selector,
-                                              top_padding)));
+                                              selector, top_padding)));
 }
 
-void ShowCastAction::OnWaitForElement(ProcessActionCallback callback,
-                                      const Selector& selector,
+void ShowCastAction::OnWaitForElement(const Selector& selector,
                                       const TopPadding& top_padding,
                                       const ClientStatus& element_status) {
   if (!element_status.ok()) {
-    UpdateProcessedAction(element_status.proto_status());
-    std::move(callback).Run(std::move(processed_action_proto_));
+    EndAction(element_status);
     return;
   }
 
@@ -78,6 +76,18 @@ void ShowCastAction::OnWaitForElement(ProcessActionCallback callback,
   actions->emplace_back(
       base::BindOnce(&ActionDelegate::WaitForDocumentToBecomeInteractive,
                      delegate_->GetWeakPtr()));
+  auto wait_for_stable_element = proto_.show_cast().wait_for_stable_element();
+  if (wait_for_stable_element == STEP_UNSPECIFIED) {
+    wait_for_stable_element = SKIP_STEP;
+  }
+  action_delegate_util::AddOptionalStep(
+      wait_for_stable_element,
+      base::BindOnce(&ActionDelegate::WaitUntilElementIsStable,
+                     delegate_->GetWeakPtr(),
+                     proto_.show_cast().stable_check_max_rounds(),
+                     base::TimeDelta::FromMilliseconds(
+                         proto_.show_cast().stable_check_interval_ms())),
+      actions.get());
   actions->emplace_back(base::BindOnce(&ActionDelegate::ScrollToElementPosition,
                                        delegate_->GetWeakPtr(), selector,
                                        top_padding));
@@ -85,15 +95,18 @@ void ShowCastAction::OnWaitForElement(ProcessActionCallback callback,
       delegate_, selector,
       base::BindOnce(&action_delegate_util::PerformAll, std::move(actions)),
       base::BindOnce(&ShowCastAction::OnScrollToElementPosition,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
-void ShowCastAction::OnScrollToElementPosition(ProcessActionCallback callback,
-                                               const ClientStatus& status) {
+void ShowCastAction::OnScrollToElementPosition(const ClientStatus& status) {
   delegate_->SetTouchableElementArea(
       proto().show_cast().touchable_element_area());
+  EndAction(status);
+}
+
+void ShowCastAction::EndAction(const ClientStatus& status) {
   UpdateProcessedAction(status);
-  std::move(callback).Run(std::move(processed_action_proto_));
+  std::move(process_action_callback_).Run(std::move(processed_action_proto_));
 }
 
 }  // namespace autofill_assistant

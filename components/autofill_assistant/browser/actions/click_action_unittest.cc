@@ -33,8 +33,8 @@ class ClickActionTest : public testing::Test {
         .WillByDefault(RunOnceCallback<1>(OkClientStatus()));
     ON_CALL(mock_action_delegate_, ScrollIntoView(_, _))
         .WillByDefault(RunOnceCallback<1>(OkClientStatus()));
-    ON_CALL(mock_action_delegate_, WaitUntilElementIsStable(_, _))
-        .WillByDefault(RunOnceCallback<1>(OkClientStatus()));
+    ON_CALL(mock_action_delegate_, WaitUntilElementIsStable(_, _, _, _))
+        .WillByDefault(RunOnceCallback<3>(OkClientStatus()));
     ON_CALL(mock_action_delegate_, CheckOnTop(_, _))
         .WillByDefault(RunOnceCallback<1>(OkClientStatus()));
     ON_CALL(mock_action_delegate_, ClickOrTapElement(_, _, _))
@@ -90,9 +90,10 @@ TEST_F(ClickActionTest, CheckExpectedCallChain) {
   EXPECT_CALL(mock_action_delegate_,
               ScrollIntoView(EqualsElement(expected_element), _))
       .WillOnce(RunOnceCallback<1>(OkClientStatus()));
-  EXPECT_CALL(mock_action_delegate_,
-              WaitUntilElementIsStable(EqualsElement(expected_element), _))
-      .WillOnce(RunOnceCallback<1>(OkClientStatus()));
+  EXPECT_CALL(
+      mock_action_delegate_,
+      WaitUntilElementIsStable(_, _, EqualsElement(expected_element), _))
+      .WillOnce(RunOnceCallback<3>(OkClientStatus()));
   EXPECT_CALL(
       mock_action_delegate_,
       ClickOrTapElement(ClickType::CLICK, EqualsElement(expected_element), _))
@@ -112,7 +113,8 @@ TEST_F(ClickActionTest, JavaScriptClickSkipsWaitForElementStable) {
   ElementFinder::Result expected_element =
       test_util::MockFindElement(mock_action_delegate_, expected_selector);
 
-  EXPECT_CALL(mock_action_delegate_, WaitUntilElementIsStable(_, _)).Times(0);
+  EXPECT_CALL(mock_action_delegate_, WaitUntilElementIsStable(_, _, _, _))
+      .Times(0);
   EXPECT_CALL(mock_action_delegate_, CheckOnTop(_, _)).Times(0);
   EXPECT_CALL(mock_action_delegate_,
               ClickOrTapElement(ClickType::JAVASCRIPT,
@@ -152,8 +154,9 @@ TEST_F(ClickActionTest, RequireCheckOnTop) {
       test_util::MockFindElement(mock_action_delegate_, expected_selector);
 
   InSequence seq;
-  EXPECT_CALL(mock_action_delegate_,
-              WaitUntilElementIsStable(EqualsElement(expected_element), _));
+  EXPECT_CALL(
+      mock_action_delegate_,
+      WaitUntilElementIsStable(_, _, EqualsElement(expected_element), _));
   EXPECT_CALL(mock_action_delegate_,
               CheckOnTop(EqualsElement(expected_element), _));
   EXPECT_CALL(
@@ -177,8 +180,9 @@ TEST_F(ClickActionTest, OptionalCheckOnTop) {
       test_util::MockFindElement(mock_action_delegate_, expected_selector);
 
   InSequence seq;
-  EXPECT_CALL(mock_action_delegate_,
-              WaitUntilElementIsStable(EqualsElement(expected_element), _));
+  EXPECT_CALL(
+      mock_action_delegate_,
+      WaitUntilElementIsStable(_, _, EqualsElement(expected_element), _));
   EXPECT_CALL(mock_action_delegate_,
               CheckOnTop(EqualsElement(expected_element), _));
   EXPECT_CALL(

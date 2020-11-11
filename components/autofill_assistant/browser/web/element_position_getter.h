@@ -11,7 +11,6 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "components/autofill_assistant/browser/client_settings.h"
 #include "components/autofill_assistant/browser/devtools/devtools/domains/types_dom.h"
 #include "components/autofill_assistant/browser/devtools/devtools/domains/types_runtime.h"
 #include "components/autofill_assistant/browser/devtools/devtools_client.h"
@@ -30,7 +29,8 @@ class ElementPositionGetter : public WebControllerWorker {
  public:
   // |devtools_client| must be valid for the lifetime of the instance.
   ElementPositionGetter(DevtoolsClient* devtools_client,
-                        const ClientSettings& settings,
+                        int max_rounds,
+                        base::TimeDelta check_interval,
                         const std::string& optional_node_frame_id);
   ~ElementPositionGetter() override;
 
@@ -40,8 +40,6 @@ class ElementPositionGetter : public WebControllerWorker {
   // If the operation failed, the status is ELEMENT_UNSTABLE.
   // If the operation succeeded, check the coordinate in the getter.
   using Callback = base::OnceCallback<void(const ClientStatus&)>;
-
-  void DisableWaitForElementStable() { max_rounds_ = 1; }
 
   // The X coordinate of the center of the element, only valid after getting a
   // successful callback.
