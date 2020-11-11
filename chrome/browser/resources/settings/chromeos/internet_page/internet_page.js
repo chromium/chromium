@@ -125,6 +125,12 @@ Polymer({
       value: false,
     },
 
+    /**
+     * Name of cellular setup dialog page.
+     * @private {!cellularSetup.CellularSetupPageName|null}
+     */
+    cellularSetupDialogPageName_: String,
+
     /** @private {!Map<string, Element>} */
     focusConfig_: {
       type: Object,
@@ -313,9 +319,13 @@ Polymer({
     }
   },
 
-  /** @private */
-  onShowCellularSetupDialog_() {
+  /**
+   * @param {Event} event
+   * @private
+   */
+  onShowCellularSetupDialog_(event) {
     this.showCellularSetupDialog_ = true;
+    this.cellularSetupDialogPageName_ = event.detail.pageName;
   },
 
   /** @private */

@@ -117,11 +117,12 @@ Polymer({
    * @private
    */
   onEsimLearnMoreClicked_(event) {
-    // TODO(crbug.com/1093185): navigate to cellular dialog esim setup landing
-    // page
-
     event.detail.event.preventDefault();
     event.stopPropagation();
+
+    this.fire(
+        'show-cellular-setup',
+        {pageName: cellularSetup.CellularSetupPageName.ESIM_FLOW_UI});
   },
 
   /**
@@ -129,9 +130,11 @@ Polymer({
    * @private
    */
   onPsimLearnMoreClicked_(event) {
-    // TODO(crbug.com/1093185): navigate to cellular dialog psim setup landing
-    // page
     event.detail.event.preventDefault();
     event.stopPropagation();
+
+    this.fire(
+        'show-cellular-setup',
+        {pageName: cellularSetup.CellularSetupPageName.PSIM_FLOW_UI});
   },
 });

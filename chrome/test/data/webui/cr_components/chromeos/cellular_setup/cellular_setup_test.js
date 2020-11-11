@@ -30,7 +30,7 @@ suite('CrComponentsCellularSetupTest', function() {
 
   test('Page selection change', function() {
     assertTrue(
-        cellularSetupPage.currentPageName_ ===
+        cellularSetupPage.currentPageName ===
         cellularSetup.CellularSetupPageName.SETUP_FLOW_SELECTION);
 
     const selectionFlow = cellularSetupPage.$$('setup-selection-flow');

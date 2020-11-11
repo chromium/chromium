@@ -2,6 +2,7 @@
 
 <link rel="import" href="chrome://resources/cr_components/chromeos/cellular_setup/cellular_setup.html">
 <link rel="import" href="chrome://resources/cr_components/chromeos/cellular_setup/cellular_setup_delegate.html">
+<link rel="import" href="chrome://resources/cr_components/chromeos/cellular_setup/cellular_types.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_dialog/cr_dialog.html">
 <link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
 <link rel="import" href="chrome://resources/html/i18n_behavior.html">
@@ -63,7 +64,8 @@
       <div slot="body">
         <cellular-setup
             flow-title="{{dialogTitle_}}"
-            delegate="[[delegate_]]">
+            delegate="[[delegate_]]"
+            current-page-name="[[pageName]]">
         </cellular-setup>
       </div>
     </cr-dialog>

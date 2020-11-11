@@ -12,6 +12,12 @@ Polymer({
   properties: {
 
     /**
+     * Name of cellular dialog page to be selected.
+     * @type {!cellularSetup.CellularSetupPageName}
+     */
+    pageName: String,
+
+    /**
      * @private {!cellular_setup.CellularSetupDelegate}
      */
     delegate_: Object,

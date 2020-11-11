@@ -24,7 +24,7 @@ Polymer({
      * Name of the currently displayed sub-page.
      * @private {!cellularSetup.CellularSetupPageName|null}
      */
-    currentPageName_: {
+    currentPageName: {
       type: String,
       value: cellularSetup.CellularSetupPageName.SETUP_FLOW_SELECTION,
     },

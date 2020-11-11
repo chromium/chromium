@@ -12,7 +12,7 @@
   <template>
     <iron-pages
         attr-for-selected="id"
-        selected="[[currentPageName_]]"
+        selected="[[currentPageName]]"
         selected-item="{{currentPage_}}">
       <setup-selection-flow
           selected-page="{{selectedFlow_}}"
@@ -20,7 +20,7 @@
           id="setup-selection-flow">
       </setup-selection-flow>
       <template is="dom-if"
-          if="[[isPSimSelected_(currentPageName_)]]" restamp>
+          if="[[isPSimSelected_(currentPageName)]]" restamp>
         <psim-flow-ui
             button-state="{{buttonState_}}"
             name-of-carrier-pending-setup="{{flowTitle}}"
@@ -29,7 +29,7 @@
         </psim-flow-ui>
       </template>
       <template is="dom-if"
-          if="[[isESimSelected_(currentPageName_)]]" restamp>
+          if="[[isESimSelected_(currentPageName)]]" restamp>
         <esim-flow-ui
             button-state="{{buttonState_}}"
             delegate="[[delegate]]"

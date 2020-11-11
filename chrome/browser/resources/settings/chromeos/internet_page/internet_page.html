@@ -1,5 +1,6 @@
 <link rel="import" href="chrome://resources/html/polymer.html">
 
+<link rel="import" href="chrome://resources/cr_components/chromeos/cellular_setup/cellular_types.html">
 <link rel="import" href="chrome://resources/cr_components/chromeos/network/mojo_interface_provider.html">
 <link rel="import" href="chrome://resources/cr_components/chromeos/network/network_listener_behavior.html">
 <link rel="import" href="chrome://resources/cr_components/chromeos/network/onc_mojo.html">
@@ -155,7 +156,8 @@
 
     <template is="dom-if" if="[[showCellularSetupDialog_]]" restamp>
       <os-settings-cellular-setup-dialog id="cellularSetupDialog"
-          on-close="onCloseCellularSetupDialog_">
+          on-close="onCloseCellularSetupDialog_"
+          page-name="[[cellularSetupDialogPageName_]]">
       </os-settings-cellular-setup-dialog>
     </template>
   </template>
