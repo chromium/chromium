@@ -26,11 +26,11 @@ bool IsAccessAllowedInternal(const base::FilePath& path,
   return true;
 #else
 
-  std::vector<base::FilePath> whitelist;
+  std::vector<base::FilePath> allowlist;
 #if defined(OS_CHROMEOS)
-  // Use a whitelist to only allow access to files residing in the list of
+  // Use an allowlist to only allow access to files residing in the list of
   // directories below.
-  static const base::FilePath::CharType* const kLocalAccessWhiteList[] = {
+  static const base::FilePath::CharType* const kLocalAccessAllowList[] = {
       "/home/chronos/user/Downloads",
       "/home/chronos/user/MyFiles",
       "/home/chronos/user/log",
@@ -44,19 +44,19 @@ bool IsAccessAllowedInternal(const base::FilePath& path,
 
   base::FilePath temp_dir;
   if (base::PathService::Get(base::DIR_TEMP, &temp_dir))
-    whitelist.push_back(temp_dir);
+    allowlist.push_back(temp_dir);
 
   // The actual location of "/home/chronos/user/Xyz" is the Xyz directory under
   // the profile path ("/home/chronos/user' is a hard link to current primary
   // logged in profile.) For the support of multi-profile sessions, we are
-  // switching to use explicit "$PROFILE_PATH/Xyz" path and here whitelist such
+  // switching to use explicit "$PROFILE_PATH/Xyz" path and here allow such
   // access.
   if (!profile_path.empty()) {
     const base::FilePath downloads = profile_path.AppendASCII("Downloads");
-    whitelist.push_back(downloads);
-    whitelist.push_back(profile_path.AppendASCII("MyFiles"));
+    allowlist.push_back(downloads);
+    allowlist.push_back(profile_path.AppendASCII("MyFiles"));
     const base::FilePath webrtc_logs = profile_path.AppendASCII("WebRTC Logs");
-    whitelist.push_back(webrtc_logs);
+    allowlist.push_back(webrtc_logs);
   }
 #elif defined(OS_ANDROID)
   // Access to files in external storage is allowed.
@@ -68,21 +68,22 @@ bool IsAccessAllowedInternal(const base::FilePath& path,
 
   auto all_download_dirs = base::android::GetAllPrivateDownloadsDirectories();
   for (const auto& dir : all_download_dirs)
-    whitelist.push_back(dir);
+    allowlist.push_back(dir);
 
-  // Whitelist of other allowed directories.
-  static const base::FilePath::CharType* const kLocalAccessWhiteList[] = {
-      "/sdcard", "/mnt/sdcard",
+  // allowlist of other allowed directories.
+  static const base::FilePath::CharType* const kLocalAccessAllowList[] = {
+      "/sdcard",
+      "/mnt/sdcard",
   };
 #endif
 
-  for (const auto* whitelisted_path : kLocalAccessWhiteList)
-    whitelist.push_back(base::FilePath(whitelisted_path));
+  for (const auto* allowlisted_path : kLocalAccessAllowList)
+    allowlist.push_back(base::FilePath(allowlisted_path));
 
-  for (const auto& whitelisted_path : whitelist) {
+  for (const auto& allowlisted_path : allowlist) {
     // base::FilePath::operator== should probably handle trailing separators.
-    if (whitelisted_path == path.StripTrailingSeparators() ||
-        whitelisted_path.IsParent(path)) {
+    if (allowlisted_path == path.StripTrailingSeparators() ||
+        allowlisted_path.IsParent(path)) {
       return true;
     }
   }
@@ -121,7 +122,7 @@ bool ChromeNetworkDelegate::IsAccessAllowed(
     const base::FilePath& absolute_path,
     const base::FilePath& profile_path) {
 #if defined(OS_ANDROID)
-  // Android's whitelist relies on symbolic links (ex. /sdcard is whitelisted
+  // Android's allowlist relies on symbolic links (ex. /sdcard is allowed
   // and commonly a symbolic link), thus do not check absolute paths.
   return IsAccessAllowedInternal(path, profile_path);
 #else
