@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/memory/scoped_refptr.h"
+#include "media/base/media_log.h"
 #include "media/gpu/media_gpu_export.h"
 #include "media/video/supported_video_decoder_config.h"
 
@@ -22,7 +23,6 @@ class GpuDriverBugWorkarounds;
 namespace media {
 
 class DmabufVideoFramePool;
-class MediaLog;
 class VideoDecoder;
 class VideoFrameConverter;
 
