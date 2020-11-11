@@ -4,13 +4,8 @@
 
 #include "chrome/browser/apps/digital_goods/digital_goods_impl.h"
 
-#include "base/optional.h"
-#include "chrome/browser/chromeos/apps/apk_web_app_service.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/web_applications/components/app_registrar.h"
-#include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/apps/digital_goods/util.h"
 #include "content/public/browser/render_frame_host.h"
-#include "content/public/browser/web_contents.h"
 
 namespace {
 
@@ -50,8 +45,8 @@ void DigitalGoodsImpl::GetDetails(const std::vector<std::string>& item_ids,
     return;
   }
 
-  const std::string package_name = GetTwaPackageName();
-  const std::string scope = GetScope();
+  const std::string package_name = apps::GetTwaPackageName(render_frame_host_);
+  const std::string scope = apps::GetScope(render_frame_host_);
   if (package_name.empty() || scope.empty()) {
     LogErrorState(package_name, scope);
     std::move(callback).Run(
@@ -75,8 +70,8 @@ void DigitalGoodsImpl::Acknowledge(const std::string& purchase_token,
     return;
   }
 
-  const std::string package_name = GetTwaPackageName();
-  const std::string scope = GetScope();
+  const std::string package_name = apps::GetTwaPackageName(render_frame_host_);
+  const std::string scope = apps::GetScope(render_frame_host_);
   if (package_name.empty() || scope.empty()) {
     LogErrorState(package_name, scope);
     std::move(callback).Run(
@@ -94,17 +89,17 @@ void DigitalGoodsImpl::ListPurchases(ListPurchasesCallback callback) {
   if (!digital_goods_service) {
     std::move(callback).Run(
         payments::mojom::BillingResponseCode::kClientAppUnavailable,
-        /* purchase_details_list = */ {});
+        /*purchase_details_list=*/{});
     return;
   }
 
-  const std::string package_name = GetTwaPackageName();
-  const std::string scope = GetScope();
+  const std::string package_name = apps::GetTwaPackageName(render_frame_host_);
+  const std::string scope = apps::GetScope(render_frame_host_);
   if (package_name.empty() || scope.empty()) {
     LogErrorState(package_name, scope);
     std::move(callback).Run(
         payments::mojom::BillingResponseCode::kClientAppUnavailable,
-        /* purchase_details_list = */ {});
+        /*purchase_details_list=*/{});
     return;
   }
 
@@ -119,42 +114,6 @@ DigitalGoodsImpl::DigitalGoodsImpl(content::RenderFrameHost* render_frame_host)
 arc::ArcDigitalGoodsBridge* DigitalGoodsImpl::GetArcDigitalGoodsBridge() {
   return arc::ArcDigitalGoodsBridge::GetForBrowserContext(
       render_frame_host_->GetBrowserContext());
-}
-
-std::string DigitalGoodsImpl::GetTwaPackageName() {
-  auto* apk_web_app_service = chromeos::ApkWebAppService::Get(
-      Profile::FromBrowserContext(render_frame_host_->GetBrowserContext()));
-
-  if (!apk_web_app_service) {
-    return "";
-  }
-
-  base::Optional<std::string> twa_package_name =
-      apk_web_app_service->GetPackageNameForWebApp(
-          content::WebContents::FromRenderFrameHost(render_frame_host_)
-              ->GetLastCommittedURL());
-
-  return twa_package_name.value_or("");
-}
-
-std::string DigitalGoodsImpl::GetScope() {
-  web_app::AppRegistrar& registrar =
-      web_app::WebAppProvider::Get(
-          Profile::FromBrowserContext(render_frame_host_->GetBrowserContext()))
-          ->registrar();
-  base::Optional<web_app::AppId> app_id = registrar.FindAppWithUrlInScope(
-      content::WebContents::FromRenderFrameHost(render_frame_host_)
-          ->GetLastCommittedURL());
-  if (!app_id) {
-    return "";
-  }
-
-  GURL scope = registrar.GetAppScope(app_id.value());
-  if (!scope.is_valid()) {
-    return "";
-  }
-
-  return scope.spec();
 }
 
 RENDER_DOCUMENT_HOST_USER_DATA_KEY_IMPL(DigitalGoodsImpl)

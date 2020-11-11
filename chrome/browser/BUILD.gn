@@ -2302,6 +2302,8 @@ static_library("browser") {
       "apps/digital_goods/digital_goods_factory_impl.h",
       "apps/digital_goods/digital_goods_impl.cc",
       "apps/digital_goods/digital_goods_impl.h",
+      "apps/digital_goods/util.cc",
+      "apps/digital_goods/util.h",
     ]
     deps += [
       "//chrome/app/theme:chrome_unscaled_resources_grit",

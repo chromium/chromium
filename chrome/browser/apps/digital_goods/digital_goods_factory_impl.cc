@@ -8,8 +8,15 @@
 
 #include "base/feature_list.h"
 #include "chrome/browser/apps/digital_goods/digital_goods_impl.h"
+#include "chrome/browser/apps/digital_goods/util.h"
 #include "components/payments/core/features.h"
 #include "components/payments/core/payments_experimental_features.h"
+
+namespace {
+
+constexpr char kSupportedPaymentMethod[] = "https://play.google.com/billing";
+
+}  // namespace
 
 namespace apps {
 
@@ -33,12 +40,21 @@ void DigitalGoodsFactoryImpl::CreateDigitalGoods(
           payments::features::kAppStoreBilling)) {
     std::move(callback).Run(
         payments::mojom::CreateDigitalGoodsResponseCode::kUnsupportedContext,
-        /* digital_goods = */ mojo::NullRemote());
+        /*digital_goods=*/mojo::NullRemote());
     return;
   }
 
-  // TODO(jshikaram): Check that it's a valid TWA (check the host was installed
-  // via the play store using ApkWebApp Service)
+  if (payment_method != kSupportedPaymentMethod) {
+    std::move(callback).Run(payments::mojom::CreateDigitalGoodsResponseCode::
+                                kUnsupportedPaymentMethod,
+                            /*digital_goods=*/mojo::NullRemote());
+  }
+
+  if (apps::GetTwaPackageName(render_frame_host_).empty()) {
+    std::move(callback).Run(
+        payments::mojom::CreateDigitalGoodsResponseCode::kUnsupportedContext,
+        /*digital_goods=*/mojo::NullRemote());
+  }
 
   // TODO(jshikaram): check with Android if there is a payment_method available.
   std::move(callback).Run(payments::mojom::CreateDigitalGoodsResponseCode::kOk,
