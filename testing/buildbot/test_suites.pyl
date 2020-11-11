@@ -1886,7 +1886,7 @@
           '--shard-timeout=500',
         ],
         'android_swarming': {
-          'shards': 10,
+          'shards': 20,
         },
         'desktop_args': [
           '--bot-mode',
