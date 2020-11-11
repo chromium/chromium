@@ -1564,6 +1564,8 @@ component("base") {
       "fuchsia/intl_profile_watcher.h",
       "fuchsia/process_context.cc",
       "fuchsia/process_context.h",
+      "fuchsia/scoped_fx_logger.cc",
+      "fuchsia/scoped_fx_logger.h",
       "fuchsia/scoped_service_binding.h",
       "fuchsia/scoped_service_publisher.h",
       "fuchsia/service_provider_impl.cc",
@@ -1619,10 +1621,12 @@ component("base") {
     public_deps += [
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.intl",
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.io",
+      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.logger",
       "//third_party/fuchsia-sdk/sdk/pkg/async",
       "//third_party/fuchsia-sdk/sdk/pkg/fdio",
       "//third_party/fuchsia-sdk/sdk/pkg/fidl_cpp",
       "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
+      "//third_party/fuchsia-sdk/sdk/pkg/syslog",
       "//third_party/fuchsia-sdk/sdk/pkg/vfs_cpp",
       "//third_party/fuchsia-sdk/sdk/pkg/zx",
     ]
