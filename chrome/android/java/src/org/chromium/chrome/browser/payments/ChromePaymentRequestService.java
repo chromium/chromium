@@ -30,8 +30,6 @@ import org.chromium.components.payments.PackageManagerDelegate;
 import org.chromium.components.payments.PaymentApp;
 import org.chromium.components.payments.PaymentAppService;
 import org.chromium.components.payments.PaymentAppType;
-import org.chromium.components.payments.PaymentDetailsConverter;
-import org.chromium.components.payments.PaymentDetailsConverter.MethodChecker;
 import org.chromium.components.payments.PaymentDetailsUpdateServiceHelper;
 import org.chromium.components.payments.PaymentFeatureList;
 import org.chromium.components.payments.PaymentHandlerHost;
@@ -69,7 +67,6 @@ import java.util.Set;
  * living in {@link PaymentRequestService}.
  */
 public class ChromePaymentRequestService implements BrowserPaymentRequest,
-                                                    PaymentDetailsConverter.MethodChecker,
                                                     PaymentUiService.Delegate, PaymentUIsObserver {
 
     // Null-check is necessary because retainers of ChromePaymentRequestService could still
@@ -475,19 +472,6 @@ public class ChromePaymentRequestService implements BrowserPaymentRequest,
             mJourneyLogger.setPaymentAppUkmSourceId(invokedPaymentApp.getUkmSourceId());
         }
         return paymentHandlerWebContents;
-    }
-
-    @Override
-    public boolean isInvokedInstrumentValidForPaymentMethodIdentifier(
-            String methodName, PaymentApp invokedPaymentApp) {
-        return invokedPaymentApp != null
-                && invokedPaymentApp.isValidForPaymentMethodData(methodName, null);
-    }
-
-    // Implement BrowserPaymentRequest:
-    @Override
-    public MethodChecker getMethodChecker() {
-        return this;
     }
 
     // Implement BrowserPaymentRequest:

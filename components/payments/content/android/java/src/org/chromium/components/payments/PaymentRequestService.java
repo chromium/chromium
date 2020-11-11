@@ -60,7 +60,7 @@ import java.util.Map;
 public class PaymentRequestService
         implements PaymentAppFactoryDelegate, PaymentAppFactoryParams,
                    PaymentRequestUpdateEventListener, PaymentApp.AbortCallback,
-                   PaymentApp.InstrumentDetailsCallback,
+                   PaymentApp.InstrumentDetailsCallback, PaymentDetailsConverter.MethodChecker,
                    PaymentResponseHelperInterface.PaymentResponseResultCallback {
     private static final String TAG = "PaymentRequestServ";
     /**
@@ -935,6 +935,14 @@ public class PaymentRequestService
         mBrowserPaymentRequest.triggerPaymentAppUiSkipIfApplicable();
     }
 
+    // Implements PaymentDetailsConverter.MethodChecker:
+    @Override
+    public boolean isInvokedInstrumentValidForPaymentMethodIdentifier(
+            String methodName, PaymentApp invokedPaymentApp) {
+        return invokedPaymentApp != null
+                && invokedPaymentApp.isValidForPaymentMethodData(methodName, null);
+    }
+
     /**
      * The component part of the {@link PaymentRequest#updateWith} implementation.
      * @param details The details that the merchant provides to update the payment request.
@@ -981,8 +989,7 @@ public class PaymentRequestService
             // updated price in its UI.
             mInvokedPaymentApp.updateWith(
                     PaymentDetailsConverter.convertToPaymentRequestDetailsUpdate(details,
-                            /*methodChecker=*/mBrowserPaymentRequest.getMethodChecker(),
-                            mInvokedPaymentApp));
+                            /*methodChecker=*/this, mInvokedPaymentApp));
         }
         mBrowserPaymentRequest.onPaymentDetailsUpdated(details, hasNotifiedInvokedPaymentApp);
     }

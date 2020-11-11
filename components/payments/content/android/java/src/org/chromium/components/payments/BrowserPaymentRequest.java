@@ -6,7 +6,6 @@ package org.chromium.components.payments;
 
 import androidx.annotation.Nullable;
 
-import org.chromium.components.payments.PaymentDetailsConverter.MethodChecker;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.payments.mojom.PaymentDetails;
 import org.chromium.payments.mojom.PaymentMethodData;
@@ -206,13 +205,5 @@ public interface BrowserPaymentRequest {
      */
     default boolean parseAndValidateDetailsFurtherIfNeeded(PaymentDetails details) {
         return true;
-    }
-
-    /**
-     * @return The {@link MethodChecker} that can check whether the invoked payment app is valid for
-     *         the given payment method identifier.
-     */
-    default MethodChecker getMethodChecker() {
-        return null;
     }
 }
