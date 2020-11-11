@@ -35,6 +35,7 @@ _DISABLED_ALWAYS = [
     "SwitchIntDef",  # Many C++ enums are not used at all in java.
     "UniqueConstants",  # Chromium enums allow aliases.
     "UnusedAttribute",  # Chromium apks have various minSdkVersion values.
+    "ObsoleteLintCustomCheck",  # We have no control over custom lint checks.
 ]
 
 # These checks are not useful for test targets and adds an unnecessary burden
@@ -61,6 +62,7 @@ _DISABLED_FOR_TESTS = [
 
 _RES_ZIP_DIR = 'RESZIPS'
 _SRCJAR_DIR = 'SRCJARS'
+_AAR_DIR = 'AARS'
 
 
 def _SrcRelative(path):
@@ -75,6 +77,8 @@ def _GenerateProjectFile(android_manifest,
                          classpath=None,
                          srcjar_sources=None,
                          resource_sources=None,
+                         custom_lint_jars=None,
+                         custom_annotation_zips=None,
                          android_sdk_version=None):
   project = ElementTree.Element('project')
   root = ElementTree.SubElement(project, 'root')
@@ -109,6 +113,14 @@ def _GenerateProjectFile(android_manifest,
     for resource_file in resource_sources:
       resource = ElementTree.SubElement(main_module, 'resource')
       resource.set('file', resource_file)
+  if custom_lint_jars:
+    for lint_jar in custom_lint_jars:
+      lint = ElementTree.SubElement(main_module, 'lint-checks')
+      lint.set('file', lint_jar)
+  if custom_annotation_zips:
+    for annotation_zip in custom_annotation_zips:
+      annotation = ElementTree.SubElement(main_module, 'annotations')
+      annotation.set('file', annotation_zip)
   return project
 
 
@@ -198,6 +210,7 @@ def _RunLint(lint_binary_path,
              classpath,
              cache_dir,
              android_sdk_version,
+             aars,
              srcjars,
              min_sdk_version,
              resource_sources,
@@ -254,6 +267,24 @@ def _RunLint(lint_binary_path,
     resource_sources.extend(
         build_utils.ExtractAll(resource_zip, path=resource_dir))
 
+  logging.info('Extracting aars')
+  aar_root_dir = os.path.join(lint_gen_dir, _AAR_DIR)
+  custom_lint_jars = []
+  custom_annotation_zips = []
+  if aars:
+    for aar in aars:
+      # Use relative source for aar files since they are not generated.
+      aar_dir = os.path.join(aar_root_dir,
+                             os.path.splitext(_SrcRelative(aar))[0])
+      shutil.rmtree(aar_dir, True)
+      os.makedirs(aar_dir)
+      aar_files = build_utils.ExtractAll(aar, path=aar_dir)
+      for f in aar_files:
+        if f.endswith('lint.jar'):
+          custom_lint_jars.append(f)
+        elif f.endswith('annotations.zip'):
+          custom_annotation_zips.append(f)
+
   logging.info('Extracting srcjars')
   srcjar_root_dir = os.path.join(lint_gen_dir, _SRCJAR_DIR)
   srcjar_sources = []
@@ -273,7 +304,8 @@ def _RunLint(lint_binary_path,
   project_file_root = _GenerateProjectFile(lint_android_manifest_path,
                                            android_sdk_root, cache_dir, sources,
                                            classpath, srcjar_sources,
-                                           resource_sources,
+                                           resource_sources, custom_lint_jars,
+                                           custom_annotation_zips,
                                            android_sdk_version)
 
   project_xml_path = os.path.join(lint_gen_dir, 'project.xml')
@@ -327,6 +359,7 @@ def _RunLint(lint_binary_path,
     end = time.time() - start
     logging.info('Lint command took %ss', end)
     if not is_debug:
+      shutil.rmtree(aar_root_dir, ignore_errors=True)
       shutil.rmtree(resource_root_dir, ignore_errors=True)
       shutil.rmtree(srcjar_root_dir, ignore_errors=True)
       os.unlink(project_xml_path)
@@ -370,6 +403,7 @@ def _ParseArgs(argv):
                       help='Treat all warnings as errors.')
   parser.add_argument('--java-sources',
                       help='File containing a list of java sources files.')
+  parser.add_argument('--aars', help='GN list of included aars.')
   parser.add_argument('--srcjars', help='GN list of included srcjars.')
   parser.add_argument('--manifest-path',
                       help='Path to original AndroidManifest.xml')
@@ -398,6 +432,7 @@ def _ParseArgs(argv):
 
   args = parser.parse_args(build_utils.ExpandFileArgs(argv))
   args.java_sources = build_utils.ParseGnList(args.java_sources)
+  args.aars = build_utils.ParseGnList(args.aars)
   args.srcjars = build_utils.ParseGnList(args.srcjars)
   args.resource_sources = build_utils.ParseGnList(args.resource_sources)
   args.extra_manifest_paths = build_utils.ParseGnList(args.extra_manifest_paths)
@@ -433,6 +468,7 @@ def main():
            args.classpath,
            args.cache_dir,
            args.android_sdk_version,
+           args.aars,
            args.srcjars,
            args.min_sdk_version,
            resource_sources,

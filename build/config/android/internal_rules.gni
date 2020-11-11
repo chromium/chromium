@@ -227,6 +227,13 @@ template("write_build_config") {
       _target_label,
     ]
 
+    if (defined(invoker.aar_path)) {
+      args += [
+        "--aar-path",
+        rebase_path(invoker.aar_path, root_build_dir),
+      ]
+    }
+
     if (defined(invoker.chromium_code) && !invoker.chromium_code) {
       # Default to chromium code if invoker did not pass anything.
       args += [ "--non-chromium-code" ]
@@ -1124,6 +1131,7 @@ if (enable_java_templates) {
           # Lint requires all source and all resource files to be passed in the
           # same invocation for checks like UnusedResources.
           "--java-sources=@FileArg($_rebased_build_config:deps_info:lint_java_sources)",
+          "--aars=@FileArg($_rebased_build_config:deps_info:lint_aars)",
           "--srcjars=@FileArg($_rebased_build_config:deps_info:lint_srcjars)",
           "--resource-sources=@FileArg($_rebased_build_config:deps_info:lint_resource_sources)",
           "--resource-zips=@FileArg($_rebased_build_config:deps_info:lint_resource_zips)",
@@ -3734,6 +3742,7 @@ if (enable_java_templates) {
                                "input_jars_paths",
                                "main_class",
                                "public_target_label",
+                               "aar_path",
                                "proguard_configs",
                                "proguard_enabled",
                                "proguard_mapping_path",
