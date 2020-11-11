@@ -557,6 +557,10 @@ void SingleThreadProxy::RequestBeginMainFrameNotExpected(bool new_state) {
   }
 }
 
+bool SingleThreadProxy::IsInSynchronousComposite() const {
+  return inside_synchronous_composite_;
+}
+
 void SingleThreadProxy::CompositeImmediately(base::TimeTicks frame_begin_time,
                                              bool raster) {
   TRACE_EVENT0("cc,benchmark", "SingleThreadProxy::CompositeImmediately");

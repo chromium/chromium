@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/synchronization/waitable_event.h"
 #include "base/time/default_tick_clock.h"
 #include "base/trace_event/trace_event.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
@@ -57,9 +58,13 @@ VideoFrameCompositor::GetUpdateSubmissionStateCallback() {
   return update_submission_state_callback_;
 }
 
-void VideoFrameCompositor::SetIsSurfaceVisible(bool is_visible) {
+void VideoFrameCompositor::SetIsSurfaceVisible(
+    bool is_visible,
+    base::WaitableEvent* done_event) {
   DCHECK(task_runner_->BelongsToCurrentThread());
   submitter_->SetIsSurfaceVisible(is_visible);
+  if (done_event)
+    done_event->Signal();
 }
 
 void VideoFrameCompositor::InitializeSubmitter() {

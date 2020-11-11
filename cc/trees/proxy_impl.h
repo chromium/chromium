@@ -6,6 +6,7 @@
 #define CC_TREES_PROXY_IMPL_H_
 
 #include <memory>
+#include <vector>
 
 #include "base/memory/weak_ptr.h"
 #include "cc/base/completion_event.h"
@@ -148,6 +149,7 @@ class CC_EXPORT ProxyImpl : public LayerTreeHostImplClient,
       base::TimeTicks time) override;
   void FrameIntervalUpdated(base::TimeDelta interval) override {}
   bool HasCustomPropertyAnimations() const override;
+  bool IsInSynchronousComposite() const override;
 
   DrawResult DrawInternal(bool forced_draw);
 

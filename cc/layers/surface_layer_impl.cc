@@ -5,8 +5,11 @@
 #include "cc/layers/surface_layer_impl.h"
 
 #include <stdint.h>
+#include <algorithm>
+#include <utility>
 
 #include "base/stl_util.h"
+#include "base/synchronization/waitable_event.h"
 #include "base/trace_event/traced_value.h"
 #include "cc/debug/debug_colors.h"
 #include "cc/layers/append_quads_data.h"
@@ -16,6 +19,26 @@
 #include "components/viz/common/quads/surface_draw_quad.h"
 
 namespace cc {
+
+// static
+std::unique_ptr<SurfaceLayerImpl> SurfaceLayerImpl::Create(
+    LayerTreeImpl* tree_impl,
+    int id,
+    UpdateSubmissionStateCB update_submission_state_callback) {
+  return base::WrapUnique(new SurfaceLayerImpl(
+      tree_impl, id, std::move(update_submission_state_callback)));
+}
+
+// static
+std::unique_ptr<SurfaceLayerImpl> SurfaceLayerImpl::Create(
+    LayerTreeImpl* tree_impl,
+    int id) {
+  return base::WrapUnique(new SurfaceLayerImpl(
+      tree_impl, id, base::BindRepeating([](bool, base::WaitableEvent* event) {
+        if (event)
+          event->Signal();
+      })));
+}
 
 SurfaceLayerImpl::SurfaceLayerImpl(
     LayerTreeImpl* tree_impl,
@@ -27,7 +50,7 @@ SurfaceLayerImpl::SurfaceLayerImpl(
 
 SurfaceLayerImpl::~SurfaceLayerImpl() {
   if (update_submission_state_callback_)
-    update_submission_state_callback_.Run(false);
+    update_submission_state_callback_.Run(false, nullptr);
 }
 
 std::unique_ptr<LayerImpl> SurfaceLayerImpl::CreateLayerImpl(
@@ -113,8 +136,19 @@ bool SurfaceLayerImpl::WillDraw(
   // compositor frames.
   if (will_draw_ != will_draw) {
     will_draw_ = will_draw;
-    if (update_submission_state_callback_)
-      update_submission_state_callback_.Run(will_draw);
+    if (update_submission_state_callback_) {
+      // If we're in synchronous composite mode, ensure that we finish running
+      // the update submission state callback. This is important to avoid race
+      // conditions in web_tests which results from a thread hop that happens in
+      // the callback.
+      if (layer_tree_impl()->IsInSynchronousComposite()) {
+        base::WaitableEvent event;
+        update_submission_state_callback_.Run(will_draw, &event);
+        event.Wait();
+      } else {
+        update_submission_state_callback_.Run(will_draw, nullptr);
+      }
+    }
   }
 
   return will_draw;

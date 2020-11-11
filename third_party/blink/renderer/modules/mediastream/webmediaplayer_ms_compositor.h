@@ -27,6 +27,7 @@
 
 namespace base {
 class SingleThreadTaskRunner;
+class WaitableEvent;
 }
 
 namespace gfx {
@@ -156,7 +157,7 @@ class MODULES_EXPORT WebMediaPlayerMSCompositor
   void InitializeSubmitter();
 
   // Signals the VideoFrameSubmitter to stop submitting frames.
-  void SetIsSurfaceVisible(bool);
+  void SetIsSurfaceVisible(bool, base::WaitableEvent*);
 
   // The use of std::vector here is OK because this method is bound into a
   // base::OnceCallback instance, and passed to media::VideoRendererAlgorithm

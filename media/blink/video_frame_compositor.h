@@ -25,6 +25,10 @@
 #include "third_party/blink/public/platform/web_video_frame_submitter.h"
 #include "ui/gfx/geometry/size.h"
 
+namespace base {
+class WaitableEvent;
+}
+
 namespace viz {
 class SurfaceId;
 }
@@ -177,7 +181,7 @@ class MEDIA_BLINK_EXPORT VideoFrameCompositor : public VideoRendererSink,
 
   // Signals the VideoFrameSubmitter to stop submitting frames. Sets whether the
   // video surface is visible within the view port.
-  void SetIsSurfaceVisible(bool is_visible);
+  void SetIsSurfaceVisible(bool is_visible, base::WaitableEvent* done_event);
 
   // Indicates whether the endpoint for the VideoFrame exists.
   bool IsClientSinkAvailable();

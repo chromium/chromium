@@ -246,6 +246,10 @@ void ProxyImpl::RequestBeginMainFrameNotExpected(bool new_state) {
   scheduler_->SetMainThreadWantsBeginMainFrameNotExpected(new_state);
 }
 
+bool ProxyImpl::IsInSynchronousComposite() const {
+  return false;
+}
+
 void ProxyImpl::NotifyReadyToCommitOnImpl(
     CompletionEvent* completion,
     LayerTreeHost* layer_tree_host,

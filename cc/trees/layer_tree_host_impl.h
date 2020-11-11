@@ -182,6 +182,11 @@ class LayerTreeHostImplClient {
       base::TimeDelta first_scroll_delay,
       base::TimeTicks first_scroll_timestamp) = 0;
 
+  // Returns true if the client is currently compositing synchronously. This is
+  // only true in tests, but some behavior needs to be synchronized in non-test
+  // code as a result.
+  virtual bool IsInSynchronousComposite() const = 0;
+
  protected:
   virtual ~LayerTreeHostImplClient() = default;
 };
@@ -805,6 +810,11 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   }
   DroppedFrameCounter* dropped_frame_counter_for_testing() {
     return &dropped_frame_counter_;
+  }
+
+  // Returns true if the client is currently compositing synchronously.
+  bool IsInSynchronousComposite() const {
+    return client_->IsInSynchronousComposite();
   }
 
  protected:

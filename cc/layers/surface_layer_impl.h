@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/synchronization/waitable_event.h"
 #include "cc/cc_export.h"
 #include "cc/layers/layer_impl.h"
 #include "components/viz/common/quads/surface_draw_quad.h"
@@ -18,24 +19,19 @@
 
 namespace cc {
 
-// This must match SurfaceLayer::UpdateSubmissionStateCB.
-using UpdateSubmissionStateCB = base::RepeatingCallback<void(bool is_visible)>;
+// This must match surface_layer.h's UpdateSubmissionStateCB.
+using UpdateSubmissionStateCB =
+    base::RepeatingCallback<void(bool is_visible, base::WaitableEvent*)>;
 
 class CC_EXPORT SurfaceLayerImpl : public LayerImpl {
  public:
   static std::unique_ptr<SurfaceLayerImpl> Create(
       LayerTreeImpl* tree_impl,
       int id,
-      UpdateSubmissionStateCB update_submission_state_callback) {
-    return base::WrapUnique(new SurfaceLayerImpl(
-        tree_impl, id, std::move(update_submission_state_callback)));
-  }
+      UpdateSubmissionStateCB update_submission_state_callback);
 
   static std::unique_ptr<SurfaceLayerImpl> Create(LayerTreeImpl* tree_impl,
-                                                  int id) {
-    return base::WrapUnique(
-        new SurfaceLayerImpl(tree_impl, id, base::BindRepeating([](bool) {})));
-  }
+                                                  int id);
 
   SurfaceLayerImpl(const SurfaceLayerImpl&) = delete;
   ~SurfaceLayerImpl() override;

@@ -725,6 +725,10 @@ class CC_EXPORT LayerTreeImpl {
     return host_impl_->DrawTransform();
   }
 
+  bool IsInSynchronousComposite() const {
+    return host_impl_->IsInSynchronousComposite();
+  }
+
   // These functions are used for plumbing DelegatedInkMetadata from blink
   // through the compositor and into viz via a compositor frame. They should
   // only be called after the JS API |updateInkTrailStartPoint| has been

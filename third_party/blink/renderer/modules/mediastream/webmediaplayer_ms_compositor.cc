@@ -10,6 +10,7 @@
 
 #include "base/hash/hash.h"
 #include "base/single_thread_task_runner.h"
+#include "base/synchronization/waitable_event.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -233,9 +234,13 @@ void WebMediaPlayerMSCompositor::InitializeSubmitter() {
   submitter_->Initialize(this, /* is_media_stream = */ true);
 }
 
-void WebMediaPlayerMSCompositor::SetIsSurfaceVisible(bool state) {
+void WebMediaPlayerMSCompositor::SetIsSurfaceVisible(
+    bool state,
+    base::WaitableEvent* done_event) {
   DCHECK(video_frame_compositor_task_runner_->BelongsToCurrentThread());
   submitter_->SetIsSurfaceVisible(state);
+  if (done_event)
+    done_event->Signal();
 }
 
 // TODO(https://crbug/879424): Rename, since it really doesn't enable

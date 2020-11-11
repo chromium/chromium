@@ -28,4 +28,8 @@ void FakeLayerTreeHostImplClient::NotifyReadyToDraw() {
   ready_to_draw_ = true;
 }
 
+bool FakeLayerTreeHostImplClient::IsInSynchronousComposite() const {
+  return is_synchronous_composite_;
+}
+
 }  // namespace cc

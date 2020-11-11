@@ -147,13 +147,46 @@ TEST_F(VideoFrameCompositorTest, InitialValues) {
 TEST_F(VideoFrameCompositorTest, SetIsSurfaceVisible) {
   auto cb = compositor()->GetUpdateSubmissionStateCallback();
 
-  EXPECT_CALL(*submitter_, SetIsSurfaceVisible(true));
-  cb.Run(true);
-  base::RunLoop().RunUntilIdle();
+  {
+    base::RunLoop run_loop;
+    EXPECT_CALL(*submitter_, SetIsSurfaceVisible(true));
+    cb.Run(true, nullptr);
+    base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
+                                                  run_loop.QuitClosure());
+    run_loop.Run();
+  }
 
-  EXPECT_CALL(*submitter_, SetIsSurfaceVisible(false));
-  cb.Run(false);
-  base::RunLoop().RunUntilIdle();
+  {
+    base::RunLoop run_loop;
+    EXPECT_CALL(*submitter_, SetIsSurfaceVisible(false));
+    cb.Run(false, nullptr);
+    base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
+                                                  run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
+  {
+    base::RunLoop run_loop;
+    base::WaitableEvent true_event;
+    EXPECT_CALL(*submitter_, SetIsSurfaceVisible(true));
+    cb.Run(true, &true_event);
+    base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
+                                                  run_loop.QuitClosure());
+    run_loop.Run();
+    EXPECT_TRUE(true_event.IsSignaled());
+  }
+
+  {
+    base::RunLoop run_loop;
+    base::WaitableEvent false_event;
+    EXPECT_CALL(*submitter_, SetIsSurfaceVisible(false));
+    cb.Run(false, &false_event);
+
+    base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
+                                                  run_loop.QuitClosure());
+    run_loop.Run();
+    EXPECT_TRUE(false_event.IsSignaled());
+  }
 }
 
 TEST_F(VideoFrameCompositorTest, SetIsPageVisible) {

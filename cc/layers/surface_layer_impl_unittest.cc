@@ -5,7 +5,10 @@
 #include "cc/layers/surface_layer_impl.h"
 
 #include <stddef.h>
+#include <utility>
 
+#include "base/test/bind.h"
+#include "base/threading/thread.h"
 #include "cc/layers/append_quads_data.h"
 #include "cc/test/layer_tree_impl_test_base.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -277,6 +280,88 @@ TEST(SurfaceLayerImplTest, GetEnclosingRectInTargetSpace) {
   // pixels.
   EXPECT_EQ(surface_layer_impl->GetScaledEnclosingRectInTargetSpace(1.33),
             surface_layer_impl->GetEnclosingRectInTargetSpace());
+}
+
+TEST(SurfaceLayerImplTest, WillDrawNotifiesSynchronouslyInCompositeImmediate) {
+  auto thread = std::make_unique<base::Thread>("VideoCompositor");
+  ASSERT_TRUE(thread->StartAndWaitForTesting());
+  scoped_refptr<base::TaskRunner> task_runner = thread->task_runner();
+
+  bool updated = false;
+  UpdateSubmissionStateCB callback = base::BindLambdaForTesting(
+      [task_runner, &updated](bool draw, base::WaitableEvent* done) {
+        // SurfaceLayerImpl also notifies the callback on destruction with draw
+        // = false. Ignore that call, since it's not really a part of the test.
+        if (!draw)
+          return;
+        // We're going to return control to the compositor, without signalling
+        // |done| for a bit.
+        task_runner->PostDelayedTask(
+            FROM_HERE,
+            base::BindOnce(
+                [](bool* updated, base::WaitableEvent* done) {
+                  *updated = true;
+                  if (done)
+                    done->Signal();
+                },
+                base::Unretained(&updated), base::Unretained(done)),
+            base::TimeDelta::FromMilliseconds(100));
+      });
+
+  // Note that this has to be created after the callback so that the layer is
+  // destroyed first (it will call the callback in the dtor).
+  LayerTreeImplTestBase impl;
+  impl.host_impl()->client()->set_is_synchronous_composite(true);
+
+  SurfaceLayerImpl* surface_layer_impl =
+      impl.AddLayer<SurfaceLayerImpl>(std::move(callback));
+  surface_layer_impl->SetBounds(gfx::Size(500, 500));
+  surface_layer_impl->SetDrawsContent(true);
+
+  CopyProperties(impl.root_layer(), surface_layer_impl);
+  impl.CalcDrawProps(gfx::Size(500, 500));
+
+  surface_layer_impl->WillDraw(DRAW_MODE_SOFTWARE, nullptr);
+
+  // This would not be set to true if WillDraw() completed before the task
+  // posted by `callback` runs and completes. That task is posted with a delay
+  // to ensure that the current thread really did wait.
+  EXPECT_TRUE(updated);
+}
+
+TEST(SurfaceLayerImplTest, WillDrawNotifiesAsynchronously) {
+  bool updated = false;
+  UpdateSubmissionStateCB callback = base::BindLambdaForTesting(
+      [&updated](bool draw, base::WaitableEvent* done) {
+        // SurfaceLayerImpl also notifies the callback on destruction with draw
+        // = false. Ignore that call, since it's not really a part of the test.
+        if (!draw)
+          return;
+
+        // Note that the event should always be null here, meaning we don't
+        // synchronize anything if posted across threads. This is because we're
+        // using threaded compositing in this test (see
+        // set_is_synchronous_composite(false) call below).
+        EXPECT_FALSE(done);
+        updated = true;
+      });
+
+  // Note that this has to be created after the callback so that the layer is
+  // destroyed first (it will call the callback in the dtor).
+  LayerTreeImplTestBase impl;
+  impl.host_impl()->client()->set_is_synchronous_composite(false);
+
+  SurfaceLayerImpl* surface_layer_impl =
+      impl.AddLayer<SurfaceLayerImpl>(std::move(callback));
+  surface_layer_impl->SetBounds(gfx::Size(500, 500));
+  surface_layer_impl->SetDrawsContent(true);
+
+  CopyProperties(impl.root_layer(), surface_layer_impl);
+  impl.CalcDrawProps(gfx::Size(500, 500));
+
+  surface_layer_impl->WillDraw(DRAW_MODE_SOFTWARE, nullptr);
+  // We should have called the callback, which would set `updated` to true.
+  EXPECT_TRUE(updated);
 }
 
 }  // namespace
