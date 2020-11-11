@@ -13,6 +13,7 @@
 #include "base/android/jni_string.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/files/scoped_file.h"
 
 using base::android::ConvertJavaStringToUTF8;
 using base::android::ConvertUTF8ToJavaString;
@@ -29,8 +30,8 @@ static jboolean JNI_VariationsSeedLoader_ParseAndSaveSeedProto(
   std::unique_ptr<AwVariationsSeed> seed =
       std::make_unique<AwVariationsSeed>(AwVariationsSeed::default_instance());
   std::string native_seed_path = ConvertJavaStringToUTF8(seed_path);
-  int seed_fd = open(native_seed_path.c_str(), O_RDONLY);
-  if (!seed->ParseFromFileDescriptor(seed_fd)) {
+  base::ScopedFD seed_fd(open(native_seed_path.c_str(), O_RDONLY));
+  if (!seed->ParseFromFileDescriptor(seed_fd.get())) {
     return false;
   }
 
