@@ -34,13 +34,13 @@
 #include <memory>
 #include <string>
 
+#include "base/test/metrics/histogram_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/web_data.h"
 #include "third_party/blink/public/platform/web_size.h"
 #include "third_party/blink/renderer/platform/graphics/bitmap_image_metrics.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_animation.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder_test_helpers.h"
-#include "third_party/blink/renderer/platform/testing/histogram_tester.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 
 namespace blink {
@@ -414,7 +414,7 @@ class ColorSpaceUMATest
 // Tests that the JPEG color space/subsampling is recorded correctly as a UMA
 // for a variety of images. When the decode fails, no UMA should be recorded.
 TEST_P(ColorSpaceUMATest, CorrectColorSpaceRecorded) {
-  HistogramTester histogram_tester;
+  base::HistogramTester histogram_tester;
   scoped_refptr<SharedBuffer> data =
       ReadFile(("/images/resources/" + GetParam().file).c_str());
   ASSERT_TRUE(data);

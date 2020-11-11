@@ -376,7 +376,8 @@ void ImageDecoderExternal::MaybeSatisfyPendingDecodes() {
         base::nullopt, options_));
     result->setDuration(
         decoder_->FrameDurationAtIndex(request->frame_index).InMicroseconds());
-    result->setOrientation(decoder_->Orientation().Orientation());
+    result->setOrientation(
+        static_cast<uint32_t>(decoder_->Orientation().Orientation()));
     result->setComplete(is_complete);
     request->result = result;
   }

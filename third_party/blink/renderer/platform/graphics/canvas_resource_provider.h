@@ -136,7 +136,7 @@ class PLATFORM_EXPORT CanvasResourceProvider
   // should be derived from the source of the bitmap data.
   virtual scoped_refptr<CanvasResource> ProduceCanvasResource() = 0;
   virtual scoped_refptr<StaticBitmapImage> Snapshot(
-      const ImageOrientation& = kDefaultImageOrientation) = 0;
+      const ImageOrientation& = ImageOrientationEnum::kDefault) = 0;
 
   // WebGraphicsContext3DProvider::DestructionObserver implementation.
   void OnContextDestroyed() override;

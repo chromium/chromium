@@ -978,7 +978,7 @@ void ImageBitmap::RasterizeImageOnBackgroundThread(
   PostCrossThreadTask(
       *task_runner, FROM_HERE,
       CrossThreadBindOnce(std::move(callback), std::move(skia_image),
-                          kDefaultImageOrientation));
+                          ImageOrientationEnum::kDefault));
 }
 
 ScriptPromise ImageBitmap::CreateAsync(ImageElementBase* image,

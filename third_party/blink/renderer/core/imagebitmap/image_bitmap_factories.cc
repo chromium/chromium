@@ -309,7 +309,7 @@ void DecodeImageOnDecoderThread(
       data_complete, alpha_option, ImageDecoder::kDefaultBitDepth,
       color_behavior);
   sk_sp<SkImage> frame;
-  ImageOrientationEnum orientation = kDefaultImageOrientation;
+  ImageOrientationEnum orientation = ImageOrientationEnum::kDefault;
   if (decoder) {
     orientation = decoder->Orientation().Orientation();
     frame = ImageBitmap::GetSkImageFromDecoder(std::move(decoder));

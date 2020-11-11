@@ -21,10 +21,10 @@ class PLATFORM_EXPORT UnacceleratedStaticBitmapImage final
   // The ImageOrientation should be derived from the source of the image data.
   static scoped_refptr<UnacceleratedStaticBitmapImage> Create(
       sk_sp<SkImage>,
-      ImageOrientation orientation = kDefaultImageOrientation);
+      ImageOrientation orientation = ImageOrientationEnum::kDefault);
   static scoped_refptr<UnacceleratedStaticBitmapImage> Create(
       PaintImage,
-      ImageOrientation orientation = kDefaultImageOrientation);
+      ImageOrientation orientation = ImageOrientationEnum::kDefault);
 
   bool CurrentFrameKnownToBeOpaque() override;
   IntSize Size() const override;

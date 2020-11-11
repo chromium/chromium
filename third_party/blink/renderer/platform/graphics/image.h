@@ -212,7 +212,7 @@ class PLATFORM_EXPORT Image : public ThreadSafeRefCounted<Image> {
   // Most image types have the default orientation. Only bitmap derived image
   // types need to override this method.
   virtual ImageOrientation CurrentFrameOrientation() const {
-    return kDefaultImageOrientation;
+    return ImageOrientationEnum::kDefault;
   }
 
   virtual IntSize CurrentFrameDensityCorrectedSize() const { return IntSize(); }

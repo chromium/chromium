@@ -32,6 +32,7 @@
 
 #include "base/bind.h"
 #include "base/feature_list.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "cc/paint/image_provider.h"
 #include "cc/paint/skia_paint_canvas.h"
@@ -45,7 +46,6 @@
 #include "third_party/blink/renderer/platform/graphics/image_observer.h"
 #include "third_party/blink/renderer/platform/graphics/test/mock_image_decoder.h"
 #include "third_party/blink/renderer/platform/scheduler/test/fake_task_runner.h"
-#include "third_party/blink/renderer/platform/testing/histogram_tester.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support_with_mock_scheduler.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
@@ -148,7 +148,14 @@ class BitmapImageTest : public testing::Test {
   void DestroyDecodedData() { image_->DestroyDecodedData(); }
   size_t FrameCount() { return image_->FrameCount(); }
 
+  void CreateImage() {
+    image_observer_ = MakeGarbageCollected<FakeImageObserver>();
+    image_ = BitmapImage::Create(image_observer_.Get());
+  }
+
   void LoadImage(const char* file_name) {
+    CreateImage();
+
     scoped_refptr<SharedBuffer> image_data = ReadFile(file_name);
     ASSERT_TRUE(image_data.get());
 
@@ -236,11 +243,6 @@ class BitmapImageTest : public testing::Test {
   scoped_refptr<SharedBuffer> Data() { return image_->Data(); }
 
  protected:
-  void SetUp() override {
-    image_observer_ = MakeGarbageCollected<FakeImageObserver>();
-    image_ = BitmapImage::Create(image_observer_.Get());
-  }
-
   Persistent<FakeImageObserver> image_observer_;
   scoped_refptr<BitmapImage> image_;
   ScopedTestingPlatformSupport<TestingPlatformSupportWithMaxDecodedBytes>
@@ -350,6 +352,7 @@ TEST_F(BitmapImageTest, ConstantImageIdForPartiallyLoadedImages) {
 
   // First partial load. Repeated calls for a PaintImage should have the same
   // image until the data changes or the decoded data is destroyed.
+  CreateImage();
   ASSERT_EQ(image_->SetData(partial_buffer, false), Image::kSizeAvailable);
   auto image1 = image_->PaintImageForCurrentFrame();
   auto image2 = image_->PaintImageForCurrentFrame();
@@ -604,10 +607,9 @@ class BitmapImageTestWithMockDecoder : public BitmapImageTest,
                                        public MockImageDecoderClient {
  public:
   void SetUp() override {
-    BitmapImageTest::SetUp();
-
     auto decoder = std::make_unique<MockImageDecoder>(this);
     decoder->SetSize(10u, 10u);
+    CreateImage();
     image_->SetDecoderForTesting(
         DeferredImageDecoder::CreateForTesting(std::move(decoder)));
   }
@@ -796,141 +798,87 @@ TEST_F(BitmapImageTestWithMockDecoder, PaintImageForStaticBitmapImage) {
                    .ShouldAnimate());
 }
 
-template <typename HistogramEnumType>
-struct HistogramTestParams {
-  HistogramTestParams(const char* filename, HistogramEnumType type, int count)
-      : filename(filename), type(type), count(count) {}
-  HistogramTestParams(const char* filename, HistogramEnumType type)
-      : HistogramTestParams(filename, type, 1) {}
-
-  const char* filename;
-  HistogramEnumType type;
-
-  // The number of events reported in the histogram when |type| is not
-  // kNoSamplesReported, otherwise is ignored.
-  int count;
-};
-
-template <typename HistogramEnumType>
-class BitmapHistogramTest : public BitmapImageTest,
-                            public testing::WithParamInterface<
-                                HistogramTestParams<HistogramEnumType>> {
- public:
-  // Flag to tell the test that no samples should have been reported in this
-  // case. Only useful when the parametric type is int.
-  static const int kNoSamplesReported = -1;
-
+class BitmapHistogramTest : public BitmapImageTest {
  protected:
-  void RunTest(const char* histogram_name) {
-    HistogramTester histogram_tester;
-    LoadImage(this->GetParam().filename);
-    if (std::is_same<HistogramEnumType, int>::value &&
-        this->GetParam().type == kNoSamplesReported) {
-      histogram_tester.ExpectTotalCount(histogram_name, 0);
-    } else {
-      histogram_tester.ExpectUniqueSample(histogram_name, this->GetParam().type,
-                                          this->GetParam().count);
-    }
+  template <typename MetricType>
+  void ExpectImageRecordsSample(const char* filename,
+                                const char* name,
+                                MetricType bucket,
+                                int count = 1) {
+    base::HistogramTester histogram_tester;
+    LoadImage(filename);
+    histogram_tester.ExpectUniqueSample(name, bucket, count);
   }
 };
 
-using DecodedImageTypeHistogramTest =
-    BitmapHistogramTest<BitmapImageMetrics::DecodedImageType>;
-
-TEST_P(DecodedImageTypeHistogramTest, ImageType) {
+TEST_F(BitmapHistogramTest, DecodedImageType) {
+  ExpectImageRecordsSample("green.jpg", "Blink.DecodedImageType",
+                           BitmapImageMetrics::DecodedImageType::kJPEG);
+  ExpectImageRecordsSample("palatted-color-png-gamma-one-color-profile.png",
+                           "Blink.DecodedImageType",
+                           BitmapImageMetrics::DecodedImageType::kPNG);
+  ExpectImageRecordsSample("animated-10color.gif", "Blink.DecodedImageType",
+                           BitmapImageMetrics::DecodedImageType::kGIF);
+  ExpectImageRecordsSample("webp-color-profile-lossy.webp",
+                           "Blink.DecodedImageType",
+                           BitmapImageMetrics::DecodedImageType::kWebP);
+  ExpectImageRecordsSample("wrong-frame-dimensions.ico",
+                           "Blink.DecodedImageType",
+                           BitmapImageMetrics::DecodedImageType::kICO);
+  ExpectImageRecordsSample("gracehopper.bmp", "Blink.DecodedImageType",
+                           BitmapImageMetrics::DecodedImageType::kBMP);
 #if BUILDFLAG(ENABLE_AV1_DECODER)
-  if (GetParam().type == BitmapImageMetrics::kImageAVIF &&
-      !base::FeatureList::IsEnabled(features::kAVIF)) {
-    return;
+  ExpectImageRecordsSample("red-full-ranged-8bpc.avif",
+                           "Blink.DecodedImageType",
+                           BitmapImageMetrics::DecodedImageType::kAVIF);
+#endif  // BUILDFLAG(ENABLE_AV1_DECODER)
+}
+
+TEST_F(BitmapHistogramTest, DecodedImageDensitySizeCorrectionDetected) {
+  ExpectImageRecordsSample("exif-resolution-none.jpg",
+                           "Blink.DecodedImage.DensitySizeCorrectionDetected",
+                           false);
+  ExpectImageRecordsSample("exif-resolution-invalid-cm.jpg",
+                           "Blink.DecodedImage.DensitySizeCorrectionDetected",
+                           false);
+  ExpectImageRecordsSample("exif-resolution-invalid-no-match.jpg",
+                           "Blink.DecodedImage.DensitySizeCorrectionDetected",
+                           false);
+  ExpectImageRecordsSample("exif-resolution-invalid-partial.jpg",
+                           "Blink.DecodedImage.DensitySizeCorrectionDetected",
+                           false);
+  ExpectImageRecordsSample("exif-resolution-no-change.jpg",
+                           "Blink.DecodedImage.DensitySizeCorrectionDetected",
+                           false);
+  ExpectImageRecordsSample("exif-resolution-valid-hires.jpg",
+                           "Blink.DecodedImage.DensitySizeCorrectionDetected",
+                           true);
+  ExpectImageRecordsSample("exif-resolution-valid-lores.jpg",
+                           "Blink.DecodedImage.DensitySizeCorrectionDetected",
+                           true);
+  ExpectImageRecordsSample("exif-resolution-valid-non-uniform.jpg",
+                           "Blink.DecodedImage.DensitySizeCorrectionDetected",
+                           true);
+}
+
+TEST_F(BitmapHistogramTest, DecodedImageDensityKiBWeighted_JpegDensity) {
+  // Test a 64x64 image, which should be too small to report any metrics.
+  {
+    base::HistogramTester histogram_tester;
+    LoadImage("rgb-jpeg-red.jpg");
+    histogram_tester.ExpectTotalCount(
+        "Blink.DecodedImage.JpegDensity.KiBWeighted", 0);
   }
-#endif
-  RunTest("Blink.DecodedImageType");
+
+  // 439x154, 23220 bytes --> 2.74 bpp, 23 KiB (rounded up)
+  ExpectImageRecordsSample("cropped_mandrill.jpg",
+                           "Blink.DecodedImage.JpegDensity.KiBWeighted", 274,
+                           23);
+
+  // 320x320, 74017 bytes --> 5.78, 72 KiB (rounded down)
+  ExpectImageRecordsSample("blue-wheel-srgb-color-profile.jpg",
+                           "Blink.DecodedImage.JpegDensity.KiBWeighted", 578,
+                           72);
 }
-
-const DecodedImageTypeHistogramTest::ParamType
-    kDecodedImageTypeHistogramTestparams[] = {
-        {"green.jpg", BitmapImageMetrics::kImageJPEG},
-        {"palatted-color-png-gamma-one-color-profile.png",
-         BitmapImageMetrics::kImagePNG},
-        {"animated-10color.gif", BitmapImageMetrics::kImageGIF},
-        {"webp-color-profile-lossy.webp", BitmapImageMetrics::kImageWebP},
-        {"wrong-frame-dimensions.ico", BitmapImageMetrics::kImageICO},
-        {"gracehopper.bmp", BitmapImageMetrics::kImageBMP},
-#if BUILDFLAG(ENABLE_AV1_DECODER)
-        {"red-full-ranged-8bpc.avif", BitmapImageMetrics::kImageAVIF},
-#endif
-};
-
-INSTANTIATE_TEST_SUITE_P(
-    DecodedImageTypeHistogramTest,
-    DecodedImageTypeHistogramTest,
-    testing::ValuesIn(kDecodedImageTypeHistogramTestparams));
-
-using DecodedImageOrientationHistogramTest =
-    BitmapHistogramTest<ImageOrientationEnum>;
-
-TEST_P(DecodedImageOrientationHistogramTest, ImageOrientation) {
-  RunTest("Blink.DecodedImage.Orientation");
-}
-
-const DecodedImageOrientationHistogramTest::ParamType
-    kDecodedImageOrientationHistogramTestParams[] = {
-        {"exif-orientation-1-ul.jpg", kOriginTopLeft},
-        {"exif-orientation-2-ur.jpg", kOriginTopRight},
-        {"exif-orientation-3-lr.jpg", kOriginBottomRight},
-        {"exif-orientation-4-lol.jpg", kOriginBottomLeft},
-        {"exif-orientation-5-lu.jpg", kOriginLeftTop},
-        {"exif-orientation-6-ru.jpg", kOriginRightTop},
-        {"exif-orientation-7-rl.jpg", kOriginRightBottom},
-        {"exif-orientation-8-llo.jpg", kOriginLeftBottom}};
-
-INSTANTIATE_TEST_SUITE_P(
-    DecodedImageOrientationHistogramTest,
-    DecodedImageOrientationHistogramTest,
-    testing::ValuesIn(kDecodedImageOrientationHistogramTestParams));
-
-using DecodedImageDensitySizeCorrectionDetectedHistogramTest =
-    BitmapHistogramTest<bool>;
-
-TEST_P(DecodedImageDensitySizeCorrectionDetectedHistogramTest, bool) {
-  RunTest("Blink.DecodedImage.DensitySizeCorrectionDetected");
-}
-
-const DecodedImageDensitySizeCorrectionDetectedHistogramTest::ParamType
-    kDecodedImageDensitySizeCorrectionHistogramTestParams[] = {
-        {"exif-resolution-none.jpg", false},
-        {"exif-resolution-invalid-cm.jpg", false},
-        {"exif-resolution-invalid-no-match.jpg", false},
-        {"exif-resolution-invalid-partial.jpg", false},
-        {"exif-resolution-no-change.jpg", false},
-        {"exif-resolution-valid-hires.jpg", true},
-        {"exif-resolution-valid-lores.jpg", true},
-        {"exif-resolution-valid-non-uniform.jpg", true}};
-
-INSTANTIATE_TEST_SUITE_P(
-    DecodedImageDensitySizeCorrectionDetectedHistogramTest,
-    DecodedImageDensitySizeCorrectionDetectedHistogramTest,
-    testing::ValuesIn(kDecodedImageDensitySizeCorrectionHistogramTestParams));
-
-using DecodedImageDensityHistogramTestKiBWeighted = BitmapHistogramTest<int>;
-
-TEST_P(DecodedImageDensityHistogramTestKiBWeighted, JpegDensity) {
-  RunTest("Blink.DecodedImage.JpegDensity.KiBWeighted");
-}
-
-const DecodedImageDensityHistogramTestKiBWeighted::ParamType
-    kDecodedImageDensityHistogramTestKiBWeightedParams[] = {
-        // 64x64 too small to report any metric
-        {"rgb-jpeg-red.jpg",
-         DecodedImageDensityHistogramTestKiBWeighted::kNoSamplesReported},
-        // 439x154, 23220 bytes --> 2.74 bpp, 23 KiB (rounded up)
-        {"cropped_mandrill.jpg", 274, 23},
-        // 320x320, 74017 bytes --> 5.78, 72 KiB (rounded down)
-        {"blue-wheel-srgb-color-profile.jpg", 578, 72}};
-
-INSTANTIATE_TEST_SUITE_P(
-    DecodedImageDensityHistogramTestKiBWeighted,
-    DecodedImageDensityHistogramTestKiBWeighted,
-    testing::ValuesIn(kDecodedImageDensityHistogramTestKiBWeightedParams));
 
 }  // namespace blink

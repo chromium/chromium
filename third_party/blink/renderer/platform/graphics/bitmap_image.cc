@@ -166,7 +166,7 @@ IntSize BitmapImage::PreferredDisplaySize() const {
 
 bool BitmapImage::HasDefaultOrientation() const {
   ImageOrientation orientation = CurrentFrameOrientation();
-  return orientation == kDefaultImageOrientation;
+  return orientation == ImageOrientationEnum::kDefault;
 }
 
 bool BitmapImage::GetHotSpot(IntPoint& hot_spot) const {
@@ -288,13 +288,13 @@ void BitmapImage::Draw(
   if (adjusted_src_rect.IsEmpty() || dst_rect.IsEmpty())
     return;  // Nothing to draw.
 
-  ImageOrientation orientation = kDefaultImageOrientation;
+  ImageOrientation orientation = ImageOrientationEnum::kDefault;
   if (should_respect_image_orientation == kRespectImageOrientation)
     orientation = CurrentFrameOrientation();
 
   PaintCanvasAutoRestore auto_restore(canvas, false);
   FloatRect adjusted_dst_rect = dst_rect;
-  if (orientation != kDefaultImageOrientation) {
+  if (orientation != ImageOrientationEnum::kDefault) {
     canvas->save();
 
     // ImageOrientation expects the origin to be at (0, 0)
@@ -349,9 +349,6 @@ bool BitmapImage::IsSizeAvailable() {
   if (size_available_ && HasVisibleImageSize(Size())) {
     BitmapImageMetrics::CountDecodedImageType(decoder_->FilenameExtension());
     if (decoder_->FilenameExtension() == "jpg") {
-      BitmapImageMetrics::CountImageOrientation(
-          decoder_->OrientationAtIndex(0).Orientation());
-
       IntSize correctedSize = decoder_->DensityCorrectedSizeAtIndex(0);
       BitmapImageMetrics::CountImageDensityCorrection(
         !correctedSize.IsEmpty() && correctedSize != decoder_->Size());
@@ -419,7 +416,7 @@ bool BitmapImage::CurrentFrameIsLazyDecoded() {
 
 ImageOrientation BitmapImage::CurrentFrameOrientation() const {
   return decoder_ ? decoder_->OrientationAtIndex(PaintImage::kDefaultFrameIndex)
-                  : kDefaultImageOrientation;
+                  : ImageOrientationEnum::kDefault;
 }
 
 IntSize BitmapImage::CurrentFrameDensityCorrectedSize() const {

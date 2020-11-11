@@ -27,11 +27,11 @@ class PLATFORM_EXPORT StaticBitmapImage : public Image {
   // The ImageOrientation should be derived from the source of the image data.
   static scoped_refptr<StaticBitmapImage> Create(
       PaintImage,
-      ImageOrientation = kDefaultImageOrientation);
+      ImageOrientation = ImageOrientationEnum::kDefault);
   static scoped_refptr<StaticBitmapImage> Create(
       sk_sp<SkData> data,
       const SkImageInfo&,
-      ImageOrientation = kDefaultImageOrientation);
+      ImageOrientation = ImageOrientationEnum::kDefault);
 
   StaticBitmapImage(ImageOrientation orientation) : orientation_(orientation) {}
 
@@ -93,7 +93,7 @@ class PLATFORM_EXPORT StaticBitmapImage : public Image {
     return orientation_;
   }
   bool HasDefaultOrientation() const override {
-    return orientation_ == kDefaultImageOrientation;
+    return orientation_ == ImageOrientationEnum::kDefault;
   }
 
   static base::CheckedNumeric<size_t> GetSizeInBytes(
@@ -122,7 +122,7 @@ class PLATFORM_EXPORT StaticBitmapImage : public Image {
   // static image is created and the underlying representations do not store
   // the information. The property is set at construction based on the source of
   // the image data.
-  ImageOrientation orientation_ = kDefaultImageOrientation;
+  ImageOrientation orientation_ = ImageOrientationEnum::kDefault;
 
   // The following property is here because the SkImage API doesn't expose the
   // info. It is applied to both UnacceleratedStaticBitmapImage and

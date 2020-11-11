@@ -552,6 +552,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Blink.DecodedImage.Orientation" enum="DecodedImageOrientation"
     expires_after="M81">
+  <obsolete>
+    Removed in M88.
+  </obsolete>
   <owner>andrescj@chromium.org</owner>
   <owner>rob.buis@samsung.org</owner>
   <summary>Image orientation inferred during decode.</summary>

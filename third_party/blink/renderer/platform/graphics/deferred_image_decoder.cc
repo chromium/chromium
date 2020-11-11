@@ -120,7 +120,7 @@ struct DeferredFrameData {
 
  public:
   DeferredFrameData()
-      : orientation_(kDefaultImageOrientation), is_received_(false) {}
+      : orientation_(ImageOrientationEnum::kDefault), is_received_(false) {}
 
   ImageOrientation orientation_;
   IntSize density_corrected_size_;
@@ -361,7 +361,7 @@ ImageOrientation DeferredImageDecoder::OrientationAtIndex(size_t index) const {
     return metadata_decoder_->Orientation();
   if (index < frame_data_.size())
     return frame_data_[index].orientation_;
-  return kDefaultImageOrientation;
+  return ImageOrientationEnum::kDefault;
 }
 
 IntSize DeferredImageDecoder::DensityCorrectedSizeAtIndex(size_t index) const {

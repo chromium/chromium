@@ -21,41 +21,23 @@ class PLATFORM_EXPORT BitmapImageMetrics {
   // Values synced with 'DecodedImageType' in
   // src/tools/metrics/histograms/enums.xml. These values are persisted to logs.
   // Entries should not be renumbered and numeric values should never be reused.
-  enum DecodedImageType {
-    kImageUnknown = 0,
-    kImageJPEG = 1,
-    kImagePNG = 2,
-    kImageGIF = 3,
-    kImageWebP = 4,
-    kImageICO = 5,
-    kImageBMP = 6,
-    kImageAVIF = 7,
-    kDecodedImageTypeEnumEnd = kImageAVIF + 1
-  };
-
-  // Values synced with 'Gamma' in src/tools/metrics/histograms/enums.xml. These
-  // values are persisted to logs. Entries should not be renumbered and numeric
-  // values should never be reused.
-  enum Gamma {
-    kGammaLinear = 0,
-    kGammaSRGB = 1,
-    kGamma2Dot2 = 2,
-    kGammaNonStandard = 3,
-    kGammaNull = 4,
-    kGammaFail = 5,
-    kGammaInvalid = 6,
-    kGammaExponent = 7,
-    kGammaTable = 8,
-    kGammaParametric = 9,
-    kGammaNamed = 10,
-    kGammaEnd = kGammaNamed + 1,
+  enum class DecodedImageType {
+    kUnknown = 0,
+    kJPEG = 1,
+    kPNG = 2,
+    kGIF = 3,
+    kWebP = 4,
+    kICO = 5,
+    kBMP = 6,
+    kAVIF = 7,
+    kMaxValue = kAVIF,
   };
 
   // Categories for the JPEG color space histogram. Synced with 'JpegColorSpace'
   // in src/tools/metrics/histograms/enums.xml. These values are persisted to
   // logs. Entries should not be renumbered and numeric values should never be
   // reused.
-  enum JpegColorSpace {
+  enum class JpegColorSpace {
     kUnknown = 0,
     kGrayscale = 1,
     kRGB = 2,
@@ -73,7 +55,6 @@ class PLATFORM_EXPORT BitmapImageMetrics {
 
   // |type| is the return value of ImageDecoder::FilenameExtension().
   static void CountDecodedImageType(const String& type);
-  static void CountImageOrientation(const ImageOrientationEnum);
   static void CountImageDensityCorrection(bool densityCorrectionPresent);
   // Report the JPEG compression density in 0.01 bits per pixel for an image
   // with a smallest side (width or length) of |image_min_side| and total size

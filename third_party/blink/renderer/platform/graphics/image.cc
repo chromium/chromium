@@ -117,7 +117,7 @@ PaintImage Image::ResizeAndOrientImage(
   IntSize size(image.width(), image.height());
   size.Scale(image_scale.Width(), image_scale.Height());
   AffineTransform transform;
-  if (orientation != kDefaultImageOrientation) {
+  if (orientation != ImageOrientationEnum::kDefault) {
     if (orientation.UsesWidthAsHeight())
       size = size.TransposedSize();
     transform *= orientation.TransformFromDefault(FloatSize(size));
@@ -369,7 +369,7 @@ SkBitmap Image::AsSkBitmapForCurrentFrame(
     ImageOrientation orientation =
         respect_image_orientation == kRespectImageOrientation
             ? bitmap_image->CurrentFrameOrientation()
-            : kDefaultImageOrientation;
+            : ImageOrientationEnum::kDefault;
 
     FloatSize image_scale(1, 1);
     if (density_corrected_size != bitmap_image->Size()) {
@@ -402,7 +402,7 @@ DarkModeImageCache* Image::GetDarkModeImageCache() {
 FloatRect Image::CorrectSrcRectForImageOrientation(FloatSize image_size,
                                                    FloatRect src_rect) const {
   ImageOrientation orientation = CurrentFrameOrientation();
-  DCHECK(orientation != kDefaultImageOrientation);
+  DCHECK(orientation != ImageOrientationEnum::kDefault);
   AffineTransform forward_map = orientation.TransformFromDefault(image_size);
   AffineTransform inverse_map = forward_map.Inverse();
   return inverse_map.MapRect(src_rect);

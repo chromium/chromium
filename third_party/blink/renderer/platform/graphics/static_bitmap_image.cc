@@ -58,7 +58,7 @@ void StaticBitmapImage::DrawHelper(
 
   cc::PaintCanvasAutoRestore auto_restore(canvas, false);
   FloatRect adjusted_dst_rect = dst_rect;
-  if (respect_orientation && orientation_ != kDefaultImageOrientation) {
+  if (respect_orientation && orientation_ != ImageOrientationEnum::kDefault) {
     canvas->save();
 
     // ImageOrientation expects the origin to be at (0, 0)
