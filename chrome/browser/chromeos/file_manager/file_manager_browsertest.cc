@@ -890,7 +890,8 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("showGridViewDownloads").DisableFilesNg(),
         TestCase("showGridViewDownloads").InGuestMode(),
         TestCase("showGridViewDownloads").FilesNg(),
-        TestCase("showGridViewDrive"),
+        // Flaky test: See crbug.com/1147306
+        // TestCase("showGridViewDrive"),
         TestCase("showGridViewButtonSwitches"),
         TestCase("showGridViewKeyboardSelectionA11y"),
         TestCase("showGridViewTitles").FilesNg(),
