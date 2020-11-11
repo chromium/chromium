@@ -777,47 +777,49 @@ bool H265Decoder::PerformDpbOperations(const H265SPS* sps) {
     }
     dpb_.Clear();
   } else {
-    dpb_.DeleteUnused();
-    // Get all pictures that haven't been outputted yet.
-    H265Picture::Vector not_outputted;
-    dpb_.AppendPendingOutputPics(&not_outputted);
+    int num_to_output;
+    do {
+      dpb_.DeleteUnused();
+      // Get all pictures that haven't been outputted yet.
+      H265Picture::Vector not_outputted;
+      dpb_.AppendPendingOutputPics(&not_outputted);
+      // Sort in output order.
+      std::sort(not_outputted.begin(), not_outputted.end(), POCAscCompare());
 
-    // Sort in output order.
-    std::sort(not_outputted.begin(), not_outputted.end(), POCAscCompare());
-
-    // Calculate how many pictures we need to output.
-    int num_to_output = 0;
-    int highest_tid = sps->sps_max_sub_layers_minus1;
-    num_to_output =
-        std::max(num_to_output, static_cast<int>(not_outputted.size()) -
-                                    sps->sps_max_num_reorder_pics[highest_tid]);
-    num_to_output = std::max(
-        num_to_output, static_cast<int>(dpb_.size()) -
-                           sps->sps_max_dec_pic_buffering_minus1[highest_tid]);
-
-    if (!num_to_output && dpb_.IsFull()) {
-      // This is wrong, we should try to output pictures until we can clear one
-      // from the DPB. This is better than failing, but we then may end up with
-      // something out of order.
-      DVLOG(1) << "Forcibly outputting pictures to make room in DPB.";
-      for (const auto& pic : not_outputted) {
-        num_to_output++;
-        if (pic->ref_ == H265Picture::kUnused)
-          break;
+      // Calculate how many pictures we need to output.
+      num_to_output = 0;
+      int highest_tid = sps->sps_max_sub_layers_minus1;
+      num_to_output = std::max(num_to_output,
+                               static_cast<int>(not_outputted.size()) -
+                                   sps->sps_max_num_reorder_pics[highest_tid]);
+      num_to_output =
+          std::max(num_to_output,
+                   static_cast<int>(dpb_.size()) -
+                       sps->sps_max_dec_pic_buffering_minus1[highest_tid]);
+      if (!num_to_output && dpb_.IsFull()) {
+        // This is wrong, we should try to output pictures until we can clear
+        // one from the DPB. This is better than failing, but we then may end up
+        // with something out of order.
+        DVLOG(1) << "Forcibly outputting pictures to make room in DPB.";
+        for (const auto& pic : not_outputted) {
+          num_to_output++;
+          if (pic->ref_ == H265Picture::kUnused)
+            break;
+        }
       }
-    }
 
-    // TODO(jkardatzke): There's another output picture requirement regarding
-    // the sps_max_latency_increase_plus1, but I have yet to understand how that
-    // could be larger than the sps_max_num_reorder_pics since the actual
-    // latency value used is the sum of both.
-    not_outputted.resize(num_to_output);
-    for (auto& pic : not_outputted) {
-      if (!OutputPic(pic))
-        return false;
-    }
+      // TODO(jkardatzke): There's another output picture requirement regarding
+      // the sps_max_latency_increase_plus1, but I have yet to understand how
+      // that could be larger than the sps_max_num_reorder_pics since the actual
+      // latency value used is the sum of both.
+      not_outputted.resize(num_to_output);
+      for (auto& pic : not_outputted) {
+        if (!OutputPic(pic))
+          return false;
+      }
 
-    dpb_.DeleteUnused();
+      dpb_.DeleteUnused();
+    } while (dpb_.IsFull() && num_to_output);
   }
 
   if (dpb_.IsFull()) {
