@@ -23,7 +23,7 @@ templateSlotted.innerHTML = createDeepShadowTemplateContent(hostChildren, true);
 
 const templateNested = document.createElement('template');
 document.body.appendChild(templateNested);
-templateSlotted.content.allowDeclarativeShadowDom = true;
+templateNested.content.allowDeclarativeShadowDom = true;
 templateNested.innerHTML = createDeepShadowTemplateContent(hostChildren, false);
 
 if (!templateSlotted.content.firstChild.shadowRoot) {
