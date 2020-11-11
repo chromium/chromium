@@ -7,6 +7,7 @@
 #include <string>
 #include <utility>
 
+#include "base/auto_reset.h"
 #include "base/bind.h"
 #include "base/bits.h"
 #include "base/command_line.h"
@@ -2606,6 +2607,15 @@ void SkiaRenderer::PrepareRenderPassOverlay(CALayerOverlay* overlay) {
   DCHECK(!current_canvas_);
   DCHECK(batched_quads_.empty());
   DCHECK(overlay->rpdq);
+
+  // The |current_render_pass| could be used for caculating destination
+  // color space or clipping rect for backdrop filters. However
+  // the |current_render_pass| is nullptr during ScheduleOverlays(), since all
+  // overlay quads should be in the |root_render_pass|, before they are promoted
+  // to overlays, so set the |root_render_pass| to the |current_render_pass|.
+  DCHECK(!current_frame()->current_render_pass);
+  base::AutoReset<const AggregatedRenderPass*> auto_reset(
+      &current_frame()->current_render_pass, current_frame()->root_render_pass);
 
   auto* const quad = overlay->rpdq;
   overlay->rpdq = nullptr;
