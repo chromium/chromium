@@ -133,7 +133,8 @@ public class AutofillAssistantClient {
         AutofillAssistantClientJni.get().startTriggerScript(mNativeClientAndroid, this, delegate,
                 initialUrl, experimentIds,
                 parameters.keySet().toArray(new String[parameters.size()]),
-                parameters.values().toArray(new String[parameters.size()]));
+                parameters.values().toArray(new String[parameters.size()]),
+                AutofillAssistantServiceInjector.getServiceRequestSenderToInject());
     }
 
     /**
@@ -408,7 +409,7 @@ public class AutofillAssistantClient {
                 boolean onboardingShown, long nativeService);
         void startTriggerScript(long nativeClientAndroid, AutofillAssistantClient caller,
                 AssistantTriggerScriptBridge delegate, String initialUrl, String experimentIds,
-                String[] parameterNames, String[] parameterValues);
+                String[] parameterNames, String[] parameterValues, long nativeServiceRequestSender);
         void onAccessToken(long nativeClientAndroid, AutofillAssistantClient caller,
                 boolean success, String accessToken);
         String getPrimaryAccountName(long nativeClientAndroid, AutofillAssistantClient caller);

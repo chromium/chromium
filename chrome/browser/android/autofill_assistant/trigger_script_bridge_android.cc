@@ -35,24 +35,37 @@ void TriggerScriptBridgeAndroid::StartTriggerScript(
     Client* client,
     const JavaParamRef<jobject>& jdelegate,
     const GURL& initial_url,
-    std::unique_ptr<TriggerContext> trigger_context) {
+    std::unique_ptr<TriggerContext> trigger_context,
+    jlong jservice_request_sender) {
   DCHECK(!java_object_);
   java_object_ = ScopedJavaGlobalRef<jobject>(jdelegate);
   Java_AssistantTriggerScriptBridge_setNativePtr(
       AttachCurrentThread(), java_object_, reinterpret_cast<intptr_t>(this));
+
+  std::unique_ptr<ServiceRequestSender> service_request_sender = nullptr;
+  if (jservice_request_sender) {
+    service_request_sender.reset(static_cast<ServiceRequestSender*>(
+        reinterpret_cast<void*>(jservice_request_sender)));
+    ClientSettingsProto::IntegrationTestSettings test_settings;
+    test_settings.set_disable_header_animations(true);
+    test_settings.set_disable_carousel_change_animations(true);
+    client_settings_.integration_test_settings = test_settings;
+  } else {
+    service_request_sender = std::make_unique<ServiceRequestSenderImpl>(
+        client->GetWebContents()->GetBrowserContext(),
+        /* access_token_fetcher = */ nullptr,
+        std::make_unique<NativeURLLoaderFactory>(),
+        ApiKeyFetcher().GetAPIKey(chrome::GetChannel()),
+        /* auth_enabled = */ false,
+        /* disable_auth_if_no_access_token = */ true);
+  }
 
   ServerUrlFetcher url_fetcher{ServerUrlFetcher::GetDefaultServerUrl()};
   trigger_script_coordinator_ = std::make_unique<TriggerScriptCoordinator>(
       client,
       WebController::CreateForWebContents(client->GetWebContents(),
                                           &client_settings_),
-      std::make_unique<ServiceRequestSenderImpl>(
-          client->GetWebContents()->GetBrowserContext(),
-          /* access_token_fetcher = */ nullptr,
-          std::make_unique<NativeURLLoaderFactory>(),
-          ApiKeyFetcher().GetAPIKey(chrome::GetChannel()),
-          /* auth_enabled = */ false,
-          /* disable_auth_if_no_access_token = */ true),
+      std::move(service_request_sender),
       url_fetcher.GetTriggerScriptsEndpoint(),
       std::make_unique<StaticTriggerConditions>(),
       std::make_unique<DynamicTriggerConditions>(), ukm::UkmRecorder::Get());

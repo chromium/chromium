@@ -33,7 +33,8 @@ class TriggerScriptBridgeAndroid : public TriggerScriptCoordinator::Observer {
   void StartTriggerScript(Client* client,
                           const base::android::JavaParamRef<jobject>& jdelegate,
                           const GURL& initial_url,
-                          std::unique_ptr<TriggerContext> trigger_context);
+                          std::unique_ptr<TriggerContext> trigger_context,
+                          jlong jservice_request_sender);
 
   // Stops and destroys the current trigger script, if any. Also disconnects the
   // java-side delegate.

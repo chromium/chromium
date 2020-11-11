@@ -60,7 +60,7 @@ public class AutofillAssistantArguments {
             return this;
         }
 
-        public Builder addParameter(String key, String value) {
+        public Builder addParameter(String key, Object value) {
             mArguments.mAutofillAssistantParameters.put(key, value);
             return this;
         }
@@ -247,6 +247,12 @@ public class AutofillAssistantArguments {
         return mInitialUrl;
     }
 
+    /** Whether the caller requests the client to fetch trigger scripts from a remote endpoint. */
+    public boolean requestsTriggerScript() {
+        return getBooleanParameter(PARAMETER_REQUEST_TRIGGER_SCRIPT);
+    }
+
+    /** Deprecated. Whether the caller provides script paths for lite scripts to execute. */
     public boolean containsTriggerScript() {
         return !TextUtils.isEmpty(getStringParameter(PARAMETER_TRIGGER_FIRST_TIME_USER))
                 && !TextUtils.isEmpty(getStringParameter(PARAMETER_TRIGGER_RETURNING_TIME_USER));

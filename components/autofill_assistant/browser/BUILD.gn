@@ -440,6 +440,8 @@ if (is_android) {
     sources = [
       "service/java_service.cc",
       "service/java_service.h",
+      "service/java_service_request_sender.cc",
+      "service/java_service_request_sender.h",
     ]
 
     deps = [

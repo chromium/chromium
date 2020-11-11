@@ -266,7 +266,6 @@ void TriggerScriptCoordinator::ShowTriggerScript(int index) {
       ukm_recorder_, client_->GetWebContents(),
       Metrics::LiteScriptShownToUser::LITE_SCRIPT_SHOWN_TO_USER);
   visible_trigger_script_ = index;
-  static_trigger_conditions_->set_is_first_time_user(false);
   auto proto = trigger_scripts_[index]->AsProto().user_interface();
   for (Observer& observer : observers_) {
     observer.OnTriggerScriptShown(proto);
@@ -278,6 +277,7 @@ void TriggerScriptCoordinator::HideTriggerScript() {
     return;
   }
 
+  static_trigger_conditions_->set_is_first_time_user(false);
   visible_trigger_script_ = -1;
   for (Observer& observer : observers_) {
     observer.OnTriggerScriptHidden();

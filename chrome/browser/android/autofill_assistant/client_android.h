@@ -71,7 +71,8 @@ class ClientAndroid : public Client,
       const base::android::JavaParamRef<jstring>& jinitial_url,
       const base::android::JavaParamRef<jstring>& jexperiment_ids,
       const base::android::JavaParamRef<jobjectArray>& jparameter_names,
-      const base::android::JavaParamRef<jobjectArray>& jparameter_values);
+      const base::android::JavaParamRef<jobjectArray>& jparameter_values,
+      jlong jservice_request_sender);
 
   base::android::ScopedJavaLocalRef<jstring> GetPrimaryAccountName(
       JNIEnv* env,

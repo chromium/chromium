@@ -178,12 +178,14 @@ void ClientAndroid::StartTriggerScript(
     const base::android::JavaParamRef<jstring>& jinitial_url,
     const base::android::JavaParamRef<jstring>& jexperiment_ids,
     const base::android::JavaParamRef<jobjectArray>& jparameter_names,
-    const base::android::JavaParamRef<jobjectArray>& jparameter_values) {
+    const base::android::JavaParamRef<jobjectArray>& jparameter_values,
+    jlong jservice_request_sender) {
   trigger_script_bridge_.StartTriggerScript(
       this, jdelegate,
       GURL(base::android::ConvertJavaStringToUTF8(env, jinitial_url)),
       CreateTriggerContext(env, jexperiment_ids, jparameter_names,
-                           jparameter_values));
+                           jparameter_values),
+      jservice_request_sender);
 }
 
 void ClientAndroid::OnJavaDestroyUI(

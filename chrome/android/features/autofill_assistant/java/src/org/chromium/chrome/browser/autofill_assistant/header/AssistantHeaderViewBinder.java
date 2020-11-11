@@ -174,6 +174,9 @@ class AssistantHeaderViewBinder
 
     private void showOrDismissBubble(AssistantHeaderModel model, ViewHolder view) {
         String message = model.get(AssistantHeaderModel.BUBBLE_MESSAGE);
+        if (message.isEmpty() && view.mTextBubble == null) {
+            return;
+        }
         if (message.isEmpty() && view.mTextBubble != null) {
             view.mTextBubble.dismiss();
             view.mTextBubble = null;
