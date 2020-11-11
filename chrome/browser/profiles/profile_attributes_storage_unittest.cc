@@ -33,6 +33,10 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/native_theme/native_theme.h"
 
+#if !defined(OS_ANDROID)
+#include "chrome/browser/ui/signin/profile_colors_util.h"
+#endif
+
 using ::testing::Mock;
 using ::testing::_;
 
@@ -938,13 +942,12 @@ TEST_F(ProfileAttributesStorageTest, ProfileThemeColors) {
   VerifyAndResetCallExpectations();
 
   EXPECT_EQ(entry->GetProfileThemeColors(),
-            ProfileAttributesEntry::GetDefaultProfileThemeColors(false));
+            GetDefaultProfileThemeColors(false));
 
   ui::NativeTheme::GetInstanceForNativeUi()->set_use_dark_colors(true);
-  EXPECT_EQ(entry->GetProfileThemeColors(),
-            ProfileAttributesEntry::GetDefaultProfileThemeColors(true));
+  EXPECT_EQ(entry->GetProfileThemeColors(), GetDefaultProfileThemeColors(true));
   EXPECT_NE(entry->GetProfileThemeColors(),
-            ProfileAttributesEntry::GetDefaultProfileThemeColors(false));
+            GetDefaultProfileThemeColors(false));
 
   ProfileThemeColors colors = {SK_ColorTRANSPARENT, SK_ColorBLACK,
                                SK_ColorWHITE};
@@ -963,7 +966,7 @@ TEST_F(ProfileAttributesStorageTest, ProfileThemeColors) {
   EXPECT_CALL(observer(), OnProfileThemeColorsChanged(profile_path)).Times(1);
   entry->SetProfileThemeColors(base::nullopt);
   EXPECT_EQ(entry->GetProfileThemeColors(),
-            ProfileAttributesEntry::GetDefaultProfileThemeColors(false));
+            GetDefaultProfileThemeColors(false));
   VerifyAndResetCallExpectations();
 }
 #endif

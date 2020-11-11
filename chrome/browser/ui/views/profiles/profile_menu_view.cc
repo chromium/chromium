@@ -466,7 +466,7 @@ void ProfileMenuView::BuildIdentity() {
 #endif
 
   SkColor background_color =
-      GetThemeColorsForProfile(profile).profile_highlight_color;
+      profile_attributes->GetProfileThemeColors().profile_highlight_color;
   if (account_info.has_value()) {
     SetProfileIdentityInfo(
         profile_name, background_color, edit_button_params,

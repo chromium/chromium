@@ -23,6 +23,7 @@
 class PrefRegistrySimple;
 class PrefService;
 class ProfileInfoCache;
+struct ProfileThemeColors;
 
 enum class SigninState {
   kNotSignedIn,
@@ -37,16 +38,6 @@ enum class NameForm {
 };
 
 enum class AccountCategory { kConsumer, kEnterprise };
-
-struct ProfileThemeColors {
-  SkColor profile_highlight_color;
-  SkColor default_avatar_fill_color;
-  SkColor default_avatar_stroke_color;
-
-  // Equality operators for testing.
-  bool operator==(const ProfileThemeColors& other) const;
-  bool operator!=(const ProfileThemeColors& other) const;
-};
 
 class ProfileAttributesEntry {
  public:
@@ -228,9 +219,6 @@ class ProfileAttributesEntry {
   FRIEND_TEST_ALL_PREFIXES(ProfileAttributesStorageTest, ProfileActiveTime);
   FRIEND_TEST_ALL_PREFIXES(ProfileAttributesStorageTest,
                            DownloadHighResAvatarTest);
-  FRIEND_TEST_ALL_PREFIXES(ProfileAttributesStorageTest, ProfileThemeColors);
-
-  static ProfileThemeColors GetDefaultProfileThemeColors(bool dark_mode);
 
   void Initialize(ProfileInfoCache* cache,
                   const base::FilePath& path,
