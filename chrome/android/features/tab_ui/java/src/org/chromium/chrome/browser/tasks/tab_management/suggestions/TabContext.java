@@ -216,6 +216,12 @@ public class TabContext {
         // add it to a group it belongs to.
         for (int i = 0; i < tabModelFilter.getCount(); i++) {
             Tab currentTab = tabModelFilter.getTabAt(i);
+
+            assert currentTab != null : "currentTab should not be null";
+
+            // TODO(crbug.com/1146320): Investigate the NPE.
+            if (currentTab == null) continue;
+
             List<Tab> relatedTabs = tabModelFilter.getRelatedTabList(currentTab.getId());
 
             if (relatedTabs.size() > 1) {
