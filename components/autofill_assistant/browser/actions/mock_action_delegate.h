@@ -326,6 +326,7 @@ class MockActionDelegate : public ActionDelegate {
                                             base::TimeDelta)>&));
 
   void WaitForDocumentReadyState(
+      base::TimeDelta max_wait_time,
       DocumentReadyState min_ready_state,
       const ElementFinder::Result& optional_frame_element,
       base::OnceCallback<void(const ClientStatus&,

@@ -932,6 +932,9 @@ message WebControllerErrorInfoProto {
     // Check that the element is on top, usually as part of clicking.
     // Fails with ELEMENT_NOT_ON_TOP.
     ON_TOP = 17;
+
+    // Waiting for a certain document ready state failed.
+    WAIT_FOR_DOCUMENT_READY_STATE = 18;
   }
 
   // The web-action that failed. This is usually a step in an execution chain

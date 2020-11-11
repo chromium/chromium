@@ -205,6 +205,8 @@ static_library("browser") {
     "value_util.cc",
     "value_util.h",
     "viewport_mode.h",
+    "wait_for_document_operation.cc",
+    "wait_for_document_operation.h",
     "web/check_on_top_worker.cc",
     "web/check_on_top_worker.h",
     "web/element_finder.cc",
@@ -370,6 +372,7 @@ source_set("unit_tests") {
     "user_data_util_unittest.cc",
     "user_model_unittest.cc",
     "value_util_unittest.cc",
+    "wait_for_document_operation_unittest.cc",
     "website_login_manager_impl_unittest.cc",
   ]
 

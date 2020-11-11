@@ -69,8 +69,9 @@ class ScriptExecutorTest : public testing::Test,
 
     // In this test, "tell" actions always succeed and "click" actions,
     // always fail. The following makes a click action fail.
-    ON_CALL(mock_web_controller_, OnWaitForDocumentToBecomeInteractive(_, _))
-        .WillByDefault(RunOnceCallback<1>(OkClientStatus()));
+    ON_CALL(mock_web_controller_, OnWaitForDocumentReadyState(_, _, _))
+        .WillByDefault(RunOnceCallback<2>(OkClientStatus(), DOCUMENT_COMPLETE,
+                                          base::TimeDelta::FromSeconds(0)));
     ON_CALL(mock_web_controller_, OnScrollIntoView(_, _))
         .WillByDefault(RunOnceCallback<1>(OkClientStatus()));
     ON_CALL(mock_web_controller_, WaitUntilElementIsStable(_, _))

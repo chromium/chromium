@@ -29,6 +29,7 @@
 
 namespace autofill_assistant {
 class UserModel;
+class WaitForDocumentOperation;
 
 // Class to execute an assistant script.
 class ScriptExecutor : public ActionDelegate,
@@ -240,6 +241,7 @@ class ScriptExecutor : public ActionDelegate,
       base::OnceCallback<void(const ClientStatus&, DocumentReadyState)>
           callback) override;
   void WaitForDocumentReadyState(
+      base::TimeDelta max_wait_time,
       DocumentReadyState min_ready_state,
       const ElementFinder::Result& optional_frame_element,
       base::OnceCallback<void(const ClientStatus&,
@@ -452,6 +454,11 @@ class ScriptExecutor : public ActionDelegate,
                      const base::string16& cvc);
   void OnChosen(UserAction::Callback callback,
                 std::unique_ptr<TriggerContext> context);
+  void OnWaitForDocumentReadyState(
+      base::OnceCallback<void(const ClientStatus&)> callback,
+      const ClientStatus& status,
+      DocumentReadyState ready_state,
+      base::TimeDelta wait_time);
   void OnResume();
 
   // Actions that can manipulate the UserActions should be interrupted, such
@@ -513,6 +520,7 @@ class ScriptExecutor : public ActionDelegate,
     NavigationInfoProto navigation_info;
 
     std::unique_ptr<WaitForDomOperation> wait_for_dom;
+    std::unique_ptr<WaitForDocumentOperation> wait_for_document;
 
     // Set to true when a direct action was used to trigger a UserAction within
     // a prompt. This is reported to the backend.

@@ -24,6 +24,7 @@ using ::base::test::RunOnceCallback;
 using ::testing::_;
 using ::testing::ElementsAre;
 using ::testing::Eq;
+using ::testing::InSequence;
 using ::testing::Invoke;
 using ::testing::IsEmpty;
 using ::testing::IsNull;
@@ -33,8 +34,7 @@ using ::testing::SizeIs;
 
 class WaitForDocumentActionTest : public testing::Test {
  public:
-  WaitForDocumentActionTest()
-      : task_env_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+  WaitForDocumentActionTest() {}
 
   void SetUp() override {
     ON_CALL(mock_action_delegate_, OnWaitForDocumentReadyState(_, _, _))
@@ -61,10 +61,6 @@ class WaitForDocumentActionTest : public testing::Test {
   }
 
  protected:
-  // task_env_ must be first to guarantee other field
-  // creation run in that environment.
-  base::test::TaskEnvironment task_env_;
-
   MockActionDelegate mock_action_delegate_;
   WaitForDocumentProto proto_;
   ProcessedActionProto processed_action_;
@@ -150,45 +146,28 @@ TEST_F(WaitForDocumentActionTest, WaitForDocumentInteractive) {
 }
 
 TEST_F(WaitForDocumentActionTest, WaitForDocumentInteractiveTimesOut) {
+  InSequence sequence;
+
   // The first time the document is reported as loading.
   EXPECT_CALL(mock_action_delegate_, OnGetDocumentReadyState(_, _))
       .WillOnce(RunOnceCallback<1>(OkClientStatus(), DOCUMENT_LOADING));
-
-  // The document doesn't become complete right away.
-  base::OnceCallback<void(const ClientStatus&, DocumentReadyState,
-                          base::TimeDelta)>
-      captured_callback;
   EXPECT_CALL(mock_action_delegate_,
               OnWaitForDocumentReadyState(DOCUMENT_COMPLETE, _, _))
-      .WillOnce(Invoke(
-          [&captured_callback](
-              DocumentReadyState min_ready_state,
-              const ElementFinder::Result& optional_frame_element,
-              base::OnceCallback<void(const ClientStatus&, DocumentReadyState,
-                                      base::TimeDelta)>& callback) {
-            captured_callback = std::move(callback);
-          }));
+      .WillOnce(RunOnceCallback<2>(ClientStatus(TIMED_OUT),
+                                   DOCUMENT_UNKNOWN_READY_STATE,
+                                   base::TimeDelta::FromSeconds(0)));
+  // The second time the document is reported interactive.
+  EXPECT_CALL(mock_action_delegate_, OnGetDocumentReadyState(_, _))
+      .WillOnce(RunOnceCallback<1>(OkClientStatus(), DOCUMENT_INTERACTIVE));
 
   proto_.set_timeout_ms(1000);
   proto_.set_min_ready_state(DOCUMENT_COMPLETE);
   Run();
-
-  // 1s afterwards, the document has become interactive, but not complete. The
-  // action times out and reports that.
-  EXPECT_CALL(mock_action_delegate_, OnGetDocumentReadyState(_, _))
-      .WillOnce(RunOnceCallback<1>(OkClientStatus(), DOCUMENT_INTERACTIVE));
-  task_env_.FastForwardBy(base::TimeDelta::FromSeconds(1));
-
   EXPECT_EQ(TIMED_OUT, processed_action_.status());
   EXPECT_EQ(DOCUMENT_LOADING,
             processed_action_.wait_for_document_result().start_ready_state());
   EXPECT_EQ(DOCUMENT_INTERACTIVE,
             processed_action_.wait_for_document_result().end_ready_state());
-
-  // This callback should be ignored. It's too late. This should not crash.
-  std::move(captured_callback)
-      .Run(OkClientStatus(), DOCUMENT_COMPLETE,
-           base::TimeDelta::FromSeconds(0));
 }
 
 TEST_F(WaitForDocumentActionTest, CheckDocumentInFrame) {

@@ -34,13 +34,12 @@ class WaitForDocumentAction : public Action {
   void OnWaitForStartState(const ClientStatus& status,
                            DocumentReadyState current_state,
                            base::TimeDelta wait_time);
-  void OnTimeout(base::TimeTicks wait_time_start);
-  void OnTimeoutInState(const ClientStatus& status,
+  void OnTimeoutInState(const ClientStatus& original_status,
+                        const ClientStatus& status,
                         DocumentReadyState end_state);
   void SendResult(const ClientStatus& status, DocumentReadyState end_state);
 
   ProcessActionCallback callback_;
-  base::OneShotTimer timer_;
   std::unique_ptr<ElementFinder::Result> optional_frame_element_;
   base::WeakPtrFactory<WaitForDocumentAction> weak_ptr_factory_{this};
 

@@ -34,14 +34,6 @@ class MockWebController : public WebController {
                void(const Selector& selector,
                     ElementFinder::Callback& callback));
 
-  void WaitForDocumentToBecomeInteractive(
-      const ElementFinder::Result& element,
-      base::OnceCallback<void(const ClientStatus&)> callback) override {
-    OnWaitForDocumentToBecomeInteractive(element, callback);
-  }
-  MOCK_METHOD2(OnWaitForDocumentToBecomeInteractive,
-               void(const ElementFinder::Result&,
-                    base::OnceCallback<void(const ClientStatus&)>& callback));
   void ScrollIntoView(
       const ElementFinder::Result& element,
       base::OnceCallback<void(const ClientStatus&)> callback) override {

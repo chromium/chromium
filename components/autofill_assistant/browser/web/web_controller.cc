@@ -166,13 +166,6 @@ const char* const kGetOuterHtmlsScript =
 
 const char* const kGetElementTagScript = "function () { return this.tagName; }";
 
-// Javascript code to query whether the document is ready for interact.
-const char* const kIsDocumentReadyForInteract =
-    R"(function () {
-      return document.readyState == 'interactive'
-          || document.readyState == 'complete';
-    })";
-
 // Javascript code to click on an element.
 const char* const kClickElementScript =
     R"(function (selector) {
@@ -412,80 +405,6 @@ void WebController::ScrollIntoView(
           base::BindOnce(&DecorateWebControllerStatus,
                          WebControllerErrorInfoProto::SCROLL_INTO_VIEW,
                          std::move(callback))));
-}
-
-void WebController::WaitForDocumentToBecomeInteractive(
-    const ElementFinder::Result& element,
-    base::OnceCallback<void(const ClientStatus&)> callback) {
-  InternalWaitForDocumentToBecomeInteractive(
-      settings_->document_ready_check_count, element.object_id,
-      element.node_frame_id,
-      base::BindOnce(&WebController::OnWaitForDocumentToBecomeInteractive,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-}
-
-void WebController::InternalWaitForDocumentToBecomeInteractive(
-    int remaining_rounds,
-    const std::string& object_id,
-    const std::string& node_frame_id,
-    base::OnceCallback<void(bool)> callback) {
-  devtools_client_->GetRuntime()->CallFunctionOn(
-      runtime::CallFunctionOnParams::Builder()
-          .SetObjectId(object_id)
-          .SetFunctionDeclaration(std::string(kIsDocumentReadyForInteract))
-          .SetReturnByValue(true)
-          .Build(),
-      node_frame_id,
-      base::BindOnce(
-          &WebController::OnInternalWaitForDocumentToBecomeInteractive,
-          weak_ptr_factory_.GetWeakPtr(), remaining_rounds, object_id,
-          node_frame_id, std::move(callback)));
-}
-
-void WebController::OnInternalWaitForDocumentToBecomeInteractive(
-    int remaining_rounds,
-    const std::string& object_id,
-    const std::string& node_frame_id,
-    base::OnceCallback<void(bool)> callback,
-    const DevtoolsClient::ReplyStatus& reply_status,
-    std::unique_ptr<runtime::CallFunctionOnResult> result) {
-  ClientStatus status =
-      CheckJavaScriptResult(reply_status, result.get(), __FILE__, __LINE__);
-  if (!status.ok() || remaining_rounds <= 0) {
-    VLOG(1) << __func__
-            << " Failed to wait for the document to become interactive with "
-               "remaining_rounds: "
-            << remaining_rounds;
-    std::move(callback).Run(false);
-    return;
-  }
-
-  bool ready;
-  if (SafeGetBool(result->GetResult(), &ready) && ready) {
-    std::move(callback).Run(true);
-    return;
-  }
-
-  content::GetUIThreadTaskRunner({})->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(&WebController::InternalWaitForDocumentToBecomeInteractive,
-                     weak_ptr_factory_.GetWeakPtr(), --remaining_rounds,
-                     object_id, node_frame_id, std::move(callback)),
-      settings_->document_ready_check_interval);
-}
-
-void WebController::OnWaitForDocumentToBecomeInteractive(
-    base::OnceCallback<void(const ClientStatus&)> callback,
-    bool result) {
-  if (!result) {
-    ClientStatus error_status(TIMED_OUT);
-    FillWebControllerErrorInfo(
-        WebControllerErrorInfoProto::WAIT_FOR_DOCUMENT_TO_BECOME_INTERACTIVE,
-        &error_status);
-    std::move(callback).Run(error_status);
-    return;
-  }
-  std::move(callback).Run(OkClientStatus());
 }
 
 void WebController::CheckOnTop(
@@ -779,8 +698,12 @@ void WebController::OnWaitForDocumentReadyState(
     std::unique_ptr<runtime::EvaluateResult> result) {
   ClientStatus status =
       CheckJavaScriptResult(reply_status, result.get(), __FILE__, __LINE__);
-  VLOG_IF(1, !status.ok()) << __func__
-                           << " Failed to get document ready state.";
+  if (!status.ok()) {
+    VLOG(1) << __func__ << " Failed to get document ready state.";
+    FillWebControllerErrorInfo(
+        WebControllerErrorInfoProto::WAIT_FOR_DOCUMENT_READY_STATE, &status);
+  }
+
   int ready_state;
   SafeGetIntValue(result->GetResult(), &ready_state);
   std::move(callback).Run(status, static_cast<DocumentReadyState>(ready_state),

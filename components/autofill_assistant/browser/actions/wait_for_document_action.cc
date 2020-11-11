@@ -92,12 +92,8 @@ void WaitForDocumentAction::OnGetStartState(const ClientStatus& status,
     return;
   }
 
-  timer_.Start(
-      FROM_HERE, timeout,
-      base::BindOnce(&WaitForDocumentAction::OnTimeout,
-                     weak_ptr_factory_.GetWeakPtr(), base::TimeTicks::Now()));
   delegate_->WaitForDocumentReadyState(
-      proto_.wait_for_document().min_ready_state(),
+      timeout, proto_.wait_for_document().min_ready_state(),
       optional_frame_element_ ? *optional_frame_element_
                               : ElementFinder::Result(),
       base::BindOnce(&WaitForDocumentAction::OnWaitForStartState,
@@ -109,28 +105,26 @@ void WaitForDocumentAction::OnWaitForStartState(
     DocumentReadyState current_state,
     base::TimeDelta wait_time) {
   action_stopwatch_.TransferToWaitTime(wait_time);
+
+  if (status.proto_status() == TIMED_OUT) {
+    delegate_->GetDocumentReadyState(
+        optional_frame_element_ ? *optional_frame_element_
+                                : ElementFinder::Result(),
+        base::BindOnce(&WaitForDocumentAction::OnTimeoutInState,
+                       weak_ptr_factory_.GetWeakPtr(), status));
+    return;
+  }
+
   SendResult(status, current_state);
 }
 
-void WaitForDocumentAction::OnTimeout(base::TimeTicks wait_time_start) {
-  // We've already returned successfully.
-  if (!callback_)
-    return;
-
-  action_stopwatch_.TransferToWaitTime(base::TimeTicks::Now() -
-                                       wait_time_start);
-  delegate_->GetDocumentReadyState(
-      optional_frame_element_ ? *optional_frame_element_
-                              : ElementFinder::Result(),
-      base::BindOnce(&WaitForDocumentAction::OnTimeoutInState,
-                     weak_ptr_factory_.GetWeakPtr()));
-}
-
-void WaitForDocumentAction::OnTimeoutInState(const ClientStatus& status,
-                                             DocumentReadyState end_state) {
+void WaitForDocumentAction::OnTimeoutInState(
+    const ClientStatus& original_status,
+    const ClientStatus& status,
+    DocumentReadyState end_state) {
   DVLOG_IF(1, !status.ok())
       << __func__ << ": cannot report end_state because of " << status;
-  SendResult(ClientStatus(TIMED_OUT), end_state);
+  SendResult(original_status, end_state);
 }
 
 void WaitForDocumentAction::SendResult(const ClientStatus& status,

@@ -114,6 +114,7 @@ class ActionDelegate {
       base::OnceCallback<void(const ClientStatus&)> callback) = 0;
 
   // Wait for the |element|'s document to become interactive.
+  // Note: This is a legacy method, use WaitForDocumentReadyState instead.
   virtual void WaitForDocumentToBecomeInteractive(
       const ElementFinder::Result& element,
       base::OnceCallback<void(const ClientStatus&)> callback) = 0;
@@ -334,6 +335,7 @@ class ActionDelegate {
   // |min_ready_state| in |optional_frame_element| or, if it is empty, in the
   // main document.
   virtual void WaitForDocumentReadyState(
+      base::TimeDelta max_wait_time,
       DocumentReadyState min_ready_state,
       const ElementFinder::Result& optional_frame_element,
       base::OnceCallback<void(const ClientStatus&,

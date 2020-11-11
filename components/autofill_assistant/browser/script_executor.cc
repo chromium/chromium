@@ -24,6 +24,7 @@
 #include "components/autofill_assistant/browser/self_delete_full_card_requester.h"
 #include "components/autofill_assistant/browser/service/service.h"
 #include "components/autofill_assistant/browser/trigger_context.h"
+#include "components/autofill_assistant/browser/wait_for_document_operation.h"
 #include "components/autofill_assistant/browser/web/element_finder.h"
 #include "components/autofill_assistant/browser/web/web_controller.h"
 #include "components/strings/grit/components_strings.h"
@@ -331,8 +332,12 @@ void ScriptExecutor::FindAllElements(const Selector& selector,
 void ScriptExecutor::WaitForDocumentToBecomeInteractive(
     const ElementFinder::Result& element,
     base::OnceCallback<void(const ClientStatus&)> callback) {
-  delegate_->GetWebController()->WaitForDocumentToBecomeInteractive(
-      element, std::move(callback));
+  WaitForDocumentReadyState(
+      delegate_->GetSettings().document_ready_check_count *
+          delegate_->GetSettings().document_ready_check_interval,
+      DOCUMENT_INTERACTIVE, element,
+      base::BindOnce(&ScriptExecutor::OnWaitForDocumentReadyState,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void ScriptExecutor::ScrollIntoView(
@@ -714,13 +719,25 @@ void ScriptExecutor::GetDocumentReadyState(
 }
 
 void ScriptExecutor::WaitForDocumentReadyState(
+    base::TimeDelta max_wait_time,
     DocumentReadyState min_ready_state,
     const ElementFinder::Result& optional_frame_element,
     base::OnceCallback<void(const ClientStatus&,
                             DocumentReadyState,
                             base::TimeDelta)> callback) {
-  delegate_->GetWebController()->WaitForDocumentReadyState(
-      optional_frame_element, min_ready_state, std::move(callback));
+  current_action_data_.wait_for_document =
+      std::make_unique<WaitForDocumentOperation>(
+          delegate_, max_wait_time, min_ready_state, optional_frame_element,
+          std::move(callback));
+  current_action_data_.wait_for_document->Run();
+}
+
+void ScriptExecutor::OnWaitForDocumentReadyState(
+    base::OnceCallback<void(const ClientStatus&)> callback,
+    const ClientStatus& status,
+    DocumentReadyState ready_state,
+    base::TimeDelta wait_time) {
+  std::move(callback).Run(status);
 }
 
 void ScriptExecutor::LoadURL(const GURL& url) {

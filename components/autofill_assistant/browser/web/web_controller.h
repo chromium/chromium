@@ -92,12 +92,6 @@ class WebController {
       const ElementFinder::Result& element,
       base::OnceCallback<void(const ClientStatus&)> callback);
 
-  // Wait for the |element|'s document to become interactive. This runs for
-  // a predefined number of turns.
-  virtual void WaitForDocumentToBecomeInteractive(
-      const ElementFinder::Result& element,
-      base::OnceCallback<void(const ClientStatus&)> callback);
-
   // Perform a mouse left button click or a touch tap on the |element|
   // return the result through callback.
   virtual void ClickOrTapElement(
@@ -325,9 +319,6 @@ class WebController {
                               const std::vector<std::string>&)> callback,
       const DevtoolsClient::ReplyStatus& reply_status,
       std::unique_ptr<runtime::CallFunctionOnResult> result);
-  void OnWaitForDocumentToBecomeInteractive(
-      base::OnceCallback<void(const ClientStatus&)> callback,
-      bool result);
   void OnCheckOnTop(CheckOnTopWorker* worker,
                     base::OnceCallback<void(const ClientStatus&)> callback,
                     const ClientStatus& status);
@@ -432,19 +423,6 @@ class WebController {
       autofill_assistant::input::DispatchKeyEventType type,
       const UChar32 codepoint);
 
-  // Waits for the document.readyState to be 'interactive' or 'complete'.
-  void InternalWaitForDocumentToBecomeInteractive(
-      int remaining_rounds,
-      const std::string& object_id,
-      const std::string& node_frame_id,
-      base::OnceCallback<void(bool)> callback);
-  void OnInternalWaitForDocumentToBecomeInteractive(
-      int remaining_rounds,
-      const std::string& object_id,
-      const std::string& node_frame_id,
-      base::OnceCallback<void(bool)> callback,
-      const DevtoolsClient::ReplyStatus& reply_status,
-      std::unique_ptr<runtime::CallFunctionOnResult> result);
   void OnWaitForDocumentReadyState(
       base::OnceCallback<void(const ClientStatus&,
                               DocumentReadyState,
