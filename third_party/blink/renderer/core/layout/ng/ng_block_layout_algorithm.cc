@@ -1378,10 +1378,19 @@ NGLayoutResult::EStatus NGBlockLayoutAlgorithm::HandleNewFormattingContext(
                                      previous_inflow_position))
     return NGLayoutResult::kBfcBlockOffsetResolved;
 
-  if (UNLIKELY(child.Style().AlignSelfBlockCenter() &&
-               ChildAvailableSize().block_size != kIndefiniteSize)) {
-    logical_offset = CenterBlockChild(
-        logical_offset, ChildAvailableSize().block_size, fragment.BlockSize());
+  if (UNLIKELY(child.Style().AlignSelfBlockCenter())) {
+    DCHECK(Node().IsTextField());
+    // The block-size of a textfield doesn't depend on its contents, so we can
+    // compute the block-size without passing the actual intrinsic block-size.
+    const LayoutUnit bsp_block_sum = BorderScrollbarPadding().BlockSum();
+    LayoutUnit block_size = ClampIntrinsicBlockSize(
+        ConstraintSpace(), Node(), BorderScrollbarPadding(), bsp_block_sum);
+    block_size = ComputeBlockSizeForFragment(
+        ConstraintSpace(), Style(), BorderPadding(), block_size,
+        container_builder_.InitialBorderBoxSize().inline_size);
+    block_size -= bsp_block_sum;
+    logical_offset =
+        CenterBlockChild(logical_offset, block_size, fragment.BlockSize());
   }
 
   PropagateBaselineFromChild(physical_fragment, logical_offset.block_offset);
