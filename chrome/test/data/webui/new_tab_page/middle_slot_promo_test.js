@@ -143,11 +143,14 @@ suite('NewTabPageMiddleSlotPromoTest', () => {
     testProxy.handler.setResultFor('getPromo', Promise.resolve({promo: null}));
     const middleSlotPromo = document.createElement('ntp-middle-slot-promo');
     document.body.appendChild(middleSlotPromo);
+    const loaded =
+        eventToPromise('ntp-middle-slot-promo-loaded', document.body);
     assertEquals(
         0,
         promoBrowserCommandTestProxy.handler.getCallCount(
             'canShowPromoWithCommand'));
     assertEquals(0, testProxy.handler.getCallCount('onPromoRendered'));
     assertTrue(middleSlotPromo.hasAttribute('hidden'));
+    await loaded;
   });
 });

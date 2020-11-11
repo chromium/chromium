@@ -102,6 +102,11 @@ class MiddleSlotPromoElement extends PolymerElement {
           this.dispatchEvent(new Event(
               'ntp-middle-slot-promo-loaded', {bubbles: true, composed: true}));
         });
+      } else {
+        // Dispatch this event even if there is no promo as Modules wait for the
+        // promo to be loaded before showing.
+        this.dispatchEvent(new Event(
+            'ntp-middle-slot-promo-loaded', {bubbles: true, composed: true}));
       }
     });
   }
