@@ -4,6 +4,7 @@
 
 #import "chrome/browser/ui/cocoa/main_menu_builder.h"
 
+#include "base/feature_list.h"
 #include "build/branding_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/cocoa/accelerators_cocoa.h"
@@ -356,10 +357,14 @@ base::scoped_nsobject<NSMenuItem> BuildPeopleMenu(
     id app_delegate,
     const base::string16& product_name,
     bool is_pwa) {
-  base::scoped_nsobject<NSMenuItem> item = Item(IDS_PROFILES_OPTIONS_GROUP_NAME)
-                                               .tag(IDC_PROFILE_MAIN_MENU)
-                                               .submenu({})
-                                               .Build();
+  const bool new_picker =
+      base::FeatureList::IsEnabled(features::kNewProfilePicker);
+  base::scoped_nsobject<NSMenuItem> item =
+      Item(new_picker ? IDS_PROFILES_MENU_NAME
+                      : IDS_PROFILES_OPTIONS_GROUP_NAME)
+          .tag(IDC_PROFILE_MAIN_MENU)
+          .submenu({})
+          .Build();
   return item;
 }
 

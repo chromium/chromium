@@ -337,9 +337,11 @@ void AppShimController::SendBootstrapOnShimConnected(
 void AppShimController::SetUpMenu() {
   chrome::BuildMainMenu(NSApp, delegate_, params_.app_name, true);
 
-  // Initialize the profiles menu to be empty. It will be updated from the
-  // browser.
-  UpdateProfileMenu(std::vector<chrome::mojom::ProfileMenuItemPtr>());
+  // Initialize the profiles menu to be empty (the value of `use_new_picker` is
+  // chosen arbitrarily as it does not matter for an empty menu). It will be
+  // updated from the browser.
+  UpdateProfileMenu(std::vector<chrome::mojom::ProfileMenuItemPtr>(),
+                    /*use_new_picker=*/false);
 }
 
 void AppShimController::BootstrapChannelError(uint32_t custom_reason,
@@ -426,7 +428,8 @@ void AppShimController::SetBadgeLabel(const std::string& badge_label) {
 }
 
 void AppShimController::UpdateProfileMenu(
-    std::vector<chrome::mojom::ProfileMenuItemPtr> profile_menu_items) {
+    std::vector<chrome::mojom::ProfileMenuItemPtr> profile_menu_items,
+    bool use_new_picker) {
   profile_menu_items_ = std::move(profile_menu_items);
 
   NSMenuItem* cocoa_profile_menu =
@@ -438,9 +441,10 @@ void AppShimController::UpdateProfileMenu(
   }
   [cocoa_profile_menu setHidden:NO];
 
-  base::scoped_nsobject<NSMenu> menu(
-      [[NSMenu alloc] initWithTitle:l10n_util::GetNSStringWithFixup(
-                                        IDS_PROFILES_OPTIONS_GROUP_NAME)]);
+  base::scoped_nsobject<NSMenu> menu([[NSMenu alloc]
+      initWithTitle:l10n_util::GetNSStringWithFixup(
+                        use_new_picker ? IDS_PROFILES_MENU_NAME
+                                       : IDS_PROFILES_OPTIONS_GROUP_NAME)]);
   [cocoa_profile_menu setSubmenu:menu];
 
   // Note that this code to create menu items is nearly identical to the code

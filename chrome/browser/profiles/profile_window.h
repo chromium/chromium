@@ -92,12 +92,6 @@ void SwitchToGuestProfile(ProfileManager::CreateCallback callback);
 // one and the current window is a guest window.
 bool HasProfileSwitchTargets(Profile* profile);
 
-// Creates a new profile from the next available profile directory, and
-// opens a new browser window for the profile once it is ready. When the browser
-// is opened, |callback| will be run if it isn't null.
-void CreateAndSwitchToNewProfile(ProfileManager::CreateCallback callback,
-                                 ProfileMetrics::ProfileAdd metric);
-
 // Closes all browser windows that belong to the guest profile and opens the
 // user manager.
 void CloseGuestProfileWindows();

@@ -14,6 +14,7 @@
 
 #include "base/bind.h"
 #include "base/check_op.h"
+#include "base/feature_list.h"
 #include "base/macros.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
@@ -32,6 +33,8 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_live_tab_context.h"
+#include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/user_manager.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/dbus_appmenu_registrar.h"
 #include "chrome/grit/generated_resources.h"
@@ -142,10 +145,17 @@ constexpr DbusAppmenuCommand kToolsMenu[] = {
     {IDC_DEV_TOOLS_DEVICES, IDS_DEV_TOOLS_DEVICES},
     {kMenuEnd}};
 
-constexpr DbusAppmenuCommand kProfilesMenu[] = {
+// TODO(crbug.com/1108289): Remove after launch.
+constexpr DbusAppmenuCommand kOldProfilesMenu[] = {
     {kSeparator},
     {kTagProfileEdit, IDS_PROFILES_MANAGE_BUTTON_LABEL},
     {kTagProfileCreate, IDS_PROFILES_CREATE_BUTTON_LABEL},
+    {kMenuEnd}};
+
+constexpr DbusAppmenuCommand kProfilesMenu[] = {
+    {kSeparator},
+    {kTagProfileEdit, IDS_PROFILES_MANAGE_BUTTON_LABEL},
+    {kTagProfileCreate, IDS_PROFILES_ADD_PROFILE_LABEL},
     {kMenuEnd}};
 
 constexpr DbusAppmenuCommand kHelpMenu[] = {
@@ -247,7 +257,9 @@ void DbusAppmenu::Initialize(DbusMenu::InitializedCallback callback) {
   history_menu_ = BuildStaticMenu(IDS_HISTORY_MENU_LINUX, kHistoryMenu);
   BuildStaticMenu(IDS_TOOLS_MENU_LINUX, kToolsMenu);
   profiles_menu_ =
-      BuildStaticMenu(IDS_PROFILES_OPTIONS_GROUP_NAME, kProfilesMenu);
+      base::FeatureList::IsEnabled(features::kNewProfilePicker)
+          ? BuildStaticMenu(IDS_PROFILES_MENU_NAME, kProfilesMenu)
+          : BuildStaticMenu(IDS_PROFILES_OPTIONS_GROUP_NAME, kOldProfilesMenu);
   BuildStaticMenu(IDS_HELP_MENU_LINUX, kHelpMenu);
 
   pref_change_registrar_.Init(browser_->profile()->GetPrefs());
@@ -549,8 +561,8 @@ void DbusAppmenu::ExecuteCommand(int command_id, int event_flags) {
   } else if (command_id == kTagProfileEdit) {
     avatar_menu_->EditProfile(active_profile_index_);
   } else if (command_id == kTagProfileCreate) {
-    profiles::CreateAndSwitchToNewProfile(ProfileManager::CreateCallback(),
-                                          ProfileMetrics::ADD_NEW_USER_MENU);
+    UserManager::Show(/*profile_path_to_focus=*/base::FilePath(),
+                      profiles::USER_MANAGER_OPEN_CREATE_USER_PAGE);
   } else if (base::Contains(history_items_, command_id)) {
     HistoryItem* item = history_items_[command_id].get();
     // If this item can be restored using TabRestoreService, do so.

@@ -80,7 +80,9 @@ interface AppShim {
   SetBadgeLabel(string badge_label);
 
   // Called to update the state of the profiles NSMenu.
-  UpdateProfileMenu(array<ProfileMenuItem> profile_menu_items);
+  // TODO(crbug.com/1108289): Remove `use_new_picker` after launch.
+  UpdateProfileMenu(array<ProfileMenuItem> profile_menu_items,
+                    bool use_new_picker);
 };
 
 // Interface through which the a process communicates to the browser process.

@@ -115,8 +115,9 @@ class AppShimController : public chrome::mojom::AppShim {
   void SetBadgeLabel(const std::string& badge_label) override;
   void SetUserAttention(
       chrome::mojom::AppShimAttentionType attention_type) override;
-  void UpdateProfileMenu(std::vector<chrome::mojom::ProfileMenuItemPtr>
-                             profile_menu_items) override;
+  void UpdateProfileMenu(
+      std::vector<chrome::mojom::ProfileMenuItemPtr> profile_menu_items,
+      bool use_new_picker) override;
 
   // Helper function to set up a connection to the AppShimListener at the given
   // Mach endpoint name.

@@ -291,20 +291,6 @@ bool HasProfileSwitchTargets(Profile* profile) {
   return number_of_profiles >= min_profiles;
 }
 
-void CreateAndSwitchToNewProfile(ProfileManager::CreateCallback callback,
-                                 ProfileMetrics::ProfileAdd metric) {
-  ProfileAttributesStorage& storage =
-      g_browser_process->profile_manager()->GetProfileAttributesStorage();
-
-  int placeholder_avatar_index = profiles::GetPlaceholderAvatarIndex();
-  ProfileManager::CreateMultiProfileAsync(
-      storage.ChooseNameForNewProfile(placeholder_avatar_index),
-      profiles::GetDefaultAvatarIconUrl(placeholder_avatar_index),
-      base::BindRepeating(&profiles::OpenBrowserWindowForProfile, callback,
-                          true, true, false));
-  ProfileMetrics::LogProfileAddNewUser(metric);
-}
-
 void ProfileBrowserCloseSuccess(const base::FilePath& profile_path) {
 #if !defined(OS_CHROMEOS)
   UserManager::Show(base::FilePath(),

@@ -76,9 +76,20 @@
   <message name="IDS_PROFILES_OPTIONS_GROUP_NAME" desc="The name of the sync group in the options dialog when using the new Profiles UI.">
     People
   </message>
+  <message name="IDS_PROFILES_MENU_NAME" desc="The name of menu for profiles (Mac and linux) and name for the launcher menu section (Mac).">
+    Profiles
+  </message>
   <if expr="is_macosx">
     <message name="IDS_PROFILES_CREATE_NEW_PROFILE_OPTION" desc="In Title Case. Create new profile menu item and button title.">
       Add Person...
+    </message>
+    <message name="IDS_PROFILES_ADD_PROFILE_LABEL" desc="In Title Case. Menu item for adding a new profile.">
+      Add Profile...
+    </message>
+  </if>
+  <if expr="is_linux">
+    <message name="IDS_PROFILES_ADD_PROFILE_LABEL" desc="Menu item for adding a new profile.">
+      Add profile...
     </message>
   </if>
   <message name="IDS_PROFILES_PROFILE_BUBBLE_ACCESSIBLE_TITLE" desc="Accessible title of the avatar menu bubble.">

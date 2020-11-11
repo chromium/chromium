@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include "base/feature_list.h"
 #include "base/mac/scoped_nsobject.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/sys_string_conversions.h"
@@ -21,6 +22,8 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/cocoa/last_active_browser_cocoa.h"
+#include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/user_manager.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
@@ -44,6 +47,13 @@ bool IsAddPersonEnabled() {
   PrefService* service = g_browser_process->local_state();
   DCHECK(service);
   return service->GetBoolean(prefs::kBrowserAddPersonEnabled);
+}
+
+NSString* GetProfileMenuTitle() {
+  const bool newPicker =
+      base::FeatureList::IsEnabled(features::kNewProfilePicker);
+  return l10n_util::GetNSStringWithFixup(
+      newPicker ? IDS_PROFILES_MENU_NAME : IDS_PROFILES_OPTIONS_GROUP_NAME);
 }
 
 }  // namespace
@@ -90,8 +100,8 @@ class Observer : public BrowserListObserver, public AvatarMenuObserver {
   if ((self = [super init])) {
     _mainMenuItem = item;
 
-    base::scoped_nsobject<NSMenu> menu([[NSMenu alloc] initWithTitle:
-        l10n_util::GetNSStringWithFixup(IDS_PROFILES_OPTIONS_GROUP_NAME)]);
+    base::scoped_nsobject<NSMenu> menu(
+        [[NSMenu alloc] initWithTitle:GetProfileMenuTitle()]);
     [_mainMenuItem setSubmenu:menu];
 
     // This object will be constructed as part of nib loading, which happens
@@ -119,8 +129,8 @@ class Observer : public BrowserListObserver, public AvatarMenuObserver {
 }
 
 - (IBAction)newProfile:(id)sender {
-  profiles::CreateAndSwitchToNewProfile(ProfileManager::CreateCallback(),
-                                        ProfileMetrics::ADD_NEW_USER_MENU);
+  UserManager::Show(/*profile_path_to_focus=*/base::FilePath(),
+                    profiles::USER_MANAGER_OPEN_CREATE_USER_PAGE);
 }
 
 - (BOOL)insertItemsIntoMenu:(NSMenu*)menu
@@ -134,12 +144,10 @@ class Observer : public BrowserListObserver, public AvatarMenuObserver {
     return NO;
 
   if (dock) {
-    NSString* headerName =
-        l10n_util::GetNSStringWithFixup(IDS_PROFILES_OPTIONS_GROUP_NAME);
-    base::scoped_nsobject<NSMenuItem> header(
-        [[NSMenuItem alloc] initWithTitle:headerName
-                                   action:NULL
-                            keyEquivalent:@""]);
+    base::scoped_nsobject<NSMenuItem> header([[NSMenuItem alloc]
+        initWithTitle:GetProfileMenuTitle()
+               action:NULL
+        keyEquivalent:@""]);
     [header setEnabled:NO];
     [menu insertItem:header atIndex:offset++];
   }
@@ -240,9 +248,14 @@ class Observer : public BrowserListObserver, public AvatarMenuObserver {
   if (IsAddPersonEnabled()) {
     [[self menu] addItem:[NSMenuItem separatorItem]];
 
-    item = [self createItemWithTitle:l10n_util::GetNSStringWithFixup(
-                                         IDS_PROFILES_CREATE_NEW_PROFILE_OPTION)
-                              action:@selector(newProfile:)];
+    const bool newPicker =
+        base::FeatureList::IsEnabled(features::kNewProfilePicker);
+    item = [self
+        createItemWithTitle:l10n_util::GetNSStringWithFixup(
+                                newPicker
+                                    ? IDS_PROFILES_ADD_PROFILE_LABEL
+                                    : IDS_PROFILES_CREATE_NEW_PROFILE_OPTION)
+                     action:@selector(newProfile:)];
     [[self menu] addItem:item];
   }
 
