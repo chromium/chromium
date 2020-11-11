@@ -12,6 +12,7 @@ export const AppState = {
   GETTING_CAPS: 2,
   READY: 3,
   SCANNING: 4,
+  DONE: 5,
 };
 
 /**

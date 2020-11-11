@@ -4,13 +4,12 @@
 
 import 'chrome://scanning/scanning_app.js';
 
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {setScanServiceForTesting} from 'chrome://scanning/mojo_interface_provider.js';
 import {ScannerArr} from 'chrome://scanning/scanning_app_types.js';
 import {tokenToString} from 'chrome://scanning/scanning_app_util.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
-import {flushTasks} from '../../test_util.m.js';
+import {flushTasks, isVisible} from '../../test_util.m.js';
 
 import {changeSelect, createScanner, createScannerSource} from './scanning_app_test_utils.js';
 
@@ -268,11 +267,22 @@ export function scanningAppTest() {
   }
 
   /**
+   * Clicks the "Done" button.
+   * @return {!Promise}
+   */
+  function clickDoneButton() {
+    const button = scanningApp.$$('#doneButton');
+    assertTrue(!!button);
+    button.click();
+    return flushTasks();
+  }
+
+  /**
    * Returns whether the "More settings" section is expanded or not.
    * @return {boolean}
    */
   function isSettingsOpen() {
-    return scanningApp.$.collapse.opened;
+    return scanningApp.$$('#collapse').opened;
   }
 
   test('Scan', () => {
@@ -299,15 +309,15 @@ export function scanningAppTest() {
     let resolutionSelect;
     /** @type {!CrButtonElement} */
     let scanButton;
-    /** @type {!Element} */
+    /** @type {!HTMLElement} */
     let statusText;
-    /** @type {!Element} */
+    /** @type {!HTMLElement} */
     let helperText;
-    /** @type {!Element} */
+    /** @type {!HTMLElement} */
     let scanProgress;
-    /** @type {!Element} */
+    /** @type {!HTMLElement} */
     let progressText;
-    /** @type {!Element} */
+    /** @type {!HTMLElement} */
     let progressBar;
 
     return initializeScanningApp(expectedScanners, capabilities)
@@ -320,12 +330,11 @@ export function scanningAppTest() {
           resolutionSelect = scanningApp.$$('#resolutionSelect').$$('select');
           scanButton =
               /** @type {!CrButtonElement} */ (scanningApp.$$('#scanButton'));
-          statusText = /** @type {!Element} */ (scanningApp.$$('#statusText'));
-          helperText = /** @type {!Element} */ (
-              scanningApp.$$('#scanPreview').$$('#helperText'));
+          statusText =
+              /** @type {!HTMLElement} */ (scanningApp.$$('#statusText'));
+          helperText = scanningApp.$$('#scanPreview').$$('#helperText');
           scanProgress = scanningApp.$$('#scanPreview').$$('#scanProgress');
-          progressText = /** @type {!Element} */ (
-              scanningApp.$$('#scanPreview').$$('#progressText'));
+          progressText = scanningApp.$$('#scanPreview').$$('#progressText');
           progressBar = scanningApp.$$('#scanPreview').$$('paper-progress');
           return fakeScanService_.whenCalled('getScannerCapabilities');
         })
@@ -357,8 +366,10 @@ export function scanningAppTest() {
           assertFalse(resolutionSelect.disabled);
           assertFalse(scanButton.disabled);
           assertEquals('', statusText.textContent.trim());
-          assertFalse(helperText.hidden);
-          assertTrue(scanProgress.hidden);
+          assertTrue(isVisible(helperText));
+          assertFalse(isVisible(scanProgress));
+          assertFalse(isVisible(
+              /** @type {!HTMLElement} */ (scanningApp.$$('#fileSaved'))));
 
           // Click the Scan button and wait till the scan is started.
           scanButton.click();
@@ -376,8 +387,10 @@ export function scanningAppTest() {
           assertTrue(pageSizeSelect.disabled);
           assertTrue(resolutionSelect.disabled);
           assertTrue(scanButton.disabled);
-          assertTrue(helperText.hidden);
-          assertFalse(scanProgress.hidden);
+          assertFalse(isVisible(helperText));
+          assertTrue(isVisible(scanProgress));
+          assertFalse(isVisible(
+              /** @type {!HTMLElement} */ (scanningApp.$$('#fileSaved'))));
           assertEquals('Scanning page 1', progressText.textContent.trim());
           assertEquals(0, progressBar.value);
 
@@ -413,9 +426,18 @@ export function scanningAppTest() {
           return fakeScanService_.simulateScanComplete(true);
         })
         .then(() => {
+          assertTrue(isVisible(
+              /** @type {!HTMLElement} */ (scanningApp.$$('#fileSaved'))));
+          assertEquals(
+              'Scanned files saved!',
+              scanningApp.$$('#fileSaved').textContent.trim());
+
+          // Click the Done button to return to READY state.
+          return clickDoneButton();
+        })
+        .then(() => {
           // After scanning is complete, the settings and scan button should be
-          // enabled, and the scan status should indicate that scanning is
-          // complete. The progress bar and text should no longer be visible.
+          // enabled. The progress bar and text should no longer be visible.
           assertFalse(scannerSelect.disabled);
           assertFalse(sourceSelect.disabled);
           assertFalse(fileTypeSelect.disabled);
@@ -423,11 +445,10 @@ export function scanningAppTest() {
           assertFalse(pageSizeSelect.disabled);
           assertFalse(resolutionSelect.disabled);
           assertFalse(scanButton.disabled);
-          assertEquals(
-              'Scan complete! File(s) saved to /home/chronos/user/MyFiles.',
-              statusText.textContent.trim());
-          assertFalse(helperText.hidden);
-          assertTrue(scanProgress.hidden);
+          assertTrue(isVisible(helperText));
+          assertFalse(isVisible(scanProgress));
+          assertFalse(isVisible(
+              /** @type {!HTMLElement} */ (scanningApp.$$('#fileSaved'))));
         });
   });
 

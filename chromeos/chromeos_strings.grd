@@ -561,6 +561,15 @@ Try tapping the mic to ask me anything.
       <message name="IDS_SCANNING_APP_SCAN_PREVIEW_PROGRESS_TEXT" desc="The text displayed in the scan preview to indicate which page is currently being scanned.">
         Scanning page <ph name="PAGE_NUMBER">$1<ex>4</ex></ph>
       </message>
+      <message name="IDS_SCANNING_APP_FILE_SAVED_TEXT" desc="The text displayed in the Scanning App when a scan job is completed and the file is saved.">
+        Scanned file saved!
+      </message>
+      <message name="IDS_SCANNING_APP_FILE_SAVED_TEXT_PLURAL" desc="The text displayed in the Scanning App when a scan job is completed and the files are saved.">
+        Scanned files saved!
+      </message>
+      <message name="IDS_SCANNING_APP_DONE_BUTTON_TEXT" desc="The text displayed for the button the user clicks to return to the intial Scanning App page after a scan job is completed.">
+        Done
+      </message>
 
       <!-- Diagnostics App -->
       <!-- TODO(michaelcheco): Update with finalized copies of the strings -->

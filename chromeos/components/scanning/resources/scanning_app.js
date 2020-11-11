@@ -12,6 +12,7 @@ import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import './file_path.mojom-lite.js';
 import './color_mode_select.js';
 import './file_type_select.js';
+import './icons.js';
 import './page_size_select.js';
 import './resolution_select.js';
 import './scan_preview.js';
@@ -194,9 +195,12 @@ Polymer({
    * @param {boolean} success
    */
   onScanComplete(success) {
-    this.statusText_ = success ?
-        'Scan complete! File(s) saved to ' + this.selectedFilePath + '.' :
-        'Scan failed.';
+    if (success) {
+      this.setAppState_(AppState.DONE);
+      return;
+    }
+
+    this.statusText_ = 'Scan failed.';
     this.setAppState_(AppState.READY);
   },
 
@@ -324,6 +328,11 @@ Polymer({
             });
   },
 
+  /** @private */
+  onDoneClick_() {
+    this.setAppState_(AppState.READY);
+  },
+
   /**
    * @param {!{success: boolean}} response
    * @private
@@ -341,7 +350,7 @@ Polymer({
 
   /** @private */
   toggleClicked_() {
-    this.$.collapse.toggle();
+    this.$$('#collapse').toggle();
   },
 
   /**
@@ -375,6 +384,24 @@ Polymer({
   },
 
   /**
+   * @return {boolean}
+   * @private
+   */
+  shouldShowDonePage_() {
+    return this.appState_ === AppState.DONE;
+  },
+
+  /**
+   * @return {string}
+   * @private
+   */
+  getFileSavedText_() {
+    const fileSavedText =
+        this.pageNumber_ > 1 ? 'fileSavedTextPlural' : 'fileSavedText';
+    return this.i18n(fileSavedText);
+  },
+
+  /**
    * Sets the app state if the state transition is allowed.
    * @param {!AppState} newState
    * @private
@@ -395,10 +422,14 @@ Polymer({
       case (AppState.READY):
         assert(
             this.appState_ === AppState.GETTING_CAPS ||
-            this.appState_ === AppState.SCANNING);
+            this.appState_ === AppState.SCANNING ||
+            this.appState_ === AppState.DONE);
         break;
       case (AppState.SCANNING):
         assert(this.appState_ === AppState.READY);
+        break;
+      case (AppState.DONE):
+        assert(this.appState_ === AppState.SCANNING);
         break;
     }
 

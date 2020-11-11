@@ -58,7 +58,8 @@ Polymer({
    * @private
    */
   shouldHideHelperText_() {
-    return this.appState === AppState.SCANNING;
+    return this.appState === AppState.SCANNING ||
+        this.appState === AppState.DONE;
   },
 
   /**
