@@ -567,7 +567,7 @@ input[type="hidden" i], input[type="image" i], input[type="file" i] {
 input[type="file" i] {
     align-items: baseline;
     color: inherit;
-    overflow: hidden !important;
+    overflow: hidden;
     text-align: start !important;
     text-overflow: ellipsis;
     white-space: pre;
