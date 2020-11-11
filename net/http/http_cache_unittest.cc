@@ -2458,7 +2458,7 @@ TEST_F(HttpCacheTest, RangeGET_ParallelValidationDifferentRanges) {
     std::string data_read(buffer->data(), kBufferSize);
     first_read = data_read;
 
-    EXPECT_EQ(LOAD_STATE_READING_RESPONSE, c->trans->GetLoadState());
+    EXPECT_EQ(LOAD_STATE_IDLE, c->trans->GetLoadState());
   }
 
   // 2nd transaction requests ranges 30-39.
@@ -2611,7 +2611,7 @@ TEST_F(HttpCacheTest, RangeGET_ParallelValidationCacheLockTimeout) {
     std::string data_read(buffer->data(), kBufferSize);
     first_read = data_read;
 
-    EXPECT_EQ(LOAD_STATE_READING_RESPONSE, c->trans->GetLoadState());
+    EXPECT_EQ(LOAD_STATE_IDLE, c->trans->GetLoadState());
   }
 
   // Cache lock timeout will lead to dooming the entry since the transaction may
@@ -2706,7 +2706,7 @@ TEST_F(HttpCacheTest, RangeGET_ParallelValidationCouldntConditionalize) {
     std::string data_read(buffer->data(), kBufferSize);
     first_read = data_read;
 
-    EXPECT_EQ(LOAD_STATE_READING_RESPONSE, c->trans->GetLoadState());
+    EXPECT_EQ(LOAD_STATE_IDLE, c->trans->GetLoadState());
   }
 
   // 2nd transaction requests a range.
@@ -2794,7 +2794,7 @@ TEST_F(HttpCacheTest, RangeGET_ParallelValidationCouldConditionalize) {
     std::string data_read(buffer->data(), kBufferSize);
     first_read = data_read;
 
-    EXPECT_EQ(LOAD_STATE_READING_RESPONSE, c->trans->GetLoadState());
+    EXPECT_EQ(LOAD_STATE_IDLE, c->trans->GetLoadState());
   }
 
   // 2nd transaction requests a range.
@@ -2870,7 +2870,7 @@ TEST_F(HttpCacheTest, RangeGET_ParallelValidationOverlappingRanges) {
     std::string data_read(buffer->data(), kBufferSize);
     first_read = data_read;
 
-    EXPECT_EQ(LOAD_STATE_READING_RESPONSE, c->trans->GetLoadState());
+    EXPECT_EQ(LOAD_STATE_IDLE, c->trans->GetLoadState());
   }
 
   // 2nd transaction requests ranges 30-49.
@@ -2973,7 +2973,7 @@ TEST_F(HttpCacheTest, RangeGET_ParallelValidationRestartDoneHeaders) {
     std::string data_read(buffer->data(), kBufferSize);
     first_read = data_read;
 
-    EXPECT_EQ(LOAD_STATE_READING_RESPONSE, c->trans->GetLoadState());
+    EXPECT_EQ(LOAD_STATE_IDLE, c->trans->GetLoadState());
   }
 
   // 2nd transaction requests ranges 30-59.

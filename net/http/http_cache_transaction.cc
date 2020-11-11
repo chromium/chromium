@@ -485,6 +485,11 @@ const HttpResponseInfo* HttpCache::Transaction::GetResponseInfo() const {
 }
 
 LoadState HttpCache::Transaction::GetLoadState() const {
+  // If there's no pending callback, the ball is not in the
+  // HttpCache::Transaction's court, whatever else may be going on.
+  if (!callback_)
+    return LOAD_STATE_IDLE;
+
   LoadState state = GetWriterLoadState();
   if (state != LOAD_STATE_WAITING_FOR_CACHE)
     return state;
