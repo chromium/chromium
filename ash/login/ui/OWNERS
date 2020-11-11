@@ -1,3 +1,6 @@
+# (in CET)
+tellier@google.com
+
 per-file lock_screen.*=set noparent
 per-file lock_screen.*=file://ash/login/LOGIN_LOCK_OWNERS
 
