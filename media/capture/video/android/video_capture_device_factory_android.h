@@ -44,11 +44,13 @@ class CAPTURE_EXPORT VideoCaptureDeviceFactoryAndroid
   // Switch to indicate that all created Java capturers will be in test mode.
   bool test_mode_ = false;
 
-  // VideoCaptureFormats are cached, so GetSupportedFormats() doesn't need to be
+  // VideoCaptureFormats and zooms are cached, so GetSupportedFormats() and
+  // Java_VideoCaptureFactory_isZoomSupported() respectively don't need to be
   // called for every device every time GetDevicesInfo() is called. It also
   // allows to workaround bugs on some devices that don't handle the case when
   // an actively used camera is opened again (see https://crbug.com/1138608).
   base::flat_map<std::string, VideoCaptureFormats> supported_formats_cache_;
+  base::flat_map<std::string, bool> zooms_cache_;
 
   DISALLOW_COPY_AND_ASSIGN(VideoCaptureDeviceFactoryAndroid);
 };
