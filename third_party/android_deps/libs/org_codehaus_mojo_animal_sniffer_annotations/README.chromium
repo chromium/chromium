@@ -3,8 +3,8 @@ Short Name: animal-sniffer-annotations
 URL: http://www.mojohaus.org/animal-sniffer/animal-sniffer-annotations/
 Version: 1.17
 License: MIT
-License File: NOT_SHIPPED
-Security Critical: no
+License File: LICENSE
+Security Critical: yes
 
 Description:
 

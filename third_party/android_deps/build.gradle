@@ -184,6 +184,9 @@ dependencies {
     def errorproneVersion = '2.4.0'
     // Used by downstream targets.
     compile "com.google.errorprone:error_prone_annotations:${errorproneVersion}"
+    compile "org.checkerframework:checker-compat-qual:2.5.3"
+    compile "org.codehaus.mojo:animal-sniffer-annotations:1.17"
+
     buildCompile "com.google.errorprone:error_prone_core:${errorproneVersion}"
     buildCompile "com.google.errorprone:error_prone_check_api:${errorproneVersion}"
     buildCompile "com.google.errorprone:error_prone_annotation:${errorproneVersion}"

@@ -461,6 +461,7 @@ class BuildConfigGenerator extends DefaultTask {
             case 'com_google_j2objc_j2objc_annotations':
             case 'com_google_guava_listenablefuture':
             case 'com_googlecode_java_diff_utils_diffutils':
+            case 'org_codehaus_mojo_animal_sniffer_annotations':
                 sb.append('\n')
                 sb.append('  # Needed to break dependency cycle for errorprone_plugin_java.\n')
                 sb.append('  enable_bytecode_checks = false\n')

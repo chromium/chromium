@@ -3,8 +3,8 @@ Short Name: checker-compat-qual
 URL: https://checkerframework.org
 Version: 2.5.3
 License: GPL v2 with the classpath exception
-License File: NOT_SHIPPED
-Security Critical: no
+License File: LICENSE
+Security Critical: yes
 
 Description:
 Checker Qual is the set of annotations (qualifiers) and supporting classes used by the Checker Framework to type check Java source code. Please see artifact: org.checkerframework:checker

@@ -1659,6 +1659,23 @@ java_prebuilt("org_ccil_cowan_tagsoup_tagsoup_java") {
 }
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+java_prebuilt("org_checkerframework_checker_compat_qual_java") {
+  jar_path = "libs/org_checkerframework_checker_compat_qual/checker-compat-qual-2.5.3.jar"
+  output_name = "org_checkerframework_checker_compat_qual"
+  supports_android = true
+}
+
+# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+java_prebuilt("org_codehaus_mojo_animal_sniffer_annotations_java") {
+  jar_path = "libs/org_codehaus_mojo_animal_sniffer_annotations/animal-sniffer-annotations-1.17.jar"
+  output_name = "org_codehaus_mojo_animal_sniffer_annotations"
+  supports_android = true
+
+  # Needed to break dependency cycle for errorprone_plugin_java.
+  enable_bytecode_checks = false
+}
+
+# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 java_prebuilt("org_ow2_asm_asm_java") {
   jar_path = "libs/org_ow2_asm_asm/asm-7.0.jar"
   output_name = "org_ow2_asm_asm"
@@ -2823,17 +2840,6 @@ java_prebuilt("org_apache_maven_wagon_wagon_provider_api_java") {
 }
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-java_prebuilt("org_checkerframework_checker_compat_qual_java") {
-  jar_path = "libs/org_checkerframework_checker_compat_qual/checker-compat-qual-2.5.3.jar"
-  output_name = "org_checkerframework_checker_compat_qual"
-  enable_bytecode_checks = false
-
-  # To remove visibility constraint, add this dependency to
-  # //third_party/android_deps/build.gradle.
-  visibility = [ ":*" ]
-}
-
-# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 java_prebuilt("org_checkerframework_checker_qual_java") {
   jar_path = "libs/org_checkerframework_checker_qual/checker-qual-2.10.0.jar"
   output_name = "org_checkerframework_checker_qual"
@@ -2849,17 +2855,6 @@ java_prebuilt("org_checkerframework_dataflow_shaded_java") {
   jar_path =
       "libs/org_checkerframework_dataflow_shaded/dataflow-shaded-3.1.2.jar"
   output_name = "org_checkerframework_dataflow_shaded"
-  enable_bytecode_checks = false
-
-  # To remove visibility constraint, add this dependency to
-  # //third_party/android_deps/build.gradle.
-  visibility = [ ":*" ]
-}
-
-# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-java_prebuilt("org_codehaus_mojo_animal_sniffer_annotations_java") {
-  jar_path = "libs/org_codehaus_mojo_animal_sniffer_annotations/animal-sniffer-annotations-1.17.jar"
-  output_name = "org_codehaus_mojo_animal_sniffer_annotations"
   enable_bytecode_checks = false
 
   # To remove visibility constraint, add this dependency to
