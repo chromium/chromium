@@ -518,7 +518,7 @@ void DeleteSelectionCommand::RemoveNode(
     // Make sure empty cell has some height, if a placeholder can be inserted.
     GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
     LayoutObject* r = node->GetLayoutObject();
-    if (r && r->IsTableCell() && ToLayoutBox(r)->ContentHeight() <= 0) {
+    if (r && r->IsTableCell() && To<LayoutBox>(r)->ContentHeight() <= 0) {
       Position first_editable_position = FirstEditablePositionInNode(node);
       if (first_editable_position.IsNotNull())
         InsertBlockPlaceholder(first_editable_position, editing_state);

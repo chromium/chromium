@@ -2043,7 +2043,7 @@ TEST_F(DisplayLockContextRenderingTest,
   )HTML");
 
   auto* parent = GetDocument().getElementById("parent");
-  auto* parent_box = ToLayoutBoxModelObject(parent->GetLayoutObject());
+  auto* parent_box = parent->GetLayoutBoxModelObject();
   ASSERT_TRUE(parent_box);
   EXPECT_TRUE(parent_box->Layer());
   EXPECT_TRUE(parent_box->HasSelfPaintingLayer());
@@ -2053,8 +2053,7 @@ TEST_F(DisplayLockContextRenderingTest,
   lockable->classList().Add("hidden");
   UpdateAllLifecyclePhasesForTest();
 
-  auto* child = GetDocument().getElementById("child");
-  auto* child_layer = ToLayoutBoxModelObject(child->GetLayoutObject())->Layer();
+  auto* child_layer = GetPaintLayerByElementId("child");
   child_layer->SetNeedsVisualOverflowRecalc();
   EXPECT_TRUE(child_layer->NeedsVisualOverflowRecalc());
 
@@ -2141,7 +2140,7 @@ TEST_F(DisplayLockContextRenderingTest,
   )HTML");
 
   auto* parent = GetDocument().getElementById("parent");
-  auto* parent_box = ToLayoutBoxModelObject(parent->GetLayoutObject());
+  auto* parent_box = parent->GetLayoutBoxModelObject();
   ASSERT_TRUE(parent_box);
   EXPECT_TRUE(parent_box->Layer());
   EXPECT_TRUE(parent_box->HasSelfPaintingLayer());
@@ -2151,8 +2150,7 @@ TEST_F(DisplayLockContextRenderingTest,
   lockable->classList().Add("hidden");
   UpdateAllLifecyclePhasesForTest();
 
-  auto* child = GetDocument().getElementById("child");
-  auto* child_layer = ToLayoutBoxModelObject(child->GetLayoutObject())->Layer();
+  auto* child_layer = GetPaintLayerByElementId("child");
   child_layer->SetNeedsVisualOverflowRecalc();
   EXPECT_TRUE(child_layer->NeedsVisualOverflowRecalc());
 
@@ -2297,10 +2295,10 @@ TEST_F(DisplayLockContextRenderingTest,
   auto* child = GetDocument().getElementById("child");
   auto* grandchild = GetDocument().getElementById("grandchild");
 
-  auto* parent_box = ToLayoutBoxModelObject(parent->GetLayoutObject());
-  auto* lockable_box = ToLayoutBoxModelObject(lockable->GetLayoutObject());
-  auto* child_box = ToLayoutBoxModelObject(child->GetLayoutObject());
-  auto* grandchild_box = ToLayoutBoxModelObject(grandchild->GetLayoutObject());
+  auto* parent_box = parent->GetLayoutBoxModelObject();
+  auto* lockable_box = lockable->GetLayoutBoxModelObject();
+  auto* child_box = child->GetLayoutBoxModelObject();
+  auto* grandchild_box = grandchild->GetLayoutBoxModelObject();
 
   ASSERT_TRUE(parent_box);
   ASSERT_TRUE(lockable_box);
@@ -2894,7 +2892,7 @@ TEST_F(DisplayLockContextRenderingTest, CompositingRootIsSkippedIfLocked) {
 
   auto* target = GetDocument().getElementById("target");
   ASSERT_TRUE(target->GetLayoutObject());
-  auto* target_box = ToLayoutBoxModelObject(target->GetLayoutObject());
+  auto* target_box = target->GetLayoutBoxModelObject();
   ASSERT_TRUE(target_box);
   EXPECT_TRUE(target_box->Layer());
   EXPECT_TRUE(target_box->HasSelfPaintingLayer());
@@ -2905,7 +2903,7 @@ TEST_F(DisplayLockContextRenderingTest, CompositingRootIsSkippedIfLocked) {
 
   auto* container = GetDocument().getElementById("container");
   ASSERT_TRUE(container->GetLayoutObject());
-  auto* container_box = ToLayoutBoxModelObject(container->GetLayoutObject());
+  auto* container_box = container->GetLayoutBoxModelObject();
   ASSERT_TRUE(container_box);
   EXPECT_TRUE(container_box->Layer());
   EXPECT_TRUE(container_box->HasSelfPaintingLayer());
@@ -2953,7 +2951,7 @@ TEST_F(DisplayLockContextRenderingTest,
 
   auto* target = GetDocument().getElementById("target");
   ASSERT_TRUE(target->GetLayoutObject());
-  auto* target_box = ToLayoutBoxModelObject(target->GetLayoutObject());
+  auto* target_box = To<LayoutBoxModelObject>(target->GetLayoutObject());
   ASSERT_TRUE(target_box);
   EXPECT_TRUE(target_box->Layer());
   EXPECT_TRUE(target_box->HasSelfPaintingLayer());
@@ -2964,7 +2962,7 @@ TEST_F(DisplayLockContextRenderingTest,
 
   auto* container = GetDocument().getElementById("container");
   ASSERT_TRUE(container->GetLayoutObject());
-  auto* container_box = ToLayoutBoxModelObject(container->GetLayoutObject());
+  auto* container_box = container->GetLayoutBoxModelObject();
   ASSERT_TRUE(container_box);
   EXPECT_TRUE(container_box->Layer());
   EXPECT_TRUE(container_box->HasSelfPaintingLayer());
@@ -3313,10 +3311,9 @@ TEST_F(DisplayLockContextLegacyRenderingTest,
 
   auto* grandparent = GetDocument().getElementById("grandparent");
   auto* parent = GetDocument().getElementById("parent");
-  auto* item = GetDocument().getElementById("item");
 
-  auto* grandparent_box = ToLayoutBox(grandparent->GetLayoutObject());
-  auto* item_box = ToLayoutBox(item->GetLayoutObject());
+  auto* grandparent_box = To<LayoutBox>(grandparent->GetLayoutObject());
+  auto* item_box = GetLayoutBoxByElementId("item");
 
   ASSERT_TRUE(grandparent_box);
   ASSERT_TRUE(parent->GetLayoutObject());
@@ -3357,7 +3354,7 @@ TEST_F(DisplayLockContextTest, GraphicsLayerBitsNotCheckedInLockedSubtree) {
   // Check if the result is correct if we update the contents.
   auto* container = GetDocument().getElementById("container");
   auto* target = GetDocument().getElementById("target");
-  auto* target_box = ToLayoutBoxModelObject(target->GetLayoutObject());
+  auto* target_box = target->GetLayoutBoxModelObject();
   ASSERT_TRUE(target_box);
   EXPECT_TRUE(target_box->Layer());
   EXPECT_TRUE(target_box->HasSelfPaintingLayer());

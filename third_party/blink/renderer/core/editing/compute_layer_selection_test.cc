@@ -185,8 +185,7 @@ TEST_F(ComputeLayerSelectionTest, PositionInScroller) {
       To<HTMLInputElement>(GetDocument().getElementById("target")));
 
   Element* e = GetDocument().getElementById("scroller");
-  PaintLayerScrollableArea* scroller =
-      ToLayoutBox(e->GetLayoutObject())->GetScrollableArea();
+  PaintLayerScrollableArea* scroller = e->GetLayoutBox()->GetScrollableArea();
   scroller->SetScrollOffset(ScrollOffset(900, 800),
                             mojom::blink::ScrollType::kProgrammatic);
   ASSERT_EQ(ScrollOffset(900, 800), scroller->GetScrollOffset());

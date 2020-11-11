@@ -59,7 +59,7 @@ unsigned MoveCommands::VerticalScrollDistance(LocalFrame& frame) {
   LayoutObject* const layout_object = focused_element->GetLayoutObject();
   if (!layout_object || !layout_object->IsBox())
     return 0;
-  LayoutBox& layout_box = ToLayoutBox(*layout_object);
+  auto& layout_box = To<LayoutBox>(*layout_object);
   const ComputedStyle* const style = layout_box.Style();
   if (!style)
     return 0;

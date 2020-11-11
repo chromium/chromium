@@ -586,12 +586,11 @@ CSSValue* ComputedStyleUtils::ValueForPositionOffset(
   const Length& offset = *positions.first;
   const Length& opposite = *positions.second;
 
-  if (offset.IsPercentOrCalc() && layout_object && layout_object->IsBox() &&
-      layout_object->IsPositioned()) {
+  const auto* box = DynamicTo<LayoutBox>(layout_object);
+  if (offset.IsPercentOrCalc() && box && layout_object->IsPositioned()) {
     LayoutUnit containing_block_size;
     if (layout_object->IsStickyPositioned()) {
-      const LayoutBox& enclosing_scrollport_box =
-          ToLayoutBox(layout_object)->EnclosingScrollportBox();
+      const LayoutBox& enclosing_scrollport_box = box->EnclosingScrollportBox();
       bool use_inline_size = is_horizontal_property ==
                              enclosing_scrollport_box.IsHorizontalWritingMode();
       containing_block_size =
@@ -601,10 +600,8 @@ CSSValue* ComputedStyleUtils::ValueForPositionOffset(
       containing_block_size =
           is_horizontal_property ==
                   layout_object->ContainingBlock()->IsHorizontalWritingMode()
-              ? ToLayoutBox(layout_object)
-                    ->ContainingBlockLogicalWidthForContent()
-              : ToLayoutBox(layout_object)
-                    ->ContainingBlockLogicalHeightForGetComputedStyle();
+              ? box->ContainingBlockLogicalWidthForContent()
+              : box->ContainingBlockLogicalHeightForGetComputedStyle();
     }
 
     return ZoomAdjustedPixelValue(ValueForLength(offset, containing_block_size),
@@ -627,14 +624,12 @@ CSSValue* ComputedStyleUtils::ValueForPositionOffset(
       }
 
       if (opposite.IsPercentOrCalc()) {
-        if (layout_object->IsBox()) {
+        if (box) {
           LayoutUnit containing_block_size =
               is_horizontal_property == layout_object->ContainingBlock()
                                             ->IsHorizontalWritingMode()
-                  ? ToLayoutBox(layout_object)
-                        ->ContainingBlockLogicalWidthForContent()
-                  : ToLayoutBox(layout_object)
-                        ->ContainingBlockLogicalHeightForGetComputedStyle();
+                  ? box->ContainingBlockLogicalWidthForContent()
+                  : box->ContainingBlockLogicalHeightForGetComputedStyle();
           return ZoomAdjustedPixelValue(
               -FloatValueForLength(opposite, containing_block_size), style);
         }
@@ -653,30 +648,29 @@ CSSValue* ComputedStyleUtils::ValueForPositionOffset(
       // right are defined relative to the corresponding sides of the containing
       // block.
       LayoutBlock* container = layout_object->ContainingBlock();
-      const LayoutBox* layout_box = ToLayoutBox(layout_object);
 
       // clientOffset is the distance from this object's border edge to the
       // container's padding edge. Thus it includes margins which we subtract
       // below.
       const LayoutSize client_offset =
-          layout_box->LocationOffset() -
+          box->LocationOffset() -
           LayoutSize(container->ClientLeft(), container->ClientTop());
       LayoutUnit position;
 
       switch (property.PropertyID()) {
         case CSSPropertyID::kLeft:
-          position = client_offset.Width() - layout_box->MarginLeft();
+          position = client_offset.Width() - box->MarginLeft();
           break;
         case CSSPropertyID::kTop:
-          position = client_offset.Height() - layout_box->MarginTop();
+          position = client_offset.Height() - box->MarginTop();
           break;
         case CSSPropertyID::kRight:
-          position = container->ClientWidth() - layout_box->MarginRight() -
-                     (layout_box->OffsetWidth() + client_offset.Width());
+          position = container->ClientWidth() - box->MarginRight() -
+                     (box->OffsetWidth() + client_offset.Width());
           break;
         case CSSPropertyID::kBottom:
-          position = container->ClientHeight() - layout_box->MarginBottom() -
-                     (layout_box->OffsetHeight() + client_offset.Height());
+          position = container->ClientHeight() - box->MarginBottom() -
+                     (box->OffsetHeight() + client_offset.Height());
           break;
         default:
           NOTREACHED();
@@ -1489,7 +1483,7 @@ FloatSize ComputedStyleUtils::UsedBoxSize(const LayoutObject& layout_object) {
   }
   if (!layout_object.IsBox())
     return FloatSize();
-  const LayoutBox& box = ToLayoutBox(layout_object);
+  const auto& box = To<LayoutBox>(layout_object);
   return FloatSize(box.StyleRef().BoxSizing() == EBoxSizing::kBorderBox
                        ? box.BorderBoxRect().Size()
                        : box.ComputedCSSContentBoxRect().Size());
@@ -1954,7 +1948,7 @@ FloatRect ComputedStyleUtils::ReferenceBoxForTransform(
   if (layout_object.IsSVGChild())
     return TransformHelper::ComputeReferenceBox(layout_object);
   if (layout_object.IsBox()) {
-    const auto& layout_box = ToLayoutBox(layout_object);
+    const auto& layout_box = To<LayoutBox>(layout_object);
     if (pixel_snap_box == kUsePixelSnappedBox)
       return FloatRect(layout_box.PixelSnappedBorderBoxRect());
     return FloatRect(layout_box.BorderBoxRect());

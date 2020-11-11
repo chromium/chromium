@@ -529,7 +529,7 @@ bool HasRenderedNonAnonymousDescendantsWithHeight(
        o = o->NextInPreOrder()) {
     if (o->NonPseudoNode()) {
       if ((o->IsText() && To<LayoutText>(o)->HasNonCollapsedText()) ||
-          (o->IsBox() && ToLayoutBox(o)->PixelSnappedLogicalHeight()) ||
+          (o->IsBox() && To<LayoutBox>(o)->PixelSnappedLogicalHeight()) ||
           (o->IsLayoutInline() && IsEmptyInline(LineLayoutItem(o)) &&
            // TODO(crbug.com/771398): Find alternative ways to check whether an
            // empty LayoutInline is rendered, without checking InlineBox.
@@ -637,7 +637,7 @@ bool EndsOfNodeAreVisuallyDistinctPositions(const Node* node) {
   // There is a VisiblePosition inside an empty inline-block container.
   return layout_object->IsAtomicInlineLevel() &&
          CanHaveChildrenForEditing(node) &&
-         !ToLayoutBox(layout_object)->Size().IsEmpty() &&
+         !To<LayoutBox>(layout_object)->Size().IsEmpty() &&
          !HasRenderedNonAnonymousDescendantsWithHeight(layout_object);
 }
 

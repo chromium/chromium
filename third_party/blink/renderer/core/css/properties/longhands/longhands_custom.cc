@@ -4037,7 +4037,7 @@ const CSSValue* MarginBottom::CSSValueFromComputedStyleInternal(
     return ComputedStyleUtils::ZoomAdjustedPixelValueForLength(margin_bottom,
                                                                style);
   }
-  return ZoomAdjustedPixelValue(ToLayoutBox(layout_object)->MarginBottom(),
+  return ZoomAdjustedPixelValue(To<LayoutBox>(layout_object)->MarginBottom(),
                                 style);
 }
 
@@ -4091,7 +4091,7 @@ const CSSValue* MarginLeft::CSSValueFromComputedStyleInternal(
     return ComputedStyleUtils::ZoomAdjustedPixelValueForLength(margin_left,
                                                                style);
   }
-  return ZoomAdjustedPixelValue(ToLayoutBox(layout_object)->MarginLeft(),
+  return ZoomAdjustedPixelValue(To<LayoutBox>(layout_object)->MarginLeft(),
                                 style);
 }
 
@@ -4120,19 +4120,18 @@ const CSSValue* MarginRight::CSSValueFromComputedStyleInternal(
                                                                style);
   }
   float value;
+  const auto& box = *To<LayoutBox>(layout_object);
   if (margin_right.IsPercentOrCalc()) {
     // LayoutBox gives a marginRight() that is the distance between the
     // right-edge of the child box and the right-edge of the containing box,
     // when display == EDisplay::kBlock. Let's calculate the absolute value
     // of the specified margin-right % instead of relying on LayoutBox's
     // marginRight() value.
-    value =
-        MinimumValueForLength(
-            margin_right,
-            ToLayoutBox(layout_object)->ContainingBlockLogicalWidthForContent())
-            .ToFloat();
+    value = MinimumValueForLength(margin_right,
+                                  box.ContainingBlockLogicalWidthForContent())
+                .ToFloat();
   } else {
-    value = ToLayoutBox(layout_object)->MarginRight().ToFloat();
+    value = box.MarginRight().ToFloat();
   }
   return ZoomAdjustedPixelValue(value, style);
 }
@@ -4161,7 +4160,8 @@ const CSSValue* MarginTop::CSSValueFromComputedStyleInternal(
     return ComputedStyleUtils::ZoomAdjustedPixelValueForLength(margin_top,
                                                                style);
   }
-  return ZoomAdjustedPixelValue(ToLayoutBox(layout_object)->MarginTop(), style);
+  return ZoomAdjustedPixelValue(To<LayoutBox>(layout_object)->MarginTop(),
+                                style);
 }
 
 const CSSValue* MarkerEnd::ParseSingleValue(
@@ -4790,7 +4790,7 @@ const CSSValue* PaddingBottom::CSSValueFromComputedStyleInternal(
                                                                style);
   }
   return ZoomAdjustedPixelValue(
-      ToLayoutBox(layout_object)->ComputedCSSPaddingBottom(), style);
+      To<LayoutBox>(layout_object)->ComputedCSSPaddingBottom(), style);
 }
 
 bool PaddingInlineEnd::IsLayoutDependent(const ComputedStyle* style,
@@ -4844,7 +4844,7 @@ const CSSValue* PaddingLeft::CSSValueFromComputedStyleInternal(
                                                                style);
   }
   return ZoomAdjustedPixelValue(
-      ToLayoutBox(layout_object)->ComputedCSSPaddingLeft(), style);
+      To<LayoutBox>(layout_object)->ComputedCSSPaddingLeft(), style);
 }
 
 const CSSValue* PaddingRight::ParseSingleValue(
@@ -4872,7 +4872,7 @@ const CSSValue* PaddingRight::CSSValueFromComputedStyleInternal(
                                                                style);
   }
   return ZoomAdjustedPixelValue(
-      ToLayoutBox(layout_object)->ComputedCSSPaddingRight(), style);
+      To<LayoutBox>(layout_object)->ComputedCSSPaddingRight(), style);
 }
 
 const CSSValue* PaddingTop::ParseSingleValue(
@@ -4900,7 +4900,7 @@ const CSSValue* PaddingTop::CSSValueFromComputedStyleInternal(
                                                                style);
   }
   return ZoomAdjustedPixelValue(
-      ToLayoutBox(layout_object)->ComputedCSSPaddingTop(), style);
+      To<LayoutBox>(layout_object)->ComputedCSSPaddingTop(), style);
 }
 
 const CSSValue* Page::ParseSingleValue(CSSParserTokenRange& range,
@@ -5066,7 +5066,7 @@ const CSSValue* PerspectiveOrigin::CSSValueFromComputedStyleInternal(
   if (layout_object) {
     LayoutRect box;
     if (layout_object->IsBox())
-      box = ToLayoutBox(layout_object)->BorderBoxRect();
+      box = To<LayoutBox>(layout_object)->BorderBoxRect();
 
     return MakeGarbageCollected<CSSValuePair>(
         ZoomAdjustedPixelValue(

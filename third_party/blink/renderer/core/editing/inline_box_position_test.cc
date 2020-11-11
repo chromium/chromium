@@ -53,7 +53,7 @@ TEST_F(InlineBoxPositionTest, ComputeInlineBoxPositionMixedEditable) {
   Element* const sample = GetDocument().getElementById("sample");
   Element* const input = GetDocument().QuerySelector("input");
   const InlineBox* const input_wrapper_box =
-      ToLayoutBox(input->GetLayoutObject())->InlineBoxWrapper();
+      input->GetLayoutBox()->InlineBoxWrapper();
   if (!input_wrapper_box) {
     EXPECT_TRUE(RuntimeEnabledFeatures::LayoutNGEnabled());
     return;
@@ -73,7 +73,7 @@ TEST_F(InlineBoxPositionTest, InFlatTreeAfterInputWithPlaceholderDoesntCrash) {
 
   SetBodyContent("foo <input placeholder=bla> bar");
   const Element* const input = GetDocument().QuerySelector("input");
-  const LayoutBox* const input_layout = ToLayoutBox(input->GetLayoutObject());
+  const auto* const input_layout = input->GetLayoutBox();
   const InlineBox* const input_wrapper = input_layout->InlineBoxWrapper();
   if (!input_wrapper) {
     EXPECT_TRUE(RuntimeEnabledFeatures::LayoutNGEnabled());

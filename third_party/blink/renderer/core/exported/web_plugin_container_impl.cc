@@ -230,7 +230,7 @@ void WebPluginContainerImpl::InvalidateRect(const IntRect& rect) {
   if (!IsAttached())
     return;
 
-  LayoutBox* layout_object = ToLayoutBox(element_->GetLayoutObject());
+  auto* layout_object = To<LayoutBox>(element_->GetLayoutObject());
   if (!layout_object)
     return;
 
@@ -1110,7 +1110,7 @@ void WebPluginContainerImpl::ComputeClipRectsForPlugin(
   while (root_view->GetFrame()->OwnerLayoutObject())
     root_view = root_view->GetFrame()->OwnerLayoutObject()->View();
 
-  LayoutBox* box = ToLayoutBox(owner_element->GetLayoutObject());
+  auto* box = To<LayoutBox>(owner_element->GetLayoutObject());
 
   // Note: FrameRect() for this plugin is equal to contentBoxRect, mapped to
   // the containing view space, and rounded off.  See

@@ -2147,9 +2147,7 @@ TEST_P(AnimationCompositorAnimationsTest,
   EXPECT_EQ(transform->GetBackfaceVisibilityForTesting(),
             TransformPaintPropertyNode::BackfaceVisibility::kVisible);
   const CompositedLayerMapping* composited_layer_mapping =
-      ToLayoutBoxModelObject(target->GetLayoutObject())
-          ->Layer()
-          ->GetCompositedLayerMapping();
+      target->GetLayoutBoxModelObject()->Layer()->GetCompositedLayerMapping();
   ASSERT_NE(nullptr, composited_layer_mapping);
   const auto& layer = composited_layer_mapping->MainGraphicsLayer()->CcLayer();
   EXPECT_FALSE(layer.should_check_backface_visibility());

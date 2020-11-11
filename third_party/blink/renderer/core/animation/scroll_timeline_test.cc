@@ -111,8 +111,8 @@ TEST_F(ScrollTimelineTest, CurrentTimeIsNullIfScrollSourceIsNotScrollable) {
     <div id='scroller'></div>
   )HTML");
 
-  LayoutBoxModelObject* scroller =
-      ToLayoutBoxModelObject(GetLayoutObjectByElementId("scroller"));
+  auto* scroller =
+      To<LayoutBoxModelObject>(GetLayoutObjectByElementId("scroller"));
   ASSERT_TRUE(scroller);
 
   ScrollTimelineOptions* options = ScrollTimelineOptions::Create();
@@ -139,8 +139,8 @@ TEST_F(ScrollTimelineTest,
     </div>
   )HTML");
 
-  LayoutBoxModelObject* scroller =
-      ToLayoutBoxModelObject(GetLayoutObjectByElementId("scroller"));
+  auto* scroller =
+      To<LayoutBoxModelObject>(GetLayoutObjectByElementId("scroller"));
   ASSERT_TRUE(scroller);
   ASSERT_TRUE(scroller->IsScrollContainer());
   PaintLayerScrollableArea* scrollable_area = scroller->GetScrollableArea();
@@ -206,8 +206,8 @@ TEST_F(ScrollTimelineTest,
     </div>
   )HTML");
 
-  LayoutBoxModelObject* scroller =
-      ToLayoutBoxModelObject(GetLayoutObjectByElementId("scroller"));
+  auto* scroller =
+      To<LayoutBoxModelObject>(GetLayoutObjectByElementId("scroller"));
   ASSERT_TRUE(scroller);
   ASSERT_TRUE(scroller->IsScrollContainer());
   PaintLayerScrollableArea* scrollable_area = scroller->GetScrollableArea();
@@ -258,8 +258,8 @@ TEST_F(ScrollTimelineTest, PhasesAreCorrectWhenUsingOffsets) {
     </div>
   )HTML");
 
-  LayoutBoxModelObject* scroller =
-      ToLayoutBoxModelObject(GetLayoutObjectByElementId("scroller"));
+  auto* scroller =
+      To<LayoutBoxModelObject>(GetLayoutObjectByElementId("scroller"));
   ASSERT_TRUE(scroller);
   ASSERT_TRUE(scroller->IsScrollContainer());
   PaintLayerScrollableArea* scrollable_area = scroller->GetScrollableArea();
@@ -444,8 +444,8 @@ TEST_F(ScrollTimelineTest, ScheduleFrameOnlyWhenScrollOffsetChanges) {
     </div>
   )HTML");
 
-  LayoutBoxModelObject* scroller =
-      ToLayoutBoxModelObject(GetLayoutObjectByElementId("scroller"));
+  auto* scroller =
+      To<LayoutBoxModelObject>(GetLayoutObjectByElementId("scroller"));
   PaintLayerScrollableArea* scrollable_area = scroller->GetScrollableArea();
   scrollable_area->SetScrollOffset(ScrollOffset(0, 20),
                                    mojom::blink::ScrollType::kProgrammatic);
@@ -495,8 +495,8 @@ TEST_F(ScrollTimelineTest, ScheduleFrameWhenScrollerLayoutChanges) {
       <div id ='spacer'></div>
     </div>
   )HTML");
-  LayoutBoxModelObject* scroller =
-      ToLayoutBoxModelObject(GetLayoutObjectByElementId("scroller"));
+  auto* scroller =
+      To<LayoutBoxModelObject>(GetLayoutObjectByElementId("scroller"));
   PaintLayerScrollableArea* scrollable_area = scroller->GetScrollableArea();
   scrollable_area->SetScrollOffset(ScrollOffset(0, 20),
                                    mojom::blink::ScrollType::kProgrammatic);
@@ -541,8 +541,8 @@ TEST_F(ScrollTimelineTest,
       <div id ='spacer'></div>
     </div>
   )HTML");
-  LayoutBoxModelObject* scroller =
-      ToLayoutBoxModelObject(GetLayoutObjectByElementId("scroller"));
+  auto* scroller =
+      To<LayoutBoxModelObject>(GetLayoutObjectByElementId("scroller"));
   PaintLayerScrollableArea* scrollable_area = scroller->GetScrollableArea();
   scrollable_area->SetScrollOffset(ScrollOffset(0, 20),
                                    mojom::blink::ScrollType::kProgrammatic);
@@ -586,8 +586,8 @@ TEST_F(ScrollTimelineTest, CurrentTimeUpdateAfterNewAnimationFrame) {
     </div>
   )HTML");
 
-  LayoutBoxModelObject* scroller =
-      ToLayoutBoxModelObject(GetLayoutObjectByElementId("scroller"));
+  auto* scroller =
+      To<LayoutBoxModelObject>(GetLayoutObjectByElementId("scroller"));
   ASSERT_TRUE(scroller);
   ASSERT_TRUE(scroller->IsScrollContainer());
   PaintLayerScrollableArea* scrollable_area = scroller->GetScrollableArea();
@@ -631,8 +631,8 @@ TEST_F(ScrollTimelineTest, FinishedAnimationPlaysOnReversedScrolling) {
     </div>
   )HTML");
   Element* scroller_element = GetElementById("scroller");
-  LayoutBoxModelObject* scroller =
-      ToLayoutBoxModelObject(GetLayoutObjectByElementId("scroller"));
+  auto* scroller =
+      To<LayoutBoxModelObject>(GetLayoutObjectByElementId("scroller"));
   PaintLayerScrollableArea* scrollable_area = scroller->GetScrollableArea();
   TestScrollTimeline* scroll_timeline =
       MakeGarbageCollected<TestScrollTimeline>(&GetDocument(),
@@ -728,8 +728,8 @@ TEST_F(ScrollTimelineTest,
       <div id ='spacer'></div>
     </div>
   )HTML");
-  LayoutBoxModelObject* scroller =
-      ToLayoutBoxModelObject(GetLayoutObjectByElementId("scroller"));
+  auto* scroller =
+      To<LayoutBoxModelObject>(GetLayoutObjectByElementId("scroller"));
   PaintLayerScrollableArea* scrollable_area = scroller->GetScrollableArea();
   TestScrollTimeline* scroll_timeline =
       MakeGarbageCollected<TestScrollTimeline>(&GetDocument(),
@@ -795,8 +795,8 @@ TEST_F(ScrollTimelineTest, MultipleScrollOffsetsCurrentTimeCalculations) {
     </div>
   )HTML");
 
-  LayoutBoxModelObject* scroller =
-      ToLayoutBoxModelObject(GetLayoutObjectByElementId("scroller"));
+  auto* scroller =
+      To<LayoutBoxModelObject>(GetLayoutObjectByElementId("scroller"));
   ASSERT_TRUE(scroller);
   ASSERT_TRUE(scroller->HasNonVisibleOverflow());
   PaintLayerScrollableArea* scrollable_area = scroller->GetScrollableArea();

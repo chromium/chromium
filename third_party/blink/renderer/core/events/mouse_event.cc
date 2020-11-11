@@ -501,8 +501,7 @@ void MouseEvent::ComputeRelativePosition() {
     // find the local coordinates relative to the padding box not the border
     // box.
     if (layout_object->IsBoxModelObject()) {
-      const LayoutBoxModelObject* layout_box =
-          ToLayoutBoxModelObject(layout_object);
+      const auto* layout_box = To<LayoutBoxModelObject>(layout_object);
       local_pos.Move(-layout_box->BorderLeft(), -layout_box->BorderTop());
     }
 

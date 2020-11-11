@@ -178,8 +178,8 @@ InlineBoxPosition ComputeInlineBoxPositionForAtomicInline(
     int caret_offset) {
   // TODO(editing-dev): Add the following DCHECK when ready.
   // DCHECK(CanUseInlineBox(*layout_object);
-  DCHECK(layout_object->IsBox());
-  InlineBox* const inline_box = ToLayoutBox(layout_object)->InlineBoxWrapper();
+  InlineBox* const inline_box =
+      To<LayoutBox>(layout_object)->InlineBoxWrapper();
   if (!inline_box)
     return InlineBoxPosition();
   if ((caret_offset > inline_box->CaretMinOffset() &&

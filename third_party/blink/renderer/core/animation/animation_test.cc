@@ -1419,8 +1419,8 @@ TEST_F(AnimationAnimationTestCompositing,
   )HTML");
 
   // Create ScrollTimeline
-  LayoutBoxModelObject* scroller =
-      ToLayoutBoxModelObject(GetLayoutObjectByElementId("scroller"));
+  auto* scroller =
+      To<LayoutBoxModelObject>(GetLayoutObjectByElementId("scroller"));
   PaintLayerScrollableArea* scrollable_area = scroller->GetScrollableArea();
   scrollable_area->SetScrollOffset(ScrollOffset(0, 20),
                                    mojom::blink::ScrollType::kProgrammatic);
@@ -1485,8 +1485,8 @@ TEST_F(AnimationAnimationTestCompositing,
   )HTML");
 
   // Create ScrollTimeline
-  LayoutBoxModelObject* scroller =
-      ToLayoutBoxModelObject(GetLayoutObjectByElementId("scroller"));
+  auto* scroller =
+      To<LayoutBoxModelObject>(GetLayoutObjectByElementId("scroller"));
   PaintLayerScrollableArea* scrollable_area = scroller->GetScrollableArea();
   scrollable_area->SetScrollOffset(ScrollOffset(0, 100),
                                    mojom::blink::ScrollType::kProgrammatic);
@@ -1563,8 +1563,8 @@ TEST_F(AnimationAnimationTestNoCompositing, ScrollLinkedAnimationCreation) {
     </div>
   )HTML");
 
-  LayoutBoxModelObject* scroller =
-      ToLayoutBoxModelObject(GetLayoutObjectByElementId("scroller"));
+  auto* scroller =
+      To<LayoutBoxModelObject>(GetLayoutObjectByElementId("scroller"));
   PaintLayerScrollableArea* scrollable_area = scroller->GetScrollableArea();
   scrollable_area->SetScrollOffset(ScrollOffset(0, 20),
                                    mojom::blink::ScrollType::kProgrammatic);
@@ -1619,8 +1619,8 @@ TEST_F(AnimationAnimationTestCompositing,
     </div>
   )HTML");
 
-  LayoutBoxModelObject* scroller =
-      ToLayoutBoxModelObject(GetLayoutObjectByElementId("scroller"));
+  auto* scroller =
+      To<LayoutBoxModelObject>(GetLayoutObjectByElementId("scroller"));
   ASSERT_TRUE(scroller->UsesCompositedScrolling());
 
   // Create ScrollTimeline
@@ -1961,8 +1961,8 @@ TEST_F(AnimationAnimationTestCompositing,
   )HTML");
 
   // Create ScrollTimeline
-  LayoutBoxModelObject* scroller =
-      ToLayoutBoxModelObject(GetLayoutObjectByElementId("scroller"));
+  auto* scroller =
+      To<LayoutBoxModelObject>(GetLayoutObjectByElementId("scroller"));
   PaintLayerScrollableArea* scrollable_area = scroller->GetScrollableArea();
   ASSERT_FALSE(scroller->UsesCompositedScrolling());
   scrollable_area->SetScrollOffset(ScrollOffset(0, 20),
