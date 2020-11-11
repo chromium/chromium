@@ -630,6 +630,8 @@ SkBitmap SkBitmapOperations::UnPreMultiply(const SkBitmap& bitmap) {
     return bitmap;
   if (bitmap.alphaType() != kPremul_SkAlphaType)
     return bitmap;
+  // It's expected this code is called with a 32bpp image.
+  CHECK_EQ(kN32_SkColorType, bitmap.colorType());
 
   const SkImageInfo& opaque_info =
       bitmap.info().makeAlphaType(kUnpremul_SkAlphaType);
