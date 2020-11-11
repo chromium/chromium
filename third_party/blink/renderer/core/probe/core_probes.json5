@@ -120,6 +120,7 @@
         "FrameStartedLoading",
         "PrepareRequest",
         "GetDisabledImageTypes",
+        "WillCommitLoad",
       ]
     },
     InspectorLayerTreeAgent: {

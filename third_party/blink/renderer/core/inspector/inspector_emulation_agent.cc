@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/inspector/dev_tools_emulator.h"
 #include "third_party/blink/renderer/core/inspector/locale_controller.h"
 #include "third_party/blink/renderer/core/inspector/protocol/DOM.h"
+#include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/page/focus_controller.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/platform/geometry/double_rect.h"
@@ -431,6 +432,9 @@ void InspectorEmulationAgent::ApplyVirtualTimePolicy(
         budget_amount,
         WTF::Bind(&InspectorEmulationAgent::VirtualTimeBudgetExpired,
                   WrapWeakPersistent(this)));
+    for (DocumentLoader* loader : pending_document_loaders_)
+      loader->SetDefersLoading(false);
+    pending_document_loaders_.clear();
   }
   if (new_policy.max_virtual_time_task_starvation_count) {
     web_local_frame_->View()->Scheduler()->SetMaxVirtualTimeTaskStarvationCount(
@@ -668,6 +672,16 @@ void InspectorEmulationAgent::GetDisabledImageTypes(HashSet<String>* result) {
     result->insert(type);
 }
 
+void InspectorEmulationAgent::WillCommitLoad(LocalFrame*,
+                                             DocumentLoader* loader) {
+  if (virtual_time_policy_.Get() !=
+      protocol::Emulation::VirtualTimePolicyEnum::Pause) {
+    return;
+  }
+  loader->SetDefersLoading(true);
+  pending_document_loaders_.push_back(loader);
+}
+
 void InspectorEmulationAgent::ApplyAcceptLanguageOverride(String* accept_lang) {
   if (!accept_language_override_.Get().IsEmpty())
     *accept_lang = accept_language_override_.Get();
@@ -704,6 +718,7 @@ Response InspectorEmulationAgent::AssertPage() {
 
 void InspectorEmulationAgent::Trace(Visitor* visitor) const {
   visitor->Trace(web_local_frame_);
+  visitor->Trace(pending_document_loaders_);
   InspectorBaseAgent::Trace(visitor);
 }
 
