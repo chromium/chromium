@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 1522 tests; 1497 PASS, 25 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 1520 tests; 1495 PASS, 25 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS -apple-color-filter: _camel_cased_attribute v. CSS.supports
 PASS -apple-color-filter: _webkit_cased_attribute must only exist for -webkit-
 PASS -apple-color-filter: _dashed_attribute v. CSS.supports
@@ -1347,8 +1347,6 @@ PASS shape-rendering: _camel_cased_attribute v. CSS.supports
 PASS shape-rendering: _dashed_attribute v. CSS.supports
 PASS size: _camel_cased_attribute v. CSS.supports
 PASS speak: _camel_cased_attribute v. CSS.supports
-PASS speak-as: _camel_cased_attribute v. CSS.supports
-PASS speak-as: _dashed_attribute v. CSS.supports
 FAIL src: _camel_cased_attribute v. CSS.supports assert_equals: expected true but got false
 PASS stop-color: _camel_cased_attribute v. CSS.supports
 PASS stop-color: _dashed_attribute v. CSS.supports
