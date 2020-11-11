@@ -7,6 +7,7 @@
 
 #include "base/callback.h"
 #include "base/strings/string_piece.h"
+#include "chrome/browser/policy/messaging_layer/encryption/encryption.h"
 #include "chrome/browser/policy/messaging_layer/public/report_queue.h"
 #include "chrome/browser/policy/messaging_layer/util/statusor.h"
 #include "components/policy/proto/record.pb.h"
@@ -29,7 +30,7 @@ class TestEncryptionModuleStrict : public EncryptionModule {
 
   void UpdateAsymmetricKey(
       base::StringPiece new_public_key,
-      int64_t new_public_key_id,
+      Encryptor::PublicKeyId new_public_key_id,
       base::OnceCallback<void(Status)> response_cb) override;
 
  protected:

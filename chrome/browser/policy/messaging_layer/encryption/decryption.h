@@ -15,6 +15,7 @@
 #include "base/strings/string_piece.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "chrome/browser/policy/messaging_layer/encryption/encryption.h"
 #include "chrome/browser/policy/messaging_layer/util/status.h"
 #include "chrome/browser/policy/messaging_layer/util/statusor.h"
 
@@ -79,14 +80,15 @@ class Decryptor : public base::RefCountedThreadSafe<Decryptor> {
 
   // Records a key pair (stores only private key).
   // Executes on a sequenced thread, returns key id or error with callback.
-  void RecordKeyPair(base::StringPiece private_key,
-                     base::StringPiece public_key,
-                     base::OnceCallback<void(StatusOr<int64_t>)> cb);
+  void RecordKeyPair(
+      base::StringPiece private_key,
+      base::StringPiece public_key,
+      base::OnceCallback<void(StatusOr<Encryptor::PublicKeyId>)> cb);
 
   // Retrieves private key matching the public key hash.
   // Executes on a sequenced thread, returns with callback.
   void RetrieveMatchingPrivateKey(
-      int64_t public_key_id,
+      Encryptor::PublicKeyId public_key_id,
       base::OnceCallback<void(StatusOr<std::string>)> cb);
 
  private:
@@ -102,7 +104,7 @@ class Decryptor : public base::RefCountedThreadSafe<Decryptor> {
     std::string private_key;
     base::Time time_stamp;
   };
-  base::flat_map<int64_t, KeyInfo> keys_;
+  base::flat_map<Encryptor::PublicKeyId, KeyInfo> keys_;
 
   // Sequential task runner for all keys_ activities:
   // recording, lookup, purge.

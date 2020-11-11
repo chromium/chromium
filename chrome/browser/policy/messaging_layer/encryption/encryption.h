@@ -39,6 +39,9 @@ namespace reporting {
 // The implementation class should never be used directly by the client code.
 class Encryptor : public base::RefCountedThreadSafe<Encryptor> {
  public:
+  // Public key id, as defined by Keystore.
+  using PublicKeyId = int32_t;
+
   // Encryption record handle, which is created by |OpenRecord| and can accept
   // pieces of data to be encrypted as one record by calling |AddToRecord|
   // multiple times. Resulting encrypted record is available once |CloseRecord|
@@ -65,7 +68,7 @@ class Encryptor : public base::RefCountedThreadSafe<Encryptor> {
     // as a callback after asynchronous retrieval of the asymmetric key.
     void ProduceEncryptedRecord(
         base::OnceCallback<void(StatusOr<EncryptedRecord>)> cb,
-        StatusOr<std::pair<std::string, int64_t>> asymmetric_key_result);
+        StatusOr<std::pair<std::string, PublicKeyId>> asymmetric_key_result);
 
     // Accumulated data to encrypt.
     std::string record_;
@@ -85,13 +88,14 @@ class Encryptor : public base::RefCountedThreadSafe<Encryptor> {
   // (it is OK to do it after OpenRecord and Handle::AddToRecord).
   // Executes on a sequenced thread, returns with callback.
   void UpdateAsymmetricKey(base::StringPiece new_public_key,
-                           int64_t new_public_key_id,
+                           PublicKeyId new_public_key_id,
                            base::OnceCallback<void(Status)> response_cb);
 
   // Retrieves the current public key.
   // Executes on a sequenced thread, returns with callback.
   void RetrieveAsymmetricKey(
-      base::OnceCallback<void(StatusOr<std::pair<std::string, int64_t>>)> cb);
+      base::OnceCallback<void(StatusOr<std::pair<std::string, PublicKeyId>>)>
+          cb);
 
  private:
   friend class base::RefCountedThreadSafe<Encryptor>;
@@ -99,7 +103,7 @@ class Encryptor : public base::RefCountedThreadSafe<Encryptor> {
   ~Encryptor();
 
   // Public key used for asymmetric encryption of symmetric key and its id.
-  base::Optional<std::pair<std::string, int64_t>> asymmetric_key_;
+  base::Optional<std::pair<std::string, PublicKeyId>> asymmetric_key_;
 
   // Sequential task runner for all asymmetric_key_ activities: update, read.
   scoped_refptr<base::SequencedTaskRunner>

@@ -47,7 +47,7 @@ void Encryptor::Handle::CloseRecord(
 
 void Encryptor::Handle::ProduceEncryptedRecord(
     base::OnceCallback<void(StatusOr<EncryptedRecord>)> cb,
-    StatusOr<std::pair<std::string, int64_t>> asymmetric_key_result) {
+    StatusOr<std::pair<std::string, PublicKeyId>> asymmetric_key_result) {
   // Make sure the record self-destructs when returning from this method.
   const auto self_destruct = base::WrapUnique(this);
 
@@ -133,7 +133,7 @@ Encryptor::~Encryptor() = default;
 
 void Encryptor::UpdateAsymmetricKey(
     base::StringPiece new_public_key,
-    int64_t new_public_key_id,
+    PublicKeyId new_public_key_id,
     base::OnceCallback<void(Status)> response_cb) {
   if (new_public_key.empty()) {
     std::move(response_cb)
@@ -145,7 +145,7 @@ void Encryptor::UpdateAsymmetricKey(
   asymmetric_key_sequenced_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(
-          [](base::StringPiece new_public_key, int64_t new_public_key_id,
+          [](base::StringPiece new_public_key, PublicKeyId new_public_key_id,
              scoped_refptr<Encryptor> encryptor) {
             encryptor->asymmetric_key_ =
                 std::make_pair(std::string(new_public_key), new_public_key_id);
@@ -162,29 +162,30 @@ void Encryptor::OpenRecord(base::OnceCallback<void(StatusOr<Handle*>)> cb) {
 }
 
 void Encryptor::RetrieveAsymmetricKey(
-    base::OnceCallback<void(StatusOr<std::pair<std::string, int64_t>>)> cb) {
+    base::OnceCallback<void(StatusOr<std::pair<std::string, PublicKeyId>>)>
+        cb) {
   // Schedule key retrieval on the sequenced task runner.
   asymmetric_key_sequenced_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(
-          [](base::OnceCallback<void(StatusOr<std::pair<std::string, int64_t>>)>
-                 cb,
+          [](base::OnceCallback<void(
+                 StatusOr<std::pair<std::string, PublicKeyId>>)> cb,
              scoped_refptr<Encryptor> encryptor) {
             DCHECK_CALLED_ON_VALID_SEQUENCE(
                 encryptor->asymmetric_key_sequence_checker_);
-            StatusOr<std::pair<std::string, int64_t>> response;
+            StatusOr<std::pair<std::string, PublicKeyId>> response;
             // Schedule response on regular thread pool.
             base::ThreadPool::PostTask(
                 FROM_HERE,
                 base::BindOnce(
                     [](base::OnceCallback<void(
-                           StatusOr<std::pair<std::string, int64_t>>)> cb,
-                       StatusOr<std::pair<std::string, int64_t>> response) {
+                           StatusOr<std::pair<std::string, PublicKeyId>>)> cb,
+                       StatusOr<std::pair<std::string, PublicKeyId>> response) {
                       std::move(cb).Run(response);
                     },
                     std::move(cb),
                     !encryptor->asymmetric_key_.has_value()
-                        ? StatusOr<std::pair<std::string, int64_t>>(Status(
+                        ? StatusOr<std::pair<std::string, PublicKeyId>>(Status(
                               error::NOT_FOUND, "Asymmetric key not set"))
                         : encryptor->asymmetric_key_.value()));
           },

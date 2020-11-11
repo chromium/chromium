@@ -14,6 +14,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "chrome/browser/policy/messaging_layer/encryption/decryption.h"
+#include "chrome/browser/policy/messaging_layer/encryption/encryption.h"
 #include "chrome/browser/policy/messaging_layer/util/status.h"
 #include "chrome/browser/policy/messaging_layer/util/status_macros.h"
 #include "chrome/browser/policy/messaging_layer/util/statusor.h"
@@ -114,8 +115,9 @@ class EncryptionModuleTest : public ::testing::Test {
     return decrypted_string;
   }
 
-  StatusOr<std::string> DecryptMatchingSecret(int64_t public_key_id,
-                                              base::StringPiece encrypted_key) {
+  StatusOr<std::string> DecryptMatchingSecret(
+      Encryptor::PublicKeyId public_key_id,
+      base::StringPiece encrypted_key) {
     // Retrieve private key that matches public key hash.
     TestEvent<StatusOr<std::string>> retrieve_private_key;
     decryptor_->RetrieveMatchingPrivateKey(public_key_id,
@@ -133,14 +135,15 @@ class EncryptionModuleTest : public ::testing::Test {
     uint8_t out_private_key[X25519_PRIVATE_KEY_LEN];
     X25519_keypair(out_public_value, out_private_key);
 
-    TestEvent<StatusOr<int64_t>> record_keys;
+    TestEvent<StatusOr<Encryptor::PublicKeyId>> record_keys;
     decryptor_->RecordKeyPair(
         std::string(reinterpret_cast<const char*>(out_private_key),
                     X25519_PRIVATE_KEY_LEN),
         std::string(reinterpret_cast<const char*>(out_public_value),
                     X25519_PUBLIC_VALUE_LEN),
         record_keys.cb());
-    ASSIGN_OR_RETURN(int64_t new_public_key_id, record_keys.result());
+    ASSIGN_OR_RETURN(Encryptor::PublicKeyId new_public_key_id,
+                     record_keys.result());
     TestEvent<Status> set_public_key;
     encryption_module_->UpdateAsymmetricKey(
         std::string(reinterpret_cast<const char*>(out_public_value),
@@ -275,7 +278,7 @@ TEST_F(EncryptionModuleTest, EncryptAndDecryptMultipleParallel) {
     SingleEncryptionContext(
         base::StringPiece test_string,
         base::StringPiece public_key,
-        int64_t public_key_id,
+        Encryptor::PublicKeyId public_key_id,
         scoped_refptr<EncryptionModule> encryption_module,
         base::OnceCallback<void(StatusOr<EncryptedRecord>)> response)
         : test_string_(test_string),
@@ -336,7 +339,7 @@ TEST_F(EncryptionModuleTest, EncryptAndDecryptMultipleParallel) {
    private:
     const std::string test_string_;
     const std::string public_key_;
-    const int64_t public_key_id_;
+    const Encryptor::PublicKeyId public_key_id_;
     const scoped_refptr<EncryptionModule> encryption_module_;
     base::OnceCallback<void(StatusOr<EncryptedRecord>)> response_;
   };
@@ -468,7 +471,7 @@ TEST_F(EncryptionModuleTest, EncryptAndDecryptMultipleParallel) {
   // Public and private key pairs in this test are reversed strings.
   std::vector<std::string> private_key_strings;
   std::vector<std::string> public_value_strings;
-  std::vector<int64_t> public_value_ids;
+  std::vector<Encryptor::PublicKeyId> public_value_ids;
   for (size_t i = 0; i < 3; ++i) {
     // Generate new pair of private key and public value.
     uint8_t out_public_value[X25519_PUBLIC_VALUE_LEN];
@@ -482,7 +485,7 @@ TEST_F(EncryptionModuleTest, EncryptAndDecryptMultipleParallel) {
   }
 
   // Register all key pairs for decryption.
-  std::vector<TestEvent<StatusOr<int64_t>>> record_results(
+  std::vector<TestEvent<StatusOr<Encryptor::PublicKeyId>>> record_results(
       public_value_strings.size());
   for (size_t i = 0; i < public_value_strings.size(); ++i) {
     base::ThreadPool::PostTask(
@@ -490,7 +493,8 @@ TEST_F(EncryptionModuleTest, EncryptAndDecryptMultipleParallel) {
                        [](base::StringPiece private_key_string,
                           base::StringPiece public_key_string,
                           scoped_refptr<Decryptor> decryptor,
-                          base::OnceCallback<void(StatusOr<int64_t>)> done_cb) {
+                          base::OnceCallback<void(
+                              StatusOr<Encryptor::PublicKeyId>)> done_cb) {
                          decryptor->RecordKeyPair(private_key_string,
                                                   public_key_string,
                                                   std::move(done_cb));

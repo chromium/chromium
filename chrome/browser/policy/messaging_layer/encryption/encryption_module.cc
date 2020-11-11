@@ -88,7 +88,7 @@ void EncryptionModule::EncryptRecord(
 
 void EncryptionModule::UpdateAsymmetricKey(
     base::StringPiece new_public_key,
-    int64_t new_public_key_id,
+    Encryptor::PublicKeyId new_public_key_id,
     base::OnceCallback<void(Status)> response_cb) {
   encryptor_->UpdateAsymmetricKey(new_public_key, new_public_key_id,
                                   std::move(response_cb));

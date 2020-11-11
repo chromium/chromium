@@ -14,6 +14,7 @@
 #include "base/task/post_task.h"
 #include "base/task_runner.h"
 #include "chrome/browser/policy/messaging_layer/encryption/decryption.h"
+#include "chrome/browser/policy/messaging_layer/encryption/encryption.h"
 #include "chrome/browser/policy/messaging_layer/util/status.h"
 #include "chrome/browser/policy/messaging_layer/util/statusor.h"
 #include "crypto/aead.h"
@@ -122,18 +123,19 @@ Decryptor::Decryptor()
 
 Decryptor::~Decryptor() = default;
 
-void Decryptor::RecordKeyPair(base::StringPiece private_key,
-                              base::StringPiece public_key,
-                              base::OnceCallback<void(StatusOr<int64_t>)> cb) {
+void Decryptor::RecordKeyPair(
+    base::StringPiece private_key,
+    base::StringPiece public_key,
+    base::OnceCallback<void(StatusOr<Encryptor::PublicKeyId>)> cb) {
   // Schedule key recording on the sequenced task runner.
   keys_sequenced_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(
           [](std::string public_key, KeyInfo key_info,
-             base::OnceCallback<void(StatusOr<int64_t>)> cb,
+             base::OnceCallback<void(StatusOr<Encryptor::PublicKeyId>)> cb,
              scoped_refptr<Decryptor> decryptor) {
             DCHECK_CALLED_ON_VALID_SEQUENCE(decryptor->keys_sequence_checker_);
-            StatusOr<int64_t> result;
+            StatusOr<Encryptor::PublicKeyId> result;
             if (key_info.private_key.size() != X25519_PRIVATE_KEY_LEN) {
               result = Status(
                   error::FAILED_PRECONDITION,
@@ -152,7 +154,7 @@ void Decryptor::RecordKeyPair(base::StringPiece private_key,
               // Assign a random number to be public key id for testing purposes
               // only (in production it will be Java Fingerprint2011 which is
               // 'long').
-              int64_t public_key_id;
+              Encryptor::PublicKeyId public_key_id;
               base::RandBytes(&public_key_id, sizeof(public_key_id));
               if (!decryptor->keys_.emplace(public_key_id, key_info).second) {
                 result = Status(error::ALREADY_EXISTS,
@@ -164,11 +166,13 @@ void Decryptor::RecordKeyPair(base::StringPiece private_key,
             }
             // Schedule response on a generic thread pool.
             base::ThreadPool::PostTask(
-                FROM_HERE,
-                base::BindOnce(
-                    [](base::OnceCallback<void(StatusOr<int64_t>)> cb,
-                       StatusOr<int64_t> result) { std::move(cb).Run(result); },
-                    std::move(cb), result));
+                FROM_HERE, base::BindOnce(
+                               [](base::OnceCallback<void(
+                                      StatusOr<Encryptor::PublicKeyId>)> cb,
+                                  StatusOr<Encryptor::PublicKeyId> result) {
+                                 std::move(cb).Run(result);
+                               },
+                               std::move(cb), result));
           },
           std::string(public_key),
           KeyInfo{.private_key = std::string(private_key),
@@ -177,13 +181,13 @@ void Decryptor::RecordKeyPair(base::StringPiece private_key,
 }
 
 void Decryptor::RetrieveMatchingPrivateKey(
-    int64_t public_key_id,
+    Encryptor::PublicKeyId public_key_id,
     base::OnceCallback<void(StatusOr<std::string>)> cb) {
   // Schedule key retrieval on the sequenced task runner.
   keys_sequenced_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(
-          [](int64_t public_key_id,
+          [](Encryptor::PublicKeyId public_key_id,
              base::OnceCallback<void(StatusOr<std::string>)> cb,
              scoped_refptr<Decryptor> decryptor) {
             DCHECK_CALLED_ON_VALID_SEQUENCE(decryptor->keys_sequence_checker_);
