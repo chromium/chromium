@@ -25,10 +25,11 @@ class ContentUpdateTask extends ProcessContentCaptureDataTask {
 
     private AutofillId notifyViewTextChanged(
             PlatformSessionData parentPlatformSessionData, ContentCaptureData data) {
-        AutofillId autofillId = parentPlatformSessionData.contentCaptureSession.newAutofillId(
+        AutofillId autofillId = PlatformAPIWrapper.getInstance().newAutofillId(
+                parentPlatformSessionData.contentCaptureSession,
                 mPlatformSession.getRootPlatformSessionData().autofillId, data.getId());
-        parentPlatformSessionData.contentCaptureSession.notifyViewTextChanged(
-                autofillId, data.getValue());
+        PlatformAPIWrapper.getInstance().notifyViewTextChanged(
+                parentPlatformSessionData.contentCaptureSession, autofillId, data.getValue());
         return autofillId;
     }
 }

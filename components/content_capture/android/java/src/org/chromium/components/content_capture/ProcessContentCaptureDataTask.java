@@ -27,9 +27,8 @@ abstract class ProcessContentCaptureDataTask extends NotificationTask {
     }
 
     @Override
-    protected Boolean doInBackground() {
+    protected void runTask() {
         processContent();
-        return true;
     }
 
     private void processContent() {

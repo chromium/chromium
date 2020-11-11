@@ -41,6 +41,8 @@ android_library("java") {
     "java/src/org/chromium/components/content_capture/ExperimentContentCaptureConsumer.java",
     "java/src/org/chromium/components/content_capture/FrameSession.java",
     "java/src/org/chromium/components/content_capture/NotificationTask.java",
+    "java/src/org/chromium/components/content_capture/PlatformAPIWrapper.java",
+    "java/src/org/chromium/components/content_capture/PlatformAPIWrapperImpl.java",
     "java/src/org/chromium/components/content_capture/PlatformSession.java",
     "java/src/org/chromium/components/content_capture/ProcessContentCaptureDataTask.java",
     "java/src/org/chromium/components/content_capture/SessionRemovedTask.java",

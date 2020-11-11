@@ -15,9 +15,8 @@ class SessionRemovedTask extends NotificationTask {
     }
 
     @Override
-    protected Boolean doInBackground() {
+    protected void runTask() {
         removeSession();
-        return true;
     }
 
     private void removeSession() {
@@ -25,7 +24,8 @@ class SessionRemovedTask extends NotificationTask {
         PlatformSessionData removedPlatformSessionData =
                 mPlatformSession.getFrameIdToPlatformSessionData().remove(mSession.get(0).getId());
         if (removedPlatformSessionData == null) return;
-        removedPlatformSessionData.contentCaptureSession.destroy();
+        PlatformAPIWrapper.getInstance().destroyContentCaptureSession(
+                removedPlatformSessionData.contentCaptureSession);
         PlatformSessionData parentPlatformSessionData =
                 mPlatformSession.getRootPlatformSessionData();
         // We need to notify the view disappeared through the removed session's parent,
@@ -36,7 +36,8 @@ class SessionRemovedTask extends NotificationTask {
                     mPlatformSession.getFrameIdToPlatformSessionData().get(mSession.get(1).getId());
         }
         if (parentPlatformSessionData == null) return;
-        parentPlatformSessionData.contentCaptureSession.notifyViewDisappeared(
+        PlatformAPIWrapper.getInstance().notifyViewDisappeared(
+                parentPlatformSessionData.contentCaptureSession,
                 removedPlatformSessionData.autofillId);
     }
 }
