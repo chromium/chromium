@@ -5,7 +5,6 @@
 #include "chrome/renderer/lite_video/lite_video_url_loader_throttle.h"
 
 #include "base/metrics/histogram_macros.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "chrome/renderer/lite_video/lite_video_hint_agent.h"
 #include "chrome/renderer/lite_video/lite_video_util.h"
 #include "content/public/renderer/render_frame.h"

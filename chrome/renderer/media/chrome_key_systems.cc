@@ -35,10 +35,10 @@
 #include "media/base/media_switches.h"
 #include "media/base/video_codecs.h"
 #if BUILDFLAG(ENABLE_WIDEVINE)
-#include "third_party/widevine/cdm/widevine_cdm_common.h"
+#include "third_party/widevine/cdm/widevine_cdm_common.h"  // nogncheck
 // TODO(crbug.com/663554): Needed for WIDEVINE_CDM_MIN_GLIBC_VERSION.
 // component updated CDM on all desktop platforms and remove this.
-#include "widevine_cdm_version.h" // In SHARED_INTERMEDIATE_DIR.
+#include "widevine_cdm_version.h"  // In SHARED_INTERMEDIATE_DIR. // nogncheck
 // The following must be after widevine_cdm_version.h.
 #if defined(WIDEVINE_CDM_MIN_GLIBC_VERSION)
 #include <gnu/libc-version.h>

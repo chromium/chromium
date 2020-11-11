@@ -200,8 +200,8 @@
 
 #if BUILDFLAG(ENABLE_PRINTING)
 #include "chrome/renderer/printing/chrome_print_render_frame_helper_delegate.h"
-#include "components/printing/renderer/print_render_frame_helper.h"
-#include "printing/print_settings.h"
+#include "components/printing/renderer/print_render_frame_helper.h"  // nogncheck
+#include "printing/print_settings.h"  // nogncheck
 #endif
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
@@ -209,7 +209,7 @@
 #endif
 
 #if BUILDFLAG(ENABLE_PAINT_PREVIEW)
-#include "components/paint_preview/renderer/paint_preview_recorder_impl.h"
+#include "components/paint_preview/renderer/paint_preview_recorder_impl.h"  // nogncheck
 #endif
 
 #if BUILDFLAG(ENABLE_SPELLCHECK)

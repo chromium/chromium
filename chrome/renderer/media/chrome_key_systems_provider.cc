@@ -9,7 +9,7 @@
 #include "third_party/widevine/cdm/buildflags.h"
 
 #if BUILDFLAG(ENABLE_WIDEVINE_CDM_COMPONENT)
-#include "third_party/widevine/cdm/widevine_cdm_common.h"
+#include "third_party/widevine/cdm/widevine_cdm_common.h"  // nogncheck
 #endif
 
 ChromeKeySystemsProvider::ChromeKeySystemsProvider()
