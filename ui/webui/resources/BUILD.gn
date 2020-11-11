@@ -12,10 +12,12 @@ generate_grd("build_grd") {
   out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
 
   deps = [
+    "html:build_grdp",
     "js:build_grdp",
     "js/cr/ui:build_grdp",
   ]
   grdp_files = [
+    "$target_gen_dir/html/resources.grdp",
     "$target_gen_dir/js/cr/ui/resources.grdp",
     "$target_gen_dir/js/resources.grdp",
   ]

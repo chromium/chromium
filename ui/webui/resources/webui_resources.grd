@@ -128,89 +128,12 @@ without changes to the corresponding grd file. -->
                  file="css/widgets.css" type="chrome_html"
                  flattenhtml="true" />
 
-      <structure name="IDR_WEBUI_HTML_ACTION_LINK_HTML"
-                 file="html/action_link.html" type="chrome_html" />
-      <structure name="IDR_WEBUI_HTML_ASSERT_HTML"
-                 file="html/assert.html" type="chrome_html" />
-      <structure name="IDR_WEBUI_HTML_PROMISE_RESOLVER_HTML"
-                 file="html/promise_resolver.html" type="chrome_html" />
-
       <if expr="chromeos">
         <structure name="IDR_WEBUI_CROS_COLORS_CSS"
                    file="${root_gen_dir}/ui/chromeos/colors/cros_colors.generated.css"
                    type="chrome_html"
                    use_base_dir="false" />
       </if>
-
-      <structure name="IDR_WEBUI_HTML_CR_HTML"
-                 file="html/cr.html" type="chrome_html" />
-      <structure name="IDR_WEBUI_HTML_CR_EVENT_TARGET_HTML"
-                 file="html/cr/event_target.html" type="chrome_html" />
-      <structure name="IDR_WEBUI_HTML_CR_UI_HTML"
-                 file="html/cr/ui.html" type="chrome_html" />
-      <structure name="IDR_WEBUI_HTML_CR_UI_ARRAY_DATA_MODEL_HTML"
-                 file="html/cr/ui/array_data_model.html" type="chrome_html" />
-      <structure name="IDR_WEBUI_HTML_CR_UI_COMMAND_HTML"
-                 file="html/cr/ui/command.html" type="chrome_html" />
-      <structure name="IDR_WEBUI_HTML_CR_UI_CONTEXT_MENU_HANDLER_HTML"
-                 file="html/cr/ui/context_menu_handler.html"
-                 type="chrome_html" />
-      <structure name="IDR_WEBUI_HTML_CR_UI_DRAG_WRAPPER_HTML"
-                 file="html/cr/ui/drag_wrapper.html" type="chrome_html" />
-      <structure name="IDR_WEBUI_HTML_CR_UI_FOCUS_GRID_HTML"
-                 file="html/cr/ui/focus_grid.html" type="chrome_html" />
-      <structure name="IDR_WEBUI_HTML_CR_UI_FOCUS_MANAGER_HTML"
-                 file="html/cr/ui/focus_manager.html" type="chrome_html" />
-      <structure name="IDR_WEBUI_HTML_CR_UI_FOCUS_OUTLINE_MANAGER_HTML"
-                 file="html/cr/ui/focus_outline_manager.html"
-                 type="chrome_html" />
-      <structure name="IDR_WEBUI_HTML_CR_UI_FOCUS_ROW_HTML"
-                 file="html/cr/ui/focus_row.html" type="chrome_html" />
-      <structure name="IDR_WEBUI_HTML_CR_UI_KEYBOARD_SHORTCUT_LIST_HTML"
-                 file="html/cr/ui/keyboard_shortcut_list.html"
-                 type="chrome_html" />
-      <structure name="IDR_WEBUI_HTML_CR_UI_LIST_HTML"
-                 file="html/cr/ui/list.html"
-                 type="chrome_html" />
-      <structure name="IDR_WEBUI_HTML_CR_UI_LIST_ITEM_HTML"
-                 file="html/cr/ui/list_item.html"
-                 type="chrome_html" />
-      <structure name="IDR_WEBUI_HTML_CR_UI_LIST_SELECTION_CONTROLLER_HTML"
-                 file="html/cr/ui/list_selection_controller.html"
-                 type="chrome_html" />
-      <structure name="IDR_WEBUI_HTML_CR_UI_LIST_SELECTION_MODEL_HTML"
-                 file="html/cr/ui/list_selection_model.html"
-                 type="chrome_html" />
-      <structure name="IDR_WEBUI_HTML_CR_UI_MENU_HTML"
-                 file="html/cr/ui/menu.html" type="chrome_html" />
-      <structure name="IDR_WEBUI_HTML_CR_UI_MENU_BUTTON_HTML"
-                 file="html/cr/ui/menu_button.html" type="chrome_html" />
-      <structure name="IDR_WEBUI_HTML_CR_UI_MENU_ITEM_HTML"
-                 file="html/cr/ui/menu_item.html" type="chrome_html" />
-      <structure name="IDR_WEBUI_HTML_CR_UI_OVERLAY_HTML"
-                 file="html/cr/ui/overlay.html" type="chrome_html" />
-      <structure name="IDR_WEBUI_HTML_CR_UI_POSITION_UTIL_HTML"
-                 file="html/cr/ui/position_util.html" type="chrome_html" />
-      <structure name="IDR_WEBUI_HTML_CR_UI_SPLITTER_HTML"
-                 file="html/cr/ui/splitter.html" type="chrome_html" />
-      <structure name="IDR_WEBUI_HTML_CR_UI_STORE_HTML"
-                 file="html/cr/ui/store.html"
-                 type="chrome_html" />
-      <structure name="IDR_WEBUI_HTML_CR_UI_STORE_CLIENT_HTML"
-                 file="html/cr/ui/store_client.html"
-                 type="chrome_html" />
-      <structure name="IDR_WEBUI_HTML_EVENT_TRACKER_HTML"
-                 file="html/event_tracker.html" type="chrome_html" />
-      <structure name="IDR_WEBUI_HTML_ICON_HTML"
-                 file="html/icon.html" type="chrome_html" />
-      <structure name="IDR_WEBUI_HTML_LOAD_TIME_DATA_HTML"
-                 file="html/load_time_data.html" type="chrome_html" />
-      <structure name="IDR_WEBUI_HTML_PARSE_HTML_SUBSET"
-                 file="html/parse_html_subset.html" type="chrome_html" />
-      <structure name="IDR_WEBUI_HTML_TEST_LOADER_HTML"
-                 file="html/test_loader.html" type="chrome_html"/>
-      <structure name="IDR_WEBUI_HTML_UTIL_HTML"
-                 file="html/util.html" type="chrome_html" />
 
       <if expr="is_ios">
         <structure name="IDR_WEBUI_JS_IOS_WEB_UI"
