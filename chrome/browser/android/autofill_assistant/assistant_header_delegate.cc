@@ -30,7 +30,7 @@ void AssistantHeaderDelegate::OnFeedbackButtonClicked(
 }
 
 base::android::ScopedJavaGlobalRef<jobject>
-AssistantHeaderDelegate::GetJavaObject() {
+AssistantHeaderDelegate::GetJavaObject() const {
   return java_assistant_header_delegate_;
 }
 

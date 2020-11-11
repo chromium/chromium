@@ -16,6 +16,7 @@
 #include "chrome/browser/android/autofill_assistant/assistant_form_delegate.h"
 #include "chrome/browser/android/autofill_assistant/assistant_generic_ui_delegate.h"
 #include "chrome/browser/android/autofill_assistant/assistant_header_delegate.h"
+#include "chrome/browser/android/autofill_assistant/assistant_header_model.h"
 #include "chrome/browser/android/autofill_assistant/assistant_overlay_delegate.h"
 #include "components/autofill_assistant/browser/chip.h"
 #include "components/autofill_assistant/browser/controller_observer.h"
@@ -283,6 +284,8 @@ class UiControllerAndroid : public ControllerObserver {
 
   OverlayState desired_overlay_state_ = OverlayState::FULL;
   OverlayState overlay_state_ = OverlayState::FULL;
+
+  std::unique_ptr<AssistantHeaderModel> header_model_;
 
   base::WeakPtrFactory<UiControllerAndroid> weak_ptr_factory_{this};
 

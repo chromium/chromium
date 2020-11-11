@@ -2420,6 +2420,8 @@ static_library("browser") {
       "android/autofill_assistant/assistant_generic_ui_delegate.h",
       "android/autofill_assistant/assistant_header_delegate.cc",
       "android/autofill_assistant/assistant_header_delegate.h",
+      "android/autofill_assistant/assistant_header_model.cc",
+      "android/autofill_assistant/assistant_header_model.h",
       "android/autofill_assistant/assistant_overlay_delegate.cc",
       "android/autofill_assistant/assistant_overlay_delegate.h",
       "android/autofill_assistant/client_android.cc",

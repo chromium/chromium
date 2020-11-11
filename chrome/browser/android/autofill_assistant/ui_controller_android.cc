@@ -23,7 +23,6 @@
 #include "chrome/android/features/autofill_assistant/jni_headers/AssistantFormInput_jni.h"
 #include "chrome/android/features/autofill_assistant/jni_headers/AssistantFormModel_jni.h"
 #include "chrome/android/features/autofill_assistant/jni_headers/AssistantGenericUiModel_jni.h"
-#include "chrome/android/features/autofill_assistant/jni_headers/AssistantHeaderModel_jni.h"
 #include "chrome/android/features/autofill_assistant/jni_headers/AssistantInfoBoxModel_jni.h"
 #include "chrome/android/features/autofill_assistant/jni_headers/AssistantInfoBox_jni.h"
 #include "chrome/android/features/autofill_assistant/jni_headers/AssistantModel_jni.h"
@@ -290,14 +289,15 @@ UiControllerAndroid::UiControllerAndroid(
       /* allowTabSwitching= */
       base::FeatureList::IsEnabled(features::kAutofillAssistantChromeEntry),
       reinterpret_cast<intptr_t>(this), joverlay_coordinator);
+  header_model_ = std::make_unique<AssistantHeaderModel>(
+      Java_AssistantModel_getHeaderModel(env, GetModel()));
 
   // Register overlay_delegate_ as delegate for the overlay.
   Java_AssistantOverlayModel_setDelegate(env, GetOverlayModel(),
                                          overlay_delegate_.GetJavaObject());
 
   // Register header_delegate_ as delegate for clicks on header buttons.
-  Java_AssistantHeaderModel_setDelegate(env, GetHeaderModel(),
-                                        header_delegate_.GetJavaObject());
+  header_model_->SetDelegate(header_delegate_);
 
   // Register collect_user_data_delegate_ as delegate for the collect user data
   // UI.
@@ -368,13 +368,6 @@ UiControllerAndroid::~UiControllerAndroid() {
 base::android::ScopedJavaLocalRef<jobject> UiControllerAndroid::GetModel() {
   return Java_AutofillAssistantUiController_getModel(AttachCurrentThread(),
                                                      java_object_);
-}
-
-// Header related methods.
-
-base::android::ScopedJavaLocalRef<jobject>
-UiControllerAndroid::GetHeaderModel() {
-  return Java_AssistantModel_getHeaderModel(AttachCurrentThread(), GetModel());
 }
 
 void UiControllerAndroid::OnStateChanged(AutofillAssistantState new_state) {
@@ -457,59 +450,36 @@ void UiControllerAndroid::SetupForState() {
 }
 
 void UiControllerAndroid::OnStatusMessageChanged(const std::string& message) {
-  JNIEnv* env = AttachCurrentThread();
-  Java_AssistantHeaderModel_setStatusMessage(
-      env, GetHeaderModel(),
-      base::android::ConvertUTF8ToJavaString(env, message));
+  header_model_->SetStatusMessage(message);
 }
 
 void UiControllerAndroid::OnBubbleMessageChanged(const std::string& message) {
   if (!message.empty()) {
-    JNIEnv* env = AttachCurrentThread();
-    Java_AssistantHeaderModel_setBubbleMessage(
-        env, GetHeaderModel(),
-        base::android::ConvertUTF8ToJavaString(env, message));
+    header_model_->SetBubbleMessage(message);
   }
 }
 
 void UiControllerAndroid::OnProgressChanged(int progress) {
-  Java_AssistantHeaderModel_setProgress(AttachCurrentThread(), GetHeaderModel(),
-                                        progress);
+  header_model_->SetProgress(progress);
 }
 
 void UiControllerAndroid::OnProgressActiveStepChanged(int active_step) {
-  Java_AssistantHeaderModel_setProgressActiveStep(
-      AttachCurrentThread(), GetHeaderModel(), active_step);
+  header_model_->SetProgressActiveStep(active_step);
 }
 
 void UiControllerAndroid::OnProgressVisibilityChanged(bool visible) {
-  Java_AssistantHeaderModel_setProgressVisible(AttachCurrentThread(),
-                                               GetHeaderModel(), visible);
+  header_model_->SetProgressVisible(visible);
 }
 
 void UiControllerAndroid::OnProgressBarErrorStateChanged(bool error) {
-  Java_AssistantHeaderModel_setProgressBarErrorState(AttachCurrentThread(),
-                                                     GetHeaderModel(), error);
+  header_model_->SetProgressBarErrorState(error);
 }
 
 void UiControllerAndroid::OnStepProgressBarConfigurationChanged(
     const ShowProgressBarProto::StepProgressBarConfiguration& configuration) {
-  JNIEnv* env = AttachCurrentThread();
-  auto jmodel = GetHeaderModel();
-  Java_AssistantHeaderModel_setUseStepProgressBar(
-      env, jmodel, configuration.use_step_progress_bar());
-  if (!configuration.annotated_step_icons().empty()) {
-    auto jcontext =
-        Java_AutofillAssistantUiController_getContext(env, java_object_);
-    auto jlist = Java_AssistantHeaderModel_createIconList(env);
-    for (const auto& icon : configuration.annotated_step_icons()) {
-      Java_AssistantHeaderModel_addStepProgressBarIcon(
-          env, jlist,
-          ui_controller_android_utils::CreateJavaDrawable(env, jcontext,
-                                                          icon.icon()));
-    }
-    Java_AssistantHeaderModel_setStepProgressBarIcons(env, jmodel, jlist);
-  }
+  header_model_->SetStepProgressBarConfiguration(
+      configuration, Java_AutofillAssistantUiController_getContext(
+                         AttachCurrentThread(), java_object_));
 }
 
 void UiControllerAndroid::OnViewportModeChanged(ViewportMode mode) {
@@ -556,8 +526,7 @@ void UiControllerAndroid::ShowContentAndExpandBottomSheet() {
 }
 
 void UiControllerAndroid::SetSpinPoodle(bool enabled) {
-  Java_AssistantHeaderModel_setSpinPoodle(AttachCurrentThread(),
-                                          GetHeaderModel(), enabled);
+  header_model_->SetSpinPoodle(enabled);
 }
 
 void UiControllerAndroid::OnFeedbackButtonClicked() {
@@ -832,8 +801,7 @@ void UiControllerAndroid::UpdateActions(
   }
 
   Java_AutofillAssistantUiController_setActions(env, java_object_, jchips);
-  Java_AssistantHeaderModel_setChips(AttachCurrentThread(), GetHeaderModel(),
-                                     jsticky_chips);
+  header_model_->SetChips(jsticky_chips);
 }
 
 void UiControllerAndroid::OnUserActionsChanged(
@@ -1716,8 +1684,7 @@ void UiControllerAndroid::OnClientSettingsChanged(
     Java_AssistantOverlayModel_clearOverlayImage(env, GetOverlayModel());
   }
   if (settings.integration_test_settings.has_value()) {
-    Java_AssistantHeaderModel_setDisableAnimations(
-        env, GetHeaderModel(),
+    header_model_->SetDisableAnimations(
         settings.integration_test_settings->disable_header_animations());
     Java_AutofillAssistantUiController_setDisableChipChangeAnimations(
         env, java_object_,
