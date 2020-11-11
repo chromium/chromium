@@ -162,7 +162,10 @@ public class GoogleServicesSettings
 
         mAutofillAssistant = (ChromeSwitchPreference) findPreference(PREF_AUTOFILL_ASSISTANT);
         Preference autofillAssistantSubsection = findPreference(PREF_AUTOFILL_ASSISTANT_SUBSECTION);
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_ASSISTANT_PROACTIVE_HELP)) {
+        // Assistant autofill/voicesearch both live in the sub-section. If either one of them is
+        // enabled, then the subsection should show.
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_ASSISTANT_PROACTIVE_HELP)
+                || ChromeFeatureList.isEnabled(ChromeFeatureList.OMNIBOX_ASSISTANT_VOICE_SEARCH)) {
             removePreference(getPreferenceScreen(), mAutofillAssistant);
             mAutofillAssistant = null;
             autofillAssistantSubsection.setVisible(true);

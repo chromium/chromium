@@ -9,6 +9,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import androidx.preference.Preference;
+import androidx.preference.PreferenceCategory;
 import androidx.test.filters.LargeTest;
 
 import org.junit.Test;
@@ -170,6 +171,85 @@ public class AutofillAssistantPreferenceFragmentTest {
 
             assertFalse(proactiveHelpSwitch.isEnabled());
             assertFalse(syncAndServicesLink.isVisible());
+        });
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"Sync"})
+    @DisableFeatures(ChromeFeatureList.AUTOFILL_ASSISTANT_PROACTIVE_HELP)
+    public void testProactiveHelpInvisibleIfProactiveHelpDisabled() {
+        final AutofillAssistantPreferenceFragment prefs =
+                startAutofillAssistantPreferenceFragment();
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            ChromeSwitchPreference proactiveHelpSwitch =
+                    (ChromeSwitchPreference) prefs.findPreference(
+                            AutofillAssistantPreferenceFragment
+                                    .PREF_ASSISTANT_PROACTIVE_HELP_SWITCH);
+            assertFalse(proactiveHelpSwitch.isVisible());
+        });
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"Sync"})
+    @DisableFeatures({ChromeFeatureList.AUTOFILL_ASSISTANT,
+            ChromeFeatureList.AUTOFILL_ASSISTANT_PROACTIVE_HELP})
+    public void
+    testWebAssistanceInvisibleIfAutofillAssistantCompletelyDisabled() {
+        final AutofillAssistantPreferenceFragment prefs =
+                startAutofillAssistantPreferenceFragment();
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            PreferenceCategory webAssistanceCateogory = prefs.findPreference(
+                    AutofillAssistantPreferenceFragment.PREF_WEB_ASSISTANCE_CATEGORY);
+            assertFalse(webAssistanceCateogory.isVisible());
+        });
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"AssistantVoiceSearch"})
+    @EnableFeatures(ChromeFeatureList.OMNIBOX_ASSISTANT_VOICE_SEARCH)
+    public void testEnhancedVoiceSearch_Enabled() {
+        final AutofillAssistantPreferenceFragment prefs =
+                startAutofillAssistantPreferenceFragment();
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            PreferenceCategory assistantVoiceSearchCategory = prefs.findPreference(
+                    AutofillAssistantPreferenceFragment.PREF_ASSISTANT_VOICE_SEARCH_CATEGORY);
+            assertTrue(assistantVoiceSearchCategory.isVisible());
+
+            ChromeSwitchPreference assistantVoiceSearchEnabledSwitch =
+                    (ChromeSwitchPreference) prefs.findPreference(
+                            AutofillAssistantPreferenceFragment
+                                    .PREF_ASSISTANT_VOICE_SEARCH_ENABLED_SWTICH);
+            assertTrue(assistantVoiceSearchEnabledSwitch.isVisible());
+            assistantVoiceSearchEnabledSwitch.performClick();
+            assertTrue(mSharedPreferencesManager.readBoolean(
+                    ChromePreferenceKeys.ASSISTANT_VOICE_SEARCH_ENABLED, /* default= */ false));
+        });
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"AssistantVoiceSearch"})
+    @DisableFeatures(ChromeFeatureList.OMNIBOX_ASSISTANT_VOICE_SEARCH)
+    public void testEnhancedVoiceSearch_Disabled() {
+        final AutofillAssistantPreferenceFragment prefs =
+                startAutofillAssistantPreferenceFragment();
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            PreferenceCategory assistantVoiceSearchCategory = prefs.findPreference(
+                    AutofillAssistantPreferenceFragment.PREF_ASSISTANT_VOICE_SEARCH_CATEGORY);
+            assertFalse(assistantVoiceSearchCategory.isVisible());
+
+            ChromeSwitchPreference assistantVoiceSearchEnabledSwitch =
+                    (ChromeSwitchPreference) prefs.findPreference(
+                            AutofillAssistantPreferenceFragment
+                                    .PREF_ASSISTANT_VOICE_SEARCH_ENABLED_SWTICH);
+            assertFalse(assistantVoiceSearchEnabledSwitch.isVisible());
         });
     }
 

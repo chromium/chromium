@@ -57,8 +57,8 @@ public final class ChromePreferenceKeys {
 
     /** Assistant voice search keys. */
     public static final String ASSISTANT_LAST_VERSION = "Chrome.Assistant.LastVersion";
-    public static final String ASSISTANT_VOICE_SEARCH_SUPPORTED =
-            "Chrome.Assistant.Supported";
+    public static final String ASSISTANT_VOICE_SEARCH_SUPPORTED = "Chrome.Assistant.Supported";
+    public static final String ASSISTANT_VOICE_SEARCH_ENABLED = "Chrome.Assistant.Enabled";
 
     /** Whether Autofill Assistant is enabled */
     public static final String AUTOFILL_ASSISTANT_ENABLED = "autofill_assistant_switch";
@@ -797,6 +797,7 @@ public final class ChromePreferenceKeys {
         // clang-format off
         return Arrays.asList(
                 ASSISTANT_LAST_VERSION,
+                ASSISTANT_VOICE_SEARCH_ENABLED,
                 ASSISTANT_VOICE_SEARCH_SUPPORTED,
                 AUTOFILL_ASSISTANT_FIRST_TIME_LITE_SCRIPT_USER,
                 AUTOFILL_ASSISTANT_NUMBER_OF_LITE_SCRIPTS_CANCELED,

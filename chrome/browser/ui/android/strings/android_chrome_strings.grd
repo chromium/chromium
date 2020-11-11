@@ -3959,6 +3959,7 @@ Data from your Incognito session will only be cleared from Chrome when you <ph n
       </message>
 
       <!-- Autofill Assistant preferences -->
+      <!-- TODO(b/168178344): Move to Assistant settings strings section below. -->
       <message name="IDS_PREFS_AUTOFILL_ASSISTANT_TITLE" desc="Title for the Autofill Assistant preferences screen. [CHAR-LIMIT=32]">
         Google Assistant in Chrome
       </message>
@@ -4344,6 +4345,17 @@ Data from your Incognito session will only be cleared from Chrome when you <ph n
       </message>
       <message name="IDS_AVS_CONSENT_UI_CLOSED_DESCRIPTION" desc="Enable button text for a dialog asking the user's permission to use Assistant for voice search.">
       Assistant voice search consent ui closed
+      </message>
+
+      <!-- Assistant settings strings-->
+      <message name="IDS_AVS_SETTING_CATEGORY_TITLE" desc="Title of the Assistant voice search setting category.">
+      Voice assistance
+      </message>
+      <message name="IDS_AVS_SETTING_ENABLED_TITLE" desc="Title of the Assistant voice search setting.">
+      Enhanced voice search
+      </message>
+      <message name="IDS_AVS_SETTING_ENABLED_DESCRIPTION" desc="Description of the Assistant voice search setting.">
+      Google Assistant provides a better voice experience for searching the web and engaging with sites you have open. Google Assistant will receive the URL and contents of sites you use with it.
       </message>
     </messages>
   </release>
