@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill_assistant/browser/service/service_request_sender.h"
+#include "components/autofill_assistant/browser/service/service_request_sender_impl.h"
 
 #include <memory>
 #include <vector>
@@ -46,10 +46,10 @@ std::unique_ptr<::network::mojom::URLResponseHead> CreateResponseInfo(
   return response;
 }
 
-class ServiceRequestSenderTest : public testing::Test {
+class ServiceRequestSenderImplTest : public testing::Test {
  public:
-  ServiceRequestSenderTest() = default;
-  ~ServiceRequestSenderTest() override = default;
+  ServiceRequestSenderImplTest() = default;
+  ~ServiceRequestSenderImplTest() override = default;
 
  protected:
   base::MockCallback<base::OnceCallback<void(int, const std::string&)>>
@@ -61,7 +61,7 @@ class ServiceRequestSenderTest : public testing::Test {
   NiceMock<MockAccessTokenFetcher> mock_access_token_fetcher_;
 };
 
-TEST_F(ServiceRequestSenderTest, SendUnauthenticatedRequest) {
+TEST_F(ServiceRequestSenderImplTest, SendUnauthenticatedRequest) {
   auto loader_factory =
       std::make_unique<NiceMock<MockSimpleURLLoaderFactory>>();
   auto loader = std::make_unique<NiceMock<MockURLLoader>>();
@@ -86,7 +86,7 @@ TEST_F(ServiceRequestSenderTest, SendUnauthenticatedRequest) {
       .WillRepeatedly(Return(response_info.get()));
 
   EXPECT_CALL(mock_response_callback_, Run(net::HTTP_OK, "response"));
-  ServiceRequestSender request_sender{
+  ServiceRequestSenderImpl request_sender{
       &context_,
       /* access_token_fetcher = */ nullptr,
       std::move(loader_factory),
@@ -98,7 +98,7 @@ TEST_F(ServiceRequestSenderTest, SendUnauthenticatedRequest) {
                              mock_response_callback_.Get());
 }
 
-TEST_F(ServiceRequestSenderTest, SendAuthenticatedRequest) {
+TEST_F(ServiceRequestSenderImplTest, SendAuthenticatedRequest) {
   auto loader_factory =
       std::make_unique<NiceMock<MockSimpleURLLoaderFactory>>();
   auto loader = std::make_unique<NiceMock<MockURLLoader>>();
@@ -129,7 +129,7 @@ TEST_F(ServiceRequestSenderTest, SendAuthenticatedRequest) {
   EXPECT_CALL(mock_access_token_fetcher_, InvalidateAccessToken).Times(0);
 
   EXPECT_CALL(mock_response_callback_, Run(net::HTTP_OK, "response"));
-  ServiceRequestSender request_sender{
+  ServiceRequestSenderImpl request_sender{
       &context_,
       /* access_token_fetcher = */ &mock_access_token_fetcher_,
       std::move(loader_factory),
@@ -141,7 +141,7 @@ TEST_F(ServiceRequestSenderTest, SendAuthenticatedRequest) {
                              mock_response_callback_.Get());
 }
 
-TEST_F(ServiceRequestSenderTest,
+TEST_F(ServiceRequestSenderImplTest,
        AuthRequestFallsBackToApiKeyOnEmptyAccessToken) {
   EXPECT_CALL(mock_access_token_fetcher_, OnFetchAccessToken)
       .Times(1)
@@ -171,7 +171,7 @@ TEST_F(ServiceRequestSenderTest,
       .WillRepeatedly(Return(response_info.get()));
 
   EXPECT_CALL(mock_response_callback_, Run(net::HTTP_OK, "response"));
-  ServiceRequestSender request_sender{
+  ServiceRequestSenderImpl request_sender{
       &context_,
       /* access_token_fetcher = */ &mock_access_token_fetcher_,
       std::move(loader_factory),
@@ -183,7 +183,7 @@ TEST_F(ServiceRequestSenderTest,
                              mock_response_callback_.Get());
 }
 
-TEST_F(ServiceRequestSenderTest,
+TEST_F(ServiceRequestSenderImplTest,
        AuthRequestFallsBackToApiKeyIfFetchingAccessTokenFails) {
   EXPECT_CALL(mock_access_token_fetcher_, OnFetchAccessToken)
       .Times(1)
@@ -214,7 +214,7 @@ TEST_F(ServiceRequestSenderTest,
       .WillRepeatedly(Return(response_info.get()));
 
   EXPECT_CALL(mock_response_callback_, Run(net::HTTP_OK, "response"));
-  ServiceRequestSender request_sender{
+  ServiceRequestSenderImpl request_sender{
       &context_,
       /* access_token_fetcher = */ &mock_access_token_fetcher_,
       std::move(loader_factory),

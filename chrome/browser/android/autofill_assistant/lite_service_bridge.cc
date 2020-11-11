@@ -11,6 +11,7 @@
 #include "components/autofill_assistant/browser/service/api_key_fetcher.h"
 #include "components/autofill_assistant/browser/service/lite_service.h"
 #include "components/autofill_assistant/browser/service/server_url_fetcher.h"
+#include "components/autofill_assistant/browser/service/service_request_sender_impl.h"
 #include "content/public/browser/web_contents.h"
 
 namespace autofill_assistant {
@@ -48,7 +49,7 @@ jlong JNI_AutofillAssistantLiteService_CreateLiteService(
 
   ServerUrlFetcher url_fetcher{ServerUrlFetcher::GetDefaultServerUrl()};
   return reinterpret_cast<jlong>(new LiteService(
-      std::make_unique<ServiceRequestSender>(
+      std::make_unique<ServiceRequestSenderImpl>(
           web_contents->GetBrowserContext(),
           /* access_token_fetcher = */ nullptr,
           std::make_unique<NativeURLLoaderFactory>(),

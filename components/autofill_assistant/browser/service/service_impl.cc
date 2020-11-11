@@ -15,6 +15,7 @@
 #include "components/autofill_assistant/browser/protocol_utils.h"
 #include "components/autofill_assistant/browser/service/api_key_fetcher.h"
 #include "components/autofill_assistant/browser/service/server_url_fetcher.h"
+#include "components/autofill_assistant/browser/service/service_request_sender_impl.h"
 #include "components/autofill_assistant/browser/switches.h"
 #include "components/autofill_assistant/browser/trigger_context.h"
 #include "content/public/browser/browser_context.h"
@@ -31,7 +32,7 @@ std::unique_ptr<ServiceImpl> ServiceImpl::Create(
     content::BrowserContext* context,
     Client* client) {
   ServerUrlFetcher url_fetcher{ServerUrlFetcher::GetDefaultServerUrl()};
-  auto request_sender = std::make_unique<ServiceRequestSender>(
+  auto request_sender = std::make_unique<ServiceRequestSenderImpl>(
       context, client->GetAccessTokenFetcher(),
       std::make_unique<NativeURLLoaderFactory>(),
       ApiKeyFetcher().GetAPIKey(client->GetChannel()),

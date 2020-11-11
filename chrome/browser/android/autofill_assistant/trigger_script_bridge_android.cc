@@ -12,7 +12,7 @@
 #include "chrome/common/channel_info.h"
 #include "components/autofill_assistant/browser/service/api_key_fetcher.h"
 #include "components/autofill_assistant/browser/service/server_url_fetcher.h"
-#include "components/autofill_assistant/browser/service/service_request_sender.h"
+#include "components/autofill_assistant/browser/service/service_request_sender_impl.h"
 #include "components/autofill_assistant/browser/service/simple_url_loader_factory.h"
 #include "components/autofill_assistant/browser/trigger_scripts/dynamic_trigger_conditions.h"
 #include "components/autofill_assistant/browser/trigger_scripts/static_trigger_conditions.h"
@@ -46,7 +46,7 @@ void TriggerScriptBridgeAndroid::StartTriggerScript(
       client,
       WebController::CreateForWebContents(client->GetWebContents(),
                                           &client_settings_),
-      std::make_unique<ServiceRequestSender>(
+      std::make_unique<ServiceRequestSenderImpl>(
           client->GetWebContents()->GetBrowserContext(),
           /* access_token_fetcher = */ nullptr,
           std::make_unique<NativeURLLoaderFactory>(),

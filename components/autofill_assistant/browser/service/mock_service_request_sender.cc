@@ -6,13 +6,7 @@
 
 namespace autofill_assistant {
 
-MockServiceRequestSender::MockServiceRequestSender()
-    : ServiceRequestSender(/* context = */ nullptr,
-                           /* access_token_fetcher = */ nullptr,
-                           /* loader_factory = */ nullptr,
-                           /* api_key = */ std::string("fake_api_key"),
-                           /* auth_enabled = */ false,
-                           /* disable_auth_if_no_access_token = */ true) {}
+MockServiceRequestSender::MockServiceRequestSender() = default;
 MockServiceRequestSender::~MockServiceRequestSender() = default;
 
 }  // namespace autofill_assistant
