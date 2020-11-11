@@ -168,6 +168,21 @@ Process Process::Duplicate() const {
   return Process(out.release());
 }
 
+ProcessHandle Process::Release() {
+  if (is_current()) {
+    // Caller expects to own the reference, so duplicate the self handle.
+    zx::process handle;
+    zx_status_t result =
+        zx::process::self()->duplicate(ZX_RIGHT_SAME_RIGHTS, &handle);
+    if (result != ZX_OK) {
+      return kNullProcessHandle;
+    }
+    is_current_process_ = false;
+    return handle.release();
+  }
+  return process_.release();
+}
+
 ProcessId Process::Pid() const {
   DCHECK(IsValid());
   return GetProcId(Handle());

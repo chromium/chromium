@@ -10,6 +10,8 @@
 #include <sys/resource.h>
 #include <sys/wait.h>
 
+#include <utility>
+
 #include "base/clang_profiling_buildflags.h"
 #include "base/debug/activity_tracker.h"
 #include "base/files/scoped_file.h"
@@ -297,6 +299,10 @@ Process Process::Duplicate() const {
     return Current();
 
   return Process(process_);
+}
+
+ProcessHandle Process::Release() {
+  return std::exchange(process_, kNullProcessHandle);
 }
 
 ProcessId Process::Pid() const {

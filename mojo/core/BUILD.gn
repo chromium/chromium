@@ -66,7 +66,6 @@ template("core_impl_source_set") {
       "platform_handle_utils.h",
       "platform_shared_memory_mapping.h",
       "request_context.h",
-      "scoped_process_handle.h",
       "shared_buffer_dispatcher.h",
       "user_message_impl.h",
     ]
@@ -94,7 +93,6 @@ template("core_impl_source_set") {
       "platform_handle_utils.cc",
       "platform_shared_memory_mapping.cc",
       "request_context.cc",
-      "scoped_process_handle.cc",
       "shared_buffer_dispatcher.cc",
       "user_message_impl.cc",
       "watch.cc",

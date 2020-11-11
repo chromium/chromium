@@ -1674,6 +1674,7 @@ component("base") {
     sources += [
       "files/file_path_watcher_stub.cc",
       "process/process_metrics_nacl.cc",
+      "process/process_stubs.cc",
       "sync_socket_nacl.cc",
       "threading/platform_thread_linux.cc",
     ]
@@ -2022,6 +2023,7 @@ component("base") {
       "message_loop/message_pump_mac.mm",
       "power_monitor/power_monitor_device_source_ios.mm",
       "process/memory_stubs.cc",
+      "process/process_stubs.cc",
       "strings/sys_string_conversions_mac.mm",
       "synchronization/waitable_event_mac.cc",
       "system/sys_info_ios.mm",

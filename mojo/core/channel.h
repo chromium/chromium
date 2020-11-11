@@ -11,12 +11,12 @@
 #include "base/macros.h"
 #include "base/memory/aligned_memory.h"
 #include "base/memory/ref_counted.h"
+#include "base/process/process.h"
 #include "base/process/process_handle.h"
 #include "base/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "mojo/core/connection_params.h"
 #include "mojo/core/platform_handle_in_transit.h"
-#include "mojo/core/scoped_process_handle.h"
 #include "mojo/public/cpp/platform/platform_handle.h"
 
 namespace mojo {
@@ -295,11 +295,11 @@ class MOJO_SYSTEM_IMPL_EXPORT Channel
 
   // Sets the process handle of the remote endpoint to which this Channel is
   // connected. If called at all, must be called only once, and before Start().
-  void set_remote_process(ScopedProcessHandle remote_process) {
-    DCHECK(!remote_process_.is_valid());
+  void set_remote_process(base::Process remote_process) {
+    DCHECK(!remote_process_.IsValid());
     remote_process_ = std::move(remote_process);
   }
-  const ScopedProcessHandle& remote_process() const { return remote_process_; }
+  const base::Process& remote_process() const { return remote_process_; }
 
   // Begin processing I/O events. Delegate methods must only be invoked after
   // this call.
@@ -410,7 +410,7 @@ class MOJO_SYSTEM_IMPL_EXPORT Channel
   const std::unique_ptr<ReadBuffer> read_buffer_;
 
   // Handle to the process on the other end of this Channel, iff known.
-  ScopedProcessHandle remote_process_;
+  base::Process remote_process_;
 
   DISALLOW_COPY_AND_ASSIGN(Channel);
 };

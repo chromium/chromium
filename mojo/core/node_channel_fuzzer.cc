@@ -70,12 +70,7 @@ extern "C" int LLVMFuzzerTestOneInput(const unsigned char* data, size_t size) {
   // receiver has to assume that the broker has already duplicated the HANDLE
   // into the non-broker's process), but fuzzing that direction is not
   // interesting since a compromised broker process has much bigger problems.
-  //
-  // Note that in order for this hack to work properly, the remote process
-  // handle needs to be a "real" process handle rather than the pseudo-handle
-  // returned by GetCurrentProcessHandle(). Hence the use of OpenProcess().
-  receiver->SetRemoteProcessHandle(mojo::core::ScopedProcessHandle(
-      ::OpenProcess(PROCESS_ALL_ACCESS, FALSE, ::GetCurrentProcessId())));
+  receiver->SetRemoteProcessHandle(base::Process::Current());
 #endif
 
   receiver->Start();

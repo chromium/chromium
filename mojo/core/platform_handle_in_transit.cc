@@ -36,9 +36,9 @@ HANDLE TransferHandle(HANDLE handle,
   }
 }
 
-void CloseHandleInProcess(HANDLE handle, const ScopedProcessHandle& process) {
+void CloseHandleInProcess(HANDLE handle, const base::Process& process) {
   DCHECK_NE(handle, INVALID_HANDLE_VALUE);
-  DCHECK(process.is_valid());
+  DCHECK(process.IsValid());
 
   // The handle lives in |process|, so we close it there using a special
   // incantation of |DuplicateHandle()|.
@@ -48,7 +48,7 @@ void CloseHandleInProcess(HANDLE handle, const ScopedProcessHandle& process) {
   // handle from the source process...". Note that although the documentation
   // says that the target *handle* address must be NULL, it seems that the
   // target process handle being NULL is what really matters here.
-  BOOL result = ::DuplicateHandle(process.get(), handle, NULL, &handle, 0,
+  BOOL result = ::DuplicateHandle(process.Handle(), handle, nullptr, &handle, 0,
                                   FALSE, DUPLICATE_CLOSE_SOURCE);
   if (!result) {
     DPLOG(ERROR) << "DuplicateHandle failed";
@@ -70,7 +70,7 @@ PlatformHandleInTransit::PlatformHandleInTransit(
 
 PlatformHandleInTransit::~PlatformHandleInTransit() {
 #if defined(OS_WIN)
-  if (!owning_process_.is_valid()) {
+  if (!owning_process_.IsValid()) {
     DCHECK_EQ(remote_handle_, INVALID_HANDLE_VALUE);
     return;
   }
@@ -82,7 +82,7 @@ PlatformHandleInTransit::~PlatformHandleInTransit() {
 PlatformHandleInTransit& PlatformHandleInTransit::operator=(
     PlatformHandleInTransit&& other) {
 #if defined(OS_WIN)
-  if (owning_process_.is_valid()) {
+  if (owning_process_.IsValid()) {
     DCHECK_NE(remote_handle_, INVALID_HANDLE_VALUE);
     CloseHandleInProcess(remote_handle_, owning_process_);
   }
@@ -96,7 +96,7 @@ PlatformHandleInTransit& PlatformHandleInTransit::operator=(
 }
 
 PlatformHandle PlatformHandleInTransit::TakeHandle() {
-  DCHECK(!owning_process_.is_valid());
+  DCHECK(!owning_process_.IsValid());
   return std::move(handle_);
 }
 
@@ -105,18 +105,17 @@ void PlatformHandleInTransit::CompleteTransit() {
   remote_handle_ = INVALID_HANDLE_VALUE;
 #endif
   handle_.release();
-  owning_process_ = ScopedProcessHandle();
+  owning_process_ = base::Process();
 }
 
-bool PlatformHandleInTransit::TransferToProcess(
-    ScopedProcessHandle target_process) {
-  DCHECK(target_process.is_valid());
-  DCHECK(!owning_process_.is_valid());
+bool PlatformHandleInTransit::TransferToProcess(base::Process target_process) {
+  DCHECK(target_process.IsValid());
+  DCHECK(!owning_process_.IsValid());
   DCHECK(handle_.is_valid());
 #if defined(OS_WIN)
   remote_handle_ =
       TransferHandle(handle_.ReleaseHandle(), base::GetCurrentProcessHandle(),
-                     target_process.get());
+                     target_process.Handle());
   if (remote_handle_ == INVALID_HANDLE_VALUE)
     return false;
 #endif

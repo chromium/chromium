@@ -114,13 +114,13 @@ class ChannelWin : public Channel,
   }
 
   void Write(MessagePtr message) override {
-    if (remote_process().is_valid()) {
+    if (remote_process().IsValid()) {
       // If we know the remote process handle, we transfer all outgoing handles
       // to the process now rewriting them in the message.
       std::vector<PlatformHandleInTransit> handles = message->TakeHandles();
       for (auto& handle : handles) {
         if (handle.handle().is_valid())
-          handle.TransferToProcess(remote_process().Clone());
+          handle.TransferToProcess(remote_process().Duplicate());
       }
       message->SetHandles(std::move(handles));
     }
@@ -172,12 +172,12 @@ class ChannelWin : public Channel,
           base::win::Uint32ToHandle(extra_header_handles[i].handle);
       if (PlatformHandleInTransit::IsPseudoHandle(handle_value))
         return false;
-      if (remote_process().is_valid()) {
+      if (remote_process().IsValid()) {
         // If we know the remote process's handle, we assume it doesn't know
         // ours; that means any handle values still belong to that process, and
         // we need to transfer them to this process.
         handle_value = PlatformHandleInTransit::TakeIncomingRemoteHandle(
-                           handle_value, remote_process().get())
+                           handle_value, remote_process().Handle())
                            .ReleaseHandle();
       }
       handles->emplace_back(base::win::ScopedHandle(std::move(handle_value)));
