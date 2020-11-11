@@ -683,8 +683,9 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothTestWithNewPermissionsBackendEnabled,
   EXPECT_TRUE(blink::WebBluetoothDeviceId::IsValid(granted_id));
 }
 
+// TODO(crbug.com/1147582): Flaky
 IN_PROC_BROWSER_TEST_F(WebBluetoothTestWithNewPermissionsBackendEnabled,
-                       WebBluetoothIdsUsedInWebBluetoothScanning) {
+                       DISABLED_WebBluetoothIdsUsedInWebBluetoothScanning) {
   // Grant permission to scan for Bluetooth devices again, and compare the ID
   // assigned to the scanned device against the one that was stored previously.
   ASSERT_TRUE(content::ExecJs(web_contents_, R"(
