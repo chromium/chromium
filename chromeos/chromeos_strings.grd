@@ -547,7 +547,7 @@ Try tapping the mic to ask me anything.
         More settings
       </message>
       <message name="IDS_SCANNING_APP_SCAN_PREVIEW_HELPER_TEXT" desc="The text displayed in the scan preview that explains how to scan a document.">
-        Place your document, and click Scan to get started
+        Place your document on the scanner and select <ph name="SPAN_BEGIN">&lt;span id="boldHelperText"&gt;</ph>Scan<ph name="SPAN_END">&lt;/span&gt;</ph> to get started
       </message>
       <message name="IDS_SCANNING_APP_SCAN_BUTTON_TEXT" desc="The text displayed for the button that starts a scan.">
         Scan
