@@ -81,6 +81,7 @@ luci.gitiles_poller(
         "chromium.fuzz",
         "chromium.gpu.fyi",
         "chromium.swangle",
+        "chromium.updater",
     ],
 ) for name, title in (
     ("main", settings.main_console_title),
@@ -333,6 +334,10 @@ ci.console_view(
         "ToT SwiftShader|Linux": "*cpu*",
         "Chromium": "*os*",
     },
+)
+
+ci.console_view(
+    name = "chromium.updater",
 )
 
 ci.console_view(
@@ -2617,8 +2622,8 @@ ci.fyi_builder(
     triggered_by = ["ci/Mac Builder"],
 )
 
-ci.fyi_builder(
-    name = "mac-omaha-builder-rel",
+ci.updater_builder(
+    name = "mac-updater-builder-rel",
     console_view_entry = ci.console_view_entry(
         category = "updater|mac",
         short_name = "bld",
@@ -2629,62 +2634,62 @@ ci.fyi_builder(
     cores = None,
 )
 
-ci.fyi_builder(
-    name = "mac10.10-omaha-tester-rel",
+ci.updater_builder(
+    name = "mac10.10-updater-tester-rel",
     console_view_entry = ci.console_view_entry(
         category = "updater|mac",
         short_name = "10.10",
     ),
-    triggered_by = ["mac-omaha-builder-rel"],
+    triggered_by = ["mac-updater-builder-rel"],
 )
 
-ci.fyi_builder(
-    name = "mac10.11-omaha-tester-rel",
+ci.updater_builder(
+    name = "mac10.11-updater-tester-rel",
     console_view_entry = ci.console_view_entry(
         category = "updater|mac",
         short_name = "10.11",
     ),
-    triggered_by = ["mac-omaha-builder-rel"],
+    triggered_by = ["mac-updater-builder-rel"],
 )
 
-ci.fyi_builder(
-    name = "mac10.12-omaha-tester-rel",
+ci.updater_builder(
+    name = "mac10.12-updater-tester-rel",
     console_view_entry = ci.console_view_entry(
         category = "updater|mac",
         short_name = "10.12",
     ),
-    triggered_by = ["mac-omaha-builder-rel"],
+    triggered_by = ["mac-updater-builder-rel"],
 )
 
-ci.fyi_builder(
-    name = "mac10.13-omaha-tester-rel",
+ci.updater_builder(
+    name = "mac10.13-updater-tester-rel",
     console_view_entry = ci.console_view_entry(
         category = "updater|mac",
         short_name = "10.13",
     ),
-    triggered_by = ["mac-omaha-builder-rel"],
+    triggered_by = ["mac-updater-builder-rel"],
 )
 
-ci.fyi_builder(
-    name = "mac10.14-omaha-tester-rel",
+ci.updater_builder(
+    name = "mac10.14-updater-tester-rel",
     console_view_entry = ci.console_view_entry(
         category = "updater|mac",
         short_name = "10.14",
     ),
-    triggered_by = ["mac-omaha-builder-rel"],
+    triggered_by = ["mac-updater-builder-rel"],
 )
 
-ci.fyi_builder(
-    name = "mac10.15-omaha-tester-rel",
+ci.updater_builder(
+    name = "mac10.15-updater-tester-rel",
     console_view_entry = ci.console_view_entry(
         category = "updater|mac",
         short_name = "10.15",
     ),
-    triggered_by = ["mac-omaha-builder-rel"],
+    triggered_by = ["mac-updater-builder-rel"],
 )
 
-ci.fyi_builder(
-    name = "win-omaha-builder-rel",
+ci.updater_builder(
+    name = "win-updater-builder-rel",
     console_view_entry = ci.console_view_entry(
         category = "updater|win",
         short_name = "bld",
@@ -2693,23 +2698,23 @@ ci.fyi_builder(
     cpu = cpu.X86,
 )
 
-ci.fyi_builder(
-    name = "win7-omaha-tester-rel",
+ci.updater_builder(
+    name = "win7-updater-tester-rel",
     console_view_entry = ci.console_view_entry(
         category = "updater|win",
         short_name = "7",
     ),
-    triggered_by = ["win-omaha-builder-rel"],
+    triggered_by = ["win-updater-builder-rel"],
 )
 
-ci.fyi_builder(
-    name = "win10-omaha-tester-rel",
+ci.updater_builder(
+    name = "win10-updater-tester-rel",
     console_view_entry = ci.console_view_entry(
         category = "updater|win",
         short_name = "10",
     ),
     os = os.WINDOWS_10,
-    triggered_by = ["win-omaha-builder-rel"],
+    triggered_by = ["win-updater-builder-rel"],
 )
 
 ci.fyi_builder(

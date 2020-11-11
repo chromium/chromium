@@ -993,6 +993,17 @@ def thin_tester(
         **kwargs
     )
 
+def updater_builder(
+        *,
+        name,
+        **kwargs):
+    return ci.builder(
+        name = name,
+        builder_group = "chromium.updater",
+        goma_backend = builders.goma.backend.RBE_PROD,
+        **kwargs
+    )
+
 def win_builder(
         *,
         name,
@@ -1057,5 +1068,6 @@ ci = struct(
     swangle_mac_builder = swangle_mac_builder,
     swangle_windows_builder = swangle_windows_builder,
     thin_tester = thin_tester,
+    updater_builder = updater_builder,
     win_builder = win_builder,
 )

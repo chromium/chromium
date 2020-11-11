@@ -311,11 +311,9 @@
       'linux-wpt-payments-fyi-rel': 'release_bot_minimal_symbols',
       'mac-code-coverage': 'clang_code_coverage',
       'mac-hermetic-upgrade-rel': 'release_bot',
-      'mac-omaha-builder-rel': 'updater_release_bot',
       'mac-upload-perfetto': 'release_bot',
       'win-annotator-rel': 'release_bot',
       'win-celab-builder-rel': 'release_bot_minimal_symbols',
-      'win-omaha-builder-rel': 'updater_release_bot',
       'win-paeverywhere-x86-fyi-dbg': 'debug_bot_paeverywhere_x86',
       'win-paeverywhere-x86-fyi-rel': 'release_trybot_paeverywhere_x86',
       'win-paeverywhere-x64-fyi-dbg': 'debug_bot_paeverywhere_x64',
@@ -645,6 +643,11 @@
       'V8 Blink Win': 'release_bot_blink',
       'V8 Linux GN': 'release_bot',
       'Win V8 FYI Release (NVIDIA)': 'gpu_tests_release_trybot_x86_resource_whitelisting',
+    },
+
+    'chromium.updater': {
+      'mac-updater-builder-rel': 'updater_release_bot',
+      'win-updater-builder-rel': 'updater_release_bot',
     },
 
     # TODO(crbug.com/818301): This master is going away.

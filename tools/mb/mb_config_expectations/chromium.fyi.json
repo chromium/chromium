@@ -689,12 +689,6 @@
       "use_goma": true
     }
   },
-  "mac-omaha-builder-rel": {
-    "gn_args": {
-      "is_debug": false,
-      "is_google_branded": true
-    }
-  },
   "mac-upload-perfetto": {
     "gn_args": {
       "is_component_build": false,
@@ -715,12 +709,6 @@
       "is_debug": false,
       "symbol_level": 1,
       "use_goma": true
-    }
-  },
-  "win-omaha-builder-rel": {
-    "gn_args": {
-      "is_debug": false,
-      "is_google_branded": true
     }
   },
   "win-paeverywhere-x64-fyi-dbg": {

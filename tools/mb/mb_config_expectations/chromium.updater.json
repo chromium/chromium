@@ -1,0 +1,14 @@
+{
+  "mac-updater-builder-rel": {
+    "gn_args": {
+      "is_debug": false,
+      "is_google_branded": true
+    }
+  },
+  "win-updater-builder-rel": {
+    "gn_args": {
+      "is_debug": false,
+      "is_google_branded": true
+    }
+  }
+}
