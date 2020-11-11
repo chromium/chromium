@@ -196,6 +196,11 @@
     "args": ["--enable-blink-features=CompositeAfterPaint"]
   },
   {
+    "prefix": "fractional-scroll-offsets",
+    "bases": ["external/wpt/css/css-position/sticky/"],
+    "args": ["--enable-blink-features=FractionalScrollOffsets"]
+  },
+  {
     "prefix": "font-access",
     "bases": ["external/wpt/font-access"],
     "args": ["--enable-features=FontAccess"]

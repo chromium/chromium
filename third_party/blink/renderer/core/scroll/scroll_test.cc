@@ -141,6 +141,64 @@ TEST_F(FractionalScrollSimTest, NoRepaintOnScrollFromSubpixel) {
   GetDocument().View()->SetTracksRasterInvalidations(false);
 }
 
+// Verifies that the sticky constraints are correctly computed when the scroll
+// offset is fractional. Ensures any kind of layout unit snapping is
+// consistent.
+TEST_F(FractionalScrollSimTest, StickyDoesntOscillate) {
+  WebView().MainFrameWidget()->Resize(gfx::Size(800, 600));
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <style>
+      #sticky {
+        position: sticky; top: 0; width: 100px; height: 100px;
+      }
+      body {
+        margin: 0;
+        height: 300vh;
+      }
+      #padding {
+        height: 8px;
+        width: 100%;
+      }
+    </style>
+    <div id='padding'></div>
+    <div id='sticky'></div>
+  )HTML");
+  Compositor().BeginFrame();
+
+  const float kOneLayoutUnitF = LayoutUnit::Epsilon();
+  Element* sticky = GetDocument().getElementById("sticky");
+
+  // Try sub-layout-unit scroll offsets. The sticky box shouldn't move.
+  for (int i = 0; i < 3; ++i) {
+    GetDocument().View()->GetScrollableArea()->ScrollBy(
+        ScrollOffset(0.f, kOneLayoutUnitF / 4.f),
+        mojom::blink::ScrollType::kProgrammatic);
+    Compositor().BeginFrame();
+    EXPECT_EQ(8, sticky->getBoundingClientRect()->top());
+  }
+
+  // This offset is specifically chosen since it doesn't land on a LayoutUnit
+  // boundary and reproduced https://crbug.com/1010961.
+  GetDocument().View()->GetScrollableArea()->SetScrollOffset(
+      FloatSize(0.f, 98.8675308f), mojom::blink::ScrollType::kProgrammatic,
+      mojom::blink::ScrollBehavior::kInstant);
+  Compositor().BeginFrame();
+  EXPECT_EQ(0, sticky->getBoundingClientRect()->top());
+
+  // Incrementally scroll from here, making sure the sticky position remains
+  // fixed.
+  for (int i = 0; i < 4; ++i) {
+    GetDocument().View()->GetScrollableArea()->ScrollBy(
+        ScrollOffset(0.f, kOneLayoutUnitF / 3.f),
+        mojom::blink::ScrollType::kProgrammatic);
+    Compositor().BeginFrame();
+    EXPECT_EQ(0, sticky->getBoundingClientRect()->top());
+  }
+}
+
 class ScrollAnimatorSimTest : public SimTest {};
 
 // Test that the callback of user scroll will be executed when the animation

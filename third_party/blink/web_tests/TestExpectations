@@ -527,12 +527,12 @@ crbug.com/711807 external/wpt/css/CSS2/normal-flow/replaced-intrinsic-001.xht [ 
 crbug.com/711807 external/wpt/css/CSS2/normal-flow/replaced-intrinsic-002.xht [ Failure ]
 
 #### external/wpt/css/css-position
-crbug.com/752022 external/wpt/css/css-position/position-sticky-offset-overflow.html [ Failure ]
-crbug.com/702927 external/wpt/css/css-position/position-sticky-table-tr-top.html [ Failure ]
-crbug.com/702927 external/wpt/css/css-position/position-sticky-table-tr-bottom.html [ Failure ]
-crbug.com/702927 external/wpt/css/css-position/position-sticky-table-tfoot-bottom.html [ Failure ]
-crbug.com/702927 external/wpt/css/css-position/position-sticky-table-thead-top.html [ Failure ]
-crbug.com/702927 external/wpt/css/css-position/position-sticky-parsing.html [ Failure ]
+crbug.com/752022 external/wpt/css/css-position/sticky/position-sticky-offset-overflow.html [ Failure ]
+crbug.com/702927 external/wpt/css/css-position/sticky/position-sticky-table-tr-top.html [ Failure ]
+crbug.com/702927 external/wpt/css/css-position/sticky/position-sticky-table-tr-bottom.html [ Failure ]
+crbug.com/702927 external/wpt/css/css-position/sticky/position-sticky-table-tfoot-bottom.html [ Failure ]
+crbug.com/702927 external/wpt/css/css-position/sticky/position-sticky-table-thead-top.html [ Failure ]
+crbug.com/702927 external/wpt/css/css-position/sticky/position-sticky-parsing.html [ Failure ]
 crbug.com/417223 external/wpt/css/css-position/position-relative-table-tbody-left-absolute-child.html [ Failure ]
 crbug.com/417223 external/wpt/css/css-position/position-relative-table-tbody-left.html [ Failure ]
 crbug.com/417223 external/wpt/css/css-position/position-relative-table-tbody-top-absolute-child.html [ Failure ]
