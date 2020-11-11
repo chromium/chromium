@@ -19,9 +19,14 @@ namespace extensions {
 
 namespace {
 // Information about an unacked event.
-//   std::string - GUID of the Service Worker's external request for the event.
-//   int - RenderProcessHost id.
-using EventInfo = std::pair<std::string, int>;
+struct EventInfo {
+  // GUID of the Service Worker's external request for the event.
+  std::string request_uuid;
+  // RenderProcessHost id.
+  int render_process_id;
+  // Whether or not StartExternalRequest succeeded.
+  bool start_ok;
+};
 }  // namespace
 
 // Class that holds map of unacked event information keyed by event id, accessed
@@ -55,19 +60,20 @@ void EventAckData::StartExternalRequestOnCoreThread(
   DCHECK_CURRENTLY_ON(content::ServiceWorkerContext::GetCoreThreadId());
 
   std::string request_uuid = base::GenerateGUID();
+  bool start_ok = true;
 
   content::ServiceWorkerExternalRequestResult result =
       context->StartingExternalRequest(version_id, request_uuid);
   if (result != content::ServiceWorkerExternalRequestResult::kOk) {
     LOG(ERROR) << "StartExternalRequest failed: " << static_cast<int>(result);
-    return;
+    start_ok = false;
   }
 
   // TODO(lazyboy): Clean up |unacked_events_| if RenderProcessHost died before
   // it got a chance to ack |event_id|. This shouldn't happen in common cases.
   std::map<int, EventInfo>& unacked_events_map = unacked_events->event_map;
   auto insert_result = unacked_events_map.insert(std::make_pair(
-      event_id, std::make_pair(request_uuid, render_process_id)));
+      event_id, EventInfo{request_uuid, render_process_id, start_ok}));
   DCHECK(insert_result.second) << "EventAckData: Duplicate event_id.";
 }
 
@@ -85,19 +91,20 @@ void EventAckData::FinishExternalRequestOnCoreThread(
   std::map<int, EventInfo>& unacked_events_map = unacked_events->event_map;
   auto request_info_iter = unacked_events_map.find(event_id);
   if (request_info_iter == unacked_events_map.end() ||
-      request_info_iter->second.second != render_process_id) {
+      request_info_iter->second.render_process_id != render_process_id) {
     std::move(failure_callback).Run();
     return;
   }
 
-  std::string request_uuid = std::move(request_info_iter->second.first);
+  std::string request_uuid = std::move(request_info_iter->second.request_uuid);
+  bool start_ok = request_info_iter->second.start_ok;
   unacked_events_map.erase(request_info_iter);
 
   content::ServiceWorkerExternalRequestResult result =
       context->FinishedExternalRequest(version_id, request_uuid);
-  // If the worker was already stopped, the FinishedExternalRequest will
-  // legitimately fail.
-  if (worker_stopped)
+  // If the worker was already stopped or StartExternalRequest didn't succeed,
+  // the FinishedExternalRequest will legitimately fail.
+  if (worker_stopped || !start_ok)
     return;
 
   if (result != content::ServiceWorkerExternalRequestResult::kOk) {
