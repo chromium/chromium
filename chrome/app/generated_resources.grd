@@ -9878,6 +9878,30 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_GROUP_AX_LABEL_EXPANDED" desc="Used as part of the accessibility label text of a group header for an expanded tab group.">
         Expanded
       </message>
+      <message name="IDS_TAB_AX_ANNOUNCE_MOVED_RIGHT" is_accessibility_with_no_ui="true" desc="Screen reader announcement when the user inputs a hotkey for moving the currently-selected tab to the right">
+        Tab moved right
+      </message>
+      <message name="IDS_TAB_AX_ANNOUNCE_MOVED_LEFT" is_accessibility_with_no_ui="true" desc="Screen reader announcement when the user inputs a hotkey for moving the currently-selected tab to the left">
+        Tab moved left
+      </message>
+      <message name="IDS_TAB_AX_ANNOUNCE_MOVED_FIRST" is_accessibility_with_no_ui="true" desc="Screen reader announcement when the user inputs a hotkey for moving the currently-selected tab to the start of the tabstrip">
+        Tab moved to start of tabstrip
+      </message>
+      <message name="IDS_TAB_AX_ANNOUNCE_MOVED_LAST" is_accessibility_with_no_ui="true" desc="Screen reader announcement when the user inputs a hotkey for moving the currently-selected tab to the end of the tabstrip">
+        Tab moved to end of tabstrip
+      </message>
+      <message name="IDS_TAB_AX_ANNOUNCE_TAB_ADDED_TO_UNNAMED_GROUP" is_accessibility_with_no_ui="true" desc="Screen reader announcement when the user inputs a hotkey for moving the currently-selected tab and it results in the tab being added to a tab group with no title">
+        Tab moved into unnamed group - <ph name="GROUP_CONTENTS">$1<ex>Google Search and 3 other tabs</ex></ph>
+      </message>
+      <message name="IDS_TAB_AX_ANNOUNCE_TAB_ADDED_TO_NAMED_GROUP" is_accessibility_with_no_ui="true" desc="Screen reader announcement when the user inputs a hotkey for moving the currently-selected tab and it results in the tab being added to a tab group with a title">
+        Tab moved into group <ph name="GROUP_NAME">$1</ph> - <ph name="GROUP_CONTENTS">$2<ex>Google Search and 3 other tabs</ex></ph>
+      </message>
+      <message name="IDS_TAB_AX_ANNOUNCE_TAB_REMOVED_FROM_UNNAMED_GROUP" is_accessibility_with_no_ui="true" desc="Screen reader announcement when the user inputs a hotkey for moving the currently-selected tab and it results in the tab being removed from a tab group with no title">
+        Tab removed from unnamed group - <ph name="GROUP_CONTENTS">$1<ex>Google Search and 3 other tabs</ex></ph>
+      </message>
+      <message name="IDS_TAB_AX_ANNOUNCE_TAB_REMOVED_FROM_NAMED_GROUP" is_accessibility_with_no_ui="true" desc="Screen reader announcement when the user inputs a hotkey for moving the currently-selected tab and it results in the tab being removed from a tab group with a title">
+        Tab removed from group <ph name="GROUP_NAME">$1</ph> - <ph name="GROUP_CONTENTS">$2<ex>Google Search and 3 other tabs</ex></ph>
+      </message>
 
       <!-- ProcessSingleton -->
       <message name="IDS_PROFILE_IN_USE_LINUX_QUIT" desc="Text of button in profile in use dialog to quit without doing anything.">

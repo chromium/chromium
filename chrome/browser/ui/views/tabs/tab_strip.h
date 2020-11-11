@@ -645,6 +645,10 @@ class TabStrip : public views::View,
 
   void OnTouchUiChanged();
 
+  // Screen-reader-only announcements that depend on tab group titles.
+  void AnnounceTabAddedToGroup(tab_groups::TabGroupId group_id);
+  void AnnounceTabRemovedFromGroup(tab_groups::TabGroupId group_id);
+
   // -- Member Variables ------------------------------------------------------
 
   base::ObserverList<TabStripObserver>::Unchecked observers_;

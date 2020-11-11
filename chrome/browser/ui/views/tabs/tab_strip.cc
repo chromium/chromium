@@ -1777,20 +1777,17 @@ void TabStrip::MoveTabFirst(Tab* tab) {
   if (!IsValidModelIndex(target_index))
     return;
 
-  if (target_index == start_index) {
-    // Even if the tab is already at the front, it may be able to "move" out of
-    // its current group.
-    if (tab->group().has_value())
-      controller_->RemoveTabFromGroup(target_index);
-    return;
-  }
-
-  controller_->MoveTab(start_index, target_index);
+  if (target_index != start_index)
+    controller_->MoveTab(start_index, target_index);
 
   // The tab may unintentionally land in the first group in the tab strip, so we
-  // remove the group to ensure consistent behavior.
+  // remove the group to ensure consistent behavior. Even if the tab is already
+  // at the front, it should "move" out of its current group.
   if (tab->group().has_value())
     controller_->RemoveTabFromGroup(target_index);
+
+  GetViewAccessibility().AnnounceText(
+      l10n_util::GetStringUTF16(IDS_TAB_AX_ANNOUNCE_MOVED_FIRST));
 }
 
 void TabStrip::MoveTabLast(Tab* tab) {
@@ -1814,20 +1811,17 @@ void TabStrip::MoveTabLast(Tab* tab) {
   if (!IsValidModelIndex(target_index))
     return;
 
-  if (target_index == start_index) {
-    // Even if the tab is already at the back, it may be able to "move" out of
-    // its current group.
-    if (tab->group().has_value())
-      controller_->RemoveTabFromGroup(target_index);
-    return;
-  }
-
-  controller_->MoveTab(start_index, target_index);
+  if (target_index != start_index)
+    controller_->MoveTab(start_index, target_index);
 
   // The tab may unintentionally land in the last group in the tab strip, so we
-  // remove the group to ensure consistent behavior.
+  // remove the group to ensure consistent behavior. Even if the tab is already
+  // at the back, it should "move" out of its current group.
   if (tab->group().has_value())
     controller_->RemoveTabFromGroup(target_index);
+
+  GetViewAccessibility().AnnounceText(
+      l10n_util::GetStringUTF16(IDS_TAB_AX_ANNOUNCE_MOVED_LAST));
 }
 
 void TabStrip::ShowContextMenuForTab(Tab* tab,
@@ -3005,13 +2999,16 @@ void TabStrip::ShiftTabRelative(Tab* tab, int offset) {
   if (tab->closing())
     return;
 
+  const auto old_group = tab->group();
   if (!IsValidModelIndex(target_index) ||
       controller_->IsTabPinned(start_index) !=
           controller_->IsTabPinned(target_index)) {
     // Even if we've reached the boundary of where the tab could go, it may
     // still be able to "move" out of its current group.
-    if (tab->group().has_value())
+    if (old_group.has_value()) {
+      AnnounceTabRemovedFromGroup(old_group.value());
       controller_->RemoveTabFromGroup(start_index);
+    }
     return;
   }
 
@@ -3019,8 +3016,9 @@ void TabStrip::ShiftTabRelative(Tab* tab, int offset) {
   // actually moving the tab just change its group membership.
   base::Optional<tab_groups::TabGroupId> target_group =
       tab_at(target_index)->group();
-  if (tab->group() != target_group) {
-    if (tab->group().has_value()) {
+  if (old_group != target_group) {
+    if (old_group.has_value()) {
+      AnnounceTabRemovedFromGroup(old_group.value());
       controller_->RemoveTabFromGroup(start_index);
       return;
     } else if (target_group.has_value()) {
@@ -3039,12 +3037,19 @@ void TabStrip::ShiftTabRelative(Tab* tab, int offset) {
           target_index = offset < 0 ? 0 : GetModelCount() - 1;
         }
       } else {
+        // Read before adding the tab to the group so that the group description
+        // isn't the tab we just added.
+        AnnounceTabAddedToGroup(target_group.value());
         controller_->AddTabToGroup(start_index, target_group.value());
         return;
       }
     }
   }
+
   controller_->MoveTab(start_index, target_index);
+  GetViewAccessibility().AnnounceText(l10n_util::GetStringUTF16(
+      ((offset > 0) ^ base::i18n::IsRTL()) ? IDS_TAB_AX_ANNOUNCE_MOVED_RIGHT
+                                           : IDS_TAB_AX_ANNOUNCE_MOVED_LEFT));
 }
 
 void TabStrip::ShiftGroupRelative(const tab_groups::TabGroupId& group,
@@ -3626,4 +3631,31 @@ void TabStrip::OnViewBlurred(views::View* observed_view) {
 void TabStrip::OnTouchUiChanged() {
   StopAnimating(true);
   PreferredSizeChanged();
+}
+
+void TabStrip::AnnounceTabAddedToGroup(tab_groups::TabGroupId group_id) {
+  const base::string16 group_title = controller()->GetGroupTitle(group_id);
+  const base::string16 contents_string =
+      controller()->GetGroupContentString(group_id);
+  GetViewAccessibility().AnnounceText(
+      group_title.empty()
+          ? l10n_util::GetStringFUTF16(
+                IDS_TAB_AX_ANNOUNCE_TAB_ADDED_TO_UNNAMED_GROUP, contents_string)
+          : l10n_util::GetStringFUTF16(
+                IDS_TAB_AX_ANNOUNCE_TAB_ADDED_TO_NAMED_GROUP, group_title,
+                contents_string));
+}
+
+void TabStrip::AnnounceTabRemovedFromGroup(tab_groups::TabGroupId group_id) {
+  const base::string16 group_title = controller()->GetGroupTitle(group_id);
+  const base::string16 contents_string =
+      controller()->GetGroupContentString(group_id);
+  GetViewAccessibility().AnnounceText(
+      group_title.empty()
+          ? l10n_util::GetStringFUTF16(
+                IDS_TAB_AX_ANNOUNCE_TAB_REMOVED_FROM_UNNAMED_GROUP,
+                contents_string)
+          : l10n_util::GetStringFUTF16(
+                IDS_TAB_AX_ANNOUNCE_TAB_REMOVED_FROM_NAMED_GROUP, group_title,
+                contents_string));
 }
