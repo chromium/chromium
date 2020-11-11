@@ -967,6 +967,13 @@ void RendererBlinkPlatformImpl::SetRenderingColorSpace(
 
 //------------------------------------------------------------------------------
 
+void RendererBlinkPlatformImpl::SetActiveURL(const blink::WebURL& url,
+                                             const blink::WebString& top_url) {
+  GetContentClient()->SetActiveURL(url, top_url.Utf8());
+}
+
+//------------------------------------------------------------------------------
+
 blink::mojom::CodeCacheHost& RendererBlinkPlatformImpl::GetCodeCacheHost() {
   if (!code_cache_host_) {
     code_cache_host_ = mojo::SharedRemote<blink::mojom::CodeCacheHost>(

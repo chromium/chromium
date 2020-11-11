@@ -69,6 +69,9 @@ class HeapMojoReceiver {
   bool WaitForIncomingCall() {
     return wrapper_->receiver().WaitForIncomingCall();
   }
+  void SetFilter(std::unique_ptr<mojo::MessageFilter> filter) {
+    wrapper_->receiver().SetFilter(std::move(filter));
+  }
 
   void Trace(Visitor* visitor) const { visitor->Trace(wrapper_); }
 

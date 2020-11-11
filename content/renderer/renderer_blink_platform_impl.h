@@ -210,6 +210,8 @@ class CONTENT_EXPORT RendererBlinkPlatformImpl : public BlinkPlatformImpl {
       scoped_refptr<base::SingleThreadTaskRunner> owner_task_runner) override;
   media::GpuVideoAcceleratorFactories* GetGpuFactories() override;
   void SetRenderingColorSpace(const gfx::ColorSpace& color_space) override;
+  void SetActiveURL(const blink::WebURL& url,
+                    const blink::WebString& top_url) override;
 
   // Tells this platform that the renderer is locked to a site (i.e., a scheme
   // plus eTLD+1, such as https://google.com), or to a more specific origin.

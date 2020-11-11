@@ -66,6 +66,10 @@ class HeapMojoAssociatedReceiver {
     return wrapper_->associated_receiver().WaitForIncomingCall();
   }
 
+  void SetFilter(std::unique_ptr<mojo::MessageFilter> filter) {
+    wrapper_->associated_receiver().SetFilter(std::move(filter));
+  }
+
   void Trace(Visitor* visitor) const { visitor->Trace(wrapper_); }
 
  private:

@@ -747,6 +747,13 @@ class BLINK_PLATFORM_EXPORT Platform {
   // runs during Chromium's build step).
   virtual bool IsTakingV8ContextSnapshot() { return false; }
 
+  // Crash Reporting -----------------------------------------------------
+
+  // Set the active URL for crash reporting. The active URL is stored as crash
+  // keys and is usually set for the duration of processing an IPC message. To
+  // unset pass an empty WebURL and WebString.
+  virtual void SetActiveURL(const WebURL& url, const WebString& top_url) {}
+
  private:
   static void InitializeMainThreadCommon(Platform* platform,
                                          std::unique_ptr<Thread> main_thread);
