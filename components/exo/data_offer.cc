@@ -66,6 +66,7 @@ void WriteFileDescriptor(base::ScopedFD fd,
 
 // Gets a comma-separated list of urls extracted from |data|->file.
 bool GetUrlListFromDataFile(FileHelper* file_helper,
+                            aura::Window* target,
                             const ui::OSExchangeData& data,
                             base::string16* url_list_string) {
   if (!data.HasFile())
@@ -75,7 +76,7 @@ bool GetUrlListFromDataFile(FileHelper* file_helper,
     for (const auto& info : files) {
       GURL url;
       // TODO(niwa): Need to fill the correct app_id.
-      if (file_helper->GetUrlFromPath(/* app_id */ "", info.path, &url)) {
+      if (file_helper->GetUrlFromPath(target, info.path, &url)) {
         if (!url_list_string->empty())
           *url_list_string += base::UTF8ToUTF16(kUriListSeparator);
         *url_list_string += base::UTF8ToUTF16(url.spec());
@@ -263,6 +264,7 @@ void DataOffer::SetSourceActions(
 }
 
 void DataOffer::SetDropData(FileHelper* file_helper,
+                            aura::Window* target,
                             const ui::OSExchangeData& data) {
   DCHECK_EQ(0u, data_callbacks_.size());
 
@@ -284,7 +286,7 @@ void DataOffer::SetDropData(FileHelper* file_helper,
 
   const std::string uri_list_mime_type = file_helper->GetMimeTypeForUriList();
   base::string16 url_list_string;
-  if (GetUrlListFromDataFile(file_helper, data, &url_list_string)) {
+  if (GetUrlListFromDataFile(file_helper, target, data, &url_list_string)) {
     data_callbacks_.emplace(
         uri_list_mime_type,
         AsyncSend(base::RefCountedString16::TakeString(&url_list_string)));
@@ -295,10 +297,10 @@ void DataOffer::SetDropData(FileHelper* file_helper,
   base::Pickle pickle;
   if (data.GetPickledData(GetClipboardFormatType(), &pickle) &&
       file_helper->HasUrlsInPickle(pickle)) {
-    data_callbacks_.emplace(
-        uri_list_mime_type,
-        base::BindOnce(&DataOffer::GetUrlsFromPickle,
-                       weak_ptr_factory_.GetWeakPtr(), file_helper, pickle));
+    data_callbacks_.emplace(uri_list_mime_type,
+                            base::BindOnce(&DataOffer::GetUrlsFromPickle,
+                                           weak_ptr_factory_.GetWeakPtr(),
+                                           file_helper, target, pickle));
     delegate_->OnOffer(uri_list_mime_type);
     return;
   }
@@ -407,11 +409,11 @@ void DataOffer::OnDataReady(const std::string& mime_type,
 }
 
 void DataOffer::GetUrlsFromPickle(FileHelper* file_helper,
+                                  aura::Window* target,
                                   const base::Pickle& pickle,
                                   DataOffer::SendDataCallback callback) {
-  // TODO(niwa): Need to fill the correct app_id.
   file_helper->GetUrlsFromPickle(
-      /* app_id */ "", pickle,
+      target, pickle,
       base::BindOnce(&DataOffer::OnPickledUrlsResolved,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }

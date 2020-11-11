@@ -12,6 +12,10 @@
 
 class GURL;
 
+namespace aura {
+class Window;
+}
+
 namespace base {
 class FilePath;
 class Pickle;
@@ -27,13 +31,13 @@ class FileHelper {
   // FileHelper.
   virtual std::string GetMimeTypeForUriList() const = 0;
 
-  // Converts native file path to URL which can be used by application with
-  // |app_id|.  We don't expose enter file system to a container directly.
+  // Converts native file path to URL to be consumed by the target window
+  // |target|.  We don't expose enter file system to a container directly.
   // Instead we mount specific directory in the containers' namespace.  Thus we
   // need to convert native path to file URL which points mount point in
   // containers.  The conversion should be container specific, now we only have
   // ARC container though.
-  virtual bool GetUrlFromPath(const std::string& app_id,
+  virtual bool GetUrlFromPath(aura::Window* target,
                               const base::FilePath& path,
                               GURL* out) = 0;
 
@@ -45,9 +49,10 @@ class FileHelper {
       base::OnceCallback<void(const std::vector<GURL>& urls)>;
 
   // Takes in |pickle| constructed by the web contents view, reads filesystem
-  // URLs from it and converts the URLs to something that applications can
-  // understand.  e.g. content:// URI for Android apps.
-  virtual void GetUrlsFromPickle(const std::string& app_id,
+  // URLs from it and converts the URLs to something that applications
+  // represented by |target| can understand and consume.  e.g. content:// URI
+  // for Android apps.
+  virtual void GetUrlsFromPickle(aura::Window* target,
                                  const base::Pickle& pickle,
                                  UrlsFromPickleCallback callback) = 0;
 };

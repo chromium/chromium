@@ -78,7 +78,7 @@ class ChromeFileHelper : public exo::FileHelper {
     return kMimeTypeArcUriList;
   }
 
-  bool GetUrlFromPath(const std::string& app_id,
+  bool GetUrlFromPath(aura::Window* target,
                       const base::FilePath& path,
                       GURL* out) override {
     return file_manager::util::ConvertPathToArcUrl(path, out);
@@ -90,7 +90,7 @@ class ChromeFileHelper : public exo::FileHelper {
     return !file_system_urls.empty();
   }
 
-  void GetUrlsFromPickle(const std::string& app_id,
+  void GetUrlsFromPickle(aura::Window* target,
                          const base::Pickle& pickle,
                          UrlsFromPickleCallback callback) override {
     std::vector<storage::FileSystemURL> file_system_urls;

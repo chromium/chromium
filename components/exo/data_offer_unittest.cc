@@ -117,7 +117,7 @@ TEST_F(DataOfferTest, SetTextDropData) {
   EXPECT_EQ(DndAction::kNone, delegate.dnd_action());
 
   TestFileHelper file_helper;
-  data_offer.SetDropData(&file_helper, data);
+  data_offer.SetDropData(&file_helper, nullptr, data);
   data_offer.SetSourceActions(source_actions);
   data_offer.SetActions(base::flat_set<DndAction>(), DndAction::kMove);
 
@@ -147,7 +147,7 @@ TEST_F(DataOfferTest, SetHTMLDropData) {
   EXPECT_EQ(DndAction::kNone, delegate.dnd_action());
 
   TestFileHelper file_helper;
-  data_offer.SetDropData(&file_helper, data);
+  data_offer.SetDropData(&file_helper, nullptr, data);
   data_offer.SetSourceActions(source_actions);
   data_offer.SetActions(base::flat_set<DndAction>(), DndAction::kMove);
 
@@ -179,7 +179,7 @@ TEST_F(DataOfferTest, SetFileDropData) {
   TestFileHelper file_helper;
   ui::OSExchangeData data;
   data.SetFilename(base::FilePath("/test/downloads/file"));
-  data_offer.SetDropData(&file_helper, data);
+  data_offer.SetDropData(&file_helper, nullptr, data);
 
   EXPECT_EQ(1u, delegate.mime_types().size());
   EXPECT_EQ(1u, delegate.mime_types().count("text/uri-list"));
@@ -199,7 +199,7 @@ TEST_F(DataOfferTest, SetPickleDropData) {
   pickle.WriteString("id");  // filesystem id
   data.SetPickledData(
       ui::ClipboardFormatType::GetType("chromium/x-file-system-files"), pickle);
-  data_offer.SetDropData(&file_helper, data);
+  data_offer.SetDropData(&file_helper, nullptr, data);
 
   EXPECT_EQ(1u, delegate.mime_types().size());
   EXPECT_EQ(1u, delegate.mime_types().count("text/uri-list"));
@@ -212,7 +212,7 @@ TEST_F(DataOfferTest, ReceiveString) {
   TestFileHelper file_helper;
   ui::OSExchangeData data;
   data.SetString(base::ASCIIToUTF16("Test data"));
-  data_offer.SetDropData(&file_helper, data);
+  data_offer.SetDropData(&file_helper, nullptr, data);
 
   base::ScopedFD read_pipe;
   base::ScopedFD write_pipe;
@@ -247,7 +247,7 @@ TEST_F(DataOfferTest, ReceiveHTML) {
   TestFileHelper file_helper;
   ui::OSExchangeData data;
   data.SetHtml(base::ASCIIToUTF16("Test HTML data"), GURL());
-  data_offer.SetDropData(&file_helper, data);
+  data_offer.SetDropData(&file_helper, nullptr, data);
 
   base::ScopedFD read_pipe_16;
   base::ScopedFD write_pipe_16;
@@ -273,7 +273,7 @@ TEST_F(DataOfferTest, ReceiveUriList) {
   TestFileHelper file_helper;
   ui::OSExchangeData data;
   data.SetFilename(base::FilePath("/test/downloads/file"));
-  data_offer.SetDropData(&file_helper, data);
+  data_offer.SetDropData(&file_helper, nullptr, data);
 
   base::ScopedFD read_pipe;
   base::ScopedFD write_pipe;
@@ -299,7 +299,7 @@ TEST_F(DataOfferTest, ReceiveUriListFromPickle_ReceiveBeforeUrlIsResolved) {
   pickle.WriteString("id");  // filesystem id
   data.SetPickledData(
       ui::ClipboardFormatType::GetType("chromium/x-file-system-files"), pickle);
-  data_offer.SetDropData(&file_helper, data);
+  data_offer.SetDropData(&file_helper, nullptr, data);
 
   base::ScopedFD read_pipe1;
   base::ScopedFD write_pipe1;
@@ -347,7 +347,7 @@ TEST_F(DataOfferTest,
   pickle.WriteString("id");  // filesystem id
   data.SetPickledData(
       ui::ClipboardFormatType::GetType("chromium/x-file-system-files"), pickle);
-  data_offer.SetDropData(&file_helper, data);
+  data_offer.SetDropData(&file_helper, nullptr, data);
 
   base::ScopedFD read_pipe;
   base::ScopedFD write_pipe;

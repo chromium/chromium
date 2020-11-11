@@ -21,7 +21,7 @@ std::string TestFileHelper::GetMimeTypeForUriList() const {
   return "text/uri-list";
 }
 
-bool TestFileHelper::GetUrlFromPath(const std::string& app_id,
+bool TestFileHelper::GetUrlFromPath(aura::Window* target,
                                     const base::FilePath& path,
                                     GURL* out) {
   *out = GURL("file://" + path.value());
@@ -32,7 +32,7 @@ bool TestFileHelper::HasUrlsInPickle(const base::Pickle& pickle) {
   return true;
 }
 
-void TestFileHelper::GetUrlsFromPickle(const std::string& app_id,
+void TestFileHelper::GetUrlsFromPickle(aura::Window* target,
                                        const base::Pickle& pickle,
                                        UrlsFromPickleCallback callback) {
   urls_callback_ = std::move(callback);

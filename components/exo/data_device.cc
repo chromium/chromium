@@ -9,6 +9,7 @@
 #include "components/exo/data_offer.h"
 #include "components/exo/data_source.h"
 #include "components/exo/seat.h"
+#include "components/exo/shell_surface_util.h"
 #include "components/exo/surface.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/clipboard_monitor.h"
@@ -93,7 +94,8 @@ void DataDevice::OnDragEntered(const ui::DropTargetEvent& event) {
 
   data_offer_ =
       std::make_unique<ScopedDataOffer>(delegate_->OnDataOffer(), this);
-  data_offer_->get()->SetDropData(file_helper_, event.data());
+  data_offer_->get()->SetDropData(file_helper_, surface->window(),
+                                  event.data());
   data_offer_->get()->SetSourceActions(dnd_actions);
   data_offer_->get()->SetActions(base::flat_set<DndAction>(), DndAction::kAsk);
   delegate_->OnEnter(surface, event.location_f(), *data_offer_->get());

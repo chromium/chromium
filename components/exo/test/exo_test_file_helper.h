@@ -18,11 +18,11 @@ class TestFileHelper : public FileHelper {
 
   // FileHelper:
   std::string GetMimeTypeForUriList() const override;
-  bool GetUrlFromPath(const std::string& app_id,
+  bool GetUrlFromPath(aura::Window* target,
                       const base::FilePath& path,
                       GURL* out) override;
   bool HasUrlsInPickle(const base::Pickle& pickle) override;
-  void GetUrlsFromPickle(const std::string& app_id,
+  void GetUrlsFromPickle(aura::Window* target,
                          const base::Pickle& pickle,
                          UrlsFromPickleCallback callback) override;
 

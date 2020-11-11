@@ -18,6 +18,10 @@
 #include "ui/base/class_property.h"
 #include "url/gurl.h"
 
+namespace aura {
+class Window;
+}
+
 namespace base {
 class Pickle;
 class RefCountedMemory;
@@ -66,12 +70,15 @@ class DataOffer final : public ui::PropertyHandler {
 
   // Sets the dropped data from |data| to the DataOffer object. |file_helper|
   // will be used to convert paths to handle mount points which is mounted in
-  // the mount point namespace of clinet process.
-  // While this function immediately calls DataOfferDelegate::OnOffer inside it
-  // with found mime types, dropped data bytes may be populated asynchronously
-  // after this function call.
-  // (e.g. Asynchronous lookup is required for resolving file system urls.)
-  void SetDropData(FileHelper* file_helper, const ui::OSExchangeData& data);
+  // the mount point namespace of clinet process. |target| is the drop target
+  // window and can be used to apply the target specitic logic to interpret the
+  // data.  While this function immediately calls DataOfferDelegate::OnOffer
+  // inside it with found mime types, dropped data bytes may be populated
+  // asynchronously after this function call.  (e.g. Asynchronous lookup is
+  // required for resolving file system urls.)
+  void SetDropData(FileHelper* file_helper,
+                   aura::Window* target,
+                   const ui::OSExchangeData& data);
 
   // Sets the clipboard data from |data| to the DataOffer object.
   void SetClipboardData(FileHelper* file_helper, const ui::Clipboard& data);
@@ -88,6 +95,7 @@ class DataOffer final : public ui::PropertyHandler {
                    base::ScopedFD fd,
                    scoped_refptr<base::RefCountedMemory> data);
   void GetUrlsFromPickle(FileHelper* file_helper,
+                         aura::Window* target,
                          const base::Pickle& pickle,
                          SendDataCallback callback);
   void OnPickledUrlsResolved(SendDataCallback callback,
