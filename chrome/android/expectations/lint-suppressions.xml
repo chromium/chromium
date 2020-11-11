@@ -243,8 +243,8 @@ Still reading?
     <ignore regexp="The resource `R.string.reading_list_mark_as_read` appears to be unused"/>
     <ignore regexp="The resource `R.string.reading_list_share` appears to be unused"/>
     <ignore regexp="The resource `R.string.reading_list_reminder_notification_title` appears to be unused"/>
-    <ignore regexp="The resource `R.string.reading_list_reminder_notification_subtitle` appears to be unused"/>
-    <ignore regexp="The resource `R.string.reading_list_unread_page_count` appears to be unused"/>
+    <ignore regexp="The resource `R.plurals.reading_list_reminder_notification_subtitle` appears to be unused"/>
+    <ignore regexp="The resource `R.plurals.reading_list_unread_page_count` appears to be unused"/>
     <ignore regexp="The resource `R.string.reading_list_intro_text` appears to be unused"/>
     <ignore regexp="The resource `R.string.reading_list_find_in_bookmarks` appears to be unused"/>
 

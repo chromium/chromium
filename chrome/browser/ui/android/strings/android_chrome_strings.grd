@@ -3100,10 +3100,14 @@ Data from your Incognito session will only be cleared from Chrome when you <ph n
         Catch up on your reading list
       </message>
       <message name="IDS_READING_LIST_REMINDER_NOTIFICATION_SUBTITLE" desc="The subtitle of the reminder notification for reading list.">
-        You have <ph name="READING_LIST_COUNT">%1$d<ex>5</ex></ph> pages
+          {READING_LIST_REMINDER_NOTIFICATION_SUBTITLE, plural,
+          =1 {You have <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE">%1$d<ex>1</ex></ph> page}
+          other {You have <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY">%1$d<ex>8</ex></ph> pages}}
       </message>
       <message name="IDS_READING_LIST_UNREAD_PAGE_COUNT" desc="Inform the user about the number of unread reading list items.">
-        <ph name="READING_LIST_COUNT">%1$d<ex>5</ex></ph> unread pages
+          {READING_LIST_UNREAD_PAGE_COUNT, plural,
+          =1 {<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE">%1$d<ex>1</ex></ph> unread page}
+          other {<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY">%1$d<ex>8</ex></ph> unread pages}}
       </message>
       <message name="IDS_READING_LIST_INTRO_TEXT" desc="The text on the reading list in product help bubble and other UIs to introduce the feature to the user.">
         Save this page for later and get a reminder
