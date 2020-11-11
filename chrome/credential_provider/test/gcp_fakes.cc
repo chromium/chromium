@@ -1418,7 +1418,7 @@ void FakeTaskManager::RunTasksInternal() {
 
   int64_t current = base::Time::Now().ToDeltaSinceWindowsEpoch().InHours();
 
-  ASSERT_EQ(current - start_hour, (num_of_times_executed_ - 1) * 3)
+  ASSERT_EQ(current - start_hour, (num_of_times_executed_ - 1) * 1)
       << (current - start_hour) << " hours since first run";
 
   TaskManager::RunTasksInternal();
