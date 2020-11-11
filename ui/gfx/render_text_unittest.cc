@@ -2051,6 +2051,53 @@ INSTANTIATE_TEST_SUITE_P(
                      testing::ValuesIn(kElideTailTextCases)),
     RenderTextTestWithElideTextCase::ParamInfoToString);
 
+const ElideTextCase kElideTruncateTextCases[] = {
+    {"empty", L"", L""},
+    {"letter_m_tail0", L"M", L""},
+    {"letter_m_tail1", L"M", L"M"},
+    {"no_eliding", L"012ab", L"012ab"},
+    {"ltr_3", L"abc", L"abc"},
+    {"ltr_2", L"abc", L"ab"},
+    {"ltr_1", L"abc", L"a"},
+    {"ltr_0", L"abc", L""},
+    {"rtl_3", L"\u05d0\u05d1\u05d2", L"\u05d0\u05d1\u05d2"},
+    {"rtl_2", L"\u05d0\u05d1\u05d2", L"\u05d0\u05d1"},
+    {"rtl_1", L"\u05d0\u05d1\u05d2", L"\u05d0"},
+    {"rtl_0", L"\u05d0\u05d1\u05d2", L""},
+    {"ltr_rtl_5", L"abc\u05d0\u05d1\u05d2", L"abc\u05d0\u05d1"},
+    {"ltr_rtl_4", L"abc\u05d0\u05d1\u05d2", L"abc\u05d0"},
+    {"ltr_rtl_3", L"abc\u05d0\u05d1\u05d2", L"abc"},
+    {"ltr_rtl_2", L"abc\u05d0\u05d1\u05d2", L"ab"},
+    {"rtl_ltr_5", L"\u05d0\u05d1\u05d2abc", L"\u05d0\u05d1\u05d2ab"},
+    {"rtl_ltr_4", L"\u05d0\u05d1\u05d2abc", L"\u05d0\u05d1\u05d2a"},
+    {"rtl_ltr_3", L"\u05d0\u05d1\u05d2abc", L"\u05d0\u05d1\u05d2"},
+    {"rtl_ltr_2", L"\u05d0\u05d1\u05d2abc", L"\u05d0\u05d1"},
+    {"bidi_1", L"012a\u05d1b\u05d1c", L"012a\u05d1b\u05d1"},
+    {"bidi_2", L"012a\u05d1b\u05d1c", L"012a\u05d1b"},
+    {"bidi_3", L"012a\u05d1b\u05d1c", L"012a\u05d1"},
+    {"bidi_4", L"012a\u05d1b\u05d1c", L"012a\u05d1"},
+    // Test surrogate pairs. The first pair 𝄞 'MUSICAL SYMBOL G CLEF' U+1D11E
+    // should be kept, and the second pair 𝄢 'MUSICAL SYMBOL F CLEF' U+1D122
+    // should be removed. No surrogate pair should be partially elided.
+    {"surrogate1", L"0123\U0001D11E\U0001D122x", L"0123\U0001D11E\U0001D122"},
+    {"surrogate2", L"0123\U0001D11E\U0001D122x", L"0123\U0001D11E"},
+    {"surrogate3", L"0123\U0001D11E\U0001D122x", L"0123"},
+    // Test combining character sequences. U+0915 U+093F forms a compound
+    // glyph, as does U+0915 U+0942. The first should be kept; the second
+    // removed. No combining sequence should be partially elided.
+    {"combining", L"0123\u0915\u093f\u0915\u0942456", L"0123\u0915\u093f"},
+    // 𝄞 (U+1D11E, MUSICAL SYMBOL G CLEF) should be fully elided.
+    {"emoji1", L"012\U0001D11Ex", L"012\U0001D11E"},
+    {"emoji2", L"012\U0001D11Ex", L"012"},
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    ElideTruncate,
+    RenderTextTestWithElideTextCase,
+    testing::Combine(testing::Values(ElideTextTestOptions{TRUNCATE}),
+                     testing::ValuesIn(kElideTruncateTextCases)),
+    RenderTextTestWithElideTextCase::ParamInfoToString);
+
 const ElideTextCase kElideEmailTextCases[] = {
     // Invalid email text.
     {"empty", L"", L""},
