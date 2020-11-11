@@ -119,8 +119,8 @@ CodecConfigEval AudioDecoder::MakeMediaConfig(const ConfigType& config,
   return CodecConfigEval::kSupported;
 }
 
-scoped_refptr<media::DecoderBuffer> AudioDecoder::MakeDecoderBuffer(
-    const InputType& chunk) {
+media::StatusOr<scoped_refptr<media::DecoderBuffer>>
+AudioDecoder::MakeDecoderBuffer(const InputType& chunk) {
   auto decoder_buffer = media::DecoderBuffer::CopyFrom(
       static_cast<uint8_t*>(chunk.data()->Data()),
       chunk.data()->ByteLengthAsSizeT());

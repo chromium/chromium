@@ -68,9 +68,11 @@ class MODULES_EXPORT DecoderTemplate
 
   // Convert a chunk to a DecoderBuffer. You can assume that the last
   // configuration sent to MakeMediaConfig() is the active configuration for
-  // |chunk|.
-  virtual scoped_refptr<media::DecoderBuffer> MakeDecoderBuffer(
-      const InputType& chunk) = 0;
+  // |chunk|. If there is an error in the conversion process, the resulting
+  // DecoderBuffer will be null, and |out_status| will contain a description of
+  // the error.
+  virtual media::StatusOr<scoped_refptr<media::DecoderBuffer>>
+  MakeDecoderBuffer(const InputType& chunk) = 0;
 
  private:
   struct Request final : public GarbageCollected<Request> {
@@ -93,6 +95,9 @@ class MODULES_EXPORT DecoderTemplate
 
     // For kFlush Requests.
     Member<ScriptPromiseResolver> resolver;
+
+    // For reporting an error at the time when a request is processed.
+    media::Status status;
   };
 
   void ProcessRequests();

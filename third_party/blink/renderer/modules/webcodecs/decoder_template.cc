@@ -132,7 +132,14 @@ void DecoderTemplate<Traits>::decode(const InputType* chunk,
 
   Request* request = MakeGarbageCollected<Request>();
   request->type = Request::Type::kDecode;
-  request->decoder_buffer = MakeDecoderBuffer(*chunk);
+  auto status_or_buffer = MakeDecoderBuffer(*chunk);
+
+  if (status_or_buffer.has_value()) {
+    request->decoder_buffer = std::move(status_or_buffer.value());
+  } else {
+    request->status = std::move(status_or_buffer.error());
+  }
+
   requests_.push_back(request);
   ++requested_decodes_;
   ProcessRequests();
@@ -291,9 +298,13 @@ bool DecoderTemplate<Traits>::ProcessDecodeRequest(Request* request) {
 
   // The request may be invalid, if so report that now.
   if (!request->decoder_buffer || request->decoder_buffer->data_size() == 0) {
-    HandleError("Decoding error",
-                media::Status(media::StatusCode::kDecoderFailedDecode,
-                              "Null or empty decoder buffer."));
+    media::Status error =
+        !request->status.is_ok()
+            ? request->status
+            : media::Status(media::StatusCode::kDecoderFailedDecode,
+                            "Null or empty decoder buffer.");
+
+    HandleError("Decoding error", error);
     return false;
   }
 

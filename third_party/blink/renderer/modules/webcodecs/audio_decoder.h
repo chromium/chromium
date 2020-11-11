@@ -77,7 +77,7 @@ class MODULES_EXPORT AudioDecoder : public DecoderTemplate<AudioDecoderTraits> {
   CodecConfigEval MakeMediaConfig(const ConfigType& config,
                                   MediaConfigType* out_media_config,
                                   String* out_console_message) override;
-  scoped_refptr<media::DecoderBuffer> MakeDecoderBuffer(
+  media::StatusOr<scoped_refptr<media::DecoderBuffer>> MakeDecoderBuffer(
       const InputType& chunk) override;
 };
 

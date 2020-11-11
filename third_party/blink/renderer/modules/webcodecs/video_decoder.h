@@ -86,7 +86,7 @@ class MODULES_EXPORT VideoDecoder : public DecoderTemplate<VideoDecoderTraits> {
   CodecConfigEval MakeMediaConfig(const ConfigType& config,
                                   MediaConfigType* out_media_config,
                                   String* out_console_message) override;
-  scoped_refptr<media::DecoderBuffer> MakeDecoderBuffer(
+  media::StatusOr<scoped_refptr<media::DecoderBuffer>> MakeDecoderBuffer(
       const InputType& input) override;
 
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)

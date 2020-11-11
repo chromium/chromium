@@ -168,8 +168,8 @@ CodecConfigEval VideoDecoder::MakeMediaConfig(const ConfigType& config,
   return CodecConfigEval::kSupported;
 }
 
-scoped_refptr<media::DecoderBuffer> VideoDecoder::MakeDecoderBuffer(
-    const InputType& chunk) {
+media::StatusOr<scoped_refptr<media::DecoderBuffer>>
+VideoDecoder::MakeDecoderBuffer(const InputType& chunk) {
   uint8_t* src = static_cast<uint8_t*>(chunk.data()->Data());
   size_t src_size = chunk.data()->ByteLengthAsSizeT();
 
@@ -180,16 +180,16 @@ scoped_refptr<media::DecoderBuffer> VideoDecoder::MakeDecoderBuffer(
     uint32_t output_size = h264_converter_->CalculateNeededOutputBufferSize(
         src, static_cast<uint32_t>(src_size), h264_avcc_.get());
     if (!output_size) {
-      // TODO(sandersd): Provide an error message.
-      return nullptr;
+      return media::Status(media::StatusCode::kH264ParsingError,
+                           "Unable to determine size of bitstream buffer.");
     }
 
     std::vector<uint8_t> buf(output_size);
     if (!h264_converter_->ConvertNalUnitStreamToByteStream(
             src, static_cast<uint32_t>(src_size), h264_avcc_.get(), buf.data(),
             &output_size)) {
-      // TODO(sandersd): Provide an error message.
-      return nullptr;
+      return media::Status(media::StatusCode::kH264ParsingError,
+                           "Unable to convert NALU to byte stream.");
     }
 
     decoder_buffer = media::DecoderBuffer::CopyFrom(buf.data(), output_size);
