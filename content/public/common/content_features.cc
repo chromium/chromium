@@ -449,7 +449,7 @@ const base::Feature kPeriodicBackgroundSync{"PeriodicBackgroundSync",
 
 // Enable permission policy for configuring and restricting feature behavior.
 const base::Feature kPermissionsPolicyHeader{"PermissionsPolicyHeader",
-                                             base::FEATURE_DISABLED_BY_DEFAULT};
+                                             base::FEATURE_ENABLED_BY_DEFAULT};
 
 // If Pepper 3D Image Chromium is allowed, this feature controls whether it is
 // enabled.
