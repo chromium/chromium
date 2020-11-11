@@ -8,7 +8,7 @@
 #include <set>
 #include <string>
 
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "components/ntp_snippets/callbacks.h"
 #include "components/ntp_snippets/category.h"
 #include "components/ntp_snippets/category_info.h"
@@ -74,8 +74,8 @@ class ReadingListSuggestionsProvider : public ContentSuggestionsProvider,
   const Category provided_category_;
 
   ReadingListModel* reading_list_model_;
-  ScopedObserver<ReadingListModel, ReadingListModelObserver> scoped_observer_{
-      this};
+  base::ScopedObservation<ReadingListModel, ReadingListModelObserver>
+      scoped_observation_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ReadingListSuggestionsProvider);
 };

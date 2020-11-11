@@ -56,8 +56,6 @@ ContentSuggestionsService::ContentSuggestionsService(
     std::unique_ptr<UserClassifier> user_classifier,
     std::unique_ptr<RemoteSuggestionsScheduler> remote_suggestions_scheduler)
     : state_(state),
-      identity_manager_observer_(this),
-      history_service_observer_(this),
       remote_suggestions_provider_(nullptr),
       large_icon_service_(large_icon_service),
       pref_service_(pref_service),
@@ -66,11 +64,11 @@ ContentSuggestionsService::ContentSuggestionsService(
       category_ranker_(std::move(category_ranker)) {
   // Can be null in tests.
   if (identity_manager) {
-    identity_manager_observer_.Add(identity_manager);
+    identity_manager_observation_.Observe(identity_manager);
   }
 
   if (history_service) {
-    history_service_observer_.Add(history_service);
+    history_service_observation_.Observe(history_service);
   }
 
   RestoreDismissedCategoriesFromPrefs();
@@ -552,7 +550,8 @@ void ContentSuggestionsService::OnURLsDeleted(
 
 void ContentSuggestionsService::HistoryServiceBeingDeleted(
     history::HistoryService* history_service) {
-  history_service_observer_.RemoveAll();
+  DCHECK(history_service_observation_.IsObservingSource(history_service));
+  history_service_observation_.RemoveObservation();
 }
 
 bool ContentSuggestionsService::TryRegisterProviderForCategory(

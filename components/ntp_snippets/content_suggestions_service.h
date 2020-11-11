@@ -14,7 +14,7 @@
 #include "base/callback_forward.h"
 #include "base/observer_list.h"
 #include "base/optional.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/time/time.h"
 #include "components/history/core/browser/history_service.h"
@@ -378,13 +378,15 @@ class ContentSuggestionsService : public KeyedService,
 
   // Observer for the IdentityManager. All observers are notified when the
   // signin state changes so that they can refresh their list of suggestions.
-  ScopedObserver<signin::IdentityManager, signin::IdentityManager::Observer>
-      identity_manager_observer_;
+  base::ScopedObservation<signin::IdentityManager,
+                          signin::IdentityManager::Observer>
+      identity_manager_observation_{this};
 
   // Observer for the HistoryService. All providers are notified when history is
   // deleted.
-  ScopedObserver<history::HistoryService, history::HistoryServiceObserver>
-      history_service_observer_;
+  base::ScopedObservation<history::HistoryService,
+                          history::HistoryServiceObserver>
+      history_service_observation_{this};
 
   base::ObserverList<Observer>::Unchecked observers_;
 

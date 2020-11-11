@@ -43,7 +43,7 @@ ReadingListSuggestionsProvider::ReadingListSuggestionsProvider(
 
   // If the ReadingListModel is loaded, this will trigger a call to
   // ReadingListModelLoaded. Keep it as last instruction.
-  scoped_observer_.Add(reading_list_model_);
+  scoped_observation_.Observe(reading_list_model_);
 }
 
 ReadingListSuggestionsProvider::~ReadingListSuggestionsProvider() {}
@@ -160,7 +160,8 @@ void ReadingListSuggestionsProvider::ReadingListModelLoaded(
 void ReadingListSuggestionsProvider::ReadingListModelBeingDeleted(
     const ReadingListModel* model) {
   DCHECK(model == reading_list_model_);
-  scoped_observer_.Remove(reading_list_model_);
+  DCHECK(scoped_observation_.IsObservingSource(reading_list_model_));
+  scoped_observation_.RemoveObservation();
   reading_list_model_ = nullptr;
 }
 

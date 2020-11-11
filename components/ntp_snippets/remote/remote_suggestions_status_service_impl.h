@@ -6,7 +6,7 @@
 #define COMPONENTS_NTP_SNIPPETS_REMOTE_REMOTE_SUGGESTIONS_STATUS_SERVICE_IMPL_H_
 
 #include "base/callback.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "components/ntp_snippets/remote/remote_suggestions_status_service.h"
 #include "components/prefs/pref_change_registrar.h"
 
