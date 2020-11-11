@@ -237,6 +237,7 @@ class AndroidPlatform : public device::cablev2::authenticator::Platform {
 
   void OnStatus(Status status) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    LOG(ERROR) << __func__ << " " << static_cast<int>(status);
 
     if (!cable_authenticator_) {
       return;
@@ -247,6 +248,9 @@ class AndroidPlatform : public device::cablev2::authenticator::Platform {
   }
 
   void OnCompleted(base::Optional<Error> maybe_error) override {
+    LOG(ERROR) << __func__ << " "
+               << (maybe_error ? static_cast<int>(*maybe_error) : -1);
+
     // The transaction might fail before interactive mode, thus
     // |cable_authenticator_| may be empty.
     if (cable_authenticator_) {
