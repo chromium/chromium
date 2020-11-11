@@ -13,6 +13,9 @@
 #include "chrome/common/buildflags.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/search_engines/template_url_service.h"
+#include "content/public/browser/browsing_data_filter_builder.h"
+#include "content/public/browser/storage_partition.h"
+#include "storage/browser/quota/special_storage_policy.h"
 
 #if BUILDFLAG(ENABLE_SESSION_SERVICE)
 #include "chrome/browser/sessions/session_service_factory.h"
@@ -77,18 +80,71 @@ void DeleteTemplateUrlsForDeletedOrigins(TemplateURLService* keywords_model,
       base::Time::Min(), base::Time::Max());
 }
 
-void DeleteTemplateUrls(TemplateURLService* keywords_model,
-                        const history::DeletionInfo& deletion_info) {
-  if (deletion_info.time_range().IsValid()) {
-    DeleteTemplateUrlsForTimeRange(keywords_model,
-                                   deletion_info.time_range().begin(),
-                                   deletion_info.time_range().end());
-  } else {
-    auto deleted_origins =
-        GetDeletedOrigins(deletion_info.deleted_urls_origin_map());
-    DeleteTemplateUrlsForDeletedOrigins(keywords_model,
-                                        std::move(deleted_origins));
+bool DoesOriginMatchPredicate(
+    base::OnceCallback<bool(const url::Origin&)> predicate,
+    const url::Origin& origin,
+    storage::SpecialStoragePolicy* policy) {
+  if (!std::move(predicate).Run(origin))
+    return false;
+
+  if (policy && policy->IsStorageProtected(origin.GetURL()))
+    return false;
+
+  return true;
+}
+
+void DeleteStoragePartitionDataWithFilter(
+    content::StoragePartition* storage_partition,
+    std::unique_ptr<content::BrowsingDataFilterBuilder> filter_builder,
+    base::Time delete_begin,
+    base::Time delete_end) {
+  content::StoragePartition::OriginMatcherFunction matcher_function =
+      filter_builder ? base::BindRepeating(&DoesOriginMatchPredicate,
+                                           filter_builder->BuildOriginFilter())
+                     : base::NullCallback();
+
+  const uint32_t removal_mask =
+      content::StoragePartition::REMOVE_DATA_MASK_CONVERSIONS;
+  const uint32_t quota_removal_mask = 0;
+  storage_partition->ClearData(
+      removal_mask, quota_removal_mask, std::move(matcher_function),
+      nullptr /* cookie_deletion_filter */, false /* perform_storage_cleanup */,
+      delete_begin, delete_end, base::DoNothing());
+}
+
+void DeleteStoragePartitionDataForTimeRange(
+    content::StoragePartition* storage_partition,
+    base::Time delete_begin,
+    base::Time delete_end,
+    const base::Optional<std::set<GURL>>& urls) {
+  std::unique_ptr<content::BrowsingDataFilterBuilder> filter_builder = nullptr;
+  if (urls) {
+    filter_builder = content::BrowsingDataFilterBuilder::Create(
+        content::BrowsingDataFilterBuilder::Mode::kDelete);
+    for (const auto& url : *urls) {
+      url::Origin origin = url::Origin::Create(url);
+      if (!origin.opaque())
+        filter_builder->AddOrigin(std::move(origin));
+    }
   }
+
+  DeleteStoragePartitionDataWithFilter(
+      storage_partition, std::move(filter_builder), delete_begin, delete_end);
+}
+
+void DeleteStoragePartitionDataForDeletedOrigins(
+    content::StoragePartition* storage_partition,
+    const base::flat_set<GURL>& deleted_origins) {
+  auto filter_builder = content::BrowsingDataFilterBuilder::Create(
+      content::BrowsingDataFilterBuilder::Mode::kDelete);
+  for (const auto& url : deleted_origins) {
+    url::Origin origin = url::Origin::Create(url);
+    if (!origin.opaque())
+      filter_builder->AddOrigin(std::move(origin));
+  }
+  DeleteStoragePartitionDataWithFilter(storage_partition,
+                                       std::move(filter_builder), base::Time(),
+                                       base::Time::Max());
 }
 
 }  // namespace
@@ -114,8 +170,44 @@ void BrowsingDataHistoryObserverService::OnURLsDeleted(
   TemplateURLService* keywords_model =
       TemplateURLServiceFactory::GetForProfile(profile_);
 
-  if (keywords_model)
-    DeleteTemplateUrls(keywords_model, deletion_info);
+  content::StoragePartition* storage_partition =
+      storage_partition_for_testing_
+          ? storage_partition_for_testing_
+          : content::BrowserContext::GetDefaultStoragePartition(profile_);
+
+  if (deletion_info.time_range().IsValid()) {
+    if (keywords_model) {
+      DeleteTemplateUrlsForTimeRange(keywords_model,
+                                     deletion_info.time_range().begin(),
+                                     deletion_info.time_range().end());
+    }
+
+    if (storage_partition) {
+      DeleteStoragePartitionDataForTimeRange(
+          storage_partition, deletion_info.time_range().begin(),
+          deletion_info.time_range().end(), deletion_info.restrict_urls());
+    }
+  } else {
+    // If the history deletion did not have a time range, delete data by origin.
+    auto deleted_origins =
+        GetDeletedOrigins(deletion_info.deleted_urls_origin_map());
+
+    if (storage_partition) {
+      DeleteStoragePartitionDataForDeletedOrigins(storage_partition,
+                                                  deleted_origins);
+    }
+
+    // Move the deleted origins to avoid an expensive copy.
+    if (keywords_model) {
+      DeleteTemplateUrlsForDeletedOrigins(keywords_model,
+                                          std::move(deleted_origins));
+    }
+  }
+}
+
+void BrowsingDataHistoryObserverService::OverrideStoragePartitionForTesting(
+    content::StoragePartition* partition) {
+  storage_partition_for_testing_ = partition;
 }
 
 // static

@@ -19,15 +19,13 @@ class CONTENT_EXPORT BrowsingDataFilterBuilderImpl
   explicit BrowsingDataFilterBuilderImpl(Mode mode);
   ~BrowsingDataFilterBuilderImpl() override;
 
-  // TODO(csharrison): consider exposing / using this in the //content public
-  // API.
-  base::RepeatingCallback<bool(const url::Origin&)> BuildOriginFilter();
-
   // BrowsingDataFilterBuilder implementation:
   void AddOrigin(const url::Origin& origin) override;
   void AddRegisterableDomain(const std::string& registrable_domain) override;
   bool MatchesAllOriginsAndDomains() override;
   base::RepeatingCallback<bool(const GURL&)> BuildUrlFilter() override;
+  base::RepeatingCallback<bool(const url::Origin&)> BuildOriginFilter()
+      override;
   network::mojom::ClearDataFilterPtr BuildNetworkServiceFilter() override;
   network::mojom::CookieDeletionFilterPtr BuildCookieDeletionFilter() override;
   base::RepeatingCallback<bool(const std::string& site)> BuildPluginFilter()

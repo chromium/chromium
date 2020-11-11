@@ -93,10 +93,6 @@ BrowsingDataFilterBuilderImpl::BrowsingDataFilterBuilderImpl(Mode mode)
 BrowsingDataFilterBuilderImpl::~BrowsingDataFilterBuilderImpl() {}
 
 void BrowsingDataFilterBuilderImpl::AddOrigin(const url::Origin& origin) {
-  // TODO(msramek): Optimize OriginFilterBuilder for larger filters if needed.
-  DCHECK_LE(origins_.size(), 10U) << "OriginFilterBuilder is only suitable "
-                                     "for creating small filters.";
-
   // By limiting the filter to non-unique origins, we can guarantee that
   // origin1 < origin2 && origin1 > origin2 <=> origin1.isSameOrigin(origin2).
   // This means that std::set::find() will use the same semantics for
@@ -139,6 +135,12 @@ BrowsingDataFilterBuilderImpl::BuildOriginFilter() {
 
 network::mojom::ClearDataFilterPtr
 BrowsingDataFilterBuilderImpl::BuildNetworkServiceFilter() {
+  // TODO(msramek): Optimize BrowsingDataFilterBuilder for larger filters
+  // if needed.
+  DCHECK_LE(origins_.size(), 10U)
+      << "BrowsingDataFilterBuilder is only suitable for creating "
+         "small network service filters.";
+
   if (MatchesAllOriginsAndDomains())
     return nullptr;
   network::mojom::ClearDataFilterPtr filter =

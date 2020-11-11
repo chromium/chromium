@@ -23,13 +23,13 @@ class Origin;
 
 namespace content {
 
-// An class that builds GURL->bool predicates to filter browsing data. These
+// A class that builds Origin->bool predicates to filter browsing data. These
 // filters can be of two modes - a list of items to delete or a list of items to
 // preserve, deleting everything else. The filter entries can be origins or
 // registrable domains.
 //
 // This class defines interface to build filters for various kinds of browsing
-// data. |BuildUrlFilter()| is useful for most browsing data storage backends,
+// data. |BuildOriginFilter()| is useful for most browsing data storage backends,
 // but some backends, such as website settings and cookies, use other formats of
 // filter.
 class CONTENT_EXPORT BrowsingDataFilterBuilder {
@@ -62,9 +62,19 @@ class CONTENT_EXPORT BrowsingDataFilterBuilder {
   // Returns true if we're an empty preserve list, where we delete everything.
   virtual bool MatchesAllOriginsAndDomains() = 0;
 
+  // Deprecated: Prefer `BuildOriginFilter()` instead.
   // Builds a filter that matches URLs that are in the list to delete, or aren't
   // in the list to preserve.
+  //
+  // TODO(https://crbug.com/1145270): Migrate usage to BuildOriginFilter() and
+  // remove this function.
   virtual base::RepeatingCallback<bool(const GURL&)> BuildUrlFilter() = 0;
+
+  // Builds a filter that matches origins that are in the list to delete, or
+  // aren't in the list to preserve. This is preferred to BuildUrlFilter() as
+  // it does not inherently perform GURL->Origin conversions.
+  virtual base::RepeatingCallback<bool(const url::Origin&)>
+  BuildOriginFilter() = 0;
 
   // Builds a filter that can be used with the network service. This uses a Mojo
   // struct rather than a predicate function (as used by the rest of the filters
