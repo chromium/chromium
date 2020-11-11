@@ -2537,6 +2537,15 @@ void TabStrip::StartRemoveTabAnimation(int model_index, bool was_active) {
   UpdateIdealBounds();
   AnimateToIdealBounds();
 
+  if (in_tab_close_ && model_count > 0 &&
+      override_available_width_for_tabs_ >
+          ideal_bounds(model_count - 1).right()) {
+    // Tab closing mode is no longer constraining tab widths - they're at full
+    // size. Exit tab closing mode so that it doesn't artificially inflate the
+    // tabstrip's bounds.
+    ExitTabClosingMode();
+  }
+
   // TODO(pkasting): When closing multiple tabs, we get repeated RemoveTabAt()
   // calls, each of which closes a new tab and thus generates different ideal
   // bounds.  We should update the animations of any other tabs that are
