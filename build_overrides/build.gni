@@ -62,10 +62,7 @@ declare_args() {
 
 if (is_apple && use_system_xcode == "") {
   _result = exec_script("//build/mac/should_use_hermetic_xcode.py",
-                        [
-                          "--xcode-version=$mac_xcode_version",
-                          target_os,
-                        ],
+                        [ target_os ],
                         "value")
 
   assert(_result != 2,

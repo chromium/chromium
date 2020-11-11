@@ -815,7 +815,7 @@ def main():
       sys.path.insert(1, os.path.join(CHROMIUM_DIR, 'build'))
       import mac_toolchain
       LLVM_XCODE = os.path.join(THIRD_PARTY_DIR, 'llvm-xcode')
-      mac_toolchain.InstallXcodeBinaries('xcode_12_beta', LLVM_XCODE)
+      mac_toolchain.InstallXcodeBinaries(LLVM_XCODE)
       isysroot_11 = os.path.join(LLVM_XCODE, 'Contents', 'Developer',
                                  'Platforms', 'MacOSX.platform', 'Developer',
                                  'SDKs', 'MacOSX11.0.sdk')

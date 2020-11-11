@@ -17,17 +17,11 @@ Building _for_ arm Macs
 You can build Chrome for arm macs on an Intel Mac. To build for arm64, you have
 to do 2 things:
 
-1. use the `MacOSX11.0.sdk` that comes with
-   Xcode 12 beta. If you're on Google's corporate network, edit your `.gclient`
-   file and add this `custom_vars`:
-
-       "custom_vars": { "mac_xcode_version": "xcode_12_beta" },
-
-   Then just run `gclient sync` and you'll automatically get that SDK and will
-   build with it.
-
-   Otherwise, manually download and install the current Xcode 12 beta and make
-   it the active Xcode with `xcode-select`.
+1. use the `MacOSX11.0.sdk` that comes with the
+   Xcode 12.2 release candidate. If you're on Google's corporate network, this
+   SDK is part of the hermetic toolchain and will be used automatically.
+   Otherwise, manually download and install this version of Xcode and make it
+   the active Xcode with `xcode-select`.
 
 2. Add `target_cpu = "arm64"` to your `args.gn`.
 

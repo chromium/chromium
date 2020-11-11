@@ -37,7 +37,7 @@ declare_args() {
   # The SDK version used when making official builds. This is a single exact
   # version, not a minimum. If this version isn't available official builds
   # will fail.
-  mac_sdk_official_version = "10.15"
+  mac_sdk_official_version = "11.0"
 
   # Production builds should use hermetic Xcode. If you want to do production
   # builds with system Xcode to test new SDKs, set this.
@@ -113,13 +113,7 @@ if (use_system_xcode) {
     mac_bin_path = find_sdk_lines[1]
   }
 } else {
-  if (mac_xcode_version == "default") {
-    mac_sdk_version = mac_sdk_official_version
-  } else if (mac_xcode_version == "xcode_12_beta") {
-    mac_sdk_version = "11.0"
-  } else {
-    assert(false, "unknown mac_xcode_version $mac_xcode_version")
-  }
+  mac_sdk_version = mac_sdk_official_version
   _dev = _hermetic_xcode_path + "/Contents/Developer"
   _sdk = "MacOSX${mac_sdk_version}.sdk"
   mac_sdk_path = _dev + "/Platforms/MacOSX.platform/Developer/SDKs/$_sdk"

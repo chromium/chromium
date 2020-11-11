@@ -33,7 +33,7 @@
 // instead of including more headers. If that is infeasible, adjust the limit.
 // For more info, see
 // https://chromium.googlesource.com/chromium/src/+/HEAD/docs/wmax_tokens.md
-#pragma clang max_tokens_here 980000
+#pragma clang max_tokens_here 1000000
 
 #include <memory>
 #include <utility>
