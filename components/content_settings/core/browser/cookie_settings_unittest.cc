@@ -6,7 +6,7 @@
 
 #include <cstddef>
 
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -45,7 +45,7 @@ class CookieSettingsObserver : public CookieSettings::Observer {
  public:
   explicit CookieSettingsObserver(CookieSettings* settings)
       : settings_(settings) {
-    scoped_observer_.Add(settings);
+    scoped_observation_.Observe(settings);
   }
 
   void OnThirdPartyCookieBlockingChanged(
@@ -60,8 +60,8 @@ class CookieSettingsObserver : public CookieSettings::Observer {
  private:
   CookieSettings* settings_;
   bool last_value_ = false;
-  ScopedObserver<CookieSettings, CookieSettings::Observer> scoped_observer_{
-      this};
+  base::ScopedObservation<CookieSettings, CookieSettings::Observer>
+      scoped_observation_{this};
 
   DISALLOW_COPY_AND_ASSIGN(CookieSettingsObserver);
 };

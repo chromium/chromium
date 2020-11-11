@@ -335,7 +335,7 @@ PageSpecificContentSettings::PageSpecificContentSettings(
           delegate_->GetIsDeletionDisabledCallback()),
       load_plugins_link_enabled_(true),
       microphone_camera_state_(MICROPHONE_CAMERA_NOT_ACCESSED) {
-  observer_.Add(map_);
+  observation_.Observe(map_);
 }
 
 PageSpecificContentSettings::~PageSpecificContentSettings() = default;

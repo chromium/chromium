@@ -33,7 +33,7 @@ CookieControlsBridge::CookieControlsBridge(
       permissions_client->GetCookieSettings(web_contents->GetBrowserContext()),
       original_context ? permissions_client->GetCookieSettings(original_context)
                        : nullptr);
-  observer_.Add(controller_.get());
+  observation_.Observe(controller_.get());
   controller_->Update(web_contents);
 }
 

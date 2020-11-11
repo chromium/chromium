@@ -7,6 +7,7 @@
 
 #include "base/android/jni_weak_ref.h"
 #include "base/optional.h"
+#include "base/scoped_observation.h"
 #include "components/content_settings/browser/ui/cookie_controls_controller.h"
 #include "components/content_settings/browser/ui/cookie_controls_view.h"
 #include "components/content_settings/core/common/cookie_controls_status.h"
@@ -51,7 +52,8 @@ class CookieControlsBridge : public CookieControlsView {
   base::Optional<int> blocked_cookies_;
   base::Optional<int> allowed_cookies_;
   std::unique_ptr<CookieControlsController> controller_;
-  ScopedObserver<CookieControlsController, CookieControlsView> observer_{this};
+  base::ScopedObservation<CookieControlsController, CookieControlsView>
+      observation_{this};
 
   DISALLOW_COPY_AND_ASSIGN(CookieControlsBridge);
 };

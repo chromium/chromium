@@ -37,7 +37,7 @@ CookieSettings::CookieSettings(
       is_incognito_(is_incognito),
       extension_scheme_(extension_scheme),
       block_third_party_cookies_(false) {
-  content_settings_observer_.Add(host_content_settings_map_.get());
+  content_settings_observation_.Observe(host_content_settings_map_.get());
   pref_change_registrar_.Init(prefs);
   pref_change_registrar_.Add(
       prefs::kCookieControlsMode,

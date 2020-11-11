@@ -7,6 +7,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/observer_list.h"
+#include "base/scoped_observation.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/cookie_controls_enforcement.h"
@@ -94,9 +95,9 @@ class CookieControlsController : content_settings::CookieSettings::Observer {
   // This may be null.
   scoped_refptr<content_settings::CookieSettings> original_cookie_settings_;
 
-  ScopedObserver<content_settings::CookieSettings,
-                 content_settings::CookieSettings::Observer>
-      cookie_observer_{this};
+  base::ScopedObservation<content_settings::CookieSettings,
+                          content_settings::CookieSettings::Observer>
+      cookie_observation_{this};
 
   bool should_reload_ = false;
 

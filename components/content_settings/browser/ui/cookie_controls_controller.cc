@@ -33,7 +33,7 @@ CookieControlsController::CookieControlsController(
     scoped_refptr<CookieSettings> original_cookie_settings)
     : cookie_settings_(cookie_settings),
       original_cookie_settings_(original_cookie_settings) {
-  cookie_observer_.Add(cookie_settings_.get());
+  cookie_observation_.Observe(cookie_settings_.get());
 }
 
 CookieControlsController::~CookieControlsController() = default;
