@@ -93,8 +93,7 @@ class MojoPageTimingSender : public PageTimingSender {
 
 MetricsRenderFrameObserver::MetricsRenderFrameObserver(
     content::RenderFrame* render_frame)
-    : content::RenderFrameObserver(render_frame),
-      scoped_ad_resource_observer_(this) {}
+    : content::RenderFrameObserver(render_frame) {}
 
 MetricsRenderFrameObserver::~MetricsRenderFrameObserver() {
   if (page_timing_metrics_sender_)
@@ -345,12 +344,13 @@ void MetricsRenderFrameObserver::DidCommitProvisionalLoad(
 void MetricsRenderFrameObserver::SetAdResourceTracker(
     subresource_filter::AdResourceTracker* ad_resource_tracker) {
   // Remove all sources and set a new source for the observer.
-  scoped_ad_resource_observer_.RemoveAll();
-  scoped_ad_resource_observer_.Add(ad_resource_tracker);
+  if (scoped_ad_resource_observation_.IsObserving())
+    scoped_ad_resource_observation_.RemoveObservation();
+  scoped_ad_resource_observation_.Observe(ad_resource_tracker);
 }
 
 void MetricsRenderFrameObserver::OnAdResourceTrackerGoingAway() {
-  scoped_ad_resource_observer_.RemoveAll();
+  scoped_ad_resource_observation_.RemoveObservation();
 }
 
 void MetricsRenderFrameObserver::OnAdResourceObserved(int request_id) {

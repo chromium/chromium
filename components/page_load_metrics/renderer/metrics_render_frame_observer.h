@@ -9,7 +9,7 @@
 #include <set>
 
 #include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "components/page_load_metrics/common/page_load_timing.h"
 #include "components/page_load_metrics/renderer/page_resource_data_use.h"
 #include "components/page_load_metrics/renderer/page_timing_metadata_recorder.h"
@@ -146,9 +146,9 @@ class MetricsRenderFrameObserver
   std::unique_ptr<PageResourceDataUse> provisional_frame_resource_data_use_;
   int provisional_frame_resource_id_ = 0;
 
-  ScopedObserver<subresource_filter::AdResourceTracker,
-                 subresource_filter::AdResourceTracker::Observer>
-      scoped_ad_resource_observer_;
+  base::ScopedObservation<subresource_filter::AdResourceTracker,
+                          subresource_filter::AdResourceTracker::Observer>
+      scoped_ad_resource_observation_{this};
 
   // Set containing all request ids that were reported as ads from the renderer.
   std::set<int> ad_request_ids_;
