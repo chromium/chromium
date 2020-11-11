@@ -48,7 +48,12 @@ std::vector<content::WebPluginInfo> GetPlugins() {
 using ChromePluginTest = InProcessBrowserTest;
 
 // Verify that the official builds have the known set of plugins.
-IN_PROC_BROWSER_TEST_F(ChromePluginTest, InstalledPlugins) {
+#if defined(OS_CHROMEOS) // http://crbug.com/1147726
+#define MAYBE_InstalledPlugins DISABLED_InstalledPlugins
+#else
+#define MAYBE_InstalledPlugins InstalledPlugins
+#endif
+IN_PROC_BROWSER_TEST_F(ChromePluginTest, MAYBE_InstalledPlugins) {
   const char* expected[] = {
       "Chrome PDF Plugin",
       "Native Client",
