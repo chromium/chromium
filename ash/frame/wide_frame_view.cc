@@ -121,6 +121,11 @@ WideFrameView::WideFrameView(views::Widget* target)
   window->SetProperty(kForceVisibleInMiniViewKey, true);
   window->SetEventTargeter(std::make_unique<WideFrameTargeter>(header_view()));
   set_owned_by_client();
+
+  paint_as_active_subscription_ =
+      target_->RegisterPaintAsActiveChangedCallback(base::BindRepeating(
+          &WideFrameView::PaintAsActiveChanged, base::Unretained(this)));
+  PaintAsActiveChanged();
 }
 
 WideFrameView::~WideFrameView() {
@@ -207,6 +212,11 @@ HeaderView* WideFrameView::GetTargetHeaderView() {
   auto* frame_view = static_cast<NonClientFrameViewAsh*>(
       target_->non_client_view()->frame_view());
   return frame_view->GetHeaderView();
+}
+
+void WideFrameView::PaintAsActiveChanged() {
+  header_view_->GetFrameHeader()->SetPaintAsActive(
+      target_->ShouldPaintAsActive());
 }
 
 }  // namespace ash

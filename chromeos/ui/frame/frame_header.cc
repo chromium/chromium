@@ -96,8 +96,8 @@ class FrameHeader::FrameAnimatorView : public views::View,
                                        public views::ViewObserver,
                                        public ui::ImplicitAnimationObserver {
  public:
-  FrameAnimatorView(FrameHeader* frame_header, views::View* parent)
-      : frame_header_(frame_header), parent_(parent) {
+  FrameAnimatorView(views::View* parent)
+      : parent_(parent) {
     SetPaintToLayer(ui::LAYER_NOT_DRAWN);
     parent_->AddChildViewAt(this, 0);
     parent_->AddObserver(this);
@@ -111,13 +111,13 @@ class FrameHeader::FrameAnimatorView : public views::View,
   }
 
   void StartAnimation(base::TimeDelta duration) {
-    if (layer_owner_) {
-      // If animation is already running, just update the content of the new
-      // layer.
+    if (layer_owner_ || !parent_->GetWidget()) {
+      // If animation is already running or the widget hasn't been initialized
+      // yet, just update the content of the new layer.
       parent_->SchedulePaint();
       return;
     }
-    aura::Window* window = frame_header_->target_widget()->GetNativeWindow();
+    aura::Window* window = parent_->GetWidget()->GetNativeWindow();
 
     // Make sure the this view is at the bottom of root view's children.
     parent_->ReorderChildView(this, 0);
@@ -184,7 +184,6 @@ class FrameHeader::FrameAnimatorView : public views::View,
     }
   }
 
-  FrameHeader* frame_header_;
   views::View* parent_;
   std::unique_ptr<ui::LayerTreeOwner> layer_owner_;
 };
@@ -279,7 +278,7 @@ FrameHeader::FrameHeader(views::Widget* target_widget, views::View* view)
   DCHECK(target_widget);
   DCHECK(view);
   UpdateFrameHeaderKey();
-  frame_animator_ = new FrameAnimatorView(this, view);
+  frame_animator_ = new FrameAnimatorView(view);
 }
 
 void FrameHeader::UpdateFrameHeaderKey() {
@@ -337,12 +336,6 @@ void FrameHeader::SetCaptionButtonContainer(
 }
 
 void FrameHeader::StartTransitionAnimation(base::TimeDelta duration) {
-  aura::Window* window = target_widget_->GetNativeWindow();
-  // Don't start another animation if the window is already animating
-  // such as maximize/restore/unminimize.
-  if (window->layer()->GetAnimator()->is_animating())
-    return;
-
   frame_animator_->StartAnimation(duration);
 
   frame_animator_->SchedulePaint();
