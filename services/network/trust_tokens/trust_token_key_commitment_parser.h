@@ -24,9 +24,6 @@ extern const char kTrustTokenKeyCommitmentProtocolVersionField[];
 extern const char kTrustTokenKeyCommitmentIDField[];
 // "Batch size" (number of blinded tokens to provide per issuance request):
 extern const char kTrustTokenKeyCommitmentBatchsizeField[];
-// Verification key for the signatures the issuer provides over its Signed
-// Redemption Records (SRRs):
-extern const char kTrustTokenKeyCommitmentSrrkeyField[];
 // Each issuance key's expiry timestamp:
 extern const char kTrustTokenKeyCommitmentExpiryField[];
 // Each issuance key's key material:

@@ -8,7 +8,6 @@
 #include "base/callback_helpers.h"
 #include "net/http/structured_headers.h"
 #include "services/network/trust_tokens/scoped_boringssl_bytes.h"
-#include "services/network/trust_tokens/signed_redemption_record_serialization.h"
 #include "services/network/trust_tokens/trust_token_client_data_canonicalization.h"
 #include "services/network/trust_tokens/trust_token_parameterization.h"
 #include "third_party/boringssl/src/include/openssl/base.h"
@@ -26,15 +25,17 @@ BoringsslTrustTokenRedemptionCryptographer::
 
 bool BoringsslTrustTokenRedemptionCryptographer::Initialize(
     mojom::TrustTokenProtocolVersion issuer_configured_version,
-    int issuer_configured_batch_size,
-    base::StringPiece redemption_record_verification_key) {
+    int issuer_configured_batch_size) {
   if (!base::IsValueInRangeForNumericType<size_t>(issuer_configured_batch_size))
     return false;
 
   const TRUST_TOKEN_METHOD* method = nullptr;
   switch (issuer_configured_version) {
-    case mojom::TrustTokenProtocolVersion::kTrustTokenV1:
-      method = TRUST_TOKEN_experiment_v1();
+    case mojom::TrustTokenProtocolVersion::kTrustTokenV2Pmb:
+      method = TRUST_TOKEN_experiment_v2_pmb();
+      break;
+    case mojom::TrustTokenProtocolVersion::kTrustTokenV2Voprf:
+      method = TRUST_TOKEN_experiment_v2_voprf();
       break;
   }
 
@@ -42,19 +43,6 @@ bool BoringsslTrustTokenRedemptionCryptographer::Initialize(
       method, static_cast<size_t>(issuer_configured_batch_size)));
   if (!ctx_)
     return false;
-
-  bssl::UniquePtr<EVP_PKEY> rr_verification_pkey(EVP_PKEY_new_raw_public_key(
-      EVP_PKEY_ED25519,
-      /*unused=*/nullptr,  // Yes, this parameter is called "unused".
-      base::as_bytes(base::make_span(redemption_record_verification_key))
-          .data(),
-      redemption_record_verification_key.size()));
-  if (!rr_verification_pkey)
-    return false;
-
-  if (!TRUST_TOKEN_CLIENT_set_srr_key(ctx_.get(), rr_verification_pkey.get())) {
-    return false;
-  }
 
   return true;
 }
@@ -107,20 +95,20 @@ BoringsslTrustTokenRedemptionCryptographer::ConfirmRedemption(
   if (!base::Base64Decode(response_header, &decoded_response))
     return base::nullopt;
 
-  // |srr_body| and |srr_signature| together provide the information in the
-  // redemption record (see ConstructRedemptionRecord's function comment for
-  // more information).
-  ScopedBoringsslBytes srr_body;
-  ScopedBoringsslBytes srr_signature;
+  // In TrustTokenV2, the entire RR is stored in the body field, and the
+  // signature field is unused in finish_redemption.
+  ScopedBoringsslBytes rr;
+  ScopedBoringsslBytes unused;
   if (!TRUST_TOKEN_CLIENT_finish_redemption(
-          ctx_.get(), srr_body.mutable_ptr(), srr_body.mutable_len(),
-          srr_signature.mutable_ptr(), srr_signature.mutable_len(),
+          ctx_.get(), rr.mutable_ptr(), rr.mutable_len(), unused.mutable_ptr(),
+          unused.mutable_len(),
           base::as_bytes(base::make_span(decoded_response)).data(),
           decoded_response.size())) {
     return base::nullopt;
   }
 
-  return ConstructRedemptionRecord(srr_body.as_span(), srr_signature.as_span());
+  return std::string(reinterpret_cast<const char*>(rr.as_span().data()),
+                     rr.as_span().size());
 }
 
 }  // namespace network

@@ -134,12 +134,11 @@ void TrustTokenRequestRedemptionHelper::OnGotKeyCommitment(
   }
 
   if (!commitment_result->batch_size ||
-      !cryptographer_->Initialize(
-          commitment_result->protocol_version, commitment_result->batch_size,
-          commitment_result->redemption_record_verification_key)) {
+      !cryptographer_->Initialize(commitment_result->protocol_version,
+                                  commitment_result->batch_size)) {
     LogOutcome(net_log_, kBegin,
                "Internal error initializing BoringSSL redemption state "
-               "(possibly due to malformed RR key or bad batch size)");
+               "(possibly due to bad batch size)");
     std::move(done).Run(mojom::TrustTokenOperationStatus::kInternalError);
     return;
   }
@@ -213,8 +212,7 @@ void TrustTokenRequestRedemptionHelper::Finalize(
   }
 
   // 2. Strip the Sec-Trust-Token header, from the response and pass the header,
-  // base64-decoded, to BoringSSL, along with the issuer’s RR-verification
-  // public key previously obtained from a key commitment.
+  // base64-decoded, to BoringSSL.
   response->headers->RemoveHeader(kTrustTokensSecTrustTokenHeader);
 
   base::Optional<std::string> maybe_redemption_record =

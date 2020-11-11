@@ -49,7 +49,7 @@ IssuanceKeyPair GenerateIssuanceKeyPair(int id) {
   keys.verification.resize(TRUST_TOKEN_MAX_PUBLIC_KEY_SIZE);
   size_t signing_key_len, verification_key_len;
   CHECK(TRUST_TOKEN_generate_key(
-      TRUST_TOKEN_experiment_v1(), keys.signing.data(), &signing_key_len,
+      TRUST_TOKEN_experiment_v2_pmb(), keys.signing.data(), &signing_key_len,
       keys.signing.size(), keys.verification.data(), &verification_key_len,
       keys.verification.size(), id));
   keys.signing.resize(signing_key_len);
@@ -83,9 +83,6 @@ struct TrustTokenRequestHandler::Rep {
   // the value of this field.
   SigningOutcome client_signing_outcome;
 
-  // Redemption record (RR) signing and verification keys:
-  std::vector<uint8_t> rr_signing;
-  std::vector<uint8_t> rr_verification;
   std::vector<IssuanceKeyPair> issuance_keys;
 
   // Whether to peremptorily reject issuance and redemption or whether to
@@ -123,7 +120,7 @@ struct TrustTokenRequestHandler::Rep {
 bssl::UniquePtr<TRUST_TOKEN_ISSUER>
 TrustTokenRequestHandler::Rep::CreateIssuerContextFromUnexpiredKeys() const {
   bssl::UniquePtr<TRUST_TOKEN_ISSUER> ret(
-      TRUST_TOKEN_ISSUER_new(TRUST_TOKEN_experiment_v1(), batch_size));
+      TRUST_TOKEN_ISSUER_new(TRUST_TOKEN_experiment_v2_pmb(), batch_size));
   if (!ret)
     return nullptr;
 
@@ -140,8 +137,10 @@ TrustTokenRequestHandler::Rep::CreateIssuerContextFromUnexpiredKeys() const {
   // Copying the comment from evp.h:
   // The [Ed25519] RFC 8032 private key format is the 32-byte prefix of
   // |ED25519_sign|'s 64-byte private key.
+  uint8_t public_key[32], private_key[64];
+  ED25519_keypair(public_key, private_key);
   bssl::UniquePtr<EVP_PKEY> issuer_rr_key(EVP_PKEY_new_raw_private_key(
-      EVP_PKEY_ED25519, /*unused=*/nullptr, rr_signing.data(),
+      EVP_PKEY_ED25519, /*unused=*/nullptr, private_key,
       /*len=*/32));
 
   if (!issuer_rr_key)
@@ -226,8 +225,6 @@ std::string TrustTokenRequestHandler::GetKeyCommitmentRecord() const {
   JSONStringValueSerializer serializer(&ret);
 
   base::Value value(base::Value::Type::DICTIONARY);
-  value.SetStringKey(
-      "srrkey", base::Base64Encode(base::make_span(rep_->rr_verification)));
   value.SetStringKey("protocol_version", rep_->protocol_version);
   value.SetIntKey("id", rep_->id);
   value.SetIntKey("batchsize", rep_->batch_size);
@@ -367,10 +364,6 @@ void TrustTokenRequestHandler::UpdateOptions(Options options) {
   rep_->client_signing_outcome = options.client_signing_outcome;
   rep_->issuance_outcome = options.issuance_outcome;
   rep_->redemption_outcome = options.redemption_outcome;
-
-  rep_->rr_signing.resize(ED25519_PRIVATE_KEY_LEN);
-  rep_->rr_verification.resize(ED25519_PUBLIC_KEY_LEN);
-  ED25519_keypair(rep_->rr_verification.data(), rep_->rr_signing.data());
 
   for (int i = 0; i < options.num_keys; ++i) {
     rep_->issuance_keys.push_back(GenerateIssuanceKeyPair(i));

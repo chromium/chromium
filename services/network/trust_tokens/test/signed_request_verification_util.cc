@@ -17,7 +17,6 @@
 #include "net/http/structured_headers.h"
 #include "services/network/public/cpp/trust_token_http_headers.h"
 #include "services/network/trust_tokens/ed25519_trust_token_request_signer.h"
-#include "services/network/trust_tokens/signed_redemption_record_serialization.h"
 #include "services/network/trust_tokens/trust_token_parameterization.h"
 #include "services/network/trust_tokens/trust_token_request_canonicalizer.h"
 #include "services/network/trust_tokens/trust_token_request_signing_helper.h"
@@ -252,44 +251,6 @@ bool ValidateSignatureHeaderMapAndExtractFields(
 
 }  // namespace
 
-// From the design doc:
-//
-// The RR is a two-item Structured Headers Draft 15 dictionary with “byte
-// sequence”-typed fields body and signature:
-// - body is the serialization of the below CBOR-encoded structure (the “RR
-// body”)
-// - signature is the Ed25519 signature, over the RR body, by the issuer’s
-// RR signing key corresponding to the verification key in the issuer’s key
-// commitment registry.
-RrVerificationStatus VerifyTrustTokenRedemptionRecord(
-    base::StringPiece record,
-    base::StringPiece verification_key,
-    std::string* rr_body_out) {
-  std::string body, signature;
-  if (!ParseTrustTokenRedemptionRecord(record, &body, &signature))
-    return RrVerificationStatus::kParseError;
-
-  if (verification_key.size() != ED25519_PUBLIC_KEY_LEN)
-    return RrVerificationStatus::kSignatureVerificationError;
-
-  if (signature.size() != ED25519_SIGNATURE_LEN)
-    return RrVerificationStatus::kSignatureVerificationError;
-
-  if (!ED25519_verify(
-          base::as_bytes(base::make_span(body)).data(), body.size(),
-          base::as_bytes(base::make_span<ED25519_SIGNATURE_LEN>(signature))
-              .data(),
-          base::as_bytes(
-              base::make_span<ED25519_PUBLIC_KEY_LEN>(verification_key))
-              .data())) {
-    return RrVerificationStatus::kSignatureVerificationError;
-  }
-
-  if (rr_body_out)
-    rr_body_out->swap(body);
-  return RrVerificationStatus::kSuccess;
-}
-
 bool ReconstructSigningDataAndVerifySignatures(
     const GURL& destination,
     const net::HttpRequestHeaders& headers,
@@ -340,75 +301,6 @@ bool ReconstructSigningDataAndVerifySignatures(
     if (!ReconstructSigningDataAndVerifyForIndividualIssuer(
             issuer_and_parameters, destination, headers, verifier,
             sign_request_data, error_out, verification_keys_out, sig_alg)) {
-      return false;
-    }
-  }
-
-  return true;
-}
-
-bool ConfirmRrBodyIntegrity(base::StringPiece rr_body, std::string* error_out) {
-  std::string dummy_error;
-  std::string& error = error_out ? *error_out : dummy_error;
-
-  base::Optional<cbor::Value> maybe_map =
-      cbor::Reader::Read(base::as_bytes(base::make_span(rr_body)));
-
-  if (!maybe_map) {
-    error = "RR body wasn't valid CBOR";
-    return false;
-  }
-
-  if (!maybe_map->is_map()) {
-    error = "RR body wasn't a CBOR map";
-    return false;
-  }
-
-  const cbor::Value::MapValue& map = maybe_map->GetMap();
-
-  if (map.size() != 4) {
-    error = "RR body is a map of unexpected size";
-    return false;
-  }
-
-  // check_field is a convenience function automating some of the work of
-  // verifying that the CBOR map has the desired structure. It takes a (possibly
-  // two-level compound) field name and a type-checker cbor::Value member
-  // function pointer (e.g. &cbor::Value::is_string) and verifies that the field
-  // exists and satisfies the given type predicate.
-  auto check_field = [&](base::StringPiece key, auto type_checker) -> bool {
-    const cbor::Value::MapValue* submap = &map;
-    if (base::Contains(key, ".")) {
-      auto keys = base::SplitStringPiece(key, ".", base::KEEP_WHITESPACE,
-                                         base::SPLIT_WANT_ALL);
-      cbor::Value submap_key(keys[0], cbor::Value::Type::STRING);
-      if (!map.contains(submap_key) || !map.at(submap_key).is_map()) {
-        return false;
-      }
-
-      submap = &map.at(submap_key).GetMap();
-      key = keys[1];
-    }
-
-    cbor::Value cbor_key(key, cbor::Value::Type::STRING);
-    return submap->contains(cbor_key) && (submap->at(cbor_key).*type_checker)();
-  };
-
-  for (const auto& tup : {
-           std::make_tuple("client-data", &cbor::Value::is_map),
-           std::make_tuple("client-data.key-hash", &cbor::Value::is_bytestring),
-           std::make_tuple("client-data.redemption-timestamp",
-                           &cbor::Value::is_unsigned),
-           std::make_tuple("client-data.redeeming-origin",
-                           &cbor::Value::is_string),
-           std::make_tuple("metadata", &cbor::Value::is_map),
-           std::make_tuple("metadata.public", &cbor::Value::is_unsigned),
-           std::make_tuple("metadata.private", &cbor::Value::is_unsigned),
-           std::make_tuple("expiry-timestamp", &cbor::Value::is_unsigned),
-           std::make_tuple("token-hash", &cbor::Value::is_bytestring),
-       }) {
-    if (!check_field(std::get<0>(tup), std::get<1>(tup))) {
-      error = "Missing or type-unsafe " + std::string(std::get<0>(tup));
       return false;
     }
   }

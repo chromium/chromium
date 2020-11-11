@@ -65,10 +65,9 @@ base::NoDestructor<FixedKeyCommitmentGetter> g_fixed_key_commitment_getter{};
 class MockCryptographer
     : public TrustTokenRequestRedemptionHelper::Cryptographer {
  public:
-  MOCK_METHOD3(Initialize,
+  MOCK_METHOD2(Initialize,
                bool(mojom::TrustTokenProtocolVersion issuer_configured_version,
-                    int issuer_configured_batch_size,
-                    base::StringPiece redemption_record_verification_key));
+                    int issuer_configured_batch_size));
 
   MOCK_METHOD3(
       BeginRedemption,
@@ -220,7 +219,7 @@ TEST_F(TrustTokenRequestRedemptionHelperTest,
   key_commitment_result->keys.push_back(
       mojom::TrustTokenVerificationKey::New());
   key_commitment_result->protocol_version =
-      mojom::TrustTokenProtocolVersion::kTrustTokenV1;
+      mojom::TrustTokenProtocolVersion::kTrustTokenV2Pmb;
   key_commitment_result->id = 1;
   key_commitment_result->batch_size =
       static_cast<int>(kMaximumTrustTokenIssuanceBatchSize);
@@ -230,7 +229,7 @@ TEST_F(TrustTokenRequestRedemptionHelperTest,
 
   // Configure the cryptographer to fail to encode the redemption request.
   auto cryptographer = std::make_unique<MockCryptographer>();
-  EXPECT_CALL(*cryptographer, Initialize(_, _, _)).WillOnce(Return(false));
+  EXPECT_CALL(*cryptographer, Initialize(_, _)).WillOnce(Return(false));
 
   TrustTokenRequestRedemptionHelper helper(
       *SuitableTrustTokenOrigin::Create(GURL("https://toplevel.com/")),
@@ -268,7 +267,7 @@ TEST_F(TrustTokenRequestRedemptionHelperTest,
   key_commitment_result->keys.push_back(
       mojom::TrustTokenVerificationKey::New());
   key_commitment_result->protocol_version =
-      mojom::TrustTokenProtocolVersion::kTrustTokenV1;
+      mojom::TrustTokenProtocolVersion::kTrustTokenV2Pmb;
   key_commitment_result->id = 1;
   key_commitment_result->batch_size =
       static_cast<int>(kMaximumTrustTokenIssuanceBatchSize);
@@ -278,7 +277,7 @@ TEST_F(TrustTokenRequestRedemptionHelperTest,
 
   // Configure the cryptographer to fail to encode the redemption request.
   auto cryptographer = std::make_unique<MockCryptographer>();
-  EXPECT_CALL(*cryptographer, Initialize(_, _, _)).WillOnce(Return(true));
+  EXPECT_CALL(*cryptographer, Initialize(_, _)).WillOnce(Return(true));
   EXPECT_CALL(*cryptographer, BeginRedemption(_, _, _))
       .WillOnce(Return(base::nullopt));
 
@@ -317,7 +316,7 @@ TEST_F(TrustTokenRequestRedemptionHelperTest, RejectsIfKeyPairGenerationFails) {
   key_commitment_result->keys.push_back(
       mojom::TrustTokenVerificationKey::New());
   key_commitment_result->protocol_version =
-      mojom::TrustTokenProtocolVersion::kTrustTokenV1;
+      mojom::TrustTokenProtocolVersion::kTrustTokenV2Pmb;
   key_commitment_result->id = 1;
   key_commitment_result->batch_size =
       static_cast<int>(kMaximumTrustTokenIssuanceBatchSize);
@@ -369,7 +368,7 @@ class TrustTokenBeginRedemptionPostconditionsTest
     key_commitment_result->keys.push_back(
         mojom::TrustTokenVerificationKey::New());
     key_commitment_result->protocol_version =
-        mojom::TrustTokenProtocolVersion::kTrustTokenV1;
+        mojom::TrustTokenProtocolVersion::kTrustTokenV2Pmb;
     key_commitment_result->id = 1;
     key_commitment_result->batch_size =
         static_cast<int>(kMaximumTrustTokenIssuanceBatchSize);
@@ -380,7 +379,7 @@ class TrustTokenBeginRedemptionPostconditionsTest
     // The value obtained from the cryptographer should be the exact
     // Sec-Trust-Token header attached to the request.
     auto cryptographer = std::make_unique<MockCryptographer>();
-    EXPECT_CALL(*cryptographer, Initialize(_, _, _)).WillOnce(Return(true));
+    EXPECT_CALL(*cryptographer, Initialize(_, _)).WillOnce(Return(true));
     EXPECT_CALL(*cryptographer, BeginRedemption(_, _, _))
         .WillOnce(
             Return(std::string("this string contains a redemption request")));
@@ -442,7 +441,7 @@ TEST_F(TrustTokenRequestRedemptionHelperTest, RejectsIfResponseOmitsHeader) {
   key_commitment_result->keys.push_back(
       mojom::TrustTokenVerificationKey::New());
   key_commitment_result->protocol_version =
-      mojom::TrustTokenProtocolVersion::kTrustTokenV1;
+      mojom::TrustTokenProtocolVersion::kTrustTokenV2Pmb;
   key_commitment_result->id = 1;
   key_commitment_result->batch_size =
       static_cast<int>(kMaximumTrustTokenIssuanceBatchSize);
@@ -451,7 +450,7 @@ TEST_F(TrustTokenRequestRedemptionHelperTest, RejectsIfResponseOmitsHeader) {
       std::move(key_commitment_result));
 
   auto cryptographer = std::make_unique<MockCryptographer>();
-  EXPECT_CALL(*cryptographer, Initialize(_, _, _)).WillOnce(Return(true));
+  EXPECT_CALL(*cryptographer, Initialize(_, _)).WillOnce(Return(true));
   EXPECT_CALL(*cryptographer, BeginRedemption(_, _, _))
       .WillOnce(
           Return(std::string("this string contains a redemption request")));
@@ -503,7 +502,7 @@ TEST_F(TrustTokenRequestRedemptionHelperTest, RejectsIfResponseIsUnusable) {
   key_commitment_result->keys.push_back(
       mojom::TrustTokenVerificationKey::New());
   key_commitment_result->protocol_version =
-      mojom::TrustTokenProtocolVersion::kTrustTokenV1;
+      mojom::TrustTokenProtocolVersion::kTrustTokenV2Pmb;
   key_commitment_result->id = 1;
   key_commitment_result->batch_size =
       static_cast<int>(kMaximumTrustTokenIssuanceBatchSize);
@@ -514,7 +513,7 @@ TEST_F(TrustTokenRequestRedemptionHelperTest, RejectsIfResponseIsUnusable) {
   // Configure the cryptographer to reject the response header by returning
   // nullopt on ConfirmRedemption.
   auto cryptographer = std::make_unique<MockCryptographer>();
-  EXPECT_CALL(*cryptographer, Initialize(_, _, _)).WillOnce(Return(true));
+  EXPECT_CALL(*cryptographer, Initialize(_, _)).WillOnce(Return(true));
   EXPECT_CALL(*cryptographer, BeginRedemption(_, _, _))
       .WillOnce(
           Return(std::string("this string contains a redemption request")));
@@ -572,7 +571,7 @@ TEST_F(TrustTokenRequestRedemptionHelperTest, Success) {
   key_commitment_result->keys.push_back(
       mojom::TrustTokenVerificationKey::New());
   key_commitment_result->protocol_version =
-      mojom::TrustTokenProtocolVersion::kTrustTokenV1;
+      mojom::TrustTokenProtocolVersion::kTrustTokenV2Pmb;
   key_commitment_result->id = 1;
   key_commitment_result->batch_size =
       static_cast<int>(kMaximumTrustTokenIssuanceBatchSize);
@@ -583,7 +582,7 @@ TEST_F(TrustTokenRequestRedemptionHelperTest, Success) {
   // Configure the cryptographer to succeed on both the outbound and inbound
   // halves of the operation.
   auto cryptographer = std::make_unique<MockCryptographer>();
-  EXPECT_CALL(*cryptographer, Initialize(_, _, _)).WillOnce(Return(true));
+  EXPECT_CALL(*cryptographer, Initialize(_, _)).WillOnce(Return(true));
   EXPECT_CALL(*cryptographer, BeginRedemption(_, _, _))
       .WillOnce(Return("well-formed redemption request"));
   EXPECT_CALL(*cryptographer, ConfirmRedemption(_))
@@ -641,7 +640,7 @@ TEST_F(TrustTokenRequestRedemptionHelperTest, AssociatesIssuerWithToplevel) {
   key_commitment_result->keys.push_back(
       mojom::TrustTokenVerificationKey::New());
   key_commitment_result->protocol_version =
-      mojom::TrustTokenProtocolVersion::kTrustTokenV1;
+      mojom::TrustTokenProtocolVersion::kTrustTokenV2Pmb;
   key_commitment_result->id = 1;
   key_commitment_result->batch_size =
       static_cast<int>(kMaximumTrustTokenIssuanceBatchSize);
@@ -652,7 +651,7 @@ TEST_F(TrustTokenRequestRedemptionHelperTest, AssociatesIssuerWithToplevel) {
   // Configure the cryptographer to succeed on both the outbound and inbound
   // halves of the operation.
   auto cryptographer = std::make_unique<MockCryptographer>();
-  EXPECT_CALL(*cryptographer, Initialize(_, _, _)).WillOnce(Return(true));
+  EXPECT_CALL(*cryptographer, Initialize(_, _)).WillOnce(Return(true));
   EXPECT_CALL(*cryptographer, BeginRedemption(_, _, _))
       .WillOnce(Return("well-formed redemption request"));
 
@@ -700,7 +699,7 @@ TEST_F(TrustTokenRequestRedemptionHelperTest, StoresObtainedRedemptionRecord) {
   key_commitment_result->keys.push_back(mojom::TrustTokenVerificationKey::New(
       "token verification key", /*expiry=*/base::Time::Max()));
   key_commitment_result->protocol_version =
-      mojom::TrustTokenProtocolVersion::kTrustTokenV1;
+      mojom::TrustTokenProtocolVersion::kTrustTokenV2Pmb;
   key_commitment_result->id = 1;
   key_commitment_result->batch_size =
       static_cast<int>(kMaximumTrustTokenIssuanceBatchSize);
@@ -709,7 +708,7 @@ TEST_F(TrustTokenRequestRedemptionHelperTest, StoresObtainedRedemptionRecord) {
       std::move(key_commitment_result));
 
   auto cryptographer = std::make_unique<MockCryptographer>();
-  EXPECT_CALL(*cryptographer, Initialize(_, _, _)).WillOnce(Return(true));
+  EXPECT_CALL(*cryptographer, Initialize(_, _)).WillOnce(Return(true));
   EXPECT_CALL(*cryptographer, BeginRedemption(_, _, _))
       .WillOnce(Return("well-formed redemption request"));
   EXPECT_CALL(*cryptographer, ConfirmRedemption(_))
@@ -828,7 +827,7 @@ TEST_F(TrustTokenRequestRedemptionHelperTest,
   key_commitment_result->keys.push_back(
       mojom::TrustTokenVerificationKey::New());
   key_commitment_result->protocol_version =
-      mojom::TrustTokenProtocolVersion::kTrustTokenV1;
+      mojom::TrustTokenProtocolVersion::kTrustTokenV2Pmb;
   key_commitment_result->id = 1;
   key_commitment_result->batch_size =
       static_cast<int>(kMaximumTrustTokenIssuanceBatchSize);
@@ -837,7 +836,7 @@ TEST_F(TrustTokenRequestRedemptionHelperTest,
       std::move(key_commitment_result));
 
   auto cryptographer = std::make_unique<MockCryptographer>();
-  EXPECT_CALL(*cryptographer, Initialize(_, _, _)).WillOnce(Return(true));
+  EXPECT_CALL(*cryptographer, Initialize(_, _)).WillOnce(Return(true));
   EXPECT_CALL(*cryptographer, BeginRedemption(_, _, _))
       .WillOnce(Return("well-formed redemption request"));
   EXPECT_CALL(*cryptographer, ConfirmRedemption(_))

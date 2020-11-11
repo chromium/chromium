@@ -18,7 +18,7 @@ std::string GenerateValidVerificationKey() {
       signing(TRUST_TOKEN_MAX_PRIVATE_KEY_SIZE, 'a');
   size_t verification_len, signing_len;
   CHECK(TRUST_TOKEN_generate_key(
-      TRUST_TOKEN_experiment_v1(),
+      TRUST_TOKEN_experiment_v2_pmb(),
       base::as_writable_bytes(base::make_span(signing)).data(), &signing_len,
       signing.size(),
       base::as_writable_bytes(base::make_span(verification)).data(),
@@ -38,9 +38,9 @@ TEST(BoringsslTrustTokenIssuanceCryptographer, RespectsKeyLimit) {
   // kMaximumConcurrentlyValidTrustTokenVerificationKeys is no greater than
   // BoringSSL's internally-configured maximum number of permitted keys.
   BoringsslTrustTokenIssuanceCryptographer cryptographer;
-  ASSERT_TRUE(
-      cryptographer.Initialize(mojom::TrustTokenProtocolVersion::kTrustTokenV1,
-                               /*issuer_configured_batch_size=*/10));
+  ASSERT_TRUE(cryptographer.Initialize(
+      mojom::TrustTokenProtocolVersion::kTrustTokenV2Pmb,
+      /*issuer_configured_batch_size=*/10));
 
   for (size_t i = 0; i < kMaximumConcurrentlyValidTrustTokenVerificationKeys;
        ++i) {

@@ -7,59 +7,12 @@
 #include "components/cbor/reader.h"
 #include "components/cbor/values.h"
 #include "services/network/public/mojom/trust_tokens.mojom.h"
-#include "services/network/trust_tokens/signed_redemption_record_serialization.h"
 #include "services/network/trust_tokens/suitable_trust_token_origin.h"
 #include "services/network/trust_tokens/trust_token_key_commitment_getter.h"
 #include "services/network/trust_tokens/trust_token_parameterization.h"
 #include "services/network/trust_tokens/types.h"
 
 namespace network {
-
-namespace {
-
-const char kExpiryTimestampKey[] = "expiry-timestamp";
-
-// Extracts the expiry timestamp from the given RR body, a top-level CBOR map
-// member of type integer with key "expiry-timestamp" and value an expiry in
-// seconds since the UNIX epoch. (The Trust Tokens design doc is the current
-// normative source for this field's format.)
-//
-// Returns |kTrustTokenDefaultRedemptionRecordExpiry| if the optional timestamp
-// is not present in the RR body; returns nullopt if the RR body is not a map,
-// or if it contains an "expiry-timestamp" member that is not an integer.
-//
-// Implementation note: We do this on the fly since it is pretty fast (a few
-// microseconds) and expected to be done at most once per request.
-// Pre-extracting the timestamp and storing it alongside the RR would be a
-// potential improvement if the control flow changes so that multiple RRs are
-// queried for expiry per protocol operation, but would introduce extra
-// complexity: the RRs could get out of sync with the timestamp bodies.
-base::Optional<base::Time> ExtractExpiryTimestampOrDefault(
-    base::span<const uint8_t> rr_body) {
-  // Extract the expiry timestamp now so that downstream consumers don't have to
-  // deserialize CBOR repeatedly to inspect the timestamp.
-  //
-  // From the design doc:
-  //   “expiry-timestamp”: <optional expiry timestamp, seconds past the Unix
-  //   epoch>
-  base::Optional<cbor::Value> maybe_cbor = cbor::Reader::Read(rr_body);
-  if (!maybe_cbor || !maybe_cbor->is_map())
-    return base::nullopt;
-
-  cbor::Value expiry_timestamp_cbor_key(kExpiryTimestampKey,
-                                        cbor::Value::Type::STRING);
-
-  auto it = maybe_cbor->GetMap().find(expiry_timestamp_cbor_key);
-  if (it == maybe_cbor->GetMap().end())
-    return kTrustTokenDefaultRedemptionRecordExpiry;
-  if (!it->second.is_integer())
-    return base::nullopt;
-
-  return base::Time::UnixEpoch() +
-         base::TimeDelta::FromSeconds(it->second.GetInteger());
-}
-
-}  // namespace
 
 ExpiryInspectingRecordExpiryDelegate::ExpiryInspectingRecordExpiryDelegate(
     const SynchronousTrustTokenKeyCommitmentGetter* key_commitment_getter)
@@ -68,24 +21,6 @@ ExpiryInspectingRecordExpiryDelegate::ExpiryInspectingRecordExpiryDelegate(
 bool ExpiryInspectingRecordExpiryDelegate::IsRecordExpired(
     const TrustTokenRedemptionRecord& record,
     const SuitableTrustTokenOrigin& issuer) {
-  std::string record_body;
-  if (!ParseTrustTokenRedemptionRecord(record.body(), &record_body,
-                                       /*signature_out=*/nullptr)) {
-    // Malformed record; say that it's expired so it gets deleted.
-    return true;
-  }
-
-  base::Optional<base::Time> expiry_timestamp_or_error =
-      ExtractExpiryTimestampOrDefault(
-          base::as_bytes(base::make_span(record_body)));
-  if (!expiry_timestamp_or_error) {
-    // Malformed record; say that it's expired so it gets deleted.
-    return true;
-  }
-
-  if (*expiry_timestamp_or_error <= base::Time::Now())
-    return true;
-
   mojom::TrustTokenKeyCommitmentResultPtr key_commitments =
       key_commitment_getter_->GetSync(issuer.origin());
 

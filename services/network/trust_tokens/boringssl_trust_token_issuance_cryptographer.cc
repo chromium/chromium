@@ -36,8 +36,11 @@ bool BoringsslTrustTokenIssuanceCryptographer::Initialize(
 
   const TRUST_TOKEN_METHOD* method = nullptr;
   switch (issuer_configured_version) {
-    case mojom::TrustTokenProtocolVersion::kTrustTokenV1:
-      method = TRUST_TOKEN_experiment_v1();
+    case mojom::TrustTokenProtocolVersion::kTrustTokenV2Pmb:
+      method = TRUST_TOKEN_experiment_v2_pmb();
+      break;
+    case mojom::TrustTokenProtocolVersion::kTrustTokenV2Voprf:
+      method = TRUST_TOKEN_experiment_v2_voprf();
       break;
   }
 

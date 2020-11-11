@@ -248,9 +248,9 @@ const TrustTokenTestParameters kSigningTrustTokenTestParameters[]{
 //
 // Example:
 //   WrapKeyCommitmentForIssuers({{
-//      "https://issuer.com", R"( {"srrkey": "abcd"} )"
+//      "https://issuer.com", R"( {"batchsize": 5} )"
 //      }})
-//   =  R"( { "https://issuer.com": { "srrkey": "abcd" } } )"
+//   =  R"( { "https://issuer.com": { "batchsize": 5 } } )"
 std::string WrapKeyCommitmentsForIssuers(
     base::flat_map<url::Origin, base::StringPiece> issuers_and_commitments);
 

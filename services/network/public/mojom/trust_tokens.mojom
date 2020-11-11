@@ -10,11 +10,14 @@ import "mojo/public/mojom/base/time.mojom";
 // TrustTokenProtocolVersion enumerates the versions of Trust Token that the
 // client knows about. Different versions represent different configuration
 // flows, data structure meanings, etc and may require clearing the database
-// due to incompatibilities.
+// due to incompatibilities. kTrustTokenV2Pmb and kTrustTokenV2Voprf can
+// safely be supported at the same time, as they use the same underlying data
+// model; they just use different cryptosystems to generate tokens' signatures.
 // TODO(crbug/1133969): Schema versioning needs to be implemented for future
 // versions that need to clear the database on schema changes.
 enum TrustTokenProtocolVersion {
-  kTrustTokenV1,
+  kTrustTokenV2Pmb,
+  kTrustTokenV2Voprf,
 };
 
 
@@ -112,9 +115,9 @@ struct TrustTokenParams {
   // Required.
   TrustTokenOperationType type;
 
-  // Required exactly when "type" is "kRedemption"; specifies whether the caller
-  // wishes to use a cached Redemption Record (RR) if available or redeem a new
-  // token, evicting the RR currently stored.
+  // Required exactly when "type" is "kRedemption"; specifies whether the
+  // caller wishes to use a cached Redemption Record (RR) if available or
+  // redeem a new token, evicting the RR currently stored.
   TrustTokenRefreshPolicy refresh_policy = kUseCached;
 
   // The remaining members are used only when "type" is "kSigning": these
@@ -189,11 +192,6 @@ struct TrustTokenKeyCommitmentResult {
   // |keys| is the collection of the issuer's current trust token verification
   // keys.
   array<TrustTokenVerificationKey> keys;
-
-  // |redemption_record_verification_key| is an Ed25519 public key that
-  // can be used to verify Redemption Record (RR) signatures
-  // subsequently provided by the issuer.
-  string redemption_record_verification_key;
 
   // |request_issuance_locally_on| specifies operating systems on which to
   // divert issuance requests for this issuer to the system (i.e. to request

@@ -19,7 +19,6 @@ namespace network {
 const char kTrustTokenKeyCommitmentProtocolVersionField[] = "protocol_version";
 const char kTrustTokenKeyCommitmentIDField[] = "id";
 const char kTrustTokenKeyCommitmentBatchsizeField[] = "batchsize";
-const char kTrustTokenKeyCommitmentSrrkeyField[] = "srrkey";
 const char kTrustTokenKeyCommitmentExpiryField[] = "expiry";
 const char kTrustTokenKeyCommitmentKeyField[] = "Y";
 const char kTrustTokenKeyCommitmentRequestIssuanceLocallyOnField[] =
@@ -174,8 +173,12 @@ mojom::TrustTokenKeyCommitmentResultPtr ParseSingleIssuer(
       value.FindStringKey(kTrustTokenKeyCommitmentProtocolVersionField);
   if (!maybe_version)
     return nullptr;
-  if (*maybe_version == "TrustTokenV1") {
-    result->protocol_version = mojom::TrustTokenProtocolVersion::kTrustTokenV1;
+  if (*maybe_version == "TrustTokenV2PMB") {
+    result->protocol_version =
+        mojom::TrustTokenProtocolVersion::kTrustTokenV2Pmb;
+  } else if (*maybe_version == "TrustTokenV2VOPRF") {
+    result->protocol_version =
+        mojom::TrustTokenProtocolVersion::kTrustTokenV2Voprf;
   } else {
     return nullptr;
   }
@@ -193,16 +196,6 @@ mojom::TrustTokenKeyCommitmentResultPtr ParseSingleIssuer(
   if (!maybe_batch_size || *maybe_batch_size <= 0)
     return nullptr;
   result->batch_size = *maybe_batch_size;
-
-  // Confirm that the srrkey field is present and base64-encoded.
-  const std::string* maybe_srrkey =
-      value.FindStringKey(kTrustTokenKeyCommitmentSrrkeyField);
-  if (!maybe_srrkey)
-    return nullptr;
-  if (!base::Base64Decode(*maybe_srrkey,
-                          &result->redemption_record_verification_key)) {
-    return nullptr;
-  }
 
   if (!ParseLocalIssuanceFieldsIfPresent(value, result.get()))
     return nullptr;
@@ -254,8 +247,6 @@ mojom::TrustTokenKeyCommitmentResultPtr& commitment(Entry& e) {
 //   "protocol_version" : ..., // Protocol Version; value of type string.
 //   "id" : ...,               // ID; value of type int.
 //   "batchsize" : ...,        // Batch size; value of type int.
-//   "srrkey" : ...,           // Required Redemption Record (RR) verification
-//                             // key, in base64.
 //
 //   // Optional operating systems on which to request issuance via system
 //   // mediation (valid values are: "android"), and (required if at least one

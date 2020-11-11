@@ -37,7 +37,7 @@ namespace network {
 // For example, it provides operations:
 // - checking preconditions for the different protocol steps;
 // - storing unblinded, signed tokens; and
-// - managing Redemption Records (RRs) and corresponding key pairs.
+// - managing Redemption Records (RRs).
 //
 // TrustTokenStore's methods do minimal precondition checking and, in
 // particular, only selectively verify protocol-level invariants and

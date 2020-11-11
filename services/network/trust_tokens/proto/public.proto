@@ -27,8 +27,8 @@ message TrustToken {
 // the RR itself; when the protocol is configured to use RR-bound key pairs,
 // "public_key" and "signing_key" are the keys associated with the RR.
 message TrustTokenRedemptionRecord {
-  // The body of an RR encodes information such as its top-level origin and
-  // its expiration time.
+  // The body of an RR contains an arbitrary bundle of issuer-provided bytes
+  // set as part of the redemption.
   optional bytes body = 1;  // required
 
   // If one of public_key or signing_key is present, the other must also be

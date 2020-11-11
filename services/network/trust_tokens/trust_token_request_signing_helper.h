@@ -69,7 +69,7 @@ class TrustTokenRequestSigningHelper : public TrustTokenRequestHelper {
   // signatures forwards-incompatible, which is useful in case the signing
   // data's semantics change across protocol versions but its syntax does not.
   static constexpr uint8_t kRequestSigningDomainSeparator[] = {
-      'T', 'r', 'u', 's', 't', ' ', 'T', 'o', 'k', 'e', 'n', ' ', 'v', '0'};
+      'T', 'r', 'u', 's', 't', 'T', 'o', 'k', 'e', 'n', 'V', '2'};
 
   struct Params {
     // Refer to fields' comments for their semantics.

@@ -19,23 +19,6 @@
 namespace network {
 namespace test {
 
-// Parses the given Trust Tokens signed redemption record
-// https://docs.google.com/document/d/1TNnya6B8pyomDK2F1R9CL3dY10OAmqWlnCxsWyOBDVQ/edit#bookmark=id.omg78vbnmjid,
-// extracts the signature and body, and uses the given verification key to
-// verify the signature.
-//
-// On success, if |rr_body_out| is non-null, sets |rr_body_out| to the
-// obtained RR body.
-enum class RrVerificationStatus {
-  kParseError,
-  kSignatureVerificationError,
-  kSuccess
-};
-RrVerificationStatus VerifyTrustTokenRedemptionRecord(
-    base::StringPiece record,
-    base::StringPiece verification_key,
-    std::string* rr_body_out = nullptr);
-
 // Reconstructs a request's canonical request data, extracts the signatures from
 // its Sec-Signature header, checks that the Sec-Signature header's contained
 // signatures verify.
@@ -61,16 +44,10 @@ bool ReconstructSigningDataAndVerifySignatures(
     std::map<std::string, std::string>* verification_keys_out = nullptr,
     mojom::TrustTokenSignRequestData* sign_request_data_out = nullptr);
 
-// Returns true if |rr_body| a valid CBOR encoding of an "SRR body" struct, as
-// defined in the design doc. Otherwise, returns false and, if |error_out| is
-// non-null, sets |error_out| to a helpful error message.
-bool ConfirmRrBodyIntegrity(base::StringPiece rr_body,
-                            std::string* error_out = nullptr);
-
 // Parses a Sec-Redemption-Record header and extracts the (issuer, redemption
-// record) pairs the header contains. On success, returns true. On failure,
-// returns false and, if |error_out| is not null, stores a helpful error
-// message in |error_out| for debugging.
+// record) pairs the header contains. On success, returns true. On
+// failure, returns false and, if |error_out| is not null, stores a
+// helpful error message in |error_out| for debugging.
 bool ExtractRedemptionRecordsFromHeader(
     base::StringPiece sec_redemption_record_header,
     std::map<SuitableTrustTokenOrigin, std::string>*

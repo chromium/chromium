@@ -579,8 +579,8 @@ TrustTokenRequestSigningHelper::GetSignature(
   // generation," in the Trust Tokens design doc.)
   //
   // 1. Generate a CBOR-encoded dictionary, the canonical request data.
-  // 2. Sign the concatenation of “Trust Token v0” and the CBOR-encoded
-  // dictionary. (The domain separator string “Trust Token v0” allows versioning
+  // 2. Sign the concatenation of the major protocol version and the
+  // CBOR-encoded dictionary. (The domain separator string allows versioning
   // otherwise-forward-compatible protocol structures, which is useful in case
   // the semantics change across versions.)
 

@@ -1214,16 +1214,14 @@ TEST_F(NetworkServiceTestWithService, SetsTrustTokenKeyCommitments) {
   ASSERT_TRUE(service_->trust_token_key_commitments());
 
   auto expectation = mojom::TrustTokenKeyCommitmentResult::New();
-  ASSERT_TRUE(base::Base64Decode(
-      "aaaa", &expectation->redemption_record_verification_key));
   expectation->protocol_version =
-      mojom::TrustTokenProtocolVersion::kTrustTokenV1;
+      mojom::TrustTokenProtocolVersion::kTrustTokenV2Pmb;
   expectation->id = 1;
   expectation->batch_size = 5;
 
   base::RunLoop run_loop;
   network_service_->SetTrustTokenKeyCommitments(
-      R"( { "https://issuer.example": { "protocol_version": "TrustTokenV1", "id": 1, "batchsize": 5, "srrkey": "aaaa" } } )",
+      R"( { "https://issuer.example": { "protocol_version": "TrustTokenV2PMB", "id": 1, "batchsize": 5 } } )",
       run_loop.QuitClosure());
   run_loop.Run();
 

@@ -69,7 +69,7 @@ class TrustTokenRequestHandler {
 
     // The protocol version with which to parameterize the server-side
     // cryptographic logic. We return this value in key commitment results.
-    std::string protocol_version = "TrustTokenV1";
+    std::string protocol_version = "TrustTokenV2PMB";
 
     // The key commitment ID.
     int id = 1;

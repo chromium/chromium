@@ -14,7 +14,6 @@ class SynchronousTrustTokenKeyCommitmentGetter;
 
 // ExpiryInspectingRecordExpiryDelegate considers a redemption record (RR) to
 // have expired if:
-// - its expiry timestamp is not in the future, or
 // - its associated trust token verification key is not present in the token's
 // issuer's most recent key commitment, or
 // - its issuer is not a valid Trust Tokens issuer (this means the record has
