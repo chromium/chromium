@@ -1461,8 +1461,8 @@ TEST_F('PrintPreviewDestinationSettingsTest', 'RecentDestinations', function() {
   this.runMochaTest(destination_settings_test.TestNames.RecentDestinations);
 });
 
-// Flaky on Mac, see https://crbug.com/1147205
-GEN('#if defined(OS_MAC)');
+// Flaky on Mac and Linux, see https://crbug.com/1147205
+GEN('#if defined(OS_MAC) || defined(OS_LINUX)');
 GEN('#define MAYBE_RecentDestinationsMissing DISABLED_RecentDestinationsMissing');
 GEN('#else');
 GEN('#define MAYBE_RecentDestinationsMissing RecentDestinationsMissing');
