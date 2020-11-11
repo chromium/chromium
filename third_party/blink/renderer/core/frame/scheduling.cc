@@ -8,27 +8,39 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_is_input_pending_options.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/navigator.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/pending_user_input.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 
 namespace blink {
 
-bool Scheduling::isInputPending(ScriptState* script_state,
-                                const IsInputPendingOptions* options) const {
-  DCHECK(RuntimeEnabledFeatures::ExperimentalIsInputPendingEnabled(
-      ExecutionContext::From(script_state)));
-  DCHECK(options);
+const char Scheduling::kSupplementName[] = "Scheduling";
 
-  auto* frame = LocalDOMWindow::From(script_state)->GetFrame();
-  if (!frame)
+Scheduling* Scheduling::scheduling(Navigator& navigator) {
+  Scheduling* supplement = Supplement<Navigator>::From<Scheduling>(navigator);
+  if (!supplement) {
+    supplement = MakeGarbageCollected<Scheduling>(navigator);
+    ProvideTo(navigator, supplement);
+  }
+  return supplement;
+}
+
+Scheduling::Scheduling(Navigator& navigator)
+    : Supplement<Navigator>(navigator) {}
+
+bool Scheduling::isInputPending(const IsInputPendingOptions* options) const {
+  LocalDOMWindow* window = GetSupplementable()->DomWindow();
+  DCHECK(RuntimeEnabledFeatures::ExperimentalIsInputPendingEnabled(window));
+  DCHECK(options);
+  if (!window)
     return false;
 
   auto* scheduler = ThreadScheduler::Current();
   auto info = scheduler->GetPendingUserInputInfo(options->includeContinuous());
 
   for (const auto& attribution : info) {
-    if (frame->CanAccessEvent(attribution)) {
+    if (window->GetFrame()->CanAccessEvent(attribution)) {
       return true;
     }
   }
@@ -38,6 +50,11 @@ bool Scheduling::isInputPending(ScriptState* script_state,
 bool Scheduling::isFramePending() const {
   auto* scheduler = ThreadScheduler::Current();
   return scheduler->IsBeginMainFrameScheduled();
+}
+
+void Scheduling::Trace(Visitor* visitor) const {
+  ScriptWrappable::Trace(visitor);
+  Supplement<Navigator>::Trace(visitor);
 }
 
 }  // namespace blink

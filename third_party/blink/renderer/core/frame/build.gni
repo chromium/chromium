@@ -119,8 +119,6 @@ blink_core_sources_frame = [
   "navigator_language.cc",
   "navigator_language.h",
   "navigator_on_line.h",
-  "navigator_scheduling.cc",
-  "navigator_scheduling.h",
   "navigator_ua.cc",
   "navigator_ua.h",
   "navigator_ua_data.cc",

@@ -5,22 +5,31 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_SCHEDULING_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_SCHEDULING_H_
 
-#include "third_party/blink/renderer/platform/bindings/script_state.h"
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
 class IsInputPendingOptions;
+class Navigator;
 
 // Low-level scheduling primitives for JS scheduler implementations.
-class Scheduling : public ScriptWrappable {
+class CORE_EXPORT Scheduling : public ScriptWrappable,
+                               public Supplement<Navigator> {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  bool isInputPending(ScriptState*, const IsInputPendingOptions* options) const;
+  static const char kSupplementName[];
+  static Scheduling* scheduling(Navigator&);
+  explicit Scheduling(Navigator&);
+
+  bool isInputPending(const IsInputPendingOptions* options) const;
   bool isFramePending() const;
+
+  void Trace(Visitor*) const override;
 };
 
 }  // namespace blink
