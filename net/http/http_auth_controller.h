@@ -49,14 +49,14 @@ class NET_EXPORT_PRIVATE HttpAuthController
   //
   // * |target| is either PROXY or SERVER and determines the authentication
   //       headers to use ("WWW-Authenticate"/"Authorization" vs.
-  //       "Proxy-Authenticate","Proxy-Authorization") and how ambient
+  //       "Proxy-Authenticate"/"Proxy-Authorization") and how ambient
   //       credentials are used.
   //
   // * |auth_url| specifies the target URL. The origin of the URL identifies the
   //       target host. The path (hierarchical part defined in RFC 3986 section
   //       3.3) of the URL is used by HTTP basic authentication to determine
   //       cached credentials can be used to preemptively send an authorization
-  //       header. See RFC 7627 section 2.2 (Reusing Credentials) for details.
+  //       header. See RFC 7617 section 2.2 (Reusing Credentials) for details.
   //       If |target| is PROXY, then |auth_url| should have no hierarchical
   //       part since that is meaningless.
   //
@@ -71,8 +71,8 @@ class NET_EXPORT_PRIVATE HttpAuthController
   //       authentication is stateful across requests. So the |http_auth_cache|
   //       is also used to maintain state for this authentication scheme.
   //
-  // * |http_auth_handler_factory| is used to contruct instances of
-  //       HttpAuthHandler subclass to handle scheme specific authentication
+  // * |http_auth_handler_factory| is used to construct instances of
+  //       HttpAuthHandler subclasses to handle scheme-specific authentication
   //       logic. The |http_auth_handler_factory| is also responsible for
   //       determining whether the authentication stack should use a specific
   //       authentication scheme or not.
@@ -158,7 +158,7 @@ class NET_EXPORT_PRIVATE HttpAuthController
   // cache entry's data and returns true.
   bool SelectPreemptiveAuth(const NetLogWithSource& caller_net_log);
 
-  // Invalidates the current handler.  If |action| is
+  // Invalidates the current handler. If |action| is
   // INVALIDATE_HANDLER_AND_CACHED_CREDENTIALS, then also invalidate
   // the cached credentials used by the handler.
   void InvalidateCurrentHandler(InvalidateHandlerAction action);
@@ -167,7 +167,7 @@ class NET_EXPORT_PRIVATE HttpAuthController
   // The identity that was rejected is |identity_|.
   void InvalidateRejectedAuthFromCache();
 
-  // Allows reusing last used identity source.  If the authentication handshake
+  // Allows reusing last used identity source. If the authentication handshake
   // breaks down halfway, then the controller needs to restart it from the
   // beginning and resue the same identity.
   void PrepareIdentityForReuse();
@@ -191,17 +191,17 @@ class NET_EXPORT_PRIVATE HttpAuthController
   // Indicates if this handler is for Proxy auth or Server auth.
   HttpAuth::Target target_;
 
-  // Holds the {scheme, host, path, port} for the authentication target.
+  // Holds the {scheme, host, port, path} for the authentication target.
   const GURL auth_url_;
 
   // Holds the {scheme, host, port} for the authentication target.
   const GURL auth_origin_;
 
   // The absolute path of the resource needing authentication.
-  // For proxy authentication the path is empty.
+  // For proxy authentication, the path is empty.
   const std::string auth_path_;
 
-  // NetworkIsolationKey assocaied with the request.
+  // NetworkIsolationKey associated with the request.
   const NetworkIsolationKey network_isolation_key_;
 
   // |handler_| encapsulates the logic for the particular auth-scheme.
@@ -209,9 +209,9 @@ class NET_EXPORT_PRIVATE HttpAuthController
   // associated auth handler.
   std::unique_ptr<HttpAuthHandler> handler_;
 
-  // |identity_| holds the credentials that should be used by
-  // the handler_ to generate challenge responses. This identity can come from
-  // a number of places (url, cache, prompt).
+  // |identity_| holds the credentials that should be used by the handler_ to
+  // generate challenge responses. This identity can come from a number of
+  // places (url, cache, prompt).
   HttpAuth::Identity identity_;
 
   // |auth_token_| contains the opaque string to pass to the proxy or
@@ -231,7 +231,7 @@ class NET_EXPORT_PRIVATE HttpAuthController
   bool default_credentials_used_;
 
   // These two are owned by the HttpNetworkSession/IOThread, which own the
-  // objects which reference |this|.  Therefore, these raw pointers are valid
+  // objects which reference |this|. Therefore, these raw pointers are valid
   // for the lifetime of this object.
   HttpAuthCache* const http_auth_cache_;
   HttpAuthHandlerFactory* const http_auth_handler_factory_;
