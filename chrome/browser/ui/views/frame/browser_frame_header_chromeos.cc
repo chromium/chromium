@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/frame/browser_frame_header_ash.h"
+#include "chrome/browser/ui/views/frame/browser_frame_header_chromeos.h"
 
-#include "ash/public/cpp/tablet_mode.h"
 #include "base/check.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chromeos/ui/base/chromeos_ui_constants.h"
+#include "chromeos/ui/base/tablet_state.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
@@ -106,9 +106,9 @@ void PaintFrameImagesInRoundRect(gfx::Canvas* canvas,
 }  // namespace
 
 ///////////////////////////////////////////////////////////////////////////////
-// BrowserFrameHeaderAsh, public:
+// BrowserFrameHeaderChromeOS, public:
 
-BrowserFrameHeaderAsh::BrowserFrameHeaderAsh(
+BrowserFrameHeaderChromeOS::BrowserFrameHeaderChromeOS(
     views::Widget* target_widget,
     views::View* view,
     AppearanceProvider* appearance_provider,
@@ -121,10 +121,10 @@ BrowserFrameHeaderAsh::BrowserFrameHeaderAsh(
   SetCaptionButtonContainer(caption_button_container);
 }
 
-BrowserFrameHeaderAsh::~BrowserFrameHeaderAsh() = default;
+BrowserFrameHeaderChromeOS::~BrowserFrameHeaderChromeOS() = default;
 
 // static
-int BrowserFrameHeaderAsh::GetThemeBackgroundXInset() {
+int BrowserFrameHeaderChromeOS::GetThemeBackgroundXInset() {
   // In the pre-Ash era the web content area had a frame along the left edge, so
   // user-generated theme images for the new tab page assume they are shifted
   // right relative to the header.  Now that we have removed the left edge frame
@@ -135,16 +135,17 @@ int BrowserFrameHeaderAsh::GetThemeBackgroundXInset() {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-// BrowserFrameHeaderAsh, protected:
+// BrowserFrameHeaderChromeOS, protected:
 
-void BrowserFrameHeaderAsh::DoPaintHeader(gfx::Canvas* canvas) {
+void BrowserFrameHeaderChromeOS::DoPaintHeader(gfx::Canvas* canvas) {
   PaintFrameImages(canvas);
   PaintTitleBar(canvas);
 }
 
-views::CaptionButtonLayoutSize BrowserFrameHeaderAsh::GetButtonLayoutSize()
+views::CaptionButtonLayoutSize BrowserFrameHeaderChromeOS::GetButtonLayoutSize()
     const {
-  if (ash::TabletMode::Get() && ash::TabletMode::Get()->InTabletMode())
+  if (chromeos::TabletState::Get() &&
+      chromeos::TabletState::Get()->InTabletMode())
     return views::CaptionButtonLayoutSize::kBrowserCaptionMaximized;
 
   return chromeos::ShouldUseRestoreFrame(target_widget())
@@ -152,23 +153,23 @@ views::CaptionButtonLayoutSize BrowserFrameHeaderAsh::GetButtonLayoutSize()
              : views::CaptionButtonLayoutSize::kBrowserCaptionMaximized;
 }
 
-SkColor BrowserFrameHeaderAsh::GetTitleColor() const {
+SkColor BrowserFrameHeaderChromeOS::GetTitleColor() const {
   return appearance_provider_->GetTitleColor();
 }
 
-SkColor BrowserFrameHeaderAsh::GetCurrentFrameColor() const {
+SkColor BrowserFrameHeaderChromeOS::GetCurrentFrameColor() const {
   return appearance_provider_->GetFrameHeaderColor(mode() == MODE_ACTIVE);
 }
 
-void BrowserFrameHeaderAsh::UpdateFrameColors() {
+void BrowserFrameHeaderChromeOS::UpdateFrameColors() {
   UpdateCaptionButtonColors();
   view()->SchedulePaint();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-// BrowserFrameHeaderAsh, private:
+// BrowserFrameHeaderChromeOS, private:
 
-void BrowserFrameHeaderAsh::PaintFrameImages(gfx::Canvas* canvas) {
+void BrowserFrameHeaderChromeOS::PaintFrameImages(gfx::Canvas* canvas) {
   const bool active = mode() == Mode::MODE_ACTIVE;
 
   gfx::ImageSkia frame_image =

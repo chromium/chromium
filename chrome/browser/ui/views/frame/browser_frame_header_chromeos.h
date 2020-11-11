@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_FRAME_HEADER_ASH_H_
-#define CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_FRAME_HEADER_ASH_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_FRAME_HEADER_CHROMEOS_H_
+#define CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_FRAME_HEADER_CHROMEOS_H_
 
 #include "base/callback.h"
 #include "base/macros.h"
@@ -12,7 +12,7 @@
 
 // Helper class for drawing a custom frame (such as for a themed Chrome Browser
 // frame).
-class BrowserFrameHeaderAsh : public chromeos::FrameHeader {
+class BrowserFrameHeaderChromeOS : public chromeos::FrameHeader {
  public:
   class AppearanceProvider {
    public:
@@ -24,15 +24,15 @@ class BrowserFrameHeaderAsh : public chromeos::FrameHeader {
     virtual gfx::ImageSkia GetFrameHeaderOverlayImage(bool active) = 0;
   };
 
-  // BrowserFrameHeaderAsh does not take ownership of any of the parameters.
-  // |target_widget| is the widget that the caption buttons act on.
+  // BrowserFrameHeaderChromeOS does not take ownership of any of the
+  // parameters. |target_widget| is the widget that the caption buttons act on.
   // |view| is the view into which |this| will paint.
-  BrowserFrameHeaderAsh(
+  BrowserFrameHeaderChromeOS(
       views::Widget* target_widget,
       views::View* view,
       AppearanceProvider* appearance_provider,
       chromeos::FrameCaptionButtonContainerView* caption_button_container);
-  ~BrowserFrameHeaderAsh() override;
+  ~BrowserFrameHeaderChromeOS() override;
 
   // Returns the amount that the frame background is inset from the left edge of
   // the window.
@@ -54,7 +54,7 @@ class BrowserFrameHeaderAsh : public chromeos::FrameHeader {
 
   AppearanceProvider* appearance_provider_ = nullptr;
 
-  DISALLOW_COPY_AND_ASSIGN(BrowserFrameHeaderAsh);
+  DISALLOW_COPY_AND_ASSIGN(BrowserFrameHeaderChromeOS);
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_FRAME_HEADER_ASH_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_FRAME_HEADER_CHROMEOS_H_

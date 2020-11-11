@@ -11,7 +11,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observer.h"
-#include "chrome/browser/ui/views/frame/browser_frame_header_ash.h"
+#include "chrome/browser/ui/views/frame/browser_frame_header_chromeos.h"
 #include "chrome/browser/ui/views/frame/browser_non_client_frame_view.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
 #include "chrome/browser/ui/views/tab_icon_view_model.h"
@@ -34,7 +34,7 @@ class FrameCaptionButtonContainerView;
 // Provides the BrowserNonClientFrameView for Chrome OS.
 class BrowserNonClientFrameViewAsh
     : public BrowserNonClientFrameView,
-      public BrowserFrameHeaderAsh::AppearanceProvider,
+      public BrowserFrameHeaderChromeOS::AppearanceProvider,
       public display::DisplayObserver,
       public TabIconViewModel,
       public aura::WindowObserver,
@@ -75,7 +75,7 @@ class BrowserNonClientFrameViewAsh
   void OnThemeChanged() override;
   void ChildPreferredSizeChanged(views::View* child) override;
 
-  // BrowserFrameHeaderAsh::AppearanceProvider:
+  // BrowserFrameHeaderChromeOS::AppearanceProvider:
   SkColor GetTitleColor() override;
   SkColor GetFrameHeaderColor(bool active) override;
   gfx::ImageSkia GetFrameHeaderImage(bool active) override;
