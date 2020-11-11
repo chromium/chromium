@@ -32,6 +32,7 @@
 #include "base/threading/scoped_blocking_call.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
+#include "build/chromeos_buildflags.h"
 #include "storage/browser/blob/blob_data_builder.h"
 #include "storage/browser/blob/blob_data_item.h"
 #include "storage/browser/blob/shareable_blob_data_item.h"
@@ -94,7 +95,8 @@ BlobStorageLimits CalculateBlobStorageLimitsImpl(
 
   // Don't do specialty configuration for error size (-1).
   if (memory_size > 0) {
-#if !defined(OS_CHROMEOS) && !defined(OS_ANDROID) && defined(ARCH_CPU_64_BITS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OS_ANDROID) && \
+    defined(ARCH_CPU_64_BITS)
     constexpr size_t kTwoGigabytes = 2ull * 1024 * 1024 * 1024;
     limits.max_blob_in_memory_space = kTwoGigabytes;
 #elif defined(OS_ANDROID)
@@ -111,7 +113,7 @@ BlobStorageLimits CalculateBlobStorageLimitsImpl(
 
   // Don't do specialty configuration for error size (-1). Allow no disk.
   if (disk_size >= 0) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     limits.desired_max_disk_space = static_cast<uint64_t>(disk_size / 2ll);
 #elif defined(OS_ANDROID)
     limits.desired_max_disk_space = static_cast<uint64_t>(3ll * disk_size / 50);

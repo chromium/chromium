@@ -11,6 +11,7 @@
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "storage/browser/file_system/file_system_operation_context.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/common/file_system/file_system_mount_option.h"
@@ -24,7 +25,7 @@ namespace {
 //
 // TODO(benchan): Find a better place outside webkit to host this function.
 bool SetPlatformSpecificDirectoryPermissions(const base::FilePath& dir_path) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // System daemons on Chrome OS may run as a user different than the Chrome
   // process but need to access files under the directories created here.
   // Because of that, grant the execute permission on the created directory
