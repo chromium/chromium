@@ -242,7 +242,8 @@ void StorageManager::StartObserving() {
     return;
 
   ExecutionContext* execution_context = GetExecutionContext();
-  DCHECK(execution_context);
+  if (!execution_context)
+    return;
 
   // Using kMiscPlatformAPI because the Storage specification does not
   // specify a dedicated task queue yet.
