@@ -730,6 +730,7 @@ EXPORTS
     ?format@detail@cctz@time_internal@absl@@YA?AV?$basic_string@DU?$char_traits@D@__1@std@@V?$allocator@D@23@@__1@std@@AEBV567@AEBV?$time_point@Vsystem_clock@chrono@__1@std@@V?$duration@_JV?$ratio@$00$00@__1@std@@@234@@chrono@67@AEBV?$duration@_JV?$ratio@$00$0DINHOKEMGIAAA@@__1@std@@@967@AEBVtime_zone@234@@Z
     ?from_chars@absl@@YA?AUfrom_chars_result@1@PEBD0AEAMW4chars_format@1@@Z
     ?from_chars@absl@@YA?AUfrom_chars_result@1@PEBD0AEANW4chars_format@1@@Z
+    ?get_weekday@detail@cctz@time_internal@absl@@YA?AW4weekday@1234@AEBV?$civil_time@Usecond_tag@detail@cctz@time_internal@absl@@@1234@@Z
     ?load_time_zone@cctz@time_internal@absl@@YA_NAEBV?$basic_string@DU?$char_traits@D@__1@std@@V?$allocator@D@23@@__1@std@@PEAVtime_zone@123@@Z
     ?local_time_zone@cctz@time_internal@absl@@YA?AVtime_zone@123@XZ
     ?lookup@time_zone@cctz@time_internal@absl@@QEBA?AUabsolute_lookup@1234@AEBV?$time_point@Vsystem_clock@chrono@__1@std@@V?$duration@_JV?$ratio@$00$00@__1@std@@@234@@chrono@__1@std@@@Z

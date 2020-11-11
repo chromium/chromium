@@ -51,9 +51,9 @@ ABSL_NAMESPACE_BEGIN
 namespace strings_internal {
 
 // This class is implicitly constructible from everything that absl::string_view
-// is implicitly constructible from. If it's constructed from a temporary
-// string, the data is moved into a data member so its lifetime matches that of
-// the ConvertibleToStringView instance.
+// is implicitly constructible from, except for rvalue strings.  This means it
+// can be used as a function parameter in places where passing a temporary
+// string might cause memory lifetime issues.
 class ConvertibleToStringView {
  public:
   ConvertibleToStringView(const char* s)  // NOLINT(runtime/explicit)
@@ -65,57 +65,13 @@ class ConvertibleToStringView {
       : value_(s) {}
 
   // Matches rvalue strings and moves their data to a member.
-  ConvertibleToStringView(std::string&& s)  // NOLINT(runtime/explicit)
-      : copy_(std::move(s)), value_(copy_), self_referential_(true) {}
-
-  ConvertibleToStringView(const ConvertibleToStringView& other)
-      : value_(other.value_), self_referential_(other.self_referential_) {
-    if (other.self_referential_) {
-      new (&copy_) std::string(other.copy_);
-      value_ = copy_;
-    }
-  }
-
-  ConvertibleToStringView(ConvertibleToStringView&& other)
-      : value_(other.value_), self_referential_(other.self_referential_) {
-    if (other.self_referential_) {
-      new (&copy_) std::string(std::move(other.copy_));
-      value_ = copy_;
-    }
-  }
-
-  ConvertibleToStringView& operator=(ConvertibleToStringView other) {
-    this->~ConvertibleToStringView();
-    new (this) ConvertibleToStringView(std::move(other));
-    return *this;
-  }
+  ConvertibleToStringView(std::string&& s) = delete;
+  ConvertibleToStringView(const std::string&& s) = delete;
 
   absl::string_view value() const { return value_; }
 
-  ~ConvertibleToStringView() { MaybeReleaseCopy(); }
-
  private:
-  void MaybeReleaseCopy() {
-    if (self_referential_) {
-      // An explicit destructor call cannot be a qualified name such as
-      // std::string. The "using" declaration works around this
-      // issue by creating an unqualified name for the destructor.
-      using string_type = std::string;
-      copy_.~string_type();
-    }
-  }
-  struct Unused {  // MSVC disallows unions with only 1 member.
-  };
-  // Holds the data moved from temporary std::string arguments. Declared first
-  // so that 'value' can refer to 'copy_'.
-  union {
-    std::string copy_;
-    Unused unused_;
-  };
-
   absl::string_view value_;
-  // true if value_ refers to the internal copy_ member.
-  bool self_referential_ = false;
 };
 
 // An iterator that enumerates the parts of a string from a Splitter. The text
@@ -288,7 +244,11 @@ struct SplitterIsConvertibleTo
 // the split strings: only strings for which the predicate returns true will be
 // kept. A Predicate object is any unary functor that takes an absl::string_view
 // and returns bool.
-template <typename Delimiter, typename Predicate>
+//
+// The StringType parameter can be either string_view or string, depending on
+// whether the Splitter refers to a string stored elsewhere, or if the string
+// resides inside the Splitter itself.
+template <typename Delimiter, typename Predicate, typename StringType>
 class Splitter {
  public:
   using DelimiterType = Delimiter;
@@ -296,12 +256,12 @@ class Splitter {
   using const_iterator = strings_internal::SplitIterator<Splitter>;
   using value_type = typename std::iterator_traits<const_iterator>::value_type;
 
-  Splitter(ConvertibleToStringView input_text, Delimiter d, Predicate p)
+  Splitter(StringType input_text, Delimiter d, Predicate p)
       : text_(std::move(input_text)),
         delimiter_(std::move(d)),
         predicate_(std::move(p)) {}
 
-  absl::string_view text() const { return text_.value(); }
+  absl::string_view text() const { return text_; }
   const Delimiter& delimiter() const { return delimiter_; }
   const Predicate& predicate() const { return predicate_; }
 
@@ -458,7 +418,7 @@ class Splitter {
     };
   };
 
-  ConvertibleToStringView text_;
+  StringType text_;
   Delimiter delimiter_;
   Predicate predicate_;
 };

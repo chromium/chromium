@@ -37,8 +37,11 @@ static const unsigned char* GetKernelRtSigreturnAddress() {
   absl::debugging_internal::VDSOSupport vdso;
   if (vdso.IsPresent()) {
     absl::debugging_internal::VDSOSupport::SymbolInfo symbol_info;
-    if (!vdso.LookupSymbol("__kernel_rt_sigreturn", "LINUX_2.6.39", STT_FUNC,
-                           &symbol_info) ||
+    auto lookup = [&](int type) {
+      return vdso.LookupSymbol("__kernel_rt_sigreturn", "LINUX_2.6.39", type,
+                               &symbol_info);
+    };
+    if ((!lookup(STT_FUNC) && !lookup(STT_NOTYPE)) ||
         symbol_info.address == nullptr) {
       // Unexpected: VDSO is present, yet the expected symbol is missing
       // or null.
