@@ -53,11 +53,10 @@ public class AutofillAssistantModuleEntryImpl implements AutofillAssistantModule
 
             // Start trigger script and transition to regular flow on success.
             if (TextUtils.equals(parameters.get(PARAMETER_REQUEST_TRIGGER_SCRIPT), "true")) {
-                AssistantTriggerScriptBridge triggerScriptController =
+                AssistantTriggerScriptBridge triggerScriptBridge =
                         new AssistantTriggerScriptBridge();
-                triggerScriptController.start(bottomSheetController, context, webContents,
-                        initialUrl, parameters, experimentIds,
-                        new AssistantTriggerScriptBridge.Delegate() {
+                triggerScriptBridge.start(bottomSheetController, context, webContents, initialUrl,
+                        parameters, experimentIds, new AssistantTriggerScriptBridge.Delegate() {
                             @Override
                             public void onTriggerScriptFinished(
                                     @LiteScriptFinishedState int finishedState) {
@@ -109,7 +108,6 @@ public class AutofillAssistantModuleEntryImpl implements AutofillAssistantModule
         return !TextUtils.isEmpty(parameters.get(PARAMETER_TRIGGER_FIRST_TIME_USER))
                 || TextUtils.equals(parameters.get(PARAMETER_REQUEST_TRIGGER_SCRIPT), "true");
     }
-
     /**
      * Starts a 'lite' autofill assistant script in the background. Does not show the onboarding.
      * Does not have access to any information aside from the trigger script paths. Calls {@code

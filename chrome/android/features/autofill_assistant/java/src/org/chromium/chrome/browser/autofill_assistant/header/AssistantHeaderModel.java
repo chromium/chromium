@@ -60,6 +60,7 @@ public class AssistantHeaderModel extends PropertyModel {
                 PROGRESS_VISIBLE, USE_STEP_PROGRESS_BAR, STEP_PROGRESS_BAR_ICONS, SPIN_POODLE,
                 FEEDBACK_BUTTON_CALLBACK, CHIPS, CHIPS_VISIBLE, DISABLE_ANIMATIONS_FOR_TESTING);
         set(CHIPS, new ArrayList<>());
+        set(PROGRESS_VISIBLE, true);
     }
 
     @CalledByNative

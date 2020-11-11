@@ -12,6 +12,7 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.autofill_assistant.AutofillAssistantClient;
+import org.chromium.chrome.browser.autofill_assistant.AutofillAssistantPreferencesUtil;
 import org.chromium.chrome.browser.autofill_assistant.carousel.AssistantChip;
 import org.chromium.chrome.browser.autofill_assistant.header.AssistantHeaderModel;
 import org.chromium.chrome.browser.autofill_assistant.metrics.LiteScriptFinishedState;
@@ -98,6 +99,9 @@ public class AssistantTriggerScriptBridge {
         mTriggerScript.setLeftAlignedChips(leftAlignedChips, leftAlignedChipsActions);
         mTriggerScript.setRightAlignedChips(rightAlignedChips, rightAlignedChipsActions);
         mTriggerScript.show();
+
+        // A trigger script was displayed, users are no longer considered first-time users.
+        AutofillAssistantPreferencesUtil.setAutofillAssistantReturningLiteScriptUser();
     }
 
     @CalledByNative

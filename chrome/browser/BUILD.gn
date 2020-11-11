@@ -3289,7 +3289,8 @@ static_library("browser") {
       ]
       deps += [ "//chrome/android/modules/dev_ui/provider:native" ]
     }
-  } else {  #!is_android
+  } else {
+    #!is_android
     sources += [
       "accessibility/caption_controller.cc",
       "accessibility/caption_controller.h",
@@ -4101,7 +4102,7 @@ static_library("browser") {
         "task_manager/sampling/shared_sampler_posix.cc",
       ]
 
-      # TODO(crbug.com/1052397): Rename chromeos_is_browser_only to is_lacros.
+      # TODO(crbug.com / 1052397): Rename chromeos_is_browser_only to is_lacros.
       if (!chromeos_is_browser_only) {
         sources += [ "first_run/first_run_internal_posix.cc" ]
       }
@@ -5617,7 +5618,7 @@ static_library("browser") {
       "//components/guest_view/browser",
       "//media/cast:sender",
 
-      # TODO(crbug.com/879012): mirroring shouldn't depend on enable_extensions.
+      # TODO(crbug.com / 879012): mirroring shouldn't depend on enable_extensions.
       "//components/mirroring/browser",
       "//components/mirroring/mojom:host",
       "//components/mirroring/mojom:service",
@@ -6307,7 +6308,7 @@ proto_library("permissions_proto") {
 }
 
 grit("resources") {
-  # TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
+  # TODO(crbug.com / 1112471): Get this to run cleanly under Python 3.
   run_under_python2 = true
 
   source = "browser_resources.grd"

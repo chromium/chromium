@@ -25,6 +25,10 @@ class MockDynamicTriggerConditions : public DynamicTriggerConditions {
   MOCK_METHOD2(OnUpdate,
                void(WebController* web_controller,
                     base::OnceCallback<void(void)>& callback));
+
+  MOCK_METHOD1(AddSelectorsFromTriggerScript,
+               void(const TriggerScriptProto& proto));
+  MOCK_METHOD0(ClearSelectors, void(void));
 };
 
 }  // namespace autofill_assistant

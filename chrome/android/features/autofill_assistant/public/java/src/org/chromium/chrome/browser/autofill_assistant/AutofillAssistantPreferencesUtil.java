@@ -9,7 +9,7 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 
 /** Autofill Assistant related preferences util class. */
-class AutofillAssistantPreferencesUtil {
+public class AutofillAssistantPreferencesUtil {
     /**
      * If a user explicitly cancels a lite script >= this number, they will implicitly opt-out of
      * this experience and never see a lite script again. Note: this is only temporarily in place
@@ -43,7 +43,7 @@ class AutofillAssistantPreferencesUtil {
     }
 
     /** Marks a user as having seen a lite script at least once before. */
-    static void setAutofillAssistantReturningLiteScriptUser() {
+    public static void setAutofillAssistantReturningLiteScriptUser() {
         SharedPreferencesManager.getInstance().writeBoolean(
                 ChromePreferenceKeys.AUTOFILL_ASSISTANT_FIRST_TIME_LITE_SCRIPT_USER, false);
     }

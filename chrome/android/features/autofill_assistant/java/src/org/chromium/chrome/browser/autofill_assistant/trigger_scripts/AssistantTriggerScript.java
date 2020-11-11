@@ -45,17 +45,15 @@ public class AssistantTriggerScript {
     }
 
     @Nullable
-    private final AssistantBottomSheetContent mContent;
+    private AssistantBottomSheetContent mContent;
     private final Context mContext;
     private final Delegate mDelegate;
     private final BottomSheetController mBottomSheetController;
     private final BottomSheetObserver mBottomSheetObserver;
 
-    private final AssistantRootViewContainer mRootViewContainer;
-    private final ScrollView mScrollableContent;
-    private final AssistantHeaderCoordinator mHeaderCoordinator;
-    private final AssistantHeaderModel mHeaderModel;
-    private final LinearLayout mChipsContainer;
+    private AssistantHeaderCoordinator mHeaderCoordinator;
+    private final AssistantHeaderModel mHeaderModel = new AssistantHeaderModel();
+    private LinearLayout mChipsContainer;
     private final int mInnerChipSpacing;
 
     private final List<AssistantChip> mLeftAlignedChips = new ArrayList<>();
@@ -80,7 +78,13 @@ public class AssistantTriggerScript {
                 }
             }
         };
+        mInnerChipSpacing = mContext.getResources().getDimensionPixelSize(
+                R.dimen.autofill_assistant_actions_spacing);
+        mHeaderModel.set(
+                AssistantHeaderModel.FEEDBACK_BUTTON_CALLBACK, mDelegate::onFeedbackButtonClicked);
+    }
 
+    private void createBottomSheetContents() {
         mContent =
                 new AssistantBottomSheetContent(mContext, () -> new AssistantBottomBarDelegate() {
                     @Override
@@ -103,29 +107,27 @@ public class AssistantTriggerScript {
         // Allow swipe-to-dismiss.
         mContent.setPeekModeDisabled(true);
 
-        mHeaderModel = new AssistantHeaderModel();
-        mHeaderModel.set(
-                AssistantHeaderModel.FEEDBACK_BUTTON_CALLBACK, mDelegate::onFeedbackButtonClicked);
-        mHeaderCoordinator = new AssistantHeaderCoordinator(context, mHeaderModel);
-
-        mChipsContainer = new LinearLayout(context);
+        if (mHeaderCoordinator != null) {
+            mHeaderCoordinator.destroy();
+        }
+        mHeaderCoordinator = new AssistantHeaderCoordinator(mContext, mHeaderModel);
+        mChipsContainer = new LinearLayout(mContext);
         mChipsContainer.setOrientation(LinearLayout.HORIZONTAL);
-        int horizontalMargin = context.getResources().getDimensionPixelSize(
+        int horizontalMargin = mContext.getResources().getDimensionPixelSize(
                 R.dimen.autofill_assistant_bottombar_horizontal_spacing);
-        int verticalMargin = AssistantDimension.getPixelSizeDp(context, 16);
+        int verticalMargin = AssistantDimension.getPixelSizeDp(mContext, 16);
         mChipsContainer.setPadding(
                 horizontalMargin, verticalMargin, horizontalMargin, verticalMargin);
-        mInnerChipSpacing = mContext.getResources().getDimensionPixelSize(
-                R.dimen.autofill_assistant_actions_spacing);
 
-        mRootViewContainer = (AssistantRootViewContainer) LayoutInflater.from(context).inflate(
-                R.layout.autofill_assistant_bottom_sheet_content, /* root= */ null);
-        mScrollableContent = mRootViewContainer.findViewById(R.id.scrollable_content);
-        mRootViewContainer.addView(mHeaderCoordinator.getView(), 0);
-        mRootViewContainer.addView(mChipsContainer,
+        AssistantRootViewContainer rootViewContainer =
+                (AssistantRootViewContainer) LayoutInflater.from(mContext).inflate(
+                        R.layout.autofill_assistant_bottom_sheet_content, /* root= */ null);
+        ScrollView scrollableContent = rootViewContainer.findViewById(R.id.scrollable_content);
+        rootViewContainer.addView(mHeaderCoordinator.getView(), 0);
+        rootViewContainer.addView(mChipsContainer,
                 new LinearLayout.LayoutParams(
                         ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-        mContent.setContent(mRootViewContainer, mScrollableContent);
+        mContent.setContent(rootViewContainer, scrollableContent);
     }
 
     public void destroy() {
@@ -173,13 +175,13 @@ public class AssistantTriggerScript {
     private void bindChips(List<AssistantChip> chips, int[] actions) {
         assert chips.size() == actions.length;
         for (int i = 0; i < chips.size(); ++i) {
-            int action = actions[i];
-            if (action == TriggerScriptAction.SHOW_CANCEL_POPUP) {
-                chips.get(i).setPopupItems(mCancelPopupItems,
+            int index = i;
+            if (actions[index] == TriggerScriptAction.SHOW_CANCEL_POPUP) {
+                chips.get(index).setPopupItems(mCancelPopupItems,
                         result -> mDelegate.onTriggerScriptAction(mCancelPopupActions.get(result)));
             } else {
-                chips.get(i).setSelectedListener(
-                        () -> mDelegate.onTriggerScriptAction(actions[action]));
+                chips.get(index).setSelectedListener(
+                        () -> mDelegate.onTriggerScriptAction(actions[index]));
             }
         }
     }
@@ -218,6 +220,7 @@ public class AssistantTriggerScript {
     }
 
     public void show() {
+        createBottomSheetContents();
         update();
         mBottomSheetController.removeObserver(mBottomSheetObserver);
         mBottomSheetController.addObserver(mBottomSheetObserver);

@@ -111,8 +111,6 @@ public class AssistantHeaderCoordinator implements ProfileDataCache.Observer {
                 new AssistantHeaderViewBinder.ViewHolder(context, mView, poodle, mChipsContainer);
         AssistantHeaderViewBinder viewBinder = new AssistantHeaderViewBinder();
         PropertyModelChangeProcessor.create(model, mViewHolder, viewBinder);
-
-        model.set(AssistantHeaderModel.PROGRESS_VISIBLE, true);
     }
 
     @Override

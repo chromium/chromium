@@ -28,6 +28,9 @@ class DynamicTriggerConditions {
   // selectors to be queried in |Update|.
   virtual void AddSelectorsFromTriggerScript(const TriggerScriptProto& proto);
 
+  // Clears all selectors from the list of selectors to be queried in |Update|.
+  virtual void ClearSelectors();
+
   // Returns whether |selector| currently matches the DOM tree. |Update| must
   // be called prior to this method. Only selectors that have previously been
   // added via |AddSelectorsFromTriggerScript| can be queried.

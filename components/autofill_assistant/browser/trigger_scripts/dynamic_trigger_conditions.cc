@@ -52,6 +52,10 @@ void DynamicTriggerConditions::AddSelectorsFromTriggerScript(
   ExtractSelectors(proto.trigger_condition(), &selectors_);
 }
 
+void DynamicTriggerConditions::ClearSelectors() {
+  selectors_.clear();
+}
+
 base::Optional<bool> DynamicTriggerConditions::GetSelectorMatches(
     const Selector& selector) const {
   auto it = selector_matches_.find(selector);

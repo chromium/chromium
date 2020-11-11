@@ -115,4 +115,13 @@ TEST_F(DynamicTriggerConditionsTest, Update) {
             base::make_optional(true));
 }
 
+TEST_F(DynamicTriggerConditionsTest, ClearSelectors) {
+  TriggerScriptProto proto;
+  *proto.mutable_trigger_condition()->mutable_selector() = ToSelectorProto("a");
+  dynamic_trigger_conditions_.AddSelectorsFromTriggerScript(proto);
+  EXPECT_EQ(GetSelectorsForTest()->size(), 1u);
+  dynamic_trigger_conditions_.ClearSelectors();
+  EXPECT_EQ(GetSelectorsForTest()->size(), 0u);
+}
+
 }  // namespace autofill_assistant
