@@ -644,16 +644,6 @@ const base::Feature kSiteIsolationEnforcementForFileSystemApi{
 const base::Feature kSpareRendererForSitePerProcess{
     "SpareRendererForSitePerProcess", base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Enables Storage Pressure notifications and settings pages.
-const base::Feature kStoragePressureUI {
-  "StoragePressureUI",
-#if defined(OS_ANDROID)
-      base::FEATURE_DISABLED_BY_DEFAULT
-#else
-      base::FEATURE_ENABLED_BY_DEFAULT
-#endif
-};
-
 // Enables the out-of-process Storage Service.
 const base::Feature kStorageServiceOutOfProcess{
     "StorageServiceOutOfProcess", base::FEATURE_ENABLED_BY_DEFAULT};

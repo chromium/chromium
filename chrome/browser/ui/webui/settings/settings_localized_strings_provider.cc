@@ -2216,10 +2216,6 @@ void AddSiteSettingsStrings(content::WebUIDataSource* html_source,
           browsing_data::features::kEnableRemovingAllThirdPartyCookies));
 
   html_source->AddBoolean(
-      "enableStoragePressureUI",
-      base::FeatureList::IsEnabled(features::kStoragePressureUI));
-
-  html_source->AddBoolean(
       "enableQuietNotificationPromptsSetting",
       base::FeatureList::IsEnabled(features::kQuietNotificationPrompts));
 

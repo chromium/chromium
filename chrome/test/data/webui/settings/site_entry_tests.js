@@ -86,7 +86,6 @@ suite('SiteEntry', function() {
   teardown(function() {
     // The code being tested changes the Route. Reset so that state is not
     // leaked across tests.
-    loadTimeData.overrideValues({'enableStoragePressureUI': true});
     Router.getInstance().resetRouteForTesting();
   });
 
@@ -151,29 +150,14 @@ suite('SiteEntry', function() {
         Router.getInstance().getQueryParameters().get('site'));
   });
 
-  test(
-      'with single origin does not show overflow menu if ' +
-          'storagePressureUIEnabled is false',
-      function() {
-        loadTimeData.overrideValues({'enableStoragePressureUI': false});
-        testElement.siteGroup = TEST_SINGLE_SITE_GROUP;
-        flush();
-        const overflowMenuButton = testElement.$.overflowMenuButton;
-        assertTrue(overflowMenuButton.closest('.row-aligned').hidden);
-      });
-
-  test(
-      'with single origin, shows overflow menu if storagePressureUIEnabled',
-      function() {
-        loadTimeData.overrideValues({'enableStoragePressureUI': true});
-        testElement.siteGroup = TEST_SINGLE_SITE_GROUP;
-        flush();
-        const overflowMenuButton = testElement.$.overflowMenuButton;
-        assertFalse(overflowMenuButton.closest('.row-aligned').hidden);
-      });
+  test('with single origin, shows overflow menu', function() {
+    testElement.siteGroup = TEST_SINGLE_SITE_GROUP;
+    flush();
+    const overflowMenuButton = testElement.$.overflowMenuButton;
+    assertFalse(overflowMenuButton.closest('.row-aligned').hidden);
+  });
 
   test('clear data for single origin fires the right method', async function() {
-    loadTimeData.overrideValues({'enableStoragePressureUI': true});
     testElement.siteGroup =
         JSON.parse(JSON.stringify(TEST_MULTIPLE_SITE_GROUP));
     flush();

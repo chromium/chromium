@@ -25,7 +25,7 @@ bool IsStoragePressureEnabled() {
 #if defined(OS_ANDROID)
   return false;
 #else
-  return base::FeatureList::IsEnabled(features::kStoragePressureUI);
+  return true;
 #endif
 }
 

@@ -109,7 +109,6 @@ suite('AllSites', function() {
     // The code being tested changes the Route. Reset so that state is not
     // leaked across tests.
     Router.getInstance().resetRouteForTesting();
-    loadTimeData.overrideValues({enableStoragePressureUI: true});
   });
 
   /**
@@ -124,7 +123,6 @@ suite('AllSites', function() {
       Router.getInstance().navigateTo(
           routes.SITE_SETTINGS_ALL, new URLSearchParams(`sort=${sortOrder}`));
     } else {
-      loadTimeData.overrideValues({enableStoragePressureUI: false});
       Router.getInstance().navigateTo(routes.SITE_SETTINGS_ALL);
     }
   }

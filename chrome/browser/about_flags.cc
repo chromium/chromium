@@ -4437,10 +4437,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kStoragePressureEventDescription, kOsAll,
      FEATURE_VALUE_TYPE(storage::features::kStoragePressureEvent)},
 
-    {"enable-storage-pressure-ui", flag_descriptions::kStoragePressureUIName,
-     flag_descriptions::kStoragePressureUIDescription, kOsAll,
-     FEATURE_VALUE_TYPE(features::kStoragePressureUI)},
-
     {"installed-apps-in-cbd", flag_descriptions::kInstalledAppsInCbdName,
      flag_descriptions::kInstalledAppsInCbdDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kInstalledAppsInCbd)},

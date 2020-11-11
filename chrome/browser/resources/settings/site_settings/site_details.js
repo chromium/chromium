@@ -104,12 +104,6 @@ Polymer({
     },
 
     /** @private */
-    storagePressureFlagEnabled_: {
-      type: Boolean,
-      value: () => loadTimeData.getBoolean('enableStoragePressureUI'),
-    },
-
-    /** @private */
     enableWebBluetoothNewPermissionsBackend_: {
       type: Boolean,
       value: () =>
@@ -282,11 +276,7 @@ Polymer({
    */
   onConfirmClearStorage_(e) {
     e.preventDefault();
-    if (this.storagePressureFlagEnabled_) {
-      this.$.confirmClearStorageNew.showModal();
-    } else {
-      this.$.confirmClearStorage.showModal();
-    }
+    this.$.confirmClearStorageNew.showModal();
   },
 
   /**

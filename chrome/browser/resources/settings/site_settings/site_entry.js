@@ -102,16 +102,6 @@ Polymer({
      * @type {!SortMethod|undefined}
      */
     sortMethod: {type: String, observer: 'updateOrigins_'},
-
-    /**
-     * Represents whether or not the storage pressure UI flag is enabled
-     * @type {boolean}
-     * @private
-     */
-    storagePressureUIEnabled_: {
-      type: Boolean,
-      value: loadTimeData.getBoolean('enableStoragePressureUI'),
-    },
   },
 
   /** @private {?LocalDataBrowserProxy} */
@@ -155,17 +145,6 @@ Polymer({
       return true;
     }
     return false;
-  },
-
-  /**
-   * Whether or not to display the overflow menu for a site group.
-   * @param {SiteGroup} siteGroup The eTLD+1 group of origins.
-   * @return {boolean}
-   * @private
-   */
-  shouldHideOverflow_(siteGroup) {
-    return !this.grouped_(siteGroup) &&
-        !loadTimeData.getBoolean('enableStoragePressureUI');
   },
 
   /**

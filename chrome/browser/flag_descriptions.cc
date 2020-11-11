@@ -2136,11 +2136,6 @@ const char kStoragePressureEventDescription[] =
     "If enabled, Chrome will dispatch a DOM event, informing applications "
     "about storage pressure (low disk space)";
 
-const char kStoragePressureUIName[] = "Enable storage pressure UI";
-const char kStoragePressureUIDescription[] =
-    "If enabled, Chrome will trigger system notifications to warn about "
-    "storage pressure.";
-
 const char kSuggestedContentToggleName[] = "Enable Suggested Content toggle";
 const char kSuggestedContentToggleDescription[] =
     "Enables a settings UI toggle that controls Suggested Content status. Also"
