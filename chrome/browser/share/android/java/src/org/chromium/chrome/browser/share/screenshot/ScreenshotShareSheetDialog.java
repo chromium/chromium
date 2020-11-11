@@ -63,7 +63,7 @@ public class ScreenshotShareSheetDialog extends DialogFragment {
                         R.layout.screenshot_share_sheet, null);
         builder.setView(screenshotShareSheetView);
 
-        new ScreenshotShareSheetCoordinator(mContext, mScreenshot, this::dismiss,
+        new ScreenshotShareSheetCoordinator(mContext, mScreenshot, this::dismissAllowingStateLoss,
                 screenshotShareSheetView, mTab, mChromeOptionShareCallback, mInstallCallback);
         return builder.create();
     }
