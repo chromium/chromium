@@ -5182,6 +5182,10 @@ interface MediaStreamTrackGenerator : MediaStreamTrack
     attribute @@toStringTag
     getter writable
     method constructor
+interface MediaStreamTrackProcessor
+    attribute @@toStringTag
+    getter readable
+    method constructor
 interface MerchantValidationEvent : Event
     attribute @@toStringTag
     getter methodName
