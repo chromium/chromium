@@ -44,3 +44,10 @@ Window.prototype.IN_TEST;
  * @type {boolean}
  */
 Window.prototype.UNIT_TEST;
+
+/**
+ * True if files app is running in a SWA container.
+ *
+ * @type {boolean}
+ */
+Window.prototype.isSWA;
