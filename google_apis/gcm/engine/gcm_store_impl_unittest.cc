@@ -51,6 +51,8 @@ class GCMStoreImplTest : public testing::Test {
   GCMStoreImplTest();
   ~GCMStoreImplTest() override;
 
+  void TearDown() override;
+
   std::unique_ptr<GCMStoreImpl> BuildGCMStore();
   void LoadGCMStore(GCMStoreImpl* gcm_store,
                     std::unique_ptr<GCMStore::LoadResult>* result_dst);
@@ -84,6 +86,10 @@ GCMStoreImplTest::GCMStoreImplTest()
 }
 
 GCMStoreImplTest::~GCMStoreImplTest() {}
+
+void GCMStoreImplTest::TearDown() {
+  PumpLoop();
+}
 
 std::unique_ptr<GCMStoreImpl> GCMStoreImplTest::BuildGCMStore() {
   // Pass an non-existent directory as store path to match the exact behavior in

@@ -464,6 +464,9 @@ void GCMClientImplTest::SetUp() {
 }
 
 void GCMClientImplTest::TearDown() {
+  gcm_client_.reset();
+  PumpLoopUntilIdle();
+  testing::Test::TearDown();
 }
 
 void GCMClientImplTest::SetFeatureParams(const base::Feature& feature,

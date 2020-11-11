@@ -130,6 +130,7 @@ class MCSClientTest : public testing::Test {
   ~MCSClientTest() override;
 
   void SetUp() override;
+  void TearDown() override;
 
   void BuildMCSClient();
   void InitializeClient();
@@ -173,7 +174,7 @@ class MCSClientTest : public testing::Test {
   base::SimpleTestClock clock_;
 
   base::ScopedTempDir temp_directory_;
-  base::test::SingleThreadTaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_;
   std::unique_ptr<base::RunLoop> run_loop_;
   std::unique_ptr<GCMStore> gcm_store_;
 
@@ -206,6 +207,12 @@ MCSClientTest::~MCSClientTest() {}
 
 void MCSClientTest::SetUp() {
   testing::Test::SetUp();
+}
+
+void MCSClientTest::TearDown() {
+  gcm_store_.reset();
+  task_environment_.RunUntilIdle();
+  testing::Test::TearDown();
 }
 
 void MCSClientTest::BuildMCSClient() {
