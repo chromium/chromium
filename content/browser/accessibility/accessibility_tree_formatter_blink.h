@@ -22,11 +22,10 @@ class CONTENT_EXPORT AccessibilityTreeFormatterBlink
   std::unique_ptr<base::DictionaryValue> BuildAccessibilityTree(
       BrowserAccessibility* root) override;
 
-  std::unique_ptr<base::DictionaryValue> BuildAccessibilityTreeForWindow(
-      gfx::AcceleratedWidget widget) override;
+  base::Value BuildTreeForWindow(gfx::AcceleratedWidget widget) const override;
 
-  std::unique_ptr<base::DictionaryValue> BuildAccessibilityTreeForSelector(
-      const AXTreeSelector& selector) override;
+  base::Value BuildTreeForSelector(
+      const AXTreeSelector& selector) const override;
 
   void AddDefaultFilters(
       std::vector<AXPropertyFilter>* property_filters) override;

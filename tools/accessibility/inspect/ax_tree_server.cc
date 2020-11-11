@@ -30,16 +30,14 @@ constexpr char kAllowOptEmptyStr[] = "@ALLOW-EMPTY:";
 constexpr char kAllowOptStr[] = "@ALLOW:";
 constexpr char kDenyOptStr[] = "@DENY:";
 
-std::unique_ptr<base::DictionaryValue> BuildTreeForSelector(
-    const AXTreeSelector& selector,
-    AXTreeFormatter* formatter) {
-  return formatter->BuildAccessibilityTreeForSelector(selector);
+base::Value BuildTreeForSelector(const AXTreeSelector& selector,
+                                 const AXTreeFormatter* formatter) {
+  return formatter->BuildTreeForSelector(selector);
 }
 
-std::unique_ptr<base::DictionaryValue> BuildTreeForWindow(
-    gfx::AcceleratedWidget widget,
-    AXTreeFormatter* formatter) {
-  return formatter->BuildAccessibilityTreeForWindow(widget);
+base::Value BuildTreeForWindow(gfx::AcceleratedWidget widget,
+                               const AXTreeFormatter* formatter) {
+  return formatter->BuildTreeForWindow(widget);
 }
 
 AXTreeServer::AXTreeServer(const AXTreeSelector& selector,
@@ -69,15 +67,14 @@ void AXTreeServer::Run(BuildTree build_tree,
   formatter->SetPropertyFilters(filters);
 
   // Get accessibility tree as a nested dictionary.
-  std::unique_ptr<base::DictionaryValue> dict =
-      std::move(build_tree).Run(formatter.get());
-  if (!dict) {
+  base::Value dict = std::move(build_tree).Run(formatter.get());
+  if (dict.DictEmpty()) {
     LOG(ERROR) << "Failed to get accessibility tree";
     return;
   }
 
   // Format the tree.
-  Format(*formatter, *dict, use_json);
+  Format(*formatter, base::Value::AsDictionaryValue(dict), use_json);
 }
 
 std::vector<ui::AXPropertyFilter> AXTreeServer::GetPropertyFilters(

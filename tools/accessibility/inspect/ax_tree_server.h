@@ -27,8 +27,7 @@ class AXTreeServer final {
                bool use_json);
 
  private:
-  using BuildTree = base::OnceCallback<std::unique_ptr<base::DictionaryValue>(
-      ui::AXTreeFormatter*)>;
+  using BuildTree = base::OnceCallback<base::Value(const ui::AXTreeFormatter*)>;
 
   // Builds and formats the accessible tree.
   void Run(BuildTree build_tree,

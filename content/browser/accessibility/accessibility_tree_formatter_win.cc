@@ -44,10 +44,9 @@ class AccessibilityTreeFormatterWin : public AccessibilityTreeFormatterBase {
 
   std::unique_ptr<base::DictionaryValue> BuildAccessibilityTree(
       BrowserAccessibility* start) override;
-  std::unique_ptr<base::DictionaryValue> BuildAccessibilityTreeForWindow(
-      gfx::AcceleratedWidget hwnd) override;
-  std::unique_ptr<base::DictionaryValue> BuildAccessibilityTreeForSelector(
-      const AXTreeSelector& selector) override;
+  base::Value BuildTreeForWindow(gfx::AcceleratedWidget hwnd) const override;
+  base::Value BuildTreeForSelector(
+      const AXTreeSelector& selector) const override;
   std::unique_ptr<base::DictionaryValue> BuildAccessibilityTree(
       Microsoft::WRL::ComPtr<IAccessible> start,
       LONG window_x = 0,
@@ -62,32 +61,32 @@ class AccessibilityTreeFormatterWin : public AccessibilityTreeFormatterBase {
       const Microsoft::WRL::ComPtr<IAccessible> node,
       base::DictionaryValue* dict,
       LONG root_x,
-      LONG root_y);
+      LONG root_y) const;
 
   void AddProperties(const Microsoft::WRL::ComPtr<IAccessible>,
                      base::DictionaryValue* dict,
                      LONG root_x,
-                     LONG root_y);
+                     LONG root_y) const;
   void AddMSAAProperties(const Microsoft::WRL::ComPtr<IAccessible>,
                          base::DictionaryValue* dict,
                          LONG root_x,
-                         LONG root_y);
+                         LONG root_y) const;
   void AddSimpleDOMNodeProperties(const Microsoft::WRL::ComPtr<IAccessible>,
-                                  base::DictionaryValue* dict);
+                                  base::DictionaryValue* dict) const;
   bool AddIA2Properties(const Microsoft::WRL::ComPtr<IAccessible>,
-                        base::DictionaryValue* dict);
+                        base::DictionaryValue* dict) const;
   void AddIA2ActionProperties(const Microsoft::WRL::ComPtr<IAccessible>,
-                              base::DictionaryValue* dict);
+                              base::DictionaryValue* dict) const;
   void AddIA2HypertextProperties(const Microsoft::WRL::ComPtr<IAccessible>,
-                                 base::DictionaryValue* dict);
+                                 base::DictionaryValue* dict) const;
   void AddIA2TextProperties(const Microsoft::WRL::ComPtr<IAccessible>,
-                            base::DictionaryValue* dict);
+                            base::DictionaryValue* dict) const;
   void AddIA2TableProperties(const Microsoft::WRL::ComPtr<IAccessible>,
-                             base::DictionaryValue* dict);
+                             base::DictionaryValue* dict) const;
   void AddIA2TableCellProperties(const Microsoft::WRL::ComPtr<IAccessible>,
-                                 base::DictionaryValue* dict);
+                                 base::DictionaryValue* dict) const;
   void AddIA2ValueProperties(const Microsoft::WRL::ComPtr<IAccessible>,
-                             base::DictionaryValue* dict);
+                             base::DictionaryValue* dict) const;
   std::string ProcessTreeForOutput(
       const base::DictionaryValue& node,
       base::DictionaryValue* filtered_dict_result = nullptr) override;
@@ -299,38 +298,35 @@ AccessibilityTreeFormatterWin::BuildAccessibilityTree(
   return dict;
 }
 
-std::unique_ptr<base::DictionaryValue>
-AccessibilityTreeFormatterWin::BuildAccessibilityTreeForWindow(
-    gfx::AcceleratedWidget hwnd) {
+base::Value AccessibilityTreeFormatterWin::BuildTreeForWindow(
+    gfx::AcceleratedWidget hwnd) const {
   if (!hwnd)
-    return nullptr;
+    return base::Value(base::Value::Type::DICTIONARY);
 
   // Get IAccessible* for window
   Microsoft::WRL::ComPtr<IAccessible> start;
   HRESULT hr = ::AccessibleObjectFromWindow(
       hwnd, static_cast<DWORD>(OBJID_CLIENT), IID_PPV_ARGS(&start));
   if (FAILED(hr))
-    return nullptr;
+    return base::Value(base::Value::Type::DICTIONARY);
 
-  auto dict(std::make_unique<base::DictionaryValue>());
-  RecursiveBuildAccessibilityTree(start, dict.get(), 0, 0);
-
-  return dict;
+  base::DictionaryValue dict;
+  RecursiveBuildAccessibilityTree(start, &dict, 0, 0);
+  return std::move(dict);
 }
 
-std::unique_ptr<base::DictionaryValue>
-AccessibilityTreeFormatterWin::BuildAccessibilityTreeForSelector(
-    const AXTreeSelector& selector) {
+base::Value AccessibilityTreeFormatterWin::BuildTreeForSelector(
+    const AXTreeSelector& selector) const {
   LOG(ERROR) << "Windows does not yet support building accessibility trees for "
                 "tree selectors";
-  return nullptr;
+  return base::Value(base::Value::Type::DICTIONARY);
 }
 
 void AccessibilityTreeFormatterWin::RecursiveBuildAccessibilityTree(
     const Microsoft::WRL::ComPtr<IAccessible> node,
     base::DictionaryValue* dict,
     LONG root_x,
-    LONG root_y) {
+    LONG root_y) const {
   AddProperties(node, dict, root_x, root_y);
 
   auto children = std::make_unique<base::ListValue>();
@@ -435,7 +431,7 @@ void AccessibilityTreeFormatterWin::AddProperties(
     const Microsoft::WRL::ComPtr<IAccessible> node,
     base::DictionaryValue* dict,
     LONG root_x,
-    LONG root_y) {
+    LONG root_y) const {
   AddMSAAProperties(node, dict, root_x, root_y);
   AddSimpleDOMNodeProperties(node, dict);
   if (AddIA2Properties(node, dict)) {
@@ -462,7 +458,7 @@ void AccessibilityTreeFormatterWin::AddMSAAProperties(
     const Microsoft::WRL::ComPtr<IAccessible> node,
     base::DictionaryValue* dict,
     LONG root_x,
-    LONG root_y) {
+    LONG root_y) const {
   base::win::ScopedVariant variant_self(CHILDID_SELF);
   base::win::ScopedBstr temp_bstr;
   base::win::ScopedVariant ia_role_variant;
@@ -570,7 +566,7 @@ void AccessibilityTreeFormatterWin::AddMSAAProperties(
 
 void AccessibilityTreeFormatterWin::AddSimpleDOMNodeProperties(
     const Microsoft::WRL::ComPtr<IAccessible> node,
-    base::DictionaryValue* dict) {
+    base::DictionaryValue* dict) const {
   Microsoft::WRL::ComPtr<ISimpleDOMNode> simple_dom_node;
 
   if (S_OK != QuerySimpleDOMNode(node.Get(), &simple_dom_node))
@@ -587,7 +583,7 @@ void AccessibilityTreeFormatterWin::AddSimpleDOMNodeProperties(
 
 bool AccessibilityTreeFormatterWin::AddIA2Properties(
     const Microsoft::WRL::ComPtr<IAccessible> node,
-    base::DictionaryValue* dict) {
+    base::DictionaryValue* dict) const {
   Microsoft::WRL::ComPtr<IAccessible2> ia2;
   if (S_OK != QueryIAccessible2(node.Get(), &ia2))
     return false;  // No IA2, we are finished with this node.
@@ -659,7 +655,7 @@ bool AccessibilityTreeFormatterWin::AddIA2Properties(
 
 void AccessibilityTreeFormatterWin::AddIA2ActionProperties(
     const Microsoft::WRL::ComPtr<IAccessible> node,
-    base::DictionaryValue* dict) {
+    base::DictionaryValue* dict) const {
   Microsoft::WRL::ComPtr<IAccessibleAction> ia2action;
   if (S_OK != QueryIAccessibleAction(node.Get(), &ia2action))
     return;  // No IA2Value, we are finished with this node.
@@ -676,7 +672,7 @@ void AccessibilityTreeFormatterWin::AddIA2ActionProperties(
 
 void AccessibilityTreeFormatterWin::AddIA2HypertextProperties(
     Microsoft::WRL::ComPtr<IAccessible> node,
-    base::DictionaryValue* dict) {
+    base::DictionaryValue* dict) const {
   Microsoft::WRL::ComPtr<IAccessibleHypertext> ia2hyper;
   if (S_OK != QueryIAccessibleHypertext(node.Get(), &ia2hyper))
     return;  // No IA2, we are finished with this node
@@ -744,7 +740,7 @@ void AccessibilityTreeFormatterWin::AddIA2HypertextProperties(
 
 void AccessibilityTreeFormatterWin::AddIA2TableProperties(
     const Microsoft::WRL::ComPtr<IAccessible> node,
-    base::DictionaryValue* dict) {
+    base::DictionaryValue* dict) const {
   Microsoft::WRL::ComPtr<IAccessibleTable> ia2table;
   if (S_OK != QueryIAccessibleTable(node.Get(), &ia2table))
     return;  // No IA2Text, we are finished with this node.
@@ -783,7 +779,7 @@ static base::string16 ProcessAccessiblesArray(IUnknown** accessibles,
 
 void AccessibilityTreeFormatterWin::AddIA2TableCellProperties(
     const Microsoft::WRL::ComPtr<IAccessible> node,
-    base::DictionaryValue* dict) {
+    base::DictionaryValue* dict) const {
   Microsoft::WRL::ComPtr<IAccessibleTableCell> ia2cell;
   if (S_OK != QueryIAccessibleTableCell(node.Get(), &ia2cell))
     return;  // No IA2Text, we are finished with this node.
@@ -813,7 +809,7 @@ void AccessibilityTreeFormatterWin::AddIA2TableCellProperties(
 
 void AccessibilityTreeFormatterWin::AddIA2TextProperties(
     const Microsoft::WRL::ComPtr<IAccessible> node,
-    base::DictionaryValue* dict) {
+    base::DictionaryValue* dict) const {
   Microsoft::WRL::ComPtr<IAccessibleText> ia2text;
   if (S_OK != QueryIAccessibleText(node.Get(), &ia2text))
     return;  // No IA2Text, we are finished with this node.
@@ -880,7 +876,7 @@ void AccessibilityTreeFormatterWin::AddIA2TextProperties(
 
 void AccessibilityTreeFormatterWin::AddIA2ValueProperties(
     const Microsoft::WRL::ComPtr<IAccessible> node,
-    base::DictionaryValue* dict) {
+    base::DictionaryValue* dict) const {
   Microsoft::WRL::ComPtr<IAccessibleValue> ia2value;
   if (S_OK != QueryIAccessibleValue(node.Get(), &ia2value))
     return;  // No IA2Value, we are finished with this node.

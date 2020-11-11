@@ -66,18 +66,16 @@ class AccessibilityTreeFormatterMac : public AccessibilityTreeFormatterBase {
 
   std::unique_ptr<base::DictionaryValue> BuildAccessibilityTree(
       BrowserAccessibility* root) override;
-  std::unique_ptr<base::DictionaryValue> BuildAccessibilityTreeForWindow(
-      gfx::AcceleratedWidget widget) override;
-  std::unique_ptr<base::DictionaryValue> BuildAccessibilityTreeForSelector(
-      const AXTreeSelector& selector) override;
+  base::Value BuildTreeForWindow(gfx::AcceleratedWidget widget) const override;
+  base::Value BuildTreeForSelector(
+      const AXTreeSelector& selector) const override;
 
  private:
-  std::unique_ptr<base::DictionaryValue> BuildAccessibilityTreeForAXUIElement(
-      AXUIElementRef node) const;
+  base::Value BuildTreeForAXUIElement(AXUIElementRef node) const;
 
-  void RecursiveBuildAccessibilityTree(const id node,
-                                       const LineIndexer* line_indexer,
-                                       base::DictionaryValue* dict) const;
+  void RecursiveBuildTree(const id node,
+                          const LineIndexer* line_indexer,
+                          base::Value* dict) const;
 
   void AddProperties(const id node,
                      const LineIndexer* line_indexer,
@@ -152,50 +150,48 @@ AccessibilityTreeFormatterMac::BuildAccessibilityTree(
   BrowserAccessibilityCocoa* cocoa_root = ToBrowserAccessibilityCocoa(root);
   LineIndexer line_indexer(cocoa_root);
   std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue);
-  RecursiveBuildAccessibilityTree(cocoa_root, &line_indexer, dict.get());
+  RecursiveBuildTree(cocoa_root, &line_indexer, dict.get());
   return dict;
 }
 
-std::unique_ptr<base::DictionaryValue>
-AccessibilityTreeFormatterMac::BuildAccessibilityTreeForWindow(
-    gfx::AcceleratedWidget widget) {
-  return BuildAccessibilityTreeForAXUIElement(
-      AXUIElementCreateApplication(widget));
+base::Value AccessibilityTreeFormatterMac::BuildTreeForWindow(
+    gfx::AcceleratedWidget widget) const {
+  return BuildTreeForAXUIElement(AXUIElementCreateApplication(widget));
 }
 
-std::unique_ptr<base::DictionaryValue>
-AccessibilityTreeFormatterMac::BuildAccessibilityTreeForSelector(
-    const AXTreeSelector& selector) {
+base::Value AccessibilityTreeFormatterMac::BuildTreeForSelector(
+    const AXTreeSelector& selector) const {
   AXUIElementRef node = nil;
   std::tie(node, std::ignore) = a11y::FindAXUIElement(selector);
-  return node != nil ? BuildAccessibilityTreeForAXUIElement(node) : nil;
+  if (node == nil) {
+    return base::Value(base::Value::Type::DICTIONARY);
+  }
+  return BuildTreeForAXUIElement(node);
 }
 
-std::unique_ptr<base::DictionaryValue>
-AccessibilityTreeFormatterMac::BuildAccessibilityTreeForAXUIElement(
+base::Value AccessibilityTreeFormatterMac::BuildTreeForAXUIElement(
     AXUIElementRef node) const {
   LineIndexer line_indexer(static_cast<id>(node));
-  std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue);
-  RecursiveBuildAccessibilityTree(static_cast<id>(node), &line_indexer,
-                                  dict.get());
+
+  base::Value dict(base::Value::Type::DICTIONARY);
+  RecursiveBuildTree(static_cast<id>(node), &line_indexer, &dict);
   return dict;
 }
 
-void AccessibilityTreeFormatterMac::RecursiveBuildAccessibilityTree(
+void AccessibilityTreeFormatterMac::RecursiveBuildTree(
     const id node,
     const LineIndexer* line_indexer,
-    base::DictionaryValue* dict) const {
+    base::Value* dict) const {
   AddProperties(node, line_indexer, dict);
 
   NSArray* children = ChildrenOf(node);
-  auto child_dict_list = std::make_unique<base::ListValue>();
+  base::Value child_dict_list(base::Value::Type::LIST);
   for (id child in children) {
-    std::unique_ptr<base::DictionaryValue> child_dict(
-        new base::DictionaryValue);
-    RecursiveBuildAccessibilityTree(child, line_indexer, child_dict.get());
-    child_dict_list->Append(std::move(child_dict));
+    base::Value child_dict(base::Value::Type::DICTIONARY);
+    RecursiveBuildTree(child, line_indexer, &child_dict);
+    child_dict_list.Append(std::move(child_dict));
   }
-  dict->Set(kChildrenDictAttr, std::move(child_dict_list));
+  dict->SetPath(kChildrenDictAttr, std::move(child_dict_list));
 }
 
 void AccessibilityTreeFormatterMac::AddProperties(

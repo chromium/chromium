@@ -86,11 +86,10 @@ class AccessibilityTreeFormatterAndroid
   std::unique_ptr<base::DictionaryValue> BuildAccessibilityTree(
       BrowserAccessibility* root) override;
 
-  std::unique_ptr<base::DictionaryValue> BuildAccessibilityTreeForWindow(
-      gfx::AcceleratedWidget widget) override;
+  base::Value BuildTreeForWindow(gfx::AcceleratedWidget widget) const override;
 
-  std::unique_ptr<base::DictionaryValue> BuildAccessibilityTreeForSelector(
-      const AXTreeSelector& selector) override;
+  base::Value BuildTreeForSelector(
+      const AXTreeSelector& selector) const override;
 
   void AddDefaultFilters(
       std::vector<AXPropertyFilter>* property_filters) override;
@@ -137,18 +136,16 @@ AccessibilityTreeFormatterAndroid::BuildAccessibilityTree(
   return dict;
 }
 
-std::unique_ptr<base::DictionaryValue>
-AccessibilityTreeFormatterAndroid::BuildAccessibilityTreeForWindow(
-    gfx::AcceleratedWidget widget) {
+base::Value AccessibilityTreeFormatterAndroid::BuildTreeForWindow(
+    gfx::AcceleratedWidget widget) const {
   NOTREACHED();
-  return nullptr;
+  return base::Value(base::Value::Type::DICTIONARY);
 }
 
-std::unique_ptr<base::DictionaryValue>
-AccessibilityTreeFormatterAndroid::BuildAccessibilityTreeForSelector(
-    const AXTreeSelector& selector) {
+base::Value AccessibilityTreeFormatterAndroid::BuildTreeForSelector(
+    const AXTreeSelector& selector) const {
   NOTREACHED();
-  return nullptr;
+  return base::Value(base::Value::Type::DICTIONARY);
 }
 
 void AccessibilityTreeFormatterAndroid::AddDefaultFilters(

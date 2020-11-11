@@ -214,18 +214,16 @@ AccessibilityTreeFormatterBlink::BuildAccessibilityTree(
   return dict;
 }
 
-std::unique_ptr<base::DictionaryValue>
-AccessibilityTreeFormatterBlink::BuildAccessibilityTreeForWindow(
-    gfx::AcceleratedWidget widget) {
+base::Value AccessibilityTreeFormatterBlink::BuildTreeForWindow(
+    gfx::AcceleratedWidget widget) const {
   NOTREACHED();
-  return nullptr;
+  return base::Value(base::Value::Type::DICTIONARY);
 }
 
-std::unique_ptr<base::DictionaryValue>
-AccessibilityTreeFormatterBlink::BuildAccessibilityTreeForSelector(
-    const AXTreeSelector& selector) {
+base::Value AccessibilityTreeFormatterBlink::BuildTreeForSelector(
+    const AXTreeSelector& selector) const {
   NOTREACHED();
-  return nullptr;
+  return base::Value(base::Value::Type::DICTIONARY);
 }
 
 void AccessibilityTreeFormatterBlink::RecursiveBuildAccessibilityTree(

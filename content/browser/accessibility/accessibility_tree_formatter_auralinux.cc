@@ -22,11 +22,11 @@
 #include "content/browser/accessibility/browser_accessibility_auralinux.h"
 #include "ui/accessibility/platform/ax_platform_node_auralinux.h"
 
-#define CHECK_ATSPI_ERROR(error)  \
-  if (error) {                    \
-    LOG(ERROR) << error->message; \
-    g_clear_error(&error);        \
-    return nullptr;               \
+#define CHECK_ATSPI_ERROR(error)                       \
+  if (error) {                                         \
+    LOG(ERROR) << error->message;                      \
+    g_clear_error(&error);                             \
+    return base::Value(base::Value::Type::DICTIONARY); \
   }
 
 namespace content {
@@ -44,19 +44,16 @@ class AccessibilityTreeFormatterAuraLinux
 
   std::unique_ptr<base::DictionaryValue> BuildAccessibilityTree(
       BrowserAccessibility* root) override;
-  std::unique_ptr<base::DictionaryValue> BuildAccessibilityTreeForWindow(
-      gfx::AcceleratedWidget hwnd) override;
-  std::unique_ptr<base::DictionaryValue> BuildAccessibilityTreeForSelector(
-      const AXTreeSelector& selector) override;
-  std::unique_ptr<base::DictionaryValue> BuildAccessibilityTreeWithNode(
-      AtspiAccessible* node);
+  base::Value BuildTreeForWindow(gfx::AcceleratedWidget hwnd) const override;
+  base::Value BuildTreeForSelector(
+      const AXTreeSelector& selector) const override;
 
   void RecursiveBuildAccessibilityTree(AtspiAccessible* node,
-                                       base::DictionaryValue* dict);
+                                       base::DictionaryValue* dict) const;
   void RecursiveBuildAccessibilityTree(AtkObject*, base::DictionaryValue*);
 
   void AddProperties(AtkObject*, base::DictionaryValue*);
-  void AddProperties(AtspiAccessible*, base::DictionaryValue*);
+  void AddProperties(AtspiAccessible*, base::DictionaryValue*) const;
 
   void AddTextProperties(AtkText* atk_text, base::DictionaryValue* dict);
   void AddActionProperties(AtkObject* atk_object, base::DictionaryValue* dict);
@@ -85,9 +82,8 @@ AccessibilityTreeFormatterAuraLinux::AccessibilityTreeFormatterAuraLinux() {}
 
 AccessibilityTreeFormatterAuraLinux::~AccessibilityTreeFormatterAuraLinux() {}
 
-std::unique_ptr<base::DictionaryValue>
-AccessibilityTreeFormatterAuraLinux::BuildAccessibilityTreeForSelector(
-    const AXTreeSelector& selector) {
+base::Value AccessibilityTreeFormatterAuraLinux::BuildTreeForSelector(
+    const AXTreeSelector& selector) const {
   // AT-SPI2 always expects the first parameter to this call to be zero.
   AtspiAccessible* desktop = atspi_get_desktop(0);
   CHECK(desktop);
@@ -111,7 +107,12 @@ AccessibilityTreeFormatterAuraLinux::BuildAccessibilityTreeForSelector(
   }
 
   if (matched_children.size() == 1) {
-    return BuildAccessibilityTreeWithNode(matched_children[0].second);
+    AtspiAccessible* node = matched_children[0].second;
+    CHECK(node);
+
+    base::DictionaryValue dict;
+    RecursiveBuildAccessibilityTree(node, &dict);
+    return std::move(dict);
   }
 
   if (matched_children.size()) {
@@ -122,7 +123,7 @@ AccessibilityTreeFormatterAuraLinux::BuildAccessibilityTreeForSelector(
     }
   }
 
-  return nullptr;
+  return base::Value(base::Value::Type::DICTIONARY);
 }
 
 std::unique_ptr<base::DictionaryValue>
@@ -142,9 +143,8 @@ AccessibilityTreeFormatterAuraLinux::BuildAccessibilityTree(
   return dict;
 }
 
-std::unique_ptr<base::DictionaryValue>
-AccessibilityTreeFormatterAuraLinux::BuildAccessibilityTreeForWindow(
-    gfx::AcceleratedWidget pid) {
+base::Value AccessibilityTreeFormatterAuraLinux::BuildTreeForWindow(
+    gfx::AcceleratedWidget pid) const {
   AtspiAccessible* desktop = atspi_get_desktop(0);
   CHECK(desktop);
 
@@ -161,24 +161,13 @@ AccessibilityTreeFormatterAuraLinux::BuildAccessibilityTreeForWindow(
     CHECK_ATSPI_ERROR(error)
 
     if (pid == application_pid) {
-      auto dictionary_value = std::make_unique<base::DictionaryValue>();
-      RecursiveBuildAccessibilityTree(child, dictionary_value.get());
-      return dictionary_value;
+      base::DictionaryValue dictionary_value;
+      RecursiveBuildAccessibilityTree(child, &dictionary_value);
+      return std::move(dictionary_value);
     }
   }
 
-  return nullptr;
-}
-
-std::unique_ptr<base::DictionaryValue>
-AccessibilityTreeFormatterAuraLinux::BuildAccessibilityTreeWithNode(
-    AtspiAccessible* node) {
-  CHECK(node);
-
-  std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue);
-  RecursiveBuildAccessibilityTree(node, dict.get());
-
-  return dict;
+  return base::Value(base::Value::Type::DICTIONARY);
 }
 
 void AccessibilityTreeFormatterAuraLinux::RecursiveBuildAccessibilityTree(
@@ -209,7 +198,7 @@ void AccessibilityTreeFormatterAuraLinux::RecursiveBuildAccessibilityTree(
 
 void AccessibilityTreeFormatterAuraLinux::RecursiveBuildAccessibilityTree(
     AtspiAccessible* node,
-    base::DictionaryValue* dict) {
+    base::DictionaryValue* dict) const {
   AddProperties(node, dict);
 
   GError* error = nullptr;
@@ -520,7 +509,7 @@ void AccessibilityTreeFormatterAuraLinux::AddProperties(
 
 void AccessibilityTreeFormatterAuraLinux::AddProperties(
     AtspiAccessible* node,
-    base::DictionaryValue* dict) {
+    base::DictionaryValue* dict) const {
   GError* error = nullptr;
   char* role_name = atspi_accessible_get_role_name(node, &error);
   if (!error)

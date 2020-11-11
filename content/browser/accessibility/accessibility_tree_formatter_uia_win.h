@@ -33,10 +33,9 @@ class AccessibilityTreeFormatterUia : public AccessibilityTreeFormatterBase {
       std::vector<AXPropertyFilter>* property_filters) override;
   std::unique_ptr<base::DictionaryValue> BuildAccessibilityTree(
       BrowserAccessibility* start) override;
-  std::unique_ptr<base::DictionaryValue> BuildAccessibilityTreeForWindow(
-      gfx::AcceleratedWidget hwnd) override;
-  std::unique_ptr<base::DictionaryValue> BuildAccessibilityTreeForSelector(
-      const AXTreeSelector& selector) override;
+  base::Value BuildTreeForWindow(gfx::AcceleratedWidget hwnd) const override;
+  base::Value BuildTreeForSelector(
+      const AXTreeSelector& selector) const override;
 
  private:
   static const long properties_[];
@@ -45,53 +44,55 @@ class AccessibilityTreeFormatterUia : public AccessibilityTreeFormatterBase {
   void RecursiveBuildAccessibilityTree(IUIAutomationElement* node,
                                        int root_x,
                                        int root_y,
-                                       base::DictionaryValue* dict);
+                                       base::DictionaryValue* dict) const;
   void BuildCacheRequests();
   void AddProperties(IUIAutomationElement* node,
                      int root_x,
                      int root_y,
-                     base::DictionaryValue* dict);
+                     base::DictionaryValue* dict) const;
   void AddExpandCollapseProperties(IUIAutomationElement* node,
-                                   base::DictionaryValue* dict);
+                                   base::DictionaryValue* dict) const;
   void AddGridProperties(IUIAutomationElement* node,
-                         base::DictionaryValue* dict);
+                         base::DictionaryValue* dict) const;
   void AddGridItemProperties(IUIAutomationElement* node,
-                             base::DictionaryValue* dict);
+                             base::DictionaryValue* dict) const;
   void AddRangeValueProperties(IUIAutomationElement* node,
-                               base::DictionaryValue* dict);
+                               base::DictionaryValue* dict) const;
   void AddScrollProperties(IUIAutomationElement* node,
-                           base::DictionaryValue* dict);
+                           base::DictionaryValue* dict) const;
   void AddSelectionProperties(IUIAutomationElement* node,
-                              base::DictionaryValue* dict);
+                              base::DictionaryValue* dict) const;
   void AddSelectionItemProperties(IUIAutomationElement* node,
-                                  base::DictionaryValue* dict);
+                                  base::DictionaryValue* dict) const;
   void AddTableProperties(IUIAutomationElement* node,
-                          base::DictionaryValue* dict);
+                          base::DictionaryValue* dict) const;
   void AddToggleProperties(IUIAutomationElement* node,
-                           base::DictionaryValue* dict);
+                           base::DictionaryValue* dict) const;
   void AddValueProperties(IUIAutomationElement* node,
-                          base::DictionaryValue* dict);
+                          base::DictionaryValue* dict) const;
   void AddWindowProperties(IUIAutomationElement* node,
-                           base::DictionaryValue* dict);
+                           base::DictionaryValue* dict) const;
   void WriteProperty(long propertyId,
                      const base::win::ScopedVariant& var,
                      int root_x,
                      int root_y,
-                     base::DictionaryValue* dict);
+                     base::DictionaryValue* dict) const;
   // UIA enums have type I4, print formatted string for these when possible
-  void WriteI4Property(long propertyId, long lval, base::DictionaryValue* dict);
+  void WriteI4Property(long propertyId,
+                       long lval,
+                       base::DictionaryValue* dict) const;
   void WriteUnknownProperty(long propertyId,
                             IUnknown* unk,
-                            base::DictionaryValue* dict);
+                            base::DictionaryValue* dict) const;
   void WriteRectangleProperty(long propertyId,
                               const VARIANT& value,
                               int root_x,
                               int root_y,
-                              base::DictionaryValue* dict);
+                              base::DictionaryValue* dict) const;
   void WriteElementArray(long propertyId,
                          IUIAutomationElementArray* array,
-                         base::DictionaryValue* dict);
-  base::string16 GetNodeName(IUIAutomationElement* node);
+                         base::DictionaryValue* dict) const;
+  base::string16 GetNodeName(IUIAutomationElement* node) const;
   std::string ProcessTreeForOutput(
       const base::DictionaryValue& node,
       base::DictionaryValue* filtered_result = nullptr) override;

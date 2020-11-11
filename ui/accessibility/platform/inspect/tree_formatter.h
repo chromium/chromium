@@ -10,6 +10,7 @@
 #include "ui/gfx/native_widget_types.h"
 
 namespace base {
+class Value;
 class DictionaryValue;
 }
 
@@ -46,13 +47,12 @@ class AX_EXPORT AXTreeFormatter {
                                  const base::DictionaryValue& dict);
 
   // Build an accessibility tree for any window.
-  virtual std::unique_ptr<base::DictionaryValue>
-  BuildAccessibilityTreeForWindow(gfx::AcceleratedWidget widget) = 0;
+  virtual base::Value BuildTreeForWindow(
+      gfx::AcceleratedWidget widget) const = 0;
 
   // Build an accessibility tree for an application with a name matching the
   // given pattern.
-  virtual std::unique_ptr<base::DictionaryValue>
-  BuildAccessibilityTreeForSelector(const AXTreeSelector&) = 0;
+  virtual base::Value BuildTreeForSelector(const AXTreeSelector&) const = 0;
 
   // Returns a filtered accessibility tree using the current property and node
   // filters.
