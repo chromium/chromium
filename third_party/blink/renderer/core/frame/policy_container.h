@@ -21,6 +21,8 @@ namespace blink {
 // parses meta tags). The corresponding setters trigger also an update in the
 // corresponding PolicyContainerHost via a mojo IPC.
 class CORE_EXPORT PolicyContainer {
+  USING_FAST_MALLOC(PolicyContainer);
+
  public:
   PolicyContainer() = delete;
   PolicyContainer(
