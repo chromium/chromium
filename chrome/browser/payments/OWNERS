@@ -1,5 +1,2 @@
-# TEAM: payments-dev@chromium.org
-# COMPONENT: UI>Browser>Payments
-
 file://components/payments/OWNERS
 per-file payment_handler*=jinho.bang@samsung.com
