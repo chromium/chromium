@@ -245,7 +245,7 @@ void BluetoothDetailedView::UpdateDeviceScrollList(
     } else {
       scroll_content()->ReorderChildView(bluetooth_discovering_label_, index++);
     }
-  } else {
+  } else if (bluetooth_discovering_label_) {
     scroll_content()->RemoveChildView(bluetooth_discovering_label_);
     bluetooth_discovering_label_ = nullptr;
   }
@@ -273,6 +273,7 @@ const char* BluetoothDetailedView::GetClassName() const {
 
 void BluetoothDetailedView::CreateItems() {
   CreateScrollableList();
+  scroll_content()->SetID(kScrollContentID);
   CreateTitleRow(IDS_ASH_STATUS_TRAY_BLUETOOTH);
 }
 

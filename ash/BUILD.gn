@@ -2149,6 +2149,7 @@ test("ash_unittests") {
     "system/bluetooth/bluetooth_notification_controller_unittest.cc",
     "system/bluetooth/bluetooth_power_controller_unittest.cc",
     "system/bluetooth/tray_bluetooth_helper_legacy_unittest.cc",
+    "system/bluetooth/unified_bluetooth_detailed_view_controller_unittest.cc",
     "system/caps_lock_notification_controller_unittest.cc",
     "system/gesture_education/gesture_education_notification_controller_unittest.cc",
     "system/holding_space/holding_space_tray_unittest.cc",

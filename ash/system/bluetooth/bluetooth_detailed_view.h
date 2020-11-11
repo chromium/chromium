@@ -25,6 +25,9 @@ namespace tray {
 
 class BluetoothDetailedView : public TrayDetailedView {
  public:
+  // ID for scroll content view. Used in testing.
+  static const int kScrollContentID = 1;
+
   BluetoothDetailedView(DetailedViewDelegate* delegate, LoginStatus login);
 
   ~BluetoothDetailedView() override;
