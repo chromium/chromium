@@ -31,6 +31,7 @@ using ProbeCategories = healthd::ProbeCategoryEnum;
 
 constexpr int kBatteryHealthRefreshIntervalInSeconds = 60;
 constexpr int kChargeStatusRefreshIntervalInSeconds = 15;
+constexpr int kCpuUsageRefreshIntervalInSeconds = 1;
 constexpr int kMemoryUsageRefreshIntervalInSeconds = 10;
 constexpr int kMilliampsInAnAmp = 1000;
 
@@ -140,11 +141,44 @@ void PopulateMemoryUsage(const healthd::MemoryInfo& memory_info,
   out_memory_usage.free_memory_kib = memory_info.free_memory_kib;
   out_memory_usage.available_memory_kib = memory_info.available_memory_kib;
 }
+
+CpuUsageData CalculateCpuUsage(
+    const std::vector<healthd::LogicalCpuInfoPtr>& logical_cpu_infos) {
+  CpuUsageData new_usage_data;
+
+  DCHECK_GE(logical_cpu_infos.size(), 1u);
+  for (const auto& logical_cpu_ptr : logical_cpu_infos) {
+    new_usage_data += CpuUsageData(logical_cpu_ptr->user_time_user_hz,
+                                   logical_cpu_ptr->system_time_user_hz,
+                                   logical_cpu_ptr->idle_time_user_hz);
+  }
+
+  return new_usage_data;
+}
+
+void PopulateCpuUsagePercentages(const CpuUsageData& new_usage,
+                                 const CpuUsageData& old_usage,
+                                 mojom::CpuUsage& out_cpu_usage) {
+  CpuUsageData delta = new_usage - old_usage;
+
+  const uint64_t total_delta = delta.GetTotalTime();
+  if (total_delta == 0) {
+    return;
+  }
+
+  // Mulitply by 100 to convert to percentages.
+  out_cpu_usage.percent_usage_user = 100 * delta.GetUserTime() / total_delta;
+  out_cpu_usage.percent_usage_system =
+      100 * delta.GetSystemTime() / total_delta;
+  out_cpu_usage.percent_usage_free = 100 * delta.GetIdleTime() / total_delta;
+}
+
 }  // namespace
 
 SystemDataProvider::SystemDataProvider() {
   battery_charge_status_timer_ = std::make_unique<base::RepeatingTimer>();
   battery_health_timer_ = std::make_unique<base::RepeatingTimer>();
+  cpu_usage_timer_ = std::make_unique<base::RepeatingTimer>();
   memory_usage_timer_ = std::make_unique<base::RepeatingTimer>();
   PowerManagerClient::Get()->AddObserver(this);
 }
@@ -214,6 +248,21 @@ void SystemDataProvider::ObserveMemoryUsage(
   UpdateMemoryUsage();
 }
 
+void SystemDataProvider::ObserveCpuUsage(
+    mojo::PendingRemote<mojom::CpuUsageObserver> observer) {
+  cpu_usage_observers_.Add(std::move(observer));
+  if (!cpu_usage_timer_->IsRunning()) {
+    previous_cpu_usage_data_ = CpuUsageData();
+    cpu_usage_timer_->Start(
+        FROM_HERE,
+        base::TimeDelta::FromSeconds(kCpuUsageRefreshIntervalInSeconds),
+        base::BindRepeating(&SystemDataProvider::UpdateCpuUsage,
+                            base::Unretained(this)));
+  }
+
+  UpdateCpuUsage();
+}
+
 void SystemDataProvider::PowerChanged(
     const power_manager::PowerSupplyProperties& proto) {
   if (battery_charge_status_observers_.empty()) {
@@ -246,6 +295,11 @@ void SystemDataProvider::SetBatteryHealthTimerForTesting(
 void SystemDataProvider::SetMemoryUsageTimerForTesting(
     std::unique_ptr<base::RepeatingTimer> timer) {
   memory_usage_timer_ = std::move(timer);
+}
+
+void SystemDataProvider::SetCpuUsageTimerForTesting(
+    std::unique_ptr<base::RepeatingTimer> timer) {
+  cpu_usage_timer_ = std::move(timer);
 }
 
 void SystemDataProvider::OnSystemInfoProbeResponse(
@@ -348,6 +402,15 @@ void SystemDataProvider::UpdateMemoryUsage() {
                      base::Unretained(this)));
 }
 
+void SystemDataProvider::UpdateCpuUsage() {
+  BindCrosHealthdProbeServiceIfNeccessary();
+
+  probe_service_->ProbeTelemetryInfo(
+      {ProbeCategories::kCpu},
+      base::BindOnce(&SystemDataProvider::OnCpuUsageUpdated,
+                     base::Unretained(this)));
+}
+
 void SystemDataProvider::OnBatteryChargeStatusUpdated(
     const base::Optional<PowerSupplyProperties>& power_supply_properties,
     healthd::TelemetryInfoPtr info_ptr) {
@@ -429,6 +492,55 @@ void SystemDataProvider::OnMemoryUsageUpdated(
   NotifyMemoryUsageObservers(memory_usage);
 }
 
+void SystemDataProvider::OnCpuUsageUpdated(healthd::TelemetryInfoPtr info_ptr) {
+  mojom::CpuUsagePtr cpu_usage = mojom::CpuUsage::New();
+
+  if (info_ptr.is_null()) {
+    LOG(ERROR) << "Null response from croshealthd::ProbeTelemetryInfo.";
+    NotifyCpuUsageObservers(cpu_usage);
+    cpu_usage_timer_.reset();
+    return;
+  }
+
+  const healthd::CpuInfo* cpu_info = GetCpuInfo(*info_ptr);
+  if (cpu_info == nullptr) {
+    LOG(ERROR) << "No CpuInfo in response from cros_healthd.";
+    NotifyCpuUsageObservers(cpu_usage);
+    cpu_usage_timer_.reset();
+    return;
+  }
+
+  ComputeAndPopulateCpuUsage(*cpu_info, *cpu_usage.get());
+
+  NotifyCpuUsageObservers(cpu_usage);
+}
+void SystemDataProvider::ComputeAndPopulateCpuUsage(
+    const healthd::CpuInfo& cpu_info,
+    mojom::CpuUsage& out_cpu_usage) {
+  // For simplicity, assume that all devices have just one physical CPU, made
+  // up of one or more virtual CPUs.
+
+  // TODO(baileyberro): Handle devices with multiple physical CPUs.
+  if (cpu_info.physical_cpus.size() > 1) {
+    LOG(ERROR) << "Device has more than one physical CPU";
+  }
+
+  const healthd::PhysicalCpuInfoPtr& physical_cpu_ptr =
+      cpu_info.physical_cpus[0];
+
+  CpuUsageData new_usage_data =
+      CalculateCpuUsage(physical_cpu_ptr->logical_cpus);
+
+  // We use the first usage data we get back as a baseline. On subsequent
+  // fetches, we use the previous cumulative data to calculate a delta.
+  if (previous_cpu_usage_data_.IsInitialized()) {
+    PopulateCpuUsagePercentages(new_usage_data, previous_cpu_usage_data_,
+                                out_cpu_usage);
+  }
+
+  previous_cpu_usage_data_ = new_usage_data;
+}
+
 void SystemDataProvider::NotifyBatteryChargeStatusObservers(
     const mojom::BatteryChargeStatusPtr& battery_charge_status) {
   for (auto& observer : battery_charge_status_observers_) {
@@ -447,6 +559,13 @@ void SystemDataProvider::NotifyMemoryUsageObservers(
     const mojom::MemoryUsagePtr& memory_usage) {
   for (auto& observer : memory_usage_observers_) {
     observer->OnMemoryUsageUpdated(memory_usage.Clone());
+  }
+}
+
+void SystemDataProvider::NotifyCpuUsageObservers(
+    const mojom::CpuUsagePtr& cpu_usage) {
+  for (auto& observer : cpu_usage_observers_) {
+    observer->OnCpuUsageUpdated(cpu_usage.Clone());
   }
 }
 
