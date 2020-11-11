@@ -562,6 +562,13 @@
         return pending(caller, 'Waiting for <webview> content.');
       }
     });
+
+    // Check metadata is loaded correctly.
+    const sizeText = await getQuickViewMetadataBoxField(appId, 'Size');
+    chrome.test.assertEq(ENTRIES.hello.sizeText, sizeText);
+    const lastModifiedText =
+        await getQuickViewMetadataBoxField(appId, 'Date modified');
+    chrome.test.assertEq(ENTRIES.hello.lastModifiedTime, lastModifiedText);
   };
 
   /**

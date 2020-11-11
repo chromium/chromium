@@ -293,6 +293,9 @@ class SingleEntryPropertiesGetterForDocumentsProvider {
     properties_->can_rename = std::make_unique<bool>(metadata.supports_rename);
     properties_->can_add_children =
         std::make_unique<bool>(metadata.dir_supports_create);
+    properties_->modification_time =
+        std::make_unique<double>(metadata.last_modified.ToJsTimeIgnoringNull());
+    properties_->size = std::make_unique<double>(metadata.size);
     CompleteGetEntryProperties(base::File::FILE_OK);
   }
 

@@ -99,10 +99,13 @@ class MultiMetadataProvider extends MetadataProvider {
           volumeInfo &&
           volumeInfo.volumeType ===
               VolumeManagerCommon.VolumeType.DOCUMENTS_PROVIDER) {
-        // We need to discard content requests when using a documents provider
-        // since the content sniffing code can't resolve the file path in the
-        // MediaGallery API. See crbug.com/942417
-        addRequests(fileSystemRequests, fileSystemPropertyNames);
+        // When using a documents provider, we need to discard:
+        // - contentRequests: since the content sniffing code
+        //   can't resolve the file path in the MediaGallery API. See
+        //   crbug.com/942417
+        // - fileSystemRequests: because it does not correctly handle unknown
+        //   file size, which DocumentsProvider files may report (all filesystem
+        //   request fields are retrieved using external requests instead).
         addRequests(
             externalRequests,
             MultiMetadataProvider.DOCUMENTS_PROVIDER_EXTERNAL_PROPERTY_NAMES);
@@ -190,4 +193,6 @@ MultiMetadataProvider.DOCUMENTS_PROVIDER_EXTERNAL_PROPERTY_NAMES = [
   'canDelete',
   'canRename',
   'canAddChildren',
+  'modificationTime',
+  'size',
 ];

@@ -1348,6 +1348,8 @@ TEST_F(ArcDocumentsProviderRootTest, GetMetadataNonDeletable) {
             EXPECT_TRUE(metadata.supports_rename);
             EXPECT_TRUE(metadata.dir_supports_create);
             EXPECT_TRUE(metadata.supports_thumbnail);
+            EXPECT_EQ(metadata.size, 3);
+            EXPECT_EQ(metadata.last_modified, base::Time::FromJavaTime(45));
           },
           &run_loop));
   run_loop.Run();
@@ -1366,6 +1368,8 @@ TEST_F(ArcDocumentsProviderRootTest, GetMetadataNonRenamable) {
             EXPECT_FALSE(metadata.supports_rename);
             EXPECT_TRUE(metadata.dir_supports_create);
             EXPECT_TRUE(metadata.supports_thumbnail);
+            EXPECT_EQ(metadata.size, 3);
+            EXPECT_EQ(metadata.last_modified, base::Time::FromJavaTime(46));
           },
           &run_loop));
   run_loop.Run();
@@ -1384,6 +1388,8 @@ TEST_F(ArcDocumentsProviderRootTest, GetMetadataReadOnlyDirectory) {
             EXPECT_FALSE(metadata.supports_rename);
             EXPECT_FALSE(metadata.dir_supports_create);
             EXPECT_FALSE(metadata.supports_thumbnail);
+            EXPECT_EQ(metadata.size, -1);
+            EXPECT_EQ(metadata.last_modified, base::Time::FromJavaTime(56));
           },
           &run_loop));
   run_loop.Run();
@@ -1402,6 +1408,8 @@ TEST_F(ArcDocumentsProviderRootTest, GetMetadataNonExist) {
             EXPECT_FALSE(metadata.supports_rename);
             EXPECT_FALSE(metadata.dir_supports_create);
             EXPECT_FALSE(metadata.supports_thumbnail);
+            EXPECT_EQ(metadata.size, 0);
+            EXPECT_EQ(metadata.last_modified, base::Time{});
           },
           &run_loop));
   run_loop.Run();

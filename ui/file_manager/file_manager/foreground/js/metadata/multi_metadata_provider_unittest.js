@@ -162,21 +162,14 @@ function testMultiMetadataProviderExternalAndContentProperty(callback) {
 }
 
 /**
- * Tests that a valid property in FileSystemMetadataProvider response (e.g.
- * 'size') for a documents-provider file is not cleared by
- * ExternalMetadataProvider response which can have zero-filled value (0, null,
- * '', etc...) with the same property name.
+ * Tests that we only use ExternalMetadataProvider for a DocumentsProvider file.
  */
 function testMultiMetadataProviderFileSystemAndExternalForDP(callback) {
   const model = new MultiMetadataProvider(
       /** @type {!FileSystemMetadataProvider} */ ({
         get: function(requests) {
-          assertEquals(1, requests.length);
-          assertEquals('filesystem://D', requests[0].entry.toURL());
-          assertArrayEquals(['size'], requests[0].names);
-          return Promise.resolve([
-            {size: 110},
-          ]);
+          assertEquals(0, requests.length);
+          return Promise.resolve([]);
         }
       }),
       /** @type {!ExternalMetadataProvider} */ ({
@@ -184,14 +177,19 @@ function testMultiMetadataProviderFileSystemAndExternalForDP(callback) {
           assertEquals(1, requests.length);
           assertEquals('filesystem://D', requests[0].entry.toURL());
           assertArrayEquals(
-              ['canCopy', 'canDelete', 'canRename', 'canAddChildren'],
+              [
+                'canCopy', 'canDelete', 'canRename', 'canAddChildren',
+                'modificationTime', 'size'
+              ],
               requests[0].names);
           return Promise.resolve([
             {
               canCopy: true,
               canDelete: true,
               canRename: true,
-              canAddChildren: true
+              canAddChildren: true,
+              size: 110,
+              modificationTime: new Date(2015, 1, 2),
             },
           ]);
         }
@@ -216,6 +214,9 @@ function testMultiMetadataProviderFileSystemAndExternalForDP(callback) {
           .then(results => {
             assertEquals(1, results.length);
             assertEquals(110, results[0].size);
+            assertEquals(
+                new Date(2015, 1, 2).toString(),
+                results[0].modificationTime.toString());
             assertEquals(true, results[0].canCopy);
             assertEquals(true, results[0].canDelete);
             assertEquals(true, results[0].canRename);

@@ -53,6 +53,14 @@ class ArcDocumentsProviderRoot : public ArcFileSystemOperationRunner::Observer {
     // True if a document will return a valid thumbnail from
     // the DocumentsProvider.openDocumentThumbnail() Android API call.
     bool supports_thumbnail;
+    // Last modified time of the the file, returned in the COLUMN_LAST_MODIFIED
+    // from the DocumentsProvider.queryDocument() and .queryChildDocuments(). If
+    // unknown, it's set to the Unix epoch time.
+    base::Time last_modified;
+    // Size of the file in bytes, returned in the COLUMN_SIZE from the
+    // DocumentsProvider.queryDocument() and .queryChildDocuments(). If the
+    // size unknown, it's set to -1.
+    int64_t size;
   };
 
   // TODO(crbug.com/755451): Use OnceCallback/RepeatingCallback.
