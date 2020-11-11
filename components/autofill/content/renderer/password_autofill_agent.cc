@@ -570,6 +570,11 @@ void PasswordAutofillAgent::UpdateStateForTextChange(
   }
 }
 
+void PasswordAutofillAgent::TrackAutofilledElement(
+    const blink::WebFormControlElement& element) {
+  autofill_agent_->TrackAutofilledElement(element);
+}
+
 bool PasswordAutofillAgent::FillSuggestion(
     const WebFormControlElement& control_element,
     const base::string16& username,
@@ -640,7 +645,7 @@ void PasswordAutofillAgent::FillField(WebInputElement* input,
   const FieldRendererId input_id(input->UniqueRendererFormControlId());
   field_data_manager_->UpdateFieldDataMap(
       input_id, credential, FieldPropertiesFlags::kAutofilledOnUserTrigger);
-  autofill_agent_->TrackAutofilledElement(*input);
+  TrackAutofilledElement(*input);
 }
 
 void PasswordAutofillAgent::FillPasswordFieldAndSave(

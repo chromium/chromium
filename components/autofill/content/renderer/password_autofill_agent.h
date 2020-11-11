@@ -162,6 +162,9 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
   // shown.
   void UpdateStateForTextChange(const blink::WebInputElement& element);
 
+  // Instructs `autofill_agent_` to track the autofilled `element`.
+  void TrackAutofilledElement(const blink::WebFormControlElement& element);
+
   // Fills the username and password fields of this form with the given values.
   // Returns true if the fields were filled, false otherwise.
   bool FillSuggestion(const blink::WebFormControlElement& control_element,
