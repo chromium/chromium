@@ -9,5 +9,4 @@
     android:background="@drawable/custom_toast_background"
     android:gravity="center"
     android:minHeight="44dp"
-    android:singleLine="true"
     android:textAppearance="@style/TextAppearance.TextSmall.Primary.Dark"/>
