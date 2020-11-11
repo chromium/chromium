@@ -67,9 +67,6 @@ void AppLaunchSplashScreenHandler::DeclareLocalizedValues(
   builder->Add("shortcutInfo",
                l10n_util::GetStringFUTF16(IDS_APP_START_BAILOUT_SHORTCUT_FORMAT,
                                           product_os_name));
-
-  builder->Add("productName",
-               l10n_util::GetStringUTF16(IDS_SHORT_PRODUCT_OS_NAME));
 }
 
 void AppLaunchSplashScreenHandler::Initialize() {

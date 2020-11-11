@@ -1,14 +1,31 @@
-<div id="app-launch-splash" class="step hidden fullscreen" hidden>
-  <div id="splash-content">
-    <div id="splash-title">
-      <div id="splash-header" i18n-content="productName"></div>
-      <div id="splash-subheader"></div>
+<!-- Copyright 2020 The Chromium Authors. All rights reserved.
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file. -->
+
+<link rel="import" href="chrome://resources/html/polymer.html">
+<link rel="import" href="chrome://resources/html/action_link.html">
+
+<link rel="import" href="/components/throbber_notice.html">
+
+<dom-module id="app-launch-splash-element">
+  <template>
+    <link rel="stylesheet" href="screen_app_launch_splash.css">
+    <div id="content">
+      <div id="header">
+        <div id="appName">[[appName]]</div>
+        <div id="appUrl">[[appUrl]]</div>
+      </div>
+      <div id="launchText">[[launchText]]</div>
+      <div id="configNetworkContainer" class="faded">
+        <a id="configNetwork" class="oobe-local-link" is="action-link" on-click='onConfigNetwork_'>
+          [[i18nDynamic(locale, 'configureNetwork')]]
+        </a>
+      </div>
+      <throbber-notice>
+      </throbber-notice>
     </div>
-    <div id="splash-launch-text" i18n-content="appStartMessage"></div>
-    <div id="splash-config-network-container" class="faded">
-      <a id="splash-config-network" i18n-content="configureNetwork" href="javascript:void(0)"></a>
-    </div>
-    <div id="splash-spinner" class="spinner"></div>
-  </div>
-  <p id="splash-shortcut-info" i18n-content="shortcutInfo"></p>
-</div>
+    <p id="shortcutInfo">
+      [[i18nDynamic(locale, 'shortcutInfo')]]
+    </p>
+  </template>
+</dom-module>

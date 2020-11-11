@@ -23,7 +23,6 @@
 // <include src="oobe_screen_autolaunch.js">
 // <include src="oobe_select.js">
 
-// <include src="screen_app_launch_splash.js">
 // <include src="screen_arc_terms_of_service.js">
 // <include src="screen_error_message.js">
 // <include src="screen_discover.js">
@@ -47,7 +46,6 @@ cr.define('cr.ui.Oobe', function() {
       login.AccountPickerScreen.register();
       login.ErrorMessageScreen.register();
       login.ArcTermsOfServiceScreen.register();
-      login.AppLaunchSplashScreen.register();
       login.DiscoverScreen.register();
       login.MultiDeviceSetupScreen.register();
 

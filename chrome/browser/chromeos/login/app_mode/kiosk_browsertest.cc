@@ -135,6 +135,8 @@ namespace chromeos {
 
 namespace {
 
+const test::UIPath kConfigNetwork = {"app-launch-splash", "configNetwork"};
+
 // This is a simple test app that creates an app window and immediately closes
 // it again. Webstore data json is in
 //   chrome/test/data/chromeos/app_mode/webstore/inlineinstall/
@@ -747,7 +749,7 @@ class KioskTest : public OobeBaseTest {
     WaitForAppLaunchNetworkTimeout();
 
     // Configure network link should be visible.
-    test::OobeJS().ExpectVisible("splash-config-network");
+    test::OobeJS().ExpectVisiblePath(kConfigNetwork);
 
     // Set up fake user manager with an owner for the test.
     LoginDisplayHost::default_host()->GetOobeUI()->ShowOobeUI(false);
@@ -1076,7 +1078,7 @@ IN_PROC_BROWSER_TEST_F(KioskTest, LaunchAppNetworkDownConfigureNotAllowed) {
   WaitForAppLaunchNetworkTimeout();
 
   // Configure network link should not be visible.
-  test::OobeJS().ExpectHidden("splash-config-network");
+  test::OobeJS().ExpectHiddenPath(kConfigNetwork);
 
   // Network becomes online and app launch is resumed.
   SimulateNetworkOnline();
