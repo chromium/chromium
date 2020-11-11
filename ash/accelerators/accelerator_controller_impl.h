@@ -358,4 +358,4 @@ class ASH_EXPORT AcceleratorControllerImpl : public ui::AcceleratorTarget,
 
 }  // namespace ash
 
-#endif  // ASH_ACCELERATOR_CONTROLLER_IMPL_H_
+#endif  // ASH_ACCELERATORS_ACCELERATOR_CONTROLLER_IMPL_H_

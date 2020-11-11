@@ -28,10 +28,10 @@ void SpokenFeedbackToggler::SetEnabled(bool enabled) {
 
 // static
 std::unique_ptr<ui::EventHandler> SpokenFeedbackToggler::CreateHandler() {
+  // Uses `new` due to private constructor.
   std::unique_ptr<KeyHoldDetector::Delegate> delegate(
       new SpokenFeedbackToggler());
-  return std::unique_ptr<ui::EventHandler>(
-      new KeyHoldDetector(std::move(delegate)));
+  return std::make_unique<KeyHoldDetector>(std::move(delegate));
 }
 
 bool SpokenFeedbackToggler::ShouldProcessEvent(

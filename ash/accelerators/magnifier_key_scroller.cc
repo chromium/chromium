@@ -35,10 +35,10 @@ void MagnifierKeyScroller::SetEnabled(bool enabled) {
 
 // static
 std::unique_ptr<ui::EventHandler> MagnifierKeyScroller::CreateHandler() {
+  // Uses `new` due to private constructor.
   std::unique_ptr<KeyHoldDetector::Delegate> delegate(
       new MagnifierKeyScroller());
-  return std::unique_ptr<ui::EventHandler>(
-      new KeyHoldDetector(std::move(delegate)));
+  return std::make_unique<KeyHoldDetector>(std::move(delegate));
 }
 
 bool MagnifierKeyScroller::ShouldProcessEvent(const ui::KeyEvent* event) const {

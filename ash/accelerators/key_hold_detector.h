@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_ACCELERATOR_KEY_HOLD_DETECTOR_H_
-#define ASH_ACCELERATOR_KEY_HOLD_DETECTOR_H_
+#ifndef ASH_ACCELERATORS_KEY_HOLD_DETECTOR_H_
+#define ASH_ACCELERATORS_KEY_HOLD_DETECTOR_H_
 
 #include <memory>
 
@@ -69,4 +69,4 @@ class ASH_EXPORT KeyHoldDetector : public ui::EventHandler {
 
 }  // namespace ash
 
-#endif  // ASH_ACCELERATOR_KEY_HOLD_DETECTOR_H_
+#endif  // ASH_ACCELERATORS_KEY_HOLD_DETECTOR_H_
