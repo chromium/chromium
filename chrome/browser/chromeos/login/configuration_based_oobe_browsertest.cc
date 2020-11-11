@@ -46,10 +46,6 @@
 using testing::_;
 using testing::Invoke;
 
-// Disabled due to flakiness: https://crbug.com/997685.
-#define MAYBE_TestDemoModeOfflineNetwork DISABLED_TestDemoModeOfflineNetwork
-#define MAYBE_TestDemoModeAcceptEula DISABLED_TestDemoModeAcceptEula
-
 namespace chromeos {
 
 // This test case will use
@@ -233,8 +229,7 @@ IN_PROC_BROWSER_TEST_F(OobeConfigurationTest, TestDemoModePreferences) {
 
 // Check that configuration lets correctly use offline demo mode on network
 // screen.
-IN_PROC_BROWSER_TEST_F(OobeConfigurationTest,
-                       MAYBE_TestDemoModeOfflineNetwork) {
+IN_PROC_BROWSER_TEST_F(OobeConfigurationTest, TestDemoModeOfflineNetwork) {
   LoadConfiguration();
   OobeScreenWaiter(DemoPreferencesScreenView::kScreenId).Wait();
   SimulateOfflineEnvironment();
@@ -243,7 +238,7 @@ IN_PROC_BROWSER_TEST_F(OobeConfigurationTest,
 
 // Check that configuration lets correctly use offline demo mode on EULA
 // screen.
-IN_PROC_BROWSER_TEST_F(OobeConfigurationTest, MAYBE_TestDemoModeAcceptEula) {
+IN_PROC_BROWSER_TEST_F(OobeConfigurationTest, TestDemoModeAcceptEula) {
   LoadConfiguration();
   OobeScreenWaiter(DemoPreferencesScreenView::kScreenId).Wait();
   SimulateOfflineEnvironment();
