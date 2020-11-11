@@ -2390,6 +2390,7 @@ const char kWebOtpBackendDescription[] =
 const char kWebOtpBackendSmsVerification[] =
     "SMS Verification API (requires app-hash)";
 const char kWebOtpBackendUserConsent[] = "User Consent API";
+const char kWebOtpBackendAuto[] = "Automatically select the backend";
 
 const char kWebglDraftExtensionsName[] = "WebGL Draft Extensions";
 const char kWebglDraftExtensionsDescription[] =

@@ -2247,6 +2247,8 @@ const FeatureEntry::Choice kWebOtpBackendChoices[] = {
      switches::kWebOtpBackendSmsVerification},
     {flag_descriptions::kWebOtpBackendUserConsent, switches::kWebOtpBackend,
      switches::kWebOtpBackendUserConsent},
+    {flag_descriptions::kWebOtpBackendAuto, switches::kWebOtpBackend,
+     switches::kWebOtpBackendAuto},
 };
 
 const FeatureEntry::Choice kQueryTilesCountryChoices[] = {

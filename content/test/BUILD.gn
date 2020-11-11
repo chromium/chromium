@@ -2414,8 +2414,7 @@ test("content_unittests") {
       "../browser/font_unique_name_lookup/font_unique_name_lookup_unittest.cc",
       "../browser/media/capture/screen_capture_device_android_unittest.cc",
       "../browser/renderer_host/render_widget_host_view_android_unittest.cc",
-      "../browser/sms/sms_provider_gms_user_consent_unittest.cc",
-      "../browser/sms/sms_provider_gms_verification_unittest.cc",
+      "../browser/sms/sms_provider_gms_unittest.cc",
       "../renderer/java/gin_java_bridge_value_converter_unittest.cc",
       "../renderer/media/android/stream_texture_proxy_unittest.cc",
       "../renderer/media/android/stream_texture_wrapper_impl_unittest.cc",
@@ -2597,8 +2596,7 @@ group("test_buildbucket_api_gpu_use_cases") {
 
 if (is_android) {
   content_java_sources_needing_jni = [
-    "//content/public/android/javatests/src/org/chromium/content/browser/sms/SmsVerificationFakes.java",
-    "//content/public/android/javatests/src/org/chromium/content/browser/sms/SmsUserConsentFakes.java",
+    "//content/public/android/javatests/src/org/chromium/content/browser/sms/SmsProviderFakes.java",
     "//content/public/android/javatests/src/org/chromium/content/browser/fakes/TestViewAndroidDelegate.java",
   ]
 

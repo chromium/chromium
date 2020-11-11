@@ -223,6 +223,7 @@ CONTENT_EXPORT extern const char kZygoteProcess[];
 CONTENT_EXPORT extern const char kWebOtpBackend[];
 CONTENT_EXPORT extern const char kWebOtpBackendSmsVerification[];
 CONTENT_EXPORT extern const char kWebOtpBackendUserConsent[];
+CONTENT_EXPORT extern const char kWebOtpBackendAuto[];
 CONTENT_EXPORT extern const char kDisableWebRtcEncryption[];
 CONTENT_EXPORT extern const char kDisableWebRtcHWDecoding[];
 CONTENT_EXPORT extern const char kDisableWebRtcHWEncoding[];

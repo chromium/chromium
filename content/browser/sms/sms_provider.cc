@@ -12,8 +12,7 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 #if defined(OS_ANDROID)
-#include "content/browser/sms/sms_provider_gms_user_consent.h"
-#include "content/browser/sms/sms_provider_gms_verification.h"
+#include "content/browser/sms/sms_provider_gms.h"
 #endif
 
 namespace content {
@@ -24,12 +23,7 @@ SmsProvider::~SmsProvider() = default;
 // static
 std::unique_ptr<SmsProvider> SmsProvider::Create() {
 #if defined(OS_ANDROID)
-  if (base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          switches::kWebOtpBackend) ==
-      switches::kWebOtpBackendSmsVerification) {
-    return std::make_unique<SmsProviderGmsVerification>();
-  }
-  return std::make_unique<SmsProviderGmsUserConsent>();
+  return std::make_unique<SmsProviderGms>();
 #else
   return nullptr;
 #endif

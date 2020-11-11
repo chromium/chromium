@@ -11,8 +11,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 
-import androidx.annotation.VisibleForTesting;
-
+import com.google.android.gms.auth.api.phone.SmsCodeBrowserClient;
 import com.google.android.gms.auth.api.phone.SmsCodeRetriever;
 import com.google.android.gms.auth.api.phone.SmsRetriever;
 import com.google.android.gms.auth.api.phone.SmsRetrieverStatusCodes;
@@ -22,57 +21,50 @@ import com.google.android.gms.common.api.ResolvableApiException;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.tasks.Task;
 
-import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNIAdditionalImport;
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
 import org.chromium.ui.base.WindowAndroid;
 
 /**
- * Simple proxy that provides C++ code with an access pathway to the Android
- * SMS Code Browser retriever.
+ * Encapsulates logic to retrieve OTP code via SMS Browser Code API.
  * See also:
  * https://developers.google.com/android/reference/com/google/android/gms/auth/api/phone/SmsCodeBrowserClient
+ *
+ * TODO(majidvp): rename legacy Verification name to more appropriate name (
+ *  e.g., BrowserCode.
  */
-@JNINamespace("content")
-@JNIAdditionalImport(Wrappers.class)
 public class SmsVerificationReceiver extends BroadcastReceiver {
     private static final int CODE_PERMISSION_REQUEST = 1;
     private static final String TAG = "SmsVerification";
     private static final boolean DEBUG = false;
-    private final long mSmsProviderAndroid;
+    private final SmsProviderGms mProvider;
     private boolean mDestroyed;
-    private Wrappers.SmsRetrieverClientWrapper mClient;
     private Wrappers.WebOTPServiceContext mContext;
 
-    private SmsVerificationReceiver(long smsProviderAndroid) {
-        mDestroyed = false;
-        mSmsProviderAndroid = smsProviderAndroid;
+    public SmsVerificationReceiver(SmsProviderGms provider, Wrappers.WebOTPServiceContext context) {
+        if (DEBUG) Log.d(TAG, "Creating SmsVerificationReceiver.");
 
-        mContext = new Wrappers.WebOTPServiceContext(ContextUtils.getApplicationContext());
+        mDestroyed = false;
+        mProvider = provider;
+        mContext = context;
 
         // A broadcast receiver is registered upon the creation of this class which happens when the
-        // SMS Browser Code API is used for the first time since chrome last restarted (which, on
-        // android, happens frequently). The broadcast receiver is fairly lightweight (e.g. it
-        // responds quickly without much computation). If this broadcast receiver becomes more
-        // heavyweight, we should make this registration expire after the SMS message is received.
-        if (DEBUG) Log.d(TAG, "Registering intent filters.");
+        // SMS Retriever API or SMS Browser Code API is used for the first time since chrome last
+        // restarted (which, on android, happens frequently). The broadcast receiver is fairly
+        // lightweight (e.g. it responds quickly without much computation). If this broadcast
+        // receiver becomes more heavyweight, we should make this registration expire after the SMS
+        // message is received.
+        if (DEBUG) Log.i(TAG, "Registering intent filters.");
         IntentFilter filter = new IntentFilter();
         filter.addAction(SmsCodeRetriever.SMS_CODE_RETRIEVED_ACTION);
 
         mContext.registerReceiver(this, filter);
     }
 
-    @CalledByNative
-    private static SmsVerificationReceiver create(long smsProviderAndroid) {
-        if (DEBUG) Log.d(TAG, "Creating SmsVerificationReceiver.");
-        return new SmsVerificationReceiver(smsProviderAndroid);
+    public SmsCodeBrowserClient createClient() {
+        return SmsCodeRetriever.getBrowserClient(mContext);
     }
 
-    @CalledByNative
-    private void destroy() {
+    public void destroy() {
         if (DEBUG) Log.d(TAG, "Destroying SmsVerificationReceiver.");
         mDestroyed = true;
         mContext.unregisterReceiver(this);
@@ -107,23 +99,23 @@ public class SmsVerificationReceiver extends BroadcastReceiver {
             case CommonStatusCodes.SUCCESS:
                 String message = intent.getExtras().getString(SmsCodeRetriever.EXTRA_SMS_CODE_LINE);
                 if (DEBUG) Log.d(TAG, "Got message: %s!", message);
-                SmsVerificationReceiverJni.get().onReceive(mSmsProviderAndroid, message);
+                mProvider.onReceive(message);
                 break;
             case CommonStatusCodes.TIMEOUT:
                 if (DEBUG) Log.d(TAG, "Timeout");
-                SmsVerificationReceiverJni.get().onTimeout(mSmsProviderAndroid);
+                mProvider.onTimeout();
                 break;
         }
     }
 
     public void onPermissionDone(WindowAndroid window, int resultCode) {
         if (resultCode == Activity.RESULT_OK) {
-            // We have been granted permission to use the SmsCodeRetriver so
+            // We have been granted permission to use the SmsCoderetriever so
             // restart the process.
             if (DEBUG) Log.d(TAG, "The one-time permission was granted");
             listen(window);
         } else {
-            SmsVerificationReceiverJni.get().onCancel(mSmsProviderAndroid);
+            mProvider.onCancel();
             if (DEBUG) Log.d(TAG, "The one-time permission was rejected");
         }
     }
@@ -136,16 +128,16 @@ public class SmsVerificationReceiver extends BroadcastReceiver {
         if (DEBUG) Log.d(TAG, "Task failed. Attempting recovery.", e);
         ApiException exception = (ApiException) e;
         if (exception.getStatusCode() == SmsRetrieverStatusCodes.API_NOT_CONNECTED) {
-            // TODO(majidvp): fallback to the other flow. http://crbug.com/1141024
+            mProvider.onMethodNotAvailable();
             Log.d(TAG, "update GMS services.");
         } else if (exception.getStatusCode() == SmsRetrieverStatusCodes.PLATFORM_NOT_SUPPORTED) {
-            // TODO(majidvp): fallback to the other flow. http://crbug.com/1141024
+            mProvider.onMethodNotAvailable();
             Log.d(TAG, "old android platform.");
         } else if (exception.getStatusCode() == SmsRetrieverStatusCodes.API_NOT_AVAILABLE) {
-            // TODO(majidvp): fallback to the other flow. http://crbug.com/1141024
+            mProvider.onMethodNotAvailable();
             Log.d(TAG, "not the default browser.");
         } else if (exception.getStatusCode() == SmsRetrieverStatusCodes.USER_PERMISSION_REQUIRED) {
-            SmsVerificationReceiverJni.get().onCancel(mSmsProviderAndroid);
+            mProvider.onCancel();
             Log.d(TAG, "user permission is required.");
         } else if (exception.getStatusCode() == CommonStatusCodes.RESOLUTION_REQUIRED) {
             if (exception instanceof ResolvableApiException) {
@@ -173,37 +165,12 @@ public class SmsVerificationReceiver extends BroadcastReceiver {
         }
     }
 
-    @CalledByNative
-    private void listen(WindowAndroid window) {
-        Wrappers.SmsRetrieverClientWrapper client = getClient();
+    public void listen(WindowAndroid window) {
+        Wrappers.SmsRetrieverClientWrapper client = mProvider.getClient();
         Task<Void> task = client.startSmsCodeBrowserRetriever();
 
         task.addOnFailureListener((Exception e) -> { this.onRetrieverTaskFailure(window, e); });
 
         if (DEBUG) Log.d(TAG, "Installed task");
-    }
-
-    private Wrappers.SmsRetrieverClientWrapper getClient() {
-        if (mClient != null) {
-            return mClient;
-        }
-        mClient = new Wrappers.SmsRetrieverClientWrapper(
-                SmsRetriever.getClient(mContext), SmsCodeRetriever.getBrowserClient(mContext));
-
-        return mClient;
-    }
-
-    @VisibleForTesting
-    public void setClientForTesting(Wrappers.SmsRetrieverClientWrapper client) {
-        assert mClient == null;
-        mClient = client;
-        mClient.setContext(mContext);
-    }
-
-    @NativeMethods
-    interface Natives {
-        void onReceive(long nativeSmsProviderGmsVerification, String sms);
-        void onTimeout(long nativeSmsProviderGmsVerification);
-        void onCancel(long nativeSmsProviderGmsVerification);
     }
 }

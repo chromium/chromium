@@ -1,0 +1,55 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CONTENT_BROWSER_SMS_SMS_PROVIDER_GMS_H_
+#define CONTENT_BROWSER_SMS_SMS_PROVIDER_GMS_H_
+
+#include <utility>
+
+#include "base/android/jni_string.h"
+#include "base/android/scoped_java_ref.h"
+#include "base/macros.h"
+#include "content/browser/sms/sms_provider.h"
+#include "content/common/content_export.h"
+
+namespace content {
+
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.content.browser.sms
+enum class GmsBackend : int {
+  kAuto = 0,
+  kUserConsent = 1,
+  kVerification = 2,
+};
+
+class RenderFrameHost;
+
+class CONTENT_EXPORT SmsProviderGms : public SmsProvider {
+ public:
+  SmsProviderGms();
+  ~SmsProviderGms() override;
+
+  void Retrieve(RenderFrameHost* rfh) override;
+
+  // Implements JNI method SmsProviderGms.Natives.onReceive().
+  void OnReceive(JNIEnv*, jstring message);
+
+  // Implements JNI method SmsProviderGms.Natives.onTimeout().
+  void OnTimeout(JNIEnv* env);
+
+  // Implements JNI method SmsProviderGms.Natives.onCancel().
+  void OnCancel(JNIEnv* env);
+
+  void SetClientAndWindowForTesting(
+      const base::android::JavaRef<jobject>& j_fake_client,
+      const base::android::JavaRef<jobject>& j_window);
+
+ private:
+  base::android::ScopedJavaGlobalRef<jobject> j_sms_provider_;
+
+  DISALLOW_COPY_AND_ASSIGN(SmsProviderGms);
+};
+
+}  // namespace content
+
+#endif  // CONTENT_BROWSER_SMS_SMS_PROVIDER_GMS_H_

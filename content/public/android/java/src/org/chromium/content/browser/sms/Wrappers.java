@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 
 import com.google.android.gms.auth.api.phone.SmsCodeBrowserClient;
+import com.google.android.gms.auth.api.phone.SmsCodeRetriever;
 import com.google.android.gms.auth.api.phone.SmsRetrieverClient;
 import com.google.android.gms.tasks.Task;
 
@@ -27,11 +28,6 @@ class Wrappers {
         // Used for browser code flow.
         private final SmsCodeBrowserClient mSmsCodeBrowserClient;
         private WebOTPServiceContext mContext;
-
-        public SmsRetrieverClientWrapper(SmsRetrieverClient smsRetrieverClient) {
-            mSmsRetrieverClient = smsRetrieverClient;
-            mSmsCodeBrowserClient = null;
-        }
 
         public SmsRetrieverClientWrapper(
                 SmsRetrieverClient smsRetrieverClient, SmsCodeBrowserClient smsCodeBrowserClient) {
@@ -61,14 +57,19 @@ class Wrappers {
      * registered BroadcastReceiver.
      */
     static class WebOTPServiceContext extends ContextWrapper {
-        private BroadcastReceiver mReceiver;
+        private BroadcastReceiver mVerificationReceiver;
+        private BroadcastReceiver mUserConsentReceiver;
 
         public WebOTPServiceContext(Context context) {
             super(context);
         }
 
-        public BroadcastReceiver getRegisteredReceiver() {
-            return mReceiver;
+        public SmsVerificationReceiver getRegisteredVerificationReceiver() {
+            return (SmsVerificationReceiver) mVerificationReceiver;
+        }
+
+        public SmsUserConsentReceiver getRegisteredUserConsentReceiver() {
+            return (SmsUserConsentReceiver) mUserConsentReceiver;
         }
 
         // ---------------------------------------------------------------------
@@ -76,13 +77,23 @@ class Wrappers {
 
         @Override
         public Intent registerReceiver(BroadcastReceiver receiver, IntentFilter filter) {
-            mReceiver = receiver;
+            if (filter.hasAction(SmsCodeRetriever.SMS_CODE_RETRIEVED_ACTION)) {
+                mVerificationReceiver = receiver;
+            } else {
+                mUserConsentReceiver = receiver;
+            }
+
             return super.registerReceiver(receiver, filter);
         }
 
         @Override
         public void unregisterReceiver(BroadcastReceiver receiver) {
-            mReceiver = null;
+            if (receiver == mVerificationReceiver) {
+                mVerificationReceiver = null;
+            } else {
+                mUserConsentReceiver = null;
+            }
+
             super.unregisterReceiver(receiver);
         }
     }
