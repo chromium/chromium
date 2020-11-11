@@ -1549,6 +1549,23 @@ void ChromeDownloadManagerDelegate::CheckDownloadAllowed(
     bool content_initiated,
     content::CheckDownloadAllowedCallback check_download_allowed_cb) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+#if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_CHROMEOS) || \
+    defined(OS_MAC)
+  // Don't download pdf if it is a file URL, as that might cause an infinite
+  // download loop if Chrome is not the system pdf viewer.
+  if (url.SchemeIsFile() && download_prefs_->ShouldOpenPdfInSystemReader()) {
+    base::FilePath path;
+    net::FileURLToFilePath(url, &path);
+    base::FilePath::StringType extension = path.Extension();
+    if (!extension.empty() && base::FilePath::CompareEqualIgnoreCase(
+                                  extension, FILE_PATH_LITERAL(".pdf"))) {
+      base::ThreadTaskRunnerHandle::Get()->PostTask(
+          FROM_HERE,
+          base::BindOnce(std::move(check_download_allowed_cb), false));
+      return;
+    }
+  }
+#endif
   CanDownloadCallback cb = base::BindOnce(
       &ChromeDownloadManagerDelegate::OnCheckDownloadAllowedComplete,
       weak_ptr_factory_.GetWeakPtr(), std::move(check_download_allowed_cb));
