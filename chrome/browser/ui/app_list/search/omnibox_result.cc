@@ -26,6 +26,7 @@
 #include "components/search_engines/util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/color_palette.h"
+#include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "url/gurl.h"
 #include "url/url_canon.h"
@@ -126,6 +127,34 @@ const gfx::VectorIcon& TypeToVectorIcon(AutocompleteMatchType::Type type) {
   }
   NOTREACHED();
   return ash::kDomainIcon;
+}
+
+// Converts AutocompleteMatchType::Type to an answer vector icon.
+const gfx::VectorIcon& TypeToAnswerIcon(int type) {
+  switch (static_cast<SuggestionAnswer::AnswerType>(type)) {
+    case SuggestionAnswer::ANSWER_TYPE_CURRENCY:
+      return omnibox::kAnswerCurrencyIcon;
+    case SuggestionAnswer::ANSWER_TYPE_DICTIONARY:
+      return omnibox::kAnswerDictionaryIcon;
+    case SuggestionAnswer::ANSWER_TYPE_FINANCE:
+      return omnibox::kAnswerFinanceIcon;
+    case SuggestionAnswer::ANSWER_TYPE_SUNRISE:
+      return omnibox::kAnswerSunriseIcon;
+    case SuggestionAnswer::ANSWER_TYPE_TRANSLATION:
+      return omnibox::kAnswerTranslationIcon;
+    case SuggestionAnswer::ANSWER_TYPE_WHEN_IS:
+      return omnibox::kAnswerWhenIsIcon;
+    default:
+      return omnibox::kAnswerDefaultIcon;
+  }
+}
+
+gfx::ImageSkia CreateAnswerIcon(const gfx::VectorIcon& vector_icon) {
+  const auto& icon = gfx::CreateVectorIcon(vector_icon, SK_ColorWHITE);
+  const int dimension =
+      ash::AppListConfig::instance().search_list_icon_dimension();
+  return gfx::ImageSkiaOperations::CreateImageWithCircleBackground(
+      dimension / 2, gfx::kGoogleBlue600, icon);
 }
 
 base::string16 ImageLineToString16(const SuggestionAnswer::ImageLine& line) {
@@ -266,24 +295,30 @@ GURL OmniboxResult::DestinationURL() const {
 }
 
 void OmniboxResult::UpdateIcon() {
-  BookmarkModel* bookmark_model =
-      BookmarkModelFactory::GetForBrowserContext(profile_);
-  bool is_bookmarked =
-      bookmark_model && bookmark_model->IsBookmarked(match_.destination_url);
+  if (app_list_features::IsOmniboxRichEntitiesEnabled() &&
+      (match_.type == AutocompleteMatchType::CALCULATOR || match_.answer)) {
+    if (match_.type == AutocompleteMatchType::CALCULATOR) {
+      SetIcon(CreateAnswerIcon(omnibox::kCalculatorIcon));
+    } else if (match_.answer) {
+      SetIcon(CreateAnswerIcon(TypeToAnswerIcon(match_.answer->type())));
+    }
+    // TODO(crbug.com/1130372): Download images once their URLs are available
+    // from the backend.
+  } else {
+    BookmarkModel* bookmark_model =
+        BookmarkModelFactory::GetForBrowserContext(profile_);
+    bool is_bookmarked =
+        bookmark_model && bookmark_model->IsBookmarked(match_.destination_url);
 
-  const gfx::VectorIcon& icon =
-      is_bookmarked ? omnibox::kBookmarkIcon : TypeToVectorIcon(match_.type);
-  SetIcon(gfx::CreateVectorIcon(
-      icon, ash::AppListConfig::instance().search_list_icon_dimension(),
-      kListIconColor));
+    const gfx::VectorIcon& icon =
+        is_bookmarked ? omnibox::kBookmarkIcon : TypeToVectorIcon(match_.type);
+    SetIcon(gfx::CreateVectorIcon(
+        icon, ash::AppListConfig::instance().search_list_icon_dimension(),
+        kListIconColor));
+  }
 }
 
 void OmniboxResult::UpdateTitleAndDetails() {
-  // For url result with non-empty description, swap title and details. Thus,
-  // the url description is presented as title, and url itself is presented as
-  // details.
-  const bool use_directly = !IsUrlResultWithDescription();
-  ChromeSearchResult::Tags title_tags;
   if (ShouldDisplayAsAnswer()) {
     const auto* additional_text = match_.answer->first_line().additional_text();
     const bool has_additional_text =
@@ -294,39 +329,48 @@ void OmniboxResult::UpdateTitleAndDetails() {
                  ? base::StrCat({match_.contents, base::ASCIIToUTF16(" "),
                                  additional_text->text()})
                  : match_.contents);
+    ChromeSearchResult::Tags title_tags;
     ACMatchClassificationsToTags(match_.contents, match_.contents_class,
                                  &title_tags);
-  } else if (use_directly) {
-    SetTitle(match_.contents);
-    ACMatchClassificationsToTags(match_.contents, match_.contents_class,
-                                 &title_tags);
-  } else {
-    SetTitle(match_.description);
-    ACMatchClassificationsToTags(match_.description, match_.description_class,
-                                 &title_tags);
-  }
-  SetTitleTags(title_tags);
+    SetTitleTags(title_tags);
 
-  ChromeSearchResult::Tags details_tags;
-  if (ShouldDisplayAsAnswer()) {
     // Answer results will contain the answer in the second line.
     SetDetails(ImageLineToString16(match_.answer->second_line()));
-  } else if (use_directly) {
-    if (AutocompleteMatch::IsSearchType(match_.type)) {
-      SetAccessibleName(l10n_util::GetStringFUTF16(
-          IDS_APP_LIST_QUERY_SEARCH_ACCESSIBILITY_NAME, title(),
-          GetDefaultSearchEngineName(
-              TemplateURLServiceFactory::GetForProfile(profile_))));
-    }
-    SetDetails(match_.description);
+    ChromeSearchResult::Tags details_tags;
     ACMatchClassificationsToTags(match_.description, match_.description_class,
                                  &details_tags);
+    SetDetailsTags(details_tags);
   } else {
-    SetDetails(match_.contents);
-    ACMatchClassificationsToTags(match_.contents, match_.contents_class,
-                                 &details_tags);
+    // For url result with non-empty description, swap title and details. Thus,
+    // the url description is presented as title, and url itself is presented as
+    // details.
+    const bool use_directly = !IsUrlResultWithDescription();
+    ChromeSearchResult::Tags title_tags;
+    ChromeSearchResult::Tags details_tags;
+    if (use_directly) {
+      SetTitle(match_.contents);
+      ACMatchClassificationsToTags(match_.contents, match_.contents_class,
+                                   &title_tags);
+      SetDetails(match_.description);
+      ACMatchClassificationsToTags(match_.description, match_.description_class,
+                                   &details_tags);
+      if (AutocompleteMatch::IsSearchType(match_.type)) {
+        SetAccessibleName(l10n_util::GetStringFUTF16(
+            IDS_APP_LIST_QUERY_SEARCH_ACCESSIBILITY_NAME, title(),
+            GetDefaultSearchEngineName(
+                TemplateURLServiceFactory::GetForProfile(profile_))));
+      }
+    } else {
+      SetTitle(match_.description);
+      ACMatchClassificationsToTags(match_.description, match_.description_class,
+                                   &title_tags);
+      SetDetails(match_.contents);
+      ACMatchClassificationsToTags(match_.contents, match_.contents_class,
+                                   &details_tags);
+    }
+    SetTitleTags(title_tags);
+    SetDetailsTags(details_tags);
   }
-  SetDetailsTags(details_tags);
 }
 
 bool OmniboxResult::IsUrlResultWithDescription() const {
