@@ -5,7 +5,7 @@
 #include "chrome/browser/web_applications/test/web_app_test.h"
 
 #include "base/threading/thread_task_runner_handle.h"
-#include "chrome/common/web_application_info.h"
+#include "chrome/browser/web_applications/components/web_application_info.h"
 
 namespace web_app {
 

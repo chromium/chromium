@@ -71,6 +71,8 @@ source_set("components") {
     "web_app_url_loader.h",
     "web_app_utils.cc",
     "web_app_utils.h",
+    "web_application_info.cc",
+    "web_application_info.h",
 
     # TODO(nigeltao): move these two files from
     # //chrome/browser/web_applications/components to a stand-alone

@@ -4,7 +4,6 @@
 
 #include "chrome/renderer/chrome_content_settings_agent_delegate.h"
 
-#include "chrome/common/render_messages.h"
 #include "chrome/common/ssl_insecure_content.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_view.h"

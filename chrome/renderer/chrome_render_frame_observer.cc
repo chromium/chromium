@@ -22,10 +22,10 @@
 #include "chrome/common/chrome_isolated_world_ids.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/open_search_description_document_handler.mojom.h"
-#include "chrome/common/render_messages.h"
+#include "chrome/common/web_page_metadata.mojom.h"
 #include "chrome/renderer/chrome_content_settings_agent_delegate.h"
 #include "chrome/renderer/media/media_feeds.h"
-#include "chrome/renderer/web_apps.h"
+#include "chrome/renderer/web_page_metadata_extraction.h"
 #include "components/crash/core/common/crash_key.h"
 #include "components/no_state_prefetch/renderer/prerender_helper.h"
 #include "components/offline_pages/buildflags/buildflags.h"
@@ -387,16 +387,17 @@ void ChromeRenderFrameObserver::RequestReloadImageForContextNode() {
   }
 }
 
-void ChromeRenderFrameObserver::GetWebApplicationInfo(
-    GetWebApplicationInfoCallback callback) {
+void ChromeRenderFrameObserver::GetWebPageMetadata(
+    GetWebPageMetadataCallback callback) {
   WebLocalFrame* frame = render_frame()->GetWebFrame();
 
-  WebApplicationInfo web_app_info;
-  web_apps::ParseWebAppFromWebDocument(frame, &web_app_info);
+  chrome::mojom::WebPageMetadataPtr web_page_metadata =
+      chrome::ExtractWebPageMetadata(frame);
 
   // The warning below is specific to mobile but it doesn't hurt to show it even
   // if the Chromium build is running on a desktop. It will get more exposition.
-  if (web_app_info.mobile_capable == WebApplicationInfo::MOBILE_CAPABLE_APPLE) {
+  if (web_page_metadata->mobile_capable ==
+      chrome::mojom::WebPageMobileCapable::ENABLED_APPLE) {
     blink::WebConsoleMessage message(
         blink::mojom::ConsoleMessageLevel::kWarning,
         "<meta name=\"apple-mobile-web-app-capable\" content=\"yes\"> is "
@@ -409,21 +410,22 @@ void ChromeRenderFrameObserver::GetWebApplicationInfo(
   // any icon with a data URL to have originated from a favicon.  We don't want
   // to decode arbitrary data URLs in the browser process.  See
   // http://b/issue?id=1162972
-  for (auto it = web_app_info.icon_infos.begin();
-       it != web_app_info.icon_infos.end();) {
-    if (it->url.SchemeIs(url::kDataScheme))
-      it = web_app_info.icon_infos.erase(it);
+  for (auto it = web_page_metadata->icons.begin();
+       it != web_page_metadata->icons.end();) {
+    if ((*it)->url.SchemeIs(url::kDataScheme))
+      it = web_page_metadata->icons.erase(it);
     else
       ++it;
   }
 
   // Truncate the strings we send to the browser process.
-  web_app_info.title =
-      web_app_info.title.substr(0, chrome::kMaxMetaTagAttributeLength);
-  web_app_info.description =
-      web_app_info.description.substr(0, chrome::kMaxMetaTagAttributeLength);
+  web_page_metadata->application_name =
+      web_page_metadata->application_name.substr(
+          0, chrome::kMaxMetaTagAttributeLength);
+  web_page_metadata->description = web_page_metadata->description.substr(
+      0, chrome::kMaxMetaTagAttributeLength);
 
-  std::move(callback).Run(web_app_info);
+  std::move(callback).Run(std::move(web_page_metadata));
 }
 
 #if defined(OS_ANDROID)

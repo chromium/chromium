@@ -22,7 +22,6 @@ struct FaviconRawBitmapResult;
 
 class InstallableManager;
 struct InstallableData;
-struct WebApplicationInfo;
 
 // Aysnchronously fetches and processes data needed to create a shortcut for an
 // Android Home screen launcher.
@@ -56,10 +55,10 @@ class AddToHomescreenDataFetcher : public content::WebContentsObserver {
   ~AddToHomescreenDataFetcher() override;
 
   // IPC message received when the initialization is finished.
-  void OnDidGetWebApplicationInfo(
+  void OnDidGetWebPageMetadata(
       mojo::AssociatedRemote<chrome::mojom::ChromeRenderFrame>
           chrome_render_frame,
-      const WebApplicationInfo& web_app_info);
+      chrome::mojom::WebPageMetadataPtr web_page_metadata);
 
   // Accessors, etc.
   const SkBitmap& primary_icon() const { return primary_icon_; }

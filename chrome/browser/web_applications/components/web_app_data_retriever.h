@@ -15,6 +15,7 @@
 #include "chrome/browser/web_applications/components/web_app_icon_downloader.h"
 #include "chrome/browser/web_applications/components/web_app_install_utils.h"
 #include "chrome/common/chrome_render_frame.mojom-forward.h"
+#include "chrome/common/web_page_metadata.mojom-forward.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 
@@ -78,11 +79,11 @@ class WebAppDataRetriever : content::WebContentsObserver {
   void RenderProcessGone(base::TerminationStatus status) override;
 
  private:
-  void OnGetWebApplicationInfo(
+  void OnGetWebPageMetadata(
       mojo::AssociatedRemote<chrome::mojom::ChromeRenderFrame>
           chrome_render_frame,
       int last_committed_nav_entry_unique_id,
-      const WebApplicationInfo& web_app_info);
+      chrome::mojom::WebPageMetadataPtr web_page_metadata);
   void OnDidPerformInstallableCheck(const InstallableData& data);
   void OnIconsDownloaded(bool success, IconsMap icons_map);
 

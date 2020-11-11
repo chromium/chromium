@@ -25,7 +25,6 @@
 #include "chrome/browser/ui/search/search_tab_helper.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_switches.h"
-#include "chrome/common/render_messages.h"
 #include "chrome/common/search/instant_types.h"
 #include "chrome/common/search/mock_embedded_search_client.h"
 #include "chrome/common/search/ntp_logging_events.h"

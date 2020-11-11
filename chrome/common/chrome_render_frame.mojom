@@ -4,6 +4,7 @@
 
 module chrome.mojom;
 
+import "chrome/common/web_page_metadata.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 import "third_party/blink/public/mojom/window_features/window_features.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
@@ -17,12 +18,8 @@ enum ImageFormat {
   ORIGINAL,
 };
 
-[Native]
-struct WebApplicationInfo;
-
 // Messages sent from chrome to the render frame.
 interface ChromeRenderFrame {
-
   // Updates the window features of the main frame's render view.
   SetWindowFeatures(blink.mojom.WindowFeatures window_features);
 
@@ -49,8 +46,8 @@ interface ChromeRenderFrame {
   // before onload events are fired.
   ExecuteWebUIJavaScript(mojo_base.mojom.String16 javascript);
 
-  // Requests the web application info from the renderer.
-  GetWebApplicationInfo() => (WebApplicationInfo web_application_info);
+  // Requests the web page metadata from the renderer.
+  GetWebPageMetadata() => (WebPageMetadata web_page_metadata);
 
   // Sets a header identifying the CCT session.
   [EnableIf=is_android]

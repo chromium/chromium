@@ -16,8 +16,8 @@
 #include "chrome/browser/installable/installable_data.h"
 #include "chrome/browser/installable/installable_manager.h"
 #include "chrome/browser/web_applications/components/web_app_icon_generator.h"
+#include "chrome/browser/web_applications/components/web_application_info.h"
 #include "chrome/common/chrome_render_frame.mojom.h"
-#include "chrome/common/web_application_info.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -72,9 +72,9 @@ void WebAppDataRetriever::GetWebApplicationInfo(
                      weak_ptr_factory_.GetWeakPtr()));
   // Bind the InterfacePtr into the callback so that it's kept alive
   // until there's either a connection error or a response.
-  auto* web_app_info_proxy = chrome_render_frame.get();
-  web_app_info_proxy->GetWebApplicationInfo(
-      base::BindOnce(&WebAppDataRetriever::OnGetWebApplicationInfo,
+  auto* web_page_metadata_proxy = chrome_render_frame.get();
+  web_page_metadata_proxy->GetWebPageMetadata(
+      base::BindOnce(&WebAppDataRetriever::OnGetWebPageMetadata,
                      weak_ptr_factory_.GetWeakPtr(),
                      std::move(chrome_render_frame), entry->GetUniqueID()));
 }
@@ -138,11 +138,11 @@ void WebAppDataRetriever::RenderProcessGone(base::TerminationStatus status) {
   CallCallbackOnError();
 }
 
-void WebAppDataRetriever::OnGetWebApplicationInfo(
+void WebAppDataRetriever::OnGetWebPageMetadata(
     mojo::AssociatedRemote<chrome::mojom::ChromeRenderFrame>
         chrome_render_frame,
     int last_committed_nav_entry_unique_id,
-    const WebApplicationInfo& web_app_info) {
+    chrome::mojom::WebPageMetadataPtr web_page_metadata) {
   if (ShouldStopRetrieval())
     return;
 
@@ -158,7 +158,7 @@ void WebAppDataRetriever::OnGetWebApplicationInfo(
 
   if (entry) {
     if (entry->GetUniqueID() == last_committed_nav_entry_unique_id) {
-      info = std::make_unique<WebApplicationInfo>(web_app_info);
+      info = std::make_unique<WebApplicationInfo>(*web_page_metadata);
       if (info->start_url.is_empty())
         info->start_url = std::move(default_web_application_info_->start_url);
       if (info->title.empty())

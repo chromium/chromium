@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/common/web_application_info.h"
+#include "chrome/browser/web_applications/components/web_application_info.h"
 
+#include "chrome/common/web_page_metadata.mojom.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 
 // WebApplicationIconInfo
@@ -71,6 +72,31 @@ WebApplicationInfo::WebApplicationInfo() = default;
 
 WebApplicationInfo::WebApplicationInfo(const WebApplicationInfo& other) =
     default;
+
+WebApplicationInfo::WebApplicationInfo(
+    const chrome::mojom::WebPageMetadata& metadata)
+    : title(metadata.application_name),
+      description(metadata.description),
+      start_url(metadata.application_url) {
+  for (const auto& icon : metadata.icons) {
+    WebApplicationIconInfo icon_info;
+    icon_info.url = icon->url;
+    if (icon->square_size_px > 0)
+      icon_info.square_size_px = icon->square_size_px;
+    icon_infos.push_back(icon_info);
+  }
+  switch (metadata.mobile_capable) {
+    case chrome::mojom::WebPageMobileCapable::UNSPECIFIED:
+      mobile_capable = MOBILE_CAPABLE_UNSPECIFIED;
+      break;
+    case chrome::mojom::WebPageMobileCapable::ENABLED:
+      mobile_capable = MOBILE_CAPABLE;
+      break;
+    case chrome::mojom::WebPageMobileCapable::ENABLED_APPLE:
+      mobile_capable = MOBILE_CAPABLE_APPLE;
+      break;
+  }
+}
 
 WebApplicationInfo::~WebApplicationInfo() = default;
 

@@ -10,8 +10,8 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/web_applications/components/app_shortcut_manager.h"
+#include "chrome/browser/web_applications/components/web_application_info.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
-#include "chrome/common/web_application_info.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
 class Profile;

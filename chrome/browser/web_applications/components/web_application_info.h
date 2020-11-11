@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_COMMON_WEB_APPLICATION_INFO_H_
-#define CHROME_COMMON_WEB_APPLICATION_INFO_H_
+#ifndef CHROME_BROWSER_WEB_APPLICATIONS_COMPONENTS_WEB_APPLICATION_INFO_H_
+#define CHROME_BROWSER_WEB_APPLICATIONS_COMPONENTS_WEB_APPLICATION_INFO_H_
 
 #include <functional>
 #include <iosfwd>
@@ -15,6 +15,7 @@
 #include "base/containers/flat_set.h"
 #include "base/optional.h"
 #include "base/strings/string16.h"
+#include "chrome/common/web_page_metadata.mojom-forward.h"
 #include "components/services/app_service/public/cpp/share_target.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
@@ -93,6 +94,7 @@ struct WebApplicationInfo {
 
   WebApplicationInfo();
   WebApplicationInfo(const WebApplicationInfo& other);
+  explicit WebApplicationInfo(const chrome::mojom::WebPageMetadata& metadata);
   ~WebApplicationInfo();
 
   // Title of the application.
@@ -197,4 +199,4 @@ bool operator==(const WebApplicationShortcutsMenuItemInfo::Icon& icon1,
 bool operator==(const WebApplicationShortcutsMenuItemInfo& shortcut_info1,
                 const WebApplicationShortcutsMenuItemInfo& shortcut_info2);
 
-#endif  // CHROME_COMMON_WEB_APPLICATION_INFO_H_
+#endif  // CHROME_BROWSER_WEB_APPLICATIONS_COMPONENTS_WEB_APPLICATION_INFO_H_

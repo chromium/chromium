@@ -10,7 +10,6 @@
 #include "chrome/browser/search/instant_service.h"
 #include "chrome/browser/search/instant_service_factory.h"
 #include "chrome/browser/search/search.h"
-#include "chrome/common/render_messages.h"
 #include "chrome/common/search/omnibox.mojom.h"
 #include "components/search/search.h"
 #include "content/public/browser/navigation_details.h"

@@ -24,7 +24,7 @@
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/installable/installable_manager.h"
 #include "chrome/browser/installable/installable_metrics.h"
-#include "chrome/common/web_application_info.h"
+#include "chrome/browser/web_applications/components/web_application_info.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/browser/web_contents.h"
@@ -239,12 +239,14 @@ class AddToHomescreenDataFetcherTest : public ChromeRenderViewHostTestHarness {
                   const char* expected_name,
                   blink::mojom::DisplayMode display_mode,
                   bool is_webapk_compatible) {
-    WebApplicationInfo web_application_info;
-    web_application_info.title = base::UTF8ToUTF16(kWebApplicationInfoTitle);
+    chrome::mojom::WebPageMetadataPtr web_page_metadata(
+        chrome::mojom::WebPageMetadata::New());
+    web_page_metadata->application_name =
+        base::ASCIIToUTF16(kWebApplicationInfoTitle);
 
-    fetcher->OnDidGetWebApplicationInfo(
+    fetcher->OnDidGetWebPageMetadata(
         mojo::AssociatedRemote<chrome::mojom::ChromeRenderFrame>(),
-        web_application_info);
+        std::move(web_page_metadata));
     waiter.WaitForDataAvailable();
 
     EXPECT_EQ(is_webapk_compatible, waiter.is_webapk_compatible());

@@ -122,7 +122,6 @@ static_library("common") {
     "pref_names_util.cc",
     "pref_names_util.h",
     "ref_counted_util.h",
-    "render_messages.h",
     "search/instant_mojom_traits.h",
     "search/instant_types.cc",
     "search/instant_types.h",
@@ -133,9 +132,6 @@ static_library("common") {
     "ssl_insecure_content.h",
     "url_constants.cc",
     "url_constants.h",
-    "web_application_info.cc",
-    "web_application_info.h",
-    "web_application_info_provider_param_traits.h",
     "webui_url_constants.cc",
     "webui_url_constants.h",
   ]
@@ -714,6 +710,7 @@ mojom("mojo_bindings") {
     "renderer_configuration.mojom",
     "subresource_redirect_service.mojom",
     "sync_encryption_keys_extension.mojom",
+    "web_page_metadata.mojom",
   ]
 
   deps = []

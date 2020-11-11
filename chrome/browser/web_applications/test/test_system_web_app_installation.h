@@ -8,10 +8,10 @@
 #include <memory>
 #include <string>
 
+#include "chrome/browser/web_applications/components/web_application_info.h"
 #include "chrome/browser/web_applications/system_web_app_manager.h"
 #include "chrome/browser/web_applications/test/test_system_web_app_web_ui_controller_factory.h"
 #include "chrome/browser/web_applications/test/test_web_app_provider.h"
-#include "chrome/common/web_application_info.h"
 
 namespace web_app {
 

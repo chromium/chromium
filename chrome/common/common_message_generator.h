@@ -6,11 +6,6 @@
 
 #include "chrome/common/search/instant_mojom_traits.h"
 #include "services/network/public/cpp/p2p_param_traits.h"
-#undef CHROME_COMMON_RENDER_MESSAGES_H_
-#include "chrome/common/render_messages.h"
-#ifndef CHROME_COMMON_RENDER_MESSAGES_H_
-#error "Failed to include header chrome/common/render_messages.h"
-#endif
 #include "components/safe_browsing/buildflags.h"
 #include "content/public/common/common_param_traits.h"
 #include "content/public/common/common_param_traits_macros.h"
