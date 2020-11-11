@@ -6,6 +6,7 @@
 
 #include "ash/app_list/views/app_list_item_view.h"
 #include "ash/app_list/views/apps_grid_view.h"
+#include "ash/public/cpp/app_list/app_list_color_provider.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
@@ -43,7 +44,8 @@ TopIconAnimationView::TopIconAnimationView(AppsGridView* grid,
   title_label->SetLineHeight(
       grid_->GetAppListConfig().app_title_max_line_height());
   title_label->SetHorizontalAlignment(gfx::ALIGN_CENTER);
-  title_label->SetEnabledColor(SK_ColorBLACK);
+  title_label->SetEnabledColor(
+      AppListColorProvider::Get()->GetFolderTitleTextColor(SK_ColorBLACK));
   title_label->SetText(title);
   if (item_in_folder_icon_) {
     // The title's opacity of the item should be changed separately if it is in
