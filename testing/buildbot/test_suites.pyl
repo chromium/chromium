@@ -77,6 +77,7 @@
         'mixins': [
           'chrome-gold-service-account',
           'skia_gold_test',
+          'enable_resultdb',
         ],
       },
       'content_browsertests': {
@@ -128,6 +129,7 @@
         'mixins': [
           'chrome-gold-service-account',
           'skia_gold_test',
+          'enable_resultdb',
         ],
       },
       'webview_instrumentation_test_apk': {
@@ -201,6 +203,7 @@
         'mixins': [
           'chrome-gold-service-account',
           'skia_gold_test',
+          'enable_resultdb',
         ],
       },
       'chrome_public_test_vr_apk': {
@@ -311,6 +314,7 @@
         'mixins': [
           'chrome-gold-service-account',
           'skia_gold_test',
+          'enable_resultdb',
         ],
         'test': 'chrome_public_test_apk',
       },
@@ -3833,6 +3837,7 @@
         'mixins': [
           'chrome-gold-service-account',
           'skia_gold_test',
+          'enable_resultdb',
         ],
         'test': 'chrome_public_test_apk',
       },
@@ -4174,6 +4179,7 @@
         'mixins': [
           'chrome-gold-service-account',
           'skia_gold_test',
+          'enable_resultdb',
         ],
         'test': 'chrome_public_test_apk',
       },
