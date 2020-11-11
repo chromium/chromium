@@ -1912,6 +1912,14 @@ class CONTENT_EXPORT ContentBrowserClient {
   // Returns the URL-Keyed Metrics service for chrome:ukm.
   virtual ukm::UkmService* GetUkmService();
 
+  // Called when a keepalive request
+  // (https://fetch.spec.whatwg.org/#request-keepalive-flag) is requested.
+  virtual void OnKeepaliveRequestStarted();
+
+  // Called when a keepalive request finishes either successfully or
+  // unsuccessfully.
+  virtual void OnKeepaliveRequestFinished();
+
 #if defined(OS_MAC)
   // Sets up the embedder sandbox parameters for the given sandbox type. Returns
   // true if parameters were successfully set up or false if no additional

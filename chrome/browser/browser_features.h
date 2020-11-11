@@ -30,6 +30,7 @@ extern const base::Feature kDoubleTapToZoomInTabletMode;
 #if !defined(OS_ANDROID)
 extern const base::Feature kCopyLinkToText;
 extern const base::Feature kMuteNotificationsDuringScreenShare;
+extern const base::Feature kShutdownSupportForKeepalive;
 #endif
 
 #if defined(OS_MAC)

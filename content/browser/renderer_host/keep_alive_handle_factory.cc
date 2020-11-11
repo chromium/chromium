@@ -13,7 +13,9 @@
 #include "content/common/frame.mojom.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
@@ -24,6 +26,8 @@ class KeepAliveHandleFactory::Context final : public base::RefCounted<Context> {
  public:
   explicit Context(int process_id) : process_id_(process_id) {
     RenderProcessHost* process_host = RenderProcessHost::FromID(process_id_);
+    receiver_set_.set_disconnect_handler(base::BindRepeating(
+        []() { GetContentClient()->browser()->OnKeepaliveRequestFinished(); }));
     if (!process_host || process_host->IsKeepAliveRefCountDisabled())
       return;
     process_host->IncrementKeepAliveRefCount();
@@ -33,6 +37,10 @@ class KeepAliveHandleFactory::Context final : public base::RefCounted<Context> {
     if (detached_)
       return;
     detached_ = true;
+    for (size_t i = 0; i < receiver_set_.size(); ++i) {
+      GetContentClient()->browser()->OnKeepaliveRequestFinished();
+    }
+
     RenderProcessHost* process_host = RenderProcessHost::FromID(process_id_);
     if (!process_host || process_host->IsKeepAliveRefCountDisabled())
       return;
@@ -48,6 +56,7 @@ class KeepAliveHandleFactory::Context final : public base::RefCounted<Context> {
 
   void AddReceiver(std::unique_ptr<mojom::KeepAliveHandle> impl,
                    mojo::PendingReceiver<mojom::KeepAliveHandle> receiver) {
+    GetContentClient()->browser()->OnKeepaliveRequestStarted();
     receiver_set_.Add(std::move(impl), std::move(receiver));
   }
 

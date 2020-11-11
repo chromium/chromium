@@ -3372,6 +3372,13 @@ const char kSCTAuditingDescription[] =
     "Enables SCT auditing for users who have opted in to Safe Browsing "
     "Extended Reporting.";
 
+const char kShutdownSupportForKeepaliveName[] =
+    "Shutdown support for keepalive requests";
+const char kShutdownSupportForKeepaliveDescription[] =
+    "When enabled, keepalive requests "
+    "(https://fetch.spec.whatwg.org/#request-keepalive-flag) blocks the "
+    "browser shutdown sequence for a short period of time.";
+
 const char kTabFreezeName[] = "Tab Freeze";
 const char kTabFreezeDescription[] =
     "Enables freezing eligible tabs when they have been backgrounded for 5 "

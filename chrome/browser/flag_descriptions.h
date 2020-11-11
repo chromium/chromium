@@ -1944,6 +1944,9 @@ extern const char kPasswordsWeaknessCheckDescription[];
 extern const char kSCTAuditingName[];
 extern const char kSCTAuditingDescription[];
 
+extern const char kShutdownSupportForKeepaliveName[];
+extern const char kShutdownSupportForKeepaliveDescription[];
+
 extern const char kTabFreezeName[];
 extern const char kTabFreezeDescription[];
 

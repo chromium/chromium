@@ -42591,6 +42591,7 @@ from previous Chrome versions.
   <int value="-1342039126" label="AshNewSystemMenu:enabled"/>
   <int value="-1341685799" label="AutofillAssistantDirectActions:enabled"/>
   <int value="-1341092934" label="enable-accelerated-overflow-scroll"/>
+  <int value="-1340460869" label="ShutdownSupportForKeepalive:enabled"/>
   <int value="-1340055960" label="enable-streamlined-hosted-apps"/>
   <int value="-1338306372" label="BrowserTouchBar:enabled"/>
   <int value="-1337185440" label="enable-webvr"/>
@@ -44686,6 +44687,7 @@ from previous Chrome versions.
   <int value="727571565" label="PasswordForceSaving"/>
   <int value="728064595" label="RevampedContextMenu:disabled"/>
   <int value="728656094" label="PasswordForceSaving:disabled"/>
+  <int value="728937354" label="ShutdownSupportForKeepalive:disabled"/>
   <int value="730024226" label="enable-out-of-process-pdf"/>
   <int value="730750097" label="PermissionsBlacklist:disabled"/>
   <int value="731318054" label="WebAssemblySimd:enabled"/>

@@ -43,6 +43,7 @@
 #include "chrome/browser/after_startup_task_utils.h"
 #include "chrome/browser/bluetooth/chrome_bluetooth_delegate.h"
 #include "chrome/browser/browser_about_handler.h"
+#include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_delegate.h"
 #include "chrome/browser/captive_portal/captive_portal_service_factory.h"
@@ -216,6 +217,8 @@
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/feature_list.h"
 #include "components/google/core/common/google_switches.h"
+#include "components/keep_alive_registry/keep_alive_types.h"
+#include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/media_router/browser/presentation/presentation_service_delegate_impl.h"
 #include "components/media_router/browser/presentation/receiver_presentation_service_delegate_impl.h"
@@ -683,6 +686,10 @@ using plugins::ChromeContentBrowserClientPluginsPart;
 #endif
 
 namespace {
+
+#if !defined(OS_ANDROID)
+constexpr base::TimeDelta kKeepaliveDuration = base::TimeDelta::FromSeconds(1);
+#endif
 
 #if defined(OS_WIN) && !defined(COMPONENT_BUILD) && !defined(ADDRESS_SANITIZER)
 // Enables pre-launch Code Integrity Guard (CIG) for Chrome renderers, when
@@ -2411,17 +2418,17 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
 #endif
     MaybeAppendSecureOriginsAllowlistSwitch(command_line);
   } else if (process_type == switches::kZygoteProcess) {
-      // Load (in-process) Pepper plugins in-process in the zygote pre-sandbox.
+    // Load (in-process) Pepper plugins in-process in the zygote pre-sandbox.
 #if BUILDFLAG(ENABLE_NACL)
-      static const char* const kSwitchNames[] = {
-          switches::kEnableNaClDebug,
-          switches::kEnableNaClNonSfiMode,
-          switches::kForcePNaClSubzero,
-          switches::kNaClDangerousNoSandboxNonSfi,
-      };
+    static const char* const kSwitchNames[] = {
+        switches::kEnableNaClDebug,
+        switches::kEnableNaClNonSfiMode,
+        switches::kForcePNaClSubzero,
+        switches::kNaClDangerousNoSandboxNonSfi,
+    };
 
-      command_line->CopySwitchesFrom(browser_command_line, kSwitchNames,
-                                     base::size(kSwitchNames));
+    command_line->CopySwitchesFrom(browser_command_line, kSwitchNames,
+                                   base::size(kSwitchNames));
 #endif
   } else if (process_type == switches::kGpuProcess) {
     // If --ignore-gpu-blocklist is passed in, don't send in crash reports
@@ -3829,7 +3836,6 @@ bool ChromeContentBrowserClient::IsRendererCodeIntegrityEnabled() {
 }
 
 #endif  // defined(OS_WIN)
-
 
 void ChromeContentBrowserClient::WillStartServiceManager() {
 #if defined(OS_WIN) || defined(OS_MAC) || \
@@ -5838,6 +5844,40 @@ ukm::UkmService* ChromeContentBrowserClient::GetUkmService() {
   return g_browser_process->GetMetricsServicesManager()->GetUkmService();
 }
 
+void ChromeContentBrowserClient::OnKeepaliveRequestStarted() {
+#if !defined(OS_ANDROID)
+  if (base::FeatureList::IsEnabled(features::kShutdownSupportForKeepalive)) {
+    ++num_keepalive_requests_;
+
+    DCHECK_GT(num_keepalive_requests_, 0u);
+    last_keepalive_request_time_ = base::TimeTicks::Now();
+    if (!keepalive_timer_.IsRunning()) {
+      keepalive_timer_.Start(
+          FROM_HERE, kKeepaliveDuration,
+          base::BindOnce(
+              &ChromeContentBrowserClient::OnKeepaliveTimerFired,
+              weak_factory_.GetWeakPtr(),
+              std::make_unique<ScopedKeepAlive>(
+                  KeepAliveOrigin::BROWSER, KeepAliveRestartOption::DISABLED)));
+    }
+  }
+#endif  // !defined(OS_ANDROID)
+}
+
+void ChromeContentBrowserClient::OnKeepaliveRequestFinished() {
+#if !defined(OS_ANDROID)
+  if (base::FeatureList::IsEnabled(features::kShutdownSupportForKeepalive)) {
+    DCHECK_GT(num_keepalive_requests_, 0u);
+    --num_keepalive_requests_;
+    if (num_keepalive_requests_ == 0) {
+      keepalive_timer_.Stop();
+      // This deletes the keep alive handle attached to the timer function and
+      // unblock the shutdown sequence.
+    }
+  }
+#endif  // !defined(OS_ANDROID)
+}
+
 #if defined(OS_MAC)
 bool ChromeContentBrowserClient::SetupEmbedderSandboxParameters(
     sandbox::policy::SandboxType sandbox_type,
@@ -5875,4 +5915,20 @@ bool ChromeContentBrowserClient::HasErrorPage(int http_status_code) {
   // Use an internal error page, if we have one for the status code.
   return error_page::LocalizedError::HasStrings(
       error_page::Error::kHttpErrorDomain, http_status_code);
+}
+
+void ChromeContentBrowserClient::OnKeepaliveTimerFired(
+    std::unique_ptr<ScopedKeepAlive> keep_alive_handle) {
+#if !defined(OS_ANDROID)
+  DCHECK(base::FeatureList::IsEnabled(features::kShutdownSupportForKeepalive));
+  const auto now = base::TimeTicks::Now();
+  const auto then = last_keepalive_request_time_ + kKeepaliveDuration;
+  if (now < then) {
+    keepalive_timer_.Start(
+        FROM_HERE, then - now,
+        base::BindOnce(&ChromeContentBrowserClient::OnKeepaliveTimerFired,
+                       weak_factory_.GetWeakPtr(),
+                       std::move(keep_alive_handle)));
+  }
+#endif
 }

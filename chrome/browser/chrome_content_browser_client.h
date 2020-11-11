@@ -18,6 +18,7 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "chrome/browser/startup_data.h"
 #include "content/public/browser/content_browser_client.h"
@@ -33,6 +34,7 @@
 
 class ChromeContentBrowserClientParts;
 class PrefRegistrySimple;
+class ScopedKeepAlive;
 
 namespace base {
 class CommandLine;
@@ -697,6 +699,9 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       const GURL& url) override;
   ukm::UkmService* GetUkmService() override;
 
+  void OnKeepaliveRequestStarted() override;
+  void OnKeepaliveRequestFinished() override;
+
 #if defined(OS_MAC)
   bool SetupEmbedderSandboxParameters(
       sandbox::policy::SandboxType sandbox_type,
@@ -768,6 +773,9 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       bool is_enterprise_lookup_enabled,
       bool is_consumer_lookup_enabled);
 
+  void OnKeepaliveTimerFired(
+      std::unique_ptr<ScopedKeepAlive> keep_alive_handle);
+
   // Vector of additional ChromeContentBrowserClientParts.
   // Parts are deleted in the reverse order they are added.
   std::vector<ChromeContentBrowserClientParts*> extra_parts_;
@@ -791,6 +799,12 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   // Returned from GetNetworkContextsParentDirectory() but created on the UI
   // thread because it needs to access the Local State prefs.
   std::vector<base::FilePath> network_contexts_parent_directory_;
+
+#if !defined(OS_ANDROID)
+  uint64_t num_keepalive_requests_ = 0;
+  base::OneShotTimer keepalive_timer_;
+  base::TimeTicks last_keepalive_request_time_;
+#endif
 
   base::WeakPtrFactory<ChromeContentBrowserClient> weak_factory_{this};
 

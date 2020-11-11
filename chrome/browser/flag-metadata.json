@@ -4279,6 +4279,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "shutdown-support-for-keepalive",
+    "owners": [ "yhirano" ],
+    "expiry_milestone": 92
+  },
+  {
     "name" : "side-panel",
     "owners": [ "chrome-desktop-ui-sea@google.com", "pbos" ],
     "expiry_milestone" : 92

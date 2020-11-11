@@ -1141,6 +1141,10 @@ ukm::UkmService* ContentBrowserClient::GetUkmService() {
   return nullptr;
 }
 
+void ContentBrowserClient::OnKeepaliveRequestStarted() {}
+
+void ContentBrowserClient::OnKeepaliveRequestFinished() {}
+
 #if defined(OS_MAC)
 bool ContentBrowserClient::SetupEmbedderSandboxParameters(
     sandbox::policy::SandboxType sandbox_type,
