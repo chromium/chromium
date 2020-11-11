@@ -18,7 +18,7 @@ using unified_consent::UrlKeyedDataCollectionConsentHelper;
 
 namespace ukm {
 
-UkmConsentStateObserver::UkmConsentStateObserver() : sync_observer_(this) {}
+UkmConsentStateObserver::UkmConsentStateObserver() = default;
 
 UkmConsentStateObserver::~UkmConsentStateObserver() {
   for (const auto& entry : consent_helpers_) {
@@ -55,7 +55,7 @@ void UkmConsentStateObserver::StartObserving(syncer::SyncService* sync_service,
 
   consent_helper->AddObserver(this);
   consent_helpers_[sync_service] = std::move(consent_helper);
-  sync_observer_.Add(sync_service);
+  sync_observations_.AddObservation(sync_service);
   UpdateUkmAllowedForAllProfiles(false);
 }
 
@@ -149,7 +149,8 @@ void UkmConsentStateObserver::OnSyncShutdown(syncer::SyncService* sync) {
     found->second->RemoveObserver(this);
     consent_helpers_.erase(found);
   }
-  sync_observer_.Remove(sync);
+  DCHECK(sync_observations_.IsObservingSource(sync));
+  sync_observations_.RemoveObservation(sync);
   previous_states_.erase(sync);
   UpdateUkmAllowedForAllProfiles(/*must_purge=*/false);
 }

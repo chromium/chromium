@@ -7,7 +7,7 @@
 
 #include <map>
 
-#include "base/scoped_observer.h"
+#include "base/scoped_multi_source_observation.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_service_observer.h"
 #include "components/unified_consent/url_keyed_data_collection_consent_helper.h"
@@ -69,8 +69,9 @@ class UkmConsentStateObserver
   bool CheckPreviousStatesAllowExtensionUkm();
 
   // Tracks observed sync services, for cleanup.
-  ScopedObserver<syncer::SyncService, syncer::SyncServiceObserver>
-      sync_observer_;
+  base::ScopedMultiSourceObservation<syncer::SyncService,
+                                     syncer::SyncServiceObserver>
+      sync_observations_{this};
 
   // State data about profiles that we need to remember.
   struct ProfileState {

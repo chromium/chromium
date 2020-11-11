@@ -7,7 +7,7 @@
 
 #include <set>
 
-#include "base/scoped_observer.h"
+#include "base/scoped_multi_source_observation.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_service_observer.h"
 
@@ -34,8 +34,9 @@ class HistoryDeleteObserver : public history::HistoryServiceObserver {
 
  private:
   // Tracks observed history services, for cleanup.
-  ScopedObserver<history::HistoryService, history::HistoryServiceObserver>
-      history_observer_{this};
+  base::ScopedMultiSourceObservation<history::HistoryService,
+                                     history::HistoryServiceObserver>
+      history_observations_{this};
 
   DISALLOW_COPY_AND_ASSIGN(HistoryDeleteObserver);
 };
