@@ -169,6 +169,7 @@ crbug.com/1145951 [ fuchsia fuchsia-board-astro ] conformance/rendering/preserve
 # Specific build issue
 crbug.com/1146483 [ fuchsia fuchsia-board-astro ] conformance/textures/misc/tex-video-using-tex-unit-non-zero.html [ Skip ]
 crbug.com/1146483 [ fuchsia fuchsia-board-astro ] conformance/textures/misc/texture-upload-size.html [ Skip ]
+crbug.com/1146483 [ fuchsia fuchsia-board-astro ] conformance/textures/misc/texture-video-transparent.html [ Skip ]
 crbug.com/1146483 [ fuchsia fuchsia-board-astro ] conformance/textures/image_bitmap_from_video/tex-2d-alpha-alpha-unsigned_byte.html [ Skip ]
 crbug.com/1146483 [ fuchsia fuchsia-board-astro ] conformance/textures/video/tex-2d-alpha-alpha-unsigned_byte.html [ Skip ]
 
