@@ -31,6 +31,7 @@
 #include "chrome/browser/nearby_sharing/logging/logging.h"
 #include "chrome/browser/nearby_sharing/nearby_connections_manager.h"
 #include "chrome/browser/nearby_sharing/nearby_share_default_device_name.h"
+#include "chrome/browser/nearby_sharing/nearby_share_metrics_logger.h"
 #include "chrome/browser/nearby_sharing/paired_key_verification_runner.h"
 #include "chrome/browser/nearby_sharing/transfer_metadata.h"
 #include "chrome/browser/nearby_sharing/transfer_metadata_builder.h"
@@ -254,6 +255,8 @@ NearbySharingServiceImpl::NearbySharingServiceImpl(
   DCHECK(profile_);
   DCHECK(nearby_connections_manager_);
   DCHECK(power_client_);
+
+  RecordNearbyShareEnabledMetric(prefs);
 
 #if defined(OS_CHROMEOS)
   auto* session_controller = ash::SessionController::Get();

@@ -50251,6 +50251,14 @@ Called by update_use_counter_css.py.-->
   <int value="6" label="Started send"/>
 </enum>
 
+<enum name="NearbyShareEnabledState">
+  <int value="0" label="Enabled and onboarded"/>
+  <int value="1" label="Enabled and not onboarded"/>
+  <int value="2" label="Disabled and onboarded"/>
+  <int value="3" label="Disabled and not onboarded"/>
+  <int value="4" label="Disallowed by policy"/>
+</enum>
+
 <enum name="NearbyShareHttpResult">
   <int value="0" label="Success"/>
   <int value="1" label="Timeout"/>

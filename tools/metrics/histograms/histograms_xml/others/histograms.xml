@@ -9265,6 +9265,19 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </token>
 </histogram>
 
+<histogram name="Nearby.Share.Enabled" enum="NearbyShareEnabledState"
+    expires_after="2021-08-19">
+  <owner>nohle@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records if the user has the Nearby Share feature enabled, and if not,
+    records why the feature is not enabled. For example, the feature is not
+    allowed by policy, or the user onboarded but later disabled the feature.
+    Emitted when the Nearby Share service starts. This happens at login if the
+    feature flag is on.
+  </summary>
+</histogram>
+
 <histogram name="Nearby.Share.LocalDeviceData.DeviceDataUpdater.HttpResult"
     enum="NearbyShareHttpResult" expires_after="2021-08-19">
   <owner>cclem@chromium.org</owner>

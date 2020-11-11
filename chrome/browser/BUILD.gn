@@ -4269,6 +4269,8 @@ static_library("browser") {
       "nearby_sharing/nearby_share_default_device_name.h",
       "nearby_sharing/nearby_share_delegate_impl.cc",
       "nearby_sharing/nearby_share_delegate_impl.h",
+      "nearby_sharing/nearby_share_metrics_logger.cc",
+      "nearby_sharing/nearby_share_metrics_logger.h",
       "nearby_sharing/nearby_share_settings.cc",
       "nearby_sharing/nearby_share_settings.h",
       "nearby_sharing/nearby_sharing_service.h",
