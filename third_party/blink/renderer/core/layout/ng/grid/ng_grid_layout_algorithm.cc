@@ -991,6 +991,9 @@ void NGGridLayoutAlgorithm::IncreaseTrackSizesToAccommodateGridItems(
     sets_to_grow.Shrink(0);
     sets_to_grow_beyond_limit.Shrink(0);
 
+    // TODO(ansollan): If the grid is auto-sized and has a calc or percent row
+    // gap, then the gap can't be calculated on the first pass as we wouldn't
+    // know our block size.
     LayoutUnit spanned_tracks_size =
         GridGap(track_direction) * (grid_item->SpanSize(track_direction) - 1);
     for (auto set_iterator = GetSetIteratorForItem(*grid_item, track_direction);
@@ -1102,36 +1105,27 @@ GridTrackSizingDirection NGGridLayoutAlgorithm::AutoFlowDirection() const {
 }
 
 void NGGridLayoutAlgorithm::PlaceGridItems() {
-  LayoutUnit column_grid_gap = GridGap(GridTrackSizingDirection::kForColumns);
-  LayoutUnit row_grid_gap = GridGap(GridTrackSizingDirection::kForRows);
+  LayoutUnit column_grid_gap =
+      GridGap(kForColumns, ChildAvailableSize().inline_size);
+  LayoutUnit row_grid_gap = GridGap(kForRows, ChildAvailableSize().block_size);
+  Vector<LayoutUnit> column_set_offsets =
+      ComputeSetOffsets(kForColumns, column_grid_gap);
+  Vector<LayoutUnit> row_set_offsets =
+      ComputeSetOffsets(kForRows, row_grid_gap);
 
-  LayoutUnit column_set_offset = BorderScrollbarPadding().inline_start;
-  Vector<LayoutUnit> column_set_offsets = {column_set_offset};
-  column_set_offsets.ReserveCapacity(
-      algorithm_column_track_collection_.SetCount() + 1);
-  for (auto column_set_iterator =
-           algorithm_column_track_collection_.GetSetIterator();
-       !column_set_iterator.IsAtEnd(); column_set_iterator.MoveToNextSet()) {
-    const auto& set = column_set_iterator.CurrentSet();
-    column_set_offset += set.BaseSize() + set.TrackCount() * column_grid_gap;
-    column_set_offsets.push_back(column_set_offset);
+  // Store the total size of row definitions as the intrinsic block size.
+  intrinsic_block_size_ =
+      row_set_offsets.back() -
+      (row_set_offsets.size() == 1 ? LayoutUnit() : row_grid_gap) +
+      BorderScrollbarPadding().block_end;
+
+  // If the row gap is percent or calc, it should be computed now that the
+  // intrinsic size is known. However, the gap should not be added to the
+  // intrinsic block size.
+  if (IsRowGridGapUnresolvable(ChildAvailableSize().block_size)) {
+    row_grid_gap = GridGap(kForRows, intrinsic_block_size_);
+    row_set_offsets = ComputeSetOffsets(kForRows, row_grid_gap);
   }
-
-  LayoutUnit row_set_offset = BorderScrollbarPadding().block_start;
-  Vector<LayoutUnit> row_set_offsets = {row_set_offset};
-  row_set_offsets.ReserveCapacity(algorithm_row_track_collection_.SetCount() +
-                                  1);
-  for (auto row_set_iterator = algorithm_row_track_collection_.GetSetIterator();
-       !row_set_iterator.IsAtEnd(); row_set_iterator.MoveToNextSet()) {
-    const auto& set = row_set_iterator.CurrentSet();
-    row_set_offset += set.BaseSize() + set.TrackCount() * row_grid_gap;
-    row_set_offsets.push_back(row_set_offset);
-  }
-
-  // Store the total size of row definitions (summed with
-  // BorderScrollbarPadding) as the intrinsic block size.
-  intrinsic_block_size_ = BorderScrollbarPadding().BlockSum() +
-                          (row_set_offsets.back() - row_grid_gap);
 
   for (GridItemData& grid_item : grid_items_) {
     wtf_size_t column_start_index = grid_item.columns_begin_set_index;
@@ -1238,21 +1232,42 @@ void NGGridLayoutAlgorithm::PlaceGridItem(const GridItemData& grid_item,
 }
 
 LayoutUnit NGGridLayoutAlgorithm::GridGap(
-    GridTrackSizingDirection track_direction) {
+    GridTrackSizingDirection track_direction,
+    LayoutUnit available_size) {
   const base::Optional<Length>& gap =
       track_direction == kForColumns ? Style().ColumnGap() : Style().RowGap();
-  if (!gap)
-    return LayoutUnit();
 
-  LayoutUnit available_size = track_direction == kForColumns
-                                  ? ChildAvailableSize().inline_size
-                                  : ChildAvailableSize().block_size;
-
-  // TODO (ansollan): handle block axis % resolution for grid-gap with
-  // auto-sized grids.
-  if (gap->IsPercentOrCalc() && available_size == kIndefiniteSize)
+  // TODO(ansollan): Update behavior based on outcome of working group
+  // discussions. See https://github.com/w3c/csswg-drafts/issues/5566.
+  if (!gap || IsRowGridGapUnresolvable(available_size))
     return LayoutUnit();
   return MinimumValueForLength(*gap, available_size);
 }
 
+Vector<LayoutUnit> NGGridLayoutAlgorithm::ComputeSetOffsets(
+    GridTrackSizingDirection track_direction,
+    LayoutUnit grid_gap) {
+  LayoutUnit set_offset = track_direction == kForColumns
+                              ? BorderScrollbarPadding().inline_start
+                              : BorderScrollbarPadding().block_start;
+  Vector<LayoutUnit> set_offsets = {set_offset};
+  auto& track_collection = (track_direction == kForColumns)
+                               ? algorithm_column_track_collection_
+                               : algorithm_row_track_collection_;
+  set_offsets.ReserveCapacity(track_collection.SetCount() + 1);
+  for (auto set_iterator = track_collection.GetSetIterator();
+       !set_iterator.IsAtEnd(); set_iterator.MoveToNextSet()) {
+    const auto& set = set_iterator.CurrentSet();
+    set_offset += set.BaseSize() + set.TrackCount() * grid_gap;
+    set_offsets.push_back(set_offset);
+  }
+  return set_offsets;
+}
+
+bool NGGridLayoutAlgorithm::IsRowGridGapUnresolvable(
+    LayoutUnit available_size) {
+  const base::Optional<Length>& row_gap = Style().RowGap();
+  return row_gap && row_gap->IsPercentOrCalc() &&
+         available_size == kIndefiniteSize;
+}
 }  // namespace blink

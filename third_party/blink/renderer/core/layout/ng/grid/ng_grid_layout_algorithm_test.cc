@@ -1531,6 +1531,59 @@ TEST_F(NGGridLayoutAlgorithmTest, AutoSizedGridWithGap) {
   EXPECT_EQ(expectation, dump);
 }
 
+TEST_F(NGGridLayoutAlgorithmTest, AutoSizedGridWithPercentageGap) {
+  if (!RuntimeEnabledFeatures::LayoutNGGridEnabled())
+    return;
+
+  LoadAhem();
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      body {
+        font: 10px/1 Ahem;
+      }
+
+      #grid {
+        display: grid;
+        width: auto;
+        height: auto;
+        grid-template-columns: 100px 100px 100px;
+        grid-template-rows: 100px 100px;
+        gap: 5%;
+      }
+
+    </style>
+    <div id="wrapper">
+     <div id="grid">
+        <div style="background: orange;"></div>
+        <div style="background: green;"></div>
+        <div style="background: blueviolet;"></div>
+        <div style="background: orange;"></div>
+        <div style="background: green;"></div>
+        <div style="background: blueviolet;"></div>
+      </div>
+    </div>
+  )HTML");
+  String dump = DumpFragmentTree(GetElementById("wrapper"));
+
+  // TODO(ansollan): Change this expectation string as it is currently
+  // incorrect. The 'auto' inline size of the second node should be resolved to
+  // 300, based on the column definitions. After that work is implemented, the
+  // first two nodes in the output should look like this:
+  // offset:unplaced size:1000x200
+  //   offset:0,0 size:300x200
+  String expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.
+  offset:unplaced size:1000x200
+    offset:0,0 size:1000x200
+      offset:0,0 size:100x100
+      offset:150,0 size:100x100
+      offset:300,0 size:100x100
+      offset:0,110 size:100x100
+      offset:150,110 size:100x100
+      offset:300,110 size:100x100
+)DUMP";
+  EXPECT_EQ(expectation, dump);
+}
+
 TEST_F(NGGridLayoutAlgorithmTest, ItemsSizeWithGap) {
   if (!RuntimeEnabledFeatures::LayoutNGGridEnabled())
     return;

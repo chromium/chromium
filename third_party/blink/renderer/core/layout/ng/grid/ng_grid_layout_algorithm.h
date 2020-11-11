@@ -187,7 +187,16 @@ class CORE_EXPORT NGGridLayoutAlgorithm
                      LogicalSize size);
 
   // Gets the row or column gap of the grid.
-  LayoutUnit GridGap(GridTrackSizingDirection track_direction);
+  LayoutUnit GridGap(GridTrackSizingDirection track_direction,
+                     LayoutUnit available_size = kIndefiniteSize);
+
+  // Calculates inline and block offsets for all tracks.
+  Vector<LayoutUnit> ComputeSetOffsets(GridTrackSizingDirection track_direction,
+                                       LayoutUnit grid_gap);
+
+  // Tests whether the row gap is unresolvable based on its type and the
+  // available size.
+  bool IsRowGridGapUnresolvable(LayoutUnit available_size);
 
   GridTrackSizingDirection AutoFlowDirection() const;
 
