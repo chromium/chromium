@@ -70,7 +70,7 @@ class DesktopScreenX11Test : public views::ViewsTestBase,
   // Overridden from testing::Test:
   void SetUp() override {
     ViewsTestBase::SetUp();
-    // TODO(msisov): rewrite desktop screen tests for ozone and non-ozone Linux.
+    // TODO(crbug.com/1096425): Once non-Ozone X11 is deprecated, re-work this.
     if (features::IsUsingOzonePlatform())
       GTEST_SKIP();
     // Initialize the world to the single monitor case.
