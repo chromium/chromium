@@ -29,9 +29,6 @@ if (!is_android && !is_fuchsia) {
               root_build_dir),
     ]
 
-    defines = [ "SHARED_INTERMEDIATE_DIR=" +
-                rebase_path(root_gen_dir, root_build_dir) ]
-
     deps = [
       "//third_party/blink/public/devtools_protocol:protocol_version",
 

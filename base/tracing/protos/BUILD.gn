@@ -29,8 +29,4 @@ grit("chrome_track_event_resources") {
     "tracing_proto_resources.pak",
   ]
   deps = [ ":chrome_track_event" ]
-  grit_flags = [
-    "-E",
-    "root_gen_dir=" + rebase_path(root_gen_dir, root_build_dir),
-  ]
 }

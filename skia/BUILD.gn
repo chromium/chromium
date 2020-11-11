@@ -1002,10 +1002,5 @@ grit("skia_resources") {
     "skia_resources.pak",
   ]
 
-  grit_flags = [
-    "-E",
-    "root_gen_dir=" + rebase_path(root_gen_dir, root_build_dir),
-  ]
-
   deps = [ "public/mojom:mojom_js" ]
 }

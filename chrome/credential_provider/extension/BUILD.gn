@@ -24,10 +24,6 @@ grit("extension_resources") {
     "grit/extension_resources.rc",
   ]
   resource_ids = ""
-  grit_flags = [
-    "-E",
-    "root_gen_dir=" + rebase_path(root_gen_dir, root_build_dir),
-  ]
 }
 
 source_set("common") {

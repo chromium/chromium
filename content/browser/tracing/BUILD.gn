@@ -43,11 +43,5 @@ grit("resources") {
     "tracing_resources.pak",
   ]
 
-  # resource_ids has an entry for our .grd file that looks like:
-  # "<(SHARED_INTERMEDIATE_DIR)/content/browser/tracing/tracing_resources.grd"
-  # and what we pass here should make that resolve to our .grd file.
-  defines =
-      [ "SHARED_INTERMEDIATE_DIR=" + rebase_path(root_gen_dir, root_build_dir) ]
-
   deps = [ ":generate_tracing_grd" ]
 }

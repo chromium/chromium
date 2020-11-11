@@ -176,19 +176,10 @@ preprocess_grit("preprocess_external_mojo") {
 }
 
 grit("os_settings_resources") {
-  grit_flags = [
-    "-E",
-    "root_gen_dir=" + rebase_path(root_gen_dir, root_build_dir),
-    "-E",
-    "root_src_dir=" + rebase_path("//", root_build_dir),
-  ]
-
   defines = chrome_grit_defines
 
   # These arguments are needed since the grd is generated at build time.
   enable_input_discovery_for_gn_analyze = false
-  defines +=
-      [ "SHARED_INTERMEDIATE_DIR=" + rebase_path(root_gen_dir, root_build_dir) ]
   source = "$target_gen_dir/os_settings_resources.grd"
   deps = [ ":build_grd" ]
 

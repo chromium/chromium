@@ -18,10 +18,6 @@ grit("webui_test_resources") {
 
   deps = [ ":web_ui_test_bindings_js" ]
 
-  grit_flags = [
-    "-E",
-    "root_gen_dir=" + rebase_path(root_gen_dir, root_build_dir),
-  ]
   output_dir = "$root_gen_dir/chrome"
 }
 

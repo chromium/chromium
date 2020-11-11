@@ -38,8 +38,6 @@ grit("components_resources") {
   grit_flags = [
     "-E",
     "about_credits_file=" + rebase_path(about_credits_file, root_build_dir),
-    "-E",
-    "root_gen_dir=" + rebase_path(root_gen_dir, root_build_dir),
   ]
 
   defines = [

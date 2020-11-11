@@ -11,11 +11,6 @@ grit("supervised_user_unscaled_resources") {
     "supervised_user_unscaled_resources.pak",
   ]
   output_dir = "$root_gen_dir/chrome/browser/supervised_user"
-
-  grit_flags = [
-    "-E",
-    "root_gen_dir=" + rebase_path(root_gen_dir, root_build_dir),
-  ]
 }
 
 static_library("test_support") {

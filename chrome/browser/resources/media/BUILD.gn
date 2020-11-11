@@ -14,10 +14,6 @@ grit("webrtc_logs_resources") {
     "webrtc_logs_resources.pak",
   ]
   output_dir = "$root_gen_dir/chrome"
-  grit_flags = [
-    "-E",
-    "root_gen_dir=" + rebase_path(root_gen_dir, root_build_dir),
-  ]
 }
 
 js_type_check("closure_compile") {

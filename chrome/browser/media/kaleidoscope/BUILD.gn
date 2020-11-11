@@ -14,10 +14,6 @@ if (enable_kaleidoscope) {
       "grit/kaleidoscope_resources.h",
       "kaleidoscope_resources.pak",
     ]
-    grit_flags = [
-      "-E",
-      "root_gen_dir=" + rebase_path(root_gen_dir, root_build_dir),
-    ]
     deps = [
       "//chrome/browser/media/kaleidoscope/internal:kaleidoscope_strings",
       "//chrome/browser/media/kaleidoscope/internal/resources:all",
@@ -32,10 +28,6 @@ if (enable_kaleidoscope) {
     outputs = [
       "grit/kaleidoscope_resources.h",
       "kaleidoscope_resources.pak",
-    ]
-    grit_flags = [
-      "-E",
-      "root_gen_dir=" + rebase_path(root_gen_dir, root_build_dir),
     ]
     inputs = [ "//third_party/shaka-player/dist/shaka-player.ui.js" ]
     deps = [

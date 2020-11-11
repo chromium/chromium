@@ -76,9 +76,5 @@ grit("resources") {
     "bluetooth_internals_resources.pak",
   ]
   output_dir = "$root_gen_dir/chrome"
-  grit_flags = [
-    "-E",
-    "root_gen_dir=" + rebase_path(root_gen_dir, root_build_dir),
-  ]
   deps = [ "//chrome/browser/ui/webui/bluetooth_internals:mojo_bindings_js" ]
 }

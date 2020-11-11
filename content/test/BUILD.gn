@@ -1675,10 +1675,6 @@ grit("web_ui_mojo_test_resources") {
     "grit/web_ui_mojo_test_resources_map.h",
     "web_ui_mojo_test_resources.pak",
   ]
-  grit_flags = [
-    "-E",
-    "root_gen_dir=" + rebase_path(root_gen_dir, root_build_dir),
-  ]
   deps = [ ":web_ui_test_mojo_bindings_webui_js" ]
 }
 

@@ -902,8 +902,6 @@ grit("generate_webui_resources") {
   grit_flags = [
     "-w",
     rebase_path(_allowlist, root_build_dir),
-    "-E",
-    "root_gen_dir=" + rebase_path(root_gen_dir, root_build_dir),
   ]
   outputs = [
     "grit/webui_resources.h",
@@ -927,8 +925,6 @@ grit("generate_mojo_resources") {
   grit_flags = [
     "-w",
     rebase_path(_allowlist, root_build_dir),
-    "-E",
-    "root_gen_dir=" + rebase_path(root_gen_dir, root_build_dir),
   ]
   outputs = [
     "grit/mojo_bindings_resources.h",
@@ -973,8 +969,6 @@ grit("generate_components_resources") {
     _allowlist,
     "-E",
     "about_credits_file=" + rebase_path(_about_credits_file, root_build_dir),
-    "-E",
-    "root_gen_dir=" + rebase_path(root_gen_dir, root_build_dir),
   ]
   outputs = [
     "grit/components_resources.h",

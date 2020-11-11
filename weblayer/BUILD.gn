@@ -801,10 +801,6 @@ grit("resources") {
     "grit/weblayer_resources.h",
     "weblayer_resources.pak",
   ]
-  grit_flags = [
-    "-E",
-    "root_gen_dir=" + rebase_path(root_gen_dir, root_build_dir),
-  ]
   deps = [ "//weblayer/browser/webui:mojo_bindings_js" ]
 }
 # TODO(jam): move weblayer_shell_resources_grit and copy_shell_resources here in

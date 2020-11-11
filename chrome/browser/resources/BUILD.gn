@@ -112,11 +112,6 @@ if (!is_android) {
   grit("component_extension_resources") {
     source = "component_extension_resources.grd"
 
-    grit_flags = [
-      "-E",
-      "root_gen_dir=" + rebase_path(root_gen_dir, root_build_dir),
-    ]
-
     deps = [ "//chrome/browser/resources/pdf:web_components" ]
 
     defines = chrome_grit_defines
@@ -134,11 +129,6 @@ if (!is_android) {
   }
 
   grit("gaia_auth_host_resources") {
-    grit_flags = [
-      "-E",
-      "root_gen_dir=" + rebase_path(root_gen_dir, root_build_dir),
-    ]
-
     source = "gaia_auth_host/gaia_auth_host_resources.grd"
     deps = [ "//chrome/browser/resources/gaia_auth_host:modulize" ]
 
@@ -185,11 +175,6 @@ if (!is_android) {
       deps += [ "//chrome/browser/resources/new_tab_page:web_components" ]
     }
 
-    grit_flags = [
-      "-E",
-      "root_gen_dir=" + rebase_path(root_gen_dir, root_build_dir),
-    ]
-
     defines = chrome_grit_defines + [ "is_official_build=$is_official_build" ]
     outputs = [
       "grit/new_tab_page_resources.h",
@@ -218,11 +203,6 @@ if (is_chromeos) {
     source =
         "chromeos/multidevice_internals/multidevice_internals_resources.grd"
 
-    grit_flags = [
-      "-E",
-      "root_gen_dir=" + rebase_path(root_gen_dir, root_build_dir),
-    ]
-
     deps = [ "//chrome/browser/resources/chromeos/multidevice_internals:web_components" ]
 
     defines = chrome_grit_defines
@@ -238,11 +218,6 @@ if (is_chromeos) {
   grit("nearby_internals_resources") {
     source = "nearby_internals/nearby_internals_resources.grd"
 
-    grit_flags = [
-      "-E",
-      "root_gen_dir=" + rebase_path(root_gen_dir, root_build_dir),
-    ]
-
     deps = [ "//chrome/browser/resources/nearby_internals:web_components" ]
 
     defines = chrome_grit_defines
@@ -256,19 +231,10 @@ if (is_chromeos) {
   }
 
   grit("bluetooth_pairing_dialog_resources") {
-    grit_flags = [
-      "-E",
-      "root_gen_dir=" + rebase_path(root_gen_dir, root_build_dir),
-      "-E",
-      "root_src_dir=" + rebase_path("//", root_build_dir),
-    ]
-
     defines = chrome_grit_defines
 
     # These arguments are needed since the grd is generated at build time.
     enable_input_discovery_for_gn_analyze = false
-    defines += [ "SHARED_INTERMEDIATE_DIR=" +
-                 rebase_path(root_gen_dir, root_build_dir) ]
     bluetooth_gen_dir = "$root_gen_dir/chrome/browser/resources/chromeos/bluetooth_pairing_dialog"
     source = "$bluetooth_gen_dir/bluetooth_pairing_dialog_resources.grd"
     deps = [

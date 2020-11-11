@@ -7,7 +7,14 @@ import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/crypto.gni")
 import("//build/config/ui.gni")
 
-grit_defines = []
+grit_defines = [
+  "-E",
+  "root_gen_dir=" + rebase_path(root_gen_dir, root_build_dir),
+  "-E",
+  "root_src_dir=" + rebase_path("//", root_build_dir),
+  "-D",
+  "SHARED_INTERMEDIATE_DIR=" + rebase_path(root_gen_dir, root_build_dir),
+]
 
 if (is_mac || is_win || is_linux || is_chromeos || is_ios) {
   grit_defines += [

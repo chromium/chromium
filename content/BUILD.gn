@@ -116,10 +116,6 @@ grit("content_resources") {
     "grit/content_resources_map.h",
     "content_resources.pak",
   ]
-  grit_flags = [
-    "-E",
-    "root_gen_dir=" + rebase_path(root_gen_dir, root_build_dir),
-  ]
   deps = [
     "//gpu/ipc/common:vulkan_interface_js",
     "//url/mojom:url_mojom_origin_js",
@@ -132,10 +128,6 @@ grit("dev_ui_content_resources") {
   outputs = [
     "grit/dev_ui_content_resources.h",
     "dev_ui_content_resources.pak",
-  ]
-  grit_flags = [
-    "-E",
-    "root_gen_dir=" + rebase_path(root_gen_dir, root_build_dir),
   ]
   deps = [
     "//content/browser/conversions:mojo_bindings_js",

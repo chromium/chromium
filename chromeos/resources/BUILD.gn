@@ -53,11 +53,6 @@ grit("camera_app_resources") {
   ]
   output_dir = "$root_gen_dir/chromeos"
 
-  grit_flags = [
-    "-E",
-    "root_gen_dir=" + rebase_path(root_gen_dir, root_build_dir),
-  ]
-
   deps = [
     "//chromeos/components/camera_app_ui:mojo_bindings_js",
     "//media/capture/video/chromeos/mojom:cros_camera_js",
@@ -70,8 +65,6 @@ grit("camera_app_resources") {
 grit("connectivity_diagnostics_resources") {
   # These arguments are needed since the grd is generated at build time.
   enable_input_discovery_for_gn_analyze = false
-  defines =
-      [ "SHARED_INTERMEDIATE_DIR=" + rebase_path(root_gen_dir, root_build_dir) ]
   conn_diag_gen_dir =
       "$root_gen_dir/chromeos/components/connectivity_diagnostics/resources"
   source = "$conn_diag_gen_dir/connectivity_diagnostics_resources.grd"
@@ -84,13 +77,6 @@ grit("connectivity_diagnostics_resources") {
     "grit/connectivity_diagnostics_resources.h",
     "grit/connectivity_diagnostics_resources_map.cc",
     "grit/connectivity_diagnostics_resources_map.h",
-  ]
-
-  grit_flags = [
-    "-E",
-    "root_gen_dir=" + rebase_path(root_gen_dir, root_build_dir),
-    "-E",
-    "root_src_dir=" + rebase_path("//", root_build_dir),
   ]
 
   output_dir = "$root_gen_dir/chromeos"
@@ -108,11 +94,6 @@ if (!is_official_build) {
       "chromeos_file_manager_resources.pak",
     ]
     output_dir = "$root_gen_dir/chromeos"
-
-    grit_flags = [
-      "-E",
-      "root_gen_dir=" + rebase_path(root_gen_dir, root_build_dir),
-    ]
 
     deps = [
       "//chromeos/components/file_manager/mojom:mojom_js",
@@ -133,11 +114,6 @@ grit("help_app_resources") {
     "chromeos_help_app_resources.pak",
   ]
   output_dir = "$root_gen_dir/chromeos"
-
-  grit_flags = [
-    "-E",
-    "root_gen_dir=" + rebase_path(root_gen_dir, root_build_dir),
-  ]
 
   deps = [
     "//chromeos/components/help_app_ui:mojo_bindings_js",
@@ -169,16 +145,6 @@ grit("help_app_bundle_resources") {
 if (!is_official_build) {
   # Resources used by chrome://sample-system-web-app
   grit("sample_system_web_app_resources") {
-    grit_flags = [
-      "-E",
-      "root_gen_dir=" + rebase_path(root_gen_dir, root_build_dir),
-      "-E",
-      "root_src_dir=" + rebase_path("//", root_build_dir),
-    ]
-
-    defines = [ "SHARED_INTERMEDIATE_DIR=" +
-                rebase_path(root_gen_dir, root_build_dir) ]
-
     # These arguments are needed since the grd is generated at build time.
     enable_input_discovery_for_gn_analyze = false
     sample_system_web_app_gen_dir =
@@ -209,11 +175,6 @@ grit("telemetry_extension_resources") {
     "chromeos_telemetry_extension_resources.pak",
   ]
 
-  grit_flags = [
-    "-E",
-    "root_gen_dir=" + rebase_path(root_gen_dir, root_build_dir),
-  ]
-
   output_dir = "$root_gen_dir/chromeos"
 }
 
@@ -229,11 +190,6 @@ grit("media_app_resources") {
   output_dir = "$root_gen_dir/chromeos"
 
   use_brotli = true
-
-  grit_flags = [
-    "-E",
-    "root_gen_dir=" + rebase_path(root_gen_dir, root_build_dir),
-  ]
 
   deps = [ "//chromeos/components/media_app_ui:mojo_bindings_js" ]
 }
@@ -274,11 +230,6 @@ grit("print_management_resources") {
     "chromeos_print_management_resources.pak",
   ]
 
-  grit_flags = [
-    "-E",
-    "root_gen_dir=" + rebase_path(root_gen_dir, root_build_dir),
-  ]
-
   output_dir = "$root_gen_dir/chromeos"
 }
 
@@ -295,11 +246,6 @@ grit("scanning_app_resources") {
     "grit/chromeos_scanning_app_resources.h",
     "grit/chromeos_scanning_app_resources_map.cc",
     "grit/chromeos_scanning_app_resources_map.h",
-  ]
-
-  grit_flags = [
-    "-E",
-    "root_gen_dir=" + rebase_path(root_gen_dir, root_build_dir),
   ]
 
   output_dir = "$root_gen_dir/chromeos"
@@ -319,11 +265,6 @@ grit("diagnostics_app_resources") {
     "grit/chromeos_diagnostics_app_resources.h",
     "grit/chromeos_diagnostics_app_resources_map.cc",
     "grit/chromeos_diagnostics_app_resources_map.h",
-  ]
-
-  grit_flags = [
-    "-E",
-    "root_gen_dir=" + rebase_path(root_gen_dir, root_build_dir),
   ]
 
   output_dir = "$root_gen_dir/chromeos"

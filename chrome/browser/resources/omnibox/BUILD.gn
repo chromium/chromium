@@ -62,9 +62,5 @@ grit("resources") {
     "omnibox_resources.pak",
   ]
   output_dir = "$root_gen_dir/chrome"
-  grit_flags = [
-    "-E",
-    "root_gen_dir=" + rebase_path(root_gen_dir, root_build_dir),
-  ]
   deps = [ "//chrome/browser/ui/webui/omnibox:mojo_bindings_webui_js" ]
 }

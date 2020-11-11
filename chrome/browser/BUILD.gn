@@ -6324,8 +6324,6 @@ grit("resources") {
     "-E",
     "additional_modules_list_file=" +
         rebase_path(additional_modules_list_file, root_build_dir),
-    "-E",
-    "root_gen_dir=" + rebase_path(root_gen_dir, root_build_dir),
   ]
 
   deps = [
@@ -6431,11 +6429,6 @@ grit("dev_ui_browser_resources") {
   outputs = [
     "grit/dev_ui_browser_resources.h",
     "dev_ui_browser_resources.pak",
-  ]
-
-  grit_flags = [
-    "-E",
-    "root_gen_dir=" + rebase_path(root_gen_dir, root_build_dir),
   ]
 
   deps = [

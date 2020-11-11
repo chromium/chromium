@@ -666,9 +666,5 @@ grit("resources") {
     "grit/ios_web_resources.h",
     "ios_web_resources.pak",
   ]
-  grit_flags = [
-    "-E",
-    "root_gen_dir=" + rebase_path(root_gen_dir, root_build_dir),
-  ]
   deps = [ "//mojo/public/js:bindings" ]
 }
