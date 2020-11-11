@@ -550,7 +550,7 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             if (value == null
-                    || (value != null && value != ContentSettingValues.ALLOW
+                    || (value != ContentSettingValues.ALLOW
                             && value != ContentSettingValues.BLOCK)) {
                 // TODO(crbug.com/735110): Figure out if this is the correct thing to do, for values
                 // that are non-null, but not ALLOW or BLOCK either. (In setupListPreference we
@@ -560,13 +560,11 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
             }
             String overrideSummary;
             if (isPermissionControlledByDSE(ContentSettingsType.NOTIFICATIONS)) {
-                overrideSummary = getString(value != null && value == ContentSettingValues.ALLOW
-                                ? R.string.website_settings_permissions_allow_dse
-                                : R.string.website_settings_permissions_block_dse);
+                overrideSummary = getDSECategorySummary(value);
             } else {
                 overrideSummary = isEmbargoed
                         ? getString(R.string.automatically_blocked)
-                        : getString(ContentSettingsResources.getSiteSummary(value));
+                        : getString(ContentSettingsResources.getCategorySummary(value));
             }
 
             // On Android O this preference is read-only, so we replace the existing pref with a
@@ -582,7 +580,7 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
         } else {
             setUpListPreference(preference, value, isEmbargoed);
             if (isPermissionControlledByDSE(ContentSettingsType.NOTIFICATIONS) && value != null) {
-                updatePreferenceForDSESetting(preference);
+                updatePreferenceForDSESetting(preference, value);
             }
         }
     }
@@ -889,7 +887,7 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
         setUpListPreference(
                 preference, permission, isPermissionEmbargoed(ContentSettingsType.GEOLOCATION));
         if (isPermissionControlledByDSE(ContentSettingsType.GEOLOCATION) && permission != null) {
-            updatePreferenceForDSESetting(preference);
+            updatePreferenceForDSESetting(preference, permission);
         }
     }
 
@@ -980,6 +978,12 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
         listPreference.setValueIndex(permission == ContentSettingValues.ALLOW ? 0 : 1);
     }
 
+    private String getDSECategorySummary(@ContentSettingValues int value) {
+        return value == ContentSettingValues.ALLOW
+                ? getString(R.string.website_settings_permissions_allowed_dse)
+                : getString(R.string.website_settings_permissions_blocked_dse);
+    }
+
     /**
      * Returns true if the DSE (default search engine) geolocation and notifications permissions
      * are configured for the DSE.
@@ -995,12 +999,14 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
      * for searches that happen from the omnibox.
      * @param preference The Location preference to modify.
      */
-    private void updatePreferenceForDSESetting(Preference preference) {
+    private void updatePreferenceForDSESetting(
+            Preference preference, @ContentSettingValues int value) {
         ListPreference listPreference = (ListPreference) preference;
         listPreference.setEntries(new String[] {
                 getString(R.string.website_settings_permissions_allow_dse),
                 getString(R.string.website_settings_permissions_block_dse),
         });
+        listPreference.setSummary(getDSECategorySummary(value));
     }
 
     public @ContentSettingsType int getContentSettingsTypeFromPreferenceKey(String preferenceKey) {
@@ -1033,8 +1039,12 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
         int type = getContentSettingsTypeFromPreferenceKey(preference.getKey());
         if (type != ContentSettingsType.DEFAULT) {
             mSite.setContentSetting(browserContextHandle, type, permission);
-            preference.setSummary(
-                    getString(ContentSettingsResources.getCategorySummary(permission)));
+            if (isPermissionControlledByDSE(type)) {
+                preference.setSummary(getDSECategorySummary(permission));
+            } else {
+                preference.setSummary(
+                        getString(ContentSettingsResources.getCategorySummary(permission)));
+            }
 
             if (mWebsiteSettingsObserver != null) {
                 mWebsiteSettingsObserver.onPermissionChanged();
