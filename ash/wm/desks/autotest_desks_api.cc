@@ -110,9 +110,9 @@ class ChainedDeskAnimationObserver : public ui::LayerAnimationObserver,
     if (animation_layer_)
       return;
 
-    animation_layer_ = DesksController::Get()
-                           ->GetAnimationForTesting()
-                           ->GetFirstDeskSwitchAnimatorForTesting()
+    auto* animation = DesksController::Get()->animation();
+    DCHECK(animation);
+    animation_layer_ = animation->GetFirstDeskSwitchAnimatorForTesting()
                            ->GetAnimationLayerForTesting();
     animation_layer_->GetAnimator()->AddObserver(this);
   }

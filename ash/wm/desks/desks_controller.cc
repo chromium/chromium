@@ -33,10 +33,12 @@
 #include "base/auto_reset.h"
 #include "base/check_op.h"
 #include "base/containers/unique_ptr_adapters.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/numerics/ranges.h"
 #include "base/stl_util.h"
+#include "base/timer/timer.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/wm/public/activation_client.h"
 
@@ -58,6 +60,16 @@ constexpr char kNumberOfWindowsOnDesk_3_HistogramName[] =
     "Ash.Desks.NumberOfWindowsOnDesk_3";
 constexpr char kNumberOfWindowsOnDesk_4_HistogramName[] =
     "Ash.Desks.NumberOfWindowsOnDesk_4";
+
+constexpr char kNumberOfDeskTraversalsHistogramName[] =
+    "Ash.Desks.NumberOfDeskTraversals";
+constexpr int kDeskTraversalsMaxValue = 20;
+
+// After an desk activation animation starts,
+// |kNumberOfDeskTraversalsHistogramName| will be recorded after this time
+// interval.
+constexpr base::TimeDelta kDeskTraversalsTimeout =
+    base::TimeDelta::FromSeconds(5);
 
 // Appends the given |windows| to the end of the currently active overview mode
 // session such that the most-recently used window is added first. If
@@ -143,8 +155,69 @@ bool IsParentSwitchableContainer(const aura::Window* window) {
 
 }  // namespace
 
+// Helper class which wraps around a OneShotTimer and used for recording how
+// many times the user has traversed desks. Here traversal means the amount of
+// times the user has seen a visual desk change. This differs from desk
+// activation as a desk is only activated as needed for a screenshot during an
+// animation. The user may bounce back and forth on two desks that already
+// have screenshots, and each bounce is recorded as a traversal. For touchpad
+// swipes, the amount of traversals in one animation depends on the amount of
+// changes in the most visible desk have been seen. For other desk changes,
+// the amount of traversals in one animation is 1 + number of Replace() calls.
+// Multiple animations may be recorded before the timer stops.
+class DesksController::DeskTraversalsMetricsHelper {
+ public:
+  explicit DeskTraversalsMetricsHelper(DesksController* controller)
+      : controller_(controller) {}
+  DeskTraversalsMetricsHelper(const DeskTraversalsMetricsHelper&) = delete;
+  DeskTraversalsMetricsHelper& operator=(const DeskTraversalsMetricsHelper&) =
+      delete;
+  ~DeskTraversalsMetricsHelper() = default;
+
+  // Starts |timer_| unless it is already running.
+  void MaybeStart() {
+    if (timer_.IsRunning())
+      return;
+
+    count_ = 0;
+    timer_.Start(FROM_HERE, kDeskTraversalsTimeout,
+                 base::BindOnce(&DeskTraversalsMetricsHelper::OnTimerStop,
+                                base::Unretained(this)));
+  }
+
+  // Called when a desk animation is finished. Adds all observed
+  // |visible_desk_changes| to |count_|.
+  void OnAnimationFinished(int visible_desk_changes) {
+    if (timer_.IsRunning())
+      count_ += visible_desk_changes;
+  }
+
+ private:
+  void OnTimerStop() {
+    // If an animation is still running, add its current visible desk change
+    // count to |count_|.
+    DeskAnimationBase* current_animation = controller_->animation();
+    if (current_animation)
+      count_ += current_animation->visible_desk_changes();
+
+    base::UmaHistogramExactLinear(kNumberOfDeskTraversalsHistogramName, count_,
+                                  kDeskTraversalsMaxValue);
+  }
+
+  // Pointer to the DesksController that owns this. Guaranteed to be not
+  // nullptr for the lifetime of |this|.
+  DesksController* const controller_;
+
+  base::OneShotTimer timer_;
+
+  // Tracks the amount of traversals that have happened since |timer_| has
+  // started.
+  int count_ = 0;
+};
+
 DesksController::DesksController()
-    : is_enhanced_desk_animations_(features::IsEnhancedDeskAnimations()) {
+    : is_enhanced_desk_animations_(features::IsEnhancedDeskAnimations()),
+      metrics_helper_(std::make_unique<DeskTraversalsMetricsHelper>(this)) {
   Shell::Get()->activation_client()->AddObserver(this);
   Shell::Get()->session_controller()->AddObserver(this);
 
@@ -322,6 +395,8 @@ void DesksController::ActivateDesk(const Desk* desk, DesksSwitchSource source) {
       this, starting_desk_index, target_desk_index, source,
       update_window_activation);
   animation_->Launch();
+
+  metrics_helper_->MaybeStart();
 }
 
 bool DesksController::ActivateAdjacentDesk(bool going_left,
@@ -521,13 +596,9 @@ void DesksController::OnFirstSessionStarted() {
   desks_restore_util::RestorePrimaryUserDesks();
 }
 
-DeskAnimationBase* DesksController::GetAnimationForTesting() const {
-  DCHECK(animation_);
-  return animation_.get();
-}
-
 void DesksController::OnAnimationFinished(DeskAnimationBase* animation) {
   DCHECK_EQ(animation_.get(), animation);
+  metrics_helper_->OnAnimationFinished(animation->visible_desk_changes());
   animation_.reset();
 }
 

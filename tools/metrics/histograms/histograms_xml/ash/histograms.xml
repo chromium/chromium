@@ -477,6 +477,20 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Ash.Desks.NumberOfDeskTraversals" units="units"
+    expires_after="2021-11-10">
+  <owner>afakhry@chromium.org</owner>
+  <owner>sammiequon@chromium.org</owner>
+  <owner>tclaiborne@chromium.org</owner>
+  <summary>
+    Tracks the number of times a desk (virtual workspace) has visibly changed in
+    a time span of five seconds. This counts the number of total traversals; for
+    example if the user has moved from desk 1 to 2 to 1 to 2 to 3, the number
+    recorded is 4. This only gets recorded if a traversal starts. A traversal
+    means that the desk has changed onscreen.
+  </summary>
+</histogram>
+
 <histogram name="Ash.Desks.NumberOfWindowsOnDesk_1" units="units"
     expires_after="2021-04-11">
   <owner>afakhry@chromium.org</owner>

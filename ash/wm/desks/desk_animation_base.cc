@@ -132,6 +132,10 @@ void DeskAnimationBase::OnDeskSwitchAnimationFinished() {
   // `this` is now deleted.
 }
 
+void DeskAnimationBase::OnVisibleDeskChanged() {
+  ++visible_desk_changes_;
+}
+
 RootWindowDeskSwitchAnimator*
 DeskAnimationBase::GetFirstDeskSwitchAnimatorForTesting() const {
   DCHECK(!desk_switch_animators_.empty());

@@ -73,6 +73,8 @@ class ASH_EXPORT DesksController : public DesksHelper,
 
   const Desk* active_desk() const { return active_desk_; }
 
+  DeskAnimationBase* animation() const { return animation_.get(); }
+
   // Returns the current |active_desk()| or the soon-to-be active desk if a desk
   // switch animation is in progress.
   const Desk* GetTargetActiveDesk() const;
@@ -178,9 +180,8 @@ class ASH_EXPORT DesksController : public DesksHelper,
   void OnActiveUserSessionChanged(const AccountId& account_id) override;
   void OnFirstSessionStarted() override;
 
-  DeskAnimationBase* GetAnimationForTesting() const;
-
  private:
+  class DeskTraversalsMetricsHelper;
   friend class DeskAnimationBase;
   friend class DeskActivationAnimation;
   friend class DeskRemovalAnimation;
@@ -243,6 +244,10 @@ class ASH_EXPORT DesksController : public DesksHelper,
 
   // True when the enhanced desk animations feature is enabled.
   const bool is_enhanced_desk_animations_;
+
+  // Responsible for tracking and writing number of desk traversals one has
+  // done within a span of X seconds.
+  std::unique_ptr<DeskTraversalsMetricsHelper> metrics_helper_;
 
   base::ObserverList<Observer>::Unchecked observers_;
 

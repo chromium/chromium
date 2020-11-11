@@ -130,6 +130,7 @@ RootWindowDeskSwitchAnimator::RootWindowDeskSwitchAnimator(
     : root_window_(root),
       starting_desk_index_(starting_desk_index),
       ending_desk_index_(ending_desk_index),
+      visible_desk_index_(starting_desk_index),
       delegate_(delegate),
       animation_layer_owner_(CreateAnimationLayerOwner(root)),
       root_window_size_(
@@ -301,13 +302,17 @@ bool RootWindowDeskSwitchAnimator::UpdateSwipeAnimation(float scroll_delta_x) {
           : transformed_animation_layer_bounds.x() >
                 -kMinDistanceBeforeScreenshotDp;
 
+  const int old_visible_desk_index = visible_desk_index_;
+  visible_desk_index_ = GetIndexOfMostVisibleDeskScreenshot();
+  if (old_visible_desk_index != visible_desk_index_)
+    delegate_->OnVisibleDeskChanged();
+
   if (!going_out_of_bounds)
     return false;
 
-  // Get the current visible desk index. The upcoming desk we need to show will
-  // be an adjacent desk based on |moving_left|.
-  const int current_visible_desk_index = GetIndexOfMostVisibleDeskScreenshot();
-  int new_desk_index = current_visible_desk_index + (moving_left ? 1 : -1);
+  // The upcoming desk we need to show will be an adjacent desk to the desk at
+  // |visible_desk_index_| based on |moving_left|.
+  const int new_desk_index = visible_desk_index_ + (moving_left ? 1 : -1);
 
   if (new_desk_index < 0 ||
       new_desk_index >= int{DesksController::Get()->desks().size()}) {
@@ -331,14 +336,13 @@ void RootWindowDeskSwitchAnimator::EndSwipeAnimation() {
     return;
   }
 
-  // If the ending desk screenshot has not finished,
-  // GetIndexOfMostVisibleDeskScreenshot will still return a valid desk index
-  // that we can animate to, but we need to make sure the ending desk screenshot
-  // callback does not get called.
+  // If the ending desk screenshot has not finished, |visible_desk_index_| will
+  // still return a valid desk index that we can animate to, but we need to make
+  // sure the ending desk screenshot callback does not get called.
   if (!ending_desk_screenshot_taken_)
     weak_ptr_factory_.InvalidateWeakPtrs();
 
-  ending_desk_index_ = GetIndexOfMostVisibleDeskScreenshot();
+  ending_desk_index_ = visible_desk_index_;
   StartAnimation();
 }
 

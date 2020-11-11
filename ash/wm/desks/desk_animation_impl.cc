@@ -68,6 +68,11 @@ DeskActivationAnimation::DeskActivationAnimation(DesksController* controller,
             root, starting_desk_index, ending_desk_index, this,
             /*for_remove=*/false));
   }
+
+  // On starting, the user may stay on the current desk for a touchpad swipe.
+  // All other switch sources are guaranteed to move at least once.
+  if (switch_source_ != DesksSwitchSource::kDeskSwitchTouchpad)
+    visible_desk_changes_ = 1;
 }
 
 DeskActivationAnimation::~DeskActivationAnimation() = default;
@@ -95,6 +100,11 @@ bool DeskActivationAnimation::Replace(bool moving_left,
   }
 
   ending_desk_index_ = new_ending_desk_index;
+
+  // Similar to on starting, for touchpad, the user can replace the animation
+  // without switching visible desks.
+  if (switch_source_ != DesksSwitchSource::kDeskSwitchTouchpad)
+    ++visible_desk_changes_;
 
   // List of animators that need a screenshot. It should be either empty or
   // match the size of |desk_switch_animators_| as all the animations should be

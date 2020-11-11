@@ -56,6 +56,7 @@
 #include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/prefs/pref_service.h"
@@ -3686,6 +3687,45 @@ TEST_P(PerDeskShelfTest, RemoveActiveDesk) {
   VerifyViewVisibility(app1, true);
   VerifyViewVisibility(app2, true);
 }
+
+// A test class that uses a mock time task environment.
+class DesksMockTimeTest : public AshTestBase {
+ public:
+  DesksMockTimeTest()
+      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+  DesksMockTimeTest(const DesksMockTimeTest&) = delete;
+  DesksMockTimeTest& operator=(const DesksMockTimeTest&) = delete;
+  ~DesksMockTimeTest() override = default;
+};
+
+TEST_F(DesksMockTimeTest, DeskTraversalNonTouchpadMetrics) {
+  NewDesk();
+  NewDesk();
+  NewDesk();
+  ASSERT_EQ(4u, DesksController::Get()->desks().size());
+
+  constexpr char kDeskTraversalsHistogramName[] =
+      "Ash.Desks.NumberOfDeskTraversals";
+
+  base::HistogramTester histogram_tester;
+  auto* controller = DesksController::Get();
+  const auto& desks = controller->desks();
+  ASSERT_EQ(controller->active_desk(), desks[0].get());
+
+  // Move 5 desks. There is nothing recorded at the end since the timer is still
+  // running.
+  ActivateDesk(desks[1].get());
+  ActivateDesk(desks[0].get());
+  ActivateDesk(desks[1].get());
+  ActivateDesk(desks[2].get());
+  ActivateDesk(desks[3].get());
+  histogram_tester.ExpectBucketCount(kDeskTraversalsHistogramName, 5, 0);
+
+  // Advance the time to end the timer. There should be 5 desks recorded.
+  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(5));
+  histogram_tester.ExpectBucketCount(kDeskTraversalsHistogramName, 5, 1);
+}
+
 // TODO(afakhry): Add more tests:
 // - Always on top windows are not tracked by any desk.
 // - Reusing containers when desks are removed and created.
