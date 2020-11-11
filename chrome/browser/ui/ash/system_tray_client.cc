@@ -117,7 +117,10 @@ SystemTrayClient::SystemTrayClient()
       update_notification_style_(ash::NotificationStyle::kDefault) {
   // If this observes clock setting changes before ash comes up the IPCs will
   // be queued on |system_tray_|.
-  g_browser_process->platform_part()->GetSystemClock()->AddObserver(this);
+  chromeos::system::SystemClock* clock =
+      g_browser_process->platform_part()->GetSystemClock();
+  clock->AddObserver(this);
+  system_tray_->SetUse24HourClock(clock->ShouldUse24HourClock());
 
   // If an upgrade is available at startup then tell ash about it.
   if (UpgradeDetector::GetInstance()->notify_upgrade())

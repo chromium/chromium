@@ -17,11 +17,14 @@
 #include "chrome/browser/chromeos/login/ui/user_adding_screen.h"
 #include "chrome/browser/chromeos/policy/device_policy_cros_browser_test.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
+#include "chrome/browser/chromeos/settings/scoped_testing_cros_settings.h"
+#include "chrome/browser/chromeos/settings/stub_cros_settings_provider.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chromeos/settings/cros_settings_names.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
@@ -156,17 +159,23 @@ class SystemTrayClientClockUnknownPrefTest
     : public SystemTrayClientClockTest,
       public chromeos::LocalStateMixin::Delegate {
  public:
+  SystemTrayClientClockUnknownPrefTest() {
+    scoped_testing_cros_settings_.device_settings()->SetBoolean(
+        chromeos::kSystemUse24HourClock, true);
+  }
   // chromeos::localStateMixin::Delegate:
   void SetUpLocalState() override {
-    // Set preference for the first user only.
-    user_manager::known_user::SetBooleanPref(account_id1_,
-                                             ::prefs::kUse24HourClock, true);
-
+    // First user does not have a preference.
     ASSERT_FALSE(user_manager::known_user::GetBooleanPref(
-        account_id2_, ::prefs::kUse24HourClock, nullptr));
+        account_id1_, ::prefs::kUse24HourClock, nullptr));
+
+    // Set preference for the second user only.
+    user_manager::known_user::SetBooleanPref(account_id2_,
+                                             ::prefs::kUse24HourClock, false);
   }
 
  protected:
+  chromeos::ScopedTestingCrosSettings scoped_testing_cros_settings_;
   chromeos::LocalStateMixin local_state_{&mixin_host_, this};
 };
 
@@ -175,12 +184,15 @@ IN_PROC_BROWSER_TEST_F(SystemTrayClientClockUnknownPrefTest, SwitchToDefault) {
   ASSERT_EQ(base::GetHourClockType(), base::k12HourClock);
 
   auto tray_test_api = ash::SystemTrayTestApi::Create();
-  // Check user with the set preference.
-  EXPECT_TRUE(ash::LoginScreenTestApi::FocusUser(account_id1_));
+  EXPECT_EQ(ash::LoginScreenTestApi::GetFocusedUser(), account_id1_);
+  // Should be system setting because the first user does not have a preference.
   EXPECT_TRUE(tray_test_api->Is24HourClock());
 
-  // Should get back to the default 12 hours because there is not preference for
-  // the second user.
+  // Check user with the set preference.
   EXPECT_TRUE(ash::LoginScreenTestApi::FocusUser(account_id2_));
   EXPECT_FALSE(tray_test_api->Is24HourClock());
+
+  // Should get back to the system settings.
+  EXPECT_TRUE(ash::LoginScreenTestApi::FocusUser(account_id1_));
+  EXPECT_TRUE(tray_test_api->Is24HourClock());
 }
