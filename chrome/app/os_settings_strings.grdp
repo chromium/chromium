@@ -2500,6 +2500,11 @@
     Enter your password to configure security and sign-in
   </message>
 
+  <!-- Kerberos section (OS settings) -->
+  <message name="IDS_OS_SETTINGS_KERBEROS" desc="Name of a section in the OS settings page." meaning="Manage Kerberos authetication tickets.">
+    Kerberos
+  </message>
+
   <!-- Kerberos Add Accounts Dialog Page (OS settings) -->
   <message name="IDS_SETTINGS_KERBEROS_ACCOUNTS_ADVANCED_CONFIG_LABEL" desc="Label of the button in 'Add a Kerberos ticket' dialog to get to the Advanced configuration dialog.">
     Advanced
