@@ -84,7 +84,7 @@ std::string GetHistogramSuffixForSafetyTipStatus(
 // Sets |level| to the right value if status should be set.
 bool ShouldSetSecurityLevelFromSafetyTip(security_state::SafetyTipStatus status,
                                          SecurityLevel* level) {
-  if (!base::FeatureList::IsEnabled(security_state::features::kSafetyTipUI)) {
+  if (!IsSafetyTipUIFeatureEnabled()) {
     return false;
   }
 

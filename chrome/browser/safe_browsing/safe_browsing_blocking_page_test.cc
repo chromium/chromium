@@ -2657,7 +2657,17 @@ IN_PROC_BROWSER_TEST_P(
     SafeBrowsingBlockingPageDelayedWarningWithSafetyTipBrowserTest,
     ShowSafetyTipBeforeInterstitial) {
   base::HistogramTester histograms;
-  NavigateAndAssertNoInterstitial();
+  // Use an https server in this test to check that the security level is
+  // downgraded when the Safety Tip is showing. (http:// pages are always
+  // downgraded regardless of Safety Tip status.)
+  net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
+  https_server.SetSSLConfig(net::EmbeddedTestServer::CERT_OK);
+  https_server.ServeFilesFromSourceDirectory("chrome/test/data");
+  ASSERT_TRUE(https_server.Start());
+  GURL url = https_server.GetURL("/title1.html");
+  SetURLThreatType(url, SB_THREAT_TYPE_URL_PHISHING);
+  ui_test_utils::NavigateToURL(browser(), url);
+  AssertNoInterstitial(browser(), true);
 
   // Check that a Safety Tip is showing.
   EXPECT_EQ(PageInfoBubbleViewBase::BUBBLE_SAFETY_TIP,
@@ -2666,11 +2676,23 @@ IN_PROC_BROWSER_TEST_P(
                                 security_state::SafetyTipStatus::kBadReputation,
                                 1);
 
+  // When the Safety Tip is showing, the security level should be downgraded, as
+  // with a normal Safety Tip.
+  content::WebContents* contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  SecurityStateTabHelper* helper =
+      SecurityStateTabHelper::FromWebContents(contents);
+  ASSERT_TRUE(helper);
+  EXPECT_EQ(security_state::NONE, helper->GetSecurityLevel());
+
   // After typing in the page, the delayed warning should show and the Safety
   // Tip should be dismissed.
   EXPECT_TRUE(TypeAndWaitForInterstitial(browser()));
   EXPECT_EQ(PageInfoBubbleViewBase::BUBBLE_NONE,
             PageInfoBubbleViewBase::GetShownBubbleType());
+  // After the interstitial shows, the security level should be DANGEROUS as
+  // with a normal interstitial.
+  EXPECT_EQ(security_state::DANGEROUS, helper->GetSecurityLevel());
 }
 
 // Tests that when delayed warnings and Safety Tips for delayed warnings are
