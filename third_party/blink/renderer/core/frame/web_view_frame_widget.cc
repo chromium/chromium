@@ -625,13 +625,6 @@ void WebViewFrameWidget::RunPaintBenchmark(int repeat_count,
   web_view_->RunPaintBenchmark(repeat_count, result);
 }
 
-void WebViewFrameWidget::DidCompletePageScaleAnimation() {
-  if (auto* focused_frame = View()->FocusedFrame()) {
-    if (focused_frame->AutofillClient())
-      focused_frame->AutofillClient()->DidCompleteFocusChangeInFrame();
-  }
-}
-
 const ScreenInfo& WebViewFrameWidget::GetOriginalScreenInfo() {
   if (device_emulator_)
     return device_emulator_->original_screen_info();

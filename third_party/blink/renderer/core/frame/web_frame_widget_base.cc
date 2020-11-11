@@ -894,6 +894,15 @@ void WebFrameWidgetBase::WillBeginMainFrame() {
   Client()->WillBeginMainFrame();
 }
 
+void WebFrameWidgetBase::DidCompletePageScaleAnimation() {
+  // Page scale animations only happen on the main frame.
+  DCHECK(ForMainFrame());
+  if (auto* focused_frame = View()->FocusedFrame()) {
+    if (focused_frame->AutofillClient())
+      focused_frame->AutofillClient()->DidCompleteFocusChangeInFrame();
+  }
+}
+
 void WebFrameWidgetBase::ScheduleAnimation() {
   Client()->ScheduleAnimation();
 }
