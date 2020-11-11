@@ -216,7 +216,7 @@ interface IAppWeb : IDispatch {
 [
   object,
   dual,
-  uuid(IUPDATERCONTROLCALLBACK_IID),
+  uuid(PLACEHOLDER-GUID-D272C794-2ACE-4584-B993-3B90C622BE65),
   helpstring("IUpdaterControlCallback Interface"),
   pointer_default(unique)
 ]
@@ -227,7 +227,7 @@ interface IUpdaterControlCallback : IUnknown {
 [
   object,
   dual,
-  uuid(IUPDATERCONTROL_IID),
+  uuid(PLACEHOLDER-GUID-526DA036-9BD3-4697-865A-DA12D37DFFCA),
   helpstring("IUpdaterControl Interface"),
   pointer_default(unique)
 ]
@@ -240,7 +240,7 @@ interface IUpdaterControl : IUnknown {
 [
   object,
   dual,
-  uuid(IUPDATESTATE_IID),
+  uuid(PLACEHOLDER-GUID-46ACF70B-AC13-406D-B53B-B2C4BF091FF6),
   helpstring("IUpdateState Interface"),
   pointer_default(unique)
 ]
@@ -259,7 +259,7 @@ interface IUpdateState : IUnknown {
 [
   object,
   dual,
-  uuid(ICOMPLETESTATUS_IID),
+  uuid(PLACEHOLDER-GUID-2FCD14AF-B645-4351-8359-E80A0E202A0B),
   helpstring("ICompleteStatus Interface"),
   pointer_default(unique)
 ]
@@ -271,7 +271,7 @@ interface ICompleteStatus : IUnknown {
 [
   object,
   oleautomation,
-  uuid(IUPDATEROBSERVER_IID),
+  uuid(PLACEHOLDER-GUID-7B416CFD-4216-4FD6-BD83-7C586054676E),
   helpstring("IUpdaterObserver Interface"),
   pointer_default(unique)
 ]
@@ -301,7 +301,7 @@ interface IUpdater : IUnknown {
 };
 
 [
-  uuid(UPDATER_LIB_UUID),
+  uuid(PLACEHOLDER-GUID-69464FF0-D9EC-4037-A35F-8AE4358106CC),
   version(1.0),
   helpstring("Omaha 4.0 Type Library")
 ]
