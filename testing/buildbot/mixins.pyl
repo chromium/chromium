@@ -240,6 +240,31 @@
       ],
     },
   },
+  'chromeos-betty': {
+    'swarming': {
+      'dimension_sets': [
+        {
+          'cpu': 'x86',
+          'kvm': '1',
+          'os': 'Ubuntu-16.04',
+          'pool': 'chrome.tests',
+        }
+      ],
+      'optional_dimensions': {
+        '60': [
+          {
+            'caches': 'cros_vm',
+          }
+        ],
+      },
+      'named_caches': [
+        {
+          'name': 'cros_vm',
+          'path': 'magic_cros_vm_cache',
+        },
+      ],
+    },
+  },
   'chromeos-kevin': {
     'swarming': {
       'dimensions': {
