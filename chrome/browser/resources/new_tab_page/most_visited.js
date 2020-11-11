@@ -704,6 +704,11 @@ class MostVisitedElement extends PolymerElement {
    * @private
    */
   onTileClick_(e) {
+    if (e.defaultPrevented) {
+      // Ignore previousely handled events.
+      return;
+    }
+
     if (loadTimeData.getBoolean('handleMostVisitedNavigationExplicitly')) {
       e.preventDefault();  // Prevents default browser action (navigation).
     }
