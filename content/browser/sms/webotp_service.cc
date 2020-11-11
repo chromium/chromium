@@ -56,9 +56,11 @@ WebOTPService::WebOTPService(
                     host->GetLastCommittedOrigin(),
                     host,
                     std::move(receiver)) {
+  auto otp_switch = base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+      switches::kWebOtpBackend);
   bool needs_user_prompt =
-      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          switches::kWebOtpBackend) == switches::kWebOtpBackendSmsVerification;
+      otp_switch == switches::kWebOtpBackendSmsVerification ||
+      otp_switch == switches::kWebOtpBackendAuto;
 
   if (needs_user_prompt) {
     consent_handler_ = std::make_unique<PromptBasedUserConsentHandler>(
