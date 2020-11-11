@@ -6,146 +6,128 @@
  * @fileoverview Enable developer features screen implementation.
  */
 
-login.createScreen('EnableDebuggingScreen', 'debugging', function() {
-  return {
+'use strict';
 
-    /* Possible UI states of the enable debugging screen. */
-    UI_STATE:
-        {ERROR: -1, NONE: 0, REMOVE_PROTECTION: 1, SETUP: 2, WAIT: 3, DONE: 4},
+(function() {
 
-    EXTERNAL_API: ['updateState'],
+/**
+ * Possible UI states of the enable debugging screen.
+ * These values must be kept in sync with EnableDebuggingScreenHandler::UIState
+ * in C++ code and the order of the enum must be the same.
+ * @enum {string}
+ */
+const UI_STATE = {
+  ERROR: 'error',
+  NONE: 'none',
+  REMOVE_PROTECTION: 'remove-protection',
+  SETUP: 'setup',
+  WAIT: 'wait',
+  DONE: 'done',
+};
 
-    /** @override */
-    decorate() {
-      $('enable-debugging-help-link')
-          .addEventListener('click', function(event) {
-            chrome.send('enableDebuggingOnLearnMore');
-          });
+Polymer({
+  is: 'oobe-debugging',
 
-      var password = $('enable-debugging-password');
-      var password2 = $('enable-debugging-password2');
-      password.addEventListener('input', this.onPasswordChanged_.bind(this));
-      password2.addEventListener('input', this.onPasswordChanged_.bind(this));
-      password.placeholder =
-          loadTimeData.getString('enableDebuggingPasswordLabel');
-      password2.placeholder =
-          loadTimeData.getString('enableDebuggingConfirmPasswordLabel');
-    },
+  behaviors: [
+    OobeI18nBehavior,
+    LoginScreenBehavior,
+    MultiStepBehavior,
+  ],
+
+  EXTERNAL_API: ['updateState'],
+
+  properties: {
+    /**
+     * Current value of password input field.
+     */
+    password_: {type: String, value: ''},
 
     /**
-     * Buttons in oobe wizard's button strip.
-     * @type {array} Array of Buttons.
+     * Current value of repeat password input field.
      */
-    get buttons() {
-      var buttons = [];
-      var rootfsRemoveButton = this.ownerDocument.createElement('button');
-      rootfsRemoveButton.id = 'debugging-remove-protection-button';
-      rootfsRemoveButton.textContent =
-          loadTimeData.getString('enableDebuggingRemoveButton');
-      rootfsRemoveButton.addEventListener('click', function(e) {
-        chrome.send('enableDebuggingOnRemoveRootFSProtection');
-        e.stopPropagation();
-      });
-      buttons.push(rootfsRemoveButton);
-
-      var enableButton = this.ownerDocument.createElement('button');
-      enableButton.id = 'debugging-enable-button';
-      enableButton.textContent =
-          loadTimeData.getString('enableDebuggingEnableButton');
-      enableButton.addEventListener('click', function(e) {
-        chrome.send(
-            'enableDebuggingOnSetup', [$('enable-debugging-password').value]);
-        e.stopPropagation();
-      });
-      buttons.push(enableButton);
-
-      var cancelButton = this.ownerDocument.createElement('button');
-      cancelButton.id = 'debugging-cancel-button';
-      cancelButton.textContent =
-          loadTimeData.getString('enableDebuggingCancelButton');
-      cancelButton.addEventListener('click', function(e) {
-        chrome.send('enableDebuggingOnCancel');
-        e.stopPropagation();
-      });
-      buttons.push(cancelButton);
-
-      var okButton = this.ownerDocument.createElement('button');
-      okButton.id = 'debugging-ok-button';
-      okButton.textContent = loadTimeData.getString('enableDebuggingOKButton');
-      okButton.addEventListener('click', function(e) {
-        chrome.send('enableDebuggingOnDone');
-        e.stopPropagation();
-      });
-      buttons.push(okButton);
-
-      return buttons;
-    },
+    passwordRepeat_: {type: String, value: ''},
 
     /**
-     * Returns a control which should receive an initial focus.
+     * Whether password input fields are matching.
      */
-    get defaultControl() {
-      if (this.state_ == this.UI_STATE.REMOVE_PROTECTION)
-        return $('debugging-remove-protection-button');
-      else if (this.state_ == this.UI_STATE.SETUP)
-        return $('enable-debugging-password');
-      else if (
-          this.state_ == this.UI_STATE.DONE ||
-          this.state_ == this.UI_STATE.ERROR) {
-        return $('debugging-ok-button');
-      }
-
-      return $('debugging-cancel-button');
+    passwordsMatch_: {
+      type: Boolean,
+      computed: 'computePasswordsMatch_(password_, passwordRepeat_)',
     },
+  },
 
-    /**
-     * Cancels the enable debugging screen and drops the user back to the
-     * network settings.
-     */
-    cancel() {
-      chrome.send('enableDebuggingOnCancel');
-    },
+  ready() {
+    this.initializeLoginScreen('EnableDebuggingScreen', {
+      resetAllowed: false,
+    });
+  },
 
-    /**
-     * Event handler that is invoked just before the screen in shown.
-     * @param {Object} data Screen init payload.
-     */
-    onBeforeShow(data) {
-      this.setDialogView_(this.UI_STATE.NONE);
-    },
+  defaultUIStep() {
+    return UI_STATE.NONE;
+  },
 
-    onPasswordChanged_() {
-      var enableButton = $('debugging-enable-button');
-      var password = $('enable-debugging-password');
-      var password2 = $('enable-debugging-password2');
-      var pwd = password.value;
-      var pwd2 = password2.value;
-      enableButton.disabled =
-          !((pwd.length == 0 && pwd2.length == 0) ||
-            (pwd == pwd2 && pwd.length >= 4));
-    },
+  UI_STEPS: UI_STATE,
 
-    /**
-     * Sets css style for corresponding state of the screen.
-     * @param {number} state.
-     * @private
-     */
-    setDialogView_(state) {
-      this.state_ = state;
-      this.classList.toggle(
-          'remove-protection-view', state == this.UI_STATE.REMOVE_PROTECTION);
-      this.classList.toggle('setup-view', state == this.UI_STATE.SETUP);
-      this.classList.toggle('wait-view', state == this.UI_STATE.WAIT);
-      this.classList.toggle('done-view', state == this.UI_STATE.DONE);
-      this.classList.toggle('error-view', state == this.UI_STATE.ERROR);
+  /**
+   * Returns a control which should receive an initial focus.
+   */
+  get defaultControl() {
+    if (this.uiStep == UI_STATE.REMOVE_PROTECTION)
+      return this.$.removeProtectionProceedButton;
+    else if (this.uiStep == UI_STATE.SETUP)
+      return this.$.password;
+    else if (this.uiStep == UI_STATE.DONE)
+      return this.$.okButton;
+    else if (this.uiStep == UI_STATE.ERROR)
+      return this.$.errorOkButton;
+  },
+
+  /**
+   * Cancels the enable debugging screen and drops the user back to the
+   * network settings.
+   */
+  cancel() {
+    chrome.send('enableDebuggingOnCancel');
+  },
+
+  /**
+   * Update UI for corresponding state of the screen.
+   * @param {number} state
+   * @suppress {missingProperties}
+   */
+  updateState(state) {
+    // Use `state + 1` as index to locate the corresponding UI_STATE
+    this.setUIStep(Object.values(UI_STATE)[state + 1]);
+
+    if (this.defaultControl)
       this.defaultControl.focus();
 
-      if (Oobe.getInstance().currentScreen === this)
-        Oobe.getInstance().updateScreenSize(this);
-    },
+    if (Oobe.getInstance().currentScreen === this)
+      Oobe.getInstance().updateScreenSize(this);
+  },
 
-    updateState(state) {
-      this.setDialogView_(state);
-    }
-  };
+  computePasswordsMatch_(password, password2) {
+    return (password.length == 0 && password2.length == 0) ||
+        (password == password2 && password.length >= 4);
+  },
+
+  onHelpLinkClicked_() {
+    chrome.send('enableDebuggingOnLearnMore');
+  },
+
+  onRemoveButtonClicked_() {
+    chrome.send('enableDebuggingOnRemoveRootFSProtection');
+  },
+
+  onEnableButtonClicked_() {
+    chrome.send('enableDebuggingOnSetup', [this.password_]);
+    this.password_ = '';
+    this.passwordRepeat_ = '';
+  },
+
+  onOKButtonClicked_() {
+    chrome.send('enableDebuggingOnDone');
+  },
+
 });
+})();

@@ -38,6 +38,32 @@
 
 namespace chromeos {
 
+namespace {
+constexpr char kDebuggingScreenId[] = "debugging";
+
+const test::UIPath kRemoveProtectionDialog = {kDebuggingScreenId,
+                                              "removeProtectionDialog"};
+const test::UIPath kSetupDialog = {kDebuggingScreenId, "setupDialog"};
+const test::UIPath kWaitDialog = {kDebuggingScreenId, "waitDialog"};
+const test::UIPath kDoneDialog = {kDebuggingScreenId, "doneDialog"};
+const test::UIPath kErrorDialog = {kDebuggingScreenId, "errorDialog"};
+
+const test::UIPath kHelpLink = {kDebuggingScreenId, "help-link"};
+const test::UIPath kSetUpDetails = {kDebuggingScreenId, "setup-details"};
+const test::UIPath kPasswordContainer = {kDebuggingScreenId,
+                                         "password-container"};
+const test::UIPath kPasswordInput = {kDebuggingScreenId, "password"};
+const test::UIPath kPassword2Input = {kDebuggingScreenId, "passwordRepeat"};
+const test::UIPath kPasswordNote = {kDebuggingScreenId, "password-note"};
+
+const test::UIPath kCancelButton = {kDebuggingScreenId,
+                                    "removeProtectionCancelButton"};
+const test::UIPath kEnableButton = {kDebuggingScreenId, "enableButton"};
+const test::UIPath kRemoveProtectionButton = {kDebuggingScreenId,
+                                              "removeProtectionProceedButton"};
+
+}  // namespace
+
 class TestDebugDaemonClient : public FakeDebugDaemonClient {
  public:
   TestDebugDaemonClient()
@@ -181,52 +207,38 @@ class EnableDebuggingTestBase : public OobeBaseTest {
     OobeScreenWaiter(EnableDebuggingScreenView::kScreenId).Wait();
   }
 
-  void CloseEnableDebuggingScreen() {
-    test::OobeJS().TapOn("debugging-cancel-button");
-  }
+  void CloseEnableDebuggingScreen() { test::OobeJS().TapOnPath(kCancelButton); }
 
-  void ClickEnableButton() { test::OobeJS().TapOn("debugging-enable-button"); }
+  void ClickEnableButton() { test::OobeJS().TapOnPath(kEnableButton); }
 
   void ShowRemoveProtectionScreen() {
     debug_daemon_client_->SetDebuggingFeaturesStatus(
         DebugDaemonClient::DEV_FEATURE_NONE);
     OobeBaseTest::WaitForOobeUI();
-    test::OobeJS().ExpectHidden("debugging");
+    test::OobeJS().ExpectHidden(kDebuggingScreenId);
     InvokeEnableDebuggingScreen();
-    test::OobeJS().ExpectVisible("debugging");
-    test::OobeJS().ExpectVisible({"debugging-remove-protection-button"});
-    test::OobeJS().ExpectVisible({"enable-debugging-help-link"});
+    test::OobeJS().ExpectVisiblePath(kRemoveProtectionDialog);
+    test::OobeJS().ExpectVisiblePath(kRemoveProtectionButton);
+    test::OobeJS().ExpectVisiblePath(kHelpLink);
     debug_daemon_client_->WaitUntilCalled();
     base::RunLoop().RunUntilIdle();
-    VerifyRemoveProtectionScreen();
-  }
-
-  void VerifyRemoveProtectionScreen() {
-    test::OobeJS().ExpectHasClass("remove-protection-view", {"debugging"});
-    test::OobeJS().ExpectHasNoClass("setup-view", {"debugging"});
-    test::OobeJS().ExpectHasNoClass("done-view", {"debugging"});
-    test::OobeJS().ExpectHasNoClass("wait-view", {"debugging"});
   }
 
   void ShowSetupScreen() {
     debug_daemon_client_->SetDebuggingFeaturesStatus(
         debugd::DevFeatureFlag::DEV_FEATURE_ROOTFS_VERIFICATION_REMOVED);
     OobeBaseTest::WaitForOobeUI();
-    test::OobeJS().ExpectHidden("debugging");
+    test::OobeJS().ExpectHidden(kDebuggingScreenId);
     InvokeEnableDebuggingScreen();
-    test::OobeJS().ExpectVisible("debugging");
+    test::OobeJS().ExpectVisiblePath(kSetupDialog);
     debug_daemon_client_->WaitUntilCalled();
     base::RunLoop().RunUntilIdle();
-    test::OobeJS().ExpectHasNoClass("remove-protection-view", {"debugging"});
-    test::OobeJS().ExpectHasClass("setup-view", {"debugging"});
-    test::OobeJS().ExpectHasNoClass("done-view", {"debugging"});
-    test::OobeJS().ExpectHasNoClass("wait-view", {"debugging"});
 
-    test::OobeJS().ExpectVisible("enable-debugging-passwords");
-    test::OobeJS().ExpectVisible("enable-debugging-password");
-    test::OobeJS().ExpectVisible("enable-debugging-password2");
-    test::OobeJS().ExpectVisible("enable-debugging-setup-details");
-    test::OobeJS().ExpectVisible("enable-debugging-password-note");
+    test::OobeJS().ExpectVisiblePath(kPasswordContainer);
+    test::OobeJS().ExpectVisiblePath(kPasswordInput);
+    test::OobeJS().ExpectVisiblePath(kPassword2Input);
+    test::OobeJS().ExpectVisiblePath(kSetUpDetails);
+    test::OobeJS().ExpectVisiblePath(kPasswordNote);
   }
 
   TestDebugDaemonClient* debug_daemon_client_ = nullptr;
@@ -251,7 +263,7 @@ class EnableDebuggingDevTest : public EnableDebuggingTestBase {
 IN_PROC_BROWSER_TEST_F(EnableDebuggingDevTest, ShowAndCancelRemoveProtection) {
   ShowRemoveProtectionScreen();
   CloseEnableDebuggingScreen();
-  test::OobeJS().ExpectHidden("debugging");
+  test::OobeJS().ExpectHidden(kDebuggingScreenId);
 
   EXPECT_EQ(debug_daemon_client_->num_query_debugging_features(), 1);
   EXPECT_EQ(debug_daemon_client_->num_enable_debugging_features(), 0);
@@ -263,9 +275,9 @@ IN_PROC_BROWSER_TEST_F(EnableDebuggingDevTest, ShowAndCancelRemoveProtection) {
 IN_PROC_BROWSER_TEST_F(EnableDebuggingDevTest, ShowAndRemoveProtection) {
   ShowRemoveProtectionScreen();
   debug_daemon_client_->ResetWait();
-  test::OobeJS().TapOn("debugging-remove-protection-button");
+  test::OobeJS().TapOnPath(kRemoveProtectionButton);
   debug_daemon_client_->WaitUntilCalled();
-  test::OobeJS().ExpectHasClass("wait-view", {"debugging"});
+  test::OobeJS().ExpectVisiblePath(kWaitDialog);
 
   // Check if we have rebooted after enabling.
   base::RunLoop().RunUntilIdle();
@@ -280,7 +292,8 @@ IN_PROC_BROWSER_TEST_F(EnableDebuggingDevTest, ShowSetup) {
   debug_daemon_client_->ResetWait();
   ClickEnableButton();
   debug_daemon_client_->WaitUntilCalled();
-  test::OobeJS().CreateHasClassWaiter(true, "done-view", {"debugging"})->Wait();
+  test::OobeJS().CreateVisibilityWaiter(true, kDoneDialog)->Wait();
+
   EXPECT_EQ(debug_daemon_client_->num_enable_debugging_features(), 1);
   EXPECT_EQ(debug_daemon_client_->num_remove_protection(), 0);
 }
@@ -290,11 +303,11 @@ IN_PROC_BROWSER_TEST_F(EnableDebuggingDevTest, ShowSetup) {
 IN_PROC_BROWSER_TEST_F(EnableDebuggingDevTest, SetupMatchingPasswords) {
   ShowSetupScreen();
   debug_daemon_client_->ResetWait();
-  test::OobeJS().TypeIntoPath("test0000", {"enable-debugging-password"});
-  test::OobeJS().TypeIntoPath("test0000", {"enable-debugging-password2"});
+  test::OobeJS().TypeIntoPath("test0000", kPasswordInput);
+  test::OobeJS().TypeIntoPath("test0000", kPassword2Input);
   ClickEnableButton();
   debug_daemon_client_->WaitUntilCalled();
-  test::OobeJS().CreateHasClassWaiter(true, "done-view", {"debugging"})->Wait();
+  test::OobeJS().CreateVisibilityWaiter(true, kDoneDialog)->Wait();
 
   EXPECT_EQ(debug_daemon_client_->num_enable_debugging_features(), 1);
   EXPECT_EQ(debug_daemon_client_->num_remove_protection(), 0);
@@ -306,20 +319,17 @@ IN_PROC_BROWSER_TEST_F(EnableDebuggingDevTest, SetupMatchingPasswords) {
 IN_PROC_BROWSER_TEST_F(EnableDebuggingDevTest, SetupNotMatchingPasswords) {
   ShowSetupScreen();
   debug_daemon_client_->ResetWait();
-  test::OobeJS().TypeIntoPath("test0000", {"enable-debugging-password"});
-  test::OobeJS().TypeIntoPath("test9999", {"enable-debugging-password2"});
-  ClickEnableButton();
-  test::OobeJS()
-      .CreateHasClassWaiter(false, "done-view", {"debugging"})
-      ->Wait();
+  test::OobeJS().TypeIntoPath("test0000", kPasswordInput);
+  test::OobeJS().TypeIntoPath("test9999", kPassword2Input);
+  test::OobeJS().ExpectDisabledPath(kEnableButton);
 
   EXPECT_EQ(debug_daemon_client_->num_enable_debugging_features(), 0);
   EXPECT_EQ(debug_daemon_client_->num_remove_protection(), 0);
 
-  test::OobeJS().TypeIntoPath("test0000", {"enable-debugging-password2"});
+  test::OobeJS().TypeIntoPath("test0000", kPassword2Input);
   ClickEnableButton();
   debug_daemon_client_->WaitUntilCalled();
-  test::OobeJS().CreateHasClassWaiter(true, "done-view", {"debugging"})->Wait();
+  test::OobeJS().CreateVisibilityWaiter(true, kDoneDialog)->Wait();
 
   EXPECT_EQ(debug_daemon_client_->num_enable_debugging_features(), 1);
   EXPECT_EQ(debug_daemon_client_->num_remove_protection(), 0);
@@ -332,12 +342,11 @@ IN_PROC_BROWSER_TEST_F(EnableDebuggingDevTest, ShowOnTestImages) {
       debugd::DevFeatureFlag::DEV_FEATURE_SSH_SERVER_CONFIGURED |
       debugd::DevFeatureFlag::DEV_FEATURE_SYSTEM_ROOT_PASSWORD_SET);
   OobeBaseTest::WaitForOobeUI();
-  test::OobeJS().ExpectHidden("debugging");
+  test::OobeJS().ExpectHidden(kDebuggingScreenId);
   InvokeEnableDebuggingScreen();
-  test::OobeJS().ExpectVisible("debugging");
+  test::OobeJS().ExpectVisiblePath(kRemoveProtectionDialog);
   debug_daemon_client_->WaitUntilCalled();
   base::RunLoop().RunUntilIdle();
-  VerifyRemoveProtectionScreen();
 
   EXPECT_EQ(debug_daemon_client_->num_query_debugging_features(), 1);
   EXPECT_EQ(debug_daemon_client_->num_enable_debugging_features(), 0);
@@ -352,16 +361,15 @@ IN_PROC_BROWSER_TEST_F(EnableDebuggingDevTest, WaitForDebugDaemon) {
   OobeBaseTest::WaitForOobeUI();
 
   // Invoking UI and it should land on wait-view.
-  test::OobeJS().ExpectHidden("debugging");
+  test::OobeJS().ExpectHidden(kDebuggingScreenId);
   InvokeEnableDebuggingScreen();
-  test::OobeJS().ExpectVisible("debugging");
-  test::OobeJS().ExpectHasClass("wait-view", {"debugging"});
+  test::OobeJS().ExpectVisiblePath(kWaitDialog);
 
   // Mark service ready and it should proceed to remove protection view.
   debug_daemon_client_->SetServiceIsAvailable(true);
   debug_daemon_client_->WaitUntilCalled();
   base::RunLoop().RunUntilIdle();
-  VerifyRemoveProtectionScreen();
+  test::OobeJS().ExpectVisiblePath(kRemoveProtectionDialog);
 }
 
 class EnableDebuggingNonDevTest : public EnableDebuggingTestBase {
@@ -379,16 +387,9 @@ class EnableDebuggingNonDevTest : public EnableDebuggingTestBase {
 
 // Try to show enable debugging dialog, we should see error screen here.
 IN_PROC_BROWSER_TEST_F(EnableDebuggingNonDevTest, NoShowInNonDevMode) {
-  test::OobeJS().ExpectHidden("debugging");
+  test::OobeJS().ExpectHidden(kDebuggingScreenId);
   InvokeEnableDebuggingScreen();
-  test::OobeJS().ExpectVisible("debugging");
-  test::OobeJS()
-      .CreateHasClassWaiter(true, "error-view", {"debugging"})
-      ->Wait();
-  test::OobeJS().ExpectHasNoClass("remove-protection-view", {"debugging"});
-  test::OobeJS().ExpectHasNoClass("setup-view", {"debugging"});
-  test::OobeJS().ExpectHasNoClass("done-view", {"debugging"});
-  test::OobeJS().ExpectHasNoClass("wait-view", {"debugging"});
+  test::OobeJS().CreateVisibilityWaiter(true, kErrorDialog)->Wait();
 }
 
 class EnableDebuggingRequestedTest : public EnableDebuggingDevTest {
@@ -426,7 +427,7 @@ IN_PROC_BROWSER_TEST_F(EnableDebuggingRequestedTest, AutoShowSetup) {
 IN_PROC_BROWSER_TEST_F(EnableDebuggingRequestedTest, CancelAutoShowSetup) {
   OobeScreenWaiter(EnableDebuggingScreenView::kScreenId).Wait();
   CloseEnableDebuggingScreen();
-  test::OobeJS().ExpectHidden("debugging");
+  test::OobeJS().ExpectHidden(kDebuggingScreenId);
 }
 
 }  // namespace chromeos

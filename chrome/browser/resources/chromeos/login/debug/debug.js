@@ -181,38 +181,6 @@ cr.define('cr.ui.login.debug', function() {
     {
       id: 'debugging',
       kind: ScreenKind.OTHER,
-      states: [
-        {
-          id: 'remove-protection',
-          trigger: (screen) => {
-            screen.updateState(1);
-          },
-        },
-        {
-          id: 'setup',
-          trigger: (screen) => {
-            screen.updateState(2);
-          },
-        },
-        {
-          id: 'wait',
-          trigger: (screen) => {
-            screen.updateState(3);
-          },
-        },
-        {
-          id: 'done',
-          trigger: (screen) => {
-            screen.updateState(4);
-          },
-        },
-        {
-          id: 'error',
-          trigger: (screen) => {
-            screen.updateState(-1);
-          },
-        },
-      ],
     },
     {
       id: 'demo-preferences',

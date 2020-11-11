@@ -22,6 +22,7 @@
 #include "chrome/browser/chromeos/login/test/test_predicate_waiter.h"
 #include "chrome/browser/chromeos/login/ui/login_display_host.h"
 #include "chrome/browser/chromeos/login/wizard_controller.h"
+#include "chrome/browser/ui/webui/chromeos/login/enable_debugging_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
 #include "chrome/browser/ui/webui/chromeos/login/welcome_screen_handler.h"
 #include "chrome/common/pref_names.h"
@@ -418,10 +419,15 @@ IN_PROC_BROWSER_TEST_F(WelcomeScreenSystemDevModeBrowserTest,
   test::OobeJS().ClickOnPath(
       {"connect", "welcomeScreen", "enableDebuggingLink"});
 
-  test::OobeJS().ExpectVisiblePath({"debugging-remove-protection-button"});
-  test::OobeJS().ExpectVisiblePath({"debugging-cancel-button"});
-  test::OobeJS().ExpectVisiblePath({"enable-debugging-help-link"});
-  test::OobeJS().ClickOnPath({"debugging-cancel-button"});
+  test::OobeJS()
+      .CreateVisibilityWaiter(true, {"debugging", "removeProtectionDialog"})
+      ->Wait();
+  test::OobeJS().ExpectVisiblePath(
+      {"debugging", "removeProtectionProceedButton"});
+  test::OobeJS().ExpectVisiblePath(
+      {"debugging", "removeProtectionCancelButton"});
+  test::OobeJS().ExpectVisiblePath({"debugging", "help-link"});
+  test::OobeJS().ClickOnPath({"debugging", "removeProtectionCancelButton"});
 }
 
 class WelcomeScreenTimezone : public WelcomeScreenBrowserTest {

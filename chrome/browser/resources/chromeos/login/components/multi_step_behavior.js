@@ -105,13 +105,13 @@ var MultiStepBehavior = {
     if (this.uiStep) {
       if (this.uiStep == step)
         return;
-      for (let element of this.stepElements_[this.uiStep]) {
+      for (let element of this.stepElements_[this.uiStep] || []) {
         cr.ui.login.invokePolymerMethod(element, 'onBeforeHide');
         element.hidden = true;
       }
     }
     this.uiStep = step;
-    for (let element of this.stepElements_[this.uiStep]) {
+    for (let element of this.stepElements_[this.uiStep] || []) {
       cr.ui.login.invokePolymerMethod(element, 'onBeforeShow');
       element.hidden = false;
       // Trigger show() if element is an oobe-dialog
