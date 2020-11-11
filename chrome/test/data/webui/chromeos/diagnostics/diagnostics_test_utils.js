@@ -7,7 +7,7 @@ import {assertTrue} from '../../chai_assert.js';
 /**
  * Helper function for getting an array of data-point elements from a
  * diagnostics card.
- * @param {T} element
+ * @param {?T} element
  * @template T
  * @return {!NodeList<!DataPointElement>}
  */
@@ -19,7 +19,7 @@ export function getDataPointElements(element) {
 /**
  * Helper function for getting a percent-bar-chart element from a
  * diagnostics card.
- * @param {T} element
+ * @param {?T} element
  * @template T
  * @return {!PercentBarChartElement}
  */
@@ -31,7 +31,7 @@ export function getPercentBarChartElement(element) {
 /**
  * Helper function for getting a realtime-cpu-chart element from a
  * diagnostics card.
- * @param {CpuCardElement} element
+ * @param {?CpuCardElement} element
  * @return {!RealtimeCpuChartElement}
  */
 export function getRealtimeCpuChartElement(element) {
@@ -42,7 +42,7 @@ export function getRealtimeCpuChartElement(element) {
 /**
  * Helper function for getting an array of routine-result-entry
  * element from a routine-result-list.
- * @param {RoutineResultListElement} element
+ * @param {?RoutineResultListElement} element
  * @return {!NodeList<!RoutineResultEntryElement>}
  */
 export function getResultEntries(element) {
@@ -52,7 +52,7 @@ export function getResultEntries(element) {
 
 /**
  * Helper function for getting the routine-result-list from an element.
- * @param {RoutineSectionElement} element
+ * @param {?RoutineSectionElement} element
  * @return {!RoutineResultListElement}
  */
 export function getResultList(element) {
@@ -63,7 +63,7 @@ export function getResultList(element) {
 /**
  * Helper function for getting an array of routine-result-entry
  * element from a routine-section.
- * @param {RoutineSectionElement} element
+ * @param {?RoutineSectionElement} element
  * @return {!NodeList<!RoutineResultEntryElement>}
  */
 export function getResultEntriesFromSection(element) {
@@ -72,7 +72,7 @@ export function getResultEntriesFromSection(element) {
 
 /**
  * Helper function for getting the Run Tests button from a routine-section.
- * @param {RoutineSectionElement} element
+ * @param {?RoutineSectionElement} element
  * @return {!CrButtonElement}
  */
 export function getRunTestsButtonFromSection(element) {
@@ -97,7 +97,7 @@ export function getToggleTestReportButtonFromSection(element) {
 
 /**
  * Helper function to check if a substring exists in an element.
- * @param {Element} element
+ * @param {?Element} element
  * @param {string} text substring to check
  * @throws {Error}
  */
