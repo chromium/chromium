@@ -116,8 +116,10 @@ class SafeBrowsingTabHelper
         const GURL& url,
         web::WebStatePolicyDecider::PolicyDecisionCallback callback);
 
-    // Returns the pending main frame query for |url|.
-    MainFrameUrlQuery* GetPendingMainFrameQuery(const GURL& url);
+    // Returns the oldest query for |url| that has not yet received a decision.
+    // If there are no queries for |url| or if all such queries have already
+    // been decided, returns null.
+    MainFrameUrlQuery* GetOldestPendingMainFrameQuery(const GURL& url);
 
     // Callback invoked when a main frame query for |url| has finished with
     // |decision|.

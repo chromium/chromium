@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/feature_list.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/post_task.h"
 #include "components/safe_browsing/core/browser/safe_browsing_url_checker_impl.h"
@@ -89,7 +90,7 @@ bool SafeBrowsingTabHelper::PolicyDecider::IsQueryStale(
   bool is_main_frame = query.IsMainFrame();
   const GURL& url = query.url;
   if (is_main_frame) {
-    return !GetPendingMainFrameQuery(url);
+    return !GetOldestPendingMainFrameQuery(url);
   } else {
     web::NavigationItem* last_committed_item =
         web_state()->GetNavigationManager()->GetLastCommittedItem();
@@ -241,7 +242,19 @@ void SafeBrowsingTabHelper::PolicyDecider::HandleMainFrameResponsePolicy(
     const GURL& url,
     web::WebStatePolicyDecider::PolicyDecisionCallback callback) {
   DCHECK(pending_main_frame_query_);
-  DCHECK_EQ(pending_main_frame_query_->url, url);
+  // When there's a server redirect, a ShouldAllowRequest call sometimes
+  // doesn't happen for the target of the redirection. This seems to be fixed
+  // in trunk WebKit.
+  if (pending_main_frame_redirect_chain_.empty()) {
+    // Only check that the hosts match, since a ServiceWorker that handles a
+    // request can set a different URL in the response that it produces, without
+    // triggering a redirect.
+    DCHECK_EQ(pending_main_frame_query_->url.host(), url.host());
+  } else {
+    bool matching_hosts = pending_main_frame_query_->url.host() == url.host();
+    UMA_HISTOGRAM_BOOLEAN(
+        "IOS.SafeBrowsing.RedirectedRequestResponseHostsMatch", matching_hosts);
+  }
   // If the previous query wasn't added to a pending redirect chain, the
   // pending chain is no longer active, since DidRedirectNavigation() is
   // guaranteed to be called before ShouldAllowResponse() is called for the
@@ -281,24 +294,26 @@ void SafeBrowsingTabHelper::PolicyDecider::HandleSubFrameResponsePolicy(
 #pragma mark URL Check Completion Helpers
 
 SafeBrowsingTabHelper::PolicyDecider::MainFrameUrlQuery*
-SafeBrowsingTabHelper::PolicyDecider::GetPendingMainFrameQuery(
+SafeBrowsingTabHelper::PolicyDecider::GetOldestPendingMainFrameQuery(
     const GURL& url) {
-  if (pending_main_frame_query_ && pending_main_frame_query_->url == url) {
-    return &pending_main_frame_query_.value();
-  } else {
-    for (auto& query : pending_main_frame_redirect_chain_) {
-      if (query.url == url) {
-        return &query;
-      }
+  for (auto& query : pending_main_frame_redirect_chain_) {
+    if (query.url == url && !query.decision) {
+      return &query;
     }
   }
+
+  if (pending_main_frame_query_ && pending_main_frame_query_->url == url &&
+      !pending_main_frame_query_->decision) {
+    return &pending_main_frame_query_.value();
+  }
+
   return nullptr;
 }
 
 void SafeBrowsingTabHelper::PolicyDecider::OnMainFrameUrlQueryDecided(
     const GURL& url,
     web::WebStatePolicyDecider::PolicyDecision decision) {
-  GetPendingMainFrameQuery(url)->decision = decision;
+  GetOldestPendingMainFrameQuery(url)->decision = decision;
 
   // If ShouldAllowResponse() has already been called for this URL, and if
   // an overall decision for the redirect chain can be computed, invoke this

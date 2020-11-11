@@ -294,6 +294,22 @@ TEST_P(SafeBrowsingTabHelperTest, RequestAndResponseWithUnsupportedScheme) {
   EXPECT_TRUE(response_decision.ShouldAllowNavigation());
 }
 
+// Tests the case of a request and response that are not identical, but have
+// the same host.
+TEST_P(SafeBrowsingTabHelperTest, RequestAndResponseWithOnlyMatchingHost) {
+  GURL request_url("http://chromium.test/page1.html");
+  GURL response_url("http://chromium.test/page2.html");
+
+  EXPECT_TRUE(ShouldAllowRequestUrl(request_url).ShouldAllowNavigation());
+
+  if (SafeBrowsingDecisionArrivesBeforeResponse())
+    base::RunLoop().RunUntilIdle();
+
+  web::WebStatePolicyDecider::PolicyDecision response_decision =
+      ShouldAllowResponseUrl(response_url);
+  EXPECT_TRUE(response_decision.ShouldAllowNavigation());
+}
+
 // Tests the case of a single sub frame navigation request and response, for a
 // URL that is safe.
 TEST_P(SafeBrowsingTabHelperTest, SafeSubFrameRequestAndResponse) {
@@ -783,6 +799,92 @@ TEST_P(SafeBrowsingTabHelperTest, RedirectToSameUnsafeURL) {
   web::WebStatePolicyDecider::PolicyDecision response_decision =
       ShouldAllowResponseUrl(url);
   EXPECT_TRUE(response_decision.ShouldCancelNavigation());
+}
+
+// Tests the case of a redirection chain where all URLs in the chain are safe,
+// and one URL appears multiple times.
+TEST_P(SafeBrowsingTabHelperTest, SafeRedirectChainWithRepeatedURL) {
+  GURL url1("http://chromium1.test");
+  GURL url2("http://chromium2.test");
+  GURL url3("http://chromium3.test");
+  EXPECT_TRUE(ShouldAllowRequestUrl(url1).ShouldAllowNavigation());
+  if (SafeBrowsingDecisionArrivesBeforeResponse())
+    base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(ShouldAllowRequestUrl(url2).ShouldAllowNavigation());
+  if (SafeBrowsingDecisionArrivesBeforeResponse())
+    base::RunLoop().RunUntilIdle();
+  SimulateMainFrameRedirect();
+
+  EXPECT_TRUE(ShouldAllowRequestUrl(url1).ShouldAllowNavigation());
+  if (SafeBrowsingDecisionArrivesBeforeResponse())
+    base::RunLoop().RunUntilIdle();
+  SimulateMainFrameRedirect();
+
+  EXPECT_TRUE(ShouldAllowRequestUrl(url3).ShouldAllowNavigation());
+  if (SafeBrowsingDecisionArrivesBeforeResponse())
+    base::RunLoop().RunUntilIdle();
+  SimulateMainFrameRedirect();
+
+  EXPECT_TRUE(ShouldAllowRequestUrl(url1).ShouldAllowNavigation());
+  if (SafeBrowsingDecisionArrivesBeforeResponse())
+    base::RunLoop().RunUntilIdle();
+  SimulateMainFrameRedirect();
+
+  web::WebStatePolicyDecider::PolicyDecision response_decision =
+      ShouldAllowResponseUrl(url1);
+  EXPECT_TRUE(response_decision.ShouldAllowNavigation());
+}
+
+// Tests the case of a redirection chain where an unsafe URL appears multiple
+// times.
+TEST_P(SafeBrowsingTabHelperTest, UnsafeRedirectChainWithRepeatedURL) {
+  GURL url1("http://chromium1.test");
+  GURL url2("http://" + FakeSafeBrowsingService::kUnsafeHost);
+  GURL url3("http://chromium3.test");
+  EXPECT_TRUE(ShouldAllowRequestUrl(url1).ShouldAllowNavigation());
+  if (SafeBrowsingDecisionArrivesBeforeResponse())
+    base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(ShouldAllowRequestUrl(url2).ShouldAllowNavigation());
+  StoreUnsafeResource(url2);
+  base::RunLoop().RunUntilIdle();
+  SimulateMainFrameRedirect();
+
+  EXPECT_TRUE(ShouldAllowRequestUrl(url3).ShouldAllowNavigation());
+  if (SafeBrowsingDecisionArrivesBeforeResponse())
+    base::RunLoop().RunUntilIdle();
+  SimulateMainFrameRedirect();
+
+  EXPECT_TRUE(ShouldAllowRequestUrl(url2).ShouldAllowNavigation());
+  StoreUnsafeResource(url2);
+  if (SafeBrowsingDecisionArrivesBeforeResponse())
+    base::RunLoop().RunUntilIdle();
+  SimulateMainFrameRedirect();
+
+  web::WebStatePolicyDecider::PolicyDecision response_decision =
+      ShouldAllowResponseUrl(url2);
+  EXPECT_TRUE(response_decision.ShouldCancelNavigation());
+}
+
+// Tests the case of a redirection where ShouldAllowRequest is not called on
+// the target of the redirection but instead called a second time on the source.
+TEST_P(SafeBrowsingTabHelperTest, RedirectWithMissingShouldAllowRequest) {
+  GURL url1("http://chromium1.test/page1.html");
+  GURL url2("http://chromium2.test/page2.html");
+  EXPECT_TRUE(ShouldAllowRequestUrl(url1).ShouldAllowNavigation());
+  if (SafeBrowsingDecisionArrivesBeforeResponse())
+    base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(ShouldAllowRequestUrl(url1).ShouldAllowNavigation());
+
+  SimulateMainFrameRedirect();
+  if (SafeBrowsingDecisionArrivesBeforeResponse())
+    base::RunLoop().RunUntilIdle();
+
+  web::WebStatePolicyDecider::PolicyDecision response_decision =
+      ShouldAllowResponseUrl(url2);
+  EXPECT_TRUE(response_decision.ShouldAllowNavigation());
 }
 
 // Tests that prerendering is cancelled when the URL being prerendered is
