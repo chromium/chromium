@@ -638,15 +638,6 @@ void TabLifecycleUnitSource::TabLifecycleUnit::DidStartLoading() {
 
 void TabLifecycleUnitSource::TabLifecycleUnit::OnVisibilityChanged(
     content::Visibility visibility) {
-  // Ensure that the tab is not considered focused when not visible.
-  //
-  // TabLifeycleUnitSource calls SetFocused(false) when focus changes to another
-  // tab. The code below is also required to cover the case where the focused
-  // tab is hidden but no other tab is focused, which can happen when the
-  // focused window is minimized or occluded.
-  if (visibility != content::Visibility::VISIBLE)
-    SetFocused(false);
-
   OnLifecycleUnitVisibilityChanged(visibility);
 }
 

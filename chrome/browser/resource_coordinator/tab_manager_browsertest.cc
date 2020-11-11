@@ -154,6 +154,10 @@ class TabManagerTest : public InProcessBrowserTest {
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
+
+    // To avoid flakes when focus changes, set the active tab strip model
+    // explicitly.
+    GetTabLifecycleUnitSource()->SetFocusedTabStripModelForTesting(tsm());
   }
 
   void OpenTwoTabs(const GURL& first_url, const GURL& second_url) {
@@ -206,7 +210,6 @@ class TabManagerTestWithTwoTabs : public TabManagerTest {
     ASSERT_TRUE(embedded_test_server()->Start());
 
     // Open 2 tabs with default URLs in a focused tab strip.
-    GetTabLifecycleUnitSource()->SetFocusedTabStripModelForTesting(tsm());
     OpenTwoTabs(embedded_test_server()->GetURL("/title2.html"),
                 embedded_test_server()->GetURL("/title3.html"));
   }
@@ -940,6 +943,12 @@ Browser* CreateBrowserWithTabs(int num_tabs) {
   chrome::NewWindow(current_browser);
   Browser* new_browser = BrowserList::GetInstance()->GetLastActive();
   EXPECT_NE(new_browser, current_browser);
+
+  // To avoid flakes when focus changes, set the active tab strip model
+  // explicitly.
+  GetTabLifecycleUnitSource()->SetFocusedTabStripModelForTesting(
+      new_browser->tab_strip_model());
+
   EnsureTabsInBrowser(new_browser, num_tabs);
   return new_browser;
 }
@@ -955,11 +964,12 @@ Browser* CreateBrowserWithTabs(int num_tabs) {
 #define MAYBE_DiscardTabsWithMinimizedWindow DiscardTabsWithMinimizedWindow
 #endif
 IN_PROC_BROWSER_TEST_F(TabManagerTest, MAYBE_DiscardTabsWithMinimizedWindow) {
+  // Do not override the focused TabStripModel.
+  GetTabLifecycleUnitSource()->SetFocusedTabStripModelForTesting(nullptr);
+
   // Minimized browser.
   EnsureTabsInBrowser(browser(), 2);
   browser()->window()->Minimize();
-  // Other browser that will be last active. This browser exists because the
-  // last active tab cannot be discarded on
 
   // Advance time so everything is urgent discardable.
   test_clock_.Advance(kBackgroundUrgentProtectionTime);
@@ -982,6 +992,12 @@ IN_PROC_BROWSER_TEST_F(TabManagerTest, MAYBE_DiscardTabsWithMinimizedWindow) {
   // Non-active tabs can be discarded on all platforms.
   EXPECT_TRUE(
       IsTabDiscarded(browser()->tab_strip_model()->GetWebContentsAt(1)));
+
+  // Showing the browser again should reload the active tab.
+  browser()->window()->Show();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(
+      IsTabDiscarded(browser()->tab_strip_model()->GetWebContentsAt(0)));
 }
 
 // Do not run in debug or ASAN builds to avoid timeouts due to multiple

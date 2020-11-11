@@ -32,8 +32,10 @@
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/resource_coordinator/tab_lifecycle_unit_external.h"
+#include "chrome/browser/resource_coordinator/tab_lifecycle_unit_source.h"
 #include "chrome/browser/resource_coordinator/tab_manager.h"
 #include "chrome/browser/resource_coordinator/time.h"
+#include "chrome/browser/resource_coordinator/utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -1308,6 +1310,11 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, DiscardedProperty) {
   ASSERT_TRUE(g_browser_process && g_browser_process->GetTabManager());
   resource_coordinator::TabManager* tab_manager =
       g_browser_process->GetTabManager();
+
+  // To avoid flakes when focus changes, set the active tab strip model
+  // explicitly.
+  resource_coordinator::GetTabLifecycleUnitSource()
+      ->SetFocusedTabStripModelForTesting(browser()->tab_strip_model());
 
   // Create two aditional tabs.
   content::OpenURLParams params(GURL(url::kAboutBlankURL), content::Referrer(),
