@@ -6,10 +6,9 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <!-- TODO(crbug.com/1077766): Add link. -->
     <org.chromium.components.browser_ui.settings.TextMessagePreference
         android:key="cookie_summary"
-        app:iconSpaceReserved="false"/>
+        android:layout="@layout/page_info_summary" />
 
     <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
         android:key="cookie_switch"

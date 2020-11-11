@@ -88,11 +88,11 @@ public class ConnectionInfoView implements OnClickListener {
         // TODO(crbug.com/1077766): Rename mPaddingWide and mPaddingThin to mPaddingSides and
         // mPaddingVertical respectively when cleaning up V2 enabled tags
         if (mIsV2Enabled) {
-            mPaddingWide = (int) context.getResources().getDimension(
+            mPaddingWide = context.getResources().getDimensionPixelSize(
                     R.dimen.page_info_popup_padding_sides);
-            mPaddingThin = (int) context.getResources().getDimension(
+            mPaddingThin = context.getResources().getDimensionPixelSize(
                     R.dimen.page_info_popup_padding_vertical);
-            mContainer.setPadding(mPaddingWide, mPaddingThin, mPaddingThin, 0);
+            mContainer.setPadding(mPaddingWide, mPaddingThin, mPaddingWide, 0);
 
         } else {
             mPaddingWide =

@@ -34,6 +34,7 @@
         android:id="@+id/page_info_row_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:includeFontPadding="false"
         android:textAppearance="@style/TextAppearance.TextLarge.Primary" />
 
     <org.chromium.ui.widget.TextViewWithLeading
