@@ -52,6 +52,7 @@ public class IncognitoCustomTabIntentDataProvider extends BrowserServicesIntentD
     private final Bundle mAnimationBundle;
     private final int mToolbarColor;
     private final int mBottomBarColor;
+    private final int mNavigationBarColor;
     private final Drawable mCloseButtonIcon;
     private final boolean mShowShareItem;
     private final List<Pair<String, PendingIntent>> mMenuEntries = new ArrayList<>();
@@ -81,6 +82,8 @@ public class IncognitoCustomTabIntentDataProvider extends BrowserServicesIntentD
         mToolbarColor = ChromeColors.getDefaultThemeColor(
                 context.getResources(), /*forceDarkBgColor*/ true);
         mBottomBarColor = ChromeColors.getDefaultThemeColor(
+                context.getResources(), /*forceDarkBgColor*/ true);
+        mNavigationBarColor = ChromeColors.getDefaultThemeColor(
                 context.getResources(), /*forceDarkBgColor*/ true);
         mCloseButtonIcon = TintedDrawable.constructTintedDrawable(context, R.drawable.btn_close);
         mShowShareItem = IntentUtils.safeGetBooleanExtra(
@@ -235,6 +238,11 @@ public class IncognitoCustomTabIntentDataProvider extends BrowserServicesIntentD
     @Override
     public int getBottomBarColor() {
         return mBottomBarColor;
+    }
+
+    @Override
+    public Integer getNavigationBarColor() {
+        return mNavigationBarColor;
     }
 
     @Override
