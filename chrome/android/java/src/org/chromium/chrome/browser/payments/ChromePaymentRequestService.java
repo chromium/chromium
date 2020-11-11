@@ -162,8 +162,7 @@ public class ChromePaymentRequestService implements BrowserPaymentRequest,
     @Override
     public void onSpecValidated(PaymentRequestSpec spec) {
         mSpec = spec;
-        mPaymentUiService.initialize(
-                mSpec.getPaymentDetails(), mSpec.getRawTotal(), mSpec.getRawLineItems());
+        mPaymentUiService.initialize(mSpec.getPaymentDetails());
 
         // Log the various types of payment methods that were requested by the merchant.
         boolean requestedMethodGoogle = false;
@@ -482,8 +481,7 @@ public class ChromePaymentRequestService implements BrowserPaymentRequest,
         // mSpec.updateWith() can be used only when mSpec has not been destroyed.
         assert !mSpec.isDestroyed();
 
-        mPaymentUiService.updateDetailsOnPaymentRequestUI(
-                mSpec.getPaymentDetails(), mSpec.getRawTotal(), mSpec.getRawLineItems());
+        mPaymentUiService.updateDetailsOnPaymentRequestUI(mSpec.getPaymentDetails());
 
         if (hasNotifiedInvokedPaymentApp) return;
 
@@ -512,8 +510,7 @@ public class ChromePaymentRequestService implements BrowserPaymentRequest,
             return;
         }
 
-        mPaymentUiService.updateDetailsOnPaymentRequestUI(
-                mSpec.getPaymentDetails(), mSpec.getRawTotal(), mSpec.getRawLineItems());
+        mPaymentUiService.updateDetailsOnPaymentRequestUI(mSpec.getPaymentDetails());
 
         // Do not create shipping section When UI is not built yet. This happens when the show
         // promise gets resolved before all apps are ready.

@@ -539,14 +539,10 @@ public class PaymentUiService implements SettingsAutofillAndPaymentsObserver.Obs
     /**
      * Initializes the payment UI service.
      * @param details The PaymentDetails provided by the merchant.
-     * @param rawTotal The raw total amount being charged.
-     * @param rawLineItems The raw items in the shopping cart, as they were received from the
-     *         merchant page.
      */
-    public void initialize(
-            PaymentDetails details, PaymentItem rawTotal, List<PaymentItem> rawLineItems) {
+    public void initialize(PaymentDetails details) {
         assert !mParams.hasClosed();
-        updateDetailsOnPaymentRequestUI(details, rawTotal, rawLineItems);
+        updateDetailsOnPaymentRequestUI(details);
         for (PaymentMethodData method : mParams.getMethodData().values()) {
             mCardEditor.addAcceptedPaymentMethodIfRecognized(method);
         }
@@ -1417,18 +1413,18 @@ public class PaymentUiService implements SettingsAutofillAndPaymentsObserver.Obs
     /**
      * Update the details related fields on the PaymentRequest UI.
      * @param details The details whose information is used for the update.
-     * @param rawTotal The raw total parsed from the details to be used for the update.
-     * @param rawLineItems The raw line items parsed from the details to be used for the update.
      */
-    public void updateDetailsOnPaymentRequestUI(
-            PaymentDetails details, PaymentItem rawTotal, List<PaymentItem> rawLineItems) {
+    public void updateDetailsOnPaymentRequestUI(PaymentDetails details) {
         loadCurrencyFormattersForPaymentDetails(details);
         // Total is never pending.
-        CurrencyFormatter formatter = getOrCreateCurrencyFormatter(rawTotal.amount);
-        LineItem uiTotal = new LineItem(rawTotal.label, formatter.getFormattedCurrencyCode(),
-                formatter.format(rawTotal.amount.value), /*isPending=*/false);
+        CurrencyFormatter formatter = getOrCreateCurrencyFormatter(details.total.amount);
+        LineItem uiTotal = new LineItem(details.total.label, formatter.getFormattedCurrencyCode(),
+                formatter.format(details.total.amount.value), /*isPending=*/false);
 
-        List<LineItem> uiLineItems = getLineItems(rawLineItems);
+        List<PaymentItem> itemList = details.displayItems == null
+                ? new ArrayList<>()
+                : Arrays.asList(details.displayItems);
+        List<LineItem> uiLineItems = getLineItems(itemList);
 
         mUiShoppingCart = new ShoppingCart(uiTotal, uiLineItems);
 
