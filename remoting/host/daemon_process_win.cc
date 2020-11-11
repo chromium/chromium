@@ -245,7 +245,8 @@ std::unique_ptr<DaemonProcess> DaemonProcess::Create(
       caller_task_runner, io_task_runner, std::move(stopped_callback));
 
   // Initialize our ETW logger first so we can capture any subsequent events.
-  daemon_process->StartEtwLogging();
+  // TODO(joedow): Re-enable after we can control logging via the registry.
+  // daemon_process->StartEtwLogging();
 
   daemon_process->Initialize();
 
