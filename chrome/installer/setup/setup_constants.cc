@@ -19,6 +19,9 @@ const wchar_t kInstallSourceChromeDir[] = L"Chrome-bin";
 const wchar_t kMediaPlayerRegPath[] =
     L"Software\\Microsoft\\MediaPlayer\\ShimInclusionList";
 
+// Local State preference names.
+const char kUninstallMetricsName[] = "uninstall_metrics";
+
 const char kCourgette[] = "courgette";
 const char kBsdiff[] = "bsdiff";
 #if BUILDFLAG(ZUCCHINI)

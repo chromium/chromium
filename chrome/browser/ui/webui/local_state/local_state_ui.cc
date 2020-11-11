@@ -69,8 +69,8 @@ void LocalStateUIHandler::HandleRequestJson(const base::ListValue* args) {
       g_browser_process->local_state()->GetPreferenceValues(
           PrefService::EXCLUDE_DEFAULTS);
   if (ENABLE_FILTERING) {
-    std::vector<std::string> allowlisted_prefixes = {"variations",
-                                                     "user_experience_metrics"};
+    std::vector<std::string> allowlisted_prefixes = {
+        "variations", "user_experience_metrics", "uninstall_metrics"};
     internal::FilterPrefs(allowlisted_prefixes, local_state_values);
   }
   std::string json;

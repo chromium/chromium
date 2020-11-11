@@ -147,7 +147,8 @@ void StabilityMetricsHelper::ProvideStabilityMetrics(
 }
 
 void StabilityMetricsHelper::ClearSavedStabilityMetrics() {
-  // Clear all the prefs used in this class in UMA reports.
+  // Clear all the prefs used in this class in UMA reports (which doesn't
+  // include |kUninstallMetricsPageLoadCount| as it's not sent up by UMA).
   local_state_->SetInteger(prefs::kStabilityChildProcessCrashCount, 0);
   local_state_->SetInteger(prefs::kStabilityExtensionRendererCrashCount, 0);
   local_state_->SetInteger(prefs::kStabilityExtensionRendererFailedLaunchCount,
@@ -176,6 +177,8 @@ void StabilityMetricsHelper::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(prefs::kStabilityRendererFailedLaunchCount, 0);
   registry->RegisterIntegerPref(prefs::kStabilityRendererHangCount, 0);
   registry->RegisterIntegerPref(prefs::kStabilityRendererLaunchCount, 0);
+
+  registry->RegisterInt64Pref(prefs::kUninstallMetricsPageLoadCount, 0);
 }
 
 void StabilityMetricsHelper::IncreaseRendererCrashCount() {
@@ -208,6 +211,7 @@ void StabilityMetricsHelper::BrowserChildProcessCrashed() {
 
 void StabilityMetricsHelper::LogLoadStarted() {
   IncrementPrefValue(prefs::kStabilityPageLoadCount);
+  IncrementLongPrefsValue(prefs::kUninstallMetricsPageLoadCount);
   RecordStabilityEvent(StabilityEventType::kPageLoad);
 }
 
