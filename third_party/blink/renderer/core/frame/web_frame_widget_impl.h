@@ -93,7 +93,6 @@ class WebFrameWidgetImpl final : public WebFrameWidgetBase {
   void Resize(const gfx::Size&) override;
   void UpdateLifecycle(WebLifecycleUpdate requested_update,
                        DocumentUpdateReason reason) override;
-  WebHitTestResult HitTestResultAt(const gfx::PointF&) override;
   WebInputEventResult DispatchBufferedTouchEvents() override;
 
   void MouseCaptureLost() override;
@@ -126,7 +125,6 @@ class WebFrameWidgetImpl final : public WebFrameWidgetBase {
   void IntrinsicSizingInfoChanged(
       mojom::blink::IntrinsicSizingInfoPtr) override;
   void DidCreateLocalRootView() override;
-  HitTestResult CoreHitTestResultAt(const gfx::PointF&) override;
   void ZoomToFindInPageRect(const WebRect& rect_in_root_frame) override;
   void SetAutoResizeMode(bool auto_resize,
                          const gfx::Size& min_size_before_dsf,

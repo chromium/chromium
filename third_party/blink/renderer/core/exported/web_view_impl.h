@@ -188,7 +188,6 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   void EnableAutoResizeForTesting(const gfx::Size& min_window_size,
                                   const gfx::Size& max_window_size) override;
   void DisableAutoResizeForTesting(const gfx::Size& new_window_size) override;
-  WebHitTestResult HitTestResultAt(const gfx::PointF&);
   WebHitTestResult HitTestResultForTap(const gfx::Point&,
                                        const gfx::Size&) override;
   void EnableDeviceEmulation(const DeviceEmulationParams&) override;
@@ -249,7 +248,6 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   void ResetScaleStateImmediately();
   base::Optional<mojom::blink::ScreenOrientation> ScreenOrientationOverride();
 
-  HitTestResult CoreHitTestResultAt(const gfx::PointF&);
   void InvalidateRect(const IntRect&);
 
   void SetZoomFactorOverride(float);
@@ -577,8 +575,6 @@ class CORE_EXPORT WebViewImpl final : public WebView,
       mojo::PendingAssociatedReceiver<mojom::blink::PageBroadcast> page_handle,
       scheduler::WebAgentGroupScheduler& agent_group_scheduler);
   ~WebViewImpl() override;
-
-  HitTestResult HitTestResultForRootFramePos(const FloatPoint&);
 
   void ConfigureAutoResizeMode();
 

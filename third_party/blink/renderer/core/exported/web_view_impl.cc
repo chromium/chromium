@@ -2995,29 +2995,6 @@ void WebViewImpl::ResetScrollAndScaleState() {
   GetPageScaleConstraintsSet().SetNeedsReset(true);
 }
 
-WebHitTestResult WebViewImpl::HitTestResultAt(const gfx::PointF& point) {
-  return CoreHitTestResultAt(point);
-}
-
-HitTestResult WebViewImpl::CoreHitTestResultAt(
-    const gfx::PointF& point_in_viewport) {
-  // TODO(crbug.com/843128): When we do async hit-testing, we might try to do
-  // hit-testing when the local main frame is not valid anymore. Look into if we
-  // can avoid getting here earlier in the pipeline.
-  if (!MainFrameImpl() || !MainFrameImpl()->GetFrameView())
-    return HitTestResult();
-
-  LocalFrameView* view = MainFrameImpl()->GetFrameView();
-  FloatPoint point_in_root_frame =
-      view->ViewportToFrame(FloatPoint(point_in_viewport));
-  HitTestResult result =
-      MainFrameImpl()->GetFrame()->View()->HitTestWithThrottlingAllowed(
-          HitTestLocation(point_in_root_frame),
-          HitTestRequest::kReadOnly | HitTestRequest::kActive);
-  result.SetToShadowHostIfInRestrictedShadowRoot();
-  return result;
-}
-
 void WebViewImpl::SendResizeEventForMainFrame() {
   // FIXME: This is wrong. The LocalFrameView is responsible sending a
   // resizeEvent as part of layout. Layout is also responsible for sending
@@ -3476,19 +3453,6 @@ Element* WebViewImpl::FocusedElement() const {
     return nullptr;
 
   return document->FocusedElement();
-}
-
-HitTestResult WebViewImpl::HitTestResultForRootFramePos(
-    const FloatPoint& pos_in_root_frame) {
-  auto* main_frame = DynamicTo<LocalFrame>(page_->MainFrame());
-  if (!main_frame)
-    return HitTestResult();
-  HitTestLocation location(
-      main_frame->View()->ConvertFromRootFrame(pos_in_root_frame));
-  HitTestResult result = main_frame->GetEventHandler().HitTestResultAtLocation(
-      location, HitTestRequest::kReadOnly | HitTestRequest::kActive);
-  result.SetToShadowHostIfInRestrictedShadowRoot();
-  return result;
 }
 
 WebHitTestResult WebViewImpl::HitTestResultForTap(

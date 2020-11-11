@@ -209,15 +209,6 @@ void WebViewFrameWidget::SetRootLayer(scoped_refptr<cc::Layer> root_layer) {
   web_view_->DidChangeRootLayer(!!root_layer);
 }
 
-WebHitTestResult WebViewFrameWidget::HitTestResultAt(const gfx::PointF& point) {
-  return web_view_->HitTestResultAt(point);
-}
-
-HitTestResult WebViewFrameWidget::CoreHitTestResultAt(
-    const gfx::PointF& point) {
-  return web_view_->CoreHitTestResultAt(point);
-}
-
 void WebViewFrameWidget::ZoomToFindInPageRect(
     const WebRect& rect_in_root_frame) {
   web_view_->ZoomToFindInPageRect(rect_in_root_frame);

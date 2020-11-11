@@ -1829,6 +1829,14 @@ WebFrameWidgetBase::EnsureCompositorMutatorDispatcher(
   return mutator_dispatcher_;
 }
 
+HitTestResult WebFrameWidgetBase::CoreHitTestResultAt(
+    const gfx::PointF& point_in_viewport) {
+  LocalFrameView* view = LocalRootImpl()->GetFrameView();
+  FloatPoint point_in_root_frame(
+      view->ViewportToFrame(FloatPoint(point_in_viewport)));
+  return HitTestResultForRootFramePos(point_in_root_frame);
+}
+
 cc::AnimationHost* WebFrameWidgetBase::AnimationHost() const {
   return widget_base_->AnimationHost();
 }
@@ -2835,7 +2843,7 @@ HitTestResult WebFrameWidgetBase::HitTestResultForRootFramePos(
           pos_in_root_frame);
   HitTestLocation location(doc_point);
   HitTestResult result =
-      LocalRootImpl()->GetFrame()->GetEventHandler().HitTestResultAtLocation(
+      LocalRootImpl()->GetFrame()->View()->HitTestWithThrottlingAllowed(
           location, HitTestRequest::kReadOnly | HitTestRequest::kActive);
   result.SetToShadowHostIfInRestrictedShadowRoot();
   return result;
@@ -2858,6 +2866,10 @@ const viz::FrameSinkId& WebFrameWidgetBase::GetFrameSinkId() {
   // printing and placeholders. But if we go to use it, it should be valid.
   DCHECK(frame_sink_id_.is_valid());
   return frame_sink_id_;
+}
+
+WebHitTestResult WebFrameWidgetBase::HitTestResultAt(const gfx::PointF& point) {
+  return CoreHitTestResultAt(point);
 }
 
 WebPlugin* WebFrameWidgetBase::GetFocusedPluginContainer() {

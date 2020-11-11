@@ -2514,7 +2514,7 @@ TEST_P(ScrollingSimTest, ScrollLayoutTriggers) {
 
     // The hit test (which may be performed by a scroll begin) should cause a
     // layout to occur.
-    WebView().HitTestResultAt(gfx::PointF(10, 10));
+    WebView().MainFrameWidget()->HitTestResultAt(gfx::PointF(10, 10));
     EXPECT_EQ(NumObjectsNeedingLayout(), 0u);
 
   } else {

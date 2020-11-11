@@ -330,10 +330,6 @@ void WebFrameWidgetImpl::UpdateLifecycle(WebLifecycleUpdate requested_update,
   View()->UpdatePagePopup();
 }
 
-WebHitTestResult WebFrameWidgetImpl::HitTestResultAt(const gfx::PointF& point) {
-  return CoreHitTestResultAt(point);
-}
-
 WebInputEventResult WebFrameWidgetImpl::DispatchBufferedTouchEvents() {
   if (doing_drag_and_drop_)
     return WebInputEventResult::kHandledSuppressed;
@@ -699,14 +695,6 @@ void WebFrameWidgetImpl::SetRootLayer(scoped_refptr<cc::Layer> layer) {
                              View()->MaximumPageScaleFactor());
 
   widget_base_->LayerTreeHost()->SetRootLayer(layer);
-}
-
-HitTestResult WebFrameWidgetImpl::CoreHitTestResultAt(
-    const gfx::PointF& point_in_viewport) {
-  LocalFrameView* view = LocalRootImpl()->GetFrameView();
-  FloatPoint point_in_root_frame(
-      view->ViewportToFrame(FloatPoint(point_in_viewport)));
-  return HitTestResultForRootFramePos(point_in_root_frame);
 }
 
 void WebFrameWidgetImpl::ZoomToFindInPageRect(

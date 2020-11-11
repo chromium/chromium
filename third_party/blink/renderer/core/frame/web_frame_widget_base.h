@@ -134,7 +134,7 @@ class CORE_EXPORT WebFrameWidgetBase
   base::WeakPtr<PaintWorkletPaintDispatcher> EnsureCompositorPaintDispatcher(
       scoped_refptr<base::SingleThreadTaskRunner>* paint_task_runner);
 
-  virtual HitTestResult CoreHitTestResultAt(const gfx::PointF&) = 0;
+  HitTestResult CoreHitTestResultAt(const gfx::PointF&);
 
   // FrameWidget implementation.
   WebWidgetClient* Client() const final { return client_; }
@@ -299,6 +299,7 @@ class CORE_EXPORT WebFrameWidgetBase
   bool HandlingSelectRange() override;
   void ReleaseMouseLockAndPointerCaptureForTesting() override;
   const viz::FrameSinkId& GetFrameSinkId() override;
+  WebHitTestResult HitTestResultAt(const gfx::PointF&) override;
 
   // Called when a drag-n-drop operation should begin.
   void StartDragging(const WebDragData&,
