@@ -449,7 +449,14 @@ TEST_F(ResponseBodyLoaderTest, ReadDataFromConsumerWhileSuspended) {
   consumer->Add(Command(Command::kData, "llo"));
   consumer->Add(Command(Command::kWait));
   consumer->Add(Command(Command::kData, "wo"));
-  task_runner->RunUntilIdle();
+  // ResponseBodyLoader will buffer data when deferred, and won't notify the
+  // client until it's resumed.
+  EXPECT_FALSE(consumer->IsCommandsEmpty());
+  consumer->TriggerOnStateChange();
+  while (!consumer->IsCommandsEmpty()) {
+    task_runner->RunUntilIdle();
+  }
+
   EXPECT_EQ("he", client->GetData());
   EXPECT_FALSE(client->LoadingIsFinished());
   EXPECT_FALSE(client->LoadingIsFailed());
@@ -482,7 +489,13 @@ TEST_F(ResponseBodyLoaderTest, ReadDataFromConsumerWhileSuspendedLong) {
   body_loader->Suspend();
   std::string body(70000, '*');
   consumer->Add(Command(Command::kDataAndDone, body.c_str()));
-  task_runner->RunUntilIdle();
+  // ResponseBodyLoader will buffer data when deferred, and won't notify the
+  // client until it's resumed.
+  EXPECT_FALSE(consumer->IsCommandsEmpty());
+  consumer->TriggerOnStateChange();
+  while (!consumer->IsCommandsEmpty()) {
+    task_runner->RunUntilIdle();
+  }
   EXPECT_EQ("", client->GetData());
   EXPECT_FALSE(client->LoadingIsFinished());
   EXPECT_FALSE(client->LoadingIsFailed());

@@ -64,6 +64,8 @@ class ReplayingBytesConsumer final : public BytesConsumer {
   String DebugName() const override { return "ReplayingBytesConsumer"; }
 
   bool IsCancelled() const { return is_cancelled_; }
+  bool IsCommandsEmpty() { return commands_.IsEmpty(); }
+  void TriggerOnStateChange() { client_->OnStateChange(); }
 
   void Trace(Visitor*) const override;
 

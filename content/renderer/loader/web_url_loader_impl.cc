@@ -1129,8 +1129,7 @@ void WebURLLoaderImpl::DidChangePriority(WebURLRequest::Priority new_priority,
 
 scoped_refptr<base::SingleThreadTaskRunner>
 WebURLLoaderImpl::GetTaskRunnerForBodyLoader() {
-  // TODO(yuzus): Use |unfreezable_task_runner_| once body loading is supported.
-  return context_->freezable_task_runner();
+  return context_->unfreezable_task_runner();
 }
 
 // static

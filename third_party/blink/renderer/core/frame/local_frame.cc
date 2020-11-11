@@ -2291,7 +2291,8 @@ void LocalFrame::ForciblyPurgeV8Memory() {
 
 void LocalFrame::OnPageLifecycleStateUpdated() {
   if (frozen_ != GetPage()->Frozen()) {
-    if (GetPage()->Frozen()) {
+    frozen_ = GetPage()->Frozen();
+    if (frozen_) {
       DidFreeze();
     } else {
       DidResume();
@@ -2299,10 +2300,7 @@ void LocalFrame::OnPageLifecycleStateUpdated() {
     // The event handlers might have detached the frame.
     if (!IsAttached())
       return;
-
-    frozen_ = GetPage()->Frozen();
   }
-
   SetContextPaused(GetPage()->Paused());
 
   mojom::blink::FrameLifecycleState frame_lifecycle_state =
