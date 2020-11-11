@@ -395,6 +395,7 @@ base::LazyInstance<HWNDMessageHandler::FullscreenWindowMonitorMap>::
 // HWNDMessageHandler, public:
 
 LONG HWNDMessageHandler::last_touch_or_pen_message_time_ = 0;
+bool HWNDMessageHandler::is_pen_active_in_client_area_ = false;
 
 HWNDMessageHandler::HWNDMessageHandler(HWNDMessageHandlerDelegate* delegate,
                                        const std::string& debugging_id)
@@ -2485,6 +2486,11 @@ LRESULT HWNDMessageHandler::OnScrollMessage(UINT message,
 LRESULT HWNDMessageHandler::OnSetCursor(UINT message,
                                         WPARAM w_param,
                                         LPARAM l_param) {
+  // Ignore system generated cursors likely caused by window management mouse
+  // moves while the pen is active over the window client area.
+  if (is_pen_active_in_client_area_)
+    return 1;
+
   // Reimplement the necessary default behavior here. Calling DefWindowProc can
   // trigger weird non-client painting for non-glass windows with custom frames.
   // Using a ScopedRedrawLock to prevent caption rendering artifacts may allow
@@ -2976,6 +2982,22 @@ LRESULT HWNDMessageHandler::HandleMouseEventInternal(UINT message,
                                                      WPARAM w_param,
                                                      LPARAM l_param,
                                                      bool track_mouse) {
+  // Ignore system generated mouse messages while the pen is active over the
+  // window client area.
+  if (is_pen_active_in_client_area_) {
+    INPUT_MESSAGE_SOURCE input_message_source;
+    static const auto get_current_input_message_source =
+        reinterpret_cast<decltype(&::GetCurrentInputMessageSource)>(
+            base::win::GetUser32FunctionPointer(
+                "GetCurrentInputMessageSource"));
+    if (get_current_input_message_source &&
+        get_current_input_message_source(&input_message_source) &&
+        input_message_source.deviceType == IMDT_UNAVAILABLE) {
+      return 0;
+    }
+    is_pen_active_in_client_area_ = false;
+  }
+
   // We handle touch events in Aura. Windows generates synthesized mouse
   // messages whenever there's a touch, but it doesn't give us the actual touch
   // messages if it thinks the touch point is in non-client space.
@@ -3278,6 +3300,7 @@ LRESULT HWNDMessageHandler::HandlePointerEventTypePenClient(UINT message,
       NOTREACHED();
 
     last_touch_or_pen_message_time_ = ::GetMessageTime();
+    is_pen_active_in_client_area_ = true;
   }
 
   // Always mark as handled as we don't want to generate WM_MOUSE compatiblity
