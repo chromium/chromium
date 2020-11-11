@@ -502,6 +502,10 @@ void LayoutTheme::AdjustSliderContainerStyle(const Element& e,
   } else {
     style.SetTouchAction(TouchAction::kPanY);
     style.SetWritingMode(WritingMode::kHorizontalTb);
+    if (To<HTMLInputElement>(e.OwnerShadowHost())->list()) {
+      style.SetAlignSelf(StyleSelfAlignmentData(ItemPosition::kCenter,
+                                                OverflowAlignment::kUnsafe));
+    }
   }
   style.SetEffectiveAppearance(kNoControlPart);
 }
