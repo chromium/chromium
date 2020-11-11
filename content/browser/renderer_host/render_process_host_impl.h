@@ -31,6 +31,7 @@
 #include "base/threading/sequence_bound.h"
 #include "base/util/type_safety/pass_key.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "content/browser/child_process_launcher.h"
 #include "content/browser/dom_storage/session_storage_namespace_impl.h"
 #include "content/browser/media/media_internals.h"
@@ -429,7 +430,7 @@ class CONTENT_EXPORT RenderProcessHostImpl
   static scoped_refptr<base::SingleThreadTaskRunner>
   GetInProcessRendererThreadTaskRunnerForTesting();
 
-#if !defined(OS_ANDROID) && !defined(OS_CHROMEOS)
+#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
   // Gets the platform-specific limit. Used by GetMaxRendererProcessCount().
   static size_t GetPlatformMaxRendererProcessCount();
 #endif

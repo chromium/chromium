@@ -11,6 +11,7 @@
 #include "base/bind_helpers.h"
 #include "base/logging.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "content/browser/renderer_host/pepper/browser_ppapi_host_impl.h"
 #include "content/browser/renderer_host/pepper/content_browser_pepper_host_factory.h"
 #include "content/browser/renderer_host/pepper/pepper_socket_utils.h"
@@ -36,9 +37,9 @@
 #include "ppapi/shared_impl/private/net_address_private_impl.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/network/firewall_hole.h"
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 using ppapi::NetAddressPrivateImpl;
 using ppapi::host::NetErrorToPepperError;
@@ -251,7 +252,7 @@ void PepperTCPServerSocketMessageFilter::OnListenCompleted(
     return;
   }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   OpenFirewallHole(context, *local_addr);
 #else
   SendListenReply(context, PP_OK, bound_addr_);
@@ -259,7 +260,7 @@ void PepperTCPServerSocketMessageFilter::OnListenCompleted(
 #endif
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 void PepperTCPServerSocketMessageFilter::OpenFirewallHole(
     const ppapi::host::ReplyMessageContext& context,
     const net::IPEndPoint& local_addr) {
@@ -282,7 +283,7 @@ void PepperTCPServerSocketMessageFilter::OnFirewallHoleOpened(
   SendListenReply(context, PP_OK, bound_addr_);
   state_ = STATE_LISTENING;
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 void PepperTCPServerSocketMessageFilter::OnAcceptCompleted(
     const ppapi::host::ReplyMessageContext& context,
@@ -378,9 +379,9 @@ void PepperTCPServerSocketMessageFilter::Close() {
   state_ = STATE_CLOSED;
 
   socket_.reset();
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   firewall_hole_.reset();
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 void PepperTCPServerSocketMessageFilter::SendListenReply(

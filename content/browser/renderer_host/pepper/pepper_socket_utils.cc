@@ -13,6 +13,7 @@
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/render_frame_host.h"
@@ -137,7 +138,7 @@ bool GetCertificateFields(const char* der,
   return GetCertificateFields(*cert.get(), fields);
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 namespace {
 
 // The entire IPv4 subnet 127.0.0.0/8 is for loopback. See RFC3330.
@@ -183,7 +184,7 @@ void OpenUDPFirewallHole(const net::IPEndPoint& address,
   OpenFirewallHole(address, chromeos::FirewallHole::PortType::UDP,
                    std::move(callback));
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 net::MutableNetworkTrafficAnnotationTag PepperTCPNetworkAnnotationTag() {
   return net::MutableNetworkTrafficAnnotationTag(

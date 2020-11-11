@@ -19,6 +19,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "content/common/content_export.h"
 #include "content/public/common/process_type.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -35,10 +36,10 @@
 
 struct PP_NetAddress_Private;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/network/firewall_hole.h"
 #include "content/public/browser/browser_thread.h"
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace ppapi {
 
@@ -137,14 +138,14 @@ class CONTENT_EXPORT PepperUDPSocketMessageFilter
                           listener_receiver,
                       const ppapi::host::ReplyMessageContext& context,
                       const PP_NetAddress_Private& net_address);
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   void OnFirewallHoleOpened(
       mojo::PendingReceiver<network::mojom::UDPSocketListener>
           listener_receiver,
       const ppapi::host::ReplyMessageContext& context,
       const PP_NetAddress_Private& net_address,
       std::unique_ptr<chromeos::FirewallHole> hole);
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   void StartPendingSend();
   void Close();
 
@@ -223,7 +224,7 @@ class CONTENT_EXPORT PepperUDPSocketMessageFilter
   // on UI thread.
   mojo::Receiver<network::mojom::UDPSocketListener> receiver_{this};
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<chromeos::FirewallHole,
                   content::BrowserThread::DeleteOnUIThread>
       firewall_hole_;
@@ -231,7 +232,7 @@ class CONTENT_EXPORT PepperUDPSocketMessageFilter
   // network service crashes.
   base::WeakPtrFactory<PepperUDPSocketMessageFilter>
       firewall_hole_weak_ptr_factory_{this};
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   DISALLOW_COPY_AND_ASSIGN(PepperUDPSocketMessageFilter);
 };

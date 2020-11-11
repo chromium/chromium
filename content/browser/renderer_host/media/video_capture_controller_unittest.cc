@@ -22,6 +22,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "build/chromeos_buildflags.h"
 #include "content/browser/renderer_host/media/media_stream_provider.h"
 #include "content/browser/renderer_host/media/mock_video_capture_provider.h"
 #include "content/browser/renderer_host/media/video_capture_controller_event_handler.h"
@@ -39,9 +40,9 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "media/capture/video/chromeos/video_capture_jpeg_decoder_impl.h"
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 using ::testing::_;
 using ::testing::AnyNumber;
@@ -178,7 +179,7 @@ class VideoCaptureControllerTest
   void InitializeNewDeviceClientAndBufferPoolInstances() {
     buffer_pool_ = new media::VideoCaptureBufferPoolImpl(
         media::VideoCaptureBufferType::kSharedMemory, kPoolSize);
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     device_client_.reset(new media::VideoCaptureDeviceClient(
         media::VideoCaptureBufferType::kSharedMemory,
         std::make_unique<media::VideoFrameReceiverOnTaskRunner>(
@@ -190,7 +191,7 @@ class VideoCaptureControllerTest
         std::make_unique<media::VideoFrameReceiverOnTaskRunner>(
             controller_->GetWeakPtrForIOThread(), GetIOThreadTaskRunner({})),
         buffer_pool_));
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   }
 
   void SendStubFrameToDeviceClient(const media::VideoCaptureFormat format,

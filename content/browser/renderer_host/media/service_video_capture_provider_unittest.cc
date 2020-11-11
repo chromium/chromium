@@ -12,6 +12,7 @@
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "base/threading/thread.h"
+#include "build/chromeos_buildflags.h"
 #include "content/public/browser/video_capture_device_launcher.h"
 #include "content/public/browser/video_capture_service.h"
 #include "content/public/test/browser_task_environment.h"
@@ -68,7 +69,7 @@ class ServiceVideoCaptureProviderTest : public testing::Test {
 
  protected:
   void SetUp() override {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     provider_ = std::make_unique<ServiceVideoCaptureProvider>(
         base::BindRepeating([]() {
           return std::unique_ptr<video_capture::mojom::AcceleratorFactory>();
@@ -77,7 +78,7 @@ class ServiceVideoCaptureProviderTest : public testing::Test {
 #else
     provider_ =
         std::make_unique<ServiceVideoCaptureProvider>(kIgnoreLogMessageCB);
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
     ON_CALL(mock_video_capture_service_, DoConnectToVideoSourceProvider(_))
         .WillByDefault(Invoke(

@@ -14,6 +14,7 @@
 #include "base/task/current_thread.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "content/browser/gpu/compositor_util.h"
 #include "content/browser/renderer_host/dip_util.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
@@ -874,7 +875,7 @@ IN_PROC_BROWSER_TEST_P(
   PerformTestWithLeftRightRects(html_rect_size, copy_rect, output_size);
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // On ChromeOS there is no software compositing.
 static const auto kTestCompositingModes = testing::Values(GL_COMPOSITING);
 #else

@@ -38,6 +38,7 @@
 #include "base/trace_event/trace_conversion_helper.h"
 #include "base/trace_event/traced_value.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/download/public/common/download_url_parameters.h"
 #include "content/browser/about_url_loader_factory.h"
 #include "content/browser/accessibility/browser_accessibility_manager.h"
@@ -8956,7 +8957,7 @@ void RenderFrameHostImpl::MaybeGenerateCrashReport(
         return;
       break;
     case base::TERMINATION_STATUS_OOM:
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     case base::TERMINATION_STATUS_PROCESS_WAS_KILLED_BY_OOM:
 #endif
 #if defined(OS_ANDROID)

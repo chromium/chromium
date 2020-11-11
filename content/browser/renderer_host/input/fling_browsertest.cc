@@ -5,6 +5,7 @@
 #include "base/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "content/browser/renderer_host/input/synthetic_smooth_scroll_gesture.h"
 #include "content/browser/renderer_host/render_widget_host_input_event_router.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -397,7 +398,7 @@ IN_PROC_BROWSER_TEST_F(BrowserSideFlingBrowserTest,
 }
 
 // Touchpad fling only happens on ChromeOS.
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_F(BrowserSideFlingBrowserTest,
                        TouchpadInertialGSUsBubbleFromOOPIF) {
   LoadPageWithOOPIF();
@@ -415,7 +416,7 @@ IN_PROC_BROWSER_TEST_F(BrowserSideFlingBrowserTest,
   SimulateTouchpadFling(child_view_->host(), GetWidgetHost(), fling_velocity);
   WaitForFrameScroll(GetRootNode(), 15, true /* upward */);
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 IN_PROC_BROWSER_TEST_F(BrowserSideFlingBrowserTest,
                        InertialGSEGetsBubbledFromOOPIF) {

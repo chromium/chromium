@@ -2168,6 +2168,7 @@ test("content_unittests") {
     "//base/test:test_support",
     "//base/third_party/dynamic_annotations",
     "//build:chromecast_buildflags",
+    "//build:chromeos_buildflags",
     "//cc",
     "//cc:test_support",
     "//cc/mojom",

@@ -8,22 +8,23 @@
 #include <memory>
 
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "content/public/common/socket_permission_request.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "ppapi/c/pp_stdint.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/network/firewall_hole.h"
 #include "net/base/ip_endpoint.h"
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 struct PP_NetAddress_Private;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 namespace chromeos {
 class FirewallHole;
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace net {
 class X509Certificate;
@@ -61,7 +62,7 @@ bool GetCertificateFields(const char* der,
                           uint32_t length,
                           ppapi::PPB_X509Certificate_Fields* fields);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Returns true if the open operation is in progress.
 void OpenTCPFirewallHole(const net::IPEndPoint& address,
@@ -69,7 +70,7 @@ void OpenTCPFirewallHole(const net::IPEndPoint& address,
 
 void OpenUDPFirewallHole(const net::IPEndPoint& address,
                          chromeos::FirewallHole::OpenCallback callback);
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Annotations for TCP and UDP network requests. Defined here to make it easier
 // to keep them in sync.

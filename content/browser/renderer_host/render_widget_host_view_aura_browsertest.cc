@@ -9,6 +9,7 @@
 #include "base/run_loop.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "build/chromeos_buildflags.h"
 #include "content/browser/devtools/protocol/devtools_protocol_test_support.h"
 #include "content/browser/renderer_host/delegated_frame_host.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
@@ -30,7 +31,7 @@
 namespace content {
 namespace {
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 const char kMinimalPageDataURL[] =
     "data:text/html,<html><head></head><body>Hello, world</body></html>";
 
@@ -43,7 +44,7 @@ void GiveItSomeTime() {
       base::TimeDelta::FromMilliseconds(250));
   run_loop.Run();
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 class FakeWebContentsDelegate : public WebContentsDelegate {
  public:
@@ -84,7 +85,7 @@ class RenderWidgetHostViewAuraBrowserTest : public ContentBrowserTest {
   }
 };
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraBrowserTest,
                        StaleFrameContentOnEvictionNormal) {
   EXPECT_TRUE(NavigateToURL(shell(), GURL(kMinimalPageDataURL)));
@@ -199,7 +200,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraBrowserTest,
   EXPECT_FALSE(
       GetDelegatedFrameHost()->stale_content_layer_->has_external_content());
 }
-#endif  // #if defined(OS_CHROMEOS)
+#endif  // #if BUILDFLAG(IS_CHROMEOS_ASH)
 
 class RenderWidgetHostViewAuraDevtoolsBrowserTest
     : public content::DevToolsProtocolTest {

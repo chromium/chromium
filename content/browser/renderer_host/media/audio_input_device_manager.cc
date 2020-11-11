@@ -13,6 +13,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "content/browser/renderer_host/media/media_stream_manager.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -24,7 +25,7 @@
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-shared.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/audio/cras_audio_handler.h"
 #endif
 
@@ -32,7 +33,7 @@ namespace content {
 
 namespace {
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 void SetKeyboardMicStreamActiveOnUIThread(bool active) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   chromeos::CrasAudioHandler::Get()->SetKeyboardMicActive(active);
@@ -88,7 +89,7 @@ std::string GetOpenLogString(const base::UnguessableToken& session_id,
 AudioInputDeviceManager::AudioInputDeviceManager(
     media::AudioSystem* audio_system)
     :
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
       keyboard_mic_streams_count_(0),
 #endif
       audio_system_(audio_system) {
@@ -172,7 +173,7 @@ void AudioInputDeviceManager::Close(const base::UnguessableToken& session_id) {
                                 this, stream_type, session_id));
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 AudioInputDeviceManager::KeyboardMicRegistration::KeyboardMicRegistration(
     KeyboardMicRegistration&& other)
     : shared_registration_count_(other.shared_registration_count_) {

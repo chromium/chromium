@@ -12,6 +12,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "content/browser/renderer_host/media/in_process_launched_video_capture_device.h"
 #include "content/browser/renderer_host/media/video_capture_controller.h"
 #include "content/common/buildflags.h"
@@ -42,15 +43,15 @@
 #endif  // defined(OS_ANDROID)
 #endif  // BUILDFLAG(ENABLE_SCREEN_CAPTURE)
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "content/browser/gpu/chromeos/video_capture_dependencies.h"
 #include "media/capture/video/chromeos/scoped_video_capture_jpeg_decoder.h"
 #include "media/capture/video/chromeos/video_capture_jpeg_decoder_impl.h"
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace {
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 std::unique_ptr<media::VideoCaptureJpegDecoder> CreateGpuJpegDecoder(
     media::VideoCaptureJpegDecoder::DecodeDoneCB decode_done_cb,
     base::RepeatingCallback<void(const std::string&)> send_log_message_cb) {
@@ -63,7 +64,7 @@ std::unique_ptr<media::VideoCaptureJpegDecoder> CreateGpuJpegDecoder(
           std::move(send_log_message_cb)),
       io_task_runner);
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // The maximum number of video frame buffers in-flight at any one time. This
 // value should be based on the logical capacity of the capture pipeline, and
@@ -250,7 +251,7 @@ InProcessVideoCaptureDeviceLauncher::CreateDeviceClient(
       new media::VideoCaptureBufferPoolImpl(
           requested_buffer_type, buffer_pool_max_buffer_count);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   return std::make_unique<media::VideoCaptureDeviceClient>(
       requested_buffer_type, std::move(receiver), std::move(buffer_pool),
       base::BindRepeating(
@@ -262,7 +263,7 @@ InProcessVideoCaptureDeviceLauncher::CreateDeviceClient(
 #else
   return std::make_unique<media::VideoCaptureDeviceClient>(
       requested_buffer_type, std::move(receiver), std::move(buffer_pool));
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 void InProcessVideoCaptureDeviceLauncher::OnDeviceStarted(

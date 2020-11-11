@@ -16,6 +16,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -27,10 +28,10 @@
 #include "ppapi/host/resource_message_filter.h"
 #include "services/network/public/mojom/tcp_socket.mojom.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/network/firewall_hole.h"
 #include "content/public/browser/browser_thread.h"
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace network {
 namespace mojom {
@@ -134,12 +135,12 @@ class CONTENT_EXPORT PepperTCPServerSocketMessageFilter
   void SendAcceptError(const ppapi::host::ReplyMessageContext& context,
                        int32_t pp_result);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   void OpenFirewallHole(const ppapi::host::ReplyMessageContext& context,
                         const net::IPEndPoint& local_addr);
   void OnFirewallHoleOpened(const ppapi::host::ReplyMessageContext& context,
                             std::unique_ptr<chromeos::FirewallHole> hole);
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Following fields are initialized and used only on the IO thread.
   // Non-owning ptr.
@@ -153,11 +154,11 @@ class CONTENT_EXPORT PepperTCPServerSocketMessageFilter
 
   PP_NetAddress_Private bound_addr_;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<chromeos::FirewallHole,
                   content::BrowserThread::DeleteOnUIThread>
       firewall_hole_;
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Following fields are initialized on the IO thread but used only
   // on the UI thread.

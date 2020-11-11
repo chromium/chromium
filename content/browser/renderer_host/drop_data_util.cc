@@ -13,6 +13,7 @@
 #include "base/files/file_path.h"
 #include "base/optional.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/chromeos_buildflags.h"
 #include "content/browser/file_system_access/native_file_system_manager_impl.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/mojom/referrer_policy.mojom-shared.h"
@@ -34,7 +35,7 @@ namespace {
 // system implementation.
 content::NativeFileSystemEntryFactory::PathType MaybeRemapPath(
     base::FilePath* entry_path) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   base::FilePath virtual_path;
   auto* external_mount_points =
       storage::ExternalMountPoints::GetSystemInstance();

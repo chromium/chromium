@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 #include <utility>
+#include "build/chromeos_buildflags.h"
 
 #include "content/browser/renderer_host/pepper/browser_ppapi_host_impl.h"
 #include "content/browser/renderer_host/pepper/pepper_browser_font_singleton_host.h"
@@ -27,7 +28,7 @@
 #include "ppapi/proxy/ppapi_messages.h"
 #include "ppapi/shared_impl/ppapi_permissions.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "content/browser/renderer_host/pepper/pepper_vpn_provider_message_filter_chromeos.h"
 #endif
 
@@ -172,7 +173,7 @@ ContentBrowserPepperHostFactory::CreateResourceHost(
             new PepperPrintingHost(host_->GetPpapiHost(), instance, resource,
                                    std::move(manager)));
       }
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
       case PpapiHostMsg_VpnProvider_Create::ID: {
         scoped_refptr<PepperVpnProviderMessageFilter> vpn_provider(
             new PepperVpnProviderMessageFilter(host_, instance));

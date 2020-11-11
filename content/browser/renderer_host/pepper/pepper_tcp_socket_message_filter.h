@@ -18,6 +18,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "content/browser/renderer_host/pepper/browser_ppapi_host_impl.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -37,9 +38,9 @@
 #include "services/network/public/mojom/tcp_socket.mojom.h"
 #include "services/network/public/mojom/tls_socket.mojom.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/network/firewall_hole.h"
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace ppapi {
 class SocketOptionData;
@@ -223,11 +224,11 @@ class CONTENT_EXPORT PepperTCPSocketMessageFilter
   void SetStreams(mojo::ScopedDataPipeConsumerHandle receive_stream,
                   mojo::ScopedDataPipeProducerHandle send_stream);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   void OpenFirewallHole(const ppapi::host::ReplyMessageContext& context);
   void OnFirewallHoleOpened(const ppapi::host::ReplyMessageContext& context,
                             std::unique_ptr<chromeos::FirewallHole> hole);
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   void SendBindReply(const ppapi::host::ReplyMessageContext& context,
                      int32_t pp_result,
@@ -310,9 +311,9 @@ class CONTENT_EXPORT PepperTCPSocketMessageFilter
   // The bound address.
   net::IPEndPoint bind_output_ip_endpoint_;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<chromeos::FirewallHole> firewall_hole_;
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Bitwise-or of SocketOption flags. This stores the state about whether
   // each option is set before Connect() is called.

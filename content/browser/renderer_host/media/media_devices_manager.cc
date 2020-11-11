@@ -23,6 +23,7 @@
 #include "base/threading/thread_checker.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "content/browser/media/media_devices_permission_checker.h"
 #include "content/browser/renderer_host/media/media_stream_manager.h"
 #include "content/browser/renderer_host/media/video_capture_manager.h"
@@ -1115,7 +1116,7 @@ void MediaDevicesManager::MaybeStopRemovedInputDevices(
   // matching either "default" or "communications".
   // NOTE: ChromeOS is able to seamlessly redirect streams to the new default
   // device, hence the event should not be triggered.
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   for (const auto& removed_audio_device : removed_audio_devices) {
     for (const auto& old_device_info :
          current_snapshot_[static_cast<size_t>(type)]) {
@@ -1128,7 +1129,7 @@ void MediaDevicesManager::MaybeStopRemovedInputDevices(
       }
     }
   }
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 void MediaDevicesManager::NotifyDeviceChangeSubscribers(

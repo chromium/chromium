@@ -22,6 +22,7 @@
 #include "base/threading/thread.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "content/browser/renderer_host/media/media_stream_provider.h"
 #include "content/common/content_export.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
@@ -52,7 +53,7 @@ class CONTENT_EXPORT AudioInputDeviceManager : public MediaStreamProvider {
   // other than Chrome OS.
   class KeyboardMicRegistration {
    public:
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     // No registration.
     KeyboardMicRegistration() = default;
 
@@ -75,7 +76,7 @@ class CONTENT_EXPORT AudioInputDeviceManager : public MediaStreamProvider {
 #endif
   };
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Registers that a stream using keyboard mic has been opened or closed.
   // Keeps count of how many such streams are open and activates and
   // inactivates the keyboard mic accordingly. The (in)activation is done on the
@@ -111,7 +112,7 @@ class CONTENT_EXPORT AudioInputDeviceManager : public MediaStreamProvider {
   base::ObserverList<MediaStreamProviderListener>::Unchecked listeners_;
   blink::MediaStreamDevices devices_;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Keeps count of how many streams are using keyboard mic.
   int keyboard_mic_streams_count_;
 #endif

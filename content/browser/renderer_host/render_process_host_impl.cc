@@ -1212,7 +1212,7 @@ void AddAllowedRequestInitiatorForPluginOnUIThread(
       process_id, allowed_request_initiator);
 }
 
-#if !defined(OS_ANDROID) && !defined(OS_CHROMEOS)
+#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 static constexpr size_t kUnknownPlatformProcessLimit = 0;
 
 // Returns the process limit from the system. Use |kUnknownPlatformProcessLimit|
@@ -1232,7 +1232,7 @@ size_t GetPlatformProcessLimit() {
   return kUnknownPlatformProcessLimit;
 #endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
 }
-#endif  // !defined(OS_ANDROID) && !defined(OS_CHROMEOS)
+#endif  // !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 
 RenderProcessHost::BindHostReceiverInterceptor&
 GetBindHostReceiverInterceptor() {
@@ -1385,7 +1385,7 @@ RenderProcessHostImpl::GetInProcessRendererThreadTaskRunnerForTesting() {
   return g_in_process_thread->task_runner();
 }
 
-#if !defined(OS_ANDROID) && !defined(OS_CHROMEOS)
+#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 // static
 size_t RenderProcessHostImpl::GetPlatformMaxRendererProcessCount() {
   // Set the limit to half of the system limit to leave room for other programs.
@@ -1410,7 +1410,7 @@ size_t RenderProcessHost::GetMaxRendererProcessCount() {
   // happy with keeping a lot of these, as long as the number of live renderer
   // processes remains reasonable, and on Android the OS takes care of that.
   return std::numeric_limits<size_t>::max();
-#elif defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
   // On Chrome OS new renderer processes are very cheap and there's no OS
   // driven constraint on the number of processes, and the effectiveness
   // of the tab discarder is very poor when we have tabs sharing a
@@ -3259,10 +3259,11 @@ void RenderProcessHostImpl::PropagateBrowserCommandLineToRenderer(
     switches::kDisableInProcessStackTraces,
     sandbox::policy::switches::kDisableSeccompFilterSandbox,
     sandbox::policy::switches::kNoSandbox,
-#if defined(OS_LINUX) && !defined(OS_CHROMEOS) && !BUILDFLAG(IS_LACROS)
+#if defined(OS_LINUX) && !BUILDFLAG(IS_CHROMEOS_ASH) && \
+    !BUILDFLAG(IS_CHROMEOS_LACROS)
     switches::kDisableDevShmUsage,
 #endif
-#if defined(OS_LINUX) && !defined(OS_CHROMEOS) && !defined(OS_ANDROID)
+#if (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) && !defined(OS_ANDROID)
     switches::kEnableAcceleratedVideoDecode,
 #endif
 #if defined(OS_MAC)
@@ -3482,7 +3483,7 @@ void RenderProcessHostImpl::PropagateBrowserCommandLineToRenderer(
   if (browser_cmd.HasSwitch(switches::kDisableGpuCompositing)) {
     renderer_cmd->AppendSwitch(switches::kDisableGpuCompositing);
   }
-#elif !defined(OS_CHROMEOS)
+#elif !BUILDFLAG(IS_CHROMEOS_ASH)
   // If gpu compositing is not being used, tell the renderer at startup. This
   // is inherently racey, as it may change while the renderer is being
   // launched, but the renderer will hear about the correct state eventually.

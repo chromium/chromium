@@ -5,6 +5,7 @@
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "cc/base/features.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_input_event_router.h"
@@ -280,7 +281,7 @@ IN_PROC_BROWSER_TEST_F(
              ExecuteScriptAndExtractDouble(
                  "scrollableDiv.getBoundingClientRect().bottom")) /
             2;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   bool precise = true;
 #else
   bool precise = false;

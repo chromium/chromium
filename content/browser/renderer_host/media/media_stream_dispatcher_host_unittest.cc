@@ -22,6 +22,7 @@
 #include "base/test/gmock_move_support.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "content/browser/renderer_host/media/audio_input_device_manager.h"
 #include "content/browser/renderer_host/media/media_stream_manager.h"
 #include "content/browser/renderer_host/media/media_stream_ui_proxy.h"
@@ -43,7 +44,7 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/audio/cras_audio_handler.h"
 #include "chromeos/dbus/audio/cras_audio_client.h"
 #endif
@@ -269,7 +270,7 @@ class MediaStreamDispatcherHostTest : public testing::Test {
     host_->SetMediaStreamDeviceObserverForTesting(
         host_->BindNewPipeAndPassRemote());
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     chromeos::CrasAudioClient::InitializeFake();
     chromeos::CrasAudioHandler::InitializeForTesting();
 #endif
@@ -277,7 +278,7 @@ class MediaStreamDispatcherHostTest : public testing::Test {
 
   ~MediaStreamDispatcherHostTest() override {
     audio_manager_->Shutdown();
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     chromeos::CrasAudioHandler::Shutdown();
     chromeos::CrasAudioClient::Shutdown();
 #endif

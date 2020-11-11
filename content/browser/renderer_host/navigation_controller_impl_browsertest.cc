@@ -24,6 +24,7 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/renderer_host/display_util.h"
 #include "content/browser/renderer_host/frame_navigation_entry.h"
@@ -10859,7 +10860,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTestNoServer,
 // 3) to a http URL with port 0.
 // This is the scenario behind https://crbug.com/1065532.
 // TODO(crbug.com/1138540): Flaky on Chrome OS.
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #define MAYBE_SameDocumentNavigationToHttpPortZero \
   DISABLED_SameDocumentNavigationToHttpPortZero
 #else

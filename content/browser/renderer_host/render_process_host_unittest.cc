@@ -13,6 +13,7 @@
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/common/frame_messages.h"
 #include "content/public/browser/browser_context.h"
@@ -62,7 +63,7 @@ TEST_F(RenderProcessHostUnitTest, GuestsAreNotSuitableHosts) {
             RenderProcessHostImpl::GetExistingProcessHost(site_instance.get()));
 }
 
-#if !defined(OS_ANDROID) && !defined(OS_CHROMEOS)
+#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(RenderProcessHostUnitTest, RendererProcessLimit) {
   // This test shouldn't run with --site-per-process mode, which prohibits
   // the renderer process reuse this test explicitly exercises.
@@ -91,7 +92,7 @@ TEST_F(RenderProcessHostUnitTest, RendererProcessLimit) {
 }
 #endif
 
-#if defined(OS_ANDROID) || defined(OS_CHROMEOS)
+#if defined(OS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(RenderProcessHostUnitTest, NoRendererProcessLimitOnAndroidOrChromeOS) {
   // Add a few dummy process hosts.
   static constexpr size_t kMaxRendererProcessCountForTesting = 82;

@@ -26,6 +26,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "cc/trees/render_frame_metadata.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
@@ -122,7 +123,7 @@
 #include "ui/gfx/selection_bound.h"
 #include "ui/wm/core/window_util.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ui/base/ime/input_method.h"
 #endif
 
@@ -1181,7 +1182,7 @@ TEST_F(RenderWidgetHostViewAuraTest, DestroyFullscreenOnBlur) {
   view_ = nullptr;
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Checks that a popup view is destroyed when a user clicks outside of the popup
 // view and focus does not change. This is the case when the user clicks on the
 // desktop background on Chrome OS.
@@ -1239,7 +1240,7 @@ TEST_F(RenderWidgetHostViewAuraTest, DestroyPopupTapOutsidePopup) {
 }
 #endif
 
-#if defined(OS_LINUX) && !defined(OS_CHROMEOS)
+#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 // On Desktop Linux, select boxes need mouse capture in order to work. Test that
 // when a select box is opened via a mouse press that it retains mouse capture
 // after the mouse is released.
@@ -4914,7 +4915,7 @@ TEST_F(RenderWidgetHostViewAuraOverscrollTest, OverscrollResetsOnBlur) {
   ReleaseAndResetDispatchedMessages();
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Check that when accessibility virtual keyboard is enabled, windows are
 // shifted up when focused and restored when focus is lost.
 TEST_F(RenderWidgetHostViewAuraTest, VirtualKeyboardFocusEnsureCaretInRect) {
@@ -4952,7 +4953,7 @@ TEST_F(RenderWidgetHostViewAuraTest, VirtualKeyboardFocusEnsureCaretInRect) {
   // Window should be restored.
   EXPECT_EQ(view_->GetNativeView()->bounds(), orig_view_bounds);
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Tests that invalid touch events are consumed and handled
 // synchronously.
