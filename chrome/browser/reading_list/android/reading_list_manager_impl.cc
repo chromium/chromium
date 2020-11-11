@@ -47,10 +47,7 @@ bool SyncToBookmark(const ReadingListEntry& entry, BookmarkNode* bookmark) {
 
 ReadingListManagerImpl::ReadingListManagerImpl(
     ReadingListModel* reading_list_model)
-    : reading_list_model_(reading_list_model),
-      maximum_id_(0L),
-      loaded_(false),
-      performing_batch_update_(false) {
+    : reading_list_model_(reading_list_model), maximum_id_(0L), loaded_(false) {
   DCHECK(reading_list_model_);
   root_ = std::make_unique<BookmarkNode>(maximum_id_++, base::GenerateGUID(),
                                          GURL());
@@ -96,28 +93,6 @@ void ReadingListManagerImpl::ReadingListDidMoveEntry(
   const auto* moved_entry = reading_list_model_->GetEntryByURL(url);
   DCHECK(moved_entry);
   AddOrUpdateBookmark(moved_entry);
-}
-
-void ReadingListManagerImpl::ReadingListDidApplyChanges(
-    ReadingListModel* model) {
-  // Ignores ReadingListDidApplyChanges() invocations during batch update.
-  if (performing_batch_update_)
-    return;
-
-  NotifyReadingListChanged();
-}
-
-void ReadingListManagerImpl::ReadingListModelBeganBatchUpdates(
-    const ReadingListModel* model) {
-  performing_batch_update_ = true;
-}
-
-void ReadingListManagerImpl::ReadingListModelCompletedBatchUpdates(
-    const ReadingListModel* model) {
-  performing_batch_update_ = false;
-
-  // Batch update is done, notify the observer only once.
-  NotifyReadingListChanged();
 }
 
 void ReadingListManagerImpl::AddObserver(Observer* observer) {
@@ -257,9 +232,4 @@ const BookmarkNode* ReadingListManagerImpl::AddOrUpdateBookmark(
       maximum_id_++, base::GenerateGUID(), entry->URL());
   bool success = SyncToBookmark(*entry, new_node.get());
   return success ? root_->Add(std::move(new_node)) : nullptr;
-}
-
-void ReadingListManagerImpl::NotifyReadingListChanged() {
-  for (Observer& observer : observers_)
-    observer.ReadingListChanged();
 }

@@ -34,11 +34,6 @@ class ReadingListManagerImpl : public ReadingListManager,
                                   const GURL& url) override;
   void ReadingListDidMoveEntry(const ReadingListModel* model,
                                const GURL& url) override;
-  void ReadingListDidApplyChanges(ReadingListModel* model) override;
-  void ReadingListModelBeganBatchUpdates(
-      const ReadingListModel* model) override;
-  void ReadingListModelCompletedBatchUpdates(
-      const ReadingListModel* model) override;
 
   // ReadingListManager implementation.
   void AddObserver(Observer* observer) override;
@@ -65,7 +60,6 @@ class ReadingListManagerImpl : public ReadingListManager,
   void RemoveBookmark(const GURL& url);
   const bookmarks::BookmarkNode* AddOrUpdateBookmark(
       const ReadingListEntry* entry);
-  void NotifyReadingListChanged();
 
   // Contains reading list data, outlives this class.
   ReadingListModel* reading_list_model_;
@@ -78,9 +72,6 @@ class ReadingListManagerImpl : public ReadingListManager,
 
   // Whether the |reading_list_model_| is loaded.
   bool loaded_;
-
-  // Whether |reading_list_model_| is in batch update mode.
-  bool performing_batch_update_;
 
   base::ObserverList<Observer> observers_;
 };
