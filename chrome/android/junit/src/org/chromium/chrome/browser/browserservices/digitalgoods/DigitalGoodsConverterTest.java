@@ -116,7 +116,8 @@ public class DigitalGoodsConverterTest {
 
         convertedCallback.onExtraCallback(GetDetailsConverter.RESPONSE_COMMAND, args);
 
-        assertEquals(DigitalGoodsConverter.convertResponseCodeV0(responseCode), state.responseCode);
+        assertEquals(DigitalGoodsConverter.convertResponseCode(responseCode, Bundle.EMPTY),
+                state.responseCode);
         assertItemDetails(state.results[0], "1", "t1", "d1", "c1", "v1");
         assertSubsItemDetails(state.results[0], null, null, null, null, null);
         assertItemDetails(state.results[1], "2", "t2", "d2", "c2", "v2");
@@ -240,7 +241,7 @@ public class DigitalGoodsConverterTest {
 
         {
             Bundle bundle = validBundle.deepCopy();
-            bundle.putInt(ListPurchasesConverter.KEY_PURCHASE_TIME_MS_PAST_UNIX_EPOCH, 5);
+            bundle.putInt(ListPurchasesConverter.KEY_PURCHASE_TIME_MICROSECONDS_PAST_UNIX_EPOCH, 5);
             assertNull(ListPurchasesConverter.convertPurchaseDetails(bundle));
         }
 
@@ -269,30 +270,35 @@ public class DigitalGoodsConverterTest {
 
         convertedCallback.onExtraCallback(ListPurchasesConverter.RESPONSE_COMMAND, args);
 
-        assertEquals(DigitalGoodsConverter.convertResponseCodeV0(responseCode), state.responseCode);
+        assertEquals(DigitalGoodsConverter.convertResponseCode(responseCode, Bundle.EMPTY),
+                state.responseCode);
         assertPurchaseDetails(state.results[0], "1", "t1", true, 1, 1L, true);
         assertPurchaseDetails(state.results[1], "2", "t2", false, 2, 2L, false);
     }
 
     @Test
-    public void convertResponseCodes() {
+    public void convertResponseCodes_v0() {
+        Bundle args = Bundle.EMPTY;
+
         assertEquals(BillingResponseCode.OK,
-                DigitalGoodsConverter.convertResponseCodeV0(PLAY_BILLING_OK));
+                DigitalGoodsConverter.convertResponseCode(PLAY_BILLING_OK, args));
         assertEquals(BillingResponseCode.ITEM_ALREADY_OWNED,
-                DigitalGoodsConverter.convertResponseCodeV0(PLAY_BILLING_ITEM_ALREADY_OWNED));
+                DigitalGoodsConverter.convertResponseCode(PLAY_BILLING_ITEM_ALREADY_OWNED, args));
         assertEquals(BillingResponseCode.ITEM_NOT_OWNED,
-                DigitalGoodsConverter.convertResponseCodeV0(PLAY_BILLING_ITEM_NOT_OWNED));
+                DigitalGoodsConverter.convertResponseCode(PLAY_BILLING_ITEM_NOT_OWNED, args));
         assertEquals(BillingResponseCode.ITEM_UNAVAILABLE,
-                DigitalGoodsConverter.convertResponseCodeV0(PLAY_BILLING_ITEM_UNAVAILABLE));
+                DigitalGoodsConverter.convertResponseCode(PLAY_BILLING_ITEM_UNAVAILABLE, args));
 
         // Check that other numbers get set to ERROR.
-        assertEquals(BillingResponseCode.ERROR, DigitalGoodsConverter.convertResponseCodeV0(2));
-        assertEquals(BillingResponseCode.ERROR, DigitalGoodsConverter.convertResponseCodeV0(-1));
-        assertEquals(BillingResponseCode.ERROR, DigitalGoodsConverter.convertResponseCodeV0(10));
+        assertEquals(BillingResponseCode.ERROR, DigitalGoodsConverter.convertResponseCode(2, args));
+        assertEquals(
+                BillingResponseCode.ERROR, DigitalGoodsConverter.convertResponseCode(-1, args));
+        assertEquals(
+                BillingResponseCode.ERROR, DigitalGoodsConverter.convertResponseCode(10, args));
     }
 
     @Test
-    public void convertResponseCodes_v2() {
+    public void convertResponseCodes_v1() {
         Bundle args = new Bundle();
         args.putInt(DigitalGoodsConverter.KEY_VERSION, 1);
 

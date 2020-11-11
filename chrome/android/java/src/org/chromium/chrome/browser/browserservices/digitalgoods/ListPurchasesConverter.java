@@ -33,12 +33,13 @@ class ListPurchasesConverter {
     static final String KEY_PURCHASES_LIST = "listPurchases.purchasesList";
     static final String KEY_RESPONSE_CODE = "listPurchases.responseCode";
 
-    static final String KEY_ITEM_ID = "listPurchases.itemId";
-    static final String KEY_PURCHASE_TOKEN = "listPurchases.purchaseToken";
-    static final String KEY_ACKNOWLEDGED = "listPurchases.acknowledged";
-    static final String KEY_PURCHASE_STATE = "listPurchases.purchaseState";
-    static final String KEY_PURCHASE_TIME_MS_PAST_UNIX_EPOCH = "listPurchases.purchaseTime";
-    static final String KEY_WILL_AUTO_RENEW = "listPurchases.willAutoRenew";
+    static final String KEY_ITEM_ID = "purchaseDetails.itemId";
+    static final String KEY_PURCHASE_TOKEN = "purchaseDetails.purchaseToken";
+    static final String KEY_ACKNOWLEDGED = "purchaseDetails.acknowledged";
+    static final String KEY_PURCHASE_STATE = "purchaseDetails.purchaseState";
+    static final String KEY_PURCHASE_TIME_MICROSECONDS_PAST_UNIX_EPOCH =
+            "purchaseDetails.purchaseTimeMicrosecondsPastUnixEpoch";
+    static final String KEY_WILL_AUTO_RENEW = "purchaseDetails.willAutoRenew";
 
     // These values are copied from the Play Billing library since Chrome cannot depend on it.
     // https://developer.android.com/reference/com/android/billingclient/api/Purchase.PurchaseState
@@ -88,11 +89,14 @@ class ListPurchasesConverter {
         if (!checkField(purchase, KEY_PURCHASE_TOKEN, String.class)) return null;
         if (!checkField(purchase, KEY_ACKNOWLEDGED, Boolean.class)) return null;
         if (!checkField(purchase, KEY_PURCHASE_STATE, Integer.class)) return null;
-        if (!checkField(purchase, KEY_PURCHASE_TIME_MS_PAST_UNIX_EPOCH, Long.class)) return null;
+        if (!checkField(purchase, KEY_PURCHASE_TIME_MICROSECONDS_PAST_UNIX_EPOCH, Long.class)) {
+            return null;
+        }
         if (!checkField(purchase, KEY_WILL_AUTO_RENEW, Boolean.class)) return null;
 
         TimeDelta purchaseTime = new TimeDelta();
-        purchaseTime.microseconds = purchase.getLong(KEY_PURCHASE_TIME_MS_PAST_UNIX_EPOCH);
+        purchaseTime.microseconds =
+                purchase.getLong(KEY_PURCHASE_TIME_MICROSECONDS_PAST_UNIX_EPOCH);
 
         PurchaseDetails result = new PurchaseDetails();
 
@@ -127,7 +131,7 @@ class ListPurchasesConverter {
 
     @VisibleForTesting
     static Bundle createPurchaseDetailsBundle(String itemId, String purchaseToken,
-            boolean acknowledged, int purchaseState, long purchaseTimeMsPastUnixEpoch,
+            boolean acknowledged, int purchaseState, long purchaseTimeMicrosecondsPastUnixEpoch,
             boolean willAutoRenew) {
         Bundle bundle = new Bundle();
 
@@ -135,7 +139,8 @@ class ListPurchasesConverter {
         bundle.putString(KEY_PURCHASE_TOKEN, purchaseToken);
         bundle.putBoolean(KEY_ACKNOWLEDGED, acknowledged);
         bundle.putInt(KEY_PURCHASE_STATE, purchaseState);
-        bundle.putLong(KEY_PURCHASE_TIME_MS_PAST_UNIX_EPOCH, purchaseTimeMsPastUnixEpoch);
+        bundle.putLong(KEY_PURCHASE_TIME_MICROSECONDS_PAST_UNIX_EPOCH,
+                purchaseTimeMicrosecondsPastUnixEpoch);
         bundle.putBoolean(KEY_WILL_AUTO_RENEW, willAutoRenew);
 
         return bundle;

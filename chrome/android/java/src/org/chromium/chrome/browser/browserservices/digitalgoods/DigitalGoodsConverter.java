@@ -60,12 +60,7 @@ public class DigitalGoodsConverter {
         return BillingResponseCode.ERROR;
     }
 
-    /** Convenience method for legacy callers. */
-    static int convertResponseCodeV0(int responseCode) {
-        return convertResponseCode(responseCode, new Bundle());
-    }
-
-    private static int playBillingToMojoResponseCode(int responseCode) {
+    static int playBillingToMojoResponseCode(int responseCode) {
         switch (responseCode) {
             case PLAY_BILLING_OK:
                 return BillingResponseCode.OK;
