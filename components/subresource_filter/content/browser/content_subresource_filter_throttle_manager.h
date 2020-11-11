@@ -13,7 +13,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/stl_util.h"
 #include "base/supports_user_data.h"
 #include "components/subresource_filter/content/browser/subframe_navigation_filtering_throttle.h"
@@ -272,8 +272,9 @@ class ContentSubresourceFilterThrottleManager
 
   content::WebContentsFrameReceiverSet<mojom::SubresourceFilterHost> receiver_;
 
-  ScopedObserver<SubresourceFilterObserverManager, SubresourceFilterObserver>
-      scoped_observer_{this};
+  base::ScopedObservation<SubresourceFilterObserverManager,
+                          SubresourceFilterObserver>
+      scoped_observation_{this};
 
   // Lazily instantiated in EnsureRulesetHandle when the first page level
   // activation is triggered. Will go away when there are no more activated

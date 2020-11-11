@@ -10,7 +10,7 @@
 
 #include "base/macros.h"
 #include "base/optional.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "components/safe_browsing/core/db/util.h"
 #include "components/safe_browsing/core/db/v4_protocol_manager_util.h"
 #include "components/subresource_filter/content/browser/subresource_filter_observer.h"
@@ -74,8 +74,9 @@ class TestSubresourceFilterObserver : public SubresourceFilterObserver,
       pending_activations_;
   base::Optional<mojom::ActivationLevel> last_committed_activation_;
 
-  ScopedObserver<SubresourceFilterObserverManager, SubresourceFilterObserver>
-      scoped_observer_;
+  base::ScopedObservation<SubresourceFilterObserverManager,
+                          SubresourceFilterObserver>
+      scoped_observation_{this};
   DISALLOW_COPY_AND_ASSIGN(TestSubresourceFilterObserver);
 };
 
