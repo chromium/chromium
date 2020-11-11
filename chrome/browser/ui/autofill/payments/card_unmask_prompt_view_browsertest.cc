@@ -221,10 +221,16 @@ IN_PROC_BROWSER_TEST_F(CardUnmaskPromptViewBrowserTest, DisplayUI) {
   ShowUi(kExpiryExpired);
 }
 
+// Fails on multiple bots: https://crbug.com/1144598
 // Makes sure the user can close the dialog while the verification success
 // message is showing.
+#if defined(OS_LINUX) || !defined(NDEBUG) || defined(ADDRESS_SANITIZER)
+#define MAYBE_EarlyCloseAfterSuccess DISABLED_EarlyCloseAfterSuccess
+#else
+#define MAYBE_EarlyCloseAfterSuccess EarlyCloseAfterSuccess
+#endif
 IN_PROC_BROWSER_TEST_F(CardUnmaskPromptViewBrowserTest,
-                       EarlyCloseAfterSuccess) {
+                       MAYBE_EarlyCloseAfterSuccess) {
   ShowUi(kExpiryExpired);
   controller()->OnUnmaskPromptAccepted(
       base::ASCIIToUTF16("123"), base::ASCIIToUTF16("10"),
