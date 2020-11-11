@@ -40,9 +40,9 @@
 #include "third_party/skia/include/core/SkData.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkSurface.h"
-#include "third_party/skia/include/core/SkYUVAIndex.h"
 #include "third_party/skia/include/gpu/GrBackendSurface.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
+#include "third_party/skia/include/gpu/GrYUVABackendTextures.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/skia_util.h"
@@ -476,6 +476,38 @@ size_t GetUploadedTextureSizeFromSkImage(const sk_sp<SkImage>& plane,
   return plane_size;
 }
 
+// Preserves the division of channels into planes and channel order within
+// planes but removes chroma subsampling. If there is no such config this will
+// return SkYUVAInfo::PlanarConfig::kUnknown.
+SkYUVAInfo::PlanarConfig ConvertPlanarConfigTo444(
+    SkYUVAInfo::PlanarConfig config) {
+  switch (config) {
+    case SkYUVAInfo::PlanarConfig::kY_U_V_444:
+    case SkYUVAInfo::PlanarConfig::kY_U_V_422:
+    case SkYUVAInfo::PlanarConfig::kY_U_V_420:
+    case SkYUVAInfo::PlanarConfig::kY_U_V_440:
+    case SkYUVAInfo::PlanarConfig::kY_U_V_411:
+    case SkYUVAInfo::PlanarConfig::kY_U_V_410:
+      return SkYUVAInfo::PlanarConfig::kY_U_V_444;
+
+    case SkYUVAInfo::PlanarConfig::kYUV_444:
+      return SkYUVAInfo::PlanarConfig::kYUV_444;
+    case SkYUVAInfo::PlanarConfig::kUYV_444:
+      return SkYUVAInfo::PlanarConfig::kUYV_444;
+    case SkYUVAInfo::PlanarConfig::kYUVA_4444:
+      return SkYUVAInfo::PlanarConfig::kYUVA_4444;
+    case SkYUVAInfo::PlanarConfig::kUYVA_4444:
+      return SkYUVAInfo::PlanarConfig::kUYVA_4444;
+
+    // There are planar configs with no 444[4] equivalent, none of which are
+    // used by GpuImageDecoderCache currently. For example, there is kY_UV_420
+    // but no kY_UV_444. Skia could easily have add the equivalents if required.
+    default:
+      NOTREACHED();
+      return SkYUVAInfo::PlanarConfig::kUnknown;
+  }
+}
+
 }  // namespace
 
 // static
@@ -873,6 +905,7 @@ GpuImageDecodeCache::ImageData::ImageData(
     bool do_hardware_accelerated_decode,
     bool is_yuv_format,
     SkYUVColorSpace yuv_cs,
+    SkYUVAPixmapInfo::PlanarConfig yuv_config,
     SkYUVAPixmapInfo::DataType yuv_dt)
     : paint_image_id(paint_image_id),
       mode(mode),
@@ -891,6 +924,7 @@ GpuImageDecodeCache::ImageData::ImageData(
   if (is_yuv) {
     DCHECK_LE(yuv_cs, SkYUVColorSpace::kLastEnum_SkYUVColorSpace);
     yuv_color_space = yuv_cs;
+    yuv_planar_config = yuv_config;
     yuv_data_type = yuv_dt;
   }
 }
@@ -2242,6 +2276,7 @@ void GpuImageDecodeCache::UploadImageIfNecessary(const DrawImage& draw_image,
       uploaded_image = CreateImageFromYUVATexturesInternal(
           uploaded_y_image.get(), uploaded_u_image.get(),
           uploaded_v_image.get(), image_width, image_height,
+          image_data->yuv_planar_config.value(),
           image_data->yuv_color_space.value(), color_space,
           decoded_target_colorspace);
     }
@@ -2437,6 +2472,8 @@ GpuImageDecodeCache::CreateImageData(const DrawImage& draw_image,
                       mode != DecodedDataMode::kCpu &&
                       !image_larger_than_max_texture;
 
+  SkYUVAInfo::PlanarConfig yuv_planar_config =
+      SkYUVAInfo::PlanarConfig::kUnknown;
   // TODO(crbug.com/910276): Change after alpha support.
   if (is_yuv) {
     if (upload_scale_mip_level > 0) {
@@ -2446,9 +2483,13 @@ GpuImageDecodeCache::CreateImageData(const DrawImage& draw_image,
           image_info.makeColorType(yuva_pixmap_info.planeInfo(0).colorType())
               .computeMinByteSize();
       DCHECK(!SkImageInfo::ByteSizeOverflowed(y_plane_size.ValueOrDie()));
+      yuv_planar_config =
+          ConvertPlanarConfigTo444(yuva_pixmap_info.yuvaInfo().planarConfig());
+      DCHECK_NE(yuv_planar_config, SkYUVAInfo::PlanarConfig::kUnknown);
       data_size = (3 * y_plane_size).ValueOrDie();
     } else {
       // Original size decode.
+      yuv_planar_config = yuva_pixmap_info.yuvaInfo().planarConfig();
       data_size = yuva_pixmap_info.computeTotalBytes();
       DCHECK(!SkImageInfo::ByteSizeOverflowed(data_size));
     }
@@ -2460,7 +2501,7 @@ GpuImageDecodeCache::CreateImageData(const DrawImage& draw_image,
       CalculateDesiredFilterQuality(draw_image), upload_scale_mip_level,
       needs_mips, is_bitmap_backed, can_do_hardware_accelerated_decode,
       do_hardware_accelerated_decode, is_yuv, yuva_pixmap_info.yuvColorSpace(),
-      yuva_pixmap_info.dataType()));
+      yuv_planar_config, yuva_pixmap_info.dataType()));
 }
 
 void GpuImageDecodeCache::WillAddCacheEntry(const DrawImage& draw_image) {
@@ -2947,23 +2988,22 @@ sk_sp<SkImage> GpuImageDecodeCache::CreateImageFromYUVATexturesInternal(
     const SkImage* uploaded_v_image,
     const size_t image_width,
     const size_t image_height,
-    const SkYUVColorSpace& yuv_color_space,
+    const SkYUVAInfo::PlanarConfig yuva_planar_config,
+    const SkYUVColorSpace yuv_color_space,
     sk_sp<SkColorSpace> target_color_space,
     sk_sp<SkColorSpace> decoded_color_space) const {
   DCHECK(uploaded_y_image);
   DCHECK(uploaded_u_image);
   DCHECK(uploaded_v_image);
-  GrSurfaceOrigin origin_temp = kTopLeft_GrSurfaceOrigin;
+  SkYUVAInfo yuva_info({image_width, image_height}, yuva_planar_config,
+                       yuv_color_space);
   GrBackendTexture yuv_textures[3]{};
   yuv_textures[0] = uploaded_y_image->getBackendTexture(false);
   yuv_textures[1] = uploaded_u_image->getBackendTexture(false);
   yuv_textures[2] = uploaded_v_image->getBackendTexture(false);
-
-  SkYUVAIndex indices[SkYUVAIndex::kIndexCount];
-  indices[SkYUVAIndex::kY_Index] = {0, SkColorChannel::kR};
-  indices[SkYUVAIndex::kU_Index] = {1, SkColorChannel::kR};
-  indices[SkYUVAIndex::kV_Index] = {2, SkColorChannel::kR};
-  indices[SkYUVAIndex::kA_Index] = {-1, SkColorChannel::kR};
+  GrYUVABackendTextures yuva_backend_textures(yuva_info, yuv_textures,
+                                              kTopLeft_GrSurfaceOrigin);
+  DCHECK(yuva_backend_textures.isValid());
 
   if (target_color_space && SkColorSpace::Equals(target_color_space.get(),
                                                  decoded_color_space.get())) {
@@ -2971,8 +3011,7 @@ sk_sp<SkImage> GpuImageDecodeCache::CreateImageFromYUVATexturesInternal(
   }
 
   sk_sp<SkImage> yuva_image = SkImage::MakeFromYUVATextures(
-      context_->GrContext(), yuv_color_space, yuv_textures, indices,
-      SkISize::Make(image_width, image_height), origin_temp,
+      context_->GrContext(), yuva_backend_textures,
       std::move(decoded_color_space));
   if (target_color_space)
     return yuva_image->makeColorSpace(target_color_space,
@@ -3065,6 +3104,7 @@ void GpuImageDecodeCache::UpdateMipsIfNeeded(const DrawImage& draw_image,
         CreateImageFromYUVATexturesInternal(
             image_y_with_mips_owned.get(), image_u_with_mips_owned.get(),
             image_v_with_mips_owned.get(), width, height,
+            image_data->yuv_planar_config.value(),
             image_data->yuv_color_space.value(), color_space,
             upload_color_space);
     // In case of lost context

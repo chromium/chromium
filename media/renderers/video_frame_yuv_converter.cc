@@ -16,8 +16,9 @@
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkSurface.h"
-#include "third_party/skia/include/core/SkYUVAIndex.h"
+#include "third_party/skia/include/core/SkYUVAInfo.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
+#include "third_party/skia/include/gpu/GrYUVABackendTextures.h"
 #include "third_party/skia/include/gpu/gl/GrGLTypes.h"
 
 namespace media {
@@ -39,21 +40,25 @@ sk_sp<SkImage> YUVGrBackendTexturesToSkImage(
     VideoPixelFormat video_format,
     GrBackendTexture* yuv_textures,
     const GrBackendTexture& result_texture) {
-  SkYUVColorSpace color_space = ColorSpaceToSkYUVColorSpace(video_color_space);
-
+  SkYUVAInfo::PlanarConfig planar_config;
   switch (video_format) {
     case PIXEL_FORMAT_NV12:
-      return SkImage::MakeFromNV12TexturesCopyWithExternalBackend(
-          gr_context, color_space, yuv_textures, kTopLeft_GrSurfaceOrigin,
-          result_texture);
+      planar_config = SkYUVAInfo::PlanarConfig::kY_UV_420;
+      break;
     case PIXEL_FORMAT_I420:
-      return SkImage::MakeFromYUVTexturesCopyWithExternalBackend(
-          gr_context, color_space, yuv_textures, kTopLeft_GrSurfaceOrigin,
-          result_texture);
+      planar_config = SkYUVAInfo::PlanarConfig::kY_U_V_420;
+      break;
     default:
       NOTREACHED();
       return nullptr;
   }
+  SkYUVColorSpace color_space = ColorSpaceToSkYUVColorSpace(video_color_space);
+  SkYUVAInfo yuva_info(result_texture.dimensions(), planar_config, color_space);
+  GrYUVABackendTextures yuva_backend_textures(yuva_info, yuv_textures,
+                                              kTopLeft_GrSurfaceOrigin);
+  return SkImage::MakeFromYUVATexturesCopyToExternal(
+      gr_context, yuva_backend_textures, result_texture,
+      kRGBA_8888_SkColorType);
 }
 
 gfx::Size GetVideoYSize(const VideoFrame* video_frame) {
@@ -64,20 +69,6 @@ gfx::Size GetVideoYSize(const VideoFrame* video_frame) {
 gfx::Size GetVideoUVSize(const VideoFrame* video_frame) {
   gfx::Size y_size = GetVideoYSize(video_frame);
   return gfx::Size((y_size.width() + 1) / 2, (y_size.height() + 1) / 2);
-}
-
-// Some YUVA factories infer the YUVAIndices. This helper identifies the channel
-// to use for single channel textures.
-SkColorChannel GetSingleChannel(const GrBackendTexture& tex) {
-  switch (tex.getBackendFormat().channelMask()) {
-    case kGray_SkColorChannelFlag:  // Gray can be read as any of kR, kG, kB.
-    case kRed_SkColorChannelFlag:
-      return SkColorChannel::kR;
-    case kAlpha_SkColorChannelFlag:
-      return SkColorChannel::kA;
-    default:  // multiple channels in the texture. Guess kR.
-      return SkColorChannel::kR;
-  }
 }
 
 SkColorType GetCompatibleSurfaceColorType(GrGLenum format) {
@@ -124,37 +115,25 @@ bool YUVGrBackendTexturesToSkSurface(GrDirectContext* gr_context,
                                      sk_sp<SkSurface> surface,
                                      bool flip_y,
                                      bool use_visible_rect) {
-  SkYUVAIndex indices[4];
-
+  SkYUVAInfo::PlanarConfig planar_config;
   switch (video_frame->format()) {
     case PIXEL_FORMAT_NV12:
-      indices[SkYUVAIndex::kY_Index] = {
-          0, GetSingleChannel(yuv_textures[0])};  // the first backend texture
-      indices[SkYUVAIndex::kU_Index] = {
-          1, SkColorChannel::kR};  // the second backend texture
-      indices[SkYUVAIndex::kV_Index] = {1, SkColorChannel::kG};
-      indices[SkYUVAIndex::kA_Index] = {-1,
-                                        SkColorChannel::kA};  // no alpha plane
+      planar_config = SkYUVAInfo::PlanarConfig::kY_UV_420;
       break;
     case PIXEL_FORMAT_I420:
-      indices[SkYUVAIndex::kY_Index] = {
-          0, GetSingleChannel(yuv_textures[0])};  // the first backend texture
-      indices[SkYUVAIndex::kU_Index] = {
-          1, GetSingleChannel(yuv_textures[1])};  // the second backend texture
-      indices[SkYUVAIndex::kV_Index] = {2, GetSingleChannel(yuv_textures[2])};
-      indices[SkYUVAIndex::kA_Index] = {-1,
-                                        SkColorChannel::kA};  // no alpha plane
+      planar_config = SkYUVAInfo::PlanarConfig::kY_U_V_420;
       break;
     default:
       NOTREACHED();
       return false;
   }
-
-  auto image = SkImage::MakeFromYUVATextures(
-      gr_context, ColorSpaceToSkYUVColorSpace(video_frame->ColorSpace()),
-      yuv_textures, indices,
+  SkYUVAInfo yuva_info(
       {video_frame->coded_size().width(), video_frame->coded_size().height()},
-      kTopLeft_GrSurfaceOrigin, SkColorSpace::MakeSRGB());
+      planar_config, ColorSpaceToSkYUVColorSpace(video_frame->ColorSpace()));
+  auto image = SkImage::MakeFromYUVATextures(
+      gr_context,
+      GrYUVABackendTextures(yuva_info, yuv_textures, kTopLeft_GrSurfaceOrigin),
+      SkColorSpace::MakeSRGB());
 
   if (!image) {
     return false;

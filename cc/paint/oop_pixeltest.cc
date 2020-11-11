@@ -37,9 +37,10 @@
 #include "third_party/khronos/GLES2/gl2ext.h"
 #include "third_party/skia/include/core/SkGraphics.h"
 #include "third_party/skia/include/core/SkSurface.h"
+#include "third_party/skia/include/core/SkYUVAInfo.h"
 #include "third_party/skia/include/gpu/GrBackendSurface.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
-#include "third_party/skia/include/gpu/GrTypes.h"
+#include "third_party/skia/include/gpu/GrYUVABackendTextures.h"
 #include "ui/gfx/geometry/axis_transform2d.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/skia_util.h"
@@ -1947,17 +1948,14 @@ TEST_F(OopPixelTest, ConvertYUVToRGB) {
   backend_textures[2] = MakeBackendTexture(
       gl, v_mailbox, uv_options.resource_size, GL_LUMINANCE8_EXT);
 
-  SkYUVAIndex yuva_indices[4];
-  yuva_indices[SkYUVAIndex::kY_Index] = {0, SkColorChannel::kR};
-  yuva_indices[SkYUVAIndex::kU_Index] = {1, SkColorChannel::kR};
-  yuva_indices[SkYUVAIndex::kV_Index] = {2, SkColorChannel::kR};
-  yuva_indices[SkYUVAIndex::kA_Index] = {-1, SkColorChannel::kA};
+  SkYUVAInfo yuva_info(
+      {options.resource_size.width(), options.resource_size.height()},
+      SkYUVAInfo::PlanarConfig::kY_U_V_420, kJPEG_Full_SkYUVColorSpace);
+  GrYUVABackendTextures yuva_textures(yuva_info, backend_textures,
+                                      kTopLeft_GrSurfaceOrigin);
 
   auto expected_image = SkImage::MakeFromYUVATextures(
-      gles2_context_provider_->GrContext(), kJPEG_SkYUVColorSpace,
-      backend_textures, yuva_indices,
-      {options.resource_size.width(), options.resource_size.height()},
-      kTopLeft_GrSurfaceOrigin, nullptr);
+      gles2_context_provider_->GrContext(), yuva_textures);
 
   SkBitmap expected_bitmap;
   expected_bitmap.allocN32Pixels(options.resource_size.width(),
@@ -2068,17 +2066,13 @@ TEST_F(OopPixelTest, ConvertNV12ToRGB) {
   backend_textures[1] =
       MakeBackendTexture(gl, uv_mailbox, uv_options.resource_size, GL_RG8);
 
-  SkYUVAIndex yuva_indices[4];
-  yuva_indices[SkYUVAIndex::kY_Index] = {0, SkColorChannel::kR};
-  yuva_indices[SkYUVAIndex::kU_Index] = {1, SkColorChannel::kR};
-  yuva_indices[SkYUVAIndex::kV_Index] = {1, SkColorChannel::kG};
-  yuva_indices[SkYUVAIndex::kA_Index] = {-1, SkColorChannel::kA};
-
-  auto expected_image = SkImage::MakeFromYUVATextures(
-      gles2_context_provider_->GrContext(), kJPEG_SkYUVColorSpace,
-      backend_textures, yuva_indices,
+  SkYUVAInfo yuva_info(
       {options.resource_size.width(), options.resource_size.height()},
-      kTopLeft_GrSurfaceOrigin, nullptr);
+      SkYUVAInfo::PlanarConfig::kY_UV_420, kJPEG_Full_SkYUVColorSpace);
+  GrYUVABackendTextures yuva_textures(yuva_info, backend_textures,
+                                      kTopLeft_GrSurfaceOrigin);
+  auto expected_image = SkImage::MakeFromYUVATextures(
+      gles2_context_provider_->GrContext(), yuva_textures);
 
   SkBitmap expected_bitmap;
   expected_bitmap.allocN32Pixels(options.resource_size.width(),

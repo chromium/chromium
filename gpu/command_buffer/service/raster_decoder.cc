@@ -66,11 +66,11 @@
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/core/SkSurfaceProps.h"
 #include "third_party/skia/include/core/SkTypeface.h"
-#include "third_party/skia/include/core/SkYUVAIndex.h"
+#include "third_party/skia/include/core/SkYUVAInfo.h"
 #include "third_party/skia/include/gpu/GrBackendSemaphore.h"
 #include "third_party/skia/include/gpu/GrBackendSurface.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
-#include "third_party/skia/include/gpu/GrTypes.h"
+#include "third_party/skia/include/gpu/GrYUVABackendTextures.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/skia_util.h"
 #include "ui/gl/gl_context.h"
@@ -2737,19 +2737,14 @@ void RasterDecoderImpl::DoConvertYUVMailboxesToRGBINTERNAL(
 
     SkISize dest_size =
         SkISize::Make(dest_surface->width(), dest_surface->height());
-
-    std::array<SkYUVAIndex, SkYUVAIndex::kIndexCount> yuva_indices;
-    yuva_indices[SkYUVAIndex::kY_Index] = {0, SkColorChannel::kR};
-    yuva_indices[SkYUVAIndex::kU_Index] = {1, SkColorChannel::kR};
-    if (is_nv12)
-      yuva_indices[SkYUVAIndex::kV_Index] = {1, SkColorChannel::kG};
-    else
-      yuva_indices[SkYUVAIndex::kV_Index] = {2, SkColorChannel::kR};
-    yuva_indices[SkYUVAIndex::kA_Index] = {-1, SkColorChannel::kA};
-
-    auto result_image = SkImage::MakeFromYUVATextures(
-        gr_context(), src_color_space, yuva_textures.data(),
-        yuva_indices.data(), dest_size, kTopLeft_GrSurfaceOrigin, nullptr);
+    SkYUVAInfo::PlanarConfig planar_config =
+        is_nv12 ? SkYUVAInfo::PlanarConfig::kY_UV_420
+                : SkYUVAInfo::PlanarConfig::kY_U_V_420;
+    SkYUVAInfo yuva_info(dest_size, planar_config, src_color_space);
+    GrYUVABackendTextures yuva_backend_textures(yuva_info, yuva_textures.data(),
+                                                kTopLeft_GrSurfaceOrigin);
+    auto result_image =
+        SkImage::MakeFromYUVATextures(gr_context(), yuva_backend_textures);
     if (!result_image) {
       LOCAL_SET_GL_ERROR(
           GL_INVALID_OPERATION, "glConvertYUVMailboxesToRGB",

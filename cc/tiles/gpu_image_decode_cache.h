@@ -522,6 +522,7 @@ class CC_EXPORT GpuImageDecodeCache
               bool do_hardware_accelerated_decode,
               bool is_yuv_format,
               SkYUVColorSpace yuv_cs,
+              SkYUVAInfo::PlanarConfig yuv_config,
               SkYUVAPixmapInfo::DataType yuv_dt);
 
     bool IsGpuOrTransferCache() const;
@@ -539,6 +540,7 @@ class CC_EXPORT GpuImageDecodeCache
     bool is_yuv;
     bool is_budgeted = false;
     base::Optional<SkYUVColorSpace> yuv_color_space;
+    base::Optional<SkYUVAInfo::PlanarConfig> yuv_planar_config;
     base::Optional<SkYUVAPixmapInfo::DataType> yuv_data_type;
 
     // If true, this image is no longer in our |persistent_cache_| and will be
@@ -640,7 +642,8 @@ class CC_EXPORT GpuImageDecodeCache
       const SkImage* uploaded_v_image,
       const size_t image_width,
       const size_t image_height,
-      const SkYUVColorSpace& yuva_color_space,
+      const SkYUVAInfo::PlanarConfig yuva_planar_config,
+      const SkYUVColorSpace yuva_color_space,
       sk_sp<SkColorSpace> target_color_space,
       sk_sp<SkColorSpace> decoded_color_space) const;
 
