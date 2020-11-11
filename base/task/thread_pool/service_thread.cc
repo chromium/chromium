@@ -5,7 +5,7 @@
 #include "base/task/thread_pool/service_thread.h"
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/debug/alias.h"
 #include "base/rand_util.h"
 #include "base/stl_util.h"

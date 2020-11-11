@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/views/profiles/profile_picker_view.h"
 
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"

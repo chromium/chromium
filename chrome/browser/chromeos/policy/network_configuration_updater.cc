@@ -5,7 +5,7 @@
 #include "chrome/browser/chromeos/policy/network_configuration_updater.h"
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/values.h"
 #include "chromeos/network/onc/onc_utils.h"

@@ -4,7 +4,7 @@
 
 #include "weblayer/browser/page_specific_content_settings_delegate.h"
 
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
 #include "content/public/browser/render_process_host.h"

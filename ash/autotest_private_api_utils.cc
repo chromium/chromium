@@ -10,7 +10,7 @@
 #include "ash/shell.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/tablet_mode/scoped_skip_user_session_blocked_check.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 
 namespace ash {
 namespace {

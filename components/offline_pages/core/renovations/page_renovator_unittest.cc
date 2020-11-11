@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/test/mock_callback.h"
 #include "base/values.h"
 #include "components/offline_pages/core/renovations/script_injector.h"

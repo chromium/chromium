@@ -4,7 +4,7 @@
 
 #include "android_webview/browser/tracing/background_tracing_field_trial.h"
 
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "content/public/browser/background_tracing_config.h"
 #include "content/public/browser/background_tracing_manager.h"
 #include "services/tracing/public/cpp/tracing_features.h"

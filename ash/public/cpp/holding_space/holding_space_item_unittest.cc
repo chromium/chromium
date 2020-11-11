@@ -8,7 +8,7 @@
 #include <vector>
 
 #include "ash/public/cpp/holding_space/holding_space_image.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/test/bind.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/image/image_skia.h"

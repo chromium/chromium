@@ -4,11 +4,11 @@
 
 #include <memory>
 
-#include "ash/login/ui/login_user_menu_view.h"
 #include "ash/login/ui/login_button.h"
 #include "ash/login/ui/login_test_base.h"
+#include "ash/login/ui/login_user_menu_view.h"
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/user_manager/user_type.h"
 #include "ui/events/test/event_generator.h"

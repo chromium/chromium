@@ -4,7 +4,7 @@
 
 #include "chrome/chrome_cleaner/pup_data/pup_cleaner_util.h"
 
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/files/file_util.h"
 #include "chrome/chrome_cleaner/os/file_remover.h"
 #include "chrome/chrome_cleaner/os/layered_service_provider_wrapper.h"

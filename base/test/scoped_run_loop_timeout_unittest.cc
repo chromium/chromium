@@ -5,7 +5,7 @@
 #include "base/test/scoped_run_loop_timeout.h"
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/location.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"

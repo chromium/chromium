@@ -4,7 +4,7 @@
 
 #include "services/video_capture/device_media_to_mojo_adapter.h"
 
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "build/chromeos_buildflags.h"

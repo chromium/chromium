@@ -4,7 +4,7 @@
 
 #include "components/component_updater/timer_update_scheduler.h"
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 
 namespace component_updater {
 

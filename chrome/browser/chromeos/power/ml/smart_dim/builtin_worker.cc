@@ -5,7 +5,7 @@
 #include "chrome/browser/chromeos/power/ml/smart_dim/builtin_worker.h"
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/memory/ref_counted_memory.h"
 #include "chrome/browser/chromeos/power/ml/smart_dim/ml_agent_util.h"
 #include "chrome/grit/browser_resources.h"

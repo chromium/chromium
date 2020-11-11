@@ -4,7 +4,7 @@
 
 #include "components/sync/driver/sync_auth_manager.h"
 
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"

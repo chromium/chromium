@@ -5,7 +5,7 @@
 #include "cc/raster/paint_worklet_image_provider.h"
 
 #include <utility>
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 
 namespace cc {
 

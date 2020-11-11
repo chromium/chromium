@@ -5,7 +5,7 @@
 #include "ui/web_dialogs/web_dialog_ui.h"
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/lazy_instance.h"
 #include "base/memory/ptr_util.h"
 #include "base/values.h"

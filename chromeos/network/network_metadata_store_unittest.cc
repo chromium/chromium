@@ -4,7 +4,7 @@
 
 #include <memory>
 
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/optional.h"
 #include "base/test/task_environment.h"
 #include "chromeos/constants/chromeos_pref_names.h"

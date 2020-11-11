@@ -8,7 +8,7 @@
 #include "chrome/test/chromedriver/chrome/adb_impl.h"
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/environment.h"
 #include "base/json/string_escape.h"
 #include "base/logging.h"

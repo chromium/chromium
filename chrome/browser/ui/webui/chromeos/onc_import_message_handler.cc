@@ -5,7 +5,7 @@
 #include "chrome/browser/ui/webui/chromeos/onc_import_message_handler.h"
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"

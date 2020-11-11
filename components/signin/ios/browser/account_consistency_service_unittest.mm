@@ -9,7 +9,7 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/ios/ios_util.h"
 #include "base/test/bind.h"
 #import "base/test/ios/wait_util.h"

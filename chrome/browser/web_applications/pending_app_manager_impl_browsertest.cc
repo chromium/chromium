@@ -5,8 +5,8 @@
 #include "chrome/browser/web_applications/pending_app_manager_impl.h"
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
 #include "base/callback.h"
+#include "base/callback_helpers.h"
 #include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"

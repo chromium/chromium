@@ -5,7 +5,7 @@
 #include "content/browser/screenlock_monitor/screenlock_monitor_device_source.h"
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"

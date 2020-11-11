@@ -5,7 +5,7 @@
 #include "base/task/lazy_thread_pool_task_runner.h"
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/sequence_checker_impl.h"
 #include "base/task/scoped_set_task_priority_for_current_thread.h"
 #include "base/test/task_environment.h"

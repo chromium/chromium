@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/views/hats/hats_bubble_view.h"
 
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/post_task.h"
 #include "chrome/browser/ui/browser.h"

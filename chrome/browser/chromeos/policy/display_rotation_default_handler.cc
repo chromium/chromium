@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/chromeos/policy/display_rotation_default_handler.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 
 #include <utility>
 

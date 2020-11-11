@@ -5,7 +5,7 @@
 #include "ash/display/output_protection_delegate.h"
 
 #include "ash/shell.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "ui/display/display.h"
 #include "ui/display/manager/content_protection_manager.h"
 #include "ui/display/manager/display_configurator.h"

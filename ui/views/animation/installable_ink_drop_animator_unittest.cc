@@ -4,7 +4,7 @@
 
 #include "ui/views/animation/installable_ink_drop_animator.h"
 
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"

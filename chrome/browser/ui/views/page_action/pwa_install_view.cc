@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/views/page_action/pwa_install_view.h"
 
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/user_metrics.h"

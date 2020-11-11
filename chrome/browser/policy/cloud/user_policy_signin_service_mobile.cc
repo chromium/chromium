@@ -5,8 +5,8 @@
 #include "chrome/browser/policy/cloud/user_policy_signin_service_mobile.h"
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
 #include "base/callback.h"
+#include "base/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/single_thread_task_runner.h"

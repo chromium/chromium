@@ -5,7 +5,7 @@
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_url_loader.h"
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/location.h"
 #include "base/task/post_task.h"
 #include "base/task/task_traits.h"

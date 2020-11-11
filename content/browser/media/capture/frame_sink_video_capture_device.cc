@@ -5,7 +5,6 @@
 #include "content/browser/media/capture/frame_sink_video_capture_device.h"
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/check_op.h"

@@ -5,7 +5,7 @@
 #include "ui/views/animation/ink_drop_ripple.h"
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/compositor/callback_layer_animation_observer.h"

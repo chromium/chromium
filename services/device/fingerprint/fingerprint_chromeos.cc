@@ -7,7 +7,6 @@
 #include <string.h>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
 #include "base/callback_helpers.h"
 #include "chromeos/dbus/biod/biod_client.h"
 #include "dbus/object_path.h"

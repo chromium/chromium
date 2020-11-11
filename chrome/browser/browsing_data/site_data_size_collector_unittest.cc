@@ -5,7 +5,7 @@
 #include "chrome/browser/browsing_data/site_data_size_collector.h"
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/files/file_util.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"

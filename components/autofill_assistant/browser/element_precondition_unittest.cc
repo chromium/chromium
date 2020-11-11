@@ -5,8 +5,8 @@
 #include "components/autofill_assistant/browser/script_precondition.h"
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
 #include "base/callback.h"
+#include "base/callback_helpers.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"

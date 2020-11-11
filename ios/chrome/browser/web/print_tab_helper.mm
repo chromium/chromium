@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/web/print_tab_helper.h"
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/values.h"
 #include "components/prefs/pref_service.h"

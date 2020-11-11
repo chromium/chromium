@@ -5,7 +5,7 @@
 #include "content/browser/scheduler/responsiveness/native_event_observer.h"
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/win/message_window.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/content_browser_test.h"

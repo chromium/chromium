@@ -5,7 +5,7 @@
 #include "content/browser/conversions/conversion_host.h"
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/check.h"
 #include "base/memory/ptr_util.h"
 #include "content/browser/conversions/conversion_manager.h"

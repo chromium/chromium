@@ -12,7 +12,7 @@
 
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/containers/circular_deque.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"

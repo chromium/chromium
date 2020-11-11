@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "remoting/base/compound_buffer.h"
 #include "remoting/host/action_executor.h"
 #include "remoting/proto/action.pb.h"

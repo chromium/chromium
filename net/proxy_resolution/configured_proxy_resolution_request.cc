@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "net/base/net_errors.h"
 #include "net/log/net_log_event_type.h"
 #include "net/proxy_resolution/configured_proxy_resolution_service.h"

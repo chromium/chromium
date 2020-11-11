@@ -4,7 +4,7 @@
 
 #include "chrome/browser/chromeos/cert_provisioning/cert_provisioning_common.h"
 
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/notreached.h"
 #include "base/optional.h"
 #include "base/time/time.h"

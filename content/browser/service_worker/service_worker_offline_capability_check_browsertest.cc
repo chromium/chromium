@@ -4,7 +4,7 @@
 
 #include "base/barrier_closure.h"
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/guid.h"
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"

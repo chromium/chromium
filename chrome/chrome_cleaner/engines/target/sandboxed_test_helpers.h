@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/run_loop.h"
 #include "chrome/chrome_cleaner/engines/broker/cleaner_engine_requests_impl.h"
 #include "chrome/chrome_cleaner/engines/broker/engine_cleanup_results_impl.h"

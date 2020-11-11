@@ -5,7 +5,7 @@
 #include "chrome/browser/web_applications/components/web_app_file_handler_registration.h"
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"

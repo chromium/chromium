@@ -5,7 +5,7 @@
 #include "content/browser/appcache/appcache_update_job.h"
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/compiler_specific.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"

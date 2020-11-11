@@ -4,7 +4,7 @@
 
 #include "weblayer/browser/persistence/browser_persister.h"
 
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/guid.h"

@@ -4,7 +4,7 @@
 
 #include "ios/chrome/browser/safe_browsing/fake_safe_browsing_service.h"
 
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "components/safe_browsing/core/browser/safe_browsing_url_checker_impl.h"
 #include "components/safe_browsing/core/db/test_database_manager.h"
 #import "ios/chrome/browser/safe_browsing/url_checker_delegate_impl.h"

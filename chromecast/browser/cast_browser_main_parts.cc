@@ -138,7 +138,7 @@
 #endif  // !defined(OS_ANDROID) && !defined(OS_FUCHSIA)
 
 #if !defined(OS_FUCHSIA)
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "chromecast/base/cast_sys_info_util.h"
 #include "chromecast/public/cast_sys_info.h"
 #include "components/heap_profiling/multi_process/client_connection_manager.h"

@@ -8,7 +8,7 @@
 
 #include "ash/public/ash_interfaces.h"
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/ui/ash/ash_util.h"
 #include "content/public/browser/browser_task_traits.h"

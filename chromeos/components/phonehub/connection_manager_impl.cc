@@ -4,7 +4,7 @@
 
 #include "chromeos/components/phonehub/connection_manager_impl.h"
 
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "chromeos/constants/chromeos_features.h"

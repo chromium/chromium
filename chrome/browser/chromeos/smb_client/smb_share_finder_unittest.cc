@@ -8,8 +8,8 @@
 #include <string>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
 #include "base/callback.h"
+#include "base/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/chromeos/smb_client/discovery/in_memory_host_locator.h"
 #include "chrome/browser/chromeos/smb_client/smb_constants.h"

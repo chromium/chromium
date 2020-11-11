@@ -5,7 +5,7 @@
 #include "chrome/browser/chromeos/policy/install_event_log_manager.h"
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/check_op.h"
 #include "base/location.h"
 #include "base/sequenced_task_runner.h"

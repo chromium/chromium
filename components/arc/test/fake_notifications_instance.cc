@@ -5,7 +5,7 @@
 #include "components/arc/test/fake_notifications_instance.h"
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 
 namespace arc {
 

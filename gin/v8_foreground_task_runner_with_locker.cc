@@ -5,7 +5,7 @@
 #include "gin/v8_foreground_task_runner_with_locker.h"
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "v8/include/v8.h"

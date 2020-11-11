@@ -8,7 +8,7 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/check.h"
 #include "chrome/chrome_cleaner/chrome_utils/extensions_util.h"
 #include "chrome/chrome_cleaner/chrome_utils/force_installed_extension.h"

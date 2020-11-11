@@ -12,7 +12,7 @@
 #include "base/android/android_hardware_buffer_compat.h"
 #endif
 
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/numerics/ranges.h"
 #include "build/build_config.h"
 #include "content/browser/xr/service/vr_service_impl.h"

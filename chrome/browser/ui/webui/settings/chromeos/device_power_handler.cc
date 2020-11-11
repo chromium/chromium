@@ -10,7 +10,7 @@
 #include "ash/public/cpp/ash_pref_names.h"
 #include "ash/public/cpp/power_utils.h"
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"

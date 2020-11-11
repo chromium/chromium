@@ -4,7 +4,7 @@
 
 #include "components/performance_manager/test_support/performance_manager_browsertest_harness.h"
 
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/run_loop.h"
 #include "components/performance_manager/embedder/performance_manager_lifetime.h"
 #include "content/public/common/content_switches.h"

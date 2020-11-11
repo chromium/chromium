@@ -5,7 +5,7 @@
 #include "chrome/browser/ui/webui/history/navigation_handler.h"
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/check.h"
 #include "base/values.h"
 #include "content/public/browser/web_contents.h"

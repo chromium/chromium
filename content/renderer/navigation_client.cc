@@ -4,7 +4,7 @@
 
 #include "content/renderer/navigation_client.h"
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "content/renderer/render_frame_impl.h"
 #include "third_party/blink/public/platform/task_type.h"
 

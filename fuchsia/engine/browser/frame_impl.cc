@@ -9,7 +9,7 @@
 #include <lib/ui/scenic/cpp/view_ref_pair.h>
 #include <limits>
 
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/process_context.h"

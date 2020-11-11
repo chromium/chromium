@@ -14,7 +14,7 @@
 #include "ash/public/cpp/ash_pref_names.h"
 #include "ash/public/cpp/session/session_controller.h"
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"

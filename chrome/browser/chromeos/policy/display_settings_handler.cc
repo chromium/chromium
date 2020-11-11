@@ -9,7 +9,7 @@
 #include "ash/public/ash_interfaces.h"
 #include "ash/public/mojom/cros_display_config.mojom.h"
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/location.h"
 #include "base/memory/ref_counted.h"
 #include "base/single_thread_task_runner.h"

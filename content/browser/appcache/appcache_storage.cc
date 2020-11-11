@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "content/browser/appcache/appcache_disk_cache_ops.h"
 #include "content/browser/appcache/appcache_response_info.h"

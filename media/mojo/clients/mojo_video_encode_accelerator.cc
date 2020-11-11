@@ -5,7 +5,7 @@
 #include "media/mojo/clients/mojo_video_encode_accelerator.h"
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "build/build_config.h"
 #include "gpu/ipc/client/gpu_channel_host.h"

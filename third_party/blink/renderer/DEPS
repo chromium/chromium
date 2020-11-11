@@ -3,7 +3,7 @@ include_rules = [
     "+base/allocator/partition_allocator/oom.h",
     "+base/auto_reset.h",
     "+base/bind.h",
-    "+base/bind_helpers.h",
+    "+base/callback_helpers.h",
     "+base/bit_cast.h",
     "+base/check.h",
     "+base/check_op.h",

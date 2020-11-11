@@ -5,7 +5,7 @@
 #include "gpu/vulkan/x/vulkan_implementation_x11.h"
 
 #include "base/base_paths.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/files/file_path.h"
 #include "base/notreached.h"
 #include "base/optional.h"

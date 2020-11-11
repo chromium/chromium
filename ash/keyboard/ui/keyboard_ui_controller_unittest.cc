@@ -16,7 +16,7 @@
 #include "ash/keyboard/ui/test/test_keyboard_ui_factory.h"
 #include "ash/public/cpp/keyboard/keyboard_controller_observer.h"
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/macros.h"
 #include "base/run_loop.h"

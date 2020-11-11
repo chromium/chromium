@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/values.h"
 #include "chromeos/settings/cros_settings_names.h"
 #include "testing/gtest/include/gtest/gtest.h"

@@ -29,7 +29,7 @@
 #include "ash/system/status_area_widget.h"
 #include "ash/wm/work_area_insets.h"
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/check.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"

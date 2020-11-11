@@ -5,7 +5,7 @@
 #include "chrome/browser/ui/views/web_apps/web_app_uninstall_dialog_view.h"
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"

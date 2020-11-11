@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/modules/service_worker/service_worker_event_queue.h"
 
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"

@@ -5,7 +5,7 @@
 #include "device/bluetooth/dbus/bluetooth_debug_manager_client.h"
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/check.h"
 #include "base/macros.h"
 #include "dbus/bus.h"

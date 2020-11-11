@@ -5,7 +5,7 @@
 #include "chrome/browser/extensions/global_shortcut_listener_win.h"
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/win/win_util.h"
 #include "chrome/common/extensions/command.h"
 #include "content/public/browser/browser_thread.h"

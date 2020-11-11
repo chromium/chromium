@@ -5,7 +5,7 @@
 #include "components/language/content/browser/geo_language_model.h"
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/macros.h"
 #include "base/test/task_environment.h"
 #include "base/timer/timer.h"

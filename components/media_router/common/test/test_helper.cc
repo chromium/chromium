@@ -4,7 +4,7 @@
 
 #include "components/media_router/common/test/test_helper.h"
 
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 
 namespace media_router {

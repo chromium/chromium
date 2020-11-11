@@ -5,7 +5,6 @@
 #include "extensions/renderer/bindings/api_last_error.h"
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
 #include "base/callback_helpers.h"
 #include "base/optional.h"
 #include "extensions/renderer/bindings/api_binding_test.h"

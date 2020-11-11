@@ -5,7 +5,7 @@
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/check.h"
 #include "base/location.h"
 #include "base/single_thread_task_runner.h"

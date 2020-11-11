@@ -12,7 +12,7 @@
 #include "ash/shell.h"
 #include "ash/shell_delegate.h"
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/stl_util.h"
 #include "components/media_message_center/media_notification_util.h"
 #include "ui/message_center/message_center.h"

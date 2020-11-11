@@ -4,7 +4,7 @@
 
 #include "content/public/browser/media_session.h"
 
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/optional.h"
 #include "base/run_loop.h"

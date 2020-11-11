@@ -7,7 +7,7 @@
 #import <Foundation/Foundation.h>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/mac/foundation_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "components/signin/ios/browser/account_consistency_service.h"

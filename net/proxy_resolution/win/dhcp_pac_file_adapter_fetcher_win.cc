@@ -5,7 +5,7 @@
 #include "net/proxy_resolution/win/dhcp_pac_file_adapter_fetcher_win.h"
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/free_deleter.h"

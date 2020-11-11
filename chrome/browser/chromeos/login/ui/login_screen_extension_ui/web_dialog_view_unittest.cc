@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/macros.h"
 #include "chrome/browser/chromeos/login/ui/login_screen_extension_ui/create_options.h"
 #include "chrome/browser/chromeos/login/ui/login_screen_extension_ui/dialog_delegate.h"

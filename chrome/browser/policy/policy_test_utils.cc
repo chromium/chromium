@@ -4,7 +4,7 @@
 
 #include "chrome/browser/policy/policy_test_utils.h"
 
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/optional.h"
 #include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"

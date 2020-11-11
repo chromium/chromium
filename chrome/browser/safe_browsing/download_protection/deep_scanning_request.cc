@@ -5,8 +5,8 @@
 #include "chrome/browser/safe_browsing/download_protection/deep_scanning_request.h"
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
 #include "base/callback_forward.h"
+#include "base/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/optional.h"
 #include "base/strings/string_number_conversions.h"

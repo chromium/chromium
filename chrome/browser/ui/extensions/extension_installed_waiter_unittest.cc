@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/extensions/extension_installed_waiter.h"
 
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/load_error_reporter.h"

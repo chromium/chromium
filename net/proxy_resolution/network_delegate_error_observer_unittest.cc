@@ -5,7 +5,7 @@
 #include "net/proxy_resolution/network_delegate_error_observer.h"
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/location.h"
 #include "base/optional.h"
 #include "base/run_loop.h"

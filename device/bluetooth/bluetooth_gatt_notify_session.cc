@@ -5,7 +5,7 @@
 #include "device/bluetooth/bluetooth_gatt_notify_session.h"
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "device/bluetooth/bluetooth_remote_gatt_characteristic.h"
 

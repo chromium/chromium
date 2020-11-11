@@ -4,7 +4,7 @@
 
 #include "chrome/browser/web_applications/pending_app_registration_task.h"
 
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/components/pending_app_manager.h"
 #include "chrome/browser/web_applications/components/web_app_url_loader.h"

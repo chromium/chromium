@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/files/file_path_watcher.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"

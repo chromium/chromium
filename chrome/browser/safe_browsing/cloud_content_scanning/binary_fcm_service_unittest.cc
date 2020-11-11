@@ -5,7 +5,7 @@
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_fcm_service.h"
 
 #include "base/base64.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"

@@ -5,7 +5,7 @@
 #include "chrome/browser/chromeos/system/pointer_device_observer.h"
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "chrome/browser/chromeos/system/input_device_settings.h"
 #include "content/public/browser/browser_thread.h"
 #include "ui/events/devices/device_data_manager.h"

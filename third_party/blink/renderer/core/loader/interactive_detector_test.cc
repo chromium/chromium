@@ -4,7 +4,7 @@
 #include "components/ukm/test_ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "third_party/blink/renderer/core/loader/interactive_detector.h"
 
 #include "testing/gtest/include/gtest/gtest.h"

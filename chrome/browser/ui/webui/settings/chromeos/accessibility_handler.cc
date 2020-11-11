@@ -5,7 +5,7 @@
 #include "chrome/browser/ui/webui/settings/chromeos/accessibility_handler.h"
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/chromeos/accessibility/accessibility_manager.h"
 #include "chrome/browser/extensions/extension_tab_util.h"

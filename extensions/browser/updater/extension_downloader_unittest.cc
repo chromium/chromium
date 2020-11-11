@@ -4,7 +4,7 @@
 
 #include "extensions/browser/updater/extension_downloader.h"
 
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/sequenced_task_runner.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"

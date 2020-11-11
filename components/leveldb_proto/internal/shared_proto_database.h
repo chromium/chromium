@@ -9,7 +9,7 @@
 #include <string>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/cancelable_callback.h"
 #include "base/component_export.h"
 #include "base/containers/queue.h"

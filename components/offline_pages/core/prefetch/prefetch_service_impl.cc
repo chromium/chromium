@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/check.h"
 #include "components/image_fetcher/core/image_fetcher.h"
 #include "components/offline_pages/core/client_id.h"

@@ -4,7 +4,7 @@
 
 #include "chrome/browser/enterprise/reporting/extension_request/extension_request_report_throttler_test.h"
 
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/time/time.h"
 
 namespace enterprise_reporting {

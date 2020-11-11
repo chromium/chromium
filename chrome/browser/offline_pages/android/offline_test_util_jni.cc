@@ -10,7 +10,7 @@
 #include "base/android/jni_string.h"
 #include "base/android/jni_utils.h"
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/json/json_writer.h"
 #include "chrome/android/test_support_jni_headers/OfflineTestUtil_jni.h"
 #include "chrome/browser/android/profile_key_util.h"

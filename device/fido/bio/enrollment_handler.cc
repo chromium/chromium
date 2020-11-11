@@ -5,7 +5,7 @@
 #include "device/fido/bio/enrollment_handler.h"
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "components/device_event_log/device_event_log.h"
 #include "device/fido/fido_authenticator.h"
 #include "device/fido/fido_constants.h"

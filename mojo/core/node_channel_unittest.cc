@@ -4,7 +4,7 @@
 
 #include "mojo/core/node_channel.h"
 
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/test/task_environment.h"

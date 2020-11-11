@@ -4,7 +4,7 @@ include_rules = [
     "+base/allocator/partition_allocator",
     "+base/atomic_ref_count.h",
     "+base/bind.h",
-    "+base/bind_helpers.h",
+    "+base/callback_helpers.h",
     "+base/bit_cast.h",
     "+base/command_line.h",
     "+base/compiler_specific.h",

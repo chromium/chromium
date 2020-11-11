@@ -5,7 +5,7 @@
 #include "chrome/browser/safe_browsing/ui_manager.h"
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/values.h"
 #include "chrome/browser/net/system_network_context_manager.h"

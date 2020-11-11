@@ -5,7 +5,7 @@
 #include "chrome/browser/ui/webui/settings/browser_lifetime_handler.h"
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "build/build_config.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 

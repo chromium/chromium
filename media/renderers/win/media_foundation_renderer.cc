@@ -9,7 +9,6 @@
 #include <memory>
 #include <string>
 
-#include "base/bind_helpers.h"
 #include "base/callback_helpers.h"
 #include "base/guid.h"
 #include "base/strings/string16.h"

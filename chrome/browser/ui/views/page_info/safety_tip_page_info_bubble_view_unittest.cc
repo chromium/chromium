@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/views/page_info/safety_tip_page_info_bubble_view.h"
 
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "chrome/browser/content_settings/page_specific_content_settings_delegate.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_test_views_delegate.h"

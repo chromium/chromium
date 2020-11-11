@@ -4,7 +4,7 @@
 
 #include "cc/test/resource_provider_test_utils.h"
 
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 
 namespace cc {
 

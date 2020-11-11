@@ -8,7 +8,7 @@
 
 #import <PassKit/PassKit.h>
 
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "ios/chrome/browser/download/download_test_util.h"
 #include "ios/chrome/browser/download/pass_kit_mime_type.h"

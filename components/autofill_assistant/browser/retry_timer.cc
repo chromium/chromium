@@ -7,7 +7,7 @@
 #include <algorithm>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/numerics/clamped_math.h"
 #include "components/autofill_assistant/browser/client_status.h"
 

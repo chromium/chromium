@@ -5,8 +5,8 @@
 #include "chromeos/services/secure_channel/public/cpp/client/client_channel_impl.h"
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
 #include "base/callback.h"
+#include "base/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
 #include "base/optional.h"

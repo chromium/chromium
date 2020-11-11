@@ -4,7 +4,7 @@
 
 #include "content/common/service_manager/service_manager_connection_impl.h"
 
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"

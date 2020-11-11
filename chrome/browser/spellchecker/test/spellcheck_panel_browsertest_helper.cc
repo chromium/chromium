@@ -5,7 +5,7 @@
 #include "chrome/browser/spellchecker/test/spellcheck_panel_browsertest_helper.h"
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/task/post_task.h"
 #include "chrome/browser/spellchecker/spell_check_panel_host_impl.h"

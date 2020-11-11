@@ -5,8 +5,8 @@
 #include "chrome/browser/policy/messaging_layer/util/shared_vector.h"
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
 #include "base/callback.h"
+#include "base/callback_helpers.h"
 #include "base/optional.h"
 #include "base/sequenced_task_runner.h"
 #include "base/task/task_traits.h"

@@ -5,7 +5,7 @@
 #include "content/browser/media/midi_host.h"
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/process/process.h"
 #include "base/stl_util.h"

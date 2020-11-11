@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
 #include "base/callback_helpers.h"
 #include "base/win/win_util.h"
 #include "testing/gtest/include/gtest/gtest.h"

@@ -5,7 +5,7 @@
 #include "media/gpu/chromeos/video_decoder_pipeline.h"
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"

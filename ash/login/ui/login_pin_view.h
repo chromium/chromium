@@ -11,8 +11,8 @@
 #include "ash/ash_export.h"
 #include "ash/login/ui/login_palette.h"
 #include "ash/login/ui/non_accessible_view.h"
-#include "base/bind_helpers.h"
 #include "base/callback.h"
+#include "base/callback_helpers.h"
 #include "base/macros.h"
 #include "ui/views/view.h"
 

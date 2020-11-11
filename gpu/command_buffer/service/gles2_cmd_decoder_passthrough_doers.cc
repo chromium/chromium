@@ -4,7 +4,7 @@
 
 #include "gpu/command_buffer/service/gles2_cmd_decoder_passthrough.h"
 
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/ranges.h"
 #include "base/strings/string_number_conversions.h"

@@ -5,7 +5,7 @@
 #include "content/browser/service_worker/service_worker_installed_scripts_sender.h"
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"

@@ -5,7 +5,7 @@
 #include "content/browser/renderer_host/render_widget_host_view_child_frame.h"
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"

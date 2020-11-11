@@ -5,7 +5,7 @@
 #include "content/browser/bluetooth/bluetooth_device_scanning_prompt_controller.h"
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "content/browser/bluetooth/web_bluetooth_service_impl.h"
 #include "content/public/browser/bluetooth_delegate.h"
 #include "content/public/browser/content_browser_client.h"

@@ -4,7 +4,7 @@
 
 #import "ios/web/public/navigation/web_state_policy_decider_bridge.h"
 
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #import "ios/web/public/test/fakes/crw_fake_web_state_policy_decider.h"
 #import "ios/web/public/test/fakes/test_web_state.h"
 #include "testing/platform_test.h"

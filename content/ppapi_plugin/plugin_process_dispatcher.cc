@@ -5,7 +5,7 @@
 #include "content/ppapi_plugin/plugin_process_dispatcher.h"
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "content/child/child_process.h"
 
 namespace content {

@@ -7,7 +7,7 @@
 
 // spellcheck_per_process_browsertest.cc
 
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/feature_list.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"

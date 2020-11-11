@@ -5,7 +5,7 @@
 #include "chromeos/components/tether/tether_connector_impl.h"
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/metrics/histogram_macros.h"
 #include "chromeos/components/multidevice/logging/logging.h"
 #include "chromeos/components/tether/active_host.h"

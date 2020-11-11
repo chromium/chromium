@@ -5,7 +5,7 @@
 #include "content/public/browser/download_manager_delegate.h"
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/download/public/common/download_item.h"
 #include "content/public/browser/web_contents_delegate.h"

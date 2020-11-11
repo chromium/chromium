@@ -9,7 +9,6 @@
 #include <random>
 #include <vector>
 
-#include "base/bind_helpers.h"
 #include "base/callback.h"
 #include "base/test/bind.h"
 #include "testing/gtest/include/gtest/gtest.h"

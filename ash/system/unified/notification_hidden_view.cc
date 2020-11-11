@@ -12,7 +12,7 @@
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/unified/rounded_label_button.h"
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/lock_screen/lock_screen_controller.h"
 #include "ui/message_center/message_center.h"

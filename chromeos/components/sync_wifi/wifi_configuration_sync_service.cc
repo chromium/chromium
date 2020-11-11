@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "ash/public/cpp/network_config_service.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/time/default_clock.h"
 #include "chromeos/components/sync_wifi/local_network_collector_impl.h"
 #include "chromeos/components/sync_wifi/pending_network_configuration_tracker_impl.h"

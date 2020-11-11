@@ -5,7 +5,7 @@
 #include "chrome/browser/chromeos/smb_client/smbfs_share.h"
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"

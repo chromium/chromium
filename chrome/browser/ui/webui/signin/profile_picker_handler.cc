@@ -5,7 +5,7 @@
 #include "chrome/browser/ui/webui/signin/profile_picker_handler.h"
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/optional.h"
 #include "base/strings/utf_string_conversions.h"

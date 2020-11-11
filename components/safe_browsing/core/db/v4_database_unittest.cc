@@ -6,7 +6,7 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/debug/leak_annotations.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"

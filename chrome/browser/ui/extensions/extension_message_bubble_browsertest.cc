@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/extensions/extension_message_bubble_browsertest.h"
 
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/app/chrome_command_ids.h"

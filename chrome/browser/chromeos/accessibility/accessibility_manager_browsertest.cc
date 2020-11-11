@@ -7,7 +7,7 @@
 #include "ash/public/cpp/ash_pref_names.h"
 #include "ash/public/cpp/test/accessibility_controller_test_api.h"
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/macros.h"
 #include "chrome/browser/chromeos/login/session/user_session_manager.h"

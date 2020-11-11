@@ -4,7 +4,7 @@
 
 #include "components/variations/variations_id_collection.h"
 
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/stl_util.h"

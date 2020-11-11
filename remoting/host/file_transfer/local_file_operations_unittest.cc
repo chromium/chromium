@@ -5,7 +5,7 @@
 #include "remoting/host/file_transfer/local_file_operations.h"
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/containers/queue.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"

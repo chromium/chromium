@@ -5,7 +5,7 @@
 #include "media/test/test_media_source.h"
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "media/base/test_data_util.h"
 #include "media/base/timestamp_constants.h"

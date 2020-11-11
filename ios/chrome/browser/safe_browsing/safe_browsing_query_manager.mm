@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/safe_browsing/safe_browsing_query_manager.h"
 
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/check_op.h"
 #include "base/task/post_task.h"
 #include "ios/chrome/browser/application_context.h"

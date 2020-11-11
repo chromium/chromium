@@ -5,7 +5,7 @@
 #include "content/browser/geolocation/geolocation_service_impl.h"
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/run_loop.h"
 #include "content/browser/permissions/permission_controller_impl.h"
 #include "content/public/browser/device_service.h"

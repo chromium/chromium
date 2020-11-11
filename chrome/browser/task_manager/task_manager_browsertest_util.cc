@@ -5,7 +5,7 @@
 #include "chrome/browser/task_manager/task_manager_browsertest_util.h"
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/location.h"
 #include "base/run_loop.h"

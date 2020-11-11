@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 #include <utility>
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/test/metrics/histogram_tester.h"

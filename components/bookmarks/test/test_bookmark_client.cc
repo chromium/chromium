@@ -10,7 +10,7 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/notreached.h"
 #include "base/stl_util.h"
 #include "components/bookmarks/browser/bookmark_load_details.h"

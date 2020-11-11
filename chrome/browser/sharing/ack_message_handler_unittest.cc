@@ -5,7 +5,7 @@
 #include "chrome/browser/sharing/ack_message_handler.h"
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/sharing/mock_sharing_message_sender.h"
 #include "chrome/browser/sharing/proto/sharing_message.pb.h"

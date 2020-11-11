@@ -8,7 +8,7 @@
 
 #include "ash/public/cpp/keyboard/keyboard_switches.h"
 #include "ash/public/cpp/test/shell_test_api.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/logging.h"

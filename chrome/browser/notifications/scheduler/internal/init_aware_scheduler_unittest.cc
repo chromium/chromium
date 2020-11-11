@@ -7,7 +7,7 @@
 #include <memory>
 #include <utility>
 
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/notifications/scheduler/public/notification_params.h"
 #include "testing/gmock/include/gmock/gmock.h"

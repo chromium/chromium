@@ -5,7 +5,7 @@
 #include "content/browser/renderer_host/render_widget_helper.h"
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/lazy_instance.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/threading/thread.h"

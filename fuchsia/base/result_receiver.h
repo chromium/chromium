@@ -6,7 +6,7 @@
 #define FUCHSIA_BASE_RESULT_RECEIVER_H_
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/optional.h"
 
 namespace cr_fuchsia {

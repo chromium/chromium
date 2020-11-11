@@ -6,7 +6,7 @@
 #define STORAGE_BROWSER_FILE_SYSTEM_FILE_STREAM_WRITER_TEST_H_
 
 #include <cstdio>
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"

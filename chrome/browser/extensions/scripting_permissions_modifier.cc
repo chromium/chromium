@@ -4,7 +4,7 @@
 
 #include "chrome/browser/extensions/scripting_permissions_modifier.h"
 
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "chrome/browser/extensions/permissions_updater.h"
 #include "chrome/common/webui_url_constants.h"
 #include "content/public/common/url_constants.h"

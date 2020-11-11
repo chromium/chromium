@@ -5,7 +5,7 @@
 #include "chromeos/components/tether/network_connection_handler_tether_delegate.h"
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/stl_util.h"
 #include "chromeos/components/multidevice/logging/logging.h"
 #include "chromeos/components/tether/active_host.h"

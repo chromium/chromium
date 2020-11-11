@@ -5,7 +5,7 @@
 #include "media/base/video_thumbnail_decoder.h"
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/video_frame.h"
 

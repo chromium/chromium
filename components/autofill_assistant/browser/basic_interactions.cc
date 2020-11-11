@@ -4,7 +4,7 @@
 
 #include "components/autofill_assistant/browser/basic_interactions.h"
 #include <algorithm>
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/i18n/time_formatting.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"

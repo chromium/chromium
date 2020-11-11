@@ -4,7 +4,7 @@
 
 #include "services/video_capture/test/mock_device_test.h"
 
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "build/chromeos_buildflags.h"

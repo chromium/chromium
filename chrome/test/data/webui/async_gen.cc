@@ -5,7 +5,7 @@
 #include "chrome/test/data/webui/async_gen.h"
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/values.h"
 #include "content/public/browser/web_ui.h"
 

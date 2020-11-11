@@ -5,7 +5,7 @@
 #include "chrome/browser/chromeos/policy/server_backed_state_keys_broker.h"
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_mock_time_message_loop_task_runner.h"

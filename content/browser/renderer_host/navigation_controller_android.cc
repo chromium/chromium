@@ -8,8 +8,8 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
-#include "base/bind_helpers.h"
 #include "base/callback.h"
+#include "base/callback_helpers.h"
 #include "base/containers/flat_map.h"
 #include "base/strings/string16.h"
 #include "content/browser/renderer_host/navigation_controller_impl.h"

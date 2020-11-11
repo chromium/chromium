@@ -5,7 +5,7 @@
 #include "chromeos/components/cdm_factory_daemon/cdm_factory_daemon_proxy.h"
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"

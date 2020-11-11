@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/arc/test/fake_clipboard_instance.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 
 namespace arc {
 

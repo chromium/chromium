@@ -8,7 +8,7 @@
 
 #include "ash/public/cpp/in_session_auth_dialog_controller.h"
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/chromeos/login/quick_unlock/fingerprint_storage.h"

@@ -8,8 +8,8 @@
 #include <string>
 #include <vector>
 
-#include "base/bind_helpers.h"
 #include "base/callback.h"
+#include "base/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/test/task_environment.h"
 #include "remoting/base/oauth_token_getter.h"

@@ -4,7 +4,7 @@
 
 #include "content/browser/scheduler/responsiveness/native_event_observer.h"
 
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/content_browser_test.h"
 #include "ui/events/test/cocoa_test_event_utils.h"

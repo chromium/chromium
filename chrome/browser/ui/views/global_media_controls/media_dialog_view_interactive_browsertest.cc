@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/views/global_media_controls/media_dialog_view.h"
 
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"

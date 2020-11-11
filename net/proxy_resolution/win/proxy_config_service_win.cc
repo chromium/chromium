@@ -8,8 +8,8 @@
 #include <winhttp.h>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
 #include "base/callback.h"
+#include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/string_util.h"

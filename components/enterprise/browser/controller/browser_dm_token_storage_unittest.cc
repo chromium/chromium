@@ -5,7 +5,7 @@
 #include "components/enterprise/browser/controller/browser_dm_token_storage.h"
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"

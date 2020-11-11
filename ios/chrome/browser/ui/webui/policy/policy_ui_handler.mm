@@ -8,8 +8,8 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
 #include "base/callback.h"
+#include "base/callback_helpers.h"
 #include "base/values.h"
 #include "components/policy/core/browser/policy_conversions.h"
 #include "components/policy/core/common/policy_map.h"

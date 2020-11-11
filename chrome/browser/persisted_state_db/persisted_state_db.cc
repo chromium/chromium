@@ -5,7 +5,7 @@
 #include "chrome/browser/persisted_state_db/persisted_state_db.h"
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/files/file_path.h"
 #include "base/strings/string_util.h"
 #include "base/task/post_task.h"

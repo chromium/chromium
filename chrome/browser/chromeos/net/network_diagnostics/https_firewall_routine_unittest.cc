@@ -8,7 +8,7 @@
 #include <memory>
 #include <utility>
 
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "chrome/browser/chromeos/net/network_diagnostics/fake_host_resolver.h"
 #include "chrome/browser/chromeos/net/network_diagnostics/fake_network_context.h"
 #include "content/public/browser/browser_task_traits.h"

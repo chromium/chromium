@@ -694,8 +694,8 @@ references. (Binding to non-const references is forbidden, see bind.h.)
 
 To change this behavior, we introduce a set of argument wrappers (e.g.,
 `base::Unretained()`).  These are simple container templates that are passed by
-value, and wrap a pointer to argument.  See the file-level comment in
-base/bind_helpers.h for more info.
+value, and wrap a pointer to argument.  Each helper has a comment describing it
+in base/bind.h.
 
 These types are passed to the `Unwrap()` functions to modify the behavior of
 `base::Bind()`.  The `Unwrap()` functions change behavior by doing partial

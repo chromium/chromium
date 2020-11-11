@@ -5,7 +5,7 @@
 #include "chrome/browser/chromeos/login/screens/arc_terms_of_service_screen.h"
 
 #include "ash/public/cpp/login_screen_test_api.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/guid.h"
 #include "base/hash/sha1.h"

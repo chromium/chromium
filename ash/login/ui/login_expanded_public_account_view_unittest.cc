@@ -12,7 +12,7 @@
 #include "ash/login/ui/views_utils.h"
 #include "ash/public/cpp/login_types.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/ranges/algorithm.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "testing/gtest/include/gtest/gtest.h"

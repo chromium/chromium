@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/web_applications/web_app_browser_controller.h"
 
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"

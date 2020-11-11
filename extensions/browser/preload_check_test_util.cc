@@ -5,7 +5,7 @@
 #include "extensions/browser/preload_check_test_util.h"
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/check.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"

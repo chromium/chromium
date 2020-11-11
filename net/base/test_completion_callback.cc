@@ -5,7 +5,7 @@
 #include "net/base/test_completion_callback.h"
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/compiler_specific.h"
 #include "base/run_loop.h"
 #include "net/base/io_buffer.h"

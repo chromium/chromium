@@ -6,8 +6,8 @@
 
 #include <utility>
 
-#include "base/bind_helpers.h"
 #include "base/callback.h"
+#include "base/callback_helpers.h"
 #include "components/performance_manager/performance_manager_impl.h"
 
 namespace performance_manager {

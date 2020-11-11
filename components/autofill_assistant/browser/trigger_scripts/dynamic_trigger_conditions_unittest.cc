@@ -8,7 +8,6 @@
 #include "components/autofill_assistant/browser/web/mock_web_controller.h"
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
 #include "base/callback.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"

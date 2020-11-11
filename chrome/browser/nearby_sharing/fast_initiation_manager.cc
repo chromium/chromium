@@ -6,7 +6,7 @@
 
 #include <string>
 
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "chrome/browser/nearby_sharing/logging/logging.h"
 #include "device/bluetooth/bluetooth_advertisement.h"
 

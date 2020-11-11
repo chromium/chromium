@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "ash/public/cpp/shell_window_ids.h"
-#include "base/bind_helpers.h"
 #include "base/callback_helpers.h"
 #include "base/containers/adapters.h"
 #include "base/logging.h"

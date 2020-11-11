@@ -10,8 +10,8 @@
 #include <wrl/module.h>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
 #include "base/callback.h"
+#include "base/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/win/com_init_util.h"
 #include "base/win/core_winrt_util.h"

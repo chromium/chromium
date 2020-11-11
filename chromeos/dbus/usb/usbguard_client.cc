@@ -7,7 +7,7 @@
 #include <map>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/observer_list.h"
 #include "chromeos/dbus/usb/fake_usbguard_client.h"

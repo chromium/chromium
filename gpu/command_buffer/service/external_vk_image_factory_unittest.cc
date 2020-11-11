@@ -7,7 +7,7 @@
 #include <memory>
 #include <utility>
 
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "components/viz/common/gpu/vulkan_in_process_context_provider.h"
 #include "gpu/command_buffer/service/external_vk_image_dawn_representation.h"
 #include "gpu/command_buffer/service/external_vk_image_skia_representation.h"

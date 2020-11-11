@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/browser_dialogs.h"
 
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/metrics/histogram_macros.h"
 
 namespace chrome {

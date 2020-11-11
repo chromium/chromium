@@ -5,7 +5,7 @@
 #include "chrome/browser/chromeos/policy/extension_install_event_log_manager_wrapper.h"
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/location.h"

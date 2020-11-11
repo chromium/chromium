@@ -5,7 +5,6 @@
 #include "media/mojo/clients/mojo_audio_decoder.h"
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
 #include "base/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"

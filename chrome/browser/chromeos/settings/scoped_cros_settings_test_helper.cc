@@ -4,7 +4,7 @@
 
 #include "chrome/browser/chromeos/settings/scoped_cros_settings_test_helper.h"
 
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/check.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"

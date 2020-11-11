@@ -5,7 +5,7 @@
 #include "chrome/browser/apps/platform_apps/shortcut_manager.h"
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/one_shot_event.h"

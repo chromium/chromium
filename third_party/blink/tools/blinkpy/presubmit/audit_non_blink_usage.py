@@ -90,7 +90,7 @@ _CONFIG = [
             'base::ObserverList',
             'base::CheckedObserver',
 
-            # //base/bind_helpers.h.
+            # //base/callback_helpers.h.
             'base::DoNothing',
 
             # //base/callback.h is allowed, but you need to use WTF::Bind or

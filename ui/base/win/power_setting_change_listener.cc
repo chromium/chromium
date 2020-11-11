@@ -5,7 +5,7 @@
 #include "ui/base/win/power_setting_change_listener.h"
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/location.h"
 #include "base/memory/singleton.h"
 #include "base/observer_list.h"

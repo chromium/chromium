@@ -26,7 +26,7 @@
 #include "ash/shell.h"
 #include "ash/system/power/power_status.h"
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/check.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"

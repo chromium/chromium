@@ -7,7 +7,7 @@
 #include <map>
 #include <utility>
 
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/time/time.h"
 #include "components/gcm_driver/gcm_driver.h"

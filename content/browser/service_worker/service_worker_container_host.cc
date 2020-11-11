@@ -7,7 +7,6 @@
 #include <set>
 #include <utility>
 
-#include "base/bind_helpers.h"
 #include "base/callback_helpers.h"
 #include "base/guid.h"
 #include "content/browser/child_process_security_policy_impl.h"

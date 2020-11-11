@@ -6,8 +6,8 @@
 #define CHROMEOS_COMPONENTS_TETHER_FAKE_ASYNCHRONOUS_SHUTDOWN_OBJECT_CONTAINER_H_
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
 #include "base/callback.h"
+#include "base/callback_helpers.h"
 #include "base/macros.h"
 #include "chromeos/components/tether/asynchronous_shutdown_object_container.h"
 
