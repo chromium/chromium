@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include "base/containers/id_map.h"
 #include "content/common/agent_scheduling_group.mojom.h"
 #include "content/common/associated_interfaces.mojom.h"
 #include "content/common/content_export.h"
@@ -175,10 +176,15 @@ class CONTENT_EXPORT AgentSchedulingGroupHost
   void ResetMojo();
   void SetUpMojoIfNeeded();
 
+  IPC::Listener* GetListener(int32_t routing_id);
+
   // The RenderProcessHost this AgentSchedulingGroup is assigned to.
   RenderProcessHost& process_;
 
   const bool should_associate_;
+
+  // Map of registered IPC listeners.
+  base::IDMap<IPC::Listener*> listener_map_;
 
   // Implementation of `mojom::AgentSchedulingGroupHost`, used for responding to
   // calls from the (renderer-side) `AgentSchedulingGroup`.

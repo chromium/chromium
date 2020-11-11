@@ -128,20 +128,16 @@ bool AgentSchedulingGroup::Send(IPC::Message* message) {
   return RenderThread::Get()->Send(message);
 }
 
-// IPC messages to be forwarded to the `RenderThread`, for now. In the future
-// they will be handled directly by the `AgentSchedulingGroup`.
 void AgentSchedulingGroup::AddRoute(int32_t routing_id, Listener* listener) {
-  // TODO(crbug.com/1111231): For some reason, changing this to use
-  // render_thread_ causes trybots to time out (not specific tests).
-  RenderThread::Get()->AddRoute(routing_id, listener);
+  DCHECK(!listener_map_.Lookup(routing_id));
+  listener_map_.AddWithID(listener, routing_id);
+  render_thread_.AddRoute(routing_id, listener);
 }
 
-// IPC messages to be forwarded to the `RenderThread`, for now. In the future
-// they will be handled directly by the `AgentSchedulingGroup`.
 void AgentSchedulingGroup::RemoveRoute(int32_t routing_id) {
-  // TODO(crbug.com/1111231): For some reason, changing this to use
-  // render_thread_ causes trybots to time out (not specific tests).
-  RenderThread::Get()->RemoveRoute(routing_id);
+  DCHECK(listener_map_.Lookup(routing_id));
+  listener_map_.Remove(routing_id);
+  render_thread_.RemoveRoute(routing_id);
 }
 
 mojom::RouteProvider* AgentSchedulingGroup::GetRemoteRouteProvider() {
@@ -232,9 +228,21 @@ void AgentSchedulingGroup::GetAssociatedInterface(
         receiver) {
   int32_t routing_id =
       associated_interface_provider_receivers_.current_context();
-  IPC::Listener* listener = ToImpl(render_thread_).GetListener(routing_id);
-  if (listener)
+
+  if (auto* listener = GetListener(routing_id))
     listener->OnAssociatedInterfaceRequest(name, receiver.PassHandle());
+}
+
+Listener* AgentSchedulingGroup::GetListener(int32_t routing_id) {
+  if (routing_id == MSG_ROUTING_CONTROL)
+    return &ToImpl(render_thread_);
+
+  if (auto* listener = listener_map_.Lookup(routing_id))
+    return listener;
+
+  // TODO(crbug.com/1111231): Can/should we log it when we find the listener on
+  // the render thread but not here?
+  return ToImpl(render_thread_).GetListener(routing_id);
 }
 
 }  // namespace content

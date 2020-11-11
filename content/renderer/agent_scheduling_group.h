@@ -5,6 +5,7 @@
 #ifndef CONTENT_RENDERER_AGENT_SCHEDULING_GROUP_H_
 #define CONTENT_RENDERER_AGENT_SCHEDULING_GROUP_H_
 
+#include "base/containers/id_map.h"
 #include "content/common/agent_scheduling_group.mojom.h"
 #include "content/common/associated_interfaces.mojom.h"
 #include "content/common/content_export.h"
@@ -136,6 +137,11 @@ class CONTENT_EXPORT AgentSchedulingGroup
       const std::string& name,
       mojo::PendingAssociatedReceiver<blink::mojom::AssociatedInterface>
           receiver) override;
+
+  IPC::Listener* GetListener(int32_t routing_id);
+
+  // Map of registered IPC listeners.
+  base::IDMap<IPC::Listener*> listener_map_;
 
   // A dedicated scheduler for this AgentSchedulingGroup.
   std::unique_ptr<blink::scheduler::WebAgentGroupScheduler>

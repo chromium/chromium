@@ -49,6 +49,10 @@ class AgentGroupHostUserData : public base::SupportsUserData::Data {
   std::unique_ptr<AgentSchedulingGroupHost> agent_group_;
 };
 
+RenderProcessHostImpl& ToImpl(RenderProcessHost& process) {
+  return static_cast<RenderProcessHostImpl&>(process);
+}
+
 }  // namespace
 
 // MaybeAssociatedReceiver:
@@ -232,10 +236,14 @@ bool AgentSchedulingGroupHost::Send(IPC::Message* message) {
 
 void AgentSchedulingGroupHost::AddRoute(int32_t routing_id,
                                         Listener* listener) {
+  DCHECK(!listener_map_.Lookup(routing_id));
+  listener_map_.AddWithID(listener, routing_id);
   process_.AddRoute(routing_id, listener);
 }
 
 void AgentSchedulingGroupHost::RemoveRoute(int32_t routing_id) {
+  DCHECK(listener_map_.Lookup(routing_id));
+  listener_map_.Remove(routing_id);
   process_.RemoveRoute(routing_id);
 }
 
@@ -292,10 +300,8 @@ void AgentSchedulingGroupHost::GetAssociatedInterface(
         receiver) {
   int32_t routing_id =
       associated_interface_provider_receivers_.current_context();
-  IPC::Listener* listener =
-      static_cast<RenderProcessHostImpl&>(process_).GetListener(PassKey(),
-                                                                routing_id);
-  if (listener)
+
+  if (auto* listener = GetListener(routing_id))
     listener->OnAssociatedInterfaceRequest(name, receiver.PassHandle());
 }
 
@@ -340,6 +346,18 @@ void AgentSchedulingGroupHost::SetUpMojoIfNeeded() {
   mojo_remote_.get()->BindAssociatedRouteProvider(
       route_provider_receiver_.BindNewEndpointAndPassRemote(),
       remote_route_provider_.BindNewEndpointAndPassReceiver());
+}
+
+Listener* AgentSchedulingGroupHost::GetListener(int32_t routing_id) {
+  if (routing_id == MSG_ROUTING_CONTROL)
+    return &process_;
+
+  if (auto* listener = listener_map_.Lookup(routing_id))
+    return listener;
+
+  // TODO(crbug.com/1111231): Can/should we log it when we find the listener on
+  // the process but not here?
+  return ToImpl(process_).GetListener(PassKey(), routing_id);
 }
 
 }  // namespace content
