@@ -3468,7 +3468,8 @@
         "type": "win"
       },
       "intel_gpu_series": [
-        "icelake"
+        "icelake",
+        "tigerlake"
       ],
       "features": [
         "force_rgb10a2_overlay_support_flags"
