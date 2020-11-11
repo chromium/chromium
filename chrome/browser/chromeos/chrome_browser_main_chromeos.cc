@@ -1082,7 +1082,10 @@ void ChromeBrowserMainPartsChromeos::PostBrowserStart() {
 
   // Enable Chrome OS USB detection.
   cros_usb_detector_ = std::make_unique<CrosUsbDetector>();
-  cros_usb_detector_->ConnectToDeviceManager();
+  content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT})
+      ->PostTask(FROM_HERE,
+                 base::BindOnce(&CrosUsbDetector::ConnectToDeviceManager,
+                                base::Unretained(cros_usb_detector_.get())));
 
   crostini_unsupported_action_notifier_ =
       std::make_unique<crostini::CrostiniUnsupportedActionNotifier>();
