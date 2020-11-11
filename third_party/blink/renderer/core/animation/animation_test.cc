@@ -258,7 +258,7 @@ TEST_F(AnimationAnimationTestNoCompositing, InitialState) {
 
   StartTimeline();
   EXPECT_EQ("finished", animation->playState());
-  EXPECT_EQ(0, timeline->currentTime());
+  EXPECT_EQ(0, timeline->CurrentTimeMilliseconds());
   EXPECT_EQ(0, animation->currentTime());
   EXPECT_FALSE(animation->Paused());
   EXPECT_FALSE(animation->pending());

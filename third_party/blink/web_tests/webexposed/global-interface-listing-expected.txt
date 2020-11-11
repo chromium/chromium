@@ -218,6 +218,7 @@ interface AnimationPlaybackEvent : Event
 interface AnimationTimeline
     attribute @@toStringTag
     getter currentTime
+    getter duration
     getter phase
     method constructor
 interface Attr : Node

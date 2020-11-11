@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/animation/scroll_timeline_offset.h"
 #include "third_party/blink/renderer/core/animation/scroll_timeline_util.h"
 #include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
+#include "third_party/blink/renderer/core/css/cssom/css_unit_values.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
 #include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
@@ -26,6 +27,13 @@
 namespace blink {
 
 namespace {
+
+constexpr double kScrollTimelineDuration = 100.0;
+// Animation times are tracked as TimeDeltas which are stored internally as an
+// integer number of microseconds. Multiplying by 1000 converts this into a
+// value equivalent to Milliseconds.
+constexpr double kScrollTimelineDurationMs = kScrollTimelineDuration * 1000.0;
+
 using ScrollTimelineSet =
     HeapHashMap<WeakMember<Node>,
                 Member<HeapHashSet<WeakMember<ScrollTimeline>>>>;
@@ -161,17 +169,13 @@ ScrollTimeline* ScrollTimeline::Create(Document& document,
     }
   }
 
-  // TODO(crbug.com/1097041): Support 'auto' value.
-  if (options->timeRange().IsScrollTimelineAutoKeyword()) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kNotSupportedError,
-        "'auto' value for timeRange not yet supported");
-    return nullptr;
+  base::Optional<double> time_range;
+  if (options->timeRange().IsDouble()) {
+    time_range = base::make_optional(options->timeRange().GetAsDouble());
   }
 
   return MakeGarbageCollected<ScrollTimeline>(
-      &document, scroll_source, orientation, scroll_offsets,
-      options->timeRange().GetAsDouble());
+      &document, scroll_source, orientation, scroll_offsets, time_range);
 }
 
 ScrollTimeline::ScrollTimeline(
@@ -179,7 +183,7 @@ ScrollTimeline::ScrollTimeline(
     Element* scroll_source,
     ScrollDirection orientation,
     HeapVector<Member<ScrollTimelineOffset>>* scroll_offsets,
-    double time_range)
+    base::Optional<double> time_range)
     : AnimationTimeline(document),
       scroll_source_(scroll_source),
       resolved_scroll_source_(ResolveScrollSource(scroll_source_)),
@@ -293,6 +297,38 @@ bool ScrollTimeline::ScrollOffsetsEqual(
   return true;
 }
 
+void ScrollTimeline::currentTime(CSSNumberish& currentTime) {
+  // time returns either in milliseconds or a 0 to 100 value representing the
+  // progress of the timeline
+  auto current_time = timeline_state_snapshotted_.current_time;
+
+  // TODO(crbug.com/1140602): Support progress based animations
+  // We are currently abusing the intended use of the "auto" keyword. We are
+  // using it here as a signal to use progress based timeline instead of having
+  // a range based current time.
+  // We are doing this maintain backwards compatibility with existing tests.
+  if (time_range_) {
+    // not using progress based, return time as double
+    currentTime =
+        current_time ? CSSNumberish::FromDouble(current_time->InMillisecondsF())
+                     : CSSNumberish();
+  } else {
+    currentTime = current_time
+                      ? CSSNumberish::FromCSSNumericValue(
+                            CSSUnitValues::percent(current_time->InSecondsF()))
+                      : CSSNumberish();
+  }
+}
+
+void ScrollTimeline::duration(CSSNumberish& duration) {
+  if (time_range_) {
+    duration = CSSNumberish::FromDouble(time_range_.value());
+  } else {
+    duration = CSSNumberish::FromCSSNumericValue(
+        CSSUnitValues::percent(kScrollTimelineDuration));
+  }
+}
+
 ScrollTimeline::TimelineState ScrollTimeline::ComputeTimelineState() const {
   // 1. If scroll timeline is inactive, return an unresolved time value.
   // https://github.com/WICG/scroll-animations/issues/31
@@ -331,6 +367,9 @@ ScrollTimeline::TimelineState ScrollTimeline::ComputeTimelineState() const {
     return {TimelinePhase::kBefore, base::TimeDelta(), resolved_offsets};
   }
 
+  double duration =
+      time_range_ ? time_range_.value() : kScrollTimelineDurationMs;
+
   // 4. If current scroll offset is greater than or equal to endScrollOffset:
   if (current_offset >= end_offset) {
     // If end_offset is greater than or equal to the maximum scroll offset of
@@ -338,7 +377,7 @@ ScrollTimeline::TimelineState ScrollTimeline::ComputeTimelineState() const {
     // after phase.
     TimelinePhase phase = end_offset >= max_offset ? TimelinePhase::kActive
                                                    : TimelinePhase::kAfter;
-    return {phase, base::TimeDelta::FromMillisecondsD(time_range_),
+    return {phase, base::TimeDelta::FromMillisecondsD(duration),
             resolved_offsets};
   }
 
@@ -348,7 +387,7 @@ ScrollTimeline::TimelineState ScrollTimeline::ComputeTimelineState() const {
   base::Optional<base::TimeDelta> calculated_current_time =
       base::TimeDelta::FromMillisecondsD(scroll_timeline_util::ComputeProgress(
                                              current_offset, resolved_offsets) *
-                                         time_range_);
+                                         duration);
   return {TimelinePhase::kActive, calculated_current_time, resolved_offsets};
 }
 
@@ -451,7 +490,16 @@ const HeapVector<ScrollTimelineOffsetValue> ScrollTimeline::scrollOffsets()
 }
 
 void ScrollTimeline::timeRange(DoubleOrScrollTimelineAutoKeyword& result) {
-  result.SetDouble(time_range_);
+  // TODO(crbug.com/1140602): Support progress based animations
+  // We are currently abusing the intended use of the "auto" keyword. We are
+  // using it here as a signal to use progress based timeline instead of having
+  // a range based current time.
+  // We are doing this maintain backwards compatibility with existing tests.
+  if (time_range_) {
+    result.SetDouble(time_range_.value());
+  } else {
+    result.SetScrollTimelineAutoKeyword("auto");
+  }
 }
 
 void ScrollTimeline::GetCurrentAndMaxOffset(const LayoutBox* layout_box,

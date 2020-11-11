@@ -5,9 +5,9 @@
 // https://drafts.csswg.org/web-animations/#the-computedeffecttiming-dictionary
 
 dictionary ComputedEffectTiming : EffectTiming {
-    unrestricted double  endTime;
-    unrestricted double  activeDuration;
-    double?              localTime;
-    double?              progress;
-    unrestricted double? currentIteration;
+    CSSNumberish          endTime;
+    CSSNumberish          activeDuration;
+    CSSNumberish?         localTime;
+    double?               progress;
+    unrestricted double?  currentIteration;
 };

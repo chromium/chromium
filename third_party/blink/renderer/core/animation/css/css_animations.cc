@@ -1039,7 +1039,8 @@ void CSSAnimations::MaybeApplyPendingUpdate(Element* element) {
 
     // Set the current time as the start time for retargeted transitions
     if (retargeted_compositor_transitions.Contains(property)) {
-      animation->setStartTime(element->GetDocument().Timeline().currentTime());
+      animation->setStartTime(
+          element->GetDocument().Timeline().CurrentTimeMilliseconds());
     }
     animation->Update(kTimingUpdateOnDemand);
     running_transition->animation = animation;

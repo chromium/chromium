@@ -7,6 +7,7 @@
 
 #include "third_party/blink/renderer/core/animation/animation.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/css/cssom/css_numeric_value.h"
 #include "third_party/blink/renderer/platform/animation/compositor_animation_timeline.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 
@@ -34,8 +35,11 @@ class CORE_EXPORT AnimationTimeline : public ScriptWrappable {
   AnimationTimeline(Document*);
   ~AnimationTimeline() override = default;
 
-  base::Optional<double> currentTime();
+  virtual void currentTime(CSSNumberish&);
+  base::Optional<double> CurrentTimeMilliseconds();
   base::Optional<double> CurrentTimeSeconds();
+
+  virtual void duration(CSSNumberish&);
 
   String phase();
   TimelinePhase Phase() { return CurrentPhaseAndTime().phase; }

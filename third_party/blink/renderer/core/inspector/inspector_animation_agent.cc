@@ -228,7 +228,8 @@ Response InspectorAnimationAgent::getCurrentTime(const String& id,
     *current_time = animation->currentTime().value_or(Timing::NullValue());
   } else {
     // Use startTime where possible since currentTime is limited.
-    base::Optional<double> timeline_time = animation->timeline()->currentTime();
+    base::Optional<double> timeline_time =
+        animation->timeline()->CurrentTimeMilliseconds();
     // TODO(crbug.com/916117): Handle NaN values for scroll linked animations.
     *current_time =
         timeline_time ? timeline_time.value() -
@@ -255,7 +256,8 @@ Response InspectorAnimationAgent::setPaused(
       if (!clone->timeline()->IsActive()) {
         current_time = clone->currentTime().value_or(Timing::NullValue());
       } else {
-        base::Optional<double> timeline_time = clone->timeline()->currentTime();
+        base::Optional<double> timeline_time =
+            clone->timeline()->CurrentTimeMilliseconds();
         // TODO(crbug.com/916117): Handle NaN values.
         current_time =
             timeline_time ? timeline_time.value() -
@@ -514,9 +516,10 @@ double InspectorAnimationAgent::NormalizedStartTime(
   auto* document_timeline = DynamicTo<DocumentTimeline>(animation.timeline());
   if (document_timeline) {
     if (ReferenceTimeline().PlaybackRate() == 0) {
-      time_ms +=
-          ReferenceTimeline().currentTime().value_or(Timing::NullValue()) -
-          document_timeline->currentTime().value_or(Timing::NullValue());
+      time_ms += ReferenceTimeline().CurrentTimeMilliseconds().value_or(
+                     Timing::NullValue()) -
+                 document_timeline->CurrentTimeMilliseconds().value_or(
+                     Timing::NullValue());
     } else {
       time_ms +=
           (document_timeline->ZeroTime() - ReferenceTimeline().ZeroTime())

@@ -166,7 +166,8 @@ base::Optional<base::TimeDelta> CalculateStartTime(
     base::TimeDelta current_time,
     double playback_rate,
     AnimationTimeline& timeline) {
-  base::Optional<double> timeline_current_time_ms = timeline.currentTime();
+  base::Optional<double> timeline_current_time_ms =
+      timeline.CurrentTimeMilliseconds();
   return base::TimeDelta::FromMillisecondsD(timeline_current_time_ms.value()) -
          (current_time / playback_rate);
 }
@@ -729,7 +730,7 @@ base::Optional<base::TimeDelta> WorkletAnimation::InitialCurrentTime() const {
 
   base::Optional<base::TimeDelta> starting_time =
       timeline_->InitialStartTimeForAnimations();
-  base::Optional<double> current_time = timeline_->currentTime();
+  base::Optional<double> current_time = timeline_->CurrentTimeMilliseconds();
 
   if (!starting_time || !current_time) {
     return base::nullopt;
@@ -791,7 +792,8 @@ base::Optional<base::TimeDelta> WorkletAnimation::CurrentTimeInternal() const {
   // OR
   // - Current scroll offset is greater than or equal to endScrollOffset and
   //   fill mode is none or backwards.
-  base::Optional<double> timeline_time_ms = timeline_->currentTime();
+  base::Optional<double> timeline_time_ms =
+      timeline_->CurrentTimeMilliseconds();
   if (!timeline_time_ms)
     return base::nullopt;
 

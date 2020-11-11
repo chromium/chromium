@@ -36,6 +36,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
+#include "third_party/blink/renderer/bindings/core/v8/double_or_scroll_timeline_auto_keyword.h"
 #include "third_party/blink/renderer/core/animation/animation_timeline.h"
 #include "third_party/blink/renderer/core/animation/animation_utils.h"
 #include "third_party/blink/renderer/core/animation/compositor_animations.h"
@@ -193,6 +194,23 @@ Animation* Animation::Create(AnimationEffect* effect,
   }
   DCHECK(IsA<DocumentTimeline>(timeline) || timeline->IsScrollTimeline());
 
+  // TODO(crbug.com/1097041): Support 'auto' value.
+  if (timeline->IsScrollTimeline()) {
+    DoubleOrScrollTimelineAutoKeyword time_range;
+    To<ScrollTimeline>(timeline)->timeRange(time_range);
+    // TODO(crbug.com/1140602): Support progress based animations
+    // We are currently abusing the intended use of the "auto" keyword. We are
+    // using it here as a signal to use progress based timeline instead of
+    // having a range based current time. We are doing this maintain backwards
+    // compatibility with existing tests.
+    if (time_range.IsScrollTimelineAutoKeyword()) {
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kNotSupportedError,
+          "progress based animations are not supported");
+      return nullptr;
+    }
+  }
+
   auto* context = timeline->GetDocument()->GetExecutionContext();
   return MakeGarbageCollected<Animation>(context, timeline, effect);
 }
@@ -290,7 +308,7 @@ Document* Animation::GetDocument() const {
 }
 
 base::Optional<double> Animation::TimelineTime() const {
-  return timeline_ ? timeline_->currentTime() : base::nullopt;
+  return timeline_ ? timeline_->CurrentTimeMilliseconds() : base::nullopt;
 }
 
 // https://drafts.csswg.org/web-animations/#setting-the-current-time-of-an-animation.

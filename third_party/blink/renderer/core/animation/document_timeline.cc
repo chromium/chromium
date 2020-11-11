@@ -99,7 +99,7 @@ bool DocumentTimeline::IsActive() const {
 // timeline current time.
 base::Optional<base::TimeDelta>
 DocumentTimeline::InitialStartTimeForAnimations() {
-  base::Optional<double> current_time_ms = currentTime();
+  base::Optional<double> current_time_ms = CurrentTimeMilliseconds();
   if (current_time_ms.has_value()) {
     return base::TimeDelta::FromMillisecondsD(current_time_ms.value());
   }

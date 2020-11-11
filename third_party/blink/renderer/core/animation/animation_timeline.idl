@@ -9,6 +9,7 @@ enum TimelinePhase { "inactive", "before", "active", "after" };
     RuntimeEnabled=WebAnimationsAPI,
     Exposed=Window
 ] interface AnimationTimeline {
-    readonly attribute double? currentTime;
+    readonly attribute CSSNumberish? currentTime;
+    [RuntimeEnabled=ScrollTimeline] readonly attribute CSSNumberish? duration;
     [RuntimeEnabled=ScrollTimeline] readonly attribute TimelinePhase phase;
 };

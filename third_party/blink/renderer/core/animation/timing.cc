@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_computed_effect_timing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_effect_timing.h"
 #include "third_party/blink/renderer/core/animation/timing_calculations.h"
+#include "third_party/blink/renderer/core/css/cssom/css_numeric_value.h"
 
 namespace blink {
 
@@ -111,13 +112,17 @@ ComputedEffectTiming* Timing::getComputedTiming(
   ComputedEffectTiming* computed_timing = ComputedEffectTiming::Create();
 
   // ComputedEffectTiming members.
-  computed_timing->setEndTime(EndTimeInternal() * 1000);
-  computed_timing->setActiveDuration(ActiveDuration() * 1000);
+  computed_timing->setEndTime(
+      CSSNumberish::FromDouble(EndTimeInternal() * 1000));
+  computed_timing->setActiveDuration(
+      CSSNumberish::FromDouble(ActiveDuration() * 1000));
 
-  if (calculated_timing.local_time)
-    computed_timing->setLocalTime(calculated_timing.local_time.value() * 1000);
-  else
+  if (calculated_timing.local_time) {
+    computed_timing->setLocalTime(
+        CSSNumberish::FromDouble(calculated_timing.local_time.value() * 1000));
+  } else {
     computed_timing->setLocalTimeToNull();
+  }
 
   if (calculated_timing.is_in_effect) {
     DCHECK(calculated_timing.current_iteration);
