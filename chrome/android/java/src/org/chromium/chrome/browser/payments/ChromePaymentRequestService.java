@@ -509,6 +509,23 @@ public class ChromePaymentRequestService implements BrowserPaymentRequest,
         // mSpec.updateWith() can be used only when mSpec has not been destroyed.
         assert !mSpec.isDestroyed();
 
+        if (!PaymentValidator.validatePaymentDetails(details)
+                || !parseAndValidateDetailsFurtherIfNeeded(details)) {
+            mJourneyLogger.setAborted(AbortReason.INVALID_DATA_FROM_RENDERER);
+            disconnectFromClientWithDebugMessage(ErrorStrings.INVALID_PAYMENT_DETAILS);
+            return;
+        }
+
+        if (!TextUtils.isEmpty(details.error)) {
+            mJourneyLogger.setNotShown(NotShownReason.OTHER);
+            disconnectFromClientWithDebugMessage(ErrorStrings.INVALID_STATE);
+            return;
+        }
+
+        mSpec.updateWith(details);
+
+        mPaymentRequestService.resetWaitingForUpdatedDetails();
+
         ChromeActivity chromeActivity = ChromeActivity.fromWebContents(mWebContents);
         if (chromeActivity == null) {
             mJourneyLogger.setNotShown(NotShownReason.OTHER);
@@ -516,21 +533,8 @@ public class ChromePaymentRequestService implements BrowserPaymentRequest,
             return;
         }
 
-        if (!PaymentValidator.validatePaymentDetails(details)
-                || !parseAndValidateDetailsFurtherIfNeeded(details)) {
-            mJourneyLogger.setAborted(AbortReason.INVALID_DATA_FROM_RENDERER);
-            disconnectFromClientWithDebugMessage(ErrorStrings.INVALID_PAYMENT_DETAILS);
-            return;
-        }
-        mSpec.updateWith(details);
         mPaymentUiService.updateDetailsOnPaymentRequestUI(
                 mSpec.getPaymentDetails(), mSpec.getRawTotal(), mSpec.getRawLineItems());
-
-        if (!TextUtils.isEmpty(details.error)) {
-            mJourneyLogger.setNotShown(NotShownReason.OTHER);
-            disconnectFromClientWithDebugMessage(ErrorStrings.INVALID_STATE);
-            return;
-        }
 
         // Do not create shipping section When UI is not built yet. This happens when the show
         // promise gets resolved before all apps are ready.
@@ -539,7 +543,6 @@ public class ChromePaymentRequestService implements BrowserPaymentRequest,
             mPaymentUiService.createShippingSectionForPaymentRequestUI(chromeActivity);
         }
 
-        mPaymentRequestService.resetWaitingForUpdatedDetails();
         // Triggered transaction amount gets recorded when both of the following conditions are met:
         // 1- Either Event.Shown or Event.SKIPPED_SHOW bits are set showing that transaction is
         // triggered (mDidRecordShowEvent == true). 2- The total amount in details won't change
