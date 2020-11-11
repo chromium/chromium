@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CORE_COMMON_AUTOFILL_REGEXES_H_
-#define COMPONENTS_AUTOFILL_CORE_COMMON_AUTOFILL_REGEXES_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_REGEXES_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_REGEXES_H_
 
 #include "base/strings/string16.h"
 
@@ -20,4 +20,4 @@ bool MatchesPattern(const base::string16& input,
 
 }  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_CORE_COMMON_AUTOFILL_REGEXES_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_REGEXES_H_

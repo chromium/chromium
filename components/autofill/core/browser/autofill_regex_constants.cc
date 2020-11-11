@@ -6,7 +6,7 @@
 // different compilers, we use a script to convert the UTF8 strings into
 // numeric literals (\x##).
 
-#include "components/autofill/core/common/autofill_regex_constants.h"
+#include "components/autofill/core/browser/autofill_regex_constants.h"
 
 namespace autofill {
 
@@ -247,13 +247,13 @@ const char kExpirationYearRe[] =
 //  - (optional) Exactly two adjacent m's before the y's.
 //    - (optional) Separated by white-space and/or a dash or slash.
 //  - (optional) Prepended with some text similar to "Expiration Date".
-// Tested in components/autofill/core/common/autofill_regexes_unittest.cc
+// Tested in components/autofill/core/browser/autofill_regexes_unittest.cc
 const char kExpirationDate2DigitYearRe[] =
     "(?:exp.*date[^y\\n\\r]*|mm\\s*[-/]?\\s*)yy(?:[^y]|$)";
 // Used to match a expiration date field with a four digit year.
 // Same requirements as |kExpirationDate2DigitYearRe| except:
 //  - Exactly four adjacent y's.
-// Tested in components/autofill/core/common/autofill_regexes_unittest.cc
+// Tested in components/autofill/core/browser/autofill_regexes_unittest.cc
 const char kExpirationDate4DigitYearRe[] =
     "(?:exp.*date[^y\\n\\r]*|mm\\s*[-/]?\\s*)yyyy(?:[^y]|$)";
 // Used to match expiration date fields that do not specify a year length.

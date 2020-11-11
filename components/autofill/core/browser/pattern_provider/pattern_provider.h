@@ -12,9 +12,9 @@
 #include "base/no_destructor.h"
 #include "base/sequence_checker.h"
 #include "base/version.h"
+#include "components/autofill/core/browser/autofill_regex_constants.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_parsing/autofill_parsing_utils.h"
-#include "components/autofill/core/common/autofill_regex_constants.h"
 
 namespace autofill {
 

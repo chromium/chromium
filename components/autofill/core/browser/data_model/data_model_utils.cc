@@ -11,9 +11,9 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "components/autofill/core/browser/autofill_regex_constants.h"
+#include "components/autofill/core/browser/autofill_regexes.h"
 #include "components/autofill/core/common/autofill_clock.h"
-#include "components/autofill/core/common/autofill_regex_constants.h"
-#include "components/autofill/core/common/autofill_regexes.h"
 #include "third_party/icu/source/common/unicode/uloc.h"
 #include "third_party/icu/source/i18n/unicode/dtfmtsym.h"
 

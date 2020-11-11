@@ -6,8 +6,8 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/autofill_field.h"
+#include "components/autofill/core/browser/autofill_regex_constants.h"
 #include "components/autofill/core/browser/form_parsing/autofill_scanner.h"
-#include "components/autofill/core/common/autofill_regex_constants.h"
 
 namespace autofill {
 
