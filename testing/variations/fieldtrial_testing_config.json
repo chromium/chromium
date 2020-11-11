@@ -1013,6 +1013,21 @@
             ]
         }
     ],
+    "AutofillUseUniqueRendererIDsOnIOS": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillUseUniqueRendererIDsOnIOS"
+                    ]
+                }
+            ]
+        }
+    ],
     "BackForwardCache": [
         {
             "platforms": [
