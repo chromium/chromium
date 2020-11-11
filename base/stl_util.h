@@ -502,16 +502,6 @@ ResultType STLSetIntersection(const Arg1& a1, const Arg2& a2) {
   return result;
 }
 
-// Returns true if the sorted container |a1| contains all elements of the sorted
-// container |a2|.
-template <typename Arg1, typename Arg2>
-bool STLIncludes(const Arg1& a1, const Arg2& a2) {
-  DCHECK(ranges::is_sorted(a1));
-  DCHECK(ranges::is_sorted(a2));
-  return std::includes(a1.begin(), a1.end(),
-                       a2.begin(), a2.end());
-}
-
 // Erase/EraseIf are based on C++20's uniform container erasure API:
 // - https://eel.is/c++draft/libraryindex#:erase
 // - https://eel.is/c++draft/libraryindex#:erase_if

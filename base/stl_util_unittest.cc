@@ -503,30 +503,6 @@ TEST(STLUtilTest, STLSetIntersection) {
   }
 }
 
-TEST(STLUtilTest, STLIncludes) {
-  std::set<int> a1;
-  a1.insert(1);
-  a1.insert(2);
-  a1.insert(3);
-  a1.insert(4);
-
-  std::set<int> a2;
-  a2.insert(3);
-  a2.insert(4);
-
-  std::set<int> a3;
-  a3.insert(3);
-  a3.insert(4);
-  a3.insert(5);
-
-  EXPECT_TRUE(STLIncludes<std::set<int> >(a1, a2));
-  EXPECT_FALSE(STLIncludes<std::set<int> >(a1, a3));
-  EXPECT_FALSE(STLIncludes<std::set<int> >(a2, a1));
-  EXPECT_FALSE(STLIncludes<std::set<int> >(a2, a3));
-  EXPECT_FALSE(STLIncludes<std::set<int> >(a3, a1));
-  EXPECT_TRUE(STLIncludes<std::set<int> >(a3, a2));
-}
-
 TEST(Erase, String) {
   const std::pair<std::string, std::string> test_data[] = {
       {"", ""}, {"abc", "bc"}, {"abca", "bc"},

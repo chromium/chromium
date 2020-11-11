@@ -7,7 +7,7 @@
 #include <set>
 #include <vector>
 
-#include "base/stl_util.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -42,8 +42,8 @@ bool MakesRedundant(const ChromePermissionMessageRule& first_rule,
   // (i.e., A, B, and C are all there), then the requirements for 1 are also
   // satisfied. Since 1 comes first, it will always take A and B, and so the
   // requirements for 2 can never be satisfied by the time it's applied.
-  return base::STLIncludes(second_rule.required_permissions(),
-                           first_rule.required_permissions());
+  return base::ranges::includes(second_rule.required_permissions(),
+                                first_rule.required_permissions());
 }
 
 }  // namespace

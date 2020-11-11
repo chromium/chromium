@@ -11,6 +11,7 @@
 #include <type_traits>
 #include <utility>
 
+#include "base/check.h"
 #include "base/functional/identity.h"
 #include "base/functional/invoke.h"
 #include "base/ranges/functional.h"
@@ -3732,6 +3733,8 @@ constexpr auto includes(InputIterator1 first1,
                         Comp comp = {},
                         Proj1 proj1 = {},
                         Proj2 proj2 = {}) {
+  DCHECK(ranges::is_sorted(first1, last1, comp, proj1));
+  DCHECK(ranges::is_sorted(first2, last2, comp, proj2));
   // Needs to opt-in to all permutations, since std::includes expects
   // comp(proj1(lhs), proj2(rhs)) and comp(proj2(lhs), proj1(rhs)) to compile.
   return std::includes(

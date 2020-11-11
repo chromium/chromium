@@ -11,6 +11,7 @@
 #include "base/base64.h"
 #include "base/containers/flat_set.h"
 #include "base/optional.h"
+#include "base/ranges/algorithm.h"
 #include "base/stl_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
@@ -169,8 +170,8 @@ GetHeadersToSignAndUpdateSignedHeadersHeader(
   if (deduped_lowercase_headers_to_sign.empty())
     return std::vector<std::string>();
 
-  if (!base::STLIncludes(LowercaseSignableHeaders(),
-                         deduped_lowercase_headers_to_sign)) {
+  if (!base::ranges::includes(LowercaseSignableHeaders(),
+                              deduped_lowercase_headers_to_sign)) {
     return base::nullopt;
   }
 

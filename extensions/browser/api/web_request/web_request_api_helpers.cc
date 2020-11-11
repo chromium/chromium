@@ -19,6 +19,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
+#include "base/ranges/algorithm.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -1260,7 +1261,7 @@ void MergeOnBeforeSendHeadersResponses(
                      IsStringLowerCaseASCII));
   DCHECK(std::all_of(set_headers->begin(), set_headers->end(),
                      IsStringLowerCaseASCII));
-  DCHECK(base::STLIncludes(
+  DCHECK(base::ranges::includes(
       *set_headers,
       base::STLSetUnion<std::set<std::string>>(
           web_request_added_headers, web_request_overridden_headers)));
@@ -1270,7 +1271,7 @@ void MergeOnBeforeSendHeadersResponses(
   DCHECK(base::STLSetIntersection<std::set<std::string>>(*removed_headers,
                                                          *set_headers)
              .empty());
-  DCHECK(base::STLIncludes(*removed_headers, web_request_removed_headers));
+  DCHECK(base::ranges::includes(*removed_headers, web_request_removed_headers));
 
   // Record request header removals, additions and modifications.
   record_request_headers(web_request_removed_headers,

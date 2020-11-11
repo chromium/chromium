@@ -8,6 +8,7 @@
 
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/ranges/algorithm.h"
 #include "base/stl_util.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_client.h"
@@ -75,9 +76,9 @@ DiceAccountReconcilorDelegate::GetInconsistencyReason(
   std::vector<CoreAccountId> sorted_chrome_accounts(chrome_accounts);
   std::sort(sorted_chrome_accounts.begin(), sorted_chrome_accounts.end());
   bool missing_token =
-      !base::STLIncludes(sorted_chrome_accounts, valid_gaia_accounts_ids);
+      !base::ranges::includes(sorted_chrome_accounts, valid_gaia_accounts_ids);
   bool missing_cookie =
-      !base::STLIncludes(valid_gaia_accounts_ids, sorted_chrome_accounts);
+      !base::ranges::includes(valid_gaia_accounts_ids, sorted_chrome_accounts);
 
   if (missing_token && missing_cookie)
     return InconsistencyReason::kCookieTokenMismatch;

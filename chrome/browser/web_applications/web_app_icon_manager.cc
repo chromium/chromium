@@ -14,7 +14,7 @@
 #include "base/logging.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/stl_util.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/task_traits.h"
@@ -563,7 +563,8 @@ bool WebAppIconManager::HasIcons(const AppId& app_id,
   if (!web_app)
     return false;
 
-  return base::STLIncludes(web_app->downloaded_icon_sizes(purpose), icon_sizes);
+  return base::ranges::includes(web_app->downloaded_icon_sizes(purpose),
+                                icon_sizes);
 }
 
 base::Optional<AppIconManager::IconSizeAndPurpose>

@@ -5,6 +5,7 @@
 #include "extensions/common/permissions/api_permission_set.h"
 
 #include "base/logging.h"
+#include "base/ranges/algorithm.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
@@ -314,7 +315,7 @@ PermissionIDSet PermissionIDSet::GetAllPermissionsWithIDs(
 }
 
 bool PermissionIDSet::Includes(const PermissionIDSet& subset) const {
-  return base::STLIncludes(permissions_, subset.permissions_);
+  return base::ranges::includes(permissions_, subset.permissions_);
 }
 
 bool PermissionIDSet::Equals(const PermissionIDSet& set) const {

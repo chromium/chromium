@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "base/ranges/algorithm.h"
 #include "base/stl_util.h"
 #include "chrome/browser/extensions/api/identity/identity_constants.h"
 
@@ -222,7 +223,8 @@ const IdentityTokenCacheValue& IdentityTokenCache::GetToken(
         cached_tokens.begin(), cached_tokens.end(),
         [&key](const auto& cached_token) {
           return key.scopes.size() <= cached_token.granted_scopes().size() &&
-                 base::STLIncludes(cached_token.granted_scopes(), key.scopes);
+                 base::ranges::includes(cached_token.granted_scopes(),
+                                        key.scopes);
         });
 
     if (matched_token_it != cached_tokens.end()) {
