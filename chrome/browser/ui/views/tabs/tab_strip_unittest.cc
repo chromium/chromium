@@ -841,33 +841,6 @@ TEST_P(TabStripTest, GetTooltipHandler) {
   EXPECT_FALSE(tab_strip_->GetTooltipHandlerForPoint(gfx::Point(-1, 2)));
 }
 
-// TODO(tbergquist): Move this to TabStripRegionViewUnitTest once that exists.
-TEST_P(TabStripTest, DISABLED_NewTabButtonStaysVisible) {
-  const int kTabStripWidth = 500;
-  tab_strip_parent_->SetBounds(0, 0, kTabStripWidth, 20);
-
-  for (int i = 0; i < 100; ++i)
-    controller_->AddTab(i, (i == 0));
-
-  CompleteAnimationAndLayout();
-
-  // EXPECT_LE(tab_strip_->new_tab_button_ideal_bounds().right(),
-  // kTabStripWidth);
-}
-
-// TODO(tbergquist): Move this to TabStripRegionViewUnitTest once that exists.
-TEST_P(TabStripTest, DISABLED_NewTabButtonRightOfTabs) {
-  const int kTabStripWidth = 500;
-  tab_strip_parent_->SetBounds(0, 0, kTabStripWidth, 20);
-
-  controller_->AddTab(0, true);
-
-  AnimateToIdealBounds();
-
-  // EXPECT_EQ(tab_strip_->new_tab_button_ideal_bounds().x(),
-  //          tab_strip_->ideal_bounds(0).right() + TabToNewTabButtonSpacing());
-}
-
 // The cached widths are private, but if they give incorrect results it can
 // cause subtle errors in other tests. Therefore it's prudent to test them.
 TEST_P(TabStripTest, CachedWidthsReportCorrectSize) {
@@ -1031,26 +1004,6 @@ TEST_P(TabStripTest, TabNeedsAttentionGeneric) {
   EXPECT_TRUE(IsShowingAttentionIndicator(tab1));
   controller_->SelectTab(1, dummy_event_);
   EXPECT_TRUE(IsShowingAttentionIndicator(tab1));
-}
-
-// TODO(tbergquist): Move this to TabStripRegionViewUnitTest once that exists.
-TEST_P(TabStripTest, DISABLED_NewTabButtonInkDrop) {
-  constexpr int kTabStripWidth = 500;
-  tab_strip_parent_->SetBounds(0, 0, kTabStripWidth,
-                               GetLayoutConstant(TAB_HEIGHT));
-
-  // Add a few tabs and simulate the new tab button's ink drop animation. This
-  // should not cause any crashes since the ink drop layer size as well as the
-  // ink drop container size should remain equal to the new tab button visible
-  // bounds size. https://crbug.com/814105.
-  for (int i = 0; i < 10; ++i) {
-    // tab_strip_->new_tab_button()->AnimateInkDropToStateForTesting(
-    //    views::InkDropState::ACTION_TRIGGERED);
-    controller_->AddTab(i, true /* is_active */);
-    CompleteAnimationAndLayout();
-    // tab_strip_->new_tab_button()->AnimateInkDropToStateForTesting(
-    //    views::InkDropState::HIDDEN);
-  }
 }
 
 // Closing tab should be targeted during event dispatching.
@@ -1330,30 +1283,11 @@ TEST_P(TabStripTest, ChangingLayoutTypeResizesTabs) {
   }
 }
 
-// We want to make sure that the new tab button sits flush with the top of the
-// tab strip. This is important in ensuring that we maximise the targetable area
-// of the new tab button and users are able to hit the new tab button when the
-// tab strip is flush with the top of the screen when the window is maximized
-// (https://crbug.com/1136557).
-// TODO(tbergquist): Move this to TabStripRegionViewUnitTest once that exists.
-TEST_P(TabStripTest, DISABLED_NewTabButtonFlushWithTopOfTabStrip) {
-  tab_strip_parent_->SetBounds(0, 0, 1000, 100);
-  controller_->AddTab(0, true);
-
-  AnimateToIdealBounds();
-
-  // The new tab button should sit flush with the top of the
-  // |tab_strip_|.
-  // EXPECT_EQ(tab_strip_, tab_strip_->new_tab_button()->parent());
-  // EXPECT_EQ(0, tab_strip_->new_tab_button()->bounds().y());
-}
-
-// Regression test for a crash when closing a tab under certain
-// conditions. If the first tab in a group was animating closed,
-// attempting to close the next tab could result in a crash. This was
-// due to TabStripLayoutHelper mistakenly mapping the next tab's model
-// index to the closing tab's slot. See https://crbug.com/1138748 for a
-// related crash.
+// Regression test for a crash when closing a tab under certain conditions. If
+// the first tab in a group was animating closed, attempting to close the next
+// tab could result in a crash. This was due to TabStripLayoutHelper mistakenly
+// mapping the next tab's model index to the closing tab's slot. See
+// https://crbug.com/1138748 for a related crash.
 TEST_P(TabStripTest, CloseTabInGroupWhilePreviousTabAnimatingClosed) {
   controller_->AddTab(0, true);
   controller_->AddTab(1, false);

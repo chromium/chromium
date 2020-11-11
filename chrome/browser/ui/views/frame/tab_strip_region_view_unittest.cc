@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/tabs/fake_base_tab_strip_controller.h"
+#include "chrome/browser/ui/views/tabs/new_tab_button.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/tabs/tab_style_views.h"
@@ -91,6 +92,79 @@ class TabStripRegionViewTest : public TabStripRegionViewTestBase,
   TabStripRegionViewTest& operator=(const TabStripRegionViewTest&) = delete;
   ~TabStripRegionViewTest() override = default;
 };
+
+TEST_P(TabStripRegionViewTest, NewTabButtonStaysVisible) {
+  const int kTabStripWidth = 500;
+  tab_strip_region_view_->SetBounds(0, 0, kTabStripWidth, 20);
+
+  for (int i = 0; i < 100; ++i)
+    controller_->AddTab(i, (i == 0));
+
+  CompleteAnimationAndLayout();
+
+  EXPECT_LE(tab_strip_region_view_->new_tab_button()->bounds().right(),
+            kTabStripWidth);
+}
+
+TEST_P(TabStripRegionViewTest, NewTabButtonRightOfTabs) {
+  const int kTabStripWidth = 500;
+  tab_strip_region_view_->SetBounds(0, 0, kTabStripWidth, 20);
+
+  controller_->AddTab(0, true);
+
+  CompleteAnimationAndLayout();
+
+  EXPECT_EQ(tab_strip_region_view_->new_tab_button()->bounds().x(),
+            tab_strip_->ideal_bounds(0).right());
+}
+
+TEST_P(TabStripRegionViewTest, NewTabButtonInkDrop) {
+  constexpr int kTabStripWidth = 500;
+  tab_strip_region_view_->SetBounds(0, 0, kTabStripWidth,
+                                    GetLayoutConstant(TAB_HEIGHT));
+
+  // Add a few tabs and simulate the new tab button's ink drop animation. This
+  // should not cause any crashes since the ink drop layer size as well as the
+  // ink drop container size should remain equal to the new tab button visible
+  // bounds size. https://crbug.com/814105.
+  for (int i = 0; i < 10; ++i) {
+    tab_strip_region_view_->new_tab_button()->AnimateInkDropToStateForTesting(
+        views::InkDropState::ACTION_TRIGGERED);
+    controller_->AddTab(i, true /* is_active */);
+    CompleteAnimationAndLayout();
+    tab_strip_region_view_->new_tab_button()->AnimateInkDropToStateForTesting(
+        views::InkDropState::HIDDEN);
+  }
+}
+
+// We want to make sure that the following children views sits flush with the
+// top of tab strip region view:
+// * tab strip
+// * new tab button
+// This is important in ensuring that we maximise the targetable area of these
+// views when the tab strip is flush with the top of the screen when the window
+// is maximized (Fitt's Law).
+TEST_P(TabStripRegionViewTest, ChildrenAreFlushWithTopOfTabStripRegionView) {
+  tab_strip_region_view_->SetBounds(0, 0, 1000, 100);
+  controller_->AddTab(0, true);
+
+  CompleteAnimationAndLayout();
+
+  // The tab strip should sit flush with the top of the
+  // |tab_strip_region_view_|.
+  gfx::Point tab_strip_origin(tab_strip_->bounds().origin());
+  views::View::ConvertPointToTarget(tab_strip_, tab_strip_region_view_,
+                                    &tab_strip_origin);
+  EXPECT_EQ(0, tab_strip_origin.y());
+
+  // The new tab button should sit flush with the top of the
+  // |tab_strip_region_view_|.
+  gfx::Point new_tab_button_origin(
+      tab_strip_region_view_->new_tab_button()->bounds().origin());
+  views::View::ConvertPointToTarget(tab_strip_, tab_strip_region_view_,
+                                    &new_tab_button_origin);
+  EXPECT_EQ(0, new_tab_button_origin.y());
+}
 
 class TabStripRegionViewTestWithScrollingDisabled
     : public TabStripRegionViewTestBase {
