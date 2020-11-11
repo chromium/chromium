@@ -122,6 +122,10 @@ bool IsOSSettingsSubPage(const std::string& sub_page) {
       chromeos::settings::mojom::kAboutChromeOsSectionPath,
       chromeos::settings::mojom::kAboutChromeOsDetailsSubpagePath,
       chromeos::settings::mojom::kDetailedBuildInfoSubpagePath,
+
+      // Kerberos section.
+      chromeos::settings::mojom::kKerberosSectionPath,
+      chromeos::settings::mojom::kKerberosAccountsV2SubpagePath,
   };
 
   // Sub-pages may have query parameters, e.g. networkDetail?guid=123456.

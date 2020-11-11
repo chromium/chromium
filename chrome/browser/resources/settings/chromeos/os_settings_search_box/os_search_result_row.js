@@ -611,6 +611,8 @@ cr.define('settings', function() {
           return 'os-settings:apps';
         case Icon.kAssistant:
           return 'os-settings:assistant';
+        case Icon.kAuthKey:
+          return 'os-settings:auth-key';
         case Icon.kAvatar:
           return 'cr:person';
         case Icon.kBluetooth:

@@ -422,6 +422,13 @@ void TestAllOSSettingPages(const GURL& base_url) {
       ChromePage::CELLULAR,
       base_url.Resolve(
           chromeos::settings::mojom::kMobileDataNetworksSubpagePath));
+  TestOpenChromePage(
+      ChromePage::KERBEROS,
+      base_url.Resolve(chromeos::settings::mojom::kKerberosSectionPath));
+  TestOpenChromePage(
+      ChromePage::KERBEROSACCOUNTSV2,
+      base_url.Resolve(
+          chromeos::settings::mojom::kKerberosAccountsV2SubpagePath));
 }
 
 void TestAllBrowserSettingPages(const GURL& base_url) {

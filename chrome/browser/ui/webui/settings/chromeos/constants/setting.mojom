@@ -229,4 +229,9 @@ enum Setting {
   kGetHelpWithChromeOs = 1704,
   kReportAnIssue = 1705,
   kTermsOfService = 1706,
+
+  // Kerberos section.
+  kAddKerberosTicketV2 = 1800,
+  kRemoveKerberosTicketV2 = 1801,
+  kSetActiveKerberosTicketV2 = 1802,
 };

@@ -57,9 +57,11 @@ TEST_F(OsSettingsManagerTest, Initialization) {
     const Hierarchy::SectionMetadata& metadata =
         manager_->hierarchy_->GetSectionMetadata(section);
 
-    // Only the "About Chrome OS" section contains only a link to a subpage.
+    // Only "About Chrome OS" and "Kerberos" sections contain only a link to a
+    // subpage.
     EXPECT_EQ(metadata.only_contains_link_to_subpage,
-              section == mojom::Section::kAboutChromeOs);
+              section == mojom::Section::kAboutChromeOs ||
+                  section == mojom::Section::kKerberos);
 
     EXPECT_TRUE(
         base::Contains(*sections_enum_entry_map, static_cast<int32_t>(section)))

@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/webui/settings/chromeos/device_section.h"
 #include "chrome/browser/ui/webui/settings/chromeos/files_section.h"
 #include "chrome/browser/ui/webui/settings/chromeos/internet_section.h"
+#include "chrome/browser/ui/webui/settings/chromeos/kerberos_section.h"
 #include "chrome/browser/ui/webui/settings/chromeos/languages_section.h"
 #include "chrome/browser/ui/webui/settings/chromeos/main_section.h"
 #include "chrome/browser/ui/webui/settings/chromeos/multidevice_section.h"
@@ -137,6 +138,11 @@ OsSettingsSections::OsSettingsSections(
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
   sections_map_[mojom::Section::kAboutChromeOs] = about_section.get();
   sections_.push_back(std::move(about_section));
+
+  auto kerberos_section = std::make_unique<KerberosSection>(
+      profile, search_tag_registry, kerberos_credentials_manager);
+  sections_map_[mojom::Section::kKerberos] = kerberos_section.get();
+  sections_.push_back(std::move(kerberos_section));
 }
 
 OsSettingsSections::OsSettingsSections() = default;

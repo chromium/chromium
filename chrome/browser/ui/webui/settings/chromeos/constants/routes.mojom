@@ -27,6 +27,7 @@ enum Section {
   kAccessibility = 15,
   kReset = 16,
   kAboutChromeOs = 17,
+  kKerberos = 18,
 };
 
 // Chrome OS Settings subpages (i.e., nested pages within a section). Each
@@ -130,6 +131,9 @@ enum Subpage {
   // About Chrome OS section.
   kAboutChromeOsDetails = 1700,
   kDetailedBuildInfo = 1701,
+
+  // Kerberos section.
+  kKerberosAccountsV2 = 1800,
 };
 
 // Network section.
@@ -246,3 +250,7 @@ const string kResetSectionPath = "osReset";
 const string kAboutChromeOsSectionPath = "help";
 const string kAboutChromeOsDetailsSubpagePath = "help/about";
 const string kDetailedBuildInfoSubpagePath = "help/details";
+
+// Kerberos section.
+const string kKerberosSectionPath = "kerberos";
+const string kKerberosAccountsV2SubpagePath = "kerberos/kerberosAccounts";

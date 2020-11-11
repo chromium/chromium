@@ -174,7 +174,10 @@ constexpr std::pair<arc::mojom::ChromePage, const char*> kOSSettingsMapping[] =
       chromeos::settings::mojom::kSwitchAccessOptionsSubpagePath},
      {ChromePage::TETHERSETTINGS,
       chromeos::settings::mojom::kMobileDataNetworksSubpagePath},
-     {ChromePage::WIFI, chromeos::settings::mojom::kWifiNetworksSubpagePath}};
+     {ChromePage::WIFI, chromeos::settings::mojom::kWifiNetworksSubpagePath},
+     {ChromePage::KERBEROS, chromeos::settings::mojom::kKerberosSectionPath},
+     {ChromePage::KERBEROSACCOUNTSV2,
+      chromeos::settings::mojom::kKerberosAccountsV2SubpagePath}};
 
 constexpr std::pair<arc::mojom::ChromePage, const char*>
     kBrowserSettingsMapping[] = {

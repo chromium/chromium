@@ -75,7 +75,7 @@ class Hierarchy::PerSectionHierarchyGenerator
         << "Setting registered in multiple primary locations: " << setting;
 
     // If a top-level setting exists, the section contains more than just a link
-    // link to a subpage.
+    // to a subpage.
     *only_contains_link_to_subpage_ = false;
   }
 
@@ -101,7 +101,7 @@ class Hierarchy::PerSectionHierarchyGenerator
     metadata.alternates.emplace_back(section_, /*subpage=*/base::nullopt);
 
     // If a top-level setting exists, the section contains more than just a link
-    // link to a subpage.
+    // to a subpage.
     *only_contains_link_to_subpage_ = false;
   }
 

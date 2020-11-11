@@ -2488,6 +2488,8 @@ static_library("ui") {
       "webui/settings/chromeos/internet_section.h",
       "webui/settings/chromeos/kerberos_accounts_handler.cc",
       "webui/settings/chromeos/kerberos_accounts_handler.h",
+      "webui/settings/chromeos/kerberos_section.cc",
+      "webui/settings/chromeos/kerberos_section.h",
       "webui/settings/chromeos/languages_section.cc",
       "webui/settings/chromeos/languages_section.h",
       "webui/settings/chromeos/main_section.cc",

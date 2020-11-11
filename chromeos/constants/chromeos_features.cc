@@ -695,6 +695,10 @@ bool IsInstantTetheringBackgroundAdvertisingSupported() {
       kInstantTetheringBackgroundAdvertisementSupport);
 }
 
+bool IsKerberosSettingsSectionEnabled() {
+  return base::FeatureList::IsEnabled(kKerberosSettingsSection);
+}
+
 bool IsLacrosSupportEnabled() {
   return base::FeatureList::IsEnabled(kLacrosSupport);
 }
