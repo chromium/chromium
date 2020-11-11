@@ -84,6 +84,7 @@ MockCrashEndpoint::HandleRequest(const net::test_server::HttpRequest& request) {
     return nullptr;
   }
 
+  ++report_count_;
   last_report_ = Report(absolute_url.query(), request.content);
   auto http_response = std::make_unique<net::test_server::BasicHttpResponse>();
   http_response->set_code(net::HTTP_OK);

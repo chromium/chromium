@@ -25,8 +25,17 @@ void MockChromeJsErrorReportProcessor::SetCrashEndpoint(
   crash_endpoint_ = crash_endpoint;
 }
 
+void MockChromeJsErrorReportProcessor::SetCrashEndpointStaging(
+    std::string crash_endpoint) {
+  crash_endpoint_staging_ = crash_endpoint;
+}
+
 std::string MockChromeJsErrorReportProcessor::GetCrashEndpoint() {
   return crash_endpoint_;
+}
+
+std::string MockChromeJsErrorReportProcessor::GetCrashEndpointStaging() {
+  return crash_endpoint_staging_;
 }
 
 void MockChromeJsErrorReportProcessor::GetOsVersion(

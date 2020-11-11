@@ -2035,6 +2035,7 @@ test("content_unittests") {
     "../browser/webrtc/webrtc_internals_message_handler_unittest.cc",
     "../browser/webrtc/webrtc_internals_unittest.cc",
     "../browser/webui/web_ui_data_source_unittest.cc",
+    "../browser/webui/web_ui_main_frame_observer_unittest.cc",
     "../browser/webui/web_ui_message_handler_unittest.cc",
     "../browser/webui/web_ui_unittest.cc",
     "../browser/worker_host/dedicated_worker_service_impl_unittest.cc",
@@ -2302,6 +2303,10 @@ test("content_unittests") {
   if (is_posix) {
     sources += [ "../browser/posix_file_descriptor_info_impl_unittest.cc" ]
     deps += [ "//services/tracing:test_utils" ]
+  }
+
+  if (is_linux || is_chromeos) {
+    deps += [ "//components/crash/content/browser/error_reporting" ]
   }
 
   if (enable_plugins) {

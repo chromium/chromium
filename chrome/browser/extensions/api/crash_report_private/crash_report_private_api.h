@@ -11,10 +11,6 @@
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/extension_function_histogram_value.h"
 
-namespace base {
-class Clock;
-}
-
 namespace extensions {
 namespace api {
 
@@ -33,8 +29,6 @@ class CrashReportPrivateReportErrorFunction : public ExtensionFunction {
 
   DISALLOW_COPY_AND_ASSIGN(CrashReportPrivateReportErrorFunction);
 };
-
-void SetClockForTesting(base::Clock* clock);
 
 }  // namespace api
 }  // namespace extensions

@@ -4,7 +4,6 @@
 
 #include "chrome/browser/extensions/api/crash_report_private/crash_report_private_api.h"
 
-#include "base/time/default_clock.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/metrics/renderer_uptime_tracker.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -19,14 +18,6 @@ namespace extensions {
 namespace api {
 
 namespace {
-
-// Used for throttling the API calls.
-base::Time g_last_called_time;
-
-base::Clock*& GetClock() {
-  static base::Clock* clock = base::DefaultClock::GetInstance();
-  return clock;
-}
 
 WindowType GetWindowType(content::WebContents* web_contents) {
   Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
@@ -48,19 +39,12 @@ CrashReportPrivateReportErrorFunction::
     ~CrashReportPrivateReportErrorFunction() = default;
 
 ExtensionFunction::ResponseAction CrashReportPrivateReportErrorFunction::Run() {
-  // Ensure we don't send too many crash reports. Limit to one report per hour.
-  if (!g_last_called_time.is_null() &&
-      GetClock()->Now() - g_last_called_time < base::TimeDelta::FromHours(1)) {
-    return RespondNow(Error("Too many calls to this API"));
-  }
   content::WebContents* web_contents = GetSenderWebContents();
   // Silently drop the crash report if devtools has ever been opened for this
   // |web_contents|.
   if (web_contents && content::DevToolsAgentHost::HasFor(web_contents)) {
     return RespondNow(NoArguments());
   }
-
-  g_last_called_time = base::Time::Now();
 
   // TODO(https://crbug.com/986166): Use crash_reporter for Chrome OS.
   const auto params = crash_report_private::ReportError::Params::Create(*args_);
@@ -124,10 +108,6 @@ ExtensionFunction::ResponseAction CrashReportPrivateReportErrorFunction::Run() {
 
 void CrashReportPrivateReportErrorFunction::OnReportComplete() {
   Respond(NoArguments());
-}
-
-void SetClockForTesting(base::Clock* clock) {
-  GetClock() = clock;
 }
 
 }  // namespace api

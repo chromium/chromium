@@ -18,11 +18,14 @@
 #include "base/system/sys_info.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/time/default_clock.h"
+#include "build/build_config.h"
 #include "components/crash/content/browser/error_reporting/javascript_error_report.h"
 #include "components/crash/core/app/client_upload_info.h"
 #include "components/feedback/redaction_tool.h"
 #include "components/startup_metric_utils/browser/startup_metric_utils.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
 #include "net/base/escape.h"
@@ -32,6 +35,8 @@
 namespace {
 
 constexpr char kCrashEndpointUrl[] = "https://clients2.google.com/cr/report";
+constexpr char kCrashEndpointStagingUrl[] =
+    "https://clients2.google.com/cr/staging_report";
 constexpr char kNoBrowserNoWindow[] = "NO_BROWSER";
 constexpr char kRegularTabbedWindow[] = "REGULAR_TABBED";
 constexpr char kWebAppWindow[] = "WEB_APP";
@@ -90,7 +95,8 @@ std::string MapWindowTypeToString(WindowType window_type) {
 
 }  // namespace
 
-ChromeJsErrorReportProcessor::ChromeJsErrorReportProcessor() = default;
+ChromeJsErrorReportProcessor::ChromeJsErrorReportProcessor()
+    : clock_(base::DefaultClock::GetInstance()) {}
 ChromeJsErrorReportProcessor::~ChromeJsErrorReportProcessor() = default;
 
 void ChromeJsErrorReportProcessor::OnRequestComplete(
@@ -170,17 +176,18 @@ void ChromeJsErrorReportProcessor::SendReport(
         sender: "JavaScript error reporter"
         description:
           "Chrome can send JavaScript errors that occur within built-in "
-          "component extensions. If enabled, the error message, along "
-          "with information about Chrome and the operating system, is sent to "
-          "Google."
+          "component extensions and chrome:// webpages. If enabled, the error "
+          "message, along with information about Chrome and the operating "
+          "system, is sent to Google for debugging."
         trigger:
           "A JavaScript error occurs in a Chrome component extension (an "
           "extension bundled with the Chrome browser, not downloaded "
-          "separately)."
+          "separately) or in certain chrome:// webpages."
         data:
           "The JavaScript error message, the version and channel of Chrome, "
-          "the URL of the extension, the line and column number where the "
-          "error occurred, and a stack trace of the error."
+          "the URL of the extension or webpage, the line and column number of "
+          "the JavaScript code where the error occurred, and a stack trace of "
+          "the error."
         destination: GOOGLE_OWNED_SERVICE
       }
       policy {
@@ -228,7 +235,10 @@ void ChromeJsErrorReportProcessor::OnConsentCheckCompleted(
     return;
   }
 
-  std::string crash_endpoint_string = GetCrashEndpoint();
+  std::string crash_endpoint_string = error_report->send_to_production_servers
+                                          ? GetCrashEndpoint()
+                                          : GetCrashEndpointStaging();
+
   // TODO(https://crbug.com/986166): Use crash_reporter for Chrome OS.
   const auto platform = GetPlatformInfo();
 
@@ -284,6 +294,67 @@ void ChromeJsErrorReportProcessor::OnConsentCheckCompleted(
   SendReport(url, body, std::move(callback_runner), loader_factory.get());
 }
 
+void ChromeJsErrorReportProcessor::CheckAndUpdateRecentErrorReports(
+    const JavaScriptErrorReport& error_report,
+    bool* should_send) {
+  base::Time now = clock_->Now();
+  constexpr base::TimeDelta kTimeBetweenCleanings =
+      base::TimeDelta::FromHours(1);
+  constexpr base::TimeDelta kTimeBetweenDuplicateReports =
+      base::TimeDelta::FromHours(1);
+  // Check for cleaning.
+  if (last_recent_error_reports_cleaning_.is_null()) {
+    // First time in this function, no need to clean.
+    last_recent_error_reports_cleaning_ = now;
+  } else if (now - kTimeBetweenCleanings >
+             last_recent_error_reports_cleaning_) {
+    auto it = recent_error_reports_.begin();
+    while (it != recent_error_reports_.end()) {
+      if (now - kTimeBetweenDuplicateReports > it->second) {
+        it = recent_error_reports_.erase(it);
+      } else {
+        ++it;
+      }
+    }
+    last_recent_error_reports_cleaning_ = now;
+  } else if (now < last_recent_error_reports_cleaning_) {
+    // Time went backwards, clock must have been adjusted. Assume all our
+    // last-send records are meaningless. Clock adjustments should be rare
+    // enough that it doesn't matter if we send a few duplicate reports in this
+    // case.
+    recent_error_reports_.clear();
+    last_recent_error_reports_cleaning_ = now;
+  }
+
+  std::string error_key =
+      base::StrCat({error_report.message, "+", error_report.product});
+  if (error_report.line_number) {
+    base::StrAppend(&error_key,
+                    {"+", base::NumberToString(*error_report.line_number)});
+  }
+  if (error_report.column_number) {
+    base::StrAppend(&error_key,
+                    {"+", base::NumberToString(*error_report.column_number)});
+  }
+  auto insert_result = recent_error_reports_.try_emplace(error_key, now);
+  if (insert_result.second) {
+    // No recent reports with this key. Time is already inserted into map.
+    *should_send = true;
+    return;
+  }
+
+  base::Time& last_error_report = insert_result.first->second;
+  if (now - kTimeBetweenDuplicateReports > last_error_report ||
+      now < last_error_report) {
+    // It's been long enough, send the report. (Or, the clock has been adjusted
+    // and we don't really know how long it's been, so send the report.)
+    *should_send = true;
+    last_error_report = now;
+  } else {
+    *should_send = false;
+  }
+}
+
 // static
 void ChromeJsErrorReportProcessor::Create() {
   // Google only wants error reports from official builds. Don't install a
@@ -291,8 +362,13 @@ void ChromeJsErrorReportProcessor::Create() {
 #if defined(GOOGLE_CHROME_BUILD)
   DCHECK(JsErrorReportProcessor::Get() == nullptr)
       << "Attempted to create multiple ChromeJsErrorReportProcessors";
+  VLOG(3) << "Installing ChromeJsErrorReportProcessor as JavaScript error "
+             "processor";
   JsErrorReportProcessor::SetDefault(
       base::AdoptRef(new ChromeJsErrorReportProcessor));
+#else
+  VLOG(3) << "Not installing ChromeJsErrorReportProcessor as JavaScript error "
+          << "processor; not a Google Chrome build";
 #endif  // defined(GOOGLE_CHROME_BUILD)
 }
 
@@ -301,6 +377,23 @@ void ChromeJsErrorReportProcessor::SendErrorReport(
     base::OnceClosure completion_callback,
     content::BrowserContext* browser_context) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  // In theory, we should wait until the after the consent check to update the
+  // sent map. However, that would mean we do a bunch of extra work on each
+  // duplicate; problematic if we're getting a lot of duplicates. In practice,
+  // it doesn't matter much if we update the sent map and then find out the user
+  // didn't consent -- we will suppress all reports from this instance anyways,
+  // so whether we suppress the next report because it was a duplicate or
+  // because it failed the consent check doesn't matter.
+  bool should_send = false;
+  CheckAndUpdateRecentErrorReports(error_report, &should_send);
+  if (!should_send) {
+    VLOG(3) << "Not sending duplicate error report";
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, std::move(completion_callback));
+    return;
+  }
+
   base::ScopedClosureRunner callback_runner(std::move(completion_callback));
 
   // loader_factory must be created on UI thread. Get it now while we still
@@ -328,6 +421,10 @@ void ChromeJsErrorReportProcessor::SendErrorReport(
 
 std::string ChromeJsErrorReportProcessor::GetCrashEndpoint() {
   return kCrashEndpointUrl;
+}
+
+std::string ChromeJsErrorReportProcessor::GetCrashEndpointStaging() {
+  return kCrashEndpointStagingUrl;
 }
 
 void ChromeJsErrorReportProcessor::GetOsVersion(int32_t& os_major_version,

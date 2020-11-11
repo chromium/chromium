@@ -255,36 +255,6 @@ IN_PROC_BROWSER_TEST_F(CrashReportPrivateApiTest, SuppressedIfDevtoolsOpen) {
   ASSERT_FALSE(report);
 }
 
-IN_PROC_BROWSER_TEST_F(CrashReportPrivateApiTest, Throttling) {
-  constexpr char kTestScript[] = R"(
-    chrome.crashReportPrivate.reportError({
-        message: "hi",
-        url: "http://www.test.com",
-      },
-      () => {
-        window.domAutomationController.send(chrome.runtime.lastError ?
-            chrome.runtime.lastError.message : "")
-      });
-  )";
-
-  base::SimpleTestClock test_clock;
-  test_clock.SetNow(base::Time::Now());
-  api::SetClockForTesting(&test_clock);
-
-  // Use an exact time for the first API call.
-  EXPECT_EQ("", ExecuteScriptInBackgroundPage(extension_->id(), kTestScript));
-
-  // API is limited to one call per hr. So pretend the second call is just
-  // before 1 hr.
-  test_clock.Advance(base::TimeDelta::FromMinutes(59));
-  EXPECT_EQ("Too many calls to this API",
-            ExecuteScriptInBackgroundPage(extension_->id(), kTestScript));
-
-  // Call again after 1 hr.
-  test_clock.Advance(base::TimeDelta::FromMinutes(2));
-  EXPECT_EQ("", ExecuteScriptInBackgroundPage(extension_->id(), kTestScript));
-}
-
 // Ensures that reportError checks user consent for data collection on the
 // correct thread and correctly handles the case where consent is not given.
 IN_PROC_BROWSER_TEST_F(CrashReportPrivateApiTest, NoConsent) {

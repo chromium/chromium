@@ -23,6 +23,7 @@
 namespace content {
 class RenderFrameHost;
 class WebContentsImpl;
+class WebUIMainFrameObserver;
 
 class CONTENT_EXPORT WebUIImpl : public WebUI,
                                  public mojom::WebUIHost,
@@ -96,7 +97,7 @@ class CONTENT_EXPORT WebUIImpl : public WebUI,
   RenderFrameHost* frame_host_for_test() const { return frame_host_; }
 
  private:
-  class MainFrameNavigationObserver;
+  friend class WebUIMainFrameObserver;
 
   // mojom::WebUIHost
   void Send(const std::string& message, base::Value args) override;
@@ -104,7 +105,7 @@ class CONTENT_EXPORT WebUIImpl : public WebUI,
   // Execute a string of raw JavaScript on the page.
   void ExecuteJavascript(const base::string16& javascript);
 
-  // Called internally and by the owned MainFrameNavigationObserver.
+  // Called internally and by the owned WebUIMainFrameObserver.
   void DisallowJavascriptOnAllHandlers();
 
   // A map of message name -> message handling callback.
@@ -129,7 +130,7 @@ class CONTENT_EXPORT WebUIImpl : public WebUI,
   WebContentsImpl* web_contents_;
 
   // Notifies this WebUI about notifications in the main frame.
-  std::unique_ptr<MainFrameNavigationObserver> web_contents_observer_;
+  std::unique_ptr<WebUIMainFrameObserver> web_contents_observer_;
 
   std::unique_ptr<WebUIController> controller_;
 

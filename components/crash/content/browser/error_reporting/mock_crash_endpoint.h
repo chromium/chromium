@@ -40,6 +40,9 @@ class MockCrashEndpoint {
   // Returns the last report received, if any.
   const base::Optional<Report>& last_report() const { return last_report_; }
 
+  // Get the number of reports received since this object was created.
+  int report_count() const { return report_count_; }
+
   // Configures whether the mock crash reporter client has user-consent for
   // submitting crash reports.
   void set_consented(bool consented) { consented_ = consented; }
@@ -56,6 +59,7 @@ class MockCrashEndpoint {
   net::test_server::EmbeddedTestServer* test_server_;
   std::unique_ptr<Client> client_;
   base::Optional<Report> last_report_;
+  int report_count_ = 0;
   bool consented_ = true;
   base::RepeatingClosure on_report_;
 };

@@ -20,6 +20,8 @@ class MockChromeJsErrorReportProcessor : public ChromeJsErrorReportProcessor {
 
   // Controls what is returned from GetCrashEndpoint() override.
   void SetCrashEndpoint(std::string crash_endpoint);
+  // Controls what is returned from GetCrashEndpointStaging() override.
+  void SetCrashEndpointStaging(std::string crash_endpoint);
 
   // Allow tests to manipulate the result of JsErrorReportProcessor::Get().
   // Calling this will cause JsErrorReportProcessor::Get() to return this
@@ -31,6 +33,7 @@ class MockChromeJsErrorReportProcessor : public ChromeJsErrorReportProcessor {
 
  protected:
   std::string GetCrashEndpoint() override;
+  std::string GetCrashEndpointStaging() override;
 
   // Always returns 7.20.1 (arbitrary).
   void GetOsVersion(int32_t& os_major_version,
@@ -40,6 +43,7 @@ class MockChromeJsErrorReportProcessor : public ChromeJsErrorReportProcessor {
  private:
   ~MockChromeJsErrorReportProcessor() override;
   std::string crash_endpoint_;
+  std::string crash_endpoint_staging_;
 };
 
 // Wrapper for MockChromeJsErrorReportProcessor. Will automatically create, set

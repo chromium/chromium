@@ -66,6 +66,11 @@ struct COMPONENT_EXPORT(JS_ERROR_REPORTING) JavaScriptErrorReport {
 
   // The window type of the JS context that reported this error.
   base::Optional<WindowType> window_type;
+
+  // If true (the default), send this report to the production server. If false,
+  // send to the staging server. This should be set to false for errors from
+  // tests and dev builds, and true for real (end-user) errors.
+  bool send_to_production_servers = true;
 };
 
 #endif  // COMPONENTS_CRASH_CONTENT_BROWSER_ERROR_REPORTING_JAVASCRIPT_ERROR_REPORT_H_
