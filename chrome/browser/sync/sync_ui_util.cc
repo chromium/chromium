@@ -280,6 +280,13 @@ AvatarSyncErrorType GetAvatarSyncErrorType(Profile* profile) {
                : TRUSTED_VAULT_KEY_MISSING_FOR_PASSWORDS_ERROR;
   }
 
+  // Check for trusted vault recoverability state.
+  if (ShouldShowTrustedVaultDegradedRecoverabilityError(service)) {
+    return service->GetUserSettings()->IsEncryptEverythingEnabled()
+               ? TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_EVERYTHING_ERROR
+               : TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_PASSWORDS_ERROR;
+  }
+
   // There is no error.
   return NO_SYNC_ERROR;
 }
@@ -312,6 +319,13 @@ bool ShouldShowSyncKeysMissingError(const syncer::SyncService* service) {
   const syncer::SyncUserSettings* settings = service->GetUserSettings();
   return HasUserOptedInToSync(settings) &&
          settings->IsTrustedVaultKeyRequiredForPreferredDataTypes();
+}
+
+bool ShouldShowTrustedVaultDegradedRecoverabilityError(
+    const syncer::SyncService* service) {
+  const syncer::SyncUserSettings* settings = service->GetUserSettings();
+  return HasUserOptedInToSync(settings) &&
+         settings->IsTrustedVaultRecoverabilityDegraded();
 }
 
 void OpenTabForSyncKeyRetrieval(

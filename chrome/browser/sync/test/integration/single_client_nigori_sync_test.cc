@@ -597,6 +597,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithWebApiTest,
                    ->IsTrustedVaultRecoverabilityDegraded());
   EXPECT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::PASSWORDS));
   EXPECT_FALSE(sync_ui_util::ShouldShowSyncKeysMissingError(GetSyncService(0)));
+  EXPECT_FALSE(sync_ui_util::ShouldShowTrustedVaultDegradedRecoverabilityError(
+      GetSyncService(0)));
   EXPECT_THAT(
       sync_ui_util::GetStatusLabels(GetProfile(0)),
       StatusLabelsMatch(sync_ui_util::SYNCED, IDS_SYNC_ACCOUNT_SYNCING,
@@ -980,6 +982,15 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithRecoverySyncTest,
   EXPECT_TRUE(GetSyncService(0)
                   ->GetUserSettings()
                   ->IsTrustedVaultRecoverabilityDegraded());
+  EXPECT_TRUE(sync_ui_util::ShouldShowTrustedVaultDegradedRecoverabilityError(
+      GetSyncService(0)));
+
+#if !defined(OS_CHROMEOS)
+  // Verify the profile-menu error string is empty.
+  EXPECT_EQ(
+      sync_ui_util::TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_PASSWORDS_ERROR,
+      sync_ui_util::GetAvatarSyncErrorType(GetProfile(0)));
+#endif  // !defined(OS_CHROMEOS)
 
   // No messages expected in settings.
   EXPECT_THAT(
@@ -1001,6 +1012,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithRecoverySyncTest,
 
   EXPECT_TRUE(
       TrustedVaultRecoverabilityNotDegradedChecker(GetSyncService(0)).Wait());
+  EXPECT_FALSE(sync_ui_util::ShouldShowTrustedVaultDegradedRecoverabilityError(
+      GetSyncService(0)));
 
 #if !defined(OS_CHROMEOS)
   // Verify the profile-menu error string is empty.

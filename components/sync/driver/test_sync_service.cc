@@ -128,6 +128,10 @@ void TestSyncService::SetTrustedVaultKeyRequiredForPreferredDataTypes(
   user_settings_.SetTrustedVaultKeyRequiredForPreferredDataTypes(required);
 }
 
+void TestSyncService::SetTrustedVaultRecoverabilityDegraded(bool degraded) {
+  user_settings_.SetTrustedVaultRecoverabilityDegraded(degraded);
+}
+
 void TestSyncService::SetIsUsingSecondaryPassphrase(bool enabled) {
   user_settings_.SetIsUsingSecondaryPassphrase(enabled);
 }

@@ -8306,11 +8306,20 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_SYNC_ERROR_PASSWORDS_USER_MENU_TITLE" desc="Title of the sync/signin error header of desktop user menu.">
         Password sync isn't working
       </message>
+      <message name="IDS_SYNC_ERROR_RECOVERABILITY_DEGRADED_FOR_EVERYTHING_USER_MENU_TITLE" desc="Title of a sync error header of desktop user menu that prompts the user to add recovery options.">
+        Make sure you can always access your sync data
+      </message>
+      <message name="IDS_SYNC_ERROR_RECOVERABILITY_DEGRADED_FOR_PASSWORDS_USER_MENU_TITLE" desc="Title of a sync error header of desktop user menu that prompts the user to add recovery options.">
+        Make sure you can always access your saved passwords
+      </message>
       <message name="IDS_SYNC_ERROR_USER_MENU_SIGNIN_BUTTON" desc="Button in the header of desktop user menu that prompts the user to sign in again to fix the out-of-date signin info error.">
         Sign in again
       </message>
       <message name="IDS_SYNC_ERROR_USER_MENU_PASSPHRASE_BUTTON" desc="Button in the header of desktop user menu that prompts the user to enter the sync passphrase to fix the out-of-date passphrase error.">
         Enter passphrase
+      </message>
+      <message name="IDS_SYNC_ERROR_USER_MENU_RECOVERABILITY_BUTTON" desc="Button in the header of desktop user menu that prompts the user to reauthentication to fix the sync error affecting encrypted datatypes.">
+        Fix now
       </message>
       <message name="IDS_SYNC_ERROR_USER_MENU_RETRIEVE_KEYS_BUTTON" desc="Button in the header of desktop user menu that prompts the user to reauthentication to fix the sync error affecting encrypted datatypes.">
         Fix now

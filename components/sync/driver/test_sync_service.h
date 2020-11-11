@@ -49,6 +49,7 @@ class TestSyncService : public SyncService {
   void SetPassphraseRequiredForPreferredDataTypes(bool required);
   void SetTrustedVaultKeyRequired(bool required);
   void SetTrustedVaultKeyRequiredForPreferredDataTypes(bool required);
+  void SetTrustedVaultRecoverabilityDegraded(bool degraded);
   void SetIsUsingSecondaryPassphrase(bool enabled);
 
   void FireStateChanged();

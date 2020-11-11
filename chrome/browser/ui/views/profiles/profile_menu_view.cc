@@ -104,6 +104,18 @@ ProfileMenuViewBase::SyncInfo GetSyncInfoForAvatarErrorType(
       return {IDS_SYNC_ERROR_PASSWORDS_USER_MENU_TITLE,
               IDS_SYNC_ERROR_USER_MENU_RETRIEVE_KEYS_BUTTON,
               ProfileMenuViewBase::SyncInfoContainerBackgroundState::kError};
+    case sync_ui_util::
+        TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_EVERYTHING_ERROR:
+      return {
+          IDS_SYNC_ERROR_RECOVERABILITY_DEGRADED_FOR_EVERYTHING_USER_MENU_TITLE,
+          IDS_SYNC_ERROR_USER_MENU_RECOVERABILITY_BUTTON,
+          ProfileMenuViewBase::SyncInfoContainerBackgroundState::kError};
+    case sync_ui_util::
+        TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_PASSWORDS_ERROR:
+      return {
+          IDS_SYNC_ERROR_RECOVERABILITY_DEGRADED_FOR_PASSWORDS_USER_MENU_TITLE,
+          IDS_SYNC_ERROR_USER_MENU_RECOVERABILITY_BUTTON,
+          ProfileMenuViewBase::SyncInfoContainerBackgroundState::kError};
     case sync_ui_util::SETTINGS_UNCONFIRMED_ERROR:
       return GetStandardSyncErrorInfo(
           IDS_SYNC_ERROR_USER_MENU_CONFIRM_SYNC_SETTINGS_BUTTON);
@@ -228,6 +240,10 @@ gfx::ImageSkia ProfileMenuView::GetSyncIcon() const {
     case sync_ui_util::PASSPHRASE_ERROR:
     case sync_ui_util::TRUSTED_VAULT_KEY_MISSING_FOR_EVERYTHING_ERROR:
     case sync_ui_util::TRUSTED_VAULT_KEY_MISSING_FOR_PASSWORDS_ERROR:
+    case sync_ui_util::
+        TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_EVERYTHING_ERROR:
+    case sync_ui_util::
+        TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_PASSWORDS_ERROR:
     case sync_ui_util::SETTINGS_UNCONFIRMED_ERROR:
       icon = &kSyncPausedCircleIcon;
       color_id = ui::NativeTheme::kColorId_AlertSeverityHigh;
@@ -345,6 +361,14 @@ void ProfileMenuView::OnSyncErrorButtonClicked(
       break;
     case sync_ui_util::TRUSTED_VAULT_KEY_MISSING_FOR_EVERYTHING_ERROR:
     case sync_ui_util::TRUSTED_VAULT_KEY_MISSING_FOR_PASSWORDS_ERROR:
+      sync_ui_util::OpenTabForSyncKeyRetrieval(
+          browser(), syncer::KeyRetrievalTriggerForUMA::kProfileMenu);
+      break;
+    case sync_ui_util::
+        TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_EVERYTHING_ERROR:
+    case sync_ui_util::
+        TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_PASSWORDS_ERROR:
+      // TODO(crbug.com/1081649): This should use a dedicated function.
       sync_ui_util::OpenTabForSyncKeyRetrieval(
           browser(), syncer::KeyRetrievalTriggerForUMA::kProfileMenu);
       break;

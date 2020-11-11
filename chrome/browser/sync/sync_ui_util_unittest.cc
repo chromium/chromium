@@ -65,6 +65,7 @@ enum DistinctState {
   STATUS_CASE_CONFIRM_SYNC_SETTINGS,
   STATUS_CASE_PASSPHRASE_ERROR,
   STATUS_CASE_TRUSTED_VAULT_KEYS_ERROR,
+  STATUS_CASE_TRUSTED_VAULT_RECOVERABILITY_ERROR,
   STATUS_CASE_SYNCED,
   STATUS_CASE_SYNC_DISABLED_BY_POLICY,
   STATUS_CASE_SYNC_RESET_FROM_DASHBOARD,
@@ -164,6 +165,15 @@ StatusLabels SetUpDistinctCase(
       service->SetTrustedVaultKeyRequiredForPreferredDataTypes(true);
       return {PASSWORDS_ONLY_SYNC_ERROR, IDS_SETTINGS_EMPTY_STRING,
               IDS_SYNC_STATUS_NEEDS_KEYS_BUTTON, RETRIEVE_TRUSTED_VAULT_KEYS};
+    case STATUS_CASE_TRUSTED_VAULT_RECOVERABILITY_ERROR:
+      service->SetFirstSetupComplete(true);
+      service->SetTransportState(syncer::SyncService::TransportState::ACTIVE);
+      service->SetDetailedSyncStatus(false, syncer::SyncStatus());
+      service->SetDisableReasons(syncer::SyncService::DisableReasonSet());
+      service->SetPassphraseRequired(false);
+      service->SetTrustedVaultRecoverabilityDegraded(true);
+      return {SYNCED, IDS_SYNC_ACCOUNT_SYNCING, IDS_SETTINGS_EMPTY_STRING,
+              NO_ACTION};
     case STATUS_CASE_SYNCED: {
       service->SetFirstSetupComplete(true);
       service->SetTransportState(syncer::SyncService::TransportState::ACTIVE);

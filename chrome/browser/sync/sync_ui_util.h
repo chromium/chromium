@@ -35,7 +35,7 @@ enum MessageType {
   PASSWORDS_ONLY_SYNC_ERROR,
 };
 
-// The action associated with the sync status.
+// The action associated with the sync status in settings.
 enum ActionType {
   // No action to take.
   NO_ACTION,
@@ -72,6 +72,11 @@ enum AvatarSyncErrorType {
   TRUSTED_VAULT_KEY_MISSING_FOR_EVERYTHING_ERROR,
   // Trusted vault keys missing for always-encrypted datatypes (passwords).
   TRUSTED_VAULT_KEY_MISSING_FOR_PASSWORDS_ERROR,
+  // User needs to improve recoverability of the trusted vault (encrypt
+  // everything is enabled).
+  TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_EVERYTHING_ERROR,
+  // User needs to improve recoverability of the trusted vault (passwords).
+  TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_PASSWORDS_ERROR,
   // Sync settings dialog not confirmed yet.
   SETTINGS_UNCONFIRMED_ERROR,
 };
@@ -114,6 +119,11 @@ bool ShouldShowPassphraseError(const syncer::SyncService* service);
 // Returns whether missing trusted vault keys is preventing sync from starting
 // up encrypted datatypes.
 bool ShouldShowSyncKeysMissingError(const syncer::SyncService* service);
+
+// Returns whether user action is required to improve the recoverability of the
+// trusted vault.
+bool ShouldShowTrustedVaultDegradedRecoverabilityError(
+    const syncer::SyncService* service);
 
 // Opens a tab to trigger a reauth to retrieve the trusted vault keys.
 void OpenTabForSyncKeyRetrieval(
