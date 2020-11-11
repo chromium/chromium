@@ -8,14 +8,18 @@ import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
+import org.chromium.base.annotations.CalledByNative;
+import org.chromium.base.annotations.JNINamespace;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * A chip to display to the user.
  */
+@JNINamespace("autofill_assistant")
 public class AssistantChip {
     @IntDef({Type.CHIP_ASSISTIVE, Type.BUTTON_FILLED_BLUE, Type.BUTTON_HAIRLINE})
     @Retention(RetentionPolicy.SOURCE)
@@ -172,6 +176,7 @@ public class AssistantChip {
      * Creates a hairline assistant chip with an empty callback. The callback needs to be bound
      * before the view is inflated.
      */
+    @CalledByNative
     public static AssistantChip createHairlineAssistantChip(
             int icon, String text, boolean disabled, boolean sticky, boolean visible) {
         return new AssistantChip(
@@ -182,8 +187,19 @@ public class AssistantChip {
      * Creates a blue-filled assistant chip with an empty callback. The callback needs to be bound
      * before the view is inflated.
      */
+    @CalledByNative
     public static AssistantChip createHighlightedAssistantChip(
             int icon, String text, boolean disabled, boolean sticky, boolean visible) {
         return new AssistantChip(Type.BUTTON_FILLED_BLUE, icon, text, disabled, sticky, visible);
+    }
+
+    @CalledByNative
+    private static List<AssistantChip> createChipList() {
+        return new ArrayList<>();
+    }
+
+    @CalledByNative
+    private static void addChipToList(List<AssistantChip> list, AssistantChip chip) {
+        list.add(chip);
     }
 }

@@ -525,7 +525,7 @@ message TriggerScriptUIProto {
 
   message TriggerChip {
     optional ChipProto chip = 1;
-    optional TriggerScriptProto.TriggerScriptAction behavior = 2;
+    optional TriggerScriptProto.TriggerScriptAction action = 2;
   }
   message Popup {
     message Choice {

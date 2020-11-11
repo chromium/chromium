@@ -61,6 +61,9 @@ public class AssistantTriggerScript {
     private final List<AssistantChip> mLeftAlignedChips = new ArrayList<>();
     private final List<AssistantChip> mRightAlignedChips = new ArrayList<>();
 
+    private final List<String> mCancelPopupItems = new ArrayList<>();
+    private final List<Integer> mCancelPopupActions = new ArrayList<>();
+
     private boolean mAnimateBottomSheet = true;
 
     public AssistantTriggerScript(
@@ -136,10 +139,6 @@ public class AssistantTriggerScript {
     }
 
     @VisibleForTesting
-    public AssistantHeaderModel getHeaderModelForTest() {
-        return mHeaderModel;
-    }
-    @VisibleForTesting
     public List<AssistantChip> getLeftAlignedChipsForTest() {
         return mLeftAlignedChips;
     }
@@ -166,9 +165,50 @@ public class AssistantTriggerScript {
         }
     }
 
-    // TODO(b/171776026): before calling this method, native needs to send the necessary
-    // information to populate and update the views.
-    @VisibleForTesting
+    public AssistantHeaderModel getHeaderModel() {
+        return mHeaderModel;
+    }
+
+    /** Binds {@code chips} to {@code actions}. */
+    private void bindChips(List<AssistantChip> chips, int[] actions) {
+        assert chips.size() == actions.length;
+        for (int i = 0; i < chips.size(); ++i) {
+            int action = actions[i];
+            if (action == TriggerScriptAction.SHOW_CANCEL_POPUP) {
+                chips.get(i).setPopupItems(mCancelPopupItems,
+                        result -> mDelegate.onTriggerScriptAction(mCancelPopupActions.get(result)));
+            } else {
+                chips.get(i).setSelectedListener(
+                        () -> mDelegate.onTriggerScriptAction(actions[action]));
+            }
+        }
+    }
+
+    public void setLeftAlignedChips(List<AssistantChip> chips, int[] actions) {
+        assert chips.size() == actions.length;
+        mLeftAlignedChips.clear();
+        mLeftAlignedChips.addAll(chips);
+        bindChips(mLeftAlignedChips, actions);
+    }
+
+    public void setRightAlignedChips(List<AssistantChip> chips, int[] actions) {
+        assert chips.size() == actions.length;
+        mRightAlignedChips.clear();
+        mRightAlignedChips.addAll(chips);
+        bindChips(mRightAlignedChips, actions);
+    }
+
+    public void setCancelPopupMenu(String[] items, int[] actions) {
+        assert items.length == actions.length;
+        mCancelPopupItems.clear();
+        mCancelPopupActions.clear();
+
+        for (int i = 0; i < actions.length; ++i) {
+            mCancelPopupItems.add(items[i]);
+            mCancelPopupActions.add(actions[i]);
+        }
+    }
+
     public void update() {
         mChipsContainer.removeAllViews();
         addChipsToContainer(mChipsContainer, mLeftAlignedChips);

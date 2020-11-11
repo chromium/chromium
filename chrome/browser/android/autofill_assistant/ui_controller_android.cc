@@ -724,6 +724,8 @@ void UiControllerAndroid::UpdateActions(
     const auto& action = user_actions[i];
     const Chip& chip = action.chip();
     base::android::ScopedJavaLocalRef<jobject> jchip;
+    // TODO(arbesser): Refactor this to use
+    // ui_controller_android_utils::CreateJavaAssistantChip.
     switch (chip.type) {
       default:  // Ignore actions with other chip types or with no chips.
         break;

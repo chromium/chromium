@@ -201,6 +201,7 @@ generate_jni("jni_headers") {
     "java/src/org/chromium/chrome/browser/autofill_assistant/AutofillAssistantDirectActionImpl.java",
     "java/src/org/chromium/chrome/browser/autofill_assistant/AutofillAssistantLiteService.java",
     "java/src/org/chromium/chrome/browser/autofill_assistant/AutofillAssistantUiController.java",
+    "java/src/org/chromium/chrome/browser/autofill_assistant/carousel/AssistantChip.java",
     "java/src/org/chromium/chrome/browser/autofill_assistant/details/AssistantDetails.java",
     "java/src/org/chromium/chrome/browser/autofill_assistant/details/AssistantDetailsModel.java",
     "java/src/org/chromium/chrome/browser/autofill_assistant/form/AssistantFormDelegate.java",

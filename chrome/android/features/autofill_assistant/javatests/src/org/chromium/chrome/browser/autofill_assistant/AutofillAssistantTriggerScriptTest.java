@@ -118,7 +118,7 @@ public class AutofillAssistantTriggerScriptTest {
                                 }, getBottomSheetController()));
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            AssistantHeaderModel headerModel = triggerScript.getHeaderModelForTest();
+            AssistantHeaderModel headerModel = triggerScript.getHeaderModel();
             headerModel.set(AssistantHeaderModel.DISABLE_ANIMATIONS_FOR_TESTING, true);
             headerModel.set(AssistantHeaderModel.STATUS_MESSAGE, "Hello world!");
             headerModel.set(AssistantHeaderModel.USE_STEP_PROGRESS_BAR, true);

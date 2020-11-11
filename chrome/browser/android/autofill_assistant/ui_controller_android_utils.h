@@ -88,6 +88,18 @@ BottomSheetState ToNativeBottomSheetState(int state);
 // Converts a BottomSheetState to the Android SheetState enum.
 int ToJavaBottomSheetState(BottomSheetState state);
 
+// Returns an instance of |AssistantChip| or nullptr if the chip type is
+// invalid.
+base::android::ScopedJavaLocalRef<jobject> CreateJavaAssistantChip(
+    JNIEnv* env,
+    const ChipProto& chip);
+
+// Returns a list of |AssistantChip| instances or nullptr if any of the chips
+// in |chips| has an invalid type.
+base::android::ScopedJavaLocalRef<jobject> CreateJavaAssistantChipList(
+    JNIEnv* env,
+    const std::vector<ChipProto>& chips);
+
 }  // namespace ui_controller_android_utils
 }  //  namespace autofill_assistant
 

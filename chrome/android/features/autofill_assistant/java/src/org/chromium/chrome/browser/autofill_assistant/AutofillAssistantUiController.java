@@ -382,6 +382,7 @@ public class AutofillAssistantUiController {
         return chip;
     }
 
+    // TODO(arbesser): Remove this and use methods in {@code AssistantChip} instead.
     @CalledByNative
     private static void appendChipToList(List<AssistantChip> chips, AssistantChip chip) {
         chips.add(chip);

@@ -4,7 +4,11 @@
 
 #include "chrome/browser/android/autofill_assistant/trigger_script_bridge_android.h"
 
+#include "base/android/jni_array.h"
+#include "base/android/jni_string.h"
 #include "chrome/android/features/autofill_assistant/jni_headers/AssistantTriggerScriptBridge_jni.h"
+#include "chrome/browser/android/autofill_assistant/assistant_header_model.h"
+#include "chrome/browser/android/autofill_assistant/ui_controller_android_utils.h"
 #include "chrome/common/channel_info.h"
 #include "components/autofill_assistant/browser/service/api_key_fetcher.h"
 #include "components/autofill_assistant/browser/service/server_url_fetcher.h"
@@ -17,6 +21,10 @@
 #include "services/metrics/public/cpp/ukm_recorder.h"
 
 using base::android::AttachCurrentThread;
+using base::android::JavaParamRef;
+using base::android::ScopedJavaGlobalRef;
+using base::android::ToJavaArrayOfStrings;
+using base::android::ToJavaIntArray;
 
 namespace autofill_assistant {
 
@@ -25,11 +33,11 @@ TriggerScriptBridgeAndroid::~TriggerScriptBridgeAndroid() = default;
 
 void TriggerScriptBridgeAndroid::StartTriggerScript(
     Client* client,
-    const base::android::JavaParamRef<jobject>& jdelegate,
+    const JavaParamRef<jobject>& jdelegate,
     const GURL& initial_url,
     std::unique_ptr<TriggerContext> trigger_context) {
   DCHECK(!java_object_);
-  java_object_ = base::android::ScopedJavaGlobalRef<jobject>(jdelegate);
+  java_object_ = ScopedJavaGlobalRef<jobject>(jdelegate);
   Java_AssistantTriggerScriptBridge_setNativePtr(
       AttachCurrentThread(), java_object_, reinterpret_cast<intptr_t>(this));
 
@@ -64,35 +72,40 @@ void TriggerScriptBridgeAndroid::StopTriggerScript() {
 
 void TriggerScriptBridgeAndroid::OnTriggerScriptAction(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jcaller,
+    const JavaParamRef<jobject>& jcaller,
     jint action) {
   if (!trigger_script_coordinator_) {
     return;
   }
+  trigger_script_coordinator_->PerformTriggerScriptAction(
+      static_cast<TriggerScriptProto::TriggerScriptAction>(action));
 }
 
 void TriggerScriptBridgeAndroid::OnBottomSheetClosedWithSwipe(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jcaller) {
+    const JavaParamRef<jobject>& jcaller) {
   if (!trigger_script_coordinator_) {
     return;
   }
+  // TODO(b/171776026): Implement this.
 }
 
 void TriggerScriptBridgeAndroid::OnBackButtonPressed(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jcaller) {
+    const JavaParamRef<jobject>& jcaller) {
   if (!trigger_script_coordinator_) {
     return;
   }
+  // TODO(b/171776026): Implement this.
 }
 
 void TriggerScriptBridgeAndroid::OnFeedbackButtonClicked(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jcaller) {
+    const JavaParamRef<jobject>& jcaller) {
   if (!trigger_script_coordinator_) {
     return;
   }
+  // TODO(b/171776026): Implement this.
 }
 
 void TriggerScriptBridgeAndroid::OnTriggerScriptShown(
@@ -100,8 +113,57 @@ void TriggerScriptBridgeAndroid::OnTriggerScriptShown(
   if (!java_object_) {
     return;
   }
-  Java_AssistantTriggerScriptBridge_showTriggerScript(AttachCurrentThread(),
-                                                      java_object_);
+  JNIEnv* env = AttachCurrentThread();
+  auto jheader_model =
+      Java_AssistantTriggerScriptBridge_getHeaderModel(env, java_object_);
+  AssistantHeaderModel header_model(jheader_model);
+  header_model.SetStatusMessage(proto.status_message());
+  header_model.SetBubbleMessage(proto.callout_message());
+  header_model.SetProgressVisible(proto.has_progress_bar());
+  if (proto.has_progress_bar()) {
+    ShowProgressBarProto::StepProgressBarConfiguration configuration;
+    configuration.set_use_step_progress_bar(true);
+    for (const auto& icon : proto.progress_bar().step_icons()) {
+      *configuration.add_annotated_step_icons()->mutable_icon() = icon;
+    }
+    auto jcontext =
+        Java_AssistantTriggerScriptBridge_getContext(env, java_object_);
+    header_model.SetStepProgressBarConfiguration(configuration, jcontext);
+    header_model.SetProgressActiveStep(proto.progress_bar().active_step());
+  }
+
+  std::vector<ChipProto> left_aligned_chips;
+  std::vector<int> left_aligned_chip_actions;
+  for (const auto& chip : proto.left_aligned_chips()) {
+    left_aligned_chips.emplace_back(chip.chip());
+    left_aligned_chip_actions.emplace_back(static_cast<int>(chip.action()));
+  }
+  auto jleft_aligned_chips =
+      ui_controller_android_utils::CreateJavaAssistantChipList(
+          env, left_aligned_chips);
+
+  std::vector<ChipProto> right_aligned_chips;
+  std::vector<int> right_aligned_chip_actions;
+  for (const auto& chip : proto.right_aligned_chips()) {
+    right_aligned_chips.emplace_back(chip.chip());
+    right_aligned_chip_actions.emplace_back(static_cast<int>(chip.action()));
+  }
+  auto jright_aligned_chips =
+      ui_controller_android_utils::CreateJavaAssistantChipList(
+          env, right_aligned_chips);
+
+  std::vector<std::string> cancel_popup_items;
+  std::vector<int> cancel_popup_actions;
+  for (const auto& choice : proto.cancel_popup().choices()) {
+    cancel_popup_items.emplace_back(choice.text());
+    cancel_popup_actions.emplace_back(static_cast<int>(choice.action()));
+  }
+
+  Java_AssistantTriggerScriptBridge_showTriggerScript(
+      env, java_object_, ToJavaArrayOfStrings(env, cancel_popup_items),
+      ToJavaIntArray(env, cancel_popup_actions), jleft_aligned_chips,
+      ToJavaIntArray(env, left_aligned_chip_actions), jright_aligned_chips,
+      ToJavaIntArray(env, right_aligned_chip_actions));
 }
 
 void TriggerScriptBridgeAndroid::OnTriggerScriptHidden() {
@@ -117,8 +179,11 @@ void TriggerScriptBridgeAndroid::OnTriggerScriptFinished(
   if (!java_object_) {
     return;
   }
+  // NOTE: for now, the transition to the regular script (if state == ACCEPTED)
+  // is still done in Java.
   Java_AssistantTriggerScriptBridge_onTriggerScriptFinished(
       AttachCurrentThread(), java_object_, static_cast<int>(state));
+  StopTriggerScript();
 }
 
 }  // namespace autofill_assistant

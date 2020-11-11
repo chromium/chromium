@@ -12,10 +12,13 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.autofill_assistant.AutofillAssistantClient;
+import org.chromium.chrome.browser.autofill_assistant.carousel.AssistantChip;
+import org.chromium.chrome.browser.autofill_assistant.header.AssistantHeaderModel;
 import org.chromium.chrome.browser.autofill_assistant.metrics.LiteScriptFinishedState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.content_public.browser.WebContents;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -27,6 +30,7 @@ public class AssistantTriggerScriptBridge {
     private AssistantTriggerScript mTriggerScript;
     private long mNativeBridge;
     private Delegate mDelegate;
+    private Context mContext;
 
     /** Interface for delegates of the {@code start} method. */
     public interface Delegate {
@@ -42,6 +46,7 @@ public class AssistantTriggerScriptBridge {
             @NonNull WebContents webContents, @NonNull String initialUrl,
             Map<String, String> scriptParameters, String experimentIds, Delegate delegate) {
         mDelegate = delegate;
+        mContext = context;
         mTriggerScript = new AssistantTriggerScript(context, new AssistantTriggerScript.Delegate() {
             @Override
             public void onTriggerScriptAction(int action) {
@@ -71,8 +76,27 @@ public class AssistantTriggerScriptBridge {
     }
 
     @CalledByNative
-    private void showTriggerScript() {
-        // TODO update
+    private AssistantHeaderModel getHeaderModel() {
+        return mTriggerScript.getHeaderModel();
+    }
+
+    @CalledByNative
+    private Context getContext() {
+        return mContext;
+    }
+
+    /**
+     * Used by native to update and show the UI. The header should be updated using {@code
+     * getHeaderModel} prior to calling this function.
+     */
+    @CalledByNative
+    private void showTriggerScript(String[] cancelPopupMenuItems, int[] cancelPopupMenuActions,
+            List<AssistantChip> leftAlignedChips, int[] leftAlignedChipsActions,
+            List<AssistantChip> rightAlignedChips, int[] rightAlignedChipsActions) {
+        // NOTE: the cancel popup menu must be set before the chips are bound.
+        mTriggerScript.setCancelPopupMenu(cancelPopupMenuItems, cancelPopupMenuActions);
+        mTriggerScript.setLeftAlignedChips(leftAlignedChips, leftAlignedChipsActions);
+        mTriggerScript.setRightAlignedChips(rightAlignedChips, rightAlignedChipsActions);
         mTriggerScript.show();
     }
 

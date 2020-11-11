@@ -6,6 +6,7 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/notreached.h"
+#include "chrome/android/features/autofill_assistant/jni_headers/AssistantChip_jni.h"
 #include "chrome/android/features/autofill_assistant/jni_headers/AssistantColor_jni.h"
 #include "chrome/android/features/autofill_assistant/jni_headers/AssistantDateTime_jni.h"
 #include "chrome/android/features/autofill_assistant/jni_headers/AssistantDialogButton_jni.h"
@@ -423,6 +424,43 @@ int ToJavaBottomSheetState(BottomSheetState state) {
   }
 }
 
-}  // namespace ui_controller_android_utils
+base::android::ScopedJavaLocalRef<jobject> CreateJavaAssistantChip(
+    JNIEnv* env,
+    const ChipProto& chip) {
+  switch (chip.type()) {
+    default:  // Other chip types are not supported.
+      return nullptr;
 
+    case HIGHLIGHTED_ACTION:
+    case DONE_ACTION:
+      return Java_AssistantChip_createHighlightedAssistantChip(
+          env, chip.icon(),
+          base::android::ConvertUTF8ToJavaString(env, chip.text()),
+          /* disabled = */ false, chip.sticky(), /* visible = */ true);
+
+    case NORMAL_ACTION:
+    case CANCEL_ACTION:
+    case CLOSE_ACTION:
+      return Java_AssistantChip_createHairlineAssistantChip(
+          env, chip.icon(),
+          base::android::ConvertUTF8ToJavaString(env, chip.text()),
+          /* disabled = */ false, chip.sticky(), /* visible = */ true);
+  }
+}
+
+base::android::ScopedJavaLocalRef<jobject> CreateJavaAssistantChipList(
+    JNIEnv* env,
+    const std::vector<ChipProto>& chips) {
+  auto jlist = Java_AssistantChip_createChipList(env);
+  for (const auto& chip : chips) {
+    auto jchip = CreateJavaAssistantChip(env, chip);
+    if (!jchip) {
+      return nullptr;
+    }
+    Java_AssistantChip_addChipToList(env, jlist, jchip);
+  }
+  return jlist;
+}
+
+}  // namespace ui_controller_android_utils
 }  // namespace autofill_assistant
