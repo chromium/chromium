@@ -46,6 +46,7 @@ LikelyFormFilling SendFillInformationToRenderer(
     const std::vector<const PasswordForm*>& best_matches,
     const std::vector<const PasswordForm*>& federated_matches,
     const PasswordForm* preferred_match,
+    bool blocked_by_user,
     PasswordFormMetricsRecorder* metrics_recorder);
 
 // Create a PasswordFormFillData structure in preparation for filling a form

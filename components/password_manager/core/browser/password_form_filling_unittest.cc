@@ -150,7 +150,7 @@ TEST_F(PasswordFormFillingTest, NoSavedCredentials) {
 
   LikelyFormFilling likely_form_filling = SendFillInformationToRenderer(
       &client_, &driver_, observed_form_, best_matches, federated_matches_,
-      nullptr, metrics_recorder_.get());
+      nullptr, /*blocked_by_user=*/false, metrics_recorder_.get());
   EXPECT_EQ(LikelyFormFilling::kNoFilling, likely_form_filling);
 }
 
@@ -169,7 +169,7 @@ TEST_F(PasswordFormFillingTest, Autofill) {
 
   LikelyFormFilling likely_form_filling = SendFillInformationToRenderer(
       &client_, &driver_, observed_form_, best_matches, federated_matches_,
-      &saved_match_, metrics_recorder_.get());
+      &saved_match_, /*blocked_by_user=*/false, metrics_recorder_.get());
 
   // On Android Touch To Fill will prevent autofilling credentials on page load.
 #if defined(OS_ANDROID)
@@ -241,7 +241,7 @@ TEST_F(PasswordFormFillingTest, TestFillOnLoadSuggestion) {
 
     LikelyFormFilling likely_form_filling = SendFillInformationToRenderer(
         &client_, &driver_, observed_form, best_matches, federated_matches_,
-        &saved_match_, metrics_recorder_.get());
+        &saved_match_, /*blocked_by_user=*/false, metrics_recorder_.get());
 
     // In all cases where a current password exists, fill on load should be
     // permitted. Otherwise, the renderer will not fill anyway and return
@@ -314,7 +314,7 @@ TEST_F(PasswordFormFillingTest, TestFillOnLoadSuggestionWithPrefill) {
 
     LikelyFormFilling likely_form_filling = SendFillInformationToRenderer(
         &client_, &driver_, observed_form, best_matches, federated_matches_,
-        &preferred_match, metrics_recorder_.get());
+        &preferred_match, /*blocked_by_user=*/false, metrics_recorder_.get());
 
     EXPECT_EQ(test_case.likely_form_filling, likely_form_filling);
   }
@@ -331,7 +331,7 @@ TEST_F(PasswordFormFillingTest, AutofillPSLMatch) {
 
   LikelyFormFilling likely_form_filling = SendFillInformationToRenderer(
       &client_, &driver_, observed_form_, best_matches, federated_matches_,
-      &psl_saved_match_, metrics_recorder_.get());
+      &psl_saved_match_, /*blocked_by_user=*/false, metrics_recorder_.get());
   EXPECT_EQ(LikelyFormFilling::kFillOnAccountSelect, likely_form_filling);
 
   // Check that the message to the renderer (i.e. |fill_data|) is filled
@@ -362,7 +362,7 @@ TEST_F(PasswordFormFillingTest, NoAutofillOnHttp) {
   EXPECT_CALL(client_, IsCommittedMainFrameSecure).WillOnce(Return(false));
   LikelyFormFilling likely_form_filling = SendFillInformationToRenderer(
       &client_, &driver_, observed_http_form, best_matches, federated_matches_,
-      &saved_http_match, metrics_recorder_.get());
+      &saved_http_match, /*blocked_by_user=*/false, metrics_recorder_.get());
   EXPECT_EQ(LikelyFormFilling::kFillOnAccountSelect, likely_form_filling);
 }
 
@@ -372,7 +372,7 @@ TEST_F(PasswordFormFillingTest, TouchToFill) {
 
   LikelyFormFilling likely_form_filling = SendFillInformationToRenderer(
       &client_, &driver_, observed_form_, best_matches, federated_matches_,
-      &saved_match_, metrics_recorder_.get());
+      &saved_match_, /*blocked_by_user=*/false, metrics_recorder_.get());
   EXPECT_EQ(LikelyFormFilling::kFillOnAccountSelect, likely_form_filling);
 }
 #endif
