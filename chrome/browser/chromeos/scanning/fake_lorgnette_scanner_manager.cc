@@ -55,6 +55,11 @@ void FakeLorgnetteScannerManager::Scan(const std::string& scanner_name,
       base::BindOnce(std::move(completion_callback), scan_data_.has_value()));
 }
 
+void FakeLorgnetteScannerManager::CancelScan(CancelCallback cancel_callback) {
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(cancel_callback), true));
+}
+
 void FakeLorgnetteScannerManager::SetGetScannerNamesResponse(
     const std::vector<std::string>& scanner_names) {
   scanner_names_ = scanner_names;

@@ -34,6 +34,7 @@ class LorgnetteScannerManager : public KeyedService {
   using PageCallback = base::RepeatingCallback<void(std::string scan_data,
                                                     uint32_t page_number)>;
   using CompletionCallback = base::OnceCallback<void(bool success)>;
+  using CancelCallback = base::OnceCallback<void(bool success)>;
 
   ~LorgnetteScannerManager() override = default;
 
@@ -62,6 +63,10 @@ class LorgnetteScannerManager : public KeyedService {
                     ProgressCallback progress_callback,
                     PageCallback page_callback,
                     CompletionCallback completion_callback) = 0;
+
+  // Request to cancel the currently running scan job. This function makes the
+  // assumption that LorgnetteManagerClient only has one scan running at a time.
+  virtual void CancelScan(CancelCallback cancel_callback) = 0;
 };
 
 }  // namespace chromeos

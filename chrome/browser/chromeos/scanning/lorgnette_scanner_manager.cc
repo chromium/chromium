@@ -125,6 +125,11 @@ class LorgnetteScannerManagerImpl final : public LorgnetteScannerManager {
         std::move(page_callback), std::move(progress_callback));
   }
 
+  // LorgnetteScannerManager:
+  void CancelScan(CancelCallback cancel_callback) override {
+    GetLorgnetteManagerClient()->CancelScan(std::move(cancel_callback));
+  }
+
  private:
   // Called when scanners are detected by a ScannerDetector.
   void OnScannersDetected(std::vector<Scanner> scanners) {

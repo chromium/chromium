@@ -33,6 +33,7 @@ class FakeLorgnetteScannerManager final : public LorgnetteScannerManager {
             ProgressCallback progress_callback,
             PageCallback page_callback,
             CompletionCallback completion_callback) override;
+  void CancelScan(CancelCallback cancel_callback) override;
 
   // Sets the response returned by GetScannerNames().
   void SetGetScannerNamesResponse(

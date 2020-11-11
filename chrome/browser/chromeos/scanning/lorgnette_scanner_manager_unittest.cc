@@ -179,6 +179,14 @@ class LorgnetteScannerManagerTest : public testing::Test {
                    base::Unretained(this)));
   }
 
+  // Calls LorgnetteScannerManager::CancelScan() and binds a callback to process
+  // the result.
+  void CancelScan() {
+    lorgnette_scanner_manager_->CancelScan(
+        base::Bind(&LorgnetteScannerManagerTest::CancelScanCallback,
+                   base::Unretained(this)));
+  }
+
   // Runs all tasks until the ThreadPool's non-delayed queues are empty.
   void CompleteTasks() { task_environment_.RunUntilIdle(); }
 
@@ -202,6 +210,7 @@ class LorgnetteScannerManagerTest : public testing::Test {
 
   std::vector<std::string> scan_data() const { return scan_data_; }
   bool scan_success() const { return scan_success_; }
+  bool cancel_scan_success() const { return cancel_scan_success_; }
 
  private:
   // Handles the result of calling LorgnetteScannerManager::GetScannerNames().
@@ -228,6 +237,12 @@ class LorgnetteScannerManagerTest : public testing::Test {
     run_loop_->Quit();
   }
 
+  // Handles completion of LorgnetteScannerManager::CancelScan().
+  void CancelScanCallback(bool success) {
+    cancel_scan_success_ = success;
+    run_loop_->Quit();
+  }
+
   base::test::TaskEnvironment task_environment_;
 
   std::unique_ptr<base::RunLoop> run_loop_;
@@ -239,6 +254,7 @@ class LorgnetteScannerManagerTest : public testing::Test {
   std::vector<std::string> scanner_names_;
   base::Optional<lorgnette::ScannerCapabilities> scanner_capabilities_;
   bool scan_success_ = false;
+  bool cancel_scan_success_ = false;
   std::vector<std::string> scan_data_;
 };
 
@@ -493,6 +509,19 @@ TEST_F(LorgnetteScannerManagerTest, ScanMultiplePages) {
   EXPECT_EQ(scan_data()[1], "TestPageTwo");
   EXPECT_EQ(scan_data()[2], "TestPageThree");
   EXPECT_TRUE(scan_success());
+}
+
+// Test that requesting to cancel the current scan job returns the success
+// result.
+TEST_F(LorgnetteScannerManagerTest, CancelScan) {
+  auto scanner = CreateZeroconfScanner();
+  fake_zeroconf_scanner_detector()->AddDetections({scanner});
+  CompleteTasks();
+  GetScannerNames();
+  WaitForResult();
+  CancelScan();
+  WaitForResult();
+  EXPECT_TRUE(cancel_scan_success());
 }
 
 }  // namespace chromeos
