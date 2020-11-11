@@ -259,11 +259,11 @@ public class ChromePaymentRequestService implements BrowserPaymentRequest,
     }
 
     /** @return Whether the UI was built. */
-    private boolean buildUI(ChromeActivity activity, boolean waitForUpdatedDetails) {
+    private boolean buildUI(ChromeActivity activity, boolean isShowWaitingForUpdatedDetails) {
         String error = mPaymentUiService.buildPaymentRequestUI(activity,
                 /*isWebContentsActive=*/
                 PaymentRequestServiceUtil.isWebContentsActive(mRenderFrameHost),
-                /*waitForUpdatedDetails=*/waitForUpdatedDetails);
+                /*isShowWaitingForUpdatedDetails=*/isShowWaitingForUpdatedDetails);
         if (error != null) {
             mJourneyLogger.setNotShown(NotShownReason.OTHER);
             disconnectFromClientWithDebugMessage(error);
@@ -282,7 +282,7 @@ public class ChromePaymentRequestService implements BrowserPaymentRequest,
 
     // Implements BrowserPaymentRequest:
     @Override
-    public boolean showAppSelector(boolean waitForUpdatedDetails) {
+    public boolean showAppSelector(boolean isShowWaitingForUpdatedDetails) {
         // Send AppListReady signal when all apps are created and request.show() is called.
         if (PaymentRequestService.getNativeObserverForTest() != null) {
             PaymentRequestService.getNativeObserverForTest().onAppListReady(
@@ -295,11 +295,11 @@ public class ChromePaymentRequestService implements BrowserPaymentRequest,
                 mDelegate.skipUiForBasicCard(), mPaymentOptions);
         ChromeActivity chromeActivity = ChromeActivity.fromWebContents(mWebContents);
         if (quitShowIfActivityNotFound(chromeActivity)
-                || !buildUI(chromeActivity, waitForUpdatedDetails)) {
+                || !buildUI(chromeActivity, isShowWaitingForUpdatedDetails)) {
             return false;
         }
         if (!mPaymentUiService.shouldSkipShowingPaymentRequestUi() && mSkipToGPayHelper == null) {
-            mPaymentUiService.getPaymentRequestUI().show(waitForUpdatedDetails);
+            mPaymentUiService.getPaymentRequestUI().show(isShowWaitingForUpdatedDetails);
         }
         return true;
     }
@@ -341,7 +341,7 @@ public class ChromePaymentRequestService implements BrowserPaymentRequest,
         if ((mPaymentUiService.shouldSkipShowingPaymentRequestUi() || mSkipToGPayHelper != null)
                 && mPaymentRequestService.isFinishedQueryingPaymentApps()
                 && mPaymentRequestService.isCurrentPaymentRequestShowing()
-                && !mPaymentRequestService.waitForUpdatedDetails()) {
+                && !mPaymentRequestService.isShowWaitingForUpdatedDetails()) {
             assert !mPaymentUiService.getPaymentMethodsSection().isEmpty();
             assert mPaymentUiService.getPaymentRequestUI() != null;
 
@@ -371,7 +371,7 @@ public class ChromePaymentRequestService implements BrowserPaymentRequest,
             assert mSpec.getRawTotal() != null;
             // The total amount in details should be finalized at this point. So it is safe to
             // record the triggered transaction amount.
-            assert !mPaymentRequestService.waitForUpdatedDetails();
+            assert !mPaymentRequestService.isShowWaitingForUpdatedDetails();
             mJourneyLogger.recordTransactionAmount(mSpec.getRawTotal().amount.currency,
                     mSpec.getRawTotal().amount.value, false /*completed*/);
             invokePaymentApp(null /* selectedShippingAddress */, null /* selectedShippingOption */,
@@ -494,8 +494,10 @@ public class ChromePaymentRequestService implements BrowserPaymentRequest,
         // mSpec.updateWith() can be used only when mSpec has not been destroyed.
         assert !mSpec.isDestroyed();
 
-        if (mPaymentRequestService.waitForUpdatedDetails()) {
-            initializeWithUpdatedDetails(details);
+        if (mPaymentRequestService.isShowWaitingForUpdatedDetails()) {
+            // Under this condition, updateWith() is called in response to the resolution of
+            // show()'s PaymentDetailsUpdate promise.
+            continueShow(details);
             return;
         }
 
@@ -549,8 +551,8 @@ public class ChromePaymentRequestService implements BrowserPaymentRequest,
         if (providedInformationToPaymentRequestUI) recordShowEventAndTransactionAmount();
     }
 
-    private void initializeWithUpdatedDetails(PaymentDetails details) {
-        assert mPaymentRequestService.waitForUpdatedDetails();
+    private void continueShow(PaymentDetails details) {
+        assert mPaymentRequestService.isShowWaitingForUpdatedDetails();
         // mSpec.updateWith() can be used only when mSpec has not been destroyed.
         assert !mSpec.isDestroyed();
 
@@ -584,13 +586,13 @@ public class ChromePaymentRequestService implements BrowserPaymentRequest,
             mPaymentUiService.createShippingSectionForPaymentRequestUI(chromeActivity);
         }
 
-        mPaymentRequestService.resetWaitForUpdatedDetails();
+        mPaymentRequestService.resetWaitingForUpdatedDetails();
         // Triggered transaction amount gets recorded when both of the following conditions are met:
         // 1- Either Event.Shown or Event.SKIPPED_SHOW bits are set showing that transaction is
         // triggered (mDidRecordShowEvent == true). 2- The total amount in details won't change
-        // (mWaitForUpdatedDetails == false). Record the transaction amount only when the triggered
-        // condition is already met. Otherwise it will get recorded when triggered condition becomes
-        // true.
+        // (mPaymentRequestService.isShowWaitingForUpdatedDetails() == false). Record the
+        // transaction amount only when the triggered condition is already met. Otherwise it will
+        // get recorded when triggered condition becomes true.
         if (mDidRecordShowEvent) {
             assert mSpec.getRawTotal() != null;
             mJourneyLogger.recordTransactionAmount(mSpec.getRawTotal().amount.currency,
@@ -666,9 +668,9 @@ public class ChromePaymentRequestService implements BrowserPaymentRequest,
         mDidRecordShowEvent = true;
         mJourneyLogger.setEventOccurred(Event.SHOWN);
         // Record the triggered transaction amount only when the total amount in details is
-        // finalized (i.e. mWaitForUpdatedDetails == false). Otherwise it will get recorded when
-        // the updated details become available.
-        if (!mPaymentRequestService.waitForUpdatedDetails()) {
+        // finalized (i.e. mPaymentRequestService.isShowWaitingForUpdatedDetails() == false).
+        // Otherwise it will get recorded when the updated details become available.
+        if (!mPaymentRequestService.isShowWaitingForUpdatedDetails()) {
             assert mSpec.getRawTotal() != null;
             mJourneyLogger.recordTransactionAmount(mSpec.getRawTotal().amount.currency,
                     mSpec.getRawTotal().amount.value, false /*completed*/);

@@ -257,11 +257,12 @@ interface PaymentRequest {
   // |wait_for_updated_details|: It's true when merchant passed in a promise
   // into PaymentRequest.show(), so Chrome should disregard the initial payment
   // details and show a spinner until the promise resolves with the correct
-  // payment details.
+  // payment details. The payment details will be updated with UpdateWith().
   Show(bool is_user_gesture, bool wait_for_updated_details);
 
-  // Updates the payment details in response to new shipping address or shipping
-  // option.
+  // Updates the payment details in response to (1) new shipping address or
+  // shipping option, or (2) the resolution of show()'s PaymentDetailsUpdate
+  // promise.
   // |details|: The details that the merchant provides to update the payment
   // request.
   UpdateWith(PaymentDetails details);

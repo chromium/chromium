@@ -113,9 +113,10 @@ public interface BrowserPaymentRequest {
     /**
      * Shows the payment apps selector.
      * @return Whether the showing is successful.
-     * @param waitForUpdatedDetails Whether to wait for updated details.
+     * @param isShowWaitingForUpdatedDetails Whether {@link PaymentRequest#show} is waiting for the
+     *         updated details.
      */
-    default boolean showAppSelector(boolean waitForUpdatedDetails) {
+    default boolean showAppSelector(boolean isShowWaitingForUpdatedDetails) {
         return false;
     }
 

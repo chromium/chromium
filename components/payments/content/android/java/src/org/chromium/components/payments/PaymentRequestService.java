@@ -95,7 +95,7 @@ public class PaymentRequestService
     private boolean mHasClosed;
     private boolean mIsFinishedQueryingPaymentApps;
     private boolean mIsCurrentPaymentRequestShowing;
-    private boolean mWaitForUpdatedDetails;
+    private boolean mIsShowWaitingForUpdatedDetails;
 
     /** If not empty, use this error message for rejecting PaymentRequest.show(). */
     private String mRejectShowErrorMessage;
@@ -359,14 +359,20 @@ public class PaymentRequestService
         service.create(/*delegate=*/this);
     }
 
-    /** @return Whether the payment details is pending to be updated. */
-    public boolean waitForUpdatedDetails() {
-        return mWaitForUpdatedDetails;
+    /**
+     * @return Whether the payment details is pending to be updated due to a promise that was
+     *         passed into PaymentRequest.show().
+     */
+    public boolean isShowWaitingForUpdatedDetails() {
+        return mIsShowWaitingForUpdatedDetails;
     }
 
-    /** The payment details is no longer pending to be updated. */
-    public void resetWaitForUpdatedDetails() {
-        mWaitForUpdatedDetails = false;
+    /**
+     * Sets that the payment details is no longer pending to be updated because the promise that
+     * was passed into PaymentRequest.show() has been resolved.
+     */
+    public void resetWaitingForUpdatedDetails() {
+        mIsShowWaitingForUpdatedDetails = false;
     }
 
     /**
@@ -635,7 +641,7 @@ public class PaymentRequestService
         mBrowserPaymentRequest.notifyPaymentUiOfPendingApps(mPendingApps);
         mPendingApps.clear();
         if (isCurrentPaymentRequestShowing()
-                && !mBrowserPaymentRequest.showAppSelector(mWaitForUpdatedDetails)) {
+                && !mBrowserPaymentRequest.showAppSelector(mIsShowWaitingForUpdatedDetails)) {
             return;
         }
 
@@ -915,14 +921,14 @@ public class PaymentRequestService
         mJourneyLogger.recordCheckoutStep(CheckoutFunnelStep.SHOW_CALLED);
         mIsCurrentPaymentRequestShowing = true;
         mIsUserGestureShow = isUserGesture;
-        mWaitForUpdatedDetails = waitForUpdatedDetails;
+        mIsShowWaitingForUpdatedDetails = waitForUpdatedDetails;
 
         mJourneyLogger.setTriggerTime();
         if (disconnectIfNoPaymentMethodsSupported(mBrowserPaymentRequest.hasAvailableApps())) {
             return;
         }
         if (isFinishedQueryingPaymentApps()
-                && !mBrowserPaymentRequest.showAppSelector(mWaitForUpdatedDetails)) {
+                && !mBrowserPaymentRequest.showAppSelector(mIsShowWaitingForUpdatedDetails)) {
             return;
         }
 
