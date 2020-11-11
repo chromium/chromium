@@ -2513,6 +2513,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram
     name="CompositorLatency.Diagnostic.PresentationTimeDeltaFromDeadline"
     units="ms" expires_after="M87">
+  <obsolete>
+    Removed in M88.
+  </obsolete>
   <owner>behdadb@chromium.org</owner>
   <owner>sadrul@chromium.org</owner>
   <summary>

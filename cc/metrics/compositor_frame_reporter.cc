@@ -241,19 +241,6 @@ base::TimeTicks ComputeSafeDeadlineForFrame(const viz::BeginFrameArgs& args) {
   return args.frame_time + (args.interval * 1.5);
 }
 
-void ReportOffsetBetweenDeadlineAndPresentationTime(
-    const viz::BeginFrameArgs& args,
-    base::TimeTicks presentation_time) {
-  const base::TimeTicks strict_deadline = args.frame_time + args.interval;
-  const base::TimeDelta offset = presentation_time - strict_deadline;
-  // |strict_deadline| and |presentation_time| should normally be pretty close.
-  // Measure how close they are.
-  UMA_HISTOGRAM_CUSTOM_TIMES(
-      "CompositorLatency.Diagnostic.PresentationTimeDeltaFromDeadline", offset,
-      base::TimeDelta::FromMilliseconds(1),
-      base::TimeDelta::FromMilliseconds(32), /*bucket_count=*/16);
-}
-
 #define REPORT_VIZ_TRACE_EVENT(start_time, end_time, index, trace_func) \
   if (start_time <= end_time) {                                         \
     const char* substage_name =                                         \
@@ -438,8 +425,6 @@ void CompositorFrameReporter::TerminateReporter() {
   switch (frame_termination_status_) {
     case FrameTerminationStatus::kPresentedFrame:
       EnableReportType(FrameReportType::kNonDroppedFrame);
-      ReportOffsetBetweenDeadlineAndPresentationTime(args_,
-                                                     frame_termination_time_);
       if (ComputeSafeDeadlineForFrame(args_) < frame_termination_time_)
         EnableReportType(FrameReportType::kMissedDeadlineFrame);
       break;
