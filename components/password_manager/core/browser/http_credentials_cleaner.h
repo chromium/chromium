@@ -14,6 +14,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/weak_ptr.h"
 #include "components/password_manager/core/browser/credentials_cleaner.h"
 #include "components/password_manager/core/browser/hsts_query.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -122,6 +123,8 @@ class HttpCredentialCleaner : public PasswordStoreConsumer,
   // Number of HTTP credentials from the password store. Used to know when all
   // credentials were processed.
   size_t total_http_credentials_ = 0;
+
+  base::WeakPtrFactory<HttpCredentialCleaner> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(HttpCredentialCleaner);
 };

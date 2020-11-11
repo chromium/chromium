@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/password_manager/credentials_cleaner_runner_factory.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -164,8 +165,10 @@ PasswordStoreFactory::BuildServiceInstanceFor(
             ->GetNetworkContext();
       },
       profile);
-  password_manager_util::RemoveUselessCredentials(ps, profile->GetPrefs(), 60,
-                                                  network_context_getter);
+  password_manager_util::RemoveUselessCredentials(
+      CredentialsCleanerRunnerFactory::GetForProfile(profile), ps,
+      profile->GetPrefs(), base::TimeDelta::FromSeconds(60),
+      network_context_getter);
 
 #if defined(OS_WIN) || defined(OS_MAC) || \
     (defined(OS_LINUX) && !defined(OS_CHROMEOS))

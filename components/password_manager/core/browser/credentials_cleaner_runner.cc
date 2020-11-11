@@ -23,8 +23,8 @@ bool CredentialsCleanerRunner::HasPendingTasks() const {
 }
 
 void CredentialsCleanerRunner::StartCleaning() {
-  DCHECK(!cleaning_started_);
-  cleaning_started_ = true;
+  if (cleaning_in_progress_)
+    return;
   StartCleaningTask();
 }
 
@@ -36,13 +36,15 @@ void CredentialsCleanerRunner::CleaningCompleted() {
 }
 
 void CredentialsCleanerRunner::StartCleaningTask() {
-  if (!HasPendingTasks()) {
-    // Delete the runner if no more clean-up is scheduled.
-    delete this;
+  cleaning_in_progress_ = HasPendingTasks();
+  if (!cleaning_in_progress_)
     return;
-  }
 
   cleaning_tasks_queue_.front()->StartCleaning(this);
+}
+
+base::WeakPtr<CredentialsCleanerRunner> CredentialsCleanerRunner::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 }  // namespace password_manager

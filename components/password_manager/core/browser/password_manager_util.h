@@ -10,6 +10,7 @@
 
 #include "base/callback.h"
 #include "base/strings/string16.h"
+#include "base/time/time.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_store.h"
@@ -22,6 +23,7 @@ class NetworkContext;
 }  // namespace network
 
 namespace password_manager {
+class CredentialsCleanerRunner;
 class PasswordManagerDriver;
 class PasswordManagerClient;
 }  // namespace password_manager
@@ -87,9 +89,10 @@ void UserTriggeredManualGenerationFromContextMenu(
 // HSTS query is not supported. |network_context_getter| is always null for iOS
 // and it can also be null for some unittests.
 void RemoveUselessCredentials(
+    password_manager::CredentialsCleanerRunner* cleaning_tasks_runner,
     scoped_refptr<password_manager::PasswordStore> store,
     PrefService* prefs,
-    int delay_in_seconds,
+    base::TimeDelta delay,
     base::RepeatingCallback<network::mojom::NetworkContext*()>
         network_context_getter);
 

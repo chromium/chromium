@@ -172,13 +172,13 @@ void UserTriggeredManualGenerationFromContextMenu(
 // TODO(http://crbug.com/890318): Add unitests to check cleaners are correctly
 // created.
 void RemoveUselessCredentials(
+    password_manager::CredentialsCleanerRunner* cleaning_tasks_runner,
     scoped_refptr<password_manager::PasswordStore> store,
     PrefService* prefs,
-    int delay_in_seconds,
+    base::TimeDelta delay,
     base::RepeatingCallback<network::mojom::NetworkContext*()>
         network_context_getter) {
-  auto cleaning_tasks_runner =
-      std::make_unique<password_manager::CredentialsCleanerRunner>();
+  DCHECK(cleaning_tasks_runner);
 
 #if !defined(OS_IOS)
   // Can be null for some unittests.
@@ -196,8 +196,8 @@ void RemoveUselessCredentials(
         FROM_HERE,
         base::BindOnce(
             &password_manager::CredentialsCleanerRunner::StartCleaning,
-            base::Unretained(cleaning_tasks_runner.release())),
-        base::TimeDelta::FromSeconds(delay_in_seconds));
+            cleaning_tasks_runner->GetWeakPtr()),
+        delay);
   }
 }
 

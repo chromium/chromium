@@ -1,0 +1,39 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_PASSWORD_MANAGER_CREDENTIALS_CLEANER_RUNNER_FACTORY_H_
+#define CHROME_BROWSER_PASSWORD_MANAGER_CREDENTIALS_CLEANER_RUNNER_FACTORY_H_
+
+#include "base/no_destructor.h"
+#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+
+namespace password_manager {
+class CredentialsCleanerRunner;
+}  // namespace password_manager
+
+namespace content {
+class BrowserContext;
+}  // namespace content
+
+class Profile;
+
+// Creates instances of CredentialsCleanerRunner per Profile.
+class CredentialsCleanerRunnerFactory
+    : public BrowserContextKeyedServiceFactory {
+ public:
+  static CredentialsCleanerRunnerFactory* GetInstance();
+  static password_manager::CredentialsCleanerRunner* GetForProfile(
+      Profile* profile);
+
+ private:
+  friend class base::NoDestructor<CredentialsCleanerRunnerFactory>;
+
+  CredentialsCleanerRunnerFactory();
+  ~CredentialsCleanerRunnerFactory() override;
+
+  KeyedService* BuildServiceInstanceFor(
+      content::BrowserContext* context) const override;
+};
+
+#endif  // CHROME_BROWSER_PASSWORD_MANAGER_CREDENTIALS_CLEANER_RUNNER_FACTORY_H_

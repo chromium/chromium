@@ -681,6 +681,9 @@ void PasswordStore::ScheduleEnterprisePasswordURLUpdate() {
 
 PasswordStore::~PasswordStore() {
   DCHECK(shutdown_called_);
+  // PasswordSyncBridge should delete on the same sequence where it was created.
+  if (sync_bridge_)
+    background_task_runner_->DeleteSoon(FROM_HERE, std::move(sync_bridge_));
 }
 
 scoped_refptr<base::SequencedTaskRunner>

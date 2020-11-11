@@ -24,6 +24,7 @@
 #include "ios/chrome/browser/application_context.h"
 #include "ios/chrome/browser/browser_state/browser_state_otr_helper.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#include "ios/chrome/browser/passwords/credentials_cleaner_runner_factory.h"
 #include "ios/chrome/browser/sync/profile_sync_service_factory.h"
 #include "ios/chrome/browser/webdata_services/web_data_service_factory.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -99,8 +100,9 @@ IOSChromePasswordStoreFactory::BuildServiceInstanceFor(
     return nullptr;
   }
   password_manager_util::RemoveUselessCredentials(
-      store, ChromeBrowserState::FromBrowserState(context)->GetPrefs(), 60,
-      base::NullCallback());
+      CredentialsCleanerRunnerFactory::GetForBrowserState(context), store,
+      ChromeBrowserState::FromBrowserState(context)->GetPrefs(),
+      base::TimeDelta::FromSeconds(60), base::NullCallback());
   return store;
 }
 
