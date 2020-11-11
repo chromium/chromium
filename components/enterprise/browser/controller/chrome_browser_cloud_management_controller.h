@@ -70,14 +70,6 @@ class ChromeBrowserCloudManagementController
     // Sets the platform-specific DM token storage delegate;
     virtual void SetDMTokenStorageDelegate() = 0;
 
-    // Platform-specific check whether Chrome browser cloud management is
-    // enabled.
-    // TODO(crbug.com/1111435): This needs to be an instance method because iOS
-    // needs custom logic to determine whether CBCM is enabled. After it is
-    // fully launched on iOS, however, this can be moved back to the base class
-    // as a static method.
-    virtual bool IsEnabled() = 0;
-
     // Returns the platform-specific DIR_USER_DATA value to pass to the
     // PathService.
     virtual int GetUserDataDirKey() = 0;

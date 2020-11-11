@@ -181,6 +181,7 @@ source_set("eg2_tests") {
     ":test_resources",
     "//base",
     "//components/autofill/core/common",
+    "//components/enterprise",
     "//components/password_manager/core/common",
     "//components/policy:generated",
     "//components/policy/core/common:common_constants",

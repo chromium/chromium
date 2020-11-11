@@ -8,6 +8,8 @@ static_library("enterprise") {
     "browser/controller/browser_dm_token_storage.h",
     "browser/controller/chrome_browser_cloud_management_helper.cc",
     "browser/controller/chrome_browser_cloud_management_helper.h",
+    "browser/enterprise_switches.cc",
+    "browser/enterprise_switches.h",
     "browser/reporting/common_pref_names.cc",
     "browser/reporting/common_pref_names.h",
   ]

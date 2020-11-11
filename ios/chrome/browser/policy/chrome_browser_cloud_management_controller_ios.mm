@@ -32,10 +32,6 @@ void ChromeBrowserCloudManagementControllerIOS::SetDMTokenStorageDelegate() {
       std::make_unique<BrowserDMTokenStorageIOS>());
 }
 
-bool ChromeBrowserCloudManagementControllerIOS::IsEnabled() {
-  return IsChromeBrowserCloudManagementEnabled();
-}
-
 int ChromeBrowserCloudManagementControllerIOS::GetUserDataDirKey() {
   return ios::DIR_USER_DATA;
 }

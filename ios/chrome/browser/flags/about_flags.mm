@@ -27,6 +27,7 @@
 #include "components/autofill/ios/browser/autofill_switches.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/dom_distiller/core/dom_distiller_switches.h"
+#include "components/enterprise/browser/enterprise_switches.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/feature_list.h"
 #include "components/flags_ui/feature_entry.h"

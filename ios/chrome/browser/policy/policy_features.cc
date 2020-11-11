@@ -40,19 +40,6 @@ bool IsDisableEnterprisePolicySwitchPresent() {
 
 }  // namespace
 
-bool IsChromeBrowserCloudManagementEnabled() {
-  // This method is called very early during the launch sequence (inside
-  // IOSChromeMainParts::PreCreateThreads). At that point, the FeatureList API
-  // isn't ready yet, so neither Finch experiments nor first-run field trials
-  // can be used for progressive rollout. To ensure adequate coverage of both
-  // the "CBCM disabled" and "CBCM enabled" code paths, CBCM is enabled at 100%
-  // on Beta and 0% on all other channels (CBCM is disabled by default). This
-  // allows monitoring crashes for both code paths while allowing early adopters
-  // to use CBCM on the Beta channel.
-  return HasSwitch(switches::kEnableChromeBrowserCloudManagement) ||
-         GetChannel() == version_info::Channel::BETA;
-}
-
 bool IsEditBookmarksIOSEnabled() {
   return base::FeatureList::IsEnabled(kEditBookmarksIOS);
 }

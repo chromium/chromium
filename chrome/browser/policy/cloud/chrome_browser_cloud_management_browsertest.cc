@@ -38,6 +38,7 @@
 #include "components/enterprise/browser/controller/browser_dm_token_storage.h"
 #include "components/enterprise/browser/controller/chrome_browser_cloud_management_controller.h"
 #include "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
+#include "components/enterprise/browser/enterprise_switches.h"
 #include "components/policy/core/common/cloud/chrome_browser_cloud_management_metrics.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/device_management_service.h"

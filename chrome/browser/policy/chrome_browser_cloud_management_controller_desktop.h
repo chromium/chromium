@@ -43,7 +43,6 @@ class ChromeBrowserCloudManagementControllerDesktop
 
   // ChromeBrowserCloudManagementController::Delegate implementation.
   void SetDMTokenStorageDelegate() override;
-  bool IsEnabled() override;
   int GetUserDataDirKey() override;
   base::FilePath GetExternalPolicyPath() override;
   NetworkConnectionTrackerGetter CreateNetworkConnectionTrackerGetter()

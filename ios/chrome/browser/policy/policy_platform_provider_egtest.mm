@@ -9,6 +9,7 @@
 #include "base/json/json_string_value_serializer.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
+#include "components/enterprise/browser/enterprise_switches.h"
 #import "components/policy/core/common/policy_loader_ios_constants.h"
 #include "components/policy/policy_constants.h"
 #include "components/strings/grit/components_strings.h"

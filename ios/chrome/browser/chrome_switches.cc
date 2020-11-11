@@ -24,10 +24,6 @@ const char kDisableIOSPasswordSuggestions[] =
 const char kDisableThirdPartyKeyboardWorkaround[] =
     "disable-third-party-keyboard-workaround";
 
-// Enables Chrome Browser Cloud Management flow.
-const char kEnableChromeBrowserCloudManagement[] =
-    "enable-chrome-browser-cloud-management";
-
 // Enables enterprise policy support.
 const char kEnableEnterprisePolicy[] = "enable-enterprise-policy";
 
