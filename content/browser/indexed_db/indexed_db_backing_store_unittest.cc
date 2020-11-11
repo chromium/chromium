@@ -203,6 +203,13 @@ class MockBlobStorageContext : public ::storage::mojom::BlobStorageContext {
                        base::Optional<base::Time> last_modified,
                        WriteBlobToFileCallback callback) override {
     writes_.emplace_back(std::move(blob), path);
+
+    if (write_files_to_disk_) {
+      auto filesystem_proxy = std::make_unique<storage::FilesystemProxy>(
+          storage::FilesystemProxy::UNRESTRICTED, base::FilePath());
+      filesystem_proxy->WriteFileAtomically(path, "fake contents");
+    }
+
     base::SequencedTaskRunnerHandle::Get()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback),
@@ -212,8 +219,13 @@ class MockBlobStorageContext : public ::storage::mojom::BlobStorageContext {
   const std::vector<BlobWrite>& writes() { return writes_; }
   void ClearWrites() { writes_.clear(); }
 
+  // If true, writes a fake file for each blob file to disk.
+  // The contents are bogus, but the files will exist.
+  void SetWriteFilesToDisk(bool write) { write_files_to_disk_ = write; }
+
  private:
   std::vector<BlobWrite> writes_;
+  bool write_files_to_disk_ = false;
 };
 
 class FakeNativeFileSystemTransferToken
@@ -636,14 +648,25 @@ class IndexedDBBackingStoreTestWithExternalObjects
   bool CheckBlobWrites() {
     DCHECK(idb_context_->IDBTaskRunner()->RunsTasksInCurrentSequence());
 
-    if (blob_context_->writes().size() +
-            native_file_system_context_->writes().size() !=
-        external_objects_.size()) {
+    size_t num_empty_blobs = 0;
+    for (const auto& info : external_objects_) {
+      if (info.object_type() == IndexedDBExternalObject::ObjectType::kFile &&
+          !info.size()) {
+        num_empty_blobs++;
+      }
+    }
+
+    size_t num_written = blob_context_->writes().size() +
+                         native_file_system_context_->writes().size();
+    if (num_written != external_objects_.size() - num_empty_blobs) {
       return false;
     }
     for (size_t i = 0; i < blob_context_->writes().size(); ++i) {
       const BlobWrite& desc = blob_context_->writes()[i];
       const IndexedDBExternalObject& info = external_objects_[i];
+      if (!info.size())
+        continue;
+
       base::RunLoop uuid_loop;
       std::string uuid_out;
       DCHECK(desc.blob.is_bound());
@@ -1778,7 +1801,7 @@ TEST_F(IndexedDBBackingStoreTest, SchemaUpgradeWithoutBlobsSurvives) {
   ASSERT_TRUE(success);
 
   EXPECT_TRUE(found);
-  EXPECT_EQ(4, found_int);
+  EXPECT_EQ(indexed_db::kLatestKnownSchemaVersion, found_int);
   task_environment_.RunUntilIdle();
 }
 
@@ -2051,6 +2074,140 @@ TEST_F(IndexedDBBackingStoreTestWithBlobs, SchemaUpgradeV3ToV4) {
   EXPECT_TRUE(transaction2.CommitPhaseTwo().ok());
   EXPECT_EQ(value3_.bits, result_value.bits);
   EXPECT_TRUE(CheckBlobInfoMatches(result_value.external_objects));
+}
+
+TEST_F(IndexedDBBackingStoreTestWithBlobs, SchemaUpgradeV4ToV5) {
+  int64_t database_id;
+  const int64_t object_store_id = 99;
+
+  const base::string16 database_name(ASCIIToUTF16("db1"));
+  const int64_t version = 9;
+
+  const base::string16 object_store_name(ASCIIToUTF16("object_store1"));
+  const bool auto_increment = true;
+  const IndexedDBKeyPath object_store_key_path(
+      ASCIIToUTF16("object_store_key"));
+
+  // Add an empty blob here to test with.  Empty blobs are not written
+  // to disk, so it's important to verify that a database with empty blobs
+  // should be considered still valid.
+  external_objects().push_back(CreateBlobInfo(base::UTF8ToUTF16("empty blob"),
+                                              base::UTF8ToUTF16("file type"),
+                                              base::Time::Now(), 0u));
+  // The V5 migration checks files on disk, so make sure our fake blob
+  // context writes something there to check.
+  blob_context_->SetWriteFilesToDisk(true);
+
+  IndexedDBMetadataCoding metadata_coding;
+
+  {
+    IndexedDBDatabaseMetadata database;
+    leveldb::Status s = metadata_coding.CreateDatabase(
+        backing_store()->db(), backing_store()->origin_identifier(),
+        database_name, version, &database);
+    EXPECT_TRUE(s.ok());
+    EXPECT_GT(database.id, 0);
+    database_id = database.id;
+
+    IndexedDBBackingStore::Transaction transaction(
+        backing_store()->AsWeakPtr(),
+        blink::mojom::IDBTransactionDurability::Relaxed,
+        blink::mojom::IDBTransactionMode::ReadWrite);
+    transaction.Begin(CreateDummyLock());
+
+    IndexedDBObjectStoreMetadata object_store;
+    s = metadata_coding.CreateObjectStore(
+        transaction.transaction(), database.id, object_store_id,
+        object_store_name, object_store_key_path, auto_increment,
+        &object_store);
+    EXPECT_TRUE(s.ok());
+
+    bool succeeded = false;
+    EXPECT_TRUE(
+        transaction.CommitPhaseOne(CreateBlobWriteCallback(&succeeded)).ok());
+    EXPECT_TRUE(succeeded);
+    EXPECT_TRUE(transaction.CommitPhaseTwo().ok());
+  }
+  task_environment_.RunUntilIdle();
+
+  // Initiate transaction - writing blobs.
+  std::unique_ptr<IndexedDBBackingStore::Transaction> transaction =
+      std::make_unique<IndexedDBBackingStore::Transaction>(
+          backing_store()->AsWeakPtr(),
+          blink::mojom::IDBTransactionDurability::Relaxed,
+          blink::mojom::IDBTransactionMode::ReadWrite);
+  transaction->Begin(CreateDummyLock());
+  IndexedDBBackingStore::RecordIdentifier record;
+
+  IndexedDBKey key = IndexedDBKey(ASCIIToUTF16("key"));
+  IndexedDBValue value = IndexedDBValue("value3", external_objects());
+
+  EXPECT_TRUE(backing_store()
+                  ->PutRecord(transaction.get(), database_id, object_store_id,
+                              key, &value, &record)
+                  .ok());
+  bool succeeded = false;
+  base::RunLoop write_blobs_loop;
+  EXPECT_TRUE(transaction
+                  ->CommitPhaseOne(CreateBlobWriteCallback(
+                      &succeeded, write_blobs_loop.QuitClosure()))
+                  .ok());
+  write_blobs_loop.Run();
+  task_environment_.RunUntilIdle();
+
+  // Finish up transaction, verifying blob writes.
+  EXPECT_TRUE(succeeded);
+  EXPECT_TRUE(CheckBlobWrites());
+  ASSERT_TRUE(transaction->CommitPhaseTwo().ok());
+  transaction.reset();
+
+  task_environment_.RunUntilIdle();
+  ASSERT_EQ(blob_context_->writes().size(), 3u);
+
+  // Verify V4 to V5 conversion with all blobs intact has no data loss.
+  {
+    // Change the schema to be v4.
+    const int64_t old_version = 4;
+    std::unique_ptr<LevelDBWriteBatch> write_batch =
+        LevelDBWriteBatch::Create();
+    const std::string schema_version_key = SchemaVersionKey::Encode();
+    ASSERT_TRUE(
+        indexed_db::PutInt(write_batch.get(), schema_version_key, old_version)
+            .ok());
+    ASSERT_TRUE(backing_store()->db()->Write(write_batch.get()).ok());
+
+    DestroyFactoryAndBackingStore();
+    CreateFactoryAndBackingStore();
+
+    // There should be no corruption here.
+    ASSERT_EQ(data_loss_info_.status, blink::mojom::IDBDataLoss::None);
+  }
+
+  // Verify V4 to V5 conversion with missing blobs has data loss.
+  {
+    // Change the schema to be v4.
+    const int64_t old_version = 4;
+    std::unique_ptr<LevelDBWriteBatch> write_batch =
+        LevelDBWriteBatch::Create();
+    const std::string schema_version_key = SchemaVersionKey::Encode();
+    ASSERT_TRUE(
+        indexed_db::PutInt(write_batch.get(), schema_version_key, old_version)
+            .ok());
+    ASSERT_TRUE(backing_store()->db()->Write(write_batch.get()).ok());
+
+    // Pick a blob we wrote arbitrarily and delete it.
+    auto path = blob_context_->writes()[1].path;
+    auto filesystem_proxy = std::make_unique<storage::FilesystemProxy>(
+        storage::FilesystemProxy::UNRESTRICTED, base::FilePath());
+    filesystem_proxy->DeleteFile(path);
+
+    DestroyFactoryAndBackingStore();
+    CreateFactoryAndBackingStore();
+
+    // This should be corrupted.
+    ASSERT_NE(data_loss_info_.status, blink::mojom::IDBDataLoss::None);
+    DestroyFactoryAndBackingStore();
+  }
 }
 
 // This tests that external objects are deleted when ClearObjectStore is called.

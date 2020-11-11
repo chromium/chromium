@@ -728,6 +728,9 @@ leveldb::Status IndexedDBBackingStore::Initialize(bool clean_active_journal) {
     if (s.ok() && db_schema_version < 4) {
       s = MigrateToV4(write_batch.get());
     }
+    if (s.ok() && db_schema_version < 5) {
+      s = MigrateToV5(write_batch.get());
+    }
     db_schema_version = indexed_db::kLatestKnownSchemaVersion;
   }
 
@@ -922,6 +925,83 @@ Status IndexedDBBackingStore::UpgradeBlobEntriesToV4(
         write_batch->Put(iterator->Key(), data);
         if (!status.ok())
           return status;
+      }
+      if (status.IsNotFound())
+        status = leveldb::Status::OK();
+      if (!status.ok())
+        return status;
+    }
+
+    if (!status.ok())
+      return status;
+  }
+  return Status::OK();
+}
+
+Status IndexedDBBackingStore::ValidateBlobFiles(
+    TransactionalLevelDBDatabase* db) {
+  DCHECK(filesystem_proxy_);
+
+  Status status = leveldb::Status::OK();
+  std::vector<base::string16> names;
+  IndexedDBMetadataCoding metadata_coding;
+  status = metadata_coding.ReadDatabaseNames(db, origin_identifier_, &names);
+  if (!status.ok())
+    return status;
+
+  for (const auto& name : names) {
+    IndexedDBDatabaseMetadata metadata;
+    bool found = false;
+    status = metadata_coding.ReadMetadataForDatabaseName(
+        db, origin_identifier_, name, &metadata, &found);
+    if (!found)
+      return Status::NotFound("Metadata not found for \"%s\".",
+                              base::UTF16ToUTF8(name));
+    for (const auto& store_id_metadata_pair : metadata.object_stores) {
+      leveldb::ReadOptions options;
+      // Since this is a scan, don't fill up the cache, as it's not likely these
+      // blocks will be reloaded.
+      options.fill_cache = false;
+      options.verify_checksums = true;
+      std::unique_ptr<TransactionalLevelDBIterator> iterator =
+          db->CreateIterator(options);
+      std::string min_key = BlobEntryKey::EncodeMinKeyForObjectStore(
+          metadata.id, store_id_metadata_pair.first);
+      std::string max_key = BlobEntryKey::EncodeStopKeyForObjectStore(
+          metadata.id, store_id_metadata_pair.first);
+      status = iterator->Seek(base::StringPiece(min_key));
+      if (status.IsNotFound()) {
+        status = Status::OK();
+        continue;
+      }
+      if (!status.ok())
+        return status;
+      // Loop through all blob entries in for the given object store.
+      for (; status.ok() && iterator->IsValid() &&
+             db->leveldb_state()->comparator()->Compare(
+                 leveldb_env::MakeSlice(iterator->Key()), max_key) < 0;
+           status = iterator->Next()) {
+        std::vector<IndexedDBExternalObject> temp_external_objects;
+        DecodeExternalObjects(iterator->Value().as_string(),
+                              &temp_external_objects);
+        for (auto& object : temp_external_objects) {
+          if (object.object_type() !=
+              IndexedDBExternalObject::ObjectType::kFile) {
+            continue;
+          }
+          // Empty blobs are not written to disk.
+          if (!object.size())
+            continue;
+
+          base::FilePath path =
+              GetBlobFileName(metadata.id, object.blob_number());
+          base::Optional<base::File::Info> info =
+              filesystem_proxy_->GetFileInfo(path);
+          if (!info.has_value()) {
+            return leveldb::Status::Corruption(
+                "Unable to upgrade to database version 5.", "");
+          }
+        }
       }
       if (status.IsNotFound())
         status = leveldb::Status::OK();
@@ -3030,6 +3110,27 @@ Status IndexedDBBackingStore::MigrateToV4(LevelDBWriteBatch* write_batch) {
       filesystem_proxy_->DeleteFile(path);
     }
   }
+
+  return s;
+}
+
+Status IndexedDBBackingStore::MigrateToV5(LevelDBWriteBatch* write_batch) {
+  // Some blob files were not written to disk due to a bug.
+  // Validate that all blob files in the db exist on disk,
+  // and return InternalInconsistencyStatus if any do not.
+  // See http://crbug.com/1131151 for more details.
+  const int64_t db_schema_version = 5;
+  const std::string schema_version_key = SchemaVersionKey::Encode();
+  Status s;
+
+  if (origin_.host() != "docs.google.com") {
+    s = ValidateBlobFiles(db_.get());
+    if (!s.ok()) {
+      INTERNAL_CONSISTENCY_ERROR(SET_UP_METADATA);
+      return InternalInconsistencyStatus();
+    }
+  }
+  ignore_result(PutInt(write_batch, schema_version_key, db_schema_version));
 
   return s;
 }

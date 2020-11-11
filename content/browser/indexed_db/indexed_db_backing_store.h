@@ -538,10 +538,18 @@ class CONTENT_EXPORT IndexedDBBackingStore {
       TransactionalLevelDBDatabase* database,
       bool* blobs_exist);
 
+  // A helper function for V4 schema migration.
+  // It iterates through all blob files.  It will add to the db entry both the
+  // size and modified date for the blob based on the written file.  If any blob
+  // file in the db is missing on disk, it will return an inconsistency status.
   leveldb::Status UpgradeBlobEntriesToV4(
       TransactionalLevelDBDatabase* database,
       LevelDBWriteBatch* write_batch,
       std::vector<base::FilePath>* empty_blobs_to_delete);
+  // A helper function for V5 schema miration.
+  // Iterates through all blob files on disk and validates they exist,
+  // returning an internal inconsistency corruption error if any are missing.
+  leveldb::Status ValidateBlobFiles(TransactionalLevelDBDatabase* database);
 
   // TODO(dmurph): Move this completely to IndexedDBMetadataFactory.
   leveldb::Status GetCompleteMetadata(
@@ -568,6 +576,7 @@ class CONTENT_EXPORT IndexedDBBackingStore {
   leveldb::Status MigrateToV2(LevelDBWriteBatch* write_batch);
   leveldb::Status MigrateToV3(LevelDBWriteBatch* write_batch);
   leveldb::Status MigrateToV4(LevelDBWriteBatch* write_batch);
+  leveldb::Status MigrateToV5(LevelDBWriteBatch* write_batch);
 
   leveldb::Status FindKeyInIndex(
       IndexedDBBackingStore::Transaction* transaction,

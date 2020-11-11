@@ -30,7 +30,8 @@ namespace indexed_db {
 // 2 - Adds DataVersion to to global metadata.
 // 3 - Adds metadata needed for blob support.
 // 4 - Adds size & last_modified to 'file' blob_info encodings.
-const constexpr int64_t kLatestKnownSchemaVersion = 4;
+// 5 - One time verification that blob files exist on disk.
+const constexpr int64_t kLatestKnownSchemaVersion = 5;
 }  // namespace indexed_db
 
 CONTENT_EXPORT extern const unsigned char kMinimumIndexId;
