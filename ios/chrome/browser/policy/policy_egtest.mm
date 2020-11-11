@@ -89,7 +89,7 @@ void VerifyBoolPolicy(const std::string& policy_key,
   // provides some visual feedback as the test runs.
   [ChromeEarlGrey loadURL:GURL("chrome://policy")];
   [ChromeEarlGrey waitForWebStateContainingText:l10n_util::GetStringUTF8(
-                                                    IDS_POLICY_SHOW_UNSET)];
+                                                    IDS_POLICY_HEADER_NAME)];
   // Force the preference off via policy.
   SetPolicy(false, policy_key);
   GREYAssertFalse([ChromeEarlGrey userBooleanPref:pref_name],
@@ -159,7 +159,7 @@ void VerifyManagedSettingItem(NSString* accessibilityID,
 - (void)testAboutPolicy {
   [ChromeEarlGrey loadURL:GURL("chrome://policy")];
   [ChromeEarlGrey waitForWebStateContainingText:l10n_util::GetStringUTF8(
-                                                    IDS_POLICY_SHOW_UNSET)];
+                                                    IDS_POLICY_HEADER_NAME)];
 }
 
 // Tests for the DefaultSearchProviderEnabled policy.
