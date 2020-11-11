@@ -287,8 +287,7 @@ void SharedWorkerGlobalScope::Trace(Visitor* visitor) const {
 }
 
 bool SharedWorkerGlobalScope::CrossOriginIsolatedCapability() const {
-  // TODO(crbug.com/1131403): Return Agent::IsCrossOriginIsolated().
-  return false;
+  return Agent::IsCrossOriginIsolated();
 }
 
 }  // namespace blink

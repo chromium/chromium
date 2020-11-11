@@ -117,10 +117,12 @@ ServiceWorkerProcessManager::AllocateWorkerProcess(
   // (e.g., <webview>).
   const bool is_guest =
       storage_partition_ &&
-      !storage_partition_->site_for_guest_service_worker().is_empty();
+      !storage_partition_->site_for_guest_service_worker_or_shared_worker()
+           .is_empty();
   const GURL service_worker_url =
-      is_guest ? storage_partition_->site_for_guest_service_worker()
-               : script_url;
+      is_guest
+          ? storage_partition_->site_for_guest_service_worker_or_shared_worker()
+          : script_url;
   const bool is_coop_coep_cross_origin_isolated =
       !is_guest && cross_origin_embedder_policy.has_value() &&
       (cross_origin_embedder_policy->value ==

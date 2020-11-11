@@ -162,6 +162,7 @@ class TestSharedWorkerService : public content::SharedWorkerService {
   bool TerminateWorker(const GURL& url,
                        const std::string& name,
                        const url::Origin& constructor_origin) override;
+  void Shutdown() override;
 
   // Creates a new shared worker and returns its token.
   blink::SharedWorkerToken CreateSharedWorker(int worker_process_id);
@@ -212,6 +213,11 @@ bool TestSharedWorkerService::TerminateWorker(
   // Not implemented.
   ADD_FAILURE();
   return false;
+}
+
+void TestSharedWorkerService::Shutdown() {
+  // Not implemented.
+  ADD_FAILURE();
 }
 
 blink::SharedWorkerToken TestSharedWorkerService::CreateSharedWorker(

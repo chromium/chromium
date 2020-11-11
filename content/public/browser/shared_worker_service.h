@@ -83,6 +83,10 @@ class CONTENT_EXPORT SharedWorkerService {
                                const std::string& name,
                                const url::Origin& constructor_origin) = 0;
 
+  // Drops all shared workers and references to processes for shared workers
+  // synchronously.
+  virtual void Shutdown() = 0;
+
  protected:
   virtual ~SharedWorkerService() = default;
 };

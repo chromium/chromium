@@ -55,6 +55,7 @@ class CONTENT_EXPORT SharedWorkerServiceImpl : public SharedWorkerService {
   bool TerminateWorker(const GURL& url,
                        const std::string& name,
                        const url::Origin& constructor_origin) override;
+  void Shutdown() override;
 
   // Uses |url_loader_factory| to load workers' scripts instead of
   // StoragePartition's URLLoaderFactoryGetter.
@@ -90,14 +91,15 @@ class CONTENT_EXPORT SharedWorkerServiceImpl : public SharedWorkerService {
   friend class SharedWorkerHostTest;
   friend class SharedWorkerServiceImplTest;
   friend class TestSharedWorkerServiceImpl;
+  friend class WorkerTest;
   FRIEND_TEST_ALL_PREFIXES(NetworkServiceRestartBrowserTest, SharedWorker);
 
   // Creates a new worker in the creator's renderer process.
   SharedWorkerHost* CreateWorker(
+      RenderFrameHostImpl& creator,
       const SharedWorkerInstance& instance,
       blink::mojom::FetchClientSettingsObjectPtr
           outside_fetch_client_settings_object,
-      GlobalFrameRoutingId creator_render_frame_host_id,
       const std::string& storage_domain,
       const blink::MessagePortChannel& message_port,
       scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory);

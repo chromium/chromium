@@ -1507,8 +1507,9 @@ RenderProcessHost* RenderProcessHostImpl::CreateRenderProcessHost(
   // to get a process in the guest's StoragePartition.)
   const bool is_for_guests_only = site_instance && site_instance->IsGuest();
   if (is_for_guests_only &&
-      storage_partition_impl->site_for_guest_service_worker().is_empty()) {
-    storage_partition_impl->set_site_for_guest_service_worker(
+      storage_partition_impl->site_for_guest_service_worker_or_shared_worker()
+          .is_empty()) {
+    storage_partition_impl->set_site_for_guest_service_worker_or_shared_worker(
         site_instance->GetSiteInfo().site_url());
   }
 

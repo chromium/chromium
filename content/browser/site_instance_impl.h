@@ -244,9 +244,17 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance,
     // as measured by active_frame_count().
     virtual void ActiveFrameCountIsZero(SiteInstanceImpl* site_instance) {}
 
-    // Called when the renderer process of this SiteInstance has exited.
+    // Called when the renderer process of this SiteInstance has exited. Note
+    // that GetProcess() still returns the same RenderProcessHost instance. You
+    // can reinitialize it by a call to GetProcess()->Init().
     virtual void RenderProcessGone(SiteInstanceImpl* site_instance,
-                                   const ChildProcessTerminationInfo& info) = 0;
+                                   const ChildProcessTerminationInfo& info) {}
+
+    // Called when the RenderProcessHost for this SiteInstance has been
+    // destructed. After this, the underlying `process_` is cleared, and calling
+    // GetProcess() would assign a different RenderProcessHost to this
+    // SiteInstance.
+    virtual void RenderProcessHostDestroyed() {}
   };
 
   // Methods for creating new SiteInstances. The documentation for these methods

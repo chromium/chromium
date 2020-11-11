@@ -70,22 +70,68 @@ void ConnectToSharedWorker(
                      pipe.TakePort1(), mojo::NullRemote(), kClientUkmSourceId);
 }
 
-// Helper to delete the given WebContents and shut down its process. This is
-// useful because if FastShutdownIfPossible() is called without deleting the
-// WebContents first, shutdown does not actually start.
-void KillProcess(std::unique_ptr<WebContents> web_contents) {
-  RenderFrameHost* frame_host = web_contents->GetMainFrame();
-  RenderProcessHost* process_host = frame_host->GetProcess();
-  web_contents.reset();
-  process_host->FastShutdownIfPossible(/*page_count=*/0,
-                                       /*skip_unload_handlers=*/true);
-  ASSERT_TRUE(process_host->FastShutdownStarted());
-}
-
 }  // namespace
 
 class SharedWorkerServiceImplTest : public RenderViewHostImplTestHarness {
  public:
+  class MockRenderProcessHostFactoryForSharedWorker;
+
+  class MockRenderProcessHostForSharedWorker : public MockRenderProcessHost {
+   public:
+    MockRenderProcessHostForSharedWorker(
+        BrowserContext* browser_context,
+        SharedWorkerServiceImplTest* test,
+        MockRenderProcessHostFactoryForSharedWorker* factory)
+        : MockRenderProcessHost(browser_context),
+          test_(test),
+          factory_(factory) {}
+
+    ~MockRenderProcessHostForSharedWorker() override { factory_->Remove(this); }
+
+    void BindReceiver(mojo::GenericPendingReceiver receiver) override {
+      if (*receiver.interface_name() !=
+          blink::mojom::SharedWorkerFactory::Name_)
+        return;
+      test_->BindSharedWorkerFactory(GetID(), receiver.PassPipe());
+    }
+
+    SharedWorkerServiceImplTest* const test_;
+    MockRenderProcessHostFactoryForSharedWorker* const factory_;
+  };
+
+  class MockRenderProcessHostFactoryForSharedWorker
+      : public MockRenderProcessHostFactory {
+   public:
+    explicit MockRenderProcessHostFactoryForSharedWorker(
+        SharedWorkerServiceImplTest* test)
+        : test_(test) {}
+
+    RenderProcessHost* CreateRenderProcessHost(
+        BrowserContext* browser_context,
+        SiteInstance* site_instance) override {
+      auto host = std::make_unique<MockRenderProcessHostForSharedWorker>(
+          browser_context, test_, this);
+      processes_.push_back(std::move(host));
+      processes_.back()->SetFactory(this);
+      return processes_.back().get();
+    }
+
+    void Remove(MockRenderProcessHostForSharedWorker* host) {
+      for (auto it = processes_.begin(); it != processes_.end(); ++it) {
+        if (it->get() == host) {
+          it->release();
+          processes_.erase(it);
+          break;
+        }
+      }
+    }
+
+   private:
+    SharedWorkerServiceImplTest* const test_;
+    std::vector<std::unique_ptr<MockRenderProcessHostForSharedWorker>>
+        processes_;
+  };
+
   mojo::Remote<blink::mojom::SharedWorkerConnector> MakeSharedWorkerConnector(
       GlobalFrameRoutingId render_frame_host_id) {
     mojo::Remote<blink::mojom::SharedWorkerConnector> connector;
@@ -95,53 +141,28 @@ class SharedWorkerServiceImplTest : public RenderViewHostImplTestHarness {
   }
 
   // Waits until a mojo::PendingReceiver<blink::mojom::SharedWorkerFactory>
-  // from the given process is received. kInvalidUniqueID means any process.
-  mojo::PendingReceiver<blink::mojom::SharedWorkerFactory>
-  WaitForFactoryReceiver(int process_id) {
-    if (CheckNotReceivedFactoryReceiver(process_id)) {
+  // is received. Return a pair of the receiver and the process id.
+  std::pair<mojo::PendingReceiver<blink::mojom::SharedWorkerFactory>, int>
+  WaitForFactoryReceiver() {
+    if (factorys_receivers_.empty()) {
       base::RunLoop run_loop;
       factory_receiver_callback_ = run_loop.QuitClosure();
-      factory_receiver_callback_process_id_ = process_id;
       run_loop.Run();
     }
-    auto iter = (process_id == ChildProcessHost::kInvalidUniqueID)
-                    ? factorys_receivers_.begin()
-                    : factorys_receivers_.find(process_id);
-    DCHECK(iter != factorys_receivers_.end());
-    auto& queue = iter->second;
-    DCHECK(!queue.empty());
-    auto rv = std::move(queue.front());
-    queue.pop();
-    if (queue.empty())
-      factorys_receivers_.erase(iter);
-    return rv;
-  }
 
-  bool CheckNotReceivedFactoryReceiver(int process_id) {
-    if (process_id == ChildProcessHost::kInvalidUniqueID)
-      return factorys_receivers_.empty();
-    return !base::Contains(factorys_receivers_, process_id);
+    DCHECK(!factorys_receivers_.empty());
+    auto rv = std::move(factorys_receivers_.front());
+    factorys_receivers_.pop();
+    return rv;
   }
 
   // Receives a PendingReceiver<blink::mojom::SharedWorkerFactory>.
   void BindSharedWorkerFactory(int process_id,
                                mojo::ScopedMessagePipeHandle handle) {
-    if (factory_receiver_callback_ &&
-        (factory_receiver_callback_process_id_ == process_id ||
-         factory_receiver_callback_process_id_ ==
-             ChildProcessHost::kInvalidUniqueID)) {
-      factory_receiver_callback_process_id_ =
-          ChildProcessHost::kInvalidUniqueID;
+    if (factory_receiver_callback_)
       std::move(factory_receiver_callback_).Run();
-    }
 
-    if (!base::Contains(factorys_receivers_, process_id)) {
-      factorys_receivers_.emplace(
-          process_id,
-          base::queue<
-              mojo::PendingReceiver<blink::mojom::SharedWorkerFactory>>());
-    }
-    factorys_receivers_[process_id].emplace(std::move(handle));
+    factorys_receivers_.emplace(std::move(handle), process_id);
   }
 
   std::unique_ptr<TestWebContents> CreateWebContents(const GURL& url) {
@@ -158,7 +179,7 @@ class SharedWorkerServiceImplTest : public RenderViewHostImplTestHarness {
   void SetUp() override {
     RenderViewHostImplTestHarness::SetUp();
     render_process_host_factory_ =
-        std::make_unique<MockRenderProcessHostFactory>();
+        std::make_unique<MockRenderProcessHostFactoryForSharedWorker>(this);
     RenderProcessHostImpl::set_render_process_host_factory_for_testing(
         render_process_host_factory_.get());
 
@@ -176,24 +197,24 @@ class SharedWorkerServiceImplTest : public RenderViewHostImplTestHarness {
     if (url_loader_factory_wrapper_)
       url_loader_factory_wrapper_->Detach();
     browser_context_.reset();
+    RenderProcessHostImpl::set_render_process_host_factory_for_testing(nullptr);
     RenderViewHostImplTestHarness::TearDown();
   }
 
   std::unique_ptr<TestBrowserContext> browser_context_;
 
-  // Holds pending receivers of SharedWorkerFactory for each process.
-  base::flat_map<
-      int /* process_id */,
-      base::queue<mojo::PendingReceiver<blink::mojom::SharedWorkerFactory>>>
+  // Holds pending receivers of SharedWorkerFactory.
+  base::queue<
+      std::pair<mojo::PendingReceiver<blink::mojom::SharedWorkerFactory>,
+                int /* process_id */>>
       factorys_receivers_;
 
-  // The callback is called when a pending receiver of SharedWorkerFactory for
-  // the specified process is received. kInvalidUniqueID means any process.
+  // The callback is called when a pending receiver of SharedWorkerFactory is
+  // received.
   base::OnceClosure factory_receiver_callback_;
-  int factory_receiver_callback_process_id_ =
-      ChildProcessHost::kInvalidUniqueID;
 
-  std::unique_ptr<MockRenderProcessHostFactory> render_process_host_factory_;
+  std::unique_ptr<MockRenderProcessHostFactoryForSharedWorker>
+      render_process_host_factory_;
 
   std::unique_ptr<FakeNetworkURLLoaderFactory> fake_url_loader_factory_;
   scoped_refptr<network::WeakWrapperSharedURLLoaderFactory>
@@ -221,8 +242,8 @@ TEST_F(SharedWorkerServiceImplTest, BasicTest) {
       MakeSharedWorkerConnector(render_frame_host->GetGlobalFrameRoutingId()),
       kUrl, "name", &client, &local_port);
 
-  mojo::PendingReceiver<blink::mojom::SharedWorkerFactory> factory_receiver =
-      WaitForFactoryReceiver(process_id);
+  mojo::PendingReceiver<blink::mojom::SharedWorkerFactory> factory_receiver;
+  std::tie(factory_receiver, std::ignore) = WaitForFactoryReceiver();
   MockSharedWorkerFactory factory(std::move(factory_receiver));
   base::RunLoop().RunUntilIdle();
 
@@ -333,11 +354,6 @@ TEST_F(SharedWorkerServiceImplTest, TwoRendererTest) {
       CreateWebContents(GURL("http://example.com/"));
   TestRenderFrameHost* render_frame_host0 = web_contents0->GetMainFrame();
   MockRenderProcessHost* renderer_host0 = render_frame_host0->GetProcess();
-  const int process_id0 = renderer_host0->GetID();
-  renderer_host0->OverrideBinderForTesting(
-      blink::mojom::SharedWorkerFactory::Name_,
-      base::BindRepeating(&SharedWorkerServiceImplTest::BindSharedWorkerFactory,
-                          base::Unretained(this), process_id0));
 
   MockSharedWorkerClient client0;
   MessagePortChannel local_port0;
@@ -348,8 +364,13 @@ TEST_F(SharedWorkerServiceImplTest, TwoRendererTest) {
 
   base::RunLoop().RunUntilIdle();
 
-  mojo::PendingReceiver<blink::mojom::SharedWorkerFactory> factory_receiver =
-      WaitForFactoryReceiver(process_id0);
+  mojo::PendingReceiver<blink::mojom::SharedWorkerFactory> factory_receiver;
+  int process_id = ChildProcessHost::kInvalidUniqueID;
+  std::tie(factory_receiver, process_id) = WaitForFactoryReceiver();
+  // Currently shared worker is created in the same process with the creator's
+  // process by default.
+  EXPECT_EQ(renderer_host0->GetID(), process_id);
+
   MockSharedWorkerFactory factory(std::move(factory_receiver));
   base::RunLoop().RunUntilIdle();
 
@@ -413,11 +434,6 @@ TEST_F(SharedWorkerServiceImplTest, TwoRendererTest) {
       CreateWebContents(GURL("http://example.com/"));
   TestRenderFrameHost* render_frame_host1 = web_contents1->GetMainFrame();
   MockRenderProcessHost* renderer_host1 = render_frame_host1->GetProcess();
-  const int process_id1 = renderer_host1->GetID();
-  renderer_host1->OverrideBinderForTesting(
-      blink::mojom::SharedWorkerFactory::Name_,
-      base::BindRepeating(&SharedWorkerServiceImplTest::BindSharedWorkerFactory,
-                          base::Unretained(this), process_id1));
 
   MockSharedWorkerClient client1;
   MessagePortChannel local_port1;
@@ -428,7 +444,7 @@ TEST_F(SharedWorkerServiceImplTest, TwoRendererTest) {
   base::RunLoop().RunUntilIdle();
 
   // Should not have tried to create a new shared worker.
-  EXPECT_TRUE(CheckNotReceivedFactoryReceiver(process_id1));
+  EXPECT_TRUE(factorys_receivers_.empty());
 
   int connection_request_id1;
   MessagePortChannel port1;
@@ -490,12 +506,6 @@ TEST_F(SharedWorkerServiceImplTest, CreateWorkerTest_NormalCase) {
   std::unique_ptr<TestWebContents> web_contents1 =
       CreateWebContents(GURL("http://example.com/"));
   TestRenderFrameHost* render_frame_host1 = web_contents1->GetMainFrame();
-  MockRenderProcessHost* renderer_host1 = render_frame_host1->GetProcess();
-  const int process_id1 = renderer_host1->GetID();
-  renderer_host1->OverrideBinderForTesting(
-      blink::mojom::SharedWorkerFactory::Name_,
-      base::BindRepeating(&SharedWorkerServiceImplTest::BindSharedWorkerFactory,
-                          base::Unretained(this), process_id1));
 
   // First client, creates worker.
 
@@ -506,8 +516,8 @@ TEST_F(SharedWorkerServiceImplTest, CreateWorkerTest_NormalCase) {
       kUrl, kName, &client0, &local_port0);
   base::RunLoop().RunUntilIdle();
 
-  mojo::PendingReceiver<blink::mojom::SharedWorkerFactory> factory_receiver =
-      WaitForFactoryReceiver(process_id0);
+  mojo::PendingReceiver<blink::mojom::SharedWorkerFactory> factory_receiver;
+  std::tie(factory_receiver, std::ignore) = WaitForFactoryReceiver();
   MockSharedWorkerFactory factory(std::move(factory_receiver));
   base::RunLoop().RunUntilIdle();
 
@@ -531,7 +541,7 @@ TEST_F(SharedWorkerServiceImplTest, CreateWorkerTest_NormalCase) {
       kUrl, kName, &client1, &local_port1);
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_TRUE(CheckNotReceivedFactoryReceiver(process_id1));
+  EXPECT_TRUE(factorys_receivers_.empty());
 
   EXPECT_TRUE(worker.CheckReceivedConnect(nullptr, nullptr));
   EXPECT_TRUE(client1.CheckReceivedOnCreated());
@@ -554,23 +564,11 @@ TEST_F(SharedWorkerServiceImplTest, CreateWorkerTest_NormalCase_URLMismatch) {
   std::unique_ptr<TestWebContents> web_contents0 =
       CreateWebContents(GURL("http://example.com/"));
   TestRenderFrameHost* render_frame_host0 = web_contents0->GetMainFrame();
-  MockRenderProcessHost* renderer_host0 = render_frame_host0->GetProcess();
-  const int process_id0 = renderer_host0->GetID();
-  renderer_host0->OverrideBinderForTesting(
-      blink::mojom::SharedWorkerFactory::Name_,
-      base::BindRepeating(&SharedWorkerServiceImplTest::BindSharedWorkerFactory,
-                          base::Unretained(this), process_id0));
 
   // The second renderer host.
   std::unique_ptr<TestWebContents> web_contents1 =
       CreateWebContents(GURL("http://example.com/"));
   TestRenderFrameHost* render_frame_host1 = web_contents1->GetMainFrame();
-  MockRenderProcessHost* renderer_host1 = render_frame_host1->GetProcess();
-  const int process_id1 = renderer_host1->GetID();
-  renderer_host1->OverrideBinderForTesting(
-      blink::mojom::SharedWorkerFactory::Name_,
-      base::BindRepeating(&SharedWorkerServiceImplTest::BindSharedWorkerFactory,
-                          base::Unretained(this), process_id1));
 
   // First client, creates worker.
 
@@ -581,8 +579,8 @@ TEST_F(SharedWorkerServiceImplTest, CreateWorkerTest_NormalCase_URLMismatch) {
       kUrl0, kName, &client0, &local_port0);
   base::RunLoop().RunUntilIdle();
 
-  mojo::PendingReceiver<blink::mojom::SharedWorkerFactory> factory_receiver0 =
-      WaitForFactoryReceiver(process_id0);
+  mojo::PendingReceiver<blink::mojom::SharedWorkerFactory> factory_receiver0;
+  std::tie(factory_receiver0, std::ignore) = WaitForFactoryReceiver();
   MockSharedWorkerFactory factory0(std::move(factory_receiver0));
   base::RunLoop().RunUntilIdle();
 
@@ -606,8 +604,8 @@ TEST_F(SharedWorkerServiceImplTest, CreateWorkerTest_NormalCase_URLMismatch) {
       kUrl1, kName, &client1, &local_port1);
   base::RunLoop().RunUntilIdle();
 
-  mojo::PendingReceiver<blink::mojom::SharedWorkerFactory> factory_receiver1 =
-      WaitForFactoryReceiver(process_id1);
+  mojo::PendingReceiver<blink::mojom::SharedWorkerFactory> factory_receiver1;
+  std::tie(factory_receiver1, std::ignore) = WaitForFactoryReceiver();
   MockSharedWorkerFactory factory1(std::move(factory_receiver1));
   base::RunLoop().RunUntilIdle();
 
@@ -668,8 +666,8 @@ TEST_F(SharedWorkerServiceImplTest, CreateWorkerTest_NormalCase_NameMismatch) {
       kUrl, kName0, &client0, &local_port0);
   base::RunLoop().RunUntilIdle();
 
-  mojo::PendingReceiver<blink::mojom::SharedWorkerFactory> factory_receiver0 =
-      WaitForFactoryReceiver(process_id0);
+  mojo::PendingReceiver<blink::mojom::SharedWorkerFactory> factory_receiver0;
+  std::tie(factory_receiver0, std::ignore) = WaitForFactoryReceiver();
   MockSharedWorkerFactory factory0(std::move(factory_receiver0));
   base::RunLoop().RunUntilIdle();
 
@@ -693,8 +691,8 @@ TEST_F(SharedWorkerServiceImplTest, CreateWorkerTest_NormalCase_NameMismatch) {
       kUrl, kName1, &client1, &local_port1);
   base::RunLoop().RunUntilIdle();
 
-  mojo::PendingReceiver<blink::mojom::SharedWorkerFactory> factory_receiver1 =
-      WaitForFactoryReceiver(process_id1);
+  mojo::PendingReceiver<blink::mojom::SharedWorkerFactory> factory_receiver1;
+  std::tie(factory_receiver1, std::ignore) = WaitForFactoryReceiver();
   MockSharedWorkerFactory factory1(std::move(factory_receiver1));
   base::RunLoop().RunUntilIdle();
 
@@ -764,8 +762,8 @@ TEST_F(SharedWorkerServiceImplTest, CreateWorkerTest_PendingCase) {
   // Check that the worker was created. The receiver could come from either
   // process.
 
-  mojo::PendingReceiver<blink::mojom::SharedWorkerFactory> factory_receiver =
-      WaitForFactoryReceiver(ChildProcessHost::kInvalidUniqueID);
+  mojo::PendingReceiver<blink::mojom::SharedWorkerFactory> factory_receiver;
+  std::tie(factory_receiver, std::ignore) = WaitForFactoryReceiver();
   MockSharedWorkerFactory factory(std::move(factory_receiver));
 
   base::RunLoop().RunUntilIdle();
@@ -805,21 +803,11 @@ TEST_F(SharedWorkerServiceImplTest, CreateWorkerTest_PendingCase_URLMismatch) {
   std::unique_ptr<TestWebContents> web_contents0 =
       CreateWebContents(GURL("http://example.com/"));
   TestRenderFrameHost* render_frame_host0 = web_contents0->GetMainFrame();
-  MockRenderProcessHost* renderer_host0 = render_frame_host0->GetProcess();
-  renderer_host0->OverrideBinderForTesting(
-      blink::mojom::SharedWorkerFactory::Name_,
-      base::BindRepeating(&SharedWorkerServiceImplTest::BindSharedWorkerFactory,
-                          base::Unretained(this), renderer_host0->GetID()));
 
   // The second renderer host.
   std::unique_ptr<TestWebContents> web_contents1 =
       CreateWebContents(GURL("http://example.com/"));
   TestRenderFrameHost* render_frame_host1 = web_contents1->GetMainFrame();
-  MockRenderProcessHost* renderer_host1 = render_frame_host1->GetProcess();
-  renderer_host1->OverrideBinderForTesting(
-      blink::mojom::SharedWorkerFactory::Name_,
-      base::BindRepeating(&SharedWorkerServiceImplTest::BindSharedWorkerFactory,
-                          base::Unretained(this), renderer_host1->GetID()));
 
   // First client and second client are created before the workers start.
 
@@ -839,12 +827,12 @@ TEST_F(SharedWorkerServiceImplTest, CreateWorkerTest_PendingCase_URLMismatch) {
 
   // Check that both workers were created.
 
-  mojo::PendingReceiver<blink::mojom::SharedWorkerFactory> factory_receiver0 =
-      WaitForFactoryReceiver(renderer_host0->GetID());
+  mojo::PendingReceiver<blink::mojom::SharedWorkerFactory> factory_receiver0;
+  std::tie(factory_receiver0, std::ignore) = WaitForFactoryReceiver();
   MockSharedWorkerFactory factory0(std::move(factory_receiver0));
 
-  mojo::PendingReceiver<blink::mojom::SharedWorkerFactory> factory_receiver1 =
-      WaitForFactoryReceiver(renderer_host1->GetID());
+  mojo::PendingReceiver<blink::mojom::SharedWorkerFactory> factory_receiver1;
+  std::tie(factory_receiver1, std::ignore) = WaitForFactoryReceiver();
   MockSharedWorkerFactory factory1(std::move(factory_receiver1));
 
   base::RunLoop().RunUntilIdle();
@@ -905,12 +893,6 @@ TEST_F(SharedWorkerServiceImplTest, CreateWorkerTest_PendingCase_NameMismatch) {
   std::unique_ptr<TestWebContents> web_contents1 =
       CreateWebContents(GURL("http://example.com/"));
   TestRenderFrameHost* render_frame_host1 = web_contents1->GetMainFrame();
-  MockRenderProcessHost* renderer_host1 = render_frame_host1->GetProcess();
-  const int process_id1 = renderer_host1->GetID();
-  renderer_host1->OverrideBinderForTesting(
-      blink::mojom::SharedWorkerFactory::Name_,
-      base::BindRepeating(&SharedWorkerServiceImplTest::BindSharedWorkerFactory,
-                          base::Unretained(this), process_id1));
 
   // First client and second client are created before the workers start.
 
@@ -930,12 +912,12 @@ TEST_F(SharedWorkerServiceImplTest, CreateWorkerTest_PendingCase_NameMismatch) {
 
   // Check that both workers were created.
 
-  mojo::PendingReceiver<blink::mojom::SharedWorkerFactory> factory_receiver0 =
-      WaitForFactoryReceiver(process_id0);
+  mojo::PendingReceiver<blink::mojom::SharedWorkerFactory> factory_receiver0;
+  std::tie(factory_receiver0, std::ignore) = WaitForFactoryReceiver();
   MockSharedWorkerFactory factory0(std::move(factory_receiver0));
 
-  mojo::PendingReceiver<blink::mojom::SharedWorkerFactory> factory_receiver1 =
-      WaitForFactoryReceiver(process_id1);
+  mojo::PendingReceiver<blink::mojom::SharedWorkerFactory> factory_receiver1;
+  std::tie(factory_receiver1, std::ignore) = WaitForFactoryReceiver();
   MockSharedWorkerFactory factory1(std::move(factory_receiver1));
 
   base::RunLoop().RunUntilIdle();
@@ -985,32 +967,14 @@ TEST_F(SharedWorkerServiceImplTest, CreateWorkerRaceTest) {
   std::unique_ptr<TestWebContents> web_contents0 =
       CreateWebContents(GURL("http://example.com/"));
   TestRenderFrameHost* render_frame_host0 = web_contents0->GetMainFrame();
-  MockRenderProcessHost* renderer_host0 = render_frame_host0->GetProcess();
-  const int process_id0 = renderer_host0->GetID();
-  renderer_host0->OverrideBinderForTesting(
-      blink::mojom::SharedWorkerFactory::Name_,
-      base::BindRepeating(&SharedWorkerServiceImplTest::BindSharedWorkerFactory,
-                          base::Unretained(this), process_id0));
 
   std::unique_ptr<TestWebContents> web_contents1 =
       CreateWebContents(GURL("http://example.com/"));
   TestRenderFrameHost* render_frame_host1 = web_contents1->GetMainFrame();
-  MockRenderProcessHost* renderer_host1 = render_frame_host1->GetProcess();
-  const int process_id1 = renderer_host1->GetID();
-  renderer_host1->OverrideBinderForTesting(
-      blink::mojom::SharedWorkerFactory::Name_,
-      base::BindRepeating(&SharedWorkerServiceImplTest::BindSharedWorkerFactory,
-                          base::Unretained(this), process_id1));
 
   std::unique_ptr<TestWebContents> web_contents2 =
       CreateWebContents(GURL("http://example.com/"));
   TestRenderFrameHost* render_frame_host2 = web_contents2->GetMainFrame();
-  MockRenderProcessHost* renderer_host2 = render_frame_host2->GetProcess();
-  const int process_id2 = renderer_host2->GetID();
-  renderer_host2->OverrideBinderForTesting(
-      blink::mojom::SharedWorkerFactory::Name_,
-      base::BindRepeating(&SharedWorkerServiceImplTest::BindSharedWorkerFactory,
-                          base::Unretained(this), process_id2));
 
   MockSharedWorkerClient client0;
   MessagePortChannel local_port0;
@@ -1022,8 +986,9 @@ TEST_F(SharedWorkerServiceImplTest, CreateWorkerRaceTest) {
 
   // Starts a worker.
 
-  mojo::PendingReceiver<blink::mojom::SharedWorkerFactory> factory_receiver0 =
-      WaitForFactoryReceiver(process_id0);
+  mojo::PendingReceiver<blink::mojom::SharedWorkerFactory> factory_receiver0;
+  int worker_process_id0 = ChildProcessHost::kInvalidUniqueID;
+  std::tie(factory_receiver0, worker_process_id0) = WaitForFactoryReceiver();
   MockSharedWorkerFactory factory0(std::move(factory_receiver0));
 
   base::RunLoop().RunUntilIdle();
@@ -1040,8 +1005,9 @@ TEST_F(SharedWorkerServiceImplTest, CreateWorkerRaceTest) {
   EXPECT_TRUE(worker0.CheckReceivedConnect(nullptr, nullptr));
   EXPECT_TRUE(client0.CheckReceivedOnCreated());
 
-  // Kill this process, which should make worker0 unavailable.
-  KillProcess(std::move(web_contents0));
+  // Simulate unexpected disconnection that results in discarding worker0.
+  worker0.Disconnect();
+  base::RunLoop().RunUntilIdle();
 
   // Start a new client, attemping to connect to the same worker.
   MockSharedWorkerClient client1;
@@ -1054,8 +1020,8 @@ TEST_F(SharedWorkerServiceImplTest, CreateWorkerRaceTest) {
 
   // The previous worker is unavailable, so a new worker is created.
 
-  mojo::PendingReceiver<blink::mojom::SharedWorkerFactory> factory_receiver1 =
-      WaitForFactoryReceiver(process_id1);
+  mojo::PendingReceiver<blink::mojom::SharedWorkerFactory> factory_receiver1;
+  std::tie(factory_receiver1, std::ignore) = WaitForFactoryReceiver();
   MockSharedWorkerFactory factory1(std::move(factory_receiver1));
 
   base::RunLoop().RunUntilIdle();
@@ -1082,7 +1048,7 @@ TEST_F(SharedWorkerServiceImplTest, CreateWorkerRaceTest) {
 
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_TRUE(CheckNotReceivedFactoryReceiver(process_id2));
+  EXPECT_TRUE(factorys_receivers_.empty());
 
   EXPECT_TRUE(worker1.CheckReceivedConnect(nullptr, nullptr));
   EXPECT_TRUE(client2.CheckReceivedOnCreated());
@@ -1101,32 +1067,14 @@ TEST_F(SharedWorkerServiceImplTest, CreateWorkerRaceTest2) {
   std::unique_ptr<TestWebContents> web_contents0 =
       CreateWebContents(GURL("http://example.com/"));
   TestRenderFrameHost* render_frame_host0 = web_contents0->GetMainFrame();
-  MockRenderProcessHost* renderer_host0 = render_frame_host0->GetProcess();
-  const int process_id0 = renderer_host0->GetID();
-  renderer_host0->OverrideBinderForTesting(
-      blink::mojom::SharedWorkerFactory::Name_,
-      base::BindRepeating(&SharedWorkerServiceImplTest::BindSharedWorkerFactory,
-                          base::Unretained(this), process_id0));
 
   std::unique_ptr<TestWebContents> web_contents1 =
       CreateWebContents(GURL("http://example.com/"));
   TestRenderFrameHost* render_frame_host1 = web_contents1->GetMainFrame();
-  MockRenderProcessHost* renderer_host1 = render_frame_host1->GetProcess();
-  const int process_id1 = renderer_host1->GetID();
-  renderer_host1->OverrideBinderForTesting(
-      blink::mojom::SharedWorkerFactory::Name_,
-      base::BindRepeating(&SharedWorkerServiceImplTest::BindSharedWorkerFactory,
-                          base::Unretained(this), process_id1));
 
   std::unique_ptr<TestWebContents> web_contents2 =
       CreateWebContents(GURL("http://example.com/"));
   TestRenderFrameHost* render_frame_host2 = web_contents2->GetMainFrame();
-  MockRenderProcessHost* renderer_host2 = render_frame_host2->GetProcess();
-  const int process_id2 = renderer_host2->GetID();
-  renderer_host2->OverrideBinderForTesting(
-      blink::mojom::SharedWorkerFactory::Name_,
-      base::BindRepeating(&SharedWorkerServiceImplTest::BindSharedWorkerFactory,
-                          base::Unretained(this), process_id2));
 
   MockSharedWorkerClient client0;
   MessagePortChannel local_port0;
@@ -1134,12 +1082,14 @@ TEST_F(SharedWorkerServiceImplTest, CreateWorkerRaceTest2) {
       MakeSharedWorkerConnector(render_frame_host0->GetGlobalFrameRoutingId()),
       kUrl, kName, &client0, &local_port0);
 
-  mojo::PendingReceiver<blink::mojom::SharedWorkerFactory> factory_receiver0 =
-      WaitForFactoryReceiver(process_id0);
+  mojo::PendingReceiver<blink::mojom::SharedWorkerFactory> factory_receiver0;
+  int worker_process_id0 = ChildProcessHost::kInvalidUniqueID;
+  std::tie(factory_receiver0, worker_process_id0) = WaitForFactoryReceiver();
   MockSharedWorkerFactory factory0(std::move(factory_receiver0));
 
-  // Kill this process, which should make worker0 unavailable.
-  KillProcess(std::move(web_contents0));
+  // Simulate unexpected disconnection like a process crash.
+  factory0.Disconnect();
+  base::RunLoop().RunUntilIdle();
 
   // Start a new client, attempting to connect to the same worker.
   MockSharedWorkerClient client1;
@@ -1152,12 +1102,11 @@ TEST_F(SharedWorkerServiceImplTest, CreateWorkerRaceTest2) {
 
   // The previous worker is unavailable, so a new worker is created.
 
-  mojo::PendingReceiver<blink::mojom::SharedWorkerFactory> factory_receiver1 =
-      WaitForFactoryReceiver(process_id1);
+  mojo::PendingReceiver<blink::mojom::SharedWorkerFactory> factory_receiver1;
+  std::tie(factory_receiver1, std::ignore) = WaitForFactoryReceiver();
   MockSharedWorkerFactory factory1(std::move(factory_receiver1));
 
-  EXPECT_TRUE(
-      CheckNotReceivedFactoryReceiver(ChildProcessHost::kInvalidUniqueID));
+  EXPECT_TRUE(factorys_receivers_.empty());
 
   base::RunLoop().RunUntilIdle();
 
@@ -1182,8 +1131,7 @@ TEST_F(SharedWorkerServiceImplTest, CreateWorkerRaceTest2) {
 
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_TRUE(
-      CheckNotReceivedFactoryReceiver(ChildProcessHost::kInvalidUniqueID));
+  EXPECT_TRUE(factorys_receivers_.empty());
 
   EXPECT_TRUE(worker1.CheckReceivedConnect(nullptr, nullptr));
   EXPECT_TRUE(client2.CheckReceivedOnCreated());
@@ -1212,12 +1160,6 @@ TEST_F(SharedWorkerServiceImplTest, CreateWorkerRaceTest3) {
   std::unique_ptr<TestWebContents> web_contents1 =
       CreateWebContents(GURL("http://example.com/"));
   TestRenderFrameHost* render_frame_host1 = web_contents1->GetMainFrame();
-  MockRenderProcessHost* renderer_host1 = render_frame_host1->GetProcess();
-  const int process_id1 = renderer_host1->GetID();
-  renderer_host1->OverrideBinderForTesting(
-      blink::mojom::SharedWorkerFactory::Name_,
-      base::BindRepeating(&SharedWorkerServiceImplTest::BindSharedWorkerFactory,
-                          base::Unretained(this), process_id1));
 
   // Both clients try to connect/create a worker.
 
@@ -1235,8 +1177,8 @@ TEST_F(SharedWorkerServiceImplTest, CreateWorkerRaceTest3) {
   base::RunLoop().RunUntilIdle();
 
   // Expect a factory receiver. It can come from either process.
-  mojo::PendingReceiver<blink::mojom::SharedWorkerFactory> factory_receiver =
-      WaitForFactoryReceiver(ChildProcessHost::kInvalidUniqueID);
+  mojo::PendingReceiver<blink::mojom::SharedWorkerFactory> factory_receiver;
+  std::tie(factory_receiver, std::ignore) = WaitForFactoryReceiver();
   MockSharedWorkerFactory factory(std::move(factory_receiver));
   base::RunLoop().RunUntilIdle();
 
@@ -1347,8 +1289,8 @@ TEST_F(SharedWorkerServiceImplTest, Observer) {
       MakeSharedWorkerConnector(render_frame_host->GetGlobalFrameRoutingId()),
       kUrl, "name", &client, &local_port);
 
-  mojo::PendingReceiver<blink::mojom::SharedWorkerFactory> factory_receiver =
-      WaitForFactoryReceiver(process_id);
+  mojo::PendingReceiver<blink::mojom::SharedWorkerFactory> factory_receiver;
+  std::tie(factory_receiver, std::ignore) = WaitForFactoryReceiver();
   MockSharedWorkerFactory factory(std::move(factory_receiver));
   base::RunLoop().RunUntilIdle();
 
@@ -1383,12 +1325,6 @@ TEST_F(SharedWorkerServiceImplTest, EnumerateSharedWorkers) {
   std::unique_ptr<TestWebContents> web_contents =
       CreateWebContents(GURL("http://example.com/"));
   TestRenderFrameHost* render_frame_host = web_contents->GetMainFrame();
-  MockRenderProcessHost* renderer_host = render_frame_host->GetProcess();
-  const int process_id = renderer_host->GetID();
-  renderer_host->OverrideBinderForTesting(
-      blink::mojom::SharedWorkerFactory::Name_,
-      base::BindRepeating(&SharedWorkerServiceImplTest::BindSharedWorkerFactory,
-                          base::Unretained(this), process_id));
 
   MockSharedWorkerClient client;
   MessagePortChannel local_port;
@@ -1397,8 +1333,8 @@ TEST_F(SharedWorkerServiceImplTest, EnumerateSharedWorkers) {
       MakeSharedWorkerConnector(render_frame_host->GetGlobalFrameRoutingId()),
       kUrl, "name", &client, &local_port);
 
-  mojo::PendingReceiver<blink::mojom::SharedWorkerFactory> factory_receiver =
-      WaitForFactoryReceiver(process_id);
+  mojo::PendingReceiver<blink::mojom::SharedWorkerFactory> factory_receiver;
+  std::tie(factory_receiver, std::ignore) = WaitForFactoryReceiver();
   MockSharedWorkerFactory factory(std::move(factory_receiver));
   base::RunLoop().RunUntilIdle();
 
@@ -1448,12 +1384,6 @@ TEST_F(SharedWorkerServiceImplTest, CollapseDuplicateNotifications) {
   std::unique_ptr<TestWebContents> web_contents =
       CreateWebContents(GURL("http://example.com/"));
   TestRenderFrameHost* render_frame_host = web_contents->GetMainFrame();
-  MockRenderProcessHost* renderer_host = render_frame_host->GetProcess();
-  const int process_id = renderer_host->GetID();
-  renderer_host->OverrideBinderForTesting(
-      blink::mojom::SharedWorkerFactory::Name_,
-      base::BindRepeating(&SharedWorkerServiceImplTest::BindSharedWorkerFactory,
-                          base::Unretained(this), process_id));
 
   // First client, creates worker.
 
@@ -1464,8 +1394,8 @@ TEST_F(SharedWorkerServiceImplTest, CollapseDuplicateNotifications) {
       kUrl, kName, &client0, &local_port0);
   base::RunLoop().RunUntilIdle();
 
-  mojo::PendingReceiver<blink::mojom::SharedWorkerFactory> factory_receiver =
-      WaitForFactoryReceiver(process_id);
+  mojo::PendingReceiver<blink::mojom::SharedWorkerFactory> factory_receiver;
+  std::tie(factory_receiver, std::ignore) = WaitForFactoryReceiver();
   MockSharedWorkerFactory factory(std::move(factory_receiver));
   base::RunLoop().RunUntilIdle();
 
@@ -1492,7 +1422,7 @@ TEST_F(SharedWorkerServiceImplTest, CollapseDuplicateNotifications) {
       kUrl, kName, &client1, &local_port1);
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_TRUE(CheckNotReceivedFactoryReceiver(process_id));
+  EXPECT_TRUE(factorys_receivers_.empty());
 
   EXPECT_TRUE(worker.CheckReceivedConnect(nullptr, nullptr));
   EXPECT_TRUE(client1.CheckReceivedOnCreated());
@@ -1537,12 +1467,6 @@ TEST_F(SharedWorkerServiceImplTest, Observer_OnClientConnectionLost) {
   std::unique_ptr<TestWebContents> web_contents =
       CreateWebContents(GURL("http://example.com/"));
   TestRenderFrameHost* render_frame_host = web_contents->GetMainFrame();
-  MockRenderProcessHost* renderer_host = render_frame_host->GetProcess();
-  const int process_id = renderer_host->GetID();
-  renderer_host->OverrideBinderForTesting(
-      blink::mojom::SharedWorkerFactory::Name_,
-      base::BindRepeating(&SharedWorkerServiceImplTest::BindSharedWorkerFactory,
-                          base::Unretained(this), process_id));
 
   MockSharedWorkerClient client;
   MessagePortChannel local_port;
@@ -1551,8 +1475,8 @@ TEST_F(SharedWorkerServiceImplTest, Observer_OnClientConnectionLost) {
       MakeSharedWorkerConnector(render_frame_host->GetGlobalFrameRoutingId()),
       kUrl, "name", &client, &local_port);
 
-  mojo::PendingReceiver<blink::mojom::SharedWorkerFactory> factory_receiver =
-      WaitForFactoryReceiver(process_id);
+  mojo::PendingReceiver<blink::mojom::SharedWorkerFactory> factory_receiver;
+  std::tie(factory_receiver, std::ignore) = WaitForFactoryReceiver();
   MockSharedWorkerFactory factory(std::move(factory_receiver));
   base::RunLoop().RunUntilIdle();
 

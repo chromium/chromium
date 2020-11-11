@@ -118,6 +118,10 @@ void ShutdownServiceWorkerContext(StoragePartition* partition) {
   wrapper->process_manager()->Shutdown();
 }
 
+void ShutdownSharedWorkerContext(StoragePartition* partition) {
+  partition->GetSharedWorkerService()->Shutdown();
+}
+
 void SetDownloadManager(
     BrowserContext* context,
     std::unique_ptr<content::DownloadManager> download_manager) {
@@ -368,15 +372,16 @@ void BrowserContext::NotifyWillBeDestroyed(BrowserContext* browser_context) {
   // ensure that all their WebContents (and therefore RPHs) are torn down too.
   browser_context->RemoveUserData(kContentServiceKey);
 
-  // Service Workers must shutdown before the browser context is destroyed,
-  // since they keep render process hosts alive and the codebase assumes that
-  // render process hosts die before their profile (browser context) dies.
+  // Shut down service worker and shared worker machinery because these can keep
+  // RenderProcessHosts and SiteInstances alive, and the codebase assumes these
+  // are destroyed before the BrowserContext is destroyed.
   ForEachStoragePartition(browser_context,
                           base::BindRepeating(ShutdownServiceWorkerContext));
+  ForEachStoragePartition(browser_context,
+                          base::BindRepeating(ShutdownSharedWorkerContext));
 
-  // Shared workers also keep render process hosts alive, and are expected to
-  // return ref counts to 0 after documents close. However, to ensure that
-  // hosts are destructed now, forcibly release their ref counts here.
+  // Also forcibly release keep alive refcounts on RenderProcessHosts, to ensure
+  // they destruct before the BrowserContext does.
   for (RenderProcessHost::iterator host_iterator =
            RenderProcessHost::AllHostsIterator();
        !host_iterator.IsAtEnd(); host_iterator.Advance()) {

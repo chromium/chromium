@@ -16,7 +16,9 @@
 #include "base/thread_annotations.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
+#include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
+#include "content/browser/worker_host/shared_worker_service_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -202,6 +204,16 @@ class WorkerTest : public ContentBrowserTest,
     path_cookie_map_.clear();
   }
 
+  SharedWorkerHost* GetSharedWorkerHost(const GURL& url) {
+    StoragePartition* partition = BrowserContext::GetDefaultStoragePartition(
+        shell()->web_contents()->GetBrowserContext());
+    DCHECK(partition);
+    auto* service = static_cast<SharedWorkerServiceImpl*>(
+        partition->GetSharedWorkerService());
+    return service->FindMatchingSharedWorkerHost(url, "",
+                                                 url::Origin::Create(url));
+  }
+
   net::test_server::EmbeddedTestServer* ssl_server() { return &ssl_server_; }
 
  private:
@@ -308,6 +320,38 @@ IN_PROC_BROWSER_TEST_P(WorkerTest, SingleSharedWorker) {
     return;
 
   RunTest(GetTestURL("single_worker.html", "shared=true"));
+}
+
+// Confirm shared worker without COEP is in a different process from a page that
+// is protected by COOP and COEP.
+IN_PROC_BROWSER_TEST_P(WorkerTest, SharedWorkerWithoutCoepInDifferentProcess) {
+  if (!SupportsSharedWorker())
+    return;
+
+  // Navigate to a page living in an isolated process.
+  EXPECT_TRUE(NavigateToURL(
+      shell(), ssl_server()->GetURL("a.test", "/cross-origin-isolated.html")));
+  RenderFrameHostImpl* page_rfh = static_cast<RenderFrameHostImpl*>(
+      shell()->web_contents()->GetMainFrame());
+  auto page_lock = page_rfh->GetSiteInstance()->GetProcessLock();
+  EXPECT_TRUE(page_lock.coop_coep_cross_origin_isolated_info().is_isolated());
+
+  // Create a shared worker from the cross-origin-isolated page.
+  // The worker must be in a different process because shared workers isn't
+  // protected by COEP header.
+  EXPECT_EQ("Worker connected.", EvalJs(shell(), R"(
+    new Promise(resolve => {
+      const worker = new SharedWorker("/workers/messageport_worker.js");
+      worker.port.onmessage = (e) => resolve(e.data);
+    })
+  )"));
+  auto* host = GetSharedWorkerHost(
+      ssl_server()->GetURL("a.test", "/workers/messageport_worker.js"));
+  RenderProcessHost* worker_rph = host->GetProcessHost();
+  EXPECT_NE(worker_rph, page_rfh->GetProcess());
+  auto worker_lock = host->site_instance()->GetProcessLock();
+  EXPECT_FALSE(
+      worker_lock.coop_coep_cross_origin_isolated_info().is_isolated());
 }
 
 // http://crbug.com/96435

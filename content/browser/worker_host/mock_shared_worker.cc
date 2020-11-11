@@ -52,6 +52,10 @@ bool MockSharedWorker::CheckReceivedTerminate() {
   return true;
 }
 
+void MockSharedWorker::Disconnect() {
+  receiver_.reset();
+}
+
 void MockSharedWorker::Connect(int connection_request_id,
                                blink::MessagePortDescriptor port) {
   connect_received_.emplace(connection_request_id,
@@ -93,6 +97,10 @@ bool MockSharedWorkerFactory::CheckReceivedCreateSharedWorker(
   host->Bind(std::move(create_params->host));
   *receiver = std::move(create_params->receiver);
   return true;
+}
+
+void MockSharedWorkerFactory::Disconnect() {
+  receiver_.reset();
 }
 
 void MockSharedWorkerFactory::CreateSharedWorker(

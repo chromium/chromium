@@ -314,17 +314,17 @@ class CONTENT_EXPORT StoragePartitionImpl
   }
 
   // When this StoragePartition is for guests (e.g., for a <webview> tag), this
-  // is the site URL to use when creating a SiteInstance for a service worker.
-  // Typically one would use the script URL of the service worker (e.g.,
-  // "https://example.com/sw.js"), but if this StoragePartition is for guests,
-  // one must use the <webview> guest site URL to ensure that the
-  // service worker stays in this StoragePartition. This is an empty GURL if
-  // this StoragePartition is not for guests.
-  void set_site_for_guest_service_worker(const GURL& site_for_service_worker) {
-    site_for_guest_service_worker_ = site_for_service_worker;
+  // is the site URL to use when creating a SiteInstance for a service worker or
+  // a shared worker. Typically one would use the script URL of the worker
+  // (e.g., "https://example.com/sw.js"), but if this StoragePartition is for
+  // guests, one must use the <webview> guest site URL to ensure that the worker
+  // stays in this StoragePartition. This is an empty GURL if this
+  // StoragePartition is not for guests.
+  void set_site_for_guest_service_worker_or_shared_worker(const GURL& site) {
+    site_for_guest_service_worker_or_shared_worker_ = site;
   }
-  const GURL& site_for_guest_service_worker() const {
-    return site_for_guest_service_worker_;
+  const GURL& site_for_guest_service_worker_or_shared_worker() const {
+    return site_for_guest_service_worker_or_shared_worker_;
   }
 
   // Use the network context to retrieve the origin policy manager.
@@ -575,8 +575,8 @@ class CONTENT_EXPORT StoragePartitionImpl
   // Initialized in InitNetworkContext() and never updated after then.
   std::vector<std::string> cors_exempt_header_list_;
 
-  // See comments for site_for_guest_service_worker().
-  GURL site_for_guest_service_worker_;
+  // See comments for site_for_guest_service_worker_or_shared_worker().
+  GURL site_for_guest_service_worker_or_shared_worker_;
 
   // Track number of running deletion. For test use only.
   int deletion_helpers_running_;

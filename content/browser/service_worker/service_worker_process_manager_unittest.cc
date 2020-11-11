@@ -206,9 +206,10 @@ TEST_F(ServiceWorkerProcessManagerTest, AllocateWorkerProcess_InShutdown) {
 }
 
 // Tests that ServiceWorkerProcessManager uses
-// StoragePartitionImpl::site_for_guest_service_worker() when it's set. This
-// enables finding the appropriate process when inside a StoragePartition for
-// guests (e.g., the <webview> tag). https://crbug.com/781313
+// StoragePartitionImpl::site_for_guest_service_worker_or_shared_worker() when
+// it's set. This enables finding the appropriate process when inside a
+// StoragePartition for guests (e.g., the <webview> tag).
+// https://crbug.com/781313
 TEST_F(ServiceWorkerProcessManagerTest,
        AllocateWorkerProcess_StoragePartitionForGuests) {
   // Allocate a process to a worker. It should use |script_url_| as the
@@ -237,10 +238,10 @@ TEST_F(ServiceWorkerProcessManagerTest,
   }
 
   // Now change ServiceWorkerProcessManager to use a StoragePartition with
-  // |site_for_guest_service_worker| set. We must set
-  // |site_for_guest_service_worker| manually since the production codepath in
-  // CreateRenderProcessHost() isn't hit here since we are using
-  // RenderProcessHostFactory.
+  // |site_for_guest_service_worker_or_shared_worker| set. We must set
+  // |site_for_guest_service_worker_or_shared_worker| manually since the
+  // production codepath in CreateRenderProcessHost() isn't hit here since we
+  // are using RenderProcessHostFactory.
   const GURL kGuestSiteUrl("my-guest-scheme://someapp/somepath");
   scoped_refptr<SiteInstanceImpl> site_instance =
       SiteInstanceImpl::CreateForGuest(browser_context_.get(), kGuestSiteUrl);
@@ -250,7 +251,7 @@ TEST_F(ServiceWorkerProcessManagerTest,
   // StoragePartition-aware.
   StoragePartitionImpl* storage_partition = static_cast<StoragePartitionImpl*>(
       BrowserContext::GetDefaultStoragePartition(browser_context_.get()));
-  storage_partition->set_site_for_guest_service_worker(
+  storage_partition->set_site_for_guest_service_worker_or_shared_worker(
       site_instance->GetSiteURL());
   process_manager_->set_storage_partition(storage_partition);
 

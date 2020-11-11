@@ -46,6 +46,8 @@ class MockSharedWorker : public blink::mojom::SharedWorker {
   bool CheckNotReceivedConnect();
   bool CheckReceivedTerminate();
 
+  void Disconnect();
+
  private:
   // blink::mojom::SharedWorker methods:
   void Connect(int connection_request_id,
@@ -72,6 +74,8 @@ class MockSharedWorkerFactory : public blink::mojom::SharedWorkerFactory {
           expected_content_security_policy_type,
       mojo::Remote<blink::mojom::SharedWorkerHost>* host,
       mojo::PendingReceiver<blink::mojom::SharedWorker>* receiver);
+
+  void Disconnect();
 
  private:
   // blink::mojom::SharedWorkerFactory methods:

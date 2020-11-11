@@ -45,29 +45,42 @@ const ukm::SourceId kClientUkmSourceId = 12345;
 
 class SharedWorkerHostTest : public testing::Test {
  public:
+  const GURL kSiteUrl{"http://www.example.com/"};
+  const GURL kWorkerUrl{"http://www.example.com/w.js"};
+
   void SetUp() override {
-    helper_.reset(new EmbeddedWorkerTestHelper(base::FilePath()));
-    ASSERT_TRUE(mock_render_process_host_.Init());
+    helper_ = std::make_unique<EmbeddedWorkerTestHelper>(base::FilePath());
+    RenderProcessHostImpl::set_render_process_host_factory_for_testing(
+        &mock_render_process_host_factory_);
+    site_instance_ = SiteInstanceImpl::CreateForUrlInfo(
+        &browser_context_,
+        UrlInfo(kWorkerUrl, /*origin_requests_isolation=*/false),
+        CoopCoepCrossOriginIsolatedInfo::CreateNonIsolated());
+    RenderProcessHost* rph = site_instance_->GetProcess();
+
+    std::vector<std::unique_ptr<MockRenderProcessHost>>* processes =
+        mock_render_process_host_factory_.GetProcesses();
+    ASSERT_EQ(processes->size(), 1u);
+    mock_render_process_host_ = processes->at(0).get();
+    ASSERT_EQ(rph, mock_render_process_host_);
+    ASSERT_TRUE(mock_render_process_host_->Init());
   }
 
   SharedWorkerHostTest()
-      : mock_render_process_host_(&browser_context_),
-        service_(nullptr /* storage_partition */,
+      : service_(nullptr /* storage_partition */,
                  nullptr /* service_worker_context */,
                  nullptr /* appcache_service */) {}
 
   base::WeakPtr<SharedWorkerHost> CreateHost() {
-    GURL url("http://www.example.com/w.js");
-
     SharedWorkerInstance instance(
-        url, blink::mojom::ScriptType::kClassic,
+        kWorkerUrl, blink::mojom::ScriptType::kClassic,
         network::mojom::CredentialsMode::kSameOrigin, "name",
-        url::Origin::Create(url), /*content_security_policy=*/"",
+        url::Origin::Create(kWorkerUrl), /*content_security_policy=*/"",
         network::mojom::ContentSecurityPolicyType::kReport,
         network::mojom::IPAddressSpace::kPublic,
         blink::mojom::SharedWorkerCreationContextType::kSecure);
-    auto host = std::make_unique<SharedWorkerHost>(&service_, instance,
-                                                   &mock_render_process_host_);
+    auto host =
+        std::make_unique<SharedWorkerHost>(&service_, instance, site_instance_);
     auto weak_host = host->AsWeakPtr();
     service_.worker_hosts_.insert(std::move(host));
     return weak_host;
@@ -114,7 +127,7 @@ class SharedWorkerHostTest : public testing::Test {
         container_info->host_remote.InitWithNewEndpointAndPassReceiver();
 
     helper_->context()->CreateContainerHostForWorker(
-        std::move(host_receiver), mock_render_process_host_.GetID(),
+        std::move(host_receiver), mock_render_process_host_->GetID(),
         std::move(client_remote), ServiceWorkerClientInfo(host->token()));
     service_worker_handle->OnCreatedContainerHost(std::move(container_info));
     host->SetServiceWorkerHandle(std::move(service_worker_handle));
@@ -134,7 +147,7 @@ class SharedWorkerHostTest : public testing::Test {
       SharedWorkerHost* host,
       mojo::PendingRemote<blink::mojom::SharedWorkerClient> client) {
     GlobalFrameRoutingId dummy_render_frame_host_id(
-        mock_render_process_host_.GetID(), 22);
+        mock_render_process_host_->GetID(), 22);
 
     blink::MessagePortDescriptorPair port_pair;
     MessagePortChannel local_port(port_pair.TakePort0());
@@ -147,8 +160,11 @@ class SharedWorkerHostTest : public testing::Test {
  protected:
   BrowserTaskEnvironment task_environment_;
   TestBrowserContext browser_context_;
-  MockRenderProcessHost mock_render_process_host_;
+  MockRenderProcessHostFactory mock_render_process_host_factory_;
+  MockRenderProcessHost* mock_render_process_host_;
+
   std::unique_ptr<EmbeddedWorkerTestHelper> helper_;
+  scoped_refptr<SiteInstanceImpl> site_instance_;
 
   SharedWorkerServiceImpl service_;
 
