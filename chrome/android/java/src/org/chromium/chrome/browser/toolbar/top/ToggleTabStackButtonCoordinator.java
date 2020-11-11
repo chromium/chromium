@@ -11,13 +11,15 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.supplier.BooleanSupplier;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.flags.FeatureParamUtils;
 import org.chromium.chrome.browser.intent.IntentMetadata;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
+import org.chromium.chrome.browser.tab.CurrentTabObserver;
+import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
@@ -44,11 +46,10 @@ public class ToggleTabStackButtonCoordinator {
     private final OneshotSupplier<IntentMetadata> mIntentMetadataOneshotSupplier;
     private final OneshotSupplier<Boolean> mPromoShownOneshotSupplier;
     private final Callback<Boolean> mSetNewTabButtonHighlightCallback;
+    private final CurrentTabObserver mPageLoadObserver;
 
     private LayoutStateProvider mLayoutStateProvider;
     private LayoutStateProvider.LayoutStateObserver mLayoutStateObserver;
-
-    private ActivityTabProvider.ActivityTabTabObserver mPageLoadObserver;
     private boolean mIphBeingShown;
 
     /**
@@ -62,15 +63,16 @@ public class ToggleTabStackButtonCoordinator {
      * @param promoShownOneshotSupplier Potentially delayed information about if a promo was shown.
      * @param layoutStateProviderSupplier Allows observing layout state.
      * @param setNewTabButtonHighlightCallback Delegate to highlight the new tab button.
-     *
+     * @param activityTabSupplier Supplier of the activity tab.
      */
     public ToggleTabStackButtonCoordinator(Context context,
-            ToggleTabStackButton toggleTabStackButton, ActivityTabProvider activityTabProvider,
-            UserEducationHelper userEducationHelper, BooleanSupplier isIncognitoSupplier,
+            ToggleTabStackButton toggleTabStackButton, UserEducationHelper userEducationHelper,
+            BooleanSupplier isIncognitoSupplier,
             OneshotSupplier<IntentMetadata> intentMetadataOneshotSupplier,
             OneshotSupplier<Boolean> promoShownOneshotSupplier,
             OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier,
-            Callback<Boolean> setNewTabButtonHighlightCallback) {
+            Callback<Boolean> setNewTabButtonHighlightCallback,
+            ObservableSupplier<Tab> activityTabSupplier) {
         mContext = context;
         mToggleTabStackButton = toggleTabStackButton;
         mUserEducationHelper = userEducationHelper;
@@ -81,22 +83,19 @@ public class ToggleTabStackButtonCoordinator {
 
         layoutStateProviderSupplier.onAvailable(
                 mCallbackController.makeCancelable(this::setLayoutStateProvider));
-        mPageLoadObserver = new ActivityTabProvider.ActivityTabTabObserver(activityTabProvider) {
+        mPageLoadObserver = new CurrentTabObserver(activityTabSupplier, new EmptyTabObserver() {
             @Override
             public void onPageLoadFinished(Tab tab, String url) {
                 handlePageLoadFinished();
             }
-        };
+        });
     }
 
     /** Cleans up callbacks and observers. */
     public void destroy() {
         mCallbackController.destroy();
 
-        if (mPageLoadObserver != null) {
-            mPageLoadObserver.destroy();
-            mPageLoadObserver = null;
-        }
+        mPageLoadObserver.destroy();
 
         if (mLayoutStateProvider != null) {
             mLayoutStateProvider.removeObserver(mLayoutStateObserver);
@@ -133,7 +132,6 @@ public class ToggleTabStackButtonCoordinator {
         mLayoutStateProvider.addObserver(mLayoutStateObserver);
     }
 
-    // TODO(https://crbug.com/1133355): Reduce visibility once ActivityTabTabObserver is mockable.
     @VisibleForTesting
     void handlePageLoadFinished() {
         if (mToggleTabStackButton == null || !mToggleTabStackButton.isShown()) return;

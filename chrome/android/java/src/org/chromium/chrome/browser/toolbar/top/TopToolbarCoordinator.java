@@ -19,13 +19,7 @@ import org.chromium.base.supplier.OneShotCallback;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
-import org.chromium.chrome.browser.compositor.Invalidator;
-import org.chromium.chrome.browser.compositor.overlays.toolbar.TopToolbarOverlayCoordinator;
-import org.chromium.chrome.browser.device.DeviceClassManager;
-import org.chromium.chrome.browser.findinpage.FindToolbar;
-import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.omnibox.LocationBar;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
@@ -88,7 +82,6 @@ public class TopToolbarCoordinator implements Toolbar {
     private MenuButtonCoordinator mMenuButtonCoordinator;
     private ObservableSupplier<AppMenuButtonHelper> mAppMenuButtonHelperSupplier;
     private ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
-    private TopToolbarOverlayCoordinator mOverlayCoordinator;
 
     private Callback<ClipDrawableProgressBar.DrawingInfo> mProgressDrawInfoCallback;
     private ToolbarControlContainer mControlContainer;
@@ -185,15 +178,12 @@ public class TopToolbarCoordinator implements Toolbar {
      * @param newTabClickHandler The click handler for the new tab button.
      * @param bookmarkClickHandler The click handler for the bookmarks button.
      * @param customTabsBackClickHandler The click handler for the custom tabs back button.
-     * @param layoutManager A means of adding SceneOverlays.
-     * @param tabProvider A means of accessing the currently active tab.
      * @param browserControlsStateProvider Access to the state of the browser controls.
      */
     public void initializeWithNative(Runnable layoutUpdater,
             OnClickListener tabSwitcherClickHandler,
             OnLongClickListener tabSwitcherLongClickHandler, OnClickListener newTabClickHandler,
             OnClickListener bookmarkClickHandler, OnClickListener customTabsBackClickHandler,
-            LayoutManager layoutManager, ActivityTabProvider tabProvider,
             BrowserControlsStateProvider browserControlsStateProvider) {
         assert mTabModelSelectorSupplier.get() != null;
         if (mTabSwitcherModeCoordinatorPhone != null) {
@@ -218,16 +208,6 @@ public class TopToolbarCoordinator implements Toolbar {
         mToolbarLayout.setLayoutUpdater(layoutUpdater);
 
         mToolbarLayout.onNativeLibraryReady();
-
-        // If fullscreen is disabled, don't bother creating this overlay; only the android view will
-        // ever be shown.
-        if (DeviceClassManager.enableFullscreen()) {
-            mOverlayCoordinator = new TopToolbarOverlayCoordinator(mToolbarLayout.getContext(),
-                    layoutManager, mProgressDrawInfoCallback, tabProvider,
-                    browserControlsStateProvider, mResourceManagerSupplier);
-            layoutManager.addSceneOverlay(mOverlayCoordinator);
-            mToolbarLayout.setOverlayCoordinator(mOverlayCoordinator);
-        }
     }
 
     /**
@@ -255,11 +235,6 @@ public class TopToolbarCoordinator implements Toolbar {
      * Cleans up any code as necessary.
      */
     public void destroy() {
-        if (mOverlayCoordinator != null) {
-            mOverlayCoordinator.destroy();
-            mOverlayCoordinator = null;
-        }
-
         mToolbarLayout.destroy();
         if (mTabSwitcherModeCoordinatorPhone != null) {
             mTabSwitcherModeCoordinatorPhone.destroy();

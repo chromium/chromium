@@ -5,10 +5,11 @@ package org.chromium.chrome.browser.toolbar;
 
 import android.os.Handler;
 
+import androidx.annotation.NonNull;
+
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ActivityTabProvider;
-import org.chromium.chrome.browser.ActivityTabProvider.ActivityTabTabObserver;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.app.appmenu.AppMenuPropertiesDelegateImpl;
@@ -24,6 +25,8 @@ import org.chromium.chrome.browser.net.spdyproxy.DataReductionProxySettings;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
 import org.chromium.chrome.browser.previews.Previews;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.CurrentTabObserver;
+import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.translate.TranslateBridge;
 import org.chromium.chrome.browser.translate.TranslateUtils;
@@ -46,7 +49,7 @@ import org.chromium.content_public.browser.UiThreadTaskTraits;
  */
 public class ToolbarButtonInProductHelpController
         implements ScreenshotMonitorDelegate, PauseResumeWithNativeObserver {
-    private final ActivityTabTabObserver mPageLoadObserver;
+    private final CurrentTabObserver mPageLoadObserver;
     private final ChromeActivity mActivity;
     private final AppMenuPropertiesDelegate mAppMenuPropertiesDelegate;
     private final ScreenshotMonitor mScreenshotMonitor;
@@ -54,15 +57,23 @@ public class ToolbarButtonInProductHelpController
     private UserEducationHelper mUserEducationHelper;
     private final Handler mHandler = new Handler();
 
-    public ToolbarButtonInProductHelpController(final ChromeActivity activity,
-            AppMenuCoordinator appMenuCoordinator, ActivityLifecycleDispatcher lifecycleDispatcher,
-            ActivityTabProvider tabProvider) {
+    /**
+     * @param activity {@link ChromeActivity} on which this class runs.
+     * @param appMenuCoordinator {@link AppMenuCoordinator} whose visual state is to be updated
+     *        accordingly.
+     * @param lifecycleDispatcher {@link LifecycleDispatcher} that helps observe activity lifecycle.
+     * @param tabSupplier An observable supplier of the current {@link Tab}.
+     */
+    public ToolbarButtonInProductHelpController(@NonNull final ChromeActivity activity,
+            @NonNull AppMenuCoordinator appMenuCoordinator,
+            @NonNull ActivityLifecycleDispatcher lifecycleDispatcher,
+            @NonNull ObservableSupplier<Tab> tabSupplier) {
         mActivity = activity;
         mUserEducationHelper =
                 new UserEducationHelper(mActivity, mHandler, TrackerFactory::getTrackerForProfile);
         mScreenshotMonitor = new ScreenshotMonitor(this);
         lifecycleDispatcher.register(this);
-        mPageLoadObserver = new ActivityTabTabObserver(tabProvider) {
+        mPageLoadObserver = new CurrentTabObserver(tabSupplier, new EmptyTabObserver() {
             /**
              * Stores total data saved at the start of a page load. Used to calculate delta at the
              * end of page load, which is just an estimate of the data saved for the current page
@@ -125,16 +136,14 @@ public class ToolbarButtonInProductHelpController
                         Profile.fromWebContents(tab.getWebContents()));
                 tracker.notifyEvent(EventConstants.USER_HAS_SEEN_DINO);
             }
-        };
+        });
 
         mAppMenuHandler = appMenuCoordinator.getAppMenuHandler();
         mAppMenuPropertiesDelegate = appMenuCoordinator.getAppMenuPropertiesDelegate();
     }
 
     public void destroy() {
-        if (mPageLoadObserver != null) {
-            mPageLoadObserver.destroy();
-        }
+        mPageLoadObserver.destroy();
     }
 
     /**

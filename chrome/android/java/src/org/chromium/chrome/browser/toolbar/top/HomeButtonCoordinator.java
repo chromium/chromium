@@ -7,16 +7,20 @@ package org.chromium.chrome.browser.toolbar.top;
 import android.content.Context;
 import android.view.View;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.supplier.BooleanSupplier;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.feed.shared.FeedFeatures;
 import org.chromium.chrome.browser.flags.FeatureParamUtils;
 import org.chromium.chrome.browser.intent.IntentMetadata;
+import org.chromium.chrome.browser.tab.CurrentTabObserver;
+import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.HomeButton;
 import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
@@ -40,7 +44,7 @@ public class HomeButtonCoordinator {
     private final View mHomeButton;
     private final UserEducationHelper mUserEducationHelper;
     private final BooleanSupplier mIsIncognitoSupplier;
-    private final ActivityTabProvider.ActivityTabTabObserver mPageLoadObserver;
+    private final CurrentTabObserver mPageLoadObserver;
     private final OneshotSupplier<IntentMetadata> mIntentMetadataOneshotSupplier;
     private final OneshotSupplier<Boolean> mPromoShownOneshotSupplier;
     private final Supplier<Boolean> mIsHomepageNonNtpSupplier;
@@ -48,19 +52,20 @@ public class HomeButtonCoordinator {
     /**
      * @param context The Android context used for various view operations.
      * @param homeButton The concrete {@link View} class for this MVC component.
-     * @param activityTabProvider Provides the current active tab.
      * @param userEducationHelper Helper class for showing in-product help text bubbles.
      * @param isIncognitoSupplier Supplier for whether the current tab is incognito.
      * @param intentMetadataOneshotSupplier Potentially delayed information about launching intent.
      * @param promoShownOneshotSupplier Potentially delayed information about if a promo was shown.
      * @param isHomepageNonNtpSupplier Supplier for whether the current homepage is not NTP.
+     * @param tabSupplier Supplier of the activity tab.
      */
-    public HomeButtonCoordinator(Context context, View homeButton,
-            ActivityTabProvider activityTabProvider, UserEducationHelper userEducationHelper,
-            BooleanSupplier isIncognitoSupplier,
-            OneshotSupplier<IntentMetadata> intentMetadataOneshotSupplier,
-            OneshotSupplier<Boolean> promoShownOneshotSupplier,
-            Supplier<Boolean> isHomepageNonNtpSupplier) {
+    public HomeButtonCoordinator(@NonNull Context context, @Nullable View homeButton,
+            @NonNull UserEducationHelper userEducationHelper,
+            @NonNull BooleanSupplier isIncognitoSupplier,
+            @NonNull OneshotSupplier<IntentMetadata> intentMetadataOneshotSupplier,
+            @NonNull OneshotSupplier<Boolean> promoShownOneshotSupplier,
+            @NonNull Supplier<Boolean> isHomepageNonNtpSupplier,
+            @NonNull ObservableSupplier<Tab> tabSupplier) {
         mContext = context;
         mHomeButton = homeButton;
         mUserEducationHelper = userEducationHelper;
@@ -68,17 +73,16 @@ public class HomeButtonCoordinator {
         mIntentMetadataOneshotSupplier = intentMetadataOneshotSupplier;
         mPromoShownOneshotSupplier = promoShownOneshotSupplier;
         mIsHomepageNonNtpSupplier = isHomepageNonNtpSupplier;
-        mPageLoadObserver = new ActivityTabProvider.ActivityTabTabObserver(activityTabProvider) {
+        mPageLoadObserver = new CurrentTabObserver(tabSupplier, new EmptyTabObserver() {
             @Override
             public void onPageLoadFinished(Tab tab, String url) {
                 handlePageLoadFinished(url);
             }
-        };
+        });
     }
 
     /** Cleans up observers. */
     public void destroy() {
-        // This will unsubscribe the observer.
         mPageLoadObserver.destroy();
     }
 

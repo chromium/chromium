@@ -18,6 +18,7 @@ import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
+import org.chromium.chrome.browser.ActivityTabProvider.ActivityTabTabObserver;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.app.appmenu.AppMenuPropertiesDelegateImpl;
 import org.chromium.chrome.browser.banners.AppBannerInProductHelpController;
@@ -87,6 +88,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private NavigationSheet mNavigationSheet;
     private ComposedBrowserControlsVisibilityDelegate mAppBrowserControlsVisibilityDelegate;
     private LayoutManagerImpl mLayoutManager;
+    private ObservableSupplierImpl<Tab> mToolbarButtonIphTabSupplier;
+    private ActivityTabTabObserver mToolbarButtonIphTabObserver;
 
     /**
      * Construct a new TabbedRootUiCoordinator.
@@ -155,6 +158,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
         if (mToolbarButtonInProductHelpController != null) {
             mToolbarButtonInProductHelpController.destroy();
+            mToolbarButtonIphTabObserver.destroy();
         }
 
         if (mAppBannerInProductHelpController != null) {
@@ -309,9 +313,19 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
     private void initializeIPH(boolean intentWithEffect) {
         if (mActivity == null) return;
+        mToolbarButtonIphTabSupplier = new ObservableSupplierImpl<>();
         mToolbarButtonInProductHelpController =
                 new ToolbarButtonInProductHelpController(mActivity, mAppMenuCoordinator,
-                        mActivity.getLifecycleDispatcher(), mActivity.getActivityTabProvider());
+                        mActivity.getLifecycleDispatcher(), mToolbarButtonIphTabSupplier);
+        ActivityTabProvider activityTabProvider = mActivity.getActivityTabProvider();
+        mToolbarButtonIphTabObserver = new ActivityTabTabObserver(activityTabProvider) {
+            @Override
+            public void onObservingDifferentTab(Tab tab, boolean hint) {
+                mToolbarButtonIphTabSupplier.set(tab);
+            }
+        };
+        mToolbarButtonIphTabSupplier.set(activityTabProvider.get());
+
         boolean didTriggerPromo = triggerPromo(intentWithEffect);
         if (!didTriggerPromo) {
             mToolbarButtonInProductHelpController.showColdStartIPH();

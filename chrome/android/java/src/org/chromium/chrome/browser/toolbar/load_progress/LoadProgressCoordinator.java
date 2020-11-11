@@ -4,7 +4,10 @@
 
 package org.chromium.chrome.browser.toolbar.load_progress;
 
-import org.chromium.chrome.browser.ActivityTabProvider;
+import androidx.annotation.NonNull;
+
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.ToolbarProgressBar;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -21,11 +24,15 @@ public class LoadProgressCoordinator {
     private final PropertyModelChangeProcessor<PropertyModel, ToolbarProgressBar, PropertyKey>
             mPropertyModelChangeProcessor;
 
-    public LoadProgressCoordinator(
-            ActivityTabProvider activityTabProvider, ToolbarProgressBar progressBarView) {
+    /**
+     * @param tabSupplier An observable supplier of the current {@link Tab}.
+     * @param progressBarView Toolbar progress bar view.
+     */
+    public LoadProgressCoordinator(@NonNull ObservableSupplier<Tab> tabSupplier,
+            @NonNull ToolbarProgressBar progressBarView) {
         mProgressBarView = progressBarView;
         mModel = new PropertyModel(LoadProgressProperties.ALL_KEYS);
-        mMediator = new LoadProgressMediator(activityTabProvider, mModel);
+        mMediator = new LoadProgressMediator(tabSupplier, mModel);
         mLoadProgressViewBinder = new LoadProgressViewBinder();
 
         mPropertyModelChangeProcessor = PropertyModelChangeProcessor.create(
@@ -46,5 +53,10 @@ public class LoadProgressCoordinator {
      */
     public void setPreventUpdates(boolean preventUpdates) {
         mMediator.setPreventUpdates(preventUpdates);
+    }
+
+    /** Destroy load progress bar object. */
+    public void destroy() {
+        mMediator.destroy();
     }
 }

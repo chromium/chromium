@@ -23,13 +23,13 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.MathUtils;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.chrome.browser.ActivityTabProvider;
-import org.chromium.chrome.browser.ActivityTabProvider.ActivityTabObserver;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabImpl;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.toolbar.load_progress.LoadProgressProperties.CompletionState;
@@ -45,36 +45,38 @@ public class LoadProgressMediatorTest {
     private static final String NATIVE_PAGE_URL = "chrome-native://newtab";
 
     @Mock
-    public ActivityTabProvider mActivityTabProvider;
-    @Mock
     private TabImpl mTab;
     @Mock
     private TabImpl mTab2;
 
     @Captor
     public ArgumentCaptor<TabObserver> mTabObserverCaptor;
-    @Captor
-    public ArgumentCaptor<ActivityTabObserver> mActivityTabObserverCaptor;
 
     private PropertyModel mModel;
     private LoadProgressMediator mMediator;
     private TabObserver mTabObserver;
+    private ObservableSupplierImpl<Tab> mTabSupplier;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        when(mActivityTabProvider.get()).thenReturn(mTab);
-
         mModel = new PropertyModel(LoadProgressProperties.ALL_KEYS);
-        mMediator = new LoadProgressMediator(mActivityTabProvider, mModel);
-        verify(mActivityTabProvider).addObserver(mActivityTabObserverCaptor.capture());
+    }
+
+    private void initMediator() {
+        // ObservableSupplierImpl needs initialization in UI thread.
+        mTabSupplier = new ObservableSupplierImpl<>();
+        mMediator = new LoadProgressMediator(mTabSupplier, mModel);
+        mTabSupplier.set(mTab);
         verify(mTab).addObserver(mTabObserverCaptor.capture());
         mTabObserver = mTabObserverCaptor.getValue();
     }
 
     @Test
     @SmallTest
+    @UiThreadTest
     public void loadRegularPage() {
+        initMediator();
         assertEquals(mModel.get(LoadProgressProperties.COMPLETION_STATE),
                 CompletionState.FINISHED_DONT_ANIMATE);
 
@@ -96,10 +98,12 @@ public class LoadProgressMediatorTest {
 
     @Test
     @SmallTest
+    @UiThreadTest
     public void switchToLoadingTab() {
+        initMediator();
         doReturn(true).when(mTab2).isLoading();
         doReturn(0.1f).when(mTab2).getProgress();
-        mActivityTabObserverCaptor.getValue().onActivityTabChanged(mTab2, false);
+        mTabSupplier.set(mTab2);
         verify(mTab2, times(1)).addObserver(any());
 
         assertEquals(
@@ -109,7 +113,9 @@ public class LoadProgressMediatorTest {
 
     @Test
     @SmallTest
+    @UiThreadTest
     public void switchToLoadedTab() {
+        initMediator();
         NavigationHandle navigation = new NavigationHandle(0, new GURL(URL_1), true, false, false);
         mTabObserver.onDidStartNavigation(mTab, navigation);
         assertEquals(
@@ -117,7 +123,7 @@ public class LoadProgressMediatorTest {
         assertEquals(mModel.get(LoadProgressProperties.PROGRESS),
                 LoadProgressMediator.MINIMUM_LOAD_PROGRESS, MathUtils.EPSILON);
 
-        mActivityTabObserverCaptor.getValue().onActivityTabChanged(mTab2, false);
+        mTabSupplier.set(mTab2);
         verify(mTab2, times(1)).addObserver(any());
         assertEquals(mModel.get(LoadProgressProperties.COMPLETION_STATE),
                 CompletionState.FINISHED_DONT_ANIMATE);
@@ -125,7 +131,9 @@ public class LoadProgressMediatorTest {
 
     @Test
     @SmallTest
+    @UiThreadTest
     public void loadNativePage() {
+        initMediator();
         doReturn(0.1f).when(mTab).getProgress();
         NavigationHandle navigation = new NavigationHandle(0, new GURL(URL_1), true, false, false);
         mTabObserver.onDidStartNavigation(mTab, navigation);
@@ -141,7 +149,9 @@ public class LoadProgressMediatorTest {
 
     @Test
     @SmallTest
+    @UiThreadTest
     public void switchToTabWithNativePage() {
+        initMediator();
         NavigationHandle navigation = new NavigationHandle(0, new GURL(URL_1), true, false, false);
         mTabObserver.onDidStartNavigation(mTab, navigation);
         assertEquals(
@@ -150,7 +160,7 @@ public class LoadProgressMediatorTest {
                 LoadProgressMediator.MINIMUM_LOAD_PROGRESS, MathUtils.EPSILON);
 
         when(mTab2.getUrlString()).thenReturn(NATIVE_PAGE_URL);
-        mActivityTabObserverCaptor.getValue().onActivityTabChanged(mTab2, false);
+        mTabSupplier.set(mTab2);
         verify(mTab2, times(1)).addObserver(any());
         assertEquals(mModel.get(LoadProgressProperties.COMPLETION_STATE),
                 CompletionState.FINISHED_DONT_ANIMATE);
@@ -160,7 +170,9 @@ public class LoadProgressMediatorTest {
 
     @Test
     @SmallTest
+    @UiThreadTest
     public void pageCrashes() {
+        initMediator();
         NavigationHandle navigation = new NavigationHandle(0, new GURL(URL_1), true, false, false);
         mTabObserver.onDidStartNavigation(mTab, navigation);
         assertEquals(
@@ -179,6 +191,7 @@ public class LoadProgressMediatorTest {
     @SmallTest
     @UiThreadTest
     public void testSwapWebContents() {
+        initMediator();
         assertEquals(mModel.get(LoadProgressProperties.COMPLETION_STATE),
                 CompletionState.FINISHED_DONT_ANIMATE);
         mTabObserver.onWebContentsSwapped(mTab, true, true);
@@ -201,7 +214,9 @@ public class LoadProgressMediatorTest {
 
     @Test
     @SmallTest
+    @UiThreadTest
     public void testSameDocumentLoad_afterFinishedLoading() {
+        initMediator();
         GURL gurl = new GURL(URL_1);
         assertEquals(mModel.get(LoadProgressProperties.COMPLETION_STATE),
                 CompletionState.FINISHED_DONT_ANIMATE);

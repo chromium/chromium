@@ -27,14 +27,15 @@ import org.robolectric.annotation.Config;
 import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
 
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.feed.shared.FeedFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.intent.IntentMetadata;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.HomeButton;
 import org.chromium.chrome.browser.user_education.IPHCommand;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
@@ -106,8 +107,6 @@ public class HomeButtonCoordinatorTest {
     @Mock
     private Context mContext;
     @Mock
-    private ActivityTabProvider mActivityTabProvider;
-    @Mock
     private HomeButton mHomeButton;
     @Mock
     private android.content.res.Resources mResources;
@@ -140,9 +139,9 @@ public class HomeButtonCoordinatorTest {
 
     private HomeButtonCoordinator newHomeButtonCoordinator(View view) {
         // clang-format off
-        return new HomeButtonCoordinator(mContext, view, mActivityTabProvider, mUserEducationHelper,
-                () -> mIsIncognito, mIntentMetadataOneshotSupplier, mPromoShownOneshotSupplier,
-                HomepageManager::isHomepageNonNtp);
+        return new HomeButtonCoordinator(mContext, view, mUserEducationHelper, () -> mIsIncognito,
+                mIntentMetadataOneshotSupplier, mPromoShownOneshotSupplier,
+                HomepageManager::isHomepageNonNtp, new ObservableSupplierImpl<Tab>());
         // clang-format on
     }
 

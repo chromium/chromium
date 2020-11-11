@@ -26,7 +26,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
 import org.chromium.base.TraceEvent;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.compositor.overlays.toolbar.TopToolbarOverlayCoordinator;
 import org.chromium.chrome.browser.findinpage.FindToolbar;
 import org.chromium.chrome.browser.omnibox.LocationBar;
 import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
@@ -84,7 +83,7 @@ public abstract class ToolbarLayout
     private MenuButtonCoordinator mMenuButtonCoordinator;
     private AppMenuButtonHelper mAppMenuButtonHelper;
 
-    private TopToolbarOverlayCoordinator mOverlayCoordinator;
+    private Callback<Boolean> mOverlayVisibilityCallback;
     private Runnable mTabOrModelChangeRunnable;
 
     /**
@@ -125,17 +124,20 @@ public abstract class ToolbarLayout
         mTabOrModelChangeRunnable = tabOrModelChangeRunnable;
     }
 
-    /** @param overlay The coordinator for the texture version of the top toolbar. */
-    void setOverlayCoordinator(TopToolbarOverlayCoordinator overlay) {
-        mOverlayCoordinator = overlay;
-        mOverlayCoordinator.setIsAndroidViewVisible(getVisibility() == View.VISIBLE);
+    /**
+     * @param callback Callback to invoke on visibility change of the texture version
+     *        of the top toolbar.
+     */
+    public void setOverlayVisibilityCallback(Callback<Boolean> callback) {
+        mOverlayVisibilityCallback = callback;
+        mOverlayVisibilityCallback.onResult(getVisibility() == View.VISIBLE);
     }
 
     @Override
     public void setVisibility(int visibility) {
         super.setVisibility(visibility);
-        if (mOverlayCoordinator != null) {
-            mOverlayCoordinator.setIsAndroidViewVisible(visibility == View.VISIBLE);
+        if (mOverlayVisibilityCallback != null) {
+            mOverlayVisibilityCallback.onResult(visibility == View.VISIBLE);
         }
     }
 
