@@ -10,6 +10,7 @@ import android.os.IBinder;
 import android.os.RemoteException;
 import android.util.AndroidRuntimeException;
 import android.view.View;
+import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -152,5 +153,14 @@ public final class TestWebLayer {
 
     public void crashTab(Tab tab) throws RemoteException {
         mITestWebLayer.crashTab(tab.getITab());
+    }
+
+    public boolean isWindowOnSmallDevice(Browser browser) throws RemoteException {
+        return mITestWebLayer.isWindowOnSmallDevice(browser.getIBrowser());
+    }
+
+    public ImageView getSecurityButton(View urlBarView) throws RemoteException {
+        return (ImageView) ObjectWrapper.unwrap(
+                mITestWebLayer.getSecurityButton(ObjectWrapper.wrap(urlBarView)), ImageView.class);
     }
 }

@@ -25,6 +25,7 @@
 #include "components/browser_sync/browser_sync_switches.h"
 #include "components/data_reduction_proxy/core/common/data_reduction_proxy_features.h"
 #include "components/download/public/common/download_features.h"
+#include "components/embedder_support/android/util/cdn_utils.h"
 #include "components/feature_engagement/public/feature_list.h"
 #include "components/feed/feed_feature_list.h"
 #include "components/history/core/browser/features.h"
@@ -83,6 +84,7 @@ const base::Feature* kFeaturesExposedToJava[] = {
     &download::features::kDownloadLater,
     &download::features::kSmartSuggestionForLargeDownloads,
     &download::features::kUseDownloadOfflineContentProvider,
+    &embedder_support::kShowTrustedPublisherURL,
     &features::kClearOldBrowsingData,
     &features::kDownloadsLocationChange,
     &features::kGenericSensorExtraClasses,
@@ -95,7 +97,6 @@ const base::Feature* kFeaturesExposedToJava[] = {
     &features::kPrioritizeBootstrapTasks,
     &features::kQuietNotificationPrompts,
     &features::kSafetyCheckAndroid,
-    &features::kShowTrustedPublisherURL,
     &features::kWebAuth,
     &features::kWebNfc,
     &feature_engagement::kIPHHomepagePromoCardFeature,

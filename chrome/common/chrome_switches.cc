@@ -635,9 +635,6 @@ const char kForceShowUpdateMenuItemCustomSummary[] = "custom_summary";
 // Sets the market URL for Chrome for use in testing.
 const char kMarketUrlForTesting[] = "market-url-for-testing";
 
-// Specifies a base URL for the trusted CDN for tests.
-const char kTrustedCDNBaseURLForTests[] = "trusted-cdn-base-url-for-tests";
-
 // Custom WebAPK server URL for the sake of testing.
 const char kWebApkServerUrl[] = "webapk-server-url";
 #endif  // defined(OS_ANDROID)

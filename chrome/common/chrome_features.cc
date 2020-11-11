@@ -733,11 +733,6 @@ const base::Feature kShow10_10ObsoleteInfobar{
     "Show1010ObsoleteInfobar", base::FEATURE_DISABLED_BY_DEFAULT};
 #endif  // defined(OS_MAC)
 
-#if defined(OS_ANDROID)
-const base::Feature kShowTrustedPublisherURL{"ShowTrustedPublisherURL",
-                                             base::FEATURE_ENABLED_BY_DEFAULT};
-#endif
-
 // Alternative to switches::kSitePerProcess, for turning on full site isolation.
 // Launch bug: https://crbug.com/810843.  This is a //chrome-layer feature to
 // avoid turning on site-per-process by default for *all* //content embedders

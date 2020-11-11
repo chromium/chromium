@@ -19,6 +19,11 @@ jinja_template("weblayer_bundle_utils") {
 
 android_resources("weblayer_resources") {
   sources = [
+    "res/drawable-hdpi/amp_icon.png",
+    "res/drawable-mdpi/amp_icon.png",
+    "res/drawable-xhdpi/amp_icon.png",
+    "res/drawable-xxhdpi/amp_icon.png",
+    "res/drawable-xxxhdpi/amp_icon.png",
     "res/drawable/weblayer_tab_indicator.xml",
     "res/layout/site_settings_layout.xml",
     "res/layout/weblayer_infobar_translate_compact_content.xml",
@@ -225,6 +230,7 @@ android_library("java") {
     "//components/prefs/android:java",
     "//components/safe_browsing/android:safe_browsing_java",
     "//components/security_interstitials/content/android:java",
+    "//components/security_state/core:security_state_enums_java",
     "//components/signin/core/browser:signin_enums_java",
     "//components/spellcheck/browser/android:java",
     "//components/translate/content/android:java",

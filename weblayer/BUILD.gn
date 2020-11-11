@@ -578,6 +578,8 @@ source_set("weblayer_lib_base") {
       "browser/tts_environment_android_impl.h",
       "browser/url_bar/page_info_client_impl.cc",
       "browser/url_bar/page_info_client_impl.h",
+      "browser/url_bar/trusted_cdn_observer.cc",
+      "browser/url_bar/trusted_cdn_observer.h",
       "browser/verdict_cache_manager_factory.cc",
       "browser/verdict_cache_manager_factory.h",
       "browser/weblayer_factory_impl_android.cc",

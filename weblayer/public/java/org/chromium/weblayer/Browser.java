@@ -68,6 +68,10 @@ public class Browser {
         }
     }
 
+    IBrowser getIBrowser() {
+        return mImpl;
+    }
+
     /**
      * Returns the Browser for the supplied Fragment; null if
      * {@link fragment} was not created by WebLayer.

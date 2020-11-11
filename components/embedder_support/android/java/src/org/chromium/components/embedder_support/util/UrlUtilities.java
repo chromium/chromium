@@ -8,15 +8,18 @@ import android.net.Uri;
 import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
+import androidx.core.text.BidiFormatter;
 
 import org.chromium.base.CollectionUtil;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.content_public.common.ContentUrlConstants;
+import org.chromium.net.GURLUtils;
 import org.chromium.url.GURL;
 
 import java.util.HashSet;
+import java.util.regex.Pattern;
 
 /**
  * Utilities for working with URIs (and URLs). These methods may be used in security-sensitive
@@ -29,6 +32,10 @@ import java.util.HashSet;
 @JNINamespace("embedder_support")
 public class UrlUtilities {
     private static final String TAG = "UrlUtilities";
+
+    /** Regular expression for prefixes to strip from publisher hostnames. */
+    private static final Pattern HOSTNAME_PREFIX_PATTERN =
+            Pattern.compile("^(www[0-9]*|web|ftp|wap|home|mobile|amp)\\.");
 
     /**
      * URI schemes that are internal to Chrome.
@@ -235,6 +242,14 @@ public class UrlUtilities {
         // chrome:// scheme so that GURL parses the host correctly.
         GURL gurl = UrlFormatter.fixupUrl(url);
         return isNTPUrl(gurl);
+    }
+
+    public static String extractPublisherFromPublisherUrl(String publisherUrl) {
+        String publisher =
+                UrlFormatter.formatUrlForDisplayOmitScheme(GURLUtils.getOrigin(publisherUrl));
+
+        String trimmedPublisher = HOSTNAME_PREFIX_PATTERN.matcher(publisher).replaceFirst("");
+        return BidiFormatter.getInstance().unicodeWrap(trimmedPublisher);
     }
 
     @NativeMethods

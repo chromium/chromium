@@ -21,6 +21,7 @@
 #if defined(OS_ANDROID)
 #include "base/android/jni_string.h"
 #include "weblayer/browser/java/jni/UrlBarControllerImpl_jni.h"
+#include "weblayer/browser/url_bar/trusted_cdn_observer.h"
 #endif
 
 namespace weblayer {
@@ -60,6 +61,21 @@ base::android::ScopedJavaLocalRef<jstring>
 UrlBarControllerImpl::GetUrlForDisplay(JNIEnv* env) {
   return base::android::ScopedJavaLocalRef<jstring>(
       base::android::ConvertUTF16ToJavaString(env, GetUrlForDisplay()));
+}
+
+base::android::ScopedJavaLocalRef<jstring>
+UrlBarControllerImpl::GetPublisherUrl(JNIEnv* env) {
+  GURL url;
+
+  auto* active_web_contents = GetActiveWebContents();
+  if (active_web_contents) {
+    auto* trusted_cdn_observer =
+        TrustedCDNObserver::FromWebContents(active_web_contents);
+    if (trusted_cdn_observer)
+      url = trusted_cdn_observer->publisher_url();
+  }
+  return base::android::ScopedJavaLocalRef<jstring>(
+      base::android::ConvertUTF8ToJavaString(env, url.spec()));
 }
 
 jint UrlBarControllerImpl::GetConnectionSecurityLevel(JNIEnv* env) {

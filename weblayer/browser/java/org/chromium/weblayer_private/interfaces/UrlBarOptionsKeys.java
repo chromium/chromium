@@ -10,6 +10,11 @@ public interface UrlBarOptionsKeys {
      * If true, clicking on the url shows page info. Default is false.
      */
     String SHOW_PAGE_INFO_WHEN_URL_TEXT_CLICKED = "ShowPageInfoWhenUrlTextClicked";
+    /**
+     * If true, shows publisher url. Default is false.
+     * @since 88
+     */
+    String SHOW_PUBLISHER_URL = "ShowPublisherUrl";
     String URL_ICON_COLOR = "UrlIconColor";
     String URL_TEXT_COLOR = "UrlTextColor";
     String URL_TEXT_SIZE = "UrlTextSize";

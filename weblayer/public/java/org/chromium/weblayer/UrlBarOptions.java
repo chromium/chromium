@@ -73,6 +73,15 @@ public final class UrlBarOptions {
         }
 
         /**
+         * Specifies whether the publisher URL is shown.
+         */
+        @NonNull
+        public Builder showPublisherUrl() {
+            mOptions.putBoolean(UrlBarOptionsKeys.SHOW_PUBLISHER_URL, true);
+            return this;
+        }
+
+        /**
          * Sets the color of the URL bar text.
          *
          * @param textColor The color for the Url bar text.

@@ -5,6 +5,7 @@
 package org.chromium.weblayer_private.test_interfaces;
 
 import android.os.Bundle;
+import org.chromium.weblayer_private.interfaces.IBrowser;
 import org.chromium.weblayer_private.interfaces.IObjectWrapper;
 import org.chromium.weblayer_private.interfaces.ITab;
 
@@ -66,4 +67,7 @@ interface ITestWebLayer {
 
   // Causes the renderer process in the tab's main frame to crash.
   void crashTab(in ITab tab) = 20;
+
+  boolean isWindowOnSmallDevice(in IBrowser browser) = 21;
+  IObjectWrapper getSecurityButton(IObjectWrapper /* View */ urlBarView) = 22;
 }

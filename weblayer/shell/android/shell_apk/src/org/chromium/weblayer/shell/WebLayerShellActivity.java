@@ -476,6 +476,7 @@ public class WebLayerShellActivity extends AppCompatActivity {
                         .setTextSizeSP(DEFAULT_TEXT_SIZE)
                         .setTextColor(android.R.color.black)
                         .setIconColor(android.R.color.black)
+                        .showPublisherUrl()
                         .setTextClickListener(v -> {
                             mEditUrlView.setText("");
                             mUrlViewContainer.setDisplayedChild(EDITABLE_URL_TEXT_VIEW);

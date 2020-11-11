@@ -33,6 +33,7 @@ class UrlBarControllerImpl : public UrlBarController,
 
 #if defined(OS_ANDROID)
   base::android::ScopedJavaLocalRef<jstring> GetUrlForDisplay(JNIEnv* env);
+  base::android::ScopedJavaLocalRef<jstring> GetPublisherUrl(JNIEnv* env);
   jint GetConnectionSecurityLevel(JNIEnv* env);
   jboolean ShouldShowDangerTriangleForWarningLevel(JNIEnv* env);
 #endif

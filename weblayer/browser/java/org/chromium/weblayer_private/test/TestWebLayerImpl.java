@@ -6,6 +6,7 @@ package org.chromium.weblayer_private.test;
 
 import android.os.IBinder;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -27,9 +28,11 @@ import org.chromium.device.geolocation.LocationProviderOverrider;
 import org.chromium.device.geolocation.MockLocationProvider;
 import org.chromium.net.NetworkChangeNotifier;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
+import org.chromium.weblayer_private.BrowserImpl;
 import org.chromium.weblayer_private.InfoBarContainer;
 import org.chromium.weblayer_private.TabImpl;
 import org.chromium.weblayer_private.WebLayerAccessibilityUtil;
+import org.chromium.weblayer_private.interfaces.IBrowser;
 import org.chromium.weblayer_private.interfaces.IObjectWrapper;
 import org.chromium.weblayer_private.interfaces.ITab;
 import org.chromium.weblayer_private.interfaces.ObjectWrapper;
@@ -237,5 +240,27 @@ public final class TestWebLayerImpl extends ITestWebLayer.Stub {
         } catch (TimeoutException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public boolean isWindowOnSmallDevice(IBrowser browser) {
+        try {
+            return TestThreadUtils.runOnUiThreadBlocking(
+                    () -> { return ((BrowserImpl) browser).isWindowOnSmallDevice(); });
+        } catch (ExecutionException e) {
+            return true;
+        }
+    }
+
+    @Override
+    public IObjectWrapper getSecurityButton(IObjectWrapper /* View */ view) {
+        View urlBarView = ObjectWrapper.unwrap(view, View.class);
+        assert (urlBarView instanceof LinearLayout);
+        LinearLayout urlBarLayout = (LinearLayout) urlBarView;
+        assert (urlBarLayout.getChildCount() == 2);
+
+        View securityIconView = urlBarLayout.getChildAt(0);
+        assert (securityIconView instanceof ImageView);
+        return ObjectWrapper.wrap((ImageView) securityIconView);
     }
 }

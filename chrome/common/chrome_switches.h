@@ -192,7 +192,6 @@ extern const char kForceShowUpdateMenuBadge[];
 extern const char kForceShowUpdateMenuItemCustomSummary[];
 extern const char kForceUpdateMenuType[];
 extern const char kMarketUrlForTesting[];
-extern const char kTrustedCDNBaseURLForTests[];
 extern const char kWebApkServerUrl[];
 #endif  // defined(OS_ANDROID)
 

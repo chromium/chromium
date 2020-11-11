@@ -492,11 +492,6 @@ COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kShow10_10ObsoleteInfobar;
 #endif  // defined(OS_MAC)
 
-#if defined(OS_ANDROID)
-COMPONENT_EXPORT(CHROME_FEATURES)
-extern const base::Feature kShowTrustedPublisherURL;
-#endif
-
 COMPONENT_EXPORT(CHROME_FEATURES) extern const base::Feature kSitePerProcess;
 
 #if defined(OS_CHROMEOS)

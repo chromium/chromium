@@ -35,7 +35,6 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
-import androidx.core.text.BidiFormatter;
 import androidx.core.view.MarginLayoutParamsCompat;
 
 import org.chromium.base.ApiCompatibilityUtils;
@@ -65,12 +64,11 @@ import org.chromium.chrome.browser.toolbar.top.ToolbarLayout;
 import org.chromium.chrome.browser.toolbar.top.ToolbarPhone;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.TintedDrawable;
+import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.page_info.PageInfoController;
-import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.ContentUrlConstants;
-import org.chromium.net.GURLUtils;
 import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.interpolators.BakedBezierInterpolator;
@@ -80,7 +78,6 @@ import org.chromium.ui.util.ColorUtils;
 import org.chromium.ui.widget.Toast;
 
 import java.util.List;
-import java.util.regex.Pattern;
 
 /**
  * The Toolbar layout to be used for a custom tab. This is used for both phone and tablet UIs.
@@ -127,10 +124,6 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
     private static final int STATE_DOMAIN_ONLY = 0;
     private static final int STATE_TITLE_ONLY = 1;
     private static final int STATE_DOMAIN_AND_TITLE = 2;
-
-    /** Regular expression for prefixes to strip from publisher hostnames. */
-    private static final Pattern HOSTNAME_PREFIX_PATTERN =
-            Pattern.compile("^(www[0-9]*|web|ftp|wap|home|mobile|amp)\\.");
 
     private View mLocationBarFrameLayout;
     private View mTitleUrlContainer;
@@ -350,7 +343,9 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         if (tab == null) return null;
 
         String publisherUrl = TrustedCdn.getPublisherUrl(tab);
-        if (publisherUrl != null) return extractPublisherFromPublisherUrl(publisherUrl);
+        if (publisherUrl != null) {
+            return UrlUtilities.extractPublisherFromPublisherUrl(publisherUrl);
+        }
 
         // TODO(bauerb): Remove this once trusted CDN publisher URLs have rolled out completely.
         if (mState == STATE_TITLE_ONLY) return parsePublisherNameFromUrl(tab.getUrlString());
@@ -371,15 +366,6 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             }
         }
         mLocationBar.updateStatusIcon();
-    }
-
-    @VisibleForTesting
-    public static String extractPublisherFromPublisherUrl(String publisherUrl) {
-        String publisher =
-                UrlFormatter.formatUrlForDisplayOmitScheme(GURLUtils.getOrigin(publisherUrl));
-
-        String trimmedPublisher = HOSTNAME_PREFIX_PATTERN.matcher(publisher).replaceFirst("");
-        return BidiFormatter.getInstance().unicodeWrap(trimmedPublisher);
     }
 
     private void updateButtonsTint() {
@@ -734,7 +720,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             if (publisherUrl != null) {
                 String plainDisplayText =
                         getContext().getString(R.string.custom_tab_amp_publisher_url,
-                                extractPublisherFromPublisherUrl(publisherUrl));
+                                UrlUtilities.extractPublisherFromPublisherUrl(publisherUrl));
                 ColorStateList tint = mUseDarkColors ? mDarkModeTint : mLightModeTint;
                 SpannableString formattedDisplayText = SpanApplier.applySpans(plainDisplayText,
                         new SpanInfo("<pub>", "</pub>", ORIGIN_SPAN),

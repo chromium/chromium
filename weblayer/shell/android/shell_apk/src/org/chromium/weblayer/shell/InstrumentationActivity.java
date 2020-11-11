@@ -66,6 +66,9 @@ public class InstrumentationActivity extends FragmentActivity {
     // that show Page Info UI on its TextView.
     public static final String EXTRA_URLBAR_TEXT_CLICKABLE = "EXTRA_URLBAR_TEXT_CLICKABLE";
 
+    // Used in tests to specify whether WebLayer URL bar should show publisher url.
+    public static final String EXTRA_URLBAR_SHOW_PUBLISHER_URL = "EXTRA_URLBAR_SHOW_PUBLISHER_URL";
+
     private static OnCreatedCallback sOnCreatedCallback;
 
     // If true, multiple fragments may be created. Only the first is attached. This is useful for
@@ -392,6 +395,9 @@ public class InstrumentationActivity extends FragmentActivity {
                                                        .setIconColor(android.R.color.black);
         if (getIntent().getBooleanExtra(EXTRA_URLBAR_TEXT_CLICKABLE, true)) {
             optionsBuilder = optionsBuilder.showPageInfoWhenTextIsClicked();
+        }
+        if (getIntent().getBooleanExtra(EXTRA_URLBAR_SHOW_PUBLISHER_URL, false)) {
+            optionsBuilder = optionsBuilder.showPublisherUrl();
         }
 
         mUrlBarView = mBrowser.getUrlBarController().createUrlBarView(optionsBuilder.build());
