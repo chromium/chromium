@@ -20,7 +20,7 @@
 #include "base/cpu.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
@@ -221,8 +221,9 @@ class FingerprintDataLoader : public content::GpuDataManagerObserver {
 
   // Ensures that any observer registrations for the GPU data are cleaned up by
   // the time this object is destroyed.
-  ScopedObserver<content::GpuDataManager, content::GpuDataManagerObserver>
-      gpu_observer_{this};
+  base::ScopedObservation<content::GpuDataManager,
+                          content::GpuDataManagerObserver>
+      gpu_observation_{this};
 
   // Data that will be passed on to the next loading phase.  See the comment for
   // GetFingerprint() for a description of these variables.
@@ -295,7 +296,7 @@ FingerprintDataLoader::FingerprintDataLoader(
   // Load GPU data if needed.
   if (gpu_data_manager_->GpuAccessAllowed(nullptr) &&
       !gpu_data_manager_->IsEssentialGpuInfoAvailable()) {
-    gpu_observer_.Add(gpu_data_manager_);
+    gpu_observation_.Observe(gpu_data_manager_);
     OnGpuInfoUpdate();
   }
 
@@ -326,7 +327,8 @@ void FingerprintDataLoader::OnGpuInfoUpdate() {
   if (!gpu_data_manager_->IsEssentialGpuInfoAvailable())
     return;
 
-  gpu_observer_.Remove(gpu_data_manager_);
+  DCHECK(gpu_observation_.IsObservingSource(gpu_data_manager_));
+  gpu_observation_.RemoveObservation();
   MaybeFillFingerprint();
 }
 
