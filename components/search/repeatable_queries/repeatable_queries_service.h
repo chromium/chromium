@@ -19,8 +19,13 @@
 class SearchProviderObserver;
 class TemplateURLService;
 
+namespace base {
+class SequencedTaskRunner;
+}  // namespace base
+
 namespace history {
 class HistoryService;
+class URLDatabase;
 }  // namespace history
 
 namespace network {
@@ -135,6 +140,8 @@ class RepeatableQueriesService : public KeyedService {
 
   // Deletes |query| from the in-memory URLDatabase.
   void DeleteRepeatableQueryFromURLDatabase(const base::string16& query);
+  void DeleteRepeatableQueryFromURLDatabaseTask(const base::string16& query,
+                                                history::URLDatabase* url_db);
 
   // Deletes the query with |deletion_url| from the server.
   void DeleteRepeatableQueryFromServer(const std::string& deletion_url);
@@ -168,6 +175,9 @@ class RepeatableQueriesService : public KeyedService {
   std::set<base::string16> deleted_repeatable_queries_;
 
   std::vector<std::unique_ptr<network::SimpleURLLoader>> loaders_;
+
+  // The TaskRunner to which deletion tasks are posted.
+  scoped_refptr<base::SequencedTaskRunner> deletion_task_runner_;
 
   base::WeakPtrFactory<RepeatableQueriesService> weak_ptr_factory_{this};
 };

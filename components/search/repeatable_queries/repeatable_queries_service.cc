@@ -12,6 +12,8 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/scoped_observer.h"
 #include "base/stl_util.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "base/values.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
@@ -127,7 +129,8 @@ RepeatableQueriesService::RepeatableQueriesService(
       search_provider_observer_(std::make_unique<SearchProviderObserver>(
           template_url_service,
           base::BindRepeating(&RepeatableQueriesService::SearchProviderChanged,
-                              base::Unretained(this)))) {
+                              base::Unretained(this)))),
+      deletion_task_runner_(base::ThreadPool::CreateSequencedTaskRunner({})) {
   DCHECK(history_service_);
   DCHECK(template_url_service_);
   DCHECK(url_loader_factory_);
@@ -460,8 +463,18 @@ void RepeatableQueriesService::DeletionResponseLoaded(
 
 void RepeatableQueriesService::DeleteRepeatableQueryFromURLDatabase(
     const base::string16& query) {
+  deletion_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &RepeatableQueriesService::DeleteRepeatableQueryFromURLDatabaseTask,
+          weak_ptr_factory_.GetWeakPtr(), query,
+          history_service_->InMemoryDatabase()));
+}
+
+void RepeatableQueriesService::DeleteRepeatableQueryFromURLDatabaseTask(
+    const base::string16& query,
+    history::URLDatabase* url_db) {
   // Fail if the in-memory URL database is not available.
-  history::URLDatabase* url_db = history_service_->InMemoryDatabase();
   if (!url_db)
     return;
 
