@@ -54,7 +54,7 @@ enum TerminationStatus {
   TERMINATION_STATUS_PROCESS_WAS_KILLED,   // e.g. SIGKILL or task manager kill
   TERMINATION_STATUS_PROCESS_CRASHED,      // e.g. Segmentation fault
   TERMINATION_STATUS_STILL_RUNNING,        // child hasn't exited yet
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if defined(OS_CHROMEOS) || BUILDFLAG(IS_LACROS)
   // Used for the case when oom-killer kills a process on ChromeOS.
   TERMINATION_STATUS_PROCESS_WAS_KILLED_BY_OOM,
 #endif

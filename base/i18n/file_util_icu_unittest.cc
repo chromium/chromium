@@ -11,7 +11,6 @@
 #include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 
@@ -117,7 +116,7 @@ TEST_F(FileUtilICUTest, IsFilenameLegalTest) {
   }
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
 static const struct normalize_name_encoding_test_cases {
   const char* original_path;
   const char* normalized_path;

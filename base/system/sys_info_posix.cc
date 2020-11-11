@@ -173,8 +173,8 @@ std::string SysInfo::OperatingSystemName() {
 }
 #endif  //! defined(OS_APPLE) && !defined(OS_ANDROID)
 
-#if !defined(OS_APPLE) && !defined(OS_ANDROID) && \
-    !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+#if !defined(OS_APPLE) && !defined(OS_ANDROID) && !defined(OS_CHROMEOS) && \
+    !BUILDFLAG(IS_LACROS)
 // static
 std::string SysInfo::OperatingSystemVersion() {
   struct utsname info;
@@ -186,8 +186,8 @@ std::string SysInfo::OperatingSystemVersion() {
 }
 #endif
 
-#if !defined(OS_APPLE) && !defined(OS_ANDROID) && \
-    !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+#if !defined(OS_APPLE) && !defined(OS_ANDROID) && !defined(OS_CHROMEOS) && \
+    !BUILDFLAG(IS_LACROS)
 // static
 void SysInfo::OperatingSystemVersionNumbers(int32_t* major_version,
                                             int32_t* minor_version,

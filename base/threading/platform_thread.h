@@ -15,7 +15,6 @@
 #include "base/macros.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 
 #if defined(OS_WIN)
 #include "base/win/windows_types.h"
@@ -246,7 +245,7 @@ class BASE_EXPORT PlatformThread {
                                 ThreadPriority priority);
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
   // Signals that the feature list has been initialized which allows to check
   // the feature's value now and initialize state. This prevents race
   // conditions where the feature is being checked while it is being

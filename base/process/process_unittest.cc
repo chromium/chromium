@@ -418,7 +418,7 @@ TEST_F(ProcessTest, ChildProcessIsRunning) {
       base::TimeDelta(), nullptr));
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if defined(OS_CHROMEOS) || BUILDFLAG(IS_LACROS)
 
 // Tests that the function IsProcessBackgroundedCGroup() can parse the contents
 // of the /proc/<pid>/cgroup file successfully.
@@ -432,6 +432,6 @@ TEST_F(ProcessTest, TestIsProcessBackgroundedCGroup) {
   EXPECT_TRUE(IsProcessBackgroundedCGroup(kBackgrounded));
 }
 
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // defined(OS_CHROMEOS) || BUILDFLAG(IS_LACROS)
 
 }  // namespace base

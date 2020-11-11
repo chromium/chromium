@@ -26,13 +26,12 @@
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 
 namespace base {
 
 namespace {
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !defined(OS_CHROMEOS)
 std::string GetKeyValueFromOSReleaseFile(const std::string& input,
                                          const char* key) {
   StringPairs key_value_pairs;
@@ -86,7 +85,7 @@ class DistroNameGetter {
     }
   }
 };
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !defined(OS_CHROMEOS)
 
 // Account for the terminating null character.
 constexpr int kDistroSize = 128 + 1;
@@ -96,7 +95,7 @@ constexpr int kDistroSize = 128 + 1;
 // We use this static string to hold the Linux distro info. If we
 // crash, the crash handler code will send this in the crash dump.
 char g_linux_distro[kDistroSize] =
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
     "CrOS";
 #elif defined(OS_ANDROID)
     "Android";
@@ -112,15 +111,15 @@ char g_linux_distro[kDistroSize] =
 BASE_EXPORT std::string GetKeyValueFromOSReleaseFileForTesting(
     const std::string& input,
     const char* key) {
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !defined(OS_CHROMEOS)
   return GetKeyValueFromOSReleaseFile(input, key);
 #else
   return "";
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !defined(OS_CHROMEOS)
 }
 
 std::string GetLinuxDistro() {
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !defined(OS_CHROMEOS)
   // We do this check only once per process. If it fails, there's
   // little reason to believe it will work if we attempt to run it again.
   static NoDestructor<DistroNameGetter> distro_name_getter;

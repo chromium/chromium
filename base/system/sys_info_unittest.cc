@@ -194,7 +194,7 @@ TEST_F(SysInfoTest, GetHardwareInfo) {
 #endif
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if defined(OS_CHROMEOS) || BUILDFLAG(IS_LACROS)
 
 TEST_F(SysInfoTest, GoogleChromeOSVersionNumbers) {
   int32_t os_major_version = -1;
@@ -298,6 +298,6 @@ TEST_F(SysInfoTest, NoCrashOnLinuxBuild) {
   SysInfo::CrashIfChromeOSNonTestImage();
 }
 
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // OS_CHROMEOS || BUILDFLAG(IS_LACROS)
 
 }  // namespace base

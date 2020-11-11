@@ -84,8 +84,8 @@ bool SysInfo::IsLowEndDeviceImpl() {
 }
 #endif
 
-#if !defined(OS_APPLE) && !defined(OS_ANDROID) && \
-    !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+#if !defined(OS_APPLE) && !defined(OS_ANDROID) && !defined(OS_CHROMEOS) && \
+    !BUILDFLAG(IS_LACROS)
 std::string SysInfo::HardwareModelName() {
   return std::string();
 }

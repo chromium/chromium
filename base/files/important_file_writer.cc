@@ -35,7 +35,6 @@
 #include "base/threading/thread.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 
 namespace base {
 
@@ -199,7 +198,7 @@ bool ImportantFileWriter::WriteFileAtomicallyImpl(const FilePath& path,
   base::debug::Alias(path_copy);
 #endif  // defined(OS_WIN) && DCHECK_IS_ON()
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
   // On Chrome OS, chrome gets killed when it cannot finish shutdown quickly,
   // and this function seems to be one of the slowest shutdown steps.
   // Include some info to the report for investigation. crbug.com/418627

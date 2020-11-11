@@ -277,7 +277,7 @@ bool DoCopyDirectory(const FilePath& from_path,
     // set of permissions than it does on other POSIX platforms.
 #if defined(OS_APPLE)
     int mode = 0600 | (stat_at_use.st_mode & 0177);
-#elif BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#elif defined(OS_CHROMEOS) || BUILDFLAG(IS_LACROS)
     int mode = 0644;
 #else
     int mode = 0600;
@@ -629,7 +629,7 @@ bool GetTempDir(FilePath* path) {
 
 #if !defined(OS_APPLE)  // Mac implementation is in file_util_mac.mm.
 FilePath GetHomeDir() {
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if defined(OS_CHROMEOS) || BUILDFLAG(IS_LACROS)
   if (SysInfo::IsRunningOnChromeOS()) {
     // On Chrome OS chrome::DIR_USER_DATA is overridden with a primary user
     // homedir once it becomes available. Return / as the safe option.
@@ -1120,7 +1120,7 @@ int GetMaximumPathComponentLength(const FilePath& path) {
 bool GetShmemTempDir(bool executable, FilePath* path) {
 #if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_AIX)
   bool disable_dev_shm = false;
-#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+#if !defined(OS_CHROMEOS) && !BUILDFLAG(IS_LACROS)
   disable_dev_shm = CommandLine::ForCurrentProcess()->HasSwitch(
       switches::kDisableDevShmUsage);
 #endif

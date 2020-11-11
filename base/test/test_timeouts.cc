@@ -14,7 +14,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/test_switches.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 
 namespace {
 
@@ -46,7 +45,7 @@ void InitializeTimeout(const char* switch_name,
   // down significantly.
   // For MSan the slowdown depends heavily on the value of msan_track_origins
   // build flag. The multiplier below corresponds to msan_track_origins = 1.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
   // A handful of tests on ChromeOS run *very* close to the 6x limit used
   // else where, so it's bumped to 7x.
   constexpr int kTimeoutMultiplier = 7;
@@ -57,7 +56,7 @@ void InitializeTimeout(const char* switch_name,
   // ASan/Win has not been optimized yet, give it a higher
   // timeout multiplier. See http://crbug.com/412471
   constexpr int kTimeoutMultiplier = 3;
-#elif defined(ADDRESS_SANITIZER) && BUILDFLAG(IS_CHROMEOS_ASH)
+#elif defined(ADDRESS_SANITIZER) && defined(OS_CHROMEOS)
   // A number of tests on ChromeOS run very close to the 2x limit, so ChromeOS
   // gets 3x.
   constexpr int kTimeoutMultiplier = 3;
@@ -66,7 +65,7 @@ void InitializeTimeout(const char* switch_name,
 #elif BUILDFLAG(CLANG_PROFILING)
   // On coverage build, tests run 3x slower.
   constexpr int kTimeoutMultiplier = 3;
-#elif !defined(NDEBUG) && BUILDFLAG(IS_CHROMEOS_ASH)
+#elif !defined(NDEBUG) && defined(OS_CHROMEOS)
   // TODO(crbug.com/1058022): reduce the multiplier back to 2x.
   // A number of tests on ChromeOS run very close to the base limit, so ChromeOS
   // gets 3x.

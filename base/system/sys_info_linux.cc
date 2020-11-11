@@ -74,8 +74,7 @@ int64_t SysInfo::AmountOfAvailablePhysicalMemory(
 
 // static
 std::string SysInfo::CPUModelName() {
-#if (BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)) && \
-    defined(ARCH_CPU_ARMEL)
+#if (defined(OS_CHROMEOS) || BUILDFLAG(IS_LACROS)) && defined(ARCH_CPU_ARMEL)
   const char kCpuModelPrefix[] = "Hardware";
 #else
   const char kCpuModelPrefix[] = "model name";

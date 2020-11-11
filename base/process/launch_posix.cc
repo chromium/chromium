@@ -47,13 +47,12 @@
 #include "base/time/time.h"
 #include "base/trace_event/base_tracing.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_AIX)
 #include <sys/prctl.h>
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
 #include <sys/ioctl.h>
 #endif
 
@@ -418,7 +417,7 @@ Process LaunchProcess(const std::vector<std::string>& argv,
     memset(reinterpret_cast<void*>(malloc), 0xff, 8);
 #endif  // 0
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
     if (options.ctrl_terminal_fd >= 0) {
       // Set process' controlling terminal.
       if (HANDLE_EINTR(setsid()) != -1) {
@@ -430,7 +429,7 @@ Process LaunchProcess(const std::vector<std::string>& argv,
         RAW_LOG(WARNING, "setsid failed, ctrl terminal not set");
       }
     }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // defined(OS_CHROMEOS)
 
     // Cannot use STL iterators here, since debug iterators use locks.
     // NOLINTNEXTLINE(modernize-loop-convert)

@@ -202,7 +202,7 @@ class BASE_EXPORT Process {
   // of this value is OS dependent.
   int GetPriority() const;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
   // Get the PID in its PID namespace.
   // If the process is not in a PID namespace or /proc/<pid>/status does not
   // report NSpid, kNullProcessId is returned.
@@ -225,13 +225,13 @@ class BASE_EXPORT Process {
   DISALLOW_COPY_AND_ASSIGN(Process);
 };
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if defined(OS_CHROMEOS) || BUILDFLAG(IS_LACROS)
 // Exposed for testing.
 // Given the contents of the /proc/<pid>/cgroup file, determine whether the
 // process is backgrounded or not.
 BASE_EXPORT bool IsProcessBackgroundedCGroup(
     const StringPiece& cgroup_contents);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // defined(OS_CHROMEOS) || BUILDFLAG(IS_LACROS)
 
 }  // namespace base
 

@@ -16,7 +16,6 @@
 #include "base/threading/platform_thread.h"
 #include "base/threading/simple_thread.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
@@ -83,7 +82,7 @@ class TestStackCopierDelegate : public StackCopier::Delegate {
 #if defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER) || \
     defined(THREAD_SANITIZER)
 #define MAYBE_CopyStack DISABLED_CopyStack
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
+#elif defined(OS_CHROMEOS)
 // https://crbug.com/1042974
 #define MAYBE_CopyStack DISABLED_CopyStack
 #else

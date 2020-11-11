@@ -23,7 +23,6 @@ import("//build/buildflag_header.gni")
 import("//build/config/arm.gni")
 import("//build/config/c++/c++.gni")
 import("//build/config/chromecast_build.gni")
-import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/compiler/compiler.gni")
 import("//build/config/dcheck_always_on.gni")
 import("//build/config/logging.gni")
@@ -1360,8 +1359,7 @@ component("base") {
 
   # Allow more direct string conversions on platforms with native utf8
   # strings
-  # TODO(crbug/1052397): Consider replacing is_ash with is_chromeos once lacros switches to target_os=chromeos
-  if (is_apple || is_chromeos_ash || is_chromecast || is_fuchsia) {
+  if (is_apple || is_chromeos || is_chromecast || is_fuchsia) {
     defines += [ "SYSTEM_NATIVE_UTF8" ]
   }
 
@@ -1523,7 +1521,7 @@ component("base") {
   }
 
   # Chromeos.
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     sources += [
       "logging_chromeos.cc",
       "power_monitor/power_monitor_device_source_chromeos.cc",
@@ -1532,7 +1530,7 @@ component("base") {
   }
 
   # Lacros.
-  if (is_chromeos_lacros) {
+  if (chromeos_is_browser_only) {
     sources += [ "system/sys_info_chromeos.cc" ]
   }
 
@@ -2102,14 +2100,13 @@ component("base") {
     ]
   }
 
-  if ((is_posix && !is_apple && !is_android && !is_chromeos_ash) ||
-      is_fuchsia) {
+  if ((is_posix && !is_apple && !is_android && !is_chromeos) || is_fuchsia) {
     sources += [ "power_monitor/power_monitor_device_source_stub.cc" ]
   }
 
   # On ARC++-enabled ChromeOS system, we need TimeTicks::FromUptimeMillis to
   # interpret time values sent from Android container.
-  if (is_android || is_chromeos_ash) {
+  if (is_android || is_chromeos) {
     sources += [ "time/time_android.cc" ]
   }
 
@@ -2446,7 +2443,6 @@ component("i18n") {
     ":base",
     "//base/third_party/dynamic_annotations",
     "//build:chromecast_buildflags",
-    "//build:chromeos_buildflags",
   ]
 
   if (!is_debug) {
@@ -3162,8 +3158,7 @@ test("base_unittests") {
 
   # Allow more direct string conversions on platforms with native utf8
   # strings
-  # TODO(crbug/1052397): Consider replacing is_ash with is_chromeos once lacros switches to target_os=chromeos
-  if (is_apple || is_chromeos_ash || is_chromecast || is_fuchsia) {
+  if (is_apple || is_chromeos || is_chromecast || is_fuchsia) {
     defines += [ "SYSTEM_NATIVE_UTF8" ]
   }
 
@@ -3331,7 +3326,7 @@ test("base_unittests") {
     }
   }
 
-  if (is_linux || is_chromeos_lacros) {
+  if (is_linux) {
     sources += [
       "linux_util_unittest.cc",
       "nix/xdg_util_unittest.cc",

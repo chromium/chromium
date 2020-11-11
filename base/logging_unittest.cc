@@ -19,7 +19,6 @@
 #include "base/test/scoped_logging_settings.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -296,7 +295,7 @@ TEST_F(LoggingTest, AlwaysLogErrorsToStderr) {
 }
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
 TEST_F(LoggingTest, InitWithFileDescriptor) {
   const char kErrorLogMessage[] = "something bad happened";
 
@@ -352,7 +351,7 @@ TEST_F(LoggingTest, DuplicateLogFile) {
   ASSERT_NE(written_logs.find(kErrorLogMessage2), std::string::npos);
   fclose(log_file_dup);
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // defined(OS_CHROMEOS)
 
 #if defined(OFFICIAL_BUILD) && defined(OS_WIN)
 NOINLINE void CheckContainingFunc(int death_location) {
@@ -809,7 +808,7 @@ TEST_F(LoggingTest, LogPrefix) {
   EXPECT_EQ(std::string::npos, log_string->find(kPrefix));
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
 TEST_F(LoggingTest, LogCrosSyslogFormat) {
   // Set log format to syslog format.
   scoped_logging_settings().SetLogFormat(LogFormat::LOG_FORMAT_SYSLOG);
@@ -882,7 +881,7 @@ TEST_F(LoggingTest, LogCrosSyslogFormat) {
     EXPECT_THAT(*log_string, ::testing::MatchesRegex(kExpected));
   }
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // defined(OS_CHROMEOS)
 
 }  // namespace
 
