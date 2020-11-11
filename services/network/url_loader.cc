@@ -1811,16 +1811,6 @@ void URLLoader::SendResponseToClient() {
   TRACE_EVENT1("loading", "network::URLLoader::SendResponseToClient", "url",
                url_request_->url().possibly_invalid_spec());
   url_loader_client_->OnReceiveResponse(std::move(response_));
-
-  net::IOBufferWithSize* metadata =
-      url_request_->response_info().metadata.get();
-  if (metadata) {
-    const uint8_t* data = reinterpret_cast<const uint8_t*>(metadata->data());
-
-    url_loader_client_->OnReceiveCachedMetadata(
-        std::vector<uint8_t>(data, data + metadata->size()));
-  }
-
   url_loader_client_->OnStartLoadingResponseBody(std::move(consumer_handle_));
 }
 

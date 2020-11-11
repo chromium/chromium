@@ -481,16 +481,6 @@ class AppCacheResponseTest : public testing::Test {
                                MockStorageDelegate& storage_delegate) {
     EXPECT_EQ(written_response_id_, storage_delegate.loaded_info_id_);
     EXPECT_TRUE(storage_delegate.loaded_info_.get());
-    const net::HttpResponseInfo& read_head =
-        storage_delegate.loaded_info_->http_response_info();
-    const int metadata_size = strlen(metadata);
-    if (metadata_size) {
-      EXPECT_TRUE(read_head.metadata.get());
-      EXPECT_EQ(metadata_size, read_head.metadata->size());
-      EXPECT_EQ(0, memcmp(metadata, read_head.metadata->data(), metadata_size));
-    } else {
-      EXPECT_FALSE(read_head.metadata.get());
-    }
     EXPECT_TRUE(CompareHttpResponseInfos(
         *write_info_buffer_->http_info,
         storage_delegate.loaded_info_->http_response_info()));

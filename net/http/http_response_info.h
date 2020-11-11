@@ -24,7 +24,6 @@ class Pickle;
 namespace net {
 
 class HttpResponseHeaders;
-class IOBufferWithSize;
 class SSLCertRequestInfo;
 
 class NET_EXPORT HttpResponseInfo {
@@ -241,9 +240,6 @@ class NET_EXPORT HttpResponseInfo {
 
   // The "Vary" header data for this response.
   HttpVaryData vary_data;
-
-  // Any metadata associated with this resource's cached data.
-  scoped_refptr<IOBufferWithSize> metadata;
 
   static std::string ConnectionInfoToString(ConnectionInfo connection_info);
 };

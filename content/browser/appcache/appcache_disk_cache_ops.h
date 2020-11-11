@@ -15,6 +15,7 @@
 
 namespace net {
 class IOBuffer;
+class IOBufferWithSize;
 }  // namespace net
 
 namespace content {
@@ -69,6 +70,7 @@ class CONTENT_EXPORT AppCacheResponseIO {
   AppCacheDiskCacheEntry* entry_;
   scoped_refptr<HttpResponseInfoIOBuffer> info_buffer_;
   scoped_refptr<net::IOBuffer> buffer_;
+  scoped_refptr<net::IOBufferWithSize> metadata_;
   int buffer_len_;
   net::CompletionOnceCallback callback_;
   net::CompletionOnceCallback open_callback_;
