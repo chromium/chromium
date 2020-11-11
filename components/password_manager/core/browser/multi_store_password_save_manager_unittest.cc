@@ -904,6 +904,30 @@ TEST_F(MultiStorePasswordSaveManagerTest,
   password_save_manager()->MoveCredentialsToAccountStore(kTrigger);
 }
 
+TEST_F(
+    MultiStorePasswordSaveManagerTest,
+    MoveCredentialsFromProfileToAccountStoreWhenExistsInBothStoresWithDifferentPassword) {
+  PasswordForm saved_match_in_profile_store(saved_match_);
+  saved_match_in_profile_store.in_store = PasswordForm::Store::kProfileStore;
+  saved_match_in_profile_store.password_value = ASCIIToUTF16("password1");
+  PasswordForm saved_match_in_account_store(saved_match_);
+  saved_match_in_account_store.in_store = PasswordForm::Store::kAccountStore;
+  saved_match_in_account_store.password_value = ASCIIToUTF16("password2");
+  SetNonFederatedAndNotifyFetchCompleted(
+      {&saved_match_in_profile_store, &saved_match_in_account_store});
+
+  password_save_manager()->CreatePendingCredentials(
+      saved_match_in_profile_store, &observed_form_, submitted_form_,
+      /*is_http_auth=*/false,
+      /*is_credential_api_save=*/false);
+
+  EXPECT_CALL(*mock_profile_form_saver(), Remove(saved_match_in_profile_store));
+  EXPECT_CALL(*mock_account_form_saver(),
+              Save(saved_match_in_profile_store, _, _));
+
+  password_save_manager()->MoveCredentialsToAccountStore(kTrigger);
+}
+
 TEST_F(MultiStorePasswordSaveManagerTest,
        MoveCredentialsFromProfileToAccountStoreWhenPSLMatchExistsInBothStores) {
   PasswordForm saved_match_in_profile_store(saved_match_);
