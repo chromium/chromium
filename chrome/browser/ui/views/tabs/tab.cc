@@ -424,24 +424,22 @@ bool Tab::OnKeyPressed(const ui::KeyEvent& event) {
 #endif
 
   if (event.type() == ui::ET_KEY_PRESSED && (event.flags() & kModifiedFlag)) {
-    if (event.flags() & ui::EF_SHIFT_DOWN) {
-      if (event.key_code() == ui::VKEY_RIGHT) {
-        controller()->MoveTabLast(this);
-        return true;
+    const bool is_right = event.key_code() == ui::VKEY_RIGHT;
+    const bool is_left = event.key_code() == ui::VKEY_LEFT;
+    if (is_right || is_left) {
+      const bool is_rtl = base::i18n::IsRTL();
+      const bool is_next = (is_right && !is_rtl) || (is_left && is_rtl);
+      if (event.flags() & ui::EF_SHIFT_DOWN) {
+        if (is_next)
+          controller()->MoveTabLast(this);
+        else
+          controller()->MoveTabFirst(this);
+      } else if (is_next) {
+        controller()->ShiftTabNext(this);
+      } else {
+        controller()->ShiftTabPrevious(this);
       }
-      if (event.key_code() == ui::VKEY_LEFT) {
-        controller()->MoveTabFirst(this);
-        return true;
-      }
-    } else {
-      if (event.key_code() == ui::VKEY_RIGHT) {
-        controller()->ShiftTabRight(this);
-        return true;
-      }
-      if (event.key_code() == ui::VKEY_LEFT) {
-        controller()->ShiftTabLeft(this);
-        return true;
-      }
+      return true;
     }
   }
 

@@ -18,6 +18,7 @@
 #include "base/containers/adapters.h"
 #include "base/containers/flat_map.h"
 #include "base/feature_list.h"
+#include "base/i18n/rtl.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_functions.h"
@@ -126,9 +127,6 @@ constexpr int kStackedPadding = 6;
 // Size of the drop indicator.
 int g_drop_indicator_width = 0;
 int g_drop_indicator_height = 0;
-
-// The offset in indices when shifting a tab or group in the given direction.
-enum ShiftOffset { kLeft = -1, kRight = 1 };
 
 // Listens in on the browser event stream (as a pre target event handler) and
 // hides an associated hover card on any keypress.
@@ -1754,12 +1752,12 @@ void TabStrip::CloseTab(Tab* tab, CloseTabSource source) {
   CloseTabInternal(GetModelIndexOf(tab), source);
 }
 
-void TabStrip::ShiftTabLeft(Tab* tab) {
-  ShiftTabRelative(tab, ShiftOffset::kLeft);
+void TabStrip::ShiftTabNext(Tab* tab) {
+  ShiftTabRelative(tab, 1);
 }
 
-void TabStrip::ShiftTabRight(Tab* tab) {
-  ShiftTabRelative(tab, ShiftOffset::kRight);
+void TabStrip::ShiftTabPrevious(Tab* tab) {
+  ShiftTabRelative(tab, -1);
 }
 
 void TabStrip::MoveTabFirst(Tab* tab) {
@@ -2997,7 +2995,7 @@ void TabStrip::UpdateContrastRatioValues() {
 }
 
 void TabStrip::ShiftTabRelative(Tab* tab, int offset) {
-  DCHECK(offset == ShiftOffset::kLeft || offset == ShiftOffset::kRight);
+  DCHECK_EQ(1, std::abs(offset));
   const int start_index = GetModelIndexOf(tab);
   int target_index = start_index + offset;
 
@@ -3038,7 +3036,7 @@ void TabStrip::ShiftTabRelative(Tab* tab, int offset) {
         if (IsValidModelIndex(candidate_index)) {
           target_index = candidate_index - offset;
         } else {
-          target_index = offset == ShiftOffset::kLeft ? 0 : GetModelCount() - 1;
+          target_index = offset < 0 ? 0 : GetModelCount() - 1;
         }
       } else {
         controller_->AddTabToGroup(start_index, target_group.value());
@@ -3051,7 +3049,7 @@ void TabStrip::ShiftTabRelative(Tab* tab, int offset) {
 
 void TabStrip::ShiftGroupRelative(const tab_groups::TabGroupId& group,
                                   int offset) {
-  DCHECK(offset == ShiftOffset::kLeft || offset == ShiftOffset::kRight);
+  DCHECK_EQ(1, std::abs(offset));
   std::vector<int> tabs_in_group = controller_->ListTabsInGroup(group);
 
   const int start_index = tabs_in_group.front();
