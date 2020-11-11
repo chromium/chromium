@@ -57,7 +57,6 @@ ScriptPromise DOMWindowDigitalGoods::GetDigitalGoodsService(
     return promise;
   }
 
-  // TODO: Bind only on platforms where an implementation exists.
   if (!mojo_service_) {
     ExecutionContext::From(script_state)
         ->GetBrowserInterfaceBroker()
