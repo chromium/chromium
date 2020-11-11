@@ -41,6 +41,7 @@ class RasterContextProvider;
 }
 
 namespace media {
+class VideoTextureBacking;
 
 // Handles rendering of VideoFrames to PaintCanvases.
 class MEDIA_EXPORT PaintCanvasVideoRenderer {
@@ -211,22 +212,15 @@ class MEDIA_EXPORT PaintCanvasVideoRenderer {
     // to the visible size of the VideoFrame. Its contents are generated lazily.
     cc::PaintImage paint_image;
 
-    // The context provider used to generate |source_mailbox| and
-    // |source_texture|. This is only set if the VideoFrame was texture-backed.
-    scoped_refptr<viz::RasterContextProvider> raster_context_provider;
+    // The backing for the source texture. This is also responsible for managing
+    // the lifetime of the texture.
+    sk_sp<VideoTextureBacking> texture_backing;
 
-    // The mailbox for the source texture. This can be either the source
-    // VideoFrame's texture (if |wraps_video_frame_texture| is true) or a newly
-    // allocated shared image (if |wraps_video_frame_texture| is false) if a
-    // copy or conversion was necessary.
-    // This is only set if the VideoFrame was texture-backed.
-    gpu::Mailbox source_mailbox;
-
-    // The texture ID created when importing |source_mailbox|.
+    // The GL texture ID used in non-OOP code path.
     // This is only set if the VideoFrame was texture-backed.
     uint32_t source_texture = 0;
 
-    // The allocated size of |source_mailbox|.
+    // The allocated size of VideoFrame texture.
     // This is only set if the VideoFrame was texture-backed.
     gfx::Size coded_size;
 
@@ -234,10 +228,6 @@ class MEDIA_EXPORT PaintCanvasVideoRenderer {
     // of the frame after cropping.
     // This is only set if the VideoFrame was texture-backed.
     gfx::Rect visible_rect;
-
-    // Whether |source_mailbox| directly points to a texture of the VideoFrame
-    // (if true), or to an allocated shared image (if false).
-    bool wraps_video_frame_texture = false;
 
     // Used to allow recycling of the previous shared image. This requires that
     // no external users have access to this resource via SkImage. Returns true
@@ -265,6 +255,8 @@ class MEDIA_EXPORT PaintCanvasVideoRenderer {
       unsigned int format,
       unsigned int type,
       bool flip_y);
+
+  bool CacheBackingWrapsTexture() const;
 
   base::Optional<Cache> cache_;
 
