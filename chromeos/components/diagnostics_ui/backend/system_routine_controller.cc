@@ -22,6 +22,7 @@ constexpr uint32_t kCpuFloatingPointDurationInSeconds = 10;
 constexpr uint32_t kCpuPrimeDurationInSeconds = 10;
 constexpr uint64_t kCpuPrimeMaxNumber = 1000000;
 constexpr uint32_t kCpuStressDurationInSeconds = 10;
+constexpr uint32_t kExpectedMemoryDurationInSeconds = 1000;
 constexpr uint32_t kRoutineResultRefreshIntervalInSeconds = 1;
 
 mojom::RoutineResultInfoPtr ConstructStandardRoutineResultInfoPtr(
@@ -67,6 +68,8 @@ uint32_t GetExpectedRoutineDurationInSeconds(mojom::RoutineType routine_type) {
       return kCpuPrimeDurationInSeconds;
     case mojom::RoutineType::kCpuStress:
       return kCpuCacheDurationInSeconds;
+    case mojom::RoutineType::kMemory:
+      return kExpectedMemoryDurationInSeconds;
   }
 }
 
@@ -121,6 +124,11 @@ void SystemRoutineController::ExecuteRoutine(mojom::RoutineType routine_type) {
     case mojom::RoutineType::kCpuStress:
       diagnostics_service_->RunCpuStressRoutine(
           kCpuStressDurationInSeconds,
+          base::BindOnce(&SystemRoutineController::OnRoutineStarted,
+                         base::Unretained(this), routine_type));
+      return;
+    case mojom::RoutineType::kMemory:
+      diagnostics_service_->RunMemoryRoutine(
           base::BindOnce(&SystemRoutineController::OnRoutineStarted,
                          base::Unretained(this), routine_type));
       return;

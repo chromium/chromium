@@ -9,6 +9,7 @@ enum RoutineType {
   kCpuStress,
   kCpuFloatingPoint,
   kCpuPrime,
+  kMemory,
 };
 
 enum StandardRoutineResult {
