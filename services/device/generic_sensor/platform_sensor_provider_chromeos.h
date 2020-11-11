@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "chromeos/components/sensors/mojom/cros_sensor_service.mojom.h"
@@ -47,6 +48,13 @@ class PlatformSensorProviderChromeOS
  private:
   friend class PlatformSensorProviderChromeOSTest;
 
+  enum class SensorLocation {
+    kBase = 0,
+    kLid,
+    kCamera,
+    kMax,
+  };
+
   using SensorIdTypesMap =
       base::flat_map<int32_t,
                      std::vector<chromeos::sensors::mojom::DeviceType>>;
@@ -55,8 +63,9 @@ class PlatformSensorProviderChromeOS
     SensorData();
     ~SensorData();
 
-    std::vector<chromeos::sensors::mojom::DeviceType> types;
+    std::vector<mojom::SensorType> types;
     bool ignored = false;
+    base::Optional<SensorLocation> location;
     base::Optional<double> scale;
 
     // Temporarily stores the remote, waiting for its attributes information.
@@ -64,6 +73,9 @@ class PlatformSensorProviderChromeOS
     // after all information is collected, if this sensor is needed.
     mojo::Remote<chromeos::sensors::mojom::SensorDevice> remote;
   };
+
+  base::Optional<SensorLocation> ParseLocation(
+      const base::Optional<std::string>& location);
 
   base::Optional<int32_t> GetDeviceId(mojom::SensorType type) const;
 
@@ -83,7 +95,10 @@ class PlatformSensorProviderChromeOS
 
   void OnSensorDeviceDisconnect(int32_t id);
   void ProcessSensorsIfPossible();
-  void DetermineSensorsByType();
+
+  void DetermineMotionSensors();
+  void DetermineLightSensor();
+
   // Remove Mojo remotes of the unused devices, as they'll never be used.
   void RemoveUnusedSensorDeviceRemotes();
   void ProcessStoredRequests();
@@ -108,6 +123,9 @@ class PlatformSensorProviderChromeOS
   std::map<mojom::SensorType, int32_t> sensor_id_by_type_;
 
   base::WeakPtrFactory<PlatformSensorProviderChromeOS> weak_ptr_factory_{this};
+
+  FRIEND_TEST_ALL_PREFIXES(PlatformSensorProviderChromeOSTest,
+                           CheckUnsupportedTypes);
 };
 
 }  // namespace device

@@ -27,6 +27,8 @@ constexpr int kFakeDeviceId = 1;
 constexpr double kScaleValue = 10.0;
 constexpr char kWrongScale[] = "10..0";
 
+constexpr char kWrongLocation[] = "basee";
+
 }  // namespace
 
 class PlatformSensorProviderChromeOSTest : public ::testing::Test {
@@ -45,21 +47,27 @@ class PlatformSensorProviderChromeOSTest : public ::testing::Test {
 
   void AddDevice(int32_t iio_device_id,
                  chromeos::sensors::mojom::DeviceType type,
-                 const base::Optional<std::string>& scale) {
+                 const base::Optional<std::string>& scale,
+                 const base::Optional<std::string>& location) {
     AddDevice(iio_device_id,
               std::set<chromeos::sensors::mojom::DeviceType>{type},
-              std::move(scale));
+              std::move(scale), std::move(location));
   }
 
   void AddDevice(int32_t iio_device_id,
                  std::set<chromeos::sensors::mojom::DeviceType> types,
-                 const base::Optional<std::string>& scale) {
+                 const base::Optional<std::string>& scale,
+                 const base::Optional<std::string>& location) {
     auto sensor_device = std::make_unique<chromeos::sensors::FakeSensorDevice>(
         std::vector<chromeos::sensors::FakeSensorDevice::ChannelData>{});
 
     if (scale.has_value()) {
       sensor_device->SetAttribute(chromeos::sensors::mojom::kScale,
                                   scale.value());
+    }
+    if (location.has_value()) {
+      sensor_device->SetAttribute(chromeos::sensors::mojom::kLocation,
+                                  location.value());
     }
 
     sensor_devices_.push_back(sensor_device.get());
@@ -106,9 +114,57 @@ class PlatformSensorProviderChromeOSTest : public ::testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_;
 };
 
+TEST_F(PlatformSensorProviderChromeOSTest, CheckUnsupportedTypes) {
+  int fake_id = 1;
+  // Containing at least one supported device type.
+  AddDevice(fake_id++, chromeos::sensors::mojom::DeviceType::ACCEL,
+            base::NumberToString(kScaleValue),
+            chromeos::sensors::mojom::kLocationBase);
+  AddDevice(fake_id++,
+            std::set<chromeos::sensors::mojom::DeviceType>{
+                chromeos::sensors::mojom::DeviceType::ANGLVEL,
+                chromeos::sensors::mojom::DeviceType::COUNT},
+            base::NumberToString(kScaleValue),
+            chromeos::sensors::mojom::kLocationBase);
+
+  // All device types are unsupported.
+  AddDevice(fake_id++, chromeos::sensors::mojom::DeviceType::COUNT,
+            base::NumberToString(kScaleValue),
+            chromeos::sensors::mojom::kLocationBase);
+  AddDevice(fake_id++, chromeos::sensors::mojom::DeviceType::ANGL,
+            base::NumberToString(kScaleValue),
+            chromeos::sensors::mojom::kLocationBase);
+  AddDevice(fake_id++,
+            std::set<chromeos::sensors::mojom::DeviceType>{
+                chromeos::sensors::mojom::DeviceType::ANGL,
+                chromeos::sensors::mojom::DeviceType::BARO},
+            base::NumberToString(kScaleValue),
+            chromeos::sensors::mojom::kLocationBase);
+
+  StartConnection();
+
+  EXPECT_TRUE(CreateSensor(mojom::SensorType::ACCELEROMETER));
+
+  EXPECT_FALSE(provider_->sensors_[1].ignored);
+  EXPECT_FALSE(provider_->sensors_[2].ignored);
+  EXPECT_TRUE(provider_->sensors_[3].ignored);
+  EXPECT_TRUE(provider_->sensors_[4].ignored);
+  EXPECT_TRUE(provider_->sensors_[5].ignored);
+}
+
 TEST_F(PlatformSensorProviderChromeOSTest, MissingScale) {
   AddDevice(kFakeDeviceId, chromeos::sensors::mojom::DeviceType::ACCEL,
-            /*scale=*/base::nullopt);
+            /*scale=*/base::nullopt, chromeos::sensors::mojom::kLocationBase);
+
+  StartConnection();
+
+  EXPECT_FALSE(CreateSensor(mojom::SensorType::ACCELEROMETER));
+}
+
+TEST_F(PlatformSensorProviderChromeOSTest, MissingLocation) {
+  AddDevice(kFakeDeviceId, chromeos::sensors::mojom::DeviceType::ACCEL,
+            base::NumberToString(kScaleValue),
+            /*location=*/base::nullopt);
 
   StartConnection();
 
@@ -117,57 +173,169 @@ TEST_F(PlatformSensorProviderChromeOSTest, MissingScale) {
 
 TEST_F(PlatformSensorProviderChromeOSTest, WrongScale) {
   AddDevice(kFakeDeviceId, chromeos::sensors::mojom::DeviceType::ACCEL,
-            kWrongScale);
+            kWrongScale, chromeos::sensors::mojom::kLocationBase);
 
   StartConnection();
 
   EXPECT_FALSE(CreateSensor(mojom::SensorType::ACCELEROMETER));
 }
 
-TEST_F(PlatformSensorProviderChromeOSTest, ChooseFirstDeviceInTheSameType) {
-  int fake_id = 1;
-
-  AddDevice(fake_id++, chromeos::sensors::mojom::DeviceType::ACCEL,
-            base::NumberToString(kScaleValue));
-  // Will not be used.
-  AddDevice(fake_id++, chromeos::sensors::mojom::DeviceType::ACCEL,
-            base::NumberToString(kScaleValue));
-
-  AddDevice(fake_id++, chromeos::sensors::mojom::DeviceType::ANGLVEL,
-            base::NumberToString(kScaleValue));
-  // Will not be used.
-  AddDevice(fake_id++, chromeos::sensors::mojom::DeviceType::ANGLVEL,
-            base::NumberToString(kScaleValue));
+TEST_F(PlatformSensorProviderChromeOSTest, WrongLocation) {
+  AddDevice(kFakeDeviceId, chromeos::sensors::mojom::DeviceType::ACCEL,
+            base::NumberToString(kScaleValue), kWrongLocation);
 
   StartConnection();
 
-  // Wait until the disconnects of the second accelerometer and gyroscope arrive
-  // at FakeSensorDevice.
+  EXPECT_FALSE(CreateSensor(mojom::SensorType::ACCELEROMETER));
+}
+
+TEST_F(PlatformSensorProviderChromeOSTest, CheckMainLocationBase) {
+  int fake_id = 1;
+  AddDevice(fake_id++, chromeos::sensors::mojom::DeviceType::ACCEL,
+            base::NumberToString(kScaleValue),
+            chromeos::sensors::mojom::kLocationBase);
+
+  // Will not be used.
+  AddDevice(fake_id++, chromeos::sensors::mojom::DeviceType::ACCEL,
+            base::NumberToString(kScaleValue),
+            chromeos::sensors::mojom::kLocationLid);
+
+  AddDevice(fake_id++, chromeos::sensors::mojom::DeviceType::ANGLVEL,
+            base::NumberToString(kScaleValue),
+            chromeos::sensors::mojom::kLocationBase);
+
+  AddDevice(fake_id++, chromeos::sensors::mojom::DeviceType::MAGN,
+            base::NumberToString(kScaleValue),
+            chromeos::sensors::mojom::kLocationBase);
+
+  StartConnection();
+
+  EXPECT_TRUE(CreateSensor(mojom::SensorType::GYROSCOPE));
+
+  // Wait until the disconnect of the gyroscope arrives at FakeSensorDevice.
+  base::RunLoop().RunUntilIdle();
+
+  // Remote stored in |provider_|.
+  EXPECT_TRUE(sensor_devices_[0]->HasReceivers());
+  EXPECT_TRUE(sensor_devices_[3]->HasReceivers());
+  // Removed in |provider_| as it'll never be used.
+  EXPECT_FALSE(sensor_devices_[1]->HasReceivers());
+}
+
+TEST_F(PlatformSensorProviderChromeOSTest, CheckMainLocationLid) {
+  int fake_id = 1;
+  AddDevice(fake_id++, chromeos::sensors::mojom::DeviceType::ACCEL,
+            base::NumberToString(kScaleValue),
+            chromeos::sensors::mojom::kLocationBase);
+  AddDevice(fake_id++, chromeos::sensors::mojom::DeviceType::ACCEL,
+            base::NumberToString(kScaleValue),
+            chromeos::sensors::mojom::kLocationLid);
+
+  AddDevice(fake_id++, chromeos::sensors::mojom::DeviceType::ANGLVEL,
+            base::NumberToString(kScaleValue),
+            chromeos::sensors::mojom::kLocationBase);
+  AddDevice(fake_id++, chromeos::sensors::mojom::DeviceType::ANGLVEL,
+            base::NumberToString(kScaleValue),
+            chromeos::sensors::mojom::kLocationLid);
+
+  AddDevice(fake_id++, chromeos::sensors::mojom::DeviceType::MAGN,
+            base::NumberToString(kScaleValue),
+            chromeos::sensors::mojom::kLocationCamera);
+
+  StartConnection();
+
+  // Wait until the disconnect of the first gyroscope arrives at
+  // FakeSensorDevice.
   base::RunLoop().RunUntilIdle();
 
   // Removed in |provider_| as they'll never be used.
-  EXPECT_FALSE(sensor_devices_[1]->HasReceivers());
-  EXPECT_FALSE(sensor_devices_[3]->HasReceivers());
+  EXPECT_FALSE(sensor_devices_[0]->HasReceivers());
+  EXPECT_FALSE(sensor_devices_[2]->HasReceivers());
+  EXPECT_FALSE(sensor_devices_[4]->HasReceivers());
+  // Remote stored in |provider_|.
+  EXPECT_TRUE(sensor_devices_[1]->HasReceivers());
+  EXPECT_TRUE(sensor_devices_[3]->HasReceivers());
+}
+
+TEST_F(PlatformSensorProviderChromeOSTest,
+       CheckMainLocationLidWithMultitypeSensor) {
+  int fake_id = 1;
+  AddDevice(fake_id++,
+            std::set<chromeos::sensors::mojom::DeviceType>{
+                chromeos::sensors::mojom::DeviceType::ACCEL,
+                chromeos::sensors::mojom::DeviceType::ANGLVEL},
+            base::NumberToString(kScaleValue),
+            chromeos::sensors::mojom::kLocationLid);
+
+  AddDevice(fake_id++, chromeos::sensors::mojom::DeviceType::ANGLVEL,
+            base::NumberToString(kScaleValue),
+            chromeos::sensors::mojom::kLocationBase);
+
+  StartConnection();
+
+  // Wait until the disconnect of the gyroscope arrives at FakeSensorDevice.
+  base::RunLoop().RunUntilIdle();
+
   // Remote stored in |provider_|.
   EXPECT_TRUE(sensor_devices_[0]->HasReceivers());
-  EXPECT_TRUE(sensor_devices_[2]->HasReceivers());
+  // Removed in |provider_| as it'll never be used.
+  EXPECT_FALSE(sensor_devices_[1]->HasReceivers());
+
+  EXPECT_TRUE(CreateSensor(mojom::SensorType::ACCELEROMETER));
+  EXPECT_TRUE(CreateSensor(mojom::SensorType::GYROSCOPE));
+}
+
+TEST_F(PlatformSensorProviderChromeOSTest, CheckAmbientLightSensorLocationLid) {
+  int fake_id = 1;
+  AddDevice(fake_id++, chromeos::sensors::mojom::DeviceType::LIGHT,
+            base::NumberToString(kScaleValue),
+            chromeos::sensors::mojom::kLocationBase);
+  AddDevice(fake_id++, chromeos::sensors::mojom::DeviceType::LIGHT,
+            base::NumberToString(kScaleValue),
+            chromeos::sensors::mojom::kLocationLid);
+
+  StartConnection();
+
+  // Wait until the disconnect of the first ambient light sensor arrives at
+  // FakeSensorDevice.
+  base::RunLoop().RunUntilIdle();
+
+  // Removed in |provider_| as it'll never be used.
+  EXPECT_FALSE(sensor_devices_[0]->HasReceivers());
+  // Remote stored in |provider_|.
+  EXPECT_TRUE(sensor_devices_[1]->HasReceivers());
+}
+
+TEST_F(PlatformSensorProviderChromeOSTest,
+       CheckAmbientLightSensorLocationBase) {
+  AddDevice(kFakeDeviceId, chromeos::sensors::mojom::DeviceType::LIGHT,
+            base::NumberToString(kScaleValue),
+            chromeos::sensors::mojom::kLocationBase);
+
+  StartConnection();
+
+  EXPECT_TRUE(CreateSensor(mojom::SensorType::AMBIENT_LIGHT));
 }
 
 TEST_F(PlatformSensorProviderChromeOSTest, Reconnect) {
   int fake_id = 1;
 
+  // Will not be used.
   AddDevice(fake_id++, chromeos::sensors::mojom::DeviceType::ACCEL,
-            base::NumberToString(kScaleValue));
+            base::NumberToString(kScaleValue),
+            chromeos::sensors::mojom::kLocationBase);
 
   AddDevice(fake_id++, chromeos::sensors::mojom::DeviceType::ANGLVEL,
-            base::NumberToString(kScaleValue));
+            base::NumberToString(kScaleValue),
+            chromeos::sensors::mojom::kLocationLid);
 
   AddDevice(fake_id++, chromeos::sensors::mojom::DeviceType::LIGHT,
-            base::NumberToString(kScaleValue));
+            base::NumberToString(kScaleValue),
+            chromeos::sensors::mojom::kLocationBase);
 
   StartConnection();
 
-  EXPECT_TRUE(CreateSensor(mojom::SensorType::ACCELEROMETER));
+  EXPECT_FALSE(CreateSensor(mojom::SensorType::ACCELEROMETER));
 
   // Simulate a disconnection between |provider_| and the dispatcher.
   ResetClient();
@@ -197,7 +365,8 @@ TEST_F(PlatformSensorProviderChromeOSTest,
 
 TEST_F(PlatformSensorProviderChromeOSTest, CheckLinearAcceleration) {
   AddDevice(kFakeDeviceId, chromeos::sensors::mojom::DeviceType::ACCEL,
-            base::NumberToString(kScaleValue));
+            base::NumberToString(kScaleValue),
+            chromeos::sensors::mojom::kLocationBase);
 
   StartConnection();
 
@@ -218,7 +387,8 @@ TEST_F(
 TEST_F(PlatformSensorProviderChromeOSTest,
        CheckAbsoluteOrientationSensorNotCreatedIfNoAccelerometer) {
   AddDevice(kFakeDeviceId, chromeos::sensors::mojom::DeviceType::MAGN,
-            base::NumberToString(kScaleValue));
+            base::NumberToString(kScaleValue),
+            chromeos::sensors::mojom::kLocationBase);
 
   StartConnection();
 
@@ -231,7 +401,8 @@ TEST_F(PlatformSensorProviderChromeOSTest,
 TEST_F(PlatformSensorProviderChromeOSTest,
        CheckAbsoluteOrientationSensorNotCreatedIfNoMagnetometer) {
   AddDevice(kFakeDeviceId, chromeos::sensors::mojom::DeviceType::ACCEL,
-            base::NumberToString(kScaleValue));
+            base::NumberToString(kScaleValue),
+            chromeos::sensors::mojom::kLocationBase);
 
   StartConnection();
 
@@ -245,9 +416,11 @@ TEST_F(PlatformSensorProviderChromeOSTest, CheckAbsoluteOrientationSensors) {
   int fake_id = 1;
 
   AddDevice(fake_id++, chromeos::sensors::mojom::DeviceType::ACCEL,
-            base::NumberToString(kScaleValue));
+            base::NumberToString(kScaleValue),
+            chromeos::sensors::mojom::kLocationBase);
   AddDevice(fake_id++, chromeos::sensors::mojom::DeviceType::MAGN,
-            base::NumberToString(kScaleValue));
+            base::NumberToString(kScaleValue),
+            chromeos::sensors::mojom::kLocationBase);
 
   StartConnection();
 
@@ -270,7 +443,8 @@ TEST_F(
 TEST_F(PlatformSensorProviderChromeOSTest,
        CheckRelativeOrientationSensorNotCreatedIfNoAccelerometer) {
   AddDevice(kFakeDeviceId, chromeos::sensors::mojom::DeviceType::ANGLVEL,
-            base::NumberToString(kScaleValue));
+            base::NumberToString(kScaleValue),
+            chromeos::sensors::mojom::kLocationBase);
 
   StartConnection();
 
@@ -283,7 +457,8 @@ TEST_F(PlatformSensorProviderChromeOSTest,
 TEST_F(PlatformSensorProviderChromeOSTest,
        CheckRelativeOrientationSensorUsingAccelerometer) {
   AddDevice(kFakeDeviceId, chromeos::sensors::mojom::DeviceType::ACCEL,
-            base::NumberToString(kScaleValue));
+            base::NumberToString(kScaleValue),
+            chromeos::sensors::mojom::kLocationBase);
 
   StartConnection();
 
@@ -296,9 +471,11 @@ TEST_F(PlatformSensorProviderChromeOSTest,
        CheckRelativeOrientationSensorUsingAccelerometerAndGyroscope) {
   int fake_id = 1;
   AddDevice(fake_id++, chromeos::sensors::mojom::DeviceType::ANGLVEL,
-            base::NumberToString(kScaleValue));
+            base::NumberToString(kScaleValue),
+            chromeos::sensors::mojom::kLocationBase);
   AddDevice(fake_id++, chromeos::sensors::mojom::DeviceType::ACCEL,
-            base::NumberToString(kScaleValue));
+            base::NumberToString(kScaleValue),
+            chromeos::sensors::mojom::kLocationBase);
 
   StartConnection();
 

@@ -53,6 +53,22 @@ base::Optional<mojom::SensorType> ConvertSensorType(
   }
 }
 
+bool DeviceNeedsLocationWithTypes(const std::vector<mojom::SensorType>& types) {
+  for (auto type : types) {
+    switch (type) {
+      case mojom::SensorType::AMBIENT_LIGHT:
+      case mojom::SensorType::ACCELEROMETER:
+      case mojom::SensorType::GYROSCOPE:
+      case mojom::SensorType::MAGNETOMETER:
+        return true;
+      default:
+        break;
+    }
+  }
+
+  return false;
+}
+
 }  // namespace
 
 PlatformSensorProviderChromeOS::PlatformSensorProviderChromeOS() {
@@ -136,6 +152,28 @@ bool PlatformSensorProviderChromeOS::IsSensorTypeAvailable(
 PlatformSensorProviderChromeOS::SensorData::SensorData() = default;
 PlatformSensorProviderChromeOS::SensorData::~SensorData() = default;
 
+base::Optional<PlatformSensorProviderChromeOS::SensorLocation>
+PlatformSensorProviderChromeOS::ParseLocation(
+    const base::Optional<std::string>& raw_location) {
+  if (!raw_location.has_value()) {
+    LOG(ERROR) << "No location attribute";
+    return base::nullopt;
+  }
+
+  // These locations must be listed in the same order as the SensorLocation
+  // enum.
+  const std::vector<std::string> location_strings = {
+      chromeos::sensors::mojom::kLocationBase,
+      chromeos::sensors::mojom::kLocationLid,
+      chromeos::sensors::mojom::kLocationCamera};
+  const auto it = base::ranges::find(location_strings, raw_location.value());
+  if (it == std::end(location_strings))
+    return base::nullopt;
+
+  return static_cast<SensorLocation>(
+      std::distance(std::begin(location_strings), it));
+}
+
 base::Optional<int32_t> PlatformSensorProviderChromeOS::GetDeviceId(
     mojom::SensorType type) const {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
@@ -206,12 +244,28 @@ void PlatformSensorProviderChromeOS::GetAllDeviceIdsCallback(
     if (sensor.ignored)
       continue;
 
-    sensor.types = id_types.second;
+    for (const auto& device_type : id_types.second) {
+      auto type_opt = ConvertSensorType(device_type);
+      if (!type_opt.has_value())
+        continue;
+
+      sensor.types.push_back(type_opt.value());
+    }
+
+    if (sensor.types.empty()) {
+      sensor.ignored = true;
+      continue;
+    }
+
     sensor.remote.reset();
 
     std::vector<std::string> attr_names;
     if (!sensor.scale.has_value())
       attr_names.push_back(chromeos::sensors::mojom::kScale);
+    if (DeviceNeedsLocationWithTypes(sensor.types) &&
+        !sensor.location.has_value()) {
+      attr_names.push_back(chromeos::sensors::mojom::kLocation);
+    }
 
     if (attr_names.empty())
       continue;
@@ -267,6 +321,25 @@ void PlatformSensorProviderChromeOS::GetAttributesCallback(
     ++index;
   }
 
+  if (DeviceNeedsLocationWithTypes(sensor.types) &&
+      !sensor.location.has_value()) {
+    if (index >= values.size()) {
+      LOG(ERROR) << "values doesn't contain location attribute.";
+      IgnoreSensor(sensor);
+      return;
+    }
+
+    sensor.location = ParseLocation(values[index]);
+    if (!sensor.location.has_value()) {
+      LOG(ERROR) << "Failed to parse location: " << values[index].value_or("")
+                 << ", with sensor id: " << id;
+      IgnoreSensor(sensor);
+      return;
+    }
+
+    ++index;
+  }
+
   ProcessSensorsIfPossible();
 }
 
@@ -286,7 +359,10 @@ bool PlatformSensorProviderChromeOS::AreAllSensorsReady() const {
     return false;
 
   return base::ranges::all_of(sensors_, [](const auto& sensor) {
-    return sensor.second.ignored || sensor.second.scale.has_value();
+    return sensor.second.ignored ||
+           (sensor.second.scale.has_value() &&
+            (!DeviceNeedsLocationWithTypes(sensor.second.types) ||
+             sensor.second.location.has_value()));
   });
 }
 
@@ -300,26 +376,81 @@ void PlatformSensorProviderChromeOS::ProcessSensorsIfPossible() {
   if (!AreAllSensorsReady())
     return;
 
-  DetermineSensorsByType();
+  DetermineMotionSensors();
+  DetermineLightSensor();
+
   RemoveUnusedSensorDeviceRemotes();
   ProcessStoredRequests();
 }
 
-void PlatformSensorProviderChromeOS::DetermineSensorsByType() {
+// Follow Android's and W3C's requirements of motion sensors:
+// Android: https://source.android.com/devices/sensors/sensor-types
+// W3C: https://w3c.github.io/sensors/#local-coordinate-system
+// To implement fusion/composite sensors, accelerometer, gyroscope (and
+// magnetometer) must be in the same plane, so when it comes to choosing an
+// accelerometer in a convertible device, we choose the one which is in the
+// same place as the gyroscope. If we still have a choice, we use the one in
+// the lid.
+void PlatformSensorProviderChromeOS::DetermineMotionSensors() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  struct MotionSensorInfo {
+    size_t count;
+    std::vector<std::pair<int32_t, mojom::SensorType>> sensor_info_pairs;
+  };
+  std::map<SensorLocation, MotionSensorInfo> motion_sensor_location_info;
+
   for (const auto& sensor : sensors_) {
-    if (sensor.second.ignored)
+    if (sensor.second.ignored || !sensor.second.location)
       continue;
 
-    int32_t id = sensor.first;
-    for (const auto& device_type : sensor.second.types) {
-      const auto type = ConvertSensorType(device_type);
-      if (!type.has_value())
-        continue;
+    SensorLocation location = sensor.second.location.value();
+    DCHECK_LT(location, SensorLocation::kMax);
 
-      base::TryEmplace(sensor_id_by_type_, type.value(), id);
+    for (auto type : sensor.second.types) {
+      switch (type) {
+        case mojom::SensorType::ACCELEROMETER:
+        case mojom::SensorType::GYROSCOPE:
+        case mojom::SensorType::MAGNETOMETER: {
+          auto& motion_sensor_info = motion_sensor_location_info[location];
+          motion_sensor_info.count++;
+          motion_sensor_info.sensor_info_pairs.push_back(
+              std::make_pair(sensor.first, type));
+          break;
+        }
+
+        default:
+          break;
+      }
     }
   }
+
+  const auto preferred_location =
+      motion_sensor_location_info[SensorLocation::kLid].count >=
+              motion_sensor_location_info[SensorLocation::kBase].count
+          ? SensorLocation::kLid
+          : SensorLocation::kBase;
+  const auto& sensor_info_pairs =
+      motion_sensor_location_info[preferred_location].sensor_info_pairs;
+  for (const auto& pair : sensor_info_pairs)
+    sensor_id_by_type_[pair.second] = pair.first;
+}
+
+// Prefer the light sensor on the lid, as it's more meaningful to web API users.
+void PlatformSensorProviderChromeOS::DetermineLightSensor() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  base::Optional<int32_t> id = base::nullopt;
+
+  for (const auto& sensor : sensors_) {
+    if (sensor.second.ignored ||
+        !base::Contains(sensor.second.types, mojom::SensorType::AMBIENT_LIGHT))
+      continue;
+
+    if (!id.has_value() || sensor.second.location == SensorLocation::kLid)
+      id = sensor.first;
+  }
+
+  if (id.has_value())
+    sensor_id_by_type_[mojom::SensorType::AMBIENT_LIGHT] = id.value();
 }
 
 void PlatformSensorProviderChromeOS::RemoveUnusedSensorDeviceRemotes() {
