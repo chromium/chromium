@@ -5,7 +5,7 @@
   <div id="cardTitle" slot="title">[[i18n('batteryTitle')]]</div>
   <percent-bar-chart slot="left-panel" header="[[i18n('remainingCharge')]]"
     value="[[batteryChargeStatus_.chargeNowMilliampHours]]"
-    max="[[batteryChargeStatus_.chargeFullNowMilliampHours]]">
+    max="[[batteryHealth_.chargeFullNowMilliampHours]]">
   </percent-bar-chart>
   <data-point slot="body" id="currentNow" header="[[i18n('currentNow')]]"
     value="[[batteryChargeStatus_.currentNowMilliamps]]">
@@ -15,7 +15,7 @@
     value="[[batteryHealth_.chargeFullDesignMilliampHours]]">
   </data-point>
   <data-point slot="body" id="chargeFullNow" header="[[i18n('chargeFullNow')]]"
-    value="[[batteryChargeStatus_.chargeFullNowMilliampHours]]">
+    value="[[batteryHealth_.chargeFullNowMilliampHours]]">
   </data-point>
   <data-point slot="body" id="chargeNow" header="[[i18n('chargeNow')]]"
     value="[[batteryChargeStatus_.chargeNowMilliampHours]]">

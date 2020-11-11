@@ -137,7 +137,6 @@ export let BatteryState = {
  * Type alias for BatteryChargeStatus.
  * @typedef {{
  *   batteryState: BatteryState,
- *   chargeFullNowMilliampHours: number,
  *   chargeNowMilliampHours: number,
  *   currentNowMilliamps: number,
  *   powerAdapterStatus: ExternalPowerSource,
