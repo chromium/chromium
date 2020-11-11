@@ -1,5 +1,6 @@
 include_rules = [
   "+chrome/browser/ui/android/layouts/java",
+  "+chrome/browser/tab/java",
   "+chrome/browser/tabmodel/android/java",
   "+chrome/browser/tabpersistence/android/java",
   "+chrome/browser/profiles/android/java",

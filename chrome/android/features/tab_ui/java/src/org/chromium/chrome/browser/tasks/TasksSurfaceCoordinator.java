@@ -21,6 +21,7 @@ import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
 import org.chromium.chrome.browser.ntp.FakeboxDelegate;
 import org.chromium.chrome.browser.ntp.IncognitoCookieControlsManager;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementDelegate.TabSwitcherType;
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementModuleProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher;
@@ -45,8 +46,8 @@ public class TasksSurfaceCoordinator implements TasksSurface {
     private final @TabSwitcherType int mTabSwitcherType;
 
     public TasksSurfaceCoordinator(ChromeActivity activity, ScrimCoordinator scrimCoordinator,
-            PropertyModel propertyModel, @TabSwitcherType int tabSwitcherType, boolean hasMVTiles,
-            boolean hasTrendyTerms) {
+            PropertyModel propertyModel, @TabSwitcherType int tabSwitcherType,
+            Supplier<Tab> parentTabSupplier, boolean hasMVTiles, boolean hasTrendyTerms) {
         mView = (TasksView) LayoutInflater.from(activity).inflate(R.layout.tasks_view_layout, null);
         mView.initialize(activity.getLifecycleDispatcher());
         mPropertyModelChangeProcessor =
@@ -79,8 +80,8 @@ public class TasksSurfaceCoordinator implements TasksSurface {
                 new IncognitoCookieControlsManager();
         Runnable trendyTermsUpdater = null;
         if (hasTrendyTerms) {
-            mTrendyTermsCoordinator = new TrendyTermsCoordinator(
-                    activity, getView().findViewById(R.id.trendy_terms_recycler_view));
+            mTrendyTermsCoordinator = new TrendyTermsCoordinator(activity,
+                    getView().findViewById(R.id.trendy_terms_recycler_view), parentTabSupplier);
 
             trendyTermsUpdater = () -> {
                 TrendyTermsCache.maybeFetch(Profile.getLastUsedRegularProfile());
@@ -93,8 +94,8 @@ public class TasksSurfaceCoordinator implements TasksSurface {
 
         if (hasMVTiles) {
             LinearLayout mvTilesLayout = mView.findViewById(R.id.mv_tiles_layout);
-            mMostVisitedList =
-                    new MostVisitedListCoordinator(activity, mvTilesLayout, mPropertyModel);
+            mMostVisitedList = new MostVisitedListCoordinator(
+                    activity, mvTilesLayout, mPropertyModel, parentTabSupplier);
         }
     }
 

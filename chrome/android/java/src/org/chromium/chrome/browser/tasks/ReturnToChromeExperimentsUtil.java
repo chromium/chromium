@@ -22,6 +22,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.IntCachedFieldTrialParameter;
 import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.locale.LocaleManager;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.pseudotab.PseudoTab;
@@ -139,12 +140,13 @@ public final class ReturnToChromeExperimentsUtil {
      * @param url The URL to load.
      * @param transition The page transition type.
      * @param incognito Whether to load URL in an incognito Tab.
+     * @param parentTab  The parent tab used to create a new tab if needed.
      * @return true if we have handled the navigation, false otherwise.
      */
-    public static boolean willHandleLoadUrlFromStartSurface(
-            String url, @PageTransition int transition, @Nullable Boolean incognito) {
+    public static boolean willHandleLoadUrlFromStartSurface(String url,
+            @PageTransition int transition, @Nullable Boolean incognito, @Nullable Tab parentTab) {
         return willHandleLoadUrlWithPostDataFromStartSurface(
-                url, transition, null, null, incognito);
+                url, transition, null, null, incognito, parentTab);
     }
 
     /**
@@ -158,11 +160,12 @@ public final class ReturnToChromeExperimentsUtil {
      *         image search.
      * @param incognito Whether to load URL in an incognito Tab. If null, the current tab model will
      *         be used.
+     * @param parentTab  The parent tab used to create a new tab if needed.
      * @return true if we have handled the navigation, false otherwise.
      */
     public static boolean willHandleLoadUrlWithPostDataFromStartSurface(String url,
             @PageTransition int transition, @Nullable String postDataType,
-            @Nullable byte[] postData, @Nullable Boolean incognito) {
+            @Nullable byte[] postData, @Nullable Boolean incognito, @Nullable Tab parentTab) {
         ChromeActivity chromeActivity = getActivityPresentingOverviewWithOmnibox();
         if (chromeActivity == null) return false;
 
@@ -183,7 +186,7 @@ public final class ReturnToChromeExperimentsUtil {
         }
 
         chromeActivity.getTabCreator(incognitoParam)
-                .createNewTab(params, TabLaunchType.FROM_START_SURFACE, null);
+                .createNewTab(params, TabLaunchType.FROM_START_SURFACE, parentTab);
 
         if (transition == PageTransition.AUTO_BOOKMARK) {
             RecordUserAction.record("Suggestions.Tile.Tapped.GridTabSwitcher");

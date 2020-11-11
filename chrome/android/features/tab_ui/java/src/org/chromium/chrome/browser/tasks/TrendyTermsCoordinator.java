@@ -19,9 +19,11 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.ui.base.PageTransition;
@@ -45,9 +47,12 @@ public class TrendyTermsCoordinator {
     }
 
     private final MVCListAdapter.ModelList mListItems;
+    private final Supplier<Tab> mParentTabSupplier;
 
-    TrendyTermsCoordinator(Context context, RecyclerView recyclerView) {
+    TrendyTermsCoordinator(
+            Context context, RecyclerView recyclerView, Supplier<Tab> parentTabSupplier) {
         mListItems = new MVCListAdapter.ModelList();
+        mParentTabSupplier = parentTabSupplier;
         SimpleRecyclerViewAdapter adapter = new SimpleRecyclerViewAdapter(mListItems);
         adapter.registerType(TRENDY_TERMS, parent -> {
             ViewLookupCachingFrameLayout view =
@@ -81,8 +86,8 @@ public class TrendyTermsCoordinator {
             OnClickListener listener = v -> {
                 RecordUserAction.record("StartSurface.TrendyTerms.TapTerm");
                 String url = TemplateUrlServiceFactory.get().getUrlForSearchQuery(trendyTerm);
-                ReturnToChromeExperimentsUtil.willHandleLoadUrlFromStartSurface(
-                        url, PageTransition.AUTO_BOOKMARK, null /*incognito*/);
+                ReturnToChromeExperimentsUtil.willHandleLoadUrlFromStartSurface(url,
+                        PageTransition.AUTO_BOOKMARK, null /*incognito*/, mParentTabSupplier.get());
             };
             PropertyModel trendInfo =
                     new PropertyModel.Builder(TrendyTermsProperties.ALL_KEYS)

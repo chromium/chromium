@@ -42,6 +42,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.feed.FeedSurfaceCoordinator;
 import org.chromium.chrome.browser.feed.shared.stream.Stream;
@@ -114,6 +115,7 @@ class StartSurfaceMediator
     @SurfaceMode
     private final int mSurfaceMode;
     private final ObserverList<StartSurface.StateObserver> mStateObservers = new ObserverList<>();
+    private final Supplier<Tab> mParentTabSupplier;
 
     // Boolean histogram used to record whether cached
     // ChromePreferenceKeys.FEED_ARTICLES_LIST_VISIBLE is consistent with
@@ -172,8 +174,9 @@ class StartSurfaceMediator
             @Nullable SecondaryTasksSurfaceInitializer secondaryTasksSurfaceInitializer,
             @SurfaceMode int surfaceMode, NightModeStateProvider nightModeStateProvider,
             BrowserControlsStateProvider browserControlsStateProvider,
-            ActivityStateChecker activityStateChecker, boolean excludeMVTiles,
-            boolean showStackTabSwitcher, OneshotSupplier<StartSurface> startSurfaceSupplier) {
+            ActivityStateChecker activityStateChecker, Supplier<Tab> parentTabSupplier,
+            boolean excludeMVTiles, boolean showStackTabSwitcher,
+            OneshotSupplier<StartSurface> startSurfaceSupplier) {
         mController = controller;
         mTabModelSelector = tabModelSelector;
         mPropertyModel = propertyModel;
@@ -185,6 +188,7 @@ class StartSurfaceMediator
         mExcludeMVTiles = excludeMVTiles;
         mShowStackTabSwitcher = showStackTabSwitcher;
         mStartSurfaceSupplier = startSurfaceSupplier;
+        mParentTabSupplier = parentTabSupplier;
 
         if (mPropertyModel != null) {
             assert mSurfaceMode == SurfaceMode.SINGLE_PANE || mSurfaceMode == SurfaceMode.TWO_PANES
@@ -564,6 +568,9 @@ class StartSurfaceMediator
 
     @Override
     public void hideOverview(boolean animate) {
+        if (mFakeboxDelegate != null) {
+            mFakeboxDelegate.setParentTabSupplier(null);
+        }
         mController.hideOverview(animate);
     }
 
@@ -611,6 +618,7 @@ class StartSurfaceMediator
             mPropertyModel.set(IS_SHOWING_OVERVIEW, true);
             if (mFakeboxDelegate != null) {
                 mFakeboxDelegate.addUrlFocusChangeListener(mUrlFocusChangeListener);
+                mFakeboxDelegate.setParentTabSupplier(mParentTabSupplier);
             }
         }
 

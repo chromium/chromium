@@ -49,9 +49,10 @@ public class ChromeTabCreator extends TabCreator {
          * Handles showing the StartSurface instead of the NTP if needed.
          * @param isNTP Whether tab with NTP should be created.
          * @param isIncognito Whether tab is created in incognito.
+         * @param parentTab The parent tab of the tab creation.
          * @return Whether NTP creation was handled.
          */
-        boolean handleCreateNTPIfNeeded(boolean isNTP, boolean isIncognito);
+        boolean handleCreateNTPIfNeeded(boolean isNTP, boolean isIncognito, Tab parentTab);
     }
 
     private static final String TAG = "ChromeTabCreator";
@@ -129,7 +130,7 @@ public class ChromeTabCreator extends TabCreator {
             int position, Intent intent) {
         if (mOverviewNTPCreator != null
                 && mOverviewNTPCreator.handleCreateNTPIfNeeded(
-                        UrlUtilities.isNTPUrl(loadUrlParams.getUrl()), mIncognito)) {
+                        UrlUtilities.isNTPUrl(loadUrlParams.getUrl()), mIncognito, parent)) {
             return null;
         }
         try {

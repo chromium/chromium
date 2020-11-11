@@ -18,6 +18,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.MockitoAnnotations;
 
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -46,7 +47,8 @@ public class TrendyTermsCoordinatorTest extends DummyUiActivityTestCase {
             mRecyclerView = new RecyclerView(getActivity());
             getActivity().setContentView(mRecyclerView);
             mRecyclerView.setVisibility(View.VISIBLE);
-            mCoordinator = new TrendyTermsCoordinator(getActivity(), mRecyclerView);
+            mCoordinator = new TrendyTermsCoordinator(
+                    getActivity(), mRecyclerView, new ObservableSupplierImpl<>());
         });
     }
 

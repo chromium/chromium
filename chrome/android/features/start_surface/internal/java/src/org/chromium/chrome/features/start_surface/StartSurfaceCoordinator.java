@@ -15,6 +15,7 @@ import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tasks.TasksSurface;
 import org.chromium.chrome.browser.tasks.TasksSurfaceProperties;
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementDelegate.TabSwitcherType;
@@ -42,6 +43,7 @@ public class StartSurfaceCoordinator implements StartSurface {
     private final StartSurfaceMediator mStartSurfaceMediator;
     private final @SurfaceMode int mSurfaceMode;
     private final BottomSheetController mBottomSheetController;
+    private final Supplier<Tab> mParentTabSupplier;
 
     // Non-null in SurfaceMode.TASKS_ONLY, SurfaceMode.TWO_PANES and SurfaceMode.SINGLE_PANE modes.
     @Nullable
@@ -94,11 +96,13 @@ public class StartSurfaceCoordinator implements StartSurface {
     // TODO(http://crbug.com/1093421): Remove dependency on ChromeActivity.
     public StartSurfaceCoordinator(ChromeActivity activity, ScrimCoordinator scrimCoordinator,
             BottomSheetController sheetController,
-            OneshotSupplierImpl<StartSurface> startSurfaceOneshotSupplier) {
+            OneshotSupplierImpl<StartSurface> startSurfaceOneshotSupplier,
+            Supplier<Tab> parentTabSupplier) {
         mActivity = activity;
         mScrimCoordinator = scrimCoordinator;
         mSurfaceMode = computeSurfaceMode();
         mBottomSheetController = sheetController;
+        mParentTabSupplier = parentTabSupplier;
 
         boolean excludeMVTiles = StartSurfaceConfiguration.START_SURFACE_EXCLUDE_MV_TILES.getValue()
                 || mSurfaceMode == SurfaceMode.OMNIBOX_ONLY
@@ -121,7 +125,7 @@ public class StartSurfaceCoordinator implements StartSurface {
                                                         : null,
                 mSurfaceMode, mActivity.getNightModeStateProvider(),
                 mActivity.getBrowserControlsManager(), this::isActivityFinishingOrDestroyed,
-                excludeMVTiles,
+                mParentTabSupplier, excludeMVTiles,
                 StartSurfaceConfiguration.START_SURFACE_SHOW_STACK_TAB_SWITCHER.getValue(),
                 startSurfaceOneshotSupplier);
 
@@ -210,8 +214,8 @@ public class StartSurfaceCoordinator implements StartSurface {
             mExploreSurfaceCoordinator = new ExploreSurfaceCoordinator(mActivity,
                     mSurfaceMode == SurfaceMode.SINGLE_PANE ? mTasksSurface.getBodyViewContainer()
                                                             : mActivity.getCompositorViewHolder(),
-                    mPropertyModel, mSurfaceMode == SurfaceMode.SINGLE_PANE,
-                    mBottomSheetController);
+                    mPropertyModel, mSurfaceMode == SurfaceMode.SINGLE_PANE, mBottomSheetController,
+                    mParentTabSupplier);
         }
         mStartSurfaceMediator.initWithNative(mSurfaceMode != SurfaceMode.NO_START_SURFACE
                         ? mActivity.getToolbarManager().getFakeboxDelegate()
@@ -344,8 +348,8 @@ public class StartSurfaceCoordinator implements StartSurface {
             tabSwitcherType = TabSwitcherType.SINGLE;
         }
         mTasksSurface = TabManagementModuleProvider.getDelegate().createTasksSurface(mActivity,
-                mScrimCoordinator, mPropertyModel, tabSwitcherType, !excludeMVTiles,
-                hasTrendyTerms);
+                mScrimCoordinator, mPropertyModel, tabSwitcherType, mParentTabSupplier,
+                !excludeMVTiles, hasTrendyTerms);
         mTasksSurface.getView().setId(R.id.primary_tasks_surface_view);
 
         mTasksSurfacePropertyModelChangeProcessor = PropertyModelChangeProcessor.create(
@@ -378,7 +382,7 @@ public class StartSurfaceCoordinator implements StartSurface {
                 StartSurfaceConfiguration.isStartSurfaceStackTabSwitcherEnabled()
                         ? TabSwitcherType.NONE
                         : TabSwitcherType.GRID,
-                false, false);
+                mParentTabSupplier, false, false);
         if (mIsInitializedWithNative) {
             mSecondaryTasksSurface.onFinishNativeInitialization(
                     mActivity, mActivity.getToolbarManager().getFakeboxDelegate());

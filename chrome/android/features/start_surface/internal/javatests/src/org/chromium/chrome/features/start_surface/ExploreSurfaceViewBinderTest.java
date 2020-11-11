@@ -27,6 +27,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.feed.FeedSurfaceCoordinator;
@@ -62,7 +63,7 @@ public class ExploreSurfaceViewBinderTest {
             mExploreSurfaceCoordinator =
                     new ExploreSurfaceCoordinator(mActivityTestRule.getActivity(),
                             mActivityTestRule.getActivity().getCompositorViewHolder(),
-                            mPropertyModel, true, null);
+                            mPropertyModel, true, null, new ObservableSupplierImpl<>());
             mFeedSurfaceCoordinator =
                     mExploreSurfaceCoordinator.getFeedSurfaceCreator().createFeedSurfaceCoordinator(
                             false, /* isPlaceholderShown= */ false);

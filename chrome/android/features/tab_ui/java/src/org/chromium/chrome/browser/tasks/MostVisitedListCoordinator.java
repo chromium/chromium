@@ -8,6 +8,7 @@ import android.view.ContextMenu;
 import android.view.View;
 import android.view.ViewGroup;
 
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -23,6 +24,7 @@ import org.chromium.chrome.browser.suggestions.tile.TileGroup.TileInteractionDel
 import org.chromium.chrome.browser.suggestions.tile.TileGroupDelegateImpl;
 import org.chromium.chrome.browser.suggestions.tile.TileRenderer;
 import org.chromium.chrome.browser.suggestions.tile.TileSectionType;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.ui.base.PageTransition;
@@ -42,15 +44,17 @@ class MostVisitedListCoordinator implements TileGroup.Observer, TileGroup.TileSe
     private final ChromeActivity mActivity;
     private final ViewGroup mParent;
     private final PropertyModelChangeProcessor mModelChangeProcessor;
+    private final Supplier<Tab> mParentTabSupplier;
     private TileGroup mTileGroup;
     private TileRenderer mRenderer;
 
-    public MostVisitedListCoordinator(
-            ChromeActivity activity, ViewGroup parent, PropertyModel propertyModel) {
+    public MostVisitedListCoordinator(ChromeActivity activity, ViewGroup parent,
+            PropertyModel propertyModel, Supplier<Tab> parentTabSupplier) {
         mActivity = activity;
         mParent = parent;
         mModelChangeProcessor = PropertyModelChangeProcessor.create(
                 propertyModel, mParent, MostVisitedListViewBinder::bind);
+        mParentTabSupplier = parentTabSupplier;
     }
 
     public void initialize() {
@@ -113,7 +117,7 @@ class MostVisitedListCoordinator implements TileGroup.Observer, TileGroup.TileSe
     /** TileSetupDelegate implementation. */
     @Override
     public TileInteractionDelegate createInteractionDelegate(Tile tile) {
-        return new MostVisitedTileInteractionDelegate(tile);
+        return new MostVisitedTileInteractionDelegate(tile, mParentTabSupplier);
     }
 
     @Override
@@ -138,9 +142,11 @@ class MostVisitedListCoordinator implements TileGroup.Observer, TileGroup.TileSe
     /** Handle interactions with the Most Visited tiles. */
     private static class MostVisitedTileInteractionDelegate implements TileInteractionDelegate {
         private Tile mTile;
+        private Supplier<Tab> mParentTabSupplier;
 
-        public MostVisitedTileInteractionDelegate(Tile tile) {
+        public MostVisitedTileInteractionDelegate(Tile tile, Supplier<Tab> parentTabSupplier) {
             mTile = tile;
+            mParentTabSupplier = parentTabSupplier;
         }
 
         @Override
@@ -149,7 +155,8 @@ class MostVisitedListCoordinator implements TileGroup.Observer, TileGroup.TileSe
         @Override
         public void onClick(View v) {
             ReturnToChromeExperimentsUtil.willHandleLoadUrlFromStartSurface(
-                    mTile.getUrl().getSpec(), PageTransition.AUTO_BOOKMARK, null /*incognito*/);
+                    mTile.getUrl().getSpec(), PageTransition.AUTO_BOOKMARK, null /*incognito*/,
+                    mParentTabSupplier.get());
         }
 
         @Override

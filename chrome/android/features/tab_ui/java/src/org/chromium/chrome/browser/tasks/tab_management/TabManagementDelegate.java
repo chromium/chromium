@@ -11,11 +11,13 @@ import androidx.annotation.IntDef;
 
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.layouts.Layout;
 import org.chromium.chrome.browser.compositor.layouts.LayoutRenderHost;
 import org.chromium.chrome.browser.compositor.layouts.LayoutUpdateHost;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.TasksSurface;
 import org.chromium.chrome.browser.tasks.TasksSurfaceProperties;
@@ -55,13 +57,15 @@ public interface TabManagementDelegate {
      * @param propertyModel The {@link PropertyModel} contains the {@link TasksSurfaceProperties} to
      *         communicate with this surface.
      * @param tabSwitcherType The type of the tab switcher to show.
+     * @param parentTabSupplier {@link Supplier} to provide parent tab for the
+     *         TasksSurface.
      * @param hasMVTiles whether has MV tiles on the surface.
      * @param hasTrendyTerms whether has trendy terms on the surface.
      * @return The {@link TasksSurface}.
      */
     TasksSurface createTasksSurface(ChromeActivity activity, ScrimCoordinator scrimCoordinator,
-            PropertyModel propertyModel, @TabSwitcherType int tabSwitcherType, boolean hasMVTiles,
-            boolean hasTrendyTerms);
+            PropertyModel propertyModel, @TabSwitcherType int tabSwitcherType,
+            Supplier<Tab> parentTabSupplier, boolean hasMVTiles, boolean hasTrendyTerms);
 
     /**
      * Create the {@link TabSwitcher} to display Tabs in grid.
@@ -114,11 +118,14 @@ public interface TabManagementDelegate {
      * @param activity The {@link ChromeActivity} creates this {@link StartSurface}.
      * @param scrimCoordinator The {@link ScrimCoordinator} to control the scrim view.
      * @param sheetController A {@link BottomSheetController} to show content in the bottom sheet.
+     * @param parentTabSupplier A {@link Supplier} to provide parent tab for
+     *         StartSurface.
      * @return the {@link StartSurface}
      */
     StartSurface createStartSurface(ChromeActivity activity, ScrimCoordinator scrimCoordinator,
             BottomSheetController sheetController,
-            OneshotSupplierImpl<StartSurface> startSurfaceOneshotSupplier);
+            OneshotSupplierImpl<StartSurface> startSurfaceOneshotSupplier,
+            Supplier<Tab> parentTabSupplier);
 
     /**
      * Create a {@link TabGroupModelFilter} for the given {@link TabModel}.

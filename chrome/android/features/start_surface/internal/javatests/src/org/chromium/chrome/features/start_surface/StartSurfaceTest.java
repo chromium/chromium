@@ -9,11 +9,15 @@ import static android.os.Build.VERSION_CODES.P;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.Espresso.pressBack;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.action.ViewActions.pressImeActionButton;
 import static androidx.test.espresso.action.ViewActions.pressKey;
 import static androidx.test.espresso.action.ViewActions.replaceText;
+import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.Visibility.GONE;
 import static androidx.test.espresso.matcher.ViewMatchers.Visibility.VISIBLE;
+import static androidx.test.espresso.matcher.ViewMatchers.isCompletelyDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
@@ -34,6 +38,7 @@ import static org.junit.Assert.fail;
 import static org.junit.Assume.assumeTrue;
 
 import static org.chromium.chrome.browser.tasks.ReturnToChromeExperimentsUtil.TAB_SWITCHER_ON_RETURN_MS;
+import static org.chromium.chrome.features.start_surface.InstantStartTest.createTabStateFile;
 import static org.chromium.chrome.features.start_surface.InstantStartTest.createThumbnailBitmapAndWriteToFile;
 import static org.chromium.chrome.features.start_surface.StartSurfaceMediator.FEED_VISIBILITY_CONSISTENCY;
 import static org.chromium.chrome.test.util.ViewUtils.VIEW_GONE;
@@ -48,6 +53,7 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.test.espresso.UiController;
 import androidx.test.espresso.ViewAction;
 import androidx.test.espresso.action.GeneralLocation;
 import androidx.test.espresso.action.GeneralSwipeAction;
@@ -57,6 +63,7 @@ import androidx.test.espresso.action.ViewActions;
 import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.filters.MediumTest;
 
+import org.hamcrest.Matcher;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -89,6 +96,7 @@ import org.chromium.chrome.browser.init.AsyncInitializationActivity;
 import org.chromium.chrome.browser.tasks.ReturnToChromeExperimentsUtil;
 import org.chromium.chrome.browser.tasks.SingleTabSwitcherMediator;
 import org.chromium.chrome.browser.tasks.pseudotab.TabAttributeCache;
+import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper;
 import org.chromium.chrome.start_surface.R;
@@ -102,6 +110,7 @@ import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
+import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.test.util.UiRestriction;
 
 import java.io.IOException;
@@ -910,20 +919,26 @@ public class StartSurfaceTest {
                 mActivityTestRule.getActivity().getTabModelSelector().getCurrentModel().getCount(),
                 equalTo(1));
 
-        ViewGroup mvTilesContainer = mActivityTestRule.getActivity().findViewById(
-                org.chromium.chrome.tab_ui.R.id.mv_tiles_layout);
-        assertTrue(mvTilesContainer.getChildCount() > 0);
-
         OverviewModeBehaviorWatcher hideWatcher =
                 TabUiTestHelper.createOverviewHideWatcher(mActivityTestRule.getActivity());
-        try {
-            // TODO (crbug.com/1025296): Find a way to perform click on a child at index 0 in
-            // LinearLayout with Espresso. Note that we do not have 'withParentIndex' so far.
-            TestThreadUtils.runOnUiThreadBlocking(
-                    () -> mvTilesContainer.getChildAt(0).performClick());
-        } catch (ExecutionException e) {
-            fail("Failed to click the first child " + e.toString());
-        }
+        onViewWaiting(withId(org.chromium.chrome.tab_ui.R.id.mv_tiles_layout))
+                .perform(new ViewAction() {
+                    @Override
+                    public Matcher<View> getConstraints() {
+                        return isDisplayed();
+                    }
+
+                    @Override
+                    public String getDescription() {
+                        return "Click the first child in MV tiles.";
+                    }
+
+                    @Override
+                    public void perform(UiController uiController, View view) {
+                        ViewGroup mvTilesContainer = (ViewGroup) view;
+                        mvTilesContainer.getChildAt(0).performClick();
+                    }
+                });
         hideWatcher.waitForBehavior();
         assertThat(
                 mActivityTestRule.getActivity().getTabModelSelector().getCurrentModel().getCount(),
@@ -1224,6 +1239,105 @@ public class StartSurfaceTest {
         assertEquals(cta.findViewById(org.chromium.chrome.tab_ui.R.id.tab_switcher_title)
                              .getVisibility(),
                 View.GONE);
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"StartSurface", "TabGroup"})
+    @CommandLineFlags.Add({BASE_PARAMS + "/single"})
+    @EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID})
+    public void testCreateTabWithinTabGroup() throws Exception {
+        // Create tab state files for a group with two tabs.
+        TabUiTestHelper.finishActivity(mActivityTestRule.getActivity());
+        createThumbnailBitmapAndWriteToFile(0);
+        createThumbnailBitmapAndWriteToFile(1);
+        TabAttributeCache.setRootIdForTesting(0, 0);
+        TabAttributeCache.setRootIdForTesting(1, 0);
+        createTabStateFile(new int[] {0, 1});
+
+        // Restart and open tab grid dialog.
+        mActivityTestRule.startMainActivityFromLauncher();
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        assertTrue(cta.getTabModelSelector().getTabModelFilterProvider().getCurrentTabModelFilter()
+                           instanceof TabGroupModelFilter);
+        TabGroupModelFilter filter = (TabGroupModelFilter) cta.getTabModelSelector()
+                                             .getTabModelFilterProvider()
+                                             .getTabModelFilter(false);
+        if (mImmediateReturn) {
+            onViewWaiting(allOf(withId(org.chromium.chrome.tab_ui.R.id.tab_list_view),
+                                  withParent(withId(org.chromium.chrome.tab_ui.R.id
+                                                            .carousel_tab_switcher_container))))
+                    .perform(RecyclerViewActions.actionOnItemAtPosition(0, click()));
+        } else {
+            onViewWaiting(allOf(withId(org.chromium.chrome.tab_ui.R.id.toolbar_left_button),
+                                  isDescendantOfA(withId(R.id.bottom_controls))))
+                    .perform(click());
+        }
+        onViewWaiting(
+                allOf(withId(org.chromium.chrome.tab_ui.R.id.tab_list_view),
+                        withParent(withId(org.chromium.chrome.tab_ui.R.id.dialog_container_view))))
+                .check(TabUiTestHelper.ChildrenCountAssertion.havingTabCount(2));
+
+        // Show start surface through tab grid dialog toolbar plus button and create a new tab by
+        // clicking on MV tiles.
+        onView(allOf(withId(org.chromium.chrome.tab_ui.R.id.toolbar_right_button),
+                       isDescendantOfA(
+                               withId(org.chromium.chrome.tab_ui.R.id.dialog_container_view))))
+                .perform(click());
+        OverviewModeBehaviorWatcher hideWatcher =
+                TabUiTestHelper.createOverviewHideWatcher(mActivityTestRule.getActivity());
+        onViewWaiting(withId(org.chromium.chrome.tab_ui.R.id.mv_tiles_layout))
+                .perform(new ViewAction() {
+                    @Override
+                    public Matcher<View> getConstraints() {
+                        return isDisplayed();
+                    }
+
+                    @Override
+                    public String getDescription() {
+                        return "Click the first child in MV tiles.";
+                    }
+
+                    @Override
+                    public void perform(UiController uiController, View view) {
+                        ViewGroup mvTilesContainer = (ViewGroup) view;
+                        mvTilesContainer.getChildAt(0).performClick();
+                    }
+                });
+        hideWatcher.waitForBehavior();
+
+        // Verify a tab is created within the group by checking the tab strip and tab model.
+        onView(withId(org.chromium.chrome.tab_ui.R.id.toolbar_container_view))
+                .check(waitForView(allOf(withId(org.chromium.chrome.tab_ui.R.id.tab_list_view),
+                        isCompletelyDisplayed())));
+        onView(allOf(withId(org.chromium.chrome.tab_ui.R.id.tab_list_view),
+                       withParent(withId(org.chromium.chrome.tab_ui.R.id.toolbar_container_view))))
+                .check(TabUiTestHelper.ChildrenCountAssertion.havingTabCount(3));
+        assertEquals(3, cta.getTabModelSelector().getCurrentModel().getCount());
+        assertEquals(1, filter.getTabGroupCount());
+
+        // Show start surface through tab strip plus button and create a new tab by perform a query
+        // search in fake box.
+        onView(allOf(withId(org.chromium.chrome.tab_ui.R.id.toolbar_right_button),
+                       isDescendantOfA(withId(org.chromium.chrome.tab_ui.R.id.bottom_controls))))
+                .perform(click());
+        onViewWaiting(withId(R.id.search_box_text))
+                .check(matches(isCompletelyDisplayed()))
+                .perform(typeText("wfh tips"));
+        KeyboardVisibilityDelegate delegate = KeyboardVisibilityDelegate.getInstance();
+        CriteriaHelper.pollUiThread(
+                () -> delegate.isKeyboardShowing(cta, cta.getCompositorViewHolder()));
+        onView(withId(R.id.url_bar)).check(matches(isDisplayed())).perform(pressImeActionButton());
+
+        // Verify a tab is created within the group by checking the tab strip and tab model.
+        onView(withId(org.chromium.chrome.tab_ui.R.id.toolbar_container_view))
+                .check(waitForView(allOf(withId(org.chromium.chrome.tab_ui.R.id.tab_list_view),
+                        isCompletelyDisplayed())));
+        onView(allOf(withId(org.chromium.chrome.tab_ui.R.id.tab_list_view),
+                       withParent(withId(org.chromium.chrome.tab_ui.R.id.toolbar_container_view))))
+                .check(TabUiTestHelper.ChildrenCountAssertion.havingTabCount(4));
+        assertEquals(4, cta.getTabModelSelector().getCurrentModel().getCount());
+        assertEquals(1, filter.getTabGroupCount());
     }
 }
 

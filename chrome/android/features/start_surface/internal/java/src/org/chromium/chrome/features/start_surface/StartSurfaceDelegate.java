@@ -8,11 +8,13 @@ import android.content.Context;
 
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.layouts.Layout;
 import org.chromium.chrome.browser.compositor.layouts.LayoutRenderHost;
 import org.chromium.chrome.browser.compositor.layouts.LayoutUpdateHost;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 
@@ -30,8 +32,9 @@ public class StartSurfaceDelegate {
 
     public static StartSurface createStartSurface(ChromeActivity activity,
             ScrimCoordinator scrimCoordinator, BottomSheetController sheetController,
-            OneshotSupplierImpl<StartSurface> startSurfaceOneshotSupplier) {
-        return new StartSurfaceCoordinator(
-                activity, scrimCoordinator, sheetController, startSurfaceOneshotSupplier);
+            OneshotSupplierImpl<StartSurface> startSurfaceOneshotSupplier,
+            Supplier<Tab> parentTabSupplier) {
+        return new StartSurfaceCoordinator(activity, scrimCoordinator, sheetController,
+                startSurfaceOneshotSupplier, parentTabSupplier);
     }
 }

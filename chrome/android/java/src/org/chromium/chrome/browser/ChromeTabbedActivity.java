@@ -301,6 +301,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             new ObservableSupplierImpl<>();
     private final OneshotSupplierImpl<StartSurface> mStartSurfaceSupplier =
             new OneshotSupplierImpl<>();
+    private ObservableSupplierImpl<Tab> mStartSurfaceParentTabSupplier =
+            new ObservableSupplierImpl<>();
 
     private CallbackController mCallbackController = new CallbackController();
 
@@ -567,7 +569,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 if (tabManagementDelegate != null) {
                     StartSurface startSurface = tabManagementDelegate.createStartSurface(this,
                             mRootUiCoordinator.getScrimCoordinator(),
-                            mRootUiCoordinator.getBottomSheetController(), mStartSurfaceSupplier);
+                            mRootUiCoordinator.getBottomSheetController(), mStartSurfaceSupplier,
+                            mStartSurfaceParentTabSupplier);
                 }
             }
             mLayoutManager = new LayoutManagerChromePhone(compositorViewHolder, mContentContainer,
@@ -1660,8 +1663,13 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         if (StartSurfaceConfiguration.isStartSurfaceEnabled()) {
             overviewNTPCreator = new ChromeTabCreator.OverviewNTPCreator() {
                 @Override
-                public boolean handleCreateNTPIfNeeded(boolean isNTP, boolean incognito) {
-                    return showStartSurfaceHomeForNTP(isNTP, incognito);
+                public boolean handleCreateNTPIfNeeded(
+                        boolean isNTP, boolean incognito, Tab parentTab) {
+                    boolean shouldShowStart = showStartSurfaceHomeForNTP(isNTP, incognito);
+                    if (shouldShowStart) {
+                        mStartSurfaceParentTabSupplier.set(parentTab);
+                    }
+                    return shouldShowStart;
                 }
             };
         }
