@@ -40,7 +40,8 @@ class InstanceRegistry {
     // Called when the InstanceRegistry object (the thing that this observer
     // observes) will be destroyed. In response, the observer, |this|, should
     // call "instance_registry->RemoveObserver(this)", whether directly or
-    // indirectly (e.g. via ScopedObserver::Remove or via Observe(nullptr)).
+    // indirectly (e.g. via base::ScopedObservation::Remove or via
+    // Observe(nullptr)).
     virtual void OnInstanceRegistryWillBeDestroyed(InstanceRegistry* cache) = 0;
 
    protected:
