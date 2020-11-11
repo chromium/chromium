@@ -62,8 +62,6 @@ ERRORPRONE_WARNINGS_TO_DISABLE = [
     'JUnitAmbiguousTestClass',
     # TODO(crbug.com/1027683): Follow steps in bug.
     'UnnecessaryParentheses',
-    # TODO(wnwen): Fix issue in JavaUploadDataSinkBase.java
-    'PrimitiveAtomicReference',
     # Android platform default is always UTF-8.
     # https://developer.android.com/reference/java/nio/charset/Charset.html#defaultCharset()
     'DefaultCharset',
