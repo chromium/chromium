@@ -32,8 +32,6 @@
 #include "chrome/browser/chromeos/login/demo_mode/demo_setup_controller.h"
 #include "chrome/browser/chromeos/login/oobe_configuration.h"
 #include "chrome/browser/chromeos/login/ui/login_display_host.h"
-#include "chrome/browser/chromeos/login/user_flow.h"
-#include "chrome/browser/chromeos/login/users/chrome_user_manager.h"
 #include "chrome/browser/chromeos/login/wizard_controller.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/settings/cros_settings.h"
@@ -205,16 +203,6 @@ bool IsArcAllowedForProfileInternal(const Profile* profile,
   if (!user->IsAffiliated() && !IsUnaffiliatedArcAllowed()) {
     VLOG_IF(1, should_report_reason)
         << "Device admin disallowed ARC for unaffiliated users.";
-    return false;
-  }
-
-  // Do not run ARC instance when supervised user is being created.
-  // Otherwise noisy notification may be displayed.
-  chromeos::UserFlow* user_flow =
-      chromeos::ChromeUserManager::Get()->GetUserFlow(user->GetAccountId());
-  if (!user_flow || !user_flow->CanStartArc()) {
-    VLOG_IF(1, should_report_reason)
-        << "ARC is not allowed in the current user flow.";
     return false;
   }
 

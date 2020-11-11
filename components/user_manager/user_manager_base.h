@@ -156,11 +156,6 @@ class USER_MANAGER_EXPORT UserManagerBase : public UserManager {
   // Subsequent calls have no effect. Must be called on the UI thread.
   virtual void EnsureUsersLoaded();
 
-  // Handle OAuth token |status| change for |account_id|.
-  virtual void HandleUserOAuthTokenStatusChange(
-      const AccountId& account_id,
-      User::OAuthTokenStatus status) const = 0;
-
   // Loads device local accounts from the Local state and fills in
   // |device_local_accounts_set|.
   virtual void LoadDeviceLocalAccounts(

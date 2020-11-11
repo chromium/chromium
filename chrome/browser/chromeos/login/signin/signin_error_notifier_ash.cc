@@ -17,7 +17,6 @@
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/chromeos/account_manager/account_manager_util.h"
 #include "chrome/browser/chromeos/login/reauth_stats.h"
-#include "chrome/browser/chromeos/login/user_flow.h"
 #include "chrome/browser/chromeos/login/users/chrome_user_manager.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/notifications/notification_common.h"
@@ -165,17 +164,6 @@ void SigninErrorNotifier::OnErrorChanged() {
         NotificationHandler::Type::TRANSIENT,
         secondary_account_notification_id_);
     return;
-  }
-
-  if (user_manager::UserManager::IsInitialized()) {
-    chromeos::UserFlow* user_flow =
-        chromeos::ChromeUserManager::Get()->GetCurrentUserFlow();
-
-    // Check whether Chrome OS user flow allows launching browser.
-    // Example: Supervised user creation flow which handles token invalidation
-    // itself and notifications should be suppressed. http://crbug.com/359045
-    if (!user_flow->ShouldLaunchBrowser())
-      return;
   }
 
   const AccountId account_id =

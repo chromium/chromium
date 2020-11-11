@@ -653,12 +653,6 @@ const std::string& FakeChromeUserManager::GetApplicationLocale() const {
   return default_locale;
 }
 
-void FakeChromeUserManager::HandleUserOAuthTokenStatusChange(
-    const AccountId& account_id,
-    user_manager::User::OAuthTokenStatus status) const {
-  NOTREACHED();
-}
-
 void FakeChromeUserManager::LoadDeviceLocalAccounts(
     std::set<AccountId>* users_set) {
   NOTREACHED();

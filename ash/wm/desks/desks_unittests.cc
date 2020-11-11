@@ -2906,13 +2906,11 @@ class DesksMultiUserTest : public NoSessionAshTestBase,
     RegisterUserProfilePrefs(user_2_prefs_->registry(), /*for_test=*/true);
     session_controller->AddUserSession(kUser1Email,
                                        user_manager::USER_TYPE_REGULAR,
-                                       /*enable_settings=*/true,
                                        /*provide_pref_service=*/false);
     session_controller->SetUserPrefService(GetUser1AccountId(),
                                            std::move(user_1_prefs));
     session_controller->AddUserSession(kUser2Email,
                                        user_manager::USER_TYPE_REGULAR,
-                                       /*enable_settings=*/true,
                                        /*provide_pref_service=*/false);
     session_controller->SetUserPrefService(GetUser2AccountId(),
                                            std::move(user_2_prefs));

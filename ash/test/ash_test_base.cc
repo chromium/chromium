@@ -401,9 +401,9 @@ void AshTestBase::SimulateUserLogin(const std::string& user_email,
 
 void AshTestBase::SimulateNewUserFirstLogin(const std::string& user_email) {
   TestSessionControllerClient* session = GetSessionControllerClient();
-  session->AddUserSession(
-      user_email, user_manager::USER_TYPE_REGULAR, true /* enable_settings */,
-      true /* provide_pref_service */, true /* is_new_profile */);
+  session->AddUserSession(user_email, user_manager::USER_TYPE_REGULAR,
+                          true /* provide_pref_service */,
+                          true /* is_new_profile */);
   session->SwitchActiveUser(AccountId::FromUserEmail(user_email));
   session->SetSessionState(session_manager::SessionState::ACTIVE);
 }

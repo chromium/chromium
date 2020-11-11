@@ -24,16 +24,8 @@ class EasyUnlockUserLoginFlow : public ExtendedUserFlow {
 
  private:
   // ExtendedUserFlow implementation.
-  bool CanLockScreen() override;
-  bool CanStartArc() override;
-  bool ShouldLaunchBrowser() override;
-  bool ShouldSkipPostLoginScreens() override;
   bool HandleLoginFailure(const AuthFailure& failure) override;
   void HandleLoginSuccess(const UserContext& context) override;
-  void HandleOAuthTokenStatusChange(
-      user_manager::User::OAuthTokenStatus status) override;
-  void LaunchExtraSteps(Profile* profile) override;
-  bool SupportsEarlyRestartToApplyFlags() override;
 
   DISALLOW_COPY_AND_ASSIGN(EasyUnlockUserLoginFlow);
 };

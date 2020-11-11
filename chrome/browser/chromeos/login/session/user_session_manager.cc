@@ -68,7 +68,6 @@
 #include "chrome/browser/chromeos/login/startup_utils.h"
 #include "chrome/browser/chromeos/login/ui/input_events_blocker.h"
 #include "chrome/browser/chromeos/login/ui/login_display_host.h"
-#include "chrome/browser/chromeos/login/user_flow.h"
 #include "chrome/browser/chromeos/login/users/chrome_user_manager.h"
 #include "chrome/browser/chromeos/login/users/supervised_user_manager.h"
 #include "chrome/browser/chromeos/login/wizard_controller.h"
@@ -318,12 +317,6 @@ bool NeedRestartToApplyPerSessionFlags(
 }
 
 bool CanPerformEarlyRestart() {
-  if (!ChromeUserManager::Get()
-           ->GetCurrentUserFlow()
-           ->SupportsEarlyRestartToApplyFlags()) {
-    return false;
-  }
-
   const ExistingUserController* controller =
       ExistingUserController::current_controller();
   if (!controller)
@@ -1729,11 +1722,9 @@ bool UserSessionManager::InitializeUserSession(Profile* profile) {
   ProfileHelper::Get()->ProfileStartup(profile);
 
   if (start_session_type_ == PRIMARY_USER_SESSION) {
-    UserFlow* user_flow = ChromeUserManager::Get()->GetCurrentUserFlow();
     WizardController* oobe_controller = WizardController::default_controller();
     base::CommandLine* cmdline = base::CommandLine::ForCurrentProcess();
     bool skip_post_login_screens =
-        user_flow->ShouldSkipPostLoginScreens() ||
         (oobe_controller && oobe_controller->skip_post_login_screens()) ||
         cmdline->HasSwitch(chromeos::switches::kOobeSkipPostLogin);
 
@@ -2129,11 +2120,6 @@ void UserSessionManager::DoBrowserLaunchInternal(Profile* profile,
         profile,
         base::Bind(&UserSessionManager::DoBrowserLaunchInternal, AsWeakPtr(),
                    profile, login_host, true /* locale_pref_checked */));
-    return;
-  }
-
-  if (!ChromeUserManager::Get()->GetCurrentUserFlow()->ShouldLaunchBrowser()) {
-    ChromeUserManager::Get()->GetCurrentUserFlow()->LaunchExtraSteps(profile);
     return;
   }
 

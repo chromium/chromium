@@ -64,8 +64,8 @@ class BluetoothPowerControllerTest : public AshTestBase {
       user_manager::UserType user_type = user_manager::USER_TYPE_REGULAR,
       bool is_new_profile = false) {
     GetSessionControllerClient()->AddUserSession(
-        display_email, user_type, false /* enable_settings */,
-        false /* provide_pref_service */, is_new_profile);
+        display_email, user_type, false /* provide_pref_service */,
+        is_new_profile);
     GetController()->active_user_pref_service_ = &active_user_prefs_;
     GetController()->StartWatchingActiveUserPrefsChanges();
   }

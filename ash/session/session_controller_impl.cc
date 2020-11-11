@@ -111,14 +111,14 @@ bool SessionControllerImpl::ShouldEnableSettings() const {
     return false;
   }
 
-  return user_sessions_[0]->should_enable_settings;
+  return true;
 }
 
 bool SessionControllerImpl::ShouldShowNotificationTray() const {
   if (!IsActiveUserSessionStarted() || IsInSecondaryLoginScreen())
     return false;
 
-  return user_sessions_[0]->should_show_notification_tray;
+  return true;
 }
 
 const SessionControllerImpl::UserSessions&

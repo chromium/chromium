@@ -255,13 +255,6 @@ bool ShouldForceDircrypto(const AccountId& account_id) {
   if (!arc::IsArcAvailable())
     return false;
 
-  // In some login flows (e.g. when siging in supervised user), ARC can not
-  // start. For such cases, we don't need to force Ext4 dircrypto.
-  chromeos::UserFlow* user_flow =
-      chromeos::ChromeUserManager::Get()->GetUserFlow(account_id);
-  if (!user_flow || !user_flow->CanStartArc())
-    return false;
-
   // When a user is signing in as a secondary user, we don't need to force Ext4
   // dircrypto since the user can not run ARC.
   if (UserAddingScreen::Get()->IsRunning())
@@ -742,9 +735,6 @@ void ExistingUserController::PerformLogin(
     const UserContext& user_context,
     LoginPerformer::AuthorizationMode auth_mode) {
   VLOG(1) << "Setting flow from PerformLogin";
-  ChromeUserManager::Get()
-      ->GetUserFlow(user_context.GetAccountId())
-      ->SetHost(GetLoginDisplayHost());
 
   BootTimesRecorder::Get()->RecordLoginAttempted();
 
@@ -1602,10 +1592,6 @@ void ExistingUserController::StartAutoLoginTimer() {
       FROM_HERE, base::TimeDelta::FromMilliseconds(auto_login_delay_),
       base::BindOnce(&ExistingUserController::OnPublicSessionAutoLoginTimerFire,
                      weak_factory_.GetWeakPtr()));
-}
-
-gfx::NativeWindow ExistingUserController::GetNativeWindow() const {
-  return GetLoginDisplayHost()->GetNativeWindow();
 }
 
 void ExistingUserController::ShowError(int error_id,

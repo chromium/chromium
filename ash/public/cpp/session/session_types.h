@@ -87,14 +87,6 @@ struct ASH_PUBLIC_EXPORT UserSession {
   // For supervised users only, the email address of the second custodian
   // account, if any. Available after profile is loaded.
   std::string second_custodian_email;
-
-  // Whether the settings icon should be enabled in the system tray menu.
-  // Usually true after login, but can be false for specialized user sessions
-  // (e.g. adding supervised users).
-  bool should_enable_settings = false;
-
-  // Similar to |should_show_settings| but for the notification tray.
-  bool should_show_notification_tray = false;
 };
 
 ASH_PUBLIC_EXPORT bool operator==(const UserSession& a, const UserSession& b);

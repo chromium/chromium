@@ -13,6 +13,7 @@
 #include "base/macros.h"
 #include "chrome/browser/chromeos/login/user_flow.h"
 #include "chrome/browser/chromeos/login/users/chrome_user_manager.h"
+#include "chrome/test/base/testing_profile.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/user.h"
@@ -143,9 +144,6 @@ class FakeChromeUserManager : public ChromeUserManager {
 
   // user_manager::UserManagerBase override.
   const std::string& GetApplicationLocale() const override;
-  void HandleUserOAuthTokenStatusChange(
-      const AccountId& account_id,
-      user_manager::User::OAuthTokenStatus status) const override;
   void LoadDeviceLocalAccounts(std::set<AccountId>* users_set) override;
   bool IsEnterpriseManaged() const override;
   void PerformPostUserListLoadingActions() override;

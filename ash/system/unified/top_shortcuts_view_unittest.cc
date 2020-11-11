@@ -121,22 +121,6 @@ TEST_F(TopShortcutsViewTest, ButtonStatesAddingUser) {
   EXPECT_TRUE(GetCollapseButton()->GetVisible());
 }
 
-// Settings button and lock button are hidden when adding a supervised user.
-TEST_F(TopShortcutsViewTest, ButtonStatesSupervisedUserFlow) {
-  // Simulate the add supervised user flow, which is a regular user session but
-  // with web UI settings disabled.
-  const bool enable_settings = false;
-  GetSessionControllerClient()->AddUserSession(
-      "foo@example.com", user_manager::USER_TYPE_REGULAR, enable_settings);
-  SetUpView();
-  EXPECT_EQ(nullptr, GetUserAvatar());
-  EXPECT_EQ(nullptr, GetSignOutButton());
-  EXPECT_EQ(nullptr, GetLockButton());
-  EXPECT_EQ(nullptr, GetSettingsButton());
-  EXPECT_TRUE(GetPowerButton()->GetVisible());
-  EXPECT_TRUE(GetCollapseButton()->GetVisible());
-}
-
 // Try to layout buttons before login.
 TEST_F(TopShortcutsViewTest, ButtonLayoutNotLoggedIn) {
   SetUpView();
@@ -165,20 +149,10 @@ TEST_F(TopShortcutsViewTest, ButtonLayoutAddingUser) {
   Layout();
 }
 
-// Try to layout buttons when adding a supervised user.
-TEST_F(TopShortcutsViewTest, ButtonLayoutSupervisedUserFlow) {
-  const bool enable_settings = false;
-  GetSessionControllerClient()->AddUserSession(
-      "foo@example.com", user_manager::USER_TYPE_REGULAR, enable_settings);
-  SetUpView();
-  Layout();
-}
-
 // Settings button is disabled when kSettingsIconDisabled is set.
 TEST_F(TopShortcutsViewTest, DisableSettingsIconPolicy) {
-  const bool enable_settings = true;
-  GetSessionControllerClient()->AddUserSession(
-      "foo@example.com", user_manager::USER_TYPE_REGULAR, enable_settings);
+  GetSessionControllerClient()->AddUserSession("foo@example.com",
+                                               user_manager::USER_TYPE_REGULAR);
   SetUpView();
   EXPECT_EQ(views::Button::STATE_NORMAL, GetSettingsButton()->GetState());
 

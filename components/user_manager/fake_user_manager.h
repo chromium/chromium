@@ -136,9 +136,6 @@ class USER_MANAGER_EXPORT FakeUserManager : public UserManagerBase {
   void SetEphemeralUsersEnabled(bool enabled) override;
   const std::string& GetApplicationLocale() const override;
   PrefService* GetLocalState() const override;
-  void HandleUserOAuthTokenStatusChange(
-      const AccountId& account_id,
-      User::OAuthTokenStatus status) const override {}
   bool IsEnterpriseManaged() const override;
   void LoadDeviceLocalAccounts(
       std::set<AccountId>* device_local_accounts_set) override {}

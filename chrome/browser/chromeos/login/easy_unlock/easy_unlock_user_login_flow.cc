@@ -15,22 +15,6 @@ EasyUnlockUserLoginFlow::EasyUnlockUserLoginFlow(const AccountId& account_id)
 
 EasyUnlockUserLoginFlow::~EasyUnlockUserLoginFlow() {}
 
-bool EasyUnlockUserLoginFlow::CanLockScreen() {
-  return true;
-}
-
-bool EasyUnlockUserLoginFlow::CanStartArc() {
-  return true;
-}
-
-bool EasyUnlockUserLoginFlow::ShouldLaunchBrowser() {
-  return true;
-}
-
-bool EasyUnlockUserLoginFlow::ShouldSkipPostLoginScreens() {
-  return false;
-}
-
 bool EasyUnlockUserLoginFlow::HandleLoginFailure(const AuthFailure& failure) {
   SmartLockMetricsRecorder::RecordAuthResultSignInFailure(
       SmartLockMetricsRecorder::SmartLockAuthResultFailureReason::
@@ -54,15 +38,6 @@ void EasyUnlockUserLoginFlow::HandleLoginSuccess(const UserContext& context) {
   if (!service)
     return;
   service->RecordEasySignInOutcome(account_id(), true);
-}
-
-void EasyUnlockUserLoginFlow::HandleOAuthTokenStatusChange(
-    user_manager::User::OAuthTokenStatus status) {}
-
-void EasyUnlockUserLoginFlow::LaunchExtraSteps(Profile* profile) {}
-
-bool EasyUnlockUserLoginFlow::SupportsEarlyRestartToApplyFlags() {
-  return true;
 }
 
 }  // namespace chromeos

@@ -95,9 +95,6 @@ class MockUserManager : public ChromeUserManager {
   MOCK_CONST_METHOD0(AreEphemeralUsersEnabled, bool(void));
   MOCK_CONST_METHOD0(GetApplicationLocale, const std::string&(void));
   MOCK_CONST_METHOD0(GetLocalState, PrefService*(void));
-  MOCK_CONST_METHOD2(HandleUserOAuthTokenStatusChange,
-                     void(const AccountId&,
-                          user_manager::User::OAuthTokenStatus status));
   MOCK_CONST_METHOD0(IsEnterpriseManaged, bool(void));
   MOCK_METHOD1(LoadDeviceLocalAccounts, void(std::set<AccountId>*));
   MOCK_METHOD0(PerformPostUserListLoadingActions, void(void));

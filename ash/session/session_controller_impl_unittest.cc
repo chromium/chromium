@@ -445,12 +445,11 @@ TEST_F(SessionControllerImplPrefsTest, Observer) {
   // Setup 2 users.
   TestSessionControllerClient* session = GetSessionControllerClient();
   // Disable auto-provision of PrefService for each user.
-  constexpr bool kEnableSettings = true;
   constexpr bool kProvidePrefService = false;
   session->AddUserSession(kUser1, user_manager::USER_TYPE_REGULAR,
-                          kEnableSettings, kProvidePrefService);
+                          kProvidePrefService);
   session->AddUserSession(kUser2, user_manager::USER_TYPE_REGULAR,
-                          kEnableSettings, kProvidePrefService);
+                          kProvidePrefService);
 
   // The observer is not notified because the PrefService for kUser1 is not yet
   // ready.

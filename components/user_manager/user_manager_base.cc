@@ -953,8 +953,6 @@ User::OAuthTokenStatus UserManagerBase::LoadUserOAuthStatus(
           account_id.GetUserEmail(), &oauth_token_status)) {
     User::OAuthTokenStatus status =
         static_cast<User::OAuthTokenStatus>(oauth_token_status);
-    HandleUserOAuthTokenStatusChange(account_id, status);
-
     return status;
   }
   return User::OAUTH_TOKEN_STATUS_UNKNOWN;

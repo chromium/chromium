@@ -181,9 +181,6 @@ class ExistingUserController : public LoginDisplay::Delegate,
   // Called when device settings change.
   void DeviceSettingsChanged();
 
-  // Returns corresponding native window.
-  gfx::NativeWindow GetNativeWindow() const;
-
   // Show error message. `error_id` error message ID in resources.
   // If `details` string is not empty, it specify additional error text
   // provided by authenticator, it is not localized.

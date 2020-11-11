@@ -60,11 +60,6 @@
 #include "ui/message_center/public/cpp/notification_types.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
 
-#if defined(OS_CHROMEOS)
-#include "chrome/browser/chromeos/login/user_flow.h"
-#include "chrome/browser/chromeos/login/users/chrome_user_manager.h"
-#endif
-
 using content::SiteInstance;
 using content::WebContents;
 using extensions::BackgroundInfo;
@@ -775,12 +770,6 @@ void BackgroundContentsService::HandleExtensionCrashed(
       extensions::Manifest::IsComponentLocation(extension->location()) ||
       extensions::Manifest::IsPolicyLocation(extension->location());
   if (!force_installed) {
-#if defined(OS_CHROMEOS)
-    chromeos::UserFlow* user_flow =
-        chromeos::ChromeUserManager::Get()->GetCurrentUserFlow();
-    if (!user_flow->AllowsNotificationBalloons())
-      return;
-#endif
     ShowBalloon(extension, profile_);
   } else {
     // Restart the extension.

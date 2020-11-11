@@ -9,8 +9,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chromeos/login/user_flow.h"
-#include "chrome/browser/chromeos/login/users/chrome_user_manager.h"
 #include "chrome/browser/notifications/notification_common.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/profiles/profile.h"
@@ -128,17 +126,6 @@ void SyncErrorNotifier::OnStateChanged(syncer::SyncService* service) {
     display_service->Close(NotificationHandler::Type::TRANSIENT,
                            notification_id_);
     return;
-  }
-
-  if (user_manager::UserManager::IsInitialized()) {
-    chromeos::UserFlow* user_flow =
-        chromeos::ChromeUserManager::Get()->GetCurrentUserFlow();
-
-    // Check whether Chrome OS user flow allows launching browser.
-    // Example: Supervised user creation flow which handles token invalidation
-    // itself and notifications should be suppressed. http://crbug.com/359045
-    if (!user_flow->ShouldLaunchBrowser())
-      return;
   }
 
   // Error state just got triggered. There shouldn't be previous notification.

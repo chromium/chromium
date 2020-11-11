@@ -19,8 +19,6 @@
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/chromeos/login/demo_mode/demo_session.h"
 #include "chrome/browser/chromeos/login/ui/user_adding_screen.h"
-#include "chrome/browser/chromeos/login/user_flow.h"
-#include "chrome/browser/chromeos/login/users/chrome_user_manager.h"
 #include "chrome/browser/chromeos/login/users/multi_profile_user_controller.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/settings/device_settings_service.h"
@@ -105,12 +103,6 @@ std::unique_ptr<ash::UserSession> UserToUserSession(const User& user) {
         *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
             IDR_LOGIN_DEFAULT_USER);
   }
-
-  chromeos::UserFlow* const user_flow =
-      chromeos::ChromeUserManager::Get()->GetUserFlow(user.GetAccountId());
-  session->should_enable_settings = user_flow->ShouldEnableSettings();
-  session->should_show_notification_tray =
-      user_flow->ShouldShowNotificationTray();
 
   return session;
 }

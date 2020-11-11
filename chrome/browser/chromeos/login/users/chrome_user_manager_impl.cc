@@ -568,8 +568,6 @@ void ChromeUserManagerImpl::SaveUserOAuthStatus(
     user_manager::User::OAuthTokenStatus oauth_token_status) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   ChromeUserManager::SaveUserOAuthStatus(account_id, oauth_token_status);
-
-  GetUserFlow(account_id)->HandleOAuthTokenStatusChange(oauth_token_status);
 }
 
 void ChromeUserManagerImpl::SaveUserDisplayName(
@@ -630,8 +628,7 @@ void ChromeUserManagerImpl::OnDeviceLocalAccountsChanged() {
 }
 
 bool ChromeUserManagerImpl::CanCurrentUserLock() const {
-  if (!ChromeUserManager::CanCurrentUserLock() ||
-      !GetCurrentUserFlow()->CanLockScreen()) {
+  if (!ChromeUserManager::CanCurrentUserLock()) {
     return false;
   }
   bool can_lock = false;
@@ -668,12 +665,6 @@ const std::string& ChromeUserManagerImpl::GetApplicationLocale() const {
 
 PrefService* ChromeUserManagerImpl::GetLocalState() const {
   return g_browser_process ? g_browser_process->local_state() : NULL;
-}
-
-void ChromeUserManagerImpl::HandleUserOAuthTokenStatusChange(
-    const AccountId& account_id,
-    user_manager::User::OAuthTokenStatus status) const {
-  GetUserFlow(account_id)->HandleOAuthTokenStatusChange(status);
 }
 
 bool ChromeUserManagerImpl::IsEnterpriseManaged() const {

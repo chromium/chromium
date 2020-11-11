@@ -13,50 +13,11 @@
 
 namespace chromeos {
 
-UserFlow::UserFlow() : host_(nullptr) {}
+UserFlow::UserFlow() {}
 
 UserFlow::~UserFlow() {}
 
-void UserFlow::SetHost(LoginDisplayHost* host) {
-  VLOG(1) << "Flow " << this << " got host " << host;
-  host_ = host;
-}
-
 DefaultUserFlow::~DefaultUserFlow() {}
-
-void DefaultUserFlow::AppendAdditionalCommandLineSwitches() {}
-
-bool DefaultUserFlow::CanLockScreen() {
-  return true;
-}
-
-bool DefaultUserFlow::CanStartArc() {
-  return true;
-}
-
-bool DefaultUserFlow::ShouldEnableSettings() {
-  return true;
-}
-
-bool DefaultUserFlow::ShouldShowNotificationTray() {
-  return true;
-}
-
-bool DefaultUserFlow::ShouldLaunchBrowser() {
-  return true;
-}
-
-bool DefaultUserFlow::ShouldSkipPostLoginScreens() {
-  return false;
-}
-
-bool DefaultUserFlow::SupportsEarlyRestartToApplyFlags() {
-  return true;
-}
-
-bool DefaultUserFlow::AllowsNotificationBalloons() {
-  return true;
-}
 
 bool DefaultUserFlow::HandleLoginFailure(const AuthFailure& failure) {
   return false;
@@ -64,32 +25,10 @@ bool DefaultUserFlow::HandleLoginFailure(const AuthFailure& failure) {
 
 void DefaultUserFlow::HandleLoginSuccess(const UserContext& context) {}
 
-void DefaultUserFlow::HandleOAuthTokenStatusChange(
-    user_manager::User::OAuthTokenStatus status) {}
-
-void DefaultUserFlow::LaunchExtraSteps(Profile* profile) {}
-
 ExtendedUserFlow::ExtendedUserFlow(const AccountId& account_id)
     : account_id_(account_id) {}
 
 ExtendedUserFlow::~ExtendedUserFlow() {}
-
-void ExtendedUserFlow::AppendAdditionalCommandLineSwitches() {}
-
-bool ExtendedUserFlow::ShouldEnableSettings() {
-  return true;
-}
-
-bool ExtendedUserFlow::ShouldShowNotificationTray() {
-  return true;
-}
-
-bool ExtendedUserFlow::AllowsNotificationBalloons() {
-  return true;
-}
-
-void ExtendedUserFlow::HandleOAuthTokenStatusChange(
-    user_manager::User::OAuthTokenStatus status) {}
 
 void ExtendedUserFlow::UnregisterFlowSoon() {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
