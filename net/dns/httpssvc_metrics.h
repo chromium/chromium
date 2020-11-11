@@ -68,13 +68,13 @@ class NET_EXPORT_PRIVATE HttpssvcMetrics {
   HttpssvcMetrics(HttpssvcMetrics&&) = delete;
 
   // May be called many times.
-  void SaveForNonIntegrity(base::Optional<std::string> doh_provider_id,
+  void SaveForAddressQuery(base::Optional<std::string> doh_provider_id,
                            base::TimeDelta resolve_time,
                            enum HttpssvcDnsRcode rcode);
 
   // Save the fact that the non-integrity queries failed. Prevents metrics from
   // being recorded.
-  void SaveNonIntegrityFailure();
+  void SaveAddressQueryFailure();
 
   // Must only be called once.
   void SaveForIntegrity(base::Optional<std::string> doh_provider_id,
@@ -87,13 +87,16 @@ class NET_EXPORT_PRIVATE HttpssvcMetrics {
                     base::TimeDelta https_resolve_time);
 
  private:
-  std::string BuildMetricName(base::StringPiece leaf_name) const;
+  enum class RecordType { kIntegrity, kHttps };
+
+  std::string BuildMetricName(RecordType type,
+                              base::StringPiece leaf_name) const;
 
   // Records all the aggregated metrics to UMA.
-  void RecordIntegrityMetrics();
-  void RecordIntegrityCommonMetrics();
-  void RecordIntegrityExpectIntactMetrics();
-  void RecordIntegrityExpectNoerrorMetrics();
+  void RecordMetrics();
+  void RecordCommonMetrics();
+  void RecordExpectIntactMetrics();
+  void RecordExpectNoerrorMetrics();
 
   void set_doh_provider_id(base::Optional<std::string> doh_provider_id);
 
@@ -103,12 +106,16 @@ class NET_EXPORT_PRIVATE HttpssvcMetrics {
   bool already_recorded_ = false;
   base::Optional<std::string> doh_provider_id_;
   base::Optional<enum HttpssvcDnsRcode> rcode_integrity_;
+  base::Optional<enum HttpssvcDnsRcode> rcode_https_;
   size_t num_integrity_records_ = 0;
+  size_t num_https_records_ = 0;
   base::Optional<bool> is_integrity_intact_;
-  // We never make multiple INTEGRITY queries per DnsTask, so we only need
-  // one TimeDelta for the INTEGRITY query.
+  base::Optional<bool> is_https_parsable_;
+  // We never make multiple INTEGRITY or HTTPS queries per DnsTask, so we only
+  // need one TimeDelta for each qtype.
   base::Optional<base::TimeDelta> integrity_resolve_time_;
-  std::vector<base::TimeDelta> non_integrity_resolve_times_;
+  base::Optional<base::TimeDelta> https_resolve_time_;
+  std::vector<base::TimeDelta> address_resolve_times_;
 };
 
 }  // namespace net

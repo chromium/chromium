@@ -1352,7 +1352,7 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
         httpssvc_metrics_->SaveForHttps(doh_provider_id, rcode_for_httpssvc,
                                         *condensed, elapsed_time);
       } else {
-        httpssvc_metrics_->SaveForNonIntegrity(doh_provider_id, elapsed_time,
+        httpssvc_metrics_->SaveForAddressQuery(doh_provider_id, elapsed_time,
                                                rcode_for_httpssvc);
       }
     }
@@ -1785,7 +1785,7 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
                  DnsResponse::Result parse_result,
                  base::Optional<base::TimeDelta> ttl) {
     if (httpssvc_metrics_)
-      httpssvc_metrics_->SaveNonIntegrityFailure();
+      httpssvc_metrics_->SaveAddressQueryFailure();
 
     DCHECK_NE(OK, net_error);
     HostCache::Entry results(net_error, HostCache::Entry::SOURCE_UNKNOWN, ttl);

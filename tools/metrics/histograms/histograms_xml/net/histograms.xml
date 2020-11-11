@@ -794,6 +794,107 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram
+    name="Net.DNS.HTTPSSVC.RecordHttps.AnyProvider.ExpectNoerror.Parsable"
+    enum="BooleanValid" expires_after="2021-08-05">
+  <owner>ericorth@chromium.org</owner>
+  <owner>dmcardle@chromium.org</owner>
+  <summary>
+    Indicates whether the result of an HTTPS query was validly parsable or
+    mangled. Only recorded when DnsRcode indicates NoError. Histograms are
+    emitted at the completion of a DnsTask's final transaction.
+  </summary>
+</histogram>
+
+<histogram
+    name="Net.DNS.HTTPSSVC.RecordHttps.AnyProvider.ExpectNoerror.RecordWithError"
+    enum="Boolean" expires_after="2021-08-05">
+  <owner>ericorth@chromium.org</owner>
+  <owner>dmcardle@chromium.org</owner>
+  <summary>
+    Records true when we receive an HTTPS record and an error RCODE at the same
+    time. Only recorded for true. Histograms are emitted at the completion of a
+    DnsTask's final transaction.
+  </summary>
+</histogram>
+
+<histogram base="true" name="Net.DNS.HTTPSSVC.RecordHttps.DnsRcode"
+    enum="HttpssvcDnsRcode" expires_after="2021-08-05">
+<!-- Name completed by histogram_suffixes
+  name="DohProviderId" and name="HttpssvcIntegrityExpectation" -->
+
+  <owner>ericorth@chromium.org</owner>
+  <owner>dmcardle@chromium.org</owner>
+  <summary>
+    Records which RCODE the DNS server specified when it responded to our HTTPS
+    query. If the query timed out before getting a response,
+    &quot;TimedOut&quot; is recorded instead of an RCODE value. Histograms are
+    emitted at the completion of a DnsTask's final transaction.
+  </summary>
+</histogram>
+
+<histogram base="true"
+    name="Net.DNS.HTTPSSVC.RecordHttps.ExpectIntact.Parsable"
+    enum="BooleanValid" expires_after="2021-08-05">
+<!-- Name completed by histogram_suffixes
+  name="DohProviderId" -->
+
+  <owner>ericorth@chromium.org</owner>
+  <owner>dmcardle@chromium.org</owner>
+  <summary>
+    Indicates whether the result of an HTTPS query was validly parsable or
+    mangled. Only recorded when DnsRcode indicates NoError. Histograms are
+    emitted at the completion of a DnsTask's final transaction.
+  </summary>
+</histogram>
+
+<histogram base="true"
+    name="Net.DNS.HTTPSSVC.RecordHttps.ExpectIntact.RecordWithError"
+    units="records" expires_after="2021-08-05">
+<!-- Name completed by histogram_suffixes
+  name="DohProviderId" -->
+
+  <owner>ericorth@chromium.org</owner>
+  <owner>dmcardle@chromium.org</owner>
+  <summary>
+    Records a sample of one when we receive an HTTPS record and an error RCODE
+    at the same time. Histograms are emitted at the completion of a DnsTask's
+    final transaction.
+  </summary>
+</histogram>
+
+<histogram base="true"
+    name="Net.DNS.HTTPSSVC.RecordHttps.ResolveTimeHttpsRecord" units="ms"
+    expires_after="2021-08-05">
+<!-- Name completed by histogram_suffixes
+  name="DohProviderId" and name="HttpssvcIntegrityExpectation" -->
+
+  <owner>ericorth@chromium.org</owner>
+  <owner>dmcardle@chromium.org</owner>
+  <summary>
+    Records how many ms the DNS server took to respond to an HTTPS query.
+    Histograms are emitted at the completion of a DnsTask's final transaction.
+  </summary>
+</histogram>
+
+<histogram base="true" name="Net.DNS.HTTPSSVC.RecordHttps.ResolveTimeRatio"
+    units="scaled ratio (% / 10)" expires_after="2021-08-05">
+<!-- Name completed by histogram_suffixes
+  name="DohProviderId" and name="HttpssvcIntegrityExpectation" -->
+
+  <owner>ericorth@chromium.org</owner>
+  <owner>dmcardle@chromium.org</owner>
+  <summary>
+    Records a ratio indicating the relative HTTPS resolve time compared to the
+    slower A or AAAA resolve time, where A/AAAA/HTTPS belong to the same
+    DnsTask. Multiply this value by 10 to obtain a percentage P. The HTTPS query
+    completed in roughly P% of the slower A/AAAA resolve time. Values smaller
+    than 10 indicate that HTTPS query was faster than A/AAAA. Values larger than
+    10 indicate that the HTTPS query was slower than A/AAAA. Histograms are
+    emitted at the completion of a DnsTask's final transaction.
+  </summary>
+</histogram>
+
 <histogram base="true" name="Net.DNS.HTTPSSVC.RecordIntegrity.DnsRcode"
     enum="HttpssvcDnsRcode" expires_after="2021-03-14">
 <!-- Name completed by histogram_suffixes

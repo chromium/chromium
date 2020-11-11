@@ -164,23 +164,25 @@ INSTANTIATE_TEST_SUITE_P(
         testing::Combine(
             testing::Bool() /* DnsHttpssvc feature enabled? */,
             testing::Bool() /* DnsHttpssvcUseIntegrity */,
-            testing::Values(false) /* DnsHttpssvcUseHttpssvc */,
+            testing::Bool() /* DnsHttpssvcUseHttpssvc */,
             testing::Values(false) /* DnsHttpssvcControlDomainWildcard */)));
 
 // Base for testing the metrics collection code in |HttpssvcMetrics|.
-class HttpssvcMetricsTest
-    : public ::testing::TestWithParam<MetricsTestParamTuple> {
+class HttpssvcMetricsTest : public ::testing::TestWithParam<bool> {
  public:
   void SetUp() override {
-    HttpssvcFeatureTuple httpssvc_feature;
-    std::tie(querying_experimental_, httpssvc_feature) = GetParam();
-    config_ = HttpssvcFeatureConfig(httpssvc_feature, "", "");
+    querying_experimental_ = GetParam();
+    config_ = HttpssvcFeatureConfig(
+        {true /* enabled */, true /* use_integrity */, true /* use_httpssvc */,
+         false /* control_domain_wildcard */},
+        "", "");
     config_.Apply(&scoped_feature_list_);
   }
 
-  std::string BuildMetricNamePrefix() const {
-    return base::StrCat(
-        {"Net.DNS.HTTPSSVC.RecordIntegrity.", doh_provider_, "."});
+  std::string BuildMetricNamePrefix(base::StringPiece record_type_str,
+                                    base::StringPiece expect_str) const {
+    return base::StrCat({"Net.DNS.HTTPSSVC.", record_type_str, ".",
+                         doh_provider_, ".", expect_str, "."});
   }
 
   template <typename T>
@@ -199,23 +201,34 @@ class HttpssvcMetricsTest
     ExpectSample<int64_t>(name, sample_ms);
   }
 
-  void VerifyMetricsForExpectIntact(
+  void VerifyAddressResolveTimeMetric(
+      base::Optional<base::TimeDelta> expect_intact_time = base::nullopt,
+      base::Optional<base::TimeDelta> expect_noerror_time = base::nullopt) {
+    const std::string kExpectIntact =
+        base::StrCat({BuildMetricNamePrefix("RecordIntegrity", "ExpectIntact"),
+                      "ResolveTimeNonIntegrityRecord"});
+    const std::string kExpectNoerror =
+        base::StrCat({BuildMetricNamePrefix("RecordIntegrity", "ExpectNoerror"),
+                      "ResolveTimeNonIntegrityRecord"});
+
+    ExpectSample(kExpectIntact, expect_intact_time);
+    ExpectSample(kExpectNoerror, expect_noerror_time);
+  }
+
+  void VerifyIntegrityMetricsForExpectIntact(
       base::Optional<HttpssvcDnsRcode> rcode,
       base::Optional<bool> integrity,
       base::Optional<bool> record_with_error,
       base::Optional<base::TimeDelta> resolve_time_integrity,
-      base::Optional<base::TimeDelta> resolve_time_non_integrity,
       base::Optional<int> resolve_time_ratio) const {
     const std::string kPrefix =
-        base::StrCat({BuildMetricNamePrefix(), "ExpectIntact."});
+        BuildMetricNamePrefix("RecordIntegrity", "ExpectIntact");
     const std::string kMetricDnsRcode = base::StrCat({kPrefix, "DnsRcode"});
     const std::string kMetricIntegrity = base::StrCat({kPrefix, "Integrity"});
     const std::string kMetricRecordWithError =
         base::StrCat({kPrefix, "RecordWithError"});
     const std::string kMetricResolveTimeIntegrity =
         base::StrCat({kPrefix, "ResolveTimeIntegrityRecord"});
-    const std::string kMetricResolveTimeNonIntegrity =
-        base::StrCat({kPrefix, "ResolveTimeNonIntegrityRecord"});
     const std::string kMetricResolveTimeRatio =
         base::StrCat({kPrefix, "ResolveTimeRatio"});
 
@@ -223,43 +236,89 @@ class HttpssvcMetricsTest
     ExpectSample(kMetricIntegrity, integrity);
     ExpectSample(kMetricRecordWithError, record_with_error);
     ExpectSample(kMetricResolveTimeIntegrity, resolve_time_integrity);
-    ExpectSample(kMetricResolveTimeNonIntegrity, resolve_time_non_integrity);
     ExpectSample(kMetricResolveTimeRatio, resolve_time_ratio);
   }
 
-  void VerifyMetricsForExpectNoerror(
+  void VerifyHttpsMetricsForExpectIntact(
+      base::Optional<HttpssvcDnsRcode> rcode = base::nullopt,
+      base::Optional<bool> parsable = base::nullopt,
+      base::Optional<bool> record_with_error = base::nullopt,
+      base::Optional<base::TimeDelta> resolve_time_https = base::nullopt,
+      base::Optional<int> resolve_time_ratio = base::nullopt) const {
+    const std::string kPrefix =
+        BuildMetricNamePrefix("RecordHttps", "ExpectIntact");
+    const std::string kMetricDnsRcode = base::StrCat({kPrefix, "DnsRcode"});
+    const std::string kMetricParsable = base::StrCat({kPrefix, "Parsable"});
+    const std::string kMetricRecordWithError =
+        base::StrCat({kPrefix, "RecordWithError"});
+    const std::string kMetricResolveTimeHttps =
+        base::StrCat({kPrefix, "ResolveTimeHttpsRecord"});
+    const std::string kMetricResolveTimeRatio =
+        base::StrCat({kPrefix, "ResolveTimeRatio"});
+
+    ExpectSample(kMetricDnsRcode, rcode);
+    ExpectSample(kMetricParsable, parsable);
+    ExpectSample(kMetricRecordWithError, record_with_error);
+    ExpectSample(kMetricResolveTimeHttps, resolve_time_https);
+    ExpectSample(kMetricResolveTimeRatio, resolve_time_ratio);
+  }
+
+  void VerifyIntegrityMetricsForExpectNoerror(
       base::Optional<HttpssvcDnsRcode> rcode,
       base::Optional<int> record_received,
       base::Optional<base::TimeDelta> resolve_time_integrity,
-      base::Optional<base::TimeDelta> resolve_time_non_integrity,
       base::Optional<int> resolve_time_ratio) const {
     const std::string kPrefix =
-        base::StrCat({BuildMetricNamePrefix(), "ExpectNoerror."});
+        BuildMetricNamePrefix("RecordIntegrity", "ExpectNoerror");
     const std::string kMetricDnsRcode = base::StrCat({kPrefix, "DnsRcode"});
     const std::string kMetricRecordReceived =
         base::StrCat({kPrefix, "RecordReceived"});
     const std::string kMetricResolveTimeIntegrity =
         base::StrCat({kPrefix, "ResolveTimeIntegrityRecord"});
-    const std::string kMetricResolveTimeNonIntegrity =
-        base::StrCat({kPrefix, "ResolveTimeNonIntegrityRecord"});
     const std::string kMetricResolveTimeRatio =
         base::StrCat({kPrefix, "ResolveTimeRatio"});
 
     ExpectSample(kMetricDnsRcode, rcode);
     ExpectSample(kMetricRecordReceived, record_received);
     ExpectSample(kMetricResolveTimeIntegrity, resolve_time_integrity);
-    ExpectSample(kMetricResolveTimeNonIntegrity, resolve_time_non_integrity);
     ExpectSample(kMetricResolveTimeRatio, resolve_time_ratio);
   }
 
-  void VerifyMetricsForExpectIntact() {
-    VerifyMetricsForExpectIntact(base::nullopt, base::nullopt, base::nullopt,
-                                 base::nullopt, base::nullopt, base::nullopt);
+  void VerifyHttpsMetricsForExpectNoerror(
+      base::Optional<HttpssvcDnsRcode> rcode = base::nullopt,
+      base::Optional<bool> parsable = base::nullopt,
+      base::Optional<bool> record_with_error = base::nullopt,
+      base::Optional<base::TimeDelta> resolve_time_https = base::nullopt,
+      base::Optional<int> resolve_time_ratio = base::nullopt) const {
+    const std::string kPrefix =
+        BuildMetricNamePrefix("RecordHttps", "ExpectNoerror");
+    const std::string kMetricDnsRcode = base::StrCat({kPrefix, "DnsRcode"});
+    const std::string kMetricParsable =
+        "Net.DNS.HTTPSSVC.RecordHttps.AnyProvider.ExpectNoerror.Parsable";
+    const std::string kMetricRecordWithError =
+        "Net.DNS.HTTPSSVC.RecordHttps.AnyProvider.ExpectNoerror."
+        "RecordWithError";
+    const std::string kMetricResolveTimeHttps =
+        base::StrCat({kPrefix, "ResolveTimeHttpsRecord"});
+    const std::string kMetricResolveTimeRatio =
+        base::StrCat({kPrefix, "ResolveTimeRatio"});
+
+    ExpectSample(kMetricDnsRcode, rcode);
+    ExpectSample(kMetricParsable, parsable);
+    ExpectSample(kMetricRecordWithError, record_with_error);
+    ExpectSample(kMetricResolveTimeHttps, resolve_time_https);
+    ExpectSample(kMetricResolveTimeRatio, resolve_time_ratio);
   }
 
-  void VerifyMetricsForExpectNoerror() {
-    VerifyMetricsForExpectNoerror(base::nullopt, base::nullopt, base::nullopt,
-                                  base::nullopt, base::nullopt);
+  void VerifyIntegrityMetricsForExpectIntact() {
+    VerifyIntegrityMetricsForExpectIntact(base::nullopt, base::nullopt,
+                                          base::nullopt, base::nullopt,
+                                          base::nullopt);
+  }
+
+  void VerifyIntegrityMetricsForExpectNoerror() {
+    VerifyIntegrityMetricsForExpectNoerror(base::nullopt, base::nullopt,
+                                           base::nullopt, base::nullopt);
   }
 
   const base::HistogramTester& histo() const { return histogram_; }
@@ -278,24 +337,13 @@ class HttpssvcMetricsTest
 // This instantiation focuses on whether the correct metrics are recorded. The
 // domain list parser is already tested against encoding quirks in
 // |HttpssvcMetricsTestDomainParsing|, so we fix the quirks at false.
-INSTANTIATE_TEST_SUITE_P(
-    HttpssvcMetricsTestSimple,
-    HttpssvcMetricsTest,
-    testing::Combine(
-        // Whether we are querying an experimental domain.
-        testing::Bool(),
-        // HttpssvcFeatureTuple
-        testing::Combine(
-            testing::Values(true) /* DnsHttpssvc feature enabled? */,
-            testing::Values(true) /* DnsHttpssvcUseIntegrity */,
-            testing::Values(false) /* DnsHttpssvcUseHttpssvc */,
-            testing::Values(false) /* DnsHttpssvcControlDomainWildcard */)));
+INSTANTIATE_TEST_SUITE_P(HttpssvcMetricsTestSimple,
+                         HttpssvcMetricsTest,
+                         // Whether we are querying an experimental domain.
+                         testing::Bool());
 
 TEST_P(HttpssvcDomainParsingTest, ParseFeatureParamIntegrityDomains) {
   HttpssvcExperimentDomainCache domain_cache;
-
-  // We are not testing this feature param yet.
-  CHECK(!config().use_httpssvc);
 
   const std::string kReservedDomain = "neither.example";
   EXPECT_FALSE(domain_cache.IsExperimental(kReservedDomain));
@@ -318,7 +366,7 @@ TEST_P(HttpssvcDomainParsingTest, ParseFeatureParamIntegrityDomains) {
       EXPECT_FALSE(domain_cache.IsExperimental(control_domain));
       EXPECT_FALSE(domain_cache.IsControl(control_domain));
     }
-  } else if (config().use_integrity) {
+  } else if (config().use_integrity || config().use_httpssvc) {
     for (const std::string& experiment_domain : expected_experiment_domains_) {
       EXPECT_TRUE(domain_cache.IsExperimental(experiment_domain));
       EXPECT_FALSE(domain_cache.IsControl(experiment_domain));
@@ -332,67 +380,145 @@ TEST_P(HttpssvcDomainParsingTest, ParseFeatureParamIntegrityDomains) {
 }
 
 // Only record metrics for a non-integrity query.
-TEST_P(HttpssvcMetricsTest, AddressAndIntegrityMissing) {
-  if (!config().enabled || !config().use_integrity) {
-    VerifyMetricsForExpectIntact();
-    VerifyMetricsForExpectNoerror();
-    return;
-  }
+TEST_P(HttpssvcMetricsTest, AddressAndExperimentalMissing) {
   const base::TimeDelta kResolveTime = base::TimeDelta::FromMilliseconds(10);
   base::Optional<HttpssvcMetrics> metrics(querying_experimental_);
-  metrics->SaveForNonIntegrity(base::nullopt, kResolveTime,
+  metrics->SaveForAddressQuery(base::nullopt, kResolveTime,
                                HttpssvcDnsRcode::kNoError);
   metrics.reset();  // Record the metrics to UMA.
 
-  VerifyMetricsForExpectIntact();
-  VerifyMetricsForExpectNoerror();
+  VerifyAddressResolveTimeMetric();
+  VerifyIntegrityMetricsForExpectIntact();
+  VerifyHttpsMetricsForExpectIntact();
+  VerifyIntegrityMetricsForExpectNoerror();
+  VerifyHttpsMetricsForExpectNoerror();
 }
 
 TEST_P(HttpssvcMetricsTest, AddressAndIntegrityIntact) {
-  if (!config().enabled || !config().use_integrity) {
-    VerifyMetricsForExpectIntact();
-    VerifyMetricsForExpectNoerror();
-    return;
-  }
   const base::TimeDelta kResolveTime = base::TimeDelta::FromMilliseconds(10);
   const base::TimeDelta kResolveTimeIntegrity =
       base::TimeDelta::FromMilliseconds(15);
   base::Optional<HttpssvcMetrics> metrics(querying_experimental_);
   metrics->SaveForIntegrity(base::nullopt, HttpssvcDnsRcode::kNoError, {true},
                             kResolveTimeIntegrity);
-  metrics->SaveForNonIntegrity(base::nullopt, kResolveTime,
+  metrics->SaveForAddressQuery(base::nullopt, kResolveTime,
+                               HttpssvcDnsRcode::kNoError);
+  metrics.reset();  // Record the metrics to UMA.
+
+  VerifyHttpsMetricsForExpectIntact();
+  VerifyHttpsMetricsForExpectNoerror();
+
+  if (querying_experimental_) {
+    VerifyAddressResolveTimeMetric({kResolveTime} /* expect_intact_time */);
+    VerifyIntegrityMetricsForExpectIntact(
+        base::nullopt /* rcode */, {true} /* integrity */,
+        base::nullopt /* record_with_error */,
+        {kResolveTimeIntegrity} /* resolve_time_integrity */,
+        {15} /* resolve_time_ratio */);
+
+    VerifyIntegrityMetricsForExpectNoerror();
+    return;
+  }
+
+  VerifyIntegrityMetricsForExpectIntact();
+
+  VerifyAddressResolveTimeMetric(base::nullopt /* expect_intact_time */,
+                                 {kResolveTime} /* expect_noerror_time */);
+  VerifyIntegrityMetricsForExpectNoerror(
+      {HttpssvcDnsRcode::kNoError} /* rcode */, {1} /* record_received */,
+      {kResolveTimeIntegrity} /* resolve_time_integrity */,
+      {15} /* resolve_time_ratio */);
+}
+
+TEST_P(HttpssvcMetricsTest, AddressAndHttpsParsable) {
+  const base::TimeDelta kResolveTime = base::TimeDelta::FromMilliseconds(10);
+  const base::TimeDelta kResolveTimeHttps =
+      base::TimeDelta::FromMilliseconds(15);
+  base::Optional<HttpssvcMetrics> metrics(querying_experimental_);
+  metrics->SaveForHttps(base::nullopt, HttpssvcDnsRcode::kNoError, {true},
+                        kResolveTimeHttps);
+  metrics->SaveForAddressQuery(base::nullopt, kResolveTime,
+                               HttpssvcDnsRcode::kNoError);
+  metrics.reset();  // Record the metrics to UMA.
+
+  VerifyIntegrityMetricsForExpectIntact();
+  VerifyIntegrityMetricsForExpectNoerror();
+
+  if (querying_experimental_) {
+    VerifyAddressResolveTimeMetric({kResolveTime} /* expect_intact_time */);
+    VerifyHttpsMetricsForExpectIntact(
+        base::nullopt /* rcode */, {true} /* parsable */,
+        base::nullopt /* record_with_error */,
+        {kResolveTimeHttps} /* resolve_time_https */,
+        {15} /* resolve_time_ratio */);
+
+    VerifyHttpsMetricsForExpectNoerror();
+    return;
+  }
+
+  VerifyHttpsMetricsForExpectIntact();
+
+  VerifyAddressResolveTimeMetric(base::nullopt /* expect_intact_time */,
+                                 {kResolveTime} /* expect_noerror_time */);
+  VerifyHttpsMetricsForExpectNoerror(
+      {HttpssvcDnsRcode::kNoError} /* rcode */, {true} /* parsable */,
+      base::nullopt /* record_with_error */,
+      {kResolveTimeHttps} /* resolve_time_https */,
+      {15} /* resolve_time_ratio */);
+}
+
+TEST_P(HttpssvcMetricsTest, AddressAndIntegrityIntactAndHttpsParsable) {
+  const base::TimeDelta kResolveTime = base::TimeDelta::FromMilliseconds(10);
+  const base::TimeDelta kResolveTimeIntegrity =
+      base::TimeDelta::FromMilliseconds(15);
+  const base::TimeDelta kResolveTimeHttps =
+      base::TimeDelta::FromMilliseconds(20);
+  base::Optional<HttpssvcMetrics> metrics(querying_experimental_);
+  metrics->SaveForIntegrity(base::nullopt, HttpssvcDnsRcode::kNoError, {true},
+                            kResolveTimeIntegrity);
+  metrics->SaveForHttps(base::nullopt, HttpssvcDnsRcode::kNoError, {true},
+                        kResolveTimeHttps);
+  metrics->SaveForAddressQuery(base::nullopt, kResolveTime,
                                HttpssvcDnsRcode::kNoError);
   metrics.reset();  // Record the metrics to UMA.
 
   if (querying_experimental_) {
-    VerifyMetricsForExpectIntact(
+    VerifyAddressResolveTimeMetric({kResolveTime} /* expect_intact_time */);
+    VerifyIntegrityMetricsForExpectIntact(
         base::nullopt /* rcode */, {true} /* integrity */,
         base::nullopt /* record_with_error */,
         {kResolveTimeIntegrity} /* resolve_time_integrity */,
-        {kResolveTime} /* resolve_time_non_integrity */,
         {15} /* resolve_time_ratio */);
+    VerifyHttpsMetricsForExpectIntact(
+        base::nullopt /* rcode */, {true} /* parsable */,
+        base::nullopt /* record_with_error */,
+        {kResolveTimeHttps} /* resolve_time_https */,
+        {20} /* resolve_time_ratio */);
 
-    VerifyMetricsForExpectNoerror();
+    VerifyIntegrityMetricsForExpectNoerror();
+    VerifyHttpsMetricsForExpectNoerror();
     return;
   }
 
-  VerifyMetricsForExpectIntact();
+  VerifyIntegrityMetricsForExpectIntact();
+  VerifyHttpsMetricsForExpectIntact();
 
-  VerifyMetricsForExpectNoerror(
+  VerifyAddressResolveTimeMetric(base::nullopt /* expect_intact_time */,
+                                 {kResolveTime} /* expect_noerror_time */);
+  VerifyIntegrityMetricsForExpectNoerror(
       {HttpssvcDnsRcode::kNoError} /* rcode */, {1} /* record_received */,
       {kResolveTimeIntegrity} /* resolve_time_integrity */,
-      {kResolveTime} /* resolve_time_non_integrity */,
       {15} /* resolve_time_ratio */);
+  VerifyHttpsMetricsForExpectNoerror(
+      {HttpssvcDnsRcode::kNoError} /* rcode */, {true} /* parsable */,
+      base::nullopt /* record_with_error */,
+      {kResolveTimeHttps} /* resolve_time_https */,
+      {20} /* resolve_time_ratio */);
 }
 
 // This test simulates an INTEGRITY response that includes no INTEGRITY records,
 // but does have an error value for the RCODE.
 TEST_P(HttpssvcMetricsTest, AddressAndIntegrityMissingWithRcode) {
-  if (!config().enabled || !config().use_integrity) {
-    VerifyMetricsForExpectIntact();
-    VerifyMetricsForExpectNoerror();
-    return;
-  }
   const base::TimeDelta kResolveTime = base::TimeDelta::FromMilliseconds(10);
   const base::TimeDelta kResolveTimeIntegrity =
       base::TimeDelta::FromMilliseconds(15);
@@ -400,41 +526,79 @@ TEST_P(HttpssvcMetricsTest, AddressAndIntegrityMissingWithRcode) {
   base::Optional<HttpssvcMetrics> metrics(querying_experimental_);
   metrics->SaveForIntegrity(base::nullopt, HttpssvcDnsRcode::kNxDomain, {},
                             kResolveTimeIntegrity);
-  metrics->SaveForNonIntegrity(base::nullopt, kResolveTime,
+  metrics->SaveForAddressQuery(base::nullopt, kResolveTime,
                                HttpssvcDnsRcode::kNoError);
   metrics.reset();  // Record the metrics to UMA.
 
+  VerifyHttpsMetricsForExpectIntact();
+  VerifyHttpsMetricsForExpectNoerror();
+
   if (querying_experimental_) {
-    VerifyMetricsForExpectIntact(
+    VerifyAddressResolveTimeMetric({kResolveTime} /* expect_intact_time */);
+    VerifyIntegrityMetricsForExpectIntact(
         {HttpssvcDnsRcode::kNxDomain} /* rcode */,
         base::nullopt /* integrity */, base::nullopt /* record_with_error */,
         {kResolveTimeIntegrity} /* resolve_time_integrity */,
-        {kResolveTime} /* resolve_time_non_integrity */,
         {15} /* resolve_time_ratio */);
 
-    VerifyMetricsForExpectNoerror();
+    VerifyIntegrityMetricsForExpectNoerror();
     return;
   }
 
-  VerifyMetricsForExpectIntact();
+  VerifyIntegrityMetricsForExpectIntact();
 
-  VerifyMetricsForExpectNoerror(
+  VerifyAddressResolveTimeMetric(base::nullopt /* expect_intact_time */,
+                                 {kResolveTime} /* expect_noerror_time */);
+  VerifyIntegrityMetricsForExpectNoerror(
       {HttpssvcDnsRcode::kNxDomain} /* rcode */,
       base::nullopt /* record_received */,
       {kResolveTimeIntegrity} /* resolve_time_integrity */,
-      {kResolveTime} /* resolve_time_non_integrity */,
+      {15} /* resolve_time_ratio */);
+}
+
+// This test simulates an HTTPS response that includes no HTTPS records,
+// but does have an error value for the RCODE.
+TEST_P(HttpssvcMetricsTest, AddressAndHttpsMissingWithRcode) {
+  const base::TimeDelta kResolveTime = base::TimeDelta::FromMilliseconds(10);
+  const base::TimeDelta kResolveTimeHttps =
+      base::TimeDelta::FromMilliseconds(15);
+
+  base::Optional<HttpssvcMetrics> metrics(querying_experimental_);
+  metrics->SaveForHttps(base::nullopt, HttpssvcDnsRcode::kNxDomain, {},
+                        kResolveTimeHttps);
+  metrics->SaveForAddressQuery(base::nullopt, kResolveTime,
+                               HttpssvcDnsRcode::kNoError);
+  metrics.reset();  // Record the metrics to UMA.
+
+  VerifyIntegrityMetricsForExpectIntact();
+  VerifyIntegrityMetricsForExpectNoerror();
+
+  if (querying_experimental_) {
+    VerifyAddressResolveTimeMetric({kResolveTime} /* expect_intact_time */);
+    VerifyHttpsMetricsForExpectIntact(
+        {HttpssvcDnsRcode::kNxDomain} /* rcode */, base::nullopt /* parsable */,
+        base::nullopt /* record_with_error */,
+        {kResolveTimeHttps} /* resolve_time_https */,
+        {15} /* resolve_time_ratio */);
+
+    VerifyHttpsMetricsForExpectNoerror();
+    return;
+  }
+
+  VerifyHttpsMetricsForExpectIntact();
+
+  VerifyAddressResolveTimeMetric(base::nullopt /* expect_intact_time */,
+                                 {kResolveTime} /* expect_noerror_time */);
+  VerifyHttpsMetricsForExpectNoerror(
+      {HttpssvcDnsRcode::kNxDomain} /* rcode */, base::nullopt /* parsable */,
+      base::nullopt /* record_with_error */,
+      {kResolveTimeHttps} /* resolve_time_https */,
       {15} /* resolve_time_ratio */);
 }
 
 // This test simulates an INTEGRITY response that includes an intact INTEGRITY
 // record, but also has an error RCODE.
 TEST_P(HttpssvcMetricsTest, AddressAndIntegrityIntactWithRcode) {
-  if (!config().enabled || !config().use_integrity) {
-    VerifyMetricsForExpectIntact();
-    VerifyMetricsForExpectNoerror();
-    return;
-  }
-
   const base::TimeDelta kResolveTime = base::TimeDelta::FromMilliseconds(10);
   const base::TimeDelta kResolveTimeIntegrity =
       base::TimeDelta::FromMilliseconds(15);
@@ -442,112 +606,240 @@ TEST_P(HttpssvcMetricsTest, AddressAndIntegrityIntactWithRcode) {
   base::Optional<HttpssvcMetrics> metrics(querying_experimental_);
   metrics->SaveForIntegrity(base::nullopt, HttpssvcDnsRcode::kNxDomain, {true},
                             kResolveTimeIntegrity);
-  metrics->SaveForNonIntegrity(base::nullopt, kResolveTime,
+  metrics->SaveForAddressQuery(base::nullopt, kResolveTime,
                                HttpssvcDnsRcode::kNoError);
   metrics.reset();  // Record the metrics to UMA.
 
+  VerifyHttpsMetricsForExpectIntact();
+  VerifyHttpsMetricsForExpectNoerror();
+
   if (querying_experimental_) {
-    VerifyMetricsForExpectIntact(
+    VerifyAddressResolveTimeMetric({kResolveTime} /* expect_intact_time */);
+    VerifyIntegrityMetricsForExpectIntact(
         // "DnsRcode" metric is omitted because we received an INTEGRITY record.
         base::nullopt /* rcode */,
         // "Integrity" metric is omitted because the RCODE is not NOERROR.
         base::nullopt /* integrity */, {true} /* record_with_error */,
         {kResolveTimeIntegrity} /* resolve_time_integrity */,
-        {kResolveTime} /* resolve_time_non_integrity */,
         {15} /* resolve_time_ratio */);
 
-    VerifyMetricsForExpectNoerror();
+    VerifyIntegrityMetricsForExpectNoerror();
     return;
   }
 
-  VerifyMetricsForExpectIntact();
+  VerifyIntegrityMetricsForExpectIntact();
 
-  VerifyMetricsForExpectNoerror(
+  VerifyAddressResolveTimeMetric(base::nullopt /* expect_intact_time */,
+                                 {kResolveTime} /* expect_noerror_time */);
+  VerifyIntegrityMetricsForExpectNoerror(
       {HttpssvcDnsRcode::kNxDomain} /* rcode */, {true} /* record_received */,
       {kResolveTimeIntegrity} /* resolve_time_integrity */,
-      {kResolveTime} /* resolve_time_non_integrity */,
+      {15} /* resolve_time_ratio */);
+}
+
+// This test simulates an HTTPS response that includes a parsable HTTPS
+// record, but also has an error RCODE.
+TEST_P(HttpssvcMetricsTest, AddressAndHttpsParsableWithRcode) {
+  const base::TimeDelta kResolveTime = base::TimeDelta::FromMilliseconds(10);
+  const base::TimeDelta kResolveTimeHttps =
+      base::TimeDelta::FromMilliseconds(15);
+
+  base::Optional<HttpssvcMetrics> metrics(querying_experimental_);
+  metrics->SaveForHttps(base::nullopt, HttpssvcDnsRcode::kNxDomain, {true},
+                        kResolveTimeHttps);
+  metrics->SaveForAddressQuery(base::nullopt, kResolveTime,
+                               HttpssvcDnsRcode::kNoError);
+  metrics.reset();  // Record the metrics to UMA.
+
+  VerifyIntegrityMetricsForExpectIntact();
+  VerifyIntegrityMetricsForExpectNoerror();
+
+  if (querying_experimental_) {
+    VerifyAddressResolveTimeMetric({kResolveTime} /* expect_intact_time */);
+    VerifyHttpsMetricsForExpectIntact(
+        // "DnsRcode" metric is omitted because we received an HTTPS record.
+        base::nullopt /* rcode */,
+        // "parsable" metric is omitted because the RCODE is not NOERROR.
+        base::nullopt /* parsable */, {true} /* record_with_error */,
+        {kResolveTimeHttps} /* resolve_time_https */,
+        {15} /* resolve_time_ratio */);
+
+    VerifyHttpsMetricsForExpectNoerror();
+    return;
+  }
+
+  VerifyHttpsMetricsForExpectIntact();
+
+  VerifyAddressResolveTimeMetric(base::nullopt /* expect_intact_time */,
+                                 {kResolveTime} /* expect_noerror_time */);
+  VerifyHttpsMetricsForExpectNoerror(
+      {HttpssvcDnsRcode::kNxDomain} /* rcode */,
+      // "parsable" metric is omitted because the RCODE is not NOERROR.
+      base::nullopt /* parsable */, {true} /* record_with_error */,
+      {kResolveTimeHttps} /* resolve_time_https */,
       {15} /* resolve_time_ratio */);
 }
 
 // This test simulates an INTEGRITY response that includes a mangled INTEGRITY
 // record *and* has an error RCODE.
 TEST_P(HttpssvcMetricsTest, AddressAndIntegrityMangledWithRcode) {
-  if (!config().enabled || !config().use_integrity) {
-    VerifyMetricsForExpectIntact();
-    VerifyMetricsForExpectNoerror();
-    return;
-  }
   const base::TimeDelta kResolveTime = base::TimeDelta::FromMilliseconds(10);
   const base::TimeDelta kResolveTimeIntegrity =
       base::TimeDelta::FromMilliseconds(15);
   base::Optional<HttpssvcMetrics> metrics(querying_experimental_);
   metrics->SaveForIntegrity(base::nullopt, HttpssvcDnsRcode::kNxDomain, {false},
                             kResolveTimeIntegrity);
-  metrics->SaveForNonIntegrity(base::nullopt, kResolveTime,
+  metrics->SaveForAddressQuery(base::nullopt, kResolveTime,
                                HttpssvcDnsRcode::kNoError);
   metrics.reset();  // Record the metrics to UMA.
 
+  VerifyHttpsMetricsForExpectIntact();
+  VerifyHttpsMetricsForExpectNoerror();
+
   if (querying_experimental_) {
-    VerifyMetricsForExpectIntact(
+    VerifyAddressResolveTimeMetric({kResolveTime} /* expect_intact_time */);
+    VerifyIntegrityMetricsForExpectIntact(
         // "DnsRcode" metric is omitted because we received an INTEGRITY record.
         base::nullopt /* rcode */,
         // "Integrity" metric is omitted because the RCODE is not NOERROR.
         base::nullopt /* integrity */, {true} /* record_with_error */,
         {kResolveTimeIntegrity} /* resolve_time_integrity */,
-        {kResolveTime} /* resolve_time_non_integrity */,
         {15} /* resolve_time_ratio */);
 
-    VerifyMetricsForExpectNoerror();
+    VerifyIntegrityMetricsForExpectNoerror();
     return;
   }
 
-  VerifyMetricsForExpectIntact();
+  VerifyIntegrityMetricsForExpectIntact();
 
-  VerifyMetricsForExpectNoerror(
+  VerifyAddressResolveTimeMetric(base::nullopt /* expect_intact_time */,
+                                 {kResolveTime} /* expect_noerror_time */);
+  VerifyIntegrityMetricsForExpectNoerror(
       {HttpssvcDnsRcode::kNxDomain} /* rcode */, {true} /* record_received */,
       {kResolveTimeIntegrity} /* resolve_time_integrity */,
-      {kResolveTime} /* resolve_time_non_integrity */,
+      {15} /* resolve_time_ratio */);
+}
+
+// This test simulates an HTTPS response that includes a mangled HTTPS
+// record *and* has an error RCODE.
+TEST_P(HttpssvcMetricsTest, AddressAndHttpsMangledWithRcode) {
+  const base::TimeDelta kResolveTime = base::TimeDelta::FromMilliseconds(10);
+  const base::TimeDelta kResolveTimeHttps =
+      base::TimeDelta::FromMilliseconds(15);
+  base::Optional<HttpssvcMetrics> metrics(querying_experimental_);
+  metrics->SaveForHttps(base::nullopt, HttpssvcDnsRcode::kNxDomain, {false},
+                        kResolveTimeHttps);
+  metrics->SaveForAddressQuery(base::nullopt, kResolveTime,
+                               HttpssvcDnsRcode::kNoError);
+  metrics.reset();  // Record the metrics to UMA.
+
+  VerifyIntegrityMetricsForExpectIntact();
+  VerifyIntegrityMetricsForExpectNoerror();
+
+  if (querying_experimental_) {
+    VerifyAddressResolveTimeMetric({kResolveTime} /* expect_intact_time */);
+    VerifyHttpsMetricsForExpectIntact(
+        // "DnsRcode" metric is omitted because we received an HTTPS record.
+        base::nullopt /* rcode */,
+        // "parsable" metric is omitted because the RCODE is not NOERROR.
+        base::nullopt /* parsable */, {true} /* record_with_error */,
+        {kResolveTimeHttps} /* resolve_time_https */,
+        {15} /* resolve_time_ratio */);
+
+    VerifyHttpsMetricsForExpectNoerror();
+    return;
+  }
+
+  VerifyHttpsMetricsForExpectIntact();
+
+  VerifyAddressResolveTimeMetric(base::nullopt /* expect_intact_time */,
+                                 {kResolveTime} /* expect_noerror_time */);
+  VerifyHttpsMetricsForExpectNoerror(
+      {HttpssvcDnsRcode::kNxDomain} /* rcode */,
+      // "parsable" metric is omitted because the RCODE is not NOERROR.
+      base::nullopt /* parsable */, {true} /* record_with_error */,
+      {kResolveTimeHttps} /* resolve_time_https */,
       {15} /* resolve_time_ratio */);
 }
 
 // This test simulates successful address queries and an INTEGRITY query that
 // timed out.
 TEST_P(HttpssvcMetricsTest, AddressAndIntegrityTimedOut) {
-  if (!config().enabled || !config().use_integrity) {
-    VerifyMetricsForExpectIntact();
-    VerifyMetricsForExpectNoerror();
-    return;
-  }
   const base::TimeDelta kResolveTime = base::TimeDelta::FromMilliseconds(10);
   const base::TimeDelta kResolveTimeIntegrity =
       base::TimeDelta::FromMilliseconds(15);
   base::Optional<HttpssvcMetrics> metrics(querying_experimental_);
   metrics->SaveForIntegrity(base::nullopt, HttpssvcDnsRcode::kTimedOut, {},
                             kResolveTimeIntegrity);
-  metrics->SaveForNonIntegrity(base::nullopt, kResolveTime,
+  metrics->SaveForAddressQuery(base::nullopt, kResolveTime,
                                HttpssvcDnsRcode::kNoError);
   metrics.reset();  // Record the metrics to UMA.
 
+  VerifyHttpsMetricsForExpectIntact();
+  VerifyHttpsMetricsForExpectNoerror();
+
   if (querying_experimental_) {
-    VerifyMetricsForExpectIntact(
+    VerifyAddressResolveTimeMetric({kResolveTime} /* expect_intact_time */);
+    VerifyIntegrityMetricsForExpectIntact(
         {HttpssvcDnsRcode::kTimedOut} /* rcode */,
         // "Integrity" metric is omitted because the RCODE is not NOERROR.
         base::nullopt /* integrity */, base::nullopt /* record_with_error */,
         {kResolveTimeIntegrity} /* resolve_time_integrity */,
-        {kResolveTime} /* resolve_time_non_integrity */,
         {15} /* resolve_time_ratio */);
 
-    VerifyMetricsForExpectNoerror();
+    VerifyIntegrityMetricsForExpectNoerror();
     return;
   }
 
-  VerifyMetricsForExpectIntact();
+  VerifyIntegrityMetricsForExpectIntact();
 
-  VerifyMetricsForExpectNoerror(
+  VerifyAddressResolveTimeMetric(base::nullopt /* expect_intact_time */,
+                                 {kResolveTime} /* expect_noerror_time */);
+  VerifyIntegrityMetricsForExpectNoerror(
       {HttpssvcDnsRcode::kTimedOut} /* rcode */,
       base::nullopt /* record_received */,
       {kResolveTimeIntegrity} /* resolve_time_integrity */,
-      {kResolveTime} /* resolve_time_non_integrity */,
+      {15} /* resolve_time_ratio */);
+}
+
+// This test simulates successful address queries and an HTTPS query that
+// timed out.
+TEST_P(HttpssvcMetricsTest, AddressAndHttpsTimedOut) {
+  const base::TimeDelta kResolveTime = base::TimeDelta::FromMilliseconds(10);
+  const base::TimeDelta kResolveTimeHttps =
+      base::TimeDelta::FromMilliseconds(15);
+  base::Optional<HttpssvcMetrics> metrics(querying_experimental_);
+  metrics->SaveForHttps(base::nullopt, HttpssvcDnsRcode::kTimedOut, {},
+                        kResolveTimeHttps);
+  metrics->SaveForAddressQuery(base::nullopt, kResolveTime,
+                               HttpssvcDnsRcode::kNoError);
+  metrics.reset();  // Record the metrics to UMA.
+
+  VerifyIntegrityMetricsForExpectIntact();
+  VerifyIntegrityMetricsForExpectNoerror();
+
+  if (querying_experimental_) {
+    VerifyAddressResolveTimeMetric({kResolveTime} /* expect_intact_time */);
+    VerifyHttpsMetricsForExpectIntact(
+        {HttpssvcDnsRcode::kTimedOut} /* rcode */,
+        // "parsable" metric is omitted because the RCODE is not NOERROR.
+        base::nullopt /* parsable */, base::nullopt /* record_with_error */,
+        {kResolveTimeHttps} /* resolve_time_https */,
+        {15} /* resolve_time_ratio */);
+
+    VerifyIntegrityMetricsForExpectNoerror();
+    return;
+  }
+
+  VerifyHttpsMetricsForExpectIntact();
+
+  VerifyAddressResolveTimeMetric(base::nullopt /* expect_intact_time */,
+                                 {kResolveTime} /* expect_noerror_time */);
+  VerifyHttpsMetricsForExpectNoerror(
+      {HttpssvcDnsRcode::kTimedOut} /* rcode */,
+      // "parsable" metric is omitted because the RCODE is not NOERROR.
+      base::nullopt /* parsable */, base::nullopt /* record_with_error */,
+      {kResolveTimeHttps} /* resolve_time_https */,
       {15} /* resolve_time_ratio */);
 }
 

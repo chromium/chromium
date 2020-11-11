@@ -5393,6 +5393,22 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <!-- Histograms for HTTPSSVC experiment -->
 
   <affected-histogram
+      name="Net.DNS.HTTPSSVC.RecordHttps.ExpectIntact.DnsRcode"/>
+  <affected-histogram
+      name="Net.DNS.HTTPSSVC.RecordHttps.ExpectIntact.Parsable"/>
+  <affected-histogram
+      name="Net.DNS.HTTPSSVC.RecordHttps.ExpectIntact.RecordWithError"/>
+  <affected-histogram
+      name="Net.DNS.HTTPSSVC.RecordHttps.ExpectIntact.ResolveTimeHttpsRecord"/>
+  <affected-histogram
+      name="Net.DNS.HTTPSSVC.RecordHttps.ExpectIntact.ResolveTimeRatio"/>
+  <affected-histogram
+      name="Net.DNS.HTTPSSVC.RecordHttps.ExpectNoerror.DnsRcode"/>
+  <affected-histogram
+      name="Net.DNS.HTTPSSVC.RecordHttps.ExpectNoerror.ResolveTimeHttpsRecord"/>
+  <affected-histogram
+      name="Net.DNS.HTTPSSVC.RecordHttps.ExpectNoerror.ResolveTimeRatio"/>
+  <affected-histogram
       name="Net.DNS.HTTPSSVC.RecordIntegrity.ExpectIntact.DnsRcode"/>
   <affected-histogram
       name="Net.DNS.HTTPSSVC.RecordIntegrity.ExpectIntact.Integrity"/>
@@ -7356,6 +7372,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
          below. These are the metrics common to both the ExpectIntact and
          ExpectNoerror branches of the HTTPSSVC metrics tree. -->
 
+  <affected-histogram name="Net.DNS.HTTPSSVC.RecordHttps.DnsRcode"/>
+  <affected-histogram
+      name="Net.DNS.HTTPSSVC.RecordHttps.ResolveTimeHttpsRecord"/>
+  <affected-histogram name="Net.DNS.HTTPSSVC.RecordHttps.ResolveTimeRatio"/>
   <affected-histogram name="Net.DNS.HTTPSSVC.RecordIntegrity.DnsRcode"/>
   <affected-histogram
       name="Net.DNS.HTTPSSVC.RecordIntegrity.ResolveTimeIntegrityRecord"/>
