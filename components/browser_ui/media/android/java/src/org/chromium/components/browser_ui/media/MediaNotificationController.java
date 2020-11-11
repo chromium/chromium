@@ -461,8 +461,11 @@ public class MediaNotificationController {
 
     private static boolean shouldIgnoreMediaNotificationInfo(
             MediaNotificationInfo oldInfo, MediaNotificationInfo newInfo) {
-        // If we don't have actions then we shouldn't display the notification.
-        if (newInfo.mediaSessionActions.isEmpty()) return true;
+        // If this is a web MediaSession notification, but we haven't yet gotten actions, then we
+        // shouldn't display the notification.
+        if (newInfo.mediaSessionActions != null && newInfo.mediaSessionActions.isEmpty()) {
+            return true;
+        }
 
         return newInfo.equals(oldInfo)
                 || ((newInfo.isPaused && oldInfo != null
@@ -657,21 +660,24 @@ public class MediaNotificationController {
         assert mMediaNotificationInfo != null;
 
         long actions = PlaybackStateCompat.ACTION_PLAY | PlaybackStateCompat.ACTION_PAUSE;
-        if (mMediaNotificationInfo.mediaSessionActions.contains(
-                    MediaSessionAction.PREVIOUS_TRACK)) {
-            actions |= PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS;
-        }
-        if (mMediaNotificationInfo.mediaSessionActions.contains(MediaSessionAction.NEXT_TRACK)) {
-            actions |= PlaybackStateCompat.ACTION_SKIP_TO_NEXT;
-        }
-        if (mMediaNotificationInfo.mediaSessionActions.contains(MediaSessionAction.SEEK_FORWARD)) {
-            actions |= PlaybackStateCompat.ACTION_FAST_FORWARD;
-        }
-        if (mMediaNotificationInfo.mediaSessionActions.contains(MediaSessionAction.SEEK_BACKWARD)) {
-            actions |= PlaybackStateCompat.ACTION_REWIND;
-        }
-        if (mMediaNotificationInfo.mediaSessionActions.contains(MediaSessionAction.SEEK_TO)) {
-            actions |= PlaybackStateCompat.ACTION_SEEK_TO;
+
+        Set<Integer> availableActions = mMediaNotificationInfo.mediaSessionActions;
+        if (availableActions != null) {
+            if (availableActions.contains(MediaSessionAction.PREVIOUS_TRACK)) {
+                actions |= PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS;
+            }
+            if (availableActions.contains(MediaSessionAction.NEXT_TRACK)) {
+                actions |= PlaybackStateCompat.ACTION_SKIP_TO_NEXT;
+            }
+            if (availableActions.contains(MediaSessionAction.SEEK_FORWARD)) {
+                actions |= PlaybackStateCompat.ACTION_FAST_FORWARD;
+            }
+            if (availableActions.contains(MediaSessionAction.SEEK_BACKWARD)) {
+                actions |= PlaybackStateCompat.ACTION_REWIND;
+            }
+            if (availableActions.contains(MediaSessionAction.SEEK_TO)) {
+                actions |= PlaybackStateCompat.ACTION_SEEK_TO;
+            }
         }
         return actions;
     }
@@ -727,7 +733,9 @@ public class MediaNotificationController {
         // TODO(zqzhang): handle other actions when play/pause is not supported? See
         // https://crbug.com/667500
         if (mMediaNotificationInfo.supportsPlayPause()) {
-            actions.addAll(mMediaNotificationInfo.mediaSessionActions);
+            if (mMediaNotificationInfo.mediaSessionActions != null) {
+                actions.addAll(mMediaNotificationInfo.mediaSessionActions);
+            }
             if (mMediaNotificationInfo.isPaused) {
                 actions.remove(MediaSessionAction.PAUSE);
                 actions.add(MediaSessionAction.PLAY);

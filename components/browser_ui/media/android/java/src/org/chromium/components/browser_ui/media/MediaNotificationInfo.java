@@ -13,7 +13,6 @@ import androidx.annotation.Nullable;
 import org.chromium.services.media_session.MediaMetadata;
 import org.chromium.services.media_session.MediaPosition;
 
-import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -225,9 +224,10 @@ public class MediaNotificationInfo {
     public final MediaNotificationListener listener;
 
     /**
-     * The actions enabled in MediaSession.
+     * The actions enabled in MediaSession. If null, the notification is not associated with a web
+     * Media Session.
      */
-    public final Set<Integer> mediaSessionActions;
+    public final @Nullable Set<Integer> mediaSessionActions;
 
     /**
      * The current position of the media session.
@@ -296,9 +296,7 @@ public class MediaNotificationInfo {
         this.id = id;
         this.contentIntent = contentIntent;
         this.listener = listener;
-        this.mediaSessionActions = (mediaSessionActions != null)
-                ? new HashSet<Integer>(mediaSessionActions)
-                : new HashSet<Integer>();
+        this.mediaSessionActions = mediaSessionActions;
         this.mediaPosition = mediaPosition;
     }
 

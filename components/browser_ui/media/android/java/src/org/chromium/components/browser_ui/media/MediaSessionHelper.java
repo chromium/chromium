@@ -32,6 +32,7 @@ import org.chromium.services.media_session.MediaMetadata;
 import org.chromium.services.media_session.MediaPosition;
 import org.chromium.ui.base.WindowAndroid;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -69,7 +70,7 @@ public class MediaSessionHelper implements MediaImageCallback {
     private MediaMetadata mPageMetadata;
     // The currently showing metadata.
     private MediaMetadata mCurrentMetadata;
-    private Set<Integer> mMediaSessionActions;
+    private Set<Integer> mMediaSessionActions = Collections.emptySet();
     private @Nullable MediaPosition mMediaPosition;
     private Handler mHandler;
     // The delayed task to hide notification. Hiding notification can be immediate or delayed.
@@ -294,7 +295,7 @@ public class MediaSessionHelper implements MediaImageCallback {
                 // {@link #titleWasSet()}. The following assignment is to keep
                 // |mCurrentMetadata| up to date as |mPageMetadata| may have changed.
                 mCurrentMetadata = getMetadata();
-                mMediaSessionActions = null;
+                mMediaSessionActions = Collections.emptySet();
 
                 if (isNotificationHidingOrHidden()) return;
 
@@ -338,7 +339,7 @@ public class MediaSessionHelper implements MediaImageCallback {
         if (mMediaSessionObserver == null) return;
         mMediaSessionObserver.stopObserving();
         mMediaSessionObserver = null;
-        mMediaSessionActions = null;
+        mMediaSessionActions = Collections.emptySet();
     }
 
     /** An interface for dispatching embedder-specific behavior. */
