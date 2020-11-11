@@ -57,6 +57,9 @@ export function sampleData() {
   return profileTabs;
 }
 
+/**
+ * @return {!Array<string>}
+ */
 export function sampleSiteNames() {
   return [
     'Google',
@@ -73,11 +76,12 @@ export function sampleSiteNames() {
 }
 
 /**
- * Generates profile data for a window with a series of tabs.
+ * Generates sample tabs based on some given site names.
  * @param {!Array} siteNames
+ * @return {!Array}
  */
-export function generateSampleDataFromSiteNames(siteNames) {
-  const tabs = siteNames.map((siteName, i) => {
+export function generateSampleTabsFromSiteNames(siteNames) {
+  return siteNames.map((siteName, i) => {
     return {
       index: i,
       tabId: i + 1,
@@ -85,6 +89,15 @@ export function generateSampleDataFromSiteNames(siteNames) {
       url: 'https://www.' + siteName.toLowerCase() + '.com',
     };
   });
+}
 
-  return {windows: [{active: true, tabs: tabs}]};
+/**
+ * Generates profile data for a window with a series of tabs.
+ * @param {!Array} siteNames
+ * @return {!Object}
+ */
+export function generateSampleDataFromSiteNames(siteNames) {
+  return {
+    windows: [{active: true, tabs: generateSampleTabsFromSiteNames(siteNames)}]
+  };
 }

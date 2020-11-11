@@ -8,23 +8,21 @@ import 'chrome://resources/cr_elements/mwb_shared_style.js';
 import 'chrome://resources/cr_elements/mwb_shared_vars.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/polymer/v3_0/iron-iconset-svg/iron-iconset-svg.js';
-import 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
+import './infinite_list.js';
 import './tab_search_item.js';
 import './tab_search_search_field.js';
 import './strings.js';
 
-import {assert} from 'chrome://resources/js/assert.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {listenOnce} from 'chrome://resources/js/util.m.js';
 import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {afterNextRender, html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {fuzzySearch} from './fuzzy_search.js';
+import {InfiniteList, NO_SELECTION, selectorNavigationKeys} from './infinite_list.js';
 import {TabData} from './tab_data.js';
 import {Tab, WindowTabs} from './tab_search.mojom-webui.js';
 import {TabSearchApiProxy, TabSearchApiProxyImpl} from './tab_search_api_proxy.js';
-
-const selectorNavigationKeys = ['ArrowUp', 'ArrowDown', 'Home', 'End'];
 
 export class TabSearchAppElement extends PolymerElement {
   static get is() {
@@ -53,16 +51,6 @@ export class TabSearchAppElement extends PolymerElement {
       filteredOpenTabs_: {
         type: Array,
         value: [],
-      },
-
-      /**
-       * Controls the number of tab search list items initially rendered in
-       * dom-repeat's chunked rendering mode.
-       * @private {number}
-       */
-      chunkingItemCount_: {
-        type: Number,
-        value: 10,
       },
 
       /**
@@ -160,26 +148,13 @@ export class TabSearchAppElement extends PolymerElement {
       // Prior to the first load |this.openTabs_| has not been set. Record the
       // time it takes for the initial list of tabs to render.
       if (!this.openTabs_) {
-        listenOnce(this.$.tabsList, 'rendered-item-count-changed', e => {
-          const event = /** @type {!CustomEvent<!{value: number}>} */ (e);
-          // The initial rendered tab list must be non-zero.
-          assert(event.detail.value > 0);
-
-          // Chunking is used to bound the time to interactive for users
-          // irrespective of the number of tabs they have open. This is no longer
-          // needed after the initial list render and can cause flickering on
-          // updates so disable it here.
-          // TODO(tluk): Investigate a more efficient way to handle this.
-          this.chunkingItemCount_ = 0;
-
-          // Push showUI() to the event loop to allow reflow to occur following
-          // the DOM update.
-          setTimeout(() => {
+        listenOnce(this.$.tabsList, 'dom-change', () => {
+          afterNextRender(this, () => {
             this.apiProxy_.showUI();
             chrome.metricsPrivate.recordTime(
-              'Tabs.TabSearch.WebUI.InitialTabsRenderTime',
-              Math.round(window.performance.now()));
-          }, 0);
+                'Tabs.TabSearch.WebUI.InitialTabsRenderTime',
+                Math.round(window.performance.now()));
+          });
         });
       }
       this.openTabs_ = profileTabs.windows;
@@ -228,10 +203,7 @@ export class TabSearchAppElement extends PolymerElement {
    * @return {number}
    */
   getSelectedIndex() {
-    const selector = /** @type {!IronSelectorElement} */ (this.$.selector);
-    return selector.selected !== undefined ?
-        /** @type {number} */ (selector.selected) :
-        -1;
+    return /** @type {!InfiniteList} */ (this.$.tabsList).selected;
   }
 
   /**
@@ -243,9 +215,8 @@ export class TabSearchAppElement extends PolymerElement {
 
     this.updateFilteredTabs_(this.openTabs_ || []);
     // Reset the selected item whenever a search query is provided.
-    this.$.selector.selected =
-        this.filteredOpenTabs_.length > 0 ? 0 : undefined;
-    this.$.tabs.scrollTop = 0;
+    /** @type {!InfiniteList} */ (this.$.tabsList).selected =
+        this.filteredOpenTabs_.length > 0 ? 0 : NO_SELECTION;
 
     const length = this.filteredOpenTabs_.length;
     let text;
@@ -267,7 +238,7 @@ export class TabSearchAppElement extends PolymerElement {
 
   /** @private */
   onFeedbackFocus_() {
-    this.$.selector.selected = undefined;
+    /** @type {!InfiniteList} */ (this.$.tabsList).selected = NO_SELECTION;
   }
 
   /**
@@ -288,9 +259,25 @@ export class TabSearchAppElement extends PolymerElement {
     const tabId = Number.parseInt(e.currentTarget.id, 10);
     this.apiProxy_.closeTab(tabId);
     this.announceA11y_(loadTimeData.getString('a11yTabClosed'));
-    listenOnce(this.$.tabsList, 'rendered-item-count-changed', () => {
+    listenOnce(this.$.tabsList, 'iron-items-changed', () => {
       performance.mark('close_tab:benchmark_end');
     });
+  }
+
+  /**
+   * @param {!Event} e
+   * @private
+   */
+  onItemKeyDown_(e) {
+    if (e.key !== 'Enter' && e.key !== ' ') {
+      return;
+    }
+
+    e.stopPropagation();
+    e.preventDefault();
+
+    this.apiProxy_.switchToTab(
+        {tabId: this.getSelectedTab_().tabId}, !!this.searchText_);
   }
 
   /**
@@ -304,9 +291,10 @@ export class TabSearchAppElement extends PolymerElement {
     // selected; else retain the currently selected index. If the list
     // shrunk above the selected index, select the last index in the list.
     // If there are no matching results, set the selected index value to none.
-    this.$.selector.selectIndex(Math.min(
+    const tabsList = /** @type {!InfiniteList} */ (this.$.tabsList);
+    tabsList.selected = Math.min(
         Math.max(this.getSelectedIndex(), 0),
-        this.filteredOpenTabs_.length - 1));
+        this.filteredOpenTabs_.length - 1);
   }
 
   /**
@@ -314,67 +302,18 @@ export class TabSearchAppElement extends PolymerElement {
    * @private
    */
   onItemFocus_(e) {
-    this.$.selector.selected =
+    // Ensure that when a TabSearchItem receives focus, it becomes the selected
+    // item in the list.
+    /** @type {!InfiniteList} */ (this.$.tabsList).selected =
         e.currentTarget.parentNode.indexOf(e.currentTarget);
-    this.updateScrollView_();
-  }
-
-  /**
-   * @param {string} key Keyboard event key value.
-   * @private
-   */
-  selectorNavigate_(key) {
-    const selector = /** @type {!IronSelectorElement} */ (this.$.selector);
-    switch (key) {
-      case 'ArrowUp':
-        selector.selectPrevious();
-        break;
-      case 'ArrowDown':
-        selector.selectNext();
-        break;
-      case 'Home':
-        selector.selected = 0;
-        break;
-      case 'End':
-        selector.selected = this.filteredOpenTabs_.length - 1;
-        break;
-    }
-  }
-
-  /**
-   * Handles key events when list item elements have focus.
-   * @param {!KeyboardEvent} e
-   * @private
-   */
-  onItemKeyDown_(e) {
-    if (e.shiftKey) {
-      return;
-    }
-
-    if (this.getSelectedIndex() === -1) {
-      // No tabs matching the search text criteria.
-      return;
-    }
-
-    if (selectorNavigationKeys.includes(e.key)) {
-      this.selectorNavigate_(e.key);
-      /** @type {!HTMLElement} */ (this.$.selector.selectedItem).focus({
-        preventScroll: true
-      });
-      e.stopPropagation();
-      e.preventDefault();
-    } else if (e.key === 'Enter' || e.key === ' ') {
-      this.apiProxy_.switchToTab(
-          {tabId: this.getSelectedTab_().tabId}, !!this.searchText_);
-      e.stopPropagation();
-    }
   }
 
   /** @private */
   onSearchFocus_() {
-    if (this.$.selector.selected === undefined &&
+    const tabsList = /** @type {!InfiniteList} */ (this.$.tabsList);
+    if (tabsList.selected === NO_SELECTION &&
         this.filteredOpenTabs_.length > 0) {
-      this.$.selector.selectIndex(0);
+      tabsList.selected = 0;
     }
   }
 
@@ -407,8 +346,8 @@ export class TabSearchAppElement extends PolymerElement {
     }
 
     if (selectorNavigationKeys.includes(e.key)) {
-      this.selectorNavigate_(e.key);
-      this.updateScrollView_();
+      /** @type {!InfiniteList} */ (this.$.tabsList).navigate(e.key);
+
       e.stopPropagation();
       e.preventDefault();
 
@@ -459,42 +398,6 @@ export class TabSearchAppElement extends PolymerElement {
             0);
     this.filteredOpenTabs_ =
         fuzzySearch(this.searchText_, result, this.fuzzySearchOptions_);
-
-    // Update the item count in css so that the css rule can calculate the final
-    // height of the tabsContainer. This prevents the scrolling height from
-    // changing as list items are added to the dom incrementally via chunking
-    // mode.
-    this.$.tabsContainer.style
-      .setProperty("--item-count", this.filteredOpenTabs_.length.toString());
-  }
-
-  /**
-   * Ensure the scroll view can fully display a preceding or following tab item
-   * if existing.
-   * @private
-   */
-  updateScrollView_() {
-    const selectedIndex = this.getSelectedIndex();
-    if (selectedIndex === 0 ||
-        selectedIndex === this.filteredOpenTabs_.length - 1) {
-      /** @type {!Element} */ (this.$.selector.selectedItem).scrollIntoView({
-        behavior: 'smooth'
-      });
-    } else {
-      const previousItem = this.$.selector.items[this.$.selector.selected - 1];
-      if (previousItem.offsetTop < this.$.tabs.scrollTop) {
-        /** @type {!Element} */ (previousItem)
-            .scrollIntoView({behavior: 'smooth', block: 'nearest'});
-        return;
-      }
-
-      const nextItem = this.$.selector.items[this.$.selector.selected + 1];
-      if (nextItem.offsetTop + nextItem.offsetHeight >
-          this.$.tabs.scrollTop + this.$.tabs.offsetHeight) {
-        /** @type {!Element} */ (nextItem).scrollIntoView(
-            {behavior: 'smooth', block: 'nearest'});
-      }
-    }
   }
 
   /** return {!Tab} */

@@ -57,6 +57,18 @@ TEST_F('FuzzySearchTest', 'All', function() {
 });
 
 // eslint-disable-next-line no-var
+var InfiniteListTest = class extends TabSearchBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://tab-search/test_loader.html?module=tab_search/infinite_list_test.js';
+  }
+};
+
+TEST_F('InfiniteListTest', 'All', function() {
+  mocha.run();
+});
+
+// eslint-disable-next-line no-var
 var TabSearchItemTest = class extends TabSearchBrowserTest {
   /** @override */
   get browsePreload() {

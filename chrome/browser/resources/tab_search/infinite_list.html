@@ -1,0 +1,21 @@
+<style include="mwb-shared-style">
+  :host {
+    display: block;
+  }
+
+  #container {
+    max-height: var(--list-max-height);
+    overflow-x: hidden;
+    overflow-y: auto;
+    position: relative;
+  }
+</style>
+<div id="container" on-scroll="onScroll_">
+  <div id="items">
+    <iron-selector id="selector" on-keydown="onKeyDown_"
+        on-iron-items-changed="updateScrollerSize_"
+        on-iron-select="onSelectedChanged_" role="listbox"
+        selected-class="selected">
+    </iron-selector>
+  </div>
+</div>
