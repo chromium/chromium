@@ -1261,12 +1261,6 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     base::Value::Type::BOOLEAN },
 #endif  // BUILDFLAG(ENABLE_CLICK_TO_CALL)
 
-#if BUILDFLAG(ENABLE_SERVICE_DISCOVERY)
-  { key::kLocalDiscoveryEnabled,
-    prefs::kLocalDiscoveryEnabled,
-    base::Value::Type::BOOLEAN },
-#endif  // BUILDFLAG(ENABLE_SERVICE_DISCOVERY)
-
 #if BUILDFLAG(ENABLE_SPELLCHECK)
   { key::kSpellCheckServiceEnabled,
     spellcheck::prefs::kSpellCheckUseSpellingService,

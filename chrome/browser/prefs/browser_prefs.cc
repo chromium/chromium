@@ -197,10 +197,6 @@
 #include "chrome/browser/renderer_host/pepper/device_id_fetcher.h"
 #endif
 
-#if BUILDFLAG(ENABLE_SERVICE_DISCOVERY)
-#include "chrome/browser/ui/webui/local_discovery/local_discovery_ui.h"
-#endif
-
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
 #include "chrome/browser/supervised_user/child_accounts/child_account_service.h"
 #include "chrome/browser/supervised_user/supervised_user_allowlist_service.h"
@@ -559,6 +555,12 @@ void RegisterProfilePrefsForMigration(
 #if defined(USE_X11)
   registry->RegisterIntegerPref(kMigrationToLoginDBStep, 0);
 #endif
+
+#if BUILDFLAG(ENABLE_SERVICE_DISCOVERY)
+  registry->RegisterBooleanPref(prefs::kLocalDiscoveryEnabled, true);
+  registry->RegisterBooleanPref(prefs::kLocalDiscoveryNotificationsEnabled,
+                                false);
+#endif
 }
 
 }  // namespace
@@ -867,10 +869,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   ChromeRLZTrackerDelegate::RegisterProfilePrefs(registry);
 #endif
 
-#if BUILDFLAG(ENABLE_SERVICE_DISCOVERY)
-  LocalDiscoveryUI::RegisterProfilePrefs(registry);
-#endif
-
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   ChildAccountService::RegisterProfilePrefs(registry);
   SupervisedUserService::RegisterProfilePrefs(registry);
@@ -1152,5 +1150,11 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
   // Added 11/2020
 #if defined(USE_X11)
   profile_prefs->ClearPref(kMigrationToLoginDBStep);
+#endif
+
+  // Added 11/2020.
+#if BUILDFLAG(ENABLE_SERVICE_DISCOVERY)
+  profile_prefs->ClearPref(prefs::kLocalDiscoveryEnabled);
+  profile_prefs->ClearPref(prefs::kLocalDiscoveryNotificationsEnabled);
 #endif
 }

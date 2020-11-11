@@ -27,8 +27,6 @@ extern const base::Feature kExtensionSettingsOverriddenDialogs;
 
 extern const base::Feature kExtensionsToolbarMenu;
 
-extern const base::Feature kForceEnableDevicesPage;
-
 extern const base::Feature kNewProfilePicker;
 
 extern const base::Feature kNewTabstripAnimation;

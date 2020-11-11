@@ -9743,12 +9743,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
       </message>
       <!-- Local Device Discovery display strings -->
       <if expr="enable_service_discovery">
-        <message name="IDS_LOCAL_DISCOVERY_SERVICE_REGISTER" desc="Name for button to register device in the Cloud">
-          Register
-        </message>
-        <message name="IDS_LOCAL_DISCOVERY_MANAGE_DEVICE" desc="Name for button to manage registered device">
-          Manage
-        </message>
         <message name="IDS_LOCAL_DISCOVERY_NOTIFICATION_TITLE_PRINTER" desc="Title of notification for one or more new printer showing up on your network. [ICU Syntax]">
         {NUM_PRINTER, plural,
          =1 {New printer on your network}
@@ -9765,93 +9759,10 @@ Please help our engineers fix this problem. Tell us what happened right before y
         <message name="IDS_LOCAL_DISCOVERY_NOTIFICATION_BUTTON_PRINTER" desc="Message on registration button for printer">
           Add to Cloud Print
         </message>
-        <message name="IDS_LOCAL_DISCOVERY_DEVICES_PAGE_TITLE" desc="Title for devices page">
-          Devices
-        </message>
-        <message name="IDS_LOCAL_DISCOVERY_REGISTER_USER" desc="Label for user picker in registration dialog">
-          User:
-        </message>
-        <message name="IDS_LOCAL_DISCOVERY_CONFIRM_REGISTRATION" desc="Title for 'confirm registration' page">
-          Confirm registration
-        </message>
-        <message name="IDS_LOCAL_DISCOVERY_ADDING_PRINTER" desc="Title for 'adding printer' page">
-          Adding printer...
-        </message>
-        <message name="IDS_LOCAL_DISCOVERY_ERROR_OCURRED" desc="Title for error page">
-          Could not complete registration
-        </message>
-        <message name="IDS_LOCAL_DISCOVERY_ADDING_PRINTER_MESSAGE1" desc="Message for adding printer number 1">
-          You must confirm registration on your printer to finish this process - check it now.
-        </message>
-        <message name="IDS_LOCAL_DISCOVERY_ADDING_PRINTER_MESSAGE2" desc="Message for adding printer number 2">
-          Adding the printer to your account - this may take a moment...
-        </message>
-        <message name="IDS_LOCAL_DISCOVERY_ERROR_OCURRED_MESSAGE" desc="Message for error page">
-          An error has occurred. Please check your printer and try again.
-        </message>
-        <message name="IDS_LOCAL_DISCOVERY_NO_DESCRIPTION_PRINTER" desc="Description for printer with an empty description">
-          Printer on Google Cloud Print
-        </message>
-        <message name="IDS_LOCAL_DISCOVERY_NO_DESCRIPTION_DEVICE" desc="Description for device with an empty description">
-          Device on Google Cloud Devices
-        </message>
-        <message name="IDS_LOCAL_DISCOVERY_PRINTERS_ON_NETWORK_ZERO" desc="'Zero' case for number indicator for locally discoverable printers">
-          No other available devices.
-        </message>
-        <message name="IDS_LOCAL_DISCOVERY_PRINTERS_ON_NETWORK_ONE" desc="'One' case for number indicator for locally discoverable printers">
-          One other available device.
-        </message>
-        <message name="IDS_LOCAL_DISCOVERY_PRINTERS_ON_NETWORK_MULTIPLE" desc="General case for number indicator for locally discoverable printers">
-          <ph name="NUM_PRINTERS">$1</ph> other available devices.
-        </message>
-        <message name="IDS_LOCAL_DISCOVERY_LOADING" desc="Loading for local discovery screens">
-          Loading
-        </message>
-        <message name="IDS_LOCAL_DISCOVERY_ADD_PRINTERS" desc="Text on button to add printers to cloud print">
-          Add Devices
-        </message>
-        <message name="IDS_LOCAL_DISCOVERY_NO_PRINTERS_ON_NETWORK_EXPLANATION" desc="Explanatory text in case there are no printers to register on the network">
-          Looks like there are no devices available to register on the network. If your device is on and connected to the internet, try registering it using instructions in its instruction manual.
-        </message>
-        <message name="IDS_LOCAL_DISCOVERY_CLOUD_DEVICES_UNAVAILABLE" desc="Explanatory text in case the list of cloud devices can't be retrieved">
-          Could not load devices.
-        </message>
-        <message name="IDS_LOCAL_DISCOVERY_RETRY_LOAD_CLOUD_DEVICES" desc="Text on button to retry loading cloud devices">
-          Try again
-        </message>
-        <message name="IDS_LOCAL_DISCOVERY_CLOUD_DEVICES_NEED_LOGIN" desc="Text on login promo for local discovery page">
-          You need to sign in to Chrome to see your devices
-        </message>
-        <message name="IDS_LOCAL_DISCOVERY_REGISTER_NEED_LOGIN" desc="Text on login promo for local discovery registration">
-          You need to sign in to Chrome to register new devices
-        </message>
-        <message name="IDS_LOCAL_DISCOVERY_CLOUD_DEVICES_LOGIN" desc="Text on login button for local discovery page">
-          sign in
-        </message>
-        <message name="IDS_LOCAL_DISCOVERY_AVAILABLE_DEVICES" desc="Title for 'available devices' section in devices page">
-          New devices
-        </message>
-        <message name="IDS_LOCAL_DISCOVERY_MY_DEVICES" desc="Title for 'my devices' section in devices page">
-          My devices
-        </message>
-        <if expr="not chromeos">
-          <message name="IDS_LOCAL_DISCOVERY_CLOUD_PRINT_CONNECTOR_DISABLED_LABEL" desc="In local discovery page: The label of the cloud print setup button when it hasn't been set up yet.">
-            You can add classic printers connected to your computer to <ph name="CLOUD_PRINT_NAME">$1<ex>Google Cloud Print</ex></ph>.
-          </message>
-          <message name="IDS_LOCAL_DISCOVERY_CONNECTOR_SECTION" desc="In local discovery page: Title of cloud print connector section.">
-            Classic printers
-          </message>
-        </if>
         <message name="IDS_LOCAL_DISCOVERY_NOTIFICATIONS_DISABLE_BUTTON_LABEL" desc="Label for button disabling local device notifications">
           Don't show this again
         </message>
       </if>
-      <message name="IDS_LOCAL_DISCOVERY_REGISTER_CANCELED_ON_PRINTER" desc="Label for when registration is canceled on the printer side">
-        Printer registration has been canceled.
-      </message>
-      <message name="IDS_LOCAL_DISCOVERY_REGISTER_TIMEOUT_ON_PRINTER" desc="Label for when registration has timed out on the printer side">
-        Printer registration has timed out. In order to register a printer, you must confirm registration on the printer.
-      </message>
 
       <!--Cloud printing deprecation messages for chrome://devices & Print Preview-->
       <message name="IDS_CLOUD_PRINTING_NOT_SUPPORTED_WARNING" desc="Warning shown to the user to inform them that cloud printing will no longer be supported.">

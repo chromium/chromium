@@ -4492,18 +4492,10 @@ static_library("ui") {
         "webui/print_preview/privet_printer_handler.cc",
         "webui/print_preview/privet_printer_handler.h",
       ]
-    }
-  }
 
-  if (enable_service_discovery) {
-    sources += [
-      "webui/local_discovery/local_discovery_ui.cc",
-      "webui/local_discovery/local_discovery_ui.h",
-      "webui/local_discovery/local_discovery_ui_handler.cc",
-      "webui/local_discovery/local_discovery_ui_handler.h",
-    ]
-    if (enable_print_preview && !is_chromeos) {
-      deps += [ "//chrome/common:service_process_mojom" ]
+      if (!is_chromeos) {
+        deps += [ "//chrome/common:service_process_mojom" ]
+      }
     }
   }
 

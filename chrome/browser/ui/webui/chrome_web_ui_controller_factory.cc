@@ -276,10 +276,6 @@
 #include "chrome/browser/ui/webui/certificate_viewer_ui.h"
 #endif
 
-#if BUILDFLAG(ENABLE_SERVICE_DISCOVERY)
-#include "chrome/browser/ui/webui/local_discovery/local_discovery_ui.h"
-#endif
-
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/extensions/extension_web_ui.h"
 #include "chrome/browser/ui/webui/extensions/extensions_ui.h"
@@ -908,11 +904,6 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
     if (url.path() == "/pdf/index.html")
       return nullptr;
     return &NewWebUI<printing::PrintPreviewUI>;
-  }
-#endif
-#if BUILDFLAG(ENABLE_SERVICE_DISCOVERY)
-  if (url.host_piece() == chrome::kChromeUIDevicesHost) {
-    return &NewWebUI<LocalDiscoveryUI>;
   }
 #endif
 

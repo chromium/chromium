@@ -27,7 +27,6 @@
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/webui/local_discovery/local_discovery_ui_handler.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
@@ -233,10 +232,7 @@ void PrivetNotificationService::AddNotification(
   // existing notification but not add a new one.
   const bool notification_exists =
       base::Contains(displayed_notifications, kPrivetNotificationID);
-  const bool add_new_notification =
-      device_added &&
-      !local_discovery::LocalDiscoveryUIHandler::GetHasVisible();
-  if (!notification_exists && !add_new_notification)
+  if (!notification_exists && !device_added)
     return;
 
   message_center::RichNotificationData rich_notification_data;

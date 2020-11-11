@@ -3097,11 +3097,6 @@ if (!is_android) {
         "//components/services/paint_preview_compositor/public/mojom",
       ]
     }
-    if (enable_service_discovery && !is_mac) {
-      sources += [
-        "../browser/ui/webui/local_discovery/local_discovery_ui_browsertest.cc",
-      ]
-    }
     if (use_brlapi) {
       deps += [ "//third_party/libbrlapi" ]
     } else if (enable_extensions) {

@@ -478,12 +478,6 @@ const char kDeviceDiscoveryNotificationsName[] =
 const char kDeviceDiscoveryNotificationsDescription[] =
     "Device discovery notifications on local network.";
 
-const char kForceEnableDevicesPageName[] = "Force enable chrome://devices page";
-const char kForceEnableDevicesPageDescription[] =
-    "With this flag on, the chrome://devices page will show its previous "
-    "content, instead of a warning message. Note: chrome://devices is "
-    "no longer supported, and this flag will be permanently removed in M88.";
-
 const char kDisallowDocWrittenScriptsUiName[] =
     "Block scripts loaded via document.write";
 const char kDisallowDocWrittenScriptsUiDescription[] =

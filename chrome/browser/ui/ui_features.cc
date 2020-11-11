@@ -23,10 +23,6 @@ const base::Feature kExtensionSettingsOverriddenDialogs{
 const base::Feature kExtensionsToolbarMenu{"ExtensionsToolbarMenu",
                                            base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Force enables the legacy chrome://devices page. To be removed in M88.
-const base::Feature kForceEnableDevicesPage{"ForceEnableDevicesPage",
-                                            base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Enables the new profile picker.
 // https:://crbug.com/1063856
 const base::Feature kNewProfilePicker{"NewProfilePicker",

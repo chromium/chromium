@@ -2939,10 +2939,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDeviceDiscoveryNotificationsDescription, kOsDesktop,
      SINGLE_VALUE_TYPE(switches::kEnableDeviceDiscoveryNotifications)},
 #endif  // BUILDFLAG(ENABLE_SERVICE_DISCOVERY)
-    {"force-enable-devices-page",
-     flag_descriptions::kForceEnableDevicesPageName,
-     flag_descriptions::kForceEnableDevicesPageDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kForceEnableDevicesPage)},
     {"enable-webgl-draft-extensions",
      flag_descriptions::kWebglDraftExtensionsName,
      flag_descriptions::kWebglDraftExtensionsDescription, kOsAll,
