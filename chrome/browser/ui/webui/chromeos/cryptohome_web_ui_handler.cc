@@ -35,8 +35,6 @@ void CryptohomeWebUIHandler::OnPageLoaded(const base::ListValue* args) {
   cryptohome_client->TpmIsReady(GetCryptohomeBoolCallback("tpm-is-ready"));
   cryptohome_client->TpmIsEnabled(GetCryptohomeBoolCallback("tpm-is-enabled"));
   cryptohome_client->TpmIsOwned(GetCryptohomeBoolCallback("tpm-is-owned"));
-  cryptohome_client->TpmIsBeingOwned(
-      GetCryptohomeBoolCallback("tpm-is-being-owned"));
   cryptohome_client->Pkcs11IsTpmTokenReady(
       GetCryptohomeBoolCallback("pkcs11-is-tpm-token-ready"));
 
