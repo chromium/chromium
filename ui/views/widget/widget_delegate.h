@@ -73,12 +73,10 @@ class VIEWS_EXPORT WidgetDelegate {
     // Widget; if false, focus cycles within this Widget.
     bool focus_traverses_out = false;
 
-    // Controls whether the user can traverse widget views using up/down and
-    // left/right arrow keys in addition to TAB.
-    // TODO(dfried): Can only be set on top-level widgets. If we need to enable
-    // this for child widgets, we'll need to move away from checking
-    // FocusManager::arrow_key_traversal_enabled_for_widget_ on arrow key press
-    // to checking the current view's widget's enable_arrow_key_traversal().
+    // Controls whether the user can traverse a Widget's views using up/down
+    // and left/right arrow keys in addition to TAB. Applies only to the
+    // current widget so can be set independently even on widgets that share a
+    // focus manager.
     bool enable_arrow_key_traversal = false;
 
     // The widget's icon, if any.

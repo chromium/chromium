@@ -625,9 +625,9 @@ void AppListView::InitWidget(gfx::NativeView parent) {
   widget->GetNativeWindow()->SetEventTargeter(
       std::make_unique<AppListEventTargeter>(delegate_));
 
-  // Enable arrow key in FocusManager. Arrow left/right and up/down triggers
-  // the same focus movement as tab/shift+tab.
-  widget->GetFocusManager()->set_arrow_key_traversal_enabled_for_widget(true);
+  // Enable arrow key. Arrow left/right and up/down triggers the same focus
+  // movement as tab/shift+tab.
+  SetEnableArrowKeyTraversal(true);
 
   widget->GetNativeView()->AddObserver(this);
 

@@ -455,7 +455,7 @@ void ShelfNavigationWidget::Initialize(aura::Window* container) {
   Init(std::move(params));
   delegate_->Init(GetLayer());
   set_focus_on_creation(false);
-  GetFocusManager()->set_arrow_key_traversal_enabled_for_widget(true);
+  delegate_->SetEnableArrowKeyTraversal(true);
   SetContentsView(delegate_);
   SetSize(CalculateIdealSize(/*only_visible_area=*/false));
   UpdateLayout(/*animate=*/false);

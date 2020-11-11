@@ -690,11 +690,11 @@ void HotseatWidget::Initialize(aura::Window* container, Shelf* shelf) {
   params.layer_type = ui::LAYER_NOT_DRAWN;
   Init(std::move(params));
   set_focus_on_creation(false);
-  GetFocusManager()->set_arrow_key_traversal_enabled_for_widget(true);
 
   scrollable_shelf_view_ = GetContentsView()->AddChildView(
       std::make_unique<ScrollableShelfView>(ShelfModel::Get(), shelf));
   delegate_view_->Init(scrollable_shelf_view(), GetLayer(), this);
+  delegate_view_->SetEnableArrowKeyTraversal(true);
 
   // The initialization of scrollable shelf should update the translucent
   // background which is stored in |delegate_view_|. So initializes

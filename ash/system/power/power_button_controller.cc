@@ -78,10 +78,9 @@ std::unique_ptr<views::Widget> CreateMenuWidget() {
       display::Screen::GetScreen()->GetPrimaryDisplay().bounds();
   menu_widget->SetBounds(widget_bounds);
 
-  // Enable arrow key in FocusManager. Arrow right/left and down/up triggers
-  // the same focus movement as tab/shift+tab.
-  menu_widget->GetFocusManager()->set_arrow_key_traversal_enabled_for_widget(
-      true);
+  // Enable arrow key - arrow right/left and down/up triggers the same focus
+  // movement as tab/shift+tab.
+  menu_widget->widget_delegate()->SetEnableArrowKeyTraversal(true);
   return menu_widget;
 }
 

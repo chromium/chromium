@@ -600,7 +600,7 @@ void ShelfWidget::Initialize(aura::Window* shelf_container) {
 
   // Sets initial session state to make sure the UI is properly shown.
   OnSessionStateChanged(Shell::Get()->session_controller()->GetSessionState());
-  GetFocusManager()->set_arrow_key_traversal_enabled_for_widget(true);
+  delegate_view_->SetEnableArrowKeyTraversal(true);
 
   Shell::Get()->accessibility_controller()->AddObserver(this);
 }

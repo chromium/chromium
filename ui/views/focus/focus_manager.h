@@ -286,14 +286,6 @@ class VIEWS_EXPORT FocusManager : public ViewObserver {
     return arrow_key_traversal_enabled_;
   }
 
-  // Similar to above, but only for the widget that owns this FocusManager.
-  void set_arrow_key_traversal_enabled_for_widget(bool enabled) {
-    arrow_key_traversal_enabled_for_widget_ = enabled;
-  }
-  bool arrow_key_traversal_enabled_for_widget() const {
-    return arrow_key_traversal_enabled_for_widget_;
-  }
-
   // Returns the next focusable view. Traversal starts at |starting_view|. If
   // |starting_view| is null, |starting_widget| is consulted to determine which
   // Widget to start from. See WidgetDelegate::Params::focus_traverses_out for
@@ -335,12 +327,11 @@ class VIEWS_EXPORT FocusManager : public ViewObserver {
   bool RedirectAcceleratorToBubbleAnchorWidget(
       const ui::Accelerator& accelerator);
 
+  // Returns true if arrow key traversal is enabled for the current widget.
+  bool IsArrowKeyTraversalEnabledForWidget() const;
+
   // Whether arrow key traversal is enabled globally.
   static bool arrow_key_traversal_enabled_;
-
-  // Whether arrow key traversal is enabled for all widgets under the top-level
-  // widget that owns the FocusManager.
-  bool arrow_key_traversal_enabled_for_widget_ = false;
 
   // The top-level Widget this FocusManager is associated with.
   Widget* widget_;

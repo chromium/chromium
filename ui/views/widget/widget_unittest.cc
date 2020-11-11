@@ -25,6 +25,7 @@
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/buildflags.h"
+#include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/event_monitor.h"
 #include "ui/views/layout/fill_layout.h"
@@ -256,30 +257,151 @@ TEST_F(WidgetTest, GetParent) {
   // children should be automatically destroyed with |toplevel|.
 }
 
-TEST_F(WidgetWithCustomParamsTest,
-       EnableArrowKeyTraversalFalsePropagatesFromDelegate) {
-  WidgetDelegate delegate;
-  SetInitFunction(base::BindLambdaForTesting(
-      [&](Widget::InitParams* params) { params->delegate = &delegate; }));
+// Verify that there is no change in focus if |enable_arrow_key_traversal| is
+// false (the default).
+TEST_F(WidgetTest, ArrowKeyFocusTraversalOffByDefault) {
+  WidgetAutoclosePtr toplevel(CreateTopLevelPlatformWidget());
 
-  // Setting should default to off.
-  DCHECK(!delegate.enable_arrow_key_traversal());
-  std::unique_ptr<Widget> widget = CreateTestWidget();
-  EXPECT_FALSE(
-      widget->GetFocusManager()->arrow_key_traversal_enabled_for_widget());
+  // Establish default value.
+  DCHECK(!toplevel->widget_delegate()->enable_arrow_key_traversal());
+
+  View* container = toplevel->client_view();
+  container->SetLayoutManager(std::make_unique<FillLayout>());
+  auto* const button1 =
+      container->AddChildView(std::make_unique<LabelButton>());
+  auto* const button2 =
+      container->AddChildView(std::make_unique<LabelButton>());
+  toplevel->Show();
+  button1->RequestFocus();
+
+  ui::KeyEvent right_arrow(ui::ET_KEY_PRESSED, ui::VKEY_RIGHT, ui::EF_NONE);
+  toplevel->OnKeyEvent(&right_arrow);
+  EXPECT_TRUE(button1->HasFocus());
+  EXPECT_FALSE(button2->HasFocus());
+
+  ui::KeyEvent left_arrow(ui::ET_KEY_PRESSED, ui::VKEY_LEFT, ui::EF_NONE);
+  toplevel->OnKeyEvent(&left_arrow);
+  EXPECT_TRUE(button1->HasFocus());
+  EXPECT_FALSE(button2->HasFocus());
+
+  ui::KeyEvent up_arrow(ui::ET_KEY_PRESSED, ui::VKEY_UP, ui::EF_NONE);
+  toplevel->OnKeyEvent(&up_arrow);
+  EXPECT_TRUE(button1->HasFocus());
+  EXPECT_FALSE(button2->HasFocus());
+
+  ui::KeyEvent down_arrow(ui::ET_KEY_PRESSED, ui::VKEY_DOWN, ui::EF_NONE);
+  toplevel->OnKeyEvent(&down_arrow);
+  EXPECT_TRUE(button1->HasFocus());
+  EXPECT_FALSE(button2->HasFocus());
 }
 
-TEST_F(WidgetWithCustomParamsTest,
-       EnableArrowKeyTraversalTruePropagatesFromDelegate) {
-  WidgetDelegate delegate;
-  SetInitFunction(base::BindLambdaForTesting(
-      [&](Widget::InitParams* params) { params->delegate = &delegate; }));
+// Verify that arrow keys can change focus if |enable_arrow_key_traversal| is
+// set to true.
+TEST_F(WidgetTest, ArrowKeyTraversalMovesFocusBetweenViews) {
+  WidgetAutoclosePtr toplevel(CreateTopLevelPlatformWidget());
+  toplevel->widget_delegate()->SetEnableArrowKeyTraversal(true);
 
-  // Now set to true and create a new widget.
-  delegate.SetEnableArrowKeyTraversal(true);
-  std::unique_ptr<Widget> widget = CreateTestWidget();
-  EXPECT_TRUE(
-      widget->GetFocusManager()->arrow_key_traversal_enabled_for_widget());
+  View* container = toplevel->client_view();
+  container->SetLayoutManager(std::make_unique<FillLayout>());
+  auto* const button1 =
+      container->AddChildView(std::make_unique<LabelButton>());
+  auto* const button2 =
+      container->AddChildView(std::make_unique<LabelButton>());
+  auto* const button3 =
+      container->AddChildView(std::make_unique<LabelButton>());
+  toplevel->Show();
+  button1->RequestFocus();
+
+  // Right should advance focus (similar to TAB).
+  ui::KeyEvent right_arrow(ui::ET_KEY_PRESSED, ui::VKEY_RIGHT, ui::EF_NONE);
+  toplevel->OnKeyEvent(&right_arrow);
+  EXPECT_FALSE(button1->HasFocus());
+  EXPECT_TRUE(button2->HasFocus());
+  EXPECT_FALSE(button3->HasFocus());
+
+  // Down should also advance focus.
+  ui::KeyEvent down_arrow(ui::ET_KEY_PRESSED, ui::VKEY_DOWN, ui::EF_NONE);
+  toplevel->OnKeyEvent(&down_arrow);
+  EXPECT_FALSE(button1->HasFocus());
+  EXPECT_FALSE(button2->HasFocus());
+  EXPECT_TRUE(button3->HasFocus());
+
+  // Left should reverse focus (similar to SHIFT+TAB).
+  ui::KeyEvent left_arrow(ui::ET_KEY_PRESSED, ui::VKEY_LEFT, ui::EF_NONE);
+  toplevel->OnKeyEvent(&left_arrow);
+  EXPECT_FALSE(button1->HasFocus());
+  EXPECT_TRUE(button2->HasFocus());
+  EXPECT_FALSE(button3->HasFocus());
+
+  // Up should also reverse focus.
+  ui::KeyEvent up_arrow(ui::ET_KEY_PRESSED, ui::VKEY_UP, ui::EF_NONE);
+  toplevel->OnKeyEvent(&up_arrow);
+  EXPECT_TRUE(button1->HasFocus());
+  EXPECT_FALSE(button2->HasFocus());
+  EXPECT_FALSE(button3->HasFocus());
+
+  // Test backwards wrap-around.
+  ui::KeyEvent up_arrow2(ui::ET_KEY_PRESSED, ui::VKEY_UP, ui::EF_NONE);
+  toplevel->OnKeyEvent(&up_arrow2);
+  EXPECT_FALSE(button1->HasFocus());
+  EXPECT_FALSE(button2->HasFocus());
+  EXPECT_TRUE(button3->HasFocus());
+
+  // Test forward wrap-around.
+  ui::KeyEvent down_arrow2(ui::ET_KEY_PRESSED, ui::VKEY_DOWN, ui::EF_NONE);
+  toplevel->OnKeyEvent(&down_arrow2);
+  EXPECT_TRUE(button1->HasFocus());
+  EXPECT_FALSE(button2->HasFocus());
+  EXPECT_FALSE(button3->HasFocus());
+}
+
+TEST_F(WidgetTest, ArrowKeyTraversalNotInheritedByChildWidgets) {
+  WidgetAutoclosePtr parent(CreateTopLevelPlatformWidget());
+  Widget* child = CreateChildPlatformWidget(parent->GetNativeView());
+
+  parent->widget_delegate()->SetEnableArrowKeyTraversal(true);
+
+  View* container = child->GetContentsView();
+  DCHECK(container);
+  container->SetLayoutManager(std::make_unique<FillLayout>());
+  auto* const button1 =
+      container->AddChildView(std::make_unique<LabelButton>());
+  auto* const button2 =
+      container->AddChildView(std::make_unique<LabelButton>());
+  parent->Show();
+  child->Show();
+  button1->RequestFocus();
+
+  // Arrow key should not cause focus change on child since only the parent
+  // Widget has |enable_arrow_key_traversal| set.
+  ui::KeyEvent right_arrow(ui::ET_KEY_PRESSED, ui::VKEY_RIGHT, ui::EF_NONE);
+  child->OnKeyEvent(&right_arrow);
+  EXPECT_TRUE(button1->HasFocus());
+  EXPECT_FALSE(button2->HasFocus());
+}
+
+TEST_F(WidgetTest, ArrowKeyTraversalMayBeExplicitlyEnabledByChildWidgets) {
+  WidgetAutoclosePtr parent(CreateTopLevelPlatformWidget());
+  Widget* child = CreateChildPlatformWidget(parent->GetNativeView());
+
+  child->widget_delegate()->SetEnableArrowKeyTraversal(true);
+
+  View* container = child->GetContentsView();
+  container->SetLayoutManager(std::make_unique<FillLayout>());
+  auto* const button1 =
+      container->AddChildView(std::make_unique<LabelButton>());
+  auto* const button2 =
+      container->AddChildView(std::make_unique<LabelButton>());
+  parent->Show();
+  child->Show();
+  button1->RequestFocus();
+
+  // Arrow key should cause focus key on child since child has flag set, even
+  // if the parent Widget does not.
+  ui::KeyEvent right_arrow(ui::ET_KEY_PRESSED, ui::VKEY_RIGHT, ui::EF_NONE);
+  child->OnKeyEvent(&right_arrow);
+  EXPECT_FALSE(button1->HasFocus());
+  EXPECT_TRUE(button2->HasFocus());
 }
 
 ////////////////////////////////////////////////////////////////////////////////
