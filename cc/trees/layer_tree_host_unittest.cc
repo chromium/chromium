@@ -6719,7 +6719,7 @@ class LayerTreeHostTestSynchronousCompositeSwapPromise
         new TestSwapPromise(&swap_promise_result_[0]));
     layer_tree_host()->GetSwapPromiseManager()->QueueSwapPromise(
         std::move(swap_promise0));
-    layer_tree_host()->Composite(base::TimeTicks::Now(), raster);
+    layer_tree_host()->CompositeForTest(base::TimeTicks::Now(), raster);
 
     // Fail to swap (no damage) if not reclaiming resources from the Display.
     std::unique_ptr<SwapPromise> swap_promise1(
@@ -6727,7 +6727,7 @@ class LayerTreeHostTestSynchronousCompositeSwapPromise
     layer_tree_host()->GetSwapPromiseManager()->QueueSwapPromise(
         std::move(swap_promise1));
     layer_tree_host()->SetNeedsCommit();
-    layer_tree_host()->Composite(base::TimeTicks::Now(), raster);
+    layer_tree_host()->CompositeForTest(base::TimeTicks::Now(), raster);
 
     // Fail to draw (not visible).
     std::unique_ptr<SwapPromise> swap_promise2(
@@ -6736,7 +6736,7 @@ class LayerTreeHostTestSynchronousCompositeSwapPromise
         std::move(swap_promise2));
     layer_tree_host()->SetNeedsDisplayOnAllLayers();
     layer_tree_host()->SetVisible(false);
-    layer_tree_host()->Composite(base::TimeTicks::Now(), raster);
+    layer_tree_host()->CompositeForTest(base::TimeTicks::Now(), raster);
 
     EndTest();
   }

@@ -154,7 +154,8 @@ class CC_EXPORT SingleThreadProxy : public Proxy,
 
   // Called by the legacy path where RenderWidget does the scheduling.
   // Rasterization of tiles is only performed when |raster| is true.
-  void CompositeImmediately(base::TimeTicks frame_begin_time, bool raster);
+  void CompositeImmediatelyForTest(base::TimeTicks frame_begin_time,
+                                   bool raster);
 
  protected:
   SingleThreadProxy(LayerTreeHost* layer_tree_host,

@@ -283,7 +283,7 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   // Synchronously performs a complete main frame update, commit and compositor
   // frame. Used only in single threaded mode when the compositor's internal
   // scheduling is disabled.
-  void Composite(base::TimeTicks frame_begin_time, bool raster);
+  void CompositeForTest(base::TimeTicks frame_begin_time, bool raster);
 
   // Requests a redraw (compositor frame) for the given rect.
   void SetNeedsRedrawRect(const gfx::Rect& damage_rect);

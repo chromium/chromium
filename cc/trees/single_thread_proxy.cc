@@ -561,9 +561,11 @@ bool SingleThreadProxy::IsInSynchronousComposite() const {
   return inside_synchronous_composite_;
 }
 
-void SingleThreadProxy::CompositeImmediately(base::TimeTicks frame_begin_time,
-                                             bool raster) {
-  TRACE_EVENT0("cc,benchmark", "SingleThreadProxy::CompositeImmediately");
+void SingleThreadProxy::CompositeImmediatelyForTest(
+    base::TimeTicks frame_begin_time,
+    bool raster) {
+  TRACE_EVENT0("cc,benchmark",
+               "SingleThreadProxy::CompositeImmediatelyForTest");
   DCHECK(task_runner_provider_->IsMainThread());
 #if DCHECK_IS_ON()
   DCHECK(!inside_impl_frame_);

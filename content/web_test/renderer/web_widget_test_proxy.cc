@@ -163,7 +163,8 @@ void WebWidgetTestProxy::DoComposite(content::RenderWidget* widget,
     widget->layer_tree_host()->SetNeedsCommitWithForcedRedraw();
   }
 
-  widget->layer_tree_host()->Composite(base::TimeTicks::Now(), do_raster);
+  widget->layer_tree_host()->CompositeForTest(base::TimeTicks::Now(),
+                                              do_raster);
 }
 
 void WebWidgetTestProxy::SynchronouslyComposite(bool do_raster) {

@@ -135,7 +135,7 @@ class LayerTreeViewWithFrameSinkTracking : public LayerTreeView {
     layer_tree_host()->SetVisible(true);
 
     base::TimeTicks some_time;
-    layer_tree_host()->Composite(some_time, true /* raster */);
+    layer_tree_host()->CompositeForTest(some_time, true /* raster */);
   }
 
   void RequestNewLayerTreeFrameSink() override {

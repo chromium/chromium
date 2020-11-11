@@ -468,8 +468,8 @@ class MultipleCompositeDoesNotCreateLayerTreeFrameSink
   }
 
   void BeginTest() override {
-    layer_tree_host()->Composite(TicksFromMicroseconds(1), false);
-    layer_tree_host()->Composite(TicksFromMicroseconds(2), false);
+    layer_tree_host()->CompositeForTest(TicksFromMicroseconds(1), false);
+    layer_tree_host()->CompositeForTest(TicksFromMicroseconds(2), false);
   }
 
   void DidInitializeLayerTreeFrameSink() override { EXPECT_TRUE(false); }
@@ -510,12 +510,12 @@ class FailedCreateDoesNotCreateExtraLayerTreeFrameSink
 
   void BeginTest() override {
     // First composite tries to create a surface.
-    layer_tree_host()->Composite(TicksFromMicroseconds(1), false);
+    layer_tree_host()->CompositeForTest(TicksFromMicroseconds(1), false);
     EXPECT_EQ(num_requests_, 2);
     EXPECT_TRUE(has_failed_);
 
     // Second composite should not request or fail.
-    layer_tree_host()->Composite(TicksFromMicroseconds(2), false);
+    layer_tree_host()->CompositeForTest(TicksFromMicroseconds(2), false);
     EXPECT_EQ(num_requests_, 2);
     EndTest();
   }
@@ -561,7 +561,7 @@ class LayerTreeHostContextTestCommitAfterDelayedLayerTreeFrameSink
   }
 
   void BeginTest() override {
-    layer_tree_host()->Composite(TicksFromMicroseconds(1), false);
+    layer_tree_host()->CompositeForTest(TicksFromMicroseconds(1), false);
   }
 
   void ScheduleComposite() override {
@@ -594,7 +594,7 @@ class LayerTreeHostContextTestAvoidUnnecessaryComposite
 
   void BeginTest() override {
     in_composite_ = true;
-    layer_tree_host()->Composite(TicksFromMicroseconds(1), false);
+    layer_tree_host()->CompositeForTest(TicksFromMicroseconds(1), false);
     in_composite_ = false;
   }
 

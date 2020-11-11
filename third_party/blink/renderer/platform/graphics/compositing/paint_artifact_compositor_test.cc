@@ -4996,7 +4996,7 @@ TEST_P(PaintArtifactCompositorTest, DirectlySetScrollOffset) {
   EXPECT_EQ(gfx::ScrollOffset(-7, -9), transform_node->scroll_offset);
 
   auto& host = GetLayerTreeHost();
-  host.Composite(base::TimeTicks::Now(), true);
+  host.CompositeForTest(base::TimeTicks::Now(), true);
   ASSERT_FALSE(host.LayersThatShouldPushProperties().contains(scroll_layer));
   ASSERT_FALSE(host.proxy()->CommitRequested());
   ASSERT_FALSE(transform_tree.needs_update());

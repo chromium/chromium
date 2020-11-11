@@ -1094,7 +1094,7 @@ void WebFrameWidgetBase::SetLayerTreeDebugState(
 
 void WebFrameWidgetBase::SynchronouslyCompositeForTesting(
     base::TimeTicks frame_time) {
-  widget_base_->LayerTreeHost()->Composite(frame_time, false);
+  widget_base_->LayerTreeHost()->CompositeForTest(frame_time, false);
 }
 
 // TODO(665924): Remove direct dispatches of mouse events from
