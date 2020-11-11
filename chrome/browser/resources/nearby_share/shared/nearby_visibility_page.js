@@ -21,15 +21,17 @@ Polymer({
     settings: {
       type: Object,
       notify: true,
-    }
+    },
+
+    /** @private */
+    isVisibilitySelected_: {
+      type: Boolean,
+      notify: true,
+    },
   },
 
-  listeners: {
-    'next': 'onNext_',
-    'manage-contacts': 'onManageContacts_'
-  },
+  listeners: {'next': 'onNext_', 'manage-contacts': 'onManageContacts_'},
 
-  /** @private */
   onNext_() {
     this.set('settings.enabled', true);
     this.fire('onboarding-complete');

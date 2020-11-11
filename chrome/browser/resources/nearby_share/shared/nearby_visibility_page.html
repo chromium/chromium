@@ -23,12 +23,14 @@
         sub-title="$i18n{nearbyShareVisibilityPageSubtitle}"
         action-button-label="$i18n{nearbyShareActionsConfirm}"
         action-button-event-name="next"
+        action-disabled="[[!isVisibilitySelected_]]"
         cancel-button-label="$i18n{nearbyShareActionsCancel}"
         cancel-button-event-name="close"
         utility-button-label="$i18n{nearbyShareVisibilityPageManageContacts}"
         utility-button-event-name="manage-contacts">
       <div id=center-content slot="content">
         <nearby-contact-visibility id="contactVisibility"
+            is-visibility-selected="{{isVisibilitySelected_}}"
             settings="{{settings}}">
         </nearby-contact-visibility>
       </div>

@@ -107,6 +107,12 @@ Polymer({
       type: Array,
       value: null,
     },
+
+    isVisibilitySelected: {
+      type: Boolean,
+      computed: 'isVisibilitySelected_(selectedVisibility)',
+      notify: true,
+    },
   },
 
   /** @private {?nearbyShare.mojom.ContactManagerInterface} */

@@ -64,6 +64,13 @@ suite('NearbyShare', function() {
     return dialog.$$(page).$$('nearby-page-template').$$(button);
   }
 
+  function selectAllContacts() {
+    dialog.$$('nearby-visibility-page')
+        .$$('nearby-contact-visibility')
+        .$$('#allContacts')
+        .click();
+  }
+
   suite('EnabledTests', function() {
     setup(function() {
       sharedSetup(true);
@@ -163,6 +170,8 @@ suite('NearbyShare', function() {
 
       assertTrue(isVisible('nearby-visibility-page'));
       // Advance to the next page.
+      fakeContactManager.completeDownload();
+      selectAllContacts();
       getButton('nearby-visibility-page', '#actionButton').click();
 
       await test_util.waitAfterNextRender(dialog);
@@ -183,6 +192,8 @@ suite('NearbyShare', function() {
 
       assertTrue(isVisible('nearby-visibility-page'));
       // This should close the dialog.
+      fakeContactManager.completeDownload();
+      selectAllContacts();
       getButton('nearby-visibility-page', '#actionButton').click();
 
       assertTrue(dialog.closing_);
