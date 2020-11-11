@@ -239,8 +239,6 @@ test("sbox_integration_tests") {
     ":sbox_integration_test_win_proc",
   ]
 
-  # Overrides the globals set in testing/test.gni that disable CFG.
-  win_test_enable_cfi_linker = true
   libs = [ "dxva2.lib" ]
 }
 

@@ -45,7 +45,6 @@ if ((is_linux && !is_chromeos) || is_mac || is_win ||
 #   use_xvfb: (optional) whether to run the executable under Xvfb.
 #   use_raw_android_executable: Use executable() rather than android_apk().
 #   use_native_activity: Test implements ANativeActivity_onCreate().
-#   win_test_enable_cfi_linker: (Win) Enable CFI linker for this test binary.
 #   is_xctest: (iOS, optional) whether to build the executable as XCTest.
 #      Similar to the GN arg 'enable_run_ios_unittests_with_xctest' but
 #      for build targets.
@@ -489,14 +488,6 @@ template("test") {
         _use_xvfb = false
       }
 
-      if (is_win) {
-        if (defined(invoker.win_test_enable_cfi_linker)) {
-          _win_test_enable_cfi_linker = invoker.win_test_enable_cfi_linker
-        } else {
-          _win_test_enable_cfi_linker = false
-        }
-      }
-
       generate_wrapper(_gen_runner_target) {
         testonly = true
         wrapper_script = "$root_build_dir/bin/run_" + _executable
@@ -537,16 +528,6 @@ template("test") {
         deps = []
       }
 
-      if (is_win) {
-        if (!_win_test_enable_cfi_linker) {
-          # Initializing CFG data during process creation is a significant
-          # bottleneck for large test binaries, and CFG is not needed for
-          # most tests, so disable it. See https://crbug.com/950923 for
-          # details. This can be overridden by specifying
-          # win_test_enable_cfi_linker.
-          configs -= [ "//build/config/win:cfi_linker" ]
-        }
-      }
       testonly = true
       deps += [
         # Give tests the default manifest on Windows (a no-op elsewhere).
