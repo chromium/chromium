@@ -114,16 +114,19 @@ public class AutofillAssistantFacade {
                         arguments.isLiteScriptExperiment() ? LITE_SCRIPT_EXPERIMENT_TRIAL_EXPERIMENT
                                                            : LITE_SCRIPT_EXPERIMENT_TRIAL_CONTROL);
 
-                if (!AutofillAssistantPreferencesUtil.isAutofillAssistantSwitchOn()) {
+                if (!AutofillAssistantPreferencesUtil.isProactiveHelpSwitchOn()) {
+                    // Opt out users who have disabled the proactive help Chrome setting.
                     AutofillAssistantMetrics.recordLiteScriptStarted(tab.getWebContents(),
-                            AutofillAssistantPreferencesUtil
-                                            .isAutofillAssistantLiteScriptCancelThresholdReached()
-                                    ? LiteScriptStarted.LITE_SCRIPT_CANCELED_TWO_TIMES
-                                    : LiteScriptStarted.LITE_SCRIPT_ONBOARDING_REJECTED);
-                    // Opt-out users who have seen and rejected the onboarding, or who have canceled
-                    // the lite script too many times.
+                            LiteScriptStarted.LITE_SCRIPT_PROACTIVE_TRIGGERING_DISABLED);
                     return;
                 }
+
+                if (!AutofillAssistantPreferencesUtil.isAutofillAssistantSwitchOn()) {
+                    // Legacy. This should no longer happen, because the proactive help switch
+                    // should only be 'on' if the autofill assistant switch is 'on' as well.
+                    return;
+                }
+
                 if (AutofillAssistantModuleEntryProvider.INSTANCE.getModuleEntryIfInstalled()
                         == null) {
                     // Opt-out users who don't have DFM installed.

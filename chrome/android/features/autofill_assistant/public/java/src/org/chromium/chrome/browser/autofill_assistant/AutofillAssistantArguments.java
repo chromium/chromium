@@ -99,11 +99,24 @@ public class AutofillAssistantArguments {
     /** Special parameter for returning user script path. */
     static final String PARAMETER_TRIGGER_RETURNING_TIME_USER = "TRIGGER_RETURNING_USER";
 
+    // Deprecated, remove as soon as possible.
     /** Special output parameter that should hold which of the trigger scripts was used, if any. */
     static final String PARAMETER_TRIGGER_SCRIPT_USED = "TRIGGER_SCRIPT_USED";
 
     /** Special parameter for declaring a user to be in a lite script experiment. */
     static final String PARAMETER_LITE_SCRIPT_EXPERIMENT = "TRIGGER_SCRIPT_EXPERIMENT";
+
+    /**
+     * Special parameter for instructing the client to request and run a trigger script prior to
+     * starting the regular flow.
+     */
+    static final String PARAMETER_REQUEST_TRIGGER_SCRIPT = "REQUEST_TRIGGER_SCRIPT";
+
+    /**
+     * Special output boolean parameter that will be set to true for regular scripts that were
+     * started with a trigger script.
+     */
+    static final String PARAMETER_STARTED_WITH_TRIGGER_SCRIPT = "STARTED_WITH_TRIGGER_SCRIPT";
 
     /**
      * Identifier used by parameters/or special intent that indicates experiments passed from

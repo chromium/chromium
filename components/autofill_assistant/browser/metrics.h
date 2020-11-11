@@ -188,8 +188,6 @@ class Metrics {
   enum class LiteScriptStarted {
     // Device did not have DFM downloaded.
     LITE_SCRIPT_DFM_UNAVAILABLE = 0,
-    // User has rejected the onboarding and thus opted out of the experience.
-    LITE_SCRIPT_ONBOARDING_REJECTED = 2,
     // User has not seen the lite script before and will see first time
     // experience.
     LITE_SCRIPT_FIRST_TIME_USER = 3,
@@ -210,6 +208,8 @@ class Metrics {
     // User has explicitly rejected the lite script two times and thus opted
     // out of  the experience.
     LITE_SCRIPT_CANCELED_TWO_TIMES = 1,
+    // User has rejected the onboarding and thus opted out of the experience.
+    LITE_SCRIPT_ONBOARDING_REJECTED = 2,
 
     kMaxValue = LITE_SCRIPT_INTENT_RECEIVED
   };
