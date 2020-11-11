@@ -20,6 +20,7 @@
 #include "base/logging.h"
 #include "base/path_service.h"
 #include "base/single_thread_task_runner.h"
+#include "base/strings/string_split.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chromecast/base/cast_paths.h"
 #include "chromecast/base/pref_names.h"
@@ -44,8 +45,6 @@ const char kCrashServerProduction[] = "https://clients2.google.com/cr/report";
 const char kVirtualChannel[] = "virtual-channel";
 
 const char kLatestUiVersion[] = "latest-ui-version";
-
-const char kExtraInfoKey[] = "extra_info";
 
 typedef std::vector<std::unique_ptr<DumpInfo>> DumpList;
 
@@ -253,7 +252,19 @@ bool MinidumpUploader::DoWork() {
       g.SetParameter("stadia_session_id", dump.params().stadia_session_id);
     }
     if (!dump.params().extra_info.empty()) {
-      g.SetParameter(kExtraInfoKey, dump.params().extra_info);
+      std::vector<std::string> pairs = base::SplitString(dump.params().extra_info,
+                                                         " ",
+                                                         base::TRIM_WHITESPACE,
+                                                         base::SPLIT_WANT_NONEMPTY
+                                                        );
+      for (const auto& pair : pairs) {
+        std::vector<std::string> key_value =
+                base::SplitString(pair, "=", base::TRIM_WHITESPACE,
+                                  base::SPLIT_WANT_NONEMPTY);
+        if (key_value.size() == 2) {
+          g.SetParameter(key_value[0], key_value[1]);
+        }
+      }
     }
 
     std::string response;
