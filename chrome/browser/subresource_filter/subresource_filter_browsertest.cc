@@ -943,9 +943,10 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
 // Test that resources in a popup with an aborted initial load due to a
 // doc.write are still blocked when disallowed, even if the opener is
 // immediately closed after writing.
+// TODO(alexmt): Fix test flakiness and then reenable.
 IN_PROC_BROWSER_TEST_F(
     SubresourceFilterBrowserTest,
-    PopupWithDocWriteAbortedLoadAndOpenerClosed_FilterChecked) {
+    DISABLED_PopupWithDocWriteAbortedLoadAndOpenerClosed_FilterChecked) {
   ASSERT_NO_FATAL_FAILURE(
       SetRulesetWithRules({testing::CreateSuffixRule("ad_script.js"),
                            testing::CreateSuffixRule("ad=true")}));
