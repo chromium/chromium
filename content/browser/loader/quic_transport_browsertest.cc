@@ -277,12 +277,8 @@ IN_PROC_BROWSER_TEST_F(QuicTransportBrowserTest, CreateSendStream) {
   ASSERT_TRUE(WaitForTitle(ASCIIToUTF16("PASS"), {ASCIIToUTF16("FAIL")}));
 }
 
-#if defined(OS_WIN)
-// ReceiveStream is flaky on Windows: crbug.com/1140193.
+// ReceiveStream is flaky: crbug.com/1140193
 #define MAYBE_ReceiveStream DISABLED_ReceiveStream
-#else
-#define MAYBE_ReceiveStream ReceiveStream
-#endif
 IN_PROC_BROWSER_TEST_F(QuicTransportBrowserTest, MAYBE_ReceiveStream) {
   ASSERT_TRUE(embedded_test_server()->Start());
   ASSERT_TRUE(
