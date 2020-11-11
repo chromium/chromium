@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/style/ash_color_provider.h"
 #include "base/time/time.h"
 #include "cc/paint/paint_flags.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -25,8 +26,6 @@ namespace {
 // Arrow icon size.
 constexpr int kArrowIconSizeDp = 20;
 constexpr int kArrowIconBackroundRadius = 25;
-// An alpha value for disabled button.
-constexpr SkAlpha kButtonDisabledAlpha = 0x80;
 // How long does a single step of the loading animation take - i.e., the time it
 // takes for the arc to grow from a point to a full circle.
 constexpr base::TimeDelta kLoadingAnimationStepDuration =
@@ -61,13 +60,8 @@ ArrowButtonView::ArrowButtonView(PressedCallback callback, int size)
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
 
-  SetImage(Button::STATE_NORMAL,
-           gfx::CreateVectorIcon(kLockScreenArrowIcon, kArrowIconSizeDp,
-                                 SK_ColorWHITE));
-  SetImage(
-      views::Button::STATE_DISABLED,
-      gfx::CreateVectorIcon(kLockScreenArrowIcon, kArrowIconSizeDp,
-                            SkColorSetA(SK_ColorWHITE, kButtonDisabledAlpha)));
+  AshColorProvider::Get()->DecorateIconButton(
+      this, kLockScreenArrowIcon, /*toggled_=*/false, kArrowIconSizeDp);
   focus_ring()->SetPathGenerator(
       std::make_unique<views::FixedSizeCircleHighlightPathGenerator>(
           kArrowIconBackroundRadius));

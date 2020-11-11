@@ -9,6 +9,7 @@
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
+#include "ash/style/ash_color_provider.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -33,8 +34,10 @@ LoginErrorBubble::LoginErrorBubble(views::View* content,
     : LoginBaseBubbleView(anchor_view) {
   views::ImageView* alert_icon = new views::ImageView();
   alert_icon->SetPreferredSize(gfx::Size(kAlertIconSizeDp, kAlertIconSizeDp));
-  alert_icon->SetImage(
-      gfx::CreateVectorIcon(kLockScreenAlertIcon, SK_ColorWHITE));
+  alert_icon->SetImage(gfx::CreateVectorIcon(
+      kLockScreenAlertIcon,
+      AshColorProvider::Get()->GetContentLayerColor(
+          AshColorProvider::ContentLayerType::kIconColorPrimary)));
   AddChildView(alert_icon);
 
   if (content) {

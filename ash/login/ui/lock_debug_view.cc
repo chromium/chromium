@@ -24,6 +24,7 @@
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_widget.h"
 #include "ash/shell.h"
+#include "ash/style/ash_color_provider.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
@@ -1001,7 +1002,8 @@ void LockDebugView::UpdatePerUserActionContainer() {
     auto* name = new views::Label();
     name->SetText(debug_data_dispatcher_->GetDisplayNameForUserIndex(i));
     name->SetSubpixelRenderingEnabled(false);
-    name->SetEnabledColor(SK_ColorWHITE);
+    name->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
+        AshColorProvider::ContentLayerType::kTextColorPrimary));
     name->SetAutoColorReadabilityEnabled(false);
     // name->SetFontList(name->font_list().DeriveWithSizeDelta(3));
     row->AddChildView(name);

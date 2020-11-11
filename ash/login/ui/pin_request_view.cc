@@ -77,7 +77,6 @@ constexpr int kPinRequestViewMinimumHeightDp =
 constexpr int kAlpha70Percent = 178;
 constexpr int kAlpha74Percent = 189;
 
-constexpr SkColor kTextColor = SK_ColorWHITE;
 constexpr SkColor kErrorColor = gfx::kGoogleRed300;
 constexpr SkColor kArrowButtonColor = SkColorSetARGB(0x2B, 0xFF, 0xFF, 0xFF);
 
@@ -231,7 +230,10 @@ PinRequestView::PinRequestView(PinRequest request, Delegate* delegate)
 
   views::ImageView* icon = new views::ImageView();
   icon->SetPreferredSize(gfx::Size(kLockIconSizeDp, kLockIconSizeDp));
-  icon->SetImage(gfx::CreateVectorIcon(kPinRequestLockIcon, SK_ColorWHITE));
+  icon->SetImage(gfx::CreateVectorIcon(
+      kPinRequestLockIcon,
+      AshColorProvider::Get()->GetContentLayerColor(
+          AshColorProvider::ContentLayerType::kIconColorPrimary)));
   icon_view->AddChildView(icon);
 
   // Back button. Note that it should be the last view added to |header| in
@@ -258,7 +260,10 @@ PinRequestView::PinRequestView(PinRequest request, Delegate* delegate)
       views::CreateSolidBackground(SK_ColorTRANSPARENT));
   back_button_->SetImage(
       views::Button::STATE_NORMAL,
-      gfx::CreateVectorIcon(views::kIcCloseIcon, kCrossSizeDp, SK_ColorWHITE));
+      gfx::CreateVectorIcon(
+          views::kIcCloseIcon, kCrossSizeDp,
+          AshColorProvider::Get()->GetContentLayerColor(
+              AshColorProvider::ContentLayerType::kIconColorPrimary)));
   back_button_->SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
   back_button_->SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
   back_button_->SetAccessibleName(
@@ -277,7 +282,8 @@ PinRequestView::PinRequestView(PinRequest request, Delegate* delegate)
   auto decorate_label = [](views::Label* label) {
     label->SetSubpixelRenderingEnabled(false);
     label->SetAutoColorReadabilityEnabled(false);
-    label->SetEnabledColor(kTextColor);
+    label->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
+        AshColorProvider::ContentLayerType::kTextColorPrimary));
     label->SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
   };
 
@@ -373,7 +379,9 @@ PinRequestView::PinRequestView(PinRequest request, Delegate* delegate)
   help_button_->SetPaintToLayer();
   help_button_->layer()->SetFillsBoundsOpaquely(false);
   help_button_->SetTextSubpixelRenderingEnabled(false);
-  help_button_->SetEnabledTextColors(kTextColor);
+  help_button_->SetEnabledTextColors(
+      AshColorProvider::Get()->GetContentLayerColor(
+          AshColorProvider::ContentLayerType::kTextColorPrimary));
   help_button_->SetVisible(request.help_button_enabled);
   footer->AddChildView(help_button_);
 
@@ -492,6 +500,8 @@ void PinRequestView::UpdateState(PinRequestViewState state,
   UpdatePreferredSize();
   switch (state_) {
     case PinRequestViewState::kNormal: {
+      const SkColor kTextColor = AshColorProvider::Get()->GetContentLayerColor(
+          AshColorProvider::ContentLayerType::kTextColorPrimary);
       access_code_view_->SetInputColor(kTextColor);
       title_label_->SetEnabledColor(kTextColor);
       return;

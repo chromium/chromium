@@ -329,7 +329,10 @@ class UserAddingScreenIndicator : public views::View {
 
     views::ImageView* info_icon = new views::ImageView();
     info_icon->SetPreferredSize(gfx::Size(kInfoIconSizeDp, kInfoIconSizeDp));
-    info_icon->SetImage(gfx::CreateVectorIcon(views::kInfoIcon, SK_ColorWHITE));
+    info_icon->SetImage(gfx::CreateVectorIcon(
+        views::kInfoIcon,
+        AshColorProvider::Get()->GetContentLayerColor(
+            AshColorProvider::ContentLayerType::kIconColorPrimary)));
     AddChildView(info_icon);
 
     base::string16 message =
@@ -1237,7 +1240,8 @@ void LockContentsView::OnSystemInfoChanged(
   auto create_info_label = []() {
     auto label = std::make_unique<views::Label>();
     label->SetAutoColorReadabilityEnabled(false);
-    label->SetEnabledColor(SK_ColorWHITE);
+    label->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
+        AshColorProvider::ContentLayerType::kTextColorPrimary));
     label->SetFontList(views::Label::GetDefaultFontList().Derive(
         -1, gfx::Font::FontStyle::NORMAL, gfx::Font::Weight::NORMAL));
     label->SetSubpixelRenderingEnabled(false);

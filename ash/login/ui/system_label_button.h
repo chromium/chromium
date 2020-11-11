@@ -37,6 +37,8 @@ class ASH_EXPORT SystemLabelButton : public views::LabelButton {
   // font accordingly.
   void SetAlertMode(bool alert_mode);
 
+  // Absurd color to show the developer that background color has not been
+  // initialized properly.
   SkColor background_color_ = SK_ColorGREEN;
   // Used only to ensure that we do not call SetDisplayType when the current
   // display type is ALERT_WITH_ICON.

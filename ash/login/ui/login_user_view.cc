@@ -71,8 +71,6 @@ constexpr int kExtraSmallUserIconSizeDp = 22;
 // Size of the icon compared to the one of the white circle.
 constexpr float kIconProportion = 0.55f;
 
-constexpr SkColor kIconBackgroundColor = SK_ColorWHITE;
-
 // Opacity for when the user view is active/focused and inactive.
 constexpr float kOpaqueUserViewOpacity = 1.f;
 constexpr float kTransparentUserViewOpacity = 0.63f;
@@ -126,7 +124,8 @@ class IconRoundedView : public views::View {
     path.addRect(gfx::RectToSkRect(image_bounds));
     cc::PaintFlags flags;
     flags.setAntiAlias(true);
-    flags.setColor(kIconBackgroundColor);
+    flags.setColor(AshColorProvider::Get()->GetContentLayerColor(
+        AshColorProvider::ContentLayerType::kIconColorPrimary));
     flags.setStyle(cc::PaintFlags::kFill_Style);
     // The white circle on which we paint the icon.
     canvas->DrawCircle(center_circle, radius_, flags);
@@ -254,7 +253,8 @@ class LoginUserView::UserLabel : public NonAccessibleView {
     SetLayoutManager(std::make_unique<views::FillLayout>());
 
     user_name_ = new views::Label();
-    user_name_->SetEnabledColor(SK_ColorWHITE);
+    user_name_->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
+        AshColorProvider::ContentLayerType::kTextColorPrimary));
     user_name_->SetSubpixelRenderingEnabled(false);
     user_name_->SetAutoColorReadabilityEnabled(false);
 

@@ -19,6 +19,7 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/ash_color_provider.h"
 #include "base/bind.h"
 #include "base/bind_helpers.h"
 #include "base/strings/utf_string_conversions.h"
@@ -153,7 +154,9 @@ class SelectionButtonView : public LoginButton {
         views::BoxLayout::MainAxisAlignment::kStart);
     AddChildView(label_container);
 
-    label_ = CreateLabel(text, SK_ColorWHITE);
+    label_ = CreateLabel(
+        text, AshColorProvider::Get()->GetContentLayerColor(
+                  AshColorProvider::ContentLayerType::kTextColorPrimary));
     left_margin_view_ = add_horizontal_margin(left_margin_, label_container);
     label_container->AddChildView(label_);
 
@@ -238,7 +241,9 @@ class MonitoringWarningView : public NonAccessibleView {
 
     const base::string16 label_text = l10n_util::GetStringUTF16(
         IDS_ASH_LOGIN_PUBLIC_ACCOUNT_MONITORING_WARNING);
-    label_ = CreateLabel(label_text, SK_ColorWHITE);
+    label_ = CreateLabel(
+        label_text, AshColorProvider::Get()->GetContentLayerColor(
+                        AshColorProvider::ContentLayerType::kTextColorPrimary));
     label_->SetMultiLine(true);
     label_->SetLineHeight(kTextLineHeightDp);
     AddChildView(label_);
@@ -323,7 +328,8 @@ class RightPaneView : public NonAccessibleView {
     views::StyledLabel::RangeStyleInfo style;
     style.custom_font = learn_more_label_->GetFontList().Derive(
         0, gfx::Font::FontStyle::NORMAL, gfx::Font::Weight::NORMAL);
-    style.override_color = SK_ColorWHITE;
+    style.override_color = AshColorProvider::Get()->GetContentLayerColor(
+        AshColorProvider::ContentLayerType::kTextColorPrimary);
     learn_more_label_->AddStyleRange(gfx::Range(0, offset), style);
 
     views::StyledLabel::RangeStyleInfo link_style =

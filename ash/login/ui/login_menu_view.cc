@@ -11,6 +11,7 @@
 
 #include "ash/login/ui/hover_notifier.h"
 #include "ash/login/ui/non_accessible_view.h"
+#include "ash/style/ash_color_provider.h"
 #include "base/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/views/controls/button/button.h"
@@ -52,7 +53,8 @@ class MenuItemView : public views::Button {
     AddChildView(std::move(spacing));
 
     auto label = std::make_unique<views::Label>(base::UTF8ToUTF16(item.title));
-    label->SetEnabledColor(SK_ColorWHITE);
+    label->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
+        AshColorProvider::ContentLayerType::kTextColorPrimary));
     label->SetSubpixelRenderingEnabled(false);
     label->SetAutoColorReadabilityEnabled(false);
     label->SetHorizontalAlignment(gfx::ALIGN_LEFT);

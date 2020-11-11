@@ -28,6 +28,7 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/ash_color_provider.h"
 #include "ash/system/model/clock_model.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/night_light/time_of_day.h"
@@ -93,10 +94,6 @@ constexpr SkColor kChallengeResponseSmartCardIconColor = gfx::kGoogleGrey200;
 constexpr SkColor kChallengeResponseArrowBackgroundColor =
     SkColorSetARGB(0x2B, 0xFF, 0xFF, 0xFF);
 constexpr SkColor kChallengeResponseErrorColor = gfx::kGoogleRed300;
-
-// 38% opacity.
-constexpr SkColor kDisabledFingerprintIconColor =
-    SkColorSetA(SK_ColorWHITE, 97);
 
 // Date time format containing only the day of the week, for example: "Tuesday".
 constexpr char kDayOfWeekOnlyTimeFormat[] = "EEEE";
@@ -410,7 +407,9 @@ class LoginAuthUserView::FingerprintView : public views::View {
         gfx::Size(kFingerprintIconSizeDp, kFingerprintIconSizeDp),
         0 /*corner_radius*/);
     icon_->SetImage(gfx::CreateVectorIcon(
-        kLockScreenFingerprintIcon, kFingerprintIconSizeDp, SK_ColorWHITE));
+        kLockScreenFingerprintIcon, kFingerprintIconSizeDp,
+        AshColorProvider::Get()->GetContentLayerColor(
+            AshColorProvider::ContentLayerType::kIconColorPrimary)));
     AddChildView(icon_);
 
     label_ = new FingerprintLabel();
@@ -497,11 +496,13 @@ class LoginAuthUserView::FingerprintView : public views::View {
   }
 
   void SetIcon(FingerprintState state) {
+    const SkColor icon_color = AshColorProvider::Get()->GetContentLayerColor(
+        AshColorProvider::ContentLayerType::kIconColorPrimary);
     const SkColor color =
-        (state == FingerprintState::AVAILABLE_DEFAULT ||
-                 state == FingerprintState::AVAILABLE_WITH_TOUCH_SENSOR_WARNING
-             ? SK_ColorWHITE
-             : kDisabledFingerprintIconColor);
+        state == FingerprintState::AVAILABLE_DEFAULT ||
+                state == FingerprintState::AVAILABLE_WITH_TOUCH_SENSOR_WARNING
+            ? icon_color
+            : AshColorProvider::Get()->GetDisabledColor(icon_color);
     switch (state) {
       case FingerprintState::UNAVAILABLE:
       case FingerprintState::AVAILABLE_DEFAULT:
@@ -703,16 +704,18 @@ class LoginAuthUserView::DisabledAuthMessageView : public views::View {
       message_icon_ = new views::ImageView();
       message_icon_->SetPreferredSize(gfx::Size(
           kDisabledAuthMessageIconSizeDp, kDisabledAuthMessageIconSizeDp));
-      message_icon_->SetImage(
-          gfx::CreateVectorIcon(kLockScreenTimeLimitMoonIcon,
-                                kDisabledAuthMessageIconSizeDp, SK_ColorWHITE));
+      message_icon_->SetImage(gfx::CreateVectorIcon(
+          kLockScreenTimeLimitMoonIcon, kDisabledAuthMessageIconSizeDp,
+          AshColorProvider::Get()->GetContentLayerColor(
+              AshColorProvider::ContentLayerType::kIconColorPrimary)));
       AddChildView(message_icon_);
     }
 
     auto decorate_label = [](views::Label* label) {
       label->SetSubpixelRenderingEnabled(false);
       label->SetAutoColorReadabilityEnabled(false);
-      label->SetEnabledColor(SK_ColorWHITE);
+      label->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
+          AshColorProvider::ContentLayerType::kTextColorPrimary));
       label->SetFocusBehavior(FocusBehavior::ALWAYS);
     };
     message_title_ =
@@ -768,7 +771,9 @@ class LoginAuthUserView::DisabledAuthMessageView : public views::View {
         auth_disabled_data.reason, auth_disabled_data.auth_reenabled_time,
         auth_disabled_data.device_used_time, use_24hour_clock);
     message_icon_->SetImage(gfx::CreateVectorIcon(
-        *message.icon, kDisabledAuthMessageIconSizeDp, SK_ColorWHITE));
+        *message.icon, kDisabledAuthMessageIconSizeDp,
+        AshColorProvider::Get()->GetContentLayerColor(
+            AshColorProvider::ContentLayerType::kIconColorPrimary)));
     message_title_->SetText(message.title);
     message_contents_->SetText(message.content);
     Layout();
@@ -817,8 +822,10 @@ class LoginAuthUserView::LockedTpmMessageView : public views::View {
     auto message_icon = std::make_unique<views::ImageView>();
     message_icon->SetPreferredSize(
         gfx::Size(kLockedTpmMessageIconSizeDp, kLockedTpmMessageIconSizeDp));
-    message_icon->SetImage(
-        gfx::CreateVectorIcon(kLockScreenAlertIcon, SK_ColorWHITE));
+    message_icon->SetImage(gfx::CreateVectorIcon(
+        kLockScreenAlertIcon,
+        AshColorProvider::Get()->GetContentLayerColor(
+            AshColorProvider::ContentLayerType::kIconColorPrimary)));
     message_icon_ = AddChildView(std::move(message_icon));
 
     message_warning_ = CreateLabel();
@@ -875,7 +882,8 @@ class LoginAuthUserView::LockedTpmMessageView : public views::View {
                                               gfx::Font::Weight::NORMAL));
     label->SetSubpixelRenderingEnabled(false);
     label->SetAutoColorReadabilityEnabled(false);
-    label->SetEnabledColor(SK_ColorWHITE);
+    label->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
+        AshColorProvider::ContentLayerType::kTextColorPrimary));
     label->SetFocusBehavior(FocusBehavior::ALWAYS);
     label->SetMultiLine(true);
     return AddChildView(std::move(label));
