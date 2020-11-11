@@ -73,6 +73,8 @@ int GetLayoutConstant(LayoutConstant constant) {
       return 8;
     case TAB_STACK_DISTANCE:
       return touch_ui ? 4 : 6;
+    case TABSTRIP_REGION_VIEW_CONTROL_PADDING:
+      return 8;
     case TABSTRIP_TOOLBAR_OVERLAP:
       return 1;
     case TOOLBAR_BUTTON_HEIGHT:

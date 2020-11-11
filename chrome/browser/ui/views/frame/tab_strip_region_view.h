@@ -9,6 +9,10 @@
 #include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/views/accessible_pane_view.h"
 
+namespace views {
+class FlexLayout;
+}
+
 class NewTabButton;
 class TabSearchButton;
 class TabStrip;
@@ -48,6 +52,8 @@ class TabStripRegionView final : public views::AccessiblePaneView,
   // views::ViewObserver:
   void OnViewPreferredSizeChanged(View* view) override;
 
+  views::FlexLayout* layout_manager_for_testing() { return layout_manager_; }
+
   // TODO(958173): Override OnBoundsChanged to cancel tabstrip animations.
 
  private:
@@ -65,6 +71,7 @@ class TabStripRegionView final : public views::AccessiblePaneView,
   // whenever any input of the computation of the border's sizing changes.
   void UpdateNewTabButtonBorder();
 
+  views::FlexLayout* layout_manager_ = nullptr;
   views::View* tab_strip_container_;
   views::View* reserved_grab_handle_space_;
   TabStrip* tab_strip_;

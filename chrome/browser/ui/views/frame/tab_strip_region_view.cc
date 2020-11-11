@@ -61,9 +61,8 @@ class FrameGrabHandle : public views::View {
 }  // namespace
 
 TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip) {
-  views::FlexLayout* layout_manager =
-      SetLayoutManager(std::make_unique<views::FlexLayout>());
-  layout_manager->SetOrientation(views::LayoutOrientation::kHorizontal);
+  layout_manager_ = SetLayoutManager(std::make_unique<views::FlexLayout>());
+  layout_manager_->SetOrientation(views::LayoutOrientation::kHorizontal);
 
   tab_strip_ = tab_strip.get();
   tab_strip->SetAvailableWidthCallback(
@@ -142,6 +141,11 @@ TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip) {
     tab_search_button->SetProperty(views::kCrossAxisAlignmentKey,
                                    views::LayoutAlignment::kCenter);
     tab_search_button_ = AddChildView(std::move(tab_search_button));
+
+    // Add the margin necessary to ensure correct spacing between right-aligned
+    // controls and the end of the TabStripRegionView.
+    layout_manager_->SetInteriorMargin(gfx::Insets(
+        0, 0, 0, GetLayoutConstant(TABSTRIP_REGION_VIEW_CONTROL_PADDING)));
   }
 }
 
@@ -253,7 +257,8 @@ int TabStripRegionView::CalculateTabStripAvailableWidth() {
       reserved_width += child->GetMinimumSize().width();
   }
 
-  return size().width() - reserved_width;
+  return size().width() - reserved_width -
+         layout_manager_->interior_margin().width();
 }
 
 void TabStripRegionView::ScrollTowardsLeadingTab() {

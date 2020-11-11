@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
+#include "ui/views/layout/flex_layout.h"
 
 class TabStripRegionViewBrowserTest
     : public InProcessBrowserTest,
@@ -179,7 +180,11 @@ IN_PROC_BROWSER_TEST_P(TabStripRegionViewBrowserTest, TestBeginEndFocus) {
 IN_PROC_BROWSER_TEST_P(TabStripRegionViewBrowserTest,
                        TestSearchButtonIsEndAligned) {
   if (base::FeatureList::IsEnabled(features::kTabSearch)) {
-    EXPECT_EQ(tab_strip_region_view()->GetLocalBounds().right(),
+    const int kRightMargin = tab_strip_region_view()
+                                 ->layout_manager_for_testing()
+                                 ->interior_margin()
+                                 .right();
+    EXPECT_EQ(tab_strip_region_view()->GetLocalBounds().right() - kRightMargin,
               tab_search_button()->bounds().right());
   }
 }

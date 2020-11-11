@@ -91,6 +91,10 @@ enum LayoutConstant {
   // non-pixel-aligned drawing goes in.  See https://crbug.com/765723.
   TABSTRIP_TOOLBAR_OVERLAP,
 
+  // The horizontal padding between any right aligned controls and the end of
+  // the TabStripRegionView.
+  TABSTRIP_REGION_VIEW_CONTROL_PADDING,
+
   // The total height, including icons and insets, of buttons in the toolbar.
   TOOLBAR_BUTTON_HEIGHT,
 
