@@ -85,6 +85,8 @@ class ScreenCaptureHost;
 class ScreenCaptureInstance;
 class SensorHost;
 class SensorInstance;
+class SharesheetHost;
+class SharesheetInstance;
 class SmartCardManagerHost;
 class SmartCardManagerInstance;
 class StorageManagerInstance;
@@ -262,6 +264,10 @@ class ArcBridgeService {
   ConnectionHolder<mojom::SensorInstance, mojom::SensorHost>* sensor() {
     return &sensor_;
   }
+  ConnectionHolder<mojom::SharesheetInstance, mojom::SharesheetHost>*
+  sharesheet() {
+    return &sharesheet_;
+  }
   ConnectionHolder<mojom::SmartCardManagerInstance,
                    mojom::SmartCardManagerHost>*
   smart_card_manager() {
@@ -350,6 +356,8 @@ class ArcBridgeService {
   ConnectionHolder<mojom::ScreenCaptureInstance, mojom::ScreenCaptureHost>
       screen_capture_;
   ConnectionHolder<mojom::SensorInstance, mojom::SensorHost> sensor_;
+  ConnectionHolder<mojom::SharesheetInstance, mojom::SharesheetHost>
+      sharesheet_;
   ConnectionHolder<mojom::SmartCardManagerInstance, mojom::SmartCardManagerHost>
       smart_card_manager_;
   ConnectionHolder<mojom::StorageManagerInstance> storage_manager_;

@@ -757,6 +757,8 @@ source_set("chromeos") {
     "arc/session/arc_session_manager.cc",
     "arc/session/arc_session_manager.h",
     "arc/session/arc_session_manager_observer.h",
+    "arc/sharesheet/arc_sharesheet_bridge.cc",
+    "arc/sharesheet/arc_sharesheet_bridge.h",
     "arc/tracing/arc_app_performance_tracing.cc",
     "arc/tracing/arc_app_performance_tracing.h",
     "arc/tracing/arc_app_performance_tracing_custom_session.cc",

@@ -55,6 +55,7 @@ if (is_chromeos) {
       "screen_capture.mojom",
       "sensor.mojom",
       "sensor_service.mojom",
+      "sharesheet.mojom",
       "storage_manager.mojom",
       "timer.mojom",
       "tracing.mojom",

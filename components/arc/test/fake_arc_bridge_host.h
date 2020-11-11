@@ -114,6 +114,8 @@ class FakeArcBridgeHost : public mojom::ArcBridgeHost {
       override;
   void OnSensorInstanceReady(
       mojo::PendingRemote<mojom::SensorInstance> sensor_remote) override;
+  void OnSharesheetInstanceReady(mojo::PendingRemote<mojom::SharesheetInstance>
+                                     sharesheet_remote) override;
   void OnSmartCardManagerInstanceReady(
       mojo::PendingRemote<mojom::SmartCardManagerInstance>
           smart_card_manager_remote) override;
