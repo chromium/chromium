@@ -3456,9 +3456,7 @@
 
       If this policy is left not set Google Sync will be available for the user to choose whether to use it or not.
 
-      To fully disable Google Sync, it is recommended that you disable the Google Sync service in the Google Admin console.
-
-      This policy should not be enabled when <ph name="ROAMING_PROFILE_SUPPORT_ENABLED_POLICY_NAME">RoamingProfileSupportEnabled</ph> policy is set to enabled as that feature shares the same client side functionality. The Google-hosted synchronization is disabled in this case completely.''',
+      To fully disable Google Sync, it is recommended that you disable the Google Sync service in the Google Admin console.''',
       'arc_support': 'Disabling Google Sync will cause Android Backup and Restore to not function properly.',
     },
     {
@@ -3498,9 +3496,7 @@
       'tags': ['local-data-access'],
       'desc': '''If you enable this setting, the settings stored in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> profiles like bookmarks, autofill data, passwords, etc. will also be written to a file stored in the Roaming user profile folder or a location specified by the Administrator through the <ph name="ROAMING_PROFILE_LOCATION_POLICY_NAME">RoamingProfileLocation</ph> policy. Enabling this policy disables cloud sync.
 
-      If this policy is disabled or left not set only the regular local profiles will be used.
-
-      The <ph name="SYNC_DISABLED_POLICY_NAME">SyncDisabled</ph> policy disables all data synchronization, overriding <ph name="ROAMING_PROFILE_SUPPORT_ENABLED_POLICY_NAME">RoamingProfileSupportEnabled</ph>.''',
+      If this policy is disabled or left not set only the regular local profiles will be used.''',
       'label': '''Enable the creation of roaming copies for <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> profile data.''',
     },
     {

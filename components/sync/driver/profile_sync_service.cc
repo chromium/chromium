@@ -727,18 +727,20 @@ SyncService::DisableReasonSet ProfileSyncService::GetDisableReasons() const {
   if (!user_settings_->IsSyncAllowedByPlatform()) {
     result.Put(DISABLE_REASON_PLATFORM_OVERRIDE);
   }
-  if (sync_prefs_.IsManaged() || sync_disabled_by_admin_) {
-    result.Put(DISABLE_REASON_ENTERPRISE_POLICY);
+
+  // If local sync is enabled, most disable reasons don't apply.
+  if (!IsLocalSyncEnabled()) {
+    if (sync_prefs_.IsManaged() || sync_disabled_by_admin_) {
+      result.Put(DISABLE_REASON_ENTERPRISE_POLICY);
+    }
+    if (!IsSignedIn()) {
+      result.Put(DISABLE_REASON_NOT_SIGNED_IN);
+    }
+    if (!user_settings_->IsSyncRequested()) {
+      result.Put(DISABLE_REASON_USER_CHOICE);
+    }
   }
-  // Local sync doesn't require sign-in.
-  if (!IsSignedIn() && !IsLocalSyncEnabled()) {
-    result.Put(DISABLE_REASON_NOT_SIGNED_IN);
-  }
-  // When local sync is on sync should be considered requsted or otherwise it
-  // will not resume after the policy or the flag has been removed.
-  if (!user_settings_->IsSyncRequested() && !IsLocalSyncEnabled()) {
-    result.Put(DISABLE_REASON_USER_CHOICE);
-  }
+
   if (unrecoverable_error_reason_) {
     result.Put(DISABLE_REASON_UNRECOVERABLE_ERROR);
   }
@@ -1495,6 +1497,13 @@ void ProfileSyncService::GetEntityCountsForDebugging(
 
 void ProfileSyncService::OnSyncManagedPrefChange(bool is_sync_managed) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Local sync is not controlled by the "sync managed" policy, so these pref
+  // changes make no difference to the service state.
+  if (IsLocalSyncEnabled()) {
+    return;
+  }
+
   if (is_sync_managed) {
     StopImpl(CLEAR_DATA);
   } else {

@@ -288,7 +288,8 @@ bool ProfileSyncServiceFactory::IsSyncAllowed(Profile* profile) {
   // No ProfileSyncService created yet - we don't want to create one, so just
   // infer the accessible state by looking at prefs/command line flags.
   syncer::SyncPrefs prefs(profile->GetPrefs());
-  return switches::IsSyncAllowedByFlag() && !prefs.IsManaged();
+  return switches::IsSyncAllowedByFlag() &&
+         (!prefs.IsManaged() || prefs.IsLocalSyncEnabled());
 }
 
 // static

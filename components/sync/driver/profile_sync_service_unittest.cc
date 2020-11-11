@@ -1281,8 +1281,8 @@ TEST_F(ProfileSyncServiceTest, DisableSyncOnClient) {
   EXPECT_FALSE(service()->IsSyncFeatureActive());
 }
 
-// Verify a that local sync mode resumes after the policy is lifted.
-TEST_F(ProfileSyncServiceTest, LocalBackendDisabledByPolicy) {
+// Verify a that local sync mode isn't impacted by sync being disabled.
+TEST_F(ProfileSyncServiceTest, LocalBackendUnimpactedByPolicy) {
   prefs()->SetManagedPref(prefs::kSyncManaged,
                           std::make_unique<base::Value>(false));
   CreateServiceWithLocalSyncBackend();
@@ -1294,10 +1294,8 @@ TEST_F(ProfileSyncServiceTest, LocalBackendDisabledByPolicy) {
   prefs()->SetManagedPref(prefs::kSyncManaged,
                           std::make_unique<base::Value>(true));
 
-  EXPECT_EQ(SyncService::DisableReasonSet(
-                SyncService::DISABLE_REASON_ENTERPRISE_POLICY),
-            service()->GetDisableReasons());
-  EXPECT_EQ(SyncService::TransportState::DISABLED,
+  EXPECT_EQ(SyncService::DisableReasonSet(), service()->GetDisableReasons());
+  EXPECT_EQ(SyncService::TransportState::ACTIVE,
             service()->GetTransportState());
 
   // Note: If standalone transport is enabled, then setting kSyncManaged to
