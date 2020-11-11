@@ -137,22 +137,6 @@ window.chrome.metricsPrivate = {
   recordValue: (metricName, value) => {},
 };
 
-// TODO(crbug.com/1113981): remove once chrome.metricsPrivate lands.
-/** @suppress {checkTypes} */
-window.metrics = {
-  recordEnum: function() {},
-  recordInterval: function() {},
-  recordSmallCount: function() {},
-  recordTime: function() {},
-  recordUserAction: function() {},
-  recordValue: function() {},
-  startInterval: function() {},
-};
-
-// TODO(crbug.com/1113981): remove once chrome.metricsPrivate lands.
-// eslint-disable-next-line
-var metrics = window.metrics;
-
 window.DriveSyncHandler = class extends EventTarget {
   /**
    * Returns the completed event name.
