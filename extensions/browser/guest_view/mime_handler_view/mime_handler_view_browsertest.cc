@@ -599,27 +599,31 @@ IN_PROC_BROWSER_TEST_F(MimeHandlerViewTest, DoNotLoadInSandboxedFrame) {
   if (guest_view_manager->num_guests_created() == 0)
     ASSERT_TRUE(guest_view_manager->WaitForNextGuestCreated());
   ASSERT_EQ(1U, guest_view_manager->num_guests_created());
+
   // Remove the non-sandboxed frame.
-  ASSERT_TRUE(content::ExecJs(GetEmbedderWebContents(),
-                              "remove_frame('notsandboxed');"));
+  content::RenderFrameHost* main_rfh = GetEmbedderWebContents()->GetMainFrame();
+  ASSERT_TRUE(content::ExecJs(main_rfh, "remove_frame('notsandboxed');"));
   // The page is expected to embed only '1' GuestView. If there is GuestViews
   // embedded inside other frames we should be timing out here.
   guest_view_manager->WaitForAllGuestsDeleted();
-  // Sanity check: Ensure that the documents in a sandbox frame is empty.
-  auto sandbox1_document_has_contents =
-      content::EvalJs(GetEmbedderWebContents(),
-                      "!!(sandbox1.contentDocument.body && "
-                      "sandbox1.contentDocument.body.firstChild)")
-          .ExtractBool();
-  EXPECT_FALSE(sandbox1_document_has_contents);
+
+  // Since 'sandbox1' has no fallback content, we would render an error page in
+  // the iframe. Note that we can't access the contentDocument because error
+  // pages have opaque origins (so it's using a different origin than the main
+  // frame).
+  EXPECT_EQ(false, content::EvalJs(main_rfh, "!!(sandbox1.contentDocument)"));
+  // The error page will not be blank.
+  EXPECT_EQ(true,
+            content::EvalJs(ChildFrameAt(main_rfh, 0),
+                            "!!(document.body && document.body.firstChild)"));
+
   // The document inside 'sandbox2' contains an <object> with fallback content.
   // The expectation is that the <object> fails to load the MimeHandlerView and
-  // should show the fallback content instead, which means the width of the
-  // layout object is non-zero.
-  auto fallback_width =
-      content::EvalJs(GetEmbedderWebContents(),
-                      "sandbox2.contentDocument.getElementById('fallback')."
-                      "getBoundingClientRect().width")
-          .ExtractInt();
-  EXPECT_NE(0, fallback_width);
+  // should show the fallback content instead.
+  EXPECT_EQ(true, content::EvalJs(main_rfh, "!!(sandbox2.contentDocument)"));
+  EXPECT_EQ(
+      "Fallback",
+      content::EvalJs(
+          main_rfh,
+          "sandbox2.contentDocument.getElementById('fallback').innerText"));
 }

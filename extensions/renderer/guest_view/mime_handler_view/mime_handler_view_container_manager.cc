@@ -156,14 +156,6 @@ void MimeHandlerViewContainerManager::SetInternalId(
   internal_id_ = token_id;
 }
 
-void MimeHandlerViewContainerManager::LoadEmptyPage(const GURL& resource_url) {
-  // TODO(ekaramad): Add test coverage to ensure document ends up empty (see
-  // https://crbug.com/968350).
-  render_frame()->LoadHTMLString("<!doctype html>", resource_url, "UTF-8",
-                                 resource_url, true /* replace_current_item */);
-  GetRenderFrameMap()->erase(render_frame()->GetRoutingID());
-}
-
 void MimeHandlerViewContainerManager::CreateBeforeUnloadControl(
     CreateBeforeUnloadControlCallback callback) {
   if (!post_message_support_)

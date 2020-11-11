@@ -417,6 +417,15 @@ class CONTENT_EXPORT NavigationHandle {
   // the navigation: no error page will commit.
   virtual void SetSilentlyIgnoreErrors() = 0;
 
+  // The sandbox flags of the new document created by this navigation. This
+  // function can only be called for cross-document navigations after receiving
+  // the final response.
+  // See also: content/browser/renderer_host/sandbox_flags.md
+  //
+  // TODO(arthursonzogni): After RenderDocument, this can be computed and stored
+  // directly into the RenderDocumentHost.
+  virtual network::mojom::WebSandboxFlags SandboxFlagsToCommit() = 0;
+
   // Testing methods ----------------------------------------------------------
   //
   // The following methods should be used exclusively for writing unit tests.

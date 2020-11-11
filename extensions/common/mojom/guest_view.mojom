@@ -49,12 +49,6 @@ interface MimeHandlerViewContainerManager {
   // to attach the MimeHandlerViewGuest.
   SetInternalId(string token_id);
 
-  // Requests the MimeHandlerViewContainerManager to load an empty page as an
-  // HTML string. This is used in cases where MimeHandlerViewEmbedder decides
-  // not to continue with loading the embedding page for the resource at
-  // |resource_url|, e.g., due to sandbox violation.
-  LoadEmptyPage(url.mojom.Url resource_url);
-
   // Called by the browser to request a BeforeUnloadControl interface pointer
   // which will later be connected to the request from the extension page to
   // provide the beforeunload API (to setup beforeunload in the embedder

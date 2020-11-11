@@ -2904,9 +2904,11 @@ void NavigationRequest::OnServiceWorkerAccessed(
   GetDelegate()->OnServiceWorkerAccessed(this, scope, allowed);
 }
 
-base::Optional<network::mojom::WebSandboxFlags>
-NavigationRequest::SandboxFlagsToCommit() {
-  return sandbox_flags_to_commit_;
+network::mojom::WebSandboxFlags NavigationRequest::SandboxFlagsToCommit() {
+  DCHECK_GE(state_, WILL_PROCESS_RESPONSE);
+  DCHECK(!IsSameDocument());
+  DCHECK(!IsServedFromBackForwardCache());
+  return sandbox_flags_to_commit_.value();
 }
 
 void NavigationRequest::OnRedirectChecksComplete(

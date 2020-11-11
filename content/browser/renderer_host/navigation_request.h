@@ -323,6 +323,7 @@ class CONTENT_EXPORT NavigationRequest
   void SetIsOverridingUserAgent(bool override_ua) override;
   bool GetIsOverridingUserAgent() override;
   void SetSilentlyIgnoreErrors() override;
+  network::mojom::WebSandboxFlags SandboxFlagsToCommit() override;
 
   // Called on the UI thread by the Navigator to start the navigation.
   // The NavigationRequest can be deleted while BeginNavigation() is called.
@@ -678,14 +679,6 @@ class CONTENT_EXPORT NavigationRequest
   // the committed document.
   std::vector<mojo::PendingReceiver<network::mojom::CookieAccessObserver>>
   TakeCookieObservers() WARN_UNUSED_RESULT;
-
-  // The sandbox policy of the document to be loaded. This returns nullopt for
-  // navigations that haven't reached the 'ReadyToCommit' stage yet. In
-  // particular, this returns nullopt for same-document navigations.
-  //
-  // TODO(arthursonzogni): After RenderDocument, this can be computed and stored
-  // directly into the RenderDocumentHost.
-  base::Optional<network::mojom::WebSandboxFlags> SandboxFlagsToCommit();
 
   // Returns the coop status information relevant to the current navigation.
   CrossOriginOpenerPolicyStatus& coop_status() { return coop_status_; }

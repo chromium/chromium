@@ -8781,7 +8781,19 @@ void RenderFrameHostImpl::DidCommitNewDocument(
   // Keep track of the sandbox policy of the document that has just committed.
   // It will be compared with the value computed from the renderer. The latter
   // is expected to be received in DidSetFramePolicyHeaders(..).
-  active_sandbox_flags_control_ = navigation_request->SandboxFlagsToCommit();
+  if (navigation_request->state() >=
+      NavigationRequest::NavigationState::WILL_PROCESS_RESPONSE) {
+    active_sandbox_flags_control_ = navigation_request->SandboxFlagsToCommit();
+  } else {
+    // Navigations that are known by the browser only at DidCommit time will
+    // have their state set to WILL_START_REQUEST and won't have sandbox flags
+    // that are calculated by the browser before commit.
+    // TODO(https://crbug.com/1133115): Remove this once all the cross-document
+    // cases of those navigations have been removed.
+    DCHECK_EQ(navigation_request->state(),
+              NavigationRequest::NavigationState::WILL_START_REQUEST);
+    active_sandbox_flags_control_.reset();
+  }
 
   coep_reporter_ = navigation_request->TakeCoepReporter();
   if (coep_reporter_) {

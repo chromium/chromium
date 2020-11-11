@@ -55,6 +55,11 @@ class MimeHandlerViewEmbedder : public content::WebContentsObserver {
 
   void ReadyToCreateMimeHandlerView(bool result);
 
+  // Called when we've finished calculating the sandbox flags for the frame
+  // associated with this MimeHandlerViewEmbedder and found that it's sandboxed.
+  // This signals that the navigation to the resource will fail.
+  void OnFrameSandboxed();
+
  private:
   MimeHandlerViewEmbedder(int32_t frame_tree_node_id,
                           const GURL& resource_url,
@@ -67,11 +72,6 @@ class MimeHandlerViewEmbedder : public content::WebContentsObserver {
   void DidCreateMimeHandlerViewGuest(content::WebContents* guest_web_contents);
   // Returns null before |render_frame_host_| is known.
   mojom::MimeHandlerViewContainerManager* GetContainerManager();
-
-  // Checks the sandbox state of |render_frame_host_|. If the frame is sandboxed
-  // it will send an IPC to renderer to show an empty page and immediately
-  // deletes |this|.
-  void CheckSandboxFlags();
 
   // The ID for the embedder frame of MimeHandlerViewGuest.
   int32_t frame_tree_node_id_;
