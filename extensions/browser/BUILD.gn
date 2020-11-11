@@ -412,6 +412,8 @@ source_set("browser_sources") {
     "//services/metrics/public/cpp:metrics_cpp",
     "//services/preferences/public/cpp",
     "//services/service_manager/public/cpp",
+    "//skia",
+    "//skia/public/mojom",
     "//third_party/blink/public/common",
     "//third_party/blink/public/mojom/frame",
     "//ui/display",
