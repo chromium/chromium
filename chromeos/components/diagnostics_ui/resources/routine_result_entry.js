@@ -88,7 +88,7 @@ Polymer({
       return lookupEnumValueName(ExecutionProgress, ExecutionProgress.kRunning);
     }
 
-    return lookupEnumValueName(StandardRoutineResult, result.simple_result);
+    return lookupEnumValueName(StandardRoutineResult, result.simpleResult);
   },
 
   /** @override */

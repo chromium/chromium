@@ -62,11 +62,11 @@ Polymer({
   },
 
   /**
-   * @param {!BatteryInfo} batteryInfo
+   * @param {!{batteryInfo: !BatteryInfo}} result
    * @private
    */
-  onBatteryInfoReceived_(batteryInfo) {
-    this.batteryInfo_ = batteryInfo;
+  onBatteryInfoReceived_(result) {
+    this.batteryInfo_ = result.batteryInfo;
   },
 
   /** @private */

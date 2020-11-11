@@ -25,7 +25,7 @@ export class FakeSystemDataProvider {
   }
 
   /**
-   * @return {!Promise<!SystemInfo>}
+   * @return {!Promise<!{systemInfo: !SystemInfo}>}
    */
   getSystemInfo() {
     return this.methods_.resolveMethod('getSystemInfo');
@@ -36,12 +36,12 @@ export class FakeSystemDataProvider {
    * @param {!SystemInfo} systemInfo
    */
   setFakeSystemInfo(systemInfo) {
-    this.methods_.setResult('getSystemInfo', systemInfo);
+    this.methods_.setResult('getSystemInfo', {systemInfo: systemInfo});
   }
 
   /**
    * Implements SystemDataProviderInterface.GetBatteryInfo.
-   * @return {!Promise<!BatteryInfo>}
+   * @return {!Promise<!{batteryInfo: !BatteryInfo}>}
    */
   getBatteryInfo() {
     return this.methods_.resolveMethod('getBatteryInfo');
@@ -52,7 +52,7 @@ export class FakeSystemDataProvider {
    * @param {!BatteryInfo} batteryInfo
    */
   setFakeBatteryInfo(batteryInfo) {
-    this.methods_.setResult('getBatteryInfo', batteryInfo);
+    this.methods_.setResult('getBatteryInfo', {batteryInfo: batteryInfo});
   }
 
   /*

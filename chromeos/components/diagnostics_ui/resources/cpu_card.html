@@ -5,17 +5,17 @@
   <div id="cardTitle" slot="title">[[i18n('cpuTitle')]]</div>
   <!-- TODO(michaelcheco): Add i18n string for percent number format -->
   <realtime-cpu-chart slot="left-panel" id="realtimeCpuChart"
-    user="[[cpuUsage_.percent_usage_user]]"
-    system="[[cpuUsage_.percent_usage_system]]">
+    user="[[cpuUsage_.percentUsageUser]]"
+    system="[[cpuUsage_.percentUsageSystem]]">
   </realtime-cpu-chart>
   <data-point slot="body" id="cpuUsageUser" header="[[i18n('cpuUsage')]]"
-    value="[[computeCurrentlyUsing_(cpuUsage_.percent_usage_system,
-        cpuUsage_.percent_usage_user)]]">
+    value="[[computeCurrentlyUsing_(cpuUsage_.percentUsageSystem,
+        cpuUsage_.percentUsageUser)]]">
   </data-point>
   <!-- TODO(michaelcheco): Investigate whether or not temperature can be
   localized. -->
   <data-point slot="body" id="cpuTemp" header="[[i18n('cpuTemp')]]"
-    value="[[cpuUsage_.cpu_temp_degrees_celcius]]">
+    value="[[cpuUsage_.cpuTempDegreesCelsius]]">
   </data-point>
 
   <routine-section slot="routines" routines="[[routines_]]"></routine-section>

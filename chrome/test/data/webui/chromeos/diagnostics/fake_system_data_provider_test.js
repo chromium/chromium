@@ -24,34 +24,35 @@ export function fakeSystemDataProviderTestSuite() {
   test('GetSystemInfo', () => {
     /** @type {!DeviceCapabilities} */
     const capabilities = {
-      has_battery: true,
+      hasBattery: true,
     };
 
     /** @type {!VersionInfo} */
     const version = {
-      milestone_version: 'M97',
+      milestoneVersion: 'M97',
     };
 
     /** @type {!SystemInfo} */
     const expected = {
-      board_name: 'BestBoard',
-      cpu_model_name: 'SuperFast CPU',
-      total_memory_kib: 9999,
-      cpu_threads_count: 4,
-      version: version,
-      device_capabilities: capabilities,
+      boardName: 'BestBoard',
+      cpuModelName: 'SuperFast CPU',
+      marketingName: 'Bestest 1000',
+      totalMemoryKib: 9999,
+      cpuThreadsCount: 4,
+      versionInfo: version,
+      deviceCapabilities: capabilities,
     };
 
     provider.setFakeSystemInfo(expected);
-    return provider.getSystemInfo().then((systemInfo) => {
-      assertDeepEquals(expected, systemInfo);
+    return provider.getSystemInfo().then((result) => {
+      assertDeepEquals(expected, result.systemInfo);
     });
   });
 
   test('GetBatteryInfo', () => {
     provider.setFakeBatteryInfo(fakeBatteryInfo);
-    return provider.getBatteryInfo().then((batteryInfo) => {
-      assertDeepEquals(fakeBatteryInfo, batteryInfo);
+    return provider.getBatteryInfo().then((result) => {
+      assertDeepEquals(fakeBatteryInfo, result.batteryInfo);
     });
   });
 
@@ -121,8 +122,8 @@ export function fakeSystemDataProviderTestSuite() {
     provider.reset();
     provider.setFakeBatteryInfo(fakeBatteryInfo2);
 
-    return provider.getBatteryInfo().then((batteryInfo) => {
-      assertDeepEquals(fakeBatteryInfo2, batteryInfo);
+    return provider.getBatteryInfo().then((result) => {
+      assertDeepEquals(fakeBatteryInfo2, result.batteryInfo);
     });
   });
 
@@ -130,8 +131,8 @@ export function fakeSystemDataProviderTestSuite() {
     // Setup the initial fake data.
     provider.setFakeBatteryInfo(fakeBatteryInfo);
     return provider.getBatteryInfo()
-        .then((batteryInfo) => {
-          assertDeepEquals(fakeBatteryInfo, batteryInfo);
+        .then((result) => {
+          assertDeepEquals(fakeBatteryInfo, result.batteryInfo);
         })
         .then(() => {
           // Reset and next time it should fire undefined.
@@ -144,8 +145,8 @@ export function fakeSystemDataProviderTestSuite() {
           // Set different data and next time should fire with it.
           provider.reset();
           provider.setFakeBatteryInfo(fakeBatteryInfo2);
-          return provider.getBatteryInfo().then((batteryInfo) => {
-            assertDeepEquals(fakeBatteryInfo2, batteryInfo);
+          return provider.getBatteryInfo().then((result) => {
+            assertDeepEquals(fakeBatteryInfo2, result.batteryInfo);
           });
         });
   });

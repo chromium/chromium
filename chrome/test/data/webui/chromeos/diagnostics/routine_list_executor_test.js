@@ -38,9 +38,9 @@ export function fakeRoutineListExecutorTestSuite() {
       // Set the result into the fake.
       assertNotEquals(undefined, routine);
       assertNotEquals(undefined, routine.result);
-      assertNotEquals(undefined, routine.result.simple_result);
+      assertNotEquals(undefined, routine.result.simpleResult);
       controller.setFakeStandardRoutineResult(
-          routine.name, routine.result.simple_result);
+          routine.name, routine.result.simpleResult);
 
       // Build the list of routines to run.
       routineNames.push(routine.name);
@@ -69,8 +69,8 @@ export function fakeRoutineListExecutorTestSuite() {
         assertEquals(null, status.result);
       } else {
         assertEquals(
-            expectedCallbacks[upto].result.simple_result,
-            status.result.simple_result);
+            expectedCallbacks[upto].result.simpleResult,
+            status.result.simpleResult);
       }
 
       upto++;
@@ -86,7 +86,7 @@ export function fakeRoutineListExecutorTestSuite() {
     /** @type {!Array<!RoutineResultInfo>} */
     const routines = [{
       name: RoutineName.kCpuStress,
-      result: {simple_result: StandardRoutineResult.kTestFailed}
+      result: {simpleResult: StandardRoutineResult.kTestFailed}
     }];
     return runRoutinesAndAssertResults(routines);
   });
@@ -96,19 +96,19 @@ export function fakeRoutineListExecutorTestSuite() {
     const routines = [
       {
         name: RoutineName.kCpuStress,
-        result: {simple_result: StandardRoutineResult.kTestPassed}
+        result: {simpleResult: StandardRoutineResult.kTestPassed}
       },
       {
         name: RoutineName.kCpuCache,
-        result: {simple_result: StandardRoutineResult.kTestFailed}
+        result: {simpleResult: StandardRoutineResult.kTestFailed}
       },
       {
         name: RoutineName.kFloatingPoint,
-        result: {simple_result: StandardRoutineResult.kTestPassed}
+        result: {simpleResult: StandardRoutineResult.kTestPassed}
       },
       {
         name: RoutineName.kPrimeSearch,
-        result: {simple_result: StandardRoutineResult.kTestFailed}
+        result: {simpleResult: StandardRoutineResult.kTestFailed}
       }
     ];
 

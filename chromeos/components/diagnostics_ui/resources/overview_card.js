@@ -46,11 +46,11 @@ Polymer({
   },
 
   /**
-   * @param {!SystemInfo} systemInfo
+   * @param {!{systemInfo: !SystemInfo}} result
    * @private
    */
-  onSystemInfoReceived_(systemInfo) {
-    this.systemInfo_ = systemInfo;
+  onSystemInfoReceived_(result) {
+    this.systemInfo_ = result.systemInfo;
   },
 
 });

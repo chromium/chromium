@@ -89,14 +89,13 @@ export function memoryCardTestSuite() {
   test('MemoryCardPopulated', () => {
     return initializeMemoryCard(fakeMemoryUsage).then(() => {
       const dataPoints = dx_utils.getDataPointElements(memoryElement);
-      assertEquals(fakeMemoryUsage[0].total_memory_kib, dataPoints[0].value);
-      assertEquals(
-          fakeMemoryUsage[0].available_memory_kib, dataPoints[1].value);
+      assertEquals(fakeMemoryUsage[0].totalMemoryKib, dataPoints[0].value);
+      assertEquals(fakeMemoryUsage[0].availableMemoryKib, dataPoints[1].value);
 
       const barChart = dx_utils.getPercentBarChartElement(memoryElement);
-      const memInUse = fakeMemoryUsage[0].total_memory_kib -
-          fakeMemoryUsage[0].available_memory_kib;
-      assertEquals(fakeMemoryUsage[0].total_memory_kib, barChart.max);
+      const memInUse = fakeMemoryUsage[0].totalMemoryKib -
+          fakeMemoryUsage[0].availableMemoryKib;
+      assertEquals(fakeMemoryUsage[0].totalMemoryKib, barChart.max);
       assertEquals(memInUse, barChart.value);
 
       // Verify the routine section is in the card.

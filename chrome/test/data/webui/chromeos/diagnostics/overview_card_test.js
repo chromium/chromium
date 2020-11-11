@@ -53,16 +53,16 @@ export function overviewCardTestSuite() {
   test('OverviewCardPopulated', () => {
     return initializeOverviewCard(fakeSystemInfo).then(() => {
       assertEquals(
-          fakeSystemInfo.board_name,
+          fakeSystemInfo.boardName,
           overviewElement.$$('#boardName').textContent);
       assertEquals(
-          fakeSystemInfo.cpu_model_name,
+          fakeSystemInfo.cpuModelName,
           overviewElement.$$('#cpuModelName').textContent);
       assertEquals(
-          fakeSystemInfo.total_memory_kib.toString(),
+          fakeSystemInfo.totalMemoryKib.toString(),
           overviewElement.$$('#totalMemory').textContent);
       assertEquals(
-          fakeSystemInfo.version.milestone_version,
+          fakeSystemInfo.versionInfo.milestoneVersion,
           overviewElement.$$('#version').textContent);
     });
   });

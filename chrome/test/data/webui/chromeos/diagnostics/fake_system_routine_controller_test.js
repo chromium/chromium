@@ -35,7 +35,7 @@ export function fakeSystemRoutineContollerTestSuite() {
     const routineRunnerRemote = {
       onRoutineResult: (resultInfo) => {
         assertEquals(expectedName, resultInfo.name);
-        assertEquals(expectedResult, resultInfo.result.simple_result);
+        assertEquals(expectedResult, resultInfo.result.simpleResult);
         resolver.resolve();
       }
     };
@@ -70,7 +70,7 @@ export function fakeSystemRoutineContollerTestSuite() {
         assertTrue(controller.isRoutineInProgressForTesting());
         assertFalse(wasRun);
         assertEquals(expectedName, resultInfo.name);
-        assertEquals(expectedResult, resultInfo.result.simple_result);
+        assertEquals(expectedResult, resultInfo.result.simpleResult);
 
         // Mark that the test completed.
         wasRun = true;

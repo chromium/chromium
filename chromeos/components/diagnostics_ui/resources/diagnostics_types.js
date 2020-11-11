@@ -38,8 +38,8 @@ export let ObserveMemoryUsageFunction;
  * Type alias for the SystemDataProviderInterface.
  * TODO(zentaro): Replace with a real mojo type when implemented.
  * @typedef {{
- *   getBatteryInfo: !function(): !Promise<!BatteryInfo>,
- *   getSystemInfo: !function(): !Promise<!SystemInfo>,
+ *   getBatteryInfo: !function(): !Promise<!{batteryInfo: !BatteryInfo}>,
+ *   getSystemInfo: !function(): !Promise<!{systemInfo: SystemInfo}>,
  *   observeBatteryChargeStatus: !ObserveBatteryChargeStatusFunction,
  *   observeBatteryHealth: !ObserveBatteryHealthFunction,
  *   observeCpuUsage: !ObserveCpuUsageFunction,
@@ -51,7 +51,7 @@ export let SystemDataProviderInterface;
 /**
  * Type alias for DeviceCapabilities.
  * @typedef {{
- *   has_battery: boolean,
+ *   hasBattery: boolean,
  * }}
  */
 export let DeviceCapabilities;
@@ -59,7 +59,7 @@ export let DeviceCapabilities;
 /**
  * Type alias for VersionInfo.
  * @typedef {{
- *   milestone_version: string,
+ *   milestoneVersion: string,
  * }}
  */
 export let VersionInfo;
@@ -67,12 +67,13 @@ export let VersionInfo;
 /**
  * Type alias for SystemInfo.
  * @typedef {{
- *   board_name: string,
- *   cpu_model_name: string,
- *   cpu_threads_count: number,
- *   device_capabilities: DeviceCapabilities,
- *   total_memory_kib: number,
- *   version: VersionInfo,
+ *   boardName: string,
+ *   cpuModelName: string,
+ *   cpuThreadsCount: number,
+ *   deviceCapabilities: DeviceCapabilities,
+ *   marketingName: string,
+ *   totalMemoryKib: number,
+ *   versionInfo: VersionInfo,
  * }}
  */
 export let SystemInfo;
@@ -80,7 +81,7 @@ export let SystemInfo;
 /**
  * Type alias for BatteryInfo.
  * @typedef {{
- *   charge_full_design_milliamp_hours: number,
+ *   chargeFullDesignMilliampHours: number,
  *   manufacturer: string,
  * }}
  */
@@ -97,9 +98,9 @@ export let CpuUsageObserver;
 /**
  * Type alias for CpuUsage.
  * @typedef {{
- *   cpu_temp_degrees_celcius: number,
- *   percent_usage_system: number,
- *   percent_usage_user: number,
+ *   cpuTempDegreesCelsius: number,
+ *   percentUsageSystem: number,
+ *   percentUsageUser: number,
  * }}
  */
 export let CpuUsage;
@@ -123,13 +124,24 @@ export let ExternalPowerSource = {
 };
 
 /**
+ * Battery state enumeration.
+ * @enum {number}
+ */
+export let BatteryState = {
+  kCharging: 0,
+  kDischarging: 1,
+  kFull: 2,
+};
+
+/**
  * Type alias for BatteryChargeStatus.
  * @typedef {{
- *   charge_full_now_milliamp_hours: number,
- *   charge_now_milliamp_hours: number,
- *   current_now_milliamps: number,
- *   power_adapter_status: ExternalPowerSource,
- *   power_time: string,
+ *   batteryState: BatteryState,
+ *   chargeFullNowMilliampHours: number,
+ *   chargeNowMilliampHours: number,
+ *   currentNowMilliamps: number,
+ *   powerAdapterStatus: ExternalPowerSource,
+ *   powerTime: string,
  * }}
  */
 export let BatteryChargeStatus;
@@ -145,10 +157,10 @@ export let BatteryHealthObserver;
 /**
  * Type alias for BatteryHealth.
  * @typedef {{
- *   battery_wear_percentage: number,
- *   charge_full_design_milliamp_hours: number,
- *   charge_full_now_milliamp_hours: number,
- *   cycle_count: number,
+ *   batteryWearPercentage: number,
+ *   chargeFullDesignMilliampHours: number,
+ *   chargeFullNowMilliampHours: number,
+ *   cycleCount: number,
  * }}
  */
 export let BatteryHealth;
@@ -164,9 +176,9 @@ export let MemoryUsageObserver;
 /**
  * Type alias for MemoryUsage.
  * @typedef {{
- *   available_memory_kib: number,
- *   free_memory_kib: number,
- *   total_memory_kib: number,
+ *   availableMemoryKib: number,
+ *   freeMemoryKib: number,
+ *   totalMemoryKib: number,
  * }}
  */
 export let MemoryUsage;
@@ -201,7 +213,7 @@ export let StandardRoutineResult = {
  * Type alias for RoutineResult.
  * TODO(zentaro): Currently only includes simple result type.
  * @typedef {{
- *   simple_result: !StandardRoutineResult
+ *   simpleResult: !StandardRoutineResult
  * }}
  */
 export let RoutineResult;

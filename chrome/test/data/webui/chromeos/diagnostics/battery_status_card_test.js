@@ -70,31 +70,31 @@ export function batteryStatusCardTestSuite() {
           const dataPoints =
               dx_utils.getDataPointElements(batteryStatusElement);
           assertEquals(
-              fakeBatteryChargeStatus[0].current_now_milliamps,
+              fakeBatteryChargeStatus[0].currentNowMilliamps,
               dataPoints[0].value);
           assertEquals(
-              fakeBatteryHealth[0].charge_full_design_milliamp_hours,
+              fakeBatteryHealth[0].chargeFullDesignMilliampHours,
               dataPoints[1].value);
           assertEquals(
-              fakeBatteryChargeStatus[0].charge_full_now_milliamp_hours,
+              fakeBatteryChargeStatus[0].chargeFullNowMilliampHours,
               dataPoints[2].value);
           assertEquals(
-              fakeBatteryChargeStatus[0].charge_now_milliamp_hours,
+              fakeBatteryChargeStatus[0].chargeNowMilliampHours,
               dataPoints[3].value);
           assertEquals(
-              fakeBatteryChargeStatus[0].power_time, dataPoints[4].value);
+              fakeBatteryChargeStatus[0].powerTime, dataPoints[4].value);
           assertEquals(
-              fakeBatteryChargeStatus[0].power_adapter_status,
+              fakeBatteryChargeStatus[0].powerAdapterStatus,
               dataPoints[5].value);
-          assertEquals(fakeBatteryHealth[0].cycle_count, dataPoints[6].value);
+          assertEquals(fakeBatteryHealth[0].cycleCount, dataPoints[6].value);
 
           const barChart =
               dx_utils.getPercentBarChartElement(batteryStatusElement);
           assertEquals(
-              fakeBatteryChargeStatus[0].charge_full_now_milliamp_hours,
+              fakeBatteryChargeStatus[0].chargeFullNowMilliampHours,
               barChart.max);
           assertEquals(
-              fakeBatteryChargeStatus[0].charge_now_milliamp_hours,
+              fakeBatteryChargeStatus[0].chargeNowMilliampHours,
               barChart.value);
         });
   });

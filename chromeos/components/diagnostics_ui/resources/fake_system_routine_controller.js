@@ -130,7 +130,7 @@ export class FakeSystemRoutineController {
 
     /** @type {!RoutineResult} */
     const fullResult = {
-      simple_result: result,
+      simpleResult: result,
     };
 
     /** @type {!RoutineResultInfo} */

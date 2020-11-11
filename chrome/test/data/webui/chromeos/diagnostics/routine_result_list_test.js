@@ -160,7 +160,7 @@ export function routineResultListTestSuite() {
             // Move the first routine to completed state.
             status = new ResultStatusItem(routines[0]);
             status.progress = ExecutionProgress.kCompleted;
-            status.result = {simple_result: StandardRoutineResult.kTestPassed};
+            status.result = {simpleResult: StandardRoutineResult.kTestPassed};
             routineResultListElement.onStatusUpdate(status);
 
             return flushTasks();
@@ -172,7 +172,7 @@ export function routineResultListTestSuite() {
             assertNotEquals(null, getEntries()[0].item.result);
             assertEquals(
                 StandardRoutineResult.kTestPassed,
-                getEntries()[0].item.result.simple_result);
+                getEntries()[0].item.result.simpleResult);
 
             status = new ResultStatusItem(routines[1]);
             status.progress = ExecutionProgress.kRunning;
@@ -189,7 +189,7 @@ export function routineResultListTestSuite() {
             // Move the second routine to completed state.
             status = new ResultStatusItem(routines[1]);
             status.progress = ExecutionProgress.kCompleted;
-            status.result = {simple_result: StandardRoutineResult.kTestPassed};
+            status.result = {simpleResult: StandardRoutineResult.kTestPassed};
             routineResultListElement.onStatusUpdate(status);
 
             return flushTasks();
@@ -201,7 +201,7 @@ export function routineResultListTestSuite() {
             assertNotEquals(null, getEntries()[1].item.result);
             assertEquals(
                 StandardRoutineResult.kTestPassed,
-                getEntries()[0].item.result.simple_result);
+                getEntries()[0].item.result.simpleResult);
 
             return flushTasks();
           });

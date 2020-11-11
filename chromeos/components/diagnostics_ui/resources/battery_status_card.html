@@ -4,29 +4,29 @@
 <diagnostics-card>
   <div id="cardTitle" slot="title">[[i18n('batteryTitle')]]</div>
   <percent-bar-chart slot="left-panel" header="[[i18n('remainingCharge')]]"
-    value="[[batteryChargeStatus_.charge_now_milliamp_hours]]"
-    max="[[batteryChargeStatus_.charge_full_now_milliamp_hours]]">
+    value="[[batteryChargeStatus_.chargeNowMilliampHours]]"
+    max="[[batteryChargeStatus_.chargeFullNowMilliampHours]]">
   </percent-bar-chart>
   <data-point slot="body" id="currentNow" header="[[i18n('currentNow')]]"
-    value="[[batteryChargeStatus_.current_now_milliamps]]">
+    value="[[batteryChargeStatus_.currentNowMilliamps]]">
   </data-point>
   <data-point slot="body" id="chargeFullDesign"
     header="[[i18n('chargeFullDesign')]]"
-    value="[[batteryHealth_.charge_full_design_milliamp_hours]]">
+    value="[[batteryHealth_.chargeFullDesignMilliampHours]]">
   </data-point>
   <data-point slot="body" id="chargeFullNow" header="[[i18n('chargeFullNow')]]"
-    value="[[batteryChargeStatus_.charge_full_now_milliamp_hours]]">
+    value="[[batteryChargeStatus_.chargeFullNowMilliampHours]]">
   </data-point>
   <data-point slot="body" id="chargeNow" header="[[i18n('chargeNow')]]"
-    value="[[batteryChargeStatus_.charge_now_milliamp_hours]]">
+    value="[[batteryChargeStatus_.chargeNowMilliampHours]]">
   </data-point>
   <data-point slot="body" id="powerTime" header="[[i18n('powerTime')]]"
-    value="[[batteryChargeStatus_.power_time]]">
+    value="[[batteryChargeStatus_.powerTime]]">
   </data-point>
   <data-point slot="body" id="adapterStatus" header="[[i18n('adapterStatus')]]"
-    value="[[batteryChargeStatus_.power_adapter_status]]">
+    value="[[batteryChargeStatus_.powerAdapterStatus]]">
   </data-point>
   <data-point slot="body" id="cycleCount" header="[[i18n('cycleCount')]]"
-    value="[[batteryHealth_.cycle_count]]">
+    value="[[batteryHealth_.cycleCount]]">
   </data-point>
 </diagnostics-card>

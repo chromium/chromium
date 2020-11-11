@@ -55,11 +55,12 @@ Polymer({
   },
 
   /**
-   * @param {!SystemInfo} systemInfo
+   * @param {{systemInfo: !SystemInfo}} result
    * @private
    */
-  onSystemInfoReceived_(systemInfo) {
-    this.showBatteryStatusCard_ = systemInfo.device_capabilities.has_battery;
+  onSystemInfoReceived_(result) {
+    this.showBatteryStatusCard_ =
+        result.systemInfo.deviceCapabilities.hasBattery;
   },
 
 });

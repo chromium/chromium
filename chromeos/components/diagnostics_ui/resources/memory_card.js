@@ -74,7 +74,6 @@ Polymer({
    * @private
    */
   getTotalUsedMemory_(memoryUsage) {
-    return memoryUsage.total_memory_kib -
-        memoryUsage.available_memory_kib;
+    return memoryUsage.totalMemoryKib - memoryUsage.availableMemoryKib;
   }
 });

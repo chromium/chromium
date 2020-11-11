@@ -137,7 +137,7 @@ export function routineResultEntryTestSuite() {
   test('PassedTest', () => {
     const item = createCompletedStatus(
         RoutineName.kCpuStress,
-        {simple_result: StandardRoutineResult.kTestPassed});
+        {simpleResult: StandardRoutineResult.kTestPassed});
     return initializeEntryWithItem(item).then(() => {
       // TODO(zentaro): Localize the test.
       assertEquals(getNameText(), 'kCpuStress');
@@ -150,7 +150,7 @@ export function routineResultEntryTestSuite() {
   test('FailedTest', () => {
     const item = createCompletedStatus(
         RoutineName.kCpuStress,
-        {simple_result: StandardRoutineResult.kTestFailed});
+        {simpleResult: StandardRoutineResult.kTestFailed});
     return initializeEntryWithItem(item).then(() => {
       // TODO(zentaro): Localize the test.
       assertEquals(getNameText(), 'kCpuStress');

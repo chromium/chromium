@@ -90,15 +90,14 @@ export function cpuCardTestSuite() {
   test('CpuCardPopulated', () => {
     return initializeCpuCard(fakeCpuUsage).then(() => {
       const dataPoints = dx_utils.getDataPointElements(cpuElement);
-      const currentlyUsingValue = fakeCpuUsage[0].percent_usage_user +
-          fakeCpuUsage[0].percent_usage_system;
+      const currentlyUsingValue =
+          fakeCpuUsage[0].percentUsageUser + fakeCpuUsage[0].percentUsageSystem;
       assertEquals(currentlyUsingValue, dataPoints[0].value);
-      assertEquals(
-          fakeCpuUsage[0].cpu_temp_degrees_celcius, dataPoints[1].value);
+      assertEquals(fakeCpuUsage[0].cpuTempDegreesCelsius, dataPoints[1].value);
 
       const cpuChart = dx_utils.getRealtimeCpuChartElement(cpuElement);
-      assertEquals(fakeCpuUsage[0].percent_usage_user, cpuChart.user);
-      assertEquals(fakeCpuUsage[0].percent_usage_system, cpuChart.system);
+      assertEquals(fakeCpuUsage[0].percentUsageUser, cpuChart.user);
+      assertEquals(fakeCpuUsage[0].percentUsageSystem, cpuChart.system);
 
       // Verify the routine section is in the page.
       assertTrue(!!getRoutineSection());

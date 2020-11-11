@@ -5,14 +5,14 @@
   <div id="cardTitle" slot="title">[[i18n('memoryTitle')]]</div>
   <percent-bar-chart slot="left-panel" header="[[i18n('usedMemory')]]"
     value="[[getTotalUsedMemory_(memoryUsage_)]]"
-    max="[[memoryUsage_.total_memory_kib]]">
+    max="[[memoryUsage_.totalMemoryKib]]">
   </percent-bar-chart>
   <data-point slot="body" id="memoryTotal" header="[[i18n('totalMemory')]]"
-    value="[[memoryUsage_.total_memory_kib]]">
+    value="[[memoryUsage_.totalMemoryKib]]">
   </data-point>
   <data-point slot="body" id="memoryAvailable"
     header="[[i18n('memoryAvailable')]]"
-    value="[[memoryUsage_.available_memory_kib]]">
+    value="[[memoryUsage_.availableMemoryKib]]">
   </data-point>
 
   <routine-section slot="routines" routines="[[routines_]]"></routine-section>
