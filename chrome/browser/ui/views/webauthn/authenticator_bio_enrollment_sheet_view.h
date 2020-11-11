@@ -26,6 +26,9 @@ class AuthenticatorBioEnrollmentSheetView
   // AuthenticatorRequestSheetView:
   std::unique_ptr<views::View> BuildStepSpecificContent() override;
 
+  // views::View:
+  bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
+
   RingProgressBar* ring_progress_bar_;
 
   DISALLOW_COPY_AND_ASSIGN(AuthenticatorBioEnrollmentSheetView);
