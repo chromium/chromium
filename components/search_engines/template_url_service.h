@@ -149,17 +149,6 @@ class TemplateURLService : public WebDataServiceConsumer,
                            bool supports_replacement_only,
                            TURLsAndMeaningfulLengths* matches);
 
-  // Adds to |matches| all TemplateURLs for search engines with the domain
-  // name part of the keyword starts with |prefix|, sorted
-  // shortest-domain-name-first. If |supports_replacement_only| is true, only
-  // TemplateURLs that support replacement are returned.  Does not bother
-  // searching/returning keywords that would've been found with an identical
-  // call to FindMatchingKeywords(); i.e., doesn't search keywords for which
-  // the domain name is the keyword.
-  void AddMatchingDomainKeywords(const base::string16& prefix,
-                                 bool supports_replacement_only,
-                                 TURLsAndMeaningfulLengths* matches);
-
   // Looks up |keyword| and returns the element it maps to.  Returns NULL if
   // the keyword was not found.
   // The caller should not try to delete the returned pointer; the data store
@@ -477,15 +466,6 @@ class TemplateURLService : public WebDataServiceConsumer,
   using KeywordToTURLAndMeaningfulLength =
       std::map<base::string16, TURLAndMeaningfulLength>;
 
-  // A mapping from domain names to corresponding TemplateURLs and their
-  // meaningful keyword lengths.  Specifically, for a keyword that is a
-  // hostname containing more than just a domain name, e.g., 'abc.def.com',
-  // the keyword is added to this map under the domain key 'def.com'.  This
-  // means multiple keywords from the same domain share the same key, so this
-  // must be a multimap.
-  using KeywordDomainToTURLAndMeaningfulLength =
-      std::multimap<base::string16, TURLAndMeaningfulLength>;
-
   // Declaration of values to be used in an enumerated histogram to tally
   // changes to the default search provider from various entry points. In
   // particular, we use this to see what proportion of changes are from Sync
@@ -526,25 +506,15 @@ class TemplateURLService : public WebDataServiceConsumer,
   void Init(const Initializer* initializers, int num_initializers);
 
   // Removes |template_url| from various internal maps
-  // (|keyword_to_turl_and_length_|, |keyword_domain_to_turl_and_length_|,
-  // |guid_to_turl_|, |provider_map_|).
+  // (|keyword_to_turl_and_length_|, |guid_to_turl_|, |provider_map_|).
   void RemoveFromMaps(const TemplateURL* template_url);
 
   // Adds |template_url| to various internal maps
-  // (|keyword_to_turl_and_length_|, |keyword_domain_to_turl_and_length_|,
-  // |guid_to_turl_|, |provider_map_|) if appropriate.  (It might not be
-  // appropriate if, for instance, |template_url|'s keyword conflicts with
-  // the keyword of a custom search engine already existing in the maps that
-  // is not allowed to be replaced.)
+  // (|keyword_to_turl_and_length_|, |guid_to_turl_|, |provider_map_|) if
+  // appropriate.  (It might not be appropriate if, for instance,
+  // |template_url|'s keyword conflicts with the keyword of a custom search
+  // engine already existing in the maps that is not allowed to be replaced.)
   void AddToMaps(TemplateURL* template_url);
-
-  // Helper function for removing an element from
-  // |keyword_domain_to_turl_and_length_|.
-  void RemoveFromDomainMap(const TemplateURL* template_url);
-
-  // Helper fuction for adding an element to
-  // |keyword_domain_to_turl_and_length_| if appropriate.
-  void AddToDomainMap(TemplateURL* template_url);
 
   // Helper function for adding an element to |keyword_to_turl_and_length_|.
   void AddToMap(TemplateURL* template_url);
@@ -745,17 +715,6 @@ class TemplateURLService : public WebDataServiceConsumer,
 
   // Mapping from keyword to the TemplateURL.
   KeywordToTURLAndMeaningfulLength keyword_to_turl_and_length_;
-
-  // Mapping from keyword domain to the TemplateURL.
-  // Entries are only allowed here if there is a corresponding entry in
-  // |keyword_to_turl_and_length_|, i.e., if a template URL doesn't have an
-  // entry in |keyword_to_turl_and_length_| because it's subsumed by another
-  // template URL with an identical keyword, the template URL will not have an
-  // entry in this map either.  This map will also not bother including entries
-  // for keywords in which the keyword is the domain name, with no subdomain
-  // before the domain name.  (The ordinary |keyword_to_turl_and_length|
-  // suffices for that.)
-  KeywordDomainToTURLAndMeaningfulLength keyword_domain_to_turl_and_length_;
 
   // Mapping from Sync GUIDs to the TemplateURL.
   GUIDToTURL guid_to_turl_;

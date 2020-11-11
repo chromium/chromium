@@ -284,12 +284,7 @@ void KeywordProvider::Start(const AutocompleteInput& input,
   // relevances and we can just recreate the results synchronously anyway, we
   // don't bother.
   TemplateURLService::TURLsAndMeaningfulLengths matches;
-  model_->AddMatchingKeywords(
-      keyword, !remaining_input.empty(), &matches);
-  if (!OmniboxFieldTrial::KeywordRequiresPrefixMatch()) {
-    model_->AddMatchingDomainKeywords(
-        keyword, !remaining_input.empty(), &matches);
-  }
+  model_->AddMatchingKeywords(keyword, !remaining_input.empty(), &matches);
 
   for (auto i(matches.begin()); i != matches.end();) {
     const TemplateURL* template_url = i->first;

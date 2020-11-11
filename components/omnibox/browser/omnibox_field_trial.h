@@ -354,13 +354,6 @@ bool HUPSearchDatabase();
 // the keyword name for matching purposes.  Returns true if the experiment
 // isn't active.
 
-// For keywords that look like hostnames, returns whether KeywordProvider
-// should require users to type a prefix of the hostname to match against
-// them, rather than just the domain name portion.  In other words, returns
-// whether the prefix before the domain name should be considered important
-// for matching purposes.  Returns true if the experiment isn't active.
-bool KeywordRequiresPrefixMatch();
-
 // Returns the relevance score that KeywordProvider should assign to keywords
 // with sufficiently-complete matches, i.e., the user has typed all of the
 // important part of the keyword.  Returns -1 if the experiment isn't active.
@@ -469,8 +462,10 @@ extern const char kHQPNumTitleWordsRule[];
 extern const char kHQPAlsoDoHUPLikeScoringRule[];
 extern const char kHUPSearchDatabaseRule[];
 extern const char kPreventUWYTDefaultForNonURLInputsRule[];
+// kKeywordRequiresRegistryRule seemingly has no production uses, but the string
+// is actually used within TemplateURLService as a string to break a circular
+// omnibox -> search_engines -> omnibox dependency.
 extern const char kKeywordRequiresRegistryRule[];
-extern const char kKeywordRequiresPrefixMatchRule[];
 extern const char kKeywordScoreForSufficientlyCompleteMatchRule[];
 extern const char kHQPAllowDupMatchesForScoringRule[];
 extern const char kEmphasizeTitlesRule[];

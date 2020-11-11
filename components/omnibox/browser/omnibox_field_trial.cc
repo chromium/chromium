@@ -605,13 +605,6 @@ bool OmniboxFieldTrial::HUPSearchDatabase() {
   return value.empty() || (value == "true");
 }
 
-bool OmniboxFieldTrial::KeywordRequiresPrefixMatch() {
-  const std::string& value = variations::GetVariationParamValue(
-      kBundledExperimentFieldTrialName,
-      kKeywordRequiresPrefixMatchRule);
-  return value.empty() || (value == "true");
-}
-
 int OmniboxFieldTrial::KeywordScoreForSufficientlyCompleteMatch() {
   std::string value_str = variations::GetVariationParamValue(
       kBundledExperimentFieldTrialName,
@@ -875,8 +868,6 @@ const char OmniboxFieldTrial::kHQPAlsoDoHUPLikeScoringRule[] =
 const char OmniboxFieldTrial::kHUPSearchDatabaseRule[] = "HUPSearchDatabase";
 const char OmniboxFieldTrial::kKeywordRequiresRegistryRule[] =
     "KeywordRequiresRegistry";
-const char OmniboxFieldTrial::kKeywordRequiresPrefixMatchRule[] =
-    "KeywordRequiresPrefixMatch";
 const char OmniboxFieldTrial::kKeywordScoreForSufficientlyCompleteMatchRule[] =
     "KeywordScoreForSufficientlyCompleteMatch";
 const char OmniboxFieldTrial::kEmphasizeTitlesRule[] = "EmphasizeTitles";

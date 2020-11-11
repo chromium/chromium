@@ -161,15 +161,6 @@ size_t GetRegistryLength(const base::string16& host) {
       net::registry_controlled_domains::EXCLUDE_PRIVATE_REGISTRIES);
 }
 
-// Returns the domain name (including registry) of a hostname.  For example,
-// www.google.co.uk will return google.co.uk.
-base::string16 GetDomainAndRegistry(const base::string16& host) {
-  return base::UTF8ToUTF16(
-      net::registry_controlled_domains::GetDomainAndRegistry(
-          base::UTF16ToUTF8(host),
-          net::registry_controlled_domains::EXCLUDE_PRIVATE_REGISTRIES));
-}
-
 // For keywords that look like hostnames, returns whether KeywordProvider
 // should require users to type a prefix of the hostname to match against
 // them, rather than just the domain name portion. In other words, returns
@@ -396,15 +387,6 @@ void TemplateURLService::AddMatchingKeywords(
     TURLsAndMeaningfulLengths* matches) {
   AddMatchingKeywordsHelper(
       keyword_to_turl_and_length_, prefix, supports_replacement_only, matches);
-}
-
-void TemplateURLService::AddMatchingDomainKeywords(
-    const base::string16& prefix,
-    bool supports_replacement_only,
-    TURLsAndMeaningfulLengths* matches) {
-  AddMatchingKeywordsHelper(
-      keyword_domain_to_turl_and_length_, prefix, supports_replacement_only,
-      matches);
 }
 
 TemplateURL* TemplateURLService::GetTemplateURLForKeyword(
@@ -1498,10 +1480,8 @@ void TemplateURLService::RemoveFromMaps(const TemplateURL* template_url) {
         }
       }
     }
-    RemoveFromDomainMap(template_url);
     if (best_fallback) {
       AddToMap(best_fallback);
-      AddToDomainMap(best_fallback);
     } else {
       keyword_to_turl_and_length_.erase(iter);
     }
@@ -1526,14 +1506,11 @@ void TemplateURLService::AddToMaps(TemplateURL* template_url) {
       keyword_to_turl_and_length_.find(keyword);
   if (i == keyword_to_turl_and_length_.end()) {
     AddToMap(template_url);
-    AddToDomainMap(template_url);
   } else {
     TemplateURL* existing_url = i->second.first;
     CHECK_NE(existing_url, template_url);
     if (template_url->IsBetterThanEngineWithConflictingKeyword(existing_url)) {
-      RemoveFromDomainMap(existing_url);
       AddToMap(template_url);
-      AddToDomainMap(template_url);
     }
   }
 
@@ -1545,33 +1522,6 @@ void TemplateURLService::AddToMaps(TemplateURL* template_url) {
   // |provider_map_| is only initialized after loading has completed.
   if (loaded_)
     provider_map_->Add(template_url, search_terms_data());
-}
-
-void TemplateURLService::RemoveFromDomainMap(const TemplateURL* template_url) {
-  const base::string16 domain = GetDomainAndRegistry(template_url->keyword());
-  if (domain.empty())
-    return;
-
-  const auto match_range(
-      keyword_domain_to_turl_and_length_.equal_range(domain));
-  for (auto it(match_range.first); it != match_range.second; ) {
-    if (it->second.first == template_url)
-      it = keyword_domain_to_turl_and_length_.erase(it);
-    else
-      ++it;
-  }
-}
-
-void TemplateURLService::AddToDomainMap(TemplateURL* template_url) {
-  const base::string16 domain = GetDomainAndRegistry(template_url->keyword());
-  // Only bother adding an entry to the domain map if its key in the domain
-  // map would be different from the key in the regular map.
-  if (domain != template_url->keyword()) {
-    keyword_domain_to_turl_and_length_.insert(std::make_pair(
-        domain,
-        TURLAndMeaningfulLength(
-            template_url, GetMeaningfulKeywordLength(domain, template_url))));
-  }
 }
 
 void TemplateURLService::AddToMap(TemplateURL* template_url) {
