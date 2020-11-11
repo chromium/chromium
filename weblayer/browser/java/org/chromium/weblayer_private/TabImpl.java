@@ -458,11 +458,21 @@ public final class TabImpl extends ITab.Stub {
     /**
      * Returns whether this Tab is visible.
      */
-    @CalledByNative
     public boolean isVisible() {
         return isActiveTab()
                 && ((mBrowser.isStarted() && mBrowser.isViewAttachedToWindow())
                         || mBrowser.isInConfigurationChangeAndWasAttached());
+    }
+
+    @CalledByNative
+    public boolean willAutomaticallyReloadAfterCrashImpl() {
+        return !isVisible();
+    }
+
+    @Override
+    public boolean willAutomaticallyReloadAfterCrash() {
+        StrictModeWorkaround.apply();
+        return willAutomaticallyReloadAfterCrashImpl();
     }
 
     public boolean isActiveTab() {

@@ -137,6 +137,27 @@ public class Tab {
         return mImpl == null;
     }
 
+    /**
+     * Returns whether the tab will automatically reload after its renderer process is lost.
+     *
+     * This returns true if the tab is known not to be visible, specifically if the tab is not
+     * active in its browser or its Fragment is not started. When a tab in this state loses its
+     * renderer process to a crash (or due to system memory reclamation), it will automatically
+     * reload next the time it becomes possibly visible.
+     */
+    public boolean willAutomaticallyReloadAfterCrash() {
+        ThreadCheck.ensureOnUiThread();
+        throwIfDestroyed();
+        if (WebLayer.getSupportedMajorVersionInternal() < 88) {
+            throw new UnsupportedOperationException();
+        }
+        try {
+            return mImpl.willAutomaticallyReloadAfterCrash();
+        } catch (RemoteException e) {
+            throw new APICallException(e);
+        }
+    }
+
     @NonNull
     public Browser getBrowser() {
         ThreadCheck.ensureOnUiThread();

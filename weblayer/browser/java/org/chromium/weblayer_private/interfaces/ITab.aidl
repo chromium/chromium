@@ -78,4 +78,5 @@ interface ITab {
 
   // Added in 88
   void setFloatingActionModeOverride(in int actionModeItemTypes) = 27;
+  boolean willAutomaticallyReloadAfterCrash() = 28;
 }
