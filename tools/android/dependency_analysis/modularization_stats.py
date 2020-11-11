@@ -19,6 +19,8 @@ CLASSES_TO_COUNT_INBOUND = ['ChromeActivity', 'ChromeTabbedActivity']
 
 
 def _copy_metadata(metadata: Dict) -> Dict[str, str]:
+    if metadata is None:
+        return {}
     return {f'meta_{key}': value for key, value in metadata.items()}
 
 

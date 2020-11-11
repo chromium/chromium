@@ -143,7 +143,7 @@ def load_class_graph_from_file(
         json_obj = json.load(json_file)
         class_graph_json_obj = json_obj[json_consts.CLASS_GRAPH]
         return create_class_graph_from_json_obj(
-            class_graph_json_obj), json_obj[json_consts.BUILD_METADATA]
+            class_graph_json_obj), json_obj.get(json_consts.BUILD_METADATA)
 
 
 def load_class_and_package_graphs_from_file(
