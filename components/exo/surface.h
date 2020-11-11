@@ -59,7 +59,7 @@ class PropertyHelper;
 enum class Transform { NORMAL, ROTATE_90, ROTATE_180, ROTATE_270 };
 
 // A property key to store the surface Id set by the client.
-extern const ui::ClassProperty<int32_t>* const kClientSurfaceIdKey;
+extern const ui::ClassProperty<std::string*>* const kClientSurfaceIdKey;
 
 // This class represents a rectangular area that is displayed on the screen.
 // It has a location, size and pixel contents.
@@ -188,8 +188,8 @@ class Surface final : public ui::PropertyHandler {
   void SetParent(Surface* parent, const gfx::Point& position);
 
   // Request that surface should have a specific ID assigned by client.
-  void SetClientSurfaceId(int32_t client_surface_id);
-  int32_t GetClientSurfaceId() const;
+  void SetClientSurfaceId(const char* client_surface_id);
+  std::string GetClientSurfaceId() const;
 
   // Enable embedding of an arbitrary viz surface in this exo surface.
   // If the callback is valid, a SurfaceDrawQuad will be emitted targeting

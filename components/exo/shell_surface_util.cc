@@ -146,6 +146,10 @@ const base::Optional<int32_t> GetShellClientAccessibilityId(
     return id;
 }
 
+bool IsShellMainSurfaceKey(const void* key) {
+  return kMainSurfaceKey == key;
+}
+
 void SetShellMainSurface(aura::Window* window, Surface* surface) {
   window->SetProperty(kMainSurfaceKey, surface);
 }

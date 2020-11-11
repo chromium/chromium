@@ -1231,9 +1231,9 @@ TEST_P(SurfaceTest, DestroyAttachedBuffer) {
 
 TEST_P(SurfaceTest, SetClientSurfaceId) {
   auto surface = std::make_unique<Surface>();
-  constexpr int kTestId = 42;
+  const std::string kTestId = "42";
 
-  surface->SetClientSurfaceId(kTestId);
+  surface->SetClientSurfaceId(kTestId.c_str());
   EXPECT_EQ(kTestId, surface->GetClientSurfaceId());
 }
 

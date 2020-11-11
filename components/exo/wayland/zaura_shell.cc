@@ -16,6 +16,7 @@
 
 #include "ash/public/cpp/window_properties.h"
 #include "ash/wm/window_state.h"
+#include "base/strings/string_number_conversions.h"
 #include "components/exo/wayland/server_util.h"
 #include "components/exo/wayland/wayland_display_observer.h"
 #include "components/exo/wayland/wl_output.h"
@@ -119,10 +120,13 @@ void aura_surface_set_application_id(wl_client* client,
   GetUserDataAs<AuraSurface>(resource)->SetApplicationId(application_id);
 }
 
-void aura_surface_set_client_surface_id(wl_client* client,
-                                        wl_resource* resource,
-                                        int client_surface_id) {
-  GetUserDataAs<AuraSurface>(resource)->SetClientSurfaceId(client_surface_id);
+void aura_surface_set_client_surface_id_DEPRECATED(wl_client* client,
+                                                   wl_resource* resource,
+                                                   int client_surface_id) {
+  // DEPRECATED. Use aura_surface_set_client_surface_str_id
+  std::string client_surface_str_id = base::NumberToString(client_surface_id);
+  GetUserDataAs<AuraSurface>(resource)->SetClientSurfaceId(
+      client_surface_str_id.c_str());
 }
 
 void aura_surface_set_occlusion_tracking(wl_client* client,
@@ -149,18 +153,25 @@ void aura_surface_set_fullscreen_mode(wl_client* client,
   GetUserDataAs<AuraSurface>(resource)->SetFullscreenMode(mode);
 }
 
+void aura_surface_set_client_surface_str_id(wl_client* client,
+                                            wl_resource* resource,
+                                            const char* client_surface_id) {
+  GetUserDataAs<AuraSurface>(resource)->SetClientSurfaceId(client_surface_id);
+}
+
 const struct zaura_surface_interface aura_surface_implementation = {
     aura_surface_set_frame,
     aura_surface_set_parent,
     aura_surface_set_frame_colors,
     aura_surface_set_startup_id,
     aura_surface_set_application_id,
-    aura_surface_set_client_surface_id,
+    aura_surface_set_client_surface_id_DEPRECATED,
     aura_surface_set_occlusion_tracking,
     aura_surface_unset_occlusion_tracking,
     aura_surface_activate,
     aura_surface_draw_attention,
-    aura_surface_set_fullscreen_mode};
+    aura_surface_set_fullscreen_mode,
+    aura_surface_set_client_surface_str_id};
 
 }  // namespace
 
@@ -208,7 +219,7 @@ void AuraSurface::SetApplicationId(const char* application_id) {
     surface_->SetApplicationId(application_id);
 }
 
-void AuraSurface::SetClientSurfaceId(int client_surface_id) {
+void AuraSurface::SetClientSurfaceId(const char* client_surface_id) {
   if (surface_)
     surface_->SetClientSurfaceId(client_surface_id);
 }

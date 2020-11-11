@@ -6,6 +6,7 @@
 
 #include "base/optional.h"
 #include "base/stl_util.h"
+#include "base/strings/string_number_conversions.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/exo/surface.h"
 #include "ui/aura/env.h"
@@ -47,7 +48,17 @@ void WebviewWindowManager::OnWindowPropertyChanged(aura::Window* window,
   if (key != exo::kClientSurfaceIdKey)
     return;
 
-  int app_id = window->GetProperty(exo::kClientSurfaceIdKey);
+  // Note: The property was originally an integer, and was switched to be a
+  // string. For compatibility integer values are converted to a string via
+  // base::NumberToString before being set as the property value.
+  std::string* app_id_str = window->GetProperty(exo::kClientSurfaceIdKey);
+  if (!app_id_str)
+    return;
+
+  int app_id = 0;
+  if (!base::StringToInt(*app_id_str, &app_id))
+    return;
+
   LOG(INFO) << "Found window for webview " << app_id;
   for (auto& observer : observers_)
     observer.OnNewWebviewContainerWindow(window, app_id);

@@ -9,6 +9,10 @@
 
 #include "base/macros.h"
 
+namespace ash {
+class ArcOverlayManager;
+}
+
 namespace exo {
 class WaylandServerController;
 }
@@ -23,6 +27,7 @@ class ExoParts {
  private:
   ExoParts();
 
+  std::unique_ptr<ash::ArcOverlayManager> arc_overlay_manager_;
   std::unique_ptr<exo::WaylandServerController> wayland_server_;
 
   DISALLOW_COPY_AND_ASSIGN(ExoParts);

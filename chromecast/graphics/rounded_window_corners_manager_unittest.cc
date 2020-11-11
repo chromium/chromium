@@ -68,7 +68,7 @@ TEST_F(RoundedWindowCornersManagerTest,
   std::unique_ptr<aura::Window> window =
       std::make_unique<aura::Window>(nullptr);
   window->Init(ui::LAYER_TEXTURED);
-  window->SetProperty(exo::kClientSurfaceIdKey, 1);
+  window->SetProperty(exo::kClientSurfaceIdKey, new std::string("1"));
   root_window->AddChild(window.get());
   EXPECT_CALL(*mock_cast_window_manager_, SetEnableRoundedCorners(true));
   window->Show();
@@ -87,7 +87,7 @@ TEST_F(RoundedWindowCornersManagerTest,
   window->Show();
   root_window->AddChild(window.get());
   EXPECT_CALL(*mock_cast_window_manager_, SetEnableRoundedCorners(true));
-  window->SetProperty(exo::kClientSurfaceIdKey, 1);
+  window->SetProperty(exo::kClientSurfaceIdKey, new std::string("1"));
 
   EXPECT_CALL(*mock_cast_window_manager_, SetEnableRoundedCorners(false));
   window = nullptr;
@@ -99,7 +99,7 @@ TEST_F(RoundedWindowCornersManagerTest, RemoveRoundedCornersAfterHidingWindow) {
   std::unique_ptr<aura::Window> window =
       std::make_unique<aura::Window>(nullptr);
   window->Init(ui::LAYER_TEXTURED);
-  window->SetProperty(exo::kClientSurfaceIdKey, 1);
+  window->SetProperty(exo::kClientSurfaceIdKey, new std::string("1"));
   root_window->AddChild(window.get());
   EXPECT_CALL(*mock_cast_window_manager_, SetEnableRoundedCorners(true));
   window->Show();
@@ -118,8 +118,8 @@ TEST_F(RoundedWindowCornersManagerTest,
   std::unique_ptr<aura::Window> window2 =
       std::make_unique<aura::Window>(nullptr);
   window2->Init(ui::LAYER_TEXTURED);
-  window1->SetProperty(exo::kClientSurfaceIdKey, 1);
-  window2->SetProperty(exo::kClientSurfaceIdKey, 2);
+  window1->SetProperty(exo::kClientSurfaceIdKey, new std::string("1"));
+  window2->SetProperty(exo::kClientSurfaceIdKey, new std::string("2"));
   root_window->AddChild(window1.get());
   root_window->AddChild(window2.get());
   EXPECT_CALL(*mock_cast_window_manager_, SetEnableRoundedCorners(true));
@@ -141,8 +141,8 @@ TEST_F(RoundedWindowCornersManagerTest,
   std::unique_ptr<aura::Window> window2 =
       std::make_unique<aura::Window>(nullptr);
   window2->Init(ui::LAYER_TEXTURED);
-  window1->SetProperty(exo::kClientSurfaceIdKey, 1);
-  window2->SetProperty(exo::kClientSurfaceIdKey, 2);
+  window1->SetProperty(exo::kClientSurfaceIdKey, new std::string("1"));
+  window2->SetProperty(exo::kClientSurfaceIdKey, new std::string("2"));
   root_window->AddChild(window1.get());
   root_window->AddChild(window2.get());
   EXPECT_CALL(*mock_cast_window_manager_, SetEnableRoundedCorners(true));
@@ -161,7 +161,7 @@ TEST_F(RoundedWindowCornersManagerTest,
   std::unique_ptr<aura::Window> webview =
       std::make_unique<aura::Window>(nullptr);
   webview->Init(ui::LAYER_TEXTURED);
-  webview->SetProperty(exo::kClientSurfaceIdKey, 1);
+  webview->SetProperty(exo::kClientSurfaceIdKey, new std::string("1"));
   std::unique_ptr<aura::Window> sibling =
       std::make_unique<aura::Window>(nullptr);
   sibling->Init(ui::LAYER_TEXTURED);
@@ -184,7 +184,7 @@ TEST_F(RoundedWindowCornersManagerTest,
   std::unique_ptr<aura::Window> webview =
       std::make_unique<aura::Window>(nullptr);
   webview->Init(ui::LAYER_TEXTURED);
-  webview->SetProperty(exo::kClientSurfaceIdKey, 1);
+  webview->SetProperty(exo::kClientSurfaceIdKey, new std::string("1"));
   std::unique_ptr<aura::Window> sibling =
       std::make_unique<aura::Window>(nullptr);
   sibling->Init(ui::LAYER_TEXTURED);
@@ -210,7 +210,7 @@ TEST_F(RoundedWindowCornersManagerTest,
   std::unique_ptr<aura::Window> webview =
       std::make_unique<aura::Window>(nullptr);
   webview->Init(ui::LAYER_TEXTURED);
-  webview->SetProperty(exo::kClientSurfaceIdKey, 1);
+  webview->SetProperty(exo::kClientSurfaceIdKey, new std::string("1"));
   std::unique_ptr<aura::Window> sibling =
       std::make_unique<aura::Window>(nullptr);
   sibling->Init(ui::LAYER_TEXTURED);
@@ -231,7 +231,7 @@ TEST_F(RoundedWindowCornersManagerTest,
   std::unique_ptr<aura::Window> webview =
       std::make_unique<aura::Window>(nullptr);
   webview->Init(ui::LAYER_TEXTURED);
-  webview->SetProperty(exo::kClientSurfaceIdKey, 1);
+  webview->SetProperty(exo::kClientSurfaceIdKey, new std::string("1"));
   std::unique_ptr<aura::Window> sibling =
       std::make_unique<aura::Window>(nullptr);
   sibling->Init(ui::LAYER_TEXTURED);
@@ -257,7 +257,7 @@ TEST_F(RoundedWindowCornersManagerTest, AddRoundedCornersWhenSiblingIsHidden) {
   std::unique_ptr<aura::Window> webview =
       std::make_unique<aura::Window>(nullptr);
   webview->Init(ui::LAYER_TEXTURED);
-  webview->SetProperty(exo::kClientSurfaceIdKey, 1);
+  webview->SetProperty(exo::kClientSurfaceIdKey, new std::string("1"));
   std::unique_ptr<aura::Window> sibling =
       std::make_unique<aura::Window>(nullptr);
   sibling->Init(ui::LAYER_TEXTURED);
@@ -285,7 +285,7 @@ TEST_F(RoundedWindowCornersManagerTest,
   std::unique_ptr<aura::Window> webview =
       std::make_unique<aura::Window>(nullptr);
   webview->Init(ui::LAYER_TEXTURED);
-  webview->SetProperty(exo::kClientSurfaceIdKey, 1);
+  webview->SetProperty(exo::kClientSurfaceIdKey, new std::string("1"));
   std::unique_ptr<aura::Window> sibling =
       std::make_unique<aura::Window>(nullptr);
   sibling->Init(ui::LAYER_TEXTURED);
@@ -313,7 +313,7 @@ TEST_F(RoundedWindowCornersManagerTest,
   std::unique_ptr<aura::Window> webview =
       std::make_unique<aura::Window>(nullptr);
   webview->Init(ui::LAYER_TEXTURED);
-  webview->SetProperty(exo::kClientSurfaceIdKey, 1);
+  webview->SetProperty(exo::kClientSurfaceIdKey, new std::string("1"));
   std::unique_ptr<aura::Window> sibling =
       std::make_unique<aura::Window>(nullptr);
   sibling->Init(ui::LAYER_TEXTURED);

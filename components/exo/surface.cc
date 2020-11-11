@@ -228,7 +228,7 @@ int surface_id = 0;
 
 }  // namespace
 
-DEFINE_UI_CLASS_PROPERTY_KEY(int32_t, kClientSurfaceIdKey, 0)
+DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(std::string, kClientSurfaceIdKey, nullptr)
 
 ScopedSurface::ScopedSurface(Surface* surface, SurfaceObserver* observer)
     : surface_(surface), observer_(observer) {
@@ -575,15 +575,17 @@ void Surface::RequestActivation() {
     delegate_->OnActivationRequested();
 }
 
-void Surface::SetClientSurfaceId(int32_t client_surface_id) {
-  if (client_surface_id)
-    window_->SetProperty(kClientSurfaceIdKey, client_surface_id);
+void Surface::SetClientSurfaceId(const char* client_surface_id) {
+  if (client_surface_id && strlen(client_surface_id) > 0)
+    window_->SetProperty(kClientSurfaceIdKey,
+                         new std::string(client_surface_id));
   else
     window_->ClearProperty(kClientSurfaceIdKey);
 }
 
-int32_t Surface::GetClientSurfaceId() const {
-  return window_->GetProperty(kClientSurfaceIdKey);
+std::string Surface::GetClientSurfaceId() const {
+  std::string* value = window_->GetProperty(kClientSurfaceIdKey);
+  return value ? *value : std::string();
 }
 
 void Surface::SetEmbeddedSurfaceId(
