@@ -48,7 +48,7 @@ HoldingSpaceTray::HoldingSpaceTray(Shelf* shelf) : TrayBackgroundView(shelf) {
   SetVisible(false);
 
   // Context menu.
-  if (features::IsTemporaryHoldingSpaceContentForwardEntryPointEnabled())
+  if (features::IsTemporaryHoldingSpacePreviewsEnabled())
     set_context_menu_controller(this);
 
   // Icon.
@@ -206,7 +206,7 @@ void HoldingSpaceTray::OnHoldingSpaceItemFinalized(
 }
 
 void HoldingSpaceTray::ExecuteCommand(int command_id, int event_flags) {
-  DCHECK(features::IsTemporaryHoldingSpaceContentForwardEntryPointEnabled());
+  DCHECK(features::IsTemporaryHoldingSpacePreviewsEnabled());
   switch (command_id) {
     case HoldingSpaceCommandId::kHidePreviews:
       holding_space_metrics::RecordPodAction(
@@ -232,7 +232,7 @@ void HoldingSpaceTray::ShowContextMenuForViewImpl(
     views::View* source,
     const gfx::Point& point,
     ui::MenuSourceType source_type) {
-  DCHECK(features::IsTemporaryHoldingSpaceContentForwardEntryPointEnabled());
+  DCHECK(features::IsTemporaryHoldingSpacePreviewsEnabled());
 
   holding_space_metrics::RecordPodAction(
       holding_space_metrics::PodAction::kShowContextMenu);

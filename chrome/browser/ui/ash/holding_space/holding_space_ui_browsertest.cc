@@ -371,10 +371,10 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceUiBrowserTest, OpenItem) {
 class HoldingSpaceUiPreviewsBrowserTest : public HoldingSpaceUiBrowserTest {
  public:
   HoldingSpaceUiPreviewsBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kTemporaryHoldingSpace,
-        /*field_trial_params=*/{
-            {"content-forward-entry-point-enabled", "true"}});
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kTemporaryHoldingSpace,
+                              features::kTemporaryHoldingSpacePreviews},
+        /*disabled_features=*/{});
   }
 
  private:

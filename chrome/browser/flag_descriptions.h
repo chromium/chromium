@@ -2441,6 +2441,9 @@ extern const char kHideArcMediaNotificationsDescription[];
 extern const char kHoldingSpaceName[];
 extern const char kHoldingSpaceDescription[];
 
+extern const char kHoldingSpacePreviewsName[];
+extern const char kHoldingSpacePreviewsDescription[];
+
 extern const char kImeAssistAutocorrectName[];
 extern const char kImeAssistAutocorrectDescription[];
 

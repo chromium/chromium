@@ -6527,6 +6527,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kHoldingSpaceDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kTemporaryHoldingSpace)},
 
+    {"enable-holding-space-previews",
+     flag_descriptions::kHoldingSpacePreviewsName,
+     flag_descriptions::kHoldingSpacePreviewsDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kTemporaryHoldingSpacePreviews)},
+
     {"enhanced-desk-animations", flag_descriptions::kEnhancedDeskAnimationsName,
      flag_descriptions::kEnhancedDeskAnimationsDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kEnhancedDeskAnimations)},

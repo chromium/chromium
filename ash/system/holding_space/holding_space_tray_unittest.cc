@@ -38,16 +38,22 @@ std::unique_ptr<HoldingSpaceImage> CreateStubHoldingSpaceImage() {
 
 }  // namespace
 
-// Parameterized by whether the content forward entry point is enabled.
+// Parameterized by whether the previews feature is enabled.
 class HoldingSpaceTrayTest : public AshTestBase,
                              public testing::WithParamInterface<bool> {
  public:
   HoldingSpaceTrayTest() {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kTemporaryHoldingSpace,
-        /*field_trial_params=*/{
-            {"content-forward-entry-point-enabled",
-             IsContentForwardEntryPointEnabled() ? "true" : "false"}});
+    std::vector<base::Feature> enabled_features;
+    std::vector<base::Feature> disabled_features;
+
+    enabled_features.push_back(features::kTemporaryHoldingSpace);
+
+    if (IsPreviewsFeatureEnabled())
+      enabled_features.push_back(features::kTemporaryHoldingSpacePreviews);
+    else
+      disabled_features.push_back(features::kTemporaryHoldingSpacePreviews);
+
+    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 
   // AshTestBase:
@@ -128,7 +134,7 @@ class HoldingSpaceTrayTest : public AshTestBase,
         GetSessionControllerClient()->GetUserPrefService(user_account));
   }
 
-  bool IsContentForwardEntryPointEnabled() const { return GetParam(); }
+  bool IsPreviewsFeatureEnabled() const { return GetParam(); }
 
   HoldingSpaceTestApi* test_api() { return test_api_.get(); }
 
@@ -1073,7 +1079,7 @@ TEST_P(HoldingSpaceTrayTest, PartialDownloadItemWithExistingNearbyShareItems) {
 }
 
 // Right clicking the holding space tray should show a context menu if the
-// content forward entry point is enabled. Otherwise it should do nothing.
+// previews feature is enabled. Otherwise it should do nothing.
 TEST_P(HoldingSpaceTrayTest, ShouldMaybeShowContextMenuOnRightClick) {
   StartSession();
 
@@ -1089,7 +1095,7 @@ TEST_P(HoldingSpaceTrayTest, ShouldMaybeShowContextMenuOnRightClick) {
   event_generator.ClickRightButton();
 
   EXPECT_EQ(!!views::MenuController::GetActiveInstance(),
-            IsContentForwardEntryPointEnabled());
+            IsPreviewsFeatureEnabled());
 }
 
 INSTANTIATE_TEST_SUITE_P(All, HoldingSpaceTrayTest, testing::Bool());

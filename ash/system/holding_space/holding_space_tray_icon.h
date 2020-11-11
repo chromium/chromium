@@ -32,7 +32,6 @@ namespace ash {
 class HoldingSpaceTrayIconPreview;
 class Shelf;
 
-// TODO(crbug.com/1142572): Implement content forward icon w/ motion spec.
 // The icon used to represent holding space in its tray in the shelf.
 class ASH_EXPORT HoldingSpaceTrayIcon : public views::View,
                                         public HoldingSpaceControllerObserver,
@@ -92,9 +91,9 @@ class ASH_EXPORT HoldingSpaceTrayIcon : public views::View,
   // previews are disabled or there are no previews available.
   views::ImageView* no_previews_image_view_ = nullptr;
 
-  // Whether previews are currently enabled. Note that if the content forward
-  // entry point feature is disabled, this will always be false. Otherwise,
-  // previews can be enabled/disabled by the user at runtime.
+  // Whether previews are currently enabled. Note that if the previews feature
+  // is disabled, this will always be false. Otherwise, previews can be enabled/
+  // disabled by the user at runtime.
   bool previews_enabled_ = false;
 
   // A preview is added to the tray icon to visually represent each holding
@@ -105,8 +104,8 @@ class ASH_EXPORT HoldingSpaceTrayIcon : public views::View,
   std::vector<std::unique_ptr<HoldingSpaceTrayIconPreview>> previews_;
   std::vector<std::unique_ptr<HoldingSpaceTrayIconPreview>> removed_previews_;
 
-  // When the holding space content forward entry point is enabled, the user
-  // can enable/disable previews. This registrar is associated with the active
+  // When the holding space previews feature is enabled, the user can enable/
+  // disable previews at runtime. This registrar is associated with the active
   // user pref service and notifies the holding space tray icon of changes to
   // the user's preference.
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;

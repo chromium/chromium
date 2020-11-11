@@ -33,8 +33,8 @@ namespace {
 // Returns whether previews are enabled.
 bool IsPreviewsEnabled() {
   auto* prefs = Shell::Get()->session_controller()->GetActivePrefService();
-  return features::IsTemporaryHoldingSpaceContentForwardEntryPointEnabled() &&
-         prefs && holding_space_prefs::IsPreviewsEnabled(prefs);
+  return features::IsTemporaryHoldingSpacePreviewsEnabled() && prefs &&
+         holding_space_prefs::IsPreviewsEnabled(prefs);
 }
 
 // Sets `view`'s visibility to the specified value. Note that this method will
@@ -54,7 +54,7 @@ HoldingSpaceTrayIcon::HoldingSpaceTrayIcon(Shelf* shelf) : shelf_(shelf) {
   SetID(kHoldingSpaceTrayIconId);
   InitLayout();
 
-  if (features::IsTemporaryHoldingSpaceContentForwardEntryPointEnabled()) {
+  if (features::IsTemporaryHoldingSpacePreviewsEnabled()) {
     controller_observer_.Add(HoldingSpaceController::Get());
     shell_observer_.Add(Shell::Get());
     session_observer_.Add(Shell::Get()->session_controller());
@@ -93,7 +93,7 @@ void HoldingSpaceTrayIcon::InitLayout() {
       gfx::CreateVectorIcon(kHoldingSpaceIcon, kHoldingSpaceTrayIconSize,
                             ShelfConfig::Get()->shelf_icon_color()));
 
-  if (features::IsTemporaryHoldingSpaceContentForwardEntryPointEnabled()) {
+  if (features::IsTemporaryHoldingSpacePreviewsEnabled()) {
     // As holding space items are added to the model, child layers will be added
     // to `this` view's layer to represent them.
     SetPaintToLayer();
@@ -104,7 +104,7 @@ void HoldingSpaceTrayIcon::InitLayout() {
 
 void HoldingSpaceTrayIcon::OnHoldingSpaceModelAttached(
     HoldingSpaceModel* model) {
-  DCHECK(features::IsTemporaryHoldingSpaceContentForwardEntryPointEnabled());
+  DCHECK(features::IsTemporaryHoldingSpacePreviewsEnabled());
 
   model_observer_.Add(model);
   for (const std::unique_ptr<HoldingSpaceItem>& item : model->items())
@@ -113,7 +113,7 @@ void HoldingSpaceTrayIcon::OnHoldingSpaceModelAttached(
 
 void HoldingSpaceTrayIcon::OnHoldingSpaceModelDetached(
     HoldingSpaceModel* model) {
-  DCHECK(features::IsTemporaryHoldingSpaceContentForwardEntryPointEnabled());
+  DCHECK(features::IsTemporaryHoldingSpacePreviewsEnabled());
 
   model_observer_.Remove(model);
   for (const std::unique_ptr<HoldingSpaceItem>& item : model->items())
@@ -122,7 +122,7 @@ void HoldingSpaceTrayIcon::OnHoldingSpaceModelDetached(
 
 void HoldingSpaceTrayIcon::OnHoldingSpaceItemAdded(
     const HoldingSpaceItem* item) {
-  DCHECK(features::IsTemporaryHoldingSpaceContentForwardEntryPointEnabled());
+  DCHECK(features::IsTemporaryHoldingSpacePreviewsEnabled());
 
   if (!previews_enabled_)
     return;
@@ -144,7 +144,7 @@ void HoldingSpaceTrayIcon::OnHoldingSpaceItemAdded(
 
 void HoldingSpaceTrayIcon::OnHoldingSpaceItemRemoved(
     const HoldingSpaceItem* item) {
-  DCHECK(features::IsTemporaryHoldingSpaceContentForwardEntryPointEnabled());
+  DCHECK(features::IsTemporaryHoldingSpacePreviewsEnabled());
 
   if (!previews_enabled_)
     return;
@@ -178,7 +178,7 @@ void HoldingSpaceTrayIcon::OnHoldingSpaceItemRemoved(
 
 void HoldingSpaceTrayIcon::OnHoldingSpaceItemFinalized(
     const HoldingSpaceItem* item) {
-  DCHECK(features::IsTemporaryHoldingSpaceContentForwardEntryPointEnabled());
+  DCHECK(features::IsTemporaryHoldingSpacePreviewsEnabled());
 
   if (!previews_enabled_)
     return;
@@ -214,7 +214,7 @@ void HoldingSpaceTrayIcon::OnHoldingSpaceItemFinalized(
 void HoldingSpaceTrayIcon::OnShelfAlignmentChanged(
     aura::Window* root_window,
     ShelfAlignment old_alignment) {
-  DCHECK(features::IsTemporaryHoldingSpaceContentForwardEntryPointEnabled());
+  DCHECK(features::IsTemporaryHoldingSpacePreviewsEnabled());
 
   if (!previews_enabled_)
     return;
@@ -228,7 +228,7 @@ void HoldingSpaceTrayIcon::OnShelfAlignmentChanged(
 }
 
 void HoldingSpaceTrayIcon::OnActiveUserPrefServiceChanged(PrefService* prefs) {
-  DCHECK(features::IsTemporaryHoldingSpaceContentForwardEntryPointEnabled());
+  DCHECK(features::IsTemporaryHoldingSpacePreviewsEnabled());
 
   pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
   pref_change_registrar_->Init(prefs);
@@ -266,7 +266,7 @@ void HoldingSpaceTrayIcon::UpdatePreferredSize() {
 }
 
 void HoldingSpaceTrayIcon::UpdatePreviewsEnabled() {
-  DCHECK(features::IsTemporaryHoldingSpaceContentForwardEntryPointEnabled());
+  DCHECK(features::IsTemporaryHoldingSpacePreviewsEnabled());
 
   const bool previews_enabled = IsPreviewsEnabled();
   if (previews_enabled_ == previews_enabled)

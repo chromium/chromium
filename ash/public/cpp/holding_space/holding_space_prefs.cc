@@ -36,8 +36,7 @@ constexpr char kTimeOfFirstPin[] = "ash.holding_space.time_of_first_pin";
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(
-      kPreviewsEnabled,
-      features::IsTemporaryHoldingSpaceContentForwardEntryPointEnabled());
+      kPreviewsEnabled, features::IsTemporaryHoldingSpacePreviewsEnabled());
   registry->RegisterTimePref(kTimeOfFirstAdd, base::Time::UnixEpoch());
   registry->RegisterTimePref(kTimeOfFirstAvailability, base::Time::UnixEpoch());
   registry->RegisterTimePref(kTimeOfFirstEntry, base::Time::UnixEpoch());

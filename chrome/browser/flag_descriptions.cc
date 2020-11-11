@@ -4168,12 +4168,20 @@ const char kHideArcMediaNotificationsDescription[] =
     "#enable-media-session-notifications to be enabled.";
 
 const char kHoldingSpaceName[] =
-    "Quick access to screenshots, downloads, and files test";
+    "Quick access to screenshots, downloads, and files";
 const char kHoldingSpaceDescription[] =
     "Enables quick access to screenshots, downloads, and important files which "
     "aims to increase productivity by saving time. When enabled, access recent "
     "screenshots and downloads from the shelf. Pin important files with the "
     "Files App context menu to keep them one click away.";
+
+const char kHoldingSpacePreviewsName[] =
+    "Support showing previews of quick access screenshots, downloads, and "
+    "files";
+const char kHoldingSpacePreviewsDescription[] =
+    "Enables support for showing previews of quick access screenshots, "
+    "downloads, and imporant files in the shelf. Note that this has no effect "
+    "unless #enable-holding-space is also enabled.";
 
 const char kImeAssistAutocorrectName[] = "Enable assistive autocorrect";
 const char kImeAssistAutocorrectDescription[] =
