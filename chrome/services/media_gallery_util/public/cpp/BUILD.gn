@@ -16,6 +16,7 @@ source_set("cpp") {
 
   deps = [
     "//chrome/app:generated_resources",
+    "//chrome/common",
     "//content/public/browser",
     "//media:media_buildflags",
     "//net:buildflags",
@@ -33,22 +34,28 @@ source_set("cpp") {
   }
 }
 
-source_set("browser_tests") {
-  testonly = true
+if (!is_android) {
+  source_set("browser_tests") {
+    testonly = true
 
-  sources = [ "media_gallery_util_browsertest.cc" ]
-  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [ "media_gallery_util_browsertest.cc" ]
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
-  deps = [
-    "//base",
-    "//chrome/test:test_support",
-    "//testing/gtest",
-  ]
-
-  if (media_use_ffmpeg) {
-    deps += [
-      "//third_party/ffmpeg",
-      "//third_party/ffmpeg:ffmpeg_features",
+    deps = [
+      ":cpp",
+      "//base",
+      "//chrome/services/media_gallery_util/public/mojom",
+      "//chrome/test:test_support",
+      "//chrome/test:test_support_ui",
+      "//testing/gtest",
+      "//third_party/libyuv",
     ]
+
+    if (media_use_ffmpeg) {
+      deps += [
+        "//third_party/ffmpeg",
+        "//third_party/ffmpeg:ffmpeg_features",
+      ]
+    }
   }
 }

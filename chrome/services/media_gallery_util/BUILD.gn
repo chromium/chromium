@@ -18,8 +18,10 @@ source_set("lib") {
 
   deps = [
     "//base",
+    "//chrome/common",
     "//media",
     "//mojo/public/cpp/bindings",
+    "//third_party/libyuv",
   ]
 
   if (is_android) {
@@ -55,6 +57,8 @@ if (is_android) {
 
     deps = [
       ":lib",
+      "//base/test:test_support",
+      "//media:test_support",
       "//testing/gtest",
     ]
   }

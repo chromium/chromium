@@ -77,8 +77,6 @@ no_check_targets = [
   "//chrome/services/cups_proxy/public/cpp:*",  # 2 errors
   "//chrome/services/cups_proxy:*",  # 6 errors
   "//chrome/services/ipp_parser:*",  # 1 error
-  "//chrome/services/media_gallery_util/public/cpp:*",  # 6 errors
-  "//chrome/services/media_gallery_util:*",  # 3 errors
   "//chrome/services/removable_storage_writer:*",  # 1 error
   "//chrome/services/speech:*",  # 5 errors
   "//chrome/services/util_win:*",  # 1 error

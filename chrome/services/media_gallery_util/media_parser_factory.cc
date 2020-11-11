@@ -4,7 +4,6 @@
 
 #include "chrome/services/media_gallery_util/media_parser_factory.h"
 
-#include "base/allocator/buildflags.h"
 #include "build/build_config.h"
 #include "chrome/services/media_gallery_util/media_parser.h"
 #include "media/base/media.h"
