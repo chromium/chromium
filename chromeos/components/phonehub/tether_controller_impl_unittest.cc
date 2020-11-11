@@ -516,20 +516,17 @@ TEST_F(TetherControllerImplTest, AttemptConnectFeatureOffNoNetwork) {
 
   // Tether is scanning, connection should be connecting still.
   SetTetherScanState(true);
-  EnableTetherDevice();
   EXPECT_EQ(GetStatus(), TetherController::Status::kConnecting);
   DisconnectTetherDevice();
 
   // Tether stops scanning, attempt ends and connection should become
   // unavailable.
   SetTetherScanState(false);
-  EnableTetherDevice();
   EXPECT_EQ(GetNumObserverScanFailed(), 1U);
   EXPECT_EQ(GetStatus(), TetherController::Status::kConnectionUnavailable);
 
   // Tether starts scanning after connection attempt ended.
   SetTetherScanState(true);
-  EnableTetherDevice();
   EXPECT_EQ(GetNumObserverScanFailed(), 1U);
   EXPECT_EQ(GetStatus(), TetherController::Status::kConnectionUnavailable);
 }

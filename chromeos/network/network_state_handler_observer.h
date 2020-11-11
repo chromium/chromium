@@ -66,6 +66,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkStateHandlerObserver {
   // A scan for a given network type has been requested.
   virtual void ScanRequested(const NetworkTypePattern& type);
 
+  // A scan for |device| started.
+  virtual void ScanStarted(const DeviceState* device);
+
   // A scan for |device| completed.
   virtual void ScanCompleted(const DeviceState* device);
 

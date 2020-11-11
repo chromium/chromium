@@ -339,6 +339,9 @@ void NetworkStateHandler::SetTetherScanState(bool is_scanning) {
   if (was_scanning && !is_scanning) {
     // If a scan was in progress but has completed, notify observers.
     NotifyScanCompleted(tether_device_state);
+  } else if (!was_scanning && is_scanning) {
+    // If a scan was started, notify observers.
+    NotifyScanStarted(tether_device_state);
   }
 }
 
@@ -2031,6 +2034,13 @@ void NetworkStateHandler::NotifyScanCompleted(const DeviceState* device) {
   NET_LOG(EVENT) << "NOTIFY: ScanCompleted for: " << device->path();
   for (auto& observer : observers_)
     observer.ScanCompleted(device);
+}
+
+void NetworkStateHandler::NotifyScanStarted(const DeviceState* device) {
+  SCOPED_NET_LOG_IF_SLOW();
+  NET_LOG(EVENT) << "NOTIFY: ScanStarted for: " << device->path();
+  for (auto& observer : observers_)
+    observer.ScanStarted(device);
 }
 
 void NetworkStateHandler::LogPropertyUpdated(const ManagedState* state,

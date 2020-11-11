@@ -150,6 +150,8 @@ class CrosNetworkConfig : public mojom::CrosNetworkConfig,
   void NetworkPropertiesUpdated(const NetworkState* network) override;
   void DevicePropertiesUpdated(const DeviceState* device) override;
   void OnShuttingDown() override;
+  void ScanStarted(const DeviceState* device) override;
+  void ScanCompleted(const DeviceState* device) override;
 
   // NetworkCertificateHandler::Observer
   void OnCertificatesChanged() override;

@@ -36,6 +36,8 @@ void NetworkStateHandlerObserver::DevicePropertiesUpdated(
 void NetworkStateHandlerObserver::ScanRequested(
     const NetworkTypePattern& type) {}
 
+void NetworkStateHandlerObserver::ScanStarted(const DeviceState* device) {}
+
 void NetworkStateHandlerObserver::ScanCompleted(const DeviceState* device) {}
 
 void NetworkStateHandlerObserver::HostnameChanged(const std::string& hostname) {

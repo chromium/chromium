@@ -2628,6 +2628,14 @@ void CrosNetworkConfig::DevicePropertiesUpdated(const DeviceState* device) {
   DeviceListChanged();
 }
 
+void CrosNetworkConfig::ScanCompleted(const DeviceState* device) {
+  DeviceListChanged();
+}
+
+void CrosNetworkConfig::ScanStarted(const DeviceState* device) {
+  DeviceListChanged();
+}
+
 void CrosNetworkConfig::OnShuttingDown() {
   if (network_state_handler_->HasObserver(this))
     network_state_handler_->RemoveObserver(this, FROM_HERE);

@@ -571,6 +571,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkStateHandler
   // Called to ask observers to scan for networks.
   void NotifyScanRequested(const NetworkTypePattern& type);
 
+  // Called whenever Device.Scanning state transitions to true.
+  void NotifyScanStarted(const DeviceState* device);
+
   // Called whenever Device.Scanning state transitions to false.
   void NotifyScanCompleted(const DeviceState* device);
 

@@ -1315,6 +1315,24 @@ TEST_F(CrosNetworkConfigTest, DeviceListChanged) {
   // disabling state, next when it's actually disabled, and lastly when
   // Device::available_managed_network_path_ changes.
   EXPECT_EQ(3, observer()->device_state_list_changed());
+
+  // Enable Tethering
+  helper().network_state_handler()->SetTetherTechnologyState(
+      NetworkStateHandler::TechnologyState::TECHNOLOGY_ENABLED);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(4, observer()->device_state_list_changed());
+
+  // Tests that observers are notified of device state list change
+  // when a tether scan begins for a device.
+  helper().network_state_handler()->SetTetherScanState(true);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(5, observer()->device_state_list_changed());
+
+  // Tests that observers are notified of device state list change
+  // when a tether scan completes.
+  helper().network_state_handler()->SetTetherScanState(false);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(6, observer()->device_state_list_changed());
 }
 
 TEST_F(CrosNetworkConfigTest, ActiveNetworksChanged) {
