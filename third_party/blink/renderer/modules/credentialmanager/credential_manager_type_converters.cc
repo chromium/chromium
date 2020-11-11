@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <utility>
 
+#include "base/numerics/safe_conversions.h"
 #include "build/build_config.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/array_buffer_or_array_buffer_view.h"
@@ -203,13 +204,15 @@ TypeConverter<Vector<uint8_t>, blink::ArrayBufferOrArrayBufferView>::Convert(
   Vector<uint8_t> vector;
   if (buffer.IsArrayBuffer()) {
     vector.Append(static_cast<uint8_t*>(buffer.GetAsArrayBuffer()->Data()),
-                  buffer.GetAsArrayBuffer()->DeprecatedByteLengthAsUnsigned());
+                  base::checked_cast<wtf_size_t>(
+                      buffer.GetAsArrayBuffer()->ByteLengthAsSizeT()));
   } else {
     DCHECK(buffer.IsArrayBufferView());
     vector.Append(
         static_cast<uint8_t*>(
             buffer.GetAsArrayBufferView().View()->BaseAddress()),
-        buffer.GetAsArrayBufferView().View()->deprecatedByteLengthAsUnsigned());
+        base::checked_cast<wtf_size_t>(
+            buffer.GetAsArrayBufferView().View()->byteLengthAsSizeT()));
   }
   return vector;
 }

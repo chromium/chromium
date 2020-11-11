@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/metrics/histogram_macros.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/rand_util.h"
 #include "build/build_config.h"
 #include "third_party/blink/public/common/sms/webotp_service_outcome.h"
@@ -55,6 +56,8 @@
 #include "third_party/blink/renderer/modules/credentialmanager/password_credential.h"
 #include "third_party/blink/renderer/modules/credentialmanager/payment_credential.h"
 #include "third_party/blink/renderer/modules/credentialmanager/public_key_credential.h"
+#include "third_party/blink/renderer/modules/credentialmanager/public_key_credential_descriptor.h"
+#include "third_party/blink/renderer/modules/credentialmanager/public_key_credential_user_entity.h"
 #include "third_party/blink/renderer/modules/credentialmanager/scoped_promise_resolver.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
@@ -225,6 +228,25 @@ bool IsIconURLNullOrSecure(const KURL& url) {
   return url.IsAboutSrcdocURL() || url.IsAboutBlankURL() ||
          url.ProtocolIsData() ||
          SecurityOrigin::Create(url)->IsPotentiallyTrustworthy();
+}
+
+// Checks if the size of the supplied ArrayBuffer or ArrayBufferView is at most
+// the maximum size allowed.
+bool IsArrayBufferOrViewBelowSizeLimit(
+    ArrayBufferOrArrayBufferView buffer_or_view) {
+  if (buffer_or_view.IsNull())
+    return true;
+
+  if (buffer_or_view.IsArrayBuffer()) {
+    return base::CheckedNumeric<wtf_size_t>(
+               buffer_or_view.GetAsArrayBuffer()->ByteLengthAsSizeT())
+        .IsValid();
+  }
+
+  DCHECK(buffer_or_view.IsArrayBufferView());
+  return base::CheckedNumeric<wtf_size_t>(
+             buffer_or_view.GetAsArrayBufferView()->byteLengthAsSizeT())
+      .IsValid();
 }
 
 DOMException* CredentialManagerErrorToDOMException(
@@ -701,6 +723,13 @@ void CreatePublicKeyCredentialForPaymentCredential(
     return;
   }
 
+  if (!IsArrayBufferOrViewBelowSizeLimit(options->challenge())) {
+    resolver->Reject(DOMException::Create(
+        "The `challenge` attribute exceeds the maximum allowed size.",
+        "RangeError"));
+    return;
+  }
+
   auto mojo_options = mojom::blink::PublicKeyCredentialCreationOptions::New();
   mojo_options->relying_party =
       mojom::blink::PublicKeyCredentialRpEntity::From(*options->rp());
@@ -855,7 +884,12 @@ ScriptPromise CredentialsContainer::get(
                         WebFeature::kCredentialManagerGetWithUVM);
     }
 #endif
-
+    if (!IsArrayBufferOrViewBelowSizeLimit(options->publicKey()->challenge())) {
+      resolver->Reject(DOMException::Create(
+          "The `challenge` attribute exceeds the maximum allowed size.",
+          "RangeError"));
+      return promise;
+    }
     if (options->publicKey()->hasExtensions()) {
       if (options->publicKey()->extensions()->hasAppid()) {
         const auto& appid = options->publicKey()->extensions()->appid();
@@ -1109,6 +1143,30 @@ ScriptPromise CredentialsContainer::create(
           WebFeature::kCredentialManagerCreatePublicKeyCredential);
     }
 
+    if (!IsArrayBufferOrViewBelowSizeLimit(options->publicKey()->challenge())) {
+      resolver->Reject(DOMException::Create(
+          "The `challenge` attribute exceeds the maximum allowed size.",
+          "RangeError"));
+      return promise;
+    }
+
+    if (!IsArrayBufferOrViewBelowSizeLimit(
+            options->publicKey()->user()->id())) {
+      resolver->Reject(DOMException::Create(
+          "The `user.id` attribute exceeds the maximum allowed size.",
+          "RangeError"));
+      return promise;
+    }
+
+    for (const auto& credential : options->publicKey()->excludeCredentials()) {
+      if (!IsArrayBufferOrViewBelowSizeLimit(credential->id())) {
+        resolver->Reject(DOMException::Create(
+            "The `excludedCredentials.id` attribute exceeds the maximum "
+            "allowed size.",
+            "RangeError"));
+        return promise;
+      }
+    }
     if (options->publicKey()->hasExtensions()) {
       if (options->publicKey()->extensions()->hasAppid()) {
         resolver->Reject(MakeGarbageCollected<DOMException>(
