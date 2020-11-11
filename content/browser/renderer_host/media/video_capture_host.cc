@@ -191,6 +191,11 @@ void VideoCaptureHost::Start(
            << media::VideoCaptureFormat::ToString(params.requested_format);
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
+  if (!params.IsValid()) {
+    mojo::ReportBadMessage("Invalid video capture params.");
+    return;
+  }
+
   DCHECK(!base::Contains(device_id_to_observer_map_, device_id));
   device_id_to_observer_map_[device_id].Bind(std::move(observer));
 
@@ -247,6 +252,11 @@ void VideoCaptureHost::Resume(const base::UnguessableToken& device_id,
                               const media::VideoCaptureParams& params) {
   DVLOG(1) << __func__ << " " << device_id;
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
+
+  if (!params.IsValid()) {
+    mojo::ReportBadMessage("Invalid video capture params.");
+    return;
+  }
 
   VideoCaptureControllerID controller_id(device_id);
   auto it = controllers_.find(controller_id);
