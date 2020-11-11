@@ -28,7 +28,8 @@ enum class CaptureModeEntryType {
   kAccelTakeWindowScreenshot,
   kQuickSettings,
   kStylusPalette,
-  kMaxValue = kStylusPalette,
+  kPowerMenu,
+  kMaxValue = kPowerMenu,
 };
 
 // Records capture mode bar button presses given by |button_type|.

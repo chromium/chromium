@@ -6,8 +6,10 @@
 
 #include <memory>
 
+#include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/login/login_screen_controller.h"
+#include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
@@ -175,6 +177,11 @@ void PowerButtonMenuView::RecreateItems() {
   const bool create_sign_out = login_status != LoginStatus::NOT_LOGGED_IN;
   const bool create_lock_screen = login_status != LoginStatus::LOCKED &&
                                   session_controller->CanLockScreen();
+  const bool capture_mode_enabled = features::IsCaptureModeEnabled();
+  const bool create_capture_mode =
+      capture_mode_enabled &&
+      Shell::Get()->tablet_mode_controller()->InTabletMode() &&
+      !session_controller->IsUserSessionBlocked();
   const bool create_feedback = login_status != LoginStatus::LOCKED &&
                                login_status != LoginStatus::KIOSK_APP;
 
@@ -201,6 +208,16 @@ void PowerButtonMenuView::RecreateItems() {
       kSystemPowerButtonMenuLockScreenIcon,
       l10n_util::GetStringUTF16(IDS_ASH_POWER_BUTTON_MENU_LOCK_SCREEN_BUTTON),
       &lock_screen_item_);
+  add_remove_item(
+      create_capture_mode, PowerButtonMenuActionType::kCaptureMode,
+      capture_mode_enabled
+          ? base::BindRepeating(&CaptureModeController::Start,
+                                base::Unretained(CaptureModeController::Get()),
+                                CaptureModeEntryType::kPowerMenu)
+          : base::DoNothing(),
+      kCaptureModeIcon,
+      l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_CAPTURE_MODE_BUTTON_LABEL),
+      &capture_mode_item_);
   add_remove_item(
       create_feedback, PowerButtonMenuActionType::kFeedback,
       base::BindRepeating(
@@ -251,6 +268,10 @@ void PowerButtonMenuView::Layout() {
       lock_screen_item_->SetBoundsRect(rect);
     }
   }
+  if (capture_mode_item_) {
+    rect.Offset(x_offset, 0);
+    capture_mode_item_->SetBoundsRect(rect);
+  }
   if (feedback_item_) {
     rect.Offset(x_offset, 0);
     feedback_item_->SetBoundsRect(rect);
@@ -272,6 +293,8 @@ gfx::Size PowerButtonMenuView::CalculatePreferredSize() const {
       if (lock_screen_item_)
         width += one_item_x_offset;
   }
+  if (capture_mode_item_)
+    width += one_item_x_offset;
   if (feedback_item_)
     width += one_item_x_offset;
   menu_size.set_width(width);

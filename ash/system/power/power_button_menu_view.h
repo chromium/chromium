@@ -88,6 +88,7 @@ class ASH_EXPORT PowerButtonMenuView : public views::View,
   PowerButtonMenuItemView* power_off_item_ = nullptr;
   PowerButtonMenuItemView* sign_out_item_ = nullptr;
   PowerButtonMenuItemView* lock_screen_item_ = nullptr;
+  PowerButtonMenuItemView* capture_mode_item_ = nullptr;
   PowerButtonMenuItemView* feedback_item_ = nullptr;
 
   // The physical display side of power button in landscape primary.

@@ -9273,6 +9273,7 @@ Called by update_bad_message_reasons.py.-->
   <int value="1" label="Window Screenshot Accelerator"/>
   <int value="2" label="Quick Settings"/>
   <int value="3" label="Stylus Palette"/>
+  <int value="4" label="Power Menu"/>
 </enum>
 
 <enum name="CapturePixelFormat">
@@ -58672,6 +58673,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="4" label="Touch to dismiss"/>
   <int value="5" label="Lock screen"/>
   <int value="6" label="Feedback"/>
+  <int value="7" label="Capture mode"/>
 </enum>
 
 <enum name="PowerButtonPressType">

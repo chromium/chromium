@@ -17,7 +17,8 @@ enum class PowerButtonMenuActionType {
   kDismissByTouch,
   kLockScreen,
   kFeedback,
-  kMaxValue = kFeedback,
+  kCaptureMode,
+  kMaxValue = kCaptureMode,
 };
 
 void RecordMenuActionHistogram(PowerButtonMenuActionType type);
