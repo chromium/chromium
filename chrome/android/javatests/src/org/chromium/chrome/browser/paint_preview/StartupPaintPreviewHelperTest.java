@@ -17,8 +17,8 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.params.ParameterizedCommandLineFlags;
 import org.chromium.base.test.params.ParameterizedCommandLineFlags.Switches;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Restriction;
+import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.paint_preview.services.PaintPreviewTabServiceFactory;
@@ -31,9 +31,8 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import java.util.concurrent.ExecutionException;
 
 /**
- * Tests for the {@link StartupPaintPreviewHelper} class.
- * This test suite cannot be batched because tests rely on the cold start behavior of
- * {@link ChromeActivity}.
+ * Tests for the {@link StartupPaintPreviewHelper} class. This test suite cannot be batched because
+ * tests rely on the cold start behavior of {@link ChromeActivity}.
  */
 @RunWith(StartupPaintPreviewHelperTestRunner.class)
 @Features.EnableFeatures({ChromeFeatureList.PAINT_PREVIEW_SHOW_ON_STARTUP})
@@ -95,17 +94,20 @@ public class StartupPaintPreviewHelperTest {
     @Test
     @MediumTest
     @Restriction(StartupPaintPreviewHelperTestRunner.RESTRICTION_TYPE_KEEP_ACTIVITIES)
-    @DisabledTest(message = "https://crbug.com/1145783")
     public void testDisplayOnStartup() throws ExecutionException {
         mActivityTestRule.startMainActivityWithURL(
                 mActivityTestRule.getTestServer().getURL(TEST_URL));
 
         // Send Chrome to background to trigger capture.
         UiDevice.getInstance(InstrumentationRegistry.getInstrumentation()).pressHome();
-        assertHasCaptureForTab(mActivityTestRule.getActivity().getActivityTab(), true);
+        ChromeTabbedActivity firstActivity = mActivityTestRule.getActivity();
+        assertHasCaptureForTab(firstActivity.getActivityTab(), true);
 
         // Restart Chrome. Paint preview should be shown on startup.
-        TestThreadUtils.runOnUiThreadBlocking(() -> mActivityTestRule.getActivity().finish());
+        TestThreadUtils.runOnUiThreadBlocking(firstActivity::finish);
+        CriteriaHelper.pollInstrumentationThread(
+                firstActivity::isDestroyed, "Activity is not destroyed.");
+
         mActivityTestRule.startMainActivityFromLauncher();
         final Tab tab = mActivityTestRule.getActivity().getActivityTab();
         TabbedPaintPreview tabbedPaintPreview =
