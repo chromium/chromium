@@ -13,7 +13,6 @@
 #include "ash/wm/overview/overview_constants.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_item.h"
-#include "ash/wm/overview/rounded_rect_view.h"
 #include "ash/wm/window_preview_view.h"
 #include "ash/wm/wm_highlight_item_border.h"
 #include "ui/accessibility/ax_enums.mojom.h"

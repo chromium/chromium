@@ -1570,8 +1570,6 @@ component("ash") {
     "wm/overview/overview_window_drag_controller.h",
     "wm/overview/rounded_label_widget.cc",
     "wm/overview/rounded_label_widget.h",
-    "wm/overview/rounded_rect_view.cc",
-    "wm/overview/rounded_rect_view.h",
     "wm/overview/scoped_overview_animation_settings.cc",
     "wm/overview/scoped_overview_animation_settings.h",
     "wm/overview/scoped_overview_hide_windows.cc",

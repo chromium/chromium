@@ -40,8 +40,6 @@ constexpr SkColor kCircleColor = SK_ColorWHITE;
 constexpr SkColor kLabelBackgroundColor = SkColorSetA(SK_ColorBLACK, 0xDE);
 
 // Colors for split view.
-constexpr SkColor kSplitviewDividerColor = SK_ColorBLACK;
-constexpr SkColor kSplitviewDividerHandlerBarColor = SK_ColorWHITE;
 constexpr SkColor kSplitviewLabelBackgroundColor =
     SkColorSetA(SK_ColorBLACK, 0xDE);
 constexpr SkColor kSplitviewLabelEnabledColor = SK_ColorWHITE;

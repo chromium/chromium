@@ -9,7 +9,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/ash_constants.h"
-#include "ash/wm/overview/rounded_rect_view.h"
 #include "base/macros.h"
 #include "ui/gfx/canvas.h"
 #include "ui/views/view.h"
@@ -17,7 +16,7 @@
 namespace ash {
 
 // The white handler bar in the middle of the divider.
-class ASH_EXPORT SplitViewDividerHandlerView : public RoundedRectView {
+class ASH_EXPORT SplitViewDividerHandlerView : public views::View {
  public:
   SplitViewDividerHandlerView();
   ~SplitViewDividerHandlerView() override;
@@ -36,6 +35,10 @@ class ASH_EXPORT SplitViewDividerHandlerView : public RoundedRectView {
   // dragging.
   void Refresh(bool is_resizing);
 
+  // Updates the corner radius of the handler bar to |radius|. Happens during
+  // the animation of starting and ending dragging.
+  void UpdateCornerRadius(int radius);
+
  private:
   class SelectionAnimation;
   class SpawningAnimation;
@@ -44,6 +47,7 @@ class ASH_EXPORT SplitViewDividerHandlerView : public RoundedRectView {
 
   // views::View:
   void OnPaint(gfx::Canvas* canvas) override;
+  void OnThemeChanged() override;
 
   // Handles the animations for starting and ending dragging.
   std::unique_ptr<SelectionAnimation> selection_animation_;

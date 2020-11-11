@@ -8,7 +8,6 @@
 #include "ui/views/view.h"
 
 namespace ash {
-class RoundedRectView;
 
 // DropTargetView represents a transparent view with border in overview. It
 // includes a background view and plus icon. Dragged window in tablet mode can
@@ -30,7 +29,7 @@ class DropTargetView : public views::View {
  private:
   class PlusIconView;
 
-  RoundedRectView* background_view_ = nullptr;
+  views::View* background_view_ = nullptr;
   PlusIconView* plus_icon_ = nullptr;
 };
 
