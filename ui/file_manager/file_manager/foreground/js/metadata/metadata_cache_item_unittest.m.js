@@ -2,6 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assertEquals, assertFalse, assertThrows, assertTrue} from 'chrome://test/chai_assert.js';
+import {MetadataCacheItem} from './metadata_cache_item.m.js';
+import {MetadataItem} from './metadata_item.m.js';
+
 /**
  * @type {!MetadataItem}
  */
@@ -9,7 +13,7 @@ const metadataA = new MetadataItem();
 metadataA.contentMimeType = 'value';
 
 
-function testMetadataCacheItemBasic() {
+export function testMetadataCacheItemBasic() {
   const item = new MetadataCacheItem();
   const loadRequested = item.createRequests(['contentMimeType']);
   assertEquals(1, loadRequested.length);
@@ -22,7 +26,7 @@ function testMetadataCacheItemBasic() {
   assertEquals('value', result.contentMimeType);
 }
 
-function testMetadataCacheItemAvoidDoubleLoad() {
+export function testMetadataCacheItemAvoidDoubleLoad() {
   const item = new MetadataCacheItem();
   item.startRequests(1, ['contentMimeType']);
   const loadRequested = item.createRequests(['contentMimeType']);
@@ -35,7 +39,7 @@ function testMetadataCacheItemAvoidDoubleLoad() {
   assertEquals('value', result.contentMimeType);
 }
 
-function testMetadataCacheItemInvalidate() {
+export function testMetadataCacheItemInvalidate() {
   const item = new MetadataCacheItem();
   item.startRequests(1, item.createRequests(['contentMimeType']));
   item.invalidate(2);
@@ -45,7 +49,7 @@ function testMetadataCacheItemInvalidate() {
   assertEquals(1, loadRequested.length);
 }
 
-function testMetadataCacheItemStoreInReverseOrder() {
+export function testMetadataCacheItemStoreInReverseOrder() {
   const item = new MetadataCacheItem();
   item.startRequests(1, item.createRequests(['contentMimeType']));
   item.startRequests(2, item.createRequests(['contentMimeType']));
@@ -60,7 +64,7 @@ function testMetadataCacheItemStoreInReverseOrder() {
   assertEquals('value2', result.contentMimeType);
 }
 
-function testMetadataCacheItemClone() {
+export function testMetadataCacheItemClone() {
   const itemA = new MetadataCacheItem();
   itemA.startRequests(1, itemA.createRequests(['contentMimeType']));
   const itemB = itemA.clone();
@@ -74,7 +78,7 @@ function testMetadataCacheItemClone() {
   assertTrue(itemB.hasFreshCache(['contentMimeType']));
 }
 
-function testMetadataCacheItemHasFreshCache() {
+export function testMetadataCacheItemHasFreshCache() {
   const item = new MetadataCacheItem();
   assertFalse(item.hasFreshCache(['contentMimeType', 'externalFileUrl']));
 
@@ -97,7 +101,7 @@ function testMetadataCacheItemHasFreshCache() {
   assertTrue(item.hasFreshCache(['contentMimeType']));
 }
 
-function testMetadataCacheItemShouldNotUpdateBeforeInvalidation() {
+export function testMetadataCacheItemShouldNotUpdateBeforeInvalidation() {
   const item = new MetadataCacheItem();
   item.startRequests(1, item.createRequests(['contentMimeType']));
   item.storeProperties(1, metadataA);
@@ -109,7 +113,7 @@ function testMetadataCacheItemShouldNotUpdateBeforeInvalidation() {
   assertEquals('value', item.get(['contentMimeType']).contentMimeType);
 }
 
-function testMetadataCacheItemError() {
+export function testMetadataCacheItemError() {
   const item = new MetadataCacheItem();
   item.startRequests(1, item.createRequests(['contentThumbnailUrl']));
 
@@ -122,7 +126,7 @@ function testMetadataCacheItemError() {
   assertEquals('Error', property.contentThumbnailUrlError.message);
 }
 
-function testMetadataCacheItemErrorShouldNotFetchedDirectly() {
+export function testMetadataCacheItemErrorShouldNotFetchedDirectly() {
   const item = new MetadataCacheItem();
   item.startRequests(1, item.createRequests(['contentThumbnailUrl']));
 

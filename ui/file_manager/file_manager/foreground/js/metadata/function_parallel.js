@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// #import {MetadataParser} from './metadata_parser.m.js';
+
 /**
  * @class FunctionParallel to invoke steps in parallel.
  */
-class FunctionParallel {
+/* #export */ class FunctionParallel {
   /**
    * @param {string} name Name of the function.
    * @param {Array<Function>} steps Array of functions to invoke in parallel.

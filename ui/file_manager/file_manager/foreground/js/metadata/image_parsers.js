@@ -2,12 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
+// #import {ByteReader} from './byte_reader.m.js';
+// #import {ImageParser, MetadataParser} from './metadata_parser.m.js';
+// #import {MetadataParserLogger} from '../../../../externs/metadata_worker_window.m.js';
+// clang-format on
+
 /**
  * Base class for image metadata parsers that only need to look at a short
  * fragment at the start of the file.
  * @abstract
  */
-class SimpleImageParser extends ImageParser {
+/* #export */ class SimpleImageParser extends ImageParser {
   /**
    * @param {!MetadataParserLogger} parent Parent object.
    * @param {string} type Image type.
@@ -51,7 +57,7 @@ class SimpleImageParser extends ImageParser {
  * Parser for the header of png files.
  * @final
  */
-class PngParser extends SimpleImageParser {
+/* #export */ class PngParser extends SimpleImageParser {
   /**
    * @param {!MetadataParserLogger} parent Parent object.
    */
@@ -85,7 +91,7 @@ class PngParser extends SimpleImageParser {
  * Parser for the header of bmp files.
  * @final
  */
-class BmpParser extends SimpleImageParser {
+/* #export */ class BmpParser extends SimpleImageParser {
   /**
    * @param {!MetadataParserLogger} parent Parent object.
    */
@@ -114,7 +120,7 @@ class BmpParser extends SimpleImageParser {
  * Parser for the header of gif files.
  * @final
  */
-class GifParser extends SimpleImageParser {
+/* #export */ class GifParser extends SimpleImageParser {
   /**
    * @param {!MetadataParserLogger} parent Parent object.
    */
@@ -142,7 +148,7 @@ class GifParser extends SimpleImageParser {
  * Parser for the header of webp files.
  * @final
  */
-class WebpParser extends SimpleImageParser {
+/* #export */ class WebpParser extends SimpleImageParser {
   /**
    * @param {!MetadataParserLogger} parent Parent object.
    */
@@ -217,7 +223,7 @@ class WebpParser extends SimpleImageParser {
  * Parser for the header of .ico icon files.
  * @final
  */
-class IcoParser extends SimpleImageParser {
+/* #export */ class IcoParser extends SimpleImageParser {
   /**
    * @param {!MetadataParserLogger} parent Parent metadata dispatcher object.
    */

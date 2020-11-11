@@ -2,11 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// #import {MetadataItem} from './metadata_item.m.js';
+// #import {MetadataProvider} from './metadata_provider.m.js';
+
 /**
  * Metadata provider for FileEntry#getMetadata.
  * @final
  */
-class FileSystemMetadataProvider extends MetadataProvider {
+/* #export */ class FileSystemMetadataProvider extends MetadataProvider {
   constructor() {
     super(FileSystemMetadataProvider.PROPERTY_NAMES);
   }
