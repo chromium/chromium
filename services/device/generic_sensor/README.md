@@ -62,7 +62,7 @@ Support for the SensorTypes defined by the Mojo interface is summarized in this
 table. An empty cell indicates that the sensor type is not supported on that
 platform.
 
-| SensorType                        | Android                   | Linux                                 | macOS                                 | Windows                                   |
+| SensorType                        | Android                   | Linux and ChromeOS                    | macOS                                 | Windows                                   |
 | --------------------------------- | ------------------------- | ------------------------------------- | ------------------------------------- | ----------------------------------------- |
 | AMBIENT_LIGHT                     | TYPE_LIGHT                | in_illuminance                        | AppleLMUController                    | Yes                                       |
 | PROXIMITY                         |                           |                                       |                                       |                                           |
@@ -103,13 +103,15 @@ For ABSOLUTE_ORIENTATION_QUATERNION, the following sensor fallback is used:
 For RELATIVE_ORIENTATION_EULER_ANGLES, converts the data produced by
 RELATIVE_ORIENTATION_QUATERNION to euler angles.
 
-### Linux (and Chrome OS)
+### Linux and Chrome OS
 
-Sensors are implemented by reading values from the IIO subsystem. The values in
-the "Linux" column of the table above are the prefix of the sysfs files Chrome
-searches for to provide data for a SensorType. The
-ABSOLUTE_ORIENTATION_EULER_ANGLES sensor type is provided by interpreting the
-value that can be read from the ACCELEROMETER and MAGNETOMETER. The
+On Linux, sensors are implemented by reading values from the IIO subsystem.
+The values in the "Linux" column of the table above are the prefix of the
+sysfs files Chrome searches for to provide data for a SensorType.
+On ChromeOS, sensors are implemented with Mojo connections to IIO Service, a
+CrOS daemon that provides sensors' data to other applications.
+The ABSOLUTE_ORIENTATION_EULER_ANGLES sensor type is provided by interpreting
+the value that can be read from the ACCELEROMETER and MAGNETOMETER. The
 ABSOLUTE_ORIENTATION_QUATERNION sensor type is provided by interpreting the
 value that can be read from the ABSOLUTE_ORIENTATION_EULER_ANGLES. The
 RELATIVE_ORIENTATION_EULER_ANGLES sensor type is provided by interpreting the

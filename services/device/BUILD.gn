@@ -103,8 +103,6 @@ component("binder_overrides") {
   defines = [ "IS_DEVICE_SERVICE_BINDER_OVERRIDES_IMPL" ]
 }
 
-is_linux_without_udev = (is_linux || is_chromeos) && !use_udev
-
 source_set("perftests") {
   testonly = true
 
@@ -197,7 +195,7 @@ source_set("tests") {
     ]
   }
 
-  if (!is_linux_without_udev && is_linux) {
+  if (is_linux && use_udev) {
     sources +=
         [ "generic_sensor/platform_sensor_and_provider_unittest_linux.cc" ]
   }
@@ -211,8 +209,14 @@ source_set("tests") {
   }
 
   if (is_ash) {
-    sources += [ "fingerprint/fingerprint_chromeos_unittest.cc" ]
+    sources += [
+      "fingerprint/fingerprint_chromeos_unittest.cc",
+      "generic_sensor/platform_sensor_chromeos_unittest.cc",
+      "generic_sensor/platform_sensor_provider_chromeos_unittest.cc",
+    ]
     deps += [
+      "//chromeos/components/sensors:sensors",
+      "//chromeos/components/sensors:test_support",
       "//chromeos/dbus:test_support",
       "//chromeos/dbus/biod:test_support",
       "//chromeos/network:test_support",
@@ -246,7 +250,7 @@ source_set("tests") {
       "//services/device/vibration",
     ]
 
-    if (!is_linux_without_udev) {
+    if ((!is_linux && !is_chromeos) || use_udev) {
       sources += [
         "hid/hid_connection_impl_unittest.cc",
         "hid/test_report_descriptors.cc",

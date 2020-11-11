@@ -1,0 +1,393 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "services/device/generic_sensor/platform_sensor_provider_chromeos.h"
+
+#include <algorithm>
+#include <iterator>
+#include <utility>
+
+#include "base/bind.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/ranges/algorithm.h"
+#include "base/stl_util.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_split.h"
+#include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
+#include "base/threading/sequenced_task_runner_handle.h"
+#include "chromeos/components/sensors/sensor_hal_dispatcher.h"
+#include "services/device/generic_sensor/absolute_orientation_euler_angles_fusion_algorithm_using_accelerometer_and_magnetometer.h"
+#include "services/device/generic_sensor/linear_acceleration_fusion_algorithm_using_accelerometer.h"
+#include "services/device/generic_sensor/linux/sensor_data_linux.h"
+#include "services/device/generic_sensor/orientation_quaternion_fusion_algorithm_using_euler_angles.h"
+#include "services/device/generic_sensor/platform_sensor_chromeos.h"
+#include "services/device/generic_sensor/platform_sensor_fusion.h"
+#include "services/device/generic_sensor/relative_orientation_euler_angles_fusion_algorithm_using_accelerometer.h"
+#include "services/device/generic_sensor/relative_orientation_euler_angles_fusion_algorithm_using_accelerometer_and_gyroscope.h"
+
+namespace device {
+namespace {
+
+constexpr base::TimeDelta kReconnectDelay =
+    base::TimeDelta::FromMilliseconds(1000);
+
+base::Optional<mojom::SensorType> ConvertSensorType(
+    chromeos::sensors::mojom::DeviceType device_type) {
+  switch (device_type) {
+    case chromeos::sensors::mojom::DeviceType::ACCEL:
+      return mojom::SensorType::ACCELEROMETER;
+
+    case chromeos::sensors::mojom::DeviceType::ANGLVEL:
+      return mojom::SensorType::GYROSCOPE;
+
+    case chromeos::sensors::mojom::DeviceType::LIGHT:
+      return mojom::SensorType::AMBIENT_LIGHT;
+
+    case chromeos::sensors::mojom::DeviceType::MAGN:
+      return mojom::SensorType::MAGNETOMETER;
+
+    default:
+      return base::nullopt;
+  }
+}
+
+}  // namespace
+
+PlatformSensorProviderChromeOS::PlatformSensorProviderChromeOS() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  RegisterSensorClient();
+}
+
+PlatformSensorProviderChromeOS::~PlatformSensorProviderChromeOS() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+}
+
+void PlatformSensorProviderChromeOS::SetUpChannel(
+    mojo::PendingRemote<chromeos::sensors::mojom::SensorService>
+        pending_remote) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  if (sensor_service_remote_.is_bound()) {
+    LOG(ERROR) << "Ignoring the second Remote<SensorService>";
+    return;
+  }
+
+  sensor_service_remote_.Bind(std::move(pending_remote));
+  sensor_service_remote_.set_disconnect_handler(
+      base::BindOnce(&PlatformSensorProviderChromeOS::OnSensorServiceDisconnect,
+                     weak_ptr_factory_.GetWeakPtr()));
+
+  sensor_service_remote_->GetAllDeviceIds(
+      base::BindOnce(&PlatformSensorProviderChromeOS::GetAllDeviceIdsCallback,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void PlatformSensorProviderChromeOS::CreateSensorInternal(
+    mojom::SensorType type,
+    SensorReadingSharedBuffer* reading_buffer,
+    CreateSensorCallback callback) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
+  if (!sensor_service_remote_.is_bound() || !AreAllSensorsReady()) {
+    // Wait until |sensor_service_remote_| is connected and all sensors are
+    // ready to proceed.
+    // If |sensor_service_remote_| is disconnected, wait until it re-connects to
+    // proceed, as it needs a valid SensorDevice channel.
+    return;
+  }
+
+  // As mojom::SensorType::RELATIVE_ORIENTATION_EULER_ANGLES needs to know
+  // whether mojom::SensorType::GYROSCOPE exists or not to determine the
+  // algorithm, wait until all sensors ready before processing the fusion
+  // sensors as well.
+  if (IsFusionSensorType(type)) {
+    CreateFusionSensor(type, reading_buffer, std::move(callback));
+    return;
+  }
+
+  auto id_opt = GetDeviceId(type);
+  if (!id_opt.has_value()) {
+    std::move(callback).Run(nullptr);
+    return;
+  }
+  int32_t id = id_opt.value();
+  DCHECK(base::Contains(sensors_, id));
+
+  auto& sensor = sensors_[id];
+  DCHECK(sensor.scale.has_value());
+
+  auto sensor_device_remote = GetSensorDeviceRemote(id);
+  std::move(callback).Run(base::MakeRefCounted<PlatformSensorChromeOS>(
+      id, type, reading_buffer, this, sensor.scale.value(),
+      std::move(sensor_device_remote)));
+}
+
+void PlatformSensorProviderChromeOS::FreeResources() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+}
+
+bool PlatformSensorProviderChromeOS::IsSensorTypeAvailable(
+    mojom::SensorType type) const {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  return GetDeviceId(type).has_value();
+}
+
+PlatformSensorProviderChromeOS::SensorData::SensorData() = default;
+PlatformSensorProviderChromeOS::SensorData::~SensorData() = default;
+
+base::Optional<int32_t> PlatformSensorProviderChromeOS::GetDeviceId(
+    mojom::SensorType type) const {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  const auto type_id = sensor_id_by_type_.find(type);
+  if (type_id == sensor_id_by_type_.end())
+    return base::nullopt;
+  return type_id->second;
+}
+
+void PlatformSensorProviderChromeOS::RegisterSensorClient() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK(!sensor_hal_client_.is_bound());
+
+  chromeos::sensors::SensorHalDispatcher::GetInstance()->RegisterClient(
+      sensor_hal_client_.BindNewPipeAndPassRemote());
+
+  sensor_hal_client_.set_disconnect_handler(
+      base::BindOnce(&PlatformSensorProviderChromeOS::OnSensorHalClientFailure,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void PlatformSensorProviderChromeOS::OnSensorHalClientFailure() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
+  LOG(ERROR) << "OnSensorHalClientFailure";
+
+  ResetSensorService();
+  sensor_hal_client_.reset();
+
+  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&PlatformSensorProviderChromeOS::RegisterSensorClient,
+                     weak_ptr_factory_.GetWeakPtr()),
+      kReconnectDelay);
+}
+
+void PlatformSensorProviderChromeOS::OnSensorServiceDisconnect() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
+  LOG(ERROR) << "OnSensorServiceDisconnect";
+
+  ResetSensorService();
+}
+
+void PlatformSensorProviderChromeOS::ResetSensorService() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
+  for (auto& sensor : sensors_) {
+    // Reset only the remote while keeping the attributes information to speed
+    // up recovery, as the attributes won't need to be queried again.
+    sensor.second.remote.reset();
+  }
+
+  sensor_service_remote_.reset();
+}
+
+void PlatformSensorProviderChromeOS::GetAllDeviceIdsCallback(
+    const SensorIdTypesMap& ids_types) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK(sensor_service_remote_.is_bound());
+
+  sensor_ids_received_ = true;
+
+  for (const auto& id_types : ids_types) {
+    int32_t id = id_types.first;
+    SensorData& sensor = sensors_[id];
+
+    if (sensor.ignored)
+      continue;
+
+    sensor.types = id_types.second;
+    sensor.remote.reset();
+
+    std::vector<std::string> attr_names;
+    if (!sensor.scale.has_value())
+      attr_names.push_back(chromeos::sensors::mojom::kScale);
+
+    if (attr_names.empty())
+      continue;
+
+    sensor.remote = GetSensorDeviceRemote(id);
+
+    // Add a temporary disconnect handler to catch failures during sensor
+    // enumeration. PlatformSensorChromeOS will handle disconnection during
+    // normal operation.
+    sensor.remote.set_disconnect_handler(base::BindOnce(
+        &PlatformSensorProviderChromeOS::OnSensorDeviceDisconnect,
+        weak_ptr_factory_.GetWeakPtr(), id));
+
+    sensor.remote->GetAttributes(
+        std::move(attr_names),
+        base::BindOnce(&PlatformSensorProviderChromeOS::GetAttributesCallback,
+                       weak_ptr_factory_.GetWeakPtr(), id));
+  }
+
+  ProcessSensorsIfPossible();
+}
+
+void PlatformSensorProviderChromeOS::GetAttributesCallback(
+    int32_t id,
+    const std::vector<base::Optional<std::string>>& values) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
+  auto it = sensors_.find(id);
+  DCHECK(it != sensors_.end());
+  auto& sensor = it->second;
+  DCHECK(sensor.remote.is_bound());
+
+  size_t index = 0;
+
+  if (!sensor.scale.has_value()) {
+    if (index >= values.size()) {
+      LOG(ERROR) << "values doesn't contain scale attribute.";
+      IgnoreSensor(sensor);
+      return;
+    }
+
+    double scale = 0.0;
+    if (!values[index].has_value() ||
+        !base::StringToDouble(values[index].value(), &scale)) {
+      LOG(ERROR) << "Invalid scale: " << values[index].value_or("")
+                 << ", for accel with id: " << id;
+      IgnoreSensor(sensor);
+      return;
+    }
+
+    sensor.scale = scale;
+
+    ++index;
+  }
+
+  ProcessSensorsIfPossible();
+}
+
+void PlatformSensorProviderChromeOS::IgnoreSensor(SensorData& sensor) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
+  sensor.ignored = true;
+  sensor.remote.reset();
+
+  ProcessSensorsIfPossible();
+}
+
+bool PlatformSensorProviderChromeOS::AreAllSensorsReady() const {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
+  if (!sensor_ids_received_)
+    return false;
+
+  return base::ranges::all_of(sensors_, [](const auto& sensor) {
+    return sensor.second.ignored || sensor.second.scale.has_value();
+  });
+}
+
+void PlatformSensorProviderChromeOS::OnSensorDeviceDisconnect(int32_t id) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
+  sensors_[id].remote.reset();
+}
+
+void PlatformSensorProviderChromeOS::ProcessSensorsIfPossible() {
+  if (!AreAllSensorsReady())
+    return;
+
+  DetermineSensorsByType();
+  RemoveUnusedSensorDeviceRemotes();
+  ProcessStoredRequests();
+}
+
+void PlatformSensorProviderChromeOS::DetermineSensorsByType() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  for (const auto& sensor : sensors_) {
+    if (sensor.second.ignored)
+      continue;
+
+    int32_t id = sensor.first;
+    for (const auto& device_type : sensor.second.types) {
+      const auto type = ConvertSensorType(device_type);
+      if (!type.has_value())
+        continue;
+
+      base::TryEmplace(sensor_id_by_type_, type.value(), id);
+    }
+  }
+}
+
+void PlatformSensorProviderChromeOS::RemoveUnusedSensorDeviceRemotes() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  std::set<int32_t> used_ids;
+  for (const auto& type_id : sensor_id_by_type_)
+    used_ids.emplace(type_id.second);
+
+  for (auto& sensor : sensors_) {
+    if (!base::Contains(used_ids, sensor.first))
+      sensor.second.remote.reset();
+  }
+}
+
+void PlatformSensorProviderChromeOS::ProcessStoredRequests() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  std::vector<mojom::SensorType> request_types = GetPendingRequestTypes();
+  for (const auto& type : request_types) {
+    SensorReadingSharedBuffer* reading_buffer =
+        GetSensorReadingSharedBufferForType(type);
+
+    if (!reading_buffer)
+      continue;
+
+    if (IsFusionSensorType(type)) {
+      CreateFusionSensor(
+          type, reading_buffer,
+          base::BindOnce(&PlatformSensorProviderChromeOS::NotifySensorCreated,
+                         weak_ptr_factory_.GetWeakPtr(), type));
+      continue;
+    }
+
+    auto id_opt = GetDeviceId(type);
+    if (!id_opt.has_value()) {
+      NotifySensorCreated(type, nullptr);
+      continue;
+    }
+
+    int32_t id = id_opt.value();
+    DCHECK(base::Contains(sensors_, id));
+
+    auto& sensor = sensors_[id];
+    DCHECK(sensor.scale.has_value());
+
+    auto sensor_device_remote = GetSensorDeviceRemote(id);
+    NotifySensorCreated(
+        type, base::MakeRefCounted<PlatformSensorChromeOS>(
+                  id, type, reading_buffer, this, sensor.scale.value(),
+                  std::move(sensor_device_remote)));
+  }
+}
+
+mojo::Remote<chromeos::sensors::mojom::SensorDevice>
+PlatformSensorProviderChromeOS::GetSensorDeviceRemote(int32_t id) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK(sensor_service_remote_.is_bound());
+
+  mojo::Remote<chromeos::sensors::mojom::SensorDevice> sensor_device_remote;
+  auto& sensor = sensors_[id];
+  if (sensor.remote.is_bound()) {
+    // Reuse the previous remote.
+    sensor_device_remote = std::move(sensor.remote);
+  } else {
+    sensor_service_remote_->GetDevice(
+        id, sensor_device_remote.BindNewPipeAndPassReceiver());
+  }
+
+  return sensor_device_remote;
+}
+
+}  // namespace device
