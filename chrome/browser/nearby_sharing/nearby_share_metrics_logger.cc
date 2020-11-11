@@ -24,6 +24,54 @@ enum class NearbyShareEnabledState {
   kMaxValue = kDisallowedByPolicy
 };
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused. If entries are added, kMaxValue should
+// be updated.
+enum class TransferNotCompletedReason {
+  kUnknown = 0,
+  kAwaitingRemoteAcceptanceFailed = 1,
+  kFailed = 2,
+  kRejected = 3,
+  kCancelled = 4,
+  kTimedOut = 5,
+  kMediaUnavailable = 6,
+  kNotEnoughSpace = 7,
+  kUnsupportedAttachmentType = 8,
+  kMaxValue = kUnsupportedAttachmentType
+};
+
+TransferNotCompletedReason TransferMetadataStatusToTransferNotCompletedReason(
+    TransferMetadata::Status status) {
+  switch (status) {
+    case TransferMetadata::Status::kAwaitingRemoteAcceptanceFailed:
+      return TransferNotCompletedReason::kAwaitingRemoteAcceptanceFailed;
+    case TransferMetadata::Status::kFailed:
+      return TransferNotCompletedReason::kFailed;
+    case TransferMetadata::Status::kRejected:
+      return TransferNotCompletedReason::kRejected;
+    case TransferMetadata::Status::kCancelled:
+      return TransferNotCompletedReason::kCancelled;
+    case TransferMetadata::Status::kTimedOut:
+      return TransferNotCompletedReason::kTimedOut;
+    case TransferMetadata::Status::kMediaUnavailable:
+      return TransferNotCompletedReason::kMediaUnavailable;
+    case TransferMetadata::Status::kNotEnoughSpace:
+      return TransferNotCompletedReason::kNotEnoughSpace;
+    case TransferMetadata::Status::kUnsupportedAttachmentType:
+      return TransferNotCompletedReason::kUnsupportedAttachmentType;
+    case TransferMetadata::Status::kUnknown:
+    case TransferMetadata::Status::kConnecting:
+    case TransferMetadata::Status::kAwaitingLocalConfirmation:
+    case TransferMetadata::Status::kAwaitingRemoteAcceptance:
+    case TransferMetadata::Status::kInProgress:
+    case TransferMetadata::Status::kComplete:
+    case TransferMetadata::Status::kMediaDownloading:
+    case TransferMetadata::Status::kExternalProviderLaunched:
+      NOTREACHED();
+      return TransferNotCompletedReason::kUnknown;
+  }
+}
+
 }  // namespace
 
 void RecordNearbyShareEnabledMetric(const PrefService* pref_service) {
@@ -47,4 +95,48 @@ void RecordNearbyShareEnabledMetric(const PrefService* pref_service) {
   }
 
   base::UmaHistogramEnumeration("Nearby.Share.Enabled", state);
+}
+
+void RecordNearbyShareTransferCompletionStatusMetric(
+    bool is_incoming,
+    nearby_share::mojom::ShareTargetType type,
+    TransferMetadata::Status status) {
+  DCHECK(TransferMetadata::IsFinalStatus(status));
+
+  const std::string kPrefix = "Nearby.Share.Transfer.CompletionStatus";
+  std::string send_or_receive = is_incoming ? ".Receive" : ".Send";
+  std::string share_target_type;
+  switch (type) {
+    case nearby_share::mojom::ShareTargetType::kUnknown:
+      share_target_type = ".Unknown";
+      break;
+    case nearby_share::mojom::ShareTargetType::kPhone:
+      share_target_type = ".Phone";
+      break;
+    case nearby_share::mojom::ShareTargetType::kTablet:
+      share_target_type = ".Tablet";
+      break;
+    case nearby_share::mojom::ShareTargetType::kLaptop:
+      share_target_type = ".Laptop";
+      break;
+  }
+
+  bool is_complete = status == TransferMetadata::Status::kComplete;
+  base::UmaHistogramBoolean(kPrefix, is_complete);
+  base::UmaHistogramBoolean(kPrefix + send_or_receive, is_complete);
+  base::UmaHistogramBoolean(kPrefix + share_target_type, is_complete);
+  base::UmaHistogramBoolean(kPrefix + send_or_receive + share_target_type,
+                            is_complete);
+  if (!is_complete) {
+    const std::string kReasonInfix = ".NotCompletedReason";
+    TransferNotCompletedReason reason =
+        TransferMetadataStatusToTransferNotCompletedReason(status);
+    base::UmaHistogramEnumeration(kPrefix + kReasonInfix, reason);
+    base::UmaHistogramEnumeration(kPrefix + kReasonInfix + send_or_receive,
+                                  reason);
+    base::UmaHistogramEnumeration(kPrefix + kReasonInfix + share_target_type,
+                                  reason);
+    base::UmaHistogramEnumeration(
+        kPrefix + kReasonInfix + send_or_receive + share_target_type, reason);
+  }
 }

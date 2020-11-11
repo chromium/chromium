@@ -9292,6 +9292,57 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram
+    name="Nearby.Share.Transfer.CompletionStatus.NotCompletedReason{Direction}{ShareTargetType}"
+    enum="NearbyShareTransferNotCompletedReason" expires_after="2021-08-19">
+  <owner>nohle@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records the reason a Nearby Share {Direction} transfer was not completed
+    when sharing with {ShareTargetType}. Emitted when a transfer aborts before
+    fully completing.
+  </summary>
+  <token key="Direction">
+    <variant name="" summary="outgoing (send) or incoming (receive)"/>
+    <variant name=".Receive" summary="incoming (receive)"/>
+    <variant name=".Send" summary="outgoing (send)"/>
+  </token>
+  <token key="ShareTargetType">
+    <variant name="" summary="any device type"/>
+    <variant name=".Laptop" summary="a laptop"/>
+    <variant name=".Phone" summary="a phone"/>
+    <variant name=".Tablet" summary="a tablet"/>
+    <variant name=".Unknown" summary="an unknown device type"/>
+  </token>
+</histogram>
+
+<histogram
+    name="Nearby.Share.Transfer.CompletionStatus{Direction}{ShareTargetType}"
+    enum="BooleanCompleted" expires_after="2021-08-19">
+  <owner>nohle@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records if a Nearby Share {Direction} transfer fully completes or not when
+    sharing with {ShareTargetType}. Emitted when a transfer completes
+    successfully, fails, or was aborted by the user, for example, by cancelling
+    the transfer. Note: This metric does not reflect success/failure. For
+    example, if a user manually cancels a transfer, that is not considered a
+    failure but it will be bucketed as &quot;Not Completed&quot;.
+  </summary>
+  <token key="Direction">
+    <variant name="" summary="outgoing (send) or incoming (receive)"/>
+    <variant name=".Receive" summary="incoming (receive)"/>
+    <variant name=".Send" summary="outgoing (send)"/>
+  </token>
+  <token key="ShareTargetType">
+    <variant name="" summary="any device type"/>
+    <variant name=".Laptop" summary="a laptop"/>
+    <variant name=".Phone" summary="a phone"/>
+    <variant name=".Tablet" summary="a tablet"/>
+    <variant name=".Unknown" summary="an unknown device type"/>
+  </token>
+</histogram>
+
 <histogram name="net.HttpIdentSrcURL" units="requests" expires_after="M85">
   <owner>tsepez@chromium.org</owner>
   <summary>

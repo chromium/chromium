@@ -5,8 +5,15 @@
 #ifndef CHROME_BROWSER_NEARBY_SHARING_NEARBY_SHARE_METRICS_LOGGER_H_
 #define CHROME_BROWSER_NEARBY_SHARING_NEARBY_SHARE_METRICS_LOGGER_H_
 
+#include "chrome/browser/nearby_sharing/transfer_metadata.h"
+#include "chromeos/services/nearby/public/mojom/nearby_share_target_types.mojom.h"
+
 class PrefService;
 
 void RecordNearbyShareEnabledMetric(const PrefService* pref_service);
+void RecordNearbyShareTransferCompletionStatusMetric(
+    bool is_incoming,
+    nearby_share::mojom::ShareTargetType type,
+    TransferMetadata::Status status);
 
 #endif  // CHROME_BROWSER_NEARBY_SHARING_NEARBY_SHARE_METRICS_LOGGER_H_

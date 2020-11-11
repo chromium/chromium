@@ -50374,6 +50374,18 @@ Called by update_use_counter_css.py.-->
   <int value="4" label="Transfer already in progress"/>
 </enum>
 
+<enum name="NearbyShareTransferNotCompletedReason">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Awaiting remote acceptance failed"/>
+  <int value="2" label="Failed"/>
+  <int value="3" label="Rejected"/>
+  <int value="4" label="Cancelled"/>
+  <int value="5" label="Timed out"/>
+  <int value="6" label="Media unavailable"/>
+  <int value="7" label="Not enough space"/>
+  <int value="8" label="Unsupported attachment type"/>
+</enum>
+
 <enum name="NearOomDetectionEndReason">
   <obsolete>
     Removed in Feb 2020.

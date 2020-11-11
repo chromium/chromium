@@ -40,6 +40,7 @@
 #include "chrome/services/sharing/public/cpp/advertisement.h"
 #include "chrome/services/sharing/public/cpp/conversions.h"
 #include "chromeos/services/nearby/public/mojom/nearby_connections_types.mojom.h"
+#include "chromeos/services/nearby/public/mojom/nearby_share_target_types.mojom.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/download_manager.h"
 #include "content/public/browser/storage_partition.h"
@@ -2289,6 +2290,8 @@ void NearbySharingServiceImpl::OnIncomingTransferUpdate(
   }
 
   if (metadata.is_final_status()) {
+    RecordNearbyShareTransferCompletionStatusMetric(
+        /*is_incoming=*/true, share_target.type, metadata.status());
     OnTransferComplete();
   } else if (metadata.status() ==
              TransferMetadata::Status::kAwaitingLocalConfirmation) {
@@ -2315,6 +2318,8 @@ void NearbySharingServiceImpl::OnOutgoingTransferUpdate(
 
   if (metadata.is_final_status()) {
     is_connecting_ = false;
+    RecordNearbyShareTransferCompletionStatusMetric(
+        /*is_incoming=*/false, share_target.type, metadata.status());
     OnTransferComplete();
   } else if (metadata.status() == TransferMetadata::Status::kMediaDownloading ||
              metadata.status() ==
