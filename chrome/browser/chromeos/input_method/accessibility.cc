@@ -13,29 +13,24 @@
 namespace chromeos {
 namespace input_method {
 
-Accessibility::Accessibility(InputMethodManager* imm)
-    : imm_(imm) {
-  DCHECK(imm_);
-  imm_->AddObserver(this);
+Accessibility::Accessibility(InputMethodManager* imm) {
+  DCHECK(imm);
+  observed_input_method_manager_.Observe(imm);
 }
 
-Accessibility::~Accessibility() {
-  DCHECK(imm_);
-  imm_->RemoveObserver(this);
-}
+Accessibility::~Accessibility() = default;
 
 void Accessibility::InputMethodChanged(InputMethodManager* imm,
                                        Profile* profile,
                                        bool show_message) {
-  DCHECK_EQ(imm, imm_);
   if (!show_message)
     return;
 
   // Get the medium name of the changed input method (e.g. US, INTL, etc.)
   const InputMethodDescriptor descriptor =
-      imm_->GetActiveIMEState()->GetCurrentInputMethod();
+      imm->GetActiveIMEState()->GetCurrentInputMethod();
   const std::string medium_name = base::UTF16ToUTF8(
-      imm_->GetInputMethodUtil()->GetInputMethodMediumName(descriptor));
+      imm->GetInputMethodUtil()->GetInputMethodMediumName(descriptor));
 
   AutomationManagerAura::GetInstance()->HandleAlert(medium_name);
 }
