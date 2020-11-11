@@ -658,7 +658,7 @@
     "structures": [3820],
   },
   "<(SHARED_INTERMEDIATE_DIR)/ui/webui/resources/webui_generated_resources.grd": {
-    "META": {"sizes": {"includes": [500]}},
+    "META": {"sizes": {"includes": [600]}},
     "includes": [3830],
   },
   "weblayer/weblayer_resources.grd": {

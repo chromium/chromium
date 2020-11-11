@@ -3,10 +3,7 @@
 # found in the LICENSE file.
 
 import("//third_party/closure_compiler/compile_js.gni")
-import("//tools/grit/preprocess_grit.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
-
-preprocess_folder = "preprocessed"
 
 include_polymer = !is_android && !is_ios
 
@@ -14,8 +11,14 @@ generate_grd("build_grd") {
   grd_prefix = "webui_generated"
   out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
 
-  deps = [ "js/cr/ui:build_grdp" ]
-  grdp_files = [ "$root_gen_dir/ui/webui/resources/js/cr/ui/resources.grdp" ]
+  deps = [
+    "js:build_grdp",
+    "js/cr/ui:build_grdp",
+  ]
+  grdp_files = [
+    "$target_gen_dir/js/cr/ui/resources.grdp",
+    "$target_gen_dir/js/resources.grdp",
+  ]
 
   if (include_polymer) {
     deps += [
@@ -40,48 +43,10 @@ generate_grd("build_grd") {
 
 group("preprocess") {
   deps = [
-    ":preprocess_generated",
-    ":preprocess_src",
     "cr_components:preprocess",
     "cr_elements:preprocess",
-    "js/cr/ui:preprocess",
+    "js:preprocess",
   ]
-}
-
-preprocess_grit("preprocess_src") {
-  in_folder = "./"
-  out_folder = "$target_gen_dir/$preprocess_folder"
-  in_files = [
-    "js/action_link.js",
-    "js/color_utils.js",
-    "js/cr.m.js",
-    "js/plural_string_proxy.js",
-  ]
-}
-
-preprocess_grit("preprocess_generated") {
-  deps = [ ":modulize" ]
-  in_folder = target_gen_dir
-  out_folder = "$target_gen_dir/$preprocess_folder"
-  in_files = [
-    "js/assert.m.js",
-    "js/event_tracker.m.js",
-    "js/icon.m.js",
-    "js/load_time_data.m.js",
-    "js/parse_html_subset.m.js",
-    "js/promise_resolver.m.js",
-    "js/util.m.js",
-    "js/cr/event_target.m.js",
-  ]
-
-  if (include_polymer) {
-    in_files += [
-      "js/i18n_behavior.m.js",
-      "js/list_property_update_behavior.m.js",
-      "js/search_highlight_utils.m.js",
-      "js/web_ui_listener_behavior.m.js",
-    ]
-  }
 }
 
 group("closure_compile") {

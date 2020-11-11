@@ -15,7 +15,7 @@
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/resource/resource_bundle.h"
-#include "ui/resources/grit/webui_resources.h"
+#include "ui/resources/grit/webui_generated_resources.h"
 #include "url/gurl.h"
 
 namespace {

@@ -15,6 +15,7 @@
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/webui/web_ui_util.h"
+#include "ui/resources/grit/webui_generated_resources.h"
 #include "ui/resources/grit/webui_resources.h"
 
 DiceWebSigninInterceptUI::DiceWebSigninInterceptUI(content::WebUI* web_ui)

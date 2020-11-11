@@ -739,12 +739,14 @@ repack("repack_pack") {
     "$target_gen_dir/aw_resources.pak",
     "$target_gen_dir/components_resources.pak",
     "$target_gen_dir/mojo_bindings_resources.pak",
+    "$target_gen_dir/webui_generated_resources.pak",
     "$target_gen_dir/webui_resources.pak",
   ]
   deps = [
     ":generate_aw_resources",
     ":generate_components_resources",
     ":generate_mojo_resources",
+    ":generate_webui_generated_resources",
     ":generate_webui_resources",
     "//content:content_resources",
     "//net:net_resources",
@@ -913,6 +915,34 @@ grit("generate_webui_resources") {
     "//ui/webui/resources/js:modulize",
     "//ui/webui/resources/js/cr:modulize",
     "//ui/webui/resources/js/cr/ui:modulize",
+  ]
+}
+
+grit("generate_webui_generated_resources") {
+  enable_input_discovery_for_gn_analyze = false
+  defines =
+      [ "SHARED_INTERMEDIATE_DIR=" + rebase_path(root_gen_dir, root_build_dir) ]
+  source = "$root_gen_dir/ui/webui/resources/webui_generated_resources.grd"
+  deps = [ "//ui/webui/resources:build_grd" ]
+
+  outputs = [
+    "grit/webui_generated_resources.h",
+    "grit/webui_generated_resources_map.cc",
+    "grit/webui_generated_resources_map.h",
+    "webui_generated_resources.pak",
+  ]
+
+  # webui/resources has way too many resources. The allowlist is trim this down
+  # to a reasonable size
+  _allowlist = "ui/grit_resources_allowlist.txt"
+  inputs = [ _allowlist ]
+  grit_flags = [
+    "-w",
+    rebase_path(_allowlist, root_build_dir),
+    "-E",
+    "root_gen_dir=" + rebase_path(root_gen_dir, root_build_dir),
+    "-E",
+    "root_src_dir=" + rebase_path("//", root_build_dir),
   ]
 }
 

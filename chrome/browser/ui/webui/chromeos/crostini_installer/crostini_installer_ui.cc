@@ -29,6 +29,7 @@
 #include "ui/base/text/bytes_formatting.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/chromeos/devicetype_utils.h"
+#include "ui/resources/grit/webui_generated_resources.h"
 #include "ui/resources/grit/webui_resources.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/web_dialogs/web_dialog_ui.h"

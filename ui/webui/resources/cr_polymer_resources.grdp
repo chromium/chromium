@@ -21,16 +21,4 @@
   <!-- CSS resources -->
   <structure name="IDR_WEBUI_CSS_MD_COLORS"
              file="css/md_colors.css" type="chrome_html" />
-
-  <!-- JS resources -->
-  <structure name="IDR_WEBUI_JS_I18N_BEHAVIOR"
-             file="js/i18n_behavior.js" type="chrome_html" preprocess="true" />
-  <structure name="IDR_WEBUI_JS_LIST_PROPERTY_UPDATE_BEHAVIOR"
-             file="js/list_property_update_behavior.js" type="chrome_html" />
-  <structure name="IDR_WEBUI_JS_POLYMER_CONFIG"
-             file="js/polymer_config.js" type="chrome_html" />
-  <structure name="IDR_WEBUI_JS_WEBUI_LISTENER_BEHAVIOR"
-             file="js/web_ui_listener_behavior.js" type="chrome_html" />
-  <structure name="IDR_WEBUI_JS_SEARCH_HIGHLIGHT_UTILS"
-             file="js/search_highlight_utils.js" type="chrome_html" />
 </grit-part>

@@ -3,7 +3,100 @@
 # found in the LICENSE file.
 
 import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/grit/preprocess_grit.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
 import("../tools/js_modulizer.gni")
+
+preprocess_folder = "$root_gen_dir/ui/webui/resources/preprocessed/js"
+preprocess_gen_manifest = "preprocessed_gen_manifest.json"
+preprocess_src_manifest = "preprocessed_src_manifest.json"
+
+include_polymer = !is_android && !is_ios
+
+generate_grd("build_grdp") {
+  grd_prefix = "webui_js"
+  out_grd = "$target_gen_dir/resources.grdp"
+  deps = [ ":preprocess" ]
+  manifest_files = [
+    "$target_gen_dir/$preprocess_gen_manifest",
+    "$target_gen_dir/$preprocess_src_manifest",
+  ]
+  resource_path_prefix = "js"
+}
+
+group("preprocess") {
+  public_deps = [
+    ":preprocess_generated",
+    ":preprocess_src",
+    "cr/ui:preprocess",
+  ]
+}
+
+preprocess_grit("preprocess_src") {
+  in_folder = "./"
+  out_folder = "$preprocess_folder"
+  out_manifest = "$target_gen_dir/$preprocess_src_manifest"
+  in_files = [
+    "action_link.js",
+    "assert.js",
+    "color_utils.js",
+    "cr/event_target.js",
+    "cr.js",
+    "cr.m.js",
+    "cr/ui.js",
+    "event_tracker.js",
+    "i18n_template_no_process.js",
+    "icon.js",
+    "load_time_data.js",
+    "parse_html_subset.js",
+    "plural_string_proxy.js",
+    "promise_resolver.js",
+    "test_loader.js",
+    "util.js",
+    "webui_resource_test.js",
+  ]
+
+  if (is_chromeos) {
+    in_files += [ "i18n_template_process.js" ]
+  }
+
+  if (include_polymer) {
+    in_files += [
+      "i18n_behavior.js",
+      "list_property_update_behavior.js",
+      "polymer_config.js",
+      "search_highlight_utils.js",
+      "web_ui_listener_behavior.js",
+    ]
+  }
+}
+
+preprocess_grit("preprocess_generated") {
+  deps = [ ":modulize" ]
+  in_folder = target_gen_dir
+  out_folder = "$preprocess_folder"
+  out_manifest = "$target_gen_dir/$preprocess_gen_manifest"
+  in_files = [
+    "assert.m.js",
+    "cr/event_target.m.js",
+    "cr/ui.m.js",
+    "event_tracker.m.js",
+    "icon.m.js",
+    "load_time_data.m.js",
+    "parse_html_subset.m.js",
+    "promise_resolver.m.js",
+    "util.m.js",
+  ]
+
+  if (include_polymer) {
+    in_files += [
+      "i18n_behavior.m.js",
+      "list_property_update_behavior.m.js",
+      "search_highlight_utils.m.js",
+      "web_ui_listener_behavior.m.js",
+    ]
+  }
+}
 
 group("closure_compile") {
   deps = [

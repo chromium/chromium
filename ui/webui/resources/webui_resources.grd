@@ -13,9 +13,6 @@ without changes to the corresponding grd file. -->
   </outputs>
   <release seq="1">
     <includes>
-      <if expr="chromeos">
-        <include name="IDR_WEBUI_JS_I18N_TEMPLATE_PROCESS_JS" file="js/i18n_template_process.js" type="BINDATA" />
-      </if>
       <include name="IDR_WEBUI_JS_JSTEMPLATE_COMPILED_JS"
                file="../../../third_party/jstemplate/jstemplate_compiled.js"
                resource_path="js/jstemplate_compiled.js" type="BINDATA"/>
@@ -70,47 +67,10 @@ without changes to the corresponding grd file. -->
                file="images/throbber_medium.svg" type="BINDATA" />
       <include name="IDR_WEBUI_IMAGES_THROBBER_SMALL_SVG"
                file="images/throbber_small.svg" type="BINDATA" />
-      <!-- Web UI shared JS module resources. -->
-      <include name="IDR_WEBUI_JS_ASSERT_M_JS"
-               file="${root_gen_dir}/ui/webui/resources/js/assert.m.js"
-               use_base_dir="false" type="BINDATA" />
-      <include name="IDR_WEBUI_JS_COLOR_UTILS_JS"
-               file="js/color_utils.js" type="BINDATA" />
-      <include name="IDR_WEBUI_JS_CR_EVENT_TARGET_M_JS"
-               file="${root_gen_dir}/ui/webui/resources/js/cr/event_target.m.js"
-               use_base_dir="false" type="BINDATA" />
-      <include name="IDR_WEBUI_JS_CR_UI_M_JS"
-               file="${root_gen_dir}/ui/webui/resources/js/cr/ui.m.js"
-               use_base_dir="false" type="BINDATA" />
-      <include name="IDR_WEBUI_JS_EVENT_TRACKER_M_JS"
-               file="${root_gen_dir}/ui/webui/resources/js/event_tracker.m.js"
-               use_base_dir="false" type="BINDATA" />
-      <include name="IDR_WEBUI_JS_ICON_M_JS"
-               file="${root_gen_dir}/ui/webui/resources/js/icon.m.js"
-               use_base_dir="false" type="BINDATA" />
-      <include name="IDR_WEBUI_JS_LOAD_TIME_DATA_M_JS"
-               file="${root_gen_dir}/ui/webui/resources/js/load_time_data.m.js"
-               use_base_dir="false" type="BINDATA" />
-      <include name="IDR_WEBUI_JS_PARSE_HTML_SUBSET_M_JS"
-               file="${root_gen_dir}/ui/webui/resources/js/parse_html_subset.m.js"
-               use_base_dir="false" type="BINDATA" />
-      <include name="IDR_WEBUI_JS_PLURAL_STRING_PROXY"
-               file="js/plural_string_proxy.js" type="BINDATA" />
-      <include name="IDR_WEBUI_JS_PROMISE_RESOLVER_M_JS"
-               file="${root_gen_dir}/ui/webui/resources/js/promise_resolver.m.js"
-               use_base_dir="false" type="BINDATA" />
-      <include name="IDR_WEBUI_JS_UTIL_M_JS"
-               file="${root_gen_dir}/ui/webui/resources/js/util.m.js"
-               use_base_dir="false" type="BINDATA"
-               preprocess="true" />
 
       <if expr="not is_android">
         <part file="cr_components/cr_components_images.grdp" />
         <part file="cr_elements_images.grdp" />
-      </if>
-
-      <if expr="not is_android and not is_ios">
-        <part file="cr_polymer_resources_v3.grdp" />
       </if>
     </includes>
     <structures>
@@ -251,41 +211,6 @@ without changes to the corresponding grd file. -->
                  file="html/test_loader.html" type="chrome_html"/>
       <structure name="IDR_WEBUI_HTML_UTIL_HTML"
                  file="html/util.html" type="chrome_html" />
-
-      <structure name="IDR_WEBUI_JS_ACTION_LINK_JS"
-                 file="js/action_link.js" type="chrome_html" />
-      <structure name="IDR_WEBUI_JS_ASSERT_JS"
-                 file="js/assert.js" type="chrome_html" />
-      <structure name="IDR_WEBUI_JS_PROMISE_RESOLVER_JS"
-                 file="js/promise_resolver.js" type="chrome_html" />
-
-      <structure name="IDR_WEBUI_JS_CR_JS"
-                 file="js/cr.js" type="chrome_html"
-                 preprocess="true" />
-      <structure name="IDR_WEBUI_JS_CR_M_JS"
-                 file="js/cr.m.js" type="chrome_html"
-                 preprocess="true" />
-      <structure name="IDR_WEBUI_JS_CR_EVENT_TARGET_JS"
-                 file="js/cr/event_target.js" type="chrome_html" />
-      <structure name="IDR_WEBUI_JS_CR_UI_JS"
-                 file="js/cr/ui.js" type="chrome_html" />
-      <structure name="IDR_WEBUI_JS_EVENT_TRACKER_JS"
-                 file="js/event_tracker.js" type="chrome_html" />
-      <structure name="IDR_WEBUI_JS_ICON_JS"
-                 file="js/icon.js" type="chrome_html" />
-      <structure name="IDR_WEBUI_JS_I18N_TEMPLATE_NO_PROCESS_JS"
-                 file="js/i18n_template_no_process.js"
-                 type="chrome_html" />
-      <structure name="IDR_WEBUI_JS_LOAD_TIME_DATA_JS"
-                 file="js/load_time_data.js" type="chrome_html" />
-      <structure name="IDR_WEBUI_JS_PARSE_HTML_SUBSET_JS"
-                 file="js/parse_html_subset.js" type="chrome_html" />
-      <structure name="IDR_WEBUI_JS_TEST_LOADER_JS"
-                 file="js/test_loader.js" type="chrome_html"/>
-      <structure name="IDR_WEBUI_JS_UTIL_JS"
-                 file="js/util.js" type="chrome_html" preprocess="true"/>
-      <structure name="IDR_WEBUI_JS_WEBUI_RESOURCE_TEST_JS"
-                 file="js/webui_resource_test.js" type="chrome_html" />
 
       <if expr="is_ios">
         <structure name="IDR_WEBUI_JS_IOS_WEB_UI"
