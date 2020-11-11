@@ -316,7 +316,7 @@ See
 https://groups.google.com/a/chromium.org/forum/#!searchin/chromium-dev/gdb-add-index/chromium-dev/ELRuj1BDCL4/5Ki4LGx41CcJ
 for more info.
 
-You can improve GDB load time significantly at the cost of link time by
+You can improve GDB load time significantly at the cost of link time by not
 splitting symbols from the object files. In GN, set `use_debug_fission=false` in
 your "gn args".
 
