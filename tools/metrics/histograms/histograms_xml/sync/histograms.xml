@@ -821,6 +821,26 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>The type of event that triggered sync initialization.</summary>
 </histogram>
 
+<histogram name="Sync.Startup.PolicyLoadStartupDelay" units="ms"
+    expires_after="2021-11-01">
+  <owner>ydago@chromium.org</owner>
+  <owner>treib@chromium.org</owner>
+  <summary>
+    The time spent waiting for policies to load before starting the sync engine.
+  </summary>
+</histogram>
+
+<histogram name="Sync.Startup.PolicyLoadTimeout" enum="Boolean"
+    expires_after="2021-11-01">
+  <owner>ydago@chromium.org</owner>
+  <owner>treib@chromium.org</owner>
+  <summary>
+    Records if the policy load delay before starting the sync engine was timed
+    out. In case of a timeout, the sync engine attempts to start ignoring
+    potential policy restrictions.
+  </summary>
+</histogram>
+
 <histogram name="Sync.Startup.TimeDeferred2" units="ms" expires_after="M88">
   <owner>mastiz@chromium.org</owner>
   <owner>treib@chromium.org</owner>

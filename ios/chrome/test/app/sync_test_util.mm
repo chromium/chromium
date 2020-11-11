@@ -104,6 +104,10 @@ void StartSync() {
   SyncSetupService* sync_setup_service =
       SyncSetupServiceFactory::GetForBrowserState(browser_state);
   sync_setup_service->SetSyncEnabled(true);
+  syncer::ProfileSyncService* sync_service =
+      ProfileSyncServiceFactory::GetAsProfileSyncServiceForBrowserState(
+          browser_state);
+  sync_service->TriggerPoliciesLoadedForTest();
 }
 
 void StopSync() {

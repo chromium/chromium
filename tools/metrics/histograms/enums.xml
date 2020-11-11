@@ -43100,6 +43100,7 @@ from previous Chrome versions.
   <int value="-858280894" label="DelayCompetingLowPriorityRequests:disabled"/>
   <int value="-856915246" label="enable-new-audio-rendering-mixing-strategy"/>
   <int value="-856016114" label="NTPOfflinePages:disabled"/>
+  <int value="-855513281" label="SyncRequiresPoliciesLoaded:disabled"/>
   <int value="-855277252" label="CookiesWithoutSameSiteMustBeSecure:disabled"/>
   <int value="-855130893" label="enable-touch-calibration-setting"/>
   <int value="-854716639" label="TranslateAndroidManualTrigger:enabled"/>
@@ -45908,6 +45909,7 @@ from previous Chrome versions.
   <int value="1948978490" label="PaintPreviewDemo:disabled"/>
   <int value="1949019439"
       label="AutofillRestrictUnownedFieldsToFormlessCheckout:disabled"/>
+  <int value="1949156880" label="SyncRequiresPoliciesLoaded:enabled"/>
   <int value="1949908940" label="disable-zip-archiver-unpacker"/>
   <int value="1949996482" label="CSSColorSchemeUARendering:disabled"/>
   <int value="1950191981" label="OverlayNewLayout:enabled"/>

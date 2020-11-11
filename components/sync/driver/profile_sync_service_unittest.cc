@@ -17,6 +17,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "components/policy/core/common/policy_service_impl.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -33,6 +34,7 @@
 #include "components/sync/driver/sync_client_mock.h"
 #include "components/sync/driver/sync_driver_switches.h"
 #include "components/sync/driver/sync_service_observer.h"
+#include "components/sync/driver/sync_service_utils.h"
 #include "components/sync/driver/sync_token_status.h"
 #include "components/sync/engine/fake_sync_engine.h"
 #include "components/sync/invalidations/switches.h"
@@ -170,6 +172,7 @@ class ProfileSyncServiceTest : public ::testing::Test {
   void SignIn() { identity_test_env()->MakePrimaryAccountAvailable(kTestUser); }
 
   void CreateService(ProfileSyncService::StartBehavior behavior,
+                     policy::PolicyService* policy_service = nullptr,
                      std::vector<std::pair<ModelType, bool>>
                          registered_types_and_transport_mode_support = {
                              {BOOKMARKS, false},
@@ -192,9 +195,11 @@ class ProfileSyncServiceTest : public ::testing::Test {
     ON_CALL(*sync_client, CreateDataTypeControllers(_))
         .WillByDefault(Return(ByMove(std::move(controllers))));
 
-    service_ = std::make_unique<ProfileSyncService>(
-        profile_sync_service_bundle_.CreateBasicInitParams(
-            behavior, std::move(sync_client)));
+    auto init_params = profile_sync_service_bundle_.CreateBasicInitParams(
+        behavior, std::move(sync_client));
+    init_params.policy_service = policy_service;
+
+    service_ = std::make_unique<ProfileSyncService>(std::move(init_params));
 
     ON_CALL(*component_factory(), CreateSyncEngine(_, _, _, _))
         .WillByDefault(ReturnNewFakeSyncEngine());
@@ -456,6 +461,37 @@ TEST_F(ProfileSyncServiceTest, SetupInProgress) {
   EXPECT_FALSE(observer.setup_in_progress());
 
   service()->RemoveObserver(&observer);
+}
+
+// Verify that we wait for policies to load before starting the sync engine.
+TEST_F(ProfileSyncServiceTest, WaitForPoliciesToStart) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(switches::kSyncRequiresPoliciesLoaded);
+  std::unique_ptr<policy::PolicyServiceImpl> policy_service =
+      policy::PolicyServiceImpl::CreateWithThrottledInitialization(
+          policy::PolicyServiceImpl::Providers());
+
+  SignIn();
+  CreateService(ProfileSyncService::AUTO_START, policy_service.get());
+  EXPECT_CALL(*component_factory(), CreateSyncEngine(_, _, _, _))
+      .WillOnce(ReturnNewFakeSyncEngine());
+  EXPECT_CALL(*component_factory(), CreateDataTypeManager(_, _, _, _, _, _))
+      .WillOnce(
+          ReturnNewFakeDataTypeManager(GetDefaultConfigureCalledCallback()));
+  InitializeForNthSync();
+  EXPECT_EQ(SyncService::DisableReasonSet(), service()->GetDisableReasons());
+  EXPECT_EQ(SyncService::TransportState::START_DEFERRED,
+            service()->GetTransportState());
+
+  EXPECT_EQ(
+      syncer::UploadState::INITIALIZING,
+      syncer::GetUploadToGoogleState(service(), syncer::ModelType::BOOKMARKS));
+
+  policy_service->UnthrottleInitialization();
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(SyncService::TransportState::ACTIVE,
+            service()->GetTransportState());
 }
 
 // Verify that disable by enterprise policy works.
@@ -1362,7 +1398,7 @@ MATCHER(ContainsSessions, "") {
 
 TEST_F(ProfileSyncServiceTestWithSyncInvalidationsServiceCreated,
        ShouldEnableAndDisableInvalidationsForSessions) {
-  CreateService(ProfileSyncService::AUTO_START,
+  CreateService(ProfileSyncService::AUTO_START, nullptr,
                 {{SESSIONS, false}, {TYPED_URLS, false}});
   SignIn();
   InitializeForNthSync();

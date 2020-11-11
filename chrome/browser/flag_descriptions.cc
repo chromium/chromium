@@ -677,6 +677,12 @@ const char kEnableMigrateDefaultChromeAppToWebAppsNonGSuiteDescription[] =
     "Enable the migration of default installed non-G Suite Chrome apps over to "
     "their corresponding web apps.";
 
+const char kEnableSyncRequiresPoliciesLoadedName[] =
+    "Sync waits for all policies to load before starting";
+const char kEnableSyncRequiresPoliciesLoadedDescription[] =
+    "Enables behaviour for Sync to wait for all policies to load before "
+    "starting";
+
 const char kEnableTLS13EarlyDataName[] = "TLS 1.3 Early Data";
 const char kEnableTLS13EarlyDataDescription[] =
     "This option enables TLS 1.3 Early Data, allowing GET requests to be sent "

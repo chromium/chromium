@@ -14,6 +14,7 @@
 #include "components/invalidation/impl/profile_invalidation_provider.h"
 #include "components/keyed_service/ios/browser_state_dependency_manager.h"
 #include "components/network_time/network_time_tracker.h"
+#include "components/policy/core/common/policy_map.h"
 #include "components/sync/base/sync_util.h"
 #include "components/sync/driver/profile_sync_service.h"
 #include "components/sync/driver/sync_driver_switches.h"
@@ -28,6 +29,7 @@
 #include "ios/chrome/browser/history/history_service_factory.h"
 #include "ios/chrome/browser/invalidation/ios_chrome_profile_invalidation_provider_factory.h"
 #include "ios/chrome/browser/passwords/ios_chrome_password_store_factory.h"
+#include "ios/chrome/browser/policy/browser_state_policy_connector.h"
 #include "ios/chrome/browser/reading_list/reading_list_model_factory.h"
 #include "ios/chrome/browser/search_engines/template_url_service_factory.h"
 #include "ios/chrome/browser/signin/about_signin_internals_factory.h"
@@ -168,6 +170,9 @@ ProfileSyncServiceFactory::BuildServiceInstanceFor(
       GetApplicationContext()->GetNetworkConnectionTracker();
   init_params.channel = ::GetChannel();
   init_params.debug_identifier = browser_state->GetDebugName();
+  auto* policy_connector = browser_state->GetPolicyConnector();
+  init_params.policy_service =
+      policy_connector ? policy_connector->GetPolicyService() : nullptr;
 
   auto* fcm_invalidation_provider =
       IOSChromeProfileInvalidationProviderFactory::GetForBrowserState(

@@ -24,6 +24,7 @@
 #include "chrome/browser/invalidation/profile_invalidation_provider_factory.h"
 #include "chrome/browser/password_manager/account_password_store_factory.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
+#include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
@@ -195,6 +196,8 @@ KeyedService* ProfileSyncServiceFactory::BuildServiceInstanceFor(
   init_params.channel = chrome::GetChannel();
   init_params.debug_identifier = profile->GetDebugName();
 
+  init_params.policy_service =
+      profile->GetProfilePolicyConnector()->policy_service();
   bool local_sync_backend_enabled = false;
 
 // Only check the local sync backend pref on the supported platforms of

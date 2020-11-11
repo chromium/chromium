@@ -5456,6 +5456,11 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAll | kDeprecated,
      FEATURE_VALUE_TYPE(blink::features::kAllowSyncXHRInPageDismissal)},
 
+    {"enable-sync-requires-policies-loaded",
+     flag_descriptions::kEnableSyncRequiresPoliciesLoadedName,
+     flag_descriptions::kEnableSyncRequiresPoliciesLoadedDescription, kOsAll,
+     FEATURE_VALUE_TYPE(switches::kSyncRequiresPoliciesLoaded)},
+
 #if !defined(OS_ANDROID)
     {"form-controls-dark-mode", flag_descriptions::kFormControlsDarkModeName,
      flag_descriptions::kFormControlsDarkModeDescription, kOsDesktop,

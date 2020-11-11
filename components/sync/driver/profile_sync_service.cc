@@ -262,13 +262,17 @@ ProfileSyncService::ProfileSyncService(InitParams init_params)
     passphrase_prompt_triggered_by_version_ = true;
   }
 
+  bool should_wait_for_policies =
+      base::FeatureList::IsEnabled(switches::kSyncRequiresPoliciesLoaded);
+
   startup_controller_ = std::make_unique<StartupController>(
       base::BindRepeating(&ProfileSyncService::GetPreferredDataTypes,
                           base::Unretained(this)),
       base::BindRepeating(&ProfileSyncService::IsEngineAllowedToRun,
                           base::Unretained(this)),
       base::BindRepeating(&ProfileSyncService::StartUpSlowEngineComponents,
-                          base::Unretained(this)));
+                          base::Unretained(this)),
+      should_wait_for_policies ? init_params.policy_service : nullptr);
 
   sync_stopped_reporter_ = std::make_unique<SyncStoppedReporter>(
       sync_service_url_, MakeUserAgentForSync(channel_), url_loader_factory_,
@@ -346,9 +350,9 @@ void ProfileSyncService::Initialize() {
 }
 
 void ProfileSyncService::StartSyncingWithServer() {
+  DCHECK(startup_controller_->ArePoliciesReady());
   if (engine_)
     engine_->StartSyncingWithServer();
-
   if (IsLocalSyncEnabled()) {
     TriggerRefresh(Intersection(GetActiveDataTypes(), ProtocolTypes()));
   }
@@ -356,6 +360,13 @@ void ProfileSyncService::StartSyncingWithServer() {
 
 ModelTypeSet ProfileSyncService::GetRegisteredDataTypesForTest() const {
   return GetRegisteredDataTypes();
+}
+
+void ProfileSyncService::TriggerPoliciesLoadedForTest() {
+  if (!startup_controller_->ArePoliciesReady()) {
+    startup_controller_->OnFirstPoliciesLoaded(
+        policy::PolicyDomain::POLICY_DOMAIN_CHROME);
+  }
 }
 
 bool ProfileSyncService::IsDataTypeControllerRunningForTest(

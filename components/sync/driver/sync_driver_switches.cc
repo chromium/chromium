@@ -67,6 +67,15 @@ const base::Feature kDecoupleSyncFromAndroidMasterSync{
 const base::Feature kFollowTrustedVaultKeyRotation{
     "FollowTrustedVaultKeyRotation", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Sync requires policies to be loaded before starting.
+const base::Feature kSyncRequiresPoliciesLoaded{
+    "SyncRequiresPoliciesLoaded", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Max time to delay the sync startup while waiting for policies to load.
+const base::FeatureParam<base::TimeDelta> kSyncPolicyLoadTimeout{
+    &kSyncRequiresPoliciesLoaded, "SyncPolicyLoadTimeout",
+    base::TimeDelta::FromSeconds(10)};
+
 const base::Feature kSyncSupportTrustedVaultPassphraseRecovery{
     "SyncSupportTrustedVaultPassphraseRecovery",
     base::FEATURE_DISABLED_BY_DEFAULT};

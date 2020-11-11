@@ -500,6 +500,7 @@ source_set("unit_tests") {
     "//components/invalidation/impl",
     "//components/os_crypt",
     "//components/os_crypt:test_support",
+    "//components/policy/core/common:test_support",
     "//components/prefs:test_support",
     "//components/signin/public/base:test_support",
     "//components/signin/public/identity_manager:test_support",

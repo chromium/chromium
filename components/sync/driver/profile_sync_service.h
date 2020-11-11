@@ -21,6 +21,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/invalidation/public/identity_provider.h"
+#include "components/policy/core/common/policy_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/sync_prefs.h"
@@ -92,6 +93,7 @@ class ProfileSyncService : public SyncService,
     network::NetworkConnectionTracker* network_connection_tracker = nullptr;
     version_info::Channel channel = version_info::Channel::UNKNOWN;
     std::string debug_identifier;
+    policy::PolicyService* policy_service = nullptr;
 
    private:
     DISALLOW_COPY_AND_ASSIGN(InitParams);
@@ -237,6 +239,10 @@ class ProfileSyncService : public SyncService,
                                   create_http_post_provider_factory_cb);
 
   ModelTypeSet GetRegisteredDataTypesForTest() const;
+
+  // Simulates that all policies just got loaded. This does nothing if the
+  // policies were already loaded.
+  void TriggerPoliciesLoadedForTest();
 
   bool IsDataTypeControllerRunningForTest(ModelType type) const;
 

@@ -2163,6 +2163,11 @@
     "expiry_milestone": 92
   },
   {
+    "name": "enable-sync-requires-policies-loaded",
+    "owners": ["ydago"],
+    "expiry_milestone": 95
+  },
+  {
     "name": "enable-tab-engagement-reporting",
     "owners": [ "memex-team@google.com" ],
     "expiry_milestone": 90
