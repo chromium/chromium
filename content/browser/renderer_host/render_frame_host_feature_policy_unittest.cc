@@ -111,7 +111,7 @@ TEST_F(RenderFrameHostFeaturePolicyTest, HeaderPolicy) {
   RenderFrameHost* child = AddChildRFH(parent, kOrigin2);
 
   EXPECT_TRUE(parent->IsFeatureEnabled(kDefaultSelfFeature));
-  EXPECT_TRUE(child->IsFeatureEnabled(kDefaultSelfFeature));
+  EXPECT_FALSE(child->IsFeatureEnabled(kDefaultSelfFeature));
 
   // Set an empty allowlist in the child to test that the policies combine
   // correctly.
@@ -124,7 +124,7 @@ TEST_F(RenderFrameHostFeaturePolicyTest, HeaderPolicy) {
   // Re-enable the feature in the child.
   RefreshPageAndSetHeaderPolicy(&child, kDefaultSelfFeature,
                                 {std::string(kOrigin2)});
-  EXPECT_TRUE(child->IsFeatureEnabled(kDefaultSelfFeature));
+  EXPECT_FALSE(child->IsFeatureEnabled(kDefaultSelfFeature));
 
   // Navigate the child. Check that the feature is disabled.
   SimulateNavigation(&child, GURL(kOrigin3));
@@ -159,12 +159,13 @@ TEST_F(RenderFrameHostFeaturePolicyTest, HeaderAndContainerPolicy) {
 
   RenderFrameHost* child = AddChildRFH(parent, kOrigin2);
   SetContainerPolicy(parent, child, kDefaultSelfFeature,
-                     {std::string(kOrigin3)});
+                     {std::string(kOrigin2), std::string(kOrigin3)});
 
   // The feature should be enabled in kOrigin2, kOrigin3 but not kOrigin4.
+  SimulateNavigation(&child, GURL(kOrigin2));
   EXPECT_TRUE(child->IsFeatureEnabled(kDefaultSelfFeature));
   SimulateNavigation(&child, GURL(kOrigin3));
-  EXPECT_TRUE(child->IsFeatureEnabled(kDefaultSelfFeature));
+  EXPECT_FALSE(child->IsFeatureEnabled(kDefaultSelfFeature));
   SimulateNavigation(&child, GURL(kOrigin4));
   EXPECT_FALSE(child->IsFeatureEnabled(kDefaultSelfFeature));
 

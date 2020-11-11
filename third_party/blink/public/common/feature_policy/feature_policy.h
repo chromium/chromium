@@ -180,13 +180,6 @@ class BLINK_COMMON_EXPORT FeaturePolicy {
   bool IsFeatureEnabledForOrigin(mojom::FeaturePolicyFeature feature,
                                  const url::Origin& origin) const;
 
-  // Returns the value of the given feature on the given origin.
-  bool GetFeatureValueForOrigin(mojom::FeaturePolicyFeature feature,
-                                const url::Origin& origin) const;
-
-  bool GetProposedFeatureValueForOrigin(mojom::FeaturePolicyFeature feature,
-                                        const url::Origin& origin) const;
-
   // Returns the allowlist of a given feature by this policy.
   const Allowlist GetAllowlistForFeature(
       mojom::FeaturePolicyFeature feature) const;
@@ -218,17 +211,15 @@ class BLINK_COMMON_EXPORT FeaturePolicy {
       const url::Origin& origin,
       const FeaturePolicyFeatureList& features);
 
-  bool GetInheritedValueForFeature(
+  bool InheritedValueForFeature(
       const FeaturePolicy* parent_policy,
       std::pair<mojom::FeaturePolicyFeature, FeaturePolicyFeatureDefault>
           feature,
       const ParsedFeaturePolicy& container_policy) const;
 
-  bool GetProposedInheritedValueForFeature(
-      const FeaturePolicy* parent_policy,
-      std::pair<mojom::FeaturePolicyFeature, FeaturePolicyFeatureDefault>
-          feature,
-      const ParsedFeaturePolicy& container_policy) const;
+  // Returns the value of the given feature on the given origin.
+  bool GetFeatureValueForOrigin(mojom::FeaturePolicyFeature feature,
+                                const url::Origin& origin) const;
 
   // The origin of the document with which this policy is associated.
   url::Origin origin_;
@@ -240,11 +231,6 @@ class BLINK_COMMON_EXPORT FeaturePolicy {
   // Records whether or not each feature was enabled for this frame by its
   // parent frame.
   FeaturePolicyFeatureState inherited_policies_;
-
-  // Temporary member to support metrics. These are the values which would be
-  // stored in |inherited_policies_| under the proposal in
-  // https://crbug.com/937131.
-  FeaturePolicyFeatureState proposed_inherited_policies_;
 
   const FeaturePolicyFeatureList& feature_list_;
 

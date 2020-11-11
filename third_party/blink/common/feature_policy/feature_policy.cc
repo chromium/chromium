@@ -117,7 +117,6 @@ std::unique_ptr<FeaturePolicy> FeaturePolicy::CreateWithOpenerPolicy(
   std::unique_ptr<FeaturePolicy> new_policy = base::WrapUnique(
       new FeaturePolicy(origin, GetFeaturePolicyFeatureList()));
   new_policy->inherited_policies_ = inherited_policies;
-  new_policy->proposed_inherited_policies_ = inherited_policies;
   return new_policy;
 }
 
@@ -127,12 +126,6 @@ bool FeaturePolicy::IsFeatureEnabled(
 }
 
 bool FeaturePolicy::IsFeatureEnabledForOrigin(
-    mojom::FeaturePolicyFeature feature,
-    const url::Origin& origin) const {
-  return GetFeatureValueForOrigin(feature, origin);
-}
-
-bool FeaturePolicy::GetFeatureValueForOrigin(
     mojom::FeaturePolicyFeature feature,
     const url::Origin& origin) const {
   DCHECK(base::Contains(feature_list_, feature));
@@ -149,27 +142,22 @@ bool FeaturePolicy::GetFeatureValueForOrigin(
   if (default_policy == FeaturePolicyFeatureDefault::EnableForSelf &&
       !origin_.IsSameOriginWith(origin))
     return false;
+
   return inherited_value;
 }
 
-// Temporary code to support metrics: (https://crbug.com/937131)
-// This method implements a proposed algorithm change to feature policy in which
-// the default allowlist for a feature if not specified in the header, is always
-// '*', but where the header allowlist *must* allow the nested frame origin in
-// order to delegate use of the feature to that frame.
-bool FeaturePolicy::GetProposedFeatureValueForOrigin(
+bool FeaturePolicy::GetFeatureValueForOrigin(
     mojom::FeaturePolicyFeature feature,
     const url::Origin& origin) const {
   DCHECK(base::Contains(feature_list_, feature));
-  DCHECK(base::Contains(proposed_inherited_policies_, feature));
+  DCHECK(base::Contains(inherited_policies_, feature));
 
-  auto inherited_value = proposed_inherited_policies_.at(feature);
+  auto inherited_value = inherited_policies_.at(feature);
   auto allowlist = allowlists_.find(feature);
   if (allowlist != allowlists_.end()) {
     return inherited_value && allowlist->second->Contains(origin);
   }
 
-  // If no allowlist is specified, return default feature value.
   return inherited_value;
 }
 
@@ -236,53 +224,16 @@ std::unique_ptr<FeaturePolicy> FeaturePolicy::CreateFromParentPolicy(
       base::WrapUnique(new FeaturePolicy(origin, features));
   for (const auto& feature : features) {
     new_policy->inherited_policies_[feature.first] =
-        new_policy->GetInheritedValueForFeature(parent_policy, feature,
-                                                container_policy);
-    new_policy->proposed_inherited_policies_[feature.first] =
-        new_policy->GetProposedInheritedValueForFeature(parent_policy, feature,
-                                                        container_policy);
+        new_policy->InheritedValueForFeature(parent_policy, feature,
+                                             container_policy);
   }
   return new_policy;
 }
 
-// Implements Feature Policy 9.8: Define an inherited policy for feature in
-// document and 9.9: Define an inherited policy for feature in container at
-// origin.
-bool FeaturePolicy::GetInheritedValueForFeature(
-    const FeaturePolicy* parent_policy,
-    std::pair<mojom::FeaturePolicyFeature, FeaturePolicyFeatureDefault> feature,
-    const ParsedFeaturePolicy& container_policy) const {
-  // 9.8 3: Otherwise [If context is not a nested browsing context,] return
-  // "Enabled".
-  if (!parent_policy)
-    return true;
-
-  for (const auto& decl : container_policy) {
-    if (decl.feature == feature.first) {
-      // 9.9 3.1: If the allowlist for feature in container policy does not
-      // match origin, return "Disabled".
-      if (!AllowlistFromDeclaration(decl, feature_list_)->Contains(origin_))
-        return false;
-
-      // 9.9 3.2: If feature is enabled in parent for parent’s origin, return
-      // "Enabled".
-      if (parent_policy->GetFeatureValueForOrigin(feature.first,
-                                                  parent_policy->origin_))
-        return true;
-    }
-  }
-
-  // 9.9 4: If feature is enabled in parent for parent’s origin, return
-  // "Enabled".
-  // 9.9 5: Otherwise return "Disabled".
-  return parent_policy->GetFeatureValueForOrigin(feature.first, origin_);
-}
-
-// Temporary code to support metrics (https://crbug.com/937131)
 // Implements Permissions Policy 9.7: Define an inherited policy for feature in
 // browsing context and 9.8: Define an inherited policy for feature in container
 // at origin.
-bool FeaturePolicy::GetProposedInheritedValueForFeature(
+bool FeaturePolicy::InheritedValueForFeature(
     const FeaturePolicy* parent_policy,
     std::pair<mojom::FeaturePolicyFeature, FeaturePolicyFeatureDefault> feature,
     const ParsedFeaturePolicy& container_policy) const {
@@ -293,14 +244,14 @@ bool FeaturePolicy::GetProposedInheritedValueForFeature(
 
   // 9.8 2: If policy’s inherited policy for feature is "Disabled", return
   // "Disabled".
-  if (!parent_policy->GetProposedFeatureValueForOrigin(feature.first,
-                                                       parent_policy->origin_))
+  if (!parent_policy->GetFeatureValueForOrigin(feature.first,
+                                               parent_policy->origin_))
     return false;
 
   // 9.8 3: If feature is present in policy’s declared policy, and the allowlist
   // for feature in policy’s declared policy does not match origin, then return
   // "Disabled".
-  if (!parent_policy->GetProposedFeatureValueForOrigin(feature.first, origin_))
+  if (!parent_policy->GetFeatureValueForOrigin(feature.first, origin_))
     return false;
 
   for (const auto& decl : container_policy) {

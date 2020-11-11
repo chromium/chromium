@@ -31,13 +31,14 @@ var remote_iframe_policy = document.getElementById("f2").featurePolicy;
 var local_src = "http://127.0.0.1:8000";
 var remote_src = "http://localhost:8000";
 // Tests for featurePolicy.allowsFeature().
-// fullscreen should be allowed in both iframes on any origin.
+// Without an allow attribute, 'fullscreen' should be only be allowed in
+// same-origin frames, for its own origin.
 test(function() {
   assert_true(local_iframe_policy.allowsFeature("fullscreen"));
   assert_true(local_iframe_policy.allowsFeature("fullscreen", local_src));
   assert_false(local_iframe_policy.allowsFeature("fullscreen", remote_src));
-  assert_true(remote_iframe_policy.allowsFeature("fullscreen"));
-  assert_true(remote_iframe_policy.allowsFeature("fullscreen", remote_src));
+  assert_false(remote_iframe_policy.allowsFeature("fullscreen"));
+  assert_false(remote_iframe_policy.allowsFeature("fullscreen", remote_src));
   assert_false(remote_iframe_policy.allowsFeature("fullscreen", local_src));
   assert_false(local_iframe_policy.allowsFeature("fullscreen", "http://www.example.com"));
   assert_false(remote_iframe_policy.allowsFeature("fullscreen", "http://www.example.com"));
@@ -48,8 +49,8 @@ test(function() {
   assert_true(local_iframe_policy.allowsFeature("camera"));
   assert_true(local_iframe_policy.allowsFeature("camera", local_src));
   assert_false(local_iframe_policy.allowsFeature("camera", remote_src));
-  assert_true(remote_iframe_policy.allowsFeature("camera"));
-  assert_true(remote_iframe_policy.allowsFeature("camera", remote_src));
+  assert_false(remote_iframe_policy.allowsFeature("camera"));
+  assert_false(remote_iframe_policy.allowsFeature("camera", remote_src));
   assert_false(remote_iframe_policy.allowsFeature("camera", local_src));
   assert_false(local_iframe_policy.allowsFeature("camera", "http://www.example.com"));
   assert_false(remote_iframe_policy.allowsFeature("camera", "http://www.example.com"));
@@ -78,11 +79,12 @@ for (var feature of ["badfeature", "midi"]) {
 // Tests for featurePolicy.allowedFeatures().
 var allowed_local_iframe_features = local_iframe_policy.allowedFeatures();
 var allowed_remote_iframe_features = remote_iframe_policy.allowedFeatures();
-for (var feature of ["fullscreen", "camera"]) {
+for (var feature of ["fullscreen", "camera", "payment", "geolocation"]) {
   test(function() {
     assert_true(allowed_local_iframe_features.includes(feature));
-    assert_true(allowed_remote_iframe_features.includes(feature));
-  }, 'Test featurePolicy.allowedFeatures() include feature ' + feature);
+    assert_false(allowed_remote_iframe_features.includes(feature));
+  }, 'Test featurePolicy.allowedFeatures() locally include feature ' + feature +
+  '  but not remotely ');
 }
 for (var feature of ["badfeature", "midi"]) {
   test(function() {
@@ -91,12 +93,33 @@ for (var feature of ["badfeature", "midi"]) {
   }, 'Test featurePolicy.allowedFeatures() does not include disallowed feature ' +
     feature);
 }
-for (var feature of ["payment", "geolocation"]) {
+
+// Dynamically change policies: Allow as much as possible with attribute
+document.getElementById("f1").allow = "fullscreen *; camera *; payment *; geolocation *; midi *";
+document.getElementById("f2").allow = "fullscreen *; camera *; payment *; geolocation *; midi *";
+
+// Tests for featurePolicy.allowedFeatures().
+var allowed_local_iframe_features = local_iframe_policy.allowedFeatures();
+var allowed_remote_iframe_features = remote_iframe_policy.allowedFeatures();
+for (var feature of ["fullscreen", "camera", "geolocation"]) {
+  test(function() {
+    assert_true(allowed_local_iframe_features.includes(feature));
+    assert_true(allowed_remote_iframe_features.includes(feature));
+  }, 'Test featurePolicy.allowedFeatures() include feature ' + feature + ' with allow *');
+}
+for (var feature of ["badfeature", "midi"]) {
+  test(function() {
+    assert_false(allowed_local_iframe_features.includes(feature));
+    assert_false(allowed_remote_iframe_features.includes(feature));
+  }, 'Test featurePolicy.allowedFeatures() does not include disallowed feature ' +
+    feature + ' with allow *');
+}
+for (var feature of ["payment"]) {
 test(function() {
   assert_true(allowed_local_iframe_features.includes(feature));
   assert_false(allowed_remote_iframe_features.includes(feature));
 }, 'Test featurePolicy.allowedFeatures() locally include feature ' + feature +
-  '  but not remotely ');
+  '  but not remotely with allow *');
 }
 
 // Tests for featurePolicy.getAllowlistForFeature().
@@ -116,7 +139,7 @@ test(function() {
   assert_array_equals(
     local_iframe_policy.getAllowlistForFeature("geolocation"), [local_src]);
   assert_array_equals(
-    remote_iframe_policy.getAllowlistForFeature("geolocation"), []);
+    remote_iframe_policy.getAllowlistForFeature("geolocation"), [remote_src]);
 }, 'featurePolicy.getAllowlistForFeature(): geolocation is allowed only in local iframe');
 test(function() {
   assert_array_equals(
@@ -125,7 +148,7 @@ test(function() {
     remote_iframe_policy.getAllowlistForFeature("midi"), []);
 }, 'featurePolicy.getAllowlistForFeature(): midi is disallowed in both iframe');
 
-// Dynamically update iframes policy.
+// Dynamically update iframe policy: Restrict with allow attribute.
 document.getElementById("f1").allow = "fullscreen 'none'; payment 'src'; midi 'src'; geolocation 'none'; camera 'src' 'self' https://www.example.com https://www.example.net";
 document.getElementById("f2").allow = "fullscreen 'none'; payment 'src'; midi 'src'; geolocation 'none'; camera 'src' 'self' https://www.example.com https://www.example.net";
 test(function() {
@@ -148,11 +171,11 @@ test(function() {
     document.getElementById("f1").featurePolicy.getAllowlistForFeature("payment"),
     [local_src]);
   assert_array_equals(
-    remote_iframe_policy.getAllowlistForFeature("payment"), [remote_src]);
+    remote_iframe_policy.getAllowlistForFeature("payment"), []);
   assert_array_equals(
     document.getElementById("f2").featurePolicy.getAllowlistForFeature("payment"),
-    [remote_src]);
-}, 'Dynamically redefine allow: payment is allowed in both iframes');
+    []);
+}, 'Dynamically redefine allow: payment is allowed in local frame only');
 
 test(function() {
   assert_array_equals(
@@ -173,5 +196,5 @@ test(function() {
     local_iframe_policy.getAllowlistForFeature("midi"), []);
   assert_array_equals(
     remote_iframe_policy.getAllowlistForFeature("midi"), []);
-}, 'Dynamically redefine allow: midi is disallowed in both iframe');
+}, 'Dynamically redefine allow: midi is still disallowed in both iframe');
 </script>

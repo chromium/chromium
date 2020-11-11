@@ -178,13 +178,10 @@ TEST_F(IFramePolicyTest, TestCrossOriginAllowedFeatures) {
   GetPolicy()->UpdateContainerPolicy(
       ParsedFeaturePolicy(), SecurityOrigin::CreateFromString(kOriginA));
   Vector<String> allowed_features = GetPolicy()->allowedFeatures(nullptr);
-  // These features are allowed in the cross-origin frame by the Feature-Policy
-  // header.
-  EXPECT_TRUE(allowed_features.Contains("fullscreen"));
-  EXPECT_TRUE(allowed_features.Contains("camera"));
-  // These features are not allowed by the header, and so should not be allowed
-  // in a cross-origin context.
+  // None of these features should be allowed in a cross-origin context.
+  EXPECT_FALSE(allowed_features.Contains("fullscreen"));
   EXPECT_FALSE(allowed_features.Contains("payment"));
+  EXPECT_FALSE(allowed_features.Contains("camera"));
   EXPECT_FALSE(allowed_features.Contains("geolocation"));
   EXPECT_FALSE(allowed_features.Contains("midi"));
   // "sync-xhr" is allowed on all origins.
@@ -201,11 +198,10 @@ TEST_F(IFramePolicyTest, TestCombinedPolicy) {
   GetPolicy()->UpdateContainerPolicy(
       container_policy, SecurityOrigin::CreateFromString(kOriginA));
   Vector<String> allowed_features = GetPolicy()->allowedFeatures(nullptr);
-  // These features are not allowed by either the header or attribute.
+  // These features are not explicitly allowed.
+  EXPECT_FALSE(allowed_features.Contains("fullscreen"));
   EXPECT_FALSE(allowed_features.Contains("payment"));
-  // These features are allowed by the header.
-  EXPECT_TRUE(allowed_features.Contains("fullscreen"));
-  // These features are explicitly allowed by the attribute.
+  // These features are explicitly allowed.
   EXPECT_TRUE(allowed_features.Contains("geolocation"));
   EXPECT_TRUE(allowed_features.Contains("camera"));
   // "midi" is allowed by the attribute, but still blocked by the parent

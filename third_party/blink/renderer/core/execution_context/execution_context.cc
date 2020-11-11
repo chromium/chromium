@@ -422,20 +422,6 @@ bool ExecutionContext::FeatureEnabled(OriginTrialFeature feature) const {
   return origin_trial_context_->IsFeatureEnabled(feature);
 }
 
-void ExecutionContext::FeaturePolicyPotentialBehaviourChangeObserved(
-    mojom::blink::FeaturePolicyFeature feature) const {
-  size_t feature_index = static_cast<size_t>(feature);
-  if (feature_policy_behaviour_change_counted_.size() == 0) {
-    feature_policy_behaviour_change_counted_.resize(
-        static_cast<size_t>(mojom::blink::FeaturePolicyFeature::kMaxValue) + 1);
-  } else if (feature_policy_behaviour_change_counted_[feature_index]) {
-    return;
-  }
-  feature_policy_behaviour_change_counted_[feature_index] = true;
-  UMA_HISTOGRAM_ENUMERATION(
-      "Blink.UseCounter.FeaturePolicy.ProposalWouldChangeBehaviour", feature);
-}
-
 bool ExecutionContext::IsFeatureEnabled(
     mojom::blink::FeaturePolicyFeature feature,
     ReportOptions report_on_failure,
@@ -449,20 +435,6 @@ bool ExecutionContext::IsFeatureEnabled(
 
   bool should_report;
   bool enabled = security_context_.IsFeatureEnabled(feature, &should_report);
-
-  if (enabled) {
-    // Report if the proposed header semantics change would have affected the
-    // outcome. (https://crbug.com/937131)
-    const FeaturePolicy* policy = security_context_.GetFeaturePolicy();
-    url::Origin origin = GetSecurityOrigin()->ToUrlOrigin();
-    if (!policy->GetProposedFeatureValueForOrigin(feature, origin)) {
-      // Count that there was a change in this page load.
-      const_cast<ExecutionContext*>(this)->CountUse(
-          WebFeature::kFeaturePolicyProposalWouldChangeBehaviour);
-      // Record the specific feature whose behaviour was changed.
-      FeaturePolicyPotentialBehaviourChangeObserved(feature);
-    }
-  }
 
   if (should_report && report_on_failure == ReportOptions::kReportOnFailure) {
     mojom::blink::PolicyDisposition disposition =
