@@ -831,8 +831,8 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             boolean requiresConfirmation, @Nullable LensQueryResult lensQueryResult) {
         mNativeDelegate.retrieveImageForShare(ContextMenuImageFormat.PNG, (Uri imageUri) -> {
             ShareHelper.shareImageWithGoogleLens(getWindow(), imageUri, mItemDelegate.isIncognito(),
-                    mParams.getSrcUrl(), mParams.getTitleText(), lensQueryResult,
-                    requiresConfirmation);
+                    mParams.getSrcUrl(), mParams.getTitleText(), mParams.getPageUrl(),
+                    lensQueryResult, requiresConfirmation);
         });
     }
 

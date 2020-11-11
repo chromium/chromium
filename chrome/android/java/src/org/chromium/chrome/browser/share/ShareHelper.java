@@ -125,16 +125,17 @@ public class ShareHelper extends org.chromium.components.browser_ui.share.ShareH
      * @param isIncognito Whether the current tab is in incognito mode.
      * @param srcUrl The 'src' attribute of the image.
      * @param titleOrAltText The 'title' or, if empty, the 'alt' attribute of the image.
+     * @param pageUrl The page url.
      * @param lensQueryResult The wrapper object which contains the classify result of Lens image
      *         query.
      * @param requiresConfirmation Whether the request requires an confirmation dialog.
      */
     public static void shareImageWithGoogleLens(final WindowAndroid window, Uri imageUri,
-            boolean isIncognito, String srcUrl, String titleOrAltText,
+            boolean isIncognito, String srcUrl, String titleOrAltText, String pageUrl,
             LensQueryResult lensQueryResult, boolean requiresConfirmation) {
         Intent shareIntent = LensUtils.getShareWithGoogleLensIntent(imageUri, isIncognito,
-                SystemClock.elapsedRealtimeNanos(), srcUrl, titleOrAltText, lensQueryResult,
-                requiresConfirmation);
+                SystemClock.elapsedRealtimeNanos(), srcUrl, titleOrAltText, pageUrl,
+                lensQueryResult, requiresConfirmation);
         try {
             // Pass an empty callback to ensure the triggered activity can identify the source
             // of the intent (startActivityForResult allows app identification).

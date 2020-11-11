@@ -38,6 +38,7 @@ public class LensUtils {
     private static final String LAUNCH_TIMESTAMP_URI_KEY = "ActivityLaunchTimestampNanos";
     private static final String IMAGE_SRC_URI_KEY = "ImageSrc";
     private static final String ALT_URI_KEY = "ImageAlt";
+    private static final String PAGE_URI_KEY = "PageUrl";
     private static final String VARIATION_ID_URI_KEY = "Gid";
     private static final String LENS_INTENT_TYPE_KEY = "lens_intent_type";
     private static final String REQUIRE_ACCOUNT_DIALOG_KEY = "requiresConfirmation";
@@ -54,6 +55,7 @@ public class LensUtils {
     private static final String LOG_UKM_PARAM_NAME = "logUkm";
     private static final String SEND_SRC_PARAM_NAME = "sendSrc";
     private static final String SEND_ALT_PARAM_NAME = "sendAlt";
+    private static final String SEND_PAGE_PARAM_NAME = "sendPage";
     private static final String USE_DIRECT_INTENT_FEATURE_PARAM_NAME = "useDirectIntent";
     private static final String DISABLE_ON_INCOGNITO_PARAM_NAME = "disableOnIncognito";
     private static final String ORDER_SHARE_IMAGE_BEFORE_LENS_PARAM_NAME =
@@ -120,11 +122,11 @@ public class LensUtils {
             try {
                 final PackageManager pm = context.getPackageManager();
                 // No data transmission occurring so safe to assume incognito is false.
-                final Intent lensIntent =
-                        getShareWithGoogleLensIntent(Uri.EMPTY, /* isIncognito= */ false,
-                                /* currentTimeNanos= */ 0L, /* srcUrl */ "",
-                                /* titleOrAltText */ "", /* lensQueryResult */ null,
-                                /* requiresConfirmation */ false);
+                final Intent lensIntent = getShareWithGoogleLensIntent(Uri.EMPTY,
+                        /* isIncognito= */ false,
+                        /* currentTimeNanos= */ 0L, /* srcUrl */ "",
+                        /* titleOrAltText */ "", /* pageUrl */ "", /* lensQueryResult */ null,
+                        /* requiresConfirmation */ false);
                 final ComponentName lensActivity = lensIntent.resolveActivity(pm);
                 if (lensActivity == null) return "";
                 final PackageInfo packageInfo = pm.getPackageInfo(lensActivity.getPackageName(), 0);
@@ -232,6 +234,7 @@ public class LensUtils {
      * @param srcUrl           The 'src' attribute of the image.
      * @param titleOrAltText   The 'title' or, if empty, the 'alt' attribute of the
      *                         image.
+     * @param pageUrl          The url of the top level frame of the page.
      * @param LensQueryResult The image query result returned from Lens Prime API.
      * @param requiresConfirmation Whether the request requires an confirmation dialog.
      * @return The intent to Google Lens.
@@ -239,7 +242,8 @@ public class LensUtils {
 
     public static Intent getShareWithGoogleLensIntent(final Uri imageUri, final boolean isIncognito,
             final long currentTimeNanos, final String srcUrl, final String titleOrAltText,
-            LensQueryResult lensQueryResult, final boolean requiresConfirmation) {
+            final String pageUrl, LensQueryResult lensQueryResult,
+            final boolean requiresConfirmation) {
         final CoreAccountInfo coreAccountInfo =
                 IdentityServicesProvider.get()
                         .getIdentityManager(Profile.getLastUsedRegularProfile())
@@ -284,6 +288,12 @@ public class LensUtils {
                                 ChromeFeatureList.CONTEXT_MENU_SEARCH_WITH_GOOGLE_LENS,
                                 SEND_ALT_PARAM_NAME, false)) {
                     lensUriBuilder.appendQueryParameter(ALT_URI_KEY, titleOrAltText);
+                }
+                if ((pageUrl != null)
+                        && ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                                ChromeFeatureList.CONTEXT_MENU_SEARCH_WITH_GOOGLE_LENS,
+                                SEND_PAGE_PARAM_NAME, false)) {
+                    lensUriBuilder.appendQueryParameter(PAGE_URI_KEY, pageUrl);
                 }
                 String variations = sFakeVariationsForTesting == null
                         ? VariationsAssociatedData.getGoogleAppVariations()

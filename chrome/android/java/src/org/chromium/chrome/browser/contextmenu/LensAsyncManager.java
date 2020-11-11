@@ -72,7 +72,7 @@ class LensAsyncManager {
     public void searchWithGoogleLens() {
         Callback<Uri> callback = (uri) -> {
             ShareHelper.shareImageWithGoogleLens(mWindow, uri, mIsIncognito, mParams.getSrcUrl(),
-                    mParams.getTitleText(), mLastCompletedQueryResult,
+                    mParams.getTitleText(), mParams.getPageUrl(), mLastCompletedQueryResult,
                     /* requiresConfirmation*/ false);
         };
         mNativeDelegate.retrieveImageForShare(ContextMenuImageFormat.PNG, callback);
