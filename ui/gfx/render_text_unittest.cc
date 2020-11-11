@@ -7629,6 +7629,36 @@ TEST_F(RenderTextTest, LineEndSelections) {
   }
 }
 
+TEST_F(RenderTextTest, GetSubstringBounds) {
+  const float kGlyphWidth = 5;
+  SetGlyphWidth(kGlyphWidth);
+  RenderText* render_text = GetRenderText();
+  render_text->SetText(UTF8ToUTF16("abc"));
+  render_text->SetCursorEnabled(false);
+  render_text->SetElideBehavior(NO_ELIDE);
+
+  EXPECT_EQ(GetSubstringBoundsUnion(Range(0, 1)).width(), kGlyphWidth);
+  EXPECT_EQ(GetSubstringBoundsUnion(Range(1, 2)).width(), kGlyphWidth);
+  EXPECT_EQ(GetSubstringBoundsUnion(Range(1, 3)).width(), 2 * kGlyphWidth);
+
+  EXPECT_EQ(GetSubstringBoundsUnion(Range(0, 0)).width(), 0);
+  EXPECT_EQ(GetSubstringBoundsUnion(Range(3, 3)).width(), 0);
+
+  // Apply eliding so display text has 2 visible character.
+  render_text->SetDisplayRect(Rect(0, 0, 2 * kGlyphWidth, 100));
+  render_text->SetElideBehavior(TRUNCATE);
+
+  EXPECT_EQ(GetSubstringBoundsUnion(Range(0, 1)).width(), kGlyphWidth);
+  EXPECT_EQ(GetSubstringBoundsUnion(Range(1, 2)).width(), kGlyphWidth);
+  EXPECT_EQ(GetSubstringBoundsUnion(Range(1, 3)).width(), kGlyphWidth);
+  // Check a fully elided range.
+  EXPECT_EQ(GetSubstringBoundsUnion(Range(2, 3)).width(), 0);
+
+  // Empty ranges result in empty rect.
+  EXPECT_EQ(GetSubstringBoundsUnion(Range(0, 0)).width(), 0);
+  EXPECT_EQ(GetSubstringBoundsUnion(Range(3, 3)).width(), 0);
+}
+
 // Tests that GetSubstringBounds rounds outward when glyphs have floating-point
 // widths.
 TEST_F(RenderTextTest, GetSubstringBoundsFloatingPoint) {

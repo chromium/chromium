@@ -286,6 +286,10 @@ class GFX_EXPORT RenderTextHarfBuzz : public RenderText {
   // Makes sure that text runs for layout text are shaped.
   void EnsureLayoutRunList();
 
+  // Returns whether the display range is still a valid range after the eliding
+  // pass.
+  bool IsValidDisplayRange(Range display_range);
+
   // RenderText:
   internal::TextRunList* GetRunList() override;
   const internal::TextRunList* GetRunList() const override;

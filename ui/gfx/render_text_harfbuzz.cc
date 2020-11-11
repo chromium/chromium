@@ -1419,11 +1419,11 @@ SizeF RenderTextHarfBuzz::GetLineSizeF(const SelectionModel& caret) {
 std::vector<Rect> RenderTextHarfBuzz::GetSubstringBounds(const Range& range) {
   EnsureLayout();
   DCHECK(!update_display_run_list_);
-  DCHECK(Range(0, text().length()).Contains(range));
+  DCHECK(range.IsBoundedBy(Range(0, text().length())));
   const Range grapheme_range = ExpandRangeToGraphemeBoundary(range);
   const Range display_range(TextIndexToDisplayIndex(grapheme_range.start()),
                             TextIndexToDisplayIndex(grapheme_range.end()));
-  DCHECK(Range(0, GetDisplayText().length()).Contains(display_range));
+  DCHECK(IsValidDisplayRange(display_range));
 
   std::vector<Rect> rects;
   if (display_range.is_empty())
@@ -1497,6 +1497,7 @@ RangeF RenderTextHarfBuzz::GetCursorSpan(const Range& text_range) {
 
   Range display_range(TextIndexToDisplayIndex(valid_range.start()),
                       TextIndexToDisplayIndex(next_grapheme_start));
+  DCHECK(IsValidDisplayRange(display_range));
 
   // Although highly likely, there's no guarantee that a single text run is used
   // for the entire cursor span. For example, Unicode Variation Selectors are
@@ -2234,6 +2235,28 @@ internal::TextRunList* RenderTextHarfBuzz::GetRunList() {
 
 const internal::TextRunList* RenderTextHarfBuzz::GetRunList() const {
   return const_cast<RenderTextHarfBuzz*>(this)->GetRunList();
+}
+
+bool RenderTextHarfBuzz::IsValidDisplayRange(Range display_range) {
+  // The |display_text_| is an elided version of |layout_text_|. Removing
+  // codepoints from the text may break the conversion for codepoint offsets
+  // between text to display_text offset. For elding behaviors that truncate
+  // codepoint at the end, the conversion will work just fine. But for eliding
+  // behavior that truncate at the beginning of middle of the text, the offsets
+  // are completely wrong and should not be used.
+  // TODO(http://crbug.com/1085014): Fix eliding for the broken cases.
+  switch (elide_behavior()) {
+    case NO_ELIDE:
+    case FADE_TAIL:
+      return display_range.IsBoundedBy(Range(0, GetDisplayText().length()));
+    case TRUNCATE:
+    case ELIDE_TAIL:
+      return display_range.IsBoundedBy(Range(0, GetLayoutText().length()));
+    case ELIDE_HEAD:
+    case ELIDE_MIDDLE:
+    case ELIDE_EMAIL:
+      return !text_elided();
+  }
 }
 
 bool RenderTextHarfBuzz::GetDecoratedTextForRange(
