@@ -4,18 +4,28 @@
 
 #include "chrome/browser/ui/webui/help/version_updater_mac.h"
 
+#include <string>
+
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/mac/foundation_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/buildflags.h"
 #import "chrome/browser/mac/keystone_glue.h"
 #include "chrome/browser/obsolete_system/obsolete_system.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "net/base/escape.h"
 #include "ui/base/l10n/l10n_util.h"
+
+#if BUILDFLAG(ENABLE_CHROMIUM_UPDATER)
+#include "base/numerics/ranges.h"
+#include "base/strings/stringprintf.h"
+#include "chrome/browser/updater/browser_updater_client.h"  // nogncheck
+#include "chrome/updater/update_service.h"                  // nogncheck
+#endif  // BUILDFLAG(ENABLE_CHROMIUM_UPDATER)
 
 // KeystoneObserver is a simple notification observer for Keystone status
 // updates. It will be created and managed by VersionUpdaterMac.
@@ -57,6 +67,63 @@
 
 @end  // @implementation KeystoneObserver
 
+#if BUILDFLAG(ENABLE_CHROMIUM_UPDATER)
+namespace {
+
+int GetDownloadProgress(int64_t downloaded_bytes, int64_t total_bytes) {
+  if (downloaded_bytes < 0 || total_bytes <= 0)
+    return -1;
+  return 100 *
+         base::ClampToRange(double{downloaded_bytes} / total_bytes, 0.0, 1.0);
+}
+
+void UpdateStatusFromChromiumUpdater(
+    const VersionUpdater::StatusCallback& status_callback,
+    updater::UpdateService::UpdateState update_state) {
+  VersionUpdater::Status status = VersionUpdater::Status::CHECKING;
+  int progress = 0;
+  std::string version;
+  std::string err_message;
+
+  switch (update_state.state) {
+    case updater::UpdateService::UpdateState::State::kCheckingForUpdates:
+      FALLTHROUGH;
+    case updater::UpdateService::UpdateState::State::kUpdateAvailable:
+      status = VersionUpdater::Status::CHECKING;
+      break;
+    case updater::UpdateService::UpdateState::State::kDownloading:
+      progress = GetDownloadProgress(update_state.downloaded_bytes,
+                                     update_state.total_bytes);
+      FALLTHROUGH;
+    case updater::UpdateService::UpdateState::State::kInstalling:
+      status = VersionUpdater::Status::UPDATING;
+      break;
+    case updater::UpdateService::UpdateState::State::kUpdated:
+      status = VersionUpdater::Status::NEARLY_UPDATED;
+      break;
+    case updater::UpdateService::UpdateState::State::kNoUpdate:
+      status = VersionUpdater::Status::UPDATED;
+      break;
+    case updater::UpdateService::UpdateState::State::kUpdateError:
+      status = VersionUpdater::Status::FAILED;
+      // TODO(https://crbug.com/1146201): Localize error string.
+      err_message = base::StringPrintf(
+          "An error occurred. (Error code: %d) (Extra code: %d)",
+          update_state.error_code, update_state.extra_code1);
+      break;
+    case updater::UpdateService::UpdateState::State::kNotStarted:
+      FALLTHROUGH;
+    case updater::UpdateService::UpdateState::State::kUnknown:
+      return;
+  }
+
+  status_callback.Run(status, progress, false, false, version, 0,
+                      base::UTF8ToUTF16(err_message));
+}
+
+}  // namespace
+#endif  // BUILDFLAG(ENABLE_CHROMIUM_UPDATER)
+
 VersionUpdater* VersionUpdater::Create(
     content::WebContents* /* web_contents */) {
   return new VersionUpdaterMac;
@@ -64,17 +131,21 @@ VersionUpdater* VersionUpdater::Create(
 
 VersionUpdaterMac::VersionUpdaterMac()
     : show_promote_button_(false),
-      keystone_observer_([[KeystoneObserver alloc] initWithUpdater:this]) {
-}
+      keystone_observer_([[KeystoneObserver alloc] initWithUpdater:this]) {}
 
-VersionUpdaterMac::~VersionUpdaterMac() {
-}
+VersionUpdaterMac::~VersionUpdaterMac() {}
 
 void VersionUpdaterMac::CheckForUpdate(
     const StatusCallback& status_callback,
     const PromoteCallback& promote_callback) {
-  // Copy the callbacks, we will re-use this for the remaining lifetime
-  // of this object.
+#if BUILDFLAG(ENABLE_CHROMIUM_UPDATER)
+  if (!update_client_)
+    update_client_ = BrowserUpdaterClient::Create();
+
+  update_client_->CheckForUpdate(
+      base::BindRepeating(&UpdateStatusFromChromiumUpdater, status_callback));
+  return;
+#else
   status_callback_ = status_callback;
   promote_callback_ = promote_callback;
 
@@ -111,6 +182,7 @@ void VersionUpdaterMac::CheckForUpdate(
     status_callback_.Run(DISABLED, 0, false, false, std::string(), 0,
                          base::string16());
   }
+#endif  // BUILDFLAG(ENABLE_CHROMIUM_UPDATER)
 }
 
 void VersionUpdaterMac::PromoteUpdater() const {
@@ -130,11 +202,11 @@ void VersionUpdaterMac::PromoteUpdater() const {
 }
 
 void VersionUpdaterMac::UpdateStatus(NSDictionary* dictionary) {
-  AutoupdateStatus keystone_status = static_cast<AutoupdateStatus>(
-      [base::mac::ObjCCastStrict<NSNumber>(
+  AutoupdateStatus keystone_status =
+      static_cast<AutoupdateStatus>([base::mac::ObjCCastStrict<NSNumber>(
           [dictionary objectForKey:kAutoupdateStatusStatus]) intValue]);
-  std::string error_messages = base::SysNSStringToUTF8(
-      base::mac::ObjCCastStrict<NSString>(
+  std::string error_messages =
+      base::SysNSStringToUTF8(base::mac::ObjCCastStrict<NSString>(
           [dictionary objectForKey:kAutoupdateStatusErrorMessages]));
 
   bool enable_promote_button = true;
@@ -192,19 +264,16 @@ void VersionUpdaterMac::UpdateStatus(NSDictionary* dictionary) {
     case kAutoupdateInstallFailed:
     case kAutoupdatePromoteFailed:
       status = FAILED;
-      message = l10n_util::GetStringFUTF16Int(IDS_UPGRADE_ERROR,
-                                              keystone_status);
+      message =
+          l10n_util::GetStringFUTF16Int(IDS_UPGRADE_ERROR, keystone_status);
       break;
 
-    case kAutoupdateNeedsPromotion:
-      {
-        status = FAILED;
-        base::string16 product_name =
-            l10n_util::GetStringUTF16(IDS_PRODUCT_NAME);
-        message = l10n_util::GetStringFUTF16(IDS_PROMOTE_INFOBAR_TEXT,
-                                             product_name);
-      }
-      break;
+    case kAutoupdateNeedsPromotion: {
+      status = FAILED;
+      base::string16 product_name = l10n_util::GetStringUTF16(IDS_PRODUCT_NAME);
+      message =
+          l10n_util::GetStringFUTF16(IDS_PROMOTE_INFOBAR_TEXT, product_name);
+    } break;
 
     default:
       NOTREACHED();
@@ -242,8 +311,8 @@ void VersionUpdaterMac::UpdateStatus(NSDictionary* dictionary) {
       promotion_state = PROMOTE_HIDDEN;
 
       if (show_promote_button_) {
-        promotion_state = enable_promote_button ? PROMOTE_ENABLED
-                                                : PROMOTE_DISABLED;
+        promotion_state =
+            enable_promote_button ? PROMOTE_ENABLED : PROMOTE_DISABLED;
       }
     }
 

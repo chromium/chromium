@@ -10,7 +10,15 @@
 #include "base/compiler_specific.h"
 #include "base/mac/scoped_nsobject.h"
 #include "base/macros.h"
+#include "base/memory/scoped_refptr.h"
+#include "chrome/browser/buildflags.h"
 #include "chrome/browser/ui/webui/help/version_updater.h"
+
+#if BUILDFLAG(ENABLE_CHROMIUM_UPDATER)
+#include "chrome/updater/update_service.h"  // nogncheck
+
+class BrowserUpdaterClient;
+#endif  // BUILDFLAG(ENABLE_CHROMIUM_UPDATER)
 
 @class KeystoneObserver;
 
@@ -51,6 +59,12 @@ class VersionUpdaterMac : public VersionUpdater {
 
   // The observer that will receive keystone status updates.
   base::scoped_nsobject<KeystoneObserver> keystone_observer_;
+
+#if BUILDFLAG(ENABLE_CHROMIUM_UPDATER)
+  // Instance of the BrowserUpdaterClient used to update the browser with the
+  // new updater.
+  scoped_refptr<BrowserUpdaterClient> update_client_;
+#endif  // BUILDFLAG(ENABLE_CHROMIUM_UPDATER)
 
   DISALLOW_COPY_AND_ASSIGN(VersionUpdaterMac);
 };

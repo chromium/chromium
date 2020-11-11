@@ -20,6 +20,7 @@
 #include "chrome/browser/apps/app_shim/app_shim_listener.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
+#include "chrome/browser/buildflags.h"
 #import "chrome/browser/chrome_browser_application_mac.h"
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/mac/install_from_dmg.h"
@@ -41,6 +42,10 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/resource/resource_handle.h"
 #include "ui/native_theme/native_theme_mac.h"
+
+#if BUILDFLAG(ENABLE_CHROMIUM_UPDATER)
+#include "chrome/browser/mac/install_updater.h"
+#endif  // BUILDFLAG(ENABLE_CHROMIUM_UPDATER)
 
 // ChromeBrowserMainPartsMac ---------------------------------------------------
 
@@ -75,9 +80,13 @@ void ChromeBrowserMainPartsMac::PreMainMessageLoopStart() {
   // point (needed to load the nib).
   CHECK(ui::ResourceBundle::HasSharedInstance());
 
+#if BUILDFLAG(ENABLE_CHROMIUM_UPDATER)
+  InstallUpdaterAndRegisterBrowser();
+#else
   // This is a no-op if the KeystoneRegistration framework is not present.
   // The framework is only distributed with branded Google Chrome builds.
   [[KeystoneGlue defaultKeystoneGlue] registerWithKeystone];
+#endif  // BUILDFLAG(ENABLE_CHROMIUM_UPDATER)
 
   // Disk image installation is sort of a first-run task, so it shares the
   // no first run switches.

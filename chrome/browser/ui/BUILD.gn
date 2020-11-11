@@ -3096,6 +3096,13 @@ static_library("ui") {
       "Carbon.framework",
       "Quartz.framework",
     ]
+
+    if (enable_chromium_updater) {
+      deps += [
+        "//chrome/browser/updater:browser_updater_client",
+        "//chrome/updater:browser_sources",
+      ]
+    }
   }
 
   if (is_win) {

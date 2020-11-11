@@ -4717,6 +4717,11 @@ test("unit_tests") {
         "../utility/importer/firefox_importer_unittest_utils_mac.cc",
         "../utility/importer/safari_importer_unittest.mm",
       ]
+
+      if (enable_chromium_updater) {
+        sources +=
+            [ "../browser/updater/browser_updater_client_mac_unittest.mm" ]
+      }
     }
 
     deps += [

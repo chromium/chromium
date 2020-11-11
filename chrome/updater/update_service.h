@@ -11,7 +11,7 @@
 #include "base/callback_forward.h"
 #include "base/memory/ref_counted.h"
 #include "base/version.h"
-#include "chrome/updater/util.h"
+#include "chrome/updater/enum_traits.h"
 
 namespace updater {
 
@@ -60,6 +60,10 @@ class UpdateService : public base::RefCountedThreadSafe<UpdateService> {
     kInactive = 8,
 
     // Change the EnumTraits class in this file when adding new values.
+    // IPC connection to the remote process failed for some reason.
+    kIPCConnectionFailed = 9,
+
+    // Change the traits class in this file when adding new values.
   };
 
   // Run time errors are organized in specific categories to indicate the

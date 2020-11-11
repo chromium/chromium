@@ -27,6 +27,7 @@
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/buildflags.h"
 #include "chrome/browser/google/google_brand.h"
 #include "chrome/browser/obsolete_system/obsolete_system.h"
 #include "chrome/browser/upgrade_detector/build_state.h"
@@ -455,7 +456,8 @@ void UpgradeDetectorImpl::Init() {
 
   // On Windows, only enable upgrade notifications for Google Chrome builds.
   // Chromium does not use an auto-updater.
-#if !defined(OS_WIN) || BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if !defined(OS_WIN) || BUILDFLAG(GOOGLE_CHROME_BRANDING) || \
+    BUILDFLAG(ENABLE_CHROMIUM_UPDATER)
 
   // On macOS, only enable upgrade notifications if the updater (Keystone) is
   // present.

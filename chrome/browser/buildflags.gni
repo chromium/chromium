@@ -9,5 +9,13 @@ declare_args() {
   # code.
   enable_kaleidoscope = !is_android && is_chrome_branded
 
+  # Chromium Updater is a cross-platform updater for desktop clients built using
+  # Chromium code and tools. Code is in //chrome/updater. The design doc is
+  # located at http://bit.ly/chromium-updater. Chrome is currently installed and
+  # updated with proprietary updater (Omaha & Keystone). This build flag allows
+  # integration with the open source, cross-platform Chromium updater.
+  # TODO(crbug.com/1054060)
+  enable_chromium_updater = false
+
   tpm_fallback = false
 }

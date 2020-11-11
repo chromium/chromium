@@ -44,6 +44,7 @@ if (is_win || is_mac) {
       "crash_client.h",
       "crash_reporter.cc",
       "crash_reporter.h",
+      "enum_traits.h",
       "patcher.cc",
       "patcher.h",
       "persisted_data.cc",
@@ -255,12 +256,44 @@ if (is_win || is_mac) {
     ]
   }
 
+  source_set("browser_sources") {
+    sources = [
+      "//chrome/updater/constants.cc",
+      "//chrome/updater/constants.h",
+      "//chrome/updater/enum_traits.h",
+      "//chrome/updater/registration_data.cc",
+      "//chrome/updater/registration_data.h",
+      "//chrome/updater/update_service.cc",
+      "//chrome/updater/update_service.h",
+    ]
+
+    deps = [
+      "//base",
+      "//components/update_client",
+    ]
+
+    if (is_mac) {
+      sources += [
+        "//chrome/updater/app/server/mac/service_protocol.h",
+        "//chrome/updater/app/server/mac/service_protocol.mm",
+        "//chrome/updater/app/server/mac/update_service_wrappers.h",
+        "//chrome/updater/app/server/mac/update_service_wrappers.mm",
+      ]
+    }
+
+    visibility = [
+      "//chrome/browser/ui:ui",
+      "//chrome/browser/updater:*",
+    ]
+  }
+
   # These tests are run serially since they mutate system state.
   test("updater_tests") {
     testonly = true
 
     sources = [
       "app/app_server_unittest.cc",
+      "enum_traits_unittest.cc",
       "external_constants_unittest.cc",
       "external_constants_unittest.h",
       "lib_util_unittest.cc",
@@ -275,7 +308,6 @@ if (is_win || is_mac) {
       "test/integration_tests.h",
       "unittest_util_unittest.cc",
       "updater_unittest.cc",
-      "util_unittest.cc",
     ]
 
     deps = [

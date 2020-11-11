@@ -1,0 +1,28 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("browser_updater_client") {
+  sources = [
+    "browser_updater_client.cc",
+    "browser_updater_client.h",
+    "browser_updater_client_util.cc",
+    "browser_updater_client_util.h",
+  ]
+
+  if (is_mac) {
+    sources += [
+      "browser_updater_client_mac.h",
+      "browser_updater_client_mac.mm",
+      "browser_updater_client_util_mac.mm",
+    ]
+  }
+
+  deps = [
+    "//base",
+    "//chrome/browser:buildflags",
+    "//chrome/common:version_header",
+    "//chrome/updater:browser_sources",
+    "//components/version_info",
+  ]
+}

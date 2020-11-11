@@ -78,6 +78,7 @@ buildflag_header("buildflags") {
   flags = [
     "ENABLE_KALEIDOSCOPE=$enable_kaleidoscope",
     "USE_MINIKIN_HYPHENATION=$use_minikin_hyphenation",
+    "ENABLE_CHROMIUM_UPDATER=$enable_chromium_updater",
     "USE_THIN_LTO=$use_thin_lto",
   ]
   if (is_win) {
@@ -4876,6 +4877,13 @@ static_library("browser") {
       "SafariServices.framework",  # macOS 10.12
       "UserNotifications.framework",  # macOS 10.14
     ]
+
+    if (enable_chromium_updater) {
+      sources += [
+        "mac/install_updater.h",
+        "mac/install_updater.mm",
+      ]
+    }
   }
 
   if (is_linux || is_chromeos) {
@@ -4976,6 +4984,10 @@ static_library("browser") {
       "recovery/recovery_install_global_error_factory.cc",
       "recovery/recovery_install_global_error_factory.h",
     ]
+
+    if (enable_chromium_updater) {
+      deps += [ "//chrome/browser/updater:browser_updater_client" ]
+    }
   } else {
     # On other platforms, use the generic implementation.
     sources += [ "hang_monitor/hang_crash_dump.cc" ]
