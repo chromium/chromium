@@ -16415,6 +16415,18 @@ regressions. -->
   </summary>
 </histogram>
 
+<histogram name="WebContextFetcher.Time.RunJavaScript" units="ms"
+    expires_after="2021-11-01">
+  <owner>benwgold@chromium.org</owner>
+  <owner>mdjones@chromium.org</owner>
+  <summary>
+    Records the number of milliseconds that it takes for a web context fetch to
+    complete. Recorded when the javascript execution completes. To start will be
+    used for Google Lens image queries to track time to retrieve page context,
+    but may extend to other features over time.
+  </summary>
+</histogram>
+
 <histogram name="WebController.BackForwardListOutOfSync" enum="BooleanHit"
     expires_after="2020-12-25">
   <owner>ajuma@chromium.org</owner>

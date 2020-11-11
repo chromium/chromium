@@ -859,6 +859,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/invalidation/ChromeBrowserSyncAdapterServiceImpl.java",
   "java/src/org/chromium/chrome/browser/invalidation/ResumableDelayedTaskRunner.java",
   "java/src/org/chromium/chrome/browser/invalidation/SessionsInvalidationManager.java",
+  "java/src/org/chromium/chrome/browser/javascript/WebContextFetcher.java",
   "java/src/org/chromium/chrome/browser/language/AppLocaleUtils.java",
   "java/src/org/chromium/chrome/browser/language/GlobalAppLocaleController.java",
   "java/src/org/chromium/chrome/browser/language/LanguageAskPrompt.java",

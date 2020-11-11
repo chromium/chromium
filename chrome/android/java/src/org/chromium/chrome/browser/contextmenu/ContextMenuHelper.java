@@ -162,7 +162,7 @@ public class ContextMenuHelper {
         if (LensUtils.enableImageChip(mIsIncognito)
                 && LensController.getInstance().isQueryEnabled()) {
             LensAsyncManager lensAsyncManager = new LensAsyncManager(mCurrentContextMenuParams,
-                    mCurrentNativeDelegate, mWindow, mIsIncognito, mPageTitle);
+                    mCurrentNativeDelegate, mWindow, mIsIncognito, mPageTitle, mWebContents);
             menuCoordinator.displayMenuWithLensChip(mWindow, mWebContents,
                     mCurrentContextMenuParams, items, mCallback, mOnMenuShown, mOnMenuClosed,
                     lensAsyncManager);

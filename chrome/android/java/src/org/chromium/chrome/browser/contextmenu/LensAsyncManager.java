@@ -12,6 +12,7 @@ import org.chromium.chrome.browser.lens.LensQueryParams;
 import org.chromium.chrome.browser.lens.LensQueryResult;
 import org.chromium.chrome.browser.share.ShareHelper;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuParams;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 
 // TODO(b/170970926):  Move LensAsyncManager to the private code repository.
@@ -27,6 +28,7 @@ class LensAsyncManager {
     private WindowAndroid mWindow;
     private boolean mIsIncognito;
     private String mPageTitle;
+    private WebContents mWebContents;
 
     /**
      * Construct a lens async manager.
@@ -34,14 +36,17 @@ class LensAsyncManager {
      * @param nativeDelegate {@link ContextMenuNativeDelegate} used to retrieve image bytes.
      * @param window The current window.
      * @param isIncognito Whether the current tab is in incognito mode.
+     * @param pageTitle The title of the current tab's document.
+     * @param webContents The web contents representing the selected element.
      */
     public LensAsyncManager(ContextMenuParams params, ContextMenuNativeDelegate nativeDelegate,
-            WindowAndroid window, boolean isIncognito, String pageTitle) {
+            WindowAndroid window, boolean isIncognito, String pageTitle, WebContents webContents) {
         mParams = params;
         mNativeDelegate = nativeDelegate;
         mWindow = window;
         mIsIncognito = isIncognito;
         mPageTitle = pageTitle;
+        mWebContents = webContents;
     }
 
     /**
@@ -56,6 +61,7 @@ class LensAsyncManager {
                             .withPageUrl(mParams.getPageUrl())
                             .withImageTitleOrAltText(mParams.getTitleText())
                             .withPageTitle(mPageTitle)
+                            .withWebContents(mWebContents)
                             .build();
             LensController.getInstance().queryImage(lensQueryParams, (lensQueryResult) -> {
                 mLastCompletedQueryResult = lensQueryResult;
