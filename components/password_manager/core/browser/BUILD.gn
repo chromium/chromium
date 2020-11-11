@@ -184,7 +184,6 @@ static_library("browser") {
     "password_session_durations_metrics_recorder.h",
     "password_store.cc",
     "password_store.h",
-    "password_store_change.cc",
     "password_store_change.h",
     "password_store_consumer.cc",
     "password_store_consumer.h",

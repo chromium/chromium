@@ -5,6 +5,7 @@
 #include "components/password_manager/core/browser/multi_store_password_save_manager.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "base/ranges/algorithm.h"
 #include "components/autofill/core/common/gaia_id_hash.h"
 #include "components/password_manager/core/browser/form_fetcher.h"
 #include "components/password_manager/core/browser/form_saver.h"
@@ -43,13 +44,11 @@ std::vector<const PasswordForm*> ProfileStoreMatches(
 bool AccountStoreMatchesContainForm(
     const std::vector<const PasswordForm*>& matches,
     const PasswordForm& form) {
-  PasswordForm form_in_account_store(form);
-  form_in_account_store.in_store = PasswordForm::Store::kAccountStore;
-  for (const PasswordForm* match : matches) {
-    if (form_in_account_store == *match)
-      return true;
-  }
-  return false;
+  DCHECK(base::ranges::all_of(matches, &PasswordForm::IsUsingAccountStore));
+  return base::ranges::find_if(matches, [&form](const PasswordForm* match) {
+           return ArePasswordFormUniqueKeysEqual(*match, form) &&
+                  match->password_value == form.password_value;
+         }) != matches.end();
 }
 
 PendingCredentialsState ResolvePendingCredentialsStates(

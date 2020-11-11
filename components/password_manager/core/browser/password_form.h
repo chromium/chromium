@@ -359,10 +359,6 @@ struct PasswordForm {
   // Returns true when |password_value| or |new_password_value| are non-empty.
   bool HasNonEmptyPasswordValue() const;
 
-  // Equality operators for testing.
-  bool operator==(const PasswordForm& form) const;
-  bool operator!=(const PasswordForm& form) const;
-
   PasswordForm();
   PasswordForm(const PasswordForm& other);
   PasswordForm(PasswordForm&& other);
@@ -378,9 +374,16 @@ bool ArePasswordFormUniqueKeysEqual(const PasswordForm& left,
                                     const PasswordForm& right);
 
 // For testing.
+#if defined(UNIT_TEST)
+// An exact equality comparison of all the fields is only useful for tests.
+// Production code should be using `ArePasswordFormUniqueKeysEqual` instead.
+bool operator==(const PasswordForm& lhs, const PasswordForm& rhs);
+bool operator!=(const PasswordForm& lhs, const PasswordForm& rhs);
+
 std::ostream& operator<<(std::ostream& os, PasswordForm::Scheme scheme);
 std::ostream& operator<<(std::ostream& os, const PasswordForm& form);
 std::ostream& operator<<(std::ostream& os, PasswordForm* form);
+#endif
 
 }  // namespace password_manager
 

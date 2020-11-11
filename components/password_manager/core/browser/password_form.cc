@@ -209,61 +209,64 @@ bool PasswordForm::HasNonEmptyPasswordValue() const {
   return !password_value.empty() || !new_password_value.empty();
 }
 
-bool PasswordForm::operator==(const PasswordForm& form) const {
-  return scheme == form.scheme && signon_realm == form.signon_realm &&
-         url == form.url && action == form.action &&
-         submit_element == form.submit_element &&
-         username_element == form.username_element &&
-         username_element_renderer_id == form.username_element_renderer_id &&
-         username_value == form.username_value &&
-         all_possible_usernames == form.all_possible_usernames &&
-         all_possible_passwords == form.all_possible_passwords &&
-         form_has_autofilled_value == form.form_has_autofilled_value &&
-         password_element == form.password_element &&
-         password_element_renderer_id == form.password_element_renderer_id &&
-         password_value == form.password_value &&
-         new_password_element == form.new_password_element &&
-         confirmation_password_element_renderer_id ==
-             form.confirmation_password_element_renderer_id &&
-         confirmation_password_element == form.confirmation_password_element &&
-         confirmation_password_element_renderer_id ==
-             form.confirmation_password_element_renderer_id &&
-         new_password_value == form.new_password_value &&
-         date_created == form.date_created && date_synced == form.date_synced &&
-         date_last_used == form.date_last_used &&
-         blocked_by_user == form.blocked_by_user && type == form.type &&
-         times_used == form.times_used &&
-         form_data.SameFormAs(form.form_data) &&
-         generation_upload_status == form.generation_upload_status &&
-         display_name == form.display_name && icon_url == form.icon_url &&
-         // We compare the serialization of the origins here, as we want unique
-         // origins to compare as '=='.
-         federation_origin.Serialize() == form.federation_origin.Serialize() &&
-         skip_zero_click == form.skip_zero_click &&
-         was_parsed_using_autofill_predictions ==
-             form.was_parsed_using_autofill_predictions &&
-         is_public_suffix_match == form.is_public_suffix_match &&
-         is_affiliation_based_match == form.is_affiliation_based_match &&
-         affiliated_web_realm == form.affiliated_web_realm &&
-         app_display_name == form.app_display_name &&
-         app_icon_url == form.app_icon_url &&
-         submission_event == form.submission_event &&
-         only_for_fallback == form.only_for_fallback &&
-         is_new_password_reliable == form.is_new_password_reliable &&
-         in_store == form.in_store &&
-         moving_blocked_for_list == form.moving_blocked_for_list;
-}
-
-bool PasswordForm::operator!=(const PasswordForm& form) const {
-  return !operator==(form);
-}
-
 bool ArePasswordFormUniqueKeysEqual(const PasswordForm& left,
                                     const PasswordForm& right) {
   return (left.signon_realm == right.signon_realm && left.url == right.url &&
           left.username_element == right.username_element &&
           left.username_value == right.username_value &&
           left.password_element == right.password_element);
+}
+
+bool operator==(const PasswordForm& lhs, const PasswordForm& rhs) {
+  return lhs.scheme == rhs.scheme && lhs.signon_realm == rhs.signon_realm &&
+         lhs.url == rhs.url && lhs.action == rhs.action &&
+         lhs.submit_element == rhs.submit_element &&
+         lhs.username_element == rhs.username_element &&
+         lhs.username_element_renderer_id == rhs.username_element_renderer_id &&
+         lhs.username_value == rhs.username_value &&
+         lhs.all_possible_usernames == rhs.all_possible_usernames &&
+         lhs.all_possible_passwords == rhs.all_possible_passwords &&
+         lhs.form_has_autofilled_value == rhs.form_has_autofilled_value &&
+         lhs.password_element == rhs.password_element &&
+         lhs.password_element_renderer_id == rhs.password_element_renderer_id &&
+         lhs.password_value == rhs.password_value &&
+         lhs.new_password_element == rhs.new_password_element &&
+         lhs.confirmation_password_element_renderer_id ==
+             rhs.confirmation_password_element_renderer_id &&
+         lhs.confirmation_password_element ==
+             rhs.confirmation_password_element &&
+         lhs.confirmation_password_element_renderer_id ==
+             rhs.confirmation_password_element_renderer_id &&
+         lhs.new_password_value == rhs.new_password_value &&
+         lhs.date_created == rhs.date_created &&
+         lhs.date_synced == rhs.date_synced &&
+         lhs.date_last_used == rhs.date_last_used &&
+         lhs.blocked_by_user == rhs.blocked_by_user && lhs.type == rhs.type &&
+         lhs.times_used == rhs.times_used &&
+         lhs.form_data.SameFormAs(rhs.form_data) &&
+         lhs.generation_upload_status == rhs.generation_upload_status &&
+         lhs.display_name == rhs.display_name && lhs.icon_url == rhs.icon_url &&
+         // We compare the serialization of the origins here, as we want unique
+         // origins to compare as '=='.
+         lhs.federation_origin.Serialize() ==
+             rhs.federation_origin.Serialize() &&
+         lhs.skip_zero_click == rhs.skip_zero_click &&
+         lhs.was_parsed_using_autofill_predictions ==
+             rhs.was_parsed_using_autofill_predictions &&
+         lhs.is_public_suffix_match == rhs.is_public_suffix_match &&
+         lhs.is_affiliation_based_match == rhs.is_affiliation_based_match &&
+         lhs.affiliated_web_realm == rhs.affiliated_web_realm &&
+         lhs.app_display_name == rhs.app_display_name &&
+         lhs.app_icon_url == rhs.app_icon_url &&
+         lhs.submission_event == rhs.submission_event &&
+         lhs.only_for_fallback == rhs.only_for_fallback &&
+         lhs.is_new_password_reliable == rhs.is_new_password_reliable &&
+         lhs.in_store == rhs.in_store &&
+         lhs.moving_blocked_for_list == rhs.moving_blocked_for_list;
+}
+
+bool operator!=(const PasswordForm& lhs, const PasswordForm& rhs) {
+  return !(lhs == rhs);
 }
 
 std::ostream& operator<<(std::ostream& os, PasswordForm::Scheme scheme) {

@@ -923,9 +923,15 @@ class PasswordStore : protected PasswordStoreSync,
   DISALLOW_COPY_AND_ASSIGN(PasswordStore);
 };
 
-// For logging only.
-std::ostream& operator<<(std::ostream& os,
-                         const PasswordStore::FormDigest& digest);
+// For testing only.
+#if defined(UNIT_TEST)
+inline std::ostream& operator<<(std::ostream& os,
+                                const PasswordStore::FormDigest& digest) {
+  return os << "FormDigest(scheme: " << digest.scheme
+            << ", signon_realm: " << digest.signon_realm
+            << ", url: " << digest.url << ")";
+}
+#endif
 
 }  // namespace password_manager
 

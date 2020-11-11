@@ -1389,11 +1389,4 @@ void PasswordStore::DestroyOnBackgroundSequence() {
 #endif
 }
 
-std::ostream& operator<<(std::ostream& os,
-                         const PasswordStore::FormDigest& digest) {
-  return os << "FormDigest(scheme: " << digest.scheme
-            << ", signon_realm: " << digest.signon_realm
-            << ", url: " << digest.url << ")";
-}
-
 }  // namespace password_manager

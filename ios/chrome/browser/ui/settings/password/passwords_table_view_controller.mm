@@ -1255,7 +1255,8 @@ std::vector<std::unique_ptr<password_manager::PasswordForm>> CopyOf(
         begin, end,
         [&deletedForm](
             const std::unique_ptr<password_manager::PasswordForm>& value) {
-          return *value == deletedForm;
+          return password_manager::ArePasswordFormUniqueKeysEqual(*value,
+                                                                  deletedForm);
         });
     DCHECK(formIterator != end);
 
@@ -1636,7 +1637,7 @@ std::vector<std::unique_ptr<password_manager::PasswordForm>> CopyOf(
   auto iterator = std::find_if(
       forms.begin(), forms.end(),
       [&form](const std::unique_ptr<password_manager::PasswordForm>& value) {
-        return *value == form;
+        return password_manager::ArePasswordFormUniqueKeysEqual(*value, form);
       });
   // If |form| not found, pop password details view controller.
   if (iterator == forms.end()) {
