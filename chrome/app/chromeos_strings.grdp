@@ -5136,16 +5136,16 @@
 
   <!-- Strings for Oobe fingerprint enrollment screen -->
   <message name="IDS_OOBE_FINGERPINT_SETUP_SCREEN_TITLE" desc="The title of the dialog that allow users to register their fingerprint.">
-    Set up your fingerprint
-  </message>
-  <message name="IDS_OOBE_FINGERPINT_SETUP_SCREEN_SENSOR_LOCATION_TITLE" desc="The title of the dialog that shows where the fingerprint sensor is.">
-    Set up your fingerprint
+    Set up your fingerprint to unlock your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> faster
   </message>
   <message name="IDS_OOBE_FINGERPINT_SETUP_SCREEN_SENSOR_POWER_BUTTON_DESCRIPTION" desc="The label that explains that the fingerprint sensor is in the power button.">
     Touch the power button with your finger
   </message>
   <message name="IDS_OOBE_FINGERPINT_SETUP_SCREEN_SENSOR_GENERAL_DESCRIPTION" desc="The label that explains the location of the fingerprint sensor on the device.">
       Touch the fingerprint sensor with your finger
+  </message>
+  <message name="IDS_OOBE_FINGERPINT_SETUP_SCREEN_ENROLLMENT_FOOTER" desc="Footer message for the fingerprint setup screen">
+      Your fingerprint data is stored securely and never leaves your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>.
   </message>
   <message name="IDS_OOBE_FINGERPINT_SETUP_SCREEN_ENROLLMENT_PROGRESS_TITLE" desc="The title of the dialog that shows where the fingerprint sensor is.">
     Lift, then touch again

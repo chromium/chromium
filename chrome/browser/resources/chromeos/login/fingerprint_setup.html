@@ -19,7 +19,7 @@
     <link rel="stylesheet" href="fingerprint_setup.css">
     <oobe-dialog id="setupFingerprint" role="dialog" for-step="start"
         has-buttons footer-shrinkable
-        title-key="placeFingerScreenTitle"
+        title-key="setupFingerprintScreenTitle"
         subtitle-key="setupFingerprintScreenDescription"
         aria-label$="[[i18nDynamic(locale, 'setupFingerprintScreenAriaLabel')]]">
       <hd-iron-icon slot="oobe-icon"
@@ -35,6 +35,9 @@
           <template is="dom-if" if="[[!shouldUseLottieAnimation_]]">
             <div id="sensorLocation"></div>
           </template>
+        </div>
+        <div id="footer-text" class="content self-stretch" >
+          [[i18nDynamic(locale, 'setupFingerprintScreenFooter')]]
         </div>
       </div>
       <div slot="bottom-buttons" class="layout horizontal end-justified">

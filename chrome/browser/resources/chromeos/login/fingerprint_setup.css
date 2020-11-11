@@ -20,3 +20,6 @@
   width: 100%;
 }
 
+#footer-text {
+  color: var(--oobe-subheader-text-color);
+}

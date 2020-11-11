@@ -9,6 +9,7 @@
 #include "chrome/browser/chromeos/login/screens/fingerprint_setup_screen.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/login/localized_values_builder.h"
+#include "ui/chromeos/devicetype_utils.h"
 
 namespace chromeos {
 
@@ -24,16 +25,18 @@ FingerprintSetupScreenHandler::~FingerprintSetupScreenHandler() = default;
 
 void FingerprintSetupScreenHandler::DeclareLocalizedValues(
     ::login::LocalizedValuesBuilder* builder) {
-  builder->Add("setupFingerprintScreenTitle",
-               IDS_OOBE_FINGERPINT_SETUP_SCREEN_TITLE);
+  builder->AddF("setupFingerprintScreenTitle",
+                IDS_OOBE_FINGERPINT_SETUP_SCREEN_TITLE,
+                ui::GetChromeOSDeviceName());
+  builder->AddF("setupFingerprintScreenFooter",
+                IDS_OOBE_FINGERPINT_SETUP_SCREEN_ENROLLMENT_FOOTER,
+                ui::GetChromeOSDeviceName());
   builder->Add("skipFingerprintSetup",
                IDS_OOBE_FINGERPINT_SETUP_SCREEN_BUTTON_SKIP);
   builder->Add("fingerprintSetupDone",
                IDS_OOBE_FINGERPINT_SETUP_SCREEN_BUTTON_DONE);
   builder->Add("fingerprintSetupAddAnother",
                IDS_OOBE_FINGERPINT_SETUP_SCREEN_BUTTON_ADD_ANOTHER);
-  builder->Add("placeFingerScreenTitle",
-               IDS_OOBE_FINGERPINT_SETUP_SCREEN_SENSOR_LOCATION_TITLE);
   builder->Add("enrollmentProgressScreenTitle",
                IDS_OOBE_FINGERPINT_SETUP_SCREEN_ENROLLMENT_PROGRESS_TITLE);
   builder->Add("setupFingerprintEnrollmentSuccessTitle",
