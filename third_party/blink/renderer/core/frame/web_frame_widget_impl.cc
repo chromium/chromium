@@ -350,8 +350,6 @@ WebInputEventResult WebFrameWidgetImpl::DispatchBufferedTouchEvents() {
       .DispatchBufferedTouchEvents();
 }
 
-void WebFrameWidgetImpl::DidDetachLocalFrameTree() {}
-
 bool WebFrameWidgetImpl::ScrollFocusedEditableElementIntoView() {
   Element* element = FocusedElement();
   if (!element || !WebElement(element).IsEditable())

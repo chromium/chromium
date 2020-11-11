@@ -191,10 +191,6 @@ void WebViewFrameWidget::DisableDeviceEmulation() {
   device_emulator_ = nullptr;
 }
 
-void WebViewFrameWidget::DidDetachLocalFrameTree() {
-  web_view_->DidDetachLocalMainFrame();
-}
-
 bool WebViewFrameWidget::ScrollFocusedEditableElementIntoView() {
   return web_view_->ScrollFocusedEditableElementIntoView();
 }

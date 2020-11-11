@@ -88,11 +88,6 @@ class WebFrameWidget : public WebWidget {
   // Returns the local root of this WebFrameWidget.
   virtual WebLocalFrame* LocalRoot() const = 0;
 
-  // Called when the root LocalFrame of this WebFrameWidget (and implicitly its
-  // subtree) are being detached. The frame pointer and the WebWidgetClient are
-  // still valid while this is called, for them to be used for any cleanup.
-  virtual void DidDetachLocalFrameTree() = 0;
-
   // Current instance of the active WebInputMethodController, that is, the
   // WebInputMethodController corresponding to (and owned by) the focused
   // WebLocalFrameImpl. It will return nullptr when there are no focused

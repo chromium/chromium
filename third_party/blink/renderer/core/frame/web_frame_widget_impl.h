@@ -108,7 +108,6 @@ class WebFrameWidgetImpl final : public WebFrameWidgetBase {
       mojom::blink::ViewportIntersectionStatePtr intersection_state) override;
 
   // WebFrameWidget implementation.
-  void DidDetachLocalFrameTree() override;
   bool ScrollFocusedEditableElementIntoView() override;
   void SetZoomLevelForTesting(double zoom_level) override;
   void ResetZoomLevelForTesting() override;

@@ -74,7 +74,6 @@ class CORE_EXPORT WebViewFrameWidget : public WebFrameWidgetBase {
   void DisableDeviceEmulation() override;
 
   // WebFrameWidget overrides:
-  void DidDetachLocalFrameTree() override;
   bool ScrollFocusedEditableElementIntoView() override;
   void SetZoomLevelForTesting(double zoom_level) override;
   void ResetZoomLevelForTesting() override;
