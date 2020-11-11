@@ -194,16 +194,13 @@ suite('CommanderWebUIBrowserTest', () => {
 
     const input = app.$.input;
     input.value = 'A';
-    // await flushTasks();
 
     // Backspace over text doesn't delete the chip.
     keyDownOn(input, 0, [], 'Backspace');
-    // await flushTasks();
     assertEquals(0, testProxy.getCallCount('promptCancelled'));
 
     input.value = '';
     keyDownOn(input, 0, [], 'Backspace');
-    // await flushTasks();
     assertEquals(1, testProxy.getCallCount('promptCancelled'));
   });
 });
