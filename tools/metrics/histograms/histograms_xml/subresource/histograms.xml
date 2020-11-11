@@ -284,7 +284,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="SubresourceFilter.PageLoad.ActivationState.DidInherit"
     enum="SubresourceFilterActivationState" expires_after="2021-11-02">
   <owner>alexmt@chromium.org</owner>
-  <owner>chrome-ads-uma@google.com</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
   <summary>
     Whenever a document load is committed in a main frame that inherits from its
     same-origin opener, records whether subresource filtering should be
@@ -296,7 +296,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="SubresourceFilter.PageLoad.AdsInterventionTriggered"
     enum="AdsViolations" expires_after="M90">
   <owner>yaoxia@google.com</owner>
-  <owner>chrome-ads-uma@google.com</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
   <summary>
     Records that an ads violation has been triggered on a page load. Logged at
     the time the ads violation is detected.
@@ -395,7 +395,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="SubresourceFilter.PageLoad.TimeSinceLastActiveAdsIntervention"
     units="hours" expires_after="M90">
   <owner>yaoxia@google.com</owner>
-  <owner>chrome-ads-uma@google.com</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
   <summary>
     Records the time since the last ads intervention when loading a page that
     has previously triggered an ads intervention. This is limited by the maximum
