@@ -1480,7 +1480,8 @@ class PolicyTemplateChecker(object):
       # policies instead of just new ones.
       if self._NeedsDefault(new_policy) and new_policy.get('default',
                                                            None) == None:
-        self._Error(('Missing default field for policy %s') % (new_policy_name))
+        self._Error("Definition of policy %s must include a 'default'"
+                    " field." % (new_policy_name))
 
   def _LeadingWhitespace(self, line):
     match = LEADING_WHITESPACE.match(line)
