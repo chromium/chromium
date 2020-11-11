@@ -310,13 +310,6 @@ Still reading?
     <ignore regexp="The resource `R.string.accessibility_omnibox_most_visited_tile` appears to be unused"/>
     <!-- 1: Some strings in components_strings_grd are not used in other targets. -->
     <ignore regexp="webview_.*__lint.*components_strings_grd"/>
-    <!-- 6: Temporarily suppress until implementation is ready, see https://crbug.com/1116201-->
-    <ignore regexp="The resource `R.string.iph_ntp_without_feed_text` appears to be unused"/>
-    <ignore regexp="The resource `R.string.iph_ntp_without_feed_accessibility_text` appears to be unused"/>
-    <ignore regexp="The resource `R.string.iph_ntp_with_feed_text` appears to be unused"/>
-    <ignore regexp="The resource `R.string.iph_ntp_with_feed_accessibility_text` appears to be unused"/>
-    <ignore regexp="The resource `R.string.iph_tab_switcher_text` appears to be unused"/>
-    <ignore regexp="The resource `R.string.iph_tab_switcher_accessibility_text` appears to be unused"/>
     <!-- 5: Temporarily suppressed until impelmentation is ready, see https://crbug.com/1144250 -->
     <ignore regexp="The resource `R.string.iph_bubble_add_to_home_screen_accessibility` appears to be unused"/>
     <ignore regexp="The resource `R.string.iph_bubble_add_to_home_screen` appears to be unused"/>
