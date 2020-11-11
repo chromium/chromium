@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/fileapi/blob.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/navigator.h"
 #include "third_party/blink/renderer/modules/contacts_picker/contact_address.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
@@ -100,8 +101,22 @@ constexpr char kIcon[] = "icon";
 
 }  // namespace
 
-ContactsManager::ContactsManager(ExecutionContext* execution_context)
-    : contacts_manager_(execution_context) {}
+// static
+const char ContactsManager::kSupplementName[] = "ContactsManager";
+
+// static
+ContactsManager* ContactsManager::contacts(Navigator& navigator) {
+  auto* supplement = Supplement<Navigator>::From<ContactsManager>(navigator);
+  if (!supplement) {
+    supplement = MakeGarbageCollected<ContactsManager>(navigator);
+    ProvideTo(navigator, supplement);
+  }
+  return supplement;
+}
+
+ContactsManager::ContactsManager(Navigator& navigator)
+    : Supplement<Navigator>(navigator),
+      contacts_manager_(navigator.DomWindow()) {}
 
 ContactsManager::~ContactsManager() = default;
 
@@ -249,6 +264,7 @@ ScriptPromise ContactsManager::getProperties(ScriptState* script_state) {
 
 void ContactsManager::Trace(Visitor* visitor) const {
   visitor->Trace(contacts_manager_);
+  Supplement<Navigator>::Trace(visitor);
   ScriptWrappable::Trace(visitor);
 }
 

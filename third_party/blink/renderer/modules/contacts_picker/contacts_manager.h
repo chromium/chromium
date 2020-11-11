@@ -14,20 +14,27 @@
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_wrapper_mode.h"
+#include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
 class ExceptionState;
+class Navigator;
 class ScriptPromiseResolver;
 class ScriptState;
 
 // Represents an the ContactManager, providing access to Contacts.
-class ContactsManager final : public ScriptWrappable {
+class ContactsManager final : public ScriptWrappable,
+                              public Supplement<Navigator> {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  explicit ContactsManager(ExecutionContext* execution_context);
+  static const char kSupplementName[];
+  // Web Exposed as navigator.contacts
+  static ContactsManager* contacts(Navigator& navigator);
+
+  explicit ContactsManager(Navigator& navigator);
   ~ContactsManager() override;
 
   // Web-exposed function defined in the IDL file.
