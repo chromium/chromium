@@ -7,6 +7,7 @@
 
 #include "components/translate/core/browser/translate_metrics_logger.h"
 
+#include "base/memory/weak_ptr.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace translate {
@@ -22,12 +23,17 @@ class MockTranslateMetricsLogger : public TranslateMetricsLogger {
   MockTranslateMetricsLogger& operator=(const MockTranslateMetricsLogger&) =
       delete;
 
+  base::WeakPtr<MockTranslateMetricsLogger> GetWeakPtr();
+
   MOCK_METHOD1(OnPageLoadStart, void(bool));
   MOCK_METHOD1(OnForegroundChange, void(bool));
   MOCK_METHOD1(RecordMetrics, void(bool));
   MOCK_METHOD2(LogRankerMetrics, void(RankerDecision, uint32_t));
   MOCK_METHOD1(LogTriggerDecision, void(TriggerDecision));
   MOCK_METHOD0(LogAutofillAssistantDeferredTriggerDecision, void());
+
+ private:
+  base::WeakPtrFactory<MockTranslateMetricsLogger> weak_method_factory_{this};
 };
 
 }  // namespace testing

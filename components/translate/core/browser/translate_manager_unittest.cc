@@ -21,6 +21,7 @@
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/translate/core/browser/mock_translate_client.h"
 #include "components/translate/core/browser/mock_translate_driver.h"
+#include "components/translate/core/browser/mock_translate_metrics_logger.h"
 #include "components/translate/core/browser/mock_translate_ranker.h"
 #include "components/translate/core/browser/translate_accept_languages.h"
 #include "components/translate/core/browser/translate_browser_metrics.h"
@@ -187,6 +188,30 @@ class TranslateManagerTest : public ::testing::Test {
     return translate_manager_->null_translate_metrics_logger_.get();
   }
 
+  MockTranslateMetricsLogger* mock_translate_metrics_logger() {
+    return mock_translate_metrics_logger_.get();
+  }
+
+  void ExpectHighestPriorityTriggerDecision(
+      TriggerDecision highest_priority_trigger_decision) {
+    mock_translate_metrics_logger_ =
+        std::make_unique<MockTranslateMetricsLogger>();
+
+    translate_manager_->RegisterTranslateMetricsLogger(
+        mock_translate_metrics_logger_->GetWeakPtr());
+
+    // Requires that the given highest priority trigger decision is logged with
+    // the translate metrics logger first. After that value is logged, other
+    // values can be logged.
+    ::testing::Expectation highest_priority_trigger_decision_expectation =
+        EXPECT_CALL(*mock_translate_metrics_logger_,
+                    LogTriggerDecision(highest_priority_trigger_decision))
+            .Times(1);
+    EXPECT_CALL(*mock_translate_metrics_logger_, LogTriggerDecision(_))
+        .Times(::testing::AnyNumber())
+        .After(highest_priority_trigger_decision_expectation);
+  }
+
   // Required to instantiate a net::test::MockNetworkChangeNotifier, because it
   // uses ObserverListThreadSafe.
   base::test::TaskEnvironment task_environment_;
@@ -203,6 +228,7 @@ class TranslateManagerTest : public ::testing::Test {
   ::testing::NiceMock<translate::testing::MockTranslateClient>
       mock_translate_client_;
   MockLanguageModel mock_language_model_;
+  std::unique_ptr<MockTranslateMetricsLogger> mock_translate_metrics_logger_;
   std::unique_ptr<TranslateManager> translate_manager_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -385,6 +411,8 @@ TEST_F(TranslateManagerTest, OverrideTriggerWithIndiaEnglishExperiment) {
   translate_manager_ = std::make_unique<translate::TranslateManager>(
       &mock_translate_client_, &mock_translate_ranker_, &mock_language_model_);
 
+  ExpectHighestPriorityTriggerDecision(TriggerDecision::kShowUI);
+
   base::HistogramTester histogram_tester;
   prefs_.SetBoolean(prefs::kOfferTranslateEnabled, true);
   translate_manager_->GetLanguageState()->LanguageDetermined("en", true);
@@ -422,6 +450,9 @@ TEST_F(TranslateManagerTest,
   translate_manager_ = std::make_unique<translate::TranslateManager>(
       &mock_translate_client_, &mock_translate_ranker_, &mock_language_model_);
 
+  ExpectHighestPriorityTriggerDecision(
+      TriggerDecision::kDisabledSimilarLanguages);
+
   base::HistogramTester histogram_tester;
   prefs_.SetBoolean(prefs::kOfferTranslateEnabled, true);
   translate_manager_->GetLanguageState()->LanguageDetermined("en", true);
@@ -455,6 +486,8 @@ TEST_F(TranslateManagerTest,
 
   translate_manager_ = std::make_unique<translate::TranslateManager>(
       &mock_translate_client_, &mock_translate_ranker_, &mock_language_model_);
+
+  ExpectHighestPriorityTriggerDecision(TriggerDecision::kShowUI);
 
   base::HistogramTester histogram_tester;
   prefs_.SetBoolean(prefs::kOfferTranslateEnabled, true);
@@ -499,6 +532,8 @@ TEST_F(TranslateManagerTest,
 
   translate_manager_ = std::make_unique<translate::TranslateManager>(
       &mock_translate_client_, &mock_translate_ranker_, &mock_language_model_);
+
+  ExpectHighestPriorityTriggerDecision(TriggerDecision::kShowUI);
 
   base::HistogramTester histogram_tester;
   prefs_.SetBoolean(prefs::kOfferTranslateEnabled, true);
@@ -551,6 +586,8 @@ TEST_F(TranslateManagerTest, ShouldHonorExperimentRankerEnforcement_Enforce) {
   translate_manager_ = std::make_unique<translate::TranslateManager>(
       &mock_translate_client_, &mock_translate_ranker_, &mock_language_model_);
 
+  ExpectHighestPriorityTriggerDecision(TriggerDecision::kDisabledByRanker);
+
   base::HistogramTester histogram_tester;
   prefs_.SetBoolean(prefs::kOfferTranslateEnabled, true);
   translate_manager_->GetLanguageState()->LanguageDetermined("en", true);
@@ -590,6 +627,8 @@ TEST_F(TranslateManagerTest,
   translate_manager_ = std::make_unique<translate::TranslateManager>(
       &mock_translate_client_, &mock_translate_ranker_, &mock_language_model_);
 
+  ExpectHighestPriorityTriggerDecision(TriggerDecision::kShowUI);
+
   base::HistogramTester histogram_tester;
   prefs_.SetBoolean(prefs::kOfferTranslateEnabled, true);
   translate_manager_->GetLanguageState()->LanguageDetermined("fr", true);
@@ -619,6 +658,8 @@ TEST_F(TranslateManagerTest, LanguageAddedToAcceptLanguagesAfterTranslation) {
 
   translate_manager_ = std::make_unique<translate::TranslateManager>(
       &mock_translate_client_, &mock_translate_ranker_, &mock_language_model_);
+
+  ExpectHighestPriorityTriggerDecision(TriggerDecision::kShowUI);
 
   // Accept languages shouldn't contain "hi" before translating to that language
   std::vector<std::string> languages;
@@ -661,6 +702,8 @@ TEST_F(TranslateManagerTest,
   translate_manager_ = std::make_unique<translate::TranslateManager>(
       &mock_translate_client_, &mock_translate_ranker_, &mock_language_model_);
 
+  ExpectHighestPriorityTriggerDecision(TriggerDecision::kShowUI);
+
   // Add a regional variant locale to the list of accepted languages.
   mock_translate_client_.GetTranslatePrefs()->AddToLanguageList("en-US", false);
 
@@ -693,11 +736,15 @@ TEST_F(TranslateManagerTest, DontTranslateOffline) {
   TranslateManager::SetIgnoreMissingKeyForTesting(true);
 
   TranslateAcceptLanguages accept_languages(&prefs_, accept_languages_prefs);
+  ON_CALL(mock_translate_client_, IsTranslatableURL(GURL::EmptyGURL()))
+      .WillByDefault(Return(true));
   ON_CALL(mock_translate_client_, GetTranslateAcceptLanguages())
       .WillByDefault(Return(&accept_languages));
 
   translate_manager_ = std::make_unique<translate::TranslateManager>(
       &mock_translate_client_, &mock_translate_ranker_, &mock_language_model_);
+
+  ExpectHighestPriorityTriggerDecision(TriggerDecision::kDisabledOffline);
 
   // The test measures that the "Translate was disabled" exit can only be
   // reached after the early-out tests including IsOffline() passed.
@@ -736,6 +783,12 @@ TEST_F(TranslateManagerTest, DontTranslateAutofillAssistantRunning) {
 
   translate_manager_ = std::make_unique<translate::TranslateManager>(
       &mock_translate_client_, &mock_translate_ranker_, &mock_language_model_);
+
+  ExpectHighestPriorityTriggerDecision(
+      TriggerDecision::kDisabledURLNotSupported);
+  EXPECT_CALL(*mock_translate_metrics_logger(),
+              LogAutofillAssistantDeferredTriggerDecision())
+      .Times(1);
 
   // The test measures that the "Translate was disabled" exit can only be
   // reached after the early-out tests including IsOffline() passed.
@@ -1101,11 +1154,17 @@ TEST_F(TranslateManagerTest, PredefinedTargetLanguage_HonourUserSettings) {
 
   translate_manager_->GetLanguageState()->LanguageDetermined("de", true);
 
+  ExpectHighestPriorityTriggerDecision(
+      TriggerDecision::kDisabledNeverTranslateLanguage);
+
   base::HistogramTester histogram_tester;
   translate_manager_->InitiateTranslation("de");
   EXPECT_THAT(
       histogram_tester.GetAllSamples(kInitiationStatusName),
       ElementsAre(Bucket(metrics::INITIATION_STATUS_DISABLED_BY_CONFIG, 1)));
+
+  ExpectHighestPriorityTriggerDecision(
+      TriggerDecision::kAutomaticTranslationByPref);
 
   translate_manager_->GetLanguageState()->LanguageDetermined("fr", true);
   translate_manager_->InitiateTranslation("fr");

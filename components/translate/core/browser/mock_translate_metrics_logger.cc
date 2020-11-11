@@ -12,6 +12,11 @@ MockTranslateMetricsLogger::MockTranslateMetricsLogger() = default;
 
 MockTranslateMetricsLogger::~MockTranslateMetricsLogger() = default;
 
+base::WeakPtr<MockTranslateMetricsLogger>
+MockTranslateMetricsLogger::GetWeakPtr() {
+  return weak_method_factory_.GetWeakPtr();
+}
+
 }  // namespace testing
 
 }  // namespace translate
