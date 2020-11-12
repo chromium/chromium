@@ -489,6 +489,16 @@ body.files-ng [file-type-icon='downloads'] {
   background-image: none;
 }
 
+[file-type-icon='camera-folder'] {
+  -webkit-mask-image: url(../images/filetype/filetype_folder.svg);
+  background-color: currentColor;
+  background-image: none;
+}
+
+body.camera-folder-enabled [file-type-icon='camera-folder'] {
+  -webkit-mask-image: url(../images/volumes/camera.svg);
+}
+
 [volume-type-icon='drive'] {
   background-image: -webkit-image-set(
       url(../images/volumes/drive.png) 1x,

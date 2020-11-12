@@ -651,6 +651,7 @@ FileType.getIconOverrides = (entry, opt_rootType) => {
   // Overrides per RootType and defined by fullPath.
   const overrides = {
     [VolumeManagerCommon.RootType.DOWNLOADS]: {
+      '/Camera': 'camera-folder',
       '/Downloads': VolumeManagerCommon.VolumeType.DOWNLOADS,
       '/PvmDefault': 'plugin_vm',
     },

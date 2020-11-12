@@ -794,6 +794,10 @@ class FileManager extends cr.EventTarget {
       this.document_.documentElement.classList.remove('files-ng');
       this.dialogDom_.classList.remove('files-ng');
     }
+
+    this.dialogDom_.classList.toggle(
+        'camera-folder-enabled', util.isFilesCameraFolderEnabled());
+
     this.initEssentialUI_();
     this.initAdditionalUI_();
     await this.initSettingsPromise_;
