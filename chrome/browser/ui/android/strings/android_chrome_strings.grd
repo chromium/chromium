@@ -2946,6 +2946,9 @@ Data from your Incognito session will only be cleared from Chrome when you <ph n
       <message name="IDS_MENU_GROUP_TABS" desc="Menu item for grouping tabs. [CHAR-LIMIT=27]">
         Group tabs
       </message>
+      <message name="IDS_MENU_TRACK_PRICES" desc="Menu item for tracking prices on tabs. [CHAR-LIMIT=27]">
+        Track prices
+      </message>
       <message name="IDS_MENU_GET_IMAGE_DESCRIPTIONS" desc="Menu item to start getting alt text accessibility image labels/descriptions [CHAR-LIMIT=27]">
         Get image descriptions
       </message>

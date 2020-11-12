@@ -373,6 +373,17 @@
       <message name="IDS_TAB_STRIP_INFO_BAR_RESHOW" desc="This text is shown on the info bar action button and serves as one answer to &quot;Don't show tab strip again?&quot;. When a user clicks this button, tab strip will keep showing for this user.">
           Show later
       </message>
+
+      <!-- Price Drops Card strings -->
+      <message name="IDS_PRICE_DROP_SPOTTED_TITLE" desc="This text shows on the price drop message card if any item in the open tabs has a price drop. It familiarizes users with the new track-prices-on-tabs UI.">
+        Price drop spotted
+      </message>
+      <message name="IDS_PRICE_DROP_SPOTTED_CONTENT" desc="This text shows below 'Price drop spotted'. It describes what will happen when clicking 'Show me' button.">
+        See which item in your open tabs has a better price
+      </message>
+      <message name="IDS_PRICE_DROP_SPOTTED_SHOW_ME" desc="This text button shows below 'Price drop spotted'. When user clicks on the text button, it scrolls the users to the first tab that has a price drop.">
+        Show me
+      </message>
     </messages>
   </release>
 </grit>
