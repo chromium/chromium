@@ -5,6 +5,7 @@
 #include "ash/system/phonehub/continue_browsing_chip.h"
 
 #include "ash/public/cpp/new_window_delegate.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
 #include "ash/style/ash_color_provider.h"
@@ -13,6 +14,7 @@
 #include "ash/system/status_area_widget.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/components/multidevice/logging/logging.h"
+#include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -70,7 +72,15 @@ ContinueBrowsingChip::ContinueBrowsingChip(
   auto* favicon =
       header_view->AddChildView(std::make_unique<views::ImageView>());
   favicon->SetImageSize(kContinueBrowsingChipFaviconSize);
-  favicon->SetImage(metadata.favicon.AsImageSkia());
+
+  if (metadata.favicon.IsEmpty()) {
+    favicon->SetImage(CreateVectorIcon(
+        kPhoneHubDefaultFaviconIcon,
+        AshColorProvider::Get()->GetContentLayerColor(
+            AshColorProvider::ContentLayerType::kIconColorPrimary)));
+  } else {
+    favicon->SetImage(metadata.favicon.AsImageSkia());
+  }
 
   auto* url_label = header_view->AddChildView(
       std::make_unique<views::Label>(base::UTF8ToUTF16(metadata.url.host())));
