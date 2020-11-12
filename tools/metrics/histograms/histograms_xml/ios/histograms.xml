@@ -61,7 +61,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="IOS.ContentExtension.Index" units="index"
-    expires_after="2020-12-25">
+    expires_after="2021-11-01">
   <owner>javierrobles@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
@@ -701,7 +701,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="IOS.ShareExtension.ReceivedEntriesCount" units="files"
-    expires_after="2020-12-25">
+    expires_after="2021-11-01">
   <owner>javierrobles@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
@@ -711,14 +711,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="IOS.ShareExtension.ReceivedEntry"
-    enum="IOSShareExtensionReceivedEntryType" expires_after="2020-12-25">
+    enum="IOSShareExtensionReceivedEntryType" expires_after="2021-11-01">
   <owner>javierrobles@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>Type of the item received from the iOS share extension.</summary>
 </histogram>
 
 <histogram name="IOS.ShareExtension.ReceivedEntryDelay" units="ms"
-    expires_after="2020-12-25">
+    expires_after="2021-11-01">
   <owner>javierrobles@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
@@ -728,7 +728,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="IOS.ShareExtension.Source"
-    enum="IOSShareExtensionReceivedEntrySource" expires_after="2020-12-25">
+    enum="IOSShareExtensionReceivedEntrySource" expires_after="2021-11-01">
   <owner>javierrobles@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
