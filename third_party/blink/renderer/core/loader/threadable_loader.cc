@@ -54,7 +54,6 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_loader.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_loader_options.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
-#include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
 
 namespace blink {
@@ -126,23 +125,8 @@ void ThreadableLoader::Start(ResourceRequest request) {
              network::mojom::CorsPreflightPolicy::kConsiderPreflight ||
          cors::IsCorsEnabledRequestMode(request.GetMode()));
 
-  // TODO(crbug.com/1053866): Remove the following check later as the same
-  // condition is checked outside the Blink.
-  if (cors::CalculateCorsFlag(request.Url(), GetSecurityOrigin(),
-                              request.IsolatedWorldOrigin().get(),
-                              request.GetMode()) &&
-      request.GetMode() == network::mojom::RequestMode::kSameOrigin) {
-    ThreadableLoaderClient* client = client_;
-    Clear();
-    client->DidFail(ResourceError(
-        request.Url(), network::CorsErrorStatus(
-                           network::mojom::CorsError::kDisallowedByMode)));
-    return;
-  }
-
-  security_origin_ = request.RequestorOrigin();
-  request_mode_ = request.GetMode();
   request_started_ = base::TimeTicks::Now();
+  request_mode_ = request.GetMode();
 
   // Set the service worker mode to none if "bypass for network" in DevTools is
   // enabled.
@@ -294,61 +278,44 @@ void ThreadableLoader::DidDownloadToBlob(Resource* resource,
   client_->DidDownloadToBlob(std::move(blob));
 }
 
-void ThreadableLoader::ReportResponseReceived(
-    uint64_t identifier,
-    const ResourceResponse& response) {
-  LocalFrame* frame = GetFrame();
-  if (!frame)
-    return;
-  DocumentLoader* loader = frame->Loader().GetDocumentLoader();
-  probe::DidReceiveResourceResponse(probe::ToCoreProbeSink(execution_context_),
-                                    identifier, loader, response,
-                                    GetResource());
-  frame->Console().ReportResourceResponseReceived(loader, identifier, response);
-}
-
 void ThreadableLoader::ResponseReceived(Resource* resource,
                                         const ResourceResponse& response) {
-  DCHECK_EQ(resource, GetResource());
   DCHECK(client_);
+  DCHECK_EQ(resource, GetResource());
+  DCHECK(!response.WasFallbackRequiredByServiceWorker());
 
   checker_.ResponseReceived();
 
-  DCHECK(!response.WasFallbackRequiredByServiceWorker());
-
-  if (!response.WasFetchedViaServiceWorker()) {
-    client_->DidReceiveResponse(resource->InspectorId(), response);
-    return;
-  }
-
-  // It's possible that we issue a fetch with request with non "no-cors"
-  // mode but get an opaque filtered response if a service worker is involved.
-  // We dispatch a CORS failure for the case.
-  // TODO(yhirano): This is probably not spec conformant. Fix it after
-  // https://github.com/w3c/preload/issues/100 is addressed.
-  // TODO(crbug.com/1053866): Check if this check is still needed.
-  if (request_mode_ != network::mojom::RequestMode::kNoCors &&
+  // Now the following check is not needed as the service worker added their own
+  // checks and today memory cache and preload matching rules are more strict.
+  // TODO(crbug.com/1053866): Remove the check.
+  if (response.WasFetchedViaServiceWorker() &&
+      request_mode_ != network::mojom::RequestMode::kNoCors &&
       response.GetType() == network::mojom::FetchResponseType::kOpaque) {
     DispatchDidFail(ResourceError(
         response.CurrentRequestUrl(),
         network::CorsErrorStatus(network::mojom::CorsError::kInvalidResponse)));
     return;
   }
-
   client_->DidReceiveResponse(resource->InspectorId(), response);
 }
 
-void ThreadableLoader::ResponseBodyReceived(Resource*, BytesConsumer& body) {
-  checker_.ResponseBodyReceived();
+void ThreadableLoader::ResponseBodyReceived(Resource* resource,
+                                            BytesConsumer& body) {
+  DCHECK(client_);
+  DCHECK_EQ(resource, GetResource());
 
+  checker_.ResponseBodyReceived();
   client_->DidStartLoadingResponseBody(body);
 }
 
-void ThreadableLoader::SetSerializedCachedMetadata(Resource*,
+void ThreadableLoader::SetSerializedCachedMetadata(Resource* resource,
                                                    const uint8_t* data,
                                                    size_t size) {
-  checker_.SetSerializedCachedMetadata();
+  DCHECK(client_);
+  DCHECK_EQ(resource, GetResource());
 
+  checker_.SetSerializedCachedMetadata();
   client_->DidReceiveCachedMetadata(reinterpret_cast<const char*>(data),
                                     SafeCast<int>(size));
 }
@@ -356,8 +323,8 @@ void ThreadableLoader::SetSerializedCachedMetadata(Resource*,
 void ThreadableLoader::DataReceived(Resource* resource,
                                     const char* data,
                                     size_t data_length) {
-  DCHECK_EQ(resource, GetResource());
   DCHECK(client_);
+  DCHECK_EQ(resource, GetResource());
 
   checker_.DataReceived();
 
@@ -408,18 +375,6 @@ void ThreadableLoader::DispatchDidFail(const ResourceError& error) {
   ThreadableLoaderClient* client = client_;
   Clear();
   client->DidFail(error);
-}
-
-const SecurityOrigin* ThreadableLoader::GetSecurityOrigin() const {
-  return security_origin_ ? security_origin_.get()
-                          : resource_fetcher_->GetProperties()
-                                .GetFetchClientSettingsObject()
-                                .GetSecurityOrigin();
-}
-
-LocalFrame* ThreadableLoader::GetFrame() const {
-  auto* window = DynamicTo<LocalDOMWindow>(execution_context_.Get());
-  return window ? window->GetFrame() : nullptr;
 }
 
 void ThreadableLoader::Trace(Visitor* visitor) const {

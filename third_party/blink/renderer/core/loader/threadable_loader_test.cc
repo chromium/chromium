@@ -420,54 +420,6 @@ TEST_F(ThreadableLoaderTest, ClearInDidFail) {
   ServeRequests();
 }
 
-TEST_F(ThreadableLoaderTest, DidFailInStart) {
-  InSequence s;
-  EXPECT_CALL(GetCheckpoint(), Call(1));
-  CreateLoader();
-  CallCheckpoint(1);
-
-  EXPECT_CALL(
-      *Client(),
-      DidFail(ResourceError(
-          ErrorURL(), network::CorsErrorStatus(
-                          network::mojom::CorsError::kDisallowedByMode))));
-  EXPECT_CALL(GetCheckpoint(), Call(2));
-
-  StartLoader(ErrorURL(), network::mojom::RequestMode::kSameOrigin);
-  CallCheckpoint(2);
-  ServeRequests();
-}
-
-TEST_F(ThreadableLoaderTest, CancelInDidFailInStart) {
-  InSequence s;
-  EXPECT_CALL(GetCheckpoint(), Call(1));
-  CreateLoader();
-  CallCheckpoint(1);
-
-  EXPECT_CALL(*Client(), DidFail(_))
-      .WillOnce(InvokeWithoutArgs(this, &ThreadableLoaderTest::CancelLoader));
-  EXPECT_CALL(GetCheckpoint(), Call(2));
-
-  StartLoader(ErrorURL(), network::mojom::RequestMode::kSameOrigin);
-  CallCheckpoint(2);
-  ServeRequests();
-}
-
-TEST_F(ThreadableLoaderTest, ClearInDidFailInStart) {
-  InSequence s;
-  EXPECT_CALL(GetCheckpoint(), Call(1));
-  CreateLoader();
-  CallCheckpoint(1);
-
-  EXPECT_CALL(*Client(), DidFail(_))
-      .WillOnce(InvokeWithoutArgs(this, &ThreadableLoaderTest::ClearLoader));
-  EXPECT_CALL(GetCheckpoint(), Call(2));
-
-  StartLoader(ErrorURL(), network::mojom::RequestMode::kSameOrigin);
-  CallCheckpoint(2);
-  ServeRequests();
-}
-
 TEST_F(ThreadableLoaderTest, RedirectDidFinishLoading) {
   InSequence s;
   EXPECT_CALL(GetCheckpoint(), Call(1));

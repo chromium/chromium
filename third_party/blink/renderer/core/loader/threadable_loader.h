@@ -51,9 +51,7 @@
 namespace blink {
 
 class ExecutionContext;
-class LocalFrame;
 class ResourceRequest;
-class SecurityOrigin;
 class ThreadableLoaderClient;
 
 // Useful for doing loader operations from any thread (not threadsafe, just able
@@ -79,7 +77,6 @@ class CORE_EXPORT ThreadableLoader final
   // Loading completes when one of the following methods are called:
   // - DidFinishLoading()
   // - DidFail()
-  // - DidFailAccessControlCheck()
   // - DidFailRedirectCheck()
   // After any of these methods is called, the loader won't call any of the
   // ThreadableLoaderClient methods.
@@ -128,19 +125,9 @@ class CORE_EXPORT ThreadableLoader final
  private:
   void Clear();
 
-  // Notify Inspector and log to console about resource response. Use this
-  // method if response is not going to be finished normally.
-  void ReportResponseReceived(uint64_t identifier, const ResourceResponse&);
-
   void DidTimeout(TimerBase*);
 
   void DispatchDidFail(const ResourceError&);
-
-  const SecurityOrigin* GetSecurityOrigin() const;
-
-  // Returns null if the loader is not associated with a frame.
-  // TODO(kinuko): Remove dependency to frame.
-  LocalFrame* GetFrame() const;
 
   // ResourceClient implementation:
   void NotifyFinished(Resource*) override;
@@ -165,13 +152,7 @@ class CORE_EXPORT ThreadableLoader final
   Member<ExecutionContext> execution_context_;
   Member<ResourceFetcher> resource_fetcher_;
 
-  // Some items may be overridden by m_forceDoNotAllowStoredCredentials and
-  // m_securityOrigin. In such a case, build a ResourceLoaderOptions with
-  // up-to-date values from them and this variable, and use it.
   const ResourceLoaderOptions resource_loader_options_;
-
-  // Corresponds to the CORS flag in the Fetch spec.
-  scoped_refptr<const SecurityOrigin> security_origin_;
 
   // Saved so that we can use the original mode in ResponseReceived() where
   // |resource| might be a reused one (e.g. preloaded resource) which can have a
