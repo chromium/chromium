@@ -440,6 +440,11 @@ TEST_F(UnifiedMediaControlsControllerTest, MediaControlsEmptyState) {
   EnableAction(MediaSessionAction::kPreviousTrack);
   EnableAction(MediaSessionAction::kNextTrack);
 
+  media_session::MediaMetadata metadata;
+  metadata.title = base::ASCIIToUTF16("title");
+  metadata.artist = base::ASCIIToUTF16("artist");
+  controller()->MediaSessionMetadataChanged(metadata);
+
   EXPECT_TRUE(artist_label()->GetVisible());
   EXPECT_FALSE(artwork_view()->GetVisible());
   for (views::View* button : button_row()->children())
@@ -472,7 +477,6 @@ TEST_F(UnifiedMediaControlsControllerTest, MediaControlsEmptyState) {
   SimulateNewMediaSessionWithData(request_id);
   EXPECT_FALSE(IsMediaControlsInEmptyState());
 
-  EXPECT_TRUE(artist_label()->GetVisible());
   EXPECT_FALSE(artwork_view()->GetVisible());
   for (views::View* button : button_row()->children())
     EXPECT_TRUE(button->GetEnabled());

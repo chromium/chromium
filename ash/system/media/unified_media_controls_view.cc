@@ -367,7 +367,6 @@ void UnifiedMediaControlsView::OnNewMediaSession() {
   is_in_empty_state_ = false;
   title_label_->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
       AshColorProvider::ContentLayerType::kTextColorPrimary));
-  artist_label_->SetVisible(true);
   drop_down_icon_->SetVisible(true);
 
   for (views::View* button : button_row_->children())
