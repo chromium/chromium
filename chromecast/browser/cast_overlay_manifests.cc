@@ -13,7 +13,7 @@
 #include "services/service_manager/public/cpp/manifest_builder.h"
 
 #if BUILDFLAG(ENABLE_EXTERNAL_MOJO_SERVICES)
-#include "chromecast/external_mojo/broker_service/broker_service.h"
+#include "chromecast/external_mojo/broker_service/broker_service.h"  // nogncheck
 #endif
 
 #if defined(USE_INTERNAL_OVERLAY_MANIFESTS)

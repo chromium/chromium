@@ -36,7 +36,7 @@
 #endif  // BUILDFLAG(ENABLE_CAST_RENDERER)
 
 #if BUILDFLAG(ENABLE_EXTERNAL_MOJO_SERVICES)
-#include "chromecast/external_mojo/broker_service/broker_service.h"
+#include "chromecast/external_mojo/broker_service/broker_service.h"  // nogncheck
 #endif
 
 #if (defined(OS_LINUX) || defined(OS_CHROMEOS)) && defined(USE_OZONE)
