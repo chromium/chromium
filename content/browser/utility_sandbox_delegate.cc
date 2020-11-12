@@ -72,6 +72,12 @@ base::EnvironmentMap UtilitySandboxedProcessLauncherDelegate::GetEnvironment() {
 }
 #endif  // OS_POSIX
 
+#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
+bool UtilitySandboxedProcessLauncherDelegate::LaunchX86_64() {
+  return launch_x86_64_;
+}
+#endif  // OS_MAC && ARCH_CPU_ARM64
+
 #if BUILDFLAG(USE_ZYGOTE_HANDLE)
 ZygoteHandle UtilitySandboxedProcessLauncherDelegate::GetZygote() {
   // If the sandbox has been disabled for a given type, don't use a zygote.

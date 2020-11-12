@@ -16,6 +16,7 @@
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "content/browser/media/media_interface_factory_holder.h"
+#include "content/public/common/cdm_info.h"
 #include "media/media_buildflags.h"
 #include "media/mojo/buildflags.h"
 #include "media/mojo/mojom/content_decryption_module.mojom.h"
@@ -97,11 +98,8 @@ class MediaInterfaceProxy : public media::mojom::InterfaceFactory {
   // |cdm_path| will be used to preload the CDM, if necessary.
   // |cdm_file_system_id| is used when creating the matching storage interface.
   // |cdm_name| is used as the display name of the CDM (utility) process.
-  media::mojom::CdmFactory* ConnectToCdmService(
-      const base::Token& cdm_guid,
-      const base::FilePath& cdm_path,
-      const std::string& cdm_file_system_id,
-      const std::string& cdm_name);
+  media::mojom::CdmFactory* ConnectToCdmService(const base::Token& cdm_guid,
+                                                const CdmInfo& cdm_info);
 
   // Callback for connection error from the CdmFactoryPtr in the
   // |cdm_factory_map_| associated with |cdm_guid|.

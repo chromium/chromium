@@ -42,7 +42,6 @@
 #include "base/time/time.h"
 #include "content/browser/media/cdm_storage_impl.h"
 #include "content/browser/media/key_system_support_impl.h"
-#include "content/public/common/cdm_info.h"
 #include "media/base/key_system_names.h"
 #include "media/base/media_switches.h"
 #include "media/mojo/mojom/cdm_service.mojom.h"
@@ -137,9 +136,9 @@ void EraseCdmService(const CdmServiceKey& key) {
 media::mojom::CdmService& GetCdmService(const base::Token& guid,
                                         BrowserContext* browser_context,
                                         const GURL& site,
-                                        const std::string& cdm_name) {
+                                        const CdmInfo& cdm_info) {
   CdmServiceKey key;
-  std::string display_name = cdm_name;
+  std::string display_name = cdm_info.name;
 
   if (base::FeatureList::IsEnabled(media::kCdmProcessSiteIsolation)) {
     key = {guid, browser_context, site};
@@ -154,9 +153,15 @@ media::mojom::CdmService& GetCdmService(const base::Token& guid,
 
   auto& remote = GetCdmServiceMap().GetOrCreateRemote(key);
   if (!remote) {
-    ServiceProcessHost::Launch(
-        remote.BindNewPipeAndPassReceiver(),
-        ServiceProcessHost::Options().WithDisplayName(display_name).Pass());
+    ServiceProcessHost::Options options;
+    options.WithDisplayName(display_name);
+#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
+    if (cdm_info.launch_x86_64) {
+      options.WithChildFlags(ChildProcessHost::CHILD_LAUNCH_X86_64);
+    }
+#endif  // OS_MAC && ARCH_CPU_ARM64
+    ServiceProcessHost::Launch(remote.BindNewPipeAndPassReceiver(),
+                               options.Pass());
     remote.set_disconnect_handler(base::BindOnce(&EraseCdmService, key));
     remote.set_idle_handler(kCdmServiceIdleTimeout,
                             base::BindRepeating(EraseCdmService, key));
@@ -512,39 +517,37 @@ media::mojom::CdmFactory* MediaInterfaceProxy::GetCdmFactory(
   if (found != cdm_factory_map_.end())
     return found->second.get();
 
-  return ConnectToCdmService(cdm_guid, cdm_info->path, cdm_info->file_system_id,
-                             cdm_info->name);
+  return ConnectToCdmService(cdm_guid, *cdm_info);
 }
 
 media::mojom::CdmFactory* MediaInterfaceProxy::ConnectToCdmService(
     const base::Token& cdm_guid,
-    const base::FilePath& cdm_path,
-    const std::string& cdm_file_system_id,
-    const std::string& cdm_name) {
-  DVLOG(1) << __func__ << ": cdm_name = " << cdm_name;
+    const CdmInfo& cdm_info) {
+  DVLOG(1) << __func__ << ": cdm_name = " << cdm_info.name;
 
   DCHECK(!cdm_factory_map_.count(cdm_guid));
 
   auto* browser_context = render_frame_host_->GetBrowserContext();
   auto& site = render_frame_host_->GetSiteInstance()->GetSiteURL();
-  auto& cdm_service = GetCdmService(cdm_guid, browser_context, site, cdm_name);
+  auto& cdm_service = GetCdmService(cdm_guid, browser_context, site, cdm_info);
 
 #if defined(OS_MAC)
   // LoadCdm() should always be called before CreateInterfaceFactory().
   mojo::PendingRemote<media::mojom::SeatbeltExtensionTokenProvider>
       token_provider_remote;
   mojo::MakeSelfOwnedReceiver(
-      std::make_unique<SeatbeltExtensionTokenProviderImpl>(cdm_path),
+      std::make_unique<SeatbeltExtensionTokenProviderImpl>(cdm_info.path),
       token_provider_remote.InitWithNewPipeAndPassReceiver());
 
-  cdm_service.LoadCdm(cdm_path, std::move(token_provider_remote));
+  cdm_service.LoadCdm(cdm_info.path, std::move(token_provider_remote));
 #else
-  cdm_service.LoadCdm(cdm_path);
+  cdm_service.LoadCdm(cdm_info.path);
 #endif  // defined(OS_MAC)
 
   mojo::Remote<media::mojom::CdmFactory> cdm_factory_remote;
-  cdm_service.CreateCdmFactory(cdm_factory_remote.BindNewPipeAndPassReceiver(),
-                               GetFrameServices(cdm_guid, cdm_file_system_id));
+  cdm_service.CreateCdmFactory(
+      cdm_factory_remote.BindNewPipeAndPassReceiver(),
+      GetFrameServices(cdm_guid, cdm_info.file_system_id));
   cdm_factory_remote.set_disconnect_handler(
       base::BindOnce(&MediaInterfaceProxy::OnCdmServiceConnectionError,
                      base::Unretained(this), cdm_guid));

@@ -12,6 +12,7 @@
 #include "base/files/file_path.h"
 #include "base/token.h"
 #include "base/version.h"
+#include "build/build_config.h"
 #include "content/common/content_export.h"
 #include "media/base/content_decryption_module.h"
 #include "media/base/encryption_scheme.h"
@@ -90,6 +91,12 @@ struct CONTENT_EXPORT CdmInfo {
   // For example, com.example.somekeysystem.a and com.example.somekeysystem.b
   // are both sub key systems of com.example.somekeysystem.
   bool supports_sub_key_systems;
+
+#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
+  // If true, the child process will be launched as x86_64 code under Rosetta
+  // translation.
+  bool launch_x86_64 = false;
+#endif  // OS_MAC && ARCH_CPU_ARM64
 };
 
 }  // namespace content

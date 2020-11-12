@@ -213,7 +213,14 @@ struct BASE_EXPORT LaunchOptions {
   // code, the responsibility for the child process should be disclaimed so
   // that any TCC requests are not associated with the parent.
   bool disclaim_responsibility = false;
-#endif
+
+#if defined(ARCH_CPU_ARM64)
+  // If true, the child process will be launched as x86_64 code under Rosetta
+  // translation. The executable being launched must contain x86_64 code, either
+  // as a thin Mach-O file targeting x86_64, or a fat file with an x86_64 slice.
+  bool launch_x86_64 = false;
+#endif  // ARCH_CPU_ARM64
+#endif  // OS_MAC
 
 #if defined(OS_FUCHSIA)
   // If valid, launches the application in that job object.
