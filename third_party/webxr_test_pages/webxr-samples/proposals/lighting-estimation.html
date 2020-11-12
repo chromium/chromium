@@ -51,12 +51,12 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
       <details open>
         <summary>Lighting Estimation</summary>
         <p>
-          <b style='color: darkred'>The Light Estimation API is undergoing
-          a redesign. This page will not be functional in newer versions of
-          Chrome until that work is complete.</b>
           This sample demonstrates use of a non-exclusive XRSession to present
           Augmented Reality content.
           <a class="back" href="./index.html">Back</a>
+          <hr/>
+          <input id="useRGBA" type="checkbox">
+          <label for="useRGBA">Use RGBA Half Float Texture Format</label><br/>
         </p>
       </details>
     </header>
@@ -79,25 +79,15 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
           context: ctx.gl,
         });
 
-        // Set up the lighting estimation environment map
-        ctx.threeEnvMap = new THREE.CubeTexture(new Array(6));
-        ctx.envMap = ctx.gl.createTexture();
-        ctx.gl.bindTexture(ctx.gl.TEXTURE_CUBE_MAP, ctx.envMap);
-        ctx.gl.texImage2D(ctx.gl.TEXTURE_CUBE_MAP_POSITIVE_X, 0, ctx.gl.RGBA32F, 16, 16, 0, ctx.gl.RGBA, ctx.gl.FLOAT, new Float32Array(16 * 16 * 4).fill(100));
-        ctx.gl.texImage2D(ctx.gl.TEXTURE_CUBE_MAP_NEGATIVE_X, 0, ctx.gl.RGBA32F, 16, 16, 0, ctx.gl.RGBA, ctx.gl.FLOAT, new Float32Array(16 * 16 * 4).fill(100));
-        ctx.gl.texImage2D(ctx.gl.TEXTURE_CUBE_MAP_POSITIVE_Y, 0, ctx.gl.RGBA32F, 16, 16, 0, ctx.gl.RGBA, ctx.gl.FLOAT, new Float32Array(16 * 16 * 4).fill(100));
-        ctx.gl.texImage2D(ctx.gl.TEXTURE_CUBE_MAP_NEGATIVE_Y, 0, ctx.gl.RGBA32F, 16, 16, 0, ctx.gl.RGBA, ctx.gl.FLOAT, new Float32Array(16 * 16 * 4).fill(100));
-        ctx.gl.texImage2D(ctx.gl.TEXTURE_CUBE_MAP_POSITIVE_Z, 0, ctx.gl.RGBA32F, 16, 16, 0, ctx.gl.RGBA, ctx.gl.FLOAT, new Float32Array(16 * 16 * 4).fill(100));
-        ctx.gl.texImage2D(ctx.gl.TEXTURE_CUBE_MAP_NEGATIVE_Z, 0, ctx.gl.RGBA32F, 16, 16, 0, ctx.gl.RGBA, ctx.gl.FLOAT, new Float32Array(16 * 16 * 4).fill(100));
-        ctx.gl.bindTexture(ctx.gl.TEXTURE_CUBE_MAP, null);
-
-        // Hook into the THREE.js renderer properties for the environment so that we can manage the underlying texture.
-        let rendererProps = ctx.renderer.properties.get(ctx.threeEnvMap);
-        rendererProps.__webglInit = true;
-        rendererProps.__webglTexture = ctx.envMap;
-
         // Construct a Three.JS scene
         ctx.scene = new THREE.Scene();
+
+        // Set up the lighting estimation environment map, and then setup THREE
+        // to accept a webgl texture.
+        ctx.cubeTarget = new THREE.WebGLCubeRenderTarget(16);
+        ctx.threeEnvMap = ctx.cubeTarget.texture;
+        let rendererProps = ctx.renderer.properties.get(ctx.threeEnvMap);
+        rendererProps.__webglInit = true;
 
         // Set up the camera
         ctx.camera = new THREE.Camera(); // WebXR gives us the projection matrix to use, so don't bother with PerspectiveCamera
@@ -108,7 +98,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
         ctx.material = new THREE.MeshStandardMaterial({ color: 0xFFFFFF, metalness: 0.0, roughness: 0.0 });
         ctx.sphere = new THREE.Mesh(ctx.geometry, ctx.material);
         ctx.scene.add(ctx.sphere);
-        ctx.sphere.position.y = 1;
+        ctx.sphere.position.z = -1;
         ctx.sphere.updateMatrix();
 
         // Set up light source
@@ -128,18 +118,35 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
       }
 
       function onRequestSession(ctx) {
-        navigator.xr.requestSession('immersive-ar', {requiredFeatures: ['local-floor']}).then(session => {
+        navigator.xr.requestSession('immersive-ar', {requiredFeatures: ['local', 'light-estimation']}).then(session => {
           session.addEventListener('end', () => onSessionEnded(ctx));
 
           ctx.session = session;
           ctx.xrButton.setSession(session);
+          ctx.glBinding = new XRWebGLBinding(session, ctx.gl);
 
           session.updateRenderState({ baseLayer: new XRWebGLLayer(session, ctx.gl) });
-          session.requestReferenceSpace('local-floor').then(refSpace => onReceivedReferenceSpace(ctx, refSpace));
-          session.updateWorldTrackingState({ lightEstimationState: { enabled: true }});
+          session.requestReferenceSpace('local').then(refSpace => onReceivedReferenceSpace(ctx, refSpace));
+          session.requestLightProbe({reflectionFormat: "rgba16f"}).then((rgbaProbe) =>
+          {
+            ctx.rgbaProbe = rgbaProbe;
+            rgbaProbe.addEventListener('onreflectionchange', () => onReflectionChanged(ctx));
+          }).catch(err => console.error(err));
+
+          session.requestLightProbe().then((defaultProbe) => {
+            ctx.defaultProbe = defaultProbe;
+            defaultProbe.addEventListener('onreflectionchange', () => onReflectionChanged(ctx));
+          }).catch(err => console.error(err));
+
+          ctx.reflectionChanged = true;
+
 
           session.requestAnimationFrame((t, frame) => update(ctx, t, frame));
         });
+      }
+
+      function onReflectionChanged(ctx) {
+        ctx.reflectionChanged = true;
       }
 
       function onReceivedReferenceSpace(ctx, refSpace) {
@@ -177,12 +184,26 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
         }
 
         // Get ambient lighting estimation
-        if (frame.worldInformation.lightEstimation) {
-          ctx.light_probe.sh.fromArray(frame.worldInformation.lightEstimation.lightProbe.sphericalHarmonics.coefficients);
+        const lightProbe = document.getElementById('useRGBA').checked ? ctx.rgbaProbe : ctx.defaultProbe;
+        if (lightProbe) {
+          const estimate = frame.getLightEstimate(lightProbe);
 
-          // Update cubemap texture
-          frame.worldInformation.lightEstimation.reflectionProbe.cubeMap.updateWebGLEnvironmentCube(ctx.gl, ctx.envMap);
-          ctx.material.envMap = ctx.threeEnvMap;
+          if (estimate) {
+            ctx.light_probe.sh.fromArray(estimate.sphericalHarmonicsCoefficients);
+          } else {
+            console.log("light estimate not available");
+          }
+
+          if (ctx.reflectionChanged) {
+            const cubeMap = ctx.glBinding.getReflectionCubeMap(lightProbe);
+            if (cubeMap) {
+              let rendererProps = ctx.renderer.properties.get(ctx.threeEnvMap);
+              rendererProps.__webglTexture = cubeMap;
+            } else {
+              console.log("Cube map not available");
+            }
+            ctx.reflectionChanged = false;
+          }
         } else {
           console.log("Session light estimation not available");
         }
