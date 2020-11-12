@@ -36,6 +36,25 @@ SendTabToSelfModelTypeController::~SendTabToSelfModelTypeController() {
   sync_service_->RemoveObserver(this);
 }
 
+void SendTabToSelfModelTypeController::Stop(
+    syncer::ShutdownReason shutdown_reason,
+    StopCallback callback) {
+  DCHECK(CalledOnValidThread());
+  switch (shutdown_reason) {
+    case syncer::STOP_SYNC:
+      // Special case: We want to clear all data even when Sync is stopped
+      // temporarily. This is also needed to make sure the feature stops being
+      // offered to the user, because predicates like IsUserSyncTypeActive()
+      // should return false upon stop.
+      shutdown_reason = syncer::DISABLE_SYNC;
+      break;
+    case syncer::DISABLE_SYNC:
+    case syncer::BROWSER_SHUTDOWN:
+      break;
+  }
+  ModelTypeController::Stop(shutdown_reason, std::move(callback));
+}
+
 syncer::DataTypeController::PreconditionState
 SendTabToSelfModelTypeController::GetPreconditionState() const {
   DCHECK(CalledOnValidThread());

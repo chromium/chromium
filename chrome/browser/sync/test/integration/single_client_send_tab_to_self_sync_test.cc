@@ -6,8 +6,10 @@
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_util.h"
 #include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
+#include "chrome/browser/sync/test/integration/bookmarks_helper.h"
 #include "chrome/browser/sync/test/integration/profile_sync_service_harness.h"
 #include "chrome/browser/sync/test/integration/send_tab_to_self_helper.h"
+#include "chrome/browser/sync/test/integration/sync_integration_test_util.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/ui/browser.h"
 #include "components/history/core/browser/history_service.h"
@@ -141,6 +143,49 @@ IN_PROC_BROWSER_TEST_F(SingleClientSendTabToSelfSyncTest,
 
   GetClient(0)->DisableSyncForType(syncer::UserSelectableType::kTabs);
 
+  EXPECT_TRUE(send_tab_to_self_helper::SendTabToSelfUrlDeletedChecker(
+                  SendTabToSelfSyncServiceFactory::GetForProfile(GetProfile(0)),
+                  GURL(kUrl))
+                  .Wait());
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientSendTabToSelfSyncTest,
+                       ShouldNotUploadInSyncPausedState) {
+  const GURL kUrl("https://www.example.com");
+  const std::string kTitle("example");
+  const base::Time kTime = base::Time::FromDoubleT(1);
+  const std::string kTargetDeviceSyncCacheGuid("target");
+
+  ASSERT_TRUE(SetupSync());
+  ASSERT_TRUE(GetSyncService(0)->IsSyncFeatureActive());
+
+  // Enter the sync paused state.
+  GetClient(0)->EnterSyncPausedStateForPrimaryAccount();
+  ASSERT_TRUE(GetSyncService(0)->GetAuthError().IsPersistentError());
+
+  send_tab_to_self::SendTabToSelfModel* model =
+      SendTabToSelfSyncServiceFactory::GetForProfile(GetProfile(0))
+          ->GetSendTabToSelfModel();
+
+  ASSERT_FALSE(
+      model->AddEntry(kUrl, kTitle, kTime, kTargetDeviceSyncCacheGuid));
+
+  EXPECT_FALSE(send_tab_to_self::ShouldOfferFeature(
+      GetBrowser(0)->tab_strip_model()->GetActiveWebContents()));
+
+  // Clear the "Sync paused" state again.
+  GetClient(0)->ExitSyncPausedStateForPrimaryAccount();
+  ASSERT_TRUE(GetSyncService(0)->IsSyncFeatureActive());
+
+  // Just checking that we don't see test_event isn't very convincing yet,
+  // because it may simply not have reached the server yet. So let's send
+  // something else through the system that we can wait on before checking.
+  ASSERT_TRUE(
+      bookmarks_helper::AddURL(0, "What are you syncing about?",
+                               GURL("https://google.com/synced-bookmark-1")));
+  ASSERT_TRUE(ServerCountMatchStatusChecker(syncer::BOOKMARKS, 1).Wait());
+
+  // Repurpose the deleted checker to ensure url wasnt added.
   EXPECT_TRUE(send_tab_to_self_helper::SendTabToSelfUrlDeletedChecker(
                   SendTabToSelfSyncServiceFactory::GetForProfile(GetProfile(0)),
                   GURL(kUrl))
