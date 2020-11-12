@@ -56,9 +56,9 @@
                 "description": "Limits the change to when a particular tab is selected. Automatically resets when the tab is closed."
               }
             }
-          },
-          {"type": "function", "name": "callback", "parameters": [], "optional": true}
-        ]
+          }
+        ],
+        "returns_async": {"name": "callback", "parameters": [], "optional": true}
       },
       {
         "name": "getTitle",
@@ -68,18 +68,17 @@
           {
             "name": "details",
             "$ref": "TabDetails"
-          },
-          {
-            "type": "function",
-            "name": "callback",
-            "parameters": [
-              {
-                "name": "result",
-                "type": "string"
-              }
-            ]
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "parameters": [
+            {
+              "name": "result",
+              "type": "string"
+            }
+          ]
+        }
       },
       {
         "name": "setIcon",
@@ -147,9 +146,9 @@
                 "description": "The HTML file to show in a popup. If set to the empty string (''), no popup is shown."
               }
             }
-          },
-          {"type": "function", "name": "callback", "parameters": [], "optional": true}
-        ]
+          }
+        ],
+        "returns_async": {"name": "callback", "parameters": [], "optional": true}
       },
       {
         "name": "getPopup",
@@ -159,18 +158,17 @@
           {
             "name": "details",
             "$ref": "TabDetails"
-          },
-          {
-            "type": "function",
-            "name": "callback",
-            "parameters": [
-              {
-                "name": "result",
-                "type": "string"
-              }
-            ]
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "parameters": [
+            {
+              "name": "result",
+              "type": "string"
+            }
+          ]
+        }
       },
       {
         "name": "setBadgeText",
@@ -192,9 +190,9 @@
                 "description": "Limits the change to when a particular tab is selected. Automatically resets when the tab is closed."
               }
             }
-          },
-          {"type": "function", "name": "callback", "parameters": [], "optional": true}
-        ]
+          }
+        ],
+        "returns_async": {"name": "callback", "parameters": [], "optional": true}
       },
       {
         "name": "getBadgeText",
@@ -204,18 +202,17 @@
           {
             "name": "details",
             "$ref": "TabDetails"
-          },
-          {
-            "type": "function",
-            "name": "callback",
-            "parameters": [
-              {
-                "name": "result",
-                "type": "string"
-              }
-            ]
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "parameters": [
+            {
+              "name": "result",
+              "type": "string"
+            }
+          ]
+        }
       },
       {
         "name": "setBadgeBackgroundColor",
@@ -239,9 +236,9 @@
                 "description": "Limits the change to when a particular tab is selected. Automatically resets when the tab is closed."
               }
             }
-          },
-          {"type": "function", "name": "callback", "parameters": [], "optional": true}
-        ]
+          }
+        ],
+        "returns_async": {"name": "callback", "parameters": [], "optional": true}
       },
       {
         "name": "getBadgeBackgroundColor",
@@ -251,18 +248,17 @@
           {
             "name": "details",
             "$ref": "TabDetails"
-          },
-          {
-            "type": "function",
-            "name": "callback",
-            "parameters": [
-              {
-                "name": "result",
-                "$ref": "ColorArray"
-              }
-            ]
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "parameters": [
+            {
+              "name": "result",
+              "$ref": "ColorArray"
+            }
+          ]
+        }
       },
       {
         "name": "enable",
@@ -275,9 +271,9 @@
             "name": "tabId",
             "minimum": 0,
             "description": "The ID of the tab for which to modify the browser action."
-          },
-          {"type": "function", "name": "callback", "parameters": [], "optional": true}
-        ]
+          }
+        ],
+        "returns_async": {"name": "callback", "parameters": [], "optional": true}
       },
       {
         "name": "disable",
@@ -290,9 +286,9 @@
             "name": "tabId",
             "minimum": 0,
             "description": "The ID of the tab for which to modify the browser action."
-          },
-          {"type": "function", "name": "callback", "parameters": [], "optional": true}
-        ]
+          }
+        ],
+        "returns_async": {"name": "callback", "parameters": [], "optional": true}
       },
       {
         "name": "openPopup",
