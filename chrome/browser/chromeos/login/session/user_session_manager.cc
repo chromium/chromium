@@ -1522,6 +1522,16 @@ void UserSessionManager::UserProfileInitialized(Profile* profile,
     return;
   }
 
+  if (user_context_.GetAuthFlow() == UserContext::AUTH_FLOW_ACTIVE_DIRECTORY) {
+    // Call FinalizePrepareProfile directly and skip RestoreAuthSessionImpl
+    // because there is no need to merge session for Active Directory users.
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&UserSessionManager::PrepareTpmDeviceAndFinalizeProfile,
+                       AsWeakPtr(), profile));
+    return;
+  }
+
   PrepareTpmDeviceAndFinalizeProfile(profile);
 }
 
