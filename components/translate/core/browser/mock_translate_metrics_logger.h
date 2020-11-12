@@ -31,6 +31,12 @@ class MockTranslateMetricsLogger : public TranslateMetricsLogger {
   MOCK_METHOD2(LogRankerMetrics, void(RankerDecision, uint32_t));
   MOCK_METHOD1(LogTriggerDecision, void(TriggerDecision));
   MOCK_METHOD0(LogAutofillAssistantDeferredTriggerDecision, void());
+  MOCK_METHOD0(LogInitialState, void());
+  MOCK_METHOD0(LogTranslationStarted, void());
+  MOCK_METHOD1(LogTranslationFinished, void(bool));
+  MOCK_METHOD0(LogReversion, void());
+  MOCK_METHOD1(LogUIChange, void(bool));
+  MOCK_METHOD1(LogOmniboxIconChange, void(bool));
 
  private:
   base::WeakPtrFactory<MockTranslateMetricsLogger> weak_method_factory_{this};

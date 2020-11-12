@@ -37,6 +37,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/translate/core/browser/translate_download_manager.h"
 #include "components/translate/core/browser/translate_manager.h"
+#include "components/translate/core/browser/translate_metrics_logger.h"
 #include "components/translate/core/browser/translate_prefs.h"
 #include "components/translate/core/browser/translate_ui_delegate.h"
 #include "components/vector_icons/vector_icons.h"
@@ -198,6 +199,11 @@ views::Widget* TranslateBubbleView::ShowBubble(
   // hotkey combination to focus the bubble.
   view->ShowForReason(reason, false);
   translate::ReportUiAction(translate::BUBBLE_SHOWN);
+
+  ChromeTranslateClient::GetManagerFromWebContents(web_contents)
+      ->GetActiveTranslateMetricsLogger()
+      ->LogUIChange(true);
+
   return bubble_widget;
 }
 

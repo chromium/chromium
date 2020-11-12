@@ -73384,6 +73384,22 @@ Full version information for the fingerprint enum values:
   <int value="2" label="unexpected other schemes"/>
 </enum>
 
+<enum name="TranslateState">
+  <int value="0" label="Uninitialized"/>
+  <int value="1"
+      label="The page is not translated, and no translate UI is shown"/>
+  <int value="2"
+      label="The page is not translated, and only the translate omnibox icon
+             is shown"/>
+  <int value="3"
+      label="The page is not translated, and the translate UI is shown"/>
+  <int value="4" label="The page is translated, and no translate UI is shown"/>
+  <int value="5"
+      label="The page is translated, and only the translate omnibox icon is
+             shown"/>
+  <int value="6" label="The page is translated, and the translate UI is shown"/>
+</enum>
+
 <enum name="TranslateTabIntentResult">
   <int value="0" label="Feature was disabled"/>
   <int value="1" label="Intent sent to the wrong component (missing token)"/>

@@ -22,6 +22,7 @@
 #include "components/translate/content/browser/content_record_page_language.h"
 #include "components/translate/core/browser/translate_download_manager.h"
 #include "components/translate/core/browser/translate_manager.h"
+#include "components/translate/core/browser/translate_metrics_logger.h"
 #include "components/translate/core/common/translate_metrics.h"
 #include "components/ukm/content/source_url_recorder.h"
 #include "content/public/browser/browser_context.h"
@@ -322,8 +323,12 @@ void ContentTranslateDriver::OnPageTranslated(
     const std::string& original_lang,
     const std::string& translated_lang,
     TranslateErrors::Type error_type) {
-  if (cancelled)
+  if (cancelled) {
+    // Informs the |TranslateMetricsLogger| that the translation was cancelled.
+    translate_manager_->GetActiveTranslateMetricsLogger()
+        ->LogTranslationFinished(false);
     return;
+  }
 
   translate_manager_->PageTranslated(
       original_lang, translated_lang, error_type);

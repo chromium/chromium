@@ -50,6 +50,30 @@ class MockTranslateMetricsLoggerContainer
         ->LogAutofillAssistantDeferredTriggerDecision();
   }
 
+  void LogInitialState() override {
+    mock_translate_metrics_logger_->LogInitialState();
+  }
+
+  void LogTranslationStarted() override {
+    mock_translate_metrics_logger_->LogTranslationStarted();
+  }
+
+  void LogTranslationFinished(bool was_sucessful) override {
+    mock_translate_metrics_logger_->LogTranslationFinished(was_sucessful);
+  }
+
+  void LogReversion() override {
+    mock_translate_metrics_logger_->LogReversion();
+  }
+
+  void LogUIChange(bool is_ui_shown) override {
+    mock_translate_metrics_logger_->LogUIChange(is_ui_shown);
+  }
+
+  void LogOmniboxIconChange(bool is_omnibox_icon_shown) override {
+    mock_translate_metrics_logger_->LogOmniboxIconChange(is_omnibox_icon_shown);
+  }
+
  private:
   translate::testing::MockTranslateMetricsLogger*
       mock_translate_metrics_logger_;  // Weak.

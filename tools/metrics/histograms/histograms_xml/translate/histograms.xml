@@ -471,6 +471,59 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Translate.PageLoad.FinalState" enum="TranslateState"
+    expires_after="2021-04-04">
+  <owner>curranmax@google.com</owner>
+  <owner>megjablon@google.com</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    The state of Translate at the end of a page load. The state includes whether
+    the page is translated, and what translate is shown (no UI, omnibox icon
+    only, and full UI shown). This value is logged once the page load is
+    completed or the first time Chrome is backgrounded during the course of the
+    page load, whichever comes first.
+  </summary>
+</histogram>
+
+<histogram name="Translate.PageLoad.InitialState" enum="TranslateState"
+    expires_after="2021-04-04">
+  <owner>curranmax@google.com</owner>
+  <owner>megjablon@google.com</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    The state of Translate at the start of a page load. The state includes
+    whether the page is translated, and what translate is shown (no UI, omnibox
+    icon only, and full UI shown). This value is logged once the page load is
+    completed or the first time Chrome is backgrounded during the course of the
+    page load, whichever comes first.
+  </summary>
+</histogram>
+
+<histogram name="Translate.PageLoad.NumReversions" units="reversions"
+    expires_after="2021-04-04">
+  <owner>curranmax@google.com</owner>
+  <owner>megjablon@google.com</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    The number of translations that are reverted over the course of a page load.
+    This value is logged once the page load is completed or the first time
+    Chrome is backgrounded during the course of the page load, whichever comes
+    first.
+  </summary>
+</histogram>
+
+<histogram name="Translate.PageLoad.NumTranslations" units="translations"
+    expires_after="2021-04-04">
+  <owner>curranmax@google.com</owner>
+  <owner>megjablon@google.com</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    The number of translations performed over the course of a page load. This
+    value is logged once the page load is completed or the first time Chrome is
+    backgrounded during the course of the page load, whichever comes first.
+  </summary>
+</histogram>
+
 <histogram name="Translate.PageLoad.Ranker.Decision"
     enum="TranslateRankerDecision" expires_after="2021-04-04">
   <owner>curranmax@google.com</owner>

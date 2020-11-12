@@ -21,6 +21,19 @@ enum class RankerDecision {
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+enum class TranslateState {
+  kUninitialized = 0,
+  kNotTranslatedNoUI = 1,
+  kNotTranslatedOmniboxIconOnly = 2,
+  kNotTranslatedUIShown = 3,
+  kTranslatedNoUI = 4,
+  kTranslatedOmniboxIconOnly = 5,
+  kTranslatedUIShown = 6,
+  kMaxValue = kTranslatedUIShown,
+};
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum class TriggerDecision {
   kUninitialized = 0,
   kDisabledDoesntNeedTranslation = 1,
@@ -67,6 +80,14 @@ class TranslateMetricsLogger {
   // page load.
   virtual void LogTriggerDecision(TriggerDecision trigger_decision) = 0;
   virtual void LogAutofillAssistantDeferredTriggerDecision() = 0;
+
+  // Tracks the state of Translate over the course of the page load.
+  virtual void LogInitialState() = 0;
+  virtual void LogTranslationStarted() = 0;
+  virtual void LogTranslationFinished(bool was_successful) = 0;
+  virtual void LogReversion() = 0;
+  virtual void LogUIChange(bool is_ui_shown) = 0;
+  virtual void LogOmniboxIconChange(bool is_omnibox_icon_show) = 0;
 };
 
 }  // namespace translate

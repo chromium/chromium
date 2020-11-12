@@ -222,6 +222,11 @@ class TranslateInfoBarDelegate : public infobars::InfoBarDelegate {
   // Remove an observer.
   virtual void RemoveObserver(Observer* observer);
 
+  // Handles when the user closes the translate infobar. This includes when: the
+  // user presses the 'x' button, the user selects to never translate the site,
+  // and the user selects to never translate the language.
+  void OnInfoBarClosedByUser();
+
   // InfoBarDelegate:
   infobars::InfoBarDelegate::InfoBarIdentifier GetIdentifier() const override;
   int GetIconId() const override;

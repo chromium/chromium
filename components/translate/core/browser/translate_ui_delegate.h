@@ -134,6 +134,11 @@ class TranslateUIDelegate {
   // the language, when we think the user wants that functionality.
   bool ShouldShowNeverTranslateShortcut() const;
 
+  // Updates metrics when a user's action closes the translate UI. This includes
+  // when: the user presses the 'x' button, the user selects to never translate
+  // this site, and the user selects to never translate this language.
+  void OnUIClosedByUser();
+
  private:
   FRIEND_TEST_ALL_PREFIXES(TranslateUIDelegateTest, GetPageHost);
 

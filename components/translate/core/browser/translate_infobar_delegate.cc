@@ -429,6 +429,8 @@ int TranslateInfoBarDelegate::GetIconId() const {
 }
 
 void TranslateInfoBarDelegate::InfoBarDismissed() {
+  OnInfoBarClosedByUser();
+
   bool declined = false;
   bool has_observer = false;
   for (auto& observer : observers_) {
@@ -474,6 +476,10 @@ int TranslateInfoBarDelegate::GetMaximumNumberOfAutoNever() {
   static constexpr base::FeatureParam<int> auto_never_maximum{
       &kTranslateAutoSnackbars, "AutoNeverMaximum", kMaxNumberOfAutoNever};
   return auto_never_maximum.Get();
+}
+
+void TranslateInfoBarDelegate::OnInfoBarClosedByUser() {
+  ui_delegate_.OnUIClosedByUser();
 }
 
 }  // namespace translate

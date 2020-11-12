@@ -176,6 +176,10 @@ void TranslateManager::InitiateTranslation(const std::string& page_lang) {
   RecordDecisionMetrics(decision, page_language_code, ui_shown);
   RecordDecisionRankerEvent(decision, translate_prefs.get(), page_language_code,
                             target_lang);
+
+  // Mark the current state as the initial state now that we are done
+  // initializing Translate.
+  GetActiveTranslateMetricsLogger()->LogInitialState();
 }
 
 void TranslateManager::OnAutofillAssistantFinished() {
@@ -399,6 +403,8 @@ void TranslateManager::TranslatePage(const std::string& original_source_lang,
       translate::TRANSLATE_STEP_TRANSLATING, source_lang, target_lang,
       TranslateErrors::NONE, triggered_from_menu);
 
+  GetActiveTranslateMetricsLogger()->LogTranslationStarted();
+
   TranslateScript* script = TranslateDownloadManager::GetInstance()->script();
   DCHECK(script != nullptr);
 
@@ -424,6 +430,8 @@ void TranslateManager::RevertTranslation() {
   // Revert the translation.
   translate_driver_->RevertTranslation(page_seq_no_);
   language_state_.SetCurrentLanguage(language_state_.original_language());
+
+  GetActiveTranslateMetricsLogger()->LogReversion();
 }
 
 void TranslateManager::ReportLanguageDetectionError() {
@@ -514,6 +522,9 @@ void TranslateManager::PageTranslated(const std::string& source_lang,
                                      source_lang, target_lang, error_type,
                                      false);
   NotifyTranslateError(error_type);
+
+  GetActiveTranslateMetricsLogger()->LogTranslationFinished(
+      error_type == TranslateErrors::NONE);
 }
 
 void TranslateManager::OnTranslateScriptFetchComplete(
@@ -535,6 +546,7 @@ void TranslateManager::OnTranslateScriptFetchComplete(
         translate::TRANSLATE_STEP_TRANSLATE_ERROR, source_lang, target_lang,
         TranslateErrors::NETWORK, false);
     NotifyTranslateError(TranslateErrors::NETWORK);
+    GetActiveTranslateMetricsLogger()->LogTranslationFinished(false);
   }
 }
 

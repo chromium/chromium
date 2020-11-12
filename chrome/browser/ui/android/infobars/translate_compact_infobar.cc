@@ -153,12 +153,14 @@ void TranslateCompactInfoBar::ApplyBoolTranslateOption(
       action_flags_ |= FLAG_NEVER_LANGUAGE;
       delegate->ToggleTranslatableLanguageByPrefs();
       RemoveSelf();
+      delegate->OnInfoBarClosedByUser();
     }
   } else if (option == translate::TranslateUtils::OPTION_NEVER_TRANSLATE_SITE) {
     if (value && !delegate->IsSiteBlacklisted()) {
       action_flags_ |= FLAG_NEVER_SITE;
       delegate->ToggleSiteBlacklist();
       RemoveSelf();
+      delegate->OnInfoBarClosedByUser();
     }
   } else {
     DCHECK(false);

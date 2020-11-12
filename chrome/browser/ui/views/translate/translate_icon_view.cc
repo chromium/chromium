@@ -15,6 +15,8 @@
 #include "chrome/browser/ui/views/translate/translate_bubble_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/translate/core/browser/language_state.h"
+#include "components/translate/core/browser/translate_manager.h"
+#include "components/translate/core/browser/translate_metrics_logger.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 
@@ -43,6 +45,11 @@ void TranslateIconView::UpdateImpl() {
       ChromeTranslateClient::FromWebContents(GetWebContents())
           ->GetLanguageState();
   bool enabled = language_state.translate_enabled();
+
+  ChromeTranslateClient::FromWebContents(GetWebContents())
+      ->GetTranslateManager()
+      ->GetActiveTranslateMetricsLogger()
+      ->LogOmniboxIconChange(enabled);
 
   // Enable Translate page command or disable icon.
   enabled &= SetCommandEnabled(enabled);
