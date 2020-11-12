@@ -6271,3 +6271,6 @@ crbug.com/1127115 inspector-protocol/runtime/runtime-console-log-node-document-t
 
 # Sheriff 2020-11-06
 crbug.com/1146560 [ Win ] fast/canvas/color-space/canvas-createImageBitmap-e_srgb.html [ Failure Pass ]
+
+# Sheriff 2020-11-12
+crbug.com/1148259 [ Mac ] external/wpt/html/browsers/browsing-the-web/navigating-across-documents/javascript-url-return-value-handling-dynamic.html [ Failure ]
