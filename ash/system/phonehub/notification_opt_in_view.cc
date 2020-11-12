@@ -117,6 +117,8 @@ void NotificationOptInView::InitLayout() {
                                .DeriveWithWeight(gfx::Font::Weight::MEDIUM));
   text_label_->SetLineHeight(kTextLabelLineHeightDip);
   text_label_->SetBorder(views::CreateEmptyBorder(kTextLabelBorderInsets));
+  text_label_->SetMultiLine(/*multi_line=*/true);
+  text_label_->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
   text_label_->SetText(l10n_util::GetStringFUTF16(
       IDS_ASH_PHONE_HUB_NOTIFICATION_OPT_IN_DESCRIPTION,
       ui::GetChromeOSDeviceName()));
