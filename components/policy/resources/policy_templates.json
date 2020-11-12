@@ -13999,6 +13999,16 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Allow users to use Touch to Search',
+        },
+        {
+          'value': False,
+          'caption': 'Prevent users from using Touch to Search',
+        },
+      ],
       'example_value': True,
       'default': True,
       'id': 281,
@@ -16457,6 +16467,16 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Allow queries to a Google server to retrieve an accurate timestamp',
+        },
+        {
+          'value': False,
+          'caption': 'Do not allow queries to Google servers to retrieve timestamps',
+        },
+      ],
       'example_value': True,
       'default': True,
       'id': 370,
@@ -20793,6 +20813,16 @@
         'dynamic_refresh': False,
         'per_profile': False,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Show security warnings when potentially dangerous command-line flags are used',
+        },
+        {
+          'value': False,
+          'caption': 'Hide security warnings when potentially dangerous command-line flags are used',
+        },
+      ],
       'example_value': True,
       'default': True,
       'id': 566,
@@ -22824,6 +22854,16 @@ If you disable this policy, web page scrolling to specific text fragments via UR
         'per_profile': False,
         'dynamic_refresh': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Allow the back-forward cache to be used',
+        },
+        {
+          'value': False,
+          'caption': 'Do not allow the back-forward cache to be used',
+        },
+      ],
       'example_value': True,
       'default': True,
       'id': 758,
@@ -23081,6 +23121,16 @@ If you disable this policy, web page scrolling to specific text fragments via UR
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Hide <ph name="CLOUD_PRINT_NAME">Google Cloud Print</ph> deprecation warnings',
+        },
+        {
+          'value': False,
+          'caption': 'Show <ph name="CLOUD_PRINT_NAME">Google Cloud Print</ph> deprecation warnings',
+        },
+      ],
       'example_value': True,
       'default': False,
       'id': 781,
