@@ -4,14 +4,22 @@
 
 #include "base/mac/rosetta.h"
 
+#include <AppKit/AppKit.h>
 #include <CoreFoundation/CoreFoundation.h>
 #include <dlfcn.h>
 #include <mach/machine.h>
+#include <string.h>
 #include <sys/sysctl.h>
 #include <sys/types.h>
 
+#include <utility>
+
+#include "base/check.h"
 #include "base/files/file_path.h"
+#include "base/mac/scoped_nsobject.h"
 #include "base/mac/sdk_forward_declarations.h"
+#include "base/no_destructor.h"
+#include "base/strings/sys_string_conversions.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "build/build_config.h"
 
@@ -42,6 +50,93 @@ bool IsRosettaInstalled() {
 #pragma clang diagnostic ignored "-Wunguarded-availability-new"
   return CFBundleIsArchitectureLoadable(CPU_TYPE_X86_64);
 #pragma clang diagnostic pop
+}
+
+void RequestRosettaInstallation(const string16& title_text,
+                                const string16& body_text,
+                                OnceCallback<void(bool)> callback) {
+  DCHECK([NSThread isMainThread]);
+
+  if (IsRosettaInstalled()) {
+    std::move(callback).Run(true);
+    return;
+  }
+
+  static bool been_there_done_that = false;
+  if (been_there_done_that) {
+    std::move(callback).Run(false);
+    return;
+  }
+  been_there_done_that = true;
+
+  @autoreleasepool {
+    static const NoDestructor<scoped_nsobject<NSBundle>> bundle([]() {
+      scoped_nsobject<NSBundle> bundle(
+          [[NSBundle alloc] initWithPath:@"/System/Library/PrivateFrameworks/"
+                                         @"OAHSoftwareUpdate.framework"]);
+      if (![bundle load])
+        return scoped_nsobject<NSBundle>();
+
+      return bundle;
+    }());
+    if (!bundle.get()) {
+      std::move(callback).Run(false);
+      return;
+    }
+
+    // The method being called is:
+    //
+    // - (void)[OAHSoftwareUpdateController
+    //      startUpdateWithOptions:(NSDictionary*)options
+    //              withHostWindow:(NSWindow*)window
+    //                  completion:(void (^)(BOOL))block]
+    SEL selector = @selector(startUpdateWithOptions:withHostWindow:completion:);
+
+    scoped_nsobject<NSObject> controller(
+        [[NSClassFromString(@"OAHSoftwareUpdateController") alloc] init]);
+    NSMethodSignature* signature =
+        [controller methodSignatureForSelector:selector];
+    if (!signature) {
+      std::move(callback).Run(false);
+      return;
+    }
+    if (strcmp(signature.methodReturnType, "v") != 0 ||
+        signature.numberOfArguments != 5 ||
+        strcmp([signature getArgumentTypeAtIndex:0], "@") != 0 ||
+        strcmp([signature getArgumentTypeAtIndex:1], ":") != 0 ||
+        strcmp([signature getArgumentTypeAtIndex:2], "@") != 0 ||
+        strcmp([signature getArgumentTypeAtIndex:3], "@") != 0 ||
+        strcmp([signature getArgumentTypeAtIndex:4], "@?") != 0) {
+      std::move(callback).Run(false);
+      return;
+    }
+
+    NSInvocation* invocation =
+        [NSInvocation invocationWithMethodSignature:signature];
+
+    __block NSObject* block_controller = [controller.get() retain];
+    invocation.target = block_controller;
+    invocation.selector = selector;
+
+    NSDictionary* options = @{
+      @"TitleText" : SysUTF16ToNSString(title_text),
+      @"BodyText" : SysUTF16ToNSString(body_text)
+    };
+    [invocation setArgument:&options atIndex:2];
+
+    NSWindow* window = nil;
+    [invocation setArgument:&window atIndex:3];
+
+    __block OnceCallback<void(bool)> block_callback = std::move(callback);
+    auto completion = ^(BOOL success) {
+      [controller release];
+      std::move(block_callback).Run(success);
+    };
+
+    [invocation setArgument:&completion atIndex:4];
+
+    [invocation invoke];
+  }
 }
 
 #endif  // ARCH_CPU_ARM64
@@ -76,8 +171,7 @@ bool RequestRosettaAheadOfTimeTranslation(
     path_strs.push_back(paths.back().c_str());
   }
 
-  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
-                                                base::BlockingType::MAY_BLOCK);
+  ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
   return oah_translate_binaries(path_strs.data(), path_strs.size());
 }
 
