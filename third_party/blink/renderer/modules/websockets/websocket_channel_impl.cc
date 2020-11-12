@@ -467,6 +467,10 @@ void WebSocketChannelImpl::OnOpeningHandshakeStarted(
   handshake_request_ = std::move(request);
 }
 
+void WebSocketChannelImpl::OnFailure(const WTF::String& message,
+                                     int net_error,
+                                     int response_code) {}
+
 void WebSocketChannelImpl::OnConnectionEstablished(
     mojo::PendingRemote<network::mojom::blink::WebSocket> websocket,
     mojo::PendingReceiver<network::mojom::blink::WebSocketClient>

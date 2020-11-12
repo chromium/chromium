@@ -240,8 +240,10 @@ class WebSocketChannel::ConnectDelegate
     // |this| may have been deleted.
   }
 
-  void OnFailure(const std::string& message) override {
-    creator_->OnConnectFailure(message);
+  void OnFailure(const std::string& message,
+                 int net_error,
+                 base::Optional<int> response_code) override {
+    creator_->OnConnectFailure(message, net_error, response_code);
     // |this| has been deleted.
   }
 
@@ -473,7 +475,8 @@ void WebSocketChannel::SendAddChannelRequestWithSuppliedCallback(
   if (!socket_url.SchemeIsWSOrWSS()) {
     // TODO(ricea): Kill the renderer (this error should have been caught by
     // Javascript).
-    event_interface_->OnFailChannel("Invalid scheme");
+    event_interface_->OnFailChannel("Invalid scheme", ERR_FAILED,
+                                    base::nullopt);
     // |this| is deleted here.
     return;
   }
@@ -508,7 +511,9 @@ void WebSocketChannel::OnConnectSuccess(
   // |this| may have been deleted after OnAddChannelResponse.
 }
 
-void WebSocketChannel::OnConnectFailure(const std::string& message) {
+void WebSocketChannel::OnConnectFailure(const std::string& message,
+                                        int net_error,
+                                        base::Optional<int> response_code) {
   DCHECK_EQ(CONNECTING, state_);
 
   // Copy the message before we delete its owner.
@@ -517,7 +522,7 @@ void WebSocketChannel::OnConnectFailure(const std::string& message) {
   SetState(CLOSED);
   stream_request_.reset();
 
-  event_interface_->OnFailChannel(message_copy);
+  event_interface_->OnFailChannel(message_copy, net_error, response_code);
   // |this| has been deleted.
 }
 
@@ -956,7 +961,7 @@ void WebSocketChannel::FailChannel(const std::string& message,
   // handshake.
   stream_->Close();
   SetState(CLOSED);
-  event_interface_->OnFailChannel(message);
+  event_interface_->OnFailChannel(message, ERR_FAILED, base::nullopt);
 }
 
 ChannelState WebSocketChannel::SendClose(uint16_t code,

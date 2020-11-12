@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/optional.h"
 #include "net/http/http_basic_state.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_stream_parser.h"
@@ -187,7 +188,9 @@ class DummyConnectDelegate : public WebSocketStream::ConnectDelegate {
   void OnSuccess(
       std::unique_ptr<WebSocketStream> stream,
       std::unique_ptr<WebSocketHandshakeResponseInfo> response) override {}
-  void OnFailure(const std::string& message) override {}
+  void OnFailure(const std::string& message,
+                 int net_error,
+                 base::Optional<int> response_code) override {}
   void OnStartOpeningHandshake(
       std::unique_ptr<WebSocketHandshakeRequestInfo> request) override {}
   void OnSSLCertificateError(
@@ -213,7 +216,9 @@ class TestWebSocketStreamRequestAPI : public WebSocketStreamRequestAPI {
       WebSocketBasicHandshakeStream* handshake_stream) override;
   void OnHttp2HandshakeStreamCreated(
       WebSocketHttp2HandshakeStream* handshake_stream) override;
-  void OnFailure(const std::string& message) override {}
+  void OnFailure(const std::string& message,
+                 int net_error,
+                 base::Optional<int> response_code) override {}
 };
 
 // A sub-class of WebSocketHandshakeStreamCreateHelper which sets a

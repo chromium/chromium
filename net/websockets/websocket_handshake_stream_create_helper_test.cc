@@ -117,7 +117,9 @@ class TestConnectDelegate : public WebSocketStream::ConnectDelegate {
   void OnSuccess(
       std::unique_ptr<WebSocketStream> stream,
       std::unique_ptr<WebSocketHandshakeResponseInfo> response) override {}
-  void OnFailure(const std::string& failure_message) override {}
+  void OnFailure(const std::string& failure_message,
+                 int net_error,
+                 base::Optional<int> response_code) override {}
   void OnStartOpeningHandshake(
       std::unique_ptr<WebSocketHandshakeRequestInfo> request) override {}
   void OnSSLCertificateError(
@@ -144,7 +146,10 @@ class MockWebSocketStreamRequestAPI : public WebSocketStreamRequestAPI {
                void(WebSocketBasicHandshakeStream* handshake_stream));
   MOCK_METHOD1(OnHttp2HandshakeStreamCreated,
                void(WebSocketHttp2HandshakeStream* handshake_stream));
-  MOCK_METHOD1(OnFailure, void(const std::string& message));
+  MOCK_METHOD3(OnFailure,
+               void(const std::string& message,
+                    int net_error,
+                    base::Optional<int> response_code));
 };
 
 class WebSocketHandshakeStreamCreateHelperTest
@@ -176,7 +181,7 @@ class WebSocketHandshakeStreamCreateHelperTest
         NOTREACHED();
     }
 
-    EXPECT_CALL(stream_request_, OnFailure(_)).Times(0);
+    EXPECT_CALL(stream_request_, OnFailure(_, _, _)).Times(0);
 
     HttpRequestInfo request_info;
     request_info.url = url;

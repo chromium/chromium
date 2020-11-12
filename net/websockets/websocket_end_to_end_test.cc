@@ -116,7 +116,9 @@ class ConnectTestingEventInterface : public WebSocketEventInterface {
                      uint16_t code,
                      const std::string& reason) override;
 
-  void OnFailChannel(const std::string& message) override;
+  void OnFailChannel(const std::string& message,
+                     int net_error,
+                     base::Optional<int> response_code) override;
 
   void OnStartOpeningHandshake(
       std::unique_ptr<WebSocketHandshakeRequestInfo> request) override;
@@ -188,7 +190,10 @@ void ConnectTestingEventInterface::OnDropChannel(bool was_clean,
                                                  uint16_t code,
                                                  const std::string& reason) {}
 
-void ConnectTestingEventInterface::OnFailChannel(const std::string& message) {
+void ConnectTestingEventInterface::OnFailChannel(
+    const std::string& message,
+    int net_error,
+    base::Optional<int> response_code) {
   failed_ = true;
   failure_message_ = message;
   QuitNestedEventLoop();

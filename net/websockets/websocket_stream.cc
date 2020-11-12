@@ -10,6 +10,7 @@
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/optional.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "net/base/ip_endpoint.h"
@@ -147,10 +148,14 @@ class WebSocketStreamRequestImpl : public WebSocketStreamRequestAPI {
     OnHandshakeStreamCreated(handshake_stream);
   }
 
-  void OnFailure(const std::string& message) override {
+  void OnFailure(const std::string& message,
+                 int net_error,
+                 base::Optional<int> response_code) override {
     if (api_delegate_)
-      api_delegate_->OnFailure(message);
+      api_delegate_->OnFailure(message, net_error, response_code);
     failure_message_ = message;
+    failure_net_error_ = net_error;
+    failure_response_code_ = response_code;
   }
 
   void Start(std::unique_ptr<base::OneShotTimer> timer) {
@@ -172,8 +177,9 @@ class WebSocketStreamRequestImpl : public WebSocketStreamRequestAPI {
 
     if (!handshake_stream_) {
       ReportFailureWithMessage(
-          "No handshake stream has been created "
-          "or handshake stream is already destroyed.");
+          "No handshake stream has been created or handshake stream is already "
+          "destroyed.",
+          ERR_FAILED, base::nullopt);
       return;
     }
 
@@ -205,7 +211,7 @@ class WebSocketStreamRequestImpl : public WebSocketStreamRequestAPI {
     }
   }
 
-  void ReportFailure(int net_error) {
+  void ReportFailure(int net_error, base::Optional<int> response_code) {
     DCHECK(timer_);
     timer_->Stop();
     if (failure_message_.empty()) {
@@ -224,11 +230,16 @@ class WebSocketStreamRequestImpl : public WebSocketStreamRequestAPI {
           break;
       }
     }
-    ReportFailureWithMessage(failure_message_);
+
+    ReportFailureWithMessage(
+        failure_message_, failure_net_error_.value_or(net_error),
+        failure_response_code_ ? failure_response_code_ : response_code);
   }
 
-  void ReportFailureWithMessage(const std::string& failure_message) {
-    connect_delegate_->OnFailure(failure_message);
+  void ReportFailureWithMessage(const std::string& failure_message,
+                                int net_error,
+                                base::Optional<int> response_code) {
+    connect_delegate_->OnFailure(failure_message, net_error, response_code);
   }
 
   WebSocketStream::ConnectDelegate* connect_delegate() const {
@@ -265,8 +276,10 @@ class WebSocketStreamRequestImpl : public WebSocketStreamRequestAPI {
   // succeeded.
   base::WeakPtr<WebSocketHandshakeStreamBase> handshake_stream_;
 
-  // The failure message supplied by WebSocketBasicHandshakeStream, if any.
+  // The failure information supplied by WebSocketBasicHandshakeStream, if any.
   std::string failure_message_;
+  base::Optional<int> failure_net_error_;
+  base::Optional<int> failure_response_code_;
 
   // A timer for handshake timeout.
   std::unique_ptr<base::OneShotTimer> timer_;
@@ -339,7 +352,7 @@ void Delegate::OnResponseStarted(URLRequest* request, int net_error) {
 
   if (net_error != OK) {
     DVLOG(3) << "OnResponseStarted (request failed)";
-    owner_->ReportFailure(net_error);
+    owner_->ReportFailure(net_error, base::nullopt);
     return;
   }
   const int response_code = request->GetResponseCode();
@@ -352,7 +365,7 @@ void Delegate::OnResponseStarted(URLRequest* request, int net_error) {
       return;
     }
 
-    owner_->ReportFailure(net_error);
+    owner_->ReportFailure(net_error, base::nullopt);
     return;
   }
 
@@ -363,15 +376,17 @@ void Delegate::OnResponseStarted(URLRequest* request, int net_error) {
 
     case HTTP_UNAUTHORIZED:
       owner_->ReportFailureWithMessage(
-          "HTTP Authentication failed; no valid credentials available");
+          "HTTP Authentication failed; no valid credentials available",
+          net_error, response_code);
       return;
 
     case HTTP_PROXY_AUTHENTICATION_REQUIRED:
-      owner_->ReportFailureWithMessage("Proxy authentication failed");
+      owner_->ReportFailureWithMessage("Proxy authentication failed", net_error,
+                                       response_code);
       return;
 
     default:
-      owner_->ReportFailure(net_error);
+      owner_->ReportFailure(net_error, response_code);
   }
 }
 
@@ -391,7 +406,7 @@ void Delegate::OnAuthRequired(URLRequest* request,
     return;
   if (rv != OK) {
     request->LogUnblocked();
-    owner_->ReportFailure(rv);
+    owner_->ReportFailure(rv, base::nullopt);
     return;
   }
   OnAuthRequiredComplete(request, nullptr);

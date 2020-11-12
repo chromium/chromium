@@ -53,6 +53,9 @@ class COMPONENT_EXPORT(DEVICE_FIDO) WebSocketAdapter
 
   void OnOpeningHandshakeStarted(
       network::mojom::WebSocketHandshakeRequestPtr request) override;
+  void OnFailure(const std::string& message,
+                 int net_error,
+                 int response_code) override;
   void OnConnectionEstablished(
       mojo::PendingRemote<network::mojom::WebSocket> socket,
       mojo::PendingReceiver<network::mojom::WebSocketClient> client_receiver,

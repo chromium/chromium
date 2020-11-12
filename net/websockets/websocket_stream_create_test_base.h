@@ -55,6 +55,7 @@ class WebSocketStreamCreateTestBase : public WithTaskEnvironment {
       const HttpResponseHeaders& headers);
 
   const std::string& failure_message() const { return failure_message_; }
+  int failure_response_code() const { return failure_response_code_; }
   bool has_failed() const { return has_failed_; }
 
   // Runs |connect_run_loop_|. It will stop when the connection establishes or
@@ -75,6 +76,7 @@ class WebSocketStreamCreateTestBase : public WithTaskEnvironment {
   std::unique_ptr<WebSocketStream> stream_;
   // Only set if the connection failed.
   std::string failure_message_;
+  int failure_response_code_ = -1;
   bool has_failed_;
   std::unique_ptr<WebSocketHandshakeRequestInfo> request_info_;
   std::unique_ptr<WebSocketHandshakeResponseInfo> response_info_;

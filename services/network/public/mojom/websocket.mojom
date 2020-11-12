@@ -60,6 +60,15 @@ interface WebSocketHandshakeClient {
   // Notify the renderer that the browser has started an opening handshake.
   OnOpeningHandshakeStarted(WebSocketHandshakeRequest request);
 
+  // Called when the WebSocket connection has failed.
+  // |message| may contain a human-readable explanation of the error, but may be
+  // empty.
+  // |net_error| contains a network error code, which will be |ERR_FAILED| for
+  // WebSocket-level protocol errors that do not have their own error code.
+  // |response_code| contains the HTTP status code that caused the failure, if
+  // it was caused by an unexpected status code, or else is -1.
+  OnFailure(string message, int32 net_error, int32 response_code);
+
   // Called when the connection is established.
   // |response| may contain cookie-related headers when the client has
   // an access to raw cookie information.

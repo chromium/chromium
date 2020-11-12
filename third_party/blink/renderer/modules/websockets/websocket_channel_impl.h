@@ -115,6 +115,9 @@ class MODULES_EXPORT WebSocketChannelImpl final
   // network::mojom::blink::WebSocketHandshakeClient methods:
   void OnOpeningHandshakeStarted(
       network::mojom::blink::WebSocketHandshakeRequestPtr) override;
+  void OnFailure(const WTF::String& message,
+                 int net_error,
+                 int response_code) override;
   void OnConnectionEstablished(
       mojo::PendingRemote<network::mojom::blink::WebSocket> websocket,
       mojo::PendingReceiver<network::mojom::blink::WebSocketClient>

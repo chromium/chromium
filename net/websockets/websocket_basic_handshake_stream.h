@@ -101,7 +101,9 @@ class NET_EXPORT_PRIVATE WebSocketBasicHandshakeStream final
   // OK if they are, otherwise returns ERR_INVALID_RESPONSE.
   int ValidateUpgradeResponse(const HttpResponseHeaders* headers);
 
-  void OnFailure(const std::string& message);
+  void OnFailure(const std::string& message,
+                 int net_error,
+                 base::Optional<int> response_code);
 
   HttpStreamParser* parser() const { return state_.parser(); }
 

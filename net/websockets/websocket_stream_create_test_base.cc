@@ -45,9 +45,12 @@ class WebSocketStreamCreateTestBase::TestConnectDelegate
     std::move(done_callback_).Run();
   }
 
-  void OnFailure(const std::string& message) override {
+  void OnFailure(const std::string& message,
+                 int net_error,
+                 base::Optional<int> response_code) override {
     owner_->has_failed_ = true;
     owner_->failure_message_ = message;
+    owner_->failure_response_code_ = response_code.value_or(-1);
     std::move(done_callback_).Run();
   }
 

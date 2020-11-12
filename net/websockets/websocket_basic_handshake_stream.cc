@@ -453,23 +453,27 @@ int WebSocketBasicHandshakeStream::ValidateResponse(int rv) {
         // Reporting "Unexpected response code: 200" in this case is not
         // helpful, so use a different error message.
         if (headers->GetHttpVersion() == HttpVersion(0, 9)) {
-          OnFailure("Error during WebSocket handshake: Invalid status line");
+          OnFailure("Error during WebSocket handshake: Invalid status line",
+                    ERR_FAILED, base::nullopt);
         } else {
-          OnFailure(base::StringPrintf(
-              "Error during WebSocket handshake: Unexpected response code: %d",
-              headers->response_code()));
+          OnFailure(base::StringPrintf("Error during WebSocket handshake: "
+                                       "Unexpected response code: %d",
+                                       headers->response_code()),
+                    ERR_FAILED, headers->response_code());
         }
         result_ = HandshakeResult::INVALID_STATUS;
         return ERR_INVALID_RESPONSE;
     }
   } else {
     if (rv == ERR_EMPTY_RESPONSE) {
-      OnFailure("Connection closed before receiving a handshake response");
+      OnFailure("Connection closed before receiving a handshake response", rv,
+                base::nullopt);
       result_ = HandshakeResult::EMPTY_RESPONSE;
       return rv;
     }
-    OnFailure(std::string("Error during WebSocket handshake: ") +
-              ErrorToString(rv));
+    OnFailure(
+        std::string("Error during WebSocket handshake: ") + ErrorToString(rv),
+        rv, base::nullopt);
     // Some error codes (for example ERR_CONNECTION_CLOSED) get changed to OK at
     // higher levels. To prevent an unvalidated connection getting erroneously
     // upgraded, don't pass through the status code unchanged if it is
@@ -508,14 +512,18 @@ int WebSocketBasicHandshakeStream::ValidateUpgradeResponse(
     result_ = HandshakeResult::CONNECTED;
     return OK;
   }
-  OnFailure("Error during WebSocket handshake: " + failure_message);
+  OnFailure("Error during WebSocket handshake: " + failure_message, ERR_FAILED,
+            base::nullopt);
   return ERR_INVALID_RESPONSE;
 }
 
-void WebSocketBasicHandshakeStream::OnFailure(const std::string& message) {
+void WebSocketBasicHandshakeStream::OnFailure(
+    const std::string& message,
+    int net_error,
+    base::Optional<int> response_code) {
   // Avoid connection reuse if auth did not happen.
   state_.connection()->socket()->Disconnect();
-  stream_request_->OnFailure(message);
+  stream_request_->OnFailure(message, net_error, response_code);
 }
 
 }  // namespace net

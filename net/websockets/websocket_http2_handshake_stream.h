@@ -13,6 +13,7 @@
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "base/optional.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_export.h"
@@ -113,7 +114,9 @@ class NET_EXPORT_PRIVATE WebSocketHttp2HandshakeStream
   // in which case returns OK, otherwise returns ERR_INVALID_RESPONSE.
   int ValidateUpgradeResponse(const HttpResponseHeaders* headers);
 
-  void OnFailure(const std::string& message);
+  void OnFailure(const std::string& message,
+                 int net_error,
+                 base::Optional<int> response_code);
 
   HandshakeResult result_;
 

@@ -57,6 +57,10 @@ void WebSocketAdapter::OnOpeningHandshakeStarted(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
+void WebSocketAdapter::OnFailure(const std::string& message,
+                                 int net_error,
+                                 int response_code) {}
+
 void WebSocketAdapter::OnConnectionEstablished(
     mojo::PendingRemote<network::mojom::WebSocket> socket,
     mojo::PendingReceiver<network::mojom::WebSocketClient> client_receiver,

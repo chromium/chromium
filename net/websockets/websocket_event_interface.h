@@ -96,8 +96,16 @@ class NET_EXPORT WebSocketEventInterface {
   // The channel should not be used again after OnFailChannel() has been
   // called.
   //
+  // |message| is a human readable string describing the failure. (It may be
+  // empty.) |net_error| contains the network error code for the failure, which
+  // may be |OK| if the failure was at a higher level. |response_code| contains
+  // the HTTP status code that caused the failure, or |base::nullopt| if the
+  // attempt didn't get that far.
+  //
   // This function deletes the Channel.
-  virtual void OnFailChannel(const std::string& message) = 0;
+  virtual void OnFailChannel(const std::string& message,
+                             int net_error,
+                             base::Optional<int> response_code) = 0;
 
   // Called when the browser starts the WebSocket Opening Handshake.
   virtual void OnStartOpeningHandshake(

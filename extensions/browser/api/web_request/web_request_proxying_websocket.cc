@@ -144,6 +144,10 @@ void WebRequestProxyingWebSocket::OnOpeningHandshakeStarted(
   forwarding_handshake_client_->OnOpeningHandshakeStarted(std::move(request));
 }
 
+void WebRequestProxyingWebSocket::OnFailure(const std::string&,
+                                            int net_error,
+                                            int response_code) {}
+
 void WebRequestProxyingWebSocket::ContinueToHeadersReceived() {
   auto continuation = base::BindRepeating(
       &WebRequestProxyingWebSocket::OnHeadersReceivedComplete,

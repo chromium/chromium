@@ -66,7 +66,9 @@ class NET_EXPORT_PRIVATE WebSocketStreamRequestAPI
       WebSocketBasicHandshakeStream* handshake_stream) = 0;
   virtual void OnHttp2HandshakeStreamCreated(
       WebSocketHttp2HandshakeStream* handshake_stream) = 0;
-  virtual void OnFailure(const std::string& message) = 0;
+  virtual void OnFailure(const std::string& message,
+                         int net_error,
+                         base::Optional<int> response_code) = 0;
 };
 
 // WebSocketStream is a transport-agnostic interface for reading and writing
@@ -100,7 +102,9 @@ class NET_EXPORT_PRIVATE WebSocketStream {
 
     // Called on failure to connect.
     // |message| contains defails of the failure.
-    virtual void OnFailure(const std::string& message) = 0;
+    virtual void OnFailure(const std::string& message,
+                           int net_error,
+                           base::Optional<int> response_code) = 0;
 
     // Called when the WebSocket Opening Handshake starts.
     virtual void OnStartOpeningHandshake(

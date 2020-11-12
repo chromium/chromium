@@ -972,6 +972,7 @@ TEST_P(WebSocketMultiProtocolStreamCreateTest, InvalidStatusCode) {
   if (stream_type_ == BASIC_HANDSHAKE_STREAM) {
     EXPECT_EQ("Error during WebSocket handshake: Unexpected response code: 200",
               failure_message());
+    EXPECT_EQ(failure_response_code(), 200);
     EXPECT_EQ(
         1, samples->GetCount(static_cast<int>(
                WebSocketHandshakeStreamBase::HandshakeResult::INVALID_STATUS)));
@@ -979,6 +980,7 @@ TEST_P(WebSocketMultiProtocolStreamCreateTest, InvalidStatusCode) {
     DCHECK_EQ(stream_type_, HTTP2_HANDSHAKE_STREAM);
     EXPECT_EQ("Error during WebSocket handshake: Unexpected response code: 101",
               failure_message());
+    EXPECT_EQ(failure_response_code(), 101);
     EXPECT_EQ(1, samples->GetCount(static_cast<int>(
                      WebSocketHandshakeStreamBase::HandshakeResult::
                          HTTP2_INVALID_STATUS)));
