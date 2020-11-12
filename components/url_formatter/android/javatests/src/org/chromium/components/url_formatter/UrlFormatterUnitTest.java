@@ -4,6 +4,8 @@
 
 package org.chromium.components.url_formatter;
 
+import static org.junit.Assert.assertEquals;
+
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
@@ -11,9 +13,12 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.Function;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
+import org.chromium.url.GURL;
+import org.chromium.url.GURLJavaTestHelper;
 
 /**
  * Unit tests for {@link UrlFormatter}.
@@ -27,14 +32,15 @@ public class UrlFormatterUnitTest {
     @Before
     public void setUp() {
         NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
+        GURLJavaTestHelper.nativeInitializeICU();
     }
 
     @Test
     @SmallTest
     public void testFixupUrl() {
-        Assert.assertEquals("http://google.com/", UrlFormatter.fixupUrl("google.com").getSpec());
-        Assert.assertEquals("chrome://version/", UrlFormatter.fixupUrl("about:").getSpec());
-        Assert.assertEquals("file:///mail.google.com:/",
+        assertEquals("http://google.com/", UrlFormatter.fixupUrl("google.com").getSpec());
+        assertEquals("chrome://version/", UrlFormatter.fixupUrl("about:").getSpec());
+        assertEquals("file:///mail.google.com:/",
                 UrlFormatter.fixupUrl("//mail.google.com:/").getSpec());
         Assert.assertFalse(UrlFormatter.fixupUrl("0x100.0").isValid());
     }
@@ -42,12 +48,25 @@ public class UrlFormatterUnitTest {
     @Test
     @SmallTest
     public void testFormatUrlForDisplayOmitUsernamePassword() {
-        Assert.assertEquals("http://google.com/path",
+        assertEquals("http://google.com/path",
                 UrlFormatter.formatUrlForDisplayOmitUsernamePassword("http://google.com/path"));
-        Assert.assertEquals("http://google.com",
+        assertEquals("http://google.com",
                 UrlFormatter.formatUrlForDisplayOmitUsernamePassword(
                         "http://user:pass@google.com"));
-        Assert.assertEquals("http://google.com",
+        assertEquals("http://google.com",
                 UrlFormatter.formatUrlForDisplayOmitUsernamePassword("http://user@google.com"));
+    }
+
+    @Test
+    @SmallTest
+    public void testFormatUrlForDisplayOmitSchemePathAndTrivialSubdomains() {
+        Function<GURL, String> f =
+                UrlFormatter::formatUrlForDisplayOmitSchemePathAndTrivialSubdomains;
+
+        assertEquals("google.com", f.apply(new GURL("http://user:pass@google.com/path")));
+        assertEquals("chrome://version", f.apply(new GURL("chrome://version")));
+        assertEquals("äää.de", f.apply(new GURL("https://äää.de")));
+        assertEquals("xn--4caaa.com", f.apply(new GURL("https://äää.com")));
+        assertEquals("مثال.إختبار", f.apply(new GURL("https://xn--mgbh0fb.xn--kgbechtv/")));
     }
 }

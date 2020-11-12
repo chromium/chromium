@@ -42,7 +42,6 @@ import org.chromium.components.page_info.PageInfoView.ConnectionInfoParams;
 import org.chromium.components.page_info.PageInfoView.PageInfoViewParams;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.components.security_state.SecurityStateModel;
-import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
@@ -257,8 +256,8 @@ public class PageInfoController implements PageInfoMainController, ModalDialogPr
             PageInfoContainer.Params containerParams = new PageInfoContainer.Params();
             containerParams.url = viewParams.url;
             containerParams.urlOriginLength = viewParams.urlOriginLength;
-            containerParams.truncatedUrl = UrlFormatter.formatUrlForSecurityDisplay(
-                    url, SchemeDisplay.OMIT_HTTP_AND_HTTPS);
+            containerParams.truncatedUrl =
+                    UrlFormatter.formatUrlForDisplayOmitSchemePathAndTrivialSubdomains(url);
             containerParams.backButtonClickCallback = this::exitSubpage;
             containerParams.urlTitleClickCallback = mContainer::toggleUrlTruncation;
             containerParams.urlTitleLongClickCallback = viewParams.urlTitleLongClickCallback;

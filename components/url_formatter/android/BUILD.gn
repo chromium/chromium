@@ -37,6 +37,7 @@ android_library("url_formatter_javatests") {
     "//third_party/android_deps:androidx_test_runner_java",
     "//third_party/android_support_test_runner:runner_java",
     "//third_party/junit",
+    "//url:gurl_android_test_helper_java",
     "//url:gurl_java",
   ]
 }
