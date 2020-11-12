@@ -48,7 +48,18 @@ sql::InitStatus FailedMigrationTo(int version_num) {
 
 }  // namespace
 
-WebDatabase::WebDatabase() {}
+WebDatabase::WebDatabase()
+    : db_({// Run the database in exclusive mode. Nobody else should be
+           // accessing the database while we're running, and this will give
+           // somewhat improved perf.
+           .exclusive_locking = true,
+           // We don't store that much data in the tables so use a small page
+           // size. This provides a large benefit for empty tables (which is
+           // very likely with the tables we create).
+           .page_size = 2048,
+           // We shouldn't have much data and what access we currently have is
+           // quite infrequent. So we go with a small cache size.
+           .cache_size = 32}) {}
 
 WebDatabase::~WebDatabase() {}
 
@@ -79,19 +90,6 @@ sql::Database* WebDatabase::GetSQLConnection() {
 
 sql::InitStatus WebDatabase::Init(const base::FilePath& db_name) {
   db_.set_histogram_tag("Web");
-
-  // We don't store that much data in the tables so use a small page size.
-  // This provides a large benefit for empty tables (which is very likely with
-  // the tables we create).
-  db_.set_page_size(2048);
-
-  // We shouldn't have much data and what access we currently have is quite
-  // infrequent. So we go with a small cache size.
-  db_.set_cache_size(32);
-
-  // Run the database in exclusive mode. Nobody else should be accessing the
-  // database while we're running, and this will give somewhat improved perf.
-  db_.set_exclusive_locking();
 
   if ((db_name.value() == kInMemoryPath) ? !db_.OpenInMemory()
                                          : !db_.Open(db_name)) {
