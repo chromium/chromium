@@ -41,9 +41,12 @@ PartitionDirectUnmap(SlotSpanMetadata<thread_safe>* slot_span) {
     extent->next_extent->prev_extent = extent->prev_extent;
   }
 
-  // Add on the size of the trailing guard page and preceeding partition
-  // page.
-  unmap_size += PartitionPageSize() + SystemPageSize();
+  // Add the size of the trailing guard page (32-bit only) and preceding
+  // partition page.
+  unmap_size += PartitionPageSize();
+#if !defined(ARCH_CPU_64_BITS)
+  unmap_size += SystemPageSize();
+#endif
 
   size_t uncommitted_page_size =
       slot_span->bucket->slot_size + SystemPageSize();

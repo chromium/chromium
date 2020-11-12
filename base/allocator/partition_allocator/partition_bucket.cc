@@ -8,6 +8,7 @@
 #include "base/allocator/partition_allocator/object_bitmap.h"
 #include "base/allocator/partition_allocator/oom.h"
 #include "base/allocator/partition_allocator/page_allocator.h"
+#include "base/allocator/partition_allocator/page_allocator_constants.h"
 #include "base/allocator/partition_allocator/partition_address_space.h"
 #include "base/allocator/partition_allocator/partition_alloc.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
@@ -18,6 +19,7 @@
 #include "base/allocator/partition_allocator/partition_page.h"
 #include "base/allocator/partition_allocator/partition_tag.h"
 #include "base/allocator/partition_allocator/partition_tag_bitmap.h"
+#include "base/bits.h"
 #include "base/check.h"
 #include "build/build_config.h"
 
@@ -30,10 +32,11 @@ template <bool thread_safe>
 ALWAYS_INLINE SlotSpanMetadata<thread_safe>*
 PartitionDirectMap(PartitionRoot<thread_safe>* root, int flags, size_t raw_size)
     EXCLUSIVE_LOCKS_REQUIRED(root->lock_) {
-  size_t size = PartitionBucket<thread_safe>::get_direct_map_size(raw_size);
+  size_t slot_size =
+      PartitionBucket<thread_safe>::get_direct_map_size(raw_size);
 
   // Because we need to fake looking like a super page, we need to allocate
-  // a bunch of system pages more than "size":
+  // a bunch of system pages more than |slot_size|:
   // - The first few system pages are the partition page in which the super
   // page metadata is stored. We commit just one system page out of a partition
   // page sized clump.
@@ -41,30 +44,34 @@ PartitionDirectMap(PartitionRoot<thread_safe>* root, int flags, size_t raw_size)
   // massive address space plus randomization instead; additionally GigaCage
   // guarantees that the region is in the company of regions that have leading
   // guard pages).
-  size_t map_size = size + PartitionPageSize();
+  size_t reserved_size = slot_size + PartitionPageSize();
 #if !defined(ARCH_CPU_64_BITS)
-  map_size += SystemPageSize();
+  reserved_size += SystemPageSize();
 #endif
   // Round up to the allocation granularity.
-  map_size += PageAllocationGranularityOffsetMask();
-  map_size &= PageAllocationGranularityBaseMask();
+  reserved_size = bits::Align(reserved_size, PageAllocationGranularity());
+  size_t map_size = reserved_size - PartitionPageSize();
+#if !defined(ARCH_CPU_64_BITS)
+  map_size -= SystemPageSize();
+#endif
+  PA_DCHECK(slot_size <= map_size);
 
   char* ptr = nullptr;
   // Allocate from GigaCage, if enabled. However, the exception to this is when
   // tags aren't allowed, as CheckedPtr assumes that everything inside GigaCage
   // uses tags (specifically, inside the GigaCage's normal bucket pool).
   if (root->UsesGigaCage()) {
-    ptr = internal::AddressPoolManager::GetInstance()->Alloc(GetDirectMapPool(),
-                                                             nullptr, map_size);
+    ptr = internal::AddressPoolManager::GetInstance()->Alloc(
+        GetDirectMapPool(), nullptr, reserved_size);
   } else {
-    ptr = reinterpret_cast<char*>(AllocPages(nullptr, map_size,
+    ptr = reinterpret_cast<char*>(AllocPages(nullptr, reserved_size,
                                              kSuperPageAlignment, PageReadWrite,
                                              PageTag::kPartitionAlloc));
   }
   if (UNLIKELY(!ptr))
     return nullptr;
 
-  size_t committed_page_size = size + SystemPageSize();
+  size_t committed_page_size = slot_size + SystemPageSize();
   root->total_size_of_direct_mapped_pages.fetch_add(committed_page_size,
                                                     std::memory_order_relaxed);
   root->IncreaseCommittedPages(committed_page_size);
@@ -75,7 +82,10 @@ PartitionDirectMap(PartitionRoot<thread_safe>* root, int flags, size_t raw_size)
                        PartitionPageSize() - (SystemPageSize() * 2),
                        PageInaccessible);
 #if !defined(ARCH_CPU_64_BITS)
-  SetSystemPagesAccess(slot + size, SystemPageSize(), PageInaccessible);
+  // TODO(bartekn): Uncommit all the way up to reserved_size, or in case of
+  // GigaCage, all the way up to 2MB boundary.
+  PA_DCHECK(slot + slot_size + SystemPageSize() <= ptr + reserved_size);
+  SetSystemPagesAccess(slot + slot_size, SystemPageSize(), PageInaccessible);
 #endif
 
   auto* metadata = reinterpret_cast<PartitionDirectMapMetadata<thread_safe>*>(
@@ -107,10 +117,10 @@ PartitionDirectMap(PartitionRoot<thread_safe>* root, int flags, size_t raw_size)
   PA_DCHECK(!metadata->bucket.decommitted_slot_spans_head);
   PA_DCHECK(!metadata->bucket.num_system_pages_per_slot_span);
   PA_DCHECK(!metadata->bucket.num_full_slot_spans);
-  metadata->bucket.slot_size = size;
+  metadata->bucket.slot_size = slot_size;
 
   auto* map_extent = &metadata->direct_map_extent;
-  map_extent->map_size = map_size - PartitionPageSize() - SystemPageSize();
+  map_extent->map_size = map_size;
   map_extent->bucket = &metadata->bucket;
 
   // Maintain the doubly-linked list of all direct mappings.
