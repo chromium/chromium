@@ -1617,6 +1617,13 @@ void PaintLayer::AppendSingleFragmentIgnoringPagination(
                       offset_from_root);
   fragment.root_fragment_data = &root_layer->GetLayoutObject().FirstFragment();
   fragment.fragment_data = &GetLayoutObject().FirstFragment();
+  if (GetLayoutObject().CanTraversePhysicalFragments()) {
+    // Make sure that we actually traverse the fragment tree, by providing a
+    // physical fragment. Otherwise we'd fall back to LayoutObject traversal.
+    if (const auto* layout_box = GetLayoutBox())
+      fragment.physical_fragment = layout_box->GetPhysicalFragment(0);
+  }
+
   fragments.push_back(fragment);
 }
 
