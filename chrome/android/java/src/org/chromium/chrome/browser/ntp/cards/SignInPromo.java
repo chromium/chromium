@@ -239,6 +239,8 @@ public abstract class SignInPromo extends OptionalLeaf {
             // implementing this we can show the promo if the user did not sign in during the FRE.
             mCanSignIn = mSigninManager.isSignInAllowed();
             updateVisibility();
+            // Update the promo state between sign-in promo and sync promo if required.
+            notifyDataChanged();
         }
 
         // SignInStateObserver implementation.
@@ -246,12 +248,16 @@ public abstract class SignInPromo extends OptionalLeaf {
         public void onSignedIn() {
             mCanSignIn = false;
             updateVisibility();
+            // Update the promo state between sign-in promo and sync promo if required.
+            notifyDataChanged();
         }
 
         @Override
         public void onSignedOut() {
             mCanSignIn = mSigninManager.isSignInAllowed();
             updateVisibility();
+            // Update the promo state between sign-in promo and sync promo if required.
+            notifyDataChanged();
         }
 
         // AccountsChangeObserver implementation.
