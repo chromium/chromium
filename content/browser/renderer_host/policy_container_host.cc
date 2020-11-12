@@ -8,13 +8,13 @@ namespace content {
 
 PolicyContainerHost::PolicyContainerHost() = default;
 PolicyContainerHost::PolicyContainerHost(
-    network::mojom::ReferrerPolicy referrer_policy)
-    : referrer_policy_(referrer_policy) {}
+    PolicyContainerHost::DocumentPolicies document_policies)
+    : document_policies_(document_policies) {}
 PolicyContainerHost::~PolicyContainerHost() = default;
 
 void PolicyContainerHost::SetReferrerPolicy(
     network::mojom::ReferrerPolicy referrer_policy) {
-  referrer_policy_ = referrer_policy;
+  document_policies_.referrer_policy = referrer_policy;
 }
 
 blink::mojom::PolicyContainerPtr
@@ -28,14 +28,13 @@ PolicyContainerHost::CreatePolicyContainerForBlink() {
   // received before we try to create a new remote.
   policy_container_host_receiver_.reset();
   return blink::mojom::PolicyContainer::New(
-      blink::mojom::PolicyContainerDocumentPolicies::New(referrer_policy_),
+      blink::mojom::PolicyContainerDocumentPolicies::New(
+          document_policies_.referrer_policy),
       policy_container_host_receiver_.BindNewEndpointAndPassRemote());
 }
 
 std::unique_ptr<PolicyContainerHost> PolicyContainerHost::Clone() const {
-  std::unique_ptr<PolicyContainerHost> copy =
-      std::make_unique<PolicyContainerHost>(referrer_policy_);
-  return copy;
+  return std::make_unique<PolicyContainerHost>(document_policies_);
 }
 
 void PolicyContainerHost::Bind(
