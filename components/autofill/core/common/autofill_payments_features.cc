@@ -84,6 +84,12 @@ const base::Feature kAutofillEnableGoogleIssuedCard{
 const base::Feature kAutofillEnableOffersInDownstream{
     "kAutofillEnableOffersInDownstream", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// When enabled and user is signed in, a footer indicating user's e-mail address
+// and profile picture will appear at the bottom of SaveCardInfoBar.
+const base::Feature kAutofillEnableSaveCardInfoBarAccountIndicationFooter{
+    "AutofillEnableSaveCardInfoBarAccountIndicationFooter",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 // When enabled, all payments related bubbles will not be dismissed upon page
 // navigation.
 const base::Feature kAutofillEnableStickyPaymentsBubble{
