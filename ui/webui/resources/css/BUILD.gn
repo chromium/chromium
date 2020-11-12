@@ -1,0 +1,57 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//tools/grit/preprocess_grit.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+
+include_polymer = !is_android && !is_ios
+
+preprocess_folder = "$root_gen_dir/ui/webui/resources/preprocessed/css"
+preprocess_src_manifest = "preprocessed_src_manifest.json"
+
+generate_grd("build_grdp") {
+  grd_prefix = "webui_css"
+  out_grd = "$target_gen_dir/resources.grdp"
+  deps = [ ":preprocess_src" ]
+  manifest_files = [ "$target_gen_dir/$preprocess_src_manifest" ]
+  resource_path_prefix = "css"
+}
+
+preprocess_grit("preprocess_src") {
+  in_folder = "./"
+  out_folder = "$preprocess_folder"
+  out_manifest = "$target_gen_dir/$preprocess_src_manifest"
+  in_files = [
+    "action_link.css",
+    "apps/common.css",
+    "apps/topbutton_bar.css",
+    "bubble_button.css",
+    "bubble.css",
+    "butter_bar.css",
+    "chrome_shared.css",
+    "dialogs.css",
+    "i18n_process.css",
+    "list.css",
+    "roboto.css",
+    "table.css",
+    "tabs.css",
+    "text_defaults.css",
+    "text_defaults_md.css",
+    "throbber.css",
+
+    # TODO(dpapad): Include remaining files once thy no longer depend on
+    # flattenhtml=true.
+    #"controlled_indicator.css",
+    #"menu_button.css",
+    #"menu.css",
+    #"overlay.css",
+    #"spinner.css",
+    #"tree.css",
+    #"widgets.css",
+  ]
+
+  if (include_polymer) {
+    in_files += [ "md_colors.css" ]
+  }
+}

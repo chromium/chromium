@@ -34,8 +34,8 @@
 #include "skia/grit/skia_resources_map.h"
 #include "ui/base/layout.h"
 #include "ui/base/webui/web_ui_util.h"
+#include "ui/resources/grit/webui_generated_resources.h"
 #include "ui/resources/grit/webui_generated_resources_map.h"
-#include "ui/resources/grit/webui_resources.h"
 #include "ui/resources/grit/webui_resources_map.h"
 
 #if defined(OS_CHROMEOS)

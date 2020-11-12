@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- Holds various resources under ui/webui/resources/{js,html}, that depend on
-     Polymer or are Polymer related. -->
-<grit-part>
-  <!-- CSS resources -->
-  <structure name="IDR_WEBUI_CSS_MD_COLORS"
-             file="css/md_colors.css" type="chrome_html" />
-</grit-part>

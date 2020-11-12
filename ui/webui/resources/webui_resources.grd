@@ -74,53 +74,20 @@ without changes to the corresponding grd file. -->
       </if>
     </includes>
     <structures>
-      <structure name="IDR_WEBUI_CSS_ACTION_LINK_CSS"
-                 file="css/action_link.css" type="chrome_html" />
-      <structure name="IDR_WEBUI_CSS_APPS_COMMON_CSS"
-                 file="css/apps/common.css" type="chrome_html" />
-      <structure name="IDR_WEBUI_CSS_APPS_TOPBUTTON_BAR_CSS"
-                 file="css/apps/topbutton_bar.css" type="chrome_html" />
-      <structure name="IDR_WEBUI_CSS_BUBBLE_CSS"
-                 file="css/bubble.css" type="chrome_html" />
-      <structure name="IDR_WEBUI_CSS_BUBBLE_BUTTON_CSS"
-                 file="css/bubble_button.css" type="chrome_html" />
-      <structure name="IDR_WEBUI_CSS_BUTTER_BAR_CSS"
-                 file="css/butter_bar.css" type="chrome_html" />
-      <structure name="IDR_WEBUI_CSS_CHROME_SHARED_CSS"
-                 file="css/chrome_shared.css" type="chrome_html"
-                 flattenhtml="true" />
       <structure name="IDR_WEBUI_CSS_CONTROLLED_INDICATOR_CSS"
                  file="css/controlled_indicator.css" type="chrome_html" flattenhtml="true" />
-      <structure name="IDR_WEBUI_CSS_DIALOGS_CSS"
-                 file="css/dialogs.css" type="chrome_html" />
-      <structure name="IDR_WEBUI_CSS_I18N_PROCESS_CSS"
-                 file="css/i18n_process.css" type="chrome_html" />
-      <structure name="IDR_WEBUI_CSS_LIST_CSS"
-                 file="css/list.css" type="chrome_html" />
       <structure name="IDR_WEBUI_CSS_MENU_CSS"
                  file="css/menu.css" type="chrome_html"
                  flattenhtml="true" />
       <structure name="IDR_WEBUI_CSS_MENU_BUTTON_CSS"
                  file="css/menu_button.css" type="chrome_html"
                  flattenhtml="true" />
-      <structure name="IDR_WEBUI_CSS_TEXT_DEFAULTS_CSS"
-                 file="css/text_defaults.css" type="chrome_html" />
-      <structure name="IDR_WEBUI_CSS_TEXT_DEFAULTS_MD_CSS"
-                 file="css/text_defaults_md.css" type="chrome_html" />
       <structure name="IDR_WEBUI_CSS_OVERLAY_CSS"
                  file="css/overlay.css" type="chrome_html"
                  flattenhtml="true" />
-      <structure name="IDR_WEBUI_CSS_ROBOTO_CSS" preprocess="true"
-                 file="css/roboto.css" type="chrome_html" />
       <structure name="IDR_WEBUI_CSS_SPINNER_CSS"
                  file="css/spinner.css" type="chrome_html"
                  flattenhtml="true" />
-      <structure name="IDR_WEBUI_CSS_TABLE_CSS"
-                 file="css/table.css" type="chrome_html" />
-      <structure name="IDR_WEBUI_CSS_TABS_CSS"
-                 file="css/tabs.css" type="chrome_html" />
-      <structure name="IDR_WEBUI_CSS_THROBBER_CSS"
-                 file="css/throbber.css" type="chrome_html" />
       <structure name="IDR_WEBUI_CSS_TREE_CSS"
                  file="css/tree.css" type="chrome_html"
                  flattenhtml="true" />
@@ -146,10 +113,6 @@ without changes to the corresponding grd file. -->
         <structure name="IDR_LOTTIE_LOTTIE_WORKER_MIN_JS"
                    file="../../../third_party/lottie/lottie_worker.min.js"
                    type="chrome_html" />
-      </if>
-
-      <if expr="not is_android and not is_ios">
-        <part file="cr_polymer_resources.grdp" />
       </if>
     </structures>
   </release>
