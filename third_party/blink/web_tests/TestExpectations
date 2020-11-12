@@ -2459,7 +2459,6 @@ crbug.com/1100119 [ Mac ] external/wpt/css/css-pseudo/active-selection-054.html 
 crbug.com/1018465 external/wpt/css/css-pseudo/active-selection-056.html [ Failure ]
 crbug.com/1078474 external/wpt/css/css-pseudo/active-selection-012.html [ Failure ]
 crbug.com/932343 external/wpt/css/css-pseudo/active-selection-014.html [ Failure ]
-crbug.com/1078474 external/wpt/css/css-pseudo/active-selection-018.html [ Failure ]
 crbug.com/1110495 external/wpt/css/css-pseudo/selection-input-011.html [ Failure ]
 crbug.com/1110495 external/wpt/css/css-pseudo/selection-textarea-011.html [ Failure ]
 crbug.com/1078474 external/wpt/css/css-pseudo/selection-intercharacter-011.html [ Failure ]

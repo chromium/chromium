@@ -30,6 +30,11 @@ bool NodeIsSelectable(const ComputedStyle& style, Node* node) {
                                style.UserModify() == EUserModify::kReadOnly);
 }
 
+bool NodeIsReplaced(Node* node) {
+  return node && node->GetLayoutObject() &&
+         node->GetLayoutObject()->IsLayoutReplaced();
+}
+
 Color ForcedSystemForegroundColor(PseudoId pseudo_id,
                                   mojom::blink::ColorScheme color_scheme) {
   CSSValueID keyword = CSSValueID::kHighlighttext;
@@ -208,8 +213,11 @@ Color HighlightPaintingUtils::HighlightBackgroundColor(
         pseudo_style->ForcedColorAdjust() == EForcedColorAdjust::kNone) {
       Color highlight_color =
           pseudo_style->VisitedDependentColor(GetCSSPropertyBackgroundColor());
-      if (pseudo == kPseudoIdSelection)
+      if (pseudo == kPseudoIdSelection && NodeIsReplaced(node)) {
+        // Avoid that ::selection full obscures selected replaced elements like
+        // images.
         return highlight_color.BlendWithWhite();
+      }
       return highlight_color;
     }
     color_scheme = pseudo_style->UsedColorScheme();
