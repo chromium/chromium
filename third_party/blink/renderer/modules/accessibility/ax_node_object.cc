@@ -3841,25 +3841,23 @@ void AXNodeObject::ChildrenChanged() {
   if (!GetNode() && !GetLayoutObject())
     return;
 
-  // Call SetNeedsToUpdateChildren on this node, and if this node is
-  // ignored, call it on each existing parent until reaching an unignored node,
-  // because unignored nodes recursively include all children of ignored
-  // nodes. This method is called during layout, so we need to be careful to
-  // only explore existing objects.
-  if (!LastKnownIsIncludedInTreeValue()) {
-    // The first object (this or ancestor) that is included in the tree is the
-    // one whose children may have changed.
-    // Can be null, e.g. if <title> contents change
-    if (ParentObjectIncludedInTree())
-      ParentObjectIncludedInTree()->SetNeedsToUpdateChildren();
-  }
-
-  // Also update the current object, in case it wasn't included in the tree but
+  // Always update current object, in case it wasn't included in the tree but
   // now is. In that case, the LastKnownIsIncludedInTreeValue() won't have been
   // updated yet, so we can't use that. Unfortunately, this is not a safe time
   // to get the current included in tree value, therefore, we'll play it safe
   // and update the children in two places sometimes.
   SetNeedsToUpdateChildren();
+
+  // If this node is not in the tree, update the children of the first ancesor
+  // that is included in the tree.
+  if (!LastKnownIsIncludedInTreeValue()) {
+    // The first object (this or ancestor) that is included in the tree is the
+    // one whose children may have changed.
+    // Can be null, e.g. if <title> contents change
+    if (AXObject* node_to_update = ParentObjectIncludedInTree())
+      node_to_update->SetNeedsToUpdateChildren();
+  }
+
 
   // If this node's children are not part of the accessibility tree then
   // skip notification and walking up the ancestors.
