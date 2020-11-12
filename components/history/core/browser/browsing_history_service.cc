@@ -173,12 +173,12 @@ BrowsingHistoryService::BrowsingHistoryService(
 
   // Get notifications when history is cleared.
   if (local_history_)
-    history_service_observer_.Add(local_history_);
+    history_service_observation_.Observe(local_history_);
 
   // Get notifications when web history is deleted.
   WebHistoryService* web_history = driver_->GetWebHistoryService();
   if (web_history) {
-    web_history_service_observer_.Add(web_history);
+    web_history_service_observation_.Observe(web_history);
   } else if (sync_service_) {
     // If |web_history| is not available, it means that history sync is
     // disabled. If |sync_service_| is not null, it means that syncing is
@@ -187,7 +187,7 @@ BrowsingHistoryService::BrowsingHistoryService(
     // observing. This is okay because sync will never start for us, for example
     // it may be disabled by flag or we're part of an incognito/guest mode
     // window.
-    sync_service_observer_.Add(sync_service_);
+    sync_service_observation_.Observe(sync_service_);
   }
 }
 
@@ -201,9 +201,9 @@ void BrowsingHistoryService::OnStateChanged(syncer::SyncService* sync) {
   // This method should not be called after we already added the observer.
   WebHistoryService* web_history = driver_->GetWebHistoryService();
   if (web_history) {
-    DCHECK(!web_history_service_observer_.IsObserving(web_history));
-    web_history_service_observer_.Add(web_history);
-    sync_service_observer_.RemoveAll();
+    DCHECK(!web_history_service_observation_.IsObserving());
+    web_history_service_observation_.Observe(web_history);
+    sync_service_observation_.RemoveObservation();
   }
 }
 

@@ -27,7 +27,7 @@ void InMemoryHistoryBackend::AttachToHistoryService(
     HistoryService* history_service) {
   DCHECK(db_);
   DCHECK(history_service);
-  history_service_observer_.Add(history_service);
+  history_service_observation_.Observe(history_service);
 }
 
 void InMemoryHistoryBackend::DeleteAllSearchTermsForKeyword(

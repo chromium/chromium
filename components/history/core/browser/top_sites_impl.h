@@ -14,7 +14,7 @@
 #include "base/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/synchronization/lock.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/threading/thread_checker.h"
@@ -210,8 +210,8 @@ class TopSitesImpl : public TopSites, public HistoryServiceObserver {
   // The histogram should only be recorded once for each Chrome execution.
   static bool histogram_recorded_;
 
-  ScopedObserver<HistoryService, HistoryServiceObserver>
-      history_service_observer_{this};
+  base::ScopedObservation<HistoryService, HistoryServiceObserver>
+      history_service_observation_{this};
 
   DISALLOW_COPY_AND_ASSIGN(TopSitesImpl);
 };

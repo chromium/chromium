@@ -25,7 +25,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_service_observer.h"
 #include "components/history/core/browser/keyword_id.h"
@@ -91,8 +91,8 @@ class InMemoryHistoryBackend : public HistoryServiceObserver {
 
   std::unique_ptr<InMemoryDatabase> db_;
 
-  ScopedObserver<HistoryService, HistoryServiceObserver>
-      history_service_observer_{this};
+  base::ScopedObservation<HistoryService, HistoryServiceObserver>
+      history_service_observation_{this};
 
   DISALLOW_COPY_AND_ASSIGN(InMemoryHistoryBackend);
 };
