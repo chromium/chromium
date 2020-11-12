@@ -743,8 +743,13 @@ bool WaitForLoadStop(WebContents* web_contents) {
 void PrepContentsForBeforeUnloadTest(WebContents* web_contents,
                                      bool trigger_user_activation) {
   for (auto* frame : web_contents->GetAllFrames()) {
-    if (trigger_user_activation)
-      frame->ExecuteJavaScriptWithUserGestureForTests(base::string16());
+    if (trigger_user_activation && frame->IsRenderFrameLive()) {
+      // Execute script with user interaction to prep the page to show
+      // before unload dialog if needed. Must wait on a response from the
+      // renderer before proceeding to ensure the page has been interacted with.
+
+      ExecuteScriptWithUserGestureControl(frame, std::string(), true);
+    }
 
     // Disable the hang monitor, otherwise there will be a race between the
     // beforeunload dialog and the beforeunload hang timer.
