@@ -255,13 +255,17 @@ void PlayerCompositorDelegate::OnMemoryPressure(
     base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level) {
   if (memory_pressure_level ==
       base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL) {
+    if (paint_preview_compositor_client_)
+      paint_preview_compositor_client_.reset();
+
+    if (paint_preview_compositor_service_)
+      paint_preview_compositor_service_.reset();
+
     if (compositor_error_) {
       std::move(compositor_error_)
           .Run(static_cast<int>(
               CompositorStatus::STOPPED_DUE_TO_MEMORY_PRESSURE));
     }
-    paint_preview_compositor_client_.reset();
-    paint_preview_compositor_service_.reset();
   }
 }
 
