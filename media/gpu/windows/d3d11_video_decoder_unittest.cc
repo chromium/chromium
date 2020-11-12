@@ -350,22 +350,6 @@ TEST_F(D3D11VideoDecoderTest, DoesNotSupportEncryptionWithoutFlag) {
                     StatusCode::kDecoderInitializeNeverCompleted);
 }
 
-TEST_F(D3D11VideoDecoderTest, DoesNotSupportZeroCopyPreference) {
-  gpu_preferences_.enable_zero_copy_dxgi_video = false;
-  CreateDecoder();
-  InitializeDecoder(
-      TestVideoConfig::NormalCodecProfile(kCodecH264, H264PROFILE_MAIN),
-      StatusCode::kDecoderInitializeNeverCompleted);
-}
-
-TEST_F(D3D11VideoDecoderTest, DoesNotSupportZeroCopyWorkaround) {
-  gpu_workarounds_.disable_dxgi_zero_copy_video = true;
-  CreateDecoder();
-  InitializeDecoder(
-      TestVideoConfig::NormalCodecProfile(kCodecH264, H264PROFILE_MAIN),
-      StatusCode::kDecoderInitializeNeverCompleted);
-}
-
 TEST_F(D3D11VideoDecoderTest, IgnoreWorkaroundsIgnoresWorkaround) {
   // k...IgnoreWorkarounds should enable the decoder even if it's turned off
   // for gpu workarounds.

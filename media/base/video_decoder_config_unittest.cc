@@ -91,4 +91,13 @@ TEST(VideoDecoderConfigTest, Invalid_AspectRatioDenominatorVeryLarge) {
   EXPECT_FALSE(config.IsValidConfig());
 }
 
+TEST(VideoDecoderConfigTest, SetProfile) {
+  VideoDecoderConfig config(
+      kCodecVP9, VP9PROFILE_PROFILE0, VideoDecoderConfig::AlphaMode::kIsOpaque,
+      VideoColorSpace(), kNoTransformation, kCodedSize, kVisibleRect,
+      kNaturalSize, EmptyExtraData(), EncryptionScheme::kUnencrypted);
+  config.set_profile(VP9PROFILE_PROFILE2);
+  EXPECT_EQ(config.profile(), VP9PROFILE_PROFILE2);
+}
+
 }  // namespace media

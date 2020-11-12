@@ -77,6 +77,7 @@ class MEDIA_EXPORT VideoDecoderConfig {
 
   VideoCodec codec() const { return codec_; }
   VideoCodecProfile profile() const { return profile_; }
+  void set_profile(VideoCodecProfile profile) { profile_ = profile; }
   AlphaMode alpha_mode() const { return alpha_mode_; }
 
   // Difference between encoded and display orientation.
