@@ -70,18 +70,6 @@ TEST_F('HelpAppUIBrowserTest', 'HasTitleAndLang', () => {
   testDone();
 });
 
-// Tests that we can make calls to the LSS to search.
-TEST_F('HelpAppUIBrowserTest', 'CanSearchViaLSSIndex', async () => {
-  const toString16 = s => ({data: Array.from(s, c => c.charCodeAt())});
-  const result = await indexRemote.find(toString16('search string!'), 100);
-
-  // Status 3 corresponds to kEmptyIndex.
-  // https://source.chromium.org/chromium/chromium/src/+/master:chromeos/components/local_search_service/mojom/types.mojom;drc=c2c84a5ac7711dedcc0b7ff9e79bf7f2da019537;l=72
-  assertEquals(result.status, 3);
-  assertEquals(result.results, null);
-  testDone();
-});
-
 // Test cases injected into the guest context.
 // See implementations in help_app_guest_ui_browsertest.js.
 
