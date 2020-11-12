@@ -11,11 +11,15 @@ import androidx.annotation.NonNull;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.chrome.browser.autofill_assistant.AssistantCoordinator;
 import org.chromium.chrome.browser.autofill_assistant.AutofillAssistantClient;
 import org.chromium.chrome.browser.autofill_assistant.AutofillAssistantPreferencesUtil;
+import org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiController;
 import org.chromium.chrome.browser.autofill_assistant.carousel.AssistantChip;
 import org.chromium.chrome.browser.autofill_assistant.header.AssistantHeaderModel;
 import org.chromium.chrome.browser.autofill_assistant.metrics.LiteScriptFinishedState;
+import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
+import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.content_public.browser.WebContents;
 
@@ -60,13 +64,17 @@ public class AssistantTriggerScriptBridge {
             }
 
             @Override
-            public void onBackButtonPressed() {
-                safeNativeOnBackButtonPressed();
+            public boolean onBackButtonPressed() {
+                return safeNativeOnBackButtonPressed();
             }
 
             @Override
             public void onFeedbackButtonClicked() {
-                safeNativeOnFeedbackButtonClicked();
+                HelpAndFeedbackLauncherImpl.getInstance().showFeedback(
+                        TabUtils.getActivity(TabUtils.fromWebContents(webContents)),
+                        AutofillAssistantUiController.getProfile(),
+                        webContents.getVisibleUrl().getSpec(),
+                        AssistantCoordinator.FEEDBACK_CATEGORY_TAG);
             }
         }, bottomSheetController);
 
@@ -139,18 +147,12 @@ public class AssistantTriggerScriptBridge {
         }
     }
 
-    private void safeNativeOnBackButtonPressed() {
+    private boolean safeNativeOnBackButtonPressed() {
         if (mNativeBridge != 0) {
-            AssistantTriggerScriptBridgeJni.get().onBackButtonPressed(
+            return AssistantTriggerScriptBridgeJni.get().onBackButtonPressed(
                     mNativeBridge, AssistantTriggerScriptBridge.this);
         }
-    }
-
-    private void safeNativeOnFeedbackButtonClicked() {
-        if (mNativeBridge != 0) {
-            AssistantTriggerScriptBridgeJni.get().onFeedbackButtonClicked(
-                    mNativeBridge, AssistantTriggerScriptBridge.this);
-        }
+        return false;
     }
 
     @NativeMethods
@@ -159,9 +161,7 @@ public class AssistantTriggerScriptBridge {
                 AssistantTriggerScriptBridge caller, int action);
         void onBottomSheetClosedWithSwipe(
                 long nativeTriggerScriptBridgeAndroid, AssistantTriggerScriptBridge caller);
-        void onBackButtonPressed(
-                long nativeTriggerScriptBridgeAndroid, AssistantTriggerScriptBridge caller);
-        void onFeedbackButtonClicked(
+        boolean onBackButtonPressed(
                 long nativeTriggerScriptBridgeAndroid, AssistantTriggerScriptBridge caller);
     }
 }

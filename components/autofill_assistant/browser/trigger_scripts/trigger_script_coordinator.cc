@@ -13,6 +13,7 @@
 #include "components/version_info/version_info.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/navigation_controller.h"
 #include "net/http/http_status_code.h"
 
 namespace {
@@ -155,6 +156,32 @@ void TriggerScriptCoordinator::PerformTriggerScriptAction(
     case TriggerScriptProto::UNDEFINED:
       return;
   }
+}
+
+void TriggerScriptCoordinator::OnBottomSheetClosedWithSwipe() {
+  if (visible_trigger_script_ == -1) {
+    NOTREACHED();
+    Stop(Metrics::LiteScriptFinishedState::LITE_SCRIPT_UNKNOWN_FAILURE);
+    return;
+  }
+  Metrics::RecordLiteScriptShownToUser(
+      ukm_recorder_, client_->GetWebContents(),
+      Metrics::LiteScriptShownToUser::LITE_SCRIPT_SWIPE_DISMISSED);
+  PerformTriggerScriptAction(trigger_scripts_[visible_trigger_script_]
+                                 ->AsProto()
+                                 .on_swipe_to_dismiss());
+}
+
+bool TriggerScriptCoordinator::OnBackButtonPressed() {
+  if (visible_trigger_script_ == -1) {
+    return false;
+  }
+  if (client_->GetWebContents()->GetController().CanGoBack()) {
+    client_->GetWebContents()->GetController().GoBack();
+  }
+  // We need to handle this event, because by default the bottom sheet will
+  // close when the back button is pressed.
+  return true;
 }
 
 void TriggerScriptCoordinator::Stop(Metrics::LiteScriptFinishedState state) {

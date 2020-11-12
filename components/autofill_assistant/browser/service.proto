@@ -487,6 +487,10 @@ message TriggerScriptProto {
   // The user interface to show.
   optional TriggerScriptUIProto user_interface = 3;
 
+  // What should happen if the user swipe-dismisses the bottom sheet.
+  optional TriggerScriptAction on_swipe_to_dismiss = 4
+      [default = CANCEL_SESSION];
+
   reserved 2;
 }
 
@@ -2795,9 +2799,7 @@ message GetElementStatusProto {
     optional MatchExpectation match_expectation = 3;
   }
 
-  message ValueMatch {
-    optional TextMatch text_match = 1;
-  }
+  message ValueMatch { optional TextMatch text_match = 1; }
 
   message ComparisonReport {
     optional MatchOptions match_options = 1;

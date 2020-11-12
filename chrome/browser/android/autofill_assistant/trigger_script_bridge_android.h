@@ -52,14 +52,10 @@ class TriggerScriptBridgeAndroid : public TriggerScriptCoordinator::Observer {
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& jcaller);
 
-  // Called by the UI when the back button was pressed.
-  void OnBackButtonPressed(JNIEnv* env,
+  // Called by the UI when the back button was pressed. Returns whether the
+  // event was handled or not.
+  bool OnBackButtonPressed(JNIEnv* env,
                            const base::android::JavaParamRef<jobject>& jcaller);
-
-  // Called by the UI when the feedback form was requested.
-  void OnFeedbackButtonClicked(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& jcaller);
 
  private:
   // From TriggerScriptCoordinator::Observer:

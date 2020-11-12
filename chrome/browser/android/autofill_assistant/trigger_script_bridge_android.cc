@@ -98,25 +98,16 @@ void TriggerScriptBridgeAndroid::OnBottomSheetClosedWithSwipe(
   if (!trigger_script_coordinator_) {
     return;
   }
-  // TODO(b/171776026): Implement this.
+  trigger_script_coordinator_->OnBottomSheetClosedWithSwipe();
 }
 
-void TriggerScriptBridgeAndroid::OnBackButtonPressed(
+bool TriggerScriptBridgeAndroid::OnBackButtonPressed(
     JNIEnv* env,
     const JavaParamRef<jobject>& jcaller) {
   if (!trigger_script_coordinator_) {
-    return;
+    return false;
   }
-  // TODO(b/171776026): Implement this.
-}
-
-void TriggerScriptBridgeAndroid::OnFeedbackButtonClicked(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& jcaller) {
-  if (!trigger_script_coordinator_) {
-    return;
-  }
-  // TODO(b/171776026): Implement this.
+  return trigger_script_coordinator_->OnBackButtonPressed();
 }
 
 void TriggerScriptBridgeAndroid::OnTriggerScriptShown(

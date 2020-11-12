@@ -72,6 +72,13 @@ class TriggerScriptCoordinator : public content::WebContentsObserver {
   void PerformTriggerScriptAction(
       TriggerScriptProto::TriggerScriptAction action);
 
+  // Called when the user swipe-dismisses the bottom sheet.
+  void OnBottomSheetClosedWithSwipe();
+
+  // Called when the back button is pressed. Returns whether the event was
+  // handled or not.
+  bool OnBackButtonPressed();
+
   void AddObserver(Observer* observer);
   void RemoveObserver(const Observer* observer);
 

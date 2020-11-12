@@ -18,8 +18,8 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.Shee
  * The main coordinator for the Autofill Assistant, responsible for instantiating all other
  * sub-components and shutting down the Autofill Assistant.
  */
-class AssistantCoordinator {
-    private static final String FEEDBACK_CATEGORY_TAG =
+public class AssistantCoordinator {
+    public static final String FEEDBACK_CATEGORY_TAG =
             "com.android.chrome.USER_INITIATED_FEEDBACK_REPORT_AUTOFILL_ASSISTANT";
 
     private final ChromeActivity mActivity;

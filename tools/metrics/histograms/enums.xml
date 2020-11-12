@@ -4589,6 +4589,7 @@ Unknown properties are collapsed to zero. -->
   <int value="1" label="Ui shown"/>
   <int value="2" label="User chose 'not now'"/>
   <int value="3" label="Ui hidden due to trigger condition no longer true"/>
+  <int value="4" label="User swipe-dismissed the bottom sheet"/>
 </enum>
 
 <enum name="AutofillAssistantLiteScriptStarted">

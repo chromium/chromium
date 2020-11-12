@@ -40,7 +40,7 @@ public class AssistantTriggerScript {
     public interface Delegate {
         void onTriggerScriptAction(@TriggerScriptAction int action);
         void onBottomSheetClosedWithSwipe();
-        void onBackButtonPressed();
+        boolean onBackButtonPressed();
         void onFeedbackButtonClicked();
     }
 
@@ -89,10 +89,7 @@ public class AssistantTriggerScript {
                 new AssistantBottomSheetContent(mContext, () -> new AssistantBottomBarDelegate() {
                     @Override
                     public boolean onBackButtonPressed() {
-                        // We need to handle this event, because by default the bottom sheet will
-                        // close when the back button is pressed.
-                        mDelegate.onBackButtonPressed();
-                        return true;
+                        return mDelegate.onBackButtonPressed();
                     }
 
                     @Override

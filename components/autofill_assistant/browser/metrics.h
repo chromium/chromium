@@ -169,8 +169,11 @@ class Metrics {
     // trigger condition no longer being true. Can happen multiple times per
     // run.
     LITE_SCRIPT_HIDE_ON_TRIGGER_CONDITION_NO_LONGER_TRUE = 3,
+    // Since Chrome M-88. The user swipe-dismissed the bottom sheet. Depending
+    // on configuration, this may happen multiple times per run.
+    LITE_SCRIPT_SWIPE_DISMISSED = 4,
 
-    kMaxValue = LITE_SCRIPT_HIDE_ON_TRIGGER_CONDITION_NO_LONGER_TRUE
+    kMaxValue = LITE_SCRIPT_SWIPE_DISMISSED
   };
 
   // The different ways a user might have opted out of the lite script
@@ -238,8 +241,6 @@ class Metrics {
     LITE_SCRIPT_PROMPT_FAILED_CANCEL_SESSION = 14,
     // Since Chrome M-88. The user tapped the 'never show again' button.
     LITE_SCRIPT_PROMPT_FAILED_CANCEL_FOREVER = 15,
-    // Since Chrome M-88. The bottom sheet was swipe-dismissed by the user.
-    LITE_SCRIPT_PROMPT_SWIPE_DISMISSED = 16,
     // Since Chrome M-88. The trigger script has timed out. This indicates that
     // trigger conditions were evaluated for >= timeout without success. Time is
     // only counted while the tab is visible and the lite script is invisible.
@@ -279,6 +280,8 @@ class Metrics {
     LITE_SCRIPT_PROMPT_FAILED_CLOSE = 11,
     // The prompt(regular) action failed for an unknown reason.
     LITE_SCRIPT_PROMPT_FAILED_OTHER = 12,
+    // Since Chrome M-88. The bottom sheet was swipe-dismissed by the user.
+    LITE_SCRIPT_PROMPT_SWIPE_DISMISSED = 16,
 
     kMaxValue = LITE_SCRIPT_WEB_CONTENTS_DESTROYED_WHILE_INVISIBLE
   };
