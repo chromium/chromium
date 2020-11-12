@@ -682,6 +682,15 @@ Try tapping the mic to ask me anything.
       <message name="IDS_NETWORK_DIAGNOSTICS_DNS_RESOLUTION" desc="Label for Network diagnostics `DNS resolution` test. This test ensures that the Domain Name Server (DNS) can resolve network requests.">
         DNS Resolution
       </message>
+      <message name="IDS_NETWORK_DIAGNOSTICS_HTTP_FIREWALL" desc="Label for Network diagnostics `HTTP Firewall` test. This test ensures that the device's firewall can resolve HTTP requests">
+        HTTP Firewall
+      </message>
+      <message name="IDS_NETWORK_DIAGNOSTICS_HTTPS_FIREWALL" desc="Label for Network diagnostics `HTTPS Firewall` test. This test ensures that the device's firewall can resolve HTTPS requests">
+        HTTPS Firewall
+      </message>
+      <message name="IDS_NETWORK_DIAGNOSTICS_HTTPS_LATENCY" desc="Label for Network diagnostics `HTTPS Latency` test. This test ensures that the device's https requests have an acceptable amount of latency">
+        HTTPS Latency
+      </message>
       <message name="IDS_NETWORK_DIAGNOSTICS_PASSED" desc="Label shown when a Network diagnostics routine passed">
         Passed
       </message>
@@ -759,6 +768,27 @@ Try tapping the mic to ask me anything.
       </message>
       <message name="IDS_NETWORK_DIAGNOSTICS_DNS_RESOLUTION_PROBLEM_FAILED_TO_RESOLVE_HOST" desc="Error message shown when the domain name server (DNS) failed to resolve a host">
         Failed to resolve host
+      </message>
+      <message name="IDS_NETWORK_DIAGNOSTICS_FIREWALL_PROBLEM_DNS_RESOLUTION_FAILURE_RATE" desc="Error message shown when the domain name server (DNS) has a high failure rate">
+        High DNS resolution failure rate
+      </message>
+      <message name="IDS_NETWORK_DIAGNOSTICS_FIREWALL_PROBLEM_FIREWALL_DETECTED" desc="Error message shown when a firewall is detected">
+        Firewall detected
+      </message>
+      <message name="IDS_NETWORK_DIAGNOSTICS_FIREWALL_PROBLEM_FIREWALL_SUSPECTED" desc="Error message shown when a firewall is suspected">
+        Firewall suspected
+      </message>
+      <message name="IDS_NETWORK_DIAGNOSTICS_HTTPS_LATENCY_PROBLEM_FAILED_DNS_RESOLUTIONS" desc="Error message shown when there are one or more failed DNS resolution">
+        Failed DNS resolutions
+      </message>
+      <message name="IDS_NETWORK_DIAGNOSTICS_HTTPS_LATENCY_PROBLEM_FAILED_HTTPS_REQUESTS" desc="Error message shown when there are one or more failed HTTPS requests">
+        Failed HTTP requests
+      </message>
+      <message name="IDS_NETWORK_DIAGNOSTICS_HTTPS_LATENCY_PROBLEM_HIGH_LATENCY" desc="Error message shown when HTTPS requests have a high latency">
+        High HTTPS latency
+      </message>
+      <message name="IDS_NETWORK_DIAGNOSTICS_HTTPS_LATENCY_PROBLEM_VERY_HIGH_LATENCY" desc="Error message shown when HTTPS requests have a very high latency">
+        Very high HTTPS latency
       </message>
     </messages>
   </release>

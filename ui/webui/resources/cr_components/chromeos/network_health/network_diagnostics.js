@@ -47,6 +47,9 @@ const RoutineType = {
   DNS_RESOLVER: 4,
   DNS_LATENCY: 5,
   DNS_RESOLUTION: 6,
+  HTTP_FIREWALL: 7,
+  HTTPS_FIREWALL: 8,
+  HTTPS_LATENCY: 9,
 };
 
 /**
@@ -97,6 +100,12 @@ Polymer({
             'NetworkDiagnosticsDnsLatency', RoutineType.DNS_LATENCY);
         routines[RoutineType.DNS_RESOLUTION] = createRoutine(
             'NetworkDiagnosticsDnsResolution', RoutineType.DNS_RESOLUTION);
+        routines[RoutineType.HTTP_FIREWALL] = createRoutine(
+            'NetworkDiagnosticsHttpFirewall', RoutineType.HTTP_FIREWALL);
+        routines[RoutineType.HTTPS_FIREWALL] = createRoutine(
+            'NetworkDiagnosticsHttpsFirewall', RoutineType.HTTPS_FIREWALL);
+        routines[RoutineType.HTTPS_LATENCY] = createRoutine(
+            'NetworkDiagnosticsHttpsLatency', RoutineType.HTTPS_LATENCY);
         return routines;
       }
     }
@@ -197,6 +206,18 @@ Polymer({
         break;
       case RoutineType.DNS_RESOLUTION:
         this.networkDiagnostics_.dnsResolution().then(
+            result => this.evaluateRoutine_(type, result));
+        break;
+      case RoutineType.HTTP_FIREWALL:
+        this.networkDiagnostics_.httpFirewall().then(
+            result => this.evaluateRoutine_(type, result));
+        break;
+      case RoutineType.HTTPS_FIREWALL:
+        this.networkDiagnostics_.httpsFirewall().then(
+            result => this.evaluateRoutine_(type, result));
+        break;
+      case RoutineType.HTTPS_LATENCY:
+        this.networkDiagnostics_.httpsLatency().then(
             result => this.evaluateRoutine_(type, result));
         break;
     }
@@ -391,6 +412,46 @@ Polymer({
               break;
           }
           break;
+
+        case RoutineType.HTTP_FIREWALL:
+        case RoutineType.HTTPS_FIREWALL:
+          switch (problem) {
+            case diagnosticsMojom.HttpFirewallProblem
+                .kDnsResolutionFailuresAboveThreshold:
+            case diagnosticsMojom.HttpsFirewallProblem.kFailedDnsResolutions:
+              problemStrings.push(
+                  getString('FirewallProblem_DnsResolutionFailureRate'));
+              break;
+            case diagnosticsMojom.HttpFirewallProblem.kFirewallDetected:
+            case diagnosticsMojom.HttpsFirewallProblem.kFirewallDetected:
+              problemStrings.push(
+                  getString('FirewallProblem_FirewallDetected'));
+              break;
+            case diagnosticsMojom.HttpFirewallProblem.kPotentialFirewall:
+            case diagnosticsMojom.HttpsFirewallProblem.kPotentialFirewall:
+              problemStrings.push(
+                  getString('FirewallProblem_FirewallSuspected'));
+              break;
+          }
+
+        case RoutineType.HTTPS_LATENCY:
+          switch (problem) {
+            case diagnosticsMojom.HttpsLatencyProblem.kFailedDnsResolutions:
+              problemStrings.push(
+                  getString('HttpsLatencyProblem_FailedDnsResolution'));
+              break;
+            case diagnosticsMojom.HttpsLatencyProblem.kFailedHttpsRequests:
+              problemStrings.push(
+                  getString('HttpsLatencyProblem_FailedHttpsRequests'));
+              break;
+            case diagnosticsMojom.HttpsLatencyProblem.kHighLatency:
+              problemStrings.push(getString('HttpsLatencyProblem_HighLatency'));
+              break;
+            case diagnosticsMojom.HttpsLatencyProblem.kVeryHighLatency:
+              problemStrings.push(
+                  getString('HttpsLatencyProblem_VeryHighLatency'));
+              break;
+          }
       }
     }
 
