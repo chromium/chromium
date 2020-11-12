@@ -25,6 +25,7 @@
 #include "build/chromeos_buildflags.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "media/gpu/vaapi/vaapi_wrapper.h"
+#include "media/media_buildflags.h"
 
 namespace media {
 namespace {
@@ -44,6 +45,9 @@ base::Optional<VAProfile> ConvertToVAProfile(VideoCodecProfile profile) {
     // 2.9.0 or newer.
     // https://source.chromium.org/chromium/chromium/src/+/master:build/linux/sysroot_scripts/generated_package_lists/sid.amd64
     {AV1PROFILE_PROFILE_MAIN, VAProfileAV1Profile0},
+#endif
+#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
+    {HEVCPROFILE_MAIN, VAProfileHEVCMain},
 #endif
   };
   auto it = kProfileMap.find(profile);
@@ -70,6 +74,9 @@ base::Optional<VAProfile> StringToVAProfile(const std::string& va_profile) {
     // 2.9.0 or newer.
     // https://source.chromium.org/chromium/chromium/src/+/master:build/linux/sysroot_scripts/generated_package_lists/sid.amd64
     {"VAProfileAV1Profile0", VAProfileAV1Profile0},
+#endif
+#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
+    {"VAProfileHEVCMain", VAProfileHEVCMain},
 #endif
   };
 

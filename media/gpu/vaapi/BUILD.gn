@@ -6,6 +6,7 @@ import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//build/config/ui.gni")
 import("//media/gpu/args.gni")
+import("//media/media_options.gni")
 import("//testing/test.gni")
 import("//tools/generate_stubs/rules.gni")
 import("//ui/gl/features.gni")
@@ -71,6 +72,12 @@ source_set("vaapi") {
     "vp9_vaapi_video_decoder_delegate.cc",
     "vp9_vaapi_video_decoder_delegate.h",
   ]
+  if (proprietary_codecs && enable_platform_hevc) {
+    sources += [
+      "h265_vaapi_video_decoder_delegate.cc",
+      "h265_vaapi_video_decoder_delegate.h",
+    ]
+  }
 
   configs += [
     "//build/config/linux/libva",
@@ -80,6 +87,7 @@ source_set("vaapi") {
   deps = [
     ":common",
     "//base",
+    "//build:chromeos_buildflags",
     "//gpu/config",
     "//gpu/ipc/common",
     "//gpu/ipc/service",

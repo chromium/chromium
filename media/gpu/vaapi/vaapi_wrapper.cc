@@ -43,6 +43,7 @@
 #include "media/base/video_frame.h"
 #include "media/base/video_types.h"
 #include "media/gpu/macros.h"
+#include "media/media_buildflags.h"
 
 // Auto-generated for dlopen libva libraries
 #include "media/gpu/vaapi/va_stubs.h"
@@ -362,6 +363,9 @@ const ProfileCodecMap& GetProfileCodecMap() {
 #endif  // BUILDFLAG(IS_ASH)
         // VaapiWrapper does not support AV1 Profile 1.
         // {AV1PROFILE_PROFILE_HIGH, VAProfileAV1Profile1},
+#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
+          {HEVCPROFILE_MAIN, VAProfileHEVCMain},
+#endif
   });
   return *kMediaToVAProfileMap;
 }

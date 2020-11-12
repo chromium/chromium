@@ -8,6 +8,11 @@
 #include "media/gpu/vaapi/va_surface.h"
 #include "media/gpu/vp8_picture.h"
 #include "media/gpu/vp9_picture.h"
+#include "media/media_buildflags.h"
+
+#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
+#include "media/gpu/h265_dpb.h"
+#endif
 
 namespace media {
 
@@ -32,6 +37,27 @@ class VaapiH264Picture : public H264Picture {
 
   DISALLOW_COPY_AND_ASSIGN(VaapiH264Picture);
 };
+
+#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
+class VaapiH265Picture : public H265Picture {
+ public:
+  explicit VaapiH265Picture(scoped_refptr<VASurface> va_surface);
+
+  VaapiH265Picture(const VaapiH265Picture&) = delete;
+  VaapiH265Picture& operator=(const VaapiH265Picture&) = delete;
+
+  VaapiH265Picture* AsVaapiH265Picture() override;
+
+  scoped_refptr<VASurface> va_surface() const { return va_surface_; }
+  VASurfaceID GetVASurfaceID() const { return va_surface_->id(); }
+
+ protected:
+  ~VaapiH265Picture() override;
+
+ private:
+  scoped_refptr<VASurface> va_surface_;
+};
+#endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
 
 class VaapiVP8Picture : public VP8Picture {
  public:
