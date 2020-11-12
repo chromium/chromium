@@ -66,6 +66,8 @@ class CORE_EXPORT DocumentAnimations final
       DocumentLifecycle::LifecycleState required_lifecycle_state,
       const PaintArtifactCompositor* paint_artifact_compositor);
 
+  size_t GetAnimationsCount();
+
   void MarkAnimationsCompositorPending();
 
   HeapVector<Member<Animation>> getAnimations(const TreeScope&);

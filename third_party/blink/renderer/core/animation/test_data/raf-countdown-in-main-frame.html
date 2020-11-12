@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<script>
+function runRaf(countdown) {
+  countdown--;
+  if (countdown > 0)
+    requestAnimationFrame(function() { runRaf(countdown); });
+}
+requestAnimationFrame(function() { runRaf(5); });
+requestAnimationFrame(function() { runRaf(10); });
+</script>
+<div>Main frame</div>
+<iframe src="data:text/html,Test page"></iframe>

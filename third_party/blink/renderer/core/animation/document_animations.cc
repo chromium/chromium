@@ -116,27 +116,24 @@ void DocumentAnimations::UpdateAnimations(
     DCHECK(document_->View());
     document_->View()->ScheduleAnimation();
   }
-  if (document_->View()) {
-    if (cc::AnimationHost* host =
-            document_->View()->GetCompositorAnimationHost()) {
-      wtf_size_t total_animations_count = 0;
-      for (auto& timeline : timelines_) {
-        if (timeline->HasAnimations())
-          total_animations_count += timeline->AnimationsNeedingUpdateCount();
-      }
-
-      // In the CompositorTimingHistory::DidDraw where we know that there is
-      // visual update, we will use document.CurrentFrameHadRAF as a signal to
-      // record UMA or not.
-      host->SetAnimationCounts(total_animations_count,
-                               document_->CurrentFrameHadRAF(),
-                               document_->NextFrameHasPendingRAF());
-    }
-  }
 
   document_->GetWorkletAnimationController().UpdateAnimationStates();
   for (auto& timeline : timelines_)
     timeline->ScheduleNextService();
+}
+
+size_t DocumentAnimations::GetAnimationsCount() {
+  wtf_size_t total_animations_count = 0;
+  if (document_->View()) {
+    if (cc::AnimationHost* host =
+            document_->View()->GetCompositorAnimationHost()) {
+      for (auto& timeline : timelines_) {
+        if (timeline->HasAnimations())
+          total_animations_count += timeline->AnimationsNeedingUpdateCount();
+      }
+    }
+  }
+  return total_animations_count;
 }
 
 void DocumentAnimations::MarkAnimationsCompositorPending() {

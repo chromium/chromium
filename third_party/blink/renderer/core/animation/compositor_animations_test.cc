@@ -2291,4 +2291,45 @@ TEST_P(AnimationCompositorAnimationsTest, UnsupportedSVGCSSProperty) {
                 GetDocument().View()->GetPaintArtifactCompositor()));
 }
 
+TEST_P(AnimationCompositorAnimationsTest,
+       TotalAnimationCountAcrossAllDocuments) {
+  LoadTestData("animation-in-main-frame.html");
+
+  cc::AnimationHost* host =
+      GetFrame()->GetDocument()->View()->GetCompositorAnimationHost();
+
+  // We are checking that the animation count for all documents is 1 for every
+  // frame.
+  for (int i = 0; i < 9; i++) {
+    BeginFrame();
+    EXPECT_EQ(1U, host->MainThreadAnimationsCount());
+  }
+}
+
+TEST_P(AnimationCompositorAnimationsTest, TrackRafAnimationAcrossAllDocuments) {
+  LoadTestData("raf-countdown-in-main-frame.html");
+
+  cc::AnimationHost* host =
+      GetFrame()->GetDocument()->View()->GetCompositorAnimationHost();
+
+  // The test file registers two rAF 'animations'; one which ends after 5
+  // iterations and the other that ends after 10.
+  for (int i = 0; i < 9; i++) {
+    BeginFrame();
+    EXPECT_TRUE(host->CurrentFrameHadRAF());
+    EXPECT_TRUE(host->NextFrameHasPendingRAF());
+  }
+
+  // On the 10th iteration, there should be a current rAF, but no more pending
+  // rAFs.
+  BeginFrame();
+  EXPECT_TRUE(host->CurrentFrameHadRAF());
+  EXPECT_FALSE(host->NextFrameHasPendingRAF());
+
+  // On the 11th iteration, there should be no more rAFs firing.
+  BeginFrame();
+  EXPECT_FALSE(host->CurrentFrameHadRAF());
+  EXPECT_FALSE(host->NextFrameHasPendingRAF());
+}
+
 }  // namespace blink

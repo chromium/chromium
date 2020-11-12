@@ -36,6 +36,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/timer/lap_timer.h"
+#include "cc/animation/animation_host.h"
 #include "cc/input/main_thread_scrolling_reason.h"
 #include "cc/layers/picture_layer.h"
 #include "cc/tiles/frame_viewer_instrumentation.h"
@@ -2794,7 +2795,13 @@ void LocalFrameView::RunPaintLifecyclePhase(PaintBenchmarkMode benchmark_mode) {
     bool needed_update = !paint_artifact_compositor_ ||
                          paint_artifact_compositor_->NeedsUpdate();
     PushPaintArtifactToCompositor(repainted);
-    ForAllNonThrottledLocalFrameViews([this](LocalFrameView& frame_view) {
+    size_t total_animations_count = 0;
+    bool current_frame_had_raf = false;
+    bool next_frame_has_pending_raf = false;
+    ForAllNonThrottledLocalFrameViews([this, &total_animations_count,
+                                       &current_frame_had_raf,
+                                       &next_frame_has_pending_raf](
+                                          LocalFrameView& frame_view) {
       if (auto* scrollable_area = frame_view.GetScrollableArea())
         scrollable_area->UpdateCompositorScrollAnimations();
       if (const auto* animating_scrollable_areas =
@@ -2807,7 +2814,22 @@ void LocalFrameView::RunPaintLifecyclePhase(PaintBenchmarkMode benchmark_mode) {
           .GetDocumentAnimations()
           .UpdateAnimations(DocumentLifecycle::kPaintClean,
                             paint_artifact_compositor_.get());
+      Document& document = frame_view.GetLayoutView()->GetDocument();
+      total_animations_count +=
+          document.GetDocumentAnimations().GetAnimationsCount();
+      current_frame_had_raf |= document.CurrentFrameHadRAF();
+      next_frame_has_pending_raf |= document.NextFrameHasPendingRAF();
     });
+
+    if (GetLayoutView()->GetDocument().View() &&
+        GetLayoutView()->GetDocument().View()->GetCompositorAnimationHost()) {
+      GetLayoutView()
+          ->GetDocument()
+          .View()
+          ->GetCompositorAnimationHost()
+          ->SetAnimationCounts(total_animations_count, current_frame_had_raf,
+                               next_frame_has_pending_raf);
+    }
 
     // Initialize animation properties in the newly created paint property
     // nodes according to the current animation state. This is mainly for
