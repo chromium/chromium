@@ -408,11 +408,8 @@ bool VideoTrackAdapter::VideoFrameResolutionAdapter::MaybeDropFrame(
     media::VideoCaptureFrameDropReason* reason) {
   DCHECK_CALLED_ON_VALID_THREAD(io_thread_checker_);
 
-  // Do not drop frames if max frame rate hasn't been specified or the source
-  // frame rate is known and is lower than max.
-  if (settings_.max_frame_rate() == 0.0f ||
-      (source_frame_rate > 0 &&
-       source_frame_rate <= settings_.max_frame_rate())) {
+  // Do not drop frames if max frame rate hasn't been specified.
+  if (settings_.max_frame_rate() == 0.0f) {
     last_time_stamp_ = frame.timestamp();
     return false;
   }
