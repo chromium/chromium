@@ -64,6 +64,11 @@
 #include "ui/wm/core/shadow_controller_delegate.h"
 #endif
 
+#if defined(USE_OZONE)
+#include "ui/base/ui_base_features.h"
+#include "ui/ozone/public/ozone_platform.h"
+#endif
+
 namespace views {
 namespace test {
 
@@ -4066,6 +4071,21 @@ TEST_F(DesktopWidgetTest, WindowModalOwnerDestroyedEnabledTest) {
 
 namespace {
 
+bool CanHaveCompositingManager() {
+#if defined(USE_OZONE)
+  if (features::IsUsingOzonePlatform()) {
+    const auto* const egl_utility =
+        ui::OzonePlatform::GetInstance()->GetPlatformGLEGLUtility();
+    return egl_utility != nullptr;
+  }
+#endif
+#if defined(USE_X11)
+  return true;
+#else
+  return false;
+#endif
+}
+
 class CompositingWidgetTest : public DesktopWidgetTest {
  public:
   CompositingWidgetTest()
@@ -4121,17 +4141,15 @@ class CompositingWidgetTest : public DesktopWidgetTest {
       EXPECT_EQ(IsNativeWindowTransparent(widget->GetNativeWindow()),
                 should_be_transparent);
 
-#if defined(USE_X11)
-      if (features::IsUsingOzonePlatform())
-        return;
-      if (HasCompositingManager() &&
-          (widget_type == Widget::InitParams::TYPE_DRAG ||
-           widget_type == Widget::InitParams::TYPE_WINDOW)) {
-        EXPECT_TRUE(widget->IsTranslucentWindowOpacitySupported());
-      } else {
-        EXPECT_FALSE(widget->IsTranslucentWindowOpacitySupported());
+      if (CanHaveCompositingManager()) {
+        if (HasCompositingManager() &&
+            (widget_type == Widget::InitParams::TYPE_DRAG ||
+             widget_type == Widget::InitParams::TYPE_WINDOW)) {
+          EXPECT_TRUE(widget->IsTranslucentWindowOpacitySupported());
+        } else {
+          EXPECT_FALSE(widget->IsTranslucentWindowOpacitySupported());
+        }
       }
-#endif
     }
   }
 
