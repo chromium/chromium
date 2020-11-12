@@ -25,36 +25,40 @@ suite('CrComponentsEsimFlowUiTest', function() {
   });
 
   test('Forward navigation goes to final page', function() {
-    const activationCodePage = eSimPage.$$('#activationCodePage');
+    const profileDiscoveryPage = eSimPage.$$('#profileDiscoveryPage');
     const finalPage = eSimPage.$$('#finalPage');
 
-    assertTrue(!!activationCodePage);
+    assertTrue(!!profileDiscoveryPage);
     assertTrue(!!finalPage);
 
     assertTrue(
-        eSimPage.selectedESimPageName_ === cellular_setup.ESimPageName.ESIM &&
-        eSimPage.selectedESimPageName_ === activationCodePage.id);
+        eSimPage.selectedESimPageName_ ===
+            cellular_setup.ESimPageName.PROFILE_DISCOVERY &&
+        eSimPage.selectedESimPageName_ === profileDiscoveryPage.id);
 
     eSimPage.navigateForward();
     Polymer.dom.flush();
 
+    // TODO(crbug.com/1093185) Update this test when the navigation between
+    // profile discovery and activation code pages is wired up.
     assertTrue(
         eSimPage.selectedESimPageName_ === cellular_setup.ESimPageName.FINAL &&
         eSimPage.selectedESimPageName_ === finalPage.id);
   });
 
 
-  test('Enable next button', function() {
-    assertTrue(
-        eSimPage.buttonState.next ===
-        cellularSetup.ButtonState.SHOWN_BUT_DISABLED);
+  // TODO(crbug.com/1093185) Update this test when the navigation between
+  // profile discovery and activation code pages is wired up.
+  test('Enable done button', function() {
+    assertTrue(eSimPage.buttonState.done === cellularSetup.ButtonState.HIDDEN);
 
-    const activationCodePage = eSimPage.$$('#activationCodePage');
-    activationCodePage.$$('#activationCode').value = 'ACTIVATION_CODE';
+    const profileDiscoveryPage = eSimPage.$$('#profileDiscoveryPage');
+    const profileList = profileDiscoveryPage.$$('#profileList');
+    profileList.selectItem(profileList.items[0]);
     Polymer.dom.flush();
 
     assertTrue(
-        eSimPage.buttonState.next ===
+        eSimPage.buttonState.done ===
         cellularSetup.ButtonState.SHOWN_AND_ENABLED);
   });
 });

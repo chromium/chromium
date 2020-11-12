@@ -315,6 +315,9 @@
   <message name="IDS_CELLULAR_SETUP_CELLULAR_SETUP_PAGE_ESIM_MESSAGE" desc="Message for electronic SIM (eSIM) setup flow card radio select button during cellular setup, informing the user to establish an internet connection before proceeding.">
     Establish an internet connection first
   </message>
+  <message name="IDS_CELLULAR_SETUP_PROFILE_LIST_PAGE_MESSAGE" desc="Label informing the user that they are able to select multiple eSIM profiles for downloading.">
+    We've found multiple profiles available to download. Select the ones you would like to download before proceeding.
+  </message>
   <message name="IDS_CELLULAR_SETUP_ESIM_PAGE_SCAN_QR_CODE" desc="Label for informing the user on ways to retrieve an eSim profile">
     Scan QR code using device camera or enter activation code provided by your carrier.
   </message>

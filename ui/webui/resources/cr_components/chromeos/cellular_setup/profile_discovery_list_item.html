@@ -1,0 +1,55 @@
+<link rel="import" href="chrome://resources/html/polymer.html">
+
+<link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
+<link rel="import" href="chrome://resources/html/i18n_behavior.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-flex-layout/iron-flex-layout-classes.html">
+
+<dom-module id="profile-discovery-list-item">
+  <template>
+    <style include="iron-flex">
+      #details {
+        align-items: center;
+        display: flex;
+        flex: auto;
+        min-height: var(--cr-section-two-line-min-height);
+      }
+
+      #profileImage {
+        margin-inline-end: 16px;
+      }
+
+      #profileTitleLabel {
+        color: var(--cr-primary-text-color);
+      }
+
+      #checkmark {
+        -webkit-mask: url(activation_code_page_checked.svg) no-repeat center;
+        background-color: var(--google-blue-600);
+        height: 20px;
+        margin-inline-end: 8px;
+        mask: url(activation_code_page_checked.svg) no-repeat center;
+        padding-inline-end: var(--cr-section-padding);
+        width: 20px;
+      }
+    </style>
+    <div class="two-line no-padding" selectable>
+      <div class="flex layout horizontal center link-wrapper">
+        <div id="details" no-flex$="false">
+          <!-- TODO(crbug.com/1093185): Update with real profile image. -->
+          <img id="profileImage" src="../../../images/200-logo_googleg.png">
+          <div class="flex settings-box-text">
+            <div id="profileTitleLabel">
+              [[profile.name]]
+            </div>
+            <div id="profileProviderLabel">
+              [[profile.provider]]
+            </div>
+          </div>
+        </div>
+        <span id="checkmark" hidden$="[[!selected]]"
+            tabindex="-1">
+      </div>
+    </div>
+  </template>
+  <script src="profile_discovery_list_item.js"></script>
+</dom-module>

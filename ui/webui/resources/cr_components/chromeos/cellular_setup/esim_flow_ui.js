@@ -5,6 +5,7 @@
 cr.define('cellular_setup', function() {
   /** @enum{string} */
   /* #export */ const ESimPageName = {
+    PROFILE_DISCOVERY: 'profileDiscoveryPage',
     ESIM: 'activationCodePage',
     FINAL: 'finalPage',
   };
@@ -31,7 +32,7 @@ cr.define('cellular_setup', function() {
        */
       selectedESimPageName_: {
         type: String,
-        value: ESimPageName.ESIM,
+        value: ESimPageName.PROFILE_DISCOVERY,
       },
 
       /**
@@ -42,23 +43,36 @@ cr.define('cellular_setup', function() {
         type: Boolean,
         value: false,
       },
+
+      /**
+       * @type {Array<!Object>}
+       * @private
+       */
+      selectedProfiles_: {
+        type: Object,
+      },
     },
 
-    listeners: {'activation-code-updated': 'onActivationCodeUpdated_'},
+    listeners: {
+      'activation-code-updated': 'onActivationCodeUpdated_',
+    },
+
+    observers: ['onSelectedProfilesChanged_(selectedProfiles_.splices)'],
 
     initSubflow() {
       this.buttonState = {
-        backward: cellularSetup.ButtonState.SHOWN_AND_ENABLED,
+        backward: cellularSetup.ButtonState.HIDDEN,
         cancel: this.delegate.shouldShowCancelButton() ?
             cellularSetup.ButtonState.SHOWN_AND_ENABLED :
             cellularSetup.ButtonState.HIDDEN,
         done: cellularSetup.ButtonState.HIDDEN,
-        next: cellularSetup.ButtonState.SHOWN_BUT_DISABLED,
+        next: cellularSetup.ButtonState.HIDDEN,
         tryAgain: cellularSetup.ButtonState.HIDDEN,
-        skipDiscovery: cellularSetup.ButtonState.HIDDEN,
+        skipDiscovery: cellularSetup.ButtonState.SHOWN_AND_ENABLED,
       };
     },
 
+    /** @private */
     onActivationCodeUpdated_(event) {
       if (event.detail.activationCode) {
         this.set(
@@ -66,6 +80,21 @@ cr.define('cellular_setup', function() {
       } else {
         this.set(
             'buttonState.next', cellularSetup.ButtonState.SHOWN_BUT_DISABLED);
+      }
+    },
+
+    /** @private */
+    onSelectedProfilesChanged_() {
+      // TODO(crbug.com/1093185): Add navigation logic.
+      if (this.selectedProfiles_.length > 0) {
+        this.set('buttonState.skipDiscovery', cellularSetup.ButtonState.HIDDEN);
+        this.set(
+            'buttonState.done', cellularSetup.ButtonState.SHOWN_AND_ENABLED);
+      } else {
+        this.set(
+            'buttonState.skipDiscovery',
+            cellularSetup.ButtonState.SHOWN_AND_ENABLED);
+        this.set('buttonState.done', cellularSetup.ButtonState.HIDDEN);
       }
     },
 

@@ -19,6 +19,8 @@ js_type_check("closure_compile") {
     ":cellular_types",
     ":final_page",
     ":mojo_interface_provider",
+    ":profile_discovery_list_item",
+    ":profile_discovery_list_page",
     ":provisioning_page",
     ":psim_flow_ui",
     ":setup_selection_flow",
@@ -77,6 +79,17 @@ js_library("activation_code_page") {
   ]
 }
 
+js_library("profile_discovery_list_page") {
+  deps = [
+    "//third_party/polymer/v1_0/components-chromium/iron-list:iron-list-extracted",
+    "//ui/webui/resources/js:i18n_behavior",
+  ]
+}
+
+js_library("profile_discovery_list_item") {
+  deps = [ "//ui/webui/resources/js:i18n_behavior" ]
+}
+
 js_library("psim_flow_ui") {
   deps = [
     ":cellular_setup_delegate",
@@ -96,6 +109,8 @@ js_library("esim_flow_ui") {
   deps = [
     ":activation_code_page",
     ":cellular_setup_delegate",
+    ":profile_discovery_list_item",
+    ":profile_discovery_list_page",
     ":subflow_behavior",
     "//ui/webui/resources/js:i18n_behavior",
   ]
@@ -157,6 +172,8 @@ js_type_check("closure_compile_module") {
     ":esim_flow_ui.m",
     ":final_page.m",
     ":mojo_interface_provider.m",
+    ":profile_discovery_list_item.m",
+    ":profile_discovery_list_page.m",
     ":provisioning_page.m",
     ":psim_flow_ui.m",
     ":setup_selection_flow.m",
@@ -194,6 +211,21 @@ js_library("activation_code_page.m") {
     "//ui/webui/resources/js:i18n_behavior.m",
   ]
   extra_deps = [ ":activation_code_page_module" ]
+}
+
+js_library("profile_discovery_list_item.m") {
+  sources = [ "$root_gen_dir/ui/webui/resources/cr_components/chromeos/cellular_setup/profile_discovery_list_item.m.js" ]
+  deps = [ "//ui/webui/resources/js:i18n_behavior.m" ]
+  extra_deps = [ ":profile_discovery_list_item_module" ]
+}
+
+js_library("profile_discovery_list_page.m") {
+  sources = [ "$root_gen_dir/ui/webui/resources/cr_components/chromeos/cellular_setup/profile_discovery_list_page.m.js" ]
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/iron-list:iron-list",
+    "//ui/webui/resources/js:i18n_behavior.m",
+  ]
+  extra_deps = [ ":profile_discovery_list_page_module" ]
 }
 
 js_library("mojo_interface_provider.m") {
@@ -292,6 +324,8 @@ js_library("esim_flow_ui.m") {
     ":cellular_setup_delegate.m",
     ":cellular_types.m",
     ":final_page.m",
+    ":profile_discovery_list_item.m",
+    ":profile_discovery_list_page.m",
     ":subflow_behavior.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:i18n_behavior.m",
@@ -332,6 +366,8 @@ group("polymer3_elements") {
     ":esim_flow_ui_module",
     ":final_page_module",
     ":modulize",
+    ":profile_discovery_list_item_module",
+    ":profile_discovery_list_page_module",
     ":provisioning_page_module",
     ":psim_flow_ui_module",
     ":setup_selection_flow_module",
@@ -374,6 +410,22 @@ polymer_modulizer("button_bar") {
 polymer_modulizer("sim_detect_page") {
   js_file = "sim_detect_page.js"
   html_file = "sim_detect_page.html"
+  html_type = "dom-module"
+  namespace_rewrites = cr_components_chromeos_namespace_rewrites
+  auto_imports = cr_components_chromeos_auto_imports
+}
+
+polymer_modulizer("profile_discovery_list_item") {
+  js_file = "profile_discovery_list_item.js"
+  html_file = "profile_discovery_list_item.html"
+  html_type = "dom-module"
+  namespace_rewrites = cr_components_chromeos_namespace_rewrites
+  auto_imports = cr_components_chromeos_auto_imports
+}
+
+polymer_modulizer("profile_discovery_list_page") {
+  js_file = "profile_discovery_list_page.js"
+  html_file = "profile_discovery_list_page.html"
   html_type = "dom-module"
   namespace_rewrites = cr_components_chromeos_namespace_rewrites
   auto_imports = cr_components_chromeos_auto_imports

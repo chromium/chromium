@@ -6,6 +6,7 @@
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-pages/iron-pages.html">
 <link rel="import" href="activation_code_page.html">
 <link rel="import" href="final_page.html">
+<link rel="import" href="profile_discovery_list_page.html">
 
 <dom-module id="esim-flow-ui">
   <template>
@@ -19,6 +20,9 @@
     </style>
     <iron-pages attr-for-selected="id"
         selected="[[selectedESimPageName_]]">
+      <profile-discovery-list-page id="profileDiscoveryPage"
+          selected-profiles="{{selectedProfiles_}}">
+      </profile-discovery-list-page>
       <activation-code-page id="activationCodePage"></activation-code-page>
       <final-page
         id="finalPage"

@@ -53,7 +53,8 @@ constexpr webui::LocalizedString kLocalizedStringsWithoutPlaceholders[] = {
     {"switchCamera", IDS_CELLULAR_SETUP_ESIM_PAGE_SWITCH_CAMERA},
     {"useCamera", IDS_CELLULAR_SETUP_ESIM_PAGE_USE_CAMERA},
     {"scanQRCodeSuccess", IDS_CELLULAR_SETUP_ESIM_PAGE_SCAN_QR_CODE_SUCCESS},
-    {"qrCodeRetry", IDS_CELLULAR_SETUP_ESIM_PAGE_SCAN_QR_CODE_RETRY}};
+    {"qrCodeRetry", IDS_CELLULAR_SETUP_ESIM_PAGE_SCAN_QR_CODE_RETRY},
+    {"profileListPageMessage", IDS_CELLULAR_SETUP_PROFILE_LIST_PAGE_MESSAGE}};
 }  //  namespace
 
 void AddLocalizedStrings(content::WebUIDataSource* html_source) {
