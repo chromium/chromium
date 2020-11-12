@@ -160,7 +160,7 @@ bool IsAmbientAuthAllowedForProfile(Profile* profile) {
   }
 
   // System profile does not need ambient authentication.
-  if (profile->GetOriginalProfile()->IsSystemProfile())
+  if (profile->IsSystemProfile())
     return false;
 
   // Profile type not yet supported.

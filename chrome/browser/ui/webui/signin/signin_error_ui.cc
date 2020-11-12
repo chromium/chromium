@@ -34,7 +34,7 @@
 SigninErrorUI::SigninErrorUI(content::WebUI* web_ui)
     : SigninWebDialogUI(web_ui) {
   Profile* webui_profile = Profile::FromWebUI(web_ui);
-  if (webui_profile->GetOriginalProfile()->IsSystemProfile()) {
+  if (webui_profile->IsSystemProfile()) {
     InitializeMessageHandlerForUserManager();
   }
 }

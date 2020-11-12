@@ -852,8 +852,7 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
   if (url.host_piece() == chrome::kChromeUIMdUserManagerHost)
     return &NewWebUI<UserManagerUI>;
   if (url.host_piece() == chrome::kChromeUISigninErrorHost &&
-      (!profile->IsOffTheRecord() ||
-       profile->GetOriginalProfile()->IsSystemProfile()))
+      (!profile->IsOffTheRecord() || profile->IsSystemProfile()))
     return &NewWebUI<SigninErrorUI>;
   if (url.host_piece() == chrome::kChromeUISigninEmailConfirmationHost &&
       !profile->IsOffTheRecord())

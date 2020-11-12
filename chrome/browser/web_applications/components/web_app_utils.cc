@@ -22,14 +22,11 @@ constexpr base::FilePath::CharType kTempDirectoryName[] =
     FILE_PATH_LITERAL("Temp");
 
 bool AreWebAppsEnabled(const Profile* profile) {
-  if (!profile)
+  if (!profile || profile->IsSystemProfile())
     return false;
 
   const Profile* original_profile = profile->GetOriginalProfile();
   DCHECK(!original_profile->IsOffTheRecord());
-
-  if (original_profile->IsSystemProfile())
-    return false;
 
 #if defined(OS_CHROMEOS)
   // Web Apps should not be installed to the ChromeOS system profiles.

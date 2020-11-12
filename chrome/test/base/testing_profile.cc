@@ -329,8 +329,12 @@ void TestingProfile::Init() {
 
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   if (profile_manager) {
-    set_is_system_profile(profile_path_ ==
-                          profile_manager->GetSystemProfilePath());
+    if (IsOffTheRecord()) {
+      set_is_system_profile(original_profile_->IsSystemProfile());
+    } else {
+      set_is_system_profile(profile_path_ ==
+                            profile_manager->GetSystemProfilePath());
+    }
   }
 
   if (IsOffTheRecord()) {

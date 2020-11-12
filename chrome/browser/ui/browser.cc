@@ -605,7 +605,7 @@ Browser::~Browser() {
   // Browser (e.g. for offscreen tabs, https://crbug.com/664351).
   if (profile_->IsIncognitoProfile() &&
       !BrowserList::IsOffTheRecordBrowserInUse(profile_) &&
-      !profile_->GetOriginalProfile()->IsSystemProfile()) {
+      !profile_->IsSystemProfile()) {
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
       // The Printing Background Manager holds onto preview dialog WebContents
       // whose corresponding print jobs have not yet fully spooled. Make sure
