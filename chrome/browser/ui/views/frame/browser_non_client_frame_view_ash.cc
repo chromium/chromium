@@ -6,7 +6,6 @@
 
 #include <algorithm>
 
-#include "ash/public/cpp/window_properties.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -145,7 +144,7 @@ void BrowserNonClientFrameViewAsh::Init() {
   // To preserve privacy, tag incognito windows so that they won't be included
   // in screenshot sent to assistant server.
   if (browser->profile()->IsOffTheRecord())
-    window->SetProperty(ash::kBlockedForAssistantSnapshotKey, true);
+    window->SetProperty(chromeos::kBlockedForAssistantSnapshotKey, true);
 
   display::Screen::GetScreen()->AddObserver(this);
 
@@ -307,7 +306,7 @@ void BrowserNonClientFrameViewAsh::UpdateWindowTitle() {
     frame_header_->SchedulePaintForTitle();
 
   frame()->GetNativeWindow()->SetProperty(
-      ash::kWindowOverviewTitleKey,
+      chromeos::kWindowOverviewTitleKey,
       browser_view()->browser()->GetWindowTitleForCurrentTab(
           /*include_app_name=*/false));
 }

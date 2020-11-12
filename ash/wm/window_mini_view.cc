@@ -7,10 +7,10 @@
 #include <memory>
 #include <utility>
 
-#include "ash/public/cpp/window_properties.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/wm/window_preview_view.h"
 #include "ash/wm/wm_highlight_item_border.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/aura/client/aura_constants.h"
@@ -35,7 +35,7 @@ constexpr int kBackdropBorderRoundingDp = 4;
 base::string16 GetWindowTitle(aura::Window* window) {
   aura::Window* transient_root = wm::GetTransientRoot(window);
   const base::string16* overview_title =
-      transient_root->GetProperty(kWindowOverviewTitleKey);
+      transient_root->GetProperty(chromeos::kWindowOverviewTitleKey);
   return (overview_title && !overview_title->empty())
              ? *overview_title
              : transient_root->GetTitle();

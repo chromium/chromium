@@ -6,13 +6,13 @@
 
 #include <utility>
 
-#include "ash/public/cpp/window_properties.h"
 #include "base/bind.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "components/arc/arc_service_manager.h"
 #include "components/arc/mojom/app.mojom.h"
 #include "components/arc/session/arc_bridge_service.h"
@@ -72,7 +72,7 @@ void RequestAssistantStructureForActiveBrowserWindow(
 
   aura::Window* window = browser->window()->GetNativeWindow();
   // Ignore incognito window.
-  if (window->GetProperty(ash::kBlockedForAssistantSnapshotKey)) {
+  if (window->GetProperty(chromeos::kBlockedForAssistantSnapshotKey)) {
     std::move(callback).Run(nullptr, nullptr);
     return;
   }

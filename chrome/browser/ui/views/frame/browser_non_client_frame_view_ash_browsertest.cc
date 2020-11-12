@@ -8,7 +8,6 @@
 #include "ash/public/cpp/shelf_test_api.h"
 #include "ash/public/cpp/split_view_test_api.h"
 #include "ash/public/cpp/test/shell_test_api.h"
-#include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
@@ -380,7 +379,7 @@ IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewAshTest,
                        IncognitoMarkedAsAssistantBlocked) {
   Browser* incognito_browser = CreateIncognitoBrowser();
   EXPECT_TRUE(incognito_browser->window()->GetNativeWindow()->GetProperty(
-      ash::kBlockedForAssistantSnapshotKey));
+      chromeos::kBlockedForAssistantSnapshotKey));
 }
 
 // Tests that browser frame minimum size constraint is updated in response to

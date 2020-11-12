@@ -9,8 +9,6 @@
 #include <string>
 
 #include "ash/public/cpp/ash_public_export.h"
-#include "base/strings/string16.h"
-#include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/class_property.h"
 
 class SkRegion;
@@ -51,11 +49,6 @@ ASH_PUBLIC_EXPORT extern const aura::WindowProperty<std::string*>* const
 // black window that covers the entire workspace placed behind the window.
 ASH_PUBLIC_EXPORT extern const aura::WindowProperty<WindowBackdrop*>* const
     kWindowBackdropKey;
-
-// If set to true, the window will be replaced by a black rectangle when taking
-// screenshot for assistant. Used to preserve privacy for incognito windows.
-ASH_PUBLIC_EXPORT extern const aura::WindowProperty<bool>* const
-    kBlockedForAssistantSnapshotKey;
 
 // If true, the window can attach into another window.
 ASH_PUBLIC_EXPORT extern const aura::WindowProperty<bool>* const
@@ -177,11 +170,6 @@ ASH_PUBLIC_EXPORT extern const aura::WindowProperty<SkRegion*>* const
 // originated from if the window is currently in tab-dragging process.
 ASH_PUBLIC_EXPORT extern const aura::WindowProperty<aura::Window*>* const
     kTabDraggingSourceWindowKey;
-
-// A property key whose value is shown in alt-tab/overview mode. If non-value
-// is set, the window's title is used.
-ASH_PUBLIC_EXPORT extern const aura::WindowProperty<base::string16*>* const
-    kWindowOverviewTitleKey;
 
 // A property key to indicate whether ash should perform auto management of
 // window positions; when you open a second browser, ash will move the two to

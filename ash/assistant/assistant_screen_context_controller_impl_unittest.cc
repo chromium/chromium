@@ -9,7 +9,6 @@
 #include "ash/assistant/assistant_controller_impl.h"
 #include "ash/assistant/test/assistant_ash_test_base.h"
 #include "ash/public/cpp/shell_window_ids.h"
-#include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
 #include "ash/wm/desks/desks_util.h"
 #include "base/bind.h"
@@ -17,6 +16,7 @@
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "ui/aura/window.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_tree_owner.h"
@@ -110,7 +110,7 @@ TEST_F(AssistantScreenContextControllerTest, Screenshot) {
   ui::Layer* window1_layer = window1->layer();
   ui::Layer* window2_layer = window2->layer();
 
-  window1->SetProperty(kBlockedForAssistantSnapshotKey, true);
+  window1->SetProperty(chromeos::kBlockedForAssistantSnapshotKey, true);
 
   std::unique_ptr<ui::LayerTreeOwner> layer_owner =
       controller()->CreateLayerForAssistantSnapshotForTest();
