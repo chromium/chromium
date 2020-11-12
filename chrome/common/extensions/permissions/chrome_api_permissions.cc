@@ -105,6 +105,8 @@ constexpr APIPermissionInfo::InitInfo permissions_to_register[] = {
      APIPermissionInfo::kFlagRequiresManagementUIWarning},
     {APIPermission::kSearch, "search",
      APIPermissionInfo::kFlagDoesNotRequireManagedSessionFullLoginWarning},
+    {APIPermission::kScripting, "scripting",
+     APIPermissionInfo::kFlagRequiresManagementUIWarning},
     {APIPermission::kSessions, "sessions"},
     {APIPermission::kSignedInDevices, "signedInDevices"},
     {APIPermission::kTabGroups, "tabGroups",

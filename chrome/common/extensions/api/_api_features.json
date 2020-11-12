@@ -731,6 +731,10 @@
     "dependencies": ["permission:safeBrowsingPrivate"],
     "contexts": ["blessed_extension"]
   },
+  "scripting": {
+    "dependencies": ["permission:scripting"],
+    "contexts": ["blessed_extension"]
+  },
   "search": {
     "dependencies": ["permission:search"],
     "contexts": ["blessed_extension"]

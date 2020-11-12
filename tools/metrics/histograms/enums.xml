@@ -25330,6 +25330,7 @@ Called by update_extension_histograms.py.-->
   <int value="1529" label="TAB_GROUPS_UPDATE"/>
   <int value="1530" label="ACCESSIBILITY_PRIVATE_UPDATESELECTTOSPEAKPANEL"/>
   <int value="1531" label="TAB_GROUPS_MOVE"/>
+  <int value="1532" label="SCRIPTING_EXECUTESCRIPT"/>
 </enum>
 
 <enum name="ExtensionIconState">
@@ -25932,6 +25933,7 @@ Called by update_extension_permission.py.-->
   <int value="227" label="kEnterpriseNetworkingAttributes"/>
   <int value="228" label="kSearch"/>
   <int value="229" label="kTabGroups"/>
+  <int value="230" label="kScripting"/>
 </enum>
 
 <enum name="ExtensionPolicyReinstallReason">

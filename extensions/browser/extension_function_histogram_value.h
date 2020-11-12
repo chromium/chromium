@@ -1592,6 +1592,7 @@ enum HistogramValue {
   TAB_GROUPS_UPDATE = 1529,
   ACCESSIBILITY_PRIVATE_UPDATESELECTTOSPEAKPANEL = 1530,
   TAB_GROUPS_MOVE = 1531,
+  SCRIPTING_EXECUTESCRIPT = 1532,
   // Last entry: Add new entries above, then run:
   // python tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY

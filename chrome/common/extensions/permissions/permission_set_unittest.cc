@@ -795,6 +795,7 @@ TEST(PermissionsTest, PermissionMessages) {
   skip.insert(APIPermission::kDeclarativeContent);
   skip.insert(APIPermission::kPageCapture);
   skip.insert(APIPermission::kProxy);
+  skip.insert(APIPermission::kScripting);
   skip.insert(APIPermission::kTabCapture);
   skip.insert(APIPermission::kWebRequest);
   skip.insert(APIPermission::kWebRequestBlocking);

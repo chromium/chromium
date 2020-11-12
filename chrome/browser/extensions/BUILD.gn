@@ -309,6 +309,8 @@ static_library("extensions") {
     "api/safe_browsing_private/safe_browsing_private_event_router_factory.h",
     "api/safe_browsing_private/safe_browsing_util.cc",
     "api/safe_browsing_private/safe_browsing_util.h",
+    "api/scripting/scripting_api.cc",
+    "api/scripting/scripting_api.h",
     "api/search/search_api.cc",
     "api/search/search_api.h",
     "api/sessions/session_id.cc",

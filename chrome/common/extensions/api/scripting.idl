@@ -1,0 +1,41 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Use the <code>chrome.scripting</code> API to execute script in different
+// contexts.
+namespace scripting {
+  callback InjectedFunction = void();
+
+  dictionary InjectionTarget {
+    // The ID of the tab into which to inject.
+    long tabId;
+  };
+
+  dictionary ScriptInjection {
+    // A JavaScript function to inject. This function will be serialized, and
+    // then deserialized for injection. This means that any bound parameters
+    // and execution context will be lost.
+    // At least one of "file" and "function" must be specified.
+    [serializableFunction]InjectedFunction? function;
+
+    // Details specifying the target into which to inject the script.
+    InjectionTarget target;
+  };
+
+  dictionary InjectionResult {
+    // The result of the script execution.
+    any? result;
+  };
+
+  callback ScriptInjectionCallback = void(InjectionResult[] results);
+
+  interface Functions {
+    // Injects a script into a target context.
+    // |injection|: The details of the script which to inject.
+    // |callback|: Invoked upon completion of the injection. The resulting
+    // array contains the result of execution for each frame.
+    static void executeScript(ScriptInjection injection,
+                              optional ScriptInjectionCallback callback);
+  };
+};

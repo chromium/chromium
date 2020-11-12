@@ -49,6 +49,7 @@ schema_sources_ = [
   "permissions.json",
   "resources_private.idl",
   "safe_browsing_private.idl",
+  "scripting.idl",
   "search.idl",
   "sessions.json",
   "settings_private.idl",
