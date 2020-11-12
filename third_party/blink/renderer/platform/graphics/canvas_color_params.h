@@ -60,13 +60,6 @@ class PLATFORM_EXPORT CanvasColorParams {
   void SetCanvasPixelFormat(CanvasPixelFormat f) { pixel_format_ = f; }
   void SetOpacityMode(OpacityMode m) { opacity_mode_ = m; }
 
-  // Indicates if pixels in this canvas color settings require any color
-  // conversion to be used in the passed canvas color settings.
-  bool NeedsColorConversion(const CanvasColorParams&) const;
-
-  // The SkColorSpace to use in the SkImageInfo for SkImages and SkSurfaces.
-  sk_sp<SkColorSpace> GetSkColorSpaceForSkSurfaces() const;
-
   // The pixel format to use for allocating SkSurfaces.
   SkColorType GetSkColorType() const;
   uint8_t BytesPerPixel() const;

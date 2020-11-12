@@ -802,7 +802,7 @@ SkImageInfo ImageData::GetSkImageInfo() {
     color_type = kRGBA_F32_SkColorType;
   }
   return SkImageInfo::Make(width(), height(), color_type,
-                           GetCanvasColorParams().GetSkAlphaType());
+                           kUnpremul_SkAlphaType);
 }
 
 bool ImageData::ImageDataInCanvasColorSettings(

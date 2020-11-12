@@ -12,8 +12,8 @@
 namespace blink {
 
 // When drawing a color managed canvas, the target SkColorSpace is obtained by
-// calling CanvasColorParams::GetSkColorSpaceForSkSurfaces(). When drawing media
-// to the canvas, the target gfx::ColorSpace is returned by CanvasColorParams::
+// calling CanvasColorParams::GetSkColorSpace(). When drawing media to the
+// canvas, the target gfx::ColorSpace is returned by CanvasColorParams::
 // GetStorageGfxColorSpace(). This test verifies that the two different color
 // spaces are approximately the same for different CanvasColorParam objects.
 TEST(CanvasColorParamsTest, MatchSkColorSpaceWithGfxColorSpace) {

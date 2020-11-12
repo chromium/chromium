@@ -196,13 +196,13 @@ bool ColorCorrectionTestUtils::ConvertPixelsToColorSpaceAndPixelFormatForTest(
                             ? CanvasPixelFormat::kRGBA8
                             : CanvasPixelFormat::kF16,
                         kNonOpaque)
-          .GetSkColorSpaceForSkSurfaces();
+          .GetSkColorSpace();
   if (!src_sk_color_space.get())
     src_sk_color_space = SkColorSpace::MakeSRGB();
 
   sk_sp<SkColorSpace> dst_sk_color_space =
       CanvasColorParams(dst_color_space, dst_canvas_pixel_format, kNonOpaque)
-          .GetSkColorSpaceForSkSurfaces();
+          .GetSkColorSpace();
   if (!dst_sk_color_space.get())
     dst_sk_color_space = SkColorSpace::MakeSRGB();
 

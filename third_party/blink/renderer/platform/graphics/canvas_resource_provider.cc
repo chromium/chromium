@@ -143,7 +143,7 @@ class CanvasResourceProviderBitmap : public CanvasResourceProvider {
 
     SkImageInfo info = SkImageInfo::Make(
         Size().Width(), Size().Height(), ColorParams().GetSkColorType(),
-        kPremul_SkAlphaType, ColorParams().GetSkColorSpaceForSkSurfaces());
+        kPremul_SkAlphaType, ColorParams().GetSkColorSpace());
     return SkSurface::MakeRaster(info, ColorParams().GetSkSurfaceProps());
   }
 };
@@ -568,8 +568,7 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider {
       return SkSurface::MakeFromBackendTexture(
           GetGrContext(), CreateGrTextureForResource(), GetGrSurfaceOrigin(),
           0 /* msaa_sample_count */, ColorParams().GetSkColorType(),
-          ColorParams().GetSkColorSpaceForSkSurfaces(),
-          ColorParams().GetSkSurfaceProps());
+          ColorParams().GetSkColorSpace(), ColorParams().GetSkSurfaceProps());
     }
 
     // For software raster path, we render into cpu memory managed internally
@@ -807,8 +806,7 @@ class CanvasResourceProviderSwapChain final : public CanvasResourceProvider {
     return SkSurface::MakeFromBackendTexture(
         GetGrContext(), backend_texture, kTopLeft_GrSurfaceOrigin,
         0 /* msaa_sample_count */, ColorParams().GetSkColorType(),
-        ColorParams().GetSkColorSpaceForSkSurfaces(),
-        ColorParams().GetSkSurfaceProps());
+        ColorParams().GetSkColorSpace(), ColorParams().GetSkSurfaceProps());
   }
 
   void FlushIfNeeded() {

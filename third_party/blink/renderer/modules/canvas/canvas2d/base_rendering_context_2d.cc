@@ -1850,7 +1850,8 @@ void BaseRenderingContext2D::putImageData(ImageData* data,
            .AssignIfValid(&data_length))
     return;
 
-  if (data_color_params.NeedsColorConversion(context_color_params) ||
+  if (data_color_params.ColorSpace() != context_color_params.ColorSpace() ||
+      data_color_params.PixelFormat() != context_color_params.PixelFormat() ||
       PixelFormat() == CanvasPixelFormat::kF16) {
     std::unique_ptr<uint8_t[]> converted_pixels(new uint8_t[data_length]);
     if (data->ImageDataInCanvasColorSettings(
@@ -1930,17 +1931,11 @@ void BaseRenderingContext2D::PutByteArray(const unsigned char* source,
     alpha_type = kUnpremul_SkAlphaType;
   }
 
-  SkImageInfo info;
-  if (ColorParams().GetSkColorSpaceForSkSurfaces()) {
-    info = SkImageInfo::Make(source_rect.Width(), source_rect.Height(),
-                             ColorParams().GetSkColorType(), alpha_type,
-                             ColorParams().GetSkColorSpaceForSkSurfaces());
-    if (info.colorType() == kN32_SkColorType)
-      info = info.makeColorType(kRGBA_8888_SkColorType);
-  } else {
-    info = SkImageInfo::Make(source_rect.Width(), source_rect.Height(),
-                             kRGBA_8888_SkColorType, alpha_type);
-  }
+  SkImageInfo info = SkImageInfo::Make(
+      source_rect.Width(), source_rect.Height(), ColorParams().GetSkColorType(),
+      alpha_type, ColorParams().GetSkColorSpace());
+  if (info.colorType() == kN32_SkColorType)
+    info = info.makeColorType(kRGBA_8888_SkColorType);
   WritePixels(info, src_addr, src_bytes_per_row, dest_x, dest_y);
 }
 

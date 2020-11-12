@@ -242,8 +242,7 @@ static bool ExtractImageData(Image* image,
   CanvasColorParams color_params;
   SkImageInfo info = SkImageInfo::Make(
       image_size.Width(), image_size.Height(), color_params.GetSkColorType(),
-      color_params.GetSkAlphaType(),
-      color_params.GetSkColorSpaceForSkSurfaces());
+      color_params.GetSkAlphaType(), color_params.GetSkColorSpace());
   sk_sp<SkSurface> surface =
       SkSurface::MakeRaster(info, color_params.GetSkSurfaceProps());
 

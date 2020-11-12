@@ -461,7 +461,7 @@ scoped_refptr<StaticBitmapImage> MakeBlankImage(
   SkImageInfo info = SkImageInfo::Make(
       parsed_options.crop_rect.Width(), parsed_options.crop_rect.Height(),
       parsed_options.color_params.GetSkColorType(), kPremul_SkAlphaType,
-      parsed_options.color_params.GetSkColorSpaceForSkSurfaces());
+      parsed_options.color_params.GetSkColorSpace());
   if (parsed_options.should_scale_input) {
     info =
         info.makeWH(parsed_options.resize_width, parsed_options.resize_height);
@@ -749,7 +749,7 @@ ImageBitmap::ImageBitmap(const void* pixel_data,
       SkImageInfo::Make(width, height, color_params.GetSkColorType(),
                         is_image_bitmap_premultiplied ? kPremul_SkAlphaType
                                                       : kUnpremul_SkAlphaType,
-                        color_params.GetSkColorSpaceForSkSurfaces());
+                        color_params.GetSkColorSpace());
   SkPixmap pixmap(info, pixel_data, info.bytesPerPixel() * width);
   sk_sp<SkImage> raster_copy = SkImage::MakeRasterCopy(pixmap);
   if (!raster_copy)
@@ -809,7 +809,7 @@ ImageBitmap::ImageBitmap(ImageData* data,
       parsed_options.color_params.GetSkColorType(),
       parsed_options.premultiply_alpha ? kPremul_SkAlphaType
                                        : kUnpremul_SkAlphaType,
-      parsed_options.color_params.GetSkColorSpaceForSkSurfaces());
+      parsed_options.color_params.GetSkColorSpace());
   image_ = StaticBitmapImage::Create(std::move(image_pixels), info);
   if (!image_)
     return;

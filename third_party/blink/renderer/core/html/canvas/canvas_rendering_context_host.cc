@@ -52,7 +52,7 @@ CanvasRenderingContextHost::CreateTransparentImage(const IntSize& size) const {
     color_params = RenderingContext()->ColorParams();
   SkImageInfo info = SkImageInfo::Make(
       size.Width(), size.Height(), color_params.GetSkColorType(),
-      kPremul_SkAlphaType, color_params.GetSkColorSpaceForSkSurfaces());
+      kPremul_SkAlphaType, color_params.GetSkColorSpace());
   sk_sp<SkSurface> surface =
       SkSurface::MakeRaster(info, info.minRowBytes(), nullptr);
   if (!surface)

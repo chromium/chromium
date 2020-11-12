@@ -310,8 +310,7 @@ bool CanvasResourceSharedBitmap::HasGpuMailbox() const {
 void CanvasResourceSharedBitmap::TakeSkImage(sk_sp<SkImage> image) {
   SkImageInfo image_info = SkImageInfo::Make(
       Size().Width(), Size().Height(), ColorParams().GetSkColorType(),
-      ColorParams().GetSkAlphaType(),
-      ColorParams().GetSkColorSpaceForSkSurfaces());
+      ColorParams().GetSkAlphaType(), ColorParams().GetSkColorSpace());
 
   bool read_pixels_successful = image->readPixels(
       image_info, shared_mapping_.memory(), image_info.minRowBytes(), 0, 0);

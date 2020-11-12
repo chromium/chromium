@@ -54,18 +54,6 @@ CanvasColorParams::CanvasColorParams(CanvasColorSpace color_space,
 CanvasColorParams::CanvasColorParams(const SkImageInfo& info)
     : CanvasColorParams(info.refColorSpace(), info.colorType()) {}
 
-sk_sp<SkColorSpace> CanvasColorParams::GetSkColorSpaceForSkSurfaces() const {
-  return GetSkColorSpace();
-}
-
-bool CanvasColorParams::NeedsColorConversion(
-    const CanvasColorParams& dest_color_params) const {
-  if ((color_space_ == dest_color_params.ColorSpace() &&
-       pixel_format_ == dest_color_params.PixelFormat()))
-    return false;
-  return true;
-}
-
 SkColorType CanvasColorParams::GetSkColorType() const {
   switch (pixel_format_) {
     case CanvasPixelFormat::kF16:
