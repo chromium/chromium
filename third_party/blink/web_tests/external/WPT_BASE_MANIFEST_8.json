@@ -232924,7 +232924,7 @@
      []
     ],
     "scroll-animations.idl": [
-     "3ef9f5452906509e5c9bc88bdaf31fbf2b3ff8a8",
+     "efa986d93e351bcb6b4816b51f587c4ed6efa1ba",
      []
     ],
     "scroll-to-text-fragment.idl": [
@@ -244741,19 +244741,19 @@
       []
      ],
      "cacert.key": [
-      "3a3e487a83de0f5676e481e7240b68107b7ee34e",
+      "1c1ca2bc110002bb5ad5f2315b8953a37a2592d9",
       []
      ],
      "cacert.pem": [
-      "e9b5fda55c380cf8850f4b94524b62055c9ca360",
+      "a9383d0cf00bb59ccf7341a8639d9cc646312e1b",
       []
      ],
      "web-platform.test.key": [
-      "957dfb234f8b90ebb40a1fb48d58623875f2e03d",
+      "4e557404ab2bf093d93fae5c37446cc0e309cfe5",
       []
      ],
      "web-platform.test.pem": [
-      "61d7e4d189266500efb379da960eafbb38aca530",
+      "7c58aa67f0a40337c133906289b586fc7c9c97c7",
       []
      ]
     },
@@ -251049,7 +251049,7 @@
         []
        ],
        "chrome_spki_certs.py": [
-        "c6e583581882dbabe817600b1f1047e48a0d1dcb",
+        "071d53e9e4eea9b458681e4697610a8539fb114c",
         []
        ],
        "edge.py": [
@@ -293744,6 +293744,13 @@
        {}
       ]
      ],
+     "hit-test-transformed-child.html": [
+      "ac0fd54c9f35dda0f01f5b8eb92fd7df7a3b5bb7",
+      [
+       null,
+       {}
+      ]
+     ],
      "inheritance.html": [
       "e7938d3e9ffa2d21c57e4565283911431e56f17e",
       [
@@ -310598,6 +310605,13 @@
    },
    "dom": {
     "abort": {
+     "addEventListenerAbortController.tentative.html": [
+      "36373507c192c2f642165772facae1e308ac289d",
+      [
+       null,
+       {}
+      ]
+     ],
      "event.any.js": [
       "a67e6f400fcf1dfa347390e1a76e25b573afbb9a",
       [
@@ -406819,7 +406833,7 @@
       ]
      ],
      "declarative-shadow-dom-opt-in.tentative.html": [
-      "c6153173212e1543c5f460a65532a18cc2d6a55f",
+      "eb87fc95e712e1ef2362f388d762f8598c761bd7",
       [
        null,
        {}
