@@ -400,6 +400,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Profile.ProfileError" enum="ProfileErrorType"
     expires_after="M85">
+  <obsolete>
+    Removed on 2020-11 (crbug.com/1089331).
+  </obsolete>
   <owner>tnagel@chromium.org</owner>
   <summary>
     The error with the current user profile that caused an error dialog to be

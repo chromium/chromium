@@ -48,8 +48,6 @@ void ShowProfileErrorDialog(ProfileErrorType type,
 #if defined(OS_ANDROID)
   NOTIMPLEMENTED();
 #else  // defined(OS_ANDROID)
-  UMA_HISTOGRAM_ENUMERATION("Profile.ProfileError", static_cast<int>(type),
-                            static_cast<int>(ProfileErrorType::END));
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kNoErrorDialogs)) {
     return;
