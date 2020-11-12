@@ -7,7 +7,7 @@
 
 #include "base/macros.h"
 #include "base/optional.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "components/subresource_filter/content/browser/subresource_filter_observer.h"
 #include "components/subresource_filter/content/browser/subresource_filter_observer_manager.h"
@@ -68,9 +68,9 @@ class PopupTracker : public content::WebContentsObserver,
           CheckResult& result) override;
   void OnSubresourceFilterGoingAway() override;
 
-  ScopedObserver<subresource_filter::SubresourceFilterObserverManager,
-                 subresource_filter::SubresourceFilterObserver>
-      scoped_observer_;
+  base::ScopedObservation<subresource_filter::SubresourceFilterObserverManager,
+                          subresource_filter::SubresourceFilterObserver>
+      scoped_observation_{this};
 
   // Will be unset until the first navigation commits. Will be set to the total
   // time the contents was visible at commit time.

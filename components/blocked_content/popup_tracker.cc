@@ -47,7 +47,6 @@ PopupTracker::PopupTracker(content::WebContents* contents,
                            content::WebContents* opener,
                            WindowOpenDisposition disposition)
     : content::WebContentsObserver(contents),
-      scoped_observer_(this),
       visibility_tracker_(
           base::DefaultTickClock::GetInstance(),
           contents->GetVisibility() != content::Visibility::HIDDEN),
@@ -56,11 +55,11 @@ PopupTracker::PopupTracker(content::WebContents* contents,
   if (auto* popup_opener = PopupOpenerTabHelper::FromWebContents(opener))
     popup_opener->OnOpenedPopup(this);
 
-  auto* observer_manager =
+  auto* observation_manager =
       subresource_filter::SubresourceFilterObserverManager::FromWebContents(
           contents);
-  if (observer_manager) {
-    scoped_observer_.Add(observer_manager);
+  if (observation_manager) {
+    scoped_observation_.Observe(observation_manager);
   }
 }
 
@@ -173,7 +172,7 @@ void PopupTracker::OnSafeBrowsingChecksComplete(
 }
 
 void PopupTracker::OnSubresourceFilterGoingAway() {
-  scoped_observer_.RemoveAll();
+  scoped_observation_.RemoveObservation();
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(PopupTracker)

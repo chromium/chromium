@@ -97,10 +97,9 @@ SafeBrowsingTriggeredPopupBlocker::SafeBrowsingTriggeredPopupBlocker(
     content::WebContents* web_contents,
     subresource_filter::SubresourceFilterObserverManager* observer_manager)
     : content::WebContentsObserver(web_contents),
-      scoped_observer_(this),
       current_page_data_(std::make_unique<PageData>()) {
   DCHECK(observer_manager);
-  scoped_observer_.Add(observer_manager);
+  scoped_observation_.Observe(observer_manager);
 }
 
 void SafeBrowsingTriggeredPopupBlocker::DidFinishNavigation(
@@ -173,7 +172,7 @@ void SafeBrowsingTriggeredPopupBlocker::OnSafeBrowsingChecksComplete(
 }
 
 void SafeBrowsingTriggeredPopupBlocker::OnSubresourceFilterGoingAway() {
-  scoped_observer_.RemoveAll();
+  scoped_observation_.RemoveObservation();
 }
 
 bool SafeBrowsingTriggeredPopupBlocker::IsEnabled(

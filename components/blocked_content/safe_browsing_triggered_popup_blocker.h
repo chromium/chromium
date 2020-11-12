@@ -10,7 +10,7 @@
 #include "base/feature_list.h"
 #include "base/macros.h"
 #include "base/optional.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "components/safe_browsing/core/db/util.h"
 #include "components/subresource_filter/content/browser/subresource_filter_observer.h"
 #include "components/subresource_filter/content/browser/subresource_filter_observer_manager.h"
@@ -126,9 +126,9 @@ class SafeBrowsingTriggeredPopupBlocker
     DISALLOW_COPY_AND_ASSIGN(PageData);
   };
 
-  ScopedObserver<subresource_filter::SubresourceFilterObserverManager,
-                 subresource_filter::SubresourceFilterObserver>
-      scoped_observer_;
+  base::ScopedObservation<subresource_filter::SubresourceFilterObserverManager,
+                          subresource_filter::SubresourceFilterObserver>
+      scoped_observation_{this};
 
   // Whether the next main frame navigation that commits should trigger the
   // stronger popup blocker in enforce or warn mode.

@@ -4,6 +4,7 @@
 
 #include "components/blocked_content/popup_blocker_tab_helper.h"
 
+#include "base/scoped_observation.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/blocked_content/popup_navigation_delegate.h"
 #include "components/blocked_content/safe_browsing_triggered_popup_blocker.h"
@@ -30,7 +31,7 @@ constexpr char kUrl2[] = "http://example2.test";
 class BlockedUrlListObserver : public UrlListManager::Observer {
  public:
   explicit BlockedUrlListObserver(PopupBlockerTabHelper* helper) {
-    observer_.Add(helper->manager());
+    observation_.Observe(helper->manager());
   }
   // UrlListManager::Observer:
   void BlockedUrlAdded(int32_t id, const GURL& url) override {
@@ -41,7 +42,8 @@ class BlockedUrlListObserver : public UrlListManager::Observer {
 
  private:
   std::map<int32_t, GURL> blocked_urls_;
-  ScopedObserver<UrlListManager, UrlListManager::Observer> observer_{this};
+  base::ScopedObservation<UrlListManager, UrlListManager::Observer>
+      observation_{this};
 };
 }  // namespace
 
