@@ -360,10 +360,7 @@ bool NavigationEquals(const sessions::SerializedNavigationEntry& expected,
   return true;
 }
 
-namespace {
-
-template <typename T1, typename T2>
-bool WindowsMatchImpl(const T1& win1, const T2& win2) {
+bool WindowsMatch(const ScopedWindowMap& win1, const ScopedWindowMap& win2) {
   sessions::SessionTab* client0_tab;
   sessions::SessionTab* client1_tab;
   if (win1.size() != win2.size()) {
@@ -404,16 +401,6 @@ bool WindowsMatchImpl(const T1& win1, const T2& win2) {
   return true;
 }
 
-}  // namespace
-
-bool WindowsMatch(const ScopedWindowMap& win1, const ScopedWindowMap& win2) {
-  return WindowsMatchImpl(win1, win2);
-}
-
-bool WindowsMatch(const SessionWindowMap& win1, const ScopedWindowMap& win2) {
-  return WindowsMatchImpl(win1, win2);
-}
-
 void DeleteForeignSession(int browser_index, std::string session_tag) {
   SessionSyncServiceFactory::GetInstance()
       ->GetForProfile(test()->GetProfile(browser_index))
@@ -441,9 +428,13 @@ bool ForeignSessionsMatchChecker::IsExitConditionSatisfied(std::ostream* os) {
   DCHECK(foreign_local_sessions);
 
   SyncedSessionVector sessions;
-  if (!GetSessionData(profile_index_, &sessions)) {
-    *os << "Cannot get foreign sessions on profile " << profile_index_ << ".";
-    return false;
+  GetSessionData(profile_index_, &sessions);
+
+  if (foreign_local_sessions->windows.empty() && sessions.empty()) {
+    // The case when the remote session has deleted all tabs. In this case if
+    // there is no local windows and remote sessions, then it is considered to
+    // match.
+    return true;
   }
 
   for (const sync_sessions::SyncedSession* remote_session : sessions) {

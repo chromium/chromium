@@ -28,6 +28,7 @@ using sessions_helper::ForeignSessionsMatchChecker;
 using sessions_helper::GetLocalWindows;
 using sessions_helper::GetSessionData;
 using sessions_helper::NavigateTab;
+using sessions_helper::OpenMultipleTabs;
 using sessions_helper::OpenTab;
 using sessions_helper::OpenTabAtIndex;
 using sessions_helper::ScopedWindowMap;
@@ -215,6 +216,27 @@ IN_PROC_BROWSER_TEST_F(TwoClientSessionsSyncTest,
   EXPECT_TRUE(WaitForForeignSessionsToSync(0, 1));
 
   EXPECT_THAT(GetFakeServer()->GetCommittedHistoryURLs(), IsEmpty());
+}
+
+IN_PROC_BROWSER_TEST_F(TwoClientSessionsSyncTest, ShouldSyncAllClosedTabs) {
+  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+
+  ASSERT_TRUE(CheckInitialState(0));
+  ASSERT_TRUE(CheckInitialState(1));
+
+  ASSERT_TRUE(OpenMultipleTabs(0, {GURL(kURL1), GURL(kURL2)}));
+
+  ASSERT_TRUE(
+      WaitForForeignSessionsToSync(/*local_index=*/0, /*non_local_index=*/1));
+
+  // Close all tabs and wait for syncing.
+  CloseTab(/*index=*/0, /*tab_index=*/0);
+  ASSERT_TRUE(
+      WaitForForeignSessionsToSync(/*local_index=*/0, /*non_local_index=*/1));
+
+  CloseTab(/*index=*/0, /*tab_index=*/0);
+  EXPECT_TRUE(
+      WaitForForeignSessionsToSync(/*local_index=*/0, /*non_local_index=*/1));
 }
 
 }  // namespace

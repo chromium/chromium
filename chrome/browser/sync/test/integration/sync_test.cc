@@ -98,6 +98,8 @@
 #else
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
@@ -278,6 +280,29 @@ bool SyncTest::FakeInstanceIDDriver::ExistsInstanceID(
   return fake_instance_ids_.count(app_id);
 }
 
+#if !defined(OS_ANDROID)
+class SyncTest::ClosedBrowserObserver : public BrowserListObserver {
+ public:
+  using OnBrowserRemovedCallback =
+      base::RepeatingCallback<void(Browser* browser)>;
+
+  explicit ClosedBrowserObserver(OnBrowserRemovedCallback callback)
+      : browser_remove_callback_(std::move(callback)) {
+    BrowserList::AddObserver(this);
+  }
+
+  ~ClosedBrowserObserver() override { BrowserList::RemoveObserver(this); }
+
+  // BrowserListObserver overrides.
+  void OnBrowserRemoved(Browser* browser) override {
+    browser_remove_callback_.Run(browser);
+  }
+
+ private:
+  OnBrowserRemovedCallback browser_remove_callback_;
+};
+#endif
+
 SyncTest::SyncTest(TestType test_type)
     : test_type_(test_type),
       test_construction_time_(base::Time::Now()),
@@ -295,6 +320,10 @@ SyncTest::SyncTest(TestType test_type)
       break;
     }
   }
+#if !defined(OS_ANDROID)
+  browser_list_observer_ = std::make_unique<ClosedBrowserObserver>(
+      base::BindRepeating(&SyncTest::OnBrowserRemoved, base::Unretained(this)));
+#endif
 }
 
 SyncTest::~SyncTest() = default;
@@ -523,7 +552,7 @@ Browser* SyncTest::GetBrowser(int index) {
   Browser* browser = browsers_[index];
   DCHECK(browser);
 
-  return browsers_[index];
+  return browser;
 }
 
 Browser* SyncTest::AddBrowser(int profile_index) {
@@ -533,6 +562,14 @@ Browser* SyncTest::AddBrowser(int profile_index) {
   DCHECK_EQ(browsers_.size(), profiles_.size());
 
   return browsers_[browsers_.size() - 1];
+}
+
+void SyncTest::OnBrowserRemoved(Browser* browser) {
+  for (size_t i = 0; i < browsers_.size(); ++i) {
+    if (browsers_[i] == browser) {
+      browsers_[i] = nullptr;
+    }
+  }
 }
 #endif
 
@@ -971,12 +1008,16 @@ void SyncTest::TearDownOnMainThread() {
   // Closing all browsers created by this test. The calls here block until
   // they are closed. Other browsers created outside SyncTest setup should be
   // closed by the creator of that browser.
-  size_t init_browser_count = chrome::GetTotalBrowserCount();
-  for (size_t i = 0; i < browsers_.size(); ++i) {
-    CloseBrowserSynchronously(browsers_[i]);
+  const size_t initial_total_browser_count = chrome::GetTotalBrowserCount();
+  size_t closed_browser_count = 0;
+  for (Browser* browser : browsers_) {
+    if (browser) {
+      CloseBrowserSynchronously(browser);
+      closed_browser_count++;
+    }
   }
   ASSERT_EQ(chrome::GetTotalBrowserCount(),
-            init_browser_count - browsers_.size());
+            initial_total_browser_count - closed_browser_count);
 #endif
 
   if (fake_server_.get()) {
@@ -1112,7 +1153,9 @@ void SyncTest::ResetSyncForPrimaryAccount() {
     ASSERT_TRUE(SyncDisabledChecker(GetSyncService(0)).Wait());
 
 #if !defined(OS_ANDROID)
-    CloseBrowserSynchronously(browsers_[0]);
+    if (browsers_[0]) {
+      CloseBrowserSynchronously(browsers_[0]);
+    }
 #endif
 
     // After reset, this client will disable sync. It may log some messages

@@ -67,7 +67,6 @@ bool NavigationEquals(const sessions::SerializedNavigationEntry& expected,
 //    4. actual tab navigations contents
 // - false otherwise.
 bool WindowsMatch(const ScopedWindowMap& win1, const ScopedWindowMap& win2);
-bool WindowsMatch(const SessionWindowMap& win1, const ScopedWindowMap& win2);
 
 // Retrieves the foreign sessions for a particular profile and compares them
 // with a reference SessionWindow list.
@@ -151,8 +150,8 @@ class ForeignSessionsMatchChecker : public MultiClientStatusChangeChecker {
   bool IsExitConditionSatisfied(std::ostream* os) override;
 
  private:
-  int profile_index_;
-  int foreign_profile_index_;
+  const int profile_index_;
+  const int foreign_profile_index_;
 };
 
 }  // namespace sessions_helper

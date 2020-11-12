@@ -15,6 +15,7 @@
 #include "build/build_config.h"
 #include "components/sync/model/sync_change.h"
 #include "components/sync/protocol/sync.pb.h"
+#include "components/sync_sessions/switches.h"
 #include "components/sync_sessions/sync_sessions_client.h"
 #include "components/sync_sessions/synced_session_tracker.h"
 #include "components/sync_sessions/synced_tab_delegate.h"
@@ -44,8 +45,12 @@ bool IsSessionRestoreInProgress(SyncSessionsClient* sessions_client) {
 }
 
 bool IsWindowSyncable(const SyncedWindowDelegate& window_delegate) {
-  return window_delegate.ShouldSync() && window_delegate.GetTabCount() &&
-         window_delegate.HasWindow();
+  // TODO(crbug.com/1039234): remove the feature toggle once the logic is rolled
+  // out.
+  return window_delegate.ShouldSync() && window_delegate.HasWindow() &&
+         (window_delegate.GetTabCount() ||
+          base::FeatureList::IsEnabled(
+              switches::kSyncConsiderEmptyWindowsSyncable));
 }
 
 // On Android, it's possible to not have any tabbed windows when only custom
@@ -157,12 +162,16 @@ void LocalSessionEventHandlerImpl::AssociateWindows(ReloadTabsOption option,
                               window_delegate->GetTabCount());
     }
 
-    // Make sure the window has tabs and a viewable window. The viewable
-    // window check is necessary because, for example, when a browser is
-    // closed the destructor is not necessarily run immediately. This means
+    // Make sure the window is viewable and is not about to be closed. The
+    // viewable window check is necessary because, for example, when a browser
+    // is closed the destructor is not necessarily run immediately. This means
     // its possible for us to get a handle to a browser that is about to be
-    // removed. If the tab count is 0 or the window is null, the browser is
-    // about to be deleted, so we ignore it.
+    // removed. If the window is null, the browser is about to be deleted, so we
+    // ignore it. There is no check for having open tabs anymore. This is needed
+    // to handle a case when the last tab is closed (on Andorid it doesn't mean
+    // that the window is about to be removed). Instead, there is a check if the
+    // window is about to be closed. If the window is last for the profile, the
+    // latest state will be kept.
     if (!IsWindowSyncable(*window_delegate)) {
       continue;
     }

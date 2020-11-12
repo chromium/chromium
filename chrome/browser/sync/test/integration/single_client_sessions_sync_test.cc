@@ -458,6 +458,21 @@ IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest, NavigateThenCloseTab) {
           .Wait());
 }
 
+IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest,
+                       ShouldDeleteLastClosedTab) {
+  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(CheckInitialState(0));
+
+  ASSERT_TRUE(OpenTab(0, GURL(kURL1)));
+  ASSERT_TRUE(OpenTab(0, GURL(kURL2)));
+  WaitForHierarchyOnServer(SessionsHierarchy({{kURL1, kURL2}}));
+
+  CloseTab(/*index=*/0, /*tab_index=*/0);
+  WaitForHierarchyOnServer(SessionsHierarchy({{kURL2}}));
+  CloseTab(/*index=*/0, /*tab_index=*/0);
+  WaitForHierarchyOnServer(SessionsHierarchy());
+}
+
 class SingleClientSessionsWithDeferRecyclingSyncTest
     : public SingleClientSessionsSyncTest {
  public:

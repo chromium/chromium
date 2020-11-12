@@ -184,7 +184,7 @@ class SyncTest : public PlatformBrowserTest {
 
 #if !defined(OS_ANDROID)
   // Returns a pointer to a particular browser. Callee owns the object
-  // and manages its lifetime.
+  // and manages its lifetime. The called browser must not be closed before.
   Browser* GetBrowser(int index);
 
   // Adds a new browser belonging to the profile at |profile_index|, and appends
@@ -372,6 +372,14 @@ class SyncTest : public PlatformBrowserTest {
       std::vector<syncer::FCMHandler*>* sync_invalidations_fcm_handlers,
       content::BrowserContext* context);
 
+#if !defined(OS_ANDROID)
+  // Called when the |browser| was removed externally. This just marks the
+  // |browser| in the |browsers_| list as nullptr to keep indexes in |browsers_|
+  // and |profiles_| in sync. It is used when the |browser| is removed within a
+  // test (e.g. when the last tab is closed for the |browser|).
+  void OnBrowserRemoved(Browser* browser);
+#endif
+
   // Helper to Profile::CreateProfile that handles path creation. It creates
   // a profile then registers it as a testing profile.
   Profile* MakeTestProfile(base::FilePath profile_path, int index);
@@ -466,6 +474,9 @@ class SyncTest : public PlatformBrowserTest {
   // managed by BrowserList, so we don't use a std::vector<std::unique_ptr<>>
   // here.
   std::vector<Browser*> browsers_;
+
+  class ClosedBrowserObserver;
+  std::unique_ptr<ClosedBrowserObserver> browser_list_observer_;
 #endif
 
   // Collection of sync clients used by a test. A sync client is associated
