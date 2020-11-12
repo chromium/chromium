@@ -30,6 +30,7 @@ import org.robolectric.shadows.ShadowToast;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Promise;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.browserservices.ui.controller.Verifier;
@@ -54,7 +55,8 @@ import org.chromium.url.JUnitTestGURLs;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@EnableFeatures(ChromeFeatureList.TRUSTED_WEB_ACTIVITY_QUALITY_ENFORCEMENT)
+@EnableFeatures({ChromeFeatureList.TRUSTED_WEB_ACTIVITY_QUALITY_ENFORCEMENT,
+        ChromeFeatureList.TRUSTED_WEB_ACTIVITY_QUALITY_ENFORCEMENT_WARNING})
 @DisableFeatures(ChromeFeatureList.TRUSTED_WEB_ACTIVITY_QUALITY_ENFORCEMENT_FORCED)
 public class QualityEnforcerUnitTest {
     private static final GURL TRUSTED_ORIGIN_PAGE = JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1);
@@ -64,6 +66,10 @@ public class QualityEnforcerUnitTest {
 
     @Rule
     public TestRule mFeaturesProcessor = new Features.JUnitProcessor();
+
+    @Rule
+    public JniMocker mocker = new JniMocker();
+
     @Mock
     private ChromeActivity mActivity;
     @Mock
@@ -84,6 +90,8 @@ public class QualityEnforcerUnitTest {
     private Tab mTab;
     @Mock
     public TrustedWebActivityUmaRecorder mUmaRecorder;
+    @Mock
+    private QualityEnforcer.Natives mNativeMock;
 
     private ShadowPackageManager mShadowPackageManager;
 
@@ -92,6 +100,8 @@ public class QualityEnforcerUnitTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
+        mocker.mock(QualityEnforcerJni.TEST_HOOKS, mNativeMock);
+
         doNothing()
                 .when(mTabObserverRegistrar)
                 .registerActivityTabObserver(mTabObserverCaptor.capture());
@@ -102,6 +112,7 @@ public class QualityEnforcerUnitTest {
         mQualityEnforcer = new QualityEnforcer(mActivity, mLifecycleDispatcher,
                 mTabObserverRegistrar, mIntentDataProvider, mCustomTabsConnection, mVerifier,
                 mClientPackageNameProvider, mUmaRecorder);
+        when(mIntentDataProvider.getUrlToLoad()).thenReturn(TRUSTED_ORIGIN_PAGE.getSpec());
     }
 
     @Test
@@ -163,14 +174,14 @@ public class QualityEnforcerUnitTest {
     @Test
     public void notTrigger_digitalAssetLinkPass() {
         when(mIntentDataProvider.getUrlToLoad()).thenReturn(TRUSTED_ORIGIN_PAGE.getSpec());
-        mQualityEnforcer.onFinishNativeInitialization();
+        navigateToUrlNoError(TRUSTED_ORIGIN_PAGE);
         verifyNotTriggered();
     }
 
     @Test
     public void trigger_digitalAssetLinkFailed() {
         when(mIntentDataProvider.getUrlToLoad()).thenReturn(UNTRUSTED_PAGE.getSpec());
-        mQualityEnforcer.onFinishNativeInitialization();
+        navigateToUrlNoError(UNTRUSTED_PAGE);
         verifyToastShown(ContextUtils.getApplicationContext().getString(
                 R.string.twa_quality_enforcement_violation_asset_link, UNTRUSTED_PAGE.getSpec()));
         verifyNotifyClientApp();
@@ -197,7 +208,7 @@ public class QualityEnforcerUnitTest {
     public void triggerNotCrash_whenDigitalAssetLinkFailed() {
         setClientEnable(true);
         when(mIntentDataProvider.getUrlToLoad()).thenReturn(UNTRUSTED_PAGE.getSpec());
-        mQualityEnforcer.onFinishNativeInitialization();
+        navigateToUrlNoError(UNTRUSTED_PAGE);
         verifyNotifyClientApp();
         verify(mActivity, never()).finish();
     }

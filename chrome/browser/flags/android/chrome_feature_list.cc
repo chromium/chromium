@@ -221,6 +221,7 @@ const base::Feature* kFeaturesExposedToJava[] = {
     &kTrustedWebActivityPostMessage,
     &kTrustedWebActivityQualityEnforcement,
     &kTrustedWebActivityQualityEnforcementForced,
+    &kTrustedWebActivityQualityEnforcementWarning,
     &kStartSurfaceAndroid,
     &kUmaBackgroundSessions,
     &kUpdateNotificationSchedulingIntegration,
@@ -640,6 +641,10 @@ const base::Feature kTrustedWebActivityQualityEnforcement{
 const base::Feature kTrustedWebActivityQualityEnforcementForced{
     "TrustedWebActivityQualityEnforcementForced",
     base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kTrustedWebActivityQualityEnforcementWarning{
+    "TrustedWebActivityQualityEnforcementWarning",
+    base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kStartSurfaceAndroid{"StartSurfaceAndroid",
                                          base::FEATURE_DISABLED_BY_DEFAULT};

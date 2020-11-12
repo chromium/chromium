@@ -443,6 +443,8 @@ public abstract class ChromeFeatureList {
             "TrustedWebActivityQualityEnforcement";
     public static final String TRUSTED_WEB_ACTIVITY_QUALITY_ENFORCEMENT_FORCED =
             "TrustedWebActivityQualityEnforcementForced";
+    public static final String TRUSTED_WEB_ACTIVITY_QUALITY_ENFORCEMENT_WARNING =
+            "TrustedWebActivityQualityEnforcementWarning";
     public static final String VIDEO_TUTORIALS = "VideoTutorials";
     public static final String UPDATE_NOTIFICATION_SCHEDULING_INTEGRATION =
             "UpdateNotificationSchedulingIntegration";

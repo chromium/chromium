@@ -215,13 +215,13 @@ public class TrustedWebActivityUmaRecorder {
     }
 
     public void recordQualityEnforcementViolation(
-            @QualityEnforcer.ViolationType int type, boolean crashed) {
+            @QualityEnforcementViolationType int type, boolean crashed) {
         RecordHistogram.recordEnumeratedHistogram("TrustedWebActivity.QualityEnforcementViolation",
-                type, QualityEnforcer.ViolationType.NUM_ENTRIES);
+                type, QualityEnforcementViolationType.MAX_VALUE + 1);
         if (crashed) {
             RecordHistogram.recordEnumeratedHistogram(
                     "TrustedWebActivity.QualityEnforcementViolation.Crashed", type,
-                    QualityEnforcer.ViolationType.NUM_ENTRIES);
+                    QualityEnforcementViolationType.MAX_VALUE + 1);
         }
     }
 }

@@ -129,6 +129,7 @@ extern const base::Feature kTrustedWebActivityNewDisclosure;
 extern const base::Feature kTrustedWebActivityPostMessage;
 extern const base::Feature kTrustedWebActivityQualityEnforcement;
 extern const base::Feature kTrustedWebActivityQualityEnforcementForced;
+extern const base::Feature kTrustedWebActivityQualityEnforcementWarning;
 extern const base::Feature kStartSurfaceAndroid;
 extern const base::Feature kUmaBackgroundSessions;
 extern const base::Feature kUpdateNotificationSchedulingIntegration;

@@ -2978,6 +2978,7 @@ static_library("browser") {
       "installable/installed_webapp_geolocation_context.h",
       "installable/installed_webapp_provider.cc",
       "installable/installed_webapp_provider.h",
+      "installable/quality_enforcer.cc",
       "lifetime/application_lifetime_android.cc",
       "lifetime/application_lifetime_android.h",
       "media/android/cdm/media_drm_origin_id_manager.cc",
