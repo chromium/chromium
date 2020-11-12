@@ -18,6 +18,18 @@ declare_args() {
       !is_chromeos && !is_android && !is_chromecast && !is_fuchsia &&
       !(host_os == "mac" && current_cpu == "x86") &&
       (v8_target_cpu == target_cpu || is_msan) && !(is_win && host_os != "win")
+
+  # We use a different filename for arm64 macOS builds so that the arm64 and
+  # x64 snapshots can live side-by-side in a universal macOS app.
+  if (is_mac) {
+    if (v8_target_cpu == "x64") {
+      v8_context_snapshot_filename = "v8_context_snapshot.x86_64.bin"
+    } else if (v8_target_cpu == "arm64") {
+      v8_context_snapshot_filename = "v8_context_snapshot.arm64.bin"
+    }
+  } else {
+    v8_context_snapshot_filename = "v8_context_snapshot.bin"
+  }
 }
 
 # We cannot use V8 context snapshot, if V8 doesn't use snapshot files.

@@ -43,6 +43,7 @@ source_set("browser") {
   configs += [
     "//build/config:precompiled_headers",
     "//content:content_implementation",
+    "//tools/v8_context_snapshot:use_v8_context_snapshot",
     "//v8:external_startup_data",
   ]
   defines = []

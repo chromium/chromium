@@ -471,7 +471,7 @@ component("headless_non_renderer") {
     if (v8_use_external_startup_data) {
       public_deps += [ "//v8" ]
       if (use_v8_context_snapshot) {
-        data += [ "$root_out_dir/v8_context_snapshot.bin" ]
+        data += [ "$root_out_dir/$v8_context_snapshot_filename" ]
         data_deps += [ "//tools/v8_context_snapshot" ]
       } else {
         data += [ "$root_out_dir/snapshot_blob.bin" ]

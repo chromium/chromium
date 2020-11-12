@@ -85,7 +85,10 @@ component("gin") {
     frameworks = [ "CoreFoundation.framework" ]
   }
 
-  configs += [ "//v8:external_startup_data" ]
+  configs += [
+    "//tools/v8_context_snapshot:use_v8_context_snapshot",
+    "//v8:external_startup_data",
+  ]
 }
 
 executable("gin_shell") {

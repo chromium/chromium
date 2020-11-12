@@ -76,7 +76,9 @@ const char kSnapshotFileName32[] = "snapshot_blob_32.bin";
 #endif
 
 #else  // defined(OS_ANDROID)
-const char kV8ContextSnapshotFileName[] = "v8_context_snapshot.bin";
+#if defined(USE_V8_CONTEXT_SNAPSHOT)
+const char kV8ContextSnapshotFileName[] = V8_CONTEXT_SNAPSHOT_FILENAME;
+#endif
 const char kSnapshotFileName[] = "snapshot_blob.bin";
 #endif  // defined(OS_ANDROID)
 
@@ -86,7 +88,12 @@ const char* GetSnapshotFileName(
     case V8Initializer::V8SnapshotFileType::kDefault:
       return kSnapshotFileName;
     case V8Initializer::V8SnapshotFileType::kWithAdditionalContext:
+#if defined(USE_V8_CONTEXT_SNAPSHOT)
       return kV8ContextSnapshotFileName;
+#else
+      NOTREACHED();
+      return nullptr;
+#endif
   }
   NOTREACHED();
   return nullptr;
