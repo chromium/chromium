@@ -85,11 +85,19 @@ Polymer({
     },
   },
 
+  /** @private {?settings.TimeZoneBrowserProxy} */
+  browserProxy_: null,
+
+  /** @override */
+  created() {
+    this.browserProxy_ = settings.TimeZoneBrowserProxyImpl.getInstance();
+  },
+
   /** @override */
   attached() {
     this.addWebUIListener(
         'can-set-date-time-changed', this.onCanSetDateTimeChanged_.bind(this));
-    chrome.send('dateTimePageReady');
+    this.browserProxy_.dateTimePageReady();
   },
 
   /**
@@ -115,7 +123,7 @@ Polymer({
 
   /** @private */
   onSetDateTimeTap_() {
-    chrome.send('showSetDateTimeUI');
+    this.browserProxy_.showSetDateTimeUI();
   },
 
   /**

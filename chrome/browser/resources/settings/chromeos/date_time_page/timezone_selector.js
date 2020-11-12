@@ -108,8 +108,9 @@ Polymer({
     // Setting several preferences at once will trigger several
     // |maybeGetTimeZoneList_| calls, which we don't want.
     this.getTimeZonesRequestSent_ = true;
-    cr.sendWithPromise('getTimeZones')
-        .then((timezones) => {
+    settings.TimeZoneBrowserProxyImpl.getInstance()
+        .getTimeZones()
+        .then(timezones => {
           this.setTimeZoneList_(timezones);
         })
         .finally(() => {

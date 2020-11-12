@@ -18,6 +18,7 @@ js_type_check("closure_compile") {
 js_library("date_time_page") {
   deps = [
     ":date_time_types",
+    ":timezone_browser_proxy",
     ":timezone_selector",
     "..:deep_linking_behavior",
     "..:os_route",
@@ -40,6 +41,7 @@ js_library("timezone_browser_proxy") {
 
 js_library("timezone_selector") {
   deps = [
+    ":timezone_browser_proxy",
     "../../controls:settings_dropdown_menu",
     "../../prefs:prefs_behavior",
     "//ui/webui/resources/js:cr",
@@ -104,6 +106,7 @@ js_library("timezone_browser_proxy.m") {
 js_library("timezone_selector.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/date_time_page/timezone_selector.m.js" ]
   deps = [
+    ":timezone_browser_proxy.m",
     "../../controls:settings_dropdown_menu.m",
     "../../prefs:prefs_behavior.m",
     "../../prefs:prefs_types.m",
@@ -146,7 +149,7 @@ polymer_modulizer("date_time_page") {
   html_type = "dom-module"
   migrated_imports = os_settings_migrated_imports
   namespace_rewrites = os_settings_namespace_rewrites
-  auto_imports = os_settings_auto_imports
+  auto_imports = os_settings_auto_imports + [ "chrome/browser/resources/settings/chromeos/date_time_page/timezone_browser_proxy.html|TimeZoneBrowserProxyImpl,TimeZoneBrowserProxy" ]
 }
 
 polymer_modulizer("timezone_selector") {
@@ -155,7 +158,7 @@ polymer_modulizer("timezone_selector") {
   html_type = "dom-module"
   migrated_imports = os_settings_migrated_imports
   namespace_rewrites = os_settings_namespace_rewrites
-  auto_imports = os_settings_auto_imports
+  auto_imports = os_settings_auto_imports + [ "chrome/browser/resources/settings/chromeos/date_time_page/timezone_browser_proxy.html|TimeZoneBrowserProxyImpl,TimeZoneBrowserProxy" ]
 }
 
 polymer_modulizer("timezone_subpage") {
@@ -163,8 +166,7 @@ polymer_modulizer("timezone_subpage") {
   html_file = "timezone_subpage.html"
   html_type = "dom-module"
   migrated_imports = os_settings_migrated_imports
-  namespace_rewrites = os_settings_namespace_rewrites +
-                       [ "settings.TimeZoneBrowserProxy|TimeZoneBrowserProxy" ]
+  namespace_rewrites = os_settings_namespace_rewrites
   auto_imports = os_settings_auto_imports + [
                    "chrome/browser/resources/settings/chromeos/date_time_page/date_time_types.html|TimeZoneAutoDetectMethod",
                    "chrome/browser/resources/settings/chromeos/date_time_page/timezone_browser_proxy.html|TimeZoneBrowserProxyImpl,TimeZoneBrowserProxy",
