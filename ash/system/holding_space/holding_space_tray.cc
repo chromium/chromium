@@ -54,6 +54,12 @@ HoldingSpaceTray::HoldingSpaceTray(Shelf* shelf) : TrayBackgroundView(shelf) {
   // Icon.
   icon_ = tray_container()->AddChildView(
       std::make_unique<HoldingSpaceTrayIcon>(shelf));
+
+  // It's possible that this holding space tray was created after login, such as
+  // would occur if the user connects an external display. In such situations
+  // the holding space model will already have been attached.
+  if (HoldingSpaceController::Get()->model())
+    OnHoldingSpaceModelAttached(HoldingSpaceController::Get()->model());
 }
 
 HoldingSpaceTray::~HoldingSpaceTray() = default;

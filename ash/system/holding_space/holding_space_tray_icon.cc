@@ -58,6 +58,12 @@ HoldingSpaceTrayIcon::HoldingSpaceTrayIcon(Shelf* shelf) : shelf_(shelf) {
     controller_observer_.Add(HoldingSpaceController::Get());
     shell_observer_.Add(Shell::Get());
     session_observer_.Add(Shell::Get()->session_controller());
+
+    // It's possible that this holding space tray icon was created after login,
+    // such as would occur if the user connects an external display. In such
+    // situations the holding space model will already have been attached.
+    if (HoldingSpaceController::Get()->model())
+      OnHoldingSpaceModelAttached(HoldingSpaceController::Get()->model());
   }
 }
 
