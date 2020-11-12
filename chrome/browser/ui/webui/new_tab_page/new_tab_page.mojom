@@ -403,6 +403,8 @@ interface PageHandler {
   OnModuleUsage(string module_id);
   // Logs that the modules have been shown at |time|.
   OnModulesRendered(double time);
+  // Logs that the <ntp-app> element's |ready| callback method was called.
+  OnAppRendered(double time);
 
   // ======= REALBOX =======
   // Queries autocomplete matches from the browser.

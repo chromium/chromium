@@ -728,6 +728,11 @@ void NewTabPageHandler::OnPromoServiceShuttingDown() {
   promo_service_ = nullptr;
 }
 
+void NewTabPageHandler::OnAppRendered(double time) {
+  logger_->LogEvent(NTP_APP_RENDERED,
+                    base::Time::FromJsTime(time) - ntp_navigation_start_time_);
+}
+
 void NewTabPageHandler::OnMostVisitedTilesRendered(
     std::vector<new_tab_page::mojom::MostVisitedTilePtr> tiles,
     double time) {

@@ -351,6 +351,7 @@ class AppElement extends PolymerElement {
   /** @override */
   ready() {
     super.ready();
+    this.pageHandler_.onAppRendered(BrowserProxy.getInstance().now());
     // Let the browser breath and then render remaining elements.
     BrowserProxy.getInstance().waitForLazyRender().then(() => {
       ensureLazyLoaded();

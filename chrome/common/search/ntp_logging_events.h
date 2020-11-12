@@ -176,7 +176,10 @@ enum NTPLoggingEventType {
   // The NTP modules were shown.
   NTP_MODULES_SHOWN = 83,
 
-  NTP_EVENT_TYPE_LAST = NTP_MODULES_SHOWN
+  // The NTP <ntp-app> element was created and ready() was called.
+  NTP_APP_RENDERED = 84,
+
+  NTP_EVENT_TYPE_LAST = NTP_APP_RENDERED
 };
 
 // The different types of events that are logged for NTP search suggestions,

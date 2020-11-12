@@ -552,6 +552,9 @@ void NTPUserDataLogger::LogEvent(NTPLoggingEventType event,
     case NTP_MODULES_SHOWN:
       UMA_HISTOGRAM_LOAD_TIME("NewTabPage.Modules.ShownTime", time);
       break;
+    case NTP_APP_RENDERED:
+      UMA_HISTOGRAM_LOAD_TIME("NewTabPage.MainUi.ShownTime", time);
+      break;
   }
 }
 
