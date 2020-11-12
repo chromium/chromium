@@ -124,12 +124,6 @@ Process Process::Duplicate() const {
   return Process(out_handle);
 }
 
-ProcessHandle Process::Release() {
-  if (is_current())
-    return ::GetCurrentProcess();
-  return process_.Take();
-}
-
 ProcessId Process::Pid() const {
   DCHECK(IsValid());
   return GetProcId(Handle());

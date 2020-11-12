@@ -162,7 +162,7 @@ void NodeController::SetIOTaskRunner(
 }
 
 void NodeController::SendBrokerClientInvitation(
-    base::Process target_process,
+    base::ProcessHandle target_process,
     ConnectionParams connection_params,
     const std::vector<std::pair<std::string, ports::PortRef>>& attached_ports,
     const ProcessErrorCallback& process_error_callback) {
@@ -180,10 +180,12 @@ void NodeController::SendBrokerClientInvitation(
     }
   }
 
+  ScopedProcessHandle scoped_target_process =
+      ScopedProcessHandle::CloneFrom(target_process);
   io_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&NodeController::SendBrokerClientInvitationOnIOThread,
-                     base::Unretained(this), std::move(target_process),
+                     base::Unretained(this), std::move(scoped_target_process),
                      std::move(connection_params), temporary_node_name,
                      process_error_callback));
 }
@@ -359,7 +361,7 @@ void NodeController::DeserializeMessageAsEventForFuzzer(
 }
 
 void NodeController::SendBrokerClientInvitationOnIOThread(
-    base::Process target_process,
+    ScopedProcessHandle target_process,
     ConnectionParams connection_params,
     ports::NodeName temporary_node_name,
     const ProcessErrorCallback& process_error_callback) {
@@ -375,7 +377,7 @@ void NodeController::SendBrokerClientInvitationOnIOThread(
     node_connection_params = ConnectionParams(node_channel.TakeLocalEndpoint());
     // BrokerHost owns itself.
     BrokerHost* broker_host =
-        new BrokerHost(target_process.Duplicate(), std::move(connection_params),
+        new BrokerHost(target_process.get(), std::move(connection_params),
                        process_error_callback);
     bool channel_ok = broker_host->SendChannel(
         node_channel.TakeRemoteEndpoint().TakePlatformHandle());
@@ -875,7 +877,7 @@ void NodeController::OnAcceptInvitation(const ports::NodeName& from_node,
 void NodeController::OnAddBrokerClient(const ports::NodeName& from_node,
                                        const ports::NodeName& client_name,
                                        base::ProcessHandle process_handle) {
-  base::Process scoped_process_handle(process_handle);
+  ScopedProcessHandle scoped_process_handle(process_handle);
 
   scoped_refptr<NodeChannel> sender = GetPeerChannel(from_node);
   if (!sender) {
@@ -898,7 +900,7 @@ void NodeController::OnAddBrokerClient(const ports::NodeName& from_node,
 #if defined(OS_WIN)
   // The broker must have a working handle to the client process in order to
   // properly copy other handles to and from the client.
-  if (!scoped_process_handle.IsValid()) {
+  if (!scoped_process_handle.is_valid()) {
     DLOG(ERROR) << "Broker rejecting client with invalid process handle.";
     return;
   }
@@ -1308,7 +1310,7 @@ void NodeController::ForceDisconnectProcessForTestingOnIOThread(
   for (auto& peer : peers_) {
     NodeChannel* channel = peer.second.get();
     if (channel->HasRemoteProcessHandle()) {
-      base::Process process(channel->CloneRemoteProcessHandle());
+      base::Process process(channel->CloneRemoteProcessHandle().release());
       if (process.Pid() == process_id)
         peers_to_drop.emplace(peer.first, peer.second);
     }

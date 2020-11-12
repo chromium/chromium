@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/process/process.h"
 #include "base/process/process_handle.h"
 #include "base/strings/string_piece.h"
 #include "base/task/current_thread.h"
@@ -18,6 +17,7 @@
 #include "mojo/core/connection_params.h"
 #include "mojo/core/embedder/process_error_callback.h"
 #include "mojo/core/platform_handle_in_transit.h"
+#include "mojo/core/scoped_process_handle.h"
 #include "mojo/public/cpp/platform/platform_handle.h"
 
 namespace mojo {
@@ -28,7 +28,7 @@ namespace core {
 class BrokerHost : public Channel::Delegate,
                    public base::CurrentThread::DestructionObserver {
  public:
-  BrokerHost(base::Process client_process,
+  BrokerHost(base::ProcessHandle client_process,
              ConnectionParams connection_params,
              const ProcessErrorCallback& process_error_callback);
 
@@ -59,7 +59,7 @@ class BrokerHost : public Channel::Delegate,
   const ProcessErrorCallback process_error_callback_;
 
 #if defined(OS_WIN)
-  base::Process client_process_;
+  ScopedProcessHandle client_process_;
 #endif
 
   scoped_refptr<Channel> channel_;

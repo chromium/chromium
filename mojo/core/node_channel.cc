@@ -231,27 +231,29 @@ void NodeChannel::NotifyBadMessage(const std::string& error) {
   process_error_callback_.Run("Received bad user message: " + error);
 }
 
-void NodeChannel::SetRemoteProcessHandle(base::Process process_handle) {
+void NodeChannel::SetRemoteProcessHandle(ScopedProcessHandle process_handle) {
   DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
   {
     base::AutoLock lock(channel_lock_);
     if (channel_)
-      channel_->set_remote_process(process_handle.Duplicate());
+      channel_->set_remote_process(process_handle.Clone());
   }
   base::AutoLock lock(remote_process_handle_lock_);
-  DCHECK(!remote_process_handle_.IsValid());
-  CHECK_NE(remote_process_handle_.Handle(), base::GetCurrentProcessHandle());
+  DCHECK(!remote_process_handle_.is_valid());
+  CHECK_NE(remote_process_handle_.get(), base::GetCurrentProcessHandle());
   remote_process_handle_ = std::move(process_handle);
 }
 
 bool NodeChannel::HasRemoteProcessHandle() {
   base::AutoLock lock(remote_process_handle_lock_);
-  return remote_process_handle_.IsValid();
+  return remote_process_handle_.is_valid();
 }
 
-base::Process NodeChannel::CloneRemoteProcessHandle() {
+ScopedProcessHandle NodeChannel::CloneRemoteProcessHandle() {
   base::AutoLock lock(remote_process_handle_lock_);
-  return remote_process_handle_.Duplicate();
+  if (!remote_process_handle_.is_valid())
+    return ScopedProcessHandle();
+  return remote_process_handle_.Clone();
 }
 
 void NodeChannel::SetRemoteNodeName(const ports::NodeName& name) {
@@ -292,11 +294,11 @@ void NodeChannel::AcceptPeer(const ports::NodeName& sender_name,
 }
 
 void NodeChannel::AddBrokerClient(const ports::NodeName& client_name,
-                                  base::Process process_handle) {
+                                  ScopedProcessHandle process_handle) {
   AddBrokerClientData* data;
   std::vector<PlatformHandle> handles;
 #if defined(OS_WIN)
-  handles.emplace_back(base::win::ScopedHandle(process_handle.Release()));
+  handles.emplace_back(base::win::ScopedHandle(process_handle.release()));
 #endif
   Channel::MessagePtr message =
       CreateMessage(MessageType::ADD_BROKER_CLIENT, sizeof(AddBrokerClientData),
@@ -304,7 +306,7 @@ void NodeChannel::AddBrokerClient(const ports::NodeName& client_name,
   message->SetHandles(std::move(handles));
   data->client_name = client_name;
 #if !defined(OS_WIN)
-  data->process_handle = process_handle.Handle();
+  data->process_handle = process_handle.get();
   data->padding = 0;
 #endif
   WriteChannelMessage(std::move(message));
@@ -493,8 +495,8 @@ void NodeChannel::CreateAndBindLocalBrokerHost(
   // Self-owned.
   ConnectionParams connection_params(
       PlatformChannelEndpoint(std::move(broker_host_handle)));
-  new BrokerHost(remote_process_handle_.Duplicate(),
-                 std::move(connection_params), process_error_callback_);
+  new BrokerHost(remote_process_handle_.get(), std::move(connection_params),
+                 process_error_callback_);
 #endif
 }
 
@@ -646,7 +648,7 @@ void NodeChannel::OnChannelMessage(const void* payload,
         // NOTE: It's safe to retain a weak reference to this process handle
         // through the extent of this call because |this| is kept alive and
         // |remote_process_handle_| is never reset once set.
-        from_process = remote_process_handle_.Handle();
+        from_process = remote_process_handle_.get();
       }
       const RelayEventMessageData* data;
       if (GetMessagePayload(payload, payload_size, &data)) {

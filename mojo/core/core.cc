@@ -168,13 +168,13 @@ MojoHandle Core::CreatePartialMessagePipe(const ports::PortRef& port) {
 }
 
 void Core::SendBrokerClientInvitation(
-    base::Process target_process,
+    base::ProcessHandle target_process,
     ConnectionParams connection_params,
     const std::vector<std::pair<std::string, ports::PortRef>>& attached_ports,
     const ProcessErrorCallback& process_error_callback) {
   RequestContext request_context;
   GetNodeController()->SendBrokerClientInvitation(
-      std::move(target_process), std::move(connection_params), attached_ports,
+      target_process, std::move(connection_params), attached_ports,
       process_error_callback);
 }
 
@@ -1251,23 +1251,17 @@ MojoResult Core::SendInvitation(
   if (options && options->struct_size < sizeof(*options))
     return MOJO_RESULT_INVALID_ARGUMENT;
 
-  base::ProcessHandle target_process_handle = base::kNullProcessHandle;
+  base::ProcessHandle target_process = base::kNullProcessHandle;
   if (process_handle) {
     if (process_handle->struct_size < sizeof(*process_handle))
       return MOJO_RESULT_INVALID_ARGUMENT;
 #if defined(OS_WIN)
-    target_process_handle = reinterpret_cast<base::ProcessHandle>(
+    target_process = reinterpret_cast<base::ProcessHandle>(
         static_cast<uintptr_t>(process_handle->value));
 #else
-    target_process_handle =
-        static_cast<base::ProcessHandle>(process_handle->value);
+    target_process = static_cast<base::ProcessHandle>(process_handle->value);
 #endif
   }
-  // The passed in |process_handle| is owned by the caller, so duplicate it to
-  // a new strongly-owned handle and release ownership of the original.
-  base::Process temp_process(target_process_handle);
-  base::Process target_process = temp_process.Duplicate();
-  ignore_result(temp_process.Release());
 
   ProcessErrorCallback process_error_callback;
   if (error_handler) {
@@ -1361,7 +1355,7 @@ MojoResult Core::SendInvitation(
       connection_params.set_is_async(true);
     }
     GetNodeController()->SendBrokerClientInvitation(
-        std::move(target_process), std::move(connection_params), attached_ports,
+        target_process, std::move(connection_params), attached_ports,
         process_error_callback);
   }
 
