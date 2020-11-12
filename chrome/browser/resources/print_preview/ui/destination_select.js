@@ -167,17 +167,9 @@ Polymer({
       return this.i18n('noLongerSupportedFragment');
     }
 
-    if (this.destination.shouldShowSaveToDriveWarning) {
-      return this.i18nAdvanced('saveToDriveNotSupportedWarning');
-    }
-
     // Give preference to connection status.
     if (this.destination.connectionStatusText) {
       return this.destination.connectionStatusText;
-    }
-
-    if (this.destination.shouldShowDeprecatedPrinterWarning) {
-      return this.i18nAdvanced('printerNotSupportedWarning');
     }
 
     return '';

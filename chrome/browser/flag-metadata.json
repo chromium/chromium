@@ -2632,9 +2632,9 @@
     "expiry_milestone": 89
   },
   {
-    "name": "force-enable-devices-page",
+    "name": "force-enable-privet-printing",
     "owners": [ "thestig", "rbpotter", "dhoss" ],
-    "expiry_milestone": 88
+    "expiry_milestone": 90
   },
   {
     "name": "force-preferred-interval-for-video",

@@ -82,13 +82,6 @@ Polymer({
       value: false,
     },
 
-    /** @private {boolean} */
-    showCloudPrintWarning_: {
-      type: Boolean,
-      computed: 'computeShowCloudPrintWarning_(destinations_.splices)',
-      value: false,
-    },
-
     /** @private {?RegExp} */
     searchQuery_: {
       type: Object,
@@ -128,18 +121,6 @@ Polymer({
   /** @override */
   detached() {
     this.tracker_.removeAll();
-  },
-
-  /**
-   * @return {boolean} Whether the destinations dialog should show a Cloud Print
-   *     deprecation warning.
-   * @private
-   */
-  computeShowCloudPrintWarning_() {
-    return this.destinations_.some(destination => {
-      return destination.shouldShowSaveToDriveWarning ||
-          destination.shouldShowDeprecatedPrinterWarning;
-    });
   },
 
   /**

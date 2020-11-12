@@ -287,15 +287,10 @@ Polymer({
       }
     }
 
-    if (this.destination.origin !== DestinationOrigin.CROS) {
-      return this.destination.shouldShowDeprecatedPrinterWarning ?
-          this.i18nAdvanced('printerNotSupportedWarning') :
-          '';
-    }
-
     // Only when the flag is enabled do we need to fetch a local printer status
     // error string.
-    if (!this.printerStatusFlagEnabled_) {
+    if (this.destination.origin !== DestinationOrigin.CROS ||
+        !this.printerStatusFlagEnabled_) {
       return '';
     }
 

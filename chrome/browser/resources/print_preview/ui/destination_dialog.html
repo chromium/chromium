@@ -96,20 +96,6 @@
     font-weight: 500;
   }
 
-  .destinations-status {
-    align-items: center;
-    display: flex;
-    margin-bottom: 16px;
-  }
-
-  .destinations-status iron-icon {
-    --google-orange-600: rgb(232, 113, 10);  /* e8710a */
-    fill: var(--google-orange-600);
-    flex-shrink: 0;
-    padding-inline-end: 8px;
-    padding-inline-start: 4px;
-  }
-
   cr-button iron-icon {
     --iron-icon-fill-color: currentColor;
     margin-inline-start: 8px;
@@ -131,13 +117,6 @@
         </template>
         <option value="">$i18n{addAccountTitle}</option>
       </select>
-    </div>
-    <div class="destinations-status" hidden$="[[!showCloudPrintWarning_]]">
-      <iron-icon icon="cr:warning" aria-label="$i18n{warningIconAriaLabel}">
-      </iron-icon>
-      <span id="warning-message">
-        $i18nRaw{cloudPrintingNotSupportedWarning}
-      </span>
     </div>
     <print-preview-search-box id="searchBox"
         label="$i18n{searchBoxPlaceholder}" search-query="{{searchQuery_}}"

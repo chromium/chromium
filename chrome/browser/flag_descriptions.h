@@ -1070,6 +1070,9 @@ extern const char kPrivacyReorderedAndroidDescription[];
 extern const char kPrivacySettingsRedesignName[];
 extern const char kPrivacySettingsRedesignDescription[];
 
+extern const char kForceEnablePrivetPrintingName[];
+extern const char kForceEnablePrivetPrintingDescription[];
+
 extern const char kSafetyCheckAndroidName[];
 extern const char kSafetyCheckAndroidDescription[];
 

@@ -689,52 +689,6 @@ TEST_F('PrintPreviewDestinationDialogTest', 'UserAccounts', function() {
   this.runMochaTest(destination_dialog_test.TestNames.UserAccounts);
 });
 
-TEST_F(
-    'PrintPreviewDestinationDialogTest', 'CloudPrinterDeprecationWarnings',
-    function() {
-      this.runMochaTest(
-          destination_dialog_test.TestNames.CloudPrinterDeprecationWarnings);
-    });
-
-TEST_F(
-    'PrintPreviewDestinationDialogTest',
-    'CloudPrinterDeprecationWarningsSuppressed', function() {
-      this.runMochaTest(destination_dialog_test.TestNames
-                            .CloudPrinterDeprecationWarningsSuppressed);
-    });
-
-// TODO(crbug.com/1111985): Different tests are needed because |isChromeOS| from
-// cr.m.js does not match the behavior of the |OS_CHROMEOS| macro on Lacros.
-GEN('#if defined(OS_CHROMEOS)');
-TEST_F(
-    'PrintPreviewDestinationDialogTest', 'SaveToDriveDeprecationWarningsCros',
-    function() {
-      this.runMochaTest(
-          destination_dialog_test.TestNames.SaveToDriveDeprecationWarningsCros);
-    });
-
-TEST_F(
-    'PrintPreviewDestinationDialogTest',
-    'SaveToDriveDeprecationWarningsSuppressedCros', function() {
-      this.runMochaTest(destination_dialog_test.TestNames
-                            .SaveToDriveDeprecationWarningsSuppressedCros);
-    });
-GEN('#else');
-TEST_F(
-    'PrintPreviewDestinationDialogTest', 'SaveToDriveDeprecationWarnings',
-    function() {
-      this.runMochaTest(
-          destination_dialog_test.TestNames.SaveToDriveDeprecationWarnings);
-    });
-
-TEST_F(
-    'PrintPreviewDestinationDialogTest',
-    'SaveToDriveDeprecationWarningsSuppressed', function() {
-      this.runMochaTest(destination_dialog_test.TestNames
-                            .SaveToDriveDeprecationWarningsSuppressed);
-    });
-GEN('#endif');
-
 // eslint-disable-next-line no-var
 var PrintPreviewAdvancedDialogTest = class extends PrintPreviewTest {
   /** @override */
@@ -1272,23 +1226,9 @@ TEST_F('PrintPreviewDestinationSelectTestCrOS', 'UpdateStatus', function() {
   this.runMochaTest(destination_select_test_cros.TestNames.UpdateStatus);
 });
 
-TEST_F(
-    'PrintPreviewDestinationSelectTestCrOS', 'UpdateStatusDeprecationWarnings',
-    function() {
-      this.runMochaTest(destination_select_test_cros.TestNames
-                            .UpdateStatusDeprecationWarnings);
-    });
-
 TEST_F('PrintPreviewDestinationSelectTestCrOS', 'ChangeIcon', function() {
   this.runMochaTest(destination_select_test_cros.TestNames.ChangeIcon);
 });
-
-TEST_F(
-    'PrintPreviewDestinationSelectTestCrOS', 'ChangeIconDeprecationWarnings',
-    function() {
-      this.runMochaTest(
-          destination_select_test_cros.TestNames.ChangeIconDeprecationWarnings);
-    });
 
 TEST_F('PrintPreviewDestinationSelectTestCrOS', 'EulaIsDisplayed', function() {
   this.runMochaTest(destination_select_test_cros.TestNames.EulaIsDisplayed);
@@ -1413,23 +1353,9 @@ TEST_F('PrintPreviewDestinationSelectTest', 'UpdateStatus', function() {
   this.runMochaTest(destination_select_test.TestNames.UpdateStatus);
 });
 
-TEST_F(
-    'PrintPreviewDestinationSelectTest', 'UpdateStatusDeprecationWarnings',
-    function() {
-      this.runMochaTest(
-          destination_select_test.TestNames.UpdateStatusDeprecationWarnings);
-    });
-
 TEST_F('PrintPreviewDestinationSelectTest', 'ChangeIcon', function() {
   this.runMochaTest(destination_select_test.TestNames.ChangeIcon);
 });
-
-TEST_F(
-    'PrintPreviewDestinationSelectTest', 'ChangeIconDeprecationWarnings',
-    function() {
-      this.runMochaTest(
-          destination_select_test.TestNames.ChangeIconDeprecationWarnings);
-    });
 GEN('#endif');
 
 // eslint-disable-next-line no-var

@@ -352,11 +352,18 @@ Polymer({
       return;
     }
 
-    // Remove unsupported cloud printers from the sticky settings, to free up
-    // these spots for supported printers.
+    // Remove unsupported cloud and privet printers from the sticky settings,
+    // to free up these spots for supported printers.
+    // TODO (rbpotter): Remove this logic a milestone after the policy and flag
+    // below have been removed, as it is unlikely for users to still have stale
+    // cloud and privet printers after that point.
     if (!loadTimeData.getBoolean('cloudPrintDeprecationWarningsSuppressed')) {
-      const filteredRecentDestinations =
-          recentDestinations.filter(d => !CloudOrigins.includes(d.origin));
+      const privetEnabled =
+          loadTimeData.getBoolean('forceEnablePrivetPrinting');
+      const filteredRecentDestinations = recentDestinations.filter(d => {
+        return !CloudOrigins.includes(d.origin) &&
+            (privetEnabled || d.origin !== DestinationOrigin.PRIVET);
+      });
       if (filteredRecentDestinations.length !== recentDestinations.length) {
         this.setSetting('recentDestinations', filteredRecentDestinations);
         recentDestinations = filteredRecentDestinations;
