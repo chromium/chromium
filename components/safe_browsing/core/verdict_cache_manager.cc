@@ -372,7 +372,7 @@ VerdictCacheManager::VerdictCacheManager(
       stored_verdict_count_real_time_url_check_(base::nullopt),
       content_settings_(content_settings) {
   if (history_service)
-    history_service_observer_.Add(history_service);
+    history_service_observation_.Observe(history_service);
   if (!content_settings->IsOffTheRecord()) {
     ScheduleNextCleanUpAfterInterval(
         base::TimeDelta::FromSeconds(kCleanUpIntervalInitSecond));
@@ -382,7 +382,8 @@ VerdictCacheManager::VerdictCacheManager(
 
 void VerdictCacheManager::Shutdown() {
   CleanUpExpiredVerdicts();
-  history_service_observer_.RemoveAll();
+  if (history_service_observation_.IsObserving())
+    history_service_observation_.RemoveObservation();
   weak_factory_.InvalidateWeakPtrs();
 }
 
@@ -688,7 +689,8 @@ void VerdictCacheManager::OnURLsDeleted(
 // Overridden from history::HistoryServiceObserver.
 void VerdictCacheManager::HistoryServiceBeingDeleted(
     history::HistoryService* history_service) {
-  history_service_observer_.Remove(history_service);
+  DCHECK(history_service_observation_.IsObservingSource(history_service));
+  history_service_observation_.RemoveObservation();
 }
 
 bool VerdictCacheManager::RemoveExpiredPhishGuardVerdicts(

@@ -24,7 +24,7 @@ ThreatDetailsRedirectsCollector::ThreatDetailsRedirectsCollector(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   if (history_service) {
-    history_service_observer_.Add(history_service.get());
+    history_service_observation_.Observe(history_service.get());
   }
 }
 
@@ -111,7 +111,8 @@ void ThreatDetailsRedirectsCollector::AllDone() {
 
 void ThreatDetailsRedirectsCollector::HistoryServiceBeingDeleted(
     history::HistoryService* history_service) {
-  history_service_observer_.Remove(history_service);
+  DCHECK(history_service_observation_.IsObservingSource(history_service));
+  history_service_observation_.RemoveObservation();
   history_service_.reset();
 }
 
