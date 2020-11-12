@@ -198,7 +198,7 @@ TEST_F(SyntheticCrashReportUtilTest, CreateSyntheticCrashReportForUte) {
             config_lines[53]);
   EXPECT_EQ(base::NumberToString(kUptimeMs), config_lines[54]);
 
-  EXPECT_EQ("memory_footprint", config_lines[55]);
+  EXPECT_EQ("BreakpadServerParameterPrefix_memory_footprint", config_lines[55]);
   EXPECT_EQ(base::NumberToString(base::NumberToString(kMemoryFootprint).size()),
             config_lines[56]);
   EXPECT_EQ(base::NumberToString(kMemoryFootprint), config_lines[57]);
