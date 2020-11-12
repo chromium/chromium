@@ -6,6 +6,7 @@
 #include <iterator>
 #include <string>
 
+#include "ash/public/cpp/login_screen_test_api.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/files/file_util.h"
@@ -35,6 +36,7 @@
 #include "chrome/browser/chromeos/login/test/https_forwarder.h"
 #include "chrome/browser/chromeos/login/test/js_checker.h"
 #include "chrome/browser/chromeos/login/test/local_policy_test_server_mixin.h"
+#include "chrome/browser/chromeos/login/test/login_manager_mixin.h"
 #include "chrome/browser/chromeos/login/test/oobe_base_test.h"
 #include "chrome/browser/chromeos/login/test/oobe_screen_exit_waiter.h"
 #include "chrome/browser/chromeos/login/test/oobe_screen_waiter.h"
@@ -492,11 +494,26 @@ IN_PROC_BROWSER_TEST_F(WebviewLoginTest, AllowNewUser) {
   test::OobeJS().ExpectTrue(frame_url + ".search('flow=nosignup') != -1");
 }
 
-IN_PROC_BROWSER_TEST_F(WebviewLoginTest, EmailPrefill) {
+class ReauthWebviewLoginTest : public WebviewLoginTest {
+ protected:
+  LoginManagerMixin::TestUserInfo reauth_user_{
+      AccountId::FromUserEmailGaiaId(FakeGaiaMixin::kFakeUserEmail,
+                                     FakeGaiaMixin::kFakeUserGaiaId),
+      user_manager::USER_TYPE_REGULAR,
+      /* invalid token status to force online signin */
+      user_manager::User::OAUTH2_TOKEN_STATUS_INVALID};
+  LoginManagerMixin login_manager_mixin_{&mixin_host_, {reauth_user_}};
+};
+
+IN_PROC_BROWSER_TEST_F(ReauthWebviewLoginTest, EmailPrefill) {
+  EXPECT_TRUE(
+      ash::LoginScreenTestApi::IsForcedOnlineSignin(reauth_user_.account_id));
+  // Focus triggers online signin.
+  EXPECT_TRUE(ash::LoginScreenTestApi::FocusUser(reauth_user_.account_id));
   WaitForGaiaPageLoad();
-  test::OobeJS().ExecuteAsync("Oobe.showSigninUI('user@example.com')");
-  WaitForGaiaPageReload();
-  EXPECT_EQ(fake_gaia_.fake_gaia()->prefilled_email(), "user@example.com");
+  EXPECT_TRUE(ash::LoginScreenTestApi::IsOobeDialogVisible());
+  EXPECT_EQ(fake_gaia_.fake_gaia()->prefilled_email(),
+            reauth_user_.account_id.GetUserEmail());
 }
 
 IN_PROC_BROWSER_TEST_F(WebviewLoginTest, StoragePartitionHandling) {
