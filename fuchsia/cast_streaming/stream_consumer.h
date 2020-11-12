@@ -5,8 +5,6 @@
 #ifndef FUCHSIA_CAST_STREAMING_STREAM_CONSUMER_H_
 #define FUCHSIA_CAST_STREAMING_STREAM_CONSUMER_H_
 
-#include <fuchsia/media/cpp/fidl.h>
-
 #include "base/callback.h"
 #include "base/timer/timer.h"
 #include "media/mojo/mojom/media_types.mojom.h"

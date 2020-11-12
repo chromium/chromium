@@ -9,7 +9,6 @@ source_set("cast_streaming") {
     "//base",
     "//components/openscreen_platform",
     "//components/openscreen_platform:openscreen_platform_network_service",
-    "//fuchsia/base",
     "//media",
     "//media/mojo/common",
     "//media/mojo/mojom",
@@ -20,6 +19,7 @@ source_set("cast_streaming") {
     "//third_party/openscreen/src/platform:api",
     "//third_party/openscreen/src/util",
   ]
+  public_deps = [ "//components/cast/message_port" ]
   visibility = [ "//fuchsia/engine/*" ]
   public = [
     "public/cast_streaming.h",

@@ -4,12 +4,10 @@
 
 #include "fuchsia/cast_streaming/cast_message_port_impl.h"
 
-#include "base/fuchsia/fuchsia_logging.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/values.h"
-#include "fuchsia/base/mem_buffer_util.h"
 #include "third_party/openscreen/src/platform/base/error.h"
 
 namespace cast_streaming {
@@ -50,26 +48,13 @@ const char kInitialConnectMessage[] = R"(
     }
     )";
 
-// Upper limit for pending FIDL messages. Messages are going to be pending as
-// long as the other end of the MessagePort does not acknowledge the latest
-// message. This is to prevent the queue from being overrun in case the other
-// end of the FIDL MessagePort is misbehaving.
-// This should cover the largest burst of messages from the Open Screen
-// implementation.
-constexpr size_t kMaxPendingFidlMessages = 10;
-
 // Extracts |buffer| data into |sender_id|, |message_namespace| and |message|.
 // Returns true on success.
-bool ParseMessageBuffer(const fuchsia::mem::Buffer& buffer,
+bool ParseMessageBuffer(base::StringPiece buffer,
                         std::string* sender_id,
                         std::string* message_namespace,
                         std::string* message) {
-  std::string string_buffer;
-  if (!cr_fuchsia::StringFromMemBuffer(buffer, &string_buffer))
-    return false;
-
-  base::Optional<base::Value> converted_value =
-      base::JSONReader::Read(string_buffer);
+  base::Optional<base::Value> converted_value = base::JSONReader::Read(buffer);
   if (!converted_value)
     return false;
 
@@ -93,11 +78,11 @@ bool ParseMessageBuffer(const fuchsia::mem::Buffer& buffer,
   return true;
 }
 
-// Creates a WebMessage out of the |sender_id|, |message_namespace| and
+// Creates a message string out of the |sender_id|, |message_namespace| and
 // |message|.
-fuchsia::web::WebMessage CreateWebMessage(const std::string& sender_id,
-                                          const std::string& message_namespace,
-                                          const std::string& message) {
+std::string CreateStringMessage(const std::string& sender_id,
+                                const std::string& message_namespace,
+                                const std::string& message) {
   base::Value value(base::Value::Type::DICTIONARY);
   value.SetStringKey(kKeyNamespace, message_namespace);
   value.SetStringKey(kKeySenderId, sender_id);
@@ -105,31 +90,16 @@ fuchsia::web::WebMessage CreateWebMessage(const std::string& sender_id,
 
   std::string json_message;
   CHECK(base::JSONWriter::Write(value, &json_message));
-
-  fuchsia::mem::Buffer buffer;
-  buffer.size = json_message.size();
-  zx_status_t status = zx::vmo::create(json_message.size(), 0, &buffer.vmo);
-  ZX_DCHECK(status == ZX_OK, status);
-  status = buffer.vmo.write(json_message.data(), 0, json_message.size());
-  ZX_DCHECK(status == ZX_OK, status);
-
-  fuchsia::web::WebMessage web_message;
-  web_message.set_data(std::move(buffer));
-
-  return web_message;
+  return json_message;
 }
 
 }  // namespace
 
 CastMessagePortImpl::CastMessagePortImpl(
-    fidl::InterfaceRequest<fuchsia::web::MessagePort> message_port_request)
-    : message_port_binding_(this, std::move(message_port_request)) {
+    std::unique_ptr<cast_api_bindings::MessagePort> message_port)
+    : message_port_(std::move(message_port)) {
   DVLOG(1) << __func__;
-  DCHECK(message_port_binding_.is_bound());
-  message_port_binding_.set_error_handler([this](zx_status_t status) {
-    ZX_LOG(ERROR, status) << "MessagePort disconnected.";
-    MaybeCloseWithEpitaph(ZX_ERR_BAD_STATE);
-  });
+  message_port_->SetReceiver(this);
 
   // Initialize the connection with the Cast Streaming Sender.
   PostMessage(kValueSystemSenderId, kSystemNamespace, kInitialConnectMessage);
@@ -137,24 +107,13 @@ CastMessagePortImpl::CastMessagePortImpl(
 
 CastMessagePortImpl::~CastMessagePortImpl() = default;
 
-void CastMessagePortImpl::MaybeSendMessageToFidl() {
-  DVLOG(3) << __func__;
-  if (!receive_message_callback_ || pending_fidl_messages_.empty())
-    return;
-
-  receive_message_callback_(std::move(pending_fidl_messages_.front()));
-  receive_message_callback_ = nullptr;
-  pending_fidl_messages_.pop_front();
-}
-
-void CastMessagePortImpl::MaybeCloseWithEpitaph(zx_status_t epitaph) {
-  if (message_port_binding_.is_bound())
-    message_port_binding_.Close(epitaph);
+void CastMessagePortImpl::MaybeClose() {
+  if (message_port_)
+    message_port_.reset();
   if (client_) {
     client_->OnError(
         openscreen::Error(openscreen::Error::Code::kCastV2CastSocketError));
   }
-  pending_fidl_messages_.clear();
 }
 
 void CastMessagePortImpl::SetClient(
@@ -164,12 +123,12 @@ void CastMessagePortImpl::SetClient(
   DCHECK_NE(!client_, !client);
   client_ = client;
   if (!client_)
-    MaybeCloseWithEpitaph(ZX_OK);
+    MaybeClose();
 }
 
 void CastMessagePortImpl::ResetClient() {
   client_ = nullptr;
-  MaybeCloseWithEpitaph(ZX_OK);
+  MaybeClose();
 }
 
 void CastMessagePortImpl::SendInjectResponse(const std::string& sender_id,
@@ -222,42 +181,41 @@ void CastMessagePortImpl::PostMessage(const std::string& sender_id,
                                       const std::string& message_namespace,
                                       const std::string& message) {
   DVLOG(3) << __func__;
-  if (!message_port_binding_.is_bound())
+  if (!message_port_)
     return;
-
-  if (pending_fidl_messages_.size() > kMaxPendingFidlMessages) {
-    LOG(ERROR) << "Too many buffered Open Screen messages.";
-    MaybeCloseWithEpitaph(ZX_ERR_BAD_STATE);
-    return;
-  }
 
   DVLOG(3) << "Received Open Screen message. SenderId: " << sender_id
            << ". Namespace: " << message_namespace << ". Message: " << message;
-
-  pending_fidl_messages_.push_back(
-      CreateWebMessage(sender_id, message_namespace, message));
-  MaybeSendMessageToFidl();
+  message_port_->PostMessage(
+      CreateStringMessage(sender_id, message_namespace, message));
 }
 
-void CastMessagePortImpl::PostMessage(
-    fuchsia::web::WebMessage message,
-    fuchsia::web::MessagePort::PostMessageCallback callback) {
+bool CastMessagePortImpl::OnMessage(
+    base::StringPiece message,
+    std::vector<std::unique_ptr<cast_api_bindings::MessagePort>> ports) {
   DVLOG(3) << __func__;
 
-  // If |client_| was cleared, the binding should have been closed.
+  // If |client_| was cleared, |message_port_| should have been reset.
   DCHECK(client_);
+
+  if (!ports.empty()) {
+    // We should never receive any ports for Cast Streaming.
+    LOG(ERROR) << "Received ports on Cast Streaming MessagePort.";
+    MaybeClose();
+    return false;
+  }
 
   std::string sender_id;
   std::string message_namespace;
   std::string str_message;
-  if (!ParseMessageBuffer(message.data(), &sender_id, &message_namespace,
+  if (!ParseMessageBuffer(message, &sender_id, &message_namespace,
                           &str_message)) {
     LOG(ERROR) << "Received bad message.";
     client_->OnError(
         openscreen::Error(openscreen::Error::Code::kCastV2InvalidMessage));
-    return;
+    return false;
   }
-  DVLOG(3) << "Received FIDL message. SenderId: " << sender_id
+  DVLOG(3) << "Received Cast message. SenderId: " << sender_id
            << ". Namespace: " << message_namespace
            << ". Message: " << str_message;
 
@@ -274,22 +232,12 @@ void CastMessagePortImpl::PostMessage(
              << ", message=" << str_message;
   }
 
-  // Acknowledge the message and unblock the receipt of another.
-  fuchsia::web::MessagePort_PostMessage_Result result;
-  result.set_response(fuchsia::web::MessagePort_PostMessage_Response());
-  callback(std::move(result));
+  return true;
 }
 
-void CastMessagePortImpl::ReceiveMessage(
-    fuchsia::web::MessagePort::ReceiveMessageCallback callback) {
+void CastMessagePortImpl::OnPipeError() {
   DVLOG(3) << __func__;
-  if (receive_message_callback_) {
-    MaybeCloseWithEpitaph(ZX_ERR_BAD_STATE);
-    return;
-  }
-
-  receive_message_callback_ = std::move(callback);
-  MaybeSendMessageToFidl();
+  MaybeClose();
 }
 
 }  // namespace cast_streaming

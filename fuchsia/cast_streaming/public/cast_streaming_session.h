@@ -5,13 +5,12 @@
 #ifndef FUCHSIA_CAST_STREAMING_PUBLIC_CAST_STREAMING_SESSION_H_
 #define FUCHSIA_CAST_STREAMING_PUBLIC_CAST_STREAMING_SESSION_H_
 
-#include <fuchsia/web/cpp/fidl.h>
-
 #include <memory>
 
 #include "base/callback.h"
 #include "base/optional.h"
 #include "base/sequenced_task_runner.h"
+#include "components/cast/message_port/message_port.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/video_decoder_config.h"
 #include "media/mojo/mojom/media_types.mojom.h"
@@ -93,10 +92,9 @@ class CastStreamingSession {
   // * On failure, OnSessionEnded() will be called.
   // * When a new offer is sent by the Cast Streaming Sender,
   //   OnSessionReinitialization() will be called.
-  void Start(
-      Client* client,
-      fidl::InterfaceRequest<fuchsia::web::MessagePort> message_port_request,
-      scoped_refptr<base::SequencedTaskRunner> task_runner);
+  void Start(Client* client,
+             std::unique_ptr<cast_api_bindings::MessagePort> message_port,
+             scoped_refptr<base::SequencedTaskRunner> task_runner);
 
   // Stops the Cast Streaming Session. This can only be called once during the
   // lifespan of this object and only after a call to Start().

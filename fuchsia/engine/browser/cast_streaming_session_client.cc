@@ -5,6 +5,7 @@
 #include "fuchsia/engine/browser/cast_streaming_session_client.h"
 
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "components/cast/message_port/message_port_fuchsia.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/video_decoder_config.h"
 #include "media/mojo/mojom/media_types.mojom.h"
@@ -33,7 +34,9 @@ void CastStreamingSessionClient::StartMojoConnection(
 void CastStreamingSessionClient::OnReceiverEnabled() {
   DVLOG(1) << __func__;
   DCHECK(message_port_request_);
-  cast_streaming_session_.Start(this, std::move(message_port_request_),
+  cast_streaming_session_.Start(this,
+                                cast_api_bindings::MessagePortFuchsia::Create(
+                                    std::move(message_port_request_)),
                                 base::SequencedTaskRunnerHandle::Get());
 }
 

@@ -4,8 +4,6 @@
 
 #include "fuchsia/cast_streaming/public/cast_streaming_session.h"
 
-#include <lib/zx/time.h>
-
 #include "base/bind.h"
 #include "base/notreached.h"
 #include "base/timer/timer.h"
@@ -109,13 +107,12 @@ void CastStreamingSession::SetNetworkContextGetter(
 class CastStreamingSession::Internal
     : public openscreen::cast::ReceiverSession::Client {
  public:
-  Internal(
-      CastStreamingSession::Client* client,
-      fidl::InterfaceRequest<fuchsia::web::MessagePort> message_port_request,
-      scoped_refptr<base::SequencedTaskRunner> task_runner)
+  Internal(CastStreamingSession::Client* client,
+           std::unique_ptr<cast_api_bindings::MessagePort> message_port,
+           scoped_refptr<base::SequencedTaskRunner> task_runner)
       : task_runner_(task_runner),
         environment_(&openscreen::Clock::now, &task_runner_),
-        cast_message_port_impl_(std::move(message_port_request)),
+        cast_message_port_impl_(std::move(message_port)),
         client_(client) {
     DCHECK(task_runner);
     DCHECK(client_);
@@ -336,12 +333,12 @@ CastStreamingSession::~CastStreamingSession() = default;
 
 void CastStreamingSession::Start(
     Client* client,
-    fidl::InterfaceRequest<fuchsia::web::MessagePort> message_port_request,
+    std::unique_ptr<cast_api_bindings::MessagePort> message_port,
     scoped_refptr<base::SequencedTaskRunner> task_runner) {
   DCHECK(client);
   DCHECK(!internal_);
-  internal_ = std::make_unique<Internal>(
-      client, std::move(message_port_request), task_runner);
+  internal_ =
+      std::make_unique<Internal>(client, std::move(message_port), task_runner);
 }
 
 void CastStreamingSession::Stop() {
