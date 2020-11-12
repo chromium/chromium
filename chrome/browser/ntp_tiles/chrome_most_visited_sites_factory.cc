@@ -17,6 +17,7 @@
 #include "chrome/browser/ntp_tiles/chrome_custom_links_manager_factory.h"
 #include "chrome/browser/ntp_tiles/chrome_popular_sites_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/search/repeatable_queries/repeatable_queries_service_factory.h"
 #include "chrome/browser/search/suggestions/suggestions_service_factory.h"
 #include "chrome/common/buildflags.h"
 #include "components/history/core/browser/top_sites.h"
@@ -127,6 +128,11 @@ ChromeMostVisitedSitesFactory::NewForProfile(Profile* profile) {
 
   auto most_visited_sites = std::make_unique<ntp_tiles::MostVisitedSites>(
       profile->GetPrefs(), TopSitesFactory::GetForProfile(profile),
+#if defined(OS_ANDROID)
+      nullptr,
+#else
+      RepeatableQueriesServiceFactory::GetForProfile(profile),
+#endif
       SuggestionsServiceFactory::GetForProfile(profile),
 #if defined(OS_ANDROID)
       ChromePopularSitesFactory::NewForProfile(profile),

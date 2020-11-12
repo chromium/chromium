@@ -12,6 +12,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "components/search/ntp_features.h"
 #include "components/search/repeatable_queries/repeatable_queries_service.h"
 #include "content/public/browser/browser_context.h"
@@ -42,7 +43,8 @@ RepeatableQueriesServiceFactory::~RepeatableQueriesServiceFactory() = default;
 
 KeyedService* RepeatableQueriesServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
-  if (!base::FeatureList::IsEnabled(ntp_features::kNtpRepeatableQueries)) {
+  if (!base::FeatureList::IsEnabled(ntp_features::kNtpRepeatableQueries) ||
+      !base::FeatureList::IsEnabled(omnibox::kNewSearchFeatures)) {
     return nullptr;
   }
 

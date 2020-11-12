@@ -26,6 +26,7 @@
 #include "components/ntp_tiles/switches.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
+#include "components/search/ntp_features.h"
 
 using history::TopSites;
 using suggestions::ChromeSuggestion;
@@ -120,6 +121,7 @@ base::string16 GenerateShortTitle(const base::string16& title) {
 MostVisitedSites::MostVisitedSites(
     PrefService* prefs,
     scoped_refptr<history::TopSites> top_sites,
+    RepeatableQueriesService* repeatable_queries,
     SuggestionsService* suggestions,
     std::unique_ptr<PopularSites> popular_sites,
     std::unique_ptr<CustomLinksManager> custom_links,
@@ -127,6 +129,7 @@ MostVisitedSites::MostVisitedSites(
     std::unique_ptr<MostVisitedSitesSupervisor> supervisor)
     : prefs_(prefs),
       top_sites_(top_sites),
+      repeatable_queries_(repeatable_queries),
       suggestions_service_(suggestions),
       popular_sites_(std::move(popular_sites)),
       custom_links_(std::move(custom_links)),
@@ -215,7 +218,11 @@ void MostVisitedSites::SetMostVisitedURLsObserver(Observer* observer,
   if (top_sites_) {
     // Register as TopSitesObserver so that we can update ourselves when the
     // TopSites changes.
-    top_sites_observer_.Add(top_sites_.get());
+    top_sites_observer_.Observe(top_sites_.get());
+  }
+
+  if (repeatable_queries_) {
+    repeatable_queries_observer_.Observe(repeatable_queries_);
   }
 
   if (custom_links_) {
@@ -242,6 +249,10 @@ void MostVisitedSites::Refresh() {
     // TODO(mastiz): Is seems unnecessary to refresh TopSites if we will end up
     // using server-side suggestions.
     top_sites_->SyncWithHistory();
+  }
+
+  if (repeatable_queries_) {
+    repeatable_queries_->Refresh();
   }
 
   suggestions_service_->FetchSuggestionsData();
@@ -389,6 +400,13 @@ void MostVisitedSites::AddOrRemoveBlockedUrl(const GURL& url, bool add_url) {
         base::UserMetricsAction("Suggestions.Site.RemovalUndone"));
   }
 
+  if (repeatable_queries_) {
+    if (add_url)
+      repeatable_queries_->DeleteQueryWithDestinationURL(url);
+    else
+      NOTREACHED() << "Deleted repeatable queries cannot be restored.";
+  }
+
   if (top_sites_) {
     if (add_url)
       top_sites_->AddBlockedUrl(url);
@@ -481,7 +499,37 @@ void MostVisitedSites::OnMostVisitedURLsAvailable(
   }
 
   mv_source_ = TileSource::TOP_SITES;
-  InitiateNotificationForNewTiles(std::move(tiles));
+  InitiateNotificationForNewTiles(InsertRepeatableQueryTiles(std::move(tiles)));
+}
+
+NTPTilesVector MostVisitedSites::InsertRepeatableQueryTiles(
+    NTPTilesVector tiles) {
+  if (!repeatable_queries_)
+    return tiles;
+
+  const std::vector<RepeatableQuery>& repeatable_queries =
+      repeatable_queries_->repeatable_queries();
+
+  // Make room for the repeatable query tiles, if necessary.
+  int num_overflow_tiles =
+      tiles.size() + repeatable_queries.size() - GetMaxNumSites();
+  if (num_overflow_tiles > 0)
+    tiles.resize(tiles.size() - num_overflow_tiles);
+
+  auto insert_position = (ntp_features::GetRepeatableQueriesInsertPosition() ==
+                          ntp_features::RepeatableQueriesInsertPosition::kStart)
+                             ? tiles.begin()
+                             : tiles.end();
+  for (const auto& repeatable_query : repeatable_queries) {
+    NTPTile tile;
+    tile.title = repeatable_query.query;
+    tile.url = repeatable_query.destination_url;
+    tile.source = TileSource::REPEATABLE_QUERIES_SERVICE;
+
+    auto inserted_position = tiles.insert(insert_position, tile);
+    insert_position = inserted_position + 1;
+  }
+  return tiles;
 }
 
 void MostVisitedSites::OnSuggestionsProfileChanged(
@@ -886,6 +934,20 @@ void MostVisitedSites::TopSitesChanged(TopSites* top_sites,
     // The displayed tiles are invalidated.
     InitiateTopSitesQuery();
   }
+}
+
+void MostVisitedSites::OnRepeatableQueriesUpdated() {
+  // Repeatable Queries are shown along with the most visited URLs only.
+  // Simulate a change to the most visited urls. This will result in
+  // MostVisitedSites::OnMostVisitedURLsAvailable to be called synchronously or
+  // asynchronously depending on whether the most visited URLs are cached.
+  if (top_sites_) {
+    TopSitesChanged(top_sites_.get(), ChangeReason::MOST_VISITED);
+  }
+}
+
+void MostVisitedSites::OnRepeatableQueriesServiceShuttingDown() {
+  repeatable_queries_observer_.RemoveObservation();
 }
 
 bool MostVisitedSites::ShouldAddHomeTile() const {

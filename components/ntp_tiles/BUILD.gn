@@ -60,6 +60,7 @@ static_library("ntp_tiles") {
     "//components/prefs",
     "//components/rappor/public",
     "//components/resources",
+    "//components/search",
     "//components/search_engines",
     "//components/strings",
     "//components/url_formatter",

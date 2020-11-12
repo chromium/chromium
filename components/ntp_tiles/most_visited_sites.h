@@ -21,7 +21,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/strings/string16.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history/core/browser/top_sites.h"
@@ -31,6 +31,8 @@
 #include "components/ntp_tiles/popular_sites.h"
 #include "components/ntp_tiles/section_type.h"
 #include "components/ntp_tiles/tile_source.h"
+#include "components/search/repeatable_queries/repeatable_queries_service.h"
+#include "components/search/repeatable_queries/repeatable_queries_service_observer.h"
 #include "components/suggestions/proto/suggestions.pb.h"
 #include "components/suggestions/suggestions_service.h"
 #include "url/gurl.h"
@@ -82,7 +84,8 @@ class MostVisitedSitesSupervisor {
 
 // Tracks the list of most visited sites.
 class MostVisitedSites : public history::TopSitesObserver,
-                         public MostVisitedSitesSupervisor::Observer {
+                         public MostVisitedSitesSupervisor::Observer,
+                         public RepeatableQueriesServiceObserver {
  public:
   // The observer to be notified when the list of most visited sites changes.
   class Observer {
@@ -123,6 +126,7 @@ class MostVisitedSites : public history::TopSitesObserver,
   //  optional and if null, the associated features will be disabled.
   MostVisitedSites(PrefService* prefs,
                    scoped_refptr<history::TopSites> top_sites,
+                   RepeatableQueriesService* repeatable_queries,
                    suggestions::SuggestionsService* suggestions,
                    std::unique_ptr<PopularSites> popular_sites,
                    std::unique_ptr<CustomLinksManager> custom_links,
@@ -260,6 +264,8 @@ class MostVisitedSites : public history::TopSitesObserver,
   void OnMostVisitedURLsAvailable(
       const history::MostVisitedURLList& visited_list);
 
+  NTPTilesVector InsertRepeatableQueryTiles(NTPTilesVector tiles);
+
   // Callback for when an update is reported by the SuggestionsService.
   void OnSuggestionsProfileChanged(
       const suggestions::SuggestionsProfile& suggestions_profile);
@@ -341,8 +347,13 @@ class MostVisitedSites : public history::TopSitesObserver,
   void TopSitesChanged(history::TopSites* top_sites,
                        ChangeReason change_reason) override;
 
+  // RepeatableQueriesServiceObserver implementation.
+  void OnRepeatableQueriesUpdated() override;
+  void OnRepeatableQueriesServiceShuttingDown() override;
+
   PrefService* prefs_;
   scoped_refptr<history::TopSites> top_sites_;
+  RepeatableQueriesService* repeatable_queries_;
   suggestions::SuggestionsService* suggestions_service_;
   std::unique_ptr<PopularSites> const popular_sites_;
   std::unique_ptr<CustomLinksManager> const custom_links_;
@@ -368,8 +379,12 @@ class MostVisitedSites : public history::TopSitesObserver,
       suggestions::SuggestionsService::ResponseCallbackList::Subscription>
       suggestions_subscription_;
 
-  ScopedObserver<history::TopSites, history::TopSitesObserver>
+  base::ScopedObservation<history::TopSites, history::TopSitesObserver>
       top_sites_observer_{this};
+
+  base::ScopedObservation<RepeatableQueriesService,
+                          RepeatableQueriesServiceObserver>
+      repeatable_queries_observer_{this};
 
   std::unique_ptr<base::CallbackList<void()>::Subscription>
       custom_links_subscription_;
