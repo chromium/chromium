@@ -176,6 +176,12 @@ class TpmChallengeKeySubtleImpl final : public TpmChallengeKeySubtle {
   // Returns the AccountId associated with |profile_|. Will return
   // EmptyAccountId() if GetUser() returns nullptr.
   AccountId GetAccountId() const;
+  // Returns `GetAccountId()` if the key type is `KEY_USER`; otherwise, returns
+  // empty `AccountId` for `KEY_DEVICE`.
+  AccountId GetAccountIdForAttestationFlow() const;
+  // Returns the account id in string if the key type is `KEY_USER`; otherwise,
+  // returns empty string for `KEY_DEVICE`.
+  std::string GetUsernameForAttestationClient() const;
 
   // Actually prepares a key after all checks are passed and if `can_continue`
   // is true.

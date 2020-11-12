@@ -709,7 +709,7 @@ TEST_F(TpmChallengeKeySubtleTest, GetPublicKeyFailed) {
   // attestation flow.
   AttestationClient::Get()
       ->GetTestInterface()
-      ->GetMutableKeyInfoReply(kTestUserEmail, key_name)
+      ->GetMutableKeyInfoReply(/*username=*/"", key_name)
       ->set_status(::attestation::STATUS_INVALID_PARAMETER);
 
   RunOneStepAndExpect(KEY_DEVICE, /*will_register_key=*/true, key_name,

@@ -317,6 +317,28 @@ AccountId TpmChallengeKeySubtleImpl::GetAccountId() const {
   return EmptyAccountId();
 }
 
+AccountId TpmChallengeKeySubtleImpl::GetAccountIdForAttestationFlow() const {
+  switch (key_type_) {
+    case KEY_DEVICE:
+      return EmptyAccountId();
+    case KEY_USER:
+      return GetAccountId();
+  }
+  LOG(DFATAL) << "Unrecognized key type value: " << key_type_;
+  return EmptyAccountId();
+}
+
+std::string TpmChallengeKeySubtleImpl::GetUsernameForAttestationClient() const {
+  switch (key_type_) {
+    case KEY_DEVICE:
+      return std::string();
+    case KEY_USER:
+      return cryptohome::Identification(GetAccountId()).id();
+  }
+  LOG(DFATAL) << "Unrecognized key type value: " << key_type_;
+  return std::string();
+}
+
 void TpmChallengeKeySubtleImpl::GetDeviceAttestationEnabled(
     const base::RepeatingCallback<void(bool)>& callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -403,7 +425,7 @@ void TpmChallengeKeySubtleImpl::GetEnrollmentPreparationsCallback(
   }
 
   ::attestation::GetKeyInfoRequest request;
-  request.set_username(cryptohome::Identification(GetAccountId()).id());
+  request.set_username(GetUsernameForAttestationClient());
   request.set_key_label(key_name_);
   AttestationClient::Get()->GetKeyInfo(
       request, base::BindOnce(&TpmChallengeKeySubtleImpl::DoesKeyExistCallback,
@@ -480,7 +502,7 @@ void TpmChallengeKeySubtleImpl::AskForUserConsentCallback(bool result) {
 
   // Generate a new key and have it signed by PCA.
   attestation_flow_->GetCertificate(
-      GetCertificateProfile(), GetAccountId(),
+      GetCertificateProfile(), GetAccountIdForAttestationFlow(),
       /*request_origin=*/std::string(),  // Not used.
       /*force_new_key=*/true, key_name_,
       base::BindOnce(&TpmChallengeKeySubtleImpl::GetCertificateCallback,
@@ -505,7 +527,7 @@ void TpmChallengeKeySubtleImpl::GetPublicKey() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   ::attestation::GetKeyInfoRequest request;
-  request.set_username(cryptohome::Identification(GetAccountId()).id());
+  request.set_username(GetUsernameForAttestationClient());
   request.set_key_label(key_name_);
   AttestationClient::Get()->GetKeyInfo(
       request, base::BindOnce(&TpmChallengeKeySubtleImpl::PrepareKeyFinished,
@@ -551,7 +573,7 @@ void TpmChallengeKeySubtleImpl::StartSignChallengeStep(
                                                       : std::string();
 
   ::attestation::SignEnterpriseChallengeRequest request;
-  request.set_username(cryptohome::Identification(GetAccountId()).id());
+  request.set_username(GetUsernameForAttestationClient());
   request.set_key_label(key_name_for_challenge);
   request.set_key_name_for_spkac(key_name_for_spkac);
   request.set_domain(GetEmail());
@@ -587,7 +609,7 @@ void TpmChallengeKeySubtleImpl::StartRegisterKeyStep(
   callback_ = std::move(callback);
 
   ::attestation::RegisterKeyWithChapsTokenRequest request;
-  request.set_username(cryptohome::Identification(GetAccountId()).id());
+  request.set_username(GetUsernameForAttestationClient());
   request.set_key_label(key_name_);
   request.set_include_certificates(false);
 
