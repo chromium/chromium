@@ -432,7 +432,7 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
 
   // Navigate the iframe same-origin to a document with the COOP header. The
   // header must be ignored in iframes.
-  NavigateFrameToURL(iframe_ftn, iframe_navigation_url);
+  EXPECT_TRUE(NavigateToURLFromRenderer(iframe_ftn, iframe_navigation_url));
   iframe_rfh = iframe_ftn->current_frame_host();
 
   // We expect the navigation to have used the same SiteInstance that was used

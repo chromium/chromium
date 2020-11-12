@@ -106,10 +106,11 @@ IN_PROC_BROWSER_TEST_F(SnapshotAXTreeBrowserTest,
       static_cast<WebContentsImpl*>(shell()->web_contents());
   FrameTreeNode* root_frame = web_contents->GetFrameTree()->root();
 
-  NavigateFrameToURL(root_frame->child_at(0), GURL("data:text/plain,Alpha"));
-  NavigateFrameToURL(
+  EXPECT_TRUE(NavigateToURLFromRenderer(root_frame->child_at(0),
+                                        GURL("data:text/plain,Alpha")));
+  EXPECT_TRUE(NavigateToURLFromRenderer(
       root_frame->child_at(1),
-      embedded_test_server()->GetURL("/accessibility/snapshot/inner.html"));
+      embedded_test_server()->GetURL("/accessibility/snapshot/inner.html")));
 
   AXTreeSnapshotWaiter waiter;
   web_contents->RequestAXTreeSnapshot(
@@ -165,14 +166,15 @@ IN_PROC_BROWSER_TEST_F(SnapshotAXTreeBrowserTest,
       static_cast<WebContentsImpl*>(shell()->web_contents());
   FrameTreeNode* root_frame = web_contents->GetFrameTree()->root();
 
-  NavigateFrameToURL(root_frame->child_at(0), GURL("data:text/plain,Alpha"));
+  EXPECT_TRUE(NavigateToURLFromRenderer(root_frame->child_at(0),
+                                        GURL("data:text/plain,Alpha")));
 
   WebContentsImpl* inner_contents =
       static_cast<WebContentsImpl*>(CreateAndAttachInnerContents(
           root_frame->child_at(1)->current_frame_host()));
-  NavigateFrameToURL(
+  EXPECT_TRUE(NavigateToURLFromRenderer(
       inner_contents->GetFrameTree()->root(),
-      embedded_test_server()->GetURL("/accessibility/snapshot/inner.html"));
+      embedded_test_server()->GetURL("/accessibility/snapshot/inner.html")));
 
   AXTreeSnapshotWaiter waiter;
   web_contents->RequestAXTreeSnapshot(

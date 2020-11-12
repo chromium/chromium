@@ -406,7 +406,7 @@ IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraSiteIsolationTest,
   // not a property of this test.
   GURL child_url(
       embedded_test_server()->GetURL("b.com", "/touch_selection.html"));
-  NavigateFrameToURL(child, child_url);
+  EXPECT_TRUE(NavigateToURLFromRenderer(child, child_url));
   EXPECT_EQ(
       " Site A ------------ proxies for B\n"
       "   +--Site B ------- proxies for A\n"
@@ -518,7 +518,7 @@ IN_PROC_BROWSER_TEST_P(TouchSelectionControllerClientAuraSiteIsolationTest,
   // not a property of this test.
   GURL child_url(
       embedded_test_server()->GetURL("b.com", "/touch_selection.html"));
-  NavigateFrameToURL(child, child_url);
+  EXPECT_TRUE(NavigateToURLFromRenderer(child, child_url));
   EXPECT_EQ(
       " Site A ------------ proxies for B\n"
       "   +--Site B ------- proxies for A\n"

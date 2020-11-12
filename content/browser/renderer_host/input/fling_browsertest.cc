@@ -117,7 +117,7 @@ class BrowserSideFlingBrowserTest : public ContentBrowserTest {
     {
       RenderFrameDeletedObserver deleted_observer(
           iframe_node->current_frame_host());
-      NavigateFrameToURL(iframe_node, iframe_url);
+      EXPECT_TRUE(NavigateToURLFromRenderer(iframe_node, iframe_url));
       deleted_observer.WaitUntilDeleted();
     }
 

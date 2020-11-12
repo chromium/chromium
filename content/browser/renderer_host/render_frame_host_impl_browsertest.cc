@@ -2668,7 +2668,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   ASSERT_TRUE(NavigateToURL(shell(), main_frame));
   FrameTreeNode* root = web_contents()->GetFrameTree()->root();
   FrameTreeNode* nested_iframe_node = root->child_at(0);
-  NavigateFrameToURL(nested_iframe_node, child_url);
+  EXPECT_TRUE(NavigateToURLFromRenderer(nested_iframe_node, child_url));
 
   ASSERT_EQ(blink::mojom::FrameVisibility::kRenderedOutOfViewport,
             nested_iframe_node->current_frame_host()->visibility());
@@ -2684,7 +2684,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest, VisibilityChildInView) {
   ASSERT_TRUE(NavigateToURL(shell(), main_frame));
   FrameTreeNode* root = web_contents()->GetFrameTree()->root();
   FrameTreeNode* nested_iframe_node = root->child_at(0);
-  NavigateFrameToURL(nested_iframe_node, child_url);
+  EXPECT_TRUE(NavigateToURLFromRenderer(nested_iframe_node, child_url));
 
   ASSERT_EQ(blink::mojom::FrameVisibility::kRenderedInViewport,
             nested_iframe_node->current_frame_host()->visibility());
@@ -3300,7 +3300,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
     EXPECT_EQ("a.test", grandchild_same_scheme_navigation.registrable_domain());
 
     // Navigate the middle child frame to https.
-    NavigateFrameToURL(child, url);
+    EXPECT_TRUE(NavigateToURLFromRenderer(child, url));
     EXPECT_EQ("a.test", child->current_url().host());
     EXPECT_EQ("https", child->current_origin().scheme());
     EXPECT_EQ(1u, child->child_count());
@@ -3735,7 +3735,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   EXPECT_EQ(LifecycleState::kActive, rfh_b->lifecycle_state());
 
   // 2) Navigate B's subframe to a cross-site C.
-  NavigateFrameToURL(rfh_b->frame_tree_node(), url_c);
+  EXPECT_TRUE(NavigateToURLFromRenderer(rfh_b->frame_tree_node(), url_c));
 
   // 3) Check LifecycleState of sub-frame rfh_c after navigating from subframe
   // rfh_b.

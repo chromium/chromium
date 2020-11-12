@@ -1047,7 +1047,8 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
 
   GURL subframe_url =
       embedded_test_server()->GetURL("a.com", "/simple_links.html");
-  NavigateFrameToURL(main_frame()->child_at(0), subframe_url);
+  EXPECT_TRUE(
+      NavigateToURLFromRenderer(main_frame()->child_at(0), subframe_url));
 
   RenderFrameHostImpl* subframe_rfh =
       current_frame_host()->child_at(0)->current_frame_host();

@@ -92,8 +92,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessMacBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
   FrameTreeNode* root = web_contents()->GetFrameTree()->root();
   FrameTreeNode* child = root->child_at(0);
-  NavigateFrameToURL(child,
-                     embedded_test_server()->GetURL("b.com", "/title1.html"));
+  EXPECT_TRUE(NavigateToURLFromRenderer(
+      child, embedded_test_server()->GetURL("b.com", "/title1.html")));
   web_contents()->GetFrameTree()->SetFocusedFrame(
       child, web_contents()->GetSiteInstance());
 
@@ -309,7 +309,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessMacBrowserTest,
 
   GURL frame_url(
       embedded_test_server()->GetURL("b.com", "/page_with_click_handler.html"));
-  NavigateFrameToURL(root->child_at(0), frame_url);
+  EXPECT_TRUE(NavigateToURLFromRenderer(root->child_at(0), frame_url));
   auto* child_frame_host = root->child_at(0)->current_frame_host();
 
   // Synchronize with the child and parent renderers to guarantee that the

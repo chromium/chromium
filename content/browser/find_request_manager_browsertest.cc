@@ -84,7 +84,7 @@ class FindRequestManagerTest : public ContentBrowserTest,
     GURL url(embedded_test_server()->GetURL(
         "b.com", child->current_url().path()));
 
-    EXPECT_TRUE(NavigateFrameToURL(child, url));
+    EXPECT_TRUE(NavigateToURLFromRenderer(child, url));
   }
 
   void Find(const std::string& search_text,
@@ -531,7 +531,8 @@ IN_PROC_BROWSER_TEST_P(FindRequestManagerTest, MAYBE(NavigateFrame)) {
       GetParam() ? "b.com" : "a.com", "/find_in_simple_page.html"));
   delegate()->MarkNextReply();
   TestNavigationObserver navigation_observer(contents());
-  NavigateFrameToURL(root->child_at(0)->child_at(1)->child_at(0), url);
+  EXPECT_TRUE(NavigateToURLFromRenderer(
+      root->child_at(0)->child_at(1)->child_at(0), url));
   EXPECT_TRUE(navigation_observer.last_navigation_succeeded());
   delegate()->WaitForNextReply();
 

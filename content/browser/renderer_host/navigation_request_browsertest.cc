@@ -772,7 +772,7 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest, VerifySameDocument) {
   }
   {
     NavigationHandleObserver observer(shell()->web_contents(), about_blank_url);
-    NavigateFrameToURL(root->child_at(0), about_blank_url);
+    EXPECT_TRUE(NavigateToURLFromRenderer(root->child_at(0), about_blank_url));
 
     EXPECT_TRUE(observer.has_committed());
     EXPECT_FALSE(observer.is_error());
@@ -2399,7 +2399,7 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
   {
     base::HistogramTester histograms;
     GURL url(embedded_test_server()->GetURL("b.com", "/title3.html"));
-    NavigateFrameToURL(root->child_at(0), url);
+    EXPECT_TRUE(NavigateToURLFromRenderer(root->child_at(0), url));
 
     std::string navigation_type =
         AreAllSitesIsolatedForTesting() ? "CrossProcess" : "SameProcess";

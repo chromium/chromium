@@ -812,7 +812,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessInternalsHitTestBrowserTest,
 
   GURL site_url(embedded_test_server()->GetURL(
       "b.com", "/tall_page_with_local_iframe.html"));
-  NavigateFrameToURL(parent_iframe_node, site_url);
+  EXPECT_TRUE(NavigateToURLFromRenderer(parent_iframe_node, site_url));
 
   FrameTreeNode* nested_iframe_node = parent_iframe_node->child_at(0);
   WaitForHitTestData(nested_iframe_node->current_frame_host());
@@ -930,7 +930,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessInternalsHitTestBrowserTest,
 
   GURL site_url(embedded_test_server()->GetURL(
       "b.com", "/tall_page_with_local_iframe.html"));
-  NavigateFrameToURL(parent_iframe_node, site_url);
+  EXPECT_TRUE(NavigateToURLFromRenderer(parent_iframe_node, site_url));
 
   FrameTreeNode* nested_iframe_node = parent_iframe_node->child_at(0);
   WaitForHitTestData(nested_iframe_node->current_frame_host());
@@ -1778,7 +1778,8 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
 
   GURL nested_frame_url(embedded_test_server()->GetURL(
       "baz.com", "/page_with_touch_start_janking_main_thread.html"));
-  NavigateFrameToURL(parent_iframe_node->child_at(0), nested_frame_url);
+  EXPECT_TRUE(NavigateToURLFromRenderer(parent_iframe_node->child_at(0),
+                                        nested_frame_url));
 
   RenderWidgetHostViewBase* root_rwhv = static_cast<RenderWidgetHostViewBase*>(
       root->current_frame_host()->GetRenderWidgetHost()->GetView());
@@ -2160,7 +2161,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
   // The child must be vertically scrollable.
   GURL child_url(embedded_test_server()->GetURL("b.com", "/tall_page.html"));
 #endif
-  NavigateFrameToURL(child_node, child_url);
+  EXPECT_TRUE(NavigateToURLFromRenderer(child_node, child_url));
 
   EXPECT_EQ(
       " Site A ------------ proxies for B\n"
@@ -4552,8 +4553,8 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessMouseWheelHitTestBrowserTest,
   // To test for https://bugs.chromium.org/p/chromium/issues/detail?id=820232
   // it's important that both subframes are in the same renderer process, so
   // we load the same URL in each case.
-  NavigateFrameToURL(root->child_at(0), frame_url);
-  NavigateFrameToURL(root->child_at(1), frame_url);
+  EXPECT_TRUE(NavigateToURLFromRenderer(root->child_at(0), frame_url));
+  EXPECT_TRUE(NavigateToURLFromRenderer(root->child_at(1), frame_url));
 
   for (int frame_index = 0; frame_index < 2; frame_index++) {
     // Synchronize with the child and parent renderers to guarantee that the
@@ -4613,7 +4614,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessMouseWheelHitTestBrowserTest,
 
   GURL frame_url(embedded_test_server()->GetURL(
       "b.com", "/page_with_scrollable_div.html"));
-  NavigateFrameToURL(root->child_at(0), frame_url);
+  EXPECT_TRUE(NavigateToURLFromRenderer(root->child_at(0), frame_url));
 
   // Synchronize with the child and parent renderers to guarantee that the
   // surface information required for event hit testing is ready.
@@ -4805,7 +4806,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
 
   GURL frame_url(
       embedded_test_server()->GetURL("b.com", "/page_with_touch_handler.html"));
-  NavigateFrameToURL(root->child_at(0), frame_url);
+  EXPECT_TRUE(NavigateToURLFromRenderer(root->child_at(0), frame_url));
 
   // Synchronize with the child and parent renderers to guarantee that the
   // surface information required for event hit testing is ready.
@@ -4948,7 +4949,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
 
   GURL frame_url(
       embedded_test_server()->GetURL("b.com", "/page_with_click_handler.html"));
-  NavigateFrameToURL(root->child_at(0), frame_url);
+  EXPECT_TRUE(NavigateToURLFromRenderer(root->child_at(0), frame_url));
   auto* child_frame_host = root->child_at(0)->current_frame_host();
 
   // Synchronize with the child and parent renderers to guarantee that the
@@ -5221,7 +5222,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
 
   GURL frame_url(
       embedded_test_server()->GetURL("b.com", "/page_with_click_handler.html"));
-  NavigateFrameToURL(root->child_at(0), frame_url);
+  EXPECT_TRUE(NavigateToURLFromRenderer(root->child_at(0), frame_url));
   auto* child_frame_host = root->child_at(0)->current_frame_host();
   auto* rwhv_child =
       static_cast<RenderWidgetHostViewBase*>(child_frame_host->GetView());
@@ -5307,7 +5308,7 @@ IN_PROC_BROWSER_TEST_F(
 
   GURL frame_url(embedded_test_server()->GetURL(
       "b.com", "/page_with_touch_start_default_prevented.html"));
-  NavigateFrameToURL(root->child_at(0), frame_url);
+  EXPECT_TRUE(NavigateToURLFromRenderer(root->child_at(0), frame_url));
 
   auto* child_frame_host = root->child_at(0)->current_frame_host();
   RenderWidgetHostImpl* child_render_widget_host =
@@ -5381,7 +5382,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
 
   GURL frame_url(
       embedded_test_server()->GetURL("b.com", "/page_with_click_handler.html"));
-  NavigateFrameToURL(root->child_at(0), frame_url);
+  EXPECT_TRUE(NavigateToURLFromRenderer(root->child_at(0), frame_url));
   auto* child_frame_host = root->child_at(0)->current_frame_host();
 
   // Synchronize with the child and parent renderers to guarantee that the
@@ -5483,7 +5484,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
 
   GURL frame_url(
       embedded_test_server()->GetURL("b.com", "/page_with_wheel_handler.html"));
-  NavigateFrameToURL(root->child_at(0), frame_url);
+  EXPECT_TRUE(NavigateToURLFromRenderer(root->child_at(0), frame_url));
   auto* child_frame_host = root->child_at(0)->current_frame_host();
 
   auto* rwhv_child =
@@ -5601,7 +5602,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
 
   GURL frame_url(
       embedded_test_server()->GetURL("b.com", "/page_with_wheel_handler.html"));
-  NavigateFrameToURL(root->child_at(0), frame_url);
+  EXPECT_TRUE(NavigateToURLFromRenderer(root->child_at(0), frame_url));
   auto* child_frame_host = root->child_at(0)->current_frame_host();
 
   WaitForHitTestData(child_frame_host);
@@ -5811,7 +5812,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest, MAYBE_PopupMenuTest) {
   FrameTreeNode* child_node = root->child_at(0);
   GURL site_url(embedded_test_server()->GetURL(
       "baz.com", "/site_isolation/page-with-select.html"));
-  NavigateFrameToURL(child_node, site_url);
+  EXPECT_TRUE(NavigateToURLFromRenderer(child_node, site_url));
 
   web_contents()->SendScreenRects();
 
@@ -5936,7 +5937,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
   FrameTreeNode* c_node = b_node->child_at(0);
   GURL site_url(embedded_test_server()->GetURL(
       "baz.com", "/site_isolation/page-with-select.html"));
-  NavigateFrameToURL(c_node, site_url);
+  EXPECT_TRUE(NavigateToURLFromRenderer(c_node, site_url));
 
   RenderWidgetHostViewBase* rwhv_c_node =
       static_cast<RenderWidgetHostViewBase*>(
@@ -6051,7 +6052,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
 
   GURL child_url(embedded_test_server()->GetURL(
       "b.com", "/frame_tree/page_with_positioned_frame.html"));
-  NavigateFrameToURL(child_node, child_url);
+  EXPECT_TRUE(NavigateToURLFromRenderer(child_node, child_url));
 
   FrameTreeNode* grandchild_node = child_node->child_at(0);
 
@@ -6061,7 +6062,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
 
   GURL grandchild_url(embedded_test_server()->GetURL(
       "c.com", "/site_isolation/page-with-select.html"));
-  NavigateFrameToURL(grandchild_node, grandchild_url);
+  EXPECT_TRUE(NavigateToURLFromRenderer(grandchild_node, grandchild_url));
 
   // This is to make sure that the navigation is completed and the previous
   // RenderProcessHost is destroyed.
@@ -6285,7 +6286,7 @@ class SitePerProcessGestureHitTestBrowserTest
 
     FrameTreeNode* child_node = root_node->child_at(0);
     GURL b_url(embedded_test_server()->GetURL("b.com", url));
-    NavigateFrameToURL(child_node, b_url);
+    EXPECT_TRUE(NavigateToURLFromRenderer(child_node, b_url));
 
     ASSERT_EQ(
         " Site A ------------ proxies for B\n"

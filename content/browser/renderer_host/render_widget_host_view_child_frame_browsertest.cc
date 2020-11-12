@@ -144,7 +144,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest, Screen) {
   // Load cross-site page into iframe.
   GURL cross_site_url(
       embedded_test_server()->GetURL("foo.com", "/title2.html"));
-  NavigateFrameToURL(root->child_at(0), cross_site_url);
+  EXPECT_TRUE(NavigateToURLFromRenderer(root->child_at(0), cross_site_url));
 
   int main_frame_screen_width =
       ExecuteScriptAndGetValue(shell()->web_contents()->GetMainFrame(),
@@ -228,7 +228,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest,
   {
     GURL cross_site_url(
         embedded_test_server()->GetURL("c.com", "/title2.html"));
-    NavigateFrameToURL(root->child_at(0), cross_site_url);
+    EXPECT_TRUE(NavigateToURLFromRenderer(root->child_at(0), cross_site_url));
 
     // Wait to see the size sent to the child RenderWidget.
     while (true) {
@@ -244,7 +244,8 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest,
   {
     GURL cross_site_url(
         embedded_test_server()->GetURL("c.com", "/title2.html"));
-    NavigateFrameToURL(nested_root->child_at(0), cross_site_url);
+    EXPECT_TRUE(
+        NavigateToURLFromRenderer(nested_root->child_at(0), cross_site_url));
 
     // Wait to see the size sent to the child RenderWidget.
     while (true) {
@@ -385,7 +386,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest,
   // Load cross-site page into iframe.
   GURL cross_site_url(
       embedded_test_server()->GetURL("foo.com", "/title2.html"));
-  NavigateFrameToURL(root->child_at(0), cross_site_url);
+  EXPECT_TRUE(NavigateToURLFromRenderer(root->child_at(0), cross_site_url));
 
   auto* child_rwh_impl =
       root->child_at(0)->current_frame_host()->GetRenderWidgetHost();
@@ -491,7 +492,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest,
 
   // Navigate a frame to b.com, which we already have a process for.
   GURL same_site_url(embedded_test_server()->GetURL("b.com", "/title2.html"));
-  NavigateFrameToURL(root->child_at(0), same_site_url);
+  EXPECT_TRUE(NavigateToURLFromRenderer(root->child_at(0), same_site_url));
 
   // The navigated frame sees the correct (non-default) value.
   EXPECT_EQ(true,
@@ -500,7 +501,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest,
 
   // Navigate the frame to c.com, which we don't have a process for.
   GURL cross_site_url(embedded_test_server()->GetURL("c.com", "/title2.html"));
-  NavigateFrameToURL(root->child_at(0), cross_site_url);
+  EXPECT_TRUE(NavigateToURLFromRenderer(root->child_at(0), cross_site_url));
 
   // The navigated frame sees the correct (non-default) value.
   EXPECT_EQ(true,
@@ -610,7 +611,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest,
     // re-using the existing RenderProcessHost from c.com (aka
     // |oopdescendant_rph|).
     GURL new_frame_url(embedded_test_server()->GetURL("c.com", "/title2.html"));
-    NavigateFrameToURL(root->child_at(1), new_frame_url);
+    EXPECT_TRUE(NavigateToURLFromRenderer(root->child_at(1), new_frame_url));
 
     while (true) {
       base::Optional<blink::VisualProperties> properties =
@@ -623,7 +624,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest,
       // when the frame is added in that process). So we need to wait for
       // the outgoing VisualProperties triggered from the parent renderer
       // and comes in via the CrossProcessFrameConnector, which can happen
-      // after NavigateFrameToURL completes.
+      // after NavigateToURLFromRenderer completes.
       if (properties &&
           properties->root_widget_window_segments == expected_segments)
         break;

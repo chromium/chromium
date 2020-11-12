@@ -183,7 +183,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
       web_contents()->GetFrameTree()->root()->child_at(0);
   GURL b_url(embedded_test_server()->GetURL(
       "b.com", "/render_frame_host/beforeunload.html"));
-  NavigateFrameToURL(child_node, b_url);
+  EXPECT_TRUE(NavigateToURLFromRenderer(child_node, b_url));
   CrossProcessFrameConnector* frame_connector_delegate =
       static_cast<RenderWidgetHostViewChildFrame*>(
           child_node->current_frame_host()->GetView())
@@ -596,7 +596,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, UnloadNestedPendingDeletion) {
   RenderFrameDeletedObserver delete_b(rfh_b), delete_c(rfh_c);
 
   // 2) Navigate rfh_c to D.
-  NavigateFrameToURL(rfh_c->frame_tree_node(), url_d);
+  EXPECT_TRUE(NavigateToURLFromRenderer(rfh_c->frame_tree_node(), url_d));
   EXPECT_EQ(RenderFrameHostImpl::LifecycleState::kActive,
             rfh_a->lifecycle_state());
   EXPECT_EQ(RenderFrameHostImpl::LifecycleState::kActive,
@@ -616,7 +616,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, UnloadNestedPendingDeletion) {
   EXPECT_TRUE(ExecuteScript(rfh_d->frame_tree_node(), onunload_script));
 
   // 3) Navigate rfh_b to E.
-  NavigateFrameToURL(rfh_b->frame_tree_node(), url_e);
+  EXPECT_TRUE(NavigateToURLFromRenderer(rfh_b->frame_tree_node(), url_e));
   EXPECT_EQ(RenderFrameHostImpl::LifecycleState::kActive,
             rfh_a->lifecycle_state());
   EXPECT_EQ(RenderFrameHostImpl::LifecycleState::kRunningUnloadHandlers,
@@ -1219,8 +1219,9 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, FocusedFrameUnload) {
   EXPECT_TRUE(B2->IsPendingDeletion());
 
   // 3. C3 navigates.
-  NavigateFrameToURL(C3->frame_tree_node(),
-                     embedded_test_server()->GetURL("d.com", "/title1.html"));
+  EXPECT_TRUE(NavigateToURLFromRenderer(
+      C3->frame_tree_node(),
+      embedded_test_server()->GetURL("d.com", "/title1.html")));
   EXPECT_TRUE(WaitForLoadStop(web_contents()));
   EXPECT_EQ(2u, A1->child_count());
 }

@@ -3582,7 +3582,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
   // to point to valid cross-site URLs.
   GURL frame_url(
       embedded_test_server()->GetURL("a.com", "/click-noreferrer-links.html"));
-  NavigateFrameToURL(root->child_at(0), frame_url);
+  EXPECT_TRUE(NavigateToURLFromRenderer(root->child_at(0), frame_url));
   std::string script = "setOriginForLinks('http://b.com:" +
                        embedded_test_server()->base_url().port() + "/');";
   EXPECT_TRUE(ExecuteScript(root->child_at(0), script));

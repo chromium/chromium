@@ -545,7 +545,7 @@ IN_PROC_BROWSER_TEST_F(IFrameZoomBrowserTest, SubframeRetainsZoomOnNavigation) {
   // Navigate child frame cross site, and make sure zoom is the same.
   TestNavigationObserver observer(web_contents());
   GURL url = embedded_test_server()->GetURL("c.com", "/title1.html");
-  NavigateFrameToURL(root->child_at(0), url);
+  EXPECT_TRUE(NavigateToURLFromRenderer(root->child_at(0), url));
   EXPECT_TRUE(observer.last_navigation_succeeded());
   EXPECT_EQ(url, observer.last_navigation_url());
 

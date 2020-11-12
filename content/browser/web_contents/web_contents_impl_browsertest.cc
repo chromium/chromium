@@ -1847,8 +1847,8 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   EXPECT_EQ("about:blank", test_delegate.last_message());
 
   // Navigate the subframe cross-site.
-  NavigateFrameToURL(frame,
-                     embedded_test_server()->GetURL("b.com", "/title2.html"));
+  EXPECT_TRUE(NavigateToURLFromRenderer(
+      frame, embedded_test_server()->GetURL("b.com", "/title2.html")));
   EXPECT_TRUE(WaitForLoadStop(wc));
 
   // A dialog from the subframe.
@@ -2827,7 +2827,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, UpdateTargetURL) {
   FrameTreeNode* subframe = web_contents->GetFrameTree()->root()->child_at(0);
   GURL subframe_url =
       embedded_test_server()->GetURL("b.com", "/simple_links.html");
-  NavigateFrameToURL(subframe, subframe_url);
+  EXPECT_TRUE(NavigateToURLFromRenderer(subframe, subframe_url));
 
   // Focusing the link should fire the UpdateTargetURL notification.
   UpdateTargetURLWaiter target_url_waiter(web_contents);
@@ -4307,7 +4307,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   auto* web_contents = static_cast<WebContentsImpl*>(shell()->web_contents());
   FrameTreeNode* iframe = web_contents->GetFrameTree()->root()->child_at(0);
   GURL iframe_url(server->GetURL("b.co", "/scrollable_page_with_content.html"));
-  NavigateFrameToURL(iframe, iframe_url);
+  EXPECT_TRUE(NavigateToURLFromRenderer(iframe, iframe_url));
 
   // Size our view so that we can scroll both horizontally and vertically.
   ResizeWebContentsView(shell(), gfx::Size(10, 10), /*set_start_page=*/false);

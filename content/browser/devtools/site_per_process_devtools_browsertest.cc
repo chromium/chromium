@@ -85,7 +85,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessDevToolsBrowserTest,
   // Load same-site page into iframe.
   FrameTreeNode* child = root->child_at(0);
   GURL http_url(embedded_test_server()->GetURL("/title1.html"));
-  NavigateFrameToURL(child, http_url);
+  EXPECT_TRUE(NavigateToURLFromRenderer(child, http_url));
 
   list = DevToolsAgentHost::GetOrCreateAll();
   EXPECT_EQ(1U, list.size());
@@ -97,7 +97,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessDevToolsBrowserTest,
   GURL cross_site_url(embedded_test_server()->GetURL("/title2.html"));
   replace_host.SetHostStr("foo.com");
   cross_site_url = cross_site_url.ReplaceComponents(replace_host);
-  NavigateFrameToURL(root->child_at(0), cross_site_url);
+  EXPECT_TRUE(NavigateToURLFromRenderer(root->child_at(0), cross_site_url));
 
   list = DevToolsAgentHost::GetOrCreateAll();
   EXPECT_EQ(2U, list.size());
@@ -126,7 +126,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessDevToolsBrowserTest,
   parent_client.WaitForReply();
 
   // Load back same-site page into iframe.
-  NavigateFrameToURL(root->child_at(0), http_url);
+  EXPECT_TRUE(NavigateToURLFromRenderer(root->child_at(0), http_url));
 
   list = DevToolsAgentHost::GetOrCreateAll();
   EXPECT_EQ(1U, list.size());
@@ -159,7 +159,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessDevToolsBrowserTest, AgentHostForFrames) {
   // Load same-site page into iframe.
   FrameTreeNode* child = root->child_at(0);
   GURL http_url(embedded_test_server()->GetURL("/title1.html"));
-  NavigateFrameToURL(child, http_url);
+  EXPECT_TRUE(NavigateToURLFromRenderer(child, http_url));
 
   scoped_refptr<DevToolsAgentHost> child_frame_agent =
       RenderFrameDevToolsAgentHost::GetOrCreateFor(child);
@@ -170,7 +170,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessDevToolsBrowserTest, AgentHostForFrames) {
   GURL cross_site_url(embedded_test_server()->GetURL("/title2.html"));
   replace_host.SetHostStr("foo.com");
   cross_site_url = cross_site_url.ReplaceComponents(replace_host);
-  NavigateFrameToURL(root->child_at(0), cross_site_url);
+  EXPECT_TRUE(NavigateToURLFromRenderer(root->child_at(0), cross_site_url));
 
   child_frame_agent = RenderFrameDevToolsAgentHost::GetOrCreateFor(child);
   EXPECT_NE(page_agent.get(), child_frame_agent.get());
@@ -194,7 +194,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessDevToolsBrowserTest,
   GURL cross_site_url(embedded_test_server()->GetURL("/title2.html"));
   replace_host.SetHostStr("foo.com");
   cross_site_url = cross_site_url.ReplaceComponents(replace_host);
-  NavigateFrameToURL(child, cross_site_url);
+  EXPECT_TRUE(NavigateToURLFromRenderer(child, cross_site_url));
 
   // First ask for child frame, then for main frame.
   scoped_refptr<DevToolsAgentHost> child_frame_agent =

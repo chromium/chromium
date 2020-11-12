@@ -534,7 +534,7 @@ IN_PROC_BROWSER_TEST_P(WorkerTest,
   FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
                             ->GetFrameTree()
                             ->root();
-  NavigateFrameToURL(root->child_at(0), test_url);
+  EXPECT_TRUE(NavigateToURLFromRenderer(root->child_at(0), test_url));
   waiter.Run();
 
   // Check cookies sent with each request to "a.test". Frame request should not

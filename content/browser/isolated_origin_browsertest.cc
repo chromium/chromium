@@ -410,7 +410,8 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInOriginPolicyCommandLineTest,
   FrameTreeNode* root = web_contents()->GetFrameTree()->root();
   FrameTreeNode* child_frame_node = root->child_at(0);
 
-  NavigateFrameToURL(child_frame_node, non_isolated_sub_origin);
+  EXPECT_TRUE(
+      NavigateToURLFromRenderer(child_frame_node, non_isolated_sub_origin));
 
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
   EXPECT_TRUE(policy->ShouldOriginGetOptInIsolation(
@@ -536,7 +537,8 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInOriginPolicyTest,
 
   FrameTreeNode* root = web_contents()->GetFrameTree()->root();
   FrameTreeNode* child_frame_node = root->child_at(0);
-  NavigateFrameToURL(child_frame_node, isolated_suborigin_url);
+  EXPECT_TRUE(
+      NavigateToURLFromRenderer(child_frame_node, isolated_suborigin_url));
   EXPECT_NE(root->current_frame_host()->GetSiteInstance(),
             child_frame_node->current_frame_host()->GetSiteInstance());
   EXPECT_TRUE(child_frame_node->current_frame_host()
@@ -575,7 +577,8 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInOriginPolicyTest,
 
   FrameTreeNode* root = web_contents()->GetFrameTree()->root();
   FrameTreeNode* child_frame_node = root->child_at(0);
-  NavigateFrameToURL(child_frame_node, isolated_suborigin_url);
+  EXPECT_TRUE(
+      NavigateToURLFromRenderer(child_frame_node, isolated_suborigin_url));
   EXPECT_EQ(root->current_frame_host()->GetSiteInstance(),
             child_frame_node->current_frame_host()->GetSiteInstance());
 }
@@ -725,7 +728,8 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInOriginPolicyTest,
   FrameTreeNode* child_frame_node0 = root->child_at(0);
   FrameTreeNode* child_frame_node1 = root->child_at(1);
 
-  NavigateFrameToURL(child_frame_node0, isolated_suborigin_url);
+  EXPECT_TRUE(
+      NavigateToURLFromRenderer(child_frame_node0, isolated_suborigin_url));
   EXPECT_NE(root->current_frame_host()->GetSiteInstance(),
             child_frame_node0->current_frame_host()->GetSiteInstance());
 
@@ -737,7 +741,8 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInOriginPolicyTest,
   console_observer.SetPattern(
       "The page did not request origin isolation, but was isolated anyway*");
 
-  NavigateFrameToURL(child_frame_node1, isolated_suborigin_url);
+  EXPECT_TRUE(
+      NavigateToURLFromRenderer(child_frame_node1, isolated_suborigin_url));
 
   console_observer.Wait();
 
@@ -775,7 +780,8 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInOriginPolicyTest,
   FrameTreeNode* child_frame_node0 = root->child_at(0);
   FrameTreeNode* child_frame_node1 = root->child_at(1);
 
-  NavigateFrameToURL(child_frame_node0, isolated_suborigin_url);
+  EXPECT_TRUE(
+      NavigateToURLFromRenderer(child_frame_node0, isolated_suborigin_url));
   EXPECT_EQ(root->current_frame_host()->GetSiteInstance(),
             child_frame_node0->current_frame_host()->GetSiteInstance());
 
@@ -787,7 +793,8 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInOriginPolicyTest,
   console_observer.SetPattern(
       "The page requested origin isolation, but could not be isolated*");
 
-  NavigateFrameToURL(child_frame_node1, isolated_suborigin_url);
+  EXPECT_TRUE(
+      NavigateToURLFromRenderer(child_frame_node1, isolated_suborigin_url));
 
   console_observer.Wait();
 
@@ -823,21 +830,23 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInOriginPolicyTest,
   // Even though we're navigating to isolated.foo.com, there's no manifest
   // requesting opt-in, so it should end up in the same SiteInstance as the
   // main frame.
-  NavigateFrameToURL(child_frame_node0, isolated_suborigin_url);
+  EXPECT_TRUE(
+      NavigateToURLFromRenderer(child_frame_node0, isolated_suborigin_url));
   EXPECT_EQ(root->current_frame_host()->GetSiteInstance(),
             child_frame_node0->current_frame_host()->GetSiteInstance());
 
   // This navigation removes isolated_suborigin_url from the frame tree, but it
   // should still be in the session history.
-  NavigateFrameToURL(child_frame_node0,
-                     https_server()->GetURL("foo.com", "/title1.html"));
+  EXPECT_TRUE(NavigateToURLFromRenderer(
+      child_frame_node0, https_server()->GetURL("foo.com", "/title1.html")));
   EXPECT_EQ(root->current_frame_host()->GetSiteInstance(),
             child_frame_node0->current_frame_host()->GetSiteInstance());
 
   // Change OriginPolicy manifest to start isolating the sub-origin. It should
   // still be not isolated, to remain consistent with the other frame.
   SetOriginPolicyManifest(R"({ "ids": ["my-policy"], "isolation": true })");
-  NavigateFrameToURL(child_frame_node0, isolated_suborigin_url);
+  EXPECT_TRUE(
+      NavigateToURLFromRenderer(child_frame_node0, isolated_suborigin_url));
   EXPECT_EQ(root->current_frame_host()->GetSiteInstance(),
             child_frame_node0->current_frame_host()->GetSiteInstance());
 
@@ -872,7 +881,8 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInOriginPolicyTest,
   FrameTreeNode* root = web_contents()->GetFrameTree()->root();
   FrameTreeNode* child_frame_node0 = root->child_at(0);
 
-  NavigateFrameToURL(child_frame_node0, isolated_suborigin_url);
+  EXPECT_TRUE(
+      NavigateToURLFromRenderer(child_frame_node0, isolated_suborigin_url));
   EXPECT_EQ(root->current_frame_host()->GetSiteInstance(),
             child_frame_node0->current_frame_host()->GetSiteInstance());
 
@@ -1100,8 +1110,10 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInOriginPolicyTest,
   FrameTreeNode* root = web_contents()->GetFrameTree()->root();
   FrameTreeNode* child_frame_node1 = root->child_at(0);
   FrameTreeNode* child_frame_node2 = root->child_at(1);
-  NavigateFrameToURL(child_frame_node1, non_isolated_sub_origin1);
-  NavigateFrameToURL(child_frame_node2, non_isolated_sub_origin2);
+  EXPECT_TRUE(
+      NavigateToURLFromRenderer(child_frame_node1, non_isolated_sub_origin1));
+  EXPECT_TRUE(
+      NavigateToURLFromRenderer(child_frame_node2, non_isolated_sub_origin2));
 
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
   EXPECT_TRUE(policy->ShouldOriginGetOptInIsolation(
@@ -1207,8 +1219,10 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest,
   FrameTreeNode* root = web_contents()->GetFrameTree()->root();
   FrameTreeNode* child_frame_node1 = root->child_at(0);
   FrameTreeNode* child_frame_node2 = root->child_at(1);
-  NavigateFrameToURL(child_frame_node1, non_isolated_sub_origin_url_a);
-  NavigateFrameToURL(child_frame_node2, non_isolated_sub_origin_url_b);
+  EXPECT_TRUE(NavigateToURLFromRenderer(child_frame_node1,
+                                        non_isolated_sub_origin_url_a));
+  EXPECT_TRUE(NavigateToURLFromRenderer(child_frame_node2,
+                                        non_isolated_sub_origin_url_b));
 
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
   EXPECT_TRUE(policy->ShouldOriginGetOptInIsolation(
@@ -1639,7 +1653,7 @@ IN_PROC_BROWSER_TEST_F(StrictOriginIsolationTest, SubframesAreIsolated) {
   FrameTreeNode* child_frame2_node = root->child_at(2);
   GURL foo_url(embedded_test_server()->GetURL("www.foo.com", "/title1.html"));
   const auto expected_foo_lock = GetStrictProcessLock(foo_url);
-  NavigateFrameToURL(child_frame2_node, foo_url);
+  EXPECT_TRUE(NavigateToURLFromRenderer(child_frame2_node, foo_url));
   EXPECT_NE(root->current_frame_host()->GetSiteInstance(),
             child_frame2_node->current_frame_host()->GetSiteInstance());
   // The old RenderFrameHost for subframe3 will no longer be valid, so get the
@@ -2216,7 +2230,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginTest,
 
   // Navigate the isolated origin's subframe back to bar.com, completing the
   // ABA hierarchy.
-  NavigateFrameToURL(grandchild, bar_url);
+  EXPECT_TRUE(NavigateToURLFromRenderer(grandchild, bar_url));
 
   // The root and grandchild should be in the same SiteInstance, and the
   // middle child should be in a different SiteInstance.

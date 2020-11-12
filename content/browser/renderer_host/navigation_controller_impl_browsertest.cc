@@ -184,10 +184,10 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest, LoadCrossSiteSubframe) {
   ASSERT_EQ(1U, root->child_count());
   ASSERT_NE(nullptr, root->child_at(0));
 
-  // Use NavigateFrameToURL to go cross-site in the subframe.
+  // Use NavigateToURLFromRenderer to go cross-site in the subframe.
   GURL foo_url(embedded_test_server()->GetURL(
       "foo.com", "/navigation_controller/simple_page_1.html"));
-  NavigateFrameToURL(root->child_at(0), foo_url);
+  EXPECT_TRUE(NavigateToURLFromRenderer(root->child_at(0), foo_url));
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
 
   // We should only have swapped processes in --site-per-process.
@@ -562,10 +562,10 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest, UniqueIDsOnFrames) {
   // The about:blank iframe should have inherited the same nav_entry_id.
   EXPECT_EQ(unique_id, root->child_at(0)->current_frame_host()->nav_entry_id());
 
-  // Use NavigateFrameToURL to go cross-site in the subframe.
+  // Use NavigateToURLFromRenderer to go cross-site in the subframe.
   GURL foo_url(embedded_test_server()->GetURL(
       "foo.com", "/navigation_controller/simple_page_1.html"));
-  NavigateFrameToURL(root->child_at(0), foo_url);
+  EXPECT_TRUE(NavigateToURLFromRenderer(root->child_at(0), foo_url));
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
 
   // The unique ID should have stayed the same for the auto-subframe navigation,
@@ -577,7 +577,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest, UniqueIDsOnFrames) {
   // Navigating in the subframe again should create a new entry.
   GURL foo_url2(embedded_test_server()->GetURL(
       "foo.com", "/navigation_controller/simple_page_2.html"));
-  NavigateFrameToURL(root->child_at(0), foo_url2);
+  EXPECT_TRUE(NavigateToURLFromRenderer(root->child_at(0), foo_url2));
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
   int unique_id2 = controller.GetLastCommittedEntry()->GetUniqueID();
   EXPECT_NE(unique_id, unique_id2);
@@ -1703,7 +1703,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
     LoadCommittedCapturer capturer(root->child_at(0));
     GURL frame_url(embedded_test_server()->GetURL(
         "/navigation_controller/simple_page_1.html"));
-    NavigateFrameToURL(root->child_at(0), frame_url);
+    EXPECT_TRUE(NavigateToURLFromRenderer(root->child_at(0), frame_url));
     capturer.Wait();
     EXPECT_TRUE(ui::PageTransitionTypeIncludingQualifiersIs(
         capturer.transition_type(), ui::PAGE_TRANSITION_AUTO_SUBFRAME));
@@ -1714,7 +1714,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
     FrameNavigateParamsCapturer capturer(root->child_at(0));
     GURL frame_url(embedded_test_server()->GetURL(
         "/navigation_controller/simple_page_2.html"));
-    NavigateFrameToURL(root->child_at(0), frame_url);
+    EXPECT_TRUE(NavigateToURLFromRenderer(root->child_at(0), frame_url));
     capturer.Wait();
     EXPECT_TRUE(ui::PageTransitionTypeIncludingQualifiersIs(
         capturer.transition(), ui::PAGE_TRANSITION_MANUAL_SUBFRAME));
@@ -1746,7 +1746,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
     FrameNavigateParamsCapturer capturer(root->child_at(0));
     GURL frame_url(embedded_test_server()->GetURL(
         "/navigation_controller/page_with_links.html"));
-    NavigateFrameToURL(root->child_at(0), frame_url);
+    EXPECT_TRUE(NavigateToURLFromRenderer(root->child_at(0), frame_url));
     capturer.Wait();
     EXPECT_TRUE(ui::PageTransitionTypeIncludingQualifiersIs(
         capturer.transition(), ui::PAGE_TRANSITION_MANUAL_SUBFRAME));
@@ -1917,7 +1917,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   ASSERT_EQ(1U, root->child_count());
   ASSERT_NE(nullptr, root->child_at(0));
 
-  NavigateFrameToURL(root->child_at(0), links_url);
+  EXPECT_TRUE(NavigateToURLFromRenderer(root->child_at(0), links_url));
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
 
   {
@@ -2692,7 +2692,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
       "/navigation_controller/page_with_links.html"));
   {
     FrameNavigateParamsCapturer capturer(root->child_at(0));
-    NavigateFrameToURL(root->child_at(0), frame_url2);
+    EXPECT_TRUE(NavigateToURLFromRenderer(root->child_at(0), frame_url2));
     capturer.Wait();
     EXPECT_TRUE(ui::PageTransitionTypeIncludingQualifiersIs(
         capturer.transition(), ui::PAGE_TRANSITION_MANUAL_SUBFRAME));
@@ -2736,7 +2736,8 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
     FrameNavigateParamsCapturer capturer(root->child_at(1)->child_at(0));
     RenderFrameDeletedObserver deleted_observer(
         root->child_at(1)->child_at(0)->current_frame_host());
-    NavigateFrameToURL(root->child_at(1)->child_at(0), bar_url);
+    EXPECT_TRUE(
+        NavigateToURLFromRenderer(root->child_at(1)->child_at(0), bar_url));
     // Wait for the RenderFrame to go away, if this will be cross-process.
     if (AreAllSitesIsolatedForTesting())
       deleted_observer.WaitUntilDeleted();
@@ -2835,7 +2836,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
       "/navigation_controller/simple_page_1.html"));
   {
     LoadCommittedCapturer capturer(root->child_at(0));
-    NavigateFrameToURL(root->child_at(0), subframe_url);
+    EXPECT_TRUE(NavigateToURLFromRenderer(root->child_at(0), subframe_url));
     capturer.Wait();
     EXPECT_TRUE(ui::PageTransitionTypeIncludingQualifiersIs(
         capturer.transition_type(), ui::PAGE_TRANSITION_AUTO_SUBFRAME));
@@ -2898,7 +2899,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
       "foo.com", "/navigation_controller/page_with_links.html"));
   {
     FrameNavigateParamsCapturer capturer(root->child_at(0));
-    NavigateFrameToURL(root->child_at(0), frame_url2);
+    EXPECT_TRUE(NavigateToURLFromRenderer(root->child_at(0), frame_url2));
     capturer.Wait();
   }
   EXPECT_EQ(2, controller.GetEntryCount());
@@ -2910,7 +2911,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
       "bar.com", "/navigation_controller/page_with_links.html"));
   {
     FrameNavigateParamsCapturer capturer(root->child_at(0));
-    NavigateFrameToURL(root->child_at(0), frame_url3);
+    EXPECT_TRUE(NavigateToURLFromRenderer(root->child_at(0), frame_url3));
     capturer.Wait();
   }
   EXPECT_EQ(3, controller.GetEntryCount());
@@ -3047,7 +3048,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
       "b.com", "/navigation_controller/page_with_data_iframe.html"));
   {
     FrameNavigateParamsCapturer capturer(root->child_at(0));
-    NavigateFrameToURL(root->child_at(0), frame_url_b);
+    EXPECT_TRUE(NavigateToURLFromRenderer(root->child_at(0), frame_url_b));
     capturer.Wait();
   }
   ASSERT_EQ(1U, root->child_count());
@@ -3080,7 +3081,8 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
       "c.com", "/navigation_controller/simple_page_2.html"));
   {
     FrameNavigateParamsCapturer capturer(root->child_at(0)->child_at(0));
-    NavigateFrameToURL(root->child_at(0)->child_at(0), frame_url_c);
+    EXPECT_TRUE(
+        NavigateToURLFromRenderer(root->child_at(0)->child_at(0), frame_url_c));
     capturer.Wait();
   }
   ASSERT_EQ(1U, root->child_count());
@@ -3307,7 +3309,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
       "b.com", "/navigation_controller/simple_page_1.html"));
   {
     FrameNavigateParamsCapturer capturer(root->child_at(0));
-    NavigateFrameToURL(root->child_at(0), frame_url_b);
+    EXPECT_TRUE(NavigateToURLFromRenderer(root->child_at(0), frame_url_b));
     capturer.Wait();
   }
   ASSERT_EQ(1U, root->child_count());
@@ -3744,7 +3746,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
 
   // 2. Navigate the subframe to about:blank.
   GURL blank_url(url::kAboutBlankURL);
-  NavigateFrameToURL(root->child_at(0), blank_url);
+  EXPECT_TRUE(NavigateToURLFromRenderer(root->child_at(0), blank_url));
   EXPECT_EQ(blank_url, root->child_at(0)->current_url());
   EXPECT_EQ(2, controller.GetEntryCount());
   EXPECT_EQ(1, controller.GetLastCommittedEntryIndex());
@@ -3867,8 +3869,8 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   GURL frame_url(embedded_test_server()->GetURL(
       "foo.com", "/navigation_controller/page_with_data_iframe.html"));
   GURL data_url("data:text/html,Subframe");
-  NavigateFrameToURL(root->child_at(0), frame_url);
-  NavigateFrameToURL(root->child_at(1), frame_url);
+  EXPECT_TRUE(NavigateToURLFromRenderer(root->child_at(0), frame_url));
+  EXPECT_TRUE(NavigateToURLFromRenderer(root->child_at(1), frame_url));
   EXPECT_EQ(initial_url, root->current_url());
   EXPECT_EQ(frame_url, root->child_at(0)->current_url());
   EXPECT_EQ(data_url, root->child_at(0)->child_at(0)->current_url());
@@ -3956,7 +3958,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   // step 4.
   {
     FrameNavigateParamsCapturer capturer(root->child_at(1));
-    NavigateFrameToURL(root->child_at(1), url2);
+    EXPECT_TRUE(NavigateToURLFromRenderer(root->child_at(1), url2));
     capturer.Wait();
   }
   EXPECT_EQ(4, controller.GetEntryCount());
@@ -4041,7 +4043,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   GURL frame_url(embedded_test_server()->GetURL(
       "/navigation_controller/page_with_data_iframe.html"));
   GURL data_url("data:text/html,Subframe");
-  NavigateFrameToURL(root->child_at(0), frame_url);
+  EXPECT_TRUE(NavigateToURLFromRenderer(root->child_at(0), frame_url));
   EXPECT_EQ(initial_url, root->current_url());
   EXPECT_EQ(frame_url, root->child_at(0)->current_url());
   EXPECT_EQ(data_url, root->child_at(0)->child_at(0)->current_url());
@@ -4168,7 +4170,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
       "b.com", "/navigation_controller/simple_page_1.html"));
   {
     FrameNavigateParamsCapturer capturer(root->child_at(0));
-    NavigateFrameToURL(root->child_at(0), frame_url_b);
+    EXPECT_TRUE(NavigateToURLFromRenderer(root->child_at(0), frame_url_b));
     capturer.Wait();
   }
   ASSERT_EQ(1U, root->child_count());
@@ -4380,7 +4382,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   // TODO(creis): Fix the unnamed case in https://crbug.com/502317.
   GURL bar_url(embedded_test_server()->GetURL(
       "bar.com", "/navigation_controller/simple_page_1.html"));
-  NavigateFrameToURL(foo_subframe, bar_url);
+  EXPECT_TRUE(NavigateToURLFromRenderer(foo_subframe, bar_url));
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
 
   // When run just with subframe navigation entries enabled and not in
@@ -5199,7 +5201,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   // 2. Navigate the iframe cross-site.
   GURL frame_url_b(embedded_test_server()->GetURL(
       "b.com", "/navigation_controller/simple_page_1.html"));
-  NavigateFrameToURL(root->child_at(0), frame_url_b);
+  EXPECT_TRUE(NavigateToURLFromRenderer(root->child_at(0), frame_url_b));
   EXPECT_EQ(main_url_a, root->current_url());
   EXPECT_EQ(frame_url_b, root->child_at(0)->current_url());
 
@@ -5461,7 +5463,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
     FrameNavigateParamsCapturer capturer(root->child_at(0));
     GURL frame_url(embedded_test_server()->GetURL(
         "/navigation_controller/simple_page_2.html"));
-    NavigateFrameToURL(root->child_at(0), frame_url);
+    EXPECT_TRUE(NavigateToURLFromRenderer(root->child_at(0), frame_url));
     capturer.Wait();
     EXPECT_EQ(NAVIGATION_TYPE_NEW_SUBFRAME, capturer.navigation_type());
   }
@@ -5558,7 +5560,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
     FrameNavigateParamsCapturer capturer(root->child_at(0));
     GURL frame_url(embedded_test_server()->GetURL(
         "/navigation_controller/simple_page_2.html"));
-    NavigateFrameToURL(root->child_at(0), frame_url);
+    EXPECT_TRUE(NavigateToURLFromRenderer(root->child_at(0), frame_url));
     capturer.Wait();
     EXPECT_EQ(NAVIGATION_TYPE_NEW_SUBFRAME, capturer.navigation_type());
   }
@@ -5812,7 +5814,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
 
   GURL frame_url = embedded_test_server()->GetURL(
       "foo.com", "/navigation_controller/simple_page_2.html");
-  NavigateFrameToURL(frame, frame_url);
+  EXPECT_TRUE(NavigateToURLFromRenderer(frame, frame_url));
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
 
   EXPECT_EQ(2, controller.GetEntryCount());
@@ -5939,7 +5941,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
 
   GURL frame_url_2 = embedded_test_server()->GetURL(
       "foo.com", "/navigation_controller/simple_page_2.html");
-  NavigateFrameToURL(frame, frame_url_2);
+  EXPECT_TRUE(NavigateToURLFromRenderer(frame, frame_url_2));
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
 
   EXPECT_EQ(3, controller.GetEntryCount());
@@ -6070,7 +6072,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   // Go cross-site in the iframe.
   GURL frame_url_3 = embedded_test_server()->GetURL(
       "foo.com", "/navigation_controller/simple_page_2.html");
-  NavigateFrameToURL(frame, frame_url_3);
+  EXPECT_TRUE(NavigateToURLFromRenderer(frame, frame_url_3));
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
   EXPECT_EQ(4, controller.GetEntryCount());
   EXPECT_EQ(4, EvalJs(shell(), "history.length"));
@@ -6300,7 +6302,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   // Navigate the iframe to a second page.
   GURL frame_url_a2 = embedded_test_server()->GetURL(
       "/navigation_controller/simple_page_1.html");
-  NavigateFrameToURL(frame, frame_url_a2);
+  EXPECT_TRUE(NavigateToURLFromRenderer(frame, frame_url_a2));
 
   EXPECT_EQ(2, controller.GetEntryCount());
   EXPECT_EQ(1, controller.GetLastCommittedEntryIndex());
@@ -6436,11 +6438,11 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   // Navigate the iframe to a second page.
   GURL frame_url_a2 = embedded_test_server()->GetURL(
       "/navigation_controller/simple_page_1.html");
-  NavigateFrameToURL(root->child_at(0), frame_url_a2);
+  EXPECT_TRUE(NavigateToURLFromRenderer(root->child_at(0), frame_url_a2));
 
   // Navigate the iframe to about:blank.
   GURL blank_url(url::kAboutBlankURL);
-  NavigateFrameToURL(root->child_at(0), blank_url);
+  EXPECT_TRUE(NavigateToURLFromRenderer(root->child_at(0), blank_url));
   EXPECT_EQ(3, controller.GetEntryCount());
   EXPECT_EQ(2, controller.GetLastCommittedEntryIndex());
   EXPECT_EQ(url_a, root->current_url());
@@ -6524,12 +6526,12 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   // Navigate the iframe to a first real page.
   GURL frame_url_a1 = embedded_test_server()->GetURL(
       "/navigation_controller/simple_page_1.html");
-  NavigateFrameToURL(root->child_at(0), frame_url_a1);
+  EXPECT_TRUE(NavigateToURLFromRenderer(root->child_at(0), frame_url_a1));
 
   // Navigate the iframe to a second real page.
   GURL frame_url_a2 = embedded_test_server()->GetURL(
       "/navigation_controller/simple_page_2.html");
-  NavigateFrameToURL(root->child_at(0), frame_url_a2);
+  EXPECT_TRUE(NavigateToURLFromRenderer(root->child_at(0), frame_url_a2));
   EXPECT_EQ(3, controller.GetEntryCount());
   EXPECT_EQ(2, controller.GetLastCommittedEntryIndex());
   EXPECT_EQ(url_a, root->current_url());
@@ -6667,7 +6669,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
 
   GURL frame_url(embedded_test_server()->GetURL(
       "foo.com", "/navigation_controller/simple_page_1.html"));
-  NavigateFrameToURL(root->child_at(0), frame_url);
+  EXPECT_TRUE(NavigateToURLFromRenderer(root->child_at(0), frame_url));
 
   EXPECT_EQ(url_1, root->current_url());
   EXPECT_EQ(frame_url, root->child_at(0)->current_url());
@@ -8313,7 +8315,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   // (this prepares for executing history.back() in a later step).
   GURL final_subframe_url =
       embedded_test_server()->GetURL("b.com", "/title1.html");
-  NavigateFrameToURL(root->child_at(0), final_subframe_url);
+  EXPECT_TRUE(NavigateToURLFromRenderer(root->child_at(0), final_subframe_url));
   EXPECT_EQ(final_subframe_url,
             root->child_at(0)->current_frame_host()->GetLastCommittedURL());
   EXPECT_EQ(2, controller.GetEntryCount());
@@ -10328,11 +10330,12 @@ class SandboxedNavigationControllerBrowserTest
     GURL sub_subframe_url(embedded_test_server()->GetURL(
         "/navigation_controller/simple_page_2.html"));
     // Navigate sibling frame to simple_page_2.
-    NavigateFrameToURL(root->child_at(0), sub_subframe_url);
+    EXPECT_TRUE(NavigateToURLFromRenderer(root->child_at(0), sub_subframe_url));
     ASSERT_EQ(3, controller.GetEntryCount());
 
     // Navigate sandbox frame to simple_page_2.
-    NavigateFrameToURL(root->child_at(1)->child_at(0), sub_subframe_url);
+    EXPECT_TRUE(NavigateToURLFromRenderer(root->child_at(1)->child_at(0),
+                                          sub_subframe_url));
     ASSERT_EQ(4, controller.GetEntryCount());
 
     // Click link inside sandboxed iframe.
@@ -10994,7 +10997,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
     FrameTreeNode* child = contents()->GetFrameTree()->root()->child_at(0);
     GURL child_url = child->current_url();
     int entry_count = contents()->GetController().GetEntryCount();
-    ASSERT_TRUE(NavigateFrameToURL(child, child_url));
+    ASSERT_TRUE(NavigateToURLFromRenderer(child, child_url));
     EXPECT_EQ(entry_count, contents()->GetController().GetEntryCount());
   }
   {
@@ -11005,7 +11008,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
     FrameTreeNode* child = contents()->GetFrameTree()->root()->child_at(0);
     GURL child_url = child->current_url();
     int entry_count = contents()->GetController().GetEntryCount();
-    ASSERT_TRUE(NavigateFrameToURL(child, child_url));
+    ASSERT_TRUE(NavigateToURLFromRenderer(child, child_url));
     EXPECT_EQ(entry_count, contents()->GetController().GetEntryCount());
   }
 }
@@ -11064,7 +11067,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   // Navigate frame b cross-document.
   GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
   TestNavigationObserver navigation_observer(contents());
-  EXPECT_TRUE(NavigateFrameToURL(ftn_b, url_b));
+  EXPECT_TRUE(NavigateToURLFromRenderer(ftn_b, url_b));
   navigation_observer.WaitForNavigationFinished();
   EXPECT_EQ(5, controller.GetEntryCount());
 
@@ -11190,7 +11193,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
   {
     TestNavigationObserver navigation_observer(contents());
-    EXPECT_TRUE(NavigateFrameToURL(ftn_b, url_b));
+    EXPECT_TRUE(NavigateToURLFromRenderer(ftn_b, url_b));
     navigation_observer.WaitForNavigationFinished();
   }
   EXPECT_EQ(2, controller.GetEntryCount());
@@ -11253,7 +11256,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
   {
     TestNavigationObserver navigation_observer(contents());
-    EXPECT_TRUE(NavigateFrameToURL(ftn_b, url_b));
+    EXPECT_TRUE(NavigateToURLFromRenderer(ftn_b, url_b));
     navigation_observer.WaitForNavigationFinished();
   }
   EXPECT_EQ(2, controller.GetEntryCount());
@@ -11261,7 +11264,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   GURL url_c(embedded_test_server()->GetURL("c.com", "/title2.html"));
   {
     TestNavigationObserver navigation_observer(contents());
-    EXPECT_TRUE(NavigateFrameToURL(ftn_b, url_c));
+    EXPECT_TRUE(NavigateToURLFromRenderer(ftn_b, url_c));
     navigation_observer.WaitForNavigationFinished();
   }
   EXPECT_EQ(3, controller.GetEntryCount());
@@ -11363,14 +11366,14 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   GURL url_b(embedded_test_server()->GetURL("b.com", "/title2.html"));
   {
     TestNavigationObserver navigation_observer(contents());
-    EXPECT_TRUE(NavigateFrameToURL(ftn_b, url_b));
+    EXPECT_TRUE(NavigateToURLFromRenderer(ftn_b, url_b));
     navigation_observer.WaitForNavigationFinished();
   }
 
   GURL url_c(embedded_test_server()->GetURL("c.com", "/title3.html"));
   {
     TestNavigationObserver navigation_observer(contents());
-    EXPECT_TRUE(NavigateFrameToURL(ftn_b, url_c));
+    EXPECT_TRUE(NavigateToURLFromRenderer(ftn_b, url_c));
     navigation_observer.WaitForNavigationFinished();
   }
   EXPECT_EQ(3, controller.GetEntryCount());
@@ -11435,7 +11438,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   GURL url_d(embedded_test_server()->GetURL("d.com", "/title2.html"));
   {
     TestNavigationObserver navigation_observer(contents());
-    EXPECT_TRUE(NavigateFrameToURL(ftn_b, url_d));
+    EXPECT_TRUE(NavigateToURLFromRenderer(ftn_b, url_d));
     navigation_observer.WaitForNavigationFinished();
   }
   EXPECT_EQ(2, controller.GetEntryCount());

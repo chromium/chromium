@@ -468,7 +468,7 @@ IN_PROC_BROWSER_TEST_P(AccessibilityHitTestingCrossProcessBrowserTest,
   ASSERT_EQ(1U, root->child_count());
 
   FrameTreeNode* child = root->child_at(0);
-  NavigateFrameToURL(child, url_b);
+  EXPECT_TRUE(NavigateToURLFromRenderer(child, url_b));
   EXPECT_EQ(url_b, child->current_url());
   WaitForAccessibilityTreeToContainNodeWithName(shell()->web_contents(),
                                                 "rectF");

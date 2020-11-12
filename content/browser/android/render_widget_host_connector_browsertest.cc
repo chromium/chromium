@@ -28,7 +28,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostConnectorTest,
   // Navigate to the enclosed <iframe>.
   FrameTreeNode* iframe = web_contents()->GetFrameTree()->root()->child_at(0);
   GURL frame_url(embedded_test_server()->GetURL("/title1.html"));
-  NavigateFrameToURL(iframe, frame_url);
+  EXPECT_TRUE(NavigateToURLFromRenderer(iframe, frame_url));
 
   // Open a popup from the iframe. This creates a render widget host view
   // view before the corresponding web contents. Tests if rwhva gets connected.

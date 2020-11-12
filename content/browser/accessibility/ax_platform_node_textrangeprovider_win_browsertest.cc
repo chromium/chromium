@@ -15,6 +15,7 @@
 #include "content/public/test/accessibility_notification_waiter.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/hit_test_region_observer.h"
 #include "content/shell/browser/shell.h"
 #include "content/test/content_browser_test_utils_internal.h"
@@ -2104,7 +2105,7 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
     AccessibilityNotificationWaiter waiter(iframe_web_contents,
                                            ui::kAXModeComplete,
                                            ax::mojom::Event::kLoadComplete);
-    NavigateFrameToURL(iframe_node, iframe_url);
+    EXPECT_TRUE(NavigateToURLFromRenderer(iframe_node, iframe_url));
     waiter.WaitForNotification();
   }
 
