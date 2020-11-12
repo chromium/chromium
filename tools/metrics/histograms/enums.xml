@@ -17724,6 +17724,18 @@ Called by update_document_policy_enum.py.-->
   <int value="92" label="Umax1220U"/>
   <int value="93" label="UmaxPp"/>
   <int value="94" label="XeroxMfp"/>
+  <int value="95" label="IppUsbBrother"/>
+  <int value="96" label="IppUsbCanon"/>
+  <int value="97" label="IppUsbEpson"/>
+  <int value="98" label="IppUsbHp"/>
+  <int value="99" label="IppUsbKodak"/>
+  <int value="100" label="IppUsbKonicaMinolta"/>
+  <int value="101" label="IppUsbKyocera"/>
+  <int value="102" label="IppUsbLexmark"/>
+  <int value="103" label="IppUsbOther"/>
+  <int value="104" label="IppUsbRicoh"/>
+  <int value="105" label="IppUsbSamsung"/>
+  <int value="106" label="IppUsbXerox"/>
 </enum>
 
 <enum name="DocumentStateForDeferredLoading">
