@@ -337,9 +337,6 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
 
   void OnItemAdded(aura::Window* window);
 
-  // Tracks observed windows.
-  base::flat_set<aura::Window*> observed_windows_;
-
   // Weak pointer to the overview delegate which will be called when a selection
   // is made.
   OverviewDelegate* delegate_;
