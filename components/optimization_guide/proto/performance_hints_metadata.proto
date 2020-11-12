@@ -42,6 +42,9 @@ message PerformanceHintsMetadata {
   // An ordered set of performance hints.
   //
   // Only the first matching hint should be applied to a given URL.
+  //
+  // These will be omitted if LINK_PERFORMANCE hints are requested. Instead,
+  // link hints will be included in LinkPerformanceMetadata, below.
   repeated PerformanceHint performance_hints = 1;
 
   // The PerformanceHint for the page pattern that matched the parent
@@ -50,4 +53,14 @@ message PerformanceHintsMetadata {
   // This is (generally) the current page. The "key" field is not populated as
   // the pattern matching is done by OptimizationGuide.
   optional PerformanceHint page_hint = 2;
+}
+
+// Optimization metadata associated with Link Performance Hints.
+//
+// This is only populated for the LINK_PERFORMANCE optimization type.
+message LinkPerformanceMetadata {
+  // An ordered set of hints for the most popular links for this key.
+  //
+  // Only the first matching hint should be applied to a given link URL.
+  repeated PerformanceHint link_hints = 1;
 }

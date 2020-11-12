@@ -51,6 +51,8 @@ std::string GetStringNameForOptimizationType(
       return "DelayCompetingLowPriorityRequests";
     case proto::OptimizationType::LITE_VIDEO:
       return "LiteVideo";
+    case proto::OptimizationType::LINK_PERFORMANCE:
+      return "LinkPerformance";
   }
   NOTREACHED();
   return std::string();

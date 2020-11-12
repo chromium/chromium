@@ -57,7 +57,9 @@ class OptimizationMetadata {
       return metadata;
     return base::nullopt;
   }
-  base::Optional<proto::Any> any_metadata() const { return any_metadata_; }
+  const base::Optional<proto::Any>& any_metadata() const {
+    return any_metadata_;
+  }
   void set_any_metadata(const proto::Any& any_metadata) {
     any_metadata_ = any_metadata;
   }
@@ -65,15 +67,15 @@ class OptimizationMetadata {
   // used for testing purposes.
   void SetAnyMetadataForTesting(const google::protobuf::MessageLite& metadata);
 
-  base::Optional<proto::PreviewsMetadata> previews_metadata() const {
+  const base::Optional<proto::PreviewsMetadata>& previews_metadata() const {
     return previews_metadata_;
   }
   void set_previews_metadata(const proto::PreviewsMetadata& previews_metadata) {
     previews_metadata_ = previews_metadata;
   }
 
-  base::Optional<proto::PerformanceHintsMetadata> performance_hints_metadata()
-      const {
+  const base::Optional<proto::PerformanceHintsMetadata>&
+  performance_hints_metadata() const {
     return performance_hints_metadata_;
   }
   void set_performance_hints_metadata(
@@ -81,7 +83,8 @@ class OptimizationMetadata {
     performance_hints_metadata_ = performance_hints_metadata;
   }
 
-  base::Optional<proto::PublicImageMetadata> public_image_metadata() const {
+  const base::Optional<proto::PublicImageMetadata>& public_image_metadata()
+      const {
     return public_image_metadata_;
   }
   void set_public_image_metadata(
@@ -89,8 +92,8 @@ class OptimizationMetadata {
     public_image_metadata_ = public_image_metadata;
   }
 
-  base::Optional<proto::LoadingPredictorMetadata> loading_predictor_metadata()
-      const {
+  const base::Optional<proto::LoadingPredictorMetadata>&
+  loading_predictor_metadata() const {
     return loading_predictor_metadata_;
   }
   void set_loading_predictor_metadata(

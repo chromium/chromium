@@ -131,6 +131,9 @@ enum OptimizationType {
   // This optimization provides information about how to throttle meda requests
   // to reduce the bitrate of adaptively streamed media.
   LITE_VIDEO = 13;
+  // This optimization is used to provide aggregated performance information
+  // about pages linked to from the current page.
+  LINK_PERFORMANCE = 14;
 }
 
 // Presents semantics for how page load URLs should be matched.
@@ -167,6 +170,8 @@ message Optimization {
   //
   // It is expected that the client and server have agreed upon the appropriate
   // metadata type for the optimization type.
+  //
+  // New clients should utilize any_metadata rather than adding another field.
   oneof metadata {
     PreviewsMetadata previews_metadata = 10;
     PerformanceHintsMetadata performance_hints_metadata = 11;

@@ -12036,7 +12036,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
              requests"/>
   <suffix name="FastHostHints"
       label="Provides information about hosts that historically provide a
-             fast and responsive user experience."/>
+             fast and responsive user experience"/>
+  <suffix name="LinkPerformance"
+      label="Provides aggregated performance information for links on the
+             page"/>
   <suffix name="LitePage"
       label="HTTP server preview (served from the Data Reduction Proxy)"/>
   <suffix name="LitePageRedirect"

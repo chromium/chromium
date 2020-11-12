@@ -22,6 +22,8 @@ constexpr base::FeatureParam<std::string> kRewriteConfig{
 
 constexpr base::FeatureParam<bool> kUseFastHostHints{
     &kPerformanceHintsObserver, "use_fast_host_hints", true};
+constexpr base::FeatureParam<bool> kUseLinkPerformanceHints{
+    &kPerformanceHintsObserver, "use_link_performance_hints", false};
 
 const base::Feature kContextMenuPerformanceInfo{
     "ContextMenuPerformanceInfo", base::FEATURE_DISABLED_BY_DEFAULT};
@@ -51,6 +53,10 @@ std::string GetRewriteConfigString() {
 
 bool AreFastHostHintsEnabled() {
   return kUseFastHostHints.Get();
+}
+
+bool AreLinkPerformanceHintsEnabled() {
+  return kUseLinkPerformanceHints.Get();
 }
 
 bool IsContextMenuPerformanceInfoEnabled() {

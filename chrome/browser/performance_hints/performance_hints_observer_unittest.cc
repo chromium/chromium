@@ -34,7 +34,7 @@ using testing::SetArgPointee;
 
 namespace performance_hints {
 namespace {
-const char kTestUrl[] = "http://www.test.com/";
+const char kPageUrl[] = "http://www.example.com/";
 }  // namespace
 
 class MockOptimizationGuideKeyedService : public OptimizationGuideKeyedService {
@@ -47,10 +47,6 @@ class MockOptimizationGuideKeyedService : public OptimizationGuideKeyedService {
   MOCK_METHOD1(
       RegisterOptimizationTypes,
       void(const std::vector<optimization_guide::proto::OptimizationType>&));
-  MOCK_METHOD3(CanApplyOptimizationAsync,
-               void(content::NavigationHandle*,
-                    optimization_guide::proto::OptimizationType,
-                    optimization_guide::OptimizationGuideDecisionCallback));
   MOCK_METHOD3(CanApplyOptimization,
                optimization_guide::OptimizationGuideDecision(
                    const GURL& gurl,
@@ -92,14 +88,13 @@ class PerformanceHintsObserverTest : public ChromeRenderViewHostTestHarness {
 
     // By default, all sources will return no hints.
     ON_CALL(*mock_optimization_guide_keyed_service_,
-            CanApplyOptimizationAsync(
-                _, optimization_guide::proto::PERFORMANCE_HINTS, _))
-        .WillByDefault(base::test::RunOnceCallback<2>(
-            optimization_guide::OptimizationGuideDecision::kFalse,
-            optimization_guide::OptimizationMetadata{}));
-    ON_CALL(*mock_optimization_guide_keyed_service_,
             CanApplyOptimization(
                 _, optimization_guide::proto::PERFORMANCE_HINTS, _))
+        .WillByDefault(
+            Return(optimization_guide::OptimizationGuideDecision::kFalse));
+    ON_CALL(
+        *mock_optimization_guide_keyed_service_,
+        CanApplyOptimization(_, optimization_guide::proto::LINK_PERFORMANCE, _))
         .WillByDefault(
             Return(optimization_guide::OptimizationGuideDecision::kFalse));
     ON_CALL(
@@ -109,9 +104,9 @@ class PerformanceHintsObserverTest : public ChromeRenderViewHostTestHarness {
             Return(optimization_guide::OptimizationGuideDecision::kFalse));
 
     test_handle_ = std::make_unique<content::MockNavigationHandle>(
-        GURL(kTestUrl), main_rfh());
+        GURL(kPageUrl), main_rfh());
     std::vector<GURL> redirect_chain;
-    redirect_chain.emplace_back(GURL(kTestUrl));
+    redirect_chain.emplace_back(GURL(kPageUrl));
     test_handle_->set_redirect_chain(redirect_chain);
     test_handle_->set_has_committed(true);
     test_handle_->set_is_same_document(false);
@@ -148,12 +143,12 @@ TEST_F(PerformanceHintsObserverTest, LinkHintFound) {
   hint->set_performance_class(optimization_guide::proto::PERFORMANCE_SLOW);
   optimization_guide::OptimizationMetadata metadata;
   metadata.set_performance_hints_metadata(hints_metadata);
-  ON_CALL(
-      *mock_optimization_guide_keyed_service_,
-      CanApplyOptimizationAsync(_, optimization_guide::proto::PERFORMANCE_HINTS,
-                                base::test::IsNotNullCallback()))
-      .WillByDefault(base::test::RunOnceCallback<2>(
-          optimization_guide::OptimizationGuideDecision::kTrue, metadata));
+  ON_CALL(*mock_optimization_guide_keyed_service_,
+          CanApplyOptimization(_, optimization_guide::proto::PERFORMANCE_HINTS,
+                               NotNull()))
+      .WillByDefault(
+          DoAll(SetArgPointee<2>(metadata),
+                Return(optimization_guide::OptimizationGuideDecision::kTrue)));
 
   PerformanceHintsObserver::CreateForWebContents(web_contents());
   CallDidFinishNavigation(web_contents());
@@ -187,12 +182,12 @@ TEST_F(PerformanceHintsObserverTest, MultipleLinkHints) {
   hint->set_performance_class(optimization_guide::proto::PERFORMANCE_FAST);
   optimization_guide::OptimizationMetadata metadata;
   metadata.set_performance_hints_metadata(hints_metadata);
-  EXPECT_CALL(
-      *mock_optimization_guide_keyed_service_,
-      CanApplyOptimizationAsync(_, optimization_guide::proto::PERFORMANCE_HINTS,
-                                base::test::IsNotNullCallback()))
-      .WillOnce(base::test::RunOnceCallback<2>(
-          optimization_guide::OptimizationGuideDecision::kTrue, metadata));
+  ON_CALL(*mock_optimization_guide_keyed_service_,
+          CanApplyOptimization(_, optimization_guide::proto::PERFORMANCE_HINTS,
+                               NotNull()))
+      .WillByDefault(
+          DoAll(SetArgPointee<2>(metadata),
+                Return(optimization_guide::OptimizationGuideDecision::kTrue)));
 
   PerformanceHintsObserver::CreateForWebContents(web_contents());
   CallDidFinishNavigation(web_contents());
@@ -229,12 +224,12 @@ TEST_F(PerformanceHintsObserverTest, NoLinkHints) {
   optimization_guide::OptimizationMetadata metadata;
   metadata.set_performance_hints_metadata(
       optimization_guide::proto::PerformanceHintsMetadata());
-  EXPECT_CALL(
-      *mock_optimization_guide_keyed_service_,
-      CanApplyOptimizationAsync(_, optimization_guide::proto::PERFORMANCE_HINTS,
-                                base::test::IsNotNullCallback()))
-      .WillOnce(base::test::RunOnceCallback<2>(
-          optimization_guide::OptimizationGuideDecision::kTrue, metadata));
+  ON_CALL(*mock_optimization_guide_keyed_service_,
+          CanApplyOptimization(_, optimization_guide::proto::PERFORMANCE_HINTS,
+                               NotNull()))
+      .WillByDefault(
+          DoAll(SetArgPointee<2>(metadata),
+                Return(optimization_guide::OptimizationGuideDecision::kTrue)));
 
   PerformanceHintsObserver::CreateForWebContents(web_contents());
   CallDidFinishNavigation(web_contents());
@@ -248,6 +243,73 @@ TEST_F(PerformanceHintsObserverTest, NoLinkHints) {
 
   histogram_tester.ExpectUniqueSample(
       "PerformanceHints.Observer.HintForURLResult", /*kHintNotFound*/ 0, 1);
+}
+
+class LinkPerformanceHintsEnabledPerformanceHintsObserverTest
+    : public PerformanceHintsObserverTest {
+ public:
+  LinkPerformanceHintsEnabledPerformanceHintsObserverTest() {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{features::kPerformanceHintsObserver,
+          {{"use_link_performance_hints", "true"}}},
+         // Need to enable kOptimizationHints or GetForProfile will return
+         // nullptr.
+         {optimization_guide::features::kOptimizationHints, {}}},
+        {});
+  }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(LinkPerformanceHintsEnabledPerformanceHintsObserverTest,
+       RegisterLinkPerformance) {
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_,
+              RegisterOptimizationTypes(testing::UnorderedElementsAre(
+                  optimization_guide::proto::PERFORMANCE_HINTS,
+                  optimization_guide::proto::LINK_PERFORMANCE,
+                  optimization_guide::proto::FAST_HOST_HINTS)));
+
+  PerformanceHintsObserver::CreateForWebContents(web_contents());
+}
+
+TEST_F(LinkPerformanceHintsEnabledPerformanceHintsObserverTest,
+       LinkPerformanceHints) {
+  optimization_guide::proto::LinkPerformanceMetadata link_metadata;
+  auto* hint = link_metadata.add_link_hints();
+  hint->set_wildcard_pattern("test.com");
+  hint->set_performance_class(optimization_guide::proto::PERFORMANCE_SLOW);
+  hint = link_metadata.add_link_hints();
+  hint->set_wildcard_pattern("othersite.net");
+  hint->set_performance_class(optimization_guide::proto::PERFORMANCE_FAST);
+
+  optimization_guide::OptimizationMetadata metadata;
+  metadata.SetAnyMetadataForTesting(link_metadata);
+
+  ON_CALL(*mock_optimization_guide_keyed_service_,
+          CanApplyOptimization(GURL(kPageUrl),
+                               optimization_guide::proto::LINK_PERFORMANCE,
+                               NotNull()))
+      .WillByDefault(
+          DoAll(SetArgPointee<2>(metadata),
+                Return(optimization_guide::OptimizationGuideDecision::kTrue)));
+
+  PerformanceHintsObserver::CreateForWebContents(web_contents());
+  CallDidFinishNavigation(web_contents());
+
+  base::HistogramTester histogram_tester;
+
+  EXPECT_THAT(PerformanceHintsObserver::PerformanceClassForURL(
+                  web_contents(), GURL("http://www.test.com"),
+                  /*record_metrics=*/true),
+              Eq(optimization_guide::proto::PERFORMANCE_SLOW));
+  EXPECT_THAT(PerformanceHintsObserver::PerformanceClassForURL(
+                  web_contents(), GURL("https://www.othersite.net/this/link"),
+                  /*record_metrics=*/true),
+              Eq(optimization_guide::proto::PERFORMANCE_FAST));
+  EXPECT_THAT(PerformanceHintsObserver::PerformanceClassForURL(
+                  web_contents(), GURL("https://www.nohint.com"),
+                  /*record_metrics=*/true),
+              Eq(optimization_guide::proto::PERFORMANCE_UNKNOWN));
 }
 
 TEST_F(PerformanceHintsObserverTest, PageHintFound) {
@@ -393,6 +455,10 @@ TEST_F(FastHostHintsDisabledPerformanceHintsObserverTest,
 
   EXPECT_CALL(
       *mock_optimization_guide_keyed_service_,
+      CanApplyOptimization(GURL(kPageUrl),
+                           optimization_guide::proto::PERFORMANCE_HINTS, _));
+  EXPECT_CALL(
+      *mock_optimization_guide_keyed_service_,
       CanApplyOptimization(GURL("https://www.fastfilter.com"),
                            optimization_guide::proto::PERFORMANCE_HINTS, _));
   EXPECT_CALL(
@@ -448,12 +514,12 @@ TEST_F(PerformanceHintsObserverTest, RewrittenUrl) {
   hint->set_performance_class(optimization_guide::proto::PERFORMANCE_SLOW);
   optimization_guide::OptimizationMetadata metadata;
   metadata.set_performance_hints_metadata(hints_metadata);
-  EXPECT_CALL(
-      *mock_optimization_guide_keyed_service_,
-      CanApplyOptimizationAsync(_, optimization_guide::proto::PERFORMANCE_HINTS,
-                                base::test::IsNotNullCallback()))
-      .WillOnce(base::test::RunOnceCallback<2>(
-          optimization_guide::OptimizationGuideDecision::kTrue, metadata));
+  ON_CALL(*mock_optimization_guide_keyed_service_,
+          CanApplyOptimization(_, optimization_guide::proto::PERFORMANCE_HINTS,
+                               NotNull()))
+      .WillByDefault(
+          DoAll(SetArgPointee<2>(metadata),
+                Return(optimization_guide::OptimizationGuideDecision::kTrue)));
 
   PerformanceHintsObserver::CreateForWebContents(web_contents());
   CallDidFinishNavigation(web_contents());
@@ -535,12 +601,12 @@ TEST_F(RewritesDisabledPerformanceHintsObserverTest, RewritesDisabled) {
   hint->set_performance_class(optimization_guide::proto::PERFORMANCE_SLOW);
   optimization_guide::OptimizationMetadata metadata;
   metadata.set_performance_hints_metadata(hints_metadata);
-  EXPECT_CALL(
-      *mock_optimization_guide_keyed_service_,
-      CanApplyOptimizationAsync(_, optimization_guide::proto::PERFORMANCE_HINTS,
-                                base::test::IsNotNullCallback()))
-      .WillOnce(base::test::RunOnceCallback<2>(
-          optimization_guide::OptimizationGuideDecision::kTrue, metadata));
+  ON_CALL(*mock_optimization_guide_keyed_service_,
+          CanApplyOptimization(_, optimization_guide::proto::PERFORMANCE_HINTS,
+                               NotNull()))
+      .WillByDefault(
+          DoAll(SetArgPointee<2>(metadata),
+                Return(optimization_guide::OptimizationGuideDecision::kTrue)));
 
   PerformanceHintsObserver::CreateForWebContents(web_contents());
   CallDidFinishNavigation(web_contents());
@@ -611,12 +677,12 @@ TEST_F(PerformanceHintsObserverTest, DontMatchQueryParams) {
   hint->set_performance_class(optimization_guide::proto::PERFORMANCE_FAST);
   optimization_guide::OptimizationMetadata metadata;
   metadata.set_performance_hints_metadata(hints_metadata);
-  EXPECT_CALL(
-      *mock_optimization_guide_keyed_service_,
-      CanApplyOptimizationAsync(_, optimization_guide::proto::PERFORMANCE_HINTS,
-                                base::test::IsNotNullCallback()))
-      .WillOnce(base::test::RunOnceCallback<2>(
-          optimization_guide::OptimizationGuideDecision::kTrue, metadata));
+  ON_CALL(*mock_optimization_guide_keyed_service_,
+          CanApplyOptimization(_, optimization_guide::proto::PERFORMANCE_HINTS,
+                               NotNull()))
+      .WillByDefault(
+          DoAll(SetArgPointee<2>(metadata),
+                Return(optimization_guide::OptimizationGuideDecision::kTrue)));
 
   PerformanceHintsObserver::CreateForWebContents(web_contents());
   CallDidFinishNavigation(web_contents());
@@ -630,14 +696,12 @@ TEST_F(PerformanceHintsObserverTest, DontMatchQueryParams) {
       Eq(optimization_guide::proto::PERFORMANCE_FAST));
 }
 
-TEST_F(PerformanceHintsObserverTest, PerformanceInfoRequestedBeforeCallback) {
-  // Match calls to CanApplyOptimizationAsync so that the callback is never
-  // called.
-  ON_CALL(
-      *mock_optimization_guide_keyed_service_,
-      CanApplyOptimizationAsync(_, optimization_guide::proto::PERFORMANCE_HINTS,
-                                base::test::IsNotNullCallback()))
-      .WillByDefault(Return());
+TEST_F(PerformanceHintsObserverTest, LinkHintsNotReady) {
+  ON_CALL(*mock_optimization_guide_keyed_service_,
+          CanApplyOptimization(_, optimization_guide::proto::PERFORMANCE_HINTS,
+                               NotNull()))
+      .WillByDefault(
+          Return(optimization_guide::OptimizationGuideDecision::kUnknown));
 
   PerformanceHintsObserver::CreateForWebContents(web_contents());
   CallDidFinishNavigation(web_contents());
@@ -656,47 +720,84 @@ TEST_F(PerformanceHintsObserverTest, PerformanceInfoRequestedBeforeCallback) {
       1);
 }
 
+TEST_F(PerformanceHintsObserverTest, CacheLinkHints) {
+  PerformanceHintsObserver::CreateForWebContents(web_contents());
+  CallDidFinishNavigation(web_contents());
+
+  optimization_guide::proto::PerformanceHintsMetadata hints_metadata;
+  auto* hint = hints_metadata.add_performance_hints();
+  hint->set_wildcard_pattern("hint.com");
+  hint->set_performance_class(optimization_guide::proto::PERFORMANCE_FAST);
+  optimization_guide::OptimizationMetadata metadata;
+  metadata.set_performance_hints_metadata(hints_metadata);
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_,
+              CanApplyOptimization(GURL(kPageUrl),
+                                   optimization_guide::proto::PERFORMANCE_HINTS,
+                                   NotNull()))
+      .WillOnce(
+          DoAll(SetArgPointee<2>(metadata),
+                Return(optimization_guide::OptimizationGuideDecision::kTrue)));
+
+  base::HistogramTester histogram_tester;
+
+  EXPECT_THAT(PerformanceHintsObserver::PerformanceClassForURL(
+                  web_contents(), GURL("https://www.hint.com"),
+                  /*record_metrics=*/true),
+              Eq(optimization_guide::proto::PERFORMANCE_FAST));
+
+  histogram_tester.ExpectUniqueSample(
+      "PerformanceHints.Observer.HintForURLResult",
+      /*kHintFound*/ 3, 1);
+
+  // No further calls should be made to OptimizationGuide, just use the cached
+  // link hints for the current page.
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_,
+              CanApplyOptimization(GURL(kPageUrl),
+                                   optimization_guide::proto::PERFORMANCE_HINTS,
+                                   NotNull()))
+      .Times(0);
+
+  EXPECT_THAT(PerformanceHintsObserver::PerformanceClassForURL(
+                  web_contents(), GURL("https://www.hint.com"),
+                  /*record_metrics=*/true),
+              Eq(optimization_guide::proto::PERFORMANCE_FAST));
+
+  histogram_tester.ExpectUniqueSample(
+      "PerformanceHints.Observer.HintForURLResult",
+      /*kHintFound*/ 3, 2);
+}
+
 TEST_F(PerformanceHintsObserverTest, ResetObserverForNextNavigation) {
-  optimization_guide::OptimizationGuideDecisionCallback finished_callback;
-
-  EXPECT_CALL(
-      *mock_optimization_guide_keyed_service_,
-      CanApplyOptimizationAsync(_, optimization_guide::proto::PERFORMANCE_HINTS,
-                                base::test::IsNotNullCallback()))
-      .Times(2)
-      .WillRepeatedly(testing::WithArgs<2>(testing::Invoke(
-          [&finished_callback](
-              optimization_guide::OptimizationGuideDecisionCallback callback) {
-            finished_callback = std::move(callback);
-          })));
-
   PerformanceHintsObserver::CreateForWebContents(web_contents());
   CallDidFinishNavigation(web_contents());
 
   {
     base::HistogramTester histogram_tester;
+
     EXPECT_THAT(PerformanceHintsObserver::PerformanceClassForURL(
-                    web_contents(), GURL("https://www.nohint.com"),
+                    web_contents(), GURL("https://www.hint.com"),
                     /*record_metrics=*/true),
                 Eq(optimization_guide::proto::PERFORMANCE_UNKNOWN));
 
-    histogram_tester.ExpectUniqueSample(
-        "PerformanceHints.Observer.HintForURLResult", /*kHintNotReady*/ 1, 1);
-  }
-
-  {
-    base::HistogramTester histogram_tester;
-
-    std::move(finished_callback)
-        .Run(optimization_guide::OptimizationGuideDecision::kTrue, {});
-    EXPECT_THAT(PerformanceHintsObserver::PerformanceClassForURL(
-                    web_contents(), GURL("https://www.nohint.com"),
-                    /*record_metrics=*/true),
-                Eq(optimization_guide::proto::PERFORMANCE_UNKNOWN));
-
+    // Hints will not be returned in the default case.
     histogram_tester.ExpectUniqueSample(
         "PerformanceHints.Observer.HintForURLResult", /*kHintNotFound*/ 0, 1);
   }
+
+  // Set up the next call to return hints for the page.
+  optimization_guide::proto::PerformanceHintsMetadata hints_metadata;
+  auto* hint = hints_metadata.add_performance_hints();
+  hint->set_wildcard_pattern("hint.com");
+  hint->set_performance_class(optimization_guide::proto::PERFORMANCE_FAST);
+  optimization_guide::OptimizationMetadata metadata;
+  metadata.set_performance_hints_metadata(hints_metadata);
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_,
+              CanApplyOptimization(GURL(kPageUrl),
+                                   optimization_guide::proto::PERFORMANCE_HINTS,
+                                   NotNull()))
+      .WillOnce(
+          DoAll(SetArgPointee<2>(metadata),
+                Return(optimization_guide::OptimizationGuideDecision::kTrue)));
 
   {
     base::HistogramTester histogram_tester;
@@ -705,13 +806,13 @@ TEST_F(PerformanceHintsObserverTest, ResetObserverForNextNavigation) {
     CallDidFinishNavigation(web_contents());
 
     EXPECT_THAT(PerformanceHintsObserver::PerformanceClassForURL(
-                    web_contents(), GURL("https://www.nohint.com"),
+                    web_contents(), GURL("https://www.hint.com"),
                     /*record_metrics=*/true),
-                Eq(optimization_guide::proto::PERFORMANCE_UNKNOWN));
+                Eq(optimization_guide::proto::PERFORMANCE_FAST));
 
     histogram_tester.ExpectUniqueSample(
         "PerformanceHints.Observer.HintForURLResult",
-        /*kHintNotReady*/ 1, 1);
+        /*kHintFound*/ 3, 1);
   }
 }
 
@@ -733,7 +834,7 @@ TEST_F(PerformanceHintsObserverTest, NoErrorPageHints) {
   test_handle_->set_is_error_page(true);
 
   EXPECT_CALL(*mock_optimization_guide_keyed_service_,
-              CanApplyOptimizationAsync(_, _, _))
+              CanApplyOptimization(_, _, _))
       .Times(0);
 
   PerformanceHintsObserver::CreateForWebContents(web_contents());
@@ -747,24 +848,24 @@ TEST_F(PerformanceHintsObserverTest, NoErrorPageHints) {
 
 TEST_F(PerformanceHintsObserverTest, DontFetchForSubframe) {
   test_handle_ = std::make_unique<content::MockNavigationHandle>(
-      GURL(kTestUrl),
+      GURL(kPageUrl),
       content::RenderFrameHostTester::For(main_rfh())->AppendChild("subframe"));
   std::vector<GURL> redirect_chain;
-  redirect_chain.emplace_back(GURL(kTestUrl));
+  redirect_chain.emplace_back(GURL(kPageUrl));
   test_handle_->set_redirect_chain(redirect_chain);
   test_handle_->set_has_committed(true);
   test_handle_->set_is_same_document(false);
   test_handle_->set_is_error_page(false);
 
   EXPECT_CALL(*mock_optimization_guide_keyed_service_,
-              CanApplyOptimizationAsync(_, _, _))
+              CanApplyOptimization(_, _, _))
       .Times(0);
 
   PerformanceHintsObserver::CreateForWebContents(web_contents());
   CallDidFinishNavigation(web_contents());
 
   EXPECT_THAT(PerformanceHintsObserver::PerformanceClassForURL(
-                  web_contents(), GURL("http://www.test.com"),
+                  web_contents(), GURL(kPageUrl),
                   /*record_metrics=*/true),
               Eq(optimization_guide::proto::PERFORMANCE_UNKNOWN));
 }
@@ -802,12 +903,12 @@ TEST_F(OverrideUnknownPerformanceHintsObserverTest,
   hint->set_performance_class(optimization_guide::proto::PERFORMANCE_UNKNOWN);
   optimization_guide::OptimizationMetadata metadata;
   metadata.set_performance_hints_metadata(hints_metadata);
-  EXPECT_CALL(
-      *mock_optimization_guide_keyed_service_,
-      CanApplyOptimizationAsync(_, optimization_guide::proto::PERFORMANCE_HINTS,
-                                base::test::IsNotNullCallback()))
-      .WillOnce(base::test::RunOnceCallback<2>(
-          optimization_guide::OptimizationGuideDecision::kTrue, metadata));
+  ON_CALL(*mock_optimization_guide_keyed_service_,
+          CanApplyOptimization(_, optimization_guide::proto::PERFORMANCE_HINTS,
+                               NotNull()))
+      .WillByDefault(
+          DoAll(SetArgPointee<2>(metadata),
+                Return(optimization_guide::OptimizationGuideDecision::kTrue)));
 
   PerformanceHintsObserver::CreateForWebContents(web_contents());
   CallDidFinishNavigation(web_contents());

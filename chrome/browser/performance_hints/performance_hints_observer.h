@@ -73,12 +73,13 @@ class PerformanceHintsObserver
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
 
-  // This callback populates |hints_| with performance information for links on
-  // the current page and is called by |optimization_guide_decider_| when a
-  // definite decision has been reached.
-  void ProcessPerformanceHint(
-      optimization_guide::OptimizationGuideDecision decision,
-      const optimization_guide::OptimizationMetadata& optimization_metadata);
+  // Returns true if the current page supports hints (not an error page,
+  // must be HTTP/HTTPS, etc).
+  bool DoesPageSupportHints();
+
+  // Populates |link_hints_| with performance information for links on the
+  // current page.
+  void PopulateLinkHints();
 
   // SourceLookupStatus represents the result of a querying a single source
   // (page hints or link hints) for performance information. Tracking this
@@ -106,7 +107,7 @@ class PerformanceHintsObserver
   // current page.
   std::tuple<SourceLookupStatus,
              base::Optional<optimization_guide::proto::PerformanceHint>>
-  LinkHintForURL(const GURL& url) const;
+  LinkHintForURL(const GURL& url);
 
   // Attempts to retrieve a PerformanceHint for |url| from the OptimizationGuide
   // metadata for that URL.
@@ -158,7 +159,7 @@ class PerformanceHintsObserver
   // Fetches a PerformanceHint for the given |url|.
   //
   // See HintForURLResult for details on the return value.
-  HintForURLResult HintForURL(const GURL& url, bool record_metrics) const;
+  HintForURLResult HintForURL(const GURL& url, bool record_metrics);
 
   // If kPerformanceHintsHandleRewrites is enabled, URLs that match one of the
   // configured rewrite patterns will have the inner URL extracted and used for
@@ -172,13 +173,18 @@ class PerformanceHintsObserver
   optimization_guide::OptimizationGuideDecider* optimization_guide_decider_ =
       nullptr;
 
-  // URLs that match |first| should use the Performance hint in |second|.
+  // The URL of the main frame of the associated WebContents. This is not set if
+  // the current page is an error page.
+  base::Optional<GURL> page_url_;
+
+  // Link URLs that match |first| should use the Performance hint in |second|.
   std::vector<std::pair<optimization_guide::URLPatternWithWildcards,
                         optimization_guide::proto::PerformanceHint>>
-      hints_;
+      link_hints_;
 
-  // True if the ProcessPerformanceHint callback has been run.
-  bool hint_processed_ = false;
+  // The fetch status for link hints.
+  optimization_guide::OptimizationGuideDecision link_hints_decision_ =
+      optimization_guide::OptimizationGuideDecision::kUnknown;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
