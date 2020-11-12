@@ -661,6 +661,7 @@ quic::QuicAsyncStatus ProofVerifierChromium::VerifyCertChain(
     const quic::ProofVerifyContext* verify_context,
     std::string* error_details,
     std::unique_ptr<quic::ProofVerifyDetails>* verify_details,
+    uint8_t* /*out_alert*/,
     std::unique_ptr<quic::ProofVerifierCallback> callback) {
   if (!verify_context) {
     *error_details = "Missing context";

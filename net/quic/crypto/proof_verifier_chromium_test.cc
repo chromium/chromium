@@ -243,6 +243,7 @@ class ProofVerifierChromiumTest : public ::testing::Test {
   std::unique_ptr<quic::ProofVerifyContext> verify_context_;
   std::unique_ptr<quic::ProofVerifyDetails> details_;
   std::string error_details_;
+  uint8_t tls_alert_;
   std::vector<std::string> certs_;
   CertVerifyResult dummy_result_;
   scoped_refptr<X509Certificate> test_cert_;
@@ -273,7 +274,8 @@ TEST_F(ProofVerifierChromiumTest, VerifyProof) {
   callback = std::make_unique<DummyProofVerifierCallback>();
   status = proof_verifier.VerifyCertChain(
       kTestHostname, kTestPort, certs_, kTestEmptyOCSPResponse, kTestEmptySCT,
-      verify_context_.get(), &error_details_, &details_, std::move(callback));
+      verify_context_.get(), &error_details_, &details_, &tls_alert_,
+      std::move(callback));
   ASSERT_EQ(quic::QUIC_SUCCESS, status);
 
   ASSERT_TRUE(details_.get());
@@ -301,7 +303,8 @@ TEST_F(ProofVerifierChromiumTest, FailsIfCertFails) {
   callback = std::make_unique<DummyProofVerifierCallback>();
   status = proof_verifier.VerifyCertChain(
       kTestHostname, kTestPort, certs_, kTestEmptyOCSPResponse, kTestEmptySCT,
-      verify_context_.get(), &error_details_, &details_, std::move(callback));
+      verify_context_.get(), &error_details_, &details_, &tls_alert_,
+      std::move(callback));
   ASSERT_EQ(quic::QUIC_FAILURE, status);
 }
 
@@ -329,7 +332,7 @@ TEST_F(ProofVerifierChromiumTest, ValidSCTList) {
   quic::QuicAsyncStatus status = proof_verifier.VerifyCertChain(
       kTestHostname, kTestPort, certs_, kTestEmptyOCSPResponse,
       ct::GetSCTListForTesting(), verify_context_.get(), &error_details_,
-      &details_, std::move(callback));
+      &details_, &tls_alert_, std::move(callback));
   ASSERT_EQ(quic::QUIC_SUCCESS, status);
   CheckSCT(/*sct_expected_ok=*/true);
 }
@@ -358,7 +361,7 @@ TEST_F(ProofVerifierChromiumTest, InvalidSCTList) {
   quic::QuicAsyncStatus status = proof_verifier.VerifyCertChain(
       kTestHostname, kTestPort, certs_, kTestEmptyOCSPResponse,
       ct::GetSCTListWithInvalidSCT(), verify_context_.get(), &error_details_,
-      &details_, std::move(callback));
+      &details_, &tls_alert_, std::move(callback));
   ASSERT_EQ(quic::QUIC_SUCCESS, status);
   CheckSCT(/*sct_expected_ok=*/false);
 }
@@ -414,7 +417,8 @@ TEST_F(ProofVerifierChromiumTest, PreservesEVIfAllowed) {
   callback = std::make_unique<DummyProofVerifierCallback>();
   status = proof_verifier.VerifyCertChain(
       kTestHostname, kTestPort, certs_, kTestEmptyOCSPResponse, kTestEmptySCT,
-      verify_context_.get(), &error_details_, &details_, std::move(callback));
+      verify_context_.get(), &error_details_, &details_, &tls_alert_,
+      std::move(callback));
   ASSERT_EQ(quic::QUIC_SUCCESS, status);
 
   ASSERT_TRUE(details_.get());
@@ -457,7 +461,8 @@ TEST_F(ProofVerifierChromiumTest, StripsEVIfNotAllowed) {
   callback = std::make_unique<DummyProofVerifierCallback>();
   status = proof_verifier.VerifyCertChain(
       kTestHostname, kTestPort, certs_, kTestEmptyOCSPResponse, kTestEmptySCT,
-      verify_context_.get(), &error_details_, &details_, std::move(callback));
+      verify_context_.get(), &error_details_, &details_, &tls_alert_,
+      std::move(callback));
   ASSERT_EQ(quic::QUIC_SUCCESS, status);
 
   ASSERT_TRUE(details_.get());
@@ -510,7 +515,8 @@ TEST_F(ProofVerifierChromiumTest, CTEVHistogramNonCompliant) {
   callback = std::make_unique<DummyProofVerifierCallback>();
   status = proof_verifier.VerifyCertChain(
       kTestHostname, kTestPort, certs_, kTestEmptyOCSPResponse, kTestEmptySCT,
-      verify_context_.get(), &error_details_, &details_, std::move(callback));
+      verify_context_.get(), &error_details_, &details_, &tls_alert_,
+      std::move(callback));
 
   ASSERT_TRUE(details_.get());
   verify_details = static_cast<ProofVerifyDetailsChromium*>(details_.get());
@@ -565,7 +571,8 @@ TEST_F(ProofVerifierChromiumTest, CTEVHistogramCompliant) {
   callback = std::make_unique<DummyProofVerifierCallback>();
   status = proof_verifier.VerifyCertChain(
       kTestHostname, kTestPort, certs_, kTestEmptyOCSPResponse, kTestEmptySCT,
-      verify_context_.get(), &error_details_, &details_, std::move(callback));
+      verify_context_.get(), &error_details_, &details_, &tls_alert_,
+      std::move(callback));
 
   ASSERT_TRUE(details_.get());
   verify_details = static_cast<ProofVerifyDetailsChromium*>(details_.get());
@@ -611,7 +618,8 @@ TEST_F(ProofVerifierChromiumTest, IsFatalErrorNotSetForNonFatalError) {
   callback = std::make_unique<DummyProofVerifierCallback>();
   status = proof_verifier.VerifyCertChain(
       kTestHostname, kTestPort, certs_, kTestEmptyOCSPResponse, kTestEmptySCT,
-      verify_context_.get(), &error_details_, &details_, std::move(callback));
+      verify_context_.get(), &error_details_, &details_, &tls_alert_,
+      std::move(callback));
   ASSERT_EQ(quic::QUIC_FAILURE, status);
 
   verify_details = static_cast<ProofVerifyDetailsChromium*>(details_.get());
@@ -647,7 +655,8 @@ TEST_F(ProofVerifierChromiumTest, IsFatalErrorSetForFatalError) {
   callback = std::make_unique<DummyProofVerifierCallback>();
   status = proof_verifier.VerifyCertChain(
       kTestHostname, kTestPort, certs_, kTestEmptyOCSPResponse, kTestEmptySCT,
-      verify_context_.get(), &error_details_, &details_, std::move(callback));
+      verify_context_.get(), &error_details_, &details_, &tls_alert_,
+      std::move(callback));
   ASSERT_EQ(quic::QUIC_FAILURE, status);
   verify_details = static_cast<ProofVerifyDetailsChromium*>(details_.get());
   EXPECT_TRUE(verify_details->is_fatal_cert_error);
@@ -687,7 +696,8 @@ TEST_F(ProofVerifierChromiumTest, PKPEnforced) {
   callback = std::make_unique<DummyProofVerifierCallback>();
   status = proof_verifier.VerifyCertChain(
       kCTAndPKPHost, kTestPort, certs_, kTestEmptyOCSPResponse, kTestEmptySCT,
-      verify_context_.get(), &error_details_, &details_, std::move(callback));
+      verify_context_.get(), &error_details_, &details_, &tls_alert_,
+      std::move(callback));
   ASSERT_EQ(quic::QUIC_FAILURE, status);
 
   ASSERT_TRUE(details_.get());
@@ -730,7 +740,8 @@ TEST_F(ProofVerifierChromiumTest, PKPBypassFlagSet) {
   callback = std::make_unique<DummyProofVerifierCallback>();
   status = proof_verifier.VerifyCertChain(
       kCTAndPKPHost, kTestPort, certs_, kTestEmptyOCSPResponse, kTestEmptySCT,
-      verify_context_.get(), &error_details_, &details_, std::move(callback));
+      verify_context_.get(), &error_details_, &details_, &tls_alert_,
+      std::move(callback));
   ASSERT_EQ(quic::QUIC_SUCCESS, status);
 
   ASSERT_TRUE(details_.get());
@@ -786,7 +797,8 @@ TEST_F(ProofVerifierChromiumTest, PKPReport) {
   callback = std::make_unique<DummyProofVerifierCallback>();
   status = proof_verifier.VerifyCertChain(
       kCTAndPKPHost, kTestPort, certs_, kTestEmptyOCSPResponse, kTestEmptySCT,
-      verify_context_.get(), &error_details_, &details_, std::move(callback));
+      verify_context_.get(), &error_details_, &details_, &tls_alert_,
+      std::move(callback));
   ASSERT_EQ(quic::QUIC_FAILURE, status);
 
   ASSERT_TRUE(details_.get());
@@ -844,7 +856,8 @@ TEST_F(ProofVerifierChromiumTest, CTIsRequired) {
   callback = std::make_unique<DummyProofVerifierCallback>();
   status = proof_verifier.VerifyCertChain(
       kTestHostname, kTestPort, certs_, kTestEmptyOCSPResponse, kTestEmptySCT,
-      verify_context_.get(), &error_details_, &details_, std::move(callback));
+      verify_context_.get(), &error_details_, &details_, &tls_alert_,
+      std::move(callback));
   ASSERT_EQ(quic::QUIC_FAILURE, status);
 
   ASSERT_TRUE(details_.get());
@@ -899,7 +912,8 @@ TEST_F(ProofVerifierChromiumTest, CTIsRequiredHistogramNonCompliant) {
   callback = std::make_unique<DummyProofVerifierCallback>();
   status = proof_verifier.VerifyCertChain(
       kTestHostname, kTestPort, certs_, kTestEmptyOCSPResponse, kTestEmptySCT,
-      verify_context_.get(), &error_details_, &details_, std::move(callback));
+      verify_context_.get(), &error_details_, &details_, &tls_alert_,
+      std::move(callback));
   ASSERT_EQ(quic::QUIC_FAILURE, status);
 
   histograms.ExpectUniqueSample(
@@ -950,7 +964,8 @@ TEST_F(ProofVerifierChromiumTest, CTIsRequiredHistogramCompliant) {
     callback = std::make_unique<DummyProofVerifierCallback>();
     status = proof_verifier.VerifyCertChain(
         kTestHostname, kTestPort, certs_, kTestEmptyOCSPResponse, kTestEmptySCT,
-        verify_context_.get(), &error_details_, &details_, std::move(callback));
+        verify_context_.get(), &error_details_, &details_, &tls_alert_,
+        std::move(callback));
     ASSERT_EQ(quic::QUIC_SUCCESS, status);
 
     histograms.ExpectTotalCount(kHistogramName, 0);
@@ -980,7 +995,8 @@ TEST_F(ProofVerifierChromiumTest, CTIsRequiredHistogramCompliant) {
     callback = std::make_unique<DummyProofVerifierCallback>();
     status = proof_verifier.VerifyCertChain(
         kTestHostname, kTestPort, certs_, kTestEmptyOCSPResponse, kTestEmptySCT,
-        verify_context_.get(), &error_details_, &details_, std::move(callback));
+        verify_context_.get(), &error_details_, &details_, &tls_alert_,
+        std::move(callback));
     ASSERT_EQ(quic::QUIC_SUCCESS, status);
 
     histograms.ExpectUniqueSample(
@@ -1018,7 +1034,8 @@ TEST_F(ProofVerifierChromiumTest, CTIsNotRequiredHistogram) {
   callback = std::make_unique<DummyProofVerifierCallback>();
   status = proof_verifier.VerifyCertChain(
       kTestHostname, kTestPort, certs_, kTestEmptyOCSPResponse, kTestEmptySCT,
-      verify_context_.get(), &error_details_, &details_, std::move(callback));
+      verify_context_.get(), &error_details_, &details_, &tls_alert_,
+      std::move(callback));
   ASSERT_EQ(quic::QUIC_SUCCESS, status);
 
   histograms.ExpectTotalCount(kHistogramName, 0);
@@ -1072,7 +1089,8 @@ TEST_F(ProofVerifierChromiumTest, PKPAndCTBothTested) {
   callback = std::make_unique<DummyProofVerifierCallback>();
   status = proof_verifier.VerifyCertChain(
       kCTAndPKPHost, kTestPort, certs_, kTestEmptyOCSPResponse, kTestEmptySCT,
-      verify_context_.get(), &error_details_, &details_, std::move(callback));
+      verify_context_.get(), &error_details_, &details_, &tls_alert_,
+      std::move(callback));
   ASSERT_EQ(quic::QUIC_FAILURE, status);
 
   ASSERT_TRUE(details_.get());
@@ -1115,7 +1133,8 @@ TEST_F(ProofVerifierChromiumTest, CTComplianceStatusHistogram) {
     callback = std::make_unique<DummyProofVerifierCallback>();
     status = proof_verifier.VerifyCertChain(
         kTestHostname, kTestPort, certs_, kTestEmptyOCSPResponse, kTestEmptySCT,
-        verify_context_.get(), &error_details_, &details_, std::move(callback));
+        verify_context_.get(), &error_details_, &details_, &tls_alert_,
+        std::move(callback));
     ASSERT_EQ(quic::QUIC_SUCCESS, status);
 
     // The histogram should not have been recorded.
@@ -1148,7 +1167,8 @@ TEST_F(ProofVerifierChromiumTest, CTComplianceStatusHistogram) {
     callback = std::make_unique<DummyProofVerifierCallback>();
     status = proof_verifier.VerifyCertChain(
         kTestHostname, kTestPort, certs_, kTestEmptyOCSPResponse, kTestEmptySCT,
-        verify_context_.get(), &error_details_, &details_, std::move(callback));
+        verify_context_.get(), &error_details_, &details_, &tls_alert_,
+        std::move(callback));
     ASSERT_EQ(quic::QUIC_SUCCESS, status);
 
     // The histogram should have been recorded with the CT compliance status.
@@ -1183,7 +1203,8 @@ TEST_F(ProofVerifierChromiumTest, UnknownRootRejected) {
   callback = std::make_unique<DummyProofVerifierCallback>();
   status = proof_verifier.VerifyCertChain(
       kTestHostname, kTestPort, certs_, kTestEmptyOCSPResponse, kTestEmptySCT,
-      verify_context_.get(), &error_details_, &details_, std::move(callback));
+      verify_context_.get(), &error_details_, &details_, &tls_alert_,
+      std::move(callback));
   ASSERT_EQ(quic::QUIC_FAILURE, status);
   EXPECT_EQ(
       "Failed to verify certificate chain: net::ERR_QUIC_CERT_ROOT_NOT_KNOWN",
@@ -1217,7 +1238,8 @@ TEST_F(ProofVerifierChromiumTest, UnknownRootAcceptedWithOverride) {
   callback = std::make_unique<DummyProofVerifierCallback>();
   status = proof_verifier.VerifyCertChain(
       kTestHostname, kTestPort, certs_, kTestEmptyOCSPResponse, kTestEmptySCT,
-      verify_context_.get(), &error_details_, &details_, std::move(callback));
+      verify_context_.get(), &error_details_, &details_, &tls_alert_,
+      std::move(callback));
   ASSERT_EQ(quic::QUIC_SUCCESS, status);
 
   ASSERT_TRUE(details_.get());
@@ -1253,7 +1275,8 @@ TEST_F(ProofVerifierChromiumTest, UnknownRootAcceptedWithWildcardOverride) {
   callback = std::make_unique<DummyProofVerifierCallback>();
   status = proof_verifier.VerifyCertChain(
       kTestHostname, kTestPort, certs_, kTestEmptyOCSPResponse, kTestEmptySCT,
-      verify_context_.get(), &error_details_, &details_, std::move(callback));
+      verify_context_.get(), &error_details_, &details_, &tls_alert_,
+      std::move(callback));
   ASSERT_EQ(quic::QUIC_SUCCESS, status);
 
   ASSERT_TRUE(details_.get());
@@ -1295,7 +1318,8 @@ TEST_F(ProofVerifierChromiumTest, SCTAuditingReportCollected) {
   callback = std::make_unique<DummyProofVerifierCallback>();
   status = proof_verifier.VerifyCertChain(
       kTestHostname, kTestPort, certs_, kTestEmptyOCSPResponse, kTestEmptySCT,
-      verify_context_.get(), &error_details_, &details_, std::move(callback));
+      verify_context_.get(), &error_details_, &details_, &tls_alert_,
+      std::move(callback));
   ASSERT_EQ(quic::QUIC_SUCCESS, status);
 }
 
@@ -1331,7 +1355,8 @@ TEST_F(ProofVerifierChromiumTest, SCTAuditingNonPublicCertsNotReported) {
   callback = std::make_unique<DummyProofVerifierCallback>();
   status = proof_verifier.VerifyCertChain(
       kTestHostname, kTestPort, certs_, kTestEmptyOCSPResponse, kTestEmptySCT,
-      verify_context_.get(), &error_details_, &details_, std::move(callback));
+      verify_context_.get(), &error_details_, &details_, &tls_alert_,
+      std::move(callback));
   ASSERT_EQ(quic::QUIC_FAILURE, status);
 }
 
