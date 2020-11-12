@@ -2928,7 +2928,9 @@ template("monochrome_or_trichrome_public_bundle_tmpl") {
                              "include_32_bit_webview",
                              "include_64_bit_webview",
                              "is_64_bit_browser",
+                             "lint_baseline_file",
                              "lint_min_sdk_version",
+                             "lint_suppressions_file",
                              "static_library_provider",
                              "static_library_synchronized_proguard",
                              "expected_libs_and_assets",
@@ -2970,6 +2972,8 @@ monochrome_or_trichrome_public_bundle_tmpl("monochrome_public_bundle") {
   # lowest shipping minSdkVersion to catch all potential NewApi errors.
   lint_min_sdk_version = default_min_sdk_version
   enable_lint = true
+  lint_baseline_file = "expectations/lint-baseline.xml"
+  lint_suppressions_file = "expectations/lint-suppressions.xml"
 
   bundle_suffix = ""
   if (android_64bit_target_cpu) {

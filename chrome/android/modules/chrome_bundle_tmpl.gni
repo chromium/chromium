@@ -226,18 +226,6 @@ template("chrome_bundle") {
     is_multi_abi = _is_multi_abi
     validate_services = _enable_chrome_module
 
-    # Use a consistent baseline so that it is easy to regenerate by deleting the
-    # file and re-building the "android_lint" target.
-    if (defined(enable_lint) && enable_lint) {
-      if (!defined(lint_baseline_file)) {
-        lint_baseline_file = "//chrome/android/expectations/lint-baseline.xml"
-      }
-      if (!defined(lint_suppressions_file)) {
-        lint_suppressions_file =
-            "//chrome/android/expectations/lint-suppressions.xml"
-      }
-    }
-
     # List of DFMs that are installed by default by wrapper scripts, to make
     # testing easier. This removes the need to manually specify, e.g.,
     # "-m dev_ui" on every install or run.

@@ -1,30 +1,21 @@
 # Lint
 
-Android's [**lint**](http://developer.android.com/tools/help/lint.html) is a static
-analysis tool that Chromium uses to catch possible issues in Java code.
+Android's [**lint**](https://developer.android.com/tools/help/lint.html) is a
+static analysis tool that Chromium uses to catch possible issues in Java code.
+
+This is a list of [**checks**](http://tools.android.com/tips/lint-checks) that
+you might encounter.
 
 [TOC]
 
 ## How Chromium uses lint
 
-Chromium runs lint on a per-target basis for all targets using any of the
-following templates if they are marked as Chromium code (i.e.,
-`chromium_code = true`):
+Chromium only runs lint on apk or bundle targets that explicitly set
+`enable_lint = true`. Some example targets that have this set are:
 
- - `android_apk`
- - `android_library`
- - `instrumentation_test_apk`
- - `unittest_apk`
-
-Chromium also runs lint on a per-target basis for all targets using any of the
-following templates if they are marked as Chromium code and they support
-Android (i.e., `supports_android = true`): 
-
- - `java_library`
-
-This is implemented in the
-[`android_lint`](https://source.chromium.org/chromium/chromium/src/+/HEAD:build/config/android/internal_rules.gni)
-gn template.
+ - `//chrome/android:monochrome_public_bundle`
+ - `//android_webview/support_library/boundary_interfaces:boundary_interface_example_apk`
+ - `//remoting/android:remoting_apk`
 
 ## My code has a lint error
 
@@ -36,19 +27,20 @@ In descending order of preference:
 While this isn't always the right response, fixing the lint error or warning
 should be the default.
 
-### Suppress it in code
+### Suppress it locally
 
-Android provides an annotation,
-[`@SuppressLint`](http://developer.android.com/reference/android/annotation/SuppressLint.html),
+Java provides an annotation,
+[`@SuppressWarnings`](https://developer.android.com/reference/java/lang/SuppressWarnings),
 that tells lint to ignore the annotated element. It can be used on classes,
-constructors, methods, parameters, fields, or local variables, though usage
-in Chromium is typically limited to the first three.
+constructors, methods, parameters, fields, or local variables, though usage in
+Chromium is typically limited to the first three. You do not need to import it
+since it is in the `java.lang` package.
 
-Like many suppression annotations, `@SuppressLint` takes a value that tells **lint**
-what to ignore. It can be a single `String`:
+Like many suppression annotations, `@SuppressWarnings` takes a value that tells
+**lint** what to ignore. It can be a single `String`:
 
 ```java
-@SuppressLint("NewApi")
+@SuppressWarnings("NewApi")
 public void foo() {
     a.methodThatRequiresHighSdkLevel();
 }
@@ -57,7 +49,7 @@ public void foo() {
 It can also be a list of `String`s:
 
 ```java
-@SuppressLint({
+@SuppressWarnings({
         "NewApi",
         "UseSparseArrays"
         })
@@ -68,24 +60,76 @@ public Map<Integer, FakeObject> bar() {
 }
 ```
 
-This is the preferred way of suppressing warnings in a limited scope.
+For resource xml files you can use `tools:ignore`:
 
-### Suppress it in the suppressions XML file
-
-**lint** can be given an XML configuration containing warnings or errors that
-should be ignored. Chromium's lint suppression XML file can be found in
-[`build/android/lint/suppressions.xml`](https://chromium.googlesource.com/chromium/src/+/master/build/android/lint/suppressions.xml).
-It can be updated to suppress current warnings by running:
-
-```bash
-$ python build/android/lint/suppress.py <result.xml file>
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- TODO(crbug/###): remove tools:ignore once these colors are used -->
+    <color name="hi" tools:ignore="NewApi,UnusedResources">@color/unused</color>
+</resources>
 ```
 
-e.g., to suppress lint errors found in `media_java`:
+The examples above are the recommended ways of suppressing lint warnings.
 
-```bash
-$ python build/android/lint/suppress.py out/Debug/gen/media/base/android/media_java__lint/result.xml
+### Suppress it in a `lint-suppressions.xml` file
+
+**lint** can be given a per-target XML configuration file containing warnings or
+errors that should be ignored. Each target defines its own configuration file
+via the `lint_suppressions_file` gn variable. It is usually defined near its
+`enable_lint` gn variable.
+
+These suppressions files should only be used for temporarily ignoring warnings
+that are too hard (or not possible) to suppress locally, and permanently
+ignoring warnings only for this target. To permanently ignore a warning for all
+targets, add the warning to the `_DISABLED_ALWAYS` list in
+[build/android/gyp/lint.py](https://source.chromium.org/chromium/chromium/src/+/master:build/android/gyp/lint.py).
+Disabling globally makes lint a bit faster.
+
+Here is an example of how to structure a suppressions XML file:
+
+```xml
+<?xml version="1.0" encoding="utf-8" ?>
+<lint>
+  <!-- Chrome is a system app. -->
+  <issue id="ProtectedPermissions" severity="ignore"/>
+  <issue id="UnusedResources">
+    <!-- 1 raw resources are accessed by URL in various places. -->
+    <ignore regexp="gen/remoting/android/.*/res/raw/credits.*"/>
+    <!-- TODO(crbug.com/###): Remove the following line.  -->
+    <ignore regexp="The resource `R.string.soon_to_be_used` appears to be unused"/>
+  </issue>
+</lint>
 ```
 
-**This mechanism should only be used for disabling warnings across the entire code base; class-specific lint warnings should be disabled inline.**
+## What are `lint-baseline.xml` files for?
 
+Baseline files are to help us introduce new lint warnings and errors without
+blocking on fixing all our existing code that violate these new errors. Since
+they are generated files, they should **not** be used to suppress lint warnings.
+One of the approaches above should be used instead. Eventually all the errors in
+baseline files should be either fixed or ignored permanently.
+
+The following are some common scenarios where you may need to update baseline
+files.
+
+### I updated `cmdline-tools` and now there are tons of new errors!
+
+This happens every time lint is updated, since lint is provided by
+`cmdline-tools`.
+
+Baseline files are defined via the `lint_baseline_file` gn variable. It is
+usually defined near a target's `enable_lint` gn variable. To regenerate the
+baseline file, delete it and re-run the lint target. The command will fail, but
+the baseline file will have been generated.
+
+This may need to be repeated for all targets that have set `enable_lint = true`,
+including downstream targets. Downstream baseline files should be updated and
+first to avoid build breakages. Each target has its own `lint_baseline_file`
+defined and so all these files can be removed and regenerated as needed.
+
+### I updated `library X` and now there are tons of new errors!
+
+This is usually because `library X`'s aar contains custom lint checks and/or
+custom annotation definition. Follow the same procedure as updates to
+`cmdline-tools`.
