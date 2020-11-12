@@ -1268,6 +1268,53 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest,
       url::Origin::Create(non_isolated_sub_origin_url_b)));
 }
 
+IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest,
+                       SeperateBrowserContextTest) {
+  GURL isolated_origin_url(
+      https_server()->GetURL("isolated.foo.com", "/isolate_origin"));
+  Shell* shell2 = CreateOffTheRecordBrowser();
+
+  EXPECT_NE(shell()->web_contents()->GetBrowserContext(),
+            shell2->web_contents()->GetBrowserContext());
+
+  // The isolation header is not present, so this navigation will result in a
+  // site-keyed instance.
+  EXPECT_TRUE(NavigateToURL(shell2, isolated_origin_url));
+
+  url::Origin isolated_origin = url::Origin::Create(isolated_origin_url);
+  auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
+
+  // Now navigate a different BrowserContext to the same origin, but this time
+  // requesting isolation. The presence of the site-keyed instance in a
+  // different BrowsingInstance shouldn't prevent this navigation from being
+  // isolated.
+  SetHeaderValue("?1");
+  EXPECT_TRUE(NavigateToURL(shell(), isolated_origin_url));
+  EXPECT_TRUE(policy->ShouldOriginGetOptInIsolation(
+      static_cast<WebContentsImpl*>(shell()->web_contents())
+          ->GetFrameTree()
+          ->root()
+          ->current_frame_host()
+          ->GetSiteInstance()
+          ->GetIsolationContext(),
+      isolated_origin, false /* origin_requests_isolation */));
+
+  // Make sure isolating the origin in the main context didn't affect it in the
+  // off-the-record context. Specifically, if the opting-in in shell() did leak
+  // to shell2, then |isolated_origin| will be recorded as non-opted in in that
+  // BrowsingInstance, something that would allow shell2 to detect if shell()
+  // had visited (and isolated) |isolated_origin|. The following check makes
+  // sure that |isolated_origin| is not in the non-opt-in list.
+  EXPECT_TRUE(policy->ShouldOriginGetOptInIsolation(
+      static_cast<WebContentsImpl*>(shell2->web_contents())
+          ->GetFrameTree()
+          ->root()
+          ->current_frame_host()
+          ->GetSiteInstance()
+          ->GetIsolationContext(),
+      isolated_origin, true /* origin_requests_isolation */));
+}
+
 // This test creates a scenario where we have a frame without a
 // FrameNavigationEntry, and then we created another frame with the same origin
 // that opts-in to isolation. The opt-in triggers a walk of the session history

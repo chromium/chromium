@@ -7143,6 +7143,9 @@ void WebContentsImpl::RegisterExistingOriginToPreventOptInIsolation(
   // a WebContentsImpl instance, in which case we can use a wrapper to
   // implement the override from NavigatorDelegate.
   for (WebContentsImpl* web_contents : GetAllWebContents()) {
+    // We only need to search entries in the same BrowserContext as us.
+    if (web_contents->GetBrowserContext() != GetBrowserContext())
+      continue;
     web_contents->controller_.RegisterExistingOriginToPreventOptInIsolation(
         origin);
     // Walk the frame tree to pick up any frames without FrameNavigationEntries.
