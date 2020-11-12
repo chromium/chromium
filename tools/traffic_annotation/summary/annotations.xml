@@ -231,7 +231,6 @@ Refer to README.md for content description and update process.
  <item id="permission_request_creator" added_in_milestone="62" hash_code="43206794" type="0" deprecated="2019-07-30" content_hash_code="73571699" file_path=""/>
  <item id="persist_blob_to_indexed_db" added_in_milestone="62" hash_code="32030464" type="0" deprecated="2018-08-13" content_hash_code="35410079" file_path=""/>
  <item id="plugins_resource_service" added_in_milestone="62" hash_code="49601082" type="0" content_hash_code="6877335" os_list="linux,windows" file_path="chrome/browser/plugins/plugins_resource_service.cc"/>
- <item id="policy_blacklist_service" added_in_milestone="70" hash_code="49799644" type="0" content_hash_code="57843386" os_list="linux,windows" file_path="components/policy/content/policy_blocklist_service.cc"/>
  <item id="popular_sites_fetch" added_in_milestone="62" hash_code="50755044" type="0" content_hash_code="6910083" os_list="linux,windows" file_path="components/ntp_tiles/popular_sites_impl.cc"/>
  <item id="port_forwarding_controller_socket" added_in_milestone="65" hash_code="95075845" type="0" content_hash_code="122163428" os_list="linux,windows" file_path="chrome/browser/devtools/device/port_forwarding_controller.cc"/>
  <item id="ppapi_download_request" added_in_milestone="62" hash_code="135967426" type="0" content_hash_code="110461402" os_list="linux,windows" file_path="chrome/browser/safe_browsing/download_protection/ppapi_download_request.cc"/>
@@ -300,6 +299,7 @@ Refer to README.md for content description and update process.
  <item id="safe_browsing_realtime_url_lookup" added_in_milestone="78" hash_code="119324658" type="0" content_hash_code="71236226" os_list="linux,windows" file_path="components/safe_browsing/core/realtime/url_lookup_service.cc"/>
  <item id="safe_browsing_v4_get_hash" added_in_milestone="62" hash_code="8561691" type="0" content_hash_code="132435617" os_list="linux,windows" file_path="components/safe_browsing/core/db/v4_get_hash_protocol_manager.cc"/>
  <item id="safe_browsing_v4_update" added_in_milestone="70" hash_code="82509217" type="0" content_hash_code="5247849" os_list="linux,windows" file_path="components/safe_browsing/core/db/v4_update_protocol_manager.cc"/>
+ <item id="safe_search_service" added_in_milestone="70" hash_code="136386805" type="0" content_hash_code="127491095" os_list="linux,windows" file_path="components/policy/content/safe_search_service.cc"/>
  <item id="safety_check_update_connectivity" added_in_milestone="84" hash_code="137724067" type="0" content_hash_code="30977369" os_list="linux,windows" file_path="components/safety_check/update_check_helper.cc"/>
  <item id="sanitized_image_source" added_in_milestone="86" hash_code="36944304" type="0" content_hash_code="39770427" os_list="linux,windows" file_path="chrome/browser/ui/webui/sanitized_image_source.cc"/>
  <item id="save_file_manager" added_in_milestone="62" hash_code="56275203" type="0" content_hash_code="56692339" os_list="linux,windows" file_path="content/browser/download/save_file_manager.cc"/>

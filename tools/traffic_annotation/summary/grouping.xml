@@ -242,9 +242,9 @@ hidden="true" so that these annotations don't show up in the document.
       <traffic_annotation unique_id="gaia_oauth_client_get_tokens"/>
       <traffic_annotation unique_id="gaia_oauth_client_get_user_info"/>
       <traffic_annotation unique_id="gaia_oauth_client_refresh_token"/>
-      <traffic_annotation unique_id="policy_blacklist_service"/>
       <traffic_annotation unique_id="oauth2_access_token_fetcher"/>
       <traffic_annotation unique_id="oauth2_mint_token_flow"/>
+      <traffic_annotation unique_id="safe_search_service"/>
     </sender>
     <sender name="Payments">
       <traffic_annotation unique_id="payments_sync_cards"/>

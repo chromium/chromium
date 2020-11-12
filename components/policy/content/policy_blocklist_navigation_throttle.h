@@ -5,19 +5,12 @@
 #ifndef COMPONENTS_POLICY_CONTENT_POLICY_BLOCKLIST_NAVIGATION_THROTTLE_H_
 #define COMPONENTS_POLICY_CONTENT_POLICY_BLOCKLIST_NAVIGATION_THROTTLE_H_
 
-#include "base/macros.h"
-#include "base/memory/weak_ptr.h"
-#include "base/strings/string_piece_forward.h"
+#include "components/policy/content/safe_sites_navigation_throttle.h"
 #include "content/public/browser/navigation_throttle.h"
 
 class GURL;
 class PolicyBlocklistService;
 class PrefService;
-
-namespace content {
-class BrowserContext;
-class NavigationHandle;
-}  // namespace content
 
 // PolicyBlocklistNavigationThrottle provides a simple way to block a navigation
 // based on the URLBlocklistManager and Safe Search API. If the URL is on the
@@ -30,10 +23,10 @@ class PolicyBlocklistNavigationThrottle : public content::NavigationThrottle {
   PolicyBlocklistNavigationThrottle(
       content::NavigationHandle* navigation_handle,
       content::BrowserContext* context);
-  PolicyBlocklistNavigationThrottle(
-      content::NavigationHandle* navigation_handle,
-      content::BrowserContext* context,
-      base::StringPiece safe_sites_error_page_content);
+  PolicyBlocklistNavigationThrottle(const PolicyBlocklistNavigationThrottle&) =
+      delete;
+  PolicyBlocklistNavigationThrottle& operator=(
+      const PolicyBlocklistNavigationThrottle&) = delete;
   ~PolicyBlocklistNavigationThrottle() override;
 
   // NavigationThrottle overrides.
@@ -42,30 +35,17 @@ class PolicyBlocklistNavigationThrottle : public content::NavigationThrottle {
   const char* GetNameForLogging() override;
 
  private:
+  // To ensure both allow and block policies override Safe Sites,
+  // SafeSitesNavigationThrottle must be consulted as part of this throttle
+  // rather than added separately to the list of throttles.
   ThrottleCheckResult CheckSafeSitesFilter(const GURL& url);
-
-  // Callback from PolicyBlocklistService.
-  void CheckSafeSearchCallback(bool is_safe);
+  void OnDeferredSafeSitesResult(bool is_safe,
+                                 ThrottleCheckResult cancel_result);
+  SafeSitesNavigationThrottle safe_sites_navigation_throttle_;
 
   PolicyBlocklistService* blocklist_service_;
 
   PrefService* prefs_;
-
-  // HTML to be displayed when navigation is canceled by the Safe Sites filter.
-  // If null, a default error page will be displayed.
-  base::Optional<std::string> safe_sites_error_page_content_;
-
-  // Whether the request was deferred in order to check the Safe Search API.
-  bool deferred_ = false;
-
-  // Whether the Safe Search API callback determined the in-progress navigation
-  // should be canceled.
-  bool should_cancel_ = false;
-
-  base::WeakPtrFactory<PolicyBlocklistNavigationThrottle> weak_ptr_factory_{
-      this};
-
-  DISALLOW_COPY_AND_ASSIGN(PolicyBlocklistNavigationThrottle);
 };
 
 #endif  // COMPONENTS_POLICY_CONTENT_POLICY_BLOCKLIST_NAVIGATION_THROTTLE_H_

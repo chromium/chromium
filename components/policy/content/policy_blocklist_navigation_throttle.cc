@@ -6,11 +6,9 @@
 
 #include "base/bind.h"
 #include "base/check_op.h"
-#include "base/strings/string_piece.h"
 #include "components/policy/content/policy_blocklist_service.h"
 #include "components/policy/core/browser/url_blocklist_manager.h"
 #include "components/policy/core/browser/url_blocklist_policy_handler.h"
-#include "components/policy/core/browser/url_util.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_prefs/user_prefs.h"
@@ -21,21 +19,22 @@
 using URLBlocklistState = policy::URLBlocklist::URLBlocklistState;
 using SafeSitesFilterBehavior = policy::SafeSitesFilterBehavior;
 
+// Passing an Unretained pointer for the safe_sites_navigation_throttle_
+// callback is safe because this object owns safe_sites_navigation_throttle_,
+// which runs the callback from within the object.
 PolicyBlocklistNavigationThrottle::PolicyBlocklistNavigationThrottle(
     content::NavigationHandle* navigation_handle,
     content::BrowserContext* context)
-    : NavigationThrottle(navigation_handle),
+    : content::NavigationThrottle(navigation_handle),
+      safe_sites_navigation_throttle_(
+          navigation_handle,
+          context,
+          base::BindRepeating(
+              &PolicyBlocklistNavigationThrottle::OnDeferredSafeSitesResult,
+              base::Unretained(this))),
       blocklist_service_(PolicyBlocklistFactory::GetForBrowserContext(context)),
       prefs_(user_prefs::UserPrefs::Get(context)) {
   DCHECK(prefs_);
-}
-
-PolicyBlocklistNavigationThrottle::PolicyBlocklistNavigationThrottle(
-    content::NavigationHandle* navigation_handle,
-    content::BrowserContext* context,
-    base::StringPiece safe_sites_error_page_content)
-    : PolicyBlocklistNavigationThrottle(navigation_handle, context) {
-  safe_sites_error_page_content_ = safe_sites_error_page_content.as_string();
 }
 
 PolicyBlocklistNavigationThrottle::~PolicyBlocklistNavigationThrottle() =
@@ -43,7 +42,7 @@ PolicyBlocklistNavigationThrottle::~PolicyBlocklistNavigationThrottle() =
 
 content::NavigationThrottle::ThrottleCheckResult
 PolicyBlocklistNavigationThrottle::WillStartRequest() {
-  GURL url = navigation_handle()->GetURL();
+  const GURL& url = navigation_handle()->GetURL();
 
   // Ignore blob scheme because we may use it to deliver navigation responses
   // to the renderer process.
@@ -63,12 +62,11 @@ PolicyBlocklistNavigationThrottle::WillStartRequest() {
   return CheckSafeSitesFilter(url);
 }
 
+// SafeSitesNavigationThrottle is unconditional and does not check PrefService
+// because it is used outside //chrome. Therefore, the policy must be checked
+// here to determine whether to use SafeSitesNavigationThrottle.
 content::NavigationThrottle::ThrottleCheckResult
 PolicyBlocklistNavigationThrottle::CheckSafeSitesFilter(const GURL& url) {
-  // Safe Sites filter applies to top-level HTTP[S] requests.
-  if (!url.SchemeIsHTTPOrHTTPS())
-    return PROCEED;
-
   SafeSitesFilterBehavior filter_behavior =
       static_cast<SafeSitesFilterBehavior>(
           prefs_->GetInteger(policy::policy_prefs::kSafeSitesFilterBehavior));
@@ -76,25 +74,7 @@ PolicyBlocklistNavigationThrottle::CheckSafeSitesFilter(const GURL& url) {
     return PROCEED;
 
   DCHECK_EQ(filter_behavior, SafeSitesFilterBehavior::kSafeSitesFilterEnabled);
-
-  GURL effective_url = policy::url_util::GetEmbeddedURL(url);
-  if (!effective_url.is_valid())
-    effective_url = url;
-
-  bool synchronous = blocklist_service_->CheckSafeSearchURL(
-      effective_url,
-      base::BindOnce(
-          &PolicyBlocklistNavigationThrottle::CheckSafeSearchCallback,
-          weak_ptr_factory_.GetWeakPtr()));
-  if (!synchronous) {
-    deferred_ = true;
-    return DEFER;
-  }
-
-  if (should_cancel_)
-    return ThrottleCheckResult(CANCEL, net::ERR_BLOCKED_BY_ADMINISTRATOR,
-                               safe_sites_error_page_content_);
-  return PROCEED;
+  return safe_sites_navigation_throttle_.WillStartRequest();
 }
 
 content::NavigationThrottle::ThrottleCheckResult
@@ -106,18 +86,12 @@ const char* PolicyBlocklistNavigationThrottle::GetNameForLogging() {
   return "PolicyBlocklistNavigationThrottle";
 }
 
-void PolicyBlocklistNavigationThrottle::CheckSafeSearchCallback(bool is_safe) {
-  if (!deferred_) {
-    should_cancel_ = !is_safe;
-    return;
-  }
-
-  deferred_ = false;
+void PolicyBlocklistNavigationThrottle::OnDeferredSafeSitesResult(
+    bool is_safe,
+    ThrottleCheckResult cancel_result) {
   if (is_safe) {
     Resume();
   } else {
-    CancelDeferredNavigation(
-        ThrottleCheckResult(CANCEL, net::ERR_BLOCKED_BY_ADMINISTRATOR,
-                            safe_sites_error_page_content_));
+    CancelDeferredNavigation(cancel_result);
   }
 }
