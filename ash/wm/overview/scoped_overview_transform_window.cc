@@ -215,6 +215,12 @@ ScopedOverviewTransformWindow::ScopedOverviewTransformWindow(
 }
 
 ScopedOverviewTransformWindow::~ScopedOverviewTransformWindow() {
+  // Reset clipping in the case RestoreWindow() is not called, such as when
+  // |this| is dragged to another display. This is a no-op if SetClipping() was
+  // called in RestoreWindow().
+  // See crbug.com/1140639.
+  SetClipping({ClippingType::kExit, gfx::SizeF()});
+
   for (auto* transient : GetTransientTreeIterator(window_)) {
     transient->ClearProperty(chromeos::kIsShowingInOverviewKey);
     DCHECK(event_targeting_blocker_map_.contains(transient));
