@@ -8,7 +8,8 @@
         disabled="[[disabled]]">
       <!-- TODO(jschettler): Determine how the color modes should be sorted. -->
       <template is="dom-repeat" items="[[colorModes]]" as="colorMode">
-        <option value="[[colorMode]]">
+        <option value="[[colorMode]]"
+            selected$="[[isDefaultColorMode_(colorMode)]]">
           [[getColorModeString_(colorMode)]]
         </option>
       </template>

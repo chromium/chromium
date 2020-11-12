@@ -9,6 +9,8 @@ import {getColorModeString} from 'chrome://scanning/scanning_app_util.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 
+import {assertOrderedAlphabetically} from './scanning_app_test_utils.js';
+
 const ColorMode = {
   BLACK_AND_WHITE: chromeos.scanning.mojom.ColorMode.kBlackAndWhite,
   GRAYSCALE: chromeos.scanning.mojom.ColorMode.kGrayscale,
@@ -75,5 +77,29 @@ export function colorModeSelectTest() {
     // Verify the dropdown is enabled when there's more than one option.
     assertEquals(2, select.length);
     assertFalse(select.disabled);
+  });
+
+  test('colorModesSortedAlphabetically', () => {
+    colorModeSelect.colorModes =
+        [ColorMode.GRAYSCALE, ColorMode.BLACK_AND_WHITE, ColorMode.COLOR];
+    flush();
+
+    // Verify the color modes are sorted alphabetically and that black and white
+    // is selected by default.
+    assertOrderedAlphabetically(
+        colorModeSelect.colorModes,
+        (colorMode) => getColorModeString(colorMode));
+    assertEquals(
+        ColorMode.BLACK_AND_WHITE.toString(),
+        colorModeSelect.selectedColorMode);
+  });
+
+  test('firstColorModeUsedWhenDefaultNotAvailable', () => {
+    colorModeSelect.colorModes = [ColorMode.GRAYSCALE, ColorMode.COLOR];
+    flush();
+
+    // Verify the first color mode in the sorted color mode array is selected by
+    // default when black and white is not an available option.
+    assertEquals(ColorMode.COLOR.toString(), colorModeSelect.selectedColorMode);
   });
 }
