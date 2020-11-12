@@ -9,6 +9,7 @@
 #include "base/values.h"
 #include "chrome/browser/policy/messaging_layer/public/report_queue.h"
 #include "chrome/browser/policy/messaging_layer/util/status.h"
+#include "components/policy/proto/record.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/protobuf/src/google/protobuf/message_lite.h"
 
@@ -24,33 +25,41 @@ class MockReportQueue : public ReportQueue {
   ~MockReportQueue() override;
 
   void Enqueue(base::StringPiece record,
+               Priority priority,
                EnqueueCallback callback) const override {
-    StringPieceEnqueue_(record, std::move(callback));
+    StringPieceEnqueue_(record, priority, std::move(callback));
   }
 
   void Enqueue(const base::Value& record,
+               Priority priority,
                EnqueueCallback callback) const override {
-    ValueEnqueue_(record, std::move(callback));
+    ValueEnqueue_(record, priority, std::move(callback));
   }
 
   void Enqueue(google::protobuf::MessageLite* record,
+               Priority priority,
                EnqueueCallback callback) const override {
-    MessageLiteEnqueue_(record, std::move(callback));
+    MessageLiteEnqueue_(record, priority, std::move(callback));
   }
 
   MOCK_METHOD(void,
               StringPieceEnqueue_,
-              (base::StringPiece record, EnqueueCallback callback),
+              (base::StringPiece record,
+               Priority priority,
+               EnqueueCallback callback),
               (const));
 
   MOCK_METHOD(void,
               ValueEnqueue_,
-              (const base::Value& record, EnqueueCallback callback),
+              (const base::Value& record,
+               Priority priority,
+               EnqueueCallback callback),
               (const));
 
   MOCK_METHOD(void,
               MessageLiteEnqueue_,
               (google::protobuf::MessageLite * record,
+               Priority priority,
                EnqueueCallback callback),
               (const));
 };

@@ -32,43 +32,31 @@ TEST(ReportQueueConfigurationTest, ParametersMustBeValid) {
   // Invalid Parameters
   const DMToken invalid_dm_token = DMToken::CreateInvalidTokenForTesting();
   const Destination invalid_destination = Destination::UNDEFINED_DESTINATION;
-  const Priority invalid_priority = Priority::UNDEFINED_PRIORITY;
   const PolicyCheckCallback invalid_callback;
 
   // Valid Parameters
   const DMToken valid_dm_token = DMToken::CreateValidTokenForTesting(kDmToken);
   const Destination valid_destination = Destination::UPLOAD_EVENTS;
-  const Priority valid_priority = Priority::IMMEDIATE;
   const PolicyCheckCallback valid_callback = GetSuccessfulCallback();
 
   // Test Invalid DMToken.
-  EXPECT_FALSE(ReportQueueConfiguration::Create(invalid_dm_token,
-                                                valid_destination,
-                                                valid_priority, valid_callback)
+  EXPECT_FALSE(ReportQueueConfiguration::Create(
+                   invalid_dm_token, valid_destination, valid_callback)
                    .ok());
 
   // Test Invalid Destination.
-  EXPECT_FALSE(ReportQueueConfiguration::Create(valid_dm_token,
-                                                invalid_destination,
-                                                valid_priority, valid_callback)
+  EXPECT_FALSE(ReportQueueConfiguration::Create(
+                   valid_dm_token, invalid_destination, valid_callback)
                    .ok());
 
-  // Test Invalid Priority.
-  EXPECT_FALSE(
-      ReportQueueConfiguration::Create(valid_dm_token, valid_destination,
-                                       invalid_priority, valid_callback)
-          .ok());
-
   // Test Invalid Callback.
-  EXPECT_FALSE(
-      ReportQueueConfiguration::Create(valid_dm_token, valid_destination,
-                                       valid_priority, invalid_callback)
-          .ok());
+  EXPECT_FALSE(ReportQueueConfiguration::Create(
+                   valid_dm_token, valid_destination, invalid_callback)
+                   .ok());
 
-  EXPECT_TRUE(
-      ReportQueueConfiguration::Create(valid_dm_token, valid_destination,
-                                       valid_priority, GetSuccessfulCallback())
-          .ok());
+  EXPECT_TRUE(ReportQueueConfiguration::Create(
+                  valid_dm_token, valid_destination, GetSuccessfulCallback())
+                  .ok());
 }
 
 class TestCallbackHandler {
@@ -80,11 +68,10 @@ class TestCallbackHandler {
 TEST(ReportQueueConfigurationTest, UsesProvidedPolicyCheckCallback) {
   const DMToken dm_token = DMToken::CreateValidTokenForTesting(kDmToken);
   const Destination destination = Destination::UPLOAD_EVENTS;
-  const Priority priority = Priority::IMMEDIATE;
 
   TestCallbackHandler handler;
   auto config_result = ReportQueueConfiguration::Create(
-      dm_token, destination, priority,
+      dm_token, destination,
       base::BindRepeating(&TestCallbackHandler::Callback,
                           base::Unretained(&handler)));
   EXPECT_TRUE(config_result.ok());

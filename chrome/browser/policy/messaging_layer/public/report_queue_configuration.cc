@@ -24,14 +24,12 @@ ReportQueueConfiguration::~ReportQueueConfiguration() = default;
 StatusOr<std::unique_ptr<ReportQueueConfiguration>>
 ReportQueueConfiguration::Create(const policy::DMToken& dm_token,
                                  Destination destination,
-                                 Priority priority,
                                  PolicyCheckCallback policy_check_callback) {
   auto config = base::WrapUnique<ReportQueueConfiguration>(
       new ReportQueueConfiguration());
 
   RETURN_IF_ERROR(config->SetDMToken(dm_token));
   RETURN_IF_ERROR(config->SetDestination(destination));
-  RETURN_IF_ERROR(config->SetPriority(priority));
   RETURN_IF_ERROR(config->SetPolicyCheckCallback(policy_check_callback));
 
   return config;
@@ -64,14 +62,6 @@ Status ReportQueueConfiguration::SetDestination(Destination destination) {
     return Status(error::INVALID_ARGUMENT, "Destination must be defined");
   }
   destination_ = destination;
-  return Status::StatusOK();
-}
-
-Status ReportQueueConfiguration::SetPriority(Priority priority) {
-  if (priority == Priority::UNDEFINED_PRIORITY) {
-    return Status(error::INVALID_ARGUMENT, "Priority must be defined");
-  }
-  priority_ = priority;
   return Status::StatusOK();
 }
 

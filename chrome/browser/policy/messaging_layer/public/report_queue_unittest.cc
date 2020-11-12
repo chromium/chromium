@@ -93,7 +93,7 @@ class ReportQueueTest : public testing::Test {
     ON_CALL(*this, MockedPolicyCheck).WillByDefault(Return(Status::StatusOK()));
 
     StatusOr<std::unique_ptr<ReportQueueConfiguration>> config_result =
-        ReportQueueConfiguration::Create(dm_token_, destination_, priority_,
+        ReportQueueConfiguration::Create(dm_token_, destination_,
                                          policy_check_callback_);
 
     ASSERT_TRUE(config_result.ok());
@@ -135,7 +135,7 @@ class ReportQueueTest : public testing::Test {
 TEST_F(ReportQueueTest, SuccessfulStringRecord) {
   constexpr char kTestString[] = "El-Chupacabra";
   TestEvent<Status> a;
-  report_queue_->Enqueue(kTestString, a.cb());
+  report_queue_->Enqueue(kTestString, priority_, a.cb());
   EXPECT_OK(a.result());
   EXPECT_EQ(test_storage_module()->priority(), priority_);
   EXPECT_EQ(test_storage_module()->record().data(), kTestString);
@@ -149,7 +149,7 @@ TEST_F(ReportQueueTest, SuccessfulBaseValueRecord) {
   base::Value test_dict(base::Value::Type::DICTIONARY);
   test_dict.SetStringKey(kTestKey, kTestValue);
   TestEvent<Status> a;
-  report_queue_->Enqueue(test_dict, a.cb());
+  report_queue_->Enqueue(test_dict, priority_, a.cb());
   EXPECT_OK(a.result());
 
   EXPECT_EQ(test_storage_module()->priority(), priority_);
@@ -166,7 +166,7 @@ TEST_F(ReportQueueTest, SuccessfulProtoRecord) {
   reporting::test::TestMessage test_message;
   test_message.set_test("TEST_MESSAGE");
   TestEvent<Status> a;
-  report_queue_->Enqueue(&test_message, a.cb());
+  report_queue_->Enqueue(&test_message, priority_, a.cb());
   EXPECT_OK(a.result());
 
   EXPECT_EQ(test_storage_module()->priority(), priority_);
@@ -190,7 +190,7 @@ TEST_F(ReportQueueTest, CallSuccessCallbackFailure) {
   reporting::test::TestMessage test_message;
   test_message.set_test("TEST_MESSAGE");
   TestEvent<Status> a;
-  report_queue_->Enqueue(&test_message, a.cb());
+  report_queue_->Enqueue(&test_message, priority_, a.cb());
   const auto result = a.result();
   EXPECT_FALSE(result.ok());
   EXPECT_EQ(result.error_code(), error::UNKNOWN);
@@ -201,7 +201,7 @@ TEST_F(ReportQueueTest, EnqueueStringFailsOnPolicy) {
       .WillOnce(Return(Status(error::UNAUTHENTICATED, "Failing for tests")));
   constexpr char kTestString[] = "El-Chupacabra";
   TestEvent<Status> a;
-  report_queue_->Enqueue(kTestString, a.cb());
+  report_queue_->Enqueue(kTestString, priority_, a.cb());
   const auto result = a.result();
   EXPECT_FALSE(result.ok());
   EXPECT_EQ(result.error_code(), error::UNAUTHENTICATED);
@@ -213,7 +213,7 @@ TEST_F(ReportQueueTest, EnqueueProtoFailsOnPolicy) {
   reporting::test::TestMessage test_message;
   test_message.set_test("TEST_MESSAGE");
   TestEvent<Status> a;
-  report_queue_->Enqueue(&test_message, a.cb());
+  report_queue_->Enqueue(&test_message, priority_, a.cb());
   const auto result = a.result();
   EXPECT_FALSE(result.ok());
   EXPECT_EQ(result.error_code(), error::UNAUTHENTICATED);
@@ -227,7 +227,7 @@ TEST_F(ReportQueueTest, EnqueueValueFailsOnPolicy) {
   base::Value test_dict(base::Value::Type::DICTIONARY);
   test_dict.SetStringKey(kTestKey, kTestValue);
   TestEvent<Status> a;
-  report_queue_->Enqueue(test_dict, a.cb());
+  report_queue_->Enqueue(test_dict, priority_, a.cb());
   const auto result = a.result();
   EXPECT_FALSE(result.ok());
   EXPECT_EQ(result.error_code(), error::UNAUTHENTICATED);

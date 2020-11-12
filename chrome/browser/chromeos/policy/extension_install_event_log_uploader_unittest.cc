@@ -186,9 +186,9 @@ class ExtensionInstallEventLogUploaderTest : public testing::Test {
     waiter_.IncreaseCounterLimit();
 
     EXPECT_CALL(*mock_report_queue_,
-                ValueEnqueue_(MatchEvents(&value_report_), _))
+                ValueEnqueue_(MatchEvents(&value_report_), _, _))
         .WillOnce(
-            Invoke([=](const base::Value&,
+            Invoke([=](const base::Value&, reporting::Priority priority,
                        reporting::MockReportQueue::EnqueueCallback callback) {
               reporting::Status status =
                   success ? reporting::Status::StatusOK()
@@ -212,9 +212,9 @@ class ExtensionInstallEventLogUploaderTest : public testing::Test {
         ConvertExtensionProtoToValue(&log_, context), std::move(context));
 
     EXPECT_CALL(*mock_report_queue_,
-                ValueEnqueue_(MatchEvents(&value_report_), _))
+                ValueEnqueue_(MatchEvents(&value_report_), _, _))
         .WillOnce(
-            Invoke([callback](const base::Value&,
+            Invoke([callback](const base::Value&, reporting::Priority priority,
                               reporting::MockReportQueue::EnqueueCallback cb) {
               *callback = std::move(cb);
               return reporting::Status::StatusOK();
@@ -335,7 +335,7 @@ TEST_F(ExtensionInstallEventLogUploaderTest, RequestCancelAndSerialize) {
   uploader_->CancelUpload();
   Mock::VerifyAndClearExpectations(mock_report_queue_);
 
-  EXPECT_CALL(*mock_report_queue_, ValueEnqueue_(_, _)).Times(0);
+  EXPECT_CALL(*mock_report_queue_, ValueEnqueue_(_, _, _)).Times(0);
   EXPECT_CALL(delegate_, OnExtensionLogUploadSuccess()).Times(0);
   std::move(serialization_callback).Run(&log_);
 }

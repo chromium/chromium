@@ -32,7 +32,6 @@ namespace {
 
 using policy::DMToken;
 using reporting::Destination;
-using reporting::Priority;
 
 // Usage (in tests only):
 //
@@ -113,7 +112,6 @@ class ReportClientTest : public testing::Test {
 #endif  // OS_CHROMEOS
   const DMToken dm_token_ = DMToken::CreateValidTokenForTesting("TOKEN");
   const Destination destination_ = Destination::UPLOAD_EVENTS;
-  const Priority priority_ = Priority::IMMEDIATE;
   ReportQueueConfiguration::PolicyCheckCallback policy_checker_callback_ =
       base::BindRepeating([]() { return Status::StatusOK(); });
 };
@@ -121,7 +119,7 @@ class ReportClientTest : public testing::Test {
 // Tests that a ReportQueue can be created using the ReportingClient.
 TEST_F(ReportClientTest, CreatesReportQueue) {
   auto config_result = ReportQueueConfiguration::Create(
-      dm_token_, destination_, priority_, policy_checker_callback_);
+      dm_token_, destination_, policy_checker_callback_);
   ASSERT_OK(config_result);
 
   TestEvent<StatusOr<std::unique_ptr<ReportQueue>>> a;
@@ -133,7 +131,7 @@ TEST_F(ReportClientTest, CreatesReportQueue) {
 // Ensures that created ReportQueues are actually different.
 TEST_F(ReportClientTest, CreatesTwoDifferentReportQueues) {
   auto config_result = ReportQueueConfiguration::Create(
-      dm_token_, destination_, priority_, policy_checker_callback_);
+      dm_token_, destination_, policy_checker_callback_);
   EXPECT_TRUE(config_result.ok());
 
   TestEvent<StatusOr<std::unique_ptr<ReportQueue>>> a1;
@@ -144,8 +142,8 @@ TEST_F(ReportClientTest, CreatesTwoDifferentReportQueues) {
   auto report_queue_1 = std::move(result.ValueOrDie());
 
   TestEvent<StatusOr<std::unique_ptr<ReportQueue>>> a2;
-  config_result = ReportQueueConfiguration::Create(
-      dm_token_, destination_, priority_, policy_checker_callback_);
+  config_result = ReportQueueConfiguration::Create(dm_token_, destination_,
+                                                   policy_checker_callback_);
   ReportingClient::CreateReportQueue(std::move(config_result.ValueOrDie()),
                                      a2.cb());
   result = a2.result();

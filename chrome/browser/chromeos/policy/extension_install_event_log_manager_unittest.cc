@@ -244,9 +244,9 @@ class ExtensionInstallEventLogManagerTest : public testing::Test {
     BuildReport();
 
     EXPECT_CALL(*mock_report_queue_,
-                ValueEnqueue_(MatchEvents(&events_value_), _))
+                ValueEnqueue_(MatchEvents(&events_value_), _, _))
         .WillOnce(
-            Invoke([callback](const base::Value&,
+            Invoke([callback](const base::Value&, reporting::Priority priority,
                               reporting::MockReportQueue::EnqueueCallback cb) {
               *callback = std::move(cb);
               return reporting::Status::StatusOK();
@@ -264,9 +264,9 @@ class ExtensionInstallEventLogManagerTest : public testing::Test {
     BuildReport();
 
     EXPECT_CALL(*mock_report_queue_,
-                ValueEnqueue_(MatchEvents(&events_value_), _))
+                ValueEnqueue_(MatchEvents(&events_value_), _, _))
         .WillOnce(
-            Invoke([](const base::Value&,
+            Invoke([](const base::Value&, reporting::Priority priority,
                       reporting::MockReportQueue::EnqueueCallback callback) {
               std::move(callback).Run(reporting::Status::StatusOK());
               return reporting::Status::StatusOK();

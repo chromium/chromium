@@ -6589,6 +6589,7 @@ static_library("test_support") {
     "//components/invalidation/impl:test_support",
     "//components/password_manager/core/browser:test_support",
     "//components/policy/core/browser:test_support",
+    "//components/policy/proto:reporting_record_proto",
     "//components/prefs:test_support",
     "//components/reputation/core",
     "//components/reputation/core:proto",

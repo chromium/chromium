@@ -50,10 +50,11 @@ class ReportQueue {
   ReportQueue(const ReportQueue& other) = delete;
   ReportQueue& operator=(const ReportQueue& other) = delete;
 
-  // Enqueue asynchronously stores and delivers a record. Enqueue will return an
-  // OK status if the task is successfully scheduled. The |callback| will be
-  // called on any errors. If storage is successful |callback| will be called
+  // Enqueue asynchronously stores and delivers a record.  The |callback| will
+  // be called on any errors. If storage is successful |callback| will be called
   // with an OK status.
+  //
+  // |priority| will Enqueue the record to the specified Priority queue.
   //
   // The current destinations have the following data requirements:
   // (destination : requirement)
@@ -61,16 +62,19 @@ class ReportQueue {
   //
   // |record| will be sent as a string with no conversion.
   virtual void Enqueue(base::StringPiece record,
+                       Priority priority,
                        EnqueueCallback callback) const;
 
   // |record| will be converted to a JSON string with base::JsonWriter::Write.
   virtual void Enqueue(const base::Value& record,
+                       Priority priority,
                        EnqueueCallback callback) const;
 
   // |record| will be converted to a string with SerializeToString(). The
   // handler is responsible for converting the record back to a proto with a
   // ParseFromString() call.
   virtual void Enqueue(google::protobuf::MessageLite* record,
+                       Priority priority,
                        EnqueueCallback callback) const;
 
  protected:
@@ -78,9 +82,17 @@ class ReportQueue {
               scoped_refptr<StorageModule> storage);
 
  private:
-  void AddRecord(base::StringPiece record, EnqueueCallback callback) const;
+  void AddRecord(base::StringPiece record,
+                 Priority priority,
+                 EnqueueCallback callback) const;
+
   void SendRecordToStorage(base::StringPiece record,
+                           Priority priority,
                            EnqueueCallback callback) const;
+
+  StatusOr<std::string> ValueToJson(const base::Value& record) const;
+  StatusOr<std::string> ProtoToString(
+      google::protobuf::MessageLite* record) const;
 
   reporting::Record AugmentRecord(base::StringPiece record_data) const;
 

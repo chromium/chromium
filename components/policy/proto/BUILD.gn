@@ -30,6 +30,7 @@ proto_library("policy_record_constants") {
 proto_library("reporting_record_proto") {
   visibility = [
     "//chrome/browser:browser",
+    "//chrome/browser:test_support",
     "//components/policy/*",
   ]
   sources = [ "record.proto" ]

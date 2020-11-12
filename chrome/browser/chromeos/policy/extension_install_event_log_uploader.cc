@@ -39,7 +39,6 @@ CreateReportQueueConfigGetter(Profile* profile) {
               std::move(complete_cb)
                   .Run(::reporting::ReportQueueConfiguration::Create(
                       dm_token, ::reporting::Destination::UPLOAD_EVENTS,
-                      ::reporting::Priority::SLOW_BATCH,
                       base::BindRepeating(
                           []() { return ::reporting::Status::StatusOK(); })));
             },
@@ -119,9 +118,8 @@ void ExtensionInstallEventLogUploader::SetBuildReportQueueConfigurationForTests(
             .Run(::reporting::ReportQueueConfiguration::Create(
                 DMToken::CreateValidTokenForTesting(dm_token),
                 ::reporting::Destination::UPLOAD_EVENTS,
-                ::reporting::Priority::SLOW_BATCH, base::BindRepeating([]() {
-                  return ::reporting::Status::StatusOK();
-                })));
+                base::BindRepeating(
+                    []() { return ::reporting::Status::StatusOK(); })));
       },
       dm_token);
 }
@@ -317,6 +315,7 @@ void ExtensionInstallEventLogUploader::EnqueueReport(
       weak_factory_.GetWeakPtr(), base::ThreadTaskRunnerHandle::Get());
 
   report_queue_->Enqueue(std::move(value_report),
+                         ::reporting::Priority::SLOW_BATCH,
                          std::move(on_enqueue_done_cb));
 }
 
