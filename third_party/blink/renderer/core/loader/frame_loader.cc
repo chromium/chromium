@@ -1387,6 +1387,7 @@ void FrameLoader::ProcessFragment(const KURL& url,
   // restoring the past scroll offset during a history navigation. In these
   // cases we assume the scroll was restored from history (by the page).
   const bool uses_manual_scroll_restoration =
+      frame_load_type == WebFrameLoadType::kBackForward &&
       GetDocumentLoader()->GetHistoryItem() &&
       GetDocumentLoader()->GetHistoryItem()->ScrollRestorationType() ==
           mojom::blink::ScrollRestorationType::kManual;

@@ -1946,6 +1946,38 @@ TEST_F(TextFragmentAnchorTest, PageVisibility) {
   EXPECT_EQ(p, *GetDocument().CssTarget());
 }
 
+// Regression test for https://crbug.com/1147568. Make sure a page setting
+// manual scroll restoration doesn't cause the fragment to avoid scrolling on
+// the initial load.
+TEST_F(TextFragmentAnchorTest, ManualRestorationDoesntBlockFragment) {
+  SimRequest request("https://example.com/test.html#:~:text=test", "text/html");
+  LoadURL("https://example.com/test.html#:~:text=test");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <style>
+      body {
+        height: 1200px;
+      }
+      p {
+        position: absolute;
+        top: 1000px;
+      }
+    </style>
+    <script>
+      history.scrollRestoration = 'manual';
+    </script>
+    <p id="text">This is a test page</p>
+  )HTML");
+  RunAsyncMatchingTasks();
+
+  // Render two frames and ensure matching and scrolling does not occur.
+  BeginEmptyFrame();
+  BeginEmptyFrame();
+
+  Element& p = *GetDocument().getElementById("text");
+  EXPECT_TRUE(ViewportRect().Contains(BoundingRectInFrame(p)));
+}
+
 // Test that a text directive can match across comment nodes
 TEST_F(TextFragmentAnchorTest, MatchAcrossCommentNode) {
   SimRequest request("https://example.com/test.html#:~:text=abcdef",
