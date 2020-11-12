@@ -74,7 +74,8 @@ void SODAInstallerImpl::InstallSODA(PrefService* prefs) {
 
 void SODAInstallerImpl::InstallLanguage(PrefService* prefs) {
   component_updater::RegisterSodaLanguageComponent(
-      g_browser_process->component_updater(), prefs);
+      g_browser_process->component_updater(), prefs,
+      g_browser_process->local_state());
 
   if (!component_updater_observer_.IsObserving(
           g_browser_process->component_updater())) {

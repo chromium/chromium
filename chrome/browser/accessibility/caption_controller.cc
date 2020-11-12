@@ -54,9 +54,6 @@ void CaptionController::RegisterProfilePrefs(
   registry->RegisterBooleanPref(
       prefs::kLiveCaptionEnabled, false,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
-  registry->RegisterFilePathPref(prefs::kSodaBinaryPath, base::FilePath());
-  registry->RegisterFilePathPref(prefs::kSodaEnUsConfigPath, base::FilePath());
-  registry->RegisterFilePathPref(prefs::kSodaJaJpConfigPath, base::FilePath());
 
   // Initially default the language to en-US.
   registry->RegisterStringPref(prefs::kLiveCaptionLanguageCode, "en-US");

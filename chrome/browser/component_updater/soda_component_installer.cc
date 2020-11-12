@@ -132,6 +132,9 @@ void UpdateSODAInstallDirPref(PrefService* prefs,
 
 void RegisterPrefsForSodaComponent(PrefRegistrySimple* registry) {
   registry->RegisterTimePref(prefs::kSodaScheduledDeletionTime, base::Time());
+  registry->RegisterFilePathPref(prefs::kSodaBinaryPath, base::FilePath());
+  registry->RegisterFilePathPref(prefs::kSodaEnUsConfigPath, base::FilePath());
+  registry->RegisterFilePathPref(prefs::kSodaJaJpConfigPath, base::FilePath());
 }
 
 void RegisterSodaComponent(ComponentUpdateService* cus,
@@ -146,15 +149,15 @@ void RegisterSodaComponent(ComponentUpdateService* cus,
       global_prefs->SetTime(prefs::kSodaScheduledDeletionTime, base::Time());
       auto installer = base::MakeRefCounted<ComponentInstaller>(
           std::make_unique<SODAComponentInstallerPolicy>(base::BindRepeating(
-              [](ComponentUpdateService* cus, PrefService* profile_prefs,
+              [](ComponentUpdateService* cus, PrefService* global_prefs,
                  const base::FilePath& install_dir) {
                 content::GetUIThreadTaskRunner(
                     {base::TaskPriority::BEST_EFFORT})
                     ->PostTask(FROM_HERE,
                                base::BindOnce(&UpdateSODAInstallDirPref,
-                                              profile_prefs, install_dir));
+                                              global_prefs, install_dir));
               },
-              cus, profile_prefs)));
+              cus, global_prefs)));
 
       installer->Register(cus, std::move(callback));
     } else {
@@ -170,11 +173,10 @@ void RegisterSodaComponent(ComponentUpdateService* cus,
 }
 
 void RegisterSodaLanguageComponent(ComponentUpdateService* cus,
-                                   PrefService* profile_prefs) {
+                                   PrefService* profile_prefs,
+                                   PrefService* global_prefs) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  // TODO(crbug.com/1143753): Clean up this component if the Live Caption
-  // feature hasn't been used for some time.
   if (base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption)) {
     speech::LanguageCode language = speech::GetLanguageCode(
         profile_prefs->GetString(prefs::kLiveCaptionLanguageCode));
@@ -184,13 +186,13 @@ void RegisterSodaLanguageComponent(ComponentUpdateService* cus,
         break;
       case speech::LanguageCode::kEnUs:
         RegisterSodaEnUsComponent(
-            cus, profile_prefs,
+            cus, global_prefs,
             base::BindOnce(&SodaEnUsComponentInstallerPolicy::
                                UpdateSodaEnUsComponentOnDemand));
         break;
       case speech::LanguageCode::kJaJp:
         RegisterSodaJaJpComponent(
-            cus, profile_prefs,
+            cus, global_prefs,
             base::BindOnce(&SodaJaJpComponentInstallerPolicy::
                                UpdateSodaJaJpComponentOnDemand));
         break;

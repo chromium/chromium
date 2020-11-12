@@ -5,6 +5,7 @@
 #include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/speech/speech_recognition_service.h"
@@ -123,11 +124,11 @@ void SpeechRecognitionServiceTest::LaunchService() {
 }
 
 IN_PROC_BROWSER_TEST_F(SpeechRecognitionServiceTest, RecognizePhrase) {
-  ProfileManager::GetActiveUserProfile()->GetPrefs()->SetFilePath(
+  g_browser_process->local_state()->SetFilePath(
       prefs::kSodaBinaryPath,
       test_data_dir_.Append(base::FilePath(kSodaResourcesDir))
           .Append(kSodaBinaryRelativePath));
-  ProfileManager::GetActiveUserProfile()->GetPrefs()->SetFilePath(
+  g_browser_process->local_state()->SetFilePath(
       prefs::kSodaEnUsConfigPath,
       test_data_dir_.Append(base::FilePath(kSodaResourcesDir))
           .Append(kSodaLanguagePackRelativePath));

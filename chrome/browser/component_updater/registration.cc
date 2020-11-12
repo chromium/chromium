@@ -185,7 +185,8 @@ void RegisterComponentsForUpdate(bool is_off_the_record_profile,
   component_updater::RegisterSodaComponent(cus, profile_prefs,
                                            g_browser_process->local_state(),
                                            base::OnceClosure());
-  component_updater::RegisterSodaLanguageComponent(cus, profile_prefs);
+  component_updater::RegisterSodaLanguageComponent(
+      cus, profile_prefs, g_browser_process->local_state());
 #endif
 
 #if defined(OS_CHROMEOS)

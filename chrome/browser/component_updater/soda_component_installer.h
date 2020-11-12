@@ -66,7 +66,8 @@ void RegisterSodaComponent(ComponentUpdateService* cus,
                            base::OnceClosure callback);
 
 void RegisterSodaLanguageComponent(ComponentUpdateService* cus,
-                                   PrefService* profile_prefs);
+                                   PrefService* profile_prefs,
+                                   PrefService* global_prefs);
 
 }  // namespace component_updater
 

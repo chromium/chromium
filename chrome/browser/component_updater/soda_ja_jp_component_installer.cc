@@ -135,15 +135,6 @@ void RegisterSodaJaJpComponent(ComponentUpdateService* cus,
                                PrefService* prefs,
                                base::OnceClosure callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  // TODO(crbug.com/1143753): Clean up this component if the Live Caption
-  // feature hasn't been used for some time.
-  if (base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption)) {
-    if (!prefs->GetBoolean(prefs::kLiveCaptionEnabled) ||
-        !base::FeatureList::IsEnabled(media::kLiveCaption)) {
-      return;
-    }
-
     auto installer = base::MakeRefCounted<ComponentInstaller>(
         std::make_unique<SodaJaJpComponentInstallerPolicy>(base::BindRepeating(
             [](ComponentUpdateService* cus, PrefService* prefs,
@@ -156,7 +147,6 @@ void RegisterSodaJaJpComponent(ComponentUpdateService* cus,
             cus, prefs)));
 
     installer->Register(cus, std::move(callback));
-  }
 }
 
 }  // namespace component_updater

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/speech/speech_recognition_service.h"
 
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/service_sandbox_type.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
@@ -61,11 +62,13 @@ void SpeechRecognitionService::LaunchIfNotRunning() {
   if (speech_recognition_service_.is_bound())
     return;
 
-  PrefService* prefs = user_prefs::UserPrefs::Get(context_);
-  DCHECK(prefs);
+  PrefService* profile_prefs = user_prefs::UserPrefs::Get(context_);
+  PrefService* global_prefs = g_browser_process->local_state();
+  DCHECK(profile_prefs);
+  DCHECK(global_prefs);
 
-  auto binary_path = prefs->GetFilePath(prefs::kSodaBinaryPath);
-  auto config_path = SpeechRecognitionService::GetSodaConfigPath(prefs);
+  auto binary_path = global_prefs->GetFilePath(prefs::kSodaBinaryPath);
+  auto config_path = SpeechRecognitionService::GetSodaConfigPath(profile_prefs);
   if (enable_soda_ && (binary_path.empty() || config_path.empty())) {
     LOG(ERROR) << "Unable to find SODA files on the device.";
     return;
@@ -98,14 +101,15 @@ void SpeechRecognitionService::LaunchIfNotRunning() {
 base::FilePath SpeechRecognitionService::GetSodaConfigPath(PrefService* prefs) {
   speech::LanguageCode language = speech::GetLanguageCode(
       prefs->GetString(prefs::kLiveCaptionLanguageCode));
+  PrefService* global_prefs = g_browser_process->local_state();
   switch (language) {
     case speech::LanguageCode::kNone:
       NOTREACHED();
       return base::FilePath();
     case speech::LanguageCode::kEnUs:
-      return prefs->GetFilePath(prefs::kSodaEnUsConfigPath);
+      return global_prefs->GetFilePath(prefs::kSodaEnUsConfigPath);
     case speech::LanguageCode::kJaJp:
-      return prefs->GetFilePath(prefs::kSodaJaJpConfigPath);
+      return global_prefs->GetFilePath(prefs::kSodaJaJpConfigPath);
   }
 
   return base::FilePath();
