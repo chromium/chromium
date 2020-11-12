@@ -36,13 +36,13 @@ class CopyingFileInputStream : public google::protobuf::io::CopyingInputStream {
   base::File file_;
 };
 
-FlocId ApplySortingLshOnBackgroundThread(uint64_t sim_hash,
-                                         const base::FilePath& file_path,
-                                         const base::Version& version) {
+base::Optional<uint64_t> ApplySortingLshOnBackgroundThread(
+    uint64_t sim_hash,
+    const base::FilePath& file_path) {
   base::File sorting_lsh_clusters_file(
       file_path, base::File::FLAG_OPEN | base::File::FLAG_READ);
   if (!sorting_lsh_clusters_file.IsValid())
-    return FlocId();
+    return base::nullopt;
 
   CopyingFileInputStream copying_stream(std::move(sorting_lsh_clusters_file));
   google::protobuf::io::CopyingInputStreamAdaptor zero_copy_stream_adaptor(
@@ -88,33 +88,33 @@ FlocId ApplySortingLshOnBackgroundThread(uint64_t sim_hash,
   for (uint64_t index = 0; input_stream.ReadVarint32(&next_combined); ++index) {
     // Sanitizing error: the entry used more than |kSortingLshMaxBits| bits.
     if ((next_combined >> kSortingLshMaxBits) > 0)
-      return FlocId();
+      return base::nullopt;
 
     bool is_blocked = next_combined & kSortingLshBlockedMask;
     uint32_t next = next_combined & kSortingLshSizeMask;
 
     // Sanitizing error
     if (next > kMaxNumberOfBitsInFloc)
-      return FlocId();
+      return base::nullopt;
 
     cumulative_sum += (1ULL << next);
 
     // Sanitizing error
     if (cumulative_sum > kExpectedFinalCumulativeSum)
-      return FlocId();
+      return base::nullopt;
 
     // Found the sim-hash upper bound. Use the index as the new floc.
     if (cumulative_sum > sim_hash) {
       if (is_blocked)
-        return FlocId();
+        return base::nullopt;
 
-      return FlocId(index, version.components().front());
+      return index;
     }
   }
 
   // Sanitizing error: we didn't find a sim-hash upper bound, but we expect to
   // always find it after finish iterating through the list.
-  return FlocId();
+  return base::nullopt;
 }
 
 }  // namespace
@@ -158,14 +158,22 @@ void FlocSortingLshClustersService::ApplySortingLsh(
   base::PostTaskAndReplyWithResult(
       background_task_runner_.get(), FROM_HERE,
       base::BindOnce(&ApplySortingLshOnBackgroundThread, sim_hash,
-                     sorting_lsh_clusters_file_path_,
-                     sorting_lsh_clusters_version_),
-      std::move(callback));
+                     sorting_lsh_clusters_file_path_),
+      base::BindOnce(&FlocSortingLshClustersService::DidApplySortingLsh,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                     sorting_lsh_clusters_version_));
 }
 
 void FlocSortingLshClustersService::SetBackgroundTaskRunnerForTesting(
     scoped_refptr<base::SequencedTaskRunner> background_task_runner) {
   background_task_runner_ = background_task_runner;
+}
+
+void FlocSortingLshClustersService::DidApplySortingLsh(
+    ApplySortingLshCallback callback,
+    base::Version version,
+    base::Optional<uint64_t> final_hash) {
+  std::move(callback).Run(std::move(final_hash), std::move(version));
 }
 
 }  // namespace federated_learning

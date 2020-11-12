@@ -29,8 +29,6 @@ constexpr size_t kMinHistoryDomainSizeToReportFlocId = 1;
 constexpr base::TimeDelta kFlocScheduledUpdateInterval =
     base::TimeDelta::FromDays(1);
 constexpr int kQueryHistoryWindowInDays = 7;
-constexpr base::TimeDelta kSwaaNacAccountEnabledCachePeriod =
-    base::TimeDelta::FromHours(12);
 
 // The placeholder sorting-lsh version when the sorting-lsh feature is disabled.
 constexpr uint32_t kSortingLshVersionPlaceholder = 0;
@@ -81,7 +79,7 @@ std::string FlocIdProviderImpl::GetInterestCohortForJsApi(
   if (!floc_id_.IsValid())
     return std::string();
 
-  return floc_id_.ToString();
+  return floc_id_.ToStringForJsApi();
 }
 
 void FlocIdProviderImpl::OnComputeFlocCompleted(ComputeFlocTrigger trigger,
@@ -89,12 +87,11 @@ void FlocIdProviderImpl::OnComputeFlocCompleted(ComputeFlocTrigger trigger,
   DCHECK(floc_computation_in_progress_);
   floc_computation_in_progress_ = false;
 
-  // Some recompute event came in when this computation was in progress. Ignore
-  // this computation completely. Handle the pending one.
-  if (pending_recompute_event_) {
-    ComputeFlocTrigger recompute_trigger = pending_recompute_event_.value();
-    pending_recompute_event_.reset();
-    ComputeFloc(recompute_trigger);
+  // History-delete event came in when this computation was in progress. Ignore
+  // this computation completely and recompute.
+  if (need_recompute_) {
+    need_recompute_ = false;
+    ComputeFloc(trigger);
     return;
   }
 
@@ -167,18 +164,34 @@ void FlocIdProviderImpl::Shutdown() {
 void FlocIdProviderImpl::OnURLsDeleted(
     history::HistoryService* history_service,
     const history::DeletionInfo& deletion_info) {
-  // Set a pending event or override the existing one, that will get run when
-  // the in-progress computation finishes.
+  // Set the |need_recompute_| flag so that we will recompute the floc
+  // immediately after the in-progress one finishes, so as to avoid potential
+  // data races.
   if (floc_computation_in_progress_) {
     DCHECK(first_floc_computation_triggered_);
-    pending_recompute_event_ = ComputeFlocTrigger::kHistoryDelete;
+    need_recompute_ = true;
     return;
   }
 
-  if (!first_floc_computation_triggered_ || !floc_id_.IsValid())
+  if (!floc_id_.IsValid())
     return;
 
-  ComputeFloc(ComputeFlocTrigger::kHistoryDelete);
+  // Only invalidate the floc if it's delete-all or if the time range overlaps
+  // with the time range of the history used to compute the current floc.
+  if (!deletion_info.IsAllHistory() && !deletion_info.time_range().IsValid()) {
+    return;
+  }
+
+  if (deletion_info.time_range().begin() > floc_id_.history_end_time() ||
+      deletion_info.time_range().end() < floc_id_.history_begin_time()) {
+    return;
+  }
+
+  // We log the invalidation event although it's technically not a recompute.
+  // It'd give us a better idea how often the floc is invalidated due to
+  // history-delete.
+  LogFlocComputedEvent(ComputeFlocTrigger::kHistoryDelete, ComputeFlocResult());
+  floc_id_ = FlocId();
 }
 
 void FlocIdProviderImpl::OnSortingLshClustersFileReady() {
@@ -218,21 +231,15 @@ void FlocIdProviderImpl::MaybeTriggerFirstFlocComputation() {
 }
 
 void FlocIdProviderImpl::OnComputeFlocScheduledUpdate() {
-  // It's fine to skip the scheduled update as long as there's one in progress.
-  // We won't be losing the recomputing frequency, as the in-progress one only
-  // occurs sooner and when it finishes a new compute-floc task will be
-  // scheduled.
-  if (floc_computation_in_progress_)
-    return;
-
-  DCHECK(!pending_recompute_event_);
-
+  DCHECK(!floc_computation_in_progress_);
   ComputeFloc(ComputeFlocTrigger::kScheduledUpdate);
 }
 
 void FlocIdProviderImpl::ComputeFloc(ComputeFlocTrigger trigger) {
-  DCHECK_NE(trigger == ComputeFlocTrigger::kBrowserStart,
-            first_floc_computation_triggered_);
+  DCHECK(trigger == ComputeFlocTrigger::kBrowserStart ||
+         (trigger == ComputeFlocTrigger::kScheduledUpdate &&
+          first_floc_computation_triggered_));
+
   DCHECK(!floc_computation_in_progress_);
 
   floc_computation_in_progress_ = true;
@@ -285,14 +292,6 @@ bool FlocIdProviderImpl::AreThirdPartyCookiesAllowed() const {
 
 void FlocIdProviderImpl::IsSwaaNacAccountEnabled(
     CanComputeFlocCallback callback) {
-  if (!last_swaa_nac_account_enabled_query_time_.is_null() &&
-      last_swaa_nac_account_enabled_query_time_ +
-              kSwaaNacAccountEnabledCachePeriod >
-          base::TimeTicks::Now()) {
-    std::move(callback).Run(cached_swaa_nac_account_enabled_);
-    return;
-  }
-
   net::PartialNetworkTrafficAnnotationTag partial_traffic_annotation =
       net::DefinePartialNetworkTrafficAnnotation(
           "floc_id_provider_impl", "floc_remote_permission_service",
@@ -323,17 +322,7 @@ void FlocIdProviderImpl::IsSwaaNacAccountEnabled(
         })");
 
   floc_remote_permission_service_->QueryFlocPermission(
-      base::BindOnce(&FlocIdProviderImpl::OnCheckSwaaNacAccountEnabledCompleted,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
-      partial_traffic_annotation);
-}
-
-void FlocIdProviderImpl::OnCheckSwaaNacAccountEnabledCompleted(
-    CanComputeFlocCallback callback,
-    bool enabled) {
-  cached_swaa_nac_account_enabled_ = enabled;
-  last_swaa_nac_account_enabled_query_time_ = base::TimeTicks::Now();
-  std::move(callback).Run(enabled);
+      std::move(callback), partial_traffic_annotation);
 }
 
 void FlocIdProviderImpl::GetRecentlyVisitedURLs(
@@ -350,9 +339,19 @@ void FlocIdProviderImpl::OnGetRecentlyVisitedURLsCompleted(
     ComputeFlocCompletedCallback callback,
     history::QueryResults results) {
   std::unordered_set<std::string> domains;
+
+  base::Time history_begin_time = base::Time::Max();
+  base::Time history_end_time = base::Time::Min();
+
   for (const history::URLResult& url_result : results) {
     if (!url_result.publicly_routable())
       continue;
+
+    if (url_result.visit_time() < history_begin_time)
+      history_begin_time = url_result.visit_time();
+
+    if (url_result.visit_time() > history_end_time)
+      history_end_time = url_result.visit_time();
 
     domains.insert(net::registry_controlled_domains::GetDomainAndRegistry(
         url_result.url(),
@@ -365,16 +364,20 @@ void FlocIdProviderImpl::OnGetRecentlyVisitedURLsCompleted(
   }
 
   ApplySortingLshPostProcessing(std::move(callback),
-                                FlocId::SimHashHistory(domains));
+                                FlocId::SimHashHistory(domains),
+                                history_begin_time, history_end_time);
 }
 
 void FlocIdProviderImpl::ApplySortingLshPostProcessing(
     ComputeFlocCompletedCallback callback,
-    uint64_t sim_hash) {
+    uint64_t sim_hash,
+    base::Time history_begin_time,
+    base::Time history_end_time) {
   if (!base::FeatureList::IsEnabled(
           features::kFlocIdSortingLshBasedComputation)) {
     std::move(callback).Run(ComputeFlocResult(
-        sim_hash, FlocId(sim_hash, kSortingLshVersionPlaceholder)));
+        sim_hash, FlocId(sim_hash, history_begin_time, history_end_time,
+                         kSortingLshVersionPlaceholder)));
     return;
   }
 
@@ -382,14 +385,24 @@ void FlocIdProviderImpl::ApplySortingLshPostProcessing(
       sim_hash,
       base::BindOnce(&FlocIdProviderImpl::DidApplySortingLshPostProcessing,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-                     sim_hash));
+                     sim_hash, history_begin_time, history_end_time));
 }
 
 void FlocIdProviderImpl::DidApplySortingLshPostProcessing(
     ComputeFlocCompletedCallback callback,
     uint64_t sim_hash,
-    FlocId floc_id) {
-  std::move(callback).Run(ComputeFlocResult(sim_hash, std::move(floc_id)));
+    base::Time history_begin_time,
+    base::Time history_end_time,
+    base::Optional<uint64_t> final_hash,
+    base::Version version) {
+  if (!final_hash) {
+    std::move(callback).Run(ComputeFlocResult(sim_hash, FlocId()));
+    return;
+  }
+
+  std::move(callback).Run(ComputeFlocResult(
+      sim_hash, FlocId(final_hash.value(), history_begin_time, history_end_time,
+                       version.components().front())));
 }
 
 }  // namespace federated_learning

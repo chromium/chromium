@@ -26,8 +26,14 @@ uint64_t FlocId::SimHashHistory(
 
 FlocId::FlocId() = default;
 
-FlocId::FlocId(uint64_t id, uint32_t sorting_lsh_version)
-    : id_(id), sorting_lsh_version_(sorting_lsh_version) {}
+FlocId::FlocId(uint64_t id,
+               base::Time history_begin_time,
+               base::Time history_end_time,
+               uint32_t sorting_lsh_version)
+    : id_(id),
+      history_begin_time_(history_begin_time),
+      history_end_time_(history_end_time),
+      sorting_lsh_version_(sorting_lsh_version) {}
 
 FlocId::FlocId(const FlocId& id) = default;
 
@@ -42,19 +48,16 @@ bool FlocId::IsValid() const {
 }
 
 bool FlocId::operator==(const FlocId& other) const {
-  return id_ == other.id_ && sorting_lsh_version_ == other.sorting_lsh_version_;
+  return id_ == other.id_ && history_begin_time_ == other.history_begin_time_ &&
+         history_end_time_ == other.history_end_time_ &&
+         sorting_lsh_version_ == other.sorting_lsh_version_;
 }
 
 bool FlocId::operator!=(const FlocId& other) const {
   return !(*this == other);
 }
 
-uint64_t FlocId::ToUint64() const {
-  DCHECK(id_.has_value());
-  return id_.value();
-}
-
-std::string FlocId::ToString() const {
+std::string FlocId::ToStringForJsApi() const {
   DCHECK(id_.has_value());
 
   return base::StrCat({base::NumberToString(id_.value()), ".",

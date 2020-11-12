@@ -42,8 +42,9 @@ class FlocRemotePermissionService;
 //
 // The floc will be first computed after sync & sync-history are enabled. After
 // each computation, another computation will be scheduled 24 hours later. In
-// the event of history deletion, the floc will be recomputed immediately and
-// reset the timer of any currently scheduled computation to be 24 hours later.
+// the event of history deletion, the floc will be invalidated immediately
+// if the time range of the deletion overlaps with the time range used to
+// compute the existing floc.
 class FlocIdProviderImpl : public FlocIdProvider,
                            public FlocSortingLshClustersService::Observer,
                            public history::HistoryServiceObserver,
@@ -134,8 +135,6 @@ class FlocIdProviderImpl : public FlocIdProvider,
   bool AreThirdPartyCookiesAllowed() const;
 
   void IsSwaaNacAccountEnabled(CanComputeFlocCallback callback);
-  void OnCheckSwaaNacAccountEnabledCompleted(CanComputeFlocCallback callback,
-                                             bool enabled);
 
   void GetRecentlyVisitedURLs(GetRecentlyVisitedURLsCallback callback);
   void OnGetRecentlyVisitedURLsCompleted(ComputeFlocCompletedCallback callback,
@@ -145,10 +144,15 @@ class FlocIdProviderImpl : public FlocIdProvider,
   // The final floc may be invalid if the file is corrupted or the floc end up
   // being blocked.
   void ApplySortingLshPostProcessing(ComputeFlocCompletedCallback callback,
-                                     uint64_t sim_hash);
+                                     uint64_t sim_hash,
+                                     base::Time history_begin_time,
+                                     base::Time history_end_time);
   void DidApplySortingLshPostProcessing(ComputeFlocCompletedCallback callback,
                                         uint64_t sim_hash,
-                                        FlocId floc_id);
+                                        base::Time history_begin_time,
+                                        base::Time history_end_time,
+                                        base::Optional<uint64_t> final_hash,
+                                        base::Version version);
 
   // The id to be exposed to the JS API.
   FlocId floc_id_;
@@ -156,18 +160,16 @@ class FlocIdProviderImpl : public FlocIdProvider,
   bool floc_computation_in_progress_ = false;
   bool first_floc_computation_triggered_ = false;
 
-  // We store a pending event if it arrives during an in-progress computation.
-  // When the in-progress one finishes, we would disregard the result (no
-  // loggings, updates, etc.), and compute again.
-  base::Optional<ComputeFlocTrigger> pending_recompute_event_;
+  // True if history-delete occurs during an in-progress computation. When the
+  // in-progress one finishes, we would disregard the result (i.e. no loggings
+  // or floc update), and compute again. Potentially we could maintain extra
+  // states to tell if the history-delete would have impact on the in-progress
+  // result, but since this would only happen in rare race situations, we just
+  // always recompute to keep things simple.
+  bool need_recompute_ = false;
 
   bool first_sorting_lsh_file_ready_seen_ = false;
   bool first_sync_history_enabled_seen_ = false;
-
-  // For the swaa/nac/account_type permission, we will use a cached status to
-  // avoid querying too often.
-  bool cached_swaa_nac_account_enabled_ = false;
-  base::TimeTicks last_swaa_nac_account_enabled_query_time_;
 
   syncer::SyncService* sync_service_;
   scoped_refptr<content_settings::CookieSettings> cookie_settings_;

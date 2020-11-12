@@ -37,29 +37,31 @@ using ComputeFlocCompletedCallback =
     FlocIdProviderImpl::ComputeFlocCompletedCallback;
 using CanComputeFlocCallback = FlocIdProviderImpl::CanComputeFlocCallback;
 
-const uint32_t kDummySortingLshVersion = 1;
-
 class MockFlocSortingLshService : public FlocSortingLshClustersService {
  public:
   using FlocSortingLshClustersService::FlocSortingLshClustersService;
 
   void ConfigureSortingLsh(
-      const std::unordered_map<uint64_t, FlocId>& sorting_lsh_map) {
+      const std::unordered_map<uint64_t, base::Optional<uint64_t>>&
+          sorting_lsh_map,
+      base::Version version) {
     sorting_lsh_map_ = sorting_lsh_map;
+    version_ = version;
   }
 
   void ApplySortingLsh(uint64_t sim_hash,
                        ApplySortingLshCallback callback) override {
     if (sorting_lsh_map_.count(sim_hash)) {
-      std::move(callback).Run(sorting_lsh_map_.at(sim_hash));
+      std::move(callback).Run(sorting_lsh_map_.at(sim_hash), version_);
       return;
     }
 
-    std::move(callback).Run(FlocId());
+    std::move(callback).Run(base::nullopt, version_);
   }
 
  private:
-  std::unordered_map<uint64_t, FlocId> sorting_lsh_map_;
+  std::unordered_map<uint64_t, base::Optional<uint64_t>> sorting_lsh_map_;
+  base::Version version_;
 };
 
 class FakeFlocRemotePermissionService : public FlocRemotePermissionService {
@@ -247,9 +249,11 @@ class FlocIdProviderUnitTest : public testing::Test {
   }
 
   void ApplySortingLshPostProcessing(ComputeFlocCompletedCallback callback,
-                                     uint64_t sim_hash) {
-    floc_id_provider_->ApplySortingLshPostProcessing(std::move(callback),
-                                                     sim_hash);
+                                     uint64_t sim_hash,
+                                     base::Time history_begin_time,
+                                     base::Time history_end_time) {
+    floc_id_provider_->ApplySortingLshPostProcessing(
+        std::move(callback), sim_hash, history_begin_time, history_end_time);
   }
 
   void CheckCanComputeFloc(CanComputeFlocCallback callback) {
@@ -275,11 +279,12 @@ class FlocIdProviderUnitTest : public testing::Test {
         std::move(compute_floc_completed_callback), std::move(results));
   }
 
-  void ExpireHistoryBefore(base::Time end_time) {
+  void ExpireHistoryBeforeUninclusive(base::Time end_time) {
     base::CancelableTaskTracker tracker;
     base::RunLoop run_loop;
-    history_service_->ExpireHistoryBeforeForTesting(
-        end_time, run_loop.QuitClosure(), &tracker);
+    history_service_->ExpireHistoryBetween(
+        /*restrict_urls=*/{}, /*begin_time=*/base::Time(), end_time,
+        /*user_initiated=*/true, run_loop.QuitClosure(), &tracker);
     run_loop.Run();
   }
 
@@ -310,9 +315,7 @@ class FlocIdProviderUnitTest : public testing::Test {
     floc_id_provider_->floc_id_ = floc_id;
   }
 
-  base::Optional<ComputeFlocTrigger> pending_recompute_event() {
-    return floc_id_provider_->pending_recompute_event_;
-  }
+  bool need_recompute() { return floc_id_provider_->need_recompute_; }
 
   void SetRemoteSwaaNacAccountEnabled(bool enabled) {
     fake_floc_remote_permission_service_->set_swaa_nac_account_enabled(enabled);
@@ -348,10 +351,11 @@ class FlocIdProviderUnitTest : public testing::Test {
 TEST_F(FlocIdProviderUnitTest, QualifiedInitialHistory) {
   // Add a history entry with a timestamp exactly 7 days back from now.
   std::string domain = "foo.com";
+  const base::Time kTime = base::Time::Now() - base::TimeDelta::FromDays(7);
 
   history::HistoryAddPageArgs add_page_args;
   add_page_args.url = GURL(base::StrCat({"https://www.", domain}));
-  add_page_args.time = base::Time::Now() - base::TimeDelta::FromDays(7);
+  add_page_args.time = kTime;
   add_page_args.publicly_routable = true;
   history_service_->AddPage(add_page_args);
 
@@ -374,8 +378,8 @@ TEST_F(FlocIdProviderUnitTest, QualifiedInitialHistory) {
   // Expect that the 1st computation has completed.
   EXPECT_EQ(1u, floc_id_provider_->compute_floc_completed_count());
   EXPECT_EQ(1u, floc_id_provider_->log_event_count());
-  EXPECT_TRUE(floc_id().IsValid());
-  EXPECT_EQ(FlocId::SimHashHistory({domain}), floc_id().ToUint64());
+  EXPECT_EQ(FlocId(FlocId::SimHashHistory({domain}), kTime, kTime, 0),
+            floc_id());
   EXPECT_TRUE(first_floc_computation_triggered());
 
   // Advance the clock by 1 day. Expect a computation, as there's no history in
@@ -419,7 +423,8 @@ TEST_F(FlocIdProviderUnitTest, UnqualifiedInitialHistory) {
   EXPECT_TRUE(first_floc_computation_triggered());
 
   // Add a history entry with a timestamp 6 days back from now.
-  add_page_args.time = base::Time::Now() - base::TimeDelta::FromDays(6);
+  const base::Time kTime = base::Time::Now() - base::TimeDelta::FromDays(6);
+  add_page_args.time = kTime;
   history_service_->AddPage(add_page_args);
 
   // Advance the clock by 23 hours. Expect no more computation, as the id
@@ -435,8 +440,9 @@ TEST_F(FlocIdProviderUnitTest, UnqualifiedInitialHistory) {
 
   EXPECT_EQ(2u, floc_id_provider_->compute_floc_completed_count());
   EXPECT_EQ(2u, floc_id_provider_->log_event_count());
-  EXPECT_TRUE(floc_id().IsValid());
-  EXPECT_EQ(FlocId::SimHashHistory({domain}), floc_id().ToUint64());
+
+  EXPECT_EQ(FlocId(FlocId::SimHashHistory({domain}), kTime, kTime, 0),
+            floc_id());
 }
 
 TEST_F(FlocIdProviderUnitTest, HistoryDeleteAndScheduledUpdate) {
@@ -445,14 +451,16 @@ TEST_F(FlocIdProviderUnitTest, HistoryDeleteAndScheduledUpdate) {
 
   // Add a history entry with a timestamp exactly 7 days back from now.
   history::HistoryAddPageArgs add_page_args;
+  const base::Time kTime1 = base::Time::Now() - base::TimeDelta::FromDays(7);
   add_page_args.url = GURL(base::StrCat({"https://www.", domain1}));
-  add_page_args.time = base::Time::Now() - base::TimeDelta::FromDays(7);
+  add_page_args.time = kTime1;
   add_page_args.publicly_routable = true;
   history_service_->AddPage(add_page_args);
 
   // Add a history entry with a timestamp exactly 6 days back from now.
   add_page_args.url = GURL(base::StrCat({"https://www.", domain2}));
-  add_page_args.time = base::Time::Now() - base::TimeDelta::FromDays(6);
+  const base::Time kTime2 = base::Time::Now() - base::TimeDelta::FromDays(6);
+  add_page_args.time = kTime2;
   history_service_->AddPage(add_page_args);
 
   task_environment_.RunUntilIdle();
@@ -467,8 +475,9 @@ TEST_F(FlocIdProviderUnitTest, HistoryDeleteAndScheduledUpdate) {
   // Expect that the 1st computation has completed.
   EXPECT_EQ(1u, floc_id_provider_->compute_floc_completed_count());
   EXPECT_EQ(1u, floc_id_provider_->log_event_count());
-  EXPECT_TRUE(floc_id().IsValid());
-  EXPECT_EQ(FlocId::SimHashHistory({domain1, domain2}), floc_id().ToUint64());
+  EXPECT_EQ(
+      FlocId(FlocId::SimHashHistory({domain1, domain2}), kTime1, kTime2, 0),
+      floc_id());
 
   // Advance the clock by 12 hours. Expect no more computation.
   task_environment_.FastForwardBy(base::TimeDelta::FromHours(12));
@@ -476,37 +485,33 @@ TEST_F(FlocIdProviderUnitTest, HistoryDeleteAndScheduledUpdate) {
   EXPECT_EQ(1u, floc_id_provider_->log_event_count());
 
   // Expire the oldest history entry.
-  ExpireHistoryBefore(base::Time::Now() - base::TimeDelta::FromDays(7));
+  ExpireHistoryBeforeUninclusive(kTime2);
   task_environment_.RunUntilIdle();
 
-  // Expect one more computation due to the history deletion.
-  EXPECT_EQ(2u, floc_id_provider_->compute_floc_completed_count());
+  // Expect that the floc has been invalidated. Expect no more floc computation,
+  // but one more logging.
+  EXPECT_EQ(1u, floc_id_provider_->compute_floc_completed_count());
   EXPECT_EQ(2u, floc_id_provider_->log_event_count());
-  EXPECT_TRUE(floc_id().IsValid());
-  EXPECT_EQ(FlocId::SimHashHistory({domain2}), floc_id().ToUint64());
-
-  // Advance the clock by 23 hours. Expect no more computation, as the timer has
-  // been reset due to the recomputation from history deletion.
-  task_environment_.FastForwardBy(base::TimeDelta::FromHours(23));
-  EXPECT_EQ(2u, floc_id_provider_->compute_floc_completed_count());
-  EXPECT_EQ(2u, floc_id_provider_->log_event_count());
-
-  // Advance the clock by 1 hour. Expect one more computation, as the scheduled
-  // time is reached. Expect an invalid floc id as there is no history in the
-  // past 7 days.
-  task_environment_.FastForwardBy(base::TimeDelta::FromHours(1));
-  EXPECT_EQ(3u, floc_id_provider_->compute_floc_completed_count());
-  EXPECT_EQ(3u, floc_id_provider_->log_event_count());
   EXPECT_FALSE(floc_id().IsValid());
+
+  // Advance the clock by 12 hours. Expect one more computation, which implies
+  // the timer didn't get reset due to the history invalidation. Expect that
+  // the floc is derived from domain2.
+  task_environment_.FastForwardBy(base::TimeDelta::FromHours(12));
+  EXPECT_EQ(2u, floc_id_provider_->compute_floc_completed_count());
+  EXPECT_EQ(3u, floc_id_provider_->log_event_count());
+  EXPECT_EQ(FlocId(FlocId::SimHashHistory({domain2}), kTime2, kTime2, 0),
+            floc_id());
 }
 
-TEST_F(FlocIdProviderUnitTest, ScheduledUpdateSameFloc_NoNotification) {
+TEST_F(FlocIdProviderUnitTest, ScheduledUpdateSameFloc) {
   std::string domain = "foo.com";
+  const base::Time kTime = base::Time::Now() - base::TimeDelta::FromDays(2);
 
   // Add a history entry with a timestamp 2 days back from now.
   history::HistoryAddPageArgs add_page_args;
   add_page_args.url = GURL(base::StrCat({"https://www.", domain}));
-  add_page_args.time = base::Time::Now() - base::TimeDelta::FromDays(2);
+  add_page_args.time = kTime;
   add_page_args.publicly_routable = true;
   history_service_->AddPage(add_page_args);
 
@@ -522,7 +527,8 @@ TEST_F(FlocIdProviderUnitTest, ScheduledUpdateSameFloc_NoNotification) {
   // Expect that the 1st computation has completed.
   EXPECT_EQ(1u, floc_id_provider_->compute_floc_completed_count());
   EXPECT_EQ(1u, floc_id_provider_->log_event_count());
-  EXPECT_EQ(FlocId::SimHashHistory({domain}), floc_id().ToUint64());
+  EXPECT_EQ(FlocId(FlocId::SimHashHistory({domain}), kTime, kTime, 0),
+            floc_id());
 
   // Advance the clock by 1 day. Expect one more computation, but the floc
   // didn't change.
@@ -530,7 +536,8 @@ TEST_F(FlocIdProviderUnitTest, ScheduledUpdateSameFloc_NoNotification) {
 
   EXPECT_EQ(2u, floc_id_provider_->compute_floc_completed_count());
   EXPECT_EQ(2u, floc_id_provider_->log_event_count());
-  EXPECT_EQ(FlocId::SimHashHistory({domain}), floc_id().ToUint64());
+  EXPECT_EQ(FlocId(FlocId::SimHashHistory({domain}), kTime, kTime, 0),
+            floc_id());
 }
 
 TEST_F(FlocIdProviderUnitTest, CheckCanComputeFloc_Success) {
@@ -580,46 +587,14 @@ TEST_F(FlocIdProviderUnitTest,
   task_environment_.RunUntilIdle();
 }
 
-TEST_F(FlocIdProviderUnitTest, SwaaNacAccountEnabledUseCacheStatus) {
-  base::OnceCallback<void(bool)> assert_enabled_callback_1 = base::BindOnce(
-      [](bool can_compute_floc) { EXPECT_TRUE(can_compute_floc); });
-
-  // The permission status in the fake_floc_remote_premission_service_ is by
-  // default enabled.
-  IsSwaaNacAccountEnabled(std::move(assert_enabled_callback_1));
-  task_environment_.RunUntilIdle();
-
-  // Turn off the permission in the fake_floc_remote_premission_service_.
-  SetRemoteSwaaNacAccountEnabled(false);
-
-  base::OnceCallback<void(bool)> assert_enabled_callback_2 = base::BindOnce(
-      [](bool can_compute_floc) { EXPECT_TRUE(can_compute_floc); });
-
-  // Fast forward by 11 hours. The cache is still valid.
-  task_environment_.FastForwardBy(base::TimeDelta::FromHours(11));
-
-  // The permission status is still enabled because it was obtained from the
-  // cache.
-  IsSwaaNacAccountEnabled(std::move(assert_enabled_callback_2));
-  task_environment_.RunUntilIdle();
-
-  // Fast forward by 1 hour so the cache becomes invalid.
-  task_environment_.FastForwardBy(base::TimeDelta::FromHours(1));
-
-  base::OnceCallback<void(bool)> assert_disabled_callback = base::BindOnce(
-      [](bool can_compute_floc) { EXPECT_FALSE(can_compute_floc); });
-
-  // The permission status should be obtained from the server again, and it's
-  // now disabled.
-  IsSwaaNacAccountEnabled(std::move(assert_disabled_callback));
-  task_environment_.RunUntilIdle();
-}
-
 TEST_F(FlocIdProviderUnitTest, EventLogging) {
+  const base::Time kTime1 = base::Time::FromTimeT(1);
+  const base::Time kTime2 = base::Time::FromTimeT(2);
+
   // Event logging for browser start.
   floc_id_provider_->LogFlocComputedEvent(
       ComputeFlocTrigger::kBrowserStart,
-      ComputeFlocResult(12345ULL, FlocId(123ULL, kDummySortingLshVersion)));
+      ComputeFlocResult(12345ULL, FlocId(123ULL, kTime1, kTime1, 999)));
 
   EXPECT_EQ(1u, fake_user_event_service_->GetRecordedUserEvents().size());
   const sync_pb::UserEventSpecifics& specifics1 =
@@ -641,7 +616,7 @@ TEST_F(FlocIdProviderUnitTest, EventLogging) {
   // Event logging for scheduled update.
   floc_id_provider_->LogFlocComputedEvent(
       ComputeFlocTrigger::kScheduledUpdate,
-      ComputeFlocResult(999ULL, FlocId(777ULL, kDummySortingLshVersion)));
+      ComputeFlocResult(999ULL, FlocId(777ULL, kTime1, kTime2, 888)));
 
   EXPECT_EQ(2u, fake_user_event_service_->GetRecordedUserEvents().size());
   const sync_pb::UserEventSpecifics& specifics2 =
@@ -675,10 +650,9 @@ TEST_F(FlocIdProviderUnitTest, EventLogging) {
             event3.event_trigger());
   EXPECT_FALSE(event3.has_floc_id());
 
-  // Event logging for history delete.
-  floc_id_provider_->LogFlocComputedEvent(
-      ComputeFlocTrigger::kHistoryDelete,
-      ComputeFlocResult(555, FlocId(444, kDummySortingLshVersion)));
+  // Event logging for history-delete invalidation.
+  floc_id_provider_->LogFlocComputedEvent(ComputeFlocTrigger::kHistoryDelete,
+                                          ComputeFlocResult());
 
   EXPECT_EQ(4u, fake_user_event_service_->GetRecordedUserEvents().size());
   const sync_pb::UserEventSpecifics& specifics4 =
@@ -692,7 +666,7 @@ TEST_F(FlocIdProviderUnitTest, EventLogging) {
       specifics4.floc_id_computed_event();
   EXPECT_EQ(sync_pb::UserEventSpecifics::FlocIdComputed::HISTORY_DELETE,
             event4.event_trigger());
-  EXPECT_EQ(555ULL, event4.floc_id());
+  EXPECT_FALSE(event4.has_floc_id());
 
   // Event logging for blocked floc.
   floc_id_provider_->LogFlocComputedEvent(ComputeFlocTrigger::kScheduledUpdate,
@@ -714,75 +688,99 @@ TEST_F(FlocIdProviderUnitTest, EventLogging) {
 }
 
 TEST_F(FlocIdProviderUnitTest, HistoryDelete_AllHistory) {
-  base::Time time = base::Time::Now() - base::TimeDelta::FromDays(9);
+  const base::Time kTime1 = base::Time::FromTimeT(1);
+  const base::Time kTime2 = base::Time::FromTimeT(2);
 
-  history::URLResult url_result(GURL("https://a.test"), time);
-  url_result.set_publicly_routable(true);
-
-  history::QueryResults query_results;
-  query_results.SetURLResults({url_result});
-
+  set_floc_id(FlocId(123, kTime1, kTime2, 0));
   set_first_floc_computation_triggered(true);
-  set_floc_computation_in_progress(true);
-
-  OnGetRecentlyVisitedURLsCompleted(ComputeFlocTrigger::kBrowserStart,
-                                    std::move(query_results));
-  EXPECT_FALSE(floc_computation_in_progress());
-  EXPECT_TRUE(floc_id().IsValid());
 
   OnURLsDeleted(history_service_.get(), history::DeletionInfo::ForAllHistory());
+
   EXPECT_FALSE(floc_id().IsValid());
 }
 
 TEST_F(FlocIdProviderUnitTest, HistoryDelete_InvalidTimeRange) {
-  base::Time time = base::Time::Now() - base::TimeDelta::FromDays(9);
+  const base::Time kTime1 = base::Time::FromTimeT(1);
+  const base::Time kTime2 = base::Time::FromTimeT(2);
 
   GURL url_a = GURL("https://a.test");
 
-  history::URLResult url_result(url_a, time);
+  history::URLResult url_result(url_a, kTime1);
   url_result.set_publicly_routable(true);
 
   history::QueryResults query_results;
   query_results.SetURLResults({url_result});
 
-  set_first_floc_computation_triggered(true);
-  set_floc_computation_in_progress(true);
+  const FlocId expected_floc =
+      FlocId(FlocId::SimHashHistory({"a.test"}), kTime1, kTime2, 0);
 
-  OnGetRecentlyVisitedURLsCompleted(ComputeFlocTrigger::kBrowserStart,
-                                    std::move(query_results));
-  EXPECT_FALSE(floc_computation_in_progress());
-  EXPECT_TRUE(floc_id().IsValid());
+  set_floc_id(expected_floc);
+  set_first_floc_computation_triggered(true);
 
   OnURLsDeleted(history_service_.get(),
                 history::DeletionInfo::ForUrls(
-                    {history::URLResult(url_a, base::Time())}, {}));
-  task_environment_.RunUntilIdle();
+                    {history::URLResult(url_a, kTime1)}, /*favicon_urls=*/{}));
+
+  EXPECT_EQ(expected_floc, floc_id());
+}
+
+TEST_F(FlocIdProviderUnitTest, HistoryDelete_TimeRangeNoOverlap) {
+  const base::Time kTime1 = base::Time::FromTimeT(1);
+  const base::Time kTime2 = base::Time::FromTimeT(2);
+  const base::Time kTime3 = base::Time::FromTimeT(3);
+  const base::Time kTime4 = base::Time::FromTimeT(4);
+
+  const FlocId expected_floc =
+      FlocId(FlocId::SimHashHistory({"a.test"}), kTime1, kTime2, 0);
+
+  set_floc_id(expected_floc);
+  set_first_floc_computation_triggered(true);
+
+  history::DeletionInfo deletion_info(
+      history::DeletionTimeRange(kTime3, kTime4),
+      /*is_from_expiration=*/false, /*deleted_rows=*/{}, /*favicon_urls=*/{},
+      /*restrict_urls=*/base::nullopt);
+  OnURLsDeleted(history_service_.get(), deletion_info);
+
+  EXPECT_EQ(expected_floc, floc_id());
+}
+
+TEST_F(FlocIdProviderUnitTest, HistoryDelete_TimeRangePartialOverlap) {
+  const base::Time kTime1 = base::Time::FromTimeT(1);
+  const base::Time kTime2 = base::Time::FromTimeT(2);
+  const base::Time kTime3 = base::Time::FromTimeT(3);
+
+  const FlocId expected_floc =
+      FlocId(FlocId::SimHashHistory({"a.test"}), kTime1, kTime2, 0);
+
+  set_floc_id(expected_floc);
+  set_first_floc_computation_triggered(true);
+
+  history::DeletionInfo deletion_info(
+      history::DeletionTimeRange(kTime2, kTime3),
+      /*is_from_expiration=*/false, /*deleted_rows=*/{}, /*favicon_urls=*/{},
+      /*restrict_urls=*/base::nullopt);
+  OnURLsDeleted(history_service_.get(), deletion_info);
+
   EXPECT_FALSE(floc_id().IsValid());
 }
 
-TEST_F(FlocIdProviderUnitTest, HistoryDelete_TimeRange) {
-  base::Time time = base::Time::Now() - base::TimeDelta::FromDays(9);
+TEST_F(FlocIdProviderUnitTest, HistoryDelete_TimeRangeFullOverlap) {
+  const base::Time kTime1 = base::Time::FromTimeT(1);
+  const base::Time kTime2 = base::Time::FromTimeT(2);
 
-  history::URLResult url_result(GURL("https://a.test"), time);
-  url_result.set_publicly_routable(true);
+  const FlocId expected_floc =
+      FlocId(FlocId::SimHashHistory({"a.test"}), kTime1, kTime2, 0);
 
-  history::QueryResults query_results;
-  query_results.SetURLResults({url_result});
-
+  set_floc_id(expected_floc);
   set_first_floc_computation_triggered(true);
-  set_floc_computation_in_progress(true);
 
-  OnGetRecentlyVisitedURLsCompleted(ComputeFlocTrigger::kBrowserStart,
-                                    std::move(query_results));
-  EXPECT_FALSE(floc_computation_in_progress());
-  EXPECT_TRUE(floc_id().IsValid());
-
-  history::DeletionInfo deletion_info(history::DeletionTimeRange(time, time),
-                                      false, {}, {},
-                                      base::Optional<std::set<GURL>>());
-
+  history::DeletionInfo deletion_info(
+      history::DeletionTimeRange(kTime1, kTime2),
+      /*is_from_expiration=*/false, /*deleted_rows=*/{}, /*favicon_urls=*/{},
+      /*restrict_urls=*/base::nullopt);
   OnURLsDeleted(history_service_.get(), deletion_info);
-  task_environment_.RunUntilIdle();
+
   EXPECT_FALSE(floc_id().IsValid());
 }
 
@@ -802,15 +800,17 @@ TEST_F(FlocIdProviderUnitTest, HistoryEntriesWithPrivateIP) {
 }
 
 TEST_F(FlocIdProviderUnitTest, MultipleHistoryEntries) {
-  base::Time time = base::Time::Now() - base::TimeDelta::FromDays(1);
+  const base::Time kTime1 = base::Time::FromTimeT(1);
+  const base::Time kTime2 = base::Time::FromTimeT(2);
+  const base::Time kTime3 = base::Time::FromTimeT(3);
 
-  history::URLResult url_result_a(GURL("https://a.test"), time);
+  history::URLResult url_result_a(GURL("https://a.test"), kTime1);
   url_result_a.set_publicly_routable(true);
 
-  history::URLResult url_result_b(GURL("https://b.test"), time);
+  history::URLResult url_result_b(GURL("https://b.test"), kTime2);
   url_result_b.set_publicly_routable(true);
 
-  history::URLResult url_result_c(GURL("https://c.test"), time);
+  history::URLResult url_result_c(GURL("https://c.test"), kTime3);
 
   std::vector<history::URLResult> url_results{url_result_a, url_result_b,
                                               url_result_c};
@@ -824,15 +824,18 @@ TEST_F(FlocIdProviderUnitTest, MultipleHistoryEntries) {
   OnGetRecentlyVisitedURLsCompleted(ComputeFlocTrigger::kBrowserStart,
                                     std::move(query_results));
 
-  EXPECT_EQ(FlocId::SimHashHistory({"a.test", "b.test"}), floc_id().ToUint64());
+  EXPECT_EQ(
+      FlocId(FlocId::SimHashHistory({"a.test", "b.test"}), kTime1, kTime2, 0),
+      floc_id());
 }
 
 TEST_F(FlocIdProviderUnitTest, TurnSyncOffAndOn) {
   std::string domain = "foo.com";
+  const base::Time kTime = base::Time::Now() - base::TimeDelta::FromDays(1);
 
   history::HistoryAddPageArgs add_page_args;
   add_page_args.url = GURL(base::StrCat({"https://www.", domain}));
-  add_page_args.time = base::Time::Now() - base::TimeDelta::FromDays(1);
+  add_page_args.time = kTime;
   add_page_args.publicly_routable = true;
   history_service_->AddPage(add_page_args);
 
@@ -848,7 +851,8 @@ TEST_F(FlocIdProviderUnitTest, TurnSyncOffAndOn) {
   // Expect that the 1st computation has completed.
   EXPECT_EQ(1u, floc_id_provider_->compute_floc_completed_count());
   EXPECT_EQ(1u, floc_id_provider_->log_event_count());
-  EXPECT_EQ(FlocId::SimHashHistory({domain}), floc_id().ToUint64());
+  EXPECT_EQ(FlocId(FlocId::SimHashHistory({domain}), kTime, kTime, 0),
+            floc_id());
 
   // Turn off sync.
   test_sync_service_->SetTransportState(
@@ -871,22 +875,29 @@ TEST_F(FlocIdProviderUnitTest, TurnSyncOffAndOn) {
 
   EXPECT_EQ(3u, floc_id_provider_->compute_floc_completed_count());
   EXPECT_EQ(3u, floc_id_provider_->log_event_count());
-  EXPECT_EQ(FlocId::SimHashHistory({domain}), floc_id().ToUint64());
+  EXPECT_EQ(FlocId(FlocId::SimHashHistory({domain}), kTime, kTime, 0),
+            floc_id());
 }
 
 TEST_F(FlocIdProviderUnitTest, GetInterestCohortForJsApiMethod) {
   test_sync_service_->SetTransportState(
       syncer::SyncService::TransportState::ACTIVE);
-  set_floc_id(FlocId(123, kDummySortingLshVersion));
+  const base::Time kTime = base::Time::Now() - base::TimeDelta::FromDays(1);
+  const FlocId expected_floc = FlocId(123, kTime, kTime, 999);
 
-  EXPECT_EQ(FlocId(123, kDummySortingLshVersion).ToString(),
+  set_floc_id(expected_floc);
+
+  EXPECT_EQ(expected_floc.ToStringForJsApi(),
             floc_id_provider_->GetInterestCohortForJsApi(
                 /*requesting_origin=*/{}, /*site_for_cookies=*/{}));
 }
 
 TEST_F(FlocIdProviderUnitTest,
        GetInterestCohortForJsApiMethod_SyncHistoryDisabled) {
-  set_floc_id(FlocId(123, kDummySortingLshVersion));
+  const base::Time kTime = base::Time::Now() - base::TimeDelta::FromDays(1);
+
+  set_floc_id(FlocId(123, kTime, kTime, 888));
+
   EXPECT_EQ(std::string(),
             floc_id_provider_->GetInterestCohortForJsApi(
                 /*requesting_origin=*/{}, /*site_for_cookies=*/{}));
@@ -896,9 +907,11 @@ TEST_F(FlocIdProviderUnitTest,
        GetInterestCohortForJsApiMethod_ThirdPartyCookiesDisabled) {
   test_sync_service_->SetTransportState(
       syncer::SyncService::TransportState::ACTIVE);
-  set_floc_id(FlocId(123, kDummySortingLshVersion));
-
   fake_cookie_settings_->set_should_block_third_party_cookies(true);
+
+  const base::Time kTime = base::Time::Now() - base::TimeDelta::FromDays(1);
+
+  set_floc_id(FlocId(123, kTime, kTime, 999));
 
   EXPECT_EQ(std::string(),
             floc_id_provider_->GetInterestCohortForJsApi(
@@ -909,9 +922,11 @@ TEST_F(FlocIdProviderUnitTest,
        GetInterestCohortForJsApiMethod_CookiesContentSettingsDisallowed) {
   test_sync_service_->SetTransportState(
       syncer::SyncService::TransportState::ACTIVE);
-  set_floc_id(FlocId(123, kDummySortingLshVersion));
-
   fake_cookie_settings_->set_allow_cookies_internal(false);
+
+  const base::Time kTime = base::Time::Now() - base::TimeDelta::FromDays(1);
+
+  set_floc_id(FlocId(123, kTime, kTime, 999));
 
   EXPECT_EQ(std::string(),
             floc_id_provider_->GetInterestCohortForJsApi(
@@ -929,31 +944,49 @@ TEST_F(FlocIdProviderUnitTest,
 }
 
 TEST_F(FlocIdProviderUnitTest, HistoryDeleteDuringInProgressComputation) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({features::kFlocIdSortingLshBasedComputation},
+                                {});
+
   std::string domain1 = "foo.com";
   std::string domain2 = "bar.com";
   std::string domain3 = "baz.com";
+  const base::Time kTime1 = base::Time::Now() - base::TimeDelta::FromDays(7);
+  const base::Time kTime2 = base::Time::Now() - base::TimeDelta::FromDays(6);
+  const base::Time kTime3 = base::Time::Now() - base::TimeDelta::FromDays(5);
 
   // Add a history entry with a timestamp exactly 7 days back from now.
   history::HistoryAddPageArgs add_page_args;
   add_page_args.url = GURL(base::StrCat({"https://www.", domain1}));
-  add_page_args.time = base::Time::Now() - base::TimeDelta::FromDays(7);
+  add_page_args.time = kTime1;
   add_page_args.publicly_routable = true;
   history_service_->AddPage(add_page_args);
 
   // Add a history entry with a timestamp exactly 6 days back from now.
   add_page_args.url = GURL(base::StrCat({"https://www.", domain2}));
-  add_page_args.time = base::Time::Now() - base::TimeDelta::FromDays(6);
+  add_page_args.time = kTime2;
   history_service_->AddPage(add_page_args);
 
   // Add a history entry with a timestamp exactly 5 days back from now.
   add_page_args.url = GURL(base::StrCat({"https://www.", domain3}));
-  add_page_args.time = base::Time::Now() - base::TimeDelta::FromDays(5);
+  add_page_args.time = kTime3;
   history_service_->AddPage(add_page_args);
+
+  // Map SimHashHistory({domain1, domain2, domain3}) to 123.
+  // Map SimHashHistory({domain2, domain3}) to 456.
+  // Map SimHashHistory({domain3}) to 789.
+  sorting_lsh_service_->ConfigureSortingLsh(
+      {{FlocId::SimHashHistory({domain1, domain2, domain3}), 123},
+       {FlocId::SimHashHistory({domain2, domain3}), 456},
+       {FlocId::SimHashHistory({domain3}), 789}},
+      base::Version("999.0.0"));
 
   // Trigger the 1st floc computation.
   test_sync_service_->SetTransportState(
       syncer::SyncService::TransportState::ACTIVE);
   test_sync_service_->FireStateChanged();
+  sorting_lsh_service_->OnSortingLshClustersFileReady(base::FilePath(),
+                                                      base::Version());
 
   task_environment_.RunUntilIdle();
 
@@ -961,8 +994,7 @@ TEST_F(FlocIdProviderUnitTest, HistoryDeleteDuringInProgressComputation) {
   EXPECT_EQ(1u, floc_id_provider_->compute_floc_completed_count());
   EXPECT_EQ(1u, floc_id_provider_->log_event_count());
   EXPECT_TRUE(floc_id().IsValid());
-  EXPECT_EQ(FlocId::SimHashHistory({domain1, domain2, domain3}),
-            floc_id().ToUint64());
+  EXPECT_EQ(FlocId(123, kTime1, kTime3, 999), floc_id());
 
   // Advance the clock by 1 day. The "domain1" should expire. However, we pause
   // before the computation completes.
@@ -970,23 +1002,19 @@ TEST_F(FlocIdProviderUnitTest, HistoryDeleteDuringInProgressComputation) {
   task_environment_.FastForwardBy(base::TimeDelta::FromDays(1));
 
   EXPECT_TRUE(floc_computation_in_progress());
-  EXPECT_FALSE(pending_recompute_event().has_value());
-  EXPECT_EQ(FlocId::SimHashHistory({domain1, domain2, domain3}),
-            floc_id().ToUint64());
-  EXPECT_EQ(FlocId::SimHashHistory({domain2, domain3}),
-            floc_id_provider_->paused_result().floc_id.ToUint64());
+  EXPECT_FALSE(need_recompute());
+  EXPECT_EQ(FlocId(123, kTime1, kTime3, 999), floc_id());
+  EXPECT_EQ(FlocId(456, kTime2, kTime3, 999),
+            floc_id_provider_->paused_result().floc_id);
   EXPECT_EQ(ComputeFlocTrigger::kScheduledUpdate,
             floc_id_provider_->paused_trigger());
 
   // Expire the "domain2" history entry right before the floc computation
-  // completes. Since the computation is still considered to be in-progress, a
-  // new recompute event due to this delete will be scheduled to happen right
-  // after this computation completes.
-  ExpireHistoryBefore(base::Time::Now() - base::TimeDelta::FromDays(7));
+  // completes. Since the computation is still considered to be in-progress, we
+  // will recompute right after this computation completes.
+  ExpireHistoryBeforeUninclusive(kTime3);
 
-  EXPECT_TRUE(pending_recompute_event().has_value());
-  EXPECT_EQ(ComputeFlocTrigger::kHistoryDelete,
-            pending_recompute_event().value());
+  EXPECT_TRUE(need_recompute());
 
   floc_id_provider_->set_should_pause_before_compute_floc_completed(false);
   floc_id_provider_->ContinueLastOnComputeFlocCompleted();
@@ -994,49 +1022,17 @@ TEST_F(FlocIdProviderUnitTest, HistoryDeleteDuringInProgressComputation) {
 
   // Expect 2 more compute completion events and 1 more log event. This is
   // because we won't send log event if there's a recompute event scheduled.
+  // The compute trigger should be the original trigger (i.e. kScheduledUpdate),
+  // rather than kHistoryDelete.
   EXPECT_EQ(3u, floc_id_provider_->compute_floc_completed_count());
   EXPECT_EQ(2u, floc_id_provider_->log_event_count());
-  EXPECT_EQ(ComputeFlocTrigger::kHistoryDelete,
+  EXPECT_EQ(ComputeFlocTrigger::kScheduledUpdate,
             floc_id_provider_->last_log_event_trigger());
-  EXPECT_FALSE(pending_recompute_event().has_value());
+  EXPECT_FALSE(need_recompute());
 
   // The final floc should be derived from "domain3".
   EXPECT_TRUE(floc_id().IsValid());
-  EXPECT_EQ(FlocId::SimHashHistory({domain3}), floc_id().ToUint64());
-}
-
-TEST_F(FlocIdProviderUnitTest, ScheduledUpdateDuringInProgressComputation) {
-  std::string domain1 = "foo.com";
-  std::string domain2 = "bar.com";
-  std::string domain3 = "baz.com";
-
-  // Add a history entry with a timestamp exactly 7 days back from now.
-  history::HistoryAddPageArgs add_page_args;
-  add_page_args.url = GURL(base::StrCat({"https://www.", domain1}));
-  add_page_args.time = base::Time::Now() - base::TimeDelta::FromDays(7);
-  add_page_args.publicly_routable = true;
-  history_service_->AddPage(add_page_args);
-
-  // Trigger the 1st floc computation.
-  test_sync_service_->SetTransportState(
-      syncer::SyncService::TransportState::ACTIVE);
-  test_sync_service_->FireStateChanged();
-
-  EXPECT_TRUE(floc_computation_in_progress());
-  EXPECT_FALSE(pending_recompute_event().has_value());
-
-  // Scheduled update during an in-progress computation won't set the pending
-  // event.
-  ForceScheduledUpdate();
-  EXPECT_FALSE(pending_recompute_event().has_value());
-
-  task_environment_.RunUntilIdle();
-
-  // Expect that the 1st computation has completed.
-  EXPECT_EQ(1u, floc_id_provider_->compute_floc_completed_count());
-  EXPECT_EQ(1u, floc_id_provider_->log_event_count());
-  EXPECT_TRUE(floc_id().IsValid());
-  EXPECT_EQ(FlocId::SimHashHistory({domain1}), floc_id().ToUint64());
+  EXPECT_EQ(FlocId(789, kTime3, kTime3, 999), floc_id());
 }
 
 class FlocIdProviderUnitTestSortingLshEnabled : public FlocIdProviderUnitTest {
@@ -1085,26 +1081,33 @@ TEST_F(FlocIdProviderUnitTestSortingLshEnabled,
 
 TEST_F(FlocIdProviderUnitTestSortingLshEnabled,
        ApplyAdditionalFiltering_SortingLsh) {
+  const base::Time kTime1 = base::Time::FromTimeT(1);
+  const base::Time kTime2 = base::Time::FromTimeT(2);
+
   bool callback_called = false;
   auto callback = base::BindLambdaForTesting([&](ComputeFlocResult result) {
     EXPECT_FALSE(callback_called);
     EXPECT_EQ(result.sim_hash, 3u);
-    EXPECT_EQ(result.floc_id, FlocId(2, 99));
+    EXPECT_EQ(result.floc_id, FlocId(2, kTime1, kTime2, 99));
     callback_called = true;
   });
 
   // Map 3 to 2
   sorting_lsh_service_->OnSortingLshClustersFileReady(base::FilePath(),
                                                       base::Version());
-  sorting_lsh_service_->ConfigureSortingLsh({{3, FlocId(2, 99)}});
+  sorting_lsh_service_->ConfigureSortingLsh({{3, 2}}, base::Version("99.0"));
 
-  ApplySortingLshPostProcessing(std::move(callback), /*sim_hash=*/3);
+  ApplySortingLshPostProcessing(std::move(callback), /*sim_hash=*/3, kTime1,
+                                kTime2);
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(callback_called);
 }
 
 TEST_F(FlocIdProviderUnitTestSortingLshEnabled,
        ApplySortingLshPostProcessing_FileCorrupted) {
+  const base::Time kTime1 = base::Time::FromTimeT(1);
+  const base::Time kTime2 = base::Time::FromTimeT(2);
+
   bool callback_called = false;
   auto callback = base::BindLambdaForTesting([&](ComputeFlocResult result) {
     EXPECT_FALSE(callback_called);
@@ -1115,19 +1118,21 @@ TEST_F(FlocIdProviderUnitTestSortingLshEnabled,
 
   sorting_lsh_service_->OnSortingLshClustersFileReady(base::FilePath(),
                                                       base::Version());
-  sorting_lsh_service_->ConfigureSortingLsh({});
+  sorting_lsh_service_->ConfigureSortingLsh({}, base::Version("3.4.5"));
 
-  ApplySortingLshPostProcessing(std::move(callback), /*sim_hash=*/3);
+  ApplySortingLshPostProcessing(std::move(callback), /*sim_hash=*/3, kTime1,
+                                kTime2);
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(callback_called);
 }
 
 TEST_F(FlocIdProviderUnitTestSortingLshEnabled, SortingLshPostProcessing) {
   std::string domain = "foo.com";
+  const base::Time kTime = base::Time::Now() - base::TimeDelta::FromDays(1);
 
   history::HistoryAddPageArgs add_page_args;
   add_page_args.url = GURL(base::StrCat({"https://www.", domain}));
-  add_page_args.time = base::Time::Now() - base::TimeDelta::FromDays(1);
+  add_page_args.time = kTime;
   add_page_args.publicly_routable = true;
   history_service_->AddPage(add_page_args);
 
@@ -1136,7 +1141,8 @@ TEST_F(FlocIdProviderUnitTestSortingLshEnabled, SortingLshPostProcessing) {
   uint64_t sim_hash = FlocId::SimHashHistory({domain});
 
   // Configure the |sorting_lsh_service_| to map |sim_hash| to 12345.
-  sorting_lsh_service_->ConfigureSortingLsh({{sim_hash, FlocId(12345, 99)}});
+  sorting_lsh_service_->ConfigureSortingLsh({{sim_hash, 12345}},
+                                            base::Version("99.0"));
 
   // Trigger the sorting-lsh ready event, and turn on sync & sync-history to
   // trigger the 1st floc computation.
@@ -1154,10 +1160,11 @@ TEST_F(FlocIdProviderUnitTestSortingLshEnabled, SortingLshPostProcessing) {
   // Expect a computation. The floc should be equal to 12345.
   EXPECT_EQ(1u, floc_id_provider_->compute_floc_completed_count());
   EXPECT_EQ(1u, floc_id_provider_->log_event_count());
-  EXPECT_EQ(FlocId(12345, 99), floc_id());
+  EXPECT_EQ(FlocId(12345, kTime, kTime, 99), floc_id());
 
   // Configure the |sorting_lsh_service_| to block |sim_hash|.
-  sorting_lsh_service_->ConfigureSortingLsh({{sim_hash, FlocId()}});
+  sorting_lsh_service_->ConfigureSortingLsh({{sim_hash, base::nullopt}},
+                                            base::Version("3.4.5"));
 
   task_environment_.FastForwardBy(base::TimeDelta::FromDays(1));
 
@@ -1189,15 +1196,15 @@ TEST_F(FlocIdProviderUnitTestSortingLshEnabled, SortingLshPostProcessing) {
   EXPECT_EQ(sim_hash, event.floc_id());
 
   // Configure the |sorting_lsh_service_| to map |sim_hash| to 6789.
-  sorting_lsh_service_->ConfigureSortingLsh(
-      {{sim_hash, FlocId(6789, kDummySortingLshVersion)}});
+  sorting_lsh_service_->ConfigureSortingLsh({{sim_hash, 6789}},
+                                            base::Version("999.0"));
 
   task_environment_.FastForwardBy(base::TimeDelta::FromDays(1));
 
   // Expect one more computation. The floc should be equal to 6789.
   EXPECT_EQ(3u, floc_id_provider_->compute_floc_completed_count());
   EXPECT_EQ(3u, floc_id_provider_->log_event_count());
-  EXPECT_EQ(FlocId(6789, kDummySortingLshVersion), floc_id());
+  EXPECT_EQ(FlocId(6789, kTime, kTime, 999), floc_id());
 }
 
 }  // namespace federated_learning

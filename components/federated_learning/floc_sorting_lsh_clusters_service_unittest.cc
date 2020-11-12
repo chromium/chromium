@@ -45,6 +45,11 @@ class CopyingFileOutputStream
   base::File file_;
 };
 
+struct ApplySortingLshResult {
+  base::Optional<uint64_t> final_hash;
+  base::Version version;
+};
+
 }  // namespace
 
 class FlocSortingLshClustersServiceTest : public ::testing::Test {
@@ -117,14 +122,16 @@ class FlocSortingLshClustersServiceTest : public ::testing::Test {
     return service()->sorting_lsh_clusters_file_path_;
   }
 
-  FlocId ApplySortingLsh(uint64_t sim_hash) {
-    FlocId result;
+  ApplySortingLshResult ApplySortingLsh(uint64_t sim_hash) {
+    ApplySortingLshResult result;
 
     base::RunLoop run_loop;
-    auto cb = base::BindLambdaForTesting([&](FlocId floc_id) {
-      result = floc_id;
-      run_loop.Quit();
-    });
+    auto cb = base::BindLambdaForTesting(
+        [&](base::Optional<uint64_t> final_hash, base::Version version) {
+          result.final_hash = final_hash;
+          result.version = version;
+          run_loop.Quit();
+        });
 
     service()->ApplySortingLsh(sim_hash, std::move(cb));
     background_task_runner_->RunPendingTasks();
@@ -149,83 +156,86 @@ TEST_F(FlocSortingLshClustersServiceTest, NoFilePath) {
 
 TEST_F(FlocSortingLshClustersServiceTest, EmptyList) {
   InitializeSortingLshClustersFile({}, base::Version("2.3.4"));
-  EXPECT_EQ(FlocId(), ApplySortingLsh(0));
-  EXPECT_EQ(FlocId(), ApplySortingLsh(1));
-  EXPECT_EQ(FlocId(), ApplySortingLsh(kMaxSimHash));
+
+  EXPECT_EQ(base::nullopt, ApplySortingLsh(0).final_hash);
+  EXPECT_EQ(base::nullopt, ApplySortingLsh(1).final_hash);
+  EXPECT_EQ(base::nullopt, ApplySortingLsh(kMaxSimHash).final_hash);
 }
 
 TEST_F(FlocSortingLshClustersServiceTest, List_0) {
   InitializeSortingLshClustersFile({{0, false}}, base::Version("2.3.4"));
 
-  EXPECT_EQ(FlocId(0, 2), ApplySortingLsh(0));
-  EXPECT_EQ(FlocId(), ApplySortingLsh(1));
-  EXPECT_EQ(FlocId(), ApplySortingLsh(kMaxSimHash));
+  EXPECT_EQ(0u, ApplySortingLsh(0).final_hash.value());
+  EXPECT_EQ(base::Version("2.3.4"), ApplySortingLsh(0).version);
+  EXPECT_EQ(base::nullopt, ApplySortingLsh(1).final_hash);
+  EXPECT_EQ(base::nullopt, ApplySortingLsh(kMaxSimHash).final_hash);
 }
 
 TEST_F(FlocSortingLshClustersServiceTest, List_0_Blocked) {
   InitializeSortingLshClustersFile({{0, true}}, base::Version("2.3.4"));
 
-  EXPECT_EQ(FlocId(), ApplySortingLsh(0));
-  EXPECT_EQ(FlocId(), ApplySortingLsh(1));
-  EXPECT_EQ(FlocId(), ApplySortingLsh(kMaxSimHash));
+  EXPECT_EQ(base::nullopt, ApplySortingLsh(0).final_hash);
+  EXPECT_EQ(base::nullopt, ApplySortingLsh(1).final_hash);
+  EXPECT_EQ(base::nullopt, ApplySortingLsh(kMaxSimHash).final_hash);
 }
 
 TEST_F(FlocSortingLshClustersServiceTest, List_UnexpectedNumber) {
   InitializeSortingLshClustersFile({{1 << 8, false}}, base::Version("2.3.4"));
 
-  EXPECT_EQ(FlocId(), ApplySortingLsh(0));
-  EXPECT_EQ(FlocId(), ApplySortingLsh(1));
-  EXPECT_EQ(FlocId(), ApplySortingLsh(kMaxSimHash));
+  EXPECT_EQ(base::nullopt, ApplySortingLsh(0).final_hash);
+  EXPECT_EQ(base::nullopt, ApplySortingLsh(1).final_hash);
+  EXPECT_EQ(base::nullopt, ApplySortingLsh(kMaxSimHash).final_hash);
 }
 
 TEST_F(FlocSortingLshClustersServiceTest, List_1) {
   InitializeSortingLshClustersFile({{1, false}}, base::Version("2.3.4"));
 
-  EXPECT_EQ(FlocId(0, 2), ApplySortingLsh(0));
-  EXPECT_EQ(FlocId(0, 2), ApplySortingLsh(1));
-  EXPECT_EQ(FlocId(), ApplySortingLsh(2));
-  EXPECT_EQ(FlocId(), ApplySortingLsh(kMaxSimHash));
+  EXPECT_EQ(0u, ApplySortingLsh(0).final_hash.value());
+  EXPECT_EQ(0u, ApplySortingLsh(1).final_hash.value());
+  EXPECT_EQ(base::nullopt, ApplySortingLsh(2).final_hash);
+  EXPECT_EQ(base::nullopt, ApplySortingLsh(kMaxSimHash).final_hash);
 }
 
 TEST_F(FlocSortingLshClustersServiceTest, List_0_0) {
   InitializeSortingLshClustersFile({{0, false}, {0, false}},
                                    base::Version("2.3.4"));
 
-  EXPECT_EQ(FlocId(0, 2), ApplySortingLsh(0));
-  EXPECT_EQ(FlocId(1, 2), ApplySortingLsh(1));
-  EXPECT_EQ(FlocId(), ApplySortingLsh(2));
-  EXPECT_EQ(FlocId(), ApplySortingLsh(kMaxSimHash));
+  EXPECT_EQ(0u, ApplySortingLsh(0).final_hash.value());
+  EXPECT_EQ(1u, ApplySortingLsh(1).final_hash.value());
+  EXPECT_EQ(base::nullopt, ApplySortingLsh(2).final_hash);
+  EXPECT_EQ(base::nullopt, ApplySortingLsh(kMaxSimHash).final_hash);
 }
 
 TEST_F(FlocSortingLshClustersServiceTest, List_0_1) {
   InitializeSortingLshClustersFile({{0, false}, {1, false}},
                                    base::Version("2.3.4"));
 
-  EXPECT_EQ(FlocId(0, 2), ApplySortingLsh(0));
-  EXPECT_EQ(FlocId(1, 2), ApplySortingLsh(1));
-  EXPECT_EQ(FlocId(1, 2), ApplySortingLsh(2));
-  EXPECT_EQ(FlocId(), ApplySortingLsh(3));
-  EXPECT_EQ(FlocId(), ApplySortingLsh(kMaxSimHash));
+  EXPECT_EQ(0u, ApplySortingLsh(0).final_hash.value());
+  EXPECT_EQ(1u, ApplySortingLsh(1).final_hash.value());
+  EXPECT_EQ(1u, ApplySortingLsh(2).final_hash.value());
+  EXPECT_EQ(base::nullopt, ApplySortingLsh(3).final_hash);
+  EXPECT_EQ(base::nullopt, ApplySortingLsh(kMaxSimHash).final_hash);
 }
 
 TEST_F(FlocSortingLshClustersServiceTest, List_1_0) {
   InitializeSortingLshClustersFile({{1, false}, {0, false}},
                                    base::Version("2.3.4"));
 
-  EXPECT_EQ(FlocId(0, 2), ApplySortingLsh(0));
-  EXPECT_EQ(FlocId(0, 2), ApplySortingLsh(1));
-  EXPECT_EQ(FlocId(1, 2), ApplySortingLsh(2));
-  EXPECT_EQ(FlocId(), ApplySortingLsh(3));
-  EXPECT_EQ(FlocId(), ApplySortingLsh(kMaxSimHash));
+  EXPECT_EQ(0u, ApplySortingLsh(0).final_hash.value());
+  EXPECT_EQ(0u, ApplySortingLsh(1).final_hash.value());
+  EXPECT_EQ(1u, ApplySortingLsh(2).final_hash.value());
+  EXPECT_EQ(base::nullopt, ApplySortingLsh(3).final_hash);
+  EXPECT_EQ(base::nullopt, ApplySortingLsh(kMaxSimHash).final_hash);
 }
 
 TEST_F(FlocSortingLshClustersServiceTest, List_SingleCluster) {
   InitializeSortingLshClustersFile({{kMaxNumberOfBitsInFloc, false}},
                                    base::Version("2.3.4"));
-  EXPECT_EQ(FlocId(0, 2), ApplySortingLsh(0));
-  EXPECT_EQ(FlocId(0, 2), ApplySortingLsh(1));
-  EXPECT_EQ(FlocId(0, 2), ApplySortingLsh(12345));
-  EXPECT_EQ(FlocId(0, 2), ApplySortingLsh(kMaxSimHash));
+
+  EXPECT_EQ(0u, ApplySortingLsh(0).final_hash.value());
+  EXPECT_EQ(0u, ApplySortingLsh(1).final_hash.value());
+  EXPECT_EQ(0u, ApplySortingLsh(12345).final_hash.value());
+  EXPECT_EQ(0u, ApplySortingLsh(kMaxSimHash).final_hash.value());
 }
 
 TEST_F(FlocSortingLshClustersServiceTest, List_TwoClustersEqualSize) {
@@ -234,12 +244,12 @@ TEST_F(FlocSortingLshClustersServiceTest, List_TwoClustersEqualSize) {
                                    base::Version("2.3.4"));
 
   uint64_t middle_value = (1ULL << (kMaxNumberOfBitsInFloc - 1));
-  EXPECT_EQ(FlocId(0, 2), ApplySortingLsh(0));
-  EXPECT_EQ(FlocId(0, 2), ApplySortingLsh(1));
-  EXPECT_EQ(FlocId(0, 2), ApplySortingLsh(middle_value - 1));
-  EXPECT_EQ(FlocId(1, 2), ApplySortingLsh(middle_value));
-  EXPECT_EQ(FlocId(1, 2), ApplySortingLsh(middle_value + 1));
-  EXPECT_EQ(FlocId(1, 2), ApplySortingLsh(kMaxSimHash));
+  EXPECT_EQ(0u, ApplySortingLsh(0).final_hash.value());
+  EXPECT_EQ(0u, ApplySortingLsh(1).final_hash.value());
+  EXPECT_EQ(0u, ApplySortingLsh(middle_value - 1).final_hash.value());
+  EXPECT_EQ(1u, ApplySortingLsh(middle_value).final_hash.value());
+  EXPECT_EQ(1u, ApplySortingLsh(middle_value + 1).final_hash.value());
+  EXPECT_EQ(1u, ApplySortingLsh(kMaxSimHash).final_hash.value());
 }
 
 TEST_F(FlocSortingLshClustersServiceTest,
@@ -248,11 +258,13 @@ TEST_F(FlocSortingLshClustersServiceTest,
       InitializeSortingLshClustersFile({{0, false}}, base::Version("2.3.4"));
 
   base::RunLoop run_loop;
-  auto cb = base::BindLambdaForTesting([&](FlocId floc_id) {
-    // Since the file has been deleted, expect an invalid floc id.
-    EXPECT_EQ(FlocId(), floc_id);
-    run_loop.Quit();
-  });
+  auto cb = base::BindLambdaForTesting(
+      [&](base::Optional<uint64_t> final_hash, base::Version version) {
+        // Since the file has been deleted, expect an invalid final_hash.
+        EXPECT_EQ(base::nullopt, final_hash);
+        EXPECT_EQ(base::Version("2.3.4"), version);
+        run_loop.Quit();
+      });
 
   service()->ApplySortingLsh(/*sim_hash=*/0, std::move(cb));
   base::DeleteFile(file_path);
@@ -264,7 +276,9 @@ TEST_F(FlocSortingLshClustersServiceTest,
 TEST_F(FlocSortingLshClustersServiceTest, MultipleUpdate_LatestOneUsed) {
   InitializeSortingLshClustersFile({}, base::Version("2.3.4"));
   InitializeSortingLshClustersFile({{0, false}}, base::Version("6.7.8.9"));
-  EXPECT_EQ(FlocId(0, 6), ApplySortingLsh(0));
+
+  EXPECT_EQ(0u, ApplySortingLsh(0).final_hash.value());
+  EXPECT_EQ(base::Version("6.7.8.9"), ApplySortingLsh(0).version);
 }
 
 }  // namespace federated_learning
