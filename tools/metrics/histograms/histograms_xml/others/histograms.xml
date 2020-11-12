@@ -16540,8 +16540,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebController.BackForwardListOutOfSync" enum="BooleanHit"
-    expires_after="2020-12-25">
+    expires_after="2021-12-25">
   <owner>ajuma@chromium.org</owner>
+  <owner>eugenebut@chromium.org</owner>
   <owner>gambard@chromium.org</owner>
   <summary>
     [iOS] Counts the number of time the backForwardList of the WebView gets out
@@ -16551,8 +16552,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebController.BackForwardListOutOfSyncInProvisionalNavigation"
-    enum="IOSOutOfSyncURLAction" expires_after="2020-12-25">
+    enum="IOSOutOfSyncURLAction" expires_after="2021-12-25">
   <owner>ajuma@chromium.org</owner>
+  <owner>eugenebut@chromium.org</owner>
   <owner>gambard@chromium.org</owner>
   <summary>
     [iOS] Records the action take when the backForwardList of the WebView is out
