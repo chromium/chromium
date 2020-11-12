@@ -35,10 +35,12 @@ PartitionDirectMap(PartitionRoot<thread_safe>* root, int flags, size_t raw_size)
   // Because we need to fake looking like a super page, we need to allocate
   // a bunch of system pages more than "size":
   // - The first few system pages are the partition page in which the super
-  // page metadata is stored. We fault just one system page out of a partition
+  // page metadata is stored. We commit just one system page out of a partition
   // page sized clump.
   // - We add a trailing guard page on 32-bit (on 64-bit we rely on the
-  // massive address space plus randomization instead).
+  // massive address space plus randomization instead; additionally GigaCage
+  // guarantees that the region is in the company of regions that have leading
+  // guard pages).
   size_t map_size = size + PartitionPageSize();
 #if !defined(ARCH_CPU_64_BITS)
   map_size += SystemPageSize();
@@ -68,11 +70,11 @@ PartitionDirectMap(PartitionRoot<thread_safe>* root, int flags, size_t raw_size)
   root->IncreaseCommittedPages(committed_page_size);
 
   char* slot = ptr + PartitionPageSize();
+  SetSystemPagesAccess(ptr, SystemPageSize(), PageInaccessible);
   SetSystemPagesAccess(ptr + (SystemPageSize() * 2),
                        PartitionPageSize() - (SystemPageSize() * 2),
                        PageInaccessible);
 #if !defined(ARCH_CPU_64_BITS)
-  SetSystemPagesAccess(ptr, SystemPageSize(), PageInaccessible);
   SetSystemPagesAccess(slot + size, SystemPageSize(), PageInaccessible);
 #endif
 
