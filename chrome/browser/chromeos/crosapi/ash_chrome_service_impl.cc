@@ -73,29 +73,39 @@ void AshChromeServiceImpl::BindAccountManager(
       g_browser_process->platform_part()
           ->GetAccountManagerFactory()
           ->GetAccountManager(/* profile_path = */ profile->GetPath().value());
+  // TODO(https://crbug.com/1148448): Convert this to allow multiple,
+  // simultaneous crosapi clients. See BindScreenManager for an example.
   account_manager_ash_ = std::make_unique<crosapi::AccountManagerAsh>(
       account_manager, std::move(receiver));
 }
 
 void AshChromeServiceImpl::BindFileManager(
     mojo::PendingReceiver<crosapi::mojom::FileManager> receiver) {
+  // TODO(https://crbug.com/1148448): Convert this to allow multiple,
+  // simultaneous crosapi clients. See BindScreenManager for an example.
   file_manager_ash_ =
       std::make_unique<crosapi::FileManagerAsh>(std::move(receiver));
 }
 
 void AshChromeServiceImpl::BindKeystoreService(
     mojo::PendingReceiver<crosapi::mojom::KeystoreService> receiver) {
+  // TODO(https://crbug.com/1148448): Convert this to allow multiple,
+  // simultaneous crosapi clients. See BindScreenManager for an example.
   keystore_service_ash_ =
       std::make_unique<crosapi::KeystoreServiceAsh>(std::move(receiver));
 }
 
 void AshChromeServiceImpl::BindMessageCenter(
     mojo::PendingReceiver<mojom::MessageCenter> receiver) {
+  // TODO(https://crbug.com/1148448): Convert this to allow multiple,
+  // simultaneous crosapi clients. See BindScreenManager for an example.
   message_center_ash_ = std::make_unique<MessageCenterAsh>(std::move(receiver));
 }
 
 void AshChromeServiceImpl::BindSelectFile(
     mojo::PendingReceiver<mojom::SelectFile> receiver) {
+  // TODO(https://crbug.com/1148448): Convert this to allow multiple,
+  // simultaneous crosapi clients. See BindScreenManager for an example.
   select_file_ash_ = std::make_unique<SelectFileAsh>(std::move(receiver));
 }
 
@@ -111,6 +121,8 @@ void AshChromeServiceImpl::BindHidManager(
 
 void AshChromeServiceImpl::BindFeedback(
     mojo::PendingReceiver<mojom::Feedback> receiver) {
+  // TODO(https://crbug.com/1148448): Convert this to allow multiple,
+  // simultaneous crosapi clients. See BindScreenManager for an example.
   feedback_ash_ = std::make_unique<FeedbackAsh>(std::move(receiver));
 }
 
