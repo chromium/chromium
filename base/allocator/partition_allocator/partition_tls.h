@@ -46,7 +46,23 @@ BASE_EXPORT bool PartitionTlsCreate(PartitionTlsKey* key,
                                     void (*destructor)(void*));
 
 ALWAYS_INLINE void* PartitionTlsGet(PartitionTlsKey key) {
-  return TlsGetValue(key);
+  // Accessing TLS resets the last error, which then makes |GetLastError()|
+  // return something misleading. While this means that properly using
+  // |GetLastError()| is difficult, there is currently code in Chromium which
+  // expects malloc() to *not* reset it. Meaning that we either have to fix this
+  // code, or pay the cost of saving/restoring it.
+  //
+  // Source:
+  // https://docs.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-tlsgetvalue
+  // "Functions that return indications of failure call SetLastError() when they
+  // fail. They generally do not call SetLastError() when they succeed. The
+  // TlsGetValue() function is an exception to this general rule. The
+  // TlsGetValue() function calls SetLastError() to clear a thread's last error
+  // when it succeeds."
+  DWORD saved_error = GetLastError();
+  void* ret = TlsGetValue(key);
+  SetLastError(saved_error);
+  return ret;
 }
 
 ALWAYS_INLINE void PartitionTlsSet(PartitionTlsKey key, void* value) {
