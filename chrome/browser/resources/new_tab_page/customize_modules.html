@@ -14,7 +14,7 @@
     width: 100%;
   }
 
-  :host([hide_]) #hide {
+  :host([selected_]) #hide {
     background-color: var(--ntp-selected-background-color);
     border-color: var(--ntp-selected-border-color);
     color: var(--ntp-selected-border-color);
@@ -25,7 +25,7 @@
     margin-inline-start: 24px;
   }
 
-  :host([hide_]) #hideIcon {
+  :host([selected_]) #hideIcon {
     background-color: var(--ntp-selected-border-color);
   }
 
@@ -35,6 +35,10 @@
 
   #hideTitle {
     font-weight: bold;
+  }
+
+  cr-policy-indicator {
+    margin-inline-end: 24px;
   }
 
   cr-toggle {
@@ -47,6 +51,10 @@
     <div id="hideTitle">$i18n{hideModules}</div>
     $i18n{hideModulesDesc}
   </div>
+  <cr-policy-indicator indicator-type="devicePolicy"
+      hidden="[[!hideManagedByPolicy_]]">
+  </cr-policy-indicator>
   <cr-toggle id="hideToggle" title="$i18n{hideModules}" checked="[[hide_]]"
-      on-change="onHideChange_"></cr-toggle>
+      on-change="onHideChange_" disabled="[[hideManagedByPolicy_]]">
+  </cr-toggle>
 </div>

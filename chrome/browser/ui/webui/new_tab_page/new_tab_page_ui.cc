@@ -26,6 +26,7 @@
 #include "chrome/browser/ui/webui/sanitized_image_source.h"
 #include "chrome/browser/ui/webui/theme_source.h"
 #include "chrome/browser/ui/webui/webui_util.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
@@ -33,6 +34,7 @@
 #include "chrome/grit/new_tab_page_resources_map.h"
 #include "components/favicon_base/favicon_url_parser.h"
 #include "components/google/core/common/google_util.h"
+#include "components/prefs/pref_service.h"
 #include "components/search/ntp_features.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/strings/grit/components_strings.h"
@@ -106,6 +108,7 @@ content::WebUIDataSource* CreateNewTabPageUiHtmlSource(Profile* profile) {
       {"doneButton", IDS_DONE},
       {"title", IDS_NEW_TAB_TITLE},
       {"undo", IDS_NEW_TAB_UNDO_THUMBNAIL_REMOVE},
+      {"controlledSettingPolicy", IDS_CONTROLLED_SETTING_POLICY},
 
       // Custom Links.
       {"addLinkTitle", IDS_NTP_CUSTOM_LINKS_ADD_SHORTCUT_TITLE},
@@ -311,6 +314,9 @@ NewTabPageUI::NewTabPageUI(content::WebUI* web_ui)
   auto* source = CreateNewTabPageUiHtmlSource(profile_);
   source->AddBoolean("customBackgroundDisabledByPolicy",
                      instant_service_->IsCustomBackgroundDisabledByPolicy());
+  source->AddBoolean(
+      "modulesVisibleManagedByPolicy",
+      profile_->GetPrefs()->IsManagedPreference(prefs::kNtpModulesVisible));
   content::WebUIDataSource::Add(profile_, source);
 
   content::URLDataSource::Add(profile_,

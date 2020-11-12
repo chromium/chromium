@@ -6,8 +6,10 @@ import './mini_page.js';
 import 'chrome://resources/cr_elements/cr_icons_css.m.js';
 import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.m.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
+import 'chrome://resources/cr_elements/policy/cr_policy_indicator.m.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserProxy} from './browser_proxy.js';
@@ -28,6 +30,19 @@ class CustomizeModulesElement extends PolymerElement {
       hide_: {
         type: Boolean,
         reflectToAttribute: true,
+      },
+
+      /** @private */
+      hideManagedByPolicy_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('modulesVisibleManagedByPolicy'),
+      },
+
+      /** @private */
+      selected_: {
+        type: Boolean,
+        reflectToAttribute: true,
+        computed: 'computeSelected_(hide_, hideManagedByPolicy_)',
       },
     };
   }
@@ -56,8 +71,29 @@ class CustomizeModulesElement extends PolymerElement {
         assert(this.setModulesVisibleListenerId_));
   }
 
+  /** @override */
+  ready() {
+    // |window.CrPolicyStrings.controlledSettingPolicy| populates the tooltip
+    // text of <cr-policy-indicator indicator-type="devicePolicy" /> elements.
+    // Needs to be called before |super.ready()| so that the string is available
+    // when <cr-policy-indicator> gets instantiated.
+    window.CrPolicyStrings = {
+      controlledSettingPolicy:
+          loadTimeData.getString('controlledSettingPolicy'),
+    };
+    super.ready();
+  }
+
   apply() {
     BrowserProxy.getInstance().handler.setModulesVisible(!this.hide_);
+  }
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  computeSelected_() {
+    return this.hide_ && !this.hideManagedByPolicy_;
   }
 
   /**
