@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.features.start_surface;
 
+import static android.os.Build.VERSION_CODES.N;
 import static android.os.Build.VERSION_CODES.P;
 
 import static androidx.test.espresso.Espresso.onView;
@@ -1344,6 +1345,7 @@ public class StartSurfaceTest {
     @MediumTest
     @Feature({"StartSurface"})
     // clang-format off
+    @DisableIf.Build(sdk_is_less_than = N, message = "crbug.com/1148352")
     @CommandLineFlags.Add({BASE_PARAMS + "/single/exclude_mv_tiles/true"
             + "/show_last_active_tab_only/true/show_stack_tab_switcher/true"})
     public void testShow_SingleAsHomepageV2_VoiceSearchButtonShown() {
@@ -1365,6 +1367,7 @@ public class StartSurfaceTest {
     @Test
     @MediumTest
     @Feature({"StartSurface"})
+    @DisableIf.Build(sdk_is_less_than = N, message = "crbug.com/1148352")
     @CommandLineFlags.Add({BASE_PARAMS + "/single"})
     public void testShow_SingleAsHomepage_VoiceSearchButtonShown() {
         if (!mImmediateReturn) {
