@@ -148,7 +148,7 @@ SearchProvider::SearchProvider(AutocompleteProviderClient* client,
 
   // |template_url_service| can be null in tests.
   if (template_url_service)
-    observer_.Add(template_url_service);
+    observation_.Observe(template_url_service);
 }
 
 // static

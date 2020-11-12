@@ -76,9 +76,10 @@ void WaitForURLsDeletedObserver::OnURLsDeleted(
 void WaitForURLsDeletedNotification(history::HistoryService* history_service) {
   base::RunLoop runner;
   WaitForURLsDeletedObserver observer(&runner);
-  ScopedObserver<history::HistoryService, history::HistoryServiceObserver>
-      scoped_observer(&observer);
-  scoped_observer.Add(history_service);
+  base::ScopedObservation<history::HistoryService,
+                          history::HistoryServiceObserver>
+      scoped_observation(&observer);
+  scoped_observation.Observe(history_service);
   runner.Run();
 }
 

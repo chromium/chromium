@@ -15,7 +15,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/sequenced_task_runner.h"
 #include "base/strings/string16.h"
 #include "base/synchronization/lock.h"
@@ -170,8 +170,9 @@ class ShortcutsBackend : public RefcountedKeyedService,
   // This is a helper map for quick access to a shortcut by guid.
   GuidMap guid_map_;
 
-  ScopedObserver<history::HistoryService, history::HistoryServiceObserver>
-      history_service_observer_{this};
+  base::ScopedObservation<history::HistoryService,
+                          history::HistoryServiceObserver>
+      history_service_observation_{this};
 
   scoped_refptr<base::SequencedTaskRunner> main_runner_;
   scoped_refptr<base::SequencedTaskRunner> db_runner_;

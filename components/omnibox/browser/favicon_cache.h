@@ -13,7 +13,7 @@
 #include "base/containers/mru_cache.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "components/favicon_base/favicon_types.h"
 #include "components/history/core/browser/history_service.h"
@@ -132,8 +132,9 @@ class FaviconCache : public history::HistoryServiceObserver {
   // Non-owning pointer to a KeyedService.
   favicon::FaviconService* favicon_service_;
 
-  ScopedObserver<history::HistoryService, history::HistoryServiceObserver>
-      history_observer_{this};
+  base::ScopedObservation<history::HistoryService,
+                          history::HistoryServiceObserver>
+      history_observation_{this};
 
   base::CancelableTaskTracker task_tracker_;
   std::map<Request, std::list<FaviconFetchedCallback>> pending_requests_;

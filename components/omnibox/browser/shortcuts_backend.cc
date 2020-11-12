@@ -83,7 +83,7 @@ ShortcutsBackend::ShortcutsBackend(
   if (!suppress_db)
     db_ = new ShortcutsDatabase(database_path);
   if (history_service)
-    history_service_observer_.Add(history_service);
+    history_service_observation_.Observe(history_service);
 }
 
 bool ShortcutsBackend::Init() {
@@ -190,7 +190,8 @@ ShortcutsDatabase::Shortcut::MatchCore ShortcutsBackend::MatchToMatchCore(
 }
 
 void ShortcutsBackend::ShutdownOnUIThread() {
-  history_service_observer_.RemoveAll();
+  if (history_service_observation_.IsObserving())
+    history_service_observation_.RemoveObservation();
 }
 
 void ShortcutsBackend::OnURLsDeleted(

@@ -17,7 +17,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/omnibox/browser/answers_cache.h"
@@ -428,8 +428,8 @@ class SearchProvider : public BaseSearchProvider,
   AnswersCache answers_cache_;  // Cache for last answers seen.
   AnswersQueryData prefetch_data_;  // Data to use for query prefetching.
 
-  ScopedObserver<TemplateURLService, TemplateURLServiceObserver> observer_{
-      this};
+  base::ScopedObservation<TemplateURLService, TemplateURLServiceObserver>
+      observation_{this};
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_SEARCH_PROVIDER_H_
