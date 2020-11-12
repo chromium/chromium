@@ -429,5 +429,11 @@ if (is_win || is_mac) {
         "//chrome/updater/win/installer",
       ]
     }
+    if (is_mac) {
+      data_deps = [
+        ":version_header_py",
+        "//chrome/updater/mac:updater_bundle",
+      ]
+    }
   }
 }
