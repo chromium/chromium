@@ -92,6 +92,7 @@ class ActionsSubmenu {
     if (saveForOfflineAction || offlineNotNecessaryAction) {
       const menuItem = this.addMenuItem_({});
       menuItem.command = '#toggle-pinned';
+      menuItem.classList.toggle('hide-on-toolbar', true);
       if (saveForOfflineAction) {
         delete remainingActions[ActionsModel.CommonActionId.SAVE_FOR_OFFLINE];
       }
@@ -103,9 +104,14 @@ class ActionsSubmenu {
     util.queryDecoratedElement('#toggle-pinned', cr.ui.Command)
         .canExecuteChange(element);
 
+    let hasCustomActions = false;
     // Process all the rest as custom actions.
     Object.keys(remainingActions).forEach(key => {
+      // Certain actions (e.g. 'pin-folder' to Directory tree) do not seem to
+      // have a title, and thus don't appear in the menu even though we add it
+      // to the DOM.
       const action = remainingActions[key];
+      hasCustomActions = hasCustomActions || !!action.getTitle();
       const options = {label: action.getTitle()};
       const menuItem = this.addMenuItem_(options);
 
@@ -113,6 +119,10 @@ class ActionsSubmenu {
         action.execute();
       });
     });
+
+    // All actions that are not custom actions are hide-on-toolbar, so
+    // set hide-on-toolbar for the separator if there are no custom actions.
+    this.separator_.classList.toggle('hide-on-toolbar', !hasCustomActions);
 
     this.separator_.hidden = !this.items_.length;
   }

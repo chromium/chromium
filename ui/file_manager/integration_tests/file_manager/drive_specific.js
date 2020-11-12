@@ -519,8 +519,8 @@ testcase.driveBackupPhotos = async () => {
 };
 
 /**
- * Verify that "Available Offline" is available from the gear menu for a drive
- * file before the context menu has been opened.
+ * Verify that "Available Offline" is not available from the gear menu for a
+ * drive file.
  */
 testcase.driveAvailableOfflineGearMenu = async () => {
   const pinnedMenuQuery = '#file-context-menu:not([hidden]) ' +
@@ -545,17 +545,20 @@ testcase.driveAvailableOfflineGearMenu = async () => {
   // Ensure gear button is available
   await remoteCall.waitForElement(appId, '#selection-menu-button');
 
-  // Click on gear menu and ensure "Available Offline" is shown.
+  // Click on gear menu and ensure "Available Offline" is not shown.
   chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
       'fakeMouseClick', appId, ['#selection-menu-button']));
 
-  // Check that "Available Offline" is shown in the menu.
-  await remoteCall.waitForElement(appId, pinnedMenuQuery);
+  // Check that "Available Offline" is not shown in the menu. This element is
+  // hidden via a display:none css rule, so check that.
+  const e = await remoteCall.waitForElementStyles(
+      appId, pinnedMenuQuery, ['display']);
+  chrome.test.assertEq('none', e.styles.display);
 };
 
 /**
- * Verify that "Available Offline" is available from the gear menu for a drive
- * directory before the context menu has been opened.
+ * Verify that "Available Offline" is not available from the gear menu for a
+ * drive directory.
  */
 testcase.driveAvailableOfflineDirectoryGearMenu = async () => {
   const pinnedMenuQuery = '#file-context-menu:not([hidden]) ' +
@@ -580,12 +583,15 @@ testcase.driveAvailableOfflineDirectoryGearMenu = async () => {
   // Ensure gear button is available
   await remoteCall.waitForElement(appId, '#selection-menu-button');
 
-  // Click on gear menu and ensure "Available Offline" is shown.
+  // Click on gear menu and ensure "Available Offline" is not shown.
   chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
       'fakeMouseClick', appId, ['#selection-menu-button']));
 
-  // Check that "Available Offline" is shown in the menu.
-  await remoteCall.waitForElement(appId, pinnedMenuQuery);
+  // Check that "Available Offline" is not shown in the menu. This element is
+  // hidden via a display:none css rule, so check that.
+  const e = await remoteCall.waitForElementStyles(
+      appId, pinnedMenuQuery, ['display']);
+  chrome.test.assertEq('none', e.styles.display);
 };
 
 /**
