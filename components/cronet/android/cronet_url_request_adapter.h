@@ -54,8 +54,7 @@ class CronetURLRequestAdapter : public CronetURLRequest::Callback {
                           jboolean jtraffic_stats_tag_set,
                           jint jtraffic_stats_tag,
                           jboolean jtraffic_stats_uid_set,
-                          jint jtraffic_stats_uid,
-                          net::Idempotency idempotency);
+                          jint jtraffic_stats_uid);
   ~CronetURLRequestAdapter() override;
 
   // Methods called prior to Start are never called on network thread.

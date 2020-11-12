@@ -128,9 +128,6 @@ public abstract class ExperimentalUrlRequest extends UrlRequest {
         public abstract Builder allowDirectExecutor();
 
         @Override
-        public abstract Builder setIdempotency(int idempotency);
-
-        @Override
         public abstract ExperimentalUrlRequest build();
     }
 }

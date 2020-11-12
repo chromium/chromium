@@ -223,14 +223,13 @@ public class CronetUrlRequestContext extends CronetEngineBase {
             int priority, Collection<Object> requestAnnotations, boolean disableCache,
             boolean disableConnectionMigration, boolean allowDirectExecutor,
             boolean trafficStatsTagSet, int trafficStatsTag, boolean trafficStatsUidSet,
-            int trafficStatsUid, RequestFinishedInfo.Listener requestFinishedListener,
-            int idempotency) {
+            int trafficStatsUid, RequestFinishedInfo.Listener requestFinishedListener) {
         synchronized (mLock) {
             checkHaveAdapter();
             return new CronetUrlRequest(this, url, priority, callback, executor, requestAnnotations,
                     disableCache, disableConnectionMigration, allowDirectExecutor,
                     trafficStatsTagSet, trafficStatsTag, trafficStatsUidSet, trafficStatsUid,
-                    requestFinishedListener, idempotency);
+                    requestFinishedListener);
         }
     }
 

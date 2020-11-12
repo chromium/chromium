@@ -235,8 +235,7 @@ final class FakeCronetEngine extends CronetEngineBase {
             Executor userExecutor, int priority, Collection<Object> connectionAnnotations,
             boolean disableCache, boolean disableConnectionMigration, boolean allowDirectExecutor,
             boolean trafficStatsTagSet, int trafficStatsTag, boolean trafficStatsUidSet,
-            int trafficStatsUid, RequestFinishedInfo.Listener requestFinishedListener,
-            int idempotency) {
+            int trafficStatsUid, RequestFinishedInfo.Listener requestFinishedListener) {
         synchronized (mLock) {
             if (mIsShutdown) {
                 throw new IllegalStateException(

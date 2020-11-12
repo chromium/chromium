@@ -16,7 +16,6 @@
 #include "components/cronet/android/io_buffer_with_byte_buffer.h"
 #include "components/cronet/android/url_request_error.h"
 #include "components/cronet/metrics_util.h"
-#include "net/base/idempotency.h"
 #include "net/base/load_flags.h"
 #include "net/base/load_states.h"
 #include "net/base/net_errors.h"
@@ -69,8 +68,7 @@ static jlong JNI_CronetUrlRequest_CreateRequestAdapter(
     jboolean jtraffic_stats_tag_set,
     jint jtraffic_stats_tag,
     jboolean jtraffic_stats_uid_set,
-    jint jtraffic_stats_uid,
-    jint jidempotency) {
+    jint jtraffic_stats_uid) {
   CronetURLRequestContextAdapter* context_adapter =
       reinterpret_cast<CronetURLRequestContextAdapter*>(
           jurl_request_context_adapter);
@@ -85,8 +83,7 @@ static jlong JNI_CronetUrlRequest_CreateRequestAdapter(
       context_adapter, env, jurl_request, url,
       static_cast<net::RequestPriority>(jpriority), jdisable_cache,
       jdisable_connection_migration, jenable_metrics, jtraffic_stats_tag_set,
-      jtraffic_stats_tag, jtraffic_stats_uid_set, jtraffic_stats_uid,
-      static_cast<net::Idempotency>(jidempotency));
+      jtraffic_stats_tag, jtraffic_stats_uid_set, jtraffic_stats_uid);
 
   return reinterpret_cast<jlong>(adapter);
 }
@@ -103,8 +100,7 @@ CronetURLRequestAdapter::CronetURLRequestAdapter(
     jboolean jtraffic_stats_tag_set,
     jint jtraffic_stats_tag,
     jboolean jtraffic_stats_uid_set,
-    jint jtraffic_stats_uid,
-    net::Idempotency idempotency)
+    jint jtraffic_stats_uid)
     : request_(
           new CronetURLRequest(context->cronet_url_request_context(),
                                std::unique_ptr<CronetURLRequestAdapter>(this),
@@ -117,7 +113,7 @@ CronetURLRequestAdapter::CronetURLRequestAdapter(
                                jtraffic_stats_tag,
                                jtraffic_stats_uid_set == JNI_TRUE,
                                jtraffic_stats_uid,
-                               idempotency)) {
+                               /*idempotency=*/net::DEFAULT_IDEMPOTENCY)) {
   owner_.Reset(env, jurl_request);
 }
 
