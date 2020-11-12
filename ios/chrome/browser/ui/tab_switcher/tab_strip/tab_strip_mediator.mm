@@ -11,9 +11,11 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_item.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/tab_strip_consumer.h"
 #import "ios/chrome/browser/web/tab_id_tab_helper.h"
+#import "ios/chrome/browser/web_state_list/all_web_state_observation_forwarder.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/web/public/web_state.h"
+#import "ios/web/public/web_state_observer_bridge.h"
 #import "ui/gfx/image/image.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -70,9 +72,15 @@ web::WebState* GetWebStateWithId(WebStateList* web_state_list,
 
 }  // namespace
 
-@interface TabStripMediator () <WebStateListObserving> {
+@interface TabStripMediator () <CRWWebStateObserver, WebStateListObserving> {
   // Bridge C++ WebStateListObserver methods to this TabStripController.
   std::unique_ptr<WebStateListObserverBridge> _webStateListObserver;
+  // Bridge C++ WebStateObserver methods to this TabStripController.
+  std::unique_ptr<web::WebStateObserverBridge> _webStateObserver;
+  // Forward observer methods for all WebStates in the WebStateList monitored
+  // by the TabStripMediator.
+  std::unique_ptr<AllWebStateObservationForwarder>
+      _allWebStateObservationForwarder;
 }
 
 // The consumer for this object.
@@ -91,6 +99,7 @@ web::WebState* GetWebStateWithId(WebStateList* web_state_list,
 
 - (void)disconnect {
   if (_webStateList) {
+    _allWebStateObservationForwarder.reset();
     _webStateList->RemoveObserver(_webStateListObserver.get());
     _webStateListObserver = nullptr;
     _webStateList = nullptr;
@@ -101,6 +110,7 @@ web::WebState* GetWebStateWithId(WebStateList* web_state_list,
 
 - (void)setWebStateList:(WebStateList*)webStateList {
   if (_webStateList) {
+    _allWebStateObservationForwarder.reset();
     _webStateList->RemoveObserver(_webStateListObserver.get());
   }
 
@@ -110,6 +120,12 @@ web::WebState* GetWebStateWithId(WebStateList* web_state_list,
     DCHECK_GE(_webStateList->count(), 0);
     _webStateListObserver = std::make_unique<WebStateListObserverBridge>(self);
     _webStateList->AddObserver(_webStateListObserver.get());
+
+    _webStateObserver = std::make_unique<web::WebStateObserverBridge>(self);
+    // Observe all webStates of this |_webStateList|.
+    _allWebStateObservationForwarder =
+        std::make_unique<AllWebStateObservationForwarder>(
+            _webStateList, _webStateObserver.get());
   }
   [self populateConsumerItems];
 }
@@ -166,6 +182,15 @@ web::WebState* GetWebStateWithId(WebStateList* web_state_list,
     [self.consumer populateItems:CreateItems(self.webStateList)
                   selectedItemID:GetActiveTabId(self.webStateList)];
   }
+}
+
+#pragma mark - CRWWebStateObserver
+
+- (void)webStateDidChangeTitle:(web::WebState*)webState {
+  // Assumption: the ID of the webState didn't change as a result of this load.
+  TabIdTabHelper* tabHelper = TabIdTabHelper::FromWebState(webState);
+  NSString* itemID = tabHelper->tab_id();
+  [self.consumer replaceItemID:itemID withItem:CreateItem(webState)];
 }
 
 @end

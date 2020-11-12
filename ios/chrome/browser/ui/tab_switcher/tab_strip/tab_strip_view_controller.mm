@@ -16,6 +16,9 @@
 
 namespace {
 static NSString* const kReuseIdentifier = @"TabView";
+NSIndexPath* CreateIndexPath(NSInteger index) {
+  return [NSIndexPath indexPathForItem:index inSection:0];
+}
 }  // namespace
 
 @interface TabStripViewController ()
@@ -90,6 +93,21 @@ static NSString* const kReuseIdentifier = @"TabView";
   [self.collectionView reloadData];
 }
 
+- (void)replaceItemID:(NSString*)itemID withItem:(GridItem*)item {
+  if ([self indexOfItemWithID:itemID] == NSNotFound)
+    return;
+  // Consistency check: |item|'s ID is either |itemID| or not in |items|.
+  DCHECK([item.identifier isEqualToString:itemID] ||
+         [self indexOfItemWithID:item.identifier] == NSNotFound);
+  NSUInteger index = [self indexOfItemWithID:itemID];
+  self.items[index] = item;
+  TabStripCell* cell = (TabStripCell*)[self.collectionView
+      cellForItemAtIndexPath:CreateIndexPath(index)];
+  // |cell| may be nil if it is scrolled offscreen.
+  if (cell)
+    [self configureCell:cell withItem:item];
+}
+
 #pragma mark - Private
 
 // Configures |cell|'s title synchronously, and favicon asynchronously with
@@ -109,6 +127,15 @@ static NSString* const kReuseIdentifier = @"TabView";
                       cell.faviconView.image = icon;
                   }];
   }
+}
+
+// Returns the index in |self.items| of the first item whose identifier is
+// |identifier|.
+- (NSUInteger)indexOfItemWithID:(NSString*)identifier {
+  auto selectedTest = ^BOOL(GridItem* item, NSUInteger index, BOOL* stop) {
+    return [item.identifier isEqualToString:identifier];
+  };
+  return [self.items indexOfObjectPassingTest:selectedTest];
 }
 
 @end

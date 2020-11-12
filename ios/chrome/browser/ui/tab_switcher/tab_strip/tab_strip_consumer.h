@@ -18,6 +18,11 @@
 - (void)populateItems:(NSArray<GridItem*>*)items
        selectedItemID:(NSString*)selectedItemID;
 
+// Tells the consumer to replace the item with ID |itemID| with |item|.
+// It's an error if |item|'s ID duplicates any other item's ID besides |itemID|.
+// The consumer should ignore this call if |itemID| has not yet been inserted.
+- (void)replaceItemID:(NSString*)itemID withItem:(GridItem*)item;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_STRIP_TAB_STRIP_CONSUMER_H_
