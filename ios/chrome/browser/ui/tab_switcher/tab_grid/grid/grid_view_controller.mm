@@ -584,9 +584,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 - (void)scrollViewDidScroll:(UIScrollView*)scrollView {
   if (!IsThumbStripEnabled())
     return;
-  CGFloat offset = self.offsetPastEndOfScrollView;
-  self.fractionVisibleOfLastItem = base::ClampToRange<CGFloat>(
-      1 - offset / kScrollThresholdForPlusSignButtonHide, 0, 1);
+  [self updateFractionVisibleOfLastItem];
 }
 
 #pragma mark - GridCellDelegate
@@ -635,6 +633,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   }
   // Whether the view is visible or not, the delegate must be updated.
   [self.delegate gridViewController:self didChangeItemCount:self.items.count];
+  [self updateFractionVisibleOfLastItem];
 }
 
 - (void)insertItem:(GridItem*)item
@@ -664,6 +663,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
                      animated:YES
                scrollPosition:UICollectionViewScrollPositionNone];
     [self.delegate gridViewController:self didChangeItemCount:self.items.count];
+    [self updateFractionVisibleOfLastItem];
   };
   [self performModelUpdates:modelUpdates
                 collectionViewUpdates:collectionViewUpdates
@@ -703,6 +703,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
                  scrollPosition:UICollectionViewScrollPositionNone];
     }
     [self.delegate gridViewController:self didChangeItemCount:self.items.count];
+    [self updateFractionVisibleOfLastItem];
   };
   [self performModelUpdates:modelUpdates
                 collectionViewUpdates:collectionViewUpdates
@@ -953,6 +954,13 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   } else {
     removeEmptyState();
   }
+}
+
+// Updates the value stored in |fractionVisibleOfLastItem|.
+- (void)updateFractionVisibleOfLastItem {
+  CGFloat offset = self.offsetPastEndOfScrollView;
+  self.fractionVisibleOfLastItem = base::ClampToRange<CGFloat>(
+      1 - offset / kScrollThresholdForPlusSignButtonHide, 0, 1);
 }
 
 #pragma mark - Custom Gesture-based Reordering
