@@ -18,7 +18,7 @@
  */
 
 [
-    ImplementedAs=NavigatorGeolocation
+    ImplementedAs=Geolocation
 ] partial interface Navigator {
     readonly attribute Geolocation geolocation;
 };

@@ -17,7 +17,5 @@ blink_modules_sources("geolocation") {
     "geolocation_watchers.cc",
     "geolocation_watchers.h",
     "geoposition.h",
-    "navigator_geolocation.cc",
-    "navigator_geolocation.h",
   ]
 }

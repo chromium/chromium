@@ -43,6 +43,7 @@
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
+#include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/timer.h"
 
 namespace blink {
@@ -51,21 +52,22 @@ namespace mojom {
 enum class PermissionStatus;
 }  // namespace mojom
 
-class LocalDOMWindow;
 class LocalFrame;
-class ExecutionContext;
+class Navigator;
 
 class MODULES_EXPORT Geolocation final
     : public ScriptWrappable,
       public ActiveScriptWrappable<Geolocation>,
+      public Supplement<Navigator>,
       public ExecutionContextLifecycleObserver,
       public PageVisibilityObserver {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static Geolocation* Create(ExecutionContext*);
+  static const char kSupplementName[];
+  static Geolocation* geolocation(Navigator&);
 
-  explicit Geolocation(ExecutionContext*);
+  explicit Geolocation(Navigator&);
   ~Geolocation() override;
   void Trace(Visitor*) const override;
 
@@ -73,7 +75,6 @@ class MODULES_EXPORT Geolocation final
   // PageVisibilityObserver.
   void ContextDestroyed() override;
 
-  LocalDOMWindow* GetWindow() const;
   LocalFrame* GetFrame() const;
 
   // Creates a oneshot and attempts to obtain a position that meets the
