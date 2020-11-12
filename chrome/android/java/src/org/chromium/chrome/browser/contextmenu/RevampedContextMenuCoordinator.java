@@ -85,8 +85,8 @@ public class RevampedContextMenuCoordinator implements ContextMenuUi {
             ContextMenuParams params, List<Pair<Integer, ModelList>> items,
             Callback<Integer> onItemClicked, final Runnable onMenuShown,
             final Runnable onMenuClosed) {
-        displayMenuWithLensChip(window, webContents, params, items, onItemClicked, onMenuShown,
-                onMenuClosed, /* lensAsyncManager=*/null);
+        displayMenuWithChip(window, webContents, params, items, onItemClicked, onMenuShown,
+                onMenuClosed, /* chipDelegate=*/null);
     }
 
     @Override
@@ -94,13 +94,12 @@ public class RevampedContextMenuCoordinator implements ContextMenuUi {
         dismissDialog();
     }
 
-    // Shows the Context Menu in Chrome with the lens chip (if supported).
-    void displayMenuWithLensChip(final WindowAndroid window, WebContents webContents,
+    // Shows the menu with chip.
+    void displayMenuWithChip(final WindowAndroid window, WebContents webContents,
             ContextMenuParams params, List<Pair<Integer, ModelList>> items,
             Callback<Integer> onItemClicked, final Runnable onMenuShown,
-            final Runnable onMenuClosed, @Nullable LensAsyncManager lensAsyncManager) {
+            final Runnable onMenuClosed, @Nullable ChipDelegate chipDelegate) {
         mOnMenuClosed = onMenuClosed;
-        final boolean lensShoppingFeatureEnabled = lensAsyncManager != null;
         final boolean isPopup = params.getSourceType() == MenuSourceType.MENU_SOURCE_MOUSE;
         Activity activity = window.getActivity().get();
         final float density = activity.getResources().getDisplayMetrics().density;
@@ -113,10 +112,14 @@ public class RevampedContextMenuCoordinator implements ContextMenuUi {
                 R.layout.context_menu_fullscreen_container, null);
 
         // Only display a chip if an image was selected and the menu isn't a popup.
-        if (params.isImage() && lensShoppingFeatureEnabled && !isPopup) {
+        if (params.isImage() && chipDelegate != null && !isPopup) {
             View chipAnchorView = layout.findViewById(R.id.context_menu_chip_anchor_point);
-            mChipController = new RevampedContextMenuChipController(
-                    activity, chipAnchorView, lensAsyncManager);
+            mChipController = new RevampedContextMenuChipController(activity, chipAnchorView);
+            chipDelegate.getChipRenderParams((chipRenderParams) -> {
+                if (chipDelegate.isValidChipRenderParams(chipRenderParams)) {
+                    mChipController.showChip(chipRenderParams);
+                }
+            });
             dialogBottomMarginPx = mChipController.getVerticalPxNeededForChip();
             // Allow dialog to get close to the top of the screen.
             dialogTopMarginPx = dialogBottomMarginPx / 2;
@@ -283,7 +286,11 @@ public class RevampedContextMenuCoordinator implements ContextMenuUi {
         // Don't need to initialize controller because that should be triggered by
         // forcing feature flags.
         mChipController.setFakeLensQueryResultForTesting(); // IN-TEST
-        mChipController.handleImageClassification(null);
+        ChipRenderParams chipRenderParamsForTesting = new ChipRenderParams();
+        chipRenderParamsForTesting.titleResourceId =
+                R.string.contextmenu_shop_image_with_google_lens;
+        chipRenderParamsForTesting.onClickCallback = () -> {};
+        mChipController.showChip(chipRenderParamsForTesting);
     }
 
     // Public only to allow references from RevampedContextMenuUtils.java

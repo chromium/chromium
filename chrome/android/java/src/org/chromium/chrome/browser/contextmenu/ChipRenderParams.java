@@ -18,5 +18,6 @@ public class ChipRenderParams {
     public @DrawableRes int iconResourceId;
 
     // The callback to be called when the chip clicked.
+    // A non-null ChipRenderParams will always have a non-null callback.
     public Runnable onClickCallback;
 }

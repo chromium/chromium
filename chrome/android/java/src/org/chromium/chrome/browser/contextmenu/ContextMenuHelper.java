@@ -13,7 +13,6 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
-import org.chromium.chrome.browser.lens.LensController;
 import org.chromium.chrome.browser.performance_hints.PerformanceHintsObserver;
 import org.chromium.chrome.browser.share.LensUtils;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuParams;
@@ -48,6 +47,7 @@ public class ContextMenuHelper {
     private boolean mSelectedItemBeforeDismiss;
     private boolean mIsIncognito;
     private String mPageTitle;
+    private ChipDelegate mChipDelegate;
 
     private ContextMenuHelper(long nativeContextMenuHelper, WebContents webContents) {
         mNativeContextMenuHelper = nativeContextMenuHelper;
@@ -134,11 +134,10 @@ public class ContextMenuHelper {
                 mCurrentPopulator.onMenuClosed();
                 mCurrentPopulator = null;
             }
-            if (LensUtils.enableImageChip(mIsIncognito)
-                    && LensController.getInstance().isQueryEnabled()) {
-                // If the image was being classified terminate the classification.
+            if (LensUtils.enableImageChip(mIsIncognito)) {
+                // If the image was being classified terminate the classification
                 // Has no effect if the classification already succeeded.
-                LensController.getInstance().terminateClassification();
+                mChipDelegate.onMenuClosed();
             }
             if (mNativeContextMenuHelper == 0) return;
             ContextMenuHelperJni.get().onContextMenuClosed(
@@ -158,14 +157,12 @@ public class ContextMenuHelper {
         final RevampedContextMenuCoordinator menuCoordinator =
                 new RevampedContextMenuCoordinator(topContentOffsetPx, mCurrentNativeDelegate);
         mCurrentContextMenu = menuCoordinator;
-
-        if (LensUtils.enableImageChip(mIsIncognito)
-                && LensController.getInstance().isQueryEnabled()) {
-            LensAsyncManager lensAsyncManager = new LensAsyncManager(mCurrentContextMenuParams,
-                    mCurrentNativeDelegate, mWindow, mIsIncognito, mPageTitle, mWebContents);
-            menuCoordinator.displayMenuWithLensChip(mWindow, mWebContents,
-                    mCurrentContextMenuParams, items, mCallback, mOnMenuShown, mOnMenuClosed,
-                    lensAsyncManager);
+        if (LensUtils.enableImageChip(mIsIncognito)) {
+            mChipDelegate = new LensChipDelegate(mCurrentContextMenuParams.getPageUrl(),
+                    mCurrentContextMenuParams.getTitleText(), mCurrentContextMenuParams.getSrcUrl(),
+                    mPageTitle, mIsIncognito, mWebContents, mCurrentNativeDelegate);
+            menuCoordinator.displayMenuWithChip(mWindow, mWebContents, mCurrentContextMenuParams,
+                    items, mCallback, mOnMenuShown, mOnMenuClosed, mChipDelegate);
         } else {
             menuCoordinator.displayMenu(mWindow, mWebContents, mCurrentContextMenuParams, items,
                     mCallback, mOnMenuShown, mOnMenuClosed);
