@@ -6,11 +6,9 @@ package org.chromium.chrome.browser.ntp;
 
 import androidx.annotation.Nullable;
 
-import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.omnibox.OmniboxFocusReason;
 import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
-import org.chromium.chrome.browser.tab.Tab;
 
 import java.util.List;
 
@@ -61,11 +59,4 @@ public interface FakeboxDelegate {
      * @param listener The listener to be removed.
      */
     default void removeUrlFocusChangeListener(UrlFocusChangeListener listener) {}
-
-    /**
-     * Set up a {@link Supplier} to provide the parent tab of potential new tab created
-     * from the fake box.
-     * @param parentTabSupplier {@link Supplier} to provide parent tab.
-     */
-    default void setParentTabSupplier(Supplier<Tab> parentTabSupplier) {}
 }

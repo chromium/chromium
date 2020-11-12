@@ -176,6 +176,7 @@ public class RootUiCoordinator
     protected OneshotSupplier<IntentMetadata> mIntentMetadataOneshotSupplier;
     // This supplier only ever updated when feature TOOLBAR_IPH_ANDROID is enabled.
     protected OneshotSupplierImpl<Boolean> mPromoShownOneshotSupplier = new OneshotSupplierImpl<>();
+    protected Supplier<Tab> mStartSurfaceParentTabSupplier;
 
     /**
      * Create a new {@link RootUiCoordinator} for the given activity.
@@ -202,7 +203,8 @@ public class RootUiCoordinator
             ObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
             OneshotSupplier<StartSurface> startSurfaceSupplier,
             OneshotSupplier<IntentMetadata> intentMetadataOneshotSupplier,
-            OneshotSupplier<LayoutStateProvider> layoutStateProviderOneshotSupplier) {
+            OneshotSupplier<LayoutStateProvider> layoutStateProviderOneshotSupplier,
+            @NonNull Supplier<Tab> startSurfaceParentTabSupplier) {
         mCallbackController = new CallbackController();
         mActivity = activity;
         mOnOmniboxFocusChangedListener = onOmniboxFocusChangedListener;
@@ -235,6 +237,8 @@ public class RootUiCoordinator
 
         mStartSurfaceSupplier = startSurfaceSupplier;
         mIntentMetadataOneshotSupplier = intentMetadataOneshotSupplier;
+
+        mStartSurfaceParentTabSupplier = startSurfaceParentTabSupplier;
     }
 
     // TODO(pnoland, crbug.com/865801): remove this in favor of wiring it directly.
@@ -611,7 +615,8 @@ public class RootUiCoordinator
                     mActivity::isInOverviewMode, mActivity.isCustomTab(),
                     mActivity.getModalDialogManagerSupplier(),
                     mActivity.getNightModeStateProvider(), mActivity.getStatusBarColorController(),
-                    /* appMenuDelegate= */ mActivity, mActivity.getLifecycleDispatcher());
+                    /* appMenuDelegate= */ mActivity, mActivity.getLifecycleDispatcher(),
+                    mStartSurfaceParentTabSupplier);
             if (!mActivity.supportsAppMenu()) {
                 mToolbarManager.getToolbar().disableMenuButton();
             }

@@ -10,10 +10,8 @@ import static android.os.Build.VERSION_CODES.P;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.Espresso.pressBack;
 import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.action.ViewActions.pressImeActionButton;
 import static androidx.test.espresso.action.ViewActions.pressKey;
 import static androidx.test.espresso.action.ViewActions.replaceText;
-import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.Visibility.GONE;
 import static androidx.test.espresso.matcher.ViewMatchers.Visibility.VISIBLE;
@@ -118,7 +116,6 @@ import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
-import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.test.util.UiRestriction;
 
 import java.io.IOException;
@@ -1332,11 +1329,8 @@ public class StartSurfaceTest {
                 .perform(click());
         onViewWaiting(withId(R.id.search_box_text))
                 .check(matches(isCompletelyDisplayed()))
-                .perform(typeText("wfh tips"));
-        KeyboardVisibilityDelegate delegate = KeyboardVisibilityDelegate.getInstance();
-        CriteriaHelper.pollUiThread(
-                () -> delegate.isKeyboardShowing(cta, cta.getCompositorViewHolder()));
-        onView(withId(R.id.url_bar)).check(matches(isDisplayed())).perform(pressImeActionButton());
+                .perform(replaceText("wfh tips"));
+        onView(withId(R.id.url_bar)).perform(pressKey(KeyEvent.KEYCODE_ENTER));
 
         // Verify a tab is created within the group by checking the tab strip and tab model.
         onView(withId(org.chromium.chrome.tab_ui.R.id.toolbar_container_view))

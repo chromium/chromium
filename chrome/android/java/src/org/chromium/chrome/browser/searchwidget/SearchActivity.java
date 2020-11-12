@@ -53,6 +53,7 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.ui.base.ActivityKeyboardVisibilityDelegate;
 import org.chromium.ui.base.ActivityWindowAndroid;
+import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.url.GURL;
 
@@ -170,7 +171,9 @@ public class SearchActivity extends AsyncInitializationActivity
                 mSearchBoxDataProvider, null, new WindowDelegate(getWindow()), getWindowAndroid(),
                 /*activityTabProvider=*/null, /*modalDialogManagerSupplier=*/null,
                 /*shareDelegateSupplier=*/null, /*incognitoStateProvider=*/null,
-                getLifecycleDispatcher());
+                getLifecycleDispatcher(), /*overrideUrlLoadingDelegate=*/
+                (String url, @PageTransition int transition, String postDataType, byte[] postData,
+                        boolean incognito) -> false);
 
         // Kick off everything needed for the user to type into the box.
         beginQuery();

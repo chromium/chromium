@@ -390,7 +390,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                 getActivityTabProvider(), mTabModelProfileSupplier, mBookmarkBridgeSupplier,
                 this::getContextualSearchManager, mTabModelSelectorSupplier,
                 new OneshotSupplierImpl<>(), new OneshotSupplierImpl<>(),
-                new OneshotSupplierImpl<>());
+                new OneshotSupplierImpl<>(), () -> null);
     }
 
     private NotificationManagerProxy getNotificationManagerProxy() {

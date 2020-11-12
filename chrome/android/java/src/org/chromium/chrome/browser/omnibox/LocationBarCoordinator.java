@@ -21,7 +21,6 @@ import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
-import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.toolbar.top.ToolbarActionModeCallback;
 import org.chromium.ui.base.WindowAndroid;
@@ -83,7 +82,8 @@ public final class LocationBarCoordinator implements LocationBar, FakeboxDelegat
             Supplier<ModalDialogManager> modalDialogManagerSupplier,
             Supplier<ShareDelegate> shareDelegateSupplier,
             IncognitoStateProvider incognitoStateProvider,
-            ActivityLifecycleDispatcher activityLifecycleDispatcher) {
+            ActivityLifecycleDispatcher activityLifecycleDispatcher,
+            OverrideUrlLoadingDelegate overrideUrlLoadingDelegate) {
         mLocationBarLayout = (LocationBarLayout) locationBarLayout;
 
         if (locationBarLayout instanceof LocationBarPhone) {
@@ -99,7 +99,8 @@ public final class LocationBarCoordinator implements LocationBar, FakeboxDelegat
         mLocationBarLayout.setProfileSupplier(profileObservableSupplier);
         mLocationBarLayout.setDefaultTextEditActionModeCallback(actionModeCallback);
         mLocationBarLayout.initializeControls(windowDelegate, windowAndroid, activityTabProvider,
-                modalDialogManagerSupplier, shareDelegateSupplier, incognitoStateProvider);
+                modalDialogManagerSupplier, shareDelegateSupplier, incognitoStateProvider,
+                overrideUrlLoadingDelegate);
 
         mActivityLifecycleDispatcher = activityLifecycleDispatcher;
         mActivityLifecycleDispatcher.register(this);
@@ -313,10 +314,5 @@ public final class LocationBarCoordinator implements LocationBar, FakeboxDelegat
      */
     public void setUnfocusedWidth(int unfocusedWidth) {
         mLocationBarLayout.setUnfocusedWidth(unfocusedWidth);
-    }
-
-    @Override
-    public void setParentTabSupplier(Supplier<Tab> parentTabSupplier) {
-        mLocationBarLayout.setParentTabSupplier(parentTabSupplier);
     }
 }

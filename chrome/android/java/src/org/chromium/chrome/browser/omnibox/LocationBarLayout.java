@@ -68,7 +68,6 @@ import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
-import org.chromium.chrome.browser.tasks.ReturnToChromeExperimentsUtil;
 import org.chromium.chrome.browser.toolbar.top.ToolbarActionModeCallback;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.browser.util.KeyNavigationUtil;
@@ -148,7 +147,7 @@ public class LocationBarLayout
     private Callback<Profile> mProfileSupplierObserver;
     private CallbackController mCallbackController = new CallbackController();
     private TemplateUrlServiceObserver mTemplateUrlObserver;
-    private Supplier<Tab> mParentTabSupplier;
+    private OverrideUrlLoadingDelegate mOverrideUrlLoadingDelegate;
 
     /**
      * Class to handle input from a hardware keyboard when the focus is on the URL bar. In
@@ -335,7 +334,8 @@ public class LocationBarLayout
             ActivityTabProvider activityTabProvider,
             Supplier<ModalDialogManager> modalDialogManagerSupplier,
             Supplier<ShareDelegate> shareDelegateSupplier,
-            IncognitoStateProvider incognitoStateProvider) {
+            IncognitoStateProvider incognitoStateProvider,
+            OverrideUrlLoadingDelegate overrideUrlLoadingDelegate) {
         mWindowDelegate = windowDelegate;
         mWindowAndroid = windowAndroid;
 
@@ -345,6 +345,7 @@ public class LocationBarLayout
         mAutocompleteCoordinator.setShareDelegateSupplier(shareDelegateSupplier);
         mStatusCoordinator.setIncognitoStateProvider(incognitoStateProvider);
         mStatusCoordinator.setModalDialogManagerSupplier(modalDialogManagerSupplier);
+        mOverrideUrlLoadingDelegate = overrideUrlLoadingDelegate;
     }
 
     @Override
@@ -687,11 +688,6 @@ public class LocationBarLayout
         if (visibility == View.VISIBLE) updateMicButtonState();
     }
 
-    @Override
-    public void setParentTabSupplier(Supplier<Tab> parentTabSupplier) {
-        mParentTabSupplier = parentTabSupplier;
-    }
-
     /**
      * Call to force the UI to update the state of various buttons based on whether or not the
      * current tab is incognito.
@@ -833,16 +829,14 @@ public class LocationBarLayout
     public void loadUrlWithPostData(String url, @PageTransition int transition, long inputStart,
             @Nullable String postDataType, @Nullable byte[] postData) {
         Tab currentTab = getCurrentTab();
-        Tab parentTab = mParentTabSupplier == null ? null : mParentTabSupplier.get();
 
         // The code of the rest of this class ensures that this can't be called until the native
         // side is initialized
         assert mNativeInitialized : "Loading URL before native side initialized";
 
         // TODO(crbug.com/1085812): Should be taking a full loaded LoadUrlParams.
-        if (ReturnToChromeExperimentsUtil.willHandleLoadUrlWithPostDataFromStartSurface(url,
-                    transition, postDataType, postData, mLocationBarDataProvider.isIncognito(),
-                    parentTab)) {
+        if (mOverrideUrlLoadingDelegate.willHandleLoadUrlWithPostData(url, transition, postDataType,
+                    postData, mLocationBarDataProvider.isIncognito())) {
             return;
         }
 

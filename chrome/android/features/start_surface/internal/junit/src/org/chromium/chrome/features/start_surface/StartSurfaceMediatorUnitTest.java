@@ -59,7 +59,6 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
@@ -135,8 +134,6 @@ public class StartSurfaceMediatorUnitTest {
     private PrefService mPrefService;
     @Mock
     private OneshotSupplier<StartSurface> mStartSurfaceSupplier;
-    @Mock
-    private ObservableSupplier<Tab> mParentTabSupplier;
     @Captor
     private ArgumentCaptor<EmptyTabModelSelectorObserver> mTabModelSelectorObserverCaptor;
     @Captor
@@ -1730,19 +1727,6 @@ public class StartSurfaceMediatorUnitTest {
                 equalTo(tabSwitcherTitleTopMargin));
     }
 
-    @Test
-    public void setParentTabSupplierForFakeBox() {
-        doReturn(mVoiceRecognitionHandler).when(mFakeBoxDelegate).getVoiceRecognitionHandler();
-        doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();
-        StartSurfaceMediator mediator = createStartSurfaceMediator(SurfaceMode.SINGLE_PANE, false);
-
-        mediator.showOverview(false);
-        verify(mFakeBoxDelegate).setParentTabSupplier(eq(mParentTabSupplier));
-
-        mediator.hideOverview(false);
-        verify(mFakeBoxDelegate).setParentTabSupplier(eq(null));
-    }
-
     private StartSurfaceMediator createStartSurfaceMediator(
             @SurfaceMode int mode, boolean excludeMVTiles) {
         return createStartSurfaceMediator(mode, excludeMVTiles, false);
@@ -1766,7 +1750,7 @@ public class StartSurfaceMediatorUnitTest {
                 mTabModelSelector, mode == SurfaceMode.NO_START_SURFACE ? null : mPropertyModel,
                 mode == SurfaceMode.SINGLE_PANE ? mSecondaryTasksSurfaceInitializer : null, mode,
                 mNightModeStateProvider, mBrowserControlsStateProvider, mActivityStateChecker,
-                mParentTabSupplier, excludeMVTiles, showStackTabSwitcher, mStartSurfaceSupplier);
+                excludeMVTiles, showStackTabSwitcher, mStartSurfaceSupplier);
         return mediator;
     }
 }

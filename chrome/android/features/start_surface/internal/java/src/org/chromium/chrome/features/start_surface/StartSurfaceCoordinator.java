@@ -125,7 +125,7 @@ public class StartSurfaceCoordinator implements StartSurface {
                                                         : null,
                 mSurfaceMode, mActivity.getNightModeStateProvider(),
                 mActivity.getBrowserControlsManager(), this::isActivityFinishingOrDestroyed,
-                mParentTabSupplier, excludeMVTiles,
+                excludeMVTiles,
                 StartSurfaceConfiguration.START_SURFACE_SHOW_STACK_TAB_SWITCHER.getValue(),
                 startSurfaceOneshotSupplier);
 
