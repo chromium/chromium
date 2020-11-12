@@ -52,10 +52,11 @@
     cookieAccessSemantics = net::CookieAccessSemantics::UNKNOWN;
   }
   for (NSHTTPCookie* cookie in self.cookies) {
-    net::CanonicalCookie canonical_cookie =
+    std::unique_ptr<net::CanonicalCookie> canonical_cookie =
         net::CanonicalCookieFromSystemCookie(cookie, base::Time());
-    if (canonical_cookie
-            .IncludeForRequestURL(gURL, options, cookieAccessSemantics)
+    if (canonical_cookie &&
+        canonical_cookie
+            ->IncludeForRequestURL(gURL, options, cookieAccessSemantics)
             .status.IsInclude())
       [result addObject:cookie];
   }

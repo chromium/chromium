@@ -72,7 +72,7 @@ void ReportUMACookieLoss(CookieLossType loss, CookieEvent event) {
 }  // namespace
 
 // Converts NSHTTPCookie to net::CanonicalCookie.
-net::CanonicalCookie CanonicalCookieFromSystemCookie(
+std::unique_ptr<net::CanonicalCookie> CanonicalCookieFromSystemCookie(
     NSHTTPCookie* cookie,
     const base::Time& ceation_time) {
   net::CookieSameSite same_site = net::CookieSameSite::NO_RESTRICTION;
@@ -89,7 +89,7 @@ net::CanonicalCookie CanonicalCookieFromSystemCookie(
       same_site = net::CookieSameSite::NO_RESTRICTION;
   }
 
-  return *std::move(net::CanonicalCookie::FromStorage(
+  return net::CanonicalCookie::FromStorage(
       base::SysNSStringToUTF8([cookie name]),
       base::SysNSStringToUTF8([cookie value]),
       base::SysNSStringToUTF8([cookie domain]),
@@ -99,7 +99,7 @@ net::CanonicalCookie CanonicalCookieFromSystemCookie(
       // When iOS begins to support 'Priority' and 'SameParty' attributes, pass
       // them through here.
       net::COOKIE_PRIORITY_DEFAULT, false /* SameParty */,
-      net::CookieSourceScheme::kUnset));
+      net::CookieSourceScheme::kUnset);
 }
 
 void ReportGetCookiesForURLResult(SystemCookieStoreType store_type,

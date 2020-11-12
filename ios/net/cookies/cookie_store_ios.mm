@@ -448,8 +448,11 @@ void CookieStoreIOS::WriteToCookieMonster(NSArray* system_cookies) {
   NSUInteger cookie_count = [system_cookies count];
   cookie_list.reserve(cookie_count);
   for (NSHTTPCookie* cookie in system_cookies) {
-    cookie_list.push_back(CanonicalCookieFromSystemCookie(
-        cookie, system_store_->GetCookieCreationTime(cookie)));
+    if (std::unique_ptr<net::CanonicalCookie> canonical_cookie =
+            CanonicalCookieFromSystemCookie(
+                cookie, system_store_->GetCookieCreationTime(cookie))) {
+      cookie_list.push_back(*std::move(canonical_cookie));
+    }
   }
   cookie_monster_->SetAllCookiesAsync(cookie_list, SetCookiesCallback());
 
@@ -491,9 +494,11 @@ void CookieStoreIOS::DeleteCookiesMatchingPredicateAsync(
         for (NSHTTPCookie* cookie in cookies) {
           base::Time creation_time =
               weak_system_store->GetCookieCreationTime(cookie);
-          CanonicalCookie cc =
+          std::unique_ptr<net::CanonicalCookie> canonical_cookie =
               CanonicalCookieFromSystemCookie(cookie, creation_time);
-          if (shared_predicate.Run(cc)) {
+          if (!canonical_cookie)
+            continue;
+          if (shared_predicate.Run(*std::move(canonical_cookie))) {
             weak_system_store->DeleteCookieAsync(
                 cookie, SystemCookieStore::SystemCookieCallback());
             to_delete_count++;
@@ -577,9 +582,11 @@ void CookieStoreIOS::UpdateCacheForCookies(const GURL& gurl,
   std::vector<net::CanonicalCookie> out_added_cookies;
   for (NSHTTPCookie* nscookie in nscookies) {
     if (base::SysNSStringToUTF8(nscookie.name) == cookie_name) {
-      net::CanonicalCookie canonical_cookie = CanonicalCookieFromSystemCookie(
-          nscookie, system_store_->GetCookieCreationTime(nscookie));
-      cookies.push_back(canonical_cookie);
+      if (std::unique_ptr<net::CanonicalCookie> canonical_cookie =
+              CanonicalCookieFromSystemCookie(
+                  nscookie, system_store_->GetCookieCreationTime(nscookie))) {
+        cookies.push_back(*std::move(canonical_cookie));
+      }
     }
   }
 
@@ -673,7 +680,10 @@ CookieStoreIOS::CanonicalCookieListFromSystemCookies(NSArray* cookies) {
   cookie_list.reserve([cookies count]);
   for (NSHTTPCookie* cookie in cookies) {
     base::Time created = system_store_->GetCookieCreationTime(cookie);
-    cookie_list.push_back(CanonicalCookieFromSystemCookie(cookie, created));
+    if (std::unique_ptr<net::CanonicalCookie> canonical_cookie =
+            CanonicalCookieFromSystemCookie(cookie, created)) {
+      cookie_list.push_back(*std::move(canonical_cookie));
+    }
   }
   return cookie_list;
 }
@@ -685,8 +695,11 @@ CookieStoreIOS::CanonicalCookieWithAccessResultListFromSystemCookies(
   cookie_list.reserve([cookies count]);
   for (NSHTTPCookie* cookie in cookies) {
     base::Time created = system_store_->GetCookieCreationTime(cookie);
-    cookie_list.push_back({CanonicalCookieFromSystemCookie(cookie, created),
-                           net::CookieAccessResult()});
+    if (std::unique_ptr<net::CanonicalCookie> canonical_cookie =
+            CanonicalCookieFromSystemCookie(cookie, created)) {
+      cookie_list.push_back(
+          {*std::move(canonical_cookie), net::CookieAccessResult()});
+    }
   }
   return cookie_list;
 }

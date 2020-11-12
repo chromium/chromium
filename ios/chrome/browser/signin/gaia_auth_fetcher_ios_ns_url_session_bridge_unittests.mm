@@ -303,9 +303,12 @@ bool GaiaAuthFetcherIOSNSURLSessionBridgeTest::SetCookiesInCookieManager(
   network::mojom::CookieManager* cookie_manager =
       browser_state_->GetCookieManager();
   for (NSHTTPCookie* cookie in cookies) {
-    net::CanonicalCookie canonical_cookie =
+    std::unique_ptr<net::CanonicalCookie> canonical_cookie =
         net::CanonicalCookieFromSystemCookie(cookie, base::Time::Now());
-    if (!AddAllCookiesInCookieManager(cookie_manager, canonical_cookie))
+    if (!canonical_cookie)
+      continue;
+    if (!AddAllCookiesInCookieManager(cookie_manager,
+                                      *std::move(canonical_cookie)))
       return false;
   }
   return true;

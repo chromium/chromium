@@ -19,7 +19,7 @@ class Time;
 namespace net {
 
 // Converts NSHTTPCookie to net::CanonicalCookie.
-net::CanonicalCookie CanonicalCookieFromSystemCookie(
+std::unique_ptr<net::CanonicalCookie> CanonicalCookieFromSystemCookie(
     NSHTTPCookie* cookie,
     const base::Time& ceation_time);
 
