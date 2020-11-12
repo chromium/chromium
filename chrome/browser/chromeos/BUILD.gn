@@ -1411,6 +1411,8 @@ source_set("chromeos") {
     "first_run/steps/app_list_step.h",
     "first_run/steps/tray_step.cc",
     "first_run/steps/tray_step.h",
+    "full_restore/full_restore_prefs.cc",
+    "full_restore/full_restore_prefs.h",
     "guest_os/guest_os_external_protocol_handler.cc",
     "guest_os/guest_os_external_protocol_handler.h",
     "guest_os/guest_os_pref_names.cc",

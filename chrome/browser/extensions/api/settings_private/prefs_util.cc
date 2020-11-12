@@ -53,6 +53,7 @@
 #include "ash/public/cpp/ambient/ambient_prefs.h"
 #include "ash/public/cpp/ash_pref_names.h"  // nogncheck
 #include "chrome/browser/chromeos/crostini/crostini_pref_names.h"
+#include "chrome/browser/chromeos/full_restore/full_restore_prefs.h"
 #include "chrome/browser/chromeos/guest_os/guest_os_pref_names.h"
 #include "chrome/browser/chromeos/ownership/owner_settings_service_chromeos.h"
 #include "chrome/browser/chromeos/ownership/owner_settings_service_chromeos_factory.h"
@@ -592,6 +593,10 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::PREF_TYPE_STRING;
   (*s_allowlist)[arc::prefs::kAlwaysOnVpnLockdown] =
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
+
+  // Restore apps and pages on startup
+  (*s_allowlist)[chromeos::full_restore::kRestoreAppsAndPagesPrefName] =
+      settings_api::PrefType::PREF_TYPE_NUMBER;
 
   // Timezone settings.
   (*s_allowlist)[chromeos::kSystemTimezone] =
