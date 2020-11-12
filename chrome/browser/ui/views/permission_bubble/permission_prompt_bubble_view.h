@@ -7,6 +7,7 @@
 
 #include "base/macros.h"
 #include "base/strings/string16.h"
+#include "chrome/browser/ui/views/permission_bubble/permission_prompt_style.h"
 #include "components/permissions/permission_prompt.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
@@ -18,7 +19,8 @@ class PermissionPromptBubbleView : public views::BubbleDialogDelegateView {
  public:
   PermissionPromptBubbleView(Browser* browser,
                              permissions::PermissionPrompt::Delegate* delegate,
-                             base::TimeTicks permission_requested_time);
+                             base::TimeTicks permission_requested_time,
+                             PermissionPromptStyle prompt_style);
   ~PermissionPromptBubbleView() override;
 
   void Show();

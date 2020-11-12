@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/permission_bubble/permission_prompt_bubble_view.h"
+#include "chrome/browser/ui/views/permission_bubble/permission_prompt_style.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/permissions/permission_util.h"
@@ -67,7 +68,8 @@ class TestDelegate : public permissions::PermissionPrompt::Delegate {
 TEST_F(PermissionPromptBubbleViewTest, AccessibleTitleMentionsPermissions) {
   TestDelegate delegate(GURL("https://test.origin"), {"foo", "bar"});
   auto bubble = std::make_unique<PermissionPromptBubbleView>(
-      nullptr, &delegate, base::TimeTicks::Now());
+      nullptr, &delegate, base::TimeTicks::Now(),
+      PermissionPromptStyle::kBubbleOnly);
 
   EXPECT_PRED_FORMAT2(::testing::IsSubstring, "foo",
                       base::UTF16ToUTF8(bubble->GetAccessibleWindowTitle()));
@@ -78,7 +80,8 @@ TEST_F(PermissionPromptBubbleViewTest, AccessibleTitleMentionsPermissions) {
 TEST_F(PermissionPromptBubbleViewTest, AccessibleTitleMentionsOrigin) {
   TestDelegate delegate(GURL("https://test.origin"), {"foo", "bar"});
   auto bubble = std::make_unique<PermissionPromptBubbleView>(
-      nullptr, &delegate, base::TimeTicks::Now());
+      nullptr, &delegate, base::TimeTicks::Now(),
+      PermissionPromptStyle::kBubbleOnly);
 
   // Note that the scheme is not usually included.
   EXPECT_PRED_FORMAT2(::testing::IsSubstring, "test.origin",
@@ -90,7 +93,8 @@ TEST_F(PermissionPromptBubbleViewTest,
   TestDelegate delegate(GURL("https://test.origin"),
                         {"foo", "bar", "baz", "quxx"});
   auto bubble = std::make_unique<PermissionPromptBubbleView>(
-      nullptr, &delegate, base::TimeTicks::Now());
+      nullptr, &delegate, base::TimeTicks::Now(),
+      PermissionPromptStyle::kBubbleOnly);
 
   const auto title = base::UTF16ToUTF8(bubble->GetAccessibleWindowTitle());
   EXPECT_PRED_FORMAT2(::testing::IsSubstring, "foo", title);
@@ -103,7 +107,8 @@ TEST_F(PermissionPromptBubbleViewTest,
        AccessibleTitleFileSchemeMentionsThisFile) {
   TestDelegate delegate(GURL("file:///tmp/index.html"), {"foo", "bar"});
   auto bubble = std::make_unique<PermissionPromptBubbleView>(
-      nullptr, &delegate, base::TimeTicks::Now());
+      nullptr, &delegate, base::TimeTicks::Now(),
+      PermissionPromptStyle::kBubbleOnly);
 
   EXPECT_PRED_FORMAT2(::testing::IsSubstring,
                       base::UTF16ToUTF8(l10n_util::GetStringUTF16(
@@ -117,7 +122,8 @@ TEST_F(PermissionPromptBubbleViewTest,
                          ContentSettingsType::MEDIASTREAM_CAMERA,
                          ContentSettingsType::CAMERA_PAN_TILT_ZOOM});
   auto bubble = std::make_unique<PermissionPromptBubbleView>(
-      nullptr, &delegate, base::TimeTicks::Now());
+      nullptr, &delegate, base::TimeTicks::Now(),
+      PermissionPromptStyle::kBubbleOnly);
 
   const auto title = base::UTF16ToUTF8(bubble->GetAccessibleWindowTitle());
   EXPECT_PRED_FORMAT2(::testing::IsSubstring, "AudioCapture", title);

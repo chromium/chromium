@@ -20,7 +20,6 @@
 #include "chrome/browser/ui/views/title_origin_label.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/permissions/features.h"
 #include "components/permissions/permission_request.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/elide_url.h"
@@ -43,7 +42,8 @@
 PermissionPromptBubbleView::PermissionPromptBubbleView(
     Browser* browser,
     permissions::PermissionPrompt::Delegate* delegate,
-    base::TimeTicks permission_requested_time)
+    base::TimeTicks permission_requested_time,
+    PermissionPromptStyle prompt_style)
     : browser_(browser),
       delegate_(delegate),
       visible_requests_(GetVisibleRequests()),
@@ -67,10 +67,11 @@ PermissionPromptBubbleView::PermissionPromptBubbleView(
   SetCancelCallback(base::BindOnce(&PermissionPromptBubbleView::DenyPermission,
                                    base::Unretained(this)));
 
-  // If the permission chip feature is enabled, the chip is indicating the
-  // pending permission request and so the bubble can be opened and closed
-  // repeatedly.
-  if (!base::FeatureList::IsEnabled(permissions::features::kPermissionChip)) {
+  // If bubble hanging off the padlock icon, with no chip showing, it shouldn't
+  // close on deactivate and it should stick until user makes a decision.
+  // Otherwise, the chip is indicating the pending permission request and so the
+  // bubble can be opened and closed repeatedly.
+  if (prompt_style == PermissionPromptStyle::kBubbleOnly) {
     set_close_on_deactivate(false);
     DialogDelegate::SetCloseCallback(
         base::BindOnce(&PermissionPromptBubbleView::ClosingPermission,

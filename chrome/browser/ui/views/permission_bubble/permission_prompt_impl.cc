@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "chrome/browser/content_settings/chrome_content_settings_utils.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/permission_bubble/permission_prompt.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -19,15 +18,6 @@
 #include "components/permissions/permission_uma_util.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/views/bubble/bubble_frame_view.h"
-
-enum class PermissionPromptImpl::PromptStyle {
-  // The permission prompt bubble is shown directly.
-  kBubble,
-  // The permission chip view in the location bar.
-  kChip,
-  // The prompt as an indicator in the right side of the omnibox.
-  kQuiet
-};
 
 std::unique_ptr<permissions::PermissionPrompt> CreatePermissionPrompt(
     content::WebContents* web_contents,
@@ -45,30 +35,30 @@ std::unique_ptr<permissions::PermissionPrompt> CreatePermissionPrompt(
 PermissionPromptImpl::PermissionPromptImpl(Browser* browser,
                                            content::WebContents* web_contents,
                                            Delegate* delegate)
-    : prompt_bubble_(nullptr), web_contents_(web_contents) {
+    : prompt_bubble_(nullptr),
+      web_contents_(web_contents),
+      delegate_(delegate),
+      browser_(browser) {
   permissions::PermissionRequestManager* manager =
       permissions::PermissionRequestManager::FromWebContents(web_contents_);
   if (manager->ShouldCurrentRequestUseQuietUI()) {
-    prompt_style_ = PromptStyle::kQuiet;
+    prompt_style_ = PermissionPromptStyle::kQuiet;
     // Shows the prompt as an indicator in the right side of the omnibox.
     content_settings::UpdateLocationBarUiForWebContents(web_contents_);
   } else {
     LocationBarView* lbv = GetLocationBarView();
     std::vector<permissions::PermissionRequest*> requests =
         delegate->Requests();
+    const bool should_use_chip_ui = std::all_of(
+        requests.begin(), requests.end(),
+        [](auto* request) { return request->GetChipText().has_value(); });
     if (base::FeatureList::IsEnabled(permissions::features::kPermissionChip) &&
-        lbv && std::all_of(requests.begin(), requests.end(), [](auto* request) {
-          return request->GetChipText().has_value();
-        })) {
+        lbv && lbv->IsDrawn() && should_use_chip_ui) {
       permission_chip_ = lbv->permission_chip();
       permission_chip_->Show(delegate);
-      prompt_style_ = PromptStyle::kChip;
+      prompt_style_ = PermissionPromptStyle::kChip;
     } else {
-      prompt_bubble_ = new PermissionPromptBubbleView(browser, delegate,
-                                                      base::TimeTicks::Now());
-      prompt_bubble_->Show();
-      prompt_bubble_->GetWidget()->AddObserver(this);
-      prompt_style_ = PromptStyle::kBubble;
+      ShowBubble();
     }
   }
 }
@@ -83,29 +73,35 @@ PermissionPromptImpl::~PermissionPromptImpl() {
   if (prompt_bubble_)
     prompt_bubble_->GetWidget()->Close();
 
-  if (prompt_style_ == PromptStyle::kQuiet) {
+  if (prompt_style_ == PermissionPromptStyle::kQuiet) {
     // Hides the quiet prompt.
     content_settings::UpdateLocationBarUiForWebContents(web_contents_);
   }
 
-  if (prompt_style_ == PromptStyle::kChip && permission_chip_) {
+  if (prompt_style_ == PermissionPromptStyle::kChip && permission_chip_) {
     permission_chip_->Hide();
   }
   CHECK(!IsInObserverList());
 }
 
 void PermissionPromptImpl::UpdateAnchorPosition() {
+  // TODO(olesiamarukhno): Figure out if we need to switch UI styles (chip to
+  // bubble and vice versa) here.
   if (prompt_bubble_)
     prompt_bubble_->UpdateAnchorPosition();
 }
 
 LocationBarView* PermissionPromptImpl::GetLocationBarView() {
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents_);
-  if (!browser)
-    return nullptr;
-
-  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser_);
   return browser_view ? browser_view->GetLocationBarView() : nullptr;
+}
+
+void PermissionPromptImpl::ShowBubble() {
+  prompt_style_ = PermissionPromptStyle::kBubbleOnly;
+  prompt_bubble_ = new PermissionPromptBubbleView(
+      browser_, delegate_, base::TimeTicks::Now(), prompt_style_);
+  prompt_bubble_->Show();
+  prompt_bubble_->GetWidget()->AddObserver(this);
 }
 
 permissions::PermissionPrompt::TabSwitchingBehavior
@@ -117,11 +113,11 @@ PermissionPromptImpl::GetTabSwitchingBehavior() {
 permissions::PermissionPromptDisposition
 PermissionPromptImpl::GetPromptDisposition() const {
   switch (prompt_style_) {
-    case PromptStyle::kBubble:
+    case PermissionPromptStyle::kBubbleOnly:
       return permissions::PermissionPromptDisposition::ANCHORED_BUBBLE;
-    case PromptStyle::kChip:
+    case PermissionPromptStyle::kChip:
       return permissions::PermissionPromptDisposition::LOCATION_BAR_LEFT_CHIP;
-    case PromptStyle::kQuiet: {
+    case PermissionPromptStyle::kQuiet: {
       permissions::PermissionRequestManager* manager =
           permissions::PermissionRequestManager::FromWebContents(web_contents_);
       return permissions::NotificationPermissionUiSelector::

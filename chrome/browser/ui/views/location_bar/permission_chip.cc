@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/permission_bubble/permission_prompt_bubble_view.h"
+#include "chrome/browser/ui/views/permission_bubble/permission_prompt_style.h"
 #include "components/permissions/permission_request.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
@@ -198,8 +199,8 @@ void PermissionChip::ChipButtonPressed() {
   // deactivation.
   DCHECK(!prompt_bubble_);
 
-  prompt_bubble_ =
-      new PermissionPromptBubbleView(browser_, delegate_, requested_time_);
+  prompt_bubble_ = new PermissionPromptBubbleView(
+      browser_, delegate_, requested_time_, PermissionPromptStyle::kChip);
   prompt_bubble_->Show();
   prompt_bubble_->GetWidget()->AddObserver(this);
   // Restart the timer after user clicks on the chip to open the bubble.

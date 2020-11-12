@@ -3889,6 +3889,7 @@ static_library("ui") {
       "views/permission_bubble/permission_prompt_bubble_view.h",
       "views/permission_bubble/permission_prompt_impl.cc",
       "views/permission_bubble/permission_prompt_impl.h",
+      "views/permission_bubble/permission_prompt_style.h",
       "views/profiles/avatar_toolbar_button.cc",
       "views/profiles/avatar_toolbar_button.h",
       "views/profiles/avatar_toolbar_button_delegate.cc",
