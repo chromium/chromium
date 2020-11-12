@@ -12,9 +12,9 @@
 #include "base/macros.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
-#include "chrome/browser/subresource_filter/test_ruleset_publisher.h"
 #include "components/safe_browsing/core/db/util.h"
 #include "components/subresource_filter/content/browser/subresource_filter_profile_context.h"
+#include "components/subresource_filter/content/browser/test_ruleset_publisher.h"
 #include "components/subresource_filter/core/browser/subresource_filter_features_test_support.h"
 #include "components/subresource_filter/core/common/test_ruleset_creator.h"
 #include "components/url_pattern_index/proto/rules.pb.h"
@@ -121,7 +121,6 @@ class SubresourceFilterBrowserTest : public PlatformBrowserTest {
 
   TestRulesetCreator ruleset_creator_;
   ScopedSubresourceFilterConfigurator scoped_configuration_;
-  TestRulesetPublisher test_ruleset_publisher_;
 
   std::unique_ptr<TestSafeBrowsingDatabaseHelper> database_helper_;
 

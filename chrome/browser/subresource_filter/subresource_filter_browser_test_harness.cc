@@ -19,7 +19,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/test_safe_browsing_database_helper.h"
 #include "chrome/browser/subresource_filter/subresource_filter_profile_context_factory.h"
-#include "chrome/browser/subresource_filter/test_ruleset_publisher.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "components/blocked_content/safe_browsing_triggered_popup_blocker.h"
@@ -28,6 +27,7 @@
 #include "components/safe_browsing/core/features.h"
 #include "components/subresource_filter/content/browser/ruleset_service.h"
 #include "components/subresource_filter/content/browser/subresource_filter_profile_context.h"
+#include "components/subresource_filter/content/browser/test_ruleset_publisher.h"
 #include "components/subresource_filter/core/common/common_features.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_paths.h"
@@ -206,16 +206,22 @@ void SubresourceFilterBrowserTest::SetRulesetToDisallowURLsWithPathSuffix(
   TestRulesetPair test_ruleset_pair;
   ruleset_creator_.CreateRulesetToDisallowURLsWithPathSuffix(
       suffix, &test_ruleset_pair);
+
+  TestRulesetPublisher test_ruleset_publisher(
+      g_browser_process->subresource_filter_ruleset_service());
   ASSERT_NO_FATAL_FAILURE(
-      test_ruleset_publisher_.SetRuleset(test_ruleset_pair.unindexed));
+      test_ruleset_publisher.SetRuleset(test_ruleset_pair.unindexed));
 }
 
 void SubresourceFilterBrowserTest::SetRulesetWithRules(
     const std::vector<proto::UrlRule>& rules) {
   TestRulesetPair test_ruleset_pair;
   ruleset_creator_.CreateRulesetWithRules(rules, &test_ruleset_pair);
+
+  TestRulesetPublisher test_ruleset_publisher(
+      g_browser_process->subresource_filter_ruleset_service());
   ASSERT_NO_FATAL_FAILURE(
-      test_ruleset_publisher_.SetRuleset(test_ruleset_pair.unindexed));
+      test_ruleset_publisher.SetRuleset(test_ruleset_pair.unindexed));
 }
 
 

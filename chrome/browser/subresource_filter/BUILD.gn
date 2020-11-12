@@ -41,27 +41,16 @@ if (is_android) {
       "//third_party/junit",
     ]
   }
-}
 
-source_set("test_support") {
-  testonly = true
-  sources = [
-    "test_ruleset_publisher.cc",
-    "test_ruleset_publisher.h",
-  ]
-  deps = [
-    "//chrome/browser",
-    "//components/subresource_filter/content/browser:browser",
-    "//components/subresource_filter/core/browser:browser",
-    "//components/subresource_filter/core/common:test_support",
-    "//net",
-    "//services/network/public/mojom",
-    "//testing/gtest:gtest",
-    "//third_party/protobuf:protobuf_lite",
-  ]
-
-  if (is_android) {
-    sources += [ "android_test_ruleset_publisher.cc" ]
-    deps += [ ":jni_headers" ]
+  source_set("android_test_support") {
+    testonly = true
+    sources = [ "android_test_ruleset_publisher.cc" ]
+    deps = [
+      ":jni_headers",
+      "//base",
+      "//chrome/browser",
+      "//components/subresource_filter/content/browser",
+      "//components/subresource_filter/core/common:test_support",
+    ]
   }
 }

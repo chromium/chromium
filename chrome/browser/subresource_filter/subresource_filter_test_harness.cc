@@ -16,7 +16,6 @@
 #include "chrome/browser/subresource_filter/chrome_subresource_filter_client.h"
 #include "chrome/browser/subresource_filter/subresource_filter_profile_context_factory.h"
 #include "chrome/browser/subresource_filter/subresource_filter_test_harness.h"
-#include "chrome/browser/subresource_filter/test_ruleset_publisher.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
@@ -25,6 +24,7 @@
 #include "components/subresource_filter/content/browser/subresource_filter_content_settings_manager.h"
 #include "components/subresource_filter/content/browser/subresource_filter_observer_test_utils.h"
 #include "components/subresource_filter/content/browser/subresource_filter_profile_context.h"
+#include "components/subresource_filter/content/browser/test_ruleset_publisher.h"
 #include "components/subresource_filter/core/common/activation_decision.h"
 #include "components/subresource_filter/core/common/activation_list.h"
 #include "components/subresource_filter/core/common/test_ruleset_creator.h"
@@ -98,7 +98,8 @@ void SubresourceFilterTestHarness::SetUp() {
        subresource_filter::testing::CreateAllowlistSuffixRule(
            kDefaultAllowedSuffix)},
       &test_ruleset_pair);
-  subresource_filter::testing::TestRulesetPublisher test_ruleset_publisher;
+  subresource_filter::testing::TestRulesetPublisher test_ruleset_publisher(
+      g_browser_process->subresource_filter_ruleset_service());
   ASSERT_NO_FATAL_FAILURE(
       test_ruleset_publisher.SetRuleset(test_ruleset_pair.unindexed));
 

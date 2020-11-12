@@ -1573,7 +1573,7 @@ chrome_common_shared_library("libchromefortest") {
     "//base/test:test_support",
     "//chrome:chrome_android_core",
     "//chrome/browser/password_manager/android_test_helpers:android_wrappers",
-    "//chrome/browser/subresource_filter:test_support",
+    "//chrome/browser/subresource_filter:android_test_support",
     "//components/autofill_assistant/browser:test_support",
     "//components/crash/android:crash_android",
     "//components/minidump_uploader",

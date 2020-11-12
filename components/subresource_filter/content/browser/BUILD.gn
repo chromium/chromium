@@ -82,11 +82,14 @@ static_library("test_support") {
     "subframe_navigation_test_utils.h",
     "subresource_filter_observer_test_utils.cc",
     "subresource_filter_observer_test_utils.h",
+    "test_ruleset_publisher.cc",
+    "test_ruleset_publisher.h",
   ]
   deps = [
     ":browser",
     "//base/test:test_support",
     "//components/subresource_filter/core/common",
+    "//components/subresource_filter/core/common:test_support",
     "//content/public/browser",
     "//content/test:test_support",
     "//net",

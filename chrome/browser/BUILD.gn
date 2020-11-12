@@ -6582,7 +6582,6 @@ static_library("test_support") {
   deps = [
     "//chrome/app/theme:theme_resources",
     "//chrome/browser",
-    "//chrome/browser/subresource_filter:test_support",
     "//chrome/common",
     "//chrome/common/safe_browsing:proto",
     "//components/consent_auditor:test_support",
