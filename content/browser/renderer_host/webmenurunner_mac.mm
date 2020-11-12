@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include "base/base64.h"
 #include "base/strings/sys_string_conversions.h"
 
 @interface WebMenuRunner (PrivateAPI)
@@ -44,6 +45,16 @@
   }
 
   NSString* title = base::SysUTF8ToNSString(item->label.value_or(""));
+  // https://crbug.com/1140620: SysUTF8ToNSString will return nil if the bits
+  // that it is passed cannot be turned into a CFString. If this nil value is
+  // passed to -[NSMenuItem addItemWithTitle:action:keyEquivalent], Chromium
+  // will crash. Therefore, for debugging, if the result is nil, substitute in
+  // the raw bytes, encoded for safety in base64, to allow for investigation.
+  if (!title) {
+    std::string base64;
+    base::Base64Encode(*item->label, &base64);
+    title = base::SysUTF8ToNSString(base64);
+  }
   NSMenuItem* menuItem = [_menu addItemWithTitle:title
                                           action:@selector(menuItemSelected:)
                                    keyEquivalent:@""];
