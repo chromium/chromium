@@ -598,6 +598,8 @@ void AddResetStrings(content::WebUIDataSource* html_source, Profile* profile) {
 #endif
     {"resetTrigger", IDS_SETTINGS_RESET_SETTINGS_TRIGGER},
     {"resetPageExplanation", IDS_RESET_PROFILE_SETTINGS_EXPLANATION},
+    {"resetPageExplanationBulletPoints",
+     IDS_RESET_PROFILE_SETTINGS_EXPLANATION_IN_BULLET_POINTS},
     {"triggeredResetPageExplanation",
      IDS_TRIGGERED_RESET_PROFILE_SETTINGS_EXPLANATION},
     {"triggeredResetPageTitle", IDS_TRIGGERED_RESET_PROFILE_SETTINGS_TITLE},
@@ -618,6 +620,13 @@ void AddResetStrings(content::WebUIDataSource* html_source, Profile* profile) {
   html_source->AddBoolean(
       "showResetProfileBanner",
       ResetSettingsHandler::ShouldShowResetProfileBanner(profile));
+  bool is_reset_shortcuts_feature_enabled = false;
+#if defined(OS_WIN)
+  is_reset_shortcuts_feature_enabled =
+      base::FeatureList::IsEnabled(safe_browsing::kResetShortcutsFeature);
+#endif
+  html_source->AddBoolean("showExplanationWithBulletPoints",
+                          is_reset_shortcuts_feature_enabled);
 
   html_source->AddString("resetPageLearnMoreUrl",
                          chrome::kResetProfileSettingsLearnMoreURL);

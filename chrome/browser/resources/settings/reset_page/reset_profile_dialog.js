@@ -18,6 +18,7 @@ import 'chrome://resources/cr_elements/action_link_css.m.js';
 import 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 import '../settings_shared_css.m.js';
 
+import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -32,7 +33,10 @@ Polymer({
 
   _template: html`{__html_template__}`,
 
-  behaviors: [WebUIListenerBehavior],
+  behaviors: [
+    WebUIListenerBehavior,
+    I18nBehavior,
+  ],
 
   properties: {
     // TODO(dpapad): Evaluate whether this needs to be synced across different
@@ -72,6 +76,14 @@ Polymer({
       return loadTimeData.getStringF(
           'triggeredResetPageExplanation', this.triggeredResetToolName_);
     }
+
+    if (loadTimeData.getBoolean('showExplanationWithBulletPoints')) {
+      return this.i18nAdvanced('resetPageExplanationBulletPoints', {
+        substitutions: [],
+        tags: ['LINE_BREAKS', 'LINE_BREAK'],
+      });
+    }
+
     return loadTimeData.getStringF('resetPageExplanation');
   },
 
