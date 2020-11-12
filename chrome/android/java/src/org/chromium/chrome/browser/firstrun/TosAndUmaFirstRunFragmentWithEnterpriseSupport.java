@@ -77,6 +77,10 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupport
             mLoadingSpinner.destroy();
             mLoadingSpinner = null;
         }
+        if (mSkipTosDialogPolicyListener != null) {
+            mSkipTosDialogPolicyListener.destroy();
+            mSkipTosDialogPolicyListener = null;
+        }
         super.onDestroy();
     }
 
@@ -113,7 +117,9 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupport
     @Override
     public void onNativeInitialized() {
         super.onNativeInitialized();
-        mPolicyServiceProvider.set(PolicyServiceFactory.getGlobalPolicyService());
+        if (mSkipTosDialogPolicyListener != null && mSkipTosDialogPolicyListener.get() == null) {
+            mPolicyServiceProvider.set(PolicyServiceFactory.getGlobalPolicyService());
+        }
     }
 
     @Override

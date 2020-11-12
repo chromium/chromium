@@ -23,23 +23,49 @@
         android:scaleType="fitCenter"
         android:src="@drawable/product_logo_name" />
 
-    <org.chromium.ui.widget.TextViewWithClickableSpans
-        android:id="@+id/lightweight_fre_tos_and_privacy"
-        android:layout_width="wrap_content"
+    <FrameLayout
+        android:id="@+id/lightweight_fre_body"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/lightweight_fre_head_image"
-        android:layout_marginBottom="32dp"
-        android:lineSpacingMultiplier="1.64"
-        android:paddingEnd="24dp"
-        android:paddingStart="24dp"
-        android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
+        android:layout_marginBottom="32dp">
+
+        <org.chromium.ui.widget.TextViewWithClickableSpans
+            android:id="@+id/lightweight_fre_tos_and_privacy"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:lineSpacingMultiplier="1.64"
+            android:paddingEnd="24dp"
+            android:paddingStart="24dp"
+            android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
+
+        <!-- The FrameLayout here is to facilitate adding a proper content description for
+         the loading view. During development, it didn't seem possible to override the
+         LoadingView contentDescription in XML, but if there's support for this at some
+         point then we can remove the FrameLayout. -->
+        <FrameLayout
+            android:id="@+id/loading_view_container"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:contentDescription="@string/sync_loading"
+            android:visibility="gone">
+
+            <org.chromium.components.browser_ui.widget.LoadingView
+                android:id="@+id/loading_view"
+                style="@style/Widget.AppCompat.ProgressBar"
+                android:layout_height="@dimen/fre_loading_spinner_size"
+                android:layout_width="@dimen/fre_loading_spinner_size"
+                android:visibility="gone"/>
+        </FrameLayout>
+    </FrameLayout>
 
     <org.chromium.components.browser_ui.widget.DualControlLayout
         android:id="@+id/lightweight_fre_buttons"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
-        android:layout_below="@id/lightweight_fre_tos_and_privacy"
+        android:layout_below="@id/lightweight_fre_body"
         android:paddingEnd="8dp"
         android:paddingStart="8dp"
         app:buttonAlignment="end"

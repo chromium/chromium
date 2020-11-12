@@ -250,16 +250,19 @@ public abstract class FirstRunFlowSequencer  {
             // Promo pages are removed, so there is nothing else to show in FRE.
             return false;
         }
-        if (isCct && FirstRunStatus.isEphemeralSkipFirstRun()) {
+        if (FirstRunStatus.isEphemeralSkipFirstRun() && (isCct || preferLightweightFre)) {
             // Domain policies may have caused CCTs to skip the FRE. While this needs to be figured
             // out at runtime for each app restart, it should apply to all CCTs for the duration of
             // the app's lifetime.
             // TODO(https://crbug.com/1108582): Replace this with a shared pref.
             return false;
         }
-        return !preferLightweightFre
-                || (!FirstRunStatus.shouldSkipWelcomePage()
-                           && !FirstRunStatus.getLightweightFirstRunFlowComplete());
+        if (preferLightweightFre
+                && (FirstRunStatus.shouldSkipWelcomePage()
+                        || FirstRunStatus.getLightweightFirstRunFlowComplete())) {
+            return false;
+        }
+        return true;
     }
 
     /**

@@ -781,6 +781,44 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram
+    name="MobileFre.Lightweight.EnterprisePolicyCheckSpeed{MobileFreInflationSpeedComparison}"
+    units="ms" expires_after="2021-07-31">
+  <owner>skym@chromium.org</owner>
+  <owner>wenyufu@chromium.org</owner>
+  <summary>
+    Android: Records the time it takes from Lightweight FRE launch to the
+    enterprise policy check completing. This check is often skipped when its
+    result becomes irrelevant. {MobileFreInflationSpeedComparison}
+  </summary>
+  <token key="MobileFreInflationSpeedComparison"
+      variants="MobileFreInflationSpeedComparison"/>
+</histogram>
+
+<histogram
+    name="MobileFre.Lightweight.IsDeviceOwnedCheckSpeed{MobileFreInflationSpeedComparison}"
+    units="ms" expires_after="2021-07-31">
+  <owner>skym@chromium.org</owner>
+  <owner>wenyufu@chromium.org</owner>
+  <summary>
+    Android: Records the time it takes from from Lightweight FRE launch to the
+    device ownership check completing. This check is often skipped when its
+    result becomes irrelevant. {MobileFreInflationSpeedComparison}
+  </summary>
+  <token key="MobileFreInflationSpeedComparison"
+      variants="MobileFreInflationSpeedComparison"/>
+</histogram>
+
+<histogram name="MobileFre.Lightweight.LoadingDuration" units="ms"
+    expires_after="2021-07-31">
+  <owner>skym@chromium.org</owner>
+  <owner>wenyufu@chromium.org</owner>
+  <summary>
+    Android: Records how long it takes waiting from the dialog for Lightweight
+    FRE created to content fully loaded - either ToS is shown or FRE is skipped.
+  </summary>
+</histogram>
+
 <histogram name="MobileFre.Progress" enum="MobileFreProgress"
     expires_after="2021-04-18">
   <owner>bsazonov@chromium.org</owner>
