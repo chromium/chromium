@@ -1138,13 +1138,6 @@ class CORE_EXPORT LocalFrameView final
 
   HeapHashSet<WeakMember<HTMLVideoElement>> fullscreen_video_elements_;
 
-  // If set, this indicates that the rendering throttling status for the local
-  // root frame has changed. In this scenario, if we have become unthrottled,
-  // this is a no-op since we run paint anyway. However, if we have become
-  // throttled, this will force the lifecycle to reach the paint phase so that
-  // it can clear the painted output.
-  bool need_paint_phase_after_throttling_ = false;
-
   std::unique_ptr<OverlayInterstitialAdDetector>
       overlay_interstitial_ad_detector_;
 

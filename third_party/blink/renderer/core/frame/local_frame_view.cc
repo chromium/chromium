@@ -2577,11 +2577,6 @@ void LocalFrameView::UpdateLifecyclePhasesInternal(
 #if DCHECK_IS_ON()
   DisallowLayoutInvalidationScope disallow_layout_invalidation(this);
 #endif
-  // Now that we have run the lifecycle up to paint, we can reset
-  // |need_paint_phase_after_throttling_| so that the paint phase will
-  // properly see us as being throttled (if that was the only reason we remained
-  // unthrottled), and clear the painted output.
-  need_paint_phase_after_throttling_ = false;
 
   DCHECK_EQ(target_state, DocumentLifecycle::kPaintClean);
   RunPaintLifecyclePhase();
@@ -4329,14 +4324,15 @@ void LocalFrameView::RenderThrottlingStatusChanged() {
   if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
     SetPaintArtifactCompositorNeedsUpdate();
 
-  if (!CanThrottleRendering())
+  if (!CanThrottleRendering()) {
     InvalidateForThrottlingChange();
-
-  // If we have become unthrottled, this is essentially a no-op since we're
-  // going to paint anyway. If we have become throttled, then this will force
-  // one lifecycle update to clear the painted output.
-  if (GetFrame().IsLocalRoot())
-    need_paint_phase_after_throttling_ = true;
+  } else if (GetFrame().IsLocalRoot()) {
+    // By this point, every frame in the local frame tree has become throttled,
+    // so painting the tree should just clear the previous painted output.
+    DCHECK(!in_lifecycle_update_);
+    AllowThrottlingScope allow_throtting(*this);
+    RunPaintLifecyclePhase();
+  }
 
 #if DCHECK_IS_ON()
   // Make sure we never have an unthrottled frame inside a throttled one.
@@ -4438,10 +4434,8 @@ bool LocalFrameView::ShouldThrottleRendering() const {
   bool throttled_for_global_reasons = LocalFrameTreeAllowsThrottling() &&
                                       CanThrottleRendering() &&
                                       frame_->GetDocument();
-  if (!throttled_for_global_reasons || needs_forced_compositing_update_ ||
-      need_paint_phase_after_throttling_) {
+  if (!throttled_for_global_reasons || needs_forced_compositing_update_)
     return false;
-  }
 
   if (intersection_observation_state_ == kRequired) {
     auto* local_frame_root_view = GetFrame().LocalFrameRoot().View();
