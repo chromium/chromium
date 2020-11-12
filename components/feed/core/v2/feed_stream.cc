@@ -157,8 +157,7 @@ FeedStream::FeedStream(RefreshTaskScheduler* refresh_task_scheduler,
       chrome_info_(chrome_info),
       task_queue_(this),
       request_throttler_(profile_prefs, clock),
-      metadata_(feed_store),
-      notice_card_tracker_(profile_prefs) {
+      metadata_(feed_store) {
   static WireResponseTranslator default_translator;
   wire_response_translator_ = &default_translator;
 
@@ -577,8 +576,6 @@ RequestMetadata FeedStream::GetRequestMetadata() {
   result.display_metrics = delegate_->GetDisplayMetrics();
   result.language_tag = delegate_->GetLanguageTag();
   result.client_instance_id = GetClientInstanceId();
-  result.notice_card_acknowledged =
-      notice_card_tracker_.HasAcknowledgedNoticeCard();
   return result;
 }
 
@@ -710,12 +707,12 @@ void FeedStream::UnloadModel() {
   surface_updater_->SetModel(nullptr);
   model_.reset();
 }
+
 void FeedStream::ReportOpenAction(const std::string& slice_id) {
   int index = surface_updater_->GetSliceIndexFromSliceId(slice_id);
   if (index < 0)
     index = MetricsReporter::kUnknownCardIndex;
   metrics_reporter_->OpenAction(index);
-  notice_card_tracker_.OnOpenAction(index);
 }
 void FeedStream::ReportOpenVisitComplete(base::TimeDelta visit_time) {
   metrics_reporter_->OpenVisitComplete(visit_time);
@@ -725,7 +722,6 @@ void FeedStream::ReportOpenInNewTabAction(const std::string& slice_id) {
   if (index < 0)
     index = MetricsReporter::kUnknownCardIndex;
   metrics_reporter_->OpenInNewTabAction(index);
-  notice_card_tracker_.OnOpenAction(index);
 }
 void FeedStream::ReportOpenInNewIncognitoTabAction() {
   metrics_reporter_->OpenInNewIncognitoTabAction();
@@ -735,7 +731,6 @@ void FeedStream::ReportSliceViewed(SurfaceId surface_id,
   int index = surface_updater_->GetSliceIndexFromSliceId(slice_id);
   if (index >= 0) {
     UpdateShownSlicesUploadCondition(index);
-    notice_card_tracker_.OnSliceViewed(index);
     metrics_reporter_->ContentSliceViewed(surface_id, index);
   }
 }

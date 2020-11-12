@@ -40,7 +40,6 @@ struct RequestMetadata {
   std::string language_tag;
   std::string client_instance_id;
   DisplayMetrics display_metrics;
-  bool notice_card_acknowledged;
 };
 
 // Data internal to MetricsReporter which is persisted to Prefs.

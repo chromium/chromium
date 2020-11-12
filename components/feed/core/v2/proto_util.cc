@@ -17,7 +17,6 @@
 #include "components/feed/core/proto/v2/wire/request.pb.h"
 #include "components/feed/core/v2/config.h"
 #include "components/feed/core/v2/feed_stream.h"
-#include "components/feed/feed_feature_list.h"
 
 #if defined(OS_ANDROID)
 #include "base/android/build_info.h"
@@ -137,16 +136,6 @@ feedwire::Request CreateFeedQueryRequest(
   return request;
 }
 
-void SetNoticeCardAcknowledged(feedwire::Request* request,
-                               const RequestMetadata& request_metadata) {
-  if (request_metadata.notice_card_acknowledged) {
-    request->mutable_feed_request()
-        ->mutable_feed_query()
-        ->mutable_chrome_fulfillment_info()
-        ->set_notice_card_acknowledged(true);
-  }
-}
-
 }  // namespace
 
 std::string ContentIdString(const feedwire::ContentId& content_id) {
@@ -214,10 +203,8 @@ feedwire::Request CreateFeedQueryRefreshRequest(
     feedwire::FeedQuery::RequestReason request_reason,
     const RequestMetadata& request_metadata,
     const std::string& consistency_token) {
-  feedwire::Request request = CreateFeedQueryRequest(
-      request_reason, request_metadata, consistency_token, std::string());
-  SetNoticeCardAcknowledged(&request, request_metadata);
-  return request;
+  return CreateFeedQueryRequest(request_reason, request_metadata,
+                                consistency_token, std::string());
 }
 
 feedwire::Request CreateFeedQueryLoadMoreRequest(
