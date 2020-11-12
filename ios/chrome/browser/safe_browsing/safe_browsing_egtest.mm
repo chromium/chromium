@@ -452,7 +452,8 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
 
 // Tests performing a back navigation to a warning page and a forward navigation
 // from a warning page, in incognito mode.
-- (void)testBackForwardNavigationWithWarningInIncognito {
+// crbug.com/1147360 Test is flaky
+- (void)DISABLED_testBackForwardNavigationWithWarningInIncognito {
   [ChromeEarlGrey openNewIncognitoTab];
   [ChromeEarlGrey loadURL:_safeURL1];
   [ChromeEarlGrey waitForWebStateContainingText:_safeContent1];
