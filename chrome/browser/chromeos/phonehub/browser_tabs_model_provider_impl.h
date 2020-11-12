@@ -11,7 +11,6 @@
 #include "base/memory/weak_ptr.h"
 #include "chromeos/components/phonehub/browser_tabs_metadata_fetcher.h"
 #include "chromeos/components/phonehub/browser_tabs_model_provider.h"
-#include "chromeos/services/device_sync/public/cpp/device_sync_client.h"
 #include "chromeos/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
 
 namespace sync_sessions {
@@ -24,11 +23,9 @@ namespace phonehub {
 // Responsible for providing the BrowserTabsModel to observers.
 class BrowserTabsModelProviderImpl
     : public BrowserTabsModelProvider,
-      public device_sync::DeviceSyncClient::Observer,
       public multidevice_setup::MultiDeviceSetupClient::Observer {
  public:
   BrowserTabsModelProviderImpl(
-      device_sync::DeviceSyncClient* device_sync_client,
       multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client,
       sync_sessions::SessionSyncService* session_sync_service,
       std::unique_ptr<BrowserTabsMetadataFetcher>
@@ -37,9 +34,6 @@ class BrowserTabsModelProviderImpl
 
  private:
   friend class BrowserTabsModelProviderImplTest;
-
-  // device_sync::DeviceSyncClient::Observer:
-  void OnNewDevicesSynced() override;
 
   // multidevice_setup::MultiDeviceSetupClient::Observer:
   void OnHostStatusChanged(
@@ -53,7 +47,6 @@ class BrowserTabsModelProviderImpl
           metadata);
   base::Optional<std::string> GetSessionName() const;
 
-  device_sync::DeviceSyncClient* device_sync_client_;
   multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client_;
   sync_sessions::SessionSyncService* session_sync_service_;
   std::unique_ptr<BrowserTabsMetadataFetcher> browser_tabs_metadata_fetcher_;

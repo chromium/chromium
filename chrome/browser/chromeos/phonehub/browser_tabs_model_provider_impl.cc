@@ -14,15 +14,12 @@ namespace chromeos {
 namespace phonehub {
 
 BrowserTabsModelProviderImpl::BrowserTabsModelProviderImpl(
-    device_sync::DeviceSyncClient* device_sync_client,
     multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client,
     sync_sessions::SessionSyncService* session_sync_service,
     std::unique_ptr<BrowserTabsMetadataFetcher> browser_tabs_metadata_fetcher)
-    : device_sync_client_(device_sync_client),
-      multidevice_setup_client_(multidevice_setup_client),
+    : multidevice_setup_client_(multidevice_setup_client),
       session_sync_service_(session_sync_service),
       browser_tabs_metadata_fetcher_(std::move(browser_tabs_metadata_fetcher)) {
-  device_sync_client_->AddObserver(this);
   multidevice_setup_client_->AddObserver(this);
   session_updated_subscription_ =
       session_sync_service->SubscribeToForeignSessionsChanged(
@@ -33,7 +30,6 @@ BrowserTabsModelProviderImpl::BrowserTabsModelProviderImpl(
 }
 
 BrowserTabsModelProviderImpl::~BrowserTabsModelProviderImpl() {
-  device_sync_client_->RemoveObserver(this);
   multidevice_setup_client_->RemoveObserver(this);
 }
 
@@ -48,12 +44,6 @@ base::Optional<std::string> BrowserTabsModelProviderImpl::GetSessionName()
   return host_device_with_status.second->pii_free_name();
 }
 
-void BrowserTabsModelProviderImpl::OnNewDevicesSynced() {
-  // The decrypted metadata (which includes the pii free name) may not have been
-  // ready during initialization. Refetch when the decrypted metadata is ready.
-  AttemptBrowserTabsModelUpdate();
-}
-
 void BrowserTabsModelProviderImpl::OnHostStatusChanged(
     const multidevice_setup::MultiDeviceSetupClient::HostStatusWithDevice&
         host_device_with_status) {
@@ -64,7 +54,7 @@ void BrowserTabsModelProviderImpl::AttemptBrowserTabsModelUpdate() {
   base::Optional<std::string> session_name = GetSessionName();
   sync_sessions::OpenTabsUIDelegate* open_tabs =
       session_sync_service_->GetOpenTabsUIDelegate();
-  // Tab sync is disabled or no valid |pii_free_name|.
+  // Tab sync is disabled or no valid |pii_free_name_|.
   if (!open_tabs || !session_name) {
     InvalidateWeakPtrsAndClearTabMetadata(/*is_tab_sync_enabled=*/false);
     return;
@@ -110,7 +100,8 @@ void BrowserTabsModelProviderImpl::AttemptBrowserTabsModelUpdate() {
 void BrowserTabsModelProviderImpl::InvalidateWeakPtrsAndClearTabMetadata(
     bool is_tab_sync_enabled) {
   weak_ptr_factory_.InvalidateWeakPtrs();
-  NotifyBrowserTabsUpdated(/*is_tab_sync_enabled=*/is_tab_sync_enabled, {});
+  BrowserTabsModelProvider::NotifyBrowserTabsUpdated(
+      /*is_tab_sync_enabled=*/is_tab_sync_enabled, {});
 }
 
 void BrowserTabsModelProviderImpl::OnMetadataFetched(
@@ -119,7 +110,8 @@ void BrowserTabsModelProviderImpl::OnMetadataFetched(
   // The operation to fetch metadata was cancelled.
   if (!metadata)
     return;
-  NotifyBrowserTabsUpdated(/*is_tab_sync_enabled=*/true, *metadata);
+  BrowserTabsModelProvider::NotifyBrowserTabsUpdated(
+      /*is_tab_sync_enabled=*/true, *metadata);
 }
 
 }  // namespace phonehub
