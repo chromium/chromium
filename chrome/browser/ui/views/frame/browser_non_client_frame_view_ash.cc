@@ -7,7 +7,6 @@
 #include <algorithm>
 
 #include "ash/public/cpp/window_properties.h"
-#include "ash/wm/window_util.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -67,6 +66,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/public/cpp/app_types.h"
+#include "ash/wm/window_util.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace {
@@ -95,8 +95,12 @@ BrowserNonClientFrameViewAsh::BrowserNonClientFrameViewAsh(
     BrowserFrame* frame,
     BrowserView* browser_view)
     : BrowserNonClientFrameView(frame, browser_view) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // TODO(https://crbug.com/1067535): Check whether Ash/Chrome and Lacros
+  // will share the same ResizeHandler class.
   ash::window_util::InstallResizeHandleWindowTargeterForWindow(
       frame->GetNativeWindow());
+#endif
 }
 
 BrowserNonClientFrameViewAsh::~BrowserNonClientFrameViewAsh() {
