@@ -156,11 +156,23 @@ chrome.accessibilityPrivate.SyntheticMouseEventType = {
 };
 
 /**
+ * @enum {string}
+ */
+chrome.accessibilityPrivate.SyntheticMouseEventButton = {
+  LEFT: 'left',
+  MIDDLE: 'middle',
+  RIGHT: 'right',
+  BACK: 'back',
+  FOWARD: 'foward',
+};
+
+/**
  * @typedef {{
  *   type: !chrome.accessibilityPrivate.SyntheticMouseEventType,
  *   x: number,
  *   y: number,
- *   touchAccessibility: (boolean|undefined)
+ *   touchAccessibility: (boolean|undefined),
+ *   mouseButton: (!chrome.accessibilityPrivate.SyntheticMouseEventButton|undefined)
  * }}
  */
 chrome.accessibilityPrivate.SyntheticMouseEvent;

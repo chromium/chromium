@@ -122,6 +122,12 @@
         "enum": ["press", "release", "drag", "move", "enter", "exit"]
       },
       {
+        "id": "SyntheticMouseEventButton",
+        "type": "string",
+        "description": "The button to send event on",
+        "enum": ["left", "middle", "right", "back", "foward"]
+      },
+      {
         "id": "SyntheticMouseEvent",
         "type": "object",
         "properties": {
@@ -131,6 +137,11 @@
           "touchAccessibility": {
             "type": "boolean",
             "description": "True if the touch accessibility flag should be set.",
+            "optional": true
+          },
+          "mouseButton": {
+            "$ref": "SyntheticMouseEventButton",
+            "description": "The default mouse button is set to left if mouseButton is not specified.",
             "optional": true
           }
         }

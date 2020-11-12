@@ -339,8 +339,24 @@ AccessibilityPrivateSendSyntheticMouseEventFunction::Run() {
   }
 
   int flags = 0;
-  if (type != ui::ET_MOUSE_MOVED)
-    flags |= ui::EF_LEFT_MOUSE_BUTTON;
+  if (type != ui::ET_MOUSE_MOVED) {
+    switch (mouse_data->mouse_button) {
+      case accessibility_private::SYNTHETIC_MOUSE_EVENT_BUTTON_MIDDLE:
+        flags |= ui::EF_MIDDLE_MOUSE_BUTTON;
+        break;
+      case accessibility_private::SYNTHETIC_MOUSE_EVENT_BUTTON_RIGHT:
+        flags |= ui::EF_RIGHT_MOUSE_BUTTON;
+        break;
+      case accessibility_private::SYNTHETIC_MOUSE_EVENT_BUTTON_BACK:
+        flags |= ui::EF_BACK_MOUSE_BUTTON;
+        break;
+      case accessibility_private::SYNTHETIC_MOUSE_EVENT_BUTTON_FOWARD:
+        flags |= ui::EF_FORWARD_MOUSE_BUTTON;
+        break;
+      default:
+        flags |= ui::EF_LEFT_MOUSE_BUTTON;
+    }
+  }
 
   int changed_button_flags = flags;
 
