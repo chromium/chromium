@@ -110,11 +110,12 @@ test(() => {
 }, 'setInnerHTML on shadowRoot');
 
 test(() => {
-  let parser = new DOMParser();
-  let fragment = parser.parseFromString(content,'text/html');
+  const parser = new DOMParser();
+  let fragment = parser.parseFromString(content, 'text/html');
   assert_dsd(fragment.body,false);
-  parser = new DOMParser({allowShadowRoot: true});
-  fragment = parser.parseFromString(content,'text/html');
+  fragment = parser.parseFromString(content, 'text/html', {allowShadowRoot: false});
+  assert_dsd(fragment.body,false);
+  fragment = parser.parseFromString(content, 'text/html', {allowShadowRoot: true});
   assert_dsd(fragment.body,true);
 }, 'DOMParser');
 

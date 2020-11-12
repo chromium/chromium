@@ -27,7 +27,7 @@
 namespace blink {
 
 class Document;
-class DOMParserInit;
+class ParseFromStringOptions;
 class LocalDOMWindow;
 class ScriptState;
 
@@ -35,21 +35,21 @@ class DOMParser final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static DOMParser* Create(ScriptState* script_state,
-                           const DOMParserInit* dict) {
-    return MakeGarbageCollected<DOMParser>(script_state, dict);
+  static DOMParser* Create(ScriptState* script_state) {
+    return MakeGarbageCollected<DOMParser>(script_state);
   }
 
-  explicit DOMParser(ScriptState*, const DOMParserInit*);
+  explicit DOMParser(ScriptState*);
 
-  Document* parseFromString(const String&, const String& type);
+  Document* parseFromString(const String&,
+                            const String& type,
+                            const ParseFromStringOptions* options);
 
   void Trace(Visitor*) const override;
 
   LocalDOMWindow* GetWindow() const { return window_.Get(); }
 
  private:
-  const bool allow_shadow_root_;
   WeakMember<LocalDOMWindow> window_;
 };
 

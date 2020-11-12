@@ -759,7 +759,7 @@ core_dictionary_idl_files =
                     "trustedtypes/trusted_type_policy_options.idl",
                     "workers/worker_options.idl",
                     "workers/worklet_options.idl",
-                    "xml/dom_parser_init.idl",
+                    "xml/parse_from_string_options.idl",
                   ],
                   "abspath")
 
