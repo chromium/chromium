@@ -145,6 +145,7 @@ class DawnDeviceAndWireServer {
   ~DawnDeviceAndWireServer();
 
   WGPUDevice GetWGPUDevice() const;
+  bool HasPollingWork() const;
   void PerformPollingWork();
   error::Error HandleDawnCommands(const volatile char* dawn_commands,
                                   size_t size);
@@ -176,6 +177,8 @@ class DawnDeviceAndWireServer {
   base::flat_map<std::tuple<uint32_t, uint32_t>,
                  std::unique_ptr<SharedImageRepresentationAndAccess>>
       associated_shared_image_map_;
+
+  bool has_polling_work_ = false;
 };
 
 DawnDeviceAndWireServer::DawnDeviceAndWireServer(
@@ -215,7 +218,7 @@ WGPUDevice DawnDeviceAndWireServer::GetWGPUDevice() const {
 }
 
 void DawnDeviceAndWireServer::PerformPollingWork() {
-  dawn_procs_.deviceTick(wgpu_device_);
+  has_polling_work_ = dawn_native::DeviceTick(wgpu_device_);
   wire_serializer_->Flush();
 }
 
@@ -226,6 +229,7 @@ error::Error DawnDeviceAndWireServer::HandleDawnCommands(
     NOTREACHED();
     return error::kLostContext;
   }
+  has_polling_work_ = dawn_native::DeviceTick(wgpu_device_);
   wire_serializer_->Flush();
   return error::kNoError;
 }
@@ -303,6 +307,10 @@ error::Error DawnDeviceAndWireServer::DissociateMailbox(
 
   associated_shared_image_map_.erase(it);
   return error::kNoError;
+}
+
+bool DawnDeviceAndWireServer::HasPollingWork() const {
+  return has_polling_work_;
 }
 
 }  // namespace
@@ -383,9 +391,14 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
   bool HasMoreIdleWork() const override { return false; }
   void PerformIdleWork() override {}
 
-  // TODO(crbug.com/940985): Optimize so that this only returns true when
-  // deviceTick is needed.
-  bool HasPollingWork() const override { return true; }
+  bool HasPollingWork() const override {
+    for (auto& iter : dawn_device_and_wire_servers_) {
+      if (iter.second->HasPollingWork()) {
+        return true;
+      }
+    }
+    return false;
+  }
 
   void PerformPollingWork() override {
     TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("gpu.dawn"),
