@@ -93,6 +93,10 @@ const base::Feature kSecondaryServerFieldPredictions = {
 const base::Feature kTreatNewPasswordHeuristicsAsReliable = {
     "TreatNewPasswordHeuristicsAsReliable", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables use of Hash Affiliation fetcher for all requests.
+const base::Feature kUseOfHashAffiliationFetcher = {
+    "UseOfHashAffiliationFetcher", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables support of filling and saving on username first flow.
 const base::Feature kUsernameFirstFlow = {"UsernameFirstFlow",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
