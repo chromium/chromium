@@ -61,7 +61,7 @@ import androidx.recyclerview.widget.RecyclerView;
  *
  * <p>To build a hierarchy from code, use
  * {@link PreferenceManager#createPreferenceScreen(Context)} to create the root
- * {@link PreferenceScreen}. Once you have added other {@link Preference}s to this root scree
+ * {@link PreferenceScreen}. Once you have added other {@link Preference}s to this root screen
  * with {@link PreferenceScreen#addPreference(Preference)}, you then need to set the screen as
  * the root screen in your hierarchy with {@link #setPreferenceScreen(PreferenceScreen)}.
  *
@@ -420,8 +420,7 @@ public abstract class PreferenceFragmentCompat extends Fragment implements
                                 + "implement this method so that you can configure the new "
                                 + "fragment that will be displayed, and set a transition between "
                                 + "the fragments.");
-                final FragmentManager fragmentManager = requireActivity()
-                        .getSupportFragmentManager();
+                final FragmentManager fragmentManager = getParentFragmentManager();
                 final Bundle args = preference.getExtras();
                 final Fragment fragment = fragmentManager.getFragmentFactory().instantiate(
                         requireActivity().getClassLoader(), preference.getFragment());
@@ -457,7 +456,7 @@ public abstract class PreferenceFragmentCompat extends Fragment implements
                     .onPreferenceStartScreen(this, preferenceScreen);
         }
         if (!handled && getContext() instanceof OnPreferenceStartScreenCallback) {
-            ((OnPreferenceStartScreenCallback) getContext())
+            handled = ((OnPreferenceStartScreenCallback) getContext())
                     .onPreferenceStartScreen(this, preferenceScreen);
         }
         // Check the Activity as well in case getContext was overridden to return something other
