@@ -3056,6 +3056,7 @@ enum WebFeature {
   kAdFrameDetected = 3727,
   kMediaStreamTrackGenerator = 3728,
   kMediaStreamTrackProcessor = 3729,
+  kAddEventListenerWithAbortSignal = 3730,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

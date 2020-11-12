@@ -134,6 +134,10 @@
       status: "test",
     },
     {
+      name: "AddEventListenerAbortSignal",
+      status: "experimental",
+    },
+    {
       name: "AddressSpace",
       status: "experimental",
       implied_by: ["CorsRFC1918"],

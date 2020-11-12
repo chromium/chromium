@@ -40,6 +40,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/js_based_event_listener.h"
 #include "third_party/blink/renderer/bindings/core/v8/js_event_listener.h"
 #include "third_party/blink/renderer/bindings/core/v8/source_location.h"
+#include "third_party/blink/renderer/core/dom/abort_signal.h"
 #include "third_party/blink/renderer/core/dom/events/add_event_listener_options_resolved.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/events/event_dispatch_forbidden_scope.h"
@@ -474,6 +475,8 @@ bool EventTarget::addEventListener(
       resolved_options->setOnce(options->once());
     if (options->hasCapture())
       resolved_options->setCapture(options->capture());
+    if (options->hasSignal())
+      resolved_options->setSignal(options->signal());
     return addEventListener(event_type, event_listener, resolved_options);
   }
 
@@ -530,6 +533,20 @@ bool EventTarget::AddEventListenerInternal(
   bool added = EnsureEventTargetData().event_listener_map.Add(
       event_type, listener, options, &registered_listener);
   if (added) {
+    if (options->signal()) {
+      options->signal()->AddAlgorithm(WTF::Bind(
+          [](EventTarget* event_target, const AtomicString& event_type,
+             const EventListener* listener) {
+            event_target->removeEventListener(event_type, listener);
+          },
+          WrapWeakPersistent(this), event_type, WrapWeakPersistent(listener)));
+      if (const LocalDOMWindow* executing_window = ExecutingWindow()) {
+        if (const Document* document = executing_window->document()) {
+          document->CountUse(WebFeature::kAddEventListenerWithAbortSignal);
+        }
+      }
+    }
+
     AddedEventListener(event_type, registered_listener);
     if (IsA<JSBasedEventListener>(listener) &&
         IsInstrumentedForAsyncStack(event_type)) {

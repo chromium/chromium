@@ -69,4 +69,19 @@ TEST_F(EventTargetTest, UseCountBeforematch) {
       GetDocument().IsUseCounted(WebFeature::kBeforematchHandlerRegistered));
 }
 
+TEST_F(EventTargetTest, UseCountAbortSignal) {
+  EXPECT_FALSE(
+      GetDocument().IsUseCounted(WebFeature::kAddEventListenerWithAbortSignal));
+  GetDocument().GetSettings()->SetScriptEnabled(true);
+  ClassicScript::CreateUnspecifiedScript(ScriptSourceCode(R"HTML(
+                       const element = document.createElement('div');
+                       const ac = new AbortController();
+                       element.addEventListener(
+                         'test', () => {}, {signal: ac.signal});
+                      )HTML"))
+      ->RunScript(GetDocument().domWindow());
+  EXPECT_TRUE(
+      GetDocument().IsUseCounted(WebFeature::kAddEventListenerWithAbortSignal));
+}
+
 }  // namespace blink
