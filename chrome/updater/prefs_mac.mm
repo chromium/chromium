@@ -9,6 +9,7 @@
 
 #include "base/logging.h"
 #include "base/mac/mach_logging.h"
+#include "base/mac/scoped_mach_port.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "chrome/updater/updater_version.h"
@@ -30,13 +31,13 @@ constexpr base::TimeDelta kPrefsLockPollingInterval =
 // since "permission denied" typically means the service receive rights have
 // already been assigned.
 //
-// Returns a mach_port_t representing the receive right if the right was
-// successfully acquired. If the right cannot be acquired for any reason,
-// returns MACH_PORT_NULL instead.
-mach_port_t TryAcquireReceive(const char* service_name) {
-  mach_port_t target_port = MACH_PORT_NULL;
-  kern_return_t check_in_result =
-      bootstrap_check_in(bootstrap_port, service_name, &target_port);
+// Returns the receive right if the right was successfully acquired. If the
+// right cannot be acquired for any reason, returns an invalid right instead.
+base::mac::ScopedMachReceiveRight TryAcquireReceive(const char* service_name) {
+  base::mac::ScopedMachReceiveRight target_right;
+  kern_return_t check_in_result = bootstrap_check_in(
+      bootstrap_port, service_name,
+      base::mac::ScopedMachReceiveRight::Receiver(target_right).get());
   if (check_in_result != KERN_SUCCESS) {
     // Log error reports for all errors other than BOOTSTRAP_NOT_PRIVILEGED.
     // BOOTSTRAP_NOT_PRIVILEGED is not logged because it just means that another
@@ -49,9 +50,9 @@ mach_port_t TryAcquireReceive(const char* service_name) {
       BOOTSTRAP_VLOG(2, check_in_result)
           << "Prefs lock already held: " << kPrefsLockMachServiceName;
     }
-    return MACH_PORT_NULL;
+    return base::mac::ScopedMachReceiveRight();
   }
-  return target_port;
+  return target_right;
 }
 
 // Sleep until the lock should be retried, up to an approximate maximum of
@@ -72,10 +73,10 @@ namespace updater {
 class ScopedPrefsLockImpl {
  public:
   // Constructs a ScopedPrefsLockImpl from a receive right.
-  explicit ScopedPrefsLockImpl(mach_port_t receive_port);
+  explicit ScopedPrefsLockImpl(base::mac::ScopedMachReceiveRight receive_right);
 
   // Releases the receive right (and therefore releases the lock).
-  ~ScopedPrefsLockImpl();
+  ~ScopedPrefsLockImpl() = default;
 
   ScopedPrefsLockImpl(const ScopedPrefsLockImpl&) = delete;
   ScopedPrefsLockImpl& operator=(const ScopedPrefsLockImpl&) = delete;
@@ -83,26 +84,19 @@ class ScopedPrefsLockImpl {
  private:
   // The Mach port representing the held lock itself. We only care about
   // service ownership; no messages are transfered with this port.
-  mach_port_t receive_port_;
+  base::mac::ScopedMachReceiveRight receive_right_;
 };
 
-ScopedPrefsLockImpl::ScopedPrefsLockImpl(mach_port_t receive_port)
-    : receive_port_(receive_port) {
-  // Verify the validity of the lock.
+ScopedPrefsLockImpl::ScopedPrefsLockImpl(
+    base::mac::ScopedMachReceiveRight receive_right)
+    : receive_right_(std::move(receive_right)) {
   mach_port_type_t port_type = 0;
   kern_return_t port_check_result =
-      mach_port_type(mach_task_self(), receive_port, &port_type);
+      mach_port_type(mach_task_self(), receive_right_.get(), &port_type);
   MACH_CHECK(port_check_result == KERN_SUCCESS, port_check_result)
       << "ScopedPrefsLockImpl could not verify lock port";
   CHECK(port_type & MACH_PORT_TYPE_RECEIVE)
       << "ScopedPrefsLockImpl given port without receive right";
-}
-
-ScopedPrefsLockImpl::~ScopedPrefsLockImpl() {
-  kern_return_t destroy_result =
-      mach_port_destroy(mach_task_self(), receive_port_);
-  MACH_LOG_IF(ERROR, destroy_result != KERN_SUCCESS, destroy_result)
-      << "ScopedPrefsLockImpl could not destroy port";
 }
 
 ScopedPrefsLock::ScopedPrefsLock(std::unique_ptr<ScopedPrefsLockImpl> impl)
@@ -114,7 +108,8 @@ std::unique_ptr<ScopedPrefsLock> AcquireGlobalPrefsLock(
     base::TimeDelta timeout) {
   // First, try to acquire the lock. If the timeout is zero or negative,
   // this is the only attempt we will make.
-  mach_port_t lock_port = TryAcquireReceive(kPrefsLockMachServiceName);
+  base::mac::ScopedMachReceiveRight receive_right(
+      TryAcquireReceive(kPrefsLockMachServiceName));
 
   // Set up time limits.
   base::TimeTicks deadline = base::TimeTicks::Now() + timeout;
@@ -126,16 +121,17 @@ std::unique_ptr<ScopedPrefsLock> AcquireGlobalPrefsLock(
   // this loop waits for retry *before* attempting to acquire the lock;
   // the special case of the first try was handled outside the loop.
   for (base::TimeDelta remain = deadline - base::TimeTicks::Now();
-       lock_port == MACH_PORT_NULL && remain > kDeltaZero;
+       !receive_right.is_valid() && remain > kDeltaZero;
        remain = deadline - base::TimeTicks::Now()) {
     WaitToRetryLock(remain);
-    lock_port = TryAcquireReceive(kPrefsLockMachServiceName);
+    receive_right = TryAcquireReceive(kPrefsLockMachServiceName);
   }
 
-  return lock_port == MACH_PORT_NULL
-             ? nullptr
-             : std::make_unique<ScopedPrefsLock>(
-                   std::make_unique<ScopedPrefsLockImpl>(lock_port));
+  if (!receive_right.is_valid()) {
+    return nullptr;
+  }
+  return std::make_unique<ScopedPrefsLock>(
+      std::make_unique<ScopedPrefsLockImpl>(std::move(receive_right)));
 }
 
 }  // namespace updater
