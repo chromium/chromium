@@ -40,7 +40,6 @@
 #include "chrome/browser/ui/startup/automation_infobar_delegate.h"
 #include "chrome/browser/ui/startup/bad_flags_prompt.h"
 #include "chrome/browser/ui/startup/google_api_keys_infobar_delegate.h"
-#include "chrome/browser/ui/startup/mac_system_infobar_delegate.h"
 #include "chrome/browser/ui/startup/obsolete_system_infobar_delegate.h"
 #include "chrome/browser/ui/tab_sharing/tab_sharing_infobar_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -67,6 +66,8 @@
 
 #if defined(OS_MAC)
 #include "chrome/browser/ui/cocoa/keystone_infobar_delegate.h"
+#include "chrome/browser/ui/cocoa/rosetta_required_infobar_delegate.h"
+#include "chrome/browser/ui/startup/mac_system_infobar_delegate.h"
 #endif
 
 #if !defined(USE_AURA)
@@ -207,6 +208,7 @@ void InfoBarUiTest::ShowUi(const std::string& name) {
       {"previews_lite_page", IBD::LITE_PAGE_PREVIEWS_INFOBAR},
       {"flash_deprecation", IBD::FLASH_DEPRECATION_INFOBAR_DELEGATE},
       {"tab_sharing", IBD::TAB_SHARING_INFOBAR_DELEGATE},
+      {"rosetta_required", IBD::ROSETTA_REQUIRED_INFOBAR_DELEGATE},
   };
   auto id_entry = kIdentifiers.find(name);
   if (id_entry == kIdentifiers.end()) {
@@ -389,6 +391,14 @@ void InfoBarUiTest::ShowUi(const std::string& name) {
       TabSharingInfoBarDelegate::Create(
           GetInfoBarService(), base::ASCIIToUTF16("example.com"),
           base::ASCIIToUTF16("application.com"), false, true, nullptr);
+      break;
+
+    case IBD::ROSETTA_REQUIRED_INFOBAR_DELEGATE:
+#if defined(OS_MAC)
+      RosettaRequiredInfoBarDelegate::Create(GetInfoBarService());
+#else
+      ADD_FAILURE() << "This infobar is not supported on this OS.";
+#endif
       break;
 
     default:

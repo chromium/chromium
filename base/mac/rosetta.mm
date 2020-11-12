@@ -52,22 +52,30 @@ bool IsRosettaInstalled() {
 #pragma clang diagnostic pop
 }
 
-void RequestRosettaInstallation(const string16& title_text,
-                                const string16& body_text,
-                                OnceCallback<void(bool)> callback) {
+void RequestRosettaInstallation(
+    const string16& title_text,
+    const string16& body_text,
+    OnceCallback<void(RosettaInstallationResult)> callback) {
   DCHECK([NSThread isMainThread]);
 
   if (IsRosettaInstalled()) {
-    std::move(callback).Run(true);
+    std::move(callback).Run(RosettaInstallationResult::kAlreadyInstalled);
     return;
   }
 
-  static bool been_there_done_that = false;
-  if (been_there_done_that) {
-    std::move(callback).Run(false);
+  static NSObject* current_rosetta_installation = nil;
+  if (current_rosetta_installation) {
+    if ([current_rosetta_installation
+            respondsToSelector:@selector(windowController)]) {
+      NSWindowController* windowController = [current_rosetta_installation
+          performSelector:@selector(windowController)];
+      if (windowController &&
+          [windowController isKindOfClass:[NSWindowController class]]) {
+        [windowController showWindow:nil];
+      }
+    }
     return;
   }
-  been_there_done_that = true;
 
   @autoreleasepool {
     static const NoDestructor<scoped_nsobject<NSBundle>> bundle([]() {
@@ -80,7 +88,7 @@ void RequestRosettaInstallation(const string16& title_text,
       return bundle;
     }());
     if (!bundle.get()) {
-      std::move(callback).Run(false);
+      std::move(callback).Run(RosettaInstallationResult::kFailedToAccessSPI);
       return;
     }
 
@@ -97,7 +105,7 @@ void RequestRosettaInstallation(const string16& title_text,
     NSMethodSignature* signature =
         [controller methodSignatureForSelector:selector];
     if (!signature) {
-      std::move(callback).Run(false);
+      std::move(callback).Run(RosettaInstallationResult::kFailedToAccessSPI);
       return;
     }
     if (strcmp(signature.methodReturnType, "v") != 0 ||
@@ -107,15 +115,15 @@ void RequestRosettaInstallation(const string16& title_text,
         strcmp([signature getArgumentTypeAtIndex:2], "@") != 0 ||
         strcmp([signature getArgumentTypeAtIndex:3], "@") != 0 ||
         strcmp([signature getArgumentTypeAtIndex:4], "@?") != 0) {
-      std::move(callback).Run(false);
+      std::move(callback).Run(RosettaInstallationResult::kFailedToAccessSPI);
       return;
     }
 
     NSInvocation* invocation =
         [NSInvocation invocationWithMethodSignature:signature];
 
-    __block NSObject* block_controller = [controller.get() retain];
-    invocation.target = block_controller;
+    current_rosetta_installation = [controller.get() retain];
+    invocation.target = current_rosetta_installation;
     invocation.selector = selector;
 
     NSDictionary* options = @{
@@ -127,10 +135,14 @@ void RequestRosettaInstallation(const string16& title_text,
     NSWindow* window = nil;
     [invocation setArgument:&window atIndex:3];
 
-    __block OnceCallback<void(bool)> block_callback = std::move(callback);
+    __block OnceCallback<void(RosettaInstallationResult)> block_callback =
+        std::move(callback);
     auto completion = ^(BOOL success) {
-      [controller release];
-      std::move(block_callback).Run(success);
+      [current_rosetta_installation release];
+      current_rosetta_installation = nil;
+      std::move(block_callback)
+          .Run(success ? RosettaInstallationResult::kInstallationSuccess
+                       : RosettaInstallationResult::kInstallationFailure);
     };
 
     [invocation setArgument:&completion atIndex:4];
