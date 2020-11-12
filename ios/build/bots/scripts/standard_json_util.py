@@ -42,6 +42,11 @@ class StdJson():
 
     return test
 
+  def finalize(self):
+    """Teardown and finalizing tasks needed after all results are reported."""
+    LOGGER.info('Finalizing in standard json util.')
+    self.result_sink.close()
+
   def mark_passed(self, test, flaky=False):
     """Sets test as passed
 

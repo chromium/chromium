@@ -3,9 +3,30 @@
 # found in the LICENSE file.
 
 import base64
+import json
+import mock
+import requests
 import unittest
 
 import result_sink_util
+
+
+SINK_ADDRESS = 'sink/address'
+SINK_POST_URL = 'http://%s/prpc/luci.resultsink.v1.Sink/ReportTestResults' % SINK_ADDRESS
+AUTH_TOKEN = 'some_sink_token'
+LUCI_CONTEXT_FILE_DATA = """
+{
+  "result_sink": {
+    "address": "%s",
+    "auth_token": "%s"
+  }
+}
+""" % (SINK_ADDRESS, AUTH_TOKEN)
+HEADERS = {
+    'Content-Type': 'application/json',
+    'Accept': 'application/json',
+    'Authorization': 'ResultSink %s' % AUTH_TOKEN
+}
 
 
 class UnitTest(unittest.TestCase):
@@ -99,6 +120,43 @@ class UnitTest(unittest.TestCase):
         True,
         tags=[('disabled_test', 'true')])
     self.assertEqual(test_result, expected)
+
+  @mock.patch.object(requests.Session, 'post')
+  @mock.patch('%s.open' % 'result_sink_util',
+              mock.mock_open(read_data=LUCI_CONTEXT_FILE_DATA))
+  @mock.patch('os.environ.get', return_value='filename')
+  def test_post(self, mock_open_file, mock_session_post):
+    test_result = {
+        'testId': 'TestCase/testSomething',
+        'status': 'SKIP',
+        'expected': True,
+        'tags': [{
+            'key': 'disabled_test',
+            'value': 'true',
+        }]
+    }
+    client = result_sink_util.ResultSinkClient()
+
+    client.post(test_result)
+    mock_session_post.assert_called_with(
+        url=SINK_POST_URL,
+        headers=HEADERS,
+        data=json.dumps({'testResults': [test_result]}))
+
+  @mock.patch.object(requests.Session, 'close')
+  @mock.patch.object(requests.Session, 'post')
+  @mock.patch('%s.open' % 'result_sink_util',
+              mock.mock_open(read_data=LUCI_CONTEXT_FILE_DATA))
+  @mock.patch('os.environ.get', return_value='filename')
+  def test_close(self, mock_open_file, mock_session_post, mock_session_close):
+
+    client = result_sink_util.ResultSinkClient()
+
+    client.post({'some': 'result'})
+    mock_session_post.assert_called()
+
+    client.close()
+    mock_session_close.assert_called()
 
 
 if __name__ == '__main__':

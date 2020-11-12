@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import atexit
 import base64
 import cgi
 import json
@@ -100,6 +101,17 @@ class ResultSinkClient(object):
           'Accept': 'application/json',
           'Authorization': 'ResultSink %s' % self.sink['auth_token'],
       }
+      self._session = requests.Session()
+
+      # Ensure session is closed at exit.
+      atexit.register(self.close)
+
+  def close(self):
+    """Closes the connection to result sink server."""
+    if not self.sink:
+      return
+    LOGGER.info('Closing connection with result sink server.')
+    self._session.close()
 
   def post(self, test_result):
     """Posts single test result to server.
@@ -111,7 +123,7 @@ class ResultSinkClient(object):
     if not self.sink:
       return
 
-    res = requests.post(
+    res = self._session.post(
         url=self.url,
         headers=self.headers,
         data=json.dumps({'testResults': [test_result]}),

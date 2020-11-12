@@ -670,6 +670,7 @@ class TestRunner(object):
             retry_results[test] = retry_result
 
       output.mark_all_skipped(disabled)
+      output.finalize()
 
       # Build test_results.json.
       # Check if if any of the retries crashed in addition to the original run.
