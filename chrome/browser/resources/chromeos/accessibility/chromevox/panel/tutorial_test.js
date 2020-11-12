@@ -605,3 +605,38 @@ TEST_F('ChromeVoxTutorialTest', 'ResourcesTest', function() {
         .replay();
   });
 });
+
+// Tests that choosing a curriculum with only 1 lesson automatically opens the
+// lesson.
+TEST_F('ChromeVoxTutorialTest', 'OnlyLessonTest', function() {
+  const mockFeedback = this.createMockFeedback();
+  this.runWithLoadedTree(this.simpleDoc, async function(root) {
+    await this.launchAndWaitForTutorial();
+    const tutorial = this.getPanel().iTutorial;
+    mockFeedback.expectSpeech('ChromeVox tutorial')
+        .call(doCmd('nextObject'))
+        .expectSpeech('Quick orientation')
+        .call(doCmd('nextObject'))
+        .expectSpeech('Essential keys')
+        .call(doCmd('nextObject'))
+        .expectSpeech('Navigation')
+        .call(doCmd('nextObject'))
+        .expectSpeech('Command references')
+        .call(doCmd('nextObject'))
+        .expectSpeech('Sounds and settings')
+        .call(doCmd('nextObject'))
+        .expectSpeech('Resources')
+        .call(doCmd('forceClickOnCurrentItem'))
+        .expectSpeech('Learn More', 'Heading 1')
+        .expectSpeech(
+            ' Press Search + Right Arrow, or Search + Left Arrow to' +
+            ' navigate this lesson ')
+        // The 'All lessons' button should be hidden since this is the only
+        // lesson for the curriculum.
+        .call(doCmd('nextButton'))
+        .expectSpeech('Main menu')
+        .call(doCmd('nextButton'))
+        .expectSpeech('Exit tutorial')
+        .replay();
+  });
+});

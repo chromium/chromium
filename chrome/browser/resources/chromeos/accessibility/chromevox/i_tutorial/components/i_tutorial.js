@@ -443,9 +443,15 @@ Polymer({
 
   /** @private */
   showLessonMenu() {
-    this.activeScreen = Screen.LESSON_MENU;
-    this.createLessonShortcuts();
-    this.$.lessonMenuHeader.focus();
+    if (this.includedLessons.length === 1) {
+      // If there's only one lesson, immediately show it.
+      this.showLesson(0);
+      this.activeScreen = Screen.LESSON;
+    } else {
+      this.activeScreen = Screen.LESSON_MENU;
+      this.createLessonShortcuts();
+      this.$.lessonMenuHeader.focus();
+    }
   },
 
   /** @private */
@@ -532,7 +538,8 @@ Polymer({
   shouldHideLessonMenuButton(activeScreen) {
     return !this.curriculum || this.curriculum === Curriculum.NONE ||
         activeScreen === Screen.MAIN_MENU ||
-        activeScreen === Screen.LESSON_MENU;
+        activeScreen === Screen.LESSON_MENU ||
+        this.includedLessons.length === 1;
   },
 
   /**
