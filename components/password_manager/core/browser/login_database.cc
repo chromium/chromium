@@ -612,16 +612,15 @@ struct LoginDatabase::PrimaryKeyAndPassword {
 
 LoginDatabase::LoginDatabase(const base::FilePath& db_path,
                              IsAccountStore is_account_store)
-    : db_path_(db_path), is_account_store_(is_account_store) {}
+    : db_path_(db_path),
+      is_account_store_(is_account_store),
+      // Set options for a small, private database (based on WebDatabase).
+      db_({.exclusive_locking = true, .page_size = 2048, .cache_size = 32}) {}
 
 LoginDatabase::~LoginDatabase() = default;
 
 bool LoginDatabase::Init() {
   TRACE_EVENT0("passwords", "LoginDatabase::Init");
-  // Set pragmas for a small, private database (based on WebDatabase).
-  db_.set_page_size(2048);
-  db_.set_cache_size(32);
-  db_.set_exclusive_locking();
   db_.set_histogram_tag("Passwords");
 
   if (!db_.Open(db_path_)) {
