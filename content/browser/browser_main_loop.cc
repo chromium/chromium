@@ -31,7 +31,7 @@
 #include "base/power_monitor/power_monitor_device_source.h"
 #include "base/process/process_metrics.h"
 #include "base/run_loop.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/single_thread_task_runner.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
@@ -439,7 +439,7 @@ class GpuDataManagerVisualProxy : public GpuDataManagerObserver {
   explicit GpuDataManagerVisualProxy(GpuDataManagerImpl* gpu_data_manager)
       : gpu_data_manager_(gpu_data_manager) {
     if (!base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kHeadless))
-      scoped_observer_.Add(gpu_data_manager_);
+      data_manager_observation_.Observe(gpu_data_manager_);
   }
 
   ~GpuDataManagerVisualProxy() override = default;
@@ -466,8 +466,8 @@ class GpuDataManagerVisualProxy : public GpuDataManagerObserver {
 
   GpuDataManagerImpl* gpu_data_manager_;
 
-  ScopedObserver<GpuDataManagerImpl, GpuDataManagerObserver> scoped_observer_{
-      this};
+  base::ScopedObservation<GpuDataManagerImpl, GpuDataManagerObserver>
+      data_manager_observation_{this};
 
   DISALLOW_COPY_AND_ASSIGN(GpuDataManagerVisualProxy);
 };
