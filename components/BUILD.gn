@@ -277,6 +277,7 @@ test("components_unittests") {
       "//components/payments/content/utility:unit_tests",
       "//components/performance_manager:unit_tests",
       "//components/permissions:unit_tests",
+      "//components/permissions/prediction_service:unit_tests",
       "//components/policy/content:unit_tests",
       "//components/previews/content:unit_tests",
       "//components/query_tiles:unit_tests",

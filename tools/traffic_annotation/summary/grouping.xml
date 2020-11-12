@@ -202,6 +202,7 @@ hidden="true" so that these annotations don't show up in the document.
     <sender name="Safe Browsing">
       <traffic_annotation unique_id="client_download_request"/>
       <traffic_annotation unique_id="password_protection_request"/>
+      <traffic_annotation unique_id="permission_predictions"/>
       <traffic_annotation unique_id="safe_browsing_certificate_error_reporting"/>
       <traffic_annotation unique_id="safe_browsing_client_side_malware_detector"/>
       <traffic_annotation unique_id="safe_browsing_client_side_phishing_detector"/>

@@ -1,0 +1,126 @@
+// Copyright (c) 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package permissions;
+
+// Features that depend on the site that triggered the permission request.
+// Currently empty but added proactively for future versions.
+message SiteFeatures {}
+
+// Statistical features about client's interactions with permission prompts.
+// These features are computed on all permission actions that happened before
+// the current permission request.
+message StatsFeatures {
+  // Average deny rate for the client.
+  optional float avg_deny_rate = 1;
+  // Average grant rate for the client.
+  optional float avg_grant_rate = 2;
+  // Average dismiss rate for the client.
+  optional float avg_dismiss_rate = 3;
+  // Average ignore rate for the client.
+  optional float avg_ignore_rate = 4;
+  // Number of permission prompts seen by the client.
+  optional int32 prompts_count = 5;
+}
+
+// Features representing the overall (not permission-specific) client state at
+// the time the permission was requested.
+message ClientFeatures {
+  // Statistical features about client's previous interactions with permission
+  // prompts, aggregated across all permission types.
+  optional StatsFeatures client_stats = 1;
+
+  // Enum defining the client platforms.
+  enum Platform {
+    PLATFORM_UNKNOWN = 0;
+    PLATFORM_ANDROID = 1;
+    PLATFORM_WINDOWS = 2;
+    PLATFORM_LINUX = 3;
+    PLATFORM_MAC_OS = 4;
+  }
+
+  // The platform run by the client that originated the suggestion request.
+  optional Platform platform = 2;
+
+  // Enum defining gesture types.
+  enum Gesture {
+    UNKNOWN_GESTURE = 0;
+    NO_GESTURE = 1;
+    GESTURE = 2;
+  }
+  // The type of gesture performed by the user on the page before the permission
+  // prompt was shown.
+  optional Gesture gesture = 3;
+}
+
+// Features related to a specific permission type.
+message PermissionFeatures {
+  // Statistical features about client's previous interactions with permission
+  // prompts of the specific permission type.
+  optional StatsFeatures permission_stats = 1;
+
+  // Features related to the notification permission.
+  message NotificationPermission {}
+
+  // This field has two purposes:
+  //   * it specifies the permission type
+  //   * it contains the possible additional features for the specified type.
+  oneof permission_type { NotificationPermission notification_permission = 2; }
+}
+// Permission suggestion with the predicted likelihood that the user will grant
+// the permission prompt (more details at go/hedgehog-backend).
+message PermissionSuggestion {
+  // Additional information regarding the notification suggestion.
+  message NotificationSuggestion {}
+
+  // This field has two purposes:
+  //   * it specifies the permission type for which we generated the suggestion
+  //   * it contains the possible additional information for the specified type.
+  oneof suggestion_type { NotificationSuggestion notification_suggestion = 1; }
+
+  // Information about how likely a user is to perform a specific action.
+  message Likelihood {
+    // Discretized likelihood values (see go/hedgehog-provider-browser). The ML
+    // models generate predictions as floats in the range [0, 1]; the service
+    // maps these floats to the discretized likelihood values in this enum using
+    // thresholds that are defined in the implementation.
+    enum DiscretizedLikelihood {
+      UNKNOWN = 0;
+      VERY_UNLIKELY = 1;
+      UNLIKELY = 2;
+      NEUTRAL = 3;
+      LIKELY = 4;
+      VERY_LIKELY = 5;
+    }
+    // Discretized likelihood of the user performing the action.
+    optional DiscretizedLikelihood discretized_likelihood = 1;
+  }
+
+  // The ML predicts the likelihood of the user NOT granting the permission. We
+  // then convert it to how likely the user is to GRANT the permission request.
+  optional Likelihood grant_likelihood = 2;
+}
+
+// Message sent from the client to get suggestions for one or more permissions.
+message GetSuggestionsRequest {
+  // Features representing the overall (not permission-specific) client state.
+  optional ClientFeatures client_features = 1;
+  // Features that depend on the site that the client was visiting when the
+  // permission request was triggered.
+  optional SiteFeatures site_features = 2;
+  // Each PermissionFeatures message details a specific permission for which the
+  // client wants to receive a suggestion.
+  repeated PermissionFeatures permission_features = 3;
+}
+// The response message returned by the ChromePermissionsSuggestionsService to
+// the Chrome client.
+message GetSuggestionsResponse {
+  // One PermissionSuggestion is generated for each PermissionFeatures in the
+  // request. The order is kept between the input and output lists.
+  repeated PermissionSuggestion suggestion = 1;
+}

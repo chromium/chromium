@@ -1,0 +1,7 @@
+include_rules = [
+  "+google/protobuf",
+  "+net",
+  "+services/network/public",
+  "+services/network/test",
+  "+third_party/googletest",
+]
