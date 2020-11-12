@@ -215,21 +215,6 @@ if (is_chromeos) {
     output_dir = "$root_gen_dir/chrome"
   }
 
-  grit("nearby_internals_resources") {
-    source = "nearby_internals/nearby_internals_resources.grd"
-
-    deps = [ "//chrome/browser/resources/nearby_internals:web_components" ]
-
-    defines = chrome_grit_defines
-    outputs = [
-      "grit/nearby_internals_resources.h",
-      "grit/nearby_internals_resources_map.cc",
-      "grit/nearby_internals_resources_map.h",
-      "nearby_internals_resources.pak",
-    ]
-    output_dir = "$root_gen_dir/chrome"
-  }
-
   grit("bluetooth_pairing_dialog_resources") {
     defines = chrome_grit_defines
 

@@ -2,8 +2,81 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//chrome/common/features.gni")
 import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/grit/grit_rule.gni")
+import("//tools/grit/preprocess_grit.gni")
 import("//tools/polymer/html_to_js.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+
+preprocess_folder = "preprocessed"
+preprocess_manifest = "preprocessed_manifest.json"
+preprocess_gen_manifest = "preprocessed_gen_manifest.json"
+
+generate_grd("build_grd") {
+  grd_prefix = "nearby_internals"
+  out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
+  input_files = [ "index.html" ]
+  input_files_base_dir = rebase_path(".", "//")
+
+  deps = [
+    ":preprocess",
+    ":preprocess_generated",
+  ]
+  manifest_files = [
+    "$target_gen_dir/$preprocess_manifest",
+    "$target_gen_dir/$preprocess_gen_manifest",
+  ]
+}
+
+preprocess_grit("preprocess") {
+  in_folder = "./"
+  out_folder = "$target_gen_dir/$preprocess_folder"
+  out_manifest = "$target_gen_dir/$preprocess_manifest"
+  in_files = [
+    "nearby_contact_browser_proxy.js",
+    "nearby_http_browser_proxy.js",
+    "nearby_logs_browser_proxy.js",
+    "nearby_ui_trigger_browser_proxy.js",
+    "types.js",
+  ]
+}
+
+preprocess_grit("preprocess_generated") {
+  deps = [ ":web_components" ]
+  in_folder = target_gen_dir
+  out_folder = "$target_gen_dir/$preprocess_folder"
+  out_manifest = "$target_gen_dir/$preprocess_gen_manifest"
+  in_files = [
+    "contact_object.js",
+    "contact_tab.js",
+    "http_message_object.js",
+    "http_tab.js",
+    "log_object.js",
+    "logging_tab.js",
+    "nearby_internals.js",
+    "shared_style.js",
+    "ui_trigger_list_object.js",
+    "ui_trigger_tab.js",
+  ]
+}
+
+grit("nearby_internals_resources") {
+  defines = chrome_grit_defines
+
+  # These arguments are needed since the grd is generated at build time.
+  enable_input_discovery_for_gn_analyze = false
+  source = "$target_gen_dir/nearby_internals_resources.grd"
+  deps = [ ":build_grd" ]
+
+  outputs = [
+    "grit/nearby_internals_resources.h",
+    "grit/nearby_internals_resources_map.cc",
+    "grit/nearby_internals_resources_map.h",
+    "nearby_internals_resources.pak",
+  ]
+  output_dir = "$root_gen_dir/chrome"
+}
 
 js_type_check("closure_compile") {
   is_polymer3 = true
