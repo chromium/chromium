@@ -8,6 +8,7 @@
 
 #include "base/i18n/message_formatter.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/strings/string16.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
@@ -19,6 +20,9 @@
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "chrome/browser/ui/views/web_apps/web_app_info_image_source.h"
+#include "chrome/browser/web_applications/components/web_app_constants.h"
+#include "chrome/browser/web_applications/components/web_app_helpers.h"
+#include "chrome/browser/web_applications/components/web_app_prefs_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
@@ -31,6 +35,7 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/widget/widget.h"
 
 namespace {
 
@@ -101,12 +106,16 @@ PWAConfirmationBubbleView::PWAConfirmationBubbleView(
     views::View* anchor_view,
     views::Button* highlight_button,
     std::unique_ptr<WebApplicationInfo> web_app_info,
-    chrome::AppInstallationAcceptanceCallback callback)
+    chrome::AppInstallationAcceptanceCallback callback,
+    chrome::PwaInProductHelpState iph_state,
+    PrefService* prefs)
     : LocationBarBubbleDelegateView(anchor_view, nullptr),
       web_app_info_(std::move(web_app_info)),
       callback_(std::move(callback)),
-      run_on_os_login_(nullptr) {
+      iph_state_(iph_state),
+      prefs_(prefs) {
   DCHECK(web_app_info_);
+  DCHECK(prefs_);
 
   WidgetDelegate::SetShowCloseButton(true);
   WidgetDelegate::SetTitle(
@@ -188,6 +197,15 @@ views::View* PWAConfirmationBubbleView::GetInitiallyFocusedView() {
 void PWAConfirmationBubbleView::WindowClosing() {
   DCHECK_EQ(g_bubble_, this);
   g_bubble_ = nullptr;
+
+  // If |web_app_info_| is populated, then the bubble was not accepted.
+  if (iph_state_ == chrome::PwaInProductHelpState::kShown && web_app_info_) {
+    web_app::AppId app_id =
+        web_app::GenerateAppIdFromURL(web_app_info_->start_url);
+    UMA_HISTOGRAM_ENUMERATION("WebApp.InstallIphPromo.Result",
+                              web_app::InstallIphResult::kCanceled);
+    web_app::RecordInstallIphIgnored(prefs_, app_id);
+  }
   if (callback_) {
     DCHECK(web_app_info_);
     std::move(callback_).Run(false, std::move(web_app_info_));
@@ -208,6 +226,13 @@ bool PWAConfirmationBubbleView::Accept() {
   if (run_on_os_login_)
     web_app_info_->run_on_os_login = run_on_os_login_->GetChecked();
 
+  if (iph_state_ == chrome::PwaInProductHelpState::kShown) {
+    web_app::AppId app_id =
+        web_app::GenerateAppIdFromURL(web_app_info_->start_url);
+    UMA_HISTOGRAM_ENUMERATION("WebApp.InstallIphPromo.Result",
+                              web_app::InstallIphResult::kInstalled);
+    web_app::RecordInstallIphInstalled(prefs_, app_id);
+  }
   std::move(callback_).Run(true, std::move(web_app_info_));
   return true;
 }
@@ -221,7 +246,8 @@ namespace chrome {
 
 void ShowPWAInstallBubble(content::WebContents* web_contents,
                           std::unique_ptr<WebApplicationInfo> web_app_info,
-                          AppInstallationAcceptanceCallback callback) {
+                          AppInstallationAcceptanceCallback callback,
+                          PwaInProductHelpState iph_state) {
   if (g_bubble_)
     return;
 
@@ -236,9 +262,12 @@ void ShowPWAInstallBubble(content::WebContents* web_contents,
   PageActionIconView* icon =
       browser_view->toolbar_button_provider()->GetPageActionIconView(
           PageActionIconType::kPwaInstall);
-
-  g_bubble_ = new PWAConfirmationBubbleView(
-      anchor_view, icon, std::move(web_app_info), std::move(callback));
+  PrefService* prefs =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext())
+          ->GetPrefs();
+  g_bubble_ =
+      new PWAConfirmationBubbleView(anchor_view, icon, std::move(web_app_info),
+                                    std::move(callback), iph_state, prefs);
 
   views::BubbleDialogDelegateView::CreateBubble(g_bubble_)->Show();
 

@@ -76366,6 +76366,12 @@ Full version information for the fingerprint enum values:
   <int value="5" label="WindowControlsOverlay"/>
 </enum>
 
+<enum name="WebAppInstallIphResult">
+  <int value="0" label="Installed"/>
+  <int value="1" label="Clicked Install icon then canceled install"/>
+  <int value="2" label="Ignored"/>
+</enum>
+
 <enum name="WebAppInstallResultCode">
   <int value="0" label="Success"/>
   <int value="1" label="AlreadyInstalled"/>

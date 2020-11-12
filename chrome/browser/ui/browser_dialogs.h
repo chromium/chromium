@@ -124,13 +124,26 @@ void ShowWebAppInstallDialog(content::WebContents* web_contents,
 void SetAutoAcceptWebAppDialogForTesting(bool auto_accept,
                                          bool auto_open_in_window);
 
+// Describes the state of in-product-help being shown to the user.
+enum class PwaInProductHelpState {
+  // The in-product-help bubble was shown.
+  kShown,
+  // The in-product-help bubble was not shown.
+  kNotShown
+};
+
 // Shows the PWA installation confirmation bubble anchored off the PWA install
 // icon in the omnibox.
 //
 // |web_app_info| is the WebApplicationInfo to be installed.
-void ShowPWAInstallBubble(content::WebContents* web_contents,
-                          std::unique_ptr<WebApplicationInfo> web_app_info,
-                          AppInstallationAcceptanceCallback callback);
+// |callback| is called when install bubble closed.
+// |iph_state| records whether PWA install iph is shown before Install bubble is
+// shown.
+void ShowPWAInstallBubble(
+    content::WebContents* web_contents,
+    std::unique_ptr<WebApplicationInfo> web_app_info,
+    AppInstallationAcceptanceCallback callback,
+    PwaInProductHelpState iph_state = PwaInProductHelpState::kNotShown);
 
 // Sets whether |ShowPWAInstallBubble| should accept immediately without any
 // user interaction.

@@ -7,6 +7,7 @@
 
 #include "base/optional.h"
 #include "base/strings/string_piece.h"
+#include "base/time/time.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
 
 class PrefService;
@@ -26,6 +27,10 @@ extern const char kFileHandlersEnabled[];
 extern const char kExperimentalTabbedWindowMode[];
 
 extern const char kLatestWebAppInstallSource[];
+
+extern const char kIphIgnoreCount[];
+
+extern const char kIphLastIgnoreTime[];
 
 bool GetBoolWebAppPref(const PrefService* pref_service,
                        const AppId& app_id,
@@ -54,12 +59,25 @@ void UpdateDoubleWebAppPref(PrefService* pref_service,
                             base::StringPiece path,
                             double value);
 
+base::Optional<base::Time> GetTimeWebAppPref(const PrefService* pref_service,
+                                             const AppId& app_id,
+                                             base::StringPiece path);
+
+void UpdateTimeWebAppPref(PrefService* pref_service,
+                          const AppId& app_id,
+                          base::StringPiece path,
+                          base::Time value);
+
 void RemoveWebAppPref(PrefService* pref_service,
                       const AppId& app_id,
                       base::StringPiece path);
 
 void WebAppPrefsUtilsRegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry);
+
+void RecordInstallIphIgnored(PrefService* pref_service, const AppId& app_id);
+
+void RecordInstallIphInstalled(PrefService* pref_service, const AppId& app_id);
 
 }  // namespace web_app
 

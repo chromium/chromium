@@ -7,15 +7,20 @@
 #include "base/callback_helpers.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/banners/app_banner_manager.h"
 #include "chrome/browser/installable/installable_metrics.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/user_education/feature_promo_controller.h"
 #include "chrome/browser/ui/views/user_education/feature_promo_bubble_params.h"
 #include "chrome/browser/ui/views/user_education/feature_promo_controller_views.h"
 #include "chrome/browser/ui/views/web_apps/pwa_confirmation_bubble_view.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
+#include "chrome/browser/web_applications/components/web_app_helpers.h"
+#include "chrome/browser/web_applications/components/web_app_prefs_utils.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/omnibox/browser/vector_icons.h"
@@ -84,11 +89,40 @@ void PwaInstallView::UpdateImpl() {
       params.feature_command_id = IDC_INSTALL_PWA;
       params.anchor_view = this;
 
+      // Reset the iph flag when it's shown again.
+      install_icon_clicked_after_iph_shown_ = false;
       controller->MaybeShowPromoWithParams(
-          feature_engagement::kIPHDesktopPwaInstallFeature, params);
+          feature_engagement::kIPHDesktopPwaInstallFeature, params,
+          base::Bind(&PwaInstallView::OnIphClosed,
+                     weak_ptr_factory_.GetWeakPtr()));
     }
   }
   SetVisible(is_probably_promotable || PWAConfirmationBubbleView::IsShowing());
+}
+
+void PwaInstallView::OnIphClosed() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  // IPH is also closed when the install button is clicked. This does not
+  // count as an 'ignore'.
+  if (install_icon_clicked_after_iph_shown_)
+    return;
+  content::WebContents* web_contents = GetWebContents();
+  if (!web_contents)
+    return;
+  auto* manager = banners::AppBannerManager::FromWebContents(web_contents);
+  if (!manager)
+    return;
+  auto start_url = manager->GetManifestStartUrl();
+  if (start_url.is_empty())
+    return;
+  PrefService* prefs =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext())
+          ->GetPrefs();
+  base::UmaHistogramEnumeration("WebApp.InstallIphPromo.Result",
+                                web_app::InstallIphResult::kIgnored);
+  web_app::RecordInstallIphIgnored(prefs,
+                                   web_app::GenerateAppIdFromURL(start_url));
 }
 
 void PwaInstallView::OnExecuting(PageActionIconView::ExecuteSource source) {
@@ -97,14 +131,21 @@ void PwaInstallView::OnExecuting(PageActionIconView::ExecuteSource source) {
   // Close PWA install IPH if it is showing.
   FeaturePromoControllerViews* controller =
       FeaturePromoControllerViews::GetForView(this);
+  chrome::PwaInProductHelpState iph_state =
+      chrome::PwaInProductHelpState::kNotShown;
   if (controller) {
+    install_icon_clicked_after_iph_shown_ = controller->BubbleIsShowing(
+        feature_engagement::kIPHDesktopPwaInstallFeature);
+    if (install_icon_clicked_after_iph_shown_)
+      iph_state = chrome::PwaInProductHelpState::kShown;
+
     controller->CloseBubble(feature_engagement::kIPHDesktopPwaInstallFeature);
   }
 
   web_app::CreateWebAppFromManifest(GetWebContents(),
                                     /*bypass_service_worker_check=*/false,
                                     WebappInstallSource::OMNIBOX_INSTALL_ICON,
-                                    base::DoNothing());
+                                    base::DoNothing(), iph_state);
 }
 
 views::BubbleDialogDelegate* PwaInstallView::GetBubble() const {

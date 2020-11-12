@@ -4,6 +4,11 @@
 
 #include "chrome/browser/web_applications/components/web_app_prefs_utils.h"
 
+#include <memory>
+
+#include "base/strings/string_piece_forward.h"
+#include "base/time/time.h"
+#include "base/util/values/values_util.h"
 #include "base/values.h"
 #include "chrome/common/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -78,6 +83,10 @@ const char kExperimentalTabbedWindowMode[] = "experimental_tabbed_window_mode";
 
 const char kLatestWebAppInstallSource[] = "latest_web_app_install_source";
 
+const char kIphIgnoreCount[] = "IPH_num_of_consecutive_ignore";
+
+const char kIphLastIgnoreTime[] = "IPH_last_ignore_time";
+
 void WebAppPrefsUtilsRegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterDictionaryPref(::prefs::kWebAppsPreferences);
@@ -150,6 +159,29 @@ void UpdateDoubleWebAppPref(PrefService* pref_service,
   web_app_prefs->SetDouble(path, value);
 }
 
+base::Optional<base::Time> GetTimeWebAppPref(const PrefService* pref_service,
+                                             const AppId& app_id,
+                                             base::StringPiece path) {
+  if (const auto* web_app_prefs = GetWebAppDictionary(pref_service, app_id)) {
+    if (auto* value = web_app_prefs->FindPath(path))
+      return util::ValueToTime(value);
+  }
+
+  return base::nullopt;
+}
+
+void UpdateTimeWebAppPref(PrefService* pref_service,
+                          const AppId& app_id,
+                          base::StringPiece path,
+                          base::Time value) {
+  prefs::ScopedDictionaryPrefUpdate update(pref_service,
+                                           prefs::kWebAppsPreferences);
+
+  auto web_app_prefs = UpdateWebAppDictionary(update.Get(), app_id);
+  web_app_prefs->Set(path,
+                     std::make_unique<base::Value>(util::TimeToValue(value)));
+}
+
 void RemoveWebAppPref(PrefService* pref_service,
                       const AppId& app_id,
                       base::StringPiece path) {
@@ -159,6 +191,23 @@ void RemoveWebAppPref(PrefService* pref_service,
   std::unique_ptr<prefs::DictionaryValueUpdate> web_app_prefs =
       UpdateWebAppDictionary(update.Get(), app_id);
   web_app_prefs->Remove(path, nullptr);
+}
+
+void RecordInstallIphIgnored(PrefService* pref_service, const AppId& app_id) {
+  base::Optional<int> ignored_count =
+      GetIntWebAppPref(pref_service, app_id, kIphIgnoreCount);
+  int new_count = 1 + ignored_count.value_or(0);
+
+  UpdateIntWebAppPref(pref_service, app_id, kIphIgnoreCount, new_count);
+  UpdateTimeWebAppPref(pref_service, app_id, kIphLastIgnoreTime,
+                       base::Time::Now());
+}
+
+void RecordInstallIphInstalled(PrefService* pref_service, const AppId& app_id) {
+  // The ignored count is meant to track consecutive occurrences of the user
+  // ignoring IPH, to help determine when IPH should be muted. Therefore
+  // resetting ignored count on successful install.
+  UpdateIntWebAppPref(pref_service, app_id, kIphIgnoreCount, 0);
 }
 
 }  // namespace web_app

@@ -16142,6 +16142,16 @@ regressions. -->
   </summary>
 </histogram>
 
+<histogram name="WebApp.InstallIphPromo.Result" enum="WebAppInstallIphResult"
+    expires_after="M92">
+  <owner>phillis@chromium.org</owner>
+  <owner>dmurph@chromium.org</owner>
+  <summary>
+    Records the result of user reaction to In Product Help promo for Web App
+    Install.
+  </summary>
+</histogram>
+
 <histogram name="Webapp.InstallResult" enum="WebAppInstallResultCode"
     expires_after="2021-05-09">
 <!-- Name completed by histogram_suffixes name="WebAppType" -->

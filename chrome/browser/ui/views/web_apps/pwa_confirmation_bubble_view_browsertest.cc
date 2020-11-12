@@ -12,14 +12,18 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/views/web_apps/pwa_confirmation_bubble_view.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
+#include "chrome/browser/web_applications/components/web_app_helpers.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
+#include "chrome/browser/web_applications/components/web_app_prefs_utils.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "content/public/test/browser_test.h"
 #include "ui/views/controls/button/checkbox.h"
 
@@ -30,8 +34,10 @@ class PWAConfirmationBubbleViewBrowserTest : public InProcessBrowserTest {
     // AcceptBubbleInPWAWindowRunOnOsLoginChecked and
     // AcceptBubbleInPWAWindowRunOnOsLoginUnchecked tests interact with the
     // checkbox which is only added if feature flag is enabled.
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kDesktopPWAsRunOnOsLogin);
+    scoped_feature_list_.InitWithFeatures(
+        {features::kDesktopPWAsRunOnOsLogin,
+         feature_engagement::kIPHDesktopPwaInstallFeature},
+        {});
   }
   ~PWAConfirmationBubbleViewBrowserTest() override = default;
 
@@ -139,4 +145,35 @@ IN_PROC_BROWSER_TEST_F(PWAConfirmationBubbleViewBrowserTest,
   histograms.ExpectUniqueSample(
       "WebApp.InstallConfirmation.CloseReason",
       views::Widget::ClosedReason::kCancelButtonClicked, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(PWAConfirmationBubbleViewBrowserTest,
+                       CancelledDialogReportsIphIgnored) {
+  auto app_info = GetAppInfo();
+  GURL start_url = app_info->start_url;
+  base::RunLoop loop;
+  // Show the PWA install dialog.
+  chrome::ShowPWAInstallBubble(
+      browser()->tab_strip_model()->GetActiveWebContents(), std::move(app_info),
+      base::BindLambdaForTesting(
+          [&](bool accepted,
+              std::unique_ptr<WebApplicationInfo> app_info_callback) {
+            loop.Quit();
+          }),
+      chrome::PwaInProductHelpState::kShown);
+
+  PWAConfirmationBubbleView* bubble_dialog =
+      PWAConfirmationBubbleView::GetBubbleForTesting();
+
+  bubble_dialog->CancelDialog();
+  loop.Run();
+  PrefService* prefs = Profile::FromBrowserContext(browser()
+                                                       ->tab_strip_model()
+                                                       ->GetActiveWebContents()
+                                                       ->GetBrowserContext())
+                           ->GetPrefs();
+  web_app::AppId app_id = web_app::GenerateAppIdFromURL(start_url);
+  EXPECT_EQ(web_app::GetIntWebAppPref(prefs, app_id, web_app::kIphIgnoreCount)
+                .value(),
+            1);
 }

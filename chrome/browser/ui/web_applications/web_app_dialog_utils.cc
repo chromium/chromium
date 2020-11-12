@@ -32,6 +32,7 @@ namespace {
 
 void WebAppInstallDialogCallback(
     WebappInstallSource install_source,
+    chrome::PwaInProductHelpState iph_state,
     content::WebContents* initiator_web_contents,
     std::unique_ptr<WebApplicationInfo> web_app_info,
     ForInstallableSite for_installable_site,
@@ -40,9 +41,9 @@ void WebAppInstallDialogCallback(
   DCHECK(web_app_info);
   if (for_installable_site == ForInstallableSite::kYes) {
     web_app_info->open_as_window = true;
-    chrome::ShowPWAInstallBubble(initiator_web_contents,
-                                 std::move(web_app_info),
-                                 std::move(web_app_acceptance_callback));
+    chrome::ShowPWAInstallBubble(
+        initiator_web_contents, std::move(web_app_info),
+        std::move(web_app_acceptance_callback), iph_state);
   } else {
     chrome::ShowWebAppInstallDialog(initiator_web_contents,
                                     std::move(web_app_info),
@@ -115,21 +116,23 @@ void CreateWebAppFromCurrentWebContents(Browser* browser,
 
   provider->install_manager().InstallWebAppFromManifestWithFallback(
       web_contents, force_shortcut_app, install_source,
-      base::BindOnce(WebAppInstallDialogCallback, install_source),
+      base::BindOnce(WebAppInstallDialogCallback, install_source,
+                     chrome::PwaInProductHelpState::kNotShown),
       base::BindOnce(OnWebAppInstalled, std::move(callback)));
 }
 
 bool CreateWebAppFromManifest(content::WebContents* web_contents,
                               bool bypass_service_worker_check,
                               WebappInstallSource install_source,
-                              WebAppInstalledCallback installed_callback) {
+                              WebAppInstalledCallback installed_callback,
+                              chrome::PwaInProductHelpState iph_state) {
   auto* provider = WebAppProvider::GetForWebContents(web_contents);
   if (!provider)
     return false;
 
   provider->install_manager().InstallWebAppFromManifest(
       web_contents, bypass_service_worker_check, install_source,
-      base::BindOnce(WebAppInstallDialogCallback, install_source),
+      base::BindOnce(WebAppInstallDialogCallback, install_source, iph_state),
       base::BindOnce(OnWebAppInstalled, std::move(installed_callback)));
   return true;
 }

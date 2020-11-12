@@ -28,6 +28,14 @@ class PwaInstallView : public PageActionIconView {
   const char* GetClassName() const override;
 
  private:
+  // Called when IPH is closed.
+  void OnIphClosed();
+
+  // Track whether IPH is closed because of install icon being clicked.
+  bool install_icon_clicked_after_iph_shown_ = false;
+
+  base::WeakPtrFactory<PwaInstallView> weak_ptr_factory_{this};
+
   DISALLOW_COPY_AND_ASSIGN(PwaInstallView);
 };
 
