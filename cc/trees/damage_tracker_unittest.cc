@@ -2059,21 +2059,18 @@ TEST_F(DamageTrackerTest, CanUseCachedBackdropFilterResultTest) {
       GetRenderSurface(child1_)->can_use_cached_backdrop_filtered_result());
 
   EmulateDrawingOneFrame(root);
-  // No change under child1_.
-  EXPECT_TRUE(
+  // child1_'s render target has changed its surface property.
+  EXPECT_FALSE(
       GetRenderSurface(child1_)->can_use_cached_backdrop_filtered_result());
 
   // Let run for one update and there should be no damage left.
-  ClearDamageForAllSurfaces(root);
   EmulateDrawingOneFrame(root);
   EXPECT_TRUE(
       GetRenderSurface(child1_)->can_use_cached_backdrop_filtered_result());
 
   // CASE 1.1: Setting a non-intersecting update rect on the root
   // doesn't invalidate child1_'s cached backdrop-filtered result.
-  // Damage rect at 0,0 20x20 (expanded to -6,-6 32x32) doesn't intersect
-  // 270,270 36x38.
-  ClearDamageForAllSurfaces(root);
+  // Damage rect at 0,0 20x20 doesn't intersect 270,270 36x38.
   root->UnionUpdateRect(gfx::Rect(0, 0, 20, 20));
   EmulateDrawingOneFrame(root);
   EXPECT_TRUE(
@@ -2081,8 +2078,7 @@ TEST_F(DamageTrackerTest, CanUseCachedBackdropFilterResultTest) {
 
   // CASE 1.2: Setting an intersecting update rect on the root invalidates
   // child1_'s cached backdrop-filtered result.
-  // Damage rect at 260,260 20x20 (expanded to 254,254 32x32) intersects 270,270
-  // 36x38.
+  // Damage rect at 260,260 20x20 intersects 270,270 36x38.
   ClearDamageForAllSurfaces(root);
   root->UnionUpdateRect(gfx::Rect(260, 260, 20, 20));
   EmulateDrawingOneFrame(root);
@@ -2114,7 +2110,6 @@ TEST_F(DamageTrackerTest, CanUseCachedBackdropFilterResultTest) {
                    ->can_use_cached_backdrop_filtered_result());
 
   // Let run for one update and there should be no damage left.
-  ClearDamageForAllSurfaces(root);
   EmulateDrawingOneFrame(root);
   EXPECT_TRUE(GetRenderSurface(grand_child4_)
                   ->can_use_cached_backdrop_filtered_result());
@@ -2122,7 +2117,6 @@ TEST_F(DamageTrackerTest, CanUseCachedBackdropFilterResultTest) {
   // CASE 3.1: Adding a non-intersecting damage rect to a sibling layer under
   // the render surface with the backdrop filter doesn't invalidate cached
   // backdrop-filtered result. Damage rect on grand_child1_ at 302,302 1x1
-  // expanded by a 6-pixel spread (296,296 13x13)
   // doesn't intersect 280,280 15x16.
   ClearDamageForAllSurfaces(root);
   grand_child1_->AddDamageRect(gfx::Rect(2, 2, 1.f, 1.f));
@@ -2133,7 +2127,6 @@ TEST_F(DamageTrackerTest, CanUseCachedBackdropFilterResultTest) {
   // CASE 3.2: Adding an intersecting damage rect to a sibling layer under the
   // render surface with the backdrop filter invalidates cached
   // backdrop-filtered result. Damage rect on grand_child2_ at 290,290 1x1
-  // expanded by a 6-pixel spread (284,284 13x13)
   // intersects 280,280 15x16.
   ClearDamageForAllSurfaces(root);
   grand_child2_->AddDamageRect(gfx::Rect(0, 0, 1.f, 1.f));
@@ -2152,8 +2145,8 @@ TEST_F(DamageTrackerTest, CanUseCachedBackdropFilterResultTest) {
                   ->damage_tracker()
                   ->GetDamageRectIfValid(&damage_rect));
   EXPECT_EQ(gfx::Rect(170, 170, 1.f, 1.f), damage_rect);
-  // Damage rect at 170,170 1x1 (expanded to 164,164 13x13) in render target
-  // local space doesn't intersect 180,180 15x16.
+  // Damage rect at 170,170 1x1 in render target local space doesn't intersect
+  // 180,180 15x16.
   EXPECT_TRUE(GetRenderSurface(grand_child4_)
                   ->can_use_cached_backdrop_filtered_result());
 
@@ -2167,8 +2160,8 @@ TEST_F(DamageTrackerTest, CanUseCachedBackdropFilterResultTest) {
                   ->damage_tracker()
                   ->GetDamageRectIfValid(&damage_rect));
   EXPECT_EQ(gfx::Rect(170, 170, 11.f, 11.f), damage_rect);
-  // Damage rect at 170,170 11x11 (expanded to 164,164 23x23) in render target
-  // local space intersects 180,180 15x16
+  // Damage rect at 170,170 11x11 in render target local space intersects
+  // 180,180 15x16
   EXPECT_FALSE(GetRenderSurface(grand_child4_)
                    ->can_use_cached_backdrop_filtered_result());
 
