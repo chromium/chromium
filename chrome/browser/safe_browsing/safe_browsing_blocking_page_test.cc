@@ -43,7 +43,10 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/location_bar/location_icon_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view_base.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
@@ -56,6 +59,7 @@
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
+#include "components/reputation/core/safety_tip_test_utils.h"
 #include "components/safe_browsing/content/browser/threat_details.h"
 #include "components/safe_browsing/content/common/safe_browsing.mojom.h"
 #include "components/safe_browsing/content/renderer/threat_dom_details.h"
@@ -150,6 +154,23 @@ bool IsShowingInterstitial(WebContents* contents) {
 
 content::RenderFrameHost* GetRenderFrameHost(Browser* browser) {
   return browser->tab_strip_model()->GetActiveWebContents()->GetMainFrame();
+}
+
+class ClickEvent : public ui::Event {
+ public:
+  ClickEvent() : ui::Event(ui::ET_UNKNOWN, base::TimeTicks(), 0) {}
+};
+
+views::BubbleDialogDelegateView* OpenPageInfo(Browser* browser) {
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
+  LocationIconView* location_icon_view =
+      browser_view->toolbar()->location_bar()->location_icon_view();
+  ClickEvent event;
+  location_icon_view->ShowBubble(event);
+  views::BubbleDialogDelegateView* page_info =
+      PageInfoBubbleViewBase::GetPageInfoBubbleForTesting();
+  page_info->set_close_on_deactivate(false);
+  return page_info;
 }
 
 bool WaitForReady(Browser* browser) {
@@ -2635,6 +2656,11 @@ class SafeBrowsingBlockingPageDelayedWarningWithSafetyTipBrowserTest
       delete;
 
  protected:
+  void SetUp() override {
+    reputation::InitializeSafetyTipConfig();
+    SafeBrowsingBlockingPageDelayedWarningBrowserTest::SetUp();
+  }
+
   void GetAdditionalFeatures(
       std::vector<base::Feature>* enabled_features,
       std::vector<base::Feature>* disabled_features) override {
@@ -2669,12 +2695,17 @@ IN_PROC_BROWSER_TEST_P(
   ui_test_utils::NavigateToURL(browser(), url);
   AssertNoInterstitial(browser(), true);
 
-  // Check that a Safety Tip is showing.
+  // Check that a "Suspicious site" Safety Tip is showing.
   EXPECT_EQ(PageInfoBubbleViewBase::BUBBLE_SAFETY_TIP,
             PageInfoBubbleViewBase::GetShownBubbleType());
   histograms.ExpectUniqueSample("Security.SafetyTips.SafetyTipShown",
                                 security_state::SafetyTipStatus::kBadReputation,
                                 1);
+  auto* page_info = OpenPageInfo(browser());
+  ASSERT_TRUE(page_info);
+  EXPECT_EQ(
+      page_info->GetWindowTitle(),
+      l10n_util::GetStringUTF16(IDS_PAGE_INFO_SAFETY_TIP_BAD_REPUTATION_TITLE));
 
   // When the Safety Tip is showing, the security level should be downgraded, as
   // with a normal Safety Tip.
@@ -2728,6 +2759,65 @@ IN_PROC_BROWSER_TEST_P(
 INSTANTIATE_TEST_SUITE_P(
     SafeBrowsingBlockingPageDelayedWarningWithSafetyTipBrowserTest,
     SafeBrowsingBlockingPageDelayedWarningWithSafetyTipBrowserTest,
+    testing::Combine(
+        testing::Values(false, true), /* IsolateAllSitesForTesting */
+        testing::Values(false, true) /* Show warning on mouse click */));
+
+// This test fixture has both regular Safety Tips and delayed warnings Safety
+// Tips enabled, to test that delayed warnings Safety Tips don't interfere with
+// regular Safety Tips on non-blocklisted pages.
+class SafeBrowsingBlockingPageDelayedWarningWithLookalikeSafetyTipBrowserTest
+    : public SafeBrowsingBlockingPageDelayedWarningBrowserTest {
+ public:
+  SafeBrowsingBlockingPageDelayedWarningWithLookalikeSafetyTipBrowserTest() =
+      default;
+  SafeBrowsingBlockingPageDelayedWarningWithLookalikeSafetyTipBrowserTest(
+      const SafeBrowsingBlockingPageDelayedWarningWithLookalikeSafetyTipBrowserTest&) =
+      delete;
+  SafeBrowsingBlockingPageDelayedWarningWithLookalikeSafetyTipBrowserTest&
+  operator=(
+      const SafeBrowsingBlockingPageDelayedWarningWithLookalikeSafetyTipBrowserTest&) =
+      delete;
+
+ protected:
+  void SetUp() override {
+    reputation::InitializeSafetyTipConfig();
+    SafeBrowsingBlockingPageDelayedWarningBrowserTest::SetUp();
+  }
+
+  void GetAdditionalFeatures(
+      std::vector<base::Feature>* enabled_features,
+      std::vector<base::Feature>* disabled_features) override {
+    enabled_features->push_back(
+        security_state::features::kSafetyTipUIOnDelayedWarning);
+    enabled_features->push_back(security_state::features::kSafetyTipUI);
+  }
+};
+
+// Tests that the delayed warnings Safety Tips feature does not interfere with
+// normal lookalike safety tips.
+IN_PROC_BROWSER_TEST_P(
+    SafeBrowsingBlockingPageDelayedWarningWithLookalikeSafetyTipBrowserTest,
+    LookalikeSafetyTip) {
+  // Use a domain that is 1 edit distance away from a top 500 domain.
+  const GURL lookalike_url =
+      embedded_test_server()->GetURL("gooogle.com", "/iframe.html");
+  ui_test_utils::NavigateToURL(browser(), lookalike_url);
+  AssertNoInterstitial(browser(), true);
+
+  // Check that a "Did you mean..." Safety Tip is showing.
+  EXPECT_EQ(PageInfoBubbleViewBase::BUBBLE_SAFETY_TIP,
+            PageInfoBubbleViewBase::GetShownBubbleType());
+  auto* page_info = OpenPageInfo(browser());
+  ASSERT_TRUE(page_info);
+  EXPECT_EQ(page_info->GetWindowTitle(),
+            l10n_util::GetStringFUTF16(IDS_PAGE_INFO_SAFETY_TIP_LOOKALIKE_TITLE,
+                                       base::ASCIIToUTF16("google.com")));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    SafeBrowsingBlockingPageDelayedWarningWithLookalikeSafetyTipBrowserTest,
+    SafeBrowsingBlockingPageDelayedWarningWithLookalikeSafetyTipBrowserTest,
     testing::Combine(
         testing::Values(false, true), /* IsolateAllSitesForTesting */
         testing::Values(false, true) /* Show warning on mouse click */));

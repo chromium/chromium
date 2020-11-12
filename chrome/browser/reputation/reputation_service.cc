@@ -111,19 +111,22 @@ void ReputationService::GetReputationStatus(const GURL& url,
                                             ReputationCheckCallback callback) {
   DCHECK(url.SchemeIsHTTPOrHTTPS());
 
+  bool has_delayed_warning =
+      !!safe_browsing::SafeBrowsingUserInteractionObserver::FromWebContents(
+          web_contents);
+
   LookalikeUrlService* service = LookalikeUrlService::Get(profile_);
   if (service->EngagedSitesNeedUpdating()) {
-    service->ForceUpdateEngagedSites(base::BindOnce(
-        &ReputationService::GetReputationStatusWithEngagedSites,
-        weak_factory_.GetWeakPtr(), url,
-        !!safe_browsing::SafeBrowsingUserInteractionObserver::FromWebContents(
-            web_contents),
-        std::move(callback)));
+    service->ForceUpdateEngagedSites(
+        base::BindOnce(&ReputationService::GetReputationStatusWithEngagedSites,
+                       weak_factory_.GetWeakPtr(), url, has_delayed_warning,
+                       std::move(callback)));
     // If the engaged sites need updating, there's nothing to do until callback.
     return;
   }
 
-  GetReputationStatusWithEngagedSites(url, web_contents, std::move(callback),
+  GetReputationStatusWithEngagedSites(url, has_delayed_warning,
+                                      std::move(callback),
                                       service->GetLatestEngagedSites());
 }
 
