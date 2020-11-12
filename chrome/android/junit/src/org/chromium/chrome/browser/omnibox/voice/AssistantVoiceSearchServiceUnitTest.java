@@ -8,6 +8,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.ASSISTANT_LAST_VERSION;
+import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.ASSISTANT_VOICE_SEARCH_ENABLED;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.ASSISTANT_VOICE_SEARCH_SUPPORTED;
 
 import android.app.Activity;
@@ -95,6 +96,7 @@ public class AssistantVoiceSearchServiceUnitTest {
         doReturn(true).when(mGsaState).canAgsaHandleIntent(any());
         doReturn(true).when(mGsaState).agsaSupportsAssistantVoiceSearch();
         doReturn(true).when(mGsaState).doesGsaAccountMatchChrome();
+        mSharedPreferencesManager.writeBoolean(ASSISTANT_VOICE_SEARCH_ENABLED, true);
 
         mAssistantVoiceSearchService = new AssistantVoiceSearchService(mContext, mExternalAuthUtils,
                 mTemplateUrlService, mGsaState, null, mSharedPreferencesManager);
@@ -111,6 +113,13 @@ public class AssistantVoiceSearchServiceUnitTest {
     @Feature("OmniboxAssistantVoiceSearch")
     public void testStartVoiceRecognition_StartsAssistantVoiceSearch() {
         Assert.assertTrue(mAssistantVoiceSearchService.shouldRequestAssistantVoiceSearch());
+    }
+
+    @Test
+    @Feature("OmniboxAssistantVoiceSearch")
+    public void testStartVoiceRecognition_StartsAssistantVoiceSearch_DisabledByPref() {
+        mSharedPreferencesManager.writeBoolean(ASSISTANT_VOICE_SEARCH_ENABLED, false);
+        Assert.assertFalse(mAssistantVoiceSearchService.shouldRequestAssistantVoiceSearch());
     }
 
     @Test

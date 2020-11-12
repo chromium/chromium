@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.omnibox.voice;
 
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.ASSISTANT_LAST_VERSION;
+import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.ASSISTANT_VOICE_SEARCH_ENABLED;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.ASSISTANT_VOICE_SEARCH_SUPPORTED;
 
 import android.content.Context;
@@ -162,12 +163,18 @@ public class AssistantVoiceSearchService implements TemplateUrlService.TemplateU
         }
     }
 
+    /** @return Whether the user has had a chance to enable the feature. */
+    public boolean needsEnabledCheck() {
+        return !mSharedPrefsManager.contains(ASSISTANT_VOICE_SEARCH_ENABLED);
+    }
+
     /**
-     * Checks if the client should use Assistant for voice search. It's
+     * Checks if the client is eligible Assistant for voice search. It's
      * {@link canRequestAssistantVoiceSearch} with an additional check for experiment groups.
      */
     public boolean shouldRequestAssistantVoiceSearch() {
-        return mIsAssistantVoiceSearchEnabled && canRequestAssistantVoiceSearch();
+        return mIsAssistantVoiceSearchEnabled && canRequestAssistantVoiceSearch()
+                && isEnabledByPreference();
     }
 
     /** Checks if the client meetings the requirements to use Assistant for voice search. */
@@ -193,6 +200,15 @@ public class AssistantVoiceSearchService implements TemplateUrlService.TemplateU
                 ColorUtils.shouldUseLightForegroundOnBackground(primaryColor);
         int id = ChromeColors.getPrimaryIconTintRes(useLightColors);
         return AppCompatResources.getColorStateList(context, id);
+    }
+
+    /**
+     * @return Whether the user has enabled the feature, ensure {@link needsEnabledCheck} is
+     *         called first.
+     */
+    private boolean isEnabledByPreference() {
+        return mSharedPrefsManager.readBoolean(
+                ASSISTANT_VOICE_SEARCH_ENABLED, /* default= */ false);
     }
 
     /** Does expensive content provider read to determine if AGSA supports Assistant. */

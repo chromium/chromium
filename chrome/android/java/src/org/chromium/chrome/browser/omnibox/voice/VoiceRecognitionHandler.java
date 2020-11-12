@@ -17,12 +17,15 @@ import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
+import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
+import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.util.VoiceRecognitionUtil;
 import org.chromium.content_public.browser.NavigationHandle;
@@ -40,6 +43,8 @@ import java.util.List;
  * Class containing functionality related to voice search.
  */
 public class VoiceRecognitionHandler {
+    private static final String TAG = "VoiceRecognition";
+
     // The minimum confidence threshold that will result in navigating directly to a voice search
     // response (as opposed to treating it like a typed string in the Omnibox).
     @VisibleForTesting
@@ -114,6 +119,9 @@ public class VoiceRecognitionHandler {
          * @return The current {@link WindowAndroid}.
          */
         WindowAndroid getWindowAndroid();
+
+        /** Clears omnibox focus, used to display the dialog when the keyboard is shown. */
+        void clearOmniboxFocus();
     }
 
     /**
@@ -354,32 +362,12 @@ public class VoiceRecognitionHandler {
         Activity activity = windowAndroid.getActivity().get();
         if (activity == null) return;
 
-        if (mAssistantVoiceSearchService != null) {
-            // Report the client's eligibility for Assistant voice search.
-            mAssistantVoiceSearchService.reportUserEligibility();
+        if (startAGSAForAssistantVoiceSearch(activity, windowAndroid, source)) return;
 
-            if (mAssistantVoiceSearchService.shouldRequestAssistantVoiceSearch()) {
-                startAGSAForAssistantVoiceSearch(windowAndroid, source);
-                return;
-            }
-        }
-
-        // Check if we need to request audio permissions. If we don't, then trigger a permissions
-        // prompt will appear and startVoiceRecognition will be called again.
-        if (!ensureAudioPermissionGranted(windowAndroid, source)) return;
-
-        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
-        intent.putExtra(
-                RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_WEB_SEARCH);
-        intent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE,
-                activity.getComponentName().flattenToString());
-        intent.putExtra(RecognizerIntent.EXTRA_WEB_SEARCH_ONLY, true);
-
-        if (!showSpeechRecognitionIntent(windowAndroid, intent, source)) {
-            // Requery whether or not the recognition intent can be handled.
-            isRecognitionIntentPresent(false);
-            mDelegate.updateMicButtonState();
-            recordVoiceSearchFailureEventSource(source);
+        if (!startSystemForVoiceSearch(activity, windowAndroid, source)) {
+            // TODO(wylieb): Emit histogram here to identify how many users are attempting to use
+            // voice search, but fail completely.
+            Log.w(TAG, "Couldn't find suitable provider for voice searching");
         }
     }
 
@@ -418,15 +406,75 @@ public class VoiceRecognitionHandler {
         return false;
     }
 
-    /** Start AGSA to fulfill the current voice search. */
-    private void startAGSAForAssistantVoiceSearch(
-            WindowAndroid windowAndroid, @VoiceInteractionSource int source) {
+    /** Start the system-provided service to fulfill the current voice search. */
+    private boolean startSystemForVoiceSearch(
+            Activity activity, WindowAndroid windowAndroid, @VoiceInteractionSource int source) {
+        // Check if we need to request audio permissions. If we don't, then trigger a permissions
+        // prompt will appear and startVoiceRecognition will be called again.
+        if (!ensureAudioPermissionGranted(windowAndroid, source)) return false;
+
+        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        intent.putExtra(
+                RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_WEB_SEARCH);
+        intent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE,
+                activity.getComponentName().flattenToString());
+        intent.putExtra(RecognizerIntent.EXTRA_WEB_SEARCH_ONLY, true);
+
+        if (!showSpeechRecognitionIntent(windowAndroid, intent, source)) {
+            // Requery whether or not the recognition intent can be handled.
+            isRecognitionIntentPresent(false);
+            mDelegate.updateMicButtonState();
+            recordVoiceSearchFailureEventSource(source);
+
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Start AGSA to fulfill the current voice search.
+     *
+     * @return Whether AGSA was actually started, when false we should fallback to
+     *         {@link startSystemForVoiceSearch}.
+     */
+    private boolean startAGSAForAssistantVoiceSearch(
+            Activity activity, WindowAndroid windowAndroid, @VoiceInteractionSource int source) {
+        if (mAssistantVoiceSearchService == null) return false;
+
+        if (mAssistantVoiceSearchService.canRequestAssistantVoiceSearch()
+                && mAssistantVoiceSearchService.needsEnabledCheck()) {
+            mDelegate.clearOmniboxFocus();
+            AssistantVoiceSearchConsentUi.show(windowAndroid,
+                    SharedPreferencesManager.getInstance(), new SettingsLauncherImpl(),
+                    (useAssistant) -> {
+                        if (useAssistant) {
+                            if (!startAGSAForAssistantVoiceSearch(
+                                        activity, windowAndroid, source)) {
+                                // Fallback to system voice search.
+                                startSystemForVoiceSearch(activity, windowAndroid, source);
+                            }
+                        } else {
+                            startSystemForVoiceSearch(activity, windowAndroid, source);
+                        }
+                    });
+
+            return true;
+        }
+
+        // Report the client's eligibility for Assistant voice search.
+        mAssistantVoiceSearchService.reportUserEligibility();
+        if (!mAssistantVoiceSearchService.shouldRequestAssistantVoiceSearch()) return false;
+
         Intent intent = mAssistantVoiceSearchService.getAssistantVoiceSearchIntent();
 
         if (!showSpeechRecognitionIntent(windowAndroid, intent, source)) {
             mDelegate.updateMicButtonState();
             recordVoiceSearchFailureEventSource(source);
+
+            return false;
         }
+
+        return true;
     }
 
     /**
