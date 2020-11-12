@@ -5,16 +5,24 @@
 #include "ash/wm/window_cycle_event_filter.h"
 
 #include "ash/accelerators/debug_commands.h"
+#include "ash/display/screen_ash.h"
 #include "ash/public/cpp/ash_features.h"
 #include "ash/shell.h"
 #include "ash/wm/window_cycle_controller.h"
 #include "ash/wm/window_cycle_list.h"
 #include "base/bind.h"
 #include "ui/events/event.h"
+#include "ui/wm/core/coordinate_conversion.h"
 
 namespace ash {
 
-WindowCycleEventFilter::WindowCycleEventFilter() {
+// The distance a user has to move their mouse from |initial_mouse_location_|
+// before this stops filtering mouse events.
+constexpr int kMouseMovementThreshold = 5;
+
+WindowCycleEventFilter::WindowCycleEventFilter()
+    : initial_mouse_location_(
+          display::Screen::GetScreen()->GetCursorScreenPoint()) {
   Shell::Get()->AddPreTargetHandler(this);
   // Handling release of "Alt" must come before other pretarget handlers
   // (specifically, the partial screenshot handler). See crbug.com/651939
@@ -89,6 +97,26 @@ bool WindowCycleEventFilter::ShouldRepeatKey(ui::KeyEvent* event) const {
          !repeat_timer_.IsRunning();
 }
 
+void WindowCycleEventFilter::SetHasUserUsedMouse(ui::MouseEvent* event) {
+  if (event->type() != ui::ET_MOUSE_MOVED &&
+      event->type() != ui::ET_MOUSE_ENTERED &&
+      event->type() != ui::ET_MOUSE_EXITED) {
+    // If a user clicks/drags/scrolls mouse wheel, then they have used the
+    // mouse.
+    has_user_used_mouse_ = true;
+    return;
+  }
+
+  aura::Window* target = static_cast<aura::Window*>(event->target());
+  aura::Window* event_root = target->GetRootWindow();
+  gfx::Point event_screen_point = event->root_location();
+  wm::ConvertPointToScreen(event_root, &event_screen_point);
+  if ((initial_mouse_location_ - event_screen_point).Length() >
+      kMouseMovementThreshold) {
+    has_user_used_mouse_ = true;
+  }
+}
+
 WindowCycleController::Direction WindowCycleEventFilter::GetDirection(
     ui::KeyEvent* event) const {
   DCHECK(IsTriggerKey(event));
@@ -103,13 +131,18 @@ WindowCycleController::Direction WindowCycleEventFilter::GetDirection(
 }
 
 void WindowCycleEventFilter::OnMouseEvent(ui::MouseEvent* event) {
+  if (!has_user_used_mouse_)
+    SetHasUserUsedMouse(event);
+
   if (features::IsInteractiveWindowCycleListEnabled()) {
     WindowCycleController* window_cycle_controller =
         Shell::Get()->window_cycle_controller();
     const bool cycle_list_is_visible =
         window_cycle_controller->IsWindowListVisible();
-    if (window_cycle_controller->IsEventInCycleView(event) ||
-        !cycle_list_is_visible) {
+    const bool event_should_not_be_filtered =
+        has_user_used_mouse_ &&
+        window_cycle_controller->IsEventInCycleView(event);
+    if (event_should_not_be_filtered || !cycle_list_is_visible) {
       return;
     } else if (event->type() == ui::ET_MOUSE_PRESSED && cycle_list_is_visible) {
       // Close the window cycle list if a user clicks outside of it.

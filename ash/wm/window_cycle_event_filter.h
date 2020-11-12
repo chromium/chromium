@@ -10,6 +10,7 @@
 #include "base/macros.h"
 #include "base/timer/timer.h"
 #include "ui/events/event_handler.h"
+#include "ui/gfx/geometry/point.h"
 
 namespace ash {
 
@@ -54,6 +55,10 @@ class ASH_EXPORT WindowCycleEventFilter : public ui::EventHandler {
   // direction given by |event|.
   bool ShouldRepeatKey(ui::KeyEvent* event) const;
 
+  // Given |event|, determine if the user has used their mouse, i.e. moved or
+  // clicked.
+  void SetHasUserUsedMouse(ui::MouseEvent* event);
+
   // Returns the direction the window cycle should cycle depending on the
   // combination of keys being pressed.
   WindowCycleController::Direction GetDirection(ui::KeyEvent* event) const;
@@ -65,6 +70,18 @@ class ASH_EXPORT WindowCycleEventFilter : public ui::EventHandler {
   base::RepeatingTimer repeat_timer_;
 
   AltReleaseHandler alt_release_handler_;
+
+  // Stores the initial mouse coordinates. Used to determine whether
+  // |has_user_used_mouse_| when this handles mouse events.
+  gfx::Point initial_mouse_location_;
+
+  // Bool for tracking whether the user has used their mouse. If this is false,
+  // mouse events should be filtered. This is to prevent the initial mouse
+  // position from triggering window cycle items' mouse event handlers despite a
+  // user not moving their mouse. Should be set to true when a user moves their
+  // mouse enough or clicks/drags/mousewheel scrolls.
+  // See crbug.com/114375.
+  bool has_user_used_mouse_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(WindowCycleEventFilter);
 };
