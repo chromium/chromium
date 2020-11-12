@@ -42769,6 +42769,8 @@ from previous Chrome versions.
   <int value="-1304758527" label="SyncSendTabToSelf:disabled"/>
   <int value="-1302904242" label="enable-navigation-tracing"/>
   <int value="-1302859198" label="enable-stylus-virtual-keyboard:disabled"/>
+  <int value="-1301804101"
+      label="AutofillEnableInfoBarAccountIndicationFooterForSingleAccountUsers:disabled"/>
   <int value="-1297079591" label="EnableRemovingAllThirdPartyCookies:disabled"/>
   <int value="-1294050129" label="ContentFullscreen:disabled"/>
   <int value="-1293987566" label="OmniboxZeroSuggestionsOnNTPRealbox:disabled"/>
@@ -45886,6 +45888,8 @@ from previous Chrome versions.
   <int value="1793023585"
       label="ClickToCallContextMenuForSelectedText:disabled"/>
   <int value="1794057460" label="AutofillProfileClientValidation:enabled"/>
+  <int value="1794586887"
+      label="AutofillEnableInfoBarAccountIndicationFooterForSingleAccountUsers:enabled"/>
   <int value="1795186324" label="SyncPseudoUSSExtensionSettings:disabled"/>
   <int value="1796592669" label="InstalledAppsInCbd:disabled"/>
   <int value="1798347197"
@@ -46116,6 +46120,8 @@ from previous Chrome versions.
   <int value="1997931863" label="OmniboxContextMenuShowFullUrls:enabled"/>
   <int value="1998917160" label="AppServiceAdaptiveIcon:enabled"/>
   <int value="2000091128" label="enable-touch-hover"/>
+  <int value="2000291475"
+      label="AutofillEnableInfoBarAccountIndicationFooterForSyncUsers:enabled"/>
   <int value="2001505416" label="CorbAllowlistAlsoAppliesToOorCors:enabled"/>
   <int value="2001562962"
       label="enable-manual-fallback-for-password-saving:enabled"/>
@@ -46145,6 +46151,8 @@ from previous Chrome versions.
   <int value="2020107447" label="AndroidPayIntegrationV1:enabled"/>
   <int value="2022294878" label="WifiSyncAndroid:enabled"/>
   <int value="2024172900" label="KidsManagementUrlClassification:disabled"/>
+  <int value="2024298022"
+      label="AutofillEnableInfoBarAccountIndicationFooterForSyncUsers:disabled"/>
   <int value="2027793952" label="EditPasswordsInSettings:disabled"/>
   <int value="2032558514"
       label="RemoveUsageOfDeprecatedGaiaSigninEndpoint:enabled"/>

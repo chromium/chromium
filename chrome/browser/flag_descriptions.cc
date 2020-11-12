@@ -518,6 +518,25 @@ const char kEnableAutofillCreditCardAuthenticationDescription[] =
     "authenticator (if available) to verify card ownership when retrieving "
     "credit cards from Google Payments.";
 
+const char
+    kEnableAutofillInfoBarAccountIndicationFooterForSingleAccountUsersName[] =
+        "Display InfoBar footers with account indication information for "
+        "single account users";
+const char
+    kEnableAutofillInfoBarAccountIndicationFooterForSingleAccountUsersDescription
+        [] = "When enabled and user has single account, a footer indicating "
+             "user's e-mail address  will appear at the bottom of InfoBars "
+             "which has corresponding account indication footer flags on.";
+
+const char kEnableAutofillInfoBarAccountIndicationFooterForSyncUsersName[] =
+    "Display InfoBar footers with account indication information for "
+    "sync users";
+const char
+    kEnableAutofillInfoBarAccountIndicationFooterForSyncUsersDescription[] =
+        "When enabled and user is signed in, a footer indicating user's e-mail "
+        "address  will appear at the bottom of InfoBars which has "
+        "corresponding account indication footer flags on.";
+
 const char kEnableAutofillPasswordInfoBarAccountIndicationFooterName[] =
     "Display password InfoBar footers with account indication information";
 const char kEnableAutofillPasswordInfoBarAccountIndicationFooterDescription[] =

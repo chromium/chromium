@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/passwords/manage_passwords_view_utils.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/infobars/core/infobar.h"
 #include "components/infobars/core/infobar_manager.h"
 #include "components/password_manager/core/browser/password_bubble_experiment.h"
@@ -53,9 +54,16 @@ void SavePasswordInfoBarDelegate::Create(
   // passwords to their Google Account.
   bool is_smartlock_branding_enabled =
       password_bubble_experiment::IsSmartLockUser(sync_service);
-  bool should_show_account_footer = is_smartlock_branding_enabled &&
-                                    !is_single_account_user &&
-                                    account_info.has_value();
+  bool should_show_account_footer =
+      (is_smartlock_branding_enabled &&
+       base::FeatureList::IsEnabled(
+           autofill::features::
+               kAutofillEnableInfoBarAccountIndicationFooterForSyncUsers)) &&
+      (!is_single_account_user ||
+       base::FeatureList::IsEnabled(
+           autofill::features::
+               kAutofillEnableInfoBarAccountIndicationFooterForSingleAccountUsers)) &&
+      account_info.has_value();
   InfoBarService* infobar_service =
       InfoBarService::FromWebContents(web_contents);
   infobar_service->AddInfoBar(std::make_unique<SavePasswordInfoBar>(

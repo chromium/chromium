@@ -328,6 +328,17 @@ extern const char kEnableAutofillCreditCardCvcPromptGoogleLogoDescription[];
 extern const char kEnableAutofillCreditCardUploadFeedbackName[];
 extern const char kEnableAutofillCreditCardUploadFeedbackDescription[];
 
+extern const char
+    kEnableAutofillInfoBarAccountIndicationFooterForSingleAccountUsersName[];
+extern const char
+    kEnableAutofillInfoBarAccountIndicationFooterForSingleAccountUsersDescription
+        [];
+
+extern const char
+    kEnableAutofillInfoBarAccountIndicationFooterForSyncUsersName[];
+extern const char
+    kEnableAutofillInfoBarAccountIndicationFooterForSyncUsersDescription[];
+
 extern const char kEnableAutofillPasswordInfoBarAccountIndicationFooterName[];
 extern const char
     kEnableAutofillPasswordInfoBarAccountIndicationFooterDescription[];

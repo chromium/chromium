@@ -434,9 +434,20 @@ void ChromeAutofillClient::ConfirmSaveCreditCardToCloud(
       autofill::AutofillSyncSigninState::kSignedInAndWalletSyncTransportEnabled;
 
   base::Optional<AccountInfo> account_info = base::nullopt;
-  // AccountInfo data should be passed down only if sync is off and user has
-  // multiple accounts.
-  if (sync_disabled_wallet_transport_enabled && IsMultipleAccountUser()) {
+  // AccountInfo data should be passed down only if the following conditions are
+  // satisfied:
+  // 1) Sync is off or the
+  //   kAutofillEnableInfoBarAccountIndicationFooterForSyncUsers flag is on.
+  // 2) User has multiple accounts or the
+  //   kAutofillEnableInfoBarAccountIndicationFooterForSingleAccountUsers is on.
+  if ((sync_disabled_wallet_transport_enabled ||
+       base::FeatureList::IsEnabled(
+           features::
+               kAutofillEnableInfoBarAccountIndicationFooterForSyncUsers)) &&
+      (IsMultipleAccountUser() ||
+       base::FeatureList::IsEnabled(
+           features::
+               kAutofillEnableInfoBarAccountIndicationFooterForSingleAccountUsers))) {
     account_info = GetAccountInfo();
   }
   InfoBarService::FromWebContents(web_contents())

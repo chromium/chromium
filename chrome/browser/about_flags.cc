@@ -6688,6 +6688,28 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kShutdownSupportForKeepalive)},
 #endif  // !defined(OS_ANDROID)
 
+#if defined(OS_ANDROID)
+    {"enable-autofill-infobar-account-indication-footer-for-single-account-"
+     "users",
+     flag_descriptions::
+         kEnableAutofillInfoBarAccountIndicationFooterForSingleAccountUsersName,
+     flag_descriptions::
+         kEnableAutofillInfoBarAccountIndicationFooterForSingleAccountUsersDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         autofill::features::
+             kAutofillEnableInfoBarAccountIndicationFooterForSingleAccountUsers)},
+    {"enable-autofill-infobar-account-indication-footer-for-sync-users",
+     flag_descriptions::
+         kEnableAutofillInfoBarAccountIndicationFooterForSyncUsersName,
+     flag_descriptions::
+         kEnableAutofillInfoBarAccountIndicationFooterForSyncUsersDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         autofill::features::
+             kAutofillEnableInfoBarAccountIndicationFooterForSyncUsers)},
+#endif
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the
