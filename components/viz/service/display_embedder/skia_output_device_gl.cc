@@ -115,12 +115,14 @@ SkiaOutputDeviceGL::SkiaOutputDeviceGL(
   capabilities_.output_surface_origin = gl_surface_->GetOrigin();
   capabilities_.supports_post_sub_buffer = gl_surface_->SupportsPostSubBuffer();
 #if defined(OS_WIN)
-  if (gl_surface_->SupportsDCLayers() &&
-      gl::ShouldForceDirectCompositionRootSurfaceFullDamage()) {
+  if (gl_surface_->SupportsDCLayers()) {
     // We need to set this bit to allow viz to track the previous damage rect
     // of a backbuffer in a multiple backbuffer system, so backbuffers always
     // have valid pixels, even outside the current damage rect.
-    capabilities_.preserve_buffer_content = true;
+    capabilities_.preserve_buffer_content =
+        gl::ShouldForceDirectCompositionRootSurfaceFullDamage();
+    capabilities_.number_of_buffers =
+        gl::DirectCompositionRootSurfaceBufferCount();
   }
 #endif  // OS_WIN
   if (feature_info->workarounds()

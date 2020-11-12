@@ -124,6 +124,12 @@ UINT GetOverlaySupportFlags(DXGI_FORMAT format) {
   return gl::DirectCompositionSurfaceWin::GetOverlaySupportFlags(format);
 }
 
+unsigned int DirectCompositionRootSurfaceBufferCount() {
+  return base::FeatureList::IsEnabled(features::kDCompTripleBufferRootSwapChain)
+             ? 3u
+             : 2u;
+}
+
 bool ShouldForceDirectCompositionRootSurfaceFullDamage() {
   static bool should_force = []() {
     const base::CommandLine* cmd_line = base::CommandLine::ForCurrentProcess();

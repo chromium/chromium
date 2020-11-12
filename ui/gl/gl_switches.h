@@ -90,6 +90,8 @@ GL_EXPORT extern const int kGLSwitchesCopiedFromGpuProcessHostNumSwitches;
 }  // namespace switches
 
 namespace features {
+GL_EXPORT extern const base::Feature kDCompTripleBufferRootSwapChain;
+GL_EXPORT extern const base::Feature kDCompTripleBufferVideoSwapChain;
 GL_EXPORT extern const base::Feature kDirectCompositionForceFullDamage;
 GL_EXPORT extern const base::Feature kDirectCompositionGpuVSync;
 GL_EXPORT extern const base::Feature kDirectCompositionLowLatencyPresentation;

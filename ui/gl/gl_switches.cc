@@ -192,6 +192,14 @@ const int kGLSwitchesCopiedFromGpuProcessHostNumSwitches =
 
 namespace features {
 
+// Use BufferCount of 3 for the direct composition root swap chain.
+const base::Feature kDCompTripleBufferRootSwapChain{
+    "DCompTripleBufferRootSwapChain", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Use BufferCount of 3 for direct composition video swap chains.
+const base::Feature kDCompTripleBufferVideoSwapChain{
+    "DCompTripleBufferVideoSwapChain", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Forces Chrome's main backbuffer to full damage if the actual damage
 // is large enough and allows DWM to consider the main backbuffer as an
 // an overlay candidate.

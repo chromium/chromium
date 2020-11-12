@@ -383,7 +383,7 @@ bool DirectCompositionChildSurfaceWin::SetDrawRectangle(
     desc.Format = dxgi_format;
     desc.Stereo = FALSE;
     desc.SampleDesc.Count = 1;
-    desc.BufferCount = 2;
+    desc.BufferCount = gl::DirectCompositionRootSurfaceBufferCount();
     desc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
     desc.Scaling = DXGI_SCALING_STRETCH;
     desc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_SEQUENTIAL;
@@ -512,11 +512,12 @@ bool DirectCompositionChildSurfaceWin::Resize(
 
   // ResizeBuffers can't change alpha blending mode.
   if (swap_chain_ && resize_only) {
+    UINT buffer_count = gl::DirectCompositionRootSurfaceBufferCount();
     DXGI_FORMAT format = gfx::ColorSpaceWin::GetDXGIFormat(color_space_);
     UINT flags = DirectCompositionSurfaceWin::AllowTearing()
                      ? DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING
                      : 0;
-    HRESULT hr = swap_chain_->ResizeBuffers(2 /* BufferCount */, size.width(),
+    HRESULT hr = swap_chain_->ResizeBuffers(buffer_count, size.width(),
                                             size.height(), format, flags);
     UMA_HISTOGRAM_BOOLEAN("GPU.DirectComposition.SwapChainResizeResult",
                           SUCCEEDED(hr));

@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/win/scoped_gdi_object.h"
 #include "base/win/scoped_hdc.h"
@@ -28,6 +29,7 @@
 #include "ui/gl/gl_image_d3d.h"
 #include "ui/gl/gl_image_dxgi.h"
 #include "ui/gl/gl_image_ref_counted_memory.h"
+#include "ui/gl/gl_switches.h"
 #include "ui/gl/gl_version_info.h"
 #include "ui/gl/init/gl_factory.h"
 #include "ui/platform_window/platform_window_delegate.h"
@@ -1327,6 +1329,94 @@ TEST_F(DirectCompositionPixelTest, RootSurfaceDrawOffset) {
         << std::hex << "Expected " << test_case.expected_color << " Actual "
         << actual_color;
   }
+}
+
+void RunBufferCountTest(scoped_refptr<DirectCompositionSurfaceWin> surface,
+                        UINT buffer_count,
+                        bool for_video) {
+  if (!surface)
+    return;
+
+  if (for_video) {
+    DirectCompositionSurfaceWin::SetScaledOverlaysSupportedForTesting(true);
+    EXPECT_TRUE(surface->SetEnableDCLayers(true));
+  } else {
+    EXPECT_TRUE(surface->SetEnableDCLayers(false));
+  }
+
+  constexpr gfx::Size window_size(100, 100);
+  EXPECT_TRUE(surface->Resize(window_size, 1.0, gfx::ColorSpace(), true));
+  EXPECT_TRUE(surface->SetDrawRectangle(gfx::Rect(window_size)));
+
+  glClearColor(0.0, 0.0, 0.0, 1.0);
+  glClear(GL_COLOR_BUFFER_BIT);
+
+  constexpr gfx::Size texture_size(50, 50);
+  if (for_video) {
+    Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =
+        QueryD3D11DeviceObjectFromANGLE();
+    ASSERT_TRUE(d3d11_device);
+
+    Microsoft::WRL::ComPtr<ID3D11Texture2D> texture =
+        CreateNV12Texture(d3d11_device, texture_size, /*shared=*/false);
+    // The format doesn't matter, since we aren't binding.
+    scoped_refptr<GLImageDXGI> image_dxgi(
+        new GLImageDXGI(texture_size, nullptr));
+    image_dxgi->SetTexture(texture, /*level=*/0);
+
+    ui::DCRendererLayerParams params;
+    params.images[0] = image_dxgi;
+    params.content_rect = gfx::Rect(texture_size);
+    params.quad_rect = gfx::Rect(window_size);
+    EXPECT_TRUE(surface->ScheduleDCLayer(params));
+  }
+
+  EXPECT_EQ(gfx::SwapResult::SWAP_ACK, surface->SwapBuffers(base::DoNothing()));
+
+  const gfx::Size expected_size = for_video ? texture_size : window_size;
+  auto swap_chain = for_video ? surface->GetLayerSwapChainForTesting(0)
+                              : surface->GetBackbufferSwapChainForTesting();
+  ASSERT_TRUE(swap_chain);
+
+  DXGI_SWAP_CHAIN_DESC1 desc;
+  EXPECT_TRUE(SUCCEEDED(swap_chain->GetDesc1(&desc)));
+  EXPECT_EQ(desc.Width, static_cast<UINT>(expected_size.width()));
+  EXPECT_EQ(desc.Height, static_cast<UINT>(expected_size.height()));
+  EXPECT_EQ(desc.BufferCount, buffer_count);
+}
+
+TEST_F(DirectCompositionSurfaceTest, RootSwapChainBufferCount) {
+  RunBufferCountTest(surface_, /*buffer_count=*/2u, /*for_video=*/false);
+}
+
+TEST_F(DirectCompositionSurfaceTest, VideoSwapChainBufferCount) {
+  RunBufferCountTest(surface_, /*buffer_count=*/2u, /*for_video=*/true);
+}
+
+class DirectCompositionTripleBufferingTest
+    : public DirectCompositionSurfaceTest {
+ public:
+  DirectCompositionTripleBufferingTest() = default;
+  ~DirectCompositionTripleBufferingTest() override = default;
+
+ protected:
+  void SetUp() override {
+    feature_list_.InitWithFeatures({features::kDCompTripleBufferRootSwapChain,
+                                    features::kDCompTripleBufferVideoSwapChain},
+                                   {});
+    DirectCompositionSurfaceTest::SetUp();
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(DirectCompositionTripleBufferingTest, MainSwapChainBufferCount) {
+  RunBufferCountTest(surface_, /*buffer_count=*/3u, /*for_video=*/false);
+}
+
+TEST_F(DirectCompositionTripleBufferingTest, VideoSwapChainBufferCount) {
+  RunBufferCountTest(surface_, /*buffer_count=*/3u, /*for_video=*/true);
 }
 
 }  // namespace

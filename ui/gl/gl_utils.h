@@ -51,6 +51,9 @@ GL_EXPORT unsigned int FrameRateToPresentDuration(float frame_rate);
 
 GL_EXPORT UINT GetOverlaySupportFlags(DXGI_FORMAT format);
 
+// BufferCount for the root surface swap chain.
+GL_EXPORT unsigned int DirectCompositionRootSurfaceBufferCount();
+
 // Whether to use full damage when direct compostion root surface presents.
 // This function is thread safe.
 GL_EXPORT bool ShouldForceDirectCompositionRootSurfaceFullDamage();
