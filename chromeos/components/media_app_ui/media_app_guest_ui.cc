@@ -66,7 +66,12 @@ content::WebUIDataSource* CreateMediaAppUntrustedDataSource(
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::StyleSrc,
       "style-src 'self' 'unsafe-inline';");
-
+  // Allow loading PDFs as blob URLs.
+  source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::ObjectSrc, "object-src blob:;");
+  // Required to successfully load PDFs in the `<embed>` element.
+  source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::FrameSrc, "frame-src blob:;");
   // Allow wasm.
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ScriptSrc,

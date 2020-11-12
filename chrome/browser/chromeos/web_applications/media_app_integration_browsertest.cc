@@ -184,6 +184,34 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, MediaAppLaunchWithFile) {
   EXPECT_EQ("640x480", WaitForImageAlt(app, kFileJpeg640x480));
 }
 
+// Regression test for b/172881869.
+IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, LoadsPdf) {
+  WaitForTestSystemAppInstall();
+  LaunchApp(web_app::SystemAppType::MEDIA);
+  content::WebContents* app = PrepareActiveBrowserForTest();
+  // TODO(crbug/1148090): To fully load PDFs, "frame-src" needs to be set, this
+  // test doesn't provide coverage for that.
+  // Note: If "object-src" is not set in the CSP, the `<embed>` element fails to
+  // load and times out.
+  constexpr char loadPdf[] = R"(
+      (() => {
+        const embedBlob =  document.createElement('embed');
+        embedBlob.type ='application/pdf';
+        embedBlob.height = '100%';
+        embedBlob.width = '100%';
+        const loadPromise = new Promise((resolve, reject) => {
+          embedBlob.addEventListener('load', () => resolve(true));
+          embedBlob.addEventListener('error', () => reject(false));
+        });
+        document.body.appendChild(embedBlob);
+        embedBlob.src = 'blob:chrome-untrusted://media-app/fake-pdf-blob-hash';
+        return loadPromise;
+      })();
+  )";
+
+  EXPECT_EQ(true, MediaAppUiBrowserTest::EvalJsInAppFrame(app, loadPdf));
+}
+
 // Test that the MediaApp can load RAW files passed on launch params.
 IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, HandleRawFiles) {
   WaitForTestSystemAppInstall();
