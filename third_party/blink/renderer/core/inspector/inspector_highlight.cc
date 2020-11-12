@@ -206,11 +206,11 @@ const ShapeOutsideInfo* ShapeOutsideInfoForNode(Node* node,
                                                 FloatQuad* bounds) {
   LayoutObject* layout_object = node->GetLayoutObject();
   if (!layout_object || !layout_object->IsBox() ||
-      !ToLayoutBox(layout_object)->GetShapeOutsideInfo())
+      !To<LayoutBox>(layout_object)->GetShapeOutsideInfo())
     return nullptr;
 
   LocalFrameView* containing_view = node->GetDocument().View();
-  LayoutBox* layout_box = ToLayoutBox(layout_object);
+  auto* layout_box = To<LayoutBox>(layout_object);
   const ShapeOutsideInfo* shape_outside_info =
       layout_box->GetShapeOutsideInfo();
 
@@ -847,7 +847,7 @@ Vector<Vector<PhysicalRect>> GetFlexLinesAndItems(LayoutBox* layout_box,
       PhysicalOffset fragment_offset = child.Offset();
 
       const LayoutObject* object = child_fragment->GetLayoutObject();
-      const LayoutBox* box = ToLayoutBox(object);
+      const auto* box = To<LayoutBox>(object);
       PhysicalRect item_rect =
           PhysicalRect(fragment_offset.left - box->MarginLeft(),
                        fragment_offset.top - box->MarginTop(),
@@ -878,7 +878,7 @@ std::unique_ptr<protocol::DictionaryValue> BuildFlexInfo(
     float scale) {
   LocalFrameView* containing_view = node->GetDocument().View();
   LayoutObject* layout_object = node->GetLayoutObject();
-  LayoutBox* layout_box = ToLayoutBox(layout_object);
+  auto* layout_box = To<LayoutBox>(layout_object);
   DCHECK(layout_object);
   bool is_horizontal = IsHorizontalFlex(layout_object);
 
@@ -1247,7 +1247,7 @@ bool InspectorHighlightBase::BuildNodeQuads(Node* node,
     border_box = text_rect;
     margin_box = text_rect;
   } else if (layout_object->IsBox()) {
-    LayoutBox* layout_box = ToLayoutBox(layout_object);
+    auto* layout_box = To<LayoutBox>(layout_object);
     content_box = layout_box->PhysicalContentBoxRect();
 
     // Include scrollbars and gutters in the padding highlight.
@@ -1661,9 +1661,7 @@ bool InspectorHighlight::GetBoxModel(
 
   IntRect bounding_box =
       view->ConvertToRootFrame(layout_object->AbsoluteBoundingBoxRect());
-  LayoutBoxModelObject* model_object =
-      layout_object->IsBoxModelObject() ? ToLayoutBoxModelObject(layout_object)
-                                        : nullptr;
+  auto* model_object = DynamicTo<LayoutBoxModelObject>(layout_object);
 
   *model =
       protocol::DOM::BoxModel::create()

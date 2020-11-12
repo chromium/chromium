@@ -155,7 +155,7 @@ viz::FrameSinkId GetRemoteFrameSinkId(const HitTestResult& result) {
     return viz::FrameSinkId();
 
   IntPoint local_point = RoundedIntPoint(result.LocalPoint());
-  if (!ToLayoutBox(object)->ComputedCSSContentBoxRect().Contains(local_point))
+  if (!To<LayoutBox>(object)->ComputedCSSContentBoxRect().Contains(local_point))
     return viz::FrameSinkId();
 
   return remote_frame->GetFrameSinkId();
@@ -461,10 +461,8 @@ viz::FrameSinkId WebFrameWidgetBase::GetFrameSinkIdAtPoint(
   if (remote_frame_sink_id.is_valid()) {
     FloatPoint local_point = FloatPoint(result.LocalPoint());
     LayoutObject* object = result.GetLayoutObject();
-    if (object->IsBox()) {
-      LayoutBox* box = ToLayoutBox(object);
+    if (auto* box = DynamicTo<LayoutBox>(object))
       local_point.MoveBy(-FloatPoint(box->PhysicalContentBoxOffset()));
-    }
 
     *local_point_in_dips =
         widget_base_->BlinkSpaceToDIPs(gfx::PointF(local_point));

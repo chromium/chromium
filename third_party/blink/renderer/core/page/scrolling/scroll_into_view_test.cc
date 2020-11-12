@@ -600,9 +600,9 @@ TEST_F(ScrollIntoViewTest, StopAtLayoutViewportOption) {
                               std::move(params));
 
   ScrollableArea* root_scroller =
-      ToLayoutBox(root->GetLayoutObject())->GetScrollableArea();
+      To<LayoutBox>(root->GetLayoutObject())->GetScrollableArea();
   ScrollableArea* inner_scroller =
-      ToLayoutBox(inner->GetLayoutObject())->GetScrollableArea();
+      To<LayoutBox>(inner->GetLayoutObject())->GetScrollableArea();
 
   // Only the inner scroller should have scrolled. The root_scroller shouldn't
   // scroll because it is the layout viewport.

@@ -38,9 +38,7 @@ namespace {
 LayoutBoxModelObject* EnclosingBoxModelObject(LayoutObject* object) {
   while (object && !object->IsBoxModelObject())
     object = object->Parent();
-  if (!object)
-    return nullptr;
-  return ToLayoutBoxModelObject(object);
+  return To<LayoutBoxModelObject>(object);
 }
 
 bool IsCoordinateInPage(int top, int left, const IntRect& page) {

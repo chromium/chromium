@@ -97,10 +97,9 @@ bool ExternalPopupMenu::ShowInternal() {
     LayoutObject* layout_object = owner_element_->GetLayoutObject();
     if (!layout_object || !layout_object->IsBox())
       return false;
+    auto* box = To<LayoutBox>(layout_object);
     IntRect rect = EnclosingIntRect(
-        ToLayoutBox(layout_object)
-            ->LocalToAbsoluteRect(
-                ToLayoutBox(layout_object)->PhysicalBorderBoxRect()));
+        box->LocalToAbsoluteRect(box->PhysicalBorderBoxRect()));
     IntRect rect_in_viewport = local_frame_->View()->FrameToViewport(rect);
     float scale_for_emulation = WebLocalFrameImpl::FromFrame(local_frame_)
                                     ->LocalRootFrameWidget()

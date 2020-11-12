@@ -158,7 +158,7 @@ TEST_F(HTMLVideoElementTest, ChangeLayerNeedsCompositingUpdate) {
   SetFakeCcLayer(layer1.get());
   ASSERT_TRUE(video()->GetLayoutObject()->HasLayer());
   auto* paint_layer =
-      ToLayoutBoxModelObject(video()->GetLayoutObject())->Layer();
+      To<LayoutBoxModelObject>(video()->GetLayoutObject())->Layer();
   EXPECT_TRUE(paint_layer->NeedsCompositingInputsUpdate());
   UpdateAllLifecyclePhasesForTest();
   EXPECT_FALSE(paint_layer->NeedsCompositingInputsUpdate());

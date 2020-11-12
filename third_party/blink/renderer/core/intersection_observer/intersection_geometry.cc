@@ -89,9 +89,9 @@ PhysicalRect InitializeRootRect(const LayoutObject* root,
     // we can zoom out to fit the entire element width.
     result = layout_view->OverflowClipRect(PhysicalOffset());
   } else if (root->IsBox() && root->IsScrollContainer()) {
-    result = ToLayoutBox(root)->PhysicalContentBoxRect();
+    result = To<LayoutBox>(root)->PhysicalContentBoxRect();
   } else {
-    result = PhysicalRect(ToLayoutBoxModelObject(root)->BorderBoundingBox());
+    result = PhysicalRect(To<LayoutBoxModelObject>(root)->BorderBoundingBox());
   }
   ApplyMargin(result, margin, root->StyleRef().EffectiveZoom());
   return result;
@@ -107,7 +107,7 @@ PhysicalRect InitializeTargetRect(const LayoutObject* target,
       target->IsLayoutEmbeddedContent()) {
     result = To<LayoutEmbeddedContent>(target)->ReplacedContentRect();
   } else if (target->IsBox()) {
-    result = PhysicalRect(ToLayoutBoxModelObject(target)->BorderBoundingBox());
+    result = PhysicalRect(To<LayoutBox>(target)->BorderBoundingBox());
   } else if (target->IsLayoutInline()) {
     result = target->AbsoluteToLocalRect(
         PhysicalRect::EnclosingRect(target->AbsoluteBoundingBoxFloatRect()));
@@ -446,7 +446,7 @@ bool IntersectionGeometry::ClipToRoot(const LayoutObject* root,
   // TODO(szager): the writing mode flipping needs a test.
   const LayoutBox* local_ancestor = nullptr;
   if (!RootIsImplicit() || root->GetDocument().IsInMainFrame())
-    local_ancestor = ToLayoutBox(root);
+    local_ancestor = To<LayoutBox>(root);
 
   unsigned flags = kDefaultVisualRectFlags | kEdgeInclusive |
                    kDontApplyMainFrameOverflowClip;

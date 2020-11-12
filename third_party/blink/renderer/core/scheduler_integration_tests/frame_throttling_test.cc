@@ -1553,14 +1553,14 @@ TEST_P(FrameThrottlingTest, RebuildCompositedLayerTreeOnLayerRemoval) {
       frame_element->contentDocument()->getElementById("scroller");
   ASSERT_TRUE(scroller_element->GetLayoutObject()->HasLayer());
   auto* scroller_layer =
-      ToLayoutBoxModelObject(scroller_element->GetLayoutObject())->Layer();
+      To<LayoutBoxModelObject>(scroller_element->GetLayoutObject())->Layer();
   EXPECT_TRUE(scroller_layer->NeedsCompositedScrolling());
 
   auto* sibling_element =
       frame_element->contentDocument()->getElementById("sibling");
   ASSERT_TRUE(sibling_element->GetLayoutObject()->HasLayer());
   auto* sibling_layer =
-      ToLayoutBoxModelObject(sibling_element->GetLayoutObject())->Layer();
+      To<LayoutBoxModelObject>(sibling_element->GetLayoutObject())->Layer();
   auto* sibling_clm = sibling_layer->GetCompositedLayerMapping();
   ASSERT_TRUE(sibling_clm);
 

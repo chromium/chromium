@@ -131,7 +131,7 @@ LayoutBox* HTMLFieldSetElement::GetLayoutBoxForScrolling() const {
     return HTMLFormControlElement::GetLayoutBoxForScrolling();
   LayoutObject* child = layout_box->SlowFirstChild();
   if (child && child->IsAnonymous())
-    return ToLayoutBox(child);
+    return To<LayoutBox>(child);
   return HTMLFormControlElement::GetLayoutBoxForScrolling();
 }
 

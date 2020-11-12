@@ -111,6 +111,11 @@ class RootScrollerTest : public testing::Test,
 
   Page& GetPage() const { return *GetWebView()->GetPage(); }
 
+  PaintLayerScrollableArea* GetScrollableArea(const Element& element) const {
+    return To<LayoutBoxModelObject>(element.GetLayoutObject())
+        ->GetScrollableArea();
+  }
+
   LocalFrame* MainFrame() const {
     return GetWebView()->MainFrameImpl()->GetFrame();
   }
@@ -503,8 +508,7 @@ TEST_F(RootScrollerTest, AlwaysCreateCompositedScrollingLayers) {
 
   Element* container = MainFrame()->GetDocument()->getElementById("container");
 
-  PaintLayerScrollableArea* container_scroller =
-      ToLayoutBox(container->GetLayoutObject())->GetScrollableArea();
+  PaintLayerScrollableArea* container_scroller = GetScrollableArea(*container);
   PaintLayer* layer = container_scroller->Layer();
 
   ASSERT_FALSE(layer->HasCompositedLayerMapping());
@@ -587,8 +591,7 @@ TEST_F(RootScrollerTest, UseVisualViewportScrollbars) {
   Element* container = MainFrame()->GetDocument()->getElementById("container");
   ASSERT_EQ(container, EffectiveRootScroller(MainFrame()->GetDocument()));
 
-  ScrollableArea* container_scroller =
-      ToLayoutBox(container->GetLayoutObject())->GetScrollableArea();
+  ScrollableArea* container_scroller = GetScrollableArea(*container);
   EXPECT_FALSE(container_scroller->HorizontalScrollbar());
   EXPECT_FALSE(container_scroller->VerticalScrollbar());
   EXPECT_GT(container_scroller->MaximumScrollOffset().Width(), 0);
@@ -645,8 +648,7 @@ TEST_F(RootScrollerTest, TopControlsAdjustmentAppliedToRootScroller) {
   Element* container = MainFrame()->GetDocument()->getElementById("container");
   ASSERT_EQ(container, EffectiveRootScroller(MainFrame()->GetDocument()));
 
-  ScrollableArea* container_scroller =
-      ToLayoutBox(container->GetLayoutObject())->GetScrollableArea();
+  ScrollableArea* container_scroller = GetScrollableArea(*container);
 
   // Hide the top controls and scroll down maximally. We should account for the
   // change in maximum scroll offset due to the top controls hiding. That is,
@@ -688,8 +690,7 @@ TEST_F(RootScrollerTest, RotationAnchoring) {
         MainFrame()->GetDocument()->getElementById("container");
     ASSERT_EQ(container, EffectiveRootScroller(MainFrame()->GetDocument()));
 
-    container_scroller =
-        ToLayoutBox(container->GetLayoutObject())->GetScrollableArea();
+    container_scroller = GetScrollableArea(*container);
   }
 
   Element* target = MainFrame()->GetDocument()->getElementById("target");
@@ -2056,7 +2057,7 @@ TEST_F(ImplicitRootScrollerSimTest,
   Compositor().BeginFrame();
   EXPECT_EQ(container,
             GetDocument().GetRootScrollerController().EffectiveRootScroller());
-  EXPECT_EQ(ToLayoutBox(container->GetLayoutObject())->Size().Height(), 600);
+  EXPECT_EQ(To<LayoutBox>(container->GetLayoutObject())->Size().Height(), 600);
   WebView().SetZoomLevel(PageZoomFactorToZoomLevel(2.0));
   WebView().GetPage()->GetBrowserControls().SetShownRatio(0, 0);
   WebView().ResizeWithBrowserControls(gfx::Size(800, 650), 50, 50, false);
@@ -2835,7 +2836,7 @@ class RootScrollerHitTest : public ImplicitRootScrollerSimTest {
                          ->GlobalRootScrollerController()
                          .GlobalRootScroller();
     ScrollableArea* scrollable_area =
-        ToLayoutBox(scroller->GetLayoutObject())->GetScrollableArea();
+        To<LayoutBox>(scroller->GetLayoutObject())->GetScrollableArea();
     scrollable_area->DidScroll(FloatPoint(0, 100000));
 
     WebView().ResizeWithBrowserControls(gfx::Size(400, 450), 50, 50, false);
@@ -2892,8 +2893,8 @@ TEST_F(RootScrollerHitTest, HitTestInAreaRevealedByURLBarSameLayer) {
 
   // This test checks hit testing while the target is in the same PaintLayer as
   // the root scroller.
-  ASSERT_EQ(ToLayoutBox(target->GetLayoutObject())->EnclosingLayer(),
-            ToLayoutBox(container->GetLayoutObject())->Layer());
+  ASSERT_EQ(To<LayoutBox>(target->GetLayoutObject())->EnclosingLayer(),
+            To<LayoutBox>(container->GetLayoutObject())->Layer());
 
   CheckHitTestAtBottomOfScreen(target);
 }
@@ -2946,8 +2947,8 @@ TEST_F(RootScrollerHitTest, HitTestInAreaRevealedByURLBarDifferentLayer) {
             GetDocument().GetRootScrollerController().EffectiveRootScroller());
 
   // Ensure the target and container weren't put into the same layer.
-  ASSERT_NE(ToLayoutBox(target->GetLayoutObject())->EnclosingLayer(),
-            ToLayoutBox(container->GetLayoutObject())->Layer());
+  ASSERT_NE(To<LayoutBox>(target->GetLayoutObject())->EnclosingLayer(),
+            To<LayoutBox>(container->GetLayoutObject())->Layer());
 
   CheckHitTestAtBottomOfScreen(target);
 }

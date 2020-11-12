@@ -7935,8 +7935,8 @@ TEST_F(WebFrameTest, FullscreenLayerSize) {
   EXPECT_EQ(div_fullscreen, Fullscreen::FullscreenElementFrom(*document));
 
   // Verify that the element is sized to the viewport.
-  LayoutBox* fullscreen_layout_object =
-      ToLayoutBox(div_fullscreen->GetLayoutObject());
+  auto* fullscreen_layout_object =
+      To<LayoutBox>(div_fullscreen->GetLayoutObject());
   EXPECT_EQ(viewport_width, fullscreen_layout_object->LogicalWidth().ToInt());
   EXPECT_EQ(viewport_height, fullscreen_layout_object->LogicalHeight().ToInt());
 
@@ -8088,8 +8088,8 @@ TEST_F(WebFrameTest, FullscreenSubframe) {
   UpdateAllLifecyclePhases(web_view_impl);
 
   // Verify that the element is sized to the viewport.
-  LayoutBox* fullscreen_layout_object =
-      ToLayoutBox(div_fullscreen->GetLayoutObject());
+  auto* fullscreen_layout_object =
+      To<LayoutBox>(div_fullscreen->GetLayoutObject());
   EXPECT_EQ(viewport_width, fullscreen_layout_object->LogicalWidth().ToInt());
   EXPECT_EQ(viewport_height, fullscreen_layout_object->LogicalHeight().ToInt());
 
@@ -8506,7 +8506,7 @@ TEST_F(WebFrameTest, WebXrImmersiveOverlay) {
             SK_AlphaTRANSPARENT);
 
   GraphicsLayer* inner_layer =
-      ToLayoutBoxModelObject(
+      To<LayoutBoxModelObject>(
           frame->GetDocument()->getElementById("inner")->GetLayoutObject())
           ->Layer()
           ->GetCompositedLayerMapping()
@@ -8546,12 +8546,12 @@ TEST_F(WebFrameTest, LayoutBlockPercentHeightDescendants) {
   Document* document = web_view->MainFrameImpl()->GetFrame()->GetDocument();
   LayoutBlock* container =
       To<LayoutBlock>(document->getElementById("container")->GetLayoutObject());
-  LayoutBox* percent_height_in_anonymous =
-      ToLayoutBox(document->getElementById("percent-height-in-anonymous")
-                      ->GetLayoutObject());
-  LayoutBox* percent_height_direct_child =
-      ToLayoutBox(document->getElementById("percent-height-direct-child")
-                      ->GetLayoutObject());
+  auto* percent_height_in_anonymous =
+      To<LayoutBox>(document->getElementById("percent-height-in-anonymous")
+                        ->GetLayoutObject());
+  auto* percent_height_direct_child =
+      To<LayoutBox>(document->getElementById("percent-height-direct-child")
+                        ->GetLayoutObject());
 
   EXPECT_TRUE(
       container->HasPercentHeightDescendant(percent_height_in_anonymous));

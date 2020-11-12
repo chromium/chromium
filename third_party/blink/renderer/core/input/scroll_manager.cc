@@ -279,7 +279,7 @@ bool ScrollManager::LogicalScroll(mojom::blink::ScrollDirection direction,
     Node* scroll_chain_node = DOMNodeIds::NodeForId(scroll_chain.TakeLast());
     DCHECK(scroll_chain_node);
 
-    LayoutBox* box = ToLayoutBox(scroll_chain_node->GetLayoutObject());
+    auto* box = To<LayoutBox>(scroll_chain_node->GetLayoutObject());
     DCHECK(box);
 
     ScrollDirectionPhysical physical_direction =

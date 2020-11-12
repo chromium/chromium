@@ -217,7 +217,7 @@ ScrollableArea* ScrollableAreaFor(const Node* node) {
   if (!object || !object->IsBox())
     return nullptr;
 
-  return ToLayoutBox(object)->GetScrollableArea();
+  return To<LayoutBox>(object)->GetScrollableArea();
 }
 
 bool IsUnobscured(const FocusCandidate& candidate) {
@@ -335,11 +335,9 @@ bool IsScrollableNode(const Node* node) {
   if (node->IsDocumentNode())
     return true;
 
-  LayoutObject* layout_object = node->GetLayoutObject();
-  if (!layout_object || !layout_object->IsBox())
-    return false;
-
-  return ToLayoutBox(layout_object)->CanBeScrolledAndHasScrollableArea();
+  if (auto* box = DynamicTo<LayoutBox>(node->GetLayoutObject()))
+    return box->CanBeScrolledAndHasScrollableArea();
+  return false;
 }
 
 Node* ScrollableAreaOrDocumentOf(Node* node) {
@@ -815,7 +813,7 @@ LayoutUnit TallestInlineAtomicChild(const LayoutObject& layout_object) {
 
     if (child->IsAtomicInlineLevel()) {
       max_child_size =
-          std::max(ToLayoutBox(child)->LogicalHeight(), max_child_size);
+          std::max(To<LayoutBox>(child)->LogicalHeight(), max_child_size);
     }
   }
 

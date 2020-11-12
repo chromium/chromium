@@ -21,7 +21,7 @@ TEST_F(HTMLCanvasElementTest, CreateLayerUpdatesCompositing) {
 
   SetBodyInnerHTML("<canvas id='canvas'></canvas>");
   auto* canvas = To<HTMLCanvasElement>(GetDocument().getElementById("canvas"));
-  auto* layer = ToLayoutBoxModelObject(canvas->GetLayoutObject())->Layer();
+  auto* layer = GetPaintLayerByElementId("canvas");
   ASSERT_TRUE(layer);
   EXPECT_EQ(CompositingReason::kNone, layer->DirectCompositingReasons());
 
@@ -29,7 +29,8 @@ TEST_F(HTMLCanvasElementTest, CreateLayerUpdatesCompositing) {
   canvas->CreateLayer();
   EXPECT_TRUE(layer->NeedsCompositingInputsUpdate());
   UpdateAllLifecyclePhasesForTest();
-  ASSERT_EQ(layer, ToLayoutBoxModelObject(canvas->GetLayoutObject())->Layer());
+  ASSERT_EQ(layer,
+            To<LayoutBoxModelObject>(canvas->GetLayoutObject())->Layer());
   EXPECT_EQ(CompositingReason::kCanvas, layer->DirectCompositingReasons());
 }
 

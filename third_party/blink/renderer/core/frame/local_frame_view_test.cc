@@ -163,8 +163,7 @@ TEST_F(LocalFrameViewTest,
     <div class='container'><div id='sticky'></div></div>
   )HTML");
 
-  LayoutBoxModelObject* sticky = ToLayoutBoxModelObject(
-      GetDocument().getElementById("sticky")->GetLayoutObject());
+  auto* sticky = To<LayoutBoxModelObject>(GetLayoutObjectByElementId("sticky"));
 
   // Deliberately invalidate the ancestor overflow layer. This approximates
   // http://crbug.com/696173, in which the ancestor overflow layer can be null

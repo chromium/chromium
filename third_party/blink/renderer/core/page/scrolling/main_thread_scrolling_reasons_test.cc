@@ -96,6 +96,10 @@ class MainThreadScrollingReasonsTest : public testing::Test {
 
   WebViewImpl* GetWebView() const { return helper_.GetWebView(); }
   LocalFrame* GetFrame() const { return helper_.LocalMainFrame()->GetFrame(); }
+  PaintLayerScrollableArea* GetScrollableArea(const Element& element) const {
+    return To<LayoutBoxModelObject>(element.GetLayoutObject())
+        ->GetScrollableArea();
+  }
 
  protected:
   String base_url_;
@@ -280,8 +284,7 @@ TEST_F(MainThreadScrollingReasonsTest,
   DCHECK(scrollable_element);
 
   LayoutObject* layout_object = scrollable_element->GetLayoutObject();
-  ASSERT_TRUE(layout_object->IsBox());
-  LayoutBox* box = ToLayoutBox(layout_object);
+  auto* box = To<LayoutBox>(layout_object);
   ASSERT_TRUE(box->UsesCompositedScrolling());
   CompositedLayerMapping* composited_layer_mapping =
       box->Layer()->GetCompositedLayerMapping();
@@ -313,9 +316,7 @@ class NonCompositedMainThreadScrollingReasonsTest
     Element* container = document->getElementById("scroller1");
     ForceFullCompositingUpdate();
 
-    PaintLayerScrollableArea* scrollable_area =
-        ToLayoutBoxModelObject(container->GetLayoutObject())
-            ->GetScrollableArea();
+    PaintLayerScrollableArea* scrollable_area = GetScrollableArea(*container);
     ASSERT_TRUE(scrollable_area);
     EXPECT_NO_MAIN_THREAD_SCROLLING_REASON(
         scrollable_area->GetNonCompositedMainThreadScrollingReasons());
@@ -328,9 +329,7 @@ class NonCompositedMainThreadScrollingReasonsTest
         reason, scrollable_area->GetNonCompositedMainThreadScrollingReasons());
 
     Element* container2 = document->getElementById("scroller2");
-    PaintLayerScrollableArea* scrollable_area2 =
-        ToLayoutBoxModelObject(container2->GetLayoutObject())
-            ->GetScrollableArea();
+    PaintLayerScrollableArea* scrollable_area2 = GetScrollableArea(*container2);
     ASSERT_TRUE(scrollable_area2);
     // Different scrollable area should remain unaffected.
     EXPECT_NO_MAIN_THREAD_SCROLLING_REASON(
@@ -440,8 +439,7 @@ TEST_F(NonCompositedMainThreadScrollingReasonsTest,
                           ASSERT_NO_EXCEPTION);
   ForceFullCompositingUpdate();
 
-  PaintLayerScrollableArea* scrollable_area =
-      ToLayoutBoxModelObject(container->GetLayoutObject())->GetScrollableArea();
+  PaintLayerScrollableArea* scrollable_area = GetScrollableArea(*container);
   ASSERT_TRUE(scrollable_area);
   EXPECT_NO_MAIN_THREAD_SCROLLING_REASON(
       scrollable_area->GetNonCompositedMainThreadScrollingReasons());
@@ -451,9 +449,7 @@ TEST_F(NonCompositedMainThreadScrollingReasonsTest,
   container2->setAttribute("class", "composited border-radius",
                            ASSERT_NO_EXCEPTION);
   ForceFullCompositingUpdate();
-  PaintLayerScrollableArea* scrollable_area2 =
-      ToLayoutBoxModelObject(container2->GetLayoutObject())
-          ->GetScrollableArea();
+  PaintLayerScrollableArea* scrollable_area2 = GetScrollableArea(*container2);
   ASSERT_TRUE(scrollable_area2);
   ASSERT_TRUE(scrollable_area2->UsesCompositedScrolling());
 }

@@ -262,11 +262,9 @@ static ScrollableArea* ScrollableAreaForNode(Node* node) {
   if (!node)
     return nullptr;
 
-  LayoutObject* layout_object = node->GetLayoutObject();
-  if (!layout_object || !layout_object->IsBox())
-    return nullptr;
-
-  return ToLayoutBox(layout_object)->GetScrollableArea();
+  if (auto* box = DynamicTo<LayoutBox>(node->GetLayoutObject()))
+    return box->GetScrollableArea();
+  return nullptr;
 }
 
 void Internals::ResetToConsistentState(Page* page) {
@@ -2145,8 +2143,8 @@ bool Internals::scrollsWithRespectTo(Element* element1,
     return false;
   }
 
-  PaintLayer* layer1 = ToLayoutBox(layout_object1)->Layer();
-  PaintLayer* layer2 = ToLayoutBox(layout_object2)->Layer();
+  PaintLayer* layer1 = To<LayoutBox>(layout_object1)->Layer();
+  PaintLayer* layer2 = To<LayoutBox>(layout_object2)->Layer();
   if (!layer1 || !layer2) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidAccessError,

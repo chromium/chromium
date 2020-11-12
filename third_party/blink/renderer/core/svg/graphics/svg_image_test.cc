@@ -182,8 +182,9 @@ TEST_F(SVGImageTest, SupportsSubsequenceCaching) {
   EXPECT_TRUE(local_frame->GetDocument()->IsSVGDocument());
   LayoutObject* svg_root = local_frame->View()->GetLayoutView()->FirstChild();
   EXPECT_TRUE(svg_root->IsSVGRoot());
-  EXPECT_TRUE(
-      ToLayoutBoxModelObject(svg_root)->Layer()->SupportsSubsequenceCaching());
+  EXPECT_TRUE(To<LayoutBoxModelObject>(svg_root)
+                  ->Layer()
+                  ->SupportsSubsequenceCaching());
 }
 
 TEST_F(SVGImageTest, LayoutShiftTrackerDisabled) {

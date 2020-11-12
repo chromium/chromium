@@ -38,7 +38,7 @@ FloatSize ResizeObserverUtilities::ComputeZoomAdjustedBox(
     ResizeObserverBoxOptions box_option,
     LayoutObject* layout_object,
     const ComputedStyle& style) {
-  LayoutBox* layout_box = ToLayoutBox(layout_object);
+  auto* layout_box = To<LayoutBox>(layout_object);
   switch (box_option) {
     case ResizeObserverBoxOptions::ContentBox:
       return FloatSize(AdjustForAbsoluteZoom::AdjustLayoutUnit(

@@ -36,9 +36,7 @@ bool FillsViewport(const Element& element) {
   if (!element.GetLayoutObject())
     return false;
 
-  DCHECK(element.GetLayoutObject()->IsBox());
-
-  LayoutBox* layout_box = ToLayoutBox(element.GetLayoutObject());
+  auto* layout_box = To<LayoutBox>(element.GetLayoutObject());
 
   // TODO(bokan): Broken for OOPIF. crbug.com/642378.
   Document& top_document = element.GetDocument().TopDocument();

@@ -122,7 +122,7 @@ TEST_F(FractionalScrollSimTest, NoRepaintOnScrollFromSubpixel) {
   Compositor().BeginFrame();
 
   auto* container_layer =
-      ToLayoutBoxModelObject(
+      To<LayoutBoxModelObject>(
           GetDocument().getElementById("container")->GetLayoutObject())
           ->Layer()
           ->GraphicsLayerBacking();
@@ -365,7 +365,7 @@ TEST_F(ScrollAnimatorSimTest, MAYBE_TestDivUserScrollCallBack) {
 
   bool finished = false;
   PaintLayerScrollableArea* scrollable_area =
-      ToLayoutBox(scroller->GetLayoutObject())->GetScrollableArea();
+      To<LayoutBox>(scroller->GetLayoutObject())->GetScrollableArea();
   scrollable_area->UserScroll(
       ScrollGranularity::kScrollByLine, FloatSize(0, 100),
       ScrollableArea::ScrollCallback(

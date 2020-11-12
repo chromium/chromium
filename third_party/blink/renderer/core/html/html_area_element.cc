@@ -114,8 +114,8 @@ Path HTMLAreaElement::GetPath(const LayoutObject* container_object) const {
     Path path;
     // No need to zoom because it is already applied in
     // containerObject->borderBoxRect().
-    if (container_object->IsBox())
-      path.AddRect(FloatRect(ToLayoutBox(container_object)->BorderBoxRect()));
+    if (const auto* box = DynamicTo<LayoutBox>(container_object))
+      path.AddRect(FloatRect(box->BorderBoxRect()));
     path_ = nullptr;
     return path;
   }

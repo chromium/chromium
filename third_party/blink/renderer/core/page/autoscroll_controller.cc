@@ -123,9 +123,7 @@ void AutoscrollController::StartAutoscrollForSelection(
   if (!scrollable)
     return;
 
-  pressed_layout_object_ = layout_object && layout_object->IsBox()
-                               ? ToLayoutBox(layout_object)
-                               : nullptr;
+  pressed_layout_object_ = DynamicTo<LayoutBox>(layout_object);
   autoscroll_type_ = kAutoscrollForSelection;
   autoscroll_layout_object_ = scrollable;
   ScheduleMainThreadAnimation();
@@ -158,13 +156,10 @@ void AutoscrollController::UpdateAutoscrollLayoutObject() {
   LayoutObject* layout_object = autoscroll_layout_object_;
 
   while (layout_object && !(layout_object->IsBox() &&
-                            ToLayoutBox(layout_object)->CanAutoscroll()))
+                            To<LayoutBox>(layout_object)->CanAutoscroll()))
     layout_object = layout_object->Parent();
 
-  autoscroll_layout_object_ = layout_object && layout_object->IsBox()
-                                  ? ToLayoutBox(layout_object)
-                                  : nullptr;
-
+  autoscroll_layout_object_ = DynamicTo<LayoutBox>(layout_object);
   if (!autoscroll_layout_object_)
     autoscroll_type_ = kNoAutoscroll;
 }
