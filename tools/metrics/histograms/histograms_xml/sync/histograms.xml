@@ -413,9 +413,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Sync.KeystoreDecryptionFailed"
-    enum="SyncKeystoreDecryptionFailure" expires_after="2020-11-15">
+    enum="SyncKeystoreDecryptionFailure" expires_after="2021-06-01">
+  <owner>mmoskvitin@google.com</owner>
   <owner>mastiz@chromium.org</owner>
-  <owner>treib@chromium.org</owner>
   <summary>
     The reason for a failure decrypting the keystore decryptor token.
   </summary>
