@@ -53,8 +53,8 @@ void DurableStoragePermissionContext::DecidePermission(
   // origin is the last committed navigation origin to the web contents.
   if (requesting_origin != embedding_origin) {
     NotifyPermissionSet(id, requesting_origin, embedding_origin,
-                        std::move(callback), false /* persist */,
-                        CONTENT_SETTING_DEFAULT);
+                        std::move(callback), /*persist=*/false,
+                        CONTENT_SETTING_DEFAULT, /*is_one_time=*/false);
     return;
   }
 
@@ -68,8 +68,8 @@ void DurableStoragePermissionContext::DecidePermission(
       !cookie_settings->IsCookieAccessAllowed(requesting_origin,
                                               requesting_origin)) {
     NotifyPermissionSet(id, requesting_origin, embedding_origin,
-                        std::move(callback), false /* persist */,
-                        CONTENT_SETTING_DEFAULT);
+                        std::move(callback), /*persist=*/false,
+                        CONTENT_SETTING_DEFAULT, /*is_one_time=*/false);
     return;
   }
 
@@ -86,7 +86,7 @@ void DurableStoragePermissionContext::DecidePermission(
   if (base::Contains(installed_registerable_domains, registerable_domain)) {
     NotifyPermissionSet(id, requesting_origin, embedding_origin,
                         std::move(callback), /*persist=*/true,
-                        CONTENT_SETTING_ALLOW);
+                        CONTENT_SETTING_ALLOW, /*is_one_time=*/false);
     return;
   }
 
@@ -98,21 +98,23 @@ void DurableStoragePermissionContext::DecidePermission(
   for (const auto& important_site : important_sites) {
     if (important_site.registerable_domain == registerable_domain) {
       NotifyPermissionSet(id, requesting_origin, embedding_origin,
-                          std::move(callback), true /* persist */,
-                          CONTENT_SETTING_ALLOW);
+                          std::move(callback), /*persist=*/true,
+                          CONTENT_SETTING_ALLOW, /*is_one_time=*/false);
       return;
     }
   }
 
   NotifyPermissionSet(id, requesting_origin, embedding_origin,
-                      std::move(callback), false /* persist */,
-                      CONTENT_SETTING_DEFAULT);
+                      std::move(callback), /*persist=*/false,
+                      CONTENT_SETTING_DEFAULT, /*is_one_time=*/false);
 }
 
 void DurableStoragePermissionContext::UpdateContentSetting(
     const GURL& requesting_origin,
     const GURL& embedding_origin_ignored,
-    ContentSetting content_setting) {
+    ContentSetting content_setting,
+    bool is_one_time) {
+  DCHECK(!is_one_time);
   DCHECK_EQ(requesting_origin, requesting_origin.GetOrigin());
   DCHECK_EQ(embedding_origin_ignored, embedding_origin_ignored.GetOrigin());
   DCHECK(content_setting == CONTENT_SETTING_ALLOW ||

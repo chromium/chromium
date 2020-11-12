@@ -1,0 +1,126 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "one_time_geolocation_permission_provider.h"
+
+#include "chrome/browser/permissions/last_tab_standing_tracker.h"
+#include "chrome/browser/permissions/last_tab_standing_tracker_factory.h"
+#include "components/content_settings/core/browser/content_settings_rule.h"
+#include "components/content_settings/core/common/content_settings_utils.h"
+#include "url/gurl.h"
+
+namespace {
+
+class OneTimeRuleIterator : public content_settings::RuleIterator {
+ public:
+  using PatternToGrantTimeMap =
+      OneTimeGeolocationPermissionProvider::PatternToGrantTimeMap;
+
+  explicit OneTimeRuleIterator(
+      const PatternToGrantTimeMap& pattern_to_grant_time_map)
+      : begin_iterator_(pattern_to_grant_time_map.begin()),
+        end_iterator_(pattern_to_grant_time_map.end()) {}
+
+  ~OneTimeRuleIterator() override = default;
+
+  bool HasNext() const override { return begin_iterator_ != end_iterator_; }
+
+  content_settings::Rule Next() override {
+    content_settings::Rule rule(
+        begin_iterator_->first, ContentSettingsPattern::Wildcard(),
+        base::Value::FromUniquePtrValue(
+            content_settings::ContentSettingToValue(CONTENT_SETTING_ALLOW)),
+        begin_iterator_->second + base::TimeDelta::FromDays(1),
+        content_settings::SessionModel::OneTime);
+    begin_iterator_++;
+    return rule;
+  }
+
+ private:
+  PatternToGrantTimeMap::const_iterator begin_iterator_;
+  const PatternToGrantTimeMap::const_iterator end_iterator_;
+};
+
+}  // namespace
+
+OneTimeGeolocationPermissionProvider::OneTimeGeolocationPermissionProvider(
+    content::BrowserContext* browser_context)
+    : browser_context_(browser_context) {
+  LastTabStandingTrackerFactory::GetForBrowserContext(browser_context)
+      ->AddObserver(this);
+}
+
+OneTimeGeolocationPermissionProvider::~OneTimeGeolocationPermissionProvider() {
+  LastTabStandingTrackerFactory::GetForBrowserContext(browser_context_)
+      ->RemoveObserver(this);
+}
+
+std::unique_ptr<content_settings::RuleIterator>
+OneTimeGeolocationPermissionProvider::GetRuleIterator(
+    ContentSettingsType content_type,
+    bool incognito) const {
+  if (content_type != ContentSettingsType::GEOLOCATION)
+    return nullptr;
+  return std::make_unique<OneTimeRuleIterator>(grants_with_open_tabs_);
+}
+
+bool OneTimeGeolocationPermissionProvider::SetWebsiteSetting(
+    const ContentSettingsPattern& primary_pattern,
+    const ContentSettingsPattern& secondary_pattern,
+    ContentSettingsType content_settings_type,
+    std::unique_ptr<base::Value>&& value,
+    const content_settings::ContentSettingConstraints& constraints) {
+  if (constraints.session_model != content_settings::SessionModel::OneTime)
+    return false;
+  DCHECK_EQ(content_settings::ValueToContentSetting(value.get()),
+            CONTENT_SETTING_ALLOW);
+  DCHECK_EQ(content_settings_type, ContentSettingsType::GEOLOCATION);
+  grants_with_open_tabs_[primary_pattern] = base::Time::Now();
+  return true;
+}
+
+base::Time OneTimeGeolocationPermissionProvider::GetWebsiteSettingLastModified(
+    const ContentSettingsPattern& primary_pattern,
+    const ContentSettingsPattern& secondary_pattern,
+    ContentSettingsType content_type) {
+  if (content_type != ContentSettingsType::GEOLOCATION)
+    return base::Time();
+  std::map<ContentSettingsPattern, base::Time>::const_iterator
+      matching_iterator = grants_with_open_tabs_.find(primary_pattern);
+  if (matching_iterator == grants_with_open_tabs_.end())
+    return base::Time();
+  if (matching_iterator->second + base::TimeDelta::FromDays(1) <
+      base::Time::Now()) {
+    return base::Time();
+  }
+  return matching_iterator->second;
+}
+
+void OneTimeGeolocationPermissionProvider::ClearAllContentSettingsRules(
+    ContentSettingsType content_type) {
+  if (content_type == ContentSettingsType::GEOLOCATION)
+    return;
+  grants_with_open_tabs_.clear();
+}
+
+void OneTimeGeolocationPermissionProvider::ShutdownOnUIThread() {
+  RemoveAllObservers();
+}
+
+void OneTimeGeolocationPermissionProvider::SetClockForTesting(
+    base::Clock* clock) {
+  NOTREACHED();
+}
+
+// All pages with the given origin have either been closed or navigated away
+// from. We remove all permissions associated with the origin.
+void OneTimeGeolocationPermissionProvider::OnLastPageFromOriginClosed(
+    const url::Origin& origin) {
+  for (auto pattern_and_grant_time : grants_with_open_tabs_) {
+    if (pattern_and_grant_time.first.Matches(origin.GetURL())) {
+      grants_with_open_tabs_.erase(pattern_and_grant_time.first);
+      break;
+    }
+  }
+}

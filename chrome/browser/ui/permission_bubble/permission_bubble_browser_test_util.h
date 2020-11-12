@@ -40,6 +40,7 @@ class TestPermissionBubbleViewDelegate
   GURL GetEmbeddingOrigin() const override;
 
   void Accept() override {}
+  void AcceptThisTime() override {}
   void Deny() override {}
   void Closing() override {}
 

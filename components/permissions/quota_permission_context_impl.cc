@@ -58,7 +58,7 @@ class QuotaPermissionRequest : public PermissionRequest {
 #endif
   base::string16 GetMessageTextFragment() const override;
   GURL GetOrigin() const override;
-  void PermissionGranted() override;
+  void PermissionGranted(bool is_one_time) override;
   void PermissionDenied() override;
   void Cancelled() override;
   void RequestFinished() override;
@@ -114,7 +114,8 @@ GURL QuotaPermissionRequest::GetOrigin() const {
   return origin_url_;
 }
 
-void QuotaPermissionRequest::PermissionGranted() {
+void QuotaPermissionRequest::PermissionGranted(bool is_one_time) {
+  DCHECK(!is_one_time);
   context_->DispatchCallbackOnIOThread(
       std::move(callback_),
       content::QuotaPermissionContext::QUOTA_PERMISSION_RESPONSE_ALLOW);

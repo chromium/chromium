@@ -82,7 +82,8 @@ class GeolocationPermissionContextAndroid
                            const GURL& embedding_origin,
                            BrowserPermissionCallback callback,
                            bool persist,
-                           ContentSetting content_setting) override;
+                           ContentSetting content_setting,
+                           bool is_one_time) override;
   PermissionResult UpdatePermissionStatusWithDeviceStatus(
       PermissionResult result,
       const GURL& requesting_origin,

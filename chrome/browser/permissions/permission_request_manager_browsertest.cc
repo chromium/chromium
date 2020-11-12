@@ -264,7 +264,7 @@ PermissionDialogTest::MakeRegisterProtocolHandlerRequest() {
 permissions::PermissionRequest* PermissionDialogTest::MakePermissionRequest(
     ContentSettingsType permission) {
   bool user_gesture = true;
-  auto decided = [](ContentSetting) {};
+  auto decided = [](ContentSetting, bool) {};
   auto cleanup = [] {};  // Leave cleanup to test harness destructor.
   owned_requests_.push_back(
       std::make_unique<permissions::PermissionRequestImpl>(

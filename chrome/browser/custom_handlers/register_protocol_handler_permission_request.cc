@@ -49,7 +49,9 @@ GURL RegisterProtocolHandlerPermissionRequest::GetOrigin() const {
   return origin_;
 }
 
-void RegisterProtocolHandlerPermissionRequest::PermissionGranted() {
+void RegisterProtocolHandlerPermissionRequest::PermissionGranted(
+    bool is_one_time) {
+  DCHECK(!is_one_time);
   base::RecordAction(
       base::UserMetricsAction("RegisterProtocolHandler.Infobar_Accept"));
   registry_->OnAcceptRegisterProtocolHandler(handler_);

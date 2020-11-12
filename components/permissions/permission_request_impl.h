@@ -23,7 +23,8 @@ namespace permissions {
 // executed.
 class PermissionRequestImpl : public PermissionRequest {
  public:
-  using PermissionDecidedCallback = base::OnceCallback<void(ContentSetting)>;
+  using PermissionDecidedCallback =
+      base::OnceCallback<void(ContentSetting, bool)>;
 
   PermissionRequestImpl(const GURL& request_origin,
                         ContentSettingsType content_settings_type,
@@ -46,7 +47,7 @@ class PermissionRequestImpl : public PermissionRequest {
 #endif
   base::string16 GetMessageTextFragment() const override;
   GURL GetOrigin() const override;
-  void PermissionGranted() override;
+  void PermissionGranted(bool is_one_time) override;
   void PermissionDenied() override;
   void Cancelled() override;
   void RequestFinished() override;

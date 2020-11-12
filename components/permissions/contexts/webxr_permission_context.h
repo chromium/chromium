@@ -38,7 +38,8 @@ class WebXrPermissionContext : public PermissionContextBase {
                            const GURL& embedding_origin,
                            BrowserPermissionCallback callback,
                            bool persist,
-                           ContentSetting content_setting) override;
+                           ContentSetting content_setting,
+                           bool is_one_time) override;
 
   void OnAndroidPermissionDecided(const PermissionRequestID& id,
                                   const GURL& requesting_origin,

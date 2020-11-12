@@ -267,6 +267,7 @@ void ProtectedMediaIdentifierPermissionContext::
   }
 
   NotifyPermissionSet(id, requesting_origin, embedding_origin,
-                      std::move(callback), persist, content_setting);
+                      std::move(callback), persist, content_setting,
+                      /*is_one_time=*/false);
 }
 #endif
