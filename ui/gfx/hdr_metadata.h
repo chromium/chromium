@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_GL_HDR_METADATA_H_
-#define UI_GL_HDR_METADATA_H_
+#ifndef UI_GFX_HDR_METADATA_H_
+#define UI_GFX_HDR_METADATA_H_
 
 #include "ui/gfx/geometry/point_f.h"
-#include "ui/gl/gl_export.h"
+#include "ui/gfx/gfx_export.h"
 
-namespace gl {
+namespace gfx {
 
 // SMPTE ST 2086 mastering metadata.
-struct GL_EXPORT MasteringMetadata {
-  using Chromaticity = gfx::PointF;
+struct GFX_EXPORT MasteringMetadata {
+  using Chromaticity = PointF;
   Chromaticity primary_r;
   Chromaticity primary_g;
   Chromaticity primary_b;
@@ -32,7 +32,7 @@ struct GL_EXPORT MasteringMetadata {
 };
 
 // HDR metadata common for HDR10 and WebM/VP9-based HDR formats.
-struct GL_EXPORT HDRMetadata {
+struct GFX_EXPORT HDRMetadata {
   MasteringMetadata mastering_metadata;
   // Max content light level (CLL), i.e. maximum brightness level present in the
   // stream), in nits.
@@ -67,6 +67,6 @@ enum class HdrMetadataType {
   kSmpteSt2094_40,
 };
 
-}  // namespace gl
+}  // namespace gfx
 
-#endif  // UI_GL_HDR_METADATA_H_
+#endif  // UI_GFX_HDR_METADATA_H_

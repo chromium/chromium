@@ -277,14 +277,14 @@ TEST(SupportedTypesTest, IsSupportedVideoTypeWithHdrMetadataBasics) {
   // No HDR metadata types are supported.
   EXPECT_FALSE(
       IsSupportedVideoType({kCodecVP8, VP8PROFILE_ANY, kUnspecifiedLevel,
-                            color_space, gl::HdrMetadataType::kSmpteSt2086}));
+                            color_space, gfx::HdrMetadataType::kSmpteSt2086}));
 
   EXPECT_FALSE(IsSupportedVideoType({kCodecVP8, VP8PROFILE_ANY,
                                      kUnspecifiedLevel, color_space,
-                                     gl::HdrMetadataType::kSmpteSt2094_10}));
+                                     gfx::HdrMetadataType::kSmpteSt2094_10}));
 
   EXPECT_FALSE(IsSupportedVideoType({kCodecVP8, VP8PROFILE_ANY,
                                      kUnspecifiedLevel, color_space,
-                                     gl::HdrMetadataType::kSmpteSt2094_40}));
+                                     gfx::HdrMetadataType::kSmpteSt2094_40}));
 }
 }  // namespace media

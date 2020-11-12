@@ -18,7 +18,7 @@
 #include "media/base/text_track_config.h"
 #include "media/base/video_decoder_config.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gl/hdr_metadata.h"
+#include "ui/gfx/hdr_metadata.h"
 
 namespace media {
 
@@ -212,8 +212,8 @@ struct MediaSerializer<VideoColorSpace> {
 
 // Class (complex)
 template <>
-struct MediaSerializer<gl::HDRMetadata> {
-  static base::Value Serialize(const gl::HDRMetadata& value) {
+struct MediaSerializer<gfx::HDRMetadata> {
+  static base::Value Serialize(const gfx::HDRMetadata& value) {
     // TODO(tmathmeyer) serialize more fields here potentially.
     base::Value result(base::Value::Type::DICTIONARY);
     FIELD_SERIALIZE("luminance range",

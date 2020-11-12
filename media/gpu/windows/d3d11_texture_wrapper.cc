@@ -179,7 +179,7 @@ void DefaultTexture2DWrapper::OnError(Status status) {
 }
 
 void DefaultTexture2DWrapper::SetStreamHDRMetadata(
-    const gl::HDRMetadata& stream_metadata) {}
+    const gfx::HDRMetadata& stream_metadata) {}
 
 void DefaultTexture2DWrapper::SetDisplayHDRMetadata(
     const DXGI_HDR_METADATA_HDR10& dxgi_display_metadata) {}

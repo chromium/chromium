@@ -12,7 +12,7 @@ import "mojo/public/mojom/base/unguessable_token.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "ui/gfx/mojom/buffer_types.mojom";
 import "ui/gfx/mojom/color_space.mojom";
-import "ui/gl/mojom/hdr_metadata.mojom";
+import "ui/gfx/mojom/hdr_metadata.mojom";
 
 // See media/base/audio_codecs.h for descriptions.
 [Native]
@@ -163,7 +163,7 @@ struct VideoDecoderConfig {
   array<uint8> extra_data;
   EncryptionScheme encryption_scheme;
   VideoColorSpace color_space_info;
-  gl.mojom.HDRMetadata? hdr_metadata;
+  gfx.mojom.HDRMetadata? hdr_metadata;
 };
 
 // Native struct media::SubsampleEntry;
@@ -347,7 +347,7 @@ struct VideoFrame {
   VideoFrameMetadata metadata;
 
   gfx.mojom.ColorSpace color_space;
-  gl.mojom.HDRMetadata? hdr_metadata;
+  gfx.mojom.HDRMetadata? hdr_metadata;
 };
 
 // Possible choices for storing VideoFrame data.

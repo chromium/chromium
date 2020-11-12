@@ -8,7 +8,7 @@
 #include "base/trace_event/traced_value.h"
 #include "base/values.h"
 #include "cc/base/math_util.h"
-#include "ui/gl/hdr_metadata.h"
+#include "ui/gfx/hdr_metadata.h"
 
 namespace viz {
 
@@ -68,7 +68,7 @@ void YUVVideoDrawQuad::SetAll(const SharedQuadState* shared_quad_state,
                               float multiplier,
                               uint32_t bits_per_channel,
                               gfx::ProtectedVideoType protected_video_type,
-                              gl::HDRMetadata hdr_metadata) {
+                              gfx::HDRMetadata hdr_metadata) {
   DrawQuad::SetAll(shared_quad_state, DrawQuad::Material::kYuvVideoContent,
                    rect, visible_rect, needs_blending);
   this->ya_tex_coord_rect = ya_tex_coord_rect;

@@ -33,8 +33,8 @@
 #include "components/viz/common/quads/yuv_video_draw_quad.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/effects/SkBlurImageFilter.h"
+#include "ui/gfx/hdr_metadata.h"
 #include "ui/gfx/transform.h"
-#include "ui/gl/hdr_metadata.h"
 
 namespace viz {
 namespace {
@@ -421,7 +421,7 @@ TEST(DrawQuadTest, CopyYUVVideoDrawQuad) {
   gfx::ProtectedVideoType protected_video_type =
       gfx::ProtectedVideoType::kHardwareProtected;
   gfx::ColorSpace video_color_space = gfx::ColorSpace::CreateJpeg();
-  gl::HDRMetadata hdr_metadata = gl::HDRMetadata();
+  gfx::HDRMetadata hdr_metadata = gfx::HDRMetadata();
   hdr_metadata.max_content_light_level = 1000;
   hdr_metadata.max_frame_average_light_level = 100;
 
@@ -447,7 +447,7 @@ TEST(DrawQuadTest, CopyYUVVideoDrawQuad) {
   EXPECT_EQ(resource_multiplier, copy_quad->resource_multiplier);
   EXPECT_EQ(bits_per_channel, copy_quad->bits_per_channel);
   EXPECT_EQ(gfx::ProtectedVideoType::kClear, copy_quad->protected_video_type);
-  EXPECT_EQ(gl::HDRMetadata(), copy_quad->hdr_metadata);
+  EXPECT_EQ(gfx::HDRMetadata(), copy_quad->hdr_metadata);
 
   CREATE_QUAD_ALL(YUVVideoDrawQuad, ya_tex_coord_rect, uv_tex_coord_rect,
                   ya_tex_size, uv_tex_size, y_plane_resource_id,

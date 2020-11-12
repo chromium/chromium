@@ -1468,7 +1468,7 @@ bool YUVVideoDrawQuadFromDict(const base::Value& dict,
       static_cast<float>(resource_multiplier.value()),
       static_cast<uint32_t>(bits_per_channel.value()),
       static_cast<gfx::ProtectedVideoType>(protected_video_type_index),
-      gl::HDRMetadata());
+      gfx::HDRMetadata());
   return true;
 }
 

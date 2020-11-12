@@ -21,11 +21,11 @@
 #include "media/gpu/media_gpu_export.h"
 #include "media/gpu/windows/d3d11_com_defs.h"
 #include "ui/gfx/color_space.h"
+#include "ui/gfx/hdr_metadata.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_image_dxgi.h"
 #include "ui/gl/gl_surface_egl.h"
-#include "ui/gl/hdr_metadata.h"
 #include "ui/gl/scoped_binders.h"
 
 namespace media {
@@ -57,7 +57,8 @@ class MEDIA_GPU_EXPORT Texture2DWrapper {
                                 MailboxHolderArray* mailbox_dest_out,
                                 gfx::ColorSpace* output_color_space) = 0;
 
-  virtual void SetStreamHDRMetadata(const gl::HDRMetadata& stream_metadata) = 0;
+  virtual void SetStreamHDRMetadata(
+      const gfx::HDRMetadata& stream_metadata) = 0;
   virtual void SetDisplayHDRMetadata(
       const DXGI_HDR_METADATA_HDR10& dxgi_display_metadata) = 0;
 };
@@ -87,7 +88,7 @@ class MEDIA_GPU_EXPORT DefaultTexture2DWrapper : public Texture2DWrapper {
                         MailboxHolderArray* mailbox_dest,
                         gfx::ColorSpace* output_color_space) override;
 
-  void SetStreamHDRMetadata(const gl::HDRMetadata& stream_metadata) override;
+  void SetStreamHDRMetadata(const gfx::HDRMetadata& stream_metadata) override;
   void SetDisplayHDRMetadata(
       const DXGI_HDR_METADATA_HDR10& dxgi_display_metadata) override;
 

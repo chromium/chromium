@@ -36,14 +36,14 @@ namespace media {
 
 namespace {
 
-bool IsSupportedHdrMetadata(const gl::HdrMetadataType& hdr_metadata_type) {
+bool IsSupportedHdrMetadata(const gfx::HdrMetadataType& hdr_metadata_type) {
   switch (hdr_metadata_type) {
-    case gl::HdrMetadataType::kNone:
+    case gfx::HdrMetadataType::kNone:
       return true;
 
-    case gl::HdrMetadataType::kSmpteSt2086:
-    case gl::HdrMetadataType::kSmpteSt2094_10:
-    case gl::HdrMetadataType::kSmpteSt2094_40:
+    case gfx::HdrMetadataType::kSmpteSt2086:
+    case gfx::HdrMetadataType::kSmpteSt2094_10:
+    case gfx::HdrMetadataType::kSmpteSt2094_40:
       return false;
   }
 

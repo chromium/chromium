@@ -242,7 +242,7 @@ TEST(RenderPassIOTest, QuadList) {
           gfx::RectF(0.f, 0.f, 0.5f, 0.6f), gfx::RectF(0.1f, 0.2f, 0.7f, 0.8f),
           gfx::Size(400, 200), gfx::Size(800, 400), 1u, 2u, 3u, 4u,
           gfx::ColorSpace::CreateCustom(primary_matrix, transfer_func), 3.f,
-          1.1f, 12u, gfx::ProtectedVideoType::kClear, gl::HDRMetadata());
+          1.1f, 12u, gfx::ProtectedVideoType::kClear, gfx::HDRMetadata());
       ++sqs_index;
       ++quad_count;
     }

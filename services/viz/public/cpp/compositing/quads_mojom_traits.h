@@ -25,9 +25,9 @@
 #include "services/viz/public/cpp/compositing/surface_range_mojom_traits.h"
 #include "services/viz/public/mojom/compositing/quads.mojom-shared.h"
 #include "ui/gfx/geometry/mojom/geometry_mojom_traits.h"
+#include "ui/gfx/hdr_metadata.h"
 #include "ui/gfx/ipc/color/gfx_param_traits.h"
-#include "ui/gl/hdr_metadata.h"
-#include "ui/gl/mojom/hdr_metadata_mojom_traits.h"
+#include "ui/gfx/mojom/hdr_metadata_mojom_traits.h"
 
 namespace mojo {
 
@@ -545,7 +545,7 @@ struct StructTraits<viz::mojom::YUVVideoQuadStateDataView, viz::DrawQuad> {
         viz::YUVVideoDrawQuad::MaterialCast(&input);
     return quad->protected_video_type;
   }
-  static const gl::HDRMetadata& hdr_metadata(const viz::DrawQuad& input) {
+  static const gfx::HDRMetadata& hdr_metadata(const viz::DrawQuad& input) {
     const viz::YUVVideoDrawQuad* quad =
         viz::YUVVideoDrawQuad::MaterialCast(&input);
     return quad->hdr_metadata;

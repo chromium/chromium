@@ -172,7 +172,7 @@ CFStringRef GetMatrix(media::VideoColorSpace::MatrixID matrix_id) {
   }
 }
 
-void SetContentLightLevelInfo(const gl::HDRMetadata& hdr_metadata,
+void SetContentLightLevelInfo(const gfx::HDRMetadata& hdr_metadata,
                               NSMutableDictionary<NSString*, id>* extensions) {
   if (@available(macos 10.13, *)) {
     // This is a SMPTEST2086 Content Light Level Information box.
@@ -199,7 +199,7 @@ void SetContentLightLevelInfo(const gl::HDRMetadata& hdr_metadata,
   }
 }
 
-void SetMasteringMetadata(const gl::HDRMetadata& hdr_metadata,
+void SetMasteringMetadata(const gfx::HDRMetadata& hdr_metadata,
                           NSMutableDictionary<NSString*, id>* extensions) {
   if (@available(macos 10.13, *)) {
     // This is a SMPTEST2086 Mastering Display Color Volume box.
@@ -299,7 +299,7 @@ CFMutableDictionaryRef CreateFormatExtensions(
     CMVideoCodecType codec_type,
     VideoCodecProfile profile,
     const VideoColorSpace& color_space,
-    base::Optional<gl::HDRMetadata> hdr_metadata) {
+    base::Optional<gfx::HDRMetadata> hdr_metadata) {
   auto* extensions = [[NSMutableDictionary alloc] init];
   SetDictionaryValue(extensions, kCMFormatDescriptionExtension_FormatName,
                      CMVideoCodecTypeToString(codec_type));

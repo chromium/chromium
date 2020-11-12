@@ -20,7 +20,7 @@
 #include "media/base/media_export.h"
 #include "media/base/video_decoder_config.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gl/hdr_metadata.h"
+#include "ui/gfx/hdr_metadata.h"
 
 namespace media {
 
@@ -54,7 +54,7 @@ class MEDIA_EXPORT VideoCodecConfig {
 
   // VP9 HDR metadata is only embedded in the container. HDR10 metadata is
   // embedded in the video stream.
-  base::Optional<gl::HDRMetadata> hdr_metadata;
+  base::Optional<gfx::HDRMetadata> hdr_metadata;
 
   // Enables the async MediaCodec.Callback API. |on_buffers_available_cb|
   // will be called when input or output buffers are available. This will be

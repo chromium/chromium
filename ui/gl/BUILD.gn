@@ -126,8 +126,6 @@ component("gl") {
     "gpu_switching_manager.h",
     "gpu_timing.cc",
     "gpu_timing.h",
-    "hdr_metadata.cc",
-    "hdr_metadata.h",
     "progress_reporter.h",
     "scoped_binders.cc",
     "scoped_binders.h",

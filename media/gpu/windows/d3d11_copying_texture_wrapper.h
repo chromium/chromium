@@ -40,7 +40,7 @@ class MEDIA_GPU_EXPORT CopyingTexture2DWrapper : public Texture2DWrapper {
               ComD3D11Texture2D texture,
               size_t array_slice) override;
 
-  void SetStreamHDRMetadata(const gl::HDRMetadata& stream_metadata) override;
+  void SetStreamHDRMetadata(const gfx::HDRMetadata& stream_metadata) override;
   void SetDisplayHDRMetadata(
       const DXGI_HDR_METADATA_HDR10& dxgi_display_metadata) override;
 

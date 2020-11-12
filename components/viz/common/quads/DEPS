@@ -21,6 +21,6 @@ specific_include_rules = {
     "+cc/test",
   ],
   "yuv_video_draw_quad.*": [
-    "+ui/gl/hdr_metadata.h",
+    "+ui/gfx/hdr_metadata.h",
   ],
 }

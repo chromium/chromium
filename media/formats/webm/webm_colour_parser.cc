@@ -192,7 +192,7 @@ WebMColorMetadata WebMColourParser::GetWebMColorMetadata() const {
 
   if (max_content_light_level_ != -1 || max_frame_average_light_level_ != -1 ||
       mastering_metadata_parsed_) {
-    color_metadata.hdr_metadata = gl::HDRMetadata();
+    color_metadata.hdr_metadata = gfx::HDRMetadata();
 
     if (max_content_light_level_ != -1) {
       color_metadata.hdr_metadata->max_content_light_level =

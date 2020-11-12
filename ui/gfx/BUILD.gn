@@ -539,6 +539,8 @@ source_set("memory_buffer_sources") {
     "gpu_fence.h",
     "gpu_fence_handle.cc",
     "gpu_fence_handle.h",
+    "hdr_metadata.cc",
+    "hdr_metadata.h",
     "native_pixmap.h",
     "overlay_transform.h",
     "surface_origin.h",

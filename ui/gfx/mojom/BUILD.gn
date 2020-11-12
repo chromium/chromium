@@ -15,6 +15,7 @@ mojom("mojom") {
     "font_render_params.mojom",
     "gpu_extra_info.mojom",
     "gpu_fence_handle.mojom",
+    "hdr_metadata.mojom",
     "mask_filter_info.mojom",
     "overlay_transform.mojom",
     "presentation_feedback.mojom",
@@ -181,6 +182,21 @@ mojom("mojom") {
       ]
       traits_sources = [ "display_color_spaces_mojom_traits.cc" ]
       traits_headers = [ "display_color_spaces_mojom_traits.h" ]
+      traits_public_deps = [ "//ui/gfx" ]
+    },
+    {
+      types = [
+        {
+          mojom = "gfx.mojom.MasteringMetadata"
+          cpp = "::gfx::MasteringMetadata"
+        },
+        {
+          mojom = "gfx.mojom.HDRMetadata"
+          cpp = "::gfx::HDRMetadata"
+        },
+      ]
+      traits_headers = [ "hdr_metadata_mojom_traits.h" ]
+      traits_sources = [ "hdr_metadata_mojom_traits.cc" ]
       traits_public_deps = [ "//ui/gfx" ]
     },
     {

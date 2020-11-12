@@ -14,8 +14,8 @@
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/hdr_metadata.h"
 #include "ui/gfx/video_types.h"
-#include "ui/gl/hdr_metadata.h"
 
 namespace viz {
 
@@ -73,7 +73,7 @@ class VIZ_COMMON_EXPORT YUVVideoDrawQuad : public DrawQuad {
               float multiplier,
               uint32_t bits_per_channel,
               gfx::ProtectedVideoType protected_video_type,
-              gl::HDRMetadata hdr_metadata);
+              gfx::HDRMetadata hdr_metadata);
 
   gfx::RectF ya_tex_coord_rect;
   gfx::RectF uv_tex_coord_rect;
@@ -86,7 +86,7 @@ class VIZ_COMMON_EXPORT YUVVideoDrawQuad : public DrawQuad {
   gfx::ColorSpace video_color_space;
   gfx::ProtectedVideoType protected_video_type =
       gfx::ProtectedVideoType::kClear;
-  gl::HDRMetadata hdr_metadata;
+  gfx::HDRMetadata hdr_metadata;
 
   static const YUVVideoDrawQuad* MaterialCast(const DrawQuad*);
 

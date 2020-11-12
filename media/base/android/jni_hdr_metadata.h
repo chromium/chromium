@@ -7,7 +7,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/macros.h"
-#include "ui/gl/hdr_metadata.h"
+#include "ui/gfx/hdr_metadata.h"
 
 namespace media {
 
@@ -16,7 +16,7 @@ class VideoColorSpace;
 class JniHdrMetadata {
  public:
   JniHdrMetadata(const VideoColorSpace& color_space,
-                 const gl::HDRMetadata& hdr_metadata);
+                 const gfx::HDRMetadata& hdr_metadata);
   ~JniHdrMetadata();
 
   base::android::ScopedJavaLocalRef<jobject> obj() { return jobject_; }
@@ -58,7 +58,7 @@ class JniHdrMetadata {
 
  private:
   const VideoColorSpace& color_space_;
-  const gl::HDRMetadata& hdr_metadata_;
+  const gfx::HDRMetadata& hdr_metadata_;
   base::android::ScopedJavaLocalRef<jobject> jobject_;
 
   DISALLOW_COPY_AND_ASSIGN(JniHdrMetadata);

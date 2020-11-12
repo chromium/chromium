@@ -105,7 +105,7 @@ void HDRMetadataHelperWin::CacheDisplayMetadata(
 
 // static
 DXGI_HDR_METADATA_HDR10 HDRMetadataHelperWin::HDRMetadataToDXGI(
-    const HDRMetadata& hdr_metadata) {
+    const gfx::HDRMetadata& hdr_metadata) {
   DXGI_HDR_METADATA_HDR10 metadata{};
 
   auto& primary_r = hdr_metadata.mastering_metadata.primary_r;

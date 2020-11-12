@@ -58,11 +58,11 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkString.h"
 #include "ui/gfx/geometry/mojom/geometry_mojom_traits.h"
+#include "ui/gfx/hdr_metadata.h"
 #include "ui/gfx/mojom/buffer_types_mojom_traits.h"
 #include "ui/gfx/mojom/color_space_mojom_traits.h"
 #include "ui/gfx/mojom/selection_bound_mojom_traits.h"
 #include "ui/gfx/mojom/transform_mojom_traits.h"
-#include "ui/gl/hdr_metadata.h"
 #include "ui/latency/mojom/latency_info_mojom_traits.h"
 
 namespace viz {
@@ -1133,7 +1133,7 @@ TEST_F(StructTraitsTest, YUVDrawQuad) {
   const uint32_t bits_per_channel = 13;
   const gfx::ProtectedVideoType protected_video_type =
       gfx::ProtectedVideoType::kSoftwareProtected;
-  gl::HDRMetadata hdr_metadata = gl::HDRMetadata();
+  gfx::HDRMetadata hdr_metadata = gfx::HDRMetadata();
   hdr_metadata.max_content_light_level = 1000;
   hdr_metadata.max_frame_average_light_level = 100;
 

@@ -15,8 +15,8 @@
 
 #include "base/macros.h"
 #include "base/optional.h"
+#include "ui/gfx/hdr_metadata.h"
 #include "ui/gl/gl_export.h"
-#include "ui/gl/hdr_metadata.h"
 
 namespace gl {
 
@@ -35,7 +35,7 @@ class GL_EXPORT HDRMetadataHelperWin {
 
   // Convert |hdr_metadata| to DXGI's metadata format.
   static DXGI_HDR_METADATA_HDR10 HDRMetadataToDXGI(
-      const HDRMetadata& hdr_metadata);
+      const gfx::HDRMetadata& hdr_metadata);
 
  private:
   void CacheDisplayMetadata(

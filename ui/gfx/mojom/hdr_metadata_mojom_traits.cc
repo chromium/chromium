@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/gl/mojom/hdr_metadata_mojom_traits.h"
+#include "ui/gfx/mojom/hdr_metadata_mojom_traits.h"
 
 namespace mojo {
 
-bool StructTraits<gl::mojom::MasteringMetadataDataView, gl::MasteringMetadata>::
-    Read(gl::mojom::MasteringMetadataDataView data,
-         gl::MasteringMetadata* output) {
+bool StructTraits<
+    gfx::mojom::MasteringMetadataDataView,
+    gfx::MasteringMetadata>::Read(gfx::mojom::MasteringMetadataDataView data,
+                                  gfx::MasteringMetadata* output) {
   output->luminance_max = data.luminance_max();
   output->luminance_min = data.luminance_min();
   if (!data.ReadPrimaryR(&output->primary_r))
@@ -22,9 +23,9 @@ bool StructTraits<gl::mojom::MasteringMetadataDataView, gl::MasteringMetadata>::
   return true;
 }
 
-bool StructTraits<gl::mojom::HDRMetadataDataView, gl::HDRMetadata>::Read(
-    gl::mojom::HDRMetadataDataView data,
-    gl::HDRMetadata* output) {
+bool StructTraits<gfx::mojom::HDRMetadataDataView, gfx::HDRMetadata>::Read(
+    gfx::mojom::HDRMetadataDataView data,
+    gfx::HDRMetadata* output) {
   output->max_content_light_level = data.max_content_light_level();
   output->max_frame_average_light_level = data.max_frame_average_light_level();
   if (!data.ReadMasteringMetadata(&output->mastering_metadata))

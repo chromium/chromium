@@ -195,7 +195,7 @@ base::ScopedCFTypeRef<CMFormatDescriptionRef> CreateVideoFormatH264(
 base::ScopedCFTypeRef<CMFormatDescriptionRef> CreateVideoFormatVP9(
     media::VideoColorSpace color_space,
     media::VideoCodecProfile profile,
-    base::Optional<gl::HDRMetadata> hdr_metadata,
+    base::Optional<gfx::HDRMetadata> hdr_metadata,
     const gfx::Size& coded_size) {
   base::ScopedCFTypeRef<CFMutableDictionaryRef> format_config(
       CreateFormatExtensions(kCMVideoCodecType_VP9, profile, color_space,

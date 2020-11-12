@@ -294,7 +294,7 @@ bool CastContentRendererClient::IsSupportedVideoType(
 // TODO(servolk): make use of eotf.
 
   // TODO(1066567): Check attached screen for support of type.hdr_metadata_type.
-if (type.hdr_metadata_type != ::gl::HdrMetadataType::kNone) {
+if (type.hdr_metadata_type != ::gfx::HdrMetadataType::kNone) {
   NOTIMPLEMENTED() << "HdrMetadataType support signaling not implemented.";
   return false;
 }
