@@ -153,6 +153,10 @@ class SyncEngineBackend : public base::RefCountedThreadSafe<SyncEngineBackend>,
 
   bool HasUnsyncedItemsForTest() const;
 
+  // Called on each device infos change and might be called more than once with
+  // the same |active_devices|.
+  void DoOnActiveDevicesChanged(size_t active_devices);
+
  private:
   friend class base::RefCountedThreadSafe<SyncEngineBackend>;
 

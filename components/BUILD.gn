@@ -67,6 +67,7 @@ test("components_unittests") {
     "//components/blocklist/opt_out_blocklist/sql:unit_tests",
     "//components/bookmarks/browser:unit_tests",
     "//components/bookmarks/managed:unit_tests",
+    "//components/browser_sync:unit_tests",
     "//components/browsing_data/core:unit_tests",
     "//components/captive_portal/core:unit_tests",
     "//components/cbor:unit_tests",

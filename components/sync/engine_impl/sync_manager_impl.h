@@ -84,6 +84,7 @@ class SyncManagerImpl
       override;
   void OnCookieJarChanged(bool account_mismatch, bool empty_jar) override;
   void UpdateInvalidationClientId(const std::string& client_id) override;
+  void UpdateSingleClientStatus(bool single_client) override;
 
   // SyncEncryptionHandler::Observer implementation.
   void OnPassphraseRequired(

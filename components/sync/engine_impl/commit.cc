@@ -91,6 +91,7 @@ std::unique_ptr<Commit> Commit::Init(ModelTypeSet enabled_types,
                                      const std::string& cache_guid,
                                      bool cookie_jar_mismatch,
                                      bool cookie_jar_empty,
+                                     bool single_client,
                                      CommitProcessor* commit_processor,
                                      ExtensionsActivity* extensions_activity) {
   // Gather per-type contributions.
@@ -123,7 +124,7 @@ std::unique_ptr<Commit> Commit::Init(ModelTypeSet enabled_types,
 
   // Set the client config params.
   commit_util::AddClientConfigParamsToMessage(
-      enabled_types, cookie_jar_mismatch, commit_message);
+      enabled_types, cookie_jar_mismatch, single_client, commit_message);
 
   // Finally, serialize all our contributions.
   for (const auto& contribution : contributions) {

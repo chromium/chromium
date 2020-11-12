@@ -193,4 +193,8 @@ void FakeSyncManager::UpdateInvalidationClientId(const std::string&) {
   NOTIMPLEMENTED();
 }
 
+void FakeSyncManager::UpdateSingleClientStatus(bool single_client) {
+  // Do nothing.
+}
+
 }  // namespace syncer

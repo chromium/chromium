@@ -31,6 +31,7 @@ SyncCycleContext::SyncCycleContext(
       invalidator_client_id_(invalidator_client_id),
       cookie_jar_mismatch_(false),
       cookie_jar_empty_(false),
+      single_client_(false),
       poll_interval_(poll_interval) {
   DCHECK(!poll_interval.is_zero());
   std::vector<SyncEngineEventListener*>::const_iterator it;

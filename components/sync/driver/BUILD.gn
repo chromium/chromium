@@ -7,6 +7,7 @@ import("//tools/grit/grit_rule.gni")
 
 static_library("driver") {
   sources = [
+    "active_devices_provider.h",
     "backend_migrator.cc",
     "backend_migrator.h",
     "configure_context.h",

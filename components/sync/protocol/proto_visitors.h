@@ -272,6 +272,7 @@ VISIT_PROTO_FIELDS(const sync_pb::ClientConfigParams& proto) {
   VISIT_REP(enabled_type_ids);
   VISIT(tabs_datatype_enabled);
   VISIT(cookie_jar_mismatch);
+  VISIT(single_client);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::ClientStatus& proto) {

@@ -19,6 +19,7 @@
 #include "components/sync/base/bind_to_task_runner.h"
 #include "components/sync/base/invalidation_helper.h"
 #include "components/sync/base/sync_prefs.h"
+#include "components/sync/driver/active_devices_provider.h"
 #include "components/sync/driver/glue/sync_engine_backend.h"
 #include "components/sync/driver/sync_driver_switches.h"
 #include "components/sync/engine/data_type_activation_response.h"
@@ -27,7 +28,6 @@
 #include "components/sync/engine/events/protocol_event.h"
 #include "components/sync/engine/net/http_bridge.h"
 #include "components/sync/engine/sync_engine_host.h"
-#include "components/sync/engine/sync_manager_factory.h"
 #include "components/sync/engine/sync_string_conversions.h"
 #include "components/sync/invalidations/fcm_handler.h"
 #include "components/sync/invalidations/switches.h"
@@ -39,6 +39,7 @@ SyncEngineImpl::SyncEngineImpl(
     const std::string& name,
     invalidation::InvalidationService* invalidator,
     SyncInvalidationsService* sync_invalidations_service,
+    std::unique_ptr<ActiveDevicesProvider> active_devices_provider,
     const base::WeakPtr<SyncPrefs>& sync_prefs,
     const base::FilePath& sync_data_folder,
     scoped_refptr<base::SequencedTaskRunner> sync_task_runner)
@@ -48,10 +49,11 @@ SyncEngineImpl::SyncEngineImpl(
       invalidator_(invalidator),
       sync_invalidations_service_(sync_invalidations_service),
 #if defined(OS_ANDROID)
-      sessions_invalidation_enabled_(false) {
+      sessions_invalidation_enabled_(false),
 #else
-      sessions_invalidation_enabled_(true) {
+      sessions_invalidation_enabled_(true),
 #endif
+      active_devices_provider_(std::move(active_devices_provider)) {
   backend_ = base::MakeRefCounted<SyncEngineBackend>(
       name_, sync_data_folder, weak_ptr_factory_.GetWeakPtr());
 }
@@ -187,6 +189,9 @@ void SyncEngineImpl::Shutdown(ShutdownReason reason) {
   last_enabled_types_.Clear();
   invalidation_handler_registered_ = false;
 
+  active_devices_provider_->SetActiveDevicesChangedCallback(
+      base::RepeatingClosure());
+
   model_type_connector_.reset();
 
   // Shut down and destroy SyncManager.
@@ -296,6 +301,12 @@ void SyncEngineImpl::HandleInitializationSuccessOnFrontendLoop(
   if (sync_invalidations_service_) {
     sync_invalidations_service_->AddListener(this);
   }
+
+  active_devices_provider_->SetActiveDevicesChangedCallback(base::BindRepeating(
+      &SyncEngineImpl::OnActiveDevicesChanged, weak_ptr_factory_.GetWeakPtr()));
+
+  // Initialize active devices count.
+  OnActiveDevicesChanged();
 
   host_->OnEngineInitialized(initial_types, js_backend, debug_info_listener,
                              birthday, bag_of_chips, /*success=*/true);
@@ -444,6 +455,15 @@ void SyncEngineImpl::SendInterestedTopicsToInvalidator() {
   bool success = invalidator_->UpdateInterestedTopics(
       this, ModelTypeSetToTopicSet(invalidation_enabled_types));
   DCHECK(success);
+}
+
+void SyncEngineImpl::OnActiveDevicesChanged() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  sync_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &SyncEngineBackend::DoOnActiveDevicesChanged, backend_,
+          active_devices_provider_->CountActiveDevicesIfAvailable()));
 }
 
 }  // namespace syncer

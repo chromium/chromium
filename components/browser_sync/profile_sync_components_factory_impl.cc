@@ -20,6 +20,7 @@
 #include "components/autofill/core/browser/webdata/autofill_wallet_offer_sync_bridge.h"
 #include "components/autofill/core/browser/webdata/autofill_wallet_sync_bridge.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
+#include "components/browser_sync/active_devices_provider_impl.h"
 #include "components/browser_sync/browser_sync_client.h"
 #include "components/history/core/browser/sync/history_delete_directives_model_type_controller.h"
 #include "components/history/core/browser/sync/typed_url_model_type_controller.h"
@@ -417,8 +418,11 @@ ProfileSyncComponentsFactoryImpl::CreateSyncEngine(
     syncer::SyncInvalidationsService* sync_invalidation_service,
     const base::WeakPtr<syncer::SyncPrefs>& sync_prefs) {
   return std::make_unique<syncer::SyncEngineImpl>(
-      name, invalidator, sync_invalidation_service, sync_prefs,
-      sync_client_->GetModelTypeStoreService()->GetSyncDataPath(),
+      name, invalidator, sync_invalidation_service,
+      std::make_unique<browser_sync::ActiveDevicesProviderImpl>(
+          sync_client_->GetDeviceInfoSyncService()->GetDeviceInfoTracker(),
+          base::DefaultClock::GetInstance()),
+      sync_prefs, sync_client_->GetModelTypeStoreService()->GetSyncDataPath(),
       engines_and_directory_deletion_thread_);
 }
 

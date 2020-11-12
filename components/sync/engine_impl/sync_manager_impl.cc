@@ -566,4 +566,8 @@ void SyncManagerImpl::UpdateInvalidationClientId(const std::string& client_id) {
   cycle_context_->set_invalidator_client_id(client_id);
 }
 
+void SyncManagerImpl::UpdateSingleClientStatus(bool single_client) {
+  cycle_context_->set_single_client(single_client);
+}
+
 }  // namespace syncer

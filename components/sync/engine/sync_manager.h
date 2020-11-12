@@ -240,6 +240,9 @@ class SyncManager {
 
   // Updates invalidation client id.
   virtual void UpdateInvalidationClientId(const std::string& client_id) = 0;
+
+  // Notifies SyncManager that there are no other known active devices.
+  virtual void UpdateSingleClientStatus(bool single_client) = 0;
 };
 
 }  // namespace syncer

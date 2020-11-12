@@ -28,6 +28,7 @@ void AddExtensionsActivityToMessage(
 // Fills the config_params field of |message|.
 void AddClientConfigParamsToMessage(ModelTypeSet enabled_types,
                                     bool cookie_jar_mismatch,
+                                    bool single_client,
                                     sync_pb::CommitMessage* message);
 
 }  // namespace commit_util

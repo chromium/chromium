@@ -441,6 +441,12 @@ message ClientConfigParams {
   // chrome account. If multiple accounts are present in the cookie jar, a
   // mismatch implies all of them are different from the chrome account.
   optional bool cookie_jar_mismatch = 3;
+
+  // Indicates that the client is not aware of any other active clients for the
+  // user. This flag shows that it is not necessary to send invalidations for
+  // the committed data. The client is considered active if it's DeviceInfo has
+  // updated recent enough.
+  optional bool single_client = 4;
 }
 
 message CommitMessage {

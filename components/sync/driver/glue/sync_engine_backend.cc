@@ -526,6 +526,14 @@ void SyncEngineBackend::DoOnInvalidationReceived(const std::string& payload) {
   }
 }
 
+void SyncEngineBackend::DoOnActiveDevicesChanged(size_t active_devices) {
+  // If |active_devices| is 0, then current client doesn't know if there are any
+  // other devices. It's safer to consider that there are some other active
+  // devices.
+  const bool single_client = active_devices == 1;
+  sync_manager_->UpdateSingleClientStatus(single_client);
+}
+
 void SyncEngineBackend::GetNigoriNodeForDebugging(AllNodesCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   nigori_controller_->GetAllNodes(std::move(callback));

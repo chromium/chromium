@@ -40,6 +40,7 @@ class InvalidationService;
 
 namespace syncer {
 
+class ActiveDevicesProvider;
 class DataTypeDebugInfoListener;
 class JsBackend;
 class ModelTypeConnector;
@@ -59,6 +60,7 @@ class SyncEngineImpl : public SyncEngine,
   SyncEngineImpl(const std::string& name,
                  invalidation::InvalidationService* invalidator,
                  SyncInvalidationsService* sync_invalidations_service,
+                 std::unique_ptr<ActiveDevicesProvider> active_devices_provider,
                  const base::WeakPtr<SyncPrefs>& sync_prefs,
                  const base::FilePath& sync_data_folder,
                  scoped_refptr<base::SequencedTaskRunner> sync_task_runner);
@@ -168,6 +170,10 @@ class SyncEngineImpl : public SyncEngine,
 
   void SendInterestedTopicsToInvalidator();
 
+  // Called on each device infos change and might be called more than once with
+  // the same |active_devices|.
+  void OnActiveDevicesChanged();
+
   // The task runner where all the sync engine operations happen.
   scoped_refptr<base::SequencedTaskRunner> sync_task_runner_;
 
@@ -204,6 +210,8 @@ class SyncEngineImpl : public SyncEngine,
   bool sessions_invalidation_enabled_;
 
   SyncStatus cached_status_;
+
+  std::unique_ptr<ActiveDevicesProvider> active_devices_provider_;
 
   // Checks that we're on the same thread this was constructed on (UI thread).
   SEQUENCE_CHECKER(sequence_checker_);

@@ -116,6 +116,9 @@ class SyncCycleContext {
 
   void set_cookie_jar_empty(bool empty_jar) { cookie_jar_empty_ = empty_jar; }
 
+  bool single_client() const { return single_client_; }
+  void set_single_client(bool single_client) { single_client_ = single_client; }
+
   base::TimeDelta poll_interval() const { return poll_interval_; }
   void set_poll_interval(base::TimeDelta interval) {
     DCHECK(!interval.is_zero());
@@ -169,6 +172,9 @@ class SyncCycleContext {
 
   // If there's a cookie jar mismatch, whether the cookie jar was empty or not.
   bool cookie_jar_empty_;
+
+  // If there are no other known active devices.
+  bool single_client_;
 
   base::TimeDelta poll_interval_;
 

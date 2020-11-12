@@ -51,6 +51,7 @@ class Commit {
                                       const std::string& cache_guid,
                                       bool cookie_jar_mismatch,
                                       bool cookie_jar_empty,
+                                      bool single_client,
                                       CommitProcessor* commit_processor,
                                       ExtensionsActivity* extensions_activity);
 

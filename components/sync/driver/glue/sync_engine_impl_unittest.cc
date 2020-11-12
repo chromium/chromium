@@ -35,6 +35,7 @@
 #include "components/sync/base/invalidation_helper.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/sync_prefs.h"
+#include "components/sync/driver/active_devices_provider.h"
 #include "components/sync/driver/sync_driver_switches.h"
 #include "components/sync/engine/fake_sync_manager.h"
 #include "components/sync/engine/net/http_bridge.h"
@@ -171,6 +172,18 @@ class MockInvalidationService : public invalidation::InvalidationService {
       (const override));
 };
 
+class MockActiveDevicesProvider : public ActiveDevicesProvider {
+ public:
+  MockActiveDevicesProvider() = default;
+  ~MockActiveDevicesProvider() override = default;
+
+  MOCK_METHOD(size_t, CountActiveDevicesIfAvailable, (), (override));
+  MOCK_METHOD(void,
+              SetActiveDevicesChangedCallback,
+              (ActiveDevicesProvider::ActiveDevicesChangedCallback),
+              (override));
+};
+
 std::unique_ptr<HttpPostProviderFactory> CreateHttpBridgeFactory() {
   return std::make_unique<HttpBridgeFactory>(
       /*user_agent=*/"",
@@ -200,6 +213,7 @@ class SyncEngineImplTest : public testing::Test {
          base::TaskShutdownBehavior::BLOCK_SHUTDOWN});
     backend_ = std::make_unique<SyncEngineImpl>(
         "dummyDebugName", &invalidator_, GetSyncInvalidationsService(),
+        std::make_unique<NiceMock<MockActiveDevicesProvider>>(),
         sync_prefs_->AsWeakPtr(),
         temp_dir_.GetPath().Append(base::FilePath(kTestSyncDir)),
         sync_task_runner);

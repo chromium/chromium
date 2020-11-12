@@ -27,6 +27,7 @@ namespace {
 
 using testing::ElementsAre;
 using testing::IsSupersetOf;
+using testing::UnorderedElementsAre;
 
 MATCHER_P(HasCacheGuid, expected_cache_guid, "") {
   return arg.specifics().device_info().cache_guid() == expected_cache_guid;
@@ -166,6 +167,37 @@ IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
   EXPECT_THAT(fake_server_->GetSyncEntitiesByModelType(syncer::DEVICE_INFO),
               IsSupersetOf({HasCacheGuid(CacheGuidForSuffix(1)),
                             HasCacheGuid(CacheGuidForSuffix(2))}));
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
+                       ShouldSetTheOnlyClientFlag) {
+  ASSERT_TRUE(SetupSync());
+  ASSERT_TRUE(
+      ServerDeviceInfoMatchChecker(
+          GetFakeServer(), ElementsAre(HasCacheGuid(GetLocalCacheGuid())))
+          .Wait());
+
+  sync_pb::ClientToServerMessage message;
+  GetFakeServer()->GetLastCommitMessage(&message);
+
+  EXPECT_TRUE(message.commit().config_params().single_client());
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
+                       ShouldNotProvideTheOnlyClientFlag) {
+  InjectDeviceInfoEntityToServer(/*suffix=*/1);
+
+  ASSERT_TRUE(SetupSync());
+  ASSERT_TRUE(ServerDeviceInfoMatchChecker(
+                  GetFakeServer(),
+                  UnorderedElementsAre(HasCacheGuid(GetLocalCacheGuid()),
+                                       HasCacheGuid(CacheGuidForSuffix(1))))
+                  .Wait());
+
+  sync_pb::ClientToServerMessage message;
+  GetFakeServer()->GetLastCommitMessage(&message);
+
+  EXPECT_FALSE(message.commit().config_params().single_client());
 }
 
 }  // namespace
