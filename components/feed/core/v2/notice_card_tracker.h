@@ -27,7 +27,7 @@ class NoticeCardTracker {
 
   // Indicates whether there were enough views or clicks done on the notice
   // card to consider it as acknowledged by the user.
-  bool HasAcknowledgedNoticeCard();
+  bool HasAcknowledgedNoticeCard() const;
 
  private:
   bool HasNoticeCardActionsCountPrerequisites(int index);

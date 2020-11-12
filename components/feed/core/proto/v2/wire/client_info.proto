@@ -8,6 +8,7 @@ package feedwire;
 
 option optimize_for = LITE_RUNTIME;
 
+import "components/feed/core/proto/v2/wire/chrome_client_info.proto";
 import "components/feed/core/proto/v2/wire/display_info.proto";
 import "components/feed/core/proto/v2/wire/version.proto";
 
@@ -58,4 +59,8 @@ message ClientInfo {
   // this comes from GServices check-in which uses the SIM card MCC (mobile
   // country code), with fallback to IP geo lookup.
   optional string device_country = 9;
+
+  // Information about the client performing the request, relevant only to
+  // Chrome surfaces.
+  optional ChromeClientInfo chrome_client_info = 338478298;
 }

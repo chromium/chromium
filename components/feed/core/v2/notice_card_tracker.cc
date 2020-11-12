@@ -36,7 +36,7 @@ void NoticeCardTracker::OnOpenAction(int index) {
   MaybeUpdateNoticeCardClicksCount(index);
 }
 
-bool NoticeCardTracker::HasAcknowledgedNoticeCard() {
+bool NoticeCardTracker::HasAcknowledgedNoticeCard() const {
   constexpr char kNoticeCardViewsCountThresholdParamName[] =
       "notice-card-views-count-threshold";
   constexpr char kNoticeCardClicksCountThresholdParamName[] =

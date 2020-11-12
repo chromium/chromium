@@ -29,6 +29,7 @@
 #include "components/feed/core/common/pref_names.h"
 #include "components/feed/core/proto/v2/store.pb.h"
 #include "components/feed/core/proto/v2/ui.pb.h"
+#include "components/feed/core/proto/v2/wire/chrome_client_info.pb.h"
 #include "components/feed/core/proto/v2/wire/request.pb.h"
 #include "components/feed/core/proto/v2/wire/there_and_back_again_data.pb.h"
 #include "components/feed/core/proto/v2/xsurface.pb.h"
@@ -388,9 +389,12 @@ class TestWireResponseTranslator : public FeedStream::WireResponseTranslator {
     return FeedStream::WireResponseTranslator::TranslateWireResponse(
         std::move(response), source, was_signed_in_request, current_time);
   }
-  void InjectResponse(std::unique_ptr<StreamModelUpdateRequest> response) {
+  void InjectResponse(std::unique_ptr<StreamModelUpdateRequest> response,
+                      base::Optional<std::string> session_id = base::nullopt) {
+    DCHECK(!response->stream_data.signed_in() || !session_id);
     RefreshResponseData data;
     data.model_update_request = std::move(response);
+    data.session_id = std::move(session_id);
     InjectResponse(std::move(data));
   }
   void InjectResponse(RefreshResponseData response_data) {
@@ -1087,14 +1091,78 @@ TEST_F(FeedStreamTest, LoadStreamAfterEulaIsAccepted) {
 
 TEST_F(FeedStreamTest, ForceSignedOutRequestAfterHistoryIsDeleted) {
   stream_->OnAllHistoryDeleted();
+
+  const std::string kSessionId = "session-id";
+
+  // This test injects response post translation/parsing. We have to configure
+  // the response data that should come out of the translator, which should
+  // mark the request/response as having been made from the signed-out state.
+  StreamModelUpdateRequestGenerator model_generator;
+  model_generator.signed_in = false;
+
+  // Advance the clock, but not past the end of the forced-signed-out period.
   task_environment_.FastForwardBy(kSuppressRefreshDuration -
                                   base::TimeDelta::FromSeconds(1));
-  response_translator_.InjectResponse(MakeTypicalInitialModelState());
+
+  // Refresh the feed, queuing up a signed-out response.
+  response_translator_.InjectResponse(model_generator.MakeFirstPage(),
+                                      kSessionId);
   TestSurface surface(stream_.get());
   WaitForIdleTaskQueue();
 
-  EXPECT_EQ("loading -> 2 slices", surface.DescribeUpdates());
+  // Validate that the network request was sent as signed out.
+  ASSERT_EQ(1, network_.send_query_call_count);
   EXPECT_TRUE(network_.forced_signed_out_request);
+  EXPECT_TRUE(network_.query_request_sent->feed_request()
+                  .client_info()
+                  .chrome_client_info()
+                  .session_id()
+                  .empty());
+
+  // Validate the downstream consumption of the response.
+  EXPECT_EQ("loading -> 2 slices", surface.DescribeUpdates());
+  EXPECT_EQ(kSessionId, stream_->GetMetadata()->GetSessionIdToken());
+  EXPECT_FALSE(stream_->GetModel()->signed_in());
+
+  // Advance the clock beyond the forced signed out period.
+  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(2));
+  EXPECT_FALSE(stream_->GetModel()->signed_in());
+
+  // Requests for subsequent pages continue the use existing session.
+  // Subsequent responses may omit the session id.
+  response_translator_.InjectResponse(model_generator.MakeNextPage());
+  stream_->LoadMore(surface.GetSurfaceId(), base::DoNothing());
+  WaitForIdleTaskQueue();
+
+  // Validate that the network request was sent as signed out and
+  // contained the session id.
+  ASSERT_EQ(2, network_.send_query_call_count);
+  EXPECT_TRUE(network_.forced_signed_out_request);
+  EXPECT_EQ(kSessionId, stream_->GetMetadata()->GetSessionIdToken());
+  EXPECT_EQ(network_.query_request_sent->feed_request()
+                .client_info()
+                .chrome_client_info()
+                .session_id(),
+            kSessionId);
+
+  // The model should still be in the signed-out state.
+  EXPECT_FALSE(stream_->GetModel()->signed_in());
+
+  // Force a refresh of the feed by clearing the cache. The request for the
+  // first page should revert back to signed-in. The response data will denote
+  // a signed-in response with no session_id.
+  model_generator.signed_in = true;
+  response_translator_.InjectResponse(model_generator.MakeFirstPage());
+  stream_->OnCacheDataCleared();
+  WaitForIdleTaskQueue();
+
+  // Validate that a signed-in request was sent.
+  ASSERT_EQ(3, network_.send_query_call_count);
+  EXPECT_FALSE(network_.forced_signed_out_request);
+
+  // The model should now be in the signed-in state.
+  EXPECT_TRUE(stream_->GetModel()->signed_in());
+  EXPECT_TRUE(stream_->GetMetadata()->GetSessionIdToken().empty());
 }
 
 TEST_F(FeedStreamTest, AllowSignedInRequestAfterHistoryIsDeletedAfterDelay) {
@@ -1107,6 +1175,7 @@ TEST_F(FeedStreamTest, AllowSignedInRequestAfterHistoryIsDeletedAfterDelay) {
 
   EXPECT_EQ("loading -> 2 slices", surface.DescribeUpdates());
   EXPECT_FALSE(network_.forced_signed_out_request);
+  EXPECT_TRUE(stream_->GetMetadata()->GetSessionIdToken().empty());
 }
 
 TEST_F(FeedStreamTest, ShouldMakeFeedQueryRequestConsumesQuota) {
@@ -1914,9 +1983,14 @@ TEST_F(FeedStreamTest, LoadMoreUpdatesIsActivityLoggingEnabled) {
         CallbackReceiver<bool> callback;
         stream_->LoadMore(surface.GetSurfaceId(), callback.Bind());
         WaitForIdleTaskQueue();
-        EXPECT_EQ(stream_->IsActivityLoggingEnabled(), signed_in && waa_on)
+        EXPECT_EQ(
+            stream_->IsActivityLoggingEnabled(),
+            (signed_in && waa_on) ||
+                (!signed_in && GetFeedConfig().send_signed_out_session_logs))
             << "signed_in=" << signed_in << " waa_on=" << waa_on
-            << " privacy_notice_fulfilled=" << privacy_notice_fulfilled;
+            << " privacy_notice_fulfilled=" << privacy_notice_fulfilled
+            << " send_signed_out_session_logs="
+            << GetFeedConfig().send_signed_out_session_logs;
       }
     }
   }
@@ -2077,7 +2151,8 @@ TEST_F(FeedStreamTest, UploadActionsErasesStaleActionsByAttempts) {
 TEST_F(FeedStreamTest, MetadataLoadedWhenDatabaseInitialized) {
   ASSERT_TRUE(stream_->GetMetadata());
 
-  // Set the token and increment next action ID.
+  const auto kExpiry = kTestTimeEpoch + base::TimeDelta::FromDays(1234);
+  stream_->GetMetadata()->SetSessionId("session-id", kExpiry);
   stream_->GetMetadata()->SetConsistencyToken("token");
   EXPECT_EQ(1, stream_->GetMetadata()->GetNextActionId().GetUnsafeValue());
 
@@ -2085,6 +2160,8 @@ TEST_F(FeedStreamTest, MetadataLoadedWhenDatabaseInitialized) {
   CreateStream();
 
   ASSERT_TRUE(stream_->GetMetadata());
+  EXPECT_EQ("session-id", stream_->GetMetadata()->GetSessionIdToken());
+  EXPECT_EQ(kExpiry, stream_->GetMetadata()->GetSessionIdExpiryTime());
   EXPECT_EQ("token", stream_->GetMetadata()->GetConsistencyToken());
   EXPECT_EQ(2, stream_->GetMetadata()->GetNextActionId().GetUnsafeValue());
 }
@@ -2357,6 +2434,13 @@ TEST_F(FeedStreamTest, SendsClientInstanceId) {
                                       .client_instance_id();
   EXPECT_NE("", first_instance_id);
 
+  // No signed-out session id was in the request.
+  EXPECT_TRUE(network_.query_request_sent->feed_request()
+                  .client_info()
+                  .chrome_client_info()
+                  .session_id()
+                  .empty());
+
   // LoadMore, and verify the same token is used.
   response_translator_.InjectResponse(MakeTypicalNextPageState(2));
   stream_->LoadMore(surface.GetSurfaceId(), base::DoNothing());
@@ -2367,12 +2451,21 @@ TEST_F(FeedStreamTest, SendsClientInstanceId) {
                                    .client_info()
                                    .client_instance_id());
 
+  // No signed-out session id was in the request.
+  EXPECT_TRUE(network_.query_request_sent->feed_request()
+                  .client_info()
+                  .chrome_client_info()
+                  .session_id()
+                  .empty());
+
   // Trigger a ClearAll to verify the instance ID changes.
   stream_->OnSignedOut();
   WaitForIdleTaskQueue();
 
+  EXPECT_FALSE(stream_->GetModel());
+  const bool is_for_next_page = false;  // No model so no first page yet.
   const std::string new_instance_id =
-      stream_->GetRequestMetadata().client_instance_id;
+      stream_->GetRequestMetadata(is_for_next_page).client_instance_id;
   ASSERT_NE("", new_instance_id);
   ASSERT_NE(first_instance_id, new_instance_id);
 }
@@ -2408,6 +2501,260 @@ TEST_F(FeedStreamTest, LoadStreamSendsNoticeCardAcknowledgement) {
                   .feed_query()
                   .chrome_fulfillment_info()
                   .notice_card_acknowledged());
+}
+
+TEST_F(FeedStreamTest, GetSetAndUpdateSessionId) {
+  const std::string kToken1 = "token1";
+  const std::string kToken2 = "token2";
+  const base::Time kExpiryTime1 =
+      kTestTimeEpoch + base::TimeDelta::FromHours(2);
+  const base::Time kExpiryTime2 =
+      kTestTimeEpoch + GetFeedConfig().session_id_max_age;
+  ASSERT_NE(kExpiryTime1, kExpiryTime2);
+
+  // The stream metadata is initialized with an empty token and expiry time.
+  EXPECT_TRUE(stream_->GetMetadata()->GetSessionIdToken().empty());
+  EXPECT_TRUE(stream_->GetMetadata()->GetSessionIdExpiryTime().is_null());
+
+  // Verify that directly calling SetSessionId works as expected.
+  stream_->GetMetadata()->SetSessionId(kToken1, kExpiryTime1);
+  EXPECT_EQ(kToken1, stream_->GetMetadata()->GetSessionIdToken());
+  EXPECT_EQ(kExpiryTime1, stream_->GetMetadata()->GetSessionIdExpiryTime());
+
+  // Updating the token with nullopt is a NOP.
+  stream_->GetMetadata()->MaybeUpdateSessionId(base::nullopt,
+                                               stream_->GetClock());
+  EXPECT_EQ(kToken1, stream_->GetMetadata()->GetSessionIdToken());
+  EXPECT_EQ(kExpiryTime1, stream_->GetMetadata()->GetSessionIdExpiryTime());
+
+  // Updating the token with the same value is a NOP.
+  stream_->GetMetadata()->MaybeUpdateSessionId(kToken1, stream_->GetClock());
+  EXPECT_EQ(kToken1, stream_->GetMetadata()->GetSessionIdToken());
+  EXPECT_EQ(kExpiryTime1, stream_->GetMetadata()->GetSessionIdExpiryTime());
+
+  // Updating the token with a different value resets the token and assigns a
+  // new expiry time.
+  stream_->GetMetadata()->MaybeUpdateSessionId(kToken2, stream_->GetClock());
+  EXPECT_EQ(kToken2, stream_->GetMetadata()->GetSessionIdToken());
+  EXPECT_EQ(kExpiryTime2, stream_->GetMetadata()->GetSessionIdExpiryTime());
+
+  // Updating the token with the empty string clears its value.
+  stream_->GetMetadata()->MaybeUpdateSessionId("", stream_->GetClock());
+  EXPECT_TRUE(stream_->GetMetadata()->GetSessionIdToken().empty());
+  EXPECT_TRUE(stream_->GetMetadata()->GetSessionIdExpiryTime().is_null());
+}
+
+TEST_F(FeedStreamTest, SignedOutSessionIdConsistency) {
+  const std::string kSessionToken1("session-token-1");
+  const std::string kSessionToken2("session-token-2");
+
+  is_signed_in_ = false;
+
+  StreamModelUpdateRequestGenerator model_generator;
+  model_generator.signed_in = false;
+
+  // (1) Do an initial load of the store
+  //     - this should trigger a network request
+  //     - the request should not include client-instance-id
+  //     - the request should not include a session-id
+  //     - the stream should capture the session-id token from the response
+  response_translator_.InjectResponse(model_generator.MakeFirstPage(),
+                                      kSessionToken1);
+  TestSurface surface(stream_.get());
+  WaitForIdleTaskQueue();
+  ASSERT_EQ(1, network_.send_query_call_count);
+  EXPECT_TRUE(network_.query_request_sent->feed_request()
+                  .client_info()
+                  .client_instance_id()
+                  .empty());
+  EXPECT_FALSE(network_.query_request_sent->feed_request()
+                   .client_info()
+                   .has_chrome_client_info());
+  EXPECT_EQ(kSessionToken1, stream_->GetMetadata()->GetSessionIdToken());
+  const base::Time kSessionToken1ExpiryTime =
+      stream_->GetMetadata()->GetSessionIdExpiryTime();
+
+  // (2) LoadMore: the server returns the same session-id token
+  //     - this should trigger a network request
+  //     - the request should not include client-instance-id
+  //     - the request should include the first session-id
+  //     - the stream should retain the first session-id
+  //     - the session-id's expiry time should be unchanged
+  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+  response_translator_.InjectResponse(model_generator.MakeNextPage(2),
+                                      kSessionToken1);
+  stream_->LoadMore(surface.GetSurfaceId(), base::DoNothing());
+  WaitForIdleTaskQueue();
+  ASSERT_EQ(2, network_.send_query_call_count);
+  EXPECT_TRUE(network_.query_request_sent->feed_request()
+                  .client_info()
+                  .client_instance_id()
+                  .empty());
+  EXPECT_EQ(kSessionToken1, network_.query_request_sent->feed_request()
+                                .client_info()
+                                .chrome_client_info()
+                                .session_id());
+  EXPECT_EQ(kSessionToken1, stream_->GetMetadata()->GetSessionIdToken());
+  EXPECT_EQ(kSessionToken1ExpiryTime,
+            stream_->GetMetadata()->GetSessionIdExpiryTime());
+
+  // (3) LoadMore: the server omits returning a session-id token
+  //     - this should trigger a network request
+  //     - the request should not include client-instance-id
+  //     - the request should include the first session-id
+  //     - the stream should retain the first session-id
+  //     - the session-id's expiry time should be unchanged
+  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+  response_translator_.InjectResponse(model_generator.MakeNextPage(3));
+  stream_->LoadMore(surface.GetSurfaceId(), base::DoNothing());
+  WaitForIdleTaskQueue();
+  ASSERT_EQ(3, network_.send_query_call_count);
+  EXPECT_TRUE(network_.query_request_sent->feed_request()
+                  .client_info()
+                  .client_instance_id()
+                  .empty());
+  EXPECT_EQ(kSessionToken1, network_.query_request_sent->feed_request()
+                                .client_info()
+                                .chrome_client_info()
+                                .session_id());
+  EXPECT_EQ(kSessionToken1, stream_->GetMetadata()->GetSessionIdToken());
+  EXPECT_EQ(kSessionToken1ExpiryTime,
+            stream_->GetMetadata()->GetSessionIdExpiryTime());
+
+  // (4) LoadMore: the server returns new session id.
+  //     - this should trigger a network request
+  //     - the request should not include client-instance-id
+  //     - the request should include the first session-id
+  //     - the stream should retain the second session-id
+  //     - the new session-id's expiry time should be updated
+  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+  response_translator_.InjectResponse(model_generator.MakeNextPage(4),
+                                      kSessionToken2);
+  stream_->LoadMore(surface.GetSurfaceId(), base::DoNothing());
+  WaitForIdleTaskQueue();
+  ASSERT_EQ(4, network_.send_query_call_count);
+  EXPECT_TRUE(network_.query_request_sent->feed_request()
+                  .client_info()
+                  .client_instance_id()
+                  .empty());
+  EXPECT_EQ(kSessionToken1, network_.query_request_sent->feed_request()
+                                .client_info()
+                                .chrome_client_info()
+                                .session_id());
+  EXPECT_EQ(kSessionToken2, stream_->GetMetadata()->GetSessionIdToken());
+  EXPECT_EQ(kSessionToken1ExpiryTime + base::TimeDelta::FromSeconds(3),
+            stream_->GetMetadata()->GetSessionIdExpiryTime());
+}
+
+TEST_F(FeedStreamTest, ClearAllResetsSessionId) {
+  is_signed_in_ = false;
+
+  // Initialize a session id.
+  stream_->GetMetadata()->MaybeUpdateSessionId("session-id",
+                                               stream_->GetClock());
+  ASSERT_FALSE(stream_->GetMetadata()->GetSessionIdToken().empty());
+  ASSERT_FALSE(stream_->GetMetadata()->GetSessionIdExpiryTime().is_null());
+
+  // Trigger a ClearAll.
+  stream_->OnCacheDataCleared();
+  WaitForIdleTaskQueue();
+
+  // Session-ID should be wiped.
+  EXPECT_TRUE(stream_->GetMetadata()->GetSessionIdToken().empty());
+  EXPECT_TRUE(stream_->GetMetadata()->GetSessionIdExpiryTime().is_null());
+}
+
+TEST_F(FeedStreamTest, SignedOutSessionIdExpiry) {
+  const std::string kSessionToken1("session-token-1");
+  const std::string kSessionToken2("session-token-2");
+
+  is_signed_in_ = false;
+
+  StreamModelUpdateRequestGenerator model_generator;
+  model_generator.signed_in = false;
+
+  // (1) Do an initial load of the store
+  //     - this should trigger a network request
+  //     - the request should not include a session-id
+  //     - the stream should capture the session-id token from the response
+  response_translator_.InjectResponse(model_generator.MakeFirstPage(),
+                                      kSessionToken1);
+  TestSurface surface(stream_.get());
+  WaitForIdleTaskQueue();
+  ASSERT_EQ(1, network_.send_query_call_count);
+  EXPECT_FALSE(network_.query_request_sent->feed_request()
+                   .client_info()
+                   .has_chrome_client_info());
+  EXPECT_EQ(kSessionToken1, stream_->GetMetadata()->GetSessionIdToken());
+
+  // (2) Reload the stream from the network:
+  //     - Detach the surface, advance the clock beyond the stale content
+  //       threshold, re-attach the surface.
+  //     - this should trigger a network request
+  //     - the request should include kSessionToken1
+  //     - the stream should retain the original session-id
+  surface.Detach();
+  task_environment_.FastForwardBy(GetFeedConfig().stale_content_threshold +
+                                  base::TimeDelta::FromSeconds(1));
+  response_translator_.InjectResponse(model_generator.MakeFirstPage());
+  surface.Attach(stream_.get());
+  WaitForIdleTaskQueue();
+  ASSERT_EQ(2, network_.send_query_call_count);
+  EXPECT_EQ(kSessionToken1, network_.query_request_sent->feed_request()
+                                .client_info()
+                                .chrome_client_info()
+                                .session_id());
+  EXPECT_EQ(kSessionToken1, stream_->GetMetadata()->GetSessionIdToken());
+
+  // (3) Reload the stream from the network:
+  //     - Detach the surface, advance the clock beyond the session id max age
+  //       threshold, re-attach the surface.
+  //     - this should trigger a network request
+  //     - the request should not include a session-id
+  //     - the stream should get a new session-id
+  surface.Detach();
+  task_environment_.FastForwardBy(GetFeedConfig().session_id_max_age -
+                                  GetFeedConfig().stale_content_threshold);
+  ASSERT_LT(stream_->GetMetadata()->GetSessionIdExpiryTime(),
+            task_environment_.GetMockClock()->Now());
+  response_translator_.InjectResponse(model_generator.MakeFirstPage(),
+                                      kSessionToken2);
+  surface.Attach(stream_.get());
+  WaitForIdleTaskQueue();
+  ASSERT_EQ(3, network_.send_query_call_count);
+  EXPECT_FALSE(network_.query_request_sent->feed_request()
+                   .client_info()
+                   .has_chrome_client_info());
+  EXPECT_EQ(kSessionToken2, stream_->GetMetadata()->GetSessionIdToken());
+}
+
+TEST_F(FeedStreamTest, SessionIdPersistsAcrossStreamLoads) {
+  const std::string kSessionToken("session-token-ftw");
+  const base::Time kExpiryTime =
+      kTestTimeEpoch + GetFeedConfig().session_id_max_age;
+
+  StreamModelUpdateRequestGenerator model_generator;
+  model_generator.signed_in = false;
+  is_signed_in_ = false;
+
+  // (1) Do an initial load of the store
+  //     - this should trigger a network request
+  //     - the stream should capture the session-id token from the response
+  response_translator_.InjectResponse(model_generator.MakeFirstPage(),
+                                      kSessionToken);
+  TestSurface surface(stream_.get());
+  WaitForIdleTaskQueue();
+  ASSERT_EQ(1, network_.send_query_call_count);
+
+  // (2) Reload the metadata from disk.
+  //     - the network query call count should be unchanged
+  //     - the session token and expiry time should have been reloaded.
+  surface.Detach();
+  CreateStream();
+  WaitForIdleTaskQueue();
+  ASSERT_EQ(1, network_.send_query_call_count);
+  EXPECT_EQ(kSessionToken, stream_->GetMetadata()->GetSessionIdToken());
+  EXPECT_EQ(kExpiryTime, stream_->GetMetadata()->GetSessionIdExpiryTime());
 }
 
 }  // namespace

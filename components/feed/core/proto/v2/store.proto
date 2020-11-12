@@ -51,15 +51,24 @@ message StreamData {
   bool logging_enabled = 8;
   // Has the privacy notice been fulfilled?
   bool privacy_notice_fulfilled = 9;
+
   reserved 3, 5;
 }
 
 // Data that doesn't belong to a stream.
 message Metadata {
+  // Session identifier used for signed-out feed requests and interactions.
+  message SessionID {
+    string token = 1;
+    int64 expiry_time_ms = 2;
+  }
+
   // Token used to read or write to the same storage.
   bytes consistency_token = 1;
   // ID for the next pending action.
   int32 next_action_id = 2;
+  // The most recent session identifier.
+  SessionID session_id = 3;
 }
 
 // A set of StreamStructures that should be applied to a stream.

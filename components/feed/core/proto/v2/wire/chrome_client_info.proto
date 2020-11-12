@@ -8,8 +8,10 @@ package feedwire;
 
 option optimize_for = LITE_RUNTIME;
 
-message ChromeFeedResponseMetadata {
-  optional bool privacy_notice_fulfilled = 1;
-  optional bool logging_enabled = 2;
+// Information about the client performing the request, relevant only to Chrome
+// surfaces.
+message ChromeClientInfo {
+  // The signed-out session identifier (Zwieback) token, for clients which embed
+  // this information in-band instead of using an HTTP Cookie.
   optional string session_id = 3;
 }

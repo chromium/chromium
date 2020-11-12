@@ -359,6 +359,10 @@ public class FeedStreamSurface implements SurfaceActionsHandler, FeedActionsHand
 
         @Override
         public String getAccountName() {
+            // Don't return account name if there's a signed-out session ID.
+            if (!getSignedOutSessionId().isEmpty()) {
+                return "";
+            }
             assert ThreadUtils.runningOnUiThread();
             CoreAccountInfo primaryAccount =
                     IdentityServicesProvider.get()
@@ -375,8 +379,19 @@ public class FeedStreamSurface implements SurfaceActionsHandler, FeedActionsHand
 
         @Override
         public String getClientInstanceId() {
+            // Don't return client instance id if there's a signed-out session ID.
+            if (!getSignedOutSessionId().isEmpty()) {
+                return "";
+            }
             assert ThreadUtils.runningOnUiThread();
             return FeedServiceBridge.getClientInstanceId();
+        }
+
+        @Override
+        public String getSignedOutSessionId() {
+            assert ThreadUtils.runningOnUiThread();
+            return FeedStreamSurfaceJni.get().getSessionId(
+                    mNativeFeedStreamSurface, FeedStreamSurface.this);
         }
     }
 
@@ -1173,6 +1188,7 @@ public class FeedStreamSurface implements SurfaceActionsHandler, FeedActionsHand
         long init(FeedStreamSurface caller);
         boolean isActivityLoggingEnabled(long nativeFeedStreamSurface, FeedStreamSurface caller);
         int[] getExperimentIds();
+        String getSessionId(long nativeFeedStreamSurface, FeedStreamSurface caller);
         void reportFeedViewed(long nativeFeedStreamSurface, FeedStreamSurface caller);
         void reportSliceViewed(
                 long nativeFeedStreamSurface, FeedStreamSurface caller, String sliceId);

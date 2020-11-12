@@ -66,8 +66,13 @@ class FeedStreamSurface : public FeedStreamApi::SurfaceInterface {
   void SurfaceClosed(JNIEnv* env,
                      const base::android::JavaParamRef<jobject>& obj);
 
-  // Is activity Loggine enabled (ephemeral).
+  // Is activity logging enabled (ephemeral).
   bool IsActivityLoggingEnabled(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& obj);
+
+  // Get the signed-out session id, if any (ephemeral).
+  base::android::ScopedJavaLocalRef<jstring> GetSessionId(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj);
 

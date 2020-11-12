@@ -92,8 +92,14 @@ class FeedStream : public FeedStreamApi,
 
     void Populate(feedstore::Metadata metadata);
 
-    std::string GetConsistencyToken() const;
+    const std::string& GetConsistencyToken() const;
     void SetConsistencyToken(std::string consistency_token);
+
+    const std::string& GetSessionIdToken() const;
+    base::Time GetSessionIdExpiryTime() const;
+    void SetSessionId(std::string token, base::Time expiry_time);
+    void MaybeUpdateSessionId(base::Optional<std::string> token,
+                              const base::Clock* clock);
 
     LocalActionId GetNextActionId();
 
@@ -125,11 +131,12 @@ class FeedStream : public FeedStreamApi,
   // FeedStreamApi.
 
   bool IsActivityLoggingEnabled() const override;
+  std::string GetSessionId() const override;
   void AttachSurface(SurfaceInterface*) override;
   void DetachSurface(SurfaceInterface*) override;
   void SetArticlesListVisible(bool is_visible) override;
   bool IsArticlesListVisible() override;
-  std::string GetClientInstanceId() override;
+  std::string GetClientInstanceId() const override;
   void ExecuteRefreshTask() override;
   ImageFetchId FetchImage(
       const GURL& url,
@@ -215,6 +222,7 @@ class FeedStream : public FeedStreamApi,
   FeedStore* GetStore() { return store_; }
   RequestThrottler* GetRequestThrottler() { return &request_throttler_; }
   Metadata* GetMetadata() { return &metadata_; }
+  const Metadata* GetMetadata() const { return &metadata_; }
   MetricsReporter* GetMetricsReporter() const { return metrics_reporter_; }
 
   // Returns the time of the last content fetch.
@@ -256,7 +264,7 @@ class FeedStream : public FeedStreamApi,
 
   const base::Clock* GetClock() const { return clock_; }
   const base::TickClock* GetTickClock() const { return tick_clock_; }
-  RequestMetadata GetRequestMetadata();
+  RequestMetadata GetRequestMetadata(bool is_for_next_page) const;
 
   const WireResponseTranslator* GetWireResponseTranslator() const {
     return wire_response_translator_;

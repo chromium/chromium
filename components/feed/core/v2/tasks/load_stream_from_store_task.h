@@ -76,7 +76,6 @@ class LoadStreamFromStoreTask : public offline_pages::Task {
 
   // Data to be stuffed into the Result when the task is complete.
   std::unique_ptr<StreamModelUpdateRequest> update_request_;
-  std::string consistency_token_;
   std::vector<feedstore::StoredAction> pending_actions_;
 
   base::WeakPtrFactory<LoadStreamFromStoreTask> weak_ptr_factory_{this};

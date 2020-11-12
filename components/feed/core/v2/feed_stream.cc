@@ -113,13 +113,43 @@ void FeedStream::Metadata::Populate(feedstore::Metadata metadata) {
   metadata_ = std::move(metadata);
 }
 
-std::string FeedStream::Metadata::GetConsistencyToken() const {
+const std::string& FeedStream::Metadata::GetConsistencyToken() const {
   return metadata_.consistency_token();
 }
 
 void FeedStream::Metadata::SetConsistencyToken(std::string consistency_token) {
   metadata_.set_consistency_token(std::move(consistency_token));
   store_->WriteMetadata(metadata_, base::DoNothing());
+}
+
+const std::string& FeedStream::Metadata::GetSessionIdToken() const {
+  return metadata_.session_id().token();
+}
+
+base::Time FeedStream::Metadata::GetSessionIdExpiryTime() const {
+  return base::Time::FromDeltaSinceWindowsEpoch(
+      base::TimeDelta::FromMilliseconds(
+          metadata_.session_id().expiry_time_ms()));
+}
+
+void FeedStream::Metadata::SetSessionId(std::string token,
+                                        base::Time expiry_time) {
+  feedstore::Metadata::SessionID* session_id = metadata_.mutable_session_id();
+  session_id->set_token(std::move(token));
+  session_id->set_expiry_time_ms(
+      expiry_time.ToDeltaSinceWindowsEpoch().InMilliseconds());
+  store_->WriteMetadata(metadata_, base::DoNothing());
+}
+
+void FeedStream::Metadata::MaybeUpdateSessionId(
+    base::Optional<std::string> token,
+    const base::Clock* clock) {
+  if (token && metadata_.session_id().token() != *token) {
+    base::Time expiry_time =
+        token->empty() ? base::Time()
+                       : clock->Now() + GetFeedConfig().session_id_max_age;
+    SetSessionId(*token, expiry_time);
+  }
 }
 
 LocalActionId FeedStream::Metadata::GetNextActionId() {
@@ -239,7 +269,13 @@ bool FeedStream::IsActivityLoggingEnabled() const {
 
 void FeedStream::UpdateIsActivityLoggingEnabled() {
   is_activity_logging_enabled_ =
-      model_ && model_->signed_in() && model_->logging_enabled();
+      model_ &&
+      ((model_->signed_in() && model_->logging_enabled()) ||
+       (!model_->signed_in() && GetFeedConfig().send_signed_out_session_logs));
+}
+
+std::string FeedStream::GetSessionId() const {
+  return GetMetadata()->GetSessionIdToken();
 }
 
 void FeedStream::AttachSurface(SurfaceInterface* surface) {
@@ -302,7 +338,7 @@ bool FeedStream::IsArticlesListVisible() {
   return profile_prefs_->GetBoolean(prefs::kArticlesListVisible);
 }
 
-std::string FeedStream::GetClientInstanceId() {
+std::string FeedStream::GetClientInstanceId() const {
   return prefs::GetClientInstanceId(*profile_prefs_);
 }
 
@@ -571,14 +607,38 @@ bool FeedStream::ShouldForceSignedOutFeedQueryRequest() const {
   return base::TimeTicks::Now() < signed_out_refreshes_until_;
 }
 
-RequestMetadata FeedStream::GetRequestMetadata() {
+RequestMetadata FeedStream::GetRequestMetadata(bool is_for_next_page) const {
   RequestMetadata result;
   result.chrome_info = chrome_info_;
   result.display_metrics = delegate_->GetDisplayMetrics();
   result.language_tag = delegate_->GetLanguageTag();
-  result.client_instance_id = GetClientInstanceId();
   result.notice_card_acknowledged =
       notice_card_tracker_.HasAcknowledgedNoticeCard();
+
+  if (is_for_next_page) {
+    // If we are continuing an existing feed, use whatever session continuity
+    // mechanism is currently associated with the stream: client-instance-id
+    // for signed-in feed, session_id token for signed-out.
+    DCHECK(model_);
+    if (model_->signed_in()) {
+      result.client_instance_id = GetClientInstanceId();
+    } else {
+      result.session_id = GetMetadata()->GetSessionIdToken();
+    }
+  } else {
+    // The request is for the first page of the feed. Use client_instance_id
+    // for signed in requests and session_id token (if any, and not expired)
+    // for signed-out.
+    if (delegate_->IsSignedIn() && !ShouldForceSignedOutFeedQueryRequest()) {
+      result.client_instance_id = GetClientInstanceId();
+    } else if (!GetMetadata()->GetSessionIdToken().empty() &&
+               GetMetadata()->GetSessionIdExpiryTime() > clock_->Now()) {
+      result.session_id = GetMetadata()->GetSessionIdToken();
+    }
+  }
+
+  DCHECK(result.session_id.empty() || result.client_instance_id.empty());
+
   return result;
 }
 
@@ -739,6 +799,7 @@ void FeedStream::ReportSliceViewed(SurfaceId surface_id,
     metrics_reporter_->ContentSliceViewed(surface_id, index);
   }
 }
+// TODO(crbug/1147237): Rename this method and related members?
 bool FeedStream::CanUploadActions() const {
   return can_upload_actions_with_notice_card_ ||
          !prefs::GetLastFetchHadNoticeCard(*profile_prefs_);

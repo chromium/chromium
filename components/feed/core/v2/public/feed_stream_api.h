@@ -63,9 +63,14 @@ class FeedStreamApi {
   // as the feed is refreshed or the user signs in/out.
   virtual bool IsActivityLoggingEnabled() const = 0;
 
-  // Returns the client_instance_id. This value is reset whenever the feed
-  // stream is cleared (on sign-in, sign-out, and some data clear events).
-  virtual std::string GetClientInstanceId() = 0;
+  // Returns the signed-in client_instance_id. This value is reset whenever the
+  // feed stream is cleared (on sign-in, sign-out, and some data clear events).
+  virtual std::string GetClientInstanceId() const = 0;
+
+  // Returns the client's signed-out session id. This value is reset whenever
+  // the feed stream is cleared (on sign-in, sign-out, and some data clear
+  // events).
+  virtual std::string GetSessionId() const = 0;
 
   // Invoked by RefreshTaskScheduler's scheduled task.
   virtual void ExecuteRefreshTask() = 0;

@@ -68,7 +68,7 @@ void LoadMoreTask::UploadActionsComplete(UploadActionsTask::Result result) {
   fetch_start_time_ = stream_->GetTickClock()->NowTicks();
   stream_->GetNetwork()->SendQueryRequest(
       CreateFeedQueryLoadMoreRequest(
-          stream_->GetRequestMetadata(),
+          stream_->GetRequestMetadata(/*is_for_next_page=*/true),
           stream_->GetMetadata()->GetConsistencyToken(),
           stream_->GetModel()->GetNextPageToken()),
       force_signed_out_request,
@@ -94,6 +94,10 @@ void LoadMoreTask::QueryRequestComplete(
 
   loaded_new_content_from_network_ =
       !translated_response.model_update_request->stream_structures.empty();
+
+  stream_->GetMetadata()->MaybeUpdateSessionId(translated_response.session_id,
+                                               stream_->GetClock());
+
   model->Update(std::move(translated_response.model_update_request));
 
   if (translated_response.request_schedule)

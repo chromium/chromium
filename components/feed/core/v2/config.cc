@@ -76,6 +76,16 @@ void OverrideWithFinch(Config* config) {
           kInterestFeedV2, "upload_actions_on_enter_background",
           config->upload_actions_on_enter_background);
 
+  config->send_signed_out_session_logs =
+      base::GetFieldTrialParamByFeatureAsBool(
+          kInterestFeedV2, "send_signed_out_session_logs",
+          config->send_signed_out_session_logs);
+
+  config->session_id_max_age =
+      base::TimeDelta::FromDays(base::GetFieldTrialParamByFeatureAsInt(
+          kInterestFeedV2, "session_id_max_age_days",
+          config->session_id_max_age.InDays()));
+
   // Erase any capabilities with "enable_CAPABILITY = false" set.
   base::EraseIf(config->experimental_capabilities, CapabilityDisabled);
 }

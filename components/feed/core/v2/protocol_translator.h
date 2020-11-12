@@ -64,6 +64,9 @@ struct RefreshResponseData {
 
   // Server-defined request schedule, if provided.
   base::Optional<RequestSchedule> request_schedule;
+
+  // Server-defined session id token, if provided.
+  base::Optional<std::string> session_id;
 };
 
 base::Optional<feedstore::DataOperation> TranslateDataOperation(

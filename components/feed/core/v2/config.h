@@ -38,6 +38,10 @@ struct Config {
   int load_more_trigger_lookahead = 5;
   // Whether to attempt uploading actions when Chrome is hidden.
   bool upload_actions_on_enter_background = true;
+  // Whether to send (pseudonymous) logs for signed-out sessions.
+  bool send_signed_out_session_logs = true;
+  // The max age of a signed-out session token.
+  base::TimeDelta session_id_max_age = base::TimeDelta::FromDays(30);
   // Set of optional capabilities included in requests. See
   // CreateFeedQueryRequest() for required capabilities.
   base::flat_set<feedwire::Capability> experimental_capabilities = {

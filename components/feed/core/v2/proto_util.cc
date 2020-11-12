@@ -13,6 +13,7 @@
 #include "build/build_config.h"
 #include "components/feed/core/proto/v2/store.pb.h"
 #include "components/feed/core/proto/v2/wire/capability.pb.h"
+#include "components/feed/core/proto/v2/wire/chrome_client_info.pb.h"
 #include "components/feed/core/proto/v2/wire/feed_request.pb.h"
 #include "components/feed/core/proto/v2/wire/request.pb.h"
 #include "components/feed/core/v2/config.h"
@@ -125,9 +126,15 @@ feedwire::Request CreateFeedQueryRequest(
   *feed_request.mutable_client_info() = CreateClientInfo(request_metadata);
   feedwire::FeedQuery& query = *feed_request.mutable_feed_query();
   query.set_reason(request_reason);
-  if (!consistency_token.empty()) {
+
+  // |consistency_token|, for action reporting, is only applicable to signed-in
+  // requests. The presence of |client_instance_id|, also signed-in only, can be
+  // used a proxy for checking if we're creating a signed-in request.
+  if (!consistency_token.empty() &&
+      !request_metadata.client_instance_id.empty()) {
     feed_request.mutable_consistency_token()->set_token(consistency_token);
   }
+
   if (!next_page_token.empty()) {
     DCHECK_EQ(request_reason, feedwire::FeedQuery::NEXT_PAGE_SCROLL);
     query.mutable_next_page_token()
@@ -187,7 +194,6 @@ bool CompareContent(const feedstore::Content& a, const feedstore::Content& b) {
 
 feedwire::ClientInfo CreateClientInfo(const RequestMetadata& request_metadata) {
   feedwire::ClientInfo client_info;
-  client_info.set_client_instance_id(request_metadata.client_instance_id);
 
   feedwire::DisplayInfo& display_info = *client_info.add_display_info();
   display_info.set_screen_density(request_metadata.display_metrics.density);
@@ -207,6 +213,19 @@ feedwire::ClientInfo CreateClientInfo(const RequestMetadata& request_metadata) {
   *client_info.mutable_platform_version() = GetPlatformVersionMessage();
   *client_info.mutable_app_version() =
       GetAppVersionMessage(request_metadata.chrome_info);
+
+  // client_instance_id and session_id should not both be set at the same time.
+  DCHECK(request_metadata.client_instance_id.empty() ||
+         request_metadata.session_id.empty());
+
+  // Populate client_instance_id, session_id, or neither.
+  if (!request_metadata.client_instance_id.empty()) {
+    client_info.set_client_instance_id(request_metadata.client_instance_id);
+  } else if (!request_metadata.session_id.empty()) {
+    client_info.mutable_chrome_client_info()->set_session_id(
+        request_metadata.session_id);
+  }
+
   return client_info;
 }
 

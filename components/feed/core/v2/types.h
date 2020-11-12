@@ -39,6 +39,7 @@ struct RequestMetadata {
   ChromeInfo chrome_info;
   std::string language_tag;
   std::string client_instance_id;
+  std::string session_id;
   DisplayMetrics display_metrics;
   bool notice_card_acknowledged = false;
 };

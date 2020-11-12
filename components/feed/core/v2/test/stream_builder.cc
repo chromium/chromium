@@ -158,12 +158,13 @@ std::vector<feedstore::DataOperation> MakeTypicalStreamOperations() {
   };
 }
 
-std::unique_ptr<StreamModelUpdateRequest> MakeTypicalInitialModelState(
-    int first_cluster_id,
-    base::Time last_added_time,
-    bool signed_in,
-    bool logging_enabled,
-    bool privacy_notice_fulfilled) {
+StreamModelUpdateRequestGenerator::StreamModelUpdateRequestGenerator() =
+    default;
+StreamModelUpdateRequestGenerator::~StreamModelUpdateRequestGenerator() =
+    default;
+
+std::unique_ptr<StreamModelUpdateRequest>
+StreamModelUpdateRequestGenerator::MakeFirstPage(int first_cluster_id) const {
   auto initial_update = std::make_unique<StreamModelUpdateRequest>();
   const int i = first_cluster_id;
   const int j = first_cluster_id + 1;
@@ -191,12 +192,8 @@ std::unique_ptr<StreamModelUpdateRequest> MakeTypicalInitialModelState(
   return initial_update;
 }
 
-std::unique_ptr<StreamModelUpdateRequest> MakeTypicalNextPageState(
-    int page_number,
-    base::Time last_added_time,
-    bool signed_in,
-    bool logging_enabled,
-    bool privacy_notice_fulfilled) {
+std::unique_ptr<StreamModelUpdateRequest>
+StreamModelUpdateRequestGenerator::MakeNextPage(int page_number) const {
   auto initial_update = std::make_unique<StreamModelUpdateRequest>();
   initial_update->source =
       StreamModelUpdateRequest::Source::kInitialLoadFromStore;
@@ -222,6 +219,34 @@ std::unique_ptr<StreamModelUpdateRequest> MakeTypicalNextPageState(
   SetLastAddedTime(last_added_time, initial_update->stream_data);
 
   return initial_update;
+}
+
+std::unique_ptr<StreamModelUpdateRequest> MakeTypicalInitialModelState(
+    int first_cluster_id,
+    base::Time last_added_time,
+    bool signed_in,
+    bool logging_enabled,
+    bool privacy_notice_fulfilled) {
+  StreamModelUpdateRequestGenerator generator;
+  generator.last_added_time = last_added_time;
+  generator.signed_in = signed_in;
+  generator.logging_enabled = logging_enabled;
+  generator.privacy_notice_fulfilled = privacy_notice_fulfilled;
+  return generator.MakeFirstPage(first_cluster_id);
+}
+
+std::unique_ptr<StreamModelUpdateRequest> MakeTypicalNextPageState(
+    int page_number,
+    base::Time last_added_time,
+    bool signed_in,
+    bool logging_enabled,
+    bool privacy_notice_fulfilled) {
+  StreamModelUpdateRequestGenerator generator;
+  generator.last_added_time = last_added_time;
+  generator.signed_in = signed_in;
+  generator.logging_enabled = logging_enabled;
+  generator.privacy_notice_fulfilled = privacy_notice_fulfilled;
+  return generator.MakeNextPage(page_number);
 }
 
 }  // namespace feed
