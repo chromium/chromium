@@ -43,8 +43,6 @@ extern const base::Feature kSidePanel;
 
 extern const base::Feature kProfilesUIRevamp;
 
-extern const base::Feature kTabGroups;
-
 extern const base::Feature kTabGroupsAutoCreate;
 
 extern const base::Feature kTabGroupsCollapse;

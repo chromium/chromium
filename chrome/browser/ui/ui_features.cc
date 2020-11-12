@@ -59,9 +59,6 @@ const base::Feature kSidePanel{"SidePanel", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kProfilesUIRevamp{"ProfilesUIRevamp",
                                       base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enables grouping tabs together in the tab strip. https://crbug.com/905491
-const base::Feature kTabGroups{"TabGroups", base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Automatically create groups for users based on domain.
 // https://crbug.com/1128703
 const base::Feature kTabGroupsAutoCreate{"TabGroupsAutoCreate",

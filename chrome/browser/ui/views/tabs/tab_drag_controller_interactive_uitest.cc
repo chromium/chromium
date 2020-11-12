@@ -673,23 +673,12 @@ class DetachToBrowserTabDragControllerTest
   base::Optional<web_app::AppId> tabbed_app_id_;
 };
 
-class DetachToBrowserTabDragControllerTestWithTabGroupsEnabled
-    : public DetachToBrowserTabDragControllerTest {
- public:
-  DetachToBrowserTabDragControllerTestWithTabGroupsEnabled() {
-    scoped_feature_list_.InitAndEnableFeature(features::kTabGroups);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
 // Creates a browser with four tabs. The first three belong in the same Tab
 // Group. Dragging the third tab to after the fourth tab will result in a
 // removal of the dragged tab from its group. Then dragging the second tab to
 // after the third tab will also result in a removal of that dragged tab from
 // its group.
-IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTestWithTabGroupsEnabled,
+IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
                        DragRightToUngroupTab) {
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
   TabStripModel* model = browser()->tab_strip_model();
@@ -732,7 +721,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTestWithTabGroupsEnabled,
 // removal of the dragged tab from its group. Then dragging the third tab to
 // before the second tab will also result in a removal of that dragged tab from
 // its group.
-IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTestWithTabGroupsEnabled,
+IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
                        DragLeftToUngroupTab) {
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
   TabStripModel* model = browser()->tab_strip_model();
@@ -774,7 +763,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTestWithTabGroupsEnabled,
 // Creates a browser with four tabs. The first three belong in the same Tab
 // Group. Dragging tabs in a tab group within the defined threshold does not
 // modify the group of the dragged tab.
-IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTestWithTabGroupsEnabled,
+IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
                        DragTabWithinGroupDoesNotModifyGroup) {
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
   TabStripModel* model = browser()->tab_strip_model();
@@ -812,7 +801,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTestWithTabGroupsEnabled,
 
 // Creates a browser with four tabs. The first tab is in a Tab Group. Dragging
 // the only tab in that group will remove the group.
-IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTestWithTabGroupsEnabled,
+IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
                        DragOnlyTabInGroupRemovesGroup) {
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
   TabStripModel* model = browser()->tab_strip_model();
@@ -842,7 +831,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTestWithTabGroupsEnabled,
 // tab over one to the left will result in the tab joining Tab Group 1. Then
 // dragging the fourth tab over one to the left will result in the tab joining
 // Tab Group 1 as well.
-IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTestWithTabGroupsEnabled,
+IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
                        DragSingleTabLeftIntoGroup) {
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
   TabStripModel* model = browser()->tab_strip_model();
@@ -901,7 +890,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTestWithTabGroupsEnabled,
 // over one to the right will result in the tab joining Tab Group 1. Then
 // dragging the first tab over one to the right will result in the tab joining
 // Tab Group 1 as well.
-IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTestWithTabGroupsEnabled,
+IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
                        DragSingleTabRightIntoGroup) {
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
   TabStripModel* model = browser()->tab_strip_model();
@@ -952,7 +941,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTestWithTabGroupsEnabled,
 // tabs joining the same group as the tab in the second position. Then dragging
 // the tabs over two to the right will result in the tabs joining the same group
 // as the last tab.
-IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTestWithTabGroupsEnabled,
+IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
                        DragMultipleTabsRightIntoGroup) {
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
   TabStripModel* model = browser()->tab_strip_model();
@@ -1007,7 +996,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTestWithTabGroupsEnabled,
 // Creates a browser with four tabs each in its own group. Selecting and
 // dragging the second and fourth tabs left at the fourth tab will result in the
 // tabs joining the same group as the tab in the third position.
-IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTestWithTabGroupsEnabled,
+IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
                        DragMultipleTabsLeftIntoGroup) {
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
   TabStripModel* model = browser()->tab_strip_model();
@@ -1047,7 +1036,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTestWithTabGroupsEnabled,
 // Dragging the third tab over one to the left will result in the tab joining
 // Tab Group 1. While this drag is still in session, pressing escape will revert
 // group of the tab to before the drag session started.
-IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTestWithTabGroupsEnabled,
+IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
                        RevertDragSingleTabIntoGroup) {
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
   TabStripModel* model = browser()->tab_strip_model();
@@ -1081,7 +1070,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTestWithTabGroupsEnabled,
 // will result in the tab joining Tab Group 1. While this drag is still in
 // session, pressing escape will revert group of the tab to before the drag
 // session started.
-IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTestWithTabGroupsEnabled,
+IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
                        RevertDragSingleTabGroupIntoGroup) {
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
   TabStripModel* model = browser()->tab_strip_model();
@@ -1123,7 +1112,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTestWithTabGroupsEnabled,
 // Creates a browser with four tabs. The middle two belong in the same Tab
 // Group. Dragging the group header will result in both the grouped tabs moving
 // together.
-IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTestWithTabGroupsEnabled,
+IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
                        DragGroupHeaderDragsGroup) {
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
   TabStripModel* model = browser()->tab_strip_model();
@@ -1167,7 +1156,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTestWithTabGroupsEnabled,
 // Creates a browser with four tabs. The first two belong in Tab Group 1, and
 // the last two belong in Tab Group 2. Dragging the group header of Tab Group 1
 // right will result in Tab Group 1 moving but avoiding Tab Group 2.
-IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTestWithTabGroupsEnabled,
+IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
                        DragGroupHeaderRightAvoidsOtherGroups) {
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
   TabStripModel* model = browser()->tab_strip_model();
@@ -1215,7 +1204,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTestWithTabGroupsEnabled,
 // Creates a browser with four tabs. The first two belong in Tab Group 1, and
 // the last two belong in Tab Group 2. Dragging the group header of Tab Group 2
 // left will result in Tab Group 2 moving but avoiding Tab Group 1.
-IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTestWithTabGroupsEnabled,
+IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
                        DragGroupHeaderLeftAvoidsOtherGroups) {
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
   TabStripModel* model = browser()->tab_strip_model();
@@ -1264,7 +1253,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTestWithTabGroupsEnabled,
 // three belong in the same Tab Group. Dragging the pinned tab to the middle
 // of the group will not result in the pinned tab getting grouped or moving
 // into the group.
-IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTestWithTabGroupsEnabled,
+IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
                        DragPinnedTabDoesNotGroup) {
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
   TabStripModel* model = browser()->tab_strip_model();
@@ -2072,7 +2061,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
 // two tabs in another group {group1}. Dragging the two tabs in the first
 // browser into the middle of the second browser will insert the two dragged
 // tabs into the {group1}} after the first tab.
-IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTestWithTabGroupsEnabled,
+IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
                        DragWindowIntoGroup) {
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
   TabStripModel* model = browser()->tab_strip_model();
@@ -2110,7 +2099,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTestWithTabGroupsEnabled,
 }
 
 // Creates two browsers, then drags a group from one to the other.
-IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTestWithTabGroupsEnabled,
+IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
                        DragGroupHeaderToSeparateWindow) {
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
   TabStripModel* model = browser()->tab_strip_model();
@@ -2145,7 +2134,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTestWithTabGroupsEnabled,
 
 // Drags a tab group by the header to a new position toward the right and
 // presses escape to revert the drag.
-IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTestWithTabGroupsEnabled,
+IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
                        RevertHeaderDragRight) {
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
   TabStripModel* model = browser()->tab_strip_model();
@@ -2176,7 +2165,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTestWithTabGroupsEnabled,
 
 // Drags a tab group by the header to a new position toward the left and presses
 // escape to revert the drag.
-IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTestWithTabGroupsEnabled,
+IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
                        RevertHeaderDragLeft) {
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
   TabStripModel* model = browser()->tab_strip_model();
@@ -2234,7 +2223,7 @@ void PressEscapeWhileDetachedHeaderStep2(
 
 // Drags a tab group by the header and while detached presses escape to revert
 // the drag.
-IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTestWithTabGroupsEnabled,
+IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
                        RevertHeaderDragWhileDetached) {
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
   TabStripModel* model = browser()->tab_strip_model();
@@ -2264,8 +2253,7 @@ class DetachToBrowserTabDragControllerTestWithTabGroupsCollapseEnabled
     : public DetachToBrowserTabDragControllerTest {
  public:
   DetachToBrowserTabDragControllerTestWithTabGroupsCollapseEnabled() {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kTabGroups, features::kTabGroupsCollapse}, {});
+    scoped_feature_list_.InitWithFeatures({features::kTabGroupsCollapse}, {});
   }
 
  private:
@@ -4364,10 +4352,6 @@ INSTANTIATE_TEST_SUITE_P(TabDragging,
                          ::testing::Values("mouse", "touch"));
 INSTANTIATE_TEST_SUITE_P(
     TabDragging,
-    DetachToBrowserTabDragControllerTestWithTabGroupsEnabled,
-    ::testing::Values("mouse", "touch"));
-INSTANTIATE_TEST_SUITE_P(
-    TabDragging,
     DetachToBrowserTabDragControllerTestWithTabGroupsCollapseEnabled,
     ::testing::Values("mouse", "touch"));
 INSTANTIATE_TEST_SUITE_P(TabDragging,
@@ -4391,10 +4375,6 @@ INSTANTIATE_TEST_SUITE_P(
 INSTANTIATE_TEST_SUITE_P(TabDragging,
                          DetachToBrowserTabDragControllerTest,
                          ::testing::Values("mouse"));
-INSTANTIATE_TEST_SUITE_P(
-    TabDragging,
-    DetachToBrowserTabDragControllerTestWithTabGroupsEnabled,
-    ::testing::Values("mouse"));
 INSTANTIATE_TEST_SUITE_P(
     TabDragging,
     DetachToBrowserTabDragControllerTestWithTabGroupsCollapseEnabled,

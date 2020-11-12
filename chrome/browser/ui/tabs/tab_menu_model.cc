@@ -48,30 +48,28 @@ void TabMenuModel::Build(TabStripModel* tab_strip, int index) {
     SetEnabledAt(GetItemCount() - 1,
                  tab_strip->IsReadLaterSupportedForAny(affected_indices));
   }
-  if (base::FeatureList::IsEnabled(features::kTabGroups)) {
-    if (ExistingTabGroupSubMenuModel::ShouldShowSubmenu(tab_strip, index)) {
-      // Create submenu with existing groups
-      add_to_existing_group_submenu_ =
-          std::make_unique<ExistingTabGroupSubMenuModel>(delegate(), tab_strip,
-                                                         index);
-      AddSubMenu(TabStripModel::CommandAddToExistingGroup,
-                 l10n_util::GetPluralStringFUTF16(
-                     IDS_TAB_CXMENU_ADD_TAB_TO_GROUP, num_affected_tabs),
-                 add_to_existing_group_submenu_.get());
-      SetIsNewFeatureAt(GetItemCount() - 1, true);
-    } else {
-      AddItem(TabStripModel::CommandAddToNewGroup,
-              l10n_util::GetPluralStringFUTF16(
-                  IDS_TAB_CXMENU_ADD_TAB_TO_NEW_GROUP, num_affected_tabs));
-      SetIsNewFeatureAt(GetItemCount() - 1, true);
-    }
+  if (ExistingTabGroupSubMenuModel::ShouldShowSubmenu(tab_strip, index)) {
+    // Create submenu with existing groups
+    add_to_existing_group_submenu_ =
+        std::make_unique<ExistingTabGroupSubMenuModel>(delegate(), tab_strip,
+                                                       index);
+    AddSubMenu(TabStripModel::CommandAddToExistingGroup,
+               l10n_util::GetPluralStringFUTF16(IDS_TAB_CXMENU_ADD_TAB_TO_GROUP,
+                                                num_affected_tabs),
+               add_to_existing_group_submenu_.get());
+    SetIsNewFeatureAt(GetItemCount() - 1, true);
+  } else {
+    AddItem(TabStripModel::CommandAddToNewGroup,
+            l10n_util::GetPluralStringFUTF16(
+                IDS_TAB_CXMENU_ADD_TAB_TO_NEW_GROUP, num_affected_tabs));
+    SetIsNewFeatureAt(GetItemCount() - 1, true);
+  }
 
-    for (size_t index = 0; index < affected_indices.size(); index++) {
-      if (tab_strip->GetTabGroupForTab(affected_indices[index]).has_value()) {
-        AddItemWithStringId(TabStripModel::CommandRemoveFromGroup,
-                            IDS_TAB_CXMENU_REMOVE_TAB_FROM_GROUP);
-        break;
-      }
+  for (size_t index = 0; index < affected_indices.size(); index++) {
+    if (tab_strip->GetTabGroupForTab(affected_indices[index]).has_value()) {
+      AddItemWithStringId(TabStripModel::CommandRemoveFromGroup,
+                          IDS_TAB_CXMENU_REMOVE_TAB_FROM_GROUP);
+      break;
     }
   }
 

@@ -94,9 +94,6 @@ void CloseWebContents(Browser* browser,
 }
 
 void ConfigureTabGroupForNavigation(NavigateParams* nav_params) {
-  if (!base::FeatureList::IsEnabled(features::kTabGroups))
-    return;
-
   if (!nav_params->source_contents)
     return;
 

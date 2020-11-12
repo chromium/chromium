@@ -224,14 +224,6 @@ class TabStripModel::WebContentsData : public content::WebContentsObserver {
   bool blocked_ = false;
 
   // The group that contains this tab, if any.
-  // TODO(https://crbug.com/915956): While tab groups are being prototyped
-  // (behind a feature flag), we are tracking group membership in the simplest
-  // possible way. There are some known issues intentionally punted here:
-  //   - Groups are meant to be contiguous, but this data organization doesn't
-  //     help to ensure that they stay contiguous. Any kind of tab movement may
-  //     break that guarantee, with undefined results.
-  //   - The exact shape of the group-related changes to the TabStripModel API
-  //     (and the relevant bits of the extension API) are TBD.
   base::Optional<tab_groups::TabGroupId> group_ = base::nullopt;
 };
 

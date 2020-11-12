@@ -2199,11 +2199,6 @@ const char kTabToGTSAnimationAndroidDescription[] =
     "Allows users to see an animation when entering or leaving the "
     "Grid Tab Switcher on phones.";
 
-const char kTabGroupsName[] = "Tab Groups";
-const char kTabGroupsDescription[] =
-    "Allows users to organize tabs into visually distinct groups, e.g. to "
-    "separate tabs associated with different tasks.";
-
 const char kTabGroupsAutoCreateName[] = "Tab Groups Auto Create";
 const char kTabGroupsAutoCreateDescription[] =
     "Automatically creates groups for users, if tab groups are enabled.";

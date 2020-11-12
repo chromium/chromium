@@ -42,9 +42,6 @@ TEST_F(TabMenuModelTest, MoveToNewWindow) {
 }
 
 TEST_F(TabMenuModelTest, AddToExistingGroupSubmenu) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kTabGroups);
-
   chrome::NewTab(browser());
   chrome::NewTab(browser());
   chrome::NewTab(browser());
@@ -76,9 +73,6 @@ TEST_F(TabMenuModelTest, AddToExistingGroupSubmenu) {
 }
 
 TEST_F(TabMenuModelTest, AddToExistingGroupSubmenu_DoesNotIncludeCurrentGroup) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kTabGroups);
-
   chrome::NewTab(browser());
   chrome::NewTab(browser());
   chrome::NewTab(browser());

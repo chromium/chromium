@@ -3357,8 +3357,7 @@ void BrowserView::UpdateAcceleratorMetrics(const ui::Accelerator& accelerator,
                               BOOKMARK_ENTRY_POINT_ACCELERATOR,
                               BOOKMARK_ENTRY_POINT_LIMIT);
   }
-  if (base::FeatureList::IsEnabled(features::kTabGroups) &&
-      command_id == IDC_NEW_TAB &&
+  if (command_id == IDC_NEW_TAB &&
       browser_->SupportsWindowFeature(Browser::FEATURE_TABSTRIP)) {
     TabStripModel* const model = browser_->tab_strip_model();
     const auto group_id = model->GetTabGroupForTab(model->active_index());

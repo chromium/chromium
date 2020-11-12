@@ -154,16 +154,13 @@ sessions::LiveTab* BrowserLiveTabContext::AddRestoredTab(
 
   WebContents* web_contents = chrome::AddRestoredTab(
       browser_, navigations, tab_index, selected_navigation, extension_app_id,
-      base::FeatureList::IsEnabled(features::kTabGroups) ? group
-                                                         : base::nullopt,
-      select, pin, from_last_session, base::TimeTicks(), storage_namespace,
-      user_agent_override, false /* from_session_restore */);
+      group, select, pin, from_last_session, base::TimeTicks(),
+      storage_namespace, user_agent_override, false /* from_session_restore */);
 
   // Only update the metadata if the group doesn't already exist since the
   // existing group has the latest metadata, which may have changed from the
   // time the tab was closed.
-  if (base::FeatureList::IsEnabled(features::kTabGroups) &&
-      first_tab_in_group) {
+  if (first_tab_in_group) {
     const tab_groups::TabGroupVisualData new_data(
         group_visual_data.title(), group_visual_data.color(), false);
     group_model->GetTabGroup(group.value())->SetVisualData(new_data);

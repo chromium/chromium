@@ -10,7 +10,6 @@
 #include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -29,7 +28,6 @@
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -943,20 +941,9 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreWindowWithName) {
   EXPECT_EQ("foobar", browser->user_title());
 }
 
-class TabRestoreTestWithTabGroupsEnabled : public TabRestoreTest {
- public:
-  TabRestoreTestWithTabGroupsEnabled() {
-    feature_list_.InitAndEnableFeature(features::kTabGroups);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
 // Closing the last tab in a group then restoring will place the group back with
 // its metadata.
-IN_PROC_BROWSER_TEST_F(TabRestoreTestWithTabGroupsEnabled,
-                       RestoreSingleGroupedTab) {
+IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreSingleGroupedTab) {
   const int tab_count = AddSomeTabs(browser(), 1);
   ASSERT_LE(2, tab_count);
 
@@ -988,8 +975,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTestWithTabGroupsEnabled,
 
 // Closing the last tab in a collapsed group then restoring will place the group
 // back expanded with its metadata.
-IN_PROC_BROWSER_TEST_F(TabRestoreTestWithTabGroupsEnabled,
-                       RestoreCollapsedGroupTab_ExpandsGroup) {
+IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreCollapsedGroupTab_ExpandsGroup) {
   const int tab_count = AddSomeTabs(browser(), 1);
   ASSERT_LE(2, tab_count);
 
@@ -1026,7 +1012,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTestWithTabGroupsEnabled,
 
 // Closing a tab in a collapsed group then restoring the tab will expand the
 // group upon restore.
-IN_PROC_BROWSER_TEST_F(TabRestoreTestWithTabGroupsEnabled,
+IN_PROC_BROWSER_TEST_F(TabRestoreTest,
                        RestoreTabIntoCollapsedGroup_ExpandsGroup) {
   const int tab_count = AddSomeTabs(browser(), 2);
   ASSERT_LE(3, tab_count);
@@ -1062,8 +1048,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTestWithTabGroupsEnabled,
 
 // Closing a tab in a group then updating the metadata before restoring will
 // place the group back without updating the metadata.
-IN_PROC_BROWSER_TEST_F(TabRestoreTestWithTabGroupsEnabled,
-                       RestoreTabIntoGroup) {
+IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreTabIntoGroup) {
   const int tab_count = AddSomeTabs(browser(), 2);
   ASSERT_LE(3, tab_count);
 
@@ -1096,8 +1081,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTestWithTabGroupsEnabled,
 
 // Closing a tab in a group then moving the group to a new window before
 // restoring will place the tab in the group in the new window.
-IN_PROC_BROWSER_TEST_F(TabRestoreTestWithTabGroupsEnabled,
-                       RestoreTabIntoGroupInNewWindow) {
+IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreTabIntoGroupInNewWindow) {
   const int tab_count = AddSomeTabs(browser(), 3);
   ASSERT_LE(4, tab_count);
 
@@ -1119,8 +1103,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTestWithTabGroupsEnabled,
                     .size());
 }
 
-IN_PROC_BROWSER_TEST_F(TabRestoreTestWithTabGroupsEnabled,
-                       RestoreWindowWithGroupedTabs) {
+IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreWindowWithGroupedTabs) {
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL(chrome::kChromeUINewTabURL),
       WindowOpenDisposition::NEW_WINDOW,
@@ -1170,8 +1153,7 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTestWithTabGroupsEnabled,
 
 // Ensure a tab is not restored between tabs of another group.
 // Regression test for https://crbug.com/1109368.
-IN_PROC_BROWSER_TEST_F(TabRestoreTestWithTabGroupsEnabled,
-                       DoesNotRestoreIntoOtherGroup) {
+IN_PROC_BROWSER_TEST_F(TabRestoreTest, DoesNotRestoreIntoOtherGroup) {
   TabStripModel* const tabstrip = browser()->tab_strip_model();
 
   tabstrip->AddToNewGroup({0});
@@ -1194,38 +1176,6 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTestWithTabGroupsEnabled,
   EXPECT_EQ(group1, tabstrip->GetTabGroupForTab(0));
   EXPECT_EQ(group1, tabstrip->GetTabGroupForTab(1));
   EXPECT_EQ(group2, tabstrip->GetTabGroupForTab(2));
-}
-
-// Ensure tab groups aren't restored if |features::kTabGroups| is disabled.
-// Regression test for crbug.com/983962.
-//
-// NOTE: This test is currently disabled because it fundamentally relies on
-// manipulating the FeatureList state mid-test, which is NOT safe and not
-// allowed by the FeatureList API.
-IN_PROC_BROWSER_TEST_F(TabRestoreTest,
-                       DISABLED_GroupsNotRestoredWhenFeatureDisabled) {
-  auto feature_override = std::make_unique<base::test::ScopedFeatureList>();
-  feature_override->InitAndEnableFeature(features::kTabGroups);
-
-  ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL(chrome::kChromeUINewTabURL),
-      WindowOpenDisposition::NEW_WINDOW,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_BROWSER);
-  ASSERT_EQ(2u, active_browser_list_->size());
-
-  browser()->tab_strip_model()->AddToNewGroup({0});
-  CloseBrowserSynchronously(browser());
-  ASSERT_EQ(1u, active_browser_list_->size());
-
-  feature_override = std::make_unique<base::test::ScopedFeatureList>();
-  feature_override->InitAndDisableFeature(features::kTabGroups);
-
-  chrome::RestoreTab(GetBrowser(0));
-  ASSERT_EQ(2u, active_browser_list_->size());
-
-  Browser* restored_window = GetBrowser(1);
-  ASSERT_EQ(base::nullopt,
-            restored_window->tab_strip_model()->GetTabGroupForTab(0));
 }
 
 IN_PROC_BROWSER_TEST_F(TabRestoreTest, DoesNotRestoreReaderModePages) {

@@ -1278,9 +1278,6 @@ extern const char kTabGroupsUiImprovementsAndroidDescription[];
 extern const char kTabToGTSAnimationAndroidName[];
 extern const char kTabToGTSAnimationAndroidDescription[];
 
-extern const char kTabGroupsName[];
-extern const char kTabGroupsDescription[];
-
 extern const char kTabGroupsAutoCreateName[];
 extern const char kTabGroupsAutoCreateDescription[];
 

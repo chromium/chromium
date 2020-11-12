@@ -4224,10 +4224,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kReadLaterDescription, kOsDesktop | kOsAndroid,
      FEATURE_VALUE_TYPE(reading_list::switches::kReadLater)},
 
-    {"tab-groups", flag_descriptions::kTabGroupsName,
-     flag_descriptions::kTabGroupsDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kTabGroups)},
-
     {"tab-groups-auto-create", flag_descriptions::kTabGroupsAutoCreateName,
      flag_descriptions::kTabGroupsAutoCreateDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kTabGroupsAutoCreate)},

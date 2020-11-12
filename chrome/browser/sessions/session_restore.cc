@@ -447,14 +447,12 @@ class SessionRestoreImpl : public BrowserListObserver {
 
       // 6. Tabs will be grouped appropriately in RestoreTabsToBrowser. Now
       //    restore the groups' visual data.
-      if (base::FeatureList::IsEnabled(features::kTabGroups)) {
-        TabGroupModel* group_model = browser->tab_strip_model()->group_model();
-        for (auto& session_tab_group : (*i)->tab_groups) {
-          TabGroup* model_tab_group =
-              group_model->GetTabGroup(session_tab_group->id);
-          DCHECK(model_tab_group);
-          model_tab_group->SetVisualData(session_tab_group->visual_data);
-        }
+      TabGroupModel* group_model = browser->tab_strip_model()->group_model();
+      for (auto& session_tab_group : (*i)->tab_groups) {
+        TabGroup* model_tab_group =
+            group_model->GetTabGroup(session_tab_group->id);
+        DCHECK(model_tab_group);
+        model_tab_group->SetVisualData(session_tab_group->visual_data);
       }
 
       // 7. Notify SessionService of restored tabs, so they can be saved to the
@@ -612,20 +610,17 @@ class SessionRestoreImpl : public BrowserListObserver {
               ->RecreateSessionStorage(tab.session_storage_persistent_id);
     }
 
-    // Apply the stored group if tab groups are enabled.
-    base::Optional<tab_groups::TabGroupId> group;
-    if (base::FeatureList::IsEnabled(features::kTabGroups))
-      group = tab.group;
-
+    // Apply the stored group.
     WebContents* web_contents = chrome::AddRestoredTab(
         browser, tab.navigations, tab_index, selected_index,
-        tab.extension_app_id, group, is_selected_tab, tab.pinned, true,
+        tab.extension_app_id, tab.group, is_selected_tab, tab.pinned, true,
         last_active_time, session_storage_namespace.get(),
         tab.user_agent_override, true /* from_session_restore */);
     DCHECK(web_contents);
 
     RestoredTab restored_tab(web_contents, is_selected_tab,
-                             tab.extension_app_id.empty(), tab.pinned, group);
+                             tab.extension_app_id.empty(), tab.pinned,
+                             tab.group);
     created_contents->push_back(restored_tab);
 
     // If this isn't the selected tab, there's nothing else to do.

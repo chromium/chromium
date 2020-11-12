@@ -850,18 +850,17 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, BeforeUnloadVsBeforeReload) {
   alert->view()->AcceptAppModalDialog();
 }
 
-class BrowserTestWithTabGroupsEnabled : public BrowserTest {
+class BrowserTestWithTabGroupsAutoCreateEnabled : public BrowserTest {
  public:
-  BrowserTestWithTabGroupsEnabled() {
-    feature_list_.InitWithFeatures(
-        {features::kTabGroups, features::kTabGroupsAutoCreate}, {});
+  BrowserTestWithTabGroupsAutoCreateEnabled() {
+    feature_list_.InitWithFeatures({features::kTabGroupsAutoCreate}, {});
   }
 
  private:
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(BrowserTestWithTabGroupsEnabled,
+IN_PROC_BROWSER_TEST_F(BrowserTestWithTabGroupsAutoCreateEnabled,
                        NewTabFromLinkInGroupedTabOpensInGroup) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -884,7 +883,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTestWithTabGroupsEnabled,
   EXPECT_EQ(group_id, model->GetTabGroupForTab(1));
 }
 
-IN_PROC_BROWSER_TEST_F(BrowserTestWithTabGroupsEnabled,
+IN_PROC_BROWSER_TEST_F(BrowserTestWithTabGroupsAutoCreateEnabled,
                        NewTabFromLinkWithSameDomainCreatesGroup) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -911,7 +910,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTestWithTabGroupsEnabled,
             model->GetTabGroupForTab(1).value());
 }
 
-IN_PROC_BROWSER_TEST_F(BrowserTestWithTabGroupsEnabled,
+IN_PROC_BROWSER_TEST_F(BrowserTestWithTabGroupsAutoCreateEnabled,
                        NewTabFromLinkWithDifferentDomainDoesNotCreateGroup) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -936,8 +935,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTestWithTabGroupsEnabled,
   EXPECT_FALSE(model->GetTabGroupForTab(1).has_value());
 }
 
-IN_PROC_BROWSER_TEST_F(BrowserTestWithTabGroupsEnabled,
-                       TargetBlankLinkOpensInGroup) {
+IN_PROC_BROWSER_TEST_F(BrowserTest, TargetBlankLinkOpensInGroup) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // Add a grouped tab.

@@ -996,9 +996,7 @@ std::vector<base::Optional<tab_groups::TabGroupId>> GetTabGroups(
 class SessionRestoreTabGroupsTest : public SessionRestoreTest,
                                     public testing::WithParamInterface<bool> {
  public:
-  SessionRestoreTabGroupsTest() {
-    feature_override_.InitAndEnableFeature(features::kTabGroups);
-  }
+  SessionRestoreTabGroupsTest() = default;
 
  protected:
   void SetUpOnMainThread() override {
@@ -1092,26 +1090,6 @@ IN_PROC_BROWSER_TEST_P(SessionRestoreTabGroupsTest, GroupMetadataRestored) {
 INSTANTIATE_TEST_SUITE_P(WithAndWithoutReset,
                          SessionRestoreTabGroupsTest,
                          testing::Values(false, true));
-
-// Ensure tab groups aren't restored if |features::kTabGroups| is disabled.
-// Regression test for crbug.com/983962.
-//
-// TODO(https://crbug.com/1012605): Find a way to cover this regression without
-// relying on dynamic FeatureList overrides mid-test.
-IN_PROC_BROWSER_TEST_F(SessionRestoreTest,
-                       DISABLED_GroupsNotRestoredWhenFeatureDisabled) {
-  auto feature_override = std::make_unique<base::test::ScopedFeatureList>();
-  feature_override->InitAndEnableFeature(features::kTabGroups);
-
-  ASSERT_EQ(1, browser()->tab_strip_model()->count());
-  browser()->tab_strip_model()->AddToNewGroup({0});
-
-  feature_override = std::make_unique<base::test::ScopedFeatureList>();
-  feature_override->InitAndDisableFeature(features::kTabGroups);
-  Browser* new_browser = QuitBrowserAndRestore(browser(), 1);
-  ASSERT_EQ(base::nullopt,
-            new_browser->tab_strip_model()->GetTabGroupForTab(0));
-}
 
 IN_PROC_BROWSER_TEST_F(SessionRestoreTest, RestoreAfterDelete) {
   ui_test_utils::NavigateToURL(browser(), url1_);
