@@ -128,6 +128,10 @@ ASH_PUBLIC_EXPORT extern const base::Feature kPipRoundedCorners;
 // Enables suppression of Displays notifications other than resolution change.
 ASH_PUBLIC_EXPORT extern const base::Feature kReduceDisplayNotifications;
 
+// Enables desks restoring, including an active desk and windows belonging to
+// them.
+ASH_PUBLIC_EXPORT extern const base::Feature kDesksRestore;
+
 // Enables displaying separate network icons for different networks types.
 // https://crbug.com/902409
 ASH_PUBLIC_EXPORT extern const base::Feature kSeparateNetworkIcons;
@@ -202,6 +206,8 @@ ASH_PUBLIC_EXPORT bool IsAutoNightLightEnabled();
 ASH_PUBLIC_EXPORT bool IsCaptureModeEnabled();
 
 ASH_PUBLIC_EXPORT bool IsDarkLightModeEnabled();
+
+ASH_PUBLIC_EXPORT bool IsDesksRestoreEnabled();
 
 ASH_PUBLIC_EXPORT bool IsEnhancedDeskAnimations();
 

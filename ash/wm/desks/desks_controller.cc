@@ -248,6 +248,20 @@ const Desk* DesksController::GetTargetActiveDesk() const {
   return active_desk();
 }
 
+void DesksController::RestorePrimaryUserActiveDeskIndex(int active_desk_index) {
+  DCHECK_GE(active_desk_index, 0);
+  DCHECK_LT(active_desk_index, int{desks_.size()});
+  user_to_active_desk_index_[Shell::Get()
+                                 ->session_controller()
+                                 ->GetPrimaryUserSession()
+                                 ->user_info.account_id] = active_desk_index;
+  // Following |OnActiveUserSessionChanged| approach, restoring uses
+  // DesksSwitchSource::kUserSwitch as a desk switch source.
+  // TODO(crbug.com/1145404): consider adding an UMA metric for desks
+  // restoring to change the source to kDeskRestored.
+  ActivateDesk(desks_[active_desk_index].get(), DesksSwitchSource::kUserSwitch);
+}
+
 void DesksController::Shutdown() {
   animation_.reset();
 }
@@ -561,16 +575,15 @@ void DesksController::OnWindowActivated(ActivationReason reason,
 
 void DesksController::OnActiveUserSessionChanged(const AccountId& account_id) {
   // TODO(afakhry): Remove this when multi-profile support goes away.
-  if (!current_account_id_.is_valid()) {
-    // This is the login of the first primary user. No need to switch any desks.
-    current_account_id_ = account_id;
+  DCHECK(current_account_id_.is_valid());
+  if (current_account_id_ == account_id) {
     return;
   }
 
   user_to_active_desk_index_[current_account_id_] = GetDeskIndex(active_desk_);
   current_account_id_ = account_id;
 
-  // Note the following constraints:
+  // Note the following constraints for secondary users:
   // - Simultaneously logged-in users share the same number of desks.
   // - We don't sync and restore the number of desks nor the active desk
   //   position from previous login sessions.
@@ -593,6 +606,8 @@ void DesksController::OnActiveUserSessionChanged(const AccountId& account_id) {
 }
 
 void DesksController::OnFirstSessionStarted() {
+  current_account_id_ =
+      Shell::Get()->session_controller()->GetActiveAccountId();
   desks_restore_util::RestorePrimaryUserDesks();
 }
 
@@ -633,13 +648,21 @@ void DesksController::ActivateDeskInternal(const Desk* desk,
 
   // If in the middle of a window cycle gesture, reset the window cycle list
   // contents so it contains the new active desk's windows.
+  auto* shell = Shell::Get();
   if (features::IsAltTabLimitedToActiveDesk()) {
-    auto* window_cycle_controller = Shell::Get()->window_cycle_controller();
+    auto* window_cycle_controller = shell->window_cycle_controller();
     window_cycle_controller->MaybeResetCycleList();
   }
 
   for (auto& observer : observers_)
     observer.OnDeskActivationChanged(active_desk_, old_active);
+
+  // Only update active desk prefs when a primary user switches a desk.
+  if (features::IsDesksRestoreEnabled() &&
+      shell->session_controller()->IsUserPrimary()) {
+    desks_restore_util::UpdatePrimaryUserActiveDeskPrefs(
+        GetDeskIndex(active_desk_));
+  }
 }
 
 void DesksController::RemoveDeskInternal(const Desk* desk,

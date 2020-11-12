@@ -79,6 +79,9 @@ class ASH_EXPORT DesksController : public DesksHelper,
   // switch animation is in progress.
   const Desk* GetTargetActiveDesk() const;
 
+  // Restores the primary user's activate desk at active_desk_index.
+  void RestorePrimaryUserActiveDeskIndex(int active_desk_index);
+
   // Destroys any pending animations in preparation for shutdown.
   void Shutdown();
 

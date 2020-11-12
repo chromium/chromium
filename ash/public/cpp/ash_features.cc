@@ -27,6 +27,9 @@ const base::Feature kContextualNudges{"ContextualNudges",
 const base::Feature kDarkLightMode{"DarkLightMode",
                                    base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kDesksRestore{"DesksRestore",
+                                  base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::Feature kDisplayAlignAssist{"DisplayAlignAssist",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
 
@@ -216,6 +219,10 @@ bool IsNotificationExperimentalShortTimeoutsEnabled() {
 
 bool IsPipRoundedCornersEnabled() {
   return base::FeatureList::IsEnabled(kPipRoundedCorners);
+}
+
+bool IsDesksRestoreEnabled() {
+  return base::FeatureList::IsEnabled(kDesksRestore);
 }
 
 bool IsSeparateNetworkIconsEnabled() {

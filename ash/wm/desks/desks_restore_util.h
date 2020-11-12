@@ -22,6 +22,10 @@ void RestorePrimaryUserDesks();
 // change to the desks count or their names is triggered.
 void UpdatePrimaryUserDesksPrefs();
 
+// Called to update the active desk restore prefs for the primary user, whenever
+// the primary user switches an active desk.
+void UpdatePrimaryUserActiveDeskPrefs(int active_desk_index);
+
 }  // namespace desks_restore_util
 
 }  // namespace ash

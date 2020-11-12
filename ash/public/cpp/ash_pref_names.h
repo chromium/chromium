@@ -57,6 +57,7 @@ ASH_PUBLIC_EXPORT extern const char kShouldAlwaysShowAccessibilityMenu[];
 ASH_PUBLIC_EXPORT extern const char kContextualTooltips[];
 
 ASH_PUBLIC_EXPORT extern const char kDesksNamesList[];
+ASH_PUBLIC_EXPORT extern const char kDesksActiveDesk[];
 
 ASH_PUBLIC_EXPORT extern const char kDockedMagnifierEnabled[];
 ASH_PUBLIC_EXPORT extern const char kDockedMagnifierScale[];
