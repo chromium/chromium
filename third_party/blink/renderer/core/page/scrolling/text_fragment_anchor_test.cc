@@ -1978,6 +1978,37 @@ TEST_F(TextFragmentAnchorTest, ManualRestorationDoesntBlockFragment) {
   EXPECT_TRUE(ViewportRect().Contains(BoundingRectInFrame(p)));
 }
 
+// Regression test for https://crbug.com/1147453. Ensure replaceState doesn't
+// clobber the text fragment token and allows fragment to scroll.
+TEST_F(TextFragmentAnchorTest, ReplaceStateDoesntBlockFragment) {
+  SimRequest request("https://example.com/test.html#:~:text=test", "text/html");
+  LoadURL("https://example.com/test.html#:~:text=test");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <style>
+      body {
+        height: 1200px;
+      }
+      p {
+        position: absolute;
+        top: 1000px;
+      }
+    </style>
+    <script>
+      history.replaceState({}, 'test', '');
+    </script>
+    <p id="text">This is a test page</p>
+  )HTML");
+  RunAsyncMatchingTasks();
+
+  // Render two frames and ensure matching and scrolling does not occur.
+  BeginEmptyFrame();
+  BeginEmptyFrame();
+
+  Element& p = *GetDocument().getElementById("text");
+  EXPECT_TRUE(ViewportRect().Contains(BoundingRectInFrame(p)));
+}
+
 // Test that a text directive can match across comment nodes
 TEST_F(TextFragmentAnchorTest, MatchAcrossCommentNode) {
   SimRequest request("https://example.com/test.html#:~:text=abcdef",

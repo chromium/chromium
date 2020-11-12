@@ -498,11 +498,14 @@ void DocumentLoader::UpdateForSameDocumentNavigation(
   redirect_chain_.push_back(new_url);
 
   // We want to allow same-document text fragment navigations if they're coming
-  // from the browser.
-  has_text_fragment_token_ =
-      TextFragmentAnchor::GenerateNewTokenForSameDocument(
-          new_url.FragmentIdentifier(), type, is_content_initiated,
-          same_document_navigation_source);
+  // from the browser. Do this only on a standard navigation so that we don't
+  // clobber the token when this is called from e.g. history.replaceState.
+  if (type == WebFrameLoadType::kStandard) {
+    has_text_fragment_token_ =
+        TextFragmentAnchor::GenerateNewTokenForSameDocument(
+            new_url.FragmentIdentifier(), type, is_content_initiated,
+            same_document_navigation_source);
+  }
 
   SetHistoryItemStateForCommit(
       history_item_.Get(), type,
