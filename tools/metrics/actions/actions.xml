@@ -9019,16 +9019,45 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
-<action name="IOS.DefaultBrowserFullscreenPromoMoreInfoTapped">
+<action name="IOS.DefaultBrowserFullscreenPromo.Dismissed">
   <owner>thegreenfrog@chromium.org</owner>
+  <owner>rohitrao@chromium.org</owner>
+  <description>
+    The user dismissed the default browser fullscreen promo modal without any
+    action. iOS only.
+  </description>
+</action>
+
+<action name="IOS.DefaultBrowserFullscreenPromo.Impression"
+    not_user_triggered="true">
+  <owner>thegreenfrog@chromium.org</owner>
+  <owner>rohitrao@chromium.org</owner>
+  <description>
+    The user was shown the default browser fullscreen promo modal. iOS only.
+  </description>
+</action>
+
+<action name="IOS.DefaultBrowserFullscreenPromo.MoreInfoTapped">
+  <owner>thegreenfrog@chromium.org</owner>
+  <owner>rohitrao@chromium.org</owner>
   <description>
     The user tapped on the more information icon on the default browser
     fullscreen promo modal. iOS only.
   </description>
 </action>
 
+<action name="IOS.DefaultBrowserFullscreenPromo.PrimaryActionTapped">
+  <owner>thegreenfrog@chromium.org</owner>
+  <owner>rohitrao@chromium.org</owner>
+  <description>
+    The user tapped the primary action button in the default browser fullscreen
+    promo modal that takes the user to the Settings app. iOS only.
+  </description>
+</action>
+
 <action name="IOS.DefaultBrowserNTPPromoTapped">
   <owner>thegreenfrog@chromium.org</owner>
+  <owner>rohitrao@chromium.org</owner>
   <description>
     The user tapped on default browser NTP promo link. iOS only.
   </description>

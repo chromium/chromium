@@ -49,6 +49,8 @@ enum IOSDefaultBrowserFullscreenPromoAction {
 
 - (void)start {
   [super start];
+  base::RecordAction(
+      base::UserMetricsAction("IOS.DefaultBrowserFullscreenPromo.Impression"));
   self.defaultBrowerPromoViewController =
       [[DefaultBrowserPromoViewController alloc] init];
   self.defaultBrowerPromoViewController.actionHandler = self;
@@ -76,7 +78,9 @@ enum IOSDefaultBrowserFullscreenPromoAction {
 
 - (void)presentationControllerDidDismiss:
     (UIPresentationController*)presentationController {
-  // This ensures that a modal swipe dismss will also be logged.
+  base::RecordAction(
+      base::UserMetricsAction("IOS.DefaultBrowserFullscreenPromo.Dismissed"));
+  // This ensures that a modal swipe dismiss will also be logged.
   LogUserInteractionWithFullscreenPromo();
 }
 
@@ -89,6 +93,8 @@ enum IOSDefaultBrowserFullscreenPromoAction {
 
 - (void)confirmationAlertPrimaryAction {
   UMA_HISTOGRAM_ENUMERATION("IOS.DefaultBrowserFullscreenPromo", ACTION_BUTTON);
+  base::RecordAction(base::UserMetricsAction(
+      "IOS.DefaultBrowserFullscreenPromo.PrimaryActionTapped"));
   LogUserInteractionWithFullscreenPromo();
   [[UIApplication sharedApplication]
                 openURL:[NSURL URLWithString:UIApplicationOpenSettingsURLString]
@@ -100,13 +106,15 @@ enum IOSDefaultBrowserFullscreenPromoAction {
 
 - (void)confirmationAlertSecondaryAction {
   UMA_HISTOGRAM_ENUMERATION("IOS.DefaultBrowserFullscreenPromo", CANCEL);
+  base::RecordAction(
+      base::UserMetricsAction("IOS.DefaultBrowserFullscreenPromo.Dismissed"));
   LogUserInteractionWithFullscreenPromo();
   [self.handler hidePromo];
 }
 
 - (void)confirmationAlertLearnMoreAction {
   base::RecordAction(base::UserMetricsAction(
-      "IOS.DefaultBrowserFullscreenPromoMoreInfoTapped"));
+      "IOS.DefaultBrowserFullscreen.PromoMoreInfoTapped"));
   NSString* message =
       l10n_util::GetNSString(IDS_IOS_DEFAULT_BROWSER_LEARN_MORE_MESSAGE);
   self.learnMoreViewController =

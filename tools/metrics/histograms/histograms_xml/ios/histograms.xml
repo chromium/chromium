@@ -376,7 +376,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="IOS.IsDefaultBrowser" enum="Boolean"
-    expires_after="2021-03-21">
+    expires_after="2021-09-21">
   <owner>thegreenfrog@chromium.org</owner>
   <owner>rohitrao@chromium.org</owner>
   <summary>
@@ -385,7 +385,19 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     likely to change certain stability metrics. Thus, it will be good to filter
     those metrics by default browser status. This metrics records whether the
     user was deemed to have set Chrome as the device's default browser. This
-    metric will be logged with ever histogram upload.
+    metric will be logged once per metrics log upload.
+  </summary>
+</histogram>
+
+<histogram name="IOS.IsEligibleDefaultBrowserPromoUser" enum="BooleanEligible"
+    expires_after="2021-09-21">
+  <owner>thegreenfrog@chromium.org</owner>
+  <owner>rohitrao@chromium.org</owner>
+  <summary>
+    This metric reports whether the user was deemed eligible to be shown default
+    browser fullscreen promos. Eligibility currently includes signed-in users,
+    external intent app opens, clipboard copies, and GrowthKit opens. This
+    metric will be logged once per metrics log upload.
   </summary>
 </histogram>
 

@@ -22,4 +22,6 @@ void IOSChromeDefaultBrowserMetricsProvider::ProvideCurrentSessionData(
     metrics::ChromeUserMetricsExtension* uma_proto) {
   base::UmaHistogramBoolean("IOS.IsDefaultBrowser",
                             IsChromeLikelyDefaultBrowser());
+  base::UmaHistogramBoolean("IOS.IsEligibleDefaultBrowserPromoUser",
+                            IsLikelyInterestedDefaultBrowserUser());
 }
