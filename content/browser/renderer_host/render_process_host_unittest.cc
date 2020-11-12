@@ -969,8 +969,22 @@ class SpareRenderProcessHostUnitTest : public RenderViewHostImplTestHarness {
   void TearDown() override {
     // Important: Reset the max renderer count to leave this process in a
     // pristine state.
+    DeleteContents();
+    rph_factory_.GetProcesses()->clear();
     RenderProcessHost::SetMaxRendererProcessCount(0);
     RenderViewHostImplTestHarness::TearDown();
+  }
+
+  void PruneDeadRenderProcessHosts() {
+    std::list<MockRenderProcessHost*> to_remove;
+    for (auto& host : *rph_factory_.GetProcesses()) {
+      if (!host->IsInitializedAndNotDead()) {
+        to_remove.push_back(host.get());
+      }
+    }
+    for (auto* host : to_remove) {
+      rph_factory_.Remove(host);
+    }
   }
 
   MockRenderProcessHostFactory rph_factory_;
@@ -1040,6 +1054,7 @@ TEST_F(SpareRenderProcessHostUnitTest, TestRendererNotTaken) {
   // happens.  Without pumping, the spare would still be present in
   // rph_factory_.GetProcesses().
   base::RunLoop().RunUntilIdle();
+  PruneDeadRenderProcessHosts();
 
   RenderProcessHost* new_spare =
       RenderProcessHostImpl::GetSpareRenderProcessHostForTesting();
@@ -1100,10 +1115,6 @@ TEST_F(SpareRenderProcessHostUnitTest,
           browser_context(), UrlInfo::CreateForTesting(GURL("http://foo.com")),
           CoopCoepCrossOriginIsolatedInfo::CreateNonIsolated());
   RenderProcessHost* site_instance_process = site_instance->GetProcess();
-  // We need to ensure the MockRenderProcessHost gets destroyed at the end of
-  // the test.
-  std::unique_ptr<MockRenderProcessHost> owned_mock_process(
-      static_cast<MockRenderProcessHost*>(site_instance_process));
 
   // The SiteInstance shouldn't get the old spare, because of BrowserContext
   // mismatch.  The SiteInstance will get a new process instead.
@@ -1167,6 +1178,7 @@ TEST_F(SpareRenderProcessHostUnitTest, AtProcessLimit) {
   std::unique_ptr<BrowserContext> alternate_context(new TestBrowserContext());
   RenderProcessHost::WarmupSpareRenderProcessHost(alternate_context.get());
   base::RunLoop().RunUntilIdle();
+  PruneDeadRenderProcessHosts();
   EXPECT_EQ(2U, rph_factory_.GetProcesses()->size());
 
   // Create and navigate the 2nd WebContents.
@@ -1175,6 +1187,7 @@ TEST_F(SpareRenderProcessHostUnitTest, AtProcessLimit) {
   static_cast<TestWebContents*>(contents2.get())->NavigateAndCommit(kUrl2);
   base::RunLoop().RunUntilIdle();
 
+  PruneDeadRenderProcessHosts();
   // Creating a 2nd WebContents shouldn't share a renderer process with the 1st
   // one - instead the spare should be dropped to stay under the process limit.
   EXPECT_EQ(2U, rph_factory_.GetProcesses()->size());

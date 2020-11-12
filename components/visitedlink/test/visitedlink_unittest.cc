@@ -652,12 +652,19 @@ class VisitedLinkRenderProcessHostFactory
   content::RenderProcessHost* CreateRenderProcessHost(
       content::BrowserContext* browser_context,
       content::SiteInstance* site_instance) override {
-    return new VisitRelayingRenderProcessHost(browser_context, context_.get());
+    auto rph = std::make_unique<VisitRelayingRenderProcessHost>(browser_context,
+                                                                context_.get());
+    content::RenderProcessHost* result = rph.get();
+    processes_.push_back(std::move(rph));
+    return result;
   }
 
   VisitCountingContext* context() { return context_.get(); }
 
+  void DeleteRenderProcessHosts() { processes_.clear(); }
+
  private:
+  std::list<std::unique_ptr<VisitRelayingRenderProcessHost>> processes_;
   std::unique_ptr<VisitCountingContext> context_;
   DISALLOW_COPY_AND_ASSIGN(VisitedLinkRenderProcessHostFactory);
 };
@@ -676,6 +683,8 @@ class VisitedLinkEventsTest : public content::RenderViewHostTestHarness {
     // before our superclass sets about destroying the scoped temp
     // directory.
     writer_.reset();
+    DeleteContents();
+    vc_rph_factory_.DeleteRenderProcessHosts();
     RenderViewHostTestHarness::TearDown();
   }
 

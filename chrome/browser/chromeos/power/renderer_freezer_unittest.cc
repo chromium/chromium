@@ -254,8 +254,8 @@ class RendererFreezerTestWithExtensions : public RendererFreezerTest {
     scoped_refptr<content::SiteInstance> site_instance(
         extensions::ProcessManager::Get(profile_)->GetSiteInstanceForURL(
             extensions::BackgroundInfo::GetBackgroundURL(extension)));
-    std::unique_ptr<content::RenderProcessHost> rph(
-        rph_factory->CreateRenderProcessHost(profile_, site_instance.get()));
+    content::RenderProcessHost* rph =
+        rph_factory->CreateRenderProcessHost(profile_, site_instance.get());
 
     // Fake that the RenderProcessHost is hosting the gcm app.
     extensions::ProcessMap::Get(profile_)
@@ -264,7 +264,7 @@ class RendererFreezerTestWithExtensions : public RendererFreezerTest {
     // Send the notification that the RenderProcessHost has been created.
     content::NotificationService::current()->Notify(
         content::NOTIFICATION_RENDERER_PROCESS_CREATED,
-        content::Source<content::RenderProcessHost>(rph.get()),
+        content::Source<content::RenderProcessHost>(rph),
         content::NotificationService::NoDetails());
   }
 
@@ -289,13 +289,13 @@ TEST_F(RendererFreezerTestWithExtensions, FreezesNonExtensionRenderers) {
       new content::MockRenderProcessHostFactory());
   scoped_refptr<content::SiteInstance> site_instance(
       content::SiteInstance::Create(profile_));
-  std::unique_ptr<content::RenderProcessHost> rph(
-      rph_factory->CreateRenderProcessHost(profile_, site_instance.get()));
+  content::RenderProcessHost* rph =
+      rph_factory->CreateRenderProcessHost(profile_, site_instance.get());
 
   // Send the notification that the RenderProcessHost has been created.
   content::NotificationService::current()->Notify(
       content::NOTIFICATION_RENDERER_PROCESS_CREATED,
-      content::Source<content::RenderProcessHost>(rph.get()),
+      content::Source<content::RenderProcessHost>(rph),
       content::NotificationService::NoDetails());
 
   EXPECT_EQ(kSetShouldFreezeRenderer, test_delegate_->GetActions());

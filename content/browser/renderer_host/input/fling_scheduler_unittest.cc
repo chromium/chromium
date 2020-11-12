@@ -67,6 +67,9 @@ class FlingSchedulerTest : public testing::Test,
   void TearDown() override {
     view_->Destroy();
     widget_host_->ShutdownAndDestroyWidget(true);
+    process_host_->Cleanup();
+    agent_scheduling_group_host_.reset();
+    process_host_.reset();
     browser_context_.reset();
 
     base::RunLoop().RunUntilIdle();
@@ -74,7 +77,8 @@ class FlingSchedulerTest : public testing::Test,
 
   TestRenderWidgetHostView* CreateView() {
     browser_context_ = std::make_unique<TestBrowserContext>();
-    process_host_ = new MockRenderProcessHost(browser_context_.get());
+    process_host_ =
+        std::make_unique<MockRenderProcessHost>(browser_context_.get());
     process_host_->Init();
     agent_scheduling_group_host_ =
         std::make_unique<AgentSchedulingGroupHost>(*process_host_);
@@ -125,7 +129,7 @@ class FlingSchedulerTest : public testing::Test,
   BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestBrowserContext> browser_context_;
   RenderWidgetHostImpl* widget_host_;
-  MockRenderProcessHost* process_host_;
+  std::unique_ptr<MockRenderProcessHost> process_host_;
   std::unique_ptr<AgentSchedulingGroupHost> agent_scheduling_group_host_;
   TestRenderWidgetHostView* view_;
   std::unique_ptr<MockRenderWidgetHostDelegate> delegate_;

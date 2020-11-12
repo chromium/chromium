@@ -532,7 +532,8 @@ class RenderWidgetHostViewAuraTest : public testing::Test {
     aura_test_helper_->SetUp();
 
     browser_context_ = std::make_unique<TestBrowserContext>();
-    process_host_ = new MockRenderProcessHost(browser_context_.get());
+    process_host_ =
+        std::make_unique<MockRenderProcessHost>(browser_context_.get());
     process_host_->Init();
     agent_scheduling_group_host_ =
         std::make_unique<AgentSchedulingGroupHost>(*process_host_);
@@ -581,7 +582,6 @@ class RenderWidgetHostViewAuraTest : public testing::Test {
 
   void TearDownEnvironment() {
     sink_ = nullptr;
-    process_host_ = nullptr;
     if (view_) {
       DestroyView(view_);
     } else if (widget_host_) {
@@ -593,8 +593,10 @@ class RenderWidgetHostViewAuraTest : public testing::Test {
     parent_view_->Destroy();
     delete parent_host_;
 
+    process_host_->Cleanup();
     agent_scheduling_group_host_ = nullptr;
     web_contents_ = nullptr;
+    process_host_ = nullptr;
     browser_context_ = nullptr;
     aura_test_helper_->TearDown();
 
@@ -683,7 +685,7 @@ class RenderWidgetHostViewAuraTest : public testing::Test {
   std::unique_ptr<BrowserContext> browser_context_;
   std::unique_ptr<WebContents> web_contents_;
   std::vector<std::unique_ptr<MockRenderWidgetHostDelegate>> delegates_;
-  MockRenderProcessHost* process_host_;
+  std::unique_ptr<MockRenderProcessHost> process_host_;
   std::unique_ptr<AgentSchedulingGroupHost> agent_scheduling_group_host_;
 
   // Tests should set these to nullptr if they've already triggered their
@@ -5846,9 +5848,6 @@ class InputMethodAuraTestBase : public RenderWidgetHostViewAuraTest {
     views_.insert(views_.begin(),
                   {tab_view(), view_for_first_process_,
                    view_for_second_process_, view_for_third_process_});
-    processes_.insert(processes_.begin(),
-                      {tab_process(), tab_process(), second_process_host_,
-                       third_process_host_});
     widget_hosts_.insert(
         widget_hosts_.begin(),
         {tab_widget_host(), widget_host_for_first_process_,
@@ -5863,9 +5862,15 @@ class InputMethodAuraTestBase : public RenderWidgetHostViewAuraTest {
 
     view_for_second_process_->Destroy();
     delete widget_host_for_second_process_;
+    second_process_host_->Cleanup();
+    second_agent_scheduling_group_host_.reset();
+    second_process_host_.reset();
 
     view_for_third_process_->Destroy();
     delete widget_host_for_third_process_;
+    third_process_host_->Cleanup();
+    third_agent_scheduling_group_host_.reset();
+    third_process_host_.reset();
 
     RenderWidgetHostViewAuraTest::TearDown();
   }
@@ -5877,10 +5882,8 @@ class InputMethodAuraTestBase : public RenderWidgetHostViewAuraTest {
     return tab_view()->has_composition_text_;
   }
 
-  MockRenderProcessHost* CreateNewProcessHost() {
-    MockRenderProcessHost* process_host =
-        new MockRenderProcessHost(browser_context());
-    return process_host;
+  std::unique_ptr<MockRenderProcessHost> CreateNewProcessHost() {
+    return std::make_unique<MockRenderProcessHost>(browser_context());
   }
 
   MockRenderWidgetHostImpl* CreateRenderWidgetHostForAgentSchedulingGroup(
@@ -5904,7 +5907,7 @@ class InputMethodAuraTestBase : public RenderWidgetHostViewAuraTest {
     EXPECT_TRUE(has_composition_text());
   }
 
-  MockRenderProcessHost* tab_process() const { return process_host_; }
+  MockRenderProcessHost* tab_process() const { return process_host_.get(); }
 
   AgentSchedulingGroupHost& tab_agent_scheduling_group() const {
     return *agent_scheduling_group_host_;
@@ -5915,7 +5918,6 @@ class InputMethodAuraTestBase : public RenderWidgetHostViewAuraTest {
   MockRenderWidgetHostImpl* tab_widget_host() const { return widget_host_; }
 
   std::vector<RenderWidgetHostViewBase*> views_;
-  std::vector<MockRenderProcessHost*> processes_;
   std::vector<MockRenderWidgetHostImpl*> widget_hosts_;
   // A sequence of indices in [0, 3] which determines the index of a RWHV in
   // |views_|. This sequence is used in the tests to sequentially make a RWHV
@@ -5932,11 +5934,11 @@ class InputMethodAuraTestBase : public RenderWidgetHostViewAuraTest {
 
   MockRenderWidgetHostImpl* widget_host_for_first_process_;
   TestRenderWidgetHostView* view_for_first_process_;
-  MockRenderProcessHost* second_process_host_;
+  std::unique_ptr<MockRenderProcessHost> second_process_host_;
   std::unique_ptr<AgentSchedulingGroupHost> second_agent_scheduling_group_host_;
   MockRenderWidgetHostImpl* widget_host_for_second_process_;
   TestRenderWidgetHostView* view_for_second_process_;
-  MockRenderProcessHost* third_process_host_;
+  std::unique_ptr<MockRenderProcessHost> third_process_host_;
   std::unique_ptr<AgentSchedulingGroupHost> third_agent_scheduling_group_host_;
   MockRenderWidgetHostImpl* widget_host_for_third_process_;
   TestRenderWidgetHostView* view_for_third_process_;

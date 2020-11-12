@@ -117,12 +117,12 @@ class RenderWidgetHostViewChildFrameTest : public testing::Test {
         std::make_unique<TestImageTransportFactory>());
 #endif
 
-    auto* process_host = new MockRenderProcessHost(browser_context_.get());
-
+    process_host_ =
+        std::make_unique<MockRenderProcessHost>(browser_context_.get());
     agent_scheduling_group_host_ =
-        std::make_unique<AgentSchedulingGroupHost>(*process_host);
-    int32_t routing_id = process_host->GetNextRoutingID();
-    sink_ = &process_host->sink();
+        std::make_unique<AgentSchedulingGroupHost>(*process_host_);
+    int32_t routing_id = process_host_->GetNextRoutingID();
+    sink_ = &process_host_->sink();
 
     widget_host_ = new RenderWidgetHostImpl(
         &delegate_, *agent_scheduling_group_host_, routing_id,
@@ -160,8 +160,11 @@ class RenderWidgetHostViewChildFrameTest : public testing::Test {
     if (view_)
       view_->Destroy();
     delete widget_host_;
+    process_host_->Cleanup();
     agent_scheduling_group_host_ = nullptr;
     delete test_frame_connector_;
+
+    process_host_.reset();
 
     browser_context_.reset();
 
@@ -186,6 +189,7 @@ class RenderWidgetHostViewChildFrameTest : public testing::Test {
 
   std::unique_ptr<BrowserContext> browser_context_;
   std::unique_ptr<AgentSchedulingGroupHost> agent_scheduling_group_host_;
+  std::unique_ptr<MockRenderProcessHost> process_host_;
   IPC::TestSink* sink_ = nullptr;
   MockRenderWidgetHostDelegate delegate_;
   MockWidget widget_;

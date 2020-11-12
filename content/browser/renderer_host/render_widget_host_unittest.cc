@@ -527,7 +527,8 @@ class RenderWidgetHostTest : public testing::Test {
     command_line->AppendSwitch(switches::kValidateInputEventStream);
     browser_context_ = std::make_unique<TestBrowserContext>();
     delegate_ = std::make_unique<MockRenderWidgetHostDelegate>();
-    process_ = new RenderWidgetHostProcess(browser_context_.get());
+    process_ =
+        std::make_unique<RenderWidgetHostProcess>(browser_context_.get());
     agent_scheduling_group_host_ =
         std::make_unique<AgentSchedulingGroupHost>(*process_);
     sink_ = &process_->sink();
@@ -586,7 +587,9 @@ class RenderWidgetHostTest : public testing::Test {
     view_.reset();
     host_.reset();
     delegate_.reset();
-    process_ = nullptr;
+    process_->Cleanup();
+    agent_scheduling_group_host_.reset();
+    process_.reset();
     browser_context_.reset();
 
 #if defined(USE_AURA)
@@ -774,8 +777,7 @@ class RenderWidgetHostTest : public testing::Test {
   BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<TestBrowserContext> browser_context_;
-  RenderWidgetHostProcess* process_ =
-      nullptr;  // Deleted automatically by the widget.
+  std::unique_ptr<RenderWidgetHostProcess> process_;
   std::unique_ptr<AgentSchedulingGroupHost> agent_scheduling_group_host_;
   std::unique_ptr<MockRenderWidgetHostDelegate> delegate_;
   testing::NiceMock<MockRenderWidgetHostOwnerDelegate> mock_owner_delegate_;

@@ -454,18 +454,17 @@ TEST_F(SiteInstanceTest, DefaultSiteInstanceDestruction) {
 TEST_F(SiteInstanceTest, GetProcess) {
   // Ensure that GetProcess returns a process.
   std::unique_ptr<TestBrowserContext> browser_context(new TestBrowserContext());
-  std::unique_ptr<RenderProcessHost> host1;
   scoped_refptr<SiteInstanceImpl> instance(
       SiteInstanceImpl::Create(browser_context.get()));
-  host1.reset(instance->GetProcess());
-  EXPECT_TRUE(host1.get() != nullptr);
+  RenderProcessHost* host1 = instance->GetProcess();
+  EXPECT_TRUE(host1 != nullptr);
 
   // Ensure that GetProcess creates a new process.
   scoped_refptr<SiteInstanceImpl> instance2(
       SiteInstanceImpl::Create(browser_context.get()));
-  std::unique_ptr<RenderProcessHost> host2(instance2->GetProcess());
-  EXPECT_TRUE(host2.get() != nullptr);
-  EXPECT_NE(host1.get(), host2.get());
+  RenderProcessHost* host2 = instance2->GetProcess();
+  EXPECT_TRUE(host2 != nullptr);
+  EXPECT_NE(host1, host2);
 
   DrainMessageLoop();
 }
@@ -798,10 +797,9 @@ TEST_F(SiteInstanceTest, OneSiteInstancePerSite) {
 
   // The two SiteInstances for http://google.com should not use the same process
   // if process-per-site is not enabled.
-  std::unique_ptr<RenderProcessHost> process_a1(site_instance_a1->GetProcess());
-  std::unique_ptr<RenderProcessHost> process_a2_2(
-      site_instance_a2_2->GetProcess());
-  EXPECT_NE(process_a1.get(), process_a2_2.get());
+  RenderProcessHost* process_a1 = site_instance_a1->GetProcess();
+  RenderProcessHost* process_a2_2 = site_instance_a2_2->GetProcess();
+  EXPECT_NE(process_a1, process_a2_2);
 
   // Should be able to see that we do have SiteInstances.
   EXPECT_TRUE(browsing_instance->HasSiteInstance(
@@ -838,7 +836,7 @@ TEST_F(SiteInstanceTest, OneSiteInstancePerSiteInBrowserContext) {
       browsing_instance->GetSiteInstanceForURL(
           UrlInfo::CreateForTesting(url_a1), false));
   EXPECT_TRUE(site_instance_a1.get() != nullptr);
-  std::unique_ptr<RenderProcessHost> process_a1(site_instance_a1->GetProcess());
+  RenderProcessHost* process_a1 = site_instance_a1->GetProcess();
 
   // A separate site should create a separate SiteInstance.
   const GURL url_b1("http://www.yahoo.com/");
@@ -871,7 +869,7 @@ TEST_F(SiteInstanceTest, OneSiteInstancePerSiteInBrowserContext) {
           UrlInfo::CreateForTesting(url_a1), false));
   EXPECT_TRUE(site_instance_a1.get() != nullptr);
   EXPECT_NE(site_instance_a1.get(), site_instance_a1_2.get());
-  EXPECT_EQ(process_a1.get(), site_instance_a1_2->GetProcess());
+  EXPECT_EQ(process_a1, site_instance_a1_2->GetProcess());
 
   // A visit to the original site in a new BrowsingInstance (different browser
   // context) should return a different SiteInstance with a different process.
@@ -884,10 +882,9 @@ TEST_F(SiteInstanceTest, OneSiteInstancePerSiteInBrowserContext) {
       browsing_instance3->GetSiteInstanceForURL(
           UrlInfo::CreateForTesting(url_a2), false));
   EXPECT_TRUE(site_instance_a2_3.get() != nullptr);
-  std::unique_ptr<RenderProcessHost> process_a2_3(
-      site_instance_a2_3->GetProcess());
+  RenderProcessHost* process_a2_3 = site_instance_a2_3->GetProcess();
   EXPECT_NE(site_instance_a1.get(), site_instance_a2_3.get());
-  EXPECT_NE(process_a1.get(), process_a2_3.get());
+  EXPECT_NE(process_a1, process_a2_3);
 
   // Should be able to see that we do have SiteInstances.
   EXPECT_TRUE(browsing_instance->HasSiteInstance(
@@ -915,7 +912,7 @@ TEST_F(SiteInstanceTest, OneSiteInstancePerSiteInBrowserContext) {
 // of URLs.
 TEST_F(SiteInstanceTest, IsSuitableForUrlInfo) {
   std::unique_ptr<TestBrowserContext> browser_context(new TestBrowserContext());
-  std::unique_ptr<RenderProcessHost> host;
+  RenderProcessHost* host;
   scoped_refptr<SiteInstanceImpl> instance(
       SiteInstanceImpl::Create(browser_context.get()));
 
@@ -932,8 +929,8 @@ TEST_F(SiteInstanceTest, IsSuitableForUrlInfo) {
 
   // The call to GetProcess actually creates a new real process, which works
   // fine, but might be a cause for problems in different contexts.
-  host.reset(instance->GetProcess());
-  EXPECT_TRUE(host.get() != nullptr);
+  host = instance->GetProcess();
+  EXPECT_TRUE(host != nullptr);
   EXPECT_TRUE(instance->HasProcess());
 
   EXPECT_TRUE(instance->IsSuitableForUrlInfo(
@@ -949,7 +946,7 @@ TEST_F(SiteInstanceTest, IsSuitableForUrlInfo) {
   scoped_refptr<SiteInstanceImpl> webui_instance(
       SiteInstanceImpl::Create(browser_context.get()));
   webui_instance->SetSite(UrlInfo::CreateForTesting(webui_url));
-  std::unique_ptr<RenderProcessHost> webui_host(webui_instance->GetProcess());
+  RenderProcessHost* webui_host = webui_instance->GetProcess();
 
   // Simulate granting WebUI bindings for the process.
   ChildProcessSecurityPolicyImpl::GetInstance()->GrantWebUIBindings(
@@ -983,7 +980,7 @@ TEST_F(SiteInstanceTest, IsSuitableForUrlInfoInSitePerProcess) {
   IsolateAllSitesForTesting(base::CommandLine::ForCurrentProcess());
 
   std::unique_ptr<TestBrowserContext> browser_context(new TestBrowserContext());
-  std::unique_ptr<RenderProcessHost> host;
+  RenderProcessHost* host;
   scoped_refptr<SiteInstanceImpl> instance(
       SiteInstanceImpl::Create(browser_context.get()));
 
@@ -997,8 +994,8 @@ TEST_F(SiteInstanceTest, IsSuitableForUrlInfoInSitePerProcess) {
 
   // The call to GetProcess actually creates a new real process, which works
   // fine, but might be a cause for problems in different contexts.
-  host.reset(instance->GetProcess());
-  EXPECT_TRUE(host.get() != nullptr);
+  host = instance->GetProcess();
+  EXPECT_TRUE(host != nullptr);
   EXPECT_TRUE(instance->HasProcess());
 
   EXPECT_TRUE(instance->IsSuitableForUrlInfo(
@@ -1016,8 +1013,8 @@ TEST_F(SiteInstanceTest, IsSuitableForUrlInfoInSitePerProcess) {
 // wrong bindings for its URL.  http://crbug.com/174059.
 TEST_F(SiteInstanceTest, ProcessPerSiteWithWrongBindings) {
   std::unique_ptr<TestBrowserContext> browser_context(new TestBrowserContext());
-  std::unique_ptr<RenderProcessHost> host;
-  std::unique_ptr<RenderProcessHost> host2;
+  RenderProcessHost* host;
+  RenderProcessHost* host2;
   scoped_refptr<SiteInstanceImpl> instance(
       SiteInstanceImpl::Create(browser_context.get()));
 
@@ -1031,8 +1028,8 @@ TEST_F(SiteInstanceTest, ProcessPerSiteWithWrongBindings) {
   EXPECT_TRUE(instance->HasSite());
 
   // The call to GetProcess actually creates a new real process.
-  host.reset(instance->GetProcess());
-  EXPECT_TRUE(host.get() != nullptr);
+  host = instance->GetProcess();
+  EXPECT_TRUE(host != nullptr);
   EXPECT_TRUE(instance->HasProcess());
 
   // Without bindings, this should look like the wrong process.
@@ -1045,10 +1042,10 @@ TEST_F(SiteInstanceTest, ProcessPerSiteWithWrongBindings) {
   scoped_refptr<SiteInstanceImpl> instance2(
       SiteInstanceImpl::Create(browser_context.get()));
   instance2->SetSite(UrlInfo::CreateForTesting(webui_url));
-  host2.reset(instance2->GetProcess());
-  EXPECT_TRUE(host2.get() != nullptr);
+  host2 = instance2->GetProcess();
+  EXPECT_TRUE(host2 != nullptr);
   EXPECT_TRUE(instance2->HasProcess());
-  EXPECT_NE(host.get(), host2.get());
+  EXPECT_NE(host, host2);
 
   DrainMessageLoop();
 }
@@ -1059,14 +1056,14 @@ TEST_F(SiteInstanceTest, NoProcessPerSiteForEmptySite) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       switches::kProcessPerSite);
   std::unique_ptr<TestBrowserContext> browser_context(new TestBrowserContext());
-  std::unique_ptr<RenderProcessHost> host;
+  RenderProcessHost* host;
   scoped_refptr<SiteInstanceImpl> instance(
       SiteInstanceImpl::Create(browser_context.get()));
 
   instance->SetSite(UrlInfo());
   EXPECT_TRUE(instance->HasSite());
   EXPECT_TRUE(instance->GetSiteURL().is_empty());
-  host.reset(instance->GetProcess());
+  host = instance->GetProcess();
 
   EXPECT_FALSE(RenderProcessHostImpl::GetSoleProcessHostForSite(
       instance->GetIsolationContext(), SiteInfo()));

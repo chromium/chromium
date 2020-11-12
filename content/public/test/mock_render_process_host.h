@@ -231,12 +231,6 @@ class MockRenderProcessHost : public RenderProcessHost {
   bool OnMessageReceived(const IPC::Message& msg) override;
   void OnChannelConnected(int32_t peer_pid) override;
 
-  // Attaches the factory object so we can remove this object in its destructor
-  // and prevent MockRenderProcessHostFacotry from deleting it.
-  void SetFactory(const MockRenderProcessHostFactory* factory) {
-    factory_ = factory;
-  }
-
   void set_is_process_backgrounded(bool is_process_backgrounded) {
     is_process_backgrounded_ = is_process_backgrounded;
   }
@@ -264,7 +258,6 @@ class MockRenderProcessHost : public RenderProcessHost {
   // Stores IPC messages that would have been sent to the renderer.
   IPC::TestSink sink_;
   int bad_msg_count_;
-  const MockRenderProcessHostFactory* factory_;
   int id_;
   bool has_connection_;
   BrowserContext* browser_context_;
@@ -302,9 +295,8 @@ class MockRenderProcessHostFactory : public RenderProcessHostFactory {
       BrowserContext* browser_context,
       SiteInstance* site_instance) override;
 
-  // Removes the given MockRenderProcessHost from the MockRenderProcessHost list
-  // without deleting it. When a test deletes a MockRenderProcessHost, we need
-  // to remove it from |processes_| to prevent it from being deleted twice.
+  // Removes the given MockRenderProcessHost from the MockRenderProcessHost
+  // list.
   void Remove(MockRenderProcessHost* host) const;
 
   // Retrieve the current list of mock processes.

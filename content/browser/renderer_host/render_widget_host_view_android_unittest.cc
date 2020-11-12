@@ -49,7 +49,7 @@ class RenderWidgetHostViewAndroidTest : public testing::Test {
 
  private:
   std::unique_ptr<TestBrowserContext> browser_context_;
-  MockRenderProcessHost* process_;  // Deleted automatically by the widget.
+  std::unique_ptr<MockRenderProcessHost> process_;
   std::unique_ptr<AgentSchedulingGroupHost> agent_scheduling_group_;
   std::unique_ptr<MockRenderWidgetHostDelegate> delegate_;
   scoped_refptr<cc::Layer> parent_layer_;
@@ -82,7 +82,7 @@ void RenderWidgetHostViewAndroidTest::WasEvicted() {
 void RenderWidgetHostViewAndroidTest::SetUp() {
   browser_context_.reset(new TestBrowserContext());
   delegate_.reset(new MockRenderWidgetHostDelegate());
-  process_ = new MockRenderProcessHost(browser_context_.get());
+  process_ = std::make_unique<MockRenderProcessHost>(browser_context_.get());
   agent_scheduling_group_ =
       std::make_unique<AgentSchedulingGroupHost>(*process_);
   host_.reset(MockRenderWidgetHost::Create(
@@ -102,6 +102,7 @@ void RenderWidgetHostViewAndroidTest::TearDown() {
   render_widget_host_view_android_->Destroy();
   host_.reset();
   delegate_.reset();
+  process_->Cleanup();
   agent_scheduling_group_ = nullptr;
   process_ = nullptr;
   browser_context_.reset();

@@ -199,7 +199,7 @@ class MockProfileSharedRenderProcessHostFactory
 
   // RPH created with this factory are owned by it.  If the RPH is destroyed
   // for testing purposes, it must be removed from the factory first.
-  content::MockRenderProcessHost* ReleaseRPH(
+  std::unique_ptr<content::MockRenderProcessHost> ReleaseRPH(
       content::BrowserContext* browser_context);
 
   content::RenderProcessHost* CreateRenderProcessHost(
@@ -274,8 +274,8 @@ class ProfileState {
 
   // The RenderProcessHosts are freed when their respective WebContents /
   // RenderViewHosts go away.
-  content::MockRenderProcessHost* single_rph_;
-  content::MockRenderProcessHost* shared_rph_;
+  std::unique_ptr<content::MockRenderProcessHost> single_rph_;
+  std::unique_ptr<content::MockRenderProcessHost> shared_rph_;
 
   std::vector<base::string16> compare_names_read_;
   std::vector<base::string16> compare_names_all_;
@@ -418,7 +418,7 @@ MockProfileSharedRenderProcessHostFactory::
     ~MockProfileSharedRenderProcessHostFactory() {
 }
 
-content::MockRenderProcessHost*
+std::unique_ptr<content::MockRenderProcessHost>
 MockProfileSharedRenderProcessHostFactory::ReleaseRPH(
     content::BrowserContext* browser_context) {
   auto existing = rph_map_.find(browser_context);
@@ -427,7 +427,7 @@ MockProfileSharedRenderProcessHostFactory::ReleaseRPH(
   std::unique_ptr<content::MockRenderProcessHost> result =
       std::move(existing->second);
   rph_map_.erase(existing);
-  return result.release();
+  return result;
 }
 
 content::RenderProcessHost*

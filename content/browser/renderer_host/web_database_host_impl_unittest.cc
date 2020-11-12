@@ -89,13 +89,7 @@ class WebDatabaseHostImplTest : public ::testing::Test {
     EXPECT_EQ("Invalid origin.", bad_message_observer.WaitForBadMessage());
   }
 
-  void CallRenderProcessHostCleanup() {
-    render_process_host_->Cleanup();
-
-    // Releasing our handle on this object because Cleanup() posts a task
-    // to delete the object and we need to avoid a double delete.
-    render_process_host_.release();
-  }
+  void CallRenderProcessHostCleanup() { render_process_host_.reset(); }
 
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
 

@@ -78,15 +78,11 @@ class SharedWorkerServiceImplTest : public RenderViewHostImplTestHarness {
 
   class MockRenderProcessHostForSharedWorker : public MockRenderProcessHost {
    public:
-    MockRenderProcessHostForSharedWorker(
-        BrowserContext* browser_context,
-        SharedWorkerServiceImplTest* test,
-        MockRenderProcessHostFactoryForSharedWorker* factory)
-        : MockRenderProcessHost(browser_context),
-          test_(test),
-          factory_(factory) {}
+    MockRenderProcessHostForSharedWorker(BrowserContext* browser_context,
+                                         SharedWorkerServiceImplTest* test)
+        : MockRenderProcessHost(browser_context), test_(test) {}
 
-    ~MockRenderProcessHostForSharedWorker() override { factory_->Remove(this); }
+    ~MockRenderProcessHostForSharedWorker() override {}
 
     void BindReceiver(mojo::GenericPendingReceiver receiver) override {
       if (*receiver.interface_name() !=
@@ -96,7 +92,6 @@ class SharedWorkerServiceImplTest : public RenderViewHostImplTestHarness {
     }
 
     SharedWorkerServiceImplTest* const test_;
-    MockRenderProcessHostFactoryForSharedWorker* const factory_;
   };
 
   class MockRenderProcessHostFactoryForSharedWorker
@@ -110,16 +105,14 @@ class SharedWorkerServiceImplTest : public RenderViewHostImplTestHarness {
         BrowserContext* browser_context,
         SiteInstance* site_instance) override {
       auto host = std::make_unique<MockRenderProcessHostForSharedWorker>(
-          browser_context, test_, this);
+          browser_context, test_);
       processes_.push_back(std::move(host));
-      processes_.back()->SetFactory(this);
       return processes_.back().get();
     }
 
     void Remove(MockRenderProcessHostForSharedWorker* host) {
       for (auto it = processes_.begin(); it != processes_.end(); ++it) {
         if (it->get() == host) {
-          it->release();
           processes_.erase(it);
           break;
         }
@@ -196,6 +189,8 @@ class SharedWorkerServiceImplTest : public RenderViewHostImplTestHarness {
   void TearDown() override {
     if (url_loader_factory_wrapper_)
       url_loader_factory_wrapper_->Detach();
+    render_process_host_factory_.reset();
+
     browser_context_.reset();
     RenderProcessHostImpl::set_render_process_host_factory_for_testing(nullptr);
     RenderViewHostImplTestHarness::TearDown();

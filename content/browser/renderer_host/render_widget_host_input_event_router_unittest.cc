@@ -304,6 +304,8 @@ class RenderWidgetHostInputEventRouterTest : public testing::Test {
   void TearDown() override {
     view_root_.reset();
     widget_host_root_.reset();
+    process_host_root_->Cleanup();
+    agent_scheduling_group_host_root_.reset();
     process_host_root_.reset();
     base::RunLoop().RunUntilIdle();
 
