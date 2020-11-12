@@ -28,6 +28,8 @@
 #include "components/sync/model/metadata_change_list.h"
 #include "components/sync/model/model_error.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
+#include "url/gurl.h"
+#include "url/origin.h"
 
 namespace web_app {
 
@@ -294,6 +296,11 @@ std::unique_ptr<WebAppProto> WebAppDatabase::CreateWebAppProto(
         local_data->add_protocol_handlers();
     protocol_handler_proto->set_protocol(protocol_handler.protocol);
     protocol_handler_proto->set_url(protocol_handler.url.spec());
+  }
+
+  for (const auto& url_handler : web_app.url_handlers()) {
+    WebAppUrlHandlerProto* url_handler_proto = local_data->add_url_handlers();
+    url_handler_proto->set_origin(url_handler.origin.Serialize());
   }
 
   return local_data;
@@ -605,6 +612,21 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
     web_app->SetRunOnOsLoginMode(
         ToRunOnOsLoginMode(local_data.user_run_on_os_login_mode()));
   }
+
+  std::vector<apps::UrlHandlerInfo> url_handlers;
+  for (const auto& url_handler_proto : local_data.url_handlers()) {
+    apps::UrlHandlerInfo url_handler;
+
+    url::Origin origin = url::Origin::Create(GURL(url_handler_proto.origin()));
+    if (origin.opaque()) {
+      DLOG(ERROR) << "WebApp UrlHandler proto url parse error: "
+                  << origin.GetDebugString();
+      return nullptr;
+    }
+    url_handler.origin = std::move(origin);
+    url_handlers.push_back(std::move(url_handler));
+  }
+  web_app->SetUrlHandlers(std::move(url_handlers));
 
   return web_app;
 }

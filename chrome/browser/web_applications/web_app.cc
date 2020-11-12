@@ -237,6 +237,10 @@ void WebApp::SetProtocolHandlers(
   protocol_handlers_ = std::move(handlers);
 }
 
+void WebApp::SetUrlHandlers(apps::UrlHandlers url_handlers) {
+  url_handlers_ = std::move(url_handlers);
+}
+
 void WebApp::SetShortcutsMenuItemInfos(
     std::vector<WebApplicationShortcutsMenuItemInfo>
         shortcuts_menu_item_infos) {
@@ -340,6 +344,8 @@ std::ostream& operator<<(std::ostream& out, const WebApp& app) {
        app.protocol_handlers_) {
     out << "  protocol_handler: " << protocol_handler << std::endl;
   }
+  for (const apps::UrlHandlerInfo& url_handler : app.url_handlers_)
+    out << "  url_handler: " << url_handler << std::endl;
 
   out << " chromeos_data: " << app.chromeos_data_.has_value() << std::endl;
   if (app.chromeos_data_.has_value())
@@ -373,8 +379,9 @@ bool operator==(const WebApp& app1, const WebApp& app2) {
                   app1.is_locally_installed_, app1.is_in_sync_install_,
                   app1.file_handlers_, app1.share_target_,
                   app1.additional_search_terms_, app1.protocol_handlers_,
-                  app1.sync_fallback_data_, app1.last_launch_time_,
-                  app1.install_time_, app1.run_on_os_login_mode_) ==
+                  app1.url_handlers_, app1.sync_fallback_data_,
+                  app1.last_launch_time_, app1.install_time_,
+                  app1.run_on_os_login_mode_) ==
          std::tie(app2.app_id_, app2.sources_, app2.name_, app2.start_url_,
                   app2.launch_query_params_, app2.description_, app2.scope_,
                   app2.theme_color_, app2.background_color_, app2.icon_infos_,
@@ -386,8 +393,9 @@ bool operator==(const WebApp& app1, const WebApp& app2) {
                   app2.is_locally_installed_, app2.is_in_sync_install_,
                   app2.file_handlers_, app2.share_target_,
                   app2.additional_search_terms_, app2.protocol_handlers_,
-                  app2.sync_fallback_data_, app2.last_launch_time_,
-                  app2.install_time_, app2.run_on_os_login_mode_);
+                  app2.url_handlers_, app2.sync_fallback_data_,
+                  app2.last_launch_time_, app2.install_time_,
+                  app2.run_on_os_login_mode_);
 }
 
 bool operator!=(const WebApp& app1, const WebApp& app2) {

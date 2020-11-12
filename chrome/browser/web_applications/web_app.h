@@ -18,6 +18,7 @@
 #include "components/services/app_service/public/cpp/file_handler.h"
 #include "components/services/app_service/public/cpp/protocol_handler_info.h"
 #include "components/services/app_service/public/cpp/share_target.h"
+#include "components/services/app_service/public/cpp/url_handler_info.h"
 #include "components/sync/model/string_ordinal.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "url/gurl.h"
@@ -118,6 +119,8 @@ class WebApp {
     return protocol_handlers_;
   }
 
+  const apps::UrlHandlers& url_handlers() const { return url_handlers_; }
+
   RunOnOsLoginMode run_on_os_login_mode() const {
     return run_on_os_login_mode_;
   }
@@ -203,6 +206,7 @@ class WebApp {
       std::vector<std::string> additional_search_terms);
   void SetProtocolHandlers(
       std::vector<apps::ProtocolHandlerInfo> protocol_handlers);
+  void SetUrlHandlers(apps::UrlHandlers url_handlers);
   void SetLastLaunchTime(const base::Time& time);
   void SetInstallTime(const base::Time& time);
   void SetRunOnOsLoginMode(RunOnOsLoginMode mode);
@@ -254,6 +258,7 @@ class WebApp {
   base::Time install_time_;
   RunOnOsLoginMode run_on_os_login_mode_ = RunOnOsLoginMode::kUndefined;
   SyncFallbackData sync_fallback_data_;
+  apps::UrlHandlers url_handlers_;
 };
 
 // For logging and debug purposes.

@@ -30,9 +30,11 @@
 #include "components/services/app_service/public/cpp/file_handler.h"
 #include "components/services/app_service/public/cpp/protocol_handler_info.h"
 #include "components/services/app_service/public/cpp/share_target.h"
+#include "components/services/app_service/public/cpp/url_handler_info.h"
 #include "components/sync/model/model_type_store.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace web_app {
 
@@ -143,6 +145,22 @@ class WebAppDatabaseTest : public WebAppTest {
     }
 
     return protocol_handlers;
+  }
+
+  static std::vector<apps::UrlHandlerInfo> CreateUrlHandlers(uint32_t suffix) {
+    std::vector<apps::UrlHandlerInfo> url_handlers;
+
+    for (unsigned int i = 0; i < 3; ++i) {
+      std::string suffix_str =
+          base::NumberToString(suffix) + base::NumberToString(i);
+
+      apps::UrlHandlerInfo url_handler;
+      url_handler.origin =
+          url::Origin::Create(GURL("https://app-" + suffix_str + ".com/"));
+      url_handlers.push_back(std::move(url_handler));
+    }
+
+    return url_handlers;
   }
 
   static std::vector<WebApplicationShortcutsMenuItemInfo>
@@ -283,6 +301,7 @@ class WebAppDatabaseTest : public WebAppTest {
     if (random.next_bool())
       app->SetShareTarget(CreateShareTarget(random.next_uint()));
     app->SetProtocolHandlers(CreateProtocolHandlers(random.next_uint()));
+    app->SetUrlHandlers(CreateUrlHandlers(random.next_uint()));
 
     const int num_additional_search_terms = random.next_uint(8);
     std::vector<std::string> additional_search_terms(
@@ -576,6 +595,7 @@ TEST_F(WebAppDatabaseTest, WebAppWithoutOptionalFields) {
   EXPECT_FALSE(app->share_target().has_value());
   EXPECT_TRUE(app->additional_search_terms().empty());
   EXPECT_TRUE(app->protocol_handlers().empty());
+  EXPECT_TRUE(app->url_handlers().empty());
   EXPECT_TRUE(app->last_launch_time().is_null());
   EXPECT_TRUE(app->install_time().is_null());
   EXPECT_TRUE(app->shortcuts_menu_item_infos().empty());
@@ -632,7 +652,7 @@ TEST_F(WebAppDatabaseTest, WebAppWithoutOptionalFields) {
   EXPECT_TRUE(app_copy->file_handlers().empty());
   EXPECT_FALSE(app_copy->share_target().has_value());
   EXPECT_TRUE(app_copy->additional_search_terms().empty());
-  EXPECT_TRUE(app_copy->protocol_handlers().empty());
+  EXPECT_TRUE(app_copy->url_handlers().empty());
   EXPECT_TRUE(app_copy->shortcuts_menu_item_infos().empty());
   EXPECT_TRUE(app_copy->downloaded_shortcuts_menu_icons_sizes().empty());
   EXPECT_EQ(app_copy->run_on_os_login_mode(), RunOnOsLoginMode::kUndefined);

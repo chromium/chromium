@@ -19,6 +19,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace web_app {
 
@@ -109,6 +110,13 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifest) {
     manifest.protocol_handlers.push_back(protocol_handler);
   }
 
+  {
+    blink::Manifest::UrlHandler url_handler;
+    url_handler.origin =
+        url::Origin::Create(GURL("https://url_handlers_origin.com/"));
+    manifest.url_handlers.push_back(url_handler);
+  }
+
   UpdateWebAppInfoFromManifest(manifest, &web_app_info);
   EXPECT_EQ(base::UTF8ToUTF16(kAppShortName), web_app_info.title);
   EXPECT_EQ(AppUrl(), web_app_info.start_url);
@@ -163,6 +171,11 @@ TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifest) {
   auto protocol_handler = web_app_info.protocol_handlers[0];
   EXPECT_EQ(protocol_handler.protocol, base::UTF8ToUTF16("mailto"));
   EXPECT_EQ(protocol_handler.url, GURL("http://example.com/handle=%s"));
+
+  EXPECT_EQ(1u, web_app_info.url_handlers.size());
+  auto url_handler = web_app_info.url_handlers[0];
+  EXPECT_EQ(url_handler.origin,
+            url::Origin::Create(GURL("https://url_handlers_origin.com/")));
 }
 
 TEST(WebAppInstallUtils, UpdateWebAppInfoFromManifest_EmptyName) {
@@ -321,6 +334,13 @@ TEST_F(WebAppInstallUtilsWithShortcutsMenu,
     manifest.protocol_handlers.push_back(protocol_handler);
   }
 
+  {
+    blink::Manifest::UrlHandler url_handler;
+    url_handler.origin =
+        url::Origin::Create(GURL("https://url_handlers_origin.com/"));
+    manifest.url_handlers.push_back(url_handler);
+  }
+
   UpdateWebAppInfoFromManifest(manifest, &web_app_info);
   EXPECT_EQ(base::UTF8ToUTF16(kAppShortName), web_app_info.title);
   EXPECT_EQ(AppUrl(), web_app_info.start_url);
@@ -411,6 +431,12 @@ TEST_F(WebAppInstallUtilsWithShortcutsMenu,
   auto protocol_handler = web_app_info.protocol_handlers[0];
   EXPECT_EQ(protocol_handler.protocol, base::UTF8ToUTF16("mailto"));
   EXPECT_EQ(protocol_handler.url, GURL("http://example.com/handle=%s"));
+
+  // Check URL handlers were updated
+  EXPECT_EQ(1u, web_app_info.url_handlers.size());
+  auto url_handler = web_app_info.url_handlers[0];
+  EXPECT_EQ(url_handler.origin,
+            url::Origin::Create(GURL("https://url_handlers_origin.com/")));
 }
 
 // Tests that we limit the number of icons declared by a site.

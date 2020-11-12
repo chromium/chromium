@@ -47,6 +47,15 @@ component("app_update") {
   ]
 }
 
+source_set("app_url_handling") {
+  sources = [
+    "url_handler_info.cc",
+    "url_handler_info.h",
+  ]
+
+  deps = [ "//url" ]
+}
+
 if (is_chromeos) {
   source_set("instance_update") {
     sources = [

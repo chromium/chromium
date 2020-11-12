@@ -32,6 +32,10 @@ message WebAppProtocolHandler {
   required string url = 2;
 }
 
+message WebAppUrlHandlerProto {
+  required string origin = 1;
+}
+
 // A set to track simultaneous installs and uninstalls from multiple install
 // sources.
 message SourcesProto {
@@ -160,4 +164,6 @@ message WebAppProto {
   optional ShareTarget share_target = 25;
 
   optional string launch_query_params = 26;
+
+  repeated WebAppUrlHandlerProto url_handlers = 27;
 }
