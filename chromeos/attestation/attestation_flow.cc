@@ -252,7 +252,9 @@ void AttestationFlow::StartCertificateRequest(
     }
 
     ::attestation::CreateCertificateRequestRequest request;
-    request.set_username(cryptohome::Identification(account_id).id());
+    if (key_type == KEY_USER) {
+      request.set_username(cryptohome::Identification(account_id).id());
+    }
     request.set_certificate_profile(*attestation_profile);
     request.set_request_origin(request_origin);
     request.set_key_type(crypto_key_type_);
@@ -265,7 +267,9 @@ void AttestationFlow::StartCertificateRequest(
   }
 
   ::attestation::GetKeyInfoRequest request;
-  request.set_username(cryptohome::Identification(account_id).id());
+  if (key_type == KEY_USER) {
+    request.set_username(cryptohome::Identification(account_id).id());
+  }
   request.set_key_label(key_name);
   attestation_client_->GetKeyInfo(
       request, base::BindOnce(&AttestationFlow::OnGetKeyInfoComplete,
@@ -338,7 +342,9 @@ void AttestationFlow::SendCertificateResponseToDaemon(
   }
 
   ::attestation::FinishCertificateRequestRequest request;
-  request.set_username(cryptohome::Identification(account_id).id());
+  if (key_type == KEY_USER) {
+    request.set_username(cryptohome::Identification(account_id).id());
+  }
   request.set_key_label(key_name);
   request.set_pca_response(data);
   AttestationClient::Get()->FinishCertificateRequest(

@@ -516,6 +516,61 @@ TEST_F(AttestationFlowTest, GetMachineCertificateAlreadyEnrolled) {
                 ->certificate());
 }
 
+// We have the usecase where the machine key is requested with the user account
+// id.
+TEST_F(AttestationFlowTest, GetMachineCertificateWithUsername) {
+  chromeos::AttestationClient::Get()
+      ->GetTestInterface()
+      ->mutable_status_reply()
+      ->set_enrolled(true);
+  chromeos::AttestationClient::Get()
+      ->GetTestInterface()
+      ->AllowlistLegacyCreateCertificateRequest(
+          /*username=*/"", /*request_origin=*/"",
+          ::attestation::ENTERPRISE_MACHINE_CERTIFICATE,
+          ::attestation::KEY_TYPE_RSA);
+
+  std::unique_ptr<MockServerProxy> proxy(new StrictMock<MockServerProxy>());
+  proxy->DeferToFake(true);
+  EXPECT_CALL(*proxy, GetType()).WillRepeatedly(DoDefault());
+  proxy->fake()->set_cert_response(
+      AttestationClient::Get()->GetTestInterface()->GetFakePcaCertResponse());
+  EXPECT_CALL(
+      *proxy,
+      SendCertificateRequest(
+          AttestationClient::Get()->GetTestInterface()->GetFakePcaCertRequest(),
+          _));
+
+  StrictMock<MockObserver> observer;
+
+  const AccountId account_id = AccountId::FromUserEmail(kFakeUserEmail);
+
+  EXPECT_CALL(
+      observer,
+      MockCertificateCallback(
+          ATTESTATION_SUCCESS,
+          AttestationClient::Get()->GetTestInterface()->GetFakeCertificate()))
+      .Times(1);
+  AttestationFlow::CertificateCallback mock_callback = base::BindOnce(
+      &MockObserver::MockCertificateCallback, base::Unretained(&observer));
+
+  std::unique_ptr<ServerProxy> proxy_interface(proxy.release());
+  AttestationFlow flow(std::move(proxy_interface));
+  flow.GetCertificate(PROFILE_ENTERPRISE_MACHINE_CERTIFICATE, account_id, "",
+                      true, std::string() /* key_name */,
+                      std::move(mock_callback));
+  RunUntilIdle();
+  // The certificate should be stored as a machine key instead of a user key.
+  EXPECT_EQ(AttestationClient::Get()->GetTestInterface()->GetFakeCertificate(),
+            AttestationClient::Get()
+                ->GetTestInterface()
+                ->GetMutableKeyInfoReply(
+                    /*username=*/"",
+                    GetKeyNameForProfile(PROFILE_ENTERPRISE_MACHINE_CERTIFICATE,
+                                         /*request_origin=*/""))
+                ->certificate());
+}
+
 TEST_F(AttestationFlowTest, GetEnrollmentCertificateAlreadyEnrolled) {
   chromeos::AttestationClient::Get()
       ->GetTestInterface()
@@ -776,6 +831,36 @@ TEST_F(AttestationFlowTest, GetCertificate_AlreadyExists) {
   std::unique_ptr<ServerProxy> proxy_interface(proxy.release());
   AttestationFlow flow(std::move(proxy_interface));
   flow.GetCertificate(PROFILE_ENTERPRISE_USER_CERTIFICATE, EmptyAccountId(), "",
+                      false, std::string() /* key_name */,
+                      std::move(mock_callback));
+  RunUntilIdle();
+}
+
+TEST_F(AttestationFlowTest, GetCertificate_LookupMachineKeyWithAccountId) {
+  chromeos::AttestationClient::Get()
+      ->GetTestInterface()
+      ->mutable_status_reply()
+      ->set_enrolled(true);
+  chromeos::AttestationClient::Get()
+      ->GetTestInterface()
+      ->GetMutableKeyInfoReply("", kEnterpriseMachineKey)
+      ->set_certificate("fake_cert");
+
+  // We're not expecting any server calls in this case; StrictMock will verify.
+  std::unique_ptr<MockServerProxy> proxy(new StrictMock<MockServerProxy>());
+  EXPECT_CALL(*proxy, GetType()).WillRepeatedly(DoDefault());
+
+  StrictMock<MockObserver> observer;
+  EXPECT_CALL(observer,
+              MockCertificateCallback(ATTESTATION_SUCCESS, "fake_cert"))
+      .Times(1);
+  AttestationFlow::CertificateCallback mock_callback = base::BindOnce(
+      &MockObserver::MockCertificateCallback, base::Unretained(&observer));
+
+  std::unique_ptr<ServerProxy> proxy_interface(proxy.release());
+  const AccountId account_id = AccountId::FromUserEmail(kFakeUserEmail);
+  AttestationFlow flow(std::move(proxy_interface));
+  flow.GetCertificate(PROFILE_ENTERPRISE_MACHINE_CERTIFICATE, account_id, "",
                       false, std::string() /* key_name */,
                       std::move(mock_callback));
   RunUntilIdle();
