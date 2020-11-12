@@ -20,6 +20,7 @@
 #include "chrome/browser/extensions/browsertest_util.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/crx_installer.h"
+#include "chrome/browser/extensions/error_console/error_console.h"
 #include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -36,6 +37,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/api/web_navigation.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/gcm_driver/fake_gcm_profile_service.h"
@@ -116,6 +118,39 @@ class WebContentsLoadStopObserver : content::WebContentsObserver {
 constexpr char kTestExtensionId[] = "ogdbpbegnmindpdjfafpmpicikegejdj";
 
 }  // namespace
+
+class ErrorObserver : public ErrorConsole::Observer {
+ public:
+  ErrorObserver(size_t errors_expected, ErrorConsole* error_console)
+      : errors_expected_(errors_expected),
+        error_console_(error_console),
+        errors_observed_(0),
+        observer_(this) {
+    observer_.Add(error_console_);
+  }
+
+  // ErrorConsole::Observer implementation.
+  void OnErrorAdded(const ExtensionError* error) override {
+    ++errors_observed_;
+    if (errors_observed_ >= errors_expected_) {
+      run_loop_.Quit();
+    }
+  }
+
+  // Spin until the appropriate number of errors have been observed.
+  void WaitForErrors() {
+    if (errors_observed_ < errors_expected_) {
+      run_loop_.Run();
+    }
+  }
+
+ private:
+  size_t errors_expected_;
+  ErrorConsole* error_console_;
+  size_t errors_observed_;
+  ScopedObserver<ErrorConsole, ErrorConsole::Observer> observer_;
+  base::RunLoop run_loop_;
+};
 
 class ServiceWorkerTest : public ExtensionApiTest {
  public:
@@ -346,6 +381,26 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest, Basic) {
       browsertest_util::AddTab(browser(), url);
   EXPECT_TRUE(new_web_contents);
   EXPECT_TRUE(newtab_listener.WaitUntilSatisfied());
+}
+
+// Tests that an error is generated if the service worker script is
+// saved in non-root directory.
+IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest, NonRootDirectory) {
+  ErrorConsole* error_console = ErrorConsole::Get(profile());
+  profile()->GetPrefs()->SetBoolean(prefs::kExtensionsUIDeveloperMode, true);
+  constexpr size_t kErrorsExpected = 1u;
+  ErrorObserver observer(kErrorsExpected, error_console);
+
+  const Extension* extension = LoadExtension(test_data_dir_.AppendASCII(
+      "service_worker/worker_based_background/non_root_directory"));
+
+  observer.WaitForErrors();
+  const ErrorList& error_list =
+      error_console->GetErrorsForExtension(extension->id());
+  ASSERT_EQ(kErrorsExpected, error_list.size());
+  ASSERT_EQ(
+      error_list[0]->message(),
+      base::string16(base::ASCIIToUTF16("Service worker registration failed")));
 }
 
 // Tests chrome.runtime.onInstalled fires for extension service workers.

@@ -25,6 +25,7 @@ extern const char kAppDisplayMode[];
 extern const char kAppIconColor[];
 extern const char kAppThemeColor[];
 extern const char kAutomation[];
+extern const char kBackground[];
 extern const char kBackgroundAllowJsAccess[];
 extern const char kBackgroundPage[];
 extern const char kBackgroundPersistent[];

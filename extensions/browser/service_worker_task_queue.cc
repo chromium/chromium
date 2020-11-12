@@ -10,6 +10,7 @@
 
 #include "base/bind.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/utf_string_conversions.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -17,12 +18,15 @@
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "extensions/browser/event_router.h"
+#include "extensions/browser/extension_error.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_util.h"
+#include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/service_worker_task_queue_factory.h"
 #include "extensions/common/constants.h"
+#include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handlers/background_info.h"
 
 using content::BrowserContext;
@@ -493,8 +497,14 @@ void ServiceWorkerTaskQueue::DidRegisterServiceWorker(
                         success);
 
   if (!success) {
-    // TODO(lazyboy): Handle failure case thoroughly.
-    DCHECK(false) << "Failed to register Service Worker";
+    auto error = std::make_unique<ManifestError>(
+        extension_id, base::UTF8ToUTF16("Service worker registration failed"),
+        base::UTF8ToUTF16(manifest_keys::kBackground),
+        base::UTF8ToUTF16(
+            BackgroundInfo::GetBackgroundServiceWorkerScript(extension)));
+
+    ExtensionsBrowserClient::Get()->ReportError(browser_context_,
+                                                std::move(error));
     return;
   }
   UMA_HISTOGRAM_TIMES("Extensions.ServiceWorkerBackground.RegistrationTime",

@@ -23,6 +23,7 @@ const char kAppDisplayMode[] = "app.display_mode";
 const char kAppIconColor[] = "app.icon_color";
 const char kAppThemeColor[] = "app.theme_color";
 const char kAutomation[] = "automation";
+const char kBackground[] = "background";
 const char kBackgroundAllowJsAccess[] = "background.allow_js_access";
 const char kBackgroundPage[] = "background.page";
 const char kBackgroundPersistent[] = "background.persistent";
