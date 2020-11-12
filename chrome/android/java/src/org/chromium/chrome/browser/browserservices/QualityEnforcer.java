@@ -125,7 +125,7 @@ public class QualityEnforcer {
 
     private void trigger(
             Tab tab, @QualityEnforcementViolationType int type, String url, int httpStatusCode) {
-        mUmaRecorder.recordQualityEnforcementViolation(type, false /* crashed */);
+        mUmaRecorder.recordQualityEnforcementViolation(tab, type);
 
         if (ChromeFeatureList.isEnabled(
                     ChromeFeatureList.TRUSTED_WEB_ACTIVITY_QUALITY_ENFORCEMENT_WARNING)) {
@@ -156,7 +156,7 @@ public class QualityEnforcer {
         if (ChromeFeatureList.isEnabled(
                     ChromeFeatureList.TRUSTED_WEB_ACTIVITY_QUALITY_ENFORCEMENT_FORCED)
                 || success) {
-            mUmaRecorder.recordQualityEnforcementViolation(type, true /* crashed */);
+            mUmaRecorder.recordQualityEnforcementViolationCrashed(type);
             mActivity.finish();
         }
     }

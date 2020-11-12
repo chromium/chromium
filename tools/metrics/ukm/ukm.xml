@@ -12997,6 +12997,28 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="TrustedWebActivity.QualityEnforcementViolation" singular="True">
+  <owner>eirage@chromium.org</owner>
+  <owner>peconn@chromium.org</owner>
+  <summary>
+    Records when Trusted Web Activity launches or navigates to a site that
+    violates the quality criteria.
+  </summary>
+  <metric name="ViolationType"
+      enum="TrustedWebActivityQualityEnforcementViolationType">
+    <summary>
+      An enum that records the type of the quality criteria.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
 <event name="Unload" singular="True">
   <owner>kdillon@chromium.org</owner>
   <summary>
