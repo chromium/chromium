@@ -12,6 +12,7 @@
 #include "content/common/associated_interfaces.mojom.h"
 #include "content/common/content_export.h"
 #include "content/common/renderer.mojom-forward.h"
+#include "content/common/state_transitions.h"
 #include "content/public/browser/render_process_host_observer.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
@@ -58,11 +59,6 @@ class CONTENT_EXPORT AgentSchedulingGroupHost
   explicit AgentSchedulingGroupHost(RenderProcessHost& process);
   ~AgentSchedulingGroupHost() override;
 
-  // RenderProcessHostObserver:
-  void RenderProcessExited(RenderProcessHost* host,
-                           const ChildProcessTerminationInfo& info) override;
-  void RenderProcessHostDestroyed(RenderProcessHost* host) override;
-
   RenderProcessHost* GetProcess();
   // Ensure that the process this AgentSchedulingGroupHost belongs to is alive.
   // Returns |false| if any part of the initialization failed.
@@ -92,6 +88,24 @@ class CONTENT_EXPORT AgentSchedulingGroupHost
       const base::UnguessableToken& devtools_frame_token);
 
  private:
+  enum class LifecycleState {
+    // Just instantiated, no route assigned yet.
+    kNewborn,
+
+    // Bound mojo connection to the renderer.
+    kBound,
+
+    // Intermediate state between renderer process exit and rebinding mojo
+    // connections.
+    kRenderProcessExited,
+
+    // RenderProcessHost is destroyed, and `this` is pending for deletion.
+    // kRenderProcessHostDestroyed is the terminal state of the state machine.
+    kRenderProcessHostDestroyed,
+  };
+  friend StateTransitions<LifecycleState>;
+  friend std::ostream& operator<<(std::ostream& os, LifecycleState state);
+
   // `MaybeAssociatedReceiver` and `MaybeAssociatedRemote` are temporary helper
   // classes that allow us to switch between using associated and non-associated
   // mojo interfaces. This behavior is controlled by the
@@ -173,8 +187,15 @@ class CONTENT_EXPORT AgentSchedulingGroupHost
       mojo::PendingAssociatedReceiver<blink::mojom::AssociatedInterface>
           receiver) override;
 
+  // RenderProcessHostObserver:
+  void RenderProcessExited(RenderProcessHost* host,
+                           const ChildProcessTerminationInfo& info) override;
+  void RenderProcessHostDestroyed(RenderProcessHost* host) override;
+
   void ResetMojo();
   void SetUpMojoIfNeeded();
+
+  void SetState(LifecycleState state);
 
   IPC::Listener* GetListener(int32_t routing_id);
 
@@ -207,7 +228,11 @@ class CONTENT_EXPORT AgentSchedulingGroupHost
   mojo::AssociatedReceiverSet<blink::mojom::AssociatedInterfaceProvider,
                               int32_t>
       associated_interface_provider_receivers_;
+  LifecycleState state_{LifecycleState::kNewborn};
 };
+
+std::ostream& operator<<(std::ostream& os,
+                         AgentSchedulingGroupHost::LifecycleState state);
 
 }  // namespace content
 
