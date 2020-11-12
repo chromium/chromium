@@ -10,7 +10,7 @@
 #include "base/bind.h"
 #include "base/json/json_writer.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/stl_util.h"
 #include "base/values.h"
 #include "components/history/core/browser/history_service.h"
@@ -84,7 +84,7 @@ class RepeatableQueriesService::SigninObserver
                  base::RepeatingClosure callback)
       : identity_manager_(identity_manager), callback_(std::move(callback)) {
     if (identity_manager_) {
-      identity_manager_observer_.Add(identity_manager_);
+      identity_manager_observation_.Observe(identity_manager_);
     }
   }
   ~SigninObserver() override = default;
@@ -103,8 +103,9 @@ class RepeatableQueriesService::SigninObserver
     callback_.Run();
   }
 
-  ScopedObserver<signin::IdentityManager, signin::IdentityManager::Observer>
-      identity_manager_observer_{this};
+  base::ScopedObservation<signin::IdentityManager,
+                          signin::IdentityManager::Observer>
+      identity_manager_observation_{this};
   // May be nullptr in tests.
   signin::IdentityManager* const identity_manager_;
   base::RepeatingClosure callback_;
