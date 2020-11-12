@@ -58,8 +58,8 @@ class MockPacketReceiver final : public UdpTransportReceiver {
 };
 
 void SendPacket(UdpTransportImpl* transport, Packet packet) {
-  base::Closure cb;
-  transport->SendPacket(new base::RefCountedData<Packet>(packet), cb);
+  transport->SendPacket(new base::RefCountedData<Packet>(packet),
+                        base::OnceClosure());
 }
 
 static void UpdateCastTransportStatus(CastTransportStatus status) {
@@ -113,7 +113,6 @@ TEST_F(UdpTransportImplTest, PacketSenderSendAndReceive) {
   recv_transport_->StartReceiving(
       packet_receiver_on_receiver.packet_receiver());
 
-  base::Closure cb;
   SendPacket(send_transport_.get(), packet);
   run_loop.Run();
   std::unique_ptr<Packet> received_packet =
