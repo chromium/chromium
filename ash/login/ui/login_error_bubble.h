@@ -7,6 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/login/ui/login_base_bubble_view.h"
+#include "ash/style/ash_color_provider.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/views/view.h"
 

@@ -9,7 +9,6 @@
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
-#include "ash/style/ash_color_provider.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -56,8 +55,7 @@ void LoginErrorBubble::SetContent(views::View* content) {
 }
 
 void LoginErrorBubble::SetTextContent(const base::string16& message) {
-  SetContent(
-      login_views_utils::CreateBubbleLabel(message, gfx::kGoogleGrey200, this));
+  SetContent(login_views_utils::CreateBubbleLabel(message, this));
 }
 
 void LoginErrorBubble::SetAccessibleName(const base::string16& name) {

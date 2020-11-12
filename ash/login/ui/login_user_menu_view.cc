@@ -37,8 +37,14 @@ constexpr int kVerticalPaddingLoginUserMenuViewDp = 8;
 
 constexpr int kUserMenuRemoveUserButtonIdForTest = 1;
 
-// Font size delta from normal for the username headline.
-constexpr int kUserMenuFontSizeDeltaUsername = 2;
+// Font name of the username headline.
+constexpr char kUserMenuFontNameUsername[] = "Google Sans";
+
+// Font size of the username headline.
+constexpr int kUserMenuFontSizeUsername = 15;
+
+// Line height of the username headline.
+constexpr int kUserMenuLineHeightUsername = 22;
 
 // Traps the focus so it does not move from the |trapped_focus| view.
 class TrappedFocusSearch : public views::FocusSearch {
@@ -159,11 +165,17 @@ LoginUserMenuView::LoginUserMenuView(
         kUserMenuVerticalMarginUsernameMailDp));
     AddChildView(container);
     username_label_ = login_views_utils::CreateBubbleLabel(
-        display_username, gfx::kGoogleGrey200, nullptr,
-        kUserMenuFontSizeDeltaUsername, gfx::Font::Weight::BOLD);
+        display_username, nullptr,
+        AshColorProvider::Get()->GetContentLayerColor(
+            AshColorProvider::ContentLayerType::kTextColorPrimary),
+        gfx::FontList({kUserMenuFontNameUsername}, gfx::Font::FontStyle::NORMAL,
+                      kUserMenuFontSizeUsername, gfx::Font::Weight::MEDIUM),
+        kUserMenuLineHeightUsername);
     container->AddChildView(username_label_);
-    views::Label* email_label =
-        login_views_utils::CreateBubbleLabel(email, gfx::kGoogleGrey500);
+    views::Label* email_label = login_views_utils::CreateBubbleLabel(
+        email, nullptr,
+        AshColorProvider::Get()->GetContentLayerColor(
+            AshColorProvider::ContentLayerType::kTextColorSecondary));
     container->AddChildView(email_label);
   }
 
@@ -175,8 +187,8 @@ LoginUserMenuView::LoginUserMenuView(
     base::string16 managed_text = l10n_util::GetStringFUTF16(
         IDS_ASH_LOGIN_MANAGED_SESSION_MONITORING_USER_WARNING,
         base::UTF8ToUTF16(user.user_account_manager.value()));
-    management_disclosure_label_ = login_views_utils::CreateBubbleLabel(
-        managed_text, gfx::kGoogleGrey200, this);
+    management_disclosure_label_ =
+        login_views_utils::CreateBubbleLabel(managed_text, this);
     managed_user_data_->AddChildView(management_disclosure_label_);
     AddChildView(managed_user_data_);
   }
@@ -208,10 +220,10 @@ LoginUserMenuView::LoginUserMenuView(
     remove_user_confirm_data_->SetVisible(false);
 
     remove_user_confirm_data_->AddChildView(
-        login_views_utils::CreateBubbleLabel(part1, gfx::kGoogleGrey200, this));
+        login_views_utils::CreateBubbleLabel(part1, this));
 
     remove_user_confirm_data_->AddChildView(
-        login_views_utils::CreateBubbleLabel(part2, gfx::kGoogleGrey200, this));
+        login_views_utils::CreateBubbleLabel(part2, this));
 
     remove_user_button_ = new RemoveUserButton(
         base::BindRepeating(&LoginUserMenuView::RemoveUserButtonPressed,

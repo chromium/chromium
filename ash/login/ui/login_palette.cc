@@ -20,8 +20,8 @@ LoginPalette CreateDefaultLoginPalette() {
   return LoginPalette(
       {.password_text_color = color_provider->GetContentLayerColor(
            AshColorProvider::ContentLayerType::kTextColorPrimary),
-       .password_placeholder_text_color =
-           login_constants::kAuthMethodsTextColor,
+       .password_placeholder_text_color = color_provider->GetContentLayerColor(
+           AshColorProvider::ContentLayerType::kTextColorSecondary),
        .password_background_color = SK_ColorTRANSPARENT,
        .button_enabled_color = color_provider->GetContentLayerColor(
            AshColorProvider::ContentLayerType::kIconColorPrimary),

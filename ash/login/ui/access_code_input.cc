@@ -6,6 +6,7 @@
 
 #include "ash/public/cpp/login_constants.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/ash_color_provider.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string16.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -48,7 +49,8 @@ FlexCodeInput::FlexCodeInput(OnInputChange on_input_change,
 
   code_field_ = AddChildView(std::make_unique<views::Textfield>());
   code_field_->set_controller(this);
-  code_field_->SetTextColor(login_constants::kAuthMethodsTextColor);
+  code_field_->SetTextColor(AshColorProvider::Get()->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kTextColorSecondary));
   code_field_->SetFontList(views::Textfield::GetDefaultFontList().Derive(
       kAccessCodeFontSizeDeltaDp, gfx::Font::FontStyle::NORMAL,
       gfx::Font::Weight::NORMAL));

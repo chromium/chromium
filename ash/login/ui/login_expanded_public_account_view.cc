@@ -60,7 +60,6 @@ constexpr SkColor kPublicSessionBlueColor =
     SkColorSetARGB(0xDE, 0x7B, 0xAA, 0xF7);
 constexpr SkColor kSelectionMenuTitleColor =
     SkColorSetARGB(0x57, 0xFF, 0xFF, 0xFF);
-constexpr SkColor kArrowButtonColor = SkColorSetARGB(0xFF, 0x42, 0x85, 0xF4);
 
 constexpr int kDropDownIconSizeDp = 16;
 constexpr int kArrowButtonSizeDp = 48;
@@ -410,7 +409,6 @@ class RightPaneView : public NonAccessibleView {
         base::BindRepeating(&RightPaneView::SubmitButtonPressed,
                             base::Unretained(this)),
         kArrowButtonSizeDp);
-    submit_button_->SetBackgroundColor(kArrowButtonColor);
     AddChildView(submit_button_);
   }
 

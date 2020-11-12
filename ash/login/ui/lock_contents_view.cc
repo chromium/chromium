@@ -114,9 +114,6 @@ constexpr int kMediumDensityDistanceBetweenAuthUserAndUsersPortraitDp = 84;
 constexpr int kHorizontalPaddingAuthErrorBubbleDp = 8;
 constexpr int kVerticalPaddingAuthErrorBubbleDp = 8;
 
-// The font color of the bottom status indicator for enterprise management.
-constexpr SkColor kBottomStatusManagedFontColor = gfx::kGoogleGrey200;
-
 // The font color of the bottom status indicator for ADB warning.
 constexpr SkColor kBottomStatusAdbFontColor = gfx::kGoogleRed300;
 
@@ -209,7 +206,8 @@ void MakeSectionBold(views::StyledLabel* label,
       style.custom_font = label->GetFontList().Derive(
           0, gfx::Font::FontStyle::NORMAL, gfx::Font::Weight::BOLD);
     }
-    style.override_color = gfx::kGoogleGrey200;
+    style.override_color = AshColorProvider::Get()->GetContentLayerColor(
+        AshColorProvider::ContentLayerType::kTextColorPrimary);
     return style;
   };
 
@@ -337,8 +335,7 @@ class UserAddingScreenIndicator : public views::View {
 
     base::string16 message =
         l10n_util::GetStringUTF16(IDS_ASH_LOGIN_USER_ADDING_BANNER);
-    views::Label* label_ = login_views_utils::CreateBubbleLabel(
-        message, gfx::kGoogleGrey200, this);
+    views::Label* label_ = login_views_utils::CreateBubbleLabel(message, this);
     label_->SetText(message);
     AddChildView(label_);
 
@@ -785,7 +782,9 @@ void LockContentsView::ShowEnterpriseDomainManager(
   bottom_status_indicator_->SetText(l10n_util::GetStringFUTF16(
       IDS_ASH_LOGIN_MANAGED_DEVICE_INDICATOR, ui::GetChromeOSDeviceName(),
       base::UTF8ToUTF16(entreprise_domain_manager)));
-  bottom_status_indicator_->SetEnabledTextColors(kBottomStatusManagedFontColor);
+  bottom_status_indicator_->SetEnabledTextColors(
+      AshColorProvider::Get()->GetContentLayerColor(
+          AshColorProvider::ContentLayerType::kTextColorPrimary));
   bottom_status_indicator_->set_role_for_accessibility(
       ax::mojom::Role::kButton);
   bottom_status_indicator_status_ = BottomIndicatorState::kManagedDevice;

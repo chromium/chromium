@@ -78,7 +78,6 @@ constexpr int kAlpha70Percent = 178;
 constexpr int kAlpha74Percent = 189;
 
 constexpr SkColor kErrorColor = gfx::kGoogleRed300;
-constexpr SkColor kArrowButtonColor = SkColorSetARGB(0x2B, 0xFF, 0xFF, 0xFF);
 
 bool IsTabletMode() {
   return Shell::Get()->tablet_mode_controller()->InTabletMode();
@@ -392,7 +391,6 @@ PinRequestView::PinRequestView(PinRequest request, Delegate* delegate)
   submit_button_ = new ArrowButtonView(
       base::BindRepeating(&PinRequestView::SubmitCode, base::Unretained(this)),
       kArrowButtonSizeDp);
-  submit_button_->SetBackgroundColor(kArrowButtonColor);
   submit_button_->SetPreferredSize(
       gfx::Size(kArrowButtonSizeDp, kArrowButtonSizeDp));
   submit_button_->SetEnabled(false);

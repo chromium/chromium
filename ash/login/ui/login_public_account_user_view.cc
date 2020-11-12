@@ -20,10 +20,6 @@ namespace {
 constexpr char kLoginPublicAccountUserViewClassName[] =
     "LoginPublicAccountUserView";
 
-// Color of the user domain text.
-constexpr SkColor kArrowButtonBackground =
-    SkColorSetARGB(0x2B, 0xFF, 0xFF, 0xFF);
-
 // Distance from the top of the user view to the user icon.
 constexpr int kDistanceFromTopOfBigUserViewToUserIconDp = 54;
 
@@ -77,7 +73,6 @@ LoginPublicAccountUserView::LoginPublicAccountUserView(
       base::BindRepeating(&LoginPublicAccountUserView::ArrowButtonPressed,
                           base::Unretained(this)),
       kArrowButtonSizeDp);
-  arrow_button->SetBackgroundColor(kArrowButtonBackground);
   arrow_button->SetFocusPainter(nullptr);
 
   SetPaintToLayer(ui::LayerType::LAYER_NOT_DRAWN);

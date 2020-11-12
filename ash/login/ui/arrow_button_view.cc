@@ -65,6 +65,9 @@ ArrowButtonView::ArrowButtonView(PressedCallback callback, int size)
   focus_ring()->SetPathGenerator(
       std::make_unique<views::FixedSizeCircleHighlightPathGenerator>(
           kArrowIconBackroundRadius));
+
+  SetBackgroundColor(AshColorProvider::Get()->GetControlsLayerColor(
+      AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive));
 }
 
 ArrowButtonView::~ArrowButtonView() = default;

@@ -90,9 +90,6 @@ const int kDistanceFromPinKeyboardToBigUserViewBottomDp = 50;
 // Distance from the top of the user view to the user icon.
 constexpr int kDistanceFromTopOfBigUserViewToUserIconDp = 24;
 
-constexpr SkColor kChallengeResponseSmartCardIconColor = gfx::kGoogleGrey200;
-constexpr SkColor kChallengeResponseArrowBackgroundColor =
-    SkColorSetARGB(0x2B, 0xFF, 0xFF, 0xFF);
 constexpr SkColor kChallengeResponseErrorColor = gfx::kGoogleRed300;
 
 // Date time format containing only the day of the week, for example: "Tuesday".
@@ -221,7 +218,8 @@ class FingerprintLabel : public views::Label {
   FingerprintLabel() {
     SetSubpixelRenderingEnabled(false);
     SetAutoColorReadabilityEnabled(false);
-    SetEnabledColor(login_constants::kAuthMethodsTextColor);
+    SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
+        AshColorProvider::ContentLayerType::kTextColorSecondary));
     SetMultiLine(true);
 
     SetTextBasedOnState(FingerprintState::AVAILABLE_DEFAULT,
@@ -561,7 +559,6 @@ class LoginAuthUserView::ChallengeResponseView : public views::View {
     arrow_button_view->SetInstallFocusRingOnFocus(true);
     views::InstallCircleHighlightPathGenerator(arrow_button_view.get());
     arrow_button_ = AddChildView(std::move(arrow_button_view));
-    arrow_button_->SetBackgroundColor(kChallengeResponseArrowBackgroundColor);
     arrow_button_->SetAccessibleName(l10n_util::GetStringUTF16(
         IDS_ASH_LOGIN_START_SMART_CARD_AUTH_BUTTON_ACCESSIBLE_NAME));
 
@@ -581,7 +578,8 @@ class LoginAuthUserView::ChallengeResponseView : public views::View {
         GetTextForLabel(), views::style::CONTEXT_LABEL,
         views::style::STYLE_PRIMARY));
     label_->SetAutoColorReadabilityEnabled(false);
-    label_->SetEnabledColor(login_constants::kAuthMethodsTextColor);
+    label_->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
+        AshColorProvider::ContentLayerType::kTextColorSecondary));
     label_->SetSubpixelRenderingEnabled(false);
     label_->SetFontList(views::Label::GetDefaultFontList().Derive(
         /*size_delta=*/1, gfx::Font::FontStyle::ITALIC,
@@ -625,9 +623,10 @@ class LoginAuthUserView::ChallengeResponseView : public views::View {
     switch (state_) {
       case State::kInitial:
       case State::kAuthenticating:
-        return gfx::CreateVectorIcon(kLockScreenSmartCardIcon,
-                                     kChallengeResponseIconSizeDp,
-                                     kChallengeResponseSmartCardIconColor);
+        return gfx::CreateVectorIcon(
+            kLockScreenSmartCardIcon, kChallengeResponseIconSizeDp,
+            AshColorProvider::Get()->GetContentLayerColor(
+                AshColorProvider::ContentLayerType::kIconColorPrimary));
       case State::kFailure:
         return gfx::CreateVectorIcon(kLockScreenSmartCardFailureIcon,
                                      kChallengeResponseIconSizeDp,

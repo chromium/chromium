@@ -1005,7 +1005,6 @@ void LockDebugView::UpdatePerUserActionContainer() {
     name->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
         AshColorProvider::ContentLayerType::kTextColorPrimary));
     name->SetAutoColorReadabilityEnabled(false);
-    // name->SetFontList(name->font_list().DeriveWithSizeDelta(3));
     row->AddChildView(name);
 
     AddButton("Toggle PIN",

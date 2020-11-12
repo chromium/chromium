@@ -99,20 +99,18 @@ bool HasFocusInAnyChildView(views::View* view) {
 }
 
 views::Label* CreateBubbleLabel(const base::string16& message,
-                                SkColor color,
                                 views::View* view_defining_max_width,
-                                int font_size_delta,
-                                gfx::Font::Weight font_weight) {
+                                SkColor color,
+                                const gfx::FontList& font_list,
+                                int line_height) {
   views::Label* label =
-      new views::Label(message, views::style::CONTEXT_DIALOG_BODY_TEXT,
-                       views::style::STYLE_PRIMARY);
+      new views::Label(message, views::style::CONTEXT_DIALOG_BODY_TEXT);
   label->SetAutoColorReadabilityEnabled(false);
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   label->SetEnabledColor(color);
   label->SetSubpixelRenderingEnabled(false);
-  const gfx::FontList& base_font_list = views::Label::GetDefaultFontList();
-  label->SetFontList(base_font_list.Derive(
-      font_size_delta, gfx::Font::FontStyle::NORMAL, font_weight));
+  label->SetFontList(font_list);
+  label->SetLineHeight(line_height);
   if (view_defining_max_width != nullptr) {
     label->SetMultiLine(true);
     label->SetAllowCharacterBreak(true);

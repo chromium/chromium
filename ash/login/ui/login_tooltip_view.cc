@@ -6,7 +6,6 @@
 
 #include "ash/login/ui/non_accessible_view.h"
 #include "ash/login/ui/views_utils.h"
-#include "ash/style/ash_color_provider.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
@@ -36,8 +35,7 @@ LoginTooltipView::LoginTooltipView(const base::string16& message,
           AshColorProvider::ContentLayerType::kIconColorPrimary)));
   AddChildView(info_icon);
 
-  label_ =
-      login_views_utils::CreateBubbleLabel(message, gfx::kGoogleGrey200, this);
+  label_ = login_views_utils::CreateBubbleLabel(message, this);
   AddChildView(label_);
 }
 
