@@ -1,0 +1,23 @@
+<style include="diagnostics-shared">
+  #textBadge {
+    padding: 3px 5px;
+    border-radius: 3px;
+  }
+
+  .default {
+    background-color: var(--google-blue-100);
+    color: var(--google-blue-500);
+  }
+
+  .success {
+    background-color: var(--google-green-100);
+    color: var(--google-green-500);
+  }
+
+  .error {
+    background-color: var(--google-red-100);
+    color: var(--google-red-500);
+  }
+</style>
+
+<span id="textBadge" class$="[[badgeType]]" hidden$="[[hidden]]">[[value]]</span>

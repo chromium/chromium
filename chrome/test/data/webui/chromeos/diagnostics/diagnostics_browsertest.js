@@ -56,7 +56,7 @@ const debug_suites_list = [
   'FakeMojoInterface', 'FakeObservables', 'FakeSystemDataProvider',
   'FakeSystemRoutineContoller', 'MemoryCard', 'OverviewCard', 'PercentBarChart',
   'RealtimeCpuChart', 'RoutineListExecutor', 'RoutineResultEntry',
-  'RoutineResultList', 'RoutineSection'
+  'RoutineResultList', 'RoutineSection', 'TextBadge'
 ];
 
 TEST_F('DiagnosticsApp', 'BrowserTest', function() {

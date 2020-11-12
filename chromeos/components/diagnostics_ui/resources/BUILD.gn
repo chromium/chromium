@@ -31,6 +31,7 @@ js_type_check("closure_compile_module") {
     ":routine_result_entry",
     ":routine_result_list",
     ":routine_section",
+    ":text_badge",
   ]
 }
 
@@ -175,6 +176,12 @@ js_library("routine_section") {
   ]
 }
 
+js_library("text_badge") {
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
 html_to_js("web_components") {
   js_files = [
     "battery_status_card.js",
@@ -191,5 +198,6 @@ html_to_js("web_components") {
     "routine_result_entry.js",
     "routine_result_list.js",
     "routine_section.js",
+    "text_badge.js",
   ]
 }

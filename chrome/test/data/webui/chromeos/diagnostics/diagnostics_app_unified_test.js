@@ -22,6 +22,7 @@ import {fakeRoutineListExecutorTestSuite} from './routine_list_executor_test.js'
 import {routineResultEntryTestSuite} from './routine_result_entry_test.js';
 import {routineResultListTestSuite} from './routine_result_list_test.js';
 import {routineSectionTestSuite} from './routine_section_test.js';
+import {textBadgeTestSuite} from './text_badge_test.js';
 
 window.test_suites_list = [];
 
@@ -47,3 +48,4 @@ runSuite('RoutineListExecutor', fakeRoutineListExecutorTestSuite);
 runSuite('RoutineResultEntry', routineResultEntryTestSuite);
 runSuite('RoutineResultList', routineResultListTestSuite);
 runSuite('RoutineSection', routineSectionTestSuite);
+runSuite('TextBadge', textBadgeTestSuite);
