@@ -163,17 +163,17 @@ class OverviewItemMoveHelper : public aura::WindowObserver {
     OverviewController* overview_controller =
         Shell::Get()->overview_controller();
     if (overview_controller->InOverviewSession()) {
-      OverviewGrid* target_grid =
-          overview_controller->overview_session()->GetGridWithRootWindow(
-              window->GetRootWindow());
-      // Add |window| to |target_grid| with reposition=false and restack=false,
-      // because soon we will handle both repositioning and restacking anyway.
-      target_grid->AddItemInMruOrder(window, /*reposition=*/false,
-                                     /*animate=*/false, /*restack=*/false);
-      OverviewItem* item = target_grid->GetOverviewItemContaining(window);
+      // OverviewSession::AddItemInMruOrder() will add |window| to the grid
+      // associated with |window|'s root. Do not reposition or restack as we
+      // will soon handle them both anyway.
+      OverviewSession* session = overview_controller->overview_session();
+      session->AddItemInMruOrder(window, /*reposition=*/false,
+                                 /*animate=*/false, /*restack=*/false);
+      OverviewItem* item = session->GetOverviewItemForWindow(window);
+      DCHECK(item);
       item->SetBounds(target_item_bounds_, OVERVIEW_ANIMATION_NONE);
       item->set_should_restack_on_animation_end(true);
-      // The destructor will call |OverviewSession::PositionWindows|.
+      // The destructor will call OverviewSession::PositionWindows().
     }
     delete this;
   }

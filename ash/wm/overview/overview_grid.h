@@ -103,8 +103,8 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   // of |reposition| and |animate| is false, the stacking order will be adjusted
   // immediately.
   // Note: OverviewSession has versions of the Add/Remove items. Those are
-  // preferred as they update other things like the overview accessibility
-  // annotator.
+  // preferred as they will call into these functions and update other things
+  // like the overview accessibility annotator and the no recent items widget.
   void AddItem(aura::Window* window,
                bool reposition,
                bool animate,
