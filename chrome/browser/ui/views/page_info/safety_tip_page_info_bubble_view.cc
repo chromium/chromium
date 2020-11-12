@@ -38,11 +38,9 @@ int GetSafetyTipBannerId(security_state::SafetyTipStatus safety_tip_status,
                          bool is_dark) {
   switch (safety_tip_status) {
     case security_state::SafetyTipStatus::kBadReputation:
-      return is_dark ? IDR_SAFETY_TIP_SUSPICIOUS_ILLUSTRATION_DARK
-                     : IDR_SAFETY_TIP_SUSPICIOUS_ILLUSTRATION_LIGHT;
     case security_state::SafetyTipStatus::kLookalike:
-      return is_dark ? IDR_SAFETY_TIP_LOOKALIKE_ILLUSTRATION_DARK
-                     : IDR_SAFETY_TIP_LOOKALIKE_ILLUSTRATION_LIGHT;
+      return is_dark ? IDR_SAFETY_TIP_ILLUSTRATION_DARK
+                     : IDR_SAFETY_TIP_ILLUSTRATION_LIGHT;
     case security_state::SafetyTipStatus::kBadReputationIgnored:
     case security_state::SafetyTipStatus::kLookalikeIgnored:
     case security_state::SafetyTipStatus::kBadKeyword:
@@ -153,55 +151,8 @@ SafetyTipPageInfoBubbleView::SafetyTipPageInfoBubbleView(
                         insets.left() - insets.right());
   bottom_layout->AddView(std::move(text_label));
 
-  // Add buttons.
-  // To make the rest of the layout simpler, they live in their own grid layout.
-  auto button_view = std::make_unique<views::View>();
-  views::GridLayout* button_layout =
-      button_view->SetLayoutManager(std::make_unique<views::GridLayout>());
-  views::ColumnSet* button_column_set = button_layout->AddColumnSet(0);
-  button_column_set->AddColumn(
-      views::GridLayout::LEADING, views::GridLayout::CENTER, 0.0,
-      views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
-  button_column_set->AddPaddingColumn(1.f, 1);
-  button_column_set->AddColumn(
-      views::GridLayout::TRAILING, views::GridLayout::FILL, 0.0,
-      views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
+  MaybeAddButtons(safety_tip_status, bottom_layout, spacing, kColumnId, insets);
 
-  button_layout->StartRow(views::GridLayout::kFixedSize, kColumnId);
-
-  // More info button.
-  auto info_text =
-      l10n_util::GetStringUTF16(IDS_PAGE_INFO_SAFETY_TIP_MORE_INFO_LINK);
-  auto info_link = std::make_unique<views::StyledLabel>();
-  info_link->SetText(info_text);
-  views::StyledLabel::RangeStyleInfo link_style =
-      views::StyledLabel::RangeStyleInfo::CreateForLink(
-          base::BindRepeating(&SafetyTipPageInfoBubbleView::OpenHelpCenter,
-                              base::Unretained(this)));
-  gfx::Range details_range(0, info_text.length());
-  info_link->AddStyleRange(details_range, link_style);
-  info_link->SizeToFit(0);
-  info_button_ = button_layout->AddView(std::move(info_link));
-  // Leave site button.
-  auto leave_button = std::make_unique<views::MdTextButton>(
-      base::BindRepeating(
-          [](SafetyTipPageInfoBubbleView* view) {
-            view->ExecuteLeaveCommand();
-          },
-          this),
-      l10n_util::GetStringUTF16(GetSafetyTipLeaveButtonId(safety_tip_status)));
-  leave_button->SetProminent(true);
-  leave_button->SetID(PageInfoBubbleView::VIEW_ID_PAGE_INFO_BUTTON_LEAVE_SITE);
-  leave_button_ = button_layout->AddView(std::move(leave_button));
-
-  bottom_layout->StartRowWithPadding(views::GridLayout::kFixedSize, kColumnId,
-                                     views::GridLayout::kFixedSize, spacing);
-  bottom_layout->AddView(std::move(button_view), 1, 1,
-                         views::GridLayout::LEADING, views::GridLayout::LEADING,
-                         layout_provider->GetDistanceMetric(
-                             views::DISTANCE_BUBBLE_PREFERRED_WIDTH) -
-                             insets.left() - insets.right(),
-                         0);
   bubble_layout->StartRow(views::GridLayout::kFixedSize, kColumnId);
   bubble_layout->AddView(std::move(bottom_view));
 
@@ -302,6 +253,69 @@ void SafetyTipPageInfoBubbleView::DidStartNavigation(
 
 void SafetyTipPageInfoBubbleView::DidChangeVisibleSecurityState() {
   // Do nothing. (Base class closes the bubble.)
+}
+
+void SafetyTipPageInfoBubbleView::MaybeAddButtons(
+    security_state::SafetyTipStatus safety_tip_status,
+    views::GridLayout* bottom_layout,
+    int spacing,
+    int column_id,
+    const gfx::Insets& insets) {
+  // Suspicious site safety tips don't have a call to action, as they are used
+  // for drawing users' attention to the omnibox to see if they leave the site
+  // on their own once they notice the omnibox. (https://crbug.com/1146471)
+  if (safety_tip_status == security_state::SafetyTipStatus::kBadReputation)
+    return;
+
+  ChromeLayoutProvider* layout_provider = ChromeLayoutProvider::Get();
+  // To make the rest of the layout simpler, they live in their own grid layout.
+  auto button_view = std::make_unique<views::View>();
+  views::GridLayout* button_layout =
+      button_view->SetLayoutManager(std::make_unique<views::GridLayout>());
+  views::ColumnSet* button_column_set = button_layout->AddColumnSet(0);
+  button_column_set->AddColumn(
+      views::GridLayout::LEADING, views::GridLayout::CENTER, 0.0,
+      views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
+  button_column_set->AddPaddingColumn(1.f, 1);
+  button_column_set->AddColumn(
+      views::GridLayout::TRAILING, views::GridLayout::FILL, 0.0,
+      views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
+
+  button_layout->StartRow(views::GridLayout::kFixedSize, column_id);
+
+  // More info button.
+  auto info_text =
+      l10n_util::GetStringUTF16(IDS_PAGE_INFO_SAFETY_TIP_MORE_INFO_LINK);
+  auto info_link = std::make_unique<views::StyledLabel>();
+  info_link->SetText(info_text);
+  views::StyledLabel::RangeStyleInfo link_style =
+      views::StyledLabel::RangeStyleInfo::CreateForLink(
+          base::BindRepeating(&SafetyTipPageInfoBubbleView::OpenHelpCenter,
+                              base::Unretained(this)));
+  gfx::Range details_range(0, info_text.length());
+  info_link->AddStyleRange(details_range, link_style);
+  info_link->SizeToFit(0);
+  info_button_ = button_layout->AddView(std::move(info_link));
+  // Leave site button.
+  auto leave_button = std::make_unique<views::MdTextButton>(
+      base::BindRepeating(
+          [](SafetyTipPageInfoBubbleView* view) {
+            view->ExecuteLeaveCommand();
+          },
+          this),
+      l10n_util::GetStringUTF16(GetSafetyTipLeaveButtonId(safety_tip_status)));
+  leave_button->SetProminent(true);
+  leave_button->SetID(PageInfoBubbleView::VIEW_ID_PAGE_INFO_BUTTON_LEAVE_SITE);
+  leave_button_ = button_layout->AddView(std::move(leave_button));
+
+  bottom_layout->StartRowWithPadding(views::GridLayout::kFixedSize, column_id,
+                                     views::GridLayout::kFixedSize, spacing);
+  bottom_layout->AddView(std::move(button_view), 1, 1,
+                         views::GridLayout::LEADING, views::GridLayout::LEADING,
+                         layout_provider->GetDistanceMetric(
+                             views::DISTANCE_BUBBLE_PREFERRED_WIDTH) -
+                             insets.left() - insets.right(),
+                         0);
 }
 
 void ShowSafetyTipDialog(

@@ -311,6 +311,14 @@ class SafetyTipPageInfoBubbleViewBrowserTest
     bubble->OpenHelpCenter();
   }
 
+  void CheckNoButtons() {
+    auto* bubble = static_cast<SafetyTipPageInfoBubbleView*>(
+        PageInfoBubbleViewBase::GetPageInfoBubbleForTesting());
+    EXPECT_FALSE(bubble->info_button_);
+    EXPECT_FALSE(bubble->ignore_button_);
+    EXPECT_FALSE(bubble->leave_button_);
+  }
+
   void CloseWarningLeaveSite(Browser* browser) {
     if (ui_status() == UIStatus::kDisabled) {
       return;
@@ -592,13 +600,17 @@ IN_PROC_BROWSER_TEST_P(SafetyTipPageInfoBubbleViewBrowserTest,
 // After the user clicks 'leave site', the user should end up on a safe domain.
 IN_PROC_BROWSER_TEST_P(SafetyTipPageInfoBubbleViewBrowserTest,
                        LeaveSiteLeavesSite) {
-  auto kNavigatedUrl = GetURL("site1.com");
-  if (!IsSuspiciousSiteWarningEnabled()) {
+  // The suspicious site warning doesn't have call-to-action buttons, so this
+  // test only applies to lookalike warnings.
+  if (!AreLookalikeWarningsEnabled()) {
     return;
   }
 
-  TriggerWarningFromBlocklist(browser(), kNavigatedUrl,
-                              WindowOpenDisposition::CURRENT_TAB);
+  // This domain is a lookalike of a top domain not in the top 500.
+  const GURL kNavigatedUrl = GetURL("googlé.sk");
+  SetEngagementScore(browser(), kNavigatedUrl, kLowEngagement);
+  NavigateToURL(browser(), kNavigatedUrl, WindowOpenDisposition::CURRENT_TAB);
+  ASSERT_TRUE(IsUIShowing());
 
   CloseWarningLeaveSite(browser());
   EXPECT_FALSE(IsUIShowing());
@@ -622,6 +634,24 @@ IN_PROC_BROWSER_TEST_P(SafetyTipPageInfoBubbleViewBrowserTest,
   content::WebContentsAddedObserver new_tab_observer;
   ClickLearnMoreLink();
   EXPECT_NE(kNavigatedUrl, new_tab_observer.GetWebContents()->GetURL());
+}
+
+// Test that the Suspicious Site Safety Tip has no buttons and has the correct
+// strings.
+IN_PROC_BROWSER_TEST_P(SafetyTipPageInfoBubbleViewBrowserTest,
+                       SuspiciousSiteUI) {
+  if (!IsSuspiciousSiteWarningEnabled()) {
+    return;
+  }
+
+  auto kNavigatedUrl = GetURL("site1.com");
+  TriggerWarningFromBlocklist(browser(), kNavigatedUrl,
+                              WindowOpenDisposition::CURRENT_TAB);
+  ASSERT_NO_FATAL_FAILURE(CheckNoButtons());
+  auto* page_info = PageInfoBubbleViewBase::GetPageInfoBubbleForTesting();
+  EXPECT_EQ(
+      page_info->GetWindowTitle(),
+      l10n_util::GetStringUTF16(IDS_PAGE_INFO_SAFETY_TIP_BAD_REPUTATION_TITLE));
 }
 
 // If the user clicks 'leave site', the warning should re-appear when the user
