@@ -5109,7 +5109,7 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "Enabled_Mobile",
                     "enable_features": [
                         "PartitionAllocGigaCage"
                     ]
