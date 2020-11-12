@@ -105,7 +105,7 @@ void MoveSkippedLanguagesToEndIfNecessary(
 }  // namespace
 
 const base::Feature kOverrideLanguagePrefsForHrefTranslate{
-    "OverrideLanguagePrefsForHrefTranslate", base::FEATURE_DISABLED_BY_DEFAULT};
+    "OverrideLanguagePrefsForHrefTranslate", base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kOverrideSitePrefsForHrefTranslate{
     "OverrideSitePrefsForHrefTranslate", base::FEATURE_DISABLED_BY_DEFAULT};
@@ -983,10 +983,14 @@ void TranslateManager::FilterForUserPrefs(
     }
     // Disable auto-translating the page for hrefTranslate unless hrefTranslate
     // is supposed to override the language blocklist for auto-translation as
-    // well.
-    if (!base::GetFieldTrialParamByFeatureAsBool(
+    // well. This is enabled by default, but the below if-statement also
+    // explicitly checks if the underlying base::Feature is enabled as well so
+    // that disabling the underlying base::Feature will also turn off forcing
+    // auto translation.
+    if (!base::FeatureList::IsEnabled(kOverrideLanguagePrefsForHrefTranslate) ||
+        !base::GetFieldTrialParamByFeatureAsBool(
             kOverrideLanguagePrefsForHrefTranslate, kForceAutoTranslateKey,
-            false)) {
+            true)) {
       decision->PreventAutoHrefTranslate();
     }
 
