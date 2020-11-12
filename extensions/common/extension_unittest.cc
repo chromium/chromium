@@ -7,6 +7,8 @@
 #include "base/command_line.h"
 #include "base/optional.h"
 #include "base/test/scoped_command_line.h"
+#include "base/test/scoped_feature_list.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/switches.h"
 #include "extensions/common/value_builder.h"
@@ -125,6 +127,15 @@ TEST(ExtensionTest, ExtensionManifestVersions) {
     EXPECT_TRUE(RunManifestVersionSuccess(get_manifest(1), kType, 1));
     EXPECT_TRUE(
         RunManifestVersionSuccess(get_manifest(base::nullopt), kType, 1));
+  }
+
+  {
+    // If the requisite feature is disabled, Manifest V3 extensions should
+    // fail to load.
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndDisableFeature(
+        extensions_features::kMv3ExtensionsSupported);
+    EXPECT_TRUE(RunManifestVersionFailure(get_manifest(3)));
   }
 }
 

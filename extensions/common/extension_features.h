@@ -27,6 +27,8 @@ extern const base::Feature kAllowWithholdingExtensionPermissionsOnInstall;
 
 extern const base::Feature kContentScriptsMatchOriginAsFallback;
 
+extern const base::Feature kMv3ExtensionsSupported;
+
 extern const base::Feature kReportKeepaliveUkm;
 
 extern const base::Feature kReturnScopesInGetAuthToken;
