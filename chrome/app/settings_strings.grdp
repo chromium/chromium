@@ -2839,6 +2839,24 @@
     <message name="IDS_SETTINGS_PROFILE_SHORTCUT_TOGGLE_LABEL" desc="Label of the toggle that creates or removes a desktop shortcut for the profile.">
       Show desktop shortcut
     </message>
+    <message name="IDS_SETTINGS_CUSTOMIZE_PROFILE" desc="Title of the manage profile subpage. This is a subpage to customize Chrome Profile.">
+      Customize profile
+    </message>
+    <message name="IDS_SETTING_NAME_YOUR_PROFILE" desc="Title of the edit local profile name section on the manage profile page.">
+      Name your profile
+    </message>
+    <message name="IDS_SETTINGS_PICK_A_THEME_COLOR" desc="Title of edit profile theme color section on the manage profile page.">
+      Pick a theme color
+    </message>
+    <message name="IDS_SETTINGS_PICK_AN_AVATAR" desc="Title of the edit avatar selection section on the manage profile page.">
+      Pick an avatar
+    </message>
+    <message name="IDS_SETTINGS_CREATE_SHORTCUT" desc="Title of create shortcut section on the manage profile page.">
+      Create desktop shortcut
+    </message>
+    <message name="IDS_SETTINGS_CREATE_SHORTCUT_SUBTITLE" desc="Subtitle of create shortcut section on the manage profile page.">
+      Create a desktop shortcut on your device to access directly to this profile
+    </message>
   </if>
 
   <message name="IDS_SETTINGS_SYNC_DISCONNECT_EXPLANATION" desc="The text to display in the Sign out of Chrome dialog to stop syncing for non-managed profiles.">

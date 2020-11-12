@@ -28,6 +28,7 @@
 #include "chrome/browser/signin/account_consistency_mode_manager.h"
 #include "chrome/browser/sync/profile_sync_service_factory.h"
 #include "chrome/browser/ui/passwords/manage_passwords_view_utils.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/management_ui.h"
 #include "chrome/browser/ui/webui/policy_indicator_localized_strings_provider.h"
 #include "chrome/browser/ui/webui/settings/reset_settings_handler.h"
@@ -1196,7 +1197,6 @@ void AddPeopleStrings(content::WebUIDataSource* html_source, Profile* profile) {
 #if defined(OS_CHROMEOS)
     {"accountManagerSubMenuLabel", IDS_SETTINGS_ACCOUNT_MANAGER_SUBMENU_LABEL},
 #else
-    {"editPerson", IDS_SETTINGS_EDIT_PERSON},
     {"profileNameAndPicture", IDS_SETTINGS_PROFILE_NAME_AND_PICTURE},
 #endif
 
@@ -1204,6 +1204,17 @@ void AddPeopleStrings(content::WebUIDataSource* html_source, Profile* profile) {
 #if !defined(OS_CHROMEOS)
     {"showShortcutLabel", IDS_SETTINGS_PROFILE_SHORTCUT_TOGGLE_LABEL},
     {"nameInputLabel", IDS_SETTINGS_PROFILE_NAME_INPUT_LABEL},
+    {"nameYourProfile", IDS_SETTING_NAME_YOUR_PROFILE},
+    {"pickThemeColor", IDS_SETTINGS_PICK_A_THEME_COLOR},
+    {"pickAvatar", IDS_SETTINGS_PICK_AN_AVATAR},
+    {"createShortcutTitle", IDS_SETTINGS_CREATE_SHORTCUT},
+    {"createShortcutSubtitle", IDS_SETTINGS_CREATE_SHORTCUT_SUBTITLE},
+
+    // Color picker strings:
+    {"colorPickerLabel", IDS_NTP_CUSTOMIZE_COLOR_PICKER_LABEL},
+    {"defaultThemeLabel", IDS_NTP_CUSTOMIZE_DEFAULT_LABEL},
+    {"thirdPartyThemeDescription", IDS_NTP_CUSTOMIZE_3PT_THEME_DESC},
+    {"uninstallThirdPartyThemeButton", IDS_NTP_CUSTOMIZE_3PT_THEME_UNINSTALL},
 #endif
     {"deleteProfileWarningExpandA11yLabel",
      IDS_SETTINGS_SYNC_DISCONNECT_EXPAND_ACCESSIBILITY_LABEL},
@@ -1213,12 +1224,6 @@ void AddPeopleStrings(content::WebUIDataSource* html_source, Profile* profile) {
      IDS_SETTINGS_SYNC_DISCONNECT_DELETE_PROFILE_WARNING_WITH_COUNTS_PLURAL},
     {"deleteProfileWarningWithoutCounts",
      IDS_SETTINGS_SYNC_DISCONNECT_DELETE_PROFILE_WARNING_WITHOUT_COUNTS},
-
-    // Color picker strings:
-    {"colorPickerLabel", IDS_NTP_CUSTOMIZE_COLOR_PICKER_LABEL},
-    {"defaultThemeLabel", IDS_NTP_CUSTOMIZE_DEFAULT_LABEL},
-    {"thirdPartyThemeDescription", IDS_NTP_CUSTOMIZE_3PT_THEME_DESC},
-    {"uninstallThirdPartyThemeButton", IDS_NTP_CUSTOMIZE_3PT_THEME_UNINSTALL},
   };
   AddLocalizedStringsBulk(html_source, kLocalizedStrings);
 
@@ -1231,6 +1236,13 @@ void AddPeopleStrings(content::WebUIDataSource* html_source, Profile* profile) {
           .spec());
   html_source->AddBoolean("profileShortcutsEnabled",
                           ProfileShortcutManager::IsFeatureEnabled());
+#if !defined(OS_CHROMEOS)
+  html_source->AddLocalizedString(
+      "editPerson", base::FeatureList::IsEnabled(features::kProfilesUIRevamp)
+                        ? IDS_SETTINGS_CUSTOMIZE_PROFILE
+                        : IDS_SETTINGS_EDIT_PERSON);
+#endif
+
 #if defined(OS_CHROMEOS)
   // Toggles the Chrome OS Account Manager submenu in the People section.
   html_source->AddBoolean("isAccountManagerEnabled",
