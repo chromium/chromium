@@ -4,7 +4,6 @@
 
 #include <stddef.h>
 #include <stdint.h>
-#include <xcb/xcb.h>
 
 #include <cstring>
 #include <memory>
@@ -39,27 +38,19 @@ namespace ui {
 
 namespace {
 
-// Initializes the passed-in Xlib event.
+// Initializes the passed-in event.
 void InitButtonEvent(x11::Event* event,
                      bool is_press,
                      const gfx::Point& location,
                      int button,
                      x11::KeyButMask state) {
-  xcb_generic_event_t generic_event;
-  memset(&generic_event, 0, sizeof(generic_event));
-  auto* button_event =
-      reinterpret_cast<xcb_button_press_event_t*>(&generic_event);
-
-  // We don't bother setting fields that the event code doesn't use, such as
-  // x_root/y_root and window/root/subwindow.
-  button_event->response_type =
-      is_press ? x11::ButtonEvent::Press : x11::ButtonEvent::Release;
-  button_event->event_x = location.x();
-  button_event->event_y = location.y();
-  button_event->detail = button;
-  button_event->state = static_cast<uint16_t>(state);
-
-  *event = x11::Event(&generic_event, x11::Connection::Get());
+  *event = x11::Event(x11::ButtonEvent{
+      .opcode = is_press ? x11::ButtonEvent::Press : x11::ButtonEvent::Release,
+      .detail = static_cast<x11::Button>(button),
+      .event_x = location.x(),
+      .event_y = location.y(),
+      .state = state,
+  });
 }
 
 #if !defined(OS_CHROMEOS)
@@ -68,18 +59,13 @@ void InitKeyEvent(x11::Event* event,
                   bool is_press,
                   int keycode,
                   x11::KeyButMask state) {
-  xcb_generic_event_t generic_event;
-  memset(&generic_event, 0, sizeof(generic_event));
-  auto* key_event = reinterpret_cast<xcb_key_press_event_t*>(&generic_event);
-
   // We don't bother setting fields that the event code doesn't use, such as
   // x_root/y_root and window/root/subwindow.
-  key_event->response_type =
-      is_press ? x11::KeyEvent::Press : x11::KeyEvent::Release;
-  key_event->detail = keycode;
-  key_event->state = static_cast<uint16_t>(state);
-
-  *event = x11::Event(&generic_event, x11::Connection::Get());
+  *event = x11::Event(x11::KeyEvent{
+      .opcode = is_press ? x11::KeyEvent::Press : x11::KeyEvent::Release,
+      .detail = static_cast<x11::KeyCode>(keycode),
+      .state = state,
+  });
 }
 #endif
 
@@ -203,16 +189,13 @@ TEST_F(EventsXTest, AvoidExtraEventsOnWheelRelease) {
 }
 
 TEST_F(EventsXTest, EnterLeaveEvent) {
-  auto* connection = x11::Connection::Get();
-  xcb_generic_event_t ge;
-  memset(&ge, 0, sizeof(ge));
-  auto* enter = reinterpret_cast<xcb_enter_notify_event_t*>(&ge);
-  enter->response_type = x11::CrossingEvent::EnterNotify;
-  enter->event_x = 10;
-  enter->event_y = 20;
-  enter->root_x = 110;
-  enter->root_y = 120;
-  x11::Event event(&ge, connection);
+  x11::Event event(x11::CrossingEvent{
+      .opcode = x11::CrossingEvent::EnterNotify,
+      .root_x = 110,
+      .root_y = 120,
+      .event_x = 10,
+      .event_y = 20,
+  });
 
   // Mouse enter events are converted to mouse move events to be consistent with
   // the way views handle mouse enter. See comments for EnterNotify case in
@@ -222,12 +205,13 @@ TEST_F(EventsXTest, EnterLeaveEvent) {
   EXPECT_EQ("10,20", ui::EventLocationFromXEvent(event).ToString());
   EXPECT_EQ("110,120", ui::EventSystemLocationFromXEvent(event).ToString());
 
-  enter->response_type = x11::CrossingEvent::LeaveNotify;
-  enter->event_x = 30;
-  enter->event_y = 40;
-  enter->root_x = 230;
-  enter->root_y = 240;
-  event = x11::Event(&ge, connection);
+  event = x11::Event(x11::CrossingEvent{
+      .opcode = x11::CrossingEvent::LeaveNotify,
+      .root_x = 230,
+      .root_y = 240,
+      .event_x = 30,
+      .event_y = 40,
+  });
   EXPECT_EQ(ui::ET_MOUSE_EXITED, ui::EventTypeFromXEvent(event));
   EXPECT_EQ("30,40", ui::EventLocationFromXEvent(event).ToString());
   EXPECT_EQ("230,240", ui::EventSystemLocationFromXEvent(event).ToString());
@@ -810,12 +794,11 @@ TEST_F(EventsXTest, EventLatencyOSMouseWheelHistogram) {
   DeviceDataManagerX11::CreateInstance();
 
   // Initializes a native event and uses it to generate a MouseWheel event.
-  xcb_generic_event_t ge;
-  memset(&ge, 0, sizeof(ge));
-  auto* button = reinterpret_cast<xcb_button_press_event_t*>(&ge);
-  button->response_type = x11::ButtonEvent::Press;
-  button->detail = 4;  // A valid wheel button number between min and max.
-  x11::Event native_event(&ge, x11::Connection::Get());
+  x11::Event native_event(x11::ButtonEvent{
+      .opcode = x11::ButtonEvent::Press,
+      // A valid wheel button number between min and max.
+      .detail = static_cast<x11::Button>(4),
+  });
   auto mouse_ev = ui::BuildMouseWheelEventFromXEvent(native_event);
   histogram_tester.ExpectTotalCount("Event.Latency.OS.MOUSE_WHEEL", 1);
 }

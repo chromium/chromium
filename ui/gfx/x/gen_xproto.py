@@ -1615,6 +1615,8 @@ class GenReadEvent(FileWriter):
         self.file = open(os.path.join(self.gen_dir, 'read_event.cc'), 'w')
         self.write('#include "ui/gfx/x/event.h"')
         self.write()
+        self.write('#include <xcb/xcb.h>')
+        self.write()
         self.write('#include "ui/gfx/x/connection.h"')
         for genproto in self.genprotos:
             self.write('#include "ui/gfx/x/%s.h"' % genproto.proto)

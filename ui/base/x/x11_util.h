@@ -113,15 +113,15 @@ struct WmHints {
   // See below
   int32_t initial_state;
   // Pixmap to be used as icon
-  xcb_pixmap_t icon_pixmap;
+  x11::Pixmap icon_pixmap;
   // Window to be used as icon
-  xcb_window_t icon_window;
+  x11::Window icon_window;
   // Initial position of icon
   int32_t icon_x, icon_y;
   // Icon mask bitmap
-  xcb_pixmap_t icon_mask;
+  x11::Pixmap icon_mask;
   // Identifier of related window group
-  xcb_window_t window_group;
+  x11::Window window_group;
 };
 
 // These functions use the default display and this /must/ be called from

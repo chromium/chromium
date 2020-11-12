@@ -5,8 +5,6 @@
 #ifndef UI_GFX_X_XPROTO_TYPES_H_
 #define UI_GFX_X_XPROTO_TYPES_H_
 
-#include <xcb/xcb.h>
-
 #include <cstdint>
 #include <memory>
 

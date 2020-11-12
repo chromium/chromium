@@ -19,19 +19,6 @@ namespace x11 {
 
 Event::Event() = default;
 
-Event::Event(xcb_generic_event_t* xcb_event,
-             x11::Connection* connection,
-             bool sequence_valid)
-    : Event(base::MakeRefCounted<x11::UnretainedRefCountedMemory>(xcb_event),
-            connection,
-            sequence_valid) {
-  // Make sure the event is a fixed-size (32 bytes) event, otherwise
-  // UnretainedRefCountedMemory may be unsafe to use if the event contains
-  // variable-sized data.
-  DCHECK_NE(xcb_event->response_type & ~x11::kSendEventMask,
-            x11::GeGenericEvent::opcode);
-}
-
 Event::Event(scoped_refptr<base::RefCountedMemory> event_bytes,
              x11::Connection* connection,
              bool sequence_valid) {

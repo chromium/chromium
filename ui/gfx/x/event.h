@@ -38,9 +38,7 @@ class COMPONENT_EXPORT(X11) Event {
   }
 
   Event();
-  Event(xcb_generic_event_t* xcb_event,
-        Connection* connection,
-        bool sequence_valid = true);
+
   // |event_bytes| is modified and will not be valid after this call.
   // A copy is necessary if the original data is still needed.
   Event(scoped_refptr<base::RefCountedMemory> event_bytes,

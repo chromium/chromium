@@ -16,6 +16,8 @@
 #include "ui/gfx/x/xlib_support.h"
 #include "ui/gfx/x/xproto.h"
 
+typedef struct xcb_connection_t xcb_connection_t;
+
 namespace x11 {
 
 class KeyboardState;
