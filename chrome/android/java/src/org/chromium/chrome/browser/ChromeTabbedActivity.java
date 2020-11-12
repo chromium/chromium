@@ -1567,7 +1567,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         // tablet), a view-only start page created on Java will be shown before native is
         // initialized. The {@link prepareToShowStartPagePreNative()} is only called in a cold
         // start.
-        if (TabUiFeatureUtilities.supportInstantStart(isTablet()) && !hadWarmStart()) {
+        if (StartSurfaceConfiguration.isStartSurfaceEnabled()
+                && TabUiFeatureUtilities.supportInstantStart(isTablet()) && !hadWarmStart()) {
             prepareToShowStartPagePreNative();
         }
     }
