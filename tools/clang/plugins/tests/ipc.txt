@@ -212,7 +212,7 @@ ipc.cpp:332:30: error: [chromium-ipc] IPC::WriteParam() is called on blacklisted
 ipc.cpp:336:30: error: [chromium-ipc] IPC::WriteParam() is called on blacklisted type 'unsigned long'.
   IPC::WriteParam(nullptr, p.get<uint64_t>()); // ERROR
                              ^
-ipc.cpp:341:30: error: [chromium-ipc] IPC::WriteParam() is called on blacklisted type 'unsigned long' via 'struct std::vector<unsigned long, struct std::allocator<unsigned long> >'.
+ipc.cpp:341:30: error: [chromium-ipc] IPC::WriteParam() is called on blacklisted type 'unsigned long' via 'struct std::vector<unsigned long>'.
   IPC::WriteParam(nullptr, p.get<std::vector<uint64_t>>()); // ERROR
                              ^
 ipc.cpp:348:30: error: [chromium-ipc] IPC::WriteParam() is called on blacklisted type 'size_t' via 'std::vector<size_t>'.
