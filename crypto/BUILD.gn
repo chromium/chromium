@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/crypto.gni")
 import("//testing/test.gni")
 
@@ -115,9 +116,10 @@ component("crypto") {
       "nss_util.h",
       "nss_util_internal.h",
     ]
+    deps += [ "//build:chromeos_buildflags" ]
   }
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     sources += [ "nss_util_chromeos.cc" ]
   }
 
@@ -178,7 +180,7 @@ source_set("test_support") {
     ]
   }
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     sources += [
       "scoped_test_nss_chromeos_user.cc",
       "scoped_test_nss_chromeos_user.h",

@@ -11,6 +11,7 @@
 #include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "build/chromeos_buildflags.h"
 #include "crypto/crypto_export.h"
 
 namespace base {
@@ -35,7 +36,7 @@ CRYPTO_EXPORT void EnsureNSSInit();
 // A sample version string is "3.12.3".
 bool CheckNSSVersion(const char* version);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Indicates that NSS should use the Chaps library so that we
 // can access the TPM through NSS.  InitializeTPMTokenAndSystemSlot and
 // InitializeTPMForChromeOSUser must still be called to load the slots.

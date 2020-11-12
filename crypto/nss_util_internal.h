@@ -12,6 +12,7 @@
 #include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "build/chromeos_buildflags.h"
 #include "crypto/crypto_export.h"
 #include "crypto/scoped_nss_types.h"
 
@@ -42,7 +43,7 @@ class CRYPTO_EXPORT AutoSECMODListReadLock {
   DISALLOW_COPY_AND_ASSIGN(AutoSECMODListReadLock);
 };
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Returns a reference to the system-wide TPM slot if it is loaded. If it is not
 // loaded and |callback| is non-null, the |callback| will be run once the slot
 // is loaded.
@@ -124,7 +125,7 @@ CRYPTO_EXPORT void SetPrivateSoftwareSlotForChromeOSUserForTesting(
 // Returns true if chaps is the module to which |slot| is attached.
 CRYPTO_EXPORT bool IsSlotProvidedByChaps(PK11SlotInfo* slot);
 
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Loads the given module for this NSS session.
 SECMODModule* LoadNSSModule(const char* name,
