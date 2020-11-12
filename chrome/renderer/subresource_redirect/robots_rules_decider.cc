@@ -7,6 +7,7 @@
 #include "base/callback.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
@@ -132,16 +133,20 @@ void RobotsRulesDecider::UpdateRobotsRules(const std::string& rules) {
   pending_check_requests_.clear();
 }
 
-void RobotsRulesDecider::CheckRobotsRules(const std::string& url_path,
+void RobotsRulesDecider::CheckRobotsRules(const GURL& url,
                                           CheckResultCallback callback) {
+  std::string path_with_query = url.path();
+  if (url.has_query())
+    base::StrAppend(&path_with_query, {"?", url.query()});
   if (rules_receive_timeout_timer_.IsRunning()) {
     // Rules have not been received yet.
     pending_check_requests_.emplace_back(
-        std::make_pair(std::move(callback), url_path));
+        std::make_pair(std::move(callback), path_with_query));
     return;
   }
-  std::move(callback).Run(IsAllowed(url_path) ? CheckResult::kAllowed
-                                              : CheckResult::kDisallowed);
+  std::move(callback).Run(IsAllowed(path_with_query)
+                              ? CheckResult::kAllowed
+                              : CheckResult::kDisallowed);
 }
 
 bool RobotsRulesDecider::IsAllowed(const std::string& url_path) const {

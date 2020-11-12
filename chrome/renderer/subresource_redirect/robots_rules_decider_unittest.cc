@@ -18,6 +18,8 @@ namespace subresource_redirect {
 
 namespace {
 
+constexpr char kTestOrigin[] = "https://test.com";
+
 const bool kRuleTypeAllow = true;
 const bool kRuleTypeDisallow = false;
 
@@ -76,20 +78,21 @@ class SubresourceRedirectRobotsRulesDeciderTest : public testing::Test {
         GetRobotsRulesProtoString(patterns));
   }
 
-  void CheckRobotsRules(const std::string& url_path,
+  void CheckRobotsRules(const std::string& url_path_with_query,
                         RobotsRulesDecider::CheckResult expected_result) {
     CheckResultReceiver result_receiver;
-    robots_rules_decider_.CheckRobotsRules(url_path,
-                                           result_receiver.GetCallback());
+    robots_rules_decider_.CheckRobotsRules(
+        GURL(kTestOrigin + url_path_with_query), result_receiver.GetCallback());
     EXPECT_TRUE(result_receiver.did_receive_result());
     EXPECT_EQ(expected_result, result_receiver.check_result());
   }
 
   std::unique_ptr<CheckResultReceiver> CheckRobotsRulesAsync(
-      const std::string& url_path) {
+      const std::string& url_path_with_query) {
     auto result_receiver = std::make_unique<CheckResultReceiver>();
-    robots_rules_decider_.CheckRobotsRules(url_path,
-                                           result_receiver->GetCallback());
+    robots_rules_decider_.CheckRobotsRules(
+        GURL(kTestOrigin + url_path_with_query),
+        result_receiver->GetCallback());
     return result_receiver;
   }
 
@@ -204,8 +207,10 @@ TEST_F(SubresourceRedirectRobotsRulesDeciderTest,
   auto receiver1 = std::make_unique<CheckResultReceiver>();
   auto receiver2 = std::make_unique<CheckResultReceiver>();
 
-  robots_rules_decider->CheckRobotsRules("/foo.jpg", receiver1->GetCallback());
-  robots_rules_decider->CheckRobotsRules("/bar", receiver2->GetCallback());
+  robots_rules_decider->CheckRobotsRules(GURL("https://test.com/foo.jpg"),
+                                         receiver1->GetCallback());
+  robots_rules_decider->CheckRobotsRules(GURL("https://test.com/bar"),
+                                         receiver2->GetCallback());
   EXPECT_FALSE(receiver1->did_receive_result());
   EXPECT_FALSE(receiver2->did_receive_result());
   VerifyTotalRobotsRulesApplyHistograms(0);
@@ -330,6 +335,58 @@ TEST_F(SubresourceRedirectRobotsRulesDeciderTest,
   SetUpRobotsRules({{kRuleTypeDisallow, "/foo.jpg"}, {kRuleTypeAllow, "/foo"}});
   CheckRobotsRules("/foo.jpg", RobotsRulesDecider::CheckResult::kDisallowed);
   CheckRobotsRules("/foo", RobotsRulesDecider::CheckResult::kAllowed);
+
+  VerifyTotalRobotsRulesApplyHistograms(6);
+}
+
+TEST_F(SubresourceRedirectRobotsRulesDeciderTest, TestURLWithArguments) {
+  SetUpRobotsRules({{kRuleTypeAllow, "/*.jpg$"},
+                    {kRuleTypeDisallow, "/*.png?*arg_disallowed"},
+                    {kRuleTypeAllow, "/*.png"},
+                    {kRuleTypeDisallow, "/*.gif?*arg_disallowed"},
+                    {kRuleTypeAllow, "/*.gif"},
+                    {kRuleTypeDisallow, "/"}});
+  VerifyRobotsRulesReceiveResultHistogram(
+      RobotsRulesDecider::SubresourceRedirectRobotsRulesReceiveResult::
+          kSuccess);
+  VerifyReceivedRobotsRulesCountHistogram(6);
+
+  CheckRobotsRules("/allowed.jpg", RobotsRulesDecider::CheckResult::kAllowed);
+  CheckRobotsRules("/allowed.png", RobotsRulesDecider::CheckResult::kAllowed);
+  CheckRobotsRules("/allowed.gif", RobotsRulesDecider::CheckResult::kAllowed);
+  CheckRobotsRules("/disallowed.jpg?arg",
+                   RobotsRulesDecider::CheckResult::kDisallowed);
+  CheckRobotsRules("/allowed.png?arg",
+                   RobotsRulesDecider::CheckResult::kAllowed);
+  CheckRobotsRules("/allowed.png?arg_allowed",
+                   RobotsRulesDecider::CheckResult::kAllowed);
+  CheckRobotsRules("/allowed.png?arg_allowed&arg_allowed2",
+                   RobotsRulesDecider::CheckResult::kAllowed);
+  CheckRobotsRules("/allowed.png?arg_disallowed",
+                   RobotsRulesDecider::CheckResult::kDisallowed);
+  CheckRobotsRules("/allowed.png?arg_disallowed&arg_disallowed2",
+                   RobotsRulesDecider::CheckResult::kDisallowed);
+
+  VerifyTotalRobotsRulesApplyHistograms(9);
+}
+
+TEST_F(SubresourceRedirectRobotsRulesDeciderTest, TestRulesAreCaseSensitive) {
+  SetUpRobotsRules({{kRuleTypeAllow, "/allowed"},
+                    {kRuleTypeAllow, "/CamelCase"},
+                    {kRuleTypeAllow, "/CAPITALIZE"},
+                    {kRuleTypeDisallow, "/"}});
+  VerifyReceivedRobotsRulesCountHistogram(4);
+
+  CheckRobotsRules("/allowed.jpg", RobotsRulesDecider::CheckResult::kAllowed);
+  CheckRobotsRules("/CamelCase.jpg", RobotsRulesDecider::CheckResult::kAllowed);
+  CheckRobotsRules("/CAPITALIZE.jpg",
+                   RobotsRulesDecider::CheckResult::kAllowed);
+  CheckRobotsRules("/Allowed.jpg",
+                   RobotsRulesDecider::CheckResult::kDisallowed);
+  CheckRobotsRules("/camelcase.jpg",
+                   RobotsRulesDecider::CheckResult::kDisallowed);
+  CheckRobotsRules("/capitalize.jpg",
+                   RobotsRulesDecider::CheckResult::kDisallowed);
 
   VerifyTotalRobotsRulesApplyHistograms(6);
 }

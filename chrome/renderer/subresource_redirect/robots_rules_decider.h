@@ -51,13 +51,14 @@ class RobotsRulesDecider {
   // processed immediately and called with th result.
   void UpdateRobotsRules(const std::string& rules);
 
-  // Check whether the URL path is allowed or disallowed by robots rules.
-  // |callback| will be called with the result. The callback could be immediate
-  // if rules are available. Otherwise the callback will be added to
+  // Check whether the URL is allowed or disallowed by robots rules. |callback|
+  // will be called with the result. The callback could be immediate if rules
+  // are available. Otherwise the callback will be added to
   // |pending_check_requests_| and called when a decision can be made like when
   // rules are retrieved, or rule fetch timeout, etc.
-  void CheckRobotsRules(const std::string& url_path,
-                        CheckResultCallback callback);
+  // The robots rules check will make use of the |url| path and query
+  // parameters. The |url| origin, ref fragment, etc are immaterial.
+  void CheckRobotsRules(const GURL& url, CheckResultCallback callback);
 
  private:
   // Contains one robots.txt rule.
