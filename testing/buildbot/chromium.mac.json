@@ -10767,7 +10767,7 @@
         },
         "name": "telemetry_unittests",
         "resultdb": {
-          "enable": true
+          "enable": false
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
