@@ -7,7 +7,7 @@ import {NavigatorDelegate, PdfNavigator, WindowOpenDisposition} from 'chrome-ext
 import {OpenPdfParamsParser} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/open_pdf_params_parser.js';
 import {PDFScriptingAPI} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_scripting_api.js';
 
-import {getZoomableViewport, MockDocumentDimensions, MockElement, MockSizer, MockViewportChangedCallback, testAsync} from './test_util.js';
+import {getZoomableViewport, MockDocumentDimensions, MockElement, MockSizer, MockViewportChangedCallback} from './test_util.js';
 
 /** @implements {NavigatorDelegate} */
 class MockNavigatorDelegate {
@@ -121,7 +121,7 @@ const tests = [
    * Test navigation within the page, opening a url in the same tab and
    * opening a url in a new tab.
    */
-  function testNavigate() {
+  async function testNavigate() {
     const mockWindow = new MockElement(100, 100, null);
     const mockSizer = new MockSizer();
     const mockCallback = new MockViewportChangedCallback();
@@ -153,54 +153,53 @@ const tests = [
     viewport.setDocumentDimensions(documentDimensions);
     viewport.setZoom(1);
 
-    testAsync(async () => {
-      mockCallback.reset();
-      let navigatingDone =
-          eventToPromise('navigate-for-testing', navigator.getEventTarget());
-      // This should move viewport to page 0.
-      navigator.navigate(url + '#US', WindowOpenDisposition.CURRENT_TAB);
-      await navigatingDone;
-      chrome.test.assertTrue(mockCallback.wasCalled);
-      chrome.test.assertEq(0, viewport.position.x);
-      chrome.test.assertEq(0, viewport.position.y);
+    mockCallback.reset();
+    let navigatingDone =
+        eventToPromise('navigate-for-testing', navigator.getEventTarget());
+    // This should move viewport to page 0.
+    navigator.navigate(url + '#US', WindowOpenDisposition.CURRENT_TAB);
+    await navigatingDone;
+    chrome.test.assertTrue(mockCallback.wasCalled);
+    chrome.test.assertEq(0, viewport.position.x);
+    chrome.test.assertEq(0, viewport.position.y);
 
-      mockCallback.reset();
-      navigatorDelegate.reset();
-      navigatingDone =
-          eventToPromise('navigate-for-testing', navigator.getEventTarget());
-      // This should open "http://xyz.pdf#US" in a new tab. So current tab
-      // viewport should not update and viewport position should remain same.
-      navigator.navigate(url + '#US', WindowOpenDisposition.NEW_BACKGROUND_TAB);
-      await navigatingDone;
-      chrome.test.assertFalse(mockCallback.wasCalled);
-      chrome.test.assertTrue(navigatorDelegate.navigateInNewTabCalled);
-      chrome.test.assertEq(0, viewport.position.x);
-      chrome.test.assertEq(0, viewport.position.y);
+    mockCallback.reset();
+    navigatorDelegate.reset();
+    navigatingDone =
+        eventToPromise('navigate-for-testing', navigator.getEventTarget());
+    // This should open "http://xyz.pdf#US" in a new tab. So current tab
+    // viewport should not update and viewport position should remain same.
+    navigator.navigate(url + '#US', WindowOpenDisposition.NEW_BACKGROUND_TAB);
+    await navigatingDone;
+    chrome.test.assertFalse(mockCallback.wasCalled);
+    chrome.test.assertTrue(navigatorDelegate.navigateInNewTabCalled);
+    chrome.test.assertEq(0, viewport.position.x);
+    chrome.test.assertEq(0, viewport.position.y);
 
-      mockCallback.reset();
-      navigatingDone =
-          eventToPromise('navigate-for-testing', navigator.getEventTarget());
-      // This should move viewport to page 2.
-      navigator.navigate(url + '#UY', WindowOpenDisposition.CURRENT_TAB);
-      await navigatingDone;
-      chrome.test.assertTrue(mockCallback.wasCalled);
-      chrome.test.assertEq(0, viewport.position.x);
-      chrome.test.assertEq(300, viewport.position.y);
+    mockCallback.reset();
+    navigatingDone =
+        eventToPromise('navigate-for-testing', navigator.getEventTarget());
+    // This should move viewport to page 2.
+    navigator.navigate(url + '#UY', WindowOpenDisposition.CURRENT_TAB);
+    await navigatingDone;
+    chrome.test.assertTrue(mockCallback.wasCalled);
+    chrome.test.assertEq(0, viewport.position.x);
+    chrome.test.assertEq(300, viewport.position.y);
 
-      mockCallback.reset();
-      navigatorDelegate.reset();
-      navigatingDone =
-          eventToPromise('navigate-for-testing', navigator.getEventTarget());
-      // #ABC is not a named destination in the page so viewport should not
-      // update, and the viewport position should remain same as testNavigate3's
-      // navigating results, as this link will open in the same tab.
-      navigator.navigate(url + '#ABC', WindowOpenDisposition.CURRENT_TAB);
-      await navigatingDone;
-      chrome.test.assertFalse(mockCallback.wasCalled);
-      chrome.test.assertTrue(navigatorDelegate.navigateInCurrentTabCalled);
-      chrome.test.assertEq(0, viewport.position.x);
-      chrome.test.assertEq(300, viewport.position.y);
-    });
+    mockCallback.reset();
+    navigatorDelegate.reset();
+    navigatingDone =
+        eventToPromise('navigate-for-testing', navigator.getEventTarget());
+    // #ABC is not a named destination in the page so viewport should not
+    // update, and the viewport position should remain same as testNavigate3's
+    // navigating results, as this link will open in the same tab.
+    navigator.navigate(url + '#ABC', WindowOpenDisposition.CURRENT_TAB);
+    await navigatingDone;
+    chrome.test.assertFalse(mockCallback.wasCalled);
+    chrome.test.assertTrue(navigatorDelegate.navigateInCurrentTabCalled);
+    chrome.test.assertEq(0, viewport.position.x);
+    chrome.test.assertEq(300, viewport.position.y);
+    chrome.test.succeed();
   },
   /**
    * Test opening a url in the same tab, in a new tab, and in a new window for

@@ -117,7 +117,6 @@ js_library("material_elements_test") {
 
 js_library("download_controls_test") {
   deps = [
-    ":test_util",
     "//chrome/browser/resources/pdf:constants",
     "//chrome/browser/resources/pdf/elements:viewer-download-controls",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
@@ -202,7 +201,6 @@ js_library("viewer_pdf_toolbar_new_test") {
 
 js_library("viewer_thumbnail_bar_test") {
   deps = [
-    ":test_util",
     "../webui:test_util.m",
     "//chrome/browser/resources/pdf:controller",
     "//chrome/browser/resources/pdf/elements:viewer-thumbnail",

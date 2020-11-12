@@ -5,8 +5,6 @@
 import {eventToPromise, waitBeforeNextRender} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/_test_resources/webui/test_util.m.js';
 import {ViewerPdfToolbarNewElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/elements/viewer-pdf-toolbar-new.js';
 
-import {testAsync, waitFor} from './test_util.js';
-
 /** @return {!ViewerPdfToolbarNewElement} */
 function createToolbar() {
   document.body.innerHTML = '';
@@ -18,20 +16,17 @@ function createToolbar() {
 
 const tests = [
   function testHidingAnnotationsExitsAnnotationsMode() {
-    testAsync(async () => {
-      const toolbar = createToolbar();
-      toolbar.toggleAnnotation();
-      // This is normally done by the parent in response to the event fired by
-      // toggleAnnotation().
-      toolbar.annotationMode = true;
+    const toolbar = createToolbar();
+    toolbar.toggleAnnotation();
+    // This is normally done by the parent in response to the event fired by
+    // toggleAnnotation().
+    toolbar.annotationMode = true;
 
-      await toolbar.addEventListener('display-annotations-changed', async e => {
-        chrome.test.assertFalse(e.detail);
-        await waitFor(() => toolbar.annotationMode === false);
-        chrome.test.succeed();
-      });
-      toolbar.shadowRoot.querySelector('#show-annotations-button').click();
+    toolbar.addEventListener('display-annotations-changed', async e => {
+      chrome.test.assertFalse(e.detail);
+      chrome.test.succeed();
     });
+    toolbar.shadowRoot.querySelector('#show-annotations-button').click();
   },
   function testEnteringAnnotationsModeShowsAnnotations() {
     const toolbar = createToolbar();
@@ -58,60 +53,57 @@ const tests = [
         toolbar.shadowRoot.querySelector('#two-page-view-button').disabled);
     chrome.test.succeed();
   },
-  function testRotateOrTwoUpViewTriggersDialog() {
+  async function testRotateOrTwoUpViewTriggersDialog() {
     const toolbar = createToolbar();
     toolbar.annotationAvailable = true;
     toolbar.pdfAnnotationsEnabled = true;
     toolbar.rotated = false;
     toolbar.twoUpViewEnabled = false;
 
-    testAsync(async () => {
-      await waitBeforeNextRender(toolbar);
-      chrome.test.assertFalse(toolbar.annotationMode);
+    await waitBeforeNextRender(toolbar);
+    chrome.test.assertFalse(toolbar.annotationMode);
 
-      // If rotation is enabled clicking the button shows the dialog.
-      toolbar.rotated = true;
-      const annotateButton = toolbar.shadowRoot.querySelector('#annotate');
-      chrome.test.assertFalse(annotateButton.disabled);
-      annotateButton.click();
-      await waitBeforeNextRender(toolbar);
-      let dialog =
-          toolbar.shadowRoot.querySelector('viewer-annotations-mode-dialog');
-      chrome.test.assertTrue(dialog.isOpen());
+    // If rotation is enabled clicking the button shows the dialog.
+    toolbar.rotated = true;
+    const annotateButton = toolbar.shadowRoot.querySelector('#annotate');
+    chrome.test.assertFalse(annotateButton.disabled);
+    annotateButton.click();
+    await waitBeforeNextRender(toolbar);
+    let dialog =
+        toolbar.shadowRoot.querySelector('viewer-annotations-mode-dialog');
+    chrome.test.assertTrue(dialog.isOpen());
 
-      // Cancel the dialog.
-      const whenClosed = eventToPromise('close', dialog);
-      dialog.shadowRoot.querySelector('.cancel-button').click();
-      chrome.test.assertFalse(dialog.isOpen());
-      await whenClosed;
+    // Cancel the dialog.
+    const whenClosed = eventToPromise('close', dialog);
+    dialog.shadowRoot.querySelector('.cancel-button').click();
+    chrome.test.assertFalse(dialog.isOpen());
+    await whenClosed;
 
-      // If both two up and rotate are enabled, the dialog opens.
-      toolbar.twoUpViewEnabled = true;
-      chrome.test.assertFalse(annotateButton.disabled);
-      annotateButton.click();
-      await waitBeforeNextRender(toolbar);
-      dialog =
-          toolbar.shadowRoot.querySelector('viewer-annotations-mode-dialog');
-      chrome.test.assertTrue(dialog.isOpen());
+    // If both two up and rotate are enabled, the dialog opens.
+    toolbar.twoUpViewEnabled = true;
+    chrome.test.assertFalse(annotateButton.disabled);
+    annotateButton.click();
+    await waitBeforeNextRender(toolbar);
+    dialog = toolbar.shadowRoot.querySelector('viewer-annotations-mode-dialog');
+    chrome.test.assertTrue(dialog.isOpen());
 
-      // When "Edit" is clicked, the toolbar should fire
-      // annotation-mode-dialog-confirmed.
-      const whenConfirmed =
-          eventToPromise('annotation-mode-dialog-confirmed', toolbar);
-      dialog.shadowRoot.querySelector('.action-button').click();
-      await whenConfirmed;
-      chrome.test.assertFalse(dialog.isOpen());
-      await waitBeforeNextRender(toolbar);
+    // When "Edit" is clicked, the toolbar should fire
+    // annotation-mode-dialog-confirmed.
+    const whenConfirmed =
+        eventToPromise('annotation-mode-dialog-confirmed', toolbar);
+    dialog.shadowRoot.querySelector('.action-button').click();
+    await whenConfirmed;
+    chrome.test.assertFalse(dialog.isOpen());
+    await waitBeforeNextRender(toolbar);
 
-      // Dialog shows in two up view (un-rotated).
-      toolbar.rotated = false;
-      chrome.test.assertFalse(annotateButton.disabled);
-      annotateButton.click();
-      await waitBeforeNextRender(toolbar);
-      dialog =
-          toolbar.shadowRoot.querySelector('viewer-annotations-mode-dialog');
-      chrome.test.assertTrue(dialog.isOpen());
-    });
+    // Dialog shows in two up view (un-rotated).
+    toolbar.rotated = false;
+    chrome.test.assertFalse(annotateButton.disabled);
+    annotateButton.click();
+    await waitBeforeNextRender(toolbar);
+    dialog = toolbar.shadowRoot.querySelector('viewer-annotations-mode-dialog');
+    chrome.test.assertTrue(dialog.isOpen());
+    chrome.test.succeed();
   }
 ];
 
