@@ -10,6 +10,7 @@
 #include "ui/base/x/x11_util.h"
 #include "ui/events/platform/x11/x11_event_source.h"
 #include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/x/xlib_support.h"
 #include "ui/gfx/x/xproto.h"
 #include "ui/gtk/x/gtk_event_loop_x11.h"
 #include "ui/platform_window/x11/x11_window.h"
@@ -31,6 +32,7 @@ GtkUiDelegateX11::GtkUiDelegateX11(x11::Connection* connection)
     : connection_(connection) {
   DCHECK(connection_);
   gdk_set_allowed_backends("x11");
+  x11::InitXlib();
 }
 
 GtkUiDelegateX11::~GtkUiDelegateX11() = default;
@@ -38,6 +40,11 @@ GtkUiDelegateX11::~GtkUiDelegateX11() = default;
 void GtkUiDelegateX11::OnInitialized() {
   // Ensure the singleton instance of GtkEventLoopX11 is created and started.
   GtkEventLoopX11::EnsureInstance();
+
+  // GTK sets an Xlib error handler that exits the process on any async errors.
+  // We don't want this behavior, so reset the error handler to something that
+  // just logs the error.
+  x11::SetXlibErrorHandler();
 }
 
 GdkKeymap* GtkUiDelegateX11::GetGdkKeymap() {

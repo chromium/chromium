@@ -189,8 +189,7 @@ XlibDisplayWrapper Connection::GetXlibDisplay(XlibDisplayType type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!xlib_display_)
     xlib_display_ = base::WrapUnique(new XlibDisplay(display_string_));
-  return XlibDisplayWrapper(xlib_display_->xlib_loader_.get(),
-                            xlib_display_->display_, type);
+  return XlibDisplayWrapper(xlib_display_->display_, type);
 }
 
 Connection::Request::Request(unsigned int sequence,
