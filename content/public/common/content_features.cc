@@ -427,7 +427,7 @@ const base::Feature kNotificationTriggers{"NotificationTriggers",
 // Note that the origin policy-based variant of origin isolation is controlled
 // by kOriginPolicy, instead.
 const base::Feature kOriginIsolationHeader{"OriginIsolationHeader",
-                                           base::FEATURE_DISABLED_BY_DEFAULT};
+                                           base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Origin Policy. See https://crbug.com/751996
 const base::Feature kOriginPolicy{"OriginPolicy",

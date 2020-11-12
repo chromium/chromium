@@ -171,6 +171,7 @@ PASS oldChildWindow.onwebkittransitionend is newChildWindow.onwebkittransitionen
 PASS oldChildWindow.onwheel is newChildWindow.onwheel
 PASS oldChildWindow.opener is newChildWindow.opener
 PASS oldChildWindow.origin is newChildWindow.origin
+PASS oldChildWindow.originIsolated is newChildWindow.originIsolated
 PASS oldChildWindow.outerHeight is newChildWindow.outerHeight
 PASS oldChildWindow.outerWidth is newChildWindow.outerWidth
 PASS oldChildWindow.pageXOffset is newChildWindow.pageXOffset
