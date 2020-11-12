@@ -21,6 +21,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histograms>
 
+<variants name="DisplayModes">
+  <variant name="ClamshellMode" summary="Clamshell mode"/>
+  <variant name="TabletMode" summary="Tablet mode"/>
+</variants>
+
 <histogram name="Ash.Accelerators.Deprecated.ShowImeMenuBubble"
     enum="DeprecatedAcceleratorUsage" expires_after="M77">
   <owner>afakhry@chromium.org</owner>
@@ -88,10 +93,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     AmbientUiMode indicates whether the user entered Ambient mode from the lock
     screen or from screen idle.
   </summary>
-  <token key="TabletOrClamshell">
-    <variant name="ClamshellMode" summary="Clamshell mode"/>
-    <variant name="TabletMode" summary="Tablet mode"/>
-  </token>
+  <token key="TabletOrClamshell" variants="DisplayModes"/>
 </histogram>
 
 <histogram name="Ash.AmbientMode.AnimationSmoothness.PhotoTransition" units="%"
@@ -126,10 +128,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Among eligible users with ambient mode enabled, records the length of each
     session. The metric is uploaded when ambient mode is ended.
   </summary>
-  <token key="TabletOrClamshell">
-    <variant name="ClamshellMode" summary="Clamshell mode"/>
-    <variant name="TabletMode" summary="Tablet mode"/>
-  </token>
+  <token key="TabletOrClamshell" variants="DisplayModes"/>
 </histogram>
 
 <histogram name="Ash.AmbientMode.PhotoSource" enum="AmbientModePhotoSource"
@@ -193,10 +192,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     pressed in {TabletOrClamshell}. The recorded enum value indicates the type
     of the button pressed.
   </summary>
-  <token key="TabletOrClamshell">
-    <variant name="ClamshellMode" summary="Clamshell mode"/>
-    <variant name="TabletMode" summary="Tablet mode"/>
-  </token>
+  <token key="TabletOrClamshell" variants="DisplayModes"/>
 </histogram>
 
 <histogram
@@ -211,10 +207,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     the region. This counts each time they move the region or resize it. It is
     reset whenever a user creates a new region or the count is recorded.
   </summary>
-  <token key="TabletOrClamshell">
-    <variant name="ClamshellMode" summary="Clamshell mode"/>
-    <variant name="TabletMode" summary="Tablet mode"/>
-  </token>
+  <token key="TabletOrClamshell" variants="DisplayModes"/>
 </histogram>
 
 <histogram name="Ash.CaptureModeController.EntryPoint.{TabletOrClamshell}"
@@ -225,10 +218,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Recorded whenever Capture mode is entered from {TabletOrClamshell}. The
     recorded enum value indicates the method used to enter Capture mode.
   </summary>
-  <token key="TabletOrClamshell">
-    <variant name="ClamshellMode" summary="Clamshell mode"/>
-    <variant name="TabletMode" summary="Tablet mode"/>
-  </token>
+  <token key="TabletOrClamshell" variants="DisplayModes"/>
 </histogram>
 
 <histogram name="Ash.CaptureModeController.ScreenRecordingLength"
