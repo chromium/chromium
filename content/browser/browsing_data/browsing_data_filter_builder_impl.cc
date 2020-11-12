@@ -38,14 +38,20 @@ bool MatchesOrigin(const std::set<url::Origin>& origins,
                    const std::set<std::string>& registerable_domains,
                    BrowsingDataFilterBuilder::Mode mode,
                    const url::Origin& origin) {
-  std::string registerable_domain =
-      GetDomainAndRegistry(origin, INCLUDE_PRIVATE_REGISTRIES);
-  bool found_domain = base::Contains(
-      registerable_domains,
-      registerable_domain == "" ? origin.host() : registerable_domain);
+  bool is_delete_list = mode == BrowsingDataFilterBuilder::Mode::kDelete;
   bool found_origin = base::Contains(origins, origin);
-  return ((found_domain || found_origin) ==
-          (mode == BrowsingDataFilterBuilder::Mode::kDelete));
+  if (found_origin)
+    return is_delete_list;
+
+  bool found_domain = false;
+  if (!registerable_domains.empty()) {
+    std::string registerable_domain =
+        GetDomainAndRegistry(origin, INCLUDE_PRIVATE_REGISTRIES);
+    found_domain = base::Contains(
+        registerable_domains,
+        registerable_domain == "" ? origin.host() : registerable_domain);
+  }
+  return found_domain == is_delete_list;
 }
 
 bool MatchesURL(const std::set<url::Origin>& origins,
