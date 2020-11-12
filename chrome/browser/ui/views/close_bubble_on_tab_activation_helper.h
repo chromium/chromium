@@ -33,6 +33,7 @@ class CloseBubbleOnTabActivationHelper : public TabStripModelObserver {
 
  private:
   views::BubbleDialogDelegateView* owner_bubble_;  // weak, owns me.
+  Browser* browser_;
 
   DISALLOW_COPY_AND_ASSIGN(CloseBubbleOnTabActivationHelper);
 };
