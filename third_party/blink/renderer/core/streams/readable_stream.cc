@@ -689,7 +689,7 @@ class ReadableStream::PipeToEngine final
 
   Member<ScriptState> script_state_;
   Member<PipeOptions> pipe_options_;
-  Member<ReadableStreamGenericReader> reader_;
+  Member<ReadableStreamDefaultReader> reader_;
   Member<WritableStreamDefaultWriter> writer_;
   Member<StreamPromiseResolver> promise_;
   TraceWrapperV8Reference<v8::Promise> last_write_;
@@ -729,7 +729,7 @@ class ReadableStream::TeeEngine final : public GarbageCollected<TeeEngine> {
   class CancelAlgorithm;
 
   Member<ReadableStream> stream_;
-  Member<ReadableStreamGenericReader> reader_;
+  Member<ReadableStreamDefaultReader> reader_;
   Member<StreamPromiseResolver> cancel_promise_;
   bool closed_ = false;
 
@@ -759,7 +759,7 @@ class ReadableStream::TeeEngine::PullAlgorithm final : public StreamAlgorithm {
     //      and performs the following steps:
     return StreamThenPromise(
         script_state->GetContext(),
-        ReadableStreamGenericReader::Read(script_state, engine_->reader_)
+        ReadableStreamDefaultReader::Read(script_state, engine_->reader_)
             ->V8Promise(script_state->GetIsolate()),
         MakeGarbageCollected<ResolveFunction>(script_state, engine_));
   }
@@ -1596,7 +1596,10 @@ StreamPromiseResolver* ReadableStream::AddReadRequest(ScriptState* script_state,
                                                       ReadableStream* stream) {
   // https://streams.spec.whatwg.org/#readable-stream-add-read-request
   // 1. Assert: ! IsReadableStreamDefaultReader(stream.[[reader]]) is true.
-  DCHECK(stream->reader_);
+  ReadableStreamGenericReader* reader = stream->reader_;
+  ReadableStreamDefaultReader* default_reader =
+      static_cast<ReadableStreamDefaultReader*>(reader);
+  DCHECK(default_reader);
 
   // 2. Assert: stream.[[state]] is "readable".
   CHECK_EQ(stream->state_, kReadable);
@@ -1609,7 +1612,7 @@ StreamPromiseResolver* ReadableStream::AddReadRequest(ScriptState* script_state,
   // 4. Let readRequest be Record {[[promise]]: promise}.
   // 5. Append readRequest as the last element of stream.[[reader]].
   //  [[readRequests]].
-  stream->reader_->read_requests_.push_back(promise);
+  default_reader->read_requests_.push_back(promise);
 
   // 6. Return promise.
   return promise;
@@ -1679,18 +1682,23 @@ void ReadableStream::Close(ScriptState* script_state, ReadableStream* stream) {
 
   // TODO(ricea): Support BYOB readers.
   // 5. If ! IsReadableStreamDefaultReader(reader) is true,
+  // TODO(nidhijaju): Add a check that the reader is a default reader once BYOB
+  // readers have been implemented, so the static_cast can be changed later on.
   //   a. Repeat for each readRequest that is an element of reader.
   //      [[readRequests]],
   HeapDeque<Member<StreamPromiseResolver>> requests;
-  requests.Swap(reader->read_requests_);
+  requests.Swap(
+      static_cast<ReadableStreamDefaultReader*>(reader)->read_requests_);
   for (StreamPromiseResolver* promise : requests) {
     //   i. Resolve readRequest.[[promise]] with !
     //      ReadableStreamCreateReadResult(undefined, true, reader.
     //      [[forAuthorCode]]).
-    promise->Resolve(script_state,
-                     CreateReadResult(script_state,
-                                      v8::Undefined(script_state->GetIsolate()),
-                                      true, reader->for_author_code_));
+    promise->Resolve(
+        script_state,
+        CreateReadResult(script_state,
+                         v8::Undefined(script_state->GetIsolate()), true,
+                         static_cast<ReadableStreamDefaultReader*>(reader)
+                             ->for_author_code_));
   }
 
   //   b. Set reader.[[readRequests]] to an empty List.
@@ -1772,13 +1780,15 @@ void ReadableStream::Error(ScriptState* script_state,
   // TODO(ricea): Support BYOB readers.
   //   a. Repeat for each readRequest that is an element of reader.
   //      [[readRequests]],
-  for (StreamPromiseResolver* promise : reader->read_requests_) {
+  ReadableStreamDefaultReader* default_reader =
+      static_cast<ReadableStreamDefaultReader*>(reader);
+  for (StreamPromiseResolver* promise : default_reader->read_requests_) {
     //   i. Reject readRequest.[[promise]] with e.
     promise->Reject(script_state, e);
   }
 
   //   b. Set reader.[[readRequests]] to a new empty List.
-  reader->read_requests_.clear();
+  default_reader->read_requests_.clear();
 
   // 9. Reject reader.[[closedPromise]] with e.
   reader->closed_promise_->Reject(script_state, e);
@@ -1794,26 +1804,30 @@ void ReadableStream::FulfillReadRequest(ScriptState* script_state,
   // https://streams.spec.whatwg.org/#readable-stream-fulfill-read-request
   // 1. Let reader be stream.[[reader]].
   ReadableStreamGenericReader* reader = stream->reader_;
+  ReadableStreamDefaultReader* default_reader =
+      static_cast<ReadableStreamDefaultReader*>(reader);
 
   // 2. Let readRequest be the first element of reader.[[readRequests]].
-  StreamPromiseResolver* read_request = reader->read_requests_.front();
+  StreamPromiseResolver* read_request = default_reader->read_requests_.front();
 
   // 3. Remove readIntoRequest from reader.[[readIntoRequests]], shifting all
   //    other elements downward (so that the second becomes the first, and so
   //    on).
-  reader->read_requests_.pop_front();
+  default_reader->read_requests_.pop_front();
 
   // 4. Resolve readIntoRequest.[[promise]] with !
   //    ReadableStreamCreateReadResult(chunk, done, reader.[[forAuthorCode]]).
-  read_request->Resolve(
-      script_state, ReadableStream::CreateReadResult(script_state, chunk, done,
-                                                     reader->for_author_code_));
+  read_request->Resolve(script_state, ReadableStream::CreateReadResult(
+                                          script_state, chunk, done,
+                                          default_reader->for_author_code_));
 }
 
 int ReadableStream::GetNumReadRequests(const ReadableStream* stream) {
   // https://streams.spec.whatwg.org/#readable-stream-get-num-read-requests
   // 1. Return the number of elements in stream.[[reader]].[[readRequests]].
-  return stream->reader_->read_requests_.size();
+  ReadableStreamGenericReader* reader = stream->reader_;
+  return static_cast<ReadableStreamDefaultReader*>(reader)
+      ->read_requests_.size();
 }
 
 //

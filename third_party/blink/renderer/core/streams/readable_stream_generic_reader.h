@@ -13,9 +13,9 @@
 namespace blink {
 
 class ExceptionState;
+class ReadableStream;
 class ScriptPromise;
 class ScriptState;
-class ReadableStream;
 class StreamPromiseResolver;
 class Visitor;
 
@@ -26,50 +26,24 @@ class Visitor;
 // ReadableStreamGenericReader class.
 // TODO(ricea): Refactor this when implementing ReadableStreamBYOBReader.
 class CORE_EXPORT ReadableStreamGenericReader : public ScriptWrappable {
-  DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static ReadableStreamGenericReader* Create(ScriptState*,
-                                             ReadableStream* stream,
-                                             ExceptionState&);
-
-  // https://streams.spec.whatwg.org/#default-reader-constructor
-  ReadableStreamGenericReader(ScriptState*,
-                              ReadableStream* stream,
-                              ExceptionState&);
+  ReadableStreamGenericReader();
   ~ReadableStreamGenericReader() override;
 
-  // https://streams.spec.whatwg.org/#default-reader-closed
+  // https://streams.spec.whatwg.org/#generic-reader-closed
   ScriptPromise closed(ScriptState*) const;
 
-  // https://streams.spec.whatwg.org/#default-reader-cancel
+  // https://streams.spec.whatwg.org/#generic-reader-cancel
   ScriptPromise cancel(ScriptState*, ExceptionState&);
   ScriptPromise cancel(ScriptState*, ScriptValue reason, ExceptionState&);
-
-  // https://streams.spec.whatwg.org/#default-reader-read
-  ScriptPromise read(ScriptState*, ExceptionState&);
-
-  // https://streams.spec.whatwg.org/#default-reader-release-lock
-  void releaseLock(ScriptState*, ExceptionState&);
 
   //
   // Readable stream reader abstract operations
   //
 
-  // https://streams.spec.whatwg.org/#readable-stream-default-reader-read
-  static StreamPromiseResolver* Read(ScriptState* script_state,
-                                     ReadableStreamGenericReader* reader);
-
   // https://streams.spec.whatwg.org/#readable-stream-reader-generic-release
   static void GenericRelease(ScriptState*, ReadableStreamGenericReader*);
-
-  StreamPromiseResolver* ClosedPromise() { return closed_promise_; }
-
-  void Trace(Visitor*) const override;
-
- private:
-  friend class ReadableStreamDefaultController;
-  friend class ReadableStream;
 
   // https://streams.spec.whatwg.org/#readable-stream-reader-generic-cancel
   static v8::Local<v8::Promise> GenericCancel(ScriptState*,
@@ -81,10 +55,18 @@ class CORE_EXPORT ReadableStreamGenericReader : public ScriptWrappable {
                                 ReadableStreamGenericReader*,
                                 ReadableStream*);
 
+  StreamPromiseResolver* ClosedPromise() const { return closed_promise_; }
+
+  void Trace(Visitor*) const override;
+
+ private:
+  friend class ReadableStreamDefaultController;
+  friend class ReadableStream;
+
   Member<StreamPromiseResolver> closed_promise_;
-  bool for_author_code_ = true;
+
+ protected:
   Member<ReadableStream> owner_readable_stream_;
-  HeapDeque<Member<StreamPromiseResolver>> read_requests_;
 };
 
 }  // namespace blink

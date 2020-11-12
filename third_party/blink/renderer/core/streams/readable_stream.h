@@ -224,6 +224,7 @@ class CORE_EXPORT ReadableStream : public ScriptWrappable {
 
  private:
   friend class ReadableStreamDefaultController;
+  friend class ReadableStreamDefaultReader;
   friend class ReadableStreamGenericReader;
 
   class PipeToEngine;

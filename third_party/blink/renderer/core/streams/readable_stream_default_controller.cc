@@ -9,7 +9,7 @@
 #include "third_party/blink/renderer/core/streams/promise_handler.h"
 #include "third_party/blink/renderer/core/streams/queue_with_sizes.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
-#include "third_party/blink/renderer/core/streams/readable_stream_generic_reader.h"
+#include "third_party/blink/renderer/core/streams/readable_stream_default_reader.h"
 #include "third_party/blink/renderer/core/streams/stream_algorithms.h"
 #include "third_party/blink/renderer/core/streams/stream_promise_resolver.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -314,10 +314,12 @@ StreamPromiseResolver* ReadableStreamDefaultController::PullSteps(
     // d. Return a promise resolved with !
     //    ReadableStreamCreateReadResult(chunk, false,
     //    stream.[[reader]].[[forAuthorCode]]).
+    ReadableStreamGenericReader* reader = stream->reader_;
     return StreamPromiseResolver::CreateResolved(
-        script_state,
-        ReadableStream::CreateReadResult(script_state, chunk, false,
-                                         stream->reader_->for_author_code_));
+        script_state, ReadableStream::CreateReadResult(
+                          script_state, chunk, false,
+                          static_cast<ReadableStreamDefaultReader*>(reader)
+                              ->for_author_code_));
   }
 
   // 3. Let pendingPromise be ! ReadableStreamAddReadRequest(stream).

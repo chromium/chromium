@@ -43,24 +43,6 @@ void ReadableStreamBYOBReader::releaseLock(ScriptState* script_state,
   return;
 }
 
-ScriptPromise ReadableStreamBYOBReader::closed(
-    ScriptState* script_state) const {
-  return RejectUnimplemented(script_state);
-}
-
-ScriptPromise ReadableStreamBYOBReader::cancel(
-    ScriptState* script_state,
-    ExceptionState& exception_state) {
-  return RejectUnimplemented(script_state);
-}
-
-ScriptPromise ReadableStreamBYOBReader::cancel(
-    ScriptState* script_state,
-    ScriptValue reason,
-    ExceptionState& exception_state) {
-  return RejectUnimplemented(script_state);
-}
-
 void ReadableStreamBYOBReader::ThrowUnimplemented(
     ExceptionState& exception_state) {
   exception_state.ThrowTypeError("unimplemented");

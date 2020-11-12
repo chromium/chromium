@@ -74,7 +74,7 @@ class ReadableStreamDefaultController : public ScriptWrappable {
 
  private:
   friend class ReadableStream;
-  friend class ReadableStreamGenericReader;
+  friend class ReadableStreamDefaultReader;
 
   // https://streams.spec.whatwg.org/#rs-default-controller-private-cancel
   v8::Local<v8::Promise> CancelSteps(ScriptState*, v8::Local<v8::Value> reason);
