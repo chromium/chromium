@@ -1348,6 +1348,7 @@ public class StartSurfaceTest {
     @DisableIf.Build(sdk_is_less_than = N, message = "crbug.com/1148352")
     @CommandLineFlags.Add({BASE_PARAMS + "/single/exclude_mv_tiles/true"
             + "/show_last_active_tab_only/true/show_stack_tab_switcher/true"})
+    @DisabledTest(message = "crbug.com/1148365")
     public void testShow_SingleAsHomepageV2_VoiceSearchButtonShown() {
         // clang-format on
         if (!mImmediateReturn) {
