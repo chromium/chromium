@@ -3316,6 +3316,12 @@ crbug.com/435547 http/tests/cachestorage/serviceworker/ignore-search-with-creden
 crbug.com/697971 [ Mac10.12 ] virtual/text-antialias/selection/flexbox-selection-nested.html [ Skip ]
 crbug.com/697971 [ Mac10.12 ] virtual/text-antialias/selection/flexbox-selection.html [ Skip ]
 
+# [composite-bgcolor-animation]
+crbug.com/1148369 virtual/composite-bgcolor-animation/external/wpt/css/css-backgrounds/border-bottom-left-radius-010.xht [ Failure ]
+crbug.com/1148369 virtual/composite-bgcolor-animation/external/wpt/css/css-backgrounds/border-bottom-right-radius-010.xht [ Failure ]
+crbug.com/1148369 virtual/composite-bgcolor-animation/external/wpt/css/css-backgrounds/border-top-left-radius-010.xht [ Failure ]
+crbug.com/1148369 virtual/composite-bgcolor-animation/external/wpt/css/css-backgrounds/border-top-right-radius-010.xht [ Failure ]
+
 # [css-grid]
 crbug.com/921722 external/wpt/css/css-grid/abspos/descendant-static-position-001.html [ Failure ]
 crbug.com/921722 external/wpt/css/css-grid/abspos/descendant-static-position-002.html [ Failure ]

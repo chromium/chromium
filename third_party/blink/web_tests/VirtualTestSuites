@@ -185,8 +185,9 @@
   },
   {
     "prefix": "composite-bgcolor-animation",
-    "bases": ["external/wpt/css/composite-bgcolor-animation"],
-    "args": ["--enable-blink-features=CompositeBGColorAnimation"]
+    "bases": ["external/wpt/css/css-backgrounds"],
+    "args": ["--enable-threaded-compositing",
+             "--enable-blink-features=CompositeBGColorAnimation"]
   },
   {
     "prefix": "composite-after-paint",
