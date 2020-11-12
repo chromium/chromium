@@ -212,10 +212,11 @@ void UserManager::Show(
   user_manager->set_user_manager_started_showing(base::Time::Now());
   profiles::CreateSystemProfileForUserManager(
       profile_path_to_focus, user_manager_action,
-      base::Bind(&UserManagerView::OnSystemProfileCreated,
-                 base::Passed(base::WrapUnique(user_manager)),
-                 base::Owned(new base::AutoReset<bool>(
-                     &g_is_user_manager_view_under_construction, true))));
+      base::BindRepeating(
+          &UserManagerView::OnSystemProfileCreated,
+          base::Passed(base::WrapUnique(user_manager)),
+          base::Owned(new base::AutoReset<bool>(
+              &g_is_user_manager_view_under_construction, true))));
 }
 
 // static

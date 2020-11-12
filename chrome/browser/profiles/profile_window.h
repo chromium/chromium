@@ -115,7 +115,7 @@ bool IsLockAvailable(Profile* profile);
 void CreateSystemProfileForUserManager(
     const base::FilePath& profile_path_to_focus,
     profiles::UserManagerAction user_manager_action,
-    const base::Callback<void(Profile*, const std::string&)>& callback);
+    base::RepeatingCallback<void(Profile*, const std::string&)> callback);
 
 // Converts from modes in the avatar menu to modes understood by
 // ProfileMenuView.

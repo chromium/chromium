@@ -399,11 +399,11 @@ IN_PROC_BROWSER_TEST_F(ProfileWindowBrowserTest,
 class ProfileWindowWebUIBrowserTest : public WebUIBrowserTest {
  public:
   void OnSystemProfileCreated(std::string* url_to_test,
-                              const base::Closure& quit_loop,
+                              base::OnceClosure quit_loop,
                               Profile* profile,
                               const std::string& url) {
     *url_to_test = url;
-    quit_loop.Run();
+    std::move(quit_loop).Run();
   }
 
  private:
@@ -421,10 +421,9 @@ IN_PROC_BROWSER_TEST_F(ProfileWindowWebUIBrowserTest,
   profiles::CreateSystemProfileForUserManager(
       browser()->profile()->GetPath(),
       profiles::USER_MANAGER_SELECT_PROFILE_NO_ACTION,
-      base::Bind(&ProfileWindowWebUIBrowserTest::OnSystemProfileCreated,
-                 base::Unretained(this),
-                 &url_to_test,
-                 run_loop.QuitClosure()));
+      base::BindRepeating(
+          &ProfileWindowWebUIBrowserTest::OnSystemProfileCreated,
+          base::Unretained(this), &url_to_test, run_loop.QuitClosure()));
   run_loop.Run();
 
   ui_test_utils::NavigateToURL(browser(), GURL(url_to_test));
@@ -442,12 +441,10 @@ IN_PROC_BROWSER_TEST_F(ProfileWindowWebUIBrowserTest,
   std::string url_to_test;
   base::RunLoop run_loop;
   profiles::CreateSystemProfileForUserManager(
-      expected_path,
-      profiles::USER_MANAGER_SELECT_PROFILE_NO_ACTION,
-      base::Bind(&ProfileWindowWebUIBrowserTest::OnSystemProfileCreated,
-                 base::Unretained(this),
-                 &url_to_test,
-                 run_loop.QuitClosure()));
+      expected_path, profiles::USER_MANAGER_SELECT_PROFILE_NO_ACTION,
+      base::BindRepeating(
+          &ProfileWindowWebUIBrowserTest::OnSystemProfileCreated,
+          base::Unretained(this), &url_to_test, run_loop.QuitClosure()));
   run_loop.Run();
 
   ui_test_utils::NavigateToURL(browser(), GURL(url_to_test));
