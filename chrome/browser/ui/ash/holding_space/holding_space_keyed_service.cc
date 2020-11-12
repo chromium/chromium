@@ -48,6 +48,18 @@ ProfileManager* GetProfileManager() {
   return g_browser_process->profile_manager();
 }
 
+// Records the time from the first availability of the holding space feature
+// to the time of the first item being added into holding space.
+void RecordTimeFromFirstAvailabilityToFirstAdd(Profile* profile) {
+  base::Time time_of_first_availability =
+      holding_space_prefs::GetTimeOfFirstAvailability(profile->GetPrefs())
+          .value();
+  base::Time time_of_first_add =
+      holding_space_prefs::GetTimeOfFirstAdd(profile->GetPrefs()).value();
+  holding_space_metrics::RecordTimeFromFirstAvailabilityToFirstAdd(
+      time_of_first_add - time_of_first_availability);
+}
+
 // Records the time from the first entry to the first pin into holding space.
 // Note that this time may be zero if the user pinned their first file before
 // having ever entered holding space.
@@ -248,9 +260,10 @@ void HoldingSpaceKeyedService::AddScreenRecording(
 
 void HoldingSpaceKeyedService::AddItem(std::unique_ptr<HoldingSpaceItem> item) {
   // Mark the time when the user's first item was added to holding space. Note
-  // that this no-ops if this is not the user's first time adding an item.
-  // TODO(crbug.com/1131266): Record histogram.
-  holding_space_prefs::MarkTimeOfFirstAdd(profile_->GetPrefs());
+  // that true is returned iff this is in fact the user's first add and, if so,
+  // the time it took for the user to add their first item should be recorded.
+  if (holding_space_prefs::MarkTimeOfFirstAdd(profile_->GetPrefs()))
+    RecordTimeFromFirstAvailabilityToFirstAdd(profile_);
 
   holding_space_model_.AddItem(std::move(item));
 }

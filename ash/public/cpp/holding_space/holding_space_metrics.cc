@@ -96,6 +96,15 @@ void RecordItemCounts(const std::vector<const HoldingSpaceItem*>& items) {
   }
 }
 
+void RecordTimeFromFirstAvailabilityToFirstAdd(base::TimeDelta time_delta) {
+  // NOTE: 24 days appears to be the max supported number of days.
+  base::UmaHistogramCustomTimes(
+      "HoldingSpace.TimeFromFirstAvailabilityToFirstAdd", time_delta,
+      /*min=*/base::TimeDelta::FromMinutes(1),
+      /*max=*/base::TimeDelta::FromDays(24),
+      /*buckets=*/50);
+}
+
 void RecordTimeFromFirstAvailabilityToFirstEntry(base::TimeDelta time_delta) {
   // NOTE: 24 days appears to be the max supported number of days.
   base::UmaHistogramCustomTimes(

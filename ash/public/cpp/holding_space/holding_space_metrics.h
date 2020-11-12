@@ -68,6 +68,11 @@ ASH_PUBLIC_EXPORT void RecordItemAction(
 ASH_PUBLIC_EXPORT void RecordItemCounts(
     const std::vector<const HoldingSpaceItem*>& items);
 
+// Records time from the first availability of the holding space feature to the
+// first item being added to holding space.
+ASH_PUBLIC_EXPORT void RecordTimeFromFirstAvailabilityToFirstAdd(
+    base::TimeDelta time_delta);
+
 // Records time from first availability to the first entry into holding space.
 ASH_PUBLIC_EXPORT void RecordTimeFromFirstAvailabilityToFirstEntry(
     base::TimeDelta time_delta);
