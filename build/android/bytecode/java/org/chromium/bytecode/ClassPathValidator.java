@@ -23,7 +23,7 @@ import java.util.function.Consumer;
  */
 public class ClassPathValidator {
     // Number of warnings to print.
-    private static final int MAX_MISSING_CLASS_WARNINGS = 4;
+    private static final int MAX_MISSING_CLASS_WARNINGS = 10;
     // Number of missing classes to show per missing jar.
     private static final int MAX_ERRORS_PER_JAR = 2;
     // Map of missing .jar -> Missing class -> Classes that failed.
