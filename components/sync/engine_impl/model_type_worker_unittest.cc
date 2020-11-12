@@ -1265,6 +1265,26 @@ TEST_F(ModelTypeWorkerTest, ReceiveUndecryptableEntries) {
   EXPECT_EQ(GetLocalCryptographerKeyName(), update.encryption_key_name);
 }
 
+TEST_F(ModelTypeWorkerTest, OverwriteUndecryptableUpdateWithDecryptableOne) {
+  NormalInitialize();
+
+  // The cryptographer can decrypt data encrypted with key 1.
+  AddPendingKey();
+  DecryptPendingKey();
+  // The worker receives an update encrypted with an unknown key 2.
+  SetUpdateEncryptionFilter(2);
+  TriggerUpdateFromServer(10, kTag1, kValue1);
+  // The data can't be decrypted yet.
+  ASSERT_FALSE(processor()->HasUpdateResponse(kHash1));
+
+  // The server sends an update for the same server id now encrypted with key 1.
+  SetUpdateEncryptionFilter(1);
+  TriggerUpdateFromServer(10, kTag1, kValue1);
+  // The previous undecryptable update should be overwritten, unblocking the
+  // worker.
+  EXPECT_TRUE(processor()->HasUpdateResponse(kHash1));
+}
+
 // Verify that corrupted encrypted updates don't cause crashes.
 TEST_F(ModelTypeWorkerTest, ReceiveCorruptEncryption) {
   // Initialize the worker with basic encryption state.

@@ -195,6 +195,8 @@ SyncerError ModelTypeWorker::ProcessGetUpdatesResponse(
                                        *update_entity, &response_data)) {
       case SUCCESS:
         pending_updates_.push_back(std::move(response_data));
+        // Override any previously undecryptable update for the same id.
+        entries_pending_decryption_.erase(update_entity->id_string());
         break;
       case DECRYPTION_PENDING:
         // Cannot decrypt now, copy the sync entity for later decryption.
