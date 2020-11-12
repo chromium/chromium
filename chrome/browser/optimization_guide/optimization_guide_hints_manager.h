@@ -324,7 +324,7 @@ class OptimizationGuideHintsManager
 
   // Returns true if |this| is allowed to fetch hints at the navigation time for
   // |url|.
-  bool IsAllowedToFetchNavigationHints(const GURL& url) const;
+  bool IsAllowedToFetchNavigationHints(const GURL& url);
 
   // Loads the hint if available.
   // |callback| is run when the request has finished regardless of whether there
@@ -352,6 +352,11 @@ class OptimizationGuideHintsManager
   void OnPredictionUpdated(
       const base::Optional<NavigationPredictorKeyedService::Prediction>
           prediction) override;
+
+  // Returns whether there is an optimization type to fetch for. Will return
+  // false if no optimization types are registered or if all registered
+  // optimization types are covered by optimization filters.
+  bool HasOptimizationTypeToFetchFor();
 
   // Creates a hints fetch for |navigation_handle| if it is allowed. The
   // fetch will include the host and URL of the |navigation_handle| if the

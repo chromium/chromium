@@ -1208,11 +1208,25 @@ void OptimizationGuideHintsManager::OnEffectiveConnectionTypeChanged(
   current_effective_connection_type_ = effective_connection_type;
 }
 
+bool OptimizationGuideHintsManager::HasOptimizationTypeToFetchFor() {
+  if (registered_optimization_types_.empty())
+    return false;
+
+  base::AutoLock lock(optimization_filters_lock_);
+  for (const auto& optimization_type : registered_optimization_types_) {
+    if (optimization_types_with_filter_.find(optimization_type) ==
+        optimization_types_with_filter_.end()) {
+      return true;
+    }
+  }
+  return false;
+}
+
 bool OptimizationGuideHintsManager::IsAllowedToFetchNavigationHints(
-    const GURL& url) const {
+    const GURL& url) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  if (registered_optimization_types_.empty())
+  if (!HasOptimizationTypeToFetchFor())
     return false;
 
   if (!IsUserPermittedToFetchFromRemoteOptimizationGuide(profile_))

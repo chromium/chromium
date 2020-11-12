@@ -2512,6 +2512,42 @@ TEST_F(OptimizationGuideHintsManagerFetchingTest, HintsFetched_AtSRP_ECT_4G) {
 }
 
 TEST_F(OptimizationGuideHintsManagerFetchingTest,
+       HintsFetched_RegisteredOptimizationTypes_AllWithOptFilter) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      optimization_guide::switches::kDisableCheckingUserPermissionsForTesting);
+  hints_manager()->RegisterOptimizationTypes(
+      {optimization_guide::proto::LITE_PAGE_REDIRECT});
+
+  optimization_guide::proto::Configuration config;
+  optimization_guide::BloomFilter allowlist_bloom_filter(
+      kDefaultHostBloomFilterNumHashFunctions, kDefaultHostBloomFilterNumBits);
+  PopulateBloomFilterWithDefaultHost(&allowlist_bloom_filter);
+  AddBloomFilterToConfig(
+      optimization_guide::proto::LITE_PAGE_REDIRECT, allowlist_bloom_filter,
+      kDefaultHostBloomFilterNumHashFunctions, kDefaultHostBloomFilterNumBits,
+      /*is_allowlist=*/true, &config);
+  ProcessHints(config, "1.0.0.0");
+
+  // Set ECT estimate so fetch is activated.
+  hints_manager()->OnEffectiveConnectionTypeChanged(
+      net::EffectiveConnectionType::EFFECTIVE_CONNECTION_TYPE_SLOW_2G);
+  std::unique_ptr<content::MockNavigationHandle> navigation_handle =
+      CreateMockNavigationHandleWithOptimizationGuideWebContentsObserver(
+          url_without_hints());
+  base::HistogramTester histogram_tester;
+  hints_manager()->OnNavigationStartOrRedirect(navigation_handle.get(),
+                                               base::DoNothing());
+  RunUntilIdle();
+
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.HintsFetcher.GetHintsRequest.HostCount", 0);
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.HintsFetcher.GetHintsRequest.UrlCount", 0);
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.HintsManager.RaceNavigationFetchAttemptStatus", 0);
+}
+
+TEST_F(OptimizationGuideHintsManagerFetchingTest,
        HintsFetched_AtNonSRP_ECT_SLOW_2G) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       optimization_guide::switches::kDisableCheckingUserPermissionsForTesting);
