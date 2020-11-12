@@ -24,6 +24,7 @@ class MockStaticTriggerConditions : public StaticTriggerConditions {
   MOCK_CONST_METHOD0(is_first_time_user, bool());
   MOCK_CONST_METHOD0(has_stored_login_credentials, bool());
   MOCK_CONST_METHOD1(is_in_experiment, bool(int experiment_id));
+  MOCK_CONST_METHOD0(has_results, bool());
 };
 
 }  // namespace autofill_assistant

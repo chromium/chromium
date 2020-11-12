@@ -34,6 +34,7 @@ void ExtractSelectors(const TriggerScriptConditionProto& proto,
     case TriggerScriptConditionProto::kStoredLoginCredentials:
     case TriggerScriptConditionProto::kIsFirstTimeUser:
     case TriggerScriptConditionProto::kExperimentId:
+    case TriggerScriptConditionProto::kKeyboardHidden:
     case TriggerScriptConditionProto::TYPE_NOT_SET:
       return;
     case TriggerScriptConditionProto::kSelector:
@@ -65,6 +66,14 @@ base::Optional<bool> DynamicTriggerConditions::GetSelectorMatches(
   return it->second;
 }
 
+void DynamicTriggerConditions::SetKeyboardVisible(bool visible) {
+  keyboard_visible_ = visible;
+}
+
+bool DynamicTriggerConditions::GetKeyboardVisible() const {
+  return keyboard_visible_;
+}
+
 void DynamicTriggerConditions::Update(WebController* web_controller,
                                       base::OnceCallback<void(void)> callback) {
   DCHECK(!callback_) << "Update called while already in progress";
@@ -72,8 +81,9 @@ void DynamicTriggerConditions::Update(WebController* web_controller,
     return;
   }
 
-  selector_matches_.clear();
+  temporary_selector_matches_.clear();
   if (selectors_.empty()) {
+    selector_matches_ = temporary_selector_matches_;
     std::move(callback).Run();
     return;
   }
@@ -87,12 +97,18 @@ void DynamicTriggerConditions::Update(WebController* web_controller,
   }
 }
 
+bool DynamicTriggerConditions::HasResults() const {
+  return selector_matches_.size() == selectors_.size();
+}
+
 void DynamicTriggerConditions::OnFindElement(
     const Selector& selector,
     const ClientStatus& client_status,
     std::unique_ptr<ElementFinder::Result> element) {
-  selector_matches_.emplace(std::make_pair(selector, client_status.ok()));
-  if (selector_matches_.size() == selectors_.size()) {
+  temporary_selector_matches_.emplace(
+      std::make_pair(selector, client_status.ok()));
+  if (temporary_selector_matches_.size() == selectors_.size()) {
+    selector_matches_ = temporary_selector_matches_;
     std::move(callback_).Run();
   }
 }

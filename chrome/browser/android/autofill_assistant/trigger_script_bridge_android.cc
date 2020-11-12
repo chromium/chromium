@@ -110,6 +110,16 @@ bool TriggerScriptBridgeAndroid::OnBackButtonPressed(
   return trigger_script_coordinator_->OnBackButtonPressed();
 }
 
+void TriggerScriptBridgeAndroid::OnKeyboardVisibilityChanged(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& jcaller,
+    jboolean jvisible) {
+  if (!trigger_script_coordinator_) {
+    return;
+  }
+  trigger_script_coordinator_->OnKeyboardVisibilityChanged(jvisible);
+}
+
 void TriggerScriptBridgeAndroid::OnTriggerScriptShown(
     const TriggerScriptUIProto& proto) {
   if (!java_object_) {

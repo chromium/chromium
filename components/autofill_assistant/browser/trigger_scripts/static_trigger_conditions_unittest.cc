@@ -61,5 +61,22 @@ TEST_F(StaticTriggerConditionsTest, SetIsFirstTimeUser) {
   EXPECT_FALSE(static_trigger_conditions_.is_first_time_user());
 }
 
+TEST_F(StaticTriggerConditionsTest, HasResults) {
+  EXPECT_FALSE(static_trigger_conditions_.has_results());
+
+  TriggerContextImpl trigger_context(/* params = */ {}, /* exp = */ "1,2,4");
+  EXPECT_CALL(mock_client_, IsFirstTimeTriggerScriptUser)
+      .WillOnce(Return(true));
+  EXPECT_CALL(mock_client_, GetWebsiteLoginManager)
+      .WillOnce(Return(&mock_website_login_manager_));
+  EXPECT_CALL(mock_website_login_manager_, OnGetLoginsForUrl(GURL(kFakeUrl), _))
+      .WillOnce(RunOnceCallback<1>(std::vector<WebsiteLoginManager::Login>{
+          WebsiteLoginManager::Login(GURL(kFakeUrl), "fake_username")}));
+  EXPECT_CALL(mock_callback_, Run).Times(1);
+  static_trigger_conditions_.Init(&mock_client_, GURL(kFakeUrl),
+                                  &trigger_context, mock_callback_.Get());
+  EXPECT_TRUE(static_trigger_conditions_.has_results());
+}
+
 }  // namespace
 }  // namespace autofill_assistant

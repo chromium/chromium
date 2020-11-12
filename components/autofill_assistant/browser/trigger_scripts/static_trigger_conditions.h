@@ -27,8 +27,6 @@ class StaticTriggerConditions {
   // Initializes the field values according to |url| and the current state of
   // |client|. Invokes |callback| when done. |client| and |trigger_context| must
   // outlive this instance.
-  // NOTE: this class is not thread-safe. Do not invoke methods of this class
-  // while a call to |Init| has yet to finish.
   virtual void Init(Client* client,
                     const GURL& url,
                     TriggerContext* trigger_context,
@@ -38,12 +36,17 @@ class StaticTriggerConditions {
   virtual bool has_stored_login_credentials() const;
   virtual bool is_in_experiment(int experiment_id) const;
 
+  // If true, all values have been evaluated. They may be out-of-date by one
+  // cycle in case an update is currently scheduled.
+  virtual bool has_results() const;
+
  private:
   void OnGetLogins(std::vector<WebsiteLoginManager::Login> logins);
 
   // The callback to invoke once all information requested in |Init| has been
   // collected. Only valid during calls of |Init|.
   base::OnceCallback<void(void)> callback_;
+  bool has_results_ = false;
   bool is_first_time_user_ = true;
   bool has_stored_login_credentials_ = false;
   TriggerContext* trigger_context_;

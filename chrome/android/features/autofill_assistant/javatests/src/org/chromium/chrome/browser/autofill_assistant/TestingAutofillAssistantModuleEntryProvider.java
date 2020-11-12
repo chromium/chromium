@@ -16,6 +16,7 @@ import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.base.ActivityKeyboardVisibilityDelegate;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -65,8 +66,10 @@ class TestingAutofillAssistantModuleEntryProvider extends AutofillAssistantModul
         public void start(BottomSheetController bottomSheetController,
                 BrowserControlsStateProvider browserControls,
                 CompositorViewHolder compositorViewHolder, Context context,
-                @NonNull WebContents webContents, boolean skipOnboarding, boolean isChromeCustomTab,
-                @NonNull String initialUrl, Map<String, String> parameters, String experimentIds,
+                @NonNull WebContents webContents,
+                ActivityKeyboardVisibilityDelegate keyboardVisibilityDelegate,
+                boolean skipOnboarding, boolean isChromeCustomTab, @NonNull String initialUrl,
+                Map<String, String> parameters, String experimentIds,
                 @Nullable String callerAccount, @Nullable String userName) {}
 
         @Override

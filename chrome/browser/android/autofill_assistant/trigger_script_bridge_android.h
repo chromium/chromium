@@ -57,6 +57,12 @@ class TriggerScriptBridgeAndroid : public TriggerScriptCoordinator::Observer {
   bool OnBackButtonPressed(JNIEnv* env,
                            const base::android::JavaParamRef<jobject>& jcaller);
 
+  // Called by the UI when the keyboard was shown or hidden.
+  void OnKeyboardVisibilityChanged(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& jcaller,
+      jboolean jvisible);
+
  private:
   // From TriggerScriptCoordinator::Observer:
   void OnTriggerScriptShown(const TriggerScriptUIProto& proto) override;

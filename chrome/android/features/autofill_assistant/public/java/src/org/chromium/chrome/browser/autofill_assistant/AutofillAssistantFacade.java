@@ -161,6 +161,7 @@ public class AutofillAssistantFacade {
                                 BottomSheetControllerProvider.from(activity.getWindowAndroid()),
                                 activity.getBrowserControlsManager(),
                                 activity.getCompositorViewHolder(), activity, tab.getWebContents(),
+                                activity.getWindowAndroid().getKeyboardDelegate(),
                                 !AutofillAssistantPreferencesUtil.getShowOnboarding(),
                                 activity instanceof CustomTabActivity, arguments.getInitialUrl(),
                                 arguments.getParameters(), arguments.getExperimentIds(),

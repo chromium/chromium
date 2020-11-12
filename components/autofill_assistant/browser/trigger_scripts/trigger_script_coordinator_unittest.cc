@@ -73,6 +73,11 @@ class TriggerScriptCoordinatorTest : public content::RenderViewHostTestHarness {
         std::make_unique<NiceMock<MockDynamicTriggerConditions>>();
     mock_dynamic_trigger_conditions_ = mock_dynamic_trigger_conditions.get();
 
+    ON_CALL(*mock_static_trigger_conditions, has_results)
+        .WillByDefault(Return(true));
+    ON_CALL(*mock_dynamic_trigger_conditions, HasResults)
+        .WillByDefault(Return(true));
+
     coordinator_ = std::make_unique<TriggerScriptCoordinator>(
         &mock_client_, std::move(mock_web_controller),
         std::move(mock_request_sender), GURL(kFakeServerUrl),
@@ -678,6 +683,56 @@ TEST_F(TriggerScriptCoordinatorTest, NoTimeoutByDefault) {
   for (int i = 0; i < 10; ++i) {
     task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(1));
   }
+}
+
+TEST_F(TriggerScriptCoordinatorTest, KeyboardEventTriggersOutOfScheduleCheck) {
+  GetTriggerScriptsResponseProto response;
+  *response.add_trigger_scripts()
+       ->mutable_trigger_condition()
+       ->mutable_selector() = ToSelectorProto("#selector");
+  response.set_timeout_ms(3000);
+  response.set_trigger_condition_check_interval_ms(1000);
+  std::string serialized_response;
+  response.SerializeToString(&serialized_response);
+
+  EXPECT_CALL(*mock_request_sender_, OnSendRequest(GURL(kFakeServerUrl), _, _))
+      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, serialized_response));
+  EXPECT_CALL(*mock_static_trigger_conditions_, Init)
+      .WillOnce(RunOnceCallback<3>());
+  EXPECT_CALL(*mock_dynamic_trigger_conditions_,
+              OnUpdate(mock_web_controller_, _))
+      .WillOnce(RunOnceCallback<1>());
+  EXPECT_CALL(*mock_dynamic_trigger_conditions_, GetSelectorMatches)
+      .WillOnce(Return(false));
+  coordinator_->Start(GURL(kFakeDeepLink),
+                      std::make_unique<TriggerContextImpl>());
+
+  // While the next call to Update is pending, a keyboard visibility event will
+  // immediately trigger an out-of-schedule update (which does not count towards
+  // the timeout).
+  for (int i = 0; i < 3; ++i) {
+    EXPECT_CALL(*mock_dynamic_trigger_conditions_, GetSelectorMatches)
+        .WillOnce(Return(false));
+    EXPECT_CALL(*mock_dynamic_trigger_conditions_, OnUpdate).Times(0);
+    coordinator_->OnKeyboardVisibilityChanged(true);
+  }
+
+  EXPECT_CALL(*mock_dynamic_trigger_conditions_, GetSelectorMatches)
+      .Times(3)
+      .WillRepeatedly(Return(false));
+  EXPECT_CALL(*mock_dynamic_trigger_conditions_,
+              OnUpdate(mock_web_controller_, _))
+      .Times(3)
+      .WillRepeatedly(RunOnceCallback<1>());
+  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(1));
+
+  EXPECT_CALL(mock_observer_, OnTriggerScriptFinished(
+                                  Metrics::LiteScriptFinishedState::
+                                      LITE_SCRIPT_TRIGGER_CONDITION_TIMEOUT));
+  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(1));
+  AssertRecordedFinishedState(
+      Metrics::LiteScriptFinishedState::LITE_SCRIPT_TRIGGER_CONDITION_TIMEOUT);
 }
 
 }  // namespace autofill_assistant

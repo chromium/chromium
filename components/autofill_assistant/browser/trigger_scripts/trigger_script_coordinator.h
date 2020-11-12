@@ -79,6 +79,9 @@ class TriggerScriptCoordinator : public content::WebContentsObserver {
   // handled or not.
   bool OnBackButtonPressed();
 
+  // Called when the keyboard was shown or hidden.
+  void OnKeyboardVisibilityChanged(bool visible);
+
   void AddObserver(Observer* observer);
   void RemoveObserver(const Observer* observer);
 
@@ -96,9 +99,14 @@ class TriggerScriptCoordinator : public content::WebContentsObserver {
   void ShowTriggerScript(int index);
   void HideTriggerScript();
   void CheckDynamicTriggerConditions();
-  void OnDynamicTriggerConditionsEvaluated();
+  void OnDynamicTriggerConditionsEvaluated(bool is_out_of_schedule);
   void OnGetTriggerScripts(int http_status, const std::string& response);
   void Stop(Metrics::LiteScriptFinishedState state);
+
+  // Can be invoked to trigger an immediate check of the trigger condition,
+  // reusing the dynamic results of the last time. Does nothing if there are no
+  // previous results to reuse.
+  void RunOutOfScheduleTriggerConditionCheck();
 
   void NotifyOnTriggerScriptFinished(Metrics::LiteScriptFinishedState state);
 

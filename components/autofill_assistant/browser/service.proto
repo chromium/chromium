@@ -527,6 +527,8 @@ message TriggerScriptConditionProto {
     Empty is_first_time_user = 6;
     // The condition matches if the client is in the specified experiment.
     int32 experiment_id = 7;
+    // The condition matches if the keyboard is hidden.
+    Empty keyboard_hidden = 9;
   }
 
   reserved 4;

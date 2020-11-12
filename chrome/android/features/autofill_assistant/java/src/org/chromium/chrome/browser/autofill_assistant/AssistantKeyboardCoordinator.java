@@ -30,6 +30,7 @@ class AssistantKeyboardCoordinator {
         void onKeyboardVisibilityChanged(boolean visible);
     }
 
+    // TODO(b/173103628): refactor and inject the keyboard delegate directly.
     AssistantKeyboardCoordinator(Activity activity,
             ActivityKeyboardVisibilityDelegate keyboardVisibilityDelegate,
             CompositorViewHolder compositorViewHolder, AssistantModel model, Delegate delegate,

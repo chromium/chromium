@@ -37,6 +37,12 @@ class DynamicTriggerConditions {
   virtual base::Optional<bool> GetSelectorMatches(
       const Selector& selector) const;
 
+  // Sets whether the keyboard is currently visible.
+  virtual void SetKeyboardVisible(bool visible);
+
+  // Returns whether the keyboard is currently visible.
+  virtual bool GetKeyboardVisible() const;
+
   // Matches all previously added selectors with the current DOM tree and caches
   // the results to be available via |GetSelectorMatches|. Invokes |callback|
   // when done.
@@ -45,6 +51,10 @@ class DynamicTriggerConditions {
   // |Update| is running.
   virtual void Update(WebController* web_controller,
                       base::OnceCallback<void(void)> callback);
+
+  // If true, all values have been evaluated. They may be out-of-date by one
+  // cycle in case an update is currently scheduled.
+  virtual bool HasResults() const;
 
  private:
   friend class DynamicTriggerConditionsTest;
@@ -57,8 +67,14 @@ class DynamicTriggerConditions {
                      const ClientStatus& client_status,
                      std::unique_ptr<ElementFinder::Result> element);
 
+  // Whether the keyboard is currently visible.
+  bool keyboard_visible_ = false;
   // Lookup cache for selector matches. Must be updated by invoking |Update|.
   std::map<Selector, bool> selector_matches_;
+  // Temporary store for selector matches, used during |Update| as results
+  // trickle in. Once all results have been gathered, this becomes the new
+  // |selector_matches_|.
+  std::map<Selector, bool> temporary_selector_matches_;
   // The list of selectors to look up on |Update|.
   std::set<Selector> selectors_;
   // The callback to invoke after |Update| is finished. Only set during

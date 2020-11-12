@@ -22,6 +22,8 @@ import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
 import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.KeyboardVisibilityDelegate;
+import org.chromium.ui.base.ActivityKeyboardVisibilityDelegate;
 
 import java.util.List;
 import java.util.Map;
@@ -36,6 +38,8 @@ public class AssistantTriggerScriptBridge {
     private long mNativeBridge;
     private Delegate mDelegate;
     private Context mContext;
+    private ActivityKeyboardVisibilityDelegate mKeyboardVisibilityDelegate;
+    private KeyboardVisibilityDelegate.KeyboardVisibilityListener mKeyboardVisibilityListener;
 
     /** Interface for delegates of the {@code start} method. */
     public interface Delegate {
@@ -48,10 +52,12 @@ public class AssistantTriggerScriptBridge {
      * delegate}.
      */
     public void start(BottomSheetController bottomSheetController, Context context,
+            ActivityKeyboardVisibilityDelegate keyboardVisibilityDelegate,
             @NonNull WebContents webContents, @NonNull String initialUrl,
             Map<String, String> scriptParameters, String experimentIds, Delegate delegate) {
         mDelegate = delegate;
         mContext = context;
+        mKeyboardVisibilityDelegate = keyboardVisibilityDelegate;
         mTriggerScript = new AssistantTriggerScript(context, new AssistantTriggerScript.Delegate() {
             @Override
             public void onTriggerScriptAction(int action) {
@@ -78,6 +84,12 @@ public class AssistantTriggerScriptBridge {
             }
         }, bottomSheetController);
 
+        if (mKeyboardVisibilityListener != null) {
+            mKeyboardVisibilityDelegate.removeKeyboardVisibilityListener(
+                    mKeyboardVisibilityListener);
+        }
+        mKeyboardVisibilityListener = this::safeNativeOnKeyboardVisibilityChanged;
+        mKeyboardVisibilityDelegate.addKeyboardVisibilityListener(mKeyboardVisibilityListener);
         // Request the client to start the trigger script. Native will then bind itself to this java
         // instance via setNativePtr.
         AutofillAssistantClient.fromWebContents(webContents)
@@ -131,6 +143,7 @@ public class AssistantTriggerScriptBridge {
     private void clearNativePtr() {
         mNativeBridge = 0;
         mTriggerScript.destroy();
+        mKeyboardVisibilityDelegate.removeKeyboardVisibilityListener(mKeyboardVisibilityListener);
     }
 
     private void safeNativeOnTriggerScriptAction(int action) {
@@ -155,6 +168,13 @@ public class AssistantTriggerScriptBridge {
         return false;
     }
 
+    private void safeNativeOnKeyboardVisibilityChanged(boolean visible) {
+        if (mNativeBridge != 0) {
+            AssistantTriggerScriptBridgeJni.get().onKeyboardVisibilityChanged(
+                    mNativeBridge, AssistantTriggerScriptBridge.this, visible);
+        }
+    }
+
     @NativeMethods
     interface Natives {
         void onTriggerScriptAction(long nativeTriggerScriptBridgeAndroid,
@@ -163,5 +183,7 @@ public class AssistantTriggerScriptBridge {
                 long nativeTriggerScriptBridgeAndroid, AssistantTriggerScriptBridge caller);
         boolean onBackButtonPressed(
                 long nativeTriggerScriptBridgeAndroid, AssistantTriggerScriptBridge caller);
+        void onKeyboardVisibilityChanged(long nativeTriggerScriptBridgeAndroid,
+                AssistantTriggerScriptBridge caller, boolean visible);
     }
 }

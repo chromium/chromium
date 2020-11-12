@@ -29,6 +29,7 @@ class MockDynamicTriggerConditions : public DynamicTriggerConditions {
   MOCK_METHOD1(AddSelectorsFromTriggerScript,
                void(const TriggerScriptProto& proto));
   MOCK_METHOD0(ClearSelectors, void(void));
+  MOCK_CONST_METHOD0(HasResults, bool(void));
 };
 
 }  // namespace autofill_assistant

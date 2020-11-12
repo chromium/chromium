@@ -48,9 +48,14 @@ bool StaticTriggerConditions::is_in_experiment(int experiment_id) const {
   return trigger_context_->HasExperimentId(base::NumberToString(experiment_id));
 }
 
+bool StaticTriggerConditions::has_results() const {
+  return has_results_;
+}
+
 void StaticTriggerConditions::OnGetLogins(
     std::vector<WebsiteLoginManager::Login> logins) {
   has_stored_login_credentials_ = !logins.empty();
+  has_results_ = true;
   DCHECK(callback_);
   std::move(callback_).Run();
 }

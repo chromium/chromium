@@ -52,6 +52,8 @@ bool EvaluateTriggerCondition(
       return static_trigger_conditions.is_first_time_user();
     case TriggerScriptConditionProto::kExperimentId:
       return static_trigger_conditions.is_in_experiment(proto.experiment_id());
+    case TriggerScriptConditionProto::kKeyboardHidden:
+      return !dynamic_trigger_conditions.GetKeyboardVisible();
     case TriggerScriptConditionProto::TYPE_NOT_SET:
       return true;
   }

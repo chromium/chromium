@@ -124,4 +124,41 @@ TEST_F(DynamicTriggerConditionsTest, ClearSelectors) {
   EXPECT_EQ(GetSelectorsForTest()->size(), 0u);
 }
 
+TEST_F(DynamicTriggerConditionsTest, HasResults) {
+  // Since no selectors were added to the evaluation, the result is valid.
+  EXPECT_TRUE(dynamic_trigger_conditions_.HasResults());
+
+  TriggerScriptProto proto;
+  *proto.mutable_trigger_condition()->mutable_selector() = ToSelectorProto("a");
+  dynamic_trigger_conditions_.AddSelectorsFromTriggerScript(proto);
+  EXPECT_FALSE(dynamic_trigger_conditions_.HasResults());
+
+  EXPECT_CALL(mock_web_controller_,
+              OnFindElement(Selector(ToSelectorProto("a")), _))
+      .WillOnce(RunOnceCallback<1>(OkClientStatus(), nullptr));
+  dynamic_trigger_conditions_.Update(&mock_web_controller_,
+                                     mock_callback_.Get());
+  EXPECT_TRUE(dynamic_trigger_conditions_.HasResults());
+
+  EXPECT_CALL(mock_web_controller_,
+              OnFindElement(Selector(ToSelectorProto("a")), _))
+      .WillOnce(
+          [&](const Selector& selector, ElementFinder::Callback& callback) {
+            // While Update is running, GetSelectorMatches should return the
+            // previous results.
+            EXPECT_EQ(dynamic_trigger_conditions_.GetSelectorMatches(
+                          Selector(ToSelectorProto("a"))),
+                      base::make_optional(true));
+            std::move(callback).Run(ClientStatus(ELEMENT_RESOLUTION_FAILED),
+                                    nullptr);
+          });
+  dynamic_trigger_conditions_.Update(&mock_web_controller_,
+                                     mock_callback_.Get());
+
+  // After the update, the new result is returned.
+  EXPECT_EQ(dynamic_trigger_conditions_.GetSelectorMatches(
+                Selector(ToSelectorProto("a"))),
+            base::make_optional(false));
+}
+
 }  // namespace autofill_assistant

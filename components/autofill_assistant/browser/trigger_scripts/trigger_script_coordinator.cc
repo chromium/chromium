@@ -201,6 +201,11 @@ bool TriggerScriptCoordinator::OnBackButtonPressed() {
   return true;
 }
 
+void TriggerScriptCoordinator::OnKeyboardVisibilityChanged(bool visible) {
+  dynamic_trigger_conditions_->SetKeyboardVisible(visible);
+  RunOutOfScheduleTriggerConditionCheck();
+}
+
 void TriggerScriptCoordinator::Stop(Metrics::LiteScriptFinishedState state) {
   HideTriggerScript();
   StopCheckingTriggerConditions();
@@ -300,7 +305,8 @@ void TriggerScriptCoordinator::CheckDynamicTriggerConditions() {
       web_controller_.get(),
       base::BindOnce(
           &TriggerScriptCoordinator::OnDynamicTriggerConditionsEvaluated,
-          weak_ptr_factory_.GetWeakPtr()));
+          weak_ptr_factory_.GetWeakPtr(),
+          /* is_out_of_schedule = */ false));
 }
 
 void TriggerScriptCoordinator::StopCheckingTriggerConditions() {
@@ -338,8 +344,14 @@ void TriggerScriptCoordinator::HideTriggerScript() {
   }
 }
 
-void TriggerScriptCoordinator::OnDynamicTriggerConditionsEvaluated() {
+void TriggerScriptCoordinator::OnDynamicTriggerConditionsEvaluated(
+    bool is_out_of_schedule) {
   if (!web_contents_visible_ || !is_checking_trigger_conditions_) {
+    return;
+  }
+  if (!static_trigger_conditions_->has_results() ||
+      !dynamic_trigger_conditions_->HasResults()) {
+    DCHECK(is_out_of_schedule);
     return;
   }
 
@@ -395,6 +407,10 @@ void TriggerScriptCoordinator::OnDynamicTriggerConditionsEvaluated() {
     }
   }
 
+  if (is_out_of_schedule) {
+    // Out-of-schedule checks do not count towards the timeout.
+    return;
+  }
   if (visible_trigger_script_ == -1 &&
       remaining_trigger_condition_evaluations_ > 0) {
     remaining_trigger_condition_evaluations_--;
@@ -409,6 +425,10 @@ void TriggerScriptCoordinator::OnDynamicTriggerConditionsEvaluated() {
       base::BindOnce(&TriggerScriptCoordinator::CheckDynamicTriggerConditions,
                      weak_ptr_factory_.GetWeakPtr()),
       trigger_condition_check_interval_);
+}
+
+void TriggerScriptCoordinator::RunOutOfScheduleTriggerConditionCheck() {
+  OnDynamicTriggerConditionsEvaluated(/* is_out_of_schedule = */ true);
 }
 
 void TriggerScriptCoordinator::NotifyOnTriggerScriptFinished(
