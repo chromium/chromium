@@ -3135,7 +3135,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     attribute LOADING
 [Worker]     attribute OPENED
 [Worker]     attribute UNSENT
-[Worker]     getter allowDeclarativeShadowDom
 [Worker]     getter onreadystatechange
 [Worker]     getter readyState
 [Worker]     getter response
@@ -3158,7 +3157,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method send
 [Worker]     method setRequestHeader
 [Worker]     method setTrustToken
-[Worker]     setter allowDeclarativeShadowDom
 [Worker]     setter onreadystatechange
 [Worker]     setter responseType
 [Worker]     setter timeout

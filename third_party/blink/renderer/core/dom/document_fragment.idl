@@ -23,8 +23,6 @@
     Exposed=Window
 ] interface DocumentFragment : Node {
   [CallWith=Document] constructor();
-
-  [RuntimeEnabled=DeclarativeShadowDOM] attribute boolean allowDeclarativeShadowDom;
 };
 
 DocumentFragment includes ParentNode;

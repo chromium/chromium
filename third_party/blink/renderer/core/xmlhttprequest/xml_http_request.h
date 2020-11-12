@@ -163,13 +163,6 @@ class XMLHttpRequest final : public XMLHttpRequestEventTarget,
     return trust_token_operation_error_;
   }
 
-  bool allowDeclarativeShadowDom() const {
-    return allow_declarative_shadow_dom_;
-  }
-  void setAllowDeclarativeShadowDom(bool value) {
-    allow_declarative_shadow_dom_ = value;
-  }
-
   // For Inspector.
   void SendForInspectorXHRReplay(scoped_refptr<EncodedFormData>,
                                  ExceptionState&);
@@ -386,8 +379,6 @@ class XMLHttpRequest final : public XMLHttpRequestEventTarget,
   bool response_text_overflow_ = false;
   bool send_flag_ = false;
   bool response_array_buffer_failure_ = false;
-
-  bool allow_declarative_shadow_dom_{false};
 
   probe::AsyncTaskId async_task_id_;
 };

@@ -66,6 +66,7 @@ class ExceptionState;
 class FloatQuad;
 class FloatSize;
 class FocusOptions;
+class SetInnerHTMLOptions;
 class GetInnerHTMLOptions;
 class HTMLTemplateElement;
 class Image;
@@ -697,6 +698,9 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   String innerHTML() const;
   String outerHTML() const;
   void setInnerHTML(const String&, ExceptionState& = ASSERT_NO_EXCEPTION);
+  void setInnerHTMLWithOptions(const String&,
+                               const SetInnerHTMLOptions*,
+                               ExceptionState& = ASSERT_NO_EXCEPTION);
   String getInnerHTML(const GetInnerHTMLOptions* options) const;
   void setOuterHTML(const String&, ExceptionState& = ASSERT_NO_EXCEPTION);
 
@@ -1184,6 +1188,10 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   bool ShouldInvalidateDistributionWhenAttributeChanged(ShadowRoot&,
                                                         const QualifiedName&,
                                                         const AtomicString&);
+
+  void SetInnerHTMLInternal(const String&,
+                            const SetInnerHTMLOptions*,
+                            ExceptionState&);
 
   ElementRareData* GetElementRareData() const;
   ElementRareData& EnsureElementRareData();

@@ -314,7 +314,6 @@ mojom::FeaturePolicyFeature FeaturePolicy::FeatureForSandboxFlag(
         kPropagatesToAuxiliaryBrowsingContexts:
     case network::mojom::WebSandboxFlags::kTopNavigationByUserActivation:
     case network::mojom::WebSandboxFlags::kStorageAccessByUserActivation:
-    case network::mojom::WebSandboxFlags::kDeclarativeShadowDom:
       break;
   }
   return mojom::FeaturePolicyFeature::kNotFound;

@@ -96,8 +96,9 @@ callback ScrollStateCallback = void (ScrollState scrollState);
     [Affects=Nothing, CEReactions, CustomElementCallbacks, RaisesException=Setter] attribute [TreatNullAs=EmptyString, StringContext=TrustedHTML] DOMString outerHTML;
     [CEReactions, CustomElementCallbacks, RaisesException] void insertAdjacentHTML(DOMString position, HTMLString text);
 
-    // Declarative Shadow DOM getInnerHTML() function.
-    [RuntimeEnabled=DeclarativeShadowDOM, RuntimeCallStatsCounter=ElementGetInnerHTML] HTMLString getInnerHTML(optional GetInnerHTMLOptions options = {});
+    // Declarative Shadow DOM setInnerHTML/getInnerHTML() functions.
+    [Affects=Nothing, RuntimeEnabled=DeclarativeShadowDOM, RuntimeCallStatsCounter=ElementSetInnerHTML, RaisesException, ImplementedAs=setInnerHTMLWithOptions] void setInnerHTML(DOMString html, optional SetInnerHTMLOptions options = {});
+    [Affects=Nothing, RuntimeEnabled=DeclarativeShadowDOM, RuntimeCallStatsCounter=ElementGetInnerHTML] HTMLString getInnerHTML(optional GetInnerHTMLOptions options = {});
 
     // Pointer Lock
     // https://w3c.github.io/pointerlock/#extensions-to-the-element-interface

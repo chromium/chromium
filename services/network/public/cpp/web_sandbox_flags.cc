@@ -40,7 +40,6 @@ WebSandboxFlags ParseWebSandboxToken(const base::StringPiece& token) {
       {"allow-top-navigation", WebSandboxFlags::kTopNavigation},
       {"allow-top-navigation-by-user-activation",
        WebSandboxFlags::kTopNavigationByUserActivation},
-      {"allow-declarative-shadow-dom", WebSandboxFlags::kDeclarativeShadowDom},
   };
 
   for (const auto& it : table) {

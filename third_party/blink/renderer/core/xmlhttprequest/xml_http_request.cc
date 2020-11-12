@@ -347,16 +347,15 @@ void XMLHttpRequest::InitResponseDocument() {
   DocumentInit init = DocumentInit::Create()
                           .WithExecutionContext(GetExecutionContext())
                           .WithURL(response_.ResponseUrl());
-  if (is_html)
+  if (is_html) {
     response_document_ = MakeGarbageCollected<HTMLDocument>(init);
-  else
+    response_document_->setAllowDeclarativeShadowRoot(false);
+  } else
     response_document_ = MakeGarbageCollected<XMLDocument>(init);
 
   // FIXME: Set Last-Modified.
   response_document_->SetContextFeatures(document->GetContextFeatures());
   response_document_->SetMimeType(FinalResponseMIMETypeWithFallback());
-  response_document_->setAllowDeclarativeShadowDom(
-      allow_declarative_shadow_dom_);
 }
 
 Document* XMLHttpRequest::responseXML(ExceptionState& exception_state) {

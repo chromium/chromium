@@ -66,6 +66,7 @@ DocumentFragment* CreateFragmentForInnerOuterHTML(const String&,
                                                   Element*,
                                                   ParserContentPolicy,
                                                   const char* method,
+                                                  bool allow_shadow_root,
                                                   ExceptionState&);
 DocumentFragment* CreateFragmentForTransformToFragment(
     const String&,

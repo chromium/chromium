@@ -30,7 +30,6 @@ enum SupportedType {
 [
     Exposed=Window
 ] interface DOMParser {
-    [CallWith=ScriptState] constructor();
+    [CallWith=ScriptState] constructor(optional DOMParserInit options = {});
     [NewObject] Document parseFromString(HTMLString str, SupportedType type);
-    [RuntimeEnabled=DeclarativeShadowDOM] attribute boolean allowDeclarativeShadowDom;
 };

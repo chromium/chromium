@@ -652,6 +652,7 @@ core_dictionary_idl_files =
                     "dom/idle_request_options.idl",
                     "dom/mutation_observer_init.idl",
                     "dom/pointer_lock_options.idl",
+                    "dom/set_inner_html_options.idl",
                     "dom/shadow_root_init.idl",
                     "dom/events/add_event_listener_options.idl",
                     "dom/events/custom_event_init.idl",
@@ -758,6 +759,7 @@ core_dictionary_idl_files =
                     "trustedtypes/trusted_type_policy_options.idl",
                     "workers/worker_options.idl",
                     "workers/worklet_options.idl",
+                    "xml/dom_parser_init.idl",
                   ],
                   "abspath")
 

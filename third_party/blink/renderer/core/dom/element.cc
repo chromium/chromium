@@ -44,6 +44,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_pointer_lock_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_scroll_into_view_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_scroll_to_options.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_set_inner_html_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_shadow_root_init.h"
 #include "third_party/blink/renderer/core/accessibility/ax_context.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
@@ -4462,14 +4463,17 @@ String Element::outerHTML() const {
   return CreateMarkup(this);
 }
 
-void Element::setInnerHTML(const String& html,
-                           ExceptionState& exception_state) {
-  probe::BreakableLocation(GetExecutionContext(), "Element.setInnerHTML");
+void Element::SetInnerHTMLInternal(const String& html,
+                                   const SetInnerHTMLOptions* options,
+                                   ExceptionState& exception_state) {
   if (html.IsEmpty() && !HasNonInBodyInsertionMode()) {
     setTextContent(html);
   } else {
+    bool allow_shadow_root =
+        options->hasAllowShadowRoot() && options->allowShadowRoot();
     if (DocumentFragment* fragment = CreateFragmentForInnerOuterHTML(
-            html, this, kAllowScriptingContent, "innerHTML", exception_state)) {
+            html, this, kAllowScriptingContent, "innerHTML", allow_shadow_root,
+            exception_state)) {
       ContainerNode* container = this;
       if (auto* template_element = DynamicTo<HTMLTemplateElement>(*this)) {
         // Allow replacing innerHTML on declarative shadow templates, prior to
@@ -4481,6 +4485,21 @@ void Element::setInnerHTML(const String& html,
       ReplaceChildrenWithFragment(container, fragment, exception_state);
     }
   }
+}
+
+void Element::setInnerHTML(const String& html,
+                           ExceptionState& exception_state) {
+  probe::BreakableLocation(GetExecutionContext(), "Element.setInnerHTML");
+  const SetInnerHTMLOptions options;
+  SetInnerHTMLInternal(html, &options, exception_state);
+}
+
+void Element::setInnerHTMLWithOptions(const String& html,
+                                      const SetInnerHTMLOptions* options,
+                                      ExceptionState& exception_state) {
+  DCHECK(RuntimeEnabledFeatures::DeclarativeShadowDOMEnabled(
+      GetExecutionContext()));
+  SetInnerHTMLInternal(html, options, exception_state);
 }
 
 String Element::getInnerHTML(const GetInnerHTMLOptions* options) const {
@@ -4521,7 +4540,8 @@ void Element::setOuterHTML(const String& html,
   Node* next = nextSibling();
 
   DocumentFragment* fragment = CreateFragmentForInnerOuterHTML(
-      html, parent, kAllowScriptingContent, "outerHTML", exception_state);
+      html, parent, kAllowScriptingContent, "outerHTML",
+      /*allow_shadow_root=*/false, exception_state);
   if (exception_state.HadException())
     return;
 
@@ -4703,7 +4723,7 @@ void Element::insertAdjacentHTML(const String& where,
   // Step 3 of http://domparsing.spec.whatwg.org/#insertadjacenthtml()
   DocumentFragment* fragment = CreateFragmentForInnerOuterHTML(
       markup, context_element, kAllowScriptingContent, "insertAdjacentHTML",
-      exception_state);
+      /*allow_shadow_root=*/false, exception_state);
   if (!fragment)
     return;
   InsertAdjacent(where, fragment, exception_state);

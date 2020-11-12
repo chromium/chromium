@@ -713,15 +713,10 @@ void HTMLConstructionSite::InsertHTMLFormElement(AtomicHTMLToken* token,
 
 void HTMLConstructionSite::InsertHTMLTemplateElement(
     AtomicHTMLToken* token,
-    DeclarativeShadowRootType declarative_shadow_root_type,
-    bool allow_declarative_shadow_dom) {
+    DeclarativeShadowRootType declarative_shadow_root_type) {
   auto* template_element = To<HTMLTemplateElement>(
       CreateElement(token, html_names::xhtmlNamespaceURI));
   template_element->SetDeclarativeShadowRootType(declarative_shadow_root_type);
-  if (DocumentFragment* content =
-          template_element->TemplateContentForHTMLConstructionSite()) {
-    content->setAllowDeclarativeShadowDom(allow_declarative_shadow_dom);
-  }
   AttachLater(CurrentNode(), template_element);
   open_elements_.Push(
       MakeGarbageCollected<HTMLStackItem>(template_element, token));

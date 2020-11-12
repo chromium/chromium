@@ -56,8 +56,6 @@ typedef (Blob or BufferSource or FormData or URLSearchParams or USVString) XMLHt
     const unsigned short DONE = 4;
     readonly attribute unsigned short readyState;
 
-    [RuntimeEnabled=DeclarativeShadowDOM] attribute boolean allowDeclarativeShadowDom;
-
     // request
     [RaisesException] void open(ByteString method, USVString url);
     [RaisesException] void open(ByteString method, USVString url, boolean async, optional USVString? username = null, optional USVString? password = null);

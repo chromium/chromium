@@ -288,29 +288,12 @@ HTMLDocumentParser::HTMLDocumentParser(HTMLDocument& document,
   script_runner_ =
       HTMLParserScriptRunner::Create(ReentryPermit(), &document, this);
 
-  // Deny declarative Shadow DOM if explicitly denied.
-  // Allow declarative shadow DOM:
-  //  1. For the main frame (non-fragment) document, or
-  //  2. When explicitly enabled by the allowDeclarativeShadowDom flag, or
-  //  3. For sub-frames that do not have this feature sandboxed.
-  bool allow_declarative_shadow_dom = false;
-  if (document.GetDeclarativeShadowDomAllowState() !=
-      Document::DeclarativeShadowDomAllowState::kDeny) {
-    bool is_main_frame =
-        document.GetFrame() && document.GetFrame()->IsMainFrame();
-    const auto* context = document.GetExecutionContext();
-    allow_declarative_shadow_dom =
-        is_main_frame ||
-        (document.GetDeclarativeShadowDomAllowState() ==
-         Document::DeclarativeShadowDomAllowState::kAllow) ||
-        (!is_main_frame && context &&
-         !context->IsSandboxed(
-             network::mojom::blink::WebSandboxFlags::kDeclarativeShadowDom));
-  }
-
+  // Allow declarative shadow DOM for the document parser, if not explicitly
+  // disabled.
+  bool allow_shadow_root = document.GetDeclarativeShadowRootAllowState() !=
+                           Document::DeclarativeShadowRootAllowState::kDeny;
   tree_builder_ = MakeGarbageCollected<HTMLTreeBuilder>(
-      this, document, kAllowScriptingContent, options_,
-      allow_declarative_shadow_dom);
+      this, document, kAllowScriptingContent, options_, allow_shadow_root);
 }
 
 HTMLDocumentParser::HTMLDocumentParser(
@@ -320,10 +303,16 @@ HTMLDocumentParser::HTMLDocumentParser(
     : HTMLDocumentParser(fragment->GetDocument(),
                          parser_content_policy,
                          kForceSynchronousParsing) {
+  // Allow declarative shadow DOM for the fragment parser only if explicitly
+  // enabled.
+  bool allow_shadow_root =
+      fragment->GetDocument().GetDeclarativeShadowRootAllowState() ==
+      Document::DeclarativeShadowRootAllowState::kAllow;
+
   // No script_runner_ in fragment parser.
   tree_builder_ = MakeGarbageCollected<HTMLTreeBuilder>(
       this, fragment, context_element, parser_content_policy, options_,
-      fragment->allowDeclarativeShadowDom());
+      allow_shadow_root);
 
   // For now document fragment parsing never reports errors.
   bool report_errors = false;

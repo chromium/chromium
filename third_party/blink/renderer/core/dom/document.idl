@@ -197,9 +197,6 @@ typedef (HTMLScriptElement or SVGScriptElement) HTMLOrSVGScriptElement;
     // https://w3c.github.io/webappsec-feature-policy/#the-policy-object
     readonly attribute FeaturePolicy featurePolicy;
 
-    // Declarative Shadow DOM API
-    [RuntimeEnabled=DeclarativeShadowDOM] attribute boolean allowDeclarativeShadowDom;
-
     // Deprecated prefixed page visibility API.
     // TODO(davidben): This is a property so attaching a deprecation warning results in false positives when outputting
     // document in the console. It's possible https://crbug.com/43394 will resolve this.

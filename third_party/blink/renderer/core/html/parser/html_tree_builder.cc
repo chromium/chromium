@@ -233,13 +233,13 @@ HTMLTreeBuilder::HTMLTreeBuilder(HTMLDocumentParser* parser,
                                  Document& document,
                                  ParserContentPolicy parser_content_policy,
                                  const HTMLParserOptions& options,
-                                 bool allow_declarative_shadow_dom)
+                                 bool allow_shadow_root)
     : frameset_ok_(true),
       tree_(parser->ReentryPermit(), document, parser_content_policy),
       insertion_mode_(kInitialMode),
       original_insertion_mode_(kInitialMode),
       should_skip_leading_newline_(false),
-      allow_declarative_shadow_dom_(allow_declarative_shadow_dom),
+      allow_shadow_root_(allow_shadow_root),
       parser_(parser),
       script_to_process_start_position_(UninitializedPositionValue1()),
       options_(options) {}
@@ -249,12 +249,12 @@ HTMLTreeBuilder::HTMLTreeBuilder(HTMLDocumentParser* parser,
                                  Element* context_element,
                                  ParserContentPolicy parser_content_policy,
                                  const HTMLParserOptions& options,
-                                 bool allow_declarative_shadow_dom)
+                                 bool allow_shadow_root)
     : HTMLTreeBuilder(parser,
                       fragment->GetDocument(),
                       parser_content_policy,
                       options,
-                      allow_declarative_shadow_dom) {
+                      allow_shadow_root) {
   DCHECK(IsMainThread());
   DCHECK(context_element);
   tree_.InitFragmentParsing(fragment, context_element);
@@ -905,7 +905,7 @@ void HTMLTreeBuilder::ProcessTemplateStartTag(AtomicHTMLToken* token) {
       DeclarativeShadowRootType::kNone);
   if (RuntimeEnabledFeatures::DeclarativeShadowDOMEnabled(
           tree_.CurrentNode()->GetExecutionContext()) &&
-      allow_declarative_shadow_dom_) {
+      allow_shadow_root_) {
     if (Attribute* type_attribute =
             token->GetAttributeItem(html_names::kShadowrootAttr)) {
       String shadow_mode = type_attribute->Value();
@@ -924,8 +924,7 @@ void HTMLTreeBuilder::ProcessTemplateStartTag(AtomicHTMLToken* token) {
       }
     }
   }
-  tree_.InsertHTMLTemplateElement(token, declarative_shadow_root_type,
-                                  allow_declarative_shadow_dom_);
+  tree_.InsertHTMLTemplateElement(token, declarative_shadow_root_type);
   frameset_ok_ = false;
   template_insertion_modes_.push_back(kTemplateContentsMode);
   SetInsertionMode(kTemplateContentsMode);

@@ -609,6 +609,7 @@ DocumentFragment* CreateFragmentForInnerOuterHTML(
     Element* context_element,
     ParserContentPolicy parser_content_policy,
     const char* method,
+    bool allow_shadow_root,
     ExceptionState& exception_state) {
   DCHECK(context_element);
   const HTMLTemplateElement* template_element =
@@ -622,10 +623,7 @@ DocumentFragment* CreateFragmentForInnerOuterHTML(
           ? context_element->GetDocument().EnsureTemplateDocument()
           : context_element->GetDocument();
   DocumentFragment* fragment = DocumentFragment::Create(document);
-  fragment->setAllowDeclarativeShadowDom(
-      context_element->GetDocument().allowDeclarativeShadowDom() ||
-      (template_element && template_element->content() &&
-       template_element->content()->allowDeclarativeShadowDom()));
+  document.setAllowDeclarativeShadowRoot(allow_shadow_root);
 
   if (IsA<HTMLDocument>(document)) {
     fragment->ParseHTML(markup, context_element, parser_content_policy);
@@ -693,7 +691,7 @@ DocumentFragment* CreateContextualFragment(
 
   DocumentFragment* fragment = CreateFragmentForInnerOuterHTML(
       markup, element, parser_content_policy, "createContextualFragment",
-      exception_state);
+      /*allow_shadow_root=*/false, exception_state);
   if (!fragment)
     return nullptr;
 

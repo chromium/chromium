@@ -6962,18 +6962,14 @@ void Document::MarkFirstPaint() {
   MaybeExecuteDelayedAsyncScripts();
 }
 
-using AllowState = blink::Document::DeclarativeShadowDomAllowState;
-AllowState Document::GetDeclarativeShadowDomAllowState() const {
-  return declarative_shadow_dom_allow_state_;
+using AllowState = blink::Document::DeclarativeShadowRootAllowState;
+AllowState Document::GetDeclarativeShadowRootAllowState() const {
+  return declarative_shadow_root_allow_state_;
 }
 
-void Document::setAllowDeclarativeShadowDom(bool val) {
-  declarative_shadow_dom_allow_state_ =
+void Document::setAllowDeclarativeShadowRoot(bool val) {
+  declarative_shadow_root_allow_state_ =
       val ? AllowState::kAllow : AllowState::kDeny;
-}
-
-bool Document::allowDeclarativeShadowDom() const {
-  return declarative_shadow_dom_allow_state_ == AllowState::kAllow;
 }
 
 void Document::FinishedParsing() {

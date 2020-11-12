@@ -35,6 +35,10 @@ interface ShadowRoot : DocumentFragment {
     [CEReactions, CustomElementCallbacks, RaisesException=Setter] attribute [TreatNullAs=EmptyString, StringContext=TrustedHTML] DOMString innerHTML;
     readonly attribute boolean delegatesFocus;
     [RuntimeEnabled=ManualSlotting] readonly attribute SlotAssignmentMode slotAssignment;
+
+    // Declarative Shadow DOM setInnerHTML function.
+    // TODO(crbug.com/1147752): Add getInnerHTML() here also.
+    [Affects=Nothing, RuntimeEnabled=DeclarativeShadowDOM, RaisesException, ImplementedAs=setInnerHTMLWithOptions] void setInnerHTML(DOMString html, optional SetInnerHTMLOptions options = {});
 };
 
 ShadowRoot includes DocumentOrShadowRoot;

@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-PASS Declarative Shadow DOM enabled for origin-trial enabled document.
-FAIL Origin trial enables the allow-declarative-shadow-dom sandbox flag assert_true: expected true got false
-Harness: the test ran to completion.
-

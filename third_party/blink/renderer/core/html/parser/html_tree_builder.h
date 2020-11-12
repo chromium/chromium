@@ -55,13 +55,13 @@ class HTMLTreeBuilder final : public GarbageCollected<HTMLTreeBuilder> {
                   Document&,
                   ParserContentPolicy,
                   const HTMLParserOptions&,
-                  bool allow_declarative_shadow_dom);
+                  bool allow_shadow_root);
   HTMLTreeBuilder(HTMLDocumentParser*,
                   DocumentFragment*,
                   Element* context_element,
                   ParserContentPolicy,
                   const HTMLParserOptions&,
-                  bool allow_declarative_shadow_dom);
+                  bool allow_shadow_root);
   ~HTMLTreeBuilder();
   void Trace(Visitor*) const;
 
@@ -248,7 +248,7 @@ class HTMLTreeBuilder final : public GarbageCollected<HTMLTreeBuilder> {
 
   bool should_skip_leading_newline_;
 
-  const bool allow_declarative_shadow_dom_;
+  const bool allow_shadow_root_;
 
   // We access parser because HTML5 spec requires that we be able to change the
   // state of the tokenizer from within parser actions. We also need it to track

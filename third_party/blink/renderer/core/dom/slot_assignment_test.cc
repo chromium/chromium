@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_set_inner_html_options.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/node.h"
@@ -64,13 +65,14 @@ class SlotAssignmentTest : public testing::Test {
 void SlotAssignmentTest::SetUp() {
   dummy_page_holder_ = std::make_unique<DummyPageHolder>(IntSize(800, 600));
   document_ = &dummy_page_holder_->GetDocument();
-  document_->setAllowDeclarativeShadowDom(true);
   DCHECK(document_);
 }
 
 void SlotAssignmentTest::SetBody(const char* html) {
   Element* body = GetDocument().body();
-  body->setInnerHTML(String::FromUTF8(html));
+  SetInnerHTMLOptions options;
+  options.setAllowShadowRoot(true);
+  body->setInnerHTMLWithOptions(String::FromUTF8(html), &options);
   RemoveWhiteSpaceOnlyTextNode(*body);
 }
 
@@ -133,9 +135,9 @@ TEST_F(SlotAssignmentTest, AssignedNodesAreSet) {
 TEST_F(SlotAssignmentTest, ScheduleVisualUpdate) {
   SetBody(R"HTML(
     <div id="host">
-      <shadowroot>
+      <template shadowroot=open>
         <slot></slot>
-      </shadowroot>
+      </template>
       <div></div>
     </div>
   )HTML");
