@@ -31,20 +31,16 @@ bool ProcessIsTranslated();
 BASE_EXPORT bool IsRosettaInstalled();
 
 // Prompt the user to allow for the installation of Rosetta. `callback` is
-// called with the result of the Rosetta installation. The UI is presented to
-// the user in a dialog with the `title_text` and `body_text`. Its thread-safety
-// is not known; call it from the main thread and the callback will happen on
-// the main thread as well.
-enum class RosettaInstallationResult {
-  kFailedToAccessSPI,
-  kAlreadyInstalled,
-  kInstallationFailure,
-  kInstallationSuccess,
-};
-BASE_EXPORT void RequestRosettaInstallation(
-    const string16& title_text,
-    const string16& body_text,
-    OnceCallback<void(RosettaInstallationResult)> callback);
+// called with true if Rosetta is already installed, or if the user consented to
+// installation and Rosetta was installed. It's called with false otherwise. The
+// UI is presented to the user in a dialog with the `title_text` and
+// `body_text`. Its thread-safety is not known; call it from the main thread and
+// the callback will happen on the main thread as well. This can only be called
+// once per run of Chromium to avoid confusing the user; it will call the
+// callback with false if called subsequent times.
+BASE_EXPORT void RequestRosettaInstallation(const string16& title_text,
+                                            const string16& body_text,
+                                            OnceCallback<void(bool)> callback);
 
 #endif  // ARCH_CPU_ARM64
 

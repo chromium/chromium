@@ -37664,7 +37664,6 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="100" label="LITE_MODE_HTTPS_IMAGE_COMPRESSION_INFOBAR_ANDROID"/>
   <int value="101" label="SYSTEM_INFOBAR_DELEGATE_MAC"/>
   <int value="102" label="EXPERIMENTAL_INFOBAR_DELEGATE_LACROS"/>
-  <int value="103" label="ROSETTA_REQUIRED_INFOBAR_DELEGATE"/>
 </enum>
 
 <enum name="InfoBarResponse">

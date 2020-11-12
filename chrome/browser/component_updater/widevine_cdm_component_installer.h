@@ -18,8 +18,6 @@ class ComponentUpdateService;
 // The first part is IO intensive so we do it asynchronously in the file thread.
 void RegisterWidevineCdmComponent(ComponentUpdateService* cus);
 
-bool WasWidevineCdmComponentRejectedDueToNoRosetta();
-
 }  // namespace component_updater
 
 #endif  // CHROME_BROWSER_COMPONENT_UPDATER_WIDEVINE_CDM_COMPONENT_INSTALLER_H_

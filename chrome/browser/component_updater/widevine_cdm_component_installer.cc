@@ -58,8 +58,6 @@ namespace component_updater {
 
 namespace {
 
-static bool g_was_widevine_cdm_component_rejected_due_to_no_rosetta;
-
 // CRX hash. The extension id is: oimompecagnajdejgnnjijobebaeigek.
 const uint8_t kWidevineSha2Hash[] = {
     0xe8, 0xce, 0xcf, 0x42, 0x06, 0xd0, 0x93, 0x49, 0x6d, 0xd9, 0x89,
@@ -154,10 +152,9 @@ base::FilePath GetCdmPathFromInstallDir(const base::FilePath& install_dir) {
   // separate base::GetMachOArchitectures call must be made to determine the
   // actual architecture.
   //
-  // If there is no file at all in the native arm64 location, fall back to the
-  // x86_64 location. VerifyInstallation() and UpdateCdmPath() will do Rosetta
-  // checks before actually using it.
-  if (!base::PathExists(cdm_path) &&
+  // Since the x86_64 location can only store an x86_64 library, only attempt to
+  // use it if Rosetta is available. It’s not installed by default.
+  if (!base::PathExists(cdm_path) && base::mac::IsRosettaInstalled() &&
       base::EndsWith(cdm_platform_dir.value(), kWidevineCdmArch)) {
     cdm_platform_dir = base::FilePath(
         cdm_platform_dir.value().substr(
@@ -259,10 +256,8 @@ bool WidevineCdmComponentInstallerPolicy::VerifyInstallation(
                         base::MachOArchitectures::kARM64)) ==
       base::MachOArchitectures::kX86_64;
   if (launch_x86_64 && !base::mac::IsRosettaInstalled()) {
-    g_was_widevine_cdm_component_rejected_due_to_no_rosetta = true;
     return false;
   }
-  g_was_widevine_cdm_component_rejected_due_to_no_rosetta = false;
 #endif  // OS_MAC && ARCH_CPU_ARM64
 
   content::CdmCapability capability;
@@ -354,10 +349,6 @@ void RegisterWidevineCdmComponent(ComponentUpdateService* cus) {
   auto installer = base::MakeRefCounted<ComponentInstaller>(
       std::make_unique<WidevineCdmComponentInstallerPolicy>());
   installer->Register(cus, base::OnceClosure());
-}
-
-bool WasWidevineCdmComponentRejectedDueToNoRosetta() {
-  return g_was_widevine_cdm_component_rejected_due_to_no_rosetta;
 }
 
 }  // namespace component_updater
