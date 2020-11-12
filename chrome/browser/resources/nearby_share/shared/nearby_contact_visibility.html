@@ -19,7 +19,7 @@
     <style include="cr-icons cr-shared-style">
       :host {
         --card-border-color: var(--google-grey-300);
-        --cr-card-radio-button-padding: 8px 16px 8px 16px;
+        --cr-card-radio-button-padding: 4px 12px 4px 12px;
         --iron-icon-height: var(--cr-icon-size);
         --iron-icon-width: var(--cr-icon-size);
       }
@@ -31,18 +31,21 @@
       #main {
         display: flex;
         flex-direction: column;
+        line-height: 20px;
       }
 
       #visibilityRadioGroup {
         display: flex;
         justify-content: center;
-        margin-block-end: 8px;
+        margin-block-end: 16px;
       }
 
       cr-card-radio-button {
         border: 1px solid var(--card-border-color);
         box-shadow: none;
         flex: 1;
+        margin-block-end: 0;
+        margin-block-start: 0;
         margin-inline-end: 5px;
         margin-inline-start: 5px;
         padding: 0;
@@ -140,14 +143,12 @@
         width: 100%;
       }
 
-      .viz-description-section div {
+      .viz-description-section {
         margin-block-end: 8px;
       }
 
       .explanation-section {
         display: flex;
-        margin-block-end: 8px;
-        margin-block-start: 8px;
       }
 
       .padded-icon {
@@ -160,7 +161,6 @@
       #contactList {
         border-bottom: var(--cr-separator-line);
         border-top: var(--cr-separator-line);
-        padding-block-start: 16px;
       }
 
       #contactsHeading {
@@ -168,9 +168,7 @@
       }
 
       .contacts-section {
-        height: 100px;
-        margin-block-end: 8px;
-        margin-block-start: 8px;
+        height: 72px;
       }
 
       .contact-item {

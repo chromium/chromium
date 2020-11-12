@@ -65,7 +65,7 @@ constexpr int kCornerRadius = 12;
 
 gfx::Size ComputeSize() {
   // TODO(vecore): compute expected size based on screen size
-  return {500, 500};
+  return {/*width=*/512, /*height=*/420};
 }
 
 }  // namespace
