@@ -150,16 +150,17 @@ bool RequestRosettaAheadOfTimeTranslation(
 
   // It's unclear if this is a BOOL or Boolean or bool. It's returning 0 or 1
   // in w0, so just grab the result as an int and convert here.
-  // int oah_translate_binaries(const char*[] paths, int npaths)
-  using oah_translate_binaries_t = int (*)(const char*[], int);
-  static auto oah_translate_binaries = []() {
-    void* liboah = dlopen("/usr/lib/liboah.dylib", RTLD_LAZY | RTLD_LOCAL);
-    if (!liboah)
-      return static_cast<oah_translate_binaries_t>(nullptr);
-    return reinterpret_cast<oah_translate_binaries_t>(
-        dlsym(liboah, "oah_translate_binaries"));
+  // int rosetta_translate_binaries(const char*[] paths, int npaths)
+  using rosetta_translate_binaries_t = int (*)(const char*[], int);
+  static auto rosetta_translate_binaries = []() {
+    void* librosetta =
+        dlopen("/usr/lib/libRosetta.dylib", RTLD_LAZY | RTLD_LOCAL);
+    if (!librosetta)
+      return static_cast<rosetta_translate_binaries_t>(nullptr);
+    return reinterpret_cast<rosetta_translate_binaries_t>(
+        dlsym(librosetta, "rosetta_translate_binaries"));
   }();
-  if (!oah_translate_binaries)
+  if (!rosetta_translate_binaries)
     return false;
 
   std::vector<std::string> paths;
@@ -172,7 +173,7 @@ bool RequestRosettaAheadOfTimeTranslation(
   }
 
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
-  return oah_translate_binaries(path_strs.data(), path_strs.size());
+  return rosetta_translate_binaries(path_strs.data(), path_strs.size());
 }
 
 }  // namespace mac
