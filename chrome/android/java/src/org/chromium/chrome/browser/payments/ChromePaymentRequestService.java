@@ -477,11 +477,10 @@ public class ChromePaymentRequestService implements BrowserPaymentRequest,
     @Override
     public void onPaymentDetailsUpdated(
             PaymentDetails details, boolean hasNotifiedInvokedPaymentApp) {
-        if (mPaymentRequestService == null) return;
-        // mSpec.updateWith() can be used only when mSpec has not been destroyed.
-        assert !mSpec.isDestroyed();
+        // This method is only called from mPaymentRequestService.
+        assert mPaymentRequestService != null;
 
-        mPaymentUiService.updateDetailsOnPaymentRequestUI(mSpec.getPaymentDetails());
+        mPaymentUiService.updateDetailsOnPaymentRequestUI(details);
 
         if (hasNotifiedInvokedPaymentApp) return;
 

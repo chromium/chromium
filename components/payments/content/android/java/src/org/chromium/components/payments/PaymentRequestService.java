@@ -1017,7 +1017,8 @@ public class PaymentRequestService
                     PaymentDetailsConverter.convertToPaymentRequestDetailsUpdate(details,
                             /*methodChecker=*/this, mInvokedPaymentApp));
         }
-        mBrowserPaymentRequest.onPaymentDetailsUpdated(details, hasNotifiedInvokedPaymentApp);
+        mBrowserPaymentRequest.onPaymentDetailsUpdated(
+                mSpec.getPaymentDetails(), hasNotifiedInvokedPaymentApp);
     }
 
     /**
