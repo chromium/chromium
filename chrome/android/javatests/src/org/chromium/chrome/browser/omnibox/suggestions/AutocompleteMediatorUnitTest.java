@@ -45,17 +45,21 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.OmniboxSuggestionType;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
+import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteMediator.EditSessionState;
 import org.chromium.chrome.browser.omnibox.suggestions.header.HeaderProcessor;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
+import org.chromium.components.query_tiles.QueryTile;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
+import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -68,11 +72,60 @@ public class AutocompleteMediatorUnitTest {
     private static final int SUGGESTION_MIN_HEIGHT = 20;
     private static final int HEADER_MIN_HEIGHT = 15;
 
+    // Empty AutocompleteDelegate implementation for test. This is to work around an issue that
+    // mock doesn't work on inherited methods in some builds.
+    static class AutocompleteDelegateForTest implements AutocompleteDelegate {
+        @Override
+        public void setOmniboxEditingText(String text) {}
+
+        @Override
+        public void clearOmniboxFocus() {}
+
+        @Override
+        public void onUrlTextChanged() {}
+
+        @Override
+        public void onSuggestionsChanged(String autocompleteText) {}
+
+        @Override
+        public void onSuggestionsHidden() {}
+
+        @Override
+        public void setKeyboardVisibility(boolean shouldShow, boolean delayHide) {}
+
+        @Override
+        public boolean isKeyboardActive() {
+            return true;
+        }
+
+        @Override
+        public void loadUrl(String url, @PageTransition int transition, long inputStart) {}
+
+        @Override
+        public void loadUrlWithPostData(String url, @PageTransition int transition, long inputStart,
+                String postDataType, byte[] postData) {}
+
+        @Override
+        public boolean didFocusUrlFromFakebox() {
+            return false;
+        }
+
+        @Override
+        public boolean isUrlBarFocused() {
+            return false;
+        }
+
+        @Override
+        public boolean didFocusUrlFromQueryTiles() {
+            return false;
+        }
+    }
+
     @Rule
     public TestRule mProcessor = new Features.JUnitProcessor();
 
     @Mock
-    AutocompleteDelegate mAutocompleteDelegate;
+    AutocompleteDelegateForTest mAutocompleteDelegate;
 
     @Mock
     UrlBarEditingTextStateProvider mTextStateProvider;
@@ -516,5 +569,48 @@ public class AutocompleteMediatorUnitTest {
         mMediator.onNativeInitialized();
         verify(mAutocompleteController)
                 .startZeroSuggest(profile, "", url, pageClassification, title);
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    @DisableFeatures(ChromeFeatureList.OMNIBOX_ADAPTIVE_SUGGESTIONS_COUNT)
+    public void onQueryTilesSelected_thenTextChanged_editSessionActivatedByQueryTile() {
+        mMediator.onNativeInitialized();
+        QueryTile childTile = new QueryTile("sports", "sports", "sports", "sports",
+                new String[] {"http://foo/sports.jpg"}, null /* searchParams */,
+                null /* children */);
+        QueryTile tile =
+                new QueryTile("news", "news", "news", "news", new String[] {"http://foo/news.jpg"},
+                        null /* searchParams */, Arrays.asList(childTile));
+        mMediator.onUrlFocusChange(true);
+        Assert.assertEquals(mMediator.getEditSessionStateForTest(), EditSessionState.INACTIVE);
+
+        mMediator.onQueryTileSelected(tile);
+        Assert.assertEquals(
+                mMediator.getEditSessionStateForTest(), EditSessionState.ACTIVATED_BY_QUERY_TILE);
+        verify(mAutocompleteDelegate).setOmniboxEditingText("news ");
+        mMediator.onTextChanged("news s", "news sports");
+        Assert.assertEquals(
+                mMediator.getEditSessionStateForTest(), EditSessionState.ACTIVATED_BY_QUERY_TILE);
+
+        mMediator.onUrlFocusChange(false);
+        Assert.assertEquals(mMediator.getEditSessionStateForTest(), EditSessionState.INACTIVE);
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    @DisableFeatures(ChromeFeatureList.OMNIBOX_ADAPTIVE_SUGGESTIONS_COUNT)
+    public void onTextChanged_editSessionActivatedByUserInput() {
+        mMediator.onNativeInitialized();
+        mMediator.onUrlFocusChange(true);
+        Assert.assertEquals(mMediator.getEditSessionStateForTest(), EditSessionState.INACTIVE);
+        mMediator.onTextChanged("n", "news");
+        Assert.assertEquals(
+                mMediator.getEditSessionStateForTest(), EditSessionState.ACTIVATED_BY_USER_INPUT);
+
+        mMediator.onUrlFocusChange(false);
+        Assert.assertEquals(mMediator.getEditSessionStateForTest(), EditSessionState.INACTIVE);
     }
 }

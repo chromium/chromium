@@ -110,12 +110,21 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
     @SuggestionVisibilityState
     private int mSuggestionVisibilityState;
 
+    @IntDef({EditSessionState.INACTIVE, EditSessionState.ACTIVATED_BY_USER_INPUT,
+            EditSessionState.ACTIVATED_BY_QUERY_TILE})
+    @Retention(RetentionPolicy.SOURCE)
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @interface EditSessionState {
+        int INACTIVE = 0; // Omnibox is not being edited.
+        int ACTIVATED_BY_USER_INPUT = 1; // The edit session is triggered by user input.
+        int ACTIVATED_BY_QUERY_TILE = 2; // The edit session is triggered from query tile.
+    }
+    @EditSessionState
+    private int mEditSessionState;
+
     // The timestamp (using SystemClock.elapsedRealtime()) at the point when the user started
     // modifying the omnibox with new input.
     private long mNewOmniboxEditSessionTimestamp = -1;
-    // Set to true when the user has started typing new input in the omnibox, set to false
-    // when the omnibox loses focus or becomes empty.
-    private boolean mHasStartedNewOmniboxEditSession;
     // Set at the end of the Omnibox interaction to indicate whether the user selected an item
     // from the list (true) or left the Omnibox and suggestions list with no action taken (false).
     private boolean mOmniboxFocusResultedInNavigation;
@@ -382,7 +391,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
             SuggestionsMetrics.recordOmniboxFocusResultedInNavigation(
                     mOmniboxFocusResultedInNavigation);
             setSuggestionVisibilityState(SuggestionVisibilityState.DISALLOWED);
-            mHasStartedNewOmniboxEditSession = false;
+            mEditSessionState = EditSessionState.INACTIVE;
             mNewOmniboxEditSessionTimestamp = -1;
             // Prevent any upcoming omnibox suggestions from showing once a URL is loaded (and as
             // a consequence the omnibox is unfocused).
@@ -449,7 +458,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
         mDelegate.setOmniboxEditingText(refineText);
 
         mNewOmniboxEditSessionTimestamp = SystemClock.elapsedRealtime();
-        mHasStartedNewOmniboxEditSession = true;
+        mEditSessionState = EditSessionState.ACTIVATED_BY_QUERY_TILE;
 
         mAutocomplete.start(mDataProvider.getProfile(), mDataProvider.getCurrentUrl(),
                 mDataProvider.getPageClassification(mDelegate.didFocusUrlFromFakebox()),
@@ -692,10 +701,10 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
         mIgnoreOmniboxItemSelection = true;
         cancelPendingAutocompleteStart();
 
-        if (!mHasStartedNewOmniboxEditSession && mNativeInitialized) {
+        if (mEditSessionState == EditSessionState.INACTIVE && mNativeInitialized) {
             mAutocomplete.resetSession();
             mNewOmniboxEditSessionTimestamp = SystemClock.elapsedRealtime();
-            mHasStartedNewOmniboxEditSession = true;
+            mEditSessionState = EditSessionState.ACTIVATED_BY_USER_INPUT;
         }
 
         stopAutocomplete(false);
@@ -731,7 +740,8 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
                         mDataProvider.getPageClassification(mDelegate.didFocusUrlFromFakebox());
                 mAutocomplete.start(profile, mDataProvider.getCurrentUrl(), pageClassification,
                         textWithoutAutocomplete, cursorPosition, preventAutocomplete, null,
-                        mDelegate.didFocusUrlFromQueryTiles());
+                        mDelegate.didFocusUrlFromQueryTiles()
+                                || mEditSessionState == EditSessionState.ACTIVATED_BY_QUERY_TILE);
             };
             if (mNativeInitialized) {
                 mHandler.postDelayed(mRequestSuggestions, OMNIBOX_SUGGESTION_START_DELAY_MS);
@@ -901,7 +911,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
     private void startZeroSuggest() {
         // Reset "edited" state in the omnibox if zero suggest is triggered -- new edits
         // now count as a new session.
-        mHasStartedNewOmniboxEditSession = false;
+        mEditSessionState = EditSessionState.INACTIVE;
         mNewOmniboxEditSessionTimestamp = -1;
 
         if (mNativeInitialized && mDelegate.isUrlBarFocused()
@@ -1112,5 +1122,11 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener, StartStopWi
         // object will be reset and the suggestion will fail validation.
         recordMetrics(position, WindowOpenDisposition.CURRENT_TAB, suggestion);
         mDelegate.loadUrl(updatedUrl.getSpec(), PageTransition.LINK, mLastActionUpTimestamp);
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @EditSessionState
+    int getEditSessionStateForTest() {
+        return mEditSessionState;
     }
 }
