@@ -26,10 +26,8 @@
 #include "chrome/browser/banners/android/jni_headers/AppBannerManager_jni.h"
 #include "chrome/browser/banners/app_banner_metrics.h"
 #include "chrome/browser/banners/app_banner_settings_helper.h"
-#include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/infobars/infobar_service.h"
 #include "chrome/browser/installable/installable_metrics.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_features.h"
 #include "components/feature_engagement/public/feature_constants.h"
@@ -474,13 +472,6 @@ base::string16 AppBannerManagerAndroid::GetAppName() const {
 bool AppBannerManagerAndroid::MaybeShowInProductHelp() const {
   if (!web_contents()) {
     DVLOG(2) << "IPH for PWA aborted: null WebContents";
-    return false;
-  }
-
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
-  if (!profile) {
-    DVLOG(2) << "IPH for PWA aborted: unable to obtain profile";
     return false;
   }
 
