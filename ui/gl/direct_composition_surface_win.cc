@@ -82,8 +82,11 @@ bool CheckOverlayColorSpaceSupport(
           DXGI_OVERLAY_COLOR_SPACE_SUPPORT_FLAG_PRESENT);
 }
 
-// Used for workaround limiting overlay size to monitor size.
-gfx::Size g_overlay_monitor_size;
+// Used for adjusting overlay size to monitor size.
+gfx::Size g_primary_monitor_size;
+
+// The number of all visible display monitors on a desktop.
+int g_num_of_monitors = 0;
 
 DirectCompositionSurfaceWin::OverlayHDRInfoUpdateCallback
     g_overlay_hdr_gpu_info_callback;
@@ -127,8 +130,7 @@ void GetGpuDriverOverlayInfo(bool* supports_overlays,
                              UINT* nv12_overlay_support_flags,
                              UINT* yuy2_overlay_support_flags,
                              UINT* bgra8_overlay_support_flags,
-                             UINT* rgb10a2_overlay_support_flags,
-                             gfx::Size* overlay_monitor_size) {
+                             UINT* rgb10a2_overlay_support_flags) {
   // Initialization
   *supports_overlays = false;
   *overlay_format_used = DXGI_FORMAT_NV12;
@@ -137,7 +139,6 @@ void GetGpuDriverOverlayInfo(bool* supports_overlays,
   *yuy2_overlay_support_flags = 0;
   *bgra8_overlay_support_flags = 0;
   *rgb10a2_overlay_support_flags = 0;
-  *overlay_monitor_size = gfx::Size();
 
   // Check for DirectComposition support first to prevent likely crashes.
   if (!DirectCompositionSurfaceWin::IsDirectCompositionSupported())
@@ -227,13 +228,6 @@ void GetGpuDriverOverlayInfo(bool* supports_overlays,
         *bgra8_overlay_support_flags = *yuy2_overlay_support_flags;
     }
 
-    if (*supports_overlays) {
-      DXGI_OUTPUT_DESC monitor_desc = {};
-      if (SUCCEEDED(output3->GetDesc(&monitor_desc))) {
-        *overlay_monitor_size =
-            gfx::Rect(monitor_desc.DesktopCoordinates).size();
-      }
-    }
     // RGB10A2 overlay is used for displaying HDR content. In Intel's
     // platform, RGB10A2 overlay is enabled only when
     // DXGI_COLOR_SPACE_RGB_FULL_G2084_NONE_P2020 is supported.
@@ -272,10 +266,6 @@ void GetGpuDriverOverlayInfo(bool* supports_overlays,
   // Software overlays always use NV12 because it's slightly more efficient and
   // YUY2 was only used because Skylake doesn't support NV12 hardware overlays.
   *overlay_format_used = DXGI_FORMAT_NV12;
-
-  // This is only needed for https://crbug.com/720059 which is Intel only -- it
-  // doesn't affect software overlays.
-  *overlay_monitor_size = gfx::Size();
 }
 
 void UpdateOverlaySupport() {
@@ -290,13 +280,11 @@ void UpdateOverlaySupport() {
   UINT yuy2_overlay_support_flags = 0;
   UINT bgra8_overlay_support_flags = 0;
   UINT rgb10a2_overlay_support_flags = 0;
-  gfx::Size overlay_monitor_size = gfx::Size();
 
   GetGpuDriverOverlayInfo(
       &supports_overlays, &overlay_format_used, &overlay_format_used_hdr,
       &nv12_overlay_support_flags, &yuy2_overlay_support_flags,
-      &bgra8_overlay_support_flags, &rgb10a2_overlay_support_flags,
-      &overlay_monitor_size);
+      &bgra8_overlay_support_flags, &rgb10a2_overlay_support_flags);
 
   if (g_force_nv12_overlay_support) {
     supports_overlays = true;
@@ -339,12 +327,24 @@ void UpdateOverlaySupport() {
       bgra8_overlay_support_flags, rgb10a2_overlay_support_flags);
   g_overlay_format_used = overlay_format_used;
   g_overlay_format_used_hdr = overlay_format_used_hdr;
-  g_overlay_monitor_size = overlay_monitor_size;
 }
 
 void RunOverlayHdrGpuInfoUpdateCallback() {
   if (g_overlay_hdr_gpu_info_callback)
     g_overlay_hdr_gpu_info_callback.Run();
+}
+
+void UpdateMonitorInfo() {
+  g_num_of_monitors = GetSystemMetrics(SM_CMONITORS);
+
+  MONITORINFO monitor_info;
+  monitor_info.cbSize = sizeof(monitor_info);
+  if (GetMonitorInfo(MonitorFromWindow(nullptr, MONITOR_DEFAULTTOPRIMARY),
+                     &monitor_info)) {
+    g_primary_monitor_size = gfx::Rect(monitor_info.rcMonitor).size();
+  } else {
+    g_primary_monitor_size = gfx::Size();
+  }
 }
 }  // namespace
 
@@ -361,7 +361,6 @@ DirectCompositionSurfaceWin::DirectCompositionSurfaceWin(
           settings.force_root_surface_full_damage)),
       layer_tree_(std::make_unique<DCLayerTree>(
           settings.disable_nv12_dynamic_textures,
-          settings.disable_larger_than_screen_overlays,
           settings.disable_vp_scaling,
           settings.reset_vp_when_colorspace_changes)) {
   ui::GpuSwitchingManager::GetInstance()->AddObserver(this);
@@ -512,8 +511,13 @@ UINT DirectCompositionSurfaceWin::GetOverlaySupportFlags(DXGI_FORMAT format) {
 }
 
 // static
-gfx::Size DirectCompositionSurfaceWin::GetOverlayMonitorSize() {
-  return g_overlay_monitor_size;
+gfx::Size DirectCompositionSurfaceWin::GetPrimaryMonitorSize() {
+  return g_primary_monitor_size;
+}
+
+// static
+int DirectCompositionSurfaceWin::GetNumOfMonitors() {
+  return g_num_of_monitors;
 }
 
 // static
@@ -698,6 +702,7 @@ bool DirectCompositionSurfaceWin::Initialize(GLSurfaceFormat format) {
   if (!root_surface_->Initialize(GLSurfaceFormat()))
     return false;
 
+  UpdateMonitorInfo();
   return true;
 }
 
@@ -840,16 +845,20 @@ void DirectCompositionSurfaceWin::OnGpuSwitched(
 void DirectCompositionSurfaceWin::OnDisplayAdded() {
   InvalidateOverlayCaps();
   UpdateOverlaySupport();
+  UpdateMonitorInfo();
   RunOverlayHdrGpuInfoUpdateCallback();
 }
 
 void DirectCompositionSurfaceWin::OnDisplayRemoved() {
   InvalidateOverlayCaps();
   UpdateOverlaySupport();
+  UpdateMonitorInfo();
   RunOverlayHdrGpuInfoUpdateCallback();
 }
 
-void DirectCompositionSurfaceWin::OnDisplayMetricsChanged() {}
+void DirectCompositionSurfaceWin::OnDisplayMetricsChanged() {
+  UpdateMonitorInfo();
+}
 
 scoped_refptr<base::TaskRunner>
 DirectCompositionSurfaceWin::GetWindowTaskRunnerForTesting() {
@@ -869,6 +878,22 @@ DirectCompositionSurfaceWin::GetBackbufferSwapChainForTesting() const {
 scoped_refptr<DirectCompositionChildSurfaceWin>
 DirectCompositionSurfaceWin::GetRootSurfaceForTesting() const {
   return root_surface_;
+}
+
+void DirectCompositionSurfaceWin::GetSwapChainVisualInfoForTesting(
+    size_t index,
+    gfx::Transform* transform,
+    gfx::Point* offset,
+    gfx::Rect* clip_rect) const {
+  layer_tree_->GetSwapChainVisualInfoForTesting(  // IN-TEST
+      index, transform, offset, clip_rect);
+}
+
+void DirectCompositionSurfaceWin::SetMonitorInfoForTesting(
+    int num_of_monitors,
+    gfx::Size monitor_size) {
+  g_num_of_monitors = num_of_monitors;
+  g_primary_monitor_size = monitor_size;
 }
 
 }  // namespace gl

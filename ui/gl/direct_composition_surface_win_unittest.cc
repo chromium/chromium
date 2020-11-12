@@ -21,6 +21,7 @@
 #include "ui/base/win/hidden_window.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/gdi_util.h"
+#include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/transform.h"
 #include "ui/gl/dc_renderer_layer_params.h"
 #include "ui/gl/direct_composition_child_surface_win.h"
@@ -1051,6 +1052,7 @@ TEST_F(DirectCompositionPixelTest, ResizeVideoLayer) {
   ASSERT_TRUE(image_dxgi->InitializeHandle(base::win::ScopedHandle(handle), 0,
                                            gfx::BufferFormat::RGBA_8888));
 
+  // (1) Test if swap chain is overridden to content rect size (50, 50).
   {
     ui::DCRendererLayerParams params;
     params.images[0] = image_dxgi;
@@ -1072,6 +1074,7 @@ TEST_F(DirectCompositionPixelTest, ResizeVideoLayer) {
   EXPECT_EQ(desc.Width, 50u);
   EXPECT_EQ(desc.Height, 50u);
 
+  // (2) Test if swap chain is overridden to content rect size (30, 30).
   {
     ui::DCRendererLayerParams params;
     params.images[0] = image_dxgi;
@@ -1087,6 +1090,74 @@ TEST_F(DirectCompositionPixelTest, ResizeVideoLayer) {
   EXPECT_TRUE(SUCCEEDED(swap_chain->GetDesc1(&desc)));
   EXPECT_EQ(desc.Width, 30u);
   EXPECT_EQ(desc.Height, 30u);
+
+  // (3) Test if swap chain is adjusted to fit the monitor when overlay scaling
+  // is not supported and video on-screen size is slightly smaller than the
+  // monitor. Clipping is on.
+  DirectCompositionSurfaceWin::SetScaledOverlaysSupportedForTesting(false);
+  gfx::Size monitor_size = window_size;
+  surface_->SetMonitorInfoForTesting(1, window_size);
+  gfx::Rect on_screen_rect =
+      gfx::Rect(0, 0, monitor_size.width() - 2, monitor_size.height() - 2);
+  {
+    ui::DCRendererLayerParams params;
+    params.images[0] = image_dxgi;
+
+    params.content_rect = gfx::Rect(50, 50);
+    params.quad_rect = on_screen_rect;
+    params.clip_rect = on_screen_rect;
+    params.is_clipped = true;
+    surface_->ScheduleDCLayer(params);
+
+    EXPECT_EQ(gfx::SwapResult::SWAP_ACK,
+              surface_->SwapBuffers(base::DoNothing()));
+  }
+
+  // Swap chain is set to monitor size.
+  swap_chain = surface_->GetLayerSwapChainForTesting(0);
+  EXPECT_TRUE(SUCCEEDED(swap_chain->GetDesc1(&desc)));
+  EXPECT_EQ(static_cast<unsigned int>(monitor_size.width()), desc.Width);
+  EXPECT_EQ(static_cast<unsigned int>(monitor_size.height()), desc.Height);
+
+  gfx::Transform transform;
+  gfx::Point offset;
+  gfx::Rect clip_rect;
+  surface_->GetSwapChainVisualInfoForTesting(0, &transform, &offset,
+                                             &clip_rect);
+  EXPECT_TRUE(transform.IsIdentity());
+  EXPECT_EQ(gfx::Rect(monitor_size), clip_rect);
+
+  // (4) Test if the final on-screen size is adjusted to fit the monitor when
+  // overlay scaling is supported and video on-screen size is slightly bigger
+  // than the monitor. Clipping is off.
+  DirectCompositionSurfaceWin::SetScaledOverlaysSupportedForTesting(true);
+  on_screen_rect =
+      gfx::Rect(0, 0, monitor_size.width() + 2, monitor_size.height() + 2);
+  {
+    ui::DCRendererLayerParams params;
+    params.images[0] = image_dxgi;
+
+    params.content_rect = gfx::Rect(50, 50);
+    params.quad_rect = on_screen_rect;
+    surface_->ScheduleDCLayer(params);
+
+    EXPECT_EQ(gfx::SwapResult::SWAP_ACK,
+              surface_->SwapBuffers(base::DoNothing()));
+  }
+
+  // Swap chain is set to content rect size.
+  swap_chain = surface_->GetLayerSwapChainForTesting(0);
+  EXPECT_TRUE(SUCCEEDED(swap_chain->GetDesc1(&desc)));
+  EXPECT_EQ(50u, desc.Width);
+  EXPECT_EQ(50u, desc.Height);
+
+  // Make sure the new transform matrix is adjusted, so it transforms the swap
+  // chain to |new_on_screen_rect| which fits the monitor.
+  surface_->GetSwapChainVisualInfoForTesting(0, &transform, &offset,
+                                             &clip_rect);
+  gfx::RectF new_on_screen_rect = gfx::RectF(50, 50);
+  transform.TransformRect(&new_on_screen_rect);
+  EXPECT_EQ(gfx::Rect(monitor_size), gfx::ToEnclosingRect(new_on_screen_rect));
 }
 
 TEST_F(DirectCompositionPixelTest, SwapChainImage) {

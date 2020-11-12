@@ -20,11 +20,9 @@ bool SizeContains(const gfx::Size& a, const gfx::Size& b) {
 }  // namespace
 
 DCLayerTree::DCLayerTree(bool disable_nv12_dynamic_textures,
-                         bool disable_larger_than_screen_overlays,
                          bool disable_vp_scaling,
                          bool reset_vp_when_colorspace_changes)
     : disable_nv12_dynamic_textures_(disable_nv12_dynamic_textures),
-      disable_larger_than_screen_overlays_(disable_larger_than_screen_overlays),
       disable_vp_scaling_(disable_vp_scaling),
       reset_vp_when_colorspace_changes_(reset_vp_when_colorspace_changes) {}
 
@@ -34,6 +32,8 @@ bool DCLayerTree::Initialize(
     HWND window,
     Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device,
     Microsoft::WRL::ComPtr<IDCompositionDevice2> dcomp_device) {
+  DCHECK(window);
+  window_ = window;
   DCHECK(d3d11_device);
   d3d11_device_ = std::move(d3d11_device);
   DCHECK(dcomp_device);
@@ -44,7 +44,7 @@ bool DCLayerTree::Initialize(
   DCHECK(desktop_device);
 
   HRESULT hr =
-      desktop_device->CreateTargetForHwnd(window, TRUE, &dcomp_target_);
+      desktop_device->CreateTargetForHwnd(window_, TRUE, &dcomp_target_);
   if (FAILED(hr)) {
     DLOG(ERROR) << "CreateTargetForHwnd failed with error 0x" << std::hex << hr;
     return false;
@@ -200,6 +200,16 @@ DCLayerTree::GetLayerSwapChainForTesting(size_t index) const {
   return nullptr;
 }
 
+void DCLayerTree::GetSwapChainVisualInfoForTesting(size_t index,
+                                                   gfx::Transform* transform,
+                                                   gfx::Point* offset,
+                                                   gfx::Rect* clip_rect) const {
+  if (index < video_swap_chains_.size()) {
+    video_swap_chains_[index]->GetSwapChainVisualInfoForTesting(  // IN-TEST
+        transform, offset, clip_rect);
+  }
+}
+
 bool DCLayerTree::CommitAndClearPendingOverlays(
     DirectCompositionChildSurfaceWin* root_surface) {
   TRACE_EVENT1("gpu", "DCLayerTree::CommitAndClearPendingOverlays",
@@ -250,7 +260,7 @@ bool DCLayerTree::CommitAndClearPendingOverlays(
         new_video_swap_chains.emplace_back(std::move(video_swap_chains_[i]));
       } else {
         new_video_swap_chains.emplace_back(std::make_unique<SwapChainPresenter>(
-            this, d3d11_device_, dcomp_device_));
+            this, window_, d3d11_device_, dcomp_device_));
         if (frame_rate_ > 0)
           new_video_swap_chains.back()->SetFrameRate(frame_rate_);
       }

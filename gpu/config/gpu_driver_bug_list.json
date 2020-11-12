@@ -2072,22 +2072,6 @@
       ]
     },
     {
-      "id": 229,
-      "description": "Overlay sizes bigger than screen aren't accelerated on some Intel drivers",
-      "cr_bugs": [720059],
-      "os": {
-        "type": "win"
-      },
-      "vendor_id": "0x8086",
-      "driver_version": {
-        "op": "<",
-        "value": "21.20.16.4542"
-      },
-      "features": [
-        "disable_larger_than_screen_overlays"
-      ]
-    },
-    {
       "id": 231,
       "description": "Multisampled color renderbuffers can't be resized on Qualcomm 4xx/5xx",
       "cr_bugs": [696126],

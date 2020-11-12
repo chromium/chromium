@@ -27,6 +27,7 @@ class GLImageMemory;
 class SwapChainPresenter : public base::PowerObserver {
  public:
   SwapChainPresenter(DCLayerTree* layer_tree,
+                     HWND window,
                      Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device,
                      Microsoft::WRL::ComPtr<IDCompositionDevice2> dcomp_device);
   ~SwapChainPresenter() override;
@@ -43,6 +44,14 @@ class SwapChainPresenter : public base::PowerObserver {
   }
 
   void SetFrameRate(float frame_rate);
+
+  void GetSwapChainVisualInfoForTesting(gfx::Transform* transform,
+                                        gfx::Point* offset,
+                                        gfx::Rect* clip_rect) const {
+    *transform = visual_info_.transform;
+    *offset = visual_info_.offset;
+    *clip_rect = visual_info_.clip_rect;
+  }
 
  private:
   // Mapped to DirectCompositonVideoPresentationMode UMA enum.  Do not remove or
@@ -125,12 +134,28 @@ class SwapChainPresenter : public base::PowerObserver {
       bool content_is_hdr,
       base::Optional<DXGI_HDR_METADATA_HDR10> stream_hdr_metadata);
 
+  gfx::Size GetMonitorSize();
+
+  // If the swap chain size is very close to the screen size but not exactly the
+  // same, the swap chain should be adjusted to fit the screen size in order to
+  // get the fullscreen DWM optimizations.
+  void AdjustSwapChainToFullScreenSizeIfNeeded(
+      const ui::DCRendererLayerParams& params,
+      const gfx::Rect& overlay_onscreen_rect,
+      gfx::Size* swap_chain_size,
+      gfx::Transform* transform,
+      gfx::Rect* clip_rect);
+
   // Returns optimal swap chain size for given layer.
-  gfx::Size CalculateSwapChainSize(const ui::DCRendererLayerParams& params);
+  gfx::Size CalculateSwapChainSize(const ui::DCRendererLayerParams& params,
+                                   gfx::Transform* transform,
+                                   gfx::Rect* clip_rect);
 
   // Update direct composition visuals for layer with given swap chain size.
   void UpdateVisuals(const ui::DCRendererLayerParams& params,
-                     const gfx::Size& swap_chain_size);
+                     const gfx::Size& swap_chain_size,
+                     const gfx::Transform& transform,
+                     const gfx::Rect& clip_rect);
 
   // Try presenting to a decode swap chain based on various conditions such as
   // global state (e.g. finch, NV12 support), texture flags, and transform.
@@ -168,6 +193,8 @@ class SwapChainPresenter : public base::PowerObserver {
 
   // Layer tree instance that owns this swap chain presenter.
   DCLayerTree* layer_tree_ = nullptr;
+
+  const HWND window_;
 
   // Current size of swap chain.
   gfx::Size swap_chain_size_;

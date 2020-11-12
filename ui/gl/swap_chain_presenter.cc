@@ -153,6 +153,21 @@ UINT BufferCount() {
              ? 3u
              : 2u;
 }
+
+// Transform is correct for scaling up |quad_rect| to on screen bounds, but
+// doesn't include scaling transform from |swap_chain_size| to |quad_rect|.
+// Since |swap_chain_size| could be equal to on screen bounds, and therefore
+// possibly larger than |quad_rect|, this scaling could be downscaling, but
+// only to the extent that it would cancel upscaling already in the transform.
+void UpdateSwapChainTransform(const gfx::Size& quad_size,
+                              const gfx::Size& swap_chain_size,
+                              gfx::Transform* transform) {
+  float swap_chain_scale_x = quad_size.width() * 1.0f / swap_chain_size.width();
+  float swap_chain_scale_y =
+      quad_size.height() * 1.0f / swap_chain_size.height();
+  transform->Scale(swap_chain_scale_x, swap_chain_scale_y);
+}
+
 }  // namespace
 
 SwapChainPresenter::PresentationHistory::PresentationHistory() = default;
@@ -187,9 +202,11 @@ int SwapChainPresenter::PresentationHistory::composed_count() const {
 
 SwapChainPresenter::SwapChainPresenter(
     DCLayerTree* layer_tree,
+    HWND window,
     Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device,
     Microsoft::WRL::ComPtr<IDCompositionDevice2> dcomp_device)
     : layer_tree_(layer_tree),
+      window_(window),
       d3d11_device_(d3d11_device),
       dcomp_device_(dcomp_device),
       is_on_battery_power_(true) {
@@ -352,17 +369,117 @@ Microsoft::WRL::ComPtr<ID3D11Texture2D> SwapChainPresenter::UploadVideoImages(
   return copy_texture_;
 }
 
+gfx::Size SwapChainPresenter::GetMonitorSize() {
+  if (DirectCompositionSurfaceWin::GetNumOfMonitors() == 1) {
+    // Only one monitor. Return the size of this monitor.
+    return DirectCompositionSurfaceWin::GetPrimaryMonitorSize();
+  } else {
+    gfx::Size monitor_size;
+    // Get the monitor on which the overlay is displayed.
+    MONITORINFO monitor_info;
+    monitor_info.cbSize = sizeof(monitor_info);
+    if (GetMonitorInfo(MonitorFromWindow(window_, MONITOR_DEFAULTTONEAREST),
+                       &monitor_info)) {
+      monitor_size = gfx::Rect(monitor_info.rcMonitor).size();
+    }
+
+    return monitor_size;
+  }
+}
+
+void SwapChainPresenter::AdjustSwapChainToFullScreenSizeIfNeeded(
+    const ui::DCRendererLayerParams& params,
+    const gfx::Rect& overlay_onscreen_rect,
+    gfx::Size* swap_chain_size,
+    gfx::Transform* transform,
+    gfx::Rect* clip_rect) {
+  gfx::Rect onscreen_rect = overlay_onscreen_rect;
+  if (params.is_clipped)
+    onscreen_rect.Intersect(*clip_rect);
+
+  // Because of the rounding when converting between pixels and DIPs, a
+  // fullscreen video can become slightly larger than the monitor - e.g. on
+  // a 3000x2000 monitor with a scale factor of 1.75 a 1920x1079 video can
+  // become 3002x1689.
+  // Swapchains that are bigger than the monitor won't be put into overlays,
+  // which will hurt power usage a lot. On those systems, the scaling can be
+  // adjusted very slightly so that it's less than the monitor size. This
+  // should be close to imperceptible. http://crbug.com/668278
+  constexpr int kFullScreenMargin = 5;
+
+  // The overlay must be positioned at (0, 0) in fullscreen mode.
+  if (std::abs(onscreen_rect.x()) >= kFullScreenMargin ||
+      std::abs(onscreen_rect.y()) >= kFullScreenMargin) {
+    // Not fullscreen mode.
+    return;
+  }
+
+  gfx::Size monitor_size = GetMonitorSize();
+  if (monitor_size.IsEmpty())
+    return;
+
+  // Check whether the on-screen overlay is near the full screen size.
+  // If yes, adjust the overlay size so it can fit the screen. This allows the
+  // application of fullscreen optimizations like dynamic backlighting or
+  // dynamic refresh rates (24hz/48hz). Note: The DWM optimizations works for
+  // both hardware and software overlays.
+  // If no, do nothing.
+  if (std::abs(onscreen_rect.width() - monitor_size.width()) >=
+          kFullScreenMargin ||
+      std::abs(onscreen_rect.height() - monitor_size.height()) >=
+          kFullScreenMargin) {
+    // Not fullscreen mode.
+    return;
+  }
+
+  // Adjust the clip rect.
+  if (params.is_clipped) {
+    *clip_rect = gfx::Rect(monitor_size);
+  }
+
+  // Adjust the swap chain size.
+  // The swap chain is either the size of onscreen_rect or min(onscreen_rect,
+  // content_rect). It might not need to update if it has the content size.
+  if (std::abs(swap_chain_size->width() - monitor_size.width()) <
+          kFullScreenMargin &&
+      std::abs(swap_chain_size->height() - monitor_size.height()) <
+          kFullScreenMargin) {
+    *swap_chain_size = monitor_size;
+  }
+
+  // Adjust the transform matrix.
+  auto& transform_matrix = transform->matrix();
+  float dx = -onscreen_rect.x();
+  float dy = -onscreen_rect.y();
+  transform_matrix.postTranslate(dx, dy, 0);
+
+  float scale_x = monitor_size.width() * 1.0f / swap_chain_size->width();
+  float scale_y = monitor_size.height() * 1.0f / swap_chain_size->height();
+  transform_matrix.setScale(scale_x, scale_y, 1);
+
+#if DCHECK_IS_ON()
+  // The new transform matrix should transform the swap chain to the monitor
+  // rect.
+  gfx::Rect new_swap_chain_rect = gfx::Rect(*swap_chain_size);
+  new_swap_chain_rect.set_origin(params.quad_rect.origin());
+  gfx::RectF new_onscreen_rect(new_swap_chain_rect);
+  transform->TransformRect(&new_onscreen_rect);
+  DCHECK_EQ(gfx::ToEnclosingRect(new_onscreen_rect), gfx::Rect(monitor_size));
+#endif
+}
+
 gfx::Size SwapChainPresenter::CalculateSwapChainSize(
-    const ui::DCRendererLayerParams& params) {
+    const ui::DCRendererLayerParams& params,
+    gfx::Transform* transform,
+    gfx::Rect* clip_rect) {
   // Swap chain size is the minimum of the on-screen size and the source size so
   // the video processor can do the minimal amount of work and the overlay has
   // to read the minimal amount of data. DWM is also less likely to promote a
   // surface to an overlay if it's much larger than its area on-screen.
   gfx::Size swap_chain_size = params.content_rect.size();
-  gfx::Size overlay_onscreen_size = swap_chain_size;
   gfx::RectF bounds(params.quad_rect);
   params.transform.TransformRect(&bounds);
-  overlay_onscreen_size = gfx::ToEnclosingRect(bounds).size();
+  gfx::Rect overlay_onscreen_rect = gfx::ToEnclosingRect(bounds);
 
   // If transform isn't a scale or translation then swap chain can't be promoted
   // to an overlay so avoid blitting to a large surface unnecessarily.  Also,
@@ -371,7 +488,7 @@ gfx::Size SwapChainPresenter::CalculateSwapChainSize(
   // the transform to counteract.
   // TODO(sunnyps): Support 90/180/270 deg rotations using video context.
   if (params.transform.IsScaleOrTranslation()) {
-    swap_chain_size = overlay_onscreen_size;
+    swap_chain_size = overlay_onscreen_rect.size();
   }
   if (DirectCompositionSurfaceWin::AreScaledOverlaysSupported() &&
       !ShouldUseVideoProcessorScaling()) {
@@ -381,34 +498,6 @@ gfx::Size SwapChainPresenter::CalculateSwapChainSize(
     swap_chain_size.SetToMin(params.content_rect.size());
   }
 
-  gfx::Size overlay_monitor_size =
-      DirectCompositionSurfaceWin::GetOverlayMonitorSize();
-  if (layer_tree_->disable_larger_than_screen_overlays() &&
-      !overlay_monitor_size.IsEmpty()) {
-    // Because of the rounding when converting between pixels and DIPs, a
-    // fullscreen video can become slightly larger than the monitor - e.g. on
-    // a 3000x2000 monitor with a scale factor of 1.75 a 1920x1079 video can
-    // become 3002x1689.
-    // On older Intel drivers, swapchains that are bigger than the monitor
-    // won't be put into overlays, which will hurt power usage a lot. On those
-    // systems, the scaling can be adjusted very slightly so that it's less
-    // than the monitor size. This should be close to imperceptible.
-    // TODO(jbauman): Remove when http://crbug.com/668278 is fixed.
-    const int kOversizeMargin = 3;
-
-    if ((swap_chain_size.width() > overlay_monitor_size.width()) &&
-        (swap_chain_size.width() <=
-         overlay_monitor_size.width() + kOversizeMargin)) {
-      swap_chain_size.set_width(overlay_monitor_size.width());
-    }
-
-    if ((swap_chain_size.height() > overlay_monitor_size.height()) &&
-        (swap_chain_size.height() <=
-         overlay_monitor_size.height() + kOversizeMargin)) {
-      swap_chain_size.set_height(overlay_monitor_size.height());
-    }
-  }
-
   // 4:2:2 subsampled formats like YUY2 must have an even width, and 4:2:0
   // subsampled formats like NV12 must have an even width and height.
   if (swap_chain_size.width() % 2 == 1)
@@ -416,11 +505,25 @@ gfx::Size SwapChainPresenter::CalculateSwapChainSize(
   if (swap_chain_size.height() % 2 == 1)
     swap_chain_size.set_height(swap_chain_size.height() + 1);
 
+  // Adjust the transform matrix.
+  UpdateSwapChainTransform(params.quad_rect.size(), swap_chain_size, transform);
+
+  // In order to get the fullscreen DWM optimizations, the overlay onscreen rect
+  // must fit the monitor when in fullscreen mode. Adjust |swap_chain_size|,
+  // |transform| and |clip_rect| so |overlay_onscreen_rect| is the same as the
+  // monitor rect.
+  if (transform->IsScaleOrTranslation()) {
+    AdjustSwapChainToFullScreenSizeIfNeeded(
+        params, overlay_onscreen_rect, &swap_chain_size, transform, clip_rect);
+  }
+
   return swap_chain_size;
 }
 
 void SwapChainPresenter::UpdateVisuals(const ui::DCRendererLayerParams& params,
-                                       const gfx::Size& swap_chain_size) {
+                                       const gfx::Size& swap_chain_size,
+                                       const gfx::Transform& transform,
+                                       const gfx::Rect& clip_rect) {
   if (!content_visual_) {
     DCHECK(!clip_visual_);
     dcomp_device_->CreateVisual(&clip_visual_);
@@ -434,18 +537,6 @@ void SwapChainPresenter::UpdateVisuals(const ui::DCRendererLayerParams& params,
   // Visual offset is applied before transform so it behaves similar to how the
   // compositor uses transform to map quad rect in layer space to target space.
   gfx::Point offset = params.quad_rect.origin();
-  gfx::Transform transform = params.transform;
-
-  // Transform is correct for scaling up |quad_rect| to on screen bounds, but
-  // doesn't include scaling transform from |swap_chain_size| to |quad_rect|.
-  // Since |swap_chain_size| could be equal to on screen bounds, and therefore
-  // possibly larger than |quad_rect|, this scaling could be downscaling, but
-  // only to the extent that it would cancel upscaling already in the transform.
-  float swap_chain_scale_x =
-      params.quad_rect.width() * 1.0f / swap_chain_size.width();
-  float swap_chain_scale_y =
-      params.quad_rect.height() * 1.0f / swap_chain_size.height();
-  transform.Scale(swap_chain_scale_x, swap_chain_scale_y);
 
   if (visual_info_.offset != offset || visual_info_.transform != transform) {
     visual_info_.offset = offset;
@@ -468,9 +559,9 @@ void SwapChainPresenter::UpdateVisuals(const ui::DCRendererLayerParams& params,
   }
 
   if (visual_info_.is_clipped != params.is_clipped ||
-      visual_info_.clip_rect != params.clip_rect) {
+      visual_info_.clip_rect != clip_rect) {
     visual_info_.is_clipped = params.is_clipped;
-    visual_info_.clip_rect = params.clip_rect;
+    visual_info_.clip_rect = clip_rect;
     layer_tree_->SetNeedsRebuildVisualTree();
     // DirectComposition clips happen in the pre-transform visual space, while
     // cc/ clips happen post-transform. So the clip needs to go on a separate
@@ -479,10 +570,10 @@ void SwapChainPresenter::UpdateVisuals(const ui::DCRendererLayerParams& params,
       Microsoft::WRL::ComPtr<IDCompositionRectangleClip> clip;
       dcomp_device_->CreateRectangleClip(&clip);
       DCHECK(clip);
-      clip->SetLeft(params.clip_rect.x());
-      clip->SetRight(params.clip_rect.right());
-      clip->SetBottom(params.clip_rect.bottom());
-      clip->SetTop(params.clip_rect.y());
+      clip->SetLeft(clip_rect.x());
+      clip->SetRight(clip_rect.right());
+      clip->SetBottom(clip_rect.bottom());
+      clip->SetTop(clip_rect.y());
       clip_visual_->SetClip(clip.Get());
     } else {
       clip_visual_->SetClip(nullptr);
@@ -746,8 +837,17 @@ bool SwapChainPresenter::PresentToSwapChain(
   if (swap_chain_image)
     image_type = "swap chain";
 
-  gfx::Size swap_chain_size = swap_chain_image ? swap_chain_image->GetSize()
-                                               : CalculateSwapChainSize(params);
+  gfx::Transform transform = params.transform;
+  gfx::Rect clip_rect = params.clip_rect;
+  gfx::Size swap_chain_size;
+  if (swap_chain_image) {
+    swap_chain_size = swap_chain_image->GetSize();
+    // |transform| now scales from |swap_chain_size| to on screen bounds.
+    UpdateSwapChainTransform(params.quad_rect.size(), swap_chain_size,
+                             &transform);
+  } else {
+    swap_chain_size = CalculateSwapChainSize(params, &transform, &clip_rect);
+  }
 
   TRACE_EVENT2("gpu", "SwapChainPresenter::PresentToSwapChain", "image_type",
                image_type, "swap_chain_size", swap_chain_size.ToString());
@@ -765,7 +865,7 @@ bool SwapChainPresenter::PresentToSwapChain(
     return true;
   }
 
-  UpdateVisuals(params, swap_chain_size);
+  UpdateVisuals(params, swap_chain_size, transform, clip_rect);
 
   // Swap chain image already has a swap chain that's presented by the client
   // e.g. for webgl/canvas low-latency/desynchronized mode.

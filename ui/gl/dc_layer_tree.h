@@ -29,7 +29,6 @@ class SwapChainPresenter;
 class DCLayerTree {
  public:
   DCLayerTree(bool disable_nv12_dynamic_textures,
-              bool disable_larger_than_screen_overlays,
               bool disable_vp_scaling,
               bool reset_vp_when_colorspace_changes);
   ~DCLayerTree();
@@ -65,10 +64,6 @@ class DCLayerTree {
     return disable_nv12_dynamic_textures_;
   }
 
-  bool disable_larger_than_screen_overlays() const {
-    return disable_larger_than_screen_overlays_;
-  }
-
   bool disable_vp_scaling() const { return disable_vp_scaling_; }
 
   const Microsoft::WRL::ComPtr<ID3D11VideoDevice>& video_device() const {
@@ -91,11 +86,18 @@ class DCLayerTree {
   Microsoft::WRL::ComPtr<IDXGISwapChain1> GetLayerSwapChainForTesting(
       size_t index) const;
 
+  void GetSwapChainVisualInfoForTesting(size_t index,
+                                        gfx::Transform* transform,
+                                        gfx::Point* offset,
+                                        gfx::Rect* clip_rect) const;
+
   void SetFrameRate(float frame_rate);
 
   const std::unique_ptr<HDRMetadataHelperWin>& GetHDRMetadataHelper() {
     return hdr_metadata_helper_;
   }
+
+  HWND window() const { return window_; }
 
  private:
   void SetColorSpaceForVideoProcessor(
@@ -105,10 +107,10 @@ class DCLayerTree {
       bool is_yuv_swapchain);
 
   const bool disable_nv12_dynamic_textures_;
-  const bool disable_larger_than_screen_overlays_;
   const bool disable_vp_scaling_;
   const bool reset_vp_when_colorspace_changes_;
 
+  HWND window_;
   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device_;
   Microsoft::WRL::ComPtr<IDCompositionDevice2> dcomp_device_;
   Microsoft::WRL::ComPtr<IDCompositionTarget> dcomp_target_;
