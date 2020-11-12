@@ -280,9 +280,6 @@ void ClipboardHistoryControllerImpl::ExecuteSelectedMenuItem(int event_flags) {
   // If no menu item is currently selected, we'll fallback to the first item.
   menu_delegate_->ExecuteCommand(
       command.value_or(ClipboardHistoryUtil::kFirstItemCommandId), event_flags);
-
-  for (auto& observer : observers_)
-    observer.OnClipboardHistoryPasted();
 }
 
 void ClipboardHistoryControllerImpl::ExecuteCommand(int command_id,
@@ -339,6 +336,9 @@ void ClipboardHistoryControllerImpl::PasteMenuItemData(int command_id,
   }
 
   SendSyntheticKeyEvent(ui::VKEY_V, ui::EF_CONTROL_DOWN);
+
+  for (auto& observer : observers_)
+    observer.OnClipboardHistoryPasted();
 
   if (!original_data)
     return;
