@@ -13,7 +13,7 @@
 #include "base/android/child_process_binding_types.h"
 #include "base/lazy_instance.h"
 #include "base/process/process.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/synchronization/lock.h"
 #include "components/crash/content/browser/crash_handler_host_linux.h"
 #include "content/public/browser/browser_child_process_observer.h"
@@ -172,9 +172,9 @@ class ChildExitObserver : public content::BrowserChildProcessObserver,
 
   base::Lock crash_signals_lock_;
   std::map<base::ProcessId, int> child_pid_to_crash_signal_;
-  ScopedObserver<crashpad::CrashHandlerHost,
-                 crashpad::CrashHandlerHost::Observer>
-      scoped_observer_{this};
+  base::ScopedObservation<crashpad::CrashHandlerHost,
+                          crashpad::CrashHandlerHost::Observer>
+      scoped_observation_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ChildExitObserver);
 };

@@ -81,7 +81,7 @@ ChildExitObserver::ChildExitObserver() {
                               content::NOTIFICATION_RENDERER_PROCESS_CLOSED,
                               content::NotificationService::AllSources());
   BrowserChildProcessObserver::Add(this);
-  scoped_observer_.Add(crashpad::CrashHandlerHost::Get());
+  scoped_observation_.Observe(crashpad::CrashHandlerHost::Get());
 }
 
 ChildExitObserver::~ChildExitObserver() {
