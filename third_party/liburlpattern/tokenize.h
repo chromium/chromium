@@ -39,17 +39,19 @@ enum class TokenType {
   kEnd,
 };
 
+const char* TokenTypeToString(TokenType type);
+
 // Simple structure representing a single lexical token.
 struct COMPONENT_EXPORT(LIBURLPATTERN) Token {
   // Indicate the token type.
-  TokenType type = TokenType::kEnd;
+  const TokenType type = TokenType::kEnd;
 
   // Index of the start of this token in the original pattern string.
-  size_t index = 0;
+  const size_t index = 0;
 
   // The value of the token.  May be one or many characters depending on type.
   // May be null zero characters for the kEnd type.
-  absl::string_view value;
+  const absl::string_view value;
 
   Token(TokenType t, size_t i, absl::string_view v)
       : type(t), index(i), value(v) {}
@@ -61,7 +63,6 @@ inline bool operator==(const Token& lh, const Token& rh) {
   return lh.type == rh.type && lh.index == rh.index && lh.value == rh.value;
 }
 
-COMPONENT_EXPORT(LIBURLPATTERN)
 inline bool operator!=(const Token& lh, const Token& rh) {
   return !(lh == rh);
 }

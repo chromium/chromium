@@ -7,6 +7,10 @@
 
 #include "third_party/abseil-cpp/absl/strings/str_format.h"
 
+// The following code is a translation from the path-to-regexp typescript at:
+//
+//  https://github.com/pillarjs/path-to-regexp/blob/125c43e6481f68cc771a5af22b914acdb8c5ba1f/src/index.ts#L4-L124
+
 namespace liburlpattern {
 
 namespace {
@@ -24,16 +28,34 @@ bool IsNameChar(char c) {
 
 }  // namespace
 
+const char* TokenTypeToString(TokenType type) {
+  switch (type) {
+    case TokenType::kOpen:
+      return "OPEN";
+    case TokenType::kClose:
+      return "CLOSE";
+    case TokenType::kRegex:
+      return "REGEX";
+    case TokenType::kName:
+      return "NAME";
+    case TokenType::kChar:
+      return "CHAR";
+    case TokenType::kEscapedChar:
+      return "ESCAPED_CHAR";
+    case TokenType::kModifier:
+      return "MODIFIER";
+    case TokenType::kEnd:
+      return "END";
+  }
+}
+
 std::ostream& operator<<(std::ostream& o, Token token) {
   o << "{ type:" << static_cast<int>(token.type) << ", index:" << token.index
     << ", value:" << token.value << " }";
   return o;
 }
 
-// Split the input pattern into a list of tokens.  Originally translated to
-// c++ from:
-//
-//  https://github.com/pillarjs/path-to-regexp/blob/125c43e6481f68cc771a5af22b914acdb8c5ba1f/src/index.ts#L4-L124
+// Split the input pattern into a list of tokens.
 absl::StatusOr<std::vector<Token>> Tokenize(absl::string_view pattern) {
   // Verify that all characters are valid before parsing.  This simplifies the
   // following logic.

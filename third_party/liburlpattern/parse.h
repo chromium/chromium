@@ -18,8 +18,16 @@ class Pattern;
 // Parse a pattern string and return the result.  The input |pattern| must
 // consist of ASCII characters.  Any non-ASCII characters should be UTF-8
 // encoded and % escaped, similar to URLs, prior to calling this function.
+// |delimiter_list| contains a list of characters that are considered segment
+// separators when performing a kSegmentWildcard.  This is the behavior you
+// get when you specify a name `:foo` without a custom regular expression.
+// The |prefix_list| contains a list of characters to automatically treat
+// as a prefix when they appear before a kName or kRegex Token; e.g. "/:foo",
+// includes the leading "/" as the prefix for the "foo" named group by default.
 COMPONENT_EXPORT(LIBURLPATTERN)
-absl::StatusOr<Pattern> Parse(absl::string_view pattern);
+absl::StatusOr<Pattern> Parse(absl::string_view pattern,
+                              absl::string_view delimiter_list = "/#?",
+                              absl::string_view prefix_list = "./");
 
 }  // namespace liburlpattern
 
