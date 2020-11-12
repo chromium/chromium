@@ -134,7 +134,6 @@ const ContentSettingsTypeNameEntry kContentSettingsTypeGroupNames[] = {
     {ContentSettingsType::CLIENT_HINTS, nullptr},
     {ContentSettingsType::ACCESSIBILITY_EVENTS, nullptr},
     {ContentSettingsType::CLIPBOARD_SANITIZED_WRITE, nullptr},
-    {ContentSettingsType::PLUGINS_DATA, nullptr},
     {ContentSettingsType::BACKGROUND_FETCH, nullptr},
     {ContentSettingsType::INTENT_PICKER_DISPLAY, nullptr},
     {ContentSettingsType::PERIODIC_BACKGROUND_SYNC, nullptr},

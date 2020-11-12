@@ -276,7 +276,6 @@ HostContentSettingsMap::HostContentSettingsMap(
   default_provider->AddObserver(this);
   content_settings_providers_[DEFAULT_PROVIDER] = std::move(default_provider);
 
-  InitializePluginsDataSettings();
   MigrateSettingsPrecedingPermissionDelegationActivation();
   RecordExceptionMetrics();
 }
@@ -576,21 +575,6 @@ void HostContentSettingsMap::SetContentSettingCustomScope(
     const content_settings::ContentSettingConstraints& constraints) {
   DCHECK(content_settings::ContentSettingsRegistry::GetInstance()->Get(
       content_type));
-
-  // Record stats on Flash permission grants with ephemeral storage.
-  if (content_type == ContentSettingsType::PLUGINS &&
-      setting == CONTENT_SETTING_ALLOW) {
-    GURL url(primary_pattern.ToString());
-    ContentSettingsPattern temp_patterns[2];
-    std::unique_ptr<base::Value> value(GetContentSettingValueAndPatterns(
-        content_settings_providers_[PREF_PROVIDER].get(), url, url,
-        ContentSettingsType::PLUGINS_DATA, is_off_the_record_, temp_patterns,
-        temp_patterns + 1));
-
-    UMA_HISTOGRAM_ENUMERATION(
-        "ContentSettings.EphemeralFlashPermission",
-        value ? FlashPermissions::kRepeated : FlashPermissions::kFirstTime);
-  }
 
   std::unique_ptr<base::Value> value;
   // A value of CONTENT_SETTING_DEFAULT implies deleting the content setting.
@@ -1008,33 +992,6 @@ HostContentSettingsMap::GetContentSettingValueAndPatterns(
     }
   }
   return std::unique_ptr<base::Value>();
-}
-
-void HostContentSettingsMap::InitializePluginsDataSettings() {
-  if (!content_settings::WebsiteSettingsRegistry::GetInstance()->Get(
-          ContentSettingsType::PLUGINS_DATA)) {
-    return;
-  }
-  ContentSettingsForOneType host_settings;
-  GetSettingsForOneType(ContentSettingsType::PLUGINS_DATA, &host_settings);
-  if (host_settings.empty()) {
-    GetSettingsForOneType(ContentSettingsType::PLUGINS, &host_settings);
-    for (ContentSettingPatternSource pattern : host_settings) {
-      if (pattern.source != "preference")
-        continue;
-      const GURL primary(pattern.primary_pattern.ToString());
-      if (!primary.is_valid())
-        continue;
-      DCHECK_EQ(ContentSettingsPattern::Relation::IDENTITY,
-                ContentSettingsPattern::Wildcard().Compare(
-                    pattern.secondary_pattern));
-      auto dict = std::make_unique<base::DictionaryValue>();
-      constexpr char kFlagKey[] = "flashPreviouslyChanged";
-      dict->SetKey(kFlagKey, base::Value(true));
-      SetWebsiteSettingDefaultScope(
-          primary, primary, ContentSettingsType::PLUGINS_DATA, std::move(dict));
-    }
-  }
 }
 
 void HostContentSettingsMap::

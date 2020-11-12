@@ -29,39 +29,6 @@
 using content::BrowserThread;
 using content::PluginService;
 
-namespace {
-
-class ProfileContentSettingObserver : public content_settings::Observer {
- public:
-  explicit ProfileContentSettingObserver(Profile* profile)
-      : profile_(profile) {}
-  ~ProfileContentSettingObserver() override {}
-  void OnContentSettingChanged(const ContentSettingsPattern& primary_pattern,
-                               const ContentSettingsPattern& secondary_pattern,
-                               ContentSettingsType content_type) override {
-    if (content_type != ContentSettingsType::PLUGINS)
-      return;
-
-    // We must purge the plugin list cache when the plugin content setting
-    // changes, because the content setting affects the visibility of Flash.
-    HostContentSettingsMap* map =
-        HostContentSettingsMapFactory::GetForProfile(profile_);
-    PluginService::GetInstance()->PurgePluginListCache(profile_, false);
-
-    const GURL primary(primary_pattern.ToString());
-    if (primary.is_valid()) {
-      DCHECK_EQ(ContentSettingsPattern::Relation::IDENTITY,
-                ContentSettingsPattern::Wildcard().Compare(secondary_pattern));
-      PluginUtils::RememberFlashChangedForSite(map, primary);
-    }
-  }
-
- private:
-  Profile* profile_;
-};
-
-}  // namespace
-
 // ChromePluginServiceFilter inner struct definitions.
 
 struct ChromePluginServiceFilter::ContextInfo {
@@ -74,7 +41,6 @@ struct ChromePluginServiceFilter::ContextInfo {
   scoped_refptr<PluginPrefs> plugin_prefs;
   scoped_refptr<HostContentSettingsMap> host_content_settings_map;
   scoped_refptr<FlashTemporaryPermissionTracker> permission_tracker;
-  ProfileContentSettingObserver observer;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(ContextInfo);
@@ -87,14 +53,9 @@ ChromePluginServiceFilter::ContextInfo::ContextInfo(
     Profile* profile)
     : plugin_prefs(std::move(pp)),
       host_content_settings_map(std::move(hcsm)),
-      permission_tracker(std::move(ftpm)),
-      observer(profile) {
-  host_content_settings_map->AddObserver(&observer);
-}
+      permission_tracker(std::move(ftpm)) {}
 
-ChromePluginServiceFilter::ContextInfo::~ContextInfo() {
-  host_content_settings_map->RemoveObserver(&observer);
-}
+ChromePluginServiceFilter::ContextInfo::~ContextInfo() = default;
 
 ChromePluginServiceFilter::ProcessDetails::ProcessDetails() {}
 

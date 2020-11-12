@@ -62,7 +62,6 @@ constexpr HistogramValue kHistogramValue[] = {
     {ContentSettingsType::CLIENT_HINTS, 37},
     {ContentSettingsType::SENSORS, 38},
     {ContentSettingsType::ACCESSIBILITY_EVENTS, 39},
-    {ContentSettingsType::PLUGINS_DATA, 42},
     {ContentSettingsType::PAYMENT_HANDLER, 43},
     {ContentSettingsType::USB_GUARD, 44},
     {ContentSettingsType::BACKGROUND_FETCH, 45},

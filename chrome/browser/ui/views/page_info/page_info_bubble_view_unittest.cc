@@ -628,47 +628,6 @@ TEST_F(PageInfoBubbleViewTest, UpdatingSiteDataRetainsLayout) {
   EXPECT_NE(std::string::npos, index);
 }
 
-#if BUILDFLAG(ENABLE_PLUGINS)
-TEST_F(PageInfoBubbleViewTest, ChangingFlashSettingForSiteIsRemembered) {
-  Profile* profile = web_contents_helper_.profile();
-  ChromePluginServiceFilter::GetInstance()->RegisterProfile(profile);
-  FlashContentSettingsChangeWaiter waiter(profile);
-
-  const GURL url(kUrl);
-  HostContentSettingsMap* map =
-      HostContentSettingsMapFactory::GetForProfile(profile);
-  // Make sure the site being tested doesn't already have this marker set.
-  EXPECT_EQ(nullptr, map->GetWebsiteSetting(
-                         url, url, ContentSettingsType::PLUGINS_DATA, nullptr));
-  EXPECT_EQ(0u, api_->permissions_view()->children().size());
-
-  // Change the Flash setting.
-  map->SetContentSettingDefaultScope(url, url, ContentSettingsType::PLUGINS,
-                                     CONTENT_SETTING_ALLOW);
-  waiter.Wait();
-
-  // Check that this site has now been marked for displaying Flash always.
-  EXPECT_NE(nullptr, map->GetWebsiteSetting(
-                         url, url, ContentSettingsType::PLUGINS_DATA, nullptr));
-
-  // Check the Flash permission is now showing since it's non-default.
-  api_->CreateView();
-  const auto& children = api_->permissions_view()->children();
-  views::Label* label = static_cast<views::Label*>(children[1]);
-  EXPECT_EQ(base::ASCIIToUTF16("Flash"), label->GetText());
-
-  // Change the Flash setting back to the default.
-  map->SetContentSettingDefaultScope(url, url, ContentSettingsType::PLUGINS,
-                                     CONTENT_SETTING_DEFAULT);
-  EXPECT_EQ(kViewsPerPermissionRow, children.size());
-
-  // Check the Flash permission is still showing since the user changed it
-  // previously.
-  label = static_cast<views::Label*>(children[1]);
-  EXPECT_EQ(base::ASCIIToUTF16("Flash"), label->GetText());
-}
-#endif
-
 // Tests opening the bubble between navigation start and finish. The bubble
 // should be updated to reflect the secure state after the navigation commits.
 TEST_F(PageInfoBubbleViewTest, OpenPageInfoBubbleAfterNavigationStart) {

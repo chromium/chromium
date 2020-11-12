@@ -42,6 +42,8 @@ const char kObsoleteMouseLockDefaultPref[] =
     "profile.default_content_setting_values.mouselock";
 const char kObsoletePluginsDefaultPref[] =
     "profile.default_content_setting_values.plugins";
+const char kObsoletePluginsDataDefaultPref[] =
+    "profile.default_content_setting_values.flash_data";
 #endif  // !defined(OS_ANDROID)
 #endif  // !defined(OS_IOS)
 
@@ -126,6 +128,7 @@ void DefaultProvider::RegisterProfilePrefs(
   registry->RegisterIntegerPref(
       kObsoleteMouseLockDefaultPref, 0,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  registry->RegisterIntegerPref(kObsoletePluginsDataDefaultPref, 0);
 #endif  // !defined(OS_ANDROID)
 #endif  // !defined(OS_IOS)
 
@@ -398,6 +401,7 @@ void DefaultProvider::DiscardOrMigrateObsoletePreferences() {
 #if !defined(OS_ANDROID)
   prefs_->ClearPref(kObsoleteMouseLockDefaultPref);
   prefs_->ClearPref(kObsoletePluginsDefaultPref);
+  prefs_->ClearPref(kObsoletePluginsDataDefaultPref);
 #endif  // !defined(OS_ANDROID)
 #endif  // !defined(OS_IOS)
 

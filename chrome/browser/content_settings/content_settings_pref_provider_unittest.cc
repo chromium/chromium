@@ -160,7 +160,7 @@ TEST_F(PrefProviderTest, Observer) {
 }
 
 // Tests that fullscreen and mouselock content settings are cleared.
-TEST_F(PrefProviderTest, DiscardObsoleteFullscreenAndMouselockPreferences) {
+TEST_F(PrefProviderTest, DiscardObsoletePreferences) {
   static const char kFullscreenPrefPath[] =
       "profile.content_settings.exceptions.fullscreen";
 #if !defined(OS_ANDROID)
@@ -168,6 +168,8 @@ TEST_F(PrefProviderTest, DiscardObsoleteFullscreenAndMouselockPreferences) {
       "profile.content_settings.exceptions.mouselock";
   const char kObsoletePluginsExceptionsPref[] =
       "profile.content_settings.exceptions.plugins";
+  const char kObsoletePluginsDataExceptionsPref[] =
+      "profile.content_settings.exceptions.flash_data";
 #endif
   static const char kGeolocationPrefPath[] =
       "profile.content_settings.exceptions.geolocation";
@@ -179,6 +181,12 @@ TEST_F(PrefProviderTest, DiscardObsoleteFullscreenAndMouselockPreferences) {
   // Set some pref data. Each content setting type has the following value:
   // {"[*.]example.com": {"setting": 1}}
   base::DictionaryValue pref_data;
+
+  base::DictionaryValue plugins_data_pref;
+  auto dict = std::make_unique<base::DictionaryValue>();
+  constexpr char kFlagKey[] = "flashPreviouslyChanged";
+  plugins_data_pref.SetWithoutPathExpansion(kFlagKey, std::move(dict));
+
   auto data_for_pattern = std::make_unique<base::DictionaryValue>();
   data_for_pattern->SetInteger("setting", CONTENT_SETTING_ALLOW);
   pref_data.SetWithoutPathExpansion(kPattern, std::move(data_for_pattern));
@@ -186,6 +194,7 @@ TEST_F(PrefProviderTest, DiscardObsoleteFullscreenAndMouselockPreferences) {
 #if !defined(OS_ANDROID)
   prefs->Set(kMouselockPrefPath, pref_data);
   prefs->Set(kObsoletePluginsExceptionsPref, pref_data);
+  prefs->Set(kObsoletePluginsDataExceptionsPref, plugins_data_pref);
 #endif
   prefs->Set(kGeolocationPrefPath, pref_data);
 
@@ -201,6 +210,7 @@ TEST_F(PrefProviderTest, DiscardObsoleteFullscreenAndMouselockPreferences) {
 #if !defined(OS_ANDROID)
   EXPECT_FALSE(prefs->HasPrefPath(kMouselockPrefPath));
   EXPECT_FALSE(prefs->HasPrefPath(kObsoletePluginsExceptionsPref));
+  EXPECT_FALSE(prefs->HasPrefPath(kObsoletePluginsDataExceptionsPref));
 #endif
   EXPECT_TRUE(prefs->HasPrefPath(kGeolocationPrefPath));
   GURL primary_url("http://example.com/");

@@ -152,19 +152,6 @@ ContentSetting PluginUtils::UnsafeGetRawDefaultFlashContentSetting(
   return plugin_setting;
 }
 
-// static
-void PluginUtils::RememberFlashChangedForSite(
-    HostContentSettingsMap* host_content_settings_map,
-    const GURL& top_level_url) {
-  // A |base::DictionaryValue| is set here but for now, clients only check this
-  // is a non-nullptr value.
-  auto dict = std::make_unique<base::DictionaryValue>();
-  constexpr char kFlagKey[] = "flashPreviouslyChanged";
-  dict->SetKey(kFlagKey, base::Value(true));
-  host_content_settings_map->SetWebsiteSettingDefaultScope(
-      top_level_url, top_level_url, ContentSettingsType::PLUGINS_DATA,
-      std::move(dict));
-}
 
 // static
 std::string PluginUtils::GetExtensionIdForMimeType(

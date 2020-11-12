@@ -50,6 +50,8 @@ const char kObsoleteMouseLockExceptionsPref[] =
     "profile.content_settings.exceptions.mouselock";
 const char kObsoletePluginsExceptionsPref[] =
     "profile.content_settings.exceptions.plugins";
+const char kObsoletePluginsDataExceptionsPref[] =
+    "profile.content_settings.exceptions.flash_data";
 #endif  // !defined(OS_ANDROID)
 #endif  // !defined(OS_IOS)
 
@@ -95,6 +97,7 @@ void PrefProvider::RegisterProfilePrefs(
   registry->RegisterDictionaryPref(
       kObsoleteMouseLockExceptionsPref,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  registry->RegisterDictionaryPref(kObsoletePluginsDataExceptionsPref);
 #endif  // !defined(OS_ANDROID)
 #endif  // !defined(OS_IOS)
 
@@ -270,6 +273,7 @@ void PrefProvider::DiscardOrMigrateObsoletePreferences() {
 #if !defined(OS_ANDROID)
   prefs_->ClearPref(kObsoleteMouseLockExceptionsPref);
   prefs_->ClearPref(kObsoletePluginsExceptionsPref);
+  prefs_->ClearPref(kObsoletePluginsDataExceptionsPref);
 #endif  // !defined(OS_ANDROID)
 #endif  // !defined(OS_IOS)
 

@@ -53,12 +53,6 @@ class PluginUtils {
       const HostContentSettingsMap* host_content_settings_map,
       bool* is_managed);
 
-  // Remember that the user has changed the Flash permission for
-  // |top_level_url|.
-  static void RememberFlashChangedForSite(
-      HostContentSettingsMap* host_content_settings_map,
-      const GURL& top_level_url);
-
   // If there's an extension that is allowed to handle |mime_type|, returns its
   // ID. Otherwise returns an empty string.
   static std::string GetExtensionIdForMimeType(

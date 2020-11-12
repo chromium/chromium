@@ -405,11 +405,6 @@ class HostContentSettingsMap : public content_settings::Observer,
       ContentSettingsPattern* primary_pattern,
       ContentSettingsPattern* secondary_pattern);
 
-  // Make sure existing non-default Flash settings set by the user are marked to
-  // always show the Flash setting for this site in Page Info.
-  // TODO(patricialor): Remove after m66 (migration code).
-  void InitializePluginsDataSettings();
-
   // Migrate requesting and top level origin content settings to remove all
   // settings that have a top level pattern. If there is a pattern set for
   // (http://x.com, http://y.com) this will remove that pattern and also remove

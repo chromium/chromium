@@ -159,12 +159,9 @@ bool ShouldShowPermission(const PageInfo::PermissionInfo& info,
   if (info.type == ContentSettingsType::FILE_SYSTEM_WRITE_GUARD)
     return false;
 #else
-  // Flash is shown if the user has ever changed its setting for |site_url|.
-  if (info.type == ContentSettingsType::PLUGINS &&
-      content_settings->GetWebsiteSetting(site_url, site_url,
-                                          ContentSettingsType::PLUGINS_DATA,
-                                          nullptr) != nullptr) {
-    return true;
+  // Flash is deprecated and should never be shown.
+  if (info.type == ContentSettingsType::PLUGINS) {
+    return false;
   }
 
   // NFC is Android-only at the moment.

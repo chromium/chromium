@@ -96,10 +96,6 @@ enum class ContentSettingsType : int32_t {
   // technology.
   ACCESSIBILITY_EVENTS,
 
-  // Used to store whether the user has ever changed the Flash permission for
-  // a site.
-  PLUGINS_DATA,
-
   // Used to store whether to allow a website to install a payment handler.
   PAYMENT_HANDLER,
 
