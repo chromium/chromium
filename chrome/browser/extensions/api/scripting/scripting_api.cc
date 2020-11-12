@@ -65,11 +65,12 @@ bool HasPermissionToInject(const PermissionsData& permissions,
 void ExecuteScript(ScriptExecutor* script_executor,
                    const std::string& code,
                    const Extension& extension,
+                   ScriptExecutor::FrameScope frame_scope,
                    bool user_gesture,
                    ScriptExecutor::ScriptFinishedCallback callback) {
   script_executor->ExecuteScript(
       HostID(HostID::EXTENSIONS, extension.id()), UserScript::ADD_JAVASCRIPT,
-      code, ScriptExecutor::SINGLE_FRAME, ExtensionApiFrameIdMap::kTopFrameId,
+      code, frame_scope, ExtensionApiFrameIdMap::kTopFrameId,
       ScriptExecutor::MATCH_ABOUT_BLANK, UserScript::DOCUMENT_IDLE,
       ScriptExecutor::DEFAULT_PROCESS,
       /* webview_src */ GURL(), /* script_url */ GURL(), user_gesture,
@@ -103,9 +104,20 @@ ExtensionFunction::ResponseAction ScriptingExecuteScriptFunction::Run() {
   DCHECK(script_executor);
 
   std::string error;
-  if (!HasPermissionToInject(*extension()->permissions_data(),
-                             injection.target.tab_id, tab, &error)) {
-    return RespondNow(Error(std::move(error)));
+
+  ScriptExecutor::FrameScope frame_scope =
+      injection.target.all_frames && *injection.target.all_frames == true
+          ? ScriptExecutor::INCLUDE_SUB_FRAMES
+          : ScriptExecutor::SINGLE_FRAME;
+  // TODO(devlin): It'd be best to do all the permission checks for the frames
+  // on the browser side, including child frames. Today, we only check the
+  // parent frame, and then let the ScriptExecutor inject into all child frames
+  // (there's a permission check at the time of the injection).
+  if (frame_scope == ScriptExecutor::SINGLE_FRAME) {
+    if (!HasPermissionToInject(*extension()->permissions_data(),
+                               injection.target.tab_id, tab, &error)) {
+      return RespondNow(Error(std::move(error)));
+    }
   }
 
   EXTENSION_FUNCTION_VALIDATE(injection.function);
@@ -117,7 +129,8 @@ ExtensionFunction::ResponseAction ScriptingExecuteScriptFunction::Run() {
       base::StringPrintf("(%s)()", injection.function->c_str());
 
   ExecuteScript(
-      script_executor, code_to_execute, *extension(), user_gesture(),
+      script_executor, code_to_execute, *extension(), frame_scope,
+      user_gesture(),
       base::BindOnce(&ScriptingExecuteScriptFunction::OnScriptExecuted, this));
 
   return RespondLater();
@@ -128,9 +141,6 @@ void ScriptingExecuteScriptFunction::OnScriptExecuted(
     const GURL& frame_url,
     const base::ListValue& result) {
   std::vector<api::scripting::InjectionResult> injection_results;
-
-  // TODO(devlin): Remove this check when we support multiple frame injection.
-  DCHECK_EQ(1u, result.GetList().size());
 
   // TODO(devlin): This results in a few copies of values. It'd be better if our
   // auto-generated code supported moved-in parameters for result construction.

@@ -27,6 +27,7 @@ class ScriptingAPITest : public ExtensionApiTest {
   void SetUpOnMainThread() override {
     ExtensionApiTest::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
+    content::SetupCrossSiteRedirector(embedded_test_server());
     ASSERT_TRUE(StartEmbeddedTestServer());
   }
 
@@ -69,6 +70,43 @@ IN_PROC_BROWSER_TEST_F(ScriptingAPITest, MainFrameTests) {
   // From there, the test continues in the JS.
   ASSERT_TRUE(RunExtensionTestIgnoreManifestWarnings("scripting/main_frame"))
       << message_;
+}
+
+IN_PROC_BROWSER_TEST_F(ScriptingAPITest, SubFramesTests) {
+  // Open up two tabs, each with cross-site iframes, one at a.com and one at
+  // d.com.
+  // In both cases, the cross-site iframes point to b.com and c.com.
+  {
+    const GURL a_com =
+        embedded_test_server()->GetURL("a.com", "/iframe_cross_site.html");
+    content::WebContents* web_contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    ASSERT_TRUE(web_contents);
+    content::TestNavigationObserver nav_observer(web_contents);
+    ui_test_utils::NavigateToURL(browser(), a_com);
+    nav_observer.Wait();
+    EXPECT_TRUE(nav_observer.last_navigation_succeeded());
+    EXPECT_EQ(a_com, web_contents->GetLastCommittedURL());
+  }
+
+  {
+    const GURL d_com =
+        embedded_test_server()->GetURL("d.com", "/iframe_cross_site.html");
+    content::TestNavigationObserver nav_observer(d_com);
+    nav_observer.StartWatchingNewWebContents();
+    ui_test_utils::NavigateToURLWithDisposition(
+        browser(), d_com, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+        ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+    nav_observer.Wait();
+    EXPECT_TRUE(nav_observer.last_navigation_succeeded());
+    EXPECT_EQ(d_com, browser()
+                         ->tab_strip_model()
+                         ->GetActiveWebContents()
+                         ->GetLastCommittedURL());
+  }
+
+  // From there, the test continues in the JS.
+  ASSERT_TRUE(RunExtensionTestIgnoreManifestWarnings("scripting/sub_frames"));
 }
 
 }  // namespace extensions

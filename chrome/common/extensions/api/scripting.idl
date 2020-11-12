@@ -10,6 +10,9 @@ namespace scripting {
   dictionary InjectionTarget {
     // The ID of the tab into which to inject.
     long tabId;
+
+    // Whether the script should inject into all frames within the tab.
+    boolean? allFrames;
   };
 
   dictionary ScriptInjection {
