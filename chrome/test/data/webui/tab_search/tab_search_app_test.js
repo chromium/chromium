@@ -314,7 +314,10 @@ suite('TabSearchAppTest', () => {
         });
   });
 
-  test('Verify showUI() is called correctly', async () => {
+  /** TODO(crbug.com/1148061) Investigate/Fix flaky test. */
+  // Casting to avoid inexistent skip() function closure validation error.
+  /** @type {!Object} */
+  (test).skip('Verify showUI() is called correctly', async () => {
     assertEquals(0, testProxy.getCallCount('showUI'));
 
     await setupTest(sampleData());
