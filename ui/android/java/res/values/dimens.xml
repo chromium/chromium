@@ -52,6 +52,8 @@
     <dimen name="chip_end_padding_with_end_icon">6dp</dimen>
     <dimen name="chip_extended_end_padding_with_end_icon">16dp</dimen>
     <dimen name="chip_text_multiline_vertical_padding">12dp</dimen>
+    <!-- ( listPreferredItemHeightSmall(40dp) - text size(12sp) - top and bottom padding(8dp) ) / 2 -->
+    <dimen name="menu_chip_vertical_inset">10dp</dimen>
 
     <!-- Dropdown default measures -->
     <dimen name="dropdown_item_height">50dp</dimen>

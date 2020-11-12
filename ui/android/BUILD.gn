@@ -152,6 +152,7 @@ android_resources("ui_java_resources") {
     "java/res/color/default_text_color_secondary_list.xml",
     "java/res/color/filled_button_bg.xml",
     "java/res/color/filled_button_ripple_color.xml",
+    "java/res/color/menu_chip_background.xml",
     "java/res/color/text_button_ripple_color.xml",
     "java/res/drawable-hdpi/btn_close.png",
     "java/res/drawable-hdpi/ic_expand_less_black_24dp.png",

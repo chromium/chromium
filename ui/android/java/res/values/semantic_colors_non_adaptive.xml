@@ -71,6 +71,10 @@
     <color name="chip_selected_focused_dark">@color/modern_blue_600_alpha_12</color>
     <color name="chip_selected_hover_and_focused_light">@color/white_alpha_24</color>
     <color name="chip_selected_hover_and_focused_dark">@color/modern_blue_600_alpha_12</color>
+    <color name="menu_chip_background_color_dark">@color/modern_blue_600_alpha_6</color>
+    <color name="menu_chip_background_color_light">@color/modern_blue_300_alpha_10</color>
+    <color name="menu_chip_background_color_disabled_dark">@color/modern_grey_100_alpha_38</color>
+    <color name="menu_chip_background_color_disabled_light">@color/white_alpha_6</color>
 
     <!-- Colors used for Widgets (checkboxes, switches, buttons, etc)-->
     <color name="default_control_color_active_light" tools:ignore="UnusedResources">@color/modern_blue_600</color>

@@ -97,8 +97,6 @@ class ChipViewMenuItemViewBinder implements CustomViewBinder {
             holder.chipView.setVisibility(View.VISIBLE);
             holder.chipView.getPrimaryTextView().setText(chipViewMenuItem.getTitle());
             holder.chipView.setEnabled(chipViewMenuItem.isEnabled());
-            // Use selected chip color.
-            holder.chipView.setSelected(true);
             final MenuItem finalChipViewMenuItem = chipViewMenuItem;
             holder.chipView.setOnClickListener(
                     v -> appMenuClickHandler.onItemClick(finalChipViewMenuItem));

@@ -27,7 +27,7 @@
         android:layout_height="match_parent"
         android:layout_gravity="end"
         android:layout_marginEnd="16dp"
-        style="@style/Chip"
+        style="@style/MenuChip"
         android:visibility="gone" />
 
 </LinearLayout>

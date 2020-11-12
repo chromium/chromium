@@ -371,8 +371,8 @@ public class TabbedAppMenuTest {
 
         int downloadRowIndex = findIndexOfMenuItemById(R.id.downloads_row_menu_id);
         Assert.assertNotEquals("No download row found.", -1, downloadRowIndex);
-        mRenderTestRule.render(
-                getListView().getChildAt(downloadRowIndex), "download_row_action_chip_view");
+        mRenderTestRule.render(getListView().getChildAt(downloadRowIndex),
+                "download_row_rounded_action_chip_view");
 
         MenuItem bookmarkRow = AppMenuTestSupport.getMenu(mActivityTestRule.getAppMenuCoordinator())
                                        .findItem(R.id.all_bookmarks_row_menu_id);
@@ -380,8 +380,8 @@ public class TabbedAppMenuTest {
         Assert.assertFalse("Bookmark item should not be checked.", bookmarkMenuItem.isChecked());
         int bookmarkRowIndex = findIndexOfMenuItemById(R.id.all_bookmarks_row_menu_id);
         Assert.assertTrue("No bookmark row found.", bookmarkRowIndex != -1);
-        mRenderTestRule.render(
-                getListView().getChildAt(bookmarkRowIndex), "bookmark_row_action_chip_view");
+        mRenderTestRule.render(getListView().getChildAt(bookmarkRowIndex),
+                "bookmark_row_rounded_action_chip_view");
 
         TestThreadUtils.runOnUiThreadBlocking(() -> mAppMenuHandler.hideAppMenu());
         AppMenuPropertiesDelegateImpl.setPageBookmarkedForTesting(true);
@@ -393,7 +393,7 @@ public class TabbedAppMenuTest {
         bookmarkMenuItem = bookmarkRow.getSubMenu().getItem(1);
         Assert.assertTrue("Bookmark item should be checked.", bookmarkMenuItem.isChecked());
         mRenderTestRule.render(getListView().getChildAt(bookmarkRowIndex),
-                "bookmark_row_action_chip_view_bookmarked");
+                "bookmark_row_rounded_action_chip_view_bookmarked");
 
         AppMenuPropertiesDelegateImpl.setPageBookmarkedForTesting(null);
     }
@@ -413,8 +413,8 @@ public class TabbedAppMenuTest {
 
         int downloadRowIndex = findIndexOfMenuItemById(R.id.downloads_row_menu_id);
         Assert.assertNotEquals("No download row found.", -1, downloadRowIndex);
-        mRenderTestRule.render(
-                getListView().getChildAt(downloadRowIndex), "download_row_destination_chip_view");
+        mRenderTestRule.render(getListView().getChildAt(downloadRowIndex),
+                "download_row_rounded_destination_chip_view");
 
         MenuItem bookmarkRow = AppMenuTestSupport.getMenu(mActivityTestRule.getAppMenuCoordinator())
                                        .findItem(R.id.all_bookmarks_row_menu_id);
@@ -422,8 +422,8 @@ public class TabbedAppMenuTest {
         Assert.assertFalse("Bookmark item should not be checked.", bookmarkMenuItem.isChecked());
         int bookmarkRowIndex = findIndexOfMenuItemById(R.id.all_bookmarks_row_menu_id);
         Assert.assertTrue("No bookmark row found.", bookmarkRowIndex != -1);
-        mRenderTestRule.render(
-                getListView().getChildAt(bookmarkRowIndex), "bookmark_row_destination_chip_view");
+        mRenderTestRule.render(getListView().getChildAt(bookmarkRowIndex),
+                "bookmark_row_rounded_destination_chip_view");
 
         TestThreadUtils.runOnUiThreadBlocking(() -> mAppMenuHandler.hideAppMenu());
         AppMenuPropertiesDelegateImpl.setPageBookmarkedForTesting(true);
@@ -435,7 +435,7 @@ public class TabbedAppMenuTest {
         bookmarkMenuItem = bookmarkRow.getSubMenu().getItem(1);
         Assert.assertTrue("Bookmark item should be checked.", bookmarkMenuItem.isChecked());
         mRenderTestRule.render(getListView().getChildAt(bookmarkRowIndex),
-                "bookmark_row_destination_chip_view_bookmarked");
+                "bookmark_row_rounded_destination_chip_view_bookmarked");
 
         AppMenuPropertiesDelegateImpl.setPageBookmarkedForTesting(null);
     }
