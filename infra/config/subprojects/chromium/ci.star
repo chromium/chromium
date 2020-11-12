@@ -2212,7 +2212,7 @@ ci.fuzz_libfuzzer_builder(
         category = "libfuzz",
         short_name = "linux-ubsan",
     ),
-    execution_timeout = 3 * time.hour + 30 * time.minute,
+    execution_timeout = 4 * time.hour,
     triggering_policy = scheduler.greedy_batching(
         max_concurrent_invocations = 5,
     ),
