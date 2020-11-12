@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+assert(is_mac)
+
 import("//testing/test.gni")
 
 component("metal_util") {
@@ -40,5 +42,15 @@ component("metal_util") {
   weak_frameworks = [
     "Metal.framework",
     "MetalKit.framework",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "test_shader_unittest.cc" ]
+  deps = [
+    ":metal_util",
+    "//base",
+    "//testing/gtest",
   ]
 }

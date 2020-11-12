@@ -50,8 +50,11 @@ const char* kTestShaderSource =
     "    return %f * in.color;\n"
     "}\n"
     "";
+}  // namesspace
 
-size_t kTestLibSize = 0x1766;
+const size_t kTestLibSize = 0x1766;
+
+namespace {
 uint8_t kTestLibData[] = {
     0x4d, 0x54, 0x4c, 0x42, 0x01, 0x80, 0x02, 0x00, 0x03, 0x00, 0x00, 0x00,
     0x00, 0x00, 0x00, 0x00, 0x66, 0x17, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -553,11 +556,14 @@ uint8_t kTestLibData[] = {
     0x70, 0x6c, 0x65, 0x2d, 0x6d, 0x61, 0x63, 0x6f, 0x73, 0x78, 0x31, 0x30,
     0x2e, 0x31, 0x34, 0x2e, 0x30, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
     0x00, 0x00};
+}  // namespace
 
 // There exists a 4-byte literal at this offset, which can be changed to any
 // value in kValidLiteral to defeat caching.
 const size_t kLiteralOffset = 0x167c;
 const size_t kLiteralSize = 0x4;
+
+namespace {
 const uint8_t kValidLiteralValues[] = {
     0xef, 0x4c, 0x9a, 0x68, 0xef, 0x4c, 0x9a, 0x70, 0x66, 0x6f, 0xa6, 0x74,
     0xef, 0x4c, 0x9a, 0x78, 0x2a, 0x5e, 0x9f, 0x7a, 0x66, 0x6f, 0xa6, 0x7c,
@@ -658,12 +664,15 @@ crash_reporter::CrashKeyString<32>& GetLinkIndexCrashKey() {
   return crash_key;
 }
 
+}  // namespace
+
 std::vector<uint8_t> GetAlteredLibraryData() {
   // Make a copy of the shader's data.
   std::vector<uint8_t> data(kTestLibData, kTestLibData + kTestLibSize);
 
   // Alter the data at kLiteralOffset to defeat caching.
-  uint64_t index = base::RandInt(0, sizeof(kValidLiteralValues) / kLiteralSize);
+  uint64_t index =
+      base::RandInt(0, sizeof(kValidLiteralValues) / kLiteralSize - 1);
   for (size_t i = 0; i < kLiteralSize; ++i)
     data[kLiteralOffset + i] = kValidLiteralValues[kLiteralSize * index + i];
 
@@ -676,6 +685,8 @@ std::vector<uint8_t> GetAlteredLibraryData() {
   GetLinkIndexCrashKey().Set(base::StringPrintf("%llu", index));
   return data;
 }
+
+namespace {
 
 base::ScopedDispatchObject<dispatch_data_t> GetLibraryData() {
   auto vector_data = GetAlteredLibraryData();

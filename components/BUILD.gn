@@ -220,7 +220,7 @@ test("components_unittests") {
       "//components/translate/ios/browser:unit_tests",
       "//components/ukm/ios:unit_tests",
     ]
-  } else {  # !iOS
+  } else {  # !is_ios
     deps += [
       "//components/autofill/content/browser:unit_tests",
       "//components/autofill/content/renderer:unit_tests",
@@ -280,6 +280,7 @@ test("components_unittests") {
       "//components/safe_browsing/content/triggers:unit_tests",
       "//components/safe_browsing/content/web_ui:unit_tests",
       "//components/safe_browsing/core/common:unit_tests",
+      "//components/safe_browsing/core/realtime:unit_tests",
       "//components/safe_browsing/core/triggers:unit_tests",
       "//components/safety_check:unit_tests",
       "//components/security_interstitials/content:unit_tests",
@@ -302,6 +303,8 @@ test("components_unittests") {
       "//components/web_cache/browser:unit_tests",
       "//components/web_package:unit_tests",
       "//components/webcrypto:unit_tests",
+      "//components/webrtc_logging/browser:unit_tests",
+      "//components/webrtc_logging/common:unit_tests",
     ]
 
     if (!is_fuchsia) {  # !iOS and !Fuchsia
@@ -408,6 +411,10 @@ test("components_unittests") {
     ]
   }
 
+  if (is_mac) {
+    deps += [ "//components/metal_util:unit_tests" ]
+  }
+
   if (toolkit_views) {
     deps += [ "//components/constrained_window:unit_tests" ]
   }
@@ -443,14 +450,6 @@ test("components_unittests") {
 
   if (safe_browsing_mode == 1) {
     deps += [ "//components/safe_browsing/content/renderer/phishing_classifier:unit_tests" ]
-  }
-
-  if (!is_ios) {
-    deps += [
-      "//components/safe_browsing/core/realtime:unit_tests",
-      "//components/webrtc_logging/browser:unit_tests",
-      "//components/webrtc_logging/common:unit_tests",
-    ]
   }
 
   if (use_dbus) {
