@@ -372,7 +372,6 @@ RenderWidgetHostImpl::RenderWidgetHostImpl(
                              routing_id_),
           this));
   CHECK(result.second) << "Inserting a duplicate item!";
-  agent_scheduling_group_.AddRoute(routing_id_, this);
   agent_scheduling_group.GetProcess()->AddObserver(this);
   render_process_blocked_state_changed_subscription_ =
       agent_scheduling_group.GetProcess()->RegisterBlockStateChangedCallback(
@@ -656,14 +655,6 @@ void RenderWidgetHostImpl::ShutdownAndDestroyWidget(bool also_delete) {
   RejectMouseLockOrUnlockIfNecessary(
       blink::mojom::PointerLockResult::kElementDestroyed);
   Destroy(also_delete);
-}
-
-bool RenderWidgetHostImpl::OnMessageReceived(const IPC::Message &msg) {
-  return false;
-}
-
-bool RenderWidgetHostImpl::Send(IPC::Message* msg) {
-  return agent_scheduling_group_.Send(msg);
 }
 
 void RenderWidgetHostImpl::SetIsLoading(bool is_loading) {
@@ -2176,7 +2167,6 @@ void RenderWidgetHostImpl::Destroy(bool also_delete) {
   pending_show_closure_.Reset();
   GetProcess()->RemovePriorityClient(this);
   GetProcess()->RemoveObserver(this);
-  agent_scheduling_group_.RemoveRoute(routing_id_);
   g_routing_id_widget_map.Get().erase(
       RenderWidgetHostID(GetProcess()->GetID(), routing_id_));
 

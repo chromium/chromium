@@ -142,7 +142,6 @@ class CONTENT_EXPORT RenderWidgetHostImpl
       public RenderProcessHostImpl::PriorityClient,
       public RenderProcessHostObserver,
       public SyntheticGestureController::Delegate,
-      public IPC::Listener,
       public RenderFrameMetadataProvider::Observer,
       public blink::mojom::FrameWidgetHost,
       public blink::mojom::PopupWidgetHost,
@@ -367,12 +366,6 @@ class CONTENT_EXPORT RenderWidgetHostImpl
 
   // Tells the renderer to die and optionally delete |this|.
   void ShutdownAndDestroyWidget(bool also_delete);
-
-  // IPC::Listener
-  bool OnMessageReceived(const IPC::Message& msg) override;
-
-  // Sends a message to the corresponding object in the renderer.
-  bool Send(IPC::Message* msg) override;
 
   // Indicates if the page has finished loading.
   void SetIsLoading(bool is_loading);

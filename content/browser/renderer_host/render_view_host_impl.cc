@@ -672,10 +672,6 @@ void RenderViewHostImpl::RenderProcessExited(
   // |this| might have been deleted. Do not add code here.
 }
 
-bool RenderViewHostImpl::Send(IPC::Message* msg) {
-  return GetWidget()->Send(msg);
-}
-
 RenderWidgetHostImpl* RenderViewHostImpl::GetWidget() {
   return render_widget_host_.get();
 }

@@ -182,7 +182,7 @@ TEST_F(RenderWidgetHostViewMacEditCommandHelperWithTaskEnvTest,
     // The |render_widget|'s process needs to be deleted within |message_loop|.
     delete render_widget;
   }
-
+  process_host->Cleanup();
   ui::WindowResizeHelperMac::Get()->ShutdownForTests();
 }
 

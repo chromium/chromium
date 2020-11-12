@@ -1311,13 +1311,6 @@ viz::SurfaceId RenderWidgetHostViewMac::GetCurrentSurfaceId() const {
   return browser_compositor_->GetDelegatedFrameHost()->GetCurrentSurfaceId();
 }
 
-bool RenderWidgetHostViewMac::Send(IPC::Message* message) {
-  if (host())
-    return host()->Send(message);
-  delete message;
-  return false;
-}
-
 void RenderWidgetHostViewMac::ShutdownHost() {
   weak_factory_.InvalidateWeakPtrs();
   host()->ShutdownAndDestroyWidget(true);

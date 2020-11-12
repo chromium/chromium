@@ -410,7 +410,7 @@ void GuestViewBase::DidAttach(int guest_proxy_routing_id) {
   DidAttachToEmbedder();
 
   // Inform the associated GuestViewContainer that the contentWindow is ready.
-  GetOwnerRenderWidgetHost()->Send(new GuestViewMsg_GuestAttached(
+  GetOwnerRenderWidgetHost()->GetProcess()->Send(new GuestViewMsg_GuestAttached(
       element_instance_id_, guest_proxy_routing_id));
 
   SendQueuedEvents();

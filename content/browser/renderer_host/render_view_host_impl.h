@@ -119,7 +119,6 @@ class CONTENT_EXPORT RenderViewHostImpl
                      bool has_initialized_audio_host);
 
   // RenderViewHost implementation.
-  bool Send(IPC::Message* msg) override;
   RenderWidgetHostImpl* GetWidget() override;
   RenderProcessHost* GetProcess() override;
   int GetRoutingID() override;

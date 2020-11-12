@@ -72,6 +72,7 @@ class CursorManagerTest : public testing::Test {
       delete top_view_;
 
     widget_host_ = nullptr;
+    process_host_->Cleanup();
     agent_scheduling_group_host_ = nullptr;
     process_host_ = nullptr;
   }

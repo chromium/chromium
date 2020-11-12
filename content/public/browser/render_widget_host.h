@@ -121,7 +121,7 @@ class RenderWidgetHostView;
 // messages for select popups. This placement is more out of convenience than
 // anything else. When the view is live, these messages are forwarded to it by
 // the RenderWidgetHost's IPC message map.
-class CONTENT_EXPORT RenderWidgetHost : public IPC::Sender {
+class CONTENT_EXPORT RenderWidgetHost {
  public:
   // Returns the RenderWidgetHost given its ID and the ID of its render process.
   // Returns nullptr if the IDs do not correspond to a live RenderWidgetHost.
@@ -131,7 +131,7 @@ class CONTENT_EXPORT RenderWidgetHost : public IPC::Sender {
   // hosts.
   static std::unique_ptr<RenderWidgetHostIterator> GetRenderWidgetHosts();
 
-  ~RenderWidgetHost() override {}
+  virtual ~RenderWidgetHost() {}
 
   // Returns the viz::FrameSinkId that this object uses to put things on screen.
   // This value is constant throughout the lifetime of this object. Note that

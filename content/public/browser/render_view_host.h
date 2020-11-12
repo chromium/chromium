@@ -46,7 +46,7 @@ class SiteInstance;
 //
 // For context, please see https://crbug.com/467770 and
 // https://www.chromium.org/developers/design-documents/site-isolation.
-class CONTENT_EXPORT RenderViewHost : public IPC::Sender {
+class CONTENT_EXPORT RenderViewHost {
  public:
   // Returns the RenderViewHost given its ID and the ID of its render process.
   // Returns nullptr if the IDs do not correspond to a live RenderViewHost.
@@ -56,7 +56,7 @@ class CONTENT_EXPORT RenderViewHost : public IPC::Sender {
   // RenderWidgetHost. Returns nullptr if there is no such RenderViewHost.
   static RenderViewHost* From(RenderWidgetHost* rwh);
 
-  ~RenderViewHost() override {}
+  virtual ~RenderViewHost() {}
 
   // Returns the RenderWidgetHost for this RenderViewHost.
   virtual RenderWidgetHost* GetWidget() = 0;
