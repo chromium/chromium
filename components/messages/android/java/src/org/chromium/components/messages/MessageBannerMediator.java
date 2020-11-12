@@ -26,11 +26,13 @@ import org.chromium.ui.modelutil.PropertyModelAnimatorFactory;
  * Mediator responsible for the business logic in a message banner.
  */
 class MessageBannerMediator implements SwipeHandler {
-    private static final int ANIMATION_DURATION_MS = 400;
+    private static final int SHOW_DURATION_MS = 400;
+    private static final int HIDE_DURATION_MS = 300;
+    private static final int ANIMATION_DELAY_MS = 100;
     private static final TimeInterpolator TRANSLATION_SHOW_INTERPOLATOR =
-            Interpolators.FAST_OUT_LINEAR_IN_INTERPOLATOR;
-    private static final TimeInterpolator TRANSLATION_HIDE_INTERPOLATOR =
             Interpolators.LINEAR_OUT_SLOW_IN_INTERPOLATOR;
+    private static final TimeInterpolator TRANSLATION_HIDE_INTERPOLATOR =
+            Interpolators.FAST_OUT_LINEAR_IN_INTERPOLATOR;
     private static final TimeInterpolator ALPHA_INTERPOLATOR = Interpolators.LINEAR_INTERPOLATOR;
 
     private PropertyModel mModel;
@@ -138,20 +140,25 @@ class MessageBannerMediator implements SwipeHandler {
     // endregion
 
     private AnimatorSet createAnimatorSet(boolean isShow) {
+        final long duration = isShow ? SHOW_DURATION_MS : HIDE_DURATION_MS;
+
         final float alphaTo = isShow ? 1.f : 0.f;
         final Animator alphaAnimation =
                 PropertyModelAnimatorFactory.ofFloat(mModel, ALPHA, alphaTo);
         alphaAnimation.setInterpolator(ALPHA_INTERPOLATOR);
+        alphaAnimation.setDuration(duration);
 
         final float translateTo = isShow ? 0.f : -mMaxTranslationSupplier.get();
         final Animator translationAnimation =
                 PropertyModelAnimatorFactory.ofFloat(mModel, TRANSLATION_Y, translateTo);
         translationAnimation.setInterpolator(
                 isShow ? TRANSLATION_SHOW_INTERPOLATOR : TRANSLATION_HIDE_INTERPOLATOR);
+        translationAnimation.setDuration(duration);
+
+        (isShow ? translationAnimation : alphaAnimation).setStartDelay(ANIMATION_DELAY_MS);
 
         final AnimatorSet animatorSet = new AnimatorSet();
-        animatorSet.play(alphaAnimation).with(translationAnimation);
-        animatorSet.setDuration(ANIMATION_DURATION_MS);
+        animatorSet.playTogether(alphaAnimation, translationAnimation);
 
         return animatorSet;
     }
