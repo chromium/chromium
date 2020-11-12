@@ -246,7 +246,7 @@ LayoutUnit LayoutTextControl::FirstLineBoxBaseline() const {
   for (LayoutObject* box = inner_editor_layout_object; box && box != this;
        box = box->Parent()) {
     if (box->IsBox())
-      baseline += ToLayoutBox(box)->LogicalTop();
+      baseline += To<LayoutBox>(box)->LogicalTop();
   }
   return baseline;
 }

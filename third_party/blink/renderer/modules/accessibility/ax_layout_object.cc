@@ -135,7 +135,7 @@ ScrollableArea* AXLayoutObject::GetScrollableAreaIfScrollable() const {
   if (!layout_object_ || !layout_object_->IsBox())
     return nullptr;
 
-  LayoutBox* box = ToLayoutBox(layout_object_);
+  auto* box = To<LayoutBox>(layout_object_);
 
   // This should possibly use box->CanBeScrolledAndHasScrollableArea() as it
   // used to; however, accessibility must consider any kind of non-visible
@@ -1120,7 +1120,7 @@ AXObject* AXLayoutObject::NextOnLine() const {
   } else {
     InlineBox* inline_box = nullptr;
     if (GetLayoutObject()->IsBox()) {
-      inline_box = ToLayoutBox(GetLayoutObject())->InlineBoxWrapper();
+      inline_box = To<LayoutBox>(GetLayoutObject())->InlineBoxWrapper();
     } else if (GetLayoutObject()->IsLayoutInline()) {
       // For performance and memory consumption, LayoutInline may ignore some
       // inline-boxes during line layout because they don't actually impact
@@ -1237,7 +1237,7 @@ AXObject* AXLayoutObject::PreviousOnLine() const {
   } else {
     InlineBox* inline_box = nullptr;
     if (GetLayoutObject()->IsBox()) {
-      inline_box = ToLayoutBox(GetLayoutObject())->InlineBoxWrapper();
+      inline_box = To<LayoutBox>(GetLayoutObject())->InlineBoxWrapper();
     } else if (GetLayoutObject()->IsLayoutInline()) {
       // For performance and memory consumption, LayoutInline may ignore some
       // inline-boxes during line layout because they don't actually impact
@@ -1457,7 +1457,7 @@ AXObject* AXLayoutObject::AccessibilityHitTest(const IntPoint& point) const {
             DocumentLifecycle::kPrePaintClean);
 #endif
 
-  PaintLayer* layer = ToLayoutBox(layout_object_)->Layer();
+  PaintLayer* layer = To<LayoutBox>(layout_object_)->Layer();
 
   HitTestRequest request(HitTestRequest::kReadOnly | HitTestRequest::kActive |
                          HitTestRequest::kRetargetForInert);

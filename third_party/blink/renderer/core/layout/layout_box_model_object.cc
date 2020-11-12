@@ -70,7 +70,7 @@ PaintLayer* FindFirstStickyBetween(LayoutObject* from, LayoutObject* to) {
     maybe_sticky_ancestor =
         maybe_sticky_ancestor->IsLayoutInline()
             ? maybe_sticky_ancestor->Container()
-            : ToLayoutBox(maybe_sticky_ancestor)->LocationContainer();
+            : To<LayoutBox>(maybe_sticky_ancestor)->LocationContainer();
   }
   return nullptr;
 }
@@ -414,9 +414,9 @@ void LayoutBoxModelObject::StyleDidChange(StyleDifference diff,
       if (!child->IsBox())
         continue;
       if (new_horizontal_writing_mode != child->IsHorizontalWritingMode())
-        ToLayoutBox(child)->MarkOrthogonalWritingModeRoot();
+        To<LayoutBox>(child)->MarkOrthogonalWritingModeRoot();
       else
-        ToLayoutBox(child)->UnmarkOrthogonalWritingModeRoot();
+        To<LayoutBox>(child)->UnmarkOrthogonalWritingModeRoot();
     }
   }
 
@@ -635,7 +635,7 @@ void LayoutBoxModelObject::AddOutlineRectsForDescendant(
 
   if (descendant.IsBox()) {
     descendant.AddOutlineRects(
-        rects, additional_offset + ToLayoutBox(descendant).PhysicalLocation(),
+        rects, additional_offset + To<LayoutBox>(descendant).PhysicalLocation(),
         include_block_overflows);
     return;
   }
@@ -748,13 +748,13 @@ bool LayoutBoxModelObject::HasAutoHeightOrContainingBlockWithAutoHeight(
   NOT_DESTROYED();
   // TODO(rego): Check if we can somehow reuse LayoutBlock::
   // availableLogicalHeightForPercentageComputation() (see crbug.com/635655).
-  const LayoutBox* this_box = IsBox() ? ToLayoutBox(this) : nullptr;
+  const auto* this_box = DynamicTo<LayoutBox>(this);
   const Length& logical_height_length = StyleRef().LogicalHeight();
   LayoutBlock* cb =
       ContainingBlockForAutoHeightDetection(logical_height_length);
   if (register_percentage_descendant == kRegisterPercentageDescendant &&
       logical_height_length.IsPercentOrCalc() && cb && IsBox()) {
-    cb->AddPercentHeightDescendant(const_cast<LayoutBox*>(ToLayoutBox(this)));
+    cb->AddPercentHeightDescendant(const_cast<LayoutBox*>(To<LayoutBox>(this)));
   }
   if (this_box && this_box->IsFlexItemIncludingNG()) {
     if (this_box->IsFlexItem()) {
@@ -953,7 +953,7 @@ void LayoutBoxModelObject::UpdateStickyPositionConstraints() const {
   LayoutBlock* containing_block = ContainingBlock();
   // The location container for boxes is not always the containing block.
   LayoutObject* location_container =
-      IsLayoutInline() ? Container() : ToLayoutBox(this)->LocationContainer();
+      IsLayoutInline() ? Container() : To<LayoutBox>(this)->LocationContainer();
   // Skip anonymous containing blocks.
   while (containing_block->IsAnonymous()) {
     containing_block = containing_block->ContainingBlock();
@@ -967,8 +967,8 @@ void LayoutBoxModelObject::UpdateStickyPositionConstraints() const {
       kIgnoreTransforms | kIgnoreScrollOffset | kIgnoreStickyOffset;
   skipped_containers_offset = location_container->LocalToAncestorPoint(
       PhysicalOffset(), containing_block, flags);
-  LayoutBox& scroll_ancestor =
-      ToLayoutBox(Layer()->AncestorScrollContainerLayer()->GetLayoutObject());
+  auto& scroll_ancestor =
+      To<LayoutBox>(Layer()->AncestorScrollContainerLayer()->GetLayoutObject());
 
   LayoutUnit max_container_width =
       IsA<LayoutView>(containing_block)
@@ -1028,7 +1028,7 @@ void LayoutBoxModelObject::UpdateStickyPositionConstraints() const {
     sticky_box_rect = To<LayoutInline>(this)->PhysicalLinesBoundingBox();
   } else {
     sticky_box_rect =
-        containing_block->FlipForWritingMode(ToLayoutBox(this)->FrameRect());
+        containing_block->FlipForWritingMode(To<LayoutBox>(this)->FrameRect());
   }
   PhysicalOffset sticky_location =
       sticky_box_rect.offset + skipped_containers_offset;
@@ -1235,13 +1235,13 @@ PhysicalOffset LayoutBoxModelObject::AdjustedPositionRelativeTo(
         reference_point += PhysicalOffsetToBeNoop(
             current->ColumnOffset(reference_point.ToLayoutPoint()));
         if (current->IsBox() && !current->IsLegacyTableRow())
-          reference_point += ToLayoutBox(current)->PhysicalLocation();
+          reference_point += To<LayoutBox>(current)->PhysicalLocation();
       }
 
       if (offset_parent_object->IsBox() && offset_parent_object->IsBody() &&
           !offset_parent_object->IsPositioned()) {
         reference_point +=
-            ToLayoutBox(offset_parent_object)->PhysicalLocation();
+            To<LayoutBox>(offset_parent_object)->PhysicalLocation();
       }
     }
 
@@ -1253,17 +1253,16 @@ PhysicalOffset LayoutBoxModelObject::AdjustedPositionRelativeTo(
               StyleRef().GetPosition())) {
         // Offset for out of flow positioned elements with inline containers is
         // a special case in the CSS spec
-        reference_point +=
-            inline_parent->OffsetForInFlowPositionedInline(*ToLayoutBox(this));
+        reference_point += inline_parent->OffsetForInFlowPositionedInline(
+            *To<LayoutBox>(this));
       }
 
       reference_point -= inline_parent->FirstLineBoxTopLeft();
     }
 
     if (offset_parent_object->IsBox() && !offset_parent_object->IsBody()) {
-      reference_point -=
-          PhysicalOffset(ToLayoutBox(offset_parent_object)->BorderLeft(),
-                         ToLayoutBox(offset_parent_object)->BorderTop());
+      auto* box = To<LayoutBox>(offset_parent_object);
+      reference_point -= PhysicalOffset(box->BorderLeft(), box->BorderTop());
     }
   }
 
@@ -1516,7 +1515,7 @@ void LayoutBoxModelObject::MoveChildTo(
   }
 
   if (full_remove_insert && IsLayoutBlock() && child->IsBox())
-    ToLayoutBox(child)->RemoveFromPercentHeightContainer();
+    To<LayoutBox>(child)->RemoveFromPercentHeightContainer();
 
   if (full_remove_insert && (to_box_model_object->IsLayoutBlock() ||
                              to_box_model_object->IsLayoutInline())) {

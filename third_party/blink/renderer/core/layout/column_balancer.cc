@@ -70,7 +70,7 @@ void ColumnBalancer::TraverseChildren(const LayoutObject& object) {
       continue;
     }
 
-    const LayoutBox& child_box = ToLayoutBox(*child);
+    const auto& child_box = To<LayoutBox>(*child);
 
     LayoutUnit border_edge_offset;
     LayoutUnit logical_top = child_box.LogicalTop();

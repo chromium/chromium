@@ -161,7 +161,7 @@ LayoutBox* LayoutFieldset::FindInFlowLegend(const LayoutBlock& fieldset) {
   for (LayoutObject* legend = parent->FirstChild(); legend;
        legend = legend->NextSibling()) {
     if (legend->IsRenderedLegendCandidate())
-      return ToLayoutBox(legend);
+      return To<LayoutBox>(legend);
   }
   return nullptr;
 }

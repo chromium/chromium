@@ -1701,12 +1701,12 @@ PhysicalOffset LayoutBox::CalculateAutoscrollDirection(
 LayoutBox* LayoutBox::FindAutoscrollable(LayoutObject* layout_object,
                                          bool is_middle_click_autoscroll) {
   while (layout_object && !(layout_object->IsBox() &&
-                            ToLayoutBox(layout_object)->CanAutoscroll())) {
+                            To<LayoutBox>(layout_object)->CanAutoscroll())) {
     // Do not start selection-based autoscroll when the node is inside a
     // fixed-position element.
     if (!is_middle_click_autoscroll && layout_object->IsBox() &&
-        ToLayoutBox(layout_object)->HasLayer() &&
-        ToLayoutBox(layout_object)->Layer()->FixedToViewport()) {
+        To<LayoutBox>(layout_object)->HasLayer() &&
+        To<LayoutBox>(layout_object)->Layer()->FixedToViewport()) {
       return nullptr;
     }
 
@@ -1720,14 +1720,13 @@ LayoutBox* LayoutBox::FindAutoscrollable(LayoutObject* layout_object,
     }
   }
 
-  return layout_object && layout_object->IsBox() ? ToLayoutBox(layout_object)
-                                                 : nullptr;
+  return DynamicTo<LayoutBox>(layout_object);
 }
 
 bool LayoutBox::HasHorizontallyScrollableAncestor(LayoutObject* layout_object) {
   while (layout_object) {
     if (layout_object->IsBox() &&
-        ToLayoutBox(layout_object)->HasScrollableOverflowX())
+        To<LayoutBox>(layout_object)->HasScrollableOverflowX())
       return true;
 
     // Scroll is not propagating.
@@ -1855,7 +1854,7 @@ bool LayoutBox::MapVisualRectToContainer(
   if (!ShouldUseTransformFromContainer(container_object)) {
     transform_state.Move(container_offset, accumulation);
     if (container_object->IsBox() && container_object != ancestor &&
-        !ToLayoutBox(container_object)
+        !To<LayoutBox>(container_object)
              ->MapContentsRectToBoxSpace(transform_state, accumulation, *this,
                                          visual_rect_flags)) {
       return false;
@@ -1896,8 +1895,9 @@ bool LayoutBox::MapVisualRectToContainer(
 
   // c) Container scroll offset.
   if (container_object->IsBox() && container_object != ancestor &&
-      ToLayoutBox(container_object)->ContainedContentsScroll(*this)) {
-    LayoutSize offset(-ToLayoutBox(container_object)->ScrolledContentOffset());
+      To<LayoutBox>(container_object)->ContainedContentsScroll(*this)) {
+    LayoutSize offset(
+        -To<LayoutBox>(container_object)->ScrolledContentOffset());
     transform.PostTranslate(offset.Width(), offset.Height());
   }
 
@@ -1912,7 +1912,7 @@ bool LayoutBox::MapVisualRectToContainer(
     // Perspective on the container affects us, so we have to factor it in here.
     DCHECK(container_object->HasLayer());
     FloatPoint perspective_origin;
-    if (const auto* container_box = ToLayoutBoxOrNull(container_object))
+    if (const auto* container_box = DynamicTo<LayoutBox>(container_object))
       perspective_origin = container_box->PerspectiveOrigin();
 
     TransformationMatrix perspective_matrix;
@@ -1932,7 +1932,7 @@ bool LayoutBox::MapVisualRectToContainer(
   // 4. Apply container clip.
   if (container_object->IsBox() && container_object != ancestor &&
       container_object->HasClipRelatedProperty()) {
-    return ToLayoutBox(container_object)
+    return To<LayoutBox>(container_object)
         ->ApplyBoxClips(transform_state, accumulation, visual_rect_flags);
   }
 
@@ -2405,8 +2405,8 @@ bool LayoutBox::HitTestChildren(HitTestResult& result,
       continue;
 
     PhysicalOffset child_accumulated_offset = accumulated_offset;
-    if (child->IsBox())
-      child_accumulated_offset += ToLayoutBox(child)->PhysicalLocation(this);
+    if (auto* box = DynamicTo<LayoutBox>(child))
+      child_accumulated_offset += box->PhysicalLocation(this);
 
     if (child->NodeAtPoint(result, hit_test_location, child_accumulated_offset,
                            action))
@@ -2535,7 +2535,7 @@ bool LayoutBox::ForegroundIsKnownToBeOpaqueInRect(
        child = child->NextSibling()) {
     if (!child->IsBox())
       continue;
-    LayoutBox* child_box = ToLayoutBox(child);
+    auto* child_box = To<LayoutBox>(child);
     if (!IsCandidateForOpaquenessTest(*child_box))
       continue;
     DCHECK(!child_box->IsPositioned());
@@ -3805,7 +3805,7 @@ void LayoutBox::InflateVisualRectForFilterUnderContainer(
       // reflection and filter.
       PhysicalOffset parent_offset = parent->OffsetFromAncestor(&container);
       transform_state.Move(-parent_offset);
-      ToLayoutBox(parent)->InflateVisualRectForFilter(transform_state);
+      To<LayoutBox>(parent)->InflateVisualRectForFilter(transform_state);
       transform_state.Move(parent_offset);
     }
     if (parent == ancestor_to_stop_at)
@@ -3835,22 +3835,20 @@ bool LayoutBox::MapToVisualRectInAncestorSpaceInternal(
     if (container != ancestor)
       container = container->Parent();
     else
-      table_row_container = ToLayoutBox(container);
+      table_row_container = To<LayoutBox>(container);
   }
   if (!container)
     return true;
 
   PhysicalOffset container_offset;
-  if (container->IsBox()) {
-    container_offset += PhysicalLocation(ToLayoutBox(container));
+  if (auto* box = DynamicTo<LayoutBox>(container)) {
+    container_offset += PhysicalLocation(box);
 
     // If the row is the ancestor, however, add its offset back in. In effect,
     // this passes from the joint <td> / <tr> coordinate space to the parent
     // space, then back to <tr> / <td>.
-    if (table_row_container) {
-      container_offset -=
-          table_row_container->PhysicalLocation(ToLayoutBox(container));
-    }
+    if (table_row_container)
+      container_offset -= table_row_container->PhysicalLocation(box);
   } else {
     container_offset += PhysicalLocation();
   }
@@ -3986,12 +3984,12 @@ static float GetMaxWidthListMarker(const LayoutBox* layout_object) {
     if (!child->IsListItem())
       continue;
 
-    LayoutBox* list_item = ToLayoutBox(child);
+    auto* list_item = To<LayoutBox>(child);
     for (LayoutObject* item_child = list_item->SlowFirstChild(); item_child;
          item_child = item_child->NextSibling()) {
       if (!item_child->IsListMarkerForNormalContent())
         continue;
-      LayoutBox* item_marker = ToLayoutBox(item_child);
+      auto* item_marker = To<LayoutBox>(item_child);
       // Make sure to compute the autosized width.
       if (item_marker->NeedsLayout())
         item_marker->UpdateLayout();
@@ -5450,7 +5448,7 @@ LayoutUnit LayoutBox::ContainingBlockLogicalWidthForPositioned(
     // Ensure we compute our width based on the width of our rel-pos inline
     // container rather than any anonymous block created to manage a block-flow
     // ancestor of ours in the rel-pos inline's inline flow.
-    containing_block = ToLayoutBox(containing_block)->Continuation();
+    containing_block = To<LayoutBox>(containing_block)->Continuation();
     // There may be nested parallel inline continuations. We have now found the
     // innermost inline (which may not be relatively positioned). Locate the
     // inline that serves as the containing block of this box.
@@ -5461,7 +5459,7 @@ LayoutUnit LayoutBox::ContainingBlockLogicalWidthForPositioned(
     }
   } else if (containing_block->IsBox()) {
     return std::max(LayoutUnit(),
-                    ToLayoutBox(containing_block)->ClientLogicalWidth());
+                    To<LayoutBox>(containing_block)->ClientLogicalWidth());
   }
 
   DCHECK(containing_block->IsLayoutInline());
@@ -5518,7 +5516,7 @@ LayoutUnit LayoutBox::ContainingBlockLogicalHeightForPositioned(
     return OverrideContainingBlockContentLogicalHeight();
 
   if (containing_block->IsBox())
-    return ToLayoutBox(containing_block)->ClientLogicalHeight();
+    return To<LayoutBox>(containing_block)->ClientLogicalHeight();
 
   DCHECK(containing_block->IsLayoutInline());
   DCHECK(containing_block->CanContainOutOfFlowPositionedElement(
@@ -5594,17 +5592,18 @@ void LayoutBox::ComputeInlineStaticDistance(
                                  container_block->BorderLogicalLeft();
     for (LayoutObject* curr = child->Parent(); curr && curr != container_block;
          curr = curr->Container()) {
-      if (curr->IsBox()) {
+      if (auto* box = DynamicTo<LayoutBox>(curr)) {
         static_position +=
             (fragment_builder &&
              fragment_builder->GetLayoutObject() == curr->Parent())
                 ? fragment_builder->GetChildOffset(curr).inline_offset
-                : ToLayoutBox(curr)->LogicalLeft();
-        if (ToLayoutBox(curr)->IsInFlowPositioned())
-          static_position += ToLayoutBox(curr)->OffsetForInFlowPosition().left;
-        if (curr->IsInsideFlowThread())
+                : box->LogicalLeft();
+        if (box->IsInFlowPositioned())
+          static_position += box->OffsetForInFlowPosition().left;
+        if (curr->IsInsideFlowThread()) {
           static_position += AccumulateStaticOffsetForFlowThread(
-              *ToLayoutBox(curr), static_position, static_block_position);
+              *box, static_position, static_block_position);
+        }
       } else if (curr->IsInline() && curr->IsInFlowPositioned()) {
         if (!curr->IsInLayoutNGInlineFormattingContext()) {
           if (!curr->StyleRef().LogicalLeft().IsAuto())
@@ -5626,10 +5625,10 @@ void LayoutBox::ComputeInlineStaticDistance(
                                  container_block->BorderLogicalLeft();
     if (container_block->IsBox()) {
       static_position +=
-          ToLayoutBox(container_block)->LogicalLeftScrollbarWidth();
+          To<LayoutBox>(container_block)->LogicalLeftScrollbarWidth();
     }
     for (LayoutObject* curr = child->Parent(); curr; curr = curr->Container()) {
-      if (curr->IsBox()) {
+      if (auto* box = DynamicTo<LayoutBox>(curr)) {
         if (curr == enclosing_box)
           static_position -= enclosing_box->LogicalWidth();
         if (curr != container_block) {
@@ -5637,14 +5636,14 @@ void LayoutBox::ComputeInlineStaticDistance(
               (fragment_builder &&
                fragment_builder->GetLayoutObject() == curr->Parent())
                   ? fragment_builder->GetChildOffset(curr).inline_offset
-                  : ToLayoutBox(curr)->LogicalLeft();
-          if (ToLayoutBox(curr)->IsInFlowPositioned()) {
-            static_position -=
-                ToLayoutBox(curr)->OffsetForInFlowPosition().left;
+                  : box->LogicalLeft();
+          if (box->IsInFlowPositioned()) {
+            static_position -= box->OffsetForInFlowPosition().left;
           }
-          if (curr->IsInsideFlowThread())
+          if (curr->IsInsideFlowThread()) {
             static_position -= AccumulateStaticOffsetForFlowThread(
-                *ToLayoutBox(curr), static_position, static_block_position);
+                *box, static_position, static_block_position);
+          }
         }
       } else if (curr->IsInline() && curr->IsInFlowPositioned()) {
         if (!curr->IsInLayoutNGInlineFormattingContext()) {
@@ -5806,16 +5805,16 @@ void LayoutBox::ComputeLogicalLeftPositionedOffset(
           container_logical_width - logical_width_value - logical_left_pos;
       logical_left_pos += container_block->BorderRight();
       if (container_block->IsBox() &&
-          !ToLayoutBox(container_block)->CanSkipComputeScrollbars()) {
-        logical_left_pos += ToLayoutBox(container_block)
+          !To<LayoutBox>(container_block)->CanSkipComputeScrollbars()) {
+        logical_left_pos += To<LayoutBox>(container_block)
                                 ->ComputeScrollbarsInternal(kClampToContentBox)
                                 .right;
       }
     } else {
       logical_left_pos += container_block->BorderLeft();
       if (container_block->IsBox() &&
-          !ToLayoutBox(container_block)->CanSkipComputeScrollbars()) {
-        logical_left_pos += ToLayoutBox(container_block)
+          !To<LayoutBox>(container_block)->CanSkipComputeScrollbars()) {
+        logical_left_pos += To<LayoutBox>(container_block)
                                 ->ComputeScrollbarsInternal(kClampToContentBox)
                                 .left;
       }
@@ -5823,8 +5822,8 @@ void LayoutBox::ComputeLogicalLeftPositionedOffset(
   } else {
     logical_left_pos += container_block->BorderTop();
     if (container_block->IsBox() &&
-        !ToLayoutBox(container_block)->CanSkipComputeScrollbars()) {
-      logical_left_pos += ToLayoutBox(container_block)
+        !To<LayoutBox>(container_block)->CanSkipComputeScrollbars()) {
+      logical_left_pos += To<LayoutBox>(container_block)
                               ->ComputeScrollbarsInternal(kClampToContentBox)
                               .top;
     }
@@ -6097,7 +6096,7 @@ void LayoutBox::ComputeBlockStaticDistance(
        curr = curr->Container()) {
     if (!curr->IsBox() || curr->IsLegacyTableRow())
       continue;
-    const LayoutBox& box = *ToLayoutBox(curr);
+    const auto& box = *To<LayoutBox>(curr);
     static_logical_top +=
         (fragment_builder &&
          fragment_builder->GetLayoutObject() == box.Parent())
@@ -6120,10 +6119,8 @@ void LayoutBox::ComputeBlockStaticDistance(
   // Now static_logical_top is relative to container_block's logical top.
   // Convert it to be relative to containing_block's logical client top.
   static_logical_top -= container_block->BorderBefore();
-  if (container_block->IsBox()) {
-    static_logical_top -=
-        ToLayoutBox(container_block)->LogicalTopScrollbarHeight();
-  }
+  if (auto* box = DynamicTo<LayoutBox>(container_block))
+    static_logical_top -= box->LogicalTopScrollbarHeight();
   logical_top = Length::Fixed(static_logical_top);
 }
 
@@ -6259,24 +6256,24 @@ void LayoutBox::ComputeLogicalTopPositionedOffset(
   if (child->IsHorizontalWritingMode()) {
     logical_top_pos += container_block->BorderTop();
     if (container_block->IsBox() &&
-        !ToLayoutBox(container_block)->CanSkipComputeScrollbars()) {
-      logical_top_pos += ToLayoutBox(container_block)
+        !To<LayoutBox>(container_block)->CanSkipComputeScrollbars()) {
+      logical_top_pos += To<LayoutBox>(container_block)
                              ->ComputeScrollbarsInternal(kClampToContentBox)
                              .top;
     }
   } else if (container_block->HasFlippedBlocksWritingMode()) {
     logical_top_pos += container_block->BorderRight();
     if (container_block->IsBox() &&
-        !ToLayoutBox(container_block)->CanSkipComputeScrollbars()) {
-      logical_top_pos += ToLayoutBox(container_block)
+        !To<LayoutBox>(container_block)->CanSkipComputeScrollbars()) {
+      logical_top_pos += To<LayoutBox>(container_block)
                              ->ComputeScrollbarsInternal(kClampToContentBox)
                              .right;
     }
   } else {
     logical_top_pos += container_block->BorderLeft();
     if (container_block->IsBox() &&
-        !ToLayoutBox(container_block)->CanSkipComputeScrollbars()) {
-      logical_top_pos += ToLayoutBox(container_block)
+        !To<LayoutBox>(container_block)->CanSkipComputeScrollbars()) {
+      logical_top_pos += To<LayoutBox>(container_block)
                              ->ComputeScrollbarsInternal(kClampToContentBox)
                              .left;
     }
@@ -6587,7 +6584,7 @@ PositionWithAffinity LayoutBox::PositionForPoint(
     if (!layout_object->IsBox())
       continue;
 
-    LayoutBox* layout_box = ToLayoutBox(layout_object);
+    auto* layout_box = To<LayoutBox>(layout_object);
 
     LayoutUnit top =
         layout_box->BorderTop() + layout_box->PaddingTop() +
@@ -7196,7 +7193,7 @@ PaintLayer* LayoutBox::EnclosingFloatPaintingLayer() const {
   const LayoutObject* curr = this;
   while (curr) {
     PaintLayer* layer = curr->HasLayer() && curr->IsBox()
-                            ? ToLayoutBox(curr)->Layer()
+                            ? To<LayoutBox>(curr)->Layer()
                             : nullptr;
     if (layer && layer->IsSelfPaintingLayer())
       return layer;
@@ -7359,7 +7356,7 @@ LayoutBox* LayoutBox::LocationContainer() const {
   LayoutObject* container = Container();
   while (container && !container->IsBox())
     container = container->Container();
-  return ToLayoutBox(container);
+  return To<LayoutBox>(container);
 }
 
 bool LayoutBox::HasRelativeLogicalWidth() const {
@@ -7409,7 +7406,7 @@ LayoutObject* LayoutBox::SplitAnonymousBoxesAroundChild(
   LayoutBox* box_at_top_of_new_branch = nullptr;
 
   while (before_child->Parent() != this) {
-    LayoutBox* box_to_split = ToLayoutBox(before_child->Parent());
+    auto* box_to_split = To<LayoutBox>(before_child->Parent());
     if (box_to_split->SlowFirstChild() != before_child &&
         box_to_split->IsAnonymous()) {
       // We have to split the parent box into two boxes and move children
@@ -7417,7 +7414,7 @@ LayoutObject* LayoutBox::SplitAnonymousBoxesAroundChild(
       LayoutBox* post_box =
           box_to_split->CreateAnonymousBoxWithSameTypeAs(this);
       post_box->SetChildrenInline(box_to_split->ChildrenInline());
-      LayoutBox* parent_box = ToLayoutBox(box_to_split->Parent());
+      auto* parent_box = To<LayoutBox>(box_to_split->Parent());
       // We need to invalidate the |parentBox| before inserting the new node
       // so that the table paint invalidation logic knows the structure is
       // dirty. See for example LayoutTableCell:localVisualRect().
@@ -7542,7 +7539,7 @@ void LayoutBox::ClearPercentHeightDescendants() {
   for (LayoutObject* curr = SlowFirstChild(); curr;
        curr = curr->NextInPreOrder(this)) {
     if (curr->IsBox())
-      ToLayoutBox(curr)->RemoveFromPercentHeightContainer();
+      To<LayoutBox>(curr)->RemoveFromPercentHeightContainer();
   }
 }
 

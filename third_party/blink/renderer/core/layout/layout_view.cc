@@ -297,7 +297,8 @@ void LayoutView::UpdateBlockLayout(bool relayout_children) {
       if (child->IsSVGRoot())
         continue;
 
-      if ((child->IsBox() && ToLayoutBox(child)->HasRelativeLogicalHeight()) ||
+      if ((child->IsBox() &&
+           To<LayoutBox>(child)->HasRelativeLogicalHeight()) ||
           child->StyleRef().LogicalHeight().IsPercentOrCalc() ||
           child->StyleRef().LogicalMinHeight().IsPercentOrCalc() ||
           child->StyleRef().LogicalMaxHeight().IsPercentOrCalc())
@@ -816,8 +817,7 @@ const LayoutBox& LayoutView::RootBox() const {
   Element* document_element = GetDocument().documentElement();
   DCHECK(document_element);
   DCHECK(document_element->GetLayoutObject());
-  DCHECK(document_element->GetLayoutObject()->IsBox());
-  return ToLayoutBox(*document_element->GetLayoutObject());
+  return To<LayoutBox>(*document_element->GetLayoutObject());
 }
 
 void LayoutView::UpdateAfterLayout() {

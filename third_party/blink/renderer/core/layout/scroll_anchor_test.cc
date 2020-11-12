@@ -54,7 +54,7 @@ class ScrollAnchorTest : public testing::WithParamInterface<bool>,
   }
 
   ScrollableArea* ScrollerForElement(Element* element) {
-    return ToLayoutBox(element->GetLayoutObject())->GetScrollableArea();
+    return To<LayoutBox>(element->GetLayoutObject())->GetScrollableArea();
   }
 
   ScrollAnchor& GetScrollAnchor(ScrollableArea* scroller) {
@@ -92,9 +92,7 @@ class ScrollAnchorTest : public testing::WithParamInterface<bool>,
   }
 
   Scrollbar* VerticalScrollbarForElement(Element* element) {
-    return ToLayoutBox(element->GetLayoutObject())
-        ->GetScrollableArea()
-        ->VerticalScrollbar();
+    return ScrollerForElement(element)->VerticalScrollbar();
   }
 
   void MouseDownOnVerticalScrollbar(Scrollbar* scrollbar) {

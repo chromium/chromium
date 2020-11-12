@@ -1698,10 +1698,10 @@ bool LayoutTable::NodeAtPoint(HitTestResult& result,
        hit_test_location.Intersects(OverflowClipRect(accumulated_offset)))) {
     for (LayoutObject* child = LastChild(); child;
          child = child->PreviousSibling()) {
-      if (child->IsBox() && !ToLayoutBox(child)->HasSelfPaintingLayer() &&
+      if (child->IsBox() && !To<LayoutBox>(child)->HasSelfPaintingLayer() &&
           (child->IsTableSection() || child->IsTableCaption())) {
         PhysicalOffset child_accumulated_offset =
-            accumulated_offset + ToLayoutBox(child)->PhysicalLocation(this);
+            accumulated_offset + To<LayoutBox>(child)->PhysicalLocation(this);
         if (child->NodeAtPoint(result, hit_test_location,
                                child_accumulated_offset, action)) {
           UpdateHitTestResult(result,

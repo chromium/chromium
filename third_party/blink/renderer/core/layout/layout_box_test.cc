@@ -22,10 +22,6 @@ class LayoutBoxTest : public testing::WithParamInterface<bool>,
   LayoutBoxTest() : ScopedLayoutNGForTest(GetParam()) {}
 
  protected:
-  LayoutBox* GetLayoutBoxByElementId(const char* id) const {
-    return ToLayoutBox(GetLayoutObjectByElementId(id));
-  }
-
   bool ForegroundIsKnownToBeOpaqueInRect(const LayoutBox& box,
                                          const PhysicalRect& rect) {
     return box.ForegroundIsKnownToBeOpaqueInRect(rect, 10);
@@ -714,8 +710,8 @@ TEST_P(LayoutBoxTest, MarkerContainerLayoutOverflowRect) {
     </div>
   )HTML");
 
-  LayoutBox* marker_container =
-      ToLayoutBox(GetLayoutObjectByElementId("target")->SlowFirstChild());
+  auto* marker_container =
+      To<LayoutBox>(GetLayoutObjectByElementId("target")->SlowFirstChild());
   if (RuntimeEnabledFeatures::LayoutNGEnabled()) {
     EXPECT_GE(marker_container->Location().Y() +
                   marker_container->LayoutOverflowRect().MaxY(),

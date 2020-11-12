@@ -886,7 +886,7 @@ String ExternalRepresentation(LocalFrame* frame,
   LayoutObject* layout_object = frame->ContentLayoutObject();
   if (!layout_object || !layout_object->IsBox())
     return String();
-  LayoutBox* layout_box = ToLayoutBox(layout_object);
+  auto* layout_box = To<LayoutBox>(layout_object);
 
   PrintContext print_context(frame, /*use_printing_layout=*/true);
   bool is_text_printing_mode = !!(behavior & kLayoutAsTextPrintingMode);
@@ -900,8 +900,8 @@ String ExternalRepresentation(LocalFrame* frame,
       frame->View()->UpdateLifecyclePhasesForPrinting();
   }
 
-  String representation = ExternalRepresentation(ToLayoutBox(layout_object),
-                                                 behavior, marked_layer);
+  String representation =
+      ExternalRepresentation(layout_box, behavior, marked_layer);
   if (is_text_printing_mode)
     print_context.EndPrintMode();
   return representation;
@@ -918,7 +918,7 @@ String ExternalRepresentation(Element* element, LayoutAsTextBehavior behavior) {
   if (!layout_object || !layout_object->IsBox())
     return String();
 
-  return ExternalRepresentation(ToLayoutBox(layout_object),
+  return ExternalRepresentation(To<LayoutBox>(layout_object),
                                 behavior | kLayoutAsTextShowAllLayers);
 }
 

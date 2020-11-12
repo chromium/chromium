@@ -97,7 +97,7 @@ LayoutObject* LayoutObjectChildList::RemoveChildNode(
   DCHECK_EQ(this, owner->VirtualChildren());
 
   if (old_child->IsFloatingOrOutOfFlowPositioned())
-    ToLayoutBox(old_child)->RemoveFloatingOrPositionedChildFromBlockLists();
+    To<LayoutBox>(old_child)->RemoveFloatingOrPositionedChildFromBlockLists();
 
   if (!owner->DocumentBeingDestroyed()) {
     // So that we'll get the appropriate dirty bit set (either that a normal
@@ -116,7 +116,7 @@ LayoutObject* LayoutObjectChildList::RemoveChildNode(
 
   // If we have a line box wrapper, delete it.
   if (old_child->IsBox())
-    ToLayoutBox(old_child)->DeleteLineBoxWrapper();
+    To<LayoutBox>(old_child)->DeleteLineBoxWrapper();
 
   if (!owner->DocumentBeingDestroyed()) {
     owner->NotifyOfSubtreeChange();
@@ -125,8 +125,8 @@ LayoutObject* LayoutObjectChildList::RemoveChildNode(
       LayoutCounter::LayoutObjectSubtreeWillBeDetached(old_child);
       old_child->WillBeRemovedFromTree();
     } else if (old_child->IsBox() &&
-               ToLayoutBox(old_child)->IsOrthogonalWritingModeRoot()) {
-      ToLayoutBox(old_child)->UnmarkOrthogonalWritingModeRoot();
+               To<LayoutBox>(old_child)->IsOrthogonalWritingModeRoot()) {
+      To<LayoutBox>(old_child)->UnmarkOrthogonalWritingModeRoot();
     }
 
     if (old_child->IsInLayoutNGInlineFormattingContext()) {

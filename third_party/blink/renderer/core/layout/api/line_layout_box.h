@@ -101,9 +101,9 @@ class LineLayoutBox : public LineLayoutBoxModel {
 #endif
 
  private:
-  LayoutBox* ToBox() { return ToLayoutBox(GetLayoutObject()); }
+  LayoutBox* ToBox() { return To<LayoutBox>(GetLayoutObject()); }
 
-  const LayoutBox* ToBox() const { return ToLayoutBox(GetLayoutObject()); }
+  const LayoutBox* ToBox() const { return To<LayoutBox>(GetLayoutObject()); }
 };
 
 inline LineLayoutBox LineLayoutItem::ContainingBlock() const {

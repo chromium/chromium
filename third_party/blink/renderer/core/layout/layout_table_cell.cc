@@ -474,8 +474,7 @@ void LayoutTableCell::UpdateStyleWritingModeFromRow(const LayoutObject* row) {
 
   for (LayoutObject* child = FirstChild(); child;
        child = child->NextSibling()) {
-    if (child->IsBox()) {
-      LayoutBox* box_child = ToLayoutBox(child);
+    if (auto* box_child = DynamicTo<LayoutBox>(child)) {
       if (box_child->IsOrthogonalWritingModeRoot())
         box_child->MarkOrthogonalWritingModeRoot();
       else

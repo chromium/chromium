@@ -2377,10 +2377,8 @@ struct DowncastTraits<LayoutBox> {
   static bool AllowFrom(const LayoutObject& object) { return object.IsBox(); }
 };
 
-DEFINE_LAYOUT_OBJECT_TYPE_CASTS(LayoutBox, IsBox());
-
 inline LayoutBox* LayoutBox::PreviousSiblingBox() const {
-  return ToLayoutBox(PreviousSibling());
+  return To<LayoutBox>(PreviousSibling());
 }
 
 inline LayoutBox* LayoutBox::PreviousInFlowSiblingBox() const {
@@ -2391,7 +2389,7 @@ inline LayoutBox* LayoutBox::PreviousInFlowSiblingBox() const {
 }
 
 inline LayoutBox* LayoutBox::NextSiblingBox() const {
-  return ToLayoutBox(NextSibling());
+  return To<LayoutBox>(NextSibling());
 }
 
 inline LayoutBox* LayoutBox::NextInFlowSiblingBox() const {
@@ -2402,7 +2400,7 @@ inline LayoutBox* LayoutBox::NextInFlowSiblingBox() const {
 }
 
 inline LayoutBox* LayoutBox::ParentBox() const {
-  return ToLayoutBox(Parent());
+  return To<LayoutBox>(Parent());
 }
 
 inline LayoutBox* LayoutBox::FirstInFlowChildBox() const {
@@ -2413,11 +2411,11 @@ inline LayoutBox* LayoutBox::FirstInFlowChildBox() const {
 }
 
 inline LayoutBox* LayoutBox::FirstChildBox() const {
-  return ToLayoutBox(SlowFirstChild());
+  return To<LayoutBox>(SlowFirstChild());
 }
 
 inline LayoutBox* LayoutBox::LastChildBox() const {
-  return ToLayoutBox(SlowLastChild());
+  return To<LayoutBox>(SlowLastChild());
 }
 
 inline LayoutBox* LayoutBox::PreviousSiblingMultiColumnBox() const {

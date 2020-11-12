@@ -71,7 +71,7 @@ TEST_F(LayoutTableRowDeathTest, CrashIfSettingUnsetRowIndex) {
 class LayoutTableRowTest : public RenderingTest {
  protected:
   LayoutBox* GetRowByElementId(const char* id) {
-    return ToLayoutBox(GetLayoutObjectByElementId(id));
+    return GetLayoutBoxByElementId(id);
   }
 };
 

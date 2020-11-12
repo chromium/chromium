@@ -78,7 +78,7 @@ LayoutObject* LayoutTextControlMultiLine::LayoutSpecialExcludedChild(
     return nullptr;
   if (!placeholder_layout_object->IsBox())
     return placeholder_layout_object;
-  LayoutBox* placeholder_box = ToLayoutBox(placeholder_layout_object);
+  auto* placeholder_box = To<LayoutBox>(placeholder_layout_object);
   placeholder_box->LayoutIfNeeded();
   placeholder_box->SetX(BorderLeft() + PaddingLeft());
   placeholder_box->SetY(BorderTop() + PaddingTop());

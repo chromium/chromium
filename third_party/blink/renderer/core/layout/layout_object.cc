@@ -567,7 +567,7 @@ bool LayoutObject::HasClipRelatedProperty() const {
       (ShouldApplyStyleContainment() && ShouldApplyLayoutContainment())) {
     return true;
   }
-  if (IsBox() && ToLayoutBox(this)->HasControlClip())
+  if (IsBox() && To<LayoutBox>(this)->HasControlClip())
     return true;
   return false;
 }
@@ -815,7 +815,7 @@ PaintLayer* LayoutObject::PaintingLayer() const {
   NOT_DESTROYED();
   auto FindContainer = [](const LayoutObject& object) -> const LayoutObject* {
     if (object.IsRenderedLegend())
-      return LayoutFieldset::FindLegendContainingBlock(ToLayoutBox(object));
+      return LayoutFieldset::FindLegendContainingBlock(To<LayoutBox>(object));
     // Use ContainingBlock() instead of ParentCrossingFrames() for floating
     // objects to omit any self-painting layers of inline objects that don't
     // paint the floating object. This is only needed for inline-level floats
@@ -878,7 +878,7 @@ LayoutBox* LayoutObject::EnclosingBox() const {
   LayoutObject* curr = const_cast<LayoutObject*>(this);
   while (curr) {
     if (curr->IsBox())
-      return ToLayoutBox(curr);
+      return To<LayoutBox>(curr);
     curr = curr->Parent();
   }
 
@@ -939,7 +939,7 @@ LayoutBox* LayoutObject::EnclosingScrollableBox() const {
     if (!ancestor->IsBox())
       continue;
 
-    LayoutBox* ancestor_box = ToLayoutBox(ancestor);
+    auto* ancestor_box = To<LayoutBox>(ancestor);
     if (ancestor_box->CanBeScrolledAndHasScrollableArea())
       return ancestor_box;
   }
@@ -1007,7 +1007,7 @@ static inline bool ObjectIsRelayoutBoundary(const LayoutObject* object) {
     return false;
   }
 
-  if (const LayoutBox* layout_box = ToLayoutBoxOrNull(object)) {
+  if (const auto* layout_box = DynamicTo<LayoutBox>(object)) {
     // In general we can't relayout a flex item independently of its container;
     // not only is the result incorrect due to the override size that's set, it
     // also messes with the cached main size on the flexbox.
@@ -1388,7 +1388,7 @@ LayoutBlock* LayoutObject::ContainingBlock(AncestorSkipInfo* skip_info) const {
   if (IsColumnSpanAll()) {
     object = SpannerPlaceholder()->ContainingBlock();
   } else if (IsRenderedLegend()) {
-    return LayoutFieldset::FindLegendContainingBlock(ToLayoutBox(*this),
+    return LayoutFieldset::FindLegendContainingBlock(To<LayoutBox>(*this),
                                                      skip_info);
   } else {
     object = Parent();
@@ -1882,7 +1882,7 @@ bool LayoutObject::MapToVisualRectInAncestorSpaceInternal(
                      : TransformState::kFlattenTransform;
 
       if (parent != ancestor &&
-          !ToLayoutBox(parent)->MapContentsRectToBoxSpace(
+          !To<LayoutBox>(parent)->MapContentsRectToBoxSpace(
               transform_state, accumulation, *this, visual_rect_flags))
         return false;
     }
@@ -2524,12 +2524,12 @@ void LayoutObject::StyleWillChange(StyleDifference diff,
         (style_->UnresolvedFloating() != new_style.UnresolvedFloating())) {
       // For changes in float styles, we need to conceivably remove ourselves
       // from the floating objects list.
-      ToLayoutBox(this)->RemoveFloatingOrPositionedChildFromBlockLists();
+      To<LayoutBox>(this)->RemoveFloatingOrPositionedChildFromBlockLists();
     } else if (IsOutOfFlowPositioned() &&
                (style_->GetPosition() != new_style.GetPosition())) {
       // For changes in positioning styles, we need to conceivably remove
       // ourselves from the positioned objects list.
-      ToLayoutBox(this)->RemoveFloatingOrPositionedChildFromBlockLists();
+      To<LayoutBox>(this)->RemoveFloatingOrPositionedChildFromBlockLists();
     }
 
     affects_parent_block_ =
@@ -3134,7 +3134,7 @@ void LayoutObject::GetTransformFromContainer(
     // Perspective on the container affects us, so we have to factor it in here.
     DCHECK(container_object->HasLayer());
     FloatPoint perspective_origin;
-    if (const auto* container_box = ToLayoutBoxOrNull(container_object))
+    if (const auto* container_box = DynamicTo<LayoutBox>(container_object))
       perspective_origin = container_box->PerspectiveOrigin(size);
 
     TransformationMatrix perspective_matrix;
@@ -3291,7 +3291,7 @@ PhysicalOffset LayoutObject::OffsetFromScrollableContainer(
     bool ignore_scroll_offset) const {
   NOT_DESTROYED();
   DCHECK(container->IsScrollContainer());
-  const LayoutBox* box = ToLayoutBox(container);
+  const auto* box = To<LayoutBox>(container);
   if (!ignore_scroll_offset)
     return -PhysicalOffset(box->ScrolledContentOffset());
 
@@ -3962,7 +3962,7 @@ void LayoutObject::AddAnnotatedRegions(Vector<AnnotatedRegionValue>& regions) {
   if (StyleRef().DraggableRegionMode() == EDraggableRegionMode::kNone)
     return;
 
-  LayoutBox* box = ToLayoutBox(this);
+  auto* box = To<LayoutBox>(this);
   PhysicalRect local_bounds = box->PhysicalBorderBoxRect();
   PhysicalRect abs_bounds = LocalToAbsoluteRect(local_bounds);
 

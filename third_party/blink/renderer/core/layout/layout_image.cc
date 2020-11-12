@@ -415,7 +415,7 @@ void LayoutImage::ComputeIntrinsicSizingInfo(
         LayoutObject* containing_block =
             IsOutOfFlowPositioned() ? Container() : ContainingBlock();
         if (containing_block->IsBox()) {
-          LayoutBox* box = ToLayoutBox(containing_block);
+          auto* box = To<LayoutBox>(containing_block);
           intrinsic_sizing_info.size.SetWidth(
               box->AvailableLogicalWidth().ToFloat());
           intrinsic_sizing_info.size.SetHeight(

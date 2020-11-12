@@ -852,8 +852,8 @@ BidiRun* LayoutBlockFlow::ComputeInlineDirectionPositionsForSegment(
     } else {
       is_after_expansion = false;
       if (!r->line_layout_item_.IsLayoutInline()) {
-        LayoutBox* layout_box =
-            ToLayoutBox(r->line_layout_item_.GetLayoutObject());
+        auto* layout_box =
+            To<LayoutBox>(r->line_layout_item_.GetLayoutObject());
         if (layout_box->IsRubyRun()) {
           SetMarginsForRubyRun(r, To<LayoutRubyRun>(layout_box),
                                previous_object, line_info);
@@ -905,12 +905,13 @@ void LayoutBlockFlow::ComputeBlockDirectionPositionsForLine(
 
     // Position is used to properly position both replaced elements and
     // to update the static normal flow x/y of positioned elements.
-    if (r->line_layout_item_.IsText())
+    if (r->line_layout_item_.IsText()) {
       To<LayoutText>(r->line_layout_item_.GetLayoutObject())
           ->PositionLineBox(r->box_);
-    else if (r->line_layout_item_.IsBox())
-      ToLayoutBox(r->line_layout_item_.GetLayoutObject())
+    } else if (r->line_layout_item_.IsBox()) {
+      To<LayoutBox>(r->line_layout_item_.GetLayoutObject())
           ->PositionLineBox(r->box_);
+    }
   }
 }
 
@@ -1717,7 +1718,7 @@ void LayoutBlockFlow::ComputeInlinePreferredLogicalWidths(
 
       if (!child->IsText()) {
         if (child->IsBox() &&
-            ToLayoutBox(child)->NeedsPreferredWidthsRecalculation()) {
+            To<LayoutBox>(child)->NeedsPreferredWidthsRecalculation()) {
           // We don't really know whether the containing block of this child
           // did change or is going to change size. However, this is our only
           // opportunity to make sure that it gets its min/max widths
@@ -2013,7 +2014,7 @@ void LayoutBlockFlow::LayoutInlineChildren(bool relayout_children,
 
       if (o->IsAtomicInlineLevel() || o->IsFloating() ||
           o->IsOutOfFlowPositioned()) {
-        LayoutBox* box = ToLayoutBox(o);
+        auto* box = To<LayoutBox>(o);
         box->SetShouldCheckForPaintInvalidation();
 
         UpdateBlockChildDirtyBitsBeforeLayout(relayout_children, *box);

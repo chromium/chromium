@@ -164,7 +164,7 @@ LayoutObject* GetParentOfFirstLineBox(LayoutBlockFlow* curr) {
 
     auto* child_block_flow = DynamicTo<LayoutBlockFlow>(curr_child);
     if (!child_block_flow ||
-        (curr_child->IsBox() && ToLayoutBox(curr_child)->IsWritingModeRoot()))
+        (curr_child->IsBox() && To<LayoutBox>(curr_child)->IsWritingModeRoot()))
       return curr_child;
 
     if (curr->IsListItem() && in_quirks_mode && curr_child->GetNode() &&
@@ -291,10 +291,11 @@ bool LayoutListItem::UpdateMarkerLocation() {
 
   if (marker->IsOutsideListMarker())
     line_box_parent = GetParentOfFirstLineBox(this);
-  if (line_box_parent && (line_box_parent->IsScrollContainer() ||
-                          !line_box_parent->IsLayoutBlockFlow() ||
-                          (line_box_parent->IsBox() &&
-                           ToLayoutBox(line_box_parent)->IsWritingModeRoot())))
+  if (line_box_parent &&
+      (line_box_parent->IsScrollContainer() ||
+       !line_box_parent->IsLayoutBlockFlow() ||
+       (line_box_parent->IsBox() &&
+        To<LayoutBox>(line_box_parent)->IsWritingModeRoot())))
     need_block_direction_align_ = true;
   if (need_block_direction_align_)
     return PrepareForBlockDirectionAlign(line_box_parent);
@@ -376,14 +377,13 @@ void LayoutListItem::AlignMarkerInBlockDirection() {
   // back to its original position.
   bool back_to_original_baseline = false;
   DCHECK(Marker()->IsOutsideListMarker());
-  DCHECK(Marker()->IsBox());
-  LayoutBox* marker = ToLayoutBox(Marker());
+  auto* marker = To<LayoutBox>(Marker());
   LayoutObject* line_box_parent = GetParentOfFirstLineBox(this);
   LayoutBox* line_box_parent_block = nullptr;
   if (!line_box_parent || !line_box_parent->IsBox()) {
     back_to_original_baseline = true;
   } else {
-    line_box_parent_block = ToLayoutBox(line_box_parent);
+    line_box_parent_block = To<LayoutBox>(line_box_parent);
     // Don't align marker if line_box_parent has a different writing-mode.
     // Just let marker positioned at the left-top of line_box_parent.
     if (line_box_parent_block->IsWritingModeRoot())
@@ -453,8 +453,7 @@ void LayoutListItem::UpdateOverflow() {
     return;
 
   DCHECK(marker_object->IsOutsideListMarker());
-  DCHECK(marker_object->IsBox());
-  LayoutBox* marker = ToLayoutBox(marker_object);
+  auto* marker = To<LayoutBox>(marker_object);
   if (!marker->InlineBoxWrapper())
     return;
 

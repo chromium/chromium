@@ -944,7 +944,7 @@ void LayoutGrid::PlaceItemsOnGrid(
 // TODO(lajava): Consider rafactoring this code with
 // LocalFrameView::PrepareOrthogonalWritingModeRootForLayout
 static bool PrepareOrthogonalWritingModeRootForLayout(LayoutObject& root) {
-  DCHECK(root.IsBox() && ToLayoutBox(root).IsOrthogonalWritingModeRoot());
+  DCHECK(To<LayoutBox>(root).IsOrthogonalWritingModeRoot());
   if (!root.NeedsLayout() || root.IsOutOfFlowPositioned() ||
       root.IsColumnSpanAll() || root.IsTablePart())
     return false;

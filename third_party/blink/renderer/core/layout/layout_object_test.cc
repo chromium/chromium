@@ -1045,9 +1045,8 @@ TEST_F(LayoutObjectTest, UpdateVisualRectAfterAncestorLayout) {
   auto* target = GetDocument().getElementById("target");
   target->setAttribute(html_names::kStyleAttr, "height: 300px");
   UpdateAllLifecyclePhasesForTest();
-  const auto* container = GetLayoutObjectByElementId("ancestor");
-  EXPECT_EQ(LayoutRect(0, 0, 100, 300),
-            ToLayoutBox(container)->VisualOverflowRect());
+  const auto* container = GetLayoutBoxByElementId("ancestor");
+  EXPECT_EQ(LayoutRect(0, 0, 100, 300), container->VisualOverflowRect());
 }
 
 class LayoutObjectSimTest : public SimTest {
@@ -1366,10 +1365,8 @@ TEST_F(LayoutObjectTest, PerspectiveIsNotParent) {
     </div>
   )HTML");
 
-  auto* ancestor =
-      ToLayoutBox(GetDocument().getElementById("ancestor")->GetLayoutObject());
-  auto* child =
-      ToLayoutBox(GetDocument().getElementById("child")->GetLayoutObject());
+  auto* ancestor = GetLayoutBoxByElementId("ancestor");
+  auto* child = GetLayoutBoxByElementId("child");
 
   TransformationMatrix transform;
   child->GetTransformFromContainer(ancestor, PhysicalOffset(), transform);

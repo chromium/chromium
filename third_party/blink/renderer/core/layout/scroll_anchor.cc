@@ -84,16 +84,15 @@ static LayoutPoint CornerPointOfRect(LayoutRect rect, Corner which_corner) {
 static LayoutRect RelativeBounds(const LayoutObject* layout_object,
                                  const ScrollableArea* scroller) {
   PhysicalRect local_bounds;
-  if (layout_object->IsBox()) {
-    local_bounds = ToLayoutBox(layout_object)->PhysicalBorderBoxRect();
+  if (const auto* box = DynamicTo<LayoutBox>(layout_object)) {
+    local_bounds = box->PhysicalBorderBoxRect();
     // If we clip overflow then we can use the `PhysicalBorderBoxRect()`
     // as our bounds. If not, we expand the bounds by the layout overflow and
     // lowest floating object.
     if (!layout_object->ShouldClipOverflowAlongEitherAxis()) {
       // BorderBoxRect doesn't include overflow content and floats.
       LayoutUnit max_y =
-          std::max(local_bounds.Bottom(),
-                   ToLayoutBox(layout_object)->LayoutOverflowRect().MaxY());
+          std::max(local_bounds.Bottom(), box->LayoutOverflowRect().MaxY());
       auto* layout_block_flow = DynamicTo<LayoutBlockFlow>(layout_object);
       if (layout_block_flow && layout_block_flow->ContainsFloats()) {
         // Note that lowestFloatLogicalBottom doesn't include floating

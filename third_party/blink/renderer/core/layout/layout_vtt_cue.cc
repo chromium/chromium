@@ -350,11 +350,11 @@ IntRect LayoutVTTCue::ComputeControlsRect() const {
   }
 
   IntRect button_panel_box = BorderBoxRelativeToAncestor(
-      ToLayoutBox(*button_panel_layout_object),
-      ToLayoutBox(*controls->ContainerLayoutObject()));
+      To<LayoutBox>(*button_panel_layout_object),
+      To<LayoutBox>(*controls->ContainerLayoutObject()));
   IntRect timeline_box = BorderBoxRelativeToAncestor(
-      ToLayoutBox(*timeline_layout_object),
-      ToLayoutBox(*controls->ContainerLayoutObject()));
+      To<LayoutBox>(*timeline_layout_object),
+      To<LayoutBox>(*controls->ContainerLayoutObject()));
 
   button_panel_box.Unite(timeline_box);
   return button_panel_box;

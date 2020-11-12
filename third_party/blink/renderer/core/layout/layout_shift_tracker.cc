@@ -683,7 +683,7 @@ void ReattachHookScope::NotifyDetach(const Node& node) {
   auto& fragment = layout_object->GetMutableForPainting().FirstFragment();
 
   // Save the visual rect for restoration on future reattachment.
-  const auto& box = ToLayoutBox(*layout_object);
+  const auto& box = To<LayoutBox>(*layout_object);
   PhysicalRect visual_overflow_rect = box.PreviousPhysicalVisualOverflowRect();
   if (visual_overflow_rect.IsEmpty() && box.PreviousSize().IsEmpty())
     return;
@@ -704,7 +704,7 @@ void ReattachHookScope::NotifyAttach(const Node& node) {
   auto iter = map.find(&node);
   if (iter == map.end())
     return;
-  ToLayoutBox(layout_object)
+  To<LayoutBox>(layout_object)
       ->GetMutableForPainting()
       .SetPreviousGeometryForLayoutShiftTracking(
           iter->value.paint_offset, iter->value.size,

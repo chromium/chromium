@@ -93,7 +93,7 @@ void LayoutMedia::UpdateLayout() {
       width = ComputePanelWidth(new_rect);
     }
 
-    LayoutBox* layout_box = ToLayoutBox(child);
+    auto* layout_box = To<LayoutBox>(child);
     layout_box->SetLocation(new_rect.Location());
     layout_box->SetOverrideLogicalWidth(width);
     layout_box->SetOverrideLogicalHeight(new_rect.Height());

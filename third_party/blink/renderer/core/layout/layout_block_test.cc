@@ -46,7 +46,7 @@ TEST_F(LayoutBlockTest, WidthAvailableToChildrenChanged) {
   )HTML");
   Element* list_element = GetDocument().getElementById("list");
   ASSERT_TRUE(list_element);
-  LayoutBox* list_box = ToLayoutBox(list_element->GetLayoutObject());
+  auto* list_box = list_element->GetLayoutBox();
   Element* item_element = ElementTraversal::FirstChild(*list_element);
   ASSERT_TRUE(item_element);
   ASSERT_GT(list_box->ComputeScrollbars().HorizontalSum(), 0);
@@ -71,8 +71,7 @@ TEST_F(LayoutBlockTest, OverflowWithTransformAndPerspective) {
       </div>
     </div>
   )HTML");
-  LayoutBox* scroller =
-      ToLayoutBox(GetDocument().getElementById("target")->GetLayoutObject());
+  auto* scroller = GetLayoutBoxByElementId("target");
   EXPECT_EQ(119.5, scroller->LayoutOverflowRect().Width().ToFloat());
 }
 
@@ -85,7 +84,7 @@ TEST_F(LayoutBlockTest, NestedInlineVisualOverflow) {
     </div>
   )HTML");
 
-  auto* target = ToLayoutBox(GetLayoutObjectByElementId("target"));
+  auto* target = GetLayoutBoxByElementId("target");
   EXPECT_EQ(LayoutRect(-15, 0, 40, 40), target->VisualOverflowRect());
   EXPECT_EQ(PhysicalRect(-15, 0, 40, 40), target->PhysicalVisualOverflowRect());
 }
@@ -101,7 +100,7 @@ TEST_F(LayoutBlockTest, NestedInlineVisualOverflowVerticalRL) {
     </div>
   )HTML");
 
-  auto* target = ToLayoutBox(GetLayoutObjectByElementId("target"));
+  auto* target = GetLayoutBoxByElementId("target");
   EXPECT_EQ(LayoutRect(-15, 0, 40, 40), target->VisualOverflowRect());
   EXPECT_EQ(PhysicalRect(-25, 0, 40, 40), target->PhysicalVisualOverflowRect());
 }
@@ -123,7 +122,7 @@ TEST_F(LayoutBlockTest, ContainmentStyleChange) {
 
   Element* target_element = GetDocument().getElementById("target");
   auto* target = To<LayoutBlockFlow>(target_element->GetLayoutObject());
-  LayoutBox* contained = ToLayoutBox(GetLayoutObjectByElementId("contained"));
+  auto* contained = GetLayoutBoxByElementId("contained");
   EXPECT_TRUE(target->PositionedObjects()->Contains(contained));
 
   // Remove layout containment. This should cause |contained| to now be

@@ -1424,7 +1424,7 @@ bool InlineFlowBox::NodeAtPoint(HitTestResult& result,
   }
 
   if (GetLineLayoutItem().IsBox() &&
-      ToLayoutBox(LineLayoutAPIShim::LayoutObjectFrom(GetLineLayoutItem()))
+      To<LayoutBox>(LineLayoutAPIShim::LayoutObjectFrom(GetLineLayoutItem()))
           ->HitTestClippedOutByBorder(hit_test_location, overflow_rect.offset))
     return false;
 

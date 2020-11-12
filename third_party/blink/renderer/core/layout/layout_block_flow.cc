@@ -1612,14 +1612,14 @@ void LayoutBlockFlow::LayoutBlockChildren(bool relayout_children,
   // should make this impossible. crbug.com/632848
   LayoutObject* first_child = FirstChild();
   CHECK(!first_child || first_child->IsBox());
-  LayoutBox* next = ToLayoutBox(first_child);
+  auto* next = To<LayoutBox>(first_child);
   LayoutBox* last_normal_flow_child = nullptr;
 
   while (next) {
     LayoutBox* child = next;
     LayoutObject* next_sibling = child->NextSibling();
     CHECK(!next_sibling || next_sibling->IsBox());
-    next = ToLayoutBox(next_sibling);
+    next = To<LayoutBox>(next_sibling);
 
     child->SetShouldCheckForPaintInvalidation();
 
@@ -2442,7 +2442,7 @@ void LayoutBlockFlow::AddVisualOverflowFromFloats(
       continue;
 
     if (child->IsFloating()) {
-      AddVisualOverflowFromChild(ToLayoutBox(*child->GetLayoutObject()));
+      AddVisualOverflowFromChild(To<LayoutBox>(*child->GetLayoutObject()));
       continue;
     }
 
@@ -4548,8 +4548,8 @@ void LayoutBlockFlow::SimplifiedNormalFlowInlineLayout() {
     if (!o->IsOutOfFlowPositioned() &&
         (o->IsAtomicInlineLevel() || o->IsFloating())) {
       o->LayoutIfNeeded();
-      if (ToLayoutBox(o)->InlineBoxWrapper()) {
-        RootInlineBox& box = ToLayoutBox(o)->InlineBoxWrapper()->Root();
+      if (To<LayoutBox>(o)->InlineBoxWrapper()) {
+        RootInlineBox& box = To<LayoutBox>(o)->InlineBoxWrapper()->Root();
         line_boxes.insert(&box);
       }
     } else if (o->IsText() ||

@@ -165,7 +165,7 @@ static LayoutObject* PreviousInPreOrderSkippingOutOfFlow(
   while (object && object != flow_thread) {
     if (object->IsColumnSpanAll()) {
       LayoutMultiColumnFlowThread* placeholder_flow_thread =
-          ToLayoutBox(object)->SpannerPlaceholder()->FlowThread();
+          To<LayoutBox>(object)->SpannerPlaceholder()->FlowThread();
       if (placeholder_flow_thread == flow_thread)
         break;
       // We're inside an inner multicol container. We have no business there.
@@ -991,7 +991,7 @@ bool LayoutMultiColumnFlowThread::DescendantIsValidColumnSpanner(
   // This looks like a spanner, but if we're inside something unbreakable or
   // something that establishes a new formatting context, it's not to be treated
   // as one.
-  for (LayoutBox* ancestor = ToLayoutBox(descendant)->ParentBox(); ancestor;
+  for (LayoutBox* ancestor = To<LayoutBox>(descendant)->ParentBox(); ancestor;
        ancestor = ancestor->ContainingBlock()) {
     if (ancestor->IsLayoutFlowThread()) {
       DCHECK_EQ(ancestor, this);
@@ -1078,9 +1078,10 @@ void LayoutMultiColumnFlowThread::SkipColumnSpanner(
   // subtree.
   for (LayoutObject* descendant = layout_object->SlowFirstChild(); descendant;
        descendant = descendant->NextInPreOrder()) {
-    if (descendant->IsBox() && descendant->IsOutOfFlowPositioned())
+    if (descendant->IsBox() && descendant->IsOutOfFlowPositioned()) {
       descendant->ContainingBlock()->InsertPositionedObject(
-          ToLayoutBox(descendant));
+          To<LayoutBox>(descendant));
+    }
   }
 }
 
@@ -1155,7 +1156,7 @@ void LayoutMultiColumnFlowThread::FlowThreadDescendantWasInserted(
     if (DescendantIsValidColumnSpanner(layout_object)) {
       // This layoutObject is a spanner, so it needs to establish a spanner
       // placeholder.
-      CreateAndInsertSpannerPlaceholder(ToLayoutBox(layout_object),
+      CreateAndInsertSpannerPlaceholder(To<LayoutBox>(layout_object),
                                         object_after_subtree);
       continue;
     }
@@ -1419,7 +1420,7 @@ void LayoutMultiColumnFlowThread::ToggleSpannersInSubtree(
     walk_children = false;
     if (!object->IsBox())
       continue;
-    LayoutBox& box = ToLayoutBox(*object);
+    auto& box = To<LayoutBox>(*object);
     if (could_contain_spanners_) {
       // Remove all spanners (turn them into regular column content), as we can
       // no longer contain them.

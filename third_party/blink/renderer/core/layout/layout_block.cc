@@ -785,7 +785,7 @@ void LayoutBlock::MarkFixedPositionObjectForLayoutIfNeeded(
   // We must compute child's width and height, but not update them now.
   // The child will update its width and height when it gets laid out, and needs
   // to see them change there.
-  LayoutBox* box = ToLayoutBox(child);
+  auto* box = To<LayoutBox>(child);
   if (has_static_inline_position) {
     LogicalExtentComputedValues computed_values;
     box->ComputeLogicalWidth(computed_values);
@@ -1617,7 +1617,7 @@ void LayoutBlock::ComputeBlockPreferredLogicalWidths(
     }
 
     if (child->IsBox() &&
-        ToLayoutBox(child)->NeedsPreferredWidthsRecalculation()) {
+        To<LayoutBox>(child)->NeedsPreferredWidthsRecalculation()) {
       // We don't really know whether the containing block of this child did
       // change or is going to change size. However, this is our only
       // opportunity to make sure that it gets its min/max widths calculated.
@@ -1629,7 +1629,8 @@ void LayoutBlock::ComputeBlockPreferredLogicalWidths(
 
     scoped_refptr<const ComputedStyle> child_style = child->Style();
     if (child->IsFloating() ||
-        (child->IsBox() && ToLayoutBox(child)->CreatesNewFormattingContext())) {
+        (child->IsBox() &&
+         To<LayoutBox>(child)->CreatesNewFormattingContext())) {
       LayoutUnit float_total_width = float_left_width + float_right_width;
       EClear c = child_style->Clear(style_to_use);
       if (c == EClear::kBoth || c == EClear::kLeft) {
@@ -1674,7 +1675,8 @@ void LayoutBlock::ComputeBlockPreferredLogicalWidths(
     w = child_max_preferred_logical_width + margin;
 
     if (!child->IsFloating()) {
-      if (child->IsBox() && ToLayoutBox(child)->CreatesNewFormattingContext()) {
+      if (child->IsBox() &&
+          To<LayoutBox>(child)->CreatesNewFormattingContext()) {
         // Determine a left and right max value based off whether or not the
         // floats can fit in the margins of the object. For negative margins, we
         // will attempt to overlap the float if the negative margin is smaller
@@ -1734,11 +1736,11 @@ void LayoutBlock::ComputeChildPreferredLogicalWidths(
     // https://drafts.csswg.org/css-writing-modes/#orthogonal-shrink-to-fit
     if (!child.NeedsLayout()) {
       min_preferred_logical_width = max_preferred_logical_width =
-          ToLayoutBox(child).LogicalHeight();
+          To<LayoutBox>(child).LogicalHeight();
       return;
     }
     min_preferred_logical_width = max_preferred_logical_width =
-        ToLayoutBox(child).ComputeLogicalHeightWithoutLayout();
+        To<LayoutBox>(child).ComputeLogicalHeightWithoutLayout();
     return;
   }
 

@@ -789,7 +789,7 @@ TEST_P(VisualRectMappingTest, CSSClip) {
     </div>
   )HTML");
 
-  LayoutBox* target = ToLayoutBox(GetLayoutObjectByElementId("target"));
+  auto* target = GetLayoutBoxByElementId("target");
 
   EXPECT_EQ(PhysicalRect(0, 0, 400, 400), target->LocalVisualRect());
   CheckPaintInvalidationVisualRect(*target, GetLayoutView(),
@@ -804,7 +804,7 @@ TEST_P(VisualRectMappingTest, ContainPaint) {
     </div>
   )HTML");
 
-  LayoutBox* target = ToLayoutBox(GetLayoutObjectByElementId("target"));
+  auto* target = GetLayoutBoxByElementId("target");
 
   EXPECT_EQ(PhysicalRect(0, 0, 400, 400), target->LocalVisualRect());
   CheckPaintInvalidationVisualRect(*target, GetLayoutView(),
@@ -823,7 +823,7 @@ TEST_P(VisualRectMappingTest, FloatUnderInline) {
 
   LayoutBoxModelObject* span =
       ToLayoutBoxModelObject(GetLayoutObjectByElementId("span"));
-  LayoutBox* target = ToLayoutBox(GetLayoutObjectByElementId("target"));
+  auto* target = GetLayoutBoxByElementId("target");
 
   PhysicalRect target_visual_rect = target->LocalVisualRect();
   EXPECT_EQ(PhysicalRect(0, 0, 33, 44), target_visual_rect);
@@ -859,7 +859,7 @@ TEST_P(VisualRectMappingTest, FloatUnderInlineVerticalRL) {
   )HTML");
 
   auto* span = ToLayoutBoxModelObject(GetLayoutObjectByElementId("span"));
-  auto* target = ToLayoutBox(GetLayoutObjectByElementId("target"));
+  auto* target = GetLayoutBoxByElementId("target");
 
   auto target_visual_rect = target->LocalVisualRect();
   EXPECT_EQ(PhysicalRect(0, 0, 33, 44), target_visual_rect);
@@ -899,7 +899,7 @@ TEST_P(VisualRectMappingTest, InlineBlock) {
   )HTML");
 
   auto* span = ToLayoutBoxModelObject(GetLayoutObjectByElementId("span"));
-  auto* target = ToLayoutBox(GetLayoutObjectByElementId("target"));
+  auto* target = GetLayoutBoxByElementId("target");
 
   auto target_visual_rect = target->LocalVisualRect();
   EXPECT_EQ(PhysicalRect(0, 0, 33, 44), target_visual_rect);
@@ -928,7 +928,7 @@ TEST_P(VisualRectMappingTest, InlineBlockVerticalRL) {
   )HTML");
 
   auto* span = ToLayoutBoxModelObject(GetLayoutObjectByElementId("span"));
-  auto* target = ToLayoutBox(GetLayoutObjectByElementId("target"));
+  auto* target = GetLayoutBoxByElementId("target");
 
   auto target_visual_rect = target->LocalVisualRect();
   EXPECT_EQ(PhysicalRect(0, 0, 33, 44), target_visual_rect);
@@ -959,7 +959,7 @@ TEST_P(VisualRectMappingTest, AbsoluteUnderRelativeInline) {
   )HTML");
 
   auto* span = ToLayoutBoxModelObject(GetLayoutObjectByElementId("span"));
-  auto* target = ToLayoutBox(GetLayoutObjectByElementId("target"));
+  auto* target = GetLayoutBoxByElementId("target");
 
   auto target_visual_rect = target->LocalVisualRect();
   EXPECT_EQ(PhysicalRect(0, 0, 33, 44), target_visual_rect);
@@ -988,7 +988,7 @@ TEST_P(VisualRectMappingTest, AbsoluteUnderRelativeInlineVerticalRL) {
   )HTML");
 
   auto* span = ToLayoutBoxModelObject(GetLayoutObjectByElementId("span"));
-  auto* target = ToLayoutBox(GetLayoutObjectByElementId("target"));
+  auto* target = GetLayoutBoxByElementId("target");
 
   auto target_visual_rect = target->LocalVisualRect();
   EXPECT_EQ(PhysicalRect(0, 0, 33, 44), target_visual_rect);
@@ -1224,8 +1224,7 @@ TEST_P(VisualRectMappingTest, FixedContentsWithScrollOffset) {
     <div id='forcescroll' style='height:1000px;'></div>
   )HTML");
 
-  auto* ancestor =
-      ToLayoutBox(GetDocument().getElementById("ancestor")->GetLayoutObject());
+  auto* ancestor = GetLayoutBoxByElementId("ancestor");
   auto* fixed = GetDocument().getElementById("fixed")->GetLayoutObject();
 
   CheckMapToVisualRectInAncestorSpace(PhysicalRect(0, 0, 400, 300),
@@ -1282,10 +1281,8 @@ TEST_P(VisualRectMappingTest, InclusiveIntersect) {
     </div>
   )HTML");
 
-  auto* ancestor =
-      ToLayoutBox(GetDocument().getElementById("ancestor")->GetLayoutObject());
-  auto* child =
-      ToLayoutBox(GetDocument().getElementById("child")->GetLayoutObject());
+  auto* ancestor = GetLayoutBoxByElementId("ancestor");
+  auto* child = GetLayoutBoxByElementId("child");
 
   CheckMapToVisualRectInAncestorSpace(PhysicalRect(0, 0, 10, 10),
                                       PhysicalRect(50, 0, 0, 10), child,
@@ -1318,10 +1315,8 @@ TEST_P(VisualRectMappingTest, Perspective) {
     </div>
   )HTML");
 
-  auto* ancestor =
-      ToLayoutBox(GetDocument().getElementById("ancestor")->GetLayoutObject());
-  auto* child =
-      ToLayoutBox(GetDocument().getElementById("child")->GetLayoutObject());
+  auto* ancestor = GetLayoutBoxByElementId("ancestor");
+  auto* child = GetLayoutBoxByElementId("child");
 
   PhysicalRect rect(0, 0, 10, 10);
   child->MapToVisualRectInAncestorSpace(ancestor, rect);
@@ -1341,10 +1336,8 @@ TEST_P(VisualRectMappingTest, PerspectiveWithAnonymousTable) {
     </table>
   )HTML");
 
-  auto* ancestor =
-      ToLayoutBox(GetDocument().getElementById("ancestor")->GetLayoutObject());
-  auto* child =
-      ToLayoutBox(GetDocument().getElementById("child")->GetLayoutObject());
+  auto* ancestor = GetLayoutBoxByElementId("ancestor");
+  auto* child = GetLayoutBoxByElementId("child");
 
   PhysicalRect rect(0, 0, 10, 10);
   child->MapToVisualRectInAncestorSpace(ancestor, rect);

@@ -23,10 +23,6 @@ class LayoutFlexibleBoxTest : public testing::WithParamInterface<bool>,
   void ExpectSameAsRowReverseVLR();
   void ExpectSameAsRowReverseVRL();
   void ExpectSameAsRTLRowHTB();
-
-  LayoutBox* GetLayoutBoxByElementId(const char* id) const {
-    return ToLayoutBox(GetLayoutObjectByElementId(id));
-  }
 };
 
 INSTANTIATE_TEST_SUITE_P(All, LayoutFlexibleBoxTest, testing::Bool());
@@ -499,7 +495,7 @@ TEST_P(LayoutFlexibleBoxTest, ResizedFlexChildRequiresVisualOverflowRecalc) {
   GetDocument().View()->UpdateLifecycleToLayoutClean(
       DocumentUpdateReason::kTest);
 
-  auto* child1_box = ToLayoutBox(child1_element->GetLayoutObject());
+  auto* child1_box = To<LayoutBox>(child1_element->GetLayoutObject());
   ASSERT_TRUE(child1_box->HasSelfPaintingLayer());
   EXPECT_TRUE(child1_box->Layer()->NeedsVisualOverflowRecalc());
 

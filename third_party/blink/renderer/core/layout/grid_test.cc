@@ -57,7 +57,7 @@ TEST_F(GridTest, SingleChild) {
   auto* layout_grid = GetGridByElementId("target");
   auto* grid = layout_grid->InternalGrid();
   ASSERT_NE(grid, nullptr);
-  auto* child = ToLayoutBox(GetLayoutObjectByElementId("child"));
+  auto* child = GetLayoutBoxByElementId("child");
   ASSERT_NE(child, nullptr);
 
   EXPECT_EQ(1u, grid->NumTracks(kForRows));
@@ -156,9 +156,9 @@ TEST_F(GridTest, IntrinsicGrid) {
   auto* layout_grid = GetGridByElementId("target");
   auto* grid = layout_grid->InternalGrid();
   ASSERT_NE(grid, nullptr);
-  auto* child1 = ToLayoutBox(GetLayoutObjectByElementId("child1"));
+  auto* child1 = GetLayoutBoxByElementId("child1");
   ASSERT_NE(child1, nullptr);
-  auto* child2 = ToLayoutBox(GetLayoutObjectByElementId("child2"));
+  auto* child2 = GetLayoutBoxByElementId("child2");
   ASSERT_NE(child2, nullptr);
 
   EXPECT_EQ(8u, grid->NumTracks(kForRows));
@@ -283,7 +283,7 @@ TEST_F(GridTest, ExplicitlyPositionedChild) {
   auto* layout_grid = GetGridByElementId("target");
   auto* grid = layout_grid->InternalGrid();
   ASSERT_NE(grid, nullptr);
-  auto* child = ToLayoutBox(GetLayoutObjectByElementId("child"));
+  auto* child = GetLayoutBoxByElementId("child");
   ASSERT_NE(child, nullptr);
 
   EXPECT_EQ(1u, grid->NumTracks(kForRows));

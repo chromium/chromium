@@ -927,7 +927,7 @@ void LayoutInline::CollectCulledLineBoxRectsInFlippedBlocksDirection(
     // font ascent/descent in the block direction (aligned to the root box's
     // baseline).
     if (curr->IsBox()) {
-      LayoutBox* curr_box = ToLayoutBox(curr);
+      auto* curr_box = To<LayoutBox>(curr);
       if (curr_box->InlineBoxWrapper()) {
         RootInlineBox& root_box = curr_box->InlineBoxWrapper()->Root();
         ComputeItemTopHeight(container, root_box, &logical_top,
@@ -1036,7 +1036,7 @@ PhysicalOffset LayoutInline::AnchorPhysicalLocation() const {
     if (sibling->IsText())
       return To<LayoutText>(sibling)->FirstLineBoxTopLeft();
     if (sibling->IsBox())
-      return ToLayoutBox(sibling)->PhysicalLocation();
+      return To<LayoutBox>(sibling)->PhysicalLocation();
   }
   if (Parent()->IsLayoutInline())
     return To<LayoutInline>(Parent())->AnchorPhysicalLocation();
@@ -1314,7 +1314,7 @@ InlineBox* LayoutInline::CulledInlineFirstLineBox() const {
     // font ascent/descent in the block direction (aligned to the root box's
     // baseline).
     if (curr->IsBox())
-      return ToLayoutBox(curr)->InlineBoxWrapper();
+      return To<LayoutBox>(curr)->InlineBoxWrapper();
     if (curr->IsLayoutInline()) {
       auto* curr_inline = To<LayoutInline>(curr);
       InlineBox* result = curr_inline->FirstLineBoxIncludingCulling();
@@ -1339,7 +1339,7 @@ InlineBox* LayoutInline::CulledInlineLastLineBox() const {
     // font ascent/descent in the block direction (aligned to the root box's
     // baseline).
     if (curr->IsBox())
-      return ToLayoutBox(curr)->InlineBoxWrapper();
+      return To<LayoutBox>(curr)->InlineBoxWrapper();
     if (curr->IsLayoutInline()) {
       auto* curr_inline = To<LayoutInline>(curr);
       InlineBox* result = curr_inline->LastLineBoxIncludingCulling();
@@ -1371,7 +1371,7 @@ PhysicalRect LayoutInline::CulledInlineVisualOverflowBoundingBox() const {
 
     // For overflow we just have to propagate by hand and recompute it all.
     if (curr->IsBox()) {
-      LayoutBox* curr_box = ToLayoutBox(curr);
+      auto* curr_box = To<LayoutBox>(curr);
       if (!curr_box->HasSelfPaintingLayer() && curr_box->InlineBoxWrapper()) {
         LayoutRect logical_rect =
             curr_box->LogicalVisualOverflowRectForPropagation();
@@ -1560,8 +1560,7 @@ bool LayoutInline::MapToVisualRectInAncestorSpaceInternal(
                          accumulation);
   }
 
-  LayoutBox* container_box =
-      container->IsBox() ? ToLayoutBox(container) : nullptr;
+  LayoutBox* container_box = DynamicTo<LayoutBox>(container);
   if (container_box && container != ancestor &&
       !container_box->MapContentsRectToBoxSpace(transform_state, accumulation,
                                                 *this, visual_rect_flags))
@@ -1646,7 +1645,7 @@ void LayoutInline::DirtyLineBoxes(bool full_layout) {
       if (curr->IsFloatingOrOutOfFlowPositioned())
         continue;
       if (curr->IsBox() && !curr->NeedsLayout()) {
-        LayoutBox* curr_box = ToLayoutBox(curr);
+        auto* curr_box = To<LayoutBox>(curr);
         if (curr_box->InlineBoxWrapper())
           curr_box->InlineBoxWrapper()->Root().MarkDirty();
       } else if (!curr->SelfNeedsLayout()) {
@@ -1841,7 +1840,7 @@ void LayoutInline::AddOutlineRectsForContinuations(
     if (continuation->IsInline())
       offset += continuation->ContainingBlock()->PhysicalLocation();
     else
-      offset += ToLayoutBox(continuation)->PhysicalLocation();
+      offset += To<LayoutBox>(continuation)->PhysicalLocation();
     offset -= ContainingBlock()->PhysicalLocation();
     continuation->AddOutlineRects(rects, offset, include_block_overflows);
   }

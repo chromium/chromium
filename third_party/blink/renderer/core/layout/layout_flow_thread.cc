@@ -69,7 +69,7 @@ LayoutFlowThread* LayoutFlowThread::LocateFlowThreadContainingBlockOf(
     // inside any fragmentation context on the inside of this is completely
     // opaque to ancestor fragmentation contexts.
     if (constraint == kIsolateUnbreakableContainers && container) {
-      if (const LayoutBox* box = ToLayoutBoxOrNull(container)) {
+      if (const auto* box = DynamicTo<LayoutBox>(container)) {
         // We're walking up the tree without knowing which fragmentation engine
         // is being used, so we have to detect any engine mismatch ourselves.
         if (box->IsLayoutNGObject() != inner_is_ng_object)
