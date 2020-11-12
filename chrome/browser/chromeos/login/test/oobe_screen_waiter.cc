@@ -44,7 +44,8 @@ void OobeScreenWaiter::Wait() {
   run_loop_->Run();
   run_loop_.reset();
 
-  ASSERT_EQ(State::DONE, state_);
+  ASSERT_EQ(State::DONE, state_)
+      << " Timed out while waiting for " << target_screen_.name;
 
   oobe_ui_observer_.RemoveAll();
   if (check_native_window_visible_)
