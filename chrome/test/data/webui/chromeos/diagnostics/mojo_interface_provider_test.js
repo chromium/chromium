@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {SystemDataProviderInterface} from 'chrome://diagnostics/diagnostics_types.js';
+import {FakeSystemDataProvider} from 'chrome://diagnostics/fake_system_data_provider.js';
 import {FakeSystemRoutineController} from 'chrome://diagnostics/fake_system_routine_controller.js';
 import {getSystemDataProvider, getSystemRoutineController, setSystemDataProviderForTesting, setSystemRoutineControllerForTesting} from 'chrome://diagnostics/mojo_interface_provider.js';
 
@@ -10,9 +11,7 @@ import {assertEquals} from '../../chai_assert.js';
 
 export function fakeMojoProviderTestSuite() {
   test('SettingGettingTestProvider', () => {
-    // TODO(zentaro): Replace with fake when built.
-    let fake_provider =
-        /** @type {SystemDataProviderInterface} */ (new Object());
+    let fake_provider = new FakeSystemDataProvider();
     setSystemDataProviderForTesting(fake_provider);
     assertEquals(fake_provider, getSystemDataProvider());
   });

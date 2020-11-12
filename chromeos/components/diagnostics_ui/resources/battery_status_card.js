@@ -13,6 +13,7 @@ import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bun
 
 import {BatteryChargeStatus, BatteryHealth, BatteryInfo, SystemDataProviderInterface} from './diagnostics_types.js'
 import {getSystemDataProvider} from './mojo_interface_provider.js';
+import {mojoString16ToString} from './mojo_utils.js';
 
 /**
  * @fileoverview
@@ -30,6 +31,20 @@ Polymer({
    */
   systemDataProvider_: null,
 
+  /**
+   * Receiver responsible for observing battery charge status.
+   * @private {
+   *  ?chromeos.diagnostics.mojom.BatteryChargeStatusObserverReceiver}
+   */
+  batteryChargeStatusObserverReceiver_: null,
+
+  /**
+   * Receiver responsible for observing battery health.
+   * @private {
+   *  ?chromeos.diagnostics.mojom.BatteryHealthObserverReceiver}
+   */
+  batteryHealthObserverReceiver_: null,
+
   properties: {
     /** @private {!BatteryChargeStatus} */
     batteryChargeStatus_: {
@@ -45,6 +60,12 @@ Polymer({
     batteryInfo_: {
       type: Object,
     },
+
+    /** @protected {string} */
+    powerTimeString_: {
+      type: String,
+      computed: 'decodeString16_(batteryChargeStatus_.powerTime)',
+    },
   },
 
   /** @override */
@@ -53,6 +74,12 @@ Polymer({
     this.fetchBatteryInfo_();
     this.observeBatteryChargeStatus_();
     this.observeBatteryHealth_();
+  },
+
+  /** @override */
+  detached() {
+    this.batteryChargeStatusObserverReceiver_.$.close();
+    this.batteryHealthObserverReceiver_.$.close();
   },
 
   /** @private */
@@ -71,7 +98,16 @@ Polymer({
 
   /** @private */
   observeBatteryChargeStatus_() {
-    this.systemDataProvider_.observeBatteryChargeStatus(this);
+    this.batteryChargeStatusObserverReceiver_ =
+        new chromeos.diagnostics.mojom.BatteryChargeStatusObserverReceiver(
+            /**
+             * @type {!chromeos.diagnostics.mojom.
+             *        BatteryChargeStatusObserverInterface}
+             */
+            (this));
+
+    this.systemDataProvider_.observeBatteryChargeStatus(
+        this.batteryChargeStatusObserverReceiver_.$.bindNewPipeAndPassRemote());
   },
 
   /**
@@ -84,7 +120,26 @@ Polymer({
 
   /** @private */
   observeBatteryHealth_() {
-    this.systemDataProvider_.observeBatteryHealth(this);
+    this.batteryHealthObserverReceiver_ =
+        new chromeos.diagnostics.mojom.BatteryHealthObserverReceiver(
+            /**
+             * @type {!chromeos.diagnostics.mojom.
+             *        BatteryHealthObserverInterface}
+             */
+            (this));
+
+    this.systemDataProvider_.observeBatteryHealth(
+        this.batteryHealthObserverReceiver_.$.bindNewPipeAndPassRemote());
+  },
+
+  /**
+   * Converts utf16 to a readable string.
+   * @param {!mojoBase.mojom.String16} str16
+   * @return {string}
+   * @private
+   */
+  decodeString16_(str16) {
+    return mojoString16ToString(str16);
   },
 
   /**

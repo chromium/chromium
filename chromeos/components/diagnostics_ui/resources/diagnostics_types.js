@@ -11,176 +11,94 @@
  */
 
 /**
- * Type of SystemDataProviderInterface.ObserveBatteryChargeStatus function.
- * @typedef {!function(!BatteryChargeStatusObserver): !Promise}
- */
-export let ObserveBatteryChargeStatusFunction;
-
-/**
- * Type of SystemDataProviderInterface.ObserveBatteryHealth function.
- * @typedef {!function(!BatteryHealthObserver): !Promise}
- */
-export let ObserveBatteryHealthFunction;
-
-/**
- * Type of SystemDataProviderInterface.ObserveCpuUsage function.
- * @typedef {!function(!CpuUsageObserver): !Promise}
- */
-export let ObserveCpuUsageFunction;
-
-/**
- * Type of SystemDataProviderInterface.ObserveMemoryUsage function.
- * @typedef {!function(!MemoryUsageObserver): !Promise}
- */
-export let ObserveMemoryUsageFunction;
-
-/**
  * Type alias for the SystemDataProviderInterface.
- * TODO(zentaro): Replace with a real mojo type when implemented.
- * @typedef {{
- *   getBatteryInfo: !function(): !Promise<!{batteryInfo: !BatteryInfo}>,
- *   getSystemInfo: !function(): !Promise<!{systemInfo: SystemInfo}>,
- *   observeBatteryChargeStatus: !ObserveBatteryChargeStatusFunction,
- *   observeBatteryHealth: !ObserveBatteryHealthFunction,
- *   observeCpuUsage: !ObserveCpuUsageFunction,
- *   observeMemoryUsage: !ObserveMemoryUsageFunction,
- * }}
+ * @typedef {chromeos.diagnostics.mojom.SystemDataProviderInterface}
  */
 export let SystemDataProviderInterface;
 
 /**
  * Type alias for DeviceCapabilities.
- * @typedef {{
- *   hasBattery: boolean,
- * }}
+ * @typedef {chromeos.diagnostics.mojom.DeviceCapabilities}
  */
 export let DeviceCapabilities;
 
 /**
  * Type alias for VersionInfo.
- * @typedef {{
- *   milestoneVersion: string,
- * }}
+ * @typedef {chromeos.diagnostics.mojom.VersionInfo}
  */
 export let VersionInfo;
 
 /**
  * Type alias for SystemInfo.
- * @typedef {{
- *   boardName: string,
- *   cpuModelName: string,
- *   cpuThreadsCount: number,
- *   deviceCapabilities: DeviceCapabilities,
- *   marketingName: string,
- *   totalMemoryKib: number,
- *   versionInfo: VersionInfo,
- * }}
+ * @typedef {chromeos.diagnostics.mojom.SystemInfo}
  */
 export let SystemInfo;
 
 /**
+ * Type alias for ExternalPowerSource.
+ * @typedef {chromeos.diagnostics.mojom.ExternalPowerSource}
+ */
+export let ExternalPowerSource;
+
+/**
+ * Type alias for BatteryState.
+ * @typedef {chromeos.diagnostics.mojom.BatteryState}
+ */
+export let BatteryState;
+
+/**
  * Type alias for BatteryInfo.
- * @typedef {{
- *   chargeFullDesignMilliampHours: number,
- *   manufacturer: string,
- * }}
+ * @typedef {chromeos.diagnostics.mojom.BatteryInfo}
  */
 export let BatteryInfo;
 
 /**
- * Type alias for CpuUsageObserver.
- * @typedef {{
- *   onCpuUsageUpdated: !function(!CpuUsage),
- * }}
- */
-export let CpuUsageObserver;
-
-/**
- * Type alias for CpuUsage.
- * @typedef {{
- *   cpuTempDegreesCelsius: number,
- *   percentUsageSystem: number,
- *   percentUsageUser: number,
- * }}
- */
-export let CpuUsage;
-
-/**
- * Type alias for BatteryChargeStatusObserver.
- * @typedef {{
- *   onBatteryChargeStatusUpdated: !function(!BatteryChargeStatus)
- * }}
+ * Type alias for BatteryHealthObserver.
+ * @typedef {chromeos.diagnostics.mojom.BatteryChargeStatusObserver}
  */
 export let BatteryChargeStatusObserver;
 
 /**
- * External power source enumeration.
- * @enum {number}
- */
-export let ExternalPowerSource = {
-  kAc: 0,
-  kUsb: 1,
-  kDisconnected: 2,
-};
-
-/**
- * Battery state enumeration.
- * @enum {number}
- */
-export let BatteryState = {
-  kCharging: 0,
-  kDischarging: 1,
-  kFull: 2,
-};
-
-/**
  * Type alias for BatteryChargeStatus.
- * @typedef {{
- *   batteryState: BatteryState,
- *   chargeNowMilliampHours: number,
- *   currentNowMilliamps: number,
- *   powerAdapterStatus: ExternalPowerSource,
- *   powerTime: string,
- * }}
+ * @typedef {chromeos.diagnostics.mojom.BatteryChargeStatus}
  */
 export let BatteryChargeStatus;
 
 /**
  * Type alias for BatteryHealthObserver.
- * @typedef {{
- *   onBatteryHealthUpdated: !function(!BatteryHealth)
- * }}
+ * @typedef {chromeos.diagnostics.mojom.BatteryHealthObserver}
  */
 export let BatteryHealthObserver;
 
 /**
  * Type alias for BatteryHealth.
- * @typedef {{
- *   batteryWearPercentage: number,
- *   chargeFullDesignMilliampHours: number,
- *   chargeFullNowMilliampHours: number,
- *   cycleCount: number,
- * }}
+ * @typedef {chromeos.diagnostics.mojom.BatteryHealth}
  */
 export let BatteryHealth;
 
 /**
  * Type alias for MemoryUsageObserver.
- * @typedef {{
- *   onMemoryUsageUpdated: !function(!MemoryUsage)
- * }}
+ * @typedef {chromeos.diagnostics.mojom.MemoryUsageObserver}
  */
 export let MemoryUsageObserver;
 
 /**
  * Type alias for MemoryUsage.
- * @typedef {{
- *   availableMemoryKib: number,
- *   freeMemoryKib: number,
- *   totalMemoryKib: number,
- * }}
+ * @typedef {chromeos.diagnostics.mojom.MemoryUsage}
  */
 export let MemoryUsage;
+
+/**
+ * Type alias for CpuUsageObserver.
+ * @typedef {chromeos.diagnostics.mojom.CpuUsageObserver}
+ */
+export let CpuUsageObserver;
+
+/**
+ * Type alias for CpuUsage.
+ * @typedef {chromeos.diagnostics.mojom.CpuUsage}
+ */
+export let CpuUsage;
 
 /**
  * Enumeration of routines.

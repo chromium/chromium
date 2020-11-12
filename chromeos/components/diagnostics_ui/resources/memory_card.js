@@ -31,6 +31,13 @@ Polymer({
    */
   systemDataProvider_: null,
 
+  /**
+   * Receiver responsible for observing memory usage.
+   * @private {
+   *  ?chromeos.diagnostics.mojom.MemoryUsageObserverReceiver}
+   */
+  memoryUsageObserverReceiver_: null,
+
   properties: {
     /** @private {!Array<!RoutineName>} */
     routines_: {
@@ -54,9 +61,22 @@ Polymer({
     this.observeMemoryUsage_();
   },
 
+  /** @override */
+  detached() {
+    this.memoryUsageObserverReceiver_.$.close();
+  },
+
   /** @private */
   observeMemoryUsage_() {
-    this.systemDataProvider_.observeMemoryUsage(this);
+    this.memoryUsageObserverReceiver_ =
+        new chromeos.diagnostics.mojom.MemoryUsageObserverReceiver(
+            /**
+             * @type {!chromeos.diagnostics.mojom.MemoryUsageObserverInterface}
+             */
+            (this));
+
+    this.systemDataProvider_.observeMemoryUsage(
+        this.memoryUsageObserverReceiver_.$.bindNewPipeAndPassRemote());
   },
 
   /**

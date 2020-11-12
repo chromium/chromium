@@ -8,6 +8,7 @@ import {BatteryChargeStatus, BatteryHealth, BatteryInfo, SystemDataProviderInter
 import {fakeBatteryChargeStatus, fakeBatteryHealth, fakeBatteryInfo} from 'chrome://diagnostics/fake_data.js';
 import {FakeSystemDataProvider} from 'chrome://diagnostics/fake_system_data_provider.js';
 import {getSystemDataProvider, setSystemDataProviderForTesting} from 'chrome://diagnostics/mojo_interface_provider.js';
+import {mojoString16ToString} from 'chrome://diagnostics/mojo_utils.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {flushTasks} from '../../test_util.m.js';
@@ -82,7 +83,8 @@ export function batteryStatusCardTestSuite() {
               fakeBatteryChargeStatus[0].chargeNowMilliampHours,
               dataPoints[3].value);
           assertEquals(
-              fakeBatteryChargeStatus[0].powerTime, dataPoints[4].value);
+              mojoString16ToString(fakeBatteryChargeStatus[0].powerTime),
+              dataPoints[4].value);
           assertEquals(
               fakeBatteryChargeStatus[0].powerAdapterStatus,
               dataPoints[5].value);

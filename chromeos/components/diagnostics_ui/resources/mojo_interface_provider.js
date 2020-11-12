@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
+import 'chrome://resources/mojo/mojo/public/mojom/base/big_buffer.mojom-lite.js';
+import 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-lite.js';
+import './system_data_provider.mojom-lite.js';
+import './system_routine_controller.mojom-lite.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {SystemDataProviderInterface, SystemInfo, SystemRoutineControllerInterface} from './diagnostics_types.js';
 import {fakeBatteryChargeStatus, fakeBatteryHealth, fakeBatteryInfo, fakeCpuUsage, fakeMemoryUsage, fakeRoutineResults, fakeSystemInfo} from './fake_data.js';
@@ -79,8 +84,8 @@ export function setSystemDataProviderForTesting(testProvider) {
  */
 export function getSystemDataProvider() {
   if (!systemDataProvider) {
-    // TODO(zentaro): Instantiate a real mojo interface here.
-    setupFakeSystemDataProvider_();
+    systemDataProvider =
+        chromeos.diagnostics.mojom.SystemDataProvider.getRemote();
   }
 
   assert(!!systemDataProvider);

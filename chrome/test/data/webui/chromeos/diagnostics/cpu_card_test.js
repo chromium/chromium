@@ -93,7 +93,7 @@ export function cpuCardTestSuite() {
       const currentlyUsingValue =
           fakeCpuUsage[0].percentUsageUser + fakeCpuUsage[0].percentUsageSystem;
       assertEquals(currentlyUsingValue, dataPoints[0].value);
-      assertEquals(fakeCpuUsage[0].cpuTempDegreesCelsius, dataPoints[1].value);
+      assertEquals(fakeCpuUsage[0].averageCpuTempCelsius, dataPoints[1].value);
 
       const cpuChart = dx_utils.getRealtimeCpuChartElement(cpuElement);
       assertEquals(fakeCpuUsage[0].percentUsageUser, cpuChart.user);

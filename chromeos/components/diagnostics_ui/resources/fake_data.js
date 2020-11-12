@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {BatteryChargeStatus, BatteryHealth, CpuUsage, ExternalPowerSource, MemoryUsage, RoutineName, StandardRoutineResult, SystemInfo} from './diagnostics_types.js'
+import {stringToMojoString16} from './mojo_utils.js';
 
 /* @type {!Array<!BatteryChargeStatus>} */
 export const fakeBatteryChargeStatus = [
@@ -10,22 +11,22 @@ export const fakeBatteryChargeStatus = [
     chargeFullNowMilliampHours: 5700,
     chargeNowMilliampHours: 4200,
     currentNowMilliamps: 1123,
-    powerAdapterStatus: ExternalPowerSource.kAc,
-    powerTime: '3h 15m',
+    powerAdapterStatus: chromeos.diagnostics.mojom.ExternalPowerSource.kAc,
+    powerTime: stringToMojoString16('3h 15m'),
   },
   {
     chargeFullNowMilliampHours: 5700,
     chargeNowMilliampHours: 4500,
     currentNowMilliamps: 1123,
-    powerAdapterStatus: ExternalPowerSource.kAc,
-    powerTime: '3h 01m',
+    powerAdapterStatus: chromeos.diagnostics.mojom.ExternalPowerSource.kAc,
+    powerTime: stringToMojoString16('3h 01m'),
   },
   {
     chargeFullNowMilliampHours: 5700,
     chargeNowMilliampHours: 4800,
     currentNowMilliamps: 1123,
-    powerAdapterStatus: ExternalPowerSource.kAc,
-    powerTime: '2h 45m',
+    powerAdapterStatus: chromeos.diagnostics.mojom.ExternalPowerSource.kAc,
+    powerTime: stringToMojoString16('2h 45m'),
   }
 ];
 
@@ -60,42 +61,42 @@ export const fakeBatteryInfo2 = {
 /* @type {!Array<!CpuUsage>} */
 export const fakeCpuUsage = [
   {
-    cpuTempDegreesCelsius: 107,
+    averageCpuTempCelsius: 107,
     percentUsageSystem: 15,
     percentUsageUser: 20,
   },
   {
-    cpuTempDegreesCelsius: 106,
+    averageCpuTempCelsius: 106,
     percentUsageSystem: 30,
     percentUsageUser: 40,
   },
   {
-    cpuTempDegreesCelsius: 107,
+    averageCpuTempCelsius: 107,
     percentUsageSystem: 31,
     percentUsageUser: 45,
   },
   {
-    cpuTempDegreesCelsius: 109,
+    averageCpuTempCelsius: 109,
     percentUsageSystem: 55,
     percentUsageUser: 24,
   },
   {
-    cpuTempDegreesCelsius: 109,
+    averageCpuTempCelsius: 109,
     percentUsageSystem: 49,
     percentUsageUser: 10,
   },
   {
-    cpuTempDegreesCelsius: 161,
+    averageCpuTempCelsius: 161,
     percentUsageSystem: 1,
     percentUsageUser: 99,
   },
   {
-    cpuTempDegreesCelsius: 118,
+    averageCpuTempCelsius: 118,
     percentUsageSystem: 35,
     percentUsageUser: 37,
   },
   {
-    cpuTempDegreesCelsius: 110,
+    averageCpuTempCelsius: 110,
     percentUsageSystem: 26,
     percentUsageUser: 30,
   },

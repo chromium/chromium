@@ -23,6 +23,7 @@ js_type_check("closure_compile_module") {
     ":fake_system_routine_controller",
     ":memory_card",
     ":mojo_interface_provider",
+    ":mojo_utils",
     ":overview_card",
     ":percent_bar_chart",
     ":realtime_cpu_chart",
@@ -37,6 +38,7 @@ js_library("battery_status_card") {
   deps = [
     ":data_point",
     ":mojo_interface_provider",
+    ":mojo_utils",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:i18n_behavior.m",
   ]
@@ -118,6 +120,12 @@ js_library("mojo_interface_provider") {
     ":fake_system_routine_controller",
     "//chromeos/components/diagnostics_ui/mojom:mojom_js_library_for_compile",
     "//ui/webui/resources/js:cr.m",
+  ]
+}
+
+js_library("mojo_utils") {
+  deps = [
+    "//chromeos/components/diagnostics_ui/mojom:mojom_js_library_for_compile",
   ]
 }
 
