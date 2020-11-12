@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "components/cbor/reader.h"
-#include "device/fido/ctap_empty_authenticator_request.h"
 #include "device/fido/ctap_get_assertion_request.h"
 #include "device/fido/ctap_make_credential_request.h"
 #include "device/fido/fido_constants.h"
@@ -71,19 +70,6 @@ TEST(CTAPRequestTest, TestConstructGetAssertionRequest) {
   EXPECT_THAT(serialized_data,
               ::testing::ElementsAreArray(
                   test_data::kTestComplexCtapGetAssertionRequest));
-}
-
-TEST(CTAPRequestTest, TestConstructCtapAuthenticatorRequestParam) {
-  static constexpr uint8_t kSerializedGetInfoCmd = 0x04;
-  static constexpr uint8_t kSerializedGetNextAssertionCmd = 0x08;
-  static constexpr uint8_t kSerializedResetCmd = 0x07;
-
-  EXPECT_THAT(AuthenticatorGetInfoRequest().Serialize(),
-              ::testing::ElementsAre(kSerializedGetInfoCmd));
-  EXPECT_THAT(AuthenticatorGetNextAssertionRequest().Serialize(),
-              ::testing::ElementsAre(kSerializedGetNextAssertionCmd));
-  EXPECT_THAT(AuthenticatorResetRequest().Serialize(),
-              ::testing::ElementsAre(kSerializedResetCmd));
 }
 
 }  // namespace device

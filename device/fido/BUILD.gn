@@ -129,8 +129,6 @@ component("fido") {
       "credential_management_handler.cc",
       "credential_management_handler.h",
       "ctap2_device_operation.h",
-      "ctap_empty_authenticator_request.cc",
-      "ctap_empty_authenticator_request.h",
       "ctap_get_assertion_request.cc",
       "ctap_get_assertion_request.h",
       "ctap_make_credential_request.cc",

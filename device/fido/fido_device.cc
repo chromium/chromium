@@ -9,7 +9,6 @@
 #include "base/bind.h"
 #include "base/stl_util.h"
 #include "components/device_event_log/device_event_log.h"
-#include "device/fido/ctap_empty_authenticator_request.h"
 #include "device/fido/device_response_converter.h"
 #include "device/fido/fido_constants.h"
 
@@ -50,9 +49,10 @@ void FidoDevice::DiscoverSupportedProtocolAndDeviceInfo(
   supported_protocol_ = ProtocolVersion::kCtap2;
   FIDO_LOG(DEBUG)
       << "Sending CTAP2 AuthenticatorGetInfo request to authenticator.";
-  DeviceTransact(AuthenticatorGetInfoRequest().Serialize(),
-                 base::BindOnce(&FidoDevice::OnDeviceInfoReceived, GetWeakPtr(),
-                                std::move(done)));
+  DeviceTransact(
+      {static_cast<uint8_t>(CtapRequestCommand::kAuthenticatorGetInfo)},
+      base::BindOnce(&FidoDevice::OnDeviceInfoReceived, GetWeakPtr(),
+                     std::move(done)));
 }
 
 bool FidoDevice::SupportedProtocolIsInitialized() {
