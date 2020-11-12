@@ -5,18 +5,27 @@
 package org.chromium.chrome.browser.share;
 
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.doReturn;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.net.Uri;
 
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.lens.LensQueryResult;
@@ -34,6 +43,24 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 public class LensUtilsTest {
     @Rule
     public final ChromeBrowserTestRule mBrowserTestRule = new ChromeBrowserTestRule();
+
+    private static final String TEST_MIN_AGSA_VERSION = "11.34";
+    private static final String TEST_MIN_AGSA_VERSION_BELOW_DIRECT_INTENT_MIN = "11.33.9";
+
+    @Mock
+    Context mContext;
+    @Mock
+    PackageManager mPackageManager;
+    @Mock
+    PackageInfo mPackageInfo;
+
+    @Before
+    public void setUp() throws NameNotFoundException {
+        MockitoAnnotations.initMocks(this);
+        doReturn(mContext).when(mContext).getApplicationContext();
+        doReturn(mPackageManager).when(mContext).getPackageManager();
+        doReturn(mPackageInfo).when(mPackageManager).getPackageInfo(IntentHandler.PACKAGE_GSA, 0);
+    }
 
     /**
      * Test {@link LensUtils#getShareWithGoogleLensIntent()} method when user is signed
@@ -287,7 +314,7 @@ public class LensUtilsTest {
     public void
     getShareWithGoogleLensIntentSignedInTest_directIntentEnabled() {
         mBrowserTestRule.addTestAccountThenSigninAndEnableSync();
-
+        LensUtils.setFakeInstalledAgsaVersion(TEST_MIN_AGSA_VERSION);
         Intent intentNoUri = getShareWithGoogleLensIntentOnUiThread(Uri.EMPTY,
                 /* isIncognito= */ false, 1234L, /* srcUrl */ "", /* titleOrAltText */ "",
                 /* pageUrl */ null,
@@ -306,6 +333,85 @@ public class LensUtilsTest {
                 /* requiresConfirmation= */ false);
         Assert.assertEquals("Intent with image has incorrect URI",
                 "google://lens?LensBitmapUriKey=content%3A%2F%2Fimage-url"
+                        + "&AccountNameUriKey=test%40gmail.com&IncognitoUriKey=false"
+                        + "&ActivityLaunchTimestampNanos=1234",
+                intentWithContentUri.getData().toString());
+        Assert.assertEquals("Intent with image has incorrect action", Intent.ACTION_VIEW,
+                intentWithContentUri.getAction());
+    }
+
+    /**
+     * Test {@link LensUtils#getShareWithGoogleLensIntent()} method when user is signed
+     * in and the direct intent experiment is enabled, but the AGSA version is empty.
+     */
+    @CommandLineFlags.Add({"enable-features="
+                    + ChromeFeatureList.CONTEXT_MENU_SEARCH_WITH_GOOGLE_LENS + "<FakeStudyName",
+            "force-fieldtrials=FakeStudyName/Enabled",
+            "force-fieldtrial-params=FakeStudyName.Enabled:useDirectIntent/true"})
+    @Test
+    @SmallTest
+    public void
+    getShareWithGoogleLensIntentSignedInTest_directIntentEnabledAgsaVersionEmpty() {
+        mBrowserTestRule.addTestAccountThenSigninAndEnableSync();
+        LensUtils.setFakeInstalledAgsaVersion("");
+        Intent intentNoUri = getShareWithGoogleLensIntentOnUiThread(Uri.EMPTY,
+                /* isIncognito= */ false, 1234L, /* srcUrl */ "", /* titleOrAltText */ "",
+                /* pageUrl */ null,
+                /* lensQueryResult */ null,
+                /* requiresConfirmation= */ false);
+        Assert.assertEquals("Intent without image has incorrect URI", "googleapp://lens",
+                intentNoUri.getData().toString());
+        Assert.assertEquals("Intent without image has incorrect action", Intent.ACTION_VIEW,
+                intentNoUri.getAction());
+
+        final String contentUrl = "content://image-url";
+        Intent intentWithContentUri = getShareWithGoogleLensIntentOnUiThread(Uri.parse(contentUrl),
+                /* isIncognito= */ false, 1234L, /* srcUrl */ "", /* titleOrAltText */ "",
+                /* pageUrl */ null,
+                /* lensQueryResult */ null,
+                /* requiresConfirmation= */ false);
+        Assert.assertEquals("Intent with image has incorrect URI",
+                "googleapp://lens?LensBitmapUriKey=content%3A%2F%2Fimage-url"
+                        + "&AccountNameUriKey=test%40gmail.com&IncognitoUriKey=false"
+                        + "&ActivityLaunchTimestampNanos=1234",
+                intentWithContentUri.getData().toString());
+        Assert.assertEquals("Intent with image has incorrect action", Intent.ACTION_VIEW,
+                intentWithContentUri.getAction());
+    }
+
+    /**
+     * Test {@link LensUtils#getShareWithGoogleLensIntent()} method when user is signed
+     * in and the direct intent experiment is enabled, but the AGSA version is below the minimum
+     * required for direct intent.
+     */
+    @CommandLineFlags.Add({"enable-features="
+                    + ChromeFeatureList.CONTEXT_MENU_SEARCH_WITH_GOOGLE_LENS + "<FakeStudyName",
+            "force-fieldtrials=FakeStudyName/Enabled",
+            "force-fieldtrial-params=FakeStudyName.Enabled:useDirectIntent/true"})
+    @Test
+    @SmallTest
+    public void
+    getShareWithGoogleLensIntentSignedInTest_directIntentEnabledAgsaVersionBelowMinimum() {
+        mBrowserTestRule.addTestAccountThenSigninAndEnableSync();
+        LensUtils.setFakeInstalledAgsaVersion(TEST_MIN_AGSA_VERSION_BELOW_DIRECT_INTENT_MIN);
+        Intent intentNoUri = getShareWithGoogleLensIntentOnUiThread(Uri.EMPTY,
+                /* isIncognito= */ false, 1234L, /* srcUrl */ "", /* titleOrAltText */ "",
+                /* pageUrl */ null,
+                /* lensQueryResult */ null,
+                /* requiresConfirmation= */ false);
+        Assert.assertEquals("Intent without image has incorrect URI", "googleapp://lens",
+                intentNoUri.getData().toString());
+        Assert.assertEquals("Intent without image has incorrect action", Intent.ACTION_VIEW,
+                intentNoUri.getAction());
+
+        final String contentUrl = "content://image-url";
+        Intent intentWithContentUri = getShareWithGoogleLensIntentOnUiThread(Uri.parse(contentUrl),
+                /* isIncognito= */ false, 1234L, /* srcUrl */ "", /* titleOrAltText */ "",
+                /* pageUrl */ null,
+                /* lensQueryResult */ null,
+                /* requiresConfirmation= */ false);
+        Assert.assertEquals("Intent with image has incorrect URI",
+                "googleapp://lens?LensBitmapUriKey=content%3A%2F%2Fimage-url"
                         + "&AccountNameUriKey=test%40gmail.com&IncognitoUriKey=false"
                         + "&ActivityLaunchTimestampNanos=1234",
                 intentWithContentUri.getData().toString());
@@ -451,7 +557,7 @@ public class LensUtilsTest {
             LensQueryResult lensQueryResult, boolean requiresConfirmation) {
         return TestThreadUtils.runOnUiThreadBlockingNoException(
                 ()
-                        -> LensUtils.getShareWithGoogleLensIntent(imageUri, isIncognito,
+                        -> LensUtils.getShareWithGoogleLensIntent(mContext, imageUri, isIncognito,
                                 currentTimeNanos, srcUrl, titleOrAltText, pageUrl, lensQueryResult,
                                 requiresConfirmation));
     }
