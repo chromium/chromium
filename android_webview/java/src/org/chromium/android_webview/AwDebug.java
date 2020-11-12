@@ -38,8 +38,14 @@ public class AwDebug {
         AwDebugJni.get().setSupportLibraryWebkitVersionCrashKey(version);
     }
 
+    @UsedByReflection("")
+    public static void setCpuAffinityToLittleCores() {
+        AwDebugJni.get().setCpuAffinityToLittleCores();
+    }
+
     @NativeMethods
     interface Natives {
         void setSupportLibraryWebkitVersionCrashKey(String version);
+        void setCpuAffinityToLittleCores();
     }
 }

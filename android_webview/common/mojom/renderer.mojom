@@ -13,4 +13,8 @@ interface Renderer {
 
   // Adjusts the javascript 'online' property value.
   SetJsOnlineProperty(bool network_up);
+
+  // Set renderer process CPU affinity to little cores. Temporarily added for an
+  // experiment; to be deleted after its conclusion (https://crbug.com/1111789).
+  SetCpuAffinityToLittleCores();
 };

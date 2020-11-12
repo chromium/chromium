@@ -66,6 +66,10 @@ void AwRenderProcess::SetJsOnlineProperty(bool network_up) {
   renderer_remote_->SetJsOnlineProperty(network_up);
 }
 
+void AwRenderProcess::SetCpuAffinityToLittleCores() {
+  renderer_remote_->SetCpuAffinityToLittleCores();
+}
+
 void AwRenderProcess::Ready() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 

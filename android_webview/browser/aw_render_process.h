@@ -34,6 +34,7 @@ class AwRenderProcess : public content::RenderProcessHostObserver,
 
   void ClearCache();
   void SetJsOnlineProperty(bool network_up);
+  void SetCpuAffinityToLittleCores();
 
  private:
   void Ready();
