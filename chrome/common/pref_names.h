@@ -751,6 +751,7 @@ extern const char
     kAutoScreenBrightnessMetricsUnsupportedAlsUserAdjustmentCount[];
 extern const char kKnownUserParentAccessCodeConfig[];
 extern const char kLastRsuDeviceIdUploaded[];
+extern const char kDeviceName[];
 
 #endif  // defined(OS_CHROMEOS)
 
