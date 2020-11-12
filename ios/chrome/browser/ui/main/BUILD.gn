@@ -138,10 +138,16 @@ source_set("scene") {
   frameworks = [ "UIKit.framework" ]
 }
 
+source_set("browser_interface_provider") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [ "browser_interface_provider.h" ]
+  deps = [ "//base" ]
+  frameworks = [ "UIKit.framework" ]
+}
+
 source_set("main") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
-    "browser_interface_provider.h",
     "browser_view_wrangler.h",
     "browser_view_wrangler.mm",
     "bvc_container_view_controller.h",
@@ -202,7 +208,10 @@ source_set("main") {
     deps += [ "//ios/chrome/app/resources:base_scene_storyboard" ]
   }
 
-  public_deps = [ ":scene_state_header" ]
+  public_deps = [
+    ":browser_interface_provider",
+    ":scene_state_header",
+  ]
 
   # TODO(crbug.com/1103553): remove circular dependency.
   allow_circular_includes_from = [ "//ios/chrome/browser/ui/settings/sync" ]
