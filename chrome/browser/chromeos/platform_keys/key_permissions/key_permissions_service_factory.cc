@@ -51,6 +51,7 @@ KeyedService* KeyPermissionsServiceFactory::BuildServiceInstanceFor(
   }
 
   return new KeyPermissionsServiceImpl(
+      ProfileHelper::IsRegularProfile(profile),
       profile->GetProfilePolicyConnector()->IsManaged(), profile->GetPrefs(),
       profile->GetProfilePolicyConnector()->policy_service(),
       extensions::ExtensionSystem::Get(profile)->state_store(),

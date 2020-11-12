@@ -26,6 +26,8 @@ using SetCorporateKeyCallback = base::OnceCallback<void(Status status)>;
 // ** KeyPermissionService Responsibility **
 // A KeyPermissionService instance is responsible for answering queries
 // regarding platform keys permissions with respect to a specific profile.
+// Note: KeyPermissionsService instances can be used for sign-in profile to
+// answer queries for system-wide keys.
 //
 // ** Corporate Usage **
 // As not every key is meant for corporate usage but probably for the user's

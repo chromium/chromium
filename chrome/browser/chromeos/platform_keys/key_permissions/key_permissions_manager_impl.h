@@ -88,6 +88,7 @@ class KeyPermissionsManagerImpl : public KeyPermissionsManager,
   static KeyPermissionsManager* GetSystemTokenKeyPermissionsManager();
   // Returns a key permissions manager that manages keys residing on the user
   // token corresponding to |profile|.
+  // Note: A nullptr will be returned for non-regular user profiles.
   static KeyPermissionsManager* GetUserPrivateTokenKeyPermissionsManager(
       Profile* profile);
 

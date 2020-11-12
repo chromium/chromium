@@ -199,9 +199,16 @@ KeyPermissionsManagerImpl::GetSystemTokenKeyPermissionsManager() {
 KeyPermissionsManager*
 KeyPermissionsManagerImpl::GetUserPrivateTokenKeyPermissionsManager(
     Profile* profile) {
-  return UserPrivateTokenKeyPermissionsManagerServiceFactory::GetInstance()
-      ->GetForBrowserContext(profile)
-      ->key_permissions_manager();
+  auto* const user_private_token_kpm_service =
+      UserPrivateTokenKeyPermissionsManagerServiceFactory::GetInstance()
+          ->GetForBrowserContext(profile);
+
+  if (!user_private_token_kpm_service) {
+    DCHECK(!ProfileHelper::IsRegularProfile(profile));
+    return nullptr;
+  }
+
+  return user_private_token_kpm_service->key_permissions_manager();
 }
 
 // static

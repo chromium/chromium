@@ -44,6 +44,7 @@ class KeyPermissionsServiceImpl : public KeyPermissionsService {
   // |profile_is_managed| determines the default usage and permissions for
   // keys without explicitly assigned usage.
   KeyPermissionsServiceImpl(
+      bool is_regular_user_profile,
       bool profile_is_managed,
       PrefService* profile_prefs,
       policy::PolicyService* profile_policies,
@@ -98,6 +99,7 @@ class KeyPermissionsServiceImpl : public KeyPermissionsService {
                                     const std::vector<TokenId>& key_locations,
                                     Status key_locations_retrieval_status);
 
+  const bool is_regular_user_profile_;
   const bool profile_is_managed_;
   PrefService* const profile_prefs_;
   policy::PolicyService* const profile_policies_;

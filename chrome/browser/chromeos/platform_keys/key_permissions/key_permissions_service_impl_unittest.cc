@@ -124,9 +124,9 @@ class KeyPermissionsServiceImplTest : public ::testing::Test {
     key_permissions_manager_ = std::make_unique<MockKeyPermissionsManager>();
 
     key_permissions_service_ = std::make_unique<KeyPermissionsServiceImpl>(
-        /*profile_is_managed=*/true, profile_->GetPrefs(), policy_service_,
-        extensions_state_store_, platform_keys_service_.get(),
-        key_permissions_manager_.get());
+        /*is_regular_profile=*/true, /*profile_is_managed=*/true,
+        profile_->GetPrefs(), policy_service_, extensions_state_store_,
+        platform_keys_service_.get(), key_permissions_manager_.get());
   }
 
  protected:
