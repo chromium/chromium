@@ -6,7 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_STREAMS_READABLE_STREAM_DEFAULT_CONTROLLER_H_
 
 #include "base/optional.h"
-#include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/core/streams/readable_stream_controller.h"
 #include "v8/include/v8.h"
 
 namespace blink {
@@ -21,7 +21,7 @@ class StreamAlgorithm;
 class StreamPromiseResolver;
 class StreamStartAlgorithm;
 
-class ReadableStreamDefaultController : public ScriptWrappable {
+class ReadableStreamDefaultController : public ReadableStreamController {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -72,15 +72,16 @@ class ReadableStreamDefaultController : public ScriptWrappable {
 
   void Trace(Visitor*) const override;
 
+  // https://streams.spec.whatwg.org/#rs-default-controller-private-cancel
+  v8::Local<v8::Promise> CancelSteps(ScriptState*,
+                                     v8::Local<v8::Value> reason) override;
+
+  // https://streams.spec.whatwg.org/#rs-default-controller-private-pull
+  StreamPromiseResolver* PullSteps(ScriptState*) override;
+
  private:
   friend class ReadableStream;
   friend class ReadableStreamDefaultReader;
-
-  // https://streams.spec.whatwg.org/#rs-default-controller-private-cancel
-  v8::Local<v8::Promise> CancelSteps(ScriptState*, v8::Local<v8::Value> reason);
-
-  // https://streams.spec.whatwg.org/#rs-default-controller-private-pull
-  StreamPromiseResolver* PullSteps(ScriptState*);
 
   // https://streams.spec.whatwg.org/#readable-stream-default-controller-call-pull-if-needed
   static void CallPullIfNeeded(ScriptState*, ReadableStreamDefaultController*);

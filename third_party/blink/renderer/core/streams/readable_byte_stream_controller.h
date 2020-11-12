@@ -7,17 +7,20 @@
 
 #include "base/optional.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
+#include "third_party/blink/renderer/core/streams/readable_stream_controller.h"
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "v8/include/v8.h"
 
 namespace blink {
 
-class ExceptionState;
-class ScriptState;
 class DOMArrayBufferView;
+class ExceptionState;
 class ReadableStreamBYOBRequest;
+class ScriptState;
+class StreamPromiseResolver;
 
-class ReadableByteStreamController : public ScriptWrappable {
+class ReadableByteStreamController : public ReadableStreamController {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -38,6 +41,13 @@ class ReadableByteStreamController : public ScriptWrappable {
   // https://streams.spec.whatwg.org/#rbs-controller-error
   void error(ScriptState*, ExceptionState&);
   void error(ScriptState*, ScriptValue e, ExceptionState&);
+
+  // https://streams.spec.whatwg.org/#rbs-controller-private-cancel
+  v8::Local<v8::Promise> CancelSteps(ScriptState*,
+                                     v8::Local<v8::Value> reason) override;
+
+  // https://streams.spec.whatwg.org/#rbs-controller-private-pull
+  StreamPromiseResolver* PullSteps(ScriptState*) override;
 
  private:
   static void ThrowUnimplemented(ExceptionState&);
