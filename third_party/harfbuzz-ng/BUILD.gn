@@ -280,6 +280,15 @@ if (use_system_harfbuzz) {
       } else {
         configs -= [ "//build/config/gcc:symbol_visibility_hidden" ]
         configs += [ "//build/config/gcc:symbol_visibility_default" ]
+
+        # Exposing symbols in component builds can cause a mixture of system
+        # harfbuzz symbols and //third_party harfbuzz symbols to be loaded at
+        # the same time.  This can cause issues for libraries that indirectly
+        # load harfbuzz like pango (see https://crbug.com/1146397), so include
+        # metrics symbols to prevent pango from using the system library.
+        # TODO(https://crbug.com/1148459): Remove this workaround once bug
+        # 1148459 is fixed.
+        defines -= [ "HB_NO_METRICS" ]
       }
     }
 
