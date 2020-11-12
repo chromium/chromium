@@ -670,6 +670,16 @@
       'mac-archive-rel',
     ],
   },
+  'chrome_all_tast_tests': {
+    'modifications': {
+      'chromeos-betty-pi-arc-cfi-thin-lto-chrome': {
+        'args': [
+          # This bot sets symbol_level=2, which doesn't fit inside a normal VM.
+          '--strip-chrome',
+        ],
+      },
+    },
+  },
   'chrome_java_test_pagecontroller_tests': {
     'modifications': {
       'android-pie-arm64-rel': {

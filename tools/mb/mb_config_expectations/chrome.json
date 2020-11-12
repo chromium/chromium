@@ -7,6 +7,7 @@
       "is_chromeos_device": true,
       "is_official_build": true,
       "ozone_platform_headless": true,
+      "symbol_level": 2,
       "use_cfi_cast": true,
       "use_goma": true,
       "use_thin_lto": true
@@ -20,6 +21,7 @@
       "is_chromeos_device": true,
       "is_official_build": true,
       "ozone_platform_headless": true,
+      "symbol_level": 2,
       "use_cfi_cast": true,
       "use_goma": true,
       "use_thin_lto": true

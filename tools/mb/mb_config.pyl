@@ -1591,7 +1591,7 @@
     ],
 
     'chromeos_arm-generic_cfi_thin_lto_official': [
-      'chromeos_device', 'arm-generic', 'cfi_full', 'thin_lto', 'official',
+      'chromeos_device', 'arm-generic', 'cfi_full', 'thin_lto', 'official', 'full_symbols',
     ],
 
     'chromeos_arm-generic_dcheck_always_on': [
@@ -1607,7 +1607,7 @@
     ],
 
     'chromeos_betty-pi-arc_cfi_thin_lto_official': [
-      'chromeos_device', 'betty-pi-arc', 'cfi_full', 'thin_lto', 'official',
+      'chromeos_device', 'betty-pi-arc', 'cfi_full', 'thin_lto', 'official', 'full_symbols',
     ],
 
     'chromeos_betty-arc-r_include_unwind_tables_official_use_fake_dbus_clients': [
