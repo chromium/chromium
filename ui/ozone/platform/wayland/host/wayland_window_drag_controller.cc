@@ -124,6 +124,7 @@ bool WaylandWindowDragController::StartDragSession() {
   data_device_->StartDrag(*data_source_, *origin_window_,
                           /*icon_surface=*/nullptr, this);
   pointer_grab_owner_ = origin_window_;
+  should_process_drag_event_ = false;
 
   // Observe window so we can take ownership of the origin surface in case it
   // is destroyed during the DND session.
@@ -217,6 +218,7 @@ void WaylandWindowDragController::OnDragMotion(const gfx::PointF& location) {
   VLOG(2) << "OnMotion. location=" << location.ToString();
 
   // Forward cursor location update info to the input handling delegate.
+  should_process_drag_event_ = true;
   pointer_location_ = location;
   pointer_delegate_->OnPointerMotionEvent(location);
 }
@@ -261,12 +263,8 @@ void WaylandWindowDragController::OnDragDrop() {
   DCHECK_GE(state_, State::kAttached);
   VLOG(1) << "Dropped. state=" << state_;
 
-  // Some compositors, e.g: Exo, may delay the wl_data_source::cancelled event
-  // delivery for some seconds, when the drop happens within a toplevel surface.
-  // Such event is handled by OnDataSourceFinish() function below, which is the
-  // single entry point for the drop event in window drag controller. In order
-  // to prevent such delay, the current data offer must be destroyed here.
   DCHECK(data_offer_);
+  data_offer_->FinishOffer();
   data_offer_.reset();
 }
 
@@ -355,6 +353,9 @@ void WaylandWindowDragController::HandleMotionEvent(MouseEvent* event) {
   DCHECK(dragged_window_);
   DCHECK(event);
 
+  if (!should_process_drag_event_)
+    return;
+
   // Update current cursor position, so it can be retrieved later on through
   // |Screen::GetCursorScreenPoint| API.
   int32_t scale = dragged_window_->buffer_scale();
@@ -371,6 +372,8 @@ void WaylandWindowDragController::HandleMotionEvent(MouseEvent* event) {
   gfx::Point new_location = event->location() - drag_offset_;
   gfx::Size size = dragged_window_->GetBounds().size();
   dragged_window_->SetBounds({new_location, size});
+
+  should_process_drag_event_ = false;
 }
 
 // Dispatch mouse release event (to tell clients that the drop just happened)

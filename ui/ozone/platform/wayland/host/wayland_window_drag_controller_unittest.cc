@@ -162,10 +162,15 @@ class WaylandWindowDragControllerTest : public WaylandTest,
 
   void SendPointerMotion(WaylandWindow* window,
                          MockPlatformWindowDelegate* delegate,
-                         gfx::Point location) {
+                         gfx::Point location,
+                         bool sync_and_ensure_dispatched = true) {
     wl_fixed_t x = wl_fixed_from_int(location.x());
     wl_fixed_t y = wl_fixed_from_int(location.y());
     wl_pointer_send_motion(pointer_->resource(), NextTime(), x, y);
+
+    if (!sync_and_ensure_dispatched)
+      return;
+
     EXPECT_CALL(*delegate, DispatchEvent(_)).WillOnce([](Event* event) {
       EXPECT_TRUE(event->IsMouseEvent());
       EXPECT_EQ(ET_MOUSE_DRAGGED, event->type());
@@ -607,6 +612,115 @@ TEST_P(WaylandWindowDragControllerTest, RestoreDuringWindowDragSession) {
   // Call restore and ensure it's no-op.
   window_->Restore();
   EXPECT_EQ(PlatformWindowState::kMaximized, window_->GetPlatformWindowState());
+}
+
+// Check the following flow works as expected:
+//
+// 1. With a single 1 window open,
+// 2. Move pointer into it, press left button, move cursor a bit (drag),
+// 3. Run move loop, drag it from 200,200 location to 100,100
+// 4. Send a few wl_pointer::motion events targeting 20,20 location and ensure
+//    they are ignored (i.e: window bounds keep unchanged) until drop happens.
+//
+// Verifies window drag controller is resistant to issues such as
+// https://crbug.com/1148021.
+TEST_P(WaylandWindowDragControllerTest, IgnorePointerEventsUntilDrop) {
+  // Ensure there is no window currently focused
+  EXPECT_FALSE(window_manager()->GetCurrentFocusedWindow());
+  EXPECT_EQ(gfx::kNullAcceleratedWidget,
+            screen_->GetLocalProcessWidgetAtPoint({200, 200}, {}));
+
+  SendPointerEnter(window_.get(), &delegate_);
+  SendPointerPress(window_.get(), &delegate_, BTN_LEFT);
+  SendPointerMotion(window_.get(), &delegate_, {200, 200});
+
+  // Set up an "interaction flow", start the drag session and run move loop:
+  //  - Event dispatching and bounds changes are monitored
+  //  - At each event, emulates a new event at server side and proceeds to the
+  //  next test step.
+  auto* wayland_extension = GetWaylandExtension(*window_);
+  wayland_extension->StartWindowDraggingSessionIfNeeded();
+  EXPECT_EQ(State::kAttached, drag_controller()->state());
+
+  auto* move_loop_handler = GetWmMoveLoopHandler(*window_);
+  DCHECK(move_loop_handler);
+
+  enum { kStarted, kDragging, kDropping, kDone } test_step = kStarted;
+
+  EXPECT_CALL(delegate_, DispatchEvent(_)).WillRepeatedly([&](Event* event) {
+    EXPECT_TRUE(event->IsMouseEvent());
+    switch (test_step) {
+      case kStarted:
+        EXPECT_EQ(ET_MOUSE_ENTERED, event->type());
+        EXPECT_EQ(State::kDetached, drag_controller()->state());
+        // Ensure PlatformScreen keeps consistent.
+        EXPECT_EQ(window_->GetWidget(),
+                  screen_->GetLocalProcessWidgetAtPoint({200, 200}, {}));
+        // Drag it a bit more.
+        SendDndMotion({100, 100});
+        test_step = kDragging;
+        break;
+      case kDropping:
+        EXPECT_EQ(ET_MOUSE_RELEASED, event->type());
+        EXPECT_EQ(State::kDropped, drag_controller()->state());
+
+        // Ensure |window_|'s bounds did not change in response to 20,20
+        // wl_pointer::motion events sent at |kDragging| test step.
+        EXPECT_EQ(gfx::kNullAcceleratedWidget,
+                  screen_->GetLocalProcessWidgetAtPoint({20, 20}, {}));
+        EXPECT_EQ(window_->GetWidget(),
+                  screen_->GetLocalProcessWidgetAtPoint({100, 100}, {}));
+
+        // Rather, only PlatformScreen's cursor position is updated accordingly.
+        EXPECT_EQ(gfx::Point(20, 20), screen_->GetCursorScreenPoint());
+        test_step = kDone;
+        break;
+      case kDone:
+        EXPECT_EQ(ET_MOUSE_EXITED, event->type());
+        EXPECT_EQ(window_->GetWidget(),
+                  screen_->GetLocalProcessWidgetAtPoint({100, 100}, {}));
+        break;
+      case kDragging:
+      default:
+        FAIL() << " event=" << event->ToString()
+               << " state=" << drag_controller()->state()
+               << " step=" << static_cast<int>(test_step);
+        return;
+    }
+  });
+
+  EXPECT_CALL(delegate_, OnBoundsChanged(_))
+      .WillOnce([&](const gfx::Rect& bounds) {
+        EXPECT_EQ(State::kDetached, drag_controller()->state());
+        EXPECT_EQ(kDragging, test_step);
+        EXPECT_EQ(gfx::Point(100, 100), bounds.origin());
+
+        // Send a few wl_pointer::motion events skipping sync and dispatch
+        // checks, which will be done at |kDropping| test step handling.
+        SendPointerMotion(window_.get(), &delegate_, {30, 30},
+                          /*sync_and_ensure_dispatched =*/false);
+        SendPointerMotion(window_.get(), &delegate_, {20, 20},
+                          /*sync_and_ensure_dispatched =*/false);
+
+        SendDndDrop();
+        test_step = kDropping;
+      });
+
+  // RunMoveLoop() blocks until the dragging session ends, so resume test
+  // server's run loop until it returns.
+  server_.Resume();
+  move_loop_handler->RunMoveLoop({});
+  server_.Pause();
+
+  SendPointerEnter(window_.get(), &delegate_);
+  Sync();
+
+  EXPECT_EQ(State::kIdle, drag_controller()->state());
+  EXPECT_EQ(window_.get(), window_manager()->GetCurrentFocusedWindow());
+  EXPECT_EQ(window_->GetWidget(),
+            screen_->GetLocalProcessWidgetAtPoint({100, 100}, {}));
+  EXPECT_EQ(gfx::kNullAcceleratedWidget,
+            screen_->GetLocalProcessWidgetAtPoint({20, 20}, {}));
 }
 
 INSTANTIATE_TEST_SUITE_P(XdgVersionStableTest,
