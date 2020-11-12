@@ -6,6 +6,7 @@
 
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/memory/singleton.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -238,6 +239,53 @@ void UpdateMemoryParameters() {
   ram_swap_weight = ReadFileToUint64(base::FilePath(kRamVsSwapWeight));
   if (ram_swap_weight == 0)
     ram_swap_weight = kRamVsSwapWeightDefault;
+}
+
+PressureChecker::PressureChecker() : weak_ptr_factory_(this) {}
+
+PressureChecker::~PressureChecker() = default;
+
+PressureChecker* PressureChecker::GetInstance() {
+  return base::Singleton<PressureChecker>::get();
+}
+
+void PressureChecker::SetCheckingDelay(base::TimeDelta delay) {
+  if (checking_timer_.GetCurrentDelay() == delay)
+    return;
+
+  if (delay.is_zero()) {
+    checking_timer_.Stop();
+  } else {
+    checking_timer_.Start(FROM_HERE, delay,
+                          base::BindRepeating(&PressureChecker::CheckPressure,
+                                              weak_ptr_factory_.GetWeakPtr()));
+  }
+}
+
+void PressureChecker::AddObserver(PressureObserver* observer) {
+  pressure_observers_.AddObserver(observer);
+}
+
+void PressureChecker::RemoveObserver(PressureObserver* observer) {
+  pressure_observers_.RemoveObserver(observer);
+}
+
+void PressureChecker::CheckPressure() {
+  std::pair<uint64_t, uint64_t> margins_kb =
+      chromeos::memory::pressure::GetMemoryMarginsKB();
+  uint64_t critical_margin_kb = margins_kb.first;
+  uint64_t moderate_margin_kb = margins_kb.second;
+  uint64_t available_kb = GetAvailableMemoryKB();
+
+  if (available_kb < critical_margin_kb) {
+    for (auto& observer : pressure_observers_) {
+      observer.OnCriticalPressure();
+    }
+  } else if (available_kb < moderate_margin_kb) {
+    for (auto& observer : pressure_observers_) {
+      observer.OnModeratePressure();
+    }
+  }
 }
 
 }  // namespace pressure

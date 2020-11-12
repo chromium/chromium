@@ -11,6 +11,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/dbus/services/cros_dbus_service.h"
+#include "chromeos/memory/pressure/pressure.h"
 #include "dbus/exported_object.h"
 
 namespace dbus {
@@ -26,7 +27,8 @@ namespace chromeos {
 //     --dest=org.chromium.MemoryPressure /org/chromium/MemoryPressure
 //     org.chromium.MemoryPressure.GetAvailableMemoryKB
 class MemoryPressureServiceProvider
-    : public CrosDBusService::ServiceProviderInterface {
+    : public CrosDBusService::ServiceProviderInterface,
+      public chromeos::memory::pressure::PressureObserver {
  public:
   MemoryPressureServiceProvider();
   MemoryPressureServiceProvider& operator=(
@@ -49,8 +51,15 @@ class MemoryPressureServiceProvider
   void GetMemoryMarginsKB(dbus::MethodCall* method_call,
                           dbus::ExportedObject::ResponseSender response_sender);
 
+  // chromeos::memory::pressure::PressureObserver:
+  void OnCriticalPressure() override;
+  void OnModeratePressure() override;
+
   // TODO(b/149833548): Implement signals CriticalMemoryPressure and
   // ModerateMemoryPressure.
+
+  // A reference on ExportedObject for sending signals.
+  scoped_refptr<dbus::ExportedObject> exported_object_;
 
   base::WeakPtrFactory<MemoryPressureServiceProvider> weak_ptr_factory_{this};
 };

@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
-#include "chromeos/memory/pressure/pressure.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
@@ -15,10 +14,17 @@ namespace chromeos {
 
 MemoryPressureServiceProvider::MemoryPressureServiceProvider() = default;
 
-MemoryPressureServiceProvider::~MemoryPressureServiceProvider() = default;
+MemoryPressureServiceProvider::~MemoryPressureServiceProvider() {
+  if (exported_object_) {
+    chromeos::memory::pressure::PressureChecker::GetInstance()->RemoveObserver(
+        this);
+  }
+}
 
 void MemoryPressureServiceProvider::Start(
     scoped_refptr<dbus::ExportedObject> exported_object) {
+  DCHECK(!exported_object_);
+  exported_object_ = exported_object;
   exported_object->ExportMethod(
       memory_pressure::kMemoryPressureInterface,
       memory_pressure::kGetAvailableMemoryKBMethod,
@@ -28,11 +34,12 @@ void MemoryPressureServiceProvider::Start(
                           weak_ptr_factory_.GetWeakPtr()));
   exported_object->ExportMethod(
       memory_pressure::kMemoryPressureInterface,
-      memory_pressure::kGetMemoryMarginKBMethod,
+      memory_pressure::kGetMemoryMarginsKBMethod,
       base::BindRepeating(&MemoryPressureServiceProvider::GetMemoryMarginsKB,
                           weak_ptr_factory_.GetWeakPtr()),
       base::BindRepeating(&MemoryPressureServiceProvider::OnExported,
                           weak_ptr_factory_.GetWeakPtr()));
+  chromeos::memory::pressure::PressureChecker::GetInstance()->AddObserver(this);
 }
 
 void MemoryPressureServiceProvider::OnExported(
@@ -64,6 +71,22 @@ void MemoryPressureServiceProvider::GetMemoryMarginsKB(
   writer.AppendUint64(margins.first);
   writer.AppendUint64(margins.second);
   std::move(response_sender).Run(std::move(response));
+}
+
+void MemoryPressureServiceProvider::OnCriticalPressure() {
+  DCHECK(exported_object_);
+
+  dbus::Signal signal(memory_pressure::kMemoryPressureInterface,
+                      memory_pressure::kCriticalMemoryPressure);
+  exported_object_->SendSignal(&signal);
+}
+
+void MemoryPressureServiceProvider::OnModeratePressure() {
+  DCHECK(exported_object_);
+
+  dbus::Signal signal(memory_pressure::kMemoryPressureInterface,
+                      memory_pressure::kModerateMemoryPressure);
+  exported_object_->SendSignal(&signal);
 }
 
 }  // namespace chromeos
