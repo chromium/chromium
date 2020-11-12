@@ -991,11 +991,6 @@ IPC_MESSAGE_ROUTED3(ExtensionHostMsg_AutomationQuerySelector_Result,
                     ExtensionHostMsg_AutomationQuerySelector_Error /* error */,
                     int /* result_acc_obj_id */)
 
-// Tells the renderer whether or not activity logging is enabled. This is only
-// sent if logging is or was previously enabled; not being enabled is assumed
-// otherwise.
-IPC_MESSAGE_CONTROL1(ExtensionMsg_SetActivityLoggingEnabled, bool /* enabled */)
-
 // Messages related to Extension Service Worker.
 #undef IPC_MESSAGE_START
 #define IPC_MESSAGE_START ExtensionWorkerMsgStart

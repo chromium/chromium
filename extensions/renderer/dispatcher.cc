@@ -888,8 +888,6 @@ bool Dispatcher::OnControlMessageReceived(const IPC::Message& message) {
                       OnUpdateTabSpecificPermissions)
   IPC_MESSAGE_HANDLER(ExtensionMsg_ClearTabSpecificPermissions,
                       OnClearTabSpecificPermissions)
-  IPC_MESSAGE_HANDLER(ExtensionMsg_SetActivityLoggingEnabled,
-                      OnSetActivityLoggingEnabled)
   IPC_MESSAGE_FORWARD(ExtensionMsg_WatchPages,
                       content_watcher_.get(),
                       ContentWatcher::OnWatchPages)
@@ -1290,7 +1288,7 @@ void Dispatcher::OnClearTabSpecificPermissions(
   }
 }
 
-void Dispatcher::OnSetActivityLoggingEnabled(bool enabled) {
+void Dispatcher::SetActivityLoggingEnabled(bool enabled) {
   activity_logging_enabled_ = enabled;
   if (enabled) {
     for (const std::string& id : active_extension_ids_)

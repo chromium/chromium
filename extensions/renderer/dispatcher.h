@@ -215,6 +215,7 @@ class Dispatcher : public content::RenderThreadObserver,
 
   // mojom::Renderer implementation:
   void ActivateExtension(const std::string& extension_id) override;
+  void SetActivityLoggingEnabled(bool enabled) override;
 
   void OnRendererAssociatedRequest(
       mojo::PendingAssociatedReceiver<mojom::Renderer> receiver);
@@ -262,8 +263,6 @@ class Dispatcher : public content::RenderThreadObserver,
       const std::vector<std::string>& extension_ids,
       bool update_origin_whitelist,
       int tab_id);
-
-  void OnSetActivityLoggingEnabled(bool enabled);
 
   // UserScriptSetManager::Observer implementation.
   void OnUserScriptsUpdated(const std::set<HostID>& changed_hosts) override;

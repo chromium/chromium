@@ -114,10 +114,8 @@ void RendererStartupHelper::InitializeProcess(
       client->IsActivityLoggingEnabled(process->GetBrowserContext());
   // We only send the ActivityLoggingEnabled message if it is enabled; otherwise
   // the default (not enabled) is correct.
-  if (activity_logging_enabled) {
-    process->Send(
-        new ExtensionMsg_SetActivityLoggingEnabled(activity_logging_enabled));
-  }
+  if (activity_logging_enabled)
+    renderer->SetActivityLoggingEnabled(activity_logging_enabled);
 
   // Extensions need to know the channel and the session type for API
   // restrictions. The values are sent to all renderers, as the non-extension
@@ -318,6 +316,11 @@ RendererStartupHelper::BindNewRendererRemote(
   return renderer_interface.Unbind();
 }
 
+mojom::Renderer* RendererStartupHelper::GetRenderer(
+    content::RenderProcessHost* process) {
+  DCHECK(base::Contains(process_mojo_map_, process));
+  return process_mojo_map_.find(process)->second.get();
+}
 //////////////////////////////////////////////////////////////////////////////
 
 // static

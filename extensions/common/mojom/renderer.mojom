@@ -12,4 +12,9 @@ interface Renderer {
   // have more privileges than other extension content that might end up running
   // in the process (e.g. because of iframes or content scripts).
   ActivateExtension(string extension_id);
+
+  // Tells the renderer whether or not activity logging is enabled. This is only
+  // sent if logging is or was previously enabled; not being enabled is assumed
+  // otherwise.
+  SetActivityLoggingEnabled(bool enabled);
 };

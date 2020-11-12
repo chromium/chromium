@@ -68,6 +68,10 @@ class RendererStartupHelper : public KeyedService,
   void OnExtensionUnloaded(const Extension& extension);
   void OnExtensionLoaded(const Extension& extension);
 
+  // Returns mojom::Renderer* corresponding to |process|. Note that the callers
+  // should pass a valid content::RenderProcessHost*.
+  mojom::Renderer* GetRenderer(content::RenderProcessHost* process);
+
  protected:
   // Provide ability for tests to override.
   virtual mojo::PendingAssociatedRemote<mojom::Renderer> BindNewRendererRemote(
