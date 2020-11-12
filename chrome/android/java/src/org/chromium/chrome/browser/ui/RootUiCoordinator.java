@@ -398,9 +398,10 @@ public class RootUiCoordinator
                     new MessageContainerCoordinator(container, getBrowserControlsManager());
             mMessageDispatcher = MessagesFactory.createMessageDispatcher(
                     container, mMessageContainerCoordinator::getMessageMaxTranslation);
-            mMessageQueueMediator = new ChromeMessageQueueMediator(
-                    mActivity.getBrowserControlsManager(), mMessageContainerCoordinator,
-                    mActivity.getFullscreenManager(), mMessageDispatcher);
+            mMessageQueueMediator =
+                    new ChromeMessageQueueMediator(mActivity.getBrowserControlsManager(),
+                            mMessageContainerCoordinator, mActivity.getFullscreenManager(),
+                            mLayoutStateProviderOneShotSupplier, mMessageDispatcher);
             mMessageDispatcher.setDelegate(mMessageQueueMediator);
             MessagesFactory.attachMessageDispatcher(
                     mActivity.getWindowAndroid(), mMessageDispatcher);
@@ -688,7 +689,7 @@ public class RootUiCoordinator
             public void onFinishedHiding(int layoutType) {
                 if (layoutType != LayoutType.TAB_SWITCHER) {
                     hideAppMenu();
-                };
+                }
             }
         };
         mLayoutStateProvider.addObserver(mLayoutStateObserver);

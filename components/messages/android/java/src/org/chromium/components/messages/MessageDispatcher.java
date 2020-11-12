@@ -18,9 +18,9 @@ public interface MessageDispatcher {
     void enqueueMessage(PropertyModel messageProperties);
 
     /**
-     * Dismisses a message referenced by its PropertyModel. Hdes the message if it is currently
+     * Dismisses a message referenced by its PropertyModel. Hides the message if it is currently
      * displayed. Displays the next message in the queue if available.
-     * @param messageProperties The PropertyModel of the messageto be dismissed.
+     * @param messageProperties The PropertyModel of the message to be dismissed.
      */
     void dismissMessage(PropertyModel messageProperties);
 }

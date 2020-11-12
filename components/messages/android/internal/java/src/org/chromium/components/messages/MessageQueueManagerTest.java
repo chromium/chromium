@@ -5,6 +5,7 @@
 package org.chromium.components.messages;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -24,15 +25,27 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 public class MessageQueueManagerTest {
     private MessageQueueDelegate mEmptyDelegate = new MessageQueueDelegate() {
         @Override
-        public void prepareToShow(Runnable callback) {
+        public void onStartShowing(Runnable callback) {
             callback.run();
         }
 
         @Override
-        public void prepareToHide(Runnable callback) {
-            callback.run();
-        }
+        public void onFinishHiding() {}
     };
+
+    private class EmptyMessageStateHandler implements MessageStateHandler {
+        @Override
+        public void show() {}
+
+        @Override
+        public void hide(boolean animate, Runnable hiddenCallback) {
+            hiddenCallback.run();
+        }
+
+        @Override
+        public void dismiss() {}
+    }
+
     /**
      * Tests lifecycle of a single message:
      *   - enqueueMessage() calls show()
@@ -43,19 +56,19 @@ public class MessageQueueManagerTest {
     public void testEnqueueMessage() {
         MessageQueueManager queueManager = new MessageQueueManager();
         queueManager.setDelegate(mEmptyDelegate);
-        MessageStateHandler m1 = Mockito.mock(MessageStateHandler.class);
-        MessageStateHandler m2 = Mockito.mock(MessageStateHandler.class);
+        MessageStateHandler m1 = Mockito.spy(new EmptyMessageStateHandler());
+        MessageStateHandler m2 = Mockito.spy(new EmptyMessageStateHandler());
 
         queueManager.enqueueMessage(m1, m1);
         verify(m1).show();
         queueManager.dismissMessage(m1);
-        verify(m1).hide();
+        verify(m1).hide(anyBoolean(), any());
         verify(m1).dismiss();
 
         queueManager.enqueueMessage(m2, m2);
         verify(m2).show();
         queueManager.dismissMessage(m2);
-        verify(m2).hide();
+        verify(m2).hide(anyBoolean(), any());
         verify(m2).dismiss();
     }
 
@@ -67,8 +80,8 @@ public class MessageQueueManagerTest {
     public void testOneMessageShownAtATime() {
         MessageQueueManager queueManager = new MessageQueueManager();
         queueManager.setDelegate(mEmptyDelegate);
-        MessageStateHandler m1 = Mockito.mock(MessageStateHandler.class);
-        MessageStateHandler m2 = Mockito.mock(MessageStateHandler.class);
+        MessageStateHandler m1 = Mockito.spy(new EmptyMessageStateHandler());
+        MessageStateHandler m2 = Mockito.spy(new EmptyMessageStateHandler());
 
         queueManager.enqueueMessage(m1, m1);
         queueManager.enqueueMessage(m2, m2);
@@ -76,7 +89,7 @@ public class MessageQueueManagerTest {
         verify(m2, never()).show();
 
         queueManager.dismissMessage(m1);
-        verify(m1).hide();
+        verify(m1).hide(anyBoolean(), any());
         verify(m1).dismiss();
         verify(m2).show();
     }
@@ -103,7 +116,7 @@ public class MessageQueueManagerTest {
 
         queueManager.dismissMessage(m1);
         verify(m2, never()).show();
-        verify(m2, never()).hide();
+        verify(m2, never()).hide(anyBoolean(), any());
     }
 
     /**
@@ -131,7 +144,7 @@ public class MessageQueueManagerTest {
     public void testDismissMessageTwice() {
         MessageQueueManager queueManager = new MessageQueueManager();
         queueManager.setDelegate(mEmptyDelegate);
-        MessageStateHandler m1 = Mockito.mock(MessageStateHandler.class);
+        MessageStateHandler m1 = Mockito.spy(new EmptyMessageStateHandler());
         queueManager.enqueueMessage(m1, m1);
         queueManager.dismissMessage(m1);
         queueManager.dismissMessage(m1);
@@ -149,20 +162,20 @@ public class MessageQueueManagerTest {
         MessageQueueManager queueManager = new MessageQueueManager();
         queueManager.setDelegate(delegate);
         int token = queueManager.suspend();
-        MessageStateHandler m1 = Mockito.mock(MessageStateHandler.class);
+        MessageStateHandler m1 = Mockito.spy(new EmptyMessageStateHandler());
         queueManager.enqueueMessage(m1, m1);
-        verify(delegate, never()).prepareToShow(any());
-        verify(delegate, never()).prepareToHide(any());
+        verify(delegate, never()).onStartShowing(any());
+        verify(delegate, never()).onFinishHiding();
         verify(m1, never()).show();
-        verify(m1, never()).hide();
+        verify(m1, never()).hide(anyBoolean(), any());
 
         queueManager.resume(token);
-        verify(delegate).prepareToShow(any());
+        verify(delegate).onStartShowing(any());
         verify(m1).show();
 
         queueManager.suspend();
-        verify(delegate).prepareToHide(any());
-        verify(m1).hide();
+        verify(delegate).onFinishHiding();
+        verify(m1).hide(anyBoolean(), any());
     }
 
     /**
@@ -178,15 +191,15 @@ public class MessageQueueManagerTest {
         queueManager.suspend();
         MessageStateHandler m1 = Mockito.mock(MessageStateHandler.class);
         queueManager.enqueueMessage(m1, m1);
-        verify(delegate, never()).prepareToShow(any());
-        verify(delegate, never()).prepareToHide(any());
+        verify(delegate, never()).onStartShowing(any());
+        verify(delegate, never()).onFinishHiding();
         verify(m1, never()).show();
-        verify(m1, never()).hide();
+        verify(m1, never()).hide(anyBoolean(), any());
 
         queueManager.dismissMessage(m1);
-        verify(delegate, never()).prepareToShow(any());
-        verify(delegate, never()).prepareToHide(any());
+        verify(delegate, never()).onStartShowing(any());
+        verify(delegate, never()).onFinishHiding();
         verify(m1, never()).show();
-        verify(m1, never()).hide();
+        verify(m1, never()).hide(anyBoolean(), any());
     }
 }

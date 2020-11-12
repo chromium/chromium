@@ -15,8 +15,11 @@ public interface MessageStateHandler {
 
     /**
      * Signals that the message needs to hide its UI.
+     * @param animate Whether animation should be run or not.
+     * @param hiddenCallback Called when message has finished hiding. This will run no matter
+     *                       whether animation is skipped or not.
      */
-    void hide();
+    void hide(boolean animate, Runnable hiddenCallback);
 
     /**
      * Notify that the message is about to be dismissed from the queue.

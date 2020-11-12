@@ -4,12 +4,16 @@
 
 package org.chromium.chrome.browser.messages;
 
+import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsUtils;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager.Observer;
 import org.chromium.chrome.browser.fullscreen.FullscreenOptions;
+import org.chromium.chrome.browser.layouts.LayoutStateProvider;
+import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
+import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.messages.ManagedMessageDispatcher;
 import org.chromium.components.messages.MessageQueueDelegate;
@@ -27,6 +31,7 @@ public class ChromeMessageQueueMediator implements MessageQueueDelegate {
     private FullscreenManager mFullscreenManager;
     private int mBrowserControlsToken = TokenHolder.INVALID_TOKEN;
     private BrowserControlsObserver mBrowserControlsObserver;
+    private LayoutStateProvider mLayoutStateProvider;
 
     private FullscreenManager.Observer mFullScreenObserver = new Observer() {
         private int mToken = TokenHolder.INVALID_TOKEN;
@@ -43,16 +48,37 @@ public class ChromeMessageQueueMediator implements MessageQueueDelegate {
         }
     };
 
+    private LayoutStateObserver mLayoutStateObserver = new LayoutStateObserver() {
+        private int mToken = TokenHolder.INVALID_TOKEN;
+
+        @Override
+        public void onStartedShowing(int layoutType, boolean showToolbar) {
+            if (layoutType == LayoutType.TAB_SWITCHER) {
+                mToken = suspendQueue();
+            }
+        }
+
+        @Override
+        public void onFinishedHiding(int layoutType) {
+            if (layoutType == LayoutType.TAB_SWITCHER) {
+                resumeQueue(mToken);
+            }
+        }
+    };
+
     /**
      * @param browserControlsManager The browser controls manager able to toggle the visibility of
      *                               browser controls.
      * @param messageContainerCoordinator The coordinator able to show and hide message container.
      * @param fullscreenManager The full screen manager able to notify the fullscreen mode change.
+     * @param layoutStateProviderOneShotSupplier Supplier of the {@link LayoutStateProvider}.
      * @param messageDispatcher The {@link ManagedMessageDispatcher} able to suspend/resume queue.
      */
     public ChromeMessageQueueMediator(BrowserControlsManager browserControlsManager,
             MessageContainerCoordinator messageContainerCoordinator,
-            FullscreenManager fullscreenManager, ManagedMessageDispatcher messageDispatcher) {
+            FullscreenManager fullscreenManager,
+            OneshotSupplier<LayoutStateProvider> layoutStateProviderOneShotSupplier,
+            ManagedMessageDispatcher messageDispatcher) {
         mBrowserControlsManager = browserControlsManager;
         mContainerCoordinator = messageContainerCoordinator;
         mFullscreenManager = fullscreenManager;
@@ -60,11 +86,16 @@ public class ChromeMessageQueueMediator implements MessageQueueDelegate {
         mFullscreenManager.addObserver(mFullScreenObserver);
         mBrowserControlsObserver = new BrowserControlsObserver();
         mBrowserControlsManager.addObserver(mBrowserControlsObserver);
+        layoutStateProviderOneShotSupplier.onAvailable(this::setLayoutStateProvider);
     }
 
     public void destroy() {
         mFullscreenManager.removeObserver(mFullScreenObserver);
         mBrowserControlsManager.removeObserver(mBrowserControlsObserver);
+        if (mLayoutStateProvider != null) {
+            mLayoutStateProvider.removeObserver(mLayoutStateObserver);
+        }
+        mLayoutStateProvider = null;
         mQueueController = null;
         mContainerCoordinator = null;
         mBrowserControlsManager = null;
@@ -72,7 +103,7 @@ public class ChromeMessageQueueMediator implements MessageQueueDelegate {
     }
 
     @Override
-    public void prepareToShow(Runnable runnable) {
+    public void onStartShowing(Runnable runnable) {
         mBrowserControlsToken =
                 mBrowserControlsManager.getBrowserVisibilityDelegate().showControlsPersistent();
         mContainerCoordinator.showMessageContainer();
@@ -84,9 +115,7 @@ public class ChromeMessageQueueMediator implements MessageQueueDelegate {
     }
 
     @Override
-    public void prepareToHide(Runnable runnable) {
-        // TODO(crbug.com/1123947): wait message hiding animation to be finished.
-        runnable.run();
+    public void onFinishHiding() {
         mBrowserControlsManager.getBrowserVisibilityDelegate().releasePersistentShowingToken(
                 mBrowserControlsToken);
         mContainerCoordinator.hideMessageContainer();
@@ -105,6 +134,14 @@ public class ChromeMessageQueueMediator implements MessageQueueDelegate {
      */
     void resumeQueue(int token) {
         mQueueController.resume(token);
+    }
+
+    /**
+     * @param layoutStateProvider The provider able to add observer to observe overview mode.
+     */
+    private void setLayoutStateProvider(LayoutStateProvider layoutStateProvider) {
+        mLayoutStateProvider = layoutStateProvider;
+        mLayoutStateProvider.addObserver(mLayoutStateObserver);
     }
 
     class BrowserControlsObserver implements BrowserControlsStateProvider.Observer {

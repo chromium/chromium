@@ -10,14 +10,13 @@ package org.chromium.components.messages;
  */
 public interface MessageQueueDelegate {
     /**
-     * Call to do preparation work before showing a message.
+     * Called before a message is shown to allow the delegate to do preparation work.
      * @param callback The callback called after all the preparation work has been done.
      */
-    void prepareToShow(Runnable callback);
+    void onStartShowing(Runnable callback);
 
     /**
-     * Call to do preparation work after hiding a message.
-     * @param callback The callback called before all the preparation work has been done.
+     * Called after a message is finished hiding.
      */
-    void prepareToHide(Runnable callback);
+    void onFinishHiding();
 }

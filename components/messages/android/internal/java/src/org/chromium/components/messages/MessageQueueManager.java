@@ -54,14 +54,19 @@ class MessageQueueManager {
         if (message == null) return;
         mMessageMap.remove(key);
         mMessageQueue.remove(message);
+        Runnable onAnimationFinished = () -> {
+            message.dismiss();
+            updateCurrentDisplayedMessage();
+        };
         if (mCurrentDisplayedMessage == message) {
-            mMessageQueueDelegate.prepareToHide(() -> {
-                mCurrentDisplayedMessage.hide();
+            mCurrentDisplayedMessage.hide(true, () -> {
+                mMessageQueueDelegate.onFinishHiding();
                 mCurrentDisplayedMessage = null;
+                onAnimationFinished.run();
             });
+        } else {
+            onAnimationFinished.run();
         }
-        message.dismiss();
-        updateCurrentDisplayedMessage();
     }
 
     public int suspend() {
@@ -86,10 +91,10 @@ class MessageQueueManager {
         }
         if (mCurrentDisplayedMessage == null && !mTokenHolder.hasTokens()) {
             mCurrentDisplayedMessage = mMessageQueue.element();
-            mMessageQueueDelegate.prepareToShow(() -> mCurrentDisplayedMessage.show());
+            mMessageQueueDelegate.onStartShowing(mCurrentDisplayedMessage::show);
         } else if (mCurrentDisplayedMessage != null && mTokenHolder.hasTokens()) {
-            mMessageQueueDelegate.prepareToHide(() -> {
-                mCurrentDisplayedMessage.hide();
+            mCurrentDisplayedMessage.hide(false, () -> {
+                mMessageQueueDelegate.onFinishHiding();
                 mCurrentDisplayedMessage = null;
             });
         }

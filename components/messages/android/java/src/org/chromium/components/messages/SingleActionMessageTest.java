@@ -63,7 +63,7 @@ public class SingleActionMessageTest extends DummyUiActivityTestCase {
                 container.getChildCount());
         final ArgumentCaptor<Runnable> runnableCaptor = ArgumentCaptor.forClass(Runnable.class);
         doNothing().when(messageBanner).hide(runnableCaptor.capture());
-        message.hide();
+        message.hide(true, () -> {});
         // Let's pretend the animation ended, and the mediator called the callback as a result.
         runnableCaptor.getValue().run();
         Assert.assertEquals(

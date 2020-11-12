@@ -67,10 +67,18 @@ public class SingleActionMessage implements MessageStateHandler {
      * Hide the message view shown on the given {@link MessageContainer}.
      */
     @Override
-    public void hide() {
+    public void hide(boolean animate, Runnable hiddenCallback) {
         mAutoDismissTimer.cancelTimer();
         mMessageBanner.setOnTouchRunnable(null);
-        mMessageBanner.hide(() -> mContainer.removeMessage(mView));
+        Runnable hiddenRunnable = () -> {
+            mContainer.removeMessage(mView);
+            if (hiddenCallback != null) hiddenCallback.run();
+        };
+        if (animate) {
+            mMessageBanner.hide(hiddenRunnable);
+        } else {
+            hiddenRunnable.run();
+        }
     }
 
     /**
