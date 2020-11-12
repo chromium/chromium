@@ -25,15 +25,13 @@ void NfcPermissionContextAndroid::NotifyPermissionSet(
     const GURL& embedding_origin,
     permissions::BrowserPermissionCallback callback,
     bool persist,
-    ContentSetting content_setting,
-    bool is_one_time) {
-  DCHECK(!is_one_time);
+    ContentSetting content_setting) {
   if (content_setting != CONTENT_SETTING_ALLOW ||
       !nfc_system_level_setting_->IsNfcAccessPossible() ||
       nfc_system_level_setting_->IsNfcSystemLevelSettingEnabled()) {
     NfcPermissionContext::NotifyPermissionSet(
         id, requesting_origin, embedding_origin, std::move(callback), persist,
-        content_setting, is_one_time);
+        content_setting);
     return;
   }
 
@@ -53,7 +51,7 @@ void NfcPermissionContextAndroid::NotifyPermissionSet(
   if (tab && !tab->IsUserInteractable()) {
     permissions::PermissionContextBase::NotifyPermissionSet(
         id, requesting_origin, embedding_origin, std::move(callback),
-        false /* persist */, CONTENT_SETTING_BLOCK, /*is_one_time=*/false);
+        false /* persist */, CONTENT_SETTING_BLOCK);
     return;
   }
 
@@ -75,5 +73,5 @@ void NfcPermissionContextAndroid::OnNfcSystemLevelSettingPromptClosed(
     ContentSetting content_setting) {
   NfcPermissionContext::NotifyPermissionSet(
       id, requesting_origin, embedding_origin, std::move(callback), persist,
-      content_setting, /*is_one_time=*/false);
+      content_setting);
 }

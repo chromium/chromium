@@ -30,8 +30,7 @@ class FlashPermissionContext : public permissions::PermissionContextBase {
                         bool allowed) override;
   void UpdateContentSetting(const GURL& requesting_origin,
                             const GURL& embedding_origin,
-                            ContentSetting content_setting,
-                            bool is_one_time) override;
+                            ContentSetting content_setting) override;
   bool IsRestrictedToSecureOrigins() const override;
 
   DISALLOW_COPY_AND_ASSIGN(FlashPermissionContext);

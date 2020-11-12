@@ -65,8 +65,7 @@ void IdleDetectionPermissionContext::DecidePermission(
             base::BindOnce(&IdleDetectionPermissionContext::NotifyPermissionSet,
                            weak_factory_.GetWeakPtr(), id, requesting_origin,
                            embedding_origin, std::move(callback),
-                           /*persist=*/true, CONTENT_SETTING_BLOCK,
-                           /*is_one_time=*/false),
+                           /*persist=*/true, CONTENT_SETTING_BLOCK),
             base::TimeDelta::FromSecondsD(delay_seconds));
     return;
   }

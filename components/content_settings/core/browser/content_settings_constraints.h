@@ -16,13 +16,10 @@ namespace content_settings {
 //              if set.
 // UserSession: Settings will persist no longer than the user session
 //              regardless of expiry date, if set.
-// OneTime:     Settings will persist for the current "tab session", meaning
-//              until the last tab from the origin is closed.
 enum class SessionModel {
   Durable = 0,
   UserSession = 1,
-  OneTime = 2,
-  kMaxValue = OneTime,
+  kMaxValue = UserSession,
 };
 
 // Constraints to be applied when setting a content setting.

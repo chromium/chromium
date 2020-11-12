@@ -32,9 +32,8 @@ static void JNI_InstalledWebappBridge_NotifyPermissionResult(JNIEnv* env,
   auto* callback =
       reinterpret_cast<InstalledWebappBridge::PermissionResponseCallback*>(
           callback_ptr);
-  std::move(*callback).Run(
-      allowed ? CONTENT_SETTING_ALLOW : CONTENT_SETTING_BLOCK,
-      /*is_one_time=*/false);
+  std::move(*callback).Run(allowed ? CONTENT_SETTING_ALLOW
+                                   : CONTENT_SETTING_BLOCK);
   delete callback;
 }
 

@@ -49,8 +49,7 @@ GURL DownloadPermissionRequest::GetOrigin() const {
   return request_origin_.GetURL();
 }
 
-void DownloadPermissionRequest::PermissionGranted(bool is_one_time) {
-  DCHECK(!is_one_time);
+void DownloadPermissionRequest::PermissionGranted() {
   if (host_) {
     // This may invalidate |host_|.
     host_->Accept(request_origin_);

@@ -49,16 +49,14 @@ void WebXrPermissionContext::NotifyPermissionSet(
     const GURL& embedding_origin,
     BrowserPermissionCallback callback,
     bool persist,
-    ContentSetting content_setting,
-    bool is_one_time) {
-  DCHECK(!is_one_time);
+    ContentSetting content_setting) {
   // Only AR needs to check for additional permissions, and then only if it was
   // actually allowed.
   if (!(content_settings_type_ == ContentSettingsType::AR &&
         content_setting == ContentSetting::CONTENT_SETTING_ALLOW)) {
     PermissionContextBase::NotifyPermissionSet(
         id, requesting_origin, embedding_origin, std::move(callback), persist,
-        content_setting, is_one_time);
+        content_setting);
     return;
   }
 
@@ -66,7 +64,7 @@ void WebXrPermissionContext::NotifyPermissionSet(
   // to save the content_setting here if we should.
   if (persist) {
     PermissionContextBase::UpdateContentSetting(
-        requesting_origin, embedding_origin, content_setting, is_one_time);
+        requesting_origin, embedding_origin, content_setting);
   }
 
   content::WebContents* web_contents =
@@ -132,7 +130,7 @@ void WebXrPermissionContext::OnAndroidPermissionDecided(
                                : ContentSetting::CONTENT_SETTING_BLOCK;
   PermissionContextBase::NotifyPermissionSet(
       id, requesting_origin, embedding_origin, std::move(callback),
-      false /*persist*/, setting, /*is_one_time=*/false);
+      false /*persist*/, setting);
 }
 #endif  // defined(OS_ANDROID)
 }  // namespace permissions

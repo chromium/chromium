@@ -97,8 +97,7 @@ class PerDeviceProvisioningPermissionRequest
 
   GURL GetOrigin() const final { return origin_.GetURL(); }
 
-  void PermissionGranted(bool is_one_time) final {
-    DCHECK(!is_one_time);
+  void PermissionGranted() final {
     UpdateLastResponse(true);
     std::move(callback_).Run(true);
   }

@@ -136,7 +136,6 @@ class PermissionRequestManager
   GURL GetRequestingOrigin() const override;
   GURL GetEmbeddingOrigin() const override;
   void Accept() override;
-  void AcceptThisTime() override;
   void Deny() override;
   void Closing() override;
   bool WasCurrentRequestAlreadyDisplayed() override;
@@ -217,8 +216,7 @@ class PermissionRequestManager
   PermissionRequest* GetExistingRequest(PermissionRequest* request);
 
   // Calls PermissionGranted on a request and all its duplicates.
-  void PermissionGrantedIncludingDuplicates(PermissionRequest* request,
-                                            bool is_one_time);
+  void PermissionGrantedIncludingDuplicates(PermissionRequest* request);
   // Calls PermissionDenied on a request and all its duplicates.
   void PermissionDeniedIncludingDuplicates(PermissionRequest* request);
   // Calls Cancelled on a request and all its duplicates.

@@ -1361,7 +1361,7 @@ IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest,
 
   // Fire a geolocation permission request, which should show a permission
   // request bubble resulting in top chrome unhiding.
-  auto decided = [](ContentSetting, bool) {};
+  auto decided = [](ContentSetting) {};
   permissions::PermissionRequestImpl permission_request(
       url, ContentSettingsType::GEOLOCATION, true /* user_gesture */,
       base::BindOnce(decided), base::DoNothing() /* delete_callback */);

@@ -2464,10 +2464,10 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemoveDurablePermission) {
       HostContentSettingsMapFactory::GetForProfile(GetProfile());
 
   DurableStoragePermissionContext durable_permission(GetProfile());
-  durable_permission.UpdateContentSetting(
-      Origin1(), GURL(), CONTENT_SETTING_ALLOW, /*is_one_time=*/false);
-  durable_permission.UpdateContentSetting(
-      Origin2(), GURL(), CONTENT_SETTING_ALLOW, /*is_one_time=*/false);
+  durable_permission.UpdateContentSetting(Origin1(), GURL(),
+                                          CONTENT_SETTING_ALLOW);
+  durable_permission.UpdateContentSetting(Origin2(), GURL(),
+                                          CONTENT_SETTING_ALLOW);
 
   // Clear all except for origin1 and origin3.
   std::unique_ptr<BrowsingDataFilterBuilder> filter(
@@ -2509,8 +2509,8 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest,
   HostContentSettingsMap* host_content_settings_map =
       HostContentSettingsMapFactory::GetForProfile(GetProfile());
   DurableStoragePermissionContext durable_permission(GetProfile());
-  durable_permission.UpdateContentSetting(
-      Origin1(), GURL(), CONTENT_SETTING_ALLOW, /*is_one_time=*/false);
+  durable_permission.UpdateContentSetting(Origin1(), GURL(),
+                                          CONTENT_SETTING_ALLOW);
   ContentSettingsForOneType host_settings;
   host_content_settings_map->GetSettingsForOneType(
       ContentSettingsType::DURABLE_STORAGE, &host_settings);

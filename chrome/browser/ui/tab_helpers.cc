@@ -47,7 +47,6 @@
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/performance_hints/performance_hints_features.h"
 #include "chrome/browser/performance_hints/performance_hints_observer.h"
-#include "chrome/browser/permissions/last_tab_standing_tracker_tab_helper.h"
 #include "chrome/browser/predictors/loading_predictor_factory.h"
 #include "chrome/browser/predictors/loading_predictor_tab_helper.h"
 #include "chrome/browser/prefetch/no_state_prefetch/no_state_prefetch_tab_helper.h"
@@ -106,7 +105,6 @@
 #include "components/password_manager/core/browser/password_manager.h"
 #include "components/performance_manager/public/decorators/tab_properties_decorator.h"
 #include "components/performance_manager/public/performance_manager.h"
-#include "components/permissions/features.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/sync/engine/sync_engine_switches.h"
 #include "components/tracing/common/tracing_switches.h"
@@ -375,10 +373,6 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
       web_contents,
       std::make_unique<JavaScriptTabModalDialogManagerDelegateDesktop>(
           web_contents));
-  if (base::FeatureList::IsEnabled(
-          permissions::features::kOneTimeGeolocationPermission)) {
-    LastTabStandingTrackerTabHelper::CreateForWebContents(web_contents);
-  }
   ManagePasswordsUIController::CreateForWebContents(web_contents);
   if (media_feeds::MediaFeedsService::IsEnabled())
     MediaFeedsContentsObserver::CreateForWebContents(web_contents);

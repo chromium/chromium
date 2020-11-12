@@ -125,9 +125,7 @@ void StorageAccessGrantPermissionContext::NotifyPermissionSet(
     const GURL& embedding_origin,
     permissions::BrowserPermissionCallback callback,
     bool persist,
-    ContentSetting content_setting,
-    bool is_one_time) {
-  DCHECK(!is_one_time);
+    ContentSetting content_setting) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   NotifyPermissionSetInternal(id, requesting_origin, embedding_origin,
                               std::move(callback), persist, content_setting,
@@ -206,9 +204,7 @@ void StorageAccessGrantPermissionContext::NotifyPermissionSetInternal(
 void StorageAccessGrantPermissionContext::UpdateContentSetting(
     const GURL& requesting_origin,
     const GURL& embedding_origin,
-    ContentSetting content_setting,
-    bool is_one_time) {
-  DCHECK(!is_one_time);
+    ContentSetting content_setting) {
   // We need to notify the network service of content setting updates before we
   // run our callback. As a result we do our updates when we're notified of a
   // permission being set and should not be called here.

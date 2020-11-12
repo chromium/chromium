@@ -15,8 +15,7 @@ class GURL;
 
 class InstalledWebappBridge {
  public:
-  using PermissionResponseCallback =
-      base::OnceCallback<void(ContentSetting, bool)>;
+  using PermissionResponseCallback = base::OnceCallback<void(ContentSetting)>;
 
   static InstalledWebappProvider::RuleList GetInstalledWebappPermissions(
       ContentSettingsType content_type);

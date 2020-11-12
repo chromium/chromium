@@ -59,7 +59,6 @@ class PermissionPrompt {
     virtual GURL GetEmbeddingOrigin() const = 0;
 
     virtual void Accept() = 0;
-    virtual void AcceptThisTime() = 0;
     virtual void Deny() = 0;
     virtual void Closing() = 0;
 

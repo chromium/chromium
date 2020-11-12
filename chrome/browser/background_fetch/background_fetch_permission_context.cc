@@ -81,10 +81,9 @@ void BackgroundFetchPermissionContext::NotifyPermissionSet(
     const GURL& embedding_origin,
     permissions::BrowserPermissionCallback callback,
     bool persist,
-    ContentSetting content_setting,
-    bool is_one_time) {
+    ContentSetting content_setting) {
   DCHECK(!persist);
   permissions::PermissionContextBase::NotifyPermissionSet(
       id, requesting_origin, embedding_origin, std::move(callback), persist,
-      content_setting, is_one_time);
+      content_setting);
 }

@@ -78,9 +78,7 @@ void FlashPermissionContext::UpdateTabContext(
 void FlashPermissionContext::UpdateContentSetting(
     const GURL& requesting_origin,
     const GURL& embedding_origin,
-    ContentSetting content_setting,
-    bool is_one_time) {
-  DCHECK(!is_one_time);
+    ContentSetting content_setting) {
   DCHECK_EQ(requesting_origin, requesting_origin.GetOrigin());
   DCHECK_EQ(embedding_origin, embedding_origin.GetOrigin());
   DCHECK(content_setting == CONTENT_SETTING_ALLOW ||

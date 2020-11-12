@@ -174,7 +174,7 @@ void PermissionRequestManager::AddRequest(
   if (auto_approval_origin) {
     if (url::Origin::Create(request->GetOrigin()) ==
         auto_approval_origin.value()) {
-      request->PermissionGranted(/*is_one_time=*/false);
+      request->PermissionGranted();
     }
     request->RequestFinished();
     return;
@@ -384,19 +384,7 @@ void PermissionRequestManager::Accept() {
   std::vector<PermissionRequest*>::iterator requests_iter;
   for (requests_iter = requests_.begin(); requests_iter != requests_.end();
        requests_iter++) {
-    PermissionGrantedIncludingDuplicates(*requests_iter, /*is_one_time=*/false);
-  }
-  FinalizeCurrentRequests(PermissionAction::GRANTED);
-}
-
-void PermissionRequestManager::AcceptThisTime() {
-  if (deleting_bubble_)
-    return;
-  DCHECK(view_);
-  std::vector<PermissionRequest*>::iterator requests_iter;
-  for (requests_iter = requests_.begin(); requests_iter != requests_.end();
-       requests_iter++) {
-    PermissionGrantedIncludingDuplicates(*requests_iter, /*is_one_time=*/true);
+    PermissionGrantedIncludingDuplicates(*requests_iter);
   }
   FinalizeCurrentRequests(PermissionAction::GRANTED);
 }
@@ -694,15 +682,14 @@ PermissionRequest* PermissionRequestManager::GetExistingRequest(
 }
 
 void PermissionRequestManager::PermissionGrantedIncludingDuplicates(
-    PermissionRequest* request,
-    bool is_one_time) {
+    PermissionRequest* request) {
   DCHECK_EQ(1, base::STLCount(requests_, request) +
                    base::STLCount(queued_requests_, request))
       << "Only requests in [queued_[frame_]]requests_ can have duplicates";
-  request->PermissionGranted(is_one_time);
+  request->PermissionGranted();
   auto range = duplicate_requests_.equal_range(request);
   for (auto it = range.first; it != range.second; ++it)
-    it->second->PermissionGranted(is_one_time);
+    it->second->PermissionGranted();
 }
 
 void PermissionRequestManager::PermissionDeniedIncludingDuplicates(
