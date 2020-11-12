@@ -270,7 +270,6 @@ static_library("test_support") {
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/leveldatabase",
-    "//third_party/zlib",
     "//ui/base",
     "//ui/events:events_base",
     "//ui/gfx:test_support",
@@ -3791,14 +3790,6 @@ test("unit_tests") {
     # Duplicate these tests here because PathService has more items in
     # unit_tests than in base_unittests.
     "../../base/path_service_unittest.cc",
-
-    # Chromium's zlib unit tests.
-    "../../third_party/zlib/contrib/tests/infcover.cc",
-    "../../third_party/zlib/contrib/tests/infcover.h",
-    "../../third_party/zlib/contrib/tests/utils_unittest.cc",
-    "../../third_party/zlib/google/compression_utils_unittest.cc",
-    "../../third_party/zlib/google/zip_reader_unittest.cc",
-    "../../third_party/zlib/google/zip_unittest.cc",
   ]
 
   if (is_android) {
@@ -3940,13 +3931,6 @@ test("unit_tests") {
         [ "../browser/policy/browser_dm_token_storage_linux_unittest.cc" ]
   }
 
-  # Required by Chromium's zlib unit tests.
-  include_dirs = [
-    "//third_party/googletest/src/googletest/include/gtest",
-    "//third_party/zlib",
-    "//third_party/zlib/google",
-  ]
-
   if (enable_downgrade_processing) {
     sources += [
       "../browser/downgrade/snapshot_file_collector_unittest.cc",
@@ -4076,7 +4060,6 @@ test("unit_tests") {
     "//net/tools/testserver/",
     "//third_party/pywebsocket3/src/mod_pywebsocket/",
     "//third_party/tlslite/",
-    "//third_party/zlib/google/test/data/",
     "//tools/metrics/histograms/enums.xml",
   ]
 
@@ -4217,7 +4200,6 @@ test("unit_tests") {
     "//third_party/metrics_proto",
     "//third_party/re2",
     "//third_party/webrtc_overrides:webrtc_component",
-    "//third_party/zlib/google:compression_utils",
     "//third_party/zxcvbn-cpp",
     "//ui/base:test_support",
     "//ui/display:test_support",
@@ -6337,7 +6319,6 @@ if (!is_android) {
         "//third_party/hunspell",
         "//third_party/icu",
         "//third_party/libpng",
-        "//third_party/zlib",
         "//ui/base:test_support",
         "//ui/resources:ui_test_pak",
         "//ui/web_dialogs:test_support",
@@ -6487,7 +6468,6 @@ if (!is_android) {
       "//third_party/polymer/v1_0/components-chromium/iron-test-helpers/mock-interactions.js",
       "//third_party/pywebsocket3/src/mod_pywebsocket/",
       "//third_party/tlslite/",
-      "//third_party/zlib/google/test/data/",
       "//tools/metrics/histograms/enums.xml",
       "//ui/webui/resources/js/",
       "$root_out_dir/test_case.html",
@@ -6541,7 +6521,6 @@ if (!is_android) {
       "//third_party/hunspell",
       "//third_party/icu",
       "//third_party/libpng",
-      "//third_party/zlib",
       "//ui/base:base_interactive_ui_tests",
       "//ui/base:test_support",
       "//ui/base/clipboard:clipboard_test_support",
@@ -7360,7 +7339,6 @@ if (!is_fuchsia && !is_android) {
       "//third_party/hunspell",
       "//third_party/icu",
       "//third_party/libpng",
-      "//third_party/zlib",
       "//ui/base:test_support",
       "//ui/resources:ui_test_pak",
       "//ui/web_dialogs:test_support",
