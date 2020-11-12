@@ -239,7 +239,7 @@ It may take some time for the pointer in a `WeakMember<T>` to become `nullptr` a
 because this rewrite is only done within Blink GC's garbage collection period.
 
 ```c++
-class SomeGarbageCollectedClass : public GarbageCollected<GarbageCollectedSomething> {
+class SomeGarbageCollectedClass : public GarbageCollected<SomeGarbageCollectedClass> {
   ...
 private:
   Member<AnotherGarbageCollectedClass> another_; // OK, retained by Member<T>.
