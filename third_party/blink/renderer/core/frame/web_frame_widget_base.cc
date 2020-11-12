@@ -1390,7 +1390,6 @@ bool WebFrameWidgetBase::WillHandleGestureEvent(const WebGestureEvent& event) {
     }
     case WebInputEvent::Type::kGestureScrollEnd: {
       if (swipe_to_move_cursor_activated_) {
-        move_cursor = true;
         swipe_to_move_cursor_activated_ = false;
       }
       break;
