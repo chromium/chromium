@@ -419,6 +419,7 @@ crbug.com/angleproject/3481 [ win nvidia angle-vulkan passthrough ] conformance/
 crbug.com/angleproject/2926 [ win nvidia angle-vulkan passthrough ] deqp/data/gles2/shaders/conversions.html [ Failure ]
 crbug.com/angleproject/4569 [ win nvidia angle-vulkan passthrough ] conformance/textures/misc/default-texture.html [ Failure ]
 crbug.com/1082826 [ win nvidia angle-vulkan passthrough ] conformance/buffers/buffer-data-dynamic-delay.html [ Failure ]
+crbug.com/1148120 [ win7 nvidia angle-vulkan passthrough ] conformance/canvas/viewport-unchanged-upon-resize.html [ Failure ]
 
 # Flaky since crbug.com/1017162
 crbug.com/1017162 [ win nvidia angle-vulkan passthrough ] conformance/extensions/angle-instanced-arrays.html [ Failure ]
