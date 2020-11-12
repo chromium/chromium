@@ -60,6 +60,15 @@ IPC::PlatformFileForTransit GetRegistryKeyForTransit(
   return IPC::GetPlatformFileForTransit(handle, false);
 }
 
+#if defined(OFFICIAL_BUILD)
+constexpr wchar_t kLoggingRegistryKeyName[] =
+    L"SOFTWARE\\Google\\Chrome Remote Desktop\\logging";
+#else
+constexpr wchar_t kLoggingRegistryKeyName[] = L"SOFTWARE\\Chromoting\\logging";
+#endif
+
+constexpr wchar_t kLoggingEnabledRegistryValue[] = L"EnableEventLogging";
+
 }  // namespace
 
 namespace remoting {
@@ -245,8 +254,7 @@ std::unique_ptr<DaemonProcess> DaemonProcess::Create(
       caller_task_runner, io_task_runner, std::move(stopped_callback));
 
   // Initialize our ETW logger first so we can capture any subsequent events.
-  // TODO(joedow): Re-enable after we can control logging via the registry.
-  // daemon_process->StartEtwLogging();
+  daemon_process->StartEtwLogging();
 
   daemon_process->Initialize();
 
@@ -398,12 +406,37 @@ bool DaemonProcessWin::OpenPairingRegistry() {
 void DaemonProcessWin::StartEtwLogging() {
   DCHECK(!etw_trace_consumer_);
 
-  // TODO(joedow): Add some registry keys to control the behavior here.
-  // This will most likely include trace levels and output files/locations.
+  base::win::RegKey logging_reg_key;
+  LONG result = logging_reg_key.Open(HKEY_LOCAL_MACHINE,
+                                     kLoggingRegistryKeyName, KEY_READ);
+  if (result != ERROR_SUCCESS) {
+    ::SetLastError(result);
+    PLOG(ERROR) << "Failed to open HKLM\\" << kLoggingRegistryKeyName;
+    return;
+  }
+
+  if (!logging_reg_key.HasValue(kLoggingEnabledRegistryValue)) {
+    VLOG(1) << "Event logging registry value does not exist. EtwTraceConsumer "
+            << "not created.";
+    return;
+  }
+
+  DWORD enabled = 0;
+  result = logging_reg_key.ReadValueDW(kLoggingEnabledRegistryValue, &enabled);
+  if (result != ERROR_SUCCESS) {
+    ::SetLastError(result);
+    PLOG(ERROR) << "Failed to read HKLM\\" << kLoggingRegistryKeyName << "\\"
+                << kLoggingEnabledRegistryValue;
+    return;
+  }
+
+  if (!enabled) {
+    VLOG(1) << "Event logging is not enabled.  EtwTraceConsumer not created.";
+    return;
+  }
+
   etw_trace_consumer_ = EtwTraceConsumer::Create(AutoThread::CreateWithType(
       kEtwTracingThreadName, caller_task_runner(), base::MessagePumpType::IO));
-
-  LOG_IF(ERROR, !etw_trace_consumer_) << "Failed to create EtwTraceConsumer.";
 }
 
 }  // namespace remoting

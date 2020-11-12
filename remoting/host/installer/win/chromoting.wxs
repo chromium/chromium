@@ -503,7 +503,7 @@
             <!-- Gives full access to SYSTEM only. -->
             <!-- Cannot use the builtin PermissionEx element because it maps
                  to the MsiLockPermissionsEx table which is not supported on
-                 Windows Installer version 4.5 or lower. Also Cannot use
+                 Windows Installer version 4.5 or lower. Also cannot use
                  PermissionEx in WixUtilExtension because it automatically
                  inherits all the ACLs from the parent. -->
             <Permission User="[WIX_ACCOUNT_LOCALSYSTEM]"
@@ -609,6 +609,15 @@
                 Type="string"
                 Value="[binaries]com.google.chrome.remote_assistance-firefox.json"/>
           </RegistryKey>
+        </RegistryKey>
+        <CreateFolder/>
+      </Component>
+
+      <Component Id="remoting_logging_registry"
+                 Guid="b640a025-18dd-49b9-b26d-b31252a12f8a">
+        <RegistryKey Root="HKLM"
+                     Key="SOFTWARE\$(var.ChromotingKeyPath)\logging"
+                     Action="create">
         </RegistryKey>
         <CreateFolder/>
       </Component>
@@ -731,6 +740,7 @@
       <ComponentRef Id="remoting_desktop"/>
       <ComponentRef Id="remoting_host"/>
       <ComponentRef Id="remoting_lib"/>
+      <ComponentRef Id="remoting_logging_registry"/>
       <ComponentRef Id="remoting_pairing_registry"/>
       <ComponentRef Id="remoting_start_host"/>
       <ComponentRef Id="sawbuck_provider"/>

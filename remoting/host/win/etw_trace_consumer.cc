@@ -17,6 +17,7 @@
 #include "remoting/base/auto_thread_task_runner.h"
 #include "remoting/host/logging.h"
 #include "remoting/host/win/etw_trace_controller.h"
+#include "remoting/host/win/event_trace_data.h"
 
 namespace remoting {
 
@@ -40,7 +41,7 @@ class EtwTraceConsumerImpl : public EtwTraceConsumer {
     Core& operator=(const Core&) = delete;
     ~Core();
 
-    static VOID WINAPI ProcessEvent(PEVENT_TRACE event);
+    static VOID WINAPI ProcessEvent(EVENT_TRACE* event);
 
     bool Start();
     void Stop();
@@ -52,11 +53,11 @@ class EtwTraceConsumerImpl : public EtwTraceConsumer {
 
    private:
     // Parses an event and passes it along to the delegate for processing.
-    void DispatchEvent(PEVENT_TRACE event);
+    void DispatchEvent(EVENT_TRACE* event);
 
     // Handlers which parse and log an ETW event.
-    void HandleFullMessage(PEVENT_TRACE event);
-    void HandleMessage(PEVENT_TRACE event);
+    void HandleFullMessage(const EventTraceData& data);
+    void HandleMessage(const EventTraceData& data);
 
     static Core* instance_;
 
@@ -74,7 +75,7 @@ class EtwTraceConsumerImpl : public EtwTraceConsumer {
 EtwTraceConsumerImpl::Core* EtwTraceConsumerImpl::Core::instance_ = nullptr;
 
 // static
-void EtwTraceConsumerImpl::Core::ProcessEvent(PEVENT_TRACE event) {
+void EtwTraceConsumerImpl::Core::ProcessEvent(EVENT_TRACE* event) {
   // This method is called on the same thread as Consume().
   EtwTraceConsumerImpl::Core* instance = instance_;
   if (instance) {
@@ -129,7 +130,7 @@ void EtwTraceConsumerImpl::Core::ConsumeEvents() {
   Consume();
 }
 
-void EtwTraceConsumerImpl::Core::DispatchEvent(PEVENT_TRACE event) {
+void EtwTraceConsumerImpl::Core::DispatchEvent(EVENT_TRACE* event) {
   // This method is called on the same thread as Consume().
   DCHECK_CALLED_ON_VALID_THREAD(consume_thread_checker_);
   if (!event) {
@@ -141,23 +142,21 @@ void EtwTraceConsumerImpl::Core::DispatchEvent(PEVENT_TRACE event) {
     return;
   }
 
-  uint8_t event_type = event->Header.Class.Type;
-  if (event_type == logging::LOG_MESSAGE_FULL) {
-    HandleFullMessage(event);
-  } else if (event_type != logging::LOG_MESSAGE) {
-    HandleMessage(event);
-  } else {
-    NOTREACHED() << "Unknown event type.";
+  EventTraceData data = EventTraceData::Create(event);
+  if (data.event_type == logging::LOG_MESSAGE_FULL) {
+    HandleFullMessage(data);
+  } else if (data.event_type == logging::LOG_MESSAGE) {
+    HandleMessage(data);
   }
 }
 
-void EtwTraceConsumerImpl::Core::HandleFullMessage(PEVENT_TRACE event) {
-  // TODO(joedow): Implement parsing and logging for this event type.
+void EtwTraceConsumerImpl::Core::HandleFullMessage(const EventTraceData& data) {
+  // TODO(joedow): Implement logging for this event type.
   NOTIMPLEMENTED();
 }
 
-void EtwTraceConsumerImpl::Core::HandleMessage(PEVENT_TRACE event) {
-  // TODO(joedow): Implement parsing and logging for this event type.
+void EtwTraceConsumerImpl::Core::HandleMessage(const EventTraceData& data) {
+  // TODO(joedow): Implement logging for this event type.
   NOTIMPLEMENTED();
 }
 
@@ -208,6 +207,7 @@ std::unique_ptr<EtwTraceConsumer> EtwTraceConsumer::Create(
 
   auto etw_trace_consumer = std::make_unique<EtwTraceConsumerImpl>();
   if (!etw_trace_consumer->StartLogging(task_runner)) {
+    LOG(ERROR) << "Failed to start EtwTraceConsumer instance.";
     return nullptr;
   }
 
