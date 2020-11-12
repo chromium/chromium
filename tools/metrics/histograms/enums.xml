@@ -32338,6 +32338,14 @@ Called by update_feature_policy_enum.py.-->
   </int>
 </enum>
 
+<enum name="GaiaPasswordChangedScreenUserAction">
+  <summary>Actions which happen on the screen.</summary>
+  <int value="0" label="Resync user data"/>
+  <int value="1" label="Migrate user data"/>
+  <int value="2" label="Cancel dialog"/>
+  <int value="3" label="Incorrect old password"/>
+</enum>
+
 <enum name="GaiaPasswordHashChange">
   <int value="0" label="Saved on Chrome sign-in (syncing)"/>
   <int value="1" label="Saved in the content area"/>

@@ -103,6 +103,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="OOBE.GaiaPasswordChangedScreen.UserActions"
+    enum="GaiaPasswordChangedScreenUserAction" expires_after="2021-10-01">
+  <owner>raleksandrov@google.com</owner>
+  <owner>cros-oac@google.com</owner>
+  <summary>
+    Tracks all user actions on the GaiaPasswordChanged screen. Recorded when
+    user clicks on buttons on the screen.
+  </summary>
+</histogram>
+
 <histogram base="true" name="OOBE.GestureNavigationScreen.PageShownTime"
     units="ms" expires_after="2021-04-01">
 <!-- Name completed by histogram_suffixes

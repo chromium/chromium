@@ -4,6 +4,7 @@
 
 #include "chrome/browser/chromeos/login/screens/gaia_password_changed_screen.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/chromeos/login/reauth_stats.h"
 #include "chrome/browser/chromeos/login/ui/login_display_host.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
@@ -16,6 +17,11 @@ constexpr const char kUserActionCancelLogin[] = "cancel";
 constexpr const char kUserActionResyncData[] = "resync";
 
 }  // namespace
+
+void RecordEulaScreenAction(GaiaPasswordChangedScreen::UserAction value) {
+  base::UmaHistogramEnumeration("OOBE.GaiaPasswordChangedScreen.UserActions",
+                                value);
+}
 
 GaiaPasswordChangedScreen::GaiaPasswordChangedScreen(
     GaiaPasswordChangedView* view)
@@ -52,12 +58,16 @@ void GaiaPasswordChangedScreen::Configure(const AccountId& account_id,
   DCHECK(account_id.is_valid());
   account_id_ = account_id;
   show_error_ = after_incorrect_attempt;
+  if (after_incorrect_attempt)
+    RecordEulaScreenAction(UserAction::kIncorrectOldPassword);
 }
 
 void GaiaPasswordChangedScreen::OnUserAction(const std::string& action_id) {
   if (action_id == kUserActionCancelLogin) {
     CancelPasswordChangedFlow();
+    RecordEulaScreenAction(UserAction::kCancel);
   } else if (action_id == kUserActionResyncData) {
+    RecordEulaScreenAction(UserAction::kResyncUserData);
     // LDH will pass control to ExistingUserController to proceed with clearing
     // cryptohome.
     if (LoginDisplayHost::default_host())
@@ -67,6 +77,7 @@ void GaiaPasswordChangedScreen::OnUserAction(const std::string& action_id) {
 
 void GaiaPasswordChangedScreen::MigrateUserData(
     const std::string& old_password) {
+  RecordEulaScreenAction(UserAction::kMigrateUserData);
   // LDH will pass control to ExistingUserController to proceed with updating
   // cryptohome keys.
   if (LoginDisplayHost::default_host())
