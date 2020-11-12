@@ -59,7 +59,7 @@ source_set("flags") {
     "//ios/chrome/browser/ui/infobars:feature_flags",
     "//ios/chrome/browser/ui/page_info:features",
     "//ios/chrome/browser/ui/settings/autofill:feature_flags",
-    "//ios/chrome/browser/ui/tab_grid:features",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid:features",
     "//ios/chrome/browser/ui/table_view:feature_flags",
     "//ios/chrome/browser/ui/toolbar_container:feature_flags",
     "//ios/chrome/browser/web:feature_flags",

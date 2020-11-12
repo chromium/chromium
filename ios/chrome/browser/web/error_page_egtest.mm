@@ -6,7 +6,7 @@
 #include <string>
 
 #include "base/bind.h"
-#import "ios/chrome/browser/ui/tab_grid/features.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/features.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"

@@ -4,11 +4,11 @@
 
 #import "ios/showcase/tab_grid/sc_tab_grid_coordinator.h"
 
-#import "ios/chrome/browser/ui/tab_grid/grid/grid_commands.h"
-#import "ios/chrome/browser/ui/tab_grid/grid/grid_consumer.h"
-#import "ios/chrome/browser/ui/tab_grid/grid/grid_drag_drop_handler.h"
-#import "ios/chrome/browser/ui/tab_grid/grid/grid_item.h"
-#import "ios/chrome/browser/ui/tab_grid/tab_grid_view_controller.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_commands.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_consumer.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_drag_drop_handler.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_item.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_view_controller.h"
 #import "ios/showcase/common/protocol_alerter.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

@@ -1,0 +1,207 @@
+# Copyright 2018 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//ios/public/provider/chrome/browser/build_config.gni")
+
+source_set("tab_grid") {
+  sources = [
+    "tab_grid_coordinator.h",
+    "tab_grid_coordinator.mm",
+    "tab_grid_coordinator_delegate.h",
+    "tab_grid_mediator.h",
+    "tab_grid_mediator.mm",
+  ]
+
+  configs += [ "//build/config/compiler:enable_arc" ]
+
+  deps = [
+    ":tab_grid_paging",
+    ":tab_grid_ui",
+    "grid:grid_ui",
+    "//base",
+    "//components/favicon/ios",
+    "//components/sessions",
+    "//components/strings",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser",
+    "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/drag_and_drop",
+    "//ios/chrome/browser/main",
+    "//ios/chrome/browser/sessions",
+    "//ios/chrome/browser/sessions:restoration_agent",
+    "//ios/chrome/browser/sessions:serialisation",
+    "//ios/chrome/browser/snapshots",
+    "//ios/chrome/browser/tabs",
+    "//ios/chrome/browser/ui:feature_flags",
+    "//ios/chrome/browser/ui/activity_services",
+    "//ios/chrome/browser/ui/alert_coordinator",
+    "//ios/chrome/browser/ui/commands",
+    "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
+    "//ios/chrome/browser/ui/gestures",
+    "//ios/chrome/browser/ui/history",
+    "//ios/chrome/browser/ui/history/public",
+    "//ios/chrome/browser/ui/main",
+    "//ios/chrome/browser/ui/recent_tabs",
+    "//ios/chrome/browser/ui/recent_tabs:recent_tabs_ui",
+    "//ios/chrome/browser/ui/sharing",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/transitions",
+    "//ios/chrome/browser/ui/thumb_strip",
+    "//ios/chrome/browser/ui/thumb_strip:feature_flags",
+    "//ios/chrome/browser/ui/util",
+    "//ios/chrome/browser/url_loading",
+    "//ios/chrome/browser/web",
+    "//ios/chrome/browser/web_state_list",
+    "//ios/chrome/browser/web_state_list:agents",
+    "//ios/chrome/browser/web_state_list/web_usage_enabler",
+    "//ios/chrome/browser/window_activities",
+    "//ios/web",
+    "//ui/base",
+    "//ui/gfx",
+  ]
+}
+
+source_set("tab_grid_ui_constants") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+
+  sources = [
+    "tab_grid_constants.h",
+    "tab_grid_constants.mm",
+  ]
+
+  deps = [ "resources:grid_background_color" ]
+}
+
+source_set("tab_grid_paging") {
+  sources = [ "tab_grid_paging.h" ]
+  deps = [ "//base" ]
+  configs += [ "//build/config/compiler:enable_arc" ]
+}
+
+source_set("tab_grid_ui") {
+  sources = [
+    "tab_grid_bottom_toolbar.h",
+    "tab_grid_bottom_toolbar.mm",
+    "tab_grid_empty_state_view.h",
+    "tab_grid_empty_state_view.mm",
+    "tab_grid_new_tab_button.h",
+    "tab_grid_new_tab_button.mm",
+    "tab_grid_page_control.h",
+    "tab_grid_page_control.mm",
+    "tab_grid_top_toolbar.h",
+    "tab_grid_top_toolbar.mm",
+    "tab_grid_view_controller.h",
+    "tab_grid_view_controller.mm",
+    "thumb_strip_plus_sign_button.h",
+    "thumb_strip_plus_sign_button.mm",
+  ]
+
+  configs += [ "//build/config/compiler:enable_arc" ]
+
+  deps = [
+    ":features",
+    ":tab_grid_paging",
+    ":tab_grid_ui_constants",
+    "grid:grid_ui",
+    "grid:grid_ui_constants",
+    "resources:new_tab_floating_button",
+    "resources:new_tab_floating_button_incognito",
+    "resources:new_tab_toolbar_button",
+    "resources:new_tab_toolbar_button_incognito",
+    "resources:page_control_assets",
+    "resources:tab_grid_incognito_tabs_empty",
+    "resources:tab_grid_regular_tabs_empty",
+    "//base",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser",
+    "//ios/chrome/browser/crash_report",
+    "//ios/chrome/browser/ui:feature_flags",
+    "//ios/chrome/browser/ui/commands",
+    "//ios/chrome/browser/ui/gestures",
+    "//ios/chrome/browser/ui/recent_tabs:recent_tabs_ui",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/transitions",
+    "//ios/chrome/browser/ui/table_view:styler",
+    "//ios/chrome/browser/ui/thumb_strip:feature_flags",
+    "//ios/chrome/browser/ui/util",
+    "//ios/chrome/common/ui/util",
+    "//ios/web/public",
+    "//ui/base",
+  ]
+}
+
+source_set("features") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "features.h",
+    "features.mm",
+  ]
+  deps = [ "//base" ]
+}
+
+source_set("unit_tests") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+  sources = [
+    "tab_grid_coordinator_unittest.mm",
+    "tab_grid_mediator_unittest.mm",
+  ]
+  deps = [
+    ":tab_grid",
+    ":tab_grid_ui",
+    "grid:grid_ui",
+    "//base",
+    "//base/test:test_support",
+    "//components/sessions",
+    "//ios/chrome/browser",
+    "//ios/chrome/browser/browser_state:test_support",
+    "//ios/chrome/browser/main:test_support",
+    "//ios/chrome/browser/ntp",
+    "//ios/chrome/browser/sessions",
+    "//ios/chrome/browser/sessions:restoration_agent",
+    "//ios/chrome/browser/sessions:test_support",
+    "//ios/chrome/browser/snapshots",
+    "//ios/chrome/browser/tabs",
+    "//ios/chrome/browser/tabs:tabs_internal",
+    "//ios/chrome/browser/ui/commands",
+    "//ios/chrome/browser/web",
+    "//ios/chrome/browser/web:page_placeholder",
+    "//ios/chrome/browser/web:test_support",
+    "//ios/chrome/browser/web_state_list",
+    "//ios/chrome/browser/web_state_list:test_support",
+    "//ios/chrome/browser/web_state_list/web_usage_enabler",
+    "//ios/chrome/test:block_cleanup_test",
+    "//ios/web/common",
+    "//ios/web/public/test",
+    "//ios/web/public/test/fakes",
+    "//testing/gtest",
+    "//third_party/ocmock",
+  ]
+}
+
+source_set("eg2_tests") {
+  defines = [ "CHROME_EARL_GREY_2" ]
+  configs += [
+    "//build/config/compiler:enable_arc",
+    "//build/config/ios:xctest_config",
+  ]
+  testonly = true
+  sources = [
+    "tab_grid_egtest.mm",
+    "tab_grid_transition_egtest.mm",
+  ]
+
+  deps = [
+    ":tab_grid_ui_constants",
+    "//base",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid:features",
+    "//ios/chrome/browser/ui/util",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ios/third_party/earl_grey2:test_lib",
+    "//ios/web/public/test/http_server",
+    "//net:test_support",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}

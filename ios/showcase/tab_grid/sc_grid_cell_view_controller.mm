@@ -6,8 +6,8 @@
 
 #import "base/mac/foundation_util.h"
 #import "base/numerics/safe_conversions.h"
-#import "ios/chrome/browser/ui/tab_grid/grid/grid_cell.h"
-#import "ios/chrome/browser/ui/tab_grid/grid/grid_theme.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_cell.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_theme.h"
 #import "ios/showcase/common/protocol_alerter.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

@@ -58,7 +58,7 @@ source_set("tabs") {
     "//ios/chrome/browser/ui/ntp:util",
     "//ios/chrome/browser/ui/open_in",
     "//ios/chrome/browser/ui/popup_menu/public",
-    "//ios/chrome/browser/ui/tab_grid/grid/resources:grid_cell_close_button",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid/resources:grid_cell_close_button",
     "//ios/chrome/browser/ui/tabs/requirements",
     "//ios/chrome/browser/ui/util",
     "//ios/chrome/browser/url_loading",
