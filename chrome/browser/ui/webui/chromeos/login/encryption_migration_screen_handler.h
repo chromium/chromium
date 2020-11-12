@@ -25,7 +25,6 @@ class EncryptionMigrationScreenView {
     MIGRATING = 2,
     MIGRATION_FAILED = 3,
     NOT_ENOUGH_STORAGE = 4,
-    MIGRATING_MINIMAL = 5,
     COUNT
   };
 

@@ -46,8 +46,6 @@ const test::UIPath kMigratingDialog = {kEncryptionMigrationId,
 const test::UIPath kErrorDialog = {kEncryptionMigrationId, "error-dialog"};
 const test::UIPath kInsufficientSpaceDialog = {kEncryptionMigrationId,
                                                "insufficient-space-dialog"};
-const test::UIPath kMinimalMigrationDialog = {kEncryptionMigrationId,
-                                              "minimal-migration-dialog"};
 const test::UIPath kMigrationProgress = {kEncryptionMigrationId,
                                          "migration-progress"};
 const test::UIPath kSkipButton = {kEncryptionMigrationId, "skip-button"};
@@ -121,7 +119,6 @@ class EncryptionMigrationTest : public OobeBaseTest {
     test::OobeJS().ExpectHiddenPath(kReadyDialog);
     test::OobeJS().ExpectHiddenPath(kErrorDialog);
     test::OobeJS().ExpectHiddenPath(kInsufficientSpaceDialog);
-    test::OobeJS().ExpectHiddenPath(kMinimalMigrationDialog);
 
     EXPECT_EQ(
         GetTestCryptohomeId(),
@@ -192,7 +189,6 @@ IN_PROC_BROWSER_TEST_F(EncryptionMigrationTest, SkipWithNoPolicySet) {
   test::OobeJS().ExpectHiddenPath(kMigratingDialog);
   test::OobeJS().ExpectHiddenPath(kErrorDialog);
   test::OobeJS().ExpectHiddenPath(kInsufficientSpaceDialog);
-  test::OobeJS().ExpectHiddenPath(kMinimalMigrationDialog);
 
   test::OobeJS().ExpectVisiblePath(kSkipButton);
   test::OobeJS().ExpectVisiblePath(kUpgradeButton);
@@ -216,7 +212,6 @@ IN_PROC_BROWSER_TEST_F(EncryptionMigrationTest, MigrateWithNoUserPolicySet) {
   test::OobeJS().ExpectHiddenPath(kMigratingDialog);
   test::OobeJS().ExpectHiddenPath(kErrorDialog);
   test::OobeJS().ExpectHiddenPath(kInsufficientSpaceDialog);
-  test::OobeJS().ExpectHiddenPath(kMinimalMigrationDialog);
 
   test::OobeJS().ExpectVisiblePath(kSkipButton);
   test::OobeJS().ExpectVisiblePath(kUpgradeButton);
@@ -270,7 +265,6 @@ IN_PROC_BROWSER_TEST_F(EncryptionMigrationTest,
   test::OobeJS().ExpectHiddenPath(kReadyDialog);
   test::OobeJS().ExpectHiddenPath(kMigratingDialog);
   test::OobeJS().ExpectHiddenPath(kErrorDialog);
-  test::OobeJS().ExpectHiddenPath(kMinimalMigrationDialog);
 
   test::OobeJS().ExpectHiddenPath(kInsufficientSpaceRestartButton);
   test::OobeJS().ExpectVisiblePath(kInsufficientSpaceSkipButton);
@@ -294,7 +288,6 @@ IN_PROC_BROWSER_TEST_F(EncryptionMigrationTest, MigrateWithInsuficientSpace) {
   test::OobeJS().ExpectHiddenPath(kReadyDialog);
   test::OobeJS().ExpectHiddenPath(kMigratingDialog);
   test::OobeJS().ExpectHiddenPath(kErrorDialog);
-  test::OobeJS().ExpectHiddenPath(kMinimalMigrationDialog);
 
   test::OobeJS().ExpectVisiblePath(kInsufficientSpaceRestartButton);
   test::OobeJS().ExpectHiddenPath(kInsufficientSpaceSkipButton);
@@ -319,7 +312,6 @@ IN_PROC_BROWSER_TEST_F(EncryptionMigrationTest, InsufficientSpaceOnResume) {
   test::OobeJS().ExpectHiddenPath(kReadyDialog);
   test::OobeJS().ExpectHiddenPath(kMigratingDialog);
   test::OobeJS().ExpectHiddenPath(kErrorDialog);
-  test::OobeJS().ExpectHiddenPath(kMinimalMigrationDialog);
 
   test::OobeJS().ExpectVisiblePath(kInsufficientSpaceRestartButton);
   test::OobeJS().ExpectHiddenPath(kInsufficientSpaceSkipButton);
@@ -355,7 +347,6 @@ IN_PROC_BROWSER_TEST_F(EncryptionMigrationTest, MigrationFailure) {
   test::OobeJS().ExpectHiddenPath(kReadyDialog);
   test::OobeJS().ExpectHiddenPath(kMigratingDialog);
   test::OobeJS().ExpectHiddenPath(kInsufficientSpaceDialog);
-  test::OobeJS().ExpectHiddenPath(kMinimalMigrationDialog);
 
   test::OobeJS().ExpectVisiblePath(kRestartButton);
   test::OobeJS().TapOnPath(kRestartButton);
@@ -375,7 +366,6 @@ IN_PROC_BROWSER_TEST_F(EncryptionMigrationTest, LowBattery) {
   test::OobeJS().ExpectHiddenPath(kMigratingDialog);
   test::OobeJS().ExpectHiddenPath(kInsufficientSpaceDialog);
   test::OobeJS().ExpectHiddenPath(kErrorDialog);
-  test::OobeJS().ExpectHiddenPath(kMinimalMigrationDialog);
 
   test::OobeJS().ExpectVisiblePath(kSkipButton);
   test::OobeJS().ExpectEnabledPath(kSkipButton);
@@ -404,7 +394,6 @@ IN_PROC_BROWSER_TEST_F(EncryptionMigrationTest,
   test::OobeJS().ExpectHiddenPath(kMigratingDialog);
   test::OobeJS().ExpectHiddenPath(kInsufficientSpaceDialog);
   test::OobeJS().ExpectHiddenPath(kErrorDialog);
-  test::OobeJS().ExpectHiddenPath(kMinimalMigrationDialog);
 
   test::OobeJS().ExpectPathDisplayed(false, kSkipButton);
   test::OobeJS().ExpectPathDisplayed(false, kUpgradeButton);
@@ -427,7 +416,6 @@ IN_PROC_BROWSER_TEST_F(EncryptionMigrationTest,
   test::OobeJS().ExpectHiddenPath(kMigratingDialog);
   test::OobeJS().ExpectHiddenPath(kInsufficientSpaceDialog);
   test::OobeJS().ExpectHiddenPath(kErrorDialog);
-  test::OobeJS().ExpectHiddenPath(kMinimalMigrationDialog);
 
   EXPECT_FALSE(FakeCryptohomeClient::Get()
                    ->get_id_for_disk_migrated_to_dircrypto()

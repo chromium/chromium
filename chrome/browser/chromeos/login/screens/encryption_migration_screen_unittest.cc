@@ -7,7 +7,6 @@
 
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
-#include "base/test/simple_test_tick_clock.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/chromeos/arc/arc_migration_constants.h"
 #include "chrome/browser/chromeos/login/screens/encryption_migration_mode.h"
@@ -73,18 +72,11 @@ class TestEncryptionMigrationScreen : public EncryptionMigrationScreen {
     set_free_disk_space_fetcher_for_testing(base::BindRepeating(
         &TestEncryptionMigrationScreen::FreeDiskSpaceFetcher,
         base::Unretained(this)));
-    set_tick_clock_for_testing(&testing_tick_clock_);
   }
 
   // Sets the free disk space seen by EncryptionMigrationScreen.
   void set_free_disk_space(int64_t free_disk_space) {
     free_disk_space_ = free_disk_space;
-  }
-
-  // Returns the SimpleTestTickClock used to simulate time elapsed during
-  // migration.
-  base::SimpleTestTickClock* testing_tick_clock() {
-    return &testing_tick_clock_;
   }
 
   FakeWakeLock* fake_wake_lock() { return &fake_wake_lock_; }
@@ -98,9 +90,6 @@ class TestEncryptionMigrationScreen : public EncryptionMigrationScreen {
   int64_t FreeDiskSpaceFetcher() { return free_disk_space_; }
 
   FakeWakeLock fake_wake_lock_;
-
-  // Tick clock used to simulate time elapsed during migration.
-  base::SimpleTestTickClock testing_tick_clock_;
 
   int64_t free_disk_space_;
 };
@@ -225,107 +214,5 @@ class EncryptionMigrationScreenTest : public testing::Test {
 };
 
 }  // namespace
-
-// Tests handling of a minimal migration run that finishes immediately.
-TEST_F(EncryptionMigrationScreenTest, MinimalMigration) {
-  encryption_migration_screen_->SetMode(
-      EncryptionMigrationMode::START_MINIMAL_MIGRATION);
-  encryption_migration_screen_->SetupInitialView();
-
-  task_environment_.RunUntilIdle();
-
-  EXPECT_TRUE(encryption_migration_screen_->fake_wake_lock()->HasWakeLock());
-  fake_cryptohome_client_->NotifyDircryptoMigrationProgress(
-      cryptohome::DircryptoMigrationStatus::DIRCRYPTO_MIGRATION_SUCCESS,
-      0 /* current */, 0 /* total */);
-
-  EXPECT_TRUE(continue_login_callback_called_);
-  EXPECT_FALSE(encryption_migration_screen_->fake_wake_lock()->HasWakeLock());
-  EXPECT_TRUE(fake_cryptohome_client_->to_migrate_from_ecryptfs());
-  EXPECT_TRUE(fake_cryptohome_client_->minimal_migration());
-  EXPECT_EQ(cryptohome::CreateAccountIdentifierFromAccountId(
-                user_context_.GetAccountId()),
-            fake_cryptohome_client_->get_id_for_disk_migrated_to_dircrypto());
-  EXPECT_EQ(
-      user_context_.GetKey()->GetSecret(),
-      fake_cryptohome_client_->get_secret_for_last_mount_authentication());
-}
-
-// Tests handling of a resumed minimal migration run. This should behave the
-// same way that a freshly started minimal migration does (only UMA stats are
-// different, but we don't test that at the moment).
-TEST_F(EncryptionMigrationScreenTest, ResumeMinimalMigration) {
-  encryption_migration_screen_->SetMode(
-      EncryptionMigrationMode::RESUME_MINIMAL_MIGRATION);
-  encryption_migration_screen_->SetupInitialView();
-
-  task_environment_.RunUntilIdle();
-
-  fake_cryptohome_client_->NotifyDircryptoMigrationProgress(
-      cryptohome::DircryptoMigrationStatus::DIRCRYPTO_MIGRATION_SUCCESS,
-      0 /* current */, 0 /* total */);
-
-  EXPECT_TRUE(continue_login_callback_called_);
-  EXPECT_TRUE(fake_cryptohome_client_->to_migrate_from_ecryptfs());
-  EXPECT_TRUE(fake_cryptohome_client_->minimal_migration());
-  EXPECT_EQ(cryptohome::CreateAccountIdentifierFromAccountId(
-                user_context_.GetAccountId()),
-            fake_cryptohome_client_->get_id_for_disk_migrated_to_dircrypto());
-  EXPECT_EQ(
-      user_context_.GetKey()->GetSecret(),
-      fake_cryptohome_client_->get_secret_for_last_mount_authentication());
-}
-
-// Tests handling of a minimal migration run that takes a long time to finish.
-// We expect that EncryptionMigrationScreen will require the user to re-enter
-// their password.
-TEST_F(EncryptionMigrationScreenTest, MinimalMigrationSlow) {
-  encryption_migration_screen_->SetMode(
-      EncryptionMigrationMode::START_MINIMAL_MIGRATION);
-  encryption_migration_screen_->SetupInitialView();
-
-  task_environment_.RunUntilIdle();
-
-  encryption_migration_screen_->testing_tick_clock()->Advance(
-      base::TimeDelta::FromMinutes(1));
-  fake_cryptohome_client_->NotifyDircryptoMigrationProgress(
-      cryptohome::DircryptoMigrationStatus::DIRCRYPTO_MIGRATION_SUCCESS,
-      0 /* current */, 0 /* total */);
-
-  EXPECT_TRUE(restart_login_callback_called_);
-  EXPECT_TRUE(fake_cryptohome_client_->to_migrate_from_ecryptfs());
-  EXPECT_TRUE(fake_cryptohome_client_->minimal_migration());
-  EXPECT_EQ(cryptohome::CreateAccountIdentifierFromAccountId(
-                user_context_.GetAccountId()),
-            fake_cryptohome_client_->get_id_for_disk_migrated_to_dircrypto());
-  EXPECT_EQ(
-      user_context_.GetKey()->GetSecret(),
-      fake_cryptohome_client_->get_secret_for_last_mount_authentication());
-}
-
-// Tests handling of a minimal migration run that fails.
-TEST_F(EncryptionMigrationScreenTest, MinimalMigrationFails) {
-  encryption_migration_screen_->SetMode(
-      EncryptionMigrationMode::START_MINIMAL_MIGRATION);
-  encryption_migration_screen_->SetupInitialView();
-
-  task_environment_.RunUntilIdle();
-
-  encryption_migration_screen_->testing_tick_clock()->Advance(
-      base::TimeDelta::FromMinutes(1));
-  fake_cryptohome_client_->NotifyDircryptoMigrationProgress(
-      cryptohome::DircryptoMigrationStatus::DIRCRYPTO_MIGRATION_FAILED,
-      0 /* current */, 0 /* total */);
-
-  Mock::VerifyAndClearExpectations(mock_async_method_caller_);
-  EXPECT_TRUE(fake_cryptohome_client_->to_migrate_from_ecryptfs());
-  EXPECT_TRUE(fake_cryptohome_client_->minimal_migration());
-  EXPECT_EQ(cryptohome::CreateAccountIdentifierFromAccountId(
-                user_context_.GetAccountId()),
-            fake_cryptohome_client_->get_id_for_disk_migrated_to_dircrypto());
-  EXPECT_EQ(
-      user_context_.GetKey()->GetSecret(),
-      fake_cryptohome_client_->get_secret_for_last_mount_authentication());
-}
 
 }  // namespace chromeos

@@ -19,7 +19,6 @@ var EncryptionMigrationUIState = {
   MIGRATING: 'migrating',
   MIGRATION_FAILED: 'migration-failed',
   NOT_ENOUGH_SPACE: 'not-enough-space',
-  MIGRATING_MINIMAL: 'migrating-minimal',
 };
 
 Polymer({

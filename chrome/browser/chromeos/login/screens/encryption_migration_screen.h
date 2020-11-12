@@ -24,11 +24,6 @@
 #include "services/device/public/mojom/wake_lock.mojom.h"
 #include "third_party/cros_system_api/dbus/cryptohome/dbus-constants.h"
 
-namespace base {
-class TickClock;
-class TimeTicks;
-}  // namespace base
-
 namespace chromeos {
 
 class EncryptionMigrationScreenView;
@@ -74,14 +69,6 @@ class EncryptionMigrationScreen : public BaseScreen,
   void set_free_disk_space_fetcher_for_testing(
       FreeDiskSpaceFetcher free_disk_space_fetcher) {
     free_disk_space_fetcher_ = std::move(free_disk_space_fetcher);
-  }
-
-  // Testing only: Sets the tick clock used to measure elapsed time during
-  // migration.
-  // This doesn't take the ownership of the clock. |tick_clock| must outlive
-  // the EncryptionMigrationScreenHandler instance.
-  void set_tick_clock_for_testing(const base::TickClock* tick_clock) {
-    tick_clock_ = tick_clock;
   }
 
  protected:
@@ -138,14 +125,6 @@ class EncryptionMigrationScreen : public BaseScreen,
   // True if |mode_| suggests that migration should start immediately.
   bool IsStartImmediately() const;
 
-  // True if |mode_| suggests that we are starting or resuming a minimal
-  // migration.
-  bool IsMinimalMigration() const;
-
-  // Returns the UIState we should be in when migration is in progress.
-  // This will be different between regular and minimal migration.
-  EncryptionMigrationScreenView::UIState GetMigratingUIState() const;
-
   // Stop forcing migration if it was forced by policy.
   void MaybeStopForcingMigration();
 
@@ -179,15 +158,9 @@ class EncryptionMigrationScreen : public BaseScreen,
   // The battery level at the timing that the migration starts.
   double initial_battery_percent_ = 0.0;
 
-  // Point in time when minimal migration started, as reported by |tick_clock_|.
-  base::TimeTicks minimal_migration_start_;
-
   mojo::Remote<device::mojom::WakeLock> wake_lock_;
 
   std::unique_ptr<LoginFeedback> login_feedback_;
-
-  // Used to measure elapsed time during migration.
-  const base::TickClock* tick_clock_;
 
   FreeDiskSpaceFetcher free_disk_space_fetcher_;
 
