@@ -37,12 +37,14 @@ class COMPONENT_EXPORT(RESOURCE_COORDINATOR_PUBLIC_MEMORY_INSTRUMENTATION)
   bool AddChromeDumpToTraceIfEnabled(
       const base::trace_event::MemoryDumpRequestArgs&,
       const base::ProcessId pid,
-      const base::trace_event::ProcessMemoryDump*) override;
+      const base::trace_event::ProcessMemoryDump*,
+      const base::TimeTicks& timestamp) override;
   bool AddOsDumpToTraceIfEnabled(
       const base::trace_event::MemoryDumpRequestArgs&,
       const base::ProcessId,
       const mojom::OSMemDump&,
-      const std::vector<mojom::VmRegionPtr>&) override;
+      const std::vector<mojom::VmRegionPtr>&,
+      const base::TimeTicks& timestamp) override;
 
   void StartTracing(
       tracing::PerfettoProducer* producer,

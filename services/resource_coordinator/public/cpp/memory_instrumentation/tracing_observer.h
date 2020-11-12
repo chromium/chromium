@@ -31,13 +31,15 @@ class COMPONENT_EXPORT(RESOURCE_COORDINATOR_PUBLIC_MEMORY_INSTRUMENTATION)
   virtual bool AddChromeDumpToTraceIfEnabled(
       const base::trace_event::MemoryDumpRequestArgs&,
       const base::ProcessId pid,
-      const base::trace_event::ProcessMemoryDump*);
+      const base::trace_event::ProcessMemoryDump*,
+      const base::TimeTicks& timestamp);
 
   virtual bool AddOsDumpToTraceIfEnabled(
       const base::trace_event::MemoryDumpRequestArgs& args,
       const base::ProcessId pid,
       const mojom::OSMemDump& os_dump,
-      const std::vector<mojom::VmRegionPtr>& memory_maps);
+      const std::vector<mojom::VmRegionPtr>& memory_maps,
+      const base::TimeTicks& timestamp);
 
   // TODO(lalitm): make these private again after TracingObserver is moved
   // to private space.

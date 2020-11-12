@@ -80,7 +80,8 @@ class QueuedRequestDispatcher {
       const perfetto::trace_processor::GlobalNodeGraph& global_graph,
       const std::map<base::ProcessId, mojom::ProcessType>& pid_to_process_type,
       TracingObserver* tracing_observer,
-      bool use_proto_writer);
+      bool use_proto_writer,
+      const base::TimeTicks& timestamp);
 };
 
 }  // namespace memory_instrumentation

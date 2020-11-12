@@ -20,6 +20,7 @@
 #include "services/tracing/public/cpp/perfetto/perfetto_producer.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_traced_process.h"
 #include "services/tracing/public/cpp/perfetto/producer_test_utils.h"
+#include "services/tracing/public/cpp/perfetto/trace_time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/perfetto/protos/perfetto/trace/memory_graph.pbzero.h"
 #include "third_party/perfetto/protos/perfetto/trace/profiling/smaps.pbzero.h"
@@ -99,6 +100,10 @@ const uint32_t kResidentSetKb = 1;
 const uint32_t kPrivateFootprintKb = 2;
 const uint32_t kSharedFootprintKb = 3;
 
+const base::TimeTicks kTimestamp =
+    base::TimeTicks() + base::TimeDelta::FromMicroseconds(100000);
+const uint64_t kTimestampProto = kTimestamp.since_origin().InNanoseconds();
+
 uint64_t GetFakeAddrForVmRegion(int pid, int region_index) {
   return 0x100000ul * pid * (region_index + 1);
 }
@@ -149,13 +154,13 @@ TEST_F(TracingObserverProtoTest,
 
   base::trace_event::ProcessMemoryDump pmd = FillSamplePmd();
 
-  EXPECT_FALSE(
-      tracing_observer->AddChromeDumpToTraceIfEnabled(args, kTestPid, &pmd));
+  EXPECT_FALSE(tracing_observer->AddChromeDumpToTraceIfEnabled(
+      args, kTestPid, &pmd, kTimestamp));
 
   EnableTraceLog();
 
-  EXPECT_TRUE(
-      tracing_observer->AddChromeDumpToTraceIfEnabled(args, kTestPid, &pmd));
+  EXPECT_TRUE(tracing_observer->AddChromeDumpToTraceIfEnabled(
+      args, kTestPid, &pmd, kTimestamp));
 
   tracing_observer->StopTracing();
 }
@@ -172,14 +177,14 @@ TEST_F(TracingObserverProtoTest,
 
   base::trace_event::ProcessMemoryDump pmd = FillSamplePmd();
 
-  EXPECT_FALSE(
-      tracing_observer->AddChromeDumpToTraceIfEnabled(args, kTestPid, &pmd));
+  EXPECT_FALSE(tracing_observer->AddChromeDumpToTraceIfEnabled(
+      args, kTestPid, &pmd, kTimestamp));
 
   perfetto::DataSourceConfig config;
   tracing_observer->StartTracing(GetProducerClient(), config);
 
-  EXPECT_TRUE(
-      tracing_observer->AddChromeDumpToTraceIfEnabled(args, kTestPid, &pmd));
+  EXPECT_TRUE(tracing_observer->AddChromeDumpToTraceIfEnabled(
+      args, kTestPid, &pmd, kTimestamp));
 
   tracing_observer->StopTracing();
 }
@@ -202,12 +207,12 @@ TEST_F(TracingObserverProtoTest,
   std::vector<memory_instrumentation::mojom::VmRegionPtr> memory_map =
       FillMemoryMap(kTestPid);
   EXPECT_FALSE(tracing_observer->AddOsDumpToTraceIfEnabled(
-      args, kTestPid, os_dump, memory_map));
+      args, kTestPid, os_dump, memory_map, kTimestamp));
 
   EnableTraceLog();
 
-  EXPECT_TRUE(tracing_observer->AddOsDumpToTraceIfEnabled(args, kTestPid,
-                                                          os_dump, memory_map));
+  EXPECT_TRUE(tracing_observer->AddOsDumpToTraceIfEnabled(
+      args, kTestPid, os_dump, memory_map, kTimestamp));
 
   tracing_observer->StopTracing();
 }
@@ -227,13 +232,13 @@ TEST_F(TracingObserverProtoTest,
   std::vector<memory_instrumentation::mojom::VmRegionPtr> memory_map =
       FillMemoryMap(kTestPid);
   EXPECT_FALSE(tracing_observer->AddOsDumpToTraceIfEnabled(
-      args, kTestPid, os_dump, memory_map));
+      args, kTestPid, os_dump, memory_map, kTimestamp));
 
   perfetto::DataSourceConfig config;
   tracing_observer->StartTracing(GetProducerClient(), config);
 
-  EXPECT_TRUE(tracing_observer->AddOsDumpToTraceIfEnabled(args, kTestPid,
-                                                          os_dump, memory_map));
+  EXPECT_TRUE(tracing_observer->AddOsDumpToTraceIfEnabled(
+      args, kTestPid, os_dump, memory_map, kTimestamp));
 
   tracing_observer->StopTracing();
 }
@@ -252,15 +257,18 @@ TEST_F(TracingObserverProtoTest, AddChromeDumpToTraceIfEnabled) {
 
   base::trace_event::ProcessMemoryDump pmd = FillSamplePmd();
 
-  EXPECT_TRUE(
-      tracing_observer->AddChromeDumpToTraceIfEnabled(args, kTestPid, &pmd));
+  EXPECT_TRUE(tracing_observer->AddChromeDumpToTraceIfEnabled(
+      args, kTestPid, &pmd, kTimestamp));
 
   ASSERT_EQ(1ul, GetProducerClient()->GetFinalizedPacketCount());
 
   const perfetto::protos::TracePacket* packet =
       GetProducerClient()->GetFinalizedPacket(0);
-
   ASSERT_NE(nullptr, packet);
+  EXPECT_TRUE(packet->has_timestamp());
+  EXPECT_EQ(kTimestampProto, packet->timestamp());
+  EXPECT_TRUE(packet->has_timestamp_clock_id());
+  EXPECT_EQ(static_cast<uint32_t>(kTraceClockId), packet->timestamp_clock_id());
   EXPECT_TRUE(packet->has_memory_tracker_snapshot());
 
   const MemoryTrackerSnapshot& snapshot = packet->memory_tracker_snapshot();
@@ -317,15 +325,21 @@ TEST_F(TracingObserverProtoTest, AddOsDumpToTraceIfEnabled) {
 
   std::vector<memory_instrumentation::mojom::VmRegionPtr> memory_map =
       FillMemoryMap(kTestPid);
-  EXPECT_TRUE(tracing_observer->AddOsDumpToTraceIfEnabled(args, kTestPid,
-                                                          os_dump, memory_map));
+  EXPECT_TRUE(tracing_observer->AddOsDumpToTraceIfEnabled(
+      args, kTestPid, os_dump, memory_map, kTimestamp));
 
   EXPECT_EQ(2ul, GetProducerClient()->GetFinalizedPacketCount());
 
   const perfetto::protos::TracePacket* process_stats_trace_packet =
       GetProducerClient()->GetFinalizedPacket(0);
   ASSERT_NE(nullptr, process_stats_trace_packet);
+  EXPECT_TRUE(process_stats_trace_packet->has_timestamp());
+  EXPECT_EQ(kTimestampProto, process_stats_trace_packet->timestamp());
+  EXPECT_TRUE(process_stats_trace_packet->has_timestamp_clock_id());
+  EXPECT_EQ(static_cast<uint32_t>(kTraceClockId),
+            process_stats_trace_packet->timestamp_clock_id());
   EXPECT_TRUE(process_stats_trace_packet->has_process_stats());
+
   const ::perfetto::protos::ProcessStats& process_stats =
       process_stats_trace_packet->process_stats();
   EXPECT_EQ(1, process_stats.processes_size());

@@ -77,7 +77,8 @@ void TracingObserver::OnTraceLogDisabled() {
 bool TracingObserver::AddChromeDumpToTraceIfEnabled(
     const base::trace_event::MemoryDumpRequestArgs&,
     const base::ProcessId pid,
-    const base::trace_event::ProcessMemoryDump*) {
+    const base::trace_event::ProcessMemoryDump*,
+    const base::TimeTicks& timestamp) {
   return false;
 }
 
@@ -85,7 +86,8 @@ bool TracingObserver::AddOsDumpToTraceIfEnabled(
     const base::trace_event::MemoryDumpRequestArgs& args,
     const base::ProcessId pid,
     const mojom::OSMemDump& os_dump,
-    const std::vector<mojom::VmRegionPtr>& memory_maps) {
+    const std::vector<mojom::VmRegionPtr>& memory_maps,
+    const base::TimeTicks& timestamp) {
   return false;
 }
 

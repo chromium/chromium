@@ -471,6 +471,9 @@ void QueuedRequestDispatcher::Finalize(QueuedRequest* request,
   GraphProcessor::AddOverheadsAndPropagateEntries(global_graph.get());
   GraphProcessor::CalculateSizesForGraph(global_graph.get());
 
+  // The same timestamp needs to be set for all dumps in the memory snapshot.
+  base::TimeTicks timestamp = TRACE_TIME_TICKS_NOW();
+
   // Build up the global dump by iterating on the |valid| process dumps.
   mojom::GlobalMemoryDumpPtr global_dump(mojom::GlobalMemoryDump::New());
   global_dump->start_time = request->start_time;
@@ -520,7 +523,8 @@ void QueuedRequestDispatcher::Finalize(QueuedRequest* request,
     if (request->args.add_to_trace) {
       if (raw_os_dump) {
         bool trace_os_success = tracing_observer->AddOsDumpToTraceIfEnabled(
-            request->GetRequestArgs(), pid, *os_dump, raw_os_dump->memory_maps);
+            request->GetRequestArgs(), pid, *os_dump, raw_os_dump->memory_maps,
+            timestamp);
         if (!trace_os_success)
           request->failed_memory_dump_count++;
       }
@@ -528,7 +532,7 @@ void QueuedRequestDispatcher::Finalize(QueuedRequest* request,
       if (raw_chrome_dump) {
         bool trace_chrome_success = AddChromeMemoryDumpToTrace(
             request->GetRequestArgs(), pid, *raw_chrome_dump, *global_graph,
-            pid_to_process_type, tracing_observer, use_proto_writer);
+            pid_to_process_type, tracing_observer, use_proto_writer, timestamp);
         if (!trace_chrome_success)
           request->failed_memory_dump_count++;
       }
@@ -611,20 +615,21 @@ bool QueuedRequestDispatcher::AddChromeMemoryDumpToTrace(
     const GlobalNodeGraph& global_graph,
     const std::map<base::ProcessId, mojom::ProcessType>& pid_to_process_type,
     TracingObserver* tracing_observer,
-    bool use_proto_writer) {
+    bool use_proto_writer,
+    const base::TimeTicks& timestamp) {
   bool is_chrome_tracing_enabled =
       base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kEnableChromeTracingComputation);
   if (!is_chrome_tracing_enabled) {
-    return tracing_observer->AddChromeDumpToTraceIfEnabled(args, pid,
-                                                           &raw_chrome_dump);
+    return tracing_observer->AddChromeDumpToTraceIfEnabled(
+        args, pid, &raw_chrome_dump, timestamp);
   }
   if (!tracing_observer->ShouldAddToTrace(args))
     return false;
 
   if (use_proto_writer) {
-    return tracing_observer->AddChromeDumpToTraceIfEnabled(args, pid,
-                                                           &raw_chrome_dump);
+    return tracing_observer->AddChromeDumpToTraceIfEnabled(
+        args, pid, &raw_chrome_dump, timestamp);
   }
 
   const GlobalNodeGraph::Process& process =
