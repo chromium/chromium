@@ -35,9 +35,9 @@
   Help._showReleaseNoteIfNeeded();
 
   function onShowView(viewId, isUserGesture, viewPromise) {
-    viewPromise.then(() => {
+    viewPromise.then(async () => {
       var releaseNoteView = UI.viewManager.view('release-note');
-      var releaseNoteElement = releaseNoteView[UI.View.widgetSymbol].contentElement;
+      var releaseNoteElement = (await releaseNoteView.widget()).contentElement;
       TestRunner.addResult('Dumping release note text:');
       TestRunner.addResult(releaseNoteElement.innerText);
       TestRunner.addResult('Last version of release note seen should be updated:');
