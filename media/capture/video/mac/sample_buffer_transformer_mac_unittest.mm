@@ -81,6 +81,11 @@ constexpr uint32_t kExampleJpegHeight = 16;
 constexpr uint32_t kExampleJpegScaledDownWidth = 16;
 constexpr uint32_t kExampleJpegScaledDownHeight = 8;
 
+const uint8_t kInvalidJpegData[] = {
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+constexpr size_t kInvalidJpegDataSize = 24;
+
 constexpr uint8_t kColorR = 255u;
 constexpr uint8_t kColorG = 127u;
 constexpr uint8_t kColorB = 63u;
@@ -172,26 +177,21 @@ base::ScopedCFTypeRef<CMSampleBufferRef> CreateSampleBuffer(OSType pixel_format,
   return sample_buffer;
 }
 
-base::ScopedCFTypeRef<CMSampleBufferRef> CreateExamlpeMjpegSampleBuffer() {
-  // Sanity-check the example data.
-  int width;
-  int height;
-  int result =
-      libyuv::MJPGSize(kExampleJpegData, kExampleJpegDataSize, &width, &height);
-  DCHECK(result == 0);
-  DCHECK_EQ(width, static_cast<int>(kExampleJpegWidth));
-  DCHECK_EQ(height, static_cast<int>(kExampleJpegHeight));
-
+base::ScopedCFTypeRef<CMSampleBufferRef> CreateMjpegSampleBuffer(
+    const uint8_t* mjpeg_data,
+    size_t mjpeg_data_size,
+    size_t width,
+    size_t height) {
   CMBlockBufferRef data_buffer;
   OSStatus status = CMBlockBufferCreateWithMemoryBlock(
-      nil, const_cast<void*>(static_cast<const void*>(kExampleJpegData)),
-      kExampleJpegDataSize, nil, nil, 0, kExampleJpegDataSize, 0, &data_buffer);
+      nil, const_cast<void*>(static_cast<const void*>(mjpeg_data)),
+      mjpeg_data_size, nil, nil, 0, mjpeg_data_size, 0, &data_buffer);
   DCHECK(status == noErr);
 
   CMFormatDescriptionRef format_description;
-  status = CMVideoFormatDescriptionCreate(nil, kCMVideoCodecType_JPEG_OpenDML,
-                                          kExampleJpegWidth, kExampleJpegHeight,
-                                          nil, &format_description);
+  status =
+      CMVideoFormatDescriptionCreate(nil, kCMVideoCodecType_JPEG_OpenDML, width,
+                                     height, nil, &format_description);
   DCHECK(status == noErr);
 
   // Dummy information to make CMSampleBufferCreateReady() happy.
@@ -207,6 +207,24 @@ base::ScopedCFTypeRef<CMSampleBufferRef> CreateExamlpeMjpegSampleBuffer() {
                                      sample_buffer.InitializeInto());
   DCHECK(status == noErr);
   return sample_buffer;
+}
+
+base::ScopedCFTypeRef<CMSampleBufferRef> CreateExampleMjpegSampleBuffer() {
+  // Sanity-check the example data.
+  int width;
+  int height;
+  int result =
+      libyuv::MJPGSize(kExampleJpegData, kExampleJpegDataSize, &width, &height);
+  DCHECK(result == 0);
+  DCHECK_EQ(width, static_cast<int>(kExampleJpegWidth));
+  DCHECK_EQ(height, static_cast<int>(kExampleJpegHeight));
+  return CreateMjpegSampleBuffer(kExampleJpegData, kExampleJpegDataSize,
+                                 kExampleJpegWidth, kExampleJpegHeight);
+}
+
+base::ScopedCFTypeRef<CMSampleBufferRef> CreateInvalidMjpegSampleBuffer() {
+  return CreateMjpegSampleBuffer(kInvalidJpegData, kInvalidJpegDataSize,
+                                 kExampleJpegWidth, kExampleJpegHeight);
 }
 
 }  // namespace
@@ -332,7 +350,7 @@ TEST_P(SampleBufferTransformerMjpegTest, CanConvertFullScale) {
   OSType output_pixel_format = GetParam();
 
   base::ScopedCFTypeRef<CMSampleBufferRef> input_sample_buffer =
-      CreateExamlpeMjpegSampleBuffer();
+      CreateExampleMjpegSampleBuffer();
   std::unique_ptr<SampleBufferTransformer> transformer =
       SampleBufferTransformer::Create();
   transformer->Reconfigure(SampleBufferTransformer::Transformer::kLibyuv,
@@ -351,7 +369,7 @@ TEST_P(SampleBufferTransformerMjpegTest, CanConvertAndScaleDown) {
   OSType output_pixel_format = GetParam();
 
   base::ScopedCFTypeRef<CMSampleBufferRef> input_sample_buffer =
-      CreateExamlpeMjpegSampleBuffer();
+      CreateExampleMjpegSampleBuffer();
   std::unique_ptr<SampleBufferTransformer> transformer =
       SampleBufferTransformer::Create();
   transformer->Reconfigure(SampleBufferTransformer::Transformer::kLibyuv,
@@ -366,6 +384,22 @@ TEST_P(SampleBufferTransformerMjpegTest, CanConvertAndScaleDown) {
             CVPixelBufferGetHeight(output_pixel_buffer));
   EXPECT_TRUE(
       PixelBufferIsSingleColor(output_pixel_buffer, kColorR, kColorG, kColorB));
+}
+
+TEST_P(SampleBufferTransformerMjpegTest,
+       AttemptingToTransformInvalidMjpegFailsGracefully) {
+  OSType output_pixel_format = GetParam();
+
+  base::ScopedCFTypeRef<CMSampleBufferRef> input_sample_buffer =
+      CreateInvalidMjpegSampleBuffer();
+  std::unique_ptr<SampleBufferTransformer> transformer =
+      SampleBufferTransformer::Create();
+  transformer->Reconfigure(SampleBufferTransformer::Transformer::kLibyuv,
+                           output_pixel_format, kExampleJpegWidth,
+                           kExampleJpegHeight, 1);
+  base::ScopedCFTypeRef<CVPixelBufferRef> output_pixel_buffer =
+      transformer->Transform(input_sample_buffer);
+  EXPECT_FALSE(output_pixel_buffer);
 }
 
 INSTANTIATE_TEST_SUITE_P(SampleBufferTransformerTest,
@@ -444,7 +478,7 @@ TEST(SampleBufferTransformerAutoReconfigureTest,
             IOSurfaceGetPixelFormat(CVPixelBufferGetIOSurface(output_buffer)));
 
   output_buffer = transformer->AutoReconfigureAndTransform(
-      CreateExamlpeMjpegSampleBuffer());
+      CreateExampleMjpegSampleBuffer());
   EXPECT_EQ(kPixelFormatNv12, transformer->destination_pixel_format());
   EXPECT_EQ(kPixelFormatNv12,
             IOSurfaceGetPixelFormat(CVPixelBufferGetIOSurface(output_buffer)));
@@ -483,7 +517,7 @@ TEST(SampleBufferTransformerAutoReconfigureTest, UsesBestTransformerPaths) {
             transformer->transformer());
 
   output_buffer = transformer->AutoReconfigureAndTransform(
-      CreateExamlpeMjpegSampleBuffer());
+      CreateExampleMjpegSampleBuffer());
   EXPECT_EQ(SampleBufferTransformer::Transformer::kLibyuv,
             transformer->transformer());
 }

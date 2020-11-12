@@ -233,7 +233,11 @@ NV12Planes GetNV12PlanesFromPixelBuffer(CVPixelBufferRef pixel_buffer) {
   return nv12_planes;
 }
 
-void ConvertFromAnyToI420(OSType source_pixel_format,
+// Returns true on success. Converting uncompressed pixel formats should never
+// fail, however MJPEG frames produces by some webcams have been observed to be
+// invalid in special circumstances (see https://crbug.com/1147867). To support
+// a graceful failure path in this case, this function may return false.
+bool ConvertFromAnyToI420(OSType source_pixel_format,
                           uint8_t* source_buffer_base_address,
                           size_t source_buffer_size,
                           const I420Planes& destination) {
@@ -247,7 +251,7 @@ void ConvertFromAnyToI420(OSType source_pixel_format,
       /*crop_width*/ destination.width,
       /*crop_height*/ destination.height, libyuv::kRotate0,
       MacFourCCToLibyuvFourCC(source_pixel_format));
-  DCHECK_EQ(result, 0);
+  return result == 0;
 }
 
 void ConvertFromI420ToNV12(const I420Planes& source,
@@ -260,10 +264,16 @@ void ConvertFromI420ToNV12(const I420Planes& source,
       destination.y_plane_data, destination.y_plane_stride,
       destination.uv_plane_data, destination.uv_plane_stride, source.width,
       source.height);
+  // A webcam has never been observed to produce invalid uncompressed pixel
+  // buffer, so we do not support a graceful failure path in this case.
   DCHECK_EQ(result, 0);
 }
 
-void ConvertFromMjpegToNV12(uint8_t* source_buffer_data_base_address,
+// Returns true on success. MJPEG frames produces by some webcams have been
+// observed to be invalid in special circumstances (see
+// https://crbug.com/1147867). To support a graceful failure path in this case,
+// this function may return false.
+bool ConvertFromMjpegToNV12(uint8_t* source_buffer_data_base_address,
                             size_t source_buffer_data_size,
                             const NV12Planes& destination) {
   // Despite libyuv::MJPGToNV12() taking both source and destination sizes as
@@ -274,7 +284,7 @@ void ConvertFromMjpegToNV12(uint8_t* source_buffer_data_base_address,
       destination.y_plane_data, destination.y_plane_stride,
       destination.uv_plane_data, destination.uv_plane_stride, destination.width,
       destination.height, destination.width, destination.height);
-  DCHECK_EQ(result, 0);
+  return result == 0;
 }
 
 void ScaleI420(const I420Planes& source, const I420Planes& destination) {
@@ -454,7 +464,10 @@ base::ScopedCFTypeRef<CVPixelBufferRef> SampleBufferTransformer::Transform(
     return destination_pixel_buffer;
   }
   // Sample buffer path - it's MJPEG. Do libyuv conversion + rescale.
-  TransformSampleBuffer(sample_buffer, destination_pixel_buffer);
+  if (!TransformSampleBuffer(sample_buffer, destination_pixel_buffer)) {
+    LOG(ERROR) << "Failed to transform sample buffer.";
+    return base::ScopedCFTypeRef<CVPixelBufferRef>();
+  }
   return destination_pixel_buffer;
 }
 
@@ -548,8 +561,13 @@ void SampleBufferTransformer::TransformPixelBufferWithLibyuvFromAnyToI420(
       i420_fullscale_buffer = EnsureI420BufferSizeAndGetPlanes(
           source_width, source_height, &intermediate_i420_buffer_);
     }
-    ConvertFromAnyToI420(source_pixel_format, source_buffer_data_base_address,
-                         source_buffer_data_size, i420_fullscale_buffer);
+    if (!ConvertFromAnyToI420(source_pixel_format,
+                              source_buffer_data_base_address,
+                              source_buffer_data_size, i420_fullscale_buffer)) {
+      // Only MJPEG conversions are known to be able to fail. Because X is an
+      // uncompressed pixel format, this conversion should never fail.
+      NOTREACHED();
+    }
   }
 
   // Step 2: Rescale I420.
@@ -593,8 +611,11 @@ void SampleBufferTransformer::TransformPixelBufferWithLibyuvFromAnyToNV12(
       // Convert X -> I420.
       i420_fullscale_buffer = EnsureI420BufferSizeAndGetPlanes(
           source_width, source_height, &intermediate_i420_buffer_);
-      ConvertFromAnyToI420(source_pixel_format, source_buffer_data_base_address,
-                           source_buffer_data_size, i420_fullscale_buffer);
+      if (!ConvertFromAnyToI420(
+              source_pixel_format, source_buffer_data_base_address,
+              source_buffer_data_size, i420_fullscale_buffer)) {
+        NOTREACHED();
+      }
     }
     // Convert I420 -> NV12.
     if (!rescale_needed) {
@@ -615,7 +636,7 @@ void SampleBufferTransformer::TransformPixelBufferWithLibyuvFromAnyToNV12(
   }
 }
 
-void SampleBufferTransformer::TransformSampleBuffer(
+bool SampleBufferTransformer::TransformSampleBuffer(
     CMSampleBufferRef source_sample_buffer,
     CVPixelBufferRef destination_pixel_buffer) {
   DCHECK(transformer_ == Transformer::kLibyuv);
@@ -639,15 +660,16 @@ void SampleBufferTransformer::TransformSampleBuffer(
       CVPixelBufferLockBaseAddress(destination_pixel_buffer, 0);
   DCHECK_EQ(lock_status, kCVReturnSuccess);
   // Convert to I420 or NV12.
+  bool success = false;
   switch (destination_pixel_format_) {
     case kPixelFormatI420:
-      TransformSampleBufferFromMjpegToI420(
+      success = TransformSampleBufferFromMjpegToI420(
           source_buffer_data_base_address, source_buffer_data_size,
           source_dimensions.width, source_dimensions.height,
           destination_pixel_buffer);
       break;
     case kPixelFormatNv12:
-      TransformSampleBufferFromMjpegToNV12(
+      success = TransformSampleBufferFromMjpegToNV12(
           source_buffer_data_base_address, source_buffer_data_size,
           source_dimensions.width, source_dimensions.height,
           destination_pixel_buffer);
@@ -658,9 +680,10 @@ void SampleBufferTransformer::TransformSampleBuffer(
   // Unlock destination pixel buffer.
   lock_status = CVPixelBufferUnlockBaseAddress(destination_pixel_buffer, 0);
   DCHECK_EQ(lock_status, kCVReturnSuccess);
+  return success;
 }
 
-void SampleBufferTransformer::TransformSampleBufferFromMjpegToI420(
+bool SampleBufferTransformer::TransformSampleBufferFromMjpegToI420(
     uint8_t* source_buffer_data_base_address,
     size_t source_buffer_data_size,
     size_t source_width,
@@ -680,8 +703,10 @@ void SampleBufferTransformer::TransformSampleBufferFromMjpegToI420(
     i420_fullscale_buffer = EnsureI420BufferSizeAndGetPlanes(
         source_width, source_height, &intermediate_i420_buffer_);
   }
-  ConvertFromAnyToI420(kPixelFormatMjpeg, source_buffer_data_base_address,
-                       source_buffer_data_size, i420_fullscale_buffer);
+  if (!ConvertFromAnyToI420(kPixelFormatMjpeg, source_buffer_data_base_address,
+                            source_buffer_data_size, i420_fullscale_buffer)) {
+    return false;
+  }
 
   // Step 2: Rescale I420.
   if (rescale_needed) {
@@ -689,9 +714,10 @@ void SampleBufferTransformer::TransformSampleBufferFromMjpegToI420(
         GetI420PlanesFromPixelBuffer(destination_pixel_buffer);
     ScaleI420(i420_fullscale_buffer, i420_destination_buffer);
   }
+  return true;
 }
 
-void SampleBufferTransformer::TransformSampleBufferFromMjpegToNV12(
+bool SampleBufferTransformer::TransformSampleBufferFromMjpegToNV12(
     uint8_t* source_buffer_data_base_address,
     size_t source_buffer_data_size,
     size_t source_width,
@@ -711,8 +737,10 @@ void SampleBufferTransformer::TransformSampleBufferFromMjpegToNV12(
     nv12_fullscale_buffer = EnsureNV12BufferSizeAndGetPlanes(
         source_width, source_height, &intermediate_nv12_buffer_);
   }
-  ConvertFromMjpegToNV12(source_buffer_data_base_address,
-                         source_buffer_data_size, nv12_fullscale_buffer);
+  if (!ConvertFromMjpegToNV12(source_buffer_data_base_address,
+                              source_buffer_data_size, nv12_fullscale_buffer)) {
+    return false;
+  }
 
   // Step 2: Rescale NV12.
   if (rescale_needed) {
@@ -720,6 +748,7 @@ void SampleBufferTransformer::TransformSampleBufferFromMjpegToNV12(
         GetNV12PlanesFromPixelBuffer(destination_pixel_buffer);
     ScaleNV12(nv12_fullscale_buffer, nv12_destination_buffer);
   }
+  return true;
 }
 
 }  // namespace media
