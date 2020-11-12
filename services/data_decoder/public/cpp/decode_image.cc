@@ -11,6 +11,7 @@
 #include "base/debug/dump_without_crashing.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
+#include "skia/ext/skia_utils_base.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
 namespace data_decoder {
@@ -22,11 +23,13 @@ namespace {
 // which point the reply is forwarded to the wrapped |callback|.
 void OnDecodeImage(mojo::Remote<mojom::ImageDecoder> decoder,
                    mojom::ImageDecoder::DecodeImageCallback callback,
-                   const SkBitmap& bitmap) {
-  if (bitmap.colorType() != kN32_SkColorType) {
-    // The renderer should be sending us N32 32bpp bitmaps in reply, otherwise
-    // this can lead to out-of-bounds mistakes when transferring the pixels out
-    // of the bitmap into other buffers.
+                   const SkBitmap& unsafe_bitmap) {
+  // On receipt of an arbitrary bitmap from the renderer, we convert to an N32
+  // 32bpp bitmap. Other pixel sizes can lead to out-of-bounds mistakes when
+  // transferring the pixels out of the bitmap into other buffers.
+  SkBitmap bitmap;
+  if (!skia::SkBitmapToN32OpaqueOrPremul(unsafe_bitmap, &bitmap)) {
+    NOTREACHED() << "Unable to convert bitmap for decode image";
     base::debug::DumpWithoutCrashing();
     std::move(callback).Run(SkBitmap());
     return;
