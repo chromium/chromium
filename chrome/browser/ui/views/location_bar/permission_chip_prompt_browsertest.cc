@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/views/location_bar/permission_chip.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/test/permissions/permission_request_manager_test_api.h"
+#include "components/permissions/features.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "ui/events/base_event_utils.h"
@@ -21,7 +22,7 @@
 class PermissionChipPromptBrowserTest : public DialogBrowserTest {
  public:
   PermissionChipPromptBrowserTest() {
-    feature_list_.InitAndEnableFeature(features::kPermissionChip);
+    feature_list_.InitAndEnableFeature(permissions::features::kPermissionChip);
   }
 
   PermissionChipPromptBrowserTest(const PermissionChipPromptBrowserTest&) =

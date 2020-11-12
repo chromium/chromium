@@ -15,12 +15,12 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/bubble_anchor_util_views.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/title_origin_label.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/permissions/features.h"
 #include "components/permissions/permission_request.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/elide_url.h"
@@ -70,7 +70,7 @@ PermissionPromptBubbleView::PermissionPromptBubbleView(
   // If the permission chip feature is enabled, the chip is indicating the
   // pending permission request and so the bubble can be opened and closed
   // repeatedly.
-  if (!base::FeatureList::IsEnabled(features::kPermissionChip)) {
+  if (!base::FeatureList::IsEnabled(permissions::features::kPermissionChip)) {
     set_close_on_deactivate(false);
     DialogDelegate::SetCloseCallback(
         base::BindOnce(&PermissionPromptBubbleView::ClosingPermission,

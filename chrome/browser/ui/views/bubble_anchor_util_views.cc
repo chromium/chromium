@@ -5,12 +5,12 @@
 #include "chrome/browser/ui/views/bubble_anchor_util_views.h"
 
 #include "build/build_config.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/app_menu_button.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/location_bar/location_icon_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "components/permissions/features.h"
 
 // This file contains the bubble_anchor_util implementation for a Views
 // browser window (BrowserView).
@@ -49,7 +49,7 @@ AnchorConfiguration GetPageInfoAnchorConfiguration(Browser* browser,
 
 AnchorConfiguration GetPermissionPromptBubbleAnchorConfiguration(
     Browser* browser) {
-  if (base::FeatureList::IsEnabled(features::kPermissionChip)) {
+  if (base::FeatureList::IsEnabled(permissions::features::kPermissionChip)) {
     BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
     return {browser_view->GetLocationBarView(),
             browser_view->GetLocationBarView()->permission_chip()->button(),

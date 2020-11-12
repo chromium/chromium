@@ -38,11 +38,6 @@ const base::Feature kNewProfilePicker{"NewProfilePicker",
 const base::Feature kNewTabstripAnimation{"NewTabstripAnimation",
                                           base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Enables an experimental permission prompt that uses a chip in the location
-// bar.
-const base::Feature kPermissionChip{"PermissionChip",
-                                    base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Enables a more prominent active tab title in dark mode to aid with
 // accessibility.
 const base::Feature kProminentDarkModeActiveTabTitle{

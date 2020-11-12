@@ -24,5 +24,10 @@ const base::Feature kBlockRepeatedNotificationPermissionPrompts{
     "BlockRepeatedNotificationPermissionPrompts",
     base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Enables an experimental permission prompt that uses a chip in the location
+// bar.
+const base::Feature kPermissionChip{"PermissionChip",
+                                    base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace features
 }  // namespace permissions

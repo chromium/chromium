@@ -112,7 +112,7 @@ bool ShouldGroupRequests(PermissionRequest* a, PermissionRequest* b) {
 
 // PermissionRequestManager ----------------------------------------------------
 
-bool PermissionRequestManager::RequestAndSource::
+bool PermissionRequestManager::PermissionRequestSource::
     IsSourceFrameInactiveAndDisallowReactivation() const {
   content::RenderFrameHost* rfh =
       content::RenderFrameHost::FromID(render_process_id, render_frame_id);
@@ -215,14 +215,27 @@ void PermissionRequestManager::AddRequest(
     base::RecordAction(
         base::UserMetricsAction("PermissionBubbleIFrameRequestQueued"));
   }
-  queued_requests_.push_back({source_frame->GetProcess()->GetID(),
-                              source_frame->GetRoutingID(), request});
+
+  if (base::FeatureList::IsEnabled(features::kPermissionChip)) {
+    // Because the requests are shown in a different order for Chip, pending
+    // requests are returned back to queued_requests_ to process them after the
+    // new requests.
+    ResetViewStateForCurrentRequest();
+    for (auto* request : requests_)
+      queued_requests_.push_back(request);
+    requests_.clear();
+  }
+
+  queued_requests_.push_back(request);
+  request_sources_map_.emplace(
+      request, PermissionRequestSource({source_frame->GetProcess()->GetID(),
+                                        source_frame->GetRoutingID()}));
 
   // If we're displaying a quiet permission request, kill it in favor of this
   // permission request.
   if (ShouldCurrentRequestUseQuietUI()) {
-    // FinalizeBubble will call ScheduleDequeueRequest on its own.
-    FinalizeBubble(PermissionAction::IGNORED);
+    // FinalizeCurrentRequests will call ScheduleDequeueRequest on its own.
+    FinalizeCurrentRequests(PermissionAction::IGNORED);
   } else {
     ScheduleDequeueRequestIfNeeded();
   }
@@ -319,7 +332,7 @@ void PermissionRequestManager::OnVisibilityChanged(
           break;
         case PermissionPrompt::TabSwitchingBehavior::
             kDestroyPromptAndIgnoreRequest:
-          FinalizeBubble(PermissionAction::IGNORED);
+          FinalizeCurrentRequests(PermissionAction::IGNORED);
           break;
         case PermissionPrompt::TabSwitchingBehavior::kKeepPromptAlive:
           break;
@@ -373,7 +386,7 @@ void PermissionRequestManager::Accept() {
        requests_iter++) {
     PermissionGrantedIncludingDuplicates(*requests_iter);
   }
-  FinalizeBubble(PermissionAction::GRANTED);
+  FinalizeCurrentRequests(PermissionAction::GRANTED);
 }
 
 void PermissionRequestManager::Deny() {
@@ -399,7 +412,7 @@ void PermissionRequestManager::Deny() {
        requests_iter++) {
     PermissionDeniedIncludingDuplicates(*requests_iter);
   }
-  FinalizeBubble(PermissionAction::DENIED);
+  FinalizeCurrentRequests(PermissionAction::DENIED);
 }
 
 void PermissionRequestManager::Closing() {
@@ -411,7 +424,7 @@ void PermissionRequestManager::Closing() {
        requests_iter++) {
     CancelledIncludingDuplicates(*requests_iter);
   }
-  FinalizeBubble(PermissionAction::DISMISSED);
+  FinalizeCurrentRequests(PermissionAction::DISMISSED);
 }
 
 bool PermissionRequestManager::WasCurrentRequestAlreadyDisplayed() {
@@ -438,6 +451,13 @@ void PermissionRequestManager::ScheduleShowBubble() {
 }
 
 void PermissionRequestManager::DequeueRequestIfNeeded() {
+  // TODO(olesiamarukhno): Media requests block other media requests from
+  // pre-empting them. For example, when a camera request is pending and mic is
+  // requested, the camera request remains pending and mic request appears only
+  // after the camera request is resolved. This is caused by code in
+  // PermissionBubbleMediaAccessHandler and UserMediaClient. We probably don't
+  // need two permission queues, so resolve the duplication.
+
   if (!web_contents()->IsDocumentOnLoadCompletedInMainFrame() || view_ ||
       IsRequestInProgress()) {
     return;
@@ -445,16 +465,15 @@ void PermissionRequestManager::DequeueRequestIfNeeded() {
 
   // Find first valid request.
   while (!queued_requests_.empty()) {
-    RequestAndSource& front = queued_requests_.front();
-
-    if (!front.IsSourceFrameInactiveAndDisallowReactivation()) {
-      requests_.push_back(front.request);
-      queued_requests_.pop_front();
+    PermissionRequest* next = PopNextQueuedRequest();
+    PermissionRequestSource& source = request_sources_map_.find(next)->second;
+    if (!source.IsSourceFrameInactiveAndDisallowReactivation()) {
+      requests_.push_back(next);
       break;
     }
-    front.request->Cancelled();
-    front.request->RequestFinished();
-    queued_requests_.pop_front();
+    next->Cancelled();
+    next->RequestFinished();
+    request_sources_map_.erase(request_sources_map_.find(next));
   }
 
   if (requests_.empty()) {
@@ -462,13 +481,15 @@ void PermissionRequestManager::DequeueRequestIfNeeded() {
   }
 
   // Find additional requests that can be grouped with the first one.
-  for (; !queued_requests_.empty(); queued_requests_.pop_front()) {
-    RequestAndSource& front = queued_requests_.front();
-    if (front.IsSourceFrameInactiveAndDisallowReactivation()) {
-      front.request->Cancelled();
-      front.request->RequestFinished();
-    } else if (ShouldGroupRequests(requests_.front(), front.request)) {
-      requests_.push_back(front.request);
+  for (; !queued_requests_.empty(); PopNextQueuedRequest()) {
+    PermissionRequest* front = PeekNextQueuedRequest();
+    PermissionRequestSource& source = request_sources_map_.find(front)->second;
+    if (source.IsSourceFrameInactiveAndDisallowReactivation()) {
+      front->Cancelled();
+      front->RequestFinished();
+      request_sources_map_.erase(request_sources_map_.find(front));
+    } else if (ShouldGroupRequests(requests_.front(), front)) {
+      requests_.push_back(front);
     } else {
       break;
     }
@@ -559,7 +580,19 @@ void PermissionRequestManager::DeleteBubble() {
   NotifyBubbleRemoved();
 }
 
-void PermissionRequestManager::FinalizeBubble(
+void PermissionRequestManager::ResetViewStateForCurrentRequest() {
+  for (const auto& selector : notification_permission_ui_selectors_)
+    selector->Cancel();
+
+  current_request_already_displayed_ = false;
+  current_request_ui_to_use_.reset();
+  selector_decisions_.clear();
+
+  if (view_)
+    DeleteBubble();
+}
+
+void PermissionRequestManager::FinalizeCurrentRequests(
     PermissionAction permission_action) {
   DCHECK(IsRequestInProgress());
 
@@ -605,30 +638,23 @@ void PermissionRequestManager::FinalizeBubble(
     }
     PermissionUmaUtil::RecordEmbargoStatus(embargo_status);
   }
+  ResetViewStateForCurrentRequest();
   std::vector<PermissionRequest*>::iterator requests_iter;
   for (requests_iter = requests_.begin(); requests_iter != requests_.end();
        requests_iter++) {
     RequestFinishedIncludingDuplicates(*requests_iter);
+    request_sources_map_.erase(request_sources_map_.find(*requests_iter));
   }
   requests_.clear();
-
-  for (const auto& selector : notification_permission_ui_selectors_)
-    selector->Cancel();
-
-  current_request_already_displayed_ = false;
-  current_request_ui_to_use_.reset();
-  selector_decisions_.clear();
-
-  if (view_)
-    DeleteBubble();
 
   ScheduleDequeueRequestIfNeeded();
 }
 
 void PermissionRequestManager::CleanUpRequests() {
-  for (auto& queued_request : queued_requests_) {
-    CancelledIncludingDuplicates(queued_request.request);
-    RequestFinishedIncludingDuplicates(queued_request.request);
+  for (auto* queued_request : queued_requests_) {
+    CancelledIncludingDuplicates(queued_request);
+    RequestFinishedIncludingDuplicates(queued_request);
+    request_sources_map_.erase(request_sources_map_.find(queued_request));
   }
   queued_requests_.clear();
 
@@ -638,7 +664,7 @@ void PermissionRequestManager::CleanUpRequests() {
          requests_iter++) {
       CancelledIncludingDuplicates(*requests_iter);
     }
-    FinalizeBubble(PermissionAction::IGNORED);
+    FinalizeCurrentRequests(PermissionAction::IGNORED);
   }
 }
 
@@ -648,9 +674,9 @@ PermissionRequest* PermissionRequestManager::GetExistingRequest(
     if (IsMessageTextEqual(existing_request, request))
       return existing_request;
   }
-  for (RequestAndSource& request_and_source : queued_requests_) {
-    if (IsMessageTextEqual(request_and_source.request, request))
-      return request_and_source.request;
+  for (PermissionRequest* queued_request : queued_requests_) {
+    if (IsMessageTextEqual(queued_request, request))
+      return queued_request;
   }
   return nullptr;
 }
@@ -658,7 +684,7 @@ PermissionRequest* PermissionRequestManager::GetExistingRequest(
 void PermissionRequestManager::PermissionGrantedIncludingDuplicates(
     PermissionRequest* request) {
   DCHECK_EQ(1, base::STLCount(requests_, request) +
-                   CountQueuedPermissionRequests(request))
+                   base::STLCount(queued_requests_, request))
       << "Only requests in [queued_[frame_]]requests_ can have duplicates";
   request->PermissionGranted();
   auto range = duplicate_requests_.equal_range(request);
@@ -669,7 +695,7 @@ void PermissionRequestManager::PermissionGrantedIncludingDuplicates(
 void PermissionRequestManager::PermissionDeniedIncludingDuplicates(
     PermissionRequest* request) {
   DCHECK_EQ(1, base::STLCount(requests_, request) +
-                   CountQueuedPermissionRequests(request))
+                   base::STLCount(queued_requests_, request))
       << "Only requests in [queued_]requests_ can have duplicates";
   request->PermissionDenied();
   auto range = duplicate_requests_.equal_range(request);
@@ -680,7 +706,7 @@ void PermissionRequestManager::PermissionDeniedIncludingDuplicates(
 void PermissionRequestManager::CancelledIncludingDuplicates(
     PermissionRequest* request) {
   DCHECK_EQ(1, base::STLCount(requests_, request) +
-                   CountQueuedPermissionRequests(request))
+                   base::STLCount(queued_requests_, request))
       << "Only requests in [queued_]requests_ can have duplicates";
   request->Cancelled();
   auto range = duplicate_requests_.equal_range(request);
@@ -691,7 +717,7 @@ void PermissionRequestManager::CancelledIncludingDuplicates(
 void PermissionRequestManager::RequestFinishedIncludingDuplicates(
     PermissionRequest* request) {
   DCHECK_EQ(1, base::STLCount(requests_, request) +
-                   CountQueuedPermissionRequests(request))
+                   base::STLCount(queued_requests_, request))
       << "Only requests in [queued_]requests_ can have duplicates";
   request->RequestFinished();
   // Beyond this point, |request| has probably been deleted.
@@ -812,12 +838,19 @@ void PermissionRequestManager::DoAutoResponseForTesting() {
   }
 }
 
-int PermissionRequestManager::CountQueuedPermissionRequests(
-    PermissionRequest* request) {
-  return std::count_if(queued_requests_.begin(), queued_requests_.end(),
-                       [request](const RequestAndSource& entry) {
-                         return request == entry.request;
-                       });
+PermissionRequest* PermissionRequestManager::PeekNextQueuedRequest() {
+  return base::FeatureList::IsEnabled(features::kPermissionChip)
+             ? queued_requests_.back()
+             : queued_requests_.front();
+}
+
+PermissionRequest* PermissionRequestManager::PopNextQueuedRequest() {
+  PermissionRequest* next = PeekNextQueuedRequest();
+  if (base::FeatureList::IsEnabled(features::kPermissionChip))
+    queued_requests_.pop_back();
+  else
+    queued_requests_.pop_front();
+  return next;
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(PermissionRequestManager)

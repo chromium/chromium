@@ -13,6 +13,7 @@ namespace features {
 extern const base::Feature kBlockPromptsIfDismissedOften;
 extern const base::Feature kBlockPromptsIfIgnoredOften;
 extern const base::Feature kBlockRepeatedNotificationPermissionPrompts;
+extern const base::Feature kPermissionChip;
 
 }  // namespace features
 }  // namespace permissions

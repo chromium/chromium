@@ -10,9 +10,9 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/permission_bubble/permission_prompt.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/permission_bubble/permission_prompt_bubble_view.h"
+#include "components/permissions/features.h"
 #include "components/permissions/notification_permission_ui_selector.h"
 #include "components/permissions/permission_request.h"
 #include "components/permissions/permission_request_manager.h"
@@ -56,8 +56,8 @@ PermissionPromptImpl::PermissionPromptImpl(Browser* browser,
     LocationBarView* lbv = GetLocationBarView();
     std::vector<permissions::PermissionRequest*> requests =
         delegate->Requests();
-    if (base::FeatureList::IsEnabled(features::kPermissionChip) && lbv &&
-        std::all_of(requests.begin(), requests.end(), [](auto* request) {
+    if (base::FeatureList::IsEnabled(permissions::features::kPermissionChip) &&
+        lbv && std::all_of(requests.begin(), requests.end(), [](auto* request) {
           return request->GetChipText().has_value();
         })) {
       permission_chip_ = lbv->permission_chip();

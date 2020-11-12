@@ -107,6 +107,7 @@
 #include "components/paint_preview/features/features.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/payments/core/features.h"
+#include "components/permissions/features.h"
 #include "components/policy/core/common/features.h"
 #include "components/previews/core/previews_features.h"
 #include "components/previews/core/previews_switches.h"
@@ -6258,7 +6259,7 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"permission-chip", flag_descriptions::kPermissionChipName,
      flag_descriptions::kPermissionChipDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kPermissionChip)},
+     FEATURE_VALUE_TYPE(permissions::features::kPermissionChip)},
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
     {"dice-web-signin-interception",
