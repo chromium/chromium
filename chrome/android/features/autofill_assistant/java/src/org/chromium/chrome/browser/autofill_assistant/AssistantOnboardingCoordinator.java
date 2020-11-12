@@ -29,6 +29,7 @@ import org.chromium.chrome.browser.autofill_assistant.overlay.AssistantOverlaySt
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.components.embedder_support.util.UrlUtilitiesJni;
@@ -113,19 +114,25 @@ class AssistantOnboardingCoordinator {
                 mContext, mBrowserControls, mCompositorViewHolder, mScrimCoordinator, overlayModel);
         overlayModel.set(AssistantOverlayModel.STATE, AssistantOverlayState.FULL);
 
-        mContent =
-                new AssistantBottomSheetContent(mContext, () -> new AssistantBottomBarDelegate() {
-                    @Override
-                    public boolean onBackButtonPressed() {
-                        onUserAction(
-                                /* accept= */ false, callback, OnBoarding.OB_NO_ANSWER,
-                                DropOutReason.ONBOARDING_BACK_BUTTON_CLICKED);
-                        return true;
-                    }
+        AssistantBottomBarDelegate delegate = new AssistantBottomBarDelegate() {
+            @Override
+            public boolean onBackButtonPressed() {
+                onUserAction(
+                        /* accept= */ false, callback, OnBoarding.OB_NO_ANSWER,
+                        DropOutReason.ONBOARDING_BACK_BUTTON_CLICKED);
+                return true;
+            }
 
-                    @Override
-                    public void onBottomSheetClosedWithSwipe() {}
-                });
+            @Override
+            public void onBottomSheetClosedWithSwipe() {}
+        };
+        BottomSheetContent currentSheetContent = mController.getCurrentSheetContent();
+        if (currentSheetContent instanceof AssistantBottomSheetContent) {
+            mContent = (AssistantBottomSheetContent) currentSheetContent;
+            mContent.setDelegate(() -> delegate);
+        } else {
+            mContent = new AssistantBottomSheetContent(mContext, () -> delegate);
+        }
         initContent(callback);
     }
 

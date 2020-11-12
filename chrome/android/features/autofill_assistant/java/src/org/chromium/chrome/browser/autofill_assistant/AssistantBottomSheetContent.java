@@ -50,6 +50,10 @@ public class AssistantBottomSheetContent implements BottomSheetContent {
         mContentScrollableView = scrollableView;
     }
 
+    public void setDelegate(Supplier<AssistantBottomBarDelegate> supplier) {
+        mBottomBarDelegateSupplier = supplier;
+    }
+
     public void setPeekModeDisabled(boolean disabled) {
         mPeekModeDisabled = disabled;
     }

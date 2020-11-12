@@ -116,6 +116,7 @@ class AssistantBottomBarCoordinator implements AssistantPeekHeightCoordinator.De
         BottomSheetContent currentSheetContent = controller.getCurrentSheetContent();
         if (currentSheetContent instanceof AssistantBottomSheetContent) {
             mContent = (AssistantBottomSheetContent) currentSheetContent;
+            mContent.setDelegate(model::getBottomBarDelegate);
         } else {
             mContent = new AssistantBottomSheetContent(activity, model::getBottomBarDelegate);
         }
