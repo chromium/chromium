@@ -838,4 +838,31 @@ TEST_F(DownloadHistoryTest, RemoveClearedItemFromHistory) {
   ExpectDownloadsRemoved(ids);
 }
 
+// Test that large data URL will be truncated before being inserted into
+// history.
+TEST_F(DownloadHistoryTest, CreateLargeDataURLCompletedItem) {
+  // Create a fresh item not from download DB
+  CreateDownloadHistory({});
+
+  history::DownloadRow row;
+  std::string data_url = "data:text/html,";
+  data_url.append(std::string(2048, 'a'));
+  InitBasicItem(FILE_PATH_LITERAL("/foo/bar.pdf"), data_url.c_str(),
+                "http://example.com/referrer.html",
+                download::DownloadItem::IN_PROGRESS, &row);
+
+  // Incomplete download will not be inserted into history.
+  CallOnDownloadCreated(0);
+  ExpectNoDownloadCreated();
+
+  // Completed download should be inserted.
+  EXPECT_CALL(item(0), IsDone()).WillRepeatedly(Return(true));
+  EXPECT_CALL(item(0), GetState())
+      .WillRepeatedly(Return(download::DownloadItem::COMPLETE));
+  row.state = history::DownloadState::COMPLETE;
+  data_url.resize(1024);
+  row.url_chain.back() = GURL(data_url);
+  item(0).NotifyObserversDownloadUpdated();
+  ExpectDownloadCreated(row);
+}
 }  // anonymous namespace
