@@ -73339,7 +73339,7 @@ Full version information for the fingerprint enum values:
   <int value="16" label="Decision made to create infobar on Android"/>
   <int value="17" label="Show omnibar icon to the user"/>
   <int value="18" label="Suppress infobar but show omnibar icon"/>
-  <int value="19" label="Aborted by CLD and HTML/content language conflict"/>
+  <int value="19" label="Show infobar for predefined target language"/>
   <int value="20" label="Disabled because network unavailable"/>
   <int value="21" label="Page state doesn't require translation"/>
   <int value="22"
