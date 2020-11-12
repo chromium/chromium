@@ -6,6 +6,7 @@
 
 #include "base/bits.h"
 #include "base/fuchsia/fuchsia_logging.h"
+#include "build/build_config.h"
 #include "gpu/vulkan/vulkan_device_queue.h"
 #include "gpu/vulkan/vulkan_function_pointers.h"
 #include "ui/gfx/buffer_format_util.h"
@@ -28,6 +29,12 @@ VkFormat VkFormatForBufferFormat(gfx::BufferFormat buffer_format) {
     case gfx::BufferFormat::YUV_420_BIPLANAR:
       return VK_FORMAT_G8_B8R8_2PLANE_420_UNORM;
 
+    case gfx::BufferFormat::R_8:
+      return VK_FORMAT_R8_UNORM;
+
+    case gfx::BufferFormat::RG_88:
+      return VK_FORMAT_R8G8_UNORM;
+
     case gfx::BufferFormat::BGRA_8888:
     case gfx::BufferFormat::BGRX_8888:
       return VK_FORMAT_B8G8R8A8_UNORM;
@@ -48,16 +55,42 @@ VkFormat VkFormatForBufferFormat(gfx::BufferFormat buffer_format) {
 bool SysmemBufferCollection::IsNativePixmapConfigSupported(
     gfx::BufferFormat format,
     gfx::BufferUsage usage) {
-  bool format_supported = format == gfx::BufferFormat::YUV_420_BIPLANAR ||
-                          format == gfx::BufferFormat::RGBA_8888 ||
-                          format == gfx::BufferFormat::RGBX_8888 ||
-                          format == gfx::BufferFormat::BGRA_8888 ||
-                          format == gfx::BufferFormat::BGRX_8888;
-  bool usage_supported = usage == gfx::BufferUsage::SCANOUT ||
-                         usage == gfx::BufferUsage::SCANOUT_CPU_READ_WRITE ||
-                         usage == gfx::BufferUsage::GPU_READ_CPU_READ_WRITE ||
-                         usage == gfx::BufferUsage::GPU_READ;
-  return format_supported && usage_supported;
+  switch (format) {
+    case gfx::BufferFormat::YUV_420_BIPLANAR:
+    case gfx::BufferFormat::R_8:
+    case gfx::BufferFormat::RG_88:
+    case gfx::BufferFormat::RGBA_8888:
+    case gfx::BufferFormat::RGBX_8888:
+    case gfx::BufferFormat::BGRA_8888:
+    case gfx::BufferFormat::BGRX_8888:
+      break;
+
+    default:
+      return false;
+  }
+  switch (usage) {
+    case gfx::BufferUsage::SCANOUT:
+    case gfx::BufferUsage::GPU_READ:
+      break;
+
+    case gfx::BufferUsage::SCANOUT_CPU_READ_WRITE:
+    case gfx::BufferUsage::GPU_READ_CPU_READ_WRITE:
+#if defined(ARCH_CPU_X86_64)
+      // SwiftShader currently doesn't support liner image layouts (b/171299814)
+      // required for images accessed by CPU, so these formats cannot be
+      // supported with Goldfish Vulkan drivers running under emulator.It's not
+      // straightforward to detect format support here because this code runs in
+      // the renderer process. Disable these formats for all X64 devices for
+      // now.
+      // TODO(crbug.com/1141538): remove this workaround.
+      return false;
+#endif
+      break;
+
+    default:
+      return false;
+  }
+  return true;
 }
 
 SysmemBufferCollection::SysmemBufferCollection()
