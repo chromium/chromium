@@ -4,13 +4,19 @@
 
 #include "net/dns/dns_test_util.h"
 
+#include <string>
+#include <utility>
+#include <vector>
+
 #include "base/big_endian.h"
 #include "base/bind.h"
+#include "base/check.h"
 #include "base/location.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/single_thread_task_runner.h"
 #include "base/sys_byteorder.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/time/time.h"
 #include "net/base/io_buffer.h"
 #include "net/base/ip_address.h"
 #include "net/base/net_errors.h"
@@ -97,6 +103,23 @@ DnsResourceRecord BuildTestAddressRecord(std::string name,
       std::move(name),
       ip.IsIPv4() ? dns_protocol::kTypeA : dns_protocol::kTypeAAAA,
       net::IPAddressToPackedString(ip), ttl);
+}
+
+DnsResourceRecord BuildTestTextRecord(std::string name,
+                                      std::vector<std::string> text_strings,
+                                      base::TimeDelta ttl) {
+  DCHECK(!text_strings.empty());
+
+  std::string rdata;
+  for (const std::string& text_string : text_strings) {
+    DCHECK(!text_string.empty());
+
+    rdata += base::checked_cast<unsigned char>(text_string.size());
+    rdata += text_string;
+  }
+
+  return BuildTestDnsRecord(std::move(name), dns_protocol::kTypeTXT,
+                            std::move(rdata));
 }
 
 DnsResourceRecord BuildTestHttpsAliasRecord(std::string name,
@@ -215,18 +238,7 @@ DnsResponse BuildTestDnsTextResponse(
 
   std::vector<DnsResourceRecord> answers;
   for (std::vector<std::string>& text_record : text_records) {
-    DCHECK(!text_record.empty());
-
-    std::string rdata;
-    for (std::string text_string : text_record) {
-      DCHECK(!text_string.empty());
-
-      rdata += base::checked_cast<unsigned char>(text_string.size());
-      rdata += std::move(text_string);
-    }
-
-    answers.push_back(BuildTestDnsRecord(answer_name, dns_protocol::kTypeTXT,
-                                         std::move(rdata)));
+    answers.push_back(BuildTestTextRecord(answer_name, std::move(text_record)));
   }
 
   return BuildTestDnsResponse(std::move(name), dns_protocol::kTypeTXT, answers);
