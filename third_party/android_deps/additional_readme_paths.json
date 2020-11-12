@@ -20,6 +20,7 @@
     "libs/androidx_concurrent_concurrent_futures",
     "libs/androidx_coordinatorlayout_coordinatorlayout",
     "libs/androidx_core_core",
+    "libs/androidx_core_core_animation",
     "libs/androidx_cursoradapter_cursoradapter",
     "libs/androidx_customview_customview",
     "libs/androidx_documentfile_documentfile",

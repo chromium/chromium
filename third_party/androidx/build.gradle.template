@@ -24,6 +24,7 @@ dependencies {
     compile "androidx.lifecycle:lifecycle-viewmodel:{{androidx_dependency_version}}"
 
     compile "androidx.core:core:{{androidx_dependency_version}}"
+    compile "androidx.core:core-animation:{{androidx_dependency_version}}"
     compile "androidx.activity:activity:{{androidx_dependency_version}}"
     compile "androidx.annotation:annotation:{{androidx_dependency_version}}"
     compile "androidx.appcompat:appcompat:{{androidx_dependency_version}}"

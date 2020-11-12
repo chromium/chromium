@@ -1,0 +1,13 @@
+Name: Android Support Animation
+Short Name: core-animation
+URL: https://developer.android.com/jetpack/androidx/releases/core#1.0.0-SNAPSHOT
+Version: 1.0.0-SNAPSHOT
+License: Apache Version 2.0
+License File: LICENSE
+Security Critical: yes
+
+Description:
+This library provides functionalities for creating and manipulating animations for API 14 and above.
+
+Local Modifications:
+No modifications.

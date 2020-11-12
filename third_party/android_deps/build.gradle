@@ -53,6 +53,7 @@ dependencies {
     // Support v4 libraries
     def androidXSupportLibVersion = '1.0.0'
     compile "androidx.core:core:1.1.0"
+    compile "androidx.core:core-animation:1.0.0-SNAPSHOT"
     compile "androidx.activity:activity:1.1.0"
     compile "androidx.annotation:annotation:1.1.0"
     compile "androidx.appcompat:appcompat:1.2.0-beta01"

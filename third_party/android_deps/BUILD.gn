@@ -276,7 +276,7 @@ android_aar_prebuilt("androidx_coordinatorlayout_coordinatorlayout_java") {
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 android_aar_prebuilt("androidx_core_core_java") {
-  aar_path = "libs/androidx_core_core/core-1.3.0-beta01.aar"
+  aar_path = "libs/androidx_core_core/core-1.3.1.aar"
   info_path = "libs/androidx_core_core/androidx_core_core.info"
   deps = [
     ":androidx_annotation_annotation_java",
@@ -295,6 +295,20 @@ android_aar_prebuilt("androidx_core_core_java") {
   # shown when incremental_install=true.
   ignore_manifest = true
   ignore_proguard_configs = true
+}
+
+# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+android_aar_prebuilt("androidx_core_core_animation_java") {
+  aar_path =
+      "libs/androidx_core_core_animation/core-animation-1.0.0-SNAPSHOT.aar"
+  info_path =
+      "libs/androidx_core_core_animation/androidx_core_core_animation.info"
+  deps = [
+    ":androidx_annotation_annotation_java",
+    ":androidx_collection_collection_java",
+    ":androidx_core_core_java",
+  ]
+  resource_overlay = true
 }
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
