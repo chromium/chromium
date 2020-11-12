@@ -40,6 +40,10 @@ BASE_EXPORT bool GetDownloadsDirectory(FilePath* result);
 // directory, and a private directory on external SD card.
 BASE_EXPORT std::vector<FilePath> GetAllPrivateDownloadsDirectories();
 
+// Retrieves the paths to all secondary storage download directories. e.g.
+// /storage/1AEF-1A1E/Download/.
+BASE_EXPORT std::vector<FilePath> GetSecondaryStorageDownloadDirectories();
+
 // Retrieves the path to the native JNI libraries via
 // ApplicationInfo.nativeLibraryDir on the Java side. The result is placed in
 // the FilePath pointed to by 'result'.

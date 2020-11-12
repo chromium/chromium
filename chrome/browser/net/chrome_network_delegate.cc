@@ -15,6 +15,7 @@
 #endif
 
 #if defined(OS_ANDROID)
+#include "base/android/build_info.h"
 #include "base/android/path_utils.h"
 #endif
 
@@ -76,9 +77,19 @@ bool IsAccessAllowedInternal(const base::FilePath& path,
   if (external_storage_path.IsParent(path))
     return true;
 
-  auto all_download_dirs = base::android::GetAllPrivateDownloadsDirectories();
-  for (const auto& dir : all_download_dirs)
-    allowlist.push_back(dir);
+  std::vector<base::FilePath> all_download_dirs =
+      base::android::GetAllPrivateDownloadsDirectories();
+  allowlist.insert(allowlist.end(), all_download_dirs.begin(),
+                   all_download_dirs.end());
+
+  base::android::BuildInfo* build_info =
+      base::android::BuildInfo::GetInstance();
+  if (build_info->sdk_int() > base::android::SDK_VERSION_Q) {
+    std::vector<base::FilePath> all_external_download_volumes =
+        base::android::GetSecondaryStorageDownloadDirectories();
+    allowlist.insert(allowlist.end(), all_external_download_volumes.begin(),
+                     all_external_download_volumes.end());
+  }
 
   // allowlist of other allowed directories.
   static const base::FilePath::CharType* const kLocalAccessAllowList[] = {
