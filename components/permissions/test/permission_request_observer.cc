@@ -8,7 +8,7 @@ namespace permissions {
 
 PermissionRequestObserver::PermissionRequestObserver(
     content::WebContents* web_contents) {
-  observer_.Add(PermissionRequestManager::FromWebContents(web_contents));
+  observation_.Observe(PermissionRequestManager::FromWebContents(web_contents));
 }
 
 PermissionRequestObserver::~PermissionRequestObserver() = default;

@@ -6,7 +6,7 @@
 #define COMPONENTS_PERMISSIONS_TEST_PERMISSION_REQUEST_OBSERVER_H_
 
 #include "base/run_loop.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "components/permissions/permission_request_manager.h"
 
 namespace permissions {
@@ -30,8 +30,9 @@ class PermissionRequestObserver : public PermissionRequestManager::Observer {
   void OnBubbleAdded() override;
 
  private:
-  ScopedObserver<PermissionRequestManager, PermissionRequestManager::Observer>
-      observer_{this};
+  base::ScopedObservation<PermissionRequestManager,
+                          PermissionRequestManager::Observer>
+      observation_{this};
   base::RunLoop loop_;
   bool request_shown_ = false;
 };
