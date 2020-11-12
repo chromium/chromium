@@ -15,6 +15,7 @@
 #include "components/metrics/metrics_provider.h"
 #include "components/metrics/metrics_service.h"
 #include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
+#include "components/variations/variations_ids_provider.h"
 #include "components/version_info/android/channel_getter.h"
 #include "content/public/browser/browser_context.h"
 #include "google_apis/google_api_keys.h"
@@ -140,6 +141,8 @@ void WebLayerMetricsServiceClient::OnMetricsStart() {
     std::move(task).Run();
   }
   post_start_tasks_.clear();
+  GetMetricsService()->synthetic_trial_registry()->AddSyntheticTrialObserver(
+      variations::VariationsIdsProvider::GetInstance());
 }
 
 void WebLayerMetricsServiceClient::OnMetricsNotStarted() {
