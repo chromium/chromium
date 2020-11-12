@@ -165,18 +165,13 @@ void HistoryTabHelper::DidFinishNavigation(
       !content_suggestions_navigation &&
       referrer_url != kReadingListReferrerURL;
 
-  // Top-level frame navigations are visible; everything else is hidden.
-  // Also hide top-level navigations that result in an error in order to
-  // prevent the omnibox from suggesting URLs that have never been navigated
-  // to successfully.  (If a top-level navigation to the URL succeeds at some
-  // point, the URL will be unhidden and thus eligible to be suggested by the
-  // omnibox.)
+  // Hide navigations that result in an error in order to prevent the omnibox
+  // from suggesting URLs that have never been navigated to successfully.
+  // (If a navigation to the URL succeeds at some point, the URL will be
+  // unhidden and thus eligible to be suggested by the omnibox.)
   const bool hidden =
-      navigation_context->GetError() ||
       (navigation_context->GetResponseHeaders() &&
-       navigation_context->GetResponseHeaders()->response_code() >= 400 &&
-       navigation_context->GetResponseHeaders()->response_code() > 600) ||
-      !ui::PageTransitionIsMainFrame(navigation_context->GetPageTransition());
+       navigation_context->GetResponseHeaders()->response_code() >= 400);
   history::HistoryAddPageArgs add_page_args(
       url, last_committed_item->GetTimestamp(), this,
       last_committed_item->GetUniqueID(), referrer_url, redirects, transition,
