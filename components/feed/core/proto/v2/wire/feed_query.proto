@@ -8,6 +8,7 @@ package feedwire;
 
 option optimize_for = LITE_RUNTIME;
 
+import "components/feed/core/proto/v2/wire/chrome_fulfillment_info.proto";
 import "components/feed/core/proto/v2/wire/token.proto";
 
 message FeedQuery {
@@ -47,6 +48,9 @@ message FeedQuery {
     // reason = IN_PLACE_UPDATE.
     Tokens in_place_update_tokens = 5;
   }
+
+  // Information on how to do content fulfillment for Chrome.
+  optional ChromeFulfillmentInfo chrome_fulfillment_info = 341477699;
 
   reserved 2;
 }

@@ -106,6 +106,24 @@ bool GetHasReachedClickAndViewActionsUploadConditions(
       feed::prefs::kHasReachedClickAndViewActionsUploadConditions);
 }
 
+void IncrementNoticeCardViewsCount(PrefService& pref_service) {
+  int count = pref_service.GetInteger(feed::prefs::kNoticeCardViewsCount);
+  pref_service.SetInteger(feed::prefs::kNoticeCardViewsCount, count + 1);
+}
+
+int GetNoticeCardViewsCount(const PrefService& pref_service) {
+  return pref_service.GetInteger(feed::prefs::kNoticeCardViewsCount);
+}
+
+void IncrementNoticeCardClicksCount(PrefService& pref_service) {
+  int count = pref_service.GetInteger(feed::prefs::kNoticeCardClicksCount);
+  pref_service.SetInteger(feed::prefs::kNoticeCardClicksCount, count + 1);
+}
+
+int GetNoticeCardClicksCount(const PrefService& pref_service) {
+  return pref_service.GetInteger(feed::prefs::kNoticeCardClicksCount);
+}
+
 }  // namespace prefs
 
 }  // namespace feed

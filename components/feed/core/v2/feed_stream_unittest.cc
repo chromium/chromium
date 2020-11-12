@@ -574,10 +574,7 @@ class FeedStreamTest : public testing::Test, public FeedStream::Delegate {
     CreateStream();
   }
 
-  virtual void SetupFeatures() {
-    scoped_feature_list_.InitAndDisableFeature(
-        feed::kInterestFeedV2ClicksAndViewsConditionalUpload);
-  }
+  virtual void SetupFeatures() {}
 
   void TearDown() override {
     // Ensure the task queue can return to idle. Failure to do so may be due
@@ -2378,6 +2375,39 @@ TEST_F(FeedStreamTest, SendsClientInstanceId) {
       stream_->GetRequestMetadata().client_instance_id;
   ASSERT_NE("", new_instance_id);
   ASSERT_NE(first_instance_id, new_instance_id);
+}
+
+TEST_F(FeedStreamTest, LoadStreamSendsNoticeCardAcknowledgement) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      feed::kInterestFeedNoticeCardAutoDismiss);
+
+  store_->OverwriteStream(MakeTypicalInitialModelState(), base::DoNothing());
+  TestSurface surface(stream_.get());
+  WaitForIdleTaskQueue();
+
+  // Generate 3 view actions and 1 click action to trigger the acknowledgement
+  // of the notice card.
+  const int notice_card_index = 0;
+  std::string slice_id =
+      surface.initial_state->updated_slices(notice_card_index)
+          .slice()
+          .slice_id();
+  stream_->ReportSliceViewed(surface.GetSurfaceId(), slice_id);
+  stream_->ReportSliceViewed(surface.GetSurfaceId(), slice_id);
+  stream_->ReportSliceViewed(surface.GetSurfaceId(), slice_id);
+  stream_->ReportOpenAction(slice_id);
+
+  response_translator_.InjectResponse(MakeTypicalInitialModelState());
+  refresh_scheduler_.Clear();
+  stream_->UnloadModel();
+  stream_->ExecuteRefreshTask();
+  WaitForIdleTaskQueue();
+
+  EXPECT_TRUE(network_.query_request_sent->feed_request()
+                  .feed_query()
+                  .chrome_fulfillment_info()
+                  .notice_card_acknowledged());
 }
 
 }  // namespace
