@@ -194,6 +194,9 @@ cr.define('settings', function() {
      * @param {number} deltaY y-axis position change since the last update.
      */
     dragDisplayDelta(id, deltaX, deltaY) {}
+
+    updateStorageInfo() {}
+    openMyFiles() {}
   }
 
   /**
@@ -298,6 +301,16 @@ cr.define('settings', function() {
     /** @override */
     dragDisplayDelta(id, deltaX, deltaY) {
       chrome.send('dragDisplayDelta', [id, deltaX, deltaY]);
+    }
+
+    /** @override */
+    updateStorageInfo() {
+      chrome.send('updateStorageInfo');
+    }
+
+    /** @override */
+    openMyFiles() {
+      chrome.send('openMyFiles');
     }
   }
 

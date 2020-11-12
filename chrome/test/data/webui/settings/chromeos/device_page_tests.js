@@ -151,6 +151,9 @@ cr.define('device_page_tests', function() {
       this.lastHighlightedDisplayId_ = id;
     },
 
+    /** @override */
+    updateStorageInfo: function() {},
+
     // Test interface:
     /**
      * Sets whether the app list contains Android apps.
@@ -2433,12 +2436,6 @@ cr.define('device_page_tests', function() {
       });
 
       setup(function() {
-        // Avoid unwanted callbacks by disabling storage computations when the
-        // storage page is loaded.
-        registerMessageCallback(
-            'updateStorageInfo', null /* message handler */,
-            () => {} /* callback */);
-
         return showAndGetDeviceSubpage('storage', settings.routes.STORAGE)
             .then(function(page) {
               storagePage = page;

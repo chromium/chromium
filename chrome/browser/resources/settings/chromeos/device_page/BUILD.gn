@@ -147,6 +147,7 @@ js_library("power") {
 
 js_library("storage") {
   deps = [
+    ":device_page_browser_proxy",
     "..:os_route",
     "..:route_origin_behavior",
     "../..:router",

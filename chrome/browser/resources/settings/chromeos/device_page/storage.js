@@ -74,6 +74,9 @@ cr.define('settings', function() {
      */
     updateTimerId_: -1,
 
+    /** @private {?settings.DevicePageBrowserProxy} */
+    browserProxy_: null,
+
     /** @override */
     attached() {
       this.addWebUIListener(
@@ -105,6 +108,7 @@ cr.define('settings', function() {
       this.addFocusConfig_(r.ACCOUNTS, '#otherUsersSize');
       this.addFocusConfig_(
           r.EXTERNAL_STORAGE_PREFERENCES, '#externalStoragePreferences');
+      this.browserProxy_ = settings.DevicePageBrowserProxyImpl.getInstance();
     },
 
     /**
@@ -128,7 +132,7 @@ cr.define('settings', function() {
     onPageShown_() {
       // Updating storage information can be expensive (e.g. computing directory
       // sizes recursively), so we delay this operation until the page is shown.
-      chrome.send('updateStorageInfo');
+      this.browserProxy_.updateStorageInfo();
       // We update the storage usage periodically when the overlay is visible.
       this.startPeriodicUpdate_();
     },
@@ -138,7 +142,7 @@ cr.define('settings', function() {
      * @private
      */
     onMyFilesTap_() {
-      chrome.send('openMyFiles');
+      this.browserProxy_.openMyFiles();
     },
 
     /**
@@ -279,7 +283,7 @@ cr.define('settings', function() {
             this.stopPeriodicUpdate_();
             return;
           }
-          chrome.send('updateStorageInfo');
+          this.browserProxy_.updateStorageInfo();
         }, 5000);
       }
     },
