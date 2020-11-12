@@ -339,6 +339,9 @@ below:
         <message name="IDS_AX_COLOR_EDIT_SATURATION" desc="Accessibility label of the saturation edit box in a color picker popup">
           Saturation
         </message>
+        <message name="IDS_AX_COLOR_EYEDROPPER" desc="Accessibility label of the eyedropper button in a color picker popup">
+          Eyedropper
+        </message>
         <message name="IDS_AX_COLOR_FORMAT_TOGGLER" desc="Accessibility label of the format toggler spinbutton in a color picker popup">
           Format toggler
         </message>

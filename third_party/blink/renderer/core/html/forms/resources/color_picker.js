@@ -813,6 +813,8 @@ class EyeDropper extends HTMLElement {
     }
 
     this.setAttribute('tabIndex', 0);
+    this.setAttribute('role', 'button');
+    this.setAttribute('aria-label', global.params.axEyedropperLabel);
     this.addEventListener('click', this.onClick_);
     this.addEventListener('keydown', this.onKeyDown_);
   }

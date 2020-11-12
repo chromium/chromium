@@ -142,6 +142,7 @@ void ColorChooserPopupUIController::WriteColorPickerDocument(
                        data);
   AddLocalizedProperty("axFormatTogglerLabel", IDS_AX_COLOR_FORMAT_TOGGLER,
                        data);
+  AddLocalizedProperty("axEyedropperLabel", IDS_AX_COLOR_EYEDROPPER, data);
 #else
   CHECK(false) << "We should never reach PagePopupClient code on Android";
 #endif
