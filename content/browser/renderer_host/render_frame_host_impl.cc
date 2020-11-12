@@ -8554,10 +8554,6 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
     // same-document navigations.
     is_commit_allowed_to_proceed |= is_same_document_navigation;
 
-    // 3) Error pages implementations in Chrome can commit twice.
-    // TODO(clamy): Fix this.
-    is_commit_allowed_to_proceed |= params->url_is_unreachable;
-
     if (!is_commit_allowed_to_proceed) {
       bad_message::ReceivedBadMessage(
           GetProcess(),

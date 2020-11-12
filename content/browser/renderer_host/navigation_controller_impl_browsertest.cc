@@ -8699,6 +8699,43 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTestNoServer,
             controller.GetLastCommittedEntry()->GetPageType());
 }
 
+IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
+                       ErrorPageNavigationWithoutNavigationRequestGetsKilled) {
+  // Navigate normally to a page.
+  GURL good_url(embedded_test_server()->GetURL("/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), good_url));
+
+  // Try to fake an error page navigation by doing a DidCommitProvisionalLoad
+  // call. The browser doesn't know about the navigation at all previously.
+  GURL bad_url(embedded_test_server()->GetURL("/title2.html"));
+  std::unique_ptr<FrameHostMsg_DidCommitProvisionalLoad_Params> params =
+      std::make_unique<FrameHostMsg_DidCommitProvisionalLoad_Params>();
+  params->nav_entry_id = 0;
+  params->did_create_new_entry = true;
+  params->url = bad_url;
+  params->transition = ui::PAGE_TRANSITION_LINK;
+  params->gesture = NavigationGestureUser;
+  params->page_state = blink::PageState::CreateFromURL(bad_url);
+  params->method = "POST";
+  params->post_id = 2;
+  params->url_is_unreachable = true;
+  params->embedding_token = base::UnguessableToken::Create();
+  RenderFrameHostImpl* rfh = contents()->GetMainFrame();
+  RenderProcessHostBadIpcMessageWaiter kill_waiter(rfh->GetProcess());
+  mojo::PendingRemote<service_manager::mojom::InterfaceProvider>
+      isolated_interface_provider;
+  static_cast<mojom::FrameHost*>(rfh)->DidCommitProvisionalLoad(
+      std::move(params),
+      mojom::DidCommitProvisionalLoadInterfaceParams::New(
+          isolated_interface_provider.InitWithNewPipeAndPassReceiver(),
+          mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>()
+              .InitWithNewPipeAndPassReceiver()));
+
+  // Verify that the malicious renderer got killed.
+  EXPECT_EQ(bad_message::RFH_NO_MATCHING_NAVIGATION_REQUEST_ON_COMMIT,
+            kill_waiter.Wait());
+}
+
 // Verify that a session history navigation which results in a different
 // SiteInstance from the original commit is correctly handled - classified
 // as new navigation with replacement, resulting in no new navigation
