@@ -68,3 +68,43 @@ TEST_F(SettingsImageDetailTextItemTest, setDetailTextColor) {
 
   EXPECT_NSEQ(UIColor.blueColor, imageDetailCell.detailTextLabel.textColor);
 }
+
+// Tests that the text, detail text and image are honoured after a call to
+// |configureCell:|, and then a second call.
+TEST_F(SettingsImageDetailTextItemTest, ConfigureCellTwice) {
+  SettingsImageDetailTextItem* item =
+      [[SettingsImageDetailTextItem alloc] initWithType:0];
+  NSString* text = @"Test Text";
+  NSString* detailText = @"Test Detail Text";
+  UIColor* detailTextColor = UIColor.whiteColor;
+  UIImage* image = [[UIImage alloc] init];
+  item.image = image;
+  item.text = text;
+  item.detailText = detailText;
+  item.detailTextColor = detailTextColor;
+
+  id cell = [[[item cellClass] alloc] init];
+  SettingsImageDetailTextCell* imageDetailCell =
+      static_cast<SettingsImageDetailTextCell*>(cell);
+
+  EXPECT_FALSE(imageDetailCell.textLabel.text);
+  EXPECT_FALSE(imageDetailCell.detailTextLabel.text);
+
+  [item configureCell:cell withStyler:[[ChromeTableViewStyler alloc] init]];
+  EXPECT_NSEQ(text, imageDetailCell.textLabel.text);
+  EXPECT_NSEQ(detailText, imageDetailCell.detailTextLabel.text);
+  EXPECT_NSEQ(UIColor.whiteColor, imageDetailCell.detailTextLabel.textColor);
+  EXPECT_NSEQ(image, imageDetailCell.image);
+
+  // Change the text, the detail text, and the detail text color to new values.
+  text = @"Test Text2";
+  detailText = @"Test Detail Text2";
+  item.text = text;
+  item.detailText = detailText;
+  item.detailTextColor = nil;
+  [item configureCell:cell withStyler:[[ChromeTableViewStyler alloc] init]];
+  EXPECT_NSEQ(text, imageDetailCell.textLabel.text);
+  EXPECT_NSEQ(detailText, imageDetailCell.detailTextLabel.text);
+  EXPECT_NSEQ(UIColor.cr_secondaryLabelColor,
+              imageDetailCell.detailTextLabel.textColor);
+}
