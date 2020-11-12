@@ -30,6 +30,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/metrics/histogram_functions.h"
 #include "third_party/blink/public/common/loader/worker_main_script_load_parameters.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
@@ -51,7 +52,6 @@
 #include "third_party/blink/renderer/core/workers/worker_reporting_proxy.h"
 #include "third_party/blink/renderer/platform/bindings/microtask.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
-#include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_client_settings_object_snapshot.h"
 #include "third_party/blink/renderer/platform/loader/fetch/worker_resource_timing_notifier.h"
@@ -160,10 +160,7 @@ WorkerThread::~WorkerThread() {
 
   DCHECK(child_threads_.IsEmpty());
   DCHECK_NE(ExitCode::kNotTerminated, exit_code_);
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(
-      EnumerationHistogram, exit_code_histogram,
-      ("WorkerThread.ExitCode", static_cast<int>(ExitCode::kLastEnum)));
-  exit_code_histogram.Count(static_cast<int>(exit_code_));
+  base::UmaHistogramEnumeration("WorkerThread.ExitCode", exit_code_);
 }
 
 void WorkerThread::Start(
@@ -416,9 +413,6 @@ bool WorkerThread::IsForciblyTerminated() {
     case ExitCode::kSyncForciblyTerminated:
     case ExitCode::kAsyncForciblyTerminated:
       return true;
-    case ExitCode::kLastEnum:
-      NOTREACHED() << static_cast<int>(exit_code_);
-      return false;
   }
   NOTREACHED() << static_cast<int>(exit_code_);
   return false;

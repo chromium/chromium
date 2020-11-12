@@ -69,13 +69,10 @@ enum class ScriptSchedulingType {
   // execute after parsing completes (due to ForceDeferScriptIntervention).
   //
   // Spec: not yet spec'ed. https://crbug.com/976061
-  kForceDefer
+  kForceDefer,
 
-  // When adding a new value, update kLastScriptSchedulingType.
+  kMaxValue = kForceDefer,
 };
-
-static const int kLastScriptSchedulingType =
-    static_cast<int>(ScriptSchedulingType::kForceDefer);
 
 }  // namespace blink
 

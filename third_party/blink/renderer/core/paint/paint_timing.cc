@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/metrics/histogram_macros.h"
 #include "base/time/default_tick_clock.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -20,7 +21,6 @@
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/core/timing/window_performance.h"
-#include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/instrumentation/resource_coordinator/document_resource_coordinator.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
@@ -335,11 +335,8 @@ void PaintTiming::SetFirstPaintAfterBackForwardCacheRestoreSwap(
 }
 
 void PaintTiming::ReportSwapResultHistogram(WebSwapResult result) {
-  DEFINE_STATIC_LOCAL(
-      EnumerationHistogram, did_swap_histogram,
-      ("PageLoad.Internal.Renderer.PaintTiming.SwapResult",
-       static_cast<uint32_t>(WebSwapResult::kSwapResultLast) + 1));
-  did_swap_histogram.Count(static_cast<uint32_t>(result));
+  UMA_HISTOGRAM_ENUMERATION("PageLoad.Internal.Renderer.PaintTiming.SwapResult",
+                            result);
 }
 
 void PaintTiming::OnRestoredFromBackForwardCache() {

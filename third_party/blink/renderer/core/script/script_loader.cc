@@ -957,10 +957,7 @@ PendingScript* ScriptLoader::TakePendingScript(
     ScriptSchedulingType scheduling_type) {
   CHECK(prepared_pending_script_);
 
-  DEFINE_STATIC_LOCAL(
-      EnumerationHistogram, scheduling_type_histogram,
-      ("Blink.Script.SchedulingType", kLastScriptSchedulingType + 1));
-  scheduling_type_histogram.Count(static_cast<int>(scheduling_type));
+  UMA_HISTOGRAM_ENUMERATION("Blink.Script.SchedulingType", scheduling_type);
   PendingScript* pending_script = prepared_pending_script_;
   prepared_pending_script_ = nullptr;
   pending_script->SetSchedulingType(scheduling_type);

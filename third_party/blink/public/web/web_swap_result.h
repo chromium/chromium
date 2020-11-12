@@ -21,7 +21,7 @@ enum class WebSwapResult {
   kDidNotSwapCommitFails = 2,
   kDidNotSwapCommitNoUpdate = 3,
   kDidNotSwapActivationFails = 4,
-  kSwapResultLast = kDidNotSwapActivationFails,
+  kMaxValue = kDidNotSwapActivationFails,
 };
 using WebReportTimeCallback =
     base::OnceCallback<void(WebSwapResult, base::TimeTicks)>;

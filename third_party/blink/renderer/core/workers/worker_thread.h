@@ -91,7 +91,7 @@ class CORE_EXPORT WorkerThread : public Thread::TaskObserver {
     kGracefullyTerminated,
     kSyncForciblyTerminated,
     kAsyncForciblyTerminated,
-    kLastEnum,
+    kMaxValue = kAsyncForciblyTerminated,
   };
 
   ~WorkerThread() override;
