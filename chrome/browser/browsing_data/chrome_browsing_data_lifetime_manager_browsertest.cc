@@ -96,6 +96,33 @@ class ChromeBrowsingDataLifetimeManagerTest
   }
 };
 
+IN_PROC_BROWSER_TEST_P(ChromeBrowsingDataLifetimeManagerTest, PrefChange) {
+  static constexpr char kCookiesPref[] =
+      R"([{"time_to_live_in_hours": 1, "data_types":
+      ["cookies_and_other_site_data"]}])";
+  static constexpr char kDownloadHistoryPref[] =
+      R"([{"time_to_live_in_hours": 1, "data_types":["download_history"]}])";
+
+  GURL url = embedded_test_server()->GetURL("/browsing_data/site_data.html");
+  ui_test_utils::NavigateToURL(GetBrowser(), url);
+
+  // Add cookie.
+  SetDataForType("Cookie");
+  EXPECT_TRUE(HasDataForType("Cookie"));
+
+  // Expect that cookies are deleted.
+  ApplyBrowsingDataLifetimeDeletion(kCookiesPref);
+  EXPECT_FALSE(HasDataForType("Cookie"));
+
+  // Download an item.
+  DownloadAnItem();
+  VerifyDownloadCount(1u);
+
+  // Change the pref and verify that download history is deleted.
+  ApplyBrowsingDataLifetimeDeletion(kDownloadHistoryPref);
+  VerifyDownloadCount(0u);
+}
+
 IN_PROC_BROWSER_TEST_P(ChromeBrowsingDataLifetimeManagerTest,
                        ScheduledRemovalDownload) {
   static constexpr char kPref[] =

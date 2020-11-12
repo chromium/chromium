@@ -4,12 +4,18 @@
 
 #include "chrome/browser/browsing_data/chrome_browsing_data_lifetime_manager.h"
 
+#include <algorithm>
+#include <limits>
 #include <string>
+#include <utility>
 
 #include "base/containers/flat_set.h"
+#include "base/location.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/scoped_observation.h"
+#include "base/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/values.h"
-#include "build/build_config.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_delegate.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/profile_sync_service_factory.h"
@@ -29,8 +35,73 @@
 
 namespace {
 
+constexpr int kInitialCleanupDelayInMinutes = 2;
+
 using ScheduledRemovalSettings =
     ChromeBrowsingDataLifetimeManager::ScheduledRemovalSettings;
+
+// An observer of all the browsing data removal tasks that are started by the
+// ChromeBrowsingDataLifetimeManager that records the the tasks starts and
+// completed states as well as their durations.
+class BrowsingDataLifetimeManagerRemoverObserver
+    : public content::BrowsingDataRemover::Observer {
+ public:
+  ~BrowsingDataLifetimeManagerRemoverObserver() override = default;
+
+  // Creates an instance of BrowsingDataLifetimeManagerRemoverObserver that
+  // manages its own lifetime. The instance will be deleted after
+  // |OnBrowsingDataRemoverDone| is called.
+  static content::BrowsingDataRemover::Observer* Create(
+      content::BrowsingDataRemover* remover,
+      bool filterable_deletion) {
+    return new BrowsingDataLifetimeManagerRemoverObserver(remover,
+                                                          filterable_deletion);
+  }
+
+  // content::BrowsingDataRemover::Observer:
+  void OnBrowsingDataRemoverDone(uint64_t failed_data_types) override {
+    base::UmaHistogramMediumTimes(duration_histogram(),
+                                  base::TimeTicks::Now() - start_time_);
+    base::UmaHistogramBoolean(state_histogram(),
+                              /*BooleanStartedCompleted.Completed*/ true);
+    delete this;
+  }
+
+ private:
+  BrowsingDataLifetimeManagerRemoverObserver(
+      content::BrowsingDataRemover* remover,
+      bool filterable_deletion)
+      : start_time_(base::TimeTicks::Now()),
+        filterable_deletion_(filterable_deletion) {
+    browsing_data_remover_observer_.Observe(remover);
+    base::UmaHistogramBoolean(state_histogram(),
+                              /*BooleanStartedCompleted.Started*/ false);
+  }
+
+  const char* duration_histogram() const {
+    static constexpr char kDurationScheduledFilterableDeletion[] =
+        "History.BrowsingDataLifetime.Duration.ScheduledFilterableDeletion";
+    static constexpr char kDurationScheduledUnfilterableDeletion[] =
+        "History.BrowsingDataLifetime.Duration.ScheduledUnfilterableDeletion";
+    return filterable_deletion_ ? kDurationScheduledFilterableDeletion
+                                : kDurationScheduledUnfilterableDeletion;
+  }
+
+  const char* state_histogram() const {
+    static constexpr char kStateScheduledFilterableDeletion[] =
+        "History.BrowsingDataLifetime.State.ScheduledFilterableDeletion";
+    static constexpr char kStateScheduledUnfilterableDeletion[] =
+        "History.BrowsingDataLifetime.State.ScheduledUnfilterableDeletion";
+    return filterable_deletion_ ? kStateScheduledFilterableDeletion
+                                : kStateScheduledUnfilterableDeletion;
+  }
+
+  base::ScopedObservation<content::BrowsingDataRemover,
+                          content::BrowsingDataRemover::Observer>
+      browsing_data_remover_observer_{this};
+  const base::TimeTicks start_time_;
+  const bool filterable_deletion_;
+};
 
 uint64_t GetOriginTypeMask(const base::Value& data_types) {
   uint64_t result = 0;
@@ -108,8 +179,6 @@ base::flat_set<GURL> GetOpenedUrls(Profile* profile) {
   return result;
 }
 
-int kInitialCleanupDelayInMinutes = 2;
-
 }  // namespace
 
 namespace browsing_data {
@@ -137,15 +206,14 @@ const char kDataTypes[] = "data_types";
 
 ChromeBrowsingDataLifetimeManager::ChromeBrowsingDataLifetimeManager(
     content::BrowserContext* browser_context)
-    : profile_(Profile::FromBrowserContext(browser_context)),
-      browsing_data_remover_observer_(this) {
+    : profile_(Profile::FromBrowserContext(browser_context)) {
   DCHECK(!profile_->IsGuestSession() || profile_->IsOffTheRecord());
   pref_change_registrar_.Init(profile_->GetPrefs());
   pref_change_registrar_.Add(
       browsing_data::prefs::kBrowsingDataLifetime,
       base::BindRepeating(
           &ChromeBrowsingDataLifetimeManager::UpdateScheduledRemovalSettings,
-          weak_ptr_factory_.GetWeakPtr()));
+          base::Unretained(this)));
 
   // When the service is instantiated, wait a few minutes after Chrome startup
   // to start deleting data.
@@ -166,15 +234,8 @@ ChromeBrowsingDataLifetimeManager::~ChromeBrowsingDataLifetimeManager() =
     default;
 
 void ChromeBrowsingDataLifetimeManager::Shutdown() {
-  browsing_data_remover_observer_.RemoveAll();
   pref_change_registrar_.RemoveAll();
   weak_ptr_factory_.InvalidateWeakPtrs();
-}
-
-void ChromeBrowsingDataLifetimeManager::OnBrowsingDataRemoverDone(
-    uint64_t failed_data_types) {
-  // TODO (crbug/2324203): Add histograms to see how many times data deletion
-  // are ran and how long they take.
 }
 
 void ChromeBrowsingDataLifetimeManager::UpdateScheduledRemovalSettings() {
@@ -182,13 +243,9 @@ void ChromeBrowsingDataLifetimeManager::UpdateScheduledRemovalSettings() {
   scheduled_removals_settings_ =
       ConvertToScheduledRemovalSettings(profile_->GetPrefs()->GetList(
           browsing_data::prefs::kBrowsingDataLifetime));
-  browsing_data_remover_observer_.RemoveAll();
 
-  if (!scheduled_removals_settings_.empty()) {
-    browsing_data_remover_observer_.Add(
-        content::BrowserContext::GetBrowsingDataRemover(profile_));
+  if (!scheduled_removals_settings_.empty())
     StartScheduledBrowsingDataRemoval();
-  }
 }
 
 void ChromeBrowsingDataLifetimeManager::StartScheduledBrowsingDataRemoval() {
@@ -217,8 +274,10 @@ void ChromeBrowsingDataLifetimeManager::StartScheduledBrowsingDataRemoval() {
       remover->RemoveWithFilterAndReply(
           base::Time::Min(), deletion_end_time, filterable_remove_mask,
           removal_settings.origin_type_mask, std::move(filter_builder),
-          testing_data_remover_observer_ ? testing_data_remover_observer_
-                                         : this);
+          testing_data_remover_observer_
+              ? testing_data_remover_observer_
+              : BrowsingDataLifetimeManagerRemoverObserver::Create(
+                    remover, /*filterable_deletion=*/true));
     }
 
     auto unfilterable_remove_mask =
@@ -228,8 +287,10 @@ void ChromeBrowsingDataLifetimeManager::StartScheduledBrowsingDataRemoval() {
       remover->RemoveAndReply(
           base::Time::Min(), deletion_end_time, unfilterable_remove_mask,
           removal_settings.origin_type_mask,
-          testing_data_remover_observer_ ? testing_data_remover_observer_
-                                         : this);
+          testing_data_remover_observer_
+              ? testing_data_remover_observer_
+              : BrowsingDataLifetimeManagerRemoverObserver::Create(
+                    remover, /*filterable_deletion=*/false));
     }
 
     smallest_time_to_live =

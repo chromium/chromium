@@ -5,12 +5,12 @@
 #ifndef CHROME_BROWSER_BROWSING_DATA_CHROME_BROWSING_DATA_LIFETIME_MANAGER_H_
 #define CHROME_BROWSER_BROWSING_DATA_CHROME_BROWSING_DATA_LIFETIME_MANAGER_H_
 
+#include <stdint.h>
+#include <utility>
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
-#include "base/scoped_observer.h"
-#include "base/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -18,7 +18,6 @@
 
 namespace content {
 class BrowserContext;
-class BrowsingDataRemover;
 }  // namespace content
 
 class Profile;
@@ -46,9 +45,7 @@ extern const char kDataTypes[];
 }  // namespace browsing_data
 
 // Controls the lifetime of some browsing data.
-class ChromeBrowsingDataLifetimeManager
-    : public KeyedService,
-      public content::BrowsingDataRemover::Observer {
+class ChromeBrowsingDataLifetimeManager : public KeyedService {
  public:
   struct ScheduledRemovalSettings {
     uint64_t remove_mask;
@@ -58,19 +55,14 @@ class ChromeBrowsingDataLifetimeManager
 
   explicit ChromeBrowsingDataLifetimeManager(
       content::BrowserContext* browser_context);
-  ~ChromeBrowsingDataLifetimeManager() override;
-
   ChromeBrowsingDataLifetimeManager(const ChromeBrowsingDataLifetimeManager&) =
       delete;
-
   ChromeBrowsingDataLifetimeManager& operator=(
       const ChromeBrowsingDataLifetimeManager&) = delete;
+  ~ChromeBrowsingDataLifetimeManager() override;
 
   // KeyedService:
   void Shutdown() override;
-
-  // content::BrowsingDataRemover::Observer:
-  void OnBrowsingDataRemoverDone(uint64_t failed_data_types) override;
 
   // Sets the end time of the period for which data must be deleted, for all
   // configurations. If this is |end_time_for_testing| has no value, use the
@@ -94,9 +86,6 @@ class ChromeBrowsingDataLifetimeManager
   Profile* profile_;
   content::BrowsingDataRemover::Observer* testing_data_remover_observer_ =
       nullptr;
-  ScopedObserver<content::BrowsingDataRemover,
-                 content::BrowsingDataRemover::Observer>
-      browsing_data_remover_observer_;
   base::Optional<base::Time> end_time_for_testing_;
   base::WeakPtrFactory<ChromeBrowsingDataLifetimeManager> weak_ptr_factory_{
       this};
