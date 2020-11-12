@@ -16,9 +16,12 @@ std::unique_ptr<FormField> SearchField::Parse(AutofillScanner* scanner,
                                               const std::string& page_language,
                                               LogManager* log_manager) {
   AutofillField* field;
+  auto& patterns = PatternProvider::GetInstance().GetMatchPatterns(
+      SEARCH_TERM, page_language);
+
   if (ParseFieldSpecifics(scanner, base::UTF8ToUTF16(kSearchTermRe),
                           MATCH_DEFAULT | MATCH_SEARCH | MATCH_TEXT_AREA,
-                          &field, {log_manager, "kSearchTermRe"})) {
+                          patterns, &field, {log_manager, "kSearchTermRe"})) {
     return std::make_unique<SearchField>(field);
   }
 

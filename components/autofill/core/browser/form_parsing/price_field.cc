@@ -16,10 +16,13 @@ std::unique_ptr<FormField> PriceField::Parse(AutofillScanner* scanner,
                                              const std::string& page_language,
                                              LogManager* log_manager) {
   AutofillField* field;
+  auto& patterns =
+      PatternProvider::GetInstance().GetMatchPatterns("PRICE", page_language);
+
   if (ParseFieldSpecifics(scanner, base::UTF8ToUTF16(kPriceRe),
                           MATCH_DEFAULT | MATCH_NUMBER | MATCH_SELECT |
                               MATCH_TEXT_AREA | MATCH_SEARCH,
-                          &field, {log_manager, kPriceRe})) {
+                          patterns, &field, {log_manager, kPriceRe})) {
     return std::make_unique<PriceField>(field);
   }
 

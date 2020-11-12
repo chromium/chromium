@@ -168,6 +168,22 @@ bool FormField::ParseField(AutofillScanner* scanner,
   return ParseFieldSpecifics(scanner, patterns, match, logging);
 }
 
+bool FormField::ParseField(AutofillScanner* scanner,
+                           const base::string16& pattern,
+                           const std::vector<MatchingPattern>& patterns,
+                           AutofillField** match,
+                           const RegExLogging& logging) {
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillUsePageLanguageToSelectFieldParsingPatterns) ||
+      base::FeatureList::IsEnabled(
+          features::
+              kAutofillApplyNegativePatternsForFieldTypeDetectionHeuristics)) {
+    return ParseField(scanner, patterns, match, logging);
+  } else {
+    return ParseField(scanner, pattern, match, logging);
+  }
+}
+
 bool FormField::ParseFieldSpecifics(AutofillScanner* scanner,
                                     const base::string16& pattern,
                                     int match_field_attributes,
@@ -236,6 +252,38 @@ bool FormField::ParseFieldSpecifics(AutofillScanner* scanner,
 
   return ParseFieldSpecifics(scanner, pattern, match_field_attributes,
                              match_field_types, match, logging);
+}
+
+bool FormField::ParseFieldSpecifics(
+    AutofillScanner* scanner,
+    const base::string16& pattern,
+    int match_type,
+    const std::vector<MatchingPattern>& patterns,
+    AutofillField** match,
+    const RegExLogging& logging,
+    MatchFieldBitmasks match_field_bitmasks) {
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillUsePageLanguageToSelectFieldParsingPatterns) ||
+      base::FeatureList::IsEnabled(
+          features::
+              kAutofillApplyNegativePatternsForFieldTypeDetectionHeuristics)) {
+    // TODO(crbug/1142936): This hack is to allow
+    // AddressField::ParseNameAndLabelSeparately().
+    if (match_field_bitmasks.restrict_attributes != ~0 ||
+        match_field_bitmasks.augment_types != 0) {
+      std::vector<MatchingPattern> patterns_with_restricted_match_type =
+          patterns;
+      for (MatchingPattern& mp : patterns_with_restricted_match_type) {
+        mp.match_field_attributes &= match_field_bitmasks.restrict_attributes;
+        mp.match_field_input_types |= match_field_bitmasks.augment_types;
+      }
+      return ParseFieldSpecifics(scanner, patterns_with_restricted_match_type,
+                                 match, logging);
+    }
+    return ParseFieldSpecifics(scanner, patterns, match, logging);
+  } else {
+    return ParseFieldSpecifics(scanner, pattern, match_type, match, logging);
+  }
 }
 
 // static

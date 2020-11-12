@@ -58,30 +58,50 @@ std::unique_ptr<FormField> AddressField::Parse(AutofillScanner* scanner,
   base::string16 attention_ignored = UTF8ToUTF16(kAttentionIgnoredRe);
   base::string16 region_ignored = UTF8ToUTF16(kRegionIgnoredRe);
 
+  // In JSON : EMAIL_ADDRESS
+  auto& patterns_email = PatternProvider::GetInstance().GetMatchPatterns(
+      "EMAIL_ADDRESS", page_language);
+  // In JSON : ADDRESS_LOOKUP
+  auto& patterns_al = PatternProvider::GetInstance().GetMatchPatterns(
+      "ADDRESS_LOOKUP", page_language);
+  // In JSON : ADDRESS_NAME_IGNORED
+  auto& patterns_ni = PatternProvider::GetInstance().GetMatchPatterns(
+      "ADDRESS_NAME_IGNORED", page_language);
+  // In JSON : ATTENTION_IGNORED
+  auto& patterns_ai = PatternProvider::GetInstance().GetMatchPatterns(
+      "ATTENTION_IGNORED", page_language);
+  // In JSON : REGION_IGNORED
+  auto& patterns_ri = PatternProvider::GetInstance().GetMatchPatterns(
+      "REGION_IGNORED", page_language);
+
   // Allow address fields to appear in any order.
   size_t begin_trailing_non_labeled_fields = 0;
   bool has_trailing_non_labeled_fields = false;
   while (!scanner->IsEnd()) {
     const size_t cursor = scanner->SaveCursor();
     // Ignore "Address Lookup" field. http://crbug.com/427622
-    if (ParseField(scanner, base::UTF8ToUTF16(kAddressLookupRe), nullptr,
-                   {log_manager, "kAddressLookupRe"}) ||
-        ParseField(scanner, base::UTF8ToUTF16(kAddressNameIgnoredRe), nullptr,
+    if (ParseField(scanner, base::UTF8ToUTF16(kAddressLookupRe), patterns_al,
+                   nullptr, {log_manager, "kAddressLookupRe"}) ||
+        ParseField(scanner, base::UTF8ToUTF16(kAddressNameIgnoredRe),
+                   patterns_ni, nullptr,
                    {log_manager, "kAddressNameIgnoreRe"})) {
       continue;
       // Ignore email addresses.
     } else if (ParseFieldSpecifics(scanner, base::UTF8ToUTF16(kEmailRe),
-                                   MATCH_DEFAULT | MATCH_TEXT_AREA, nullptr,
-                                   {log_manager, "kEmailRe"})) {
+                                   MATCH_DEFAULT | MATCH_TEXT_AREA,
+                                   patterns_email, nullptr,
+                                   {log_manager, "kEmailRe"},
+                                   {.augment_types = MATCH_TEXT_AREA})) {
       continue;
-    } else if (address_field->ParseAddress(scanner) ||
-               (address_field->ParseCityStateCountryZipCode(scanner)) ||
-               address_field->ParseCompany(scanner)) {
+    } else if (address_field->ParseAddress(scanner, page_language) ||
+               address_field->ParseCityStateCountryZipCode(scanner,
+                                                           page_language) ||
+               address_field->ParseCompany(scanner, page_language)) {
       has_trailing_non_labeled_fields = false;
       continue;
-    } else if (ParseField(scanner, attention_ignored, nullptr,
+    } else if (ParseField(scanner, attention_ignored, patterns_ai, nullptr,
                           {log_manager, "kAttentionIgnoredRe"}) ||
-               ParseField(scanner, region_ignored, nullptr,
+               ParseField(scanner, region_ignored, patterns_ri, nullptr,
                           {log_manager, "kRegionIgnoredRe"})) {
       // We ignore the following:
       // * Attention.
@@ -162,15 +182,20 @@ void AddressField::AddClassifications(
                     kBaseAddressParserScore, field_candidates);
 }
 
-bool AddressField::ParseCompany(AutofillScanner* scanner) {
+bool AddressField::ParseCompany(AutofillScanner* scanner,
+                                const std::string& page_language) {
   if (company_)
     return false;
+  // In JSON : COMPANY
+  auto& patterns_c =
+      PatternProvider::GetInstance().GetMatchPatterns("COMPANY", page_language);
 
-  return ParseField(scanner, UTF8ToUTF16(kCompanyRe), &company_,
+  return ParseField(scanner, UTF8ToUTF16(kCompanyRe), patterns_c, &company_,
                     {log_manager_, "kCompanyRe"});
 }
 
-bool AddressField::ParseAddressFieldSequence(AutofillScanner* scanner) {
+bool AddressField::ParseAddressFieldSequence(AutofillScanner* scanner,
+                                             const std::string& page_language) {
   // Search for a sequence of a street name field followed by a house number
   // field. Only if both are found in an abitrary order, the parsing is
   // considered successful.
@@ -182,16 +207,24 @@ bool AddressField::ParseAddressFieldSequence(AutofillScanner* scanner) {
   }
 
   const size_t cursor_position = scanner->CursorPosition();
+  // In JSON : ---- maybe ADDRESS_LINE1(2,3)
+  auto& patterns_s = PatternProvider::GetInstance().GetMatchPatterns(
+      ADDRESS_HOME_STREET_NAME, page_language);
+  // In JSON : ----
+  auto& patterns_h = PatternProvider::GetInstance().GetMatchPatterns(
+      ADDRESS_HOME_HOUSE_NUMBER, page_language);
 
   while (!scanner->IsEnd()) {
     if (!street_name_ &&
         ParseFieldSpecifics(scanner, UTF8ToUTF16(kStreetNameRe), MATCH_DEFAULT,
-                            &street_name_, {log_manager_, "kStreetNameRe"})) {
+                            patterns_s, &street_name_,
+                            {log_manager_, "kStreetNameRe"})) {
       continue;
     }
     if (!house_number_ &&
         ParseFieldSpecifics(scanner, UTF8ToUTF16(kHouseNumberRe), MATCH_DEFAULT,
-                            &house_number_, {log_manager_, "kHouseNumberRe"})) {
+                            patterns_h, &house_number_,
+                            {log_manager_, "kHouseNumberRe"})) {
       continue;
     }
 
@@ -210,14 +243,17 @@ bool AddressField::ParseAddressFieldSequence(AutofillScanner* scanner) {
   return false;
 }
 
-bool AddressField::ParseAddress(AutofillScanner* scanner) {
+bool AddressField::ParseAddress(AutofillScanner* scanner,
+                                const std::string& page_language) {
   if (street_name_ && house_number_) {
     return false;
   }
-  return ParseAddressFieldSequence(scanner) || ParseAddressLines(scanner);
+  return ParseAddressFieldSequence(scanner, page_language) ||
+         ParseAddressLines(scanner, page_language);
 }
 
-bool AddressField::ParseAddressLines(AutofillScanner* scanner) {
+bool AddressField::ParseAddressLines(AutofillScanner* scanner,
+                                     const std::string& page_language) {
   // We only match the string "address" in page text, not in element names,
   // because sometimes every element in a group of address fields will have
   // a name containing the string "address"; for example, on the page
@@ -231,17 +267,23 @@ bool AddressField::ParseAddressLines(AutofillScanner* scanner) {
 
   base::string16 pattern = UTF8ToUTF16(kAddressLine1Re);
   base::string16 label_pattern = UTF8ToUTF16(kAddressLine1LabelRe);
-  if (!ParseFieldSpecifics(scanner, pattern, MATCH_DEFAULT, &address1_,
-                           {log_manager_, "kAddressLine1Re"}) &&
+  // In JSON : ADDRESS_LINE_1
+  auto& patterns_l1 = PatternProvider::GetInstance().GetMatchPatterns(
+      "ADDRESS_LINE_1", page_language);
+
+  if (!ParseFieldSpecifics(scanner, pattern, MATCH_DEFAULT, patterns_l1,
+                           &address1_, {log_manager_, "kAddressLine1Re"}) &&
       !ParseFieldSpecifics(scanner, label_pattern, MATCH_LABEL | MATCH_TEXT,
-                           &address1_,
+                           patterns_l1, &address1_,
                            {log_manager_, "kAddressLine1LabelRe"}) &&
       !ParseFieldSpecifics(scanner, pattern, MATCH_DEFAULT | MATCH_TEXT_AREA,
-                           &street_address_,
-                           {log_manager_, "kAddressLine1Re"}) &&
-      !ParseFieldSpecifics(scanner, label_pattern,
-                           MATCH_LABEL | MATCH_TEXT_AREA, &street_address_,
-                           {log_manager_, "kAddressLine1LabelRe"}))
+                           patterns_l1, &street_address_,
+                           {log_manager_, "kAddressLine1Re"},
+                           {.augment_types = MATCH_TEXT_AREA}) &&
+      !ParseFieldSpecifics(
+          scanner, label_pattern, MATCH_LABEL | MATCH_TEXT_AREA, patterns_l1,
+          &street_address_, {log_manager_, "kAddressLine1LabelRe"},
+          {.augment_types = MATCH_TEXT_AREA}))
     return false;
 
   if (street_address_)
@@ -252,19 +294,33 @@ bool AddressField::ParseAddressLines(AutofillScanner* scanner) {
   // discussion on https://codereview.chromium.org/741493003/
   pattern = UTF8ToUTF16(kAddressLine2Re);
   label_pattern = UTF8ToUTF16(kAddressLine2LabelRe);
-  if (!ParseField(scanner, pattern, &address2_,
+  // auto& patternsL2 = PatternProvider::GetInstance().GetMatchPatterns(
+  //     "ADDRESS_HOME_LINE2", page_language);
+  // auto& patternsSA = PatternProvider::GetInstance().GetMatchPatterns(
+  //  "ADDRESS_HOME_STREET_ADDRESS", page_language);
+
+  // In JSON : ADDRESS_LINE_2
+  auto& patterns_l2 = PatternProvider::GetInstance().GetMatchPatterns(
+      "ADDRESS_LINE_2", page_language);
+  // In JSON : ADDRESS_LINE_EXTRA
+  auto& patterns_le = PatternProvider::GetInstance().GetMatchPatterns(
+      "ADDRESS_LINE_EXTRA", page_language);
+
+  if (!ParseField(scanner, pattern, patterns_l2, &address2_,
                   {log_manager_, "kAddressLine2Re"}) &&
       !ParseFieldSpecifics(scanner, label_pattern, MATCH_LABEL | MATCH_TEXT,
-                           &address2_, {log_manager_, "kAddressLine2LabelRe"}))
+                           patterns_l2, &address2_,
+                           {log_manager_, "kAddressLine2LabelRe"}))
     return true;
 
   // Optionally parse address line 3. This uses the same label regexp as
   // address 2 above.
   pattern = UTF8ToUTF16(kAddressLinesExtraRe);
-  if (!ParseField(scanner, pattern, &address3_,
+  if (!ParseField(scanner, pattern, patterns_le, &address3_,
                   {log_manager_, "kAddressLinesExtraRe"}) &&
       !ParseFieldSpecifics(scanner, label_pattern, MATCH_LABEL | MATCH_TEXT,
-                           &address3_, {log_manager_, "kAddressLine2LabelRe"}))
+                           patterns_l2, &address3_,
+                           {log_manager_, "kAddressLine2LabelRe"}))
     return true;
 
   // Try for surplus lines, which we will promptly discard. Some pages have 4
@@ -273,21 +329,29 @@ bool AddressField::ParseAddressLines(AutofillScanner* scanner) {
   // Since these are rare, don't bother considering unlabeled lines as extra
   // address lines.
   pattern = UTF8ToUTF16(kAddressLinesExtraRe);
-  while (ParseField(scanner, pattern, nullptr,
+  while (ParseField(scanner, pattern, patterns_le, nullptr,
                     {log_manager_, "kAddressLinesExtraRe"})) {
     // Consumed a surplus line, try for another.
   }
   return true;
 }
 
-bool AddressField::ParseCountry(AutofillScanner* scanner) {
+bool AddressField::ParseCountry(AutofillScanner* scanner,
+                                const std::string& page_language) {
   if (country_)
     return false;
+
+  // In JSON : COUNTRY
+  auto& patterns_c =
+      PatternProvider::GetInstance().GetMatchPatterns("COUNTRY", page_language);
+  auto& patterns_cl = PatternProvider::GetInstance().GetMatchPatterns(
+      "COUNTRY_LOCATION", page_language);
 
   scanner->SaveCursor();
   if (ParseFieldSpecifics(scanner, UTF8ToUTF16(kCountryRe),
                           MATCH_DEFAULT | MATCH_SELECT | MATCH_SEARCH,
-                          &country_, {log_manager_, "kCountryRe"})) {
+                          patterns_c, &country_,
+                          {log_manager_, "kCountryRe"})) {
     return true;
   }
 
@@ -296,46 +360,67 @@ bool AddressField::ParseCountry(AutofillScanner* scanner) {
   scanner->Rewind();
   return ParseFieldSpecifics(
       scanner, UTF8ToUTF16(kCountryLocationRe),
-      MATCH_LABEL | MATCH_NAME | MATCH_SELECT | MATCH_SEARCH, &country_,
-      {log_manager_, "kCountryLocationRe"});
+      MATCH_LABEL | MATCH_NAME | MATCH_SELECT | MATCH_SEARCH, patterns_cl,
+      &country_, {log_manager_, "kCountryLocationRe"});
 }
 
-bool AddressField::ParseZipCode(AutofillScanner* scanner) {
+bool AddressField::ParseZipCode(AutofillScanner* scanner,
+                                const std::string& page_language) {
   if (zip_)
     return false;
 
+  // auto& patternsZ = PatternProvider::GetInstance().GetMatchPatterns(
+  //     "ADDRESS_HOME_ZIP", page_language);
+  // In JSON : ZIP_CODE
+  auto& patterns_z = PatternProvider::GetInstance().GetMatchPatterns(
+      "ZIP_CODE", page_language);
+  // In JSON : ZIP_4
+  auto& patterns_z4 =
+      PatternProvider::GetInstance().GetMatchPatterns("ZIP_4", page_language);
   if (!ParseFieldSpecifics(scanner, UTF8ToUTF16(kZipCodeRe), kZipCodeMatchType,
-                           &zip_, {log_manager_, "kZipCodeRe"})) {
+                           patterns_z, &zip_, {log_manager_, "kZipCodeRe"})) {
     return false;
   }
 
   // Look for a zip+4, whose field name will also often contain
   // the substring "zip".
-  ParseFieldSpecifics(scanner, UTF8ToUTF16(kZip4Re), kZipCodeMatchType, &zip4_,
-                      {log_manager_, "kZip4Re"});
+  ParseFieldSpecifics(scanner, UTF8ToUTF16(kZip4Re), kZipCodeMatchType,
+                      patterns_z4, &zip4_, {log_manager_, "kZip4Re"});
   return true;
 }
 
-bool AddressField::ParseCity(AutofillScanner* scanner) {
+bool AddressField::ParseCity(AutofillScanner* scanner,
+                             const std::string& page_language) {
   if (city_)
     return false;
 
+  // In JSON : CITY
+  auto& patterns_city =
+      PatternProvider::GetInstance().GetMatchPatterns("CITY", page_language);
   return ParseFieldSpecifics(scanner, UTF8ToUTF16(kCityRe), kCityMatchType,
-                             &city_, {log_manager_, "kCityRe"});
+                             patterns_city, &city_, {log_manager_, "kCityRe"});
 }
 
-bool AddressField::ParseState(AutofillScanner* scanner) {
+bool AddressField::ParseState(AutofillScanner* scanner,
+                              const std::string& page_language) {
   if (state_)
     return false;
 
+  // auto& patterns = PatternProvider::GetInstance().GetMatchPatterns(
+  //     "ADDRESS_HOME_STATE", page_language);
+  // In JSON : STATE
+  auto& patterns_state =
+      PatternProvider::GetInstance().GetMatchPatterns("STATE", page_language);
   return ParseFieldSpecifics(scanner, UTF8ToUTF16(kStateRe), kStateMatchType,
-                             &state_, {log_manager_, "kStateRe"});
+                             patterns_state, &state_,
+                             {log_manager_, "kStateRe"});
 }
 
 AddressField::ParseNameLabelResult AddressField::ParseNameAndLabelSeparately(
     AutofillScanner* scanner,
     const base::string16& pattern,
     int match_type,
+    const std::vector<MatchingPattern>& patterns,
     AutofillField** match,
     const RegExLogging& logging) {
   if (scanner->IsEnd())
@@ -344,10 +429,12 @@ AddressField::ParseNameLabelResult AddressField::ParseNameAndLabelSeparately(
   AutofillField* cur_match = nullptr;
   size_t saved_cursor = scanner->SaveCursor();
   bool parsed_name = ParseFieldSpecifics(
-      scanner, pattern, match_type & ~MATCH_LABEL, &cur_match, logging);
+      scanner, pattern, match_type & ~MATCH_LABEL, patterns, &cur_match,
+      logging, {.restrict_attributes = MATCH_NAME});
   scanner->RewindTo(saved_cursor);
   bool parsed_label = ParseFieldSpecifics(
-      scanner, pattern, match_type & ~MATCH_NAME, &cur_match, logging);
+      scanner, pattern, match_type & ~MATCH_NAME, patterns, &cur_match, logging,
+      {.restrict_attributes = MATCH_LABEL});
   if (parsed_name && parsed_label) {
     if (match)
       *match = cur_match;
@@ -362,27 +449,31 @@ AddressField::ParseNameLabelResult AddressField::ParseNameAndLabelSeparately(
   return RESULT_MATCH_NONE;
 }
 
-bool AddressField::ParseCityStateZipCode(AutofillScanner* scanner) {
+bool AddressField::ParseCityStateZipCode(AutofillScanner* scanner,
+                                         const std::string& page_language) {
   // Simple cases.
   if (scanner->IsEnd())
     return false;
   if (city_ && state_ && zip_)
     return false;
   if (state_ && zip_)
-    return ParseCity(scanner);
+    return ParseCity(scanner, page_language);
   if (city_ && zip_)
-    return ParseState(scanner);
+    return ParseState(scanner, page_language);
   if (city_ && state_)
-    return ParseZipCode(scanner);
+    return ParseZipCode(scanner, page_language);
 
   // Check for matches to both name and label.
-  ParseNameLabelResult city_result = ParseNameAndLabelForCity(scanner);
+  ParseNameLabelResult city_result =
+      ParseNameAndLabelForCity(scanner, page_language);
   if (city_result == RESULT_MATCH_NAME_LABEL)
     return true;
-  ParseNameLabelResult state_result = ParseNameAndLabelForState(scanner);
+  ParseNameLabelResult state_result =
+      ParseNameAndLabelForState(scanner, page_language);
   if (state_result == RESULT_MATCH_NAME_LABEL)
     return true;
-  ParseNameLabelResult zip_result = ParseNameAndLabelForZipCode(scanner);
+  ParseNameLabelResult zip_result =
+      ParseNameAndLabelForZipCode(scanner, page_language);
   if (zip_result == RESULT_MATCH_NAME_LABEL)
     return true;
 
@@ -395,7 +486,7 @@ bool AddressField::ParseCityStateZipCode(AutofillScanner* scanner) {
   if (maybe_state && !maybe_city && !maybe_zip)
     return SetFieldAndAdvanceCursor(scanner, &state_);
   if (maybe_zip && !maybe_city && !maybe_state)
-    return ParseZipCode(scanner);
+    return ParseZipCode(scanner, page_language);
 
   // Otherwise give name priority over label.
   if (city_result == RESULT_MATCH_NAME)
@@ -403,19 +494,21 @@ bool AddressField::ParseCityStateZipCode(AutofillScanner* scanner) {
   if (state_result == RESULT_MATCH_NAME)
     return SetFieldAndAdvanceCursor(scanner, &state_);
   if (zip_result == RESULT_MATCH_NAME)
-    return ParseZipCode(scanner);
+    return ParseZipCode(scanner, page_language);
 
   if (city_result == RESULT_MATCH_LABEL)
     return SetFieldAndAdvanceCursor(scanner, &city_);
   if (state_result == RESULT_MATCH_LABEL)
     return SetFieldAndAdvanceCursor(scanner, &state_);
   if (zip_result == RESULT_MATCH_LABEL)
-    return ParseZipCode(scanner);
+    return ParseZipCode(scanner, page_language);
 
   return false;
 }
 
-bool AddressField::ParseCityStateCountryZipCode(AutofillScanner* scanner) {
+bool AddressField::ParseCityStateCountryZipCode(
+    AutofillScanner* scanner,
+    const std::string& page_language) {
   // The |scanner| is not pointing at a field.
   if (scanner->IsEnd())
     return false;
@@ -426,25 +519,29 @@ bool AddressField::ParseCityStateCountryZipCode(AutofillScanner* scanner) {
 
   // Exactly one field type is missing.
   if (state_ && country_ && zip_)
-    return ParseCity(scanner);
+    return ParseCity(scanner, page_language);
   if (city_ && country_ && zip_)
-    return ParseState(scanner);
+    return ParseState(scanner, page_language);
   if (city_ && state_ && zip_)
-    return ParseCountry(scanner);
+    return ParseCountry(scanner, page_language);
   if (city_ && state_ && country_)
-    return ParseZipCode(scanner);
+    return ParseZipCode(scanner, page_language);
 
   // Check for matches to both the name and the label.
-  ParseNameLabelResult city_result = ParseNameAndLabelForCity(scanner);
+  ParseNameLabelResult city_result =
+      ParseNameAndLabelForCity(scanner, page_language);
   if (city_result == RESULT_MATCH_NAME_LABEL)
     return true;
-  ParseNameLabelResult state_result = ParseNameAndLabelForState(scanner);
+  ParseNameLabelResult state_result =
+      ParseNameAndLabelForState(scanner, page_language);
   if (state_result == RESULT_MATCH_NAME_LABEL)
     return true;
-  ParseNameLabelResult country_result = ParseNameAndLabelForCountry(scanner);
+  ParseNameLabelResult country_result =
+      ParseNameAndLabelForCountry(scanner, page_language);
   if (country_result == RESULT_MATCH_NAME_LABEL)
     return true;
-  ParseNameLabelResult zip_result = ParseNameAndLabelForZipCode(scanner);
+  ParseNameLabelResult zip_result =
+      ParseNameAndLabelForZipCode(scanner, page_language);
   if (zip_result == RESULT_MATCH_NAME_LABEL)
     return true;
 
@@ -460,7 +557,7 @@ bool AddressField::ParseCityStateCountryZipCode(AutofillScanner* scanner) {
   if (maybe_country && !maybe_city && !maybe_state && !maybe_zip)
     return SetFieldAndAdvanceCursor(scanner, &country_);
   if (maybe_zip && !maybe_city && !maybe_state && !maybe_country)
-    return ParseZipCode(scanner);
+    return ParseZipCode(scanner, page_language);
 
   // If there is a clash between the country and the state, set the type of
   // the field to the country.
@@ -475,7 +572,7 @@ bool AddressField::ParseCityStateCountryZipCode(AutofillScanner* scanner) {
   if (country_result == RESULT_MATCH_NAME)
     return SetFieldAndAdvanceCursor(scanner, &country_);
   if (zip_result == RESULT_MATCH_NAME)
-    return ParseZipCode(scanner);
+    return ParseZipCode(scanner, page_language);
 
   if (city_result == RESULT_MATCH_LABEL)
     return SetFieldAndAdvanceCursor(scanner, &city_);
@@ -484,30 +581,38 @@ bool AddressField::ParseCityStateCountryZipCode(AutofillScanner* scanner) {
   if (country_result == RESULT_MATCH_LABEL)
     return SetFieldAndAdvanceCursor(scanner, &country_);
   if (zip_result == RESULT_MATCH_LABEL)
-    return ParseZipCode(scanner);
+    return ParseZipCode(scanner, page_language);
 
   return false;
 }
 
 AddressField::ParseNameLabelResult AddressField::ParseNameAndLabelForZipCode(
-    AutofillScanner* scanner) {
+    AutofillScanner* scanner,
+    const std::string& page_language) {
   if (zip_)
     return RESULT_MATCH_NONE;
 
+  // In JSON : ZIP_CODE
+  auto& patterns_z = PatternProvider::GetInstance().GetMatchPatterns(
+      "ZIP_CODE", page_language);
+  // In JSON :
+  auto& patterns_z4 =
+      PatternProvider::GetInstance().GetMatchPatterns("ZIP_4", page_language);
+
   ParseNameLabelResult result = ParseNameAndLabelSeparately(
-      scanner, UTF8ToUTF16(kZipCodeRe), kZipCodeMatchType, &zip_,
+      scanner, UTF8ToUTF16(kZipCodeRe), kZipCodeMatchType, patterns_z, &zip_,
       {log_manager_, "kZipCodeRe"});
 
   if (result != RESULT_MATCH_NAME_LABEL || scanner->IsEnd())
     return result;
 
   size_t saved_cursor = scanner->SaveCursor();
-  bool found_non_zip4 = ParseCity(scanner);
+  bool found_non_zip4 = ParseCity(scanner, page_language);
   if (found_non_zip4)
     city_ = nullptr;
   scanner->RewindTo(saved_cursor);
   if (!found_non_zip4) {
-    found_non_zip4 = ParseState(scanner);
+    found_non_zip4 = ParseState(scanner, page_language);
     if (found_non_zip4)
       state_ = nullptr;
     scanner->RewindTo(saved_cursor);
@@ -517,40 +622,55 @@ AddressField::ParseNameLabelResult AddressField::ParseNameAndLabelForZipCode(
     // Look for a zip+4, whose field name will also often contain
     // the substring "zip".
     ParseFieldSpecifics(scanner, UTF8ToUTF16(kZip4Re), kZipCodeMatchType,
-                        &zip4_, {log_manager_, "kZip4Re"});
+                        patterns_z4, &zip4_, {log_manager_, "kZip4Re"});
   }
   return result;
 }
 
 AddressField::ParseNameLabelResult AddressField::ParseNameAndLabelForCity(
-    AutofillScanner* scanner) {
+    AutofillScanner* scanner,
+    const std::string& page_language) {
   if (city_)
     return RESULT_MATCH_NONE;
 
+  // In JSON : CITY
+  auto& patterns_city =
+      PatternProvider::GetInstance().GetMatchPatterns("CITY", page_language);
   return ParseNameAndLabelSeparately(scanner, UTF8ToUTF16(kCityRe),
-                                     kCityMatchType, &city_,
+                                     kCityMatchType, patterns_city, &city_,
                                      {log_manager_, "kCityRe"});
 }
 
 AddressField::ParseNameLabelResult AddressField::ParseNameAndLabelForState(
-    AutofillScanner* scanner) {
+    AutofillScanner* scanner,
+    const std::string& page_language) {
   if (state_)
     return RESULT_MATCH_NONE;
 
+  // In JSON : STATE
+  auto& patterns_state =
+      PatternProvider::GetInstance().GetMatchPatterns("STATE", page_language);
   return ParseNameAndLabelSeparately(scanner, UTF8ToUTF16(kStateRe),
-                                     kStateMatchType, &state_,
+                                     kStateMatchType, patterns_state, &state_,
                                      {log_manager_, "kStateRe"});
 }
 
 AddressField::ParseNameLabelResult AddressField::ParseNameAndLabelForCountry(
-    AutofillScanner* scanner) {
+    AutofillScanner* scanner,
+    const std::string& page_language) {
   if (country_)
     return RESULT_MATCH_NONE;
 
-  ParseNameLabelResult country_result =
-      ParseNameAndLabelSeparately(scanner, UTF8ToUTF16(kCountryRe),
-                                  MATCH_DEFAULT | MATCH_SELECT | MATCH_SEARCH,
-                                  &country_, {log_manager_, "kCountryRe"});
+  // In JSON : COUNTRY
+  auto& patterns_c =
+      PatternProvider::GetInstance().GetMatchPatterns("COUNTRY", page_language);
+  auto& patterns_cl = PatternProvider::GetInstance().GetMatchPatterns(
+      "COUNTRY_LOCATION", page_language);
+
+  ParseNameLabelResult country_result = ParseNameAndLabelSeparately(
+      scanner, UTF8ToUTF16(kCountryRe),
+      MATCH_DEFAULT | MATCH_SELECT | MATCH_SEARCH, patterns_c, &country_,
+      {log_manager_, "kCountryRe"});
   if (country_result != RESULT_MATCH_NONE)
     return country_result;
 
@@ -558,8 +678,8 @@ AddressField::ParseNameLabelResult AddressField::ParseNameAndLabelForCountry(
   // "location". However, this only makes sense for select tags.
   return ParseNameAndLabelSeparately(
       scanner, UTF8ToUTF16(kCountryLocationRe),
-      MATCH_LABEL | MATCH_NAME | MATCH_SELECT | MATCH_SEARCH, &country_,
-      {log_manager_, "kCountryLocationRe"});
+      MATCH_LABEL | MATCH_NAME | MATCH_SELECT | MATCH_SEARCH, patterns_cl,
+      &country_, {log_manager_, "kCountryLocationRe"});
 }
 
 }  // namespace autofill

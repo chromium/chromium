@@ -72,6 +72,12 @@ class FormField {
                          AutofillField** match,
                          const RegExLogging& logging = {});
 
+  static bool ParseField(AutofillScanner* scanner,
+                         const base::string16& pattern,
+                         const std::vector<MatchingPattern>& patterns,
+                         AutofillField** match,
+                         const RegExLogging& logging = {});
+
   // Parses the stream of fields in |scanner| with regular expression |pattern|
   // as specified in the |match_type| bit field (see |MatchType|).  If |match|
   // is non-NULL and the pattern matches, |match| will be set to the matched
@@ -96,6 +102,20 @@ class FormField {
                                   int match_field_input_types,
                                   AutofillField** match,
                                   const RegExLogging& logging = {});
+  struct MatchFieldBitmasks {
+    int restrict_attributes = ~0;
+    int augment_types = 0;
+  };
+
+  static bool ParseFieldSpecifics(AutofillScanner* scanner,
+                                  const base::string16& pattern,
+                                  int match_type,
+                                  const std::vector<MatchingPattern>& patterns,
+                                  AutofillField** match,
+                                  const RegExLogging& logging,
+                                  MatchFieldBitmasks match_field_bitmasks = {
+                                      .restrict_attributes = ~0,
+                                      .augment_types = 0});
 
   // Attempts to parse a field with an empty label.  Returns true
   // on success and fills |match| with a pointer to the field.

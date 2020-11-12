@@ -112,6 +112,11 @@ TEST(AutofillPatternProvider, Single_Match) {
 
 // Test that the default pattern provider loads without crashing.
 TEST(AutofillPatternProviderPipelineTest, DefaultPatternProviderLoads) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  // Enable so that PatternProvider::GetInstance() actually does load the JSON.
+  scoped_feature_list.InitAndEnableFeature(
+      autofill::features::kAutofillUsePageLanguageToSelectFieldParsingPatterns);
+
   base::test::TaskEnvironment task_environment_;
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
 
@@ -131,6 +136,11 @@ TEST(AutofillPatternProviderPipelineTest, DefaultPatternProviderLoads) {
 // needed to test the DefaultPatternProvider. Warning: If this crashes, check
 // that no state carried over from other tests using the singleton.
 TEST(AutofillPatternProviderPipelineTest, TestParsingEquivalent) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  // Enable so that PatternProvider::GetInstance() actually does load the JSON.
+  scoped_feature_list.InitAndEnableFeature(
+      autofill::features::kAutofillUsePageLanguageToSelectFieldParsingPatterns);
+
   base::test::TaskEnvironment task_environment_;
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
 

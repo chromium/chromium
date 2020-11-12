@@ -72,7 +72,17 @@ PatternProvider& PatternProvider::GetInstance() {
   if (!g_pattern_provider) {
     static base::NoDestructor<PatternProvider> instance;
     g_pattern_provider = instance.get();
-    field_type_parsing::PopulateFromResourceBundle();
+    // TODO(crbug/1147608) This is an ugly hack to avoid loading the JSON. The
+    // motivation is that some Android unit tests fail because a dependency is
+    // missing. Instead of fixing this dependency, we'll go for an alternative
+    // solution that avoids the whole async/sync problem.
+    if (base::FeatureList::IsEnabled(
+            features::kAutofillUsePageLanguageToSelectFieldParsingPatterns) ||
+        base::FeatureList::IsEnabled(
+            features::
+                kAutofillApplyNegativePatternsForFieldTypeDetectionHeuristics)) {
+      field_type_parsing::PopulateFromResourceBundle();
+    }
   }
   return *g_pattern_provider;
 }

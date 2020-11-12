@@ -12,6 +12,7 @@
 #include "base/macros.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/form_parsing/form_field.h"
+#include "components/autofill/core/browser/pattern_provider/pattern_provider.h"
 
 namespace autofill {
 
@@ -42,7 +43,8 @@ class CreditCardField : public FormField {
   // the next few years. |log_manager| is used to log any parsing details
   // to chrome://autofill-internals
   static bool LikelyCardYearSelectField(AutofillScanner* scanner,
-                                        LogManager* log_manager);
+                                        LogManager* log_manager,
+                                        const std::string& page_language);
 
   // Returns true if |scanner| points to a <select> field that contains credit
   // card type options.
@@ -53,11 +55,14 @@ class CreditCardField : public FormField {
   // Prepaid debit cards do not count as gift cards, since they can be used like
   // a credit card.
   static bool IsGiftCardField(AutofillScanner* scanner,
-                              LogManager* log_manager);
+                              LogManager* log_manager,
+                              const std::string& page_language);
 
   // Parses the expiration month/year/date fields. Returns true if it finds
   // something new.
-  bool ParseExpirationDate(AutofillScanner* scanner, LogManager* log_manager);
+  bool ParseExpirationDate(AutofillScanner* scanner,
+                           LogManager* log_manager,
+                           const std::string& page_language);
 
   // For the combined expiration field we return |exp_year_type_|; otherwise if
   // |expiration_year_| is having year with |max_length| of 2-digits we return

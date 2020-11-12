@@ -17,6 +17,7 @@
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_model/phone_number.h"
 #include "components/autofill/core/browser/form_parsing/form_field.h"
+#include "components/autofill/core/browser/pattern_provider/pattern_provider.h"
 
 namespace autofill {
 
@@ -96,12 +97,18 @@ class PhoneField : public FormField {
   // This is useful for logging purposes.
   static const char* GetRegExpName(RegexType regex_id);
 
+  // Returns the name of field type which indicated in JSON corresponding to
+  // |regex_id|.
+  static std::string GetJSONFieldType(RegexType phonetype_id);
+
   // Convenient wrapper for ParseFieldSpecifics().
   static bool ParsePhoneField(AutofillScanner* scanner,
                               const std::string& regex,
                               AutofillField** field,
                               const RegExLogging& logging,
-                              const bool is_country_code_field);
+                              const bool is_country_code_field,
+                              const std::string& json_field_type,
+                              const std::string& page_language);
 
   // Returns true if |scanner| points to a <select> field that appears to be the
   // phone country code by looking at its option contents.
