@@ -7710,6 +7710,16 @@
         'dynamic_refresh': True,
         'per_profile': False,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Allow file selection dialogs',
+        },
+        {
+          'value': False,
+          'caption': 'Prevent file selection dialogs',
+        },
+      ],
       'example_value': True,
       'default': True,
       'id': 84,
@@ -11513,6 +11523,16 @@
         'dynamic_refresh': True,
         'per_profile': False,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Allow wake locks for power management',
+        },
+        {
+          'value': False,
+          'caption': 'Ignore requests for wake locks for power management',
+        },
+      ],
       'example_value': False,
       'default': True,
       'id': 491,
@@ -11532,6 +11552,16 @@
         'dynamic_refresh': True,
         'per_profile': False,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Allow screen wake locks for power management',
+        },
+        {
+          'value': False,
+          'caption': 'Demote screen wake lock requests to system wake lock requests',
+        },
+      ],
       'example_value': False,
       'default': True,
       'id': 203,
@@ -17194,6 +17224,16 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Prevent sites with abusive experiences from opening new windows or tabs',
+        },
+        {
+          'value': False,
+          'caption': 'Allow sites with abusive experiences to open new windows or tabs',
+        },
+      ],
       'example_value': True,
       'default': True,
       'id': 404,
@@ -22698,6 +22738,20 @@ If you disable this policy, web page scrolling to specific text fragments via UR
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Use an anonymous Google service to provide automatic descriptions for unlabeled images',
+        },
+        {
+          'value': False,
+          'caption': 'Do not use Google services to provide automatic image descriptions',
+        },
+        {
+          'value': None,
+          'caption': 'Let users choose to use an anonymous Google service to provide automatic descriptions for unlabeled images',
+        },
+      ],
       'example_value': False,
       'default': None,
       'id': 703,
