@@ -494,6 +494,15 @@ public final class PageViewObserverTest {
         observer.notifySiteSuspensionChanged(STARTING_FQDN, true);
     }
 
+    @Test
+    public void eagerSuspension_nullTab() {
+        PageViewObserver observer = createPageViewObserver();
+        updateUrl(mTab, STARTING_URL);
+
+        didSelectTab(null, TabSelectionType.FROM_USER);
+        observer.notifySiteSuspensionChanged(STARTING_FQDN, true);
+    }
+
     private PageViewObserver createPageViewObserver() {
         PageViewObserver observer = new PageViewObserver(
                 mActivity, mTabModelSelector, mEventTracker, mTokenTracker, mSuspensionTracker);

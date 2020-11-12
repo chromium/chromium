@@ -127,7 +127,7 @@ public class PageViewObserver {
 
     /** Notify PageViewObserver that {@code fqdn} was just suspended or un-suspended. */
     public void notifySiteSuspensionChanged(String fqdn, boolean isSuspended) {
-        if (mCurrentTab != null && !mCurrentTab.isInitialized()) return;
+        if (mCurrentTab == null || !mCurrentTab.isInitialized()) return;
         SuspendedTab suspendedTab = SuspendedTab.from(mCurrentTab);
         if (fqdn.equals(mLastFqdn) || fqdn.equals(suspendedTab.getFqdn())) {
             if (checkSuspendedTabState(isSuspended, fqdn)) {

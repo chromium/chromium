@@ -334,6 +334,35 @@ public class TabSuspensionTest {
         });
     }
 
+    @Test
+    @MediumTest
+    public void testSuspendNullCurrentTab() {
+        mActivityTestRule.loadUrl(mStartingUrl);
+        ChromeTabUtils.closeAllTabs(InstrumentationRegistry.getInstrumentation(), mActivity);
+
+        doReturn(true).when(mSuspensionTracker).isWebsiteSuspended(STARTING_FQDN);
+        suspendDomain(STARTING_FQDN);
+
+        // We can't use loadUrlInNewTab because the site being suspended will prevent loading from
+        // completing, and loadUrlInNewTab expects loading to succeed.
+        ChromeTabUtils.newTabFromMenu(
+                InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
+        Tab tab2 = mActivity.getActivityTab();
+
+        startLoadingUrl(tab2, mStartingUrl);
+        waitForSuspendedTabToShow(tab2, STARTING_FQDN);
+    }
+
+    @Test
+    @MediumTest
+    public void testSuspendUninitializedCurrentTab() {
+        mActivityTestRule.loadUrl(mStartingUrl);
+        TestThreadUtils.runOnUiThreadBlocking(() -> mTab.destroy());
+
+        doReturn(true).when(mSuspensionTracker).isWebsiteSuspended(STARTING_FQDN);
+        suspendDomain(STARTING_FQDN);
+    }
+
     private void startLoadingUrl(Tab tab, String url) {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> { tab.loadUrl(new LoadUrlParams(url, PageTransition.TYPED)); });
