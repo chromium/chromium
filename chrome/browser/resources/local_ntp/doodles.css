@@ -69,7 +69,7 @@
 
 #logo-default,
 #logo-non-white {
-  background-image: url(../../../../ui/webui/resources/images/google_logo.svg);
+  background-image: url(../new_tab_page/icons/google_logo.svg);
   background-repeat: no-repeat;
   bottom: var(--logo-margin-bottom);
   height: 92px;
@@ -80,8 +80,7 @@
 
 body.alternate-logo #logo-default,
 body.alternate-logo #logo-non-white {
-  -webkit-mask-image:
-      url(../../../../ui/webui/resources/images/google_logo.svg);
+  -webkit-mask-image: url(../new_tab_page/icons/google_logo.svg);
   -webkit-mask-repeat: no-repeat;
   -webkit-mask-size: 100%;
   background: var(--logo-color);
