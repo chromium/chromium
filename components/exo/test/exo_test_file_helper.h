@@ -7,6 +7,8 @@
 
 #include "components/exo/file_helper.h"
 
+class GURL;
+
 namespace exo {
 
 class TestFileHelper : public FileHelper {
@@ -17,19 +19,22 @@ class TestFileHelper : public FileHelper {
   ~TestFileHelper() override;
 
   // FileHelper:
-  std::string GetMimeTypeForUriList() const override;
-  bool GetUrlFromPath(aura::Window* target,
-                      const base::FilePath& path,
-                      GURL* out) override;
-  bool HasUrlsInPickle(const base::Pickle& pickle) override;
-  void GetUrlsFromPickle(aura::Window* target,
-                         const base::Pickle& pickle,
-                         UrlsFromPickleCallback callback) override;
+  std::vector<ui::FileInfo> GetFilenames(
+      aura::Window* source,
+      const std::vector<uint8_t>& data) const override;
+  std::string GetMimeTypeForUriList(aura::Window* target) const override;
+  void SendFileInfo(aura::Window* target,
+                    const std::vector<ui::FileInfo>& files,
+                    SendDataCallback callback) const override;
+  bool HasUrlsInPickle(const base::Pickle& pickle) const override;
+  void SendPickle(aura::Window* target,
+                  const base::Pickle& pickle,
+                  SendDataCallback callback) override;
 
-  void RunUrlsCallback(std::vector<GURL> urls);
+  void RunSendPickleCallback(std::vector<GURL> urls);
 
  private:
-  UrlsFromPickleCallback urls_callback_;
+  SendDataCallback send_pickle_callback_;
 };
 
 }  // namespace exo

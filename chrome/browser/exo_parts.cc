@@ -4,7 +4,8 @@
 
 #include "chrome/browser/exo_parts.h"
 
-#include "base/memory/ptr_util.h"
+#include <string>
+#include <vector>
 
 #include "ash/public/cpp/ash_switches.h"
 #include "ash/public/cpp/external_arc/keyboard/arc_input_method_surface_manager.h"
@@ -12,9 +13,18 @@
 #include "ash/public/cpp/external_arc/overlay/arc_overlay_manager.h"
 #include "ash/public/cpp/external_arc/toast/arc_toast_surface_manager.h"
 #include "ash/shell.h"
+#include "base/bind.h"
 #include "base/command_line.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/ref_counted_memory.h"
+#include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/chromeos/crostini/crostini_shelf_utils.h"
+#include "chrome/browser/chromeos/crostini/crostini_util.h"
 #include "chrome/browser/chromeos/file_manager/app_id.h"
 #include "chrome/browser/chromeos/file_manager/fileapi_util.h"
 #include "chrome/browser/chromeos/file_manager/path_util.h"
@@ -25,12 +35,16 @@
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/drop_data.h"
+#include "net/base/filename_util.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_url.h"
+#include "storage/common/file_system/file_system_types.h"
+#include "ui/base/dragdrop/file_info/file_info.h"
 
 namespace {
 
 constexpr char kMimeTypeArcUriList[] = "application/x-arc-uri-list";
+constexpr char kUriListSeparator[] = "\r\n";
 
 storage::FileSystemContext* GetFileSystemContext() {
   // Obtains the primary profile.
@@ -69,39 +83,84 @@ void GetFileSystemUrlsFromPickle(
   }
 }
 
+void SendArcUrls(exo::FileHelper::SendDataCallback callback,
+                 const std::vector<GURL>& urls) {
+  std::vector<std::string> lines;
+  for (const GURL& url : urls) {
+    if (!url.is_valid())
+      continue;
+    lines.emplace_back(url.spec());
+  }
+  // Arc requires UTF16 for data.
+  base::string16 data =
+      base::UTF8ToUTF16(base::JoinString(lines, kUriListSeparator));
+  std::move(callback).Run(base::RefCountedString16::TakeString(&data));
+}
+
 class ChromeFileHelper : public exo::FileHelper {
  public:
   ChromeFileHelper() = default;
   ~ChromeFileHelper() override = default;
 
   // exo::FileHelper:
-  std::string GetMimeTypeForUriList() const override {
+  std::vector<ui::FileInfo> GetFilenames(
+      aura::Window* source,
+      const std::vector<uint8_t>& data) const override {
+    // TODO(crbug.com/1144138): We must translate the path if this was received
+    // from a VM. E.g. if this was from crostini as
+    // file:///home/username/file.txt, we translate to
+    // file:///media/fuse/crostini_<hash>_termina_penguin/file.txt.
+    std::string lines(data.begin(), data.end());
+    std::vector<ui::FileInfo> filenames;
+    base::FilePath path;
+    storage::FileSystemURL url;
+    for (const base::StringPiece& line : base::SplitStringPiece(
+             lines, "\n", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY)) {
+      if (!net::FileURLToFilePath(GURL(line), &path))
+        continue;
+      filenames.emplace_back(ui::FileInfo(path, base::FilePath()));
+    }
+    return filenames;
+  }
+
+  std::string GetMimeTypeForUriList(aura::Window* target) const override {
     return kMimeTypeArcUriList;
   }
 
-  bool GetUrlFromPath(aura::Window* target,
-                      const base::FilePath& path,
-                      GURL* out) override {
-    return file_manager::util::ConvertPathToArcUrl(path, out);
+  void SendFileInfo(aura::Window* target,
+                    const std::vector<ui::FileInfo>& files,
+                    exo::FileHelper::SendDataCallback callback) const override {
+    // TODO(crbug.com/1144138): Translate path and possibly share files with VM.
+    std::vector<std::string> lines;
+    GURL url;
+    for (const auto& info : files) {
+      if (file_manager::util::ConvertPathToArcUrl(info.path, &url)) {
+        lines.emplace_back(url.spec());
+      }
+    }
+    base::string16 data =
+        base::UTF8ToUTF16(base::JoinString(lines, kUriListSeparator));
+    std::move(callback).Run(base::RefCountedString16::TakeString(&data));
   }
 
-  bool HasUrlsInPickle(const base::Pickle& pickle) override {
+  bool HasUrlsInPickle(const base::Pickle& pickle) const override {
     std::vector<storage::FileSystemURL> file_system_urls;
     GetFileSystemUrlsFromPickle(pickle, &file_system_urls);
     return !file_system_urls.empty();
   }
 
-  void GetUrlsFromPickle(aura::Window* target,
-                         const base::Pickle& pickle,
-                         UrlsFromPickleCallback callback) override {
+  void SendPickle(aura::Window* target,
+                  const base::Pickle& pickle,
+                  exo::FileHelper::SendDataCallback callback) override {
+    // TODO(crbug.com/1144138): Translate path and possibly share files with VM.
     std::vector<storage::FileSystemURL> file_system_urls;
     GetFileSystemUrlsFromPickle(pickle, &file_system_urls);
     if (file_system_urls.empty()) {
-      std::move(callback).Run(std::vector<GURL>());
+      std::move(callback).Run(nullptr);
       return;
     }
-    file_manager::util::ConvertToContentUrls(file_system_urls,
-                                             std::move(callback));
+    file_manager::util::ConvertToContentUrls(
+        file_system_urls, base::BindOnce(&SendArcUrls, std::move(callback)));
   }
 };
 

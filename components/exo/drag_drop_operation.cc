@@ -10,6 +10,7 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "components/exo/data_offer.h"
 #include "components/exo/data_source.h"
+#include "components/exo/file_helper.h"
 #include "components/exo/seat.h"
 #include "components/exo/surface.h"
 #include "components/exo/surface_tree_host.h"
@@ -143,17 +144,19 @@ class DragDropOperation::IconSurface final : public SurfaceTreeHost,
 };
 
 base::WeakPtr<DragDropOperation> DragDropOperation::Create(
+    FileHelper* file_helper,
     DataSource* source,
     Surface* origin,
     Surface* icon,
     const gfx::PointF& drag_start_point,
     ui::mojom::DragEventSource event_source) {
-  auto* dnd_op = new DragDropOperation(source, origin, icon, drag_start_point,
-                                       event_source);
+  auto* dnd_op = new DragDropOperation(file_helper, source, origin, icon,
+                                       drag_start_point, event_source);
   return dnd_op->weak_ptr_factory_.GetWeakPtr();
 }
 
-DragDropOperation::DragDropOperation(DataSource* source,
+DragDropOperation::DragDropOperation(FileHelper* file_helper,
+                                     DataSource* source,
                                      Surface* origin,
                                      Surface* icon,
                                      const gfx::PointF& drag_start_point,
@@ -207,7 +210,8 @@ DragDropOperation::DragDropOperation(DataSource* source,
                      weak_ptr_factory_.GetWeakPtr()),
       DataSource::ReadDataCallback(),
       base::BindOnce(&DragDropOperation::OnFilenamesRead,
-                     weak_ptr_factory_.GetWeakPtr()),
+                     weak_ptr_factory_.GetWeakPtr(), file_helper,
+                     origin->window()),
       counter_);
 }
 
@@ -250,24 +254,12 @@ void DragDropOperation::OnHTMLRead(const std::string& mime_type,
   counter_.Run();
 }
 
-void DragDropOperation::OnFilenamesRead(const std::string& mime_type,
+void DragDropOperation::OnFilenamesRead(FileHelper* file_helper,
+                                        aura::Window* source,
+                                        const std::string& mime_type,
                                         const std::vector<uint8_t>& data) {
   DCHECK(os_exchange_data_);
-  std::string lines(data.begin(), data.end());
-  std::vector<ui::FileInfo> filenames;
-  for (const base::StringPiece& line : base::SplitStringPiece(
-           lines, "\n", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY)) {
-    if (line[0] == '#')
-      continue;
-    GURL url(line);
-    // TODO(crbug.com/1144138): We must translate the path if this was received
-    // from a VM. E.g. if this was from crostini as
-    // file:///home/username/file.txt, we translate to
-    // file:///media/fuse/crostini_<hash>_termina_penguin/file.txt.
-    filenames.emplace_back(
-        ui::FileInfo(base::FilePath(url.path()), base::FilePath()));
-  }
-  os_exchange_data_->SetFilenames(std::move(filenames));
+  os_exchange_data_->SetFilenames(file_helper->GetFilenames(source, data));
   mime_type_ = mime_type;
   counter_.Run();
 }

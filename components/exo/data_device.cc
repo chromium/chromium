@@ -67,7 +67,7 @@ void DataDevice::StartDrag(DataSource* source,
                            Surface* origin,
                            Surface* icon,
                            ui::mojom::DragEventSource event_source) {
-  seat_->StartDrag(source, origin, icon, event_source);
+  seat_->StartDrag(file_helper_, source, origin, icon, event_source);
 }
 
 void DataDevice::SetSelection(DataSource* source) {

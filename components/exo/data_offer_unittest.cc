@@ -316,20 +316,16 @@ TEST_F(DataOfferTest, ReceiveUriListFromPickle_ReceiveBeforeUrlIsResolved) {
   std::vector<GURL> urls;
   urls.push_back(
       GURL("content://org.chromium.arc.chromecontentprovider/path/to/file1"));
-  file_helper.RunUrlsCallback(urls);
+  file_helper.RunSendPickleCallback(urls);
 
-  base::string16 result1;
-  ASSERT_TRUE(ReadString16(std::move(read_pipe1), &result1));
-  EXPECT_EQ(
-      base::ASCIIToUTF16(
-          "content://org.chromium.arc.chromecontentprovider/path/to/file1"),
-      result1);
-  base::string16 result2;
-  ASSERT_TRUE(ReadString16(std::move(read_pipe2), &result2));
-  EXPECT_EQ(
-      base::ASCIIToUTF16(
-          "content://org.chromium.arc.chromecontentprovider/path/to/file1"),
-      result2);
+  std::string result1;
+  ASSERT_TRUE(ReadString(std::move(read_pipe1), &result1));
+  EXPECT_EQ("content://org.chromium.arc.chromecontentprovider/path/to/file1",
+            result1);
+  std::string result2;
+  ASSERT_TRUE(ReadString(std::move(read_pipe2), &result2));
+  EXPECT_EQ("content://org.chromium.arc.chromecontentprovider/path/to/file1",
+            result2);
 }
 
 TEST_F(DataOfferTest,
@@ -359,7 +355,7 @@ TEST_F(DataOfferTest,
   // Run callback with an empty URL.
   std::vector<GURL> urls;
   urls.push_back(GURL(""));
-  file_helper.RunUrlsCallback(urls);
+  file_helper.RunSendPickleCallback(urls);
 
   base::string16 result;
   ASSERT_TRUE(ReadString16(std::move(read_pipe), &result));

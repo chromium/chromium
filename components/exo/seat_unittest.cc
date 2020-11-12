@@ -13,6 +13,7 @@
 #include "components/exo/seat_observer.h"
 #include "components/exo/surface.h"
 #include "components/exo/test/exo_test_base.h"
+#include "components/exo/test/exo_test_file_helper.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
@@ -488,11 +489,13 @@ TEST_F(SeatTest, DragDropAbort) {
   TestDataSourceDelegate delegate;
   DataSource source(&delegate);
   Surface origin, icon;
+  TestFileHelper file_helper;
 
   // Give origin a root window for DragDropOperation.
   GetContext()->AddChild(origin.window());
 
-  seat.StartDrag(&source, &origin, &icon, ui::mojom::DragEventSource::kMouse);
+  seat.StartDrag(&file_helper, &source, &origin, &icon,
+                 ui::mojom::DragEventSource::kMouse);
   EXPECT_TRUE(seat.get_drag_drop_operation_for_testing());
   seat.AbortPendingDragOperation();
   EXPECT_FALSE(seat.get_drag_drop_operation_for_testing());

@@ -31,6 +31,7 @@ class KeyEvent;
 
 namespace exo {
 class DragDropOperation;
+class FileHelper;
 class ScopedDataSource;
 class SeatObserver;
 class Surface;
@@ -80,7 +81,8 @@ class Seat : public aura::client::FocusChangeObserver,
   // Sets clipboard data from |source|.
   void SetSelection(DataSource* source);
 
-  void StartDrag(DataSource* source,
+  void StartDrag(FileHelper* file_helper,
+                 DataSource* source,
                  Surface* origin,
                  Surface* icon,
                  ui::mojom::DragEventSource event_source);

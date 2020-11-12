@@ -40,9 +40,7 @@ constexpr char kTextMimeTypeUtf16[] = "text/plain;charset=utf-16";
 constexpr char kTextHtmlMimeTypeUtf8[] = "text/html;charset=utf-8";
 constexpr char kTextHtmlMimeTypeUtf16[] = "text/html;charset=utf-16";
 constexpr char kTextRtfMimeType[] = "text/rtf";
-constexpr char kTextUriListMimeType[] = "text/uri-list";
 constexpr char kImagePngMimeType[] = "image/png";
-constexpr char kUriListSeparator[] = "\r\n";
 
 constexpr char kUTF8[] = "utf8";
 constexpr char kUTF16[] = "utf16";
@@ -62,28 +60,6 @@ void WriteFileDescriptor(base::ScopedFD fd,
       FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_BLOCKING},
       base::BindOnce(&WriteFileDescriptorOnWorkerThread, std::move(fd),
                      std::move(memory)));
-}
-
-// Gets a comma-separated list of urls extracted from |data|->file.
-bool GetUrlListFromDataFile(FileHelper* file_helper,
-                            aura::Window* target,
-                            const ui::OSExchangeData& data,
-                            base::string16* url_list_string) {
-  if (!data.HasFile())
-    return false;
-  std::vector<ui::FileInfo> files;
-  if (data.GetFilenames(&files)) {
-    for (const auto& info : files) {
-      GURL url;
-      // TODO(niwa): Need to fill the correct app_id.
-      if (file_helper->GetUrlFromPath(target, info.path, &url)) {
-        if (!url_list_string->empty())
-          *url_list_string += base::UTF8ToUTF16(kUriListSeparator);
-        *url_list_string += base::UTF8ToUTF16(url.spec());
-      }
-    }
-  }
-  return !url_list_string->empty();
 }
 
 ui::ClipboardFormatType GetClipboardFormatType() {
@@ -112,16 +88,6 @@ DataOffer::AsyncSendDataCallback AsyncEncodeAsRefCountedString(
         std::move(callback).Run(EncodeAsRefCountedString(text, charset));
       },
       text, charset);
-}
-
-DataOffer::AsyncSendDataCallback AsyncSend(
-    scoped_refptr<base::RefCountedMemory> data) {
-  return base::BindOnce(
-      [](scoped_refptr<base::RefCountedMemory> data,
-         DataOffer::SendDataCallback callback) {
-        std::move(callback).Run(std::move(data));
-      },
-      std::move(data));
 }
 
 void ReadTextFromClipboard(const std::string& charset,
@@ -268,39 +234,27 @@ void DataOffer::SetDropData(FileHelper* file_helper,
                             const ui::OSExchangeData& data) {
   DCHECK_EQ(0u, data_callbacks_.size());
 
-  std::string filenames_content;
-  // TODO(crbug.com/1144138): If we are dropping this in a VM, we must
-  //  translate paths, and share paths at the time when data is received.
+  const std::string uri_list_mime_type =
+      file_helper->GetMimeTypeForUriList(target);
   if (data.HasFile()) {
     std::vector<ui::FileInfo> files;
-    std::vector<std::string> lines;
-    data.GetFilenames(&files);
-    for (const auto& file : files)
-      lines.emplace_back(net::FilePathToFileURL(file.path).spec());
-    filenames_content = base::JoinString(lines, kUriListSeparator);
-    data_callbacks_.emplace(
-        kTextUriListMimeType,
-        AsyncSend(base::RefCountedString::TakeString(&filenames_content)));
-    delegate_->OnOffer(kTextUriListMimeType);
-  }
-
-  const std::string uri_list_mime_type = file_helper->GetMimeTypeForUriList();
-  base::string16 url_list_string;
-  if (GetUrlListFromDataFile(file_helper, target, data, &url_list_string)) {
-    data_callbacks_.emplace(
-        uri_list_mime_type,
-        AsyncSend(base::RefCountedString16::TakeString(&url_list_string)));
-    delegate_->OnOffer(uri_list_mime_type);
-    return;
+    if (data.GetFilenames(&files)) {
+      data_callbacks_.emplace(uri_list_mime_type,
+                              base::BindOnce(&FileHelper::SendFileInfo,
+                                             base::Unretained(file_helper),
+                                             target, std::move(files)));
+      delegate_->OnOffer(uri_list_mime_type);
+      return;
+    }
   }
 
   base::Pickle pickle;
   if (data.GetPickledData(GetClipboardFormatType(), &pickle) &&
       file_helper->HasUrlsInPickle(pickle)) {
-    data_callbacks_.emplace(uri_list_mime_type,
-                            base::BindOnce(&DataOffer::GetUrlsFromPickle,
-                                           weak_ptr_factory_.GetWeakPtr(),
-                                           file_helper, target, pickle));
+    data_callbacks_.emplace(
+        uri_list_mime_type,
+        base::BindOnce(&FileHelper::SendPickle, base::Unretained(file_helper),
+                       target, pickle));
     delegate_->OnOffer(uri_list_mime_type);
     return;
   }
@@ -406,30 +360,6 @@ void DataOffer::OnDataReady(const std::string& mime_type,
       ++it;
     }
   }
-}
-
-void DataOffer::GetUrlsFromPickle(FileHelper* file_helper,
-                                  aura::Window* target,
-                                  const base::Pickle& pickle,
-                                  DataOffer::SendDataCallback callback) {
-  file_helper->GetUrlsFromPickle(
-      target, pickle,
-      base::BindOnce(&DataOffer::OnPickledUrlsResolved,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-}
-
-void DataOffer::OnPickledUrlsResolved(DataOffer::SendDataCallback callback,
-                                      const std::vector<GURL>& urls) {
-  base::string16 url_list_string;
-  for (const GURL& url : urls) {
-    if (!url.is_valid())
-      continue;
-    if (!url_list_string.empty())
-      url_list_string += base::UTF8ToUTF16(kUriListSeparator);
-    url_list_string += base::UTF8ToUTF16(url.spec());
-  }
-  const auto data = base::RefCountedString16::TakeString(&url_list_string);
-  std::move(callback).Run(std::move(data));
 }
 
 }  // namespace exo

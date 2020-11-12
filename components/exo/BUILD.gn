@@ -33,6 +33,7 @@ static_library("exo") {
     "display.h",
     "drag_drop_operation.cc",
     "drag_drop_operation.h",
+    "file_helper.h",
     "frame_sink_resource_manager.cc",
     "frame_sink_resource_manager.h",
     "input_trace.h",

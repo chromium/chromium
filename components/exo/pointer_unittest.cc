@@ -23,6 +23,7 @@
 #include "components/exo/sub_surface.h"
 #include "components/exo/surface.h"
 #include "components/exo/test/exo_test_base.h"
+#include "components/exo/test/exo_test_file_helper.h"
 #include "components/exo/test/exo_test_helper.h"
 #include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/service/surfaces/surface.h"
@@ -941,6 +942,7 @@ TEST_F(PointerTest, DragDropAbort) {
   TestDataSourceDelegate data_source_delegate;
   DataSource source(&data_source_delegate);
   Surface origin, icon;
+  TestFileHelper file_helper;
 
   // Make origin into a real window so the pointer can click it
   ShellSurface shell_surface(&origin);
@@ -956,7 +958,8 @@ TEST_F(PointerTest, DragDropAbort) {
   EXPECT_CALL(pointer_delegate, OnPointerEnter(&origin, gfx::PointF(), 0));
   generator.MoveMouseTo(origin.window()->GetBoundsInScreen().origin());
 
-  seat.StartDrag(&source, &origin, &icon, ui::mojom::DragEventSource::kMouse);
+  seat.StartDrag(&file_helper, &source, &origin, &icon,
+                 ui::mojom::DragEventSource::kMouse);
   EXPECT_TRUE(seat.get_drag_drop_operation_for_testing());
 
   EXPECT_CALL(pointer_delegate, OnPointerButton).Times(2);
