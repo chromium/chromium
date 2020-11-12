@@ -20,10 +20,10 @@ namespace ntp_tiles {
 CustomLinksManagerImpl::CustomLinksManagerImpl(
     PrefService* prefs,
     history::HistoryService* history_service)
-    : prefs_(prefs), store_(prefs), history_service_observer_(this) {
+    : prefs_(prefs), store_(prefs) {
   DCHECK(prefs);
   if (history_service)
-    history_service_observer_.Add(history_service);
+    history_service_observation_.Observe(history_service);
   if (IsInitialized())
     current_links_ = store_.RetrieveLinks();
 
@@ -226,7 +226,7 @@ void CustomLinksManagerImpl::OnURLsDeleted(
 
 void CustomLinksManagerImpl::HistoryServiceBeingDeleted(
     history::HistoryService* history_service) {
-  history_service_observer_.RemoveAll();
+  history_service_observation_.RemoveObservation();
 }
 
 void CustomLinksManagerImpl::OnPreferenceChanged() {

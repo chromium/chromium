@@ -380,11 +380,11 @@ class MostVisitedSites : public history::TopSitesObserver,
       suggestions_subscription_;
 
   base::ScopedObservation<history::TopSites, history::TopSitesObserver>
-      top_sites_observer_{this};
+      top_sites_observation_{this};
 
   base::ScopedObservation<RepeatableQueriesService,
                           RepeatableQueriesServiceObserver>
-      repeatable_queries_observer_{this};
+      repeatable_queries_observation_{this};
 
   std::unique_ptr<base::CallbackList<void()>::Subscription>
       custom_links_subscription_;

@@ -218,11 +218,11 @@ void MostVisitedSites::SetMostVisitedURLsObserver(Observer* observer,
   if (top_sites_) {
     // Register as TopSitesObserver so that we can update ourselves when the
     // TopSites changes.
-    top_sites_observer_.Observe(top_sites_.get());
+    top_sites_observation_.Observe(top_sites_.get());
   }
 
   if (repeatable_queries_) {
-    repeatable_queries_observer_.Observe(repeatable_queries_);
+    repeatable_queries_observation_.Observe(repeatable_queries_);
   }
 
   if (custom_links_) {
@@ -947,7 +947,7 @@ void MostVisitedSites::OnRepeatableQueriesUpdated() {
 }
 
 void MostVisitedSites::OnRepeatableQueriesServiceShuttingDown() {
-  repeatable_queries_observer_.RemoveObservation();
+  repeatable_queries_observation_.RemoveObservation();
 }
 
 bool MostVisitedSites::ShouldAddHomeTile() const {

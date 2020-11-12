@@ -11,7 +11,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_service_observer.h"
 #include "components/ntp_tiles/custom_links_manager.h"
@@ -95,8 +95,9 @@ class CustomLinksManagerImpl : public CustomLinksManager,
   base::CallbackList<void()> callback_list_;
 
   // Observer for the HistoryService.
-  ScopedObserver<history::HistoryService, history::HistoryServiceObserver>
-      history_service_observer_;
+  base::ScopedObservation<history::HistoryService,
+                          history::HistoryServiceObserver>
+      history_service_observation_{this};
 
   // Observer for Chrome sync changes to |prefs::kCustomLinksList| and
   // |prefs::kCustomLinksInitialized|.
