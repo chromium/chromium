@@ -50,15 +50,15 @@ PASS elem.role is "AXRole: AXMenuItemCheckBox"
 menu_radio_id
 PASS elem.role is "AXRole: AXMenuItemRadio"
 input_date_id
-PASS elem.role is "AXRole: AXDateField"
+PASS elem.role is "AXRole: AXDate"
 input_datetime_id
 PASS elem.role is "AXRole: AXTextField"
 input_datetime-local_id
-PASS elem.role is "AXRole: AXDateTimeField"
+PASS elem.role is "AXRole: AXDateTime"
 input_month_id
-PASS elem.role is "AXRole: AXDateTimeField"
+PASS elem.role is "AXRole: AXDateTime"
 input_week_id
-PASS elem.role is "AXRole: AXDateTimeField"
+PASS elem.role is "AXRole: AXDateTime"
 input_file_id
 PASS elem.role is "AXRole: AXButton"
 input_number_id
