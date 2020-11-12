@@ -17,7 +17,8 @@ declare_args() {
   enable_feed_v2 = is_android
 
   # Whether to include Feed V2 in ChromeModern builds.
-  enable_feed_v2_modern = false
+  # TODO(iwells): Enabled only on default channel to match enable_jdk_library_desugaring which is currently only enabled on the default channel.
+  enable_feed_v2_modern = android_channel == "default"
 
   # Whether to include Feed V2 as a DFM in ChromeModern builds.
   dfmify_feed_v2_modern = false
