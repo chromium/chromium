@@ -6,6 +6,7 @@
 
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/time/time.h"
 #include "components/autofill_assistant/browser/actions/action_test_utils.h"
 #include "components/autofill_assistant/browser/actions/mock_action_delegate.h"
 #include "components/autofill_assistant/browser/selector.h"
@@ -147,16 +148,16 @@ TEST_F(ActionDelegateUtilTest, ActionDelegateDeletedDuringExecution) {
   auto expected_element =
       test_util::MockFindElement(*mock_delegate, expected_selector);
 
-  EXPECT_CALL(*mock_delegate, WaitForDocumentToBecomeInteractive(
-                                  EqualsElement(expected_element), _))
-      .WillOnce(RunOnceCallback<1>(OkClientStatus()));
+  EXPECT_CALL(*mock_delegate, WaitUntilElementIsStable(
+                                  _, _, EqualsElement(expected_element), _))
+      .WillOnce(RunOnceCallback<3>(OkClientStatus()));
   EXPECT_CALL(*mock_delegate, ScrollIntoView(_, _)).Times(0);
   EXPECT_CALL(*this, MockDone(_)).Times(0);
 
   auto actions = std::make_unique<ElementActionVector>();
-  actions->emplace_back(
-      base::BindOnce(&ActionDelegate::WaitForDocumentToBecomeInteractive,
-                     mock_delegate->GetWeakPtr()));
+  actions->emplace_back(base::BindOnce(
+      &ActionDelegate::WaitUntilElementIsStable, mock_delegate->GetWeakPtr(), 1,
+      base::TimeDelta::FromMilliseconds(0)));
   actions->emplace_back(base::BindOnce(
       [](base::OnceCallback<void()> destroy_delegate,
          const ElementFinder::Result& element,

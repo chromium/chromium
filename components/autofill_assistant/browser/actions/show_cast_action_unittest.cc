@@ -77,9 +77,10 @@ TEST_F(ShowCastActionTest, CheckExpectedCallChain) {
                                    base::TimeDelta::FromSeconds(0)));
   auto expected_element =
       test_util::MockFindElement(mock_action_delegate_, expected_selector);
-  EXPECT_CALL(mock_action_delegate_, WaitForDocumentToBecomeInteractive(
-                                         EqualsElement(expected_element), _))
-      .WillOnce(RunOnceCallback<1>(OkClientStatus()));
+  EXPECT_CALL(mock_action_delegate_,
+              WaitUntilDocumentIsInReadyState(
+                  _, DOCUMENT_INTERACTIVE, EqualsElement(expected_element), _))
+      .WillOnce(RunOnceCallback<3>(OkClientStatus()));
   EXPECT_CALL(mock_action_delegate_,
               ScrollToElementPosition(expected_selector, _,
                                       EqualsElement(expected_element), _))
@@ -105,9 +106,10 @@ TEST_F(ShowCastActionTest, WaitsForStableElementIfSpecified) {
                                    base::TimeDelta::FromSeconds(0)));
   auto expected_element =
       test_util::MockFindElement(mock_action_delegate_, expected_selector);
-  EXPECT_CALL(mock_action_delegate_, WaitForDocumentToBecomeInteractive(
-                                         EqualsElement(expected_element), _))
-      .WillOnce(RunOnceCallback<1>(OkClientStatus()));
+  EXPECT_CALL(mock_action_delegate_,
+              WaitUntilDocumentIsInReadyState(
+                  _, DOCUMENT_INTERACTIVE, EqualsElement(expected_element), _))
+      .WillOnce(RunOnceCallback<3>(OkClientStatus()));
   EXPECT_CALL(
       mock_action_delegate_,
       WaitUntilElementIsStable(_, _, EqualsElement(expected_element), _))
@@ -129,8 +131,8 @@ TEST_F(ShowCastActionTest, SetsTitleIfSpecified) {
       .WillByDefault(RunOnceCallback<1>(OkClientStatus(),
                                         base::TimeDelta::FromSeconds(0)));
   test_util::MockFindAnyElement(mock_action_delegate_);
-  ON_CALL(mock_action_delegate_, WaitForDocumentToBecomeInteractive(_, _))
-      .WillByDefault(RunOnceCallback<1>(OkClientStatus()));
+  ON_CALL(mock_action_delegate_, WaitUntilDocumentIsInReadyState(_, _, _, _))
+      .WillByDefault(RunOnceCallback<3>(OkClientStatus()));
   ON_CALL(mock_action_delegate_, ScrollToElementPosition(_, _, _, _))
       .WillByDefault(RunOnceCallback<3>(OkClientStatus()));
 

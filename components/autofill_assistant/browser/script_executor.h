@@ -129,9 +129,6 @@ class ScriptExecutor : public ActionDelegate,
                    ElementFinder::Callback callback) const override;
   void FindAllElements(const Selector& selector,
                        ElementFinder::Callback callback) const override;
-  void WaitForDocumentToBecomeInteractive(
-      const ElementFinder::Result& element,
-      base::OnceCallback<void(const ClientStatus&)> callback) override;
   void ScrollIntoView(
       const ElementFinder::Result& element,
       base::OnceCallback<void(const ClientStatus&)> callback) override;
@@ -249,6 +246,11 @@ class ScriptExecutor : public ActionDelegate,
       base::OnceCallback<void(const ClientStatus&,
                               DocumentReadyState,
                               base::TimeDelta)> callback) override;
+  void WaitUntilDocumentIsInReadyState(
+      base::TimeDelta max_wait_time,
+      DocumentReadyState min_ready_state,
+      const ElementFinder::Result& optional_frame_element,
+      base::OnceCallback<void(const ClientStatus&)> callback) override;
 
   void LoadURL(const GURL& url) override;
   void Shutdown() override;

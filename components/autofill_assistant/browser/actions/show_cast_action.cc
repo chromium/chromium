@@ -11,6 +11,7 @@
 #include "base/callback.h"
 #include "components/autofill_assistant/browser/actions/action_delegate.h"
 #include "components/autofill_assistant/browser/actions/action_delegate_util.h"
+#include "components/autofill_assistant/browser/client_settings.h"
 #include "components/autofill_assistant/browser/client_status.h"
 #include "components/autofill_assistant/browser/service.pb.h"
 
@@ -73,9 +74,10 @@ void ShowCastAction::OnWaitForElement(const Selector& selector,
   }
 
   auto actions = std::make_unique<action_delegate_util::ElementActionVector>();
-  actions->emplace_back(
-      base::BindOnce(&ActionDelegate::WaitForDocumentToBecomeInteractive,
-                     delegate_->GetWeakPtr()));
+  actions->emplace_back(base::BindOnce(
+      &ActionDelegate::WaitUntilDocumentIsInReadyState, delegate_->GetWeakPtr(),
+      delegate_->GetSettings().document_ready_check_timeout,
+      DOCUMENT_INTERACTIVE));
   auto wait_for_stable_element = proto_.show_cast().wait_for_stable_element();
   if (wait_for_stable_element == STEP_UNSPECIFIED) {
     wait_for_stable_element = SKIP_STEP;

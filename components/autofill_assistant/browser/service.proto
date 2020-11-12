@@ -148,7 +148,6 @@ message OverlayImageProto {
 }
 
 message ClientSettingsProto {
-  reserved 10, 11;
   message IntegrationTestSettings {
     // Disables animations for the poodle and the progress bar.
     optional bool disable_header_animations = 1;
@@ -182,13 +181,8 @@ message ClientSettingsProto {
   // become stable.
   optional int32 box_model_check_count = 7;
 
-  // Time to wait between two checks of the document state, when waiting for the
-  // document to become ready.
-  optional int32 document_ready_check_interval_ms = 8;
-
-  // Maximum number of checks to run while waiting for the document to become
-  // ready.
-  optional int32 document_ready_check_count = 9;
+  // Maximum time to wait until document has reached "ready" state.
+  optional int32 document_ready_check_timeout_ms = 20;
 
   // How much time to give users to tap undo when they tap a cancel button.
   optional int32 cancel_delay_ms = 12;
@@ -228,6 +222,8 @@ message ClientSettingsProto {
     optional string undo_label = 2;
   }
   optional BackButtonSettings back_button_settings = 19;
+
+  reserved 8 to 11;
 }
 
 message ScriptTimeoutError {

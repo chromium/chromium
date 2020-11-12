@@ -29,8 +29,8 @@ class ClickActionTest : public testing::Test {
     ON_CALL(mock_action_delegate_, OnShortWaitForElement(_, _))
         .WillByDefault(RunOnceCallback<1>(OkClientStatus(),
                                           base::TimeDelta::FromSeconds(0)));
-    ON_CALL(mock_action_delegate_, WaitForDocumentToBecomeInteractive(_, _))
-        .WillByDefault(RunOnceCallback<1>(OkClientStatus()));
+    ON_CALL(mock_action_delegate_, WaitUntilDocumentIsInReadyState(_, _, _, _))
+        .WillByDefault(RunOnceCallback<3>(OkClientStatus()));
     ON_CALL(mock_action_delegate_, ScrollIntoView(_, _))
         .WillByDefault(RunOnceCallback<1>(OkClientStatus()));
     ON_CALL(mock_action_delegate_, WaitUntilElementIsStable(_, _, _, _))
@@ -84,9 +84,10 @@ TEST_F(ClickActionTest, CheckExpectedCallChain) {
               OnShortWaitForElement(expected_selector, _))
       .WillOnce(RunOnceCallback<1>(OkClientStatus(),
                                    base::TimeDelta::FromSeconds(0)));
-  EXPECT_CALL(mock_action_delegate_, WaitForDocumentToBecomeInteractive(
-                                         EqualsElement(expected_element), _))
-      .WillOnce(RunOnceCallback<1>(OkClientStatus()));
+  EXPECT_CALL(mock_action_delegate_,
+              WaitUntilDocumentIsInReadyState(
+                  _, DOCUMENT_INTERACTIVE, EqualsElement(expected_element), _))
+      .WillOnce(RunOnceCallback<3>(OkClientStatus()));
   EXPECT_CALL(mock_action_delegate_,
               ScrollIntoView(EqualsElement(expected_element), _))
       .WillOnce(RunOnceCallback<1>(OkClientStatus()));

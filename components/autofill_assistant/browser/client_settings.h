@@ -56,14 +56,10 @@ struct ClientSettings {
   // become stable.
   int box_model_check_count = 50;
 
-  // Time to wait between two checks of the document state, when waiting for the
+  // Time to wait while checking the document state, when waiting for the
   // document to become ready.
-  base::TimeDelta document_ready_check_interval =
-      base::TimeDelta::FromMilliseconds(200);
-
-  // Maximum number of checks to run while waiting for the document to become
-  // ready.
-  int document_ready_check_count = 50;
+  base::TimeDelta document_ready_check_timeout =
+      base::TimeDelta::FromSeconds(10);
 
   // How much time to give users to tap undo when they tap a cancel button.
   base::TimeDelta cancel_delay = base::TimeDelta::FromSeconds(5);

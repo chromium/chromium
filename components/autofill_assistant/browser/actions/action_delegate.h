@@ -114,12 +114,6 @@ class ActionDelegate {
       const ElementFinder::Result& element,
       base::OnceCallback<void(const ClientStatus&)> callback) = 0;
 
-  // Wait for the |element|'s document to become interactive.
-  // Note: This is a legacy method, use WaitForDocumentReadyState instead.
-  virtual void WaitForDocumentToBecomeInteractive(
-      const ElementFinder::Result& element,
-      base::OnceCallback<void(const ClientStatus&)> callback) = 0;
-
   // Scroll the |element| into view.
   virtual void ScrollIntoView(
       const ElementFinder::Result& element,
@@ -344,6 +338,15 @@ class ActionDelegate {
       base::OnceCallback<void(const ClientStatus&,
                               DocumentReadyState,
                               base::TimeDelta)> callback) = 0;
+
+  // Wait until the defined |min_ready_state| in |optional_frame_element| is
+  // reached or time out. If the |optional_frame_element| is empty, check the
+  // main document.
+  virtual void WaitUntilDocumentIsInReadyState(
+      base::TimeDelta max_wait_time,
+      DocumentReadyState min_ready_state,
+      const ElementFinder::Result& optional_frame_element,
+      base::OnceCallback<void(const ClientStatus&)> callback) = 0;
 
   // Gets the value of Document.readyState in |optional_frame_element| or, if
   // it is empty, in the main document.

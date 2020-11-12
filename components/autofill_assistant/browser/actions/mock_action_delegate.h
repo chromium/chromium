@@ -83,10 +83,6 @@ class MockActionDelegate : public ActionDelegate {
                     const ElementFinder::Result& element,
                     base::OnceCallback<void(const ClientStatus&)> callback));
 
-  MOCK_METHOD2(WaitForDocumentToBecomeInteractive,
-               void(const ElementFinder::Result& element,
-                    base::OnceCallback<void(const ClientStatus&)> callback));
-
   MOCK_METHOD2(ScrollIntoView,
                void(const ElementFinder::Result& element,
                     base::OnceCallback<void(const ClientStatus&)> callback));
@@ -338,6 +334,12 @@ class MockActionDelegate : public ActionDelegate {
     OnWaitForDocumentReadyState(min_ready_state, optional_frame_element,
                                 callback);
   }
+
+  MOCK_METHOD4(WaitUntilDocumentIsInReadyState,
+               void(base::TimeDelta,
+                    DocumentReadyState,
+                    const ElementFinder::Result&,
+                    base::OnceCallback<void(const ClientStatus&)>));
 
   MOCK_METHOD0(RequireUI, void());
   MOCK_METHOD0(SetExpandSheetForPromptAction, bool());

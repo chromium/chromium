@@ -411,9 +411,10 @@ TEST_F(UseCreditCardActionTest, ForcedFallbackWithKeystrokes) {
   EXPECT_CALL(mock_action_delegate_,
               SetValueAttribute("", EqualsElement(expected_element), _))
       .WillOnce(RunOnceCallback<2>(OkClientStatus()));
-  EXPECT_CALL(mock_action_delegate_, WaitForDocumentToBecomeInteractive(
-                                         EqualsElement(expected_element), _))
-      .WillOnce(RunOnceCallback<1>(OkClientStatus()));
+  EXPECT_CALL(mock_action_delegate_,
+              WaitUntilDocumentIsInReadyState(
+                  _, DOCUMENT_INTERACTIVE, EqualsElement(expected_element), _))
+      .WillOnce(RunOnceCallback<3>(OkClientStatus()));
   EXPECT_CALL(mock_action_delegate_,
               ScrollIntoView(EqualsElement(expected_element), _))
       .WillOnce(RunOnceCallback<1>(OkClientStatus()));

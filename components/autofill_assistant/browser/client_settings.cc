@@ -59,12 +59,9 @@ void ClientSettings::UpdateFromProto(const ClientSettingsProto& proto) {
   if (proto.has_box_model_check_count()) {
     box_model_check_count = proto.box_model_check_count();
   }
-  if (proto.has_document_ready_check_interval_ms()) {
-    document_ready_check_interval = base::TimeDelta::FromMilliseconds(
-        proto.document_ready_check_interval_ms());
-  }
-  if (proto.has_document_ready_check_count()) {
-    document_ready_check_count = proto.document_ready_check_count();
+  if (proto.has_document_ready_check_timeout_ms()) {
+    document_ready_check_timeout = base::TimeDelta::FromMilliseconds(
+        proto.document_ready_check_timeout_ms());
   }
   if (proto.has_cancel_delay_ms()) {
     cancel_delay = base::TimeDelta::FromMilliseconds(proto.cancel_delay_ms());

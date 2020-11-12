@@ -105,9 +105,10 @@ void AddClickOrTapSequence(const ActionDelegate* delegate,
                            ClickType click_type,
                            OptionalStep on_top,
                            ElementActionVector* actions) {
-  actions->emplace_back(
-      base::BindOnce(&ActionDelegate::WaitForDocumentToBecomeInteractive,
-                     delegate->GetWeakPtr()));
+  actions->emplace_back(base::BindOnce(
+      &ActionDelegate::WaitUntilDocumentIsInReadyState, delegate->GetWeakPtr(),
+      delegate->GetSettings().document_ready_check_timeout,
+      DOCUMENT_INTERACTIVE));
   actions->emplace_back(
       base::BindOnce(&ActionDelegate::ScrollIntoView, delegate->GetWeakPtr()));
   if (click_type != ClickType::JAVASCRIPT) {

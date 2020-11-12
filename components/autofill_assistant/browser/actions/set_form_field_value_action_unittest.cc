@@ -69,8 +69,8 @@ class SetFormFieldValueActionTest : public testing::Test {
         .WillByDefault(RunOnceCallback<2>(OkClientStatus()));
     ON_CALL(mock_action_delegate_, SelectFieldValue(_, _))
         .WillByDefault(RunOnceCallback<1>(OkClientStatus()));
-    ON_CALL(mock_action_delegate_, WaitForDocumentToBecomeInteractive(_, _))
-        .WillByDefault(RunOnceCallback<1>(OkClientStatus()));
+    ON_CALL(mock_action_delegate_, WaitUntilDocumentIsInReadyState(_, _, _, _))
+        .WillByDefault(RunOnceCallback<3>(OkClientStatus()));
     ON_CALL(mock_action_delegate_, ScrollIntoView(_, _))
         .WillByDefault(RunOnceCallback<1>(OkClientStatus()));
     ON_CALL(mock_action_delegate_, WaitUntilElementIsStable(_, _, _, _))
@@ -241,9 +241,10 @@ TEST_F(SetFormFieldValueActionTest, KeyboardInputHasExpectedCallChain) {
                                    base::TimeDelta::FromSeconds(0)));
   auto expected_element =
       test_util::MockFindElement(mock_action_delegate_, fake_selector_);
-  EXPECT_CALL(mock_action_delegate_, WaitForDocumentToBecomeInteractive(
-                                         EqualsElement(expected_element), _))
-      .WillOnce(RunOnceCallback<1>(OkClientStatus()));
+  EXPECT_CALL(mock_action_delegate_,
+              WaitUntilDocumentIsInReadyState(
+                  _, DOCUMENT_INTERACTIVE, EqualsElement(expected_element), _))
+      .WillOnce(RunOnceCallback<3>(OkClientStatus()));
   EXPECT_CALL(mock_action_delegate_,
               ScrollIntoView(EqualsElement(expected_element), _))
       .WillOnce(RunOnceCallback<1>(OkClientStatus()));
@@ -300,9 +301,10 @@ TEST_F(SetFormFieldValueActionTest, TextWithKeystrokeHasExpectedCallChain) {
   EXPECT_CALL(mock_action_delegate_,
               SetValueAttribute("", EqualsElement(expected_element), _))
       .WillOnce(RunOnceCallback<2>(OkClientStatus()));
-  EXPECT_CALL(mock_action_delegate_, WaitForDocumentToBecomeInteractive(
-                                         EqualsElement(expected_element), _))
-      .WillOnce(RunOnceCallback<1>(OkClientStatus()));
+  EXPECT_CALL(mock_action_delegate_,
+              WaitUntilDocumentIsInReadyState(
+                  _, DOCUMENT_INTERACTIVE, EqualsElement(expected_element), _))
+      .WillOnce(RunOnceCallback<3>(OkClientStatus()));
   EXPECT_CALL(mock_action_delegate_,
               ScrollIntoView(EqualsElement(expected_element), _))
       .WillOnce(RunOnceCallback<1>(OkClientStatus()));
