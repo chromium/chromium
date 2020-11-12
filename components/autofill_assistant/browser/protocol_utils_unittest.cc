@@ -5,6 +5,7 @@
 #include "components/autofill_assistant/browser/protocol_utils.h"
 
 #include "base/macros.h"
+#include "base/optional.h"
 #include "components/autofill_assistant/browser/selector.h"
 #include "components/autofill_assistant/browser/service.pb.h"
 #include "components/autofill_assistant/browser/test_util.h"
@@ -328,8 +329,11 @@ TEST_F(ProtocolUtilsTest, ParseActionsUpdateScriptListFullFeatured) {
 TEST_F(ProtocolUtilsTest, ParseTriggerScriptsParseError) {
   std::vector<std::unique_ptr<TriggerScript>> trigger_scripts;
   std::vector<std::string> additional_allowed_domains;
+  int interval_ms;
+  base::Optional<int> timeout_ms;
   EXPECT_FALSE(ProtocolUtils::ParseTriggerScripts("invalid", &trigger_scripts,
-                                                  &additional_allowed_domains));
+                                                  &additional_allowed_domains,
+                                                  &interval_ms, &timeout_ms));
   EXPECT_TRUE(trigger_scripts.empty());
 }
 
@@ -352,6 +356,9 @@ TEST_F(ProtocolUtilsTest, ParseTriggerScriptsValid) {
   proto.add_additional_allowed_domains("example.com");
   proto.add_additional_allowed_domains("other-example.com");
 
+  proto.set_trigger_condition_check_interval_ms(2000);
+  proto.set_timeout_ms(500000);
+
   TriggerScriptProto trigger_script_1;
   *trigger_script_1.mutable_trigger_condition()->mutable_selector() =
       ToSelectorProto("fake_element_1");
@@ -365,8 +372,11 @@ TEST_F(ProtocolUtilsTest, ParseTriggerScriptsValid) {
 
   std::vector<std::unique_ptr<TriggerScript>> trigger_scripts;
   std::vector<std::string> additional_allowed_domains;
+  int interval_ms;
+  base::Optional<int> timeout_ms;
   EXPECT_TRUE(ProtocolUtils::ParseTriggerScripts(proto_str, &trigger_scripts,
-                                                 &additional_allowed_domains));
+                                                 &additional_allowed_domains,
+                                                 &interval_ms, &timeout_ms));
   EXPECT_THAT(
       trigger_scripts,
       ElementsAre(
@@ -374,6 +384,8 @@ TEST_F(ProtocolUtilsTest, ParseTriggerScriptsValid) {
           Pointee(Property(&TriggerScript::AsProto, Eq(trigger_script_2)))));
   EXPECT_THAT(additional_allowed_domains,
               ElementsAre("example.com", "other-example.com"));
+  EXPECT_EQ(interval_ms, 2000);
+  EXPECT_EQ(timeout_ms, 500000);
 }
 
 }  // namespace

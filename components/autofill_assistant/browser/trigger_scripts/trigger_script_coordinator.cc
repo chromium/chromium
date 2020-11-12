@@ -6,6 +6,7 @@
 
 #include <map>
 
+#include "base/numerics/clamped_math.h"
 #include "components/autofill_assistant/browser/client_context.h"
 #include "components/autofill_assistant/browser/protocol_utils.h"
 #include "components/autofill_assistant/browser/url_utils.h"
@@ -106,11 +107,27 @@ void TriggerScriptCoordinator::OnGetTriggerScripts(
 
   trigger_scripts_.clear();
   additional_allowed_domains_.clear();
+  base::Optional<int> timeout_ms;
+  int check_interval_ms;
   if (!ProtocolUtils::ParseTriggerScripts(response, &trigger_scripts_,
-                                          &additional_allowed_domains_)) {
+                                          &additional_allowed_domains_,
+                                          &check_interval_ms, &timeout_ms)) {
     Stop(Metrics::LiteScriptFinishedState::LITE_SCRIPT_GET_ACTIONS_PARSE_ERROR);
     return;
   }
+  trigger_condition_check_interval_ =
+      base::TimeDelta::FromMilliseconds(check_interval_ms);
+  if (timeout_ms.has_value()) {
+    // Note: add 1 for the initial, not-delayed check.
+    initial_trigger_condition_evaluations_ =
+        1 + base::ClampCeil<int64_t>(
+                base::TimeDelta::FromMilliseconds(*timeout_ms) /
+                trigger_condition_check_interval_);
+  } else {
+    initial_trigger_condition_evaluations_ = -1;
+  }
+  remaining_trigger_condition_evaluations_ =
+      initial_trigger_condition_evaluations_;
 
   Metrics::RecordLiteScriptShownToUser(
       ukm_recorder_, client_->GetWebContents(),
@@ -310,6 +327,10 @@ void TriggerScriptCoordinator::HideTriggerScript() {
     return;
   }
 
+  // Since the trigger script is now hidden, the timer to track the amount of
+  // time a script was invisible is reset.
+  remaining_trigger_condition_evaluations_ =
+      initial_trigger_condition_evaluations_;
   static_trigger_conditions_->set_is_first_time_user(false);
   visible_trigger_script_ = -1;
   for (Observer& observer : observers_) {
@@ -374,11 +395,20 @@ void TriggerScriptCoordinator::OnDynamicTriggerConditionsEvaluated() {
     }
   }
 
+  if (visible_trigger_script_ == -1 &&
+      remaining_trigger_condition_evaluations_ > 0) {
+    remaining_trigger_condition_evaluations_--;
+  }
+  if (remaining_trigger_condition_evaluations_ == 0) {
+    Stop(Metrics::LiteScriptFinishedState::
+             LITE_SCRIPT_TRIGGER_CONDITION_TIMEOUT);
+    return;
+  }
   content::GetUIThreadTaskRunner({})->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&TriggerScriptCoordinator::CheckDynamicTriggerConditions,
                      weak_ptr_factory_.GetWeakPtr()),
-      periodic_element_check_interval_);
+      trigger_condition_check_interval_);
 }
 
 void TriggerScriptCoordinator::NotifyOnTriggerScriptFinished(

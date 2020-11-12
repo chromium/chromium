@@ -149,9 +149,21 @@ class TriggerScriptCoordinator : public content::WebContentsObserver {
   std::unique_ptr<DynamicTriggerConditions> dynamic_trigger_conditions_;
 
   // The time between consecutive evaluations of dynamic trigger conditions.
-  // TODO(arbesser): Maybe make this configurable in proto?
-  base::TimeDelta periodic_element_check_interval_ =
-      base::TimeDelta::FromSeconds(1);
+  base::TimeDelta trigger_condition_check_interval_ =
+      base::TimeDelta::FromMilliseconds(1000);
+
+  // The number of times the trigger condition may be evaluated. If this reaches
+  // 0, the trigger script stops with |LITE_SCRIPT_TRIGGER_CONDITION_TIMEOUT|.
+  // -1 means no limit.
+  //
+  // This number is defined by the timeout (specified in proto) divided by
+  // |trigger_condition_check_interval_|. It resets on tab resume and on UI
+  // hidden. While the UI is visible, the number does not decrease.
+  int64_t remaining_trigger_condition_evaluations_ = -1;
+
+  // The initial number of evaluations. Used to store the reset value. See
+  // |remaining_trigger_condition_evaluations_|.
+  int64_t initial_trigger_condition_evaluations_ = -1;
 
   // The UKM recorder used for metrics.
   ukm::UkmRecorder* const ukm_recorder_;

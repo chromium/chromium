@@ -573,4 +573,111 @@ TEST_F(TriggerScriptCoordinatorTest, BottomSheetClosedWithSwipe) {
       Metrics::LiteScriptShownToUser::LITE_SCRIPT_SWIPE_DISMISSED, 1);
 }
 
+TEST_F(TriggerScriptCoordinatorTest, TimeoutAfterInvisibleForTooLong) {
+  GetTriggerScriptsResponseProto response;
+  *response.add_trigger_scripts()
+       ->mutable_trigger_condition()
+       ->mutable_selector() = ToSelectorProto("#selector");
+  response.set_timeout_ms(3000);
+  response.set_trigger_condition_check_interval_ms(1000);
+  std::string serialized_response;
+  response.SerializeToString(&serialized_response);
+
+  EXPECT_CALL(*mock_request_sender_, OnSendRequest(GURL(kFakeServerUrl), _, _))
+      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, serialized_response));
+  EXPECT_CALL(*mock_static_trigger_conditions_, Init)
+      .WillOnce(RunOnceCallback<3>());
+
+  // Note: expect 4 calls: 1 initial plus 3 until timeout.
+  EXPECT_CALL(*mock_dynamic_trigger_conditions_,
+              OnUpdate(mock_web_controller_, _))
+      .Times(4)
+      .WillRepeatedly(RunOnceCallback<1>());
+  EXPECT_CALL(*mock_dynamic_trigger_conditions_, GetSelectorMatches)
+      .Times(4)
+      .WillRepeatedly(Return(false));
+  coordinator_->Start(GURL(kFakeDeepLink),
+                      std::make_unique<TriggerContextImpl>());
+  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(1));
+
+  EXPECT_CALL(mock_observer_, OnTriggerScriptFinished(
+                                  Metrics::LiteScriptFinishedState::
+                                      LITE_SCRIPT_TRIGGER_CONDITION_TIMEOUT));
+  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(1));
+  AssertRecordedFinishedState(
+      Metrics::LiteScriptFinishedState::LITE_SCRIPT_TRIGGER_CONDITION_TIMEOUT);
+}
+
+TEST_F(TriggerScriptCoordinatorTest, TimeoutResetsAfterTriggerScriptShown) {
+  GetTriggerScriptsResponseProto response;
+  *response.add_trigger_scripts()
+       ->mutable_trigger_condition()
+       ->mutable_selector() = ToSelectorProto("#selector");
+  response.set_timeout_ms(3000);
+  response.set_trigger_condition_check_interval_ms(1000);
+  std::string serialized_response;
+  response.SerializeToString(&serialized_response);
+
+  EXPECT_CALL(*mock_request_sender_, OnSendRequest(GURL(kFakeServerUrl), _, _))
+      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, serialized_response));
+  EXPECT_CALL(*mock_static_trigger_conditions_, Init)
+      .WillOnce(RunOnceCallback<3>());
+  EXPECT_CALL(*mock_dynamic_trigger_conditions_,
+              OnUpdate(mock_web_controller_, _))
+      .WillRepeatedly(RunOnceCallback<1>());
+
+  // While the trigger script is shown, the timeout is ignored.
+  EXPECT_CALL(mock_observer_, OnTriggerScriptShown).Times(1);
+  EXPECT_CALL(*mock_dynamic_trigger_conditions_, GetSelectorMatches)
+      .WillRepeatedly(Return(true));
+  coordinator_->Start(GURL(kFakeDeepLink),
+                      std::make_unique<TriggerContextImpl>());
+  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(1));
+
+  // When the trigger script is hidden, the timeout resets.
+  EXPECT_CALL(mock_observer_, OnTriggerScriptHidden).Times(1);
+  EXPECT_CALL(*mock_dynamic_trigger_conditions_, GetSelectorMatches)
+      .WillRepeatedly(Return(false));
+  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(1));
+
+  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(1));
+  EXPECT_CALL(mock_observer_, OnTriggerScriptFinished(
+                                  Metrics::LiteScriptFinishedState::
+                                      LITE_SCRIPT_TRIGGER_CONDITION_TIMEOUT));
+  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(1));
+  AssertRecordedFinishedState(
+      Metrics::LiteScriptFinishedState::LITE_SCRIPT_TRIGGER_CONDITION_TIMEOUT);
+}
+
+TEST_F(TriggerScriptCoordinatorTest, NoTimeoutByDefault) {
+  GetTriggerScriptsResponseProto response;
+  *response.add_trigger_scripts()
+       ->mutable_trigger_condition()
+       ->mutable_selector() = ToSelectorProto("#selector");
+  std::string serialized_response;
+  response.SerializeToString(&serialized_response);
+
+  EXPECT_CALL(*mock_request_sender_, OnSendRequest(GURL(kFakeServerUrl), _, _))
+      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, serialized_response));
+  EXPECT_CALL(*mock_static_trigger_conditions_, Init)
+      .WillOnce(RunOnceCallback<3>());
+  EXPECT_CALL(*mock_dynamic_trigger_conditions_,
+              OnUpdate(mock_web_controller_, _))
+      .WillRepeatedly(RunOnceCallback<1>());
+
+  EXPECT_CALL(mock_observer_, OnTriggerScriptFinished).Times(0);
+  EXPECT_CALL(*mock_dynamic_trigger_conditions_, GetSelectorMatches)
+      .WillRepeatedly(Return(false));
+  coordinator_->Start(GURL(kFakeDeepLink),
+                      std::make_unique<TriggerContextImpl>());
+  for (int i = 0; i < 10; ++i) {
+    task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(1));
+  }
+}
+
 }  // namespace autofill_assistant

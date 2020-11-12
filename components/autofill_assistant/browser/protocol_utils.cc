@@ -309,9 +309,13 @@ std::string ProtocolUtils::CreateGetTriggerScriptsRequest(
 bool ProtocolUtils::ParseTriggerScripts(
     const std::string& response,
     std::vector<std::unique_ptr<TriggerScript>>* trigger_scripts,
-    std::vector<std::string>* additional_allowed_domains) {
+    std::vector<std::string>* additional_allowed_domains,
+    int* trigger_condition_check_interval_ms,
+    base::Optional<int>* timeout_ms) {
   DCHECK(trigger_scripts);
   DCHECK(additional_allowed_domains);
+  DCHECK(trigger_condition_check_interval_ms);
+  DCHECK(timeout_ms);
 
   GetTriggerScriptsResponseProto response_proto;
   if (!response_proto.ParseFromString(response)) {
@@ -327,6 +331,12 @@ bool ProtocolUtils::ParseTriggerScripts(
   for (const auto& allowed_domain :
        response_proto.additional_allowed_domains()) {
     additional_allowed_domains->emplace_back(allowed_domain);
+  }
+
+  *trigger_condition_check_interval_ms =
+      response_proto.trigger_condition_check_interval_ms();
+  if (response_proto.has_timeout_ms()) {
+    *timeout_ms = response_proto.timeout_ms();
   }
   return true;
 }

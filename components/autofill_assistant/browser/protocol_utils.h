@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include "base/optional.h"
 #include "components/autofill_assistant/browser/actions/action.h"
 #include "components/autofill_assistant/browser/script.h"
 #include "components/autofill_assistant/browser/service.pb.h"
@@ -86,7 +87,9 @@ class ProtocolUtils {
   static bool ParseTriggerScripts(
       const std::string& response,
       std::vector<std::unique_ptr<TriggerScript>>* trigger_scripts,
-      std::vector<std::string>* additional_allowed_domains);
+      std::vector<std::string>* additional_allowed_domains,
+      int* trigger_condition_check_interval_ms,
+      base::Optional<int>* timeout_ms);
 
  private:
   // To avoid instantiate this class by accident.

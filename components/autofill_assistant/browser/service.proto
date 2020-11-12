@@ -457,6 +457,21 @@ message GetTriggerScriptsResponseProto {
   // automatically cancel the ongoing session if the user navigates away from
   // the original domain or any of the additional domains.
   repeated string additional_allowed_domains = 2;
+
+  // The amount of time a trigger script may evaluate trigger conditions while
+  // invisible. If a trigger script is invisible for this amount of time, it
+  // will automatically finish with LITE_SCRIPT_TRIGGER_CONDITION_TIMEOUT.
+  // If not specified, there is no automatic timeout.
+  //
+  // This is only counted while no trigger script is shown, and the time is
+  // reset on tab switch and whenever a trigger script is hidden. Note that this
+  // only counts the time in-between checks, so the actual timeout will be
+  // slightly longer.
+  optional int32 timeout_ms = 3;
+
+  // The amount of time between consecutive checks of trigger conditions. Should
+  // not be too small to limit performance impact.
+  optional int32 trigger_condition_check_interval_ms = 4 [default = 1000];
 }
 
 // A trigger script contains the full specification for a trigger script that is
