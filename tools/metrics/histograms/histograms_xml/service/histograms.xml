@@ -659,7 +659,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ServiceWorker.NotificationCloseEvent.Time" units="ms"
-    expires_after="M87">
+    expires_after="M90">
   <owner>nsatragno@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
