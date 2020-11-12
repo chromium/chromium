@@ -178,4 +178,14 @@ public class TasksSurfaceCoordinator implements TasksSurface {
             AppBarLayout.OnOffsetChangedListener onOffsetChangedListener) {
         mView.removeHeaderOffsetChangeListener(onOffsetChangedListener);
     }
+
+    @Override
+    public void addFakeSearchBoxShrinkAnimation() {
+        mView.addFakeSearchBoxShrinkAnimation();
+    }
+
+    @Override
+    public void removeFakeSearchBoxShrinkAnimation() {
+        mView.removeFakeSearchBoxShrinkAnimation();
+    }
 }

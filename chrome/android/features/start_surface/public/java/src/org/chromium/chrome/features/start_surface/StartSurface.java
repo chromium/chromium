@@ -22,6 +22,11 @@ public interface StartSurface {
     void initialize();
 
     /**
+     * Called when activity is being destroyed.
+     */
+    void destroy();
+
+    /**
      * An observer that is notified when the start surface internal state, excluding
      * the states notified in {@link OverviewModeObserver}, is changed.
      *

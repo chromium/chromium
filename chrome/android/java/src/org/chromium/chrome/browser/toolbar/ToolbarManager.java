@@ -809,6 +809,13 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
 
         @Override
         public boolean isLocationBarShown() {
+            // Without this check, ToolbarPhone#computeVisualState may return
+            // VisualState.NEW_TAB_NORMAL even if it's in start surface homepage, which leads
+            // ToolbarPhone#getToolbarColorForVisualState to return transparent color.
+            if (StartSurfaceConfiguration.isStartSurfaceEnabled()
+                    && mStartSurfaceState == StartSurfaceState.SHOWN_HOMEPAGE) {
+                return false;
+            }
             NewTabPage ntp = getNewTabPageForCurrentTab();
             return ntp != null && ntp.isLocationBarShownInNTP();
         }

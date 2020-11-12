@@ -54,17 +54,23 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.espresso.UiController;
 import androidx.test.espresso.ViewAction;
 import androidx.test.espresso.action.GeneralLocation;
 import androidx.test.espresso.action.GeneralSwipeAction;
 import androidx.test.espresso.action.Press;
+import androidx.test.espresso.action.ScrollToAction;
 import androidx.test.espresso.action.Swipe;
 import androidx.test.espresso.action.ViewActions;
 import androidx.test.espresso.contrib.RecyclerViewActions;
+import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.filters.MediumTest;
 
+import org.hamcrest.Description;
 import org.hamcrest.Matcher;
+import org.hamcrest.Matchers;
+import org.hamcrest.TypeSafeMatcher;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -100,6 +106,7 @@ import org.chromium.chrome.browser.tasks.pseudotab.TabAttributeCache;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper;
+import org.chromium.chrome.browser.toolbar.top.ToolbarPhone;
 import org.chromium.chrome.start_surface.R;
 import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
@@ -1384,6 +1391,85 @@ public class StartSurfaceTest {
         onView(withId(R.id.primary_tasks_surface_view)).check(matches(isDisplayed()));
         onView(withId(R.id.search_box_text)).check(matches(isDisplayed()));
         onView(withId(R.id.voice_search_button)).check(matches(isDisplayed()));
+    }
+
+    private static Matcher<View> isView(final View targetView) {
+        return new TypeSafeMatcher<View>() {
+            @Override
+            public void describeTo(Description description) {
+                description.appendText("is the targetView: ");
+                description.appendValue(targetView);
+            }
+
+            @Override
+            public boolean matchesSafely(View view) {
+                return view == targetView;
+            }
+        };
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"StartSurface"})
+    // clang-format off
+    @CommandLineFlags.Add({BASE_PARAMS + "/single/show_stack_tab_switcher/true"
+            + "/open_ntp_instead_of_start/true"})
+    public void testScrollToolbar() {
+        // clang-format on
+
+        // We need to check toolbar background color with open_ntp_instead_of_start on. This flag
+        // requires mImmediateReturn to be true.
+        assumeTrue(mImmediateReturn);
+
+        onViewWaiting(allOf(withId(R.id.feed_stream_recycler_view), isDisplayed()));
+
+        // Default scrollTo() cannot be used for RecyclerView. Add a customized scrollTo for
+        // scrolling to the last item of Feed.
+        ViewAction customizedScrollTo = new ViewAction() {
+            @Override
+            public Matcher<View> getConstraints() {
+                return Matchers.allOf(
+                        ViewMatchers.withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE),
+                        ViewMatchers.isDescendantOfA(
+                                ViewMatchers.isAssignableFrom(RecyclerView.class)));
+            }
+
+            @Override
+            public String getDescription() {
+                return "scroll to";
+            }
+
+            @Override
+            public void perform(UiController uiController, View view) {
+                new ScrollToAction().perform(uiController, view);
+            }
+        };
+
+        RecyclerView feedView =
+                mActivityTestRule.getActivity().findViewById(R.id.feed_stream_recycler_view);
+        View lastChild = feedView.getLayoutManager().findViewByPosition(
+                feedView.getAdapter().getItemCount() - 1);
+
+        // Scroll to the last item of Feed. Somehow RecyclerViewActions#scrollToPosition couldn't be
+        // performed.
+        onView(isView(lastChild)).perform(customizedScrollTo, click());
+
+        // The start surface toolbar should be scrolled up and not be displayed.
+        assertTrue(mActivityTestRule.getActivity()
+                           .findViewById(R.id.tab_switcher_toolbar)
+                           .getTranslationY()
+                < -mActivityTestRule.getActivity().getResources().getDimensionPixelOffset(
+                        R.dimen.toolbar_height_no_shadow));
+        onView(withId(R.id.tab_switcher_toolbar)).check(matches(not(isDisplayed())));
+
+        // Toolbar container view should show.
+        onView(withId(R.id.toolbar_container)).check(matches(isDisplayed()));
+
+        // Check the toolbar's background color.
+        ToolbarPhone toolbar =
+                mActivityTestRule.getActivity().findViewById(org.chromium.chrome.R.id.toolbar);
+        Assert.assertEquals(toolbar.getToolbarDataProvider().getPrimaryColor(),
+                toolbar.getBackgroundDrawable().getColor());
     }
 }
 

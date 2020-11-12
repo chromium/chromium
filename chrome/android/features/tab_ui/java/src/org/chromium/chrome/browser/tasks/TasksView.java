@@ -25,6 +25,7 @@ import androidx.core.view.ViewCompat;
 import com.google.android.material.appbar.AppBarLayout;
 
 import org.chromium.base.ApiCompatibilityUtils;
+import org.chromium.base.MathUtils;
 import org.chromium.chrome.browser.feed.shared.FeedFeatures;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.ntp.IncognitoDescriptionView;
@@ -44,6 +45,7 @@ class TasksView extends CoordinatorLayoutForPointer {
     private FrameLayout mBodyViewContainer;
     private FrameLayout mCarouselTabSwitcherContainer;
     private AppBarLayout mHeaderView;
+    private AppBarLayout.OnOffsetChangedListener mFakeSearchBoxShrinkAnimation;
     private SearchBoxCoordinator mSearchBoxCoordinator;
     private IncognitoDescriptionView mIncognitoDescriptionView;
     private View.OnClickListener mIncognitoDescriptionLearnMoreListener;
@@ -359,5 +361,72 @@ class TasksView extends CoordinatorLayoutForPointer {
         if (mHeaderView != null) {
             mHeaderView.removeOnOffsetChangedListener(onOffsetChangedListener);
         }
+    }
+
+    /**
+     * Create the fake box shrink animation if it doesn't exist yet and add the omnibox shrink
+     * animation when the homepage is scrolled.
+     */
+    void addFakeSearchBoxShrinkAnimation() {
+        if (mHeaderView == null) return;
+        if (mFakeSearchBoxShrinkAnimation == null) {
+            int fakeSearchBoxHeight =
+                    getResources().getDimensionPixelSize(R.dimen.ntp_search_box_height);
+            int toolbarContainerTopMargin =
+                    getResources().getDimensionPixelSize(R.dimen.location_bar_vertical_margin);
+            View fakeSearchBoxView = findViewById(R.id.search_box);
+            if (fakeSearchBoxView == null) return;
+            // If fake search box view is not null when creating this animation, it will not change.
+            // So checking it once above is enough.
+            mFakeSearchBoxShrinkAnimation = (appbarLayout, headerVerticalOffset)
+                    -> updateFakeSearchBoxShrinkAnimation(headerVerticalOffset, fakeSearchBoxHeight,
+                            toolbarContainerTopMargin, fakeSearchBoxView);
+        }
+        mHeaderView.addOnOffsetChangedListener(mFakeSearchBoxShrinkAnimation);
+    }
+
+    /** Remove the fake box shrink animation. */
+    void removeFakeSearchBoxShrinkAnimation() {
+        if (mHeaderView != null) {
+            mHeaderView.removeOnOffsetChangedListener(mFakeSearchBoxShrinkAnimation);
+        }
+    }
+
+    /**
+     * When the start surface toolbar is about to be scrolled out of the screen and the fake search
+     * box is almost at the screen top, start to reduce its height to make it finally the same as
+     * toolbar container view's height. This makes fake search box exactly overlap the toolbar
+     * container view and makes the transition smooth.
+     *
+     * <p>This function should be called together with
+     * StartSurfaceToolbarMediator#updateTranslationY, which scroll up the start surface toolbar
+     * together with the header.
+     *
+     * @param headerOffset The current offset of the header.
+     * @param originalFakeSearchBoxHeight The height of fake search box.
+     * @param toolbarContainerTopMargin The top margin of toolbar container view.
+     * @param fakeSearchBox The fake search box in start surface homepage.
+     */
+    private void updateFakeSearchBoxShrinkAnimation(int headerOffset,
+            int originalFakeSearchBoxHeight, int toolbarContainerTopMargin, View fakeSearchBox) {
+        // When the header is scrolled up by fake search box height or so, reduce the fake search
+        // box height.
+        int reduceHeight = MathUtils.clamp(
+                -headerOffset - originalFakeSearchBoxHeight, 0, toolbarContainerTopMargin);
+
+        ViewGroup.LayoutParams layoutParams = fakeSearchBox.getLayoutParams();
+        if (layoutParams.height == originalFakeSearchBoxHeight - reduceHeight) {
+            return;
+        }
+
+        layoutParams.height = originalFakeSearchBoxHeight - reduceHeight;
+
+        // Update the top margin of the fake search box.
+        ViewGroup.MarginLayoutParams marginLayoutParams =
+                (ViewGroup.MarginLayoutParams) fakeSearchBox.getLayoutParams();
+        marginLayoutParams.setMargins(marginLayoutParams.leftMargin, reduceHeight,
+                marginLayoutParams.rightMargin, marginLayoutParams.bottomMargin);
+
+        fakeSearchBox.setLayoutParams(layoutParams);
     }
 }

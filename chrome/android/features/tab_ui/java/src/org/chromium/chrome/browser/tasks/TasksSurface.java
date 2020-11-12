@@ -90,4 +90,14 @@ public interface TasksSurface {
      */
     void removeHeaderOffsetChangeListener(
             AppBarLayout.OnOffsetChangedListener onOffsetChangedListener);
+
+    /**
+     * Add the fake search box shrink animation.
+     */
+    void addFakeSearchBoxShrinkAnimation();
+
+    /**
+     * Remove the omnibox shrink animation.
+     */
+    void removeFakeSearchBoxShrinkAnimation();
 }

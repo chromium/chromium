@@ -160,6 +160,13 @@ public class StartSurfaceCoordinator implements StartSurface {
     }
 
     @Override
+    public void destroy() {
+        if (mTasksSurface != null) {
+            mTasksSurface.removeFakeSearchBoxShrinkAnimation();
+        }
+    }
+
+    @Override
     public void addHeaderOffsetChangeListener(
             AppBarLayout.OnOffsetChangedListener onOffsetChangedListener) {
         // TODO (crbug.com/1113852): Add a header offset change listener for incognito homepage.
@@ -351,6 +358,7 @@ public class StartSurfaceCoordinator implements StartSurface {
                 mScrimCoordinator, mPropertyModel, tabSwitcherType, mParentTabSupplier,
                 !excludeMVTiles, hasTrendyTerms);
         mTasksSurface.getView().setId(R.id.primary_tasks_surface_view);
+        mTasksSurface.addFakeSearchBoxShrinkAnimation();
 
         mTasksSurfacePropertyModelChangeProcessor = PropertyModelChangeProcessor.create(
                 mPropertyModel,

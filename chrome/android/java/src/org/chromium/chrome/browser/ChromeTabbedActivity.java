@@ -2141,6 +2141,10 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             mAppIndexingUtil = null;
         }
 
+        if (mStartSurfaceSupplier.get() != null) {
+            mStartSurfaceSupplier.get().destroy();
+        }
+
         IncognitoTabHostRegistry.getInstance().unregister(mIncognitoTabHost);
 
         TabObscuringHandler tabObscuringHandler = getTabObscuringHandler();

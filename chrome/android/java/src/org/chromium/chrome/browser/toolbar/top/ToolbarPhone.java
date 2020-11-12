@@ -553,7 +553,7 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
      * @return The background drawable for the toolbar view.
      */
     @VisibleForTesting
-    ColorDrawable getBackgroundDrawable() {
+    public ColorDrawable getBackgroundDrawable() {
         return mToolbarBackground;
     }
 
