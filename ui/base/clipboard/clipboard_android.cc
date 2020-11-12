@@ -76,7 +76,7 @@ SkBitmap GetImageData(
   }
 
   gfx::JavaBitmap java_bitmap(jbitmap);
-  if (java_bitmap.size().IsEmpty() || java_bitmap.stride() == 0U ||
+  if (java_bitmap.size().IsEmpty() || java_bitmap.bytes_per_row() == 0U ||
       java_bitmap.pixels() == nullptr) {
     return SkBitmap();
   }

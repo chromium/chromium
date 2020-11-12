@@ -39,17 +39,16 @@ class GFX_EXPORT JavaBitmap {
   inline void* pixels() { return pixels_; }
   inline const void* pixels() const { return pixels_; }
   inline const gfx::Size& size() const { return size_; }
-  // Formats are in android/bitmap.h; e.g. ANDROID_BITMAP_FORMAT_RGBA_8888
-  inline int format() const { return format_; }
-  inline uint32_t stride() const { return stride_; }
+  inline BitmapFormat format() const { return format_; }
+  inline uint32_t bytes_per_row() const { return bytes_per_row_; }
   inline int byte_count() const { return byte_count_; }
 
  private:
   base::android::ScopedJavaGlobalRef<jobject> bitmap_;
   void* pixels_;
   gfx::Size size_;
-  int format_;
-  uint32_t stride_;
+  BitmapFormat format_;
+  uint32_t bytes_per_row_;
   int byte_count_;
 
   DISALLOW_COPY_AND_ASSIGN(JavaBitmap);
