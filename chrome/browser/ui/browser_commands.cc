@@ -1351,12 +1351,14 @@ void FocusPreviousPane(Browser* browser) {
   browser->window()->RotatePaneFocus(false);
 }
 
-void ToggleDevToolsWindow(Browser* browser, DevToolsToggleAction action) {
+void ToggleDevToolsWindow(Browser* browser,
+                          DevToolsToggleAction action,
+                          DevToolsOpenedByAction opened_by) {
   if (action.type() == DevToolsToggleAction::kShowConsolePanel)
     base::RecordAction(UserMetricsAction("DevTools_ToggleConsole"));
   else
     base::RecordAction(UserMetricsAction("DevTools_ToggleWindow"));
-  DevToolsWindow::ToggleDevToolsWindow(browser, action);
+  DevToolsWindow::ToggleDevToolsWindow(browser, action, opened_by);
 }
 
 bool CanOpenTaskManager() {

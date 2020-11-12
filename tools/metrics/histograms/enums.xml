@@ -16895,6 +16895,14 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="105" label="layers.right"/>
 </enum>
 
+<enum name="DevToolsOpenedByAction">
+  <int value="1" label="Main menu or main shortcut"/>
+  <int value="2" label="Console tab shortcut"/>
+  <int value="3" label="Context menu inspect"/>
+  <int value="4" label="Inspect mode shortcut"/>
+  <int value="5" label="Toggle shortcut"/>
+</enum>
+
 <enum name="DevToolsPanel">
   <int value="1" label="Elements"/>
   <int value="2" label="Resources"/>

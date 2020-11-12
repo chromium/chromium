@@ -12,6 +12,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/devtools/devtools_toggle_action.h"
+#include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
@@ -183,7 +184,9 @@ void FocusBookmarksToolbar(Browser* browser);
 void FocusInactivePopupForAccessibility(Browser* browser);
 void FocusNextPane(Browser* browser);
 void FocusPreviousPane(Browser* browser);
-void ToggleDevToolsWindow(Browser* browser, DevToolsToggleAction action);
+void ToggleDevToolsWindow(Browser* browser,
+                          DevToolsToggleAction action,
+                          DevToolsOpenedByAction opened_by);
 bool CanOpenTaskManager();
 void OpenTaskManager(Browser* browser);
 void OpenFeedbackDialog(

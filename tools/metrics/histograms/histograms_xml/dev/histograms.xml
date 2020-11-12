@@ -245,6 +245,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="DevTools.OpenedByAction" enum="DevToolsOpenedByAction"
+    expires_after="2021-07-31">
+  <owner>changhaohan@chromium.org</owner>
+  <owner>yangguo@chromium.org</owner>
+  <owner>mathias@chromium.org</owner>
+  <summary>
+    Recorded when a particular action was taken to launch DevTools.
+  </summary>
+</histogram>
+
 <histogram name="DevTools.PanelClosed" enum="DevToolsPanel" expires_after="M94">
   <owner>yangguo@chromium.org</owner>
   <owner>joselea@microsoft.com</owner>

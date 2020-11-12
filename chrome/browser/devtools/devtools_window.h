@@ -33,6 +33,27 @@ namespace user_prefs {
 class PrefRegistrySyncable;
 }
 
+// Values that represent different actions to open DevTools window.
+// These values are written to logs. New enum values can be added, but existing
+// enums must never be renumbered or deleted and reused.
+enum class DevToolsOpenedByAction {
+  kUnknown = 0,
+  // Main menu -> More Tools -> Developer Tools
+  // or Ctrl+Shift+I shortcut
+  kMainMenuOrMainShortcut = 1,
+  // Ctrl+Shift+J shortcut to jump to Console
+  kConsoleShortcut = 2,
+  // Context menu -> Inspect
+  kContextMenuInspect = 3,
+  // Ctrl+Shift+C shortcut to turn on inspect mode
+  kInspectorModeShortcut = 4,
+  // Toggle-open via F12
+  kToggleShortcut = 5,
+  // Add values above this line with a corresponding label in
+  // tools/metrics/histograms/enums.xml
+  kMaxValue = kToggleShortcut,
+};
+
 class DevToolsWindow : public DevToolsUIBindings::Delegate,
                        public content::WebContentsDelegate {
  public:
@@ -114,7 +135,8 @@ class DevToolsWindow : public DevToolsUIBindings::Delegate,
   //
   static void ToggleDevToolsWindow(
       Browser* browser,
-      const DevToolsToggleAction& action);
+      const DevToolsToggleAction& action,
+      DevToolsOpenedByAction opened_by = DevToolsOpenedByAction::kUnknown);
 
   // Node frontend is always undocked.
   static DevToolsWindow* OpenNodeFrontendWindow(Profile* profile);
@@ -122,6 +144,8 @@ class DevToolsWindow : public DevToolsUIBindings::Delegate,
   static void InspectElement(content::RenderFrameHost* inspected_frame_host,
                              int x,
                              int y);
+
+  static void LogDevToolsOpenedByAction(DevToolsOpenedByAction opened_by);
 
   static std::unique_ptr<content::NavigationThrottle>
   MaybeCreateNavigationThrottle(content::NavigationHandle* handle);
@@ -309,7 +333,8 @@ class DevToolsWindow : public DevToolsUIBindings::Delegate,
       content::WebContents* web_contents,
       bool force_open,
       const DevToolsToggleAction& action,
-      const std::string& settings);
+      const std::string& settings,
+      DevToolsOpenedByAction opened_by = DevToolsOpenedByAction::kUnknown);
 
   // content::WebContentsDelegate:
   void ActivateContents(content::WebContents* contents) override;

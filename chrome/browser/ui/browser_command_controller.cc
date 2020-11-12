@@ -640,19 +640,23 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
           browser_, false /* force_shortcut_app */);
       break;
     case IDC_DEV_TOOLS:
-      ToggleDevToolsWindow(browser_, DevToolsToggleAction::Show());
+      ToggleDevToolsWindow(browser_, DevToolsToggleAction::Show(),
+                           DevToolsOpenedByAction::kMainMenuOrMainShortcut);
       break;
     case IDC_DEV_TOOLS_CONSOLE:
-      ToggleDevToolsWindow(browser_, DevToolsToggleAction::ShowConsolePanel());
+      ToggleDevToolsWindow(browser_, DevToolsToggleAction::ShowConsolePanel(),
+                           DevToolsOpenedByAction::kConsoleShortcut);
       break;
     case IDC_DEV_TOOLS_DEVICES:
       InspectUI::InspectDevices(browser_);
       break;
     case IDC_DEV_TOOLS_INSPECT:
-      ToggleDevToolsWindow(browser_, DevToolsToggleAction::Inspect());
+      ToggleDevToolsWindow(browser_, DevToolsToggleAction::Inspect(),
+                           DevToolsOpenedByAction::kInspectorModeShortcut);
       break;
     case IDC_DEV_TOOLS_TOGGLE:
-      ToggleDevToolsWindow(browser_, DevToolsToggleAction::Toggle());
+      ToggleDevToolsWindow(browser_, DevToolsToggleAction::Toggle(),
+                           DevToolsOpenedByAction::kToggleShortcut);
       break;
     case IDC_TASK_MANAGER:
       OpenTaskManager(browser_);

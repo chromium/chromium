@@ -13,6 +13,7 @@
 #include "base/command_line.h"
 #include "base/json/json_reader.h"
 #include "base/macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/time/time.h"
@@ -629,19 +630,18 @@ void DevToolsWindow::OpenDevToolsWindowForFrame(
 }
 
 // static
-void DevToolsWindow::ToggleDevToolsWindow(
-    Browser* browser,
-    const DevToolsToggleAction& action) {
+void DevToolsWindow::ToggleDevToolsWindow(Browser* browser,
+                                          const DevToolsToggleAction& action,
+                                          DevToolsOpenedByAction opened_by) {
   if (action.type() == DevToolsToggleAction::kToggle &&
       browser->is_type_devtools()) {
     browser->tab_strip_model()->CloseAllTabs();
     return;
   }
 
-  ToggleDevToolsWindow(
-      browser->tab_strip_model()->GetActiveWebContents(),
-      action.type() == DevToolsToggleAction::kInspect,
-      action, "");
+  ToggleDevToolsWindow(browser->tab_strip_model()->GetActiveWebContents(),
+                       action.type() == DevToolsToggleAction::kInspect, action,
+                       "", opened_by);
 }
 
 // static
@@ -705,7 +705,8 @@ void DevToolsWindow::ToggleDevToolsWindow(
     content::WebContents* inspected_web_contents,
     bool force_open,
     const DevToolsToggleAction& action,
-    const std::string& settings) {
+    const std::string& settings,
+    DevToolsOpenedByAction opened_by) {
   scoped_refptr<DevToolsAgentHost> agent(
       DevToolsAgentHost::GetOrCreateFor(inspected_web_contents));
   DevToolsWindow* window = FindDevToolsWindow(agent.get());
@@ -738,6 +739,8 @@ void DevToolsWindow::ToggleDevToolsWindow(
       return;
     window->bindings_->AttachTo(agent.get());
     do_open = true;
+    if (opened_by != DevToolsOpenedByAction::kUnknown)
+      LogDevToolsOpenedByAction(opened_by);
   }
 
   // Update toolbar to reflect DevTools changes.
@@ -766,9 +769,16 @@ void DevToolsWindow::InspectElement(
   // TODO(loislo): we should initiate DevTools window opening from within
   // renderer. Otherwise, we still can hit a race condition here.
   OpenDevToolsWindow(web_contents, DevToolsToggleAction::ShowElementsPanel());
+  LogDevToolsOpenedByAction(DevToolsOpenedByAction::kContextMenuInspect);
   DevToolsWindow* window = FindDevToolsWindow(agent.get());
   if (window && should_measure_time)
     window->inspect_element_start_time_ = start_time;
+}
+
+// static
+void DevToolsWindow::LogDevToolsOpenedByAction(
+    DevToolsOpenedByAction opened_by) {
+  base::UmaHistogramEnumeration("DevTools.OpenedByAction", opened_by);
 }
 
 // static
