@@ -31901,6 +31901,7 @@ Called by update_feature_policy_enum.py.-->
   <int value="2" label="Enabled, not at First Run"/>
   <int value="3" label="Disabled, Conversion Window expired"/>
   <int value="4" label="Disabled, Legacy User upgraded"/>
+  <int value="5" label="Disabled, First Open already recorded"/>
 </enum>
 
 <enum name="FirstMeaningfulPaintOrdering">
