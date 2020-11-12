@@ -28,6 +28,21 @@ namespace {
 
 // Helpers ---------------------------------------------------------------------
 
+// TODO(crbug.com/1131266): Track alternative type in `HoldingSpaceItem`.
+// Returns a holding space item other than the one provided which is backed by
+// the same file path in the specified `model`.
+base::Optional<const HoldingSpaceItem*> GetAlternativeHoldingSpaceItem(
+    const HoldingSpaceModel& model,
+    const HoldingSpaceItem* item) {
+  for (const auto& candidate_item : model.items()) {
+    if (candidate_item.get() == item)
+      continue;
+    if (candidate_item->file_path() == item->file_path())
+      return candidate_item.get();
+  }
+  return base::nullopt;
+}
+
 // Returns the singleton profile manager for the browser process.
 ProfileManager* GetProfileManager() {
   return g_browser_process->profile_manager();
@@ -109,8 +124,17 @@ void HoldingSpaceKeyedService::AddPinnedFile(
                                            HoldingSpaceItem::Type::kPinnedFile,
                                            file_system_url.path()));
 
+  // When pinning an item which already exists in holding space, the pin action
+  // should be recorded on the alternative item backed by the same file path if
+  // such an item exists. Otherwise the only type of holding space item pinned
+  // will be thought to be `kPinnedFile`.
+  const HoldingSpaceItem* holding_space_item_to_record =
+      GetAlternativeHoldingSpaceItem(holding_space_model_,
+                                     holding_space_item.get())
+          .value_or(holding_space_item.get());
+
   holding_space_metrics::RecordItemAction(
-      {holding_space_item.get()}, holding_space_metrics::ItemAction::kPin);
+      {holding_space_item_to_record}, holding_space_metrics::ItemAction::kPin);
 
   AddItem(std::move(holding_space_item));
 }
@@ -123,8 +147,17 @@ void HoldingSpaceKeyedService::RemovePinnedFile(
   if (!holding_space_item)
     return;
 
+  // When removing a pinned item, the unpin action should be recorded on the
+  // alternative item backed by the same file path if such an item exists. This
+  // will give more insight as to what types of items are being unpinned than
+  // would otherwise be known if only `kPinnedFile` was recorded.
+  const HoldingSpaceItem* holding_space_item_to_record =
+      GetAlternativeHoldingSpaceItem(holding_space_model_, holding_space_item)
+          .value_or(holding_space_item);
+
   holding_space_metrics::RecordItemAction(
-      {holding_space_item}, holding_space_metrics::ItemAction::kUnpin);
+      {holding_space_item_to_record},
+      holding_space_metrics::ItemAction::kUnpin);
 
   holding_space_model_.RemoveItem(holding_space_item->id());
 }
