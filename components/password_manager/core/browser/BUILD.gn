@@ -658,6 +658,7 @@ source_set("unit_tests") {
     "password_ui_utils_unittest.cc",
     "possible_username_data_unittest.cc",
     "psl_matching_helper_unittest.cc",
+    "site_affiliation/affiliation_fetcher_factory_impl_unittest.cc",
     "site_affiliation/affiliation_service_impl_unittest.cc",
     "site_affiliation/asset_link_data_unittest.cc",
     "site_affiliation/hash_affiliation_fetcher_unittest.cc",
