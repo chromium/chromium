@@ -218,10 +218,9 @@ class AccountConsistencyServiceTest : public PlatformTest {
     WaitUntilAllCookieRequestsAreApplied();
   }
 
-  void SignOutAndSimulateGaiaCookieManagerServiceLogout() {
+  void SignOut() {
     signin::ClearPrimaryAccount(identity_test_env_->identity_manager(),
                                 signin::ClearPrimaryAccountPolicy::DEFAULT);
-    SimulateGaiaCookieManagerServiceLogout();
     WaitUntilAllCookieRequestsAreApplied();
   }
 
@@ -286,7 +285,7 @@ class AccountConsistencyServiceTest : public PlatformTest {
 
   // Simulate the action of the action GaiaCookieManagerService to cleanup
   // the cookies once the sign-out is done.
-  void SimulateGaiaCookieManagerServiceLogout() {
+  void RemoveAllChromeConnectedCookies() {
     base::RunLoop run_loop;
     account_consistency_service_->RemoveAllChromeConnectedCookies(
         run_loop.QuitClosure());
@@ -372,7 +371,7 @@ TEST_F(AccountConsistencyServiceTest, SignInSignOut) {
   CheckDomainHasChromeConnectedCookie(kYoutubeDomain);
   CheckDomainHasChromeConnectedCookie(kCountryGoogleDomain);
 
-  SignOutAndSimulateGaiaCookieManagerServiceLogout();
+  SignOut();
   CheckNoChromeConnectedCookies();
 }
 
@@ -380,7 +379,7 @@ TEST_F(AccountConsistencyServiceTest, SignInSignOut) {
 TEST_F(AccountConsistencyServiceTest, SignOutWithoutDomains) {
   CheckNoChromeConnectedCookies();
 
-  SignOutAndSimulateGaiaCookieManagerServiceLogout();
+  SignOut();
   CheckNoChromeConnectedCookies();
 }
 
@@ -623,7 +622,7 @@ TEST_F(AccountConsistencyServiceTest, DomainsWithCookieLoadedFromPrefs) {
   CheckDomainHasChromeConnectedCookie(kGoogleDomain);
   CheckDomainHasChromeConnectedCookie(kYoutubeDomain);
 
-  SignOutAndSimulateGaiaCookieManagerServiceLogout();
+  SignOut();
   CheckNoChromeConnectedCookies();
 }
 
@@ -772,7 +771,7 @@ TEST_F(AccountConsistencyServiceTest, DeleteChromeConnectedCookiesAfterSet) {
   account_consistency_service_->SetChromeConnectedCookieWithUrls(
       {GURL("https://google.ca"), GURL("https://google.fr"),
        GURL("https://google.de")});
-  SimulateGaiaCookieManagerServiceLogout();
+  RemoveAllChromeConnectedCookies();
 
   WaitUntilAllCookieRequestsAreApplied();
   CheckNoChromeConnectedCookies();
@@ -790,7 +789,7 @@ TEST_F(AccountConsistencyServiceTest, SetChromeConnectedCookiesAfterDelete) {
   account_consistency_service_->SetChromeConnectedCookieWithUrls(
       {GURL("https://google.ca"), GURL("https://google.fr"),
        GURL("https://google.de")});
-  SimulateGaiaCookieManagerServiceLogout();
+  RemoveAllChromeConnectedCookies();
   account_consistency_service_->SetChromeConnectedCookieWithUrls(
       {GURL("https://google.ca")});
 
