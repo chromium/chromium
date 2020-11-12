@@ -9,9 +9,13 @@
 
 #include "base/callback.h"
 #include "base/optional.h"
+#include "base/scoped_observation.h"
 #include "base/strings/string16.h"
 #include "base/timer/timer.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/search_engines/template_url_data.h"
+#include "components/search_engines/template_url_service.h"
+#include "components/search_engines/template_url_service_observer.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "url/gurl.h"
 
@@ -32,13 +36,21 @@ enum class SearchPrefetchStatus {
   kRequestCancelled = 4,
 };
 
-class SearchPrefetchService : public KeyedService {
+class SearchPrefetchService : public KeyedService,
+                              public TemplateURLServiceObserver {
  public:
   explicit SearchPrefetchService(Profile* profile);
   ~SearchPrefetchService() override;
 
   SearchPrefetchService(const SearchPrefetchService&) = delete;
   SearchPrefetchService& operator=(const SearchPrefetchService&) = delete;
+
+  // KeyedService:
+  void Shutdown() override;
+
+  // TemplateURLServiceObserver:
+  // Monitors changes to DSE. If a change occurs, clears prefetches.
+  void OnTemplateURLServiceChanged() override;
 
   // Called when |controller| has updated information.
   void OnResultChanged(AutocompleteController* controller);
@@ -121,6 +133,12 @@ class SearchPrefetchService : public KeyedService {
 
   // The time of the last prefetch network/server error.
   base::TimeTicks last_error_time_ticks_;
+
+  // The current state of the DSE.
+  base::Optional<TemplateURLData> template_url_service_data_;
+
+  base::ScopedObservation<TemplateURLService, TemplateURLServiceObserver>
+      observer_{this};
 
   Profile* profile_;
 };

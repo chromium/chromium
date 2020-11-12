@@ -12,6 +12,7 @@
 #include "chrome/browser/prefetch/search_prefetch/prefetched_response_container.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "chrome/browser/search_engines/ui_thread_search_terms_data.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/base_search_provider.h"
 #include "components/search_engines/template_url_service.h"
@@ -145,6 +146,11 @@ SearchPrefetchService::SearchPrefetchService(Profile* profile)
 
 SearchPrefetchService::~SearchPrefetchService() = default;
 
+void SearchPrefetchService::Shutdown() {
+  if (observer_.IsObserving())
+    observer_.RemoveObservation();
+}
+
 bool SearchPrefetchService::MaybePrefetchURL(const GURL& url) {
   if (!SearchPrefetchServicePrefetchingIsEnabled())
     return false;
@@ -158,6 +164,17 @@ bool SearchPrefetchService::MaybePrefetchURL(const GURL& url) {
   if (!template_url_service ||
       !template_url_service->GetDefaultSearchProvider())
     return false;
+
+  // Lazily observe Template URL Service.
+  if (!observer_.IsObserving()) {
+    observer_.Observe(template_url_service);
+    const TemplateURL* template_url =
+        template_url_service->GetDefaultSearchProvider();
+    if (template_url) {
+      template_url_service_data_ = template_url->data();
+    }
+  }
+
   base::string16 search_terms;
 
   // Extract the terms directly to make sure this string will match the URL
@@ -324,4 +341,35 @@ void SearchPrefetchService::OnResultChanged(
       MaybePrefetchURL(match.destination_url);
     }
   }
+}
+
+void SearchPrefetchService::OnTemplateURLServiceChanged() {
+  auto* template_url_service =
+      TemplateURLServiceFactory::GetForProfile(profile_);
+  DCHECK(template_url_service);
+
+  base::Optional<TemplateURLData> template_url_service_data;
+
+  const TemplateURL* template_url =
+      template_url_service->GetDefaultSearchProvider();
+  if (template_url) {
+    template_url_service_data = template_url->data();
+  }
+
+  if (!template_url_service_data_.has_value() &&
+      !template_url_service_data.has_value()) {
+    return;
+  }
+
+  UIThreadSearchTermsData search_data;
+
+  if (template_url_service_data_.has_value() &&
+      template_url_service_data.has_value() &&
+      TemplateURL::MatchesData(
+          template_url, &(template_url_service_data_.value()), search_data)) {
+    return;
+  }
+
+  template_url_service_data_ = template_url_service_data;
+  ClearPrefetches();
 }

@@ -83,17 +83,7 @@ class SearchPrefetchBaseBrowserTest : public InProcessBrowserTest {
     search_test_utils::WaitForTemplateURLServiceToLoad(model);
     ASSERT_TRUE(model->loaded());
 
-    TemplateURLData data;
-    data.SetShortName(base::ASCIIToUTF16(kSearchDomain));
-    data.SetKeyword(data.short_name());
-    data.SetURL(GetSearchServerQueryURL("{searchTerms}").spec());
-    data.suggestions_url =
-        search_suggest_server_->GetURL(kSuggestDomain, "/?q={searchTerms}")
-            .spec();
-
-    TemplateURL* template_url = model->Add(std::make_unique<TemplateURL>(data));
-    ASSERT_TRUE(template_url);
-    model->SetUserSelectedDefaultSearchProvider(template_url);
+    SetDSEWithURL(GetSearchServerQueryURL("{searchTerms}"));
   }
 
   void SetUpCommandLine(base::CommandLine* cmd) override {
@@ -192,6 +182,40 @@ class SearchPrefetchBaseBrowserTest : public InProcessBrowserTest {
         content::BrowsingDataRemover::DATA_TYPE_CACHE,
         content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB,
         std::move(filter), &completion_observer);
+  }
+
+  void SetDSEWithURL(const GURL& url) {
+    TemplateURLService* model =
+        TemplateURLServiceFactory::GetForProfile(browser()->profile());
+    TemplateURLData data;
+    data.SetShortName(base::ASCIIToUTF16(kSearchDomain));
+    data.SetKeyword(data.short_name());
+    data.SetURL(url.spec());
+    data.suggestions_url =
+        search_suggest_server_->GetURL(kSuggestDomain, "/?q={searchTerms}")
+            .spec();
+
+    TemplateURL* template_url = model->Add(std::make_unique<TemplateURL>(data));
+    ASSERT_TRUE(template_url);
+    model->SetUserSelectedDefaultSearchProvider(template_url);
+  }
+
+  // This is sufficient to cause observer calls about updated template URL, but
+  // doesn't change DSE at all.
+  void UpdateButChangeNothingInDSE() {
+    TemplateURLService* model =
+        TemplateURLServiceFactory::GetForProfile(browser()->profile());
+    TemplateURLData data;
+    data.SetShortName(base::ASCIIToUTF16(kSuggestDomain));
+    data.SetKeyword(data.short_name());
+    data.SetURL(
+        search_suggest_server_->GetURL(kSuggestDomain, "/?q={searchTerms}")
+            .spec());
+    data.suggestions_url =
+        search_suggest_server_->GetURL(kSuggestDomain, "/?q={searchTerms}")
+            .spec();
+
+    model->Add(std::make_unique<TemplateURL>(data));
   }
 
  private:
@@ -900,6 +924,78 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
   EXPECT_TRUE(prefetch_status.has_value());
 
   ClearBrowsingCacheData(GetSuggestServerURL("/"));
+  prefetch_status = search_prefetch_service->GetSearchPrefetchStatusForTesting(
+      base::ASCIIToUTF16(search_terms));
+  EXPECT_TRUE(prefetch_status.has_value());
+}
+
+IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
+                       ChangeDSESameOriginClearsPrefetches) {
+  auto* search_prefetch_service =
+      SearchPrefetchServiceFactory::GetForProfile(browser()->profile());
+  EXPECT_NE(nullptr, search_prefetch_service);
+
+  std::string search_terms = "prefetch_content";
+
+  GURL prefetch_url = GetSearchServerQueryURL(search_terms);
+
+  EXPECT_TRUE(search_prefetch_service->MaybePrefetchURL(prefetch_url));
+
+  auto prefetch_status =
+      search_prefetch_service->GetSearchPrefetchStatusForTesting(
+          base::ASCIIToUTF16(search_terms));
+  EXPECT_TRUE(prefetch_status.has_value());
+
+  SetDSEWithURL(GetSearchServerQueryURL("/q={searchTerms}&extra_stuff"));
+
+  prefetch_status = search_prefetch_service->GetSearchPrefetchStatusForTesting(
+      base::ASCIIToUTF16(search_terms));
+  EXPECT_FALSE(prefetch_status.has_value());
+}
+
+IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
+                       ChangeDSECrossOriginClearsPrefetches) {
+  auto* search_prefetch_service =
+      SearchPrefetchServiceFactory::GetForProfile(browser()->profile());
+  EXPECT_NE(nullptr, search_prefetch_service);
+
+  std::string search_terms = "prefetch_content";
+
+  GURL prefetch_url = GetSearchServerQueryURL(search_terms);
+
+  EXPECT_TRUE(search_prefetch_service->MaybePrefetchURL(prefetch_url));
+
+  auto prefetch_status =
+      search_prefetch_service->GetSearchPrefetchStatusForTesting(
+          base::ASCIIToUTF16(search_terms));
+  EXPECT_TRUE(prefetch_status.has_value());
+
+  SetDSEWithURL(GetSuggestServerURL("/q={searchTerms}"));
+
+  prefetch_status = search_prefetch_service->GetSearchPrefetchStatusForTesting(
+      base::ASCIIToUTF16(search_terms));
+  EXPECT_FALSE(prefetch_status.has_value());
+}
+
+IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
+                       ChangeDSESameDoesntClearPrefetches) {
+  auto* search_prefetch_service =
+      SearchPrefetchServiceFactory::GetForProfile(browser()->profile());
+  EXPECT_NE(nullptr, search_prefetch_service);
+
+  std::string search_terms = "prefetch_content";
+
+  GURL prefetch_url = GetSearchServerQueryURL(search_terms);
+
+  EXPECT_TRUE(search_prefetch_service->MaybePrefetchURL(prefetch_url));
+
+  auto prefetch_status =
+      search_prefetch_service->GetSearchPrefetchStatusForTesting(
+          base::ASCIIToUTF16(search_terms));
+  EXPECT_TRUE(prefetch_status.has_value());
+
+  UpdateButChangeNothingInDSE();
+
   prefetch_status = search_prefetch_service->GetSearchPrefetchStatusForTesting(
       base::ASCIIToUTF16(search_terms));
   EXPECT_TRUE(prefetch_status.has_value());
