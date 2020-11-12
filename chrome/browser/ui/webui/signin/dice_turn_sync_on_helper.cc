@@ -20,6 +20,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/supports_user_data.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "chrome/browser/enterprise/browser_management/browser_management_service.h"
 #include "chrome/browser/policy/chrome_policy_conversions_client.h"
 #include "chrome/browser/policy/cloud/user_policy_signin_service.h"
 #include "chrome/browser/policy/cloud/user_policy_signin_service_factory.h"
@@ -40,6 +41,7 @@
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/browser/policy_conversions.h"
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
+#include "components/policy/core/common/management/platform_management_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
@@ -494,24 +496,41 @@ void DiceTurnSyncOnHelper::SigninAndShowSyncConfirmationUI() {
     // TODO(https://crbug.com/811211): Remove this handle.
     sync_blocker_ = sync_service->GetSetupInProgressHandle();
     sync_service->GetUserSettings()->SetSyncRequested(true);
+
+    // For managed users and users on enterprise machines that might have cloud
+    // policies, it is important to wait until sync is initialized so that the
+    // confirmation UI can be aware of startup errors. Since all users can be
+    // subjected to cloud policies through device or browser management (CBCM),
+    // this is needed to make sure that all cloud policies are loaded before any
+    // dialog is shown to check whether sync was disabled by admin. Only wait
+    // for cloud policies because local policies are instantly available. See
+    // http://crbug.com/812546
+    auto management_authorities =
+        policy::BrowserManagementService(profile_).GetManagementAuthorities();
+    auto platform_management_authorities =
+        policy::PlatformManagementService().GetManagementAuthorities();
+    management_authorities.insert(platform_management_authorities.begin(),
+                                  platform_management_authorities.end());
     bool is_enterprise_user =
         !policy::BrowserPolicyConnector::IsNonEnterpriseUser(
             account_info_.email);
-    if (is_enterprise_user &&
+    bool may_have_cloud_policies =
+        is_enterprise_user ||
+        management_authorities.find(
+            policy::EnterpriseManagementAuthority::CLOUD) !=
+            management_authorities.end() ||
+        management_authorities.find(
+            policy::EnterpriseManagementAuthority::CLOUD_DOMAIN) !=
+            management_authorities.end();
+
+    if (may_have_cloud_policies &&
         SyncStartupTracker::GetSyncServiceState(sync_service) ==
             SyncStartupTracker::SYNC_STARTUP_PENDING) {
-      // For enterprise users it is important to wait until sync is initialized
-      // so that the confirmation UI can be aware of startup errors. This is
-      // needed to make sure that the sync confirmation dialog is shown only
-      // after the sync service had a chance to check whether sync was disabled
-      // by admin.
-      // See http://crbug.com/812546
       sync_startup_tracker_ =
           std::make_unique<SyncStartupTracker>(sync_service, this);
       return;
     }
   }
-
   ShowSyncConfirmationUI();
 }
 
