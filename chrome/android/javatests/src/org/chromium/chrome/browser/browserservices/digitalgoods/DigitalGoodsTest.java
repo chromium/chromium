@@ -30,6 +30,7 @@ import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.chrome.browser.ChromeApplication;
 import org.chromium.chrome.browser.browserservices.TrustedWebActivityClient;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
@@ -43,6 +44,7 @@ import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.ServerCertificate;
 import org.chromium.payments.mojom.DigitalGoods.GetDetailsResponse;
 import org.chromium.payments.mojom.ItemDetails;
+import org.chromium.ui.test.util.UiDisableIf;
 
 import java.util.concurrent.TimeoutException;
 
@@ -91,6 +93,7 @@ public class DigitalGoodsTest {
      */
     @Test
     @MediumTest
+    @DisableIf.Device(type = {UiDisableIf.TABLET})
     public void javaImplConnected() throws TimeoutException {
         FakeDigitalGoods fake = new FakeDigitalGoods();
         DigitalGoodsFactoryImpl.setDigitalGoodsForTesting(fake);
