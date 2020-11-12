@@ -136,6 +136,8 @@ public class ChromeApplication extends SplitCompatApplication {
                 // Set Chrome factory for mapping BackgroundTask classes to TaskIds.
                 ChromeBackgroundTaskFactory.setAsDefault();
 
+                AppHooks.get().getChimeDelegate().initialize();
+
                 if (VersionConstants.CHANNEL == Channel.CANARY) {
                     GURL.setReportDebugThrowableCallback(
                             PureJavaExceptionReporter::reportJavaException);
@@ -143,7 +145,6 @@ public class ChromeApplication extends SplitCompatApplication {
             }
 
             BuildInfo.setFirebaseAppId(FirebaseConfig.getFirebaseAppId());
-            AppHooks.get().getChimeDelegate().initialize();
 
             if (!ContextUtils.isIsolatedProcess()) {
                 // Incremental install disables process isolation, so things in this block will
