@@ -14,8 +14,8 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.mockito.Mockito.verify;
 
+import static org.chromium.base.test.util.CriteriaHelper.pollUiThread;
 import static org.chromium.chrome.browser.password_manager.settings.PasswordSettingsTest.withSaveMenuIdOrText;
-import static org.chromium.content_public.browser.test.util.CriteriaHelper.pollUiThread;
 
 import android.os.Bundle;
 import android.view.View;

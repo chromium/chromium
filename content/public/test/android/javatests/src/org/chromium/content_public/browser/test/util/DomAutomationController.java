@@ -4,6 +4,7 @@
 
 package org.chromium.content_public.browser.test.util;
 
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.content_public.browser.WebContents;
 
 import java.util.concurrent.TimeoutException;

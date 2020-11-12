@@ -10,7 +10,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 import static org.mockito.Mockito.verify;
 
-import static org.chromium.content_public.browser.test.util.CriteriaHelper.pollUiThread;
+import static org.chromium.base.test.util.CriteriaHelper.pollUiThread;
 import static org.chromium.content_public.browser.test.util.TestThreadUtils.runOnUiThreadBlocking;
 
 import androidx.recyclerview.widget.RecyclerView;
