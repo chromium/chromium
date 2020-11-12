@@ -129,6 +129,13 @@ Polymer({
       computed: 'computeShowHideMenuTitle(activePassword_)',
     },
 
+    /** @private */
+    iconHaloClass_: {
+      type: String,
+      computed: 'computeIconHaloClass_(status, isSignedOut_, ' +
+          'leakedPasswords, weakPasswords)',
+    },
+
     /**
      * The ids of insecure credentials for which user clicked "Change Password"
      * button
@@ -420,6 +427,16 @@ Polymer({
     return this.i18n(
         this.activeListItem_.isPasswordVisible_ ? 'hideCompromisedPassword' :
                                                   'showCompromisedPassword');
+  },
+
+  /**
+   * @return {string}
+   * @private
+   */
+  computeIconHaloClass_() {
+    return !this.isCheckInProgress_() && this.hasInsecureCredentials_() ?
+        'warning-halo' :
+        '';
   },
 
   /**
