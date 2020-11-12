@@ -43,6 +43,7 @@
 #include "chrome/browser/ui/search/ntp_user_data_logger.h"
 #include "chrome/browser/ui/search/omnibox_mojo_utils.h"
 #include "chrome/browser/ui/search/omnibox_utils.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/common/search/instant_types.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/bookmarks/browser/bookmark_model.h"
@@ -73,8 +74,6 @@
 namespace {
 
 const int64_t kMaxDownloadBytes = 1024 * 1024;
-
-constexpr char kModulesVisiblePrefName[] = "NewTabPage.ModulesVisible";
 
 new_tab_page::mojom::ThemePtr MakeTheme(const NtpTheme& ntp_theme) {
   auto theme = new_tab_page::mojom::Theme::New();
@@ -391,7 +390,7 @@ NewTabPageHandler::NewTabPageHandler(
   promo_service_observer_.Add(promo_service_);
   one_google_bar_service_observer_.Add(one_google_bar_service_);
   logger_->SetModulesVisible(
-      profile_->GetPrefs()->GetBoolean(kModulesVisiblePrefName));
+      profile_->GetPrefs()->GetBoolean(prefs::kNtpModulesVisible));
 }
 
 NewTabPageHandler::~NewTabPageHandler() {
@@ -411,7 +410,7 @@ NewTabPageHandler::~NewTabPageHandler() {
 
 // static
 void NewTabPageHandler::RegisterProfilePrefs(PrefRegistrySimple* registry) {
-  registry->RegisterBooleanPref(kModulesVisiblePrefName, true);
+  registry->RegisterBooleanPref(prefs::kNtpModulesVisible, true);
 }
 
 void NewTabPageHandler::AddMostVisitedTile(
@@ -681,13 +680,13 @@ void NewTabPageHandler::OnRestoreModule(const std::string& module_id) {
 }
 
 void NewTabPageHandler::SetModulesVisible(bool visible) {
-  profile_->GetPrefs()->SetBoolean(kModulesVisiblePrefName, visible);
+  profile_->GetPrefs()->SetBoolean(prefs::kNtpModulesVisible, visible);
   UpdateModulesVisible();
 }
 
 void NewTabPageHandler::UpdateModulesVisible() {
   page_->SetModulesVisible(
-      profile_->GetPrefs()->GetBoolean(kModulesVisiblePrefName));
+      profile_->GetPrefs()->GetBoolean(prefs::kNtpModulesVisible));
 }
 
 void NewTabPageHandler::OnPromoDataUpdated() {

@@ -666,6 +666,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kMediaRecommendationsEnabled,
     kaleidoscope::prefs::kKaleidoscopePolicyEnabled,
     base::Value::Type::BOOLEAN },
+  { key::kNTPCardsVisible,
+    prefs::kNtpModulesVisible,
+    base::Value::Type::BOOLEAN },
 #endif  // defined(OS_ANDROID)
 
 #if defined(OS_CHROMEOS)

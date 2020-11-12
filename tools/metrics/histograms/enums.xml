@@ -22532,6 +22532,7 @@ Called by update_document_policy_enum.py.-->
   <int value="802" label="TargetBlankImpliesNoOpener"/>
   <int value="803" label="RemoteAccessHostEnableUserInterface"/>
   <int value="804" label="FullscreenAlertEnabled"/>
+  <int value="805" label="NTPCardsVisible"/>
 </enum>
 
 <enum name="EnterprisePolicyDeviceIdValidity">

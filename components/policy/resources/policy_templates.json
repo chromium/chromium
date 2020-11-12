@@ -15091,6 +15091,45 @@
       If the policy is set to true or unset, users can customize the background on the New Tab page.''',
     },
     {
+      'name': 'NTPCardsVisible',
+      'owners': ['danielms@chromium.org', 'tiborg@chromium.org', 'yyushkina@chromium.org'],
+      'type': 'main',
+      'schema': { 'type': 'boolean' },
+      'supported_on': ['chrome.*:88-', 'chrome_os:88-'],
+      'features': {
+        'dynamic_refresh': True,
+        'per_profile': True,
+      },
+      'items': [
+        {
+          'value': True,
+          'caption': 'New Tab Page will show cards if content is available',
+        },
+        {
+          'value': False,
+          'caption': 'New Tab Page will not show cards',
+        },
+        {
+          'value': None,
+          'caption': 'New Tab Page will show cards if content is available, but allow the user to change this setting',
+        },
+      ],
+      'example_value': True,
+      'default': None,
+      'id': 805,
+      'caption': '''Show cards on the New Tab Page''',
+      'tags': [],
+      'desc':
+      '''This policy controls the visibility of cards on the New Tab Page. Cards surface entry points to launch common user journeys based on the user's browsing behavior.
+
+      If the policy is set to Enabled, the New Tab Page will show cards if content is available.
+
+      If the policy is set to Disabled, the New Tab Page won't show cards.
+
+      If the policy is not set, the user can control the card visibility. The default is visible.
+      ''',
+    },
+    {
       'name': 'WebRtcUdpPortRange',
       'owners': ['guidou@chromium.org'],
       'type': 'string',
@@ -24455,6 +24494,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 804,
+  'highest_id_currently_used': 805,
   'highest_atomic_group_id_currently_used': 40
 }
