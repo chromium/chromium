@@ -120,7 +120,6 @@
 #include "components/optimization_guide/optimization_guide_prefs.h"
 #include "components/password_manager/core/browser/password_bubble_experiment.h"
 #include "components/password_manager/core/browser/password_manager.h"
-#include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/payments/core/payment_prefs.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/browser/url_blocklist_manager.h"
@@ -487,6 +486,10 @@ const char kHistoryMenuPromoShown[] = "history.menu_promo_shown";
 const char kMigrationToLoginDBStep[] = "profile.migration_to_logindb_step";
 #endif
 
+// Deprecated 11/2020
+const char kSettingsLaunchedPasswordChecks[] =
+    "profile.settings_launched_password_checks";
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -562,6 +565,8 @@ void RegisterProfilePrefsForMigration(
   registry->RegisterBooleanPref(prefs::kLocalDiscoveryNotificationsEnabled,
                                 false);
 #endif
+
+  registry->RegisterIntegerPref(kSettingsLaunchedPasswordChecks, 0);
 }
 
 }  // namespace
@@ -1159,4 +1164,7 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
   profile_prefs->ClearPref(prefs::kLocalDiscoveryEnabled);
   profile_prefs->ClearPref(prefs::kLocalDiscoveryNotificationsEnabled);
 #endif
+
+  // Added 11/2020
+  profile_prefs->ClearPref(kSettingsLaunchedPasswordChecks);
 }

@@ -96,7 +96,6 @@ import org.chromium.chrome.browser.history.HistoryManager;
 import org.chromium.chrome.browser.history.StubbedHistoryProvider;
 import org.chromium.chrome.browser.password_check.PasswordCheck;
 import org.chromium.chrome.browser.password_check.PasswordCheckFactory;
-import org.chromium.chrome.browser.password_check.PasswordCheckPreference;
 import org.chromium.chrome.browser.password_manager.ManagePasswordsReferrer;
 import org.chromium.chrome.browser.password_manager.PasswordManagerHelper;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -739,74 +738,6 @@ public class PasswordSettingsTest {
     }
 
     /**
-     * Check that Pref.SETTINGS_LAUNCHED_PASSWORD_CHECKS is being correctly incremented when
-     * the Check passwords preference is clicked.
-     */
-    @Test
-    @SmallTest
-    @Feature({"Preferences"})
-    @EnableFeatures(ChromeFeatureList.PASSWORD_CHECK)
-    public void testCheckPasswordsPrefIncremented() {
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> { getPrefService().setInteger(Pref.SETTINGS_LAUNCHED_PASSWORD_CHECKS, 0); });
-
-        startPasswordSettingsDirectly();
-        PasswordSettings passwordPrefs = mSettingsActivityTestRule.getFragment();
-        PasswordCheckPreference passwordCheck =
-                passwordPrefs.findPreference(PasswordSettings.PREF_CHECK_PASSWORDS);
-        Assert.assertNotNull(passwordCheck);
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            passwordCheck.performClick();
-            Assert.assertEquals(
-                    getPrefService().getInteger(Pref.SETTINGS_LAUNCHED_PASSWORD_CHECKS), 1);
-        });
-    }
-
-    /**
-     * Check that the image above the Check passwords preference is shown if the value of
-     * Pref.SETTINGS_LAUNCHED_PASSWORD_CHECKS is less than 3.
-     */
-    @Test
-    @SmallTest
-    @Feature({"Preferences"})
-    @EnableFeatures(ChromeFeatureList.PASSWORD_CHECK)
-    public void testCheckPasswordsImageShown() {
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> { getPrefService().setInteger(Pref.SETTINGS_LAUNCHED_PASSWORD_CHECKS, 2); });
-
-        startPasswordSettingsDirectly();
-        PasswordSettings passwordPrefs = mSettingsActivityTestRule.getFragment();
-        PasswordCheckPreference passwordCheck =
-                passwordPrefs.findPreference(PasswordSettings.PREF_CHECK_PASSWORDS);
-        Assert.assertNotNull(passwordCheck);
-        int promoImageVisibility =
-                passwordCheck.getPromoImageView(passwordPrefs.getActivity()).getVisibility();
-        Assert.assertEquals(promoImageVisibility, View.VISIBLE);
-    }
-
-    /**
-     * Check that the image above the Check passwords preference is not shown if the value of
-     * Pref.SETTINGS_LAUNCHED_PASSWORD_CHECKS is greater than or equal to 3.
-     */
-    @Test
-    @SmallTest
-    @Feature({"Preferences"})
-    @EnableFeatures(ChromeFeatureList.PASSWORD_CHECK)
-    public void testCheckPasswordsImageNotShown() {
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> { getPrefService().setInteger(Pref.SETTINGS_LAUNCHED_PASSWORD_CHECKS, 3); });
-
-        startPasswordSettingsDirectly();
-        PasswordSettings passwordPrefs = mSettingsActivityTestRule.getFragment();
-        PasswordCheckPreference passwordCheck =
-                passwordPrefs.findPreference(PasswordSettings.PREF_CHECK_PASSWORDS);
-        Assert.assertNotNull(passwordCheck);
-        int promoImageVisibility =
-                passwordCheck.getPromoImageView(passwordPrefs.getActivity()).getVisibility();
-        Assert.assertEquals(promoImageVisibility, View.GONE);
-    }
-
-    /**
      * Check that the check passwords preference is not shown when the corresponding feature is
      * disabled.
      */
@@ -816,7 +747,7 @@ public class PasswordSettingsTest {
     @DisableFeatures(ChromeFeatureList.PASSWORD_CHECK)
     public void testCheckPasswordsDisabled() {
         mBrowserTestRule.addTestAccountThenSigninAndEnableSync();
-        final SettingsActivity settingsActivity = startPasswordSettingsFromMainSettings();
+        startPasswordSettingsFromMainSettings();
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             PasswordSettings passwordPrefs = mSettingsActivityTestRule.getFragment();

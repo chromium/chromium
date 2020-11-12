@@ -229,8 +229,6 @@ void PasswordManager::RegisterProfilePrefs(
   registry->RegisterTimePref(prefs::kAccountStoreDateLastUsedForFilling,
                              base::Time());
 
-  registry->RegisterIntegerPref(prefs::kSettingsLaunchedPasswordChecks, 0);
-
 #if defined(OS_APPLE)
   registry->RegisterIntegerPref(prefs::kKeychainMigrationStatus,
                                 4 /* MIGRATED_DELETED */);

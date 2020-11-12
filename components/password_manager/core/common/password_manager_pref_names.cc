@@ -60,8 +60,5 @@ const char kProfileStoreDateLastUsedForFilling[] =
 const char kAccountStoreDateLastUsedForFilling[] =
     "password_manager.account_store_date_last_used_for_filling";
 
-const char kSettingsLaunchedPasswordChecks[] =
-    "profile.settings_launched_password_checks";
-
 }  // namespace prefs
 }  // namespace password_manager
