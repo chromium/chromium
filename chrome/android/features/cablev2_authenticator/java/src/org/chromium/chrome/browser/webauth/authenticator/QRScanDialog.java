@@ -31,7 +31,7 @@ import java.nio.ByteBuffer;
  * Displays a preview of what the default (rear) camera can see and processes images for QR
  * codes. Closes once an applicable QR code has been found.
  */
-public class QRScanDialog extends DialogFragment implements Camera.PreviewCallback {
+class QRScanDialog extends DialogFragment implements Camera.PreviewCallback {
     /**
      * FIDO QR codes begin with this prefix. This class will ignore QR codes that don't match
      * this.

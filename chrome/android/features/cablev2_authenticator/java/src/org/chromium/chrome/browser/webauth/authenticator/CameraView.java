@@ -68,7 +68,7 @@ public class CameraView extends SurfaceView implements SurfaceHolder.Callback {
      * Called to indicate that the callback that was passed to the constructor has finished
      * processing and thus is free to receive another camera frame.
      */
-    public void rearmCallback() {
+    void rearmCallback() {
         ThreadUtils.assertOnUiThread();
 
         if (mCamera != null) {

@@ -83,7 +83,6 @@ class CableAuthenticator {
 
     private final Context mContext;
     private final CableAuthenticatorUI mUi;
-    private final Callback mCallback;
     private final SingleThreadTaskRunner mTaskRunner;
 
     public enum Result {
@@ -94,27 +93,11 @@ class CableAuthenticator {
         OTHER,
     }
 
-    // Callbacks notifying the UI of certain CableAuthenticator state changes. These may run on any
-    // thread.
-    public interface Callback {
-        // Invoked when the authenticator has completed a handshake with a client device.
-        void onAuthenticatorConnected();
-        // Invoked when a transaction has completed. The response may still be transmitting and
-        // onComplete will follow.
-        void onAuthenticatorResult(Result result);
-        // Invoked when the authenticator has finished. The UI should be dismissed at this point.
-        void onComplete();
-        // Called when an informative status update is available. The argument has the same values
-        // as the Status enum from v2_authenticator.h.
-        void onStatus(int code);
-    }
-
     public CableAuthenticator(Context context, CableAuthenticatorUI ui, long networkContext,
             long registration, String activityClassName, boolean isFcmNotification,
             UsbAccessory accessory) {
         mContext = context;
         mUi = ui;
-        mCallback = ui;
 
         // networkContext can only be used from the UI thread, therefore all
         // short-lived work is done on that thread.
@@ -169,7 +152,7 @@ class CableAuthenticator {
     // as the Status enum from v2_authenticator.h.
     @CalledByNative
     public void onStatus(int code) {
-        mCallback.onStatus(code);
+        mUi.onStatus(code);
     }
 
     @CalledByNative
@@ -306,10 +289,10 @@ class CableAuthenticator {
     @CalledByNative
     public void onComplete() {
         assert mTaskRunner.belongsToCurrentThread();
-        mCallback.onComplete();
+        mUi.onComplete();
     }
 
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    void onActivityResult(int requestCode, int resultCode, Intent data) {
         Log.i(TAG, "onActivityResult " + requestCode + " " + resultCode);
 
         Result result = Result.OTHER;
@@ -332,10 +315,10 @@ class CableAuthenticator {
                 Log.i(TAG, "invalid requestCode: " + requestCode);
                 assert (false);
         }
-        mCallback.onAuthenticatorResult(result);
+        mUi.onAuthenticatorResult(result);
     }
 
-    public boolean onRegisterResponse(int resultCode, Intent data) {
+    private boolean onRegisterResponse(int resultCode, Intent data) {
         if (resultCode != Activity.RESULT_OK || data == null) {
             Log.e(TAG, "Failed with result code" + resultCode);
             onAuthenticatorAssertionResponse(CTAP2_ERR_OPERATION_DENIED, null, null, null, null);
@@ -384,7 +367,7 @@ class CableAuthenticator {
         return true;
     }
 
-    public boolean onSignResponse(int resultCode, Intent data) {
+    private boolean onSignResponse(int resultCode, Intent data) {
         if (resultCode != Activity.RESULT_OK || data == null) {
             Log.e(TAG, "Failed with result code" + resultCode);
             onAuthenticatorAssertionResponse(CTAP2_ERR_OPERATION_DENIED, null, null, null, null);
@@ -457,15 +440,14 @@ class CableAuthenticator {
      * @param value contents of the QR code, which will be a valid caBLE
      *              URL, i.e. "fido://"...
      */
-    public void onQRCode(String value) {
-        mTaskRunner.postTask(() -> {
-            CableAuthenticatorJni.get().startQR(this, getName(), value);
-            // TODO: show the user an error if that returned false.
-            // that indicates that the QR code was invalid.
-        });
+    void onQRCode(String value) {
+        assert mTaskRunner.belongsToCurrentThread();
+        CableAuthenticatorJni.get().startQR(this, getName(), value);
+        // TODO: show the user an error if that returned false.
+        // that indicates that the QR code was invalid.
     }
 
-    public void unlinkAllDevices() {
+    void unlinkAllDevices() {
         Log.i(TAG, "Unlinking devices");
         byte[] newStateBytes = CableAuthenticatorJni.get().unlink();
         SharedPreferences prefs = ContextUtils.getAppSharedPreferences();
@@ -475,8 +457,9 @@ class CableAuthenticator {
                 .apply();
     }
 
-    public void close() {
-        mTaskRunner.postTask(() -> { CableAuthenticatorJni.get().stop(); });
+    void close() {
+        assert mTaskRunner.belongsToCurrentThread();
+        CableAuthenticatorJni.get().stop();
     }
 
     static String getName() {
@@ -486,7 +469,7 @@ class CableAuthenticator {
     /**
      * onCloudMessage is called by {@link CableAuthenticatorUI} when a GCM message is received.
      */
-    public static void onCloudMessage(
+    static void onCloudMessage(
             long event, long systemNetworkContext, long registration, String activityClassName) {
         setup(registration, activityClassName, systemNetworkContext);
         CableAuthenticatorJni.get().onCloudMessage(event);

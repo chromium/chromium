@@ -36,8 +36,8 @@ import java.lang.ref.WeakReference;
 /**
  * A fragment that provides a UI for scanning caBLE v2 QR codes.
  */
-public class CableAuthenticatorUI extends Fragment
-        implements OnClickListener, QRScanDialog.Callback, CableAuthenticator.Callback {
+public class CableAuthenticatorUI
+        extends Fragment implements OnClickListener, QRScanDialog.Callback {
     private enum Mode {
         QR, // Triggered from Settings; can scan QR code to start handshake.
         FCM, // Triggered by user selecting notification; handshake already running.
@@ -188,8 +188,7 @@ public class CableAuthenticatorUI extends Fragment
         mAuthenticator.onQRCode(value);
     }
 
-    @Override
-    public void onStatus(int code) {
+    void onStatus(int code) {
         if (mMode != Mode.QR) {
             // In FCM mode, the handshake is done before the UI appears. For
             // USB everything should happen immediately.
@@ -230,12 +229,10 @@ public class CableAuthenticatorUI extends Fragment
         mAuthenticator.onActivityResult(requestCode, resultCode, data);
     }
 
-    @Override
     @SuppressLint("SetTextI18n")
-    public void onAuthenticatorConnected() {}
+    void onAuthenticatorConnected() {}
 
-    @Override
-    public void onAuthenticatorResult(CableAuthenticator.Result result) {
+    void onAuthenticatorResult(CableAuthenticator.Result result) {
         getActivity().runOnUiThread(() -> {
             // TODO: Temporary UI, needs i18n.
             String toast = "An error occured. Please try again.";
@@ -259,8 +256,7 @@ public class CableAuthenticatorUI extends Fragment
         });
     }
 
-    @Override
-    public void onComplete() {
+    void onComplete() {
         getActivity().runOnUiThread(() -> { getActivity().finish(); });
     }
 
