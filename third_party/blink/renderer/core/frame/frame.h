@@ -334,6 +334,8 @@ class CORE_EXPORT Frame : public GarbageCollected<Frame> {
   // Returns the last child frame.
   Frame* LastChild() const { return last_child_; }
 
+  // TODO(dcheng): these should probably all have restricted visibility. They
+  // are not intended for general usage.
   // Detaches a frame from its parent frame if it has one.
   void DetachFromParent();
 
@@ -341,6 +343,15 @@ class CORE_EXPORT Frame : public GarbageCollected<Frame> {
 
   // Removes the given child from this frame.
   void RemoveChild(Frame* child);
+
+  LocalFrame* ProvisionalFrame() const { return provisional_frame_; }
+  void SetProvisionalFrame(LocalFrame* provisional_frame) {
+    // There should only be null -> non-null or non-null -> null transitions
+    // here. Anything else indicates a logic error in the code managing this
+    // state.
+    DCHECK_NE(!!provisional_frame, !!provisional_frame_);
+    provisional_frame_ = provisional_frame;
+  }
 
  protected:
   // |inheriting_agent_factory| should basically be set to the parent frame or
@@ -427,6 +438,8 @@ class CORE_EXPORT Frame : public GarbageCollected<Frame> {
   Member<Frame> next_sibling_;
   Member<Frame> first_child_;
   Member<Frame> last_child_;
+
+  Member<LocalFrame> provisional_frame_;
 
   NavigationRateLimiter navigation_rate_limiter_;
 

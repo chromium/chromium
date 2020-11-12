@@ -560,6 +560,19 @@ void LocalFrame::Navigate(FrameLoadRequest& request,
 }
 
 void LocalFrame::DetachImpl(FrameDetachType type) {
+  if (IsProvisional()) {
+    Frame* provisional_owner = nullptr;
+    if (Owner()) {
+      provisional_owner = Owner()->ContentFrame();
+    } else {
+      provisional_owner = GetPage()->MainFrame();
+    }
+    // Having multiple provisional frames somehow associated with the same frame
+    // to potentially replace is a logic error.
+    DCHECK_EQ(provisional_owner->ProvisionalFrame(), this);
+    provisional_owner->SetProvisionalFrame(nullptr);
+  }
+
   // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   // BEGIN RE-ENTRANCY SAFE BLOCK
   // Starting here, the code must be safe against re-entrancy. Dispatching
