@@ -2,6 +2,29 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+declare_args() {
+  # Allow use of custom Cast root certificate for authentication.
+  cast_allow_developer_certificate = false
+}
+
+config("certificate_config") {
+  defines = []
+  if (cast_allow_developer_certificate) {
+    defines += [ "CAST_ALLOW_DEVELOPER_CERTIFICATE" ]
+  }
+}
+
+source_set("cast_certificate_reader") {
+  sources = [
+    "cast_cert_reader.cc",
+    "cast_cert_reader.h",
+  ]
+  deps = [
+    "//base",
+    "//net",
+  ]
+}
+
 static_library("cast_certificate") {
   sources = [
     "cast_cert_validator.cc",
@@ -11,21 +34,34 @@ static_library("cast_certificate") {
     "cast_root_ca_cert_der-inc.h",
     "eureka_root_ca_der-inc.h",
   ]
+  configs += [ ":certificate_config" ]
   deps = [
     "//base",
     "//net",
     "//third_party/openscreen/src/cast/common/certificate/proto:certificate_proto",
+
+    # Although we won't use the reader unless cast_allow_developer_certificate
+    # is enabled, the buildfiles generation step requires the inclusion
+    # anyway since it doesn't check preprocesser macros.
+    ":cast_certificate_reader",
   ]
+  if (cast_allow_developer_certificate) {
+    sources += [
+      "switches.cc",
+      "switches.h",
+    ]
+  }
 }
 
 static_library("test_support") {
   testonly = true
   sources = [
-    "cast_cert_validator_test_helpers.cc",
-    "cast_cert_validator_test_helpers.h",
+    "cast_cert_test_helpers.cc",
+    "cast_cert_test_helpers.h",
   ]
   deps = [
     ":cast_certificate",
+    ":cast_certificate_reader",
     "//base",
     "//net",
     "//testing/gtest",
@@ -41,8 +77,10 @@ source_set("unit_tests") {
   ]
   deps = [
     ":cast_certificate",
+    ":cast_certificate_reader",
     ":test_support",
     "//base",
+    "//base/test:test_support",
     "//net",
     "//testing/gtest",
     "//third_party/openscreen/src/cast/common/certificate/proto:certificate_unittest_proto",
