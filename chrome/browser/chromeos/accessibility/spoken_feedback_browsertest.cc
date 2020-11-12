@@ -919,6 +919,33 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, HardwareKeysGetRewritten) {
   sm_.Replay();
 }
 
+// Tests basic behavior of the tutorial when signed in.
+IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, Tutorial) {
+  EnableChromeVox();
+  sm_.Call([this]() {
+    ui_test_utils::NavigateToURL(
+        browser(), GURL("data:text/html,<button autofocus>Testing</button>"));
+  });
+  sm_.Call([this]() {
+    SendKeyPressWithSearch(ui::VKEY_O);
+    ASSERT_TRUE(ui_test_utils::SendKeyPressToWindowSync(
+        nullptr, ui::VKEY_T, false, false, false, false));
+  });
+  sm_.ExpectSpeech("ChromeVox tutorial");
+  sm_.ExpectSpeech(
+      "Press Search plus Right Arrow, or Search plus Left Arrow to browse "
+      "topics");
+  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_RIGHT); });
+  sm_.ExpectSpeech("Quick orientation");
+  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_RIGHT); });
+  sm_.ExpectSpeech("Essential keys");
+  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_B); });
+  sm_.ExpectSpeech("Exit tutorial");
+  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_SPACE); });
+  sm_.ExpectSpeech("Testing");
+  sm_.Replay();
+}
+
 //
 // Spoken feedback tests of the out-of-box experience.
 //
@@ -969,6 +996,30 @@ IN_PROC_BROWSER_TEST_F(OobeSpokenFeedbackTest, SpokenFeedbackInOobe) {
   sm_.ExpectSpeech("Shut down");
   sm_.ExpectSpeech("Button");
 
+  sm_.Replay();
+}
+
+IN_PROC_BROWSER_TEST_F(OobeSpokenFeedbackTest, SpokenFeedbackTutorialInOobe) {
+  ui_controls::EnableUIControls();
+  ASSERT_FALSE(AccessibilityManager::Get()->IsSpokenFeedbackEnabled());
+  AccessibilityManager::Get()->EnableSpokenFeedback(true);
+  sm_.ExpectSpeech("Welcome to ChromeVox!");
+  sm_.ExpectSpeechPattern(
+      "Welcome to the ChromeVox tutorial*When you're ready, use the spacebar "
+      "to move to the next lesson.");
+  // Press space to move to the next lesson.
+  sm_.Call([]() {
+    ASSERT_TRUE(ui_test_utils::SendKeyPressToWindowSync(
+        nullptr, ui::VKEY_SPACE, false, false, false, false));
+  });
+  sm_.ExpectSpeech("Essential Keys: Control");
+  sm_.ExpectSpeechPattern("*To continue, press the Control key.*");
+  // Press control to move to the next lesson.
+  sm_.Call([]() {
+    ASSERT_TRUE(ui_test_utils::SendKeyPressToWindowSync(
+        nullptr, ui::VKEY_CONTROL, false, false, false, false));
+  });
+  sm_.ExpectSpeechPattern("*To continue, press the left Shift key.");
   sm_.Replay();
 }
 
