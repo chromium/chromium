@@ -4,13 +4,71 @@
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/tab_strip_mediator.h"
 
+#import "components/favicon/ios/web_favicon_driver.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/chrome_url_util.h"
+#import "ios/chrome/browser/tabs/tab_title_util.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_item.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/tab_strip_consumer.h"
+#import "ios/chrome/browser/web/tab_id_tab_helper.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_observer_bridge.h"
+#import "ios/web/public/web_state.h"
+#import "ui/gfx/image/image.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
+
+namespace {
+// Constructs a GridItem from a |web_state|.
+GridItem* CreateItem(web::WebState* web_state) {
+  TabIdTabHelper* tab_helper = TabIdTabHelper::FromWebState(web_state);
+  GridItem* item = [[GridItem alloc] initWithIdentifier:tab_helper->tab_id()];
+  // chrome://newtab (NTP) tabs have no title.
+  if (IsURLNtp(web_state->GetVisibleURL())) {
+    item.hidesTitle = YES;
+  }
+  item.title = tab_util::GetTabTitle(web_state);
+  return item;
+}
+
+// Constructs an array of GridItems from a |web_state_list|.
+NSArray* CreateItems(WebStateList* web_state_list) {
+  NSMutableArray* items = [[NSMutableArray alloc] init];
+  for (int i = 0; i < web_state_list->count(); i++) {
+    web::WebState* web_state = web_state_list->GetWebStateAt(i);
+    [items addObject:CreateItem(web_state)];
+  }
+  return [items copy];
+}
+
+// Returns the ID of the active tab in |web_state_list|.
+NSString* GetActiveTabId(WebStateList* web_state_list) {
+  if (!web_state_list)
+    return nil;
+
+  web::WebState* web_state = web_state_list->GetActiveWebState();
+  if (!web_state)
+    return nil;
+  TabIdTabHelper* tab_helper = TabIdTabHelper::FromWebState(web_state);
+  return tab_helper->tab_id();
+}
+
+// Returns the WebState with |identifier| in |web_state_list|. Returns |nullptr|
+// if not found.
+web::WebState* GetWebStateWithId(WebStateList* web_state_list,
+                                 NSString* identifier) {
+  for (int i = 0; i < web_state_list->count(); i++) {
+    web::WebState* web_state = web_state_list->GetWebStateAt(i);
+    TabIdTabHelper* tab_helper = TabIdTabHelper::FromWebState(web_state);
+    if ([identifier isEqualToString:tab_helper->tab_id()])
+      return web_state;
+  }
+  return nullptr;
+}
+
+}  // namespace
 
 @interface TabStripMediator () <WebStateListObserving> {
   // Bridge C++ WebStateListObserver methods to this TabStripController.
@@ -50,10 +108,10 @@
 
   if (_webStateList) {
     DCHECK_GE(_webStateList->count(), 0);
-    [_consumer setTabsCount:static_cast<NSUInteger>(_webStateList->count())];
     _webStateListObserver = std::make_unique<WebStateListObserverBridge>(self);
     _webStateList->AddObserver(_webStateListObserver.get());
   }
+  [self populateConsumerItems];
 }
 
 #pragma mark - WebStateListObserving
@@ -61,14 +119,53 @@
 - (void)webStateList:(WebStateList*)webStateList
     didDetachWebState:(web::WebState*)webState
               atIndex:(int)atIndex {
-  [_consumer setTabsCount:static_cast<NSUInteger>(_webStateList->count())];
+  [self populateConsumerItems];
 }
 
 - (void)webStateList:(WebStateList*)webStateList
     didInsertWebState:(web::WebState*)webState
               atIndex:(int)index
            activating:(BOOL)activating {
-  [_consumer setTabsCount:static_cast<NSUInteger>(_webStateList->count())];
+  [self populateConsumerItems];
+}
+
+#pragma mark - TabFaviconDataSource
+
+- (void)faviconForIdentifier:(NSString*)identifier
+                  completion:(void (^)(UIImage*))completion {
+  web::WebState* webState = GetWebStateWithId(_webStateList, identifier);
+  if (!webState) {
+    return;
+  }
+  // NTP tabs get no favicon.
+  if (IsURLNtp(webState->GetVisibleURL())) {
+    return;
+  }
+  UIImage* defaultFavicon =
+      webState->GetBrowserState()->IsOffTheRecord()
+          ? [UIImage imageNamed:@"default_world_favicon_incognito"]
+          : [UIImage imageNamed:@"default_world_favicon_regular"];
+  completion(defaultFavicon);
+
+  favicon::FaviconDriver* faviconDriver =
+      favicon::WebFaviconDriver::FromWebState(webState);
+  if (faviconDriver) {
+    gfx::Image favicon = faviconDriver->GetFavicon();
+    if (!favicon.IsEmpty())
+      completion(favicon.ToUIImage());
+  }
+}
+
+#pragma mark - Private
+
+// Calls |-populateItems:selectedItemID:| on the consumer.
+- (void)populateConsumerItems {
+  if (!self.webStateList)
+    return;
+  if (self.webStateList->count() > 0) {
+    [self.consumer populateItems:CreateItems(self.webStateList)
+                  selectedItemID:GetActiveTabId(self.webStateList)];
+  }
 }
 
 @end

@@ -7,11 +7,16 @@
 
 #import <Foundation/Foundation.h>
 
+@class GridItem;
+
 // TabStripConsumer sets the current appearance of the TabStrip.
 @protocol TabStripConsumer
 
-// Sets the number to tabs currently opened.
-- (void)setTabsCount:(NSUInteger)tabsCount;
+// Tells the consumer to replace its current set of items with |items| and
+// update the selected item ID to be |selectedItemID|. It's an error to pass
+// an |items| array containing items without unique IDs.
+- (void)populateItems:(NSArray<GridItem*>*)items
+       selectedItemID:(NSString*)selectedItemID;
 
 @end
 

@@ -10,12 +10,15 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/tab_strip_consumer.h"
 
 @class TabStripMediator;
+@protocol TabFaviconDataSource;
 
 // ViewController for the TabStrip. This ViewController is contained by
 // BrowserViewController. This TabStripViewController is responsible for
 // responding to the different updates in the tabstrip view.
 @interface TabStripViewController
     : UICollectionViewController <TabStripConsumer>
+
+@property(nonatomic, weak) id<TabFaviconDataSource> faviconDataSource;
 
 - (instancetype)init NS_DESIGNATED_INITIALIZER;
 

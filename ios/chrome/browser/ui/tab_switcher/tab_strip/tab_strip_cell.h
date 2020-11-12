@@ -12,6 +12,11 @@
 @interface TabStripCell : UICollectionViewCell
 
 @property(nonatomic, strong) UILabel* titleLabel;
+// View for displaying the favicon.
+@property(nonatomic, strong) UIImageView* faviconView;
+// Unique identifier for the cell's contents. This is used to ensure that
+// updates in an asynchronous callback are only made if the item is the same.
+@property(nonatomic, copy) NSString* itemIdentifier;
 
 @end
 

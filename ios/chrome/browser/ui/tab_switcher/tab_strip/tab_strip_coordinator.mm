@@ -50,6 +50,8 @@
   self.mediator =
       [[TabStripMediator alloc] initWithConsumer:self.tabStripViewController];
   self.mediator.webStateList = self.browser->GetWebStateList();
+
+  self.tabStripViewController.faviconDataSource = self.mediator;
 }
 
 - (void)stop {

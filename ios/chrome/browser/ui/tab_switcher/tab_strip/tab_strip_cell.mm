@@ -79,6 +79,7 @@ const CGFloat kTitleInset = 10.0;
 - (void)prepareForReuse {
   [super prepareForReuse];
   self.titleLabel.text = nil;
+  self.itemIdentifier = nil;
 }
 
 @end
