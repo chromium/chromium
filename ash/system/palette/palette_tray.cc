@@ -21,6 +21,7 @@
 #include "ash/system/palette/palette_tool_manager.h"
 #include "ash/system/palette/palette_utils.h"
 #include "ash/system/palette/palette_welcome_bubble.h"
+#include "ash/system/tray/tray_background_view.h"
 #include "ash/system/tray/tray_bubble_wrapper.h"
 #include "ash/system/tray/tray_container.h"
 #include "ash/system/tray/tray_popup_utils.h"
@@ -287,6 +288,11 @@ void PaletteTray::ClickedOutsideBubble() {
                               PaletteInvocationMethod::MENU);
   }
   HidePalette();
+}
+
+void PaletteTray::OnThemeChanged() {
+  TrayBackgroundView::OnThemeChanged();
+  UpdateTrayIcon();
 }
 
 base::string16 PaletteTray::GetAccessibleNameForTray() {
@@ -560,7 +566,9 @@ void PaletteTray::UpdateTrayIcon() {
   icon_->SetImage(CreateVectorIcon(
       palette_tool_manager_->GetActiveTrayIcon(
           palette_tool_manager_->GetActiveTool(PaletteGroup::MODE)),
-      kTrayIconSize, ShelfConfig::Get()->shelf_icon_color()));
+      kTrayIconSize,
+      AshColorProvider::Get()->GetContentLayerColor(
+          AshColorProvider::ContentLayerType::kIconColorPrimary)));
 }
 
 void PaletteTray::OnPaletteEnabledPrefChanged() {

@@ -72,6 +72,7 @@ class ASH_EXPORT PaletteTray : public TrayBackgroundView,
 
   // TrayBackgroundView:
   void ClickedOutsideBubble() override;
+  void OnThemeChanged() override;
   base::string16 GetAccessibleNameForTray() override;
   void HandleLocaleChange() override;
   void HideBubbleWithView(const TrayBubbleView* bubble_view) override;

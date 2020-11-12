@@ -92,8 +92,7 @@ void ShelfControlButton::PaintBackground(gfx::Canvas* canvas,
                                          const gfx::Rect& bounds) {
   cc::PaintFlags flags;
   flags.setAntiAlias(true);
-  flags.setColor(
-      ShelfConfig::Get()->shelf_control_permanent_highlight_background());
+  flags.setColor(ShelfConfig::Get()->GetShelfControlButtonColor());
   canvas->DrawRoundRect(bounds, ShelfConfig::Get()->control_border_radius(),
                         flags);
 }

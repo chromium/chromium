@@ -401,6 +401,11 @@ bool ImeMenuTray::ShouldShowKeyboardToggle() const {
                                       .enabled();
 }
 
+void ImeMenuTray::OnThemeChanged() {
+  TrayBackgroundView::OnThemeChanged();
+  UpdateTrayLabel();
+}
+
 base::string16 ImeMenuTray::GetAccessibleNameForTray() {
   return l10n_util::GetStringUTF16(IDS_ASH_IME_MENU_ACCESSIBLE_NAME);
 }
@@ -524,6 +529,10 @@ void ImeMenuTray::UpdateTrayLabel() {
 
   // Updates the tray label based on the current input method.
   CreateLabel();
+
+  label_->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kIconColorPrimary));
+
   if (current_ime.third_party)
     label_->SetText(current_ime.short_name + base::UTF8ToUTF16("*"));
   else

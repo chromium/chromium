@@ -131,9 +131,6 @@ class ASH_EXPORT ShelfConfig : public TabletModeObserver,
   // if the shelf visibility should change during a drag.
   float drag_hide_ratio_threshold() const;
 
-  SkColor shelf_control_permanent_highlight_background() const {
-    return shelf_control_permanent_highlight_background_;
-  }
   SkColor shelf_focus_border_color() const { return shelf_focus_border_color_; }
   int workspace_area_visible_inset() const {
     return workspace_area_visible_inset_;
@@ -144,7 +141,6 @@ class ASH_EXPORT ShelfConfig : public TabletModeObserver,
   int hidden_shelf_in_screen_portion() const {
     return hidden_shelf_in_screen_portion_;
   }
-  SkColor shelf_icon_color() const { return shelf_icon_color_; }
   int status_indicator_offset_from_shelf_edge() const {
     return status_indicator_offset_from_shelf_edge_;
   }
@@ -282,8 +278,6 @@ class ASH_EXPORT ShelfConfig : public TabletModeObserver,
   const int app_icon_group_margin_tablet_;
   const int app_icon_group_margin_clamshell_;
 
-  const SkColor shelf_control_permanent_highlight_background_;
-
   const SkColor shelf_focus_border_color_;
 
   // We reserve a small area on the edge of the workspace area to ensure that
@@ -296,10 +290,6 @@ class ASH_EXPORT ShelfConfig : public TabletModeObserver,
 
   // Portion of the shelf that's within the screen bounds when auto-hidden.
   const int hidden_shelf_in_screen_portion_;
-
-  // The foreground color of the icons used in the shelf (launcher,
-  // notifications, etc).
-  const SkColor shelf_icon_color_;
 
   // The distance between the edge of the shelf and the status indicators.
   const int status_indicator_offset_from_shelf_edge_;

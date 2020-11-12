@@ -151,7 +151,6 @@ class ASH_EXPORT StatusAreaWidget : public SessionObserver,
   void SchedulePaint();
 
   // Overridden from views::Widget:
-  const ui::NativeTheme* GetNativeTheme() const override;
   bool OnNativeWidgetActivationChanged(bool active) override;
 
   // TODO(jamescook): Introduce a test API instead of these methods.

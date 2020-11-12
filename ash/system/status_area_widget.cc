@@ -85,7 +85,6 @@ void StatusAreaWidget::Initialize() {
   DCHECK(!initialized_);
 
   // Create the child views, left to right.
-
   overflow_button_tray_ =
       std::make_unique<StatusAreaOverflowButtonTray>(shelf_);
   AddTrayButton(overflow_button_tray_.get());
@@ -504,10 +503,6 @@ bool StatusAreaWidget::IsMessageBubbleShown() const {
 void StatusAreaWidget::SchedulePaint() {
   for (TrayBackgroundView* tray_button : tray_buttons_)
     tray_button->SchedulePaint();
-}
-
-const ui::NativeTheme* StatusAreaWidget::GetNativeTheme() const {
-  return ui::NativeTheme::GetInstanceForDarkUI();
 }
 
 bool StatusAreaWidget::OnNativeWidgetActivationChanged(bool active) {

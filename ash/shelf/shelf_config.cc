@@ -118,13 +118,10 @@ ShelfConfig::ShelfConfig()
       shelf_status_area_hit_region_padding_dense_(2),
       app_icon_group_margin_tablet_(16),
       app_icon_group_margin_clamshell_(12),
-      shelf_control_permanent_highlight_background_(
-          SkColorSetA(SK_ColorWHITE, 26)),  // 10%
       shelf_focus_border_color_(gfx::kGoogleBlue300),
       workspace_area_visible_inset_(2),
       workspace_area_auto_hide_inset_(5),
       hidden_shelf_in_screen_portion_(3),
-      shelf_icon_color_(SK_ColorWHITE),
       status_indicator_offset_from_shelf_edge_(1),
       scrollable_shelf_ripple_padding_(2),
       shelf_tooltip_preview_height_(128),
@@ -424,7 +421,8 @@ SkColor ShelfConfig::GetShelfControlButtonColor() const {
   } else if (session_state == session_manager::SessionState::OOBE) {
     return SkColorSetA(SK_ColorBLACK, 16);  // 6% opacity
   }
-  return shelf_control_permanent_highlight_background_;
+  return AshColorProvider::Get()->GetControlsLayerColor(
+      AshColorProvider::ControlsLayerType::kControlBackgroundColorInactive);
 }
 
 SkColor ShelfConfig::GetShelfWithAppListColor() const {

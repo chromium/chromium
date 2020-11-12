@@ -95,9 +95,10 @@ void HoldingSpaceTrayIcon::InitLayout() {
   // that tooltips will be retrieved from `this` instead.
   no_previews_image_view_ = AddChildView(std::make_unique<views::ImageView>());
   no_previews_image_view_->SetCanProcessEventsWithinSubtree(false);
-  no_previews_image_view_->SetImage(
-      gfx::CreateVectorIcon(kHoldingSpaceIcon, kHoldingSpaceTrayIconSize,
-                            ShelfConfig::Get()->shelf_icon_color()));
+  no_previews_image_view_->SetImage(gfx::CreateVectorIcon(
+      kHoldingSpaceIcon, kHoldingSpaceTrayIconSize,
+      AshColorProvider::Get()->GetContentLayerColor(
+          AshColorProvider::ContentLayerType::kIconColorPrimary)));
 
   if (features::IsTemporaryHoldingSpacePreviewsEnabled()) {
     // As holding space items are added to the model, child layers will be added

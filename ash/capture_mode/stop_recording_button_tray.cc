@@ -22,7 +22,9 @@ StopRecordingButtonTray::StopRecordingButtonTray(Shelf* shelf)
     : TrayBackgroundView(shelf) {
   auto image_view = std::make_unique<views::ImageView>();
   image_view->SetImage(gfx::CreateVectorIcon(
-      kCaptureModeCircleStopIcon, ShelfConfig::Get()->shelf_icon_color()));
+      kCaptureModeCircleStopIcon,
+      AshColorProvider::Get()->GetContentLayerColor(
+          AshColorProvider::ContentLayerType::kIconColorPrimary)));
   image_view->SetTooltipText(GetAccessibleNameForTray());
   image_view->SetHorizontalAlignment(views::ImageView::Alignment::kCenter);
   image_view->SetVerticalAlignment(views::ImageView::Alignment::kCenter);

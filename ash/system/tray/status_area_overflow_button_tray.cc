@@ -35,7 +35,9 @@ StatusAreaOverflowButtonTray::IconView::IconView()
   layer()->SetFillsBoundsOpaquely(false);
 
   gfx::ImageSkia image = gfx::CreateVectorIcon(
-      kOverflowShelfRightIcon, ShelfConfig::Get()->shelf_icon_color());
+      kOverflowShelfRightIcon,
+      AshColorProvider::Get()->GetContentLayerColor(
+          AshColorProvider::ContentLayerType::kIconColorPrimary));
   SetImage(image);
 
   const int vertical_padding = (kTrayHeight - image.height()) / 2;

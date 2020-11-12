@@ -14,7 +14,6 @@
 #include "base/macros.h"
 #include "base/timer/timer.h"
 #include "components/session_manager/session_manager_types.h"
-#include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/shadow_value.h"
 #include "ui/views/view.h"
@@ -49,7 +48,7 @@ class ASH_EXPORT TimeView : public ActionableView, public ClockObserver {
   void UpdateClockLayout(ClockLayout clock_layout);
 
   // Updates the time text color.
-  void SetTextColor(SkColor color, bool auto_color_readability_enabled = true);
+  void SetTextColor(SkColor color, bool auto_color_readability_enabled = false);
 
   // Updates the time text fontlist.
   void SetTextFont(const gfx::FontList& font_list);

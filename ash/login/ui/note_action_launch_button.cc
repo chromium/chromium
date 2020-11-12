@@ -188,8 +188,10 @@ class NoteActionLaunchButton::ActionButton : public views::ImageButton {
     SetAccessibleName(
         l10n_util::GetStringUTF16(IDS_ASH_STYLUS_TOOLS_CREATE_NOTE_ACTION));
     SetImage(views::Button::STATE_NORMAL,
-             CreateVectorIcon(kTrayActionNewLockScreenNoteIcon,
-                              ShelfConfig::Get()->shelf_icon_color()));
+             CreateVectorIcon(
+                 kTrayActionNewLockScreenNoteIcon,
+                 AshColorProvider::Get()->GetContentLayerColor(
+                     AshColorProvider::ContentLayerType::kButtonIconColor)));
     SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
     SetFocusPainter(nullptr);
     SetFlipCanvasOnPaintForRTLUI(true);
