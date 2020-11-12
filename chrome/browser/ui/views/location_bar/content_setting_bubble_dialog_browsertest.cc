@@ -210,6 +210,8 @@ void ContentSettingBubbleDialogTest::ShowUi(const std::string& name) {
       reason = QuietUiReason::kTriggeredDueToAbusiveRequests;
     else if (name == "notifications_quiet_abusive_content")
       reason = QuietUiReason::kTriggeredDueToAbusiveContent;
+    else if (name == "notifications_quiet_predicted_very_unlikely")
+      reason = QuietUiReason::kPredictedVeryUnlikelyGrant;
     TriggerQuietNotificationPermissionRequest(reason);
     ShowDialogBubble(ImageType::NOTIFICATIONS_QUIET_PROMPT);
     return;
@@ -330,5 +332,10 @@ IN_PROC_BROWSER_TEST_F(ContentSettingBubbleDialogTest,
 
 IN_PROC_BROWSER_TEST_F(ContentSettingBubbleDialogTest,
                        InvokeUi_notifications_quiet_abusive_content) {
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(ContentSettingBubbleDialogTest,
+                       InvokeUi_notifications_quiet_predicted_very_unlikely) {
   ShowAndVerifyUi();
 }

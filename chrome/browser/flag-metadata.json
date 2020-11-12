@@ -3760,6 +3760,11 @@
     "expiry_milestone": 90
   },
   {
+    "name": "permission-predictions",
+    "owners": [ "andypaicu", "engedy", "ravjit", "mkwst", "hkamila", "elklm" ],
+    "expiry_milestone": 93
+  },
+  {
     "name": "photo-picker-video-support",
     "owners": [ "finnur" ],
     "expiry_milestone": 92

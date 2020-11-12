@@ -11,10 +11,10 @@ namespace permissions {
 
 struct PredictionRequestFeatures {
   struct ActionCounts {
-    unsigned int grants;
-    unsigned int denies;
-    unsigned int dismissals;
-    unsigned int ignores;
+    size_t grants = 0;
+    size_t denies = 0;
+    size_t dismissals = 0;
+    size_t ignores = 0;
   };
 
   // Whether a gesture is present or not.

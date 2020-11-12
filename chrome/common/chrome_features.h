@@ -418,7 +418,12 @@ extern const base::Feature kParentAccessCodeForOnlineLogin;
 
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kPerAppTimeLimits;
+#endif
 
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::Feature kPermissionPredictions;
+
+#if defined(OS_CHROMEOS)
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kPluginVm;
 #endif

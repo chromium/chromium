@@ -87,6 +87,7 @@ base::string16 GroupedPermissionInfoBarDelegate::GetDescriptionText() const {
 
   switch (manager->ReasonForUsingQuietUi()) {
     case QuietUiReason::kEnabledInPrefs:
+    case QuietUiReason::kPredictedVeryUnlikelyGrant:
       return l10n_util::GetStringUTF16(
           IDS_NOTIFICATION_QUIET_PERMISSION_PROMPT_MESSAGE);
     case QuietUiReason::kTriggeredByCrowdDeny:
@@ -109,6 +110,7 @@ bool GroupedPermissionInfoBarDelegate::ShouldSecondaryButtonOpenSettings()
 
   switch (manager->ReasonForUsingQuietUi()) {
     case QuietUiReason::kEnabledInPrefs:
+    case QuietUiReason::kPredictedVeryUnlikelyGrant:
     case QuietUiReason::kTriggeredByCrowdDeny:
       return true;
     case QuietUiReason::kTriggeredDueToAbusiveRequests:
@@ -131,6 +133,7 @@ base::string16 GroupedPermissionInfoBarDelegate::GetLinkText() const {
   // This will be used as the text of the link in the expanded state.
   switch (manager->ReasonForUsingQuietUi()) {
     case QuietUiReason::kEnabledInPrefs:
+    case QuietUiReason::kPredictedVeryUnlikelyGrant:
     case QuietUiReason::kTriggeredByCrowdDeny:
       return base::string16();
     case QuietUiReason::kTriggeredDueToAbusiveRequests:
@@ -178,6 +181,7 @@ bool GroupedPermissionInfoBarDelegate::Accept() {
       permission_prompt_->web_contents());
   switch (manager->ReasonForUsingQuietUi()) {
     case QuietUiReason::kEnabledInPrefs:
+    case QuietUiReason::kPredictedVeryUnlikelyGrant:
     case QuietUiReason::kTriggeredByCrowdDeny:
       permission_prompt_->Accept();
       break;
@@ -197,6 +201,7 @@ bool GroupedPermissionInfoBarDelegate::Cancel() {
       permission_prompt_->web_contents());
   switch (manager->ReasonForUsingQuietUi()) {
     case QuietUiReason::kEnabledInPrefs:
+    case QuietUiReason::kPredictedVeryUnlikelyGrant:
     case QuietUiReason::kTriggeredByCrowdDeny:
       // The infobar needs to be kept open after the "Manage" button is clicked.
       return false;
@@ -251,6 +256,7 @@ base::string16 GroupedPermissionInfoBarDelegate::GetButtonLabel(
 
   switch (manager->ReasonForUsingQuietUi()) {
     case QuietUiReason::kEnabledInPrefs:
+    case QuietUiReason::kPredictedVeryUnlikelyGrant:
     case QuietUiReason::kTriggeredByCrowdDeny:
       return l10n_util::GetStringUTF16(
           (button == BUTTON_OK)

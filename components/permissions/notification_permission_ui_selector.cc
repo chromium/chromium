@@ -11,6 +11,7 @@ bool NotificationPermissionUiSelector::ShouldSuppressAnimation(
     QuietUiReason reason) {
   switch (reason) {
     case QuietUiReason::kEnabledInPrefs:
+    case QuietUiReason::kPredictedVeryUnlikelyGrant:
       return false;
     case QuietUiReason::kTriggeredByCrowdDeny:
     case QuietUiReason::kTriggeredDueToAbusiveRequests:

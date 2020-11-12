@@ -1583,6 +1583,7 @@ ContentSettingNotificationsBubbleModel::ContentSettingNotificationsBubbleModel(
     return;
   switch (manager->ReasonForUsingQuietUi()) {
     case QuietUiReason::kEnabledInPrefs:
+    case QuietUiReason::kPredictedVeryUnlikelyGrant:
       set_message(l10n_util::GetStringUTF16(
           IDS_NOTIFICATIONS_QUIET_PERMISSION_BUBBLE_DESCRIPTION));
       set_done_button_text(l10n_util::GetStringUTF16(
@@ -1647,6 +1648,7 @@ void ContentSettingNotificationsBubbleModel::OnDoneButtonClicked() {
   switch (manager->ReasonForUsingQuietUi()) {
     case QuietUiReason::kEnabledInPrefs:
     case QuietUiReason::kTriggeredByCrowdDeny:
+    case QuietUiReason::kPredictedVeryUnlikelyGrant:
       manager->Accept();
       base::RecordAction(
           base::UserMetricsAction("Notifications.Quiet.ShowForSiteClicked"));
@@ -1667,6 +1669,7 @@ void ContentSettingNotificationsBubbleModel::OnCancelButtonClicked() {
   switch (manager->ReasonForUsingQuietUi()) {
     case QuietUiReason::kEnabledInPrefs:
     case QuietUiReason::kTriggeredByCrowdDeny:
+    case QuietUiReason::kPredictedVeryUnlikelyGrant:
       // No-op.
       break;
     case QuietUiReason::kTriggeredDueToAbusiveRequests:

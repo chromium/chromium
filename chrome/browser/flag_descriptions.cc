@@ -1810,6 +1810,14 @@ const char kPermissionChipDescription[] =
     "Enables an experimental permission prompt that uses a chip in the location"
     " bar.";
 
+const char kPermissionPredictionsName[] = "Permission Predictions";
+const char kPermissionPredictionsDescription[] =
+    "Use the Permission Predictions Service to surface permission requests "
+    "using a quieter UI when the likelihood of the user granting the "
+    "permission is predicted to be low. Requires "
+    "chrome://flags/#quiet-notification-prompts and `Safe Browsing Enhanced "
+    "Protection` to be enabled.";
+
 const char kPointerLockOptionsName[] = "Enables pointer lock options";
 const char kPointerLockOptionsDescription[] =
     "Enables pointer lock unadjustedMovement. When unadjustedMovement is set "

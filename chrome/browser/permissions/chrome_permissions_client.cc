@@ -20,6 +20,7 @@
 #include "chrome/browser/permissions/contextual_notification_permission_ui_selector.h"
 #include "chrome/browser/permissions/permission_decision_auto_blocker_factory.h"
 #include "chrome/browser/permissions/permission_manager_factory.h"
+#include "chrome/browser/permissions/prediction_based_permission_ui_selector.h"
 #include "chrome/browser/permissions/pref_notification_permission_ui_selector.h"
 #include "chrome/browser/permissions/quiet_notification_permission_ui_config.h"
 #include "chrome/browser/profiles/profile.h"
@@ -206,6 +207,8 @@ ChromePermissionsClient::CreateNotificationPermissionUiSelectors(
   selectors.emplace_back(
       std::make_unique<ContextualNotificationPermissionUiSelector>());
   selectors.emplace_back(std::make_unique<PrefNotificationPermissionUiSelector>(
+      Profile::FromBrowserContext(browser_context)));
+  selectors.emplace_back(std::make_unique<PredictionBasedPermissionUiSelector>(
       Profile::FromBrowserContext(browser_context)));
   return selectors;
 }

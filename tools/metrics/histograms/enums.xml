@@ -44054,6 +44054,7 @@ from previous Chrome versions.
   <int value="-45067971" label="NewPrintPreview:disabled"/>
   <int value="-43428597" label="ClickToCallDetectionV2:enabled"/>
   <int value="-40935502" label="ContextualSuggestionsSlimPeekUI:enabled"/>
+  <int value="-37966026" label="PermissionPredictions:enabled"/>
   <int value="-36503306" label="HomepageLocationPolicy:enabled"/>
   <int value="-36234530" label="PluginVmShowMicrophonePermissions:enabled"/>
   <int value="-35745997" label="TabSearch:enabled"/>
@@ -45395,6 +45396,7 @@ from previous Chrome versions.
   <int value="1292091029" label="OmniboxOneClickUnelide:disabled"/>
   <int value="1292763218" label="SystemTrayUnified:disabled"/>
   <int value="1294131571" label="disable-winrt-midi-api"/>
+  <int value="1296878388" label="PermissionPredictions:disabled"/>
   <int value="1296958520" label="hide-active-apps-from-shelf"/>
   <int value="1298927156" label="TouchpadOverscrollHistoryNavigation:enabled"/>
   <int value="1298981651" label="disable-new-task-manager"/>

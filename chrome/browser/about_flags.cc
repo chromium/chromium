@@ -6710,6 +6710,10 @@ const FeatureEntry kFeatureEntries[] = {
              kAutofillEnableInfoBarAccountIndicationFooterForSyncUsers)},
 #endif
 
+    {"permission-predictions", flag_descriptions::kPermissionPredictionsName,
+     flag_descriptions::kPermissionPredictionsDescription, kOsAll,
+     FEATURE_VALUE_TYPE(features::kPermissionPredictions)},
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

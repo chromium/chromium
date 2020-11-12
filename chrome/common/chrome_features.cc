@@ -640,6 +640,10 @@ const base::Feature kPerAppTimeLimits{"PerAppTimeLimits",
                                       base::FEATURE_ENABLED_BY_DEFAULT};
 #endif
 
+// Enables using the prediction service for permission prompts.
+const base::Feature kPermissionPredictions{"PermissionPredictions",
+                                           base::FEATURE_DISABLED_BY_DEFAULT};
+
 #if defined(OS_CHROMEOS)
 // Enable support for "Plugin VMs" on Chrome OS.
 const base::Feature kPluginVm{"PluginVm", base::FEATURE_DISABLED_BY_DEFAULT};

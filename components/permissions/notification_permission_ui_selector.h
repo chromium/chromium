@@ -24,6 +24,7 @@ class NotificationPermissionUiSelector {
     kTriggeredByCrowdDeny,
     kTriggeredDueToAbusiveRequests,
     kTriggeredDueToAbusiveContent,
+    kPredictedVeryUnlikelyGrant,
   };
 
   enum class WarningReason {

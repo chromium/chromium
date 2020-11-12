@@ -551,6 +551,7 @@ void PermissionRequestManager::ShowBubble() {
       switch (ReasonForUsingQuietUi()) {
         case QuietUiReason::kEnabledInPrefs:
         case QuietUiReason::kTriggeredByCrowdDeny:
+        case QuietUiReason::kPredictedVeryUnlikelyGrant:
           break;
         case QuietUiReason::kTriggeredDueToAbusiveRequests:
           LogWarningToConsole(kAbusiveNotificationRequestsEnforcementMessage);
