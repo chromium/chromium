@@ -66,16 +66,6 @@ class ShortcutHelper {
   // Returns the ideal size for a shortcut icon of a WebAPK.
   static int GetIdealShortcutIconSizeInPx();
 
-  // Fetches the splash screen image and stores it inside the WebappDataStorage
-  // of the webapp. The WebappDataStorage object *must* have been previously
-  // created by AddToLauncherWithSkBitmap(); this method should be passed as a
-  // closure to that method.
-  static void FetchSplashScreenImage(content::WebContents* web_contents,
-                                     const GURL& image_url,
-                                     const int ideal_splash_image_size_in_px,
-                                     const int minimum_splash_image_size_in_px,
-                                     const std::string& webapp_id);
-
   // Stores the webapp splash screen in the WebappDataStorage associated with
   // |webapp_id|.
   static void StoreWebappSplashImage(const std::string& webapp_id,

@@ -74,15 +74,11 @@ void GetIconSizes() {
 }
 
 // Adds a shortcut which opens in a fullscreen window to the launcher.
-// |splash_image_callback| will be invoked once the Java-side operation has
-// completed. This is necessary as Java will asynchronously create and
-// populate a WebappDataStorage object for standalone-capable sites. This must
-// exist before the splash image can be stored.
-void AddWebappWithSkBitmap(const ShortcutInfo& info,
+void AddWebappWithSkBitmap(content::WebContents* web_contents,
+                           const ShortcutInfo& info,
                            const std::string& webapp_id,
                            const SkBitmap& icon_bitmap,
-                           bool is_icon_maskable,
-                           base::OnceClosure splash_image_callback) {
+                           bool is_icon_maskable) {
   // Send the data to the Java side to create the shortcut.
   JNIEnv* env = base::android::AttachCurrentThread();
   ScopedJavaLocalRef<jstring> java_webapp_id =
@@ -104,25 +100,23 @@ void AddWebappWithSkBitmap(const ShortcutInfo& info,
   if (!icon_bitmap.drawsNothing())
     java_bitmap = gfx::ConvertToJavaBitmap(icon_bitmap);
 
-  // The callback will need to be run after shortcut creation completes in order
-  // to download the splash image and save it to the WebappDataStorage. Create a
-  // copy of the callback here and send the pointer to Java, which will send it
-  // back once the asynchronous shortcut creation process finishes.
-  uintptr_t callback_pointer = reinterpret_cast<uintptr_t>(
-      new base::OnceClosure(std::move(splash_image_callback)));
-
   Java_ShortcutHelper_addWebapp(
       env, java_webapp_id, java_url, java_scope_url, java_user_title, java_name,
       java_short_name, java_best_primary_icon_url, java_bitmap,
       is_icon_maskable, static_cast<int>(info.display),
       static_cast<int>(info.orientation), info.source,
       OptionalSkColorToJavaColor(info.theme_color),
-      OptionalSkColorToJavaColor(info.background_color), callback_pointer);
+      OptionalSkColorToJavaColor(info.background_color));
+
+  // Start downloading the splash image in parallel with the app install.
+  content::ManifestIconDownloader::Download(
+      web_contents, info.splash_image_url, info.ideal_splash_image_size_in_px,
+      info.minimum_splash_image_size_in_px,
+      base::BindOnce(&ShortcutHelper::StoreWebappSplashImage, webapp_id));
 }
 
 // Adds a shortcut which opens in a browser tab to the launcher.
-void AddShortcutWithSkBitmap(content::WebContents* web_contents,
-                             const ShortcutInfo& info,
+void AddShortcutWithSkBitmap(const ShortcutInfo& info,
                              const std::string& id,
                              const SkBitmap& icon_bitmap,
                              bool is_icon_maskable) {
@@ -180,16 +174,11 @@ void ShortcutHelper::AddToLauncherWithSkBitmap(
   if (info.display == blink::mojom::DisplayMode::kStandalone ||
       info.display == blink::mojom::DisplayMode::kFullscreen ||
       info.display == blink::mojom::DisplayMode::kMinimalUi) {
-    AddWebappWithSkBitmap(
-        info, webapp_id, icon_bitmap, is_icon_maskable,
-        base::BindOnce(&ShortcutHelper::FetchSplashScreenImage, web_contents,
-                       info.splash_image_url,
-                       info.ideal_splash_image_size_in_px,
-                       info.minimum_splash_image_size_in_px, webapp_id));
+    AddWebappWithSkBitmap(web_contents, info, webapp_id, icon_bitmap,
+                          is_icon_maskable);
     return;
   }
-  AddShortcutWithSkBitmap(web_contents, info, webapp_id, icon_bitmap,
-                          is_icon_maskable);
+  AddShortcutWithSkBitmap(info, webapp_id, icon_bitmap, is_icon_maskable);
 }
 
 void ShortcutHelper::ShowWebApkInstallInProgressToast() {
@@ -231,21 +220,6 @@ int ShortcutHelper::GetIdealShortcutIconSizeInPx() {
   if (g_ideal_shortcut_icon_size == -1)
     GetIconSizes();
   return g_ideal_shortcut_icon_size;
-}
-
-// static
-void ShortcutHelper::FetchSplashScreenImage(
-    content::WebContents* web_contents,
-    const GURL& image_url,
-    const int ideal_splash_image_size_in_px,
-    const int minimum_splash_image_size_in_px,
-    const std::string& webapp_id) {
-  // This is a fire and forget task. It is not vital for the splash screen image
-  // to be downloaded so if the downloader returns false there is no fallback.
-  content::ManifestIconDownloader::Download(
-      web_contents, image_url, ideal_splash_image_size_in_px,
-      minimum_splash_image_size_in_px,
-      base::BindOnce(&ShortcutHelper::StoreWebappSplashImage, webapp_id));
 }
 
 // static
@@ -381,20 +355,4 @@ bool ShortcutHelper::DoesAndroidSupportMaskableIcons() {
 // static
 void ShortcutHelper::SetIdealShortcutSizeForTesting(int size) {
   g_ideal_shortcut_icon_size = size;
-}
-
-// Callback used by Java when the shortcut has been created.
-// |splash_image_callback| is a pointer to a base::OnceClosure allocated in
-// AddShortcutWithSkBitmap, so reinterpret_cast it back and run it.
-//
-// This callback should only ever be called when the shortcut was for a
-// webapp-capable site; otherwise, |splash_image_callback| will have never been
-// allocated and doesn't need to be run or deleted.
-void JNI_ShortcutHelper_OnWebappDataStored(JNIEnv* env,
-                                           jlong jsplash_image_callback) {
-  DCHECK(jsplash_image_callback);
-  base::OnceClosure* splash_image_callback =
-      reinterpret_cast<base::OnceClosure*>(jsplash_image_callback);
-  std::move(*splash_image_callback).Run();
-  delete splash_image_callback;
 }

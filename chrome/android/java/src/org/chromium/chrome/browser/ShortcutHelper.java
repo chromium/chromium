@@ -36,7 +36,6 @@ import org.chromium.base.Log;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.BrowserServicesIntentDataProvider;
@@ -55,8 +54,10 @@ import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.widget.Toast;
 
 import java.io.ByteArrayOutputStream;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -147,6 +148,12 @@ public class ShortcutHelper {
 
     private static ShortcutManager sShortcutManager;
 
+    // Holds splash images for web apps that are currently being installed. After installation is
+    // complete, the image associated with the web app will be moved to the appropriate {@link
+    // WebappDataStorage}.
+    @VisibleForTesting
+    public static Map<String, Bitmap> sSplashImageMap = new HashMap<>();
+
     /** Helper for generating home screen shortcuts. */
     public static class Delegate {
         /**
@@ -195,8 +202,7 @@ public class ShortcutHelper {
 
     /**
      * Adds home screen shortcut which opens in a {@link WebappActivity}. Creates web app
-     * home screen shortcut and registers web app asynchronously. Calls
-     * ShortcutHelper::OnWebappDataStored() when done.
+     * home screen shortcut and registers web app asynchronously.
      */
     @SuppressWarnings("unused")
     @CalledByNative
@@ -204,7 +210,7 @@ public class ShortcutHelper {
             final String userTitle, final String name, final String shortName, final String iconUrl,
             final Bitmap icon, boolean isIconAdaptive, @WebDisplayMode final int displayMode,
             final int orientation, final int source, final long themeColor,
-            final long backgroundColor, final long callbackPointer) {
+            final long backgroundColor) {
         new AsyncTask<Intent>() {
             @Override
             protected Intent doInBackground() {
@@ -225,18 +231,20 @@ public class ShortcutHelper {
             protected void onPostExecute(final Intent resultIntent) {
                 sDelegate.addShortcutToHomescreen(userTitle, icon, isIconAdaptive, resultIntent);
 
-                // Store the webapp data so that it is accessible without the intent. Once this
-                // process is complete, call back to native code to start the splash image
-                // download.
+                // Store the webapp data so that it is accessible without the intent.
                 WebappRegistry.getInstance().register(id, storage -> {
                     BrowserServicesIntentDataProvider intentDataProvider =
                             WebappIntentDataProviderFactory.create(resultIntent);
                     assert intentDataProvider != null;
                     if (intentDataProvider != null) {
                         storage.updateFromWebappIntentDataProvider(intentDataProvider);
-                        if (callbackPointer != 0) {
-                            ShortcutHelperJni.get().onWebappDataStored(callbackPointer);
-                        }
+                    }
+
+                    // If the image is not yet downloaded (i.e. |splashImage| is null), it will be
+                    // stored later when native calls storeWebappSplashImage().
+                    Bitmap splashImage = sSplashImageMap.remove(id);
+                    if (splashImage != null) {
+                        storeWebappSplashImage(id, splashImage);
                     }
                 });
                 if (shouldShowToastWhenAddingShortcut()) {
@@ -329,7 +337,10 @@ public class ShortcutHelper {
     @CalledByNative
     private static void storeWebappSplashImage(final String id, final Bitmap splashImage) {
         final WebappDataStorage storage = WebappRegistry.getInstance().getWebappDataStorage(id);
-        if (storage != null) {
+        if (storage == null) {
+            // The app is not installed yet; put it in this map for now.
+            sSplashImageMap.put(id, splashImage);
+        } else {
             new AsyncTask<String>() {
                 @Override
                 protected String doInBackground() {
@@ -811,10 +822,5 @@ public class ShortcutHelper {
         if (storage != null) {
             storage.setShouldForceUpdate(true);
         }
-    }
-
-    @NativeMethods
-    interface Natives {
-        void onWebappDataStored(long callbackPointer);
     }
 }

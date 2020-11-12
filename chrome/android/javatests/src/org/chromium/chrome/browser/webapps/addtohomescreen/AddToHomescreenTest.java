@@ -311,6 +311,8 @@ public class AddToHomescreenTest {
             Criteria.checkThat(dataStorageFactory.mSplashImage, Matchers.notNullValue());
         });
 
+        Assert.assertTrue(ShortcutHelper.sSplashImageMap.isEmpty());
+
         // Test that bitmap sizes match expectations.
         int idealSize = mActivity.getResources().getDimensionPixelSize(
                 R.dimen.webapp_splash_image_size_ideal);
