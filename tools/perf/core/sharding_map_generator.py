@@ -44,72 +44,73 @@ def generate_sharding_map(benchmarks_to_shard, timing_data, num_shards, debug):
   story_timing_list = _gather_timing_data(
       benchmarks_to_shard, timing_data, True)
 
-  all_stories = {}
+  stories_by_benchmark = {}
   for b in benchmarks_to_shard:
-    all_stories[b.name] = b.stories
+    stories_by_benchmark[b.name] = b.stories
 
-  total_time = sum(p[1] for p in story_timing_list)
-  expected_time_per_shard = total_time/num_shards
-
-  total_time_scheduled = 0
   sharding_map = collections.OrderedDict()
-  debug_map = collections.OrderedDict()
+  num_stories = len(story_timing_list)
   min_shard_time = sys.maxint
   min_shard_index = None
   max_shard_time = 0
   max_shard_index = None
   predicted_shard_timings = []
+  debug_timing = collections.OrderedDict()
 
   # The algorithm below removes all the stories from |story_timing_list| one by
   # one and add them to the current shard until the shard's total time is
-  # approximately equals to |expected_time_per_shard|. After that point,
+  # approximately equals to |expected_shard_time|. After that point,
   # it moves to the next shard.
   # For efficient removal of |story_timing_list|'s elements & to keep the
   # ordering of benchmark alphabetically sorted in the shards' assignment, we
   # reverse the |story_timing_list|.
+  total_time = sum(p[1] for p in story_timing_list)
+  expected_shard_time = total_time / num_shards
   story_timing_list.reverse()
-  num_stories = len(story_timing_list)
-  final_shard_index = num_shards - 1
   for i in range(num_shards):
     shard_name = 'shard #%i' % i
     sharding_map[str(i)] = {'benchmarks': collections.OrderedDict()}
-    debug_map[shard_name] = collections.OrderedDict()
-    time_per_shard = 0
+    debug_timing[shard_name] = collections.OrderedDict()
+    shard_time = 0
     stories_in_shard = []
-    expected_total_time = expected_time_per_shard * (i + 1)
-    last_diff = abs(total_time_scheduled - expected_total_time)
-    # Keep adding story to the current shard until either:
-    # * The absolute difference between the total time of shards so far and
-    #   expected total time is minimal.
-    # * The shard is final shard, and there is no more stories to add.
-    #
-    # Note: we do check for the final shard in case due to rounding error,
-    # the last_diff can be minimal even if we don't add all the stories to the
-    # final shard.
+
+    # Keep adding stories to the current shard if:
+    # 1. Adding the next story does not makes the shard time further from
+    # the expected;
+    # Or
+    # 2. The current shard is the last shard.
     while story_timing_list:
-      candidate_story, candidate_story_duration = story_timing_list[-1]
-      new_diff = abs(total_time_scheduled + candidate_story_duration -
-                     expected_total_time)
-      if new_diff <= last_diff or i == final_shard_index:
-        story_timing_list.pop()
-        total_time_scheduled += candidate_story_duration
-        time_per_shard += candidate_story_duration
-        stories_in_shard.append(candidate_story)
-        debug_map[shard_name][candidate_story] = candidate_story_duration
-        last_diff = abs(total_time_scheduled - expected_total_time)
-        _add_benchmarks_to_shard(sharding_map, i, stories_in_shard, all_stories,
-                                 benchmark_name_to_config)
-      else:
+      # Add one story anyway to avoid empty shard
+      current_story, current_duration = story_timing_list[-1]
+      story_timing_list.pop()
+      shard_time += current_duration
+      stories_in_shard.append(current_story)
+      debug_timing[shard_name][current_story] = current_duration
+      _add_benchmarks_to_shard(sharding_map, i, stories_in_shard,
+                               stories_by_benchmark, benchmark_name_to_config)
+
+      if not story_timing_list:
+        # All stories sharded
         break
-    debug_map[shard_name]['expected_total_time'] = time_per_shard
-    if time_per_shard > max_shard_time:
-      max_shard_time = time_per_shard
+
+      _, next_duration = story_timing_list[-1]
+      if (abs(shard_time + next_duration - expected_shard_time) >
+          abs(shard_time - expected_shard_time)) and i != num_shards - 1:
+        # it is not the last shard and we should not add the next story
+        break
+
+    if i != num_shards - 1:
+      total_time -= shard_time
+      expected_shard_time = total_time / (num_shards - i - 1)
+    if shard_time > max_shard_time:
+      max_shard_time = shard_time
       max_shard_index = i
-    if time_per_shard < min_shard_time:
-      min_shard_time = time_per_shard
+    if shard_time < min_shard_time:
+      min_shard_time = shard_time
       min_shard_index = i
 
-    predicted_shard_timings.append((shard_name, time_per_shard))
+    predicted_shard_timings.append((shard_name, shard_time))
+    debug_timing[shard_name]['expected_total_time'] = shard_time
 
   sharding_map['extra_infos'] = collections.OrderedDict([
       ('num_stories', num_stories),
@@ -120,7 +121,7 @@ def generate_sharding_map(benchmarks_to_shard, timing_data, num_shards, debug):
   ])
 
   if debug:
-    sharding_map['extra_infos'].update(debug_map)
+    sharding_map['extra_infos'].update(debug_timing)
   else:
     sharding_map['extra_infos'].update(predicted_shard_timings)
   return sharding_map
