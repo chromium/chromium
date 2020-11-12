@@ -1635,8 +1635,7 @@ void RenderWidgetHostViewAndroid::GestureEventAck(
   if (gesture_listener_manager_)
     gesture_listener_manager_->GestureEventAck(event, ack_result);
 
-  if (event.data.scroll_begin.cursor_control || swipe_to_move_cursor_activated_)
-    OnSwipeToMoveCursorGestureAck(event);
+  HandleSwipeToMoveCursorGestureAck(event);
 }
 
 void RenderWidgetHostViewAndroid::ChildDidAckGestureEvent(
@@ -2444,7 +2443,7 @@ void RenderWidgetHostViewAndroid::SetDisplayFeatureForTesting(
   NOTREACHED();
 }
 
-void RenderWidgetHostViewAndroid::OnSwipeToMoveCursorGestureAck(
+void RenderWidgetHostViewAndroid::HandleSwipeToMoveCursorGestureAck(
     const blink::WebGestureEvent& event) {
   if (!touch_selection_controller_ || !selection_popup_controller_) {
     swipe_to_move_cursor_activated_ = false;
@@ -2453,12 +2452,16 @@ void RenderWidgetHostViewAndroid::OnSwipeToMoveCursorGestureAck(
 
   switch (event.GetType()) {
     case blink::WebInputEvent::Type::kGestureScrollBegin: {
+      if (!event.data.scroll_begin.cursor_control)
+        break;
       swipe_to_move_cursor_activated_ = true;
       touch_selection_controller_->OnSwipeToMoveCursorBegin();
       OnSelectionEvent(ui::INSERTION_HANDLE_DRAG_STARTED);
       break;
     }
     case blink::WebInputEvent::Type::kGestureScrollUpdate: {
+      if (!swipe_to_move_cursor_activated_)
+        break;
       gfx::RectF rect = touch_selection_controller_->GetRectBetweenBounds();
       // Suppress this when the input is not focused, in which case rect will be
       // 0x0.
@@ -2469,6 +2472,8 @@ void RenderWidgetHostViewAndroid::OnSwipeToMoveCursorGestureAck(
       break;
     }
     case blink::WebInputEvent::Type::kGestureScrollEnd: {
+      if (!swipe_to_move_cursor_activated_)
+        break;
       swipe_to_move_cursor_activated_ = false;
       touch_selection_controller_->OnSwipeToMoveCursorEnd();
       OnSelectionEvent(ui::INSERTION_HANDLE_DRAG_STOPPED);

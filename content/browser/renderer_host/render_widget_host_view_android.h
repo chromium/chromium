@@ -456,7 +456,7 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
 
   void OnUpdateScopedSelectionHandles();
 
-  void OnSwipeToMoveCursorGestureAck(const blink::WebGestureEvent& event);
+  void HandleSwipeToMoveCursorGestureAck(const blink::WebGestureEvent& event);
 
   bool is_showing_;
 
