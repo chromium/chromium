@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <iosfwd>
 #include <string>
 
 #include "base/base_export.h"
@@ -15,31 +16,74 @@
 
 namespace base {
 
-// Generate a 128-bit random GUID in the form of version 4 as described in
-// RFC 4122, section 4.4.
-// The format of GUID version 4 must be xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx,
-// where y is one of [8, 9, A, B].
-// The hexadecimal values "a" through "f" are output as lower case characters.
-//
-// A cryptographically secure random source will be used, but consider using
-// UnguessableToken for greater type-safety if GUID format is unnecessary.
+// DEPRECATED, use GUID::GenerateRandomV4() instead.
 BASE_EXPORT std::string GenerateGUID();
 
-// Returns true if the input string conforms to the version 4 GUID format.
-// Note that this does NOT check if the hexadecimal values "a" through "f"
-// are in lower case characters, as Version 4 RFC says onput they're
-// case insensitive. (Use IsValidGUIDOutputString for checking if the
-// given string is valid output string)
-BASE_EXPORT bool IsValidGUID(base::StringPiece guid);
-BASE_EXPORT bool IsValidGUID(base::StringPiece16 guid);
+// DEPRECATED, use GUID::ParseCaseInsensitive() and GUID::is_valid() instead.
+BASE_EXPORT bool IsValidGUID(StringPiece input);
+BASE_EXPORT bool IsValidGUID(StringPiece16 input);
 
-// Returns true if the input string is valid version 4 GUID output string.
-// This also checks if the hexadecimal values "a" through "f" are in lower
-// case characters.
-BASE_EXPORT bool IsValidGUIDOutputString(base::StringPiece guid);
+// DEPRECATED, use GUID::ParseLowercase() and GUID::is_valid() instead.
+BASE_EXPORT bool IsValidGUIDOutputString(StringPiece input);
 
 // For unit testing purposes only.  Do not use outside of tests.
 BASE_EXPORT std::string RandomDataToGUIDString(const uint64_t bytes[2]);
+
+class BASE_EXPORT GUID {
+ public:
+  // Generate a 128-bit random GUID in the form of version 4. see RFC 4122,
+  // section 4.4. The format of GUID version 4 must be
+  // xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx, where y is one of [8, 9, a, b]. The
+  // hexadecimal values "a" through "f" are output as lower case characters.
+  // A cryptographically secure random source will be used, but consider using
+  // UnguessableToken for greater type-safety if GUID format is unnecessary.
+  static GUID GenerateRandomV4();
+
+  // Returns a valid GUID if the input string conforms to the GUID format, and
+  // an invalid GUID otherwise. Note that this does NOT check if the hexadecimal
+  // values "a" through "f" are in lower case characters.
+  static GUID ParseCaseInsensitive(StringPiece input);
+  static GUID ParseCaseInsensitive(StringPiece16 input);
+
+  // Similar to ParseCaseInsensitive(), but all hexadecimal values "a" through
+  // "f" must be lower case characters.
+  static GUID ParseLowercase(StringPiece input);
+  static GUID ParseLowercase(StringPiece16 input);
+
+  // Constructs an invalid GUID.
+  GUID();
+
+  GUID(const GUID& other);
+  GUID& operator=(const GUID& other);
+
+  bool is_valid() const { return !lowercase_.empty(); }
+
+  // Returns the GUID in a lowercase string format if it is valid, and an empty
+  // string otherwise. The returned value is guaranteed to be parsed by
+  // ParseLowercase().
+  //
+  // NOTE: While AsLowercaseString() is currently a trivial getter, callers
+  // should not treat it as such. When the internal type of base::GUID changes,
+  // this will be a non-trivial converter. See the TODO above `lowercase_` for
+  // more context.
+  const std::string& AsLowercaseString() const;
+
+  // Invalid GUIDs are equal.
+  bool operator==(const GUID& other) const;
+  bool operator!=(const GUID& other) const;
+
+ private:
+  // TODO(crbug.com/1026195): Consider using a different internal type.
+  // Most existing representations of GUIDs in the codebase use std::string,
+  // so matching the internal type will avoid inefficient string conversions
+  // during the migration to base::GUID.
+  //
+  // The lowercase form of the GUID. Empty for invalid GUIDs.
+  std::string lowercase_;
+};
+
+// Stream operator so GUID objects can be used in logging statements.
+BASE_EXPORT std::ostream& operator<<(std::ostream& out, const GUID& guid);
 
 }  // namespace base
 

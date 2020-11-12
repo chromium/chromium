@@ -14,34 +14,23 @@
 
 namespace base {
 
-namespace {
-
-bool IsGUIDv4(const std::string& guid) {
-  // The format of GUID version 4 must be xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx,
-  // where y is one of [8, 9, A, B].
-  return IsValidGUID(guid) && guid[14] == '4' &&
-         (guid[19] == '8' || guid[19] == '9' || guid[19] == 'A' ||
-          guid[19] == 'a' || guid[19] == 'B' || guid[19] == 'b');
-}
-
-}  // namespace
-
 TEST(GUIDTest, GUIDGeneratesAllZeroes) {
-  uint64_t bytes[] = {0, 0};
-  std::string clientid = RandomDataToGUIDString(bytes);
+  static constexpr uint64_t kBytes[] = {0, 0};
+  const std::string clientid = RandomDataToGUIDString(kBytes);
   EXPECT_EQ("00000000-0000-0000-0000-000000000000", clientid);
 }
 
 TEST(GUIDTest, GUIDGeneratesCorrectly) {
-  uint64_t bytes[] = {0x0123456789ABCDEFULL, 0xFEDCBA9876543210ULL};
-  std::string clientid = RandomDataToGUIDString(bytes);
+  static constexpr uint64_t kBytes[] = {0x0123456789ABCDEFULL,
+                                        0xFEDCBA9876543210ULL};
+  const std::string clientid = RandomDataToGUIDString(kBytes);
   EXPECT_EQ("01234567-89ab-cdef-fedc-ba9876543210", clientid);
 }
 
-TEST(GUIDTest, GUIDCorrectlyFormatted) {
-  const int kIterations = 10;
-  for (int it = 0; it < kIterations; ++it) {
-    std::string guid = GenerateGUID();
+TEST(GUIDTest, DeprecatedGUIDCorrectlyFormatted) {
+  constexpr int kIterations = 10;
+  for (int i = 0; i < kIterations; ++i) {
+    const std::string guid = GenerateGUID();
     EXPECT_TRUE(IsValidGUID(guid));
     EXPECT_TRUE(IsValidGUIDOutputString(guid));
     EXPECT_TRUE(IsValidGUID(ToLowerASCII(guid)));
@@ -49,17 +38,113 @@ TEST(GUIDTest, GUIDCorrectlyFormatted) {
   }
 }
 
-TEST(GUIDTest, GUIDBasicUniqueness) {
-  const int kIterations = 10;
-  for (int it = 0; it < kIterations; ++it) {
-    std::string guid1 = GenerateGUID();
-    std::string guid2 = GenerateGUID();
-    EXPECT_EQ(36U, guid1.length());
-    EXPECT_EQ(36U, guid2.length());
-    EXPECT_NE(guid1, guid2);
-    EXPECT_TRUE(IsGUIDv4(guid1));
-    EXPECT_TRUE(IsGUIDv4(guid2));
+TEST(GUIDTest, DeprecatedGUIDBasicUniqueness) {
+  constexpr int kIterations = 10;
+  for (int i = 0; i < kIterations; ++i) {
+    const std::string guid_str1 = GenerateGUID();
+    const std::string guid_str2 = GenerateGUID();
+    EXPECT_EQ(36U, guid_str1.length());
+    EXPECT_EQ(36U, guid_str2.length());
+    EXPECT_NE(guid_str1, guid_str2);
+
+    const GUID guid1 = GUID::ParseCaseInsensitive(guid_str1);
+    EXPECT_TRUE(guid1.is_valid());
+    const GUID guid2 = GUID::ParseCaseInsensitive(guid_str2);
+    EXPECT_TRUE(guid2.is_valid());
   }
+}
+
+namespace {
+
+// The format of GUID version 4 must be xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx,
+// where y is one of [8, 9, a, b].
+bool IsValidV4(const GUID& guid) {
+  const std::string& lowercase = guid.AsLowercaseString();
+  return guid.is_valid() && lowercase[14] == '4' &&
+         (lowercase[19] == '8' || lowercase[19] == '9' ||
+          lowercase[19] == 'a' || lowercase[19] == 'b');
+}
+
+}  // namespace
+
+TEST(GUIDTest, GUIDBasicUniqueness) {
+  constexpr int kIterations = 10;
+  for (int i = 0; i < kIterations; ++i) {
+    const GUID guid1 = GUID::GenerateRandomV4();
+    const GUID guid2 = GUID::GenerateRandomV4();
+    EXPECT_NE(guid1, guid2);
+    EXPECT_TRUE(guid1.is_valid());
+    EXPECT_TRUE(IsValidV4(guid1));
+    EXPECT_TRUE(guid2.is_valid());
+    EXPECT_TRUE(IsValidV4(guid2));
+  }
+}
+
+namespace {
+
+void TestGUIDValidity(StringPiece input, bool case_insensitive, bool strict) {
+  SCOPED_TRACE(input);
+  {
+    const GUID guid = GUID::ParseCaseInsensitive(input);
+    EXPECT_EQ(case_insensitive, guid.is_valid());
+  }
+  {
+    const GUID guid = GUID::ParseLowercase(input);
+    EXPECT_EQ(strict, guid.is_valid());
+  }
+}
+
+}  // namespace
+
+TEST(GUIDTest, Validity) {
+  // Empty GUID is invalid.
+  EXPECT_FALSE(GUID().is_valid());
+
+  enum Parsability { kDoesntParse, kParsesCaseInsensitiveOnly, kAlwaysParses };
+
+  static constexpr struct {
+    StringPiece input;
+    Parsability parsability;
+  } kGUIDValidity[] = {
+      {"invalid", kDoesntParse},
+      {"0123456789ab-cdef-fedc-ba98-76543210", kDoesntParse},
+      {"0123456789abcdeffedcba9876543210", kDoesntParse},
+      {"01234567-89Zz-ZzZz-ZzZz-Zz9876543210", kDoesntParse},
+      {"DEADBEEFDEADBEEFDEADBEEFDEADBEEF", kDoesntParse},
+      {"deadbeefWdeadXbeefYdeadZbeefdeadbeef", kDoesntParse},
+      {"XXXdeadbeefWdeadXbeefYdeadZbeefdeadbeefXXX", kDoesntParse},
+      {"01234567-89aB-cDeF-fEdC-bA9876543210", kParsesCaseInsensitiveOnly},
+      {"DEADBEEF-DEAD-BEEF-DEAD-BEEFDEADBEEF", kParsesCaseInsensitiveOnly},
+      {"00000000-0000-0000-0000-000000000000", kAlwaysParses},
+      {"deadbeef-dead-beef-dead-beefdeadbeef", kAlwaysParses},
+  };
+
+  for (const auto& validity : kGUIDValidity) {
+    const bool case_insensitive = validity.parsability != kDoesntParse;
+    const bool strict = validity.parsability == kAlwaysParses;
+    TestGUIDValidity(validity.input, case_insensitive, strict);
+  }
+}
+
+TEST(GUIDTest, Equality) {
+  static constexpr uint64_t kBytes[] = {0xDEADBEEFDEADBEEFULL,
+                                        0xDEADBEEFDEADBEEFULL};
+  const std::string clientid = RandomDataToGUIDString(kBytes);
+
+  static constexpr char kExpectedCanonicalStr[] =
+      "deadbeef-dead-beef-dead-beefdeadbeef";
+  ASSERT_EQ(kExpectedCanonicalStr, clientid);
+
+  const GUID from_lower = GUID::ParseCaseInsensitive(ToLowerASCII(clientid));
+  EXPECT_EQ(kExpectedCanonicalStr, from_lower.AsLowercaseString());
+
+  const GUID from_upper = GUID::ParseCaseInsensitive(ToUpperASCII(clientid));
+  EXPECT_EQ(kExpectedCanonicalStr, from_upper.AsLowercaseString());
+
+  EXPECT_EQ(from_lower, from_upper);
+
+  // Invalid GUIDs are equal.
+  EXPECT_EQ(GUID(), GUID());
 }
 
 }  // namespace base
