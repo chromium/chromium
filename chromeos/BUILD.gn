@@ -321,6 +321,10 @@ if (is_chromeos_device) {
       "inputs.VirtualKeyboardDeadKeys.french_stable",
       "inputs.VirtualKeyboardTypingApps.stable",
       "inputs.VirtualKeyboardTypingBrowser.stable",
+
+      # crbug.com/1148036
+      "ui.ExistingUserLogin",
+      "ui.SigninProfileExtension",
     ]
   }
 
