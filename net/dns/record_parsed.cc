@@ -38,7 +38,6 @@ std::unique_ptr<const RecordParsed> RecordParsed::CreateFrom(
   if (!parser->ReadRecord(&record))
     return std::unique_ptr<const RecordParsed>();
 
-  bool unrecognized_type = false;
   switch (record.type) {
     case ARecordRdata::kType:
       rdata = ARecordRdata::Create(record.rdata, *parser);
@@ -72,14 +71,10 @@ std::unique_ptr<const RecordParsed> RecordParsed::CreateFrom(
       break;
     default:
       DVLOG(1) << "Unknown RData type for received record: " << record.type;
-      rdata = nullptr;
-      unrecognized_type = true;
-      break;
+      return std::unique_ptr<const RecordParsed>();
   }
 
-  // If a recognized type has a malformed rdata, consider the whole record
-  // malformed.
-  if (!rdata.get() && !unrecognized_type)
+  if (!rdata.get())
     return std::unique_ptr<const RecordParsed>();
 
   return std::unique_ptr<const RecordParsed>(

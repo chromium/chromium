@@ -7950,39 +7950,6 @@ TEST_F(HostResolverManagerDnsTest, TxtQuery) {
                                        bar_records.begin(), bar_records.end()));
 }
 
-// Test that TXT records can be extracted from a response that also contains
-// unrecognized record types.
-TEST_F(HostResolverManagerDnsTest, TxtQuery_MixedWithUnrecognizedType) {
-  std::vector<std::string> text_strings = {"foo"};
-
-  MockDnsClientRuleList rules;
-  rules.emplace_back(
-      "host", dns_protocol::kTypeTXT, false /* secure */,
-      MockDnsClientRule::Result(BuildTestDnsResponse(
-          "host", dns_protocol::kTypeTXT,
-          {BuildTestDnsRecord("host", 3u /* type */, "fake rdata 1"),
-           BuildTestTextRecord("host", std::move(text_strings)),
-           BuildTestDnsRecord("host", 3u /* type */, "fake rdata 2")})),
-      false /* delay */);
-
-  CreateResolver();
-  UseMockDnsClient(CreateValidDnsConfig(), std::move(rules));
-
-  HostResolver::ResolveHostParameters parameters;
-  parameters.dns_query_type = DnsQueryType::TXT;
-
-  ResolveHostResponseHelper response(resolver_->CreateRequest(
-      HostPortPair("host", 108), NetworkIsolationKey(), NetLogWithSource(),
-      parameters, resolve_context_.get(), resolve_context_->host_cache()));
-  EXPECT_THAT(response.result_error(), IsOk());
-  EXPECT_FALSE(response.request()->GetAddressResults());
-  EXPECT_FALSE(response.request()->GetHostnameResults());
-  EXPECT_FALSE(response.request()->GetExperimentalResultsForTesting());
-
-  EXPECT_THAT(response.request()->GetTextResults(),
-              testing::Optional(testing::ElementsAre("foo")));
-}
-
 TEST_F(HostResolverManagerDnsTest, TxtQuery_InvalidConfig) {
   set_allow_fallback_to_proctask(false);
   // Set empty DnsConfig.
@@ -8879,39 +8846,6 @@ TEST_F(HostResolverManagerDnsTest, HttpsQuery) {
   MockDnsClientRuleList rules;
   std::vector<DnsResourceRecord> records = {
       BuildTestHttpsAliasRecord(kName, "alias.test")};
-  rules.emplace_back(kName, dns_protocol::kTypeHttps, false /* secure */,
-                     MockDnsClientRule::Result(BuildTestDnsResponse(
-                         kName, dns_protocol::kTypeHttps, records)),
-                     false /* delay */);
-
-  CreateResolver();
-  UseMockDnsClient(CreateValidDnsConfig(), std::move(rules));
-
-  HostResolver::ResolveHostParameters parameters;
-  parameters.dns_query_type = DnsQueryType::HTTPS;
-
-  ResolveHostResponseHelper response(resolver_->CreateRequest(
-      HostPortPair(kName, 108), NetworkIsolationKey(), NetLogWithSource(),
-      parameters, resolve_context_.get(), resolve_context_->host_cache()));
-  // Experimental type, so does not affect overall result.
-  EXPECT_THAT(response.result_error(), IsError(ERR_NAME_NOT_RESOLVED));
-  EXPECT_FALSE(response.request()->GetAddressResults());
-  EXPECT_FALSE(response.request()->GetHostnameResults());
-  EXPECT_FALSE(response.request()->GetTextResults());
-  // Results never saved when overall result not OK.
-  EXPECT_FALSE(response.request()->GetExperimentalResultsForTesting());
-}
-
-// Test that HTTPS records can be extracted from a response that also contains
-// unrecognized record types.
-TEST_F(HostResolverManagerDnsTest, HttpsQuery_MixedWithUnrecognizedType) {
-  const std::string kName = "https.test";
-
-  MockDnsClientRuleList rules;
-  std::vector<DnsResourceRecord> records = {
-      BuildTestDnsRecord(kName, 3u /* type */, "fake rdata 1"),
-      BuildTestHttpsAliasRecord(kName, "alias.test"),
-      BuildTestDnsRecord(kName, 3u /* type */, "fake rdata 2")};
   rules.emplace_back(kName, dns_protocol::kTypeHttps, false /* secure */,
                      MockDnsClientRule::Result(BuildTestDnsResponse(
                          kName, dns_protocol::kTypeHttps, records)),

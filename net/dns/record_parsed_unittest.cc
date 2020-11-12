@@ -4,9 +4,6 @@
 
 #include "net/dns/record_parsed.h"
 
-#include <memory>
-
-#include "base/time/time.h"
 #include "net/dns/dns_response.h"
 #include "net/dns/dns_test_util.h"
 #include "net/dns/public/dns_protocol.h"
@@ -68,55 +65,4 @@ TEST(RecordParsedTest, CacheFlushBitCompare) {
   EXPECT_TRUE(record2->IsEqual(record1.get(), true));
 }
 
-TEST(RecordParsedTest, ParseUnknownRdata) {
-  static const char kRecordData[] =
-      // NAME="foo.test"
-      "\003foo\004test\000"
-      // TYPE=MD (an obsolete type that will likely never be recognized by
-      // Chrome)
-      "\000\003"
-      // CLASS=IN
-      "\000\001"
-      // TTL=30 seconds
-      "\000\000\000\036"
-      // RDLENGTH=12 bytes
-      "\000\014"
-      // RDATA="garbage data"
-      "garbage data";
-  DnsRecordParser parser(kRecordData, sizeof(kRecordData) - 1, 0 /* offset */);
-
-  std::unique_ptr<const RecordParsed> record =
-      RecordParsed::CreateFrom(&parser, base::Time());
-
-  ASSERT_TRUE(record);
-  EXPECT_EQ(record->name(), "foo.test");
-  EXPECT_EQ(record->type(), 3u);
-  EXPECT_EQ(record->klass(), dns_protocol::kClassIN);
-  EXPECT_EQ(record->ttl(), 30u);
-  EXPECT_FALSE(record->rdata<ARecordRdata>());
-  EXPECT_FALSE(record->rdata_for_testing());
-}
-
-TEST(RecordParsedTest, RejectMalformedRdata) {
-  static const char kRecordData[] =
-      // NAME="foo.test"
-      "\003foo\004test\000"
-      // TYPE=PTR
-      "\000\014"
-      // CLASS=IN
-      "\000\001"
-      // TTL=31 seconds
-      "\000\000\000\037"
-      // RDLENGTH=1 byte
-      "\000\001"
-      // RDATA=truncated name
-      "\001";
-  DnsRecordParser parser(kRecordData, sizeof(kRecordData) - 1, 0 /* offset */);
-
-  std::unique_ptr<const RecordParsed> record =
-      RecordParsed::CreateFrom(&parser, base::Time());
-
-  EXPECT_FALSE(record);
-}
-
-}  // namespace net
+}  //namespace net

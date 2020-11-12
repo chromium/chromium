@@ -48,8 +48,8 @@ bool RecordRdata::HasValidSize(const base::StringPiece& data, uint16_t type) {
     case dns_protocol::kTypeSOA:
       return true;
     default:
-      VLOG(1) << "Unrecognized RDATA type.";
-      return true;
+      VLOG(1) << "Unsupported RDATA type.";
+      return false;
   }
 }
 
