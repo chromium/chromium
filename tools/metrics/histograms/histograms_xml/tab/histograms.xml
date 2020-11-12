@@ -2048,6 +2048,29 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Tabs.TabSearch.WebUI.IndexOf{Action}TabIn{State}List"
+    units="tabs" expires_after="M90">
+  <owner>tluk@chromium.org</owner>
+  <owner>robliao@chromium.org</owner>
+  <owner>yuhengh@chromium.org</owner>
+  <owner>romanarora@chromium.org</owner>
+  <summary>
+    Tab Search is a feature that allows users to better search their browsers
+    for their desired tabs and close any currently open tabs.
+
+    This records the index at which a {Action} has been performed on a tab in
+    Tab Search's tab list in a {State} state.
+  </summary>
+  <token key="Action">
+    <variant name="Close"/>
+    <variant name="Switch"/>
+  </token>
+  <token key="State">
+    <variant name="Filtered" summary="Filtered by user search query."/>
+    <variant name="Unfiltered" summary="Unfiltered by user search query."/>
+  </token>
+</histogram>
+
 <histogram name="Tabs.TabSearch.WebUI.InitialTabsRenderTime" units="ms"
     expires_after="M90">
   <owner>tluk@chromium.org</owner>

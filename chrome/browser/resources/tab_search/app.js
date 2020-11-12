@@ -281,8 +281,9 @@ export class TabSearchAppElement extends PolymerElement {
    * @private
    */
   onItemClick_(e) {
+    const tabIndex = e.currentTarget.parentNode.indexOf(e.currentTarget);
     const tabId = Number.parseInt(e.currentTarget.id, 10);
-    this.apiProxy_.switchToTab({tabId}, !!this.searchText_);
+    this.apiProxy_.switchToTab({tabId}, !!this.searchText_, tabIndex);
   }
 
   /**
@@ -371,7 +372,8 @@ export class TabSearchAppElement extends PolymerElement {
       e.preventDefault();
     } else if (e.key === 'Enter' || e.key === ' ') {
       this.apiProxy_.switchToTab(
-          {tabId: this.getSelectedTab_().tabId}, !!this.searchText_);
+          {tabId: this.getSelectedTab_().tabId}, !!this.searchText_,
+          this.getSelectedIndex());
       e.stopPropagation();
     }
   }
@@ -424,7 +426,8 @@ export class TabSearchAppElement extends PolymerElement {
           this.ariaLabel_(this.filteredOpenTabs_[this.getSelectedIndex()]));
     } else if (e.key === 'Enter') {
       this.apiProxy_.switchToTab(
-          {tabId: this.getSelectedTab_().tabId}, !!this.searchText_);
+          {tabId: this.getSelectedTab_().tabId}, !!this.searchText_,
+          this.getSelectedIndex());
       e.stopPropagation();
     }
   }

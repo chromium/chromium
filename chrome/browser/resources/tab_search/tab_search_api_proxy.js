@@ -29,8 +29,9 @@ export class TabSearchApiProxy {
   /**
    * @param {!SwitchToTabInfo} info
    * @param {boolean} withSearch
+   * @param {number} switchedTabIndex
    */
-  switchToTab(info, withSearch) {}
+  switchToTab(info, withSearch, switchedTabIndex) {}
 
   /** @return {!PageCallbackRouter} */
   getCallbackRouter() {}
@@ -71,12 +72,17 @@ export class TabSearchApiProxyImpl {
   }
 
   /** @override */
-  switchToTab(info, withSearch) {
+  switchToTab(info, withSearch, switchedTabIndex) {
     chrome.metricsPrivate.recordEnumerationValue(
         'Tabs.TabSearch.WebUI.TabSwitchAction',
         withSearch ? TabSwitchAction.WITH_SEARCH
                    : TabSwitchAction.WITHOUT_SEARCH,
         Object.keys(TabSwitchAction).length);
+    chrome.metricsPrivate.recordSmallCount(
+        withSearch ? 'Tabs.TabSearch.WebUI.IndexOfSwitchTabInFilteredList' :
+                     'Tabs.TabSearch.WebUI.IndexOfSwitchTabInUnfilteredList',
+        switchedTabIndex);
+
     this.handler.switchToTab(info);
   }
 

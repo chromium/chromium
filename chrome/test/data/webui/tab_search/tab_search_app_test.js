@@ -286,9 +286,24 @@ suite('TabSearchAppTest', () => {
 
     // Assert switchToTab() was called appropriately for an unfiltered tab list.
     await testProxy.whenCalled('switchToTab')
-        .then(([ tabInfo, withSearch ]) => {
+        .then(([tabInfo, withSearch, switchedTabIndex]) => {
           assertEquals(1, tabInfo.tabId);
           assertFalse(withSearch);
+          assertEquals(0, switchedTabIndex);
+        });
+
+    testProxy.reset();
+    // Click the first element with tabId 6.
+    tabSearchItem = /** @type {!HTMLElement} */
+        (tabSearchApp.shadowRoot.querySelector('tab-search-item[id="6"]'));
+    tabSearchItem.click();
+
+    // Assert switchToTab() was called appropriately for an unfiltered tab list.
+    await testProxy.whenCalled('switchToTab')
+        .then(([tabInfo, withSearch, switchedTabIndex]) => {
+          assertEquals(6, tabInfo.tabId);
+          assertFalse(withSearch);
+          assertEquals(2, switchedTabIndex);
         });
 
     // Force a change to filtered tab data that would result in a
@@ -308,9 +323,10 @@ suite('TabSearchAppTest', () => {
     // Assert switchToTab() was called appropriately for a tab list fitlered by
     // the search query.
     await testProxy.whenCalled('switchToTab')
-        .then(([ tabInfo, withSearch ]) => {
+        .then(([tabInfo, withSearch, switchedTabIndex]) => {
           assertEquals(2, tabInfo.tabId);
           assertTrue(withSearch);
+          assertEquals(0, switchedTabIndex);
         });
   });
 
