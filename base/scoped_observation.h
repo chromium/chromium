@@ -11,7 +11,13 @@
 
 namespace base {
 
-// ScopedObservation is used to keep track of a single observation.
+// ScopedObservation is used to keep track of singular observation, e.g.
+// where an observer observes a single source only.
+//
+// Use base::ScopedMultiSourceObservation for objects that observe multiple
+// sources. This class and base::ScopedMultiSourceObservation replace
+// ScopedObserver.
+//
 // When ScopedObservation is destroyed, it removes the registered observation,
 // if any. Basic example (as a member variable):
 //
@@ -21,19 +27,21 @@ namespace base {
 //     ScopedObservation<Foo, FooObserver> foo_observation_{this};
 //   };
 //
+//   MyFooObserver::MyFooObserver(Foo* foo) {
+//     foo_observation_.Observe(foo);
+//   }
+//
 // For cases with methods not named AddObserver/RemoveObserver:
 //
 //   class MyFooStateObserver : public FooStateObserver {
 //     ...
 //    private:
 //     ScopedObservation<Foo,
-//                    FooStateObserver,
-//                    &Foo::AddStateObserver,
-//                    &Foo::RemoveStateObserver>
-//       observed_foo_{this};
+//                       FooStateObserver,
+//                       &Foo::AddStateObserver,
+//                       &Foo::RemoveStateObserver>
+//       foo_observation_{this};
 //   };
-//
-// See also base::ScopedObserver to manage observations from multiple sources.
 template <class Source,
           class Observer,
           void (Source::*AddObsFn)(Observer*) = &Source::AddObserver,

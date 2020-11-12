@@ -15,33 +15,36 @@
 
 namespace base {
 
-// ScopedMultiSourceObservation is used to keep track of the set of sources an
-// object has attached itself to as an observer.
+// ScopedMultiSourceObservation is used to keep track of plural observation,
+// e.g. where an observer observes more than a single source.
 //
-// For objects that observe only a single source, use base::ScopedObservation
-// rather than this class. This class and base::ScopedObservation replace
-// ScopedObserver.
+// Use base::ScopedObservation for objects that observe only a single source.
+// This class and base::ScopedObservation replace ScopedObserver.
 //
-// When ScopedMultiSourceObservation is destroyed it removes the object as an
+// When ScopedMultiSourceObservation is destroyed, it removes the object as an
 // observer from all sources it has been added to.
 // Basic example (as a member variable):
 //
 //   class MyFooObserver : public FooObserver {
 //     ...
 //    private:
-//     ScopedMultiSourceObservation<Foo, FooObserver> observed_foo_{this};
+//     ScopedMultiSourceObservation<Foo, FooObserver> foo_observations_{this};
 //   };
+//
+//   MyFooObserver::OnFooCreated(Foo* foo) {
+//     foo_observations_.AddObservation(foo);
+//   }
 //
 // For cases with methods not named AddObserver/RemoveObserver:
 //
 //   class MyFooStateObserver : public FooStateObserver {
 //     ...
 //    private:
-//     ScopedMultiSourceObservation<Foo,
-//                    FooStateObserver,
-//                    &Foo::AddStateObserver,
-//                    &Foo::RemoveStateObserver>
-//       observed_foo_{this};
+//      ScopedMultiSourceObservation<Foo,
+//                                  FooStateObserver,
+//                                  &Foo::AddStateObserver,
+//                                  &Foo::RemoveStateObserver>
+//          foo_observations_{this};
 //   };
 template <class Source,
           class Observer,
@@ -70,22 +73,27 @@ class ScopedMultiSourceObservation {
     (source->*RemoveObsFn)(observer_);
   }
 
+  // Remove the object passed to the constructor as an observer from all sources
+  // it's observing.
   void RemoveAllObservations() {
     for (Source* source : sources_)
       (source->*RemoveObsFn)(observer_);
     sources_.clear();
   }
 
+  // Returns true if any source is being observed.
+  bool IsObservingAnySource() const { return !sources_.empty(); }
+
+  // Returns true if |source| is being observed.
   bool IsObservingSource(Source* source) const {
     return base::Contains(sources_, source);
   }
 
-  bool IsObservingAnySource() const { return !sources_.empty(); }
-
+  // Returns the number of sources being observed.
   size_t GetSourcesCount() const { return sources_.size(); }
 
  private:
-  Observer* observer_;
+  Observer* const observer_;
 
   std::vector<Source*> sources_;
 };
