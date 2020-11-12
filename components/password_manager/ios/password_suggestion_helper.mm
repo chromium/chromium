@@ -130,7 +130,7 @@ typedef void (^PasswordSuggestionsAvailableCompletion)(
       formQuery.uniqueFormID, formQuery.uniqueFieldID, isPasswordField));
 }
 
-- (std::unique_ptr<password_manager::FillData>)getFillDataForUsername:
+- (std::unique_ptr<password_manager::FillData>)passwordFillDataForUsername:
     (NSString*)username {
   return _fillData.GetFillData(SysNSStringToUTF16(username));
 }

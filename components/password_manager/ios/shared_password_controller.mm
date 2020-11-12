@@ -402,7 +402,7 @@ NSString* const kSuggestionSuffix = @" ••••••••";
       NSString* username = [suggestion.value
           substringToIndex:suggestion.value.length - kSuggestionSuffix.length];
       std::unique_ptr<password_manager::FillData> fillData =
-          [self.suggestionHelper getFillDataForUsername:username];
+          [self.suggestionHelper passwordFillDataForUsername:username];
 
       if (!fillData) {
         completion();
@@ -524,7 +524,7 @@ NSString* const kSuggestionSuffix = @" ••••••••";
   if (![fieldType isEqual:kPasswordFieldType])
     return NO;
   const PasswordFormGenerationData* generation_data =
-      [self getFormForGenerationFromFormId:formIdentifier];
+      [self formForGenerationFromFormID:formIdentifier];
   if (!generation_data)
     return NO;
 
@@ -537,7 +537,7 @@ NSString* const kSuggestionSuffix = @" ••••••••";
   return NO;
 }
 
-- (const PasswordFormGenerationData*)getFormForGenerationFromFormId:
+- (const PasswordFormGenerationData*)formForGenerationFromFormID:
     (FormRendererId)formIdentifier {
   if (_formGenerationData.find(formIdentifier) != _formGenerationData.end()) {
     return &_formGenerationData[formIdentifier];
@@ -547,7 +547,7 @@ NSString* const kSuggestionSuffix = @" ••••••••";
 
 - (void)generatePasswordForFormId:(FormRendererId)formIdentifier
                   fieldIdentifier:(FieldRendererId)fieldIdentifier {
-  if (![self getFormForGenerationFromFormId:formIdentifier])
+  if (![self formForGenerationFromFormID:formIdentifier])
     return;
 
   // TODO(crbug.com/886583): pass correct |max_length|.
@@ -584,7 +584,7 @@ NSString* const kSuggestionSuffix = @" ••••••••";
                        generatedPassword:(NSString*)generatedPassword
                        completionHandler:(void (^)())completionHandler {
   const autofill::PasswordFormGenerationData* generation_data =
-      [self getFormForGenerationFromFormId:formIdentifier];
+      [self formForGenerationFromFormID:formIdentifier];
   if (!generation_data)
     return;
   FieldRendererId newPasswordUniqueId =
