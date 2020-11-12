@@ -206,6 +206,10 @@ const char kExternalDisplayMirrorInfo[] =
 // layout/offset information.
 const char kSecondaryDisplays[] = "settings.display.secondary_displays";
 
+// A boolean pref that enable fullscreen alert bubble.
+// TODO(zxdan): Change to an allowlist in M89.
+const char kFullscreenAlertEnabled[] = "ash.fullscreen_alert_enabled";
+
 // A boolean pref storing whether the gesture education notification has ever
 // been shown to the user, which we use to stop showing it again.
 const char kGestureEducationNotificationShown[] =

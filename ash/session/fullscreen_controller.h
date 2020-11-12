@@ -10,6 +10,8 @@
 #include "base/time/time.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 
+class PrefRegistrySimple;
+
 namespace ash {
 
 class SessionControllerImpl;
@@ -26,6 +28,8 @@ class FullscreenController : public chromeos::PowerManagerClient::Observer {
   static void MaybeExitFullscreen();
 
   void MaybeShowAlert();
+
+  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
  private:
   // chromeos::PowerManagerClient::Observer:

@@ -19,6 +19,7 @@
 #include "ash/media/media_controller_impl.h"
 #include "ash/public/cpp/ash_pref_names.h"
 #include "ash/public/cpp/holding_space/holding_space_prefs.h"
+#include "ash/session/fullscreen_controller.h"
 #include "ash/shelf/contextual_tooltip.h"
 #include "ash/shelf/shelf_controller.h"
 #include "ash/style/ash_color_provider.h"
@@ -59,6 +60,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry, bool for_test) {
   ClipboardNudgeController::RegisterProfilePrefs(registry);
   desks_restore_util::RegisterProfilePrefs(registry);
   DockedMagnifierControllerImpl::RegisterProfilePrefs(registry);
+  FullscreenController::RegisterProfilePrefs(registry);
   GestureEducationNotificationController::RegisterProfilePrefs(registry,
                                                                for_test);
   holding_space_prefs::RegisterProfilePrefs(registry);

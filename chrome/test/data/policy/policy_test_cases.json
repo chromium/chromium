@@ -3735,6 +3735,16 @@
     ]
   },
 
+  "FullscreenAlertEnabled": {
+    "os": ["chromeos"],
+    "policy_pref_mapping_test": [
+      {
+        "policies": {"FullscreenAlertEnabled": false},
+        "prefs": {"ash.fullscreen_alert_enabled": {}}
+      }
+    ]
+  },
+
   "GloballyScopeHTTPAuthCacheEnabled": {
     "os": ["win", "linux", "mac", "chromeos", "android"],
     "test_policy": { "GloballyScopeHTTPAuthCacheEnabled": true },

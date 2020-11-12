@@ -10936,6 +10936,39 @@
       'arc_support': 'This policy has no effect on the Android apps. They will be able to enter fullscreen mode even if this policy is set to <ph name="FALSE">False</ph>.',
     },
     {
+      'id': 804,
+      'name': 'FullscreenAlertEnabled',
+      'caption': '''Enable fullscreen alert''',
+      'owners': ['zxdan@chromium.org'],
+      'type': 'main',
+      'schema': {'type': 'boolean'},
+      'supported_on': ['chrome_os:88-'],
+      'features': {
+        'dynamic_refresh': True,
+        'per_profile': False,
+      },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable fullscreen alert',
+        },
+        {
+          'value': False,
+          'caption': 'Disable show fullscreen alert',
+        },
+        {
+          'value': None,
+          'caption': 'Enable fullscreen alert',
+        },
+      ],
+      'default': None,
+      'example_value': False,
+      'tags': [],
+      'desc': '''Specifies whether the fullscreen alert should be shown when the device returns from sleep or dark screen.
+
+      When the policy is unset or set to True, an alert will be shown to remind the users to exit fullscreen before entering password. When the policy is set to False, no alert would be shown.''',
+    },
+    {
       'name': 'ScreenDimDelayAC',
       'owners': ['file://components/policy/resources/OWNERS'],
       'type': 'int',
@@ -24419,6 +24452,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 803,
+  'highest_id_currently_used': 804,
   'highest_atomic_group_id_currently_used': 40
 }

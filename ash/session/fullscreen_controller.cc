@@ -6,15 +6,18 @@
 
 #include <limits>
 
-#include "ash/login/ui/lock_screen.h"
 #include "ash/public/cpp/ash_features.h"
+#include "ash/public/cpp/ash_pref_names.h"
 #include "ash/session/fullscreen_alert_bubble.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shelf/shelf.h"
+#include "ash/shell.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/wm_event.h"
 #include "chromeos/dbus/power_manager/backlight.pb.h"
 #include "chromeos/dbus/power_manager/idle.pb.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/pref_service.h"
 
 namespace ash {
 
@@ -60,16 +63,25 @@ void FullscreenController::MaybeShowAlert() {
   if (!features::IsFullscreenAlertBubbleEnabled())
     return;
 
-  // 1. Check if there is a lock/login screen showing up.
-  if (LockScreen::HasInstance())
+  auto* session_controler = Shell::Get()->session_controller();
+
+  // Check if a user session is active to exclude OOBE process.
+  if (session_controler->GetSessionState() !=
+      session_manager::SessionState::ACTIVE) {
+    return;
+  }
+
+  auto* prefs = session_controler->GetPrimaryUserPrefService();
+
+  if (!prefs->GetBoolean(prefs::kFullscreenAlertEnabled))
     return;
 
-  // 2. Check if the activate window is fullscreen.
+  // Check if the activate window is fullscreen.
   WindowState* active_window_state = WindowState::ForActiveWindow();
   if (!active_window_state || !active_window_state->IsFullscreen())
     return;
 
-  // 3. Check if the shelf is visible.
+  // Check if the shelf is visible.
   Shelf* shelf = Shelf::ForWindow(active_window_state->window());
   const bool shelf_visible =
       shelf->GetVisibilityState() == ShelfVisibilityState::SHELF_VISIBLE;
@@ -81,6 +93,12 @@ void FullscreenController::MaybeShowAlert() {
     bubble_ = std::make_unique<FullscreenAlertBubble>();
 
   bubble_->Show();
+}
+
+// static
+void FullscreenController::RegisterProfilePrefs(PrefRegistrySimple* registry) {
+  registry->RegisterBooleanPref(prefs::kFullscreenAlertEnabled, true,
+                                PrefRegistry::PUBLIC);
 }
 
 void FullscreenController::SuspendImminent(
