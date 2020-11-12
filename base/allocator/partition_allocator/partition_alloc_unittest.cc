@@ -871,9 +871,11 @@ TEST_F(PartitionAllocTest, AllocGetSizeAndOffset) {
   EXPECT_EQ(predicted_size, actual_size);
   EXPECT_LT(requested_size, actual_size);
 #if defined(PA_HAS_64_BITS_POINTERS)
-  for (size_t offset = 0; offset < requested_size; ++offset) {
-    EXPECT_EQ(PartitionAllocGetSlotOffset(static_cast<char*>(ptr) + offset),
-              offset);
+  if (features::IsPartitionAllocGigaCageEnabled()) {
+    for (size_t offset = 0; offset < requested_size; ++offset) {
+      EXPECT_EQ(PartitionAllocGetSlotOffset(static_cast<char*>(ptr) + offset),
+                offset);
+    }
   }
 #endif
   allocator.root()->Free(ptr);
@@ -888,9 +890,11 @@ TEST_F(PartitionAllocTest, AllocGetSizeAndOffset) {
   EXPECT_EQ(predicted_size, actual_size);
   EXPECT_EQ(requested_size, actual_size);
 #if defined(PA_HAS_64_BITS_POINTERS)
-  for (size_t offset = 0; offset < requested_size; offset += 877) {
-    EXPECT_EQ(PartitionAllocGetSlotOffset(static_cast<char*>(ptr) + offset),
-              offset);
+  if (features::IsPartitionAllocGigaCageEnabled()) {
+    for (size_t offset = 0; offset < requested_size; offset += 877) {
+      EXPECT_EQ(PartitionAllocGetSlotOffset(static_cast<char*>(ptr) + offset),
+                offset);
+    }
   }
 #endif
   allocator.root()->Free(ptr);
@@ -909,9 +913,11 @@ TEST_F(PartitionAllocTest, AllocGetSizeAndOffset) {
   EXPECT_EQ(predicted_size, actual_size);
   EXPECT_EQ(requested_size + SystemPageSize(), actual_size);
 #if defined(PA_HAS_64_BITS_POINTERS)
-  for (size_t offset = 0; offset < requested_size; offset += 4999) {
-    EXPECT_EQ(PartitionAllocGetSlotOffset(static_cast<char*>(ptr) + offset),
-              offset);
+  if (features::IsPartitionAllocGigaCageEnabled()) {
+    for (size_t offset = 0; offset < requested_size; offset += 4999) {
+      EXPECT_EQ(PartitionAllocGetSlotOffset(static_cast<char*>(ptr) + offset),
+                offset);
+    }
   }
 #endif
 
@@ -923,10 +929,12 @@ TEST_F(PartitionAllocTest, AllocGetSizeAndOffset) {
   actual_size = allocator.root()->GetSize(ptr);
   EXPECT_EQ(predicted_size, actual_size);
   EXPECT_EQ(requested_size, actual_size);
-#if defined(ARCH_CPU_64_BITS) && !defined(OS_NACL)
-  for (size_t offset = 0; offset < requested_size; offset += 4999) {
-    EXPECT_EQ(PartitionAllocGetSlotOffset(static_cast<char*>(ptr) + offset),
-              offset);
+#if defined(PA_HAS_64_BITS_POINTERS)
+  if (features::IsPartitionAllocGigaCageEnabled()) {
+    for (size_t offset = 0; offset < requested_size; offset += 4999) {
+      EXPECT_EQ(PartitionAllocGetSlotOffset(static_cast<char*>(ptr) + offset),
+                offset);
+    }
   }
 #endif
 
@@ -958,6 +966,9 @@ TEST_F(PartitionAllocTest, AllocGetSizeAndOffset) {
 
 #if defined(PA_HAS_64_BITS_POINTERS)
 TEST_F(PartitionAllocTest, GetOffsetMultiplePages) {
+  if (!features::IsPartitionAllocGigaCageEnabled())
+    return;
+
   const size_t real_size = 80;
   const size_t requested_size = real_size - kExtraAllocSize;
   // Double check we don't end up with 0 or negative size.
