@@ -130,10 +130,6 @@ class PLATFORM_EXPORT HeapAllocator {
     return ThreadState::Current()->IsAllocationAllowed();
   }
 
-  static bool IsSweepForbidden() {
-    return ThreadState::Current()->SweepForbidden();
-  }
-
   static bool IsIncrementalMarking() {
     return ThreadState::IsAnyIncrementalMarking() &&
            ThreadState::Current()->IsIncrementalMarking();
