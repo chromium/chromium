@@ -183,6 +183,28 @@ EXPECT_EQ(str_to_int.end(), str_to_int.find("c")->second);
 str_to_int["c"] = 3;
 ```
 
+### base::fixed\_flat\_map and base::fixed\_flat\_set
+
+These are specializations of `base::flat_map` and `base::flat_set` that operate
+on a sorted `std::array` instead of a sorted `std::vector`. These containers
+have immutable keys, and don't support adding or removing elements once they are
+constructed. However, these containers are constructed on the stack and don't
+have any space overhead compared to a plain array. Furthermore, these containers
+are constexpr friendly (assuming the key and mapped types are), and thus can be
+used as compile time lookup tables.
+
+To aid their constructions type deduction helpers in the form of
+`base::MakeFixedFlatMap` and `base::MakeFixedFlatSet` are provided. These will
+CHECK whether the provided elements are sorted and unique, failing compilation
+if this precondition is violated in a constexpr context.
+
+Example:
+
+```cpp
+constexpr auto kMap = base::MakeFixedFlatMap<base::StringPiece, int>(
+    {{"bar", 1}, {"baz", 2}, {"foo", 3}});
+```
+
 ### base::small\_map
 
 A small inline buffer that is brute-force searched that overflows into a full

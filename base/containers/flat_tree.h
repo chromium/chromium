@@ -31,7 +31,7 @@ namespace internal {
 // Helper functions used in DCHECKs below to make sure that inputs tagged with
 // sorted_unique are indeed sorted and unique.
 template <typename Range, typename Comp>
-bool is_sorted_and_unique(const Range& range, Comp comp) {
+constexpr bool is_sorted_and_unique(const Range& range, Comp comp) {
   return ranges::is_sorted(range, comp) &&
          // Being unique implies that there are no adjacent elements that
          // compare equal.
@@ -53,6 +53,24 @@ struct IsTransparentCompare : std::false_type {};
 template <typename T>
 struct IsTransparentCompare<T, void_t<typename T::is_transparent>>
     : std::true_type {};
+
+// Helper inspired by C++20's std::to_array to convert a C-style array to a
+// std::array. As opposed to the C++20 version this implementation does not
+// provide an overload for rvalues and does not strip cv qualifers from the
+// returned std::array::value_type, allowing the construction of std::arrays
+// with const elements.
+//
+// Reference: https://en.cppreference.com/w/cpp/container/array/to_array
+template <class T, size_t N, size_t... I>
+constexpr std::array<T, N> ToArrayImpl(const T (&data)[N],
+                                       std::index_sequence<I...>) {
+  return {{data[I]...}};
+}
+
+template <typename T, size_t N>
+constexpr std::array<T, N> ToArray(const T (&data)[N]) {
+  return ToArrayImpl<T, N>(data, std::make_index_sequence<N>());
+}
 
 // Implementation -------------------------------------------------------------
 
@@ -83,7 +101,7 @@ class flat_tree {
     value_compare() = default;
 
     template <class Cmp>
-    explicit value_compare(Cmp&& compare_arg)
+    constexpr explicit value_compare(Cmp&& compare_arg)
         : KeyCompare(std::forward<Cmp>(compare_arg)) {}
 
     bool operator()(const value_type& left, const value_type& right) const {
@@ -149,9 +167,9 @@ class flat_tree {
             const container_type& items,
             const key_compare& comp = key_compare());
 
-  flat_tree(sorted_unique_t,
-            container_type&& items,
-            const key_compare& comp = key_compare());
+  constexpr flat_tree(sorted_unique_t,
+                      container_type&& items,
+                      const key_compare& comp = key_compare());
 
   flat_tree(sorted_unique_t,
             std::initializer_list<value_type> ilist,
@@ -201,11 +219,11 @@ class flat_tree {
   // construction of the flat_tree.
 
   iterator begin();
-  const_iterator begin() const;
+  constexpr const_iterator begin() const;
   const_iterator cbegin() const;
 
   iterator end();
-  const_iterator end() const;
+  constexpr const_iterator end() const;
   const_iterator cend() const;
 
   reverse_iterator rbegin();
@@ -268,6 +286,9 @@ class flat_tree {
   // idiom when deleting multiple non-consecutive elements.
 
   iterator erase(iterator position);
+  // Artificially templatized to break ambiguity if `iterator` and
+  // `const_iterator` are the same type.
+  template <typename DummyT = void>
   iterator erase(const_iterator position);
   iterator erase(const_iterator first, const_iterator last);
   template <typename K>
@@ -486,7 +507,7 @@ class flat_tree {
     Impl() = default;
 
     template <class Cmp, class... Body>
-    explicit Impl(Cmp&& compare_arg, Body&&... underlying_type_args)
+    constexpr explicit Impl(Cmp&& compare_arg, Body&&... underlying_type_args)
         : value_compare(std::forward<Cmp>(compare_arg)),
           body_(std::forward<Body>(underlying_type_args)...) {}
 
@@ -563,7 +584,7 @@ flat_tree<Key, GetKeyFromValue, KeyCompare, Container>::flat_tree(
 }
 
 template <class Key, class GetKeyFromValue, class KeyCompare, class Container>
-flat_tree<Key, GetKeyFromValue, KeyCompare, Container>::flat_tree(
+constexpr flat_tree<Key, GetKeyFromValue, KeyCompare, Container>::flat_tree(
     sorted_unique_t,
     container_type&& items,
     const KeyCompare& comp)
@@ -654,8 +675,8 @@ auto flat_tree<Key, GetKeyFromValue, KeyCompare, Container>::begin()
 }
 
 template <class Key, class GetKeyFromValue, class KeyCompare, class Container>
-auto flat_tree<Key, GetKeyFromValue, KeyCompare, Container>::begin() const
-    -> const_iterator {
+constexpr auto flat_tree<Key, GetKeyFromValue, KeyCompare, Container>::begin()
+    const -> const_iterator {
   return ranges::begin(impl_.body_);
 }
 
@@ -671,8 +692,8 @@ auto flat_tree<Key, GetKeyFromValue, KeyCompare, Container>::end() -> iterator {
 }
 
 template <class Key, class GetKeyFromValue, class KeyCompare, class Container>
-auto flat_tree<Key, GetKeyFromValue, KeyCompare, Container>::end() const
-    -> const_iterator {
+constexpr auto flat_tree<Key, GetKeyFromValue, KeyCompare, Container>::end()
+    const -> const_iterator {
   return ranges::end(impl_.body_);
 }
 
@@ -837,6 +858,7 @@ auto flat_tree<Key, GetKeyFromValue, KeyCompare, Container>::erase(
 }
 
 template <class Key, class GetKeyFromValue, class KeyCompare, class Container>
+template <typename DummyT>
 auto flat_tree<Key, GetKeyFromValue, KeyCompare, Container>::erase(
     const_iterator position) -> iterator {
   CHECK(position != impl_.body_.end());

@@ -20,8 +20,8 @@ namespace internal {
 
 // An implementation of the flat_tree GetKeyFromValue template parameter that
 // extracts the key as the first element of a pair.
-template <class Key, class Mapped>
-struct GetKeyFromValuePairFirst {
+struct GetFirst {
+  template <class Key, class Mapped>
   const Key& operator()(const std::pair<Key, Mapped>& p) const {
     return p.first;
   }
@@ -176,17 +176,11 @@ template <class Key,
           class Mapped,
           class Compare = std::less<>,
           class Container = std::vector<std::pair<Key, Mapped>>>
-class flat_map : public ::base::internal::flat_tree<
-                     Key,
-                     ::base::internal::GetKeyFromValuePairFirst<Key, Mapped>,
-                     Compare,
-                     Container> {
+class flat_map : public ::base::internal::
+                     flat_tree<Key, internal::GetFirst, Compare, Container> {
  private:
-  using tree = typename ::base::internal::flat_tree<
-      Key,
-      ::base::internal::GetKeyFromValuePairFirst<Key, Mapped>,
-      Compare,
-      Container>;
+  using tree = typename ::base::internal::
+      flat_tree<Key, internal::GetFirst, Compare, Container>;
 
  public:
   using key_type = typename tree::key_type;
