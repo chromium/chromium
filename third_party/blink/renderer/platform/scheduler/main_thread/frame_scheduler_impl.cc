@@ -993,8 +993,8 @@ TaskQueue::QueuePriority FrameSchedulerImpl::ComputePriority(
   // Checks the task queue is associated with this frame scheduler.
   DCHECK_EQ(frame_scheduler, this);
 
-  auto queue_priority_pair = resource_loading_task_queue_priorities_.find(
-      base::WrapRefCounted(task_queue));
+  auto queue_priority_pair =
+      resource_loading_task_queue_priorities_.find(task_queue);
   if (queue_priority_pair != resource_loading_task_queue_priorities_.end())
     return queue_priority_pair->value;
 
