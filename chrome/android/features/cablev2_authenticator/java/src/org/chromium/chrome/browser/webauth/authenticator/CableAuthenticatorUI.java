@@ -8,6 +8,7 @@ import android.Manifest.permission;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
@@ -22,6 +23,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 
@@ -45,6 +47,7 @@ public class CableAuthenticatorUI extends Fragment
     private AndroidPermissionDelegate mPermissionDelegate;
     private CableAuthenticator mAuthenticator;
     private LinearLayout mQRButton;
+    private LinearLayout mUnlinkButton;
     private ImageView mHeader;
 
     @Override
@@ -102,6 +105,9 @@ public class CableAuthenticatorUI extends Fragment
                 mHeader = v.findViewById(R.id.qr_image);
                 setHeader(R.style.idle);
 
+                mUnlinkButton = v.findViewById(R.id.unlink);
+                mUnlinkButton.setOnClickListener(this);
+
                 return v;
         }
 
@@ -125,7 +131,30 @@ public class CableAuthenticatorUI extends Fragment
      * Called when the button to scan a QR code is pressed.
      */
     @Override
+    @SuppressLint("SetTextI18n")
     public void onClick(View v) {
+        if (v == mUnlinkButton) {
+            // TODO: localise strings.
+            new AlertDialog.Builder(getContext())
+                    .setTitle("Unlink all devices")
+                    .setMessage("Do you want to unlink all previously connected devices?"
+                            + " You will need to scan a QR code from a given device in"
+                            + " order to use it again."
+                            + " No credentials will be deleted.")
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .setPositiveButton(android.R.string.ok,
+                            new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int whichButton) {
+                                    mAuthenticator.unlinkAllDevices();
+                                }
+                            })
+                    .setNegativeButton(android.R.string.cancel, null)
+                    .show();
+            return;
+        }
+
+        assert (v == mQRButton);
         // If camera permission is already available, show the scanning
         // dialog.
         final Context context = getContext();

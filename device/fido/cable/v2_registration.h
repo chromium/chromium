@@ -47,6 +47,10 @@ class Registration {
   // registration will be deferred until this is called.
   virtual void PrepareContactID() = 0;
 
+  // RotateContactID invalidates the current contact ID and prepares a fresh
+  // one.
+  virtual void RotateContactID() = 0;
+
   // contact_id returns an opaque token that may be placed in pairing data for
   // desktops to later connect to. |nullopt| will be returned if the value is
   // not yet ready.

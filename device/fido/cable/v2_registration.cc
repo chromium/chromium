@@ -46,6 +46,8 @@ class FCMHandler : public gcm::GCMAppHandler, public Registration {
   }
 
   ~FCMHandler() override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
     instance_id_->gcm_driver()->RemoveAppHandler(kFCMAppId);
     instance_id_driver_->RemoveInstanceID(kFCMAppId);
   }
@@ -53,6 +55,8 @@ class FCMHandler : public gcm::GCMAppHandler, public Registration {
   // Registration:
 
   void PrepareContactID() override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
     instance_id_->GetToken(
         kFCMSenderId, instance_id::kGCMScope,
         /*time_to_live=*/base::TimeDelta(), /*options=*/{},
@@ -60,7 +64,18 @@ class FCMHandler : public gcm::GCMAppHandler, public Registration {
         base::BindOnce(&FCMHandler::GetTokenComplete, base::Unretained(this)));
   }
 
+  void RotateContactID() override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+    registration_token_.reset();
+    instance_id_->DeleteToken(kFCMSenderId, instance_id::kGCMScope,
+                              base::BindOnce(&FCMHandler::DeleteTokenComplete,
+                                             base::Unretained(this)));
+  }
+
   base::Optional<std::vector<uint8_t>> contact_id() const override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
     if (!registration_token_) {
       return base::nullopt;
     }
@@ -117,6 +132,17 @@ class FCMHandler : public gcm::GCMAppHandler, public Registration {
 
     FIDO_LOG(ERROR) << __func__ << " " << token;
     registration_token_ = token;
+  }
+
+  void DeleteTokenComplete(instance_id::InstanceID::Result result) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+    if (result != instance_id::InstanceID::SUCCESS) {
+      FIDO_LOG(ERROR) << "Deleting FCM token failed: "
+                      << static_cast<int>(result);
+    }
+
+    PrepareContactID();
   }
 
   static base::Optional<std::unique_ptr<Registration::Event>> MessageToEvent(

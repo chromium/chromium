@@ -465,6 +465,16 @@ class CableAuthenticator {
         });
     }
 
+    public void unlinkAllDevices() {
+        Log.i(TAG, "Unlinking devices");
+        byte[] newStateBytes = CableAuthenticatorJni.get().unlink();
+        SharedPreferences prefs = ContextUtils.getAppSharedPreferences();
+        prefs.edit()
+                .putString(STATE_VALUE_NAME,
+                        Base64.encodeToString(newStateBytes, Base64.NO_WRAP | Base64.NO_PADDING))
+                .apply();
+    }
+
     public void close() {
         mTaskRunner.postTask(() -> { CableAuthenticatorJni.get().stop(); });
     }
@@ -567,6 +577,14 @@ class CableAuthenticator {
          */
         boolean startQR(
                 CableAuthenticator cableAuthenticator, String authenticatorName, String qrUrl);
+
+        /**
+         * unlink causes the root secret to be rotated and the FCM token to be rotated. This
+         * prevents all previously linked devices from being able to contact this device in the
+         * future -- they'll have to go via the QR-scanning path again. It returns the updated state
+         * which must be persisted.
+         */
+        byte[] unlink();
 
         /**
          * Called after the notification created by {@link showNotification} has been pressed and

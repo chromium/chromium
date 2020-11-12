@@ -497,6 +497,19 @@ static jboolean JNI_CableAuthenticator_StartQR(
   return true;
 }
 
+static ScopedJavaLocalRef<jbyteArray> JNI_CableAuthenticator_Unlink(
+    JNIEnv* env) {
+  std::vector<uint8_t> serialized_state;
+  std::array<uint8_t, device::cablev2::kRootSecretSize> root_secret;
+  std::tie(root_secret, serialized_state) = NewState();
+
+  GlobalData& global_data = GetGlobalData();
+  global_data.root_secret = root_secret;
+  global_data.registration->RotateContactID();
+
+  return ToJavaByteArray(env, serialized_state);
+}
+
 static void JNI_CableAuthenticator_OnInteractionReady(
     JNIEnv* env,
     const JavaParamRef<jobject>& cable_authenticator) {
