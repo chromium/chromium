@@ -7,7 +7,7 @@
 #include "base/bind.h"
 #include "base/containers/flat_set.h"
 #include "base/run_loop.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "components/signin/public/base/signin_metrics.h"
@@ -63,10 +63,10 @@ class ClearPrimaryAccountTestObserver
       RefreshTokenRemovedCallback on_refresh_token_removed)
       : on_primary_account_cleared_(std::move(on_primary_account_cleared)),
         on_refresh_token_removed_(std::move(on_refresh_token_removed)),
-        scoped_observer_(this) {
+        scoped_observation_(this) {
     DCHECK(on_primary_account_cleared_);
     DCHECK(on_refresh_token_removed_);
-    scoped_observer_.Add(identity_manager);
+    scoped_observation_.Observe(identity_manager);
   }
 
   // signin::IdentityManager::Observer implementation.
@@ -82,8 +82,9 @@ class ClearPrimaryAccountTestObserver
  private:
   PrimaryAccountClearedCallback on_primary_account_cleared_;
   RefreshTokenRemovedCallback on_refresh_token_removed_;
-  ScopedObserver<signin::IdentityManager, signin::IdentityManager::Observer>
-      scoped_observer_;
+  base::ScopedObservation<signin::IdentityManager,
+                          signin::IdentityManager::Observer>
+      scoped_observation_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ClearPrimaryAccountTestObserver);
 };
@@ -166,7 +167,7 @@ void RunClearPrimaryAccountTest(
           },
           &observed_removals);
 
-  ClearPrimaryAccountTestObserver scoped_observer(
+  ClearPrimaryAccountTestObserver scoped_observation(
       identity_manager, primary_account_cleared_callback,
       refresh_token_removed_callback);
 

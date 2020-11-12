@@ -9,7 +9,7 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "components/signin/public/identity_manager/access_token_fetcher.h"
 #include "components/signin/public/identity_manager/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -202,8 +202,8 @@ class PrimaryAccountAccessTokenFetcher : public IdentityManager::Observer {
   // code.
   AccessTokenFetcher::TokenCallback callback_;
 
-  ScopedObserver<IdentityManager, IdentityManager::Observer>
-      identity_manager_observer_{this};
+  base::ScopedObservation<IdentityManager, IdentityManager::Observer>
+      identity_manager_observation_{this};
 
   // Internal fetcher that does the actual access token request.
   std::unique_ptr<AccessTokenFetcher> access_token_fetcher_;

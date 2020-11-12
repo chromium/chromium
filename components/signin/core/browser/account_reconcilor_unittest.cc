@@ -11,7 +11,7 @@
 
 #include "base/macros.h"
 #include "base/run_loop.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -2478,9 +2478,9 @@ TEST_F(AccountReconcilorMirrorTest, Lock) {
   };
 
   TestAccountReconcilorObserver observer;
-  ScopedObserver<AccountReconcilor, AccountReconcilor::Observer>
-      scoped_observer(&observer);
-  scoped_observer.Add(reconcilor);
+  base::ScopedObservation<AccountReconcilor, AccountReconcilor::Observer>
+      scoped_observation(&observer);
+  scoped_observation.Observe(reconcilor);
 
   // Lock prevents reconcile from starting, as long as one instance is alive.
   std::unique_ptr<AccountReconcilor::Lock> lock_1 =

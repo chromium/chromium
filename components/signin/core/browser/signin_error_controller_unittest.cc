@@ -9,7 +9,7 @@
 #include <functional>
 #include <memory>
 
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/stl_util.h"
 #include "base/test/task_environment.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -40,9 +40,10 @@ TEST(SigninErrorControllerTest, SingleAccount) {
   SigninErrorController error_controller(
       SigninErrorController::AccountMode::ANY_ACCOUNT,
       identity_test_env.identity_manager());
-  ScopedObserver<SigninErrorController, SigninErrorController::Observer>
-      scoped_observer(&observer);
-  scoped_observer.Add(&error_controller);
+  base::ScopedObservation<SigninErrorController,
+                          SigninErrorController::Observer>
+      scoped_observation(&observer);
+  scoped_observation.Observe(&error_controller);
   ASSERT_FALSE(error_controller.HasError());
   ::testing::Mock::VerifyAndClearExpectations(&observer);
 

@@ -11,7 +11,7 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service_observer.h"
 #include "components/signin/public/identity_manager/scope_set.h"
@@ -245,8 +245,9 @@ class AccessTokenFetcher : public ProfileOAuth2TokenServiceObserver,
   // contract.
   TokenCallback callback_;
 
-  ScopedObserver<ProfileOAuth2TokenService, ProfileOAuth2TokenServiceObserver>
-      token_service_observer_{this};
+  base::ScopedObservation<ProfileOAuth2TokenService,
+                          ProfileOAuth2TokenServiceObserver>
+      token_service_observation_{this};
 
   std::unique_ptr<OAuth2AccessTokenManager::Request> access_token_request_;
 

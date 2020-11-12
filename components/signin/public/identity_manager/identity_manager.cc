@@ -54,8 +54,8 @@ IdentityManager::IdentityManager(IdentityManager::InitParameters&& parameters)
   DCHECK(account_fetcher_service_);
   DCHECK(diagnostics_provider_);
 
-  primary_account_manager_observer_.Add(primary_account_manager_.get());
-  token_service_observer_.Add(token_service_.get());
+  primary_account_manager_observation_.Observe(primary_account_manager_.get());
+  token_service_observation_.Observe(token_service_.get());
   token_service_->AddAccessTokenDiagnosticsObserver(this);
 
   // IdentityManager owns the ATS, GCMS and PO2TS instances and will outlive
@@ -325,11 +325,11 @@ DeviceAccountsSynchronizer* IdentityManager::GetDeviceAccountsSynchronizer() {
 }
 
 void IdentityManager::AddDiagnosticsObserver(DiagnosticsObserver* observer) {
-  diagnostics_observer_list_.AddObserver(observer);
+  diagnostics_observation_list_.AddObserver(observer);
 }
 
 void IdentityManager::RemoveDiagnosticsObserver(DiagnosticsObserver* observer) {
-  diagnostics_observer_list_.RemoveObserver(observer);
+  diagnostics_observation_list_.RemoveObserver(observer);
 }
 
 void IdentityManager::OnNetworkInitialized() {
@@ -584,7 +584,7 @@ void IdentityManager::OnGaiaCookieDeletedByUserAction() {
 void IdentityManager::OnAccessTokenRequested(const CoreAccountId& account_id,
                                              const std::string& consumer_id,
                                              const ScopeSet& scopes) {
-  for (auto& observer : diagnostics_observer_list_) {
+  for (auto& observer : diagnostics_observation_list_) {
     observer.OnAccessTokenRequested(account_id, consumer_id, scopes);
   }
 }
@@ -595,14 +595,14 @@ void IdentityManager::OnFetchAccessTokenComplete(
     const ScopeSet& scopes,
     GoogleServiceAuthError error,
     base::Time expiration_time) {
-  for (auto& observer : diagnostics_observer_list_)
+  for (auto& observer : diagnostics_observation_list_)
     observer.OnAccessTokenRequestCompleted(account_id, consumer_id, scopes,
                                            error, expiration_time);
 }
 
 void IdentityManager::OnAccessTokenRemoved(const CoreAccountId& account_id,
                                            const ScopeSet& scopes) {
-  for (auto& observer : diagnostics_observer_list_)
+  for (auto& observer : diagnostics_observation_list_)
     observer.OnAccessTokenRemovedFromCache(account_id, scopes);
 }
 
@@ -610,7 +610,7 @@ void IdentityManager::OnRefreshTokenAvailableFromSource(
     const CoreAccountId& account_id,
     bool is_refresh_token_valid,
     const std::string& source) {
-  for (auto& observer : diagnostics_observer_list_)
+  for (auto& observer : diagnostics_observation_list_)
     observer.OnRefreshTokenUpdatedForAccountFromSource(
         account_id, is_refresh_token_valid, source);
 }
@@ -618,7 +618,7 @@ void IdentityManager::OnRefreshTokenAvailableFromSource(
 void IdentityManager::OnRefreshTokenRevokedFromSource(
     const CoreAccountId& account_id,
     const std::string& source) {
-  for (auto& observer : diagnostics_observer_list_)
+  for (auto& observer : diagnostics_observation_list_)
     observer.OnRefreshTokenRemovedForAccountFromSource(account_id, source);
 }
 

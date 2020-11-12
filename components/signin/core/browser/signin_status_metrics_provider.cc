@@ -17,7 +17,6 @@ SigninStatusMetricsProvider::SigninStatusMetricsProvider(
     std::unique_ptr<SigninStatusMetricsProviderDelegate> delegate,
     bool is_test)
     : delegate_(std::move(delegate)),
-      scoped_observer_(this),
       is_test_(is_test) {
   DCHECK(delegate_ || is_test_);
   if (is_test_)
@@ -56,7 +55,7 @@ void SigninStatusMetricsProvider::OnIdentityManagerCreated(
   // Whenever a new profile is created, a new IdentityManager will be created
   // for it. This ensures that all sign-in or sign-out actions of all opened
   // profiles are being monitored.
-  scoped_observer_.Add(identity_manager);
+  scoped_observations_.AddObservation(identity_manager);
 
   // If the status is unknown, it means this is the first created
   // IdentityManager and the corresponding profile should be the only opened
@@ -69,8 +68,8 @@ void SigninStatusMetricsProvider::OnIdentityManagerCreated(
 
 void SigninStatusMetricsProvider::OnIdentityManagerShutdown(
     signin::IdentityManager* identity_manager) {
-  if (scoped_observer_.IsObserving(identity_manager))
-    scoped_observer_.Remove(identity_manager);
+  if (scoped_observations_.IsObservingSource(identity_manager))
+    scoped_observations_.RemoveObservation(identity_manager);
 }
 
 void SigninStatusMetricsProvider::OnPrimaryAccountSet(
@@ -103,8 +102,8 @@ void SigninStatusMetricsProvider::Initialize() {
   // Start observing all already-created IdentityManagers.
   for (signin::IdentityManager* manager :
        delegate_->GetIdentityManagersForAllAccounts()) {
-    DCHECK(!scoped_observer_.IsObserving(manager));
-    scoped_observer_.Add(manager);
+    DCHECK(!scoped_observations_.IsObservingSource(manager));
+    scoped_observations_.AddObservation(manager);
   }
 
   // It is possible that when this object is created, no IdentityManager is

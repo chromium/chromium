@@ -10,7 +10,7 @@
 
 #include "base/macros.h"
 #include "base/observer_list.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/signin/internal/identity_manager/primary_account_manager.h"
@@ -682,16 +682,18 @@ class IdentityManager : public KeyedService,
   std::unique_ptr<DiagnosticsProvider> diagnostics_provider_;
 
   // Scoped observers.
-  ScopedObserver<PrimaryAccountManager, PrimaryAccountManager::Observer>
-      primary_account_manager_observer_{this};
-  ScopedObserver<ProfileOAuth2TokenService, ProfileOAuth2TokenServiceObserver>
-      token_service_observer_{this};
+  base::ScopedObservation<PrimaryAccountManager,
+                          PrimaryAccountManager::Observer>
+      primary_account_manager_observation_{this};
+  base::ScopedObservation<ProfileOAuth2TokenService,
+                          ProfileOAuth2TokenServiceObserver>
+      token_service_observation_{this};
 
   // Lists of observers.
   // Makes sure lists are empty on destruction.
   base::ObserverList<Observer, true>::Unchecked observer_list_;
   base::ObserverList<DiagnosticsObserver, true>::Unchecked
-      diagnostics_observer_list_;
+      diagnostics_observation_list_;
 
 #if defined(OS_ANDROID)
   // Java-side IdentityManager object.
