@@ -612,12 +612,15 @@ base::string16 OmniboxPopupModel::GetAccessibilityLabelForCurrentSelection(
             match.pedal->GetLabelStrings().id_accessibility_suffix;
         available_actions_count++;
       }
+      if (IsControlPresentOnMatch(
+              Selection(line, FOCUSED_BUTTON_REMOVE_SUGGESTION))) {
+        additional_message_id = IDS_ACC_REMOVE_SUGGESTION_SUFFIX;
+        available_actions_count++;
+      }
       DCHECK_EQ(LINE_STATE_MAX_VALUE, 6);
       if (available_actions_count > 1)
         additional_message_id = IDS_ACC_MULTIPLE_ACTIONS_SUFFIX;
 
-      // Don't add an additional message for removable suggestions without
-      // button focus, since they are relatively common.
       break;
     }
     case KEYWORD_MODE:

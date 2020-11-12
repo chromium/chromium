@@ -251,7 +251,7 @@
   <message name="IDS_ACC_MULTIPLE_ACTIONS_SUFFIX" desc="Suffix for spoken suggestion description with multiple actions available (pedals, switch tab, keyword search) to indicate that this suggestion has multiple actions available.">
     <ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT">$1<ex>The Chromium Projects http://www.chromium.org bookmark</ex></ph>, multiple actions are available, press Tab to cycle through them
   </message>
-    <message name="IDS_ACC_KEYWORD_SUFFIX" desc="Suffix for spoken keyword suggestion description to explain keystroke used to search.">
+  <message name="IDS_ACC_KEYWORD_SUFFIX" desc="Suffix for spoken keyword suggestion description to explain keystroke used to search.">
     <ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT">$1<ex>The Chromium Projects http://www.chromium.org bookmark</ex></ph>, press Tab then Enter to search
   </message>
   <message name="IDS_ACC_KEYWORD_MODE" desc="Announcement when entering keyword search mode.">
@@ -259,6 +259,9 @@
   </message>
 
   <!-- Accessibility suffix for suggestions when the remove button is focused. -->
+  <message name="IDS_ACC_REMOVE_SUGGESTION_SUFFIX" desc="Suffix for suggestions with remove suggestion button to explain keystroke used to remove suggestion.">
+    <ph name="REMOVE_SUGGESTION_SUFFIX">$1<ex>The Chromium Projects http://www.chromium.org bookmark</ex></ph>, press Tab then Enter to Remove Suggestion.
+  </message>
   <message name="IDS_ACC_REMOVE_SUGGESTION_FOCUSED_PREFIX" desc="Announcement when remove suggestion button is focused.">
     Remove Suggestion button, press Enter to remove, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT">$1<ex>The Chromium Projects http://www.chromium.org bookmark</ex></ph>
   </message>
