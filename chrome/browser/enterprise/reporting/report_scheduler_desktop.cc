@@ -102,6 +102,10 @@ void ReportSchedulerDesktop::StartWatchingExtensionRequestIfNeeded() {
   if (!ShouldReportExtensionRequestRealtime())
     return;
 
+  // On CrOS, the function may be called twice during startup.
+  if (ExtensionRequestReportThrottler::Get()->IsEnabled())
+    return;
+
   ExtensionRequestReportThrottler::Get()->Enable(
       base::TimeDelta::FromMinutes(kThrottleTimeInMinute),
       base::BindRepeating(&ReportSchedulerDesktop::TriggerExtensionRequest,

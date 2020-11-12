@@ -373,7 +373,7 @@ const base::Feature kEventBasedStatusReporting{
 #if !defined(OS_ANDROID)
 // Enables real-time reporting for extension request
 const base::Feature kEnterpriseRealtimeExtensionRequest{
-    "EnterpriseRealtimeExtensionRequest", base::FEATURE_DISABLED_BY_DEFAULT};
+    "EnterpriseRealtimeExtensionRequest", base::FEATURE_ENABLED_BY_DEFAULT};
 #endif
 
 // If enabled, this feature's |kExternalInstallDefaultButtonKey| field trial
