@@ -259,6 +259,8 @@ X11AtomCache::X11AtomCache() : connection_(x11::Connection::Get()) {
   for (const char* name : kAtomsToCache)
     requests.push_back(
         connection_->InternAtom(x11::InternAtomRequest{.name = name}));
+  // Flush so all requests are sent before waiting on any replies.
+  connection_->Flush();
   for (size_t i = 0; i < kCacheCount; ++i) {
     if (auto response = requests[i].Sync())
       cached_atoms_[kAtomsToCache[i]] = static_cast<x11::Atom>(response->atom);

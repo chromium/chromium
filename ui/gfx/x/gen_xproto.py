@@ -1530,6 +1530,8 @@ class GenExtensionManager(FileWriter):
                 self.write(
                     'auto %s_future = conn->QueryExtension({"%s"});' %
                     (extension.proto, extension.module.namespace.ext_xname))
+            # Flush so all requests are sent before waiting on any replies.
+            self.write('conn->Flush();')
             self.write()
             for extension in self.extensions:
                 name = extension.proto

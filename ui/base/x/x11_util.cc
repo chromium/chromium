@@ -465,6 +465,8 @@ bool GetInnerWindowBounds(x11::Window window, gfx::Rect* rect) {
   auto translate_coords = connection->TranslateCoordinates({x11_window, root});
 
   // Sync after making both requests so only one round-trip is made.
+  // Flush so all requests are sent before waiting on any replies.
+  connection->Flush();
   auto geometry = get_geometry.Sync();
   auto coords = translate_coords.Sync();
 
