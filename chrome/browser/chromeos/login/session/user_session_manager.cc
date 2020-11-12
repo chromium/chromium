@@ -1534,7 +1534,7 @@ void UserSessionManager::CompleteProfileCreateAfterAuthTransfer(
 void UserSessionManager::PrepareTpmDeviceAndFinalizeProfile(Profile* profile) {
   BootTimesRecorder::Get()->AddLoginTimeMarker("TPMOwn-Start", false);
 
-  if (!tpm_util::TpmIsEnabled()) {
+  if (!tpm_util::TpmIsEnabled() || tpm_util::TpmIsBeingOwned()) {
     FinalizePrepareProfile(profile);
     return;
   }
