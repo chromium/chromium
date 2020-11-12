@@ -430,6 +430,7 @@ const struct QuicErrorMapping {
     {static_cast<quic::QuicErrorCode>(101),
      "quic.invalid.application_close_data"},
 
+    {quic::QUIC_MAX_AGE_TIMEOUT, "quic.quic_max_age_timeout"},
     // No error. Used as bound while iterating.
     {quic::QUIC_LAST_ERROR, "quic.last_error"}};
 

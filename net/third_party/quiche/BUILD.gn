@@ -581,6 +581,8 @@ source_set("quiche") {
       "src/spdy/core/http2_priority_write_scheduler.h",
       "src/spdy/core/lifo_write_scheduler.h",
       "src/spdy/core/priority_write_scheduler.h",
+      "src/spdy/core/recording_headers_handler.cc",
+      "src/spdy/core/recording_headers_handler.h",
       "src/spdy/core/spdy_alt_svc_wire_format.cc",
       "src/spdy/core/spdy_alt_svc_wire_format.h",
       "src/spdy/core/spdy_bitmasks.h",
