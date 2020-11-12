@@ -632,11 +632,9 @@ java_group("chrome_all_java") {
   deps = [
     ":chrome_java",
     "//chrome/android/features/keyboard_accessory:internal_java",
-    "//chrome/android/modules/extra_icu/provider:java",
     "//chrome/browser/download/internal/android:java",
     "//chrome/browser/password_check:internal_java",
     "//chrome/browser/tabmodel/internal:java",
-    "//chrome/browser/test_dummy/internal:base_module_java",
     "//chrome/browser/touch_to_fill/android/internal:java",
     "//chrome/browser/ui/android/appmenu/internal:java",
     "//chrome/browser/video_tutorials/internal:java",
@@ -653,10 +651,6 @@ java_group("chrome_all_java") {
       "//chrome/android/features/tab_ui:java",
       "//chrome/android/features/tab_ui:module_desc_java",
     ]
-  }
-
-  if (dfmify_dev_ui) {
-    deps += [ "//chrome/android/modules/dev_ui/provider:java" ]
   }
 }
 
@@ -2155,7 +2149,9 @@ android_library("base_module_java") {
     "//content/public/android:content_java",
 
     # Deps for DFMs.
+    "//chrome/android/modules/extra_icu/provider:java",
     "//chrome/android/modules/stack_unwinder/provider:java",
+    "//chrome/browser/test_dummy/internal:base_module_java",
 
     # Deps to pull services into base module.
     # TODO(crbug.com/1126301): Consider moving these to the chrome module to
@@ -2165,6 +2161,12 @@ android_library("base_module_java") {
     "//components/payments/content/android:service_java",
     "//third_party/android_sdk/androidx_browser:androidx_browser_java",
   ]
+
+  # More deps for DFMs.
+  if (dfmify_dev_ui) {
+    deps += [ "//chrome/android/modules/dev_ui/provider:java" ]
+  }
+
   srcjar_deps = [ ":chrome_product_config" ]
 
   # Add the actual implementation where necessary so that downstream targets
