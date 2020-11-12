@@ -262,6 +262,9 @@ int main(int argc, char** argv) {
         }
       });
 
+  // Since this is for development, enable all logging.
+  frame->SetJavaScriptLogLevel(fuchsia::web::ConsoleLogLevel::DEBUG);
+
   if (enable_protected_media_identifier_access) {
     fuchsia::web::PermissionDescriptor protected_media_permission;
     protected_media_permission.set_type(
