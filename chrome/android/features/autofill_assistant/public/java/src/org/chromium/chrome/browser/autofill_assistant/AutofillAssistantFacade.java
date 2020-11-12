@@ -114,16 +114,29 @@ public class AutofillAssistantFacade {
                         arguments.isLiteScriptExperiment() ? LITE_SCRIPT_EXPERIMENT_TRIAL_EXPERIMENT
                                                            : LITE_SCRIPT_EXPERIMENT_TRIAL_CONTROL);
 
-                if (!AutofillAssistantPreferencesUtil.isProactiveHelpSwitchOn()) {
+                // Record this as soon as possible, to establish a baseline.
+                AutofillAssistantMetrics.recordLiteScriptStarted(
+                        tab.getWebContents(), LiteScriptStarted.LITE_SCRIPT_INTENT_RECEIVED);
+
+                // For trigger scripts since M-88, there is a dedicated Chrome setting that can be
+                // used to forever opt-out.
+                if (arguments.requestsTriggerScript()
+                        && !AutofillAssistantPreferencesUtil.isProactiveHelpSwitchOn()) {
                     // Opt out users who have disabled the proactive help Chrome setting.
                     AutofillAssistantMetrics.recordLiteScriptStarted(tab.getWebContents(),
                             LiteScriptStarted.LITE_SCRIPT_PROACTIVE_TRIGGERING_DISABLED);
                     return;
                 }
 
-                if (!AutofillAssistantPreferencesUtil.isAutofillAssistantSwitchOn()) {
-                    // Legacy. This should no longer happen, because the proactive help switch
-                    // should only be 'on' if the autofill assistant switch is 'on' as well.
+                // Legacy, remove as soon as possible. Trigger scripts before M-88 were tied to the
+                // regular autofill assistant Chrome setting.
+                if (arguments.containsTriggerScript()
+                        && !AutofillAssistantPreferencesUtil.isAutofillAssistantSwitchOn()) {
+                    if (AutofillAssistantPreferencesUtil
+                                    .isAutofillAssistantLiteScriptCancelThresholdReached()) {
+                        AutofillAssistantMetrics.recordLiteScriptStarted(tab.getWebContents(),
+                                LiteScriptStarted.LITE_SCRIPT_CANCELED_TWO_TIMES);
+                    }
                     return;
                 }
 

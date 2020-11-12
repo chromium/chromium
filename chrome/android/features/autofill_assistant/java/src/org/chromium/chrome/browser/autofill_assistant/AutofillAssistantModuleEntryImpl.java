@@ -51,6 +51,12 @@ public class AutofillAssistantModuleEntryImpl implements AutofillAssistantModule
                 return;
             }
 
+            boolean isFirstTimeUser =
+                    AutofillAssistantPreferencesUtil.isAutofillAssistantFirstTimeLiteScriptUser();
+            AutofillAssistantMetrics.recordLiteScriptStarted(webContents,
+                    isFirstTimeUser ? LiteScriptStarted.LITE_SCRIPT_FIRST_TIME_USER
+                                    : LiteScriptStarted.LITE_SCRIPT_RETURNING_USER);
+
             // Start trigger script and transition to regular flow on success.
             if (TextUtils.equals(parameters.get(PARAMETER_REQUEST_TRIGGER_SCRIPT), "true")) {
                 AssistantTriggerScriptBridge triggerScriptBridge =
@@ -75,13 +81,8 @@ public class AutofillAssistantModuleEntryImpl implements AutofillAssistantModule
             }
 
             // Legacy lite scripts, remove as soon as possible.
-            boolean isFirstTimeUser =
-                    AutofillAssistantPreferencesUtil.isAutofillAssistantFirstTimeLiteScriptUser();
             String firstTimeUserScriptPath = parameters.get(PARAMETER_TRIGGER_FIRST_TIME_USER);
             String returningUserScriptPath = parameters.get(PARAMETER_TRIGGER_RETURNING_TIME_USER);
-            AutofillAssistantMetrics.recordLiteScriptStarted(webContents,
-                    isFirstTimeUser ? LiteScriptStarted.LITE_SCRIPT_FIRST_TIME_USER
-                                    : LiteScriptStarted.LITE_SCRIPT_RETURNING_USER);
             startAutofillAssistantLite(bottomSheetController, browserControls, compositorViewHolder,
                     webContents, firstTimeUserScriptPath, returningUserScriptPath, result -> {
                         if (result) {
