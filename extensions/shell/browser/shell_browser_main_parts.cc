@@ -11,6 +11,7 @@
 #include "base/command_line.h"
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/nacl/common/buildflags.h"
 #include "components/prefs/pref_service.h"
@@ -47,7 +48,7 @@
 #include "ui/aura/env.h"
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/audio/audio_devices_pref_handler_impl.h"
 #include "chromeos/audio/cras_audio_handler.h"
 #include "chromeos/disks/disk_mount_manager.h"
@@ -61,7 +62,7 @@
 #include "device/bluetooth/dbus/bluez_dbus_manager.h"
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/dbus/audio/cras_audio_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/power/power_manager_client.h"
@@ -119,7 +120,7 @@ void ShellBrowserMainParts::PreMainMessageLoopStart() {
 }
 
 void ShellBrowserMainParts::PostMainMessageLoopStart() {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Perform initialization of D-Bus objects here rather than in the below
   // helper classes so those classes' tests can initialize stub versions of the
   // D-Bus objects.
@@ -146,7 +147,7 @@ void ShellBrowserMainParts::PostMainMessageLoopStart() {
       switches::kAppShellAllowRoaming)) {
     network_controller_->SetCellularAllowRoaming(true);
   }
-#elif defined(OS_LINUX)
+#elif defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   // app_shell doesn't need GTK, so the fake input method context can work.
   // See crbug.com/381852 and revision fb69f142.
   // TODO(michaelpg): Verify this works for target environments.
@@ -196,7 +197,7 @@ void ShellBrowserMainParts::PreMainMessageLoopRun() {
   extensions_browser_client_->InitWithBrowserContext(browser_context_.get(),
                                                      user_pref_service_.get());
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   mojo::PendingRemote<media_session::mojom::MediaControllerManager>
       media_controller_manager;
   content::GetMediaSessionService().BindMediaControllerManager(
@@ -284,7 +285,7 @@ void ShellBrowserMainParts::PostMainMessageLoopRun() {
 
   storage_monitor::StorageMonitor::Destroy();
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   audio_controller_.reset();
   chromeos::CrasAudioHandler::Shutdown();
 #endif
@@ -303,7 +304,7 @@ void ShellBrowserMainParts::PostDestroyThreads() {
   extensions_browser_client_.reset();
   ExtensionsBrowserClient::Set(nullptr);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   network_controller_.reset();
   chromeos::NetworkHandler::Shutdown();
   chromeos::disks::DiskMountManager::Shutdown();
@@ -312,7 +313,7 @@ void ShellBrowserMainParts::PostDestroyThreads() {
   chromeos::PowerManagerClient::Shutdown();
   chromeos::CrasAudioClient::Shutdown();
   chromeos::DBusThreadManager::Shutdown();
-#elif defined(OS_LINUX)
+#elif defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   device::BluetoothAdapterFactory::Shutdown();
   bluez::BluezDBusManager::Shutdown();
   bluez::BluezDBusThreadManager::Shutdown();

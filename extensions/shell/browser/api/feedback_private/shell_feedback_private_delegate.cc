@@ -8,6 +8,7 @@
 
 #include "base/notreached.h"
 #include "base/values.h"
+#include "build/chromeos_buildflags.h"
 #include "components/feedback/feedback_uploader.h"
 #include "components/feedback/feedback_uploader_factory.h"
 #include "components/feedback/system_logs/system_logs_fetcher.h"
@@ -33,7 +34,7 @@ ShellFeedbackPrivateDelegate::CreateSystemLogsFetcher(
   return system_logs::BuildShellSystemLogsFetcher(context);
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 std::unique_ptr<system_logs::SystemLogsSource>
 ShellFeedbackPrivateDelegate::CreateSingleLogSource(
     api::feedback_private::LogSource source_type) const {

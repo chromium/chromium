@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//extensions/buildflags/buildflags.gni")
 
 assert(enable_extensions,
@@ -17,12 +18,13 @@ source_set("file_handlers") {
     "mime_util.h",
   ]
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     sources += [ "non_native_file_system_delegate.h" ]
   }
 
   deps = [
     "//base:base",
+    "//build:chromeos_buildflags",
     "//content/public/browser",
     "//content/public/common",
     "//extensions/common",

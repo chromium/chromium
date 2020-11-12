@@ -20,6 +20,7 @@ source_set("idle") {
   ]
 
   deps = [
+    "//build:chromeos_buildflags",
     "//extensions/common/api",
     "//ui/base/idle",
   ]

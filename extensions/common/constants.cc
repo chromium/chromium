@@ -7,6 +7,7 @@
 #include "base/stl_util.h"
 #include "base/strings/string_piece.h"
 #include "build/chromecast_buildflags.h"
+#include "build/chromeos_buildflags.h"
 
 namespace extensions {
 
@@ -100,7 +101,7 @@ const char kMimeTypePng[] = "image/png";
 
 namespace extension_misc {
 
-#if defined(OS_CHROMEOS) || BUILDFLAG(IS_CHROMECAST)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMECAST)
 // The extension id for the built-in component extension.
 const char kChromeVoxExtensionId[] = "mndnfokpggljbaajbnioimlmbfngpief";
 #else
@@ -132,7 +133,7 @@ const char kGoogleSlidesDemoAppId[] = "hdmobeajeoanbanmdlabnbnlopepchip";
 const char kGoogleKeepAppId[] = "hmjkmjkepdijhoojdojkdfohbdgmmhki";
 const char kYoutubeAppId[] = "blpcfgokakmgnkcojhhkbfbldkacnbeo";
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // TODO(michaelpg): Deprecate old app IDs before adding new ones to avoid bloat.
 const char kHighlightsAppId[] = "lpmakjfjcconjeehbidjclhdlpjmfjjj";
 const char kHighlightsEveAppId[] = "iggildboghmjpbjcpmobahnkmoefkike";
@@ -168,7 +169,7 @@ bool IsSystemUIApp(base::StringPiece extension_id) {
   }
   return false;
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 const char kProdHangoutsExtensionId[] = "nckgahadagoaajjgafhacjanaoiihapd";
 const char* const kHangoutsExtensionIds[6] = {

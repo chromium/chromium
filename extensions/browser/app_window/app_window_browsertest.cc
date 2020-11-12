@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/app_window/native_app_window.h"
@@ -16,7 +17,9 @@ typedef PlatformAppBrowserTest AppWindowBrowserTest;
 // This test is disabled on Linux because of the unpredictable nature of native
 // windows. We cannot assume that the window manager will insert any title bar
 // at all, so the test may fail on certain window managers.
-#if defined(OS_LINUX) && !defined(OS_CHROMEOS)
+// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
+// of lacros-chrome is complete.
+#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_FrameInsetsForDefaultFrame DISABLED_FrameInsetsForDefaultFrame
 #else
 #define MAYBE_FrameInsetsForDefaultFrame FrameInsetsForDefaultFrame
@@ -67,7 +70,7 @@ IN_PROC_BROWSER_TEST_F(AppWindowBrowserTest, FrameInsetsForNoFrame) {
   CloseAppWindow(app_window);
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 
 IN_PROC_BROWSER_TEST_F(AppWindowBrowserTest, ShouldShowStaleContentOnEviction) {
   AppWindow* app_window = CreateTestAppWindow("{}");
@@ -90,7 +93,7 @@ IN_PROC_BROWSER_TEST_F(AppWindowBrowserTest, ShouldShowStaleContentOnEviction) {
       app_window->web_contents()->GetRenderWidgetHostView());
 }
 
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace
 

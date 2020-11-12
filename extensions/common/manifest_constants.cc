@@ -5,6 +5,8 @@
 #include "build/build_config.h"
 #include "extensions/common/manifest_constants.h"
 
+#include "build/chromeos_buildflags.h"
+
 namespace extensions {
 
 namespace manifest_keys {
@@ -192,7 +194,7 @@ const char kWebview[] = "webview";
 const char kWebviewAccessibleResources[] = "accessible_resources";
 const char kWebviewName[] = "name";
 const char kWebviewPartitions[] = "partitions";
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 const char kActionHandlers[] = "action_handlers";
 const char kActionHandlerActionKey[] = "action";
 const char kActionHandlerEnabledOnLockScreenKey[] = "enabled_on_lock_screen";
@@ -803,7 +805,7 @@ const char kUrlHandlersInHostedApps[] =
     "'url_handlers' cannot be used in Hosted Apps.";
 const char kWebRequestConflictsWithLazyBackground[] =
     "The 'webRequest' API cannot be used with event pages.";
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 const char kDuplicateActionHandlerFound[] =
     "'action_handlers' list contains duplicate entries for the action: \"*\".";
 const char kIllegalPlugins[] =

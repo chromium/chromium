@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "build/chromeos_buildflags.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/event_router.h"
@@ -68,11 +69,11 @@ class UsbDeviceManager : public BrowserContextKeyedAPI,
   const device::mojom::UsbDeviceInfo* GetDeviceInfo(const std::string& guid);
   bool UpdateActiveConfig(const std::string& guid, uint8_t config_value);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   void CheckAccess(
       const std::string& guid,
       device::mojom::UsbDeviceManager::CheckAccessCallback callback);
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   void EnsureConnectionWithDeviceManager();
 

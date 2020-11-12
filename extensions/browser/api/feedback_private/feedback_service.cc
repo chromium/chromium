@@ -12,18 +12,19 @@
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_number_conversions.h"
+#include "build/chromeos_buildflags.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/blob_reader.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "net/base/network_change_notifier.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/public/cpp/assistant/controller/assistant_controller.h"
 #include "chromeos/services/assistant/public/cpp/assistant_service.h"
 #include "extensions/browser/api/feedback_private/log_source_access_manager.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 using content::BrowserThread;
 using feedback::FeedbackData;
@@ -95,7 +96,7 @@ void FeedbackService::CompleteSendFeedback(
   const bool screenshot_completed = feedback_data->screenshot_uuid().empty();
 
   if (screenshot_completed && attached_file_completed) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     // Send feedback to Assistant server if triggered from Google Assistant.
     if (feedback_data->from_assistant()) {
       ash::AssistantController::Get()->SendAssistantFeedback(

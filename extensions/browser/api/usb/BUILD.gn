@@ -23,6 +23,7 @@ source_set("usb") {
   ]
 
   deps = [
+    "//build:chromeos_buildflags",
     "//content/public/browser",
     "//content/public/common",
     "//extensions/common/api",

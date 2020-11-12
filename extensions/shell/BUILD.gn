@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//build/config/ui.gni")
 import("//build/util/lastchange.gni")
@@ -36,6 +38,7 @@ source_set("app_shell_lib") {
     ":version_header",
     "//apps",
     "//base",
+    "//build:chromeos_buildflags",
     "//components/feedback",
     "//components/guest_view/browser",
     "//components/guest_view/renderer",
@@ -174,7 +177,7 @@ source_set("app_shell_lib") {
     ]
   }
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     sources += [
       "browser/shell_audio_controller_chromeos.cc",
       "browser/shell_audio_controller_chromeos.h",
@@ -200,12 +203,12 @@ source_set("app_shell_lib") {
       "//ui/wm",
       "//ui/wm/public",
     ]
-    if (is_chromeos) {
+    if (is_chromeos_ash) {
       deps += [ "//ui/ozone" ]
     }
   }
 
-  if (is_linux) {
+  if (is_linux || is_chromeos_lacros) {
     sources += [
       "app/shell_crash_reporter_client.cc",
       "app/shell_crash_reporter_client.h",
@@ -221,7 +224,7 @@ source_set("app_shell_lib") {
     ]
   }
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     sources += [
       "browser/api/vpn_provider/vpn_service_factory.cc",
       "browser/shell_screen.cc",
@@ -310,6 +313,7 @@ test("app_shell_unittests") {
     "//apps",
     "//base",
     "//base/test:test_support",
+    "//build:chromeos_buildflags",
     "//components/crx_file",
     "//components/feedback",
     "//components/keep_alive_registry",
@@ -350,7 +354,7 @@ test("app_shell_unittests") {
     ]
   }
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     sources += [
       "browser/shell_audio_controller_chromeos_unittest.cc",
       "browser/shell_screen_unittest.cc",
@@ -400,6 +404,7 @@ source_set("browser_tests") {
     ":app_shell_lib",
     "//base",
     "//base/test:test_support",
+    "//build:chromeos_buildflags",
     "//components/keep_alive_registry",
     "//components/version_info",
     "//content/shell:content_shell_lib",
@@ -428,7 +433,7 @@ source_set("unit_tests") {
     "//extensions/browser",
   ]
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     deps += [
       "//chromeos/constants",
       "//components/keyed_service/content",
@@ -436,7 +441,7 @@ source_set("unit_tests") {
   }
 }
 
-if (is_linux && is_official_build) {
+if ((is_linux || is_chromeos_lacros) && is_official_build) {
   extract_symbols("app_shell_linux_symbols") {
     # testonly because :app_shell is testonly. See :app_shell_lib comment.
     testonly = true

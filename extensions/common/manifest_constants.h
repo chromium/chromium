@@ -6,6 +6,7 @@
 #define EXTENSIONS_COMMON_MANIFEST_CONSTANTS_H_
 
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 
 namespace extensions {
 
@@ -195,7 +196,7 @@ extern const char kWebview[];
 extern const char kWebviewName[];
 extern const char kWebviewAccessibleResources[];
 extern const char kWebviewPartitions[];
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 extern const char kActionHandlers[];
 extern const char kActionHandlerActionKey[];
 extern const char kActionHandlerEnabledOnLockScreenKey[];
@@ -526,7 +527,7 @@ extern const char kUnrecognizedManifestKey[];
 extern const char kUnrecognizedManifestProperty[];
 extern const char kUrlHandlersInHostedApps[];
 extern const char kWebRequestConflictsWithLazyBackground[];
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 extern const char kDuplicateActionHandlerFound[];
 extern const char kIllegalPlugins[];
 extern const char kInvalidActionHandlerDictionary[];

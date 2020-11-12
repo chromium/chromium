@@ -43,6 +43,7 @@ source_set("web_request") {
   ]
 
   deps = [
+    "//build:chromeos_buildflags",
     "//components/ukm/content",
     "//components/web_cache/browser",
     "//content/public/browser",

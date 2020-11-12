@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//components/nacl/features.gni")
 import("//extensions/buildflags/buildflags.gni")
@@ -19,6 +20,7 @@ source_set("common_constants") {
   deps = [
     "//base",
     "//build:chromecast_buildflags",
+    "//build:chromeos_buildflags",
     "//components/services/app_service/public/mojom",
     "//components/version_info:channel",
     "//ui/base",
@@ -369,7 +371,7 @@ if (enable_extensions) {
       ]
     }
 
-    if (is_chromeos) {
+    if (is_chromeos_ash) {
       sources += [
         "manifest_handlers/action_handlers_handler.cc",
         "manifest_handlers/action_handlers_handler.h",
@@ -504,7 +506,7 @@ if (enable_extensions) {
       "//url",
     ]
 
-    if (is_chromeos) {
+    if (is_chromeos_ash) {
       sources += [ "manifest_handlers/action_handlers_handler_unittest.cc" ]
     }
 

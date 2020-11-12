@@ -6,11 +6,12 @@
 
 #include <memory>
 
+#include "build/chromeos_buildflags.h"
 #include "extensions/browser/api/virtual_keyboard_private/virtual_keyboard_delegate.h"
 #include "extensions/browser/api/virtual_keyboard_private/virtual_keyboard_private_api.h"
 #include "extensions/common/api/virtual_keyboard.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ui/base/ime/chromeos/input_method_manager.h"
 
 using chromeos::input_method::InputMethodManager;
@@ -26,7 +27,7 @@ VirtualKeyboardRestrictFeaturesFunction::Run() {
   std::unique_ptr<api::virtual_keyboard::RestrictFeatures::Params> params =
       api::virtual_keyboard::RestrictFeatures::Params::Create(*args_);
   EXTENSION_FUNCTION_VALIDATE(params);
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   InputMethodManager* input_method_manager = InputMethodManager::Get();
   if (input_method_manager) {
     if (params->restrictions.handwriting_enabled) {

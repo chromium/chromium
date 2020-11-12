@@ -5,6 +5,7 @@
 #include "extensions/browser/extension_util.h"
 
 #include "base/no_destructor.h"
+#include "build/chromeos_buildflags.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/storage_partition_config.h"
@@ -21,7 +22,7 @@
 #include "extensions/common/manifest_handlers/shared_module_info.h"
 #include "extensions/common/permissions/permissions_data.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "base/system/sys_info.h"
 #endif
 
@@ -30,7 +31,7 @@ namespace util {
 
 namespace {
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 bool IsSigninProfileTestExtensionOnTestImage(const Extension* extension) {
   if (extension->id() != extension_misc::kSigninProfileTestExtensionId)
     return false;
@@ -61,7 +62,7 @@ bool IsIncognitoEnabled(const std::string& extension_id,
       return true;
     if (extension->is_login_screen_extension())
       return true;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     if (IsSigninProfileTestExtensionOnTestImage(extension))
       return true;
 #endif

@@ -16,6 +16,7 @@ source_set("system_display") {
   ]
 
   deps = [
+    "//build:chromeos_buildflags",
     "//content/public/browser",
     "//extensions/common/api",
   ]

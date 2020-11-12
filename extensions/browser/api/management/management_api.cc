@@ -21,6 +21,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/api/extensions_api_client.h"
 #include "extensions/browser/api/management/management_api_constants.h"
@@ -543,7 +544,7 @@ void ManagementSetEnabledFunction::OnRequirementsChecked(
 
 void ManagementSetEnabledFunction::OnParentPermissionDialogDone(
     SupervisedUserExtensionsDelegate::ParentPermissionDialogResult result) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   switch (result) {
     case SupervisedUserExtensionsDelegate::ParentPermissionDialogResult::
         kParentPermissionReceived: {
@@ -570,15 +571,15 @@ void ManagementSetEnabledFunction::OnParentPermissionDialogDone(
   }
   // Matches the AddRef in Run().
   Release();
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 void ManagementSetEnabledFunction::OnBlockedByParentDialogDone() {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   Respond(Error(keys::kUserCantModifyError, extension_id_));
   // Matches the AddRef in Run().
   Release();
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 ManagementUninstallFunctionBase::ManagementUninstallFunctionBase() = default;

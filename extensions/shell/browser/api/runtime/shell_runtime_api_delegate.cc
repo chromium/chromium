@@ -5,10 +5,11 @@
 #include "extensions/shell/browser/api/runtime/shell_runtime_api_delegate.h"
 
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "extensions/common/api/runtime.h"
 #include "extensions/shell/browser/shell_extension_system.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 #endif
@@ -43,9 +44,9 @@ bool ShellRuntimeAPIDelegate::CheckForUpdates(
 void ShellRuntimeAPIDelegate::OpenURL(const GURL& uninstall_url) {}
 
 bool ShellRuntimeAPIDelegate::GetPlatformInfo(PlatformInfo* info) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   info->os = api::runtime::PLATFORM_OS_CROS;
-#elif defined(OS_LINUX)
+#elif defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   info->os = api::runtime::PLATFORM_OS_LINUX;
 #endif
   return true;
@@ -53,7 +54,7 @@ bool ShellRuntimeAPIDelegate::GetPlatformInfo(PlatformInfo* info) {
 
 bool ShellRuntimeAPIDelegate::RestartDevice(std::string* error_message) {
 // We allow chrome.runtime.restart() to request a device restart on ChromeOS.
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   chromeos::PowerManagerClient::Get()->RequestRestart(
       power_manager::REQUEST_RESTART_OTHER, "AppShell chrome.runtime API");
   return true;

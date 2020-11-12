@@ -26,6 +26,7 @@
 #include "base/task/post_task.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "build/chromeos_buildflags.h"
 #include "components/ukm/content/source_url_recorder.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -89,9 +90,9 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/login/login_state/login_state.h"
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 using content::BrowserThread;
 using extension_web_request_api_helpers::ExtraInfoSpec;
@@ -412,7 +413,7 @@ bool ShouldHideEvent(content::BrowserContext* browser_context,
 
 // Returns true if we're in a Public Session and restrictions are enabled.
 bool ArePublicSessionRestrictionsEnabled() {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (chromeos::LoginState::IsInitialized()) {
     return chromeos::LoginState::Get()->ArePublicSessionRestrictionsEnabled();
   }

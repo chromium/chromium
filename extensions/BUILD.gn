@@ -2,6 +2,7 @@
 # found in the LICENSE file.
 
 import("//build/config/chromecast_build.gni")
+import("//build/config/chromeos/ui_mode.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//testing/test.gni")
 import("//tools/grit/grit_rule.gni")
@@ -142,6 +143,7 @@ static_library("test_support") {
   deps = [
     ":extensions_resources",
     "//base",
+    "//build:chromeos_buildflags",
     "//chrome/common:buildflags",
     "//components/cast_certificate:test_support",
     "//components/cast_channel:test_support",
@@ -288,6 +290,7 @@ source_set("chrome_extensions_browsertests") {
     "//base",
     "//base:i18n",
     "//base/test:test_support",
+    "//build:chromeos_buildflags",
     "//chrome/browser",
     "//chrome/common/extensions/api",
     "//chrome/renderer",
@@ -331,7 +334,7 @@ source_set("chrome_extensions_browsertests") {
     "//v8",
   ]
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     deps += [ "//components/user_manager:test_support" ]
   }
 }

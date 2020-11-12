@@ -11,6 +11,7 @@
 #include "base/callback_helpers.h"
 #include "base/stl_util.h"
 #include "base/strings/string_util.h"
+#include "build/chromeos_buildflags.h"
 #include "components/onc/onc_constants.h"
 #include "extensions/browser/api/extensions_api_client.h"
 #include "extensions/browser/api/networking_private/networking_cast_private_delegate.h"
@@ -97,7 +98,7 @@ std::vector<std::string> FilterProperties(base::Value* properties,
 
 bool CanChangeSharedConfig(const Extension* extension,
                            Feature::Context context) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   return context == Feature::WEBUI_CONTEXT;
 #else
   return true;

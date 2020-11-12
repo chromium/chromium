@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//extensions/common/api/schema.gni")
 import("//tools/json_schema_compiler/json_schema_api.gni")
@@ -91,6 +92,7 @@ source_set("api") {
 
   deps = [
     "//base:i18n",
+    "//build:chromeos_buildflags",
     "//components/keyed_service/content:content",
     "//extensions/browser:browser_sources",
     "//extensions/common/api",
@@ -106,7 +108,7 @@ source_set("api") {
     "//device/bluetooth",
   ]
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     sources += [
       "lock_screen_data/data_item.cc",
       "lock_screen_data/data_item.h",

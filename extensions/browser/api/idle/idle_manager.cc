@@ -7,13 +7,14 @@
 #include <utility>
 
 #include "base/stl_util.h"
+#include "build/chromeos_buildflags.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/api/idle/idle_api_constants.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/common/api/idle.h"
 #include "extensions/common/extension.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/dbus/power/power_policy_controller.h"
 #endif
 
@@ -179,7 +180,7 @@ void IdleManager::SetThreshold(const std::string& extension_id, int threshold) {
 
 base::TimeDelta IdleManager::GetAutoLockDelay() const {
   DCHECK(thread_checker_.CalledOnValidThread());
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   return chromeos::PowerPolicyController::Get()
       ->GetMaxPolicyAutoScreenLockDelay();
 #endif

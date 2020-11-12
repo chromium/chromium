@@ -7,6 +7,7 @@
 
 #include "base/files/file_path.h"
 #include "base/strings/string_piece_forward.h"
+#include "build/chromeos_buildflags.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "components/version_info/channel.h"
 #include "ui/base/layout.h"
@@ -236,7 +237,7 @@ extern const char kGoogleKeepAppId[];
 // The extension id of the Youtube application.
 extern const char kYoutubeAppId[];
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // The extension id of the default Demo Mode Highlights app.
 extern const char kHighlightsAppId[];
 

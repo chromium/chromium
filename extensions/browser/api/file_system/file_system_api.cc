@@ -26,6 +26,7 @@
 #include "base/util/values/values_util.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -62,7 +63,7 @@
 #include "base/mac/foundation_util.h"
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "extensions/browser/api/file_handlers/non_native_file_system_delegate.h"
 #endif
 
@@ -86,7 +87,7 @@ const char kRetainEntryError[] = "Could not retain file entry.";
 const char kRetainEntryIncognitoError[] =
     "Could not retain file entry in incognito mode";
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 const char kNotSupportedOnNonKioskSessionError[] =
     "Operation only supported for kiosk apps running in a kiosk session.";
 #endif
@@ -518,7 +519,7 @@ void FileSystemChooseEntryFunction::FilesSelected(
 
     DCHECK_EQ(paths.size(), 1u);
     bool non_native_path = false;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     NonNativeFileSystemDelegate* delegate =
         ExtensionsAPIClient::Get()->GetNonNativeFileSystemDelegate();
     non_native_path = delegate && delegate->IsUnderNonNativeLocalPath(
@@ -770,7 +771,7 @@ ExtensionFunction::ResponseAction FileSystemChooseEntryFunction::Run() {
       previous_path, suggested_name, file_type_info, picker_type);
 
 // Check whether the |previous_path| is a non-native directory.
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   NonNativeFileSystemDelegate* delegate =
       ExtensionsAPIClient::Get()->GetNonNativeFileSystemDelegate();
   if (delegate &&
@@ -925,7 +926,7 @@ ExtensionFunction::ResponseAction FileSystemRestoreEntryFunction::Run() {
   return RespondNow(NoArguments());
 }
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 ExtensionFunction::ResponseAction FileSystemRequestFileSystemFunction::Run() {
   using file_system::RequestFileSystem::Params;
   const std::unique_ptr<Params> params(Params::Create(*args_));

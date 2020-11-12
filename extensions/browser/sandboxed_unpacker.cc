@@ -26,6 +26,7 @@
 #include "base/task/post_task.h"
 #include "base/timer/elapsed_timer.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/crx_file/crx_verifier.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -108,7 +109,7 @@ bool FindWritableTempLocation(const base::FilePath& extensions_dir,
 // On ChromeOS, we will only attempt to unpack extension in cryptohome (profile)
 // directory to provide additional security/privacy and speed up the rest of
 // the extension install process.
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   base::PathService::Get(base::DIR_TEMP, temp_dir);
   if (VerifyJunctionFreeLocation(temp_dir))
     return true;

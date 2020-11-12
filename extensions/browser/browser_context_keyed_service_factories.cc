@@ -5,6 +5,7 @@
 #include "extensions/browser/browser_context_keyed_service_factories.h"
 
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "extensions/browser/api/alarms/alarm_manager.h"
 #include "extensions/browser/api/api_resource_manager.h"
 #include "extensions/browser/api/audio/audio_api.h"
@@ -45,7 +46,7 @@
 #include "extensions/browser/renderer_startup_helper.h"
 #include "extensions/browser/updater/update_service_factory.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "extensions/browser/api/clipboard/clipboard_api.h"
 #include "extensions/browser/api/system_power_source/system_power_source_api.h"
 #include "extensions/browser/api/virtual_keyboard_private/virtual_keyboard_private_api.h"
@@ -53,7 +54,7 @@
 #include "extensions/browser/api/webcam_private/webcam_private_api.h"
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "extensions/browser/api/system_power_source/system_power_source_api.h"
 #endif
 
@@ -73,7 +74,7 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   BluetoothAPI::GetFactoryInstance();
   BluetoothPrivateAPI::GetFactoryInstance();
   CastChannelAPI::GetFactoryInstance();
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   ClipboardAPI::GetFactoryInstance();
 #endif
   api::BluetoothSocketEventDispatcher::GetFactoryInstance();
@@ -102,12 +103,12 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   RuntimeAPI::GetFactoryInstance();
   StorageFrontend::GetFactoryInstance();
   SystemInfoAPI::GetFactoryInstance();
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   SystemPowerSourceAPI::GetFactoryInstance();
 #endif
   UpdateServiceFactory::GetInstance();
   UsbDeviceManager::GetFactoryInstance();
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   VirtualKeyboardAPI::GetFactoryInstance();
   chromeos::VpnServiceFactory::GetInstance();
   WebcamPrivateAPI::GetFactoryInstance();

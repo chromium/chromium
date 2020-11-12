@@ -5,13 +5,14 @@
 #include "extensions/browser/api/networking_private/networking_private_delegate_factory.h"
 
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/extensions_browser_client.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "extensions/browser/api/networking_private/networking_private_chromeos.h"
-#elif defined(OS_LINUX)
+#elif defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "extensions/browser/api/networking_private/networking_private_linux.h"
 #elif defined(OS_WIN) || defined(OS_MAC)
 #include "components/wifi/wifi_service.h"
@@ -59,9 +60,9 @@ KeyedService* NetworkingPrivateDelegateFactory::BuildServiceInstanceFor(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   NetworkingPrivateDelegate* delegate;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   delegate = new NetworkingPrivateChromeOS(browser_context);
-#elif defined(OS_LINUX)
+#elif defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   delegate = new NetworkingPrivateLinux();
 #elif defined(OS_WIN) || defined(OS_MAC)
   std::unique_ptr<wifi::WiFiService> wifi_service(wifi::WiFiService::Create());

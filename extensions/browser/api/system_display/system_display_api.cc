@@ -12,12 +12,13 @@
 #include "base/bind.h"
 #include "base/macros.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "extensions/common/api/system_display.h"
 #include "extensions/common/permissions/permissions_data.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "extensions/common/manifest_handlers/kiosk_mode_info.h"
 #endif
 
@@ -154,7 +155,7 @@ bool HasAutotestPrivate(const ExtensionFunction& function) {
              APIPermission::kAutoTestPrivate);
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // |edid| is available only to Chrome OS kiosk mode applications.
 bool ShouldRestrictEdidInformation(const ExtensionFunction& function) {
   if (function.extension()) {
@@ -172,7 +173,7 @@ bool SystemDisplayCrOSRestrictedFunction::PreRunValidation(std::string* error) {
   if (!ExtensionFunction::PreRunValidation(error))
     return false;
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   *error = kCrosOnlyError;
   return false;
 #else
@@ -205,7 +206,7 @@ ExtensionFunction::ResponseAction SystemDisplayGetInfoFunction::Run() {
 
 void SystemDisplayGetInfoFunction::Response(
     DisplayInfoProvider::DisplayUnitInfoList all_displays_info) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (ShouldRestrictEdidInformation(*this)) {
     for (auto& display_info : all_displays_info)
       display_info.edid.release();

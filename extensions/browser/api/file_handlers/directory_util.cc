@@ -10,11 +10,12 @@
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "build/chromeos_buildflags.h"
 #include "content/public/browser/browser_context.h"
 #include "net/base/filename_util.h"
 #include "storage/browser/file_system/file_system_url.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "extensions/browser/api/extensions_api_client.h"
 #include "extensions/browser/api/file_handlers/non_native_file_system_delegate.h"
 #endif
@@ -35,7 +36,7 @@ bool GetIsDirectoryFromFileInfo(const base::FilePath& path) {
 void EntryIsDirectory(content::BrowserContext* context,
                       const base::FilePath& path,
                       base::OnceCallback<void(bool)> callback) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   NonNativeFileSystemDelegate* delegate =
       ExtensionsAPIClient::Get()->GetNonNativeFileSystemDelegate();
   if (delegate && delegate->IsUnderNonNativeLocalPath(context, path)) {

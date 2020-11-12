@@ -20,6 +20,7 @@ source_set("file_system") {
   deps = [
     "//base",
     "//base/util/values:values_util",
+    "//build:chromeos_buildflags",
     "//content/public/browser",
     "//extensions/browser/api/file_handlers",
     "//extensions/common",

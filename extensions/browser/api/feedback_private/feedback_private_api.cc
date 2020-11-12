@@ -22,6 +22,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/feedback/feedback_report.h"
 #include "components/feedback/system_logs/system_logs_fetcher.h"
 #include "components/feedback/tracing_manager.h"
@@ -33,9 +34,9 @@
 #include "extensions/common/constants.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "extensions/browser/api/feedback_private/log_source_access_manager.h"
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 using extensions::api::feedback_private::SystemInformation;
 using feedback::FeedbackData;
@@ -67,7 +68,7 @@ constexpr char kBluetoothLogsAttachmentNameOld[] = "bluetooth_logs.old.bz2";
 
 constexpr int kKaleidoscopeProductId = 5192933;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 constexpr char kLacrosHistogramsFilename[] = "lacros_histograms.zip";
 #endif
 
@@ -85,13 +86,13 @@ std::string StripFakepath(const std::string& path) {
 // report is successfully sent.
 feedback_private::LandingPageType GetLandingPageType(
     const feedback::FeedbackData& feedback_data) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   return ExtensionsAPIClient::Get()
       ->GetFeedbackPrivateDelegate()
       ->GetLandingPageType(feedback_data);
 #else
   return feedback_private::LANDING_PAGE_TYPE_NORMAL;
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 }  // namespace
@@ -104,12 +105,12 @@ FeedbackPrivateAPI::GetFactoryInstance() {
 
 FeedbackPrivateAPI::FeedbackPrivateAPI(content::BrowserContext* context)
     : browser_context_(context),
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
       service_(new FeedbackService(context)) {
 #else
       service_(new FeedbackService(context)),
       log_source_access_manager_(new LogSourceAccessManager(context)){
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 FeedbackPrivateAPI::~FeedbackPrivateAPI() {}
@@ -118,7 +119,7 @@ FeedbackService* FeedbackPrivateAPI::GetService() const {
   return service_.get();
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 LogSourceAccessManager* FeedbackPrivateAPI::GetLogSourceAccessManager() const {
   return log_source_access_manager_.get();
 }
@@ -142,11 +143,11 @@ void FeedbackPrivateAPI::RequestFeedbackForFlow(
     info.category_tag = std::make_unique<std::string>(category_tag);
     info.page_url = std::make_unique<std::string>(page_url.spec());
     info.system_information = std::make_unique<SystemInformationList>();
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     info.from_assistant = std::make_unique<bool>(from_assistant);
     info.include_bluetooth_logs =
         std::make_unique<bool>(include_bluetooth_logs);
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
     // Any extra diagnostics information should be added to the sys info.
     if (!extra_diagnostics.empty()) {
@@ -266,7 +267,7 @@ void FeedbackPrivateGetSystemInformationFunction::OnCompleted(
 }
 
 ExtensionFunction::ResponseAction FeedbackPrivateReadLogSourceFunction::Run() {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   using Params = feedback_private::ReadLogSource::Params;
   std::unique_ptr<Params> api_params = Params::Create(*args_);
 
@@ -288,16 +289,16 @@ ExtensionFunction::ResponseAction FeedbackPrivateReadLogSourceFunction::Run() {
 #else
   NOTREACHED() << "API function is not supported on this platform.";
   return RespondNow(Error("API function is not supported on this platform."));
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 void FeedbackPrivateReadLogSourceFunction::OnCompleted(
     std::unique_ptr<feedback_private::ReadLogSourceResult> result) {
   Respond(
       ArgumentList(feedback_private::ReadLogSource::Results::Create(*result)));
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 ExtensionFunction::ResponseAction FeedbackPrivateSendFeedbackFunction::Run() {
   std::unique_ptr<feedback_private::SendFeedback::Params> params(
@@ -339,13 +340,13 @@ ExtensionFunction::ResponseAction FeedbackPrivateSendFeedbackFunction::Run() {
     feedback_data->set_screenshot_uuid(*feedback_info.screenshot_blob_uuid);
   }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   feedback_data->set_from_assistant(feedback_info.from_assistant &&
                                     *feedback_info.from_assistant);
   feedback_data->set_assistant_debug_info_allowed(
       feedback_info.assistant_debug_info_allowed &&
       *feedback_info.assistant_debug_info_allowed);
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   const bool send_histograms =
       feedback_info.send_histograms && *feedback_info.send_histograms;
@@ -357,14 +358,14 @@ ExtensionFunction::ResponseAction FeedbackPrivateSendFeedbackFunction::Run() {
   if (params->feedback.system_information) {
     for (SystemInformation& info : *params->feedback.system_information)
       feedback_data->AddLog(std::move(info.key), std::move(info.value));
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     delegate->FetchExtraLogs(
         feedback_data,
         base::BindOnce(&FeedbackPrivateSendFeedbackFunction::OnAshLogsFetched,
                        this, send_histograms, send_bluetooth_logs,
                        send_tab_titles));
     return RespondLater();
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   }
 
   OnAllLogsFetched(send_histograms, send_bluetooth_logs, send_tab_titles,
@@ -415,7 +416,7 @@ void FeedbackPrivateSendFeedbackFunction::OnAllLogsFetched(
                  GetLandingPageType(*feedback_data)));
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 void FeedbackPrivateSendFeedbackFunction::OnAshLogsFetched(
     bool send_histograms,
     bool send_bluetooth_logs,
@@ -443,7 +444,7 @@ void FeedbackPrivateSendFeedbackFunction::OnLacrosHistogramsFetched(
   OnAllLogsFetched(send_histograms, send_bluetooth_logs, send_tab_titles,
                    feedback_data);
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 void FeedbackPrivateSendFeedbackFunction::OnCompleted(
     api::feedback_private::LandingPageType type,
@@ -461,7 +462,7 @@ void FeedbackPrivateSendFeedbackFunction::OnCompleted(
 
 ExtensionFunction::ResponseAction
 FeedbackPrivateLoginFeedbackCompleteFunction::Run() {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   FeedbackPrivateDelegate* feedback_private_delegate =
       ExtensionsAPIClient::Get()->GetFeedbackPrivateDelegate();
   feedback_private_delegate->UnloadFeedbackExtension(browser_context());

@@ -7,6 +7,7 @@
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_switches.h"
@@ -56,7 +57,9 @@ IN_PROC_BROWSER_TEST_F(ExperimentalAppWindowApiTest, SetIcon) {
 }
 
 // TODO(crbug.com/794771): These fail on Linux with HEADLESS env var set.
-#if defined(OS_LINUX) && !defined(OS_CHROMEOS)
+// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
+// of lacros-chrome is complete.
+#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_OnMinimizedEvent DISABLED_OnMinimizedEvent
 #define MAYBE_OnMaximizedEvent DISABLED_OnMaximizedEvent
 #define MAYBE_OnRestoredEvent DISABLED_OnRestoredEvent
@@ -143,7 +146,9 @@ IN_PROC_BROWSER_TEST_F(AppWindowApiTest, AlphaEnabledHasPermissions) {
   ALLOW_UNUSED_LOCAL(kHasAlphaDir);
   const char* test_dir = kNoAlphaDir;
 
-#if defined(USE_AURA) && (defined(OS_CHROMEOS) || !defined(OS_LINUX))
+// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
+// of lacros-chrome is complete.
+#if defined(USE_AURA) && !(defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
   test_dir = kHasAlphaDir;
 
 #if defined(OS_WIN)
@@ -151,7 +156,7 @@ IN_PROC_BROWSER_TEST_F(AppWindowApiTest, AlphaEnabledHasPermissions) {
     test_dir = kNoAlphaDir;
   }
 #endif  // OS_WIN
-#endif  // USE_AURA && (OS_CHROMEOS || !OS_LINUX)
+#endif  // USE_AURA && !(OS_LINUX || IS_CHROMEOS_LACROS)
 
   EXPECT_TRUE(RunPlatformAppTest(test_dir)) << message_;
 }
@@ -185,7 +190,7 @@ IN_PROC_BROWSER_TEST_F(AppWindowApiTest, VisibleOnAllWorkspacesInStable) {
       << message_;
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_F(AppWindowApiTest, ImeWindowHasPermissions) {
   EXPECT_TRUE(RunComponentExtensionTest(
       "platform_apps/windows_api_ime/has_permissions_whitelisted"))
@@ -217,6 +222,6 @@ IN_PROC_BROWSER_TEST_F(AppWindowApiTest, ImeWindowNotFullscreen) {
       "platform_apps/windows_api_ime/forced_app_mode_not_fullscreen"))
       << message_;
 }
-#endif  // OS_CHROMEOS
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace extensions

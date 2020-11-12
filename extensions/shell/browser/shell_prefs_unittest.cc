@@ -7,6 +7,7 @@
 #include "base/macros.h"
 #include "base/path_service.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_prefs/user_prefs.h"
 #include "content/public/test/browser_task_environment.h"
@@ -49,7 +50,7 @@ TEST_F(ShellPrefsTest, CreateLocalState) {
       shell_prefs::CreateLocalState(browser_context_.GetPath());
   ASSERT_TRUE(local_state);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Verify prefs were registered.
   EXPECT_TRUE(local_state->FindPreference("hardware.audio_output_enabled"));
 

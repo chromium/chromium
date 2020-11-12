@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/memory/ref_counted.h"
+#include "build/chromeos_buildflags.h"
 #include "extensions/browser/api/clipboard/clipboard_api.h"
 #include "extensions/browser/api/declarative_content/content_rules_registry.h"
 #include "extensions/browser/api/storage/settings_namespace.h"
@@ -194,7 +195,7 @@ class ExtensionsAPIClient {
   // Returns a delegate for the chrome.feedbackPrivate API.
   virtual FeedbackPrivateDelegate* GetFeedbackPrivateDelegate();
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // If supported by the embedder, returns a delegate for querying non-native
   // file systems.
   virtual NonNativeFileSystemDelegate* GetNonNativeFileSystemDelegate();

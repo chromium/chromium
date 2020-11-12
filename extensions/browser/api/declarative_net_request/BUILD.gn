@@ -88,6 +88,7 @@ source_set("core") {
 
   deps = [
     "//base",
+    "//build:chromeos_buildflags",
     "//components/url_pattern_index",
     "//components/web_cache/browser:browser",
     "//content/public/browser:browser",

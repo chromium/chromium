@@ -146,7 +146,7 @@ void WaitForFullscreenAnimation() {
 }  // namespace
 
 // TODO(1119576): Flaky under Lacros.
-#if BUILDFLAG(IS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_EscapeExitsFullscreen DISABLED_EscapeExitsFullscreen
 #else
 #define MAYBE_EscapeExitsFullscreen EscapeExitsFullscreen

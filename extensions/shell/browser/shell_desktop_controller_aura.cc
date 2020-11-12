@@ -9,6 +9,7 @@
 
 #include "base/check_op.h"
 #include "base/run_loop.h"
+#include "build/chromeos_buildflags.h"
 #include "components/keep_alive_registry/keep_alive_registry.h"
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/native_app_window.h"
@@ -32,7 +33,7 @@
 #include "ui/wm/core/native_cursor_manager.h"
 #include "ui/wm/core/native_cursor_manager_delegate.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "base/command_line.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "extensions/shell/browser/shell_screen.h"
@@ -46,7 +47,7 @@
 #include "ui/ozone/public/ozone_platform.h"  // nogncheck
 #else
 #include "ui/views/widget/desktop_aura/desktop_screen.h"
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace extensions {
 namespace {
@@ -142,7 +143,7 @@ ShellDesktopControllerAura::ShellDesktopControllerAura(
       app_window_client_(new ShellAppWindowClient) {
   extensions::AppWindowClient::Set(app_window_client_.get());
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   chromeos::PowerManagerClient::Get()->AddObserver(this);
   display_configurator_.reset(new display::DisplayConfigurator);
   display_configurator_->Init(
@@ -156,7 +157,7 @@ ShellDesktopControllerAura::ShellDesktopControllerAura(
 
 ShellDesktopControllerAura::~ShellDesktopControllerAura() {
   TearDownWindowManager();
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   chromeos::PowerManagerClient::Get()->RemoveObserver(this);
 #endif
   extensions::AppWindowClient::Set(NULL);
@@ -208,7 +209,7 @@ void ShellDesktopControllerAura::CloseRootWindowController(
   MaybeQuit();
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 void ShellDesktopControllerAura::PowerButtonEventReceived(
     bool down,
     const base::TimeTicks& timestamp) {
@@ -314,7 +315,7 @@ void ShellDesktopControllerAura::InitWindowManager() {
 
   // Screen may be initialized in tests.
   if (!display::Screen::GetScreen()) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     screen_ = std::make_unique<ShellScreen>(this, GetStartingWindowSize());
     // TODO(pkasting): Make ShellScreen() call SetScreenInstance() as the
     // classes in CreateDesktopScreen() do, and remove this.
@@ -333,7 +334,7 @@ void ShellDesktopControllerAura::InitWindowManager() {
       display::Screen::GetScreen()->GetPrimaryDisplay());
   cursor_manager_->SetCursor(ui::mojom::CursorType::kPointer);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   user_activity_detector_ = std::make_unique<ui::UserActivityDetector>();
   user_activity_notifier_ =
       std::make_unique<ui::UserActivityPowerManagerNotifier>(
@@ -346,14 +347,14 @@ void ShellDesktopControllerAura::TearDownWindowManager() {
     TearDownRootWindowController(pair.second.get());
   root_window_controllers_.clear();
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   user_activity_notifier_.reset();
   user_activity_detector_.reset();
 #endif
   cursor_manager_.reset();
   focus_controller_.reset();
   if (screen_) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     display::Screen::SetScreenInstance(nullptr);
 #endif
     screen_.reset();
@@ -405,7 +406,7 @@ void ShellDesktopControllerAura::MaybeQuit() {
   }
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 gfx::Size ShellDesktopControllerAura::GetStartingWindowSize() {
   gfx::Size size = GetPrimaryDisplaySize();
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();

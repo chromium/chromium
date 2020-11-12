@@ -253,6 +253,7 @@ source_set("renderer") {
   ]
 
   deps = [
+    "//build:chromeos_buildflags",
     "//chrome:resources",
     "//components/crx_file",
     "//components/guest_view/common",
@@ -410,6 +411,7 @@ source_set("unit_tests") {
     ":unit_test_support",
     "//base",
     "//base/test:test_support",
+    "//build:chromeos_buildflags",
     "//components/crx_file:crx_file",
     "//content/test:test_support",
     "//extensions:extensions_renderer_resources",

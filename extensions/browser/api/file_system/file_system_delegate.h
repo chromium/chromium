@@ -13,6 +13,7 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "extensions/common/api/file_system.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 
@@ -73,7 +74,7 @@ class FileSystemDelegate {
   // string ID is found.
   virtual int GetDescriptionIdForAcceptType(const std::string& accept_type) = 0;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Checks whether the extension can be granted access.
   virtual GrantVolumesMode GetGrantVolumesMode(
       content::BrowserContext* browser_context,

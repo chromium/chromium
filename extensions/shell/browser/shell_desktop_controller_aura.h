@@ -11,6 +11,7 @@
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/keep_alive_registry/keep_alive_state_observer.h"
 #include "extensions/shell/browser/desktop_controller.h"
 #include "extensions/shell/browser/root_window_controller.h"
@@ -18,7 +19,7 @@
 #include "ui/base/ime/input_method_delegate.h"
 #include "ui/display/display.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "ui/display/manager/display_configurator.h"
 #endif
@@ -45,7 +46,7 @@ class Size;
 
 namespace ui {
 class InputMethod;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 class UserActivityDetector;
 class UserActivityPowerManagerNotifier;
 #endif
@@ -66,7 +67,7 @@ class AppWindowClient;
 class ShellDesktopControllerAura
     : public DesktopController,
       public RootWindowController::DesktopDelegate,
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
       public chromeos::PowerManagerClient::Observer,
       public display::DisplayConfigurator::Observer,
 #endif
@@ -85,7 +86,7 @@ class ShellDesktopControllerAura
   void CloseRootWindowController(
       RootWindowController* root_window_controller) override;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // chromeos::PowerManagerClient::Observer:
   void PowerButtonEventReceived(bool down,
                                 const base::TimeTicks& timestamp) override;
@@ -133,7 +134,7 @@ class ShellDesktopControllerAura
   // relaunch.
   void MaybeQuit();
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Returns the desired dimensions of the RootWindowController from the command
   // line, or falls back to a default size.
   gfx::Size GetStartingWindowSize();
@@ -145,7 +146,7 @@ class ShellDesktopControllerAura
 
   content::BrowserContext* const browser_context_;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<display::DisplayConfigurator> display_configurator_;
 #endif
 
@@ -164,7 +165,7 @@ class ShellDesktopControllerAura
 
   std::unique_ptr<wm::CursorManager> cursor_manager_;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<ui::UserActivityDetector> user_activity_detector_;
   std::unique_ptr<ui::UserActivityPowerManagerNotifier> user_activity_notifier_;
 #endif

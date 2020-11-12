@@ -12,6 +12,7 @@
 #include "base/stl_util.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/notification_source.h"
 #include "content/public/browser/notification_types.h"
@@ -241,7 +242,7 @@ void AutomationEventRouter::RenderProcessHostDestroyed(
 
 void AutomationEventRouter::UpdateActiveProfile() {
   for (auto& listener : listeners_) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     int extension_id_count = 0;
     for (const auto& listener2 : listeners_) {
       if (listener2.extension_id == listener.extension_id)

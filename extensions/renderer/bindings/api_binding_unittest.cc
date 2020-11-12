@@ -11,6 +11,7 @@
 #include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
+#include "build/chromeos_buildflags.h"
 #include "extensions/renderer/bindings/api_binding_hooks.h"
 #include "extensions/renderer/bindings/api_binding_hooks_test_delegate.h"
 #include "extensions/renderer/bindings/api_binding_test.h"
@@ -636,7 +637,9 @@ TEST_F(APIBindingUnittest, TestProperties) {
   EXPECT_EQ(R"({"subprop1":"some value","subprop2":true})",
             GetStringPropertyFromObject(binding_object, context, "prop2"));
 
-#if defined(OS_LINUX) && !defined(OS_CHROMEOS)
+// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
+// of lacros-chrome is complete.
+#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   EXPECT_EQ("\"linux\"",
             GetStringPropertyFromObject(binding_object, context, "linuxOnly"));
   EXPECT_EQ("undefined", GetStringPropertyFromObject(binding_object, context,

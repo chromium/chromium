@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//extensions/buildflags/buildflags.gni")
 
 assert(enable_extensions,
@@ -27,13 +28,14 @@ source_set("networking_private") {
   ]
 
   deps = [
+    "//build:chromeos_buildflags",
     "//extensions/common/api",
     "//net",
   ]
 
   public_deps = [ "//extensions/browser:browser_sources" ]
 
-  if (!is_chromeos && is_linux && use_dbus) {
+  if ((is_linux || is_chromeos_lacros) && use_dbus) {
     sources = default_sources + [
                 "network_config_dbus_constants_linux.cc",
                 "network_config_dbus_constants_linux.h",
@@ -41,9 +43,8 @@ source_set("networking_private") {
                 "networking_private_linux.cc",
                 "networking_private_linux.h",
               ]
-    if (use_dbus) {
-      deps += [ "//dbus" ]
-    }
+
+    deps += [ "//dbus" ]
   } else if (is_win || is_mac) {
     sources = default_sources + [
                 "networking_private_event_router_nonchromeos.cc",
@@ -51,7 +52,7 @@ source_set("networking_private") {
                 "networking_private_service_client.h",
               ]
     deps += [ "//components/wifi" ]
-  } else if (is_chromeos) {
+  } else if (is_chromeos_ash) {
     sources = default_sources + [
                 "networking_private_chromeos.cc",
                 "networking_private_chromeos.h",

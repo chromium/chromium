@@ -12,6 +12,7 @@
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "build/chromeos_buildflags.h"
 #include "extensions/browser/api/device_permissions_prompt.h"
 #include "extensions/browser/api/hid/hid_device_manager.h"
 #include "extensions/shell/browser/shell_extensions_api_client.h"
@@ -21,9 +22,9 @@
 #include "services/device/public/cpp/hid/hid_report_descriptor.h"
 #include "services/device/public/mojom/hid.mojom.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/dbus/permission_broker/fake_permission_broker_client.h"
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 using base::ThreadTaskRunnerHandle;
 using device::FakeHidManager;
@@ -100,7 +101,7 @@ class TestExtensionsAPIClient : public ShellExtensionsAPIClient {
 class HidApiTest : public ShellApiTest {
  public:
   HidApiTest() {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     // Required for DevicePermissionsPrompt:
     chromeos::PermissionBrokerClient::InitializeFake();
 #endif
@@ -115,7 +116,7 @@ class HidApiTest : public ShellApiTest {
 
   ~HidApiTest() override {
     HidDeviceManager::OverrideHidManagerBinderForTesting(base::NullCallback());
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     chromeos::PermissionBrokerClient::Shutdown();
 #endif
   }

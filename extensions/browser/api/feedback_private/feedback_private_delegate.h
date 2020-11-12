@@ -13,6 +13,8 @@
 #include <memory>
 #include <string>
 
+#include "build/chromeos_buildflags.h"
+
 namespace base {
 class DictionaryValue;
 }  // namespace base
@@ -52,7 +54,7 @@ class FeedbackPrivateDelegate {
   virtual system_logs::SystemLogsFetcher* CreateSystemLogsFetcher(
       content::BrowserContext* context) const = 0;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Creates a SystemLogsSource for the given type of log file.
   virtual std::unique_ptr<system_logs::SystemLogsSource> CreateSingleLogSource(
       api::feedback_private::LogSource source_type) const = 0;

@@ -10,6 +10,7 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "build/chromeos_buildflags.h"
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/common/url_constants.h"
 #include "extensions/browser/api/extensions_api_client.h"
@@ -30,9 +31,9 @@
 #include "third_party/blink/public/common/loader/resource_type_util.h"
 #include "url/gurl.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/login/login_state/login_state.h"
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 using extensions::PermissionsData;
 
@@ -100,7 +101,7 @@ PermissionsData::PageAccess CanExtensionAccessURLInternal(
 // When restrictions are enabled in Public Session, allow all URLs for
 // webRequests initiated by a regular extension (but don't allow chrome://
 // URLs).
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (chromeos::LoginState::IsInitialized() &&
       chromeos::LoginState::Get()->ArePublicSessionRestrictionsEnabled() &&
       extension->is_extension() && !url.SchemeIs("chrome")) {

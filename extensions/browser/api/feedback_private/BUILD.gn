@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//extensions/buildflags/buildflags.gni")
 
 assert(enable_extensions,
@@ -18,6 +19,7 @@ source_set("feedback_private") {
 
   deps = [
     "//base",
+    "//build:chromeos_buildflags",
     "//components/feedback",
     "//content/public/browser",
     "//extensions/browser:browser_sources",
@@ -26,7 +28,7 @@ source_set("feedback_private") {
     "//net",
   ]
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     sources += [
       "access_rate_limiter.cc",
       "access_rate_limiter.h",

@@ -12,6 +12,7 @@
 #include "base/containers/span.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/network_service_instance.h"
@@ -58,9 +59,9 @@ const char kSocketNotConnectedError[] = "Socket not connected";
 const char kWildcardAddress[] = "*";
 const uint16_t kWildcardPort = 0;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 const char kFirewallFailure[] = "Failed to open firewall port";
-#endif  // OS_CHROMEOS
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 bool IsPortValid(int port) {
   return port >= 0 && port <= 65535;
@@ -112,7 +113,7 @@ void SocketAsyncApiFunction::RemoveSocket(int api_resource_id) {
 void SocketAsyncApiFunction::OpenFirewallHole(const std::string& address,
                                               int socket_id,
                                               Socket* socket) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (!net::HostStringIsLocalhost(address)) {
     net::IPEndPoint local_address;
     if (!socket->GetLocalAddress(&local_address)) {
@@ -137,7 +138,7 @@ void SocketAsyncApiFunction::OpenFirewallHole(const std::string& address,
   AsyncWorkCompleted();
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 
 void SocketAsyncApiFunction::OpenFirewallHoleOnUIThread(
     AppFirewallHole::PortType type,
@@ -176,7 +177,7 @@ void SocketAsyncApiFunction::OnFirewallHoleOpened(
   AsyncWorkCompleted();
 }
 
-#endif  // OS_CHROMEOS
+#endif  // IS_CHROMEOS_ASH
 
 SocketExtensionWithDnsLookupFunction::SocketExtensionWithDnsLookupFunction() =
     default;

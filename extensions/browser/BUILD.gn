@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//extensions/buildflags/buildflags.gni")
 
@@ -32,6 +33,7 @@ source_set("browser_context_keyed_service_factories") {
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   deps = [
+    "//build:chromeos_buildflags",
     "//extensions/browser:browser_sources",
     "//extensions/browser/api",
   ]
@@ -377,6 +379,7 @@ source_set("browser_sources") {
 
   deps = [
     "//base:i18n",
+    "//build:chromeos_buildflags",
     "//components/cast_certificate",
     "//components/cast_channel",
     "//components/crx_file",
@@ -498,6 +501,7 @@ source_set("browser_tests") {
   deps = [
     ":browser",
     "//base",
+    "//build:chromeos_buildflags",
     "//components/guest_view/browser:test_support",
     "//components/storage_monitor:test_support",
     "//content/test:test_support",
@@ -518,7 +522,7 @@ source_set("browser_tests") {
     "//ui/display:test_support",
   ]
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     sources += [
       "api/audio/audio_apitest_chromeos.cc",
       "api/cec_private/cec_private_apitest.cc",
@@ -585,7 +589,7 @@ source_set("test_support") {
   public_deps =
       [ "//extensions/browser/api/declarative_net_request:test_support" ]
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     sources += [
       "api/feedback_private/mock_feedback_service.cc",
       "api/feedback_private/mock_feedback_service.h",
@@ -752,7 +756,7 @@ source_set("unit_tests") {
     "//third_party/zlib/google:zip",
   ]
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     sources += [
       "api/audio/audio_device_id_calculator_unittest.cc",
       "api/feedback_private/access_rate_limiter_chromeos_unittest.cc",

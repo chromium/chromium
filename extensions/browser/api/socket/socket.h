@@ -15,6 +15,7 @@
 #include "base/containers/queue.h"
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/api/api_resource.h"
 #include "extensions/browser/api/api_resource_manager.h"
@@ -27,9 +28,9 @@
 #include "services/network/public/mojom/tcp_socket.mojom.h"
 #include "services/network/public/mojom/tls_socket.mojom.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "extensions/browser/api/socket/app_firewall_hole_manager.h"
-#endif  // OS_CHROMEOS
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace net {
 class AddressList;
@@ -78,13 +79,13 @@ class Socket : public ApiResource {
   // unbracketed.
   void set_hostname(const std::string& hostname) { hostname_ = hostname; }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   void set_firewall_hole(
       std::unique_ptr<AppFirewallHole, content::BrowserThread::DeleteOnUIThread>
           firewall_hole) {
     firewall_hole_ = std::move(firewall_hole);
   }
-#endif  // OS_CHROMEOS
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Note: |address| contains the resolved IP address, not the hostname of
   // the remote endpoint. In order to upgrade this socket to TLS, callers
@@ -172,11 +173,11 @@ class Socket : public ApiResource {
   base::queue<WriteRequest> write_queue_;
   scoped_refptr<net::IOBuffer> io_buffer_write_;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Represents a hole punched in the system firewall for this socket.
   std::unique_ptr<AppFirewallHole, content::BrowserThread::DeleteOnUIThread>
       firewall_hole_;
-#endif  // OS_CHROMEOS
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 };
 
 }  //  namespace extensions

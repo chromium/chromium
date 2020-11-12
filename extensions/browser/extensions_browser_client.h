@@ -11,6 +11,7 @@
 
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "content/public/browser/bluetooth_chooser.h"
 #include "content/public/browser/storage_partition_config.h"
 #include "extensions/browser/extension_event_histogram_value.h"
@@ -133,7 +134,7 @@ class ExtensionsBrowserClient {
   virtual content::BrowserContext* GetOriginalContext(
       content::BrowserContext* context) = 0;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Returns a user id hash from |context| or an empty string if no hash could
   // be extracted.
   virtual std::string GetUserIdHashFromContext(

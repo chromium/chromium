@@ -12,6 +12,7 @@
 #include "base/callback_helpers.h"
 #include "base/lazy_instance.h"
 #include "base/memory/ref_counted.h"
+#include "build/chromeos_buildflags.h"
 #include "components/device_event_log/device_event_log.h"
 #include "content/public/browser/browser_thread.h"
 #include "device/bluetooth/bluetooth_adapter.h"
@@ -21,7 +22,7 @@
 #include "extensions/browser/event_router.h"
 #include "extensions/common/api/bluetooth.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "device/bluetooth/chromeos/bluetooth_utils.h"
 #endif
 
@@ -140,7 +141,7 @@ void BluetoothGetDevicesFunction::DoWork(
   std::unique_ptr<base::ListValue> device_list(new base::ListValue);
 
   BluetoothAdapter::DeviceList devices;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Default filter values.
   bluetooth_api::FilterType filter_type =
       bluetooth_api::FilterType::FILTER_TYPE_ALL;

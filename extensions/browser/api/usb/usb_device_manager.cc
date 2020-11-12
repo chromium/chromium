@@ -10,6 +10,7 @@
 
 #include "base/lazy_instance.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/chromeos_buildflags.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/device_service.h"
 #include "extensions/browser/api/device_permissions_manager.h"
@@ -177,14 +178,14 @@ bool UsbDeviceManager::UpdateActiveConfig(const std::string& guid,
   return true;
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 void UsbDeviceManager::CheckAccess(
     const std::string& guid,
     device::mojom::UsbDeviceManager::CheckAccessCallback callback) {
   EnsureConnectionWithDeviceManager();
   device_manager_->CheckAccess(guid, std::move(callback));
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 void UsbDeviceManager::EnsureConnectionWithDeviceManager() {
   if (device_manager_)

@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -33,7 +34,7 @@
 #include "extensions/shell/browser/shell_navigation_ui_data.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/login/login_state/login_state.h"
 #endif
 
@@ -92,7 +93,7 @@ BrowserContext* ShellExtensionsBrowserClient::GetOriginalContext(
   return context;
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 std::string ShellExtensionsBrowserClient::GetUserIdHashFromContext(
     content::BrowserContext* context) {
   if (!chromeos::LoginState::IsInitialized())

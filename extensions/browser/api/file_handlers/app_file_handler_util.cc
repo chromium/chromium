@@ -16,6 +16,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
 #include "components/services/app_service/public/cpp/file_handler_info.h"
 #include "content/public/browser/browser_context.h"
@@ -31,7 +32,7 @@
 #include "storage/common/file_system/file_system_mount_option.h"
 #include "storage/common/file_system/file_system_types.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "extensions/browser/api/file_handlers/non_native_file_system_delegate.h"
 #endif
 
@@ -199,7 +200,7 @@ void WritableFileChecker::Check() {
   outstanding_tasks_ = paths_.size();
   for (const auto& path : paths_) {
     bool is_directory = directory_paths_.find(path) != directory_paths_.end();
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     NonNativeFileSystemDelegate* delegate =
         ExtensionsAPIClient::Get()->GetNonNativeFileSystemDelegate();
     if (delegate && delegate->IsUnderNonNativeLocalPath(context_, path)) {

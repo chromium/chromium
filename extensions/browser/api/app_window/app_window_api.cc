@@ -15,6 +15,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "content/public/browser/notification_registrar.h"
 #include "content/public/browser/notification_types.h"
 #include "content/public/browser/render_frame_host.h"
@@ -69,7 +70,7 @@ constexpr char kImeWindowMissingPermission[] =
     "Extensions require the \"app.window.ime\" permission to create windows.";
 constexpr char kImeOptionIsNotSupported[] =
     "The \"ime\" option is not supported for platform app.";
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 constexpr char kImeWindowUnsupportedPlatform[] =
     "The \"ime\" option can only be used on ChromeOS.";
 #else
@@ -244,7 +245,7 @@ ExtensionFunction::ResponseAction AppWindowCreateFunction::Run() {
             Error(app_window_constants::kImeWindowMissingPermission));
       }
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
       // IME window is only supported on ChromeOS.
       return RespondNow(
           Error(app_window_constants::kImeWindowUnsupportedPlatform));
@@ -258,7 +259,7 @@ ExtensionFunction::ResponseAction AppWindowCreateFunction::Run() {
         return RespondNow(
             Error(app_window_constants::kImeWindowMustBeImeWindow));
       }
-#endif  // OS_CHROMEOS
+#endif  // IS_CHROMEOS_ASH
     } else {
       if (options->ime.get()) {
         return RespondNow(
@@ -268,7 +269,7 @@ ExtensionFunction::ResponseAction AppWindowCreateFunction::Run() {
 
     if (options->alpha_enabled.get()) {
       const char* const kWhitelist[] = {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
         "B58B99751225318C7EB8CF4688B5434661083E07",  // http://crbug.com/410550
         "06BE211D5F014BAB34BC22D9DDA09C63A81D828E",  // http://crbug.com/425539
         "F94EE6AB36D6C6588670B2B01EB65212D9C64E33",

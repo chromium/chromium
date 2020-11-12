@@ -10,6 +10,7 @@
 #include "base/no_destructor.h"
 #include "base/path_service.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/nacl/common/buildflags.h"
 #include "content/public/browser/browser_main_runner.h"
 #include "content/public/common/content_switches.h"
@@ -21,7 +22,7 @@
 #include "extensions/shell/renderer/shell_content_renderer_client.h"
 #include "ui/base/resource/resource_bundle.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/constants/chromeos_paths.h"
 #endif
 
@@ -43,7 +44,9 @@
 #include "base/base_paths_mac.h"
 #endif
 
-#if defined(OS_LINUX) && !defined(OS_CHROMEOS)
+// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
+// of lacros-chrome is complete.
+#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "components/crash/core/app/breakpad_linux.h"         // nogncheck
 #include "components/crash/core/app/crash_reporter_client.h"  // nogncheck
 #include "extensions/shell/app/shell_crash_reporter_client.h"
@@ -51,7 +54,9 @@
 
 namespace {
 
-#if defined(OS_LINUX) && !defined(OS_CHROMEOS)
+// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
+// of lacros-chrome is complete.
+#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 extensions::ShellCrashReporterClient* GetCrashReporterClient() {
   static base::NoDestructor<extensions::ShellCrashReporterClient> instance;
   return instance.get();
@@ -134,7 +139,7 @@ ShellMainDelegate::~ShellMainDelegate() {
 bool ShellMainDelegate::BasicStartupComplete(int* exit_code) {
   InitLogging();
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   chromeos::RegisterPathProvider();
 #endif
 #if BUILDFLAG(ENABLE_NACL) && (defined(OS_LINUX) || defined(OS_CHROMEOS))
@@ -148,7 +153,9 @@ void ShellMainDelegate::PreSandboxStartup() {
   std::string process_type =
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
           switches::kProcessType);
-#if defined(OS_LINUX) && !defined(OS_CHROMEOS)
+// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
+// of lacros-chrome is complete.
+#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   crash_reporter::SetCrashReporterClient(GetCrashReporterClient());
   // Reporting for sub-processes will be initialized in ZygoteForked.
   if (process_type != switches::kZygoteProcess)
@@ -190,7 +197,9 @@ void ShellMainDelegate::ZygoteStarting(
 }
 #endif  // OS_POSIX && !OS_MAC && !OS_ANDROID
 
-#if defined(OS_LINUX) && !defined(OS_CHROMEOS)
+// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
+// of lacros-chrome is complete.
+#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 void ShellMainDelegate::ZygoteForked() {
   std::string process_type =
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
