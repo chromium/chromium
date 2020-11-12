@@ -1552,8 +1552,7 @@ class PolicyTemplateChecker(object):
 
       # TODO(crbug.com/1139046): This default check should apply to all
       # policies instead of just new ones.
-      if self._NeedsDefault(new_policy) and new_policy.get('default',
-                                                           None) == None:
+      if self._NeedsDefault(new_policy) and not 'default' in new_policy:
         self._Error("Definition of policy %s must include a 'default'"
                     " field." % (new_policy_name))
 
