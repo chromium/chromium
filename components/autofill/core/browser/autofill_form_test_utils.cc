@@ -94,6 +94,7 @@ FormData GetFormData(const TestFormAttributes& test_form_attributes) {
   form_data.url = GURL(test_form_attributes.url);
   form_data.action = GURL(test_form_attributes.action);
   form_data.name = ASCIIToUTF16(test_form_attributes.name);
+  static int field_count = 0;
   if (test_form_attributes.unique_renderer_id)
     form_data.unique_renderer_id = *test_form_attributes.unique_renderer_id;
   if (test_form_attributes.main_frame_origin)
@@ -113,6 +114,7 @@ FormData GetFormData(const TestFormAttributes& test_form_attributes) {
       field.value = ASCIIToUTF16(*field_description.value);
     if (field_description.is_autofilled)
       field.is_autofilled = *field_description.is_autofilled;
+    field.unique_renderer_id = FieldRendererId(field_count++);
     field.should_autocomplete = field_description.should_autocomplete;
     form_data.fields.push_back(field);
   }

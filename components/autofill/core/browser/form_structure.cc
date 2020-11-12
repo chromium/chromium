@@ -1062,29 +1062,16 @@ void FormStructure::RetrieveFromCache(
     const FormStructure& cached_form,
     const bool should_keep_cached_value,
     const bool only_server_and_autofill_state) {
-  // TODO(crbug/1101631) Clean up once the experiment is over.
-  const bool kUseRendererIds = base::FeatureList::IsEnabled(
-      features::kAutofillRetrieveFromCacheWithRendererIds);
-  std::map<base::string16, const AutofillField*> cached_fields_by_name;
   std::map<FieldRendererId, const AutofillField*> cached_fields_by_id;
   for (size_t i = 0; i < cached_form.field_count(); ++i) {
     auto* const field = cached_form.field(i);
-    if (kUseRendererIds)
-      cached_fields_by_id[field->unique_renderer_id] = field;
-    else
-      cached_fields_by_name[field->unique_name()] = field;
+    cached_fields_by_id[field->unique_renderer_id] = field;
   }
   for (auto& field : *this) {
     const AutofillField* cached_field = nullptr;
-    if (kUseRendererIds) {
-      const auto& it = cached_fields_by_id.find(field->unique_renderer_id);
-      if (it != cached_fields_by_id.end())
-        cached_field = it->second;
-    } else {
-      const auto& it = cached_fields_by_name.find(field->unique_name());
-      if (it != cached_fields_by_name.end())
-        cached_field = it->second;
-    }
+    const auto& it = cached_fields_by_id.find(field->unique_renderer_id);
+    if (it != cached_fields_by_id.end())
+      cached_field = it->second;
 
     // If the unique renderer id (or the name) is not stable due to some Java
     // Script magic in the website, use the field signature as a fallback
