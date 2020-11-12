@@ -22,7 +22,7 @@ class NavigationURLLoaderFactory {
       std::unique_ptr<NavigationUIData> navigation_ui_data,
       ServiceWorkerMainResourceHandle* service_worker_handle,
       NavigationURLLoaderDelegate* delegate,
-      bool is_served_from_back_forward_cache) = 0;
+      NavigationURLLoader::LoaderType loader_type) = 0;
 
  protected:
   NavigationURLLoaderFactory() {}

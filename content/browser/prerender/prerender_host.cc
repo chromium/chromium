@@ -70,12 +70,8 @@ void PrerenderHost::DidFinishNavigation(NavigationHandle* navigation_handle) {
 
 bool PrerenderHost::ActivatePrerenderedContents(
     RenderFrameHostImpl& current_render_frame_host) {
-  // TODO(https://crbug.com/1132746): We may have to cancel prerendering if
-  // ActivatePrerenderedContents() is called before DidFinishNavigation()
-  // because it is likely that the prerenderered contents are never used after
-  // that.
-  if (!is_ready_for_activation_ || !prerendered_contents_)
-    return false;
+  DCHECK(is_ready_for_activation_);
+  is_ready_for_activation_ = false;
 
   auto* current_web_contents =
       WebContents::FromRenderFrameHost(&current_render_frame_host);
@@ -85,10 +81,14 @@ bool PrerenderHost::ActivatePrerenderedContents(
   // Activate the prerendered contents.
   WebContentsDelegate* delegate = current_web_contents->GetDelegate();
   DCHECK(delegate);
+  DCHECK(prerendered_contents_);
   // Tentatively use Portal's activation function.
   // TODO(https://crbug.com/1132746): Replace this with the MPArch.
-  delegate->ActivatePortalWebContents(current_web_contents,
-                                      std::move(prerendered_contents_));
+  std::unique_ptr<WebContents> predecessor_web_contents =
+      delegate->ActivatePortalWebContents(current_web_contents,
+                                          std::move(prerendered_contents_));
+  // Stop loading on the predecessor WebContents.
+  predecessor_web_contents->Stop();
 
   // TODO(https://crbug.com/1132752): Notify the mojo capability controller that
   // the prerendered contents get activated.

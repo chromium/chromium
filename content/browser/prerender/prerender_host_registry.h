@@ -32,13 +32,20 @@ class CONTENT_EXPORT PrerenderHostRegistry {
   PrerenderHostRegistry(PrerenderHostRegistry&&) = delete;
   PrerenderHostRegistry& operator=(PrerenderHostRegistry&&) = delete;
 
+  // Registers the host for `prerendering_url`.
   void RegisterHost(const GURL& prerendering_url,
                     std::unique_ptr<PrerenderHost> prerender_host);
-  void UnregisterHost(const GURL& prerendering_url);
+
+  // Destroys the host registered for `prerendering_url`.
+  void AbandonHost(const GURL& prerendering_url);
+
+  // Selects the host for navigation to `url`. Returns nullptr if it's not found
+  // or not ready for activation yet.
+  std::unique_ptr<PrerenderHost> SelectForNavigation(const GURL& url);
 
   // Returns a prerender host for `prerendering_url`. Returns nullptr if the URL
   // doesn't match any prerender host.
-  PrerenderHost* FindHostByUrl(const GURL& prerendering_url);
+  PrerenderHost* FindHostByUrlForTesting(const GURL& prerendering_url);
 
  private:
   // TODO(https://crbug.com/1132746): Expire prerendered contents if they are

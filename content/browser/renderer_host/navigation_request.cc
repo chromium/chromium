@@ -39,6 +39,7 @@
 #include "content/browser/net/cross_origin_embedder_policy_reporter.h"
 #include "content/browser/net/cross_origin_opener_policy_reporter.h"
 #include "content/browser/network_service_instance_impl.h"
+#include "content/browser/prerender/prerender_host_registry.h"
 #include "content/browser/renderer_host/cookie_utils.h"
 #include "content/browser/renderer_host/debug_urls.h"
 #include "content/browser/renderer_host/frame_tree.h"
@@ -57,6 +58,7 @@
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/service_worker/service_worker_main_resource_handle.h"
 #include "content/browser/site_instance_impl.h"
+#include "content/browser/storage_partition_impl.h"
 #include "content/browser/web_package/prefetched_signed_exchange_cache.h"
 #include "content/browser/web_package/web_bundle_handle_tracker.h"
 #include "content/browser/web_package/web_bundle_navigation_info.h"
@@ -1474,6 +1476,27 @@ void NavigationRequest::BeginNavigation() {
         GetContentClient()->browser()->DetermineAllowedPreviews(
             common_params_->previews_state, this, common_params_->url);
   }
+
+  // Prerender2:
+  // Find an available prerendered page for the request URL. If it's found,
+  // this navigation will activate it instead of loading a page via network.
+  // Only the main frame is allowed to activate the prerendered page.
+  RenderFrameHostImpl* current_frame_host =
+      frame_tree_node_->current_frame_host();
+  if (base::FeatureList::IsEnabled(blink::features::kPrerender2) &&
+      !current_frame_host->GetParent()) {
+    auto* storage_partition_impl = static_cast<StoragePartitionImpl*>(
+        current_frame_host->GetStoragePartition());
+    PrerenderHostRegistry* prerender_host_registry =
+        storage_partition_impl->GetPrerenderHostRegistry();
+    if (prerender_host_registry) {
+      // If `prerender_host_` exists, this navigation will activate the
+      // prerendered page on navigation commit.
+      prerender_host_ =
+          prerender_host_registry->SelectForNavigation(common_params_->url);
+    }
+  }
+
   WillStartRequest();
 }
 
@@ -2875,6 +2898,10 @@ void NavigationRequest::OnStartChecksComplete(
         parent->last_committed_client_security_state().Clone();
   }
 
+  auto loader_type = NavigationURLLoader::LoaderType::kRegular;
+  if (IsServedFromBackForwardCache() || IsPrerenderedPageActivation())
+    loader_type = NavigationURLLoader::LoaderType::kNoop;
+
   loader_ = NavigationURLLoader::Create(
       browser_context, partition,
       std::make_unique<NavigationRequestInfo>(
@@ -2893,8 +2920,7 @@ void NavigationRequest::OnStartChecksComplete(
           std::move(cors_exempt_headers), std::move(client_security_state)),
       std::move(navigation_ui_data), service_worker_handle_.get(),
       appcache_handle_.get(), std::move(prefetched_signed_exchange_cache_),
-      this, IsServedFromBackForwardCache(), CreateCookieAccessObserver(),
-      std::move(interceptor));
+      this, loader_type, CreateCookieAccessObserver(), std::move(interceptor));
 
   DCHECK(!render_frame_host_);
 }
@@ -3251,6 +3277,21 @@ void NavigationRequest::CommitNavigation() {
     GetRenderFrameHost()->DidCommitBackForwardCacheNavigation(
         this, MakeDidCommitProvisionalLoadParamsForBFCache());
 
+    return;
+  }
+
+  if (base::FeatureList::IsEnabled(blink::features::kPrerender2) &&
+      IsPrerenderedPageActivation()) {
+    RenderFrameHostImpl* current_frame_host =
+        frame_tree_node_->current_frame_host();
+    DCHECK(!current_frame_host->GetParent());
+    // Retain the prerender host in a local variable because
+    // ActivatePrerenderedContents() will delete `this`. This should be a
+    // tentative approach until MPArch.
+    // TODO(https://crbug.com/1132746): Simplify the ownership structure after
+    // MPArch migration.
+    std::unique_ptr<PrerenderHost> prerender_host = std::move(prerender_host_);
+    prerender_host->ActivatePrerenderedContents(*current_frame_host);
     return;
   }
 
@@ -5257,6 +5298,11 @@ bool NavigationRequest::MaybeCancelFailedNavigation() {
   }
 
   return false;
+}
+
+bool NavigationRequest::IsPrerenderedPageActivation() const {
+  CHECK_GE(state_, WILL_START_REQUEST);
+  return !!prerender_host_;
 }
 
 }  // namespace content

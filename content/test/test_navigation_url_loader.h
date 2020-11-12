@@ -29,7 +29,7 @@ class TestNavigationURLLoader
  public:
   TestNavigationURLLoader(std::unique_ptr<NavigationRequestInfo> request_info,
                           NavigationURLLoaderDelegate* delegate,
-                          bool is_served_from_back_forward_cache);
+                          NavigationURLLoader::LoaderType loader_type);
 
   // NavigationURLLoader implementation.
   void FollowRedirect(
@@ -60,7 +60,7 @@ class TestNavigationURLLoader
   NavigationURLLoaderDelegate* delegate_;
   int redirect_count_;
 
-  bool is_served_from_back_forward_cache_;
+  const NavigationURLLoader::LoaderType loader_type_;
 };
 
 }  // namespace content

@@ -37,12 +37,20 @@ struct NavigationRequestInfo;
 // called, the request is aborted.
 class CONTENT_EXPORT NavigationURLLoader {
  public:
+  enum class LoaderType {
+    // Creates a regular NavigationURLLoader.
+    kRegular,
+
+    // Creates a noop NavigationURLLoader for BackForwardCache and Prerender.
+    kNoop,
+  };
+
   // Creates a NavigationURLLoader. The caller is responsible for ensuring that
   // |delegate| outlives the loader. |request_body| must not be accessed on the
   // UI thread after this point.
   //
-  // If |is_served_from_back_forward_cache| is true, a dummy
-  // CachedNavigationURLLoader will be returned.
+  // If |loader_type| is LoaderType::kNoop, a noop CachedNavigationURLLoader
+  // will be returned.
   //
   // TODO(davidben): When navigation is disentangled from the loader, the
   // request parameters should not come in as a navigation-specific
@@ -58,7 +66,7 @@ class CONTENT_EXPORT NavigationURLLoader {
       scoped_refptr<PrefetchedSignedExchangeCache>
           prefetched_signed_exchange_cache,
       NavigationURLLoaderDelegate* delegate,
-      bool is_served_from_back_forward_cache,
+      LoaderType loader_type,
       mojo::PendingRemote<network::mojom::CookieAccessObserver> cookie_observer,
       std::vector<std::unique_ptr<NavigationLoaderInterceptor>>
           initial_interceptors = {});

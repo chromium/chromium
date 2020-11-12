@@ -96,7 +96,7 @@ class NavigationURLLoaderTest : public testing::Test {
         browser_context_.get(),
         BrowserContext::GetDefaultStoragePartition(browser_context_.get()),
         std::move(request_info), nullptr, nullptr, nullptr, nullptr, delegate,
-        false, mojo::NullRemote());
+        NavigationURLLoader::LoaderType::kRegular, mojo::NullRemote());
   }
 
  protected:

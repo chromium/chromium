@@ -30,7 +30,7 @@ std::unique_ptr<NavigationURLLoader> NavigationURLLoader::Create(
     scoped_refptr<PrefetchedSignedExchangeCache>
         prefetched_signed_exchange_cache,
     NavigationURLLoaderDelegate* delegate,
-    bool is_served_from_back_forward_cache,
+    LoaderType loader_type,
     mojo::PendingRemote<network::mojom::CookieAccessObserver> cookie_observer,
     std::vector<std::unique_ptr<NavigationLoaderInterceptor>>
         initial_interceptors) {
@@ -38,10 +38,10 @@ std::unique_ptr<NavigationURLLoader> NavigationURLLoader::Create(
     return g_loader_factory->CreateLoader(
         storage_partition, std::move(request_info),
         std::move(navigation_ui_data), service_worker_handle, delegate,
-        is_served_from_back_forward_cache);
+        loader_type);
   }
 
-  if (is_served_from_back_forward_cache)
+  if (loader_type == LoaderType::kNoop)
     return CachedNavigationURLLoader::Create(std::move(request_info), delegate);
 
   return std::make_unique<NavigationURLLoaderImpl>(

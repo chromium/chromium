@@ -29,7 +29,7 @@ class TestNavigationURLLoaderFactory : public NavigationURLLoaderFactory {
       std::unique_ptr<NavigationUIData> navigation_ui_data,
       ServiceWorkerMainResourceHandle* service_worker_handle,
       NavigationURLLoaderDelegate* delegate,
-      bool is_served_from_back_forward_cache) override;
+      NavigationURLLoader::LoaderType loader_type) override;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(TestNavigationURLLoaderFactory);

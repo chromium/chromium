@@ -9,10 +9,11 @@
 
 namespace content {
 
-// NavigationURLLoader for navigations served by the back-forward cache. Unlike
-// a normal navigation, no actual URL loading occurs. This is because loading
-// already happened the first time this URL was navigated to (before it was
-// added to the back-forward cache).
+// NavigationURLLoader for navigations that activate a back-forward cached or
+// prerendered page. Unlike a normal navigation, no actual URL loading occurs.
+// This is because loading already happened the first time this URL was
+// navigated to (before it was added to the back-forward cache or when it was
+// prerendered).
 class CachedNavigationURLLoader : public NavigationURLLoader {
  public:
   CachedNavigationURLLoader(std::unique_ptr<NavigationRequestInfo> request_info,

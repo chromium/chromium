@@ -20,6 +20,7 @@
 #include "content/browser/initiator_csp_context.h"
 #include "content/browser/loader/navigation_url_loader_delegate.h"
 #include "content/browser/navigation_subresource_loader_params.h"
+#include "content/browser/prerender/prerender_host.h"
 #include "content/browser/renderer_host/cross_origin_opener_policy_status.h"
 #include "content/browser/renderer_host/navigation_controller_impl.h"
 #include "content/browser/renderer_host/navigation_entry_impl.h"
@@ -1124,6 +1125,11 @@ class CONTENT_EXPORT NavigationRequest
   // In that case, the caller must immediately return.
   bool MaybeCancelFailedNavigation();
 
+  // Prerender2:
+  // Returns true if this navigation will activate a prerendered page. It is
+  // only meaningful to call this after BeginNavigation().
+  bool IsPrerenderedPageActivation() const;
+
   // Never null. The pointee node owns this navigation request instance.
   FrameTreeNode* const frame_tree_node_;
 
@@ -1499,6 +1505,11 @@ class CONTENT_EXPORT NavigationRequest
 
   OptInOriginIsolationEndResult origin_isolation_end_result_ =
       OptInOriginIsolationEndResult::kNotRequestedAndNotIsolated;
+
+  // Prerender2:
+  // This is valid only when this navigation will activate the prerendered
+  // page.
+  std::unique_ptr<PrerenderHost> prerender_host_;
 
   base::WeakPtrFactory<NavigationRequest> weak_factory_{this};
 

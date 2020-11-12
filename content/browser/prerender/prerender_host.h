@@ -46,10 +46,12 @@ class CONTENT_EXPORT PrerenderHost final : public WebContentsObserver {
   void DidFinishNavigation(NavigationHandle* navigation_handle) override;
 
   // Activates the prerendered contents. Returns false when activation didn't
-  // occur for some reason (e.g., the prerendered contents are not ready for
-  // activation yet).
+  // occur for some reason. This must be called after this host gets ready for
+  // activation.
   bool ActivatePrerenderedContents(
       RenderFrameHostImpl& current_render_frame_host);
+
+  bool is_ready_for_activation() const { return is_ready_for_activation_; }
 
  private:
   const blink::mojom::PrerenderAttributesPtr attributes_;

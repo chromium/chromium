@@ -74,8 +74,7 @@ void PrerenderProcessor::Cancel() {
 void PrerenderProcessor::CancelPrerendering() {
   DCHECK_EQ(state_, State::kStarted);
   state_ = State::kCancelled;
-  // This destroys the prerender host.
-  GetPrerenderHostRegistry().UnregisterHost(prerendering_url_);
+  GetPrerenderHostRegistry().AbandonHost(prerendering_url_);
 }
 
 PrerenderHostRegistry& PrerenderProcessor::GetPrerenderHostRegistry() {

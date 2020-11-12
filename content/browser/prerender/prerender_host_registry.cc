@@ -31,11 +31,29 @@ void PrerenderHostRegistry::RegisterHost(
   prerender_host_by_url_[prerendering_url] = std::move(prerender_host);
 }
 
-void PrerenderHostRegistry::UnregisterHost(const GURL& prerendering_url) {
+void PrerenderHostRegistry::AbandonHost(const GURL& prerendering_url) {
   prerender_host_by_url_.erase(prerendering_url);
 }
 
-PrerenderHost* PrerenderHostRegistry::FindHostByUrl(
+std::unique_ptr<PrerenderHost> PrerenderHostRegistry::SelectForNavigation(
+    const GURL& url) {
+  auto found = prerender_host_by_url_.find(url);
+  if (found == prerender_host_by_url_.end())
+    return nullptr;
+
+  std::unique_ptr<PrerenderHost> host = std::move(found->second);
+  prerender_host_by_url_.erase(found);
+
+  // If the host is not ready for activation yet, destroys it and returns
+  // nullptr. This is because it is likely that the prerendered page is never
+  // used from now on.
+  if (!host->is_ready_for_activation())
+    return nullptr;
+
+  return host;
+}
+
+PrerenderHost* PrerenderHostRegistry::FindHostByUrlForTesting(
     const GURL& prerendering_url) {
   auto found = prerender_host_by_url_.find(prerendering_url);
   if (found == prerender_host_by_url_.end())
