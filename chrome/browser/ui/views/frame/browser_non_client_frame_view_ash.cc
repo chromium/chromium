@@ -13,8 +13,6 @@
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/themes/theme_properties.h"
-#include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_helper.h"
-#include "chrome/browser/ui/ash/session_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -66,6 +64,8 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/public/cpp/app_types.h"
 #include "ash/wm/window_util.h"
+#include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_helper.h"
+#include "chrome/browser/ui/ash/session_util.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace {
@@ -660,6 +660,7 @@ void BrowserNonClientFrameViewAsh::UpdateTopViewInset() {
 }
 
 bool BrowserNonClientFrameViewAsh::ShouldShowProfileIndicatorIcon() const {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // We only show the profile indicator for the teleported browser windows
   // between multi-user sessions. Note that you can't teleport an incognito
   // window.
@@ -680,9 +681,14 @@ bool BrowserNonClientFrameViewAsh::ShouldShowProfileIndicatorIcon() const {
 
   return MultiUserWindowManagerHelper::ShouldShowAvatar(
       browser_view()->GetNativeWindow());
+#else
+  NOTIMPLEMENTED() << "Multi-signin support is deprecated in Lacros.";
+  return false;
+#endif
 }
 
 void BrowserNonClientFrameViewAsh::UpdateProfileIcons() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   View* root_view = frame()->GetRootView();
   if (ShouldShowProfileIndicatorIcon()) {
     bool needs_layout = !profile_indicator_icon_;
@@ -707,6 +713,9 @@ void BrowserNonClientFrameViewAsh::UpdateProfileIcons() {
     if (root_view)
       root_view->Layout();
   }
+#else
+  NOTIMPLEMENTED() << "Multi-signin support is deprecated in Lacros.";
+#endif
 }
 
 void BrowserNonClientFrameViewAsh::LayoutProfileIndicator() {
