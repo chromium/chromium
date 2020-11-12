@@ -944,9 +944,6 @@ void AppListControllerImpl::OnHomeLauncherAnimationComplete(
   // Animations can be reversed (e.g. in a drag). Let's ensure the target
   // visibility is correct first.
   OnVisibilityChanged(shown, display_id);
-
-  if (!home_launcher_animation_callback_.is_null())
-    home_launcher_animation_callback_.Run(shown);
 }
 
 void AppListControllerImpl::OnHomeLauncherPositionChanged(int percent_shown,
@@ -1492,6 +1489,9 @@ void AppListControllerImpl::OnVisibilityChanged(bool visible,
     GetAssistantViewDelegate()->OnHostViewVisibilityChanged(real_visibility);
     for (auto& observer : observers_)
       observer.OnAppListVisibilityChanged(real_visibility, display_id);
+
+    if (!home_launcher_animation_callback_.is_null())
+      home_launcher_animation_callback_.Run(real_visibility);
   }
 }
 

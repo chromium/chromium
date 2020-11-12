@@ -11,6 +11,7 @@
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/tablet_mode/scoped_skip_user_session_blocked_check.h"
 #include "base/callback_helpers.h"
+#include "base/optional.h"
 
 namespace ash {
 namespace {
@@ -78,6 +79,17 @@ class LauncherStateWaiter {
   DISALLOW_COPY_AND_ASSIGN(LauncherStateWaiter);
 };
 
+bool WaitForHomeLauncherState(bool target_visible, base::OnceClosure closure) {
+  if (Shell::Get()->app_list_controller()->IsVisible(
+          /*display_id=*/base::nullopt) == target_visible) {
+    std::move(closure).Run();
+    return true;
+  }
+
+  new HomeLauncherStateWaiter(target_visible, std::move(closure));
+  return false;
+}
+
 }  // namespace
 
 std::vector<aura::Window*> GetAppWindowList() {
@@ -87,48 +99,60 @@ std::vector<aura::Window*> GetAppWindowList() {
 
 bool WaitForLauncherState(AppListViewState target_state,
                           base::OnceClosure closure) {
-  // In the tablet mode, some of the app-list state switching is handled
-  // differently. For open and close, HomeLauncherGestureHandler handles the
-  // gestures and animation. HomeLauncherStateWaiter can wait for such
-  // animation. For switching between the search and apps-grid,
-  // LauncherStateWaiter can wait for the animation.
-  bool should_wait_for_home_launcher = false;
-  if (Shell::Get()->tablet_mode_controller()->InTabletMode() &&
-      target_state != AppListViewState::kFullscreenSearch) {
-    // App-list can't enter into kPeeking or kHalf state. Thus |target_state|
-    // should be either kClosed or kFullscreenAllApps.
+  const bool in_tablet_mode =
+      Shell::Get()->tablet_mode_controller()->InTabletMode();
+  if (in_tablet_mode) {
+    // App-list can't enter kPeeking or kHalf state in tablet mode. Thus
+    // |target_state| should be either kClosed, kFullscreenAllApps or
+    // kFullscreenSearch.
     DCHECK(target_state == AppListViewState::kClosed ||
-           target_state == AppListViewState::kFullscreenAllApps);
-    const AppListViewState current_state =
-        Shell::Get()->app_list_controller()->GetAppListViewState();
-    should_wait_for_home_launcher =
-        (target_state == AppListViewState::kClosed) ||
-        (current_state != AppListViewState::kFullscreenSearch);
+           target_state == AppListViewState::kFullscreenAllApps ||
+           target_state == AppListViewState::kFullscreenSearch);
   }
-  if (should_wait_for_home_launcher) {
-    // We don't check if the home launcher is animating to the target visibility
-    // because a) home launcher behavior is deterministic, b) correctly
-    // deteching if the home launcher is animating to visibile/invisible require
-    // some refactoring.
-    bool target_visible = target_state != AppListViewState::kClosed;
-    new HomeLauncherStateWaiter(target_visible, std::move(closure));
-  } else {
-    // Don't wait if the launcher is already in the target state and not
-    // animating.
-    auto* app_list_view =
-        Shell::Get()->app_list_controller()->presenter()->GetView();
-    bool animating =
-        app_list_view &&
-        app_list_view->GetWidget()->GetLayer()->GetAnimator()->is_animating();
-    bool at_target_state =
-        (!app_list_view && target_state == AppListViewState::kClosed) ||
-        (app_list_view && app_list_view->app_list_state() == target_state);
-    if (at_target_state && !animating) {
-      std::move(closure).Run();
-      return true;
+
+  // In the tablet mode, home launcher visibility state needs special handling,
+  // as app list view visibility does not match home launcher visibility. The
+  // app list view is always visible, but the home launcher may be obscured by
+  // app windows. The waiter interprets waits for kClosed state as waits
+  // "home launcher not visible" state - note that the app list view
+  // is actually expected to be in a visible state.
+  AppListViewState effective_target_state =
+      in_tablet_mode && target_state == AppListViewState::kClosed
+          ? AppListViewState::kFullscreenAllApps
+          : target_state;
+
+  base::Optional<bool> target_home_launcher_visibility;
+  if (in_tablet_mode)
+    target_home_launcher_visibility = target_state != AppListViewState::kClosed;
+
+  // Don't wait if the launcher is already in the target state and not
+  // animating.
+  auto* app_list_view =
+      Shell::Get()->app_list_controller()->presenter()->GetView();
+  bool animating =
+      app_list_view &&
+      app_list_view->GetWidget()->GetLayer()->GetAnimator()->is_animating();
+  bool at_target_state =
+      (!app_list_view && effective_target_state == AppListViewState::kClosed) ||
+      (app_list_view &&
+       app_list_view->app_list_state() == effective_target_state);
+  if (at_target_state && !animating) {
+    // In tablet mode, ensure that the home launcher is in the expected state.
+    if (target_home_launcher_visibility.has_value()) {
+      return WaitForHomeLauncherState(*target_home_launcher_visibility,
+                                      std::move(closure));
     }
-    new LauncherStateWaiter(target_state, std::move(closure));
+    std::move(closure).Run();
+    return true;
   }
+
+  // In tablet mode, ensure that the home launcher is in the expected state.
+  base::OnceClosure callback =
+      target_home_launcher_visibility.has_value()
+          ? base::BindOnce(base::IgnoreResult(&WaitForHomeLauncherState),
+                           *target_home_launcher_visibility, std::move(closure))
+          : std::move(closure);
+  new LauncherStateWaiter(target_state, std::move(callback));
   return false;
 }
 
