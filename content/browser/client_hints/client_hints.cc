@@ -249,22 +249,27 @@ void AddDPRHeader(net::HttpRequestHeaders* headers,
 
 void AddViewportWidthHeader(net::HttpRequestHeaders* headers,
                             BrowserContext* context,
-                            const GURL& url,
-                            FrameTreeNode* frame_tree_node) {
+                            const GURL& url) {
   DCHECK(headers);
   DCHECK(context);
-  DCHECK(frame_tree_node);
-  int viewport_width = frame_tree_node->current_frame_host()
-                           ->GetRenderViewHost()
-                           ->GetWidget()
-                           ->GetView()
-                           ->GetVisibleViewportSize()
-                           .width();
+  // The default value on Android. See
+  // https://cs.chromium.org/chromium/src/third_party/WebKit/Source/core/css/viewportAndroid.css.
+  double viewport_width = 980;
+
+#if !defined(OS_ANDROID)
   double device_scale_factor = GetDeviceScaleFactor();
-  viewport_width /= GetZoomFactor(context, url) * device_scale_factor;
+  viewport_width = (display::Screen::GetScreen()
+                        ->GetPrimaryDisplay()
+                        .GetSizeInPixel()
+                        .width()) /
+                   GetZoomFactor(context, url) / device_scale_factor;
+#endif  // !OS_ANDROID
   DCHECK_LT(0, viewport_width);
-  SetHeaderToInt(headers, network::mojom::WebClientHintsType::kViewportWidth,
-                 viewport_width);
+  // TODO(yoav): Find out why this 0 check is needed...
+  if (viewport_width > 0) {
+    SetHeaderToInt(headers, network::mojom::WebClientHintsType::kViewportWidth,
+                   viewport_width);
+  }
 }
 
 void AddRttHeader(net::HttpRequestHeaders* headers,
@@ -618,7 +623,7 @@ void AddNavigationRequestClientHintsHeaders(
   }
   if (ShouldAddClientHint(data,
                           network::mojom::WebClientHintsType::kViewportWidth)) {
-    AddViewportWidthHeader(headers, context, url, frame_tree_node);
+    AddViewportWidthHeader(headers, context, url);
   }
   network::NetworkQualityTracker* network_quality_tracker =
       delegate->GetNetworkQualityTracker();

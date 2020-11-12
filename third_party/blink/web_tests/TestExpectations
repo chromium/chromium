@@ -6205,8 +6205,6 @@ crbug.com/1139052 virtual/webrtc-wpt-plan-b/external/wpt/webrtc/protocol/rtp-dem
 
 crbug.com/1137228 [ Mac ] external/wpt/infrastructure/testdriver/click_iframe_crossorigin.sub.html [ Pass Failure ]
 
-crbug.com/825892 external/wpt/client-hints/viewport-width-window-different-dimensions.https.html [ Failure ]
-
 # Rename document.featurePolicy to document.permissionsPolicy
 crbug.com/1123116 external/wpt/permissions-policy/payment-supported-by-permissions-policy.tentative.html [ Failure ]
 crbug.com/1123116 external/wpt/permissions-policy/permissions-policy-frame-policy-allowed-for-all.https.sub.html [ Failure ]

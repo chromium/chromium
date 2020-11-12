@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL viewport-width-subresource assert_equals: expected "503" but got "FAIL"
-Harness: the test ran to completion.
-
