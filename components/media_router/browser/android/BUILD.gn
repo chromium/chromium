@@ -72,6 +72,14 @@ android_library("java") {
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 }
 
+android_library("cast_options_provider_java") {
+  sources = [ "java/src/org/chromium/components/media_router/caf/CastOptionsProvider.java" ]
+  deps = [
+    "$google_play_services_package:google_play_services_cast_framework_java",
+    "$google_play_services_package:google_play_services_cast_java",
+  ]
+}
+
 generate_jni("jni_headers") {
   sources = [
     "java/src/org/chromium/components/media_router/BrowserMediaRouter.java",

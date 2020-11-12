@@ -218,6 +218,7 @@ android_library("java") {
     "//components/infobars/core:infobar_enums_java",
     "//components/javascript_dialogs/android:java",
     "//components/location/android:settings_java",
+    "//components/media_router/browser/android:cast_options_provider_java",
     "//components/media_router/browser/android:java",
     "//components/metrics:metrics_java",
     "//components/minidump_uploader:minidump_uploader_java",
