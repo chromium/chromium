@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/thumbnails/thumbnail_capture_driver.h"
 #include "chrome/browser/ui/thumbnails/thumbnail_readiness_tracker.h"
 #include "chrome/browser/ui/thumbnails/thumbnail_scheduler.h"
+#include "chrome/browser/ui/thumbnails/thumbnail_scheduler_impl.h"
 #include "components/history/core/common/thumbnail_score.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
@@ -83,27 +84,6 @@ class ScopedThumbnailCapture {
   // web contents has disappeared without having to add another observer.
   content::WebContentsObserver* const web_contents_observer_;
   bool captured_ = false;
-};
-
-// A scheduler that immediately captures any tab that wants it without
-// restrictions.
-class ImmediateThumbnailScheduler : public ThumbnailScheduler {
- public:
-  ImmediateThumbnailScheduler() = default;
-  ~ImmediateThumbnailScheduler() override = default;
-
-  // ThumbnailScheduler:
-  void AddTab(TabCapturer* tab) override {}
-  void RemoveTab(TabCapturer* tab) override {}
-
-  void SetTabCapturePriority(TabCapturer* tab,
-                             TabCapturePriority priority) override {
-    DCHECK(tab);
-    if (priority == TabCapturePriority::kNone)
-      tab->SetCapturePermittedByScheduler(false);
-    else
-      tab->SetCapturePermittedByScheduler(true);
-  }
 };
 
 }  // anonymous namespace
@@ -248,7 +228,7 @@ void ThumbnailTabHelper::RecordCaptureType(CaptureType type) {
 
 // static
 ThumbnailScheduler& ThumbnailTabHelper::GetScheduler() {
-  static base::NoDestructor<ImmediateThumbnailScheduler> instance;
+  static base::NoDestructor<ThumbnailSchedulerImpl> instance;
   return *instance.get();
 }
 
