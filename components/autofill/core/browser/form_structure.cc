@@ -56,6 +56,7 @@
 #include "components/autofill/core/common/logging/log_buffer.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/security_state/core/security_state.h"
+#include "components/version_info/version_info.h"
 #include "url/origin.h"
 
 namespace autofill {
@@ -64,8 +65,6 @@ using mojom::SubmissionIndicatorEvent;
 
 namespace {
 
-// Version of the client sent to the server.
-constexpr char kClientVersion[] = "6.1.1715.1442/en (GGLL)";
 constexpr char kBillingMode[] = "billing";
 constexpr char kShippingMode[] = "shipping";
 
@@ -705,7 +704,8 @@ bool FormStructure::EncodeUploadRequest(
   encoded_signatures->clear();
 
   upload->set_submission(observed_submission);
-  upload->set_client_version(kClientVersion);
+  upload->set_client_version(
+      version_info::GetProductNameAndVersionForUserAgent());
   upload->set_form_signature(form_signature().value());
   upload->set_autofill_used(form_was_autofilled);
   upload->set_data_present(EncodeFieldTypes(available_field_types));
@@ -763,7 +763,8 @@ bool FormStructure::EncodeQueryRequest(
   queried_form_signatures->clear();
   queried_form_signatures->reserve(forms.size());
 
-  query->set_client_version(kClientVersion);
+  query->set_client_version(
+      version_info::GetProductNameAndVersionForUserAgent());
 
   // If a page contains repeated forms, detect that and encode only one form as
   // the returned data would be the same for all the repeated forms.

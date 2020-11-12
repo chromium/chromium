@@ -21,6 +21,7 @@
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager_observer.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/version_info/version_info.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
@@ -28,6 +29,8 @@
 #include "services/network/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/third_party/mozilla/url_parse.h"
+
+using version_info::GetProductNameAndVersionForUserAgent;
 
 namespace autofill {
 namespace {
@@ -181,7 +184,7 @@ IN_PROC_BROWSER_TEST_F(AutofillServerTest,
       "</script>";
 
   AutofillPageQueryRequest query;
-  query.set_client_version("6.1.1715.1442/en (GGLL)");
+  query.set_client_version(GetProductNameAndVersionForUserAgent());
   auto* query_form = query.add_forms();
   query_form->set_signature(15916856893790176210U);
 
@@ -205,7 +208,7 @@ IN_PROC_BROWSER_TEST_F(AutofillServerTest,
   AutofillUploadRequest request;
   AutofillUploadContents* upload = request.mutable_upload();
   upload->set_submission(true);
-  upload->set_client_version("6.1.1715.1442/en (GGLL)");
+  upload->set_client_version(GetProductNameAndVersionForUserAgent());
   upload->set_form_signature(15916856893790176210U);
   upload->set_autofill_used(false);
   // TODO(crbug.com/1103421): Clean legacy implementation once structured names
@@ -258,7 +261,7 @@ IN_PROC_BROWSER_TEST_F(AutofillServerTest, AlwaysQueryForPasswordFields) {
       "</form>";
 
   AutofillPageQueryRequest query;
-  query.set_client_version("6.1.1715.1442/en (GGLL)");
+  query.set_client_version(GetProductNameAndVersionForUserAgent());
   auto* query_form = query.add_forms();
   query_form->set_signature(8900697631820480876U);
 
