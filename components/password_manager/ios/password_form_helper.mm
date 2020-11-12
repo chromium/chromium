@@ -63,9 +63,9 @@ constexpr char kCommandPrefix[] = "passwordForm";
 
 // Parses the |jsonString| which contatins the password forms found on a web
 // page to populate the |forms| vector.
-- (void)getPasswordFormsFromJSON:(NSString*)jsonString
-                         pageURL:(const GURL&)pageURL
-                           forms:(std::vector<FormData>*)forms;
+- (void)getPasswordForms:(std::vector<FormData>*)forms
+                fromJSON:(NSString*)jsonString
+                 pageURL:(const GURL&)pageURL;
 
 @end
 
@@ -228,11 +228,11 @@ constexpr char kCommandPrefix[] = "passwordForm";
   return NO;
 }
 
-- (void)getPasswordFormsFromJSON:(NSString*)jsonString
-                         pageURL:(const GURL&)pageURL
-                           forms:(std::vector<FormData>*)forms {
+- (void)getPasswordForms:(std::vector<FormData>*)forms
+                fromJSON:(NSString*)JSONString
+                 pageURL:(const GURL&)pageURL {
   std::vector<FormData> formsData;
-  if (!autofill::ExtractFormsData(jsonString, false, base::string16(), pageURL,
+  if (!autofill::ExtractFormsData(JSONString, false, base::string16(), pageURL,
                                   pageURL.GetOrigin(), &formsData)) {
     return;
   }
@@ -276,11 +276,11 @@ constexpr char kCommandPrefix[] = "passwordForm";
   __weak PasswordFormHelper* weakSelf = self;
   [self.jsPasswordManager
       findPasswordFormsInFrame:GetMainFrame(_webState)
-             completionHandler:^(NSString* jsonString) {
+             completionHandler:^(NSString* JSONString) {
                std::vector<FormData> forms;
-               [weakSelf getPasswordFormsFromJSON:jsonString
-                                          pageURL:pageURL
-                                            forms:&forms];
+               [weakSelf getPasswordForms:&forms
+                                 fromJSON:JSONString
+                                  pageURL:pageURL];
                // Find the maximum extracted value.
                uint32_t maxID = 0;
                for (const auto& form : forms) {
