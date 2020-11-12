@@ -292,8 +292,9 @@ export class TabSearchAppElement extends PolymerElement {
    */
   onItemClose_(e) {
     performance.mark('close_tab:benchmark_begin');
+    const tabIndex = e.currentTarget.parentNode.indexOf(e.currentTarget);
     const tabId = Number.parseInt(e.currentTarget.id, 10);
-    this.apiProxy_.closeTab(tabId);
+    this.apiProxy_.closeTab(tabId, !!this.searchText_, tabIndex);
     this.announceA11y_(loadTimeData.getString('a11yTabClosed'));
     listenOnce(this.$.tabsList, 'rendered-item-count-changed', () => {
       performance.mark('close_tab:benchmark_end');

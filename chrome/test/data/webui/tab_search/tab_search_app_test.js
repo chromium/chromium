@@ -110,8 +110,11 @@ suite('TabSearchAppTest', () => {
     const tabSearchItemCloseButton = /** @type {!HTMLElement} */ (
         tabSearchItem.shadowRoot.querySelector('cr-icon-button'));
     tabSearchItemCloseButton.click();
-    const tabId = await testProxy.whenCalled('closeTab');
+    const [tabId, withSearch, closedTabIndex] =
+        await testProxy.whenCalled('closeTab');
     assertEquals(tabData.tabId, tabId);
+    assertFalse(withSearch);
+    assertEquals(0, closedTabIndex);
   });
 
   test('Keyboard navigation on an empty list', async () => {

@@ -18,8 +18,12 @@ export const TabSwitchAction = {
 
 /** @interface */
 export class TabSearchApiProxy {
-  /** @param {number} tabId */
-  closeTab(tabId) {}
+  /**
+   * @param {number} tabId
+   * @param {boolean} withSearch
+   * @param {number} closedTabIndex
+   */
+  closeTab(tabId, withSearch, closedTabIndex) {}
 
   /** @return {Promise<{profileTabs: ProfileTabs}>} */
   getProfileTabs() {}
@@ -57,7 +61,11 @@ export class TabSearchApiProxyImpl {
   }
 
   /** @override */
-  closeTab(tabId) {
+  closeTab(tabId, withSearch, closedTabIndex) {
+    chrome.metricsPrivate.recordSmallCount(
+        withSearch ? 'Tabs.TabSearch.WebUI.IndexOfCloseTabInFilteredList' :
+                     'Tabs.TabSearch.WebUI.IndexOfCloseTabInUnfilteredList',
+        closedTabIndex);
     this.handler.closeTab(tabId);
   }
 
