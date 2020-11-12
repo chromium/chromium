@@ -29,6 +29,7 @@ proto_library("proto_v2") {
     "v2/wire/action_payload.proto",
     "v2/wire/capability.proto",
     "v2/wire/chrome_feed_response_metadata.proto",
+    "v2/wire/chrome_fulfillment_info.proto",
     "v2/wire/client_info.proto",
     "v2/wire/consistency_token.proto",
     "v2/wire/content_id.proto",

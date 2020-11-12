@@ -108,5 +108,31 @@ TEST(ProtoUtilTest, DisableCapabilitiesWithFinch) {
   EXPECT_TRUE(HasCapability(request, feedwire::Capability::PREFETCH_METADATA));
 }
 
+TEST(ProtoUtilTest, NoticeCardAcknowledged) {
+  RequestMetadata request_metadata;
+  request_metadata.notice_card_acknowledged = true;
+  feedwire::Request request = CreateFeedQueryRefreshRequest(
+      feedwire::FeedQuery::MANUAL_REFRESH, request_metadata,
+      /*consistency_token=*/std::string());
+
+  EXPECT_TRUE(request.feed_request()
+                  .feed_query()
+                  .chrome_fulfillment_info()
+                  .notice_card_acknowledged());
+}
+
+TEST(ProtoUtilTest, NoticeCardNotAcknowledged) {
+  RequestMetadata request_metadata;
+  request_metadata.notice_card_acknowledged = false;
+  feedwire::Request request = CreateFeedQueryRefreshRequest(
+      feedwire::FeedQuery::MANUAL_REFRESH, request_metadata,
+      /*consistency_token=*/std::string());
+
+  EXPECT_FALSE(request.feed_request()
+                   .feed_query()
+                   .chrome_fulfillment_info()
+                   .notice_card_acknowledged());
+}
+
 }  // namespace
 }  // namespace feed
