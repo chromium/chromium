@@ -194,14 +194,14 @@ void AddToWidgetInputEventObservers(
 }
 
 // Removes |observer| from the input observers of |widget_host|.
-void RemoveFromWidgetInputEventObservers(
+// This method is a NOOP for branded builds.
+void MaybeRemoveFromWidgetInputEventObservers(
     content::RenderWidgetHost* widget_host,
     content::RenderWidgetHost::InputEventObserver* observer) {
 #if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // TODO(https://crbug.com/1104919): Remove this logging.
   VLOG(1) << __FUNCTION__ << ": widget_host: " << widget_host
           << "; observer: " << observer;
-#endif
 
   if (!widget_host)
     return;
@@ -210,6 +210,7 @@ void RemoveFromWidgetInputEventObservers(
   widget_host->RemoveImeInputEventObserver(observer);
 #endif
   widget_host->RemoveInputEventObserver(observer);
+#endif  // !BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }
 
 #if defined(OS_ANDROID)
@@ -1282,7 +1283,7 @@ void ChromePasswordManagerClient::WebContentsDestroyed() {
   VLOG(1) << "wc->GetRenderViewHost(): "
           << web_contents()->GetMainFrame()->GetRenderViewHost();
 #endif
-  RemoveFromWidgetInputEventObservers(
+  MaybeRemoveFromWidgetInputEventObservers(
       web_contents()->GetMainFrame()->GetRenderViewHost()->GetWidget(), this);
 
   auto* autofill_assistant_manager =
@@ -1343,7 +1344,7 @@ void ChromePasswordManagerClient::RenderFrameDeleted(
 
   if (!render_frame_host->GetView())
     return;
-  RemoveFromWidgetInputEventObservers(
+  MaybeRemoveFromWidgetInputEventObservers(
       render_frame_host->GetView()->GetRenderWidgetHost(), this);
 }
 
