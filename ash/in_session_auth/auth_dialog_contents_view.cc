@@ -540,18 +540,6 @@ void AuthDialogContentsView::AddActionButtonsView() {
   buttons_layout->set_main_axis_alignment(
       views::BoxLayout::MainAxisAlignment::kStart);
 
-  cancel_button_ =
-      action_view_container_->AddChildView(std::make_unique<views::LabelButton>(
-          base::BindRepeating(&AuthDialogContentsView::OnCancelButtonPressed,
-                              base::Unretained(this)),
-          l10n_util::GetStringUTF16(IDS_ASH_IN_SESSION_AUTH_CANCEL),
-          views::style::CONTEXT_BUTTON));
-  cancel_button_->SetEnabledTextColors(kTextColorPrimary);
-
-  auto* spacing = action_view_container_->AddChildView(
-      std::make_unique<NonAccessibleView>());
-  buttons_layout->SetFlexForView(spacing, 1);
-
   help_button_ =
       action_view_container_->AddChildView(std::make_unique<views::LabelButton>(
           base::BindRepeating(&AuthDialogContentsView::OnNeedHelpButtonPressed,
@@ -559,8 +547,19 @@ void AuthDialogContentsView::AddActionButtonsView() {
           l10n_util::GetStringUTF16(IDS_ASH_IN_SESSION_AUTH_HELP),
           views::style::CONTEXT_BUTTON));
   help_button_->SetEnabledTextColors(kTextColorPrimary);
+
+  auto* spacing = action_view_container_->AddChildView(
+      std::make_unique<NonAccessibleView>());
+  buttons_layout->SetFlexForView(spacing, 1);
+
+  cancel_button_ = action_view_container_->AddChildView(
+      std::make_unique<views::MdTextButton>(
+          base::BindRepeating(&AuthDialogContentsView::OnCancelButtonPressed,
+                              base::Unretained(this)),
+          l10n_util::GetStringUTF16(IDS_ASH_IN_SESSION_AUTH_CANCEL)));
+
   action_view_container_->SetPreferredSize(
-      gfx::Size(kContainerPreferredWidth, help_button_->height()));
+      gfx::Size(kContainerPreferredWidth, cancel_button_->height()));
 }
 
 void AuthDialogContentsView::OnCancelButtonPressed(const ui::Event& event) {
@@ -627,6 +626,18 @@ void AuthDialogContentsView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->SetName(
       l10n_util::GetStringFUTF16(IDS_ASH_IN_SESSION_AUTH_ACCESSIBLE_TITLE,
                                  base::UTF8ToUTF16(origin_name_)));
+}
+
+void AuthDialogContentsView::RequestFocus() {
+  if (auth_methods_ == kAuthFingerprint) {
+    // There's no PIN input field, so let the focus be on the cancel button
+    // (instead of the help button) because it is more often used.
+    cancel_button_->RequestFocus();
+    return;
+  }
+
+  // For other cases, the base method correctly sets focus to the input field.
+  views::View::RequestFocus();
 }
 
 }  // namespace ash

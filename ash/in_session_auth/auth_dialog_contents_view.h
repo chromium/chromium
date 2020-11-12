@@ -15,6 +15,7 @@ namespace views {
 class BoxLayout;
 class Label;
 class LabelButton;
+class MdTextButton;
 }  // namespace views
 
 namespace ash {
@@ -52,6 +53,7 @@ class AuthDialogContentsView : public views::View {
 
   // views::Views:
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
+  void RequestFocus() override;
 
   uint32_t auth_methods() const { return auth_methods_; }
 
@@ -152,7 +154,7 @@ class AuthDialogContentsView : public views::View {
   FingerprintView* fingerprint_view_ = nullptr;
 
   // A button to cancel authentication and close the dialog.
-  views::LabelButton* cancel_button_ = nullptr;
+  views::MdTextButton* cancel_button_ = nullptr;
 
   // A button to show a help center article.
   views::LabelButton* help_button_ = nullptr;
