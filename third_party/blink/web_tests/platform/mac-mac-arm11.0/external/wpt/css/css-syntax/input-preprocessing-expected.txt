@@ -1,0 +1,13 @@
+This is a testharness.js-based test.
+PASS "foo\0" becomes "fooï¿½"
+PASS "f\0oo" becomes "fï¿½oo"
+PASS "\0foo" becomes "ï¿½foo"
+PASS "\0" becomes "ï¿½"
+PASS "\0\0\0" becomes "ï¿½ï¿½ï¿½"
+FAIL "fooU+d800" becomes "fooï¿½" assert_equals: expected "foo\ufffd" but got "fooí €"
+FAIL "fU+d800oo" becomes "fï¿½oo" assert_equals: expected "f\ufffdoo" but got "fí €oo"
+FAIL "U+d800foo" becomes "ï¿½foo" assert_equals: expected "\ufffdfoo" but got "í €foo"
+FAIL "U+d800" becomes "ï¿½" assert_equals: expected "\ufffd" but got "í €"
+FAIL "U+d800U+d800U+d800" becomes "ï¿½ï¿½ï¿½" assert_equals: expected "\ufffd\ufffd\ufffd" but got "í €í €í €"
+Harness: the test ran to completion.
+

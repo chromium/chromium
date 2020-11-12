@@ -360,7 +360,7 @@ PASS Parsing: <sc::a@example.net> against <about:blank>
 PASS Parsing: <wow:%NBD> against <about:blank>
 PASS Parsing: <wow:%1G> against <about:blank>
 FAIL Parsing: <wow:￿> against <about:blank> assert_equals: href expected "wow:%EF%BF%BF" but got "wow:%EF%BF%BD"
-FAIL Parsing: <http://example.com/U+d800���U+dffeU+dfff﷐﷏﷯ﷰ￾￿?U+d800���U+dffeU+dfff﷐﷏﷯ﷰ￾￿> against <about:blank> assert_equals: href expected "http://example.com/%EF%BF%BD%F0%90%9F%BE%EF%BF%BD%EF%B7%90%EF%B7%8F%EF%B7%AF%EF%B7%B0%EF%BF%BE%EF%BF%BF?%EF%BF%BD%F0%90%9F%BE%EF%BF%BD%EF%B7%90%EF%B7%8F%EF%B7%AF%EF%B7%B0%EF%BF%BE%EF%BF%BF" but got "http://example.com/%EF%BF%BD%F0%90%9F%BE%EF%BF%BD%EF%BF%BD%EF%B7%8F%EF%BF%BD%EF%B7%B0%EF%BF%BD%EF%BF%BD?%EF%BF%BD%F0%90%9F%BE%EF%BF%BD%EF%BF%BD%EF%B7%8F%EF%BF%BD%EF%B7%B0%EF%BF%BD%EF%BF%BD"
+FAIL Parsing: <http://example.com/U+d800𐟾U+dfff﷐﷏﷯ﷰ￾￿?U+d800𐟾U+dfff﷐﷏﷯ﷰ￾￿> against <about:blank> assert_equals: href expected "http://example.com/%EF%BF%BD%F0%90%9F%BE%EF%BF%BD%EF%B7%90%EF%B7%8F%EF%B7%AF%EF%B7%B0%EF%BF%BE%EF%BF%BF?%EF%BF%BD%F0%90%9F%BE%EF%BF%BD%EF%B7%90%EF%B7%8F%EF%B7%AF%EF%B7%B0%EF%BF%BE%EF%BF%BF" but got "http://example.com/%EF%BF%BD%F0%90%9F%BE%EF%BF%BD%EF%BF%BD%EF%B7%8F%EF%BF%BD%EF%B7%B0%EF%BF%BD%EF%BF%BD?%EF%BF%BD%F0%90%9F%BE%EF%BF%BD%EF%BF%BD%EF%B7%8F%EF%BF%BD%EF%B7%B0%EF%BF%BD%EF%BF%BD"
 FAIL Parsing: <http://a<b> against <about:blank> assert_unreached: Expected URL to fail parsing Reached unreachable code
 FAIL Parsing: <http://a>b> against <about:blank> assert_unreached: Expected URL to fail parsing Reached unreachable code
 FAIL Parsing: <http://a^b> against <about:blank> assert_equals: failure should set href to input expected "http://a^b" but got "http://a%5Eb/"

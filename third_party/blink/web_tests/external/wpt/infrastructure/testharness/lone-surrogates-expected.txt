@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+PASS passing test with lone surrogate U+d800 in name
+FAIL failing test with lone surrogate U+d800 in name assert_true: expected true got false
+PASS passing test with lone surrogate in assert
+FAIL failing test with lone surrogate in assert assert_true: lone U+d800 surrogate expected true got false
+Harness: the test ran to completion.
+

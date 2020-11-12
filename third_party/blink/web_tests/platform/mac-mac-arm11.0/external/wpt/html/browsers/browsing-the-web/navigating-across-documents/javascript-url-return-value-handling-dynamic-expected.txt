@@ -1,0 +1,13 @@
+This is a testharness.js-based test.
+PASS Test javascript URL string return values in direct and indirect (target) frame contexts.
+PASS Test javascript URL string return values in direct and indirect (target) frame contexts. 1
+PASS Test javascript URL string return values in direct and indirect (target) frame contexts. 2
+PASS Test javascript URL string return values in direct and indirect (target) frame contexts. 3
+FAIL Test javascript URL string return values in direct and indirect (target) frame contexts. 4 assert_equals: expected "Ì∏çA" but got "\ufffd\ufffd\ufffdA"
+PASS Test javascript URL string return values in direct and indirect (target) frame contexts. 5
+PASS Test javascript URL string return values in direct and indirect (target) frame contexts. 6
+PASS Test javascript URL string return values in direct and indirect (target) frame contexts. 7
+PASS Test javascript URL string return values in direct and indirect (target) frame contexts. 8
+FAIL Test javascript URL string return values in direct and indirect (target) frame contexts. 9 assert_equals: expected "Ì∏çA" but got "\ufffd\ufffd\ufffdA"
+Harness: the test ran to completion.
+

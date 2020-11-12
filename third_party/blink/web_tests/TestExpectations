@@ -2569,6 +2569,7 @@ crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/table-anonymous-objects-20
 crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/table-anonymous-objects-206.xht [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 external/wpt/mediacapture-record/MediaRecorder-stop.html [ Timeout ]
 crbug.com/626703 [ Mac11.0 ] external/wpt/fetch/api/response/response-clone.any.worker.html [ Failure Timeout ]
 crbug.com/626703 [ Mac11.0 ] virtual/omt-worker-fetch/external/wpt/fetch/api/response/response-clone.any.sharedworker.html [ Failure Timeout ]
 crbug.com/626703 [ Mac11.0 ] external/wpt/fetch/api/response/response-clone.any.serviceworker.html [ Failure Timeout ]

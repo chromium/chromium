@@ -400,7 +400,7 @@ PASS Parsing: <sc::a@example.net> against <about:blank>
 PASS Parsing: <wow:%NBD> against <about:blank>
 PASS Parsing: <wow:%1G> against <about:blank>
 FAIL Parsing: <wow:￿> against <about:blank> assert_equals: href expected "wow:%EF%BF%BF" but got "wow:%EF%BF%BD"
-FAIL Parsing: <http://example.com/U+d800���U+dffeU+dfff﷐﷏﷯ﷰ￾￿?U+d800���U+dffeU+dfff﷐﷏﷯ﷰ￾￿> against <about:blank> Failed to construct 'URL': Invalid URL
+FAIL Parsing: <http://example.com/U+d800𐟾U+dfff﷐﷏﷯ﷰ￾￿?U+d800𐟾U+dfff﷐﷏﷯ﷰ￾￿> against <about:blank> Failed to construct 'URL': Invalid URL
 FAIL Parsing: <http://a<b> against <about:blank> assert_throws_js: function "function() {
           bURL(expected.input, expected.base)
         }" did not throw
