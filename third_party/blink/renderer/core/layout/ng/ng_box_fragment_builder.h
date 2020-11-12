@@ -353,6 +353,7 @@ class CORE_EXPORT NGBoxFragmentBuilder final
   bool HasSeenAllChildren() { return has_seen_all_children_; }
 
   void SetIsAtBlockEnd() { is_at_block_end_ = true; }
+  bool IsAtBlockEnd() const { return is_at_block_end_; }
 
   void SetColumnSpanner(NGBlockNode spanner) { column_spanner_ = spanner; }
   bool FoundColumnSpanner() const { return !!column_spanner_; }

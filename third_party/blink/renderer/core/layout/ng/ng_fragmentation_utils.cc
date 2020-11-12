@@ -329,18 +329,8 @@ bool FinishFragmentation(NGBlockNode node,
     sides.block_end = false;
   builder->SetSidesToInclude(sides);
 
-  LayoutUnit consumed_here = final_block_size;
-  if (builder->DidBreakSelf() || builder->HasChildBreakInside()) {
-    // If this node is to be resumed in the next fragmentainer, consumed
-    // block-size always includes the entire remainder of the fragmentainer. The
-    // frament itself will only do that unless we've reached the end of the node
-    // (and we are breaking because of overflow). We include the entire
-    // fragmentainer in consumed block-size in order to write offsets correctly
-    // back to legacy layout, which would otherwise become incorrect for
-    // overflowing content.
-    consumed_here = std::max(consumed_here, space_left);
-  }
-  builder->SetConsumedBlockSize(previously_consumed_block_size + consumed_here);
+  builder->SetConsumedBlockSize(previously_consumed_block_size +
+                                final_block_size);
   builder->SetFragmentBlockSize(final_block_size);
 
   if (builder->FoundColumnSpanner())
@@ -403,6 +393,18 @@ bool FinishFragmentation(NGBlockNode node,
       if (!builder->HasInflowChildBreakInside())
         builder->SetBreakAppeal(kBreakAppealPerfect);
     }
+
+    if (builder->IsAtBlockEnd()) {
+      // This node is to be resumed in the next fragmentainer. Make sure that
+      // consumed block-size includes the entire remainder of the fragmentainer.
+      // The fragment will normally take up all that space, but not if we've
+      // reached the end of the node (and we are breaking because of
+      // overflow). We include the entire fragmentainer in consumed block-size
+      // in order to write offsets correctly back to legacy layout.
+      builder->SetConsumedBlockSize(previously_consumed_block_size +
+                                    std::max(final_block_size, space_left));
+    }
+
     return true;
   }
 

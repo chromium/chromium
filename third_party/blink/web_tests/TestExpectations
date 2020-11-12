@@ -1124,7 +1124,6 @@ crbug.com/829028 virtual/layout_ng_block_frag/fast/multicol/overflowing-columns-
 crbug.com/1079031 virtual/layout_ng_block_frag/fast/multicol/positioned-outside-of-columns.html [ Crash Failure ]
 crbug.com/1079031 virtual/layout_ng_block_frag/fast/multicol/positioned-split.html [ Failure ]
 crbug.com/1079031 virtual/layout_ng_block_frag/fast/multicol/span/abspos-containing-block-outside-spanner.html [ Crash Failure Timeout ]
-crbug.com/829028 virtual/layout_ng_block_frag/fast/multicol/span/inside-block-with-fixed-height.html [ Failure ]
 crbug.com/1058792 virtual/layout_ng_block_frag/fast/multicol/span/invalid-spanner-in-transform.html [ Failure Crash ]
 crbug.com/829028 virtual/layout_ng_block_frag/fast/multicol/span/outer-column-break-after-inner-spanner-2.html [ Failure ]
 crbug.com/829028 virtual/layout_ng_block_frag/fast/multicol/span/outer-column-break-after-inner-spanner-and-float.html [ Failure ]
