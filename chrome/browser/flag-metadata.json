@@ -373,12 +373,12 @@
   {
     "name": "autofill-use-improved-label-disambiguation",
     "owners": [ "fhorschig" ],
-    "expiry_milestone": 87
+    "expiry_milestone": 90
   },
   {
     "name": "autofill-use-mobile-label-disambiguation",
     "owners": [ "fhorschig" ],
-    "expiry_milestone": 87
+    "expiry_milestone": 90
   },
   {
     "name": "autofill-use-renderer-ids",
@@ -2140,7 +2140,7 @@
   {
     "name": "enable-suggestions-with-substring-match",
     "owners": [ "fhorschig" ],
-    "expiry_milestone": 87
+    "expiry_milestone": 90
   },
   {
     "name": "enable-surface-control",
