@@ -1346,6 +1346,10 @@ template("mojom") {
         full_name = get_label_info("$d", "label_no_toolchain")
         public_deps += [ "${full_name}${variant_suffix}_headers" ]
       }
+      if (defined(bindings_configuration.for_blink) &&
+          bindings_configuration.for_blink) {
+        public_deps += [ "//mojo/public/cpp/bindings:wtf_support" ]
+      }
     }
 
     if (!force_source_set && defined(invoker.component_macro_prefix)) {

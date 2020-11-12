@@ -4,9 +4,18 @@
 
 assert(!is_ios)
 
+import("//build/buildflag_header.gni")
 import("//build/config/compiler/compiler.gni")
 import("//testing/test.gni")
+import("//third_party/blink/public/public_features.gni")
 import("//third_party/blink/renderer/config.gni")
+
+buildflag_header("buildflags") {
+  header = "buildflags.h"
+  header_dir = "third_party/blink/renderer/platform/wtf"
+
+  flags = [ "USE_V8_OILPAN=$enable_blink_heap_use_v8_oilpan" ]
+}
 
 visibility = [
   ":*",
@@ -201,8 +210,12 @@ component("wtf") {
     "//third_party/blink/renderer:features",
   ]
 
-  # TODO(tkent): WTF should not depend on it.
-  deps = [ "//third_party/blink/public/common:headers" ]
+  deps = [
+    ":buildflags",
+
+    # TODO(tkent): WTF should not depend on it.
+    "//third_party/blink/public/common:headers",
+  ]
 
   public_deps = [
     "//base",
@@ -210,6 +223,10 @@ component("wtf") {
     "//components/crash/core/common:crash_key",
     "//third_party/icu",
   ]
+
+  if (enable_blink_heap_use_v8_oilpan) {
+    public_deps += [ "//v8:cppgc_headers" ]
+  }
 
   # Rules changing the |sources| list are temporarily commented out, until
   # those files are actually moved to here.
