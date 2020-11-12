@@ -318,6 +318,7 @@ window.addEventListener('DOMContentLoaded', () => {
   /** @type{{features: Object<string, boolean>}} */ (window).features = {
     imageAnnotation: loadTimeData.getBoolean('imageAnnotation'),
     flagsMenu: loadTimeData.getBoolean('flagsMenu'),
+    isDevChannel: loadTimeData.getBoolean('isDevChannel'),
   };
 
   const app = getApp();

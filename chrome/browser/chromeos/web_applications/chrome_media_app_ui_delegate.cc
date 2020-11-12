@@ -47,4 +47,5 @@ void ChromeMediaAppUIDelegate::PopulateLoadTimeData(
   version_info::Channel channel = chrome::GetChannel();
   source->AddBoolean("flagsMenu", channel != version_info::Channel::BETA &&
                                       channel != version_info::Channel::STABLE);
+  source->AddBoolean("isDevChannel", channel == version_info::Channel::DEV);
 }
