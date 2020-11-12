@@ -595,13 +595,13 @@ Additional details:
     Screen capture paused
   </message>
   <message name="IDS_POLICY_DLP_SCREEN_CAPTURE_PAUSED_MESSAGE" desc="The message for notification informing the user that screen capture is paused.">
-    Screen capture has been paused by your administrator due to content on your screen.
+    Screen capture was paused by your administrator due to content on your screen.
   </message>
   <message name="IDS_POLICY_DLP_SCREEN_CAPTURE_RESUMED_TITLE" desc="The title for notification informing the user that screen capture is resumed.">
     Screen capture resumed
   </message>
   <message name="IDS_POLICY_DLP_SCREEN_CAPTURE_RESUMED_MESSAGE" desc="The message for notification informing the user that screen capture is resumed.">
-    Screen capture has been resumed.
+    Screen capture was resumed.
   </message>
 
 </grit-part>
