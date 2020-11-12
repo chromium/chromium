@@ -14,7 +14,7 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -522,8 +522,9 @@ class PasswordProtectionService : public history::HistoryServiceObserver {
   // dialog.
   std::list<std::string> common_spoofed_domains_;
 
-  ScopedObserver<history::HistoryService, history::HistoryServiceObserver>
-      history_service_observer_{this};
+  base::ScopedObservation<history::HistoryService,
+                          history::HistoryServiceObserver>
+      history_service_observation_{this};
 
   // Weakptr can only cancel task if it is posted to the same thread. Therefore,
   // we need CancelableTaskTracker to cancel tasks posted to IO thread.
