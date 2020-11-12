@@ -1,5 +1,5 @@
-HTML_TYPE_NAME | 1.n |  |  | -default-default
-HTML_TYPE_EMAIL | 1.e |  |  | -default-default
+HTML_TYPE_NAME | 1.n |  |  | one-shipping-default
+HTML_TYPE_EMAIL | 1.e |  |  | one-shipping-default
 HTML_TYPE_ADDRESS_LINE1 | 1.a |  |  | one-shipping-default
 UNKNOWN_TYPE | 2.name |  |  | 2.name_1-default
 EMAIL_ADDRESS | 2.email |  |  | 2.name_1-default

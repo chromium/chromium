@@ -712,23 +712,9 @@
             ],
             "experiments": [
                 {
-                    "name": "EnableAllImprovementsButNewSectioning",
-                    "enable_features": [
-                        "AutofillAllowHtmlTypeCountryCodesWithFullNames",
-                        "AutofillImportPrefilledCountryAndStateValues",
-                        "AutofillKeepCachedFormValues",
-                        "AutofillProfileImportFromUnfocusableFields",
-                        "AutofillProfileImportFromUnifiedSection",
-                        "AutofillRetrieveFromCacheWithRendererIds",
-                        "AutofillUsePageLanguageToTranslateCountryNames",
-                        "AutofillUseParseCityStateCountryZipCodeInHeuristic",
-                        "AutofillUseVariationCountryCode"
-                    ]
-                },
-                {
                     "name": "EnableNewSectioning",
                     "enable_features": [
-                        "AutofillSectionUponRedundantNameInfo"
+                        "AutofillUseNewSectioningMethod"
                     ]
                 }
             ]

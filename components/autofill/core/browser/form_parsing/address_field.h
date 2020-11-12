@@ -73,13 +73,6 @@ class AddressField : public FormField {
   bool ParseState(AutofillScanner* scanner, const std::string& page_language);
 
   // Parses the current field pointed to by |scanner|, if it exists, and tries
-  // to figure out whether the field's type: city, state, zip, or none of those.
-  // TODO(crbug.com/1073555) Delete this once experiment
-  // |kAutofillUseParseCityStateCountryZipCodeInHeuristic| has been launched.
-  bool ParseCityStateZipCode(AutofillScanner* scanner,
-                             const std::string& page_language);
-
-  // Parses the current field pointed to by |scanner|, if it exists, and tries
   // to figure out whether the field's type: city, state, country, zip, or
   // none of those.
   bool ParseCityStateCountryZipCode(AutofillScanner* scanner,

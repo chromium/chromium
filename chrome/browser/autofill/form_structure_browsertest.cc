@@ -168,14 +168,14 @@ FormStructureBrowserTest::FormStructureBrowserTest()
     : DataDrivenTest(GetTestDataDir()) {
   feature_list_.InitWithFeatures(
       // Enabled
-      {
-          // TODO(crbug.com/1098943): Remove once experiment is over.
-          autofill::features::kAutofillEnableSupportForMoreStructureInNames,
-          // TODO(crbug.com/1125978): Remove once launched.
-          autofill::features::kAutofillEnableSupportForMoreStructureInAddresses,
-          // TODO(crbug.com/896689): Remove once launched.
-          autofill::features::kAutofillNameSectionsWithRendererIds,
-      },
+      {// TODO(crbug.com/1098943): Remove once experiment is over.
+       autofill::features::kAutofillEnableSupportForMoreStructureInNames,
+       // TODO(crbug.com/1125978): Remove once launched.
+       autofill::features::kAutofillEnableSupportForMoreStructureInAddresses,
+       // TODO(crbug.com/896689): Remove once launched.
+       autofill::features::kAutofillNameSectionsWithRendererIds,
+       // TODO(crbug.com/1076175) Remove once launched.
+       autofill::features::kAutofillUseNewSectioningMethod},
       // Disabled
       {autofill::features::kAutofillRestrictUnownedFieldsToFormlessCheckout});
 }

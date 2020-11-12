@@ -449,63 +449,6 @@ AddressField::ParseNameLabelResult AddressField::ParseNameAndLabelSeparately(
   return RESULT_MATCH_NONE;
 }
 
-bool AddressField::ParseCityStateZipCode(AutofillScanner* scanner,
-                                         const std::string& page_language) {
-  // Simple cases.
-  if (scanner->IsEnd())
-    return false;
-  if (city_ && state_ && zip_)
-    return false;
-  if (state_ && zip_)
-    return ParseCity(scanner, page_language);
-  if (city_ && zip_)
-    return ParseState(scanner, page_language);
-  if (city_ && state_)
-    return ParseZipCode(scanner, page_language);
-
-  // Check for matches to both name and label.
-  ParseNameLabelResult city_result =
-      ParseNameAndLabelForCity(scanner, page_language);
-  if (city_result == RESULT_MATCH_NAME_LABEL)
-    return true;
-  ParseNameLabelResult state_result =
-      ParseNameAndLabelForState(scanner, page_language);
-  if (state_result == RESULT_MATCH_NAME_LABEL)
-    return true;
-  ParseNameLabelResult zip_result =
-      ParseNameAndLabelForZipCode(scanner, page_language);
-  if (zip_result == RESULT_MATCH_NAME_LABEL)
-    return true;
-
-  // Check if there is only one potential match.
-  bool maybe_city = city_result != RESULT_MATCH_NONE;
-  bool maybe_state = state_result != RESULT_MATCH_NONE;
-  bool maybe_zip = zip_result != RESULT_MATCH_NONE;
-  if (maybe_city && !maybe_state && !maybe_zip)
-    return SetFieldAndAdvanceCursor(scanner, &city_);
-  if (maybe_state && !maybe_city && !maybe_zip)
-    return SetFieldAndAdvanceCursor(scanner, &state_);
-  if (maybe_zip && !maybe_city && !maybe_state)
-    return ParseZipCode(scanner, page_language);
-
-  // Otherwise give name priority over label.
-  if (city_result == RESULT_MATCH_NAME)
-    return SetFieldAndAdvanceCursor(scanner, &city_);
-  if (state_result == RESULT_MATCH_NAME)
-    return SetFieldAndAdvanceCursor(scanner, &state_);
-  if (zip_result == RESULT_MATCH_NAME)
-    return ParseZipCode(scanner, page_language);
-
-  if (city_result == RESULT_MATCH_LABEL)
-    return SetFieldAndAdvanceCursor(scanner, &city_);
-  if (state_result == RESULT_MATCH_LABEL)
-    return SetFieldAndAdvanceCursor(scanner, &state_);
-  if (zip_result == RESULT_MATCH_LABEL)
-    return ParseZipCode(scanner, page_language);
-
-  return false;
-}
-
 bool AddressField::ParseCityStateCountryZipCode(
     AutofillScanner* scanner,
     const std::string& page_language) {

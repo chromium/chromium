@@ -140,6 +140,8 @@ FormStructureBrowserTest::FormStructureBrowserTest()
           autofill::features::kAutofillEnableSupportForMoreStructureInAddresses,
           // TODO(crbug.com/896689): Remove once launched.
           autofill::features::kAutofillNameSectionsWithRendererIds,
+          // TODO(crbug.com/1076175) Remove once launched.
+          autofill::features::kAutofillUseNewSectioningMethod,
       },
       // Disabled
       {autofill::features::kAutofillRestrictUnownedFieldsToFormlessCheckout});
