@@ -15554,6 +15554,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileTopToolbarVoiceButton">
+  <owner>jds@chromium.org</owner>
+  <owner>chrome-language@google.com</owner>
+  <description>
+    The user tapped on the top toolbar's voice search button.
+  </description>
+</action>
+
 <action name="MobileUsingMenuByHwButtonDragging">
   <obsolete>
     Deprecated as of 06/2014. We removed this feature http://crbug.com/366154 .
