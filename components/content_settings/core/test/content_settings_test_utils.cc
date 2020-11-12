@@ -17,7 +17,6 @@ base::Value* TestUtils::GetContentSettingValue(
     const GURL& primary_url,
     const GURL& secondary_url,
     ContentSettingsType content_type,
-    const std::string& resource_identifier,
     bool include_incognito) {
   return HostContentSettingsMap::GetContentSettingValueAndPatterns(
              provider, primary_url, secondary_url, content_type,
@@ -31,11 +30,9 @@ ContentSetting TestUtils::GetContentSetting(
     const GURL& primary_url,
     const GURL& secondary_url,
     ContentSettingsType content_type,
-    const std::string& resource_identifier,
     bool include_incognito) {
-  std::unique_ptr<base::Value> value(
-      GetContentSettingValue(provider, primary_url, secondary_url, content_type,
-                             resource_identifier, include_incognito));
+  std::unique_ptr<base::Value> value(GetContentSettingValue(
+      provider, primary_url, secondary_url, content_type, include_incognito));
   return ValueToContentSetting(value.get());
 }
 

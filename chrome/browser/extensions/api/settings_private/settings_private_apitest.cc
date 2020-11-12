@@ -116,7 +116,7 @@ IN_PROC_BROWSER_TEST_F(SettingsPrivateApiTest, GetPartiallyManagedPref) {
   auto provider = std::make_unique<content_settings::MockProvider>();
   provider->SetWebsiteSetting(
       ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
-      ContentSettingsType::COOKIES, std::string(),
+      ContentSettingsType::COOKIES,
       std::make_unique<base::Value>(ContentSetting::CONTENT_SETTING_ALLOW));
   content_settings::TestUtils::OverrideProvider(
       HostContentSettingsMapFactory::GetForProfile(profile()),

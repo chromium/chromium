@@ -26,8 +26,7 @@ class ObservableProvider : public ProviderInterface {
  protected:
   void NotifyObservers(const ContentSettingsPattern& primary_pattern,
                        const ContentSettingsPattern& secondary_pattern,
-                       ContentSettingsType content_type,
-                       const std::string& resource_identifier);
+                       ContentSettingsType content_type);
   void RemoveAllObservers();
   bool CalledOnValidThread();
 

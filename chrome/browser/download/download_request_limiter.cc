@@ -347,7 +347,7 @@ void DownloadRequestLimiter::TabDownloadState::OnContentSettingChanged(
   GURL origin = origin_.GetURL();
   // Analogous to PageSpecificContentSettings::OnContentSettingChanged:
   const ContentSettingsDetails details(primary_pattern, secondary_pattern,
-                                       content_type, std::string());
+                                       content_type);
 
   // Check if the settings change affects the most recent origin passed
   // to SetDownloadStatusAndNotify(). If so, we need to update the omnibox

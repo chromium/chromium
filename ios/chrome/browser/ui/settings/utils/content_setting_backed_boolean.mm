@@ -65,8 +65,7 @@ void ContentSettingsObserverBridge::OnContentSettingChanged(
     return;
   }
   const ContentSettingsDetails settings_details(
-      primary_pattern, secondary_pattern, content_type,
-      /*resource_identifier=*/std::string());
+      primary_pattern, secondary_pattern, content_type);
   ContentSettingsType settingID = settings_details.type();
   // Unfortunately, because the ContentSettingsPolicyProvider doesn't publish
   // the specific content setting on policy updates, we must refresh on every

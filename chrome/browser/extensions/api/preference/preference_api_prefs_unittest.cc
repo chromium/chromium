@@ -273,7 +273,7 @@ class ControlledPrefsUninstallExtension : public ExtensionControlledPrefsTest {
         ContentSettingsPattern::FromString("http://[*.]example.com");
     store->SetExtensionContentSetting(
         extension1()->id(), pattern, pattern, ContentSettingsType::IMAGES,
-        std::string(), CONTENT_SETTING_BLOCK, kExtensionPrefsScopeRegular);
+        CONTENT_SETTING_BLOCK, kExtensionPrefsScopeRegular);
 
     UninstallExtension(extension1()->id());
   }

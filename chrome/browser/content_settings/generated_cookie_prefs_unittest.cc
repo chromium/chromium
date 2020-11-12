@@ -256,14 +256,14 @@ void SetupManagedTestConditions(
   auto provider = std::make_unique<content_settings::MockProvider>();
   provider->SetWebsiteSetting(
       ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
-      ContentSettingsType::COOKIES, std::string(),
+      ContentSettingsType::COOKIES,
       std::make_unique<base::Value>(test_case.default_content_setting));
 
   if (test_case.default_content_setting != CONTENT_SETTING_DEFAULT) {
     auto provider = std::make_unique<content_settings::MockProvider>();
     provider->SetWebsiteSetting(
         ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
-        ContentSettingsType::COOKIES, std::string(),
+        ContentSettingsType::COOKIES,
         std::make_unique<base::Value>(test_case.default_content_setting));
     HostContentSettingsMap::ProviderType provider_type;
     switch (test_case.default_content_setting_source) {
@@ -400,7 +400,7 @@ TEST_F(GeneratedCookiePrefsTest, PrimarySettingPref) {
   auto provider = std::make_unique<content_settings::MockProvider>();
   provider->SetWebsiteSetting(
       ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
-      ContentSettingsType::COOKIES, std::string(),
+      ContentSettingsType::COOKIES,
       std::make_unique<base::Value>(ContentSetting::CONTENT_SETTING_ALLOW));
   content_settings::TestUtils::OverrideProvider(
       map, std::move(provider), HostContentSettingsMap::POLICY_PROVIDER);
@@ -498,7 +498,7 @@ TEST_F(GeneratedCookiePrefsTest, SessionOnlyPref) {
   auto provider = std::make_unique<content_settings::MockProvider>();
   provider->SetWebsiteSetting(
       ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
-      ContentSettingsType::COOKIES, std::string(),
+      ContentSettingsType::COOKIES,
       std::make_unique<base::Value>(ContentSetting::CONTENT_SETTING_ALLOW));
   content_settings::TestUtils::OverrideProvider(
       map, std::move(provider),
@@ -512,7 +512,7 @@ TEST_F(GeneratedCookiePrefsTest, SessionOnlyPref) {
   provider = std::make_unique<content_settings::MockProvider>();
   provider->SetWebsiteSetting(
       ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
-      ContentSettingsType::COOKIES, std::string(),
+      ContentSettingsType::COOKIES,
       std::make_unique<base::Value>(ContentSetting::CONTENT_SETTING_ALLOW));
   content_settings::TestUtils::OverrideProvider(
       map, std::move(provider), HostContentSettingsMap::SUPERVISED_PROVIDER);
@@ -525,7 +525,7 @@ TEST_F(GeneratedCookiePrefsTest, SessionOnlyPref) {
   provider = std::make_unique<content_settings::MockProvider>();
   provider->SetWebsiteSetting(
       ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
-      ContentSettingsType::COOKIES, std::string(),
+      ContentSettingsType::COOKIES,
       std::make_unique<base::Value>(ContentSetting::CONTENT_SETTING_ALLOW));
   content_settings::TestUtils::OverrideProvider(
       map, std::move(provider), HostContentSettingsMap::POLICY_PROVIDER);

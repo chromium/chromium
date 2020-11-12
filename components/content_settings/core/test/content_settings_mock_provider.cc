@@ -15,16 +15,14 @@ MockProvider::~MockProvider() {}
 
 std::unique_ptr<RuleIterator> MockProvider::GetRuleIterator(
     ContentSettingsType content_type,
-    const ResourceIdentifier& resource_identifier,
     bool incognito) const {
-  return value_map_.GetRuleIterator(content_type, resource_identifier, nullptr);
+  return value_map_.GetRuleIterator(content_type, nullptr);
 }
 
 bool MockProvider::SetWebsiteSetting(
     const ContentSettingsPattern& requesting_url_pattern,
     const ContentSettingsPattern& embedding_url_pattern,
     ContentSettingsType content_type,
-    const ResourceIdentifier& resource_identifier,
     std::unique_ptr<base::Value>&& in_value,
     const ContentSettingConstraints& constraints) {
   if (read_only_)
@@ -32,11 +30,11 @@ bool MockProvider::SetWebsiteSetting(
   std::unique_ptr<base::Value> value(std::move(in_value));
   if (value) {
     value_map_.SetValue(requesting_url_pattern, embedding_url_pattern,
-                        content_type, resource_identifier, base::Time(),
-                        std::move(*value), constraints);
+                        content_type, base::Time(), std::move(*value),
+                        constraints);
   } else {
     value_map_.DeleteValue(requesting_url_pattern, embedding_url_pattern,
-                           content_type, resource_identifier);
+                           content_type);
   }
   return true;
 }

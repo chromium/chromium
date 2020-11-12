@@ -63,17 +63,15 @@ class MockUserModifiableProvider
     : public content_settings::UserModifiableProvider {
  public:
   ~MockUserModifiableProvider() override = default;
-  MOCK_CONST_METHOD3(GetRuleIterator,
-                     std::unique_ptr<content_settings::RuleIterator>(
-                         ContentSettingsType,
-                         const content_settings::ResourceIdentifier&,
-                         bool));
+  MOCK_CONST_METHOD2(
+      GetRuleIterator,
+      std::unique_ptr<content_settings::RuleIterator>(ContentSettingsType,
+                                                      bool));
 
-  MOCK_METHOD6(SetWebsiteSetting,
+  MOCK_METHOD5(SetWebsiteSetting,
                bool(const ContentSettingsPattern&,
                     const ContentSettingsPattern&,
                     ContentSettingsType,
-                    const content_settings::ResourceIdentifier&,
                     std::unique_ptr<base::Value>&&,
                     const content_settings::ContentSettingConstraints&));
 
@@ -81,11 +79,10 @@ class MockUserModifiableProvider
 
   MOCK_METHOD0(ShutdownOnUIThread, void());
 
-  MOCK_METHOD4(GetWebsiteSettingLastModified,
+  MOCK_METHOD3(GetWebsiteSettingLastModified,
                base::Time(const ContentSettingsPattern&,
                           const ContentSettingsPattern&,
-                          ContentSettingsType,
-                          const content_settings::ResourceIdentifier&));
+                          ContentSettingsType));
 
   MOCK_METHOD1(SetClockForTesting, void(base::Clock*));
 };
@@ -1667,7 +1664,7 @@ TEST_F(HostContentSettingsMapTest, LastModifiedMultipleModifiableProviders) {
   std::unique_ptr<MockUserModifiableProvider> provider =
       std::make_unique<MockUserModifiableProvider>();
   EXPECT_CALL(*provider, GetWebsiteSettingLastModified(
-                             _, _, ContentSettingsType::NOTIFICATIONS, _))
+                             _, _, ContentSettingsType::NOTIFICATIONS))
       .WillOnce(Return(t1));
   MockUserModifiableProvider* weak_provider = provider.get();
   map->RegisterUserModifiableProvider(
@@ -1677,7 +1674,7 @@ TEST_F(HostContentSettingsMapTest, LastModifiedMultipleModifiableProviders) {
   std::unique_ptr<MockUserModifiableProvider> other_provider =
       std::make_unique<MockUserModifiableProvider>();
   EXPECT_CALL(*other_provider, GetWebsiteSettingLastModified(
-                                   _, _, ContentSettingsType::NOTIFICATIONS, _))
+                                   _, _, ContentSettingsType::NOTIFICATIONS))
       .WillRepeatedly(Return(t2));
   MockUserModifiableProvider* weak_other_provider = other_provider.get();
   map->RegisterUserModifiableProvider(
@@ -1693,7 +1690,7 @@ TEST_F(HostContentSettingsMapTest, LastModifiedMultipleModifiableProviders) {
   clock->Advance(base::TimeDelta::FromSeconds(1));
   base::Time t3 = clock->Now();
   EXPECT_CALL(*weak_provider, GetWebsiteSettingLastModified(
-                                  _, _, ContentSettingsType::NOTIFICATIONS, _))
+                                  _, _, ContentSettingsType::NOTIFICATIONS))
       .WillOnce(Return(t3));
 
   // Expect the timestamp from the registered provider to be reported now.
@@ -1926,7 +1923,7 @@ TEST_F(HostContentSettingsMapTest, EphemeralTypeDoesntReadFromPrefProvider) {
   content_settings::PrefProvider pref_provider(profile.GetPrefs(), true, true,
                                                false);
   pref_provider.SetWebsiteSetting(
-      pattern, pattern, ephemeral_type, std::string(),
+      pattern, pattern, ephemeral_type,
       std::make_unique<base::Value>(CONTENT_SETTING_BLOCK), {});
 
   EXPECT_EQ(CONTENT_SETTING_ALLOW,

@@ -7,7 +7,6 @@
 namespace content_settings {
 std::unique_ptr<RuleIterator> ProviderInterface::GetDiscardedRuleIterator(
     ContentSettingsType content_type,
-    const ResourceIdentifier& resource_identifier,
     bool incognito) const {
   return std::make_unique<EmptyRuleIterator>();
 }

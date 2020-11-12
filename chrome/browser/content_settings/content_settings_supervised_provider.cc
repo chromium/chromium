@@ -66,10 +66,9 @@ SupervisedProvider::~SupervisedProvider() {
 
 std::unique_ptr<RuleIterator> SupervisedProvider::GetRuleIterator(
     ContentSettingsType content_type,
-    const ResourceIdentifier& resource_identifier,
     bool incognito) const {
   base::AutoLock auto_lock(lock_);
-  return value_map_.GetRuleIterator(content_type, resource_identifier);
+  return value_map_.GetRuleIterator(content_type);
 }
 
 void SupervisedProvider::OnSupervisedSettingsAvailable(
@@ -94,8 +93,7 @@ void SupervisedProvider::OnSupervisedSettingsAvailable(
     }
   }
   for (ContentSettingsType type : to_notify) {
-    NotifyObservers(ContentSettingsPattern(), ContentSettingsPattern(),
-                    type, std::string());
+    NotifyObservers(ContentSettingsPattern(), ContentSettingsPattern(), type);
   }
 }
 
@@ -105,7 +103,6 @@ bool SupervisedProvider::SetWebsiteSetting(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
     ContentSettingsType content_type,
-    const ResourceIdentifier& resource_identifier,
     std::unique_ptr<base::Value>&& value,
     const ContentSettingConstraints& constraints) {
   return false;

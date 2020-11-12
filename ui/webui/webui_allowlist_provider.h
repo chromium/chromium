@@ -29,14 +29,12 @@ class WebUIAllowlistProvider : public content_settings::ObservableProvider {
   // content_settings::ObservableProvider:
   std::unique_ptr<content_settings::RuleIterator> GetRuleIterator(
       ContentSettingsType content_type,
-      const content_settings::ResourceIdentifier& /*resource_identifier*/,
       bool incognito) const override;
   void ShutdownOnUIThread() override;
   bool SetWebsiteSetting(
       const ContentSettingsPattern& primary_pattern,
       const ContentSettingsPattern& secondary_pattern,
       ContentSettingsType content_type,
-      const content_settings::ResourceIdentifier& /*resource_identifier*/,
       std::unique_ptr<base::Value>&& value,
       const content_settings::ContentSettingConstraints& constraints) override;
   void ClearAllContentSettingsRules(ContentSettingsType content_type) override;

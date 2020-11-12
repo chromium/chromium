@@ -86,10 +86,10 @@ void WebPageNotifierControllerTest::TestGetNotifiersList(
   auto provider = std::make_unique<content_settings::MockProvider>();
 
   for (const char* pattern : kTestPatterns) {
-    provider->SetWebsiteSetting(
-        ContentSettingsPattern::FromString(pattern),
-        ContentSettingsPattern::Wildcard(), ContentSettingsType::NOTIFICATIONS,
-        std::string(), std::make_unique<base::Value>(content_setting));
+    provider->SetWebsiteSetting(ContentSettingsPattern::FromString(pattern),
+                                ContentSettingsPattern::Wildcard(),
+                                ContentSettingsType::NOTIFICATIONS,
+                                std::make_unique<base::Value>(content_setting));
   }
 
   content_settings::TestUtils::OverrideProvider(

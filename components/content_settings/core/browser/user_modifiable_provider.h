@@ -25,8 +25,7 @@ class UserModifiableProvider : public ObservableProvider {
   virtual base::Time GetWebsiteSettingLastModified(
       const ContentSettingsPattern& primary_pattern,
       const ContentSettingsPattern& secondary_pattern,
-      ContentSettingsType content_type,
-      const ResourceIdentifier& resource_identifier) = 0;
+      ContentSettingsType content_type) = 0;
   // Sets the providers internal clock for testing purposes.
   virtual void SetClockForTesting(base::Clock* clock) = 0;
 };

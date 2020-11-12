@@ -34,15 +34,6 @@ const char kExpirationPath[] = "expiration";
 const char kSessionModelPath[] = "model";
 const char kSettingPath[] = "setting";
 const char kLastModifiedPath[] = "last_modified";
-const char kPerResourceIdentifierPrefName[] = "per_resource";
-
-// If the given content type supports resource identifiers in user preferences,
-// returns true and sets |pref_key| to the key in the content settings
-// dictionary under which per-resource content settings are stored.
-// Otherwise, returns false.
-bool SupportsResourceIdentifiers(ContentSettingsType content_type) {
-  return content_type == ContentSettingsType::PLUGINS;
-}
 
 bool IsValueAllowedForType(const base::Value* value, ContentSettingsType type) {
   const content_settings::ContentSettingsInfo* info =
@@ -140,8 +131,7 @@ ContentSettingsPref::ContentSettingsPref(
       off_the_record_(off_the_record),
       restore_session_(restore_session),
       updating_preferences_(false),
-      notify_callback_(notify_callback),
-      allow_resource_identifiers_(false) {
+      notify_callback_(notify_callback) {
   DCHECK(prefs_);
 
   ReadContentSettingsFromPref();
@@ -154,23 +144,15 @@ ContentSettingsPref::ContentSettingsPref(
 ContentSettingsPref::~ContentSettingsPref() {}
 
 std::unique_ptr<RuleIterator> ContentSettingsPref::GetRuleIterator(
-    const ResourceIdentifier& resource_identifier,
     bool off_the_record) const {
-  // Resource Identifiers have been supported by the API but never used by any
-  // users of the API.
-  // TODO(crbug.com/754178): remove |resource_identifier| from the API.
-  DCHECK(resource_identifier.empty() || allow_resource_identifiers_);
-
   if (off_the_record)
-    return off_the_record_value_map_.GetRuleIterator(
-        content_type_, resource_identifier, &lock_);
-  return value_map_.GetRuleIterator(content_type_, resource_identifier, &lock_);
+    return off_the_record_value_map_.GetRuleIterator(content_type_, &lock_);
+  return value_map_.GetRuleIterator(content_type_, &lock_);
 }
 
 bool ContentSettingsPref::SetWebsiteSetting(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
-    const ResourceIdentifier& resource_identifier,
     base::Time modified_time,
     std::unique_ptr<base::Value>&& in_value,
     const ContentSettingConstraints& constraints) {
@@ -178,13 +160,7 @@ bool ContentSettingsPref::SetWebsiteSetting(
   DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK(prefs_);
   DCHECK(primary_pattern != ContentSettingsPattern::Wildcard() ||
-         secondary_pattern != ContentSettingsPattern::Wildcard() ||
-         (!resource_identifier.empty() && allow_resource_identifiers_));
-
-  // Resource Identifiers have been supported by the API but never used by any
-  // users of the API.
-  // TODO(crbug.com/754178): remove |resource_identifier| from the API.
-  DCHECK(resource_identifier.empty() || allow_resource_identifiers_);
+         secondary_pattern != ContentSettingsPattern::Wildcard());
 
   // At this point take the ownership of the |in_value|.
   std::unique_ptr<base::Value> value(std::move(in_value));
@@ -198,35 +174,32 @@ bool ContentSettingsPref::SetWebsiteSetting(
     base::AutoLock auto_lock(lock_);
     if (value) {
       map_to_modify->SetValue(primary_pattern, secondary_pattern, content_type_,
-                              resource_identifier, modified_time,
-                              value->Clone(), constraints);
+                              modified_time, value->Clone(), constraints);
     } else {
       map_to_modify->DeleteValue(primary_pattern, secondary_pattern,
-                                 content_type_, resource_identifier);
+                                 content_type_);
     }
   }
   // Update the content settings preference.
   if (!off_the_record_) {
-    UpdatePref(primary_pattern, secondary_pattern, resource_identifier,
-               modified_time, value.get(), constraints);
+    UpdatePref(primary_pattern, secondary_pattern, modified_time, value.get(),
+               constraints);
   }
 
-  notify_callback_.Run(primary_pattern, secondary_pattern, content_type_,
-                       resource_identifier);
+  notify_callback_.Run(primary_pattern, secondary_pattern, content_type_);
 
   return true;
 }
 
 base::Time ContentSettingsPref::GetWebsiteSettingLastModified(
     const ContentSettingsPattern& primary_pattern,
-    const ContentSettingsPattern& secondary_pattern,
-    const ResourceIdentifier& resource_identifier) {
+    const ContentSettingsPattern& secondary_pattern) {
   OriginIdentifierValueMap* map_to_modify = &off_the_record_value_map_;
   if (!off_the_record_)
     map_to_modify = &value_map_;
 
   base::Time last_modified = map_to_modify->GetLastModified(
-      primary_pattern, secondary_pattern, content_type_, resource_identifier);
+      primary_pattern, secondary_pattern, content_type_);
   return last_modified;
 }
 
@@ -258,7 +231,7 @@ void ContentSettingsPref::ClearAllContentSettingsRules() {
   }
 
   notify_callback_.Run(ContentSettingsPattern(), ContentSettingsPattern(),
-                       content_type_, ResourceIdentifier());
+                       content_type_);
 }
 
 size_t ContentSettingsPref::GetNumExceptions() {
@@ -347,29 +320,6 @@ void ContentSettingsPref::ReadContentSettingsFromPref() {
       continue;
     }
 
-    if (SupportsResourceIdentifiers(content_type_)) {
-      const base::DictionaryValue* resource_dictionary = nullptr;
-      if (settings_dictionary->GetDictionary(kPerResourceIdentifierPrefName,
-                                             &resource_dictionary)) {
-        base::Time last_modified = GetTimeStamp(settings_dictionary);
-        for (base::DictionaryValue::Iterator j(*resource_dictionary);
-             !j.IsAtEnd(); j.Advance()) {
-          const std::string& resource_identifier(j.key());
-          int setting = CONTENT_SETTING_DEFAULT;
-          bool is_integer = j.value().GetAsInteger(&setting);
-          DCHECK(is_integer);
-          DCHECK_NE(CONTENT_SETTING_DEFAULT, setting);
-          std::unique_ptr<base::Value> setting_ptr(new base::Value(setting));
-          DCHECK(IsValueAllowedForType(setting_ptr.get(), content_type_));
-          // Per resource settings store a single timestamps for all resources.
-          value_map_.SetValue(pattern_pair.first, pattern_pair.second,
-                              content_type_, resource_identifier, last_modified,
-                              setting_ptr->Clone(),
-                              {expiration, session_model});
-        }
-      }
-    }
-
     const base::Value* value = nullptr;
     settings_dictionary->GetWithoutPathExpansion(kSettingPath, &value);
     if (value) {
@@ -377,7 +327,7 @@ void ContentSettingsPref::ReadContentSettingsFromPref() {
       DCHECK(IsValueAllowedForType(value, content_type_));
       value_map_.SetValue(std::move(pattern_pair.first),
                           std::move(pattern_pair.second), content_type_,
-                          ResourceIdentifier(), last_modified, value->Clone(),
+                          last_modified, value->Clone(),
                           {expiration, session_model});
     }
   }
@@ -418,13 +368,12 @@ void ContentSettingsPref::OnPrefChanged() {
   ReadContentSettingsFromPref();
 
   notify_callback_.Run(ContentSettingsPattern(), ContentSettingsPattern(),
-                       content_type_, ResourceIdentifier());
+                       content_type_);
 }
 
 void ContentSettingsPref::UpdatePref(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
-    const ResourceIdentifier& resource_identifier,
     const base::Time last_modified,
     const base::Value* value,
     const ContentSettingConstraints& constraints) {
@@ -452,78 +401,32 @@ void ContentSettingsPref::UpdatePref(
     }
 
     if (settings_dictionary) {
-      if (SupportsResourceIdentifiers(content_type_) &&
-          !resource_identifier.empty()) {
-        std::unique_ptr<prefs::DictionaryValueUpdate> resource_dictionary;
-        found = settings_dictionary->GetDictionary(
-            kPerResourceIdentifierPrefName, &resource_dictionary);
-        if (!found) {
-          if (value == nullptr)
-            return;  // Nothing to remove. Exit early.
-          resource_dictionary =
-              settings_dictionary->SetDictionaryWithoutPathExpansion(
-                  kPerResourceIdentifierPrefName,
-                  std::make_unique<base::DictionaryValue>());
-        }
-        // Update resource dictionary.
-        if (value == nullptr) {
-          resource_dictionary->RemoveWithoutPathExpansion(resource_identifier,
-                                                          nullptr);
-          if (resource_dictionary->empty()) {
-            settings_dictionary->RemoveWithoutPathExpansion(
-                kPerResourceIdentifierPrefName, nullptr);
-            settings_dictionary->RemoveWithoutPathExpansion(kLastModifiedPath,
-                                                            nullptr);
-            settings_dictionary->RemoveWithoutPathExpansion(kExpirationPath,
-                                                            nullptr);
-            settings_dictionary->RemoveWithoutPathExpansion(kSessionModelPath,
-                                                            nullptr);
-          }
-        } else {
-          resource_dictionary->SetWithoutPathExpansion(resource_identifier,
-                                                       value->CreateDeepCopy());
-          // Update timestamp for whole resource dictionary.
-          settings_dictionary->SetKey(
-              kLastModifiedPath,
-              base::Value(base::NumberToString(
-                  last_modified.ToDeltaSinceWindowsEpoch().InMicroseconds())));
-          settings_dictionary->SetKey(
-              kExpirationPath,
-              base::Value(base::NumberToString(
-                  constraints.expiration.ToDeltaSinceWindowsEpoch()
-                      .InMicroseconds())));
-          settings_dictionary->SetKey(
-              kSessionModelPath,
-              base::Value(static_cast<int>(constraints.session_model)));
-        }
+      // Update settings dictionary.
+      if (value == nullptr) {
+        settings_dictionary->RemoveWithoutPathExpansion(kSettingPath, nullptr);
+        settings_dictionary->RemoveWithoutPathExpansion(kLastModifiedPath,
+                                                        nullptr);
+        settings_dictionary->RemoveWithoutPathExpansion(kExpirationPath,
+                                                        nullptr);
+        settings_dictionary->RemoveWithoutPathExpansion(kSessionModelPath,
+                                                        nullptr);
       } else {
-        // Update settings dictionary.
-        if (value == nullptr) {
-          settings_dictionary->RemoveWithoutPathExpansion(kSettingPath,
-                                                          nullptr);
-          settings_dictionary->RemoveWithoutPathExpansion(kLastModifiedPath,
-                                                          nullptr);
-          settings_dictionary->RemoveWithoutPathExpansion(kExpirationPath,
-                                                          nullptr);
-          settings_dictionary->RemoveWithoutPathExpansion(kSessionModelPath,
-                                                          nullptr);
-        } else {
-          settings_dictionary->SetWithoutPathExpansion(kSettingPath,
-                                                       value->CreateDeepCopy());
-          settings_dictionary->SetKey(
-              kLastModifiedPath,
-              base::Value(base::NumberToString(
-                  last_modified.ToDeltaSinceWindowsEpoch().InMicroseconds())));
-          settings_dictionary->SetKey(
-              kExpirationPath,
-              base::Value(base::NumberToString(
-                  constraints.expiration.ToDeltaSinceWindowsEpoch()
-                      .InMicroseconds())));
-          settings_dictionary->SetKey(
-              kSessionModelPath,
-              base::Value(static_cast<int>(constraints.session_model)));
-        }
+        settings_dictionary->SetWithoutPathExpansion(kSettingPath,
+                                                     value->CreateDeepCopy());
+        settings_dictionary->SetKey(
+            kLastModifiedPath,
+            base::Value(base::NumberToString(
+                last_modified.ToDeltaSinceWindowsEpoch().InMicroseconds())));
+        settings_dictionary->SetKey(
+            kExpirationPath,
+            base::Value(base::NumberToString(
+                constraints.expiration.ToDeltaSinceWindowsEpoch()
+                    .InMicroseconds())));
+        settings_dictionary->SetKey(
+            kSessionModelPath,
+            base::Value(static_cast<int>(constraints.session_model)));
       }
+
       // Remove the settings dictionary if it is empty.
       if (settings_dictionary->empty()) {
         pattern_pairs_settings->RemoveWithoutPathExpansion(pattern_str,

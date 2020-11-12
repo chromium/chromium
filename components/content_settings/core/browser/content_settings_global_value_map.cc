@@ -43,11 +43,7 @@ GlobalValueMap::GlobalValueMap() {}
 GlobalValueMap::~GlobalValueMap() {}
 
 std::unique_ptr<RuleIterator> GlobalValueMap::GetRuleIterator(
-    ContentSettingsType content_type,
-    const ResourceIdentifier& resource_identifier) const {
-  if (!resource_identifier.empty())
-    return nullptr;
-
+    ContentSettingsType content_type) const {
   auto it = settings_.find(content_type);
   if (it == settings_.end())
     return nullptr;

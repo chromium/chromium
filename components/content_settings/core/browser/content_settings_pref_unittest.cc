@@ -136,8 +136,8 @@ TEST(ContentSettingsPref, CanonicalizationWhileReadingFromPrefs) {
   // and setting.
 
   std::vector<CanonicalPatternToTag> patterns_to_tags_in_memory;
-  auto rule_iterator = content_settings_pref.GetRuleIterator(
-      std::string() /* resource_identifier */, false /* is_incognito */);
+  auto rule_iterator =
+      content_settings_pref.GetRuleIterator(false /* is_incognito */);
   while (rule_iterator->HasNext()) {
     auto rule = rule_iterator->Next();
     patterns_to_tags_in_memory.emplace_back(
@@ -202,8 +202,8 @@ TEST(ContentSettingsPref, ExpirationWhileReadingFromPrefs) {
   // Verify that the |value_map| contains the expected content setting patterns
   // and setting.
   std::vector<CanonicalPatternToTag> patterns_to_tags_in_memory;
-  auto rule_iterator = content_settings_pref.GetRuleIterator(
-      std::string() /* resource_identifier */, false /* is_incognito */);
+  auto rule_iterator =
+      content_settings_pref.GetRuleIterator(false /* is_incognito */);
   while (rule_iterator->HasNext()) {
     auto rule = rule_iterator->Next();
     patterns_to_tags_in_memory.emplace_back(
@@ -263,8 +263,7 @@ TEST(ContentSettingsPref, LegacyLastModifiedLoad) {
   base::Time retrieved_last_modified =
       content_settings_pref.GetWebsiteSettingLastModified(
           ContentSettingsPattern::FromString("http://example.com"),
-          ContentSettingsPattern::Wildcard(),
-          /*resource_identifier=*/std::string());
+          ContentSettingsPattern::Wildcard());
   EXPECT_EQ(last_modified, retrieved_last_modified);
 }
 

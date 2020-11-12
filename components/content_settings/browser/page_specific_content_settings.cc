@@ -815,7 +815,7 @@ void PageSpecificContentSettings::OnContentSettingChanged(
     const ContentSettingsPattern& secondary_pattern,
     ContentSettingsType content_type) {
   const ContentSettingsDetails details(primary_pattern, secondary_pattern,
-                                       content_type, std::string());
+                                       content_type);
   if (!details.update_all() &&
       // The visible URL is the URL in the URL field of a tab.
       // Currently this should be matched by the |primary_pattern|.

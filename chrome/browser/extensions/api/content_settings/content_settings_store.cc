@@ -35,7 +35,6 @@ using content_settings::ConcatenationIterator;
 using content_settings::Rule;
 using content_settings::RuleIterator;
 using content_settings::OriginIdentifierValueMap;
-using content_settings::ResourceIdentifier;
 
 namespace extensions {
 
@@ -108,28 +107,25 @@ ContentSettingsStore::~ContentSettingsStore() {
 
 std::unique_ptr<RuleIterator> ContentSettingsStore::GetRuleIterator(
     ContentSettingsType type,
-    const content_settings::ResourceIdentifier& identifier,
     bool incognito) const {
   if (base::FeatureList::IsEnabled(
           content_settings::kDisallowWildcardsInPluginContentSettings) &&
       type == ContentSettingsType::PLUGINS) {
     return std::make_unique<FilterRuleIterator>(
-        GetAllRulesIterator(type, identifier, incognito),
-        FilterType::WANT_VALID_PATTERNS);
+        GetAllRulesIterator(type, incognito), FilterType::WANT_VALID_PATTERNS);
   } else {
-    return GetAllRulesIterator(type, identifier, incognito);
+    return GetAllRulesIterator(type, incognito);
   }
 }
 
 std::unique_ptr<RuleIterator> ContentSettingsStore::GetDiscardedRuleIterator(
     ContentSettingsType type,
-    const content_settings::ResourceIdentifier& identifier,
     bool incognito) const {
   if (base::FeatureList::IsEnabled(
           content_settings::kDisallowWildcardsInPluginContentSettings) &&
       type == ContentSettingsType::PLUGINS) {
     return std::make_unique<FilterRuleIterator>(
-        GetAllRulesIterator(type, identifier, incognito),
+        GetAllRulesIterator(type, incognito),
         FilterType::WANT_DISCARDED_PATTERNS);
   } else {
     return std::make_unique<content_settings::EmptyRuleIterator>();
@@ -138,7 +134,6 @@ std::unique_ptr<RuleIterator> ContentSettingsStore::GetDiscardedRuleIterator(
 
 std::unique_ptr<RuleIterator> ContentSettingsStore::GetAllRulesIterator(
     ContentSettingsType type,
-    const content_settings::ResourceIdentifier& identifier,
     bool incognito) const {
   std::vector<std::unique_ptr<RuleIterator>> iterators;
 
@@ -154,16 +149,16 @@ std::unique_ptr<RuleIterator> ContentSettingsStore::GetAllRulesIterator(
 
     std::unique_ptr<RuleIterator> rule_it;
     if (incognito) {
-      rule_it = entry->incognito_session_only_settings.GetRuleIterator(
-          type, identifier, nullptr);
+      rule_it =
+          entry->incognito_session_only_settings.GetRuleIterator(type, nullptr);
       if (rule_it)
         iterators.push_back(std::move(rule_it));
-      rule_it = entry->incognito_persistent_settings.GetRuleIterator(
-          type, identifier, nullptr);
+      rule_it =
+          entry->incognito_persistent_settings.GetRuleIterator(type, nullptr);
       if (rule_it)
         iterators.push_back(std::move(rule_it));
     } else {
-      rule_it = entry->settings.GetRuleIterator(type, identifier, nullptr);
+      rule_it = entry->settings.GetRuleIterator(type, nullptr);
       if (rule_it)
         iterators.push_back(std::move(rule_it));
     }
@@ -180,18 +175,17 @@ void ContentSettingsStore::SetExtensionContentSetting(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
     ContentSettingsType type,
-    const content_settings::ResourceIdentifier& identifier,
     ContentSetting setting,
     ExtensionPrefsScope scope) {
   {
     base::AutoLock lock(lock_);
     OriginIdentifierValueMap* map = GetValueMap(ext_id, scope);
     if (setting == CONTENT_SETTING_DEFAULT) {
-      map->DeleteValue(primary_pattern, secondary_pattern, type, identifier);
+      map->DeleteValue(primary_pattern, secondary_pattern, type);
     } else {
       // Do not set a timestamp for extension settings.
-      map->SetValue(primary_pattern, secondary_pattern, type, identifier,
-                    base::Time(), base::Value(setting), {});
+      map->SetValue(primary_pattern, secondary_pattern, type, base::Time(),
+                    base::Value(setting), {});
     }
   }
 
@@ -334,7 +328,7 @@ void ContentSettingsStore::ClearContentSettingsForExtensionAndContentType(
     if (map->find(content_type) == map->end())
       return;
 
-    map->DeleteValues(content_type, std::string());
+    map->DeleteValues(content_type);
   }
     NotifyOfContentSettingChanged(ext_id, scope != kExtensionPrefsScopeRegular);
 }
@@ -351,7 +345,7 @@ std::unique_ptr<base::ListValue> ContentSettingsStore::GetSettingsForExtension(
   for (const auto& it : *map) {
     const auto& key = it.first;
     std::unique_ptr<RuleIterator> rule_iterator(
-        map->GetRuleIterator(key, std::string(),
+        map->GetRuleIterator(key,
                              nullptr));  // We already hold the lock.
     if (!rule_iterator)
       continue;
@@ -461,8 +455,7 @@ void ContentSettingsStore::SetExtensionContentSettingFromList(
     DCHECK_NE(CONTENT_SETTING_DEFAULT, setting);
 
     SetExtensionContentSetting(extension_id, primary_pattern, secondary_pattern,
-                               content_settings_type, std::string(), setting,
-                               scope);
+                               content_settings_type, setting, scope);
   }
 }
 

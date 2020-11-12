@@ -35,7 +35,6 @@ class ProviderInterface {
   // Returns nullptr to indicate the RuleIterator is empty.
   virtual std::unique_ptr<RuleIterator> GetRuleIterator(
       ContentSettingsType content_type,
-      const ResourceIdentifier& resource_identifier,
       bool incognito) const = 0;
 
   // Returns a |RuleIterator| over the discarded content setting rules stored
@@ -45,7 +44,6 @@ class ProviderInterface {
   // mode.
   virtual std::unique_ptr<RuleIterator> GetDiscardedRuleIterator(
       ContentSettingsType content_type,
-      const ResourceIdentifier& resource_identifier,
       bool incognito) const;
 
   // Asks the provider to set the website setting for a particular
@@ -60,7 +58,6 @@ class ProviderInterface {
       const ContentSettingsPattern& primary_pattern,
       const ContentSettingsPattern& secondary_pattern,
       ContentSettingsType content_type,
-      const ResourceIdentifier& resource_identifier,
       std::unique_ptr<base::Value>&& value,
       const ContentSettingConstraints& constraints) = 0;
 

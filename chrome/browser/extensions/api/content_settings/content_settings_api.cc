@@ -210,10 +210,6 @@ ContentSettingsContentSettingSetFunction::Run() {
       return RespondNow(Error(secondary_error));
   }
 
-  std::string resource_identifier;
-  if (params->details.resource_identifier.get())
-    resource_identifier = params->details.resource_identifier->id;
-
   std::string setting_str;
   EXTENSION_FUNCTION_VALIDATE(
       params->details.setting->GetAsString(&setting_str));
@@ -316,8 +312,8 @@ ContentSettingsContentSettingSetFunction::Run() {
   scoped_refptr<ContentSettingsStore> store =
       ContentSettingsService::Get(browser_context())->content_settings_store();
   store->SetExtensionContentSetting(extension_id(), primary_pattern,
-                                    secondary_pattern, content_type,
-                                    resource_identifier, setting, scope);
+                                    secondary_pattern, content_type, setting,
+                                    scope);
 
   return RespondNow(NoArguments());
 }

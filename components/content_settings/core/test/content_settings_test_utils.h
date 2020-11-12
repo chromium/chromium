@@ -18,7 +18,7 @@ class TestUtils {
  public:
   // The following two functions return the content setting (represented as
   // Value or directly the ContentSetting enum) from |provider| for the
-  // given |content_type| and |resource_identifier|. The returned content
+  // given |content_type|. The returned content
   // setting applies to the primary and secondary URL, and to the normal or
   // incognito mode, depending on |include_incognito|.
   static base::Value* GetContentSettingValue(
@@ -26,7 +26,6 @@ class TestUtils {
       const GURL& primary_url,
       const GURL& secondary_url,
       ContentSettingsType content_type,
-      const std::string& resource_identifier,
       bool include_incognito);
 
   static ContentSetting GetContentSetting(
@@ -34,7 +33,6 @@ class TestUtils {
       const GURL& primary_url,
       const GURL& secondary_url,
       ContentSettingsType content_type,
-      const std::string& resource_identifier,
       bool include_incognito);
 
   // This wrapper exists only to make

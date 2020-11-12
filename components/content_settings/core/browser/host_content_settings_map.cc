@@ -322,7 +322,7 @@ ContentSetting HostContentSettingsMap::GetDefaultContentSettingFromProvider(
     ContentSettingsType content_type,
     content_settings::ProviderInterface* provider) const {
   std::unique_ptr<content_settings::RuleIterator> rule_iterator(
-      provider->GetRuleIterator(content_type, std::string(), false));
+      provider->GetRuleIterator(content_type, false));
 
   if (rule_iterator) {
     ContentSettingsPattern wildcard = ContentSettingsPattern::Wildcard();
@@ -428,8 +428,8 @@ void HostContentSettingsMap::GetDiscardedSettingsForOneType(
 
   for (const auto& provider_pair : content_settings_providers_) {
     std::unique_ptr<content_settings::RuleIterator> discarded_rule_iterator(
-        provider_pair.second->GetDiscardedRuleIterator(
-            content_type, std::string(), is_off_the_record_));
+        provider_pair.second->GetDiscardedRuleIterator(content_type,
+                                                       is_off_the_record_));
     while (discarded_rule_iterator->HasNext()) {
       content_settings::Rule discarded_rule = discarded_rule_iterator->Next();
       settings->emplace_back(
@@ -488,8 +488,8 @@ void HostContentSettingsMap::SetWebsiteSettingCustomScope(
 
   for (const auto& provider_pair : content_settings_providers_) {
     if (provider_pair.second->SetWebsiteSetting(
-            primary_pattern, secondary_pattern, content_type, std::string(),
-            std::move(value), constraints)) {
+            primary_pattern, secondary_pattern, content_type, std::move(value),
+            constraints)) {
       // If successful then ownership is passed to the provider.
       return;
     }
@@ -746,7 +746,7 @@ base::Time HostContentSettingsMap::GetSettingLastModifiedDate(
   base::Time most_recent_time;
   for (auto* provider : user_modifiable_providers_) {
     base::Time time = provider->GetWebsiteSettingLastModified(
-        primary_pattern, secondary_pattern, content_type, std::string());
+        primary_pattern, secondary_pattern, content_type);
     most_recent_time = std::max(time, most_recent_time);
   }
   return most_recent_time;
@@ -771,13 +771,12 @@ void HostContentSettingsMap::ClearSettingsForOneTypeWithPredicate(
                               setting.secondary_pattern)) {
       for (auto* provider : user_modifiable_providers_) {
         base::Time last_modified = provider->GetWebsiteSettingLastModified(
-            setting.primary_pattern, setting.secondary_pattern, content_type,
-            std::string());
+            setting.primary_pattern, setting.secondary_pattern, content_type);
         if (last_modified >= begin_time &&
             (last_modified < end_time || end_time.is_null())) {
           provider->SetWebsiteSetting(setting.primary_pattern,
                                       setting.secondary_pattern, content_type,
-                                      std::string(), nullptr, {});
+                                      nullptr, {});
         }
       }
     }
@@ -815,7 +814,7 @@ void HostContentSettingsMap::AddSettingsForOneType(
     bool incognito,
     base::Optional<content_settings::SessionModel> session_model) const {
   std::unique_ptr<content_settings::RuleIterator> rule_iterator(
-      provider->GetRuleIterator(content_type, std::string(), incognito));
+      provider->GetRuleIterator(content_type, incognito));
   if (!rule_iterator)
     return;
 
@@ -967,8 +966,7 @@ HostContentSettingsMap::GetContentSettingValueAndPatterns(
     // |RuleIterator| gets out of scope before we get a rule iterator for the
     // normal mode.
     std::unique_ptr<content_settings::RuleIterator> incognito_rule_iterator(
-        provider->GetRuleIterator(content_type, std::string(),
-                                  true /* incognito */));
+        provider->GetRuleIterator(content_type, true /* incognito */));
     std::unique_ptr<base::Value> value = GetContentSettingValueAndPatterns(
         incognito_rule_iterator.get(), primary_url, secondary_url,
         primary_pattern, secondary_pattern);
@@ -977,8 +975,7 @@ HostContentSettingsMap::GetContentSettingValueAndPatterns(
   }
   // No settings from the incognito; use the normal mode.
   std::unique_ptr<content_settings::RuleIterator> rule_iterator(
-      provider->GetRuleIterator(content_type, std::string(),
-                                false /* incognito */));
+      provider->GetRuleIterator(content_type, false /* incognito */));
   std::unique_ptr<base::Value> value = GetContentSettingValueAndPatterns(
       rule_iterator.get(), primary_url, secondary_url, primary_pattern,
       secondary_pattern);

@@ -321,14 +321,12 @@ PolicyProvider::~PolicyProvider() {
 
 std::unique_ptr<RuleIterator> PolicyProvider::GetRuleIterator(
     ContentSettingsType content_type,
-    const ResourceIdentifier& resource_identifier,
     bool incognito) const {
-  return value_map_.GetRuleIterator(content_type, resource_identifier, &lock_);
+  return value_map_.GetRuleIterator(content_type, &lock_);
 }
 
 std::unique_ptr<RuleIterator> PolicyProvider::GetDiscardedRuleIterator(
     ContentSettingsType content_type,
-    const ResourceIdentifier& resource_identifier,
     bool incognito) const {
   auto it = discarded_rules_value_map_.find(content_type);
   if (it == discarded_rules_value_map_.end()) {
@@ -411,8 +409,7 @@ void PolicyProvider::GetContentSettingsFromPreferences(
 
       // Don't set a timestamp for policy settings.
       value_map->SetValue(
-          pattern_pair.first, secondary_pattern, content_type,
-          ResourceIdentifier(), base::Time(),
+          pattern_pair.first, secondary_pattern, content_type, base::Time(),
           base::Value(kPrefsForManagedContentSettingsMap[i].setting), {});
     }
   }
@@ -505,7 +502,7 @@ void PolicyProvider::GetAutoSelectCertificateSettingsFromPreferences(
 
     value_map->SetValue(pattern, ContentSettingsPattern::Wildcard(),
                         ContentSettingsType::AUTO_SELECT_CERTIFICATE,
-                        std::string(), base::Time(), setting.Clone(), {});
+                        base::Time(), setting.Clone(), {});
   }
 }
 
@@ -536,12 +533,12 @@ void PolicyProvider::UpdateManagedDefaultSetting(
   if (setting == CONTENT_SETTING_DEFAULT) {
     value_map_.DeleteValue(ContentSettingsPattern::Wildcard(),
                            ContentSettingsPattern::Wildcard(),
-                           entry.content_type, std::string());
+                           entry.content_type);
   } else if (info->IsSettingValid(IntToContentSetting(setting))) {
     // Don't set a timestamp for policy settings.
     value_map_.SetValue(ContentSettingsPattern::Wildcard(),
                         ContentSettingsPattern::Wildcard(), entry.content_type,
-                        std::string(), base::Time(), base::Value(setting), {});
+                        base::Time(), base::Value(setting), {});
   }
 }
 
@@ -560,7 +557,6 @@ bool PolicyProvider::SetWebsiteSetting(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
     ContentSettingsType content_type,
-    const ResourceIdentifier& resource_identifier,
     std::unique_ptr<base::Value>&& value,
     const ContentSettingConstraints& constraints) {
   return false;
@@ -618,7 +614,7 @@ void PolicyProvider::OnPreferenceChanged(const std::string& name) {
   }
 
   NotifyObservers(ContentSettingsPattern(), ContentSettingsPattern(),
-                  ContentSettingsType::DEFAULT, std::string());
+                  ContentSettingsType::DEFAULT);
 }
 
 }  // namespace content_settings

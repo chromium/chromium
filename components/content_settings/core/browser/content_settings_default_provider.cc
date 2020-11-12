@@ -233,7 +233,6 @@ bool DefaultProvider::SetWebsiteSetting(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
     ContentSettingsType content_type,
-    const ResourceIdentifier& resource_identifier,
     std::unique_ptr<base::Value>&& in_value,
     const ContentSettingConstraints& constraints) {
   DCHECK(CalledOnValidThread());
@@ -267,26 +266,20 @@ bool DefaultProvider::SetWebsiteSetting(
     WriteToPref(content_type, value.get());
   }
 
-  NotifyObservers(ContentSettingsPattern(),
-                  ContentSettingsPattern(),
-                  content_type,
-                  ResourceIdentifier());
+  NotifyObservers(ContentSettingsPattern(), ContentSettingsPattern(),
+                  content_type);
 
   return true;
 }
 
 std::unique_ptr<RuleIterator> DefaultProvider::GetRuleIterator(
     ContentSettingsType content_type,
-    const ResourceIdentifier& resource_identifier,
     bool off_the_record) const {
   // The default provider never has off-the-record-specific settings.
   if (off_the_record)
     return nullptr;
 
   base::AutoLock lock(lock_);
-  if (!resource_identifier.empty())
-    return nullptr;
-
   auto it = default_settings_.find(content_type);
   if (it == default_settings_.end()) {
     NOTREACHED();
@@ -385,10 +378,8 @@ void DefaultProvider::OnPreferenceChanged(const std::string& name) {
     }
   }
 
-  NotifyObservers(ContentSettingsPattern(),
-                  ContentSettingsPattern(),
-                  content_type,
-                  ResourceIdentifier());
+  NotifyObservers(ContentSettingsPattern(), ContentSettingsPattern(),
+                  content_type);
 }
 
 std::unique_ptr<base::Value> DefaultProvider::ReadFromPref(

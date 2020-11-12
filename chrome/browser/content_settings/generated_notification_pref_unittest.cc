@@ -169,7 +169,7 @@ void SetupManagedTestConditions(
   auto provider = std::make_unique<content_settings::MockProvider>();
   provider->SetWebsiteSetting(
       ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
-      ContentSettingsType::NOTIFICATIONS, std::string(),
+      ContentSettingsType::NOTIFICATIONS,
       std::make_unique<base::Value>(test_case.default_content_setting));
   HostContentSettingsMap::ProviderType provider_type;
   switch (test_case.default_content_setting_source) {
@@ -318,7 +318,7 @@ TEST_F(GeneratedNotificationPrefTest, UpdatePreferenceInvalidAction) {
   auto provider = std::make_unique<content_settings::MockProvider>();
   provider->SetWebsiteSetting(
       ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
-      ContentSettingsType::NOTIFICATIONS, std::string(),
+      ContentSettingsType::NOTIFICATIONS,
       std::make_unique<base::Value>(ContentSetting::CONTENT_SETTING_ASK));
 
   content_settings::TestUtils::OverrideProvider(

@@ -56,17 +56,14 @@ class ContentSettingsStore
 
   std::unique_ptr<content_settings::RuleIterator> GetRuleIterator(
       ContentSettingsType type,
-      const content_settings::ResourceIdentifier& identifier,
       bool incognito) const;
 
   std::unique_ptr<content_settings::RuleIterator> GetDiscardedRuleIterator(
       ContentSettingsType type,
-      const content_settings::ResourceIdentifier& identifier,
       bool incognito) const;
 
   std::unique_ptr<content_settings::RuleIterator> GetAllRulesIterator(
       ContentSettingsType type,
-      const content_settings::ResourceIdentifier& identifier,
       bool incognito) const;
 
   // Sets the content |setting| for |pattern| of extension |ext_id|. The
@@ -79,7 +76,6 @@ class ContentSettingsStore
       const ContentSettingsPattern& embedded_pattern,
       const ContentSettingsPattern& top_level_pattern,
       ContentSettingsType type,
-      const content_settings::ResourceIdentifier& identifier,
       ContentSetting setting,
       ExtensionPrefsScope scope);
 

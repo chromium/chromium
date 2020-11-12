@@ -319,7 +319,7 @@ TEST_F(SiteSettingsHelperTest, CheckExceptionOrder) {
   auto policy_provider = std::make_unique<content_settings::MockProvider>();
   policy_provider->SetWebsiteSetting(
       ContentSettingsPattern::FromString(star_google_com),
-      ContentSettingsPattern::Wildcard(), kContentType, "",
+      ContentSettingsPattern::Wildcard(), kContentType,
       std::make_unique<base::Value>(CONTENT_SETTING_BLOCK));
   policy_provider->set_read_only(true);
   content_settings::TestUtils::OverrideProvider(
@@ -337,7 +337,7 @@ TEST_F(SiteSettingsHelperTest, CheckExceptionOrder) {
   auto extension_provider = std::make_unique<content_settings::MockProvider>();
   extension_provider->SetWebsiteSetting(
       ContentSettingsPattern::FromString(drive_google_com),
-      ContentSettingsPattern::Wildcard(), kContentType, "",
+      ContentSettingsPattern::Wildcard(), kContentType,
       std::make_unique<base::Value>(CONTENT_SETTING_ASK));
   extension_provider->set_read_only(true);
   content_settings::TestUtils::OverrideProvider(
@@ -431,7 +431,7 @@ TEST_F(SiteSettingsHelperTest, ContentSettingSource) {
   auto extension_provider = std::make_unique<content_settings::MockProvider>();
   extension_provider->SetWebsiteSetting(
       ContentSettingsPattern::FromURL(origin),
-      ContentSettingsPattern::FromURL(origin), kContentType, "",
+      ContentSettingsPattern::FromURL(origin), kContentType,
       std::make_unique<base::Value>(CONTENT_SETTING_BLOCK));
   extension_provider->set_read_only(true);
   content_settings::TestUtils::OverrideProvider(
@@ -447,7 +447,7 @@ TEST_F(SiteSettingsHelperTest, ContentSettingSource) {
   auto policy_provider = std::make_unique<content_settings::MockProvider>();
   policy_provider->SetWebsiteSetting(
       ContentSettingsPattern::FromURL(origin),
-      ContentSettingsPattern::FromURL(origin), kContentType, "",
+      ContentSettingsPattern::FromURL(origin), kContentType,
       std::make_unique<base::Value>(CONTENT_SETTING_ALLOW));
   policy_provider->set_read_only(true);
   content_settings::TestUtils::OverrideProvider(

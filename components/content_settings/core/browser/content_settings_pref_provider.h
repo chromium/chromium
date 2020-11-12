@@ -45,12 +45,10 @@ class PrefProvider : public UserModifiableProvider {
   // UserModifiableProvider implementations.
   std::unique_ptr<RuleIterator> GetRuleIterator(
       ContentSettingsType content_type,
-      const ResourceIdentifier& resource_identifier,
       bool off_the_record) const override;
   bool SetWebsiteSetting(const ContentSettingsPattern& primary_pattern,
                          const ContentSettingsPattern& secondary_pattern,
                          ContentSettingsType content_type,
-                         const ResourceIdentifier& resource_identifier,
                          std::unique_ptr<base::Value>&& value,
                          const ContentSettingConstraints& constraints) override;
   void ClearAllContentSettingsRules(ContentSettingsType content_type) override;
@@ -58,8 +56,7 @@ class PrefProvider : public UserModifiableProvider {
   base::Time GetWebsiteSettingLastModified(
       const ContentSettingsPattern& primary_pattern,
       const ContentSettingsPattern& secondary_pattern,
-      ContentSettingsType content_type,
-      const ResourceIdentifier& resource_identifier) override;
+      ContentSettingsType content_type) override;
   void SetClockForTesting(base::Clock* clock) override;
 
   void ClearPrefs();
@@ -71,8 +68,7 @@ class PrefProvider : public UserModifiableProvider {
 
   void Notify(const ContentSettingsPattern& primary_pattern,
               const ContentSettingsPattern& secondary_pattern,
-              ContentSettingsType content_type,
-              const std::string& resource_identifier);
+              ContentSettingsType content_type);
 
   // Clean up the obsolete preferences from the user's profile.
   void DiscardOrMigrateObsoletePreferences();

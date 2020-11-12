@@ -77,7 +77,6 @@ OriginIdentifierValueMap::ValueEntry::~ValueEntry() {}
 
 std::unique_ptr<RuleIterator> OriginIdentifierValueMap::GetRuleIterator(
     ContentSettingsType content_type,
-    const ResourceIdentifier& resource_identifier,
     base::Lock* lock) const {
   // We access |entries_| here, so we need to lock |auto_lock| first. The lock
   // must be passed to the |RuleIteratorImpl| in a locked state, so that nobody
@@ -107,8 +106,7 @@ OriginIdentifierValueMap::~OriginIdentifierValueMap() {}
 const base::Value* OriginIdentifierValueMap::GetValue(
     const GURL& primary_url,
     const GURL& secondary_url,
-    ContentSettingsType content_type,
-    const ResourceIdentifier& resource_identifier) const {
+    ContentSettingsType content_type) const {
   auto it = entries_.find(content_type);
   if (it == entries_.end())
     return nullptr;
@@ -128,8 +126,7 @@ const base::Value* OriginIdentifierValueMap::GetValue(
 base::Time OriginIdentifierValueMap::GetLastModified(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
-    ContentSettingsType content_type,
-    const ResourceIdentifier& resource_identifier) const {
+    ContentSettingsType content_type) const {
   DCHECK(primary_pattern.IsValid());
   DCHECK(secondary_pattern.IsValid());
 
@@ -147,7 +144,6 @@ void OriginIdentifierValueMap::SetValue(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
     ContentSettingsType content_type,
-    const ResourceIdentifier& resource_identifier,
     base::Time last_modified,
     base::Value value,
     const ContentSettingConstraints& constraints) {
@@ -165,10 +161,9 @@ void OriginIdentifierValueMap::SetValue(
 }
 
 void OriginIdentifierValueMap::DeleteValue(
-      const ContentSettingsPattern& primary_pattern,
-      const ContentSettingsPattern& secondary_pattern,
-      ContentSettingsType content_type,
-      const ResourceIdentifier& resource_identifier) {
+    const ContentSettingsPattern& primary_pattern,
+    const ContentSettingsPattern& secondary_pattern,
+    ContentSettingsType content_type) {
   PatternPair patterns(primary_pattern, secondary_pattern);
   auto it = entries_.find(content_type);
   if (it == entries_.end())
@@ -178,9 +173,7 @@ void OriginIdentifierValueMap::DeleteValue(
     entries_.erase(it);
 }
 
-void OriginIdentifierValueMap::DeleteValues(
-      ContentSettingsType content_type,
-      const ResourceIdentifier& resource_identifier) {
+void OriginIdentifierValueMap::DeleteValues(ContentSettingsType content_type) {
   entries_.erase(content_type);
 }
 

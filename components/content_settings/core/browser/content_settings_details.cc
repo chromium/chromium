@@ -7,10 +7,7 @@
 ContentSettingsDetails::ContentSettingsDetails(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
-    ContentSettingsType type,
-    const std::string& resource_identifier)
+    ContentSettingsType type)
     : primary_pattern_(primary_pattern),
       secondary_pattern_(secondary_pattern),
-      type_(type),
-      resource_identifier_(resource_identifier) {
-}
+      type_(type) {}
