@@ -4,9 +4,14 @@
 
 package org.chromium.chrome.browser.bookmarks;
 
+import android.content.Context;
+
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 
+import org.chromium.base.ContextUtils;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge.BookmarkItem;
 
 import java.lang.annotation.Retention;
@@ -23,7 +28,8 @@ final class BookmarkListEntry {
      */
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({ViewType.INVALID, ViewType.PERSONALIZED_SIGNIN_PROMO, ViewType.PERSONALIZED_SYNC_PROMO,
-            ViewType.SYNC_PROMO, ViewType.FOLDER, ViewType.BOOKMARK, ViewType.DIVIDER})
+            ViewType.SYNC_PROMO, ViewType.FOLDER, ViewType.BOOKMARK, ViewType.DIVIDER,
+            ViewType.SECTION_HEADER})
     @interface ViewType {
         int INVALID = -1;
         int PERSONALIZED_SIGNIN_PROMO = 0;
@@ -32,15 +38,30 @@ final class BookmarkListEntry {
         int FOLDER = 3;
         int BOOKMARK = 4;
         int DIVIDER = 5;
+        int SECTION_HEADER = 6;
     }
 
     private final @ViewType int mViewType;
     @Nullable
     private final BookmarkItem mBookmarkItem;
+    @Nullable
+    private String mHeaderTitle;
+    @Nullable
+    private String mHeaderDescription;
 
     private BookmarkListEntry(int viewType, @Nullable BookmarkItem bookmarkItem) {
         this.mViewType = viewType;
         this.mBookmarkItem = bookmarkItem;
+    }
+
+    /** Constructor for section headers. */
+    private BookmarkListEntry(
+            int viewType, String headerTitle, @Nullable String headerDescription) {
+        assert viewType == ViewType.SECTION_HEADER;
+        this.mViewType = viewType;
+        this.mBookmarkItem = null;
+        this.mHeaderTitle = headerTitle;
+        this.mHeaderDescription = headerDescription;
     }
 
     /**
@@ -79,6 +100,31 @@ final class BookmarkListEntry {
     }
 
     /**
+     * Create an entry representing the reading list read/unread section header.
+     * @param titleRes The string resource for title text.
+     * @param descriptionRes The string resource for description.
+     * @param context The context to use.
+     */
+    static BookmarkListEntry createSectionHeader(@StringRes Integer titleRes,
+            @Nullable @StringRes Integer descriptionRes, Context context) {
+        return new BookmarkListEntry(ViewType.SECTION_HEADER, context.getString(titleRes),
+                descriptionRes == null ? null : context.getString(descriptionRes));
+    }
+
+    /**
+     * Create an entry representing the reading list read/unread section header.
+     * @param read True if it represents read section, false for unread section.
+     */
+    static BookmarkListEntry createReadingListSectionHeader(boolean read) {
+        Context context = ContextUtils.getApplicationContext();
+        return read ? new BookmarkListEntry(
+                       ViewType.SECTION_HEADER, context.getString(R.string.reading_list_read), null)
+                    : new BookmarkListEntry(ViewType.SECTION_HEADER,
+                            context.getString(R.string.reading_list_unread),
+                            context.getString(R.string.reading_list_ready_for_offline));
+    }
+
+    /**
      * Returns the view type used in the bookmark list UI.
      */
     @ViewType
@@ -92,5 +138,17 @@ final class BookmarkListEntry {
     @Nullable
     BookmarkItem getBookmarkItem() {
         return mBookmarkItem;
+    }
+
+    /** @return The title text to be shown if it is a section header. */
+    @Nullable
+    String getHeaderTitle() {
+        return mHeaderTitle;
+    }
+
+    /** @return The description text to be shown if it is a section header. */
+    @Nullable
+    String getHeaderDescription() {
+        return mHeaderDescription;
     }
 }

@@ -8,7 +8,9 @@ import android.content.Context;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
+import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.annotation.LayoutRes;
 import androidx.annotation.VisibleForTesting;
@@ -136,6 +138,11 @@ class BookmarkItemsAdapter extends DragReorderableListAdapter<BookmarkListEntry>
                 assert topLevelFoldersShowing();
             }
         }
+
+        if (mCurrentFolder.getType() == BookmarkType.READING_LIST
+                && mDelegate.getCurrentState() != BookmarkUIState.STATE_SEARCHING) {
+            ReadingListSectionHeader.maybeSortAndInsertSectionHeaders(mElements, mContext);
+        }
         notifyDataSetChanged();
     }
 
@@ -173,6 +180,8 @@ class BookmarkItemsAdapter extends DragReorderableListAdapter<BookmarkListEntry>
                 return mPromoHeaderManager.createPersonalizedSigninAndSyncPromoHolder(parent);
             case ViewType.SYNC_PROMO:
                 return mPromoHeaderManager.createSyncPromoHolder(parent);
+            case ViewType.SECTION_HEADER:
+                return createSectionHeaderViewHolder(parent, viewType);
             case ViewType.FOLDER:
                 return createViewHolderHelper(parent, R.layout.bookmark_folder_row);
             case ViewType.BOOKMARK:
@@ -195,6 +204,8 @@ class BookmarkItemsAdapter extends DragReorderableListAdapter<BookmarkListEntry>
         } else if (holder.getItemViewType() == ViewType.PERSONALIZED_SYNC_PROMO) {
             PersonalizedSigninPromoView view = (PersonalizedSigninPromoView) holder.itemView;
             mPromoHeaderManager.setupPersonalizedSyncPromo(view);
+        } else if (holder.getItemViewType() == ViewType.SECTION_HEADER) {
+            bindSectionHeaderViewHolder(holder.itemView, getItemByPosition(position));
         } else if (BookmarkListEntry.isBookmarkEntry(holder.getItemViewType())) {
             BookmarkRow row = ((BookmarkRow) holder.itemView);
             BookmarkId id = getIdByPosition(position);
@@ -215,6 +226,23 @@ class BookmarkItemsAdapter extends DragReorderableListAdapter<BookmarkListEntry>
                 ViewHighlighter.turnOffHighlight(holder.itemView);
             }
         }
+    }
+
+    private ViewHolder createSectionHeaderViewHolder(ViewGroup parent, @ViewType int viewType) {
+        ViewGroup sectionHeader = (ViewGroup) LayoutInflater.from(parent.getContext())
+                                          .inflate(R.layout.bookmark_section_header, parent, false);
+
+        // ViewHolder is abstract and it cannot be instantiated directly.
+        return new ViewHolder(sectionHeader) {};
+    }
+
+    private void bindSectionHeaderViewHolder(View view, BookmarkListEntry listItem) {
+        TextView title = view.findViewById(R.id.title);
+        TextView description = view.findViewById(R.id.description);
+        title.setText(listItem.getHeaderTitle());
+        description.setText(listItem.getHeaderDescription());
+        description.setVisibility(
+                TextUtils.isEmpty(listItem.getHeaderDescription()) ? View.GONE : View.VISIBLE);
     }
 
     @Override
