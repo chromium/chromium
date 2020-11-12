@@ -871,6 +871,76 @@ TEST_F(AXTreeSourceFlutterTest, ScopesRoute) {
   ASSERT_EQ(0, tree_data.focus_id);
 }
 
+// A test to ensure a node that had scopes route but never
+// had any names route descendant does not cause a refocus.
+TEST_F(AXTreeSourceFlutterTest, ScopesRouteNoNames) {
+  // Install a mock tts platform
+  auto* tts_controller = content::TtsController::GetInstance();
+  content::MockTtsPlatformImpl mock_tts_platform;
+  tts_controller->SetTtsPlatform(&mock_tts_platform);
+
+  // Setup some mocks required for tts platform impl
+  content::MockContentBrowserClient mock_content_browser_client;
+  content::MockContentClient client;
+  content::SetContentClient(&client);
+  content::SetBrowserClientForTesting(&mock_content_browser_client);
+
+  // Add node with scopes route but no names route descendant.
+  OnAccessibilityEventRequest event;
+
+  event.set_source_id(0);
+  event.set_window_id(1);
+  event.set_event_type(OnAccessibilityEventRequest_EventType_CONTENT_CHANGED);
+
+  SemanticsNode* root = event.add_node_data();
+  root->set_node_id(0);
+
+  SemanticsNode* child1;
+  SemanticsNode* child2;
+
+  child1 = AddChild(&event, root, 1, 0, 0, 1, 1, false);
+  child2 = AddChild(&event, child1, 2, 0, 0, 1, 1, false);
+  std::string child_2_label = "Don't Speak This";
+  child2->set_label(child_2_label);
+
+  BooleanProperties* boolean_properties;
+
+  // Set scopes on child1 but no names on child 2
+  boolean_properties = child1->mutable_boolean_properties();
+  boolean_properties->set_scopes_route(true);
+
+  mock_tts_platform.ClearLastSpokenUtterance();
+
+  CallNotifyAccessibilityEvent(&event);
+
+  // focus should remain on root
+  ui::AXTreeData tree_data;
+  CallGetTreeData(&tree_data);
+
+  // Confirm no spoken TTS or focus change
+  ASSERT_TRUE(mock_tts_platform.GetLastSpokenUtterance() == "");
+  ASSERT_EQ(0, tree_data.focus_id);
+  EXPECT_EQ(0, GetDispatchedEventCount(ax::mojom::Event::kFocus));
+
+  // Remove the node with scopes route. Again, no focus or spoken
+  // tts is expected.
+  OnAccessibilityEventRequest event2;
+
+  event2.set_source_id(0);
+  event2.set_window_id(1);
+  event2.set_event_type(OnAccessibilityEventRequest_EventType_CONTENT_CHANGED);
+
+  SemanticsNode* root2 = event2.add_node_data();
+  root2->set_node_id(0);
+
+  CallNotifyAccessibilityEvent(&event2);
+
+  // Again, confirm no spoken TTS or focus change
+  ASSERT_EQ(0, tree_data.focus_id);
+  ASSERT_TRUE(mock_tts_platform.GetLastSpokenUtterance() == "");
+  EXPECT_EQ(0, GetDispatchedEventCount(ax::mojom::Event::kFocus));
+}
+
 TEST_F(AXTreeSourceFlutterTest, Announce) {
   // Install a mock tts platform
   auto* tts_controller = content::TtsController::GetInstance();
