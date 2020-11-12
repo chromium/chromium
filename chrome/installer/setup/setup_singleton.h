@@ -23,7 +23,7 @@ namespace installer {
 
 class InstallationState;
 class InstallerState;
-class MasterPreferences;
+class InitialPreferences;
 
 // Any modification to a Chrome installation should be done within the scope of
 // a SetupSingleton. There can be only one active SetupSingleton per Chrome
@@ -38,7 +38,7 @@ class SetupSingleton {
   // installation after acquisition. Returns nullptr on failure.
   static std::unique_ptr<SetupSingleton> Acquire(
       const base::CommandLine& command_line,
-      const MasterPreferences& master_preferences,
+      const InitialPreferences& master_preferences,
       InstallationState* original_state,
       InstallerState* installer_state);
 

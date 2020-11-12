@@ -20,7 +20,7 @@ class Experiment;
 class ExperimentStorage;
 class InstallationState;
 class InstallerState;
-class MasterPreferences;
+class InitialPreferences;
 
 // Returns true if a user of this Chrome install should participate in a
 // post-update user experiment.
@@ -38,7 +38,7 @@ void BeginUserExperiment(const InstallerState& installer_state,
 
 // Runs the experiment for the current user.
 void RunUserExperiment(const base::CommandLine& command_line,
-                       const MasterPreferences& master_preferences,
+                       const InitialPreferences& master_preferences,
                        InstallationState* original_state,
                        InstallerState* installer_state);
 

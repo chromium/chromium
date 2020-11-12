@@ -23,7 +23,7 @@ class CommandLine;
 namespace installer {
 
 class InstallationState;
-class MasterPreferences;
+class InitialPreferences;
 
 // Encapsulates the state of the current installation operation. This class
 // interprets the command-line arguments and master preferences and determines
@@ -44,7 +44,7 @@ class InstallerState {
 
   // Initializes this object based on the current operation.
   void Initialize(const base::CommandLine& command_line,
-                  const MasterPreferences& prefs,
+                  const InitialPreferences& prefs,
                   const InstallationState& machine_state);
 
   // The level (user or system) of this operation.

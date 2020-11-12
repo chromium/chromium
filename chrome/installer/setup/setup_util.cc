@@ -595,7 +595,7 @@ void DeleteRegistryKeyPartial(
   }
 }
 
-bool IsDowngradeAllowed(const MasterPreferences& prefs) {
+bool IsDowngradeAllowed(const InitialPreferences& prefs) {
   bool allow_downgrade = false;
   return prefs.GetBool(initial_preferences::kAllowDowngrade,
                        &allow_downgrade) &&

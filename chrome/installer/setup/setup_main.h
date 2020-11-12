@@ -18,7 +18,7 @@ class FilePath;
 namespace installer {
 class InstallationState;
 class InstallerState;
-class MasterPreferences;
+class InitialPreferences;
 
 // Helper function that performs the installation of a set of products.
 // |installer_directory|, if non-nullptr, is populated with the path to the
@@ -28,7 +28,7 @@ class MasterPreferences;
 InstallStatus InstallProductsHelper(InstallationState& original_state,
                                     const base::FilePath& setup_exe,
                                     const base::CommandLine& cmd_line,
-                                    const MasterPreferences& prefs,
+                                    const InitialPreferences& prefs,
                                     InstallerState& installer_state,
                                     base::FilePath* installer_directory,
                                     ArchiveType* archive_type);

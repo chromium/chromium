@@ -17,18 +17,18 @@ namespace install_static {
 class PrimaryInstallDetails;
 }
 namespace installer {
-class MasterPreferences;
+class InitialPreferences;
 }
 
 // Creates a PrimaryInstallDetails instance for the installer and makes it the
 // global InstallDetails for the process.
 void InitializeInstallDetails(
     const base::CommandLine& command_line,
-    const installer::MasterPreferences& master_preferences);
+    const installer::InitialPreferences& master_preferences);
 
 // Returns a PrimaryInstallDetails instance for the installer.
 std::unique_ptr<install_static::PrimaryInstallDetails> MakeInstallDetails(
     const base::CommandLine& command_line,
-    const installer::MasterPreferences& master_preferences);
+    const installer::InitialPreferences& master_preferences);
 
 #endif  // CHROME_INSTALLER_SETUP_SETUP_INSTALL_DETAILS_H_

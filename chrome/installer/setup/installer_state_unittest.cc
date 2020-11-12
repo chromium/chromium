@@ -37,9 +37,9 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using base::win::RegKey;
+using installer::InitialPreferences;
 using installer::InstallationState;
 using installer::InstallerState;
-using installer::MasterPreferences;
 using registry_util::RegistryOverrideManager;
 
 class InstallerStateTest : public testing::Test {
@@ -70,7 +70,7 @@ TEST_F(InstallerStateTest, WithProduct) {
   const bool system_level = true;
   base::CommandLine cmd_line = base::CommandLine::FromString(
       std::wstring(L"setup.exe") + (system_level ? L" --system-level" : L""));
-  MasterPreferences prefs(cmd_line);
+  InitialPreferences prefs(cmd_line);
   InstallationState machine_state;
   machine_state.Initialize();
   MockInstallerState installer_state;
@@ -120,7 +120,7 @@ TEST_F(InstallerStateTest, InstallerResult) {
   RegistryOverrideManager override_manager;
   ASSERT_NO_FATAL_FAILURE(override_manager.OverrideRegistry(root));
   base::CommandLine cmd_line = base::CommandLine::FromString(command_line);
-  const MasterPreferences prefs(cmd_line);
+  const InitialPreferences prefs(cmd_line);
   InstallationState machine_state;
   machine_state.Initialize();
   InstallerState state;
@@ -170,7 +170,7 @@ TEST_F(InstallerStateTest, InitializeTwice) {
   // Initialize the instance to install user-level Chrome.
   {
     base::CommandLine cmd_line(base::CommandLine::FromString(L"setup.exe"));
-    MasterPreferences prefs(cmd_line);
+    InitialPreferences prefs(cmd_line);
     installer_state.Initialize(cmd_line, prefs, machine_state);
   }
   // Confirm the expected state.
@@ -187,7 +187,7 @@ TEST_F(InstallerStateTest, InitializeTwice) {
   {
     base::CommandLine cmd_line(base::CommandLine::FromString(
         L"setup.exe --system-level --verbose-logging"));
-    MasterPreferences prefs(cmd_line);
+    InitialPreferences prefs(cmd_line);
     installer_state.Initialize(cmd_line, prefs, machine_state);
   }
 
@@ -223,7 +223,7 @@ class InstallerStateCriticalVersionTest : public ::testing::Test {
                     : base::CommandLine::FromString(
                           L"setup.exe --critical-update-version=" +
                           base::ASCIIToUTF16(version.GetString()));
-    prefs_.reset(new MasterPreferences(cmd_line_));
+    prefs_.reset(new InitialPreferences(cmd_line_));
     machine_state_.Initialize();
     installer_state_.Initialize(cmd_line_, *prefs_, machine_state_);
     return installer_state_;
@@ -236,7 +236,7 @@ class InstallerStateCriticalVersionTest : public ::testing::Test {
   const base::Version high_version_;
 
   base::CommandLine cmd_line_;
-  std::unique_ptr<MasterPreferences> prefs_;
+  std::unique_ptr<InitialPreferences> prefs_;
   InstallationState machine_state_;
   MockInstallerState installer_state_;
 };

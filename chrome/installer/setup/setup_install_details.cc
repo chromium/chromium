@@ -37,14 +37,14 @@ const install_static::InstallConstants* FindInstallMode(
 
 void InitializeInstallDetails(
     const base::CommandLine& command_line,
-    const installer::MasterPreferences& master_preferences) {
+    const installer::InitialPreferences& master_preferences) {
   install_static::InstallDetails::SetForProcess(
       MakeInstallDetails(command_line, master_preferences));
 }
 
 std::unique_ptr<install_static::PrimaryInstallDetails> MakeInstallDetails(
     const base::CommandLine& command_line,
-    const installer::MasterPreferences& master_preferences) {
+    const installer::InitialPreferences& master_preferences) {
   std::unique_ptr<install_static::PrimaryInstallDetails> details(
       std::make_unique<install_static::PrimaryInstallDetails>());
 
@@ -57,7 +57,7 @@ std::unique_ptr<install_static::PrimaryInstallDetails> MakeInstallDetails(
   // - distribution.system_level=true in master_preferences,
   // - --system-level on the command line, or
   // - the GoogleUpdateIsMachine=1 environment variable.
-  // In all three cases the value is sussed out in MasterPreferences
+  // In all three cases the value is sussed out in InitialPreferences
   // initialization.
   bool system_level = false;
   master_preferences.GetBool(installer::initial_preferences::kSystemLevel,

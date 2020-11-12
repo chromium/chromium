@@ -20,7 +20,7 @@ namespace installer {
 
 std::unique_ptr<SetupSingleton> SetupSingleton::Acquire(
     const base::CommandLine& command_line,
-    const MasterPreferences& master_preferences,
+    const InitialPreferences& master_preferences,
     InstallationState* original_state,
     InstallerState* installer_state) {
   DCHECK(original_state);

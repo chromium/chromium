@@ -334,7 +334,7 @@ void BeginUserExperiment(const InstallerState& installer_state,
 // setup.exe immediately after a successful update or following user logon as a
 // result of Active Setup.
 void RunUserExperiment(const base::CommandLine& command_line,
-                       const MasterPreferences& master_preferences,
+                       const InitialPreferences& master_preferences,
                        InstallationState* original_state,
                        InstallerState* installer_state) {
   VLOG(1) << __func__;

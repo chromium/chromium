@@ -11,7 +11,7 @@ class FilePath;
 
 namespace installer {
 
-class MasterPreferences;
+class InitialPreferences;
 
 // Verbose installer runs clock in at around 50K, non-verbose much less than
 // that. Some installer operations span multiple setup.exe runs, so we try
@@ -43,13 +43,13 @@ enum TruncateResult {
 TruncateResult TruncateLogFileIfNeeded(const base::FilePath& log_file);
 
 // Call to initialize logging for Chrome installer.
-void InitInstallerLogging(const installer::MasterPreferences& prefs);
+void InitInstallerLogging(const installer::InitialPreferences& prefs);
 
 // Call when done using logging for Chrome installer.
 void EndInstallerLogging();
 
 // Returns the full path of the log file.
-base::FilePath GetLogFilePath(const installer::MasterPreferences& prefs);
+base::FilePath GetLogFilePath(const installer::InitialPreferences& prefs);
 
 }  // namespace installer
 

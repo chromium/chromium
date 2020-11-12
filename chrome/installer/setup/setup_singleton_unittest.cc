@@ -78,7 +78,7 @@ MULTIPROCESS_TEST_MAIN(SetupSingletonTestExclusiveAccessProcessMain) {
 
   // Acquire the exclusive right to modify the Chrome installation.
   std::unique_ptr<SetupSingleton> setup_singleton(SetupSingleton::Acquire(
-      GetDummyCommandLine(), MasterPreferences::ForCurrentProcess(),
+      GetDummyCommandLine(), InitialPreferences::ForCurrentProcess(),
       &original_state, &installer_state));
   if (!setup_singleton)
     return SETUP_SINGLETON_ACQUISITION_FAILED;
@@ -101,7 +101,7 @@ MULTIPROCESS_TEST_MAIN(SetupSingletonTestWaitForInterruptProcessMain) {
 
   // Acquire the exclusive right to modify the Chrome installation.
   std::unique_ptr<SetupSingleton> setup_singleton(SetupSingleton::Acquire(
-      GetDummyCommandLine(), MasterPreferences::ForCurrentProcess(),
+      GetDummyCommandLine(), InitialPreferences::ForCurrentProcess(),
       &original_state, &installer_state));
   if (!setup_singleton)
     return SETUP_SINGLETON_ACQUISITION_FAILED;
@@ -179,7 +179,7 @@ TEST_F(SetupSingletonTest, WaitForInterruptNoInterrupt) {
   InstallerState installer_state;
   installer_state.set_target_path_for_testing(install_dir_path());
   std::unique_ptr<SetupSingleton> setup_singleton(SetupSingleton::Acquire(
-      GetDummyCommandLine(), MasterPreferences::ForCurrentProcess(),
+      GetDummyCommandLine(), InitialPreferences::ForCurrentProcess(),
       &original_state, &installer_state));
   ASSERT_TRUE(setup_singleton);
 
@@ -204,7 +204,7 @@ TEST_F(SetupSingletonTest, WaitForInterruptWithInterrupt) {
   InstallerState installer_state;
   installer_state.set_target_path_for_testing(install_dir_path());
   std::unique_ptr<SetupSingleton> setup_singleton(SetupSingleton::Acquire(
-      GetDummyCommandLine(), MasterPreferences::ForCurrentProcess(),
+      GetDummyCommandLine(), InitialPreferences::ForCurrentProcess(),
       &original_state, &installer_state));
   ASSERT_TRUE(setup_singleton);
 

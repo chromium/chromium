@@ -31,7 +31,7 @@ namespace installer {
 
 class InstallationState;
 class InstallerState;
-class MasterPreferences;
+class InitialPreferences;
 
 extern const char kUnPackStatusMetricsName[];
 
@@ -113,7 +113,7 @@ void DeleteRegistryKeyPartial(
     const std::vector<base::string16>& keys_to_preserve);
 
 // Returns true if downgrade is allowed by installer data.
-bool IsDowngradeAllowed(const MasterPreferences& prefs);
+bool IsDowngradeAllowed(const InitialPreferences& prefs);
 
 // Returns the age (in days) of the installation based on the creation time of
 // its installation directory, or -1 in case of error.

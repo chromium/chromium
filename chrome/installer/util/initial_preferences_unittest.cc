@@ -38,7 +38,7 @@ class ScopedGoogleUpdateIsMachine {
   std::unique_ptr<base::Environment> env_;
 };
 
-class MasterPreferencesTest : public testing::Test {
+class InitialPreferencesTest : public testing::Test {
  protected:
   void SetUp() override {
     ASSERT_TRUE(base::CreateTemporaryFile(&prefs_file_));
@@ -60,13 +60,13 @@ struct ExpectedBooleans {
 
 }  // namespace
 
-TEST_F(MasterPreferencesTest, NoFileToParse) {
+TEST_F(InitialPreferencesTest, NoFileToParse) {
   EXPECT_TRUE(base::DeleteFile(prefs_file()));
-  installer::MasterPreferences prefs(prefs_file());
+  installer::InitialPreferences prefs(prefs_file());
   EXPECT_FALSE(prefs.read_from_file());
 }
 
-TEST_F(MasterPreferencesTest, ParseDistroParams) {
+TEST_F(InitialPreferencesTest, ParseDistroParams) {
   const char text[] =
       "{ \n"
       "  \"distribution\": { \n"
@@ -90,7 +90,7 @@ TEST_F(MasterPreferencesTest, ParseDistroParams) {
 
   EXPECT_TRUE(
       base::WriteFile(prefs_file(), text, static_cast<int>(strlen(text))));
-  installer::MasterPreferences prefs(prefs_file());
+  installer::InitialPreferences prefs(prefs_file());
   EXPECT_TRUE(prefs.read_from_file());
 
   const char* const expected_true[] = {
@@ -119,7 +119,7 @@ TEST_F(MasterPreferencesTest, ParseDistroParams) {
   EXPECT_STREQ("c:\\foo", str_value.c_str());
 }
 
-TEST_F(MasterPreferencesTest, ParseMissingDistroParams) {
+TEST_F(InitialPreferencesTest, ParseMissingDistroParams) {
   const char text[] =
       "{ \n"
       "  \"distribution\": { \n"
@@ -132,7 +132,7 @@ TEST_F(MasterPreferencesTest, ParseMissingDistroParams) {
 
   EXPECT_TRUE(
       base::WriteFile(prefs_file(), text, static_cast<int>(strlen(text))));
-  installer::MasterPreferences prefs(prefs_file());
+  installer::InitialPreferences prefs(prefs_file());
   EXPECT_TRUE(prefs.read_from_file());
 
   ExpectedBooleans expected_bool[] = {
@@ -163,7 +163,7 @@ TEST_F(MasterPreferencesTest, ParseMissingDistroParams) {
       &str_value));
 }
 
-TEST_F(MasterPreferencesTest, FirstRunTabs) {
+TEST_F(InitialPreferencesTest, FirstRunTabs) {
   const char text[] =
       "{ \n"
       "  \"distribution\": { \n"
@@ -178,7 +178,7 @@ TEST_F(MasterPreferencesTest, FirstRunTabs) {
 
   EXPECT_TRUE(
       base::WriteFile(prefs_file(), text, static_cast<int>(strlen(text))));
-  installer::MasterPreferences prefs(prefs_file());
+  installer::InitialPreferences prefs(prefs_file());
   typedef std::vector<std::string> TabsVector;
   TabsVector tabs = prefs.GetFirstRunTabs();
   ASSERT_EQ(3u, tabs.size());
@@ -198,7 +198,7 @@ TEST(MasterPrefsExtension, ValidateExtensionJSON) {
                    .AppendASCII("good")
                    .AppendASCII("Preferences");
 
-  installer::MasterPreferences prefs(prefs_path);
+  installer::InitialPreferences prefs(prefs_path);
   base::DictionaryValue* extensions = nullptr;
   EXPECT_TRUE(prefs.GetExtensionsBlock(&extensions));
   int location = 0;
@@ -222,7 +222,7 @@ TEST(MasterPrefsExtension, ValidateExtensionJSON) {
 }
 
 // Test that we are parsing master preferences correctly.
-TEST_F(MasterPreferencesTest, GetInstallPreferencesTest) {
+TEST_F(InitialPreferencesTest, GetInstallPreferencesTest) {
   // Create a temporary prefs file.
   base::FilePath prefs_file;
   ASSERT_TRUE(base::CreateTemporaryFile(&prefs_file));
@@ -244,7 +244,7 @@ TEST_F(MasterPreferencesTest, GetInstallPreferencesTest) {
                        L"\"");
   cmd_str.append(L" --do-not-launch-chrome");
   base::CommandLine cmd_line = base::CommandLine::FromString(cmd_str);
-  installer::MasterPreferences prefs(cmd_line);
+  installer::InitialPreferences prefs(cmd_line);
 
   // Check prefs that do not have any equivalent command line option.
   ExpectedBooleans expected_bool[] = {
@@ -267,7 +267,7 @@ TEST_F(MasterPreferencesTest, GetInstallPreferencesTest) {
   // prefs.
   cmd_str = L"setup.exe --do-not-launch-chrome";
   cmd_line.ParseFromString(cmd_str);
-  installer::MasterPreferences prefs2(cmd_line);
+  installer::InitialPreferences prefs2(cmd_line);
   ExpectedBooleans expected_bool2[] = {
       {installer::initial_preferences::kDoNotLaunchChrome, true},
   };
@@ -284,17 +284,17 @@ TEST_F(MasterPreferencesTest, GetInstallPreferencesTest) {
       prefs2.GetBool(installer::initial_preferences::kVerboseLogging, &value));
 }
 
-TEST_F(MasterPreferencesTest, TestDefaultInstallConfig) {
+TEST_F(InitialPreferencesTest, TestDefaultInstallConfig) {
   std::wstringstream chrome_cmd;
   chrome_cmd << "setup.exe";
 
   base::CommandLine chrome_install(
       base::CommandLine::FromString(chrome_cmd.str()));
 
-  installer::MasterPreferences pref_chrome(chrome_install);
+  installer::InitialPreferences pref_chrome(chrome_install);
 }
 
-TEST_F(MasterPreferencesTest, EnforceLegacyPreferences) {
+TEST_F(InitialPreferencesTest, EnforceLegacyPreferences) {
   static const char kLegacyPrefs[] =
       "{"
       "  \"distribution\": {"
@@ -307,7 +307,7 @@ TEST_F(MasterPreferencesTest, EnforceLegacyPreferences) {
       "  }"
       "}";
 
-  installer::MasterPreferences prefs(kLegacyPrefs);
+  installer::InitialPreferences prefs(kLegacyPrefs);
 
   bool do_not_create_desktop_shortcut = false;
   bool do_not_create_quick_launch_shortcut = false;
@@ -347,7 +347,7 @@ TEST_F(MasterPreferencesTest, EnforceLegacyPreferences) {
 #endif  // BUILDFLAG(ENABLE_RLZ)
 }
 
-TEST_F(MasterPreferencesTest, DontEnforceLegacyCreateAllShortcutsTrue) {
+TEST_F(InitialPreferencesTest, DontEnforceLegacyCreateAllShortcutsTrue) {
   static const char kCreateAllShortcutsFalsePrefs[] =
       "{"
       "  \"distribution\": {"
@@ -355,7 +355,7 @@ TEST_F(MasterPreferencesTest, DontEnforceLegacyCreateAllShortcutsTrue) {
       "  }"
       "}";
 
-  installer::MasterPreferences prefs(kCreateAllShortcutsFalsePrefs);
+  installer::InitialPreferences prefs(kCreateAllShortcutsFalsePrefs);
 
   bool do_not_create_desktop_shortcut = false;
   bool do_not_create_quick_launch_shortcut = false;
@@ -371,7 +371,8 @@ TEST_F(MasterPreferencesTest, DontEnforceLegacyCreateAllShortcutsTrue) {
   EXPECT_FALSE(do_not_create_taskbar_shortcut);
 }
 
-TEST_F(MasterPreferencesTest, DontEnforceLegacyCreateAllShortcutsNotSpecified) {
+TEST_F(InitialPreferencesTest,
+       DontEnforceLegacyCreateAllShortcutsNotSpecified) {
   static const char kCreateAllShortcutsFalsePrefs[] =
       "{"
       "  \"distribution\": {"
@@ -379,7 +380,7 @@ TEST_F(MasterPreferencesTest, DontEnforceLegacyCreateAllShortcutsNotSpecified) {
       "  }"
       "}";
 
-  installer::MasterPreferences prefs(kCreateAllShortcutsFalsePrefs);
+  installer::InitialPreferences prefs(kCreateAllShortcutsFalsePrefs);
 
   bool do_not_create_desktop_shortcut = false;
   bool do_not_create_quick_launch_shortcut = false;
@@ -395,10 +396,10 @@ TEST_F(MasterPreferencesTest, DontEnforceLegacyCreateAllShortcutsNotSpecified) {
   EXPECT_FALSE(do_not_create_taskbar_shortcut);
 }
 
-TEST_F(MasterPreferencesTest, GoogleUpdateIsMachine) {
+TEST_F(InitialPreferencesTest, GoogleUpdateIsMachine) {
   {
     ScopedGoogleUpdateIsMachine env_setter("0");
-    installer::MasterPreferences prefs(
+    installer::InitialPreferences prefs(
         base::CommandLine(base::FilePath(FILE_PATH_LITERAL("setup.exe"))));
     bool value = false;
     prefs.GetBool(installer::initial_preferences::kSystemLevel, &value);
@@ -406,7 +407,7 @@ TEST_F(MasterPreferencesTest, GoogleUpdateIsMachine) {
   }
   {
     ScopedGoogleUpdateIsMachine env_setter("1");
-    installer::MasterPreferences prefs(
+    installer::InitialPreferences prefs(
         base::CommandLine(base::FilePath(FILE_PATH_LITERAL("setup.exe"))));
     bool value = false;
     prefs.GetBool(installer::initial_preferences::kSystemLevel, &value);
@@ -414,7 +415,7 @@ TEST_F(MasterPreferencesTest, GoogleUpdateIsMachine) {
   }
   {
     ScopedGoogleUpdateIsMachine env_setter("1bridgetoofar");
-    installer::MasterPreferences prefs(
+    installer::InitialPreferences prefs(
         base::CommandLine(base::FilePath(FILE_PATH_LITERAL("setup.exe"))));
     bool value = false;
     prefs.GetBool(installer::initial_preferences::kSystemLevel, &value);
@@ -422,7 +423,7 @@ TEST_F(MasterPreferencesTest, GoogleUpdateIsMachine) {
   }
   {
     ScopedGoogleUpdateIsMachine env_setter("2");
-    installer::MasterPreferences prefs(
+    installer::InitialPreferences prefs(
         base::CommandLine(base::FilePath(FILE_PATH_LITERAL("setup.exe"))));
     bool value = false;
     prefs.GetBool(installer::initial_preferences::kSystemLevel, &value);

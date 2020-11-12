@@ -73,29 +73,29 @@ const char kDefaultMasterPrefs[] = "master_preferences";
 // This function parses the 'distribution' entry and returns a combination
 // of MasterPrefResult.
 
-class MasterPreferences {
+class InitialPreferences {
  public:
   // Construct a master preferences from the current process' current command
   // line. Equivalent to calling
-  // MasterPreferences(*CommandLine::ForCurrentProcess()).
-  MasterPreferences();
+  // InitialPreferences(*CommandLine::ForCurrentProcess()).
+  InitialPreferences();
 
   // Parses the command line and optionally reads the master preferences file
   // to get distribution related install options (if the "installerdata" switch
   // is present in the command line.
   // The options from the preference file and command line are merged, with the
   // ones from the command line taking precedence in case of a conflict.
-  explicit MasterPreferences(const base::CommandLine& cmd_line);
+  explicit InitialPreferences(const base::CommandLine& cmd_line);
 
   // Parses a specific preferences file and does not merge any command line
   // switches with the distribution dictionary.
-  explicit MasterPreferences(const base::FilePath& prefs_path);
+  explicit InitialPreferences(const base::FilePath& prefs_path);
 
   // Parses a preferences directly from |prefs| and does not merge any command
   // line switches with the distribution dictionary.
-  explicit MasterPreferences(const std::string& prefs);
+  explicit InitialPreferences(const std::string& prefs);
 
-  ~MasterPreferences();
+  ~InitialPreferences();
 
   // Each of the Get methods below returns true if the named value was found in
   // the distribution dictionary and its value assigned to the 'value'
@@ -165,7 +165,7 @@ class MasterPreferences {
   // Returns true iff the master preferences were successfully read from a file.
   bool read_from_file() const { return preferences_read_from_file_; }
 
-  // Returns a reference to this MasterPreferences' root dictionary of values.
+  // Returns a reference to this InitialPreferences' root dictionary of values.
   const base::DictionaryValue& master_dictionary() const {
     return *master_dictionary_.get();
   }
@@ -174,7 +174,7 @@ class MasterPreferences {
   // CommandLine object for the current process.
   // NOTE: Must not be called before CommandLine::Init() is called!
   // OTHER NOTE: Not thread safe.
-  static const MasterPreferences& ForCurrentProcess();
+  static const InitialPreferences& ForCurrentProcess();
 
  private:
   void InitializeFromCommandLine(const base::CommandLine& cmd_line);
@@ -198,10 +198,10 @@ class MasterPreferences {
   bool preferences_read_from_file_ = false;
 
  private:
-  DISALLOW_COPY_AND_ASSIGN(MasterPreferences);
+  DISALLOW_COPY_AND_ASSIGN(InitialPreferences);
 };
 
-using InitialPreferences = MasterPreferences;
+using InitialPreferences = InitialPreferences;
 
 }  // namespace installer
 

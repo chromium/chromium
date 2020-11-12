@@ -30,7 +30,7 @@ namespace {
 
 // Returns the boolean value of the distribution preference in |prefs| named
 // |pref_name|, or |default_value| if not set.
-bool GetMasterPreference(const MasterPreferences& prefs,
+bool GetMasterPreference(const InitialPreferences& prefs,
                          const char* pref_name,
                          bool default_value) {
   bool value;
@@ -59,7 +59,7 @@ InstallerState::InstallerState(Level level)
 InstallerState::~InstallerState() {}
 
 void InstallerState::Initialize(const base::CommandLine& command_line,
-                                const MasterPreferences& prefs,
+                                const InitialPreferences& prefs,
                                 const InstallationState& machine_state) {
   Clear();
 

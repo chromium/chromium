@@ -454,7 +454,7 @@ class MakeInstallDetailsTest : public testing::TestWithParam<TestData> {
     // Prepare the inputs from the process command line.
     command_line_.ParseFromString(test_data_.command_line);
     master_preferences_ =
-        std::make_unique<installer::MasterPreferences>(command_line_);
+        std::make_unique<installer::InitialPreferences>(command_line_);
   }
 
   void SetUp() override {
@@ -482,7 +482,7 @@ class MakeInstallDetailsTest : public testing::TestWithParam<TestData> {
 
   const base::CommandLine& command_line() const { return command_line_; }
 
-  const installer::MasterPreferences& master_preferences() const {
+  const installer::InitialPreferences& master_preferences() const {
     return *master_preferences_;
   }
 
@@ -528,7 +528,7 @@ class MakeInstallDetailsTest : public testing::TestWithParam<TestData> {
   HKEY root_key_;
   nt::ROOT_KEY nt_root_key_;
   base::CommandLine command_line_;
-  std::unique_ptr<installer::MasterPreferences> master_preferences_;
+  std::unique_ptr<installer::InitialPreferences> master_preferences_;
 
   DISALLOW_COPY_AND_ASSIGN(MakeInstallDetailsTest);
 };

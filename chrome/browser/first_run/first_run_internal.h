@@ -14,8 +14,7 @@ class FilePath;
 }
 
 namespace installer {
-class MasterPreferences;
-using InitialPreferences = MasterPreferences;
+class InitialPreferences;
 }
 
 namespace first_run {

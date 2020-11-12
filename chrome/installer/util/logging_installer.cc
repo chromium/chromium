@@ -73,7 +73,7 @@ TruncateResult TruncateLogFileIfNeeded(const base::FilePath& log_file) {
   return result;
 }
 
-void InitInstallerLogging(const installer::MasterPreferences& prefs) {
+void InitInstallerLogging(const installer::InitialPreferences& prefs) {
   if (installer_logging_)
     return;
 
@@ -110,7 +110,7 @@ void EndInstallerLogging() {
   installer_logging_ = false;
 }
 
-base::FilePath GetLogFilePath(const installer::MasterPreferences& prefs) {
+base::FilePath GetLogFilePath(const installer::InitialPreferences& prefs) {
   std::string path;
   prefs.GetString(installer::initial_preferences::kLogFile, &path);
   if (!path.empty())

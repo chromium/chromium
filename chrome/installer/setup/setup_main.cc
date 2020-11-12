@@ -98,9 +98,9 @@
 #include "chrome/installer/util/google_update_util.h"
 #endif
 
+using installer::InitialPreferences;
 using installer::InstallationState;
 using installer::InstallerState;
-using installer::MasterPreferences;
 using installer::ProductState;
 
 namespace {
@@ -650,7 +650,7 @@ installer::InstallStatus UninstallProducts(InstallationState& original_state,
 installer::InstallStatus InstallProducts(InstallationState& original_state,
                                          const base::FilePath& setup_exe,
                                          const base::CommandLine& cmd_line,
-                                         const MasterPreferences& prefs,
+                                         const InitialPreferences& prefs,
                                          InstallerState* installer_state,
                                          base::FilePath* installer_directory) {
   DCHECK(installer_state);
@@ -934,7 +934,7 @@ bool HandleNonInstallCmdLineOptions(installer::ModifyParams& modify_params,
              cmd_line.HasSwitch(installer::switches::kRenameChromeExe)) {
     std::unique_ptr<installer::SetupSingleton> setup_singleton(
         installer::SetupSingleton::Acquire(
-            cmd_line, MasterPreferences::ForCurrentProcess(), original_state,
+            cmd_line, InitialPreferences::ForCurrentProcess(), original_state,
             installer_state));
     if (!setup_singleton) {
       *exit_code = installer::SETUP_SINGLETON_ACQUISITION_FAILED;
@@ -977,7 +977,7 @@ bool HandleNonInstallCmdLineOptions(installer::ModifyParams& modify_params,
     *exit_code = InstallUtil::GetInstallReturnCode(status);
   } else if (cmd_line.HasSwitch(installer::switches::kUserExperiment)) {
     installer::RunUserExperiment(cmd_line,
-                                 MasterPreferences::ForCurrentProcess(),
+                                 InitialPreferences::ForCurrentProcess(),
                                  original_state, installer_state);
     exit_code = 0;
   } else if (cmd_line.HasSwitch(installer::switches::kPatch)) {
@@ -1044,7 +1044,7 @@ namespace installer {
 InstallStatus InstallProductsHelper(InstallationState& original_state,
                                     const base::FilePath& setup_exe,
                                     const base::CommandLine& cmd_line,
-                                    const MasterPreferences& prefs,
+                                    const InitialPreferences& prefs,
                                     InstallerState& installer_state,
                                     base::FilePath* installer_directory,
                                     ArchiveType* archive_type) {
@@ -1314,7 +1314,7 @@ int WINAPI wWinMain(HINSTANCE instance,
   // install_util uses chrome paths.
   chrome::RegisterPathProvider();
 
-  const MasterPreferences& prefs = MasterPreferences::ForCurrentProcess();
+  const InitialPreferences& prefs = InitialPreferences::ForCurrentProcess();
   installer::InitInstallerLogging(prefs);
 
   const base::CommandLine& cmd_line = *base::CommandLine::ForCurrentProcess();

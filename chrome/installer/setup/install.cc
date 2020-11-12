@@ -316,7 +316,7 @@ bool CreateVisualElementsManifest(const base::FilePath& src_path,
 }
 
 void CreateOrUpdateShortcuts(const base::FilePath& target,
-                             const MasterPreferences& prefs,
+                             const InitialPreferences& prefs,
                              InstallShortcutLevel install_level,
                              InstallShortcutOperation install_operation) {
   bool do_not_create_any_shortcuts = false;
@@ -444,7 +444,7 @@ void RegisterChromeOnMachine(const InstallerState& installer_state,
 
 InstallStatus InstallOrUpdateProduct(const InstallParams& install_params,
                                      const base::FilePath& prefs_path,
-                                     const MasterPreferences& prefs) {
+                                     const InitialPreferences& prefs) {
   const InstallationState& original_state = install_params.installation_state;
   const InstallerState& installer_state = install_params.installer_state;
   const base::FilePath& setup_path = install_params.setup_path;
@@ -577,7 +577,7 @@ void HandleOsUpgradeForBrowser(const InstallerState& installer_state,
   VLOG(1) << "Updating and registering shortcuts for --on-os-upgrade.";
 
   // Read master_preferences copied beside chrome.exe at install.
-  const MasterPreferences prefs(
+  const InitialPreferences prefs(
       installer_state.target_path().AppendASCII(kDefaultMasterPrefs));
 
   // Update shortcuts at this install level (per-user shortcuts on system-level
@@ -655,7 +655,7 @@ void HandleActiveSetupForBrowser(const InstallerState& installer_state,
   // Read master_preferences copied beside chrome.exe at install for the sake of
   // creating/updating shortcuts.
   const base::FilePath installation_root = installer_state.target_path();
-  MasterPreferences prefs(installation_root.AppendASCII(kDefaultMasterPrefs));
+  InitialPreferences prefs(installation_root.AppendASCII(kDefaultMasterPrefs));
   base::FilePath chrome_exe(installation_root.Append(kChromeExe));
   CreateOrUpdateShortcuts(chrome_exe, prefs, CURRENT_USER, install_operation);
 
