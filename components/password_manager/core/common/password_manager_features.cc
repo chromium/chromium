@@ -84,6 +84,12 @@ const base::Feature kPasswordsWeaknessCheck = {
 const base::Feature kRecoverFromNeverSaveAndroid = {
     "RecoverFromNeverSaveAndroid", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables reparsing server predictions once the password form manager notices a
+// dynamic form change.
+const base::Feature kReparseServerPredictionsFollowingFormChange = {
+    "ReparseServerPredictionsFollowingFormChange",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables considering secondary server field predictions during form parsing.
 const base::Feature kSecondaryServerFieldPredictions = {
     "SecondaryServerFieldPredictions", base::FEATURE_DISABLED_BY_DEFAULT};
