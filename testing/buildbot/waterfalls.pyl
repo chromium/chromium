@@ -25,104 +25,68 @@
         'test_suites': {
           'gtest_tests': 'chromeos_browser_integration_tests',
         },
-        'swarming': {
-          'dimension_sets': [
-            {
-              'kvm': '1',
-              'os': 'Ubuntu-16.04',
-              'pool': 'chrome.tests.cros-vm',
-            },
-          ],
-        },
+        'mixins': [
+          'chromeos-betty',
+        ],
       },
       'chromeos-betty-pi-arc-chrome': {
         'additional_compile_targets': [
           'chromiumos_preflight',
         ],
+        'mixins': [
+          'chromeos-betty',
+        ],
         'test_suites': {
           'gtest_tests': 'chromeos_vm_gtests',
           'isolated_scripts': 'chromeos_isolated_scripts',
-        },
-        'swarming': {
-          'dimension_sets': [
-            {
-              'kvm': '1',
-              'os': 'Ubuntu-16.04',
-              'pool': 'chrome.tests.cros-vm',
-            },
-          ],
         },
       },
       'chromeos-betty-pi-arc-chrome-beta': {
         'additional_compile_targets': [
           'chromiumos_preflight',
         ],
+        'mixins': [
+          'chromeos-betty',
+        ],
         'test_suites': {
           'gtest_tests': 'chromeos_vm_gtests',
           'isolated_scripts': 'chromeos_isolated_scripts',
-        },
-        'swarming': {
-          'dimension_sets': [
-            {
-              'kvm': '1',
-              'os': 'Ubuntu-16.04',
-              'pool': 'chrome.tests.cros-vm',
-            },
-          ],
         },
       },
       'chromeos-betty-pi-arc-chrome-ltc': {
         'additional_compile_targets': [
           'chromiumos_preflight',
         ],
+        'mixins': [
+          'chromeos-betty',
+        ],
         'test_suites': {
           'gtest_tests': 'chromeos_vm_gtests',
           'isolated_scripts': 'chromeos_isolated_scripts',
-        },
-        'swarming': {
-          'dimension_sets': [
-            {
-              'kvm': '1',
-              'os': 'Ubuntu-16.04',
-              'pool': 'chrome.tests.cros-vm',
-            },
-          ],
         },
       },
       'chromeos-betty-pi-arc-chrome-lts': {
         'additional_compile_targets': [
           'chromiumos_preflight',
         ],
+        'mixins': [
+          'chromeos-betty',
+        ],
         'test_suites': {
           'gtest_tests': 'chromeos_vm_gtests',
           'isolated_scripts': 'chromeos_isolated_scripts',
-        },
-        'swarming': {
-          'dimension_sets': [
-            {
-              'kvm': '1',
-              'os': 'Ubuntu-16.04',
-              'pool': 'chrome.tests.cros-vm',
-            },
-          ],
         },
       },
       'chromeos-betty-pi-arc-chrome-stable': {
         'additional_compile_targets': [
           'chromiumos_preflight',
         ],
+        'mixins': [
+          'chromeos-betty',
+        ],
         'test_suites': {
           'gtest_tests': 'chromeos_vm_gtests',
           'isolated_scripts': 'chromeos_isolated_scripts',
-        },
-        'swarming': {
-          'dimension_sets': [
-            {
-              'kvm': '1',
-              'os': 'Ubuntu-16.04',
-              'pool': 'chrome.tests.cros-vm',
-            },
-          ],
         },
       },
       'chromeos-eve-chrome': {
