@@ -840,9 +840,7 @@ int HttpProtocolHandlerCore::OnRead(char* buffer, int buffer_length) {
 
 @interface CRNHTTPProtocolHandler (Private)
 
-- (id<CRNHTTPProtocolHandlerProxy>)getProtocolHandlerProxy;
-- (scoped_refptr<net::HttpProtocolHandlerCore>)getCore;
-- (NSThread*)getClientThread;
+- (void)ensureProtocolHandlerProxyCreated;
 - (void)cancelRequest;
 
 @end
@@ -932,10 +930,10 @@ int HttpProtocolHandlerCore::OnRead(char* buffer, int buffer_length) {
   }
 
   // The closure passed to PostTask must to retain the _protocolProxy
-  // scoped_nsobject. A call to getProtocolHandlerProxy before passing
+  // scoped_nsobject. A call to ensureProtocolHandlerProxyCreated before passing
   // _protocolProxy ensure that _protocolProxy is instanciated before passing
   // it.
-  [self getProtocolHandlerProxy];
+  [self ensureProtocolHandlerProxyCreated];
   DCHECK(_protocolProxy);
   g_protocol_handler_delegate->GetDefaultURLRequestContext()
       ->GetNetworkTaskRunner()
@@ -943,7 +941,7 @@ int HttpProtocolHandlerCore::OnRead(char* buffer, int buffer_length) {
                                            _core, _protocolProxy));
 }
 
-- (id<CRNHTTPProtocolHandlerProxy>)getProtocolHandlerProxy {
+- (void)ensureProtocolHandlerProxyCreated {
   DCHECK_EQ([NSThread currentThread], _clientThread);
   if (!_protocolProxy) {
     _protocolProxy = [[CRNHTTPProtocolHandlerProxyWithClientThread alloc]
@@ -951,15 +949,6 @@ int HttpProtocolHandlerCore::OnRead(char* buffer, int buffer_length) {
             clientThread:_clientThread
              runLoopMode:[[NSRunLoop currentRunLoop] currentMode]];
   }
-  return _protocolProxy;
-}
-
-- (scoped_refptr<net::HttpProtocolHandlerCore>)getCore {
-  return _core;
-}
-
-- (NSThread*)getClientThread {
-  return _clientThread;
 }
 
 - (void)cancelRequest {

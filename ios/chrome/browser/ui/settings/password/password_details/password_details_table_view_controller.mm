@@ -273,7 +273,7 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
       initWithType:ItemTypeChangePasswordRecommendation];
   item.detailText =
       l10n_util::GetNSString(IDS_IOS_CHANGE_COMPROMISED_PASSWORD_DESCRIPTION);
-  item.image = [self getCompromisedIcon];
+  item.image = [self compromisedIcon];
   return item;
 }
 
@@ -354,7 +354,7 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
                               atIndexPath:(NSIndexPath*)indexPath {
   UIMenuController* menu = [UIMenuController sharedMenuController];
   if (![menu isMenuVisible]) {
-    menu.menuItems = [self getMenuItemsFor:itemType];
+    menu.menuItems = [self menuItemsForItemType:itemType];
 
     if (@available(iOS 13, *)) {
       [menu showMenuFromView:tableView
@@ -481,7 +481,7 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
 #pragma mark - Private
 
 // Applies tint colour and resizes image.
-- (UIImage*)getCompromisedIcon {
+- (UIImage*)compromisedIcon {
   UIImage* image = [UIImage imageNamed:@"settings_unsafe_state"];
   UIImage* newImage =
       [image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
@@ -528,7 +528,7 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
         };
 
     [self.reauthModule
-        attemptReauthWithLocalizedReason:[self getLocalizedStringFor:reason]
+        attemptReauthWithLocalizedReason:[self localizedStringForReason:reason]
                     canReusePreviousAuth:YES
                                  handler:showPasswordHandler];
   } else {
@@ -569,7 +569,7 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
 }
 
 // Returns localized reason for reauthentication dialog.
-- (NSString*)getLocalizedStringFor:(ReauthenticationReason)reason {
+- (NSString*)localizedStringForReason:(ReauthenticationReason)reason {
   switch (reason) {
     case ReauthenticationReasonShow:
       return l10n_util::GetNSString(
@@ -696,7 +696,7 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
 
 // Returns an array of UIMenuItems to display in a context menu on the site
 // cell.
-- (NSArray*)getMenuItemsFor:(NSInteger)itemType {
+- (NSArray*)menuItemsForItemType:(NSInteger)itemType {
   PasswordDetailsMenuItem* copyOption = [[PasswordDetailsMenuItem alloc]
       initWithTitle:l10n_util::GetNSString(IDS_IOS_SETTINGS_SITE_COPY_MENU_ITEM)
              action:@selector(copyPasswordDetails:)];

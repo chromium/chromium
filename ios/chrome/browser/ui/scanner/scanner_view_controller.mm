@@ -72,9 +72,9 @@ using base::UserMetricsAction;
         constraintEqualToAnchor:[self.view bottomAnchor]],
   ]];
 
-  AVCaptureVideoPreviewLayer* previewLayer = [self.scannerView getPreviewLayer];
+  AVCaptureVideoPreviewLayer* previewLayer = [self.scannerView previewLayer];
 
-  switch ([self.cameraController getAuthorizationStatus]) {
+  switch ([self.cameraController authorizationStatus]) {
     case AVAuthorizationStatusNotDetermined:
       [self.cameraController
           requestAuthorizationAndLoadCaptureSession:previewLayer];
@@ -134,7 +134,7 @@ using base::UserMetricsAction;
     // changed. This can happen if entering or leaving Split View mode on iPad.
     [self.scannerView resetPreviewFrame:size];
     [self.cameraController
-        resetVideoOrientation:[self.scannerView getPreviewLayer]];
+        resetVideoOrientation:[self.scannerView previewLayer]];
   }
 }
 

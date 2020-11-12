@@ -24,7 +24,7 @@
 @property(nonatomic, weak) id<BadgeDelegate> delegate;
 
 // Returns a properly configured BadgButton associated with |badgeType|.
-- (BadgeButton*)getBadgeButtonForBadgeType:(BadgeType)badgeType;
+- (BadgeButton*)badgeButtonForBadgeType:(BadgeType)badgeType;
 
 @end
 

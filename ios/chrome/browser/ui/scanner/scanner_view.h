@@ -45,7 +45,7 @@
 - (instancetype)initWithCoder:(NSCoder*)coder NS_UNAVAILABLE;
 
 // Returns the displayed preview layer.
-- (AVCaptureVideoPreviewLayer*)getPreviewLayer;
+- (AVCaptureVideoPreviewLayer*)previewLayer;
 
 // Sets the state of the torch button to enabled or disabled according to the
 // value of |torchIsAvailable|.

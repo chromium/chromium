@@ -502,7 +502,7 @@ const CGFloat kFadeOutAnimationDuration = 0.16f;
 
 // Returns user policy used to handle existing data when switching signed in
 // account.
-- (ShouldClearData)getShouldClearData {
+- (ShouldClearData)shouldClearData {
   switch (self.signinIntent) {
     case UserSigninIntentFirstRun: {
       return SHOULD_CLEAR_DATA_MERGE_DATA;
@@ -521,7 +521,7 @@ const CGFloat kFadeOutAnimationDuration = 0.16f;
   AuthenticationFlow* authenticationFlow = [[AuthenticationFlow alloc]
                initWithBrowser:self.browser
                       identity:self.unifiedConsentCoordinator.selectedIdentity
-               shouldClearData:[self getShouldClearData]
+               shouldClearData:[self shouldClearData]
               postSignInAction:POST_SIGNIN_ACTION_NONE
       presentingViewController:self.viewController];
   authenticationFlow.dispatcher = HandlerForProtocol(

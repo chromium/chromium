@@ -39,7 +39,7 @@
 - (instancetype)init NS_UNAVAILABLE;
 
 // Returns the app's authorization in regards to the camera.
-- (AVAuthorizationStatus)getAuthorizationStatus;
+- (AVAuthorizationStatus)authorizationStatus;
 
 // Asks the user to grant the authorization to access the camera.
 // Should only be called when the current authorization status is

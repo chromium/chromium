@@ -1667,10 +1667,6 @@ std::vector<std::unique_ptr<password_manager::PasswordForm>> CopyOf(
 
 #pragma mark - Testing
 
-- (PasswordExporter*)getPasswordExporter {
-  return _passwordExporter;
-}
-
 #pragma mark - ChromeIdentityServiceObserver
 
 - (void)identityListChanged {

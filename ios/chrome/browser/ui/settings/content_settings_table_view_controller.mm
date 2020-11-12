@@ -61,9 +61,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
   TableViewMultiDetailTextItem* _openedInAnotherWindowItem;
 }
 
-// Returns the value for the default setting with ID |settingID|.
-- (ContentSetting)getContentSetting:(ContentSettingsType)settingID;
-
 // Helpers to create collection view items.
 - (id)blockPopupsItem;
 - (id)composeEmailItem;
@@ -212,11 +209,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
   _openedInAnotherWindowItem.accessibilityIdentifier =
       kSettingsDefaultAppsCellId;
   return _openedInAnotherWindowItem;
-}
-
-- (ContentSetting)getContentSetting:(ContentSettingsType)settingID {
-  return ios::HostContentSettingsMapFactory::GetForBrowserState(_browserState)
-      ->GetDefaultContentSetting(settingID, NULL);
 }
 
 #pragma mark - UITableViewDelegate

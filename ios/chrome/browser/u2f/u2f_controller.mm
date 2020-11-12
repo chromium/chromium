@@ -85,7 +85,7 @@ const char kRequestIDKey[] = "requestId";
 
   // Compose callback string.
   NSString* chromeScheme =
-      [[ChromeAppConstants sharedInstance] getBundleURLScheme];
+      [[ChromeAppConstants sharedInstance] bundleURLScheme];
   GURL successOrErrorURL(base::StringPrintf(
       "%s://%s/", base::SysNSStringToUTF8(chromeScheme).c_str(),
       kU2FCallbackURL));

@@ -191,7 +191,7 @@ TEST_F(SpotlightManagerTest, testDefaultKeywordsExist) {
 
 namespace {
 
-// Returns the original implementation of |getHashForURL:| which used
+// Returns the original implementation of |hashForURL:| which used
 // OS-provided MD5 functions.
 int64_t OriginalHash(const GURL& url, NSString* title) {
   NSString* key = [NSString

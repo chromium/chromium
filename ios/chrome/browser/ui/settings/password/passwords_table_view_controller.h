@@ -43,11 +43,4 @@ class Browser;
 
 @end
 
-@interface PasswordsTableViewController (Testing)
-
-// Returns the password exporter to allow setting fake testing objects on it.
-- (PasswordExporter*)getPasswordExporter;
-
-@end
-
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORDS_TABLE_VIEW_CONTROLLER_H_

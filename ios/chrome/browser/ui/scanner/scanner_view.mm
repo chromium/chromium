@@ -95,7 +95,7 @@ const CGFloat kFlashDuration = 0.5;
 
 #pragma mark - public methods
 
-- (AVCaptureVideoPreviewLayer*)getPreviewLayer {
+- (AVCaptureVideoPreviewLayer*)previewLayer {
   return [_previewView previewLayer];
 }
 

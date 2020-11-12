@@ -439,7 +439,7 @@ constexpr double kSafeBrowsingRowMinDelay = 1.75;
   }
 
   // If not managed compute error info to show in popover, if available.
-  NSAttributedString* info = [self getPopoverInfoForType:itemType];
+  NSAttributedString* info = [self popoverInfoForType:itemType];
 
   // If |info| is empty there is no popover to display.
   if (!info)
@@ -460,7 +460,7 @@ constexpr double kSafeBrowsingRowMinDelay = 1.75;
 #pragma mark - Private methods
 
 // Computes the text needed for a popover on |itemType| if available.
-- (NSAttributedString*)getPopoverInfoForType:(NSInteger)itemType {
+- (NSAttributedString*)popoverInfoForType:(NSInteger)itemType {
   SafteyCheckItemType type = static_cast<SafteyCheckItemType>(itemType);
   switch (type) {
     case PasswordItemType:

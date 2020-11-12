@@ -33,10 +33,10 @@ bool IsHandledProtocol(const std::string& scheme);
 + (ChromeAppConstants*)sharedInstance;
 
 // Returns the URL scheme that launches Chrome.
-- (NSString*)getBundleURLScheme;
+- (NSString*)bundleURLScheme;
 
 // Returns all the URL schemes that are registered on the Application Bundle.
-- (NSArray*)getAllBundleURLSchemes;
+- (NSArray*)allBundleURLSchemes;
 
 // Method to set the scheme to callback Chrome iOS for testing.
 - (void)setCallbackSchemeForTesting:(NSString*)callbackScheme;

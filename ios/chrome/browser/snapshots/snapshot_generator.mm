@@ -139,7 +139,7 @@ BOOL ViewHierarchyContainsWKWebView(UIView* view) {
     }
     return;
   }
-  SnapshotInfo snapshotInfo = [self getSnapshotInfo];
+  SnapshotInfo snapshotInfo = [self snapshotInfo];
   CGRect snapshotFrameInWebView =
       [self.webState->GetView() convertRect:snapshotInfo.snapshotFrameInBaseView
                                    fromView:snapshotInfo.baseView];
@@ -165,7 +165,7 @@ BOOL ViewHierarchyContainsWKWebView(UIView* view) {
 - (UIImage*)generateSnapshotWithOverlays:(BOOL)shouldAddOverlay {
   if (![self canTakeSnapshot])
     return nil;
-  SnapshotInfo snapshotInfo = [self getSnapshotInfo];
+  SnapshotInfo snapshotInfo = [self snapshotInfo];
   [self.delegate snapshotGenerator:self
       willUpdateSnapshotForWebState:self.webState];
   UIImage* baseImage =
@@ -308,7 +308,7 @@ BOOL ViewHierarchyContainsWKWebView(UIView* view) {
 }
 
 // Retrieves information needed for snapshotting.
-- (SnapshotInfo)getSnapshotInfo {
+- (SnapshotInfo)snapshotInfo {
   SnapshotInfo snapshotInfo;
   snapshotInfo.baseView = [self.delegate snapshotGenerator:self
                                        baseViewForWebState:self.webState];

@@ -55,7 +55,7 @@ bool IsValidAppUrl(const GURL& app_url) {
 // Returns True if |app_url| has a Chrome bundle URL scheme.
 bool HasChromeAppScheme(const GURL& app_url) {
   NSArray* chrome_schemes =
-      [[ChromeAppConstants sharedInstance] getAllBundleURLSchemes];
+      [[ChromeAppConstants sharedInstance] allBundleURLSchemes];
   NSString* app_url_scheme = base::SysUTF8ToNSString(app_url.scheme());
   return [chrome_schemes containsObject:app_url_scheme];
 }

@@ -1354,7 +1354,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
   return [self.sharedState.tableViewModel numberOfItemsInSection:section] > 0;
 }
 
-- (std::vector<const bookmarks::BookmarkNode*>)getEditNodesInVector {
+- (std::vector<const bookmarks::BookmarkNode*>)editNodes {
   std::vector<const bookmarks::BookmarkNode*> nodes;
   if (self.sharedState.currentlyShowingSearchResults) {
     // Create a vector of edit nodes in the same order as the selected nodes.
@@ -1751,8 +1751,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
       addItemWithTitle:l10n_util::GetNSString(
                            IDS_IOS_BOOKMARK_CONTEXT_MENU_OPEN)
                 action:^{
-                  std::vector<const BookmarkNode*> nodes =
-                      [weakSelf getEditNodesInVector];
+                  std::vector<const BookmarkNode*> nodes = [weakSelf editNodes];
                   [weakSelf openAllNodes:nodes inIncognito:NO newTab:NO];
                 }
                  style:UIAlertActionStyleDefault];
@@ -1761,8 +1760,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
       addItemWithTitle:l10n_util::GetNSString(
                            IDS_IOS_BOOKMARK_CONTEXT_MENU_OPEN_INCOGNITO)
                 action:^{
-                  std::vector<const BookmarkNode*> nodes =
-                      [weakSelf getEditNodesInVector];
+                  std::vector<const BookmarkNode*> nodes = [weakSelf editNodes];
                   [weakSelf openAllNodes:nodes inIncognito:YES newTab:NO];
                 }
                  style:UIAlertActionStyleDefault];

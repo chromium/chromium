@@ -62,12 +62,12 @@ TEST_F(ChromeURLUtilTest, GURLHasChromeScheme) {
 TEST_F(ChromeURLUtilTest, GetBundleURLScheme) {
   // Verifies that there is some default values.
   ChromeAppConstants* constants = [ChromeAppConstants sharedInstance];
-  NSString* originalScheme = [constants getBundleURLScheme];
+  NSString* originalScheme = [constants bundleURLScheme];
   EXPECT_GT([originalScheme length], 0U);
 
   // Verifies that Chrome scheme can be reset for testing.
   [constants setCallbackSchemeForTesting:@"blah"];
-  EXPECT_NSEQ(@"blah", [constants getBundleURLScheme]);
+  EXPECT_NSEQ(@"blah", [constants bundleURLScheme]);
 
   // Resets state in case of further tests.
   [constants setCallbackSchemeForTesting:originalScheme];
@@ -76,7 +76,7 @@ TEST_F(ChromeURLUtilTest, GetBundleURLScheme) {
 TEST_F(ChromeURLUtilTest, GetAllBundleURLSchemes) {
   // Verifies that there is at least 3 scheme (regular, secure and callback).
   ChromeAppConstants* constants = [ChromeAppConstants sharedInstance];
-  NSArray* schemes = [constants getAllBundleURLSchemes];
+  NSArray* schemes = [constants allBundleURLSchemes];
   EXPECT_GT([schemes count], 2U);
 
   // Verifies that at least the main unit test scheme is in returned schemes.

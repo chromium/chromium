@@ -100,7 +100,7 @@ BOOL SetStartupParametersForSpotlightAction(
 @interface ActionsSpotlightManager ()
 
 // Creates a new Spotlight entry with title |title| for the given |action|.
-- (CSSearchableItem*)getItemForAction:(NSString*)action title:(NSString*)title;
+- (CSSearchableItem*)itemForAction:(NSString*)action title:(NSString*)title;
 
 // Clears and re-inserts all Spotlight actions.
 - (void)clearAndAddSpotlightActions;
@@ -163,11 +163,10 @@ BOOL SetStartupParametersForSpotlightAction(
               base::SysUTF8ToNSString(spotlight::kSpotlightActionQRScanner);
 
           NSArray* spotlightItems = @[
-            [strongSelf getItemForAction:voiceSearchAction
-                                   title:voiceSearchTitle],
-            [strongSelf getItemForAction:newTabAction title:newTabTitle],
-            [strongSelf getItemForAction:incognitoAction title:incognitoTitle],
-            [strongSelf getItemForAction:qrScannerAction title:qrScannerTitle],
+            [strongSelf itemForAction:voiceSearchAction title:voiceSearchTitle],
+            [strongSelf itemForAction:newTabAction title:newTabTitle],
+            [strongSelf itemForAction:incognitoAction title:incognitoTitle],
+            [strongSelf itemForAction:qrScannerAction title:qrScannerTitle],
           ];
 
           [[CSSearchableIndex defaultSearchableIndex]
@@ -177,7 +176,7 @@ BOOL SetStartupParametersForSpotlightAction(
   }];
 }
 
-- (CSSearchableItem*)getItemForAction:(NSString*)action title:(NSString*)title {
+- (CSSearchableItem*)itemForAction:(NSString*)action title:(NSString*)title {
   CSSearchableItemAttributeSet* attributeSet =
       [[CSSearchableItemAttributeSet alloc]
           initWithItemContentType:spotlight::StringFromSpotlightDomain(

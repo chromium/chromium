@@ -54,12 +54,12 @@ bool IsHandledProtocol(const std::string& scheme) {
   return g_instance;
 }
 
-- (NSString*)getBundleURLScheme {
+- (NSString*)bundleURLScheme {
   if (!_callbackScheme) {
     NSSet* allowableSchemes =
         [NSSet setWithObjects:@"googlechrome", @"chromium",
                               @"ios-chrome-unittests.http", nil];
-    NSArray* schemes = [self getAllBundleURLSchemes];
+    NSArray* schemes = [self allBundleURLSchemes];
     for (NSString* scheme in schemes) {
       if ([allowableSchemes containsObject:scheme])
         _callbackScheme = [scheme copy];
@@ -69,7 +69,7 @@ bool IsHandledProtocol(const std::string& scheme) {
   return _callbackScheme;
 }
 
-- (NSArray*)getAllBundleURLSchemes {
+- (NSArray*)allBundleURLSchemes {
   if (!_schemes) {
     NSDictionary* info = [[NSBundle mainBundle] infoDictionary];
     NSArray* urlTypes = [info objectForKey:@"CFBundleURLTypes"];

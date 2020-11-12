@@ -64,8 +64,8 @@
 - (void)setTabInfo:(NSString*)key
          withValue:(const NSString*)value
             forTab:(NSString*)tabId;
-// Retrieves the |key| information for tab |tabId|.
-- (id)getTabInfo:(NSString*)key forTab:(NSString*)tabId;
+// Retrieves the |key| information for tab |tabID|.
+- (id)tabInfo:(NSString*)key forTab:(NSString*)tabID;
 // Removes the |key| information for tab |tabId|
 - (void)removeTabInfo:(NSString*)key forTab:(NSString*)tabId;
 // Observes |webState| by this instance of the CrashReporterTabStateObserver.
@@ -104,7 +104,7 @@ const NSString* kDocumentMimeType = @"application/pdf";
 }
 
 - (void)closingDocumentInTab:(NSString*)tabId {
-  NSString* mime = (NSString*)[self getTabInfo:@"mime" forTab:tabId];
+  NSString* mime = (NSString*)[self tabInfo:@"mime" forTab:tabId];
   if ([kDocumentMimeType isEqualToString:mime])
     crash_keys::SetCurrentTabIsPDF(false);
   [self removeTabInfo:@"mime" forTab:tabId];
@@ -124,8 +124,8 @@ const NSString* kDocumentMimeType = @"application/pdf";
   [tabCurrentState setObject:value forKey:key];
 }
 
-- (id)getTabInfo:(NSString*)key forTab:(NSString*)tabId {
-  NSMutableDictionary* tabValues = [_tabCurrentStateByTabId objectForKey:tabId];
+- (id)tabInfo:(NSString*)key forTab:(NSString*)tabID {
+  NSMutableDictionary* tabValues = [_tabCurrentStateByTabId objectForKey:tabID];
   return [tabValues objectForKey:key];
 }
 
@@ -189,7 +189,7 @@ const NSString* kDocumentMimeType = @"application/pdf";
   if (!loadSuccess || webState->GetContentsMimeType() != "application/pdf")
     return;
   NSString* tabID = TabIdTabHelper::FromWebState(webState)->tab_id();
-  NSString* oldMime = (NSString*)[self getTabInfo:@"mime" forTab:tabID];
+  NSString* oldMime = (NSString*)[self tabInfo:@"mime" forTab:tabID];
   if ([kDocumentMimeType isEqualToString:oldMime])
     return;
 

@@ -78,7 +78,7 @@ using scanner::CameraState;
     (AVAuthorizationStatus)authorizationStatus {
   id mock = [OCMockObject mockForClass:[QRScannerCameraController class]];
   [[[mock stub] andReturnValue:OCMOCK_VALUE(authorizationStatus)]
-      getAuthorizationStatus];
+      authorizationStatus];
   return mock;
 }
 

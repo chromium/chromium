@@ -362,7 +362,7 @@ TEST_F(AppLauncherTabHelperTest, U2FUrls) {
 // Tests that URLs with Chrome Bundle schemes are blocked on iframes.
 TEST_F(AppLauncherTabHelperTest, ChromeBundleUrlScheme) {
   // Get the test bundle URL Scheme.
-  NSString* scheme = [[ChromeAppConstants sharedInstance] getBundleURLScheme];
+  NSString* scheme = [[ChromeAppConstants sharedInstance] bundleURLScheme];
   NSString* url = [NSString stringWithFormat:@"%@://www.google.com", scheme];
   EXPECT_FALSE(TestShouldAllowRequest(url,
                                       /*target_frame_is_main=*/false,

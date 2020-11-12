@@ -49,7 +49,7 @@
        !CGSizeEqualToSize([self.gradient size], self.bounds.size))) {
     CGRect rect =
         CGRectMake(0, 0, self.bounds.size.width, self.bounds.size.height);
-    self.gradient = [self getLinearGradient:rect];
+    self.gradient = [self linearGradientWithRect:rect];
   }
 }
 
@@ -99,7 +99,7 @@
 }
 
 // Create gradient opacity mask based on direction.
-- (UIImage*)getLinearGradient:(CGRect)rect {
+- (UIImage*)linearGradientWithRect:(CGRect)rect {
   // Create an opaque context.
   CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceGray();
   CGContextRef context =

@@ -21,7 +21,7 @@
 
 @implementation BadgeButtonFactory
 
-- (BadgeButton*)getBadgeButtonForBadgeType:(BadgeType)badgeType {
+- (BadgeButton*)badgeButtonForBadgeType:(BadgeType)badgeType {
   switch (badgeType) {
     case BadgeType::kBadgeTypePasswordSave:
       return [self passwordsSaveBadgeButton];
