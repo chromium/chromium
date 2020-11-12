@@ -662,7 +662,7 @@ void LocalFrame::DetachImpl(FrameDetachType type) {
 
   GetEventHandlerRegistry().DidRemoveAllEventHandlers(*DomWindow());
 
-  probe::FrameDetachedFromParent(this);
+  probe::FrameDetachedFromParent(this, type);
 
   supplements_.clear();
   frame_scheduler_.reset();

@@ -6768,6 +6768,12 @@ domain Page
     parameters
       # Id of the frame that has been detached.
       FrameId frameId
+      experimental enum reason
+        # The frame is removed from the DOM.
+        remove
+        # The frame is being swapped out in favor of an out-of-process iframe.
+        # A new frame target will be created (see Target.attachedToTarget).
+        swap
 
   # Fired once navigation of the frame has completed. Frame is now associated with the new loader.
   event frameNavigated

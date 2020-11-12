@@ -138,6 +138,16 @@ String NavigationPolicyToProtocol(NavigationPolicy policy) {
   return DispositionEnum::CurrentTab;
 }
 
+String FrameDetachTypeToProtocol(FrameDetachType type) {
+  namespace ReasonEnum = protocol::Page::FrameDetached::ReasonEnum;
+  switch (type) {
+    case FrameDetachType::kRemove:
+      return ReasonEnum::Remove;
+    case FrameDetachType::kSwap:
+      return ReasonEnum::Swap;
+  }
+}
+
 Resource* CachedResource(LocalFrame* frame,
                          const KURL& url,
                          InspectorResourceContentLoader* loader) {
@@ -951,8 +961,10 @@ void InspectorPageAgent::FrameAttachedToParent(LocalFrame* frame) {
   GetFrontend()->flush();
 }
 
-void InspectorPageAgent::FrameDetachedFromParent(LocalFrame* frame) {
-  GetFrontend()->frameDetached(IdentifiersFactory::FrameId(frame));
+void InspectorPageAgent::FrameDetachedFromParent(LocalFrame* frame,
+                                                 FrameDetachType type) {
+  GetFrontend()->frameDetached(IdentifiersFactory::FrameId(frame),
+                               FrameDetachTypeToProtocol(type));
 }
 
 bool InspectorPageAgent::ScreencastEnabled() {

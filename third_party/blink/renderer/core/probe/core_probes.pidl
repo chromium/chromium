@@ -112,7 +112,7 @@ interface CoreProbes {
   void DomContentLoadedEventFired([Keep] LocalFrame*);
   void LoadEventFired([Keep] LocalFrame*);
   void FrameAttachedToParent([Keep] LocalFrame*);
-  void FrameDetachedFromParent([Keep] LocalFrame*);
+  void FrameDetachedFromParent([Keep] LocalFrame*, FrameDetachType);
   void DidStartProvisionalLoad([Keep] LocalFrame*);
   void DidFailProvisionalLoad([Keep] LocalFrame*);
   void WillCommitLoad([Keep] LocalFrame*, DocumentLoader*);
