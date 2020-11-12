@@ -2606,8 +2606,6 @@ source_set("browser") {
       "speech/audio_buffer.h",
       "speech/audio_encoder.cc",
       "speech/audio_encoder.h",
-      "speech/chunked_byte_buffer.cc",
-      "speech/chunked_byte_buffer.h",
       "speech/endpointer/endpointer.cc",
       "speech/endpointer/endpointer.h",
       "speech/endpointer/energy_endpointer.cc",

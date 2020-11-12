@@ -7,10 +7,10 @@
 #include <string>
 #include <vector>
 
-#include "content/browser/speech/chunked_byte_buffer.h"
+#include "components/speech/chunked_byte_buffer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace content {
+namespace speech {
 
 typedef std::vector<uint8_t> ByteVector;
 
@@ -73,4 +73,4 @@ TEST(ChunkedByteBufferTest, BasicTest) {
   EXPECT_FALSE(buffer.HasChunks());
 }
 
-}  // namespace content
+}  // namespace speech

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_SPEECH_CHUNKED_BYTE_BUFFER_H_
-#define CONTENT_BROWSER_SPEECH_CHUNKED_BYTE_BUFFER_H_
+#ifndef COMPONENTS_SPEECH_CHUNKED_BYTE_BUFFER_H_
+#define COMPONENTS_SPEECH_CHUNKED_BYTE_BUFFER_H_
 
 #include <stddef.h>
 #include <stdint.h>
@@ -14,9 +14,8 @@
 
 #include "base/macros.h"
 #include "base/strings/string_piece.h"
-#include "content/common/content_export.h"
 
-namespace content {
+namespace speech {
 
 // Models a chunk-oriented byte buffer. The term chunk is herein defined as an
 // arbitrary sequence of bytes that is preceeded by N header bytes, indicating
@@ -28,7 +27,7 @@ namespace content {
 //
 // E.g. 00 00 00 04 xx xx xx xx 00 00 00 02 yy yy 00 00 00 04 zz zz zz zz
 //      [----- CHUNK 1 -------] [--- CHUNK 2 ---] [------ CHUNK 3 ------]
-class CONTENT_EXPORT ChunkedByteBuffer {
+class ChunkedByteBuffer {
  public:
   ChunkedByteBuffer();
   ~ChunkedByteBuffer();
@@ -72,7 +71,6 @@ class CONTENT_EXPORT ChunkedByteBuffer {
   DISALLOW_COPY_AND_ASSIGN(ChunkedByteBuffer);
 };
 
+}  // namespace speech
 
-}  // namespace content
-
-#endif  // CONTENT_BROWSER_SPEECH_CHUNKED_BYTE_BUFFER_H_
+#endif  // COMPONENTS_SPEECH_CHUNKED_BYTE_BUFFER_H_

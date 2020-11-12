@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/speech/chunked_byte_buffer.h"
+#include "components/speech/chunked_byte_buffer.h"
 
 #include <algorithm>
 #include <utility>
@@ -20,12 +20,10 @@ static_assert(sizeof(size_t) >= kHeaderLength,
 
 }  // namespace
 
-namespace content {
+namespace speech {
 
 ChunkedByteBuffer::ChunkedByteBuffer()
-    : partial_chunk_(new Chunk()),
-      total_bytes_stored_(0) {
-}
+    : partial_chunk_(new Chunk()), total_bytes_stored_(0) {}
 
 ChunkedByteBuffer::~ChunkedByteBuffer() {
   Clear();
@@ -62,8 +60,7 @@ void ChunkedByteBuffer::Append(const uint8_t* start, size_t length) {
     DCHECK_GT(insert_length, 0U);
     DCHECK_LE(insert_length, remaining_bytes);
     DCHECK_LE(next_data + insert_length, start + length);
-    insert_target->insert(insert_target->end(),
-                          next_data,
+    insert_target->insert(insert_target->end(), next_data,
                           next_data + insert_length);
     next_data += insert_length;
     remaining_bytes -= insert_length;
@@ -99,7 +96,7 @@ bool ChunkedByteBuffer::HasChunks() const {
 
 std::unique_ptr<std::vector<uint8_t>> ChunkedByteBuffer::PopChunk() {
   if (chunks_.empty())
-    return std::unique_ptr<std::vector<uint8_t>>();
+    return nullptr;
   std::unique_ptr<Chunk> chunk = std::move(*chunks_.begin());
   chunks_.erase(chunks_.begin());
   DCHECK_EQ(chunk->header.size(), kHeaderLength);
@@ -117,8 +114,7 @@ void ChunkedByteBuffer::Clear() {
 
 ChunkedByteBuffer::Chunk::Chunk() : content(new std::vector<uint8_t>()) {}
 
-ChunkedByteBuffer::Chunk::~Chunk() {
-}
+ChunkedByteBuffer::Chunk::~Chunk() {}
 
 size_t ChunkedByteBuffer::Chunk::ExpectedContentLength() const {
   DCHECK_EQ(header.size(), kHeaderLength);
@@ -128,4 +124,4 @@ size_t ChunkedByteBuffer::Chunk::ExpectedContentLength() const {
   return static_cast<size_t>(content_length);
 }
 
-}  // namespace content
+}  // namespace speech

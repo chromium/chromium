@@ -14,12 +14,12 @@
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_piece.h"
+#include "components/speech/chunked_byte_buffer.h"
 #include "components/speech/downstream_loader.h"
 #include "components/speech/downstream_loader_client.h"
 #include "components/speech/upstream_loader.h"
 #include "components/speech/upstream_loader_client.h"
 #include "content/browser/speech/audio_encoder.h"
-#include "content/browser/speech/chunked_byte_buffer.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/speech_recognition_session_preamble.h"
 #include "services/network/public/cpp/simple_url_loader_stream_consumer.h"
@@ -218,7 +218,7 @@ class CONTENT_EXPORT SpeechRecognitionEngine
   const std::string accept_language_;
   std::unique_ptr<AudioEncoder> encoder_;
   std::unique_ptr<AudioEncoder> preamble_encoder_;
-  ChunkedByteBuffer chunked_byte_buffer_;
+  speech::ChunkedByteBuffer chunked_byte_buffer_;
   bool got_last_definitive_result_;
   bool is_dispatching_event_;
   bool use_framed_post_data_;

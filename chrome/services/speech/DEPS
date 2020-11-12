@@ -1,10 +1,10 @@
 include_rules = [
   "+chrome/services/speech",
   "+components/speech",
-  "+content/browser/speech",
   "+content/public/browser",
   "+google_apis",
   "+media",
-  "+services/network",
+  "+services/network/public",
+  "+services/network/test",
   "+third_party/blink/public/mojom/speech",
 ]

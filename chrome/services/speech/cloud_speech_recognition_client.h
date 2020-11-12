@@ -11,11 +11,11 @@
 #include "base/strings/string_piece.h"
 #include "base/unguessable_token.h"
 #include "chrome/services/speech/speech_recognition_service_impl.h"
+#include "components/speech/chunked_byte_buffer.h"
 #include "components/speech/downstream_loader.h"
 #include "components/speech/downstream_loader_client.h"
 #include "components/speech/upstream_loader.h"
 #include "components/speech/upstream_loader_client.h"
-#include "content/browser/speech/chunked_byte_buffer.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 
 namespace speech {
@@ -108,7 +108,7 @@ class CloudSpeechRecognitionClient : public speech::UpstreamLoaderClient,
   mojo::Remote<network::mojom::URLLoaderFactory> url_loader_factory_;
   base::WeakPtr<SpeechRecognitionServiceImpl> speech_recognition_service_impl_;
 
-  content::ChunkedByteBuffer chunked_byte_buffer_;
+  ChunkedByteBuffer chunked_byte_buffer_;
 };
 
 }  // namespace speech

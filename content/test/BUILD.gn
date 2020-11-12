@@ -2449,7 +2449,6 @@ test("content_unittests") {
       "../browser/direct_sockets/direct_sockets_unittest.cc",
       "../browser/host_zoom_map_impl_unittest.cc",
       "../browser/serial/serial_unittest.cc",
-      "../browser/speech/chunked_byte_buffer_unittest.cc",
       "../browser/speech/endpointer/endpointer_unittest.cc",
       "../browser/speech/speech_recognition_engine_unittest.cc",
       "../browser/speech/speech_recognizer_impl_unittest.cc",
