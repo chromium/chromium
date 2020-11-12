@@ -37,16 +37,11 @@ int GetAccessFlags(PageAccessibilityConfiguration accessibility) {
 void* SystemAllocPagesInternal(void* hint,
                                size_t length,
                                PageAccessibilityConfiguration accessibility,
-                               PageTag page_tag,
-                               bool commit) {
+                               PageTag page_tag) {
   DWORD access_flag = GetAccessFlags(accessibility);
-  if (commit) {
-    PA_DCHECK(access_flag != PAGE_NOACCESS);
-  } else {
-    PA_DCHECK(access_flag == PAGE_NOACCESS);
-  }
-
-  const DWORD type_flags = commit ? (MEM_RESERVE | MEM_COMMIT) : MEM_RESERVE;
+  const DWORD type_flags = (accessibility != PageInaccessible)
+                               ? (MEM_RESERVE | MEM_COMMIT)
+                               : MEM_RESERVE;
   void* ret = VirtualAlloc(hint, length, type_flags, access_flag);
   if (ret == nullptr) {
     s_allocPageErrorCode = GetLastError();
@@ -58,7 +53,6 @@ void* TrimMappingInternal(void* base,
                           size_t base_length,
                           size_t trim_length,
                           PageAccessibilityConfiguration accessibility,
-                          bool commit,
                           size_t pre_slack,
                           size_t post_slack) {
   void* ret = base;
@@ -67,8 +61,7 @@ void* TrimMappingInternal(void* base,
     // address within the freed range.
     ret = reinterpret_cast<char*>(base) + pre_slack;
     FreePages(base, base_length);
-    ret = SystemAllocPages(ret, trim_length, accessibility, PageTag::kChromium,
-                           commit);
+    ret = SystemAllocPages(ret, trim_length, accessibility, PageTag::kChromium);
   }
   return ret;
 }

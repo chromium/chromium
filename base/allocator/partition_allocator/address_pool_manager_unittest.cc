@@ -23,7 +23,7 @@ class AddressPoolManagerTest : public testing::Test {
     AddressPoolManager::GetInstance()->ResetForTesting();
     base_address_ =
         AllocPages(nullptr, kPoolSize, kSuperPageSize, base::PageInaccessible,
-                   PageTag::kPartitionAlloc, false);
+                   PageTag::kPartitionAlloc);
     ASSERT_TRUE(base_address_);
     pool_ = AddressPoolManager::GetInstance()->Add(
         reinterpret_cast<uintptr_t>(base_address_), kPoolSize);

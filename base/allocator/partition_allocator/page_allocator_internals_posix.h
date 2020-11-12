@@ -160,8 +160,7 @@ int GetAccessFlags(PageAccessibilityConfiguration accessibility) {
 void* SystemAllocPagesInternal(void* hint,
                                size_t length,
                                PageAccessibilityConfiguration accessibility,
-                               PageTag page_tag,
-                               bool commit) {
+                               PageTag page_tag) {
 #if defined(OS_APPLE)
   // Use a custom tag to make it easier to distinguish Partition Alloc regions
   // in vmmap(1). Tags between 240-255 are supported.
@@ -246,7 +245,6 @@ void* TrimMappingInternal(void* base,
                           size_t base_length,
                           size_t trim_length,
                           PageAccessibilityConfiguration accessibility,
-                          bool commit,
                           size_t pre_slack,
                           size_t post_slack) {
   void* ret = base;

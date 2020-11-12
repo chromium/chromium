@@ -49,6 +49,8 @@ enum class PageTag {
 // automatically.
 //
 // |page_accessibility| controls the permission of the allocated pages.
+// PageInaccessible means uncommitted.
+//
 // |page_tag| is used on some platforms to identify the source of the
 // allocation. Use PageTag::kChromium as a catch-all category.
 //
@@ -57,8 +59,7 @@ BASE_EXPORT void* AllocPages(void* address,
                              size_t length,
                              size_t align,
                              PageAccessibilityConfiguration page_accessibility,
-                             PageTag tag,
-                             bool commit = true);
+                             PageTag tag);
 
 // Free one or more pages starting at |address| and continuing for |length|
 // bytes.

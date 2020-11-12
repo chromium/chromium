@@ -71,8 +71,7 @@ std::atomic<int32_t> s_allocPageErrorCode{0};
 void* SystemAllocPagesInternal(void* hint,
                                size_t length,
                                PageAccessibilityConfiguration accessibility,
-                               PageTag page_tag,
-                               bool commit) {
+                               PageTag page_tag) {
   zx::vmo vmo;
   zx_status_t status = zx::vmo::create(length, 0, &vmo);
   if (status != ZX_OK) {
@@ -124,7 +123,6 @@ void* TrimMappingInternal(void* base,
                           size_t base_length,
                           size_t trim_length,
                           PageAccessibilityConfiguration accessibility,
-                          bool commit,
                           size_t pre_slack,
                           size_t post_slack) {
   PA_DCHECK(base_length == trim_length + pre_slack + post_slack);

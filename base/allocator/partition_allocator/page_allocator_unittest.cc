@@ -93,7 +93,7 @@ TEST(PageAllocatorTest, AllocFailure) {
     return;
 
   void* result = AllocPages(nullptr, size, PageAllocationGranularity(),
-                            PageInaccessible, PageTag::kChromium, false);
+                            PageInaccessible, PageTag::kChromium);
   if (result == nullptr) {
     // We triggered allocation failure. Our reservation should have been
     // released, and we should be able to make a new reservation.
@@ -134,7 +134,7 @@ TEST(PageAllocatorTest, MAYBE_ReserveAddressSpace) {
 TEST(PageAllocatorTest, AllocAndFreePages) {
   void* buffer = AllocPages(nullptr, PageAllocationGranularity(),
                             PageAllocationGranularity(), PageReadWrite,
-                            PageTag::kChromium, true);
+                            PageTag::kChromium);
   EXPECT_TRUE(buffer);
   int* buffer0 = reinterpret_cast<int*>(buffer);
   *buffer0 = 42;
@@ -188,7 +188,7 @@ void SignalHandler(int signal, siginfo_t* info, void*) {
 TEST(PageAllocatorTest, InaccessiblePages) {
   void* buffer = AllocPages(nullptr, PageAllocationGranularity(),
                             PageAllocationGranularity(), PageInaccessible,
-                            PageTag::kChromium, false);
+                            PageTag::kChromium);
   EXPECT_TRUE(buffer);
 
   FAULT_TEST_BEGIN()
@@ -207,7 +207,7 @@ TEST(PageAllocatorTest, InaccessiblePages) {
 TEST(PageAllocatorTest, ReadExecutePages) {
   void* buffer = AllocPages(nullptr, PageAllocationGranularity(),
                             PageAllocationGranularity(), PageReadExecute,
-                            PageTag::kChromium, true);
+                            PageTag::kChromium);
   EXPECT_TRUE(buffer);
   int* buffer0 = reinterpret_cast<int*>(buffer);
   // Reading from buffer should succeed.
@@ -232,7 +232,7 @@ TEST(PageAllocatorTest, ReadExecutePages) {
 TEST(PageAllocatorTest, PageTagging) {
   void* buffer = AllocPages(nullptr, PageAllocationGranularity(),
                             PageAllocationGranularity(), PageInaccessible,
-                            PageTag::kChromium, false);
+                            PageTag::kChromium);
   EXPECT_TRUE(buffer);
 
   std::string proc_maps;
@@ -260,7 +260,7 @@ TEST(PageAllocatorTest, DecommitErasesMemory) {
 
   size_t size = PageAllocationGranularity();
   void* buffer = AllocPages(nullptr, size, PageAllocationGranularity(),
-                            PageReadWrite, PageTag::kChromium, true);
+                            PageReadWrite, PageTag::kChromium);
   ASSERT_TRUE(buffer);
 
   memset(buffer, 42, size);
@@ -285,7 +285,7 @@ TEST(PageAllocatorTest, MappedPagesAccounting) {
   // Ask for a large alignment to make sure that trimming doesn't change the
   // accounting.
   void* data = AllocPages(nullptr, size, 128 * PageAllocationGranularity(),
-                          PageInaccessible, PageTag::kChromium, false);
+                          PageInaccessible, PageTag::kChromium);
   ASSERT_TRUE(data);
 
   EXPECT_EQ(mapped_size_before + size, GetTotalMappedSize());

@@ -36,7 +36,7 @@ void PartitionAddressSpace::Init() {
 
   reserved_base_address_ = reinterpret_cast<uintptr_t>(AllocPages(
       nullptr, kDesiredAddressSpaceSize, kReservedAddressSpaceAlignment,
-      base::PageInaccessible, PageTag::kPartitionAlloc, false));
+      base::PageInaccessible, PageTag::kPartitionAlloc));
   PA_CHECK(reserved_base_address_);
 
   uintptr_t current = reserved_base_address_;
