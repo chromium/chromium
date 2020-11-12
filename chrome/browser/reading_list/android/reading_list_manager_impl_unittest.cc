@@ -149,15 +149,15 @@ TEST_F(ReadingListManagerImplTest, GetNodeByIDIsReadingListBookmark) {
   EXPECT_FALSE(manager()->IsReadingListBookmark(node_same_url.get()));
 }
 
-// Verifies Add() the same URL twice will not invalidate returned pointers, and
-// the content is updated.
+// If Add() the same URL twice, the first bookmark node pointer will be
+// invalidated.
 TEST_F(ReadingListManagerImplTest, AddTwice) {
-  // Adds a node.
+  // Adds a node twice.
   GURL url(kURL);
-  const auto* node = manager()->Add(url, kTitle);
+  manager()->Add(url, kTitle);
   const auto* new_node = manager()->Add(url, kTitle1);
-  EXPECT_EQ(node, new_node) << "Add same URL shouldn't invalidate pointers.";
-  EXPECT_EQ(kTitle1, base::UTF16ToUTF8(node->GetTitle()));
+  EXPECT_EQ(kTitle1, base::UTF16ToUTF8(new_node->GetTitle()));
+  EXPECT_EQ(url, new_node->url());
 }
 
 // Verifes SetReadStatus()/GetReadStatus() API.
@@ -197,8 +197,8 @@ TEST_F(ReadingListManagerImplTest, ReadStatus) {
   EXPECT_FALSE(manager()->GetReadStatus(manager()->GetRoot()));
 }
 
-// Verifies ReadingListDidAddEntry() API that is being called after
-// ReadingListModel::AddEntry() is called.
+// Verifies the bookmark node is added when sync or other source adds the
+// reading list entry from |reading_list_model_|.
 TEST_F(ReadingListManagerImplTest, ReadingListDidAddEntry) {
   GURL url(kURL);
   reading_list_model()->AddEntry(url, kTitle, reading_list::ADDED_VIA_SYNC);
@@ -207,6 +207,40 @@ TEST_F(ReadingListManagerImplTest, ReadingListDidAddEntry) {
   EXPECT_TRUE(node);
   EXPECT_EQ(url, node->url());
   EXPECT_EQ(1u, manager()->size());
+}
+
+// Verifies the bookmark node is deleted when sync or other source deletes the
+// reading list entry from |reading_list_model_|.
+TEST_F(ReadingListManagerImplTest, ReadingListWillRemoveEntry) {
+  GURL url(kURL);
+
+  // Adds a node.
+  manager()->Add(url, kTitle);
+  const auto* node = manager()->Get(url);
+  EXPECT_TRUE(node);
+  EXPECT_EQ(url, node->url());
+  EXPECT_EQ(1u, manager()->size());
+
+  // Removes it from |reading_list_model_|.
+  reading_list_model()->RemoveEntryByURL(url);
+  node = manager()->Get(url);
+  EXPECT_FALSE(node);
+  EXPECT_EQ(0u, manager()->size());
+}
+
+// Verifies the bookmark node is updated when sync or other source updates the
+// reading list entry from |reading_list_model_|.
+TEST_F(ReadingListManagerImplTest, ReadingListWillMoveEntry) {
+  GURL url(kURL);
+
+  // Adds a node.
+  manager()->Add(url, kTitle);
+  const auto* node = manager()->Get(url);
+  EXPECT_TRUE(node);
+  EXPECT_FALSE(manager()->GetReadStatus(node));
+
+  reading_list_model()->SetReadStatus(url, true);
+  EXPECT_TRUE(manager()->GetReadStatus(node));
 }
 
 }  // namespace

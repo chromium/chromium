@@ -30,6 +30,10 @@ class ReadingListManagerImpl : public ReadingListManager,
   void ReadingListDidAddEntry(const ReadingListModel* model,
                               const GURL& url,
                               reading_list::EntrySource source) override;
+  void ReadingListWillRemoveEntry(const ReadingListModel* model,
+                                  const GURL& url) override;
+  void ReadingListDidMoveEntry(const ReadingListModel* model,
+                               const GURL& url) override;
 
   // ReadingListManager implementation.
   void AddObserver(Observer* observer) override;
@@ -54,7 +58,8 @@ class ReadingListManagerImpl : public ReadingListManager,
   bookmarks::BookmarkNode* FindBookmarkByURL(const GURL& url) const;
 
   void RemoveBookmark(const GURL& url);
-  const bookmarks::BookmarkNode* AddBookmark(const ReadingListEntry* entry);
+  const bookmarks::BookmarkNode* AddOrUpdateBookmark(
+      const ReadingListEntry* entry);
 
   // Contains reading list data, outlives this class.
   ReadingListModel* reading_list_model_;
