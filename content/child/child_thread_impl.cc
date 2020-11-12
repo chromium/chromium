@@ -843,8 +843,4 @@ bool ChildThreadImpl::IsInBrowserProcess() const {
   return static_cast<bool>(browser_process_io_runner_);
 }
 
-IPC::Listener* ChildThreadImpl::GetListener(int32_t routing_id) {
-  return router_.GetRoute(routing_id);
-}
-
 }  // namespace content

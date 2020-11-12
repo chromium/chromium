@@ -2526,12 +2526,6 @@ void RenderProcessHostImpl::RegisterMojoInterfaces() {
       std::move(registry), std::move(child_host_pending_receiver_));
 }
 
-IPC::Listener* RenderProcessHostImpl::GetListener(
-    util::PassKey<AgentSchedulingGroupHost>,
-    int32_t routing_id) {
-  return listeners_.Lookup(routing_id);
-}
-
 void RenderProcessHostImpl::CreateEmbeddedFrameSinkProvider(
     mojo::PendingReceiver<blink::mojom::EmbeddedFrameSinkProvider> receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);

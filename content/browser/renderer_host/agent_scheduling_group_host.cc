@@ -7,12 +7,12 @@
 
 #include "base/feature_list.h"
 #include "base/supports_user_data.h"
-#include "base/util/type_safety/pass_key.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/common/agent_scheduling_group.mojom.h"
 #include "content/common/renderer.mojom.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/content_features.h"
+#include "ipc/ipc_message.h"
 
 namespace content {
 
@@ -28,8 +28,6 @@ using ::mojo::PendingReceiver;
 using ::mojo::PendingRemote;
 using ::mojo::Receiver;
 using ::mojo::Remote;
-
-using PassKey = ::util::PassKey<AgentSchedulingGroupHost>;
 
 static constexpr char kAgentGroupHostDataKey[] =
     "AgentSchedulingGroupHostUserDataKey";
@@ -48,10 +46,6 @@ class AgentGroupHostUserData : public base::SupportsUserData::Data {
  private:
   std::unique_ptr<AgentSchedulingGroupHost> agent_group_;
 };
-
-RenderProcessHostImpl& ToImpl(RenderProcessHost& process) {
-  return static_cast<RenderProcessHostImpl&>(process);
-}
 
 }  // namespace
 
@@ -349,15 +343,9 @@ void AgentSchedulingGroupHost::SetUpMojoIfNeeded() {
 }
 
 Listener* AgentSchedulingGroupHost::GetListener(int32_t routing_id) {
-  if (routing_id == MSG_ROUTING_CONTROL)
-    return &process_;
+  DCHECK_NE(routing_id, MSG_ROUTING_CONTROL);
 
-  if (auto* listener = listener_map_.Lookup(routing_id))
-    return listener;
-
-  // TODO(crbug.com/1111231): Can/should we log it when we find the listener on
-  // the process but not here?
-  return ToImpl(process_).GetListener(PassKey(), routing_id);
+  return listener_map_.Lookup(routing_id);
 }
 
 }  // namespace content

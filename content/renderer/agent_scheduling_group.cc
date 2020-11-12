@@ -234,15 +234,9 @@ void AgentSchedulingGroup::GetAssociatedInterface(
 }
 
 Listener* AgentSchedulingGroup::GetListener(int32_t routing_id) {
-  if (routing_id == MSG_ROUTING_CONTROL)
-    return &ToImpl(render_thread_);
+  DCHECK_NE(routing_id, MSG_ROUTING_CONTROL);
 
-  if (auto* listener = listener_map_.Lookup(routing_id))
-    return listener;
-
-  // TODO(crbug.com/1111231): Can/should we log it when we find the listener on
-  // the render thread but not here?
-  return ToImpl(render_thread_).GetListener(routing_id);
+  return listener_map_.Lookup(routing_id);
 }
 
 }  // namespace content

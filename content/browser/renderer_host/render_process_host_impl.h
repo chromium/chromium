@@ -762,12 +762,6 @@ class CONTENT_EXPORT RenderProcessHostImpl
   // Registers Mojo interfaces to be exposed to the renderer.
   void RegisterMojoInterfaces();
 
-  // TODO(crbug.com/1132901): We'll be able to remove this method once
-  // `AgentSchedulingGroupHost` maintains its own map of IPC::Listeners, but for
-  // now we'll let it delegate to this class.
-  IPC::Listener* GetListener(util::PassKey<AgentSchedulingGroupHost>,
-                             int32_t routing_id);
-
   // mojom::RendererHost
   using BrowserHistogramCallback =
       mojom::RendererHost::GetBrowserHistogramCallback;

@@ -161,11 +161,6 @@ class CONTENT_EXPORT ChildThreadImpl : public IPC::Listener,
 
   bool IsInBrowserProcess() const;
 
-  // TODO(1132901) We'll be able to move this method once |AgentSchedulingGroup|
-  // maintains its own map of IPC::Listeners, but for now we'll let it delegate
-  // to this class.
-  virtual IPC::Listener* GetListener(int32_t routing_id);
-
  private:
   // TODO(crbug.com/1111231): This class is a friend so that it can call our
   // private mojo implementation methods, acting as a pass-through. This is only
