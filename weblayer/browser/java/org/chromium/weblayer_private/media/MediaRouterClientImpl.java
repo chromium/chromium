@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.support.v4.media.session.MediaSessionCompat;
 
 import androidx.fragment.app.FragmentManager;
 
@@ -136,6 +137,11 @@ public class MediaRouterClientImpl extends MediaRouterClient {
         @Override
         public NotificationWrapperBuilder createNotificationWrapperBuilder() {
             return MediaSessionNotificationHelper.createNotificationWrapperBuilder(mNotificationId);
+        }
+
+        @Override
+        public void onMediaSessionUpdated(MediaSessionCompat session) {
+            // TODO(estade): implement.
         }
 
         @Override

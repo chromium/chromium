@@ -6,6 +6,7 @@ package org.chromium.weblayer_private.media;
 
 import android.app.Service;
 import android.content.Intent;
+import android.support.v4.media.session.MediaSessionCompat;
 
 import org.chromium.components.browser_ui.media.MediaNotificationController;
 import org.chromium.components.browser_ui.media.MediaNotificationInfo;
@@ -95,6 +96,11 @@ public class MediaSessionManager {
         public NotificationWrapperBuilder createNotificationWrapperBuilder() {
             return MediaSessionNotificationHelper.createNotificationWrapperBuilder(
                     getNotificationId());
+        }
+
+        @Override
+        public void onMediaSessionUpdated(MediaSessionCompat session) {
+            // This is only relevant when casting.
         }
 
         @Override
