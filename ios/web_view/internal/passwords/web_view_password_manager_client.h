@@ -119,6 +119,16 @@ class WebViewPasswordManagerClient
   void set_bridge(id<PasswordManagerClientBridge> bridge) { bridge_ = bridge; }
   const syncer::SyncService* GetSyncService();
 
+  safe_browsing::PasswordProtectionService* GetPasswordProtectionService()
+      const override;
+
+  void CheckProtectedPasswordEntry(
+      password_manager::metrics_util::PasswordType reused_password_type,
+      const std::string& username,
+      const std::vector<password_manager::MatchingReusedCredential>&
+          matching_reused_credentials,
+      bool password_field_exists) override;
+
  private:
   __weak id<PasswordManagerClientBridge> bridge_;
 

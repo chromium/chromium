@@ -44,6 +44,7 @@
 #error "This file requires ARC support."
 #endif
 
+using password_manager::metrics_util::PasswordType;
 using password_manager::PasswordFormManagerForUI;
 using password_manager::PasswordManagerMetricsRecorder;
 using password_manager::PasswordStore;
@@ -297,4 +298,21 @@ IOSChromePasswordManagerClient::GetFieldInfoManager() const {
 
 bool IOSChromePasswordManagerClient::IsAutofillAssistantUIVisible() const {
   return false;
+}
+
+safe_browsing::PasswordProtectionService*
+IOSChromePasswordManagerClient::GetPasswordProtectionService() const {
+  // TODO(crbug.com/1147967): This is no-op until the password protection
+  // service is enabled.
+  return nullptr;
+}
+
+void IOSChromePasswordManagerClient::CheckProtectedPasswordEntry(
+    PasswordType password_type,
+    const std::string& username,
+    const std::vector<password_manager::MatchingReusedCredential>&
+        matching_reused_credentials,
+    bool password_field_exists) {
+  // TODO(crbug.com/1147967): This is no-op until the password protection
+  // service is enabled.
 }

@@ -168,7 +168,6 @@ void PasswordReuseDetectionManager::OnReuseCheckDone(
     client_->LogPasswordReuseDetectedEvent();
 #endif
 
-#if defined(PASSWORD_REUSE_DETECTION_ENABLED)
   std::string username = reused_protected_password_hash.has_value()
                              ? reused_protected_password_hash->username
                              : "";
@@ -177,7 +176,7 @@ void PasswordReuseDetectionManager::OnReuseCheckDone(
       reused_password_type, username,
       std::move(all_matching_reused_credentials_).extract(),
       password_field_detected);
-#endif
+
   all_matching_reused_credentials_.clear();
 }
 

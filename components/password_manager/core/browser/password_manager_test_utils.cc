@@ -120,7 +120,6 @@ MockPasswordStoreObserver::MockPasswordStoreObserver() = default;
 
 MockPasswordStoreObserver::~MockPasswordStoreObserver() = default;
 
-#if defined(PASSWORD_REUSE_DETECTION_ENABLED)
 MockPasswordReuseDetectorConsumer::MockPasswordReuseDetectorConsumer() =
     default;
 
@@ -157,7 +156,5 @@ void PasswordHashDataMatcher::DescribeNegationTo(::std::ostream* os) const {
     base::Optional<PasswordHashData> expected) {
   return ::testing::MakeMatcher(new PasswordHashDataMatcher(expected));
 }
-
-#endif
 
 }  // namespace password_manager

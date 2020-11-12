@@ -59,11 +59,9 @@ class Origin;
 
 class GURL;
 
-#if defined(ON_FOCUS_PING_ENABLED)
 namespace safe_browsing {
 class PasswordProtectionService;
 }
-#endif
 
 namespace password_manager {
 
@@ -327,11 +325,9 @@ class PasswordManagerClient {
   // Returns the current best guess as to the page's display language.
   virtual std::string GetPageLanguage() const;
 
-#if defined(ON_FOCUS_PING_ENABLED) || defined(PASSWORD_REUSE_DETECTION_ENABLED)
   // Return the PasswordProtectionService associated with this instance.
   virtual safe_browsing::PasswordProtectionService*
   GetPasswordProtectionService() const = 0;
-#endif
 
 #if defined(ON_FOCUS_PING_ENABLED)
   // Checks the safe browsing reputation of the webpage when the
@@ -341,7 +337,6 @@ class PasswordManagerClient {
                                            const GURL& frame_url) = 0;
 #endif
 
-#if defined(PASSWORD_REUSE_DETECTION_ENABLED)
   // Checks the safe browsing reputation of the webpage where password reuse
   // happens. This is called by the PasswordReuseDetectionManager when a
   // protected password is typed on the wrong domain. This may trigger a
@@ -354,7 +349,6 @@ class PasswordManagerClient {
       const std::string& username,
       const std::vector<MatchingReusedCredential>& matching_reused_credentials,
       bool password_field_exists) = 0;
-#endif
 
 #if defined(PASSWORD_REUSE_WARNING_ENABLED)
   // Records a Chrome Sync event that GAIA password reuse was detected.

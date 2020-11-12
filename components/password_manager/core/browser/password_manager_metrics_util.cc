@@ -298,7 +298,6 @@ void LogGenerationDialogChoice(GenerationDialogChoice choice,
   };
 }  // namespace metrics_util
 
-#if defined(PASSWORD_REUSE_DETECTION_ENABLED)
 void LogGaiaPasswordHashChange(GaiaPasswordHashChange event,
                                bool is_sync_password) {
   if (is_sync_password) {
@@ -346,7 +345,6 @@ void LogProtectedPasswordHashCounts(size_t gaia_hash_count,
 }
 
 void LogProtectedPasswordReuse(PasswordType reused_password_type) {}
-#endif
 
 void LogPasswordEditResult(IsUsernameChanged username_changed,
                            IsPasswordChanged password_changed) {

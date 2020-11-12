@@ -292,4 +292,19 @@ const syncer::SyncService* WebViewPasswordManagerClient::GetSyncService() {
   return sync_service_;
 }
 
+safe_browsing::PasswordProtectionService*
+WebViewPasswordManagerClient::GetPasswordProtectionService() const {
+  // TODO(crbug.com/1148229): Enable PhishGuard in web_view.
+  return nullptr;
+}
+
+void WebViewPasswordManagerClient::CheckProtectedPasswordEntry(
+    password_manager::metrics_util::PasswordType password_type,
+    const std::string& username,
+    const std::vector<password_manager::MatchingReusedCredential>&
+        matching_reused_credentials,
+    bool password_field_exists) {
+  // TODO(crbug.com/1147967): Enable PhishGuard in web_view.
+}
+
 }  // namespace ios_web_view

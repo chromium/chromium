@@ -177,6 +177,12 @@ static_library("browser") {
     "password_manager_util.h",
     "password_requirements_service.cc",
     "password_requirements_service.h",
+    "password_reuse_detection_manager.cc",
+    "password_reuse_detection_manager.h",
+    "password_reuse_detector.cc",
+    "password_reuse_detector.h",
+    "password_reuse_detector_consumer.cc",
+    "password_reuse_detector_consumer.h",
     "password_save_manager.h",
     "password_save_manager_impl.cc",
     "password_save_manager_impl.h",
@@ -191,6 +197,8 @@ static_library("browser") {
     "password_store_default.h",
     "password_store_factory_util.cc",
     "password_store_factory_util.h",
+    "password_store_signin_notifier.cc",
+    "password_store_signin_notifier.h",
     "password_store_sync.cc",
     "password_store_sync.h",
     "password_sync_util.cc",
@@ -255,19 +263,6 @@ static_library("browser") {
   ]
 
   all_dependent_configs = [ ":password_reuse_detection_config" ]
-
-  if (password_reuse_detection_support) {
-    sources += [
-      "password_reuse_detection_manager.cc",
-      "password_reuse_detection_manager.h",
-      "password_reuse_detector.cc",
-      "password_reuse_detector.h",
-      "password_reuse_detector_consumer.cc",
-      "password_reuse_detector_consumer.h",
-      "password_store_signin_notifier.cc",
-      "password_store_signin_notifier.h",
-    ]
-  }
 
   public_deps = [
     ":password_form",
@@ -525,6 +520,7 @@ static_library("test_support") {
   public_deps = [
     ":browser",
     ":hash_password_manager",
+    ":password_hash_data",
     "//base/test:test_support",
     "//components/autofill/core/browser:test_support",
     "//components/keyed_service/core",
@@ -652,6 +648,8 @@ source_set("unit_tests") {
     "password_manager_unittest.cc",
     "password_manager_util_unittest.cc",
     "password_requirements_service_unittest.cc",
+    "password_reuse_detection_manager_unittest.cc",
+    "password_reuse_detector_unittest.cc",
     "password_save_manager_impl_unittest.cc",
     "password_store_default_unittest.cc",
     "password_store_origin_unittest.h",
@@ -689,12 +687,6 @@ source_set("unit_tests") {
     sources += [ "login_database_ios_unittest.cc" ]
   } else {
     sources += [ "http_credentials_cleaner_unittest.cc" ]
-  }
-  if (password_reuse_detection_support) {
-    sources += [
-      "password_reuse_detection_manager_unittest.cc",
-      "password_reuse_detector_unittest.cc",
-    ]
   }
 
   if (is_win || is_mac || is_linux || is_chromeos) {

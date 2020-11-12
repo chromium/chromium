@@ -14,6 +14,7 @@
 #import "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_client_helper.h"
 #include "components/password_manager/core/browser/password_manager_metrics_recorder.h"
+#include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/sync_credentials_filter.h"
 #include "components/password_manager/ios/password_manager_client_bridge.h"
 #include "components/prefs/pref_member.h"
@@ -116,6 +117,16 @@ class IOSChromePasswordManagerClient
   bool IsNewTabPage() const override;
   password_manager::FieldInfoManager* GetFieldInfoManager() const override;
   bool IsAutofillAssistantUIVisible() const override;
+
+  safe_browsing::PasswordProtectionService* GetPasswordProtectionService()
+      const override;
+
+  void CheckProtectedPasswordEntry(
+      password_manager::metrics_util::PasswordType reused_password_type,
+      const std::string& username,
+      const std::vector<password_manager::MatchingReusedCredential>&
+          matching_reused_credentials,
+      bool password_field_exists) override;
 
  private:
   __weak id<IOSChromePasswordManagerClientBridge> bridge_;

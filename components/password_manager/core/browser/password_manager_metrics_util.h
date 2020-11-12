@@ -262,7 +262,6 @@ enum class DeleteCorruptedPasswordsResult {
   kMaxValue = kEncryptionUnavailable,
 };
 
-#if defined(PASSWORD_REUSE_DETECTION_ENABLED)
 enum class GaiaPasswordHashChange {
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
@@ -297,7 +296,6 @@ enum class IsSyncPasswordHashSaved {
   IS_SYNC_PASSWORD_HASH_SAVED_COUNT = 3,
   kMaxValue = IS_SYNC_PASSWORD_HASH_SAVED_COUNT,
 };
-#endif
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -631,7 +629,6 @@ void LogGenerationDialogChoice(
     GenerationDialogChoice choice,
     autofill::password_generation::PasswordGenerationType type);
 
-#if defined(PASSWORD_REUSE_DETECTION_ENABLED)
 // Log a save gaia password change event.
 void LogGaiaPasswordHashChange(GaiaPasswordHashChange event,
                                bool is_sync_password);
@@ -646,8 +643,6 @@ void LogProtectedPasswordHashCounts(size_t gaia_hash_count,
                                     size_t enterprise_hash_count,
                                     bool does_primary_account_exists,
                                     bool is_signed_in);
-
-#endif
 
 // Log the result of the password edit action.
 void LogPasswordEditResult(IsUsernameChanged password_changed,
