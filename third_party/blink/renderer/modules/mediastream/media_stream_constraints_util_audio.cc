@@ -930,9 +930,19 @@ class ProcessingBasedContainer {
     boolean_containers_[kGoogHighpassFilter] =
         BooleanContainer(goog_highpass_filter_set);
 
-    if (!source_info.HasActiveSource())
+    // Allow the full set of supported values when the device is not open or
+    // when the candidate settings would open the device using an unprocessed
+    // source.
+    if (!source_info.HasActiveSource() ||
+        (is_reconfiguration_allowed &&
+         processing_type_ == ProcessingType::kUnprocessed)) {
       return;
+    }
 
+    // If the device is already opened, restrict supported values for
+    // non-reconfigurable settings to what is already configured. The rationale
+    // for this is that opening multiple instances of the APM is costly.
+    // TODO(crbug.com/1147928): Consider removing this restriction.
     auto_gain_control_container_ = AutoGainControlContainer(
         BoolSet({source_info.properties().goog_auto_gain_control}));
 

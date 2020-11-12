@@ -650,15 +650,21 @@ void UserMediaProcessor::SelectAudioDeviceSettings(
         audio_input_capabilities) {
   blink::AudioDeviceCaptureCapabilities capabilities;
   for (const auto& device : audio_input_capabilities) {
-    // Find the first occurrence of blink::MediaStreamAudioSource that matches
-    // the same device ID as |device|. If more than one exists, any such source
-    // will contain the same non-reconfigurable settings that limit the
-    // associated capabilities.
+    // Find the first occurrence of blink::ProcessedLocalAudioSource that
+    // matches the same device ID as |device|. If more than one exists, any
+    // such source will contain the same non-reconfigurable settings that limit
+    // the associated capabilities.
     blink::MediaStreamAudioSource* audio_source = nullptr;
     auto* it = std::find_if(local_sources_.begin(), local_sources_.end(),
                             [&device](MediaStreamSource* source) {
                               DCHECK(source);
-                              return source->Id() == device->device_id;
+                              MediaStreamAudioSource* platform_source =
+                                  MediaStreamAudioSource::From(source);
+                              ProcessedLocalAudioSource* processed_source =
+                                  ProcessedLocalAudioSource::From(
+                                      platform_source);
+                              return processed_source &&
+                                     source->Id() == device->device_id;
                             });
     if (it != local_sources_.end()) {
       WebPlatformMediaStreamSource* const source = (*it)->GetPlatformSource();
@@ -1324,8 +1330,14 @@ MediaStreamSource* UserMediaProcessor::InitializeAudioSourceObject(
     if (platform_source->device().id == audio_source->device().id) {
       auto* audio_platform_source =
           static_cast<MediaStreamAudioSource*>(platform_source);
-      DCHECK(audio_source->HasSameNonReconfigurableSettings(
-          audio_platform_source));
+      auto* processed_existing_source =
+          ProcessedLocalAudioSource::From(audio_platform_source);
+      auto* processed_new_source =
+          ProcessedLocalAudioSource::From(audio_source.get());
+      if (processed_new_source && processed_existing_source) {
+        DCHECK(audio_source->HasSameNonReconfigurableSettings(
+            audio_platform_source));
+      }
     }
   }
 #endif  // DCHECK_IS_ON()
