@@ -411,6 +411,13 @@ void DrawTiledBackground(GraphicsContext& context,
   // Use the intrinsic size of the image if it has one, otherwise force the
   // generated image to be the tile size.
   FloatSize intrinsic_tile_size(image->Size());
+  // image-resolution information is baked into the given parameters, but we
+  // need oriented size. That requires explicitly applying orientation here.
+  if (respect_orientation &&
+      image->CurrentFrameOrientation().UsesWidthAsHeight()) {
+    intrinsic_tile_size = intrinsic_tile_size.TransposedSize();
+  }
+
   FloatSize scale(1, 1);
   if (!image->HasIntrinsicSize() ||
       // TODO(crbug.com/1042783): This is not checking for real empty image
@@ -456,7 +463,7 @@ void DrawTiledBackground(GraphicsContext& context,
   }
 
   // At this point we have decided to tile the image to fill the dest rect.
-  // Note that this tile rect the image's pre-scaled size.
+  // Note that this tile rect uses the image's pre-scaled size.
   FloatRect tile_rect(FloatPoint(), intrinsic_tile_size);
 
   // Farther down the pipeline we will use the scaled tile size to determine

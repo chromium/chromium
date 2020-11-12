@@ -236,26 +236,22 @@ void Image::DrawPattern(GraphicsContext& context,
   if (!image)
     return;  // nothing to draw
 
-  // The subset_rect is in source image space, unscaled, unoriented.
+  // The subset_rect is in source image space, unscaled but oriented.
+  // image-resolution information is baked into the scale_src_to_dest,
+  // so we do not want to use it in computing the subset. That requires
+  // explicitly applying orientation here.
   IntRect subset_rect = EnclosingIntRect(float_src_rect);
-  subset_rect.Intersect(IntRect(0, 0, image.width(), image.height()));
+  IntSize oriented_image_size(image.width(), image.height());
+  if (respect_orientation && CurrentFrameOrientation().UsesWidthAsHeight())
+    oriented_image_size = oriented_image_size.TransposedSize();
+  subset_rect.Intersect(IntRect(IntPoint(), oriented_image_size));
   if (subset_rect.IsEmpty())
     return;  // nothing to draw
 
   // Apply image orientation, if necessary
   FloatSize oriented_scale = scale_src_to_dest;
   if (respect_orientation && !HasDefaultOrientation()) {
-    FloatSize original_image_size(SizeAsFloat(kDoNotRespectImageOrientation));
     image = ResizeAndOrientImage(image, CurrentFrameOrientation());
-    subset_rect = RoundedIntRect(CorrectSrcRectForImageOrientation(
-        original_image_size, FloatRect(subset_rect)));
-    // Upstream, the scale_src_to_dest was computed to take an un-oriented size
-    // and make it oriented. For example, an image that is 100x50 un-oriented
-    // and 50x100 oriented will have a scale of (0.5,2). Undo this, because the
-    // scale has now been applied by orienting the image.
-    oriented_scale.Scale(
-        original_image_size.Width() / static_cast<float>(image.width()),
-        original_image_size.Height() / static_cast<float>(image.height()));
   }
 
   SkMatrix local_matrix;

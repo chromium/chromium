@@ -395,6 +395,7 @@ crbug.com/997202 external/wpt/css/css-images/image-orientation/svg-image-orienta
 crbug.com/997202 external/wpt/css/css-images/image-orientation/svg-image-orientation-aspect-ratio.html [ Failure ]
 crbug.com/997202 external/wpt/css/css-images/image-orientation/image-orientation-background-position.html [ Failure ]
 crbug.com/997202 external/wpt/css/css-images/image-orientation/image-orientation-background-properties.html [ Failure ]
+crbug.com/997202 external/wpt/css/css-images/image-orientation/image-orientation-background-properties-border-radius.html [ Failure ]
 crbug.com/997202 external/wpt/density-size-correction/density-corrected-image-svg-aspect-ratio.html [ Failure ]
 
 # These have filtering antialiasing artifacts on one side only, but otherwise are passing. The tests
