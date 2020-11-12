@@ -67,7 +67,7 @@ class LineLayoutBlockFlow : public LineLayoutBox {
 
   LayoutUnit MarginStartForChild(LineLayoutBox child) const {
     return ToBlockFlow()->MarginStartForChild(
-        *ToLayoutBoxModelObject(child.GetLayoutObject()));
+        *To<LayoutBoxModelObject>(child.GetLayoutObject()));
   }
 
   LayoutUnit MarginEndForChild(const LayoutBoxModelObject& child) const {
@@ -76,7 +76,7 @@ class LineLayoutBlockFlow : public LineLayoutBox {
 
   LayoutUnit MarginEndForChild(LineLayoutBox child) const {
     return ToBlockFlow()->MarginEndForChild(
-        *ToLayoutBoxModelObject(child.GetLayoutObject()));
+        *To<LayoutBoxModelObject>(child.GetLayoutObject()));
   }
 
   LayoutUnit MarginBeforeForChild(const LayoutBoxModelObject& child) const {

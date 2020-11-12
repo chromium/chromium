@@ -175,7 +175,7 @@ void LayoutTreeAsText::WriteLayoutObject(WTF::TextStream& ts,
     if (!o.IsBoxModelObject())
       return;
 
-    const LayoutBoxModelObject& box = ToLayoutBoxModelObject(o);
+    const auto& box = To<LayoutBoxModelObject>(o);
     if (box.BorderTop() || box.BorderRight() || box.BorderBottom() ||
         box.BorderLeft()) {
       ts << " [border:";

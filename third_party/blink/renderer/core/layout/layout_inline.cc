@@ -797,7 +797,7 @@ void LayoutInline::AddChildToContinuation(LayoutObject* new_child,
          before_child->Parent()->IsLayoutInline());
   LayoutBoxModelObject* before_child_parent = nullptr;
   if (before_child) {
-    before_child_parent = ToLayoutBoxModelObject(before_child->Parent());
+    before_child_parent = To<LayoutBoxModelObject>(before_child->Parent());
   } else {
     LayoutBoxModelObject* cont = NextContinuation(flow);
     if (cont)

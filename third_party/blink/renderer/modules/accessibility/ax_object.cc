@@ -3969,7 +3969,7 @@ void AXObject::GetRelativeBounds(AXObject** out_container,
   // Compute the transform between the container's coordinate space and this
   // object.
   TransformationMatrix transform = layout_object->LocalToAncestorTransform(
-      ToLayoutBoxModelObject(container_layout_object));
+      To<LayoutBoxModelObject>(container_layout_object));
 
   // If the transform is just a simple translation, apply that to the
   // bounding box, but if it's a non-trivial transformation like a rotation,

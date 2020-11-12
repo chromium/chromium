@@ -450,10 +450,10 @@ TEST_F(LayoutObjectTest, FloatUnderBlock) {
     </div>
   )HTML");
 
-  LayoutBoxModelObject* layered_div =
-      ToLayoutBoxModelObject(GetLayoutObjectByElementId("layered-div"));
-  LayoutBoxModelObject* container =
-      ToLayoutBoxModelObject(GetLayoutObjectByElementId("container"));
+  auto* layered_div =
+      To<LayoutBoxModelObject>(GetLayoutObjectByElementId("layered-div"));
+  auto* container =
+      To<LayoutBoxModelObject>(GetLayoutObjectByElementId("container"));
   LayoutObject* floating = GetLayoutObjectByElementId("floating");
 
   EXPECT_EQ(layered_div->Layer(), layered_div->PaintingLayer());
@@ -470,10 +470,8 @@ TEST_F(LayoutObjectTest, InlineFloatMismatch) {
     </span>
   )HTML");
 
-  LayoutObject* float_obj =
-      ToLayoutBoxModelObject(GetLayoutObjectByElementId("float_obj"));
-  LayoutObject* span =
-      ToLayoutBoxModelObject(GetLayoutObjectByElementId("span"));
+  LayoutObject* float_obj = GetLayoutObjectByElementId("float_obj");
+  LayoutObject* span = GetLayoutObjectByElementId("span");
   if (RuntimeEnabledFeatures::LayoutNGEnabled()) {
     // 10px for margin + 40px for inset.
     EXPECT_EQ(PhysicalOffset(50, 0), float_obj->OffsetFromAncestor(span));
@@ -494,12 +492,12 @@ TEST_F(LayoutObjectTest, FloatUnderInline) {
     </div>
   )HTML");
 
-  LayoutBoxModelObject* layered_div =
-      ToLayoutBoxModelObject(GetLayoutObjectByElementId("layered-div"));
-  LayoutBoxModelObject* container =
-      ToLayoutBoxModelObject(GetLayoutObjectByElementId("container"));
-  LayoutBoxModelObject* layered_span =
-      ToLayoutBoxModelObject(GetLayoutObjectByElementId("layered-span"));
+  auto* layered_div =
+      To<LayoutBoxModelObject>(GetLayoutObjectByElementId("layered-div"));
+  auto* container =
+      To<LayoutBoxModelObject>(GetLayoutObjectByElementId("container"));
+  auto* layered_span =
+      To<LayoutBoxModelObject>(GetLayoutObjectByElementId("layered-span"));
   LayoutObject* floating = GetLayoutObjectByElementId("floating");
 
   EXPECT_EQ(layered_div->Layer(), layered_div->PaintingLayer());
@@ -1387,8 +1385,8 @@ TEST_F(LayoutObjectTest, PerspectiveWithAnonymousTable) {
   )HTML");
 
   LayoutObject* child = GetLayoutObjectByElementId("child");
-  LayoutBoxModelObject* ancestor =
-      ToLayoutBoxModelObject(GetLayoutObjectByElementId("ancestor"));
+  auto* ancestor =
+      To<LayoutBoxModelObject>(GetLayoutObjectByElementId("ancestor"));
 
   TransformationMatrix transform;
   child->GetTransformFromContainer(ancestor, PhysicalOffset(), transform);
@@ -1442,13 +1440,13 @@ TEST_F(LayoutObjectTest, LocalToAncestorRectFastPath) {
   PhysicalRect result2;
 
   EXPECT_TRUE(target2->LocalToAncestorRectFastPath(
-      rect, ToLayoutBoxModelObject(ancestor2), kUseGeometryMapperMode,
+      rect, To<LayoutBoxModelObject>(ancestor2), kUseGeometryMapperMode,
       result2));
   EXPECT_EQ(PhysicalRect(75, 15, 10, 10), result2);
 
   EXPECT_EQ(
       PhysicalRect(75, 15, 10, 10),
-      target2->LocalToAncestorRect(rect, ToLayoutBoxModelObject(ancestor2)));
+      target2->LocalToAncestorRect(rect, To<LayoutBoxModelObject>(ancestor2)));
   // Compare with non-fast path.
   EXPECT_TRUE(target2->LocalToAncestorRectFastPath(
       rect, nullptr, kUseGeometryMapperMode, result2));

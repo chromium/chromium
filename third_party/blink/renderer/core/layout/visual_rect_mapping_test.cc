@@ -821,8 +821,7 @@ TEST_P(VisualRectMappingTest, FloatUnderInline) {
     </div>
   )HTML");
 
-  LayoutBoxModelObject* span =
-      ToLayoutBoxModelObject(GetLayoutObjectByElementId("span"));
+  auto* span = To<LayoutBoxModelObject>(GetLayoutObjectByElementId("span"));
   auto* target = GetLayoutBoxByElementId("target");
 
   PhysicalRect target_visual_rect = target->LocalVisualRect();
@@ -858,7 +857,7 @@ TEST_P(VisualRectMappingTest, FloatUnderInlineVerticalRL) {
     </div>
   )HTML");
 
-  auto* span = ToLayoutBoxModelObject(GetLayoutObjectByElementId("span"));
+  auto* span = To<LayoutBoxModelObject>(GetLayoutObjectByElementId("span"));
   auto* target = GetLayoutBoxByElementId("target");
 
   auto target_visual_rect = target->LocalVisualRect();
@@ -898,7 +897,7 @@ TEST_P(VisualRectMappingTest, InlineBlock) {
     </div>
   )HTML");
 
-  auto* span = ToLayoutBoxModelObject(GetLayoutObjectByElementId("span"));
+  auto* span = To<LayoutBoxModelObject>(GetLayoutObjectByElementId("span"));
   auto* target = GetLayoutBoxByElementId("target");
 
   auto target_visual_rect = target->LocalVisualRect();
@@ -927,7 +926,7 @@ TEST_P(VisualRectMappingTest, InlineBlockVerticalRL) {
     </div>
   )HTML");
 
-  auto* span = ToLayoutBoxModelObject(GetLayoutObjectByElementId("span"));
+  auto* span = To<LayoutBoxModelObject>(GetLayoutObjectByElementId("span"));
   auto* target = GetLayoutBoxByElementId("target");
 
   auto target_visual_rect = target->LocalVisualRect();
@@ -958,7 +957,7 @@ TEST_P(VisualRectMappingTest, AbsoluteUnderRelativeInline) {
     </div>
   )HTML");
 
-  auto* span = ToLayoutBoxModelObject(GetLayoutObjectByElementId("span"));
+  auto* span = To<LayoutBoxModelObject>(GetLayoutObjectByElementId("span"));
   auto* target = GetLayoutBoxByElementId("target");
 
   auto target_visual_rect = target->LocalVisualRect();
@@ -987,7 +986,7 @@ TEST_P(VisualRectMappingTest, AbsoluteUnderRelativeInlineVerticalRL) {
     </div>
   )HTML");
 
-  auto* span = ToLayoutBoxModelObject(GetLayoutObjectByElementId("span"));
+  auto* span = To<LayoutBoxModelObject>(GetLayoutObjectByElementId("span"));
   auto* target = GetLayoutBoxByElementId("target");
 
   auto target_visual_rect = target->LocalVisualRect();

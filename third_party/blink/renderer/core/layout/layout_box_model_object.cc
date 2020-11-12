@@ -64,7 +64,7 @@ PaintLayer* FindFirstStickyBetween(LayoutObject* from, LayoutObject* to) {
   LayoutObject* maybe_sticky_ancestor = from;
   while (maybe_sticky_ancestor && maybe_sticky_ancestor != to) {
     if (maybe_sticky_ancestor->StyleRef().HasStickyConstrainedPosition()) {
-      return ToLayoutBoxModelObject(maybe_sticky_ancestor)->Layer();
+      return To<LayoutBoxModelObject>(maybe_sticky_ancestor)->Layer();
     }
 
     maybe_sticky_ancestor =
@@ -427,7 +427,7 @@ void LayoutBoxModelObject::StyleDidChange(StyleDifference diff,
     if (HTMLBodyElement* body = GetDocument().FirstBodyElement()) {
       if (auto* body_object = body->GetLayoutObject()) {
         if (body_object->IsBoxModelObject()) {
-          auto* body_box_model = ToLayoutBoxModelObject(body_object);
+          auto* body_box_model = To<LayoutBoxModelObject>(body_object);
           bool new_body_background_transfers =
               body_box_model->BackgroundTransfersToView(Style());
           bool old_body_background_transfers =

@@ -708,8 +708,6 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
   }
 };
 
-DEFINE_LAYOUT_OBJECT_TYPE_CASTS(LayoutBoxModelObject, IsBoxModelObject());
-
 template <>
 struct DowncastTraits<LayoutBoxModelObject> {
   static bool AllowFrom(const LayoutObject& object) {

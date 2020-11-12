@@ -114,9 +114,7 @@ AXLayoutObject::~AXLayoutObject() {
 }
 
 LayoutBoxModelObject* AXLayoutObject::GetLayoutBoxModelObject() const {
-  if (!layout_object_ || !layout_object_->IsBoxModelObject())
-    return nullptr;
-  return ToLayoutBoxModelObject(layout_object_);
+  return DynamicTo<LayoutBoxModelObject>(layout_object_);
 }
 
 bool IsProgrammaticallyScrollable(LayoutBox* box) {
@@ -1891,7 +1889,7 @@ bool AXLayoutObject::OnNativeSetValueAction(const String& string) {
   if (!layout_object_ || !layout_object_->IsBoxModelObject())
     return false;
 
-  LayoutBoxModelObject* layout_object = ToLayoutBoxModelObject(layout_object_);
+  auto* layout_object = To<LayoutBoxModelObject>(layout_object_);
   auto* html_input_element = DynamicTo<HTMLInputElement>(*GetNode());
   if (html_input_element && layout_object->IsTextFieldIncludingNG()) {
     html_input_element->setValue(
@@ -2163,7 +2161,7 @@ bool AXLayoutObject::IsDataTable() const {
       if (row < 5 && row == alternating_row_color_count) {
         LayoutObject* layout_row = cell_layout_block->Parent();
         if (!layout_row || !layout_row->IsBoxModelObject() ||
-            !ToLayoutBoxModelObject(layout_row)->IsTableRow())
+            !To<LayoutBoxModelObject>(layout_row)->IsTableRow())
           continue;
         const ComputedStyle* row_computed_style = layout_row->Style();
         if (!row_computed_style)

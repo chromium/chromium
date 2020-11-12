@@ -257,8 +257,7 @@ void LayoutReplaced::ComputePositionedLogicalWidth(
 
   // We don't use containingBlock(), since we may be positioned by an enclosing
   // relative positioned inline.
-  const LayoutBoxModelObject* container_block =
-      ToLayoutBoxModelObject(Container());
+  const auto* container_block = To<LayoutBoxModelObject>(Container());
 
   const LayoutUnit container_logical_width =
       ContainingBlockLogicalWidthForPositioned(container_block);
@@ -477,8 +476,7 @@ void LayoutReplaced::ComputePositionedLogicalHeight(
 
   // We don't use containingBlock(), since we may be positioned by an enclosing
   // relpositioned inline.
-  const LayoutBoxModelObject* container_block =
-      ToLayoutBoxModelObject(Container());
+  const auto* container_block = To<LayoutBoxModelObject>(Container());
 
   const LayoutUnit container_logical_height =
       ContainingBlockLogicalHeightForPositioned(container_block);

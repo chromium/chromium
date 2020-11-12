@@ -115,11 +115,12 @@ TEST_F(MapCoordinatesTest, SimpleInline) {
   SetBodyInnerHTML("<div><span id='target'>text</span></div>");
 
   LayoutObject* target = GetLayoutObjectByElementId("target");
-  PhysicalOffset mapped_point = MapLocalToAncestor(
-      target, ToLayoutBoxModelObject(target->Parent()), PhysicalOffset(10, 10));
+  PhysicalOffset mapped_point =
+      MapLocalToAncestor(target, To<LayoutBoxModelObject>(target->Parent()),
+                         PhysicalOffset(10, 10));
   EXPECT_EQ(PhysicalOffset(10, 10), mapped_point);
   mapped_point = MapAncestorToLocal(
-      target, ToLayoutBoxModelObject(target->Parent()), mapped_point);
+      target, To<LayoutBoxModelObject>(target->Parent()), mapped_point);
   EXPECT_EQ(PhysicalOffset(10, 10), mapped_point);
 }
 
@@ -133,11 +134,11 @@ TEST_F(MapCoordinatesTest, SimpleBlock) {
 
   LayoutObject* target = GetLayoutObjectByElementId("target");
   PhysicalOffset mapped_point =
-      MapLocalToAncestor(target, ToLayoutBoxModelObject(target->Parent()),
+      MapLocalToAncestor(target, To<LayoutBoxModelObject>(target->Parent()),
                          PhysicalOffset(100, 100));
   EXPECT_EQ(PhysicalOffset(125, 125), mapped_point);
   mapped_point = MapAncestorToLocal(
-      target, ToLayoutBoxModelObject(target->Parent()), mapped_point);
+      target, To<LayoutBoxModelObject>(target->Parent()), mapped_point);
   EXPECT_EQ(PhysicalOffset(100, 100), mapped_point);
 }
 
@@ -159,11 +160,11 @@ TEST_F(MapCoordinatesTest, OverflowClip) {
       ->ScrollToAbsolutePosition(FloatPoint(32, 54));
 
   PhysicalOffset mapped_point =
-      MapLocalToAncestor(target, ToLayoutBoxModelObject(target->Parent()),
+      MapLocalToAncestor(target, To<LayoutBoxModelObject>(target->Parent()),
                          PhysicalOffset(100, 100));
   EXPECT_EQ(PhysicalOffset(93, 271), mapped_point);
   mapped_point = MapAncestorToLocal(
-      target, ToLayoutBoxModelObject(target->Parent()), mapped_point);
+      target, To<LayoutBoxModelObject>(target->Parent()), mapped_point);
   EXPECT_EQ(PhysicalOffset(100, 100), mapped_point);
 }
 
@@ -192,14 +193,15 @@ TEST_F(MapCoordinatesTest, RelposInline) {
       "top:100px;'>text</span>");
 
   LayoutObject* target = GetLayoutObjectByElementId("target");
-  PhysicalOffset mapped_point = MapLocalToAncestor(
-      target, ToLayoutBoxModelObject(target->Parent()), PhysicalOffset(10, 10));
+  PhysicalOffset mapped_point =
+      MapLocalToAncestor(target, To<LayoutBoxModelObject>(target->Parent()),
+                         PhysicalOffset(10, 10));
   if (RuntimeEnabledFeatures::LayoutNGEnabled())
     EXPECT_EQ(PhysicalOffset(10, 10), mapped_point);
   else
     EXPECT_EQ(PhysicalOffset(60, 110), mapped_point);
   mapped_point = MapAncestorToLocal(
-      target, ToLayoutBoxModelObject(target->Parent()), mapped_point);
+      target, To<LayoutBoxModelObject>(target->Parent()), mapped_point);
   EXPECT_EQ(PhysicalOffset(10, 10), mapped_point);
 }
 
@@ -1188,20 +1190,21 @@ TEST_F(MapCoordinatesTest, FlippedBlocksWritingModeWithInline) {
   ASSERT_TRUE(target);
 
   // First map to the parent SPAN. Nothing special should happen.
-  PhysicalOffset mapped_point = MapLocalToAncestor(
-      target, ToLayoutBoxModelObject(target->Parent()), PhysicalOffset(75, 10));
+  PhysicalOffset mapped_point =
+      MapLocalToAncestor(target, To<LayoutBoxModelObject>(target->Parent()),
+                         PhysicalOffset(75, 10));
   EXPECT_EQ(PhysicalOffset(75, 10), mapped_point);
   mapped_point = MapAncestorToLocal(
-      target, ToLayoutBoxModelObject(target->Parent()), mapped_point);
+      target, To<LayoutBoxModelObject>(target->Parent()), mapped_point);
   EXPECT_EQ(PhysicalOffset(75, 10), mapped_point);
 
   // Continue to the nearest container. Nothing special should happen because
   // everything is in physical coordinates.
   mapped_point =
-      MapLocalToAncestor(ToLayoutBoxModelObject(target->Parent()),
+      MapLocalToAncestor(To<LayoutBoxModelObject>(target->Parent()),
                          target->ContainingBlock(), PhysicalOffset(75, 10));
   EXPECT_EQ(PhysicalOffset(75, 10), mapped_point);
-  mapped_point = MapAncestorToLocal(ToLayoutBoxModelObject(target->Parent()),
+  mapped_point = MapAncestorToLocal(To<LayoutBoxModelObject>(target->Parent()),
                                     target->ContainingBlock(), mapped_point);
   EXPECT_EQ(PhysicalOffset(75, 10), mapped_point);
 
@@ -1581,8 +1584,8 @@ TEST_F(MapCoordinatesTest, LocalToAbsoluteTransform) {
       </div>
     </div>
   )HTML");
-  LayoutBoxModelObject* container =
-      ToLayoutBoxModelObject(GetLayoutObjectByElementId("container"));
+  auto* container =
+      To<LayoutBoxModelObject>(GetLayoutObjectByElementId("container"));
   TransformationMatrix container_matrix = container->LocalToAbsoluteTransform();
   EXPECT_TRUE(container_matrix.IsIdentity());
 
@@ -1607,12 +1610,12 @@ TEST_F(MapCoordinatesTest, LocalToAncestorTransform) {
       </div>
     </div>
   )HTML");
-  LayoutBoxModelObject* container =
-      ToLayoutBoxModelObject(GetLayoutObjectByElementId("container"));
-  LayoutBoxModelObject* rotate1 =
-      ToLayoutBoxModelObject(GetLayoutObjectByElementId("rotate1"));
-  LayoutBoxModelObject* rotate2 =
-      ToLayoutBoxModelObject(GetLayoutObjectByElementId("rotate2"));
+  auto* container =
+      To<LayoutBoxModelObject>(GetLayoutObjectByElementId("container"));
+  auto* rotate1 =
+      To<LayoutBoxModelObject>(GetLayoutObjectByElementId("rotate1"));
+  auto* rotate2 =
+      To<LayoutBoxModelObject>(GetLayoutObjectByElementId("rotate2"));
   LayoutObject* child = GetLayoutObjectByElementId("child");
   TransformationMatrix matrix;
 

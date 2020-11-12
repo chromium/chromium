@@ -705,7 +705,8 @@ static void AddLayers(LayoutObject* obj,
           new_object->Parent()->FindNextLayer(parent_layer, new_object);
       new_object = nullptr;
     }
-    parent_layer->AddChild(ToLayoutBoxModelObject(obj)->Layer(), before_child);
+    parent_layer->AddChild(To<LayoutBoxModelObject>(obj)->Layer(),
+                           before_child);
     return;
   }
 
@@ -730,7 +731,7 @@ void LayoutObject::RemoveLayers(PaintLayer* parent_layer) {
     return;
 
   if (HasLayer()) {
-    parent_layer->RemoveChild(ToLayoutBoxModelObject(this)->Layer());
+    parent_layer->RemoveChild(To<LayoutBoxModelObject>(this)->Layer());
     return;
   }
 
@@ -744,7 +745,7 @@ void LayoutObject::MoveLayers(PaintLayer* old_parent, PaintLayer* new_parent) {
     return;
 
   if (HasLayer()) {
-    PaintLayer* layer = ToLayoutBoxModelObject(this)->Layer();
+    PaintLayer* layer = To<LayoutBoxModelObject>(this)->Layer();
     DCHECK_EQ(old_parent, layer->Parent());
     if (old_parent)
       old_parent->RemoveChild(layer);
@@ -768,7 +769,7 @@ PaintLayer* LayoutObject::FindNextLayer(PaintLayer* parent_layer,
   // Step 1: If our layer is a child of the desired parent, then return our
   // layer.
   PaintLayer* our_layer =
-      HasLayer() ? ToLayoutBoxModelObject(this)->Layer() : nullptr;
+      HasLayer() ? To<LayoutBoxModelObject>(this)->Layer() : nullptr;
   if (our_layer && our_layer->Parent() == parent_layer)
     return our_layer;
 
@@ -804,7 +805,7 @@ PaintLayer* LayoutObject::EnclosingLayer() const {
   for (const LayoutObject* current = this; current;
        current = current->Parent()) {
     if (current->HasLayer())
-      return ToLayoutBoxModelObject(current)->Layer();
+      return To<LayoutBoxModelObject>(current)->Layer();
   }
   // TODO(crbug.com/365897): we should get rid of detached layout subtrees, at
   // which point this code should not be reached.
@@ -829,8 +830,8 @@ PaintLayer* LayoutObject::PaintingLayer() const {
   for (const LayoutObject* current = this; current;
        current = FindContainer(*current)) {
     if (current->HasLayer() &&
-        ToLayoutBoxModelObject(current)->Layer()->IsSelfPaintingLayer()) {
-      return ToLayoutBoxModelObject(current)->Layer();
+        To<LayoutBoxModelObject>(current)->Layer()->IsSelfPaintingLayer()) {
+      return To<LayoutBoxModelObject>(current)->Layer();
     } else if (current->IsColumnSpanAll()) {
       // Column spanners paint through their multicolumn containers which can
       // be accessed through the associated out-of-flow placeholder's parent.
@@ -975,7 +976,7 @@ static inline bool ObjectIsRelayoutBoundary(const LayoutObject* object) {
   bool is_svg_root = object->IsSVGRoot();
   bool has_self_painting_layer =
       object->HasLayer() &&
-      ToLayoutBoxModelObject(object)->HasSelfPaintingLayer();
+      To<LayoutBoxModelObject>(object)->HasSelfPaintingLayer();
   if (!has_self_painting_layer && !is_svg_root)
     return false;
 
@@ -1623,7 +1624,7 @@ void LayoutObject::RecalcVisualOverflow() {
   for (LayoutObject* current = SlowFirstChild(); current;
        current = current->NextSibling()) {
     if (current->HasLayer() &&
-        ToLayoutBoxModelObject(current)->HasSelfPaintingLayer())
+        To<LayoutBoxModelObject>(current)->HasSelfPaintingLayer())
       continue;
     current->RecalcVisualOverflow();
   }
@@ -1632,7 +1633,7 @@ void LayoutObject::RecalcVisualOverflow() {
 void LayoutObject::RecalcNormalFlowChildVisualOverflowIfNeeded() {
   NOT_DESTROYED();
   if (IsOutOfFlowPositioned() ||
-      (HasLayer() && ToLayoutBoxModelObject(this)->HasSelfPaintingLayer()))
+      (HasLayer() && To<LayoutBoxModelObject>(this)->HasSelfPaintingLayer()))
     return;
   RecalcVisualOverflow();
 }
@@ -1742,13 +1743,14 @@ DOMNodeId LayoutObject::OwnerNodeId() const {
 
 bool LayoutObject::IsPaintInvalidationContainer() const {
   NOT_DESTROYED();
-  return HasLayer() &&
-         ToLayoutBoxModelObject(this)->Layer()->IsPaintInvalidationContainer();
+  return HasLayer() && To<LayoutBoxModelObject>(this)
+                           ->Layer()
+                           ->IsPaintInvalidationContainer();
 }
 
 bool LayoutObject::CanBeCompositedForDirectReasons() const {
   NOT_DESTROYED();
-  return HasLayer() && ToLayoutBoxModelObject(this)
+  return HasLayer() && To<LayoutBoxModelObject>(this)
                            ->Layer()
                            ->CanBeCompositedForDirectReasons();
 }
@@ -2089,7 +2091,7 @@ static inline void HandleDynamicFloatPositionChange(LayoutObject* object) {
   object->SetInline(object->StyleRef().IsDisplayInlineType());
   if (object->IsInline() != object->Parent()->ChildrenInline()) {
     if (!object->IsInline()) {
-      ToLayoutBoxModelObject(object->Parent())->ChildBecameNonInline(object);
+      To<LayoutBoxModelObject>(object->Parent())->ChildBecameNonInline(object);
     } else {
       // An anonymous block must be made to wrap this inline.
       LayoutBlock* block =
@@ -2142,7 +2144,7 @@ StyleDifference LayoutObject::AdjustStyleDifference(
   // elements changes, we need to force a layout.
   if (!diff.NeedsFullLayout() && Style() && IsBoxModelObject()) {
     bool requires_layer =
-        ToLayoutBoxModelObject(this)->LayerTypeRequired() != kNoPaintLayer;
+        To<LayoutBoxModelObject>(this)->LayerTypeRequired() != kNoPaintLayer;
     if (HasLayer() != requires_layer)
       diff.SetNeedsFullLayout();
   }
@@ -2199,7 +2201,7 @@ void LayoutObject::MarkContainerChainForOverflowRecalcIfNeeded(
       }
 
       if (object->HasLayer()) {
-        auto* box_model_object = ToLayoutBoxModelObject(object);
+        auto* box_model_object = To<LayoutBoxModelObject>(object);
         if (box_model_object->HasSelfPaintingLayer()) {
           auto* layer = box_model_object->Layer();
           if (layer->NeedsVisualOverflowRecalc()) {
@@ -2985,7 +2987,8 @@ void LayoutObject::MapLocalToAncestor(const LayoutBoxModelObject* ancestor,
   // TODO(smcgruer): This is inefficient. Instead we should avoid including
   // offsetForInFlowPosition in offsetFromContainer when ignoring sticky.
   if (mode & kIgnoreStickyOffset && IsStickyPositioned()) {
-    container_offset -= ToLayoutBoxModelObject(this)->OffsetForInFlowPosition();
+    container_offset -=
+        To<LayoutBoxModelObject>(this)->OffsetForInFlowPosition();
   }
 
   if (IsLayoutFlowThread()) {
@@ -3105,7 +3108,7 @@ bool LayoutObject::ShouldUseTransformFromContainer(
   // hasTransform() indicates whether the object has transform, transform-style
   // or perspective. We just care about transform, so check the layer's
   // transform directly.
-  return (HasLayer() && ToLayoutBoxModelObject(this)->Layer()->Transform()) ||
+  return (HasLayer() && To<LayoutBoxModelObject>(this)->Layer()->Transform()) ||
          (container_object && container_object->StyleRef().HasPerspective());
 }
 
@@ -3117,7 +3120,7 @@ void LayoutObject::GetTransformFromContainer(
   NOT_DESTROYED();
   transform.MakeIdentity();
   PaintLayer* layer =
-      HasLayer() ? ToLayoutBoxModelObject(this)->Layer() : nullptr;
+      HasLayer() ? To<LayoutBoxModelObject>(this)->Layer() : nullptr;
   if (layer && layer->Transform())
     transform.Multiply(layer->CurrentTransform());
 
@@ -3350,7 +3353,7 @@ bool LayoutObject::IsRooted() const {
   while (object->Parent() && !object->HasLayer())
     object = object->Parent();
   if (object->HasLayer())
-    return ToLayoutBoxModelObject(object)->Layer()->Root()->IsRootLayer();
+    return To<LayoutBoxModelObject>(object)->Layer()->Root()->IsRootLayer();
   return false;
 }
 
@@ -3755,7 +3758,7 @@ PositionWithAffinity LayoutObject::PositionForPoint(
 CompositingState LayoutObject::GetCompositingState() const {
   NOT_DESTROYED();
   return HasLayer()
-             ? ToLayoutBoxModelObject(this)->Layer()->GetCompositingState()
+             ? To<LayoutBoxModelObject>(this)->Layer()->GetCompositingState()
              : kNotComposited;
 }
 
@@ -4647,7 +4650,7 @@ LayoutUnit LayoutObject::FlipForWritingModeInternal(
 bool LayoutObject::SelfPaintingLayerNeedsVisualOverflowRecalc() const {
   NOT_DESTROYED();
   if (HasLayer()) {
-    auto* box_model_object = ToLayoutBoxModelObject(this);
+    auto* box_model_object = To<LayoutBoxModelObject>(this);
     if (box_model_object->HasSelfPaintingLayer())
       return box_model_object->Layer()->NeedsVisualOverflowRecalc();
   }
@@ -4657,7 +4660,7 @@ bool LayoutObject::SelfPaintingLayerNeedsVisualOverflowRecalc() const {
 void LayoutObject::MarkSelfPaintingLayerForVisualOverflowRecalc() {
   NOT_DESTROYED();
   if (HasLayer()) {
-    auto* box_model_object = ToLayoutBoxModelObject(this);
+    auto* box_model_object = To<LayoutBoxModelObject>(this);
     if (box_model_object->HasSelfPaintingLayer())
       box_model_object->Layer()->SetNeedsVisualOverflowRecalc();
   }

@@ -469,7 +469,7 @@ AXObject* AXObjectCacheImpl::CreateFromRenderer(LayoutObject* layout_object) {
     return MakeGarbageCollected<AXSVGRoot>(layout_object, *this);
 
   if (layout_object->IsBoxModelObject()) {
-    LayoutBoxModelObject* css_box = ToLayoutBoxModelObject(layout_object);
+    auto* css_box = To<LayoutBoxModelObject>(layout_object);
     if (auto* select_element = DynamicTo<HTMLSelectElement>(node)) {
       if (select_element->UsesMenuList()) {
         if (use_ax_menu_list_)

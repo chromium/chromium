@@ -2401,7 +2401,7 @@ bool LayoutBox::HitTestChildren(HitTestResult& result,
   for (LayoutObject* child = SlowLastChild(); child;
        child = child->PreviousSibling()) {
     if (child->HasLayer() &&
-        ToLayoutBoxModelObject(child)->Layer()->IsSelfPaintingLayer())
+        To<LayoutBoxModelObject>(child)->Layer()->IsSelfPaintingLayer())
       continue;
 
     PhysicalOffset child_accumulated_offset = accumulated_offset;
@@ -2957,7 +2957,7 @@ LayoutUnit LayoutBox::ContainingBlockLogicalHeightForGetComputedStyle() const {
   if (!IsPositioned())
     return ContainingBlockLogicalHeightForContent(kExcludeMarginBorderPadding);
 
-  LayoutBoxModelObject* cb = ToLayoutBoxModelObject(Container());
+  auto* cb = To<LayoutBoxModelObject>(Container());
   LayoutUnit height = ContainingBlockLogicalHeightForPositioned(
       cb, /* check_for_perpendicular_writing_mode */ false);
   if (IsInFlowPositioned())
@@ -5074,7 +5074,7 @@ LayoutUnit LayoutBox::ComputeReplacedLogicalWidthUsing(
       LayoutUnit cw;
       if (IsOutOfFlowPositioned()) {
         cw = ContainingBlockLogicalWidthForPositioned(
-            ToLayoutBoxModelObject(Container()));
+            To<LayoutBoxModelObject>(Container()));
       } else {
         cw = IsHorizontalWritingMode() ==
                      ContainingBlock()->IsHorizontalWritingMode()
@@ -5216,7 +5216,7 @@ LayoutUnit LayoutBox::ComputeReplacedLogicalHeightUsing(
       LayoutUnit available_height;
       if (IsOutOfFlowPositioned()) {
         available_height = ContainingBlockLogicalHeightForPositioned(
-            ToLayoutBoxModelObject(cb));
+            To<LayoutBoxModelObject>(cb));
       } else if (stretched_height != -1) {
         available_height = stretched_height;
       } else if (HasOverridePercentageResolutionBlockSize()) {
@@ -5454,7 +5454,8 @@ LayoutUnit LayoutBox::ContainingBlockLogicalWidthForPositioned(
     // inline that serves as the containing block of this box.
     while (!containing_block->CanContainOutOfFlowPositionedElement(
         StyleRef().GetPosition())) {
-      containing_block = ToLayoutBoxModelObject(containing_block->Container());
+      containing_block =
+          To<LayoutBoxModelObject>(containing_block->Container());
       DCHECK(containing_block->IsLayoutInline());
     }
   } else if (containing_block->IsBox()) {
@@ -5685,8 +5686,7 @@ void LayoutBox::ComputePositionedLogicalWidth(
 
   // We don't use containingBlock(), since we may be positioned by an enclosing
   // relative positioned inline.
-  const LayoutBoxModelObject* container_block =
-      ToLayoutBoxModelObject(Container());
+  const auto* container_block = To<LayoutBoxModelObject>(Container());
 
   const LayoutUnit container_logical_width =
       ContainingBlockLogicalWidthForPositioned(container_block);
@@ -6136,8 +6136,7 @@ void LayoutBox::ComputePositionedLogicalHeight(
 
   // We don't use containingBlock(), since we may be positioned by an enclosing
   // relpositioned inline.
-  const LayoutBoxModelObject* container_block =
-      ToLayoutBoxModelObject(Container());
+  const auto* container_block = To<LayoutBoxModelObject>(Container());
 
   const LayoutUnit container_logical_height =
       ContainingBlockLogicalHeightForPositioned(container_block);
