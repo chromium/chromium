@@ -231,6 +231,16 @@ IN_PROC_BROWSER_TEST_F(AccessibilityBridgeTest, HitTest) {
 
   fuchsia::math::PointF target_point = GetCenterOfBox(target_node->location());
 
+  float scale_factor = 20.f;
+  // Make the bridge use scaling in hit test calculations.
+  AccessibilityBridge* bridge = frame_impl_->accessibility_bridge_for_test();
+  bridge->set_device_scale_factor_for_test(scale_factor);
+
+  // Downscale the target point, since the hit test calculation will scale it
+  // back up.
+  target_point.x /= scale_factor;
+  target_point.y /= scale_factor;
+
   uint32_t hit_node_id =
       semantics_manager_.HitTestAtPointSync(std::move(target_point));
   fuchsia::accessibility::semantics::Node* hit_node =
@@ -243,8 +253,8 @@ IN_PROC_BROWSER_TEST_F(AccessibilityBridgeTest, HitTest) {
   target_point.x = -1;
   target_point.y = -1;
   EXPECT_EQ(0u, semantics_manager_.HitTestAtPointSync(std::move(target_point)));
-  target_point.x = 1;
-  target_point.y = 1;
+  target_point.x = 1. / scale_factor;
+  target_point.y = 1. / scale_factor;
   EXPECT_EQ(0u, semantics_manager_.HitTestAtPointSync(std::move(target_point)));
 }
 

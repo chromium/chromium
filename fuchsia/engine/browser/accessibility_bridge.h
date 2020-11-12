@@ -12,6 +12,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/optional.h"
 #include "content/public/browser/ax_event_notification_details.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -56,6 +57,10 @@ class WEB_ENGINE_EXPORT AccessibilityBridge
     event_received_callback_for_test_ = std::move(callback);
   }
 
+  void set_device_scale_factor_for_test(float device_scale_factor) {
+    device_scale_factor_override_for_test_ = device_scale_factor;
+  }
+
  private:
   FRIEND_TEST_ALL_PREFIXES(AccessibilityBridgeTest, OnSemanticsModeChanged);
   FRIEND_TEST_ALL_PREFIXES(AccessibilityBridgeTest,
@@ -70,6 +75,10 @@ class WEB_ENGINE_EXPORT AccessibilityBridge
   // Interrupts actions that are waiting for a response. This is invoked during
   // destruction time or when semantic updates have been disabled.
   void InterruptPendingActions();
+
+  // Accessor for the device scale factor that allows for overriding the value
+  // in tests.
+  float GetDeviceScaleFactor();
 
   // content::WebContentsObserver implementation.
   void AccessibilityEventReceived(
@@ -117,6 +126,9 @@ class WEB_ENGINE_EXPORT AccessibilityBridge
   int32_t root_id_ = 0;
 
   base::OnceClosure event_received_callback_for_test_;
+
+  // If set, the scale factor for this device for use in tests.
+  base::Optional<float> device_scale_factor_override_for_test_;
 };
 
 #endif  // FUCHSIA_ENGINE_BROWSER_ACCESSIBILITY_BRIDGE_H_
