@@ -796,6 +796,9 @@ bool H265Decoder::PerformDpbOperations(const H265SPS* sps) {
           std::max(num_to_output,
                    static_cast<int>(dpb_.size()) -
                        sps->sps_max_dec_pic_buffering_minus1[highest_tid]);
+
+      num_to_output =
+          std::min(num_to_output, static_cast<int>(not_outputted.size()));
       if (!num_to_output && dpb_.IsFull()) {
         // This is wrong, we should try to output pictures until we can clear
         // one from the DPB. This is better than failing, but we then may end up
