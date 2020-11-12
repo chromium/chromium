@@ -78,6 +78,7 @@
 /flac
 /flatbuffers/src
 /fontconfig/src
+/freetype-testing/src
 /freetype/src
 /fuchsia-sdk/images
 /fuchsia-sdk/images-internal
