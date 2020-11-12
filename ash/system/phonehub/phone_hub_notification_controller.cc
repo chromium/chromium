@@ -20,8 +20,10 @@
 #include "base/timer/timer.h"
 #include "chromeos/components/phonehub/notification.h"
 #include "chromeos/components/phonehub/phone_hub_manager.h"
+#include "chromeos/components/phonehub/phone_model.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/gfx/text_elider.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
@@ -39,6 +41,8 @@ const char kPhoneHubInstantTetherNotificationId[] =
     "chrome://phonehub-instant-tether";
 const char kNotificationCustomViewType[] = "phonehub";
 const int kReplyButtonIndex = 0;
+const int kNotificationHeaderTextWidth = 180;
+const int kNotificationAppNameMaxWidth = 140;
 
 // The amount of time the reply button is disabled after sending an inline
 // reply. This is used to make sure that all the replies are received by the
@@ -50,14 +54,27 @@ constexpr base::TimeDelta kInlineReplyDisableTime =
 class PhoneHubNotificationView : public message_center::NotificationViewMD {
  public:
   explicit PhoneHubNotificationView(
-      const message_center::Notification& notification)
+      const message_center::Notification& notification,
+      const base::string16& phone_name)
       : message_center::NotificationViewMD(notification) {
     // Add customized header.
     message_center::NotificationHeaderView* header_row =
         static_cast<message_center::NotificationHeaderView*>(
             GetViewByID(message_center::NotificationViewMD::kHeaderRow));
-    header_row->SetSummaryText(l10n_util::GetStringUTF16(
-        IDS_ASH_PHONE_HUB_NOTIFICATION_FROM_PHONE_TITLE));
+    views::View* app_name_view =
+        GetViewByID(message_center::NotificationViewMD::kAppNameView);
+    views::Label* summary_text_view = static_cast<views::Label*>(
+        GetViewByID(message_center::NotificationViewMD::kSummaryTextView));
+
+    // The app name should be displayed in full, leaving the rest of the space
+    // for device name. App name will only be truncated when it reached it
+    // maximum width.
+    int app_name_width = std::min(app_name_view->GetPreferredSize().width(),
+                                  kNotificationAppNameMaxWidth);
+    int device_name_width = kNotificationHeaderTextWidth - app_name_width;
+    header_row->SetSummaryText(
+        gfx::ElideText(phone_name, summary_text_view->font_list(),
+                       device_name_width, gfx::ELIDE_TAIL));
 
     action_buttons_row_ =
         GetViewByID(message_center::NotificationViewMD::kActionButtonsRow);
@@ -189,7 +206,8 @@ PhoneHubNotificationController::PhoneHubNotificationController() {
   message_center::MessageViewFactory::SetCustomNotificationViewFactory(
       kNotificationCustomViewType,
       base::BindRepeating(
-          &PhoneHubNotificationController::CreateCustomNotificationView));
+          &PhoneHubNotificationController::CreateCustomNotificationView,
+          weak_ptr_factory_.GetWeakPtr()));
 }
 
 PhoneHubNotificationController::~PhoneHubNotificationController() {
@@ -205,6 +223,7 @@ void PhoneHubNotificationController::SetManager(
       phone_hub_manager->GetNotificationManager();
   chromeos::phonehub::TetherController* tether_controller =
       phone_hub_manager->GetTetherController();
+  phone_model_ = phone_hub_manager->GetPhoneModel();
 
   if (manager_ == notification_manager &&
       tether_controller_ == tether_controller) {
@@ -222,6 +241,12 @@ void PhoneHubNotificationController::SetManager(
 
   tether_controller_ = tether_controller;
   tether_controller_->AddObserver(this);
+}
+
+const base::string16 PhoneHubNotificationController::GetPhoneName() const {
+  if (!phone_model_)
+    return base::string16();
+  return phone_model_->phone_name().value_or(base::string16());
 }
 
 void PhoneHubNotificationController::OnNotificationsAdded(
@@ -402,9 +427,15 @@ PhoneHubNotificationController::CreateNotification(
 // static
 std::unique_ptr<message_center::MessageView>
 PhoneHubNotificationController::CreateCustomNotificationView(
+    base::WeakPtr<PhoneHubNotificationController> notification_controller,
     const message_center::Notification& notification) {
   DCHECK_EQ(kNotificationCustomViewType, notification.custom_view_type());
-  return std::make_unique<PhoneHubNotificationView>(notification);
+
+  base::string16 phone_name = base::string16();
+  if (notification_controller)
+    phone_name = notification_controller->GetPhoneName();
+
+  return std::make_unique<PhoneHubNotificationView>(notification, phone_name);
 }
 
 }  // namespace ash

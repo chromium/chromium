@@ -13,6 +13,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/components/phonehub/fake_notification_manager.h"
 #include "chromeos/components/phonehub/fake_phone_hub_manager.h"
+#include "chromeos/components/phonehub/mutable_phone_model.h"
 #include "chromeos/components/phonehub/notification.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -246,6 +247,27 @@ TEST_F(PhoneHubNotificationControllerTest, NotificationHasCustomViewType) {
   EXPECT_EQ(kNotificationCustomViewType, notification->custom_view_type());
 }
 
+TEST_F(PhoneHubNotificationControllerTest, NotificationHasPhoneName) {
+  notification_manager_->SetNotificationsInternal(fake_notifications_);
+  auto* notification =
+      message_center_->FindVisibleNotificationById(kCrOSNotificationId0);
+
+  const base::string16 expected_phone_name = base::UTF8ToUTF16("Phone name");
+  phone_hub_manager_.mutable_phone_model()->SetPhoneName(expected_phone_name);
+
+  auto notification_view =
+      PhoneHubNotificationController::CreateCustomNotificationView(
+          controller_->weak_ptr_factory_.GetWeakPtr(), *notification);
+  auto* notification_view_md =
+      static_cast<message_center::NotificationViewMD*>(notification_view.get());
+  views::Label* summary_text_label =
+      static_cast<views::Label*>(notification_view_md->GetViewByID(
+          message_center::NotificationViewMD::kSummaryTextView));
+
+  // Notification should contain phone name in the summary text.
+  EXPECT_EQ(expected_phone_name, summary_text_label->GetText());
+}
+
 TEST_F(PhoneHubNotificationControllerTest, ReplyBrieflyDisabled) {
   notification_manager_->SetNotificationsInternal(fake_notifications_);
   auto* notification =
@@ -253,7 +275,7 @@ TEST_F(PhoneHubNotificationControllerTest, ReplyBrieflyDisabled) {
 
   auto notification_view =
       PhoneHubNotificationController::CreateCustomNotificationView(
-          *notification);
+          controller_->weak_ptr_factory_.GetWeakPtr(), *notification);
   auto* notification_view_md =
       static_cast<message_center::NotificationViewMD*>(notification_view.get());
   views::View* action_buttons_row = notification_view_md->GetViewByID(

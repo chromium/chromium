@@ -18,6 +18,7 @@
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/message_center/public/cpp/message_center_constants.h"
 #include "ui/message_center/vector_icons.h"
+#include "ui/message_center/views/notification_view_md.h"
 #include "ui/message_center/views/relative_time_formatter.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/border.h"
@@ -200,6 +201,7 @@ NotificationHeaderView::NotificationHeaderView(PressedCallback callback)
   // Explicitly disable multiline to support proper text elision for URLs.
   app_name_view_->SetMultiLine(false);
   app_name_view_->SetProperty(views::kFlexBehaviorKey, kAppNameFlex);
+  app_name_view_->SetID(NotificationViewMD::kAppNameView);
   AddChildView(app_name_view_);
 
   // Detail views which will be hidden in settings mode.
@@ -219,6 +221,7 @@ NotificationHeaderView::NotificationHeaderView(PressedCallback callback)
   // Summary text view
   summary_text_view_ = create_label();
   summary_text_view_->SetVisible(false);
+  summary_text_view_->SetID(NotificationViewMD::kSummaryTextView);
   detail_views_->AddChildView(summary_text_view_);
 
   // Timestamp divider

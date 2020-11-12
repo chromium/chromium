@@ -15,6 +15,7 @@ namespace chromeos {
 namespace phonehub {
 class Notification;
 class PhoneHubManager;
+class PhoneModel;
 }  // namespace phonehub
 }  // namespace chromeos
 
@@ -42,9 +43,13 @@ class ASH_EXPORT PhoneHubNotificationController
   // notifications.
   void SetManager(chromeos::phonehub::PhoneHubManager* phone_hub_manager);
 
+  const base::string16 GetPhoneName() const;
+
  private:
   FRIEND_TEST_ALL_PREFIXES(PhoneHubNotificationControllerTest,
                            ReplyBrieflyDisabled);
+  FRIEND_TEST_ALL_PREFIXES(PhoneHubNotificationControllerTest,
+                           NotificationHasPhoneName);
 
   class NotificationDelegate;
 
@@ -82,12 +87,16 @@ class ASH_EXPORT PhoneHubNotificationController
 
   static std::unique_ptr<message_center::MessageView>
   CreateCustomNotificationView(
+      base::WeakPtr<PhoneHubNotificationController> notification_controller,
       const message_center::Notification& notification);
 
   chromeos::phonehub::NotificationManager* manager_ = nullptr;
   chromeos::phonehub::TetherController* tether_controller_ = nullptr;
+  chromeos::phonehub::PhoneModel* phone_model_ = nullptr;
   std::unordered_map<int64_t, std::unique_ptr<NotificationDelegate>>
       notification_map_;
+
+  base::WeakPtrFactory<PhoneHubNotificationController> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

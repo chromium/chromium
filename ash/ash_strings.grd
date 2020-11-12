@@ -1159,9 +1159,6 @@ This file contains the strings for ash.
       <message name="IDS_ASH_PHONE_HUB_BLUETOOTH_DISABLED_DIALOG_LEARN_MORE_BUTTON" desc="Learn more button on the bluetooth disabled dialog to show more related information.">
         Learn more
       </message>
-      <message name="IDS_ASH_PHONE_HUB_NOTIFICATION_FROM_PHONE_TITLE" desc="The title at the header of PhoneHub notification, indicating that this notification was coming from the connected phone.">
-        From Phone
-      </message>
       <message name="IDS_ASH_PHONE_HUB_NOTIFICATION_INLINE_REPLY_BUTTON" desc="Label for the inline reply button inside a PhoneHub notification.">
         Reply
       </message>
