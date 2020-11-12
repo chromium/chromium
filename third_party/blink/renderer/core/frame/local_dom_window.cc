@@ -1747,6 +1747,13 @@ void LocalDOMWindow::ClearIsolatedWorldCSPForTesting(int32_t world_id) {
   isolated_world_csp_map_->erase(world_id);
 }
 
+bool IsSuddenTerminationDisablerEvent(const AtomicString& event_type) {
+  return event_type == event_type_names::kUnload ||
+         event_type == event_type_names::kBeforeunload ||
+         event_type == event_type_names::kPagehide ||
+         event_type == event_type_names::kVisibilitychange;
+}
+
 void LocalDOMWindow::AddedEventListener(
     const AtomicString& event_type,
     RegisteredEventListener& registered_listener) {
@@ -1774,12 +1781,8 @@ void LocalDOMWindow::AddedEventListener(
     UseCounter::Count(this, WebFeature::kDocumentPageShowRegistered);
   }
 
-  if (!GetFrame() || (event_type != event_type_names::kUnload &&
-                      event_type != event_type_names::kBeforeunload &&
-                      event_type != event_type_names::kPagehide)) {
-    return;
-  }
-  GetFrame()->AddedSuddenTerminationDisablerListener(*this, event_type);
+  if (GetFrame() && IsSuddenTerminationDisablerEvent(event_type))
+    GetFrame()->AddedSuddenTerminationDisablerListener(*this, event_type);
 }
 
 void LocalDOMWindow::RemovedEventListener(
@@ -1796,13 +1799,9 @@ void LocalDOMWindow::RemovedEventListener(
   }
 
   // Update sudden termination disabler state if we removed a listener for
-  // unload/beforeunload/pagehide.
-  if (!GetFrame() || (event_type != event_type_names::kUnload &&
-                      event_type != event_type_names::kBeforeunload &&
-                      event_type != event_type_names::kPagehide)) {
-    return;
-  }
-  GetFrame()->RemovedSuddenTerminationDisablerListener(*this, event_type);
+  // unload/beforeunload/pagehide/visibilitychange.
+  if (GetFrame() && IsSuddenTerminationDisablerEvent(event_type))
+    GetFrame()->RemovedSuddenTerminationDisablerListener(*this, event_type);
 }
 
 void LocalDOMWindow::DispatchLoadEvent() {
@@ -1861,6 +1860,8 @@ void LocalDOMWindow::RemoveAllEventListeners() {
       NumberOfEventListeners(event_type_names::kBeforeunload);
   int previous_page_hide_handlers_count =
       NumberOfEventListeners(event_type_names::kPagehide);
+  int previous_visibility_change_handlers_count =
+      NumberOfEventListeners(event_type_names::kVisibilitychange);
   EventTarget::RemoveAllEventListeners();
 
   for (auto& it : event_listener_observers_) {
@@ -1871,7 +1872,7 @@ void LocalDOMWindow::RemoveAllEventListeners() {
     GetFrame()->GetEventHandlerRegistry().DidRemoveAllEventHandlers(*this);
 
   // Update sudden termination disabler state if we previously have listeners
-  // for unload/beforeunload/pagehide.
+  // for unload/beforeunload/pagehide/visibilitychange.
   if (GetFrame() && previous_unload_handlers_count) {
     GetFrame()->RemovedSuddenTerminationDisablerListener(
         *this, event_type_names::kUnload);
@@ -1883,6 +1884,10 @@ void LocalDOMWindow::RemoveAllEventListeners() {
   if (GetFrame() && previous_page_hide_handlers_count) {
     GetFrame()->RemovedSuddenTerminationDisablerListener(
         *this, event_type_names::kPagehide);
+  }
+  if (GetFrame() && previous_visibility_change_handlers_count) {
+    GetFrame()->RemovedSuddenTerminationDisablerListener(
+        *this, event_type_names::kVisibilitychange);
   }
 }
 

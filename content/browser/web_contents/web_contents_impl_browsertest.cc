@@ -1514,10 +1514,56 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
-                       SuddenTerminationDisablerOnVisibilityChange) {
+                       SuddenTerminationDisablerOnVisibilityChangeDocument) {
   const std::string VISIBILITYCHANGE_HTML =
-      "<html><body><script>document.onvisibilitychange=function(e) {}</script>"
-      "</body></html>";
+      "<html><body><script>"
+      "document.addEventListener('visibilitychange', (e) => {});"
+      "</script></body></html>";
+  NavigateToDataURLAndCheckForTerminationDisabler(
+      shell(), VISIBILITYCHANGE_HTML, false /* expect_unload */,
+      false /* expect_beforeunload */, false /* expect_pagehide */,
+      true /* expect_visibilitychange */);
+}
+
+IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
+                       SuddenTerminationDisablerOnVisibilityChangeWindow) {
+  const std::string VISIBILITYCHANGE_HTML =
+      "<html><body><script>"
+      "window.addEventListener('visibilitychange', (e) => {});"
+      "</script></body></html>";
+  NavigateToDataURLAndCheckForTerminationDisabler(
+      shell(), VISIBILITYCHANGE_HTML, false /* expect_unload */,
+      false /* expect_beforeunload */, false /* expect_pagehide */,
+      true /* expect_visibilitychange */);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebContentsImplBrowserTest,
+    SuddenTerminationDisablerOnVisibilityChangeRemoveDocumentListener) {
+  const std::string VISIBILITYCHANGE_HTML =
+      "<html><body><script>"
+      "function handleVisibilityChange(e) {}"
+      "window.addEventListener('visibilitychange', handleVisibilityChange);"
+      "document.addEventListener('visibilitychange', handleVisibilityChange);"
+      "document.removeEventListener('visibilitychange', "
+      "handleVisibilityChange);"
+      "</script></body></html>";
+  NavigateToDataURLAndCheckForTerminationDisabler(
+      shell(), VISIBILITYCHANGE_HTML, false /* expect_unload */,
+      false /* expect_beforeunload */, false /* expect_pagehide */,
+      true /* expect_visibilitychange */);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebContentsImplBrowserTest,
+    SuddenTerminationDisablerOnVisibilityChangeRemoveWindowListener) {
+  const std::string VISIBILITYCHANGE_HTML =
+      "<html><body><script>"
+      "function handleVisibilityChange(e) {}"
+      "window.onvisibilitychange = handleVisibilityChange;"
+      "document.onvisibilitychange = handleVisibilityChange;"
+      "window.removeEventListener('visibilitychange', handleVisibilityChange);"
+      "</script></body></html>";
   NavigateToDataURLAndCheckForTerminationDisabler(
       shell(), VISIBILITYCHANGE_HTML, false /* expect_unload */,
       false /* expect_beforeunload */, false /* expect_pagehide */,
@@ -1561,10 +1607,12 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
       "window.addEventListener('unload', handleEverything);"
       "window.addEventListener('beforeunload', handleEverything);"
       "window.addEventListener('pagehide', handleEverything);"
+      "window.addEventListener('visibilitychange', handleEverything);"
       "document.addEventListener('visibilitychange', handleEverything);"
       "window.removeEventListener('unload', handleEverything);"
       "window.removeEventListener('beforeunload', handleEverything);"
       "window.removeEventListener('pagehide', handleEverything);"
+      "window.removeEventListener('visibilitychange', handleEverything);"
       "document.removeEventListener('visibilitychange', handleEverything);"
       "</script></body></html>";
   // After the handlers were added, they got deleted, so we should treat them as

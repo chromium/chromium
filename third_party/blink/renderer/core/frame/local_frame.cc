@@ -969,6 +969,35 @@ SuddenTerminationDisablerTypeForEventType(const AtomicString& event_type) {
   return mojom::blink::SuddenTerminationDisablerType::kUnloadHandler;
 }
 
+int NumberOfSuddenTerminationEventListeners(const EventTarget& event_target,
+                                            const AtomicString& event_type) {
+  if (event_type != event_type_names::kVisibilitychange)
+    return event_target.NumberOfEventListeners(event_type);
+  // For visibilitychange, we need to count the number of event listeners that
+  // are registered on the document and the window, as the event is initially
+  // dispatched on the document but might bubble up to the window.
+  // The other events (beforeunload, unload, pagehide) are dispatched on the
+  // window and won't bubble up anywhere, so we don't need to check for
+  // listeners the document for those events.
+  int total_listeners_count = event_target.NumberOfEventListeners(event_type);
+  if (auto* dom_window = event_target.ToLocalDOMWindow()) {
+    // |event_target| is the window, so get the count for listeners registered
+    // on the document.
+    total_listeners_count +=
+        dom_window->document()->NumberOfEventListeners(event_type);
+  } else {
+    auto* node = const_cast<EventTarget*>(&event_target)->ToNode();
+    DCHECK(node);
+    DCHECK(node->IsDocumentNode());
+    DCHECK(node->GetDocument().domWindow());
+    // |event_target| is the document, so get the count for listeners registered
+    // on the window.
+    total_listeners_count +=
+        node->GetDocument().domWindow()->NumberOfEventListeners(event_type);
+  }
+  return total_listeners_count;
+}
+
 void LocalFrame::UpdateSuddenTerminationStatus(
     bool added_listener,
     mojom::blink::SuddenTerminationDisablerType disabler_type) {
@@ -980,7 +1009,7 @@ void LocalFrame::UpdateSuddenTerminationStatus(
 void LocalFrame::AddedSuddenTerminationDisablerListener(
     const EventTarget& event_target,
     const AtomicString& event_type) {
-  if (event_target.NumberOfEventListeners(event_type) == 1) {
+  if (NumberOfSuddenTerminationEventListeners(event_target, event_type) == 1) {
     // The first handler of this type was added.
     UpdateSuddenTerminationStatus(
         true, SuddenTerminationDisablerTypeForEventType(event_type));
@@ -990,7 +1019,7 @@ void LocalFrame::AddedSuddenTerminationDisablerListener(
 void LocalFrame::RemovedSuddenTerminationDisablerListener(
     const EventTarget& event_target,
     const AtomicString& event_type) {
-  if (event_target.NumberOfEventListeners(event_type) == 0) {
+  if (NumberOfSuddenTerminationEventListeners(event_target, event_type) == 0) {
     // The last handler of this type was removed.
     UpdateSuddenTerminationStatus(
         false, SuddenTerminationDisablerTypeForEventType(event_type));
