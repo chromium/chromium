@@ -56,4 +56,11 @@ int64_t GetHintsReceiveTimeout() {
       kHintsReceiveDefaultTimeoutSeconds);
 }
 
+base::TimeDelta GetRobotsRulesReceiveTimeout() {
+  return base::TimeDelta::FromMilliseconds(
+      base::GetFieldTrialParamByFeatureAsInt(
+          blink::features::kSubresourceRedirect, "robots_rules_receive_timeout",
+          10));
+}
+
 }  // namespace subresource_redirect

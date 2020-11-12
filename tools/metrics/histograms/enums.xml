@@ -70664,6 +70664,12 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="11" label="AbortedBecauseSentinelFileWasPresent"/>
 </enum>
 
+<enum name="SubresourceRedirectRobotsRulesReceiveResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Timeout"/>
+  <int value="2" label="Parse error"/>
+</enum>
+
 <enum name="SuccessTimeoutStarted">
   <int value="0" label="Success"/>
   <int value="1" label="Timeout"/>

@@ -10,3 +10,7 @@ proto_library("data_reduction_proxy_proto") {
     "data_store.proto",
   ]
 }
+
+proto_library("subresource_redirect_proto") {
+  sources = [ "robots_rules.proto" ]
+}

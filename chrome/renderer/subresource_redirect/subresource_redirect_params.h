@@ -31,6 +31,10 @@ base::TimeDelta GetCompressionRedirectTimeout();
 // Returns the public image hinte receive timeout value from field trial.
 int64_t GetHintsReceiveTimeout();
 
+// Returns the timeout to wait for the robots rules to be received, after which
+// the subresource should be fetched directly from the origin.
+base::TimeDelta GetRobotsRulesReceiveTimeout();
+
 }  // namespace subresource_redirect
 
 #endif  // CHROME_RENDERER_SUBRESOURCE_REDIRECT_SUBRESOURCE_REDIRECT_PARAMS_H_

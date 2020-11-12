@@ -572,6 +572,40 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="SubresourceRedirect.RobotRulesDecider.ApplyDuration"
+    units="ms" expires_after="M92">
+  <owner>rajendrant@chromium.org</owner>
+  <owner>mcrouse@chromium.org</owner>
+  <summary>
+    Records the duration that the robots rules decider took to apply the rules.
+    Recorded once for each image fetch. There could be multiple robots rules for
+    an image origin, and the total duration needed to match with all the rules
+    and make the final Allow/Disallow decision is recorded here.
+  </summary>
+</histogram>
+
+<histogram name="SubresourceRedirect.RobotRulesDecider.Count" units="count"
+    expires_after="M92">
+  <owner>rajendrant@chromium.org</owner>
+  <owner>mcrouse@chromium.org</owner>
+  <summary>
+    Records the total number of robots rules received in the decider. Recorded
+    whenever robots rules decider object receives successfully parsable robots
+    rules.
+  </summary>
+</histogram>
+
+<histogram name="SubresourceRedirect.RobotRulesDecider.ReceiveResult"
+    enum="SubresourceRedirectRobotsRulesReceiveResult" expires_after="M92">
+  <owner>rajendrant@chromium.org</owner>
+  <owner>mcrouse@chromium.org</owner>
+  <summary>
+    Records the final result of retrieving robots.txt rules. Recorded once per
+    robots rules decider object, which is roughly the number of unique image
+    origins in the page.
+  </summary>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>
