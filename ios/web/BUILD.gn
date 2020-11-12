@@ -574,6 +574,7 @@ test("ios_web_inttests") {
     "web_state/http_auth_inttest.mm",
     "web_state/keep_render_process_alive_inttest.mm",
     "web_state/web_state_observer_inttest.mm",
+    "webui/web_ui_inttest.mm",
     "webui/web_ui_mojo_inttest.mm",
   ]
 

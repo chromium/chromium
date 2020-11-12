@@ -642,11 +642,13 @@ void ReportOutOfSyncURLInDidStartProvisionalNavigation(
   // should be registered.
 
   // When using WKBasedNavigationManager, renderer-initiated app-specific loads
-  // should be allowed in two specific cases:
+  // should only be allowed in these specific cases:
   // 1) if |backForwardList.currentItem| is a placeholder URL for the
   //    provisional load URL (i.e. webView.URL), then this is an in-progress
   //    app-specific load and should not be restarted.
   // 2) back/forward navigation to an app-specific URL should be allowed.
+  // 3) navigation to an app-specific URL should be allowed from other
+  //    app-specific URLs
   bool exemptedAppSpecificLoad = false;
   bool currentItemIsPlaceholder =
       !base::FeatureList::IsEnabled(web::features::kUseJSForErrorPage) &&
@@ -655,8 +657,8 @@ void ReportOutOfSyncURLInDidStartProvisionalNavigation(
   bool isBackForward =
       self.pendingNavigationInfo.navigationType == WKNavigationTypeBackForward;
   bool isRestoringSession = IsRestoreSessionUrl(self.documentURL);
-  exemptedAppSpecificLoad =
-      currentItemIsPlaceholder || isBackForward || isRestoringSession;
+  exemptedAppSpecificLoad = currentItemIsPlaceholder || isBackForward ||
+                            isRestoringSession || self.webStateImpl->HasWebUI();
 
   if (!web::GetWebClient()->IsAppSpecificURL(webViewURL) ||
       !exemptedAppSpecificLoad) {
