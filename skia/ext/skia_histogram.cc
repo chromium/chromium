@@ -20,15 +20,26 @@ void HistogramBoolean(std::atomic_uintptr_t* atomic_histogram_pointer,
           name, base::HistogramBase::kUmaTargetedHistogramFlag));
 }
 
-// Wrapper around HISTOGRAM_POINTER_USE - mimics UMA_HISTOGRAM_ENUMERATION but
+// Wrapper around HISTOGRAM_POINTER_USE - mimics UMA_HISTOGRAM_EXACT_LINEAR but
 // allows for an external atomic_histogram_pointer.
-void HistogramEnumeration(std::atomic_uintptr_t* atomic_histogram_pointer,
+void HistogramExactLinear(std::atomic_uintptr_t* atomic_histogram_pointer,
                           const char* name,
                           int sample,
-                          int boundary_value) {
+                          int value_max) {
   HISTOGRAM_POINTER_USE(atomic_histogram_pointer, name, Add(sample),
                         base::LinearHistogram::FactoryGet(
-                            name, 1, boundary_value, boundary_value + 1,
+                            name, 1, value_max, value_max + 1,
+                            base::HistogramBase::kUmaTargetedHistogramFlag));
+}
+
+// Wrapper around HISTOGRAM_POINTER_USE - mimics UMA_HISTOGRAM_MEMORY_KB but
+// allows for an external atomic_histogram_pointer.
+void HistogramMemoryKB(std::atomic_uintptr_t* atomic_histogram_pointer,
+                       const char* name,
+                       int sample) {
+  HISTOGRAM_POINTER_USE(atomic_histogram_pointer, name, Add(sample),
+                        base::Histogram::FactoryGet(
+                            name, 1000, 500000, 50,
                             base::HistogramBase::kUmaTargetedHistogramFlag));
 }
 

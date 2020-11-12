@@ -119,8 +119,10 @@
  * Skia consumers can provide their own definitions of these macros to
  * integrate with their histogram collection backend.
  */
-//#define SK_HISTOGRAM_BOOLEAN(name, value)
-//#define SK_HISTOGRAM_ENUMERATION(name, value, boundary_value)
+//#define SK_HISTOGRAM_BOOLEAN(name, sample)
+//#define SK_HISTOGRAM_EXACT_LINEAR(name, sample, value_max)
+//#define SK_HISTOGRAM_MEMORY_KB(name, sample)
+#include "skia/ext/skia_histogram.h"
 
 // ===== Begin Chrome-specific definitions =====
 

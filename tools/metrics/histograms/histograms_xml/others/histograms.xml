@@ -13497,11 +13497,17 @@ should be kept until we remove incident reporting. -->
 
 <histogram name="Skia.DrawScaleFactor" enum="SkiaScaleFactor"
     expires_after="M85">
+  <obsolete>
+    Removed in Oct 2020.
+  </obsolete>
   <owner>ericrk@chromium.org</owner>
   <summary>The scale factor of any images drawn by Skia.</summary>
 </histogram>
 
 <histogram name="Skia.DrawTiled" enum="BooleanTiled" expires_after="M85">
+  <obsolete>
+    Removed in Oct 2020.
+  </obsolete>
   <owner>ericrk@chromium.org</owner>
   <summary>
     Whether a call to drawBitmap(Rect) or drawImage(Rect) used the tiled or
@@ -13511,6 +13517,9 @@ should be kept until we remove incident reporting. -->
 
 <histogram name="Skia.FilterQuality" enum="SkiaFilterQuality"
     expires_after="M85">
+  <obsolete>
+    Removed in Oct 2020.
+  </obsolete>
   <owner>ericrk@chromium.org</owner>
   <summary>
     The count of images drawn by Skia with a given filter quality.
@@ -13519,9 +13528,51 @@ should be kept until we remove incident reporting. -->
 
 <histogram name="Skia.LockTexturePath" enum="SkiaLockTexturePath"
     expires_after="M85">
+  <obsolete>
+    Removed in Oct 2020.
+  </obsolete>
   <owner>ericrk@chromium.org</owner>
   <summary>
     The path taken by Skia when it attempts to lock a texture for use.
+  </summary>
+</histogram>
+
+<histogram name="Skia.SubmitRenderPasses" units="renderpasses"
+    expires_after="2021-04-29">
+  <owner>egdaniel@google.com</owner>
+  <owner>bsalomon@google.com</owner>
+  <summary>
+    The number of Skia render passes sent to the GPU during a GrContext::submit
+    call. The max value that is sent here is 100 so anything in the 100 bucket
+    actually includes render pass counts of 100+. Though we don't expect to be
+    reaching 100 render passes often. This is collected each time we submit to
+    the GPU in Skia.
+  </summary>
+</histogram>
+
+<histogram name="Skia.VulkanMemoryAllocator.AmountAllocated" units="KB"
+    expires_after="2021-04-29">
+  <owner>egdaniel@google.com</owner>
+  <owner>bsalomon@google.com</owner>
+  <summary>
+    The total amount of memory that the GrVkMemoryAllocator used by Skia's
+    Vulkan backend has allocated. This is GPU memory for VkImages and VkBuffers.
+    Note that the allocator may be shared with other users outside of Skia and
+    this amount includes their uses as well. This is collected each time we
+    request an allocation from Skia.
+  </summary>
+</histogram>
+
+<histogram name="Skia.VulkanMemoryAllocator.PercentUsed" units="%"
+    expires_after="2021-04-29">
+  <owner>egdaniel@google.com</owner>
+  <owner>bsalomon@google.com</owner>
+  <summary>
+    The percent of allocated memory that is in use by the GrVkMemoryAllocator
+    used by Skia's Vulkan backend. This is GPU memory for VkImages and
+    VkBuffers. Note that the allocator may be shared with other users outside of
+    Skia and this includes their allocations as well. This is collected each
+    time we request an allocation from Skia.
   </summary>
 </histogram>
 
