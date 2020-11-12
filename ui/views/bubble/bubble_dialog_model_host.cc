@@ -44,31 +44,51 @@ DialogContentType FieldTypeToContentType(ui::DialogModelField::Type type) {
   return DialogContentType::CONTROL;
 }
 
-std::unique_ptr<View> CreateCheckboxControl(std::unique_ptr<Checkbox> checkbox,
-                                            std::unique_ptr<View> label) {
-  auto container = std::make_unique<views::View>();
+// A subclass of Checkbox that allows using an external Label/StyledLabel view
+// instead of LabelButton's internal label. This is required for the
+// Label/StyledLabel to be clickable, while supporting Links which requires a
+// StyledLabel.
+class CheckboxControl : public Checkbox {
+ public:
+  CheckboxControl(std::unique_ptr<View> label, int label_line_height)
+      : label_line_height_(label_line_height) {
+    auto* layout = SetLayoutManager(std::make_unique<BoxLayout>());
+    layout->set_between_child_spacing(LayoutProvider::Get()->GetDistanceMetric(
+        views::DISTANCE_RELATED_LABEL_HORIZONTAL));
+    layout->set_cross_axis_alignment(
+        views::BoxLayout::CrossAxisAlignment::kStart);
 
-  // Move the checkbox border up to |container| so that it surrounds both
-  // |checkbox| and |label|. This done so that |container| looks like a single
-  // Checkbox control that has |label| as its internal label. This method is
-  // necessary as Checkbox has no internal support for a StyledLabel, which is
-  // required for link support in the checkbox label.
-  container->SetBorder(checkbox->CreateDefaultBorder());
-  checkbox->SetBorder(nullptr);
+    SetAssociatedLabel(label.get());
 
-  auto* layout = container->SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kHorizontal, gfx::Insets(),
-      LayoutProvider::Get()->GetDistanceMetric(
-          views::DISTANCE_RELATED_LABEL_HORIZONTAL)));
-  layout->set_cross_axis_alignment(
-      views::BoxLayout::CrossAxisAlignment::kStart);
+    AddChildView(std::move(label));
+  }
 
-  checkbox->SetAssociatedLabel(label.get());
+  void Layout() override {
+    // Skip LabelButton to use LayoutManager.
+    View::Layout();
+  }
 
-  container->AddChildView(std::move(checkbox));
-  container->AddChildView(std::move(label));
-  return container;
-}
+  gfx::Size CalculatePreferredSize() const override {
+    // Skip LabelButton to use LayoutManager.
+    return View::CalculatePreferredSize();
+  }
+
+  int GetHeightForWidth(int width) const override {
+    // Skip LabelButton to use LayoutManager.
+    return View::GetHeightForWidth(width);
+  }
+
+  void OnThemeChanged() override {
+    Checkbox::OnThemeChanged();
+    // This offsets the image to align with the first line of text. See
+    // LabelButton::Layout().
+    image()->SetBorder(CreateEmptyBorder(gfx::Insets(
+        (label_line_height_ - image()->GetPreferredSize().height()) / 2, 0, 0,
+        0)));
+  }
+
+  const int label_line_height_;
+};
 
 }  // namespace
 
@@ -407,8 +427,18 @@ void BubbleDialogModelHost::AddOrUpdateCheckbox(
     ui::DialogModelCheckbox* model_field) {
   // TODO(pbos): Handle updating existing field.
 
-  auto checkbox = std::make_unique<Checkbox>();
-  Checkbox* checkbox_ptr = checkbox.get();
+  std::unique_ptr<CheckboxControl> checkbox;
+  if (DialogModelLabelRequiresStyledLabel(model_field->label(GetPassKey()))) {
+    auto label =
+        CreateStyledLabelForDialogModelLabel(model_field->label(GetPassKey()));
+    const int line_height = label->GetLineHeight();
+    checkbox = std::make_unique<CheckboxControl>(std::move(label), line_height);
+  } else {
+    auto label =
+        CreateLabelForDialogModelLabel(model_field->label(GetPassKey()));
+    const int line_height = label->GetLineHeight();
+    checkbox = std::make_unique<CheckboxControl>(std::move(label), line_height);
+  }
 
   checkbox->SetCallback(base::BindRepeating(
       [](ui::DialogModelCheckbox* model_field,
@@ -418,11 +448,8 @@ void BubbleDialogModelHost::AddOrUpdateCheckbox(
       },
       model_field, GetPassKey(), checkbox.get()));
 
-  std::unique_ptr<View> view = CreateCheckboxControl(
-      std::move(checkbox),
-      CreateViewForLabel(model_field->label(GetPassKey())));
-  DialogModelHostField info{model_field, view.get(), checkbox_ptr};
-  AddDialogModelHostField(std::move(view), info);
+  DialogModelHostField info{model_field, checkbox.get(), nullptr};
+  AddDialogModelHostField(std::move(checkbox), info);
 }
 
 void BubbleDialogModelHost::AddOrUpdateCombobox(
@@ -562,33 +589,49 @@ View* BubbleDialogModelHost::GetTargetView(
                                         : field_view_info.field_view;
 }
 
+bool BubbleDialogModelHost::DialogModelLabelRequiresStyledLabel(
+    const ui::DialogModelLabel& dialog_label) {
+  // Link support only exists in StyledLabel.
+  return !dialog_label.links(GetPassKey()).empty();
+}
+
 std::unique_ptr<View> BubbleDialogModelHost::CreateViewForLabel(
     const ui::DialogModelLabel& dialog_label) {
-  if (!dialog_label.links(GetPassKey()).empty()) {
-    // Label contains links so it needs a styled label.
+  if (DialogModelLabelRequiresStyledLabel(dialog_label))
+    return CreateStyledLabelForDialogModelLabel(dialog_label);
+  return CreateLabelForDialogModelLabel(dialog_label);
+}
 
-    // TODO(pbos): Make sure this works for >1 link, it uses .front() now.
-    DCHECK_EQ(dialog_label.links(GetPassKey()).size(), 1u);
+std::unique_ptr<StyledLabel>
+BubbleDialogModelHost::CreateStyledLabelForDialogModelLabel(
+    const ui::DialogModelLabel& dialog_label) {
+  DCHECK(DialogModelLabelRequiresStyledLabel(dialog_label));
+  // TODO(pbos): Make sure this works for >1 link, it uses .front() now.
+  DCHECK_EQ(dialog_label.links(GetPassKey()).size(), 1u);
 
-    size_t offset;
-    const base::string16 link_text = l10n_util::GetStringUTF16(
-        dialog_label.links(GetPassKey()).front().message_id);
-    const base::string16 text = l10n_util::GetStringFUTF16(
-        dialog_label.message_id(GetPassKey()), link_text, &offset);
+  size_t offset;
+  const base::string16 link_text = l10n_util::GetStringUTF16(
+      dialog_label.links(GetPassKey()).front().message_id);
+  const base::string16 text = l10n_util::GetStringFUTF16(
+      dialog_label.message_id(GetPassKey()), link_text, &offset);
 
-    auto styled_label = std::make_unique<StyledLabel>();
-    styled_label->SetText(text);
-    styled_label->AddStyleRange(
-        gfx::Range(offset, offset + link_text.length()),
-        StyledLabel::RangeStyleInfo::CreateForLink(
-            dialog_label.links(GetPassKey()).front().callback));
+  auto styled_label = std::make_unique<StyledLabel>();
+  styled_label->SetText(text);
+  styled_label->AddStyleRange(
+      gfx::Range(offset, offset + link_text.length()),
+      StyledLabel::RangeStyleInfo::CreateForLink(
+          dialog_label.links(GetPassKey()).front().callback));
 
-    styled_label->SetDefaultTextStyle(dialog_label.is_secondary(GetPassKey())
-                                          ? style::STYLE_SECONDARY
-                                          : style::STYLE_PRIMARY);
+  styled_label->SetDefaultTextStyle(dialog_label.is_secondary(GetPassKey())
+                                        ? style::STYLE_SECONDARY
+                                        : style::STYLE_PRIMARY);
 
-    return styled_label;
-  }
+  return styled_label;
+}
+
+std::unique_ptr<Label> BubbleDialogModelHost::CreateLabelForDialogModelLabel(
+    const ui::DialogModelLabel& dialog_label) {
+  DCHECK(!DialogModelLabelRequiresStyledLabel(dialog_label));
 
   auto text_label = std::make_unique<Label>(
       dialog_label.GetString(GetPassKey()), style::CONTEXT_DIALOG_BODY_TEXT,

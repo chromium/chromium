@@ -14,6 +14,10 @@
 #include "ui/views/controls/button/button.h"
 
 namespace views {
+
+class Label;
+class StyledLabel;
+
 // BubbleDialogModelHost is a views implementation of ui::DialogModelHost which
 // hosts a ui::DialogModel as a BubbleDialogDelegateView. This exposes such as
 // SetAnchorView(), SetArrow() and SetHighlightedButton(). For methods that are
@@ -104,7 +108,13 @@ class VIEWS_EXPORT BubbleDialogModelHost : public BubbleDialogDelegateView,
                                std::unique_ptr<views::View> field,
                                const gfx::FontList& field_font);
 
+  static bool DialogModelLabelRequiresStyledLabel(
+      const ui::DialogModelLabel& dialog_label);
   std::unique_ptr<View> CreateViewForLabel(
+      const ui::DialogModelLabel& dialog_label);
+  std::unique_ptr<StyledLabel> CreateStyledLabelForDialogModelLabel(
+      const ui::DialogModelLabel& dialog_label);
+  std::unique_ptr<Label> CreateLabelForDialogModelLabel(
       const ui::DialogModelLabel& dialog_label);
 
   void AddDialogModelHostField(std::unique_ptr<View> view,
