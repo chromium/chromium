@@ -185,6 +185,8 @@ class InputMethodEngine : public InputMethodEngineBase,
                            uint32_t start,
                            uint32_t end) override;
 
+  gfx::Range GetAutocorrectRange() override;
+
  private:
   // InputMethodEngineBase:
   void UpdateComposition(const ui::CompositionText& composition_text,
@@ -199,7 +201,6 @@ class InputMethodEngine : public InputMethodEngineBase,
       uint32_t end,
       const std::vector<ui::ImeTextSpan>& text_spans) override;
 
-  gfx::Range GetAutocorrectRange() override;
 
   gfx::Rect GetAutocorrectCharacterBounds() override;
 
