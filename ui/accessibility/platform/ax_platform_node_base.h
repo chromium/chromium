@@ -363,9 +363,9 @@ class AX_EXPORT AXPlatformNodeBase : public AXPlatformNode {
   //
   AXPlatformNodeDelegate* delegate_ = nullptr;
 
- protected:
   bool IsDocument() const;
 
+ protected:
   bool IsSelectionItemSupported() const;
 
   // Get the role description from the node data or from the image annotation

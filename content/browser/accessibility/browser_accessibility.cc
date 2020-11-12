@@ -195,8 +195,7 @@ bool BrowserAccessibility::IsDescendantOf(
 }
 
 bool BrowserAccessibility::IsDocument() const {
-  return GetRole() == ax::mojom::Role::kRootWebArea ||
-         GetRole() == ax::mojom::Role::kWebArea;
+  return ui::IsDocument(GetRole());
 }
 
 bool BrowserAccessibility::IsIgnored() const {
