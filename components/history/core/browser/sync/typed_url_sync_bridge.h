@@ -12,7 +12,7 @@
 #include <utility>
 #include <vector>
 
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "components/history/core/browser/history_backend.h"
 #include "components/history/core/browser/history_backend_observer.h"
 #include "components/history/core/browser/sync/typed_url_sync_metadata_database.h"
@@ -247,8 +247,8 @@ class TypedURLSyncBridge : public syncer::ModelTypeSyncBridge,
 
   // Tracks observed history backend, for receiving updates from history
   // backend.
-  ScopedObserver<HistoryBackend, HistoryBackendObserver>
-      history_backend_observer_{this};
+  base::ScopedObservation<HistoryBackend, HistoryBackendObserver>
+      history_backend_observation_{this};
 
   DISALLOW_COPY_AND_ASSIGN(TypedURLSyncBridge);
 };

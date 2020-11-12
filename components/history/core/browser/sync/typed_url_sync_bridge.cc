@@ -436,7 +436,7 @@ void TypedURLSyncBridge::OnURLsDeleted(HistoryBackend* history_backend,
 void TypedURLSyncBridge::Init() {
   DCHECK(sequence_checker_.CalledOnValidSequence());
 
-  history_backend_observer_.Add(history_backend_);
+  history_backend_observation_.Observe(history_backend_);
   LoadMetadata();
 }
 
