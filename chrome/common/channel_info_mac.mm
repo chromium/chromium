@@ -22,18 +22,30 @@ std::string GetChannelName() {
 
   // Only ever return "", "unknown", "beta", "dev", or "canary" in a branded
   // build.
+  // KSProductID is not set (for stable) or "beta", "dev" or "canary" for
+  // the intel-only build.
+  // KSProductID is "arm64" (for stable) or "arm64-beta", "arm64-dev" or
+  // "arm64-canary" for the arm-only build.
+  // KSProductID is "universal" (for stable) or "universal-beta",
+  // "universal-dev" or "universal-canary" for the arm+intel universal binary.
   if (![bundle objectForInfoDictionaryKey:@"KSProductID"]) {
     // This build is not Keystone-enabled, it can't have a channel.
     channel = @"unknown";
-  } else if (!channel) {
-    // For the stable channel, KSChannelID is not set.
+  } else if (!channel || [channel isEqual:@"arm64"] ||
+             [channel isEqual:@"universal"]) {
+    // For the intel stable channel, KSChannelID is not set.
     channel = @"";
-  } else if ([channel isEqual:@"beta"] ||
-             [channel isEqual:@"dev"] ||
-             [channel isEqual:@"canary"]) {
-    // do nothing.
   } else {
-    channel = @"unknown";
+    if ([channel hasPrefix:@"arm64-"])
+      channel = [channel substringFromIndex:[@"arm64-" length]];
+    else if ([channel hasPrefix:@"universal-"])
+      channel = [channel substringFromIndex:[@"universal-" length]];
+    if ([channel isEqual:@"beta"] || [channel isEqual:@"dev"] ||
+        [channel isEqual:@"canary"]) {
+      // do nothing.
+    } else {
+      channel = @"unknown";
+    }
   }
 
   return base::SysNSStringToUTF8(channel);
@@ -67,10 +79,10 @@ bool IsSideBySideCapable() {
     return true;
   }
 
-  if (![bundle objectForInfoDictionaryKey:@"KSChannelID"]) {
-    // For the stable channel, KSChannelID is not set. Stable Chromes are what
-    // side-by-side capable Chromes are running side-by-side *to* and by
-    // definition are side-by-side capable.
+  if (GetChannelName().empty()) {
+    // For the stable channel, GetChannelName() returns the empty string.
+    // Stable Chromes are what side-by-side capable Chromes are running
+    // side-by-side *to* and by definition are side-by-side capable.
     return true;
   }
 
