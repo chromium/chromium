@@ -95,6 +95,7 @@ if (is_component_build) {
     ]
     deps = [
       "//base",
+      "//build:chromeos_buildflags",
       "//media:media_buildflags",
       "//sandbox:sandbox_buildflags",
       "//sandbox/linux:sandbox",

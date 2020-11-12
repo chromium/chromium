@@ -23,6 +23,7 @@
 #include "base/notreached.h"
 #include "base/synchronization/synchronization_buildflags.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "sandbox/linux/bpf_dsl/bpf_dsl.h"
 #include "sandbox/linux/bpf_dsl/seccomp_macros.h"
 #include "sandbox/linux/seccomp-bpf-helpers/sigsys_handlers.h"
@@ -37,8 +38,9 @@
 #if !defined(OS_NACL_NONSFI)
 #include <sys/ioctl.h>
 #include <sys/ptrace.h>
-#if defined(OS_LINUX) && !defined(OS_CHROMEOS) && !defined(__arm__) && \
-    !defined(__aarch64__) && !defined(PTRACE_GET_THREAD_AREA)
+#if (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) && \
+    !defined(__arm__) && !defined(__aarch64__) &&           \
+    !defined(PTRACE_GET_THREAD_AREA)
 // Also include asm/ptrace-abi.h since ptrace.h in older libc (for instance
 // the one in Ubuntu 16.04 LTS) is missing PTRACE_GET_THREAD_AREA.
 // asm/ptrace-abi.h doesn't exist on arm32 and PTRACE_GET_THREAD_AREA isn't
@@ -101,7 +103,7 @@ inline bool IsArchitectureMips() {
 // to allow those futex(2) calls to fail with EINVAL, instead of crashing the
 // process. See crbug.com/598471.
 inline bool IsBuggyGlibcSemPost() {
-#if defined(LIBC_GLIBC) && !defined(OS_CHROMEOS)
+#if defined(LIBC_GLIBC) && !BUILDFLAG(IS_CHROMEOS_ASH)
   return true;
 #else
   return false;

@@ -4,6 +4,7 @@
 
 import("//build/buildflag_header.gni")
 import("//build/config/chromecast_build.gni")
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//testing/test.gni")
 
@@ -24,6 +25,7 @@ component("policy") {
   deps = [
     ":sanitizer_buildflags",
     "//base",
+    "//build:chromeos_buildflags",
     "//sandbox:common",
   ]
   public_deps = []
@@ -76,7 +78,7 @@ component("policy") {
       "//sandbox/linux:suid_sandbox_client",
     ]
   }
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     sources += [
       "linux/bpf_ime_policy_linux.cc",
       "linux/bpf_ime_policy_linux.h",

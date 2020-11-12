@@ -5,6 +5,7 @@
 #include "sandbox/policy/features.h"
 
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 
 namespace sandbox {
 namespace policy {
@@ -36,7 +37,7 @@ const base::Feature kGpuLPAC{"GpuLPAC", base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kXRSandbox{"XRSandbox", base::FEATURE_ENABLED_BY_DEFAULT};
 #endif  // !defined(OS_ANDROID)
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Controls whether the Spectre variant 2 mitigation is enabled. We use a USE
 // flag on some Chrome OS boards to disable the mitigation by disabling this
 // feature in exchange for system performance.
@@ -48,7 +49,7 @@ const base::Feature kSpectreVariant2Mitigation{
 // enabled.
 const base::Feature kForceSpectreVariant2Mitigation{
     "ForceSpectreVariant2Mitigation", base::FEATURE_DISABLED_BY_DEFAULT};
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace features
 }  // namespace policy

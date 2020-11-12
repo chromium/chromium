@@ -10,6 +10,7 @@
 
 #include "base/feature_list.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "sandbox/policy/export.h"
 
 namespace sandbox {
@@ -30,11 +31,11 @@ SANDBOX_POLICY_EXPORT extern const base::Feature kGpuLPAC;
 SANDBOX_POLICY_EXPORT extern const base::Feature kXRSandbox;
 #endif  // !defined(OS_ANDROID)
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 SANDBOX_POLICY_EXPORT extern const base::Feature kSpectreVariant2Mitigation;
 SANDBOX_POLICY_EXPORT extern const base::Feature
     kForceSpectreVariant2Mitigation;
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace features
 }  // namespace policy

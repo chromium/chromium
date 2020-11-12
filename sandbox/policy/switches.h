@@ -6,6 +6,7 @@
 #define SANDBOX_POLICY_SWITCHES_H_
 
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "sandbox/policy/export.h"
 
 namespace sandbox {
@@ -38,10 +39,10 @@ SANDBOX_POLICY_EXPORT extern const char kIconReaderSandbox[];
 SANDBOX_POLICY_EXPORT extern const char kMediaFoundationCdmSandbox[];
 #endif  // OS_WIN
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 SANDBOX_POLICY_EXPORT extern const char kImeSandbox[];
 SANDBOX_POLICY_EXPORT extern const char kTtsSandbox[];
-#endif  // OS_CHROMEOS
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Flags owned by the service manager sandbox.
 SANDBOX_POLICY_EXPORT extern const char kAllowNoSandboxJob[];

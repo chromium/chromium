@@ -30,6 +30,7 @@
 #include "base/posix/eintr_wrapper.h"
 #include "base/threading/thread.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "sandbox/linux/seccomp-bpf-helpers/sigsys_handlers.h"
 #include "sandbox/linux/seccomp-bpf/bpf_tests.h"
 #include "sandbox/linux/seccomp-bpf/sandbox_bpf.h"
@@ -307,7 +308,7 @@ TEST_BASELINE_SIGSYS(__NR_inotify_init)
 TEST_BASELINE_SIGSYS(__NR_vserver)
 #endif
 
-#if defined(LIBC_GLIBC) && !defined(OS_CHROMEOS)
+#if defined(LIBC_GLIBC) && !BUILDFLAG(IS_CHROMEOS_ASH)
 BPF_TEST_C(BaselinePolicy, FutexEINVAL, BaselinePolicy) {
   int ops[] = {
       FUTEX_CMP_REQUEUE_PI, FUTEX_CMP_REQUEUE_PI_PRIVATE,
@@ -344,7 +345,7 @@ BPF_DEATH_TEST_C(BaselinePolicy,
   syscall(__NR_futex, nullptr, FUTEX_UNLOCK_PI_PRIVATE, 0, nullptr, nullptr, 0);
   _exit(1);
 }
-#endif  // defined(LIBC_GLIBC) && !defined(OS_CHROMEOS)
+#endif  // defined(LIBC_GLIBC) && !BUILDFLAG(IS_CHROMEOS_ASH)
 
 BPF_TEST_C(BaselinePolicy, PrctlDumpable, BaselinePolicy) {
   const int is_dumpable = prctl(PR_GET_DUMPABLE, 0, 0, 0, 0);

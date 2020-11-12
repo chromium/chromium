@@ -9,6 +9,7 @@
 
 #include "base/command_line.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "sandbox/policy/export.h"
 
 namespace sandbox {
@@ -74,11 +75,11 @@ enum class SandboxType {
   // The audio service process.
   kAudio,
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   kIme,
   // Text-to-speech.
   kTts,
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
   // Indicates that a process is a zygote and will get a real sandbox later.

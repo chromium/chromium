@@ -110,6 +110,7 @@ source_set("sandbox_linux_unittests_sources") {
     ":sandbox_linux_test_utils",
     "//base",
     "//base/third_party/dynamic_annotations",
+    "//build:chromeos_buildflags",
     "//testing/gtest",
   ]
 
@@ -250,6 +251,7 @@ component("seccomp_bpf") {
     ":sandbox_services",
     "//base",
     "//base/third_party/dynamic_annotations",
+    "//build:chromeos_buildflags",
     "//sandbox:sandbox_buildflags",
   ]
 

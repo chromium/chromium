@@ -10,6 +10,7 @@
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/notreached.h"
+#include "build/chromeos_buildflags.h"
 #include "sandbox/policy/features.h"
 #include "sandbox/policy/switches.h"
 
@@ -57,7 +58,7 @@ bool IsUnsandboxedSandboxType(SandboxType sandbox_type) {
 #if defined(OS_MAC)
     case SandboxType::kNaClLoader:
 #endif
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     case SandboxType::kIme:
     case SandboxType::kTts:
 #endif
@@ -122,10 +123,10 @@ void SetCommandLineFlagsForSandboxType(base::CommandLine* command_line,
     case SandboxType::kIconReader:
     case SandboxType::kMediaFoundationCdm:
 #endif  // defined(OS_WIN)
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     case SandboxType::kIme:
     case SandboxType::kTts:
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #if !defined(OS_MAC)
     case SandboxType::kSharingService:
 #endif
@@ -246,12 +247,12 @@ std::string StringFromUtilitySandboxType(SandboxType sandbox_type) {
     case SandboxType::kMediaFoundationCdm:
       return switches::kMediaFoundationCdmSandbox;
 #endif  // defined(OS_WIN)
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     case SandboxType::kIme:
       return switches::kImeSandbox;
     case SandboxType::kTts:
       return switches::kTtsSandbox;
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
       // The following are not utility processes so should not occur.
     case SandboxType::kRenderer:
     case SandboxType::kGpu:
@@ -308,12 +309,12 @@ SandboxType UtilitySandboxTypeFromString(const std::string& sandbox_string) {
     return SandboxType::kSpeechRecognition;
   if (sandbox_string == switches::kVideoCaptureSandbox)
     return SandboxType::kVideoCapture;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (sandbox_string == switches::kImeSandbox)
     return SandboxType::kIme;
   if (sandbox_string == switches::kTtsSandbox)
     return SandboxType::kTts;
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   return SandboxType::kUtility;
 }
 

@@ -13,6 +13,7 @@
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "sandbox/linux/bpf_dsl/bpf_dsl.h"
 #include "sandbox/linux/seccomp-bpf-helpers/syscall_parameters_restrictions.h"
 #include "sandbox/linux/seccomp-bpf-helpers/syscall_sets.h"
@@ -41,10 +42,10 @@ ResultExpr GpuProcessPolicy::EvaluateSyscall(int sysno) const {
   switch (sysno) {
     case __NR_kcmp:
       return Error(ENOSYS);
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
     case __NR_fallocate:
       return Allow();
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     case __NR_fcntl: {
       // The Nvidia driver uses flags not in the baseline policy
       // fcntl(fd, F_ADD_SEALS, F_SEAL_SEAL | F_SEAL_SHRINK | F_SEAL_GROW)
@@ -95,7 +96,7 @@ ResultExpr GpuProcessPolicy::EvaluateSyscall(int sysno) const {
   if (SyscallSets::IsEventFd(sysno))
     return Allow();
 
-#if defined(OS_LINUX) && !defined(OS_CHROMEOS) && defined(USE_X11)
+#if (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) && defined(USE_X11)
   if (SyscallSets::IsSystemVSharedMemory(sysno))
     return Allow();
 #endif
