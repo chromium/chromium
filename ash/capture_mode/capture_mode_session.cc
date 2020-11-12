@@ -310,6 +310,8 @@ aura::Window* CaptureModeSession::GetSelectedWindow() const {
 }
 
 void CaptureModeSession::OnCaptureSourceChanged(CaptureModeSource new_source) {
+  capture_source_changed_ = true;
+
   if (new_source == CaptureModeSource::kWindow) {
     capture_window_observer_ =
         std::make_unique<CaptureWindowObserver>(this, controller_->type());
@@ -341,10 +343,12 @@ void CaptureModeSession::OnCaptureTypeChanged(CaptureModeType new_type) {
   UpdateCaptureLabelWidget();
 }
 
-void CaptureModeSession::ReportRegionCaptureHistograms() {
-  DCHECK_EQ(controller_->source(), CaptureModeSource::kRegion);
-  RecordNumberOfCaptureRegionAdjustments(num_capture_region_adjusted_);
+void CaptureModeSession::ReportSessionHistograms() {
+  if (controller_->source() == CaptureModeSource::kRegion)
+    RecordNumberOfCaptureRegionAdjustments(num_capture_region_adjusted_);
   num_capture_region_adjusted_ = 0;
+
+  RecordCaptureModeSwitchesFromInitialMode(capture_source_changed_);
 }
 
 void CaptureModeSession::StartCountDown(

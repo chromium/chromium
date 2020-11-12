@@ -1269,7 +1269,7 @@ TEST_F(CaptureModeTest, ShuttingDownWhileRecording) {
   // VideoRecordingWatcher::OnChromeTerminating() terminates the recording.
 }
 
-// Tests that metrics are recorded properly for capture mode snap buttons.
+// Tests that metrics are recorded properly for capture mode bar buttons.
 TEST_F(CaptureModeTest, CaptureModeBarButtonTypeHistograms) {
   constexpr char kClamshellHistogram[] =
       "Ash.CaptureModeController.BarButtons.ClamshellMode";
@@ -1280,7 +1280,7 @@ TEST_F(CaptureModeTest, CaptureModeBarButtonTypeHistograms) {
   CaptureModeController::Get()->Start(CaptureModeEntryType::kQuickSettings);
   auto* event_generator = GetEventGenerator();
 
-  // Tests each snap button in clamshell mode.
+  // Tests each bar button in clamshell mode.
   ClickOnView(GetImageToggleButton(), event_generator);
   histogram_tester.ExpectBucketCount(
       kClamshellHistogram, CaptureModeBarButtonType::kScreenCapture, 1);
@@ -1301,7 +1301,7 @@ TEST_F(CaptureModeTest, CaptureModeBarButtonTypeHistograms) {
   histogram_tester.ExpectBucketCount(kClamshellHistogram,
                                      CaptureModeBarButtonType::kWindow, 1);
 
-  // Enter tablet mode and test the snap buttons.
+  // Enter tablet mode and test the bar buttons.
   auto* tablet_mode_controller = Shell::Get()->tablet_mode_controller();
   tablet_mode_controller->SetEnabledForTest(true);
   ASSERT_TRUE(tablet_mode_controller->InTabletMode());
@@ -1325,6 +1325,39 @@ TEST_F(CaptureModeTest, CaptureModeBarButtonTypeHistograms) {
   ClickOnView(GetWindowToggleButton(), event_generator);
   histogram_tester.ExpectBucketCount(kTabletHistogram,
                                      CaptureModeBarButtonType::kWindow, 1);
+}
+
+TEST_F(CaptureModeTest, CaptureSessionSwitchedModeMetric) {
+  constexpr char kHistogramName[] =
+      "Ash.CaptureModeController.SwitchesFromInitialCaptureMode";
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectBucketCount(kHistogramName, false, 0);
+  histogram_tester.ExpectBucketCount(kHistogramName, true, 0);
+
+  // Perform a capture without switching modes. A false should be recorded.
+  auto* controller = StartImageRegionCapture();
+  SelectRegion(gfx::Rect(100, 100));
+  auto* event_generator = GetEventGenerator();
+  SendKey(ui::VKEY_RETURN, event_generator);
+  histogram_tester.ExpectBucketCount(kHistogramName, false, 1);
+  histogram_tester.ExpectBucketCount(kHistogramName, true, 0);
+
+  // Perform a capture after switching to fullscreen mode. A true should be
+  // recorded.
+  controller->Start(CaptureModeEntryType::kQuickSettings);
+  ClickOnView(GetFullscreenToggleButton(), event_generator);
+  SendKey(ui::VKEY_RETURN, event_generator);
+  histogram_tester.ExpectBucketCount(kHistogramName, false, 1);
+  histogram_tester.ExpectBucketCount(kHistogramName, true, 1);
+
+  // Perform a capture after switching to another mode and back to the original
+  // mode. A true should still be recorded as there was some switching done.
+  controller->Start(CaptureModeEntryType::kQuickSettings);
+  ClickOnView(GetRegionToggleButton(), event_generator);
+  ClickOnView(GetFullscreenToggleButton(), event_generator);
+  SendKey(ui::VKEY_RETURN, event_generator);
+  histogram_tester.ExpectBucketCount(kHistogramName, false, 1);
+  histogram_tester.ExpectBucketCount(kHistogramName, true, 2);
 }
 
 // Test that cancel recording during countdown won't cause crash.

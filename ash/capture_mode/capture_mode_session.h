@@ -71,9 +71,9 @@ class ASH_EXPORT CaptureModeSession : public ui::LayerOwner,
   void OnCaptureSourceChanged(CaptureModeSource new_source);
   void OnCaptureTypeChanged(CaptureModeType new_type);
 
-  // Called when the capture source is region and the user performs a capture.
-  // Records |num_capture_region_adjusted_| to corresponding histogram.
-  void ReportRegionCaptureHistograms();
+  // Called when the user performs a capture. Records histograms related to this
+  // session.
+  void ReportSessionHistograms();
 
   // Called when starting 3-seconds count down before recording video.
   void StartCountDown(base::OnceClosure countdown_finished_callback);
@@ -256,6 +256,10 @@ class ASH_EXPORT CaptureModeSession : public ui::LayerOwner,
   // This should be reset when a user creates a new capture region, changes
   // capture sources or when a user performs a capture.
   int num_capture_region_adjusted_ = 0;
+
+  // True if at any point during the lifetime of |this|, the capture source
+  // changed. Used for metrics collection.
+  bool capture_source_changed_ = false;
 };
 
 }  // namespace ash

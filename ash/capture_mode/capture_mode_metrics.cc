@@ -16,6 +16,10 @@ constexpr char kCaptureRegionAdjustmentHistogramName[] =
 constexpr char kBarButtonHistogramName[] =
     "Ash.CaptureModeController.BarButtons";
 constexpr char kEntryHistogramName[] = "Ash.CaptureModeController.EntryPoint";
+constexpr char kRecordTimeHistogramName[] =
+    "Ash.CaptureModeController.ScreenRecordingLength";
+constexpr char kSwitchesFromInitialModeHistogramName[] =
+    "Ash.CaptureModeController.SwitchesFromInitialCaptureMode";
 
 // Appends the proper suffix to |prefix| based on whether the user is in tablet
 // mode or not.
@@ -41,6 +45,19 @@ void RecordNumberOfCaptureRegionAdjustments(int num_adjustments) {
   base::UmaHistogramCounts100(
       GetCaptureModeHistogramName(kCaptureRegionAdjustmentHistogramName),
       num_adjustments);
+}
+
+void RecordCaptureModeRecordTime(int64_t length_in_seconds) {
+  // Use custom counts macro instead of custom times so we can record in
+  // seconds instead of milliseconds. The max bucket is 3 hours.
+  base::UmaHistogramCustomCounts(
+      kRecordTimeHistogramName, length_in_seconds, /*min=*/1,
+      /*max=*/base::TimeDelta::FromHours(3).InSeconds(),
+      /*bucket_count=*/50);
+}
+
+void RecordCaptureModeSwitchesFromInitialMode(bool switched) {
+  base::UmaHistogramBoolean(kSwitchesFromInitialModeHistogramName, switched);
 }
 
 }  // namespace ash

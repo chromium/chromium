@@ -54,9 +54,6 @@ namespace {
 
 CaptureModeController* g_instance = nullptr;
 
-constexpr char kRecordTimeHistogramName[] =
-    "Ash.CaptureModeController.ScreenRecordingLength";
-
 constexpr char kScreenCaptureNotificationId[] = "capture_mode_notification";
 constexpr char kScreenCaptureStoppedNotificationId[] =
     "capture_mode_stopped_notification";
@@ -333,8 +330,8 @@ void CaptureModeController::PerformCapture() {
     return;
   }
 
-  if (source_ == CaptureModeSource::kRegion)
-    capture_mode_session_->ReportRegionCaptureHistograms();
+  DCHECK(capture_mode_session_);
+  capture_mode_session_->ReportSessionHistograms();
 
   if (type_ == CaptureModeType::kImage)
     CaptureImage();
@@ -587,13 +584,8 @@ void CaptureModeController::OnVideoFileSaved(bool success) {
     ShowPreviewNotification(current_video_file_path_, gfx::Image(),
                             CaptureModeType::kVideo);
     DCHECK(!recording_start_time_.is_null());
-    // Use custom counts macro instead of custom times so we can record in
-    // seconds instead of milliseconds. The max bucket is 3 hours.
-    base::UmaHistogramCustomCounts(
-        kRecordTimeHistogramName,
-        (base::TimeTicks::Now() - recording_start_time_).InSeconds(), /*min=*/1,
-        /*max=*/base::TimeDelta::FromHours(3).InSeconds(),
-        /*bucket_count=*/50);
+    RecordCaptureModeRecordTime(
+        (base::TimeTicks::Now() - recording_start_time_).InSeconds());
   }
 
   if (!on_file_saved_callback_.is_null())

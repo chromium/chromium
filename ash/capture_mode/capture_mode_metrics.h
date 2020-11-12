@@ -5,6 +5,8 @@
 #ifndef ASH_CAPTURE_MODE_CAPTURE_MODE_METRICS_H_
 #define ASH_CAPTURE_MODE_CAPTURE_MODE_METRICS_H_
 
+#include <stdint.h>
+
 namespace ash {
 
 // Enumeration of capture bar buttons that can be pressed while in capture mode.
@@ -44,6 +46,12 @@ void RecordCaptureModeEntryType(CaptureModeEntryType entry_type);
 // The count is just reset when a user selects a new region or the user switches
 // capture sources.
 void RecordNumberOfCaptureRegionAdjustments(int num_adjustments);
+
+// Records the length in seconds of a recording taken by capture mode.
+void RecordCaptureModeRecordTime(int64_t length_in_seconds);
+
+// Records if the user has switched modes during a capture session.
+void RecordCaptureModeSwitchesFromInitialMode(bool switched);
 
 }  // namespace ash
 
