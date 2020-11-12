@@ -232,7 +232,6 @@ Polymer({
     this.selectedColorMode = this.capabilities_.colorModes[0].toString();
     this.selectedPageSize =
         this.capabilities_.sources[0].pageSizes[0].toString();
-    this.selectedResolution = this.capabilities_.resolutions[0].toString();
 
     // TODO(jschettler): Change default file type back to PDF when it's
     // supported.

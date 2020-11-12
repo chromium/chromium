@@ -12,6 +12,9 @@ import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bun
 
 import {SelectBehavior} from './select_behavior.js';
 
+/** @type {number} */
+const DEFAULT_RESOLUTION = 300;
+
 /**
  * @fileoverview
  * 'resolution-select' displays the available scan resolutions in a dropdown.
@@ -37,7 +40,10 @@ Polymer({
     },
   },
 
-  observers: ['onNumOptionsChange(resolutions.length)'],
+  observers: [
+    'onNumOptionsChange(resolutions.length)',
+    'onResolutionsChange_(resolutions.*)'
+  ],
 
   /**
    * @param {number} resolution
@@ -47,5 +53,48 @@ Polymer({
   getResolutionString_(resolution) {
     return loadTimeData.getStringF(
         'resolutionOptionText', resolution.toString());
+  },
+
+  /**
+   * 300 dpi should be the default option if it exists. If not, use the first
+   * resolution in the resolutions array.
+   * @return {string}
+   * @private
+   */
+  getDefaultSelectedResolution_() {
+    const defaultResolutionIndex = this.resolutions.findIndex((resolution) => {
+      return this.isDefaultResolution_(resolution);
+    });
+
+    return defaultResolutionIndex === -1 ?
+        this.resolutions[0].toString() :
+        this.resolutions[defaultResolutionIndex].toString();
+  },
+
+  /**
+   * Sorts the resolutions and sets the selected resolution when the resolutions
+   * array changes.
+   * @private
+   */
+  onResolutionsChange_() {
+    if (this.resolutions.length > 1) {
+      // Sort the resolutions in descending order.
+      this.resolutions.sort(function(a, b) {
+        return b - a;
+      });
+    }
+
+    if (this.resolutions.length > 0) {
+      this.selectedResolution = this.getDefaultSelectedResolution_();
+    }
+  },
+
+  /**
+   * @param {number} resolution
+   * @return {boolean}
+   * @private
+   */
+  isDefaultResolution_(resolution) {
+    return resolution === DEFAULT_RESOLUTION;
   },
 });

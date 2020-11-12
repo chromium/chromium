@@ -8,7 +8,8 @@
         disabled="[[disabled]]">
       <!-- TODO(jschettler): Sort the resolutions. -->
       <template is="dom-repeat" items="[[resolutions]]" as="resolution">
-        <option value="[[resolution]]">
+        <option value="[[resolution]]"
+            selected$="[[isDefaultResolution_(resolution)]]">
           [[getResolutionString_(resolution)]]
         </option>
       </template>

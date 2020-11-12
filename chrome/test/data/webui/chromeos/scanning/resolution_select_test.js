@@ -44,12 +44,12 @@ export function resolutionSelectTest() {
     assertFalse(select.disabled);
     assertEquals(2, select.length);
     assertEquals(
-        firstResolution.toString() + ' dpi',
+        secondResolution.toString() + ' dpi',
         select.options[0].textContent.trim());
     assertEquals(
-        secondResolution.toString() + ' dpi',
+        firstResolution.toString() + ' dpi',
         select.options[1].textContent.trim());
-    assertEquals(firstResolution.toString(), select.value);
+    assertEquals(secondResolution.toString(), select.value);
 
     // Selecting a different option should update the selected value.
     return changeSelect(
@@ -79,5 +79,28 @@ export function resolutionSelectTest() {
     // Verify the dropdown is enabled when there's more than one option.
     assertEquals(2, select.length);
     assertFalse(select.disabled);
+  });
+
+  test('resolutionsSortedCorrectly', () => {
+    resolutionSelect.resolutions = [150, 300, 75, 600, 1200, 200];
+    flush();
+
+    // Verify the resolutions are sorted in descending order and that 300 is
+    // selected by default.
+    for (let i = 0; i < resolutionSelect.resolutions.length - 1; i++) {
+      assert(
+          resolutionSelect.resolutions[i] >
+          resolutionSelect.resolutions[i + 1]);
+    }
+    assertEquals('300', resolutionSelect.selectedResolution);
+  });
+
+  test('firstResolutionUsedWhenDefaultNotAvailable', () => {
+    resolutionSelect.resolutions = [150, 75, 600, 1200, 200];
+    flush();
+
+    // Verify the first resolution in the sorted resolution array is selected by
+    // default when 300 is not an available option.
+    assertEquals('1200', resolutionSelect.selectedResolution);
   });
 }
