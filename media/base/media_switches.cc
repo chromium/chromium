@@ -433,6 +433,10 @@ const base::Feature kUseR16Texture{"use-r16-texture",
 const base::Feature kUnifiedAutoplay{"UnifiedAutoplay",
                                      base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Enable VA-API hardware decode acceleration for AV1.
+const base::Feature kVaapiAV1Decoder{"VaapiAV1Decoder",
+                                     base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enable VA-API hardware low power encoder for all codecs on intel Gen9x gpu.
 const base::Feature kVaapiLowPowerEncoderGen9x{
     "VaapiLowPowerEncoderGen9x", base::FEATURE_DISABLED_BY_DEFAULT};

@@ -8,7 +8,9 @@
 
 #include "base/system/sys_info.h"
 #include "build/chromeos_buildflags.h"
+#include "media/base/media_switches.h"
 #include "media/base/video_types.h"
+#include "media/gpu/buildflags.h"
 #include "media/gpu/test/video.h"
 #include "media/gpu/test/video_player/video_decoder_client.h"
 
@@ -46,13 +48,23 @@ VideoPlayerTestEnvironment::VideoPlayerTestEnvironment(
     const DecoderImplementation implementation,
     const base::FilePath& output_folder,
     const FrameOutputConfig& frame_output_config)
-    : video_(std::move(video)),
+    : VideoTestEnvironment(
+          /*enabled_features=*/
+          {
+#if BUILDFLAG(USE_VAAPI)
+            // TODO(b/172217032): remove once enabled by default.
+            media::kVaapiAV1Decoder,
+#endif
+          },
+          /*disabled_featureas=*/{}),
+      video_(std::move(video)),
       enable_validator_(enable_validator),
       implementation_(implementation),
       frame_output_config_(frame_output_config),
       output_folder_(output_folder),
       gpu_memory_buffer_factory_(
-          gpu::GpuMemoryBufferFactory::CreateNativeType(nullptr)) {}
+          gpu::GpuMemoryBufferFactory::CreateNativeType(nullptr)) {
+}
 
 VideoPlayerTestEnvironment::~VideoPlayerTestEnvironment() = default;
 

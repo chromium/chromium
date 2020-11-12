@@ -359,7 +359,7 @@ const ProfileCodecMap& GetProfileCodecMap() {
           // to 2.9.0 or newer.
           // https://source.chromium.org/chromium/chromium/src/+/master:build/linux/sysroot_scripts/generated_package_lists/sid.amd64
           {AV1PROFILE_PROFILE_MAIN, VAProfileAV1Profile0},
-#endif  // defined (OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_ASH)
         // VaapiWrapper does not support AV1 Profile 1.
         // {AV1PROFILE_PROFILE_HIGH, VAProfileAV1Profile1},
   });
@@ -387,8 +387,15 @@ bool IsVAProfileSupported(VAProfile va_profile) {
 }
 
 bool IsBlockedDriver(VaapiWrapper::CodecMode mode, VAProfile va_profile) {
-  if (!IsModeEncoding(mode))
+  if (!IsModeEncoding(mode)) {
+#if BUILDFLAG(IS_ASH)
+    if (va_profile == VAProfileAV1Profile0 &&
+        !base::FeatureList::IsEnabled(kVaapiAV1Decoder)) {
+      return true;
+    }
+#endif  // BUILDFLAG(IS_ASH)
     return false;
+  }
 
   // TODO(posciak): Remove once VP8 encoding is to be enabled by default.
   if (va_profile == VAProfileVP8Version0_3 &&
