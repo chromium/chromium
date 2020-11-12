@@ -85,37 +85,52 @@ std::unique_ptr<ApplicationStatusListener> ApplicationStatusListener::New(
 // static
 void ApplicationStatusListener::NotifyApplicationStateChange(
     ApplicationState state) {
-  using perfetto::protos::pbzero::ChromeApplicationStateInfo;
-  ChromeApplicationStateInfo::ChromeApplicationState tracing_state;
+  TRACE_EVENT("browser", "ApplicationState", [&](perfetto::EventContext ctx) {
+    using perfetto::protos::pbzero::ChromeApplicationStateInfo;
+    ChromeApplicationStateInfo* app_state_info =
+        ctx.event()->set_chrome_application_state_info();
+    switch (state) {
+      case APPLICATION_STATE_UNKNOWN:
+        app_state_info->set_application_state(
+            ChromeApplicationStateInfo::APPLICATION_STATE_UNKNOWN);
+        break;
+      case APPLICATION_STATE_HAS_DESTROYED_ACTIVITIES:
+        app_state_info->set_application_state(
+            ChromeApplicationStateInfo::
+                APPLICATION_STATE_HAS_DESTROYED_ACTIVITIES);
+        break;
+      case APPLICATION_STATE_HAS_RUNNING_ACTIVITIES:
+        app_state_info->set_application_state(
+            ChromeApplicationStateInfo::
+                APPLICATION_STATE_HAS_RUNNING_ACTIVITIES);
+        break;
+      case APPLICATION_STATE_HAS_PAUSED_ACTIVITIES:
+        app_state_info->set_application_state(
+            ChromeApplicationStateInfo::
+                APPLICATION_STATE_HAS_PAUSED_ACTIVITIES);
+        break;
+      case APPLICATION_STATE_HAS_STOPPED_ACTIVITIES:
+        app_state_info->set_application_state(
+            ChromeApplicationStateInfo::
+                APPLICATION_STATE_HAS_STOPPED_ACTIVITIES);
+        break;
+    }
+  });
+
   switch (state) {
     case APPLICATION_STATE_UNKNOWN:
-      tracing_state = ChromeApplicationStateInfo::APPLICATION_STATE_UNKNOWN;
-      break;
     case APPLICATION_STATE_HAS_DESTROYED_ACTIVITIES:
-      tracing_state = ChromeApplicationStateInfo::
-          APPLICATION_STATE_HAS_DESTROYED_ACTIVITIES;
       break;
     case APPLICATION_STATE_HAS_RUNNING_ACTIVITIES:
-      tracing_state =
-          ChromeApplicationStateInfo::APPLICATION_STATE_HAS_RUNNING_ACTIVITIES;
       RecordAction(UserMetricsAction("Android.LifeCycle.HasRunningActivities"));
       break;
     case APPLICATION_STATE_HAS_PAUSED_ACTIVITIES:
-      tracing_state =
-          ChromeApplicationStateInfo::APPLICATION_STATE_HAS_PAUSED_ACTIVITIES;
       RecordAction(UserMetricsAction("Android.LifeCycle.HasPausedActivities"));
       break;
     case APPLICATION_STATE_HAS_STOPPED_ACTIVITIES:
-      tracing_state =
-          ChromeApplicationStateInfo::APPLICATION_STATE_HAS_STOPPED_ACTIVITIES;
       RecordAction(UserMetricsAction("Android.LifeCycle.HasStoppedActivities"));
       break;
   }
-  TRACE_EVENT("browser", "ApplicationState", [&](perfetto::EventContext ctx) {
-    ChromeApplicationStateInfo* app_state_info =
-        ctx.event()->set_chrome_application_state_info();
-    app_state_info->set_application_state(tracing_state);
-  });
   g_observers.Get().Notify(FROM_HERE, &ApplicationStatusListenerImpl::Notify,
                            state);
 }
