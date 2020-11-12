@@ -313,6 +313,12 @@ WebInputEventResult WebViewFrameWidget::HandleGestureEvent(
     return WebInputEventResult::kNotHandled;
   }
 
+  // TODO(https://crbug.com/1148346): We need to figure out why MainFrameImpl is
+  // null but LocalRootImpl isn't.
+  CHECK(LocalRootImpl());
+  if (!web_view_->MainFrameImpl())
+    return WebInputEventResult::kNotHandled;
+
   WebInputEventResult event_result = WebInputEventResult::kNotHandled;
   bool event_cancelled = false;  // for disambiguation
 
