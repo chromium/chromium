@@ -1033,7 +1033,7 @@ class ServiceWorkerCacheWriterDisconnectionTest
         /*writer_resource_id=*/0);
   }
 
-  void InitializeForComparison() {
+  void InitializeForComparison(bool pause_when_not_identical) {
     writer_ = std::make_unique<MockServiceWorkerResourceWriter>();
     mojo::Remote<storage::mojom::ServiceWorkerResourceWriter> remote_writer;
     remote_writer.Bind(writer_->BindNewPipeAndPassRemote(base::DoNothing()));
@@ -1053,7 +1053,7 @@ class ServiceWorkerCacheWriterDisconnectionTest
     cache_writer_ = ServiceWorkerCacheWriter::CreateForComparison(
         std::move(remote_compare_reader), std::move(remote_copy_reader),
         std::move(remote_writer),
-        /*writer_resource_id=*/0, /*pause_when_not_identical=*/true);
+        /*writer_resource_id=*/0, pause_when_not_identical);
   }
 
   void SimulateDisconnection() {
@@ -1247,7 +1247,7 @@ TEST_F(ServiceWorkerCacheWriterDisconnectionTest, ComparisonBeforeHeaderRead) {
   const std::string data1 = "abcd";
   const size_t response_size = data1.size();
 
-  InitializeForComparison();
+  InitializeForComparison(/*pause_when_not_identical=*/false);
   compare_reader_->ExpectReadResponseHeadOk(response_size);
   compare_reader_->ExpectReadDataOk(data1);
 
@@ -1265,7 +1265,7 @@ TEST_F(ServiceWorkerCacheWriterDisconnectionTest, ComparisonBeforeDataWrite) {
   const std::string data1 = "abcd";
   const size_t response_size = data1.size();
 
-  InitializeForComparison();
+  InitializeForComparison(/*pause_when_not_identical=*/false);
   compare_reader_->ExpectReadResponseHeadOk(response_size);
   compare_reader_->ExpectReadDataOk(data1);
 
@@ -1283,7 +1283,132 @@ TEST_F(ServiceWorkerCacheWriterDisconnectionTest, ComparisonBeforeDataWrite) {
   EXPECT_EQ(error, net::ERR_FAILED);
 }
 
-// TODO(crbug.com/1133143): Add test for copying and resuming for comparison.
+// Tests that a comparison fails gracefully when remotes are disconnected during
+// copy. See also the comment of ServiceWorkerCacheWriterTest.CompareFailedCopy.
+TEST_F(ServiceWorkerCacheWriterDisconnectionTest, ComparisonDuringCopy) {
+  const std::string data1 = "abcdef";
+  const std::string cache_data2 = "ghijkl";
+  const std::string net_data2 = "mnopqr";
+  const std::string data3 = "stuvwxyz";
+  const size_t cache_response_size =
+      data1.size() + cache_data2.size() + data3.size();
+  const size_t net_response_size =
+      data1.size() + net_data2.size() + data3.size();
+
+  InitializeForComparison(/*pause_when_not_identical=*/false);
+  compare_reader_->ExpectReadResponseHeadOk(cache_response_size);
+  compare_reader_->ExpectReadDataOk(data1);
+  compare_reader_->ExpectReadDataOk(cache_data2);
+
+  copy_reader_->ExpectReadResponseHeadOk(cache_response_size);
+  copy_reader_->ExpectReadDataOk(data1);
+
+  writer_->ExpectWriteResponseHeadOk(net_response_size);
+  writer_->ExpectWriteDataOk(data1.size());
+  writer_->ExpectWriteDataOk(net_data2.size());
+  writer_->ExpectWriteDataOk(data3.size());
+
+  // Complete the header comparison.
+  net::Error error = WriteHeaders(net_response_size);
+  EXPECT_EQ(error, net::ERR_IO_PENDING);
+  EXPECT_FALSE(write_complete_);
+  compare_reader_->CompletePendingRead();
+  EXPECT_TRUE(write_complete_);
+  write_complete_ = false;
+
+  // Complete the `data1` comparison.
+  error = WriteData(data1);
+  EXPECT_EQ(error, net::ERR_IO_PENDING);
+  EXPECT_FALSE(write_complete_);
+  compare_reader_->CompletePendingRead();
+  EXPECT_TRUE(write_complete_);
+  write_complete_ = false;
+
+  // Finish the comparison of `cache_data2` and `net_data2`.
+  error = WriteData(net_data2);
+  EXPECT_EQ(error, net::ERR_IO_PENDING);
+  EXPECT_FALSE(write_complete_);
+  compare_reader_->CompletePendingRead();
+  // `pause_when_not_identical` isn't enabled so the write callback should not
+  // be called yet.
+  EXPECT_FALSE(write_complete_);
+
+  // At this point, `copy_reader_` is asked to read the header and `data1`.
+  // Complete the header and `data1` copy.
+  copy_reader_->CompletePendingRead();
+  writer_->CompletePendingWrite();
+  copy_reader_->CompletePendingRead();
+  writer_->CompletePendingWrite();
+  // Complete the `net_data2` write.
+  writer_->CompletePendingWrite();
+  EXPECT_TRUE(write_complete_);
+  write_complete_ = false;
+
+  error = WriteData(data3);
+  EXPECT_EQ(error, net::ERR_IO_PENDING);
+
+  SimulateDisconnection();
+
+  EXPECT_EQ(last_error_, net::ERR_FAILED);
+  EXPECT_TRUE(write_complete_);
+}
+
+// Tests that a comparison fails gracefully when remotes are disconnected before
+// resuming.
+TEST_F(ServiceWorkerCacheWriterDisconnectionTest, ComparisonBeforeResume) {
+  const std::string data1 = "abcdef";
+  const std::string cache_data2 = "ghijkl";
+  const std::string net_data2 = "mnopqr";
+  const std::string data3 = "stuvwxyz";
+  const size_t cache_response_size =
+      data1.size() + cache_data2.size() + data3.size();
+  const size_t net_response_size =
+      data1.size() + net_data2.size() + data3.size();
+
+  InitializeForComparison(/*pause_when_not_identical=*/true);
+  compare_reader_->ExpectReadResponseHeadOk(cache_response_size);
+  compare_reader_->ExpectReadDataOk(data1);
+  compare_reader_->ExpectReadDataOk(cache_data2);
+
+  copy_reader_->ExpectReadResponseHeadOk(cache_response_size);
+  copy_reader_->ExpectReadDataOk(data1);
+
+  writer_->ExpectWriteResponseHeadOk(net_response_size);
+  writer_->ExpectWriteDataOk(data1.size());
+  writer_->ExpectWriteDataOk(net_data2.size());
+  writer_->ExpectWriteDataOk(data3.size());
+
+  // Complete the header comparison.
+  net::Error error = WriteHeaders(net_response_size);
+  EXPECT_EQ(error, net::ERR_IO_PENDING);
+  EXPECT_FALSE(write_complete_);
+  compare_reader_->CompletePendingRead();
+  EXPECT_TRUE(write_complete_);
+  write_complete_ = false;
+
+  // Complete the `data1` comparison.
+  error = WriteData(data1);
+  EXPECT_EQ(error, net::ERR_IO_PENDING);
+  EXPECT_FALSE(write_complete_);
+  compare_reader_->CompletePendingRead();
+  EXPECT_TRUE(write_complete_);
+  write_complete_ = false;
+
+  // Finish the comparison of `cache_data2` and `net_data2`.
+  error = WriteData(net_data2);
+  EXPECT_EQ(net::ERR_IO_PENDING, error);
+  EXPECT_FALSE(write_complete_);
+  compare_reader_->CompletePendingRead();
+  // `pause_when_not_identical` is enabled so the write callback should be
+  // called.
+  EXPECT_TRUE(write_complete_);
+  EXPECT_EQ(last_error_, net::ERR_IO_PENDING);
+
+  SimulateDisconnection();
+
+  error = WriteData(data3);
+  EXPECT_EQ(error, net::ERR_FAILED);
+}
 
 }  // namespace
 }  // namespace content
