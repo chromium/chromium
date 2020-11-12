@@ -243,12 +243,6 @@ void BlinkUrlLoader::DidReceiveData(const char* data, int data_length) {
   RunReadCallback();
 }
 
-void BlinkUrlLoader::DidReceiveCachedMetadata(const char* data,
-                                              int data_length) {
-  // Doesn't apply to PDF viewer requests.
-  NOTREACHED();
-}
-
 // Modeled on `content::PepperURLLoaderHost::DidFinishLoading()`.
 void BlinkUrlLoader::DidFinishLoading() {
   DCHECK_EQ(state_, LoadingState::kStreamingData);

@@ -177,7 +177,6 @@ class BlinkUrlLoader final : public UrlLoader,
   void DidReceiveResponse(const blink::WebURLResponse& response) override;
   void DidDownloadData(uint64_t data_length) override;
   void DidReceiveData(const char* data, int data_length) override;
-  void DidReceiveCachedMetadata(const char* data, int data_length) override;
   void DidFinishLoading() override;
   void DidFail(const blink::WebURLError& error) override;
 

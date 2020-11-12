@@ -425,12 +425,6 @@ void ResourceMultiBufferDataProvider::DidDownloadData(uint64_t dataLength) {
   NOTIMPLEMENTED();
 }
 
-void ResourceMultiBufferDataProvider::DidReceiveCachedMetadata(
-    const char* data,
-    int data_length) {
-  NOTIMPLEMENTED();
-}
-
 void ResourceMultiBufferDataProvider::DidFinishLoading() {
   DVLOG(1) << "didFinishLoading";
   DCHECK(active_loader_.get());

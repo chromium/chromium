@@ -115,7 +115,6 @@ class WebAssociatedURLLoaderImpl::ClientAdapter final
   void DidReceiveResponse(uint64_t, const ResourceResponse&) override;
   void DidDownloadData(uint64_t /*dataLength*/) override;
   void DidReceiveData(const char*, unsigned /*dataLength*/) override;
-  void DidReceiveCachedMetadata(const char*, int /*dataLength*/) override;
   void DidFinishLoading(uint64_t /*identifier*/) override;
   void DidFail(const ResourceError&) override;
   void DidFailRedirectCheck() override;
@@ -254,15 +253,6 @@ void WebAssociatedURLLoaderImpl::ClientAdapter::DidReceiveData(
   CHECK_LE(data_length, static_cast<unsigned>(std::numeric_limits<int>::max()));
 
   client_->DidReceiveData(data, data_length);
-}
-
-void WebAssociatedURLLoaderImpl::ClientAdapter::DidReceiveCachedMetadata(
-    const char* data,
-    int data_length) {
-  if (!client_)
-    return;
-
-  client_->DidReceiveCachedMetadata(data, data_length);
 }
 
 void WebAssociatedURLLoaderImpl::ClientAdapter::DidFinishLoading(

@@ -66,7 +66,6 @@ class WebAssociatedURLLoaderTest : public testing::Test,
         did_send_data_(false),
         did_receive_response_(false),
         did_receive_data_(false),
-        did_receive_cached_metadata_(false),
         did_finish_loading_(false),
         did_fail_(false) {
     // Reuse one of the test files from WebFrameTest.
@@ -156,10 +155,6 @@ class WebAssociatedURLLoaderTest : public testing::Test,
     did_receive_data_ = true;
     EXPECT_TRUE(data);
     EXPECT_GT(data_length, 0);
-  }
-
-  void DidReceiveCachedMetadata(const char* data, int data_length) override {
-    did_receive_cached_metadata_ = true;
   }
 
   void DidFinishLoading() override { did_finish_loading_ = true; }
@@ -267,7 +262,6 @@ class WebAssociatedURLLoaderTest : public testing::Test,
   bool did_receive_response_;
   bool did_download_data_;
   bool did_receive_data_;
-  bool did_receive_cached_metadata_;
   bool did_finish_loading_;
   bool did_fail_;
 };
