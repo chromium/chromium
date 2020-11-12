@@ -350,7 +350,7 @@ export function scanningAppTest() {
               firstCapabilities.colorModes[0].toString(),
               scanningApp.selectedColorMode);
           assertEquals(
-              firstCapabilities.sources[0].pageSizes[0].toString(),
+              firstCapabilities.sources[0].pageSizes[1].toString(),
               scanningApp.selectedPageSize);
           assertEquals(
               firstCapabilities.resolutions[0].toString(),

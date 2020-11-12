@@ -227,11 +227,6 @@ Polymer({
   onCapabilitiesReceived_(response) {
     this.capabilities_ = response.capabilities;
 
-    // Set the first options as the selected options since they will be the
-    // first options in the dropdowns.
-    this.selectedPageSize =
-        this.capabilities_.sources[0].pageSizes[0].toString();
-
     // TODO(jschettler): Change default file type back to PDF when it's
     // supported.
     this.selectedFileType = chromeos.scanning.mojom.FileType.kPng.toString();

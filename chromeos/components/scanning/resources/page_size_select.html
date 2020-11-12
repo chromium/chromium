@@ -8,7 +8,8 @@
         disabled="[[disabled]]">
       <!-- TODO(jschettler): Sort the page sizes. -->
       <template is="dom-repeat" items="[[pageSizes]]" as="pageSize">
-        <option value="[[pageSize]]">
+        <option value="[[pageSize]]"
+            selected$="[[isDefaultPageSize_(pageSize)]]">
           [[getPageSizeString_(pageSize)]]
         </option>
       </template>

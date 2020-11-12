@@ -9,7 +9,7 @@ import {getPageSizeString} from 'chrome://scanning/scanning_app_util.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 
-import {changeSelect} from './scanning_app_test_utils.js';
+import {assertOrderedAlphabetically, changeSelect} from './scanning_app_test_utils.js';
 
 const PageSize = {
   A4: chromeos.scanning.mojom.PageSize.kIsoA4,
@@ -85,5 +85,30 @@ export function pageSizeSelectTest() {
     // Verify the dropdown is enabled when there's more than one option.
     assertEquals(2, select.length);
     assertFalse(select.disabled);
+  });
+
+  test('pageSizesSortedCorrectly', () => {
+    pageSizeSelect.pageSizes = [PageSize.Letter, PageSize.Max, PageSize.A4];
+    flush();
+
+    // Verify the page sizes are sorted alphabetically except for the fit to
+    // scan area option, which should always be last. Verify that Letter is
+    // selected by default.
+    assertOrderedAlphabetically(
+        pageSizeSelect.pageSizes.slice(0, pageSizeSelect.pageSizes.length - 1),
+        (pageSize) => getPageSizeString(pageSize));
+    assertEquals(
+        PageSize.Max,
+        pageSizeSelect.pageSizes[pageSizeSelect.pageSizes.length - 1]);
+    assertEquals(PageSize.Letter.toString(), pageSizeSelect.selectedPageSize);
+  });
+
+  test('firstPageSizeUsedWhenDefaultNotAvailable', () => {
+    pageSizeSelect.pageSizes = [PageSize.Max, PageSize.A4];
+    flush();
+
+    // Verify the first page size in the sorted page sizes array is selected by
+    // default when Letter is not an available option.
+    assertEquals(PageSize.A4.toString(), pageSizeSelect.selectedPageSize);
   });
 }
