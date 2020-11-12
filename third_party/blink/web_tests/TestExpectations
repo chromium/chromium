@@ -6280,3 +6280,7 @@ crbug.com/1146560 [ Win ] fast/canvas/color-space/canvas-createImageBitmap-e_srg
 
 # Sheriff 2020-11-12
 crbug.com/1148259 [ Mac ] external/wpt/html/browsers/browsing-the-web/navigating-across-documents/javascript-url-return-value-handling-dynamic.html [ Failure ]
+
+# Disable flaky tests when scroll unification is enabled
+crbug.com/1130020 virtual/scroll-unification/fast/scrolling/scrollbars/scrollbar-mousedown-move-mouseup.html [ Pass Failure Timeout ]
+crbug.com/1130020 virtual/threaded-prefer-compositing/fast/scrolling/scrollbars/scrollbar-mousedown-move-mouseup.html [ Pass Failure Timeout ]
