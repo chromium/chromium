@@ -643,6 +643,30 @@ void Preferences::OnPreferenceChanged(const std::string& pref_name) {
   ApplyPreferences(REASON_PREF_CHANGED, pref_name);
 }
 
+void Preferences::ReportBooleanPrefApplication(
+    ApplyReason reason,
+    const std::string& changed_histogram_name,
+    const std::string& started_histogram_name,
+    bool sample) {
+  if (reason == REASON_PREF_CHANGED)
+    base::UmaHistogramBoolean(changed_histogram_name, sample);
+  else if (reason == REASON_INITIALIZATION)
+    base::UmaHistogramBoolean(started_histogram_name, sample);
+}
+
+void Preferences::ReportSensitivityPrefApplication(
+    ApplyReason reason,
+    const std::string& changed_histogram_name,
+    const std::string& started_histogram_name,
+    int sensitivity_int) {
+  system::PointerSensitivity sensitivity =
+      static_cast<system::PointerSensitivity>(sensitivity_int);
+  if (reason == REASON_PREF_CHANGED)
+    base::UmaHistogramEnumeration(changed_histogram_name, sensitivity);
+  else if (reason == REASON_INITIALIZATION)
+    base::UmaHistogramEnumeration(started_histogram_name, sensitivity);
+}
+
 void Preferences::ApplyPreferences(ApplyReason reason,
                                    const std::string& pref_name) {
   DCHECK(reason != REASON_PREF_CHANGED || !pref_name.empty());
@@ -668,10 +692,8 @@ void Preferences::ApplyPreferences(ApplyReason reason,
     const bool enabled = tap_to_click_enabled_.GetValue();
     if (user_is_active)
       touchpad_settings.SetTapToClick(enabled);
-    if (reason == REASON_PREF_CHANGED)
-      base::UmaHistogramBoolean("Touchpad.TapToClick.Changed", enabled);
-    else if (reason == REASON_INITIALIZATION)
-      base::UmaHistogramBoolean("Touchpad.TapToClick.Started", enabled);
+    ReportBooleanPrefApplication(reason, "Touchpad.TapToClick.Changed",
+                                 "Touchpad.TapToClick.Started", enabled);
 
     // Save owner preference in local state to use on login screen.
     if (user_is_owner) {
@@ -685,10 +707,8 @@ void Preferences::ApplyPreferences(ApplyReason reason,
     const bool enabled = three_finger_click_enabled_.GetValue();
     if (user_is_active)
       touchpad_settings.SetThreeFingerClick(enabled);
-    if (reason == REASON_PREF_CHANGED)
-      base::UmaHistogramBoolean("Touchpad.ThreeFingerClick.Changed", enabled);
-    else if (reason == REASON_INITIALIZATION)
-      base::UmaHistogramBoolean("Touchpad.ThreeFingerClick.Started", enabled);
+    ReportBooleanPrefApplication(reason, "Touchpad.ThreeFingerClick.Changed",
+                                 "Touchpad.ThreeFingerClick.Started", enabled);
   }
   if (reason != REASON_PREF_CHANGED ||
       pref_name == ::prefs::kUnifiedDesktopEnabledByDefault) {
@@ -710,20 +730,16 @@ void Preferences::ApplyPreferences(ApplyReason reason,
     DVLOG(1) << "Natural scroll set to " << enabled;
     if (user_is_active)
       touchpad_settings.SetNaturalScroll(enabled);
-    if (reason == REASON_PREF_CHANGED)
-      base::UmaHistogramBoolean("Touchpad.NaturalScroll.Changed", enabled);
-    else if (reason == REASON_INITIALIZATION)
-      base::UmaHistogramBoolean("Touchpad.NaturalScroll.Started", enabled);
+    ReportBooleanPrefApplication(reason, "Touchpad.NaturalScroll.Changed",
+                                 "Touchpad.NaturalScroll.Started", enabled);
   }
   if (reason != REASON_PREF_CHANGED ||
       pref_name == ash::prefs::kMouseReverseScroll) {
     const bool enabled = mouse_reverse_scroll_.GetValue();
     if (user_is_active)
       mouse_settings.SetReverseScroll(enabled);
-    if (reason == REASON_PREF_CHANGED)
-      base::UmaHistogramBoolean("Mouse.ReverseScroll.Changed", enabled);
-    else if (reason == REASON_INITIALIZATION)
-      base::UmaHistogramBoolean("Mouse.ReverseScroll.Started", enabled);
+    ReportBooleanPrefApplication(reason, "Mouse.ReverseScroll.Changed",
+                                 "Mouse.ReverseScroll.Started", enabled);
   }
 
   if (reason != REASON_PREF_CHANGED ||
@@ -737,15 +753,9 @@ void Preferences::ApplyPreferences(ApplyReason reason,
       if (!AreScrollSettingsAllowed())
         mouse_settings.SetScrollSensitivity(sensitivity_int);
     }
-    system::PointerSensitivity sensitivity =
-        static_cast<system::PointerSensitivity>(sensitivity_int);
-    if (reason == REASON_PREF_CHANGED) {
-      base::UmaHistogramEnumeration("Mouse.PointerSensitivity.Changed",
-                                    sensitivity);
-    } else if (reason == REASON_INITIALIZATION) {
-      base::UmaHistogramEnumeration("Mouse.PointerSensitivity.Started",
-                                    sensitivity);
-    }
+    ReportSensitivityPrefApplication(reason, "Mouse.PointerSensitivity.Changed",
+                                     "Mouse.PointerSensitivity.Started",
+                                     sensitivity_int);
   }
   if (reason != REASON_PREF_CHANGED ||
       pref_name == ::prefs::kMouseScrollSensitivity) {
@@ -756,15 +766,9 @@ void Preferences::ApplyPreferences(ApplyReason reason,
                                     : mouse_sensitivity_.GetValue();
     if (user_is_active)
       mouse_settings.SetScrollSensitivity(sensitivity_int);
-    system::PointerSensitivity sensitivity =
-        static_cast<system::PointerSensitivity>(sensitivity_int);
-    if (reason == REASON_PREF_CHANGED) {
-      base::UmaHistogramEnumeration("Mouse.ScrollSensitivity.Changed",
-                                    sensitivity);
-    } else if (reason == REASON_INITIALIZATION) {
-      base::UmaHistogramEnumeration("Mouse.ScrollSensitivity.Started",
-                                    sensitivity);
-    }
+    ReportSensitivityPrefApplication(reason, "Mouse.ScrollSensitivity.Changed",
+                                     "Mouse.ScrollSensitivity.Started",
+                                     sensitivity_int);
   }
   if (reason != REASON_PREF_CHANGED ||
       pref_name == ::prefs::kTouchpadSensitivity) {
@@ -777,15 +781,9 @@ void Preferences::ApplyPreferences(ApplyReason reason,
       if (!AreScrollSettingsAllowed())
         touchpad_settings.SetScrollSensitivity(sensitivity_int);
     }
-    system::PointerSensitivity sensitivity =
-        static_cast<system::PointerSensitivity>(sensitivity_int);
-    if (reason == REASON_PREF_CHANGED) {
-      base::UmaHistogramEnumeration("Touchpad.PointerSensitivity.Changed",
-                                    sensitivity);
-    } else if (reason == REASON_INITIALIZATION) {
-      base::UmaHistogramEnumeration("Touchpad.PointerSensitivity.Started",
-                                    sensitivity);
-    }
+    ReportSensitivityPrefApplication(
+        reason, "Touchpad.PointerSensitivity.Changed",
+        "Touchpad.PointerSensitivity.Started", sensitivity_int);
   }
   if (reason != REASON_PREF_CHANGED ||
       pref_name == ::prefs::kTouchpadScrollSensitivity) {
@@ -796,25 +794,17 @@ void Preferences::ApplyPreferences(ApplyReason reason,
                                     : touchpad_sensitivity_.GetValue();
     if (user_is_active)
       touchpad_settings.SetScrollSensitivity(sensitivity_int);
-    system::PointerSensitivity sensitivity =
-        static_cast<system::PointerSensitivity>(sensitivity_int);
-    if (reason == REASON_PREF_CHANGED) {
-      base::UmaHistogramEnumeration("Touchpad.ScrollSensitivity.Changed",
-                                    sensitivity);
-    } else if (reason == REASON_INITIALIZATION) {
-      base::UmaHistogramEnumeration("Touchpad.ScrollSensitivity.Started",
-                                    sensitivity);
-    }
+    ReportSensitivityPrefApplication(
+        reason, "Touchpad.ScrollSensitivity.Changed",
+        "Touchpad.ScrollSensitivity.Started", sensitivity_int);
   }
   if (reason != REASON_PREF_CHANGED ||
       pref_name == ::prefs::kPrimaryMouseButtonRight) {
     const bool right = primary_mouse_button_right_.GetValue();
     if (user_is_active)
       mouse_settings.SetPrimaryButtonRight(right);
-    if (reason == REASON_PREF_CHANGED)
-      base::UmaHistogramBoolean("Mouse.PrimaryButtonRight.Changed", right);
-    else if (reason == REASON_INITIALIZATION)
-      base::UmaHistogramBoolean("Mouse.PrimaryButtonRight.Started", right);
+    ReportBooleanPrefApplication(reason, "Mouse.PrimaryButtonRight.Changed",
+                                 "Mouse.PrimaryButtonRight.Started", right);
     // Save owner preference in local state to use on login screen.
     if (user_is_owner) {
       PrefService* prefs = g_browser_process->local_state();
@@ -827,53 +817,42 @@ void Preferences::ApplyPreferences(ApplyReason reason,
     const bool enabled = mouse_acceleration_.GetValue();
     if (user_is_active)
       mouse_settings.SetAcceleration(enabled);
-    if (reason == REASON_PREF_CHANGED)
-      base::UmaHistogramBoolean("Mouse.Acceleration.Changed", enabled);
-    else if (reason == REASON_INITIALIZATION)
-      base::UmaHistogramBoolean("Mouse.Acceleration.Started", enabled);
+    ReportBooleanPrefApplication(reason, "Mouse.Acceleration.Changed",
+                                 "Mouse.Acceleration.Started", enabled);
   }
   if (reason != REASON_PREF_CHANGED ||
       pref_name == ::prefs::kMouseScrollAcceleration) {
     const bool enabled = mouse_scroll_acceleration_.GetValue();
     if (user_is_active)
       mouse_settings.SetScrollAcceleration(enabled);
-    if (reason == REASON_PREF_CHANGED)
-      base::UmaHistogramBoolean("Mouse.ScrollAcceleration.Changed", enabled);
-    else if (reason == REASON_INITIALIZATION)
-      base::UmaHistogramBoolean("Mouse.ScrollAcceleration.Started", enabled);
+    ReportBooleanPrefApplication(reason, "Mouse.ScrollAcceleration.Changed",
+                                 "Mouse.ScrollAcceleration.Started", enabled);
   }
   if (reason != REASON_PREF_CHANGED ||
       pref_name == ::prefs::kTouchpadAcceleration) {
     const bool enabled = touchpad_acceleration_.GetValue();
     if (user_is_active)
       touchpad_settings.SetAcceleration(enabled);
-    if (reason == REASON_PREF_CHANGED)
-      base::UmaHistogramBoolean("Touchpad.Acceleration.Changed", enabled);
-    else if (reason == REASON_INITIALIZATION)
-      base::UmaHistogramBoolean("Touchpad.Acceleration.Started", enabled);
+    ReportBooleanPrefApplication(reason, "Touchpad.Acceleration.Changed",
+                                 "Touchpad.Acceleration.Started", enabled);
   }
   if (reason != REASON_PREF_CHANGED ||
       pref_name == ::prefs::kTouchpadScrollAcceleration) {
     const bool enabled = touchpad_scroll_acceleration_.GetValue();
     if (user_is_active)
       touchpad_settings.SetScrollAcceleration(enabled);
-    if (reason == REASON_PREF_CHANGED)
-      base::UmaHistogramBoolean("Touchpad.ScrollAcceleration.Changed", enabled);
-    else if (reason == REASON_INITIALIZATION)
-      base::UmaHistogramBoolean("Touchpad.ScrollAcceleration.Started", enabled);
+    ReportBooleanPrefApplication(reason, "Touchpad.ScrollAcceleration.Changed",
+                                 "Touchpad.ScrollAcceleration.Started",
+                                 enabled);
   }
   if (reason != REASON_PREF_CHANGED ||
       pref_name == ::prefs::kDownloadDefaultDirectory) {
     const bool default_download_to_drive = drive::util::IsUnderDriveMountPoint(
         download_default_directory_.GetValue());
-    if (reason == REASON_PREF_CHANGED)
-      base::UmaHistogramBoolean(
-          "FileBrowser.DownloadDestination.IsGoogleDrive.Changed",
-          default_download_to_drive);
-    else if (reason == REASON_INITIALIZATION)
-      base::UmaHistogramBoolean(
-          "FileBrowser.DownloadDestination.IsGoogleDrive.Started",
-          default_download_to_drive);
+    ReportBooleanPrefApplication(
+        reason, "FileBrowser.DownloadDestination.IsGoogleDrive.Changed",
+        "FileBrowser.DownloadDestination.IsGoogleDrive.Started",
+        default_download_to_drive);
   }
 
   if (reason != REASON_PREF_CHANGED ||

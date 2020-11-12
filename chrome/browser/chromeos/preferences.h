@@ -76,6 +76,19 @@ class Preferences : public sync_preferences::PrefServiceSyncableObserver,
   // Callback method for preference changes.
   void OnPreferenceChanged(const std::string& pref_name);
 
+  // Add a sample to the appropriate UMA histogram for a boolean preference.
+  void ReportBooleanPrefApplication(ApplyReason reason,
+                                    const std::string& changed_histogram_name,
+                                    const std::string& started_histogram_name,
+                                    bool sample);
+
+  // Add a sample to the appropriate UMA histogram for a sensitivity preference.
+  void ReportSensitivityPrefApplication(
+      ApplyReason reason,
+      const std::string& changed_histogram_name,
+      const std::string& started_histogram_name,
+      int sensitivity_int);
+
   // This will set the OS settings when the preference changed or the user
   // owning these preferences became active. Also this method is called on
   // initialization. The reason of the call is stored as the |reason| parameter.
