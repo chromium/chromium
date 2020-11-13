@@ -142,22 +142,24 @@ void NGContainerFragmentBuilder::PropagateChildData(
   // as they should only escape a fragmentation context at the discretion of the
   // fragmentation context.
   if (has_block_fragmentation_ && !child.IsFragmentainerBox()) {
-    if (const NGBreakToken* child_break_token = child.BreakToken()) {
-      switch (child.Type()) {
-        case NGPhysicalFragment::kFragmentBox:
+    const NGBreakToken* child_break_token = child.BreakToken();
+    switch (child.Type()) {
+      case NGPhysicalFragment::kFragmentBox:
+        if (child_break_token)
           child_break_tokens_.push_back(child_break_token);
-          break;
-        case NGPhysicalFragment::kFragmentLineBox:
-          // NGInlineNode produces multiple line boxes in an anonymous box. We
-          // won't know up front which line box to insert a fragment break
-          // before (due to widows), so keep them all until we know.
-          inline_break_tokens_.push_back(child_break_token);
-          break;
-        case NGPhysicalFragment::kFragmentText:
-        default:
-          NOTREACHED();
-          break;
-      }
+        break;
+      case NGPhysicalFragment::kFragmentLineBox:
+        // We only care about the break token from the last line box added. This
+        // is where we'll resume if we decide to block-fragment. Note that
+        // child_break_token is nullptr if this is the last line to be generated
+        // from the node.
+        last_inline_break_token_ = To<NGInlineBreakToken>(child_break_token);
+        line_count_++;
+        break;
+      case NGPhysicalFragment::kFragmentText:
+      default:
+        NOTREACHED();
+        break;
     }
   }
 

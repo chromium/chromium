@@ -21,7 +21,7 @@ namespace blink {
 void NGLineBoxFragmentBuilder::Reset() {
   children_.Shrink(0);
   child_break_tokens_.Shrink(0);
-  inline_break_tokens_.Shrink(0);
+  last_inline_break_token_ = nullptr;
   oof_positioned_candidates_.Shrink(0);
   unpositioned_list_marker_ = NGUnpositionedListMarker();
 
@@ -97,9 +97,6 @@ void NGLineBoxFragmentBuilder::PropagateChildrenData(
 scoped_refptr<const NGLayoutResult>
 NGLineBoxFragmentBuilder::ToLineBoxFragment() {
   writing_direction_.SetWritingMode(ToLineWritingMode(GetWritingMode()));
-
-  if (!break_token_)
-    break_token_ = NGInlineBreakToken::Create(node_);
 
   scoped_refptr<const NGPhysicalLineBoxFragment> fragment =
       NGPhysicalLineBoxFragment::Create(this);

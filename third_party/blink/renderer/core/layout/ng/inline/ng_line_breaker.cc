@@ -2382,7 +2382,7 @@ scoped_refptr<NGInlineBreakToken> NGLineBreaker::CreateBreakToken(
   const Vector<NGInlineItem>& items = Items();
   DCHECK_LE(item_index_, items.size());
   if (item_index_ >= items.size())
-    return NGInlineBreakToken::Create(node_);
+    return nullptr;
   return NGInlineBreakToken::Create(
       node_, current_style_.get(), item_index_, offset_,
       (is_after_forced_break_ ? NGInlineBreakToken::kIsForcedBreak : 0) |

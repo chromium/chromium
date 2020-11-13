@@ -68,7 +68,7 @@ class CORE_EXPORT NGLineBoxFragmentBuilder final
   }
 
   // Set the break token for the fragment to build.
-  // A finished break token will be attached if not set.
+  // Is nullptr if we didn't break.
   void SetBreakToken(scoped_refptr<NGInlineBreakToken> break_token) {
     break_token_ = std::move(break_token);
   }

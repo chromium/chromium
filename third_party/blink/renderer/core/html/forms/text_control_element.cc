@@ -76,12 +76,11 @@ Position GetNextSoftBreak(const NGOffsetMapping& mapping,
   while (cursor) {
     DCHECK(cursor.Current().IsLineBox()) << cursor.Current();
     const auto* break_token = cursor.Current().InlineBreakToken();
-    DCHECK(break_token);
     cursor.MoveToNextLine();
     // We don't need to emit a LF for the last line.
     if (!cursor)
       return Position();
-    if (!break_token->IsForcedBreak())
+    if (break_token && !break_token->IsForcedBreak())
       return mapping.GetFirstPosition(break_token->TextOffset());
   }
   return Position();

@@ -36,44 +36,33 @@ class CORE_EXPORT NGInlineBreakToken final : public NGBreakToken {
         PassKey(), node, style, item_index, text_offset, flags));
   }
 
-  // Creates a break token for a node which cannot produce any more fragments.
-  static scoped_refptr<NGInlineBreakToken> Create(NGLayoutInputNode node) {
-    return base::AdoptRef(new NGInlineBreakToken(PassKey(), node));
-  }
-
   ~NGInlineBreakToken() override;
 
   // The style at the end of this break token. The next line should start with
   // this style.
   const ComputedStyle* Style() const {
-    DCHECK(!IsFinished());
     return style_.get();
   }
 
   unsigned ItemIndex() const {
-    DCHECK(!IsFinished());
     return item_index_;
   }
 
   unsigned TextOffset() const {
-    DCHECK(!IsFinished());
     return text_offset_;
   }
 
   bool UseFirstLineStyle() const {
-    DCHECK(!IsFinished());
     return flags_ & kUseFirstLineStyle;
   }
 
   bool IsForcedBreak() const {
-    DCHECK(!IsFinished());
     return flags_ & kIsForcedBreak;
   }
 
   // True if the current position has open tags that has `box-decoration-break:
   // clone`. They should be cloned to the start of the next line.
   bool HasClonedBoxDecorations() const {
-    DCHECK(!IsFinished());
     return flags_ & kHasClonedBoxDecorations;
   }
 

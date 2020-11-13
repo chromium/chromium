@@ -27,6 +27,7 @@
 namespace blink {
 
 class NGExclusionSpace;
+class NGInlineBreakToken;
 class NGPhysicalFragment;
 
 class CORE_EXPORT NGContainerFragmentBuilder : public NGFragmentBuilder {
@@ -244,7 +245,7 @@ class CORE_EXPORT NGContainerFragmentBuilder : public NGFragmentBuilder {
   // Only used by the NGBoxFragmentBuilder subclass, but defined here to avoid
   // a virtual function call.
   NGBreakTokenVector child_break_tokens_;
-  NGBreakTokenVector inline_break_tokens_;
+  scoped_refptr<const NGInlineBreakToken> last_inline_break_token_;
 
   scoped_refptr<const NGEarlyBreak> early_break_;
   NGBreakAppeal break_appeal_ = kBreakAppealLastResort;
@@ -257,6 +258,10 @@ class CORE_EXPORT NGContainerFragmentBuilder : public NGFragmentBuilder {
   // The block size consumed by all preceding fragmentainers. Used to position
   // OOF nodes.
   LayoutUnit fragmentainer_consumed_block_size_;
+
+  // The number of line boxes added to the builder. Only updated if we're
+  // performing block fragmentation.
+  int line_count_ = 0;
 
   NGAdjoiningObjectTypes adjoining_object_types_ = kAdjoiningNone;
   bool has_adjoining_object_descendants_ = false;

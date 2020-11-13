@@ -110,10 +110,8 @@ PhysicalRect ComputeLocalCaretRectAtTextOffset(const NGInlineCursor& cursor,
       line_box.Current().OffsetInContainerBlock();
   const PhysicalRect line_box_rect(line_box_offset, line_box.Current().Size());
 
-  const NGInlineBreakToken& break_token =
-      *line_box.Current().InlineBreakToken();
-  const bool is_last_line =
-      break_token.IsFinished() || break_token.IsForcedBreak();
+  const NGInlineBreakToken* break_token = line_box.Current().InlineBreakToken();
+  const bool is_last_line = !break_token || break_token->IsForcedBreak();
   const ComputedStyle& block_style = fragment.Style();
   bool should_align_caret_right =
       ShouldAlignCaretRight(block_style.GetTextAlign(is_last_line),

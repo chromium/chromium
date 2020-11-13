@@ -139,8 +139,8 @@ PhysicalRect NGPhysicalLineBoxFragment::ScrollableOverflowForLine(
 }
 
 bool NGPhysicalLineBoxFragment::HasSoftWrapToNextLine() const {
-  const auto& break_token = To<NGInlineBreakToken>(*BreakToken());
-  return !break_token.IsFinished() && !break_token.IsForcedBreak();
+  const auto* break_token = To<NGInlineBreakToken>(BreakToken());
+  return break_token && !break_token->IsForcedBreak();
 }
 
 }  // namespace blink

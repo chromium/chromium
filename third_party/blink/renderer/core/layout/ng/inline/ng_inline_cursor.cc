@@ -214,8 +214,7 @@ void NGInlineCursor::ExpandRootToContainingBlock() {
 bool NGInlineCursorPosition::HasSoftWrapToNextLine() const {
   DCHECK(IsLineBox());
   const NGInlineBreakToken* break_token = InlineBreakToken();
-  DCHECK(break_token);
-  return !break_token->IsFinished() && !break_token->IsForcedBreak();
+  return break_token && !break_token->IsForcedBreak();
 }
 
 bool NGInlineCursorPosition::IsInlineBox() const {

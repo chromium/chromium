@@ -65,19 +65,19 @@ TEST_F(NGInlineLayoutAlgorithmTest, BreakToken) {
   scoped_refptr<const NGLayoutResult> layout_result =
       inline_node.Layout(constraint_space, nullptr, &context);
   const auto& line1 = layout_result->PhysicalFragment();
-  EXPECT_FALSE(line1.BreakToken()->IsFinished());
+  EXPECT_TRUE(line1.BreakToken());
 
   // Perform 2nd layout with the break token from the 1st line.
   scoped_refptr<const NGLayoutResult> layout_result2 =
       inline_node.Layout(constraint_space, line1.BreakToken(), &context);
   const auto& line2 = layout_result2->PhysicalFragment();
-  EXPECT_FALSE(line2.BreakToken()->IsFinished());
+  EXPECT_TRUE(line2.BreakToken());
 
   // Perform 3rd layout with the break token from the 2nd line.
   scoped_refptr<const NGLayoutResult> layout_result3 =
       inline_node.Layout(constraint_space, line2.BreakToken(), &context);
   const auto& line3 = layout_result3->PhysicalFragment();
-  EXPECT_TRUE(line3.BreakToken()->IsFinished());
+  EXPECT_FALSE(line3.BreakToken());
 }
 
 // This test ensures box fragments are generated when necessary, even when the

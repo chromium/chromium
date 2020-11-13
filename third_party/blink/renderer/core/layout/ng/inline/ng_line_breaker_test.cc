@@ -63,7 +63,7 @@ class NGLineBreakerTest : public NGLayoutTest {
     NGExclusionSpace exclusion_space;
     NGPositionedFloatVector leading_floats;
     NGLineLayoutOpportunity line_opportunity(available_width);
-    while (!break_token || !break_token->IsFinished()) {
+    do {
       NGLineInfo line_info;
       NGLineBreaker line_breaker(node, NGLineBreakerMode::kContent, space,
                                  line_opportunity, leading_floats, 0u,
@@ -85,7 +85,7 @@ class NGLineBreakerTest : public NGLayoutTest {
       }
       lines.push_back(std::make_pair(ToString(line_info.Results(), node),
                                      line_info.Results().back().item_index));
-    }
+    } while (break_token);
 
     return lines;
   }

@@ -267,8 +267,7 @@ class CORE_EXPORT NGBoxFragmentBuilder final
       return true;
     // Inline nodes produce a "finished" trailing break token even if we don't
     // need to block-fragment.
-    return !inline_break_tokens_.IsEmpty() &&
-           !inline_break_tokens_.back()->IsFinished();
+    return last_inline_break_token_.get();
   }
 
   // Return true if we need to break before or inside any in-flow child that
@@ -344,7 +343,7 @@ class CORE_EXPORT NGBoxFragmentBuilder final
   EBreakBetween JoinedBreakBetweenValue(EBreakBetween break_before) const;
 
   // Return the number of line boxes laid out.
-  int LineCount() const { return inline_break_tokens_.size(); }
+  int LineCount() const { return line_count_; }
 
   // Set when we have iterated over all the children. This means that all
   // children have been fully laid out, or have break tokens. No more children

@@ -51,8 +51,6 @@ String NGBreakToken::ToString() const {
   string_builder.Append("(");
   string_builder.Append(InputNode().ToString());
   string_builder.Append(")");
-  if (IsFinished())
-    string_builder.Append(" finished");
   return string_builder.ToString();
 }
 

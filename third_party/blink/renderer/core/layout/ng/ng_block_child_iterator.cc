@@ -18,8 +18,7 @@ NGBlockChildIterator::NGBlockChildIterator(NGLayoutInputNode first_child,
 NGBlockChildIterator::Entry NGBlockChildIterator::NextChild(
     const NGInlineBreakToken* previous_inline_break_token) {
   const NGBreakToken* child_break_token = nullptr;
-  if (previous_inline_break_token &&
-      !previous_inline_break_token->IsFinished()) {
+  if (previous_inline_break_token) {
     return Entry(previous_inline_break_token->InputNode(),
                  previous_inline_break_token);
   }
@@ -32,10 +31,7 @@ NGBlockChildIterator::Entry NGBlockChildIterator::NextChild(
 
     while (child_token_idx_ < child_break_tokens.size()) {
       child_break_token = child_break_tokens[child_token_idx_++];
-      // While it never happens to blocks, line boxes may produce break tokens
-      // even if we're finished. And those we just ignore.
-      if (!child_break_token->IsFinished())
-        break;
+      break;
     }
     // If there are no break tokens left to resume, the iterator machinery (see
     // further below) will just continue at the next sibling. The last break

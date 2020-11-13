@@ -167,15 +167,15 @@ void NGBoxFragmentBuilder::AddBreakBeforeChild(
     has_float_break_inside_ = child.IsFloating();
 
   if (auto* child_inline_node = DynamicTo<NGInlineNode>(child)) {
-    if (inline_break_tokens_.IsEmpty()) {
+    if (!last_inline_break_token_) {
       // In some cases we may want to break before the first line, as a last
       // resort. We need a break token for that as well, so that the machinery
       // will understand that we should resume at the beginning of the inline
       // formatting context, rather than concluding that we're done with the
       // whole thing.
-      inline_break_tokens_.push_back(NGInlineBreakToken::Create(
+      last_inline_break_token_ = NGInlineBreakToken::Create(
           *child_inline_node, /* style */ nullptr, /* item_index */ 0,
-          /* text_offset */ 0, NGInlineBreakToken::kDefault));
+          /* text_offset */ 0, NGInlineBreakToken::kDefault);
     }
     return;
   }
@@ -379,9 +379,8 @@ void NGBoxFragmentBuilder::PropagateBreak(
     const auto& child_fragment =
         To<NGPhysicalBoxFragment>(child_layout_result.PhysicalFragment());
     if (const auto* token = child_fragment.BreakToken()) {
-      if (!token->IsFinished() &&
-          (!token->IsBlockType() ||
-           !To<NGBlockBreakToken>(token)->IsAtBlockEnd())) {
+      if (!token->IsBlockType() ||
+          !To<NGBlockBreakToken>(token)->IsAtBlockEnd()) {
         if (child_fragment.IsFloating())
           has_float_break_inside_ = true;
         else if (!child_fragment.IsOutOfFlowPositioned())
@@ -414,12 +413,8 @@ scoped_refptr<const NGLayoutResult> NGBoxFragmentBuilder::ToBoxFragment(
 #endif
 
   if (UNLIKELY(node_ && has_block_fragmentation_)) {
-    if (!inline_break_tokens_.IsEmpty()) {
-      if (auto token = inline_break_tokens_.back()) {
-        if (!token->IsFinished())
-          child_break_tokens_.push_back(std::move(token));
-      }
-    }
+    if (last_inline_break_token_)
+      child_break_tokens_.push_back(std::move(last_inline_break_token_));
     if (DidBreakSelf() || HasChildBreakInside())
       break_token_ = NGBlockBreakToken::Create(*this);
   }

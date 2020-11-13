@@ -240,9 +240,7 @@ const NGFragmentItem* NGFragmentItems::EndOfReusableItems(
     // partial. Remove the last fragment if it is the end of the
     // fragmentation to do so, but we should figure out how to setup the
     // states without doing this.
-    const NGBreakToken* break_token = line_box_fragment->BreakToken();
-    DCHECK(break_token);
-    if (break_token->IsFinished())
+    if (!line_box_fragment->BreakToken())
       return &item;
 
     last_line_start = &item;

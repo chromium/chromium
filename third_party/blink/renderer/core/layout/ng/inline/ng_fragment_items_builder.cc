@@ -255,7 +255,7 @@ NGFragmentItemsBuilder::AddPreviousItems(
         const NGPhysicalLineBoxFragment* line_fragment = item.LineBoxFragment();
         const NGInlineBreakToken* break_token =
             To<NGInlineBreakToken>(line_fragment->BreakToken());
-        DCHECK(!break_token->IsFinished());
+        DCHECK(break_token);
         const NGInlineItemsData* current_items_data;
         if (UNLIKELY(break_token->UseFirstLineStyle()))
           current_items_data = &node_.ItemsData(true);
@@ -302,7 +302,6 @@ NGFragmentItemsBuilder::AddPreviousItems(
   DCHECK_LE(items_.size(), estimated_size);
 
   if (end_item && last_break_token) {
-    DCHECK(!last_break_token->IsFinished());
     DCHECK_GT(line_count, 0u);
     DCHECK(!max_lines || line_count <= max_lines);
     return AddPreviousItemsResult{last_break_token, used_block_size, line_count,
