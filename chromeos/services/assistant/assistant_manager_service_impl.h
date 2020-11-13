@@ -250,12 +250,6 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
   void PostInitAssistant();
   bool IsServiceStarted() const;
 
-  // Update device id, type and locale
-  void UpdateDeviceSettings();
-
-  // Sync speaker id enrollment status.
-  void SyncSpeakerIdEnrollmentStatus();
-
   void HandleLaunchMediaIntentResponse(bool app_opened);
 
   void OnAlarmTimerStateChanged();
