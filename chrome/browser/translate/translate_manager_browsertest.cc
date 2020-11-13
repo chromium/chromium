@@ -405,8 +405,9 @@ IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest, PageLanguageDetection) {
 // Tests that the language detection / HTML attribute override works correctly.
 // For languages in the whitelist, the detected language should override the
 // HTML attribute. For all other languages, the HTML attribute should be used.
+// Flaky on all platforms. https://crbug.com/1148703
 IN_PROC_BROWSER_TEST_F(TranslateManagerBrowserTest,
-                       PageLanguageDetectionConflict) {
+                       DISABLED_PageLanguageDetectionConflict) {
   ChromeTranslateClient* chrome_translate_client = GetChromeTranslateClient();
 
   // The InProcessBrowserTest opens a new tab, let's wait for that first.
