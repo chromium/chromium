@@ -15,6 +15,7 @@
 #include "base/task/thread_pool.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/notifications/notification_platform_bridge_mac_utils.h"
+#include "chrome/browser/notifications/unnotification_metrics.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/cocoa/notifications/notification_operation.h"
 #include "chrome/browser/ui/cocoa/notifications/unnotification_builder_mac.h"
@@ -70,6 +71,8 @@ NotificationPlatformBridgeMacUNNotification::
       delivered_categories_([[NSMutableDictionary alloc] init]),
       delivered_notifications_([[NSMutableDictionary alloc] init]) {
   [notification_center_ setDelegate:delegate_.get()];
+  LogUNNotificationBannerPermissionStatus(notification_center_.get());
+  LogUNNotificationBannerStyle(notification_center_.get());
 
   // TODO(crbug/1129366): Determine when to request permission.
   NotificationPlatformBridgeMacUNNotification::RequestPermission();

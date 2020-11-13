@@ -9,7 +9,9 @@
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/notifications/notification_platform_bridge_mac_unnotification.h"
+#include "chrome/browser/notifications/unnotification_metrics.h"
 #include "chrome/browser/ui/cocoa/notifications/notification_constants_mac.h"
 #include "chrome/browser/ui/cocoa/notifications/unnotification_builder_mac.h"
 #include "chrome/browser/ui/cocoa/notifications/unnotification_response_builder_mac.h"
@@ -34,7 +36,20 @@ API_AVAILABLE(macosx(10.14))
 @end
 
 API_AVAILABLE(macosx(10.14))
+@interface FakeUNNotificationSettings : NSObject
+@property(nonatomic, assign) UNAlertStyle alertStyle;
+@property(nonatomic, assign) UNAuthorizationStatus authorizationStatus;
+@end
+
+@implementation FakeUNNotificationSettings
+@synthesize alertStyle;
+@synthesize authorizationStatus;
+@end
+
+API_AVAILABLE(macosx(10.14))
 @interface FakeUNUserNotificationCenter : NSObject
+@property(nonatomic, assign) base::scoped_nsobject<FakeUNNotificationSettings>
+    settings;
 - (instancetype)init;
 // Need to provide a nop implementation of setDelegate as it is
 // used during the setup of the bridge.
@@ -58,6 +73,8 @@ API_AVAILABLE(macosx(10.14))
                                             completionHandler;
 - (void)removeDeliveredNotificationsWithIdentifiers:
     (NSArray<NSString*>*)identifiers;
+- (void)getNotificationSettingsWithCompletionHandler:
+    (void (^)(UNNotificationSettings* settings))completionHandler;
 @end
 
 @implementation FakeUNUserNotificationCenter {
@@ -65,8 +82,11 @@ API_AVAILABLE(macosx(10.14))
   base::scoped_nsobject<NSSet> _categories;
 }
 
+@synthesize settings;
+
 - (instancetype)init {
   if ((self = [super init])) {
+    settings.reset([[FakeUNNotificationSettings alloc] init]);
     _banners.reset([[NSMutableArray alloc] init]);
     _categories.reset([[NSSet alloc] init]);
   }
@@ -136,6 +156,12 @@ API_AVAILABLE(macosx(10.14))
               return ![identifiers containsObject:toastId];
             }]];
 }
+
+- (void)getNotificationSettingsWithCompletionHandler:
+    (void (^)(UNNotificationSettings* settings))completionHandler {
+  completionHandler(static_cast<UNNotificationSettings*>(settings.get()));
+}
+
 @end
 
 using message_center::Notification;
@@ -150,6 +176,9 @@ class UNNotificationPlatformBridgeMacTest : public testing::Test {
     profile_ = manager_.CreateTestingProfile("Moe");
     if (@available(macOS 10.14, *)) {
       center_.reset([[FakeUNUserNotificationCenter alloc] init]);
+      [[center_ settings] setAlertStyle:UNAlertStyleBanner];
+      [[center_ settings]
+          setAuthorizationStatus:UNAuthorizationStatusAuthorized];
       bridge_ = std::make_unique<NotificationPlatformBridgeMacUNNotification>(
           static_cast<UNUserNotificationCenter*>(center_.get()));
     }
@@ -174,11 +203,20 @@ class UNNotificationPlatformBridgeMacTest : public testing::Test {
   API_AVAILABLE(macosx(10.14))
   std::unique_ptr<NotificationPlatformBridgeMacUNNotification> bridge_;
   TestingProfile* profile_ = nullptr;
+  base::HistogramTester histogram_tester_;
 
  private:
   content::BrowserTaskEnvironment task_environment_;
   TestingProfileManager manager_;
 };
+
+class UNNotificationPlatformBridgeMacPermissionStatusTest
+    : public UNNotificationPlatformBridgeMacTest,
+      public testing::WithParamInterface<UNNotificationPermissionStatus> {};
+
+class UNNotificationPlatformBridgeMacBannerStyleTest
+    : public UNNotificationPlatformBridgeMacTest,
+      public testing::WithParamInterface<UNNotificationStyle> {};
 
 TEST_F(UNNotificationPlatformBridgeMacTest, TestDisplay) {
   if (@available(macOS 10.14, *)) {
@@ -492,3 +530,82 @@ TEST_F(UNNotificationPlatformBridgeMacTest, TestCloseRemovesCategory) {
     }];
   }
 }
+
+TEST_P(UNNotificationPlatformBridgeMacPermissionStatusTest, PermissionStatus) {
+  if (@available(macOS 10.14, *)) {
+    UNNotificationPermissionStatus permission_status = GetParam();
+
+    base::scoped_nsobject<FakeUNUserNotificationCenter> center(
+        [[FakeUNUserNotificationCenter alloc] init]);
+    [[center settings] setAlertStyle:UNAlertStyleBanner];
+
+    switch (permission_status) {
+      case UNNotificationPermissionStatus::kPermissionDenied:
+        [[center settings] setAuthorizationStatus:UNAuthorizationStatusDenied];
+        break;
+      case UNNotificationPermissionStatus::kPermissionGranted:
+        [[center settings]
+            setAuthorizationStatus:UNAuthorizationStatusAuthorized];
+        break;
+      default:
+        [[center settings]
+            setAuthorizationStatus:UNAuthorizationStatusNotDetermined];
+        break;
+    }
+
+    base::HistogramTester histogram_tester;
+    auto bridge = std::make_unique<NotificationPlatformBridgeMacUNNotification>(
+        static_cast<UNUserNotificationCenter*>(center.get()));
+
+    histogram_tester.ExpectTotalCount(
+        "Notifications.Permissions.UNNotification.Banners.PermissionStatus", 1);
+    histogram_tester.ExpectBucketCount(
+        "Notifications.Permissions.UNNotification.Banners.PermissionStatus",
+        permission_status, 1);
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    UNNotificationPlatformBridgeMacPermissionStatusTest,
+    UNNotificationPlatformBridgeMacPermissionStatusTest,
+    testing::Values(UNNotificationPermissionStatus::kNotRequestedYet,
+                    UNNotificationPermissionStatus::kPermissionDenied,
+                    UNNotificationPermissionStatus::kPermissionGranted));
+
+TEST_P(UNNotificationPlatformBridgeMacBannerStyleTest, NotificationStyle) {
+  if (@available(macOS 10.14, *)) {
+    UNNotificationStyle notification_style = GetParam();
+
+    base::scoped_nsobject<FakeUNUserNotificationCenter> center(
+        [[FakeUNUserNotificationCenter alloc] init]);
+    [[center settings] setAuthorizationStatus:UNAuthorizationStatusAuthorized];
+
+    switch (notification_style) {
+      case UNNotificationStyle::kBanners:
+        [[center settings] setAlertStyle:UNAlertStyleBanner];
+        break;
+      case UNNotificationStyle::kAlerts:
+        [[center settings] setAlertStyle:UNAlertStyleAlert];
+        break;
+      default:
+        [[center settings] setAlertStyle:UNAlertStyleNone];
+        break;
+    }
+
+    base::HistogramTester histogram_tester;
+    auto bridge = std::make_unique<NotificationPlatformBridgeMacUNNotification>(
+        static_cast<UNUserNotificationCenter*>(center.get()));
+
+    histogram_tester.ExpectTotalCount(
+        "Notifications.Permissions.UNNotification.Banners.Style", 1);
+    histogram_tester.ExpectBucketCount(
+        "Notifications.Permissions.UNNotification.Banners.Style",
+        notification_style, 1);
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(UNNotificationPlatformBridgeMacBannerStyleTest,
+                         UNNotificationPlatformBridgeMacBannerStyleTest,
+                         testing::Values(UNNotificationStyle::kNone,
+                                         UNNotificationStyle::kBanners,
+                                         UNNotificationStyle::kAlerts));
