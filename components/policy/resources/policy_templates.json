@@ -1632,6 +1632,7 @@
         'per_profile': False,
       },
       'example_value': 1,
+      'default': 0,
       'id': 792,
       'caption': '''Intranet Redirection Behavior''',
       'tags': [],
@@ -5833,6 +5834,7 @@
         'per_profile': True,
       },
       'example_value': 2,
+      'default': None,
       'id': 754,
       'caption': '''Default sensors setting''',
       'tags': [],
@@ -7506,6 +7508,16 @@
         'dynamic_refresh': False,
         'per_profile': False,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Only allow popups opened with a target of <ph name="BLANK_PAGE_NAME">_blank</ph> to interact with the page that opened the popup if the opener page explicitly opts-in to such interaction',
+        },
+        {
+          'value': False,
+          'caption': 'Allow all popups opened with a target of <ph name="BLANK_PAGE_NAME">_blank</ph> to interact the page that requested to open the popup unless the opener page explicitly opts-out of such interaction ',
+        },
+      ],
       'example_value': False,
       'default': True,
       'id': 802,
