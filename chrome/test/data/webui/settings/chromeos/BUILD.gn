@@ -62,6 +62,7 @@ js_modulizer("modulize") {
     "network_proxy_section_test.js",
     "network_summary_test.js",
     "network_summary_item_test.js",
+    "on_startup_page_tests.js",
     "os_edit_dictionary_page_test.js",
     "os_languages_page_tests.js",
     "os_languages_page_v2_tests.js",

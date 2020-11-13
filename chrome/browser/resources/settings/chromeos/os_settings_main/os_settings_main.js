@@ -85,6 +85,8 @@ Polymer({
 
     showReset: Boolean,
 
+    showStartup: Boolean,
+
     havePlayStoreApp: Boolean,
   },
 

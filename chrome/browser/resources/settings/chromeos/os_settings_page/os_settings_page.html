@@ -23,6 +23,7 @@
 <link rel="import" href="../device_page/device_page.html">
 <link rel="import" href="../internet_page/internet_page.html">
 <link rel="import" href="../multidevice_page/multidevice_page.html">
+<link rel="import" href="../on_startup_page/on_startup_page.html">
 
 <dom-module id="os-settings-page">
   <template>
@@ -193,6 +194,13 @@
             <settings-crostini-page prefs="{{prefs}}"
                 allow-crostini="[[allowCrostini_]]">
             </settings-crostini-page>
+          </settings-section>
+        </template>
+        <template is="dom-if" if="[[showStartup]]">
+          <settings-section page-title="$i18n{onStartupPageTitle}"
+              section="onstartup">
+            <settings-on-startup-page prefs="{{prefs}}">
+            </settings-on-startup-page>
           </settings-section>
         </template>
       </div>

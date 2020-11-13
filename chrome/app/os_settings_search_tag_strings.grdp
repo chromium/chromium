@@ -1133,4 +1133,12 @@
   <message name="IDS_OS_SETTINGS_TAG_ABOUT_TERMS_OF_SERVICE" desc="Text for search result item which, when clicked, navigates the user to 'About Chrome OS' settings, with a link to the Terms of Service.">
     Terms of Service
   </message>
+
+  <!-- On Startup section. -->
+  <message name="IDS_OS_SETTINGS_TAG_ON_STARTUP" desc="Text for search result item which, when clicked, navigates the user to On Startup settings, with a radio group to configure the restore apps and pages options">
+    On Startup
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_RESTORE_APPS_AND_PAGES" desc="Text for search result item which, when clicked, navigates the user to On Startup settings, with a radio group to configure the restore apps and pages options">
+    Restore apps and pages
+  </message>
 </grit-part>

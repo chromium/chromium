@@ -3318,5 +3318,22 @@
   <message name="IDS_SETTINGS_ENABLE_CONTENT_PROTECTION_ATTESTATION" desc="description label for verified access about premium contents">
     Enable Verified Access
   </message>
+
+  <!-- On Startup (OS settings) -->
+  <message name="IDS_OS_SETTINGS_ON_STARTUP" desc="Name of the settings page which displays On Startup preferences, with a radio group to configure the restore apps and pages options">
+    On Startup
+  </message>
+  <message name="IDS_OS_SETTINGS_ON_STARTUP_RADIO_GROUP_TITLE" desc="The title of the radio group that allows the user to configure the restore apps and pages options on startup.">
+    Restore apps and pages
+  </message>
+  <message name="IDS_OS_SETTINGS_ON_STARTUP_ALWAYS" desc="Label for the checkbox which enables the always restore apps and pages option on startup.">
+    Always
+  </message>
+  <message name="IDS_OS_SETTINGS_ON_STARTUP_ASK_EVERY_TIME" desc="Label for the checkbox which enables the ask every time option to show a notification on startup to give the user a choice for the restoration.">
+    Ask every time
+  </message>
+  <message name="IDS_OS_SETTINGS_ON_STARTUP_DO_NOT_RESTORE" desc="Label for the checkbox which enables the do not restore option, which means not restore apps or pages on startup.">
+    Do not restore
+  </message>
 </if>
 </grit-part>

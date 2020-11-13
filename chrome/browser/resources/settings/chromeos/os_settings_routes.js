@@ -56,6 +56,7 @@
  *   MULTIDEVICE_FEATURES: !settings.Route,
  *   NEARBY_SHARE: !settings.Route,
  *   NETWORK_DETAIL: !settings.Route,
+ *   ON_STARTUP: !settings.Route,
  *   OS_ACCESSIBILITY: !settings.Route,
  *   OS_LANGUAGES: !settings.Route,
  *   OS_LANGUAGES_DETAILS: !settings.Route,

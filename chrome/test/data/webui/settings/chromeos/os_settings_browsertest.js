@@ -615,6 +615,36 @@ TEST_F('OSSettingsCrostiniPageTest', 'SubPageSharedUsbDevices', function() {
   mocha.grep('\\bSubPageSharedUsbDevices\\b').run();
 });
 
+// Test fixture for the On Startup page.
+// eslint-disable-next-line no-var
+var OSSettingsOnStartupPageTest = class extends OSSettingsBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return super.browsePreload + 'chromeos/os_search_page/on_startup_page.html';
+  }
+
+  get featureList() {
+    return {
+      enabled: [
+        'ash::features::kFullRestore',
+      ]
+    };
+  }
+
+  /** @override */
+  get extraLibraries() {
+    return super.extraLibraries.concat([
+      BROWSER_SETTINGS_PATH + '../test_browser_proxy.js',
+      BROWSER_SETTINGS_PATH + '../test_util.js',
+      'on_startup_page_tests.js',
+    ]);
+  }
+};
+
+TEST_F('OSSettingsOnStartupPageTest', 'AllJsTests', () => {
+  mocha.run();
+});
+
 // Test fixture for the Date and Time page.
 // eslint-disable-next-line no-var
 var OSSettingsDateTimePageTest = class extends OSSettingsBrowserTest {

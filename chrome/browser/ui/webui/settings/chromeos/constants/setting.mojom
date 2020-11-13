@@ -234,4 +234,7 @@ enum Setting {
   kAddKerberosTicketV2 = 1800,
   kRemoveKerberosTicketV2 = 1801,
   kSetActiveKerberosTicketV2 = 1802,
+
+  // On Startup section.
+  kRestoreAppsAndPages = 1900,
 };

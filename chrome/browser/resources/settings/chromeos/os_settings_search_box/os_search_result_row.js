@@ -671,6 +671,8 @@ cr.define('settings', function() {
           return 'os-settings:restore';
         case Icon.kShield:
           return 'cr:security';
+        case Icon.kStartup:
+          return 'os-settings:startup';
         case Icon.kStylus:
           return 'os-settings:stylus';
         case Icon.kSync:

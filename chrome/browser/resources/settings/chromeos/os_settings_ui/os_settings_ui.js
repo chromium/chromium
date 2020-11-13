@@ -97,6 +97,9 @@ cr.define('settings', function() {
       showReset_: Boolean,
 
       /** @private */
+      showStartup_: Boolean,
+
+      /** @private */
       lastSearchQuery_: {
         type: String,
         value: '',
@@ -173,6 +176,7 @@ cr.define('settings', function() {
       this.showNavMenu_ = !loadTimeData.getBoolean('isKioskModeActive');
       this.showToolbar_ = !loadTimeData.getBoolean('isKioskModeActive');
       this.showReset_ = loadTimeData.getBoolean('allowPowerwash');
+      this.showStartup_ = loadTimeData.getBoolean('showStartup');
 
       this.addEventListener('show-container', () => {
         this.$.container.style.visibility = 'visible';

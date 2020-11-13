@@ -30,6 +30,8 @@ Polymer({
 
     showCrostini: Boolean,
 
+    showStartup: Boolean,
+
     showReset: Boolean,
 
   },

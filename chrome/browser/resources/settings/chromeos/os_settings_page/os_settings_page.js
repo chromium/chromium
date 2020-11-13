@@ -33,6 +33,8 @@ Polymer({
 
     showReset: Boolean,
 
+    showStartup: Boolean,
+
     allowCrostini_: Boolean,
 
     havePlayStoreApp: Boolean,

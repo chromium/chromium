@@ -55082,6 +55082,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="1800" label="View Add Kerberos Ticket V2"/>
   <int value="1801" label="Remove Kerberos Ticket V2"/>
   <int value="1802" label="Set Active Kerberos Ticket V2"/>
+  <int value="1900" label="Restore Apps And Pages On Startup"/>
 </enum>
 
 <enum name="OsSettingSearchBoxUserAction">
@@ -55140,6 +55141,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="16" label="Reset"/>
   <int value="17" label="About Chrome OS"/>
   <int value="18" label="Kerberos"/>
+  <int value="19" label="On Startup"/>
 </enum>
 
 <enum name="OsSettingsSubpage">

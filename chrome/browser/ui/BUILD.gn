@@ -2498,6 +2498,8 @@ static_library("ui") {
       "webui/settings/chromeos/multidevice_handler.h",
       "webui/settings/chromeos/multidevice_section.cc",
       "webui/settings/chromeos/multidevice_section.h",
+      "webui/settings/chromeos/on_startup_section.cc",
+      "webui/settings/chromeos/on_startup_section.h",
       "webui/settings/chromeos/os_settings_features_util.cc",
       "webui/settings/chromeos/os_settings_features_util.h",
       "webui/settings/chromeos/os_settings_identifier.h",

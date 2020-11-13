@@ -213,6 +213,10 @@ cr.define('settings', function() {
           Subpage.kCrostiniPortForwarding);
     }
 
+    // On Startup section.
+    r.ON_STARTUP = createSection(
+        r.BASIC, mojom.ON_STARTUP_SECTION_PATH, Section.kOnStartup);
+
     // Date and Time section.
     r.DATETIME = createSection(
         r.ADVANCED, mojom.DATE_AND_TIME_SECTION_PATH, Section.kDateAndTime);
