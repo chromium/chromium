@@ -17,8 +17,6 @@
 #include "ash/focus_cycler.h"
 #include "ash/home_screen/drag_window_from_shelf_controller.h"
 #include "ash/home_screen/drag_window_from_shelf_controller_test_api.h"
-#include "ash/home_screen/home_launcher_gesture_handler.h"
-#include "ash/home_screen/home_screen_controller.h"
 #include "ash/keyboard/keyboard_controller_impl.h"
 #include "ash/keyboard/ui/keyboard_ui.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"

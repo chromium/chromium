@@ -4,8 +4,6 @@
 
 #include "ash/shelf/home_to_overview_nudge_controller.h"
 
-#include "ash/home_screen/home_launcher_gesture_handler.h"
-#include "ash/home_screen/home_screen_controller.h"
 #include "ash/home_screen/swipe_home_to_overview_controller.h"
 #include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/ash_pref_names.h"
@@ -625,9 +623,8 @@ TEST_F(HomeToOverviewNudgeControllerTest, NoNudgeAfterSuccessfulGestures) {
               // transition to overview (which happens after swipe moves far
               // enough), run it to trigger transition to overview.
               SwipeHomeToOverviewController* swipe_controller =
-                  Shell::Get()
-                      ->home_screen_controller()
-                      ->home_launcher_gesture_handler()
+                  GetPrimaryShelf()
+                      ->shelf_layout_manager()
                       ->swipe_home_to_overview_controller_for_testing();
               ASSERT_TRUE(swipe_controller);
 
@@ -678,9 +675,8 @@ TEST_F(HomeToOverviewNudgeControllerTest, HomeToOverviewGestureFromNudge) {
         // transition to overview (which happens after swipe moves far
         // enough), run it to trigger transition to overview.
         SwipeHomeToOverviewController* swipe_controller =
-            Shell::Get()
-                ->home_screen_controller()
-                ->home_launcher_gesture_handler()
+            GetPrimaryShelf()
+                ->shelf_layout_manager()
                 ->swipe_home_to_overview_controller_for_testing();
         ASSERT_TRUE(swipe_controller);
 

@@ -475,8 +475,6 @@ component("ash") {
     "highlighter/highlighter_view.h",
     "home_screen/drag_window_from_shelf_controller.cc",
     "home_screen/drag_window_from_shelf_controller.h",
-    "home_screen/home_launcher_gesture_handler.cc",
-    "home_screen/home_launcher_gesture_handler.h",
     "home_screen/home_screen_controller.cc",
     "home_screen/home_screen_controller.h",
     "home_screen/home_screen_delegate.h",

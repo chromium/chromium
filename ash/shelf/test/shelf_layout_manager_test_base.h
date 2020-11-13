@@ -37,7 +37,6 @@ class ShelfLayoutManagerTestBase : public AshTestBase {
   views::Widget* CreateTestWidget();
 
   void RunGestureDragTests(const gfx::Point& shown, const gfx::Point& hidden);
-  void TestHomeLauncherGestureHandler(bool autohide_shelf);
 
   gfx::Rect GetVisibleShelfWidgetBoundsInScreen();
 

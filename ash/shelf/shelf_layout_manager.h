@@ -60,6 +60,7 @@ class Shelf;
 class ShelfLayoutManagerObserver;
 class ShelfLayoutManagerTestBase;
 class ShelfWidget;
+class SwipeHomeToOverviewController;
 
 // ShelfLayoutManager is the layout manager responsible for the shelf and
 // status widgets. The shelf is given the total available width and told the
@@ -282,6 +283,11 @@ class ASH_EXPORT ShelfLayoutManager
     return window_drag_controller_.get();
   }
 
+  SwipeHomeToOverviewController*
+  swipe_home_to_overview_controller_for_testing() {
+    return swipe_home_to_overview_controller_.get();
+  }
+
   HomeToOverviewNudgeController*
   home_to_overview_nudge_controller_for_testing() {
     return home_to_overview_nudge_controller_.get();
@@ -459,6 +465,7 @@ class ASH_EXPORT ShelfLayoutManager
                   float scroll_y);
   void CompleteDrag(const ui::LocatedEvent& event_in_screen);
   void CompleteAppListDrag(const ui::LocatedEvent& event_in_screen);
+  void CompleteDragHomeToOverview(const ui::LocatedEvent& event_in_screen);
   void CancelDrag(base::Optional<ShelfWindowDragResult> window_drag_result);
   void CompleteDragWithChangedVisibility();
 
@@ -628,6 +635,11 @@ class ASH_EXPORT ShelfLayoutManager
   // The window drag controller that will be used when a window can be dragged
   // up from shelf to homescreen, overview or splitview.
   std::unique_ptr<DragWindowFromShelfController> window_drag_controller_;
+
+  // The gesture controller that switches from home screen to overview when it
+  // detects an upward swipe from the home launcher shelf area.
+  std::unique_ptr<SwipeHomeToOverviewController>
+      swipe_home_to_overview_controller_;
 
   std::unique_ptr<HomeToOverviewNudgeController>
       home_to_overview_nudge_controller_;

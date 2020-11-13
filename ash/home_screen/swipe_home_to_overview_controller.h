@@ -16,7 +16,7 @@
 
 namespace ash {
 
-// Used by HomeLauncherGestureHandler to handle gesture drag events while the
+// Used by ShelfLayoutManager to handle gesture drag events while the
 // handler is in kSwipeHomeToOverview mode. The controller handles swipe gesture
 // from hot seat on the home screen. The gesture, if detected, transitions the
 // home screen to the overview UI.

@@ -14,8 +14,8 @@
 #include "ash/app_list/app_list_metrics.h"
 #include "ash/app_list/views/app_list_view.h"
 #include "ash/display/screen_orientation_controller.h"
-#include "ash/home_screen/home_launcher_gesture_handler.h"
 #include "ash/home_screen/home_screen_controller.h"
+#include "ash/home_screen/swipe_home_to_overview_controller.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/ash_pref_names.h"
@@ -160,21 +160,6 @@ int GetOffset(int offset, bool from_touchpad) {
     return prefs->GetBoolean(prefs::kNaturalScroll) ? -offset : offset;
 
   return prefs->GetBoolean(prefs::kMouseReverseScroll) ? -offset : offset;
-}
-
-// Returns HomeLauncherGestureHandler mode that should be used to handle shelf
-// gestures.
-ash::HomeLauncherGestureHandler::Mode
-GetHomeLauncherGestureHandlerModeForDrag() {
-  if (Shell::Get()->IsInTabletMode() &&
-      Shell::Get()->home_screen_controller() &&
-      Shell::Get()->home_screen_controller()->IsHomeScreenVisible() &&
-      Shell::Get()->overview_controller() &&
-      !Shell::Get()->overview_controller()->InOverviewSession()) {
-    return HomeLauncherGestureHandler::Mode::kSwipeHomeToOverview;
-  }
-
-  return HomeLauncherGestureHandler::Mode::kNone;
 }
 
 // Returns the |WorkspaceWindowState| of the currently active desk on the root
@@ -753,9 +738,10 @@ bool ShelfLayoutManager::ProcessGestureEvent(
       last_drag_velocity_ =
           event_in_screen.AsGestureEvent()->details().velocity_y();
     }
-    if (drag_status_ == kDragAppListInProgress ||
-        drag_status_ == kDragHomeToOverviewInProgress) {
+    if (drag_status_ == kDragAppListInProgress) {
       CompleteAppListDrag(event_in_screen);
+    } else if (drag_status_ == kDragHomeToOverviewInProgress) {
+      CompleteDragHomeToOverview(event_in_screen);
     } else {
       CompleteDrag(event_in_screen);
     }
@@ -2013,42 +1999,6 @@ bool ShelfLayoutManager::IsShelfAutoHideForFullscreenMaximized() const {
          active_window->autohide_shelf_when_maximized_or_fullscreen();
 }
 
-bool ShelfLayoutManager::ShouldHomeGestureHandleEvent(float scroll_y) const {
-  // If the shelf is not visible, home gesture shouldn't trigger.
-  if (!IsVisible())
-    return false;
-
-  const bool up_on_shown_hotseat =
-      hotseat_state() == HotseatState::kShownHomeLauncher && scroll_y < 0;
-  if (Shell::Get()->IsInTabletMode() && up_on_shown_hotseat) {
-    return GetHomeLauncherGestureHandlerModeForDrag() ==
-           HomeLauncherGestureHandler::Mode::kSwipeHomeToOverview;
-  }
-
-  if (Shell::Get()->IsInTabletMode()) {
-    if (hotseat_state() != HotseatState::kShownHomeLauncher &&
-        hotseat_state() != HotseatState::kNone) {
-      // If hotseat is hidden or extended (in-app or in-overview), do not let
-      // HomeLauncherGestureHandler handle the events.
-      return false;
-    }
-
-    const bool up_on_extended_hotseat =
-        hotseat_state() == HotseatState::kExtended && scroll_y < 0;
-    if (!up_on_extended_hotseat)
-      return false;
-  }
-
-  // Scroll down events should never be handled, unless they are currently being
-  // handled.
-  if (scroll_y >= 0 && drag_status_ != kDragAppListInProgress &&
-      drag_status_ != kDragHomeToOverviewInProgress) {
-    return false;
-  }
-
-  return true;
-}
-
 ////////////////////////////////////////////////////////////////////////////////
 // Gesture drag related functions:
 bool ShelfLayoutManager::StartGestureDrag(
@@ -2060,22 +2010,21 @@ bool ShelfLayoutManager::StartGestureDrag(
   if (StartAppListDrag(gesture_in_screen, scroll_y_hint))
     return true;
 
-  if (ShouldHomeGestureHandleEvent(scroll_y_hint)) {
-    DragStatus previous_drag_status = drag_status_;
-    HomeLauncherGestureHandler* home_launcher_handler =
-        Shell::Get()->home_screen_controller()->home_launcher_gesture_handler();
-    const HomeLauncherGestureHandler::Mode target_mode =
-        GetHomeLauncherGestureHandlerModeForDrag();
+  // In tablet mode, let swipe_home_to_overview_controller handle swipe up
+  // gestures on the home launcher screen.
+  if (Shell::Get()->IsInTabletMode() &&
+      Shell::Get()->app_list_controller()->IsVisible(display_.id()) &&
+      Shell::Get()->app_list_controller()->GetTargetVisibility(display_.id()) &&
+      scroll_y_hint < 0) {
     drag_status_ = kDragHomeToOverviewInProgress;
-    if (home_launcher_handler->OnPressEvent(target_mode,
-                                            gesture_in_screen.location_f())) {
-      return true;
-    }
-    drag_status_ = previous_drag_status;
+    swipe_home_to_overview_controller_ =
+        std::make_unique<SwipeHomeToOverviewController>(display_.id());
+    return true;
   }
 
   if (Shell::Get()->app_list_controller()->IsVisible(display_.id()))
     return true;
+
   return StartShelfDrag(
       gesture_in_screen,
       gfx::Vector2dF(gesture_in_screen.details().scroll_x_hint(),
@@ -2087,12 +2036,11 @@ void ShelfLayoutManager::UpdateGestureDrag(
   float scroll_x = gesture_in_screen.details().scroll_x();
   float scroll_y = gesture_in_screen.details().scroll_y();
 
-  HomeLauncherGestureHandler* home_launcher_handler =
-      Shell::Get()->home_screen_controller()->home_launcher_gesture_handler();
-  if (home_launcher_handler->IsDragInProgress() &&
-      home_launcher_handler->OnScrollEvent(
-          gesture_in_screen.details().bounding_box_f().CenterPoint(), scroll_x,
-          scroll_y)) {
+  if (drag_status_ == kDragHomeToOverviewInProgress) {
+    DCHECK(swipe_home_to_overview_controller_);
+    swipe_home_to_overview_controller_->Drag(
+        gesture_in_screen.details().bounding_box_f().CenterPoint(), scroll_x,
+        scroll_y);
     return;
   }
 
@@ -2113,11 +2061,12 @@ void ShelfLayoutManager::AttemptToDragByMouse(
 
 void ShelfLayoutManager::StartMouseDrag(const ui::MouseEvent& mouse_in_screen) {
   float scroll_y_hint = mouse_in_screen.y() - last_mouse_drag_position_.y();
-  if (!StartAppListDrag(mouse_in_screen, scroll_y_hint))
+  if (!StartAppListDrag(mouse_in_screen, scroll_y_hint)) {
     StartShelfDrag(
         mouse_in_screen,
         gfx::Vector2dF(mouse_in_screen.x() - last_mouse_drag_position_.x(),
                        scroll_y_hint));
+  }
 }
 
 void ShelfLayoutManager::UpdateMouseDrag(
@@ -2164,8 +2113,10 @@ void ShelfLayoutManager::ReleaseMouseDrag(
       drag_status_ = kDragNone;
       break;
     case kDragAppListInProgress:
-    case kDragHomeToOverviewInProgress:
       CompleteAppListDrag(mouse_in_screen);
+      break;
+    case kDragHomeToOverviewInProgress:
+      CompleteDragHomeToOverview(mouse_in_screen);
       break;
     case kDragInProgress:
       CompleteDrag(mouse_in_screen);
@@ -2194,8 +2145,8 @@ bool ShelfLayoutManager::IsDragAllowed() const {
 bool ShelfLayoutManager::StartAppListDrag(
     const ui::LocatedEvent& event_in_screen,
     float scroll_y_hint) {
-  // If the home screen is available, gesture dragging is handled by
-  // HomeLauncherGestureHandler.
+  // In tablet mode, home launcher gestures are handled by
+  // `swipe_home_to_overview_controller_`.
   if (Shell::Get()->IsInTabletMode() && event_in_screen.IsGestureEvent())
     return false;
 
@@ -2386,20 +2337,6 @@ void ShelfLayoutManager::CompleteAppListDrag(
   if (drag_status_ == kDragNone)
     return;
 
-  HomeLauncherGestureHandler* home_launcher_handler =
-      Shell::Get()->home_screen_controller()->home_launcher_gesture_handler();
-  DCHECK(home_launcher_handler);
-  base::Optional<float> velocity_y;
-  if (event_in_screen.type() == ui::ET_SCROLL_FLING_START) {
-    velocity_y = base::make_optional(
-        event_in_screen.AsGestureEvent()->details().velocity_y());
-  }
-  if (home_launcher_handler->OnReleaseEvent(event_in_screen.location_f(),
-                                            velocity_y)) {
-    drag_status_ = kDragNone;
-    return;
-  }
-
   using ash::AppListViewState;
   AppListViewState app_list_state =
       Shell::Get()->app_list_controller()->CalculateStateAfterShelfDrag(
@@ -2413,17 +2350,27 @@ void ShelfLayoutManager::CompleteAppListDrag(
   drag_status_ = kDragNone;
 }
 
+void ShelfLayoutManager::CompleteDragHomeToOverview(
+    const ui::LocatedEvent& event_in_screen) {
+  base::Optional<float> velocity_y;
+  if (event_in_screen.type() == ui::ET_SCROLL_FLING_START) {
+    velocity_y = base::make_optional(
+        event_in_screen.AsGestureEvent()->details().velocity_y());
+  }
+  DCHECK(swipe_home_to_overview_controller_);
+  swipe_home_to_overview_controller_->EndDrag(event_in_screen.location_f(),
+                                              velocity_y);
+  swipe_home_to_overview_controller_.reset();
+  drag_status_ = kDragNone;
+}
+
 void ShelfLayoutManager::CancelDrag(
     base::Optional<ShelfWindowDragResult> window_drag_result) {
-  if (drag_status_ == kDragAppListInProgress ||
-      drag_status_ == kDragHomeToOverviewInProgress) {
-    HomeLauncherGestureHandler* home_launcher_handler =
-        Shell::Get()->home_screen_controller()->home_launcher_gesture_handler();
-    DCHECK(home_launcher_handler);
-    if (home_launcher_handler->IsDragInProgress())
-      home_launcher_handler->Cancel();
-    else
-      Shell::Get()->app_list_controller()->DismissAppList();
+  if (drag_status_ == kDragAppListInProgress) {
+    Shell::Get()->app_list_controller()->DismissAppList();
+  } else if (drag_status_ == kDragHomeToOverviewInProgress) {
+    swipe_home_to_overview_controller_->CancelDrag();
+    swipe_home_to_overview_controller_.reset();
   } else {
     // Set |drag_status_| to kDragCancelInProgress to set the
     // auto hide state to |drag_auto_hide_state_|, which is the

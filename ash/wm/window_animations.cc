@@ -9,8 +9,6 @@
 #include <utility>
 #include <vector>
 
-#include "ash/home_screen/home_launcher_gesture_handler.h"
-#include "ash/home_screen/home_screen_controller.h"
 #include "ash/public/cpp/metrics_util.h"
 #include "ash/public/cpp/window_animation_types.h"
 #include "ash/shelf/shelf.h"

@@ -168,7 +168,7 @@ void ContentsView::ResetForShow() {
   SetActiveState(AppListState::kStateApps, /*animate=*/false);
   // In side shelf, the opacity of the contents is not animated so set it to the
   // final state. In tablet mode, opacity of the elements is controlled by the
-  // HomeLauncherGestureHandler which expects these elements to be opaque.
+  // HomeScreenController which expects these elements to be opaque.
   // Otherwise the contents animate from 0 to 1 so set the initial opacity to 0.
   if (app_list_view_->is_side_shelf() || app_list_view_->is_tablet_mode()) {
     AnimateToViewState(AppListViewState::kFullscreenAllApps, base::TimeDelta());

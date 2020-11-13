@@ -1590,8 +1590,8 @@ TEST_P(HotseatWidgetTest, HotseatFlushWithScreenBottomInClamshell) {
   EXPECT_EQ(hotseat_bottom, display_height);
 }
 
-// Tests that when hotseat and drag-window-to-overview features are both
-// enabled, HomeLauncherGestureHandler can receive and process events properly.
+// Tests that upward drag gesture from the shelf in tablet mode affects the
+// active window presentation.
 TEST_P(HotseatWidgetTest, DragActiveWindowInTabletMode) {
   GetPrimaryShelf()->SetAutoHideBehavior(shelf_auto_hide_behavior());
   TabletModeControllerTestApi().EnterTabletMode();
