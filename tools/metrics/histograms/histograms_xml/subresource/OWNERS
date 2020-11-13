@@ -4,4 +4,5 @@
 #  - You work in the same area as them.
 #  - They are already a good reviewer for the non-metrics part of the CL.
 # See tools/metrics/histograms/OWNERS for details.
+csharrison@chromium.org
 tbansal@chromium.org
