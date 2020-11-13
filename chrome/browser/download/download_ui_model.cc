@@ -7,6 +7,7 @@
 #include "base/i18n/rtl.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/download/download_commands.h"
 #include "chrome/browser/download/offline_item_utils.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
@@ -26,9 +27,9 @@
 #include "chrome/browser/ui/browser.h"
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/chromeos/note_taking_helper.h"
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 using base::TimeDelta;
 using download::DownloadItem;
@@ -612,12 +613,12 @@ void DownloadUIModel::ExecuteCommand(DownloadCommands* download_commands,
       download_commands->CopyFileAsImageToClipboard();
       break;
     case DownloadCommands::ANNOTATE:
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
       if (HasSupportedImageMimeType()) {
         chromeos::NoteTakingHelper::Get()->LaunchAppForNewNote(
             profile(), GetTargetFilePath());
       }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
       break;
     case DownloadCommands::DEEP_SCAN:
       break;

@@ -25,10 +25,6 @@
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
 
-#if defined(OS_CHROMEOS)
-#include "content/public/browser/download_item_utils.h"
-#endif
-
 void DragDownloadItem(const download::DownloadItem* download,
                       const gfx::Image* icon,
                       gfx::NativeView view) {

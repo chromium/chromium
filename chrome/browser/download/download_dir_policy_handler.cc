@@ -11,6 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/download/download_dir_util.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/policy/policy_path_parser.h"
@@ -37,9 +38,11 @@ bool DownloadDirPolicyHandler::CheckPolicySettings(
   if (!CheckAndGetValue(policies, errors, &value))
     return false;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Download directory can only be set as a user policy. If it is set through
   // platform policy for a chromeos=1 build, ignore it.
+  // TODO(https://crbug.com/1148846): Sort out download directory policy for
+  // lacros.
   if (value &&
       policies.Get(policy_name())->scope != policy::POLICY_SCOPE_USER) {
     errors->AddError(policy_name(), IDS_POLICY_SCOPE_ERROR);
@@ -76,7 +79,9 @@ void DownloadDirPolicyHandler::ApplyPolicySettingsWithParameters(
   // Otherwise, it would enable a user to bypass the mandatory policy.
   if (policies.Get(policy_name())->level == policy::POLICY_LEVEL_MANDATORY) {
     prefs->SetBoolean(prefs::kPromptForDownload, false);
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    // TODO(https://crbug.com/1148846): Sort out download directory policy for
+    // lacros.
     if (download_dir_util::DownloadToDrive(string_value, parameters)) {
       prefs->SetBoolean(drive::prefs::kDisableDrive, false);
     }

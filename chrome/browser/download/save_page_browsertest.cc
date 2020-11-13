@@ -24,6 +24,7 @@
 #include "base/test/test_file_util.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/download/chrome_download_manager_delegate.h"
 #include "chrome/browser/download/download_core_service.h"
@@ -793,7 +794,7 @@ IN_PROC_BROWSER_TEST_F(SavePageBrowserTest, MAYBE_SavePageAsMHTML) {
   }
 
 // On ChromeOS, the default should be MHTML.
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   ASSERT_EQ("mhtml",
             select_file_dialog_factory->GetLastDialog()->default_extension());
 #else

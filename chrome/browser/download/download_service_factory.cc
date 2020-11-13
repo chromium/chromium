@@ -14,6 +14,7 @@
 #include "base/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/background_fetch/background_fetch_download_client.h"
 #include "chrome/browser/chromeos/plugin_vm/plugin_vm_image_download_client.h"
 #include "chrome/browser/download/deferred_client_wrapper.h"
@@ -59,12 +60,12 @@ std::unique_ptr<download::Client> CreateBackgroundFetchDownloadClient(
   return std::make_unique<BackgroundFetchDownloadClient>(profile);
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 std::unique_ptr<download::Client> CreatePluginVmImageDownloadClient(
     Profile* profile) {
   return std::make_unique<plugin_vm::PluginVmImageDownloadClient>(profile);
 }
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Called on profile created to retrieve the BlobStorageContextGetter.
 void DownloadOnProfileCreated(download::BlobContextGetterCallback callback,
@@ -138,14 +139,14 @@ std::unique_ptr<KeyedService> DownloadServiceFactory::BuildServiceInstanceFor(
       std::make_unique<download::DeferredClientWrapper>(
           base::BindOnce(&CreateBackgroundFetchDownloadClient), key)));
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (!key->IsOffTheRecord()) {
     clients->insert(std::make_pair(
         download::DownloadClient::PLUGIN_VM_IMAGE,
         std::make_unique<download::DeferredClientWrapper>(
             base::BindOnce(&CreatePluginVmImageDownloadClient), key)));
   }
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Build in memory download service for incognito profile.
   if (key->IsOffTheRecord() &&

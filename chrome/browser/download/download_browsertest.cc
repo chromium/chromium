@@ -40,6 +40,7 @@
 #include "base/test/test_file_util.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_notification_types.h"
@@ -392,7 +393,7 @@ bool IsDownloadExternallyRemoved(DownloadItem* item) {
   return item->GetFileExternallyRemoved();
 }
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 // Called when a download starts. Marks the download as hidden.
 void SetHiddenDownloadCallback(DownloadItem* item,
                                download::DownloadInterruptReason reason) {
@@ -2719,7 +2720,8 @@ IN_PROC_BROWSER_TEST_F(DownloadTestWithHistogramTester,
 }
 
 // Times out often on debug ChromeOS because test is slow.
-#if defined(OS_CHROMEOS) && (!defined(NDEBUG) || defined(MEMORY_SANITIZER))
+#if BUILDFLAG(IS_CHROMEOS_ASH) && \
+    (!defined(NDEBUG) || defined(MEMORY_SANITIZER))
 #define MAYBE_SaveLargeImage DISABLED_SaveLargeImage
 #elif defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX)
 // Flaking on Windows, macOS, and Linux. https://crbug.com/1141263
@@ -3791,7 +3793,8 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, DownloadTest_PauseResumeCancel) {
 // quarantining files on Mac because it is not a cocoa app.
 // TODO(benjhayden) test the equivalents on other platforms.
 
-#if defined(OS_LINUX) && !defined(OS_CHROMEOS) && defined(ARCH_CPU_ARM_FAMILY)
+#if (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) && \
+    defined(ARCH_CPU_ARM_FAMILY)
 // Timing out on ARM linux: http://crbug.com/238459
 #define MAYBE_DownloadTest_PercentComplete DISABLED_DownloadTest_PercentComplete
 #else
@@ -4721,7 +4724,7 @@ IN_PROC_BROWSER_TEST_F(
 
 // The rest of these tests rely on the download shelf, which ChromeOS doesn't
 // use.
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 // Test that the download shelf is shown by starting a download.
 IN_PROC_BROWSER_TEST_F(DownloadTest, DownloadAndWait) {
   embedded_test_server()->ServeFilesFromDirectory(GetTestDataDirectory());
@@ -4988,4 +4991,4 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, CrxDenyInstallClosesShelf) {
   // Download shelf should close.
   EXPECT_FALSE(browser()->window()->IsDownloadShelfVisible());
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)

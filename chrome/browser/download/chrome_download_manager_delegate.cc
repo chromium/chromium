@@ -26,6 +26,7 @@
 #include "base/task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/data_reduction_proxy/data_reduction_proxy_chrome_settings.h"
 #include "chrome/browser/data_reduction_proxy/data_reduction_proxy_chrome_settings_factory.h"
@@ -1462,7 +1463,8 @@ bool ChromeDownloadManagerDelegate::IsOpenInBrowserPreferreredForFile(
 
   // On Android, always prefer opening with an external app. On ChromeOS, there
   // are no external apps so just allow all opens to be handled by the "System."
-#if !defined(OS_ANDROID) && !defined(OS_CHROMEOS) && BUILDFLAG(ENABLE_PLUGINS)
+#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH) && \
+    BUILDFLAG(ENABLE_PLUGINS)
   // TODO(asanka): Consider other file types and MIME types.
   // http://crbug.com/323561
   if (path.MatchesExtension(FILE_PATH_LITERAL(".pdf")) ||

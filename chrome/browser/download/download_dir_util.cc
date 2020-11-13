@@ -8,22 +8,22 @@
 #include "chrome/browser/policy/policy_path_parser.h"
 #include "components/policy/core/browser/configuration_policy_handler_parameters.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/chromeos/drive/drive_integration_service.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Drive root folder relative to its mount point.
 const base::FilePath::CharType* kRootRelativeToDriveMount =
     FILE_PATH_LITERAL("root");
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }  // namespace
 
 namespace download_dir_util {
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 const char kDriveNamePolicyVariableName[] = "${google_drive}";
 
 bool DownloadToDrive(const base::FilePath::StringType& string_value,
@@ -54,12 +54,12 @@ bool ExpandDrivePolicyVariable(Profile* profile,
       position, strlen(kDriveNamePolicyVariableName), google_drive_root));
   return true;
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 base::FilePath::StringType ExpandDownloadDirectoryPath(
     const base::FilePath::StringType& string_value,
     const policy::PolicyHandlerParameters& parameters) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   return string_value;
 #else
   return policy::path_parser::ExpandPathVariables(string_value);

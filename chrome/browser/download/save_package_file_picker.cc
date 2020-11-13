@@ -15,6 +15,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/download/chrome_download_manager_delegate.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/platform_util.h"
@@ -85,7 +86,7 @@ void AddWebBundleFileFileTypeInfo(
 }
 
 // Chrome OS doesn't support HTML-Complete. crbug.com/154823
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 // Adds "Webpage, Complete" type to FileTypeInfo.
 void AddCompleteFileTypeInfo(
     ui::SelectFileDialog::FileTypeInfo* file_type_info,
@@ -100,7 +101,7 @@ void AddCompleteFileTypeInfo(
     extensions.push_back(extra_extension);
   file_type_info->extensions.push_back(extensions);
 }
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Checks whether this is a blocked page (e.g., when a child user is accessing
 // a mature site).
@@ -132,7 +133,7 @@ bool SavePackageFilePicker::ShouldSaveAsOnlyHTML(
 }
 
 bool SavePackageFilePicker::ShouldSaveAsMHTML() const {
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kSavePageAsMHTML))
     return false;
@@ -191,10 +192,10 @@ SavePackageFilePicker::SavePackageFilePicker(
       }
     }
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
     AddCompleteFileTypeInfo(&file_type_info, extra_extension);
     save_types_.push_back(content::SAVE_PAGE_TYPE_AS_COMPLETE_HTML);
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
     file_type_info.include_all_files = false;
 

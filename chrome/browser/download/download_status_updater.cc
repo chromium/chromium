@@ -11,6 +11,7 @@
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 
 namespace {
 
@@ -128,7 +129,7 @@ void DownloadStatusUpdater::OnDownloadUpdated(content::DownloadManager* manager,
   UpdateAppIconDownloadProgress(item);
 }
 
-#if defined(OS_ANDROID) || defined(OS_CHROMEOS)
+#if defined(OS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
 void DownloadStatusUpdater::UpdateAppIconDownloadProgress(
     download::DownloadItem* download) {
   // TODO(avi): Implement for Android?

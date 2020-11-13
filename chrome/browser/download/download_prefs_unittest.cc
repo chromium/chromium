@@ -7,6 +7,7 @@
 #include "base/files/file_path.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/download/download_prompt_status.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
@@ -18,12 +19,12 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/chromeos/drive/drive_integration_service.h"
 #include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "components/drive/drive_pref_names.h"
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 using safe_browsing::FileTypePolicies;
 
@@ -361,7 +362,7 @@ TEST(DownloadPrefsTest, DefaultPathChangedToInvalidValue) {
             download_prefs.GetDefaultDownloadDirectory());
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 void ExpectValidDownloadDir(Profile* profile,
                             DownloadPrefs* prefs,
                             base::FilePath path) {
@@ -447,7 +448,7 @@ TEST(DownloadPrefsTest, DownloadDirSanitization) {
     EXPECT_EQ(prefs2.DownloadPath(), default_dir2);
   }
 }
-#endif  // OS_CHROMEOS
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #ifdef OS_ANDROID
 TEST(DownloadPrefsTest, DownloadLaterPrefs) {

@@ -11,6 +11,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/download/download_dir_util.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/common/pref_names.h"
@@ -27,7 +28,7 @@ namespace {
 
 const char* kUserIDHash = "deadbeef";
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 const char* kRelativeToDriveRoot = "/home/";
 #endif
 
@@ -54,7 +55,7 @@ class DownloadDirPolicyHandlerTest
   scoped_refptr<policy::ConfigurationPolicyPrefStore> recommended_store_;
 };
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(DownloadDirPolicyHandlerTest, SetDownloadDirectory) {
   policy::PolicyMap policy;
   EXPECT_FALSE(store_->GetValue(prefs::kPromptForDownload, NULL));
@@ -74,7 +75,7 @@ TEST_F(DownloadDirPolicyHandlerTest, SetDownloadDirectory) {
 }
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(DownloadDirPolicyHandlerTest, SetDownloadToDrive) {
   EXPECT_FALSE(store_->GetValue(prefs::kPromptForDownload, NULL));
 
