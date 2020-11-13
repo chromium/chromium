@@ -1085,7 +1085,8 @@ void NetworkContext::SetExpectCTTestReport(
     const GURL& report_uri,
     SetExpectCTTestReportCallback callback) {
   std::string decoded_dummy_cert;
-  DCHECK(base::Base64Decode(kTestReportCert, &decoded_dummy_cert));
+  bool decoded = base::Base64Decode(kTestReportCert, &decoded_dummy_cert);
+  DCHECK(decoded);
   scoped_refptr<net::X509Certificate> dummy_cert =
       net::X509Certificate::CreateFromBytes(decoded_dummy_cert.data(),
                                             decoded_dummy_cert.size());
