@@ -372,6 +372,7 @@ import java.util.List;
     @Test
     @MediumTest
     @Feature({"Downloads"})
+    @DisabledTest(message = "crbug.com/1148568")
     public void testDuplicateHttpDownload_OpenNewTabAndReplace() throws Exception {
         final String url =
                 mTestServer.getURL(TEST_DOWNLOAD_DIRECTORY + "get.html");
