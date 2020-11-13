@@ -2293,8 +2293,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Extensions.InstanceID.GetToken.OptionsCount" units="options"
-    expires_after="2019-01-30">
+    expires_after="M91">
   <owner>peter@chromium.org</owner>
+  <owner>knollr@chromium.org</owner>
   <summary>
     The number of options provided to the GetToken request. Recorded when the
     extension has made a call to chrome.instanceID.getToken().
