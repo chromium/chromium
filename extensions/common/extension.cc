@@ -84,7 +84,7 @@ bool IsManifestSupported(int manifest_version,
                          Manifest::Type type,
                          int creation_flags,
                          std::string* warning) {
-  static constexpr int kMaximumSupportedManifestVersion = 2;
+  static constexpr int kMaximumSupportedManifestVersion = 3;
   static_assert(kMaximumSupportedManifestVersion >= kModernManifestVersion,
                 "The modern manifest version must be supported.");
 

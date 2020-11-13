@@ -11,9 +11,6 @@
 namespace extensions {
 
 using ManifestV3PermissionsTest = ManifestTest;
-const char* kManifestV3NotSupported =
-    "The maximum currently-supported manifest version is 2, but this is 3.  "
-    "Certain features may not work as expected.";
 
 TEST_F(ManifestV3PermissionsTest, WebRequestBlockingPermissionsTest) {
   const std::string kPermissionRequiresV2OrLower =
@@ -22,18 +19,17 @@ TEST_F(ManifestV3PermissionsTest, WebRequestBlockingPermissionsTest) {
     // Manifest V3 extension that is not policy installed. This should trigger a
     // warning that manifest V3 is not currently supported and that the
     // webRequestBlocking permission requires a lower manifest version.
-    scoped_refptr<Extension> extension(LoadAndExpectWarnings(
-        "web_request_blocking_v3.json",
-        {kManifestV3NotSupported, kPermissionRequiresV2OrLower},
+    scoped_refptr<Extension> extension(LoadAndExpectWarning(
+        "web_request_blocking_v3.json", kPermissionRequiresV2OrLower,
         extensions::Manifest::Location::UNPACKED));
     ASSERT_TRUE(extension);
   }
   {
     // Manifest V3 extension that is policy extension. This should only trigger
     // a warning that manifest V3 is not supported currently.
-    scoped_refptr<Extension> extension(LoadAndExpectWarnings(
-        "web_request_blocking_v3.json", {kManifestV3NotSupported},
-        extensions::Manifest::Location::EXTERNAL_POLICY));
+    scoped_refptr<Extension> extension(
+        LoadAndExpectSuccess("web_request_blocking_v3.json",
+                             extensions::Manifest::Location::EXTERNAL_POLICY));
     ASSERT_TRUE(extension);
   }
   {
@@ -53,9 +49,8 @@ TEST_F(ManifestV3PermissionsTest, DisallowNaClTest) {
     // Unpacked Manifest V3 extension should trigger a warning that
     // manifest V3 is not currently supported and that 'nacl_modules' requires a
     // lower manifest version.
-    scoped_refptr<Extension> extension(LoadAndExpectWarnings(
-        "nacl_module_v3.json",
-        {kManifestV3NotSupported, kPermissionRequiresV2OrLower},
+    scoped_refptr<Extension> extension(LoadAndExpectWarning(
+        "nacl_module_v3.json", kPermissionRequiresV2OrLower,
         extensions::Manifest::Location::UNPACKED));
     ASSERT_TRUE(extension);
   }
