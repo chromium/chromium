@@ -189,13 +189,19 @@ void PaintChunker::CreateScrollHitTestChunk(
 bool PaintChunker::ProcessBackgroundColorCandidate(const PaintChunk::Id& id,
                                                    Color color,
                                                    float area) {
+  if (color == Color::kTransparent)
+    return false;
+
   bool created_new_chunk = EnsureCurrentChunk(id);
-  if (color != Color::kTransparent &&
-      (area >= candidate_background_area_ ||
-       area >= kMinBackgroundColorCoverageRatio *
-                   chunks_->back().bounds.Width() *
-                   chunks_->back().bounds.Height())) {
-    candidate_background_color_ = color;
+  float min_background_area = kMinBackgroundColorCoverageRatio *
+                              chunks_->back().bounds.Width() *
+                              chunks_->back().bounds.Height();
+  if (created_new_chunk || area >= candidate_background_area_ ||
+      area >= min_background_area) {
+    candidate_background_color_ =
+        candidate_background_area_ >= min_background_area
+            ? candidate_background_color_.Blend(color)
+            : color;
     candidate_background_area_ = area;
   }
   return created_new_chunk;
