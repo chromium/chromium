@@ -768,5 +768,31 @@
     "bases": ["fast/scrolling/scrollbars"],
     "args": ["--enable-features=ScrollUnification",
              "--enable-threaded-compositing"]
+  },
+  {
+    "prefix": "wheel-event-regions",
+    "bases": ["fast/dom/shadow/wheel-event-in-shadow-dom.html",
+              "fast/dom/shadow/wheel-event-on-input-in-shadow-dom.html",
+              "fast/compositor-wheel-scroll-latching",
+              "fast/events/move-element-with-wheel-and-touch-event-listeners.html",
+              "fast/events/iframe-mousewheel.html",
+              "fast/events/platform-wheelevent-paging-xy-in-scrolling-div.html",
+              "fast/events/platform-wheelevent-paging-xy-in-scrolling-page.html",
+              "fast/events/platform-wheelevent-paging-x-in-scrolling-page.html",
+              "fast/events/platform-wheelevent-paging-y-in-scrolling-page.html",
+              "fast/events/platform-wheelevent-paging-x-in-non-scrolling-div.html",
+              "fast/events/platform-wheelevent-paging-y-in-non-scrolling-div.html",
+              "fast/events/platform-wheelevent-paging-x-in-non-scrolling-page.html",
+              "fast/events/platform-wheelevent-paging-y-in-non-scrolling-page.html",
+              "fast/events/wheel",
+              "fast/scrolling/document-level-wheel-event-listener-passive-by-default.html",
+              "http/tests/devtools/layers/layer-scroll-rects-get.js",
+              "pointer-lock/wheel-event-cancelable.html",
+              "pointer-lock/wheel-event-target.html",
+              "scrollbars/scrollevent-iframe-no-scrolling-wheel.html",
+              "scrollingcoordinator/donot-compute-non-fast-scrollable-region-for-hidden-frames.html",
+              "scrollingcoordinator/plugin-with-wheel-handler.html",
+              "scrollingcoordinator/non-fast-scrollable-region-nested.html"],
+    "args": ["--enable-features=WheelEventRegions"]
   }
 ]
