@@ -31,7 +31,7 @@ defaults = args.defaults(
     refs = None,
 )
 
-def declare_bucket(milestone_vars, *, branch_selector = branches.MAIN_ONLY):
+def declare_bucket(milestone_vars, *, branch_selector = branches.MAIN):
     if not branches.matches(branch_selector):
         return
 
@@ -317,7 +317,7 @@ def ordering(*, short_names = None, categories = None):
         categories = categories or [],
     )
 
-def console_view(*, name, branch_selector = branches.MAIN_ONLY, ordering = None, **kwargs):
+def console_view(*, name, branch_selector = branches.MAIN, ordering = None, **kwargs):
     """Create a console view, optionally providing an entry ordering.
 
     Args:
@@ -364,7 +364,7 @@ def console_view(*, name, branch_selector = branches.MAIN_ONLY, ordering = None,
         ordering = ordering or {},
     )
 
-def overview_console_view(*, name, top_level_ordering, branch_selector = branches.MAIN_ONLY, **kwargs):
+def overview_console_view(*, name, top_level_ordering, branch_selector = branches.MAIN, **kwargs):
     """Create an overview console view.
 
     An overview console view is a console view that contains a subset of
@@ -417,7 +417,7 @@ def console_view_entry(*, category = None, short_name = None):
 def ci_builder(
         *,
         name,
-        branch_selector = branches.MAIN_ONLY,
+        branch_selector = branches.MAIN,
         add_to_console_view = args.DEFAULT,
         console_view = args.DEFAULT,
         main_console_view = args.DEFAULT,

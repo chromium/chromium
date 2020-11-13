@@ -283,7 +283,7 @@ defaults = args.defaults(
 def builder(
         *,
         name,
-        branch_selector = branches.MAIN_ONLY,
+        branch_selector = branches.MAIN,
         bucket = args.DEFAULT,
         executable = args.DEFAULT,
         triggered_by = args.DEFAULT,

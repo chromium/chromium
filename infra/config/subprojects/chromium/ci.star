@@ -16,13 +16,13 @@ ci.set_defaults(
     bucketed_triggers = settings.is_master,
 )
 
-ci.declare_bucket(settings, branch_selector = branches.ALL_RELEASES)
+ci.declare_bucket(settings, branch_selector = branches.ALL_BRANCHES)
 
 # Automatically maintained consoles
 
 ci.console_view(
     name = "chromium",
-    branch_selector = branches.STANDARD_RELEASES,
+    branch_selector = branches.STANDARD_MILESTONE,
     include_experimental_builds = True,
     ordering = {
         "*type*": ci.ordering(short_names = ["dbg", "rel", "off"]),
@@ -36,7 +36,7 @@ ci.console_view(
 
 ci.console_view(
     name = "chromium.android",
-    branch_selector = branches.STANDARD_RELEASES,
+    branch_selector = branches.STANDARD_MILESTONE,
     ordering = {
         None: ["cronet", "builder", "tester"],
         "*cpu*": ["arm", "arm64", "x86"],
@@ -57,7 +57,7 @@ ci.console_view(
 
 ci.console_view(
     name = "chromium.chromiumos",
-    branch_selector = branches.ALL_RELEASES,
+    branch_selector = branches.ALL_BRANCHES,
     ordering = {
         None: ["default"],
         "default": ci.ordering(short_names = ["ful", "rel"]),
@@ -93,7 +93,7 @@ ci.console_view(
 
 ci.console_view(
     name = "chromium.dawn",
-    branch_selector = branches.STANDARD_RELEASES,
+    branch_selector = branches.STANDARD_MILESTONE,
     ordering = {
         None: ["ToT"],
         "*builder*": ["Builder"],
@@ -111,7 +111,7 @@ ci.console_view(
 
 ci.console_view(
     name = "chromium.fyi",
-    branch_selector = branches.STANDARD_RELEASES,
+    branch_selector = branches.STANDARD_MILESTONE,
     ordering = {
         None: [
             "closure_compilation",
@@ -176,7 +176,7 @@ ci.console_view(
 
 ci.console_view(
     name = "chromium.gpu",
-    branch_selector = branches.STANDARD_RELEASES,
+    branch_selector = branches.STANDARD_MILESTONE,
     ordering = {
         None: ["Windows", "Mac", "Linux"],
     },
@@ -215,7 +215,7 @@ ci.console_view(
 
 ci.console_view(
     name = "chromium.linux",
-    branch_selector = branches.STANDARD_RELEASES,
+    branch_selector = branches.STANDARD_MILESTONE,
     ordering = {
         None: ["release", "debug"],
         "release": ci.ordering(short_names = ["bld", "tst", "nsl", "gcc"]),
@@ -225,7 +225,7 @@ ci.console_view(
 
 ci.console_view(
     name = "chromium.mac",
-    branch_selector = branches.STANDARD_RELEASES,
+    branch_selector = branches.STANDARD_MILESTONE,
     ordering = {
         None: ["release"],
         "release": ci.ordering(short_names = ["bld"]),
@@ -236,7 +236,7 @@ ci.console_view(
 
 ci.console_view(
     name = "chromium.memory",
-    branch_selector = branches.STANDARD_RELEASES,
+    branch_selector = branches.STANDARD_MILESTONE,
     ordering = {
         None: ["win", "mac", "linux", "cros"],
         "*build-or-test*": ci.ordering(short_names = ["bld", "tst"]),
@@ -267,7 +267,7 @@ ci.console_view(
 
 ci.console_view(
     name = "chromium.win",
-    branch_selector = branches.STANDARD_RELEASES,
+    branch_selector = branches.STANDARD_MILESTONE,
     ordering = {
         None: ["release", "debug"],
         "debug|builder": ci.ordering(short_names = ["64", "32"]),
@@ -426,7 +426,7 @@ ci.android_builder(
 
 ci.android_builder(
     name = "Android WebView M (dbg)",
-    branch_selector = branches.STANDARD_RELEASES,
+    branch_selector = branches.STANDARD_MILESTONE,
     console_view_entry = ci.console_view_entry(
         category = "tester|webview",
         short_name = "M",
@@ -438,7 +438,7 @@ ci.android_builder(
 
 ci.android_builder(
     name = "Android WebView N (dbg)",
-    branch_selector = branches.STANDARD_RELEASES,
+    branch_selector = branches.STANDARD_MILESTONE,
     console_view_entry = ci.console_view_entry(
         category = "tester|webview",
         short_name = "N",
@@ -450,7 +450,7 @@ ci.android_builder(
 
 ci.android_builder(
     name = "Android WebView O (dbg)",
-    branch_selector = branches.STANDARD_RELEASES,
+    branch_selector = branches.STANDARD_MILESTONE,
     console_view_entry = ci.console_view_entry(
         category = "tester|webview",
         short_name = "O",
@@ -462,7 +462,7 @@ ci.android_builder(
 
 ci.android_builder(
     name = "Android WebView P (dbg)",
-    branch_selector = branches.STANDARD_RELEASES,
+    branch_selector = branches.STANDARD_MILESTONE,
     console_view_entry = ci.console_view_entry(
         category = "tester|webview",
         short_name = "P",
@@ -474,7 +474,7 @@ ci.android_builder(
 
 ci.android_builder(
     name = "Android arm Builder (dbg)",
-    branch_selector = branches.STANDARD_RELEASES,
+    branch_selector = branches.STANDARD_MILESTONE,
     console_view_entry = ci.console_view_entry(
         category = "builder|arm",
         short_name = "32",
@@ -487,7 +487,7 @@ ci.android_builder(
 
 ci.android_builder(
     name = "Android arm64 Builder (dbg)",
-    branch_selector = branches.STANDARD_RELEASES,
+    branch_selector = branches.STANDARD_MILESTONE,
     console_view_entry = ci.console_view_entry(
         category = "builder|arm",
         short_name = "64",
@@ -501,7 +501,7 @@ ci.android_builder(
 
 ci.android_builder(
     name = "Android x64 Builder (dbg)",
-    branch_selector = branches.STANDARD_RELEASES,
+    branch_selector = branches.STANDARD_MILESTONE,
     console_view_entry = ci.console_view_entry(
         category = "builder|x86",
         short_name = "64",
@@ -513,7 +513,7 @@ ci.android_builder(
 
 ci.android_builder(
     name = "Android x86 Builder (dbg)",
-    branch_selector = branches.STANDARD_RELEASES,
+    branch_selector = branches.STANDARD_MILESTONE,
     console_view_entry = ci.console_view_entry(
         category = "builder|x86",
         short_name = "32",
@@ -525,7 +525,7 @@ ci.android_builder(
 
 ci.android_builder(
     name = "Cast Android (dbg)",
-    branch_selector = branches.STANDARD_RELEASES,
+    branch_selector = branches.STANDARD_MILESTONE,
     console_view_entry = ci.console_view_entry(
         category = "on_cq",
         short_name = "cst",
@@ -585,7 +585,7 @@ ci.android_builder(
 
 ci.android_builder(
     name = "Marshmallow 64 bit Tester",
-    branch_selector = branches.STANDARD_RELEASES,
+    branch_selector = branches.STANDARD_MILESTONE,
     console_view_entry = ci.console_view_entry(
         category = "tester|phone",
         short_name = "M",
@@ -609,7 +609,7 @@ ci.android_builder(
 
 ci.android_builder(
     name = "Nougat Phone Tester",
-    branch_selector = branches.STANDARD_RELEASES,
+    branch_selector = branches.STANDARD_MILESTONE,
     console_view_entry = ci.console_view_entry(
         category = "tester|phone",
         short_name = "N",
@@ -621,7 +621,7 @@ ci.android_builder(
 
 ci.android_builder(
     name = "Oreo Phone Tester",
-    branch_selector = branches.STANDARD_RELEASES,
+    branch_selector = branches.STANDARD_MILESTONE,
     console_view_entry = ci.console_view_entry(
         category = "tester|phone",
         short_name = "O",
@@ -668,7 +668,7 @@ ci.android_builder(
 
 ci.android_builder(
     name = "android-cronet-arm-dbg",
-    branch_selector = branches.STANDARD_RELEASES,
+    branch_selector = branches.STANDARD_MILESTONE,
     console_view_entry = ci.console_view_entry(
         category = "cronet|arm",
         short_name = "dbg",
@@ -680,7 +680,7 @@ ci.android_builder(
 
 ci.android_builder(
     name = "android-cronet-arm-rel",
-    branch_selector = branches.STANDARD_RELEASES,
+    branch_selector = branches.STANDARD_MILESTONE,
     console_view_entry = ci.console_view_entry(
         category = "cronet|arm",
         short_name = "rel",
@@ -718,7 +718,7 @@ ci.android_builder(
 
 ci.android_builder(
     name = "android-cronet-arm-rel-kitkat-tests",
-    branch_selector = branches.STANDARD_RELEASES,
+    branch_selector = branches.STANDARD_MILESTONE,
     console_view_entry = ci.console_view_entry(
         category = "cronet|test",
         short_name = "k",
@@ -731,7 +731,7 @@ ci.android_builder(
 
 ci.android_builder(
     name = "android-cronet-arm-rel-lollipop-tests",
-    branch_selector = branches.STANDARD_RELEASES,
+    branch_selector = branches.STANDARD_MILESTONE,
     console_view_entry = ci.console_view_entry(
         category = "cronet|test",
         short_name = "l",
@@ -793,7 +793,7 @@ ci.android_builder(
 
 ci.android_builder(
     name = "android-lollipop-arm-rel",
-    branch_selector = branches.STANDARD_RELEASES,
+    branch_selector = branches.STANDARD_MILESTONE,
     console_view_entry = ci.console_view_entry(
         category = "on_cq",
         short_name = "L",
@@ -805,7 +805,7 @@ ci.android_builder(
 
 ci.android_builder(
     name = "android-marshmallow-arm64-rel",
-    branch_selector = branches.STANDARD_RELEASES,
+    branch_selector = branches.STANDARD_MILESTONE,
     console_view_entry = ci.console_view_entry(
         category = "on_cq",
         short_name = "M",
@@ -817,7 +817,7 @@ ci.android_builder(
 
 ci.android_builder(
     name = "android-marshmallow-x86-rel",
-    branch_selector = branches.STANDARD_RELEASES,
+    branch_selector = branches.STANDARD_MILESTONE,
     console_view_entry = ci.console_view_entry(
         category = "builder_tester|x86",
         short_name = "M",
@@ -828,7 +828,7 @@ ci.android_builder(
 
 ci.android_builder(
     name = "android-nougat-arm64-rel",
-    branch_selector = branches.STANDARD_RELEASES,
+    branch_selector = branches.STANDARD_MILESTONE,
     console_view_entry = ci.console_view_entry(
         category = "builder_tester|arm64",
         short_name = "N",
@@ -839,7 +839,7 @@ ci.android_builder(
 
 ci.android_builder(
     name = "android-pie-arm64-dbg",
-    branch_selector = branches.STANDARD_RELEASES,
+    branch_selector = branches.STANDARD_MILESTONE,
     console_view_entry = ci.console_view_entry(
         category = "tester|phone",
         short_name = "P",
@@ -851,7 +851,7 @@ ci.android_builder(
 
 ci.android_builder(
     name = "android-pie-arm64-rel",
-    branch_selector = branches.STANDARD_RELEASES,
+    branch_selector = branches.STANDARD_MILESTONE,
     console_view_entry = ci.console_view_entry(
         category = "on_cq",
         short_name = "P",
@@ -936,7 +936,7 @@ ci.chromium_builder(
 
 ci.chromium_builder(
     name = "android-official",
-    branch_selector = branches.STANDARD_RELEASES,
+    branch_selector = branches.STANDARD_MILESTONE,
     main_console_view = settings.main_console_name,
     console_view_entry = ci.console_view_entry(
         category = "android",
@@ -948,7 +948,7 @@ ci.chromium_builder(
 
 ci.chromium_builder(
     name = "fuchsia-official",
-    branch_selector = branches.STANDARD_RELEASES,
+    branch_selector = branches.STANDARD_MILESTONE,
     main_console_view = settings.main_console_name,
     console_view_entry = ci.console_view_entry(
         category = "fuchsia",
@@ -985,7 +985,7 @@ ci.chromium_builder(
 
 ci.chromium_builder(
     name = "linux-official",
-    branch_selector = branches.STANDARD_RELEASES,
+    branch_selector = branches.STANDARD_MILESTONE,
     builderless = False,
     # TODO(https://crbug.com/1072012) Use the default console view and add
     # main_console_view = settings.main_console_name once the build is green
@@ -1049,7 +1049,7 @@ ci.chromium_builder(
 
 ci.chromium_builder(
     name = "win-official",
-    branch_selector = branches.STANDARD_RELEASES,
+    branch_selector = branches.STANDARD_MILESTONE,
     main_console_view = settings.main_console_name,
     console_view_entry = ci.console_view_entry(
         category = "win|off",
@@ -1086,7 +1086,7 @@ ci.chromium_builder(
 
 ci.chromium_builder(
     name = "win32-official",
-    branch_selector = branches.STANDARD_RELEASES,
+    branch_selector = branches.STANDARD_MILESTONE,
     main_console_view = settings.main_console_name,
     console_view_entry = ci.console_view_entry(
         category = "win|off",
@@ -1127,7 +1127,7 @@ ci.chromiumos_builder(
 
 ci.chromiumos_builder(
     name = "chromeos-amd64-generic-dbg",
-    branch_selector = branches.STANDARD_RELEASES,
+    branch_selector = branches.STANDARD_MILESTONE,
     console_view_entry = ci.console_view_entry(
         category = "simple|debug|x64",
         short_name = "dbg",
@@ -1138,7 +1138,7 @@ ci.chromiumos_builder(
 
 ci.chromiumos_builder(
     name = "chromeos-amd64-generic-rel",
-    branch_selector = branches.ALL_RELEASES,
+    branch_selector = branches.ALL_BRANCHES,
     console_view_entry = ci.console_view_entry(
         category = "simple|release|x64",
         short_name = "rel",
@@ -1158,7 +1158,7 @@ ci.chromiumos_builder(
 
 ci.chromiumos_builder(
     name = "chromeos-arm-generic-rel",
-    branch_selector = branches.ALL_RELEASES,
+    branch_selector = branches.ALL_BRANCHES,
     console_view_entry = ci.console_view_entry(
         category = "simple|release",
         short_name = "arm",
@@ -1169,7 +1169,7 @@ ci.chromiumos_builder(
 
 ci.chromiumos_builder(
     name = "chromeos-kevin-rel",
-    branch_selector = branches.ALL_RELEASES,
+    branch_selector = branches.ALL_BRANCHES,
     console_view_entry = ci.console_view_entry(
         category = "simple|release",
         short_name = "kvn",
@@ -1179,7 +1179,7 @@ ci.chromiumos_builder(
 
 ci.chromiumos_builder(
     name = "linux-chromeos-dbg",
-    branch_selector = branches.STANDARD_RELEASES,
+    branch_selector = branches.STANDARD_MILESTONE,
     console_view_entry = ci.console_view_entry(
         category = "default",
         short_name = "dbg",
@@ -1190,7 +1190,7 @@ ci.chromiumos_builder(
 
 ci.chromiumos_builder(
     name = "linux-chromeos-rel",
-    branch_selector = branches.ALL_RELEASES,
+    branch_selector = branches.ALL_BRANCHES,
     console_view_entry = ci.console_view_entry(
         category = "default",
         short_name = "rel",
@@ -1201,7 +1201,7 @@ ci.chromiumos_builder(
 
 ci.chromiumos_builder(
     name = "linux-lacros-builder-rel",
-    branch_selector = branches.STANDARD_RELEASES,
+    branch_selector = branches.STANDARD_MILESTONE,
     console_view_entry = ci.console_view_entry(
         category = "default",
         short_name = "lcr",
@@ -1214,7 +1214,7 @@ ci.chromiumos_builder(
 
 ci.chromiumos_builder(
     name = "linux-lacros-tester-rel",
-    branch_selector = branches.STANDARD_RELEASES,
+    branch_selector = branches.STANDARD_MILESTONE,
     console_view_entry = ci.console_view_entry(
         category = "default",
         short_name = "lcr",
@@ -1534,7 +1534,7 @@ ci.dawn_linux_builder(
 
 ci.dawn_linux_builder(
     name = "Dawn Linux x64 DEPS Builder",
-    branch_selector = branches.STANDARD_RELEASES,
+    branch_selector = branches.STANDARD_MILESTONE,
     console_view_entry = ci.console_view_entry(
         category = "DEPS|Linux|Builder",
         short_name = "x64",
@@ -1545,7 +1545,7 @@ ci.dawn_linux_builder(
 
 ci.dawn_thin_tester(
     name = "Dawn Linux x64 DEPS Release (Intel HD 630)",
-    branch_selector = branches.STANDARD_RELEASES,
+    branch_selector = branches.STANDARD_MILESTONE,
     console_view_entry = ci.console_view_entry(
         category = "DEPS|Linux|Intel",
         short_name = "x64",
@@ -1557,7 +1557,7 @@ ci.dawn_thin_tester(
 
 ci.dawn_thin_tester(
     name = "Dawn Linux x64 DEPS Release (NVIDIA)",
-    branch_selector = branches.STANDARD_RELEASES,
+    branch_selector = branches.STANDARD_MILESTONE,
     console_view_entry = ci.console_view_entry(
         category = "DEPS|Linux|Nvidia",
         short_name = "x64",
@@ -1595,7 +1595,7 @@ ci.dawn_mac_builder(
 
 ci.dawn_mac_builder(
     name = "Dawn Mac x64 DEPS Builder",
-    branch_selector = branches.STANDARD_RELEASES,
+    branch_selector = branches.STANDARD_MILESTONE,
     console_view_entry = ci.console_view_entry(
         category = "DEPS|Mac|Builder",
         short_name = "x64",
@@ -1608,7 +1608,7 @@ ci.dawn_mac_builder(
 # physical Mac hardware in the Swarming pool which is why they run on linux
 ci.dawn_thin_tester(
     name = "Dawn Mac x64 DEPS Release (AMD)",
-    branch_selector = branches.STANDARD_RELEASES,
+    branch_selector = branches.STANDARD_MILESTONE,
     console_view_entry = ci.console_view_entry(
         category = "DEPS|Mac|AMD",
         short_name = "x64",
@@ -1620,7 +1620,7 @@ ci.dawn_thin_tester(
 
 ci.dawn_thin_tester(
     name = "Dawn Mac x64 DEPS Release (Intel)",
-    branch_selector = branches.STANDARD_RELEASES,
+    branch_selector = branches.STANDARD_MILESTONE,
     console_view_entry = ci.console_view_entry(
         category = "DEPS|Mac|Intel",
         short_name = "x64",
@@ -1666,7 +1666,7 @@ ci.dawn_windows_builder(
 
 ci.dawn_windows_builder(
     name = "Dawn Win10 x64 DEPS Builder",
-    branch_selector = branches.STANDARD_RELEASES,
+    branch_selector = branches.STANDARD_MILESTONE,
     console_view_entry = ci.console_view_entry(
         category = "DEPS|Windows|Builder",
         short_name = "x64",
@@ -1679,7 +1679,7 @@ ci.dawn_windows_builder(
 # physical Win hardware in the Swarming pool, which is why they run on linux
 ci.dawn_thin_tester(
     name = "Dawn Win10 x64 DEPS Release (Intel HD 630)",
-    branch_selector = branches.STANDARD_RELEASES,
+    branch_selector = branches.STANDARD_MILESTONE,
     console_view_entry = ci.console_view_entry(
         category = "DEPS|Windows|Intel",
         short_name = "x64",
@@ -1691,7 +1691,7 @@ ci.dawn_thin_tester(
 
 ci.dawn_thin_tester(
     name = "Dawn Win10 x64 DEPS Release (NVIDIA)",
-    branch_selector = branches.STANDARD_RELEASES,
+    branch_selector = branches.STANDARD_MILESTONE,
     console_view_entry = ci.console_view_entry(
         category = "DEPS|Windows|Nvidia",
         short_name = "x64",
@@ -1729,7 +1729,7 @@ ci.dawn_windows_builder(
 
 ci.dawn_windows_builder(
     name = "Dawn Win10 x86 DEPS Builder",
-    branch_selector = branches.STANDARD_RELEASES,
+    branch_selector = branches.STANDARD_MILESTONE,
     console_view_entry = ci.console_view_entry(
         category = "DEPS|Windows|Builder",
         short_name = "x86",
@@ -1742,7 +1742,7 @@ ci.dawn_windows_builder(
 # physical Win hardware in the Swarming pool, which is why they run on linux
 ci.dawn_thin_tester(
     name = "Dawn Win10 x86 DEPS Release (Intel HD 630)",
-    branch_selector = branches.STANDARD_RELEASES,
+    branch_selector = branches.STANDARD_MILESTONE,
     console_view_entry = ci.console_view_entry(
         category = "DEPS|Windows|Intel",
         short_name = "x86",
@@ -1754,7 +1754,7 @@ ci.dawn_thin_tester(
 
 ci.dawn_thin_tester(
     name = "Dawn Win10 x86 DEPS Release (NVIDIA)",
-    branch_selector = branches.STANDARD_RELEASES,
+    branch_selector = branches.STANDARD_MILESTONE,
     console_view_entry = ci.console_view_entry(
         category = "DEPS|Windows|Nvidia",
         short_name = "x86",
@@ -2202,7 +2202,7 @@ ci.fyi_builder(
 
 ci.fyi_builder(
     name = "VR Linux",
-    branch_selector = branches.STANDARD_RELEASES,
+    branch_selector = branches.STANDARD_MILESTONE,
     console_view_entry = ci.console_view_entry(
         category = "linux",
     ),
@@ -2698,7 +2698,7 @@ ci.fyi_ios_builder(
 
 ci.fyi_ios_builder(
     name = "ios-simulator-cronet",
-    branch_selector = branches.STANDARD_RELEASES,
+    branch_selector = branches.STANDARD_MILESTONE,
     caches = [xcode_cache.x11e146],
     console_view_entry = ci.console_view_entry(
         category = "cronet",
@@ -2933,7 +2933,7 @@ ci.fyi_windows_builder(
 
 ci.gpu_linux_builder(
     name = "Android Release (Nexus 5X)",
-    branch_selector = branches.STANDARD_RELEASES,
+    branch_selector = branches.STANDARD_MILESTONE,
     console_view_entry = ci.console_view_entry(
         category = "Android",
     ),
@@ -2943,7 +2943,7 @@ ci.gpu_linux_builder(
 
 ci.gpu_linux_builder(
     name = "GPU Linux Builder",
-    branch_selector = branches.STANDARD_RELEASES,
+    branch_selector = branches.STANDARD_MILESTONE,
     console_view_entry = ci.console_view_entry(
         category = "Linux",
     ),
@@ -2961,7 +2961,7 @@ ci.gpu_linux_builder(
 
 ci.gpu_mac_builder(
     name = "GPU Mac Builder",
-    branch_selector = branches.STANDARD_RELEASES,
+    branch_selector = branches.STANDARD_MILESTONE,
     console_view_entry = ci.console_view_entry(
         category = "Mac",
     ),
@@ -2979,7 +2979,7 @@ ci.gpu_mac_builder(
 
 ci.gpu_windows_builder(
     name = "GPU Win x64 Builder",
-    branch_selector = branches.STANDARD_RELEASES,
+    branch_selector = branches.STANDARD_MILESTONE,
     console_view_entry = ci.console_view_entry(
         category = "Windows",
     ),
@@ -3006,7 +3006,7 @@ ci.gpu_thin_tester(
 
 ci.gpu_thin_tester(
     name = "Linux Release (NVIDIA)",
-    branch_selector = branches.STANDARD_RELEASES,
+    branch_selector = branches.STANDARD_MILESTONE,
     cq_mirrors_console_view = settings.cq_mirrors_console_name,
     console_view_entry = ci.console_view_entry(
         category = "Linux",
@@ -3026,7 +3026,7 @@ ci.gpu_thin_tester(
 
 ci.gpu_thin_tester(
     name = "Mac Release (Intel)",
-    branch_selector = branches.STANDARD_RELEASES,
+    branch_selector = branches.STANDARD_MILESTONE,
     console_view_entry = ci.console_view_entry(
         category = "Mac",
     ),
@@ -3046,7 +3046,7 @@ ci.gpu_thin_tester(
 
 ci.gpu_thin_tester(
     name = "Mac Retina Release (AMD)",
-    branch_selector = branches.STANDARD_RELEASES,
+    branch_selector = branches.STANDARD_MILESTONE,
     console_view_entry = ci.console_view_entry(
         category = "Mac",
     ),
@@ -3066,7 +3066,7 @@ ci.gpu_thin_tester(
 
 ci.gpu_thin_tester(
     name = "Win10 x64 Release (NVIDIA)",
-    branch_selector = branches.STANDARD_RELEASES,
+    branch_selector = branches.STANDARD_MILESTONE,
     console_view_entry = ci.console_view_entry(
         category = "Windows",
     ),
@@ -3818,7 +3818,7 @@ ci.linux_builder(
 
 ci.linux_builder(
     name = "Cast Linux",
-    branch_selector = branches.STANDARD_RELEASES,
+    branch_selector = branches.STANDARD_MILESTONE,
     console_view_entry = ci.console_view_entry(
         category = "cast",
         short_name = "vid",
@@ -3870,7 +3870,7 @@ ci.linux_builder(
 
 ci.linux_builder(
     name = "Fuchsia ARM64",
-    branch_selector = branches.STANDARD_RELEASES,
+    branch_selector = branches.STANDARD_MILESTONE,
     console_view_entry = ci.console_view_entry(
         category = "fuchsia|a64",
         short_name = "rel",
@@ -3882,7 +3882,7 @@ ci.linux_builder(
 
 ci.linux_builder(
     name = "Fuchsia x64",
-    branch_selector = branches.STANDARD_RELEASES,
+    branch_selector = branches.STANDARD_MILESTONE,
     console_view_entry = ci.console_view_entry(
         category = "fuchsia|x64",
         short_name = "rel",
@@ -3905,7 +3905,7 @@ ci.linux_builder(
 
 ci.linux_builder(
     name = "Linux Builder",
-    branch_selector = branches.STANDARD_RELEASES,
+    branch_selector = branches.STANDARD_MILESTONE,
     console_view_entry = ci.console_view_entry(
         category = "release",
         short_name = "bld",
@@ -3916,7 +3916,7 @@ ci.linux_builder(
 
 ci.linux_builder(
     name = "Linux Builder (dbg)",
-    branch_selector = branches.STANDARD_RELEASES,
+    branch_selector = branches.STANDARD_MILESTONE,
     console_view_entry = ci.console_view_entry(
         category = "debug|builder",
         short_name = "64",
@@ -3936,7 +3936,7 @@ ci.linux_builder(
 
 ci.linux_builder(
     name = "Linux Tests",
-    branch_selector = branches.STANDARD_RELEASES,
+    branch_selector = branches.STANDARD_MILESTONE,
     console_view_entry = ci.console_view_entry(
         category = "release",
         short_name = "tst",
@@ -3949,7 +3949,7 @@ ci.linux_builder(
 
 ci.linux_builder(
     name = "Linux Tests (dbg)(1)",
-    branch_selector = branches.STANDARD_RELEASES,
+    branch_selector = branches.STANDARD_MILESTONE,
     console_view_entry = ci.console_view_entry(
         category = "debug|tester",
         short_name = "64",
@@ -3961,7 +3961,7 @@ ci.linux_builder(
 
 ci.linux_builder(
     name = "fuchsia-arm64-cast",
-    branch_selector = branches.STANDARD_RELEASES,
+    branch_selector = branches.STANDARD_MILESTONE,
     console_view_entry = ci.console_view_entry(
         category = "fuchsia|cast",
         short_name = "a64",
@@ -3986,7 +3986,7 @@ ci.linux_builder(
 
 ci.linux_builder(
     name = "fuchsia-x64-cast",
-    branch_selector = branches.STANDARD_RELEASES,
+    branch_selector = branches.STANDARD_MILESTONE,
     console_view_entry = ci.console_view_entry(
         category = "fuchsia|cast",
         short_name = "x64",
@@ -4031,7 +4031,7 @@ ci.linux_builder(
 
 ci.linux_builder(
     name = "linux-ozone-rel",
-    branch_selector = branches.STANDARD_RELEASES,
+    branch_selector = branches.STANDARD_MILESTONE,
     console_view_entry = ci.console_view_entry(
         category = "release",
         short_name = "ozo",
@@ -4047,7 +4047,7 @@ ci.linux_builder(
 
 ci.linux_builder(
     name = "Linux Ozone Tester (Headless)",
-    branch_selector = branches.STANDARD_RELEASES,
+    branch_selector = branches.STANDARD_MILESTONE,
     console_view = "chromium.fyi",
     console_view_entry = ci.console_view_entry(
         category = "linux",
@@ -4060,7 +4060,7 @@ ci.linux_builder(
 
 ci.linux_builder(
     name = "Linux Ozone Tester (Wayland)",
-    branch_selector = branches.STANDARD_RELEASES,
+    branch_selector = branches.STANDARD_MILESTONE,
     console_view = "chromium.fyi",
     console_view_entry = ci.console_view_entry(
         category = "linux",
@@ -4073,7 +4073,7 @@ ci.linux_builder(
 
 ci.linux_builder(
     name = "Linux Ozone Tester (X11)",
-    branch_selector = branches.STANDARD_RELEASES,
+    branch_selector = branches.STANDARD_MILESTONE,
     console_view = "chromium.fyi",
     console_view_entry = ci.console_view_entry(
         category = "linux",
@@ -4104,7 +4104,7 @@ ci.linux_builder(
 
 ci.mac_builder(
     name = "Mac Builder",
-    branch_selector = branches.STANDARD_RELEASES,
+    branch_selector = branches.STANDARD_MILESTONE,
     console_view_entry = ci.console_view_entry(
         category = "release",
         short_name = "bld",
@@ -4116,7 +4116,7 @@ ci.mac_builder(
 
 ci.mac_builder(
     name = "Mac Builder (dbg)",
-    branch_selector = branches.STANDARD_RELEASES,
+    branch_selector = branches.STANDARD_MILESTONE,
     console_view_entry = ci.console_view_entry(
         category = "debug",
         short_name = "bld",
@@ -4139,7 +4139,7 @@ ci.mac_builder(
 
 ci.thin_tester(
     name = "Mac10.10 Tests",
-    branch_selector = branches.STANDARD_RELEASES,
+    branch_selector = branches.STANDARD_MILESTONE,
     builder_group = "chromium.mac",
     console_view_entry = ci.console_view_entry(
         category = "release",
@@ -4152,7 +4152,7 @@ ci.thin_tester(
 
 ci.thin_tester(
     name = "Mac10.11 Tests",
-    branch_selector = branches.STANDARD_RELEASES,
+    branch_selector = branches.STANDARD_MILESTONE,
     builder_group = "chromium.mac",
     console_view_entry = ci.console_view_entry(
         category = "release",
@@ -4165,7 +4165,7 @@ ci.thin_tester(
 
 ci.thin_tester(
     name = "Mac10.12 Tests",
-    branch_selector = branches.STANDARD_RELEASES,
+    branch_selector = branches.STANDARD_MILESTONE,
     builder_group = "chromium.mac",
     console_view_entry = ci.console_view_entry(
         category = "release",
@@ -4178,7 +4178,7 @@ ci.thin_tester(
 
 ci.thin_tester(
     name = "Mac10.13 Tests",
-    branch_selector = branches.STANDARD_RELEASES,
+    branch_selector = branches.STANDARD_MILESTONE,
     builder_group = "chromium.mac",
     console_view_entry = ci.console_view_entry(
         category = "release",
@@ -4191,7 +4191,7 @@ ci.thin_tester(
 
 ci.thin_tester(
     name = "Mac10.14 Tests",
-    branch_selector = branches.STANDARD_RELEASES,
+    branch_selector = branches.STANDARD_MILESTONE,
     builder_group = "chromium.mac",
     console_view_entry = ci.console_view_entry(
         category = "release",
@@ -4204,7 +4204,7 @@ ci.thin_tester(
 
 ci.thin_tester(
     name = "Mac10.15 Tests",
-    branch_selector = branches.STANDARD_RELEASES,
+    branch_selector = branches.STANDARD_MILESTONE,
     builder_group = "chromium.mac",
     console_view_entry = ci.console_view_entry(
         category = "release",
@@ -4217,7 +4217,7 @@ ci.thin_tester(
 
 ci.thin_tester(
     name = "Mac10.13 Tests (dbg)",
-    branch_selector = branches.STANDARD_RELEASES,
+    branch_selector = branches.STANDARD_MILESTONE,
     builder_group = "chromium.mac",
     console_view_entry = ci.console_view_entry(
         category = "debug",
@@ -4241,7 +4241,7 @@ ci.mac_ios_builder(
 
 ci.mac_ios_builder(
     name = "ios-simulator",
-    branch_selector = branches.STANDARD_RELEASES,
+    branch_selector = branches.STANDARD_MILESTONE,
     console_view_entry = ci.console_view_entry(
         category = "ios|default",
         short_name = "sim",
@@ -4252,7 +4252,7 @@ ci.mac_ios_builder(
 
 ci.mac_ios_builder(
     name = "ios-simulator-full-configs",
-    branch_selector = branches.STANDARD_RELEASES,
+    branch_selector = branches.STANDARD_MILESTONE,
     console_view_entry = ci.console_view_entry(
         category = "ios|default",
         short_name = "ful",
@@ -4296,7 +4296,7 @@ ci.memory_builder(
 
 ci.memory_builder(
     name = "Linux ASan LSan Builder",
-    branch_selector = branches.STANDARD_RELEASES,
+    branch_selector = branches.STANDARD_MILESTONE,
     console_view_entry = ci.console_view_entry(
         category = "linux|asan lsan",
         short_name = "bld",
@@ -4308,7 +4308,7 @@ ci.memory_builder(
 
 ci.memory_builder(
     name = "Linux ASan LSan Tests (1)",
-    branch_selector = branches.STANDARD_RELEASES,
+    branch_selector = branches.STANDARD_MILESTONE,
     console_view_entry = ci.console_view_entry(
         category = "linux|asan lsan",
         short_name = "tst",
@@ -4320,7 +4320,7 @@ ci.memory_builder(
 
 ci.memory_builder(
     name = "Linux ASan Tests (sandboxed)",
-    branch_selector = branches.STANDARD_RELEASES,
+    branch_selector = branches.STANDARD_MILESTONE,
     console_view_entry = ci.console_view_entry(
         category = "linux|asan lsan",
         short_name = "sbx",
@@ -4332,7 +4332,7 @@ ci.memory_builder(
 
 ci.memory_builder(
     name = "Linux TSan Builder",
-    branch_selector = branches.STANDARD_RELEASES,
+    branch_selector = branches.STANDARD_MILESTONE,
     console_view_entry = ci.console_view_entry(
         category = "linux|TSan v2",
         short_name = "bld",
@@ -4434,7 +4434,7 @@ ci.memory_builder(
 
 ci.memory_builder(
     name = "Linux TSan Tests",
-    branch_selector = branches.STANDARD_RELEASES,
+    branch_selector = branches.STANDARD_MILESTONE,
     console_view_entry = ci.console_view_entry(
         category = "linux|TSan v2",
         short_name = "tst",
@@ -4701,7 +4701,7 @@ ci.win_builder(
 
 ci.win_builder(
     name = "Win7 Tests (dbg)(1)",
-    branch_selector = branches.STANDARD_RELEASES,
+    branch_selector = branches.STANDARD_MILESTONE,
     console_view_entry = ci.console_view_entry(
         category = "debug|tester",
         short_name = "7",
@@ -4714,7 +4714,7 @@ ci.win_builder(
 
 ci.win_builder(
     name = "Win 7 Tests x64 (1)",
-    branch_selector = branches.STANDARD_RELEASES,
+    branch_selector = branches.STANDARD_MILESTONE,
     console_view_entry = ci.console_view_entry(
         category = "release|tester",
         short_name = "64",
@@ -4727,7 +4727,7 @@ ci.win_builder(
 
 ci.win_builder(
     name = "Win Builder (dbg)",
-    branch_selector = branches.STANDARD_RELEASES,
+    branch_selector = branches.STANDARD_MILESTONE,
     console_view_entry = ci.console_view_entry(
         category = "debug|builder",
         short_name = "32",
@@ -4740,7 +4740,7 @@ ci.win_builder(
 
 ci.win_builder(
     name = "Win x64 Builder",
-    branch_selector = branches.STANDARD_RELEASES,
+    branch_selector = branches.STANDARD_MILESTONE,
     console_view_entry = ci.console_view_entry(
         category = "release|builder",
         short_name = "64",
@@ -4753,7 +4753,7 @@ ci.win_builder(
 
 ci.win_builder(
     name = "Win10 Tests x64",
-    branch_selector = branches.STANDARD_RELEASES,
+    branch_selector = branches.STANDARD_MILESTONE,
     console_view_entry = ci.console_view_entry(
         category = "release|tester",
         short_name = "w10",
