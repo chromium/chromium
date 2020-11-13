@@ -1009,7 +1009,6 @@ enum AriaCurrentState {
   kPage,
   kStep,
   kLocation,
-  kUnclippedLocation,
   kDate,
   kTime,
 };

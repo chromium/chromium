@@ -1086,9 +1086,6 @@ void AXPlatformNodeBase::ComputeAttributes(PlatformAttributeList* attributes) {
       case ax::mojom::AriaCurrentState::kLocation:
         AddAttributeToList("current", "location", attributes);
         break;
-      case ax::mojom::AriaCurrentState::kUnclippedLocation:
-        AddAttributeToList("current", "unclippedLocation", attributes);
-        break;
       case ax::mojom::AriaCurrentState::kDate:
         AddAttributeToList("current", "date", attributes);
         break;

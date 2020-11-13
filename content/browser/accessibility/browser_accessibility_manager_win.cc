@@ -283,6 +283,11 @@ void BrowserAccessibilityManagerWin::FireGeneratedEvent(
       FireUiaPropertyChangedEvent(UIA_IsDataValidForFormPropertyId, node);
       HandleAriaPropertiesChangedEvent(*node);
       break;
+    case ui::AXEventGenerator::Event::ARIA_CURRENT_CHANGED:
+      // TODO(accessibility) No UIA mapping yet exists for aria-current.
+      // Request a mapping from API owners and implement.
+      FireWinAccessibilityEvent(IA2_EVENT_OBJECT_ATTRIBUTE_CHANGED, node);
+      break;
     case ui::AXEventGenerator::Event::KEY_SHORTCUTS_CHANGED:
       FireUiaPropertyChangedEvent(UIA_AcceleratorKeyPropertyId, node);
       break;

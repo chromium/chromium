@@ -218,6 +218,7 @@ class AX_EXPORT AXPlatformNodeAuraLinux : public AXPlatformNodeBase {
   void OnDescriptionChanged();
   void OnSortDirectionChanged();
   void OnInvalidStatusChanged();
+  void OnAriaCurrentChanged();
   void OnDocumentTitleChanged();
   void OnSubtreeCreated();
   void OnSubtreeWillBeDeleted();

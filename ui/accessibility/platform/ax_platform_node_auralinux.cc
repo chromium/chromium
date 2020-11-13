@@ -3079,6 +3079,11 @@ void AXPlatformNodeAuraLinux::GetAtkState(AtkStateSet* atk_state_set) {
       data.GetIntAttribute(ax::mojom::IntAttribute::kInvalidState) !=
           static_cast<int32_t>(ax::mojom::InvalidState::kFalse))
     atk_state_set_add_state(atk_state_set, ATK_STATE_INVALID_ENTRY);
+  if (data.HasIntAttribute(ax::mojom::IntAttribute::kAriaCurrentState) &&
+      data.GetIntAttribute(ax::mojom::IntAttribute::kAriaCurrentState) !=
+          static_cast<int32_t>(ax::mojom::AriaCurrentState::kFalse)) {
+    atk_state_set_add_state(atk_state_set, ATK_STATE_ACTIVE);
+  }
 #if defined(ATK_216)
   if (IsPlatformCheckable())
     atk_state_set_add_state(atk_state_set, ATK_STATE_CHECKABLE);
@@ -4004,6 +4009,20 @@ void AXPlatformNodeAuraLinux::OnInvalidStatusChanged() {
   atk_object_notify_state_change(
       ATK_OBJECT(atk_object), ATK_STATE_INVALID_ENTRY,
       GetData().GetInvalidState() != ax::mojom::InvalidState::kFalse);
+}
+
+void AXPlatformNodeAuraLinux::OnAriaCurrentChanged() {
+  AtkObject* atk_object = GetOrCreateAtkObject();
+  if (!atk_object)
+    return;
+
+  ax::mojom::AriaCurrentState aria_current =
+      static_cast<ax::mojom::AriaCurrentState>(GetData().GetIntAttribute(
+          ax::mojom::IntAttribute::kAriaCurrentState));
+  atk_object_notify_state_change(
+      ATK_OBJECT(atk_object), ATK_STATE_ACTIVE,
+      aria_current != ax::mojom::AriaCurrentState::kNone &&
+          aria_current != ax::mojom::AriaCurrentState::kFalse);
 }
 
 void AXPlatformNodeAuraLinux::OnAlertShown() {

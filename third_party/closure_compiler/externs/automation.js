@@ -23,6 +23,7 @@ chrome.automation.EventType = {
   ACTIVE_DESCENDANT_CHANGED: 'activeDescendantChanged',
   ALERT: 'alert',
   ARIA_ATTRIBUTE_CHANGED: 'ariaAttributeChanged',
+  ARIA_CURRENT_CHANGED: 'ariaCurrentChanged',
   ATOMIC_CHANGED: 'atomicChanged',
   AUTO_COMPLETE_CHANGED: 'autoCompleteChanged',
   AUTOCORRECTION_OCCURED: 'autocorrectionOccured',
@@ -1173,8 +1174,7 @@ chrome.automation.AutomationNode.prototype.unclippedLocation;
 chrome.automation.AutomationNode.prototype.description;
 
 /**
- * Description of the state of the checkbox. Used only when the node is
- * checkable.
+ * Description of the state of the checkbox. Used only when the node is checkable.
  * @type {(string|undefined)}
  * @see https://developer.chrome.com/extensions/automation#type-checkedStateDescription
  */

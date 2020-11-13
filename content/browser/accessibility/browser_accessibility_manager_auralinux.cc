@@ -95,6 +95,11 @@ void BrowserAccessibilityManagerAuraLinux::FireInvalidStatusChangedEvent(
   ToBrowserAccessibilityAuraLinux(node)->GetNode()->OnInvalidStatusChanged();
 }
 
+void BrowserAccessibilityManagerAuraLinux::FireAriaCurrentChangedEvent(
+    BrowserAccessibility* node) {
+  ToBrowserAccessibilityAuraLinux(node)->GetNode()->OnAriaCurrentChanged();
+}
+
 void BrowserAccessibilityManagerAuraLinux::FireEvent(BrowserAccessibility* node,
                                                      ax::mojom::Event event) {
   ToBrowserAccessibilityAuraLinux(node)->GetNode()->NotifyAccessibilityEvent(
@@ -190,6 +195,9 @@ void BrowserAccessibilityManagerAuraLinux::FireGeneratedEvent(
       break;
     case ui::AXEventGenerator::Event::INVALID_STATUS_CHANGED:
       FireInvalidStatusChangedEvent(node);
+      break;
+    case ui::AXEventGenerator::Event::ARIA_CURRENT_CHANGED:
+      FireAriaCurrentChangedEvent(node);
       break;
     case ui::AXEventGenerator::Event::LOAD_COMPLETE:
       FireLoadingEvent(node, false);

@@ -104,6 +104,7 @@ bool ShouldIgnoreGeneratedEvent(ui::AXEventGenerator::Event event_type) {
     case ui::AXEventGenerator::Event::ACCESS_KEY_CHANGED:
     case ui::AXEventGenerator::Event::ACTIVE_DESCENDANT_CHANGED:
     case ui::AXEventGenerator::Event::ALERT:
+    case ui::AXEventGenerator::Event::ARIA_CURRENT_CHANGED:
     case ui::AXEventGenerator::Event::ATOMIC_CHANGED:
     case ui::AXEventGenerator::Event::AUTO_COMPLETE_CHANGED:
     case ui::AXEventGenerator::Event::BUSY_CHANGED:

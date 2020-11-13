@@ -29,6 +29,7 @@ class AX_EXPORT AXEventGenerator : public AXTreeObserver {
     ACCESS_KEY_CHANGED,
     ACTIVE_DESCENDANT_CHANGED,
     ALERT,
+    ARIA_CURRENT_CHANGED,
     // ATK treats alignment, indentation, and other format-related attributes as
     // text attributes even when they are only applicable to the entire object.
     // And it lacks an event for use when object attributes have changed.

@@ -229,6 +229,11 @@ void BrowserAccessibilityManagerMac::FireGeneratedEvent(
       FireGeneratedEvent(ui::AXEventGenerator::Event::LIVE_REGION_CHANGED,
                          node);
       return;
+    case ui::AXEventGenerator::Event::ARIA_CURRENT_CHANGED:
+      // TODO(accessibility) Ask Apple for a notification.
+      // There currently is none:
+      // https://www.w3.org/TR/core-aam-1.2/#details-id-186
+      return;
     case ui::AXEventGenerator::Event::CHECKED_STATE_CHANGED:
       mac_notification = NSAccessibilityValueChangedNotification;
       break;

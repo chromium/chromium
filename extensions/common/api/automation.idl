@@ -17,6 +17,7 @@
     activeDescendantChanged,
     alert,
     ariaAttributeChanged,
+    ariaCurrentChanged,
     atomicChanged,
     autoCompleteChanged,
     autocorrectionOccured,

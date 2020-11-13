@@ -1373,8 +1373,6 @@ const char* ToString(ax::mojom::AriaCurrentState aria_current_state) {
       return "step";
     case ax::mojom::AriaCurrentState::kLocation:
       return "location";
-    case ax::mojom::AriaCurrentState::kUnclippedLocation:
-      return "unclippedLocation";
     case ax::mojom::AriaCurrentState::kDate:
       return "date";
     case ax::mojom::AriaCurrentState::kTime:

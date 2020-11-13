@@ -423,6 +423,9 @@ void AXEventGenerator::OnIntAttributeChanged(AXTree* tree,
       AddEvent(node, Event::CHECKED_STATE_CHANGED);
       AddEvent(node, Event::WIN_IACCESSIBLE_STATE_CHANGED);
       break;
+    case ax::mojom::IntAttribute::kAriaCurrentState:
+      AddEvent(node, Event::ARIA_CURRENT_CHANGED);
+      break;
     case ax::mojom::IntAttribute::kDropeffect:
       AddEvent(node, Event::DROPEFFECT_CHANGED);
       break;
@@ -1070,6 +1073,8 @@ const char* ToString(AXEventGenerator::Event event) {
       return "activeDescendantChanged";
     case AXEventGenerator::Event::ALERT:
       return "alert";
+    case AXEventGenerator::Event::ARIA_CURRENT_CHANGED:
+      return "ariaCurrentChanged";
     case AXEventGenerator::Event::ATK_TEXT_OBJECT_ATTRIBUTE_CHANGED:
       return "atkTextObjectAttributeChanged";
     case AXEventGenerator::Event::ATOMIC_CHANGED:
