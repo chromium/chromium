@@ -13,6 +13,7 @@
     {
       "name": "LayoutNGBlockFlow (positioned) DIV class='fixed red'",
       "bounds": [100, 100],
+      "contentsOpaque": true,
       "backgroundColor": "#FF0000",
       "transform": 2
     },

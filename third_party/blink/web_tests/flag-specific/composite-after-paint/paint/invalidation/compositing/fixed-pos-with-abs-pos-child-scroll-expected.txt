@@ -11,6 +11,7 @@ Hi!
       "name": "LayoutNGBlockFlow (positioned) DIV id='abs'",
       "position": [-360, -90],
       "bounds": [360, 90],
+      "contentsOpaque": true,
       "backgroundColor": "#FFFF00",
       "transform": 1
     },

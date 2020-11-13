@@ -8,6 +8,11 @@
       "transform": 1
     },
     {
+      "name": "LayoutBlockFlow (positioned) DIV id='fixedParent'",
+      "contentsOpaque": true,
+      "drawsContent": false
+    },
+    {
       "name": "LayoutBlockFlow (positioned) DIV id='toMove'",
       "bounds": [100, 100],
       "contentsOpaque": true,

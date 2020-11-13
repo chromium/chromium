@@ -15,11 +15,10 @@
     </script>
 </head>
 <body style="height:2000px;">
-    <p style="position: relative; top: 20px;">
+    <p style="position: absolute; top: 20px;">
         Repaint test for <i><a href="http://bugs.webkit.org/show_bug.cgi?id=11452">http://bugs.webkit.org/show_bug.cgi?id=11452</a>
         REGRESSION (r16736-r16801): Incorrect repaint of fixed boxes</i>.
     </p>
-    <!-- Using 99% opacity to ensure fixed position is not automatically promoted. -->
-    <div id="t" style="position: fixed; opacity: 0.99; width: 100px; height: 100px; background: red"></div>
+    <div id="t" style="position: fixed; top: 100px; width: 100px; height: 100px; background: red"></div>
 </body>
 </html>

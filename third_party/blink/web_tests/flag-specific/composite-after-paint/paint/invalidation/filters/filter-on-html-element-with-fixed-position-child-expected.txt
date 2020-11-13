@@ -15,12 +15,14 @@
     {
       "name": "LayoutNGBlockFlow (positioned) DIV",
       "bounds": [100, 100],
+      "contentsOpaque": true,
       "backgroundColor": "#D3D3D3",
       "transform": 2
     },
     {
       "name": "LayoutNGBlockFlow (positioned) DIV",
       "bounds": [100, 100],
+      "contentsOpaque": true,
       "backgroundColor": "#D3D3D3",
       "transform": 3
     },

@@ -18,6 +18,7 @@
     {
       "name": "LayoutNGBlockFlow (positioned) DIV id='fixed'",
       "bounds": [120, 220],
+      "contentsOpaque": true,
       "backgroundColor": "#008000",
       "invalidations": [
         [0, 0, 120, 220]

@@ -17,8 +17,7 @@
 </head>
   <body onload="scrollAndRepaint()" style="height: 3000px;">
     <p style="position: absolute; top: 210">You should see a yellow rect on the left, and a green one on the right. No red pixels.</p>
-    <!-- Using 99% opacity to ensure fixed position is not automatically promoted. -->
-    <div id="toMove" style="width: 100px; height: 100px; background-color: red; position: fixed; top: 70px; left: 10px; opacity: 0.99;"></div>
+    <div id="toMove" style="width: 100px; height: 100px; background-color: red; position: fixed; top: 70px; left: 10px;"></div>
     <div style="width: 100px; height: 100px; background-color: yellow; position: absolute; top: 270px; left: 10px; z-index: -5;"></div>
   </body>
 </html>

@@ -25,6 +25,7 @@
     {
       "name": "LayoutNGBlockFlow (positioned) DIV class='fixed'",
       "bounds": [50, 50],
+      "contentsOpaque": true,
       "backgroundColor": "#00FF00",
       "transform": 3
     },
