@@ -15,8 +15,7 @@
         <activity-alias android:name="org.chromium.android_webview.devui.LauncherActivity"
                   android:targetActivity="org.chromium.android_webview.devui.MainActivity"
                   android:label="WebView DevTools"
-                  android:exported="true"
-                  android:enabled="{{ show_devui_icon|default('true') }}">
+                  android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
