@@ -497,14 +497,6 @@ std::unique_ptr<display::DisplaySnapshot> CreateDisplaySnapshot(
   display::DisplaySnapshot::DisplayModeList modes =
       ExtractDisplayModes(info, active_pixel_size, &current_mode, &native_mode);
 
-  // TODO(https://crbug.com/1105919): Needed for investigating an issue where
-  // non-supporting devices broadcast privacy screen support on certain
-  // displays.
-  VLOG(1) << "DisplaySnapshot created: display_id=" << display_id
-          << " type=" << type << " current_mode="
-          << (current_mode ? current_mode->ToString() : "nullptr")
-          << " privacy_screen_state=" << privacy_screen_state;
-
   return std::make_unique<display::DisplaySnapshot>(
       display_id, origin, physical_size, type, is_aspect_preserving_scaling,
       has_overscan, privacy_screen_state, has_color_correction_matrix,
