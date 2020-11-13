@@ -25,7 +25,6 @@ class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) IMEInputContextHandlerInterface {
   // Called when the engine commit a text.
   virtual void CommitText(const std::string& text) = 0;
 
-#if defined(OS_CHROMEOS)
   // Called when the engine changes the composition range.
   // Returns true if the operation was successful.
   virtual bool SetCompositionRange(
@@ -46,7 +45,6 @@ class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) IMEInputContextHandlerInterface {
   // Called when the engine changes the selection range.
   // Returns true if the operation was successful.
   virtual bool SetSelectionRange(uint32_t start, uint32_t end) = 0;
-#endif
 
   // Called when the engine updates composition text.
   virtual void UpdateCompositionText(const CompositionText& text,

@@ -78,7 +78,6 @@ class IMEBridgeImpl : public IMEBridge {
       observer.OnRequestSwitchEngine();
   }
 
-#if defined(OS_CHROMEOS)
   // IMEBridge override.
   void SetCandidateWindowHandler(
       chromeos::IMECandidateWindowHandlerInterface* handler) override {
@@ -102,7 +101,6 @@ class IMEBridgeImpl : public IMEBridge {
       const override {
     return assistive_window_handler_;
   }
-#endif
 
  private:
   IMEInputContextHandlerInterface* input_context_handler_ = nullptr;
@@ -110,12 +108,10 @@ class IMEBridgeImpl : public IMEBridge {
   base::ObserverList<IMEBridgeObserver> observers_;
   IMEEngineHandlerInterface::InputContext current_input_context_;
 
-#if defined(OS_CHROMEOS)
   chromeos::IMECandidateWindowHandlerInterface* candidate_window_handler_ =
       nullptr;
   chromeos::IMEAssistiveWindowHandlerInterface* assistive_window_handler_ =
       nullptr;
-#endif
 
   DISALLOW_COPY_AND_ASSIGN(IMEBridgeImpl);
 };

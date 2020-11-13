@@ -36,7 +36,6 @@ void MockIMEInputContextHandler::UpdateCompositionText(
   last_update_composition_arg_.is_visible = visible;
 }
 
-#if defined(OS_CHROMEOS)
 bool MockIMEInputContextHandler::SetCompositionRange(
     uint32_t before,
     uint32_t after,
@@ -79,7 +78,6 @@ bool MockIMEInputContextHandler::SetSelectionRange(uint32_t start,
   last_update_composition_arg_.selection = gfx::Range(start, end);
   return true;
 }
-#endif
 
 void MockIMEInputContextHandler::DeleteSurroundingText(int32_t offset,
                                                        uint32_t length) {

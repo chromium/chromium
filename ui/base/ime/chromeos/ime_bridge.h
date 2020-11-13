@@ -25,7 +25,6 @@ class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) IMEBridge {
  public:
   virtual ~IMEBridge();
 
-#if defined(OS_CHROMEOS)
   // Allocates the global instance. Must be called before any calls to Get().
   static void Initialize();
 
@@ -34,7 +33,6 @@ class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) IMEBridge {
 
   // Returns IMEBridge global instance. Initialize() must be called first.
   static IMEBridge* Get();
-#endif
 
   // Returns current InputContextHandler. This function returns nullptr if input
   // context is not ready to use.

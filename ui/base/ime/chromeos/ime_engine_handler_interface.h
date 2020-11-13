@@ -27,11 +27,9 @@ namespace ui {
 class InputMethodKeyboardController;
 class KeyEvent;
 
-#if defined(OS_CHROMEOS)
 namespace ime {
 struct AssistiveWindowButton;
 }  // namespace ime
-#endif  // defined(OS_CHROMEOS)
 
 // A interface to handle the engine handler method call.
 class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) IMEEngineHandlerInterface {
@@ -125,8 +123,6 @@ class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) IMEEngineHandlerInterface {
   virtual ui::InputMethodKeyboardController* GetInputMethodKeyboardController()
       const = 0;
 
-#if defined(OS_CHROMEOS)
-
   // Called when a property is activated or changed.
   virtual void PropertyActivate(const std::string& property_name) = 0;
 
@@ -142,7 +138,6 @@ class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) IMEEngineHandlerInterface {
   virtual void SetMirroringEnabled(bool mirroring_enabled) = 0;
   virtual void SetCastingEnabled(bool casting_enabled) = 0;
 
-#endif  // defined(OS_CHROMEOS)
  protected:
   IMEEngineHandlerInterface() {}
 };

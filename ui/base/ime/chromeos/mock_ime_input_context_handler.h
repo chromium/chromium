@@ -38,7 +38,6 @@ class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) MockIMEInputContextHandler
                              uint32_t cursor_pos,
                              bool visible) override;
 
-#if defined(OS_CHROMEOS)
   bool SetCompositionRange(
       uint32_t before,
       uint32_t after,
@@ -53,8 +52,6 @@ class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) MockIMEInputContextHandler
                            uint32_t start,
                            uint32_t end) override;
   bool SetSelectionRange(uint32_t start, uint32_t end) override;
-#endif
-
   void DeleteSurroundingText(int32_t offset, uint32_t length) override;
   SurroundingTextInfo GetSurroundingTextInfo() override;
   void SendKeyEvent(KeyEvent* event) override;
