@@ -38,8 +38,7 @@
 
 namespace blink {
 
-Navigator::Navigator(ExecutionContext* context)
-    : NavigatorLanguage(context), ExecutionContextClient(context) {}
+Navigator::Navigator(ExecutionContext* context) : NavigatorBase(context) {}
 
 String Navigator::productSub() const {
   return "20030107";
@@ -114,14 +113,8 @@ String Navigator::GetAcceptLanguages() {
 }
 
 void Navigator::Trace(Visitor* visitor) const {
-  ScriptWrappable::Trace(visitor);
-  NavigatorLanguage::Trace(visitor);
-  ExecutionContextClient::Trace(visitor);
+  NavigatorBase::Trace(visitor);
   Supplementable<Navigator>::Trace(visitor);
-}
-
-ExecutionContext* Navigator::GetUAExecutionContext() const {
-  return GetExecutionContext();
 }
 
 }  // namespace blink

@@ -13,6 +13,7 @@ blink_core_sources_execution_context = [
   "execution_context_lifecycle_observer.h",
   "execution_context_lifecycle_state_observer.cc",
   "execution_context_lifecycle_state_observer.h",
+  "navigator_base.h",
   "remote_security_context.cc",
   "remote_security_context.h",
   "security_context.cc",
