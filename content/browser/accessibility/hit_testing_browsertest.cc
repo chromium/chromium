@@ -274,9 +274,7 @@ AccessibilityHitTestingBrowserTest::FormatHitTestAccessibilityTree() {
        {"location=*", ui::AXPropertyFilter::ALLOW},
        {"size=*", ui::AXPropertyFilter::ALLOW}});
   std::string accessibility_tree;
-  accessibility_tree_formatter->FormatAccessibilityTreeForTesting(
-      GetRootAndAssertNonNull(), &accessibility_tree);
-  return accessibility_tree;
+  return accessibility_tree_formatter->Format(GetRootAndAssertNonNull());
 }
 
 std::string AccessibilityHitTestingBrowserTest::GetScopedTrace(

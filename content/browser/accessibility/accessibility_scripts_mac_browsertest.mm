@@ -132,9 +132,7 @@ void AccessibilityScriptsMacBrowserTest::AssertOutputMatchesExpectations() {
   // Collect the tree dump and script output.
   std::ostringstream output;
   {
-    std::string contents;
-    formatter_->FormatAccessibilityTreeForTesting(root_, &contents);
-    output << contents;
+    output << formatter_->Format(root_);
     output << script_output_.str();
   }
   std::vector<std::string> lines = base::SplitString(

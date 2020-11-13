@@ -31,8 +31,7 @@ class AccessibilityTreeFormatterUia : public AccessibilityTreeFormatterBase {
   // AccessibilityTreeFormatterBase:
   void AddDefaultFilters(
       std::vector<AXPropertyFilter>* property_filters) override;
-  std::unique_ptr<base::DictionaryValue> BuildAccessibilityTree(
-      BrowserAccessibility* start) override;
+  base::Value BuildTree(BrowserAccessibility* start) const override;
   base::Value BuildTreeForWindow(gfx::AcceleratedWidget hwnd) const override;
   base::Value BuildTreeForSelector(
       const AXTreeSelector& selector) const override;
@@ -41,10 +40,10 @@ class AccessibilityTreeFormatterUia : public AccessibilityTreeFormatterBase {
   static const long properties_[];
   static const long patterns_[];
   static const long pattern_properties_[];
-  void RecursiveBuildAccessibilityTree(IUIAutomationElement* node,
-                                       int root_x,
-                                       int root_y,
-                                       base::DictionaryValue* dict) const;
+  void RecursiveBuildTree(IUIAutomationElement* node,
+                          int root_x,
+                          int root_y,
+                          base::DictionaryValue* dict) const;
   void BuildCacheRequests();
   void AddProperties(IUIAutomationElement* node,
                      int root_x,
@@ -95,15 +94,15 @@ class AccessibilityTreeFormatterUia : public AccessibilityTreeFormatterBase {
   base::string16 GetNodeName(IUIAutomationElement* node) const;
   std::string ProcessTreeForOutput(
       const base::DictionaryValue& node,
-      base::DictionaryValue* filtered_result = nullptr) override;
+      base::DictionaryValue* filtered_result = nullptr) const override;
   void ProcessPropertyForOutput(const std::string& property_name,
                                 const base::DictionaryValue& dict,
                                 std::string& line,
-                                base::DictionaryValue* filtered_result);
+                                base::DictionaryValue* filtered_result) const;
   void ProcessValueForOutput(const std::string& name,
                              const base::Value* value,
                              std::string& line,
-                             base::DictionaryValue* filtered_result);
+                             base::DictionaryValue* filtered_result) const;
   Microsoft::WRL::ComPtr<IUIAutomation> uia_;
   Microsoft::WRL::ComPtr<IUIAutomationCacheRequest> element_cache_request_;
   Microsoft::WRL::ComPtr<IUIAutomationCacheRequest> children_cache_request_;

@@ -64,8 +64,7 @@ class AccessibilityTreeFormatterMac : public AccessibilityTreeFormatterBase {
   void AddDefaultFilters(
       std::vector<AXPropertyFilter>* property_filters) override;
 
-  std::unique_ptr<base::DictionaryValue> BuildAccessibilityTree(
-      BrowserAccessibility* root) override;
+  base::Value BuildTree(BrowserAccessibility* root) const override;
   base::Value BuildTreeForWindow(gfx::AcceleratedWidget widget) const override;
   base::Value BuildTreeForSelector(
       const AXTreeSelector& selector) const override;
@@ -104,9 +103,9 @@ class AccessibilityTreeFormatterMac : public AccessibilityTreeFormatterBase {
 
   std::string ProcessTreeForOutput(
       const base::DictionaryValue& node,
-      base::DictionaryValue* filtered_dict_result = nullptr) override;
+      base::DictionaryValue* filtered_dict_result = nullptr) const override;
 
-  std::string FormatAttributeValue(const base::Value& value);
+  std::string FormatAttributeValue(const base::Value& value) const;
 };
 
 // static
@@ -143,14 +142,13 @@ void AccessibilityTreeFormatterMac::AddDefaultFilters(
   }
 }
 
-std::unique_ptr<base::DictionaryValue>
-AccessibilityTreeFormatterMac::BuildAccessibilityTree(
-    BrowserAccessibility* root) {
+base::Value AccessibilityTreeFormatterMac::BuildTree(
+    BrowserAccessibility* root) const {
   DCHECK(root);
   BrowserAccessibilityCocoa* cocoa_root = ToBrowserAccessibilityCocoa(root);
   LineIndexer line_indexer(cocoa_root);
-  std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue);
-  RecursiveBuildTree(cocoa_root, &line_indexer, dict.get());
+  base::Value dict(base::Value::Type::DICTIONARY);
+  RecursiveBuildTree(cocoa_root, &line_indexer, &dict);
   return dict;
 }
 
@@ -456,7 +454,7 @@ std::string AccessibilityTreeFormatterMac::NodeToLineIndex(
 
 std::string AccessibilityTreeFormatterMac::ProcessTreeForOutput(
     const base::DictionaryValue& dict,
-    base::DictionaryValue* filtered_dict_result) {
+    base::DictionaryValue* filtered_dict_result) const {
   std::string error_value;
   if (dict.GetString("error", &error_value))
     return error_value;
@@ -498,19 +496,17 @@ std::string AccessibilityTreeFormatterMac::ProcessTreeForOutput(
     // Special case: position.
     if (item.first == kPositionDictAttr) {
       WriteAttribute(false,
-                     FormatCoordinates(
-                         base::Value::AsDictionaryValue(item.second),
-                         kPositionDictAttr, kXCoordDictAttr, kYCoordDictAttr),
+                     FormatCoordinates(item.second, kPositionDictAttr,
+                                       kXCoordDictAttr, kYCoordDictAttr),
                      &line);
       continue;
     }
     // Special case: size.
     if (item.first == kSizeDictAttr) {
-      WriteAttribute(
-          false,
-          FormatCoordinates(base::Value::AsDictionaryValue(item.second),
-                            kSizeDictAttr, kWidthDictAttr, kHeightDictAttr),
-          &line);
+      WriteAttribute(false,
+                     FormatCoordinates(item.second, kSizeDictAttr,
+                                       kWidthDictAttr, kHeightDictAttr),
+                     &line);
       continue;
     }
 
@@ -526,7 +522,7 @@ std::string AccessibilityTreeFormatterMac::ProcessTreeForOutput(
 }
 
 std::string AccessibilityTreeFormatterMac::FormatAttributeValue(
-    const base::Value& value) {
+    const base::Value& value) const {
   // String.
   if (value.is_string()) {
     // Special handling for constants which are exposed as is, i.e. with no

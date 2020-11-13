@@ -19,11 +19,8 @@ class CONTENT_EXPORT AccessibilityTreeFormatterBlink
   explicit AccessibilityTreeFormatterBlink();
   ~AccessibilityTreeFormatterBlink() override;
 
-  std::unique_ptr<base::DictionaryValue> BuildAccessibilityTree(
-      BrowserAccessibility* root) override;
-
+  base::Value BuildTree(BrowserAccessibility* root) const override;
   base::Value BuildTreeForWindow(gfx::AcceleratedWidget widget) const override;
-
   base::Value BuildTreeForSelector(
       const AXTreeSelector& selector) const override;
 
@@ -33,8 +30,8 @@ class CONTENT_EXPORT AccessibilityTreeFormatterBlink
   static std::unique_ptr<ui::AXTreeFormatter> CreateBlink();
 
  private:
-  void RecursiveBuildAccessibilityTree(const BrowserAccessibility& node,
-                                       base::DictionaryValue* dict) const;
+  void RecursiveBuildTree(const BrowserAccessibility& node,
+                          base::Value* dict) const;
 
   uint32_t ChildCount(const BrowserAccessibility& node) const;
   BrowserAccessibility* GetChild(const BrowserAccessibility& node,
@@ -45,7 +42,7 @@ class CONTENT_EXPORT AccessibilityTreeFormatterBlink
 
   std::string ProcessTreeForOutput(
       const base::DictionaryValue& node,
-      base::DictionaryValue* filtered_dict_result = nullptr) override;
+      base::DictionaryValue* filtered_dict_result = nullptr) const override;
 };
 
 }  // namespace content

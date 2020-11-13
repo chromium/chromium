@@ -11,7 +11,6 @@
 
 namespace base {
 class Value;
-class DictionaryValue;
 }
 
 namespace ui {
@@ -44,7 +43,11 @@ class AX_EXPORT AXTreeFormatter {
 
   // Check if the given dictionary matches any of the supplied AXNodeFilter(s).
   static bool MatchesNodeFilters(const std::vector<AXNodeFilter>& node_filters,
-                                 const base::DictionaryValue& dict);
+                                 const base::Value& dict);
+
+  // Formats a given web content accessible tree.
+  // |root| must be non-null and must be in web content.
+  virtual std::string Format(AXPlatformNodeDelegate* root) const = 0;
 
   // Build an accessibility tree for any window.
   virtual base::Value BuildTreeForWindow(
@@ -56,17 +59,10 @@ class AX_EXPORT AXTreeFormatter {
 
   // Returns a filtered accessibility tree using the current property and node
   // filters.
-  virtual std::unique_ptr<base::DictionaryValue> FilterAccessibilityTree(
-      const base::DictionaryValue& dict) = 0;
+  virtual base::Value FilterTree(const base::Value& dict) const = 0;
 
-  // Dumps a BrowserAccessibility tree into a string.
-  virtual void FormatAccessibilityTree(const base::DictionaryValue& tree_node,
-                                       std::string* contents) = 0;
-
-  // Test version of FormatAccessibilityTree().
-  // |root| must be non-null and must be in web content.
-  virtual void FormatAccessibilityTreeForTesting(AXPlatformNodeDelegate* root,
-                                                 std::string* contents) = 0;
+  // Dumps accessibility tree.
+  virtual std::string FormatTree(const base::Value& tree_node) const = 0;
 
   // Set regular expression filters that apply to each property of every node
   // before it's output.

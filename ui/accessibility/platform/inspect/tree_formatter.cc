@@ -50,13 +50,10 @@ bool AXTreeFormatter::MatchesPropertyFilters(
 // static
 bool AXTreeFormatter::MatchesNodeFilters(
     const std::vector<AXNodeFilter>& node_filters,
-    const base::DictionaryValue& dict) {
+    const base::Value& dict) {
   for (const auto& filter : node_filters) {
-    std::string value;
-    if (!dict.GetString(filter.property, &value)) {
-      continue;
-    }
-    if (base::MatchPattern(value, filter.pattern)) {
+    const std::string* value = dict.FindStringKey(filter.property);
+    if (value && base::MatchPattern(*value, filter.pattern)) {
       return true;
     }
   }

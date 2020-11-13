@@ -39,8 +39,8 @@ class AXTreeServer final {
       const base::FilePath& filters_path);
 
   // Formats and dumps into console the tree.
-  void Format(ui::AXTreeFormatter& formatter,
-              const base::DictionaryValue& dict,
+  void Format(const ui::AXTreeFormatter& formatter,
+              const base::Value& dict,
               bool use_json);
 
 #if defined(OS_WIN)

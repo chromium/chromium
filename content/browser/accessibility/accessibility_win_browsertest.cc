@@ -147,10 +147,7 @@ std::string AccessibilityWinBrowserTest::PrintAXTree() const {
   formatter->SetPropertyFilters(
       {ui::AXPropertyFilter("*", ui::AXPropertyFilter::ALLOW)});
 
-  std::string str;
-  formatter->FormatAccessibilityTreeForTesting(
-      GetRootAccessibilityNode(shell()->web_contents()), &str);
-  return str;
+  return formatter->Format(GetRootAccessibilityNode(shell()->web_contents()));
 }
 
 // Loads a page with  an input text field and places sample text in it. Also,

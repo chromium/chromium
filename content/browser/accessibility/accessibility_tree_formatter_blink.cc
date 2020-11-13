@@ -205,12 +205,11 @@ const char* const TREE_DATA_ATTRIBUTES[] = {"TreeData.textSelStartOffset",
 const char* STATE_FOCUSED = "focused";
 const char* STATE_OFFSCREEN = "offscreen";
 
-std::unique_ptr<base::DictionaryValue>
-AccessibilityTreeFormatterBlink::BuildAccessibilityTree(
-    BrowserAccessibility* root) {
+base::Value AccessibilityTreeFormatterBlink::BuildTree(
+    BrowserAccessibility* root) const {
   CHECK(root);
-  std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue);
-  RecursiveBuildAccessibilityTree(*root, dict.get());
+  base::Value dict(base::Value::Type::DICTIONARY);
+  RecursiveBuildTree(*root, &dict);
   return dict;
 }
 
@@ -226,21 +225,19 @@ base::Value AccessibilityTreeFormatterBlink::BuildTreeForSelector(
   return base::Value(base::Value::Type::DICTIONARY);
 }
 
-void AccessibilityTreeFormatterBlink::RecursiveBuildAccessibilityTree(
+void AccessibilityTreeFormatterBlink::RecursiveBuildTree(
     const BrowserAccessibility& node,
-    base::DictionaryValue* dict) const {
-  AddProperties(node, dict);
+    base::Value* dict) const {
+  AddProperties(node, static_cast<base::DictionaryValue*>(dict));
 
-  auto children = std::make_unique<base::ListValue>();
-
+  base::Value children(base::Value::Type::LIST);
   for (size_t i = 0; i < ChildCount(node); ++i) {
     BrowserAccessibility* child_node = GetChild(node, i);
-    std::unique_ptr<base::DictionaryValue> child_dict(
-        new base::DictionaryValue);
-    RecursiveBuildAccessibilityTree(*child_node, child_dict.get());
-    children->Append(std::move(child_dict));
+    base::Value child_dict(base::Value::Type::DICTIONARY);
+    RecursiveBuildTree(*child_node, &child_dict);
+    children.Append(std::move(child_dict));
   }
-  dict->Set(kChildrenDictAttr, std::move(children));
+  dict->SetKey(kChildrenDictAttr, std::move(children));
 }
 
 uint32_t AccessibilityTreeFormatterBlink::ChildCount(
@@ -406,7 +403,7 @@ void AccessibilityTreeFormatterBlink::AddProperties(
 
 std::string AccessibilityTreeFormatterBlink::ProcessTreeForOutput(
     const base::DictionaryValue& dict,
-    base::DictionaryValue* filtered_dict_result) {
+    base::DictionaryValue* filtered_dict_result) const {
   std::string error_value;
   if (dict.GetString("error", &error_value))
     return error_value;

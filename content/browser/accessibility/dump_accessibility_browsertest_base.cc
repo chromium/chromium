@@ -153,10 +153,7 @@ DumpAccessibilityTestBase::DumpUnfilteredAccessibilityTreeAsString() {
   property_filters.emplace_back("*", AXPropertyFilter::ALLOW);
   formatter->SetPropertyFilters(property_filters);
   formatter->set_show_ids(true);
-  std::string ax_tree_dump;
-  formatter->FormatAccessibilityTreeForTesting(
-      GetRootAccessibilityNode(shell()->web_contents()), &ax_tree_dump);
-  return ax_tree_dump;
+  return formatter->Format(GetRootAccessibilityNode(shell()->web_contents()));
 }
 
 void DumpAccessibilityTestBase::ParseHtmlForExtraDirectives(

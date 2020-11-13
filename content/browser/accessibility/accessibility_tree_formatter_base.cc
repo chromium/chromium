@@ -45,63 +45,60 @@ std::string AccessibilityTreeFormatterBase::DumpAccessibilityTreeFromManager(
     formatter = std::make_unique<AccessibilityTreeFormatterBlink>();
   else
     formatter = Create();
-  std::string accessibility_contents;
+
   formatter->SetPropertyFilters(property_filters);
-  std::unique_ptr<base::DictionaryValue> dict =
+  base::Value dict =
       static_cast<AccessibilityTreeFormatterBase*>(formatter.get())
-          ->BuildAccessibilityTree(ax_mgr->GetRoot());
-  formatter->FormatAccessibilityTree(*dict, &accessibility_contents);
-  return accessibility_contents;
+          ->BuildTree(ax_mgr->GetRoot());
+  return formatter->FormatTree(dict);
 }
 
 AccessibilityTreeFormatterBase::AccessibilityTreeFormatterBase() = default;
 
 AccessibilityTreeFormatterBase::~AccessibilityTreeFormatterBase() = default;
 
-void AccessibilityTreeFormatterBase::FormatAccessibilityTree(
-    const base::DictionaryValue& dict,
-    std::string* contents) {
-  RecursiveFormatAccessibilityTree(dict, contents);
-}
-
-void AccessibilityTreeFormatterBase::FormatAccessibilityTreeForTesting(
-    ui::AXPlatformNodeDelegate* root,
-    std::string* contents) {
+std::string AccessibilityTreeFormatterBase::Format(
+    ui::AXPlatformNodeDelegate* root) const {
   auto* node_internal = BrowserAccessibility::FromAXPlatformNodeDelegate(root);
   DCHECK(node_internal);
-  FormatAccessibilityTree(*BuildAccessibilityTree(node_internal), contents);
+  return FormatTree(BuildTree(node_internal));
 }
 
-std::unique_ptr<base::DictionaryValue>
-AccessibilityTreeFormatterBase::FilterAccessibilityTree(
-    const base::DictionaryValue& dict) {
-  auto filtered_dict = std::make_unique<base::DictionaryValue>();
-  ProcessTreeForOutput(dict, filtered_dict.get());
-  const base::ListValue* children;
-  if (dict.GetList(kChildrenDictAttr, &children) && !children->empty()) {
-    const base::DictionaryValue* child_dict;
-    auto filtered_children = std::make_unique<base::ListValue>();
-    for (size_t i = 0; i < children->GetSize(); i++) {
-      children->GetDictionary(i, &child_dict);
-      auto filtered_child = FilterAccessibilityTree(*child_dict);
-      filtered_children->Append(std::move(filtered_child));
+std::string AccessibilityTreeFormatterBase::FormatTree(
+    const base::Value& dict) const {
+  std::string contents;
+  RecursiveFormatTree(dict, &contents);
+  return contents;
+}
+
+base::Value AccessibilityTreeFormatterBase::FilterTree(
+    const base::Value& dict) const {
+  base::DictionaryValue filtered_dict;
+  ProcessTreeForOutput(base::Value::AsDictionaryValue(dict), &filtered_dict);
+  const base::Value* children = dict.FindListPath(kChildrenDictAttr);
+  if (children && !children->GetList().empty()) {
+    base::Value filtered_children(base::Value::Type::LIST);
+    for (const auto& child_dict : children->GetList()) {
+      auto filtered_child = FilterTree(child_dict);
+      filtered_children.Append(std::move(filtered_child));
     }
-    filtered_dict->Set(kChildrenDictAttr, std::move(filtered_children));
+    filtered_dict.SetPath(kChildrenDictAttr, std::move(filtered_children));
   }
-  return filtered_dict;
+  return std::move(filtered_dict);
 }
 
-void AccessibilityTreeFormatterBase::RecursiveFormatAccessibilityTree(
-    const base::DictionaryValue& dict,
+void AccessibilityTreeFormatterBase::RecursiveFormatTree(
+    const base::Value& dict,
     std::string* contents,
-    int depth) {
+    int depth) const {
   // Check dictionary against node filters, may require us to skip this node
   // and its children.
   if (MatchesNodeFilters(dict))
     return;
 
   std::string indent = std::string(depth * kIndentSymbolCount, kIndentSymbol);
-  std::string line = indent + ProcessTreeForOutput(dict);
+  std::string line =
+      indent + ProcessTreeForOutput(base::Value::AsDictionaryValue(dict));
   if (line.find(kSkipString) != std::string::npos)
     return;
 
@@ -115,13 +112,11 @@ void AccessibilityTreeFormatterBase::RecursiveFormatAccessibilityTree(
   if (line.find(kSkipChildren) != std::string::npos)
     return;
 
-  const base::ListValue* children;
-  if (!dict.GetList(kChildrenDictAttr, &children))
-    return;
-  const base::DictionaryValue* child_dict;
-  for (size_t i = 0; i < children->GetSize(); i++) {
-    children->GetDictionary(i, &child_dict);
-    RecursiveFormatAccessibilityTree(*child_dict, contents, depth + 1);
+  const base::Value* children = dict.FindListPath(kChildrenDictAttr);
+  if (children && !children->GetList().empty()) {
+    for (const auto& child_dict : children->GetList()) {
+      RecursiveFormatTree(child_dict, contents, depth + 1);
+    }
   }
 }
 
@@ -185,40 +180,38 @@ bool AccessibilityTreeFormatterBase::MatchesPropertyFilters(
 }
 
 bool AccessibilityTreeFormatterBase::MatchesNodeFilters(
-    const base::DictionaryValue& dict) const {
+    const base::Value& dict) const {
   return ui::AXTreeFormatter::MatchesNodeFilters(node_filters_, dict);
 }
 
 std::string AccessibilityTreeFormatterBase::FormatCoordinates(
-    const base::DictionaryValue& value,
+    const base::Value& dict,
     const std::string& name,
     const std::string& x_name,
-    const std::string& y_name) {
-  int x, y;
-  value.GetInteger(x_name, &x);
-  value.GetInteger(y_name, &y);
+    const std::string& y_name) const {
+  int x = dict.FindIntPath(x_name).value_or(0);
+  int y = dict.FindIntPath(y_name).value_or(0);
   return base::StringPrintf("%s=(%d, %d)", name.c_str(), x, y);
 }
 
 std::string AccessibilityTreeFormatterBase::FormatRectangle(
-    const base::DictionaryValue& value,
+    const base::Value& dict,
     const std::string& name,
     const std::string& left_name,
     const std::string& top_name,
     const std::string& width_name,
-    const std::string& height_name) {
-  int left, top, width, height;
-  value.GetInteger(left_name, &left);
-  value.GetInteger(top_name, &top);
-  value.GetInteger(width_name, &width);
-  value.GetInteger(height_name, &height);
+    const std::string& height_name) const {
+  int left = dict.FindIntPath(left_name).value_or(0);
+  int top = dict.FindIntPath(top_name).value_or(0);
+  int width = dict.FindIntPath(width_name).value_or(0);
+  int height = dict.FindIntPath(height_name).value_or(0);
   return base::StringPrintf("%s=(%d, %d, %d, %d)", name.c_str(), left, top,
                             width, height);
 }
 
 bool AccessibilityTreeFormatterBase::WriteAttribute(bool include_by_default,
                                                     const std::string& attr,
-                                                    std::string* line) {
+                                                    std::string* line) const {
   if (attr.empty())
     return false;
   if (!MatchesPropertyFilters(attr, include_by_default))

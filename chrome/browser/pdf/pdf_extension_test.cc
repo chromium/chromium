@@ -3250,8 +3250,7 @@ class PDFExtensionAccessibilityTreeDumpTest
         content::FindAccessibilityNode(guest_contents, find_criteria);
     CHECK(pdf_root);
 
-    std::string actual_contents;
-    formatter->FormatAccessibilityTreeForTesting(pdf_root, &actual_contents);
+    std::string actual_contents = formatter->Format(pdf_root);
 
     std::vector<std::string> actual_lines =
         base::SplitString(actual_contents, "\n", base::KEEP_WHITESPACE,

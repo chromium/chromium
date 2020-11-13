@@ -74,7 +74,7 @@ void AXTreeServer::Run(BuildTree build_tree,
   }
 
   // Format the tree.
-  Format(*formatter, base::Value::AsDictionaryValue(dict), use_json);
+  Format(*formatter, dict, use_json);
 }
 
 std::vector<ui::AXPropertyFilter> AXTreeServer::GetPropertyFilters(
@@ -118,20 +118,19 @@ std::vector<ui::AXPropertyFilter> AXTreeServer::GetPropertyFilters(
   return filters;
 }
 
-void AXTreeServer::Format(AXTreeFormatter& formatter,
-                          const base::DictionaryValue& dict,
+void AXTreeServer::Format(const AXTreeFormatter& formatter,
+                          const base::Value& dict,
                           bool use_json) {
   std::string accessibility_contents;
 
   // Format accessibility tree as JSON or text.
   if (use_json) {
-    const std::unique_ptr<base::DictionaryValue> filtered_dict =
-        formatter.FilterAccessibilityTree(dict);
-    base::JSONWriter::WriteWithOptions(*filtered_dict,
+    const base::Value filtered_dict = formatter.FilterTree(dict);
+    base::JSONWriter::WriteWithOptions(filtered_dict,
                                        base::JSONWriter::OPTIONS_PRETTY_PRINT,
                                        &accessibility_contents);
   } else {
-    formatter.FormatAccessibilityTree(dict, &accessibility_contents);
+    accessibility_contents = formatter.FormatTree(dict);
   }
 
   // Write to console.
