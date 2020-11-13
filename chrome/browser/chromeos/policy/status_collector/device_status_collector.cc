@@ -1240,8 +1240,10 @@ class DeviceStatusCollectorState : public StatusCollectorState {
               system_status_out->set_vpd_sku_number(
                   system_info->product_sku_number.value());
             }
-            system_status_out->set_vpd_serial_number(
-                system_info->product_serial_number);
+            if (system_info->product_serial_number.has_value()) {
+              system_status_out->set_vpd_serial_number(
+                  system_info->product_serial_number.value());
+            }
           }
           if (report_system_info) {
             system_status_out->set_marketing_name(system_info->marketing_name);
