@@ -25,6 +25,8 @@ class FuchsiaStreamDecryptorBase : public StreamProcessorHelper::Client {
                              size_t min_buffer_size);
   ~FuchsiaStreamDecryptorBase() override;
 
+  int GetMaxDecryptRequests() const;
+
  protected:
   // StreamProcessorHelper::Client overrides.
   void AllocateInputBuffers(
