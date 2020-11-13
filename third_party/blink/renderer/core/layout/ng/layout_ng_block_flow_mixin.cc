@@ -218,6 +218,14 @@ void LayoutNGBlockFlowMixin<Base>::SetPaintFragment(
 
 template <typename Base>
 void LayoutNGBlockFlowMixin<Base>::Paint(const PaintInfo& paint_info) const {
+  // When |this| is NG block fragmented, the painter should traverse fragments
+  // instead of |LayoutObject|, because this function cannot handle block
+  // fragmented objects. We can come here only when |this| cannot traverse
+  // fragments, or the parent is legacy.
+  DCHECK(!Base::CanTraversePhysicalFragments() ||
+         !Base::Parent()->CanTraversePhysicalFragments());
+  DCHECK_LE(Base::PhysicalFragmentCount(), 1u);
+
   // Avoid painting dirty objects because descendants maybe already destroyed.
   if (UNLIKELY(Base::NeedsLayout() &&
                !Base::ChildLayoutBlockedByDisplayLock())) {
@@ -226,7 +234,9 @@ void LayoutNGBlockFlowMixin<Base>::Paint(const PaintInfo& paint_info) const {
   }
 
   if (UNLIKELY(RuntimeEnabledFeatures::LayoutNGFragmentItemEnabled())) {
-    if (const NGPhysicalBoxFragment* fragment = CurrentFragment()) {
+    if (Base::PhysicalFragmentCount()) {
+      const NGPhysicalBoxFragment* fragment = Base::GetPhysicalFragment(0);
+      DCHECK(fragment);
       if (fragment->HasItems()) {
         NGBoxFragmentPainter(*fragment).Paint(paint_info);
         return;
@@ -239,7 +249,9 @@ void LayoutNGBlockFlowMixin<Base>::Paint(const PaintInfo& paint_info) const {
     return;
   }
 
-  if (const NGPhysicalBoxFragment* fragment = CurrentFragment()) {
+  if (Base::PhysicalFragmentCount()) {
+    const NGPhysicalBoxFragment* fragment = Base::GetPhysicalFragment(0);
+    DCHECK(fragment);
     NGBoxFragmentPainter(*fragment).Paint(paint_info);
     return;
   }

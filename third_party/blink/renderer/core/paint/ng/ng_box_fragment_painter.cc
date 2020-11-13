@@ -231,10 +231,13 @@ bool HitTestCulledInlineAncestors(
 // |NGBoxFragmentPainter| for all fragments, and we still want this
 // oprimization.
 bool FragmentRequiresLegacyFallback(const NGPhysicalFragment& fragment) {
-  // Fallback to LayoutObject if this is a root of NG block layout.
-  // If this box is for this painter, LayoutNGBlockFlow will call this back.
-  // Otherwise it calls legacy painters.
-  return fragment.IsFormattingContextRoot();
+  // If |fragment| is |IsFormattingContextRoot|, it may be legacy.
+  // Avoid falling back to |LayoutObject| if |CanTraverse|, because it
+  // cannot handle block fragmented objects.
+  if (!fragment.IsFormattingContextRoot() || fragment.CanTraverse())
+    return false;
+  DCHECK(!To<NGPhysicalBoxFragment>(&fragment)->BreakToken());
+  return true;
 }
 
 // Returns a vector of backplates that surround the paragraphs of text within
@@ -2200,10 +2203,12 @@ bool NGBoxFragmentPainter::HitTestChildBoxFragment(
     return false;
 
   if (!FragmentRequiresLegacyFallback(fragment)) {
-    DCHECK(!fragment.IsAtomicInline());
-    DCHECK(!fragment.IsFloating());
     if (const NGPaintFragment* paint_fragment =
             backward_cursor.Current().PaintFragment()) {
+      if (fragment.IsPaintedAtomically()) {
+        return HitTestAllPhasesInFragment(fragment, hit_test.location,
+                                          physical_offset, hit_test.result);
+      }
       if (fragment.IsInlineBox()) {
         return NGBoxFragmentPainter(*paint_fragment)
             .NodeAtPoint(hit_test, physical_offset);
@@ -2213,6 +2218,10 @@ bool NGBoxFragmentPainter::HitTestChildBoxFragment(
       return NGBoxFragmentPainter(*paint_fragment)
           .NodeAtPoint(*hit_test.result, hit_test.location, physical_offset,
                        hit_test.action);
+    }
+    if (fragment.IsPaintedAtomically()) {
+      return HitTestAllPhasesInFragment(fragment, hit_test.location,
+                                        physical_offset, hit_test.result);
     }
     NGInlineCursor cursor(backward_cursor);
     const NGFragmentItem* item = cursor.Current().Item();
