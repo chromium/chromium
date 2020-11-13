@@ -176,8 +176,11 @@ void CreateAssistantOnBackgroundThread(
 }  // namespace
 
 ServiceController::ServiceController(
-    scoped_refptr<base::SingleThreadTaskRunner> background_task_runner)
-    : background_task_runner_(background_task_runner), weak_factory_(this) {
+    scoped_refptr<base::SingleThreadTaskRunner> background_task_runner,
+    mojo::Remote<chromeos::libassistant::mojom::ServiceController> client)
+    : background_task_runner_(background_task_runner),
+      client_(std::move(client)),
+      weak_factory_(this) {
   DCHECK(background_task_runner_);
 }
 

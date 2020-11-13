@@ -1,0 +1,24 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module chromeos.libassistant.mojom;
+
+// The main interface to the Libassistant service on ChromeOS.
+// Libassistant provides access to the Google Assistant.
+interface LibassistantService {
+  // Bind the service controller, which provides control over the lifetime
+  // of the Libassistant process (start/stop).
+  BindServiceController(pending_receiver<ServiceController> receiver);
+
+  // This service will further expose methods to bind all other helper
+  // controllers.
+  BindAudioInputController(/* pending_receiver */);
+  BindAudioOutputController(/* pending_receiver */);
+  BindInteractionController(/* pending_receiver */);
+};
+
+// Component managing the lifecycle of Libassistant,
+// exposing methods to start/stop and configure Libassistant.
+interface ServiceController {
+};

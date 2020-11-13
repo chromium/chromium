@@ -1,0 +1,19 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+component("libassistant") {
+  sources = [
+    "libassistant_service.cc",
+    "libassistant_service.h",
+  ]
+
+  deps = [ "//chromeos/services/libassistant/public/mojom" ]
+
+  defines = [ "IS_LIBASSISTANT_SERVICE_IMPL" ]
+
+  # The default output name of this service, `libassistant_service.so`, already
+  # exists (as build target of //chromeos/services/assistant), so we have to
+  # use `lib_libassistant_service.so`.
+  output_name = "_libassistant_service"
+}

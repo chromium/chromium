@@ -8,6 +8,8 @@
 #include <memory>
 
 #include "base/threading/thread.h"
+#include "chromeos/services/libassistant/public/mojom/service.mojom.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace chromeos {
 namespace assistant {
@@ -32,7 +34,29 @@ class AssistantProxy {
   base::Thread& background_thread() { return background_thread_; }
 
  private:
+  using LibassistantServiceMojom =
+      chromeos::libassistant::mojom::LibassistantService;
+  using ServiceControllerMojom =
+      chromeos::libassistant::mojom::ServiceController;
+
+  scoped_refptr<base::SingleThreadTaskRunner> background_task_runner();
+
+  void CreateMojomService();
+  void CreateMojomServiceOnBackgroundThread(
+      mojo::PendingReceiver<LibassistantServiceMojom>);
+  void DestroyMojomService();
+  void DestroyMojomServiceOnBackgroundThread();
+
+  mojo::Remote<ServiceControllerMojom> BindServiceController();
+
+  // The thread on which the Mojom service (and by extension Libassistant) runs.
   base::Thread background_thread_{"Assistant background thread"};
+
+  mojo::Remote<LibassistantServiceMojom> client_;
+
+  // The Mojom service that runs Libassistant.
+  // For now this is locally owned but it will be moved to a sandbox later.
+  std::unique_ptr<LibassistantServiceMojom> mojom_service_;
 
   std::unique_ptr<ServiceController> service_controller_;
 };

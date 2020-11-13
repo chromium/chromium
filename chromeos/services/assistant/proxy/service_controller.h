@@ -14,6 +14,8 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/single_thread_task_runner.h"
+#include "chromeos/services/libassistant/public/mojom/service.mojom.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace assistant_client {
 
@@ -40,8 +42,9 @@ class ServiceController {
   // Each authentication token exists of a [gaia_id, access_token] tuple.
   using AuthTokens = std::vector<std::pair<std::string, std::string>>;
 
-  explicit ServiceController(
-      scoped_refptr<base::SingleThreadTaskRunner> background_task_runner);
+  ServiceController(
+      scoped_refptr<base::SingleThreadTaskRunner> background_task_runner,
+      mojo::Remote<chromeos::libassistant::mojom::ServiceController> client);
 
   ServiceController(ServiceController&) = delete;
   ServiceController& operator=(ServiceController&) = delete;
@@ -127,6 +130,8 @@ class ServiceController {
   State state_ = State::kStopped;
 
   scoped_refptr<base::SingleThreadTaskRunner> background_task_runner_;
+
+  mojo::Remote<chromeos::libassistant::mojom::ServiceController> client_;
 
   // NOTE: |display_connection_| is used by |assistant_manager_| and must be
   // declared before so it will be destructed after.
