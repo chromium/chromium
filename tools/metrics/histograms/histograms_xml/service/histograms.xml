@@ -1100,7 +1100,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>chrome-worker@google.com</owner>
   <summary>
     The counts of retries to recover after a Storage Service crash. Logged after
-    a recovery, or the maximum number of retries is exceeded See
+    a recovery, or the maximum number of retries is exceeded. See
     ServiceWorkerRegistry::OnRemoteStorageDisconnected() for the maximum number
     of retries.
   </summary>
