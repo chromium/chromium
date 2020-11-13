@@ -1585,6 +1585,16 @@
         'dynamic_refresh': True,
         'per_profile': False
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Perform DNS interception checks',
+        },
+        {
+          'value': False,
+          'caption': 'Do not perform DNS interception checks',
+        },
+      ],
       'example_value': True,
       'default': True,
       'id': 654,
@@ -4442,6 +4452,16 @@
         'dynamic_refresh': True,
         'per_profile': False,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Turn NTLMv2 on',
+        },
+        {
+          'value': False,
+          'caption': 'Turn NTLMv2 off',
+        },
+      ],
       'example_value': True,
       'default': True,
       'id': 393,
@@ -11936,6 +11956,16 @@
       'features': {
         'dynamic_refresh': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Allow users to redeem offers through Chrome OS Registration',
+        },
+        {
+          'value': False,
+          'caption': 'Prevent users from redeeming offers through Chrome OS Registration',
+        },
+      ],
       'example_value': True,
       'default': True,
       'id': 185,
@@ -14613,6 +14643,16 @@
       'features': {
         'dynamic_refresh': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Allow queries to the Quirks Server and potentially downloading hardware-specific configuration files',
+        },
+        {
+          'value': False,
+          'caption': 'Do not query Quirks Servers',
+        },
+      ],
       'example_value': True,
       'default': True,
       'id': 325,
@@ -14709,6 +14749,16 @@
         'dynamic_refresh': True,
         'per_profile': False,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Always show low disk space warnings',
+        },
+        {
+          'value': False,
+          'caption': 'Only show low disk space warnings if the device is unmanged or there is only 1 user',
+        },
+      ],
       'example_value': True,
       'default': False,
       'device_only': True,
@@ -15108,6 +15158,16 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Show content suggestions on the New Tab page',
+        },
+        {
+          'value': False,
+          'caption': 'Do not show content suggestions on the New Tab page',
+        },
+      ],
       'example_value': True,
       'default': True,
       'id': 338,
@@ -21841,12 +21901,23 @@
         'type': 'boolean',
       },
       'example_value': True,
+      'default': True,
       'id': 632,
       'supported_on': ['chrome.*:79-'],
       'features': {
         'dynamic_refresh': False,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Allow users to select "Always allow" when an external protocol dialog is shown to skip future confirmation prompts',
+        },
+        {
+          'value': False,
+          'caption': 'Always require users to confrim external protocol prompts',
+        },
+      ],
       'caption': '''Show an "Always open" checkbox in external protocol dialog.''',
       'tags': [],
       'desc': ''' This policy controls whether or not the "Always open" checkbox is shown on external protocol launch confirmation prompts.
@@ -22579,6 +22650,16 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Allow local device discover',
+        },
+        {
+          'value': False,
+          'caption': 'Prevent local device discovery',
+        },
+      ],
       'example_value': True,
       'default': True,
       'id': 662,
