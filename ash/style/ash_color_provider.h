@@ -123,6 +123,13 @@ class ASH_EXPORT AshColorProvider : public SessionObserver {
 
     // Color for current active desk's border.
     kCurrentDeskColor,
+
+    // Color for the battery's badge (bolt, unreliable, X).
+    kBatteryBadgeColor,
+
+    // Color for the switch access's back button.
+    kSwitchAccessInnerStrokeColor,
+    kSwitchAccessOuterStrokeColor,
   };
 
   // Attributes of ripple, includes the base color, opacity of inkdrop and

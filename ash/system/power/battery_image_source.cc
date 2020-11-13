@@ -18,9 +18,6 @@ namespace {
 // battery is present and has a charge greater than 0.
 const int kMinVisualChargeLevel = 1;
 
-// The color of the battery's badge (bolt, unreliable, X).
-const SkColor kBatteryBadgeColor = gfx::kGoogleGrey900;
-
 }  // namespace
 
 namespace ash {
@@ -74,7 +71,8 @@ void BatteryImageSource::Draw(gfx::Canvas* canvas) {
                        size().height() * dsf);
   canvas->ClipRect(clip_rect);
 
-  const SkColor alert_color = AshColorProvider::Get()->GetContentLayerColor(
+  auto* color_provider = AshColorProvider::Get();
+  const SkColor alert_color = color_provider->GetContentLayerColor(
       AshColorProvider::ContentLayerType::kIconColorAlert);
   const bool use_alert_color =
       charge_level == min_charge_level && info_.alert_if_low;
@@ -94,7 +92,10 @@ void BatteryImageSource::Draw(gfx::Canvas* canvas) {
     const SkColor badge_color =
         use_alert_color
             ? alert_color
-            : info_.charge_percent > 50 ? kBatteryBadgeColor : fg_color_;
+            : info_.charge_percent > 50
+                  ? color_provider->GetContentLayerColor(
+                        AshColorProvider::ContentLayerType::kBatteryBadgeColor)
+                  : fg_color_;
 
     PaintVectorIcon(canvas, *info_.icon_badge, badge_color);
   }
