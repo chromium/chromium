@@ -2613,7 +2613,6 @@ void SkiaRenderer::PrepareRenderPassOverlay(CALayerOverlay* overlay) {
   // the |current_render_pass| is nullptr during ScheduleOverlays(), since all
   // overlay quads should be in the |root_render_pass|, before they are promoted
   // to overlays, so set the |root_render_pass| to the |current_render_pass|.
-  DCHECK(!current_frame()->current_render_pass);
   base::AutoReset<const AggregatedRenderPass*> auto_reset(
       &current_frame()->current_render_pass, current_frame()->root_render_pass);
 
