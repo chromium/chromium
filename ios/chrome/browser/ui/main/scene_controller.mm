@@ -909,7 +909,8 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
                 name:kChromeFirstRunUIDidFinishNotification
               object:nil];
 
-  if (!location_permissions_field_trial::IsInRemoveFirstRunPromptGroup()) {
+  if (!location_permissions_field_trial::IsInRemoveFirstRunPromptGroup() &&
+      !location_permissions_field_trial::IsInFirstRunModalGroup()) {
     // As soon as First Run has finished, give OmniboxGeolocationController an
     // opportunity to present the iOS system location alert.
     [[OmniboxGeolocationController sharedInstance]
