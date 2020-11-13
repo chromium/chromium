@@ -6,14 +6,32 @@
 #define CHROME_BROWSER_UI_COMMANDER_COMMAND_SOURCE_H_
 
 #include "base/callback.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/gfx/range/range.h"
 
 class Browser;
 
 namespace commander {
 
-class CommanderBackend;
+struct CommandItem;
+
+// Provides and ranks available commands in response to user input. The
+// intention is for every system available through the commander to
+// provide its own source, which is responsible for tracking the state and
+// context necessary to provide appropriate commands from that system.
+class CommandSource {
+ public:
+  using CommandResults = std::vector<std::unique_ptr<CommandItem>>;
+  CommandSource() = default;
+  virtual ~CommandSource() = default;
+
+  // Returns a list of scored commands to return for |input|, or an empty
+  // list if none are appropriate. The commands are not guaranteed to be in
+  // any particular order. |browser| is the browser the active commander
+  // is attached to.
+  virtual CommandResults GetCommands(const base::string16& input,
+                                     Browser* browser) const = 0;
+};
 
 // Represents a single option that can be presented in the command palette.
 struct CommandItem {
@@ -36,6 +54,12 @@ struct CommandItem {
     kTab,
     kWindow,
   };
+
+  using CompositeCommandProvider =
+      base::RepeatingCallback<CommandSource::CommandResults(
+          const base::string16&)>;
+  using CompositeCommand = std::pair<base::string16, CompositeCommandProvider>;
+
   CommandItem();
   virtual ~CommandItem();
   CommandItem(const CommandItem& other) = delete;
@@ -51,13 +75,10 @@ struct CommandItem {
   // Optional secondary text for the command. Typically used to display a
   // hotkey.
   base::string16 annotation;
-  // The code to execute if the user selects this option, if it's a one-shot.
-  // Must be unset if |delegate_factory| is set.
-  base::Optional<base::OnceClosure> command;
-  // If the user selects this option and further input is required,
-  // this creates an item-specific backend to handle the rest of the command.
-  base::Optional<base::OnceCallback<std::unique_ptr<CommanderBackend>()>>
-      delegate_factory;
+  // If this command is a one-shot, executes the command. If this command is
+  // composite, provides the prompt text sent to the user, and a
+  // CompositeCommandProvider to handle additional user input.
+  absl::variant<base::OnceClosure, CompositeCommand> command;
   // How relevant the item is to user input. Expected range is (0,1], with 1
   // indicating a perfect match (in the absence of other criteria, this boils
   // down to an exact string match).
@@ -68,24 +89,6 @@ struct CommandItem {
   // representing:
   //    [Com]mand [It]em [M]atch Resu[lt]
   std::vector<gfx::Range> matched_ranges;
-};
-
-// Provides and ranks available commands in response to user input. The
-// intention is for every system available through the commander to
-// provide its own source, which is responsible for tracking the state and
-// context necessary to provide appropriate commands from that system.
-class CommandSource {
- public:
-  using CommandResults = std::vector<std::unique_ptr<CommandItem>>;
-  CommandSource() = default;
-  virtual ~CommandSource() = default;
-
-  // Returns a list of scored commands to return for |input|, or an empty
-  // list if none are appropriate. The commands are not guaranteed to be in
-  // any particular order. |browser| is the browser the active commander
-  // is attached to.
-  virtual CommandResults GetCommands(const base::string16& input,
-                                     Browser* browser) const = 0;
 };
 
 }  // namespace commander

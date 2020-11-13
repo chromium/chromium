@@ -12,8 +12,7 @@ CommandItem::CommandItem(CommandItem&& other) = default;
 CommandItem& CommandItem::operator=(CommandItem&& other) = default;
 
 CommandItem::Type CommandItem::GetType() {
-  DCHECK(!command || !delegate_factory);
-  if (delegate_factory)
+  if (absl::get_if<CompositeCommand>(&command))
     return kComposite;
   return kOneShot;
 }
