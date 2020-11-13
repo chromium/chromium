@@ -160,7 +160,7 @@ class CONTENT_EXPORT AgentSchedulingGroupHost
   void RenderProcessHostDestroyed(RenderProcessHost* host) override;
 
   void ResetMojo();
-  void SetUpMojoIfNeeded();
+  void SetUpMojo();
 
   void SetState(LifecycleState state);
 

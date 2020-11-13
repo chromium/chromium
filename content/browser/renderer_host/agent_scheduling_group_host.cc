@@ -124,13 +124,13 @@ AgentSchedulingGroupHost::AgentSchedulingGroupHost(RenderProcessHost& process,
       mojo_remote_(should_associate) {
   process_.AddObserver(this);
 
-  // The RenderProcessHost's channel and other mojo interfaces are initialized
-  // by the time this class is constructed, so we eagerly initialize this
-  // class's mojos so they have the same bind lifetime as those of the
-  // RenderProcessHost. Furthermore, when the RenderProcessHost's channel and
-  // mojo interfaces get reset and reinitialized, we'll be notified so that we
-  // can reset and reinitialize ours as well.
-  SetUpMojoIfNeeded();
+  // The RenderProcessHost's channel and other mojo interfaces are bound by the
+  // time this class is constructed, so we eagerly initialize this class's mojos
+  // so they have the same bind lifetime as those of the RenderProcessHost.
+  // Furthermore, when the RenderProcessHost's channel and mojo interfaces get
+  // reset and reinitialized, we'll be notified so that we can reset and
+  // reinitialize ours as well.
+  SetUpMojo();
 }
 
 // DO NOT USE |process_| HERE! At this point it (or at least parts of it) is no
@@ -151,15 +151,14 @@ void AgentSchedulingGroupHost::RenderProcessExited(
   ResetMojo();
 
   // RenderProcessHostImpl will attempt to call this method later if it has not
-  // already been called. We call it now since `SetUpMojoIfNeeded()` relies on
-  // it being called, thus setting up the IPC channel and mojom::Renderer
-  // interface.
+  // already been called. We call it now since `SetUpMojo()` relies on it being
+  // called, thus setting up the IPC ChannelProxy and mojom::Renderer interface.
   process_.EnableSendQueue();
 
   // We call this so that we can immediately queue IPC and mojo messages on the
   // new channel/interfaces that are bound for the next renderer process, should
   // one eventually be spun up.
-  SetUpMojoIfNeeded();
+  SetUpMojo();
 }
 
 void AgentSchedulingGroupHost::RenderProcessHostDestroyed(
@@ -298,30 +297,15 @@ void AgentSchedulingGroupHost::ResetMojo() {
   associated_interface_provider_receivers_.Clear();
 }
 
-void AgentSchedulingGroupHost::SetUpMojoIfNeeded() {
+void AgentSchedulingGroupHost::SetUpMojo() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  // We don't DCHECK |process_.IsInitializedAndNotDead()| here because we may
-  // end up here after the render process has died but before the
-  // RenderProcessHostImpl is re-initialized (and thus not considered dead
-  // anymore).
-
   // The RenderProcessHostImpl's renderer interface must be initialized at this
-  // at this point.
+  // at this point. We don't DCHECK |process_.IsInitializedAndNotDead()| here
+  // because we may end up here after the render process has died but before
+  // RenderProcessHostImpl::Init() is called. Therefore, the process can
+  // accept IPCs that will be queued for the next render process if one is spun
+  // up.
   DCHECK(process_.GetRendererInterface());
-
-  // Make sure that the bind state of all of this class's mojos are equivalent.
-  if (state_ == LifecycleState::kBound) {
-    DCHECK(mojo_remote_.is_bound());
-    DCHECK(receiver_.is_bound());
-    DCHECK(remote_route_provider_.is_bound());
-    DCHECK(route_provider_receiver_.is_bound());
-    return;
-  }
-
-  DCHECK(!mojo_remote_.is_bound());
-  DCHECK(!receiver_.is_bound());
-  DCHECK(!remote_route_provider_.is_bound());
-  DCHECK(!route_provider_receiver_.is_bound());
 
   DCHECK(state_ == LifecycleState::kNewborn ||
          state_ == LifecycleState::kRenderProcessExited);
