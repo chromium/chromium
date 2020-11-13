@@ -5,6 +5,7 @@
 #include "chromeos/components/phonehub/feature_status_provider_impl.h"
 
 #include <memory>
+#include <vector>
 
 #include "base/test/task_environment.h"
 #include "chromeos/components/multidevice/remote_device_test_util.h"
@@ -116,14 +117,17 @@ class FeatureStatusProviderImplTest : public testing::Test {
 
   void SetSyncedDevices(
       const base::Optional<multidevice::RemoteDeviceRef>& local_device,
-      const base::Optional<multidevice::RemoteDeviceRef>& phone_device) {
+      const std::vector<base::Optional<multidevice::RemoteDeviceRef>>
+          phone_devices) {
     fake_device_sync_client_.set_local_device_metadata(local_device);
 
     multidevice::RemoteDeviceRefList synced_devices;
     if (local_device)
       synced_devices.push_back(*local_device);
-    if (phone_device)
-      synced_devices.push_back(*phone_device);
+    for (const auto& phone_device : phone_devices) {
+      if (phone_device)
+        synced_devices.push_back(*phone_device);
+    }
     fake_device_sync_client_.set_synced_devices(synced_devices);
 
     fake_device_sync_client_.NotifyNewDevicesSynced();
@@ -132,18 +136,27 @@ class FeatureStatusProviderImplTest : public testing::Test {
   void SetEligibleSyncedDevices() {
     SetSyncedDevices(CreateLocalDevice(/*supports_phone_hub_client=*/true,
                                        /*has_bluetooth_address=*/true),
-                     CreatePhoneDevice(/*supports_better_together_host=*/true,
-                                       /*supports_phone_hub_host=*/true,
-                                       /*has_bluetooth_address=*/true));
+                     {CreatePhoneDevice(/*supports_better_together_host=*/true,
+                                        /*supports_phone_hub_host=*/true,
+                                        /*has_bluetooth_address=*/true)});
   }
 
-  void SetMultiDeviceState(HostStatus host_status, FeatureState feature_state) {
+  void SetMultiDeviceState(HostStatus host_status,
+                           FeatureState feature_state,
+                           bool supports_phone_hub) {
     fake_multidevice_setup_client_.SetHostStatusWithDevice(std::make_pair(
         host_status, CreatePhoneDevice(/*supports_better_together_host=*/true,
-                                       /*supports_phone_hub_host=*/true,
+                                       supports_phone_hub,
                                        /*has_bluetooth_address=*/true)));
     fake_multidevice_setup_client_.SetFeatureState(Feature::kPhoneHub,
                                                    feature_state);
+  }
+
+  void SetHostStatusWithDevice(
+      HostStatus host_status,
+      const base::Optional<multidevice::RemoteDeviceRef>& host_device) {
+    fake_multidevice_setup_client_.SetHostStatusWithDevice(
+        std::make_pair(host_status, host_device));
   }
 
   void SetAdapterPresentState(bool present) {
@@ -170,6 +183,11 @@ class FeatureStatusProviderImplTest : public testing::Test {
 
   void SetConnectionStatus(ConnectionManager::Status status) {
     fake_connection_manager_.SetStatus(status);
+  }
+
+  void SetFeatureState(FeatureState feature_state) {
+    fake_multidevice_setup_client_.SetFeatureState(Feature::kPhoneHub,
+                                                   feature_state);
   }
 
   FeatureStatus GetStatus() const { return provider_->GetStatus(); }
@@ -205,76 +223,76 @@ class FeatureStatusProviderImplTest : public testing::Test {
 // device and/or phone and various missing properties of these devices.
 TEST_F(FeatureStatusProviderImplTest, NotEligibleForFeature) {
   SetSyncedDevices(/*local_device=*/base::nullopt,
-                   /*phone_device=*/base::nullopt);
+                   /*phone_devices=*/{base::nullopt});
   EXPECT_EQ(FeatureStatus::kNotEligibleForFeature, GetStatus());
 
   SetSyncedDevices(CreateLocalDevice(/*supports_phone_hub_client=*/false,
                                      /*has_bluetooth_address=*/false),
-                   /*phone_device=*/base::nullopt);
+                   /*phone_devices=*/{base::nullopt});
   EXPECT_EQ(FeatureStatus::kNotEligibleForFeature, GetStatus());
 
   SetSyncedDevices(CreateLocalDevice(/*supports_phone_hub_client=*/true,
                                      /*has_bluetooth_address=*/false),
-                   /*phone_device=*/base::nullopt);
+                   /*phone_devices=*/{base::nullopt});
   EXPECT_EQ(FeatureStatus::kNotEligibleForFeature, GetStatus());
 
   SetSyncedDevices(CreateLocalDevice(/*supports_phone_hub_client=*/false,
                                      /*has_bluetooth_address=*/true),
-                   /*phone_device=*/base::nullopt);
+                   /*phone_devices=*/{base::nullopt});
   EXPECT_EQ(FeatureStatus::kNotEligibleForFeature, GetStatus());
 
   SetSyncedDevices(CreateLocalDevice(/*supports_phone_hub_client=*/true,
                                      /*has_bluetooth_address=*/true),
-                   /*phone_device=*/base::nullopt);
+                   /*phone_device=*/{base::nullopt});
   EXPECT_EQ(FeatureStatus::kNotEligibleForFeature, GetStatus());
 
   SetSyncedDevices(CreateLocalDevice(/*supports_phone_hub_client=*/true,
                                      /*has_bluetooth_address=*/true),
-                   CreatePhoneDevice(/*supports_better_together_host=*/false,
-                                     /*supports_phone_hub_host=*/false,
-                                     /*has_bluetooth_address=*/false));
+                   {CreatePhoneDevice(/*supports_better_together_host=*/false,
+                                      /*supports_phone_hub_host=*/false,
+                                      /*has_bluetooth_address=*/false)});
   EXPECT_EQ(FeatureStatus::kNotEligibleForFeature, GetStatus());
 
   SetSyncedDevices(CreateLocalDevice(/*supports_phone_hub_client=*/true,
                                      /*has_bluetooth_address=*/true),
-                   CreatePhoneDevice(/*supports_better_together_host=*/true,
-                                     /*supports_phone_hub_host=*/false,
-                                     /*has_bluetooth_address=*/false));
+                   {CreatePhoneDevice(/*supports_better_together_host=*/true,
+                                      /*supports_phone_hub_host=*/false,
+                                      /*has_bluetooth_address=*/false)});
   EXPECT_EQ(FeatureStatus::kNotEligibleForFeature, GetStatus());
 
   SetSyncedDevices(CreateLocalDevice(/*supports_phone_hub_client=*/true,
                                      /*has_bluetooth_address=*/true),
-                   CreatePhoneDevice(/*supports_better_together_host=*/true,
-                                     /*supports_phone_hub_host=*/true,
-                                     /*has_bluetooth_address=*/false));
+                   {CreatePhoneDevice(/*supports_better_together_host=*/true,
+                                      /*supports_phone_hub_host=*/true,
+                                      /*has_bluetooth_address=*/false)});
   EXPECT_EQ(FeatureStatus::kNotEligibleForFeature, GetStatus());
 
   SetSyncedDevices(CreateLocalDevice(/*supports_phone_hub_client=*/true,
                                      /*has_bluetooth_address=*/true),
-                   CreatePhoneDevice(/*supports_better_together_host=*/true,
-                                     /*supports_phone_hub_host=*/false,
-                                     /*has_bluetooth_address=*/true));
+                   {CreatePhoneDevice(/*supports_better_together_host=*/true,
+                                      /*supports_phone_hub_host=*/false,
+                                      /*has_bluetooth_address=*/true)});
   EXPECT_EQ(FeatureStatus::kNotEligibleForFeature, GetStatus());
 
   SetSyncedDevices(CreateLocalDevice(/*supports_phone_hub_client=*/true,
                                      /*has_bluetooth_address=*/true),
-                   CreatePhoneDevice(/*supports_better_together_host=*/false,
-                                     /*supports_phone_hub_host=*/true,
-                                     /*has_bluetooth_address=*/false));
+                   {CreatePhoneDevice(/*supports_better_together_host=*/false,
+                                      /*supports_phone_hub_host=*/true,
+                                      /*has_bluetooth_address=*/false)});
   EXPECT_EQ(FeatureStatus::kNotEligibleForFeature, GetStatus());
 
   SetSyncedDevices(CreateLocalDevice(/*supports_phone_hub_client=*/true,
                                      /*has_bluetooth_address=*/true),
-                   CreatePhoneDevice(/*supports_better_together_host=*/false,
-                                     /*supports_phone_hub_host=*/true,
-                                     /*has_bluetooth_address=*/true));
+                   {CreatePhoneDevice(/*supports_better_together_host=*/false,
+                                      /*supports_phone_hub_host=*/true,
+                                      /*has_bluetooth_address=*/true)});
   EXPECT_EQ(FeatureStatus::kNotEligibleForFeature, GetStatus());
 
   SetSyncedDevices(CreateLocalDevice(/*supports_phone_hub_client=*/true,
                                      /*has_bluetooth_address=*/true),
-                   CreatePhoneDevice(/*supports_better_together_host=*/false,
-                                     /*supports_phone_hub_host=*/false,
-                                     /*has_bluetooth_address=*/true));
+                   {CreatePhoneDevice(/*supports_better_together_host=*/false,
+                                      /*supports_phone_hub_host=*/false,
+                                      /*has_bluetooth_address=*/true)});
   EXPECT_EQ(FeatureStatus::kNotEligibleForFeature, GetStatus());
 
   // Set all properties to true so that there is an eligible phone. Since
@@ -282,23 +300,64 @@ TEST_F(FeatureStatusProviderImplTest, NotEligibleForFeature) {
   // status should still be kNotEligibleForFeature.
   SetSyncedDevices(CreateLocalDevice(/*supports_phone_hub_client=*/true,
                                      /*has_bluetooth_address=*/true),
-                   CreatePhoneDevice(/*supports_better_together_host=*/true,
-                                     /*supports_phone_hub_host=*/true,
-                                     /*has_bluetooth_address=*/true));
+                   {CreatePhoneDevice(/*supports_better_together_host=*/true,
+                                      /*supports_phone_hub_host=*/true,
+                                      /*has_bluetooth_address=*/true)});
+  EXPECT_EQ(FeatureStatus::kNotEligibleForFeature, GetStatus());
+
+  // Simulate having multiple phones available that are both not eligible.
+  // We want to have a null host so that it simulates searching through all
+  // synced devices to find an available host. Since all phones are not
+  // eligible, expect that we return kNotEligibleForFeature.
+  SetFeatureState(FeatureState::kEnabledByUser);
+  SetHostStatusWithDevice(HostStatus::kEligibleHostExistsButNoHostSet,
+                          /*host_device=*/base::nullopt);
+  SetSyncedDevices(CreateLocalDevice(/*supports_phone_hub_client=*/true,
+                                     /*has_bluetooth_address=*/true),
+                   {CreatePhoneDevice(/*supports_better_together_host=*/false,
+                                      /*supports_phone_hub_host=*/false,
+                                      /*has_bluetooth_address=*/true),
+                    CreatePhoneDevice(/*supports_better_together_host=*/false,
+                                      /*supports_phone_hub_host=*/false,
+                                      /*has_bluetooth_address=*/true)});
   EXPECT_EQ(FeatureStatus::kNotEligibleForFeature, GetStatus());
 }
 
 TEST_F(FeatureStatusProviderImplTest, EligiblePhoneButNotSetUp) {
   SetEligibleSyncedDevices();
   SetMultiDeviceState(HostStatus::kEligibleHostExistsButNoHostSet,
-                      FeatureState::kUnavailableNoVerifiedHost);
+                      FeatureState::kUnavailableNoVerifiedHost,
+                      /*supports_phone_hub=*/true);
   EXPECT_EQ(FeatureStatus::kEligiblePhoneButNotSetUp, GetStatus());
 }
 
 TEST_F(FeatureStatusProviderImplTest, NoEligiblePhones) {
   SetMultiDeviceState(HostStatus::kNoEligibleHosts,
-                      FeatureState::kUnavailableNoVerifiedHost);
+                      FeatureState::kUnavailableNoVerifiedHost,
+                      /*supports_phone_hub=*/true);
   EXPECT_EQ(FeatureStatus::kNotEligibleForFeature, GetStatus());
+}
+
+TEST_F(FeatureStatusProviderImplTest, MultiPhoneEligibility) {
+  // There is an eligible phone but the current host phone is not eligible.
+  // Expect kNotEligibleForFeature to return.
+  SetSyncedDevices(CreateLocalDevice(/*supports_phone_hub_client=*/true,
+                                     /*has_bluetooth_address=*/true),
+                   {CreatePhoneDevice(/*supports_better_together_host=*/true,
+                                      /*supports_phone_hub_host=*/true,
+                                      /*has_bluetooth_address=*/true),
+                    CreatePhoneDevice(/*supports_better_together_host=*/false,
+                                      /*supports_phone_hub_host=*/false,
+                                      /*has_bluetooth_address=*/true)});
+  SetMultiDeviceState(HostStatus::kEligibleHostExistsButNoHostSet,
+                      FeatureState::kUnavailableNoVerifiedHost,
+                      /*supports_phone_hub=*/false);
+  EXPECT_EQ(FeatureStatus::kNotEligibleForFeature, GetStatus());
+
+  // Simulate no host device connected and expect to detect one eligible host.
+  SetHostStatusWithDevice(HostStatus::kEligibleHostExistsButNoHostSet,
+                          /*host_device=*/base::nullopt);
+  EXPECT_EQ(FeatureStatus::kEligiblePhoneButNotSetUp, GetStatus());
 }
 
 TEST_F(FeatureStatusProviderImplTest, PhoneSelectedAndPendingSetup) {
@@ -306,36 +365,43 @@ TEST_F(FeatureStatusProviderImplTest, PhoneSelectedAndPendingSetup) {
 
   SetMultiDeviceState(
       HostStatus::kHostSetLocallyButWaitingForBackendConfirmation,
-      FeatureState::kUnavailableNoVerifiedHost);
+      FeatureState::kUnavailableNoVerifiedHost,
+      /*supports_phone_hub=*/true);
   EXPECT_EQ(FeatureStatus::kPhoneSelectedAndPendingSetup, GetStatus());
 
   SetMultiDeviceState(HostStatus::kHostSetButNotYetVerified,
-                      FeatureState::kUnavailableNoVerifiedHost);
+                      FeatureState::kUnavailableNoVerifiedHost,
+                      /*supports_phone_hub=*/true);
   EXPECT_EQ(FeatureStatus::kPhoneSelectedAndPendingSetup, GetStatus());
 
   SetMultiDeviceState(HostStatus::kHostVerified,
-                      FeatureState::kNotSupportedByPhone);
+                      FeatureState::kNotSupportedByPhone,
+                      /*supports_phone_hub=*/true);
   EXPECT_EQ(FeatureStatus::kPhoneSelectedAndPendingSetup, GetStatus());
 }
 
 TEST_F(FeatureStatusProviderImplTest, Disabled) {
   SetEligibleSyncedDevices();
 
-  SetMultiDeviceState(HostStatus::kHostVerified, FeatureState::kDisabledByUser);
+  SetMultiDeviceState(HostStatus::kHostVerified, FeatureState::kDisabledByUser,
+                      /*supports_phone_hub=*/true);
   EXPECT_EQ(FeatureStatus::kDisabled, GetStatus());
 
   SetMultiDeviceState(HostStatus::kHostVerified,
-                      FeatureState::kUnavailableSuiteDisabled);
+                      FeatureState::kUnavailableSuiteDisabled,
+                      /*supports_phone_hub=*/true);
   EXPECT_EQ(FeatureStatus::kDisabled, GetStatus());
 
   SetMultiDeviceState(HostStatus::kHostVerified,
-                      FeatureState::kUnavailableTopLevelFeatureDisabled);
+                      FeatureState::kUnavailableTopLevelFeatureDisabled,
+                      /*supports_phone_hub=*/true);
   EXPECT_EQ(FeatureStatus::kDisabled, GetStatus());
 }
 
 TEST_F(FeatureStatusProviderImplTest, UnavailableBluetoothOff) {
   SetEligibleSyncedDevices();
-  SetMultiDeviceState(HostStatus::kHostVerified, FeatureState::kEnabledByUser);
+  SetMultiDeviceState(HostStatus::kHostVerified, FeatureState::kEnabledByUser,
+                      /*supports_phone_hub=*/true);
 
   SetAdapterPoweredState(false);
   SetAdapterPresentState(false);
@@ -354,26 +420,31 @@ TEST_F(FeatureStatusProviderImplTest, TransitionBetweenAllStatuses) {
   EXPECT_EQ(FeatureStatus::kNotEligibleForFeature, GetStatus());
 
   SetMultiDeviceState(HostStatus::kNoEligibleHosts,
-                      FeatureState::kUnavailableNoVerifiedHost);
+                      FeatureState::kUnavailableNoVerifiedHost,
+                      /*supports_phone_hub=*/true);
   EXPECT_EQ(FeatureStatus::kNotEligibleForFeature, GetStatus());
 
   SetMultiDeviceState(HostStatus::kEligibleHostExistsButNoHostSet,
-                      FeatureState::kUnavailableNoVerifiedHost);
+                      FeatureState::kUnavailableNoVerifiedHost,
+                      /*supports_phone_hub=*/true);
   SetEligibleSyncedDevices();
   EXPECT_EQ(FeatureStatus::kEligiblePhoneButNotSetUp, GetStatus());
   EXPECT_EQ(1u, GetNumObserverCalls());
 
   SetMultiDeviceState(HostStatus::kHostSetButNotYetVerified,
-                      FeatureState::kNotSupportedByPhone);
+                      FeatureState::kNotSupportedByPhone,
+                      /*supports_phone_hub=*/true);
   EXPECT_EQ(FeatureStatus::kPhoneSelectedAndPendingSetup, GetStatus());
   EXPECT_EQ(2u, GetNumObserverCalls());
 
-  SetMultiDeviceState(HostStatus::kHostVerified, FeatureState::kDisabledByUser);
+  SetMultiDeviceState(HostStatus::kHostVerified, FeatureState::kDisabledByUser,
+                      /*supports_phone_hub=*/true);
   EXPECT_EQ(FeatureStatus::kDisabled, GetStatus());
   EXPECT_EQ(3u, GetNumObserverCalls());
 
   SetAdapterPoweredState(false);
-  SetMultiDeviceState(HostStatus::kHostVerified, FeatureState::kEnabledByUser);
+  SetMultiDeviceState(HostStatus::kHostVerified, FeatureState::kEnabledByUser,
+                      /*supports_phone_hub=*/true);
   EXPECT_EQ(FeatureStatus::kUnavailableBluetoothOff, GetStatus());
   EXPECT_EQ(4u, GetNumObserverCalls());
 
@@ -406,7 +477,8 @@ TEST_F(FeatureStatusProviderImplTest, TransitionBetweenAllStatuses) {
 
 TEST_F(FeatureStatusProviderImplTest, AttemptingConnection) {
   SetEligibleSyncedDevices();
-  SetMultiDeviceState(HostStatus::kHostVerified, FeatureState::kEnabledByUser);
+  SetMultiDeviceState(HostStatus::kHostVerified, FeatureState::kEnabledByUser,
+                      /*supports_phone_hub=*/true);
   EXPECT_EQ(FeatureStatus::kEnabledButDisconnected, GetStatus());
   EXPECT_EQ(1u, GetNumObserverCalls());
 
@@ -417,7 +489,8 @@ TEST_F(FeatureStatusProviderImplTest, AttemptingConnection) {
 
 TEST_F(FeatureStatusProviderImplTest, AttemptedConnectionSuccessful) {
   SetEligibleSyncedDevices();
-  SetMultiDeviceState(HostStatus::kHostVerified, FeatureState::kEnabledByUser);
+  SetMultiDeviceState(HostStatus::kHostVerified, FeatureState::kEnabledByUser,
+                      /*supports_phone_hub=*/true);
   EXPECT_EQ(FeatureStatus::kEnabledButDisconnected, GetStatus());
   EXPECT_EQ(1u, GetNumObserverCalls());
 
@@ -432,7 +505,8 @@ TEST_F(FeatureStatusProviderImplTest, AttemptedConnectionSuccessful) {
 
 TEST_F(FeatureStatusProviderImplTest, AttemptedConnectionFailed) {
   SetEligibleSyncedDevices();
-  SetMultiDeviceState(HostStatus::kHostVerified, FeatureState::kEnabledByUser);
+  SetMultiDeviceState(HostStatus::kHostVerified, FeatureState::kEnabledByUser,
+                      /*supports_phone_hub=*/true);
   EXPECT_EQ(FeatureStatus::kEnabledButDisconnected, GetStatus());
   EXPECT_EQ(1u, GetNumObserverCalls());
 
@@ -447,7 +521,8 @@ TEST_F(FeatureStatusProviderImplTest, AttemptedConnectionFailed) {
 
 TEST_F(FeatureStatusProviderImplTest, LockScreenStatusUpdate) {
   SetEligibleSyncedDevices();
-  SetMultiDeviceState(HostStatus::kHostVerified, FeatureState::kEnabledByUser);
+  SetMultiDeviceState(HostStatus::kHostVerified, FeatureState::kEnabledByUser,
+                      /*supports_phone_hub=*/true);
   EXPECT_EQ(FeatureStatus::kEnabledButDisconnected, GetStatus());
   EXPECT_EQ(1u, GetNumObserverCalls());
 
@@ -464,7 +539,8 @@ TEST_F(FeatureStatusProviderImplTest, LockScreenStatusUpdate) {
 
 TEST_F(FeatureStatusProviderImplTest, HandlePowerSuspend) {
   SetEligibleSyncedDevices();
-  SetMultiDeviceState(HostStatus::kHostVerified, FeatureState::kEnabledByUser);
+  SetMultiDeviceState(HostStatus::kHostVerified, FeatureState::kEnabledByUser,
+                      /*supports_phone_hub=*/true);
   EXPECT_EQ(FeatureStatus::kEnabledButDisconnected, GetStatus());
   EXPECT_EQ(1u, GetNumObserverCalls());
 

@@ -29,11 +29,16 @@ using multidevice_setup::mojom::Feature;
 using multidevice_setup::mojom::FeatureState;
 using multidevice_setup::mojom::HostStatus;
 
+bool DoesDeviceSupportPhoneHubHost(const RemoteDeviceRef& device) {
+  return device.GetSoftwareFeatureState(SoftwareFeature::kPhoneHubHost) !=
+         SoftwareFeatureState::kNotSupported;
+}
+
 bool IsEligibleForFeature(
     const base::Optional<multidevice::RemoteDeviceRef>& local_device,
+    multidevice_setup::MultiDeviceSetupClient::HostStatusWithDevice host_status,
     const RemoteDeviceRefList& remote_devices,
-    FeatureState feature_state,
-    HostStatus host_status) {
+    FeatureState feature_state) {
   // If the feature is prohibited by policy, we don't initialize Phone Hub
   // classes at all. But, there is an edge case where a user session starts up
   // normally, then an administrator prohibits the policy during the user
@@ -60,9 +65,16 @@ bool IsEligibleForFeature(
     return false;
 
   // If the host device is not an eligible host, do not initialize Phone Hub.
-  if (host_status == HostStatus::kNoEligibleHosts)
+  if (host_status.first == HostStatus::kNoEligibleHosts)
     return false;
 
+  // If there is a host device available, check if the device is eligible for
+  // Phonehub.
+  if (host_status.second.has_value())
+    return DoesDeviceSupportPhoneHubHost(*(host_status.second));
+
+  // Otherwise, check if there is any available remote device that is
+  // eligible for Phonehub.
   for (const RemoteDeviceRef& device : remote_devices) {
     // Device must be capable of being a multi-device host.
     if (device.GetSoftwareFeatureState(SoftwareFeature::kBetterTogetherHost) ==
@@ -71,8 +83,7 @@ bool IsEligibleForFeature(
     }
 
     // Device must be capable of being a Phone Hub host.
-    if (device.GetSoftwareFeatureState(SoftwareFeature::kPhoneHubHost) ==
-        SoftwareFeatureState::kNotSupported) {
+    if (!DoesDeviceSupportPhoneHubHost(device)) {
       continue;
     }
 
@@ -253,8 +264,9 @@ FeatureStatus FeatureStatusProviderImpl::ComputeStatus() {
   // feature until proven otherwise.
   if (!device_sync_client_->is_ready() ||
       !IsEligibleForFeature(device_sync_client_->GetLocalDeviceMetadata(),
+                            multidevice_setup_client_->GetHostStatus(),
                             device_sync_client_->GetSyncedDevices(),
-                            feature_state, host_status)) {
+                            feature_state)) {
     return FeatureStatus::kNotEligibleForFeature;
   }
 
