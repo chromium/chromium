@@ -4388,10 +4388,10 @@ TEST_F(ChunkDemuxerTest,
 }
 
 namespace {
-void QuitLoop(base::Closure quit_closure,
+void QuitLoop(base::OnceClosure quit_closure,
               DemuxerStream::Type type,
               const std::vector<DemuxerStream*>& streams) {
-  quit_closure.Run();
+  std::move(quit_closure).Run();
 }
 
 void DisableAndEnableDemuxerTracks(

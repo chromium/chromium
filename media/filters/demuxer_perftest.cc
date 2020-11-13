@@ -45,10 +45,10 @@ class DemuxerHostImpl : public media::DemuxerHost {
   DISALLOW_COPY_AND_ASSIGN(DemuxerHostImpl);
 };
 
-static void QuitLoopWithStatus(base::Closure quit_cb,
+static void QuitLoopWithStatus(base::OnceClosure quit_cb,
                                media::PipelineStatus status) {
   CHECK_EQ(status, media::PIPELINE_OK);
-  quit_cb.Run();
+  std::move(quit_cb).Run();
 }
 
 static void OnEncryptedMediaInitData(EmeInitDataType init_data_type,
@@ -81,7 +81,7 @@ class StreamReader {
 
  private:
   void OnReadDone(scoped_refptr<base::SingleThreadTaskRunner> task_runner,
-                  const base::Closure& quit_when_idle_closure,
+                  base::OnceClosure quit_when_idle_closure,
                   bool* end_of_stream,
                   base::TimeDelta* timestamp,
                   media::DemuxerStream::Status status,
@@ -139,7 +139,7 @@ bool StreamReader::IsDone() {
 
 void StreamReader::OnReadDone(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
-    const base::Closure& quit_when_idle_closure,
+    base::OnceClosure quit_when_idle_closure,
     bool* end_of_stream,
     base::TimeDelta* timestamp,
     media::DemuxerStream::Status status,
@@ -148,7 +148,7 @@ void StreamReader::OnReadDone(
   CHECK(buffer);
   *end_of_stream = buffer->end_of_stream();
   *timestamp = *end_of_stream ? media::kNoTimestamp : buffer->timestamp();
-  task_runner->PostTask(FROM_HERE, quit_when_idle_closure);
+  task_runner->PostTask(FROM_HERE, std::move(quit_when_idle_closure));
 }
 
 int StreamReader::GetNextStreamIndexToRead() {

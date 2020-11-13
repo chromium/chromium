@@ -1653,10 +1653,10 @@ TEST_F(FFmpegDemuxerTest, Seek_FallbackToDisabledAudioStream) {
 }
 
 namespace {
-void QuitLoop(base::Closure quit_closure,
+void QuitLoop(base::OnceClosure quit_closure,
               DemuxerStream::Type type,
               const std::vector<DemuxerStream*>& streams) {
-  quit_closure.Run();
+  std::move(quit_closure).Run();
 }
 
 void DisableAndEnableDemuxerTracks(

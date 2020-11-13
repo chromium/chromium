@@ -134,7 +134,7 @@ class OutputMailbox {
       // The mailbox is referenced by a VideoFrame. It will be deleted  as soon
       // as the frame is destroyed.
       DCHECK(reuse_callback_);
-      reuse_callback_ = base::Closure();
+      reuse_callback_ = base::OnceClosure();
     } else {
       delete this;
     }

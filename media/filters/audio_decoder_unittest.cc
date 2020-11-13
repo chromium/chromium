@@ -301,12 +301,12 @@ class AudioDecoderTest
     decoded_audio_.push_back(std::move(buffer));
   }
 
-  void DecodeFinished(const base::Closure& quit_closure, Status status) {
+  void DecodeFinished(base::OnceClosure quit_closure, Status status) {
     EXPECT_TRUE(pending_decode_);
     EXPECT_FALSE(pending_reset_);
     pending_decode_ = false;
     last_decode_status_ = std::move(status);
-    quit_closure.Run();
+    std::move(quit_closure).Run();
   }
 
   void ResetFinished() {

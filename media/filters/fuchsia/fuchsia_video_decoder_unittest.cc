@@ -212,8 +212,8 @@ class TestRasterContextProvider
   TestRasterContextProvider(TestRasterContextProvider&) = delete;
   TestRasterContextProvider& operator=(TestRasterContextProvider&) = delete;
 
-  void SetOnDestroyedClosure(base::Closure on_destroyed) {
-    on_destroyed_ = on_destroyed;
+  void SetOnDestroyedClosure(base::OnceClosure on_destroyed) {
+    on_destroyed_ = std::move(on_destroyed);
   }
 
   // viz::RasterContextProvider implementation;
@@ -277,7 +277,7 @@ class TestRasterContextProvider
   TestSharedImageInterface shared_image_interface_;
   viz::TestContextSupport gpu_context_support_;
 
-  base::Closure on_destroyed_;
+  base::OnceClosure on_destroyed_;
 };
 
 }  // namespace

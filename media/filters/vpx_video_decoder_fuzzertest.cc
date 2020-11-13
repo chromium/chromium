@@ -30,15 +30,15 @@ struct Env {
   base::test::SingleThreadTaskEnvironment task_environment;
 };
 
-void OnDecodeComplete(const base::Closure& quit_closure, media::Status status) {
-  quit_closure.Run();
+void OnDecodeComplete(base::OnceClosure quit_closure, media::Status status) {
+  std::move(quit_closure).Run();
 }
 
-void OnInitDone(const base::Closure& quit_closure,
+void OnInitDone(base::OnceClosure quit_closure,
                 bool* success_dest,
                 media::Status status) {
   *success_dest = status.is_ok();
-  quit_closure.Run();
+  std::move(quit_closure).Run();
 }
 
 void OnOutputComplete(scoped_refptr<media::VideoFrame> frame) {}
