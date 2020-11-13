@@ -6,10 +6,19 @@ package org.chromium.chrome.browser.omnibox.suggestions;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.Color;
+import android.graphics.Rect;
+import android.graphics.drawable.ColorDrawable;
+import android.os.Build;
+import android.view.InputDevice;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.MeasureSpec;
 import android.view.ViewGroup;
+import android.view.ViewParent;
+import android.view.ViewTreeObserver.OnGlobalLayoutListener;
+import android.view.WindowInsets;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -19,21 +28,35 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.TraceEvent;
+import org.chromium.base.task.PostTask;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.util.KeyNavigationUtil;
+import org.chromium.components.browser_ui.styles.ChromeColors;
+import org.chromium.content_public.browser.UiThreadTaskTraits;
+import org.chromium.ui.base.ViewUtils;
 
-/**
- * A widget for showing a list of omnibox suggestions.
- */
+/** A widget for showing a list of omnibox suggestions. */
 public class OmniboxSuggestionsDropdown extends RecyclerView {
-    private final @NonNull OmniboxSuggestionsDropdownDelegate mDropdownDelegate;
-    private final @NonNull SuggestionScrollListener mScrollListener;
-    private @Nullable OmniboxSuggestionsDropdown.Observer mObserver;
+    private final int mStandardBgColor;
+    private final int mIncognitoBgColor;
+
+    private final int[] mTempPosition = new int[2];
+    private final Rect mTempRect = new Rect();
+
+    private final SuggestionScrollListener mScrollListener;
     private @Nullable OmniboxSuggestionsDropdownAdapter mAdapter;
+    private @Nullable OmniboxSuggestionsDropdownEmbedder mEmbedder;
+    private @Nullable OmniboxSuggestionsDropdown.Observer mObserver;
+    private @Nullable View mAnchorView;
+    private @Nullable View mAlignmentView;
+    private @Nullable OnGlobalLayoutListener mAnchorViewLayoutListener;
+    private @Nullable View.OnLayoutChangeListener mAlignmentViewLayoutListener;
 
-    private final int[] mTempMeasureSpecs = new int[2];
+    private int mListViewMaxHeight;
+    private int mLastBroadcastedListViewMaxHeight;
 
-    /** Interface that will receive notifications and callbacks from OmniboxSuggestionList. */
+    /** Interface that will receive notifications and callbacks from OmniboxSuggestionsDropdown. */
     public interface Observer {
         /**
          * Invoked whenever the height of suggestion list changes.
@@ -65,12 +88,6 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
 
     /** Scroll listener that propagates scroll event notification to registered observers. */
     private class SuggestionScrollListener extends RecyclerView.OnScrollListener {
-        private OmniboxSuggestionsDropdown.Observer mObserver;
-
-        void setObserver(OmniboxSuggestionsDropdown.Observer observer) {
-            mObserver = observer;
-        }
-
         @Override
         public void onScrolled(RecyclerView view, int dx, int dy) {}
 
@@ -112,7 +129,7 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
      * Constructs a new list designed for containing omnibox suggestions.
      * @param context Context used for contained views.
      */
-    public OmniboxSuggestionsDropdown(Context context) {
+    public OmniboxSuggestionsDropdown(@NonNull Context context) {
         super(context, null, android.R.attr.dropDownListViewStyle);
         setFocusable(true);
         setFocusableInTouchMode(true);
@@ -140,30 +157,21 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
                 resources.getDimensionPixelOffset(R.dimen.omnibox_suggestion_list_padding_bottom);
         ViewCompat.setPaddingRelative(this, 0, 0, 0, paddingBottom);
 
-        mDropdownDelegate = new OmniboxSuggestionsDropdownDelegate(resources, this);
+        mStandardBgColor = ChromeColors.getDefaultThemeColor(resources, false);
+        mIncognitoBgColor = ChromeColors.getDefaultThemeColor(resources, true);
     }
 
     /** Get the Android View implementing suggestion list. */
-    public ViewGroup getViewGroup() {
+    public @NonNull ViewGroup getViewGroup() {
         return this;
-    }
-
-    /**
-     * Sets the embedder for the list view.
-     * @param embedder the embedder of this list.
-     */
-    public void setEmbedder(OmniboxSuggestionsDropdownEmbedder embedder) {
-        mDropdownDelegate.setEmbedder(embedder);
     }
 
     /**
      * Sets the observer of suggestion list.
      * @param observer an observer of this list.
      */
-    public void setObserver(OmniboxSuggestionsDropdown.Observer observer) {
+    public void setObserver(@NonNull OmniboxSuggestionsDropdown.Observer observer) {
         mObserver = observer;
-        mScrollListener.setObserver(observer);
-        mDropdownDelegate.setObserver(observer);
     }
 
     /** Resets selection typically in response to changes to the list. */
@@ -179,7 +187,7 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
     }
 
     /** @return The Suggestion view at specific index. */
-    public View getDropdownItemViewForTest(int index) {
+    public @Nullable View getDropdownItemViewForTest(int index) {
         final LayoutManager manager = getLayoutManager();
         manager.scrollToPosition(index);
         return manager.findViewByPosition(index);
@@ -204,19 +212,44 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
 
     /** Update the suggestion popup background to reflect the current state. */
     public void refreshPopupBackground(boolean isIncognito) {
-        setBackground(mDropdownDelegate.getPopupBackground(isIncognito));
+        int color = isIncognito ? mIncognitoBgColor : mStandardBgColor;
+        if (!isHardwareAccelerated()) {
+            // When HW acceleration is disabled, changing mSuggestionList' items somehow erases
+            // mOmniboxResultsContainer' background from the area not covered by
+            // mSuggestionList. To make sure mOmniboxResultsContainer is always redrawn, we make
+            // list background color slightly transparent. This makes mSuggestionList.isOpaque()
+            // to return false, and forces redraw of the parent view (mOmniboxResultsContainer).
+            if (Color.alpha(color) == 255) {
+                color = Color.argb(254, Color.red(color), Color.green(color), Color.blue(color));
+            }
+        }
+        setBackground(new ColorDrawable(color));
     }
 
     @Override
-    public void setAdapter(Adapter adapter) {
+    public void setAdapter(@NonNull Adapter adapter) {
         mAdapter = (OmniboxSuggestionsDropdownAdapter) adapter;
         super.setAdapter(mAdapter);
+    }
+
+    @Override
+    public void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        mAnchorView.getViewTreeObserver().addOnGlobalLayoutListener(mAnchorViewLayoutListener);
+        if (mAlignmentView != null) {
+            adjustSidePadding();
+            mAlignmentView.addOnLayoutChangeListener(mAlignmentViewLayoutListener);
+        }
     }
 
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
         getRecycledViewPool().clear();
+        mAnchorView.getViewTreeObserver().removeOnGlobalLayoutListener(mAnchorViewLayoutListener);
+        if (mAlignmentView != null) {
+            mAlignmentView.removeOnLayoutChangeListener(mAlignmentViewLayoutListener);
+        }
     }
 
     @Override
@@ -224,8 +257,61 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
         try (TraceEvent tracing = TraceEvent.scoped("OmniboxSuggestionsList.Measure");
                 SuggestionsMetrics.TimingMetric metric =
                         SuggestionsMetrics.recordSuggestionListMeasureTime()) {
-            mDropdownDelegate.calculateOnMeasureAndTriggerUpdates(mTempMeasureSpecs);
-            super.onMeasure(mTempMeasureSpecs[0], mTempMeasureSpecs[1]);
+            int anchorBottomRelativeToContent = calculateAnchorBottomRelativeToContent();
+            maybeUpdateLayoutParams(anchorBottomRelativeToContent);
+
+            int availableViewportHeight =
+                    calculateAvailableViewportHeight(anchorBottomRelativeToContent);
+            notifyObserversIfViewportHeightChanged(availableViewportHeight);
+
+            int newWidthMeasureSpec = MeasureSpec.makeMeasureSpec(
+                    mAnchorView.getMeasuredWidth(), MeasureSpec.EXACTLY);
+            int newHeightMeasureSpec = MeasureSpec.makeMeasureSpec(availableViewportHeight,
+                    mEmbedder.isTablet() ? MeasureSpec.AT_MOST : MeasureSpec.EXACTLY);
+            super.onMeasure(newWidthMeasureSpec, newHeightMeasureSpec);
+        }
+    }
+
+    private int calculateAnchorBottomRelativeToContent() {
+        View contentView =
+                mEmbedder.getAnchorView().getRootView().findViewById(android.R.id.content);
+        ViewUtils.getRelativeLayoutPosition(contentView, mAnchorView, mTempPosition);
+        int anchorY = mTempPosition[1];
+        return anchorY + mAnchorView.getMeasuredHeight();
+    }
+
+    private void maybeUpdateLayoutParams(int topMargin) {
+        // Update the layout params to ensure the parent correctly positions the suggestions
+        // under the anchor view.
+        ViewGroup.LayoutParams layoutParams = getLayoutParams();
+        if (layoutParams != null && layoutParams instanceof ViewGroup.MarginLayoutParams) {
+            ((ViewGroup.MarginLayoutParams) layoutParams).topMargin = topMargin;
+        }
+    }
+
+    private int calculateAvailableViewportHeight(int anchorBottomRelativeToContent) {
+        mEmbedder.getWindowDelegate().getWindowVisibleDisplayFrame(mTempRect);
+        return mTempRect.height() - anchorBottomRelativeToContent;
+    }
+
+    private void notifyObserversIfViewportHeightChanged(int availableViewportHeight) {
+        if (availableViewportHeight == mListViewMaxHeight) return;
+
+        mListViewMaxHeight = availableViewportHeight;
+        if (mObserver != null) {
+            PostTask.postTask(UiThreadTaskTraits.DEFAULT, () -> {
+                // Detect if there was another change since this task posted.
+                // This indicates a subsequent task being posted too.
+                if (mListViewMaxHeight != availableViewportHeight) return;
+                // Detect if the new height is the same as previously broadcasted.
+                // The two checks (one above and one below) allow us to detect quick
+                // A->B->A transitions and suppress the broadcasts.
+                if (mLastBroadcastedListViewMaxHeight == availableViewportHeight) return;
+                if (mObserver == null) return;
+
+                mObserver.onSuggestionDropdownHeightChanged(availableViewportHeight);
+                mLastBroadcastedListViewMaxHeight = availableViewportHeight;
+            });
         }
     }
 
@@ -259,8 +345,15 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
 
     @Override
     public boolean onGenericMotionEvent(MotionEvent event) {
-        return mDropdownDelegate.shouldIgnoreGenericMotionEvent(event)
-                || super.onGenericMotionEvent(event);
+        // Consume mouse events to ensure clicks do not bleed through to sibling views that
+        // are obscured by the list.  crbug.com/968414
+        int action = event.getActionMasked();
+        boolean shouldIgnoreGenericMotionEvent =
+                (event.getSource() & InputDevice.SOURCE_CLASS_POINTER) != 0
+                && event.getToolType(0) == MotionEvent.TOOL_TYPE_MOUSE
+                && (action == MotionEvent.ACTION_BUTTON_PRESS
+                        || action == MotionEvent.ACTION_BUTTON_RELEASE);
+        return shouldIgnoreGenericMotionEvent || super.onGenericMotionEvent(event);
     }
 
     @Override
@@ -271,5 +364,89 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
             mObserver.onGesture(eventType == MotionEvent.ACTION_UP, ev.getEventTime());
         }
         return super.dispatchTouchEvent(ev);
+    }
+
+    /**
+     * Sets the embedder for the list view.
+     * @param embedder the embedder of this list.
+     */
+    public void setEmbedder(@NonNull OmniboxSuggestionsDropdownEmbedder embedder) {
+        assert mEmbedder == null;
+        mEmbedder = embedder;
+        mAnchorView = mEmbedder.getAnchorView();
+        // Prior to Android M, the contextual actions associated with the omnibox were anchored
+        // to the top of the screen and not a floating copy/paste menu like on newer versions.
+        // As a result of this, the toolbar is pushed down in these Android versions and we need
+        // to montior those changes to update the positioning of the list.
+        mAnchorViewLayoutListener = new OnGlobalLayoutListener() {
+            private int mOffsetInWindow;
+            private WindowInsets mWindowInsets;
+            private final Rect mWindowRect = new Rect();
+
+            @Override
+            public void onGlobalLayout() {
+                if (offsetInWindowChanged() || insetsHaveChanged()) {
+                    requestLayout();
+                }
+            }
+
+            private boolean offsetInWindowChanged() {
+                int offsetInWindow = 0;
+                View currentView = mAnchorView;
+                while (true) {
+                    offsetInWindow += currentView.getTop();
+                    ViewParent parent = currentView.getParent();
+                    if (parent == null || !(parent instanceof View)) break;
+                    currentView = (View) parent;
+                }
+                boolean result = mOffsetInWindow != offsetInWindow;
+                mOffsetInWindow = offsetInWindow;
+                return result;
+            }
+
+            private boolean insetsHaveChanged() {
+                boolean result = false;
+                WindowInsets currentInsets = null;
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    currentInsets = mAnchorView.getRootWindowInsets();
+                    result = !currentInsets.equals(mWindowInsets);
+                    mWindowInsets = currentInsets;
+                } else if (isAdaptiveSuggestionsCountEnabled()) {
+                    mEmbedder.getWindowDelegate().getWindowVisibleDisplayFrame(mTempRect);
+                    result = !mTempRect.equals(mWindowRect);
+                    mWindowRect.set(mTempRect);
+                }
+                return result;
+            }
+        };
+
+        mAlignmentView = mEmbedder.getAlignmentView();
+        if (mAlignmentView != null) {
+            mAlignmentViewLayoutListener = new View.OnLayoutChangeListener() {
+                @Override
+                public void onLayoutChange(View v, int left, int top, int right, int bottom,
+                        int oldLeft, int oldTop, int oldRight, int oldBottom) {
+                    adjustSidePadding();
+                }
+            };
+        } else {
+            mAlignmentViewLayoutListener = null;
+        }
+    }
+
+    private void adjustSidePadding() {
+        if (mAlignmentView == null) return;
+
+        ViewUtils.getRelativeLayoutPosition(mAnchorView, mAlignmentView, mTempPosition);
+        setPadding(mTempPosition[0], getPaddingTop(),
+                mAnchorView.getWidth() - mAlignmentView.getWidth() - mTempPosition[0],
+                getPaddingBottom());
+    }
+
+    /** Return whether Adaptive Suggestions Count feature is enabled. */
+    private boolean isAdaptiveSuggestionsCountEnabled() {
+        return ChromeFeatureList.isInitialized()
+                && ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.OMNIBOX_ADAPTIVE_SUGGESTIONS_COUNT);
     }
 }
