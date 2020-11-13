@@ -2358,17 +2358,6 @@ if (!is_ios && !is_android) {
     ]
   }
 
-  executable("dns_fuzz_stub") {
-    testonly = true
-    sources = [ "tools/dns_fuzz_stub/dns_fuzz_stub.cc" ]
-
-    deps = [
-      ":net",
-      "//base",
-      "//build/win:default_exe_manifest",
-    ]
-  }
-
   executable("hpack_example_generator") {
     testonly = true
     sources = [ "spdy/fuzzing/hpack_example_generator.cc" ]

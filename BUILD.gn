@@ -529,7 +529,6 @@ group("gn_all") {
         "//media/cast:generate_barcode_video",
         "//media/cast:generate_timecode_audio",
         "//net:crash_cache",
-        "//net:dns_fuzz_stub",
         "//net:net_watcher",  # TODO(GYP): This should be conditional on
                               # use_v8_in_net
         "//net:run_testserver",
@@ -1342,10 +1341,7 @@ if (!is_ios && !is_android && !is_chromecast && !is_fuchsia) {
       "//v8:d8",
     ]
     if (!is_win) {
-      deps += [
-        "//net:dns_fuzz_stub",
-        "//skia:filter_fuzz_stub",
-      ]
+      deps += [ "//skia:filter_fuzz_stub" ]
     }
     if (enable_ipc_fuzzer && !is_component_build) {
       deps += [ "//tools/ipc_fuzzer:ipc_fuzzer_all" ]
