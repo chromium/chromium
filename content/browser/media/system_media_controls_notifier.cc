@@ -14,6 +14,7 @@
 #include "content/public/common/content_client.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
+#include "ui/gfx/image/image_skia.h"
 
 #if defined(OS_WIN)
 #include "base/bind.h"

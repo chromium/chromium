@@ -53,7 +53,6 @@
 #include "ui/accessibility/ax_mode.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
-#include "ui/gfx/image/image_skia.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 #include "url/url_constants.h"
@@ -101,6 +100,10 @@ class URLLoaderThrottle;
 namespace device {
 class LocationProvider;
 }  // namespace device
+
+namespace gfx {
+class ImageSkia;
+}  // namespace gfx
 
 namespace media {
 class AudioLogFactory;

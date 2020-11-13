@@ -105,6 +105,7 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/resource/resource_bundle_android.h"
 #include "ui/display/display.h"
+#include "ui/gfx/image/image_skia.h"
 #include "ui/resources/grit/ui_resources.h"
 
 #if BUILDFLAG(ENABLE_SPELLCHECK)

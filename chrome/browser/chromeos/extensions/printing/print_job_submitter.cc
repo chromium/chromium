@@ -32,6 +32,7 @@
 #include "printing/metafile_skia.h"
 #include "printing/print_settings.h"
 #include "ui/gfx/image/image.h"
+#include "ui/gfx/image/image_skia.h"
 
 namespace extensions {
 
