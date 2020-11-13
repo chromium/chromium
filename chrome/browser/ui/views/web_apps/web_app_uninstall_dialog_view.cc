@@ -73,7 +73,11 @@ WebAppUninstallDialogDelegateView::WebAppUninstallDialogDelegateView(
       std::make_unique<WebAppInfoImageSource>(kIconSizeInDip, icon_bitmaps),
       image_size);
 
+  SetModalType(ui::MODAL_TYPE_WINDOW);
   SetShowCloseButton(false);
+  set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
+      views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
+
   SetShowIcon(true);
   SetTitle(l10n_util::GetStringFUTF16(
       IDS_EXTENSION_PROMPT_UNINSTALL_TITLE,
@@ -141,17 +145,6 @@ void WebAppUninstallDialogDelegateView::OnDialogCanceled() {
 
   if (dialog_)
     std::exchange(dialog_, nullptr)->CallCallback(/*uninstalled=*/false);
-}
-
-gfx::Size WebAppUninstallDialogDelegateView::CalculatePreferredSize() const {
-  const int width = ChromeLayoutProvider::Get()->GetDistanceMetric(
-                        views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH) -
-                    margins().width();
-  return gfx::Size(width, GetHeightForWidth(width));
-}
-
-ui::ModalType WebAppUninstallDialogDelegateView::GetModalType() const {
-  return ui::MODAL_TYPE_WINDOW;
 }
 
 gfx::ImageSkia WebAppUninstallDialogDelegateView::GetWindowIcon() {

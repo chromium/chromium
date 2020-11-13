@@ -70,6 +70,13 @@ ExtensionInstallBlockedDialogView::ExtensionInstallBlockedDialogView(
   SetTitle(
       l10n_util::GetStringFUTF16(IDS_EXTENSION_BLOCKED_BY_POLICY_PROMPT_TITLE,
                                  base::UTF8ToUTF16(extension_name)));
+
+  // Make sure user know the installation is blocked before taking further
+  // action.
+  SetModalType(ui::MODAL_TYPE_CHILD);
+  set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
+      views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
+
   set_draggable(true);
   set_close_on_deactivate(false);
   SetLayoutManager(std::make_unique<views::FillLayout>());
@@ -80,19 +87,6 @@ ExtensionInstallBlockedDialogView::ExtensionInstallBlockedDialogView(
 ExtensionInstallBlockedDialogView::~ExtensionInstallBlockedDialogView() {
   if (done_callback_)
     std::move(done_callback_).Run();
-}
-
-gfx::Size ExtensionInstallBlockedDialogView::CalculatePreferredSize() const {
-  const int width = ChromeLayoutProvider::Get()->GetDistanceMetric(
-                        views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH) -
-                    margins().width();
-  return gfx::Size(width, GetHeightForWidth(width));
-}
-
-ui::ModalType ExtensionInstallBlockedDialogView::GetModalType() const {
-  // Make sure user know the installation is blocked before taking further
-  // action.
-  return ui::MODAL_TYPE_CHILD;
 }
 
 void ExtensionInstallBlockedDialogView::AddCustomMessageContents(

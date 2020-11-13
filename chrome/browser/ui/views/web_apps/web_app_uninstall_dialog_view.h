@@ -51,10 +51,6 @@ class WebAppUninstallDialogDelegateView : public views::DialogDelegateView {
 
  private:
   // views::DialogDelegateView:
-  gfx::Size CalculatePreferredSize() const override;
-
-  // views::WidgetDelegate:
-  ui::ModalType GetModalType() const override;
   gfx::ImageSkia GetWindowIcon() override;
 
   // Uninstalls the web app. Returns true on success.

@@ -35,6 +35,11 @@ IdleActionWarningDialogView::IdleActionWarningDialogView(
     : idle_action_time_(idle_action_time) {
   DialogDelegate::SetButtons(ui::DIALOG_BUTTON_NONE);
 
+  SetModalType(ui::MODAL_TYPE_SYSTEM);
+  SetShowCloseButton(false);
+  set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
+      views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
+
   SetBorder(views::CreateEmptyBorder(
       ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(views::TEXT,
                                                                  views::TEXT)));
@@ -66,10 +71,6 @@ void IdleActionWarningDialogView::Update(base::TimeTicks idle_action_time) {
   UpdateTitle();
 }
 
-ui::ModalType IdleActionWarningDialogView::GetModalType() const {
-  return ui::MODAL_TYPE_SYSTEM;
-}
-
 base::string16 IdleActionWarningDialogView::GetWindowTitle() const {
   const base::TimeDelta time_until_idle_action =
       std::max(idle_action_time_ - base::TimeTicks::Now(), base::TimeDelta());
@@ -78,18 +79,6 @@ base::string16 IdleActionWarningDialogView::GetWindowTitle() const {
       ui::TimeFormat::Detailed(ui::TimeFormat::FORMAT_DURATION,
                                ui::TimeFormat::LENGTH_LONG, 10,
                                time_until_idle_action));
-}
-
-bool IdleActionWarningDialogView::ShouldShowCloseButton() const {
-  return false;
-}
-
-gfx::Size IdleActionWarningDialogView::CalculatePreferredSize() const {
-  const int default_width = views::LayoutProvider::Get()->GetDistanceMetric(
-      views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH);
-  return gfx::Size(
-      default_width,
-      GetLayoutManager()->GetPreferredHeightForWidth(this, default_width));
 }
 
 IdleActionWarningDialogView::~IdleActionWarningDialogView() = default;

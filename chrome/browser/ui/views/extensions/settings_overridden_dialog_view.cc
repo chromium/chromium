@@ -43,11 +43,10 @@ SettingsOverriddenDialogView::SettingsOverriddenDialogView(
   SetCancelCallback(make_result_callback(DialogResult::kKeepNewSettings));
   SetCloseCallback(make_result_callback(DialogResult::kDialogDismissed));
 
-  // Modals shouldn't show a close button according to the latest style
-  // guidelines. Note the dialog can still be dismissed by user action via the
-  // escape key (in addition to closing automatically if the parent widget
-  // is destroyed).
+  SetModalType(ui::MODAL_TYPE_WINDOW);
   SetShowCloseButton(false);
+  set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
+      views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
 
   SettingsOverriddenDialogController::ShowParams show_params =
       controller_->GetShowParams();
@@ -88,17 +87,6 @@ SettingsOverriddenDialogView::~SettingsOverriddenDialogView() {
 void SettingsOverriddenDialogView::Show(gfx::NativeWindow parent) {
   constrained_window::CreateBrowserModalDialogViews(this, parent)->Show();
   controller_->OnDialogShown();
-}
-
-ui::ModalType SettingsOverriddenDialogView::GetModalType() const {
-  return ui::MODAL_TYPE_WINDOW;
-}
-
-gfx::Size SettingsOverriddenDialogView::CalculatePreferredSize() const {
-  const int width = ChromeLayoutProvider::Get()->GetDistanceMetric(
-                        views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH) -
-                    margins().width();
-  return gfx::Size(width, GetHeightForWidth(width));
 }
 
 void SettingsOverriddenDialogView::NotifyControllerOfResult(

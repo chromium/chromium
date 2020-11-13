@@ -149,12 +149,6 @@ bool AuthenticatorRequestDialogView::ShouldOtherTransportsButtonBeVisible()
          sheet_->model()->GetOtherTransportsMenuModel()->GetItemCount();
 }
 
-gfx::Size AuthenticatorRequestDialogView::CalculatePreferredSize() const {
-  const int width = ChromeLayoutProvider::Get()->GetDistanceMetric(
-      views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH);
-  return gfx::Size(width, GetHeightForWidth(width));
-}
-
 bool AuthenticatorRequestDialogView::Accept() {
   sheet()->model()->OnAccept();
   return false;
@@ -206,20 +200,8 @@ views::View* AuthenticatorRequestDialogView::GetInitiallyFocusedView() {
   return nullptr;
 }
 
-ui::ModalType AuthenticatorRequestDialogView::GetModalType() const {
-  return ui::MODAL_TYPE_CHILD;
-}
-
 base::string16 AuthenticatorRequestDialogView::GetWindowTitle() const {
   return sheet()->model()->GetStepTitle();
-}
-
-bool AuthenticatorRequestDialogView::ShouldShowWindowTitle() const {
-  return false;
-}
-
-bool AuthenticatorRequestDialogView::ShouldShowCloseButton() const {
-  return false;
 }
 
 void AuthenticatorRequestDialogView::OnModelDestroyed() {
@@ -282,12 +264,18 @@ AuthenticatorRequestDialogView::AuthenticatorRequestDialogView(
               l10n_util::GetStringUTF16(IDS_WEBAUTHN_TRANSPORT_POPUP_LABEL)))),
       web_contents_hidden_(web_contents->GetVisibility() ==
                            content::Visibility::HIDDEN) {
+  SetShowTitle(false);
   DCHECK(!model_->should_dialog_be_closed());
   model_->AddObserver(this);
 
   SetCloseCallback(
       base::BindOnce(&AuthenticatorRequestDialogView::OnDialogClosing,
                      base::Unretained(this)));
+
+  SetModalType(ui::MODAL_TYPE_CHILD);
+  SetShowCloseButton(false);
+  set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
+      views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
 
   // Currently, all sheets have a label on top and controls at the bottom.
   // Consider moving this to AuthenticatorRequestSheetView if this changes.

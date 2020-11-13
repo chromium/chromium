@@ -29,14 +29,11 @@ class LocalCardMigrationErrorDialogView
       content::WebContents* web_contents);
   ~LocalCardMigrationErrorDialogView() override;
 
-  // LocalCardMigrationDialog
+  // LocalCardMigrationDialog:
   void ShowDialog() override;
   void CloseDialog() override;
 
-  // views::BubbleDialogDelegateView
-  gfx::Size CalculatePreferredSize() const override;
-  ui::ModalType GetModalType() const override;
-  bool ShouldShowCloseButton() const override;
+  // views::BubbleDialogDelegateView:
   void Init() override;
   void WindowClosing() override;
 

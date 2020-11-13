@@ -46,6 +46,8 @@ DownloadInProgressDialogView::DownloadInProgressDialogView(
   SetLayoutManager(std::make_unique<views::FillLayout>());
   set_margins(ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(
       views::TEXT, views::TEXT));
+  set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
+      views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
 
   auto run_callback = [](DownloadInProgressDialogView* dialog, bool accept) {
     // Note that accepting this dialog means "cancel the download", while cancel
@@ -85,13 +87,6 @@ DownloadInProgressDialogView::DownloadInProgressDialogView(
 }
 
 DownloadInProgressDialogView::~DownloadInProgressDialogView() = default;
-
-gfx::Size DownloadInProgressDialogView::CalculatePreferredSize() const {
-  const int width = ChromeLayoutProvider::Get()->GetDistanceMetric(
-                        views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH) -
-                    margins().width();
-  return gfx::Size(width, GetHeightForWidth(width));
-}
 
 BEGIN_METADATA(DownloadInProgressDialogView, views::DialogDelegateView)
 END_METADATA

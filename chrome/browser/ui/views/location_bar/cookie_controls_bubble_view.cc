@@ -107,6 +107,8 @@ CookieControlsBubbleView::CookieControlsBubbleView(
     content_settings::CookieControlsController* controller)
     : LocationBarBubbleDelegateView(anchor_view, web_contents),
       controller_(controller) {
+  SetShowTitle(true);
+  SetShowCloseButton(true);
   controller_observer_.Add(controller);
   SetButtons(ui::DIALOG_BUTTON_NONE);
 }
@@ -253,14 +255,6 @@ base::string16 CookieControlsBubbleView::GetWindowTitle() const {
       NOTREACHED();
       return base::string16();
   }
-}
-
-bool CookieControlsBubbleView::ShouldShowWindowTitle() const {
-  return true;
-}
-
-bool CookieControlsBubbleView::ShouldShowCloseButton() const {
-  return true;
 }
 
 void CookieControlsBubbleView::WindowClosing() {

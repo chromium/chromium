@@ -27,10 +27,6 @@ class SettingsOverriddenDialogView : public views::DialogDelegateView {
   void Show(gfx::NativeWindow parent);
 
  private:
-  // views::DialogDelegateView:
-  ui::ModalType GetModalType() const override;
-  gfx::Size CalculatePreferredSize() const override;
-
   // Notifies the |controller_| of the |result|.
   void NotifyControllerOfResult(
       SettingsOverriddenDialogController::DialogResult result);

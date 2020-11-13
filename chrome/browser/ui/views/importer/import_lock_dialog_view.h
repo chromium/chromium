@@ -21,15 +21,6 @@ class ImportLockDialogView : public views::DialogDelegateView {
   explicit ImportLockDialogView(base::OnceCallback<void(bool)> callback);
   ~ImportLockDialogView() override;
 
-  // views::View:
-  gfx::Size CalculatePreferredSize() const override;
-
-  // views::DialogDelegate:
-  base::string16 GetWindowTitle() const override;
-
-  // views::WidgetDelegate:
-  bool ShouldShowCloseButton() const override;
-
  private:
   // Called with the result of the dialog.
   base::OnceCallback<void(bool)> callback_;

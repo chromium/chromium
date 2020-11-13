@@ -32,13 +32,6 @@ void CrostiniPackageInstallFailureView::Show(const std::string& error_message) {
       ->Show();
 }
 
-gfx::Size CrostiniPackageInstallFailureView::CalculatePreferredSize() const {
-  const int dialog_width = ChromeLayoutProvider::Get()->GetDistanceMetric(
-                               views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH) -
-                           margins().width();
-  return gfx::Size(dialog_width, GetHeightForWidth(dialog_width));
-}
-
 CrostiniPackageInstallFailureView::CrostiniPackageInstallFailureView(
     const std::string& error_message) {
   SetShowCloseButton(false);
@@ -51,6 +44,8 @@ CrostiniPackageInstallFailureView::CrostiniPackageInstallFailureView(
       provider->GetDistanceMetric(views::DISTANCE_RELATED_CONTROL_VERTICAL)));
   set_margins(provider->GetDialogInsetsForContentType(
       views::DialogContentType::TEXT, views::DialogContentType::TEXT));
+  set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
+      views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
 
   views::StyledLabel* message_label =
       AddChildView(std::make_unique<views::StyledLabel>());

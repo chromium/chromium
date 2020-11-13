@@ -13,9 +13,6 @@ class CrostiniPackageInstallFailureView
  public:
   static void Show(const std::string& error_message);
 
-  // BubbleDialogDelegateView overrides.
-  gfx::Size CalculatePreferredSize() const override;
-
  private:
   explicit CrostiniPackageInstallFailureView(const std::string& error_message);
 

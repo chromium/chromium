@@ -39,6 +39,15 @@ LocalCardMigrationErrorDialogView::LocalCardMigrationErrorDialogView(
   SetCancelCallback(
       base::BindOnce(&LocalCardMigrationDialogController::OnDoneButtonClicked,
                      base::Unretained(controller_)));
+
+  // The error dialog should be a modal dialog blocking the whole browser
+  // which is consistent with other dialogs. It should make sure that the
+  // user can see the error message.
+  SetModalType(ui::MODAL_TYPE_WINDOW);
+  SetShowCloseButton(false);
+  set_fixed_width(ChromeLayoutProvider::Get()->GetDistanceMetric(
+      DISTANCE_LARGE_MODAL_DIALOG_PREFERRED_WIDTH));
+
   set_close_on_deactivate(false);
   set_margins(gfx::Insets());
 }
@@ -55,24 +64,6 @@ void LocalCardMigrationErrorDialogView::ShowDialog() {
 void LocalCardMigrationErrorDialogView::CloseDialog() {
   controller_ = nullptr;
   GetWidget()->Close();
-}
-
-gfx::Size LocalCardMigrationErrorDialogView::CalculatePreferredSize() const {
-  const int width = ChromeLayoutProvider::Get()->GetDistanceMetric(
-                        DISTANCE_LARGE_MODAL_DIALOG_PREFERRED_WIDTH) -
-                    margins().width();
-  return gfx::Size(width, GetHeightForWidth(width));
-}
-
-ui::ModalType LocalCardMigrationErrorDialogView::GetModalType() const {
-  // The error dialog should be a modal dialog blocking the whole browser
-  // which is consistent with other dialogs. It should make sure that the
-  // user can see the error message.
-  return ui::MODAL_TYPE_WINDOW;
-}
-
-bool LocalCardMigrationErrorDialogView::ShouldShowCloseButton() const {
-  return false;
 }
 
 void LocalCardMigrationErrorDialogView::WindowClosing() {

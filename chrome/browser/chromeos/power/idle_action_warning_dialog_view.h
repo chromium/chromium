@@ -24,12 +24,7 @@ class IdleActionWarningDialogView : public views::DialogDelegateView {
   void Update(base::TimeTicks idle_action_time);
 
   // views::DialogDelegateView:
-  ui::ModalType GetModalType() const override;
   base::string16 GetWindowTitle() const override;
-  bool ShouldShowCloseButton() const override;
-
-  // views::View:
-  gfx::Size CalculatePreferredSize() const override;
 
  private:
   ~IdleActionWarningDialogView() override;

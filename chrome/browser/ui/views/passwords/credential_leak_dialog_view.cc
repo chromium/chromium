@@ -65,7 +65,12 @@ CredentialLeakDialogView::CredentialLeakDialogView(
   SetButtonLabel(ui::DIALOG_BUTTON_OK, controller_->GetAcceptButtonLabel());
   SetButtonLabel(ui::DIALOG_BUTTON_CANCEL, controller_->GetCancelButtonLabel());
 
-  using ControllerClosureFn = void (CredentialLeakDialogController::*)(void);
+  SetModalType(ui::MODAL_TYPE_CHILD);
+  SetShowCloseButton(false);
+  set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
+      views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
+
+  using ControllerClosureFn = void (CredentialLeakDialogController::*)();
   auto close_callback = [](CredentialLeakDialogController** controller,
                            ControllerClosureFn fn) {
     // Null out the controller pointer stored in the parent object, to avoid any
@@ -104,21 +109,6 @@ void CredentialLeakDialogView::ControllerGone() {
   // the definition of |close_callback| in the constructor.
   if (controller_)
     GetWidget()->Close();
-}
-
-ui::ModalType CredentialLeakDialogView::GetModalType() const {
-  return ui::MODAL_TYPE_CHILD;
-}
-
-gfx::Size CredentialLeakDialogView::CalculatePreferredSize() const {
-  const int width = ChromeLayoutProvider::Get()->GetDistanceMetric(
-                        views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH) -
-                    margins().width();
-  return gfx::Size(width, GetHeightForWidth(width));
-}
-
-bool CredentialLeakDialogView::ShouldShowCloseButton() const {
-  return false;
 }
 
 void CredentialLeakDialogView::OnThemeChanged() {

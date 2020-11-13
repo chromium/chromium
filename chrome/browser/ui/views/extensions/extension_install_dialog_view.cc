@@ -221,6 +221,10 @@ ExtensionInstallDialogView::ExtensionInstallDialogView(
     default_button = ui::DIALOG_BUTTON_OK;
 #endif
 
+  SetModalType(ui::MODAL_TYPE_WINDOW);
+  set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
+      views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
+
   SetDefaultButton(default_button);
   SetButtons(buttons);
   SetAcceptCallback(base::BindOnce(
@@ -263,13 +267,6 @@ void ExtensionInstallDialogView::SetInstallButtonDelayForTesting(
 
 void ExtensionInstallDialogView::ResizeWidget() {
   GetWidget()->SetSize(GetWidget()->non_client_view()->GetPreferredSize());
-}
-
-gfx::Size ExtensionInstallDialogView::CalculatePreferredSize() const {
-  const int width = ChromeLayoutProvider::Get()->GetDistanceMetric(
-                        views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH) -
-                    margins().width();
-  return gfx::Size(width, GetHeightForWidth(width));
 }
 
 void ExtensionInstallDialogView::VisibilityChanged(views::View* starting_from,
@@ -398,6 +395,10 @@ bool ExtensionInstallDialogView::IsDialogButtonEnabled(
   return true;
 }
 
+base::string16 ExtensionInstallDialogView::GetAccessibleWindowTitle() const {
+  return title_;
+}
+
 void ExtensionInstallDialogView::CloseDialog() {
   GetWidget()->Close();
 }
@@ -419,14 +420,6 @@ void ExtensionInstallDialogView::OnShutdown(
   DCHECK_EQ(extension_registry, registry);
   extension_registry_observer_.Remove(extension_registry);
   CloseDialog();
-}
-
-base::string16 ExtensionInstallDialogView::GetAccessibleWindowTitle() const {
-  return title_;
-}
-
-ui::ModalType ExtensionInstallDialogView::GetModalType() const {
-  return ui::MODAL_TYPE_WINDOW;
 }
 
 void ExtensionInstallDialogView::LinkClicked() {

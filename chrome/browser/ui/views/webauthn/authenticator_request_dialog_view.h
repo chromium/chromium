@@ -63,15 +63,11 @@ class AuthenticatorRequestDialogView
   }
 
   // views::DialogDelegateView:
-  gfx::Size CalculatePreferredSize() const override;
   bool Accept() override;
   bool Cancel() override;
   bool IsDialogButtonEnabled(ui::DialogButton button) const override;
   View* GetInitiallyFocusedView() override;
-  ui::ModalType GetModalType() const override;
   base::string16 GetWindowTitle() const override;
-  bool ShouldShowWindowTitle() const override;
-  bool ShouldShowCloseButton() const override;
 
   // AuthenticatorRequestDialogModel::Observer:
   void OnModelDestroyed() override;

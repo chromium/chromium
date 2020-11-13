@@ -49,17 +49,6 @@ views::Widget* CrostiniForceCloseView::Show(
   return dialog_widget;
 }
 
-ui::ModalType CrostiniForceCloseView::GetModalType() const {
-  return ui::ModalType::MODAL_TYPE_WINDOW;
-}
-
-gfx::Size CrostiniForceCloseView::CalculatePreferredSize() const {
-  const int dialog_width = ChromeLayoutProvider::Get()->GetDistanceMetric(
-                               views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH) -
-                           margins().width();
-  return gfx::Size(dialog_width, GetHeightForWidth(dialog_width));
-}
-
 CrostiniForceCloseView::CrostiniForceCloseView(
     const base::string16& app_name,
     base::OnceClosure force_close_callback) {
@@ -73,6 +62,10 @@ CrostiniForceCloseView::CrostiniForceCloseView(
       ui::DIALOG_BUTTON_OK,
       l10n_util::GetStringUTF16(IDS_CROSTINI_FORCE_CLOSE_ACCEPT_BUTTON));
   SetAcceptCallback(std::move(force_close_callback));
+
+  SetModalType(ui::ModalType::MODAL_TYPE_WINDOW);
+  set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
+      views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
 
   views::LayoutProvider* provider = views::LayoutProvider::Get();
   SetLayoutManager(std::make_unique<views::BoxLayout>(

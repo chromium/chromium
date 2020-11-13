@@ -26,14 +26,10 @@ class VirtualCardSelectionDialogViewImpl
   void Hide() override;
 
   // views::DialogDelegateView:
-  gfx::Size CalculatePreferredSize() const override;
   void AddedToWidget() override;
   bool IsDialogButtonEnabled(ui::DialogButton button) const override;
-  ui::ModalType GetModalType() const override;
   View* GetContentsView() override;
   base::string16 GetWindowTitle() const override;
-  bool ShouldShowWindowTitle() const override;
-  bool ShouldShowCloseButton() const override;
 
  private:
   VirtualCardSelectionDialogController* controller_ = nullptr;

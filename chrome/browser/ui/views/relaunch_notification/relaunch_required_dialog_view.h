@@ -38,14 +38,8 @@ class RelaunchRequiredDialogView : views::DialogDelegateView {
   void SetDeadline(base::Time deadline);
 
   // views::DialogDelegateView:
-  ui::ModalType GetModalType() const override;
   base::string16 GetWindowTitle() const override;
-  bool ShouldShowCloseButton() const override;
   gfx::ImageSkia GetWindowIcon() override;
-
- protected:
-  // views::DialogDelegateView:
-  gfx::Size CalculatePreferredSize() const override;
 
  private:
   RelaunchRequiredDialogView(base::Time deadline,

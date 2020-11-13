@@ -46,14 +46,8 @@ class ChromeCleanerDialog
 
   void Show(Browser* browser);
 
-  // views::WidgetDelegate overrides.
-  ui::ModalType GetModalType() const override;
-  base::string16 GetWindowTitle() const override;
+  // views::DialogDelegateView:
   views::View* GetInitiallyFocusedView() override;
-  bool ShouldShowCloseButton() const override;
-
-  // views::View overrides.
-  gfx::Size CalculatePreferredSize() const override;
 
   // safe_browsing::ChromeCleanerController::Observer overrides.
   void OnIdle(

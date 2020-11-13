@@ -35,10 +35,6 @@ class ExtensionInstallBlockedDialogView
   ~ExtensionInstallBlockedDialogView() override;
 
  private:
-  // views::BubbleDialogDelegateView
-  gfx::Size CalculatePreferredSize() const override;
-  ui::ModalType GetModalType() const override;
-
   // Creates the contents area that contains custom error message that is set by
   // administrator.
   void AddCustomMessageContents(const base::string16& custom_error_message);

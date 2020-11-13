@@ -36,10 +36,6 @@ class CrostiniForceCloseView : public views::BubbleDialogDelegateView {
                              gfx::NativeView closable_view,
                              base::OnceClosure force_close_callback);
 
-  // BubbleDialogDelegateView overrides.
-  ui::ModalType GetModalType() const override;
-  gfx::Size CalculatePreferredSize() const override;
-
  private:
   CrostiniForceCloseView(const base::string16& app_name,
                          base::OnceClosure force_close_callback);

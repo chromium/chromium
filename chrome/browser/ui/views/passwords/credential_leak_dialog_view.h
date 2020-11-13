@@ -28,9 +28,6 @@ class CredentialLeakDialogView : public views::DialogDelegateView,
 
  private:
   // views::DialogDelegateView:
-  ui::ModalType GetModalType() const override;
-  gfx::Size CalculatePreferredSize() const override;
-  bool ShouldShowCloseButton() const override;
   void OnThemeChanged() override;
   base::string16 GetWindowTitle() const override;
 

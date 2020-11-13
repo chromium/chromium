@@ -27,6 +27,11 @@ AutoSigninFirstRunDialogView::AutoSigninFirstRunDialogView(
   SetButtonLabel(ui::DIALOG_BUTTON_CANCEL,
                  l10n_util::GetStringUTF16(IDS_TURN_OFF));
 
+  SetModalType(ui::MODAL_TYPE_CHILD);
+  SetShowCloseButton(false);
+  set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
+      views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
+
   using ControllerCallbackFn = void (CredentialManagerDialogController::*)();
   auto call_controller = [](AutoSigninFirstRunDialogView* dialog,
                             ControllerCallbackFn func) {
@@ -59,23 +64,8 @@ void AutoSigninFirstRunDialogView::ControllerGone() {
   controller_ = nullptr;
 }
 
-ui::ModalType AutoSigninFirstRunDialogView::GetModalType() const {
-  return ui::MODAL_TYPE_CHILD;
-}
-
 base::string16 AutoSigninFirstRunDialogView::GetWindowTitle() const {
   return controller_->GetAutoSigninPromoTitle();
-}
-
-bool AutoSigninFirstRunDialogView::ShouldShowCloseButton() const {
-  return false;
-}
-
-gfx::Size AutoSigninFirstRunDialogView::CalculatePreferredSize() const {
-  const int width = ChromeLayoutProvider::Get()->GetDistanceMetric(
-                        views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH) -
-                    margins().width();
-  return gfx::Size(width, GetHeightForWidth(width));
 }
 
 void AutoSigninFirstRunDialogView::WindowClosing() {

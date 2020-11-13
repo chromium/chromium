@@ -32,14 +32,10 @@ class WebauthnDialogViewImpl : public WebauthnDialogView,
   void OnDialogStateChanged() override;
 
   // views::DialogDelegateView:
-  gfx::Size CalculatePreferredSize() const override;
   bool Accept() override;
   bool Cancel() override;
   bool IsDialogButtonEnabled(ui::DialogButton button) const override;
-  ui::ModalType GetModalType() const override;
   base::string16 GetWindowTitle() const override;
-  bool ShouldShowWindowTitle() const override;
-  bool ShouldShowCloseButton() const override;
 
  private:
   // Closes the dialog.

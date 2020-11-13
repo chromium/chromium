@@ -58,6 +58,7 @@ ChromeCleanerDialog::ChromeCleanerDialog(
   DCHECK(dialog_controller_);
   DCHECK(cleaner_controller_);
 
+  SetTitle(IDS_CHROME_CLEANUP_PROMPT_TITLE);
   SetButtonLabel(
       ui::DIALOG_BUTTON_OK,
       l10n_util::GetStringUTF16(IDS_CHROME_CLEANUP_PROMPT_REMOVE_BUTTON_LABEL));
@@ -76,6 +77,11 @@ ChromeCleanerDialog::ChromeCleanerDialog(
   SetCloseCallback(base::BindOnce(&ChromeCleanerDialog::HandleDialogInteraction,
                                   base::Unretained(this),
                                   DialogInteractionResult::kClose));
+
+  SetModalType(ui::MODAL_TYPE_WINDOW);
+  SetShowCloseButton(false);
+  set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
+      views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
 
   ChromeLayoutProvider* layout_provider = ChromeLayoutProvider::Get();
   set_margins(
@@ -133,35 +139,11 @@ void ChromeCleanerDialog::Show(Browser* browser) {
   cleaner_controller_->AddObserver(this);
 }
 
-// WidgetDelegate overrides.
-
-ui::ModalType ChromeCleanerDialog::GetModalType() const {
-  return ui::MODAL_TYPE_WINDOW;
-}
-
-base::string16 ChromeCleanerDialog::GetWindowTitle() const {
-  DCHECK(dialog_controller_);
-  return l10n_util::GetStringUTF16(IDS_CHROME_CLEANUP_PROMPT_TITLE);
-}
-
 views::View* ChromeCleanerDialog::GetInitiallyFocusedView() {
   // Set focus away from the Remove/OK button to prevent accidental prompt
   // acceptance if the user is typing as the dialog appears.
   DCHECK(details_button_);
   return details_button_;
-}
-
-bool ChromeCleanerDialog::ShouldShowCloseButton() const {
-  return false;
-}
-
-// View overrides.
-
-gfx::Size ChromeCleanerDialog::CalculatePreferredSize() const {
-  const int dialog_width = ChromeLayoutProvider::Get()->GetDistanceMetric(
-                               views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH) -
-                           margins().width();
-  return gfx::Size(dialog_width, GetHeightForWidth(dialog_width));
 }
 
 // safe_browsing::ChromeCleanerController::Observer overrides

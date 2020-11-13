@@ -58,16 +58,8 @@ void RelaunchRequiredDialogView::SetDeadline(base::Time deadline) {
   relaunch_required_timer_.SetDeadline(deadline);
 }
 
-ui::ModalType RelaunchRequiredDialogView::GetModalType() const {
-  return ui::MODAL_TYPE_WINDOW;
-}
-
 base::string16 RelaunchRequiredDialogView::GetWindowTitle() const {
   return relaunch_required_timer_.GetWindowTitle();
-}
-
-bool RelaunchRequiredDialogView::ShouldShowCloseButton() const {
-  return false;
 }
 
 gfx::ImageSkia RelaunchRequiredDialogView::GetWindowIcon() {
@@ -76,13 +68,6 @@ gfx::ImageSkia RelaunchRequiredDialogView::GetWindowIcon() {
                            ChromeLayoutProvider::Get()->GetDistanceMetric(
                                DISTANCE_BUBBLE_HEADER_VECTOR_ICON_SIZE),
                            gfx::kChromeIconGrey));
-}
-
-gfx::Size RelaunchRequiredDialogView::CalculatePreferredSize() const {
-  const int width = ChromeLayoutProvider::Get()->GetDistanceMetric(
-                        views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH) -
-                    margins().width();
-  return gfx::Size(width, GetHeightForWidth(width));
 }
 
 // |relaunch_required_timer_| automatically starts for the next time the title
@@ -110,6 +95,12 @@ RelaunchRequiredDialogView::RelaunchRequiredDialogView(
   SetCancelCallback(base::BindOnce(
       base::RecordAction, base::UserMetricsAction("RelaunchRequired_Close")));
   SetLayoutManager(std::make_unique<views::FillLayout>());
+
+  SetModalType(ui::MODAL_TYPE_WINDOW);
+  SetShowCloseButton(false);
+  set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
+      views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
+
   chrome::RecordDialogCreation(chrome::DialogIdentifier::RELAUNCH_REQUIRED);
   const ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
   set_margins(

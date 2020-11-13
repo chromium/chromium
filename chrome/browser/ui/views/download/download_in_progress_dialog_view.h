@@ -32,9 +32,6 @@ class DownloadInProgressDialogView : public views::DialogDelegateView {
                                const base::Callback<void(bool)>& callback);
   ~DownloadInProgressDialogView() override;
 
-  // views::DialogDelegateView:
-  gfx::Size CalculatePreferredSize() const override;
-
   const base::Callback<void(bool)> callback_;
 
   DISALLOW_COPY_AND_ASSIGN(DownloadInProgressDialogView);
