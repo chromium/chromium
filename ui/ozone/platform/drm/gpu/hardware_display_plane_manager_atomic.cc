@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/containers/flat_set.h"
 #include "base/files/platform_file.h"
 #include "base/logging.h"
 #include "base/stl_util.h"
@@ -51,6 +52,18 @@ std::unique_ptr<gfx::GpuFence> CreateMergedGpuFenceFromFDs(
   return nullptr;
 }
 
+std::vector<uint32_t> GetCrtcIdsOfPlanes(
+    const HardwareDisplayPlaneList& plane_list) {
+  std::vector<uint32_t> crtcs;
+  for (HardwareDisplayPlane* plane : plane_list.plane_list) {
+    HardwareDisplayPlaneAtomic* atomic_plane =
+        static_cast<HardwareDisplayPlaneAtomic*>(plane);
+    if (crtcs.empty() || crtcs.back() != atomic_plane->AssignedCrtcId())
+      crtcs.push_back(atomic_plane->AssignedCrtcId());
+  }
+  return crtcs;
+}
+
 }  // namespace
 
 HardwareDisplayPlaneManagerAtomic::HardwareDisplayPlaneManagerAtomic(
@@ -60,69 +73,125 @@ HardwareDisplayPlaneManagerAtomic::HardwareDisplayPlaneManagerAtomic(
 HardwareDisplayPlaneManagerAtomic::~HardwareDisplayPlaneManagerAtomic() =
     default;
 
-bool HardwareDisplayPlaneManagerAtomic::Modeset(
+bool HardwareDisplayPlaneManagerAtomic::SetCrtcProps(
+    drmModeAtomicReq* atomic_request,
     uint32_t crtc_id,
-    uint32_t framebuffer_id,
+    bool set_active,
+    uint32_t mode_id) {
+  // Only making a copy here to retrieve the the props IDs. The state will be
+  // updated only after a successful modeset.
+  CrtcProperties modeset_props = GetCrtcStateForCrtcId(crtc_id).properties;
+  modeset_props.active.value = static_cast<uint64_t>(set_active);
+  modeset_props.mode_id.value = mode_id;
+
+  bool status =
+      AddPropertyIfValid(atomic_request, crtc_id, modeset_props.active);
+  status &= AddPropertyIfValid(atomic_request, crtc_id, modeset_props.mode_id);
+  return status;
+}
+
+bool HardwareDisplayPlaneManagerAtomic::SetConnectorProps(
+    drmModeAtomicReq* atomic_request,
     uint32_t connector_id,
-    const drmModeModeInfo& mode,
-    const HardwareDisplayPlaneList& plane_list) {
-  const int connector_idx = LookupConnectorIndex(connector_id);
-  DCHECK_GE(connector_idx, 0);
-  connectors_props_[connector_idx].crtc_id.value = crtc_id;
-  bool res =
-      AddPropertyIfValid(plane_list.atomic_property_set.get(), connector_id,
-                         connectors_props_[connector_idx].crtc_id);
+    uint32_t crtc_id) {
+  int connector_index = LookupConnectorIndex(connector_id);
+  DCHECK_GE(connector_index, 0);
+  // Only making a copy here to retrieve the the props IDs. The state will be
+  // updated only after a successful modeset.
+  ConnectorProperties connector_props = connectors_props_[connector_index];
+  connector_props.crtc_id.value = crtc_id;
 
-  const int crtc_idx = LookupCrtcIndex(crtc_id);
-  DCHECK_GE(crtc_idx, 0);
-  crtc_state_[crtc_idx].properties.active.value = 1UL;
-  ScopedDrmPropertyBlob mode_blob =
-      drm_->CreatePropertyBlob(&mode, sizeof(mode));
-  crtc_state_[crtc_idx].properties.mode_id.value =
-      mode_blob ? mode_blob->id() : 0;
-
-  res &= AddPropertyIfValid(plane_list.atomic_property_set.get(), crtc_id,
-                            crtc_state_[crtc_idx].properties.active);
-  res &= AddPropertyIfValid(plane_list.atomic_property_set.get(), crtc_id,
-                            crtc_state_[crtc_idx].properties.mode_id);
-
-  DCHECK(res);
-  return Commit(const_cast<HardwareDisplayPlaneList*>(&plane_list),
-                /*should_modeset=*/true,
-                /*page_flip_request=*/nullptr,
-                /*out_fence=*/nullptr);
+  return AddPropertyIfValid(atomic_request, connector_id,
+                            connector_props.crtc_id);
 }
 
-bool HardwareDisplayPlaneManagerAtomic::DisableModeset(uint32_t crtc_id,
-                                                       uint32_t connector) {
-  ScopedDrmAtomicReqPtr property_set(drmModeAtomicAlloc());
+bool HardwareDisplayPlaneManagerAtomic::Commit(CommitRequest commit_request,
+                                               uint32_t flags) {
+  bool is_testing = flags & DRM_MODE_ATOMIC_TEST_ONLY;
+  bool status = true;
 
-  const int connector_idx = LookupConnectorIndex(connector);
-  DCHECK_GE(connector_idx, 0);
-  connectors_props_[connector_idx].crtc_id.value = 0UL;
-  bool res = AddPropertyIfValid(property_set.get(), connector,
-                                connectors_props_[connector_idx].crtc_id);
+  std::vector<ScopedDrmPropertyBlob> scoped_blobs;
 
-  const int crtc_idx = LookupCrtcIndex(crtc_id);
-  DCHECK_GE(crtc_idx, 0);
-  crtc_state_[crtc_idx].properties.active.value = 0UL;
-  crtc_state_[crtc_idx].properties.mode_id.value = 0UL;
-  res &= AddPropertyIfValid(property_set.get(), crtc_id,
-                            crtc_state_[crtc_idx].properties.active);
-  res &= AddPropertyIfValid(property_set.get(), crtc_id,
-                            crtc_state_[crtc_idx].properties.mode_id);
+  base::flat_set<HardwareDisplayPlaneList*> enable_planes_lists;
+  base::flat_set<HardwareDisplayPlaneList*> all_planes_lists;
 
-  DCHECK(res);
-  return drm_->CommitProperties(property_set.get(),
-                                DRM_MODE_ATOMIC_ALLOW_MODESET, 1, nullptr);
+  ScopedDrmAtomicReqPtr atomic_request(drmModeAtomicAlloc());
+
+  for (const auto& crtc_request : commit_request) {
+    if (crtc_request.plane_list())
+      all_planes_lists.insert(crtc_request.plane_list());
+
+    uint32_t mode_id = 0;
+    if (crtc_request.should_enable()) {
+      auto mode_blob = drm_->CreatePropertyBlob(&crtc_request.mode(),
+                                                sizeof(crtc_request.mode()));
+      status &= (mode_blob != nullptr);
+      if (mode_blob) {
+        scoped_blobs.push_back(std::move(mode_blob));
+        mode_id = scoped_blobs.back()->id();
+      }
+    }
+
+    uint32_t crtc_id = crtc_request.crtc_id();
+
+    status &= SetCrtcProps(atomic_request.get(), crtc_id,
+                           crtc_request.should_enable(), mode_id);
+    status &=
+        SetConnectorProps(atomic_request.get(), crtc_request.connector_id(),
+                          crtc_request.should_enable() * crtc_id);
+
+    if (crtc_request.should_enable()) {
+      DCHECK(crtc_request.plane_list());
+      status &= AssignOverlayPlanes(crtc_request.plane_list(),
+                                    crtc_request.overlays(), crtc_id);
+      enable_planes_lists.insert(crtc_request.plane_list());
+    }
+  }
+
+  // TODO(markyacoub): Ideally this doesn't need to be a separate step. It
+  // should all be handled in Set{Crtc,Connector,Plane}Props() modulo some state
+  // tracking changes that should be done post commit. Break it apart when both
+  // Commit() are consolidated.
+  for (HardwareDisplayPlaneList* list : enable_planes_lists) {
+    SetAtomicPropsForCommit(atomic_request.get(), list,
+                            GetCrtcIdsOfPlanes(*list), is_testing);
+  }
+
+  // TODO(markyacoub): failed |status|'s should be made as DCHECKs. The only
+  // reason some of these would be failing is OOM. If we OOM-ed there's no point
+  // in trying to recover.
+  if (!status || !drm_->CommitProperties(atomic_request.get(), flags,
+                                         commit_request.size(), nullptr)) {
+    if (is_testing)
+      VPLOG(2) << "Modeset Test is rejected.";
+    else
+      PLOG(ERROR) << "Failed to commit properties for modeset.";
+
+    for (HardwareDisplayPlaneList* list : all_planes_lists)
+      ResetCurrentPlaneList(list);
+
+    return false;
+  }
+
+  if (!is_testing)
+    UpdateCrtcAndPlaneStatesAfterModeset(commit_request);
+
+  for (HardwareDisplayPlaneList* list : enable_planes_lists)
+    list->plane_list.clear();
+
+  return true;
 }
 
-bool HardwareDisplayPlaneManagerAtomic::Commit(
+void HardwareDisplayPlaneManagerAtomic::SetAtomicPropsForCommit(
+    drmModeAtomicReq* atomic_request,
     HardwareDisplayPlaneList* plane_list,
-    bool should_modeset,
-    scoped_refptr<PageFlipRequest> page_flip_request,
-    std::unique_ptr<gfx::GpuFence>* out_fence) {
-  bool test_only = !should_modeset && !page_flip_request;
+    const std::vector<uint32_t>& crtcs,
+    bool test_only) {
+  for (HardwareDisplayPlane* plane : plane_list->plane_list) {
+    HardwareDisplayPlaneAtomic* atomic_plane =
+        static_cast<HardwareDisplayPlaneAtomic*>(plane);
+    atomic_plane->SetPlaneProps(atomic_request);
+  }
 
   for (HardwareDisplayPlane* plane : plane_list->old_plane_list) {
     if (!base::Contains(plane_list->plane_list, plane)) {
@@ -135,21 +204,13 @@ bool HardwareDisplayPlaneManagerAtomic::Commit(
       plane->set_in_use(false);
       HardwareDisplayPlaneAtomic* atomic_plane =
           static_cast<HardwareDisplayPlaneAtomic*>(plane);
-      atomic_plane->SetPlaneData(
-          plane_list->atomic_property_set.get(), 0, 0, gfx::Rect(), gfx::Rect(),
-          gfx::OVERLAY_TRANSFORM_NONE, base::kInvalidPlatformFile);
+      atomic_plane->AssignPlaneProps(0, 0, gfx::Rect(), gfx::Rect(),
+                                     gfx::OVERLAY_TRANSFORM_NONE,
+                                     base::kInvalidPlatformFile);
+      atomic_plane->SetPlaneProps(atomic_request);
     }
   }
 
-  std::vector<uint32_t> crtcs;
-  for (HardwareDisplayPlane* plane : plane_list->plane_list) {
-    HardwareDisplayPlaneAtomic* atomic_plane =
-        static_cast<HardwareDisplayPlaneAtomic*>(plane);
-    if (crtcs.empty() || crtcs.back() != atomic_plane->crtc_id())
-      crtcs.push_back(atomic_plane->crtc_id());
-  }
-
-  drmModeAtomicReqPtr request = plane_list->atomic_property_set.get();
   for (uint32_t crtc : crtcs) {
     int idx = LookupCrtcIndex(crtc);
 
@@ -158,12 +219,14 @@ bool HardwareDisplayPlaneManagerAtomic::Commit(
     // swap chain for a vsync.
     // TODO(dnicoara): See if we can apply these properties async using
     // DRM_MODE_ATOMIC_ASYNC_UPDATE flag when committing.
-    AddPropertyIfValid(request, crtc, crtc_state_[idx].properties.degamma_lut);
-    AddPropertyIfValid(request, crtc, crtc_state_[idx].properties.gamma_lut);
-    AddPropertyIfValid(request, crtc, crtc_state_[idx].properties.ctm);
+    AddPropertyIfValid(atomic_request, crtc,
+                       crtc_state_[idx].properties.degamma_lut);
+    AddPropertyIfValid(atomic_request, crtc,
+                       crtc_state_[idx].properties.gamma_lut);
+    AddPropertyIfValid(atomic_request, crtc, crtc_state_[idx].properties.ctm);
 #endif
 
-    AddPropertyIfValid(request, crtc,
+    AddPropertyIfValid(atomic_request, crtc,
                        crtc_state_[idx].properties.background_color);
   }
 
@@ -177,6 +240,19 @@ bool HardwareDisplayPlaneManagerAtomic::Commit(
   } else {
     plane_list->plane_list.swap(plane_list->old_plane_list);
   }
+}
+
+bool HardwareDisplayPlaneManagerAtomic::Commit(
+    HardwareDisplayPlaneList* plane_list,
+    bool should_modeset,
+    scoped_refptr<PageFlipRequest> page_flip_request,
+    std::unique_ptr<gfx::GpuFence>* out_fence) {
+  bool test_only = !should_modeset && !page_flip_request;
+
+  std::vector<uint32_t> crtcs = GetCrtcIdsOfPlanes(*plane_list);
+
+  SetAtomicPropsForCommit(plane_list->atomic_property_set.get(), plane_list,
+                          crtcs, test_only);
 
   // After we perform the atomic commit, and if the caller has requested an
   // out-fence, the out_fence_fds vector will contain any provided out-fence
@@ -232,9 +308,10 @@ bool HardwareDisplayPlaneManagerAtomic::DisableOverlayPlanes(
 
     HardwareDisplayPlaneAtomic* atomic_plane =
         static_cast<HardwareDisplayPlaneAtomic*>(plane);
-    atomic_plane->SetPlaneData(
-        plane_list->atomic_property_set.get(), 0, 0, gfx::Rect(), gfx::Rect(),
-        gfx::OVERLAY_TRANSFORM_NONE, base::kInvalidPlatformFile);
+    atomic_plane->AssignPlaneProps(0, 0, gfx::Rect(), gfx::Rect(),
+                                   gfx::OVERLAY_TRANSFORM_NONE,
+                                   base::kInvalidPlatformFile);
+    atomic_plane->SetPlaneProps(plane_list->atomic_property_set.get());
   }
   bool ret = drm_->CommitProperties(plane_list->atomic_property_set.get(),
                                     DRM_MODE_ATOMIC_NONBLOCK, 0, nullptr);
@@ -305,10 +382,9 @@ bool HardwareDisplayPlaneManagerAtomic::SetPlaneData(
     fence_fd = gpu_fence_handle.owned_fd.get();
   }
 
-  if (!atomic_plane->SetPlaneData(plane_list->atomic_property_set.get(),
-                                  crtc_id, framebuffer_id,
-                                  overlay.display_bounds, src_rect,
-                                  overlay.plane_transform, fence_fd)) {
+  if (!atomic_plane->AssignPlaneProps(crtc_id, framebuffer_id,
+                                      overlay.display_bounds, src_rect,
+                                      overlay.plane_transform, fence_fd)) {
     return false;
   }
   return true;
@@ -399,7 +475,7 @@ bool HardwareDisplayPlaneManagerAtomic::CommitGammaCorrection(
 }
 
 bool HardwareDisplayPlaneManagerAtomic::AddOutFencePtrProperties(
-    drmModeAtomicReqPtr property_set,
+    drmModeAtomicReq* property_set,
     const std::vector<uint32_t>& crtcs,
     std::vector<base::ScopedFD>* out_fence_fds,
     std::vector<base::ScopedFD::Receiver>* out_fence_fd_receivers) {

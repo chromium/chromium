@@ -31,6 +31,9 @@ class DrmWindow;
 // Responsible for keeping track of active displays and configuring them.
 class ScreenManager {
  public:
+  using CrtcsWithDrmList =
+      std::vector<std::pair<uint32_t, const scoped_refptr<DrmDevice>>>;
+
   struct ControllerConfigParams {
     ControllerConfigParams(int64_t display_id,
                            scoped_refptr<DrmDevice> drm,
@@ -59,10 +62,9 @@ class ScreenManager {
                             uint32_t crtc,
                             uint32_t connector);
 
-  // Remove a display controller from the list of active controllers. The
-  // controller is removed since it was disconnected.
-  void RemoveDisplayController(const scoped_refptr<DrmDevice>& drm,
-                               uint32_t crtc);
+  // Remove display controllers from the list of active controllers. The
+  // controllers are removed since they were disconnected.
+  void RemoveDisplayControllers(const CrtcsWithDrmList& controllers_to_remove);
 
   // Enables/Disables the display controller based on if a mode exists.
   base::flat_map<int64_t, bool> ConfigureDisplayControllers(
@@ -103,18 +105,39 @@ class ScreenManager {
       const scoped_refptr<DrmDevice>& drm,
       uint32_t crtc);
 
-  // Configure a display controller. The display controller is identified by
-  // (|crtc|, |connector|) and the controller is modeset using |mode|.
-  bool EnableDisplayController(const scoped_refptr<DrmDevice>& drm,
-                               uint32_t crtc,
-                               uint32_t connector,
-                               const gfx::Point& origin,
-                               const drmModeModeInfo& mode);
+  base::flat_map<int64_t, bool> TestAndModeset(
+      const std::vector<ControllerConfigParams>& controllers_params);
 
-  // Disable the display controller identified by |crtc|. Note, the controller
-  // may still be connected, so this does not remove the controller.
-  bool DisableDisplayController(const scoped_refptr<DrmDevice>& drm,
-                                uint32_t crtc);
+  bool TestModeset(
+      const std::vector<ControllerConfigParams>& controllers_params);
+
+  base::flat_map<int64_t, bool> Modeset(
+      const std::vector<ControllerConfigParams>& controllers_params);
+
+  // Configures a display controller to be enabled. The display controller is
+  // identified by (|crtc|, |connector|) and the controller is to be modeset
+  // using |mode|. Controller modeset props are added into |commit_request|.
+  bool SetDisplayControllerForEnableAndGetProps(
+      CommitRequest* commit_request,
+      const scoped_refptr<DrmDevice>& drm,
+      uint32_t crtc,
+      uint32_t connector,
+      const gfx::Point& origin,
+      const drmModeModeInfo& mode);
+
+  // Configures a display controller to be disabled. The display controller is
+  // identified by |crtc|. Controller modeset props are added into
+  // |commit_request|.
+  // Note: the controller may still be connected, so this does not remove the
+  // controller.
+  bool SetDisableDisplayControllerForDisableAndGetProps(
+      CommitRequest* commit_request,
+      const scoped_refptr<DrmDevice>& drm,
+      uint32_t crtc);
+
+  void UpdateControllerStateAfterModeset(const ControllerConfigParams& config,
+                                         const CommitRequest& commit_request,
+                                         bool did_succeed);
 
   // Returns an iterator into |controllers_| for the controller located at
   // |origin|.
@@ -127,26 +150,26 @@ class ScreenManager {
       const scoped_refptr<DrmDevice>& drm,
       const gfx::Rect& bounds);
 
-  // Tries to set the controller identified by (|crtc|, |connector|) to mirror
-  // those in |mirror|. |original| is an iterator to the HDC where the
-  // controller is currently present.
-  bool HandleMirrorMode(HardwareDisplayControllers::iterator original,
+  // Tries to set the |original| controller to mirror those in |mirror|.
+  // |original| is an iterator to the HDC where the controller is currently
+  // present.
+  bool HandleMirrorMode(CommitRequest* commit_request,
+                        HardwareDisplayControllers::iterator original,
                         HardwareDisplayControllers::iterator mirror,
-                        const scoped_refptr<DrmDevice>& drm,
-                        uint32_t crtc,
-                        uint32_t connector,
                         const drmModeModeInfo& mode);
 
   DrmOverlayPlane GetModesetBuffer(HardwareDisplayController* controller,
                                    const gfx::Rect& bounds);
 
-  bool EnableController(HardwareDisplayController* controller);
-
-  // Modeset the |controller| using |origin| and |mode|. If there is a window at
-  // the controller location, then we'll re-use the current buffer.
-  bool ModesetController(HardwareDisplayController* controller,
-                         const gfx::Point& origin,
-                         const drmModeModeInfo& mode);
+  // Gets props for modesetting the |controller| using |origin| and |mode|. If
+  // there is a window at the controller location, then we'll re-use the current
+  // buffer.
+  bool GetModesetControllerProps(CommitRequest* commit_request,
+                                 HardwareDisplayController* controller,
+                                 const gfx::Point& origin,
+                                 const drmModeModeInfo& mode);
+  bool GetEnableControllerProps(CommitRequest* commit_request,
+                                HardwareDisplayController* controller);
 
   DrmWindow* FindWindowAt(const gfx::Rect& bounds) const;
 

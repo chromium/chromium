@@ -20,25 +20,28 @@ namespace ui {
 
 class HardwareDisplayPlaneAtomic : public HardwareDisplayPlane {
  public:
-  HardwareDisplayPlaneAtomic(uint32_t id);
+  explicit HardwareDisplayPlaneAtomic(uint32_t id);
   ~HardwareDisplayPlaneAtomic() override;
 
   bool Initialize(DrmDevice* drm) override;
 
-  virtual bool SetPlaneData(drmModeAtomicReq* property_set,
-                            uint32_t crtc_id,
-                            uint32_t framebuffer,
-                            const gfx::Rect& crtc_rect,
-                            const gfx::Rect& src_rect,
-                            const gfx::OverlayTransform transform,
-                            int in_fence_fd);
+  // Saves the props locally onto the plane to be committed later.
+  virtual bool AssignPlaneProps(uint32_t crtc_id,
+                                uint32_t framebuffer,
+                                const gfx::Rect& crtc_rect,
+                                const gfx::Rect& src_rect,
+                                const gfx::OverlayTransform transform,
+                                int in_fence_fd);
+  // Sets the props on |property_set| for commit.
+  bool SetPlaneProps(drmModeAtomicReq* property_set);
 
   bool SetPlaneCtm(drmModeAtomicReq* property_set, uint32_t ctm_blob_id);
 
-  uint32_t crtc_id() { return crtc_id_; }
+  uint32_t AssignedCrtcId() const;
 
  private:
-  uint32_t crtc_id_ = 0;
+  // Intermediate variable between Assign()ment and Set()ting.
+  HardwareDisplayPlane::Properties assigned_props_;
 
   DISALLOW_COPY_AND_ASSIGN(HardwareDisplayPlaneAtomic);
 };
