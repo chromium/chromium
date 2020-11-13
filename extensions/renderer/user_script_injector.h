@@ -68,8 +68,8 @@ class UserScriptInjector : public ScriptInjector,
   void OnWillNotInject(InjectFailureReason reason,
                        content::RenderFrame* render_frame) override;
 
-  // The associated user script. Owned by the UserScriptInjector that created
-  // this object.
+  // The associated user script. Owned by the UserScriptSet that created this
+  // object.
   const UserScript* script_;
 
   // The UserScriptSet that eventually owns the UserScript this
