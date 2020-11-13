@@ -241624,7 +241624,7 @@
        []
       ],
       "client-navigate-worker.js": [
-       "a96c53bced98f63cca8c97ef74d6be3887cd066f",
+       "6101d5d8f92ccd0ec798c27a2ab1cd33de5fc1bb",
        []
       ],
       "client-navigated-frame.html": [
@@ -405316,10 +405316,12 @@
       ]
      ],
      "client-navigate.https.html": [
-      "6112e37c34ee991094ee8fcbe623e9c1e26f6e7c",
+      "f40a08635cfd1e0345a64228ccab82302439f7dd",
       [
        null,
-       {}
+       {
+        "timeout": "long"
+       }
       ]
      ],
      "clients-get-client-types.https.html": [
