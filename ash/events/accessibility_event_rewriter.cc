@@ -177,7 +177,7 @@ bool AccessibilityEventRewriter::RewriteEventForChromeVox(
 bool AccessibilityEventRewriter::RewriteEventForSwitchAccess(
     const ui::Event& event,
     const Continuation continuation) {
-  if (!event.IsKeyEvent() || suspend_switch_access_key_handling_)
+  if (!event.IsKeyEvent())
     return false;
 
   const ui::KeyEvent* key_event = event.AsKeyEvent();

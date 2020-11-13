@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,8 @@
  * @fileoverview 'switch-access-subpage' is the collapsible section containing
  * Switch Access settings.
  */
+
+(function() {
 
 /**
  * The portion of the setting name common to all Switch Access preferences.
@@ -32,6 +34,20 @@ const AUTO_SCAN_SPEED_RANGE_MS = [
   1900, 2000, 2100, 2200, 2300, 2400, 2500, 2600, 2700, 2800, 2900, 3000,
   3100, 3200, 3300, 3400, 3500, 3600, 3700, 3800, 3900, 4000
 ];
+
+/**
+ * This function extracts the segment of a preference key after the fixed prefix
+ * and returns it. In cases where the preference is Switch Access command
+ * setting preference, it corresponds to the command name.
+ *
+ * @param {!chrome.settingsPrivate.PrefObject} pref
+ * @return {string}
+ */
+function getCommandNameFromCommandPref(pref) {
+  const nameStartIndex = PREFIX.length;
+  const nameEndIndex = pref.key.indexOf('.', nameStartIndex);
+  return pref.key.substring(nameStartIndex, nameEndIndex);
+}
 
 /**
  * @param {!Array<number>} ticksInMs
@@ -65,7 +81,6 @@ Polymer({
     I18nBehavior,
     PrefsBehavior,
     settings.RouteObserverBehavior,
-    WebUIListenerBehavior,
   ],
 
   properties: {
@@ -74,27 +89,6 @@ Polymer({
      */
     prefs: {
       type: Object,
-      notify: true,
-    },
-
-    /** @private {Array<string>} */
-    selectAssignments_: {
-      type: Array,
-      value: [],
-      notify: true,
-    },
-
-    /** @private {Array<string>} */
-    nextAssignments_: {
-      type: Array,
-      value: [],
-      notify: true,
-    },
-
-    /** @private {Array<string>} */
-    previousAssignments_: {
-      type: Array,
-      value: [],
       notify: true,
     },
 
@@ -146,6 +140,36 @@ Polymer({
     },
 
     /**
+     * @private {!Array<{value: !SwitchAccessAssignmentValue, name: string}>}
+     */
+    optionsForNext_: {
+      type: Array,
+      value() {
+        return [{value: -1, name: this.i18n('switchAssignOptionPlaceholder')}];
+      }
+    },
+
+    /**
+     * @private {!Array<{value: !SwitchAccessAssignmentValue, name: string}>}
+     */
+    optionsForPrevious_: {
+      type: Array,
+      value() {
+        return [{value: -1, name: this.i18n('switchAssignOptionPlaceholder')}];
+      }
+    },
+
+    /**
+     * @private {!Array<{value: !SwitchAccessAssignmentValue, name: string}>}
+     */
+    optionsForSelect_: {
+      type: Array,
+      value() {
+        return [{value: -1, name: 'Placeholder'}];
+      }
+    },
+
+    /**
      * Used by DeepLinkingBehavior to focus this page's deep links.
      * @type {!Set<!chromeos.settings.mojom.Setting>}
      */
@@ -157,36 +181,27 @@ Polymer({
         chromeos.settings.mojom.Setting.kSwitchActionAutoScanKeyboard,
       ]),
     },
-
-    /** @private {boolean} */
-    showSwitchAccessActionAssignmentDialog_: {
-      type: Boolean,
-      value: false,
-    },
-
-    /** @private {?SwitchAccessCommand} */
-    action_: {
-      type: String,
-      value: null,
-      notify: true,
-    },
   },
-
-  /** @private {?SwitchAccessSubpageBrowserProxy} */
-  switchAccessBrowserProxy_: null,
 
   /** @override */
   created() {
-    this.switchAccessBrowserProxy_ =
-        SwitchAccessSubpageBrowserProxyImpl.getInstance();
+    this.initSwitchAssignmentOptions_();
+    chrome.settingsPrivate.onPrefsChanged.addListener((prefs) => {
+      for (const pref of prefs) {
+        if (!pref.key.includes(PREFIX) || !pref.key.includes(COMMAND_SUFFIX)) {
+          continue;
+        }
+        const commandName = getCommandNameFromCommandPref(pref);
+        if (Object.values(SwitchAccessCommand).includes(commandName)) {
+          this.onSwitchAssigned_(pref);
+        }
+      }
+    });
   },
 
   /** @override */
   ready() {
-    this.addWebUIListener(
-        'switch-access-assignments-changed',
-        this.onAssignmentsChanged_.bind(this));
-    this.switchAccessBrowserProxy_.refreshAssignmentsFromPrefs();
+    this.updateOptionsForDropdowns_();
   },
 
   /**
@@ -202,41 +217,34 @@ Polymer({
     this.attemptDeepLink();
   },
 
-  /** @private */
-  onSelectAssignClick_() {
-    this.action_ = SwitchAccessCommand.SELECT;
-    this.showSwitchAccessActionAssignmentDialog_ = true;
-    this.focusAfterDialogClose_ = this.$.selectLinkRow;
-  },
-
-  /** @private */
-  onNextAssignClick_() {
-    this.action_ = SwitchAccessCommand.NEXT;
-    this.showSwitchAccessActionAssignmentDialog_ = true;
-    this.focusAfterDialogClose_ = this.$.nextLinkRow;
-  },
-
-  /** @private */
-  onPreviousAssignClick_() {
-    this.action_ = SwitchAccessCommand.PREVIOUS;
-    this.showSwitchAccessActionAssignmentDialog_ = true;
-    this.focusAfterDialogClose_ = this.$.previousLinkRow;
-  },
-
-  /** @private */
-  onSwitchAccessActionAssignmentDialogClose_() {
-    this.showSwitchAccessActionAssignmentDialog_ = false;
-    this.focusAfterDialogClose_.focus();
-  },
-
   /**
-   * @param {!Object<SwitchAccessCommand, !Array<string>>} value
-   * @private
+   * @private {?Array<{value: !SwitchAccessAssignmentValue, name: string}>}
    */
-  onAssignmentsChanged_(value) {
-    this.selectAssignments_ = value[SwitchAccessCommand.SELECT];
-    this.nextAssignments_ = value[SwitchAccessCommand.NEXT];
-    this.previousAssignments_ = value[SwitchAccessCommand.PREVIOUS];
+  allSwitchKeyOptions_: null,
+
+  /** @private */
+  initSwitchAssignmentOptions_() {
+    this.allSwitchKeyOptions_ = [
+      {
+        value: SwitchAccessAssignmentValue.NONE,
+        name: this.i18n('switchAssignOptionNone')
+      },
+      {
+        value: SwitchAccessAssignmentValue.SPACE,
+        name: this.i18n('switchAssignOptionSpace')
+      },
+      {
+        value: SwitchAccessAssignmentValue.ENTER,
+        name: this.i18n('switchAssignOptionEnter')
+      },
+      // Arabic numerals are used consistently across languages, so the
+      // strings need not be internationalized.
+      {value: SwitchAccessAssignmentValue.ONE, name: '1'},
+      {value: SwitchAccessAssignmentValue.TWO, name: '2'},
+      {value: SwitchAccessAssignmentValue.THREE, name: '3'},
+      {value: SwitchAccessAssignmentValue.FOUR, name: '4'},
+      {value: SwitchAccessAssignmentValue.FIVE, name: '5'},
+    ];
   },
 
   /**
@@ -265,6 +273,89 @@ Polymer({
   },
 
   /**
+   * @param {!chrome.settingsPrivate.PrefObject} newPref
+   * @private
+   */
+  onSwitchAssigned_(newPref) {
+    const command = getCommandNameFromCommandPref(newPref);
+
+    this.updateOptionsForDropdowns_();
+
+    // Because of complexities with mapping a ListPref to a settings-dropdown,
+    // we instead store two distinct preferences (one for the dropdown selection
+    // and one with the key codes that Switch Access intercepts). The following
+    // code sets the key code preference based on the dropdown preference.
+    const keyPref = PREFIX + command + KEY_CODE_SUFFIX;
+    switch (newPref.value) {
+      case SwitchAccessAssignmentValue.NONE:
+        chrome.settingsPrivate.setPref(keyPref, []);
+        break;
+      case SwitchAccessAssignmentValue.SPACE:
+        chrome.settingsPrivate.setPref(keyPref, [32]);
+        break;
+      case SwitchAccessAssignmentValue.ENTER:
+        chrome.settingsPrivate.setPref(keyPref, [13]);
+        break;
+      case SwitchAccessAssignmentValue.ONE:
+        chrome.settingsPrivate.setPref(keyPref, [49]);
+        break;
+      case SwitchAccessAssignmentValue.TWO:
+        chrome.settingsPrivate.setPref(keyPref, [50]);
+        break;
+      case SwitchAccessAssignmentValue.THREE:
+        chrome.settingsPrivate.setPref(keyPref, [51]);
+        break;
+      case SwitchAccessAssignmentValue.FOUR:
+        chrome.settingsPrivate.setPref(keyPref, [52]);
+        break;
+      case SwitchAccessAssignmentValue.FIVE:
+        chrome.settingsPrivate.setPref(keyPref, [53]);
+        break;
+    }
+  },
+
+  /**
+   * Updates the options available to each command by filtering out options
+   * currently used by a different command.
+   *
+   * @private
+   */
+  updateOptionsForDropdowns_() {
+    if (!this.allSwitchKeyOptions_) {
+      return;
+    }
+    /**
+     * Make a copy of the list of all possible options for each command.
+     * @type {!Object<!SwitchAccessCommand, !Array<{value:
+     *     !SwitchAccessAssignmentValue, name: string}>>}
+     */
+    const optionsFor = {};
+    for (const command of Object.values(SwitchAccessCommand)) {
+      optionsFor[command] = [...this.allSwitchKeyOptions_];
+    }
+
+    // Remove each key code assigned to a value from the other commands' lists.
+    for (const command of Object.values(SwitchAccessCommand)) {
+      const value = this.getPref(PREFIX + command + COMMAND_SUFFIX).value;
+      if (value === SwitchAccessAssignmentValue.NONE) {
+        continue;
+      }
+
+      for (const other in optionsFor) {
+        if (other === command) {
+          continue;
+        }
+        optionsFor[other] = removeElementWithValue(optionsFor[other], value);
+      }
+    }
+
+    // Assign the calculated options to the corresponding Polymer property.
+    this.optionsForNext_ = optionsFor[SwitchAccessCommand.NEXT];
+    this.optionsForPrevious_ = optionsFor[SwitchAccessCommand.PREVIOUS];
+    this.optionsForSelect_ = optionsFor[SwitchAccessCommand.SELECT];
+  },
+
+  /**
    * @param {number} scanSpeedValueMs
    * @return {string} a string representing the scan speed in seconds.
    * @private
@@ -275,3 +366,4 @@ Polymer({
         'durationInSeconds', this.formatter_.format(scanSpeedValueSec));
   },
 });
+})();

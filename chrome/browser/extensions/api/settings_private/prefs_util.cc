@@ -473,10 +473,16 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
   (*s_allowlist)[ash::prefs::kAccessibilitySwitchAccessSelectKeyCodes] =
       settings_api::PrefType::PREF_TYPE_LIST;
+  (*s_allowlist)[ash::prefs::kAccessibilitySwitchAccessSelectSetting] =
+      settings_api::PrefType::PREF_TYPE_NUMBER;
   (*s_allowlist)[ash::prefs::kAccessibilitySwitchAccessNextKeyCodes] =
       settings_api::PrefType::PREF_TYPE_LIST;
+  (*s_allowlist)[ash::prefs::kAccessibilitySwitchAccessNextSetting] =
+      settings_api::PrefType::PREF_TYPE_NUMBER;
   (*s_allowlist)[ash::prefs::kAccessibilitySwitchAccessPreviousKeyCodes] =
       settings_api::PrefType::PREF_TYPE_LIST;
+  (*s_allowlist)[ash::prefs::kAccessibilitySwitchAccessPreviousSetting] =
+      settings_api::PrefType::PREF_TYPE_NUMBER;
   (*s_allowlist)[ash::prefs::kAccessibilitySwitchAccessAutoScanEnabled] =
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
   (*s_allowlist)[ash::prefs::kAccessibilitySwitchAccessAutoScanSpeedMs] =

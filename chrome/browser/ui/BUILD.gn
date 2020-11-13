@@ -2542,8 +2542,6 @@ static_library("ui") {
       "webui/settings/chromeos/server_printer_url_util.h",
       "webui/settings/chromeos/settings_user_action_tracker.cc",
       "webui/settings/chromeos/settings_user_action_tracker.h",
-      "webui/settings/chromeos/switch_access_handler.cc",
-      "webui/settings/chromeos/switch_access_handler.h",
       "webui/settings/chromeos/tts_handler.cc",
       "webui/settings/chromeos/tts_handler.h",
       "webui/settings/chromeos/wallpaper_handler.cc",
@@ -2695,7 +2693,6 @@ static_library("ui") {
       "//ui/chromeos",
       "//ui/chromeos/events",
       "//ui/compositor_extra",
-      "//ui/events/ozone/layout:layout",
       "//ui/file_manager:file_manager",
       "//ui/ozone",
     ]

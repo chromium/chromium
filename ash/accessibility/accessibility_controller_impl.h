@@ -370,7 +370,6 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
   bool IsAccessibilityFeatureVisibleInTrayMenu(
       const std::string& path) override;
   void DisablePolicyRecommendationRestorerForTesting() override;
-  void SuspendSwitchAccessKeyHandling(bool suspend) override;
 
   // SessionObserver:
   void OnSigninScreenPrefServiceInitialized(PrefService* prefs) override;

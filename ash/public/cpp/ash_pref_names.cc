@@ -108,12 +108,21 @@ const char kAccessibilitySwitchAccessEnabled[] =
 // A pref that stores the key code for the "select" action.
 const char kAccessibilitySwitchAccessSelectKeyCodes[] =
     "settings.a11y.switch_access.select.key_codes";
+// A pref that stores the setting value for the "select" action.
+const char kAccessibilitySwitchAccessSelectSetting[] =
+    "settings.a11y.switch_access.select.setting";
 // A pref that stores the key code for the "next" action.
 const char kAccessibilitySwitchAccessNextKeyCodes[] =
     "settings.a11y.switch_access.next.key_codes";
+// A pref that stores the setting value for the "next" action.
+const char kAccessibilitySwitchAccessNextSetting[] =
+    "settings.a11y.switch_access.next.setting";
 // A pref that stores the key code for the "previous" action.
 const char kAccessibilitySwitchAccessPreviousKeyCodes[] =
     "settings.a11y.switch_access.previous.key_codes";
+// A pref that stores the setting value for the "previous" action.
+const char kAccessibilitySwitchAccessPreviousSetting[] =
+    "settings.a11y.switch_access.previous.setting";
 // A boolean pref which determines whether auto-scanning is enabled within
 // Switch Access.
 const char kAccessibilitySwitchAccessAutoScanEnabled[] =
