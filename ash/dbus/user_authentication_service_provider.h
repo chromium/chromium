@@ -46,6 +46,11 @@ class UserAuthenticationServiceProvider
                           dbus::ExportedObject::ResponseSender response_sender,
                           bool success);
 
+  // Called on UI thread in response to D-Bus requests. Dismisses the dialog if
+  // it's shown.
+  void Cancel(dbus::MethodCall* method_call,
+              dbus::ExportedObject::ResponseSender response_sender);
+
   // Keep this last so that all weak pointers will be invalidated at the
   // beginning of destruction.
   base::WeakPtrFactory<UserAuthenticationServiceProvider> weak_ptr_factory_{

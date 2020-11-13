@@ -29,6 +29,13 @@ void UserAuthenticationServiceProvider::Start(
                           weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(&UserAuthenticationServiceProvider::OnExported,
                      weak_ptr_factory_.GetWeakPtr()));
+  exported_object->ExportMethod(
+      chromeos::kUserAuthenticationServiceInterface,
+      chromeos::kUserAuthenticationServiceCancelMethod,
+      base::BindRepeating(&UserAuthenticationServiceProvider::Cancel,
+                          weak_ptr_factory_.GetWeakPtr()),
+      base::BindOnce(&UserAuthenticationServiceProvider::OnExported,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void UserAuthenticationServiceProvider::OnExported(
@@ -90,6 +97,15 @@ void UserAuthenticationServiceProvider::OnAuthFlowComplete(
       dbus::Response::FromMethodCall(method_call);
   dbus::MessageWriter writer(response.get());
   writer.AppendBool(success);
+  std::move(response_sender).Run(std::move(response));
+}
+
+void UserAuthenticationServiceProvider::Cancel(
+    dbus::MethodCall* method_call,
+    dbus::ExportedObject::ResponseSender response_sender) {
+  InSessionAuthDialogController::Get()->Cancel();
+  std::unique_ptr<dbus::Response> response =
+      dbus::Response::FromMethodCall(method_call);
   std::move(response_sender).Run(std::move(response));
 }
 
