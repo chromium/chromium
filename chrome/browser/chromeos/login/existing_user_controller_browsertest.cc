@@ -986,17 +986,15 @@ class ExistingUserControllerActiveDirectoryUserAllowlistTest
 
 // Tests that Active Directory online login succeeds on the Active Directory
 // managed device.
-// TODO(crbug.com/1148771): Test is flaky.
 IN_PROC_BROWSER_TEST_F(ExistingUserControllerActiveDirectoryTest,
-                       DISABLED_ActiveDirectoryOnlineLogin_Success) {
+                       ActiveDirectoryOnlineLogin_Success) {
   LoginAdOnline();
 }
 
 // Tests if DisabledAuthNegotiateCnameLookup changes trigger updating user
 // Kerberos files.
-// TODO(crbug.com/1148771): Test is flaky.
 IN_PROC_BROWSER_TEST_F(ExistingUserControllerActiveDirectoryTest,
-                       DISABLED_PolicyChangeTriggersFileUpdate) {
+                       PolicyChangeTriggersFileUpdate) {
   LoginAdOnline();
 
   ApplyPolicyAndWaitFilesChanged(false /* enable_dns_cname_lookup */);
@@ -1008,10 +1006,8 @@ IN_PROC_BROWSER_TEST_F(ExistingUserControllerActiveDirectoryTest,
 
 // Tests if user Kerberos files changed D-Bus signal triggers updating user
 // Kerberos files.
-// TODO(crbug.com/1148771): Test is flaky.
-IN_PROC_BROWSER_TEST_F(
-    ExistingUserControllerActiveDirectoryTest,
-    DISABLED_UserKerberosFilesChangedSignalTriggersFileUpdate) {
+IN_PROC_BROWSER_TEST_F(ExistingUserControllerActiveDirectoryTest,
+                       UserKerberosFilesChangedSignalTriggersFileUpdate) {
   LoginAdOnline();
 
   // Set authpolicyd's copy of the Kerberos files and wait until Chrome's copy
@@ -1026,9 +1022,8 @@ IN_PROC_BROWSER_TEST_F(
 
 // Tests that Active Directory offline login succeeds on the Active Directory
 // managed device.
-// TODO(crbug.com/1148771): Test is flaky.
 IN_PROC_BROWSER_TEST_F(ExistingUserControllerActiveDirectoryTest,
-                       DISABLED_ActiveDirectoryOfflineLogin_Success) {
+                       ActiveDirectoryOfflineLogin_Success) {
   ExpectLoginSuccess();
   UserContext user_context(user_manager::UserType::USER_TYPE_ACTIVE_DIRECTORY,
                            ad_account_id_);
