@@ -298,9 +298,12 @@ ClipboardWriter::ClipboardWriter(SystemClipboard* system_clipboard,
       file_reading_task_runner_(promise->GetExecutionContext()->GetTaskRunner(
           TaskType::kFileReading)),
       system_clipboard_(system_clipboard),
-      raw_system_clipboard_(raw_system_clipboard) {}
+      raw_system_clipboard_(raw_system_clipboard),
+      self_keep_alive_(PERSISTENT_FROM_HERE, this) {}
 
-ClipboardWriter::~ClipboardWriter() = default;
+ClipboardWriter::~ClipboardWriter() {
+  DCHECK(!file_reader_);
+}
 
 // static
 bool ClipboardWriter::IsValidType(const String& type, bool is_raw) {
@@ -330,12 +333,16 @@ void ClipboardWriter::DidFinishLoading() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DOMArrayBuffer* array_buffer = file_reader_->ArrayBufferResult();
   DCHECK(array_buffer);
+
   file_reader_.reset();
+  self_keep_alive_.Clear();
 
   StartWrite(array_buffer, clipboard_task_runner_);
 }
 
 void ClipboardWriter::DidFail(FileErrorCode error_code) {
+  file_reader_.reset();
+  self_keep_alive_.Clear();
   promise_->RejectFromReadOrDecodeFailure();
 }
 

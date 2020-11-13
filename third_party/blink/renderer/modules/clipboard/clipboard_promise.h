@@ -27,7 +27,7 @@ class ExecutionContext;
 class ClipboardItemOptions;
 
 class ClipboardPromise final : public GarbageCollected<ClipboardPromise>,
-                               public ExecutionContextClient {
+                               public ExecutionContextLifecycleObserver {
  public:
   // Creates promise to execute Clipboard API functions off the main thread.
   static ScriptPromise CreateForRead(ExecutionContext*,
@@ -85,6 +85,9 @@ class ClipboardPromise final : public GarbageCollected<ClipboardPromise>,
       base::OnceCallback<void(::blink::mojom::PermissionStatus)> callback);
 
   scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner();
+
+  // ExecutionContextLifecycleObserver
+  void ContextDestroyed() override;
 
   Member<ScriptState> script_state_;
   Member<ScriptPromiseResolver> script_promise_resolver_;
