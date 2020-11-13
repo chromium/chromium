@@ -121,7 +121,6 @@ class CORE_EXPORT WebViewFrameWidget : public WebFrameWidgetBase {
   // PageWidgetEventHandler overrides:
   void HandleMouseLeave(LocalFrame&, const WebMouseEvent&) override;
   WebInputEventResult HandleGestureEvent(const WebGestureEvent&) override;
-  WebInputEventResult HandleKeyEvent(const WebKeyboardEvent&) override;
 
   LocalFrameView* GetLocalFrameViewForAnimationScrolling() override;
   void SetWindowRectSynchronously(const gfx::Rect& new_window_rect);

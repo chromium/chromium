@@ -51,6 +51,7 @@
 #include "third_party/blink/renderer/core/layout/hit_test_location.h"
 #include "third_party/blink/renderer/core/layout/hit_test_request.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
+#include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/loader/interactive_detector.h"
 #include "third_party/blink/renderer/core/page/context_menu_controller.h"
@@ -69,6 +70,7 @@
 #include "third_party/blink/renderer/platform/graphics/animation_worklet_mutator_dispatcher_impl.h"
 #include "third_party/blink/renderer/platform/graphics/compositor_mutator_client.h"
 #include "third_party/blink/renderer/platform/graphics/paint_worklet_paint_dispatcher.h"
+#include "third_party/blink/renderer/platform/keyboard_codes.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/widget/input/main_thread_event_queue.h"
 #include "third_party/blink/renderer/platform/widget/input/widget_input_handler_manager.h"
@@ -506,6 +508,86 @@ float WebFrameWidgetBase::DIPsToBlinkSpace(float scalar) {
 
 void WebFrameWidgetBase::SetActive(bool active) {
   View()->SetIsActive(active);
+}
+
+WebInputEventResult WebFrameWidgetBase::HandleKeyEvent(
+    const WebKeyboardEvent& event) {
+  DCHECK((event.GetType() == WebInputEvent::Type::kRawKeyDown) ||
+         (event.GetType() == WebInputEvent::Type::kKeyDown) ||
+         (event.GetType() == WebInputEvent::Type::kKeyUp));
+
+  // Please refer to the comments explaining the m_suppressNextKeypressEvent
+  // member.
+  // The m_suppressNextKeypressEvent is set if the KeyDown is handled by
+  // Webkit. A keyDown event is typically associated with a keyPress(char)
+  // event and a keyUp event. We reset this flag here as this is a new keyDown
+  // event.
+  suppress_next_keypress_event_ = false;
+
+  // If there is a popup open, it should be the one processing the event,
+  // not the page.
+  scoped_refptr<WebPagePopupImpl> page_popup = View()->GetPagePopup();
+  if (page_popup) {
+    page_popup->HandleKeyEvent(event);
+    if (event.GetType() == WebInputEvent::Type::kRawKeyDown) {
+      suppress_next_keypress_event_ = true;
+    }
+    return WebInputEventResult::kHandledSystem;
+  }
+
+  auto* frame = DynamicTo<LocalFrame>(FocusedCoreFrame());
+  if (!frame)
+    return WebInputEventResult::kNotHandled;
+
+  WebInputEventResult result = frame->GetEventHandler().KeyEvent(event);
+  if (result != WebInputEventResult::kNotHandled) {
+    if (WebInputEvent::Type::kRawKeyDown == event.GetType()) {
+      // Suppress the next keypress event unless the focused node is a plugin
+      // node.  (Flash needs these keypress events to handle non-US keyboards.)
+      Element* element = FocusedElement();
+      if (element && element->GetLayoutObject() &&
+          element->GetLayoutObject()->IsEmbeddedObject()) {
+        if (event.windows_key_code == VKEY_TAB) {
+          // If the plugin supports keyboard focus then we should not send a tab
+          // keypress event.
+          WebPluginContainerImpl* plugin_view =
+              To<LayoutEmbeddedContent>(element->GetLayoutObject())->Plugin();
+          if (plugin_view && plugin_view->SupportsKeyboardFocus()) {
+            suppress_next_keypress_event_ = true;
+          }
+        }
+      } else {
+        suppress_next_keypress_event_ = true;
+      }
+    }
+    return result;
+  }
+
+#if !defined(OS_MAC)
+  const WebInputEvent::Type kContextMenuKeyTriggeringEventType =
+#if defined(OS_WIN)
+      WebInputEvent::Type::kKeyUp;
+#else
+      WebInputEvent::Type::kRawKeyDown;
+#endif
+  const WebInputEvent::Type kShiftF10TriggeringEventType =
+      WebInputEvent::Type::kRawKeyDown;
+
+  bool is_unmodified_menu_key =
+      !(event.GetModifiers() & WebInputEvent::kInputModifiers) &&
+      event.windows_key_code == VKEY_APPS;
+  bool is_shift_f10 = (event.GetModifiers() & WebInputEvent::kInputModifiers) ==
+                          WebInputEvent::kShiftKey &&
+                      event.windows_key_code == VKEY_F10;
+  if ((is_unmodified_menu_key &&
+       event.GetType() == kContextMenuKeyTriggeringEventType) ||
+      (is_shift_f10 && event.GetType() == kShiftF10TriggeringEventType)) {
+    View()->SendContextMenuEvent();
+    return WebInputEventResult::kHandledSystem;
+  }
+#endif  // !defined(OS_MAC)
+
+  return WebInputEventResult::kNotHandled;
 }
 
 void WebFrameWidgetBase::HandleMouseDown(LocalFrame& main_frame,
@@ -2921,6 +3003,18 @@ void WebFrameWidgetBase::NotifyInputObservers(
 Frame* WebFrameWidgetBase::FocusedCoreFrame() const {
   return GetPage() ? GetPage()->GetFocusController().FocusedOrMainFrame()
                    : nullptr;
+}
+
+Element* WebFrameWidgetBase::FocusedElement() const {
+  LocalFrame* frame = GetPage()->GetFocusController().FocusedFrame();
+  if (!frame)
+    return nullptr;
+
+  Document* document = frame->GetDocument();
+  if (!document)
+    return nullptr;
+
+  return document->FocusedElement();
 }
 
 HitTestResult WebFrameWidgetBase::HitTestResultForRootFramePos(

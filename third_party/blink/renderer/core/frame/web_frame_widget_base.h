@@ -695,6 +695,10 @@ class CORE_EXPORT WebFrameWidgetBase
 
   Frame* FocusedCoreFrame() const;
 
+  // Returns the currently focused `Element` in any `LocalFrame` owned by the
+  // associated `WebView`.
+  Element* FocusedElement() const;
+
   // Perform a hit test for a point relative to the root frame of the page.
   HitTestResult HitTestResultForRootFramePos(
       const FloatPoint& pos_in_root_frame);
@@ -732,14 +736,9 @@ class CORE_EXPORT WebFrameWidgetBase
   // base class.
   Member<HTMLPlugInElement> mouse_capture_element_;
 
-  // keyPress events to be suppressed if the associated keyDown event was
-  // handled.
-  // TODO(dtapuska): Move to private once all input handling is moved to
-  // base class.
-  bool suppress_next_keypress_event_ = false;
-
  private:
   // PageWidgetEventHandler methods:
+  WebInputEventResult HandleKeyEvent(const WebKeyboardEvent&) override;
   void HandleMouseDown(LocalFrame&, const WebMouseEvent&) override;
   WebInputEventResult HandleMouseUp(LocalFrame&, const WebMouseEvent&) override;
   WebInputEventResult HandleMouseWheel(LocalFrame&,
@@ -827,6 +826,10 @@ class CORE_EXPORT WebFrameWidgetBase
   // Used to override values given from the browser such as ScreenInfo,
   // WidgetScreenRect, WindowScreenRect, and the widget's size.
   Member<ScreenMetricsEmulator> device_emulator_;
+
+  // keyPress events to be suppressed if the associated keyDown event was
+  // handled.
+  bool suppress_next_keypress_event_ = false;
 
   friend class WebViewImpl;
   friend class ReportTimeSwapPromise;

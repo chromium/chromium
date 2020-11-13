@@ -112,9 +112,6 @@ class WebFrameWidgetImpl final : public WebFrameWidgetBase {
   void ResetZoomLevelForTesting() override;
   void SetDeviceScaleFactorForTesting(float factor) override;
 
-  // Returns the currently focused Element or null if no element has focus.
-  Element* FocusedElement() const;
-
   PaintLayerCompositor* Compositor() const;
 
   // WebFrameWidgetBase overrides:
@@ -150,7 +147,6 @@ class WebFrameWidgetImpl final : public WebFrameWidgetBase {
   // PageWidgetEventHandler functions
   void HandleMouseLeave(LocalFrame&, const WebMouseEvent&) override;
   WebInputEventResult HandleGestureEvent(const WebGestureEvent&) override;
-  WebInputEventResult HandleKeyEvent(const WebKeyboardEvent&) override;
 
   LocalFrameView* GetLocalFrameViewForAnimationScrolling() override;
 
