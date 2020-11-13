@@ -267,7 +267,9 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
                         /* no trigger condition */
                         .setUserInterface(createDefaultUI("Trigger script",
                                 /* bubbleMessage = */ "",
-                                /* withProgressBar = */ true));
+                                /* withProgressBar = */ true)
+                                                  .setRegularScriptLoadingStatusMessage(
+                                                          "Loading regular script"));
 
         GetTriggerScriptsResponseProto triggerScripts =
                 (GetTriggerScriptsResponseProto) GetTriggerScriptsResponseProto.newBuilder()
@@ -283,8 +285,9 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
 
         ArrayList<ActionProto> list = new ArrayList<>();
         list.add((ActionProto) ActionProto.newBuilder()
-                         .setPrompt(PromptProto.newBuilder().setMessage("Prompt").addChoices(
-                                 PromptProto.Choice.newBuilder()))
+                         .setPrompt(PromptProto.newBuilder().addChoices(
+                                 PromptProto.Choice.newBuilder().setChip(
+                                         ChipProto.newBuilder().setText("Done"))))
                          .build());
         AutofillAssistantTestScript script = new AutofillAssistantTestScript(
                 (SupportedScriptProto) SupportedScriptProto.newBuilder()
@@ -300,7 +303,10 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
         waitUntilViewMatchesCondition(withId(R.id.button_init_ok), isCompletelyDisplayed());
         // Accept onboarding.
         onView(withId(R.id.button_init_ok)).perform(click());
-        waitUntilViewMatchesCondition(withText("Prompt"), isCompletelyDisplayed());
+        waitUntilViewMatchesCondition(withText("Done"), isCompletelyDisplayed());
+        onView(withText("Loading regular script")).check(matches(isDisplayed()));
+        onView(withId(R.id.progress_bar)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.step_progress_bar)).check(matches(isDisplayed()));
     }
 
     @Test
@@ -313,7 +319,9 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
                         /* no trigger condition */
                         .setUserInterface(createDefaultUI("Trigger script",
                                 /* bubbleMessage = */ "",
-                                /* withProgressBar = */ true));
+                                /* withProgressBar = */ true)
+                                                  .setRegularScriptLoadingStatusMessage(
+                                                          "Loading regular script"));
 
         GetTriggerScriptsResponseProto triggerScripts =
                 (GetTriggerScriptsResponseProto) GetTriggerScriptsResponseProto.newBuilder()
@@ -329,8 +337,9 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
 
         ArrayList<ActionProto> list = new ArrayList<>();
         list.add((ActionProto) ActionProto.newBuilder()
-                         .setPrompt(PromptProto.newBuilder().setMessage("Prompt").addChoices(
-                                 PromptProto.Choice.newBuilder()))
+                         .setPrompt(PromptProto.newBuilder().addChoices(
+                                 PromptProto.Choice.newBuilder().setChip(
+                                         ChipProto.newBuilder().setText("Done"))))
                          .build());
         AutofillAssistantTestScript script = new AutofillAssistantTestScript(
                 (SupportedScriptProto) SupportedScriptProto.newBuilder()
@@ -342,6 +351,9 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
         setupRegularScripts(script);
 
         onView(withText("Continue")).perform(click());
-        waitUntilViewMatchesCondition(withText("Prompt"), isCompletelyDisplayed());
+        waitUntilViewMatchesCondition(withText("Done"), isCompletelyDisplayed());
+        onView(withText("Loading regular script")).check(matches(isDisplayed()));
+        onView(withId(R.id.progress_bar)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.step_progress_bar)).check(matches(isDisplayed()));
     }
 }

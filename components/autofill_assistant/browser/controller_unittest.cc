@@ -24,6 +24,7 @@
 #include "components/autofill_assistant/browser/public/mock_runtime_manager.h"
 #include "components/autofill_assistant/browser/service/mock_service.h"
 #include "components/autofill_assistant/browser/service/service.h"
+#include "components/autofill_assistant/browser/test_util.h"
 #include "components/autofill_assistant/browser/trigger_context.h"
 #include "components/autofill_assistant/browser/web/mock_web_controller.h"
 #include "components/strings/grit/components_strings.h"
@@ -2853,6 +2854,49 @@ TEST_F(ControllerTest, RegularScriptShowsDefaultInitialStatusMessage) {
                                   base::UTF8ToUTF16("a.example.com"))))
       .Times(1);
   EXPECT_CALL(mock_observer_, OnStatusMessageChanged("Hello World")).Times(1);
+  Start("http://a.example.com/path");
+}
+
+TEST_F(ControllerTest, NotifyObserversOfInitialStatusMessageAndProgressBar) {
+  SupportsScriptResponseProto script_response;
+  AddRunnableScript(&script_response, "script")
+      ->mutable_presentation()
+      ->set_autostart(true);
+  SetupScripts(script_response);
+
+  ActionsResponseProto actions_response;
+  actions_response.add_actions()->mutable_tell()->set_message("script message");
+  SetupActionsForScript("script", actions_response);
+
+  ShowProgressBarProto::StepProgressBarConfiguration progress_bar_configuration;
+  progress_bar_configuration.set_use_step_progress_bar(true);
+  progress_bar_configuration.add_annotated_step_icons()
+      ->mutable_icon()
+      ->set_icon(DrawableProto::PROGRESSBAR_DEFAULT_INITIAL_STEP);
+  progress_bar_configuration.add_annotated_step_icons()
+      ->mutable_icon()
+      ->set_icon(DrawableProto::PROGRESSBAR_DEFAULT_DATA_COLLECTION);
+  progress_bar_configuration.add_annotated_step_icons()
+      ->mutable_icon()
+      ->set_icon(DrawableProto::PROGRESSBAR_DEFAULT_PAYMENT);
+  progress_bar_configuration.add_annotated_step_icons()
+      ->mutable_icon()
+      ->set_icon(DrawableProto::PROGRESSBAR_DEFAULT_FINAL_STEP);
+
+  // When setting UI state of the controller before calling |Start|, observers
+  // will be notified immediately after |Start|.
+  controller_->SetStatusMessage("startup message");
+  controller_->SetStepProgressBarConfiguration(progress_bar_configuration);
+  controller_->SetProgressActiveStep(1);
+
+  EXPECT_CALL(mock_observer_, OnStepProgressBarConfigurationChanged(
+                                  progress_bar_configuration));
+  EXPECT_CALL(mock_observer_, OnProgressActiveStepChanged(1));
+  testing::Sequence s1;
+  EXPECT_CALL(mock_observer_, OnStatusMessageChanged("startup message"))
+      .InSequence(s1);
+  EXPECT_CALL(mock_observer_, OnStatusMessageChanged("script message"))
+      .InSequence(s1);
   Start("http://a.example.com/path");
 }
 

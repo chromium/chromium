@@ -226,6 +226,18 @@ TEST_F(TriggerScriptCoordinatorTest, StopOnParsingError) {
       Metrics::LiteScriptFinishedState::LITE_SCRIPT_GET_ACTIONS_PARSE_ERROR);
 }
 
+TEST_F(TriggerScriptCoordinatorTest, StopOnNoTriggerScriptsAvailable) {
+  EXPECT_CALL(*mock_request_sender_, OnSendRequest(GURL(kFakeServerUrl), _, _))
+      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, ""));
+  EXPECT_CALL(mock_observer_, OnTriggerScriptFinished(
+                                  Metrics::LiteScriptFinishedState::
+                                      LITE_SCRIPT_NO_TRIGGER_SCRIPT_AVAILABLE));
+  coordinator_->Start(GURL(kFakeDeepLink),
+                      std::make_unique<TriggerContextImpl>());
+  AssertRecordedFinishedState(Metrics::LiteScriptFinishedState::
+                                  LITE_SCRIPT_NO_TRIGGER_SCRIPT_AVAILABLE);
+}
+
 TEST_F(TriggerScriptCoordinatorTest, StartChecksStaticAndDynamicConditions) {
   GetTriggerScriptsResponseProto response;
   auto* trigger_condition_all_of = response.add_trigger_scripts()

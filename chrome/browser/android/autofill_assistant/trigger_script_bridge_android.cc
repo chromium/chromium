@@ -171,6 +171,7 @@ void TriggerScriptBridgeAndroid::OnTriggerScriptShown(
     cancel_popup_actions.emplace_back(static_cast<int>(choice.action()));
   }
 
+  last_shown_trigger_script_ = proto;
   Java_AssistantTriggerScriptBridge_showTriggerScript(
       env, java_object_, ToJavaArrayOfStrings(env, cancel_popup_items),
       ToJavaIntArray(env, cancel_popup_actions), jleft_aligned_chips,
@@ -196,6 +197,15 @@ void TriggerScriptBridgeAndroid::OnTriggerScriptFinished(
   Java_AssistantTriggerScriptBridge_onTriggerScriptFinished(
       AttachCurrentThread(), java_object_, static_cast<int>(state));
   StopTriggerScript();
+}
+
+base::Optional<TriggerScriptUIProto>
+TriggerScriptBridgeAndroid::GetLastShownTriggerScript() const {
+  return last_shown_trigger_script_;
+}
+
+void TriggerScriptBridgeAndroid::ClearLastShownTriggerScript() {
+  last_shown_trigger_script_.reset();
 }
 
 }  // namespace autofill_assistant

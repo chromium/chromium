@@ -573,11 +573,33 @@ void ClientAndroid::InvalidateAccessToken(const std::string& access_token) {
 }
 
 void ClientAndroid::CreateController(std::unique_ptr<Service> service) {
-  // Persist status message when hot-swapping controllers.
+  // Persist status message and progress bar when transitioning from trigger
+  // script.
   std::string status_message;
+  base::Optional<ShowProgressBarProto::StepProgressBarConfiguration>
+      progress_bar_config;
+  base::Optional<int> progress_bar_active_step;
   if (controller_) {
+    // Legacy, remove as soon as possible.
     status_message = controller_->GetStatusMessage();
     DestroyController();
+  } else if (trigger_script_bridge_.GetLastShownTriggerScript().has_value()) {
+    auto last_shown_trigger_script =
+        trigger_script_bridge_.GetLastShownTriggerScript();
+    status_message =
+        last_shown_trigger_script->regular_script_loading_status_message();
+    if (last_shown_trigger_script->has_progress_bar()) {
+      progress_bar_config =
+          ShowProgressBarProto::StepProgressBarConfiguration();
+      progress_bar_config->set_use_step_progress_bar(true);
+      for (const auto& step_icon :
+           last_shown_trigger_script->progress_bar().step_icons()) {
+        *progress_bar_config->add_annotated_step_icons()->mutable_icon() =
+            step_icon;
+      }
+      progress_bar_active_step =
+          last_shown_trigger_script->progress_bar().active_step();
+    }
   }
 
   controller_ = std::make_unique<Controller>(
@@ -585,6 +607,11 @@ void ClientAndroid::CreateController(std::unique_ptr<Service> service) {
       RuntimeManagerImpl::GetForWebContents(web_contents_)->GetWeakPtr(),
       std::move(service));
   controller_->SetStatusMessage(status_message);
+  if (progress_bar_config) {
+    controller_->SetStepProgressBarConfiguration(*progress_bar_config);
+    controller_->SetProgressActiveStep(*progress_bar_active_step);
+  }
+  trigger_script_bridge_.ClearLastShownTriggerScript();
 }
 
 void ClientAndroid::DestroyController() {

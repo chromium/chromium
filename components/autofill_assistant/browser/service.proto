@@ -568,6 +568,9 @@ message TriggerScriptUIProto {
   repeated TriggerChip left_aligned_chips = 5;
   // The available right-aligned chips, specified in order from left to right.
   repeated TriggerChip right_aligned_chips = 6;
+  // The status message to display when transitioning from this trigger script
+  // to the regular script.
+  optional string regular_script_loading_status_message = 7;
 }
 
 enum KeyboardValueFillStrategy {

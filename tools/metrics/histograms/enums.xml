@@ -4576,6 +4576,7 @@ Unknown properties are collapsed to zero. -->
              page"/>
   <int value="19" label="Tab was closed while prompt was visible"/>
   <int value="20" label="Tab was closed while prompt was invisible"/>
+  <int value="21" label="No trigger script available"/>
 </enum>
 
 <enum name="AutofillAssistantLiteScriptOnboarding">
