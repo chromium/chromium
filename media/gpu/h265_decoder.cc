@@ -387,6 +387,16 @@ H265Decoder::H265Accelerator::Status H265Decoder::PreprocessCurrentSlice() {
     DCHECK(!curr_pic_);
   }
 
+  // Validate that NumPicTotalCurr is non-zero for P/B slices. We do check this
+  // in the parser, but there's a way it can slip by when
+  // dependent_slice_segment_flag is set (and then we can't verify until we
+  // copy the defaults to the next slice in the decoder).
+  if ((slice_hdr->IsPSlice() || slice_hdr->IsBSlice()) &&
+      !slice_hdr->num_pic_total_curr) {
+    DVLOG(2) << "Zero valued NumPicTotalCurr for P/B slice";
+    return H265Accelerator::Status::kFail;
+  }
+
   return H265Accelerator::Status::kOk;
 }
 

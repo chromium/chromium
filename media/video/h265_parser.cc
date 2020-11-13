@@ -603,20 +603,30 @@ H265Parser::Result H265Parser::ParseSPS(int* sps_id) {
     }
   }
   READ_UE_OR_RETURN(&sps->log2_min_luma_coding_block_size_minus3);
+  // This enforces that min_cb_log2_size_y below will be <= 31 and prevents
+  // integer overflow math there.
+  TRUE_OR_RETURN(sps->log2_min_luma_coding_block_size_minus3 <= 28);
   READ_UE_OR_RETURN(&sps->log2_diff_max_min_luma_coding_block_size);
 
   int min_cb_log2_size_y = sps->log2_min_luma_coding_block_size_minus3 + 3;
-  sps->ctb_log2_size_y =
-      min_cb_log2_size_y + sps->log2_diff_max_min_luma_coding_block_size;
-  TRUE_OR_RETURN(min_cb_log2_size_y <= 31 && sps->ctb_log2_size_y <= 31);
+  base::CheckedNumeric<int> ctb_log2_size_y = min_cb_log2_size_y;
+  ctb_log2_size_y += sps->log2_diff_max_min_luma_coding_block_size;
+  if (!ctb_log2_size_y.IsValid())
+    return kInvalidStream;
+
+  sps->ctb_log2_size_y = ctb_log2_size_y.ValueOrDefault(0);
+  TRUE_OR_RETURN(sps->ctb_log2_size_y <= 31);
   int min_cb_size_y = 1 << min_cb_log2_size_y;
   int ctb_size_y = 1 << sps->ctb_log2_size_y;
   sps->pic_width_in_ctbs_y = base::ClampCeil(
       static_cast<float>(sps->pic_width_in_luma_samples) / ctb_size_y);
   sps->pic_height_in_ctbs_y = base::ClampCeil(
       static_cast<float>(sps->pic_height_in_luma_samples) / ctb_size_y);
-  sps->pic_size_in_ctbs_y =
-      sps->pic_width_in_ctbs_y * sps->pic_height_in_ctbs_y;
+  base::CheckedNumeric<int> pic_size_in_ctbs_y = sps->pic_width_in_ctbs_y;
+  pic_size_in_ctbs_y *= sps->pic_height_in_ctbs_y;
+  if (!pic_size_in_ctbs_y.IsValid())
+    return kInvalidStream;
+  sps->pic_size_in_ctbs_y = pic_size_in_ctbs_y.ValueOrDefault(0);
 
   TRUE_OR_RETURN(sps->pic_width_in_luma_samples % min_cb_size_y == 0);
   TRUE_OR_RETURN(sps->pic_height_in_luma_samples % min_cb_size_y == 0);
@@ -1113,6 +1123,7 @@ H265Parser::Result H265Parser::ParseSliceHeader(const H265NALU& nalu,
           shdr->num_pic_total_curr++;
       }
 
+      TRUE_OR_RETURN(shdr->num_pic_total_curr);
       if (pps->lists_modification_present_flag &&
           shdr->num_pic_total_curr > 1) {
         res = ParseRefPicListsModifications(*shdr,
@@ -1511,6 +1522,13 @@ H265Parser::Result H265Parser::ParseStRefPicSet(
       }
     }
     st_ref_pic_set->num_positive_pics = i;
+    IN_RANGE_OR_RETURN(
+        st_ref_pic_set->num_negative_pics, 0,
+        sps.sps_max_dec_pic_buffering_minus1[sps.sps_max_sub_layers_minus1]);
+    IN_RANGE_OR_RETURN(
+        st_ref_pic_set->num_positive_pics, 0,
+        sps.sps_max_dec_pic_buffering_minus1[sps.sps_max_sub_layers_minus1] -
+            st_ref_pic_set->num_negative_pics);
   } else {
     READ_UE_OR_RETURN(&st_ref_pic_set->num_negative_pics);
     READ_UE_OR_RETURN(&st_ref_pic_set->num_positive_pics);
@@ -1683,6 +1701,7 @@ H265Parser::Result H265Parser::ParseAndIgnoreHrdParameters(
     int cpb_cnt = 1;
     if (!low_delay_hrd_flag) {
       READ_UE_OR_RETURN(&cpb_cnt);
+      IN_RANGE_OR_RETURN(cpb_cnt, 0, 31);
       cpb_cnt += 1;  // parsed as minus1
     }
     if (nal_hrd_parameters_present_flag) {
