@@ -111,10 +111,6 @@ class ASH_EXPORT CaptureModeController
   // Called back when the mojo pipe to the recording service gets disconnected.
   void OnRecordingServiceDisconnected();
 
-  // Returns true if doing a screen capture is currently allowed, false
-  // otherwise.
-  bool IsCaptureAllowed() const;
-
   // Called to terminate |is_recording_in_progress_|, the stop-recording shelf
   // pod button, and the |video_recording_watcher_| when recording ends.
   void TerminateRecordingUiElements();
@@ -133,12 +129,16 @@ class ASH_EXPORT CaptureModeController
   };
   base::Optional<CaptureParams> GetCaptureParams() const;
 
+  // Returns true if doing a screen capture is currently allowed, false
+  // otherwise.
+  bool IsCaptureAllowed(const CaptureParams& capture_params) const;
+
   // The below functions start the actual image/video capture. They expect that
   // the capture session is still active when called, so they can retrieve the
   // capture parameters they need. They will end the sessions themselves.
   // They should never be called if IsCaptureAllowed() returns false.
-  void CaptureImage();
-  void CaptureVideo();
+  void CaptureImage(const CaptureParams& capture_params);
+  void CaptureVideo(const CaptureParams& capture_params);
 
   // Called back when an image has been captured to trigger an attempt to save
   // the image as a file. |timestamp| is the time at which the capture was
