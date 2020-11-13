@@ -424,6 +424,40 @@ TEST_F(SiteInstanceTest, SiteInstanceDestructor) {
   // contents is now deleted, along with instance and browsing_instance
 }
 
+// Verifies some basic properties of default SiteInstances.
+TEST_F(SiteInstanceTest, DefaultSiteInstanceProperties) {
+  TestBrowserContext browser_context;
+
+  // Make sure feature list command-line options are set in a way that forces
+  // default SiteInstance creation on all platforms.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kProcessSharingWithDefaultSiteInstances);
+  EXPECT_TRUE(base::FeatureList::IsEnabled(
+      features::kProcessSharingWithDefaultSiteInstances));
+  EXPECT_FALSE(base::FeatureList::IsEnabled(
+      features::kProcessSharingWithStrictSiteInstances));
+
+  base::test::ScopedCommandLine scoped_command_line;
+  // Disable site isolation so we can get default SiteInstances on all
+  // platforms.
+  scoped_command_line.GetProcessCommandLine()->AppendSwitch(
+      switches::kDisableSiteIsolation);
+
+  const auto cross_origin_isolation_info =
+      CoopCoepCrossOriginIsolatedInfo::CreateNonIsolated();
+  auto site_instance = SiteInstanceImpl::CreateForUrlInfo(
+      &browser_context, UrlInfo::CreateForTesting(GURL("http://foo.com")),
+      cross_origin_isolation_info);
+
+  EXPECT_TRUE(site_instance->IsDefaultSiteInstance());
+  EXPECT_TRUE(site_instance->HasSite());
+  EXPECT_EQ(
+      site_instance->GetSiteInfo(),
+      SiteInfo::CreateForDefaultSiteInstance(cross_origin_isolation_info));
+  EXPECT_FALSE(site_instance->RequiresDedicatedProcess());
+}
+
 // Ensure that default SiteInstances are deleted when all references to them
 // are gone.
 TEST_F(SiteInstanceTest, DefaultSiteInstanceDestruction) {

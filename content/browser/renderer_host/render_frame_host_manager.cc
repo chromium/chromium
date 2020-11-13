@@ -1631,7 +1631,6 @@ RenderFrameHostManager::GetSiteInstanceForNavigation(
   // dedicated process, set its process reuse policy so that such subframes are
   // consolidated into existing processes for that site.
   if (!frame_tree_node_->IsMainFrame() &&
-      !new_instance_impl->IsDefaultSiteInstance() &&
       !new_instance_impl->HasProcess() &&
       new_instance_impl->RequiresDedicatedProcess()) {
     // Also give the embedder a chance to override this decision.  Certain

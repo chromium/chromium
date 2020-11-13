@@ -363,7 +363,7 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance,
   };
 
   void set_process_reuse_policy(ProcessReusePolicy policy) {
-    DCHECK(!IsDefaultSiteInstance());
+    CHECK(!IsDefaultSiteInstance());
     process_reuse_policy_ = policy;
   }
   ProcessReusePolicy process_reuse_policy() const {
