@@ -748,6 +748,43 @@ void NearbySharingServiceImpl::Reject(
 void NearbySharingServiceImpl::Cancel(
     const ShareTarget& share_target,
     StatusCodesCallback status_codes_callback) {
+  ShareTargetInfo* info = GetShareTargetInfo(share_target);
+
+  if (!info || !info->connection() || !info->endpoint_id()) {
+    NS_LOG(ERROR) << __func__
+                  << ": Cancel invoked for unknown share target, returning "
+                     "kOutOfOrderApiCall";
+    // Make sure to clean up files just in case.
+    OnPayloadsFailed(share_target);
+    std::move(status_codes_callback).Run(StatusCodes::kOutOfOrderApiCall);
+    return;
+  }
+
+  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&NearbySharingServiceImpl::CloseConnection,
+                     weak_ptr_factory_.GetWeakPtr(), share_target),
+      kIncomingCancelDelay);
+
+  info->connection()->SetDisconnectionListener(
+      base::BindOnce(&NearbySharingServiceImpl::UnregisterShareTarget,
+                     weak_ptr_factory_.GetWeakPtr(), share_target));
+
+  NS_LOG(INFO) << __func__
+               << ": User canceled transfer, write cancel frame and generating "
+                  "local status update.";
+
+  WriteCancel(*info->connection());
+
+  if (info->transfer_update_callback()) {
+    info->transfer_update_callback()->OnTransferUpdate(
+        share_target, TransferMetadataBuilder()
+                          .set_status(TransferMetadata::Status::kCancelled)
+                          .build());
+  }
+
+  // Make sure to clean up files if necessary
+  OnPayloadsFailed(share_target);
   std::move(status_codes_callback).Run(StatusCodes::kOk);
 }
 
@@ -2187,6 +2224,18 @@ void NearbySharingServiceImpl::WriteResponse(
   sharing::nearby::V1Frame* v1_frame = frame.mutable_v1();
   v1_frame->set_type(sharing::nearby::V1Frame::RESPONSE);
   v1_frame->mutable_connection_response()->set_status(status);
+
+  std::vector<uint8_t> data(frame.ByteSize());
+  frame.SerializeToArray(data.data(), frame.ByteSize());
+
+  connection.Write(std::move(data));
+}
+
+void NearbySharingServiceImpl::WriteCancel(NearbyConnection& connection) {
+  sharing::nearby::Frame frame;
+  frame.set_version(sharing::nearby::Frame::V1);
+  sharing::nearby::V1Frame* v1_frame = frame.mutable_v1();
+  v1_frame->set_type(sharing::nearby::V1Frame::CANCEL);
 
   std::vector<uint8_t> data(frame.ByteSize());
   frame.SerializeToArray(data.data(), frame.ByteSize());

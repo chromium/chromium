@@ -228,6 +228,7 @@ class NearbySharingServiceImpl
   void WriteResponse(
       NearbyConnection& connection,
       sharing::nearby::ConnectionResponseFrame::Status reponse_status);
+  void WriteCancel(NearbyConnection& connection);
   void Fail(const ShareTarget& share_target, TransferMetadata::Status status);
   void OnIncomingAdvertisementDecoded(
       const std::string& endpoint_id,
