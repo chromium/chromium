@@ -7,10 +7,10 @@
 namespace autofill {
 
 MatchingPattern::MatchingPattern() = default;
-MatchingPattern::MatchingPattern(const MatchingPattern& mp) = default;
-MatchingPattern& MatchingPattern::operator=(const MatchingPattern& mp) =
-    default;
-
+MatchingPattern::MatchingPattern(const MatchingPattern&) = default;
+MatchingPattern& MatchingPattern::operator=(const MatchingPattern&) = default;
+MatchingPattern::MatchingPattern(MatchingPattern&&) = default;
+MatchingPattern& MatchingPattern::operator=(MatchingPattern&&) = default;
 MatchingPattern::~MatchingPattern() = default;
 
 }  // namespace autofill

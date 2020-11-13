@@ -11,7 +11,6 @@
 #include "base/strings/sys_string_conversions.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/form_structure.h"
-#include "components/autofill/core/browser/pattern_provider/test_pattern_provider.h"
 #include "ios/web_view/test/test_with_locale_and_resources.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
@@ -35,7 +34,6 @@ TEST_F(CWVAutofillFormTest, Initialization) {
   ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(
       pak_path, ui::SCALE_FACTOR_NONE);
 
-  autofill::TestPatternProvider test_pattern_provider;
   autofill::FormData form_data;
   autofill::test::CreateTestAddressFormData(&form_data);
   std::unique_ptr<autofill::FormStructure> form_structure =

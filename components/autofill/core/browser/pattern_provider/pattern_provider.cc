@@ -13,6 +13,7 @@
 #include "base/no_destructor.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/form_parsing/autofill_parsing_utils.h"
+#include "components/autofill/core/browser/pattern_provider/default_regex_patterns.h"
 #include "components/autofill/core/browser/pattern_provider/pattern_configuration_parser.h"
 #include "components/autofill/core/common/autofill_features.h"
 
@@ -65,31 +66,15 @@ void SortPatternsByScore(PatternProvider::Map* type_and_lang_to_patterns) {
 }
 }
 
-PatternProvider* PatternProvider::g_pattern_provider = nullptr;
-
 // static
 PatternProvider& PatternProvider::GetInstance() {
-  if (!g_pattern_provider) {
-    static base::NoDestructor<PatternProvider> instance;
-    g_pattern_provider = instance.get();
-    // TODO(crbug/1147608) This is an ugly hack to avoid loading the JSON. The
-    // motivation is that some Android unit tests fail because a dependency is
-    // missing. Instead of fixing this dependency, we'll go for an alternative
-    // solution that avoids the whole async/sync problem.
-    if (base::FeatureList::IsEnabled(
-            features::kAutofillUsePageLanguageToSelectFieldParsingPatterns) ||
-        base::FeatureList::IsEnabled(
-            features::
-                kAutofillApplyNegativePatternsForFieldTypeDetectionHeuristics)) {
-      field_type_parsing::PopulateFromResourceBundle();
-    }
+  static base::NoDestructor<PatternProvider> instance;
+  static bool initialized = false;
+  if (!initialized) {
+    instance->SetPatterns(CreateDefaultRegexPatterns(), base::Version(), true);
+    initialized = true;
   }
-  return *g_pattern_provider;
-}
-
-// static
-void PatternProvider::ResetPatternProvider() {
-  g_pattern_provider = nullptr;
+  return *instance;
 }
 
 PatternProvider::PatternProvider() = default;
@@ -100,8 +85,10 @@ void PatternProvider::SetPatterns(PatternProvider::Map patterns,
                                   const bool overwrite_equal_version) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!pattern_version_.IsValid() || pattern_version_ < version ||
-      (overwrite_equal_version && pattern_version_ == version)) {
+  if (!pattern_version_.IsValid() ||
+      (version.IsValid() && pattern_version_ < version) ||
+      (version.IsValid() && pattern_version_ == version &&
+       overwrite_equal_version)) {
     patterns_ = patterns;
     pattern_version_ = version;
     EnrichPatternsWithEnVersion(&patterns_);

@@ -31,7 +31,6 @@
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/form_structure.h"
-#include "components/autofill/core/browser/pattern_provider/test_pattern_provider.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager_observer.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
@@ -231,7 +230,6 @@ class FormDataImporterTestBase {
   std::unique_ptr<PersonalDataManager> personal_data_manager_;
   std::unique_ptr<FormDataImporter> form_data_importer_;
   base::test::ScopedFeatureList scoped_feature_list_;
-  TestPatternProvider test_pattern_provider_;
 };
 
 // TODO(crbug.com/1103421): Clean legacy implementation once structured names

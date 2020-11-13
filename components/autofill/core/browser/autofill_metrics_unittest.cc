@@ -32,7 +32,6 @@
 #include "components/autofill/core/browser/metrics/credit_card_form_event_logger.h"
 #include "components/autofill/core/browser/metrics/form_events.h"
 #include "components/autofill/core/browser/mock_autocomplete_history_manager.h"
-#include "components/autofill/core/browser/pattern_provider/test_pattern_provider.h"
 #include "components/autofill/core/browser/payments/credit_card_access_manager.h"
 #include "components/autofill/core/browser/payments/test_credit_card_save_manager.h"
 #include "components/autofill/core/browser/payments/test_payments_client.h"
@@ -383,7 +382,6 @@ class AutofillMetricsTest : public testing::Test {
   std::unique_ptr<MockAutocompleteHistoryManager> autocomplete_history_manager_;
   std::unique_ptr<AutofillExternalDelegate> external_delegate_;
   base::test::ScopedFeatureList scoped_feature_list_;
-  TestPatternProvider test_pattern_provider_;
 
  private:
   void CreateTestAutofillProfiles();

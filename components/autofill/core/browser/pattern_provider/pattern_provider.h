@@ -57,29 +57,13 @@ class PatternProvider {
       const std::string& type) const;
 
  protected:
-  // Sets a provider to be used for tests.
-  static void SetPatternProviderForTesting(PatternProvider* pattern_provider) {
-    DCHECK(pattern_provider);
-    g_pattern_provider = pattern_provider;
-  }
-
-  // Resets the provider pointer if the object behind it gets deleted.
-  static void ResetPatternProvider();
-
   PatternProvider();
   ~PatternProvider();
 
-  const Map& patterns() const { return patterns_; }
-
  private:
-  FRIEND_TEST_ALL_PREFIXES(AutofillPatternProviderPipelineTest,
-                           TestParsingEquivalent);
-  FRIEND_TEST_ALL_PREFIXES(AutofillPatternProviderPipelineTest,
-                           DefaultPatternProviderLoads);
+  FRIEND_TEST_ALL_PREFIXES(AutofillPatternProviderTest, TestDefaultEqualsJson);
 
   friend class base::NoDestructor<PatternProvider>;
-
-  static PatternProvider* g_pattern_provider;
 
   // Sequence checker to ensure thread-safety for pattern swapping.
   // All functions accessing the |patterns_| member variable are

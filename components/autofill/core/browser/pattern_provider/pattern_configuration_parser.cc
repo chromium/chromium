@@ -19,7 +19,6 @@ namespace field_type_parsing {
 
 namespace {
 
-const char kPatternIdentifierKey[] = "pattern_identifier";
 const char kPositivePatternKey[] = "positive_pattern";
 const char kNegativePatternKey[] = "negative_pattern";
 const char kPositiveScoreKey[] = "positive_score";
@@ -34,8 +33,6 @@ bool ParseMatchingPattern(PatternProvider::Map& patterns,
   if (!value.is_dict())
     return false;
 
-  const std::string* pattern_identifier =
-      value.FindStringKey(kPatternIdentifierKey);
   const std::string* positive_pattern =
       value.FindStringKey(kPositivePatternKey);
   const std::string* negative_pattern =
@@ -47,18 +44,17 @@ bool ParseMatchingPattern(PatternProvider::Map& patterns,
   base::Optional<int> match_field_input_types =
       value.FindIntKey(kMatchFieldInputTypesKey);
 
-  if (!pattern_identifier || !positive_pattern || !positive_score ||
-      !match_field_attributes || !match_field_input_types)
+  if (!positive_pattern || !positive_score || !match_field_attributes ||
+      !match_field_input_types)
     return false;
 
   autofill::MatchingPattern new_pattern;
-  new_pattern.pattern_identifier = *pattern_identifier;
   new_pattern.positive_pattern = *positive_pattern;
   new_pattern.positive_score = *positive_score;
   if (negative_pattern != nullptr) {
     new_pattern.negative_pattern = *negative_pattern;
   } else {
-    new_pattern.negative_pattern = base::nullopt;
+    new_pattern.negative_pattern = "";
   }
   new_pattern.match_field_attributes = match_field_attributes.value();
   new_pattern.match_field_input_types = match_field_input_types.value();
@@ -71,8 +67,9 @@ bool ParseMatchingPattern(PatternProvider::Map& patterns,
   std::vector<MatchingPattern>* pattern_list = &patterns[field_type][language];
   pattern_list->push_back(new_pattern);
 
-  DVLOG(2) << "Correctly parsed MatchingPattern with identifier |"
-           << new_pattern.pattern_identifier << "|.";
+  DVLOG(2) << "Correctly parsed MatchingPattern with with type " << field_type
+           << ", language " << language << ", pattern "
+           << new_pattern.positive_pattern << ".";
 
   return true;
 }

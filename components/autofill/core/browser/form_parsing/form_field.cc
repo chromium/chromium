@@ -223,16 +223,16 @@ bool FormField::ParseFieldSpecifics(
     if (base::FeatureList::IsEnabled(
             features::
                 kAutofillApplyNegativePatternsForFieldTypeDetectionHeuristics)) {
-      if (pattern.negative_pattern.has_value() &&
-          FormField::Match(field,
-                           base::UTF8ToUTF16(pattern.negative_pattern.value()),
+      if (!pattern.negative_pattern.empty() &&
+          FormField::Match(field, base::UTF8ToUTF16(pattern.negative_pattern),
                            pattern.match_field_attributes,
                            pattern.match_field_input_types, logging)) {
         continue;
       }
     }
 
-    if (MatchAndAdvance(scanner, base::UTF8ToUTF16(pattern.positive_pattern),
+    if (!pattern.positive_pattern.empty() &&
+        MatchAndAdvance(scanner, base::UTF8ToUTF16(pattern.positive_pattern),
                         pattern.match_field_attributes,
                         pattern.match_field_input_types, match, logging)) {
       return true;

@@ -13,7 +13,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/form_parsing/autofill_scanner.h"
-#include "components/autofill/core/browser/pattern_provider/test_pattern_provider.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -41,9 +40,6 @@ class PriceFieldTest : public testing::Test {
   std::vector<std::unique_ptr<AutofillField>> list_;
   std::unique_ptr<PriceField> field_;
   FieldCandidatesMap field_candidates_map_;
-
-  // RAII object to mock the the PatternProvider.
-  TestPatternProvider test_pattern_provider_;
 };
 
 TEST_F(PriceFieldTest, ParsePrice) {

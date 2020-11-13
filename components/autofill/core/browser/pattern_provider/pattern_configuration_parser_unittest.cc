@@ -88,7 +88,6 @@ TEST(PatternConfigurationParserTest, WellFormedParsedCorrectly) {
   // Test one |MatchingPattern| to check that they are parsed correctly.
   MatchingPattern* pattern = &patterns["FULL_NAME"]["fr"][0];
 
-  ASSERT_EQ("Name_fr", pattern->pattern_identifier);
   ASSERT_EQ("nom|prenom", pattern->positive_pattern);
   ASSERT_EQ("compagne", pattern->negative_pattern);
   ASSERT_EQ("fr", pattern->language);
@@ -144,7 +143,6 @@ TEST(PatternConfigurationParserTest, MalformedMissingVersion) {
       "FULL_NAME": {
         "en_us": [
           {
-            "pattern_identifier": "Name_en",
             "positive_pattern": "name|full name",
             "positive_score": 2.0,
             "negative_pattern": "company",
@@ -171,7 +169,6 @@ TEST(PatternConfigurationParserTest, MalformedNotList) {
     {
       "FULL_NAME": {
         "en_us": {
-          "pattern_identifier": "Name_en",
           "positive_pattern": "name|full name",
           "positive_score": 2.0,
           "negative_pattern": "company",

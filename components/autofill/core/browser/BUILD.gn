@@ -18,6 +18,17 @@ grit("autofill_address_rewriter_resources") {
   output_dir = "$root_gen_dir/components/autofill/core/browser"
 }
 
+action("default_regex_patterns_cc") {
+  visibility = [ ":*" ]
+  sources = [ "pattern_provider/resources/regex_patterns.json" ]
+  script = "pattern_provider/transpile_default_regex_patterns.py"
+  args = [
+    rebase_path("pattern_provider/resources/regex_patterns.json"),
+    rebase_path("$target_gen_dir/pattern_provider/default_regex_patterns.cc"),
+  ]
+  outputs = [ "$target_gen_dir/pattern_provider/default_regex_patterns.cc" ]
+}
+
 static_library("browser") {
   sources = [
     "address_normalization_manager.cc",
@@ -193,6 +204,7 @@ static_library("browser") {
     "metrics/form_event_logger_base.cc",
     "metrics/form_event_logger_base.h",
     "metrics/form_events.h",
+    "pattern_provider/default_regex_patterns.h",
     "pattern_provider/pattern_configuration_parser.cc",
     "pattern_provider/pattern_configuration_parser.h",
     "pattern_provider/pattern_provider.cc",
@@ -314,6 +326,8 @@ static_library("browser") {
     "webdata/system_encryptor.h",
   ]
 
+  sources += get_target_outputs(":default_regex_patterns_cc")
+
   if (is_win) {
     sources += [
       "autofill_ie_toolbar_import_win.cc",
@@ -376,6 +390,7 @@ static_library("browser") {
   ]
   deps = [
     ":autofill_address_rewriter_resources",
+    ":default_regex_patterns_cc",
     "//base",
     "//base:i18n",
     "//build:branding_buildflags",
@@ -461,8 +476,6 @@ static_library("test_support") {
     "logging/stub_log_manager.h",
     "mock_autocomplete_history_manager.cc",
     "mock_autocomplete_history_manager.h",
-    "pattern_provider/test_pattern_provider.cc",
-    "pattern_provider/test_pattern_provider.h",
     "payments/test_authentication_requester.cc",
     "payments/test_authentication_requester.h",
     "payments/test_credit_card_save_manager.cc",

@@ -10,7 +10,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/form_parsing/form_field.h"
-#include "components/autofill/core/browser/pattern_provider/test_pattern_provider.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -112,8 +111,6 @@ TEST(FormFieldTest, Match) {
 
 // Test that we ignore checkable elements.
 TEST(FormFieldTest, ParseFormFields) {
-  TestPatternProvider test_pattern_provider_;
-
   std::vector<std::unique_ptr<AutofillField>> fields;
   FormFieldData field_data;
   field_data.form_control_type = "text";
@@ -156,8 +153,6 @@ TEST(FormFieldTest, ParseFormFields) {
 // Test that the minimum number of required fields for the heuristics considers
 // whether a field is actually fillable.
 TEST(FormFieldTest, ParseFormFieldEnforceMinFillableFields) {
-  TestPatternProvider test_pattern_provider_;
-
   std::vector<std::unique_ptr<AutofillField>> fields;
   FormFieldData field_data;
   field_data.form_control_type = "text";
