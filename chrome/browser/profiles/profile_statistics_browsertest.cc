@@ -184,8 +184,8 @@ IN_PROC_BROWSER_TEST_F(ProfileStatisticsBrowserTest, GatherStatistics) {
 
   ProfileStatisticsAggregatorState state;
   profile_stat->GatherStatistics(
-      base::Bind(&ProfileStatisticsAggregatorState::StatsCallback,
-                 base::Unretained(&state)));
+      base::BindRepeating(&ProfileStatisticsAggregatorState::StatsCallback,
+                          base::Unretained(&state)));
   state.WaitForStats();
 
   profiles::ProfileCategoryStats stats = state.GetStats();
@@ -205,15 +205,15 @@ IN_PROC_BROWSER_TEST_F(ProfileStatisticsBrowserTest,
   ProfileStatisticsAggregatorState state2;
 
   profile_stat->GatherStatistics(
-      base::Bind(&ProfileStatisticsAggregatorState::StatsCallback,
-                 base::Unretained(&state1)));
+      base::BindRepeating(&ProfileStatisticsAggregatorState::StatsCallback,
+                          base::Unretained(&state1)));
   state1.WaitForStats();
 
   state1.SetRequiredStatCountAndCreateRunLoop(stats_categories().size());
 
   profile_stat->GatherStatistics(
-      base::Bind(&ProfileStatisticsAggregatorState::StatsCallback,
-                 base::Unretained(&state2)));
+      base::BindRepeating(&ProfileStatisticsAggregatorState::StatsCallback,
+                          base::Unretained(&state2)));
   state1.WaitForStats();
   state2.WaitForStats();
 

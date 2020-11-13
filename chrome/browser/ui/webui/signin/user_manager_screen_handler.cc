@@ -527,9 +527,9 @@ void UserManagerScreenHandler::GatherStatistics(base::Time start_time,
                                                 Profile* profile) {
   if (profile) {
     ProfileStatisticsFactory::GetForProfile(profile)->GatherStatistics(
-        base::Bind(&UserManagerScreenHandler::RemoveUserDialogLoadStatsCallback,
-                   weak_ptr_factory_.GetWeakPtr(), profile->GetPath(),
-                   start_time));
+        base::BindRepeating(
+            &UserManagerScreenHandler::RemoveUserDialogLoadStatsCallback,
+            weak_ptr_factory_.GetWeakPtr(), profile->GetPath(), start_time));
   }
 }
 

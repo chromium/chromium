@@ -108,8 +108,8 @@ void ProfileInfoHandler::HandleGetProfileStats(const base::ListValue* args) {
   AllowJavascript();
 
   ProfileStatisticsFactory::GetForProfile(profile_)->GatherStatistics(
-      base::Bind(&ProfileInfoHandler::PushProfileStatsCount,
-                 callback_weak_ptr_factory_.GetWeakPtr()));
+      base::BindRepeating(&ProfileInfoHandler::PushProfileStatsCount,
+                          callback_weak_ptr_factory_.GetWeakPtr()));
 }
 
 void ProfileInfoHandler::PushProfileStatsCount(

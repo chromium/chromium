@@ -26,7 +26,7 @@ class ProfileStatistics : public KeyedService {
   // Currently bookmarks, history, logins and autofill forms are counted. The
   // callback function will probably be called more than once, so binding
   // parameters with bind::Passed() is prohibited.
-  void GatherStatistics(const profiles::ProfileStatisticsCallback& callback);
+  void GatherStatistics(profiles::ProfileStatisticsCallback callback);
 
  private:
   friend class ProfileStatisticsFactory;

@@ -115,8 +115,8 @@ TEST_F(ProfileStatisticsTest, WaitOrCountBookmarks) {
   ProfileStatisticsAggregator aggregator(
       profile, run_loop_aggregator_done.QuitClosure());
   aggregator.AddCallbackAndStartAggregator(
-      base::Bind(&BookmarkStatHelper::StatsCallback,
-                 base::Unretained(&bookmark_stat_helper)));
+      base::BindRepeating(&BookmarkStatHelper::StatsCallback,
+                          base::Unretained(&bookmark_stat_helper)));
 
   // Wait until ProfileStatisticsAggregator::WaitOrCountBookmarks is run.
   base::RunLoop run_loop1;

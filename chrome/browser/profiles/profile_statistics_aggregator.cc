@@ -29,25 +29,26 @@ using browsing_data::BrowsingDataCounter;
 
 ProfileStatisticsAggregator::ProfileStatisticsAggregator(
     Profile* profile,
-    const base::Closure& done_callback)
+    base::OnceClosure done_callback)
     : profile_(profile),
       profile_path_(profile_->GetPath()),
-      done_callback_(done_callback) {}
+      done_callback_(std::move(done_callback)) {}
 
 ProfileStatisticsAggregator::~ProfileStatisticsAggregator() {}
 
 void ProfileStatisticsAggregator::AddCallbackAndStartAggregator(
-    const profiles::ProfileStatisticsCallback& stats_callback) {
+    profiles::ProfileStatisticsCallback stats_callback) {
   if (stats_callback)
-    stats_callbacks_.push_back(stats_callback);
+    stats_callbacks_.push_back(std::move(stats_callback));
   StartAggregator();
 }
 
 void ProfileStatisticsAggregator::AddCounter(
     std::unique_ptr<BrowsingDataCounter> counter) {
   counter->InitWithoutPref(
-      base::Time(), base::Bind(&ProfileStatisticsAggregator::OnCounterResult,
-                               base::Unretained(this)));
+      base::Time(),
+      base::BindRepeating(&ProfileStatisticsAggregator::OnCounterResult,
+                          base::Unretained(this)));
   counter->Restart();
   counters_.push_back(std::move(counter));
 }
@@ -123,7 +124,7 @@ void ProfileStatisticsAggregator::StatisticsCallback(const char* category,
 
   if (profile_category_stats_.size() ==
       profiles::kProfileStatisticsCategories.size()) {
-    if (done_callback_)
-      done_callback_.Run();
+    DCHECK(done_callback_);
+    std::move(done_callback_).Run();
   }
 }
