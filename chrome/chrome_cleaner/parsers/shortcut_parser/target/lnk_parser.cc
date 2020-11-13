@@ -4,6 +4,7 @@
 
 #include "chrome/chrome_cleaner/parsers/shortcut_parser/target/lnk_parser.h"
 
+#include <string.h>
 #include <windows.h>
 
 #include <memory>
@@ -339,15 +340,20 @@ mojom::LnkParsingResult internal::ParseLnkBytes(
   }
 
   // Retrieve the icon location.
-  if (has_icon_location &&
-      !ReadUtf16StringStructure(file_buffer, &current_byte,
-                                &parsed_shortcut->icon_location)) {
-    LOG(ERROR) << "Error reading icon location";
-    return mojom::LnkParsingResult::BAD_FORMAT;
+  if (has_icon_location) {
+    if (!ReadUtf16StringStructure(file_buffer, &current_byte,
+                                  &parsed_shortcut->icon_location)) {
+      LOG(ERROR) << "Error reading icon location";
+      return mojom::LnkParsingResult::BAD_FORMAT;
+    } else {
+      parsed_shortcut->icon_index = lnk_file_header->icon_index;
+    }
   }
 
   return mojom::LnkParsingResult::SUCCESS;
 }
+
+ParsedLnkFile::ParsedLnkFile() {}
 
 // Please note that the documentation used to write this parser was obtained
 // from the following link:

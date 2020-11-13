@@ -110,7 +110,8 @@ void SandboxedShortcutParser::OnShortcutsParsingDone(
     mojom::LnkParsingResult parsing_result,
     const base::Optional<std::wstring>& optional_file_path,
     const base::Optional<std::wstring>& optional_command_line_arguments,
-    const base::Optional<std::wstring>& optional_icon_location) {
+    const base::Optional<std::wstring>& optional_icon_location,
+    int32_t icon_index) {
   ShortcutInformation parsed_shortcut;
   parsed_shortcut.lnk_path = lnk_path;
   if (parsing_result == mojom::LnkParsingResult::SUCCESS) {
@@ -121,9 +122,10 @@ void SandboxedShortcutParser::OnShortcutsParsingDone(
       parsed_shortcut.command_line_arguments =
           optional_command_line_arguments.value();
     }
-
-    if (optional_icon_location.has_value())
+    if (optional_icon_location.has_value()) {
       parsed_shortcut.icon_location = optional_icon_location.value();
+      parsed_shortcut.icon_index = icon_index;
+    }
 
     const std::wstring kChromeLnkName = L"Google Chrome.lnk";
     if (chrome_exe_locations.Contains(

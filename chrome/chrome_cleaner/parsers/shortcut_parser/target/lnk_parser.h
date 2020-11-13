@@ -68,9 +68,11 @@ mojom::LnkParsingResult ParseLnkBytes(std::vector<BYTE> file_buffer,
 }  // namespace internal
 
 struct ParsedLnkFile {
+  ParsedLnkFile();
   std::wstring target_path;
   std::wstring command_line_arguments;
   std::wstring icon_location;
+  int32_t icon_index = -1;
 };
 
 mojom::LnkParsingResult ParseLnk(base::win::ScopedHandle file_handle,

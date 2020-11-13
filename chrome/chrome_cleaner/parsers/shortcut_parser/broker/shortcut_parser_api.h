@@ -26,6 +26,7 @@ struct ShortcutInformation {
   std::wstring target_path;
   std::wstring command_line_arguments;
   std::wstring icon_location;
+  int32_t icon_index;
 };
 
 typedef base::OnceCallback<void(std::vector<ShortcutInformation>)>
