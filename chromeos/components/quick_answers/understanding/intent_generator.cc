@@ -144,11 +144,11 @@ void IntentGenerator::LoadModelCallback(const QuickAnswersRequest& request,
   }
 
   if (text_classifier_) {
-    text_classifier_->FindLanguages(
-        !request.context.surrounding_text.empty()
-            ? request.context.surrounding_text
-            : request.selected_text,
-        base::BindOnce(&IntentGenerator::FindLanguagesCallback,
+    language_detector_ =
+        std::make_unique<LanguageDetector>(text_classifier_.get());
+    language_detector_->DetectLanguage(
+        request.context.surrounding_text, request.selected_text,
+        base::BindOnce(&IntentGenerator::LanguageDetectorCallback,
                        weak_factory_.GetWeakPtr(), request));
   }
 }
@@ -180,14 +180,14 @@ void IntentGenerator::AnnotationCallback(
       .Run(IntentInfo(request.selected_text, IntentType::kUnknown));
 }
 
-void IntentGenerator::FindLanguagesCallback(
+void IntentGenerator::LanguageDetectorCallback(
     const QuickAnswersRequest& request,
-    std::vector<machine_learning::mojom::TextLanguagePtr> languages) {
-  // TODO(b/150034512): Take confidence level into consideration.
-  if (!languages.empty() &&
+    base::Optional<std::string> detected_locale) {
+  language_detector_.reset();
+  if (detected_locale.has_value() &&
       !request.context.device_properties.language.empty() &&
-      languages.front()->locale != request.context.device_properties.language) {
-    MaybeGenerateTranslationIntent(request, languages.front()->locale);
+      detected_locale.value() != request.context.device_properties.language) {
+    MaybeGenerateTranslationIntent(request, detected_locale.value());
     return;
   }
 

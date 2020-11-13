@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/callback.h"
+#include "chromeos/components/quick_answers/utils/language_detector.h"
 #include "chromeos/services/machine_learning/public/mojom/machine_learning_service.mojom.h"
 #include "chromeos/services/machine_learning/public/mojom/text_classifier.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -50,9 +51,8 @@ class IntentGenerator {
   void AnnotationCallback(
       const QuickAnswersRequest& request,
       std::vector<machine_learning::mojom::TextAnnotationPtr> annotations);
-  void FindLanguagesCallback(
-      const QuickAnswersRequest& request,
-      std::vector<machine_learning::mojom::TextLanguagePtr> languages);
+  void LanguageDetectorCallback(const QuickAnswersRequest& request,
+                                base::Optional<std::string> detected_locale);
 
   void MaybeGenerateTranslationIntent(const QuickAnswersRequest& request,
                                       const std::string& detected_locale);
@@ -60,6 +60,7 @@ class IntentGenerator {
   IntentGeneratorCallback complete_callback_;
   mojo::Remote<::chromeos::machine_learning::mojom::TextClassifier>
       text_classifier_;
+  std::unique_ptr<LanguageDetector> language_detector_;
 
   base::WeakPtrFactory<IntentGenerator> weak_factory_{this};
 };
