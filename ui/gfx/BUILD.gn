@@ -660,6 +660,27 @@ static_library("test_support") {
   }
 }
 
+if (is_mac) {
+  component("gfx_io_surface_hdr_metadata") {
+    sources = [
+      "mac/io_surface_hdr_metadata.cc",
+      "mac/io_surface_hdr_metadata.h",
+    ]
+    defines = [ "IS_GFX_IO_SURFACE_HDR_METADATA_IMPL" ]
+
+    # This is a separate component from the other sources because it depends on
+    # the mojo serialize and deserialize methods.
+    deps = [
+      ":gfx",
+      "//ui/gfx/mojom:mojom",
+    ]
+    frameworks = [
+      "CoreFoundation.framework",
+      "IOSurface.framework",
+    ]
+  }
+}
+
 test("gfx_unittests") {
   sources = [
     "font_names_testing.cc",
@@ -684,6 +705,7 @@ test("gfx_unittests") {
       "font_fallback_mac_unittest.cc",
       "image/image_mac_unittest.mm",
       "mac/coordinate_conversion_unittest.mm",
+      "mac/io_surface_unittest.cc",
       "path_mac_unittest.mm",
       "platform_font_mac_unittest.mm",
       "range/range_mac_unittest.mm",
@@ -796,6 +818,10 @@ test("gfx_unittests") {
 
   if (is_apple) {
     deps += [ "//ui/resources:ui_test_pak_bundle_data" ]
+  }
+
+  if (is_mac) {
+    deps += [ ":gfx_io_surface_hdr_metadata" ]
   }
 
   if (!is_apple) {
