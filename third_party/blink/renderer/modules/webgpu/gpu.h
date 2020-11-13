@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/supplementable.h"
 
 struct WGPUDeviceProperties;
 
@@ -17,17 +18,23 @@ namespace blink {
 
 class GPUAdapter;
 class GPURequestAdapterOptions;
+class NavigatorBase;
 class ScriptPromiseResolver;
 class ScriptState;
 class DawnControlClientHolder;
 
 class GPU final : public ScriptWrappable,
+                  public Supplement<NavigatorBase>,
                   public ExecutionContextLifecycleObserver {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static GPU* Create(ExecutionContext& execution_context);
-  explicit GPU(ExecutionContext& execution_context);
+  static const char kSupplementName[];
+
+  // Getter for navigator.gpu
+  static GPU* gpu(NavigatorBase&);
+
+  explicit GPU(NavigatorBase&);
   ~GPU() override;
 
   // ScriptWrappable overrides

@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_request_adapter_options.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/execution_context/navigator_base.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_adapter.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/dawn_control_client_holder.h"
@@ -81,17 +82,27 @@ std::unique_ptr<WebGraphicsContext3DProvider> CreateContextProvider(
 }  // anonymous namespace
 
 // static
-GPU* GPU::Create(ExecutionContext& execution_context) {
-  return MakeGarbageCollected<GPU>(execution_context);
+const char GPU::kSupplementName[] = "GPU";
+
+// static
+GPU* GPU::gpu(NavigatorBase& navigator) {
+  GPU* gpu = Supplement<NavigatorBase>::From<GPU>(navigator);
+  if (!gpu) {
+    gpu = MakeGarbageCollected<GPU>(navigator);
+    ProvideTo(navigator, gpu);
+  }
+  return gpu;
 }
 
-GPU::GPU(ExecutionContext& execution_context)
-    : ExecutionContextLifecycleObserver(&execution_context) {}
+GPU::GPU(NavigatorBase& navigator)
+    : Supplement<NavigatorBase>(navigator),
+      ExecutionContextLifecycleObserver(navigator.GetExecutionContext()) {}
 
 GPU::~GPU() = default;
 
 void GPU::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
+  Supplement<NavigatorBase>::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
 }
 
