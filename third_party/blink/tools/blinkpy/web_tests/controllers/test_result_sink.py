@@ -17,6 +17,7 @@ import json
 import logging
 import requests
 
+from blinkpy.common.path_finder import RELATIVE_WEB_TESTS
 from blinkpy.web_tests.models.typ_types import ResultType
 
 _log = logging.getLogger(__name__)
@@ -165,6 +166,7 @@ class TestResultSink(object):
 
         # The structure and member definitions of this dict can be found at
         # https://chromium.googlesource.com/infra/luci/luci-go/+/refs/heads/master/resultdb/proto/sink/v1/test_result.proto
+        locFileName = '//%s%s' % (RELATIVE_WEB_TESTS, result.test_name)
         r = {
             'artifacts': self._artifacts(result),
             'duration': '%ss' % result.total_run_time,
@@ -176,13 +178,17 @@ class TestResultSink(object):
             # 'startTime': result.start_time
             'tags': self._tags(result),
             'testId': result.test_name,
+            'testMetadata': {
+                'name': result.test_name,
 
-            # testLocation is where the test is defined. It is used to find
-            # the associated component/team/os information in flakiness and
-            # disabled-test dashboards.
-            'testLocation': {
-                'fileName':
-                '//third_party/blink/web_tests/' + result.test_name,
+                # location is where the test is defined. It is used to find
+                # the associated component/team/os information in flakiness
+                # and disabled-test dashboards.
+                'location': {
+                    'repo': 'https://chromium.googlesource.com/chromium/src',
+                    'fileName': locFileName,
+                    # skip: 'line'
+                },
             },
         }
         self._send({'testResults': [r]})

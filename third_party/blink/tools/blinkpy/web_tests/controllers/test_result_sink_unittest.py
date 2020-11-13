@@ -11,6 +11,7 @@ import unittest
 from urlparse import urlparse
 
 from blinkpy.common.host_mock import MockHost
+from blinkpy.common.path_finder import RELATIVE_WEB_TESTS
 from blinkpy.web_tests.controllers.test_result_sink import CreateTestResultSink
 from blinkpy.web_tests.controllers.test_result_sink import TestResultSink
 from blinkpy.web_tests.models import test_results
@@ -94,15 +95,33 @@ class TestResultSinkMessage(TestResultSinkTestBase):
         self.assertEqual(sent_data['status'], 'CRASH')
         self.assertEqual(sent_data['duration'], '123.456s')
 
-    def test_test_location(self):
+    def test_test_metadata(self):
         tr = test_results.TestResult('')
-        prefix = '//third_party/blink/web_tests/'
-        sink = lambda tr: self.sink(True, tr)['testLocation']['fileName']
+        base_path = '//' + RELATIVE_WEB_TESTS
 
         tr.test_name = "test-name"
-        self.assertEqual(sink(tr), prefix + 'test-name')
+        self.assertDictEqual(
+            self.sink(True, tr)['testMetadata'],
+            {
+                'name': 'test-name',
+                'location': {
+                    'repo': 'https://chromium.googlesource.com/chromium/src',
+                    'fileName': base_path + 'test-name',
+                },
+            },
+        )
+
         tr.test_name = "///test-name"
-        self.assertEqual(sink(tr), prefix + '///test-name')
+        self.assertDictEqual(
+            self.sink(True, tr)['testMetadata'],
+            {
+                'name': '///test-name',
+                'location': {
+                    'repo': 'https://chromium.googlesource.com/chromium/src',
+                    'fileName': base_path + '///test-name',
+                },
+            },
+        )
 
     def test_device_failure(self):
         tr = test_results.TestResult(test_name='test-name')
