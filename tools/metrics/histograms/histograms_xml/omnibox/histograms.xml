@@ -956,6 +956,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     not take into account any redirects that destination URL may do before
     finally serving a page. In other words, it's the scheme of the first request
     in a possible chain.
+
+    Due to a bug, recorded paste-and-go actions through M-88 (inclusive).
+    Excluded in M-89+.
   </summary>
 </histogram>
 

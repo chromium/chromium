@@ -895,9 +895,10 @@ void OmniboxEditModel::OpenMatch(AutocompleteMatch match,
     // For logging the below histogram, only record uses that depend on the
     // omnibox suggestion system, i.e., TYPED navigations.  That is, exclude
     // omnibox URL interactions that are treated as reloads or link-following
-    // (i.e., cut-and-paste of URLs).
+    // (i.e., cut-and-paste of URLs) or paste-and-go.
     if (ui::PageTransitionTypeIncludingQualifiersIs(
-            match.transition, ui::PAGE_TRANSITION_TYPED)) {
+            match.transition, ui::PAGE_TRANSITION_TYPED) &&
+        pasted_text.empty()) {
       navigation_metrics::RecordOmniboxURLNavigation(match.destination_url);
     }
 
