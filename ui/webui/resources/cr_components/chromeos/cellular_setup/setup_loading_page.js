@@ -3,13 +3,13 @@
 // found in the LICENSE file.
 
 /**
- * SIM Detection subpage in Cellular Setup flow. This element contains image
- * asset and description to indicate that the SIM detection is in progress.
- * It also has an error state that displays a message for errors that may
- * happen during this step.
+ * Loading subpage in Cellular Setup flow. This element contains image
+ * asset and description to indicate that a SIM detection or eSIM profiles
+ * loading is in progress. It also has an error state that displays a message
+ * for errors that may happen during this step.
  */
 Polymer({
-  is: 'sim-detect-page',
+  is: 'setup-loading-page',
 
   behaviors: [I18nBehavior],
 
@@ -17,11 +17,16 @@ Polymer({
     /** @type {!cellular_setup.CellularSetupDelegate} */
     delegate: Object,
 
-    /**
-     * Whether error state should be shown.
-     * @type {boolean}
-     */
-    showError: Boolean,
+    /** Whether error state should be shown. */
+    showError: {
+      type: Boolean,
+      value: false,
+    },
+
+    loadingMessage: {
+      type: String,
+      value: '',
+    }
   },
 
   /**

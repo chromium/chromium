@@ -2,7 +2,7 @@
 
 <link rel="import" href="../../../html/i18n_behavior.html">
 <link rel="import" href="mojo_interface_provider.html">
-<link rel="import" href="sim_detect_page.html">
+<link rel="import" href="setup_loading_page.html">
 <link rel="import" href="provisioning_page.html">
 <link rel="import" href="final_page.html">
 <link rel="import" href="subflow_behavior.html">
@@ -23,16 +23,23 @@
         flex-direction: column;
       }
     </style>
-    <iron-pages attr-for-selected="is"
+    <iron-pages attr-for-selected="id"
         selected="[[selectedPSimPageName_]]"
         selected-item="{{selectedPage_}}">
-      <sim-detect-page delegate="[[delegate]]" show-error="[[showError_]]"></sim-detect-page>
-      <provisioning-page delegate="[[delegate]]" show-error="{{showError_}}"
+      <setup-loading-page id="simDetectPage"
+          delegate="[[delegate]]" show-error="[[showError_]]"
+          loading-message="[[i18n('establishNetworkConnectionMessage')]]">
+      </setup-loading-page>
+      <provisioning-page id="provisioningPage"
+          delegate="[[delegate]]" show-error="{{showError_}}"
           cellular-metadata="[[cellularMetadata_]]"
           on-carrier-portal-loaded="onCarrierPortalLoaded_"
           on-carrier-portal-result="onCarrierPortalResult_">
       </provisioning-page>
-      <final-page delegate="[[delegate]]" show-error="[[showError_]]"></final-page>
+      <final-page id="finalPage"
+          delegate="[[delegate]]"
+          show-error="[[showError_]]">
+      </final-page>
     </iron-pages>
   </template>
   <script src="psim_flow_ui.js"></script>

@@ -23,8 +23,8 @@ js_type_check("closure_compile") {
     ":profile_discovery_list_page",
     ":provisioning_page",
     ":psim_flow_ui",
+    ":setup_loading_page",
     ":setup_selection_flow",
-    ":sim_detect_page",
     ":webview_post_util",
   ]
 }
@@ -40,7 +40,7 @@ js_library("base_page") {
   deps = [ "//ui/webui/resources/js:i18n_behavior" ]
 }
 
-js_library("sim_detect_page") {
+js_library("setup_loading_page") {
   deps = [
     ":base_page",
     ":cellular_setup_delegate",
@@ -97,7 +97,7 @@ js_library("psim_flow_ui") {
     ":final_page",
     ":mojo_interface_provider",
     ":provisioning_page",
-    ":sim_detect_page",
+    ":setup_loading_page",
     ":subflow_behavior",
     "//chromeos/services/cellular_setup/public/mojom:mojom_js_library_for_compile",
     "//ui/webui/resources/js:assert.m",
@@ -176,8 +176,8 @@ js_type_check("closure_compile_module") {
     ":profile_discovery_list_page.m",
     ":provisioning_page.m",
     ":psim_flow_ui.m",
+    ":setup_loading_page.m",
     ":setup_selection_flow.m",
-    ":sim_detect_page.m",
     ":subflow_behavior.m",
     ":webview_post_util.m",
   ]
@@ -247,13 +247,13 @@ js_library("webview_post_util.m") {
   extra_deps = [ ":modulize" ]
 }
 
-js_library("sim_detect_page.m") {
-  sources = [ "$root_gen_dir/ui/webui/resources/cr_components/chromeos/cellular_setup/sim_detect_page.m.js" ]
+js_library("setup_loading_page.m") {
+  sources = [ "$root_gen_dir/ui/webui/resources/cr_components/chromeos/cellular_setup/setup_loading_page.m.js" ]
   deps = [
     ":base_page.m",
     ":cellular_setup_delegate.m",
   ]
-  extra_deps = [ ":sim_detect_page_module" ]
+  extra_deps = [ ":setup_loading_page_module" ]
 }
 
 js_library("provisioning_page.m") {
@@ -307,7 +307,7 @@ js_library("psim_flow_ui.m") {
     ":final_page.m",
     ":mojo_interface_provider.m",
     ":provisioning_page.m",
-    ":sim_detect_page.m",
+    ":setup_loading_page.m",
     ":subflow_behavior.m",
     "//chromeos/services/cellular_setup/public/mojom:mojom_js_library_for_compile",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
@@ -370,8 +370,8 @@ group("polymer3_elements") {
     ":profile_discovery_list_page_module",
     ":provisioning_page_module",
     ":psim_flow_ui_module",
+    ":setup_loading_page_module",
     ":setup_selection_flow_module",
-    ":sim_detect_page_module",
   ]
 }
 
@@ -407,9 +407,9 @@ polymer_modulizer("button_bar") {
   auto_imports = cr_components_chromeos_auto_imports
 }
 
-polymer_modulizer("sim_detect_page") {
-  js_file = "sim_detect_page.js"
-  html_file = "sim_detect_page.html"
+polymer_modulizer("setup_loading_page") {
+  js_file = "setup_loading_page.js"
+  html_file = "setup_loading_page.html"
   html_type = "dom-module"
   namespace_rewrites = cr_components_chromeos_namespace_rewrites
   auto_imports = cr_components_chromeos_auto_imports
