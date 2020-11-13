@@ -19,6 +19,7 @@
 #include "base/optional.h"
 #include "base/process/launch.h"
 #include "base/stl_util.h"
+#include "base/strings/pattern.h"
 #include "base/strings/string_split.h"
 #include "base/test/launcher/unit_test_launcher.h"
 #include "base/test/test_suite.h"
@@ -242,6 +243,82 @@ TEST_F(VaapiTest, DefaultEntrypointIsSupported) {
           << " (VaapiWrapper mode = " << wrapper_mode
           << ") is not supported for "
           << vaProfileStr(profile_and_entrypoints.first);
+    }
+  }
+}
+
+// Verifies that VaapiWrapper::CreateContext() will queue up a buffer to set the
+// encoder to its lowest quality setting if a given VAProfile and VAEntrypoint
+// claims to support configuring it.
+TEST_F(VaapiTest, LowQualityEncodingSetting) {
+  // This test only applies to low powered Intel processors.
+  constexpr int kPentiumAndLaterFamily = 0x06;
+  const base::CPU cpuid;
+  const bool is_core_y_processor =
+      base::MatchPattern(cpuid.cpu_brand(), "Intel(R) Core(TM) *Y CPU*");
+  const bool is_low_power_intel =
+      cpuid.family() == kPentiumAndLaterFamily &&
+      (base::Contains(cpuid.cpu_brand(), "Pentium") ||
+       base::Contains(cpuid.cpu_brand(), "Celeron") || is_core_y_processor);
+  if (!is_low_power_intel)
+    GTEST_SKIP() << "Not an Intel low power processor";
+
+  std::map<VAProfile, std::vector<VAEntrypoint>> configurations =
+      VaapiWrapper::GetSupportedConfigurationsForCodecModeForTesting(
+          VaapiWrapper::kEncode);
+
+  for (const auto& codec_mode :
+       {VaapiWrapper::kEncode,
+        VaapiWrapper::kEncodeConstantQuantizationParameter}) {
+    std::map<VAProfile, std::vector<VAEntrypoint>> configurations =
+        VaapiWrapper::GetSupportedConfigurationsForCodecModeForTesting(
+            codec_mode);
+
+    for (const auto& profile_and_entrypoints : configurations) {
+      const VAProfile va_profile = profile_and_entrypoints.first;
+      scoped_refptr<VaapiWrapper> wrapper = VaapiWrapper::Create(
+          VaapiWrapper::kEncode, va_profile, base::DoNothing());
+
+      const auto& supported_entrypoints = profile_and_entrypoints.second;
+      for (const auto& entrypoint : supported_entrypoints) {
+        VAConfigAttrib attrib{};
+        attrib.type = VAConfigAttribEncQualityRange;
+        {
+          base::AutoLock auto_lock(*wrapper->va_lock_);
+          VAStatus va_res = vaGetConfigAttributes(
+              wrapper->va_display_, va_profile, entrypoint, &attrib, 1);
+          ASSERT_EQ(va_res, VA_STATUS_SUCCESS);
+        }
+        const auto quality_level = attrib.value;
+        if (quality_level == VA_ATTRIB_NOT_SUPPORTED || quality_level <= 1u)
+          continue;
+        DLOG(INFO) << vaProfileStr(va_profile)
+                   << " supports encoding quality setting, with max value "
+                   << quality_level;
+
+        // If we get here it means the |va_profile| and |entrypoint| support
+        // the quality setting. We cannot inspect what the driver does with this
+        // number (it could ignore it), so instead just make sure there's a
+        // |pending_va_buffers_| that, when mapped, looks correct. That buffer
+        // should be created by CreateContext().
+        ASSERT_TRUE(wrapper->CreateContext(gfx::Size(64, 64)));
+        ASSERT_EQ(wrapper->pending_va_buffers_.size(), 1u);
+        {
+          base::AutoLock auto_lock(*wrapper->va_lock_);
+          ScopedVABufferMapping mapping(wrapper->va_lock_, wrapper->va_display_,
+                                        wrapper->pending_va_buffers_.front());
+          ASSERT_TRUE(mapping.IsValid());
+
+          auto* const va_buffer =
+              reinterpret_cast<VAEncMiscParameterBuffer*>(mapping.data());
+          EXPECT_EQ(va_buffer->type, VAEncMiscParameterTypeQualityLevel);
+
+          auto* const enc_quality =
+              reinterpret_cast<VAEncMiscParameterBufferQualityLevel*>(
+                  va_buffer->data);
+          EXPECT_EQ(enc_quality->quality_level, quality_level);
+        }
+      }
     }
   }
 }
