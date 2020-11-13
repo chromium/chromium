@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <limits>
+#include <unordered_set>
 
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
@@ -145,6 +146,22 @@ TEST(GUIDTest, Equality) {
 
   // Invalid GUIDs are equal.
   EXPECT_EQ(GUID(), GUID());
+}
+
+TEST(GUIDTest, UnorderedSet) {
+  std::unordered_set<GUID, GUIDHash> guid_set;
+
+  static constexpr char kGUID1[] = "01234567-89ab-cdef-fedc-ba9876543210";
+  guid_set.insert(GUID::ParseCaseInsensitive(ToLowerASCII(kGUID1)));
+  EXPECT_EQ(1u, guid_set.size());
+  guid_set.insert(GUID::ParseCaseInsensitive(ToUpperASCII(kGUID1)));
+  EXPECT_EQ(1u, guid_set.size());
+
+  static constexpr char kGUID2[] = "deadbeef-dead-beef-dead-beefdeadbeef";
+  guid_set.insert(GUID::ParseCaseInsensitive(ToLowerASCII(kGUID2)));
+  EXPECT_EQ(2u, guid_set.size());
+  guid_set.insert(GUID::ParseCaseInsensitive(ToUpperASCII(kGUID2)));
+  EXPECT_EQ(2u, guid_set.size());
 }
 
 }  // namespace base

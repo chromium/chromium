@@ -11,6 +11,7 @@
 #include <string>
 
 #include "base/base_export.h"
+#include "base/hash/hash.h"
 #include "base/strings/string_piece.h"
 #include "build/build_config.h"
 
@@ -80,6 +81,16 @@ class BASE_EXPORT GUID {
   //
   // The lowercase form of the GUID. Empty for invalid GUIDs.
   std::string lowercase_;
+};
+
+// For runtime usage only. Do not store the result of this hash, as it may
+// change in future Chromium revisions.
+struct BASE_EXPORT GUIDHash {
+  size_t operator()(const GUID& guid) const {
+    // TODO(crbug.com/1026195): Avoid converting to string to take the hash when
+    // the internal type is migrated to a non-string type.
+    return FastHash(guid.AsLowercaseString());
+  }
 };
 
 // Stream operator so GUID objects can be used in logging statements.
