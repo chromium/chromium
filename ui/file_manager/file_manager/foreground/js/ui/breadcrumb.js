@@ -174,7 +174,7 @@ const breadCrumbTemplate = `
   <button id='third'></button>
   <span caret hidden></span>
   <button id='fourth'></button>
-  <cr-action-menu id='elider-menu'></cr-menu-item>
+  <cr-action-menu id='elider-menu'></cr-action-menu>
 `;
 
 /**
