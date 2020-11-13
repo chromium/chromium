@@ -44819,34 +44819,6 @@
       ]
      }
     },
-    "composite-bgcolor-animation": {
-     "bg-color-with-gradient.html": [
-      "7ef5d611bcf2c131dbeef8e72877328ef1be7710",
-      [
-       null,
-       [
-        [
-         "/css/composite-bgcolor-animation/bg-color-with-gradient-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "simple-bg-color.html": [
-      "07bea44d21964b832cd9e4b4f32098ec41a2c206",
-      [
-       null,
-       [
-        [
-         "/css/composite-bgcolor-animation/simple-bg-color-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ]
-    },
     "compositing": {
      "background-blending": {
       "background-blend-mode-gradient-image.html": [
@@ -50106,6 +50078,19 @@
        {}
       ]
      ],
+     "bg-color-with-gradient.html": [
+      "7ef5d611bcf2c131dbeef8e72877328ef1be7710",
+      [
+       null,
+       [
+        [
+         "/css/css-backgrounds/bg-color-with-gradient-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "border-bottom-left-radius-001.xht": [
       "2f55928dc8f51d5e5596676ff242a9fe2e3aaafb",
       [
@@ -51556,6 +51541,19 @@
        [
         [
          "/css/css-backgrounds/reference/60x60-green-background.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "simple-bg-color.html": [
+      "07bea44d21964b832cd9e4b4f32098ec41a2c206",
+      [
+       null,
+       [
+        [
+         "/css/css-backgrounds/simple-bg-color-ref.html",
          "=="
         ]
        ],
@@ -91849,6 +91847,19 @@
         [
          "/css/css-pseudo/reference/selection-overlay-and-spelling-001-ref.html",
          "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "selection-paint-image.html": [
+      "f5e2383ca8110d03c96e2e52f1701850c96f9962",
+      [
+       null,
+       [
+        [
+         "/css/css-pseudo/selection-paint-image-notref.html",
+         "!="
         ]
        ],
        {}
@@ -170477,18 +170488,6 @@
      "stale-echo-client-hints.py": [
       "664f7c4c15d08a8ae608c05b0051b8aba6a1a5d1",
       []
-     ],
-     "viewport-frame.py": [
-      "52250bf7f9b3efc3a24cd0764f60f5ff10f08d73",
-      []
-     ],
-     "viewport-measurement.html": [
-      "c9c26f468e385bd7ab141bdf1b99a06582ec9d49",
-      []
-     ],
-     "viewport.py": [
-      "c9fb642d700891ad3a485ae38a0469fc2b5ce2cd",
-      []
      ]
     },
     "sec-ch-quotes.https.html.headers": [
@@ -170534,23 +170533,7 @@
        []
       ]
      }
-    },
-    "viewport-width-iframe.https.html.headers": [
-     "8ba9a398158d968a86cdae648a1bbf8d0760468a",
-     []
-    ],
-    "viewport-width-subresource.https.html.headers": [
-     "8ba9a398158d968a86cdae648a1bbf8d0760468a",
-     []
-    ],
-    "viewport-width-window-different-dimensions.https.html.headers": [
-     "8ba9a398158d968a86cdae648a1bbf8d0760468a",
-     []
-    ],
-    "viewport-width-window.https.html.headers": [
-     "8ba9a398158d968a86cdae648a1bbf8d0760468a",
-     []
-    ]
+    }
    },
    "clipboard-apis": {
     "META.yml": [
@@ -179167,16 +179150,6 @@
      "5cb26179b8dbe4423885bcc7c8d687bab224df91",
      []
     ],
-    "composite-bgcolor-animation": {
-     "bg-color-with-gradient-ref.html": [
-      "5c76f3408aebe6e2964215af3f98745e833e190e",
-      []
-     ],
-     "simple-bg-color-ref.html": [
-      "d8003b58e3ac1c5e917500a59b60c0d2e56287a3",
-      []
-     ]
-    },
     "compositing": {
      "Blending_in_a_group_with_filter-ref.html": [
       "ad512028adae91920814b79714ea99ec51de4dc2",
@@ -180284,6 +180257,10 @@
       "166f9e987bf5b3e64df2a0f1c87c29dfdfe97af3",
       []
      ],
+     "bg-color-with-gradient-ref.html": [
+      "5c76f3408aebe6e2964215af3f98745e833e190e",
+      []
+     ],
      "border-bottom-left-radius-004-ref.xht": [
       "15732f1c068b5890c7f65d2e7b561408cccde8e5",
       []
@@ -180832,6 +180809,10 @@
        []
       ]
      },
+     "simple-bg-color-ref.html": [
+      "d8003b58e3ac1c5e917500a59b60c0d2e56287a3",
+      []
+     ],
      "support": {
       "100x100-blue-and-orange.png": [
        "70437d7bda2b56a921b523d4a81ca4df7be4321d",
@@ -196180,6 +196161,10 @@
        []
       ]
      },
+     "selection-paint-image-notref.html": [
+      "ba1e97dffd8e3cbf1d113b8a68a099dd3fb36824",
+      []
+     ],
      "selection-text-shadow-016-ref.html": [
       "5e3eabc976e2bc75b6a290f2b740b54d8cdbf99a",
       []
@@ -250961,7 +250946,7 @@
       []
      ],
      "wpt.py": [
-      "efa985c7cc1740eb0fd6e5a80f9e89e24cf75d37",
+      "9bc6ce6ce9e89f3f0f423d01081125a4a6f6adec",
       []
      ]
     },
@@ -251367,7 +251352,7 @@
         []
        ],
        "state.py": [
-        "bdb23fed99e19fa55abeec7202a3a1b471bedc03",
+        "6b6ff1a7e08bc0c85a339c7b075e973fe87baca8",
         []
        ],
        "sync.py": [
@@ -258583,7 +258568,7 @@
     }
    },
    "wpt": [
-    "329ea66852cb8f4dac846af30ebbccb1e68fd29d",
+    "9fea20d0d9b7f1528a478fd5d26f6dff65fb4b3f",
     []
    ],
    "wpt.py": [
@@ -276261,35 +276246,7 @@
        {}
       ]
      ]
-    },
-    "viewport-width-iframe.https.html": [
-     "b6c03f01e130ef21c1723e1f5e964753825d35c9",
-     [
-      null,
-      {}
-     ]
-    ],
-    "viewport-width-subresource.https.html": [
-     "870da94de94abacc76b94a5210812ec2f0099fb6",
-     [
-      null,
-      {}
-     ]
-    ],
-    "viewport-width-window-different-dimensions.https.html": [
-     "27d81983dbcf34eaf9ba81da540121b9d48b8f4b",
-     [
-      null,
-      {}
-     ]
-    ],
-    "viewport-width-window.https.html": [
-     "1ed63575e58f682a8ce279bc37adf2fdb1202694",
-     [
-      null,
-      {}
-     ]
-    ]
+    }
    },
    "clipboard-apis": {
     "async-html-script-removal.https.html": [
