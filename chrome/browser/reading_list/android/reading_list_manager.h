@@ -32,6 +32,9 @@ class ReadingListManager : public KeyedService {
     // Called when the reading list backend is loaded.
     virtual void ReadingListLoaded() {}
 
+    // Called when the reading list backend is changed.
+    virtual void ReadingListChanged() {}
+
     Observer() = default;
     ~Observer() override = default;
   };

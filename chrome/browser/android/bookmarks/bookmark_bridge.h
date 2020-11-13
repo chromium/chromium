@@ -296,6 +296,7 @@ class BookmarkBridge : public bookmarks::BaseBookmarkModelObserver,
 
   // Override ReadingListManager::Observer
   void ReadingListLoaded() override;
+  void ReadingListChanged() override;
 
   void DestroyJavaObject();
 
