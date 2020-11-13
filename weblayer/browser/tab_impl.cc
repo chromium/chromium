@@ -1170,8 +1170,7 @@ void TabImpl::RenderProcessGone(base::TerminationStatus status) {
   // WebContents that it should automatically reload the next time it becomes
   // visible.
   JNIEnv* env = AttachCurrentThread();
-  bool visible = Java_TabImpl_isVisible(env, java_impl_);
-  if (!visible)
+  if (Java_TabImpl_willAutomaticallyReloadAfterCrashImpl(env, java_impl_))
     web_contents()->GetController().SetNeedsReload();
 #endif
 

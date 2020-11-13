@@ -75,4 +75,5 @@ interface ITab {
 
   // Added in 87
   void setScrollOffsetsEnabled(in boolean enabled) = 26;
+  boolean willAutomaticallyReloadAfterCrash() = 28;
 }
