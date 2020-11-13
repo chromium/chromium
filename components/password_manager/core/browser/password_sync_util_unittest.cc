@@ -15,10 +15,6 @@
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(PASSWORD_REUSE_DETECTION_ENABLED)
-#include "components/safe_browsing/core/common/safe_browsing_prefs.h"  // nogncheck
-#endif  // PASSWORD_REUSE_DETECTION_ENABLED
-
 using base::ASCIIToUTF16;
 
 namespace password_manager {
@@ -133,22 +129,6 @@ TEST_F(PasswordSyncUtilTest, IsSyncAccountEmail) {
         IsSyncAccountEmail(kTestCases[i].input_username, identity_manager()));
   }
 }
-
-#if defined(PASSWORD_REUSE_DETECTION_ENABLED)
-class PasswordSyncUtilEnterpriseTest : public SyncUsernameTestBase {
- public:
-  void SetUp() override {
-    // prefs_ = std::make_unique<TestingPrefServiceSimple>();
-    prefs_.registry()->RegisterListPref(prefs::kPasswordProtectionLoginURLs);
-    prefs_.registry()->RegisterStringPref(
-        prefs::kPasswordProtectionChangePasswordURL, "");
-  }
-
- protected:
-  TestingPrefServiceSimple prefs_;
-};
-
-#endif  // PASSWORD_REUSE_DETECTION_ENABLED
 
 }  // namespace sync_util
 }  // namespace password_manager
