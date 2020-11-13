@@ -194,9 +194,14 @@ class DeclarativeNetRequestUnittest : public DNRTestBase {
     tester.ExpectTotalCount(kManifestRulesCountHistogram, 0u);
   }
 
-  bool RunDynamicRuleUpdateFunction(const Extension& extension,
-                                    const std::vector<int>& rule_ids_to_remove,
-                                    const std::vector<TestRule>& rules_to_add) {
+  enum class RulesetScope { kDynamic, kSession };
+
+  // Runs the updateDynamicRules/updateSessionRules extension function based on
+  // |scope|.
+  bool RunUpdateRulesFunction(const Extension& extension,
+                              const std::vector<int>& rule_ids_to_remove,
+                              const std::vector<TestRule>& rules_to_add,
+                              RulesetScope scope) {
     std::unique_ptr<base::Value> ids_to_remove_value =
         ListBuilder()
             .Append(rule_ids_to_remove.begin(), rule_ids_to_remove.end())
@@ -213,12 +218,48 @@ class DeclarativeNetRequestUnittest : public DNRTestBase {
         content::JsReplace(kParams, std::move(*rules_to_add_value),
                            std::move(*ids_to_remove_value));
 
-    auto update_function =
-        base::MakeRefCounted<DeclarativeNetRequestUpdateDynamicRulesFunction>();
+    scoped_refptr<ExtensionFunction> update_function;
+    switch (scope) {
+      case RulesetScope::kDynamic:
+        update_function = base::MakeRefCounted<
+            DeclarativeNetRequestUpdateDynamicRulesFunction>();
+        break;
+      case RulesetScope::kSession:
+        update_function = base::MakeRefCounted<
+            DeclarativeNetRequestUpdateSessionRulesFunction>();
+        break;
+    }
     update_function->set_extension(&extension);
     update_function->set_has_callback(true);
     return api_test_utils::RunFunction(update_function.get(), json_args,
                                        browser_context());
+  }
+
+  // Runs getDynamicRules/getSessionRules extension function and populates
+  // |result|.
+  void RunGetRulesFunction(const Extension& extension,
+                           RulesetScope scope,
+                           base::ListValue* result) {
+    CHECK(result);
+    scoped_refptr<ExtensionFunction> function;
+    switch (scope) {
+      case RulesetScope::kDynamic:
+        function = base::MakeRefCounted<
+            DeclarativeNetRequestGetDynamicRulesFunction>();
+        break;
+      case RulesetScope::kSession:
+        function = base::MakeRefCounted<
+            DeclarativeNetRequestGetSessionRulesFunction>();
+        break;
+    }
+    function->set_extension(&extension);
+    function->set_has_callback(true);
+
+    auto result_ptr =
+        base::ListValue::From(api_test_utils::RunFunctionAndReturnSingleResult(
+            function.get(), "[]" /* args */, browser_context()));
+    ASSERT_TRUE(result);
+    *result = std::move(*result_ptr);
   }
 
   void RunUpdateEnabledRulesetsFunction(
@@ -908,8 +949,8 @@ TEST_P(SingleRulesetTest, DynamicRulesetRace) {
 
   // Add some dynamic rules.
   std::vector<TestRule> dynamic_rules({CreateGenericRule()});
-  ASSERT_TRUE(RunDynamicRuleUpdateFunction(
-      *extension, {} /* rule_ids_to_remove */, dynamic_rules));
+  ASSERT_TRUE(RunUpdateRulesFunction(*extension, {} /* rule_ids_to_remove */,
+                                     dynamic_rules, RulesetScope::kDynamic));
 
   // The API function to update the dynamic ruleset should only complete once
   // the initial ruleset loading (in response to OnExtensionLoaded) is complete.
@@ -963,6 +1004,41 @@ TEST_P(SingleRulesetTest, UpdateEnabledRulesetsRace) {
   // the initial ruleset loading (in response to OnExtensionLoaded) is complete.
   // Hence by now, the extension shouldn't have any active rulesets.
   VerifyPublicRulesetIDs(*extension, {});
+}
+
+// Tests updateSessionRules and getSessionRules extension function calls.
+TEST_P(SingleRulesetTest, SessionRules) {
+  // Load an extension with no static rulesets.
+  LoadAndExpectSuccess();
+
+  base::ListValue result;
+  RunGetRulesFunction(*extension(), RulesetScope::kSession, &result);
+  EXPECT_TRUE(result.empty());
+
+  TestRule rule_1 = CreateGenericRule();
+  rule_1.id = 1;
+  TestRule rule_2 = CreateGenericRule();
+  rule_2.id = 2;
+  ASSERT_TRUE(RunUpdateRulesFunction(*extension(), {}, {rule_1, rule_2},
+                                     RulesetScope::kSession));
+  RunGetRulesFunction(*extension(), RulesetScope::kSession, &result);
+  EXPECT_THAT(result.GetList(),
+              ::testing::UnorderedElementsAre(
+                  ::testing::Eq(std::cref(*rule_1.ToValue())),
+                  ::testing::Eq(std::cref(*rule_2.ToValue()))));
+
+  // No dynamic rules should be returned.
+  RunGetRulesFunction(*extension(), RulesetScope::kDynamic, &result);
+  EXPECT_TRUE(result.empty());
+
+  ASSERT_TRUE(RunUpdateRulesFunction(*extension(), {*rule_2.id}, {},
+                                     RulesetScope::kSession));
+  RunGetRulesFunction(*extension(), RulesetScope::kSession, &result);
+  EXPECT_THAT(result.GetList(), ::testing::UnorderedElementsAre(::testing::Eq(
+                                    std::cref(*rule_1.ToValue()))));
+
+  RunGetRulesFunction(*extension(), RulesetScope::kDynamic, &result);
+  EXPECT_TRUE(result.empty());
 }
 
 // Test fixture for a single ruleset with the
@@ -1556,8 +1632,8 @@ TEST_P(MultipleRulesetsTest, UpdateAndGetEnabledRulesets_Success) {
   // Add dynamic rules and ensure that the setEnabledRulesets call doesn't have
   // any effect on the dynamic ruleset. Also ensure that the getEnabledRulesets
   // call excludes the dynamic ruleset ID.
-  ASSERT_TRUE(
-      RunDynamicRuleUpdateFunction(*extension(), {}, {CreateGenericRule()}));
+  ASSERT_TRUE(RunUpdateRulesFunction(*extension(), {}, {CreateGenericRule()},
+                                     RulesetScope::kDynamic));
   VerifyPublicRulesetIDs(*extension(),
                          {kId2, kId3, dnr_api::DYNAMIC_RULESET_ID});
   VerifyGetEnabledRulesetsFunction(*extension(), {kId2, kId3});
