@@ -118,6 +118,10 @@ sk_sp<PaintFilter> PaintRenderingContext2D::StateGetFilter() {
                                                 this);
 }
 
+CanvasColorParams PaintRenderingContext2D::GetCanvas2DColorParams() const {
+  return CanvasColorParams();
+}
+
 void PaintRenderingContext2D::WillOverwriteCanvas() {
   previous_frame_.reset();
   if (did_record_draw_commands_in_paint_recorder_) {

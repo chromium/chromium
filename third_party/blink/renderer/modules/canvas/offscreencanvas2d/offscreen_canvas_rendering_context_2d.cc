@@ -321,11 +321,12 @@ String OffscreenCanvasRenderingContext2D::ColorSpaceAsString() const {
 }
 
 CanvasPixelFormat OffscreenCanvasRenderingContext2D::PixelFormat() const {
-  return ColorParams().PixelFormat();
+  return GetCanvas2DColorParams().PixelFormat();
 }
 
-CanvasColorParams OffscreenCanvasRenderingContext2D::ColorParams() const {
-  return CanvasRenderingContext::ColorParams();
+CanvasColorParams OffscreenCanvasRenderingContext2D::GetCanvas2DColorParams()
+    const {
+  return CanvasRenderingContext::CanvasRenderingContextColorParams();
 }
 
 bool OffscreenCanvasRenderingContext2D::WritePixels(

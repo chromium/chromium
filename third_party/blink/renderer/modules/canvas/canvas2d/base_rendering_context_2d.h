@@ -350,7 +350,10 @@ class MODULES_EXPORT BaseRenderingContext2D : public GarbageCollectedMixin,
 
   void UnwindStateStack();
 
-  virtual CanvasColorParams ColorParams() const { return CanvasColorParams(); }
+  // The implementations of this will query the CanvasColorParams from the
+  // CanvasRenderingContext.
+  virtual CanvasColorParams GetCanvas2DColorParams() const = 0;
+
   virtual bool WritePixels(const SkImageInfo& orig_info,
                            const void* pixels,
                            size_t row_bytes,

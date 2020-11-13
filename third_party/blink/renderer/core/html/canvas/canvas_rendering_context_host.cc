@@ -49,7 +49,7 @@ CanvasRenderingContextHost::CreateTransparentImage(const IntSize& size) const {
     return nullptr;
   CanvasColorParams color_params = CanvasColorParams();
   if (RenderingContext())
-    color_params = RenderingContext()->ColorParams();
+    color_params = RenderingContext()->CanvasRenderingContextColorParams();
   SkImageInfo info = SkImageInfo::Make(
       size.Width(), size.Height(), color_params.GetSkColorType(),
       kPremul_SkAlphaType, color_params.GetSkColorSpace());
@@ -281,7 +281,7 @@ void CanvasRenderingContextHost::CreateCanvasResourceProvider2D(
 
 CanvasColorParams CanvasRenderingContextHost::ColorParams() const {
   if (RenderingContext())
-    return RenderingContext()->ColorParams();
+    return RenderingContext()->CanvasRenderingContextColorParams();
   return CanvasColorParams();
 }
 

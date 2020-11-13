@@ -99,7 +99,9 @@ class CORE_EXPORT CanvasRenderingContext : public ScriptWrappable,
   WTF::String ColorSpaceAsString() const;
   WTF::String PixelFormatAsString() const;
 
-  const CanvasColorParams& ColorParams() const { return color_params_; }
+  const CanvasColorParams& CanvasRenderingContextColorParams() const {
+    return color_params_;
+  }
 
   virtual scoped_refptr<StaticBitmapImage> GetImage() = 0;
   virtual ContextType GetContextType() const = 0;

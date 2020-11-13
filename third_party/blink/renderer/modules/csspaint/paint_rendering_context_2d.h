@@ -94,6 +94,7 @@ class MODULES_EXPORT PaintRenderingContext2D : public ScriptWrappable,
   sk_sp<PaintRecord> GetRecord();
 
  protected:
+  CanvasColorParams GetCanvas2DColorParams() const override;
   bool IsPaint2D() const override { return true; }
   void WillOverwriteCanvas() override;
 

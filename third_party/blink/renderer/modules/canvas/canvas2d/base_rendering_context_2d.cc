@@ -1668,7 +1668,7 @@ ImageData* BaseRenderingContext2D::getImageData(
     return result;
   }
 
-  const CanvasColorParams& color_params = ColorParams();
+  const CanvasColorParams& color_params = GetCanvas2DColorParams();
   // Deferred offscreen canvases might have recorded commands, make sure
   // that those get drawn here
   FinalizeFrame();
@@ -1842,8 +1842,8 @@ void BaseRenderingContext2D::putImageData(ImageData* data,
   // order for both ImageData and CanvasResourceProvider, therefore no
   // additional swizzling is needed.
   CanvasColorParams data_color_params = data->GetCanvasColorParams();
-  CanvasColorParams context_color_params =
-      CanvasColorParams(ColorParams().ColorSpace(), PixelFormat(), kNonOpaque);
+  CanvasColorParams context_color_params = CanvasColorParams(
+      GetCanvas2DColorParams().ColorSpace(), PixelFormat(), kNonOpaque);
 
   size_t data_length;
   if (!base::CheckMul(data->Size().Area(), context_color_params.BytesPerPixel())
@@ -1855,8 +1855,8 @@ void BaseRenderingContext2D::putImageData(ImageData* data,
       PixelFormat() == CanvasPixelFormat::kF16) {
     std::unique_ptr<uint8_t[]> converted_pixels(new uint8_t[data_length]);
     if (data->ImageDataInCanvasColorSettings(
-            ColorParams().ColorSpace(), PixelFormat(), converted_pixels.get(),
-            kRGBAColorType)) {
+            GetCanvas2DColorParams().ColorSpace(), PixelFormat(),
+            converted_pixels.get(), kRGBAColorType)) {
       PutByteArray(converted_pixels.get(),
                    IntSize(data->width(), data->height()), source_rect,
                    IntPoint(dest_offset));
@@ -1890,7 +1890,7 @@ void BaseRenderingContext2D::PutByteArray(const unsigned char* source,
                                           const IntPoint& dest_point) {
   if (!IsCanvas2DBufferValid())
     return;
-  uint8_t bytes_per_pixel = ColorParams().BytesPerPixel();
+  uint8_t bytes_per_pixel = GetCanvas2DColorParams().BytesPerPixel();
 
   DCHECK_GT(source_rect.Width(), 0);
   DCHECK_GT(source_rect.Height(), 0);
@@ -1920,7 +1920,7 @@ void BaseRenderingContext2D::PutByteArray(const unsigned char* source,
       source + origin_y * src_bytes_per_row + origin_x * bytes_per_pixel;
 
   SkAlphaType alpha_type;
-  if (kOpaque == ColorParams().GetOpacityMode()) {
+  if (kOpaque == GetCanvas2DColorParams().GetOpacityMode()) {
     // If the surface is opaque, tell it that we are writing opaque
     // pixels.  Writing non-opaque pixels to opaque is undefined in
     // Skia.  There is some discussion about whether it should be
@@ -1931,9 +1931,10 @@ void BaseRenderingContext2D::PutByteArray(const unsigned char* source,
     alpha_type = kUnpremul_SkAlphaType;
   }
 
-  SkImageInfo info = SkImageInfo::Make(
-      source_rect.Width(), source_rect.Height(), ColorParams().GetSkColorType(),
-      alpha_type, ColorParams().GetSkColorSpace());
+  SkImageInfo info =
+      SkImageInfo::Make(source_rect.Width(), source_rect.Height(),
+                        GetCanvas2DColorParams().GetSkColorType(), alpha_type,
+                        GetCanvas2DColorParams().GetSkColorSpace());
   if (info.colorType() == kN32_SkColorType)
     info = info.makeColorType(kRGBA_8888_SkColorType);
   WritePixels(info, src_addr, src_bytes_per_row, dest_x, dest_y);

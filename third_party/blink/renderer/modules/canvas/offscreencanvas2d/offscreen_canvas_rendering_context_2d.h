@@ -143,7 +143,7 @@ class MODULES_EXPORT OffscreenCanvasRenderingContext2D final
   }
 
  protected:
-  CanvasColorParams ColorParams() const override;
+  CanvasColorParams GetCanvas2DColorParams() const override;
   bool WritePixels(const SkImageInfo& orig_info,
                    const void* pixels,
                    size_t row_bytes,

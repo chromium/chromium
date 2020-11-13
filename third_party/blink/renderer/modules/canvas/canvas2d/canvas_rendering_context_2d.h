@@ -216,7 +216,9 @@ class MODULES_EXPORT CanvasRenderingContext2D final
                           int sh,
                           ExceptionState&) override;
 
-  CanvasColorParams ColorParamsForTest() const { return ColorParams(); }
+  CanvasColorParams ColorParamsForTest() const {
+    return GetCanvas2DColorParams();
+  }
 
   IdentifiableToken IdentifiableTextToken() const override {
     return identifiability_study_helper_.GetToken();
@@ -231,7 +233,7 @@ class MODULES_EXPORT CanvasRenderingContext2D final
   }
 
  protected:
-  CanvasColorParams ColorParams() const override;
+  CanvasColorParams GetCanvas2DColorParams() const override;
   bool WritePixels(const SkImageInfo& orig_info,
                    const void* pixels,
                    size_t row_bytes,

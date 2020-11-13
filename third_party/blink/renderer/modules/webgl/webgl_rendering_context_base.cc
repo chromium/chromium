@@ -727,7 +727,7 @@ scoped_refptr<StaticBitmapImage> WebGLRenderingContextBase::GetImage() {
   // Since we are grabbing a snapshot that is not for compositing, we use a
   // custom resource provider. This avoids consuming compositing-specific
   // resources (e.g. GpuMemoryBuffer)
-  auto color_params = ColorParams();
+  auto color_params = CanvasRenderingContextColorParams();
   std::unique_ptr<CanvasResourceProvider> resource_provider =
       CanvasResourceProvider::CreateSharedImageProvider(
           size, GetDrawingBuffer()->FilterQuality(), color_params,
@@ -1195,7 +1195,8 @@ scoped_refptr<DrawingBuffer> WebGLRenderingContextBase::CreateDrawingBuffer(
       this, ClampedCanvasSize(), premultiplied_alpha, want_alpha_channel,
       want_depth_buffer, want_stencil_buffer, want_antialiasing, preserve,
       web_gl_version, chromium_image_usage, Host()->FilterQuality(),
-      ColorParams(), PowerPreferenceToGpuPreference(attrs.power_preference));
+      CanvasRenderingContextColorParams(),
+      PowerPreferenceToGpuPreference(attrs.power_preference));
 }
 
 void WebGLRenderingContextBase::InitializeNewContext() {
