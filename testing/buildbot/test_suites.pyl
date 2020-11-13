@@ -3807,7 +3807,6 @@
 
     'mac_specific_isolated_scripts': {
       'mac_signing_tests': {},
-      'updater_integration_tests': {},
     },
 
     'mojo_chromiumos_specific_gtests': {
@@ -4781,15 +4780,6 @@
       },
       'polymer_tools_python_unittests': {
         'experiment_percentage': 100,
-      },
-      'updater_integration_tests': {
-        'swarming': {
-          'dimension_sets': [
-            {
-              'integrity': 'high',
-            }
-          ],
-        },
       },
     },
 
