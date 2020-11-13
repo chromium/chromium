@@ -24,6 +24,7 @@ import androidx.test.espresso.action.ViewActions;
 import androidx.test.espresso.assertion.ViewAssertions;
 import androidx.test.filters.MediumTest;
 
+import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -33,10 +34,14 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.Callback;
+import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.Criteria;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsUtils;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -50,9 +55,7 @@ import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.UiRestriction;
 
-/**
- * Integration tests for showing IPH bubbles on the toolbar.
- */
+/** Integration tests for showing IPH bubbles on the toolbar. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Features.EnableFeatures(ChromeFeatureList.TOOLBAR_IPH_ANDROID)
@@ -62,6 +65,9 @@ public class ToolbarButtonIphTest {
 
     @Mock
     private Tracker mTracker;
+
+    private BrowserControlsStateProvider.Observer mBrowserControlsObserver;
+    private CallbackHelper mBrowserControlsChangedCallbackHelper;
 
     @Before
     public void setUp() {
@@ -78,24 +84,71 @@ public class ToolbarButtonIphTest {
         TrackerFactory.setTrackerForTests(mTracker);
 
         mActivityTestRule.startMainActivityOnBlankPage();
+
+        mBrowserControlsChangedCallbackHelper = new CallbackHelper();
+        mBrowserControlsObserver = new BrowserControlsStateProvider.Observer() {
+            @Override
+            public void onControlsOffsetChanged(int topOffset, int topControlsMinHeightOffset,
+                    int bottomOffset, int bottomControlsMinHeightOffset, boolean needsAnimate) {
+                // When glitching, the toolbar temporarily moves offscreen and animates back down.
+                // Wait for it to be done moving, which is known when the controls are fully
+                // visible.
+                if (BrowserControlsUtils.areBrowserControlsFullyVisible(
+                            mActivityTestRule.getActivity().getBrowserControlsManager())) {
+                    mBrowserControlsChangedCallbackHelper.notifyCalled();
+                }
+            }
+        };
+        mActivityTestRule.getActivity().getBrowserControlsManager().addObserver(
+                mBrowserControlsObserver);
     }
 
     @After
     public void tearDown() {
         TrackerFactory.setTrackerForTests(null);
+        mActivityTestRule.getActivity().getBrowserControlsManager().removeObserver(
+                mBrowserControlsObserver);
+    }
+
+    /**
+     * If onControlsOffsetChanged() is called during the test run, try again. The toolbar glitches
+     * off the screen animates back sometimes, which will cause the IPH bubbles to auto-dismiss.
+     * This only happens during startup and the second attempt should not be affected.
+     * TODO(https://crbug.com/1144328): Remove this once the underlying bug is fixed.
+     */
+    private void runWithControlsChangeForgiveness(Runnable testBody) throws InterruptedException {
+        try {
+            testBody.run();
+        } catch (AssertionError ae) {
+            // This is a bit racy with checking our boolean flag, give it a little times. Don't let
+            // the error from CriteriaHelper escape because it would hide the underlying failure.
+            try {
+                CriteriaHelper.pollInstrumentationThread(
+                        ()
+                                -> Criteria.checkThat(
+                                        mBrowserControlsChangedCallbackHelper.getCallCount(),
+                                        Matchers.greaterThan(0)));
+            } catch (Throwable ignored) {
+                throw new AssertionError("Found no browser controls change", ae);
+            }
+
+            testBody.run();
+        }
     }
 
     @Test
     @MediumTest
-    public void testNewTabButtonIph() {
+    public void testNewTabButtonIph() throws InterruptedException {
         when(mTracker.shouldTriggerHelpUI(FeatureConstants.NEW_TAB_PAGE_HOME_BUTTON_FEATURE))
                 .thenReturn(true);
 
-        mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
-        onView(withId(R.id.home_button)).check(matches(withHighlight(false)));
+        runWithControlsChangeForgiveness(() -> {
+            mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
+            onView(withId(R.id.home_button)).check(matches(withHighlight(false)));
 
-        mActivityTestRule.loadUrl("about:blank");
-        onView(withId(R.id.home_button)).check(matches(withHighlight(true)));
+            mActivityTestRule.loadUrl("about:blank");
+            onView(withId(R.id.home_button)).check(matches(withHighlight(true)));
+        });
     }
 
     @Test
@@ -121,22 +174,23 @@ public class ToolbarButtonIphTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/1144263")
     @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
-    public void testTabSwitcherButtonIph() {
+    public void testTabSwitcherButtonIph() throws InterruptedException {
         when(mTracker.shouldTriggerHelpUI(FeatureConstants.TAB_SWITCHER_BUTTON_FEATURE))
                 .thenReturn(true);
 
-        // Navigating to about:blank here was flaky for some reason, probably because the page was
-        // already on about:blank.
-        mActivityTestRule.loadUrl("chrome://about/");
-        ViewInteraction toolbarTabButtonInteraction = onView(withId(R.id.tab_switcher_button));
-        toolbarTabButtonInteraction.check(ViewAssertions.matches(withHighlight(true)));
+        runWithControlsChangeForgiveness(() -> {
+            // Navigating to about:blank here was flaky for some reason, probably because the page
+            // was already on about:blank.
+            mActivityTestRule.loadUrl("chrome://about/");
+            ViewInteraction toolbarTabButtonInteraction = onView(withId(R.id.tab_switcher_button));
+            toolbarTabButtonInteraction.check(ViewAssertions.matches(withHighlight(true)));
 
-        toolbarTabButtonInteraction.perform(ViewActions.click());
-        onView(withId(R.id.new_tab_button)).check(ViewAssertions.matches(withHighlight(true)));
+            toolbarTabButtonInteraction.perform(ViewActions.click());
+            onView(withId(R.id.new_tab_button)).check(ViewAssertions.matches(withHighlight(true)));
 
-        onView(withId(R.id.tab_switcher_mode_tab_switcher_button)).perform(ViewActions.click());
-        toolbarTabButtonInteraction.check(ViewAssertions.matches(withHighlight(false)));
+            onView(withId(R.id.tab_switcher_mode_tab_switcher_button)).perform(ViewActions.click());
+            toolbarTabButtonInteraction.check(ViewAssertions.matches(withHighlight(false)));
+        });
     }
 }
