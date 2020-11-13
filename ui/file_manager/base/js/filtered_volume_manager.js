@@ -79,12 +79,10 @@
    * @param {!AllowedPaths} allowedPaths Which paths are supported in the Files
    *     app dialog.
    * @param {boolean} writableOnly If true, only writable volumes are returned.
-   * @param {Window=} opt_backgroundPage Window object of the background
-   *     page. If this is specified, the class skips to get background page.
-   *     TODO(hirono): Let all clients of the class pass the background page and
-   *     make the argument not optional.
+   * @param {!Promise<!VolumeManager>} volumeManagerGetter Promise that resolves
+   *     when the VolumeManager has been initialized.
    */
-  constructor(allowedPaths, writableOnly, opt_backgroundPage) {
+  constructor(allowedPaths, writableOnly, volumeManagerGetter) {
     super();
 
     this.allowedPaths_ = allowedPaths;
@@ -104,8 +102,8 @@
 
     this.disposed_ = false;
 
-    /** private {Window} */
-    this.backgroundPage_ = opt_backgroundPage;
+    /** private {!Promise<!VolumeManager>} */
+    this.volumeManagerGetter_ = volumeManagerGetter;
 
     /**
      * Tracks async initialization of volume manager.
@@ -156,13 +154,7 @@
    * @private
    */
   async initialize_() {
-    if (!this.backgroundPage_) {
-      this.backgroundPage_ = await new Promise(
-          resolve => chrome.runtime.getBackgroundPage(resolve));
-    }
-
-    this.volumeManager_ =
-        await this.backgroundPage_.volumeManagerFactory.getInstance();
+    this.volumeManager_ = await this.volumeManagerGetter_;
 
     if (this.disposed_) {
       return;

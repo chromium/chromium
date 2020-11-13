@@ -890,7 +890,8 @@ class FileManager extends cr.EventTarget {
     // Note that the Drive enabling preference change is listened by
     // DriveIntegrationService, so here we don't need to take care about it.
     this.volumeManager_ = new FilteredVolumeManager(
-        allowedPaths, writableOnly, this.backgroundPage_);
+        allowedPaths, writableOnly,
+        this.fileBrowserBackground_.getVolumeManager());
   }
 
   /**

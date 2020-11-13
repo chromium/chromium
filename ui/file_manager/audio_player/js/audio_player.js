@@ -14,7 +14,18 @@ ContentMetadataProvider.WORKER_SCRIPT = '/js/metadata_worker.js';
  */
 function AudioPlayer(container) {
   this.container_ = container;
-  this.volumeManager_ = new FilteredVolumeManager(AllowedPaths.ANY_PATH, false);
+
+  const volumeManagerGetter = new Promise(resolve => {
+                                chrome.runtime.getBackgroundPage(resolve);
+                              }).then(backgroundWindow => {
+    /** @type {!BackgroundBase} */
+    const backgroundPage = (backgroundWindow).background;
+    return backgroundPage.getVolumeManager();
+  });
+
+
+  this.volumeManager_ = new FilteredVolumeManager(
+      AllowedPaths.ANY_PATH, false, volumeManagerGetter);
   this.metadataModel_ = MetadataModel.create(this.volumeManager_);
   this.selectedEntry_ = null;
   this.invalidTracks_ = {};

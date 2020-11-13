@@ -1082,7 +1082,15 @@ const loadTimeDataPromise = new Promise(function(fulfill, reject) {
  * @type {!Promise}
  */
 const volumeManagerPromise = new Promise(function(fulfill, reject) {
-  const volumeManager = new FilteredVolumeManager(AllowedPaths.ANY_PATH, false);
+  const volumeManagerGetter = new Promise(resolve => {
+                                chrome.runtime.getBackgroundPage(resolve);
+                              }).then(backgroundWindow => {
+    /** @type {!BackgroundBase} */
+    const backgroundPage = (backgroundWindow).background;
+    return backgroundPage.getVolumeManager();
+  });
+  const volumeManager = new FilteredVolumeManager(
+      AllowedPaths.ANY_PATH, false, volumeManagerGetter);
   volumeManager.ensureInitialized(fulfill.bind(null, volumeManager));
 });
 

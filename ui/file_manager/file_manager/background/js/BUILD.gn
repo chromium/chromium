@@ -203,6 +203,7 @@ js_library("background_base.m") {
   sources = [ "$root_gen_dir/ui/file_manager/file_manager/background/js/background_base.m.js" ]
   deps = [
     ":volume_manager_factory.m",
+    "//ui/file_manager/externs:volume_manager.m",
     "//ui/file_manager/externs/background:background_base.m",
     "//ui/file_manager/file_manager/common/js:util.m",
     "//ui/webui/resources/js:assert.m",
