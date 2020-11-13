@@ -156,18 +156,23 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult succeeded_callback,
       constexpr char kLengthSecondsFieldName[] = "lengthSeconds";
       base::Optional<int> length_seconds =
           params_dict_.FindIntKey(kLengthSecondsFieldName);
-      // The urandom routine expects one integer >= 0.
-      if (!length_seconds.has_value() || length_seconds.value() < 0) {
-        SYSLOG(ERROR) << "Invalid parameters for Urandom routine.";
-        base::ThreadTaskRunnerHandle::Get()->PostTask(
-            FROM_HERE, base::BindOnce(std::move(failed_callback),
-                                      std::make_unique<Payload>(
-                                          MakeInvalidParametersResponse())));
-        break;
+      base::Optional<base::TimeDelta> routine_parameter;
+      if (length_seconds.has_value()) {
+        // If the optional integer parameter is specified, it must be >= 0.
+        int value = length_seconds.value();
+        if (value < 0) {
+          SYSLOG(ERROR) << "Invalid parameters for Urandom routine.";
+          base::ThreadTaskRunnerHandle::Get()->PostTask(
+              FROM_HERE, base::BindOnce(std::move(failed_callback),
+                                        std::make_unique<Payload>(
+                                            MakeInvalidParametersResponse())));
+          break;
+        }
+        routine_parameter = base::TimeDelta::FromSeconds(value);
       }
       chromeos::cros_healthd::ServiceConnection::GetInstance()
           ->RunUrandomRoutine(
-              length_seconds.value(),
+              routine_parameter,
               base::BindOnce(
                   &DeviceCommandRunRoutineJob::OnCrosHealthdResponseReceived,
                   weak_ptr_factory_.GetWeakPtr(), std::move(succeeded_callback),

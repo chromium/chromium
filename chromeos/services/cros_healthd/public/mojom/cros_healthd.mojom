@@ -13,6 +13,7 @@ module chromeos.cros_healthd.mojom;
 import "chromeos/services/cros_healthd/public/mojom/cros_healthd_diagnostics.mojom";
 import "chromeos/services/cros_healthd/public/mojom/cros_healthd_events.mojom";
 import "chromeos/services/cros_healthd/public/mojom/cros_healthd_probe.mojom";
+import "chromeos/services/cros_healthd/public/mojom/nullable_primitives.mojom";
 import "chromeos/services/network_health/public/mojom/network_diagnostics.mojom";
 import "chromeos/services/network_health/public/mojom/network_health.mojom";
 
@@ -72,12 +73,13 @@ interface CrosHealthdDiagnosticsService {
   // * |length_seconds| - length of time, in seconds, to run the urandom routine
   //                      for. If all reads from /dev/urandom for this length of
   //                      time are successful, then the test  will pass. This
-  //                      parameter needs to be strictly greater than zero.
+  //                      parameter needs to be strictly greater than zero. If
+  //                      not specified, the routine will default to 10 seconds.
   //
   // The response:
   // * |response| - contains a unique identifier and status for the created
   //                routine.
-  RunUrandomRoutine(uint32 length_seconds)
+  RunUrandomRoutine(NullableUint32? length_seconds)
       => (RunRoutineResponse response);
 
   // Requests that the BatteryCapacity routine is created and started on the

@@ -324,18 +324,22 @@ TEST_F(DeviceCommandRunRoutineJobTest, RunUrandomRoutineSuccess) {
              })));
 }
 
-// Test that leaving out the lengthSeconds parameter causes the urandom routine
-// to fail.
+// Test that the urandom routine handles the optional length_seconds parameter
+// being missing.
 TEST_F(DeviceCommandRunRoutineJobTest, RunUrandomRoutineMissingLengthSeconds) {
+  auto run_routine_response =
+      chromeos::cros_healthd::mojom::RunRoutineResponse::New(kId, kStatus);
+  chromeos::cros_healthd::FakeCrosHealthdClient::Get()
+      ->SetRunRoutineResponseForTesting(run_routine_response);
   base::Value params_dict(base::Value::Type::DICTIONARY);
   EXPECT_TRUE(
       RunJob(chromeos::cros_healthd::mojom::DiagnosticRoutineEnum::kUrandom,
              std::move(params_dict),
              base::BindLambdaForTesting([](RemoteCommandJob* job) {
-               EXPECT_EQ(job->status(), RemoteCommandJob::FAILED);
+               EXPECT_EQ(job->status(), RemoteCommandJob::SUCCEEDED);
                std::unique_ptr<std::string> payload = job->GetResultPayload();
                EXPECT_TRUE(payload);
-               EXPECT_EQ(CreateInvalidParametersFailurePayload(), *payload);
+               EXPECT_EQ(CreateSuccessPayload(kId, kStatus), *payload);
              })));
 }
 

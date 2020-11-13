@@ -67,7 +67,7 @@ void FakeCrosHealthdService::GetRoutineUpdate(
 }
 
 void FakeCrosHealthdService::RunUrandomRoutine(
-    uint32_t length_seconds,
+    mojom::NullableUint32Ptr length_seconds,
     RunUrandomRoutineCallback callback) {
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,

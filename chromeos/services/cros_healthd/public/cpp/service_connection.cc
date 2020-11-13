@@ -39,7 +39,7 @@ class ServiceConnectionImpl : public ServiceConnection {
       mojom::CrosHealthdDiagnosticsService::GetRoutineUpdateCallback callback)
       override;
   void RunUrandomRoutine(
-      uint32_t length_seconds,
+      const base::Optional<base::TimeDelta>& length_seconds,
       mojom::CrosHealthdDiagnosticsService::RunUrandomRoutineCallback callback)
       override;
   void RunBatteryCapacityRoutine(
@@ -225,12 +225,17 @@ void ServiceConnectionImpl::GetRoutineUpdate(
 }
 
 void ServiceConnectionImpl::RunUrandomRoutine(
-    uint32_t length_seconds,
+    const base::Optional<base::TimeDelta>& length_seconds,
     mojom::CrosHealthdDiagnosticsService::RunUrandomRoutineCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   BindCrosHealthdDiagnosticsServiceIfNeeded();
-  cros_healthd_diagnostics_service_->RunUrandomRoutine(length_seconds,
-                                                       std::move(callback));
+  chromeos::cros_healthd::mojom::NullableUint32Ptr routine_parameter;
+  if (length_seconds.has_value()) {
+    routine_parameter = chromeos::cros_healthd::mojom::NullableUint32::New(
+        length_seconds.value().InSeconds());
+  }
+  cros_healthd_diagnostics_service_->RunUrandomRoutine(
+      std::move(routine_parameter), std::move(callback));
 }
 
 void ServiceConnectionImpl::RunBatteryCapacityRoutine(

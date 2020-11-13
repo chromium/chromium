@@ -55,7 +55,7 @@ class FakeCrosHealthdService final
                         mojom::DiagnosticRoutineCommandEnum command,
                         bool include_output,
                         GetRoutineUpdateCallback callback) override;
-  void RunUrandomRoutine(uint32_t length_seconds,
+  void RunUrandomRoutine(mojom::NullableUint32Ptr length_seconds,
                          RunUrandomRoutineCallback callback) override;
   void RunBatteryCapacityRoutine(
       RunBatteryCapacityRoutineCallback callback) override;

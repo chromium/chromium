@@ -15,6 +15,7 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "chromeos/dbus/cros_healthd/cros_healthd_client.h"
 #include "chromeos/dbus/cros_healthd/fake_cros_healthd_client.h"
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
@@ -306,7 +307,7 @@ TEST_F(CrosHealthdServiceConnectionTest, RunUrandomRoutine) {
   FakeCrosHealthdClient::Get()->SetRunRoutineResponseForTesting(response);
   bool callback_done = false;
   ServiceConnection::GetInstance()->RunUrandomRoutine(
-      /*length_seconds=*/10,
+      /*length_seconds=*/base::nullopt,
       base::BindOnce(
           [](bool* callback_done, mojom::RunRoutineResponsePtr response) {
             EXPECT_EQ(response, MakeRunRoutineResponse());
@@ -322,13 +323,12 @@ TEST_F(CrosHealthdServiceConnectionTest, RunBatteryCapacityRoutine) {
   auto response = MakeRunRoutineResponse();
   FakeCrosHealthdClient::Get()->SetRunRoutineResponseForTesting(response);
   bool callback_done = false;
-  ServiceConnection::GetInstance()->RunBatteryCapacityRoutine(
-      base::BindOnce(
-          [](bool* callback_done, mojom::RunRoutineResponsePtr response) {
-            EXPECT_EQ(response, MakeRunRoutineResponse());
-            *callback_done = true;
-          },
-          &callback_done));
+  ServiceConnection::GetInstance()->RunBatteryCapacityRoutine(base::BindOnce(
+      [](bool* callback_done, mojom::RunRoutineResponsePtr response) {
+        EXPECT_EQ(response, MakeRunRoutineResponse());
+        *callback_done = true;
+      },
+      &callback_done));
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(callback_done);
 }
@@ -338,13 +338,12 @@ TEST_F(CrosHealthdServiceConnectionTest, RunBatteryHealthRoutine) {
   auto response = MakeRunRoutineResponse();
   FakeCrosHealthdClient::Get()->SetRunRoutineResponseForTesting(response);
   bool callback_done = false;
-  ServiceConnection::GetInstance()->RunBatteryHealthRoutine(
-      base::BindOnce(
-          [](bool* callback_done, mojom::RunRoutineResponsePtr response) {
-            EXPECT_EQ(response, MakeRunRoutineResponse());
-            *callback_done = true;
-          },
-          &callback_done));
+  ServiceConnection::GetInstance()->RunBatteryHealthRoutine(base::BindOnce(
+      [](bool* callback_done, mojom::RunRoutineResponsePtr response) {
+        EXPECT_EQ(response, MakeRunRoutineResponse());
+        *callback_done = true;
+      },
+      &callback_done));
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(callback_done);
 }

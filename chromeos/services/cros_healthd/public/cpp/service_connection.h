@@ -12,6 +12,7 @@
 
 #include "base/callback_forward.h"
 #include "base/optional.h"
+#include "base/time/time.h"
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd_events.mojom.h"
 #include "chromeos/services/network_health/public/mojom/network_diagnostics.mojom.h"
@@ -57,7 +58,7 @@ class ServiceConnection {
   // src/chromeos/service/cros_healthd/public/mojom/cros_healthd.mojom for
   // details.
   virtual void RunUrandomRoutine(
-      uint32_t length_seconds,
+      const base::Optional<base::TimeDelta>& length_seconds,
       mojom::CrosHealthdDiagnosticsService::RunUrandomRoutineCallback
           callback) = 0;
 
