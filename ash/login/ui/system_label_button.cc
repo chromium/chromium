@@ -51,11 +51,12 @@ SystemLabelButton::SystemLabelButton(PressedCallback callback,
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
   if (display_type == DisplayType::ALERT_WITH_ICON) {
-    SetImage(views::Button::STATE_NORMAL,
-             CreateVectorIcon(
-                 kLockScreenAlertIcon,
-                 AshColorProvider::Get()->GetContentLayerColor(
-                     AshColorProvider::ContentLayerType::kIconColorAlert)));
+    SetImage(
+        views::Button::STATE_NORMAL,
+        CreateVectorIcon(
+            kLockScreenAlertIcon,
+            AshColorProvider::Get()->GetContentLayerColor(
+                AshColorProvider::ContentLayerType::kButtonIconColorPrimary)));
   }
   SetTextSubpixelRenderingEnabled(false);
   SetInkDropMode(InkDropMode::ON);
