@@ -55041,6 +55041,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="1400" label="Add Printer"/>
   <int value="1401" label="Saved Printers"/>
   <int value="1402" label="Print Jobs"/>
+  <int value="1403" label="Scanning App"/>
   <int value="1500" label="A11y Quick Settings"/>
   <int value="1501" label="Chrome Vox"/>
   <int value="1502" label="Select To Speak"/>

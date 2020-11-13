@@ -68,9 +68,25 @@ const std::vector<SearchConcept>& GetPrintingManagementSearchConcepts() {
   return *tags;
 }
 
+const std::vector<SearchConcept>& GetScanningAppSearchConcepts() {
+  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+      {IDS_OS_SETTINGS_TAG_SCANNING_APP,
+       mojom::kPrintingSectionPath,
+       mojom::SearchResultIcon::kPrinter,
+       mojom::SearchResultDefaultRank::kMedium,
+       mojom::SearchResultType::kSetting,
+       {.setting = mojom::Setting::kScanningApp}},
+  });
+  return *tags;
+}
+
 bool IsPrintManagementEnabled() {
   return base::FeatureList::IsEnabled(
       chromeos::features::kPrintJobManagementApp);
+}
+
+bool IsScanningAppEnabled() {
+  return base::FeatureList::IsEnabled(chromeos::features::kScanningUI);
 }
 
 }  // namespace
@@ -84,6 +100,9 @@ PrintingSection::PrintingSection(Profile* profile,
   updater.AddSearchTags(GetPrintingSearchConcepts());
   if (IsPrintManagementEnabled())
     updater.AddSearchTags(GetPrintingManagementSearchConcepts());
+
+  if (IsScanningAppEnabled())
+    updater.AddSearchTags(GetScanningAppSearchConcepts());
 
   // Saved Printers search tags are added/removed dynamically.
   if (printers_manager_) {
@@ -118,6 +137,8 @@ void PrintingSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_PRINTING_PRINT_JOBS_LAUNCH_APP_TITLE_LABEL},
       {"printJobsSublabel",
        IDS_SETTINGS_PRINTING_PRINT_JOBS_LAUNCH_APP_SUBLABEL},
+      {"scanAppTitle", IDS_SETTINGS_PRINTING_SCANNING_LAUNCH_APP_TITLE_LABEL},
+      {"scanAppSublabel", IDS_SETTINGS_PRINTING_SCANNING_LAUNCH_APP_SUBLABEL},
       {"printerDetailsTitle", IDS_SETTINGS_PRINTING_CUPS_PRINTER_DETAILS_TITLE},
       {"printerName", IDS_SETTINGS_PRINTING_CUPS_PRINTER_DETAILS_NAME},
       {"printerModel", IDS_SETTINGS_PRINTING_CUPS_PRINTER_DETAILS_MODEL},
@@ -251,6 +272,7 @@ void PrintingSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       "printingCUPSPrintPpdLearnMoreUrl",
       GetHelpUrlWithBoard(chrome::kCupsPrintPPDLearnMoreURL));
   html_source->AddBoolean("printManagementEnabled", IsPrintManagementEnabled());
+  html_source->AddBoolean("scanningAppEnabled", IsScanningAppEnabled());
 }
 
 void PrintingSection::AddHandlers(content::WebUI* web_ui) {
@@ -282,6 +304,7 @@ bool PrintingSection::LogMetric(mojom::Setting setting,
 
 void PrintingSection::RegisterHierarchy(HierarchyGenerator* generator) const {
   generator->RegisterTopLevelSetting(mojom::Setting::kPrintJobs);
+  generator->RegisterTopLevelSetting(mojom::Setting::kScanningApp);
 
   // Printing details.
   generator->RegisterTopLevelSubpage(IDS_SETTINGS_PRINTING_CUPS_PRINTERS,

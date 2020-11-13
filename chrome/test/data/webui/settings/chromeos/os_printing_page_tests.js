@@ -10,7 +10,7 @@
 // #import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 // #import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 // #import {Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
-// #import {waitAfterNextRender} from 'chrome://test/test_util.m.js';
+// #import {flushTasks, waitAfterNextRender} from 'chrome://test/test_util.m.js';
 // clang-format on
 
 suite('PrintingPageTests', function() {
@@ -19,9 +19,6 @@ suite('PrintingPageTests', function() {
 
   setup(function() {
     PolymerTest.clearBody();
-    printingPage = document.createElement('os-settings-printing-page');
-    document.body.appendChild(printingPage);
-    Polymer.dom.flush();
   });
 
   teardown(function() {
@@ -29,8 +26,22 @@ suite('PrintingPageTests', function() {
     settings.Router.getInstance().resetRouteForTesting();
   });
 
+  /**
+   * Set up printing page with loadTimeData overrides
+   * @param {Object} overrides Dictionary of objects to override.
+   * @return {!Promise}
+   */
+  function initializePrintingPage(overrides) {
+    loadTimeData.overrideValues(overrides);
+    printingPage = /** @type {!SettingsPrintingPageElement} */ (
+        document.createElement('os-settings-printing-page'));
+    assertTrue(!!printingPage);
+    document.body.appendChild(printingPage);
+    return test_util.flushTasks();
+  }
+
   test('Deep link to print jobs', async () => {
-    loadTimeData.overrideValues({
+    await initializePrintingPage({
       isDeepLinkingEnabled: true,
     });
 
@@ -47,5 +58,26 @@ suite('PrintingPageTests', function() {
     assertEquals(
         deepLinkElement, getDeepActiveElement(),
         'Print jobs button should be focused for settingId=1402.');
+  });
+
+  test('Deep link to scanning app', async () => {
+    await initializePrintingPage({
+      isDeepLinkingEnabled: true,
+      scanningAppEnabled: true,
+    });
+
+    const params = new URLSearchParams;
+    params.append('settingId', '1403');
+    settings.Router.getInstance().navigateTo(
+        settings.routes.OS_PRINTING, params);
+
+    Polymer.dom.flush();
+
+    const deepLinkElement =
+        printingPage.$$('#scanningApp').$$('cr-icon-button');
+    await test_util.waitAfterNextRender(deepLinkElement);
+    assertEquals(
+        deepLinkElement, getDeepActiveElement(),
+        'Scanning app button should be focused for settingId=1403.');
   });
 });

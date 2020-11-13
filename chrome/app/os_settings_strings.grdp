@@ -1963,6 +1963,12 @@
   <message name="IDS_SETTINGS_PRINTING_PRINT_JOBS_LAUNCH_APP_SUBLABEL" desc="Sub-label that describes that the print management app lets users view and manage their print jobs.">
     View and manage print jobs
   </message>
+  <message name="IDS_SETTINGS_PRINTING_SCANNING_LAUNCH_APP_TITLE_LABEL" desc="Label for launching the scanning app from the os settings page.">
+    Scan
+  </message>
+  <message name="IDS_SETTINGS_PRINTING_SCANNING_LAUNCH_APP_SUBLABEL" desc="Sub-label that describes the scanning app which lets users scan documents.">
+    Scan documents and images
+  </message>
 
   <!-- Internet page (OS settings) -->
   <message name="IDS_SETTINGS_INTERNET_ADD_CELLULAR" desc="The accessibility label for the add cellular icon at Settings > Internet > Add Cellular label. This text will not be visible, but will be announced when ChromeVox is on and the user navigates to the icon. Clicking this icon will show a dialog that allows the user to activate a physical SIM or set up eSIM.">

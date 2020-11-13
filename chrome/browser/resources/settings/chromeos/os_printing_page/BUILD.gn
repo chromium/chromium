@@ -168,6 +168,7 @@ js_library("cups_saved_printers") {
 js_library("os_printing_page") {
   deps = [
     "..:deep_linking_behavior",
+    "..:metrics_recorder",
     "..:os_route",
     "../..:router",
     "../../settings_page:settings_animated_pages",
@@ -350,6 +351,7 @@ js_library("os_printing_page.m") {
   deps = [
     ":cups_printers_browser_proxy.m",
     "..:deep_linking_behavior.m",
+    "..:metrics_recorder.m",
     "..:os_route.m",
     "../..:router.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",

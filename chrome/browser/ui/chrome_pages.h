@@ -155,6 +155,8 @@ void ShowPrintManagementApp(Profile* profile,
                             PrintManagementAppEntryPoint entry_point);
 
 void ShowConnectivityDiagnosticsApp(Profile* profile);
+
+void ShowScanningApp(Profile* profile);
 #endif
 
 #if !defined(OS_ANDROID) && !defined(OS_CHROMEOS)

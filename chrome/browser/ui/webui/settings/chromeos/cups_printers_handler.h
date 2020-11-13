@@ -235,6 +235,8 @@ class CupsPrintersHandler : public ::settings::SettingsPageUIHandler,
 
   void HandleOpenPrintManagementApp(const base::ListValue* args);
 
+  void HandleOpenScanningApp(const base::ListValue* args);
+
   Profile* profile_;
 
   // Discovery support.  discovery_active_ tracks whether or not the UI

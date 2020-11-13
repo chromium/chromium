@@ -959,6 +959,9 @@
   <message name="IDS_OS_SETTINGS_TAG_PRINT_MANAGEMENT_ALT2" desc="text for search result item which, when clicked, naviagets the user to the printing section to open the print jobs app. alternate phrase for: 'Print Management', 'Print Jobs'">
     Print history
   </message>
+  <message name="IDS_OS_SETTINGS_TAG_SCANNING_APP" desc="text for search result item which, when clicked, navigates the user to the printing section to open the scanning app.">
+    Scan
+  </message>
 
   <!-- Accessibility section. -->
   <message name="IDS_OS_SETTINGS_TAG_A11Y" desc="Text for search result item which, when clicked, navigates the user to accessibility (a.k.a. a11y) settings. Alternate phrase for: 'A11y'">

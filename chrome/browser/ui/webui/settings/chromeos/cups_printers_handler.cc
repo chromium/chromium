@@ -357,6 +357,12 @@ void CupsPrintersHandler::RegisterMessages() {
         base::BindRepeating(&CupsPrintersHandler::HandleOpenPrintManagementApp,
                             base::Unretained(this)));
   }
+  if (base::FeatureList::IsEnabled(chromeos::features::kScanningUI)) {
+    web_ui()->RegisterMessageCallback(
+        "openScanningApp",
+        base::BindRepeating(&CupsPrintersHandler::HandleOpenScanningApp,
+                            base::Unretained(this)));
+  }
 }
 
 void CupsPrintersHandler::OnJavascriptAllowed() {
@@ -1306,6 +1312,12 @@ void CupsPrintersHandler::HandleOpenPrintManagementApp(
       base::FeatureList::IsEnabled(chromeos::features::kPrintJobManagementApp));
   chrome::ShowPrintManagementApp(profile_,
                                  PrintManagementAppEntryPoint::kSettings);
+}
+
+void CupsPrintersHandler::HandleOpenScanningApp(const base::ListValue* args) {
+  DCHECK(args->empty());
+  DCHECK(base::FeatureList::IsEnabled(chromeos::features::kScanningUI));
+  chrome::ShowScanningApp(profile_);
 }
 
 }  // namespace settings

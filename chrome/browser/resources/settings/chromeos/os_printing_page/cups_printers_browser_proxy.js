@@ -221,6 +221,11 @@ cr.define('settings', function() {
      * Opens the print management app in its own window.
      */
     openPrintManagementApp() {}
+
+    /**
+     * Opens the Scanning app in its own window.
+     */
+    openScanningApp() {}
   }
 
   /**
@@ -310,6 +315,11 @@ cr.define('settings', function() {
     /** @override */
     openPrintManagementApp() {
       chrome.send('openPrintManagementApp');
+    }
+
+    /** @override */
+    openScanningApp() {
+      chrome.send('openScanningApp');
     }
   }
 
