@@ -20,6 +20,8 @@ source_set("permissions") {
     "features.h",
     "notification_permission_ui_selector.cc",
     "notification_permission_ui_selector.h",
+    "permission_auditing_database.cc",
+    "permission_auditing_database.h",
     "permission_context_base.cc",
     "permission_context_base.h",
     "permission_decision_auto_blocker.cc",
@@ -39,6 +41,8 @@ source_set("permissions") {
     "permission_result.h",
     "permission_uma_util.cc",
     "permission_uma_util.h",
+    "permission_usage_session.cc",
+    "permission_usage_session.h",
     "permission_util.cc",
     "permission_util.h",
     "permissions_client.cc",
@@ -64,7 +68,9 @@ source_set("permissions") {
     "//components/vector_icons",
     "//content/public/browser",
     "//services/metrics/public/cpp:ukm_builders",
+    "//sql",
     "//third_party/blink/public/common",
+    "//third_party/sqlite",
     "//ui/base",
     "//url",
   ]
@@ -133,6 +139,7 @@ source_set("unit_tests") {
   sources = [
     "chooser_context_base_unittest.cc",
     "contexts/geolocation_permission_context_unittest.cc",
+    "permission_auditing_database_unittest.cc",
     "permission_context_base_unittest.cc",
     "permission_decision_auto_blocker_unittest.cc",
     "permission_manager_unittest.cc",
@@ -153,7 +160,11 @@ source_set("unit_tests") {
     "//components/ukm/content",
     "//components/variations",
     "//content/test:test_support",
+    "//sql",
+    "//sql:test_support",
     "//testing/gtest",
+    "//third_party/sqlite",
+    "//url",
   ]
   if (is_android) {
     deps += [
