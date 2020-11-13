@@ -323,9 +323,14 @@ def main(arch, gendir, outdir, dynamic_guids, tlb, h, dlldata, iid, proxy,
     source = os.path.join(source, os.path.basename(idl))
   source = os.path.join(source, arch.split('.')[1])  # Append 'x86' or 'x64'.
   source = os.path.normpath(source)
-  distutils.dir_util.copy_tree(source, outdir, preserve_times=False)
 
-  dircmp_ignore = []
+  common_files = [h, dlldata, iid, proxy]
+  if os.path.isfile(os.path.join(source, tlb)):
+    # Not all projects use tlb files.
+    common_files += [tlb]
+  for source_file in common_files:
+    shutil.copy(os.path.join(source, source_file), outdir)
+
   if dynamic_guids != 'none':
     assert '=' in dynamic_guids
     if dynamic_guids.startswith("ignore_proxy_stub,"):
@@ -337,7 +342,7 @@ def main(arch, gendir, outdir, dynamic_guids, tlb, h, dlldata, iid, proxy,
       # IIDs is relying on the custom proxy/stub file. So for now, if
       # |dynamic_guids| is prefixed with "ignore_proxy_stub,", we exclude the
       # custom proxy/stub file from the directory comparisons.
-      dircmp_ignore = [proxy]
+      common_files.remove(proxy)
       dynamic_guids = dynamic_guids.split("ignore_proxy_stub,", 1)[1]
     dynamic_guids = re.sub('PLACEHOLDER-GUID-', '', dynamic_guids, flags=re.I)
     dynamic_guids = dynamic_guids.split(',')
@@ -392,11 +397,12 @@ def main(arch, gendir, outdir, dynamic_guids, tlb, h, dlldata, iid, proxy,
     return returncode
 
   # Now compare the output in midl_output_dir to the copied-over outputs.
-  diff = filecmp.dircmp(midl_output_dir, outdir, ignore=dircmp_ignore)
-  if diff.diff_files:
+  _, mismatch, errors = filecmp.cmpfiles(midl_output_dir, outdir, common_files)
+  assert not errors
+  if mismatch:
     print('midl.exe output different from files in %s, see %s' %
           (outdir, midl_output_dir))
-    for f in diff.diff_files:
+    for f in mismatch:
       if f.endswith('.tlb'): continue
       fromfile = os.path.join(outdir, f)
       tofile = os.path.join(midl_output_dir, f)
