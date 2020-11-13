@@ -463,10 +463,17 @@ bool AVIFImageDecoder::ImageHasBothStillAndAnimatedSubImages() const {
 
   // TODO(wtc): We should rely on libavif to tell us if the file has both an
   // image and an animation track instead of just checking the major brand.
-  constexpr base::StringPiece kAnimationType = "avis";
-  char buf[kAnimationType.size() + 1] = {0};
-  image_data_->copyRange(8, kAnimationType.size(), &buf);
-  return kAnimationType == buf;
+  //
+  // An AVIF image begins with a file‐type box 'ftyp':
+  //   unsigned int(32) size;
+  //   unsigned int(32) type = boxtype;  // boxtype is 'ftyp'
+  //   unsigned int(32) major_brand;
+  //   ...
+  FastSharedBufferReader fast_reader(data_);
+  char buf[4];
+  const char* major_brand = fast_reader.GetConsecutiveData(8, 4, buf);
+  // The brand 'avis' is an AVIF image sequence (animation) brand.
+  return memcmp(major_brand, "avis", 4) == 0;
 }
 
 // static
