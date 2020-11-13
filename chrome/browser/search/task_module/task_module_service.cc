@@ -4,6 +4,7 @@
 
 #include "chrome/browser/search/task_module/task_module_service.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/profiles/profile.h"
@@ -27,10 +28,7 @@ const char* GetPath(task_module::mojom::TaskModuleType task_module_type) {
       return "/async/newtab_recipe_tasks";
     case task_module::mojom::TaskModuleType::kShopping:
       return "/async/newtab_shopping_tasks";
-    default:
-      NOTREACHED();
   }
-  return nullptr;
 }
 
 GURL GetApiUrl(task_module::mojom::TaskModuleType task_module_type,
@@ -50,10 +48,7 @@ const char* GetTasksKey(task_module::mojom::TaskModuleType task_module_type) {
       return "recipe_tasks";
     case task_module::mojom::TaskModuleType::kShopping:
       return "shopping_tasks";
-    default:
-      NOTREACHED();
   }
-  return nullptr;
 }
 
 const char* GetTaskItemsKey(
@@ -63,10 +58,17 @@ const char* GetTaskItemsKey(
       return "recipes";
     case task_module::mojom::TaskModuleType::kShopping:
       return "products";
-    default:
-      NOTREACHED();
   }
-  return nullptr;
+}
+
+const char* GetTaskItemsName(
+    task_module::mojom::TaskModuleType task_module_type) {
+  switch (task_module_type) {
+    case task_module::mojom::TaskModuleType::kRecipe:
+      return "Recipes";
+    case task_module::mojom::TaskModuleType::kShopping:
+      return "Products";
+  }
 }
 
 const char* GetDismissedTasksPrefName(
@@ -76,10 +78,16 @@ const char* GetDismissedTasksPrefName(
       return "NewTabPage.DismissedRecipeTasks";
     case task_module::mojom::TaskModuleType::kShopping:
       return "NewTabPage.DismissedShoppingTasks";
-    default:
-      NOTREACHED();
   }
-  return nullptr;
+}
+
+const char* GetModuleName(task_module::mojom::TaskModuleType task_module_type) {
+  switch (task_module_type) {
+    case task_module::mojom::TaskModuleType::kRecipe:
+      return "RecipeTasks";
+    case task_module::mojom::TaskModuleType::kShopping:
+      return "ShoppingTasks";
+  }
 }
 }  // namespace
 
@@ -221,6 +229,7 @@ void TaskModuleService::OnJsonParsed(
     std::move(callback).Run(nullptr);
     return;
   }
+
   for (const auto& task : tasks->GetList()) {
     auto* title = task.FindStringPath("title");
     auto* task_name = task.FindStringPath("task_name");
@@ -272,8 +281,18 @@ void TaskModuleService::OnJsonParsed(
     auto mojo_task = task_module::mojom::Task::New();
     mojo_task->title = *title;
     mojo_task->name = *task_name;
+    base::UmaHistogramCounts100(
+        base::StringPrintf("NewTabPage.%s.%sDownloadCount",
+                           GetModuleName(task_module_type),
+                           GetTaskItemsName(task_module_type)),
+        mojo_task_items.size());
     mojo_task->task_items = std::move(mojo_task_items);
+    base::UmaHistogramCounts100(
+        base::StringPrintf("NewTabPage.%s.RelatedSearchDownloadCount",
+                           GetModuleName(task_module_type)),
+        mojo_related_searches.size());
     mojo_task->related_searches = std::move(mojo_related_searches);
+
     std::move(callback).Run(std::move(mojo_task));
     return;
   }

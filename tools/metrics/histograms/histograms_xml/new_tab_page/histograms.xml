@@ -1062,6 +1062,19 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="NewTabPage.RecipeTasks.RecipeDownloadCount" units="recipes"
+    expires_after="2021-03-01">
+  <owner>tiborg@chromium.org</owner>
+  <owner>yyushkina@chromium.org</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    The number of recipe search links in the primary shopping task (top-ranked,
+    recipe, search journey). The recipe search links are rendered with a name,
+    image and URL. This metric is logged after the recipe tasks are successfuly
+    retrieved.
+  </summary>
+</histogram>
+
 <histogram name="NewTabPage.RecipeTasks.RelatedSearchClick" units="index"
     expires_after="2021-01-01">
   <owner>tiborg@chromium.org</owner>
@@ -1070,6 +1083,19 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     Logged when a user clicked on a related search pill in the recipe tasks
     module. The value is equal to the index of the pill.
+  </summary>
+</histogram>
+
+<histogram name="NewTabPage.RecipeTasks.RelatedSearchDownloadCount"
+    units="count" expires_after="2021-03-01">
+  <owner>tiborg@chromium.org</owner>
+  <owner>yyushkina@chromium.org</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    The number of related search links in the primary recipe task (top-ranked,
+    recipe, search journey). The related search links are rendered with a name
+    and URL. This metric is logged after the recipe tasks are successfuly
+    retrieved.
   </summary>
 </histogram>
 
@@ -1217,6 +1243,19 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="NewTabPage.ShoppingTasks.ProductDownloadCount"
+    units="products" expires_after="2021-03-01">
+  <owner>tiborg@chromium.org</owner>
+  <owner>yyushkina@chromium.org</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    The number of product search links in the primary shopping task (top-ranked,
+    shopping, search journey). The product search links are rendered with a
+    name, price, image and URL. This metric is logged after the shopping tasks
+    are successfuly retrieved.
+  </summary>
+</histogram>
+
 <histogram name="NewTabPage.ShoppingTasks.RelatedSearchClick" units="index"
     expires_after="2021-01-01">
   <owner>tiborg@chromium.org</owner>
@@ -1225,6 +1264,19 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     Logged when a user clicked on a related search pill in the shopping tasks
     module. The value is equal to the index of the pill.
+  </summary>
+</histogram>
+
+<histogram name="NewTabPage.ShoppingTasks.RelatedSearchDownloadCount"
+    units="count" expires_after="2021-03-01">
+  <owner>tiborg@chromium.org</owner>
+  <owner>yyushkina@chromium.org</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    The number of related search links in the primary shopping task (top-ranked,
+    shopping, search journey). The related search links are rendered with a name
+    and URL. This metric is logged after the shopping tasks are successfuly
+    retrieved.
   </summary>
 </histogram>
 
