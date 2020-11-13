@@ -796,6 +796,7 @@ bool SwapChainPresenter::PresentToDecodeSwapChain(
         frames_since_color_space_change_);
     frames_since_color_space_change_ = 0;
   }
+  swap_chain_format_ = DXGI_FORMAT_NV12;
   RecordPresentationStatistics();
   return true;
 }
