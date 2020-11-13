@@ -219,6 +219,10 @@ suite(destination_dialog_test.suiteName, function() {
     const user2 = 'bar@chromium.org';
     cloudPrintInterface.setPrinter(getGoogleDriveDestination(user1));
     cloudPrintInterface.setPrinter(getGoogleDriveDestination(user2));
+    // Override so that privet printers will also be fetched, since we are
+    // simulating the case where the enterprise override is enabled.
+    loadTimeData.overrideValues(
+        {'cloudPrintDeprecationWarningsSuppressed': true});
     let userSelect = null;
 
     await finishSetup();
