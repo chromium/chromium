@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/check.h"
 #include "base/strings/string16.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/values.h"
@@ -16,14 +17,6 @@ namespace json_schema_compiler {
 namespace manifest_parse_util {
 
 // This file contains helpers used by auto-generated manifest parsing code.
-
-// Populates |error| and |error_path_reversed| denoting array parse error at the
-// given |key|. Note |error| should already contain the specific parse error for
-// the array item.
-void PopulateArrayParseError(
-    base::StringPiece key,
-    base::string16* error,
-    std::vector<base::StringPiece>* error_path_reversed);
 
 // Populates |error| and |error_path_reversed| denoting the given invalid enum
 // |value| at the given |key|.
@@ -109,8 +102,11 @@ bool ParseFromDictionary(const base::DictionaryValue& dict,
 
   bool result = json_schema_compiler::util::PopulateArrayFromList(
       value->AsListValue(*value), out_ptr, error);
-  if (!result)
-    PopulateArrayParseError(key, error, error_path_reversed);
+  if (!result) {
+    DCHECK(error_path_reversed);
+    DCHECK(error_path_reversed->empty());
+    error_path_reversed->push_back(key);
+  }
 
   return result;
 }

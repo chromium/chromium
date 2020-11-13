@@ -10,6 +10,9 @@
 #include <utility>
 #include <vector>
 
+#include "base/format_macros.h"
+#include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 
 namespace json_schema_compiler {
@@ -83,14 +86,22 @@ bool PopulateArrayFromList(const base::ListValue& list, std::vector<T>* out) {
 // Populates |out| with |list|. Returns false and sets |error| if there is no
 // list at the specified key or if the list has anything other than |T|.
 template <class T>
-bool PopulateArrayFromList(const base::ListValue& list,
+bool PopulateArrayFromList(const base::ListValue& list_value,
                            std::vector<T>* out,
                            base::string16* error) {
   out->clear();
   T item;
-  for (const auto& value : list) {
-    if (!PopulateItem(value, &item, error))
+  base::string16 item_error;
+  const auto& list = list_value.GetList();
+  for (size_t i = 0; i < list.size(); ++i) {
+    if (!PopulateItem(list[i], &item, &item_error)) {
+      if (!error->empty())
+        error->append(base::ASCIIToUTF16("; "));
+      error->append(base::ASCIIToUTF16(
+          base::StringPrintf("Parsing array failed at index %" PRIuS ": %s", i,
+                             base::UTF16ToASCII(item_error).c_str())));
       return false;
+    }
     out->push_back(std::move(item));
   }
 

@@ -52,37 +52,40 @@ TEST_F(InitValueManifestTest, InitFromValueInvalid) {
                "Error at key 'content_scripts'. Type is invalid. Expected "
                "list, found integer."),
       Testcase("init_invalid_script_item_invalid.json",
-               "Error at key 'content_scripts'. Parsing array failed: expected "
-               "dictionary, got integer."),
+               "Error at key 'content_scripts'. Parsing array failed at index "
+               "0: expected dictionary, got integer"),
       Testcase("init_invalid_script_matches_missing.json",
-               "Error at key 'content_scripts'. Parsing array failed: "
-               "'matches' is required."),
+               "Error at key 'content_scripts'. Parsing array failed at index "
+               "0: 'matches' is required"),
       Testcase("init_invalid_script_matches_invalid.json",
-               "Error at key 'content_scripts'. Parsing array failed: "
-               "'matches': expected list, got integer."),
+               "Error at key 'content_scripts'. Parsing array failed at index "
+               "0: 'matches': expected list, got integer"),
       Testcase("init_invalid_script_matches_empty.json",
                errors::kInvalidMatchCount),
       Testcase("init_invalid_script_match_item_invalid.json",
-               "Error at key 'content_scripts'. Parsing array failed: expected "
-               "string, got integer; unable to populate array 'matches'."),
+               "Error at key 'content_scripts'. Parsing array failed at index "
+               "0: Error at key 'matches': Parsing array failed at index 0: "
+               "expected string, got integer"),
       Testcase("init_invalid_script_match_item_invalid_2.json",
                errors::kInvalidMatch),
       Testcase("init_invalid_script_files_missing.json", errors::kMissingFile),
       Testcase("init_invalid_files_js_invalid.json",
-               "Error at key 'content_scripts'. Parsing array failed: 'js': "
-               "expected list, got integer."),
+               "Error at key 'content_scripts'. Parsing array failed at index "
+               "0: 'js': expected list, got integer"),
       Testcase("init_invalid_files_empty.json", errors::kMissingFile),
       Testcase("init_invalid_files_js_empty_css_missing.json",
                errors::kMissingFile),
       Testcase("init_invalid_files_js_item_invalid.json",
-               "Error at key 'content_scripts'. Parsing array failed: expected "
-               "string, got integer; unable to populate array 'js'."),
+               "Error at key 'content_scripts'. Parsing array failed at index "
+               "0: Error at key 'js': Parsing array failed at index 0: "
+               "expected string, got integer"),
       Testcase("init_invalid_files_css_invalid.json",
-               "Error at key 'content_scripts'. Parsing array failed: 'css': "
-               "expected list, got integer."),
+               "Error at key 'content_scripts'. Parsing array failed at index "
+               "0: 'css': expected list, got integer"),
       Testcase("init_invalid_files_css_item_invalid.json",
-               "Error at key 'content_scripts'. Parsing array failed: expected "
-               "string, got integer; unable to populate array 'css'."),
+               "Error at key 'content_scripts'. Parsing array failed at index "
+               "0: Error at key 'css': Parsing array failed at index 0: "
+               "expected string, got integer"),
       Testcase("init_invalid_permissions_invalid.json",
                errors::kInvalidPermissions),
       Testcase("init_invalid_host_permissions_invalid.json",

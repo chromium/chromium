@@ -21,8 +21,8 @@ TEST_F(ExcludeMatchesManifestTest, ExcludeMatchPatterns) {
 
   Testcase testcases2[] = {
       Testcase("exclude_matches_not_list.json",
-               "Error at key 'content_scripts'. Parsing array failed: "
-               "'exclude_matches': expected list, got string."),
+               "Error at key 'content_scripts'. Parsing array failed at index "
+               "0: 'exclude_matches': expected list, got string"),
       Testcase("exclude_matches_invalid_host.json",
                "Invalid value for 'content_scripts[0].exclude_matches[0]': "
                "Invalid host wildcard.")};

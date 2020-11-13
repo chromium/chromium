@@ -156,7 +156,7 @@ TEST_F(DNRManifestTest, InvalidRulesFileFormat) {
 
   LoadAndExpectError(
       "Error at key 'declarative_net_request.rule_resources'. Parsing array "
-      "failed: expected dictionary, got string.");
+      "failed at index 0: expected dictionary, got string");
 }
 
 TEST_F(DNRManifestTest, ZeroRulesets) {

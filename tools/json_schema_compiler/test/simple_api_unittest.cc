@@ -275,8 +275,8 @@ TEST(JsonSchemaCompilerSimpleTest, ManifestKeyParsing_ArrayParseError) {
   std::string error;
   ASSERT_NO_FATAL_FAILURE(GetManifestParseError(kPartialManifestJson, &error));
   EXPECT_EQ(
-      "Error at key 'key_ref.array'. Parsing array failed: expected string, "
-      "got integer.",
+      "Error at key 'key_ref.array'. Parsing array failed at index 2: expected "
+      "string, got integer",
       error);
 }
 
