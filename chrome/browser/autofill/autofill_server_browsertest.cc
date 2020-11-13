@@ -146,12 +146,6 @@ class AutofillServerTest : public InProcessBrowserTest {
     InProcessBrowserTest::SetUp();
   }
 
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    // Enable finch experiment for sending field metadata.
-    command_line->AppendSwitchASCII(::switches::kForceFieldTrials,
-                                    "AutofillFieldMetadata/Enabled/");
-  }
-
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -188,10 +182,10 @@ IN_PROC_BROWSER_TEST_F(AutofillServerTest,
   auto* query_form = query.add_forms();
   query_form->set_signature(15916856893790176210U);
 
-  test::FillQueryField(query_form->add_fields(), 2594484045U, "one", "text");
-  test::FillQueryField(query_form->add_fields(), 2750915947U, "two", "text");
-  test::FillQueryField(query_form->add_fields(), 3494787134U, "three", "text");
-  test::FillQueryField(query_form->add_fields(), 1236501728U, "four", "text");
+  query_form->add_fields()->set_signature(2594484045U);
+  query_form->add_fields()->set_signature(2750915947U);
+  query_form->add_fields()->set_signature(3494787134U);
+  query_form->add_fields()->set_signature(1236501728U);
 
   std::string expected_query_string;
   ASSERT_TRUE(query.SerializeToString(&expected_query_string));
@@ -220,21 +214,21 @@ IN_PROC_BROWSER_TEST_F(AutofillServerTest,
   } else {
     upload->set_data_present("1f7e0003780000080004");
   }
-  upload->set_action_signature(15724779818122431245U);
-  upload->set_form_name("test_form");
   upload->set_passwords_revealed(false);
   upload->set_submission_event(
       AutofillUploadContents_SubmissionIndicatorEvent_HTML_FORM_SUBMISSION);
   upload->set_has_form_tag(true);
 
-  test::FillUploadField(upload->add_field(), 2594484045U, "one", "text",
+  // Enabling raw form data uploading (e.g., field name) is too complicated in
+  // this test. So, don't expect it in the upload.
+  test::FillUploadField(upload->add_field(), 2594484045U, nullptr, nullptr,
                         nullptr, 2U);
-  test::FillUploadField(upload->add_field(), 2750915947U, "two", "text", "off",
-                        2U);
-  test::FillUploadField(upload->add_field(), 3494787134U, "three", "text",
+  test::FillUploadField(upload->add_field(), 2750915947U, nullptr, nullptr,
                         nullptr, 2U);
-  test::FillUploadField(upload->add_field(), 1236501728U, "four", "text", "off",
-                        2U);
+  test::FillUploadField(upload->add_field(), 3494787134U, nullptr, nullptr,
+                        nullptr, 2U);
+  test::FillUploadField(upload->add_field(), 1236501728U, nullptr, nullptr,
+                        nullptr, 2U);
 
   std::string expected_upload_string;
   ASSERT_TRUE(request.SerializeToString(&expected_upload_string));
@@ -265,10 +259,9 @@ IN_PROC_BROWSER_TEST_F(AutofillServerTest, AlwaysQueryForPasswordFields) {
   auto* query_form = query.add_forms();
   query_form->set_signature(8900697631820480876U);
 
-  test::FillQueryField(query_form->add_fields(), 2594484045U, "one", "text");
-  test::FillQueryField(query_form->add_fields(), 2750915947U, "two", "text");
-  test::FillQueryField(query_form->add_fields(), 116843943U, "three",
-                       "password");
+  query_form->add_fields()->set_signature(2594484045U);
+  query_form->add_fields()->set_signature(2750915947U);
+  query_form->add_fields()->set_signature(116843943U);
 
   std::string expected_query_string;
   ASSERT_TRUE(query.SerializeToString(&expected_query_string));
