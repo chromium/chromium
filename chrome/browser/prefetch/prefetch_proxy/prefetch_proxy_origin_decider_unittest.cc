@@ -7,58 +7,76 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_features.h"
+#include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-TEST(PrefetchProxyOriginDeciderTest, DefaultEligible) {
-  PrefetchProxyOriginDecider decider;
-  EXPECT_TRUE(decider.IsOriginOutsideRetryAfterWindow(GURL("http://foo.com")));
+class PrefetchProxyOriginDeciderTest : public testing::Test {
+ public:
+  void SetUp() override {
+    PrefetchProxyOriginDecider::RegisterPrefs(pref_service_.registry());
+  }
+
+  std::unique_ptr<PrefetchProxyOriginDecider> NewDecider() {
+    return std::make_unique<PrefetchProxyOriginDecider>(&pref_service_,
+                                                        &clock_);
+  }
+
+  base::SimpleTestClock* clock() { return &clock_; }
+
+ private:
+  TestingPrefServiceSimple pref_service_;
+  base::SimpleTestClock clock_;
+};
+
+TEST_F(PrefetchProxyOriginDeciderTest, DefaultEligible) {
+  auto decider = NewDecider();
+  EXPECT_TRUE(decider->IsOriginOutsideRetryAfterWindow(GURL("http://foo.com")));
 }
 
-TEST(PrefetchProxyOriginDeciderTest, NegativeIgnored) {
+TEST_F(PrefetchProxyOriginDeciderTest, NegativeIgnored) {
   GURL url("http://foo.com");
-  PrefetchProxyOriginDecider decider;
-  decider.ReportOriginRetryAfter(url, base::TimeDelta::FromSeconds(-1));
-  EXPECT_TRUE(decider.IsOriginOutsideRetryAfterWindow(url));
+
+  auto decider = NewDecider();
+  decider->ReportOriginRetryAfter(url, base::TimeDelta::FromSeconds(-1));
+  EXPECT_TRUE(decider->IsOriginOutsideRetryAfterWindow(url));
 }
 
-TEST(PrefetchProxyOriginDeciderTest, MaxCap) {
+TEST_F(PrefetchProxyOriginDeciderTest, MaxCap) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
       features::kIsolatePrerenders, {{"max_retry_after_duration_secs", "10"}});
 
   GURL url("http://foo.com");
-  PrefetchProxyOriginDecider decider;
-  base::SimpleTestClock clock;
-  decider.SetClockForTesting(&clock);
 
-  decider.ReportOriginRetryAfter(url, base::TimeDelta::FromSeconds(15));
-  EXPECT_FALSE(decider.IsOriginOutsideRetryAfterWindow(url));
+  auto decider = NewDecider();
 
-  clock.Advance(base::TimeDelta::FromSeconds(11));
-  EXPECT_TRUE(decider.IsOriginOutsideRetryAfterWindow(url));
+  decider->ReportOriginRetryAfter(url, base::TimeDelta::FromSeconds(15));
+  EXPECT_FALSE(decider->IsOriginOutsideRetryAfterWindow(url));
+
+  clock()->Advance(base::TimeDelta::FromSeconds(11));
+  EXPECT_TRUE(decider->IsOriginOutsideRetryAfterWindow(url));
 }
 
-TEST(PrefetchProxyOriginDeciderTest, WaitsForDelta) {
+TEST_F(PrefetchProxyOriginDeciderTest, WaitsForDelta) {
   GURL url("http://foo.com");
-  PrefetchProxyOriginDecider decider;
-  base::SimpleTestClock clock;
-  decider.SetClockForTesting(&clock);
 
-  decider.ReportOriginRetryAfter(url, base::TimeDelta::FromSeconds(15));
+  auto decider = NewDecider();
+
+  decider->ReportOriginRetryAfter(url, base::TimeDelta::FromSeconds(15));
 
   for (size_t i = 0; i <= 15; i++) {
-    EXPECT_FALSE(decider.IsOriginOutsideRetryAfterWindow(url));
-    clock.Advance(base::TimeDelta::FromSeconds(1));
+    EXPECT_FALSE(decider->IsOriginOutsideRetryAfterWindow(url));
+    clock()->Advance(base::TimeDelta::FromSeconds(1));
   }
 
-  EXPECT_TRUE(decider.IsOriginOutsideRetryAfterWindow(url));
+  EXPECT_TRUE(decider->IsOriginOutsideRetryAfterWindow(url));
 }
 
-TEST(PrefetchProxyOriginDeciderTest, ByOrigin) {
-  PrefetchProxyOriginDecider decider;
+TEST_F(PrefetchProxyOriginDeciderTest, ByOrigin) {
+  auto decider = NewDecider();
 
-  decider.ReportOriginRetryAfter(GURL("http://foo.com"),
-                                 base::TimeDelta::FromSeconds(1));
+  decider->ReportOriginRetryAfter(GURL("http://foo.com"),
+                                  base::TimeDelta::FromSeconds(1));
 
   // Any url for the origin should be ineligible.
   for (const GURL& url : {
@@ -67,7 +85,7 @@ TEST(PrefetchProxyOriginDeciderTest, ByOrigin) {
            GURL("http://foo.com/?query=yes"),
        }) {
     SCOPED_TRACE(url);
-    EXPECT_FALSE(decider.IsOriginOutsideRetryAfterWindow(url));
+    EXPECT_FALSE(decider->IsOriginOutsideRetryAfterWindow(url));
   }
 
   // Other origins are eligible.
@@ -77,17 +95,40 @@ TEST(PrefetchProxyOriginDeciderTest, ByOrigin) {
            GURL("http://test.com/"),
        }) {
     SCOPED_TRACE(url);
-    EXPECT_TRUE(decider.IsOriginOutsideRetryAfterWindow(url));
+    EXPECT_TRUE(decider->IsOriginOutsideRetryAfterWindow(url));
   }
 }
 
-TEST(PrefetchProxyOriginDeciderTest, Clear) {
+TEST_F(PrefetchProxyOriginDeciderTest, Clear) {
   GURL url("http://foo.com");
-  PrefetchProxyOriginDecider decider;
 
-  decider.ReportOriginRetryAfter(url, base::TimeDelta::FromSeconds(1));
-  EXPECT_FALSE(decider.IsOriginOutsideRetryAfterWindow(url));
+  auto decider = NewDecider();
 
-  decider.OnBrowsingDataCleared();
-  EXPECT_TRUE(decider.IsOriginOutsideRetryAfterWindow(url));
+  decider->ReportOriginRetryAfter(url, base::TimeDelta::FromSeconds(1));
+  EXPECT_FALSE(decider->IsOriginOutsideRetryAfterWindow(url));
+
+  decider->OnBrowsingDataCleared();
+  EXPECT_TRUE(decider->IsOriginOutsideRetryAfterWindow(url));
+}
+
+TEST_F(PrefetchProxyOriginDeciderTest, PersistentPrefs) {
+  {
+    auto decider = NewDecider();
+
+    decider->ReportOriginRetryAfter(GURL("http://expired.com"),
+                                    base::TimeDelta::FromSeconds(1));
+    decider->ReportOriginRetryAfter(GURL("http://foo.com"),
+                                    base::TimeDelta::FromSeconds(3));
+  }
+
+  clock()->Advance(base::TimeDelta::FromSeconds(2));
+
+  {
+    auto decider = NewDecider();
+
+    EXPECT_TRUE(
+        decider->IsOriginOutsideRetryAfterWindow(GURL("http://expired.com")));
+    EXPECT_FALSE(
+        decider->IsOriginOutsideRetryAfterWindow(GURL("http://foo.com")));
+  }
 }

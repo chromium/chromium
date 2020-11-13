@@ -22,7 +22,8 @@ PrefetchProxyService::PrefetchProxyService(Profile* profile)
     : profile_(profile),
       proxy_configurator_(std::make_unique<PrefetchProxyProxyConfigurator>()),
       origin_prober_(std::make_unique<PrefetchProxyOriginProber>(profile)),
-      origin_decider_(std::make_unique<PrefetchProxyOriginDecider>()) {}
+      origin_decider_(
+          std::make_unique<PrefetchProxyOriginDecider>(profile->GetPrefs())) {}
 
 PrefetchProxyService::~PrefetchProxyService() = default;
 

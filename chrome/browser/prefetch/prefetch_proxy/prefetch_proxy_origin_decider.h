@@ -8,16 +8,26 @@
 #include <map>
 
 #include "base/time/clock.h"
+#include "base/time/default_clock.h"
 #include "base/time/time.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+
+class PrefService;
+class PrefRegistrySimple;
 
 // A browser-scoped class that maintains persistent logic for when origins
 // should not be prefetched.
 class PrefetchProxyOriginDecider {
  public:
-  PrefetchProxyOriginDecider();
+  explicit PrefetchProxyOriginDecider(
+      PrefService* pref_service,
+      base::Clock* clock = base::DefaultClock::GetInstance());
   ~PrefetchProxyOriginDecider();
+
+  // Registers prefs. Should only be used for storing in a device-local registry
+  // (non-syncing).
+  static void RegisterPrefs(PrefRegistrySimple* registry);
 
   // This should be called anytime browsing data is cleared by the user so that
   // the persistent data store can be cleared as well.
@@ -32,9 +42,23 @@ class PrefetchProxyOriginDecider {
   // a maximum value provided by experiment params.
   void ReportOriginRetryAfter(const GURL& url, base::TimeDelta retry_after);
 
-  void SetClockForTesting(const base::Clock* clock);
+  PrefetchProxyOriginDecider(const PrefetchProxyOriginDecider&) = delete;
+  PrefetchProxyOriginDecider& operator=(const PrefetchProxyOriginDecider&) =
+      delete;
 
  private:
+  // These methods serialize and deserialize |origin_retry_afters_| to
+  // |pref_service_| in a dictionary value.
+  void LoadFromPrefs();
+  void SaveToPrefs() const;
+
+  // Erases any expired entries in |origin_retry_afters_|, returning true iff
+  // any entries were removed.
+  bool ClearPastEntries();
+
+  // Not owned.
+  PrefService* pref_service_;
+
   const base::Clock* clock_;
 
   // Maps origins to their last known retry_after time.

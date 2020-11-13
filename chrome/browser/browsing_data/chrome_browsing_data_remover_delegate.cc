@@ -60,6 +60,9 @@
 #include "chrome/browser/permissions/adaptive_quiet_notification_permission_ui_enabler.h"
 #include "chrome/browser/permissions/permission_decision_auto_blocker_factory.h"
 #include "chrome/browser/prefetch/no_state_prefetch/prerender_manager_factory.h"
+#include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_origin_decider.h"
+#include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_service.h"
+#include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_service_factory.h"
 #include "chrome/browser/prefetch/search_prefetch/search_prefetch_service.h"
 #include "chrome/browser/prefetch/search_prefetch/search_prefetch_service_factory.h"
 #include "chrome/browser/previews/previews_service.h"
@@ -581,6 +584,12 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
         LiteVideoKeyedServiceFactory::GetForProfile(profile_);
     if (lite_video_keyed_service)
       lite_video_keyed_service->ClearData(delete_begin_, delete_end_);
+
+    PrefetchProxyService* prefetch_proxy_service =
+        PrefetchProxyServiceFactory::GetForProfile(profile_);
+    if (prefetch_proxy_service) {
+      prefetch_proxy_service->origin_decider()->OnBrowsingDataCleared();
+    }
 
 #if defined(OS_ANDROID)
     OomInterventionDecider* oom_intervention_decider =

@@ -4,21 +4,51 @@
 
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_origin_decider.h"
 
-#include "base/time/default_clock.h"
+#include <memory>
+#include <vector>
+
+#include "base/util/values/values_util.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_params.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/pref_service.h"
 
-PrefetchProxyOriginDecider::PrefetchProxyOriginDecider()
-    : clock_(base::DefaultClock::GetInstance()) {}
+namespace {
+// This pref contains a dictionary value whose keys are string representations
+// of a url::Origin and values are a base::Time. The recorded base::Time is the
+// time at which prefetch requests to the corresponding origin can resume, (any
+// base::Time that is in the past can be removed). Entries to the dictionary are
+// created when a prefetch request gets a 503 response with Retry-After header.
+const char kRetryAfterPrefPath[] =
+    "chrome.prefetch_proxy.origin_decider.retry_after";
+}  // namespace
+
+// static
+void PrefetchProxyOriginDecider::RegisterPrefs(PrefRegistrySimple* registry) {
+  // Some loss in this pref (especially following a browser crash) is well
+  // tolerated and helps ensure the pref service isn't slammed.
+  registry->RegisterDictionaryPref(kRetryAfterPrefPath,
+                                   PrefRegistry::LOSSY_PREF);
+}
+
+PrefetchProxyOriginDecider::PrefetchProxyOriginDecider(
+    PrefService* pref_service,
+    base::Clock* clock)
+    : pref_service_(pref_service), clock_(clock) {
+  DCHECK(pref_service);
+  DCHECK(clock);
+
+  LoadFromPrefs();
+  if (ClearPastEntries()) {
+    SaveToPrefs();
+  }
+}
 
 PrefetchProxyOriginDecider::~PrefetchProxyOriginDecider() = default;
 
-void PrefetchProxyOriginDecider::SetClockForTesting(const base::Clock* clock) {
-  clock_ = clock;
-}
-
 void PrefetchProxyOriginDecider::OnBrowsingDataCleared() {
   origin_retry_afters_.clear();
+  SaveToPrefs();
 }
 
 bool PrefetchProxyOriginDecider::IsOriginOutsideRetryAfterWindow(
@@ -48,4 +78,62 @@ void PrefetchProxyOriginDecider::ReportOriginRetryAfter(
 
   origin_retry_afters_.emplace(url::Origin::Create(url),
                                clock_->Now() + retry_after);
+  SaveToPrefs();
+}
+
+void PrefetchProxyOriginDecider::LoadFromPrefs() {
+  origin_retry_afters_.clear();
+
+  const base::DictionaryValue* dictionary =
+      pref_service_->GetDictionary(kRetryAfterPrefPath);
+  DCHECK(dictionary);
+
+  for (const auto& element : *dictionary) {
+    GURL url_origin(element.first);
+    if (!url_origin.is_valid()) {
+      // This may happen in the case of corrupted prefs, or otherwise. Handle
+      // gracefully.
+      NOTREACHED();
+      continue;
+    }
+
+    base::Optional<base::Time> retry_after = util::ValueToTime(*element.second);
+    if (!retry_after) {
+      // This may happen in the case of corrupted prefs, or otherwise. Handle
+      // gracefully.
+      NOTREACHED();
+      continue;
+    }
+
+    url::Origin origin = url::Origin::Create(url_origin);
+    origin_retry_afters_.emplace(origin, retry_after.value());
+  }
+}
+
+void PrefetchProxyOriginDecider::SaveToPrefs() const {
+  base::DictionaryValue dictionary;
+  for (const auto& element : origin_retry_afters_) {
+    std::string key = element.first.GetURL().spec();
+    base::Value value = util::TimeToValue(element.second);
+    dictionary.SetKey(std::move(key), std::move(value));
+  }
+  pref_service_->Set(kRetryAfterPrefPath, dictionary);
+}
+
+bool PrefetchProxyOriginDecider::ClearPastEntries() {
+  std::vector<url::Origin> to_remove;
+  for (const auto& entry : origin_retry_afters_) {
+    if (entry.second < clock_->Now()) {
+      to_remove.push_back(entry.first);
+    }
+  }
+
+  if (to_remove.empty()) {
+    return false;
+  }
+
+  for (const auto& rm : to_remove) {
+    origin_retry_afters_.erase(rm);
+  }
+  return true;
 }
