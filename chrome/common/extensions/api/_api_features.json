@@ -799,10 +799,16 @@
     ],
     "platforms": ["chromeos"]
   }],
+  "tabs.executeScript": {
+    "max_manifest_version": 2
+  },
   "tabs.getAllInWindow": {
     "max_manifest_version": 2
   },
   "tabs.getSelected": {
+    "max_manifest_version": 2
+  },
+  "tabs.insertCSS": {
     "max_manifest_version": 2
   },
   "tabs.onActiveChanged": {

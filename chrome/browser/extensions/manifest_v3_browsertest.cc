@@ -59,7 +59,7 @@ IN_PROC_BROWSER_TEST_F(ManifestV3BrowserTest, ProgrammaticScriptInjection) {
            "background": {
              "service_worker": "worker.js"
            },
-           "permissions": ["tabs"],
+           "permissions": ["tabs", "scripting"],
            "host_permissions": ["*://example.com/*"]
          })";
   constexpr char kWorker[] =
@@ -70,15 +70,26 @@ IN_PROC_BROWSER_TEST_F(ManifestV3BrowserTest, ProgrammaticScriptInjection) {
            let url = new URL(tab.url);
            if (url.hostname != 'example.com')
              return;
+           // The tabs API equivalents of script injection are removed in MV3.
+           chrome.test.assertEq(undefined, chrome.tabs.executeScript);
+           chrome.test.assertEq(undefined, chrome.tabs.insertCSS);
+
            chrome.tabs.onUpdated.removeListener(listener);
-           chrome.tabs.executeScript(
-               tabId,
-               {code: "document.title = 'My New Title'; document.title;"},
+
+           function injectedFunction() {
+             document.title = 'My New Title';
+             return document.title;
+           }
+           chrome.scripting.executeScript(
+               {
+                 target: {tabId: tabId},
+                 function: injectedFunction,
+               },
                (results) => {
                  chrome.test.assertNoLastError();
                  chrome.test.assertTrue(!!results);
                  chrome.test.assertEq(1, results.length);
-                 chrome.test.assertEq('My New Title', results[0]);
+                 chrome.test.assertEq('My New Title', results[0].result);
                  chrome.test.notifyPass();
                });
          });
