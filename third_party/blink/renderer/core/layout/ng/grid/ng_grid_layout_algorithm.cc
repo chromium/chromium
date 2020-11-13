@@ -459,7 +459,6 @@ NGConstraintSpace NGGridLayoutAlgorithm::BuildSpaceForGridItem(
   builder.SetIsPaintedAtomically(true);
   builder.SetAvailableSize(ChildAvailableSize());
   builder.SetPercentageResolutionSize(child_percentage_size_);
-  builder.SetIsShrinkToFit(style.LogicalWidth().IsAuto());
   return builder.ToConstraintSpace();
 }
 
@@ -1209,8 +1208,7 @@ void NGGridLayoutAlgorithm::PlaceGridItem(const GridItemData& grid_item,
   // IsInlineSizeStretched / IsBlockSizeStretched or similar.
   builder.SetIsFixedBlockSize(item_style.LogicalHeight().IsAuto() &&
                               grid_item.is_block_axis_stretched);
-  builder.SetIsShrinkToFit(item_style.LogicalWidth().IsAuto() &&
-                           !grid_item.is_inline_axis_stretched);
+  builder.SetStretchInlineSizeIfAuto(grid_item.is_inline_axis_stretched);
 
   scoped_refptr<const NGLayoutResult> result =
       grid_item.node.Layout(builder.ToConstraintSpace());

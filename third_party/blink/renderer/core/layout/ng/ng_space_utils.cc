@@ -43,7 +43,6 @@ NGConstraintSpace CreateIndefiniteConstraintSpaceForChild(
   builder.SetPercentageResolutionSize(
       {kIndefiniteSize, input.percentage_resolution_block_size});
   builder.SetReplacedPercentageResolutionSize(indefinite_size);
-  builder.SetIsShrinkToFit(child.Style().LogicalWidth().IsAuto());
   return builder.ToConstraintSpace();
 }
 

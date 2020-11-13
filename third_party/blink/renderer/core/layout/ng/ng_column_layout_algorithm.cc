@@ -1046,6 +1046,7 @@ NGConstraintSpace NGColumnLayoutAlgorithm::CreateConstraintSpaceForBalancing(
       ConstraintSpace(), Style().GetWritingDirection(), /* is_new_fc */ true);
   space_builder.SetFragmentationType(kFragmentColumn);
   space_builder.SetAvailableSize({column_size.inline_size, kIndefiniteSize});
+  space_builder.SetStretchInlineSizeIfAuto(true);
   space_builder.SetPercentageResolutionSize(ColumnPercentageResolutionSize());
   space_builder.SetIsAnonymous(true);
   space_builder.SetIsInColumnBfc();
@@ -1060,6 +1061,7 @@ NGConstraintSpace NGColumnLayoutAlgorithm::CreateConstraintSpaceForSpanner(
   NGConstraintSpaceBuilder space_builder(
       ConstraintSpace(), Style().GetWritingDirection(), /* is_new_fc */ true);
   space_builder.SetAvailableSize(ChildAvailableSize());
+  space_builder.SetStretchInlineSizeIfAuto(true);
   space_builder.SetPercentageResolutionSize(ChildAvailableSize());
 
   space_builder.SetNeedsBaseline(ConstraintSpace().NeedsBaseline());

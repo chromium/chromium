@@ -743,6 +743,7 @@ NGConstraintSpace CreateConstraintSpaceForColumns(
       parent_space, parent_space.GetWritingDirection(), /* is_new_fc */ true);
   space_builder.SetAvailableSize(column_size);
   space_builder.SetPercentageResolutionSize(percentage_resolution_size);
+  space_builder.SetStretchInlineSizeIfAuto(true);
 
   // To ensure progression, we need something larger than 0 here. The spec
   // actually says that fragmentainers have to accept at least 1px of content.

@@ -387,7 +387,6 @@ NGConstraintSpace NGTableAlgorithmUtils::CreateTableCellConstraintSpace(
     builder.SetOrthogonalFallbackInlineSize(
         table_writing_direction.IsHorizontal() ? icb_size.height
                                                : icb_size.width);
-    builder.SetIsShrinkToFit(cell.Style().LogicalWidth().IsAuto());
   }
 
   builder.SetAvailableSize(cell_size);

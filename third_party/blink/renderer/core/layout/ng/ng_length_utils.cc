@@ -107,7 +107,6 @@ LayoutUnit ResolveInlineLengthInternal(
   DCHECK_EQ(constraint_space.GetWritingMode(), style.GetWritingMode());
 
   switch (length.GetType()) {
-    case Length::kAuto:
     case Length::kFillAvailable: {
       LayoutUnit content_size = constraint_space.AvailableSize().inline_size;
       NGBoxStrut margins = ComputeMarginsForSelf(constraint_space, style);
@@ -154,6 +153,7 @@ LayoutUnit ResolveInlineLengthInternal(
     case Length::kExtendToZoom:
       NOTREACHED() << "These should only be used for viewport definitions";
       FALLTHROUGH;
+    case Length::kAuto:
     case Length::kNone:
     default:
       NOTREACHED();
@@ -438,8 +438,6 @@ LayoutUnit ComputeInlineSizeForFragment(
   if (node.IsNGTable())
     return To<NGTableNode>(node).ComputeTableInlineSize(space, border_padding);
 
-  const ComputedStyle& style = node.Style();
-  Length logical_width = style.LogicalWidth();
   auto MinMaxSizesFunc = [&](MinMaxSizesType type) -> MinMaxSizesResult {
     if (override_min_max_sizes_for_test)
       return {*override_min_max_sizes_for_test, false};
@@ -448,10 +446,14 @@ LayoutUnit ComputeInlineSizeForFragment(
     return node.ComputeMinMaxSizes(space.GetWritingMode(), input, &space);
   };
 
+  const ComputedStyle& style = node.Style();
+  Length logical_width = style.LogicalWidth();
   Length min_length = style.LogicalMinWidth();
   // TODO(cbiesinger): Audit callers of ResolveMainInlineLength to see
   // whether they need to respect aspect ratio and consider adding a helper
   // function for that.
+  // TODO(ikilpatrick): If we are stretching in both the inline-axis, and
+  // block-axis, we shouldn't apply the aspect-ratio.
   LayoutUnit extent = kIndefiniteSize;
   if (!style.AspectRatio().IsAuto() && logical_width.IsAuto())
     extent = ComputeInlineSizeFromAspectRatio(space, style, border_padding);
@@ -460,12 +462,13 @@ LayoutUnit ComputeInlineSizeForFragment(
     // if we need to apply the implied minimum size:
     // https://drafts.csswg.org/css-sizing-4/#aspect-ratio-minimum
     if (style.OverflowInlineDirection() == EOverflow::kVisible &&
-        min_length.IsAuto()) {
+        min_length.IsAuto())
       min_length = Length::MinIntrinsic();
-    }
   } else {
-    if (logical_width.IsAuto() && space.IsShrinkToFit())
-      logical_width = Length::FitContent();
+    if (logical_width.IsAuto()) {
+      logical_width = space.StretchInlineSizeIfAuto() ? Length::FillAvailable()
+                                                      : Length::FitContent();
+    }
     extent = ResolveMainInlineLength(space, style, border_padding,
                                      MinMaxSizesFunc, logical_width);
   }

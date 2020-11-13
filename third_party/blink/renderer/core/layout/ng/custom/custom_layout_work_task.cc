@@ -131,7 +131,6 @@ void CustomLayoutWorkTask::RunLayoutFragmentTask(
   builder.SetAvailableSize(available_size);
   builder.SetPercentageResolutionSize(percentage_size);
   builder.SetReplacedPercentageResolutionSize(percentage_size);
-  builder.SetIsShrinkToFit(child.Style().LogicalWidth().IsAuto());
   builder.SetIsFixedInlineSize(is_fixed_inline_size);
   builder.SetIsFixedBlockSize(is_fixed_block_size);
   builder.SetNeedsBaseline(true);

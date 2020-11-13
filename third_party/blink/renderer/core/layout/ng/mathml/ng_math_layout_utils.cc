@@ -33,8 +33,6 @@ NGConstraintSpace CreateConstraintSpaceForMathChild(
   space_builder.SetPercentageResolutionSize(child_available_size);
   space_builder.SetReplacedPercentageResolutionSize(child_available_size);
 
-  space_builder.SetIsShrinkToFit(child_style.LogicalWidth().IsAuto());
-
   // TODO(crbug.com/1124301): add target stretch sizes.
   // TODO(crbug.com/1125137): add ink metrics.
   space_builder.SetNeedsBaseline(true);

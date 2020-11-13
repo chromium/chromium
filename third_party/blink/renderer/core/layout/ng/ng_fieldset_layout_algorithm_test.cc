@@ -38,7 +38,8 @@ class NGFieldsetLayoutAlgorithmTest
   MinMaxSizes RunComputeMinMaxSizes(NGBlockNode node) {
     NGConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
         {WritingMode::kHorizontalTb, TextDirection::kLtr},
-        LogicalSize(LayoutUnit(), LayoutUnit()), false,
+        LogicalSize(LayoutUnit(), LayoutUnit()),
+        /* stretch_inline_size_if_auto */ true,
         node.CreatesNewFormattingContext());
     NGFragmentGeometry fragment_geometry =
         CalculateInitialMinMaxFragmentGeometry(space, node);
@@ -467,7 +468,8 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, FieldsetPaddingWithLegend) {
   NGBlockNode node(GetLayoutBoxByElementId("fieldset"));
   NGConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
       {WritingMode::kHorizontalTb, TextDirection::kLtr},
-      LogicalSize(LayoutUnit(1000), kIndefiniteSize), false,
+      LogicalSize(LayoutUnit(1000), kIndefiniteSize),
+      /* stretch_inline_size_if_auto */ true,
       node.CreatesNewFormattingContext());
 
   scoped_refptr<const NGPhysicalBoxFragment> fragment =
@@ -566,7 +568,8 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, NoFragmentation) {
   NGBlockNode node(GetLayoutBoxByElementId("fieldset"));
   NGConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
       {WritingMode::kHorizontalTb, TextDirection::kLtr},
-      LogicalSize(LayoutUnit(1000), kIndefiniteSize), false,
+      LogicalSize(LayoutUnit(1000), kIndefiniteSize),
+      /* stretch_inline_size_if_auto */ true,
       node.CreatesNewFormattingContext(), kFragmentainerSpaceAvailable);
 
   // We should only have one 176x126 fragment with no fragmentation.
@@ -592,7 +595,8 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, SimpleFragmentation) {
   NGBlockNode node(GetLayoutBoxByElementId("fieldset"));
   NGConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
       {WritingMode::kHorizontalTb, TextDirection::kLtr},
-      LogicalSize(LayoutUnit(1000), kIndefiniteSize), false,
+      LogicalSize(LayoutUnit(1000), kIndefiniteSize),
+      /* stretch_inline_size_if_auto */ true,
       node.CreatesNewFormattingContext(), kFragmentainerSpaceAvailable);
 
   scoped_refptr<const NGPhysicalBoxFragment> fragment =
@@ -626,7 +630,8 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, FragmentationNoPadding) {
   NGBlockNode node(GetLayoutBoxByElementId("fieldset"));
   NGConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
       {WritingMode::kHorizontalTb, TextDirection::kLtr},
-      LogicalSize(LayoutUnit(1000), kIndefiniteSize), false,
+      LogicalSize(LayoutUnit(1000), kIndefiniteSize),
+      /* stretch_inline_size_if_auto */ true,
       node.CreatesNewFormattingContext(), kFragmentainerSpaceAvailable);
 
   scoped_refptr<const NGPhysicalBoxFragment> fragment =
@@ -672,7 +677,8 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, FieldsetContentFragmentationAutoHeight) {
   NGBlockNode node(GetLayoutBoxByElementId("fieldset"));
   NGConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
       {WritingMode::kHorizontalTb, TextDirection::kLtr},
-      LogicalSize(LayoutUnit(1000), kIndefiniteSize), false,
+      LogicalSize(LayoutUnit(1000), kIndefiniteSize),
+      /* stretch_inline_size_if_auto */ true,
       node.CreatesNewFormattingContext(), kFragmentainerSpaceAvailable);
 
   scoped_refptr<const NGPhysicalBoxFragment> fragment =
@@ -734,7 +740,8 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, FieldsetContentFragmentation) {
   NGBlockNode node(GetLayoutBoxByElementId("fieldset"));
   NGConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
       {WritingMode::kHorizontalTb, TextDirection::kLtr},
-      LogicalSize(LayoutUnit(1000), kIndefiniteSize), false,
+      LogicalSize(LayoutUnit(1000), kIndefiniteSize),
+      /* stretch_inline_size_if_auto */ true,
       node.CreatesNewFormattingContext(), kFragmentainerSpaceAvailable);
 
   scoped_refptr<const NGPhysicalBoxFragment> fragment =
@@ -796,7 +803,8 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, LegendFragmentationAutoHeight) {
   NGBlockNode node(GetLayoutBoxByElementId("fieldset"));
   NGConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
       {WritingMode::kHorizontalTb, TextDirection::kLtr},
-      LogicalSize(LayoutUnit(1000), kIndefiniteSize), false,
+      LogicalSize(LayoutUnit(1000), kIndefiniteSize),
+      /* stretch_inline_size_if_auto */ true,
       node.CreatesNewFormattingContext(), kFragmentainerSpaceAvailable);
 
   scoped_refptr<const NGPhysicalBoxFragment> fragment =
@@ -845,7 +853,8 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, LegendFragmentation) {
   NGBlockNode node(GetLayoutBoxByElementId("fieldset"));
   NGConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
       {WritingMode::kHorizontalTb, TextDirection::kLtr},
-      LogicalSize(LayoutUnit(1000), kIndefiniteSize), false,
+      LogicalSize(LayoutUnit(1000), kIndefiniteSize),
+      /* stretch_inline_size_if_auto */ true,
       node.CreatesNewFormattingContext(), kFragmentainerSpaceAvailable);
 
   scoped_refptr<const NGPhysicalBoxFragment> fragment =
@@ -898,7 +907,8 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, LegendAndContentFragmentationAutoHeight) {
   NGBlockNode node(GetLayoutBoxByElementId("fieldset"));
   NGConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
       {WritingMode::kHorizontalTb, TextDirection::kLtr},
-      LogicalSize(LayoutUnit(1000), kIndefiniteSize), false,
+      LogicalSize(LayoutUnit(1000), kIndefiniteSize),
+      /* stretch_inline_size_if_auto */ true,
       node.CreatesNewFormattingContext(), kFragmentainerSpaceAvailable);
 
   scoped_refptr<const NGPhysicalBoxFragment> fragment =
@@ -963,7 +973,8 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, LegendAndContentFragmentation) {
   NGBlockNode node(GetLayoutBoxByElementId("fieldset"));
   NGConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
       {WritingMode::kHorizontalTb, TextDirection::kLtr},
-      LogicalSize(LayoutUnit(1000), kIndefiniteSize), false,
+      LogicalSize(LayoutUnit(1000), kIndefiniteSize),
+      /* stretch_inline_size_if_auto */ true,
       node.CreatesNewFormattingContext(), kFragmentainerSpaceAvailable);
 
   scoped_refptr<const NGPhysicalBoxFragment> fragment =
@@ -1020,7 +1031,8 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, LegendFragmentationWithOverflow) {
   NGBlockNode node(GetLayoutBoxByElementId("fieldset"));
   NGConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
       {WritingMode::kHorizontalTb, TextDirection::kLtr},
-      LogicalSize(LayoutUnit(1000), kIndefiniteSize), false,
+      LogicalSize(LayoutUnit(1000), kIndefiniteSize),
+      /* stretch_inline_size_if_auto */ true,
       node.CreatesNewFormattingContext(), kFragmentainerSpaceAvailable);
 
   scoped_refptr<const NGPhysicalBoxFragment> fragment =
@@ -1077,7 +1089,8 @@ TEST_F(NGFieldsetLayoutAlgorithmTest,
   NGBlockNode node(GetLayoutBoxByElementId("fieldset"));
   NGConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
       {WritingMode::kHorizontalTb, TextDirection::kLtr},
-      LogicalSize(LayoutUnit(1000), kIndefiniteSize), false,
+      LogicalSize(LayoutUnit(1000), kIndefiniteSize),
+      /* stretch_inline_size_if_auto */ true,
       node.CreatesNewFormattingContext(), kFragmentainerSpaceAvailable);
 
   scoped_refptr<const NGPhysicalBoxFragment> fragment =
@@ -1130,7 +1143,8 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, OverflowedLegend) {
   NGBlockNode node(GetLayoutBoxByElementId("fieldset"));
   NGConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
       {WritingMode::kHorizontalTb, TextDirection::kLtr},
-      LogicalSize(LayoutUnit(1000), kIndefiniteSize), false,
+      LogicalSize(LayoutUnit(1000), kIndefiniteSize),
+      /* stretch_inline_size_if_auto */ true,
       node.CreatesNewFormattingContext(), kFragmentainerSpaceAvailable);
 
   scoped_refptr<const NGPhysicalBoxFragment> fragment =
@@ -1175,7 +1189,8 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, OverflowedFieldsetContent) {
   NGBlockNode node(GetLayoutBoxByElementId("fieldset"));
   NGConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
       {WritingMode::kHorizontalTb, TextDirection::kLtr},
-      LogicalSize(LayoutUnit(1000), kIndefiniteSize), false,
+      LogicalSize(LayoutUnit(1000), kIndefiniteSize),
+      /* stretch_inline_size_if_auto */ true,
       node.CreatesNewFormattingContext(), kFragmentainerSpaceAvailable);
 
   scoped_refptr<const NGPhysicalBoxFragment> fragment =
@@ -1242,7 +1257,8 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, BreakInsideAvoid) {
   NGBlockNode node(GetLayoutBoxByElementId("fieldset"));
   NGConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
       {WritingMode::kHorizontalTb, TextDirection::kLtr},
-      LogicalSize(LayoutUnit(1000), kIndefiniteSize), false,
+      LogicalSize(LayoutUnit(1000), kIndefiniteSize),
+      /* stretch_inline_size_if_auto */ true,
       node.CreatesNewFormattingContext(), kFragmentainerSpaceAvailable);
 
   scoped_refptr<const NGPhysicalBoxFragment> fragment =
@@ -1294,7 +1310,8 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, BreakInsideAvoidTallBlock) {
   NGBlockNode node(GetLayoutBoxByElementId("fieldset"));
   NGConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
       {WritingMode::kHorizontalTb, TextDirection::kLtr},
-      LogicalSize(LayoutUnit(1000), kIndefiniteSize), false,
+      LogicalSize(LayoutUnit(1000), kIndefiniteSize),
+      /* stretch_inline_size_if_auto */ true,
       node.CreatesNewFormattingContext(), kFragmentainerSpaceAvailable);
 
   scoped_refptr<const NGPhysicalBoxFragment> fragment =
@@ -1357,7 +1374,8 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, LegendBreakInsideAvoid) {
   NGBlockNode node(GetLayoutBoxByElementId("container"));
   NGConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
       {WritingMode::kHorizontalTb, TextDirection::kLtr},
-      LogicalSize(LayoutUnit(1000), kIndefiniteSize), false,
+      LogicalSize(LayoutUnit(1000), kIndefiniteSize),
+      /* stretch_inline_size_if_auto */ true,
       node.CreatesNewFormattingContext(), kFragmentainerSpaceAvailable);
 
   scoped_refptr<const NGPhysicalBoxFragment> fragment =
@@ -1411,7 +1429,8 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, BreakBeforeAvoid) {
   NGBlockNode node(GetLayoutBoxByElementId("container"));
   NGConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
       {WritingMode::kHorizontalTb, TextDirection::kLtr},
-      LogicalSize(LayoutUnit(1000), kIndefiniteSize), false,
+      LogicalSize(LayoutUnit(1000), kIndefiniteSize),
+      /* stretch_inline_size_if_auto */ true,
       node.CreatesNewFormattingContext(), kFragmentainerSpaceAvailable);
 
   scoped_refptr<const NGPhysicalBoxFragment> fragment =
@@ -1465,7 +1484,8 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, LegendBreakBeforeAvoid) {
   NGBlockNode node(GetLayoutBoxByElementId("container"));
   NGConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
       {WritingMode::kHorizontalTb, TextDirection::kLtr},
-      LogicalSize(LayoutUnit(1000), kIndefiniteSize), false,
+      LogicalSize(LayoutUnit(1000), kIndefiniteSize),
+      /* stretch_inline_size_if_auto */ true,
       node.CreatesNewFormattingContext(), kFragmentainerSpaceAvailable);
 
   scoped_refptr<const NGPhysicalBoxFragment> fragment =
@@ -1519,7 +1539,8 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, BreakAfterAvoid) {
   NGBlockNode node(GetLayoutBoxByElementId("container"));
   NGConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
       {WritingMode::kHorizontalTb, TextDirection::kLtr},
-      LogicalSize(LayoutUnit(1000), kIndefiniteSize), false,
+      LogicalSize(LayoutUnit(1000), kIndefiniteSize),
+      /* stretch_inline_size_if_auto */ true,
       node.CreatesNewFormattingContext(), kFragmentainerSpaceAvailable);
 
   scoped_refptr<const NGPhysicalBoxFragment> fragment =
@@ -1574,7 +1595,8 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, LegendBreakAfterAvoid) {
   NGBlockNode node(GetLayoutBoxByElementId("container"));
   NGConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
       {WritingMode::kHorizontalTb, TextDirection::kLtr},
-      LogicalSize(LayoutUnit(1000), kIndefiniteSize), false,
+      LogicalSize(LayoutUnit(1000), kIndefiniteSize),
+      /* stretch_inline_size_if_auto */ true,
       node.CreatesNewFormattingContext(), kFragmentainerSpaceAvailable);
 
   scoped_refptr<const NGPhysicalBoxFragment> fragment =
@@ -1629,7 +1651,8 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, MarginBottomPastEndOfFragmentainer) {
   NGBlockNode node(GetLayoutBoxByElementId("fieldset"));
   NGConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
       {WritingMode::kHorizontalTb, TextDirection::kLtr},
-      LogicalSize(LayoutUnit(1000), kIndefiniteSize), false,
+      LogicalSize(LayoutUnit(1000), kIndefiniteSize),
+      /* stretch_inline_size_if_auto */ true,
       node.CreatesNewFormattingContext(), kFragmentainerSpaceAvailable);
 
   scoped_refptr<const NGPhysicalBoxFragment> fragment =
@@ -1676,7 +1699,8 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, SmallLegendLargeBorderFragmentation) {
   NGBlockNode node(GetLayoutBoxByElementId("fieldset"));
   NGConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
       {WritingMode::kHorizontalTb, TextDirection::kLtr},
-      LogicalSize(LayoutUnit(1000), kIndefiniteSize), false,
+      LogicalSize(LayoutUnit(1000), kIndefiniteSize),
+      /* stretch_inline_size_if_auto */ true,
       node.CreatesNewFormattingContext(), kFragmentainerSpaceAvailable);
 
   scoped_refptr<const NGPhysicalBoxFragment> fragment =
@@ -1732,7 +1756,8 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, SmallerLegendLargeBorderFragmentation) {
   NGBlockNode node(GetLayoutBoxByElementId("fieldset"));
   NGConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
       {WritingMode::kHorizontalTb, TextDirection::kLtr},
-      LogicalSize(LayoutUnit(1000), kIndefiniteSize), false,
+      LogicalSize(LayoutUnit(1000), kIndefiniteSize),
+      /* stretch_inline_size_if_auto */ true,
       node.CreatesNewFormattingContext(), kFragmentainerSpaceAvailable);
 
   scoped_refptr<const NGPhysicalBoxFragment> fragment =
@@ -1793,7 +1818,8 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, SmallerLegendLargeBorderFragmentation2) {
   NGBlockNode node(GetLayoutBoxByElementId("container"));
   NGConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
       {WritingMode::kHorizontalTb, TextDirection::kLtr},
-      LogicalSize(LayoutUnit(1000), kIndefiniteSize), false,
+      LogicalSize(LayoutUnit(1000), kIndefiniteSize),
+      /* stretch_inline_size_if_auto */ true,
       node.CreatesNewFormattingContext(), kFragmentainerSpaceAvailable);
 
   scoped_refptr<const NGPhysicalBoxFragment> fragment =
@@ -1841,7 +1867,8 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, SmallerLegendLargeBorderWithBreak) {
   NGBlockNode node(GetLayoutBoxByElementId("fieldset"));
   NGConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
       {WritingMode::kHorizontalTb, TextDirection::kLtr},
-      LogicalSize(LayoutUnit(1000), kIndefiniteSize), false,
+      LogicalSize(LayoutUnit(1000), kIndefiniteSize),
+      /* stretch_inline_size_if_auto */ true,
       node.CreatesNewFormattingContext(), kFragmentainerSpaceAvailable);
 
   scoped_refptr<const NGPhysicalBoxFragment> fragment =

@@ -446,9 +446,11 @@ class CORE_EXPORT NGConstraintSpace final {
     return bitfields_.is_fixed_block_size_indefinite;
   }
 
-  // Whether an auto inline-size should be interpreted as shrink-to-fit
-  // (ie. fit-content). This is used for inline-block, floats, etc.
-  bool IsShrinkToFit() const { return bitfields_.is_shrink_to_fit; }
+  // Return true if the inline-size property when 'auto' should stretch to
+  // consume the available space. If false, it behaves as "shrink-to-fit".
+  bool StretchInlineSizeIfAuto() const {
+    return bitfields_.stretch_inline_size_if_auto;
+  }
 
   bool IsPaintedAtomically() const { return bitfields_.is_painted_atomically; }
 
@@ -1286,7 +1288,7 @@ class CORE_EXPORT NGConstraintSpace final {
           baseline_algorithm_type(
               static_cast<unsigned>(NGBaselineAlgorithmType::kFirstLine)),
           cache_slot(static_cast<unsigned>(NGCacheSlot::kLayout)),
-          is_shrink_to_fit(false),
+          stretch_inline_size_if_auto(false),
           is_fixed_inline_size(false),
           is_fixed_block_size(false),
           is_fixed_block_size_indefinite(false),
@@ -1316,7 +1318,7 @@ class CORE_EXPORT NGConstraintSpace final {
     }
 
     bool AreSizeConstraintsEqual(const Bitfields& other) const {
-      return is_shrink_to_fit == other.is_shrink_to_fit &&
+      return stretch_inline_size_if_auto == other.stretch_inline_size_if_auto &&
              is_fixed_inline_size == other.is_fixed_inline_size &&
              is_fixed_block_size == other.is_fixed_block_size &&
              is_fixed_block_size_indefinite ==
@@ -1347,7 +1349,7 @@ class CORE_EXPORT NGConstraintSpace final {
     unsigned cache_slot : 1;
 
     // Size constraints.
-    unsigned is_shrink_to_fit : 1;
+    unsigned stretch_inline_size_if_auto : 1;
     unsigned is_fixed_inline_size : 1;
     unsigned is_fixed_block_size : 1;
     unsigned is_fixed_block_size_indefinite : 1;

@@ -27,11 +27,8 @@ inline bool InlineLengthMayChange(const ComputedStyle& style,
                                   const NGConstraintSpace& new_space,
                                   const NGConstraintSpace& old_space,
                                   const NGLayoutResult& layout_result) {
-  DCHECK_EQ(new_space.IsShrinkToFit(), old_space.IsShrinkToFit());
-#if DCHECK_IS_ON()
-  if (type == LengthResolveType::kMainSize && new_space.IsShrinkToFit())
-    DCHECK(length.IsAuto());
-#endif
+  DCHECK_EQ(new_space.StretchInlineSizeIfAuto(),
+            old_space.StretchInlineSizeIfAuto());
 
   bool is_unspecified =
       (length.IsAuto() && type != LengthResolveType::kMinSize) ||
@@ -86,7 +83,8 @@ bool SizeMayChange(const NGBlockNode& node,
   DCHECK_EQ(new_space.IsFixedBlockSize(), old_space.IsFixedBlockSize());
   DCHECK_EQ(new_space.IsFixedBlockSizeIndefinite(),
             old_space.IsFixedBlockSizeIndefinite());
-  DCHECK_EQ(new_space.IsShrinkToFit(), old_space.IsShrinkToFit());
+  DCHECK_EQ(new_space.StretchInlineSizeIfAuto(),
+            old_space.StretchInlineSizeIfAuto());
   DCHECK_EQ(new_space.TableCellChildLayoutMode(),
             old_space.TableCellChildLayoutMode());
 
@@ -385,7 +383,7 @@ bool IntrinsicSizeWillChange(
     const NGConstraintSpace& new_space,
     base::Optional<NGFragmentGeometry>* fragment_geometry) {
   const ComputedStyle& style = node.Style();
-  if (!new_space.IsShrinkToFit() && !NeedMinMaxSize(style))
+  if (new_space.StretchInlineSizeIfAuto() && !NeedMinMaxSize(style))
     return false;
 
   if (!*fragment_geometry)

@@ -786,6 +786,7 @@ void NGTableLayoutAlgorithm::GenerateCaptionFragments(
     SetOrthogonalFallbackInlineSizeIfNeeded(Style(), caption, &builder);
     builder.SetAvailableSize(available_size);
     builder.SetPercentageResolutionSize(available_size);
+    builder.SetStretchInlineSizeIfAuto(true);
     NGConstraintSpace caption_constraint_space = builder.ToConstraintSpace();
 
     scoped_refptr<const NGLayoutResult> caption_result =

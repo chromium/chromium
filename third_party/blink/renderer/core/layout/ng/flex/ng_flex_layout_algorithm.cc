@@ -358,18 +358,19 @@ NGConstraintSpace NGFlexLayoutAlgorithm::BuildSpaceForIntrinsicBlockSize(
   NGBoxStrut margins = physical_margins.ConvertToLogical(
       ConstraintSpace().GetWritingDirection());
   LogicalSize child_available_size = ChildAvailableSize();
-  if (ShouldItemShrinkToFit(flex_item)) {
-    space_builder.SetIsShrinkToFit(true);
-  } else if (cross_axis_min_max.min_size != kIndefiniteSize &&
-             WillChildCrossSizeBeContainerCrossSize(flex_item)) {
-    LayoutUnit cross_size =
-        CalculateFixedCrossSize(cross_axis_min_max, margins);
-    if (is_column_) {
-      space_builder.SetIsFixedInlineSize(true);
-      child_available_size.inline_size = cross_size;
-    } else {
-      space_builder.SetIsFixedBlockSize(true);
-      child_available_size.block_size = cross_size;
+  if (!ShouldItemShrinkToFit(flex_item)) {
+    space_builder.SetStretchInlineSizeIfAuto(true);
+    if (cross_axis_min_max.min_size != kIndefiniteSize &&
+        WillChildCrossSizeBeContainerCrossSize(flex_item)) {
+      LayoutUnit cross_size =
+          CalculateFixedCrossSize(cross_axis_min_max, margins);
+      if (is_column_) {
+        space_builder.SetIsFixedInlineSize(true);
+        child_available_size.inline_size = cross_size;
+      } else {
+        space_builder.SetIsFixedBlockSize(true);
+        child_available_size.block_size = cross_size;
+      }
     }
   }
 
@@ -1168,8 +1169,8 @@ scoped_refptr<const NGLayoutResult> NGFlexLayoutAlgorithm::LayoutInternal() {
       // Determine the hypothetical cross size of each item by performing layout
       // with the used main size and the available space, treating auto as
       // fit-content.
-      if (ShouldItemShrinkToFit(flex_item.ng_input_node_))
-        space_builder.SetIsShrinkToFit(true);
+      if (!ShouldItemShrinkToFit(flex_item.ng_input_node_))
+        space_builder.SetStretchInlineSizeIfAuto(true);
 
       // For a button child, we need the baseline type same as the container's
       // baseline type for UseCounter. For example, if the container's display

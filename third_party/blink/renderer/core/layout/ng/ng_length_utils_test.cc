@@ -31,6 +31,7 @@ static NGConstraintSpace ConstructConstraintSpace(
                                    /* is_new_fc */ false);
   builder.SetAvailableSize(size);
   builder.SetPercentageResolutionSize(size);
+  builder.SetStretchInlineSizeIfAuto(true);
   builder.SetIsFixedInlineSize(fixed_inline);
   builder.SetIsFixedBlockSize(fixed_block);
   return builder.ToConstraintSpace();
@@ -132,7 +133,6 @@ TEST_F(NGLengthUtilsTest, testResolveInlineLength) {
   EXPECT_EQ(LayoutUnit(150), ResolveMainInlineLength(Length::Fixed(150)));
   EXPECT_EQ(LayoutUnit(0), ResolveMinInlineLength(
                                Length::Auto(), LengthResolvePhase::kIntrinsic));
-  EXPECT_EQ(LayoutUnit(200), ResolveMainInlineLength(Length::Auto()));
   EXPECT_EQ(LayoutUnit(200), ResolveMainInlineLength(Length::FillAvailable()));
 
   EXPECT_EQ(LayoutUnit::Max(),

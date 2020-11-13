@@ -140,7 +140,9 @@ class CORE_EXPORT NGConstraintSpaceBuilder final {
       space_.bitfields_.is_fixed_block_size_indefinite = b;
   }
 
-  void SetIsShrinkToFit(bool b) { space_.bitfields_.is_shrink_to_fit = b; }
+  void SetStretchInlineSizeIfAuto(bool b) {
+    space_.bitfields_.stretch_inline_size_if_auto = b;
+  }
 
   void SetIsPaintedAtomically(bool b) {
     space_.bitfields_.is_painted_atomically = b;

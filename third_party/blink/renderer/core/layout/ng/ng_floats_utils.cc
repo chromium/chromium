@@ -89,7 +89,6 @@ NGConstraintSpace CreateConstraintSpaceForFloat(
   builder.SetPercentageResolutionSize(unpositioned_float.percentage_size);
   builder.SetReplacedPercentageResolutionSize(
       unpositioned_float.replaced_percentage_size);
-  builder.SetIsShrinkToFit(style.LogicalWidth().IsAuto());
   return builder.ToConstraintSpace();
 }
 

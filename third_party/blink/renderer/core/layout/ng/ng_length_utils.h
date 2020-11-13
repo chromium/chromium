@@ -171,6 +171,7 @@ inline LayoutUnit ResolveMainInlineLength(
     const NGBoxStrut& border_padding,
     const MinMaxSizesFunc& min_max_sizes_func,
     const Length& length) {
+  DCHECK(!length.IsAuto());
   base::Optional<MinMaxSizes> min_max_sizes;
   if (length.IsContentOrIntrinsic()) {
     min_max_sizes =
@@ -190,6 +191,7 @@ inline LayoutUnit ResolveMainInlineLength<base::Optional<MinMaxSizes>>(
     const NGBoxStrut& border_padding,
     const base::Optional<MinMaxSizes>& min_max_sizes,
     const Length& length) {
+  DCHECK(!length.IsAuto());
   return ResolveInlineLengthInternal(constraint_space, style, border_padding,
                                      min_max_sizes, length);
 }

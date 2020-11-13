@@ -83,6 +83,7 @@ NGConstraintSpace NGPageLayoutAlgorithm::CreateConstraintSpaceForPages(
       ConstraintSpace(), Style().GetWritingDirection(), /* is_new_fc */ true);
   space_builder.SetAvailableSize(page_size);
   space_builder.SetPercentageResolutionSize(page_size);
+  space_builder.SetStretchInlineSizeIfAuto(true);
 
   // TODO(mstensho): Handle auto block size.
   space_builder.SetFragmentationType(kFragmentPage);

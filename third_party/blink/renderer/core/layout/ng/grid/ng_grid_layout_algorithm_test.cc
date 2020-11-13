@@ -301,7 +301,9 @@ TEST_F(NGGridLayoutAlgorithmTest, NGGridLayoutAlgorithmMeasuring) {
 
   NGConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
       {WritingMode::kHorizontalTb, TextDirection::kLtr},
-      LogicalSize(LayoutUnit(200), LayoutUnit(200)), false, true);
+      LogicalSize(LayoutUnit(200), LayoutUnit(200)),
+      /* stretch_inline_size_if_auto */ true,
+      /* is_new_formatting_context */ true);
 
   NGFragmentGeometry fragment_geometry =
       CalculateInitialFragmentGeometry(space, node);
@@ -376,7 +378,9 @@ TEST_F(NGGridLayoutAlgorithmTest, NGGridLayoutAlgorithmRanges) {
 
   NGConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
       {WritingMode::kHorizontalTb, TextDirection::kLtr},
-      LogicalSize(LayoutUnit(100), LayoutUnit(100)), false, true);
+      LogicalSize(LayoutUnit(100), LayoutUnit(100)),
+      /* stretch_inline_size_if_auto */ true,
+      /* is_new_formatting_context */ true);
 
   NGFragmentGeometry fragment_geometry =
       CalculateInitialFragmentGeometry(space, node);
@@ -431,7 +435,9 @@ TEST_F(NGGridLayoutAlgorithmTest, NGGridLayoutAlgorithmRangesWithAutoRepeater) {
 
   NGConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
       {WritingMode::kHorizontalTb, TextDirection::kLtr},
-      LogicalSize(LayoutUnit(100), LayoutUnit(100)), false, true);
+      LogicalSize(LayoutUnit(100), LayoutUnit(100)),
+      /* stretch_inline_size_if_auto */ true,
+      /* is_new_formatting_context */ true);
 
   NGFragmentGeometry fragment_geometry =
       CalculateInitialFragmentGeometry(space, node);
@@ -516,7 +522,9 @@ TEST_F(NGGridLayoutAlgorithmTest, NGGridLayoutAlgorithmRangesImplicit) {
 
   NGConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
       {WritingMode::kHorizontalTb, TextDirection::kLtr},
-      LogicalSize(LayoutUnit(100), LayoutUnit(100)), false, true);
+      LogicalSize(LayoutUnit(100), LayoutUnit(100)),
+      /* stretch_inline_size_if_auto */ true,
+      /* is_new_formatting_context */ true);
 
   NGFragmentGeometry fragment_geometry =
       CalculateInitialFragmentGeometry(space, node);
@@ -585,7 +593,9 @@ TEST_F(NGGridLayoutAlgorithmTest,
 
   NGConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
       {WritingMode::kHorizontalTb, TextDirection::kLtr},
-      LogicalSize(LayoutUnit(100), LayoutUnit(100)), false, true);
+      LogicalSize(LayoutUnit(100), LayoutUnit(100)),
+      /* stretch_inline_size_if_auto */ true,
+      /* is_new_formatting_context */ true);
 
   NGFragmentGeometry fragment_geometry =
       CalculateInitialFragmentGeometry(space, node);
@@ -651,7 +661,9 @@ TEST_F(NGGridLayoutAlgorithmTest, NGGridLayoutAlgorithmRangesImplicitAutoRows) {
 
   NGConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
       {WritingMode::kHorizontalTb, TextDirection::kLtr},
-      LogicalSize(LayoutUnit(100), LayoutUnit(100)), false, true);
+      LogicalSize(LayoutUnit(100), LayoutUnit(100)),
+      /* stretch_inline_size_if_auto */ true,
+      /* is_new_formatting_context */ true);
 
   NGFragmentGeometry fragment_geometry =
       CalculateInitialFragmentGeometry(space, node);
@@ -709,7 +721,9 @@ TEST_F(NGGridLayoutAlgorithmTest, NGGridLayoutAlgorithmRangesImplicitMixed) {
 
   NGConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
       {WritingMode::kHorizontalTb, TextDirection::kLtr},
-      LogicalSize(LayoutUnit(100), LayoutUnit(100)), false, true);
+      LogicalSize(LayoutUnit(100), LayoutUnit(100)),
+      /* stretch_inline_size_if_auto */ true,
+      /* is_new_formatting_context */ true);
 
   NGFragmentGeometry fragment_geometry =
       CalculateInitialFragmentGeometry(space, node);
@@ -796,7 +810,9 @@ TEST_F(NGGridLayoutAlgorithmTest, NGGridLayoutAlgorithmAutoGridPositions) {
 
   NGConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
       {WritingMode::kHorizontalTb, TextDirection::kLtr},
-      LogicalSize(LayoutUnit(500), LayoutUnit(500)), false, true);
+      LogicalSize(LayoutUnit(500), LayoutUnit(500)),
+      /* stretch_inline_size_if_auto */ true,
+      /* is_new_formatting_context */ true);
 
   NGFragmentGeometry fragment_geometry =
       CalculateInitialFragmentGeometry(space, node);
@@ -923,7 +939,9 @@ TEST_F(NGGridLayoutAlgorithmTest, NGGridLayoutAlgorithmAutoDense) {
 
   NGConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
       {WritingMode::kHorizontalTb, TextDirection::kLtr},
-      LogicalSize(LayoutUnit(500), LayoutUnit(500)), false, true);
+      LogicalSize(LayoutUnit(500), LayoutUnit(500)),
+      /* stretch_inline_size_if_auto */ true,
+      /* is_new_formatting_context */ true);
 
   NGFragmentGeometry fragment_geometry =
       CalculateInitialFragmentGeometry(space, node);
@@ -1006,7 +1024,9 @@ TEST_F(NGGridLayoutAlgorithmTest, NGGridLayoutAlgorithmGridPositions) {
 
   NGConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
       {WritingMode::kHorizontalTb, TextDirection::kLtr},
-      LogicalSize(LayoutUnit(500), LayoutUnit(500)), false, true);
+      LogicalSize(LayoutUnit(500), LayoutUnit(500)),
+      /* stretch_inline_size_if_auto */ true,
+      /* is_new_formatting_context */ true);
 
   NGFragmentGeometry fragment_geometry =
       CalculateInitialFragmentGeometry(space, node);
@@ -1057,7 +1077,9 @@ TEST_F(NGGridLayoutAlgorithmTest, NGGridLayoutAlgorithmResolveFixedTrackSizes) {
   NGBlockNode node(GetLayoutBoxByElementId("grid"));
   NGConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
       {WritingMode::kHorizontalTb, TextDirection::kLtr},
-      LogicalSize(LayoutUnit(100), kIndefiniteSize), false, true);
+      LogicalSize(LayoutUnit(100), kIndefiniteSize),
+      /* stretch_inline_size_if_auto */ true,
+      /* is_new_formatting_context */ true);
   NGFragmentGeometry fragment_geometry =
       CalculateInitialFragmentGeometry(space, node);
 
@@ -1135,7 +1157,9 @@ TEST_F(NGGridLayoutAlgorithmTest,
   NGBlockNode node(GetLayoutBoxByElementId("grid"));
   NGConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
       {WritingMode::kHorizontalTb, TextDirection::kLtr},
-      LogicalSize(LayoutUnit(100), kIndefiniteSize), false, true);
+      LogicalSize(LayoutUnit(100), kIndefiniteSize),
+      /* stretch_inline_size_if_auto */ true,
+      /* is_new_formatting_context */ true);
   NGFragmentGeometry fragment_geometry =
       CalculateInitialFragmentGeometry(space, node);
 

@@ -2485,6 +2485,7 @@ NGBoxStrut NGBlockLayoutAlgorithm::CalculateMargins(
                                      /* is_new_fc */ false);
     builder.SetAvailableSize(ChildAvailableSize());
     builder.SetPercentageResolutionSize(child_percentage_size_);
+    builder.SetStretchInlineSizeIfAuto(true);
     NGConstraintSpace space = builder.ToConstraintSpace();
 
     NGBoxStrut child_border_padding =
@@ -2519,12 +2520,11 @@ NGConstraintSpace NGBlockLayoutAlgorithm::CreateConstraintSpaceForChild(
                                    is_new_fc);
   SetOrthogonalFallbackInlineSizeIfNeeded(Style(), child, &builder);
 
-  if (!IsParallelWritingMode(ConstraintSpace().GetWritingMode(),
-                             child_writing_direction.GetWritingMode()))
-    builder.SetIsShrinkToFit(child_style.LogicalWidth().IsAuto());
-  if (child_style.LogicalWidth().IsAuto() &&
-      child.GetLayoutBox()->AutoWidthShouldFitContent())
-    builder.SetIsShrinkToFit(true);
+  if (IsParallelWritingMode(ConstraintSpace().GetWritingMode(),
+                            child_writing_direction.GetWritingMode())) {
+    if (!child.GetLayoutBox()->AutoWidthShouldFitContent())
+      builder.SetStretchInlineSizeIfAuto(true);
+  }
 
   builder.SetAvailableSize(child_available_size);
   builder.SetPercentageResolutionSize(child_percentage_size_);
@@ -2896,10 +2896,10 @@ void NGBlockLayoutAlgorithm::HandleRubyText(NGBlockNode ruby_text_child) {
   NGConstraintSpaceBuilder builder(ConstraintSpace(),
                                    rt_style.GetWritingDirection(), true);
   SetOrthogonalFallbackInlineSizeIfNeeded(Style(), ruby_text_child, &builder);
-  if (!IsParallelWritingMode(Style().GetWritingMode(),
-                             rt_style.GetWritingMode()))
-    builder.SetIsShrinkToFit(rt_style.LogicalWidth().IsAuto());
   builder.SetAvailableSize(ChildAvailableSize());
+  if (IsParallelWritingMode(ConstraintSpace().GetWritingMode(),
+                            rt_style.GetWritingMode()))
+    builder.SetStretchInlineSizeIfAuto(true);
 
   scoped_refptr<const NGLayoutResult> result =
       ruby_text_child.Layout(builder.ToConstraintSpace(), break_token.get());

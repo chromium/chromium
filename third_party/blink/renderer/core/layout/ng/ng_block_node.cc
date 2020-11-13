@@ -1572,7 +1572,6 @@ scoped_refptr<const NGLayoutResult> NGBlockNode::LayoutAtomicInline(
   builder.SetNeedsBaseline(true);
   builder.SetBaselineAlgorithmType(baseline_algorithm_type);
 
-  builder.SetIsShrinkToFit(Style().LogicalWidth().IsAuto());
   builder.SetAvailableSize(parent_constraint_space.AvailableSize());
   builder.SetPercentageResolutionSize(
       parent_constraint_space.PercentageResolutionSize());

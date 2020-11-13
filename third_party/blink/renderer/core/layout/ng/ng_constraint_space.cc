@@ -125,9 +125,8 @@ NGConstraintSpace NGConstraintSpace::CreateFromLayoutObject(
   builder.SetIsFixedInlineSize(fixed_inline);
   builder.SetIsFixedBlockSize(fixed_block);
   builder.SetIsFixedBlockSizeIndefinite(!fixed_block_is_definite);
-  builder.SetIsShrinkToFit(
-      style.LogicalWidth().IsAuto() &&
-      block.SizesLogicalWidthToFitContent(style.LogicalWidth()));
+  builder.SetStretchInlineSizeIfAuto(
+      !block.SizesLogicalWidthToFitContent(style.LogicalWidth()));
   return builder.ToConstraintSpace();
 }
 

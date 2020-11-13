@@ -411,7 +411,6 @@ NGFieldsetLayoutAlgorithm::CreateConstraintSpaceForLegend(
 
   builder.SetAvailableSize(available_size);
   builder.SetPercentageResolutionSize(percentage_size);
-  builder.SetIsShrinkToFit(legend.Style().LogicalWidth().IsAuto());
   return builder.ToConstraintSpace();
 }
 
@@ -425,6 +424,7 @@ NGFieldsetLayoutAlgorithm::CreateConstraintSpaceForFieldsetContent(
       ConstraintSpace(), fieldset_content.Style().GetWritingDirection(),
       /* is_new_fc */ true);
   builder.SetAvailableSize(padding_box_size);
+  builder.SetStretchInlineSizeIfAuto(true);
   // We pass the container's PercentageResolutionSize because percentage
   // padding for the fieldset content should be computed as they are in
   // the container.
