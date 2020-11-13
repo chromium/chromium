@@ -71,6 +71,8 @@ void SetSeedVersion(const std::string& seed_version);
 
 // Gets the version of the seed that the current set of FieldTrials was
 // generated from.
+// Only works on the browser process; returns the empty string from other
+// processes.
 // TODO(crbug/507665): Move this to field_trials_provider once it moves
 // into components/variations
 const std::string& GetSeedVersion();

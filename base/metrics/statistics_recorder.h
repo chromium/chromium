@@ -39,7 +39,7 @@ class HistogramSnapshotManager;
 //
 // All the public methods are static and act on a global recorder. This global
 // recorder is internally synchronized and all the static methods are thread
-// safe.
+// safe. This is intended to only be run/used in the browser process.
 //
 // StatisticsRecorder doesn't have any public constructor. For testing purpose,
 // you can create a temporary recorder using the factory method
