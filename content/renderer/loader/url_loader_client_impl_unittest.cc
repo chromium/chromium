@@ -6,6 +6,7 @@
 
 #include <vector>
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "content/renderer/loader/resource_dispatcher.h"
 #include "content/renderer/loader/test_request_peer.h"
@@ -18,6 +19,7 @@
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom.h"
 #include "third_party/blink/public/platform/resource_load_info_notifier_wrapper.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
@@ -48,9 +50,14 @@ std::string GetRequestPeerContextBody(TestRequestPeer::Context* context) {
 }  // namespace
 
 class URLLoaderClientImplTest : public ::testing::Test,
-                                public network::mojom::URLLoaderFactory {
+                                public network::mojom::URLLoaderFactory,
+                                public ::testing::WithParamInterface<bool> {
  protected:
   URLLoaderClientImplTest() : dispatcher_(new ResourceDispatcher()) {
+    if (BufferingEnabled()) {
+      scoped_feature_list_.InitAndEnableFeature(
+          blink::features::kLoadingTasksUnfreezable);
+    }
     auto request = std::make_unique<network::ResourceRequest>();
     request_id_ = dispatcher_->StartAsync(
         std::move(request), 0 /* loader_option */,
@@ -67,6 +74,8 @@ class URLLoaderClientImplTest : public ::testing::Test,
     base::RunLoop().RunUntilIdle();
     EXPECT_TRUE(url_loader_client_);
   }
+
+  bool BufferingEnabled() { return GetParam(); }
 
   void TearDown() override { url_loader_client_.reset(); }
 
@@ -97,13 +106,14 @@ class URLLoaderClientImplTest : public ::testing::Test,
   }
 
   base::test::SingleThreadTaskEnvironment task_environment_;
+  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<ResourceDispatcher> dispatcher_;
   TestRequestPeer::Context request_peer_context_;
   int request_id_ = 0;
   mojo::Remote<network::mojom::URLLoaderClient> url_loader_client_;
 };
 
-TEST_F(URLLoaderClientImplTest, OnReceiveResponse) {
+TEST_P(URLLoaderClientImplTest, OnReceiveResponse) {
   url_loader_client_->OnReceiveResponse(network::mojom::URLResponseHead::New());
 
   EXPECT_FALSE(request_peer_context_.received_response);
@@ -111,7 +121,7 @@ TEST_F(URLLoaderClientImplTest, OnReceiveResponse) {
   EXPECT_TRUE(request_peer_context_.received_response);
 }
 
-TEST_F(URLLoaderClientImplTest, ResponseBody) {
+TEST_P(URLLoaderClientImplTest, ResponseBody) {
   url_loader_client_->OnReceiveResponse(network::mojom::URLResponseHead::New());
 
   EXPECT_FALSE(request_peer_context_.received_response);
@@ -131,7 +141,7 @@ TEST_F(URLLoaderClientImplTest, ResponseBody) {
   EXPECT_EQ("hello", GetRequestPeerContextBody(&request_peer_context_));
 }
 
-TEST_F(URLLoaderClientImplTest, OnReceiveRedirect) {
+TEST_P(URLLoaderClientImplTest, OnReceiveRedirect) {
   net::RedirectInfo redirect_info;
 
   url_loader_client_->OnReceiveRedirect(redirect_info,
@@ -142,7 +152,7 @@ TEST_F(URLLoaderClientImplTest, OnReceiveRedirect) {
   EXPECT_EQ(1, request_peer_context_.seen_redirects);
 }
 
-TEST_F(URLLoaderClientImplTest, OnReceiveCachedMetadata) {
+TEST_P(URLLoaderClientImplTest, OnReceiveCachedMetadata) {
   std::vector<uint8_t> data;
   data.push_back('a');
   mojo_base::BigBuffer metadata(data);
@@ -158,7 +168,7 @@ TEST_F(URLLoaderClientImplTest, OnReceiveCachedMetadata) {
   EXPECT_EQ('a', request_peer_context_.cached_metadata.data()[0]);
 }
 
-TEST_F(URLLoaderClientImplTest, OnTransferSizeUpdated) {
+TEST_P(URLLoaderClientImplTest, OnTransferSizeUpdated) {
   url_loader_client_->OnReceiveResponse(network::mojom::URLResponseHead::New());
   url_loader_client_->OnTransferSizeUpdated(4);
   url_loader_client_->OnTransferSizeUpdated(4);
@@ -170,7 +180,7 @@ TEST_F(URLLoaderClientImplTest, OnTransferSizeUpdated) {
   EXPECT_EQ(8, request_peer_context_.total_encoded_data_length);
 }
 
-TEST_F(URLLoaderClientImplTest, OnCompleteWithResponseBody) {
+TEST_P(URLLoaderClientImplTest, OnCompleteWithResponseBody) {
   network::URLLoaderCompletionStatus status;
 
   url_loader_client_->OnReceiveResponse(network::mojom::URLResponseHead::New());
@@ -203,7 +213,7 @@ TEST_F(URLLoaderClientImplTest, OnCompleteWithResponseBody) {
 // Due to the lack of ordering guarantee, it is possible that the response body
 // bytes arrives after the completion message. URLLoaderClientImpl should
 // restore the order.
-TEST_F(URLLoaderClientImplTest, OnCompleteShouldBeTheLastMessage) {
+TEST_P(URLLoaderClientImplTest, OnCompleteShouldBeTheLastMessage) {
   network::URLLoaderCompletionStatus status;
 
   url_loader_client_->OnReceiveResponse(network::mojom::URLResponseHead::New());
@@ -226,7 +236,7 @@ TEST_F(URLLoaderClientImplTest, OnCompleteShouldBeTheLastMessage) {
   EXPECT_EQ("hello", GetRequestPeerContextBody(&request_peer_context_));
 }
 
-TEST_F(URLLoaderClientImplTest, CancelOnReceiveResponse) {
+TEST_P(URLLoaderClientImplTest, CancelOnReceiveResponse) {
   request_peer_context_.cancel_on_receive_response = true;
 
   network::URLLoaderCompletionStatus status;
@@ -247,7 +257,7 @@ TEST_F(URLLoaderClientImplTest, CancelOnReceiveResponse) {
   EXPECT_TRUE(request_peer_context_.cancelled);
 }
 
-TEST_F(URLLoaderClientImplTest, Defer) {
+TEST_P(URLLoaderClientImplTest, Defer) {
   network::URLLoaderCompletionStatus status;
 
   url_loader_client_->OnReceiveResponse(network::mojom::URLResponseHead::New());
@@ -275,16 +285,16 @@ TEST_F(URLLoaderClientImplTest, Defer) {
   EXPECT_TRUE(request_peer_context_.complete);
 }
 
-TEST_F(URLLoaderClientImplTest, DeferWithResponseBody) {
+TEST_P(URLLoaderClientImplTest, DeferWithResponseBody) {
   network::URLLoaderCompletionStatus status;
 
   url_loader_client_->OnReceiveResponse(network::mojom::URLResponseHead::New());
   mojo::DataPipe data_pipe(DataPipeOptions());
-  uint32_t size = 5;
-  MojoResult result = data_pipe.producer_handle->WriteData(
-      "hello", &size, MOJO_WRITE_DATA_FLAG_NONE);
-  ASSERT_EQ(MOJO_RESULT_OK, result);
-  EXPECT_EQ(5u, size);
+  std::string msg1 = "hello";
+  uint32_t size = msg1.size();
+  ASSERT_EQ(MOJO_RESULT_OK, data_pipe.producer_handle->WriteData(
+                                msg1.data(), &size, MOJO_WRITE_DATA_FLAG_NONE));
+  EXPECT_EQ(msg1.size(), size);
   data_pipe.producer_handle.reset();
 
   url_loader_client_->OnStartLoadingResponseBody(
@@ -313,9 +323,175 @@ TEST_F(URLLoaderClientImplTest, DeferWithResponseBody) {
   EXPECT_EQ("hello", GetRequestPeerContextBody(&request_peer_context_));
 }
 
+TEST_P(URLLoaderClientImplTest, StoppedDeferringBeforeClosing) {
+  // Call OnReceiveResponse, OnStartLoadingResponseBody, OnComplete while
+  // deferred.
+  dispatcher_->SetDefersLoading(request_id_, true);
+  url_loader_client_->OnReceiveResponse(network::mojom::URLResponseHead::New());
+  mojo::ScopedDataPipeProducerHandle producer_handle;
+  mojo::ScopedDataPipeConsumerHandle consumer_handle;
+  ASSERT_EQ(MOJO_RESULT_OK,
+            mojo::CreateDataPipe(nullptr, &producer_handle, &consumer_handle));
+  url_loader_client_->OnStartLoadingResponseBody(std::move(consumer_handle));
+  network::URLLoaderCompletionStatus status;
+  url_loader_client_->OnComplete(status);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(request_peer_context_.received_response);
+  EXPECT_FALSE(request_peer_context_.complete);
+  EXPECT_EQ("", GetRequestPeerContextBody(&request_peer_context_));
+
+  // Write data to the response body pipe, but don't close the connection yet.
+  std::string msg1 = "hello";
+  uint32_t size = msg1.size();
+  // We expect that the other end of the pipe to be ready to read the data
+  // immediately.
+  ASSERT_EQ(MOJO_RESULT_OK, producer_handle->WriteData(
+                                msg1.data(), &size, MOJO_WRITE_DATA_FLAG_NONE));
+  EXPECT_EQ(msg1.size(), size);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ("", GetRequestPeerContextBody(&request_peer_context_));
+
+  // Stop deferring. OnComplete message shouldn't be dispatched yet because
+  // we're still waiting for the response body pipe to be closed.
+  dispatcher_->SetDefersLoading(request_id_, false);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(request_peer_context_.received_response);
+  // When the body is buffered, we'll wait until the pipe is closed before
+  // sending the OnComplete message.
+  EXPECT_NE(BufferingEnabled(), request_peer_context_.complete);
+  EXPECT_EQ("hello", GetRequestPeerContextBody(&request_peer_context_));
+
+  // Write more data to the pipe while not deferred.
+  std::string msg2 = "world";
+  size = msg2.size();
+  ASSERT_EQ(MOJO_RESULT_OK, producer_handle->WriteData(
+                                msg2.data(), &size, MOJO_WRITE_DATA_FLAG_NONE));
+  EXPECT_EQ(msg2.size(), size);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(request_peer_context_.received_response);
+  EXPECT_NE(BufferingEnabled(), request_peer_context_.complete);
+  EXPECT_EQ("helloworld", GetRequestPeerContextBody(&request_peer_context_));
+
+  // Close the response body pipe.
+  producer_handle.reset();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(request_peer_context_.received_response);
+  EXPECT_TRUE(request_peer_context_.complete);
+  EXPECT_EQ("helloworld", GetRequestPeerContextBody(&request_peer_context_));
+}
+
+TEST_P(URLLoaderClientImplTest, DeferBodyWithoutOnComplete) {
+  url_loader_client_->OnReceiveResponse(network::mojom::URLResponseHead::New());
+  // Call OnStartLoadingResponseBody while deferred.
+  dispatcher_->SetDefersLoading(request_id_, true);
+  mojo::ScopedDataPipeProducerHandle producer_handle;
+  mojo::ScopedDataPipeConsumerHandle consumer_handle;
+  ASSERT_EQ(MOJO_RESULT_OK,
+            mojo::CreateDataPipe(nullptr, &producer_handle, &consumer_handle));
+  url_loader_client_->OnStartLoadingResponseBody(std::move(consumer_handle));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(request_peer_context_.received_response);
+  EXPECT_FALSE(request_peer_context_.complete);
+  EXPECT_EQ("", GetRequestPeerContextBody(&request_peer_context_));
+
+  // Write data to the response body pipe, but don't close the connection yet.
+  std::string msg1 = "hello";
+  uint32_t size = msg1.size();
+  // We expect that the other end of the pipe to be ready to read the data
+  // immediately.
+  ASSERT_EQ(MOJO_RESULT_OK, producer_handle->WriteData(
+                                msg1.data(), &size, MOJO_WRITE_DATA_FLAG_NONE));
+  EXPECT_EQ(msg1.size(), size);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ("", GetRequestPeerContextBody(&request_peer_context_));
+
+  // Stop deferring.
+  dispatcher_->SetDefersLoading(request_id_, false);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(request_peer_context_.received_response);
+  EXPECT_FALSE(request_peer_context_.complete);
+  EXPECT_EQ("hello", GetRequestPeerContextBody(&request_peer_context_));
+
+  // Close the response body pipe.
+  producer_handle.reset();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(request_peer_context_.received_response);
+  EXPECT_FALSE(request_peer_context_.complete);
+  EXPECT_EQ("hello", GetRequestPeerContextBody(&request_peer_context_));
+}
+
+TEST_P(URLLoaderClientImplTest, DeferredWithLongResponseBody) {
+  // Call OnReceiveResponse, OnStartLoadingResponseBody, OnComplete while
+  // deferred.
+  dispatcher_->SetDefersLoading(request_id_, true);
+  url_loader_client_->OnReceiveResponse(network::mojom::URLResponseHead::New());
+  mojo::ScopedDataPipeProducerHandle producer_handle;
+  mojo::ScopedDataPipeConsumerHandle consumer_handle;
+  ASSERT_EQ(MOJO_RESULT_OK,
+            mojo::CreateDataPipe(nullptr, &producer_handle, &consumer_handle));
+  url_loader_client_->OnStartLoadingResponseBody(std::move(consumer_handle));
+  network::URLLoaderCompletionStatus status;
+  url_loader_client_->OnComplete(status);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(request_peer_context_.received_response);
+  EXPECT_FALSE(request_peer_context_.complete);
+  EXPECT_EQ("", GetRequestPeerContextBody(&request_peer_context_));
+
+  // Write to the response body pipe. It will take several writes.
+  const uint32_t body_size = 70000;
+  uint32_t bytes_remaining = body_size;
+  std::string body(body_size, '*');
+  while (bytes_remaining > 0) {
+    uint32_t start_position = body_size - bytes_remaining;
+    uint32_t bytes_sent = bytes_remaining;
+    MojoResult result = producer_handle->WriteData(
+        body.c_str() + start_position, &bytes_sent, MOJO_WRITE_DATA_FLAG_NONE);
+    if (result == MOJO_RESULT_SHOULD_WAIT) {
+      if (BufferingEnabled()) {
+        // When we buffer the body the pipe gets drained asynchronously, so it's
+        // possible to keep writing to the pipe if we wait.
+        base::RunLoop().RunUntilIdle();
+        continue;
+      } else
+        // When we don't buffer the body, however, nothing is draining the pipe
+        // so we can't write more even if we wait.
+        break;
+    }
+    EXPECT_EQ(MOJO_RESULT_OK, result);
+    EXPECT_GE(bytes_remaining, bytes_sent);
+    bytes_remaining -= bytes_sent;
+  }
+  // Ensure we've written all that we can write. When buffering is disabled, we
+  // can only write |body_size| - |bytes_remaining| bytes.
+  const uint32_t bytes_written = body_size - bytes_remaining;
+  DCHECK_EQ(BufferingEnabled(), body_size == bytes_written);
+  producer_handle.reset();
+
+  // Stop deferring.
+  dispatcher_->SetDefersLoading(request_id_, false);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(request_peer_context_.received_response);
+  // When the body is buffered, BodyBuffer shouldn't be finished writing to the
+  // new response body pipe at this point (because nobody is reading it).
+  EXPECT_NE(BufferingEnabled(), request_peer_context_.complete);
+
+  // Calling GetRequestPeerContextBody to read data from the new response body
+  // pipe will make BodyBuffer write the rest of the body to the pipe.
+  uint32_t bytes_read = 0;
+  while (bytes_read < bytes_written) {
+    bytes_read = GetRequestPeerContextBody(&request_peer_context_).size();
+    base::RunLoop().RunUntilIdle();
+  }
+  // Ensure that we've read everything we've written.
+  EXPECT_EQ(bytes_written, bytes_read);
+  EXPECT_EQ(body.substr(0, bytes_written),
+            GetRequestPeerContextBody(&request_peer_context_));
+  EXPECT_TRUE(request_peer_context_.complete);
+}
+
 // As "transfer size update" message is handled specially in the implementation,
 // we have a separate test.
-TEST_F(URLLoaderClientImplTest, DeferWithTransferSizeUpdated) {
+TEST_P(URLLoaderClientImplTest, DeferWithTransferSizeUpdated) {
   network::URLLoaderCompletionStatus status;
 
   url_loader_client_->OnReceiveResponse(network::mojom::URLResponseHead::New());
@@ -358,7 +534,7 @@ TEST_F(URLLoaderClientImplTest, DeferWithTransferSizeUpdated) {
   EXPECT_EQ(4, request_peer_context_.total_encoded_data_length);
 }
 
-TEST_F(URLLoaderClientImplTest, SetDeferredDuringFlushingDeferredMessage) {
+TEST_P(URLLoaderClientImplTest, SetDeferredDuringFlushingDeferredMessage) {
   request_peer_context_.defer_on_redirect = true;
 
   net::RedirectInfo redirect_info;
@@ -420,7 +596,7 @@ TEST_F(URLLoaderClientImplTest, SetDeferredDuringFlushingDeferredMessage) {
   EXPECT_FALSE(request_peer_context_.cancelled);
 }
 
-TEST_F(URLLoaderClientImplTest,
+TEST_P(URLLoaderClientImplTest,
        SetDeferredDuringFlushingDeferredMessageOnTransferSizeUpdated) {
   request_peer_context_.defer_on_transfer_size_updated = true;
 
@@ -464,5 +640,7 @@ TEST_F(URLLoaderClientImplTest,
   EXPECT_EQ(4, request_peer_context_.total_encoded_data_length);
   EXPECT_FALSE(request_peer_context_.cancelled);
 }
+
+INSTANTIATE_TEST_SUITE_P(All, URLLoaderClientImplTest, ::testing::Bool());
 
 }  // namespace content
