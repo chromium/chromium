@@ -304,10 +304,13 @@ class BrowserContextImpl::WebLayerVariationsClient
   }
 
  private:
-  bool IsSignedIn() const {
-    // TODO(weblayer-dev): Update when signin is supported.
-    return false;
-  }
+  // Signed-in state shouldn't control the set of variations for WebLayer,
+  // so this always returns true. This is particularly experiment for
+  // registering external experiment ids, which are registered assuming
+  // signed-in.
+  // TODO(sky): this is rather misleading, and needs to be resolved. Figure
+  // out right long term solution.
+  bool IsSignedIn() const { return true; }
 
   content::BrowserContext* browser_context_;
 };
