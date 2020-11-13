@@ -4064,9 +4064,11 @@
       },
     },
 
-
     'paeverywhere_gtests': {
       'base_unittests': {},
+      'blink_platform_unittests': {},
+      'unit_tests': {},
+      'wtf_unittests': {},
     },
 
     'perfetto_gtests': {
