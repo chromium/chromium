@@ -221,6 +221,7 @@ int main(int argc, char** argv) {
 
   // Create the browser |frame| which will contain the webpage.
   fuchsia::web::CreateFrameParams frame_params;
+  frame_params.set_autoplay_policy(fuchsia::web::AutoplayPolicy::ALLOW);
   if (remote_debugging_port)
     frame_params.set_enable_remote_debugging(true);
 
