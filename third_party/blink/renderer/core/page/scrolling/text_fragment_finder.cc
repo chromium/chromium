@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/editing/finder/find_options.h"
 #include "third_party/blink/renderer/core/editing/iterators/character_iterator.h"
 #include "third_party/blink/renderer/core/editing/position.h"
+#include "third_party/blink/renderer/core/editing/position_iterator.h"
 #include "third_party/blink/renderer/core/html/list_item_ordinal.h"
 #include "third_party/blink/renderer/core/page/scrolling/text_fragment_selector.h"
 #include "third_party/blink/renderer/platform/text/text_boundaries.h"
@@ -24,17 +25,18 @@ namespace blink {
 
 namespace {
 
-const char kNoContext[] = "";
-
-// Determines whether the start and end positions of |range| are on word
-// boundaries.
 // TODO(crbug/924965): Determine how this should check node boundaries. This
 // treats node boundaries as word boundaries, for example "o" is a whole word
 // match in "f<i>o</i>o".
-bool IsWholeWordMatch(EphemeralRangeInFlatTree range) {
+// Determines whether the |start| and/or |end| positions of |range| are on a
+// word boundaries.
+bool IsWordBounded(EphemeralRangeInFlatTree range, bool start, bool end) {
+  if (!start && !end)
+    return true;
+
   wtf_size_t start_position = range.StartPosition().OffsetInContainerNode();
 
-  if (start_position != 0) {
+  if (start_position != 0 && start) {
     String start_text = range.StartPosition().AnchorNode()->textContent();
     start_text.Ensure16Bit();
     wtf_size_t word_start = FindWordStartBoundary(
@@ -46,7 +48,7 @@ bool IsWholeWordMatch(EphemeralRangeInFlatTree range) {
   wtf_size_t end_position = range.EndPosition().OffsetInContainerNode();
   String end_text = range.EndPosition().AnchorNode()->textContent();
 
-  if (end_position != end_text.length()) {
+  if (end_position != end_text.length() && end) {
     end_text.Ensure16Bit();
     // We expect end_position to be a word boundary, and FindWordEndBoundary
     // finds the next word boundary, so start from end_position - 1.
@@ -59,15 +61,44 @@ bool IsWholeWordMatch(EphemeralRangeInFlatTree range) {
   return true;
 }
 
+PositionInFlatTree FirstWordBoundaryAfter(PositionInFlatTree position) {
+  wtf_size_t offset = position.OffsetInContainerNode();
+  String text = position.AnchorNode()->textContent();
+
+  if (offset == text.length()) {
+    PositionIteratorInFlatTree itr(position);
+    if (itr.AtEnd())
+      return position;
+
+    itr.Increment();
+    return itr.ComputePosition();
+  }
+
+  text.Ensure16Bit();
+  wtf_size_t word_end =
+      FindWordEndBoundary(text.Characters16(), text.length(), offset);
+
+  PositionInFlatTree end_pos(position.AnchorNode(), word_end);
+  PositionIteratorInFlatTree itr(end_pos);
+  if (itr.AtEnd())
+    return end_pos;
+
+  itr.Increment();
+  return itr.ComputePosition();
+}
+
 EphemeralRangeInFlatTree FindMatchInRange(String search_text,
                                           PositionInFlatTree search_start,
-                                          PositionInFlatTree search_end) {
+                                          PositionInFlatTree search_end,
+                                          bool word_start_bounded,
+                                          bool word_end_bounded) {
   while (search_start < search_end) {
     const EphemeralRangeInFlatTree search_range(search_start, search_end);
     EphemeralRangeInFlatTree potential_match = FindBuffer::FindMatchInRange(
         search_range, search_text, kCaseInsensitive);
 
-    if (potential_match.IsNull() || IsWholeWordMatch(potential_match))
+    if (potential_match.IsNull() ||
+        IsWordBounded(potential_match, word_start_bounded, word_end_bounded))
       return potential_match;
 
     search_start = potential_match.EndPosition();
@@ -90,39 +121,9 @@ PositionInFlatTree NextTextPosition(PositionInFlatTree position,
   return end_position;
 }
 
-// Find and return the range of |search_text| if the first text in the search
-// range is |search_text|, skipping over whitespace and element boundaries.
-EphemeralRangeInFlatTree FindImmediateMatch(String search_text,
-                                            PositionInFlatTree search_start,
-                                            PositionInFlatTree search_end) {
-  if (search_text.IsEmpty())
-    return EphemeralRangeInFlatTree();
-
-  search_start = NextTextPosition(search_start, search_end);
-  if (search_start == search_end)
-    return EphemeralRangeInFlatTree();
-
-  FindBuffer buffer(EphemeralRangeInFlatTree(search_start, search_end));
-
-  // TODO(nburris): FindBuffer will search the rest of the document for a match,
-  // but we only need to check for an immediate match, so we should stop
-  // searching if there's no immediate match.
-  FindBuffer::Results match_results =
-      buffer.FindMatches(search_text, kCaseInsensitive);
-
-  if (!match_results.IsEmpty() && match_results.front().start == 0u) {
-    FindBuffer::BufferMatchResult buffer_match = match_results.front();
-    EphemeralRangeInFlatTree match = buffer.RangeFromBufferIndex(
-        buffer_match.start, buffer_match.start + buffer_match.length);
-    if (IsWholeWordMatch(match))
-      return match;
-  }
-
-  return EphemeralRangeInFlatTree();
-}
-
 EphemeralRangeInFlatTree FindMatchInRangeWithContext(
-    const String& search_text,
+    const String& start_text,
+    const String& end_text,
     const String& prefix,
     const String& suffix,
     PositionInFlatTree search_start,
@@ -131,43 +132,99 @@ EphemeralRangeInFlatTree FindMatchInRangeWithContext(
     EphemeralRangeInFlatTree potential_match;
 
     if (!prefix.IsEmpty()) {
-      EphemeralRangeInFlatTree prefix_match =
-          FindMatchInRange(prefix, search_start, search_end);
+      EphemeralRangeInFlatTree prefix_match = FindMatchInRange(
+          prefix, search_start, search_end, /*word_start_bounded=*/true,
+          /*word_end_bounded=*/false);
 
       // No prefix_match in remaining range
       if (prefix_match.IsNull())
         return EphemeralRangeInFlatTree();
 
-      search_start = prefix_match.EndPosition();
-      potential_match =
-          FindImmediateMatch(search_text, search_start, search_end);
+      // If we iterate again, start searching from the first boundary after the
+      // prefix start (since prefix must start at a boundary). Note, we don't
+      // advance to the prefix end; this is done since, if this prefix isn't
+      // the one we're looking for, the next occurrence might be overlapping
+      // with the current one. e.g. If |prefix| is "a a" and our search range
+      // currently starts with "a a a b...", the next iteration should start at
+      // the second a which is part of the current |prefix_match|.
+      search_start = FirstWordBoundaryAfter(prefix_match.StartPosition());
 
-      // No search_text match after current prefix_match
-      if (potential_match.IsNull())
-        continue;
-    } else {
-      potential_match = FindMatchInRange(search_text, search_start, search_end);
+      EphemeralRangeInFlatTree match_range(
+          NextTextPosition(prefix_match.EndPosition(), search_end), search_end);
 
-      // No search_text match in remaining range
+      // The match text need not be bounded at the end. If this is an exact
+      // match (i.e. no |end_text|) and we have a suffix then the suffix will
+      // be required to end on the word boundary instead. Since we have a
+      // prefix, we don't need the match to be word bounded. See
+      // https://github.com/WICG/scroll-to-text-fragment/issues/137 for
+      // details.
+      const bool end_at_word_boundary = !end_text.IsEmpty() || suffix.IsEmpty();
+
+      potential_match = FindMatchInRange(
+          start_text, match_range.StartPosition(), match_range.EndPosition(),
+          /*word_start_bounded=*/false, end_at_word_boundary);
+
+      // No start_text match after current prefix_match
       if (potential_match.IsNull())
         return EphemeralRangeInFlatTree();
 
-      search_start = potential_match.EndPosition();
-    }
-
-    PositionInFlatTree suffix_start = potential_match.EndPosition();
-    DCHECK(potential_match.IsNotNull());
-    if (!suffix.IsEmpty()) {
-      EphemeralRangeInFlatTree suffix_match =
-          FindImmediateMatch(suffix, suffix_start, search_end);
-
-      // No suffix match after current potential_match
-      if (suffix_match.IsNull())
+      // We found a potential match but it didn't immediately follow the prefix.
+      if (potential_match.StartPosition() != match_range.StartPosition())
         continue;
+    } else {
+      const bool end_at_word_boundary = !end_text.IsEmpty() || suffix.IsEmpty();
+
+      potential_match =
+          FindMatchInRange(start_text, search_start, search_end,
+                           /*word_start_bounded=*/true, end_at_word_boundary);
+
+      // No start_text match in remaining range
+      if (potential_match.IsNull())
+        return EphemeralRangeInFlatTree();
+
+      search_start = FirstWordBoundaryAfter(potential_match.StartPosition());
     }
 
-    // If we reach here without a return or continue, we have a full match.
-    return potential_match;
+    // If we've gotten here, we've found a |prefix| (if one was specified)
+    // that's followed by the |start_text|. We'll now try to expand that into a
+    // range match if |end_text| is specified.
+    if (!end_text.IsEmpty()) {
+      EphemeralRangeInFlatTree text_end_range(potential_match.EndPosition(),
+                                              search_end);
+      const bool end_at_word_boundary = suffix.IsEmpty();
+
+      EphemeralRangeInFlatTree text_end_match =
+          FindMatchInRange(end_text, text_end_range.StartPosition(),
+                           text_end_range.EndPosition(),
+                           /*word_start_bounded=*/true, end_at_word_boundary);
+
+      if (text_end_match.IsNull())
+        return EphemeralRangeInFlatTree();
+
+      potential_match = EphemeralRangeInFlatTree(
+          potential_match.StartPosition(), text_end_match.EndPosition());
+    }
+
+    DCHECK(!potential_match.IsNull());
+    if (suffix.IsEmpty())
+      return potential_match;
+
+    // Now we just have to ensure the match is followed by the |suffix|.
+    EphemeralRangeInFlatTree suffix_range(
+        NextTextPosition(potential_match.EndPosition(), search_end),
+        search_end);
+
+    EphemeralRangeInFlatTree suffix_match = FindMatchInRange(
+        suffix, suffix_range.StartPosition(), suffix_range.EndPosition(),
+        /*word_start_bounded=*/false, /*word_end_bounded=*/true);
+
+    // If no suffix appears in what follows the match, there's no way we can
+    // possibly satisfy the constraints so bail.
+    if (suffix_match.IsNull())
+      return EphemeralRangeInFlatTree();
+
+    if (suffix_match.StartPosition() == suffix_range.StartPosition())
+      return potential_match;
   }
 
   return EphemeralRangeInFlatTree();
@@ -256,34 +313,9 @@ EphemeralRangeInFlatTree TextFragmentFinder::FindMatchFromPosition(
     search_end = PositionInFlatTree::LastPositionInNode(document);
   }
 
-  // TODO(crbug.com/930156): Make FindMatch work asynchronously.
-  EphemeralRangeInFlatTree match;
-  if (selector_.Type() == TextFragmentSelector::kExact) {
-    match = FindMatchInRangeWithContext(selector_.Start(), selector_.Prefix(),
-                                        selector_.Suffix(), search_start,
-                                        search_end);
-  } else {
-    EphemeralRangeInFlatTree start_match =
-        FindMatchInRangeWithContext(selector_.Start(), selector_.Prefix(),
-                                    kNoContext, search_start, search_end);
-    if (start_match.IsNull())
-      return start_match;
-
-    // TODO(crbug.com/924964): Determine what we should do if the start text and
-    // end text are the same (and there are no context terms). This
-    // implementation continues searching for the next instance of the text,
-    // from the end of the first instance.
-    search_start = start_match.EndPosition();
-    EphemeralRangeInFlatTree end_match = FindMatchInRangeWithContext(
-        selector_.End(), kNoContext, selector_.Suffix(), search_start,
-        search_end);
-    if (end_match.IsNotNull()) {
-      match = EphemeralRangeInFlatTree(start_match.StartPosition(),
-                                       end_match.EndPosition());
-    }
-  }
-
-  return match;
+  return FindMatchInRangeWithContext(selector_.Start(), selector_.End(),
+                                     selector_.Prefix(), selector_.Suffix(),
+                                     search_start, search_end);
 }
 
 }  // namespace blink
