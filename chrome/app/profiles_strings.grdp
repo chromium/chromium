@@ -348,6 +348,9 @@
   <message name="IDS_DEFAULT_AVATAR_LABEL_25" desc="The label for the sun and cloud avatar.">
     Sun and clouds
   </message>
+  <message name="IDS_DEFAULT_AVATAR_LABEL_26" desc="The label for the default avatar.">
+    Default avatar
+  </message>
   <message name="IDS_DEFAULT_AVATAR_LABEL_27" desc="The label for the cat avatar.">
     Cat
   </message>
