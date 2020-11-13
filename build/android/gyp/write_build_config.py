@@ -821,6 +821,11 @@ def _DepsFromPaths(dep_paths,
     # dependencies.
     if recursive_resource_deps:
       dep_paths = GetAllDepsConfigsInOrder(dep_paths)
+      # Exclude assets if recursive_resource_deps is set. The
+      # recursive_resource_deps arg is used to pull resources into the base
+      # module to workaround bugs accessing resources in isolated DFMs, but
+      # assets should be kept in the DFMs.
+      blocklist.append('android_assets')
 
   return _DepsFromPathsWithFilters(dep_paths, blocklist, allowlist)
 
