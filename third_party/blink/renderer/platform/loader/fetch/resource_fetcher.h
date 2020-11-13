@@ -337,8 +337,8 @@ class PLATFORM_EXPORT ResourceFetcher
       const ResourceFactory&,
       WebScopedVirtualTimePauser& virtual_time_pauser);
 
-  Resource* ResourceForStaticData(const FetchParameters&,
-                                  const ResourceFactory&);
+  Resource* CreateResourceForStaticData(const FetchParameters&,
+                                        const ResourceFactory&);
   Resource* ResourceForBlockedRequest(const FetchParameters&,
                                       const ResourceFactory&,
                                       ResourceRequestBlockedReason,

@@ -706,7 +706,7 @@ void ResourceFetcher::DidLoadResourceFromMemoryCache(
   }
 }
 
-Resource* ResourceFetcher::ResourceForStaticData(
+Resource* ResourceFetcher::CreateResourceForStaticData(
     const FetchParameters& params,
     const ResourceFactory& factory) {
   const KURL& url = params.GetResourceRequest().Url();
@@ -1053,7 +1053,7 @@ Resource* ResourceFetcher::RequestResource(FetchParameters& params,
   bool is_static_data = is_data_url || archive_;
   bool is_stale_revalidation = params.IsStaleRevalidation();
   if (!is_stale_revalidation && is_static_data) {
-    resource = ResourceForStaticData(params, factory);
+    resource = CreateResourceForStaticData(params, factory);
     if (resource) {
       policy =
           DetermineRevalidationPolicy(resource_type, params, *resource, true);
@@ -1577,7 +1577,7 @@ ResourceFetcher::DetermineRevalidationPolicyInternal(
 
   // If resource was populated from archive or data: url, use it.
   // This doesn't necessarily mean that |resource| was just created by using
-  // ResourceForStaticData().
+  // CreateResourceForStaticData().
   if (is_static_data) {
     return {RevalidationPolicy::kUse, "Use the existing static resource."};
   }
