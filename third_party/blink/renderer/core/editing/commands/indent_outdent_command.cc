@@ -174,6 +174,42 @@ void IndentOutdentCommand::IndentIntoBlockquote(const Position& start,
           : SplitTreeToNode(start.ComputeContainerNode(), element_to_split_to);
 
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
+  // Before moving the paragraph under the new blockquote, make sure that there
+  // aren't any nested paragraphs or line breaks under the outer_block. If there
+  // are then split it into its own block so it doesn't copy multiple
+  // paragraphs.
+  Node* highest_inline_node = HighestEnclosingNodeOfType(
+      end, IsInline, kCannotCrossEditingBoundary, outer_block);
+  if (highest_inline_node) {
+    Position next_position = MostForwardCaretPosition(
+        NextPositionOf(CreateVisiblePosition(end)).DeepEquivalent());
+    if (IsStartOfParagraph(CreateVisiblePosition(next_position)) &&
+        next_position.AnchorNode()->IsDescendantOf(highest_inline_node)) {
+      // <div>Line                                 <blockquote>
+      //                                             <div>
+      //   <span> 1<div>Line 2</div></span>    ->      Line<span> 1</span>
+      //                                             </div>
+      // </div>                                    </blockquote>
+      //                                           <div><span><div>Line
+      //                                           2</div></span></div>
+      // <div>Line                                 <blockquote>
+      //   <span> 1<br>Line 2</span>    ->           Line<span> 1</span>
+      // </div>                                    </blockquote>
+      //                                           <div><span>Line
+      //                                           2</span></div>
+      Node* split_point = HighestEnclosingNodeOfType(
+          next_position, IsEnclosingBlock, kCannotCrossEditingBoundary,
+          highest_inline_node);
+      split_point =
+          split_point ? split_point
+                      : HighestEnclosingNodeOfType(next_position, IsInline,
+                                                   kCannotCrossEditingBoundary,
+                                                   highest_inline_node);
+      // Split the element to separate the paragraphs.
+      SplitElement(DynamicTo<Element>(highest_inline_node), split_point);
+    }
+  }
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
   VisiblePosition start_of_contents = CreateVisiblePosition(start);
   if (!target_blockquote) {
     // Create a new blockquote and insert it as a child of the root editable
