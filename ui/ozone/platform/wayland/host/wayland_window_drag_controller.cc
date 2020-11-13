@@ -284,6 +284,16 @@ void WaylandWindowDragController::OnDataSourceFinish(bool completed) {
   extended_drag_source_.reset();
   origin_surface_.reset();
   origin_window_ = nullptr;
+
+  // When extended-drag is available and the drop happens while a non-null
+  // surface was being dragged (i.e: detached mode) which had pointer focus
+  // before the drag session, we must reset focus to it, otherwise it would be
+  // wrongly kept to the latest surface received through wl_data_device::enter
+  // (see OnDragEnter function).
+  if (IsExtendedDragAvailable() && dragged_window_) {
+    pointer_delegate_->OnPointerFocusChanged(dragged_window_,
+                                             pointer_location_);
+  }
   dragged_window_ = nullptr;
 
   // Transition to |kDropped| state and determine the next action to take. If
