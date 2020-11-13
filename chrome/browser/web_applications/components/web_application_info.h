@@ -203,4 +203,7 @@ bool operator==(const WebApplicationShortcutsMenuItemInfo::Icon& icon1,
 bool operator==(const WebApplicationShortcutsMenuItemInfo& shortcut_info1,
                 const WebApplicationShortcutsMenuItemInfo& shortcut_info2);
 
+std::ostream& operator<<(std::ostream& out,
+                         const WebApplicationShortcutsMenuItemInfo& info);
+
 #endif  // CHROME_BROWSER_WEB_APPLICATIONS_COMPONENTS_WEB_APPLICATION_INFO_H_

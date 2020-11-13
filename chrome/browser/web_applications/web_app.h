@@ -259,6 +259,7 @@ class WebApp {
   RunOnOsLoginMode run_on_os_login_mode_ = RunOnOsLoginMode::kUndefined;
   SyncFallbackData sync_fallback_data_;
   apps::UrlHandlers url_handlers_;
+  // New fields must be added to |operator==| and |operator<<|.
 };
 
 // For logging and debug purposes.

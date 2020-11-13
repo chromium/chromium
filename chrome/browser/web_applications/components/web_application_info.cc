@@ -132,3 +132,16 @@ bool operator==(const WebApplicationShortcutsMenuItemInfo& shortcut_info1,
          std::tie(shortcut_info2.name, shortcut_info2.url,
                   shortcut_info2.shortcut_icon_infos);
 }
+
+std::ostream& operator<<(std::ostream& out,
+                         const WebApplicationShortcutsMenuItemInfo& info) {
+  out << "    name: " << info.name << std::endl
+      << "    url: " << info.url << std::endl
+      << "    shortcut_icon_infos:" << std::endl;
+  for (WebApplicationShortcutsMenuItemInfo::Icon icon :
+       info.shortcut_icon_infos) {
+    out << "      icon url: " << icon.url << std::endl
+        << "      icon square_size_px" << icon.square_size_px << std::endl;
+  }
+  return out;
+}
