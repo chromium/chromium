@@ -457,6 +457,14 @@ class BuildConfigGenerator extends DefaultTask {
                 sb.append('  deps += [":com_google_guava_listenablefuture_java"]\n')
                 sb.append('  jar_excluded_patterns = ["*/ListenableFuture.class"]\n')
                 break
+            case 'com_google_guava_guava_android':
+                sb.append('\n')
+                sb.append('  # Add a dep to com_google_guava_listenablefuture_java\n')
+                sb.append('  # because androidx_concurrent_futures also depends on it and to avoid\n')
+                sb.append('  # defining ListenableFuture.class twice.\n')
+                sb.append('  deps += [":com_google_guava_listenablefuture_java"]\n')
+                sb.append('  jar_excluded_patterns = ["*/ListenableFuture.class"]\n')
+                break
             case 'com_google_code_findbugs_jsr305':
             case 'com_google_errorprone_error_prone_annotations':
             case 'com_google_guava_failureaccess':

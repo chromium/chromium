@@ -156,6 +156,7 @@
     "libs/com_google_googlejavaformat_google_java_format",
     "libs/com_google_guava_failureaccess",
     "libs/com_google_guava_guava",
+    "libs/com_google_guava_guava_android",
     "libs/com_google_guava_listenablefuture",
     "libs/com_google_j2objc_j2objc_annotations",
     "libs/com_google_protobuf_protobuf_java",

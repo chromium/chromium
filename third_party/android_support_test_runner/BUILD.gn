@@ -9,8 +9,8 @@ android_java_prebuilt("runner_java") {
   jar_path = "lib/runner-release-no-dep.jar"
   deps = [
     ":exposed_instrumentation_api_publish_java",
+    "//third_party/android_deps:guava_android_java",
     "//third_party/android_sdk:android_test_base_java",
-    "//third_party/guava:guava_android_java",
     "//third_party/junit",
   ]
 }

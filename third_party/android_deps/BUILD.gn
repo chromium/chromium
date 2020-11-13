@@ -36,6 +36,10 @@ java_group("espresso_java") {
   deps = [ "//third_party/espresso:espresso_all_java" ]
 }
 
+java_group("guava_android_java") {
+  deps = [ ":com_google_guava_guava_android_java" ]
+}
+
 java_group("robolectric_all_java") {
   testonly = true
   deps = [
@@ -1567,6 +1571,26 @@ java_prebuilt("com_google_guava_guava_java") {
 
   # Need to exclude class and replace it with class library as
   # com_google_guava_listenablefuture has support_androids=true.
+  deps += [ ":com_google_guava_listenablefuture_java" ]
+  jar_excluded_patterns = [ "*/ListenableFuture.class" ]
+}
+
+# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+java_prebuilt("com_google_guava_guava_android_java") {
+  jar_path = "libs/com_google_guava_guava_android/guava-25.1-android.jar"
+  output_name = "com_google_guava_guava_android"
+  supports_android = true
+  deps = [
+    ":com_google_code_findbugs_jsr305_java",
+    ":com_google_errorprone_error_prone_annotations_java",
+    ":com_google_j2objc_j2objc_annotations_java",
+    ":org_checkerframework_checker_compat_qual_java",
+    ":org_codehaus_mojo_animal_sniffer_annotations_java",
+  ]
+
+  # Add a dep to com_google_guava_listenablefuture_java
+  # because androidx_concurrent_futures also depends on it and to avoid
+  # defining ListenableFuture.class twice.
   deps += [ ":com_google_guava_listenablefuture_java" ]
   jar_excluded_patterns = [ "*/ListenableFuture.class" ]
 }

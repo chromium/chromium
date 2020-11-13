@@ -172,6 +172,11 @@ dependencies {
     //      META-INF/desugar/d8/desugar.json > third_party/r8/desugar_jdk_libs.json
     compile "com.android.tools:desugar_jdk_libs_configuration:1.0.10"
 
+    // Upstream guava introduced versions with -android suffix starting with version
+    // 22 to remove incompatible code with android. Thus we keep two jars, one for
+    // the full guava and one that supports android.
+    compile "com.google.guava:guava:25.1-android"
+
     // buildCompile targets have supports_android = false.
     buildCompile "com.google.guava:guava:27.0.1-jre"
 

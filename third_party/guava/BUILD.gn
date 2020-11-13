@@ -4,25 +4,6 @@
 
 import("//build/config/android/rules.gni")
 
-# Upstream guava introduced versions with -android suffix starting with version
-# 22 to remove incompatible code with android. Thus we keep two jars, one for
-# the full guava and one that supports android. Please keep the versions in
-# sync with one another.
-
-android_java_prebuilt("guava_android_java") {
-  testonly = true
-  jar_path = "lib/guava-android.jar"
-
-  # Avoids dependency cycle.
-  no_build_hooks = true
-
-  # Depend on this to replace excluded ListenableFuture.class
-  deps = [
-    "//third_party/android_deps:com_google_guava_failureaccess_java",
-    "//third_party/android_deps:com_google_guava_listenablefuture_java",
-    "//third_party/android_deps:com_google_j2objc_j2objc_annotations_java",
-  ]
-
-  # Avoid class conflict in com_google_guava_listenablefuture.
-  jar_excluded_patterns = [ "*/ListenableFuture.class" ]
+java_group("guava_android_java") {
+  deps = [ "//third_party/android_deps:com_google_guava_guava_android_java" ]
 }

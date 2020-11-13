@@ -84,6 +84,10 @@ class ChromiumDepGraph {
             url: "https://github.com/google/guava",
             licenseUrl: "https://www.apache.org/licenses/LICENSE-2.0.txt",
             licenseName: "Apache 2.0"),
+        'com_google_guava_guava_android': new PropertyOverride(
+            url: "https://github.com/google/guava",
+            licenseUrl: "https://www.apache.org/licenses/LICENSE-2.0.txt",
+            licenseName: "Apache 2.0"),
         'com_google_guava_listenablefuture': new PropertyOverride(
             url: "https://github.com/google/guava",
             licenseUrl: "https://www.apache.org/licenses/LICENSE-2.0.txt",
@@ -391,7 +395,14 @@ class ChromiumDepGraph {
         // Does not include version because by default the resolution strategy for gradle is to use
         // the newest version among the required ones. We want to be able to match it in the
         // BUILD.gn file.
-        return sanitize("${module.id.group}_${module.id.name}")
+        def moduleId = sanitize("${module.id.group}_${module.id.name}")
+
+        // Add 'android' suffix for guava-android so that its module name is distinct from the
+        // module for guava.
+        if (module.id.name == "guava" && module.id.version.contains("android")) {
+            moduleId += "_android"
+        }
+        return moduleId
     }
 
     static String makeModuleId(ResolvedArtifact artifact) {
@@ -399,7 +410,14 @@ class ChromiumDepGraph {
         // the newest version among the required ones. We want to be able to match it in the
         // BUILD.gn file.
         def componentId = artifact.id.componentIdentifier
-        return sanitize("${componentId.group}_${componentId.module}")
+        def moduleId = sanitize("${componentId.group}_${componentId.module}")
+
+        // Add 'android' suffix for guava-android so that its module name is distinct from the
+        // module for guava.
+        if (componentId.module == "guava" && componentId.version.contains("android")) {
+            moduleId += "_android"
+        }
+        return moduleId
     }
 
     private static String sanitize(String input) {
