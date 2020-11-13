@@ -41,6 +41,7 @@ namespace blink {
 class Document;
 class ExceptionState;
 class SetInnerHTMLOptions;
+class GetInnerHTMLOptions;
 class ShadowRootV0;
 class SlotAssignment;
 class WhitespaceAttacher;
@@ -138,6 +139,7 @@ class CORE_EXPORT ShadowRoot final : public DocumentFragment, public TreeScope {
   Element* ActiveElement() const;
 
   String innerHTML() const;
+  String getInnerHTML(const GetInnerHTMLOptions* options) const;
   void setInnerHTML(const String&, ExceptionState& = ASSERT_NO_EXCEPTION);
   void setInnerHTMLWithOptions(const String&,
                                const SetInnerHTMLOptions*,

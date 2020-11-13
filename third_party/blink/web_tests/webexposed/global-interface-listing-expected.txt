@@ -8031,6 +8031,7 @@ interface ShadowRoot : DocumentFragment
     method elementFromPoint
     method elementsFromPoint
     method getAnimations
+    method getInnerHTML
     method getSelection
     method setInnerHTML
     setter adoptedStyleSheets
