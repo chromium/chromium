@@ -320,6 +320,15 @@ std::unique_ptr<media::VideoEncoder> VideoEncoder::CreateMediaVideoEncoder(
   }
 }
 
+bool VideoEncoder::CanReconfigure(ParsedConfig& original_config,
+                                  ParsedConfig& new_config) {
+  return original_config.codec == new_config.codec &&
+         original_config.profile == new_config.profile &&
+         original_config.level == new_config.level &&
+         original_config.color_space == new_config.color_space &&
+         original_config.acc_pref == new_config.acc_pref;
+}
+
 void VideoEncoder::configure(const VideoEncoderConfig* config,
                              ExceptionState& exception_state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -328,7 +337,6 @@ void VideoEncoder::configure(const VideoEncoderConfig* config,
     return;
 
   auto parsed_config = ParseConfig(config, exception_state);
-
   if (!parsed_config) {
     DCHECK(exception_state.HadException());
     return;
@@ -339,14 +347,16 @@ void VideoEncoder::configure(const VideoEncoderConfig* config,
     return;
   }
 
-  // TODO(https://crbug.com/1119892): flush |media_encoder_| if it already
-  // exists, otherwise might could lose frames in flight.
-
-  state_ = V8CodecState(V8CodecState::Enum::kConfigured);
-
   Request* request = MakeGarbageCollected<Request>();
   request->reset_count = reset_count_;
-  request->type = Request::Type::kConfigure;
+  if (media_encoder_ && active_config_ &&
+      state_.AsEnum() == V8CodecState::Enum::kConfigured &&
+      CanReconfigure(*active_config_, *parsed_config)) {
+    request->type = Request::Type::kReconfigure;
+  } else {
+    state_ = V8CodecState(V8CodecState::Enum::kConfigured);
+    request->type = Request::Type::kConfigure;
+  }
   active_config_ = std::move(parsed_config);
   EnqueueRequest(request);
 }
@@ -435,9 +445,8 @@ void VideoEncoder::reset(ExceptionState& exception_state) {
   if (ThrowIfCodecStateClosed(state_, "reset", exception_state))
     return;
 
-  ResetInternal();
-
   state_ = V8CodecState(V8CodecState::Enum::kUnconfigured);
+  ResetInternal();
 }
 
 void VideoEncoder::ResetInternal() {
@@ -446,11 +455,8 @@ void VideoEncoder::ResetInternal() {
   while (!requests_.empty()) {
     Request* pending_req = requests_.TakeFirst();
     DCHECK(pending_req);
-    if (pending_req->resolver) {
-      auto* ex = MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kOperationError, "reset() was called.");
-      pending_req->resolver.Release()->Reject(ex);
-    }
+    if (pending_req->resolver)
+      pending_req->resolver.Release()->Reject();
   }
   stall_request_processing_ = false;
 }
@@ -492,6 +498,9 @@ void VideoEncoder::ProcessRequests() {
     switch (request->type) {
       case Request::Type::kConfigure:
         ProcessConfigure(request);
+        break;
+      case Request::Type::kReconfigure:
+        ProcessReconfigure(request);
         break;
       case Request::Type::kEncode:
         ProcessEncode(request);
@@ -585,6 +594,57 @@ void VideoEncoder::ProcessConfigure(Request* request) {
                                        WrapPersistent(request)));
 }
 
+void VideoEncoder::ProcessReconfigure(Request* request) {
+  DCHECK_EQ(state_.AsEnum(), V8CodecState::Enum::kConfigured);
+  DCHECK_EQ(request->type, Request::Type::kReconfigure);
+  DCHECK(active_config_);
+  DCHECK(media_encoder_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  auto reconf_done_callback = [](VideoEncoder* self, Request* req,
+                                 media::Status status) {
+    if (!self || self->reset_count_ != req->reset_count)
+      return;
+    DCHECK_CALLED_ON_VALID_SEQUENCE(self->sequence_checker_);
+    DCHECK(self->active_config_);
+
+    if (status.is_ok()) {
+      self->stall_request_processing_ = false;
+      self->ProcessRequests();
+    } else {
+      // Reconfiguration failed. Either encoder doesn't support changing options
+      // or it didn't like this partecular change. Let's try to configure it
+      // from scratch.
+      req->type = Request::Type::kConfigure;
+      self->ProcessConfigure(req);
+    }
+  };
+
+  auto flush_done_callback = [](VideoEncoder* self, Request* req,
+                                decltype(reconf_done_callback) reconf_callback,
+                                media::Status status) {
+    if (!self || self->reset_count_ != req->reset_count)
+      return;
+    DCHECK_CALLED_ON_VALID_SEQUENCE(self->sequence_checker_);
+    if (!status.is_ok()) {
+      std::string msg = "Encoder reconfiguration error: " + status.message();
+      self->HandleError(DOMExceptionCode::kOperationError, msg.c_str());
+      self->stall_request_processing_ = false;
+      return;
+    }
+
+    self->media_encoder_->ChangeOptions(
+        self->active_config_->options,
+        WTF::Bind(reconf_callback, WrapWeakPersistent(self),
+                  WrapPersistent(req)));
+  };
+
+  stall_request_processing_ = true;
+  media_encoder_->Flush(WTF::Bind(flush_done_callback, WrapWeakPersistent(this),
+                                  WrapPersistent(request),
+                                  std::move(reconf_done_callback)));
+}
+
 void VideoEncoder::ProcessFlush(Request* request) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(state_, V8CodecState::Enum::kConfigured);
@@ -612,7 +672,7 @@ void VideoEncoder::ProcessFlush(Request* request) {
 
   stall_request_processing_ = true;
   media_encoder_->Flush(WTF::Bind(done_callback, WrapWeakPersistent(this),
-                                  WrapPersistentIfNeeded(request)));
+                                  WrapPersistent(request)));
 }
 
 void VideoEncoder::CallOutputCallback(
