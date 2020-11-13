@@ -118,7 +118,8 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
   void RemoveRenderPassResource(
       std::vector<AggregatedRenderPassId> ids) override;
   void ScheduleOverlays(OverlayList overlays,
-                        std::vector<gpu::SyncToken> sync_tokens) override;
+                        std::vector<gpu::SyncToken> sync_tokens,
+                        base::OnceClosure on_finished) override;
 
   void CopyOutput(AggregatedRenderPassId id,
                   const copy_output::RenderPassGeometry& geometry,

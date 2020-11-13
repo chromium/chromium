@@ -559,7 +559,6 @@ void SkiaOutputSurfaceImpl::EndPaint(base::OnceClosure on_finished) {
       // MakePromiseSkImageFromRenderPass() is called.
       it->second->clear_image();
     }
-    DCHECK(!on_finished);
 
     base::TimeTicks post_task_timestamp;
     if (should_measure_next_post_task_) {
@@ -567,11 +566,12 @@ void SkiaOutputSurfaceImpl::EndPaint(base::OnceClosure on_finished) {
       post_task_timestamp = base::TimeTicks::Now();
     }
 
-    auto task = base::BindOnce(
-        &SkiaOutputSurfaceImplOnGpu::FinishPaintRenderPass,
-        base::Unretained(impl_on_gpu_.get()), post_task_timestamp,
-        current_paint_->render_pass_id(), std::move(ddl),
-        std::move(images_in_current_paint_), resource_sync_tokens_);
+    auto task =
+        base::BindOnce(&SkiaOutputSurfaceImplOnGpu::FinishPaintRenderPass,
+                       base::Unretained(impl_on_gpu_.get()),
+                       post_task_timestamp, current_paint_->render_pass_id(),
+                       std::move(ddl), std::move(images_in_current_paint_),
+                       resource_sync_tokens_, std::move(on_finished));
     EnqueueGpuTask(std::move(task), std::move(resource_sync_tokens_),
                    /*make_current=*/true, /*need_framebuffer=*/false);
   } else {
@@ -677,11 +677,12 @@ void SkiaOutputSurfaceImpl::CopyOutput(
 
 void SkiaOutputSurfaceImpl::ScheduleOverlays(
     OverlayList overlays,
-    std::vector<gpu::SyncToken> sync_tokens) {
-  auto task =
-      base::BindOnce(&SkiaOutputSurfaceImplOnGpu::ScheduleOverlays,
-                     base::Unretained(impl_on_gpu_.get()), std::move(overlays),
-                     std::move(images_in_current_paint_));
+    std::vector<gpu::SyncToken> sync_tokens,
+    base::OnceClosure on_finished) {
+  auto task = base::BindOnce(
+      &SkiaOutputSurfaceImplOnGpu::ScheduleOverlays,
+      base::Unretained(impl_on_gpu_.get()), std::move(overlays),
+      std::move(images_in_current_paint_), std::move(on_finished));
 #if defined(OS_APPLE)
   DCHECK_EQ(dependency_->gr_context_type(), gpu::GrContextType::kGL);
   // If there are render pass overlays, then a gl context is needed for drawing

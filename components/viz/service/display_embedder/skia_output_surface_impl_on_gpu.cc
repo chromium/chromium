@@ -235,11 +235,14 @@ void SkiaOutputSurfaceImplOnGpu::PromiseImageAccessHelper::BeginAccess(
     std::vector<ImageContextImpl*> image_contexts,
     std::vector<GrBackendSemaphore>* begin_semaphores,
     std::vector<GrBackendSemaphore>* end_semaphores) {
-  DCHECK(begin_semaphores);
-  DCHECK(end_semaphores);
-  begin_semaphores->reserve(image_contexts.size());
-  // We may need one more space for the swap buffer semaphore.
-  end_semaphores->reserve(image_contexts.size() + 1);
+  // GL doesn't need semaphores.
+  if (!impl_on_gpu_->context_state_->GrContextIsGL()) {
+    DCHECK(begin_semaphores);
+    DCHECK(end_semaphores);
+    begin_semaphores->reserve(image_contexts.size());
+    // We may need one more space for the swap buffer semaphore.
+    end_semaphores->reserve(image_contexts.size() + 1);
+  }
   image_contexts_.reserve(image_contexts.size() + image_contexts_.size());
   image_contexts_.insert(image_contexts.begin(), image_contexts.end());
   impl_on_gpu_->BeginAccessImages(std::move(image_contexts), begin_semaphores,
@@ -604,7 +607,8 @@ void SkiaOutputSurfaceImplOnGpu::FinishPaintRenderPass(
     AggregatedRenderPassId id,
     sk_sp<SkDeferredDisplayList> ddl,
     std::vector<ImageContextImpl*> image_contexts,
-    std::vector<gpu::SyncToken> sync_tokens) {
+    std::vector<gpu::SyncToken> sync_tokens,
+    base::OnceClosure on_finished) {
   TRACE_EVENT0("viz", "SkiaOutputSurfaceImplOnGpu::FinishPaintRenderPass");
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(ddl);
@@ -655,6 +659,8 @@ void SkiaOutputSurfaceImplOnGpu::FinishPaintRenderPass(
     };
     gpu::AddVulkanCleanupTaskForSkiaFlush(vulkan_context_provider_,
                                           &flush_info);
+    if (on_finished)
+      gpu::AddCleanupTaskForSkiaFlush(std::move(on_finished), &flush_info);
     auto result = offscreen.surface()->flush(flush_info);
     if (result != GrSemaphoresSubmitted::kYes &&
         !(begin_semaphores.empty() && end_semaphores.empty())) {
@@ -983,28 +989,22 @@ void SkiaOutputSurfaceImplOnGpu::ReleaseImageContexts(
 
 void SkiaOutputSurfaceImplOnGpu::ScheduleOverlays(
     SkiaOutputSurface::OverlayList overlays,
-    std::vector<ImageContextImpl*> image_contexts) {
+    std::vector<ImageContextImpl*> image_contexts,
+    base::OnceClosure on_finished) {
 #if defined(OS_APPLE)
   if (context_is_lost_)
     return;
 
-  std::vector<GrBackendSemaphore> begin_semaphores;
-  std::vector<GrBackendSemaphore> end_semaphores;
-  promise_image_access_helper_.BeginAccess(std::move(image_contexts),
-                                           &begin_semaphores, &end_semaphores);
   // GL is used on MacOS and GL doesn't need semaphores.
-  DCHECK(begin_semaphores.empty());
-  DCHECK(end_semaphores.empty());
+  promise_image_access_helper_.BeginAccess(std::move(image_contexts),
+                                           /*begin_semaphores=*/nullptr,
+                                           /*end_semaphores=*/nullptr);
+  using ScopedWriteAccess =
+      std::unique_ptr<gpu::SharedImageRepresentationSkia::ScopedWriteAccess>;
+  std::vector<ScopedWriteAccess> scoped_write_accesses;
   for (auto& overlay : overlays) {
     if (!overlay.ddl)
       continue;
-
-    base::Optional<gpu::raster::GrShaderCache::ScopedCacheUse> cache_use;
-    if (dependency_->GetGrShaderCache()) {
-      cache_use.emplace(dependency_->GetGrShaderCache(),
-                        gpu::kDisplayCompositorClientId);
-    }
-
     const auto& characterization = overlay.ddl->characterization();
     auto backing = GetOrCreateRenderPassOverlayBacking(characterization);
     if (!backing)
@@ -1018,10 +1018,24 @@ void SkiaOutputSurfaceImplOnGpu::ScheduleOverlays(
         gpu::SharedImageRepresentation::AllowUnclearedAccess::kYes);
     bool result = scoped_access->surface()->draw(overlay.ddl);
     DCHECK(result);
-    context_state_->gr_context()->flushAndSubmit();
-    scoped_access.reset();
+    scoped_write_accesses.push_back(std::move(scoped_access));
     backing->SetCleared();
     in_flight_render_pass_overlay_backings_.insert(std::move(backing));
+  }
+
+  if (!scoped_write_accesses.empty()) {
+    base::Optional<gpu::raster::GrShaderCache::ScopedCacheUse> cache_use;
+    if (dependency_->GetGrShaderCache()) {
+      cache_use.emplace(dependency_->GetGrShaderCache(),
+                        gpu::kDisplayCompositorClientId);
+    }
+
+    GrFlushInfo flush_info = {};
+    if (on_finished)
+      gpu::AddCleanupTaskForSkiaFlush(std::move(on_finished), &flush_info);
+    context_state_->gr_context()->flush(flush_info);
+    context_state_->gr_context()->submit();
+    scoped_write_accesses.clear();
   }
   promise_image_access_helper_.EndAccess();
   output_device_->ScheduleOverlays(std::move(overlays));

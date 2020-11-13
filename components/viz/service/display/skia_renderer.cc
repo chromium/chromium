@@ -651,24 +651,6 @@ class SkiaRenderer::ScopedYUVSkImageBuilder {
   DISALLOW_COPY_AND_ASSIGN(ScopedYUVSkImageBuilder);
 };
 
-SkiaRenderer::SkiaRenderer(const RendererSettings* settings,
-                           const DebugRendererSettings* debug_settings,
-                           OutputSurface* output_surface,
-                           DisplayResourceProvider* resource_provider,
-                           OverlayProcessorInterface* overlay_processor,
-                           SkiaOutputSurface* skia_output_surface)
-    : DirectRenderer(settings,
-                     debug_settings,
-                     output_surface,
-                     resource_provider,
-                     overlay_processor),
-      skia_output_surface_(skia_output_surface) {
-  DCHECK(skia_output_surface_);
-  lock_set_for_external_use_.emplace(resource_provider, skia_output_surface_);
-}
-
-SkiaRenderer::~SkiaRenderer() = default;
-
 class SkiaRenderer::FrameResourceFence : public ResourceFence {
  public:
   FrameResourceFence() = default;
@@ -691,6 +673,27 @@ class SkiaRenderer::FrameResourceFence : public ResourceFence {
   DISALLOW_COPY_AND_ASSIGN(FrameResourceFence);
 };
 
+SkiaRenderer::SkiaRenderer(const RendererSettings* settings,
+                           const DebugRendererSettings* debug_settings,
+                           OutputSurface* output_surface,
+                           DisplayResourceProvider* resource_provider,
+                           OverlayProcessorInterface* overlay_processor,
+                           SkiaOutputSurface* skia_output_surface)
+    : DirectRenderer(settings,
+                     debug_settings,
+                     output_surface,
+                     resource_provider,
+                     overlay_processor),
+      skia_output_surface_(skia_output_surface) {
+  DCHECK(skia_output_surface_);
+  lock_set_for_external_use_.emplace(resource_provider, skia_output_surface_);
+
+  current_frame_resource_fence_ = base::MakeRefCounted<FrameResourceFence>();
+  resource_provider_->SetReadLockFence(current_frame_resource_fence_.get());
+}
+
+SkiaRenderer::~SkiaRenderer() = default;
+
 bool SkiaRenderer::CanPartialSwap() {
     return output_surface_->capabilities().supports_post_sub_buffer;
 }
@@ -698,10 +701,7 @@ bool SkiaRenderer::CanPartialSwap() {
 void SkiaRenderer::BeginDrawingFrame() {
   TRACE_EVENT0("viz", "SkiaRenderer::BeginDrawingFrame");
 
-  DCHECK(!current_frame_resource_fence_);
-
-  current_frame_resource_fence_ = base::MakeRefCounted<FrameResourceFence>();
-  resource_provider_->SetReadLockFence(current_frame_resource_fence_.get());
+  DCHECK(!current_frame_resource_fence_->WasSet());
 
 #if defined(OS_ANDROID)
   for (const auto& pass : *current_frame()->render_passes_in_draw_order) {
@@ -715,7 +715,6 @@ void SkiaRenderer::BeginDrawingFrame() {
 
 void SkiaRenderer::FinishDrawingFrame() {
   TRACE_EVENT0("viz", "SkiaRenderer::FinishDrawingFrame");
-  current_frame_resource_fence_ = nullptr;
   current_canvas_ = nullptr;
   current_surface_ = nullptr;
 
@@ -2066,6 +2065,8 @@ void SkiaRenderer::DrawUnsupportedQuad(const DrawQuad* quad,
 }
 
 void SkiaRenderer::ScheduleOverlays() {
+  DCHECK(!current_frame_resource_fence_->WasSet());
+
   pending_overlay_locks_.emplace_back();
   if (current_frame()->overlay_list.empty())
     return;
@@ -2170,8 +2171,17 @@ void SkiaRenderer::ScheduleOverlays() {
   NOTREACHED();
 #endif  // defined(OS_ANDROID)
 
+  base::OnceClosure on_finished_callback;
+  if (current_frame_resource_fence_->WasSet()) {
+    on_finished_callback = base::BindOnce(
+        &FrameResourceFence::Signal, std::move(current_frame_resource_fence_));
+    current_frame_resource_fence_ = base::MakeRefCounted<FrameResourceFence>();
+    resource_provider_->SetReadLockFence(current_frame_resource_fence_.get());
+  }
+
   skia_output_surface_->ScheduleOverlays(
-      std::move(current_frame()->overlay_list), std::move(sync_tokens));
+      std::move(current_frame()->overlay_list), std::move(sync_tokens),
+      std::move(on_finished_callback));
 }
 
 sk_sp<SkColorFilter> SkiaRenderer::GetColorSpaceConversionFilter(
@@ -2519,10 +2529,11 @@ void SkiaRenderer::FinishDrawingQuadList() {
   base::OnceClosure on_finished_callback;
   // Signal |current_frame_resource_fence_| when the root render pass is
   // finished.
-  if (current_frame_resource_fence_ &&
-      current_frame_resource_fence_->WasSet() && is_root_render_pass) {
+  if (current_frame_resource_fence_->WasSet()) {
     on_finished_callback = base::BindOnce(
         &FrameResourceFence::Signal, std::move(current_frame_resource_fence_));
+    current_frame_resource_fence_ = base::MakeRefCounted<FrameResourceFence>();
+    resource_provider_->SetReadLockFence(current_frame_resource_fence_.get());
   }
   skia_output_surface_->EndPaint(std::move(on_finished_callback));
 
