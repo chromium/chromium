@@ -107,17 +107,23 @@ def _milestone_details(*, project, ref, channel):
 # The milestone names and branch numbers of branches that we have builders
 # running for (including milestone-specific projects)
 # Branch numbers and milestones can be viewed in the chromium column at
-# https://chromiumdash.appspot.com/branches
-# The 2 highest milestones will be the ones with active branches
+# https://chromiumdash.appspot.com/releases
+# The 3rd portion of the version number is the branch number for the associated
+# milestone
 ACTIVE_MILESTONES = {
     "m86": _milestone_details(
         project = "chromium-m86",
         ref = "refs/branch-heads/4240",
-        channel = "Stable",
+        channel = "LTS-C",
     ),
     "m87": _milestone_details(
         project = "chromium-m87",
         ref = "refs/branch-heads/4280",
+        channel = "Stable",
+    ),
+    "m88": _milestone_details(
+        project = "chromium-m88",
+        ref = "refs/branch-heads/4324",
         channel = "Beta",
     ),
 }
