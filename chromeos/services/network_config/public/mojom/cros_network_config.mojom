@@ -570,11 +570,11 @@ struct ManagedProperties {
   bool connectable = false;
   string? error_state;
   string guid;
-  ManagedString? ip_address_config_type;
+  ManagedString ip_address_config_type;
   array<IPConfigProperties>? ip_configs;
   ManagedBoolean? metered;
   ManagedString? name;
-  ManagedString? name_servers_config_type;
+  ManagedString name_servers_config_type;
   ManagedInt32? priority;
   ManagedProxySettings? proxy_settings;
   PortalState portal_state = kUnknown;

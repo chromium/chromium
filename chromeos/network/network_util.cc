@@ -194,6 +194,15 @@ std::unique_ptr<base::DictionaryValue> TranslateNetworkStateToONC(
   std::unique_ptr<base::DictionaryValue> onc_dictionary =
       TranslateShillServiceToONCPart(*shill_dictionary, onc_source,
                                      &onc::kNetworkWithStateSignature, network);
+
+  // Remove IPAddressConfigType/NameServersConfigType as these were
+  // historically not provided by TranslateNetworkStateToONC.
+  // The source shill properties for those ONC properties are not provided by
+  // NetworkState::GetStateProperties, however since CL:2530330 these are
+  // assumed to have defaults that are always enforced during ONC translation.
+  onc_dictionary->RemoveKey(::onc::network_config::kIPAddressConfigType);
+  onc_dictionary->RemoveKey(::onc::network_config::kNameServersConfigType);
+
   return onc_dictionary;
 }
 

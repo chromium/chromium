@@ -1,6 +1,8 @@
 {
     // "GUID" missing because it was missing in the Shill dict.
     "Name": "my vpn",
+    "IPAddressConfigType":"DHCP",
+    "NameServersConfigType":"DHCP",
     "Type": "VPN",
     "VPN": {
         "Host": "vpn.my.domain.com",

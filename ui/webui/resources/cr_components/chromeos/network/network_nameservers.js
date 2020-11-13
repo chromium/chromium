@@ -130,11 +130,8 @@ Polymer({
     }
 
     // Update the 'nameserversType' property.
-    let configType;
-    if (this.managedProperties.nameServersConfigType) {
-      configType =
-          OncMojo.getActiveValue(this.managedProperties.nameServersConfigType);
-    }
+    const configType =
+        OncMojo.getActiveValue(this.managedProperties.nameServersConfigType);
     let type;
     if (configType === 'Static') {
       if (this.isGoogleNameservers_(nameservers)) {
@@ -186,8 +183,7 @@ Polymer({
     if (!managedProperties) {
       return false;
     }
-    if (managedProperties.nameServersConfigType &&
-        this.isNetworkPolicyEnforced(managedProperties.nameServersConfigType)) {
+    if (this.isNetworkPolicyEnforced(managedProperties.nameServersConfigType)) {
       return false;
     }
     if (managedProperties.staticIpConfig &&
@@ -212,8 +208,7 @@ Polymer({
     if (nameserversType !== 'custom') {
       return false;
     }
-    if (managedProperties.nameServersConfigType &&
-        this.isNetworkPolicyEnforced(managedProperties.nameServersConfigType)) {
+    if (this.isNetworkPolicyEnforced(managedProperties.nameServersConfigType)) {
       return false;
     }
     if (managedProperties.staticIpConfig &&
