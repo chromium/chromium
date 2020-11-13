@@ -1154,6 +1154,8 @@ void FormStructure::LogQualityMetrics(
 
   size_t num_detected_field_types = 0;
   size_t num_edited_autofilled_fields = 0;
+  size_t num_of_accepted_autofilled_fields = 0;
+  size_t num_of_corrected_autofilled_fields = 0;
   bool did_autofill_all_possible_fields = true;
   bool did_autofill_some_possible_fields = false;
   bool is_for_credit_card = IsCompleteCreditCardForm();
@@ -1197,6 +1199,13 @@ void FormStructure::LogQualityMetrics(
     }
 
     ++num_detected_field_types;
+
+    // Count the number of autofilled and corrected fields.
+    if (field->is_autofilled)
+      ++num_of_accepted_autofilled_fields;
+    else if (field->previously_autofilled())
+      ++num_of_corrected_autofilled_fields;
+
     if (field->is_autofilled)
       did_autofill_some_possible_fields = true;
     else if (!field->only_fill_when_focused())
@@ -1234,6 +1243,11 @@ void FormStructure::LogQualityMetrics(
         state =
             AutofillMetrics::FILLABLE_FORM_AUTOFILLED_NONE_DID_SHOW_SUGGESTIONS;
       }
+
+      // Log the number of autofilled fields at submission time.
+      AutofillMetrics::LogNumberOfAutofilledFieldsAtSubmission(
+          num_of_accepted_autofilled_fields,
+          num_of_corrected_autofilled_fields);
 
       // Unlike the other times, the |submission_time| should always be
       // available.

@@ -1632,6 +1632,11 @@ class AutofillMetrics {
       ukm::SourceId source_id,
       uint32_t phone_collection_metric_state);
 
+  // Logs the number of autofilled fields at submission time.
+  static void LogNumberOfAutofilledFieldsAtSubmission(
+      size_t number_of_accepted_fields,
+      size_t number_of_corrected_fields);
+
  private:
   static void Log(AutocompleteEvent event);
 

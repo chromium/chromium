@@ -37,7 +37,7 @@ using mojom::SubmissionSource;
 namespace {
 
 // Exponential bucket spacing for UKM event data.
-const double kAutofillEventDataBucketSpacing = 2.0;
+constexpr double kAutofillEventDataBucketSpacing = 2.0;
 
 // Note: if adding an enum value here, update the corresponding description for
 // AutofillTypeQualityByFieldType in histograms.xml.
@@ -2498,4 +2498,18 @@ void AutofillMetrics::LogWebOTPPhoneCollectionMetricStateUkm(
   builder.Record(recorder);
 }
 
+// static
+void AutofillMetrics::LogNumberOfAutofilledFieldsAtSubmission(
+    size_t number_of_accepted_fields,
+    size_t number_of_corrected_fields) {
+  base::UmaHistogramExactLinear(
+      "Autofill.NumberOfAutofilledFieldsAtSubmission.Total",
+      number_of_accepted_fields + number_of_corrected_fields, 50);
+  base::UmaHistogramExactLinear(
+      "Autofill.NumberOfAutofilledFieldsAtSubmission.Accepted",
+      number_of_accepted_fields, 50);
+  base::UmaHistogramExactLinear(
+      "Autofill.NumberOfAutofilledFieldsAtSubmission.Corrected",
+      number_of_corrected_fields, 50);
+}
 }  // namespace autofill

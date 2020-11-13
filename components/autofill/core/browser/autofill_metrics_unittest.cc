@@ -626,6 +626,80 @@ INSTANTIATE_TEST_SUITE_P(AutofillMetricsTest,
                          AutofillMetricsIFrameTest,
                          testing::Bool());
 
+// Test that we log the right number of autofilled fields at submission time.
+TEST_F(AutofillMetricsTest, NumberOfAutofilledFieldsAtSubmission) {
+  // Set up our form data with two autofilled fields.
+  FormData form =
+      test::GetFormData({.description_for_logging = "NumberOfAutofilledFields",
+                         .fields = {{.label = "Autofilled",
+                                     .name = "autofilled",
+                                     .value = "Elvis Aaron Presley",
+                                     .is_autofilled = true},
+                                    {.label = "Autofilled but corrected",
+                                     .name = "autofillfailed",
+                                     .value = "buddy@gmail.com",
+                                     .is_autofilled = true},
+                                    {.label = "Empty",
+                                     .name = "empty",
+                                     .value = "",
+                                     .is_autofilled = false},
+                                    {.label = "Unknown",
+                                     .name = "unknown",
+                                     .value = "garbage",
+                                     .is_autofilled = false},
+                                    {.label = "Select",
+                                     .name = "select",
+                                     .value = "USA",
+                                     .form_control_type = "select-one",
+                                     .is_autofilled = false},
+                                    {.role = ServerFieldType::PHONE_HOME_NUMBER,
+                                     .value = "2345678901",
+                                     .form_control_type = "tel",
+                                     .is_autofilled = true}},
+                         .unique_renderer_id = MakeFormRendererId(),
+                         .main_frame_origin = url::Origin::Create(
+                             autofill_client_.form_origin())});
+
+  std::vector<ServerFieldType> heuristic_types = {
+      NAME_FULL,         PHONE_HOME_NUMBER, NAME_FULL,
+      PHONE_HOME_NUMBER, UNKNOWN_TYPE,      PHONE_HOME_CITY_AND_NUMBER};
+  std::vector<ServerFieldType> server_types = {
+      NAME_FIRST,    EMAIL_ADDRESS,  NAME_FIRST,
+      EMAIL_ADDRESS, NO_SERVER_DATA, PHONE_HOME_CITY_AND_NUMBER};
+
+  // Simulate having seen this form on page load.
+  autofill_manager_->AddSeenForm(form, heuristic_types, server_types);
+
+  // Simulate user changing the second field of the form.
+  autofill_manager_->OnTextFieldDidChange(form, form.fields[1], gfx::RectF(),
+                                          TimeTicks());
+  form.fields.at(1).is_autofilled = false;
+
+  // Simulate form submission.
+  base::HistogramTester histogram_tester;
+  autofill_manager_->OnFormSubmitted(form, false,
+                                     SubmissionSource::FORM_SUBMISSION);
+
+  // Test that the correct bucket for the number of filled fields received a
+  // count while the others remain at zero counts.
+  const size_t expected_number_of_accepted_fillings = 2;
+  const size_t expected_number_of_corrected_fillings = 1;
+  const size_t expected_number_of_total_fillings =
+      expected_number_of_accepted_fillings +
+      expected_number_of_corrected_fillings;
+  for (int i = 0; i < 50; i++) {
+    histogram_tester.ExpectBucketCount(
+        "Autofill.NumberOfAutofilledFieldsAtSubmission.Total", i,
+        i == expected_number_of_total_fillings ? 1 : 0);
+    histogram_tester.ExpectBucketCount(
+        "Autofill.NumberOfAutofilledFieldsAtSubmission.Accepted", i,
+        i == expected_number_of_accepted_fillings ? 1 : 0);
+    histogram_tester.ExpectBucketCount(
+        "Autofill.NumberOfAutofilledFieldsAtSubmission.Corrected", i,
+        i == expected_number_of_corrected_fillings ? 1 : 0);
+  }
+}
+
 // Test that we log quality metrics appropriately.
 TEST_F(AutofillMetricsTest, QualityMetrics) {
   // Set up our form data.
@@ -9994,7 +10068,8 @@ TEST_F(AutofillMetricsTest,
 TEST_F(AutofillMetricsTest, FrameHasNoForm) {
   base::HistogramTester histogram_tester;
   autofill_manager_.reset();
-  histogram_tester.ExpectTotalCount("Autofill.WebOTP.OneTimeCode.FromAutocomplete", 0);
+  histogram_tester.ExpectTotalCount(
+      "Autofill.WebOTP.OneTimeCode.FromAutocomplete", 0);
 }
 
 // Verify that we correctly log metrics if a frame has
