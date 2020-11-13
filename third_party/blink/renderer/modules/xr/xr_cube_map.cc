@@ -15,6 +15,37 @@ namespace {
 bool IsPowerOfTwo(uint32_t value) {
   return value && (value & (value - 1)) == 0;
 }
+
+// This is an inversion of FloatToHalfFloat in ui/gfx/half_float.cc
+float HalfFloatToFloat(const uint16_t input) {
+  uint32_t tmp = (input & 0x7fff) << 13 | (input & 0x8000) << 16;
+  float tmp2 = *reinterpret_cast<float*>(&tmp);
+  return tmp2 / 1.9259299444e-34f;
+}
+
+// Linear to sRGB converstion as given in
+// https://www.khronos.org/registry/OpenGL/extensions/ARB/ARB_framebuffer_sRGB.txt
+uint8_t LinearToSrgb(float cl) {
+  float cs = base::ClampToRange(
+      cl < 0.0031308f ? 12.92f * cl : 1.055f * pow(cl, 0.41666f) - 0.055f, 0.0f,
+      1.0f);
+  return static_cast<uint8_t>(255.0f * cs + 0.5f);
+}
+
+void Rgba16fToSrgba8(const uint16_t* input,
+                     uint8_t* output,
+                     WTF::wtf_size_t num) {
+  DCHECK_EQ(num % 4, 0ul);
+
+  for (WTF::wtf_size_t i = 0; i < num; i += 4) {
+    output[i] = LinearToSrgb(HalfFloatToFloat(input[i]));
+    output[i + 1] = LinearToSrgb(HalfFloatToFloat(input[i + 1]));
+    output[i + 2] = LinearToSrgb(HalfFloatToFloat(input[i + 2]));
+    // We won't support non-opaque alpha to make the conversion a bit faster.
+    output[i + 3] = 255;
+  }
+}
+
 }  // namespace
 
 namespace blink {
@@ -48,7 +79,10 @@ XRCubeMap::XRCubeMap(const device::mojom::blink::XRCubeMap& cube_map) {
 
 WebGLTexture* XRCubeMap::updateWebGLEnvironmentCube(
     WebGLRenderingContextBase* context,
-    WebGLTexture* texture) const {
+    WebGLTexture* texture,
+    GLenum internal_format,
+    GLenum format,
+    GLenum type) const {
   // Ensure a texture was supplied from the passed context and with an
   // appropriate bound target.
   DCHECK(texture);
@@ -75,17 +109,39 @@ WebGLTexture* XRCubeMap::updateWebGLEnvironmentCube(
       GL_TEXTURE_CUBE_MAP_POSITIVE_Z, GL_TEXTURE_CUBE_MAP_NEGATIVE_Z,
   };
 
-  // Update image for each side of the cube map
-  for (int i = 0; i < 6; ++i) {
-    auto* image = cubemap_images[i];
-    auto target = cubemap_targets[i];
+  // Update image for each side of the cube map in the requested format,
+  // either "srgb8" or "rgba16f".
+  if (type == GL_UNSIGNED_BYTE) {
+    // If we've been asked to provide the textures with UNSIGNED_BYTE
+    // components it means the light probe was created with the "srgb8" format.
+    // Since ARCore provides texture as half float components, we need to do a
+    // conversion first to support this path.
+    // TODO(https://crbug.com/1148605): Do conversions off the main JS thread.
+    WTF::wtf_size_t component_count = width_and_height_ * width_and_height_ * 4;
+    WTF::Vector<uint8_t> sRGB(component_count);
+    for (int i = 0; i < 6; ++i) {
+      Rgba16fToSrgba8(cubemap_images[i], sRGB.data(), component_count);
+      auto target = cubemap_targets[i];
 
-    gl->TexImage2D(target, 0, GL_RGBA16F, width_and_height_, width_and_height_,
-                   0, GL_RGBA, GL_HALF_FLOAT, image);
+      gl->TexImage2D(target, 0, internal_format, width_and_height_,
+                     width_and_height_, 0, format, type, sRGB.data());
+    }
+  } else if (type == GL_HALF_FLOAT || type == GL_HALF_FLOAT_OES) {
+    // If we've been asked to provide the textures with one of the HALF_FLOAT
+    // types it means the light probe was created with the "rgba16f" format.
+    // This is ARCore's native format, so no conversion is needed.
+    for (int i = 0; i < 6; ++i) {
+      auto* image = cubemap_images[i];
+      auto target = cubemap_targets[i];
+
+      gl->TexImage2D(target, 0, internal_format, width_and_height_,
+                     width_and_height_, 0, format, type, image);
+    }
+  } else {
+    // No other formats are accepted.
+    NOTREACHED();
   }
 
-  // TODO(https://crbug.com/1079007): Restore the texture binding
-  // gl->BindTexture(GL_TEXTURE_CUBE_MAP, 0);
   DrawingBuffer::Client* client = static_cast<DrawingBuffer::Client*>(context);
   client->DrawingBufferClientRestoreTextureCubeMapBinding();
 

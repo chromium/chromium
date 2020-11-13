@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/modules/event_target_modules.h"
 #include "third_party/blink/renderer/modules/xr/xr_cube_map.h"
 #include "third_party/blink/renderer/modules/xr/xr_light_estimate.h"
+#include "third_party/blink/renderer/modules/xr/xr_light_probe_init.h"
 #include "third_party/blink/renderer/modules/xr/xr_object_space.h"
 #include "third_party/blink/renderer/modules/xr/xr_session.h"
 
@@ -22,7 +23,14 @@ const double kReflectionChangeDelta = 1000.0;
 
 }  // namespace
 
-XRLightProbe::XRLightProbe(XRSession* session) : session_(session) {}
+XRLightProbe::XRLightProbe(XRSession* session, XRLightProbeInit* options)
+    : session_(session) {
+  if (options->reflectionFormat() == "rgba16f") {
+    reflection_format_ = kReflectionFormatRGBA16F;
+  } else {
+    reflection_format_ = kReflectionFormatSRGBA8;
+  }
+}
 
 XRSpace* XRLightProbe::probeSpace() const {
   if (!probe_space_) {

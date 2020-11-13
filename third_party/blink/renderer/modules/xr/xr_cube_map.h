@@ -10,6 +10,8 @@
 #include "device/vr/public/mojom/vr_service.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
 
+typedef unsigned int GLenum;
+
 namespace blink {
 
 class WebGLRenderingContextBase;
@@ -21,7 +23,10 @@ class XRCubeMap {
   explicit XRCubeMap(const device::mojom::blink::XRCubeMap& cube_map);
 
   WebGLTexture* updateWebGLEnvironmentCube(WebGLRenderingContextBase* context,
-                                           WebGLTexture* texture) const;
+                                           WebGLTexture* texture,
+                                           GLenum internal_format,
+                                           GLenum format,
+                                           GLenum type) const;
 
  private:
   uint32_t width_and_height_ = 0;
