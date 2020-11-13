@@ -239,6 +239,12 @@ const FeatureEntry::FeatureVariation
         {"(show one)", kAutofillUseMobileLabelDisambiguationShowOne,
          base::size(kAutofillUseMobileLabelDisambiguationShowOne), nullptr}};
 
+const FeatureEntry::FeatureParam kDiscoverFeedInNtpEnableNativeUI[] = {
+    {kDiscoverFeedIsNativeUIEnabled, "true"}};
+const FeatureEntry::FeatureVariation kDiscoverFeedInNtpVariations[] = {
+    {"Native UI", kDiscoverFeedInNtpEnableNativeUI,
+     base::size(kDiscoverFeedInNtpEnableNativeUI), nullptr}};
+
 // To add a new entry, add to the end of kFeatureEntries. There are four
 // distinct types of entries:
 // . ENABLE_DISABLE_VALUE: entry is either enabled, disabled, or uses the
@@ -519,7 +525,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(kSafetyCheckIOS)},
     {"new-content-suggestions-feed", flag_descriptions::kDiscoverFeedInNtpName,
      flag_descriptions::kDiscoverFeedInNtpDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kDiscoverFeedInNtp)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(kDiscoverFeedInNtp,
+                                    kDiscoverFeedInNtpVariations,
+                                    "IOSDiscoverFeed")},
     {"autofill-enable-card-nickname-upstream",
      flag_descriptions::kAutofillEnableCardNicknameUpstreamName,
      flag_descriptions::kAutofillEnableCardNicknameUpstreamDescription,

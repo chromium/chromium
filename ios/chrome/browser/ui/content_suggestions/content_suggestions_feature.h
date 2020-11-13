@@ -12,6 +12,10 @@
 // Use IsDiscoverFeedEnabled() instead of this constant directly.
 extern const base::Feature kDiscoverFeedInNtp;
 
+// A parameter to indicate whether the native UI is enabled for the discover
+// feed.
+extern const char kDiscoverFeedIsNativeUIEnabled[];
+
 // Whether the Discover feed is enabled instead of the Zine feed.
 bool IsDiscoverFeedEnabled();
 
