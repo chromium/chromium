@@ -2370,16 +2370,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, TabsUpdate_WebToAboutBlank) {
   content::WebContents* test_contents = nullptr;
   {
     content::WebContentsAddedObserver test_contents_observer;
-    content::TestNavigationObserver nav_observer(nullptr);
-    nav_observer.StartWatchingNewWebContents();
-    content::ExecuteScriptAsync(
-        extension_contents,
-        content::JsReplace("window.open($1, '_blank')", web_url));
-
+    ui_test_utils::NavigateToURLWithDisposition(
+        browser(), web_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+        ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
     test_contents = test_contents_observer.GetWebContents();
-    nav_observer.WaitForNavigationFinished();
-    EXPECT_TRUE(nav_observer.last_navigation_succeeded());
-    EXPECT_EQ(web_url, nav_observer.last_navigation_url());
   }
   EXPECT_EQ(web_origin,
             test_contents->GetMainFrame()->GetLastCommittedOrigin());
@@ -2417,6 +2411,66 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, TabsUpdate_WebToAboutBlank) {
       test_frame->GetLastCommittedOrigin().GetTupleOrPrecursorTupleIfOpaque());
 }
 
+// Tests updating a URL of a web tab to an about:newtab.  Verify that the new
+// frame is placed in the correct process, has the correct origin and that no
+// DCHECKs are hit anywhere.
+IN_PROC_BROWSER_TEST_F(ExtensionApiTest, TabsUpdate_WebToAboutNewTab) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const extensions::Extension* extension =
+      LoadExtension(test_data_dir_.AppendASCII("../simple_with_file"));
+  ASSERT_TRUE(extension);
+  GURL extension_url = extension->GetResourceURL("file.html");
+  url::Origin extension_origin = url::Origin::Create(extension_url);
+  GURL web_url = embedded_test_server()->GetURL("/title1.html");
+  url::Origin web_origin = url::Origin::Create(web_url);
+
+  // https://crbug.com/1145381: about:version is rewritten to chrome://version
+  // when entered in the omnibox or used in a bookmark.  Such rewriting is
+  // definitely undesirable for http-initiated navigations (see r818969), but
+  // it is less clear what should happen in extension-initiated navigations.
+  GURL about_newtab_url = GURL("about:newtab");
+  GURL chrome_newtab_url = GURL("chrome://new-tab-page/");
+
+  // Navigate a tab to an extension page.
+  ui_test_utils::NavigateToURL(browser(), extension_url);
+  content::WebContents* extension_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  EXPECT_EQ(extension_origin,
+            extension_contents->GetMainFrame()->GetLastCommittedOrigin());
+
+  // Create another tab and navigate it to a web page.
+  content::WebContents* test_contents = nullptr;
+  {
+    content::WebContentsAddedObserver test_contents_observer;
+    ui_test_utils::NavigateToURLWithDisposition(
+        browser(), web_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+        ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+    test_contents = test_contents_observer.GetWebContents();
+  }
+
+  // Use |chrome.tabs.update| API to navigate |test_contents| to an about:newtab
+  // URL.
+  {
+    content::TestNavigationObserver nav_observer(test_contents, 1);
+    int test_tab_id = ExtensionTabUtil::GetTabId(test_contents);
+    content::ExecuteScriptAsync(
+        extension_contents,
+        content::JsReplace("chrome.tabs.update($1, { url: $2 })", test_tab_id,
+                           about_newtab_url));
+    nav_observer.WaitForNavigationFinished();
+    EXPECT_TRUE(nav_observer.last_navigation_succeeded());
+    EXPECT_EQ(chrome_newtab_url, nav_observer.last_navigation_url());
+  }
+
+  // Verify the origin and process of the about:newtab tab.
+  content::RenderFrameHost* test_frame = test_contents->GetMainFrame();
+  EXPECT_EQ(chrome_newtab_url, test_frame->GetLastCommittedURL());
+  EXPECT_EQ(url::Origin::Create(chrome_newtab_url),
+            test_frame->GetLastCommittedOrigin());
+  EXPECT_NE(extension_contents->GetMainFrame()->GetProcess(),
+            test_contents->GetMainFrame()->GetProcess());
+}
+
 // Tests updating a URL of a web tab to a non-web-accessible-resource of an
 // extension - such navigation should be allowed.
 IN_PROC_BROWSER_TEST_F(ExtensionApiTest, TabsUpdate_WebToNonWAR) {
@@ -2441,16 +2495,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, TabsUpdate_WebToNonWAR) {
   content::WebContents* test_contents = nullptr;
   {
     content::WebContentsAddedObserver test_contents_observer;
-    content::TestNavigationObserver nav_observer(nullptr);
-    nav_observer.StartWatchingNewWebContents();
-    content::ExecuteScriptAsync(
-        extension_contents,
-        content::JsReplace("window.open($1, '_blank')", web_url));
+    ui_test_utils::NavigateToURLWithDisposition(
+        browser(), web_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+        ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
     test_contents = test_contents_observer.GetWebContents();
-    nav_observer.WaitForNavigationFinished();
-
-    EXPECT_TRUE(nav_observer.last_navigation_succeeded());
-    EXPECT_EQ(web_url, nav_observer.last_navigation_url());
   }
   EXPECT_EQ(web_origin,
             test_contents->GetMainFrame()->GetLastCommittedOrigin());
