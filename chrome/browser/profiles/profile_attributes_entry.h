@@ -121,6 +121,10 @@ class ProfileAttributesEntry {
   std::string GetSupervisedUserId() const;
   // Returns true if the profile is an ephemeral profile.
   bool IsEphemeral() const;
+  // Returns true if the profile is a Guest profile.
+  // Only ephemeral Guest profiles are stored in profile attributes and
+  // therefore a Guest profile here is always ephemeral as well.
+  bool IsGuest() const;
   // Returns true if the profile is using a default name, typically of the
   // format "Person %d".
   bool IsUsingDefaultName() const;
@@ -167,6 +171,7 @@ class ProfileAttributesEntry {
   void SetIsSigninRequired(bool value);
   void SetSignedInWithCredentialProvider(bool value);
   void SetIsEphemeral(bool value);
+  void SetIsGuest(bool value);
   void SetIsUsingDefaultName(bool value);
   void SetIsUsingDefaultAvatar(bool value);
   void SetIsAuthError(bool value);
@@ -205,6 +210,7 @@ class ProfileAttributesEntry {
   static const char kAvatarIconKey[];
   static const char kBackgroundAppsKey[];
   static const char kProfileIsEphemeral[];
+  static const char kProfileIsGuest[];
   static const char kUserNameKey[];
   static const char kGAIAIdKey[];
   static const char kIsConsentedPrimaryAccountKey[];

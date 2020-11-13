@@ -171,6 +171,7 @@ void ProfileInfoCache::AddProfileToCache(const base::FilePath& profile_path,
   info->SetBoolean(ProfileAttributesEntry::kIsOmittedFromProfileListKey,
                    !supervised_user_id.empty());
   info->SetBoolean(ProfileAttributesEntry::kProfileIsEphemeral, false);
+  info->SetBoolean(ProfileAttributesEntry::kProfileIsGuest, false);
   // Either the user has provided a name manually on purpose, and in this case
   // we should not check for legacy profile names or this a new profile but then
   // it is not a legacy name, so we dont need to check for legacy names.

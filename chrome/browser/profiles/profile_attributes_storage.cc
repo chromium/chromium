@@ -158,7 +158,7 @@ MultiProfileUserType GetMultiProfileUserType(
 
   int active_count = std::count_if(
       entries.begin(), entries.end(), [](ProfileAttributesEntry* entry) {
-        return ProfileMetrics::IsProfileActive(entry);
+        return ProfileMetrics::IsProfileActive(entry) && !entry->IsGuest();
       });
 
   if (active_count <= 1)
@@ -412,6 +412,8 @@ void ProfileAttributesStorage::RecordProfilesState() {
   MultiProfileUserType type = GetMultiProfileUserType(entries);
 
   for (ProfileAttributesEntry* entry : entries) {
+    if (entry->IsGuest())
+      continue;
     RecordProfileState(entry, profile_metrics::StateSuffix::kAll);
 
     switch (type) {

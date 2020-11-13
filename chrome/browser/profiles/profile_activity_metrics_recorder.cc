@@ -98,6 +98,8 @@ void RecordProfilesState() {
 
 void RecordAccountMetrics(const Profile* profile) {
   DCHECK(profile);
+  if (profile->IsEphemeralGuestProfile())
+    return;
 
   ProfileAttributesEntry* entry;
   if (!g_browser_process->profile_manager()

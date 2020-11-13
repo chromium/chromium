@@ -110,6 +110,7 @@ const char ProfileAttributesEntry::kIsOmittedFromProfileListKey[] =
 const char ProfileAttributesEntry::kAvatarIconKey[] = "avatar_icon";
 const char ProfileAttributesEntry::kBackgroundAppsKey[] = "background_apps";
 const char ProfileAttributesEntry::kProfileIsEphemeral[] = "is_ephemeral";
+const char ProfileAttributesEntry::kProfileIsGuest[] = "is_guest";
 const char ProfileAttributesEntry::kUserNameKey[] = "user_name";
 const char ProfileAttributesEntry::kGAIAIdKey[] = "gaia_id";
 const char ProfileAttributesEntry::kIsConsentedPrimaryAccountKey[] =
@@ -394,6 +395,10 @@ bool ProfileAttributesEntry::IsEphemeral() const {
   return GetBool(kProfileIsEphemeral);
 }
 
+bool ProfileAttributesEntry::IsGuest() const {
+  return GetBool(kProfileIsGuest);
+}
+
 bool ProfileAttributesEntry::IsUsingDefaultName() const {
   return GetBool(kIsUsingDefaultNameKey);
 }
@@ -570,6 +575,10 @@ void ProfileAttributesEntry::RecordAccountMetrics() const {
 
 void ProfileAttributesEntry::SetIsEphemeral(bool value) {
   SetBool(kProfileIsEphemeral, value);
+}
+
+void ProfileAttributesEntry::SetIsGuest(bool value) {
+  SetBool(kProfileIsGuest, value);
 }
 
 void ProfileAttributesEntry::SetIsUsingDefaultName(bool value) {
