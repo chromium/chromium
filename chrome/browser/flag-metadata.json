@@ -2976,6 +2976,11 @@
     "expiry_milestone": 88
   },
   {
+    "name": "interest-feed-notice-card-auto-dismiss",
+    "owners": [ "//chrome/android/feed/OWNERS", "feed@chromium.org" ],
+    "expiry_milestone": 95
+  },
+  {
     "name": "interest-feed-v1-clicks-and-views-cond-upload",
     "owners": [ "//chrome/android/feed/OWNERS", "feed@chromium.org" ],
     "expiry_milestone": 90

@@ -2804,20 +2804,26 @@ const char kInterestFeedContentSuggestionsDescription[] =
 const char kInterestFeedContentSuggestionsName[] =
     "Interest Feed Content Suggestions";
 
+const char kInterestFeedNoticeCardAutoDismissName[] =
+    "Interest Feed notice card auto-dismiss";
+const char kInterestFeedNoticeCardAutoDismissDescription[] =
+    "Auto-dismiss the notice card when there are enough clicks or views on the "
+    "notice card.";
+
 const char kInterestFeedV2Name[] = "Interest Feed v2";
 const char kInterestFeedV2Description[] =
     "Show content suggestions on the New Tab Page and Start Surface using the "
     "new Feed Component.";
 
-const char InterestFeedV1ClickAndViewActionsConditionalUploadName[] =
+const char kInterestFeedV1ClickAndViewActionsConditionalUploadName[] =
     "Interest Feed V1 clicks/views conditional upload";
-const char InterestFeedV1ClickAndViewActionsConditionalUploadDescription[] =
+const char kInterestFeedV1ClickAndViewActionsConditionalUploadDescription[] =
     "Only enable the upload of clicks/views in Feed V1 after reaching "
     "conditions.";
 
-const char InterestFeedV2ClickAndViewActionsConditionalUploadName[] =
+const char kInterestFeedV2ClickAndViewActionsConditionalUploadName[] =
     "Interest Feed V2 clicks/views conditional upload";
-const char InterestFeedV2ClickAndViewActionsConditionalUploadDescription[] =
+const char kInterestFeedV2ClickAndViewActionsConditionalUploadDescription[] =
     "Only enable the upload of clicks/views in Feed V2 after reaching "
     "conditions.";
 
