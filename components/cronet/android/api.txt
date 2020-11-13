@@ -171,12 +171,16 @@ public abstract class org.chromium.net.ExperimentalCronetEngine extends org.chro
   public org.chromium.net.UrlRequest$Builder newUrlRequestBuilder(java.lang.String, org.chromium.net.UrlRequest$Callback, java.util.concurrent.Executor);
 }
 public abstract class org.chromium.net.ExperimentalUrlRequest$Builder extends org.chromium.net.UrlRequest$Builder {
+  public static final int DEFAULT_IDEMPOTENCY;
+  public static final int IDEMPOTENT;
+  public static final int NOT_IDEMPOTENT;
   public org.chromium.net.ExperimentalUrlRequest$Builder();
   public org.chromium.net.ExperimentalUrlRequest$Builder disableConnectionMigration();
   public org.chromium.net.ExperimentalUrlRequest$Builder addRequestAnnotation(java.lang.Object);
   public org.chromium.net.ExperimentalUrlRequest$Builder setTrafficStatsTag(int);
   public org.chromium.net.ExperimentalUrlRequest$Builder setTrafficStatsUid(int);
   public org.chromium.net.ExperimentalUrlRequest$Builder setRequestFinishedListener(org.chromium.net.RequestFinishedInfo$Listener);
+  public org.chromium.net.ExperimentalUrlRequest$Builder setIdempotency(int);
   public abstract org.chromium.net.ExperimentalUrlRequest$Builder setHttpMethod(java.lang.String);
   public abstract org.chromium.net.ExperimentalUrlRequest$Builder addHeader(java.lang.String, java.lang.String);
   public abstract org.chromium.net.ExperimentalUrlRequest$Builder disableCache();
@@ -394,4 +398,4 @@ public abstract class org.chromium.net.UrlResponseInfo {
   public abstract java.lang.String getProxyServer();
   public abstract long getReceivedByteCount();
 }
-Stamp: 71c5599220fcd59906505a5d599e5f7e
+Stamp: 1c548f381e3715d983e967e830d675d8

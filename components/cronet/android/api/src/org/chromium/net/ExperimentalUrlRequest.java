@@ -105,6 +105,35 @@ public abstract class ExperimentalUrlRequest extends UrlRequest {
             return this;
         }
 
+        /**
+         * Default request idempotency, only enable 0-RTT for safe HTTP methods. Passed to {@link
+         * #setIdempotency}.
+         */
+        public static final int DEFAULT_IDEMPOTENCY = 0;
+
+        /**
+         * Request is idempotent. Passed to {@link #setIdempotency}.
+         */
+        public static final int IDEMPOTENT = 1;
+
+        /**
+         * Request is not idempotent. Passed to {@link #setIdempotency}.
+         */
+        public static final int NOT_IDEMPOTENT = 2;
+
+        /**
+         * Sets idempotency of the request which should be one of the {@link #DEFAULT_IDEMPOTENCY
+         * IDEMPOTENT NOT_IDEMPOTENT} values. The default idempotency indicates that 0-RTT is only
+         * enabled for safe HTTP methods (GET, HEAD, OPTIONS, and TRACE).
+         *
+         * @param idempotency idempotency of the request which should be one of the {@link
+         *         #DEFAULT_IDEMPOTENCY IDEMPOTENT NOT_IDEMPOTENT} values.
+         * @return the builder to facilitate chaining.
+         */
+        public Builder setIdempotency(int idempotency) {
+            return this;
+        }
+
         // To support method chaining, override superclass methods to return an
         // instance of this class instead of the parent.
 

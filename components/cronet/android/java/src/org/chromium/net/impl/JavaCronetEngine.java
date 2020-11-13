@@ -70,7 +70,8 @@ public final class JavaCronetEngine extends CronetEngineBase {
             int priority, Collection<Object> connectionAnnotations, boolean disableCache,
             boolean disableConnectionMigration, boolean allowDirectExecutor,
             boolean trafficStatsTagSet, int trafficStatsTag, boolean trafficStatsUidSet,
-            int trafficStatsUid, RequestFinishedInfo.Listener requestFinishedListener) {
+            int trafficStatsUid, RequestFinishedInfo.Listener requestFinishedListener,
+            int idempotency) {
         return new JavaUrlRequest(callback, mExecutorService, executor, url, mUserAgent,
                 allowDirectExecutor, trafficStatsTagSet, trafficStatsTag, trafficStatsUidSet,
                 trafficStatsUid);
