@@ -46,7 +46,4 @@
 
     <!-- Preferences dimensions -->
     <dimen name="pref_spinner_padding_end">16dp</dimen>
-
-    <!-- Download manager dimensions -->
-    <dimen name="download_manager_ideal_image_width">240dp</dimen>
 </resources>

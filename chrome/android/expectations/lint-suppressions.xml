@@ -335,7 +335,7 @@ Still reading?
     <ignore regexp="chrome/browser/download/android/java/src/org/chromium/chrome/browser/download/DownloadDirectoryProvider.java"/>
     <ignore regexp="chrome/android/java/src/org/chromium/chrome/browser/download/OMADownloadHandler.java"/>
     <ignore regexp="chrome/android/java/src/org/chromium/chrome/browser/offlinepages/OfflinePageUtils.java"/>
-    <ignore regexp="chrome/android/java/src/org/chromium/chrome/browser/download/home/storage/StorageSummaryProvider.java"/>
+    <ignore regexp="chrome/browser/download/internal/android/java/src/org/chromium/chrome/browser/download/home/storage/StorageSummaryProvider.java"/>
   </issue>
   <issue id="VectorPath" severity="ignore"/>
   <!-- These constructors are useful for layout editors which we currently do not support. -->

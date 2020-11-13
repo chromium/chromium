@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.download.home;
 import android.app.Activity;
 import android.content.Context;
 
+import org.chromium.base.Callback;
 import org.chromium.chrome.browser.download.items.OfflineContentAggregatorFactory;
 import org.chromium.chrome.browser.download.settings.DownloadSettings;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
@@ -36,8 +37,10 @@ public class DownloadManagerCoordinatorFactoryHelper {
                 : Profile.getLastUsedRegularProfile();
         LegacyDownloadProvider legacyProvider =
                 config.useNewDownloadPath ? null : new LegacyDownloadProviderImpl();
-        return new DownloadManagerCoordinatorImpl(activity, config, new PrefetchEnabledSupplier(),
-                DownloadManagerCoordinatorFactoryHelper::settingsLaunchHelper, snackbarManager,
+        Callback<Context> settingsLaunchHelper =
+                DownloadManagerCoordinatorFactoryHelper::settingsLaunchHelper;
+        return DownloadManagerCoordinatorFactory.create(activity, config,
+                new PrefetchEnabledSupplier(), settingsLaunchHelper, snackbarManager,
                 modalDialogManager, UserPrefs.get(profile),
                 TrackerFactory.getTrackerForProfile(profile), new FaviconProviderImpl(profile),
                 OfflineContentAggregatorFactory.get(), legacyProvider,

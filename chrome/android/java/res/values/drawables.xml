@@ -7,9 +7,5 @@
     <drawable name="ntp_search_box">@drawable/modern_toolbar_text_box_background</drawable>
     <drawable name="badge_update">@drawable/badge_update_dark</drawable>
     <drawable name="ic_error_24dp_filled">@drawable/ic_error_grey800_24dp_filled</drawable>
-    <drawable name="ic_offline_pin_24dp">@drawable/ic_offline_pin_24dp_on_light_bg</drawable>
-    <drawable name="ic_play_circle_filled_24dp">
-        @drawable/ic_play_circle_filled_24dp_on_light_bg
-    </drawable>
     <drawable name="shared_clipboard_zero_state">@drawable/shared_clipboard_zero_state_light</drawable>
 </resources>

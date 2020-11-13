@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2020 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Chip list -->
+    <dimen name="chip_list_inter_chip_padding">2.5dp</dimen>
+    <dimen name="chip_list_side_padding">16dp</dimen>
+
+    <!-- Download manager dimensions -->
+    <dimen name="download_manager_ideal_image_width">150dp</dimen>
+    <dimen name="download_manager_image_padding">5dp</dimen>
+    <dimen name="download_manager_horizontal_margin">16dp</dimen>
+    <dimen name="download_manager_max_image_item_width_wide_screen">300dp</dimen>
+    <dimen name="download_manager_prefetch_vertical_margin">12dp</dimen>
+    <dimen name="download_manager_recycler_view_min_padding_wide_screen">16dp</dimen>
+    <dimen name="download_manager_section_title_padding_top">16dp</dimen>
+    <!-- The corner radius is calculated by subtracting the hairline border width from the
+         background card corner radius. -->
+    <dimen name="download_manager_thumbnail_corner_radius">7dp</dimen>
+</resources>
