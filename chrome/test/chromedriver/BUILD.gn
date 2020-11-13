@@ -57,10 +57,13 @@ action("embed_user_data_dir_in_cpp") {
 }
 
 source_set("automation_client_lib") {
+  testonly = true
   sources = [
     "chrome/adb.h",
     "chrome/adb_impl.cc",
     "chrome/adb_impl.h",
+    "chrome/browser_info.cc",
+    "chrome/browser_info.h",
     "chrome/cast_tracker.cc",
     "chrome/cast_tracker.h",
     "chrome/chrome.h",
@@ -123,6 +126,8 @@ source_set("automation_client_lib") {
     "chrome/non_blocking_navigation_tracker.h",
     "chrome/page_load_strategy.cc",
     "chrome/page_load_strategy.h",
+    "chrome/scoped_temp_dir_with_retry.cc",
+    "chrome/scoped_temp_dir_with_retry.h",
     "chrome/status.cc",
     "chrome/status.h",
     "chrome/ui_events.cc",
@@ -132,6 +137,7 @@ source_set("automation_client_lib") {
     "chrome/web_view.h",
     "chrome/web_view_impl.cc",
     "chrome/web_view_impl.h",
+    "constants/version.h",
     "log_replay/chrome_replay_impl.cc",
     "log_replay/chrome_replay_impl.h",
     "log_replay/devtools_log_reader.cc",
@@ -174,8 +180,11 @@ source_set("automation_client_lib") {
     ":embed_user_data_dir_in_cpp",
     "//base",
     "//base/third_party/dynamic_annotations",
+    "//build:branding_buildflags",
+    "//chrome/common:non_code_constants",
     "//chrome/common:version_header",
     "//net",
+    "//net/traffic_annotation:test_support",
     "//services/network/public/cpp",
     "//services/network/public/mojom",
     "//third_party/blink/public:buildflags",
@@ -183,6 +192,7 @@ source_set("automation_client_lib") {
     "//third_party/zlib/google:zip",
     "//ui/accessibility:ax_enums_mojo",
     "//ui/base",
+    "//ui/events:dom_keycode_converter",
     "//ui/gfx",
     "//ui/gfx/geometry",
     "//url",
@@ -190,6 +200,7 @@ source_set("automation_client_lib") {
 }
 
 source_set("lib") {
+  testonly = true
   sources = [
     "//third_party/webdriver/atoms.cc",
     "//third_party/webdriver/atoms.h",
@@ -199,10 +210,6 @@ source_set("lib") {
     "basic_types.h",
     "capabilities.cc",
     "capabilities.h",
-    "chrome/browser_info.cc",
-    "chrome/browser_info.h",
-    "chrome/scoped_temp_dir_with_retry.cc",
-    "chrome/scoped_temp_dir_with_retry.h",
     "chrome_launcher.cc",
     "chrome_launcher.h",
     "command.h",
@@ -212,7 +219,6 @@ source_set("lib") {
     "commands.cc",
     "commands.h",
     "connection_session_map.h",
-    "constants/version.h",
     "devtools_events_logger.cc",
     "devtools_events_logger.h",
     "element_commands.cc",
@@ -261,6 +267,7 @@ source_set("lib") {
     "//base",
     "//base/third_party/dynamic_annotations",
     "//build:branding_buildflags",
+    "//build:chromeos_buildflags",
     "//chrome/common:constants",
     "//chrome/common:version_header",
     "//chrome/test/chromedriver/constants:version_header",
@@ -270,10 +277,12 @@ source_set("lib") {
     "//crypto",
     "//net",
     "//net/server:http_server",
+    "//net/traffic_annotation:test_support",
     "//services/network:network_service",
     "//services/network/public/cpp",
     "//services/network/public/mojom",
     "//third_party/zlib",
+    "//third_party/zlib/google:zip",
     "//ui/base",
     "//ui/events:dom_keycode_converter",
     "//ui/events:events_base",
@@ -301,6 +310,7 @@ executable("chromedriver") {
   sources = [ "server/chromedriver_server.cc" ]
 
   deps = [
+    ":automation_client_lib",
     ":lib",
     "//build/win:default_exe_manifest",
     "//mojo/core/embedder",
@@ -410,9 +420,11 @@ test("chromedriver_unittests") {
   ]
 
   deps = [
+    ":automation_client_lib",
     ":lib",
     "//base",
     "//base/test:run_all_unittests",
+    "//chrome/common",
     "//mojo/core/embedder",
     "//net",
     "//net:test_support",
