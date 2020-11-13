@@ -4,8 +4,14 @@
 
 #include <vector>
 
-#include "base/feature_list.h"
+#include "base/bind.h"
+#include "base/location.h"
+#include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/test_timeouts.h"
+#include "base/threading/thread_task_runner_handle.h"
+#include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/password_manager/password_manager_interactive_test_base.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
 #include "chrome/browser/ui/browser.h"
@@ -13,19 +19,35 @@
 #include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/password_manager/core/browser/password_form_manager.h"
+#include "components/password_manager/core/browser/password_manager.h"
 #include "components/password_manager/core/browser/test_password_store.h"
+#include "components/signin/public/base/signin_buildflags.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+#include "chrome/browser/password_manager/password_manager_signin_intercept_test_helper.h"
+#include "chrome/browser/signin/dice_web_signin_interceptor.h"
+#endif  // ENABLE_DICE_SUPPORT
+
+namespace {
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+// Wait until |condition| returns true.
+void WaitForCondition(base::RepeatingCallback<bool()> condition) {
+  while (!condition.Run()) {
+    base::RunLoop run_loop;
+    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+        FROM_HERE, run_loop.QuitClosure(), TestTimeouts::tiny_timeout());
+    run_loop.Run();
+  }
+}
+#endif  // ENABLE_DICE_SUPPORT
+
+}  // namespace
+
 namespace password_manager {
 
-// Test fixture that condionally enable feature kAutofillExpandedPopupViews.
-// The fixture should be replaced with PasswordManagerBrowserTestBase once the
-// feature is deleted.
-//
-// Test params:
-//  - bool popup_views_enabled: whether feature AutofillExpandedPopupViews
-//        is enabled for testing.
 class PasswordManagerInteractiveTest
     : public PasswordManagerInteractiveTestBase {
  public:
@@ -278,5 +300,91 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTest,
   VerifyPasswordIsSavedAndFilled("/password/password_xhr_submit.html",
                                  "username_field", "password_field", submit);
 }
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+// This test suite only applies to Gaia signin page, and checks that the
+// signin interception bubble and the password bubbles never conflict.
+class PasswordManagerInteractiveTestWithSigninInterception
+    : public PasswordManagerInteractiveTest {
+ public:
+  PasswordManagerInteractiveTestWithSigninInterception()
+      : helper_(&https_test_server()) {}
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    PasswordManagerInteractiveTest::SetUpCommandLine(command_line);
+    helper_.SetUpCommandLine(command_line);
+  }
+
+  void SetUpOnMainThread() override {
+    helper_.SetUpOnMainThread();
+    PasswordManagerInteractiveTest::SetUpOnMainThread();
+  }
+
+ protected:
+  PasswordManagerSigninInterceptTestHelper helper_;
+};
+
+// Checks that password update suppresses signin interception.
+IN_PROC_BROWSER_TEST_F(PasswordManagerInteractiveTestWithSigninInterception,
+                       InterceptionBubbleSuppressedByPendingPasswordUpdate) {
+  Profile* profile = browser()->profile();
+  helper_.SetupProfilesForInterception(profile);
+  // Prepopulate Gaia credentials to trigger an update bubble.
+  scoped_refptr<password_manager::TestPasswordStore> password_store =
+      static_cast<password_manager::TestPasswordStore*>(
+          PasswordStoreFactory::GetForProfile(
+              profile, ServiceAccessType::IMPLICIT_ACCESS)
+              .get());
+  helper_.StoreGaiaCredentials(password_store);
+
+  helper_.NavigateToGaiaSigninPage(WebContents());
+
+  // Have user interact with the page
+  content::SimulateMouseClickAt(
+      WebContents(), 0, blink::WebMouseEvent::Button::kLeft, gfx::Point(1, 1));
+
+  // Wait for password to be autofilled.
+  WaitForElementValue("password_field", "pw");
+
+  // Change username and submit. This should add the characters "new" to the
+  // already autofilled password.
+  FillElementWithValue("password_field", "new", "pwnew");
+
+  // Wait until the form change is picked up by the password manager.
+  const PasswordManager* password_manager =
+      ChromePasswordManagerClient::FromWebContents(WebContents())
+          ->GetPasswordManager();
+  WaitForCondition(
+      base::BindRepeating(&PasswordManager::IsFormManagerPendingPasswordUpdate,
+                          base::Unretained(password_manager)));
+
+  // Start the navigation.
+  NavigationObserver navigation_observer(WebContents());
+  content::ExecuteScriptAsync(
+      WebContents(), "document.getElementById('input_submit_button').click()");
+
+  // Complete the Gaia signin before the navigation completes.
+  CoreAccountId account_id = helper_.AddGaiaAccountToProfile(
+      profile, helper_.gaia_email(), helper_.gaia_id());
+
+  // Check that interception does not happen.
+  base::HistogramTester histogram_tester;
+  DiceWebSigninInterceptor* signin_interceptor =
+      helper_.GetSigninInterceptor(profile);
+  signin_interceptor->MaybeInterceptWebSignin(WebContents(), account_id,
+                                              /*is_new_account=*/true,
+                                              /*is_sync_signin=*/false);
+  EXPECT_FALSE(signin_interceptor->is_interception_in_progress());
+  histogram_tester.ExpectUniqueSample(
+      "Signin.Intercept.HeuristicOutcome",
+      SigninInterceptionHeuristicOutcome::kAbortPasswordUpdatePending, 1);
+
+  // Complete the navigation. The stored password "pw" was overridden with
+  // "pwnew", so update prompt is expected.
+  BubbleObserver prompt_observer(WebContents());
+  navigation_observer.Wait();
+  EXPECT_TRUE(prompt_observer.IsUpdatePromptShownAutomatically());
+}
+#endif  // ENABLE_DICE_SUPPORT
 
 }  // namespace password_manager
