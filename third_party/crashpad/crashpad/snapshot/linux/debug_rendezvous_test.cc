@@ -196,7 +196,7 @@ void TestAgainstTarget(PtraceConnection* connection) {
   }
 }
 
-TEST(DebugRendezvous, Self) {
+TEST(DebugRendezvous, DISABLED_Self) {
   FakePtraceConnection connection;
   ASSERT_TRUE(connection.Initialize(getpid()));
 
@@ -221,7 +221,7 @@ class ChildTest : public Multiprocess {
   DISALLOW_COPY_AND_ASSIGN(ChildTest);
 };
 
-TEST(DebugRendezvous, Child) {
+TEST(DebugRendezvous, DISABLED_Child) {
   ChildTest test;
   test.Run();
 }
