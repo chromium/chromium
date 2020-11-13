@@ -51,7 +51,8 @@ class WaylandBufferManagerGpu : public ozone::mojom::WaylandBufferManagerGpu {
       mojo::PendingRemote<ozone::mojom::WaylandBufferManagerHost> remote_host,
       const base::flat_map<::gfx::BufferFormat, std::vector<uint64_t>>&
           buffer_formats_with_modifiers,
-      bool supports_dma_buf) override;
+      bool supports_dma_buf,
+      bool supports_acquire_fence) override;
 
   // These two calls get the surface, which backs the |widget| and notifies it
   // about the submission and the presentation. After the surface receives the
@@ -124,6 +125,8 @@ class WaylandBufferManagerGpu : public ozone::mojom::WaylandBufferManagerGpu {
   }
 #endif
 
+  bool supports_acquire_fence() const { return supports_acquire_fence_; }
+
   // Adds a WaylandBufferManagerGpu binding.
   void AddBindingWaylandBufferManagerGpu(
       mojo::PendingReceiver<ozone::mojom::WaylandBufferManagerGpu> receiver);
@@ -178,6 +181,8 @@ class WaylandBufferManagerGpu : public ozone::mojom::WaylandBufferManagerGpu {
   // A DRM render node based gbm device.
   std::unique_ptr<GbmDevice> gbm_device_;
 #endif
+  // Whether Wayland server allows buffer submission with acquire fence.
+  bool supports_acquire_fence_ = false;
 
   mojo::Receiver<ozone::mojom::WaylandBufferManagerGpu> receiver_{this};
 

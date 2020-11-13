@@ -608,7 +608,8 @@ bool WaylandWindow::CommitOverlays(
             nullptr, reference_above);
         connection_->buffer_manager_host()->CommitBufferInternal(
             (*iter)->wayland_surface(), (*overlay_iter)->buffer_id, gfx::Rect(),
-            /*wait_for_frame_callback=*/false);
+            /*wait_for_frame_callback=*/false,
+            std::move((*overlay_iter)->access_fence_handle));
       } else {
         // If there're more subsurfaces requested that we don't need at the
         // moment, hide them.
@@ -637,7 +638,8 @@ bool WaylandWindow::CommitOverlays(
             reference_below, nullptr);
         connection_->buffer_manager_host()->CommitBufferInternal(
             (*iter)->wayland_surface(), (*overlay_iter)->buffer_id, gfx::Rect(),
-            /*wait_for_frame_callback=*/false);
+            /*wait_for_frame_callback=*/false,
+            std::move((*overlay_iter)->access_fence_handle));
       } else {
         // If there're more subsurfaces requested that we don't need at the
         // moment, hide them.
@@ -659,7 +661,9 @@ bool WaylandWindow::CommitOverlays(
         (*split)->enable_blend, nullptr, nullptr);
     connection_->buffer_manager_host()->CommitBufferInternal(
         primary_subsurface_->wayland_surface(), (*split)->buffer_id,
-        (*split)->damage_region, /*wait_for_frame_callback=*/false);
+        (*split)->damage_region,
+        /*wait_for_frame_callback=*/false,
+        std::move((*split)->access_fence_handle));
   }
 
   root_surface_->SetViewportDestination(bounds_px_.size());

@@ -94,11 +94,13 @@ bool PresenterImageGL::Initialize(
   overlay_representation_ = representation_factory->ProduceOverlay(mailbox);
 
   // If the backing doesn't support overlay, then fallback to GL.
-  if (!overlay_representation_)
+  if (!overlay_representation_) {
+    LOG(ERROR) << "ProduceOverlay() failed";
     gl_representation_ = representation_factory->ProduceGLTexture(mailbox);
+  }
 
   if (!overlay_representation_ && !gl_representation_) {
-    DLOG(ERROR) << "ProduceOverlay() and ProduceGLTexture() failed.";
+    LOG(ERROR) << "ProduceOverlay() and ProduceGLTexture() failed.";
     return false;
   }
 

@@ -60,6 +60,7 @@ class GbmSurfacelessWayland : public gl::SurfacelessEGL,
                           PresentationCallback presentation_callback) override;
   EGLConfig GetConfig() override;
   void SetRelyOnImplicitSync() override;
+  bool SupportsPlaneGpuFences() const override;
   gfx::SurfaceOrigin GetOrigin() const override;
 
  private:
@@ -87,9 +88,6 @@ class GbmSurfacelessWayland : public gl::SurfacelessEGL,
     void Flush();
 
     bool ready = false;
-
-    // The id of the buffer, which represents this frame.
-    BufferId buffer_id = 0;
 
     // A region of the updated content in a corresponding frame. It's used to
     // advice Wayland which part of a buffer is going to be updated. Passing {0,
