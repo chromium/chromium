@@ -114,6 +114,7 @@ class RenderFrameProxyHost;
 class RenderWidgetHost;
 class RenderWidgetHostView;
 class ScopedAllowRendererCrashes;
+class ToRenderFrameHost;
 class WebContents;
 
 // Navigates |web_contents| to |url|, blocking until the navigation finishes.
@@ -137,6 +138,24 @@ WARN_UNUSED_RESULT bool NavigateToURL(WebContents* web_contents,
 void NavigateToURLBlockUntilNavigationsComplete(WebContents* web_contents,
                                                 const GURL& url,
                                                 int number_of_navigations);
+
+// Perform a renderer-initiated navigation of |window| to |url|, blocking
+// until the navigation finishes.  The navigation is done by assigning
+// location.href in the frame |adapter|. Returns true if the page was loaded
+// successfully and the last committed URL matches |url|.
+WARN_UNUSED_RESULT bool NavigateToURLFromRenderer(
+    const ToRenderFrameHost& adapter,
+    const GURL& url);
+// Similar to above but takes in an additional URL, |expected_commit_url|, to
+// which the navigation should eventually commit. (See the browser-initiated
+// counterpart for more details).
+WARN_UNUSED_RESULT bool NavigateToURLFromRenderer(
+    const ToRenderFrameHost& adapter,
+    const GURL& url,
+    const GURL& expected_commit_url);
+WARN_UNUSED_RESULT bool NavigateToURLFromRendererWithoutUserGesture(
+    const ToRenderFrameHost& adapter,
+    const GURL& url);
 
 // Navigate a frame with ID |iframe_id| to |url|, blocking until the navigation
 // finishes.  Uses a renderer-initiated navigation from script code in the
