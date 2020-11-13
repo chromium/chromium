@@ -25,13 +25,17 @@ from __future__ import print_function
 
 __author__ = 'evanm (Evan Martin)'
 
-from HTMLParser import HTMLParser
 import logging
 import os
 import re
 import shutil
 import sys
 from xml.dom import minidom
+
+if sys.version_info.major == 2:
+  from HTMLParser import HTMLParser
+else:
+  from html.parser import HTMLParser
 
 import action_utils
 import actions_model
@@ -372,7 +376,7 @@ def GrepForActions(path, actions):
       if not action_name:
         break
       actions.add(action_name)
-    except InvalidStatementException, e:
+    except InvalidStatementException as e:
       logging.warning(str(e))
 
   if action_re != USER_METRICS_ACTION_RE:
@@ -439,7 +443,7 @@ def GrepForWebUIActions(path, actions):
     # ensure the path of the file being parsed gets printed if that happens.
     close_called = True
     parser.close()
-  except Exception, e:
+  except Exception as e:
     print("Error encountered for path %s" % path)
     raise e
   finally:
@@ -468,7 +472,7 @@ def GrepForDevToolsActions(path, actions):
       if not action_name:
         break
       actions.add(action_name)
-    except InvalidStatementException, e:
+    except InvalidStatementException as e:
       logging.warning(str(e))
 
 def WalkDirectory(root_path, actions, extensions, callback):

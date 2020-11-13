@@ -4,6 +4,7 @@
 
 """Utility functions for parsing XML strings into ElementTree nodes."""
 
+import sys
 import xml.etree.ElementTree as ET
 import xml.sax
 
@@ -49,7 +50,7 @@ class _FirstTagFinder(xml.sax.ContentHandler):
 
 
 class _CommentedXMLParser(ET.XMLParser):
-  """An ElementTree builder that preserves comments."""
+  """A Python 2 compatible ElementTree builder that preserves comments."""
 
   def __init__(self, *args, **kwargs):
     super(_CommentedXMLParser, self).__init__(*args, **kwargs)
@@ -91,4 +92,8 @@ def GetTopLevelContent(file_content):
 
 def ParseXMLString(raw_xml):
   """Parses raw_xml and returns an ElementTree node that includes comments."""
-  return ET.fromstring(raw_xml, _CommentedXMLParser())
+  if sys.version_info.major == 2:
+    return ET.fromstring(raw_xml, _CommentedXMLParser())
+  else:
+    return ET.fromstring(
+        raw_xml, ET.XMLParser(target=ET.TreeBuilder(insert_comments=True)))
