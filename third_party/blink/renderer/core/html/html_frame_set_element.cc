@@ -262,7 +262,7 @@ void HTMLFrameSetElement::DefaultEventHandler(Event& evt) {
   auto* mouse_event = DynamicTo<MouseEvent>(evt);
   if (mouse_event && !noresize_ && GetLayoutObject() &&
       GetLayoutObject()->IsFrameSet()) {
-    if (ToLayoutFrameSet(GetLayoutObject())->UserResize(*mouse_event)) {
+    if (To<LayoutFrameSet>(GetLayoutObject())->UserResize(*mouse_event)) {
       evt.SetDefaultHandled();
       return;
     }

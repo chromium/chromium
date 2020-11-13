@@ -1374,8 +1374,8 @@ CSSValue* ComputedStyleUtils::ValueForGridTrackList(
     // For grids we should consider every listed track, whether implicitly or
     // explicitly created. Empty grids have a sole grid line per axis.
     auto& positions = is_row_axis
-                          ? ToLayoutGrid(layout_object)->ColumnPositions()
-                          : ToLayoutGrid(layout_object)->RowPositions();
+                          ? To<LayoutGrid>(layout_object)->ColumnPositions()
+                          : To<LayoutGrid>(layout_object)->RowPositions();
     track_list_is_empty = positions.size() == 1;
   }
 
@@ -1387,7 +1387,7 @@ CSSValue* ComputedStyleUtils::ValueForGridTrackList(
   // If the element is a grid container, the resolved value is the used value,
   // specifying track sizes in pixels and expanding the repeat() notation.
   if (is_layout_grid) {
-    const auto* grid = ToLayoutGrid(layout_object);
+    const auto* grid = To<LayoutGrid>(layout_object);
     OrderedNamedLinesCollectorInGridLayout collector(
         style, is_row_axis, grid->AutoRepeatCountForDirection(direction),
         auto_repeat_track_sizes.size());

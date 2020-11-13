@@ -248,7 +248,12 @@ class CORE_EXPORT LayoutFlexibleBox : public LayoutBlock {
   bool in_layout_;
 };
 
-DEFINE_LAYOUT_OBJECT_TYPE_CASTS(LayoutFlexibleBox, IsFlexibleBox());
+template <>
+struct DowncastTraits<LayoutFlexibleBox> {
+  static bool AllowFrom(const LayoutObject& object) {
+    return object.IsFlexibleBox();
+  }
+};
 
 }  // namespace blink
 

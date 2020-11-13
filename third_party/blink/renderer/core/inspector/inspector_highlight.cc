@@ -476,7 +476,7 @@ PhysicalOffset LocalToAbsolutePoint(Node* node,
                                     PhysicalOffset local,
                                     float scale) {
   LayoutObject* layout_object = node->GetLayoutObject();
-  LayoutGrid* layout_grid = ToLayoutGrid(layout_object);
+  auto* layout_grid = To<LayoutGrid>(layout_object);
   FloatPoint local_in_frame = FramePointToViewport(
       node->GetDocument().View(), FloatPoint(local.left, local.top));
   PhysicalOffset abs_number_pos = layout_grid->LocalToAbsolutePoint(
@@ -501,7 +501,7 @@ std::unique_ptr<protocol::ListValue> BuildGridTrackSizes(
     LayoutUnit gap,
     const Vector<String>* authored_values) {
   LayoutObject* layout_object = node->GetLayoutObject();
-  LayoutGrid* layout_grid = ToLayoutGrid(layout_object);
+  auto* layout_grid = To<LayoutGrid>(layout_object);
   bool is_rtl = direction == kForColumns &&
                 !layout_grid->StyleRef().IsLeftToRightDirection();
 
@@ -545,7 +545,7 @@ std::unique_ptr<protocol::ListValue> BuildGridPositiveLineNumberPositions(
     GridTrackSizingDirection direction,
     float scale) {
   LayoutObject* layout_object = node->GetLayoutObject();
-  LayoutGrid* layout_grid = ToLayoutGrid(layout_object);
+  auto* layout_grid = To<LayoutGrid>(layout_object);
   bool is_rtl = direction == kForColumns &&
                 !layout_grid->StyleRef().IsLeftToRightDirection();
 
@@ -588,7 +588,7 @@ std::unique_ptr<protocol::ListValue> BuildGridNegativeLineNumberPositions(
     GridTrackSizingDirection direction,
     float scale) {
   LayoutObject* layout_object = node->GetLayoutObject();
-  LayoutGrid* layout_grid = ToLayoutGrid(layout_object);
+  auto* layout_grid = To<LayoutGrid>(layout_object);
   bool is_rtl = direction == kForColumns &&
                 !layout_grid->StyleRef().IsLeftToRightDirection();
 
@@ -641,7 +641,7 @@ std::unique_ptr<protocol::ListValue> BuildGridNegativeLineNumberPositions(
 std::unique_ptr<protocol::DictionaryValue> BuildAreaNamePaths(Node* node,
                                                               float scale) {
   LayoutObject* layout_object = node->GetLayoutObject();
-  LayoutGrid* layout_grid = ToLayoutGrid(layout_object);
+  auto* layout_grid = To<LayoutGrid>(layout_object);
   LocalFrameView* containing_view = node->GetDocument().View();
   bool is_rtl = !layout_grid->StyleRef().IsLeftToRightDirection();
 
@@ -697,7 +697,7 @@ std::unique_ptr<protocol::ListValue> BuildGridLineNames(
     GridTrackSizingDirection direction,
     float scale) {
   LayoutObject* layout_object = node->GetLayoutObject();
-  LayoutGrid* layout_grid = ToLayoutGrid(layout_object);
+  auto* layout_grid = To<LayoutGrid>(layout_object);
   bool is_rtl = direction == kForColumns &&
                 !layout_grid->StyleRef().IsLeftToRightDirection();
 
@@ -932,7 +932,7 @@ std::unique_ptr<protocol::DictionaryValue> BuildGridInfo(
   LocalFrameView* containing_view = node->GetDocument().View();
   LayoutObject* layout_object = node->GetLayoutObject();
   DCHECK(layout_object);
-  LayoutGrid* layout_grid = ToLayoutGrid(layout_object);
+  auto* layout_grid = To<LayoutGrid>(layout_object);
 
   std::unique_ptr<protocol::DictionaryValue> grid_info =
       protocol::DictionaryValue::create();

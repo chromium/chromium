@@ -338,9 +338,9 @@ void LayoutFrameSet::ComputeEdgeInfo() {
     for (size_t c = 0; c < cols; ++c) {
       FrameEdgeInfo edge_info;
       if (child->IsFrameSet())
-        edge_info = ToLayoutFrameSet(child)->EdgeInfo();
+        edge_info = To<LayoutFrameSet>(child)->EdgeInfo();
       else
-        edge_info = ToLayoutFrame(child)->EdgeInfo();
+        edge_info = To<LayoutFrame>(child)->EdgeInfo();
       FillFromEdgeInfo(edge_info, r, c);
       child = child->NextSibling();
       if (!child)

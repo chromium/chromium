@@ -268,7 +268,7 @@ void FlexItem::ComputeStretchedSize() {
       cross_axis_size_ = box_->ConstrainLogicalHeightByMinMax(
           stretched_size, box_->IntrinsicContentLogicalHeight());
     } else if (!MainAxisIsInlineAxis() && style_.LogicalWidth().IsAuto()) {
-      const LayoutFlexibleBox* flexbox = ToLayoutFlexibleBox(box_->Parent());
+      const auto* flexbox = To<LayoutFlexibleBox>(box_->Parent());
       cross_axis_size_ = box_->ConstrainLogicalWidthByMinMax(
           stretched_size, flexbox->CrossAxisContentExtent(), flexbox);
     }

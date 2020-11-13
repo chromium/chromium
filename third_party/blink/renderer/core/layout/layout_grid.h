@@ -339,7 +339,12 @@ class LayoutGrid final : public LayoutBlock {
   base::Optional<bool> has_definite_logical_height_;
 };
 
-DEFINE_LAYOUT_OBJECT_TYPE_CASTS(LayoutGrid, IsLayoutGrid());
+template <>
+struct DowncastTraits<LayoutGrid> {
+  static bool AllowFrom(const LayoutObject& object) {
+    return object.IsLayoutGrid();
+  }
+};
 
 }  // namespace blink
 

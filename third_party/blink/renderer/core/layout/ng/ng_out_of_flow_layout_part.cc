@@ -253,7 +253,7 @@ bool NGOutOfFlowLayoutPart::SweepLegacyCandidates(
     // TODO(layout-dev): Remove this once LayoutFlexibleBox is removed.
     LayoutBox* layout_box = To<LayoutBox>(legacy_object);
     if (layout_box->Parent()->IsFlexibleBox()) {
-      LayoutFlexibleBox* parent = ToLayoutFlexibleBox(layout_box->Parent());
+      auto* parent = To<LayoutFlexibleBox>(layout_box->Parent());
       if (parent->SetStaticPositionForPositionedLayout(*layout_box)) {
         NGLogicalOutOfFlowPositionedNode candidate((NGBlockNode(layout_box)),
                                                    NGLogicalStaticPosition());

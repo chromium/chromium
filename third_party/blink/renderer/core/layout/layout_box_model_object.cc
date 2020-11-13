@@ -758,7 +758,7 @@ bool LayoutBoxModelObject::HasAutoHeightOrContainingBlockWithAutoHeight(
   }
   if (this_box && this_box->IsFlexItemIncludingNG()) {
     if (this_box->IsFlexItem()) {
-      const LayoutFlexibleBox& flex_box = ToLayoutFlexibleBox(*Parent());
+      const auto& flex_box = To<LayoutFlexibleBox>(*Parent());
       if (flex_box.UseOverrideLogicalHeightForPerentageResolution(*this_box))
         return false;
     } else if (this_box->GetCachedLayoutResult()) {

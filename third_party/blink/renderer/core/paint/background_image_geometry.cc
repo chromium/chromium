@@ -306,16 +306,15 @@ PhysicalOffset BackgroundImageGeometry::GetPositioningOffsetForCell(
                      cell.Table()->BorderBefore() - height_of_captions) +
                         cell.Location().Y());
 
-  DCHECK(positioning_box.IsLayoutTableCol());
-  if (ToLayoutTableCol(positioning_box).IsTableColumn()) {
+  const auto& table_col = To<LayoutTableCol>(positioning_box);
+  if (table_col.IsTableColumn()) {
     offset_in_background.top -= v_border_spacing;
     return offset_in_background;
   }
 
-  DCHECK(ToLayoutTableCol(positioning_box).IsTableColumnGroup());
+  DCHECK(table_col.IsTableColumnGroup());
   LayoutUnit offset = offset_in_background.left;
-  ExpandToTableColumnGroup(cell, ToLayoutTableCol(positioning_box), offset,
-                           kColumnGroupStart);
+  ExpandToTableColumnGroup(cell, table_col, offset, kColumnGroupStart);
   offset_in_background.left += offset;
   offset_in_background.top -= v_border_spacing;
   return offset_in_background;
@@ -343,15 +342,14 @@ PhysicalSize BackgroundImageGeometry::GetBackgroundObjectDimensions(
   LayoutUnit column_height = sections_rect.Height() -
                              cell.Table()->BorderBefore() -
                              border_spacing.height - border_spacing.height;
-  if (ToLayoutTableCol(positioning_box).IsTableColumn())
+  const auto& table_col = To<LayoutTableCol>(positioning_box);
+  if (table_col.IsTableColumn())
     return PhysicalSize(cell.Size().Width(), column_height);
 
-  DCHECK(ToLayoutTableCol(positioning_box).IsTableColumnGroup());
+  DCHECK(table_col.IsTableColumnGroup());
   LayoutUnit width = cell.Size().Width();
-  ExpandToTableColumnGroup(cell, ToLayoutTableCol(positioning_box), width,
-                           kColumnGroupStart);
-  ExpandToTableColumnGroup(cell, ToLayoutTableCol(positioning_box), width,
-                           kColumnGroupEnd);
+  ExpandToTableColumnGroup(cell, table_col, width, kColumnGroupStart);
+  ExpandToTableColumnGroup(cell, table_col, width, kColumnGroupEnd);
 
   return PhysicalSize(width, column_height);
 }

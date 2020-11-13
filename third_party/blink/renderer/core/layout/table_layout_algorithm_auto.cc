@@ -54,7 +54,7 @@ void TableLayoutAlgorithmAuto::RecalcColumn(unsigned eff_col) {
       // we need to clear their dirty bits so that if we call
       // setPreferredWidthsDirty(true) on a col or one of its descendants, we'll
       // mark it's ancestors as dirty.
-      ToLayoutTableCol(child)->ClearIntrinsicLogicalWidthsDirtyBits();
+      To<LayoutTableCol>(child)->ClearIntrinsicLogicalWidthsDirtyBits();
     } else if (child->IsTableSection()) {
       LayoutTableSection* section = To<LayoutTableSection>(child);
       unsigned num_rows = section->NumRows();

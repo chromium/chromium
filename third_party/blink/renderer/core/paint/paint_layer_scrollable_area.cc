@@ -1122,7 +1122,7 @@ void PaintLayerScrollableArea::UpdateAfterLayout() {
         }
         LayoutObject* parent = GetLayoutBox()->Parent();
         if (parent && parent->IsFlexibleBox()) {
-          ToLayoutFlexibleBox(parent)->ClearCachedMainSizeForChild(
+          To<LayoutFlexibleBox>(parent)->ClearCachedMainSizeForChild(
               *GetLayoutBox());
         }
       }

@@ -15,7 +15,7 @@ namespace {
 class GridTest : public RenderingTest {
  protected:
   LayoutGrid* GetGridByElementId(const char* id) {
-    return ToLayoutGrid(GetLayoutObjectByElementId(id));
+    return To<LayoutGrid>(GetLayoutObjectByElementId(id));
   }
 };
 

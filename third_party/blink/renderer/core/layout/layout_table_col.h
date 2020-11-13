@@ -127,7 +127,12 @@ class LayoutTableCol final : public LayoutTableBoxComponent {
   unsigned span_;
 };
 
-DEFINE_LAYOUT_OBJECT_TYPE_CASTS(LayoutTableCol, IsLayoutTableCol());
+template <>
+struct DowncastTraits<LayoutTableCol> {
+  static bool AllowFrom(const LayoutObject& object) {
+    return object.IsLayoutTableCol();
+  }
+};
 
 }  // namespace blink
 

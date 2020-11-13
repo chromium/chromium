@@ -4414,10 +4414,6 @@ CORE_EXPORT const LayoutObject* AssociatedLayoutObjectOf(
 CORE_EXPORT std::ostream& operator<<(std::ostream&, const LayoutObject*);
 CORE_EXPORT std::ostream& operator<<(std::ostream&, const LayoutObject&);
 
-#define DEFINE_LAYOUT_OBJECT_TYPE_CASTS(thisType, predicate)           \
-  DEFINE_TYPE_CASTS(thisType, LayoutObject, object, object->predicate, \
-                    object.predicate)
-
 bool IsMenuList(const LayoutObject* object);
 CORE_EXPORT bool IsListBox(const LayoutObject* object);
 

@@ -63,7 +63,7 @@ NGConstraintSpace NGConstraintSpace::CreateFromLayoutObject(
     // The flexbox-specific behavior is in addition to regular definite-ness, so
     // if the flex item would normally have a definite height it should keep it.
     fixed_block_is_definite =
-        ToLayoutFlexibleBox(block.Parent())
+        To<LayoutFlexibleBox>(block.Parent())
             ->UseOverrideLogicalHeightForPerentageResolution(block) ||
         block.HasDefiniteLogicalHeight();
   }

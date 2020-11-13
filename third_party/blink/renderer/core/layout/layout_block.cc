@@ -384,7 +384,7 @@ void LayoutBlock::RemoveLeftoverAnonymousBlock(LayoutBlock* child) {
   // LayoutGrid keeps track of its children, we must notify it about changes in
   // the tree.
   if (child->Parent()->IsLayoutGrid())
-    ToLayoutGrid(child->Parent())->DirtyGrid();
+    To<LayoutGrid>(child->Parent())->DirtyGrid();
 
   // Now remove the leftover anonymous block from the tree, and destroy it.
   // We'll rip it out manually from the tree before destroying it, because we
@@ -951,7 +951,7 @@ void LayoutBlock::LayoutPositionedObject(LayoutBox* positioned_object,
        LayoutFlexibleBox::SetStaticPositionForChildInFlexNGContainer(
            *positioned_object, To<LayoutBlock>(parent))) ||
       (parent->IsFlexibleBox() &&
-       ToLayoutFlexibleBox(parent)->SetStaticPositionForPositionedLayout(
+       To<LayoutFlexibleBox>(parent)->SetStaticPositionForPositionedLayout(
            *positioned_object))) {
     // The static position of an abspos child of a flexbox depends on its size
     // (for example, they can be centered). So we may have to reposition the
@@ -2454,7 +2454,7 @@ LayoutUnit LayoutBlock::AvailableLogicalHeightForPercentageComputation() const {
 
   LayoutUnit stretched_flex_height(-1);
   if (IsFlexItem()) {
-    const LayoutFlexibleBox* flex_box = ToLayoutFlexibleBox(Parent());
+    const auto* flex_box = To<LayoutFlexibleBox>(Parent());
     if (flex_box->UseOverrideLogicalHeightForPerentageResolution(*this))
       stretched_flex_height = OverrideContentLogicalHeight();
   } else if (HasOverrideLogicalHeight() && IsOverrideLogicalHeightDefinite()) {

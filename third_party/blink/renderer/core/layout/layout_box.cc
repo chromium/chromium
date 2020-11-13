@@ -748,7 +748,7 @@ void LayoutBox::UpdateGridPositionAfterStyleChange(
   // It should be possible to not dirty the grid in some cases (like moving an
   // explicitly placed grid item).
   // For now, it's more simple to just always recompute the grid.
-  ToLayoutGrid(Parent())->DirtyGrid();
+  To<LayoutGrid>(Parent())->DirtyGrid();
 }
 
 void LayoutBox::UpdateScrollSnapMappingAfterStyleChange(
@@ -5203,8 +5203,7 @@ LayoutUnit LayoutBox::ComputeReplacedLogicalHeightUsing(
       if (block) {
         block->AddPercentHeightDescendant(const_cast<LayoutBox*>(this));
         if (block->IsFlexItem()) {
-          const LayoutFlexibleBox* flex_box =
-              ToLayoutFlexibleBox(block->Parent());
+          const auto* flex_box = To<LayoutFlexibleBox>(block->Parent());
           if (flex_box->UseOverrideLogicalHeightForPerentageResolution(*block))
             stretched_height = block->OverrideContentLogicalHeight();
         } else if (block->IsGridItem() && block->HasOverrideLogicalHeight() &&
@@ -5320,7 +5319,7 @@ LayoutUnit LayoutBox::AvailableLogicalHeightUsing(
 
   if (IsFlexItemIncludingNG()) {
     if (IsFlexItem()) {
-      const LayoutFlexibleBox& flex_box = ToLayoutFlexibleBox(*Parent());
+      const auto& flex_box = To<LayoutFlexibleBox>(*Parent());
       if (flex_box.UseOverrideLogicalHeightForPerentageResolution(*this))
         return OverrideContentLogicalHeight();
     } else if (HasOverrideContainingBlockContentLogicalWidth() &&

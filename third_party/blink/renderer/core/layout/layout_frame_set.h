@@ -186,7 +186,12 @@ class LayoutFrameSet final : public LayoutBox {
   bool is_resizing_;
 };
 
-DEFINE_LAYOUT_OBJECT_TYPE_CASTS(LayoutFrameSet, IsFrameSet());
+template <>
+struct DowncastTraits<LayoutFrameSet> {
+  static bool AllowFrom(const LayoutObject& object) {
+    return object.IsFrameSet();
+  }
+};
 
 }  // namespace blink
 
