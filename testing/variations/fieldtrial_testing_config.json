@@ -1996,18 +1996,17 @@
             ]
         }
     ],
-    "D3D11VideoDecoderStable": [
+    "D3D11VideoDecoder": [
         {
             "platforms": [
                 "windows"
             ],
             "experiments": [
                 {
-                    "name": "D3D11StableEnabledV2",
+                    "name": "Enabled",
                     "enable_features": [
                         "D3D11VideoDecoder",
-                        "D3D11VideoDecoderCopyPictures",
-                        "D3D11VideoDecoderLimitTo11_0"
+                        "D3D11VideoDecoderCopyPictures"
                     ]
                 }
             ]
