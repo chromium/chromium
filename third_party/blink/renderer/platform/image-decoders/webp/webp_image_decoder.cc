@@ -279,6 +279,11 @@ bool WEBPImageDecoder::FrameIsReceivedAtIndex(size_t index) const {
     return false;
   if (!(format_flags_ & ANIMATION_FLAG))
     return ImageDecoder::FrameIsReceivedAtIndex(index);
+  // frame_buffer_cache_.size() is equal to the return value of
+  // DecodeFrameCount(). WebPDemuxGetI(demux_, WEBP_FF_FRAME_COUNT) returns the
+  // number of ANMF chunks that have been received. (See also the DCHECK on
+  // animated_frame.complete in InitializeNewFrame().) Therefore we can return
+  // true if |index| is valid for frame_buffer_cache_.
   bool frame_is_received_at_index = index < frame_buffer_cache_.size();
   return frame_is_received_at_index;
 }
