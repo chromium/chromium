@@ -2318,6 +2318,7 @@
       },
       'ios-simulator-multi-window': {
         'mixins': [
+          'enable_resultdb',
           'mac_10.15',
           'mac_toolchain',
           'out_dir_arg',
@@ -2363,6 +2364,7 @@
           'all',
         ],
         'mixins': [
+          'enable_resultdb',
           'mac_10.15',
           'mac_toolchain',
           'out_dir_arg',
@@ -2380,6 +2382,7 @@
           'all',
         ],
         'mixins': [
+          'enable_resultdb',
           'mac_10.15',
           'mac_toolchain',
           'out_dir_arg',
