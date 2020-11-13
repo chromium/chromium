@@ -84,26 +84,6 @@ public class TabCallbackTest {
         callback.visibleUriChangedCallback.waitUntilValueObserved(url);
     }
 
-    @Test
-    @SmallTest
-    public void testOnRenderProcessGone() throws TimeoutException {
-        InstrumentationActivity activity = mActivityTestRule.launchShellWithUrl("about:blank");
-        CallbackHelper callbackHelper = new CallbackHelper();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Tab tab = activity.getTab();
-            activity.setIgnoreRendererCrashes();
-            TabCallback callback = new TabCallback() {
-                @Override
-                public void onRenderProcessGone() {
-                    callbackHelper.notifyCalled();
-                }
-            };
-            tab.registerTabCallback(callback);
-            tab.getNavigationController().navigate(Uri.parse("chrome://crash"));
-        });
-        callbackHelper.waitForFirst();
-    }
-
     // Requires implementation M82.
     @Test
     @SmallTest

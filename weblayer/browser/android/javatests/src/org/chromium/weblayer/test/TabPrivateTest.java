@@ -95,4 +95,25 @@ public class TabPrivateTest {
         });
         navigationCompletedHelper.waitForFirst();
     }
+
+    @Test
+    @SmallTest
+    public void testOnRenderProcessGone() throws Exception {
+        InstrumentationActivity activity = mActivityTestRule.launchShellWithUrl("about:blank");
+        CallbackHelper callbackHelper = new CallbackHelper();
+        Tab tabToCrash = TestThreadUtils.runOnUiThreadBlocking(() -> {
+            Tab tab = activity.getTab();
+            activity.setIgnoreRendererCrashes();
+            TabCallback callback = new TabCallback() {
+                @Override
+                public void onRenderProcessGone() {
+                    callbackHelper.notifyCalled();
+                }
+            };
+            tab.registerTabCallback(callback);
+            return tab;
+        });
+        getTestWebLayer().crashTab(tabToCrash);
+        callbackHelper.waitForFirst();
+    }
 }
