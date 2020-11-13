@@ -191,11 +191,16 @@ class MODULES_EXPORT AXObjectCacheImpl
   AXID GetAXID(Node*) override;
   Element* GetElementFromAXID(AXID) override;
 
-  // will only return the AXObject if it already exists
+  // Will only return the AXObject if it already exists.
+  AXObject* GetIfExists(const Node*);
   AXObject* Get(AccessibleNode*);
+  AXObject* Get(AbstractInlineTextBox*);
+
+  // These can actually return a different AXObject* if it's determined that
+  // the wrong type currently axists (AXNodeObject vs AXLayoutObject).
+  // TODO(aleventhal) These should not have any side effects.
   AXObject* Get(const Node*) override;
   AXObject* Get(const LayoutObject*);
-  AXObject* Get(AbstractInlineTextBox*);
 
   AXObject* FirstAccessibleObjectFromNode(const Node*);
 
@@ -218,7 +223,6 @@ class MODULES_EXPORT AXObjectCacheImpl
   void DidShowMenuListPopupWithCleanLayout(Node*);
   void DidHideMenuListPopupWithCleanLayout(Node*);
   void StyleChangedWithCleanLayout(Node*);
-  void DidInsertChildrenOfNodeWithCleanLayout(Node*);
   void HandleScrollPositionChangedWithCleanLayout(Node*);
   void HandleValidationMessageVisibilityChangedWithCleanLayout(const Node*);
 

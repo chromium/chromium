@@ -321,6 +321,12 @@ static bool IsMenuListOption(const Node* node) {
   return select->GetLayoutObject();
 }
 
+AXObject* AXObjectCacheImpl::GetIfExists(const Node* node) {
+  AXID node_id = node_object_mapping_.at(node);
+  DCHECK(!HashTraits<AXID>::IsDeletedValue(node_id));
+  return node_id ? objects_.at(node_id) : nullptr;
+}
+
 // TODO(aleventhal) Remove side effects or rename, e.g. GetUpdated().
 AXObject* AXObjectCacheImpl::Get(const Node* node) {
   if (!node)
@@ -1215,23 +1221,12 @@ void AXObjectCacheImpl::DidInsertChildrenOfNode(Node* node) {
   // accessibility tree, notify the root of that subtree that its children have
   // changed.
   DCHECK(node);
-  DeferTreeUpdate(&AXObjectCacheImpl::ChildrenChangedWithCleanLayout, node);
-}
-
-void AXObjectCacheImpl::DidInsertChildrenOfNodeWithCleanLayout(Node* node) {
-  if (!node)
-    return;
-
-#if DCHECK_IS_ON()
-  Document* document = &node->GetDocument();
-  DCHECK(document->Lifecycle().GetState() >= DocumentLifecycle::kLayoutClean)
-      << "Unclean document at lifecycle " << document->Lifecycle().ToString();
-#endif  // DCHECK_IS_ON()
-
-  if (AXObject* obj = Get(node)) {
-    TextChangedWithCleanLayout(node);
-  } else {
-    DidInsertChildrenOfNodeWithCleanLayout(NodeTraversal::Parent(*node));
+  while (node) {
+    if (AXObject* obj = GetIfExists(node)) {
+      TextChanged(node);
+      return;
+    }
+    node = NodeTraversal::Parent(*node);
   }
 }
 
