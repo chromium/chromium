@@ -14,6 +14,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/numerics/ranges.h"
+#include "base/stl_util.h"
 #include "build/build_config.h"
 #include "content/browser/xr/service/vr_service_impl.h"
 #include "content/browser/xr/xr_utils.h"
@@ -166,13 +167,6 @@ constexpr device::mojom::XRSessionFeature kOpenXRFeatures[] = {
     device::mojom::XRSessionFeature::REF_SPACE_UNBOUNDED,
 };
 #endif
-
-bool ContainsFeature(
-    base::span<const device::mojom::XRSessionFeature> feature_list,
-    device::mojom::XRSessionFeature feature) {
-  return std::find(feature_list.begin(), feature_list.end(), feature) !=
-         feature_list.end();
-}
 }  // anonymous namespace
 
 BrowserXRRuntimeImpl::BrowserXRRuntimeImpl(
@@ -239,20 +233,20 @@ bool BrowserXRRuntimeImpl::SupportsFeature(
       }
 #endif
 
-      return ContainsFeature(kARCoreDeviceFeatures, feature);
+      return base::Contains(kARCoreDeviceFeatures, feature);
     case device::mojom::XRDeviceId::ORIENTATION_DEVICE_ID:
-      return ContainsFeature(kOrientationDeviceFeatures, feature);
+      return base::Contains(kOrientationDeviceFeatures, feature);
     case device::mojom::XRDeviceId::GVR_DEVICE_ID:
-      return ContainsFeature(kGVRDeviceFeatures, feature);
+      return base::Contains(kGVRDeviceFeatures, feature);
 
 #if BUILDFLAG(ENABLE_WINDOWS_MR)
     case device::mojom::XRDeviceId::WINDOWS_MIXED_REALITY_ID:
-      return ContainsFeature(kWindowsMixedRealityFeatures, feature);
+      return base::Contains(kWindowsMixedRealityFeatures, feature);
 #endif
 
 #if BUILDFLAG(ENABLE_OPENXR)
     case device::mojom::XRDeviceId::OPENXR_DEVICE_ID:
-      return ContainsFeature(kOpenXRFeatures, feature);
+      return base::Contains(kOpenXRFeatures, feature);
 #endif
   }
 
