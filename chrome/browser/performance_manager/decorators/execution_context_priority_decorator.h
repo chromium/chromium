@@ -15,7 +15,7 @@ namespace execution_context_priority {
 // execution context priority voters. It is responsible for taking aggregated
 // votes and applying them to the actual nodes in a graph.
 class ExecutionContextPriorityDecorator : public GraphOwnedDefaultImpl,
-                                          public VoteConsumer {
+                                          public VoteObserver {
  public:
   ExecutionContextPriorityDecorator();
   ~ExecutionContextPriorityDecorator() override;
@@ -24,19 +24,18 @@ class ExecutionContextPriorityDecorator : public GraphOwnedDefaultImpl,
   VotingChannel GetVotingChannel();
 
  protected:
-  // VoteConsumer implementation:
-  VoteReceipt SubmitVote(util::PassKey<VotingChannel>,
-                         voting::VoterId<Vote> voter_id,
-                         const ExecutionContext* execution_context,
-                         const Vote& vote) override;
-  void ChangeVote(util::PassKey<AcceptedVote>,
-                  AcceptedVote* old_vote,
-                  const Vote& new_vote) override;
-  void VoteInvalidated(util::PassKey<AcceptedVote>,
-                       AcceptedVote* vote) override;
+  // VoteObserver implementation:
+  void OnVoteSubmitted(VoterId voter_id,
+                       const ExecutionContext* execution_context,
+                       const Vote& vote) override;
+  void OnVoteChanged(VoterId voter_id,
+                     const ExecutionContext* context,
+                     const Vote& new_vote) override;
+  void OnVoteInvalidated(VoterId voter_id,
+                         const ExecutionContext* context) override;
 
-  // Our VotingChannelFactory for providing VotingChannels to our input voters.
-  VotingChannelFactory factory_;
+  // Provides the VotingChannel to our input voter.
+  VoteConsumerDefaultImpl vote_consumer_default_impl_;
 
   // The ID of the only voting channel we've vended.
   voting::VoterId<Vote> voter_id_ = voting::kInvalidVoterId<Vote>;

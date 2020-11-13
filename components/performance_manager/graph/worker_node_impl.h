@@ -146,9 +146,6 @@ class WorkerNodeImpl
   // Used by ExecutionContextRegistry mechanism.
   std::unique_ptr<NodeAttachedData> execution_context_;
 
-  // Inline storage for ExecutionContextPriorityDecorator data.
-  execution_context_priority::AcceptedVote accepted_vote_;
-
   base::WeakPtrFactory<WorkerNodeImpl> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(WorkerNodeImpl);
