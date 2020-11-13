@@ -21,6 +21,7 @@ class CastWebPreferences : public base::SupportsUserData::Data {
     base::Optional<blink::mojom::AutoplayPolicy> autoplay_policy;
     base::Optional<bool> hide_scrollbars;
     base::Optional<bool> javascript_enabled;
+    base::Optional<bool> supports_multiple_windows;
   };
 
   // Unique key used to identify CastWebPreferences in WebContents' user data.

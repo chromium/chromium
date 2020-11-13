@@ -69,10 +69,15 @@ WebviewController::WebviewController(content::BrowserContext* browser_context,
   contents_->SetUserData(CastWebPreferences::kCastWebPreferencesDataKey,
                          std::make_unique<CastWebPreferences>());
 
+  CastWebPreferences* cast_prefs = GetCastPreferencesFor(contents_.get());
+
   // Allow Webviews to show scrollbars. These are globally disabled since Cast
   // Apps are not expected to be scrollable.
-  GetCastPreferencesFor(contents_.get())->preferences()->hide_scrollbars =
-      false;
+  cast_prefs->preferences()->hide_scrollbars = false;
+
+  // Disallow Webviews to use multiple windows to show the new page in the
+  // existing view.
+  cast_prefs->preferences()->supports_multiple_windows = false;
 
   CastWebContents::InitParams cast_contents_init;
   cast_contents_init.is_root_window = true;

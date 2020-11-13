@@ -22,6 +22,10 @@ void CastWebPreferences::Update(blink::web_pref::WebPreferences* prefs) {
 
   if (preferences_.javascript_enabled)
     prefs->javascript_enabled = preferences_.javascript_enabled.value();
+
+  if (preferences_.supports_multiple_windows) {
+    prefs->supports_multiple_windows = preferences_.supports_multiple_windows.value();
+  }
 }
 
 }  // namespace chromecast

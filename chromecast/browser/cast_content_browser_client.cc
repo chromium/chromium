@@ -694,6 +694,22 @@ bool CastContentBrowserClient::CanCreateWindow(
     bool opener_suppressed,
     bool* no_javascript_access) {
   *no_javascript_access = true;
+
+  // To show new page in the existing view for WebView new window navigations,
+  // when supports_multiple_windows is disabled, return true so
+  // RenderFrameHostImpl::CreateNewWindow returns with kReuse.
+  // Otherwise, return false.
+  content::WebContents* web_contents =
+      content::WebContents::FromRenderFrameHost(opener);
+  if (web_contents) {
+    CastWebPreferences* cast_prefs =
+        static_cast<CastWebPreferences*>(web_contents->GetUserData(
+            CastWebPreferences::kCastWebPreferencesDataKey));
+
+    return (cast_prefs &&
+            !cast_prefs->preferences()->supports_multiple_windows.value());
+  }
+
   return false;
 }
 
