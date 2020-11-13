@@ -1301,6 +1301,7 @@ var stringAttributes = [
     'accessKey',
     'ariaInvalidValue',
     'autoComplete',
+    'checkedStateDescription',
     'className',
     'containerLiveRelevant',
     'containerLiveStatus',
