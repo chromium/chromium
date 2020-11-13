@@ -812,6 +812,7 @@ void WebFrameWidgetBase::Trace(Visitor* visitor) const {
   visitor->Trace(receiver_);
   visitor->Trace(input_target_receiver_);
   visitor->Trace(mouse_capture_element_);
+  visitor->Trace(device_emulator_);
 }
 
 void WebFrameWidgetBase::SetNeedsRecalculateRasterScales() {
@@ -1184,6 +1185,28 @@ void WebFrameWidgetBase::ShowContextMenu(
     }
   }
   host_context_menu_location_.reset();
+}
+
+void WebFrameWidgetBase::EnableDeviceEmulation(
+    const DeviceEmulationParams& parameters) {
+  // Device Emaulation is only supported for the main frame.
+  DCHECK(ForMainFrame());
+  if (!device_emulator_) {
+    gfx::Size size_in_dips = widget_base_->BlinkSpaceToFlooredDIPs(Size());
+
+    device_emulator_ = MakeGarbageCollected<ScreenMetricsEmulator>(
+        this, widget_base_->GetScreenInfo(), size_in_dips,
+        widget_base_->VisibleViewportSizeInDIPs(),
+        widget_base_->WidgetScreenRect(), widget_base_->WindowScreenRect());
+  }
+  device_emulator_->ChangeEmulationParams(parameters);
+}
+
+void WebFrameWidgetBase::DisableDeviceEmulation() {
+  if (!device_emulator_)
+    return;
+  device_emulator_->DisableAndApply();
+  device_emulator_ = nullptr;
 }
 
 base::Optional<gfx::Point>
@@ -1779,6 +1802,12 @@ bool WebFrameWidgetBase::IsHidden() const {
 
 WebString WebFrameWidgetBase::GetLastToolTipTextForTesting() const {
   return GetPage()->GetChromeClient().GetLastToolTipTextForTesting();
+}
+
+float WebFrameWidgetBase::GetEmulatorScale() {
+  if (device_emulator_)
+    return device_emulator_->scale();
+  return 1.0f;
 }
 
 void WebFrameWidgetBase::AutoscrollStart(const gfx::PointF& position) {
@@ -2725,6 +2754,35 @@ cc::LayerTreeHost* WebFrameWidgetBase::LayerTreeHost() {
   return widget_base_->LayerTreeHost();
 }
 
+ScreenMetricsEmulator* WebFrameWidgetBase::DeviceEmulator() {
+  return device_emulator_;
+}
+
+bool WebFrameWidgetBase::AutoResizeMode() {
+  return View()->AutoResizeMode();
+}
+
+void WebFrameWidgetBase::SetScreenMetricsEmulationParameters(
+    bool enabled,
+    const DeviceEmulationParams& params) {
+  if (enabled)
+    View()->ActivateDevToolsTransform(params);
+  else
+    View()->DeactivateDevToolsTransform();
+}
+
+void WebFrameWidgetBase::SetScreenInfoAndSize(
+    const ScreenInfo& screen_info,
+    const gfx::Size& widget_size_in_dips,
+    const gfx::Size& visible_viewport_size_in_dips) {
+  // Emulation happens on regular main frames which don't use auto-resize mode.
+  DCHECK(!AutoResizeMode());
+
+  UpdateScreenInfo(screen_info);
+  widget_base_->SetVisibleViewportSizeInDIPs(visible_viewport_size_in_dips);
+  Resize(widget_base_->DIPsToCeiledBlinkSpace(widget_size_in_dips));
+}
+
 void WebFrameWidgetBase::NotifyPageScaleFactorChanged(
     float page_scale_factor,
     bool is_pinch_gesture_active) {
@@ -2755,6 +2813,15 @@ void WebFrameWidgetBase::SetPageScaleStateAndLimits(
     float maximum) {
   widget_base_->LayerTreeHost()->SetPageScaleFactorAndLimits(page_scale_factor,
                                                              minimum, maximum);
+}
+
+bool WebFrameWidgetBase::UpdateScreenRects(
+    const gfx::Rect& widget_screen_rect,
+    const gfx::Rect& window_screen_rect) {
+  if (!device_emulator_)
+    return false;
+  device_emulator_->OnUpdateScreenRects(widget_screen_rect, window_screen_rect);
+  return true;
 }
 
 void WebFrameWidgetBase::OrientationChanged() {
@@ -2802,6 +2869,8 @@ void WebFrameWidgetBase::DidUpdateSurfaceAndScreen(
 }
 
 const ScreenInfo& WebFrameWidgetBase::GetOriginalScreenInfo() {
+  if (device_emulator_)
+    return device_emulator_->original_screen_info();
   return widget_base_->GetScreenInfo();
 }
 

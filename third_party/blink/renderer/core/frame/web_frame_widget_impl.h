@@ -140,10 +140,6 @@ class WebFrameWidgetImpl final : public WebFrameWidgetBase {
   void FocusChanged(bool enable) override;
   gfx::Rect ViewportVisibleRect() override;
 
-  // blink::mojom::FrameWidget
-  void EnableDeviceEmulation(const DeviceEmulationParams& parameters) override;
-  void DisableDeviceEmulation() override;
-
   void UpdateMainFrameLayoutSize();
 
  private:

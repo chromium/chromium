@@ -420,17 +420,6 @@ void WebFrameWidgetImpl::FocusChanged(bool enable) {
   }
 }
 
-void WebFrameWidgetImpl::EnableDeviceEmulation(
-    const DeviceEmulationParams& parameters) {
-  // This message should only be sent to the top level FrameWidget.
-  NOTREACHED();
-}
-
-void WebFrameWidgetImpl::DisableDeviceEmulation() {
-  // This message should only be sent to the top level FrameWidget.
-  NOTREACHED();
-}
-
 void WebFrameWidgetImpl::CalculateSelectionBounds(gfx::Rect& anchor_root_frame,
                                                   gfx::Rect& focus_root_frame) {
   const LocalFrame* local_frame = FocusedLocalFrameInWidget();

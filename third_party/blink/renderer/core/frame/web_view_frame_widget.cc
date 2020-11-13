@@ -138,12 +138,6 @@ void WebViewFrameWidget::SetWindowRect(const gfx::Rect& window_rect) {
   View()->SetWindowRect(window_rect);
 }
 
-float WebViewFrameWidget::GetEmulatorScale() {
-  if (device_emulator_)
-    return device_emulator_->scale();
-  return 1.0f;
-}
-
 void WebViewFrameWidget::CalculateSelectionBounds(gfx::Rect& anchor_root_frame,
                                                   gfx::Rect& focus_root_frame) {
   const Frame* frame = View()->FocusedCoreFrame();
@@ -167,26 +161,6 @@ void WebViewFrameWidget::CalculateSelectionBounds(gfx::Rect& anchor_root_frame,
       frame_view->ConvertToRootFrame(focus));
 }
 
-void WebViewFrameWidget::EnableDeviceEmulation(
-    const DeviceEmulationParams& parameters) {
-  if (!device_emulator_) {
-    gfx::Size size_in_dips = widget_base_->BlinkSpaceToFlooredDIPs(size_);
-
-    device_emulator_ = MakeGarbageCollected<ScreenMetricsEmulator>(
-        this, widget_base_->GetScreenInfo(), size_in_dips,
-        widget_base_->VisibleViewportSizeInDIPs(),
-        widget_base_->WidgetScreenRect(), widget_base_->WindowScreenRect());
-  }
-  device_emulator_->ChangeEmulationParams(parameters);
-}
-
-void WebViewFrameWidget::DisableDeviceEmulation() {
-  if (!device_emulator_)
-    return;
-  device_emulator_->DisableAndApply();
-  device_emulator_ = nullptr;
-}
-
 bool WebViewFrameWidget::ScrollFocusedEditableElementIntoView() {
   return web_view_->ScrollFocusedEditableElementIntoView();
 }
@@ -204,11 +178,6 @@ void WebViewFrameWidget::SetRootLayer(scoped_refptr<cc::Layer> root_layer) {
 void WebViewFrameWidget::ZoomToFindInPageRect(
     const WebRect& rect_in_root_frame) {
   web_view_->ZoomToFindInPageRect(rect_in_root_frame);
-}
-
-void WebViewFrameWidget::Trace(Visitor* visitor) const {
-  WebFrameWidgetBase::Trace(visitor);
-  visitor->Trace(device_emulator_);
 }
 
 WebInputEventResult WebViewFrameWidget::HandleKeyEvent(
@@ -609,53 +578,9 @@ void WebViewFrameWidget::SetDeviceColorSpaceForTesting(
   widget_base_->UpdateScreenInfo(info);
 }
 
-bool WebViewFrameWidget::AutoResizeMode() {
-  return web_view_->AutoResizeMode();
-}
-
-bool WebViewFrameWidget::UpdateScreenRects(
-    const gfx::Rect& widget_screen_rect,
-    const gfx::Rect& window_screen_rect) {
-  if (!device_emulator_)
-    return false;
-  device_emulator_->OnUpdateScreenRects(widget_screen_rect, window_screen_rect);
-  return true;
-}
-
 void WebViewFrameWidget::RunPaintBenchmark(int repeat_count,
                                            cc::PaintBenchmarkResult& result) {
   web_view_->RunPaintBenchmark(repeat_count, result);
-}
-
-const ScreenInfo& WebViewFrameWidget::GetOriginalScreenInfo() {
-  if (device_emulator_)
-    return device_emulator_->original_screen_info();
-  return GetScreenInfo();
-}
-
-ScreenMetricsEmulator* WebViewFrameWidget::DeviceEmulator() {
-  return device_emulator_;
-}
-
-void WebViewFrameWidget::SetScreenMetricsEmulationParameters(
-    bool enabled,
-    const DeviceEmulationParams& params) {
-  if (enabled)
-    View()->ActivateDevToolsTransform(params);
-  else
-    View()->DeactivateDevToolsTransform();
-}
-
-void WebViewFrameWidget::SetScreenInfoAndSize(
-    const ScreenInfo& screen_info,
-    const gfx::Size& widget_size_in_dips,
-    const gfx::Size& visible_viewport_size_in_dips) {
-  // Emulation happens on regular main frames which don't use auto-resize mode.
-  DCHECK(!web_view_->AutoResizeMode());
-
-  UpdateScreenInfo(screen_info);
-  widget_base_->SetVisibleViewportSizeInDIPs(visible_viewport_size_in_dips);
-  Resize(widget_base_->DIPsToCeiledBlinkSpace(widget_size_in_dips));
 }
 
 void WebViewFrameWidget::SetWindowRectSynchronouslyForTesting(
@@ -704,8 +629,8 @@ void WebViewFrameWidget::ApplyVisualPropertiesSizing(
     web_view_->CancelPagePopup();
   }
 
-  if (device_emulator_) {
-    device_emulator_->UpdateVisualProperties(visual_properties);
+  if (auto* device_emulator = DeviceEmulator()) {
+    device_emulator->UpdateVisualProperties(visual_properties);
     return;
   }
 
