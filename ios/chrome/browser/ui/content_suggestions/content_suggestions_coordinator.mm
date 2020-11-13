@@ -221,9 +221,12 @@
   }
   self.discoverFeedViewController = [self discoverFeed];
 
+  const TemplateURL* defaultURL =
+      templateURLService->GetDefaultSearchProvider();
   BOOL isGoogleDefaultSearchProvider =
-      templateURLService->GetDefaultSearchProvider()->GetEngineType(
-          templateURLService->search_terms_data()) == SEARCH_ENGINE_GOOGLE;
+      defaultURL &&
+      defaultURL->GetEngineType(templateURLService->search_terms_data()) ==
+          SEARCH_ENGINE_GOOGLE;
 
   self.contentSuggestionsMediator = [[ContentSuggestionsMediator alloc]
              initWithContentService:contentSuggestionsService
