@@ -47,6 +47,7 @@ mojom::StandardRoutineResult TestStatusToResult(
       return mojom::StandardRoutineResult::kExecutionError;
     case healthd::DiagnosticRoutineStatusEnum::kFailedToStart:
     case healthd::DiagnosticRoutineStatusEnum::kUnsupported:
+    case healthd::DiagnosticRoutineStatusEnum::kNotRun:
       return mojom::StandardRoutineResult::kUnableToRun;
     case healthd::DiagnosticRoutineStatusEnum::kReady:
     case healthd::DiagnosticRoutineStatusEnum::kRunning:
