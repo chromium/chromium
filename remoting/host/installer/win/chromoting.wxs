@@ -660,16 +660,6 @@
       </Component>
     </DirectoryRef>
 
-    <DirectoryRef Id="config_files">
-      <!-- Delete debug.log from previous versions -->
-      <Component Id="delete_debug_log"
-                 Guid="b309082a-e6fa-4dc7-98e4-3d83c896561d">
-        <RemoveFile Id="debug.log"
-                    Name="debug.log"
-                    On="both" />
-      </Component>
-    </DirectoryRef>
-
     <!-- The service is always installed in the stopped state with start type
          set to 'manual'. This becomes a problem when upgrading an existing
          installation that is configured to start the service automatically.
@@ -715,7 +705,6 @@
 
     <Feature Id="chromoting_host" Level="1" Title="$(var.ChromotingHost)">
       <ComponentRef Id="credits"/>
-      <ComponentRef Id="delete_debug_log"/>
       <ComponentRef Id="delete_usagestats"/>
       <?if $(var.OfficialBuild) != 0 ?>
         <ComponentRef Id="omaha_registration"/>
@@ -776,9 +765,9 @@
        Impersonate="no"
        Return="ignore"/>
 
-    <CustomAction Id="remove_debug_log"
+    <CustomAction Id="remove_logs"
       Directory="binaries"
-      ExeCommand='cmd /c del /f debug.log'
+      ExeCommand='cmd /c del /f *.log'
       Execute="deferred"
       Impersonate="no"
       Return="ignore"/>
@@ -810,7 +799,7 @@
            See http://msdn.microsoft.com/en-us/library/aa371197.aspx. -->
       <RemoveExistingProducts After="InstallInitialize" />
 
-      <Custom Action="remove_debug_log" Before="RemoveFiles">
+      <Custom Action="remove_logs" Before="RemoveFiles">
         Installed AND (NOT MAINTENANCE)
       </Custom>
       <Custom Action="remove_symbolic_link" Before="RemoveFiles">

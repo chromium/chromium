@@ -58,7 +58,7 @@ EventTraceData EventTraceData::Create(EVENT_TRACE* event) {
 
   // Parse the MofData.  The structure is defined in //base/logging_win.cc.
   // - For LOG_MESSAGE events, the MofData buffer just contains the message.
-  // - For LOG_FULL_MESSAGE events, the MofData buffer is comprised of 5 fields
+  // - For LOG_MESSAGE_FULL events, the MofData buffer is comprised of 5 fields
   //   which must be parsed (or skipped) in sequence.
   if (data.event_type == logging::LOG_MESSAGE) {
     data.message.assign(reinterpret_cast<const char*>(event->MofData),

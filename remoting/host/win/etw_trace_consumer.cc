@@ -18,6 +18,7 @@
 #include "remoting/host/logging.h"
 #include "remoting/host/win/etw_trace_controller.h"
 #include "remoting/host/win/event_trace_data.h"
+#include "remoting/host/win/host_event_logger.h"
 
 namespace remoting {
 
@@ -30,7 +31,8 @@ class EtwTraceConsumerImpl : public EtwTraceConsumer {
   EtwTraceConsumerImpl& operator=(const EtwTraceConsumerImpl&) = delete;
   ~EtwTraceConsumerImpl() override;
 
-  bool StartLogging(scoped_refptr<AutoThreadTaskRunner> task_runner);
+  bool StartLogging(scoped_refptr<AutoThreadTaskRunner> task_runner,
+                    std::vector<std::unique_ptr<HostEventLogger>> loggers);
   void StopLogging();
 
  private:
@@ -43,7 +45,7 @@ class EtwTraceConsumerImpl : public EtwTraceConsumer {
 
     static VOID WINAPI ProcessEvent(EVENT_TRACE* event);
 
-    bool Start();
+    bool Start(std::vector<std::unique_ptr<HostEventLogger>> loggers);
     void Stop();
 
     // Blocking call to begin receiving ETW events from Windows.  Must be called
@@ -55,13 +57,11 @@ class EtwTraceConsumerImpl : public EtwTraceConsumer {
     // Parses an event and passes it along to the delegate for processing.
     void DispatchEvent(EVENT_TRACE* event);
 
-    // Handlers which parse and log an ETW event.
-    void HandleFullMessage(const EventTraceData& data);
-    void HandleMessage(const EventTraceData& data);
-
     static Core* instance_;
 
     std::unique_ptr<EtwTraceController> controller_;
+
+    std::vector<std::unique_ptr<HostEventLogger>> loggers_;
 
     THREAD_CHECKER(main_thread_checker_);
     THREAD_CHECKER(consume_thread_checker_);
@@ -91,7 +91,8 @@ EtwTraceConsumerImpl::Core::~Core() {
   DCHECK_CALLED_ON_VALID_THREAD(consume_thread_checker_);
 }
 
-bool EtwTraceConsumerImpl::Core::Start() {
+bool EtwTraceConsumerImpl::Core::Start(
+    std::vector<std::unique_ptr<HostEventLogger>> loggers) {
   DCHECK_CALLED_ON_VALID_THREAD(main_thread_checker_);
   DCHECK(!instance_);
   instance_ = this;
@@ -105,6 +106,8 @@ bool EtwTraceConsumerImpl::Core::Start() {
   if (FAILED(hr)) {
     return false;
   }
+
+  loggers_ = std::move(loggers);
 
   return true;
 }
@@ -143,21 +146,12 @@ void EtwTraceConsumerImpl::Core::DispatchEvent(EVENT_TRACE* event) {
   }
 
   EventTraceData data = EventTraceData::Create(event);
-  if (data.event_type == logging::LOG_MESSAGE_FULL) {
-    HandleFullMessage(data);
-  } else if (data.event_type == logging::LOG_MESSAGE) {
-    HandleMessage(data);
+  if (data.event_type == logging::LOG_MESSAGE_FULL ||
+      data.event_type == logging::LOG_MESSAGE) {
+    for (const auto& logger : loggers_) {
+      logger->LogEvent(data);
+    }
   }
-}
-
-void EtwTraceConsumerImpl::Core::HandleFullMessage(const EventTraceData& data) {
-  // TODO(joedow): Implement logging for this event type.
-  NOTIMPLEMENTED();
-}
-
-void EtwTraceConsumerImpl::Core::HandleMessage(const EventTraceData& data) {
-  // TODO(joedow): Implement logging for this event type.
-  NOTIMPLEMENTED();
 }
 
 EtwTraceConsumerImpl::EtwTraceConsumerImpl() = default;
@@ -167,11 +161,12 @@ EtwTraceConsumerImpl::~EtwTraceConsumerImpl() {
 }
 
 bool EtwTraceConsumerImpl::StartLogging(
-    scoped_refptr<AutoThreadTaskRunner> task_runner) {
+    scoped_refptr<AutoThreadTaskRunner> task_runner,
+    std::vector<std::unique_ptr<HostEventLogger>> loggers) {
   DCHECK(!core_);
 
   core_ = std::make_unique<Core>();
-  if (!core_->Start()) {
+  if (!core_->Start(std::move(loggers))) {
     core_.reset();
     return false;
   }
@@ -202,11 +197,12 @@ void EtwTraceConsumerImpl::StopLogging() {
 
 // static
 std::unique_ptr<EtwTraceConsumer> EtwTraceConsumer::Create(
-    scoped_refptr<AutoThreadTaskRunner> task_runner) {
-  // TODO(joedow): Configure logging destination before returning the instance.
+    scoped_refptr<AutoThreadTaskRunner> task_runner,
+    std::vector<std::unique_ptr<HostEventLogger>> loggers) {
+  DCHECK(!loggers.empty());
 
   auto etw_trace_consumer = std::make_unique<EtwTraceConsumerImpl>();
-  if (!etw_trace_consumer->StartLogging(task_runner)) {
+  if (!etw_trace_consumer->StartLogging(task_runner, std::move(loggers))) {
     LOG(ERROR) << "Failed to start EtwTraceConsumer instance.";
     return nullptr;
   }
