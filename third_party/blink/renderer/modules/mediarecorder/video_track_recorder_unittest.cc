@@ -8,8 +8,10 @@
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
+#include "base/test/gmock_callback_support.h"
 #include "media/base/video_codecs.h"
 #include "media/base/video_frame.h"
+#include "media/video/mock_gpu_video_accelerator_factories.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
@@ -82,6 +84,14 @@ media::VideoCodec MediaVideoCodecFromCodecId(VideoTrackRecorder::CodecId id) {
   return media::kUnknownVideoCodec;
 }
 
+class MockTestingPlatform : public IOTaskRunnerTestingPlatformSupport {
+ public:
+  MockTestingPlatform() = default;
+  ~MockTestingPlatform() override = default;
+
+  MOCK_METHOD0(GetGpuFactories, media::GpuVideoAcceleratorFactories*());
+};
+
 class VideoTrackRecorderTest
     : public TestWithParam<testing::tuple<VideoTrackRecorder::CodecId,
                                           gfx::Size,
@@ -109,6 +119,8 @@ class VideoTrackRecorderTest
               source_->GetPlatformSource());
     EXPECT_TRUE(scheduler::GetSingleThreadTaskRunnerForTesting()
                     ->BelongsToCurrentThread());
+
+    ON_CALL(*platform_, GetGpuFactories()).WillByDefault(Return(nullptr));
   }
 
   ~VideoTrackRecorderTest() {
@@ -163,7 +175,7 @@ class VideoTrackRecorderTest
     return video_track_recorder_->encoder_->num_frames_in_encode_->count();
   }
 
-  ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport> platform_;
+  ScopedTestingPlatformSupport<MockTestingPlatform> platform_;
 
   // All members are non-const due to the series of initialize() calls needed.
   // |mock_source_| is owned by |source_|, |track_| by |component_|.
@@ -437,6 +449,28 @@ TEST_F(VideoTrackRecorderTest, ReleasesFrame) {
   EXPECT_TRUE(frame_is_destroyed);
 
   Mock::VerifyAndClearExpectations(this);
+}
+
+// Waits for HW encoder support to be enumerated before setting up and
+// performing an encode.
+TEST_F(VideoTrackRecorderTest, WaitForEncoderSupport) {
+  media::MockGpuVideoAcceleratorFactories mock_gpu_factories(nullptr);
+  EXPECT_CALL(*platform_, GetGpuFactories())
+      .WillRepeatedly(Return(&mock_gpu_factories));
+
+  EXPECT_CALL(mock_gpu_factories, NotifyEncoderSupportKnown(_))
+      .WillOnce(base::test::RunOnceClosure<0>());
+  InitializeRecorder(VideoTrackRecorder::CodecId::VP8);
+
+  const gfx::Size& frame_size = kTrackRecorderTestSize[0];
+  scoped_refptr<VideoFrame> video_frame =
+      VideoFrame::CreateBlackFrame(frame_size);
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(*this, OnEncodedVideo(_, _, _, _, true))
+      .WillOnce(RunClosure(run_loop.QuitWhenIdleClosure()));
+  Encode(video_frame, base::TimeTicks::Now());
+  run_loop.Run();
 }
 
 TEST_F(VideoTrackRecorderTest, RequiredRefreshRate) {

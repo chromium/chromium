@@ -86,6 +86,24 @@ static_assert(base::size(kPreferredCodecIdAndVEAProfiles) ==
 // encoder implementation.
 const int kMaxNumberOfFramesInEncode = 10;
 
+void NotifyEncoderSupportKnown(base::OnceClosure callback) {
+  if (!Platform::Current()) {
+    DVLOG(2) << "Couldn't access the render thread";
+    std::move(callback).Run();
+    return;
+  }
+
+  media::GpuVideoAcceleratorFactories* const gpu_factories =
+      Platform::Current()->GetGpuFactories();
+  if (!gpu_factories || !gpu_factories->IsGpuVideoAcceleratorEnabled()) {
+    DVLOG(2) << "Couldn't initialize GpuVideoAcceleratorFactories";
+    std::move(callback).Run();
+    return;
+  }
+
+  gpu_factories->NotifyEncoderSupportKnown(std::move(callback));
+}
+
 // Obtains video encode accelerator's supported profiles.
 media::VideoEncodeAccelerator::SupportedProfiles GetVEASupportedProfiles() {
   if (!Platform::Current()) {
@@ -633,6 +651,33 @@ void VideoTrackRecorderImpl::OnVideoFrameForTesting(
 }
 
 void VideoTrackRecorderImpl::InitializeEncoder(
+    CodecProfile codec_profile,
+    const OnEncodedVideoCB& on_encoded_video_cb,
+    int32_t bits_per_second,
+    bool allow_vea_encoder,
+    scoped_refptr<media::VideoFrame> frame,
+    base::TimeTicks capture_time) {
+  DVLOG(3) << __func__ << frame->visible_rect().size().ToString();
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
+
+  auto on_encoder_support_known_cb = WTF::Bind(
+      &VideoTrackRecorderImpl::InitializeEncoderOnEncoderSupportKnown,
+      weak_factory_.GetWeakPtr(), codec_profile, on_encoded_video_cb,
+      bits_per_second, allow_vea_encoder, std::move(frame), capture_time);
+
+  if (!allow_vea_encoder) {
+    // If HW encoding is not being used, no need to wait for encoder
+    // enumeration.
+    std::move(on_encoder_support_known_cb).Run();
+    return;
+  }
+
+  // Delay initializing the encoder until HW support is known, so that
+  // CanUseAcceleratedEncoder() can give a reliable and consistent answer.
+  NotifyEncoderSupportKnown(std::move(on_encoder_support_known_cb));
+}
+
+void VideoTrackRecorderImpl::InitializeEncoderOnEncoderSupportKnown(
     CodecProfile codec_profile,
     const OnEncodedVideoCB& on_encoded_video_cb,
     int32_t bits_per_second,

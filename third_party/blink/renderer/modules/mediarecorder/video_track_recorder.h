@@ -341,6 +341,13 @@ class MODULES_EXPORT VideoTrackRecorderImpl : public VideoTrackRecorder {
                          bool allow_vea_encoder,
                          scoped_refptr<media::VideoFrame> frame,
                          base::TimeTicks capture_time);
+  void InitializeEncoderOnEncoderSupportKnown(
+      CodecProfile codec_profile,
+      const OnEncodedVideoCB& on_encoded_video_cb,
+      int32_t bits_per_second,
+      bool allow_vea_encoder,
+      scoped_refptr<media::VideoFrame> frame,
+      base::TimeTicks capture_time);
   void OnError();
 
   void ConnectToTrack(const VideoCaptureDeliverFrameCB& callback);
