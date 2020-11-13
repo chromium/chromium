@@ -1193,11 +1193,7 @@ void SelectionController::HandleGestureTwoFingerTap(
 }
 
 static bool HitTestResultIsMisspelled(const HitTestResult& result) {
-  Node* inner_node = result.InnerPossiblyPseudoNode();
-  if (!inner_node || !inner_node->GetLayoutObject())
-    return false;
-  PositionWithAffinity pos_with_affinity =
-      inner_node->GetLayoutObject()->PositionForPoint(result.LocalPoint());
+  PositionWithAffinity pos_with_affinity = result.GetPosition();
   if (pos_with_affinity.IsNull())
     return false;
   // TODO(xiaochengh): Don't use |ParentAnchoredEquivalent()|.
@@ -1205,8 +1201,9 @@ static bool HitTestResultIsMisspelled(const HitTestResult& result) {
       pos_with_affinity.GetPosition().ParentAnchoredEquivalent();
   if (!SpellChecker::IsSpellCheckingEnabledAt(marker_position))
     return false;
-  return SpellCheckMarkerAtPosition(inner_node->GetDocument().Markers(),
-                                    ToPositionInFlatTree(marker_position));
+  return SpellCheckMarkerAtPosition(
+      result.InnerPossiblyPseudoNode()->GetDocument().Markers(),
+      ToPositionInFlatTree(marker_position));
 }
 
 template <typename MouseEventObject>

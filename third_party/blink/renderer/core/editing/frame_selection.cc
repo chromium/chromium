@@ -628,13 +628,8 @@ bool FrameSelection::Contains(const PhysicalOffset& point) {
   HitTestLocation location(point);
   HitTestResult result(request, location);
   GetDocument().GetLayoutView()->HitTest(location, result);
-  Node* inner_node = result.InnerNode();
-  if (!inner_node || !inner_node->GetLayoutObject())
-    return false;
-
   const PositionInFlatTreeWithAffinity pos_with_affinity =
-      FromPositionInDOMTree<EditingInFlatTreeStrategy>(
-          inner_node->GetLayoutObject()->PositionForPoint(result.LocalPoint()));
+      FromPositionInDOMTree<EditingInFlatTreeStrategy>(result.GetPosition());
   if (pos_with_affinity.IsNull())
     return false;
 
