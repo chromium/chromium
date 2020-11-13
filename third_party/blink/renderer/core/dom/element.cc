@@ -3429,9 +3429,12 @@ const ElementInternals* Element::GetElementInternals() const {
 }
 
 ShadowRoot* Element::createShadowRoot(ExceptionState& exception_state) {
-  // TODO(crbug.com/937746): Anything caught by this DCHECK is using the
-  // now-removed Shadow DOM v0 API.
-  DCHECK(false) << "Shadow DOM v0 has been removed.";
+  // TODO(crbug.com/937746): Anything caught by this CHECK is using the
+  // now-removed Shadow DOM v0 API. Please don't delete any of this code just
+  // yet, it will be removed very soon once there's been time to make sure
+  // nothing is broken by this removal. If this shows up in crash reports,
+  // please assign bugs to masonfreed at chromium dot org.
+  CHECK(false) << "Shadow DOM v0 has been removed.";
 
   DCHECK(RuntimeEnabledFeatures::ShadowDOMV0Enabled());
   if (ShadowRoot* root = GetShadowRoot()) {

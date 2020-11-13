@@ -1299,9 +1299,12 @@ ScriptValue Document::registerElement(ScriptState* script_state,
                                       const AtomicString& name,
                                       const ElementRegistrationOptions* options,
                                       ExceptionState& exception_state) {
-  // TODO(crbug.com/937746): Anything caught by this DCHECK is using the
-  // now-removed Custom Elements v0 API.
-  DCHECK(false) << "Custom Elements v0 has been removed.";
+  // TODO(crbug.com/937746): Anything caught by this CHECK is using the
+  // now-removed Custom Elements v0 API. Please don't delete any of this code
+  // just yet, it will be removed very soon once there's been time to make
+  // sure nothing is broken by this removal. If this shows up in crash
+  // reports, please assign bugs to masonfreed at chromium dot org.
+  CHECK(false) << "Custom Elements v0 has been removed.";
 
   if (!RegistrationContext()) {
     exception_state.ThrowDOMException(
