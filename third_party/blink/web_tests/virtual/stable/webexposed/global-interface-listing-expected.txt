@@ -9326,6 +9326,9 @@ interface XRViewport
     getter x
     getter y
     method constructor
+interface XRWebGLBinding
+    attribute @@toStringTag
+    method constructor
 interface XRWebGLLayer : XRLayer
     static method getNativeFramebufferScaleFactor
     attribute @@toStringTag
