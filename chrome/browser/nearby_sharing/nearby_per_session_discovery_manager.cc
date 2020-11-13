@@ -8,7 +8,6 @@
 
 #include "base/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/optional.h"
 #include "base/stl_util.h"
 #include "chrome/browser/nearby_sharing/attachment.h"
 #include "chrome/browser/nearby_sharing/logging/logging.h"
@@ -107,6 +106,10 @@ NearbyPerSessionDiscoveryManager::~NearbyPerSessionDiscoveryManager() {
   UnregisterSendSurface();
   base::UmaHistogramEnumeration(
       "Nearby.Share.Discovery.FurthestDiscoveryProgress", furthest_progress_);
+  base::UmaHistogramCounts100(
+      "Nearby.Share.Discovery.NumShareTargets.Discovered", num_discovered_);
+  base::UmaHistogramCounts100("Nearby.Share.Discovery.NumShareTargets.Lost",
+                              num_lost_);
 }
 
 void NearbyPerSessionDiscoveryManager::OnTransferUpdate(
@@ -142,8 +145,21 @@ void NearbyPerSessionDiscoveryManager::OnTransferUpdate(
 
 void NearbyPerSessionDiscoveryManager::OnShareTargetDiscovered(
     ShareTarget share_target) {
+  // Update metrics.
   UpdateFurthestDiscoveryProgressIfNecessary(
       DiscoveryProgress::kDiscoveredShareTargetNothingSent);
+  if (!base::Contains(discovered_share_targets_, share_target.id)) {
+    ++num_discovered_;
+    if (num_discovered_ == 1) {
+      base::UmaHistogramMediumTimes(
+          "Nearby.Share.Discovery.Delay.FromStartDiscoveryToFirstDiscovery",
+          base::TimeTicks::Now() - *discovery_start_time_);
+    }
+    base::UmaHistogramMediumTimes(
+        "Nearby.Share.Discovery.Delay.FromStartDiscoveryToAnyDiscovery",
+        base::TimeTicks::Now() - *discovery_start_time_);
+  }
+
   base::InsertOrAssign(discovered_share_targets_, share_target.id,
                        share_target);
   share_target_listener_->OnShareTargetDiscovered(share_target);
@@ -151,6 +167,9 @@ void NearbyPerSessionDiscoveryManager::OnShareTargetDiscovered(
 
 void NearbyPerSessionDiscoveryManager::OnShareTargetLost(
     ShareTarget share_target) {
+  if (base::Contains(discovered_share_targets_, share_target.id)) {
+    ++num_lost_;
+  }
   discovered_share_targets_.erase(share_target.id);
   share_target_listener_->OnShareTargetLost(share_target);
 }
@@ -158,6 +177,8 @@ void NearbyPerSessionDiscoveryManager::OnShareTargetLost(
 void NearbyPerSessionDiscoveryManager::StartDiscovery(
     mojo::PendingRemote<nearby_share::mojom::ShareTargetListener> listener,
     StartDiscoveryCallback callback) {
+  discovery_start_time_ = base::TimeTicks::Now();
+
   // Starting discovery again closes any previous discovery session.
   share_target_listener_.reset();
   share_target_listener_.Bind(std::move(listener));
@@ -215,6 +236,13 @@ void NearbyPerSessionDiscoveryManager::SelectShareTarget(
   mojo::PendingReceiver<nearby_share::mojom::TransferUpdateListener> receiver =
       transfer_update_listener_.BindNewPipeAndPassReceiver();
   transfer_update_listener_.reset_on_disconnect();
+
+  base::UmaHistogramCounts100(
+      "Nearby.Share.Discovery.NumShareTargets.PresentWhenSendStarts",
+      discovered_share_targets_.size());
+  base::UmaHistogramMediumTimes(
+      "Nearby.Share.Discovery.Delay.FromStartDiscoveryToStartSend",
+      base::TimeTicks::Now() - *discovery_start_time_);
 
   NearbySharingService::StatusCodes status =
       nearby_sharing_service_->SendAttachments(iter->second,

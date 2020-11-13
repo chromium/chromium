@@ -9227,6 +9227,21 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </token>
 </histogram>
 
+<histogram name="Nearby.Share.Discovery.Delay.FromStartDiscoveryTo{EndState}"
+    units="ms" expires_after="2021-08-19">
+  <owner>nohle@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records the delay between the start of the discovery session and {EndState}.
+  </summary>
+  <token key="EndState">
+    <variant name="AnyDiscovery" summary="the discovery of any share target"/>
+    <variant name="FirstDiscovery"
+        summary="the discovery of the first share target"/>
+    <variant name="StartSend" summary="the start of a transfer"/>
+  </token>
+</histogram>
+
 <histogram name="Nearby.Share.Discovery.FurthestDiscoveryProgress"
     enum="NearbyShareDiscoveryProgress" expires_after="2021-08-19">
   <owner>nohle@chromium.org</owner>
@@ -9247,6 +9262,21 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     discovered share targets. Emitted when the user selects a share target from
     the discovery page and tries to proceed to the next step in the UI.
   </summary>
+</histogram>
+
+<histogram name="Nearby.Share.Discovery.NumShareTargets.{Variation}"
+    units="share targets" expires_after="2021-08-19">
+  <owner>nohle@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records the number of share targets {Variation} in a single discovery
+    session. Emitted once during the discovery session.
+  </summary>
+  <token key="Variation">
+    <variant name="Discovered" summary="discovered"/>
+    <variant name="Lost" summary="lost"/>
+    <variant name="PresentWhenSendStarts" summary="present when a send starts"/>
+  </token>
 </histogram>
 
 <histogram name="Nearby.Share.Discovery.{Operation}"

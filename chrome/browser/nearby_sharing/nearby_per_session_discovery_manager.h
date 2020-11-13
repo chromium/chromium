@@ -10,6 +10,8 @@
 
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
+#include "base/optional.h"
+#include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/nearby_sharing/attachment.h"
 #include "chrome/browser/nearby_sharing/nearby_sharing_service.h"
@@ -84,6 +86,15 @@ class NearbyPerSessionDiscoveryManager
   // session.
   DiscoveryProgress furthest_progress_ =
       DiscoveryProgress::kDiscoveryNotAttempted;
+
+  // Used for metrics. Tracks the time when StartDiscovery() is called, or
+  // base::nullopt if never called.
+  base::Optional<base::TimeTicks> discovery_start_time_;
+
+  // Used for metrics. Tracks the total number devices discovered and lost in a
+  // given discovery session.
+  size_t num_discovered_ = 0;
+  size_t num_lost_ = 0;
 
   base::WeakPtrFactory<NearbyPerSessionDiscoveryManager> weak_ptr_factory_{
       this};
