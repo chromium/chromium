@@ -10,20 +10,20 @@ ad_domain {
   netbios_name: 'example'
 
   domain_controller {
-    windows_machine: 'win2019-dc'
+    windows_machine: 'win2016-dc'
   }
 }
 
 # the domain controller.
 windows_machine {
-  name: 'win2019-dc'
-  machine_type: 'win2019'
+  name: 'win2016-dc'
+  machine_type: 'win2016'
   network_interface { network: 'primary' }
 }
 
 windows_machine {
-  name: 'client2019'
-  machine_type: 'win2019'
+  name: 'client2016'
+  machine_type: 'win2016'
   network_interface { network: 'primary' }
   container { ad_domain: 'test1.com' }
 }

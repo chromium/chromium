@@ -40,7 +40,7 @@ class ChromeEnterpriseTestCase(EnterpriseTestCase):
       'dc': 'win2019-dc',
   }
   # Current Win Server version for testing
-  win_config = win_2019_config
+  win_config = win_2016_config
 
   def InstallChrome(self, instance_name):
     """Installs chrome.
