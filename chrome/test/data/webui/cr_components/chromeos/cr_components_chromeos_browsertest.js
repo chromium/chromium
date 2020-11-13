@@ -39,7 +39,13 @@ GEN('#include "content/public/test/browser_test.h"');
   ['NetworkConfigToggle', 'network/network_config_toggle_test.js', []],
   ['NetworkIpConfig', 'network/network_ip_config_test.js', []],
   ['NetworkList', 'network/network_list_test.js', []],
-  ['NetworkListItem', 'network/network_list_item_test.js', []],
+  ['NetworkListItem', 'network/network_list_item_test.js',
+    [
+      '//ui/webui/resources/js/assert.js',
+      '//ui/webui/resources/js/promise_resolver.js',
+      '../../chromeos/fake_network_config_mojom.js',
+    ]
+  ],
   ['NetworkNameservers', 'network/network_nameservers_test.js', []],
   ['NetworkPasswordInput', 'network/network_password_input_test.js', []],
   ['NetworkPropertyListMojo', 'network/network_property_list_mojo_test.js', []],

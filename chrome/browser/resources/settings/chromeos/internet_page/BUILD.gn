@@ -209,8 +209,6 @@ js_library("cellular_networks_list") {
     "//ui/webui/resources/cr_components/chromeos/network:onc_mojo",
     "//ui/webui/resources/js:i18n_behavior",
   ]
-  externs_list = [ "$externs_path/networking_private.js" ]
-  extra_sources = [ "$interfaces_path/networking_private_interface.js" ]
 }
 
 # TODO: Uncomment as the Polymer3 migration makes progress.

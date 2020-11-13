@@ -14,6 +14,8 @@
 
 // #import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.m.js';
 // #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+// #import {FakeNetworkConfig} from 'chrome://test/chromeos/fake_network_config_mojom.m.js';
+// #import {MojoInterfaceProviderImpl} from 'chrome://resources/cr_components/chromeos/network/mojo_interface_provider.m.js';
 // clang-format on
 
 suite('NetworkListTest', function() {
@@ -22,13 +24,27 @@ suite('NetworkListTest', function() {
 
   let mojom;
 
+  let mojoApi_ = null;
+
   setup(function() {
     mojom = chromeos.networkConfig.mojom;
-
+    mojoApi_ = new FakeNetworkConfig();
+    network_config.MojoInterfaceProviderImpl.getInstance().remote_ = mojoApi_;
     listItem = document.createElement('network-list-item');
     document.body.appendChild(listItem);
     Polymer.dom.flush();
   });
+
+  function initProperties(properties) {
+    assertTrue(!!properties.guid);
+    mojoApi_.setManagedPropertiesForTest(properties);
+  }
+
+  function flushAsync() {
+    Polymer.dom.flush();
+    // Use setTimeout to wait for the next macrotask.
+    return new Promise(resolve => setTimeout(resolve));
+  }
 
   test('Network icon visibility', function() {
     // The network icon is not shown if there is no network state.
@@ -36,14 +52,36 @@ suite('NetworkListTest', function() {
     assertFalse(!!networkIcon);
 
     listItem.item = OncMojo.getDefaultNetworkState(mojom.NetworkType.kEthernet, 'eth0');
-    assertTrue(!!listItem.item);
 
     // Update the network state.
-    listItem.networkState = listItem.item;
     Polymer.dom.flush();
 
     // The network icon exists now.
     networkIcon = listItem.$$('network-icon');
     assertTrue(!!networkIcon);
+  });
+
+  test('Network provider name visibilty', async () => {
+    listItem.item =
+        OncMojo.getDefaultNetworkState(mojom.NetworkType.kEthernet, 'eth0');
+    await flushAsync();
+
+    let providerName = listItem.$$('#networkProviderName');
+    assertFalse(!!providerName.textContent.trim());
+
+    const tether = OncMojo.getDefaultManagedProperties(
+        chromeos.networkConfig.mojom.NetworkType.kTether, 'tether1_guid', '');
+    tether.name = OncMojo.createManagedString('tether1');
+    tether.typeProperties.tether.carrier = 'Google Fi';
+    initProperties(tether);
+
+    listItem.item =
+        OncMojo.getDefaultNetworkState(mojom.NetworkType.kTether, 'tether1');
+
+    await flushAsync();
+
+    providerName = listItem.$$('#networkProviderName');
+    assertTrue(!!providerName);
+    assertEquals('Google Fi', providerName.textContent.trim());
   });
 });

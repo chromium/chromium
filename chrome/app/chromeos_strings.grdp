@@ -1572,20 +1572,38 @@
   <message name="IDS_NETWORK_LIST_ITEM_LABEL_CELLULAR" desc="A11y label for a cellular network in a list in settings and oobe. Clicking the network starts a connection attempt.">
     Network <ph name="NETWORK_INDEX">$1<ex>1</ex></ph> of <ph name="NETWORK_COUNT">$2<ex>10</ex></ph>, <ph name="NETWORK_NAME">$3<ex>Verizon Wireless</ex></ph>, Signal Strength <ph name="SIGNAL_STRENGTH">$4<ex>80</ex></ph>%, Connect
   </message>
+  <message name="IDS_NETWORK_LIST_ITEM_LABEL_CELLULAR_WITH_PROVIDER_NAME" desc="A11y label for a cellular network in a list in settings and oobe. Includes provider name. Clicking the network starts a connection attempt.">
+    Network <ph name="NETWORK_INDEX">$1<ex>1</ex></ph> of <ph name="NETWORK_COUNT">$2<ex>10</ex></ph>, <ph name="NETWORK_NAME">$3<ex>Verizon Wireless</ex></ph>, <ph name="NETWORK_PROVIDER_NAME">$4<ex>Verizon LTE</ex></ph>, Signal Strength <ph name="SIGNAL_STRENGTH">$5<ex>80</ex></ph>%, Connect
+  </message>
   <message name="IDS_NETWORK_LIST_ITEM_LABEL_CELLULAR_MANAGED" desc="A11y label for an enterprise managed cellular network in a list in settings and oobe. Clicking the network starts a connection attempt. Clicking the network navigates to the details page.">
     Network <ph name="NETWORK_INDEX">$1<ex>1</ex></ph> of <ph name="NETWORK_COUNT">$2<ex>10</ex></ph>, <ph name="NETWORK_NAME">$3<ex>Verizon Wireless</ex></ph>, Signal Strength <ph name="SIGNAL_STRENGTH">$4<ex>80</ex></ph>%, Managed by your Administrator, Connect
+  </message>
+   <message name="IDS_NETWORK_LIST_ITEM_LABEL_CELLULAR_MANAGED_WITH_PROVIDER_NAME" desc="A11y label for an enterprise managed cellular network in a list in settings and oobe. Includes provider name. Clicking the network starts a connection attempt. Clicking the network navigates to the details page.">
+    Network <ph name="NETWORK_INDEX">$1<ex>1</ex></ph> of <ph name="NETWORK_COUNT">$2<ex>10</ex></ph>, <ph name="NETWORK_NAME">$3<ex>Verizon Wireless</ex></ph>, <ph name="NETWORK_PROVIDER_NAME">$4<ex>Verizon LTE</ex></ph> Signal Strength <ph name="SIGNAL_STRENGTH">$5<ex>80</ex></ph>%, Managed by your Administrator, Connect
   </message>
   <message name="IDS_NETWORK_LIST_ITEM_LABEL_CELLULAR_WITH_CONNECTION_STATUS" desc="A11y label for a cellular network in a list in settings and oobe .  Includes connection status. Clicking the network navigates to the details page.">
     Network <ph name="NETWORK_INDEX">$1<ex>1</ex></ph> of <ph name="NETWORK_COUNT">$2<ex>10</ex></ph>, <ph name="NETWORK_NAME">$3<ex>Verizon Wireless</ex></ph>, <ph name="CONNECTION_STATUS">$4<ex>Connecting...</ex></ph>, Signal Strength <ph name="SIGNAL_STRENGTH">$5<ex>80</ex></ph>%, Details
   </message>
+  <message name="IDS_NETWORK_LIST_ITEM_LABEL_CELLULAR_WITH_CONNECTION_STATUS_AND_PROVIDER_NAME" desc="A11y label for a cellular network in a list in settings and oobe .  Includes connection status and provider name. Clicking the network navigates to the details page.">
+    Network <ph name="NETWORK_INDEX">$1<ex>1</ex></ph> of <ph name="NETWORK_COUNT">$2<ex>10</ex></ph>, <ph name="NETWORK_NAME">$3<ex>Verizon Wireless</ex></ph>, <ph name="NETWORK_PROVIDER_NAME">$4<ex>Verizon LTE</ex></ph>, <ph name="CONNECTION_STATUS">$5<ex>Connecting...</ex></ph>, Signal Strength <ph name="SIGNAL_STRENGTH">$6<ex>80</ex></ph>%, Details
+  </message>
   <message name="IDS_NETWORK_LIST_ITEM_LABEL_CELLULAR_MANAGED_WITH_CONNECTION_STATUS" desc="A11y label for an enterprise managed cellular network in a list in settings and oobe.  Includes connection status. Clicking the network navigates to the details page.">
     Network <ph name="NETWORK_INDEX">$1<ex>1</ex></ph> of <ph name="NETWORK_COUNT">$2<ex>10</ex></ph>, <ph name="NETWORK_NAME">$3<ex>Verizon Wireless</ex></ph>, <ph name="CONNECTION_STATUS">$4<ex>Connecting...</ex></ph>, Signal Strength <ph name="SIGNAL_STRENGTH">$5<ex>80</ex></ph>%, Managed by your Administrator, Details
+  </message>
+  <message name="IDS_NETWORK_LIST_ITEM_LABEL_CELLULAR_MANAGED_WITH_CONNECTION_STATUS_AND_PROVIDER_NAME" desc="A11y label for an enterprise managed cellular network in a list in settings and oobe.  Includes connection status and provider name. Clicking the network navigates to the details page.">
+    Network <ph name="NETWORK_INDEX">$1<ex>1</ex></ph> of <ph name="NETWORK_COUNT">$2<ex>10</ex></ph>, <ph name="NETWORK_NAME">$3<ex>Verizon Wireless</ex></ph>, <ph name="NETWORK_PROVIDER_NAME">$4<ex>Verizon LTE</ex></ph>, <ph name="CONNECTION_STATUS">$5<ex>Connecting...</ex></ph>, Signal Strength <ph name="SIGNAL_STRENGTH">$6<ex>80</ex></ph>%, Managed by your Administrator, Details
   </message>
   <message name="IDS_NETWORK_LIST_ITEM_LABEL_TETHER" desc="A11y label for a phone tether network in a list in settings and oobe. Clicking the network navigates to the details page.">
     Network <ph name="NETWORK_INDEX">$1<ex>1</ex></ph> of <ph name="NETWORK_COUNT">$2<ex>10</ex></ph>, <ph name="PHONE_NAME">$3<ex>Pixel 4</ex></ph>, Signal Strength <ph name="SIGNAL_STRENGTH">$4<ex>80</ex></ph>%, Phone Battery <ph name="BATTERY_STATUS">$5<ex>80</ex></ph>%, Connect
   </message>
+   <message name="IDS_NETWORK_LIST_ITEM_LABEL_TETHER_WITH_PROVIDER_NAME" desc="A11y label for a phone tether network in a list in settings and oobe. Includes provider name. Clicking the network navigates to the details page.">
+    Network <ph name="NETWORK_INDEX">$1<ex>1</ex></ph> of <ph name="NETWORK_COUNT">$2<ex>10</ex></ph>, <ph name="PHONE_NAME">$3<ex>Pixel 4</ex></ph>, <ph name="PROVIDER_NAME">$4<ex>Google Fi</ex></ph>, Signal Strength <ph name="SIGNAL_STRENGTH">$5<ex>80</ex></ph>%, Phone Battery <ph name="BATTERY_STATUS">$6<ex>80</ex></ph>%, Connect
+  </message>
   <message name="IDS_NETWORK_LIST_ITEM_LABEL_TETHER_WITH_CONNECTION_STATUS" desc="A11y label for a phone tether network in a list in settings and oobe.  Includes connection status. Clicking the network navigates to the details page.">
     Network <ph name="NETWORK_INDEX">$1<ex>1</ex></ph> of <ph name="NETWORK_COUNT">$2<ex>10</ex></ph>, <ph name="PHONE_NAME">$3<ex>Pixel 4</ex></ph>, <ph name="CONNECTION_STATUS">$4<ex>Connecting...</ex></ph>, Signal Strength <ph name="SIGNAL_STRENGTH">$5<ex>80</ex></ph>%, Phone Battery <ph name="BATTERY_STATUS">$6<ex>80</ex></ph>%, Details
+  </message>
+  <message name="IDS_NETWORK_LIST_ITEM_LABEL_TETHER_WITH_CONNECTION_STATUS_AND_PROVIDER_NAME" desc="A11y label for a phone tether network in a list in settings and oobe.  Includes connection status. Clicking the network navigates to the details page.">
+    Network <ph name="NETWORK_INDEX">$1<ex>1</ex></ph> of <ph name="NETWORK_COUNT">$2<ex>10</ex></ph>, <ph name="PHONE_NAME">$3<ex>Pixel 4</ex></ph>, <ph name="PROVIDER_NAME">$4<ex>Google Fi</ex></ph>, <ph name="CONNECTION_STATUS">$5<ex>Connecting...</ex></ph>, Signal Strength <ph name="SIGNAL_STRENGTH">$6<ex>80</ex></ph>%, Phone Battery <ph name="BATTERY_STATUS">$7<ex>80</ex></ph>%, Details
   </message>
   <message name="IDS_WIFI_NETWORK_STATUS_SECURED" desc="a11y label used when a Wi-Fi network is secured.">
     Secured
