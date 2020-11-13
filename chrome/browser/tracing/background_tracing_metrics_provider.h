@@ -5,7 +5,14 @@
 #ifndef CHROME_BROWSER_TRACING_BACKGROUND_TRACING_METRICS_PROVIDER_H_
 #define CHROME_BROWSER_TRACING_BACKGROUND_TRACING_METRICS_PROVIDER_H_
 
+#include <memory>
+
+#include "build/build_config.h"
 #include "components/metrics/metrics_provider.h"
+
+#if defined(OS_WIN)
+#include "chrome/browser/metrics/antivirus_metrics_provider_win.h"
+#endif  // defined(OS_WIN)
 
 namespace tracing {
 
@@ -25,6 +32,9 @@ class BackgroundTracingMetricsProvider : public metrics::MetricsProvider {
 
   // metrics::MetricsProvider:
   void Init() override;
+#if defined(OS_WIN)
+  void AsyncInit(base::OnceClosure done_callback) override;
+#endif  // defined(OS_WIN)
   bool HasIndependentMetrics() override;
   void ProvideIndependentMetrics(
       base::OnceCallback<void(bool)> done_callback,
@@ -32,6 +42,9 @@ class BackgroundTracingMetricsProvider : public metrics::MetricsProvider {
       base::HistogramSnapshotManager* snapshot_manager) override;
 
  private:
+#if defined(OS_WIN)
+  std::unique_ptr<AntiVirusMetricsProvider> av_metrics_provider_;
+#endif  // defined(OS_WIN)
   DISALLOW_COPY_AND_ASSIGN(BackgroundTracingMetricsProvider);
 };
 
