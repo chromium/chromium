@@ -115,6 +115,8 @@ class CaptureModeSessionTestApi {
 class CaptureModeTest : public AshTestBase {
  public:
   CaptureModeTest() = default;
+  CaptureModeTest(base::test::TaskEnvironment::TimeSource time)
+      : AshTestBase(time) {}
   CaptureModeTest(const CaptureModeTest&) = delete;
   CaptureModeTest& operator=(const CaptureModeTest&) = delete;
   ~CaptureModeTest() override = default;
@@ -1478,6 +1480,55 @@ TEST_F(CaptureModeTest, FullscreenCapture) {
   event_generator->ClickLeftButton();
   WaitForCountDownToFinish();
   EXPECT_FALSE(controller->IsActive());
+}
+
+// A test class that uses a mock time task environment.
+class CaptureModeMockTimeTest : public CaptureModeTest {
+ public:
+  CaptureModeMockTimeTest()
+      : CaptureModeTest(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+  CaptureModeMockTimeTest(const CaptureModeMockTimeTest&) = delete;
+  CaptureModeMockTimeTest& operator=(const CaptureModeMockTimeTest&) = delete;
+  ~CaptureModeMockTimeTest() override = default;
+};
+
+// Tests that the consecutive screenshots histogram is recorded properly.
+TEST_F(CaptureModeMockTimeTest, ConsecutiveScreenshotsHistograms) {
+  constexpr char kConsecutiveScreenshotsHistogram[] =
+      "Ash.CaptureModeController.ConsecutiveScreenshots";
+  base::HistogramTester histogram_tester;
+
+  auto take_n_screenshots = [this](int n) {
+    for (int i = 0; i < n; ++i) {
+      auto* controller = StartImageRegionCapture();
+      controller->PerformCapture();
+    }
+  };
+
+  // Take three consecutive screenshots. Should only record after 5 seconds.
+  StartImageRegionCapture();
+  const gfx::Rect capture_region(200, 200, 400, 400);
+  SelectRegion(capture_region);
+  take_n_screenshots(3);
+  histogram_tester.ExpectBucketCount(kConsecutiveScreenshotsHistogram, 3, 0);
+  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(5));
+  histogram_tester.ExpectBucketCount(kConsecutiveScreenshotsHistogram, 3, 1);
+
+  // Take only one screenshot. This should not be recorded.
+  take_n_screenshots(1);
+  histogram_tester.ExpectBucketCount(kConsecutiveScreenshotsHistogram, 1, 0);
+  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(5));
+  histogram_tester.ExpectBucketCount(kConsecutiveScreenshotsHistogram, 1, 0);
+
+  // Take a screenshot, change source and take another screenshot. This should
+  // count as 2 consecutive screenshots.
+  take_n_screenshots(1);
+  auto* controller = StartCaptureSession(CaptureModeSource::kFullscreen,
+                                         CaptureModeType::kImage);
+  controller->PerformCapture();
+  histogram_tester.ExpectBucketCount(kConsecutiveScreenshotsHistogram, 2, 0);
+  task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(5));
+  histogram_tester.ExpectBucketCount(kConsecutiveScreenshotsHistogram, 2, 1);
 }
 
 }  // namespace ash

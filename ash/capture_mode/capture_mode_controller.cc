@@ -54,6 +54,11 @@ namespace {
 
 CaptureModeController* g_instance = nullptr;
 
+// The amount of time that can elapse from the prior screenshot to be considered
+// consecutive.
+constexpr base::TimeDelta kConsecutiveScreenshotThreshold =
+    base::TimeDelta::FromSeconds(5);
+
 constexpr char kScreenCaptureNotificationId[] = "capture_mode_notification";
 constexpr char kScreenCaptureStoppedNotificationId[] =
     "capture_mode_stopped_notification";
@@ -247,7 +252,12 @@ CaptureModeController::CaptureModeController(
           // service.
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
            base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})),
-      recording_service_client_receiver_(this) {
+      recording_service_client_receiver_(this),
+      num_consecutive_screenshots_scheduler_(
+          FROM_HERE,
+          kConsecutiveScreenshotThreshold,
+          this,
+          &CaptureModeController::RecordAndResetConsecutiveScreenshots) {
   DCHECK_EQ(g_instance, nullptr);
   g_instance = this;
 
@@ -259,14 +269,14 @@ CaptureModeController::CaptureModeController(
   num_screenshots_taken_in_last_day_scheduler_.Start(
       FROM_HERE, base::TimeDelta::FromDays(1),
       base::BindRepeating(
-          &CaptureModeController::RecordNumberOfScreenshotsTakenInLastDay,
+          &CaptureModeController::RecordAndResetScreenshotsTakenInLastDay,
           weak_ptr_factory_.GetWeakPtr()));
 
   // Schedule recording of the number of screenshots taken per week.
   num_screenshots_taken_in_last_week_scheduler_.Start(
       FROM_HERE, base::TimeDelta::FromDays(7),
       base::BindRepeating(
-          &CaptureModeController::RecordNumberOfScreenshotsTakenInLastWeek,
+          &CaptureModeController::RecordAndResetScreenshotsTakenInLastWeek,
           weak_ptr_factory_.GetWeakPtr()));
 
   // TODO(afakhry): Explore starting this only when a video recording starts, so
@@ -513,6 +523,9 @@ void CaptureModeController::CaptureImage() {
 
   ++num_screenshots_taken_in_last_day_;
   ++num_screenshots_taken_in_last_week_;
+
+  ++num_consecutive_screenshots_;
+  num_consecutive_screenshots_scheduler_.Reset();
 }
 
 void CaptureModeController::CaptureVideo() {
@@ -684,16 +697,19 @@ base::FilePath CaptureModeController::BuildPath(const char* const format_string,
       GetTimeStr(exploded_time, delegate_->Uses24HourFormat()).c_str()));
 }
 
-void CaptureModeController::RecordNumberOfScreenshotsTakenInLastDay() {
-  base::UmaHistogramCounts100("Ash.CaptureModeController.ScreenshotsPerDay",
-                              num_screenshots_taken_in_last_day_);
+void CaptureModeController::RecordAndResetScreenshotsTakenInLastDay() {
+  RecordNumberOfScreenshotsTakenInLastDay(num_screenshots_taken_in_last_day_);
   num_screenshots_taken_in_last_day_ = 0;
 }
 
-void CaptureModeController::RecordNumberOfScreenshotsTakenInLastWeek() {
-  base::UmaHistogramCounts1000("Ash.CaptureModeController.ScreenshotsPerWeek",
-                               num_screenshots_taken_in_last_week_);
+void CaptureModeController::RecordAndResetScreenshotsTakenInLastWeek() {
+  RecordNumberOfScreenshotsTakenInLastWeek(num_screenshots_taken_in_last_week_);
   num_screenshots_taken_in_last_week_ = 0;
+}
+
+void CaptureModeController::RecordAndResetConsecutiveScreenshots() {
+  RecordNumberOfConsecutiveScreenshots(num_consecutive_screenshots_);
+  num_consecutive_screenshots_ = 0;
 }
 
 void CaptureModeController::OnVideoRecordCountDownFinished() {

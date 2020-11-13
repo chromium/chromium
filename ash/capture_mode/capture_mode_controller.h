@@ -185,8 +185,12 @@ class ASH_EXPORT CaptureModeController
                            base::Time timestamp) const;
 
   // Records the number of screenshots taken.
-  void RecordNumberOfScreenshotsTakenInLastDay();
-  void RecordNumberOfScreenshotsTakenInLastWeek();
+  void RecordAndResetScreenshotsTakenInLastDay();
+  void RecordAndResetScreenshotsTakenInLastWeek();
+
+  // Records the number of consecutive screenshots taken within 5s of each
+  // other.
+  void RecordAndResetConsecutiveScreenshots();
 
   // Called when the video record 3-seconds count down finishes.
   void OnVideoRecordCountDownFinished();
@@ -250,9 +254,15 @@ class ASH_EXPORT CaptureModeController
   base::RepeatingTimer num_screenshots_taken_in_last_day_scheduler_;
   base::RepeatingTimer num_screenshots_taken_in_last_week_scheduler_;
 
-  // Counters used to track the number of screenshots taken.
+  // Counters used to track the number of screenshots taken. These values are
+  // not persisted across crashes, restarts or sessions so they only provide a
+  // rough approximation.
   int num_screenshots_taken_in_last_day_ = 0;
   int num_screenshots_taken_in_last_week_ = 0;
+
+  // Counter used to track the number of consecutive screenshots taken.
+  int num_consecutive_screenshots_ = 0;
+  base::DelayTimer num_consecutive_screenshots_scheduler_;
 
   // The time when OnVideoRecordCountDownFinished is called and video has
   // started recording. It is used when video has finished recording for metrics

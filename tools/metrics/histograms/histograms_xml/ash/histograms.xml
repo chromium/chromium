@@ -184,7 +184,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Ash.CaptureModeController.BarButtons.{TabletOrClamshell}"
-    enum="CaptureModeEntryType" expires_after="2021-09-29">
+    enum="CaptureModeBarButtonType" expires_after="2021-09-29">
   <owner>chinsenj@chromium.org</owner>
   <owner>gzadina@google.com</owner>
   <summary>
@@ -208,6 +208,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     reset whenever a user creates a new region or the count is recorded.
   </summary>
   <token key="TabletOrClamshell" variants="DisplayModes"/>
+</histogram>
+
+<histogram name="Ash.CaptureModeController.ConsecutiveScreenshots"
+    units="consecutive screenshots" expires_after="2021-11-10">
+  <owner>chinsenj@chromium.org</owner>
+  <owner>gzadina@google.com</owner>
+  <summary>
+    Records the number of consecutive screenshots the user takes within 5s of
+    each other, regardless of capture options.
+  </summary>
 </histogram>
 
 <histogram name="Ash.CaptureModeController.EntryPoint.{TabletOrClamshell}"

@@ -40,6 +40,12 @@ void RecordCaptureModeBarButtonType(CaptureModeBarButtonType button_type);
 // Records the method the user enters capture mode given by |entry_type|.
 void RecordCaptureModeEntryType(CaptureModeEntryType entry_type);
 
+// Records the length in seconds of a recording taken by capture mode.
+void RecordCaptureModeRecordTime(int64_t length_in_seconds);
+
+// Records if the user has switched modes during a capture session.
+void RecordCaptureModeSwitchesFromInitialMode(bool switched);
+
 // Records the number of times a user adjusts a capture region. This includes
 // moving and resizing. The count is started when a user sets the capture source
 // as a region. The count is recorded and reset when a user performs a capture.
@@ -47,11 +53,17 @@ void RecordCaptureModeEntryType(CaptureModeEntryType entry_type);
 // capture sources.
 void RecordNumberOfCaptureRegionAdjustments(int num_adjustments);
 
-// Records the length in seconds of a recording taken by capture mode.
-void RecordCaptureModeRecordTime(int64_t length_in_seconds);
+// Records the number of times a user consecutively screenshots. Only records a
+// sample if |num_consecutive_screenshots| is greater than 1.
+void RecordNumberOfConsecutiveScreenshots(int num_consecutive_screenshots);
 
-// Records if the user has switched modes during a capture session.
-void RecordCaptureModeSwitchesFromInitialMode(bool switched);
+// Records the number of screenshots taken. This metric is meant to be a rough
+// approximation so its counts are not persisted across crashes, restarts or
+// sessions.
+void RecordNumberOfScreenshotsTakenInLastDay(
+    int num_screenshots_taken_in_last_day);
+void RecordNumberOfScreenshotsTakenInLastWeek(
+    int num_screenshots_taken_in_last_week);
 
 }  // namespace ash
 
