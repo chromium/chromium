@@ -25,11 +25,8 @@
 
 namespace ash {
 
-WallpaperWidgetController::WallpaperWidgetController(
-    aura::Window* root_window,
-    base::OnceClosure wallpaper_set_callback)
-    : root_window_(root_window),
-      wallpaper_set_callback_(std::move(wallpaper_set_callback)) {}
+WallpaperWidgetController::WallpaperWidgetController(aura::Window* root_window)
+    : root_window_(root_window) {}
 
 WallpaperWidgetController::~WallpaperWidgetController() {
   widget_->CloseNow();

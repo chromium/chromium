@@ -35,8 +35,7 @@ class WallpaperView;
 class ASH_EXPORT WallpaperWidgetController
     : public ui::ImplicitAnimationObserver {
  public:
-  WallpaperWidgetController(aura::Window* root_window,
-                            base::OnceClosure wallpaper_set_callback);
+  explicit WallpaperWidgetController(aura::Window* root_window);
   ~WallpaperWidgetController() override;
 
   // Initialize the widget. |lock| specifies if the wallpaper should be created
@@ -88,9 +87,6 @@ class ASH_EXPORT WallpaperWidgetController
   void ApplyCrossFadeAnimation(base::TimeDelta duration);
 
   aura::Window* root_window_;
-
-  // Callback that will be run when |active_widget_| is first set.
-  base::OnceClosure wallpaper_set_callback_;
 
   // The current wallpaper widget.
   std::unique_ptr<views::Widget> widget_;

@@ -876,10 +876,8 @@ void RootWindowController::Init(RootWindowType root_window_type) {
     GetSystemModalLayoutManager(nullptr)->CreateModalBackground();
   }
 
-  wallpaper_widget_controller_ = std::make_unique<WallpaperWidgetController>(
-      root_window,
-      base::BindOnce(&RootWindowController::OnFirstWallpaperWidgetSet,
-                     base::Unretained(this)));
+  wallpaper_widget_controller_ =
+      std::make_unique<WallpaperWidgetController>(root_window);
 
   wallpaper_widget_controller_->Init(
       Shell::Get()->session_controller()->IsUserSessionBlocked());
@@ -1244,15 +1242,6 @@ RootWindowController::GetAccessibilityPanelLayoutManager() const {
 void RootWindowController::OnMenuClosed() {
   root_window_menu_model_adapter_.reset();
   shelf_->UpdateVisibilityState();
-}
-
-void RootWindowController::OnFirstWallpaperWidgetSet() {
-  DCHECK(system_wallpaper_.get());
-
-  // Set the system wallpaper color once a wallpaper has been set to ensure the
-  // wallpaper color that might have been set for the Chrome OS boot splash
-  // screen is overriden.
-  system_wallpaper_->SetColor(SK_ColorBLACK);
 }
 
 }  // namespace ash
