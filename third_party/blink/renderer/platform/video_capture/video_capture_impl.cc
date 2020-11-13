@@ -174,7 +174,7 @@ struct VideoCaptureImpl::BufferContext
       sii->UpdateSharedImage(buffer_context->gmb_resources_->release_sync_token,
                              buffer_context->gmb_resources_->mailbox);
     }
-    gpu::SyncToken sync_token = sii->GenUnverifiedSyncToken();
+    gpu::SyncToken sync_token = sii->GenVerifiedSyncToken();
     CHECK(!buffer_context->gmb_resources_->mailbox.IsZero());
     CHECK(buffer_context->gmb_resources_->mailbox.IsSharedImage());
     gpu::MailboxHolder mailbox_holder_array[media::VideoFrame::kMaxPlanes];
