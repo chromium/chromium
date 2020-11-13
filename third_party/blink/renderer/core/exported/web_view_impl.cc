@@ -1840,17 +1840,6 @@ bool WebViewImpl::HasVerticalScrollbar() {
   return MainFrameImpl()->GetFrameView()->LayoutViewport()->VerticalScrollbar();
 }
 
-WebInputEventResult WebViewImpl::DispatchBufferedTouchEvents() {
-  if (!MainFrameImpl())
-    return WebInputEventResult::kNotHandled;
-  if (WebDevToolsAgentImpl* devtools = MainFrameDevToolsAgentImpl())
-    devtools->DispatchBufferedTouchEvents();
-  return MainFrameImpl()
-      ->GetFrame()
-      ->GetEventHandler()
-      .DispatchBufferedTouchEvents();
-}
-
 void WebViewImpl::MouseCaptureLost() {
   TRACE_EVENT_NESTABLE_ASYNC_END0("input", "capturing mouse",
                                   TRACE_ID_LOCAL(this));

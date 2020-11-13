@@ -66,7 +66,6 @@ class CORE_EXPORT WebViewFrameWidget : public WebFrameWidgetBase {
   void Resize(const gfx::Size& size_with_dsf) override;
   void UpdateLifecycle(WebLifecycleUpdate requested_update,
                        DocumentUpdateReason reason) override;
-  WebInputEventResult DispatchBufferedTouchEvents() override;
   void MouseCaptureLost() override;
 
   // blink::mojom::FrameWidget

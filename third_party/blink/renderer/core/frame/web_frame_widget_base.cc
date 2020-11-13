@@ -1504,6 +1504,18 @@ void WebFrameWidgetBase::ProcessInputEventSynchronouslyForTesting(
                                                  std::move(callback));
 }
 
+WebInputEventResult WebFrameWidgetBase::DispatchBufferedTouchEvents() {
+  CHECK(LocalRootImpl());
+
+  if (WebDevToolsAgentImpl* devtools = LocalRootImpl()->DevToolsAgentImpl())
+    devtools->DispatchBufferedTouchEvents();
+
+  return LocalRootImpl()
+      ->GetFrame()
+      ->GetEventHandler()
+      .DispatchBufferedTouchEvents();
+}
+
 WebInputEventResult WebFrameWidgetBase::HandleInputEvent(
     const WebCoalescedInputEvent& coalesced_event) {
   const WebInputEvent& input_event = coalesced_event.Event();

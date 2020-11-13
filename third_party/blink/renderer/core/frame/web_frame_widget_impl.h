@@ -93,7 +93,6 @@ class WebFrameWidgetImpl final : public WebFrameWidgetBase {
   void Resize(const gfx::Size&) override;
   void UpdateLifecycle(WebLifecycleUpdate requested_update,
                        DocumentUpdateReason reason) override;
-  WebInputEventResult DispatchBufferedTouchEvents() override;
 
   void MouseCaptureLost() override;
   void SetRemoteViewportIntersection(

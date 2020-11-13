@@ -10,6 +10,9 @@
 #include "cc/layers/solid_color_layer.h"
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
 #include "third_party/blink/public/common/input/synthetic_web_input_event_builders.h"
+#include "third_party/blink/renderer/core/dom/events/add_event_listener_options_resolved.h"
+#include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/web_frame_widget_impl.h"
 #include "third_party/blink/renderer/core/frame/web_view_frame_widget.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
@@ -27,6 +30,24 @@ bool operator==(const InputHandlerProxy::DidOverscrollParams& lhs,
          lhs.causal_event_viewport_point == rhs.causal_event_viewport_point &&
          lhs.overscroll_behavior == rhs.overscroll_behavior;
 }
+
+namespace {
+
+class TouchMoveEventListener final : public NativeEventListener {
+ public:
+  void Invoke(ExecutionContext*, Event*) override { invoked_ = true; }
+
+  bool GetInvokedStateAndReset() {
+    bool invoked = invoked_;
+    invoked_ = false;
+    return invoked;
+  }
+
+ private:
+  bool invoked_ = false;
+};
+
+}  // namespace
 
 class WebFrameWidgetSimTest : public SimTest {};
 
@@ -564,6 +585,54 @@ TEST_F(WebFrameWidgetSimTest, ActivePinchGestureUpdatesLayerTreeHost) {
   // not a pinch gesture is active, and so we shouldn't propagate this
   // information to the layer tree for a main-frame's widget.
   EXPECT_FALSE(layer_tree_host->is_external_pinch_gesture_active_for_testing());
+}
+
+// Tests that dispatch buffered touch events does not process events during
+// drag and devtools handling.
+TEST_F(WebFrameWidgetSimTest, DispatchBufferedTouchEvents) {
+  auto* widget = WebView().MainFrameViewWidget();
+
+  auto* listener = MakeGarbageCollected<TouchMoveEventListener>();
+  Window().addEventListener(
+      event_type_names::kTouchmove, listener,
+      MakeGarbageCollected<AddEventListenerOptionsResolved>());
+  widget->UpdateAllLifecyclePhases(DocumentUpdateReason::kTest);
+
+  // Send a start.
+  SyntheticWebTouchEvent touch;
+  touch.PressPoint(10, 10);
+  touch.touch_start_or_first_touch_move = true;
+  widget->ProcessInputEventSynchronouslyForTesting(
+      WebCoalescedInputEvent(touch.Clone(), {}, {}, ui::LatencyInfo()),
+      base::DoNothing());
+
+  // Expect listener gets called.
+  touch.MovePoint(0, 10, 10);
+  widget->ProcessInputEventSynchronouslyForTesting(
+      WebCoalescedInputEvent(touch.Clone(), {}, {}, ui::LatencyInfo()),
+      base::DoNothing());
+  EXPECT_TRUE(listener->GetInvokedStateAndReset());
+
+  // Expect listener does not get called, due to devtools flag.
+  touch.MovePoint(0, 12, 12);
+  WebFrameWidgetBase::SetIgnoreInputEvents(true);
+  widget->ProcessInputEventSynchronouslyForTesting(
+      WebCoalescedInputEvent(touch.Clone(), {}, {}, ui::LatencyInfo()),
+      base::DoNothing());
+  EXPECT_TRUE(WebFrameWidgetBase::IgnoreInputEvents());
+  EXPECT_FALSE(listener->GetInvokedStateAndReset());
+  WebFrameWidgetBase::SetIgnoreInputEvents(false);
+
+  // Expect listener does not get called, due to drag.
+  touch.MovePoint(0, 14, 14);
+  widget->StartDragging(WebDragData(), kDragOperationCopy, SkBitmap(),
+                        gfx::Point());
+  widget->ProcessInputEventSynchronouslyForTesting(
+      WebCoalescedInputEvent(touch.Clone(), {}, {}, ui::LatencyInfo()),
+      base::DoNothing());
+  EXPECT_TRUE(widget->DoingDragAndDrop());
+  EXPECT_FALSE(WebFrameWidgetBase::IgnoreInputEvents());
+  EXPECT_FALSE(listener->GetInvokedStateAndReset());
 }
 
 }  // namespace blink

@@ -526,7 +526,6 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   void UpdateLifecycle(WebLifecycleUpdate requested_update,
                        DocumentUpdateReason reason);
   void ThemeChanged();
-  WebInputEventResult DispatchBufferedTouchEvents();
   void ApplyViewportChanges(const ApplyViewportChangesArgs& args);
   void RecordManipulationTypeCounts(cc::ManipulationInfo info);
   void MouseCaptureLost();

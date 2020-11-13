@@ -330,26 +330,6 @@ void WebFrameWidgetImpl::UpdateLifecycle(WebLifecycleUpdate requested_update,
   View()->UpdatePagePopup();
 }
 
-WebInputEventResult WebFrameWidgetImpl::DispatchBufferedTouchEvents() {
-  if (doing_drag_and_drop_)
-    return WebInputEventResult::kHandledSuppressed;
-
-  if (!GetPage())
-    return WebInputEventResult::kNotHandled;
-
-  if (LocalRootImpl()) {
-    if (WebDevToolsAgentImpl* devtools = LocalRootImpl()->DevToolsAgentImpl())
-      devtools->DispatchBufferedTouchEvents();
-  }
-  if (IgnoreInputEvents())
-    return WebInputEventResult::kNotHandled;
-
-  return LocalRootImpl()
-      ->GetFrame()
-      ->GetEventHandler()
-      .DispatchBufferedTouchEvents();
-}
-
 bool WebFrameWidgetImpl::ScrollFocusedEditableElementIntoView() {
   Element* element = FocusedElement();
   if (!element || !WebElement(element).IsEditable())

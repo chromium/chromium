@@ -327,6 +327,7 @@ class CORE_EXPORT WebFrameWidgetBase
   void SetHandlingInputEvent(bool handling) override;
   void ProcessInputEventSynchronouslyForTesting(const WebCoalescedInputEvent&,
                                                 HandledEventCallback) override;
+  WebInputEventResult DispatchBufferedTouchEvents() override;
   WebInputEventResult HandleInputEvent(const WebCoalescedInputEvent&) override;
   void UpdateTextInputState() override;
   void UpdateSelectionBounds() override;

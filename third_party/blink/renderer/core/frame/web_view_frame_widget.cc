@@ -97,10 +97,6 @@ void WebViewFrameWidget::UpdateLifecycle(WebLifecycleUpdate requested_update,
   web_view_->UpdateLifecycle(requested_update, reason);
 }
 
-WebInputEventResult WebViewFrameWidget::DispatchBufferedTouchEvents() {
-  return web_view_->DispatchBufferedTouchEvents();
-}
-
 void WebViewFrameWidget::ApplyViewportChanges(
     const ApplyViewportChangesArgs& args) {
   web_view_->ApplyViewportChanges(args);
