@@ -27,13 +27,6 @@ SyncInternalsWebUITest.prototype = {
    */
   runAccessibilityChecks: false,
 
-  /** @override */
-  preLoad: function() {
-    this.makeAndRegisterMockHandler([
-        'getAllNodes',
-    ]);
-  },
-
   /**
    * Checks aboutInfo's details section for the specified field.
    * @param {boolean} isValid Whether the field is valid.
@@ -334,12 +327,9 @@ TEST_F('SyncInternalsWebUITest', 'SearchTabDoesntChangeOnItemSelect',
 });
 
 TEST_F('SyncInternalsWebUITest', 'NodeBrowserTest', function() {
-  const getAllNodesSavedArgs = new SaveMockArguments();
-  this.mockHandler.expects(once()).
-      getAllNodes(getAllNodesSavedArgs.match(ANYTHING)).
-      will(callFunctionWithSavedArgs(getAllNodesSavedArgs,
-                                     chrome.sync.getAllNodesCallback,
-                                     HARD_CODED_ALL_NODES));
+  chrome.sync.getAllNodes = (callback) => {
+    callback(HARD_CODED_ALL_NODES);
+  };
 
   // Hit the refresh button.
   $('node-browser-refresh-button').click();
@@ -347,7 +337,7 @@ TEST_F('SyncInternalsWebUITest', 'NodeBrowserTest', function() {
   // Check that the refresh time was updated.
   expectNotEquals($('node-browser-refresh-time').textContent, 'Never');
 
-  // Verify some hard-coded assumptions.  These depend on the vaue of the
+  // Verify some hard-coded assumptions.  These depend on the value of the
   // hard-coded nodes, specified elsewhere in this file.
 
   // Start with the tree itself.
@@ -370,12 +360,9 @@ TEST_F('SyncInternalsWebUITest', 'NodeBrowserTest', function() {
 });
 
 TEST_F('SyncInternalsWebUITest', 'NodeBrowserRefreshOnTabSelect', function() {
-  const getAllNodesSavedArgs = new SaveMockArguments();
-  this.mockHandler.expects(once()).
-      getAllNodes(getAllNodesSavedArgs.match(ANYTHING)).
-      will(callFunctionWithSavedArgs(getAllNodesSavedArgs,
-                                     chrome.sync.getAllNodesCallback,
-                                     HARD_CODED_ALL_NODES));
+  chrome.sync.getAllNodes = (callback) => {
+    callback(HARD_CODED_ALL_NODES);
+  };
 
   // Should start with non-refreshed node browser.
   expectEquals($('node-browser-refresh-time').textContent, 'Never');

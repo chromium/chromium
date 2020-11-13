@@ -160,13 +160,6 @@ Test.prototype = {
   featuresWithParameters: null,
 
   /**
-   * This should be initialized by the test fixture and can be referenced
-   * during the test run. It holds any mocked handler methods.
-   * @type {?Mock}
-   */
-  mockHandler: null,
-
-  /**
    * Value is passed through call to C++ RunJavascriptF to invoke this test.
    * @type {boolean}
    */
@@ -204,30 +197,6 @@ Test.prototype = {
   closureModuleDeps: [],
 
   /**
-   * Create a new class to handle |messageNames|, assign it to
-   * |this.mockHandler|, register its messages and return it.
-   * @return {Mock} Mock handler class assigned to |this.mockHandler|.
-   */
-  makeAndRegisterMockHandler: function(messageNames) {
-    var MockClass = makeMockClass(messageNames);
-    this.mockHandler = mock(MockClass);
-    registerMockMessageCallbacks(this.mockHandler, MockClass);
-    return this.mockHandler;
-  },
-
-  /**
-   * Create a container of mocked standalone functions to handle
-   * |functionNames|, assign it to |this.mockLocalFunctions| and return it.
-   * @param {!Array<string>} functionNames
-   * @return {Mock} Mock handler class.
-   * @see makeMockFunctions
-   */
-  makeMockLocalFunctions: function(functionNames) {
-    this.mockLocalFunctions = makeMockFunctions(functionNames);
-    return this.mockLocalFunctions;
-  },
-
-  /**
    * Override this method to perform initialization during preload (such as
    * creating mocks and registering handlers).
    * @type {Function}
@@ -241,9 +210,7 @@ Test.prototype = {
   setUp: function() {},
 
   /**
-   * Override this method to perform tasks after running your test. If you
-   * create a mock class, you must call Mock4JS.verifyAllMocks() in this
-   * phase.
+   * Override this method to perform tasks after running your test.
    * @type {Function}
    */
   tearDown: function() {
@@ -253,8 +220,6 @@ Test.prototype = {
         noAnimationStyle.parentNode.removeChild(noAnimationStyle);
       }
     }
-
-    Mock4JS.verifyAllMocks();
   },
 
   /**
@@ -455,79 +420,12 @@ function registerMessageCallback(name, messageHandler, callback) {
 }
 
 /**
- * Register all methods of {@code mockClass.prototype} with messages of the
- * same name as the method, using the proxy of the |mockObject| as the
- * |messageHandler| when registering.
- * @param {Mock} mockObject The mock to register callbacks against.
- * @param {Function} mockClass Constructor for the mocked class.
- * @see registerMessageCallback
- * @see overrideChrome
- */
-function registerMockMessageCallbacks(mockObject, mockClass) {
-  if (!deferGlobalOverrides && !originalChrome) {
-    overrideChrome();
-  }
-  var mockProxy = mockObject.proxy();
-  for (var func in mockClass.prototype) {
-    if (typeof mockClass.prototype[func] === 'function') {
-      registerMessageCallback(func, mockProxy, mockProxy[func]);
-    }
-  }
-}
-
-/**
  * When preloading JavaScript libraries, this is true until the
  * DOMContentLoaded event has been received as globals cannot be overridden
  * until the page has loaded its JavaScript.
  * @type {boolean}
  */
 var deferGlobalOverrides = false;
-
-/**
- * Empty function for use in making mocks.
- * @const
- */
-function emptyFunction() {}
-
-/**
- * Make a mock from the supplied |methodNames| array.
- * @param {Array<string>} methodNames Array of names of methods to mock.
- * @return {Function} Constructor with prototype filled in with methods
- *     matching |methodNames|.
- */
-function makeMockClass(methodNames) {
-  function MockConstructor() {}
-  for (var i = 0; i < methodNames.length; i++) {
-    MockConstructor.prototype[methodNames[i]] = emptyFunction;
-  }
-  return MockConstructor;
-}
-
-/**
- * Create a new class to handle |functionNames|, add method 'functions()'
- * that returns a container of standalone functions based on the mock class
- * members, and return it.
- * @return {Mock} Mock handler class.
- */
-function makeMockFunctions(functionNames) {
-  var MockClass = makeMockClass(functionNames);
-  var mockFunctions = mock(MockClass);
-  var mockProxy = mockFunctions.proxy();
-
-  mockFunctions.functions_ = {};
-
-  for (var func in MockClass.prototype) {
-    if (typeof MockClass.prototype[func] === 'function') {
-      mockFunctions.functions_[func] = mockProxy[func].bind(mockProxy);
-    }
-  }
-
-  mockFunctions.functions = function() {
-    return this.functions_;
-  };
-
-  return mockFunctions;
-}
 
 /**
  * Overrides {@code chrome.send} for routing messages to javascript
@@ -944,7 +842,6 @@ function overrideChrome() {
   chrome = {
     __proto__: originalChrome,
     send: send,
-    originalSend: originalChrome.send.bind(originalChrome),
   };
 }
 
@@ -1427,9 +1324,6 @@ function exportMock4JsHelpers() {
   exports.callFunction = callFunction;
   exports.callFunctionWithSavedArgs = callFunctionWithSavedArgs;
   exports.SaveMockArguments = SaveMockArguments;
-
-  // Import the Mock4JS helpers.
-  Mock4JS.addMockSupport(exports);
 }
 
 // Exports.

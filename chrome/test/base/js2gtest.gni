@@ -10,7 +10,6 @@ import("//v8/gni/v8.gni")
 # Changing the size or the order of files in this array also requires changing
 # src/tools/gypv8sh.py.
 js2gtest_js_input_libraries = [
-  "//chrome/third_party/mock4js/mock4js.js",
   "//chrome/test/data/webui/test_api.js",
   "//chrome/test/base/js2gtest.js",
 ]

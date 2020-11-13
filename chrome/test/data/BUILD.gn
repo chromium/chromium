@@ -59,7 +59,6 @@ js_type_check("closure_compile_local") {
 js_library("test_api_js") {
   sources = [ "webui/test_api.js" ]
   externs_list = [
-    "webui/mock4js_externs.js",
     "//third_party/chaijs/externs/chai-3.5.js",
     "//ui/webui/resources/js/dom_automation_controller.js",
   ]

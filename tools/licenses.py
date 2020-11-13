@@ -320,7 +320,6 @@ KNOWN_NON_IOS_LIBRARIES = set([
     os.path.join('chrome', 'installer', 'mac', 'third_party', 'xz'),
     os.path.join('chrome', 'test', 'data', 'third_party', 'kraken'),
     os.path.join('chrome', 'test', 'data', 'third_party', 'spaceport'),
-    os.path.join('chrome', 'third_party', 'mock4js'),
     os.path.join('chrome', 'third_party', 'mozilla_security_manager'),
     os.path.join('third_party', 'angle'),
     os.path.join('third_party', 'apple_apsl'),

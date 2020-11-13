@@ -85,7 +85,6 @@ if (include_js_tests) {
       "js2gtest_browsertest.js",
       "load_time_data_browsertest.js",
       "management/a11y/management_a11y_test.js",
-      "mock4js_browsertest.js",
       "net_internals/dns_view.js",
       "net_internals/domain_security_policy_view.js",
       "net_internals/main.js",

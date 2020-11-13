@@ -30,34 +30,14 @@ ChromeSendWebUITest.prototype = {
 
   /** @inheritDoc */
   browsePreload: DUMMY_URL,
-
-  /** @inheritDoc */
-  setUp: function() {
-    this.makeAndRegisterMockHandler(['checkSend']);
-  }
 };
 
 // Test that chrome.send can be mocked outside the preLoad method.
 TEST_F('ChromeSendWebUITest', 'NotInPreload', function() {
-  this.mockHandler.expects(once()).checkSend();
+  let invoked = false;
+  registerMessageCallback('checkSend', undefined, () => {
+    invoked = true;
+  });
   chrome.send('checkSend');
-});
-
-/**
- * Test fixture for chrome send WebUI testing with passthrough.
- * @constructor
- * @extends {ChromeSendWebUITest}
- */
-function ChromeSendPassthroughWebUITest() {}
-
-ChromeSendPassthroughWebUITest.prototype = {
-  __proto__: ChromeSendWebUITest.prototype,
-};
-
-// Test that the mocked chrome.send can call the original.
-TEST_F('ChromeSendPassthroughWebUITest', 'CanCallOriginal', function() {
-  this.mockHandler.expects(once()).checkSend().will(callFunction(function() {
-    chrome.originalSend('checkSend');
-  }));
-  chrome.send('checkSend');
+  assertTrue(invoked);
 });
