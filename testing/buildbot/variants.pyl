@@ -307,6 +307,52 @@
     ],
     'identifier': 'iPhone X 14.2'
   },
+  'WEBLAYER_IMPL_SKEW_TESTS_M88_NIGHTLY': {
+    'args': [
+      '--test-runner-outdir',
+      '.',
+      '--client-outdir',
+      '.',
+      '--implementation-outdir',
+      '../../weblayer_instrumentation_test_M88/out/Release',
+      '--test-expectations',
+      '../../weblayer/browser/android/javatests/skew/expectations.txt',
+      '--impl-version=88',
+    ],
+    'identifier': 'M88 Implementation Tests',
+    'swarming': {
+      'cipd_packages': [
+        {
+          'cipd_package': 'chromium/testing/weblayer-x86',
+          'location': 'weblayer_instrumentation_test_M88',
+          'revision': 'm88',
+        }
+      ],
+    },
+  },
+  'WEBLAYER_CLIENT_SKEW_TESTS_M88_NIGHTLY': {
+    'args': [
+      '--test-runner-outdir',
+      '.',
+      '--client-outdir',
+      '../../weblayer_instrumentation_test_M88/out/Release',
+      '--implementation-outdir',
+      '.',
+      '--test-expectations',
+      '../../weblayer/browser/android/javatests/skew/expectations.txt',
+      '--client-version=88',
+    ],
+    'identifier': 'M88 Client Tests',
+    'swarming': {
+      'cipd_packages': [
+        {
+          'cipd_package': 'chromium/testing/weblayer-x86',
+          'location': 'weblayer_instrumentation_test_M88',
+          'revision': 'm88',
+        }
+      ],
+    },
+  },
   'WEBLAYER_IMPL_SKEW_TESTS_NTH_MILESTONE': {
     'args': [
       '--test-runner-outdir',
