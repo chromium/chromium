@@ -5,6 +5,9 @@
 // https://github.com/WICG/web-codecs
 
 enum VideoPixelFormat {
-    // 4:2:0 subsampled planar YUV
-    "I420"
+    // 4:2:0 subsampled 3 plane Y,U,V
+    "I420",
+
+    // 4:2:0 subsampled 2 plane Y,UV
+    "NV12",
 };

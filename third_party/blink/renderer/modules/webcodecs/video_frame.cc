@@ -219,10 +219,12 @@ VideoFrame* VideoFrame::Create(ImageBitmap* source,
 
 // static
 bool VideoFrame::IsSupportedPlanarFormat(media::VideoFrame* frame) {
-  // For now only I420 in CPU memory is supported.
-  return frame && frame->IsMappable() &&
-         frame->format() == media::PIXEL_FORMAT_I420 &&
-         frame->layout().num_planes() == 3;
+  // For now only I420 or NV12 in CPU or GPU memory is supported.
+  return frame && (frame->IsMappable() || frame->HasGpuMemoryBuffer()) &&
+         ((frame->format() == media::PIXEL_FORMAT_I420 &&
+           frame->layout().num_planes() == 3) ||
+          (frame->format() == media::PIXEL_FORMAT_NV12 &&
+           frame->layout().num_planes() == 2));
 }
 
 String VideoFrame::format() const {
@@ -233,6 +235,8 @@ String VideoFrame::format() const {
   switch (local_frame->format()) {
     case media::PIXEL_FORMAT_I420:
       return V8VideoPixelFormat(V8VideoPixelFormat::Enum::kI420);
+    case media::PIXEL_FORMAT_NV12:
+      return V8VideoPixelFormat(V8VideoPixelFormat::Enum::kNV12);
 
     default:
       NOTREACHED();

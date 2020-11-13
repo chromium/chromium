@@ -8,8 +8,24 @@
 
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "ui/gfx/gpu_memory_buffer.h"
 
 namespace blink {
+
+namespace {
+
+void CopyPlane(const uint8_t* plane,
+               size_t copy_size,
+               size_t trailing_zeros_size,
+               uint8_t* dest) {
+  // Copy plane bytes.
+  memcpy(dest, plane, copy_size);
+
+  // Zero trailing padding bytes.
+  memset(dest + copy_size, 0, trailing_zeros_size);
+}
+
+}  // namespace
 
 Plane::Plane(scoped_refptr<VideoFrameHandle> handle, size_t plane)
     : handle_(std::move(handle)), plane_(plane) {
@@ -17,7 +33,7 @@ Plane::Plane(scoped_refptr<VideoFrameHandle> handle, size_t plane)
   // Validate the plane index, but only if the handle is valid.
   auto local_frame = handle_->frame();
   if (local_frame) {
-    DCHECK(local_frame->IsMappable());
+    DCHECK(local_frame->IsMappable() || local_frame->HasGpuMemoryBuffer());
     DCHECK_LT(plane, local_frame->layout().num_planes());
   }
 #endif  // DCHECK_IS_ON()
@@ -86,11 +102,21 @@ void Plane::readInto(MaybeShared<DOMArrayBufferView> dst,
     return;
   }
 
-  // Copy plane bytes.
-  memcpy(base, local_frame->data(plane_), copy_size);
+  if (local_frame->IsMappable()) {
+    CopyPlane(local_frame->data(plane_), copy_size, trailing_zeros_size, base);
+    return;
+  }
 
-  // Zero trailing padding bytes.
-  memset(base + copy_size, 0, trailing_zeros_size);
+  DCHECK(local_frame->HasGpuMemoryBuffer());
+  auto* gmb = local_frame->GetGpuMemoryBuffer();
+  if (!gmb->Map()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "Could not map video frame into memory.");
+    return;
+  }
+  CopyPlane(static_cast<const uint8_t*>(gmb->memory(plane_)), copy_size,
+            trailing_zeros_size, base);
+  gmb->Unmap();
 }
 
 }  // namespace blink
