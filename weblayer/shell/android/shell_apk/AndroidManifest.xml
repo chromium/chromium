@@ -53,14 +53,6 @@
           </intent-filter>
       </activity>
 
-      <!-- Cast support -->
-      <meta-data
-          android:name="org.chromium.weblayer.ENABLE_REMOTE_MEDIA" android:value="true"/>
-      <meta-data
-          android:name=
-          "com.google.android.gms.cast.framework.OPTIONS_PROVIDER_CLASS_NAME"
-          android:value="org.chromium.components.media_router.caf.CastOptionsProvider"/>
-
       {% if weblayer_package is defined %}
             <meta-data android:name="org.chromium.weblayer.WebLayerPackage"
                        android:value="{{ weblayer_package }}"/>

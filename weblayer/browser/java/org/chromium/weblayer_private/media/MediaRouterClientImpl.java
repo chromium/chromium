@@ -26,6 +26,7 @@ import org.chromium.components.media_router.MediaRouterClient;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.weblayer_private.IntentUtils;
 import org.chromium.weblayer_private.TabImpl;
+import org.chromium.weblayer_private.WebLayerFactoryImpl;
 import org.chromium.weblayer_private.WebLayerImpl;
 import org.chromium.weblayer_private.interfaces.RemoteMediaServiceConstants;
 
@@ -94,13 +95,15 @@ public class MediaRouterClientImpl extends MediaRouterClient {
 
     @CalledByNative
     public static boolean isMediaRouterEnabled() {
+        if (WebLayerFactoryImpl.getClientMajorVersion() < 88) return false;
+
         Context context = ContextUtils.getApplicationContext();
         try {
             ApplicationInfo ai = context.getPackageManager().getApplicationInfo(
                     context.getPackageName(), PackageManager.GET_META_DATA);
-            return ai.metaData.getBoolean(RemoteMediaServiceConstants.FEATURE_ENABLED_KEY);
+            return ai.metaData.getBoolean(RemoteMediaServiceConstants.FEATURE_ENABLED_KEY, true);
         } catch (NameNotFoundException e) {
-            return false;
+            return true;
         }
     }
 
