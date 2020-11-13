@@ -19,6 +19,7 @@ import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
+import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.toolbar.ToolbarColors;
 import org.chromium.components.browser_ui.widget.ClipDrawableProgressBar;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -84,8 +85,9 @@ public class TopToolbarOverlayMediator {
             public void onStartedShowing(@LayoutType int layout, boolean showToolbar) {
                 // TODO(1100332): Once ToolbarSwipeLayout uses a SceneLayer that does not include
                 //                its own toolbar, only check for the vertical tab switcher.
-                mLayoutHasOwnToolbar =
-                        layout == LayoutType.TAB_SWITCHER || layout == LayoutType.TOOLBAR_SWIPE;
+                mLayoutHasOwnToolbar = (layout == LayoutType.TAB_SWITCHER
+                                               && !TabUiFeatureUtilities.isGridTabSwitcherEnabled())
+                        || layout == LayoutType.TOOLBAR_SWIPE;
                 updateVisibility();
             }
         };
