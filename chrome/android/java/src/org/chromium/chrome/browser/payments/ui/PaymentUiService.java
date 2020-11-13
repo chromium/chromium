@@ -71,6 +71,7 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.payments.mojom.AddressErrors;
 import org.chromium.payments.mojom.PayerDetail;
 import org.chromium.payments.mojom.PayerErrors;
+import org.chromium.payments.mojom.PaymentComplete;
 import org.chromium.payments.mojom.PaymentCurrencyAmount;
 import org.chromium.payments.mojom.PaymentDetails;
 import org.chromium.payments.mojom.PaymentDetailsModifier;
@@ -436,17 +437,16 @@ public class PaymentUiService implements SettingsAutofillAndPaymentsObserver.Obs
     }
 
     /**
-     * Called when the payment request is complete.
-     * @param result The status of PaymentComplete.
+     * Called when the merchant calls complete() to complete the payment request.
+     * @param result The completion status of the payment request, defined in {@link
+     *         PaymentComplete}, provided by the merchant with
+     * PaymentResponse.complete(paymentResult).
      * @param onMinimalUiErroredAndClosed The function called when MinimalUI errors and closes.
-     * @param onMinimalUiCompletedAndClosed The function called when MinimalUI completes and closes.
-     * @param onPaymentRequestCompleteForNonMinimalUI The function called when PaymentRequest
-     *                                                completes for non-minimal UI.
+     * @param onUiCompleted The function called when the opened UI has handled the completion.
      */
     public void onPaymentRequestComplete(int result,
             MinimalUICoordinator.ErrorAndCloseObserver onMinimalUiErroredAndClosed,
-            MinimalUICoordinator.CompleteAndCloseObserver onMinimalUiCompletedAndClosed,
-            Runnable onPaymentRequestCompleteForNonMinimalUI) {
+            Runnable onUiCompleted) {
         // Update records of the used payment app for sorting payment apps next time.
         EditableOption selectedPaymentMethod = mPaymentMethodsSection.getSelectedItem();
         PaymentPreferencesUtil.increasePaymentAppUseCount(selectedPaymentMethod.getIdentifier());
@@ -454,12 +454,14 @@ public class PaymentUiService implements SettingsAutofillAndPaymentsObserver.Obs
                 selectedPaymentMethod.getIdentifier(), System.currentTimeMillis());
 
         if (mMinimalUi != null) {
-            mMinimalUi.onPaymentRequestComplete(
-                    result, onMinimalUiErroredAndClosed, onMinimalUiCompletedAndClosed);
+            mMinimalUi.onPaymentRequestComplete(result,
+                    onMinimalUiErroredAndClosed, /*onCompletedAndClosed=*/
+                    onUiCompleted::run);
             return;
         }
 
-        onPaymentRequestCompleteForNonMinimalUI.run();
+        // When non-minimal UI is opened.
+        onUiCompleted.run();
     }
 
     /** @return Whether PaymentRequestUI should be skipped. */

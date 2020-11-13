@@ -407,14 +407,7 @@ public class ChromePaymentRequestService implements BrowserPaymentRequest,
                 null /* selectedShippingAddress */, null /* selectedShippingOption */, app);
     }
 
-    private void onMinimalUiCompletedAndClosed() {
-        if (mPaymentRequestService == null) return;
-        mPaymentRequestService.onComplete();
-        close();
-    }
-
-    /** Called after the non-minimal UI has handled {@link #complete}. */
-    private void onNonMinimalUiHandledComplete() {
+    private void onUiCompleted() {
         if (PaymentRequestService.getNativeObserverForTest() != null) {
             PaymentRequestService.getNativeObserverForTest().onCompleteCalled();
         }
@@ -669,8 +662,7 @@ public class ChromePaymentRequestService implements BrowserPaymentRequest,
         }
 
         mPaymentUiService.onPaymentRequestComplete(result,
-                /*onMinimalUiErroredAndClosed=*/this::close, this::onMinimalUiCompletedAndClosed,
-                this::onNonMinimalUiHandledComplete);
+                /*onMinimalUiErroredAndClosed=*/this::close, this::onUiCompleted);
     }
 
     // Implement BrowserPaymentRequest:
