@@ -464,7 +464,7 @@ const base::Feature kHappinessTrackingSystem{"HappinessTrackingSystem",
 // Enables or disables the intervention that unloads ad iframes with intensive
 // resource usage.
 const base::Feature kHeavyAdIntervention{"HeavyAdIntervention",
-                                         base::FEATURE_DISABLED_BY_DEFAULT};
+                                         base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables or disables reporting on the intervention that unloads ad iframes
 // with intensive resource usage.
