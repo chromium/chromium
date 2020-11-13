@@ -124,7 +124,7 @@ class OnboardingDismissPromptView : public PhoneHubInterstitialView {
  public:
   explicit OnboardingDismissPromptView(
       chromeos::phonehub::OnboardingUiTracker* onboarding_ui_tracker)
-      : PhoneHubInterstitialView(/*show_progress=*/false),
+      : PhoneHubInterstitialView(/*show_progress=*/false, /*show_image=*/false),
         onboarding_ui_tracker_(onboarding_ui_tracker) {
     SetID(PhoneHubViewID::kOnboardingDismissPromptView);
     InitLayout();

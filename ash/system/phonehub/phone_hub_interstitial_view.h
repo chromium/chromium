@@ -30,7 +30,7 @@ class ASH_EXPORT PhoneHubInterstitialView : public PhoneHubContentView {
  public:
   METADATA_HEADER(PhoneHubInterstitialView);
 
-  explicit PhoneHubInterstitialView(bool show_progress);
+  explicit PhoneHubInterstitialView(bool show_progress, bool show_image = true);
   PhoneHubInterstitialView(const PhoneHubInterstitialView&) = delete;
   PhoneHubInterstitialView& operator=(const PhoneHubInterstitialView&) = delete;
   ~PhoneHubInterstitialView() override;
@@ -41,8 +41,6 @@ class ASH_EXPORT PhoneHubInterstitialView : public PhoneHubContentView {
   void AddButton(std::unique_ptr<views::Button> button);
 
  private:
-  void InitLayout(bool show_progress);
-
   // A progress bar will be shown under the title row if |show_progress| is
   // true.
   views::ProgressBar* progress_bar_ = nullptr;
