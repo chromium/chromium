@@ -96,6 +96,16 @@ class CORE_EXPORT LayoutNGTable : public LayoutNGMixin<LayoutBlock>,
 
   LayoutUnit BorderRight() const override;
 
+  // The collapsing border model disallows paddings on table.
+  // See http://www.w3.org/TR/CSS2/tables.html#collapsing-borders.
+  LayoutUnit PaddingTop() const override;
+
+  LayoutUnit PaddingBottom() const override;
+
+  LayoutUnit PaddingLeft() const override;
+
+  LayoutUnit PaddingRight() const override;
+
   LayoutRectOutsets BorderBoxOutsets() const override;
 
   PhysicalRect OverflowClipRect(const PhysicalOffset&,

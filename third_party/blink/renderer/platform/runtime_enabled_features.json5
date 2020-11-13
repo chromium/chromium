@@ -1043,7 +1043,7 @@
       // provides a convenient way for testing legacy layout code path in blink
       // unit tests.
       name: "LayoutNG",
-      implied_by: ["LayoutNGGrid", "BidiCaretAffinity", "LayoutNGTable"],
+      implied_by: ["LayoutNGGrid", "BidiCaretAffinity"],
       status: "stable",
     },
     {
@@ -1084,6 +1084,7 @@
     },
     {
       name: "LayoutNGTable",
+      depends_on: ["LayoutNG"]
     },
     {
       name: "LayoutNGTextControl",

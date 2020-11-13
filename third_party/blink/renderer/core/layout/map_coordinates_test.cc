@@ -1313,7 +1313,13 @@ TEST_F(MapCoordinatesTest, Table) {
   LayoutBox* tr = td->ParentBox();
   ASSERT_TRUE(tr->IsTableRow());
   mapped_point = MapLocalToAncestor(td, tr, PhysicalOffset(2, 47));
-  EXPECT_EQ(PhysicalOffset(126, 47), mapped_point);
+  // TablesNG and Legacy row inline starts differ:
+  // TablesNG inline start does not include border-spacing,
+  // Legacy does.
+  if (RuntimeEnabledFeatures::LayoutNGTableEnabled())
+    EXPECT_EQ(PhysicalOffset(116, 47), mapped_point);
+  else
+    EXPECT_EQ(PhysicalOffset(126, 47), mapped_point);
   mapped_point = MapAncestorToLocal(td, tr, mapped_point);
   EXPECT_EQ(PhysicalOffset(2, 47), mapped_point);
 
@@ -1327,7 +1333,11 @@ TEST_F(MapCoordinatesTest, Table) {
   LayoutBox* table = tbody->ParentBox();
   ASSERT_TRUE(table->IsTable());
   mapped_point = MapLocalToAncestor(tbody, table, PhysicalOffset(126, 161));
-  EXPECT_EQ(PhysicalOffset(131, 290), mapped_point);
+  // TablesNG and Legacy row inline starts differ.
+  if (RuntimeEnabledFeatures::LayoutNGTableEnabled())
+    EXPECT_EQ(PhysicalOffset(141, 290), mapped_point);
+  else
+    EXPECT_EQ(PhysicalOffset(131, 290), mapped_point);
   mapped_point = MapAncestorToLocal(tbody, table, mapped_point);
   EXPECT_EQ(PhysicalOffset(126, 161), mapped_point);
 

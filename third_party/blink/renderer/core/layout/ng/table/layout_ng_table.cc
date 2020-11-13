@@ -299,6 +299,34 @@ LayoutUnit LayoutNGTable::BorderBottom() const {
   return LayoutNGMixin<LayoutBlock>::BorderBottom();
 }
 
+LayoutUnit LayoutNGTable::PaddingTop() const {
+  NOT_DESTROYED();
+  if (ShouldCollapseBorders())
+    return LayoutUnit();
+  return LayoutNGMixin<LayoutBlock>::PaddingTop();
+}
+
+LayoutUnit LayoutNGTable::PaddingBottom() const {
+  NOT_DESTROYED();
+  if (ShouldCollapseBorders())
+    return LayoutUnit();
+  return LayoutNGMixin<LayoutBlock>::PaddingBottom();
+}
+
+LayoutUnit LayoutNGTable::PaddingLeft() const {
+  NOT_DESTROYED();
+  if (ShouldCollapseBorders())
+    return LayoutUnit();
+  return LayoutNGMixin<LayoutBlock>::PaddingLeft();
+}
+
+LayoutUnit LayoutNGTable::PaddingRight() const {
+  NOT_DESTROYED();
+  if (ShouldCollapseBorders())
+    return LayoutUnit();
+  return LayoutNGMixin<LayoutBlock>::PaddingRight();
+}
+
 LayoutRectOutsets LayoutNGTable::BorderBoxOutsets() const {
   NOT_DESTROYED();
   // DCHECK(cached_table_borders_.get())
