@@ -412,12 +412,6 @@ class CORE_EXPORT NGConstraintSpace final {
     return bitfields_.ancestor_has_clearance_past_adjoining_floats;
   }
 
-  // Returns if the parent layout needs the baseline from this layout.
-  //
-  // This bit is only used for skipping querying baseline information from
-  // legacy layout.
-  bool NeedsBaseline() const { return bitfields_.needs_baseline; }
-
   // How the baseline for the fragment should be calculated, see documentation
   // for |NGBaselineAlgorithmType|.
   NGBaselineAlgorithmType BaselineAlgorithmType() const {
@@ -1284,7 +1278,6 @@ class CORE_EXPORT NGConstraintSpace final {
           is_painted_atomically(false),
           use_first_line_style(false),
           ancestor_has_clearance_past_adjoining_floats(false),
-          needs_baseline(false),
           baseline_algorithm_type(
               static_cast<unsigned>(NGBaselineAlgorithmType::kFirstLine)),
           cache_slot(static_cast<unsigned>(NGCacheSlot::kLayout)),
@@ -1313,7 +1306,6 @@ class CORE_EXPORT NGConstraintSpace final {
              use_first_line_style == other.use_first_line_style &&
              ancestor_has_clearance_past_adjoining_floats ==
                  other.ancestor_has_clearance_past_adjoining_floats &&
-             needs_baseline == other.needs_baseline &&
              baseline_algorithm_type == other.baseline_algorithm_type;
     }
 
@@ -1343,7 +1335,6 @@ class CORE_EXPORT NGConstraintSpace final {
     unsigned use_first_line_style : 1;
     unsigned ancestor_has_clearance_past_adjoining_floats : 1;
 
-    unsigned needs_baseline : 1;
     unsigned baseline_algorithm_type : 1;
 
     unsigned cache_slot : 1;

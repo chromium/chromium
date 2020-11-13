@@ -1064,7 +1064,6 @@ NGConstraintSpace NGColumnLayoutAlgorithm::CreateConstraintSpaceForSpanner(
   space_builder.SetStretchInlineSizeIfAuto(true);
   space_builder.SetPercentageResolutionSize(ChildAvailableSize());
 
-  space_builder.SetNeedsBaseline(ConstraintSpace().NeedsBaseline());
   space_builder.SetBaselineAlgorithmType(
       ConstraintSpace().BaselineAlgorithmType());
 

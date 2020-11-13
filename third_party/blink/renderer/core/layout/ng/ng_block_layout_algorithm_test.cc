@@ -231,7 +231,6 @@ TEST_F(NGBlockLayoutAlgorithmTest, PercentageBlockSizeQuirkDescendantsCaching) {
     builder.SetAvailableSize(size);
     builder.SetPercentageResolutionSize(size);
     builder.SetStretchInlineSizeIfAuto(true);
-    builder.SetNeedsBaseline(true);
     return builder.ToConstraintSpace();
   };
 
@@ -298,7 +297,6 @@ TEST_F(NGBlockLayoutAlgorithmTest, LineOffsetCaching) {
         /* is_new_formatting_context */ false);
     builder.SetAvailableSize(size);
     builder.SetPercentageResolutionSize(size);
-    builder.SetNeedsBaseline(true);
     builder.SetBfcOffset(bfc_offset);
     return builder.ToConstraintSpace();
   };

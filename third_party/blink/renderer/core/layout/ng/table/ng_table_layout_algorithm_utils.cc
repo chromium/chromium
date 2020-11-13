@@ -410,7 +410,6 @@ NGConstraintSpace NGTableAlgorithmUtils::CreateTableCellConstraintSpace(
   builder.SetIsTableCellWithCollapsedBorders(has_collapsed_borders);
   builder.SetHideTableCellIfEmpty(
       !has_collapsed_borders && cell_style.EmptyCells() == EEmptyCells::kHide);
-  builder.SetNeedsBaseline(true);
   builder.SetCacheSlot(cache_slot);
 
   return builder.ToConstraintSpace();

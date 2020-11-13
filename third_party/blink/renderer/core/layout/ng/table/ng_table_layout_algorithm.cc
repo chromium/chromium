@@ -859,7 +859,6 @@ scoped_refptr<const NGLayoutResult> NGTableLayoutAlgorithm::GenerateFragment(
     section_space_builder.SetAvailableSize(section_available_size);
     section_space_builder.SetIsFixedInlineSize(true);
     section_space_builder.SetPercentageResolutionSize(section_available_size);
-    section_space_builder.SetNeedsBaseline(true);
     section_space_builder.SetTableSectionData(constraint_space_data,
                                               section_index);
     return section_space_builder.ToConstraintSpace();

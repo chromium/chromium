@@ -79,7 +79,6 @@ NGConstraintSpace NGConstraintSpace::CreateFromLayoutObject(
   if (!block.IsWritingModeRoot() || block.IsGridItem()) {
     // We don't know if the parent layout will require our baseline, so always
     // request it.
-    builder.SetNeedsBaseline(true);
     builder.SetBaselineAlgorithmType(block.IsInline() &&
                                              block.IsAtomicInlineLevel()
                                          ? NGBaselineAlgorithmType::kInlineBlock

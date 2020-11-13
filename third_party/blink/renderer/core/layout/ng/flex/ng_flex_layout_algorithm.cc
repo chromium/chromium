@@ -374,11 +374,6 @@ NGConstraintSpace NGFlexLayoutAlgorithm::BuildSpaceForIntrinsicBlockSize(
     }
   }
 
-  space_builder.SetNeedsBaseline(
-      ConstraintSpace().NeedsBaseline() ||
-      FlexLayoutAlgorithm::AlignmentForChild(Style(), child_style) ==
-          ItemPosition::kBaseline);
-
   // For determining the intrinsic block-size we make %-block-sizes resolve
   // against an indefinite size.
   LogicalSize child_percentage_size = child_percentage_size_;
@@ -1156,11 +1151,6 @@ scoped_refptr<const NGLayoutResult> NGFlexLayoutAlgorithm::LayoutInternal() {
         }
       }
 
-      space_builder.SetNeedsBaseline(
-          ConstraintSpace().NeedsBaseline() ||
-          FlexLayoutAlgorithm::AlignmentForChild(Style(), child_style) ==
-              ItemPosition::kBaseline);
-
       space_builder.SetAvailableSize(available_size);
       space_builder.SetPercentageResolutionSize(child_percentage_size_);
       space_builder.SetReplacedPercentageResolutionSize(child_percentage_size_);
@@ -1245,11 +1235,6 @@ void NGFlexLayoutAlgorithm::ApplyStretchAlignmentToChild(FlexItem& flex_item) {
       space_builder.SetIsFixedBlockSizeIndefinite(true);
     }
   }
-
-  space_builder.SetNeedsBaseline(
-      ConstraintSpace().NeedsBaseline() ||
-      FlexLayoutAlgorithm::AlignmentForChild(Style(), child_style) ==
-          ItemPosition::kBaseline);
 
   space_builder.SetAvailableSize(available_size);
   space_builder.SetPercentageResolutionSize(child_percentage_size_);

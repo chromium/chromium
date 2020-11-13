@@ -2600,8 +2600,6 @@ NGConstraintSpace NGBlockLayoutAlgorithm::CreateConstraintSpaceForChild(
     clearance_offset = std::max(clearance_offset, child_clearance_offset);
 
     // |PositionListMarker()| requires a baseline.
-    builder.SetNeedsBaseline(ConstraintSpace().NeedsBaseline() ||
-                             container_builder_.UnpositionedListMarker());
     builder.SetBaselineAlgorithmType(ConstraintSpace().BaselineAlgorithmType());
   }
   builder.SetClearanceOffset(clearance_offset);

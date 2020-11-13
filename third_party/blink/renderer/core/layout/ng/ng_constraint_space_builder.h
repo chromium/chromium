@@ -207,8 +207,6 @@ class CORE_EXPORT NGConstraintSpaceBuilder final {
     space_.bitfields_.ancestor_has_clearance_past_adjoining_floats = true;
   }
 
-  void SetNeedsBaseline(bool b) { space_.bitfields_.needs_baseline = b; }
-
   void SetBaselineAlgorithmType(NGBaselineAlgorithmType type) {
     space_.bitfields_.baseline_algorithm_type = static_cast<unsigned>(type);
   }
