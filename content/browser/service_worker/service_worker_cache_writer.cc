@@ -65,21 +65,15 @@ class ServiceWorkerCacheWriter::ReadResponseHeadCallbackAdapter
     DCHECK(owner_);
   }
 
-  void DidReadResponseInfo(int result,
+  void DidReadResponseHead(int result,
                            network::mojom::URLResponseHeadPtr response_head,
-                           scoped_refptr<net::IOBufferWithSize> /*metadata*/) {
+                           base::Optional<mojo_base::BigBuffer>) {
     result_ = result;
     if (!owner_)
       return;
     owner_->response_head_to_read_ = std::move(response_head);
     if (async_)
       owner_->AsyncDoLoop(result);
-  }
-
-  void DidReadResponseHead(int result,
-                           network::mojom::URLResponseHeadPtr response_head,
-                           base::Optional<mojo_base::BigBuffer>) {
-    DidReadResponseInfo(result, std::move(response_head), nullptr);
   }
 
   void SetAsync() { async_ = true; }

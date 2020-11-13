@@ -22,7 +22,7 @@ namespace content {
 namespace {
 
 // A test implementation of ServiceWorkerCacheWriter::WriteObserver.
-// This observer captures the response info or data sent to the observer
+// This observer captures the response head or data sent to the observer
 // for further checking.
 class MockServiceWorkerCacheWriterObserver
     : public ServiceWorkerCacheWriter::WriteObserver {
