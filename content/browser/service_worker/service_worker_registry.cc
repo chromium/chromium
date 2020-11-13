@@ -8,6 +8,7 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/stl_util.h"
 #include "base/task/post_task.h"
 #include "base/trace_event/trace_event.h"
@@ -83,6 +84,11 @@ void CompleteFindSoon(
     ServiceWorkerRegistry::FindRegistrationCallback callback) {
   RunSoon(from_here, base::BindOnce(&CompleteFindNow, std::move(registration),
                                     status, std::move(callback)));
+}
+
+void RecordRetryCount(size_t retries) {
+  base::UmaHistogramCounts100("ServiceWorker.Storage.RetryCountForRecovery",
+                              retries);
 }
 
 }  // namespace
@@ -1353,6 +1359,7 @@ void ServiceWorkerRegistry::OnRemoteStorageDisconnected() {
   if (connection_state_ == ConnectionState::kRecovering) {
     ++recovery_retry_counts_;
     if (recovery_retry_counts_ > kMaxRetryCounts) {
+      RecordRetryCount(kMaxRetryCounts);
       CHECK(false) << "The Storage Service consistently crashes.";
       return;
     }
@@ -1374,6 +1381,8 @@ void ServiceWorkerRegistry::OnRemoteStorageDisconnected() {
 
 void ServiceWorkerRegistry::DidRecover() {
   DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+
+  RecordRetryCount(recovery_retry_counts_);
 
   recovery_retry_counts_ = 0;
   connection_state_ = ConnectionState::kNormal;
