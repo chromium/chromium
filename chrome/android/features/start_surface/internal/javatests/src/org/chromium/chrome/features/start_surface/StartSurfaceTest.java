@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.features.start_surface;
 
-import static android.os.Build.VERSION_CODES.N;
 import static android.os.Build.VERSION_CODES.P;
 
 import static androidx.test.espresso.Espresso.onView;
@@ -1347,7 +1346,6 @@ public class StartSurfaceTest {
     @MediumTest
     @Feature({"StartSurface"})
     // clang-format off
-    @DisableIf.Build(sdk_is_less_than = N, message = "crbug.com/1148352")
     @CommandLineFlags.Add({BASE_PARAMS + "/single/exclude_mv_tiles/true"
             + "/show_last_active_tab_only/true/show_stack_tab_switcher/true"})
     @DisabledTest(message = "crbug.com/1148365")
@@ -1361,6 +1359,7 @@ public class StartSurfaceTest {
                 ()
                         -> mActivityTestRule.getActivity().getLayoutManager() != null
                         && mActivityTestRule.getActivity().getLayoutManager().overviewVisible());
+        waitForTabModel();
 
         onView(withId(R.id.primary_tasks_surface_view)).check(matches(isDisplayed()));
         onView(withId(R.id.search_box_text)).check(matches(isDisplayed()));
@@ -1370,7 +1369,6 @@ public class StartSurfaceTest {
     @Test
     @MediumTest
     @Feature({"StartSurface"})
-    @DisableIf.Build(sdk_is_less_than = N, message = "crbug.com/1148352")
     @CommandLineFlags.Add({BASE_PARAMS + "/single"})
     public void testShow_SingleAsHomepage_VoiceSearchButtonShown() {
         if (!mImmediateReturn) {
@@ -1381,6 +1379,7 @@ public class StartSurfaceTest {
                 ()
                         -> mActivityTestRule.getActivity().getLayoutManager() != null
                         && mActivityTestRule.getActivity().getLayoutManager().overviewVisible());
+        waitForTabModel();
 
         onView(withId(R.id.primary_tasks_surface_view)).check(matches(isDisplayed()));
         onView(withId(R.id.search_box_text)).check(matches(isDisplayed()));
