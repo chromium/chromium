@@ -339,7 +339,7 @@ void AshColorProvider::DecorateIconButton(views::ImageButton* button,
   button->SetImage(views::Button::STATE_NORMAL, new_normal_image);
   button->SetImage(
       views::Button::STATE_DISABLED,
-      gfx::CreateVectorIcon(icon, icon_size, GetDisabledColor(icon_color)));
+      gfx::CreateVectorIcon(icon, icon_size, GetDisabledColor(normal_color)));
 }
 
 void AshColorProvider::AddObserver(ColorModeObserver* observer) {

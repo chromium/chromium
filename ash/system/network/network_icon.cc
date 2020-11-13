@@ -433,20 +433,23 @@ NetworkIconImpl* FindAndUpdateImageImpl(const NetworkStateProperties* network,
 // Public interface
 
 SkColor GetDefaultColorForIconType(IconType icon_type) {
+  auto* ash_color_provider = AshColorProvider::Get();
   switch (icon_type) {
     case ICON_TYPE_TRAY_OOBE:
       return kIconColorInOobe;
     case ICON_TYPE_FEATURE_POD:
-      return AshColorProvider::Get()->GetContentLayerColor(
+      return ash_color_provider->GetContentLayerColor(
           AshColorProvider::ContentLayerType::kButtonIconColor);
     case ICON_TYPE_FEATURE_POD_TOGGLED:
-      return AshColorProvider::Get()->GetContentLayerColor(
+      return ash_color_provider->GetContentLayerColor(
           AshColorProvider::ContentLayerType::kButtonIconColorPrimary);
     case ICON_TYPE_FEATURE_POD_DISABLED:
-      return AshColorProvider::GetDisabledColor(
-          GetDefaultColorForIconType(ICON_TYPE_FEATURE_POD));
+      return color_utils::GetResultingPaintColor(
+          AshColorProvider::GetDisabledColor(
+              GetDefaultColorForIconType(ICON_TYPE_FEATURE_POD)),
+          ash_color_provider->GetBackgroundColor());
     default:
-      return AshColorProvider::Get()->GetContentLayerColor(
+      return ash_color_provider->GetContentLayerColor(
           AshColorProvider::ContentLayerType::kIconColorPrimary);
   }
 }
