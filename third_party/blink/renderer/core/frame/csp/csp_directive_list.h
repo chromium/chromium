@@ -86,8 +86,11 @@ class CORE_EXPORT CSPDirectiveList final
                        const IntegrityMetadataSet& = IntegrityMetadataSet(),
                        ParserDisposition = kParserInserted) const;
 
-  bool AllowTrustedTypePolicy(const String& policy_name,
-                              bool is_duplicate) const;
+  bool AllowTrustedTypePolicy(
+      const String& policy_name,
+      bool is_duplicate,
+      ContentSecurityPolicy::AllowTrustedTypePolicyDetails& violation_details)
+      const;
 
   bool AllowDynamic(ContentSecurityPolicy::DirectiveType) const;
   bool AllowDynamicWorker() const;

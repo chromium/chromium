@@ -67,14 +67,28 @@ bool StringListDirective::AllowOrProcessValue(const String& src) {
   return IsPolicyName(src);
 }
 
-bool StringListDirective::Allows(const String& value, bool is_duplicate) {
-  if (is_duplicate && !allow_duplicates_)
-    return false;
-  if (is_duplicate && value == "default")
-    return false;
-  if (!IsPolicyName(value))
-    return false;
-  return allow_any_ || list_.Contains(value);
+bool StringListDirective::Allows(
+    const String& value,
+    bool is_duplicate,
+    ContentSecurityPolicy::AllowTrustedTypePolicyDetails& violation_details) {
+  if (is_duplicate && !allow_duplicates_) {
+    violation_details = ContentSecurityPolicy::AllowTrustedTypePolicyDetails::
+        kDisallowedDuplicateName;
+  } else if (is_duplicate && value == "default") {
+    violation_details = ContentSecurityPolicy::AllowTrustedTypePolicyDetails::
+        kDisallowedDuplicateName;
+  } else if (!IsPolicyName(value)) {
+    violation_details =
+        ContentSecurityPolicy::AllowTrustedTypePolicyDetails::kDisallowedName;
+  } else if (!(allow_any_ || list_.Contains(value))) {
+    violation_details =
+        ContentSecurityPolicy::AllowTrustedTypePolicyDetails::kDisallowedName;
+  } else {
+    violation_details =
+        ContentSecurityPolicy::AllowTrustedTypePolicyDetails::kAllowed;
+  }
+  return violation_details ==
+         ContentSecurityPolicy::AllowTrustedTypePolicyDetails::kAllowed;
 }
 
 void StringListDirective::Trace(Visitor* visitor) const {

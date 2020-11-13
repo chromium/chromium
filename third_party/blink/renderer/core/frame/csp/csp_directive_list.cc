@@ -758,10 +758,15 @@ bool CSPDirectiveList::AllowFromSource(
   return result;
 }
 
-bool CSPDirectiveList::AllowTrustedTypePolicy(const String& policy_name,
-                                              bool is_duplicate) const {
-  if (!trusted_types_ || trusted_types_->Allows(policy_name, is_duplicate))
+bool CSPDirectiveList::AllowTrustedTypePolicy(
+    const String& policy_name,
+    bool is_duplicate,
+    ContentSecurityPolicy::AllowTrustedTypePolicyDetails& violation_details)
+    const {
+  if (!trusted_types_ ||
+      trusted_types_->Allows(policy_name, is_duplicate, violation_details)) {
     return true;
+  }
 
   ReportViolation(
       "trusted-types", ContentSecurityPolicy::DirectiveType::kTrustedTypes,

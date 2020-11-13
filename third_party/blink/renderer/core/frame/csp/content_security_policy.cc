@@ -855,15 +855,31 @@ bool ContentSecurityPolicy::AllowWorkerContextFromSource(
                          url, RedirectStatus::kNoRedirect);
 }
 
-bool ContentSecurityPolicy::AllowTrustedTypePolicy(const String& policy_name,
-                                                   bool is_duplicate) const {
+// The return value indicates whether the policy is allowed or not.
+// If the return value is false, the out-parameter violation_details indicates
+// the type of the violation, and if the return value is true,
+// it indicates if a report-only violation occurred.
+bool ContentSecurityPolicy::AllowTrustedTypePolicy(
+    const String& policy_name,
+    bool is_duplicate,
+    AllowTrustedTypePolicyDetails& violation_details) const {
   bool is_allowed = true;
+  violation_details = AllowTrustedTypePolicyDetails::kAllowed;
   for (const auto& policy : policies_) {
     if (!CheckHeaderTypeMatches(CheckHeaderType::kCheckAll,
                                 policy->HeaderType())) {
       continue;
     }
-    is_allowed &= policy->AllowTrustedTypePolicy(policy_name, is_duplicate);
+    auto new_violation_details = AllowTrustedTypePolicyDetails::kAllowed;
+    bool new_allowed = policy->AllowTrustedTypePolicy(policy_name, is_duplicate,
+                                                      new_violation_details);
+    // Report the first violation that is enforced.
+    // If there is none, report the first violation that is report-only.
+    if ((is_allowed && !new_allowed) ||
+        violation_details == AllowTrustedTypePolicyDetails::kAllowed) {
+      violation_details = new_violation_details;
+    }
+    is_allowed &= new_allowed;
   }
 
   return is_allowed;

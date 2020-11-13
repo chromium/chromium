@@ -213,6 +213,13 @@ class CORE_EXPORT ContentSecurityPolicy final
     kCheckReportOnly
   };
 
+  // Helper type for the method AllowTrustedTypePolicy.
+  enum AllowTrustedTypePolicyDetails {
+    kAllowed,
+    kDisallowedName,
+    kDisallowedDuplicateName
+  };
+
   static const size_t kMaxSampleLength = 40;
 
   ContentSecurityPolicy();
@@ -289,8 +296,10 @@ class CORE_EXPORT ContentSecurityPolicy final
       CheckHeaderType = CheckHeaderType::kCheckAll) const;
   bool AllowWorkerContextFromSource(const KURL&) const;
 
-  bool AllowTrustedTypePolicy(const String& policy_name,
-                              bool is_duplicate) const;
+  bool AllowTrustedTypePolicy(
+      const String& policy_name,
+      bool is_duplicate,
+      AllowTrustedTypePolicyDetails& violation_details) const;
 
   // Passing 'String()' into the |nonce| arguments in the following methods
   // represents an unnonced resource load.
