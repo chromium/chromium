@@ -1778,6 +1778,47 @@
             ]
         }
     ],
+    "ContextMenuSearchWithGoogleLens": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "DirectIntentEnabled_20201026",
+                    "params": {
+                        "disableOnIncognito": "true",
+                        "useDirectIntent": "true"
+                    },
+                    "enable_features": [
+                        "ContextMenuSearchWithGoogleLens"
+                    ]
+                }
+            ]
+        }
+    ],
+    "ContextMenuShopWithGoogleLens": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledWithTextShopSimilarProducts_20201022",
+                    "params": {
+                        "disableOnIncognito": "true",
+                        "lensShopVariation": "ShopSimilarProducts",
+                        "minAgsaVersionNameForShopping": "11.17"
+                    },
+                    "enable_features": [
+                        "ContextMenuEnableLensShoppingAllowlist",
+                        "ContextMenuSearchAndShopWithGoogleLens",
+                        "ContextMenuShopWithGoogleLens"
+                    ]
+                }
+            ]
+        }
+    ],
     "ContextualSearch": [
         {
             "platforms": [
@@ -3037,28 +3078,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "GlobalMediaControlsPictureInPicture"
-                    ]
-                }
-            ]
-        }
-    ],
-    "GoogleLensShoppingSupportedBrowserVersionsMultiArm": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledWithTextShopSimilarProducts",
-                    "params": {
-                        "lensShopVariation": "ShopSimilarProducts",
-                        "minAgsaVersionNameForShopping": "11.17"
-                    },
-                    "enable_features": [
-                        "ContextMenuEnableLensShoppingAllowlist",
-                        "ContextMenuSearchAndShopWithGoogleLens",
-                        "ContextMenuSearchWithGoogleLens",
-                        "ContextMenuShopWithGoogleLens"
                     ]
                 }
             ]
