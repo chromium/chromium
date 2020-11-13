@@ -52,8 +52,14 @@ class TabAddedRemovedObserver : public TabStripModelObserver {
   base::RunLoop loop_;
 };
 
+// Flaky on Mac: https://crbug.com/1143762:
+#if defined(OS_MAC)
+#define MAYBE_AutoCloseTabOnNonWebProtocolNavigation DISABLED_AutoCloseTabOnNonWebProtocolNavigation
+#else
+#define MAYBE_AutoCloseTabOnNonWebProtocolNavigation AutoCloseTabOnNonWebProtocolNavigation
+#endif
 IN_PROC_BROWSER_TEST_F(ExternalProtocolHandlerBrowserTest,
-                       AutoCloseTabOnNonWebProtocolNavigation) {
+                       MAYBE_AutoCloseTabOnNonWebProtocolNavigation) {
 #if defined(OS_WIN)
   // On Win 7 the protocol is registered to be handled by Chrome and thus never
   // reaches the ExternalProtocolHandler so we skip the test. For
