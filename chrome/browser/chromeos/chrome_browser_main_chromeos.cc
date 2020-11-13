@@ -1134,7 +1134,8 @@ void ChromeBrowserMainPartsChromeos::PostMainMessageLoopRun() {
 
   assistant_state_client_.reset();
 
-  ash::Shell::Get()->RemovePreTargetHandler(MagnificationManager::Get());
+  if (pre_profile_init_called_)
+    ash::Shell::Get()->RemovePreTargetHandler(MagnificationManager::Get());
 
   // Unregister CrosSettings observers before CrosSettings is destroyed.
   shutdown_policy_forwarder_.reset();
