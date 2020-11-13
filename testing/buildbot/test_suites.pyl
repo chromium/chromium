@@ -436,7 +436,6 @@
           'idempotent': False,  # https://crbug.com/923426#c27
         },
       },
-      'cros_browser_sanity_test': {},
       'disk_usage_tast_test': {
         "args": [
           # Stripping gives more accurate disk usage data.

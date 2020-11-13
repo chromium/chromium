@@ -249,21 +249,6 @@ if (is_chromeos_device) {
     deploy_chrome = true
   }
 
-  # The sanity test's actual binary is baked into the OS image. All we need to
-  # do is build the test wrapper and build our own browser to push to the DUT
-  # before testing it.
-  generate_runner_script("cros_browser_sanity_test") {
-    testonly = true
-    test_exe = "cros_browser_sanity_test"
-    generated_script = "$root_build_dir/bin/run_cros_browser_sanity_test"
-    runtime_deps_file = "$root_out_dir/cros_browser_sanity_test.runtime_deps"
-
-    data_deps = [
-      ":cros_chrome_deploy",
-      "//:chromiumos_preflight",  # Builds the browser.
-    ]
-  }
-
   tast_test("chrome_login_tast_tests") {
     tast_tests = [
       "ui.ChromeLogin",

@@ -41,9 +41,6 @@ CHROMITE_PATH = os.path.abspath(
 CROS_RUN_TEST_PATH = os.path.abspath(
     os.path.join(CHROMITE_PATH, 'bin', 'cros_run_test'))
 
-# GN target that corresponds to the cros browser sanity test.
-SANITY_TEST_TARGET = 'cros_browser_sanity_test'
-
 # This is a special hostname that resolves to a different DUT in the lab
 # depending on which lab machine you're on.
 LAB_DUT_HOSTNAME = 'variable_chromeos_device_hostname'
@@ -603,70 +600,6 @@ class GTestTest(RemoteTest):
       os.remove(self._on_device_script)
 
 
-class BrowserSanityTest(RemoteTest):
-
-  def __init__(self, args, unknown_args):
-    super(BrowserSanityTest, self).__init__(args, unknown_args)
-
-    # 10 min should be enough time for the sanity test to pass.
-    self._retries = 1
-    self._timeout = 600
-
-  @property
-  def suite_name(self):
-    return SANITY_TEST_TARGET
-
-  def build_test_command(self):
-    if '--gtest_filter=%s' % SANITY_TEST_TARGET in self._additional_args:
-      logging.info('GTest filtering not supported for the sanity test. The '
-                   '--gtest_filter arg will be ignored.')
-      self._additional_args.remove('--gtest_filter=%s' % SANITY_TEST_TARGET)
-    if any(arg.startswith('--gtest_repeat') for arg in self._additional_args):
-      logging.info(
-          '--gtest_repeat not supported for sanity test. The arg will be '
-          'ignored.')
-      self._additional_args = [
-          arg for arg in self._additional_args
-          if not arg.startswith('--gtest_repeat')
-      ]
-
-    if self._additional_args:
-      logging.error(
-          'Sanity test should not have additional args: These will be '
-          'ignored: %s', self._additional_args)
-
-    # VMs don't have the disk space for an unstripped version of Chrome
-    # instrumented for code coverage, so only strip in that case.
-    if not self._use_vm or not os.environ.get('LLVM_PROFILE_FILE'):
-      self._test_cmd.append('--nostrip')
-
-    device_test_script_contents = self.BASIC_SHELL_SCRIPT[:]
-    if self._llvm_profile_var:
-      device_test_script_contents += [
-          'echo "LLVM_PROFILE_FILE=%s" >> /etc/chrome_dev.conf' %
-          (self._llvm_profile_var)
-      ]
-
-    # vm_sanity.py is the sanity test, which is baked into the device image.
-    device_test_script_contents.append('/usr/local/autotest/bin/vm_sanity.py')
-
-    self._on_device_script = self.write_test_script_to_disk(
-        device_test_script_contents)
-
-    self._test_cmd += [
-        '--files',
-        os.path.relpath(self._on_device_script),
-        # The sanity test smoke-checks the system browser, so deploy our
-        # locally-built chrome to the device before testing.
-        '--deploy',
-        '--mount',
-        '--build-dir',
-        os.path.relpath(self._path_to_outdir, CHROMIUM_SRC_PATH),
-        '--',
-        './' + os.path.relpath(self._on_device_script, self._path_to_outdir)
-    ]
-
-
 def device_test(args, unknown_args):
   # cros_run_test has trouble with relative paths that go up directories,
   # so cd to src/, which should be the root of all data deps.
@@ -677,8 +610,6 @@ def device_test(args, unknown_args):
   # fix to https://github.com/PyCQA/pylint/issues/710.
   if args.test_type == 'tast':
     test = TastTest(args, unknown_args)
-  elif args.test_exe == SANITY_TEST_TARGET:
-    test = BrowserSanityTest(args, unknown_args)
   else:
     test = GTestTest(args, unknown_args)
 
@@ -849,12 +780,7 @@ def main():
       '--test-exe',
       type=str,
       required=True,
-      help='Path to test executable to run inside the device. If the value is '
-      '%s, the sanity test that ships with the device image runs instead. '
-      'This test smokes-check the system browser (eg: loads a simple '
-      'webpage, executes some javascript), so a fully-built Chrome binary '
-      'that can get deployed to the device is expected to be available in '
-      'the out-dir.' % SANITY_TEST_TARGET)
+      help='Path to test executable to run inside the device.')
 
   # GTest args. Some are passed down to the test binary in the device. Others
   # are parsed here since they might need tweaking or special handling.
