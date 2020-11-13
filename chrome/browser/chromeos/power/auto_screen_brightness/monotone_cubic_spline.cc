@@ -32,7 +32,6 @@ enum class InvalidCurveReason {
 void LogError(InvalidCurveReason reason) {
   base::UmaHistogramEnumeration("AutoScreenBrightness.InvalidCurveReason",
                                 reason);
-  VLOG(1) << "ABCurve invalid curve: " << static_cast<int>(reason);
 }
 
 bool IsIncreasing(const std::vector<double>& data, bool is_strict) {

@@ -130,7 +130,6 @@ void Adapter::OnAmbientLightUpdated(int lux) {
   }
 
   if (now - lid_reopen_time_ < lid_open_delay_time_) {
-    VLOG(1) << "ABAdapter ALS ignored soon after lid-reopened";
     return;
   }
 
@@ -201,10 +200,6 @@ void Adapter::OnUserBrightnessChanged(double old_brightness_percent,
     const std::string log_als =
         log_als_avg_stddev ? base::StringPrintf("%.4f", log_als_avg_stddev->avg)
                            : "";
-    VLOG(1) << "ABAdapter user brightness change: "
-            << "brightness=" << FormatToPrint(old_brightness_percent) << "->"
-            << FormatToPrint(new_brightness_percent) << " log_als=" << log_als;
-
     OnBrightnessChanged(
         *first_recent_user_brightness_request_time, new_brightness_percent,
         log_als_avg_stddev ? base::Optional<double>(log_als_avg_stddev->avg)
@@ -262,7 +257,6 @@ void Adapter::OnModelTrained(const MonotoneCubicSpline& brightness_curve) {
   model_.personal_curve = brightness_curve;
   ++model_.iteration_count;
   new_model_arrived_ = true;
-  VLOG(1) << "ABAdapter new model arrived";
 }
 
 void Adapter::OnModelInitialized(const Model& model) {
@@ -301,9 +295,6 @@ void Adapter::SuspendDone(const base::TimeDelta& /* sleep_duration */) {
 
   if (params_.user_adjustment_effect == UserAdjustmentEffect::kPauseAuto)
     adapter_disabled_by_user_adjustment_ = false;
-
-  VLOG(1) << "ABAdapter suspend done with "
-          << (new_model_arrived_ ? "new" : "no new") << " model";
 }
 
 void Adapter::LidEventReceived(chromeos::PowerManagerClient::LidState state,
@@ -312,7 +303,6 @@ void Adapter::LidEventReceived(chromeos::PowerManagerClient::LidState state,
   if (!*is_lid_closed_) {
     lid_reopen_time_ = tick_clock_->NowTicks();
     lid_closed_message_reported_ = false;
-    VLOG(1) << "ABAdapter Adapter received lid-reopened event";
     return;
   }
 
@@ -440,8 +430,6 @@ void Adapter::InitParams(const ModelConfig& model_config) {
 
   UMA_HISTOGRAM_ENUMERATION("AutoScreenBrightness.UserAdjustmentEffect",
                             params_.user_adjustment_effect);
-  VLOG(1) << "ABAdapter user adjustment effect: "
-          << static_cast<int>(params_.user_adjustment_effect);
 }
 
 void Adapter::UpdateStatus() {
@@ -667,9 +655,6 @@ void Adapter::AdjustBrightness(BrightnessChangeCause cause,
   const double brightness = GetBrightnessBasedOnAmbientLogLux(log_als_avg);
   if (current_brightness_ &&
       std::abs(brightness - *current_brightness_) < kTol) {
-    VLOG(1) << "ABAdapter model brightness change canceled: "
-            << "brightness=" << FormatToPrint(*current_brightness_) + "->"
-            << FormatToPrint(brightness);
     return;
   }
 
@@ -709,12 +694,8 @@ double Adapter::GetBrightnessBasedOnAmbientLogLux(
   DCHECK_EQ(adapter_status_, Status::kSuccess);
   // We use the latest curve available.
   if (model_.personal_curve) {
-    VLOG(1) << "ABAdapter using personal curve for brightness change: \n"
-            << model_.personal_curve->ToString();
     return model_.personal_curve->Interpolate(ambient_log_lux);
   }
-  VLOG(1) << "ABAdapter using global curve for brightness change: \n"
-          << model_.global_curve->ToString();
   return model_.global_curve->Interpolate(ambient_log_lux);
 }
 
