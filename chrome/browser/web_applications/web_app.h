@@ -212,12 +212,15 @@ class WebApp {
   void SetRunOnOsLoginMode(RunOnOsLoginMode mode);
   void SetSyncFallbackData(SyncFallbackData sync_fallback_data);
 
+  // For logging and debug purposes.
+  bool operator==(const WebApp&) const;
+  bool operator!=(const WebApp&) const;
+
  private:
   using Sources = std::bitset<Source::kMaxValue + 1>;
   bool HasAnySpecifiedSourcesAndNoOtherSources(Sources specified_sources) const;
 
   friend class WebAppDatabase;
-  friend bool operator==(const WebApp&, const WebApp&);
   friend std::ostream& operator<<(std::ostream&, const WebApp&);
 
   AppId app_id_;
@@ -271,9 +274,6 @@ bool operator==(const WebApp::SyncFallbackData& sync_fallback_data1,
                 const WebApp::SyncFallbackData& sync_fallback_data2);
 bool operator!=(const WebApp::SyncFallbackData& sync_fallback_data1,
                 const WebApp::SyncFallbackData& sync_fallback_data2);
-
-bool operator==(const WebApp& app1, const WebApp& app2);
-bool operator!=(const WebApp& app1, const WebApp& app2);
 
 }  // namespace web_app
 

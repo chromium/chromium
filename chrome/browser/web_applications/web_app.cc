@@ -378,7 +378,7 @@ bool operator!=(const WebApp::SyncFallbackData& sync_fallback_data1,
   return !(sync_fallback_data1 == sync_fallback_data2);
 }
 
-bool operator==(const WebApp& app1, const WebApp& app2) {
+bool WebApp::operator==(const WebApp& other) const {
   auto AsTuple = [](const WebApp& app) {
     // Keep in order declared in web_app.h.
     return std::tie(
@@ -420,11 +420,11 @@ bool operator==(const WebApp& app1, const WebApp& app2) {
         // clang-format on
     );
   };
-  return AsTuple(app1) == AsTuple(app2);
+  return AsTuple(*this) == AsTuple(other);
 }
 
-bool operator!=(const WebApp& app1, const WebApp& app2) {
-  return !(app1 == app2);
+bool WebApp::operator!=(const WebApp& other) const {
+  return !(*this == other);
 }
 
 }  // namespace web_app
