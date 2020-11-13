@@ -25,7 +25,7 @@ TOP_URL = [
     'live.com',
     'microsoft.com',
     'espn.com',
-    'twitch.tv',
+    'www.indeed.com',
     'blogger.com',
     'instagram.com',
     'mozilla.org',
@@ -46,7 +46,7 @@ TOP_URL = [
     'github.com',
     'vimeo.com',
     'quizlet.com',
-    'tmall.com',
+    'cnbc.com',
     'imgur.com',
     'wellsfargo.com',
     'hulu.com',
@@ -77,7 +77,6 @@ class TabSearchStory(page.Page):
     for url in url_list[1:]:
       new_tab = tabs.New()
       new_tab.Navigate('https://' + url)
-      action_runner.Wait(0.2)
     if self.WAIT_FOR_NETWORK_QUIESCENCE:
       for i, url in enumerate(url_list):
         try:
@@ -171,6 +170,37 @@ class TabSearchStoryTop100(TabSearchStory):
   URL_LIST = TOP_URL[:50] * 2
   URL = 'https://' + URL_LIST[0]
   WAIT_FOR_NETWORK_QUIESCENCE = True
+
+
+class TabSearchStoryTop10Loading(TabSearchStory):
+  NAME = 'tab_search:top10:loading:2020'
+  URL_LIST = TOP_URL[:10]
+  URL = 'https://' + URL_LIST[0]
+  WAIT_FOR_NETWORK_QUIESCENCE = False
+
+
+class TabSearchStoryTop50Loading(TabSearchStory):
+  NAME = 'tab_search:top50:loading:2020'
+  URL_LIST = TOP_URL[:50]
+  URL = 'https://' + URL_LIST[0]
+  WAIT_FOR_NETWORK_QUIESCENCE = False
+
+
+class TabSearchStoryTop100Loading(TabSearchStory):
+  NAME = 'tab_search:top100:loading:2020'
+  URL_LIST = TOP_URL[:50] * 2
+  URL = 'https://' + URL_LIST[0]
+  WAIT_FOR_NETWORK_QUIESCENCE = False
+
+
+class TabSearchStoryCloseAndOpen(TabSearchStory):
+  NAME = 'tab_search:close_and_open:2020'
+  URL_LIST = TOP_URL[:10]
+  URL = 'https://' + URL_LIST[0]
+  WAIT_FOR_NETWORK_QUIESCENCE = True
+
+  def InteractWithPage(self, action_runner):
+    self.CloseAndOpen(action_runner)
 
 
 SCROLL_ELEMENT_FUNCTION = '''
