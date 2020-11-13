@@ -545,9 +545,13 @@
               </div>
               <div class="volume-warning" id="offline-info-banner" hidden>
                 <div class="info-icon"></div>
-                <div class="body2-primary">$i18n{OFFLINE_BANNER_MESSAGE}</div>
+                <div id="offline-info-banner-text" class="body2-primary">
+                  $i18n{OFFLINE_BANNER_MESSAGE}
+                </div>
                 <div class="button-group">
                   <cr-button id="offline-learn-more" class="banner-close text-button"
+                             aria-labelledby="offline-info-banner-text"
+                             aria-describedby="offline-learn-more"
                              aria-disabled="false" role="button" tabindex="0">
                     $i18n{DRIVE_LEARN_MORE}
                   </cr-button>
