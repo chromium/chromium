@@ -82,6 +82,9 @@ STACK_ALIGN int DelayedLooperCallback(int fd, int events, void* data) {
   return 1;  // continue listening for events
 }
 
+// A bit added to the |non_delayed_fd_| to keep it signaled when we yield to
+// native tasks below.
+constexpr uint64_t kTryNativeTasksBeforeIdleBit = uint64_t(1) << 32;
 }  // namespace
 
 MessagePumpForUI::MessagePumpForUI()
@@ -150,7 +153,10 @@ void MessagePumpForUI::OnDelayedLooperCallback() {
   // the timerfd, and they both run on the same thread as this callback, so
   // there are no obvious timing or multi-threading related issues.
   DPCHECK(ret >= 0 || errno == EAGAIN);
+  DoDelayedLooperWork();
+}
 
+void MessagePumpForUI::DoDelayedLooperWork() {
   delayed_scheduled_time_.reset();
 
   Delegate::NextWorkInfo next_work_info = delegate_->DoWork();
@@ -182,10 +188,6 @@ void MessagePumpForUI::OnNonDelayedLooperCallback() {
   if (ShouldQuit())
     return;
 
-  // A bit added to the |non_delayed_fd_| to keep it signaled when we yield to
-  // native tasks below.
-  constexpr uint64_t kTryNativeTasksBeforeIdleBit = uint64_t(1) << 32;
-
   // We're about to process all the work requested by ScheduleWork().
   // MessagePump users are expected to do their best not to invoke
   // ScheduleWork() again before DoWork() returns a non-immediate
@@ -193,15 +195,18 @@ void MessagePumpForUI::OnNonDelayedLooperCallback() {
   // resetting its contents to 0 should be okay. The value currently stored
   // should be greater than 0 since work having been scheduled is the reason
   // we're here. See http://man7.org/linux/man-pages/man2/eventfd.2.html
-  uint64_t pre_work_value = 0;
-  int ret = read(non_delayed_fd_, &pre_work_value, sizeof(pre_work_value));
+  uint64_t value = 0;
+  int ret = read(non_delayed_fd_, &value, sizeof(value));
   DPCHECK(ret >= 0);
-  DCHECK_GT(pre_work_value, 0U);
+  DCHECK_GT(value, 0U);
+  bool do_idle_work = value == kTryNativeTasksBeforeIdleBit;
+  DoNonDelayedLooperWork(do_idle_work);
+}
 
-  // Note: We can't skip DoWork() even if
-  // |pre_work_value == kTryNativeTasksBeforeIdleBit| here (i.e. no additional
-  // ScheduleWork() since yielding to native) as delayed tasks might have come
-  // in and we need to re-sample |next_work_info|.
+void MessagePumpForUI::DoNonDelayedLooperWork(bool do_idle_work) {
+  // Note: We can't skip DoWork() even if |do_idle_work| is true here (i.e. no
+  // additional ScheduleWork() since yielding to native) as delayed tasks might
+  // have come in and we need to re-sample |next_work_info|.
 
   // Runs all application tasks scheduled to run.
   Delegate::NextWorkInfo next_work_info;
@@ -220,15 +225,8 @@ void MessagePumpForUI::OnNonDelayedLooperCallback() {
 
   // Before declaring this loop idle, yield to native tasks and arrange to be
   // called again (unless we're already in that second call).
-  if (pre_work_value != kTryNativeTasksBeforeIdleBit) {
-    // Note: This write() is racing with potential ScheduleWork() calls. This is
-    // fine as write() is adding this bit, not overwriting the existing value,
-    // and as such racing ScheduleWork() calls would merely add 1 to the lower
-    // bits and we would find |pre_work_value != kTryNativeTasksBeforeIdleBit|
-    // in the next cycle again, retrying this.
-    ret = write(non_delayed_fd_, &kTryNativeTasksBeforeIdleBit,
-                sizeof(kTryNativeTasksBeforeIdleBit));
-    DPCHECK(ret >= 0);
+  if (!do_idle_work) {
+    ScheduleWorkInternal(/*do_idle_work=*/true);
     return;
   }
 
@@ -241,7 +239,7 @@ void MessagePumpForUI::OnNonDelayedLooperCallback() {
   // SchedulerWork() but still keep the system non-idle (e.g., the Java Handler
   // API). It would be better to add an API to query the presence of native
   // tasks instead of relying on yielding once + kTryNativeTasksBeforeIdleBit.
-  DCHECK_EQ(pre_work_value, kTryNativeTasksBeforeIdleBit);
+  DCHECK(do_idle_work);
 
   if (ShouldQuit())
     return;
@@ -309,16 +307,26 @@ void MessagePumpForUI::Quit() {
 }
 
 void MessagePumpForUI::ScheduleWork() {
-  // Write (add) 1 to the eventfd. This tells the Looper to wake up and call our
-  // callback, allowing us to run tasks. This also allows us to detect, when we
-  // clear the fd, whether additional work was scheduled after we finished
-  // performing work, but before we cleared the fd, as we'll read back >=2
-  // instead of 1 in that case.
-  // See the eventfd man pages
+  ScheduleWorkInternal(/*do_idle_work=*/false);
+}
+
+void MessagePumpForUI::ScheduleWorkInternal(bool do_idle_work) {
+  // Write (add) |value| to the eventfd. This tells the Looper to wake up and
+  // call our callback, allowing us to run tasks. This also allows us to detect,
+  // when we clear the fd, whether additional work was scheduled after we
+  // finished performing work, but before we cleared the fd, as we'll read back
+  // >=2 instead of 1 in that case. See the eventfd man pages
   // (http://man7.org/linux/man-pages/man2/eventfd.2.html) for details on how
   // the read and write APIs for this file descriptor work, specifically without
   // EFD_SEMAPHORE.
-  uint64_t value = 1;
+  // Note: Calls with |do_idle_work| set to true may race with potential calls
+  // where the parameter is false. This is fine as write() is adding |value|,
+  // not overwriting the existing value, and as such racing calls would merely
+  // have their values added together. Since idle work is only executed when the
+  // value read equals kTryNativeTasksBeforeIdleBit, a race would prevent idle
+  // work from being run and trigger another call to this method with
+  // |do_idle_work| set to true.
+  uint64_t value = do_idle_work ? kTryNativeTasksBeforeIdleBit : 1;
   int ret = write(non_delayed_fd_, &value, sizeof(value));
   DPCHECK(ret >= 0);
 }
@@ -350,6 +358,14 @@ void MessagePumpForUI::QuitWhenIdle(base::OnceClosure callback) {
   run_loop_->QuitWhenIdle();
   // Pump the loop in case we're already idle.
   ScheduleWork();
+}
+
+MessagePump::Delegate* MessagePumpForUI::SetDelegate(Delegate* delegate) {
+  return std::exchange(delegate_, delegate);
+}
+
+bool MessagePumpForUI::SetQuit(bool quit) {
+  return std::exchange(quit_, quit);
 }
 
 }  // namespace base

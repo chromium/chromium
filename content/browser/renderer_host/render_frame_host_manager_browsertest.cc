@@ -7577,17 +7577,8 @@ IN_PROC_BROWSER_TEST_P(ProactivelySwapBrowsingInstancesSameSiteTest,
       EvalJs(main_frame_2, "localStorage.getItem('visibilitychange_storage')"));
 }
 
-// Calling script from RenderFrameHostChanged is flaky on Android, so disable
-// the test for now.
-// TODO(crbug.com/1110497): Enable the test.
-#if defined(OS_ANDROID)
-#define MAYBE_NavigationAfterPagehideHistogram \
-  DISABLED_NavigationAfterPagehideHistogram
-#else
-#define MAYBE_NavigationAfterPagehideHistogram NavigationAfterPagehideHistogram
-#endif
 IN_PROC_BROWSER_TEST_P(ProactivelySwapBrowsingInstancesSameSiteTest,
-                       MAYBE_NavigationAfterPagehideHistogram) {
+                       NavigationAfterPagehideHistogram) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url_a1(embedded_test_server()->GetURL("a.com", "/title1.html"));
   GURL url_a2(embedded_test_server()->GetURL("a.com", "/title2.html"));
@@ -7613,18 +7604,8 @@ IN_PROC_BROWSER_TEST_P(ProactivelySwapBrowsingInstancesSameSiteTest,
                     ActionAfterPagehide::kNavigation, 1);
 }
 
-// Calling script from RenderFrameHostChanged is flaky on Android, so disable
-// the test for now.
-// TODO(crbug.com/1110497): Enable the test.
-#if defined(OS_ANDROID)
-#define MAYBE_PostMessageAfterPagehideHistogram \
-  DISABLED_PostMessageAfterPagehideHistogram
-#else
-#define MAYBE_PostMessageAfterPagehideHistogram \
-  PostMessageAfterPagehideHistogram
-#endif
 IN_PROC_BROWSER_TEST_P(ProactivelySwapBrowsingInstancesSameSiteTest,
-                       MAYBE_PostMessageAfterPagehideHistogram) {
+                       PostMessageAfterPagehideHistogram) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url_a1(embedded_test_server()->GetURL("a.com", "/title1.html"));
   GURL url_a2(embedded_test_server()->GetURL("a.com", "/title2.html"));
@@ -7678,18 +7659,8 @@ IN_PROC_BROWSER_TEST_P(ProactivelySwapBrowsingInstancesSameSiteTest,
   }
 }
 
-// Calling script from RenderFrameHostChanged is flaky on Android, so disable
-// the test for now.
-// TODO(crbug.com/1110497): Enable the test.
-#if defined(OS_ANDROID)
-#define MAYBE_PostMessageAfterPagehideHistogramSubframe \
-  DISABLED_PostMessageAfterPagehideHistogramSubframe
-#else
-#define MAYBE_PostMessageAfterPagehideHistogramSubframe \
-  PostMessageAfterPagehideHistogramSubframe
-#endif
 IN_PROC_BROWSER_TEST_P(ProactivelySwapBrowsingInstancesSameSiteTest,
-                       MAYBE_PostMessageAfterPagehideHistogramSubframe) {
+                       PostMessageAfterPagehideHistogramSubframe) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url_a1(embedded_test_server()->GetURL(
       "a.com", "/cross_site_iframe_factory.html?a(a)"));
@@ -7759,18 +7730,8 @@ IN_PROC_BROWSER_TEST_P(ProactivelySwapBrowsingInstancesSameSiteTest,
   }
 }
 
-// Calling script from RenderFrameHostChanged is flaky on Android, so disable
-// the test for now.
-// TODO(crbug.com/1110497): Enable the test.
-#if defined(OS_ANDROID)
-#define MAYBE_StorageModificationAfterPagehideHistogram \
-  DISABLED_StorageModificationAfterPagehideHistogram
-#else
-#define MAYBE_StorageModificationAfterPagehideHistogram \
-  StorageModificationAfterPagehideHistogram
-#endif
 IN_PROC_BROWSER_TEST_P(ProactivelySwapBrowsingInstancesSameSiteTest,
-                       MAYBE_StorageModificationAfterPagehideHistogram) {
+                       StorageModificationAfterPagehideHistogram) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url_a1(embedded_test_server()->GetURL("a.com", "/title1.html"));
   GURL url_a2(embedded_test_server()->GetURL("a.com", "/title2.html"));
@@ -8589,22 +8550,13 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
   SetBrowserClientForTesting(old_client);
 }
 
-// TODO(crbug.com/1110497): flaky on Android builders since 2020-07-28.
-#if defined(OS_ANDROID)
-#define MAYBE_NavigationRacesWithCommitInUnassignedSiteInstance \
-  DISABLED_NavigationRacesWithCommitInUnassignedSiteInstance
-#else
-#define MAYBE_NavigationRacesWithCommitInUnassignedSiteInstance \
-  NavigationRacesWithCommitInUnassignedSiteInstance
-#endif
 // Check that when a navigation to a URL that doesn't require assigning a site
 // URL is in progress, another navigation can't reuse the same process in the
 // meantime.  Such reuse previously led to a renderer kill when the siteless
 // URL later committed; a real-world example of the siteless URL was
 // chrome-native://newtab.  See https://crbug.com/970046.
-IN_PROC_BROWSER_TEST_P(
-    RenderFrameHostManagerTest,
-    MAYBE_NavigationRacesWithCommitInUnassignedSiteInstance) {
+IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
+                       NavigationRacesWithCommitInUnassignedSiteInstance) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // Set up a URL for which ShouldAssignSiteForURL will return false.  The
@@ -8781,14 +8733,6 @@ class RenderFrameHostManagerDefaultProcessTest
   DISALLOW_COPY_AND_ASSIGN(RenderFrameHostManagerDefaultProcessTest);
 };
 
-// TODO(crbug.com/1110497): flaky on Android builders since 2020-07-28.
-#if defined(OS_ANDROID)
-#define MAYBE_NavigationRacesWithSitelessCommitInDefaultProcess \
-  DISABLED_NavigationRacesWithSitelessCommitInDefaultProcess
-#else
-#define MAYBE_NavigationRacesWithSitelessCommitInDefaultProcess \
-  NavigationRacesWithSitelessCommitInDefaultProcess
-#endif
 // Ensure that the default process can be used for URLs that don't assign a site
 // to the SiteInstance, when Site Isolation is not enabled.
 // 1. Visit foo.com.
@@ -8798,9 +8742,8 @@ class RenderFrameHostManagerDefaultProcessTest
 // https://crbug.com/838348.)
 // All navigations should use the default process, and we should not crash.
 // See https://crbug.com/977956.
-IN_PROC_BROWSER_TEST_P(
-    RenderFrameHostManagerDefaultProcessTest,
-    MAYBE_NavigationRacesWithSitelessCommitInDefaultProcess) {
+IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerDefaultProcessTest,
+                       NavigationRacesWithSitelessCommitInDefaultProcess) {
   // This test is designed to run without strict site isolation.
   if (AreAllSitesIsolatedForTesting())
     return;

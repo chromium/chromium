@@ -96,8 +96,7 @@ class MessagePumpForUIStub : public base::MessagePumpForUI {
     if (g_state->run_depth > 1) {
       RunNested(delegate);
     } else {
-      ResetShouldQuit();
-
+      SetQuit(false);
       SetDelegate(delegate);
 
       // Pump the loop once in case we're starting off idle as ALooper_pollOnce
