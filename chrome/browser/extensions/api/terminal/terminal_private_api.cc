@@ -482,6 +482,8 @@ TerminalPrivateCloseTerminalProcessFunction::Run() {
     LOG(ERROR) << "invalid terminal id " << params->id;
     return RespondNow(Error("invalid terminal id"));
   }
+  TerminalTabHelper::FromWebContents(GetSenderWebContents())
+      ->RemoveTerminalId(params->id);
 
   // Registry lives on its own task runner.
   chromeos::ProcessProxyRegistry::GetTaskRunner()->PostTask(
