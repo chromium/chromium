@@ -47,6 +47,8 @@ extern const char kOmniboxGeolocationLastAuthorizationAlertVersion[];
 
 extern const char kIosUserZoomMultipliers[];
 
+extern const char kIncognitoAuthenticationSetting[];
+
 }  // namespace prefs
 
 #endif  // IOS_CHROME_BROWSER_PREF_NAMES_H_

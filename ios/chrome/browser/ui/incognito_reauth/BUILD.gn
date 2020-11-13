@@ -1,0 +1,52 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//ios/build/chrome_build.gni")
+
+source_set("incognito_reauth_scene_agent") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "incognito_reauth_scene_agent.h",
+    "incognito_reauth_scene_agent.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/pref_registry",
+    "//components/prefs",
+    "//ios/chrome/browser",
+    "//ios/chrome/browser:pref_names",
+    "//ios/chrome/browser/ui:feature_flags",
+    "//ios/chrome/browser/ui/main:browser_interface_provider",
+    "//ios/chrome/browser/ui/main:scene_state_header",
+    "//ios/chrome/browser/ui/util:multiwindow_util",
+    "//ios/chrome/browser/web_state_list",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("unit_tests") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+  sources = [ "incognito_reauth_scene_agent_unittest.mm" ]
+  deps = [
+    ":incognito_reauth_scene_agent",
+    "//base",
+    "//base/test:test_support",
+    "//components/prefs:test_support",
+    "//ios/chrome/browser:pref_names",
+    "//ios/chrome/browser/browser_state:test_support",
+    "//ios/chrome/browser/main:test_support",
+    "//ios/chrome/browser/ui:feature_flags",
+    "//ios/chrome/browser/ui/browser_view",
+    "//ios/chrome/browser/ui/main:browser_interface_provider",
+    "//ios/chrome/browser/ui/main/test",
+    "//ios/chrome/browser/web_state_list",
+    "//ios/chrome/browser/web_state_list:test_support",
+    "//ios/chrome/browser/web_state_list:web_state_list",
+    "//ios/chrome/test:block_cleanup_test",
+    "//ios/web/public/test",
+    "//testing/gtest",
+    "//third_party/ocmock",
+  ]
+}

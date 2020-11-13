@@ -67,6 +67,7 @@
 #import "ios/chrome/browser/ui/bookmarks/bookmark_path_cache.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_utils_ios.h"
 #import "ios/chrome/browser/ui/first_run/location_permissions_field_trial.h"
+#import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_scene_agent.h"
 #include "ios/chrome/browser/voice/voice_search_prefs_registration.h"
 #import "ios/chrome/browser/web/font_size_tab_helper.h"
 #include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
@@ -126,6 +127,7 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
 
   [OmniboxGeolocationLocalState registerLocalState:registry];
   [MemoryDebuggerManager registerLocalState:registry];
+  [IncognitoReauthSceneAgent registerLocalState:registry];
 
   registry->RegisterBooleanPref(prefs::kBrowsingDataMigrationHasBeenPossible,
                                 false);

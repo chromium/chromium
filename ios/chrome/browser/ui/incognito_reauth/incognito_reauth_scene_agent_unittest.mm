@@ -1,0 +1,179 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_scene_agent.h"
+
+#include "base/feature_list.h"
+#include "base/test/scoped_feature_list.h"
+#include "components/prefs/testing_pref_service.h"
+#import "ios/chrome/browser/main/test_browser.h"
+#include "ios/chrome/browser/pref_names.h"
+#import "ios/chrome/browser/ui/main/browser_interface_provider.h"
+#import "ios/chrome/browser/ui/main/test/stub_browser_interface_provider.h"
+#import "ios/chrome/browser/ui/ui_feature_flags.h"
+#import "ios/chrome/browser/web_state_list/fake_web_state_list_delegate.h"
+#import "ios/chrome/browser/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/web_state_list/web_state_opener.h"
+#import "ios/web/public/test/fakes/test_web_state.h"
+#include "testing/platform_test.h"
+#import "third_party/ocmock/OCMock/OCMock.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
+namespace {
+
+class IncognitoReauthSceneAgentTest : public PlatformTest {
+ public:
+  IncognitoReauthSceneAgentTest()
+      : scene_state_([[SceneState alloc] initWithAppState:nil]),
+        scene_state_mock_(OCMPartialMock(scene_state_)),
+        agent_([[IncognitoReauthSceneAgent alloc] init]) {
+    [scene_state_ addAgent:agent_];
+  }
+
+ protected:
+  // Returns a WebStateList with |tabs_count| WebStates.
+  std::unique_ptr<WebStateList> CreateWebStateList(int tabs_count) {
+    std::unique_ptr<WebStateList> web_state_list =
+        std::make_unique<WebStateList>(&web_state_list_delegate_);
+    for (int i = 0; i < tabs_count; ++i) {
+      web_state_list->InsertWebState(i, std::make_unique<web::TestWebState>(),
+                                     WebStateList::INSERT_FORCE_INDEX,
+                                     WebStateOpener());
+    }
+    return web_state_list;
+  }
+
+  void SetUpTestObjects(int tab_count, bool enable_flag, bool enable_pref) {
+    // Mock the feature flag.
+    feature_list_.InitWithFeatureState(kIncognitoAuthentication, enable_flag);
+
+    // Stub all calls to be able to mock the following:
+    // 1. sceneState.interfaceProvider.incognitoInterface
+    //            .browser->GetWebStateList()->count()
+    // 2. sceneState.interfaceProvider.hasIncognitoInterface
+    web_state_list_ = CreateWebStateList(tab_count);
+    test_browser_ = std::make_unique<TestBrowser>(/*BrowserState=*/nullptr,
+                                                  web_state_list_.get());
+
+    stub_browser_interface_provider_ =
+        [[StubBrowserInterfaceProvider alloc] init];
+    stub_browser_interface_provider_.incognitoInterface.browser =
+        test_browser_.get();
+
+    OCMStub([scene_state_mock_ interfaceProvider])
+        .andReturn(stub_browser_interface_provider_);
+
+    [IncognitoReauthSceneAgent registerLocalState:pref_service_.registry()];
+    agent_.localState = &pref_service_;
+    pref_service_.SetBoolean(prefs::kIncognitoAuthenticationSetting,
+                             enable_pref);
+  }
+
+  // The scene state that the agent works with.
+  SceneState* scene_state_;
+  // Partial mock for stubbing scene_state_'s methods
+  id scene_state_mock_;
+  // The tested agent
+  IncognitoReauthSceneAgent* agent_;
+  StubBrowserInterfaceProvider* stub_browser_interface_provider_;
+  std::unique_ptr<TestBrowser> test_browser_;
+  std::unique_ptr<WebStateList> web_state_list_;
+  TestingPrefServiceSimple pref_service_;
+  base::test::ScopedFeatureList feature_list_;
+  FakeWebStateListDelegate web_state_list_delegate_;
+};
+
+// TODO: add test that after successful auth, auth is not required
+// TODO: add test that after unsuccessful auth, auth is required
+
+// Test that when the feature pref is disabled, auth isn't required.
+TEST_F(IncognitoReauthSceneAgentTest, PrefDisabled) {
+  SetUpTestObjects(/*tab_count=*/1, /*enable_flag=*/true,
+                   /*enable_pref=*/false);
+
+  // Go foreground.
+  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+
+  EXPECT_FALSE(agent_.authenticationRequired);
+}
+
+// Test that when the feature flag is disabled, auth isn't required.
+TEST_F(IncognitoReauthSceneAgentTest, FlagDisabled) {
+  SetUpTestObjects(/*tab_count=*/1, /*enable_flag=*/false,
+                   /*enable_pref=*/true);
+
+  // Go foreground.
+  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+
+  EXPECT_FALSE(agent_.authenticationRequired);
+}
+
+// Test that when the feature is enabled, we're foregrounded with some incognito
+// content already present, auth is required
+TEST_F(IncognitoReauthSceneAgentTest, NeedsAuth) {
+  SetUpTestObjects(/*tab_count=*/1, /*enable_flag=*/true, /*enable_pref=*/true);
+
+  // Go foreground.
+  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+
+  EXPECT_TRUE(agent_.authenticationRequired);
+}
+
+// Test that when auth is required and is successfully performed, it's not
+// required anymore.
+TEST_F(IncognitoReauthSceneAgentTest, SuccessfulAuth) {
+  SetUpTestObjects(/*tab_count=*/1, /*enable_flag=*/true, /*enable_pref=*/true);
+
+  // Go foreground.
+  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+
+  EXPECT_TRUE(agent_.authenticationRequired);
+
+  [agent_ authenticateWithCompletion:^(BOOL result) {
+    EXPECT_TRUE(result);
+  }];
+
+  // Auth not required
+  EXPECT_FALSE(agent_.authenticationRequired);
+
+  // Auth required after backgrounding.
+  scene_state_.activationLevel = SceneActivationLevelBackground;
+  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+  EXPECT_TRUE(agent_.authenticationRequired);
+}
+
+// Test that when the feature is enabled, auth isn't required if we foreground
+// without any incognito tabs.
+TEST_F(IncognitoReauthSceneAgentTest, AuthNotRequiredWhenNoIncognitoTabs) {
+  SetUpTestObjects(/*tab_count=*/0, /*enable_flag=*/true, /*enable_pref=*/true);
+
+  // Go foreground.
+  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+
+  EXPECT_FALSE(agent_.authenticationRequired);
+}
+
+// Test that when the feature is enabled, we're foregrounded with some incognito
+// content already present, auth is required
+TEST_F(IncognitoReauthSceneAgentTest,
+       AuthNotRequiredWhenNoIncognitoTabsOnForeground) {
+  SetUpTestObjects(/*tab_count=*/0, /*enable_flag=*/true, /*enable_pref=*/true);
+
+  // Go foreground.
+  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+
+  EXPECT_FALSE(agent_.authenticationRequired);
+
+  // Open another tab.
+  web_state_list_->InsertWebState(0, std::make_unique<web::TestWebState>(),
+                                  WebStateList::INSERT_FORCE_INDEX,
+                                  WebStateOpener());
+
+  EXPECT_FALSE(agent_.authenticationRequired);
+}
+
+}  // namespace

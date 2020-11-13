@@ -21,4 +21,11 @@
   }
   return self;
 }
+
+#pragma mark - BrowserInterfaceProvider
+
+- (BOOL)hasIncognitoInterface {
+  return _incognitoInterface;
+}
+
 @end

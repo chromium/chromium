@@ -69,6 +69,8 @@ class ChromeBrowserState;
 @property(nonatomic, readonly) id<BrowserInterface> mainInterface;
 // The incognito interface. Its |incognito| property must be YES.
 @property(nonatomic, readonly) id<BrowserInterface> incognitoInterface;
+// YES iff |incognitoInterface| is already created.
+@property(nonatomic, assign, readonly) BOOL hasIncognitoInterface;
 
 @end
 

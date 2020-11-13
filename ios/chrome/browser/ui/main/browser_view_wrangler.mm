@@ -252,6 +252,10 @@
   return _incognitoInterface;
 }
 
+- (BOOL)hasIncognitoInterface {
+  return _incognitoInterface;
+}
+
 - (Browser*)mainBrowser {
   DCHECK(_mainBrowser.get())
       << "-createMainBrowser must be called before -mainBrowser is accessed.";

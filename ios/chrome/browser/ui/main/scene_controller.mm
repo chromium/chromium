@@ -73,6 +73,7 @@
 #import "ios/chrome/browser/ui/first_run/orientation_limiting_navigation_controller.h"
 #import "ios/chrome/browser/ui/first_run/welcome_to_chrome_view_controller.h"
 #include "ios/chrome/browser/ui/history/history_coordinator.h"
+#import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_scene_agent.h"
 #import "ios/chrome/browser/ui/main/browser_interface_provider.h"
 #import "ios/chrome/browser/ui/main/browser_view_wrangler.h"
 #import "ios/chrome/browser/ui/main/default_browser_scene_agent.h"
@@ -259,6 +260,7 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
     // Add agents.
     [_sceneState addAgent:[[UIBlockerSceneAgent alloc] init]];
     [_sceneState addAgent:[[IncognitoBlockerSceneAgent alloc] init]];
+    [_sceneState addAgent:[[IncognitoReauthSceneAgent alloc] init]];
   }
   return self;
 }

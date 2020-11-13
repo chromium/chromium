@@ -104,6 +104,7 @@ source_set("scene") {
     "//ios/chrome/browser/ui/first_run",
     "//ios/chrome/browser/ui/first_run:field_trial",
     "//ios/chrome/browser/ui/history",
+    "//ios/chrome/browser/ui/incognito_reauth:incognito_reauth_scene_agent",
     "//ios/chrome/browser/ui/settings:settings_root",
     "//ios/chrome/browser/ui/settings/sync",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid",
