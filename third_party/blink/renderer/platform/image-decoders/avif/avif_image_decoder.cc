@@ -575,6 +575,7 @@ void AVIFImageDecoder::Decode(size_t index) {
   buffer.SetPixelsChanged(true);
   buffer.SetHasAlpha(!!image->alphaPlane);
   buffer.SetStatus(ImageFrame::kFrameComplete);
+  PostDecodeProcessing(index);
 }
 
 bool AVIFImageDecoder::CanReusePreviousFrameBuffer(size_t index) const {
