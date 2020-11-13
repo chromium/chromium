@@ -113,7 +113,7 @@ class CONTENT_EXPORT DevToolsAgentHost
 
   // Starts remote debugging for browser target for the given fd=3
   // for reading and fd=4 for writing remote debugging messages.
-  static void StartRemoteDebuggingPipeHandler();
+  static void StartRemoteDebuggingPipeHandler(base::OnceClosure on_disconnect);
   static void StopRemoteDebuggingPipeHandler();
 
   // Observer is notified about changes in DevToolsAgentHosts.

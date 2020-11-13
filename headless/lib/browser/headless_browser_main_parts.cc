@@ -20,7 +20,7 @@ HeadlessBrowserMainParts::~HeadlessBrowserMainParts() = default;
 
 void HeadlessBrowserMainParts::PreMainMessageLoopRun() {
   if (browser_->options()->DevtoolsServerEnabled()) {
-    StartLocalDevToolsHttpHandler(browser_->options());
+    StartLocalDevToolsHttpHandler(browser_);
     devtools_http_handler_started_ = true;
   }
   browser_->PlatformInitialize();

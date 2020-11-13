@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_DEVTOOLS_DEVTOOLS_PIPE_HANDLER_H_
 #define CONTENT_BROWSER_DEVTOOLS_DEVTOOLS_PIPE_HANDLER_H_
 
+#include "base/callback.h"
 #include "base/containers/span.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
@@ -17,11 +18,11 @@ class PipeWriterBase;
 
 class DevToolsPipeHandler : public DevToolsAgentHostClient {
  public:
-  DevToolsPipeHandler();
+  explicit DevToolsPipeHandler(base::OnceClosure on_disconnect);
   ~DevToolsPipeHandler() override;
 
   void HandleMessage(std::vector<uint8_t> message);
-  void DetachFromTarget();
+  void OnDisconnect();
 
   // DevToolsAgentHostClient overrides
   void DispatchProtocolMessage(DevToolsAgentHost* agent_host,
@@ -40,6 +41,7 @@ class DevToolsPipeHandler : public DevToolsAgentHostClient {
   };
 
   ProtocolMode mode_;
+  base::OnceClosure on_disconnect_;
 
   std::unique_ptr<PipeReaderBase> pipe_reader_;
   std::unique_ptr<PipeWriterBase> pipe_writer_;

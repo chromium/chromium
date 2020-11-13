@@ -142,8 +142,12 @@ class PipeReaderBase : public PipeIOBase {
       bool had_error = size_read <= 0;
 #endif
       if (had_error) {
-        if (!shutting_down_.IsSet())
+        if (!shutting_down_.IsSet()) {
           LOG(ERROR) << "Connection terminated while reading from pipe";
+          GetUIThreadTaskRunner({})->PostTask(
+              FROM_HERE, base::BindOnce(&DevToolsPipeHandler::OnDisconnect,
+                                        devtools_handler_));
+        }
         return 0;
       }
       bytes_read += size_read;
@@ -341,8 +345,10 @@ class PipeReaderCBOR : public PipeReaderBase {
 
 // DevToolsPipeHandler ---------------------------------------------------
 
-DevToolsPipeHandler::DevToolsPipeHandler()
-    : read_fd_(kReadFD), write_fd_(kWriteFD) {
+DevToolsPipeHandler::DevToolsPipeHandler(base::OnceClosure on_disconnect)
+    : on_disconnect_(std::move(on_disconnect)),
+      read_fd_(kReadFD),
+      write_fd_(kWriteFD) {
   browser_target_ = DevToolsAgentHost::CreateForBrowser(
       nullptr, DevToolsAgentHost::CreateServerSocketCallback());
   browser_target_->AttachClient(this);
@@ -393,7 +399,10 @@ void DevToolsPipeHandler::HandleMessage(std::vector<uint8_t> message) {
     browser_target_->DispatchProtocolMessage(this, message);
 }
 
-void DevToolsPipeHandler::DetachFromTarget() {}
+void DevToolsPipeHandler::OnDisconnect() {
+  if (on_disconnect_)
+    std::move(on_disconnect_).Run();
+}
 
 void DevToolsPipeHandler::DispatchProtocolMessage(
     DevToolsAgentHost* agent_host,

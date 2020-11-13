@@ -29,9 +29,11 @@ void DevToolsAgentHost::StartRemoteDebuggingServer(
 }
 
 // static
-void DevToolsAgentHost::StartRemoteDebuggingPipeHandler() {
+void DevToolsAgentHost::StartRemoteDebuggingPipeHandler(
+    base::OnceClosure on_disconnect) {
   DevToolsManager* manager = DevToolsManager::GetInstance();
-  manager->SetPipeHandler(std::make_unique<DevToolsPipeHandler>());
+  manager->SetPipeHandler(
+      std::make_unique<DevToolsPipeHandler>(std::move(on_disconnect)));
 }
 
 // static

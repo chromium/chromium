@@ -12,7 +12,6 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/devtools/chrome_devtools_manager_delegate.h"
 #include "chrome/browser/devtools/devtools_dock_tile.h"
-#include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -113,12 +112,7 @@ Response BrowserHandler::GetWindowBounds(
 }
 
 Response BrowserHandler::Close() {
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce([]() {
-        if (ChromeDevToolsManagerDelegate::GetInstance())
-          ChromeDevToolsManagerDelegate::GetInstance()->BrowserCloseRequested();
-        chrome::ExitIgnoreUnloadHandlers();
-      }));
+  ChromeDevToolsManagerDelegate::CloseBrowserSoon();
   return Response::Success();
 }
 

@@ -54,7 +54,8 @@ class ChromeDevToolsManagerDelegate : public content::DevToolsManagerDelegate {
   std::vector<content::BrowserContext*> GetBrowserContexts() override;
   content::BrowserContext* GetDefaultBrowserContext() override;
 
-  void BrowserCloseRequested();
+  // Closes browser soon, not in the current task.
+  static void CloseBrowserSoon();
 
  private:
   friend class DevToolsManagerDelegateTest;

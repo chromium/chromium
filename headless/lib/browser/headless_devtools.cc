@@ -9,6 +9,8 @@
 
 #include "base/files/file_path.h"
 #include "base/memory/ptr_util.h"
+#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/devtools_socket_factory.h"
 #include "content/public/browser/navigation_entry.h"
@@ -124,11 +126,20 @@ class DummyTCPServerSocketFactory : public content::DevToolsSocketFactory {
   DISALLOW_COPY_AND_ASSIGN(DummyTCPServerSocketFactory);
 };
 #endif  // defined(OS_POSIX)
+
+void PostTaskToCloseBrowser(base::WeakPtr<HeadlessBrowserImpl> browser) {
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&HeadlessBrowserImpl::Shutdown, browser));
+}
+
 }  // namespace
 
-void StartLocalDevToolsHttpHandler(HeadlessBrowser::Options* options) {
-  if (options->devtools_pipe_enabled)
-    content::DevToolsAgentHost::StartRemoteDebuggingPipeHandler();
+void StartLocalDevToolsHttpHandler(HeadlessBrowserImpl* browser) {
+  HeadlessBrowser::Options* options = browser->options();
+  if (options->devtools_pipe_enabled) {
+    content::DevToolsAgentHost::StartRemoteDebuggingPipeHandler(
+        base::BindOnce(&PostTaskToCloseBrowser, browser->GetWeakPtr()));
+  }
   if (options->devtools_endpoint.IsEmpty())
     return;
 

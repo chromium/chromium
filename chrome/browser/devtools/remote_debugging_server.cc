@@ -12,6 +12,7 @@
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/devtools/chrome_devtools_manager_delegate.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -91,7 +92,8 @@ RemoteDebuggingServer::RemoteDebuggingServer() {
   const base::CommandLine& command_line =
       *base::CommandLine::ForCurrentProcess();
   if (command_line.HasSwitch(switches::kRemoteDebuggingPipe)) {
-    content::DevToolsAgentHost::StartRemoteDebuggingPipeHandler();
+    content::DevToolsAgentHost::StartRemoteDebuggingPipeHandler(
+        base::BindOnce(&ChromeDevToolsManagerDelegate::CloseBrowserSoon));
     return;
   }
 

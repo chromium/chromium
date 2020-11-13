@@ -18,6 +18,7 @@
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/devtools/protocol/target_handler.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
+#include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/policy/developer_tools_policy_handler.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -29,6 +30,7 @@
 #include "components/guest_view/browser/guest_view_base.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/devtools_agent_host_client_channel.h"
 #include "content/public/browser/render_frame_host.h"
@@ -336,8 +338,15 @@ void ChromeDevToolsManagerDelegate::ResetAndroidDeviceManagerForTesting() {
   device_discovery_.reset();
 }
 
-void ChromeDevToolsManagerDelegate::BrowserCloseRequested() {
-  // Do not keep the application running anymore, we got an explicit request
-  // to close.
-  keep_alive_.reset();
+// static
+void ChromeDevToolsManagerDelegate::CloseBrowserSoon() {
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce([]() {
+        if (GetInstance()) {
+          // Do not keep the application running anymore, we got an explicit
+          // request to close.
+          GetInstance()->keep_alive_.reset();
+        }
+        chrome::ExitIgnoreUnloadHandlers();
+      }));
 }
