@@ -6,6 +6,7 @@ import("//build/toolchain/win/midl.gni")
 import("//build/util/version.gni")
 import("//chrome/updater/branding.gni")
 
+# TODO(crbug.com/1109612): these GUIDs must depend on branding only.
 placeholder_guids = [
   "PLACEHOLDER-GUID-69464FF0-D9EC-4037-A35F-8AE4358106CC",  # UpdaterLib
   "PLACEHOLDER-GUID-158428a4-6014-4978-83ba-9fad0dabe791",  # UpdaterClass
@@ -13,8 +14,6 @@ placeholder_guids = [
   "PLACEHOLDER-GUID-46ACF70B-AC13-406D-B53B-B2C4BF091FF6",  # IUpdateState
   "PLACEHOLDER-GUID-2FCD14AF-B645-4351-8359-E80A0E202A0B",  # ICompleteStatus
   "PLACEHOLDER-GUID-7B416CFD-4216-4FD6-BD83-7C586054676E",  # IUpdaterObserver
-  "PLACEHOLDER-GUID-526DA036-9BD3-4697-865A-DA12D37DFFCA",  # IUpdaterControl
-  "PLACEHOLDER-GUID-D272C794-2ACE-4584-B993-3B90C622BE65",  # IUpdaterControlCallback
 ]
 
 uuid5_guids = []
@@ -30,7 +29,30 @@ midl("updater_idl_idl") {
   header_file = "updater_idl.h"
   sources = [ "updater_idl.template" ]
 
+  writes_tlb = true
+}
+
+midl("updater_internal_idl_idl") {
+  header_file = "updater_internal_idl.h"
+  sources = [ "updater_internal_idl.template" ]
+
+  # TODO(crbug.com/1109612): these GUIDs must depend on branding and version.
   defines = [
+    "IUPDATERCONTROL_IID=526DA036-9BD3-4697-865A-DA12D37DFFCA",
+    "IUPDATERCONTROLCALLBACK_IID=D272C794-2ACE-4584-B993-3B90C622BE65",
+    "UPDATER_INTERNAL_LIB_UUID=C6CE92DB-72CA-42EF-8C98-6EE92481B3C9",
+  ]
+
+  writes_tlb = true
+}
+
+midl("updater_legacy_idl_idl") {
+  header_file = "updater_legacy_idl.h"
+  sources = [ "updater_legacy_idl.template" ]
+
+  # These are the Omaha GUIDs for on-demand API.
+  defines = [
+    "UPDATER_LEGACY_LIB_UUID=69464FF0-D9EC-4037-A35F-8AE4358106CC",
     "ICURRENTSTATE_IID=247954F9-9EDC-4E68-8CC3-150C2B89EADF",
     "IGOOGLEUPDATE3WEB_IID=494B20CF-282E-4BDD-9F5D-B70CB09D351E",
     "IAPPBUNDLEWEB_IID=DD42475D-6D46-496a-924E-BD5630B4CBBA",

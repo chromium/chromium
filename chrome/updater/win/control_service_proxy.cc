@@ -15,8 +15,7 @@
 #include "base/task/task_traits.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "chrome/updater/app/server/win/updater_idl.h"
-#include "chrome/updater/win/constants.h"
+#include "chrome/updater/app/server/win/updater_internal_idl.h"
 
 namespace updater {
 namespace {
@@ -139,7 +138,7 @@ void ControlServiceProxy::RunOnSTA(base::OnceClosure callback) {
   DCHECK(STA_task_runner_->BelongsToCurrentThread());
 
   Microsoft::WRL::ComPtr<IUnknown> server;
-  HRESULT hr = ::CoCreateInstance(CLSID_UpdaterControlClass, nullptr,
+  HRESULT hr = ::CoCreateInstance(__uuidof(UpdaterControlClass), nullptr,
                                   CLSCTX_LOCAL_SERVER, IID_PPV_ARGS(&server));
   if (FAILED(hr)) {
     DVLOG(2) << "Failed to instantiate the updater control server. " << std::hex
@@ -201,7 +200,7 @@ void ControlServiceProxy::InitializeUpdateServiceOnSTA(
   DCHECK(STA_task_runner_->BelongsToCurrentThread());
 
   Microsoft::WRL::ComPtr<IUnknown> server;
-  HRESULT hr = ::CoCreateInstance(CLSID_UpdaterControlClass, nullptr,
+  HRESULT hr = ::CoCreateInstance(__uuidof(UpdaterControlClass), nullptr,
                                   CLSCTX_LOCAL_SERVER, IID_PPV_ARGS(&server));
   if (FAILED(hr)) {
     DVLOG(2) << "Failed to instantiate the updater control server. " << std::hex

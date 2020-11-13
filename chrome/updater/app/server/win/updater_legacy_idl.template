@@ -1,0 +1,235 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import "oaidl.idl";
+import "ocidl.idl";
+
+// Backward-compatible, Omaha public interfaces.
+
+// The following are copied from omaha3_idl.idl:
+//   enum CurrentState.
+//   interface ICurrentState.
+//   interface IGoogleUpdate3Web.
+//   interface IAppBundleWeb.
+//   interface IAppWeb.
+//   coclass GoogleUpdate3WebUserClass.
+
+// The normal install flow proceeds from STATE_INIT through
+// STATE_INSTALL_COMPLETE in order, skipping states that are not relevant.
+// All exceptions and terminal states are start with STATE_INSTALL_COMPLETE.
+typedef enum CurrentState {
+  STATE_INIT = 1,
+  STATE_WAITING_TO_CHECK_FOR_UPDATE = 2,
+  STATE_CHECKING_FOR_UPDATE = 3,
+  STATE_UPDATE_AVAILABLE = 4,
+  STATE_WAITING_TO_DOWNLOAD = 5,
+  STATE_RETRYING_DOWNLOAD = 6,
+  STATE_DOWNLOADING = 7,
+  STATE_DOWNLOAD_COMPLETE = 8,
+  STATE_EXTRACTING = 9,
+  STATE_APPLYING_DIFFERENTIAL_PATCH = 10,
+  // TODO(omaha3): Should we move STATE_DOWNLOAD_COMPLETE here and eliminate
+  // STATE_READY_TO_INSTALL?
+  STATE_READY_TO_INSTALL = 11,
+  STATE_WAITING_TO_INSTALL = 12,
+  STATE_INSTALLING = 13,
+  STATE_INSTALL_COMPLETE = 14,
+  STATE_PAUSED = 15,
+  STATE_NO_UPDATE = 16,
+  STATE_ERROR = 17,
+} CurrentState;
+
+[
+  object,
+  dual,
+  uuid(ICURRENTSTATE_IID),
+  helpstring("ICurrentState Interface"),
+  pointer_default(unique)
+]
+interface ICurrentState : IDispatch {
+  // This interface is exposed to web clients!
+  // TODO(omaha3): Update valid comments once we settle on an implementation.
+
+  // A value from the CurrentState enum. This value determines which of the
+  // properties below are valid.
+  [propget] HRESULT stateValue([out, retval] LONG*);
+
+  // The remaining properties are only valid in the specified states. For all
+  // other states, the values are not specified.
+
+  // This property is valid only when stateValue is STATE_UPDATE_AVAILABLE.
+  [propget] HRESULT availableVersion([out, retval] BSTR*);
+
+  // The following three properties are only valid when stateValue is
+  // STATE_WAITING_TO_DOWNLOAD, STATE_RETRYING_DOWNLOAD, STATE_DOWNLOADING,
+  // STATE_DOWNLOAD_COMPLETE, STATE_EXTRACTING,
+  // STATE_APPLYING_DIFFERENTIAL_PATCH, or STATE_READY_TO_INSTALL.
+
+  // Bytes downloaded so far.
+  [propget] HRESULT bytesDownloaded([out, retval] ULONG*);
+
+  // Total bytes to download.
+  [propget] HRESULT totalBytesToDownload([out, retval] ULONG*);
+
+  // Estimated download time remaining in ms. -1 indicates unknown.
+  // Progress may not always be available, so clients should handle the -1 case.
+  [propget] HRESULT downloadTimeRemainingMs([out, retval] LONG*);
+
+  [propget] HRESULT nextRetryTime([out, retval] ULONGLONG*);
+
+  // TODO(omaha 3): Need some way to indicate reconnecting, retrying, etc.
+
+  // The following two properties are only valid when stateValue is
+  // STATE_INSTALLING or STATE_INSTALL_COMPLETE.
+
+  // Current install progress in percentage from 0 to 100. -1 indicates unknown.
+  // Progress may not always be available, so clients should handle the -1 case.
+  [propget] HRESULT installProgress([out, retval] LONG*);
+
+  // Estimated download time remaining in ms. -1 indicates unknown.
+  // Progress may not always be available, so clients should handle the -1 case.
+  [propget] HRESULT installTimeRemainingMs([out, retval] LONG*);
+
+  // The following four properties are only valid when stateValue is
+  // STATE_ERROR:
+
+  // Returns true if the app has been canceled.
+  [propget] HRESULT isCanceled([out, retval] VARIANT_BOOL* is_canceled);
+
+  // Error code.
+  [propget] HRESULT errorCode([out, retval] LONG*);
+
+  // Error extra code.
+  [propget] HRESULT extraCode1([out, retval] LONG*);
+
+  // The following three properties are only valid when stateValue is
+  // STATE_ERROR or STATE_INSTALL_COMPLETE.
+  // TODO(omaha3): If STATE_DOWNLOAD_COMPLETE or STATE_READY_TO_INSTALL becomes
+  // a terminal state, does it support completion messages?
+
+  // Completion message, localized in the specified language.
+  // TODO(omaha3): If we're going to have bundle error messages too, should the
+  // language be at bundle level? Should bundle have its own language setter?
+  [propget] HRESULT completionMessage([out, retval] BSTR*);
+
+  // Application installer result code. This is to be used as additional
+  // information only. Success/failure should be determined using errorCode.
+  // This is an error if errorCode is GOOPDATEINSTALL_E_INSTALLER_FAILED.
+  [propget] HRESULT installerResultCode([out, retval] LONG*);
+
+  // Application installer extra code.
+  [propget] HRESULT installerResultExtraCode1([out, retval] LONG*);
+
+  // A command that needs to be launched by the client after installation.
+  [propget] HRESULT postInstallLaunchCommandLine([out, retval] BSTR*);
+
+  // URL to be launched after restarting the browser.
+  [propget] HRESULT postInstallUrl([out, retval] BSTR*);
+
+  // Returns a PostInstallAction value indicating the action to be taken by the
+  // client after installation.
+  [propget] HRESULT postInstallAction([out, retval] LONG*);
+}
+
+[
+  object,
+  dual,
+  uuid(IGOOGLEUPDATE3WEB_IID),
+  helpstring("IGoogleUpdate3Web Interface"),
+  pointer_default(unique)
+]
+interface IGoogleUpdate3Web : IDispatch {
+  HRESULT createAppBundleWeb([out, retval] IDispatch** app_bundle_web);
+};
+
+[
+  object,
+  dual,
+  uuid(IAPPBUNDLEWEB_IID),
+  helpstring("IAppBundleWeb Interface"),
+  pointer_default(unique)
+]
+interface IAppBundleWeb : IDispatch {
+  [id(2)] HRESULT createApp([in] BSTR app_guid,
+                            [in] BSTR brand_code,
+                            [in] BSTR language,
+                            [in] BSTR ap);
+  [id(3)] HRESULT createInstalledApp([in] BSTR app_id);
+  [id(4)] HRESULT createAllInstalledApps();
+
+  [propget] HRESULT displayLanguage([out, retval] BSTR*);
+  [propput] HRESULT displayLanguage([in] BSTR);
+
+  [propput] HRESULT parentHWND([in] ULONG_PTR hwnd);
+
+  [propget] HRESULT length([out, retval] int* index);
+  [id(DISPID_VALUE), propget] HRESULT appWeb(
+      [in] int index, [out, retval] IDispatch** app_web);
+
+  HRESULT initialize();
+
+  HRESULT checkForUpdate();
+  HRESULT download();
+  HRESULT install();
+
+  HRESULT pause();
+  HRESULT resume();
+  HRESULT cancel();
+
+  HRESULT downloadPackage([in] BSTR app_id, [in] BSTR package_name);
+
+  [propget] HRESULT currentState([out, retval] VARIANT* current_state);
+};
+
+[
+  object,
+  dual,
+  uuid(IAPPWEB_IID),
+  helpstring("IAppWeb Interface"),
+  pointer_default(unique)
+]
+interface IAppWeb : IDispatch {
+  [propget] HRESULT appId([out, retval] BSTR*);
+
+  // Returns an IAppVersionWeb IDispatch object.
+  [propget] HRESULT currentVersionWeb([out, retval] IDispatch** current);
+  [propget] HRESULT nextVersionWeb([out, retval] IDispatch** next);
+
+  // Returns an IAppCommandWeb IDispatch object, or NULL.
+  [propget] HRESULT command([in] BSTR command_id,
+                            [out, retval] IDispatch** command);
+
+  HRESULT cancel();
+
+  [propget] HRESULT currentState([out, retval] IDispatch** current_state);
+
+  HRESULT launch();
+  HRESULT uninstall();
+
+  [propget] HRESULT serverInstallDataIndex([out, retval] BSTR*);
+  [propput] HRESULT serverInstallDataIndex([in] BSTR);
+};
+
+[
+  uuid(UPDATER_LEGACY_LIB_UUID),
+  version(1.0),
+  helpstring("Chromium Updater legacy type library.")
+]
+library UpdaterLegacyLib {
+  importlib("stdole2.tlb");
+
+  [
+    uuid(22181302-A8A6-4f84-A541-E5CBFC70CC43),
+    helpstring("GoogleUpdate3WebUserClass Class")
+  ]
+  coclass GoogleUpdate3WebUserClass
+  {
+    [default] interface IUnknown;
+  }
+
+  interface ICurrentState;
+  interface IGoogleUpdate3Web;
+  interface IAppBundleWeb;
+  interface IAppWeb;
+};

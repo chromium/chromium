@@ -5,6 +5,8 @@
 #ifndef CHROME_UPDATER_TEST_INTEGRATION_TESTS_H_
 #define CHROME_UPDATER_TEST_INTEGRATION_TESTS_H_
 
+#include "build/build_config.h"
+
 namespace base {
 class CommandLine;
 class FilePath;
@@ -12,7 +14,6 @@ class Version;
 }  // namespace base
 
 namespace updater {
-
 namespace test {
 
 // Removes traces of the updater from the system. It is best to run this at the
@@ -84,8 +85,11 @@ void SetupFakeUpdaterHigherVersion();
 // Expects that this version of updater is uninstalled from the system.
 void ExpectCandidateUninstalled();
 
-}  // namespace test
+#if defined(OS_WIN)
+void ExpectInterfacesRegistered();
+#endif
 
+}  // namespace test
 }  // namespace updater
 
 #endif  // CHROME_UPDATER_TEST_INTEGRATION_TESTS_H_

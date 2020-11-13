@@ -29,6 +29,16 @@ base::string16 GetComServiceAppidRegistryPath();
 base::string16 GetComIidRegistryPath(REFIID iid);
 base::string16 GetComTypeLibRegistryPath(REFIID iid);
 
+// Returns the resource index for the type library where the interface specified
+// by the `iid` is defined. For encapsulation reasons, the updater interfaces
+// are segregated in multiple IDL files, which get compiled to multiple type
+// libraries. The type libraries are inserted in the compiled binary as
+// resources with different resource indexes. The resource index becomes a
+// suffix of the path to where the type library exists, such as
+// `...\updater.exe\\1`. See the Windows SDK documentation for LoadTypeLib for
+// details.
+base::string16 GetComTypeLibResourceIndex(REFIID iid);
+
 // Returns the interfaces ids of all interfaces declared in IDL of the updater.
 std::vector<GUID> GetInterfaces();
 
