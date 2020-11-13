@@ -10,6 +10,7 @@
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/execution_context/navigator_base.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
@@ -270,8 +271,23 @@ void NetworkInformation::StopObserving() {
   }
 }
 
-NetworkInformation::NetworkInformation(ExecutionContext* context)
-    : ExecutionContextLifecycleObserver(context),
+const char NetworkInformation::kSupplementName[] = "NetworkInformation";
+
+NetworkInformation* NetworkInformation::connection(NavigatorBase& navigator) {
+  if (!navigator.GetExecutionContext())
+    return nullptr;
+  NetworkInformation* supplement =
+      Supplement<NavigatorBase>::From<NetworkInformation>(navigator);
+  if (!supplement) {
+    supplement = MakeGarbageCollected<NetworkInformation>(navigator);
+    ProvideTo(navigator, supplement);
+  }
+  return supplement;
+}
+
+NetworkInformation::NetworkInformation(NavigatorBase& navigator)
+    : Supplement<NavigatorBase>(navigator),
+      ExecutionContextLifecycleObserver(navigator.GetExecutionContext()),
       web_holdback_console_message_shown_(false),
       context_stopped_(false) {
   base::Optional<base::TimeDelta> http_rtt;
@@ -292,6 +308,7 @@ NetworkInformation::NetworkInformation(ExecutionContext* context)
 
 void NetworkInformation::Trace(Visitor* visitor) const {
   EventTargetWithInlineData::Trace(visitor);
+  Supplement<NavigatorBase>::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
 }
 
