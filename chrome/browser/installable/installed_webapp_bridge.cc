@@ -9,9 +9,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/android/jni_utils.h"
-#include "base/feature_list.h"
 #include "chrome/android/chrome_jni_headers/InstalledWebappBridge_jni.h"
-#include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "url/gurl.h"
 
 using base::android::ConvertJavaStringToUTF8;
