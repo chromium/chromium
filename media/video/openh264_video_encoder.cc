@@ -253,30 +253,8 @@ void OpenH264VideoEncoder::ChangeOptions(const Options& options,
     return;
   }
 
-  Status status;
-  SEncParamExt params = {};
-  if (int err = codec_->GetDefaultParams(&params)) {
-    status = Status(StatusCode::kEncoderInitializationError,
-                    "Failed to get default params.")
-                 .WithData("error", err);
-    std::move(done_cb).Run(status);
-    return;
-  }
+  // TODO(eugene): Not implemented yet.
 
-  status = SetUpOpenH264Params(options, &params);
-  if (!status.is_ok()) {
-    std::move(done_cb).Run(status);
-    return;
-  }
-
-  if (int err =
-          codec_->SetOption(ENCODER_OPTION_SVC_ENCODE_PARAM_EXT, &params)) {
-    status = Status(StatusCode::kEncoderInitializationError,
-                    "OpenH264 encoder failed to set new SEncParamExt.")
-                 .WithData("error", err);
-    std::move(done_cb).Run(status);
-    return;
-  }
   std::move(done_cb).Run(Status());
 }
 

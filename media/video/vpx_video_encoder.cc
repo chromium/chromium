@@ -307,37 +307,20 @@ void VpxVideoEncoder::ChangeOptions(const Options& options, StatusCB done_cb) {
 
   vpx_codec_enc_cfg_t new_config = codec_config_;
   auto status = SetUpVpxConfig(options, &new_config);
-  if (!status.is_ok()) {
-    std::move(done_cb).Run(status);
-    return;
-  }
-
-  if (options_.width != options.width || options_.height != options.height) {
-    // Need to re-allocate |vpx_image_| because the size has changed.
-    auto img_fmt = vpx_image_.fmt;
-    auto bit_depth = vpx_image_.bit_depth;
-    vpx_img_free(&vpx_image_);
-    if (&vpx_image_ != vpx_img_wrap(&vpx_image_, img_fmt, options.width,
-                                    options.height, 1, nullptr)) {
-      status = Status(StatusCode::kEncoderInitializationError,
-                      "Invalid format or frame size.");
-      std::move(done_cb).Run(status);
-      return;
+  if (status.is_ok()) {
+    auto vpx_error = vpx_codec_enc_config_set(codec_.get(), &new_config);
+    if (vpx_error == VPX_CODEC_OK) {
+      codec_config_ = new_config;
+      options_ = options;
+    } else {
+      status = Status(StatusCode::kEncoderUnsupportedConfig,
+                      "Failed to set new VPX config")
+                   .WithData("vpx_error", vpx_error);
     }
-    vpx_image_.bit_depth = bit_depth;
-  }
-
-  auto vpx_error = vpx_codec_enc_config_set(codec_.get(), &new_config);
-  if (vpx_error == VPX_CODEC_OK) {
-    codec_config_ = new_config;
-    options_ = options;
-  } else {
-    status = Status(StatusCode::kEncoderUnsupportedConfig,
-                    "Failed to set new VPX config")
-                 .WithData("vpx_error", vpx_error);
   }
 
   std::move(done_cb).Run(std::move(status));
+  return;
 }
 
 base::TimeDelta VpxVideoEncoder::GetFrameDuration(const VideoFrame& frame) {

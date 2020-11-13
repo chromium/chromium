@@ -82,10 +82,7 @@ class MODULES_EXPORT VideoEncoder final : public ScriptWrappable {
 
   struct Request final : public GarbageCollected<Request> {
     enum class Type {
-      // Configure an encoder from scratch, possibly replacing the existing one.
       kConfigure,
-      // Adjust options in the already configured encoder.
-      kReconfigure,
       kEncode,
       kFlush,
     };
@@ -110,7 +107,6 @@ class MODULES_EXPORT VideoEncoder final : public ScriptWrappable {
   void ProcessRequests();
   void ProcessEncode(Request* request);
   void ProcessConfigure(Request* request);
-  void ProcessReconfigure(Request* request);
   void ProcessFlush(Request* request);
 
   void ResetInternal();
@@ -120,7 +116,6 @@ class MODULES_EXPORT VideoEncoder final : public ScriptWrappable {
   bool VerifyCodecSupport(ParsedConfig*, ExceptionState&);
   std::unique_ptr<media::VideoEncoder> CreateMediaVideoEncoder(
       const ParsedConfig& config);
-  bool CanReconfigure(ParsedConfig& original_config, ParsedConfig& new_config);
 
   std::unique_ptr<ParsedConfig> active_config_;
   std::unique_ptr<media::VideoEncoder> media_encoder_;

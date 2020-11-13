@@ -91,8 +91,6 @@ class MEDIA_EXPORT VideoEncodeAcceleratorAdapter
                                  bool key_frame,
                                  StatusCB done_cb);
   void FlushOnAcceleratorThread(StatusCB done_cb);
-  void ChangeOptionsOnAcceleratorThread(const Options options,
-                                        StatusCB done_cb);
 
   template <class T>
   T WrapCallback(T cb);
