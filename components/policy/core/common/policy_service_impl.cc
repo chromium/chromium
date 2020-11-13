@@ -16,10 +16,8 @@
 #include "base/memory/ptr_util.h"
 #include "base/single_thread_task_runner.h"
 #include "base/stl_util.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
-#include "build/build_config.h"
 #include "components/policy/core/common/features.h"
 #include "components/policy/core/common/policy_bundle.h"
 #include "components/policy/core/common/policy_map.h"
@@ -27,9 +25,6 @@
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/core/common/values_util.h"
 #include "components/policy/policy_constants.h"
-#include "components/strings/grit/components_strings.h"
-#include "extensions/buildflags/buildflags.h"
-#include "ui/base/l10n/l10n_util.h"
 
 #if defined(OS_ANDROID)
 #include "components/policy/core/common/android/policy_service_android.h"
@@ -81,81 +76,6 @@ void RemapProxyPolicies(PolicyMap* policies) {
     policies->Set(key::kProxySettings, current_priority.level,
                   current_priority.scope, inherited_source,
                   std::move(proxy_settings), nullptr);
-  }
-}
-
-// Maps the separate policies for proxy settings into a single Dictionary
-// policy. This allows to keep the logic of merging policies from different
-// sources simple, as all separate proxy policies should be considered as a
-// single whole during merging.
-void RemapRenamedPolicies(PolicyMap* policies) {
-  // For all renamed policies we need to explicitly merge the value of the
-  // old policy with the new one or else merging will not be carried over
-  // if desired.
-  base::Value* merge_list =
-      policies->GetMutableValue(key::kPolicyListMultipleSourceMergeList);
-  base::flat_set<std::string> policy_lists_to_merge =
-      policy::ValueToStringSet(merge_list);
-  const std::vector<std::pair<const char*, const char*>> renamed_policies = {{
-      {policy::key::kSafeBrowsingWhitelistDomains,
-       policy::key::kSafeBrowsingAllowlistDomains},
-      {policy::key::kSpellcheckLanguageBlacklist,
-       policy::key::kSpellcheckLanguageBlocklist},
-      {policy::key::kURLBlacklist, policy::key::kURLBlocklist},
-      {policy::key::kURLWhitelist, policy::key::kURLAllowlist},
-#if !defined(OS_ANDROID)
-      {policy::key::kAutoplayWhitelist, policy::key::kAutoplayAllowlist},
-#endif  // !defined(OS_ANDROID)
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-      {policy::key::kExtensionInstallBlacklist,
-       policy::key::kExtensionInstallBlocklist},
-      {policy::key::kExtensionInstallWhitelist,
-       policy::key::kExtensionInstallAllowlist},
-      {policy::key::kNativeMessagingBlacklist,
-       policy::key::kNativeMessagingBlocklist},
-      {policy::key::kNativeMessagingWhitelist,
-       policy::key::kNativeMessagingAllowlist},
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
-#if defined(OS_CHROMEOS)
-      {policy::key::kAttestationExtensionWhitelist,
-       policy::key::kAttestationExtensionAllowlist},
-      {policy::key::kExternalPrintServersWhitelist,
-       policy::key::kExternalPrintServersAllowlist},
-      {policy::key::kNativePrintersBulkBlacklist,
-       policy::key::kPrintersBulkBlocklist},
-      {policy::key::kNativePrintersBulkWhitelist,
-       policy::key::kPrintersBulkAllowlist},
-      {policy::key::kPerAppTimeLimitsWhitelist,
-       policy::key::kPerAppTimeLimitsAllowlist},
-      {policy::key::kQuickUnlockModeWhitelist,
-       policy::key::kQuickUnlockModeAllowlist},
-      {policy::key::kNoteTakingAppsLockScreenWhitelist,
-       policy::key::kNoteTakingAppsLockScreenAllowlist},
-#if defined(USE_CUPS)
-      {policy::key::kPrintingAPIExtensionsWhitelist,
-       policy::key::kPrintingAPIExtensionsAllowlist},
-#endif  // defined(USE_CUPS)
-#endif  // defined(OS_CHROMEOS)
-  }};
-  for (const auto& policy_pair : renamed_policies) {
-    PolicyMap::Entry* old_policy = policies->GetMutable(policy_pair.first);
-    const PolicyMap::Entry* new_policy = policies->Get(policy_pair.second);
-    if (old_policy && !new_policy) {
-      PolicyMap::Entry policy_entry = old_policy->DeepCopy();
-      policy_entry.AddError(
-          l10n_util::GetStringFUTF8(IDS_POLICY_MIGRATED_NEW_POLICY,
-                                    base::UTF8ToUTF16(policy_pair.first)));
-      // TOTO(pastarmovj): Readd the old_policy error when the tast tests
-      // for chromeos have been updated.
-      // old_policy->AddError(
-      //    l10n_util::GetStringFUTF8(IDS_POLICY_MIGRATED_OLD_POLICY,
-      //                              base::UTF8ToUTF16(policy_pair.second)));
-      policies->Set(policy_pair.second, std::move(policy_entry));
-    }
-    if (policy_lists_to_merge.contains(policy_pair.first) &&
-        !policy_lists_to_merge.contains(policy_pair.second)) {
-      merge_list->Append(base::Value(policy_pair.second));
-    }
   }
 }
 
@@ -359,7 +279,6 @@ void PolicyServiceImpl::MergeAndTriggerUpdates() {
     PolicyBundle provided_bundle;
     provided_bundle.CopyFrom(provider->policies());
     RemapProxyPolicies(&provided_bundle.Get(chrome_namespace));
-    RemapRenamedPolicies(&provided_bundle.Get(chrome_namespace));
     bundle.MergeFrom(provided_bundle);
   }
 
