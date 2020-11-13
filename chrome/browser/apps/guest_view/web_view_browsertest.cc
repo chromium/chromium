@@ -4383,14 +4383,11 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginWebViewTest,
 // from guest to embedder.
 IN_PROC_BROWSER_TEST_F(WebViewTest, AutoResizeMessages) {
   LoadAppWithGuest("web_view/simple");
-  content::WebContents* embedder = GetEmbedderWebContents();
-  content::WebContents* guest = GetGuestWebContents();
 
   // Helper function as this test requires inspecting a number of content::
   // internal objects.
-  EXPECT_TRUE(content::TestGuestAutoresize(
-      embedder->GetRenderWidgetHostView()->GetRenderWidgetHost()->GetProcess(),
-      guest->GetRenderWidgetHostView()->GetRenderWidgetHost()));
+  EXPECT_TRUE(content::TestGuestAutoresize(GetEmbedderWebContents(),
+                                           GetGuestWebContents()));
 }
 
 // Test that a guest sees the synthetic wheel events of a touchpad pinch.

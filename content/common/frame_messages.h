@@ -172,23 +172,6 @@ IPC_STRUCT_TRAITS_BEGIN(content::CustomContextMenuContext)
   IPC_STRUCT_TRAITS_MEMBER(link_followed)
 IPC_STRUCT_TRAITS_END()
 
-IPC_STRUCT_TRAITS_BEGIN(blink::FrameVisualProperties)
-  IPC_STRUCT_TRAITS_MEMBER(screen_info)
-  IPC_STRUCT_TRAITS_MEMBER(auto_resize_enabled)
-  IPC_STRUCT_TRAITS_MEMBER(visible_viewport_size)
-  IPC_STRUCT_TRAITS_MEMBER(min_size_for_auto_resize)
-  IPC_STRUCT_TRAITS_MEMBER(max_size_for_auto_resize)
-  IPC_STRUCT_TRAITS_MEMBER(root_widget_window_segments)
-  IPC_STRUCT_TRAITS_MEMBER(capture_sequence_number)
-  IPC_STRUCT_TRAITS_MEMBER(zoom_level)
-  IPC_STRUCT_TRAITS_MEMBER(page_scale_factor)
-  IPC_STRUCT_TRAITS_MEMBER(is_pinch_gesture_active)
-  IPC_STRUCT_TRAITS_MEMBER(screen_space_rect)
-  IPC_STRUCT_TRAITS_MEMBER(local_frame_size)
-  IPC_STRUCT_TRAITS_MEMBER(compositor_viewport)
-  IPC_STRUCT_TRAITS_MEMBER(local_surface_id)
-IPC_STRUCT_TRAITS_END()
-
 IPC_STRUCT_TRAITS_BEGIN(blink::FramePolicy)
   IPC_STRUCT_TRAITS_MEMBER(sandbox_flags)
   IPC_STRUCT_TRAITS_MEMBER(container_policy)
@@ -519,10 +502,6 @@ IPC_MESSAGE_CONTROL3(FrameHostMsg_DidDeleteOutOfProcessPepperInstance,
 // one was registered) and has been detached, as a response to
 // UnfreezableFrameMsg_Unload message from the browser process.
 IPC_MESSAGE_ROUTED0(FrameHostMsg_Unload_ACK)
-
-// Tells the browser that a child's visual properties have changed.
-IPC_MESSAGE_ROUTED1(FrameHostMsg_SynchronizeVisualProperties,
-                    blink::FrameVisualProperties)
 
 // Used to tell the parent that the user right clicked on an area of the
 // content area, and a context menu should be shown for it. The params

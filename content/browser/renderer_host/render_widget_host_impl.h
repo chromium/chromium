@@ -888,7 +888,7 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   friend class OverscrollNavigationOverlayTest;
   friend class RenderViewHostTester;
   friend class TestRenderViewHost;
-  friend bool TestGuestAutoresize(RenderProcessHost*, RenderWidgetHost*);
+  friend bool TestGuestAutoresize(WebContents*, WebContents*);
 
   // Tell this object to destroy itself. If |also_delete| is specified, the
   // destructor is called as well.

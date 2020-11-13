@@ -179,6 +179,8 @@ class CONTENT_EXPORT RenderFrameProxyHost
   void Detach() override;
   void UpdateViewportIntersection(
       blink::mojom::ViewportIntersectionStatePtr intersection_state) override;
+  void SynchronizeVisualProperties(
+      const blink::FrameVisualProperties& frame_visual_properties) override;
 
   // blink::mojom::RemoteMainFrameHost overrides:
   void FocusPage() override;
@@ -211,10 +213,11 @@ class CONTENT_EXPORT RenderFrameProxyHost
   const base::UnguessableToken& GetFrameToken() const { return frame_token_; }
 
  private:
-  // The interceptor needs access to frame_host_receiver_for_testing().
+  // These interceptor need access to frame_host_receiver_for_testing().
   friend class RouteMessageEventInterceptor;
   friend class OpenURLInterceptor;
   friend class UpdateViewportIntersectionMessageFilter;
+  friend class SynchronizeVisualPropertiesInterceptor;
 
   // Helper to retrieve the |AgentSchedulingGroup| this proxy host is associated
   // with.

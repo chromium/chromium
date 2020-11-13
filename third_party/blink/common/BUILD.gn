@@ -90,6 +90,7 @@ source_set("common") {
     "frame/frame_policy.cc",
     "frame/frame_policy_mojom_traits.cc",
     "frame/frame_visual_properties.cc",
+    "frame/frame_visual_properties_mojom_traits.cc",
     "frame/from_ad_state.cc",
     "frame/transient_allow_fullscreen.cc",
     "frame/user_activation_state.cc",

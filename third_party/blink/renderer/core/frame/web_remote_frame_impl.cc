@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "third_party/blink/public/common/feature_policy/feature_policy.h"
+#include "third_party/blink/public/common/frame/frame_visual_properties.h"
 #include "third_party/blink/public/mojom/frame/tree_scope_type.mojom-blink.h"
 #include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom-blink.h"
 #include "third_party/blink/public/platform/web_rect.h"
@@ -327,6 +328,11 @@ void WebRemoteFrameImpl::SetReplicatedAdFrameType(
     mojom::blink::AdFrameType ad_frame_type) {
   DCHECK(GetFrame());
   GetFrame()->SetReplicatedAdFrameType(ad_frame_type);
+}
+
+void WebRemoteFrameImpl::SetVisualProperties(
+    const blink::FrameVisualProperties& properties) {
+  GetFrame()->SetVisualProperties(properties);
 }
 
 void WebRemoteFrameImpl::DidStartLoading() {

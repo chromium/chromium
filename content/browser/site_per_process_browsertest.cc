@@ -1542,9 +1542,10 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, ViewBoundsInNestedFrameTest) {
   // relative offset of its direct parent within the root frame.
   gfx::Rect bounds = rwhv_nested->GetViewBounds();
 
-  auto filter =
-      base::MakeRefCounted<SynchronizeVisualPropertiesMessageFilter>();
-  root->current_frame_host()->GetProcess()->AddFilter(filter.get());
+  RenderFrameProxyHost* parent_iframe_proxy =
+      nested_iframe_node->render_manager()->GetProxyToParent();
+  auto interceptor = std::make_unique<SynchronizeVisualPropertiesInterceptor>(
+      parent_iframe_proxy);
 
   // Scroll the parent frame downward to verify that the child rect gets updated
   // correctly.
@@ -1562,12 +1563,12 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, ViewBoundsInNestedFrameTest) {
   scroll_event.delta_y = -30.0f;
   scroll_event.phase = blink::WebMouseWheelEvent::kPhaseBegan;
   rwhv_root->ProcessMouseWheelEvent(scroll_event, ui::LatencyInfo());
-  filter->WaitForRect();
+  interceptor->WaitForRect();
 
   // The precise amount of scroll for the first view position update is not
   // deterministic, so this simply verifies that the OOPIF moved from its
   // earlier position.
-  gfx::Rect update_rect = filter->last_rect();
+  gfx::Rect update_rect = interceptor->last_rect();
   EXPECT_LT(update_rect.y(), bounds.y() - rwhv_root->GetViewBounds().y());
 }
 
@@ -1644,6 +1645,22 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 // Test that scrolling a nested out-of-process iframe bubbles unused scroll
 // delta to a parent frame.
 IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, ScrollBubblingFromOOPIFTest) {
+  // For each RenderFrameProxyHost create an interceptor. We may not use them
+  // all but we need to create the interceptors as soon as the
+  // RenderFrameProxyHost is created so we don't miss any messages.
+  using InterceptorMap =
+      std::map<RenderFrameProxyHost*,
+               std::unique_ptr<SynchronizeVisualPropertiesInterceptor>>;
+  InterceptorMap interceptors;
+  RenderFrameProxyHost::SetCreatedCallbackForTesting(base::BindRepeating(
+      [](InterceptorMap* interceptors, RenderFrameProxyHost* proxy_host) {
+        interceptors->emplace(
+            proxy_host,
+            std::make_unique<SynchronizeVisualPropertiesInterceptor>(
+                proxy_host));
+      },
+      base::Unretained(&interceptors)));
+
   ui::GestureConfiguration::GetInstance()->set_scroll_debounce_interval_in_ms(
       0);
   GURL main_url(embedded_test_server()->GetURL(
@@ -1658,16 +1675,6 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, ScrollBubblingFromOOPIFTest) {
 
   FrameTreeNode* parent_iframe_node = root->child_at(0);
 
-  // This test uses the position of the nested iframe within the parent iframe
-  // to infer the scroll position of the parent.
-  // SynchronizeVisualPropertiesMessageFilter catches updates to the position in
-  // order to avoid busy waiting. It gets created early to catch the initial
-  // rects from the navigation.
-  auto filter =
-      base::MakeRefCounted<SynchronizeVisualPropertiesMessageFilter>();
-  parent_iframe_node->current_frame_host()->GetProcess()->AddFilter(
-      filter.get());
-
   GURL site_url(embedded_test_server()->GetURL(
       "b.com", "/frame_tree/page_with_positioned_frame.html"));
   EXPECT_TRUE(NavigateToURLFromRenderer(parent_iframe_node, site_url));
@@ -1681,6 +1688,16 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, ScrollBubblingFromOOPIFTest) {
   GURL nested_site_url(embedded_test_server()->GetURL(
       "baz.com", "/tall_page.html"));
   EXPECT_TRUE(NavigateToURLFromRenderer(nested_iframe_node, nested_site_url));
+
+  // This test uses the position of the nested iframe within the parent iframe
+  // to infer the scroll position of the parent.
+  // SynchronizeVisualPropertiesInterceptor catches updates to the position in
+  // order to avoid busy waiting. It gets created early to catch the initial
+  // rects from the navigation.
+  RenderFrameProxyHost* parent_iframe_proxy =
+      nested_iframe_node->render_manager()->GetProxyToParent();
+
+  NavigateFrameToURL(nested_iframe_node, nested_site_url);
 
   EXPECT_EQ(
       " Site A ------------ proxies for B C\n"
@@ -1703,13 +1720,16 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, ScrollBubblingFromOOPIFTest) {
               ->GetRenderWidgetHost()
               ->GetView());
 
-  WaitForHitTestData(nested_iframe_node->current_frame_host());
+  WaitForHitTestData(parent_iframe_node->current_frame_host());
+
+  ASSERT_TRUE(base::Contains(interceptors, parent_iframe_proxy));
+  auto& interceptor = interceptors.find(parent_iframe_proxy)->second;
 
   // Save the original offset as a point of reference.
-  filter->WaitForRect();
-  gfx::Rect update_rect = filter->last_rect();
+  interceptor->WaitForRect();
+  gfx::Rect update_rect = interceptor->last_rect();
   int initial_y = update_rect.y();
-  filter->ResetRectRunLoop();
+  interceptor->ResetRectRunLoop();
 
   // Scroll the parent frame downward.
   blink::WebMouseWheelEvent scroll_event(
@@ -1736,10 +1756,10 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, ScrollBubblingFromOOPIFTest) {
   rwhv_parent->ProcessMouseWheelEvent(scroll_event, ui::LatencyInfo());
 
   // Ensure that the view position is propagated to the child properly.
-  filter->WaitForRect();
-  update_rect = filter->last_rect();
+  interceptor->WaitForRect();
+  update_rect = interceptor->last_rect();
   EXPECT_LT(update_rect.y(), initial_y);
-  filter->ResetRectRunLoop();
+  interceptor->ResetRectRunLoop();
   ack_observer.Reset();
 
   // Now scroll the nested frame upward, which should bubble to the parent.
@@ -1750,20 +1770,20 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, ScrollBubblingFromOOPIFTest) {
   scroll_event.phase = blink::WebMouseWheelEvent::kPhaseBegan;
   rwhv_nested->ProcessMouseWheelEvent(scroll_event, ui::LatencyInfo());
 
-  filter->WaitForRect();
+  interceptor->WaitForRect();
   // This loop isn't great, but it accounts for the possibility of multiple
   // incremental updates happening as a result of the scroll animation.
   // A failure condition of this test is that the loop might not terminate
   // due to bubbling not working properly. If the overscroll bubbles to the
   // parent iframe then the nested frame's y coord will return to its
   // initial position.
-  update_rect = filter->last_rect();
+  update_rect = interceptor->last_rect();
   while (update_rect.y() > initial_y) {
     base::RunLoop run_loop;
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
         FROM_HERE, run_loop.QuitClosure(), TestTimeouts::tiny_timeout());
     run_loop.Run();
-    update_rect = filter->last_rect();
+    update_rect = interceptor->last_rect();
   }
 
   // The event router sends wheel events of a single scroll sequence to the
@@ -1775,7 +1795,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, ScrollBubblingFromOOPIFTest) {
       blink::WebInputEvent::DispatchType::kEventNonBlocking;
   rwhv_nested->ProcessMouseWheelEvent(scroll_event, ui::LatencyInfo());
 
-  filter->ResetRectRunLoop();
+  interceptor->ResetRectRunLoop();
   // Once we've sent a wheel to the nested iframe that we expect to turn into
   // a bubbling scroll, we need to delay to make sure the GestureScrollBegin
   // from this new scroll doesn't hit the RenderWidgetHostImpl before the
@@ -1801,9 +1821,9 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, ScrollBubblingFromOOPIFTest) {
       blink::WebInputEvent::DispatchType::kEventNonBlocking;
   rwhv_parent->ProcessMouseWheelEvent(scroll_event, ui::LatencyInfo());
 
-  // Ensure ensuing offset change is received, and then reset the filter.
-  filter->WaitForRect();
-  filter->ResetRectRunLoop();
+  // Ensure ensuing offset change is received, and then reset the interceptor.
+  interceptor->WaitForRect();
+  interceptor->ResetRectRunLoop();
 
   // Scroll down the nested iframe via gesture. This requires 3 separate input
   // events.
@@ -1837,8 +1857,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, ScrollBubblingFromOOPIFTest) {
   gesture_event.SetPositionInWidget(gfx::PointF(1, 1));
   rwhv_nested->GetRenderWidgetHost()->ForwardGestureEvent(gesture_event);
 
-  filter->WaitForRect();
-  update_rect = filter->last_rect();
+  interceptor->WaitForRect();
+  update_rect = interceptor->last_rect();
   // As above, if this loop does not terminate then it indicates an issue
   // with scroll bubbling.
   while (update_rect.y() > initial_y) {
@@ -1846,12 +1866,12 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, ScrollBubblingFromOOPIFTest) {
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
         FROM_HERE, run_loop.QuitClosure(), TestTimeouts::tiny_timeout());
     run_loop.Run();
-    update_rect = filter->last_rect();
+    update_rect = interceptor->last_rect();
   }
 
   // Test that when the child frame absorbs all of the scroll delta, it does
   // not propagate to the parent (see https://crbug.com/621624).
-  filter->ResetRectRunLoop();
+  interceptor->ResetRectRunLoop();
   scroll_event.delta_y = -5.0f;
   scroll_event.dispatch_type = blink::WebInputEvent::DispatchType::kBlocking;
   scroll_event.phase = blink::WebMouseWheelEvent::kPhaseBegan;
@@ -1866,8 +1886,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, ScrollBubblingFromOOPIFTest) {
         FROM_HERE, run_loop.QuitClosure(), TestTimeouts::action_timeout());
     run_loop.Run();
   }
-  DCHECK_EQ(filter->last_rect().x(), 0);
-  DCHECK_EQ(filter->last_rect().y(), 0);
+  DCHECK_EQ(interceptor->last_rect().x(), 0);
+  DCHECK_EQ(interceptor->last_rect().y(), 0);
 }
 
 // Tests that scrolling with the keyboard will bubble unused scroll to the
@@ -11366,14 +11386,18 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 
   // Monitor visual sync messages coming from the mainframe to make sure
   // |is_pinch_gesture_active| goes true during the pinch gesture.
-  auto filter_mainframe =
-      base::MakeRefCounted<SynchronizeVisualPropertiesMessageFilter>();
-  root->current_frame_host()->GetProcess()->AddFilter(filter_mainframe.get());
+  RenderFrameProxyHost* root_proxy_host =
+      child_d->render_manager()->GetProxyToParent();
+  auto interceptor_mainframe =
+      std::make_unique<SynchronizeVisualPropertiesInterceptor>(root_proxy_host);
+
   // Monitor frame sync messages coming from child_b as it will need to
   // relay them to child_d.
-  auto filter_child_b =
-      base::MakeRefCounted<SynchronizeVisualPropertiesMessageFilter>();
-  child_b->current_frame_host()->GetProcess()->AddFilter(filter_child_b.get());
+  RenderFrameProxyHost* child_b_proxy_host =
+      child_c->render_manager()->GetProxyToParent();
+  auto interceptor_child_b =
+      std::make_unique<SynchronizeVisualPropertiesInterceptor>(
+          child_b_proxy_host);
 
   // We need to observe a root frame submission to pick up the initial page
   // scale factor.
@@ -11424,12 +11448,12 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   // gesture will occur sometime after the ack for GesturePinchEnd, so we need
   // to wait for it from each renderer. If it's never seen, the test fails by
   // timing out.
-  filter_mainframe->WaitForPinchGestureEnd();
-  EXPECT_TRUE(filter_mainframe->pinch_gesture_active_set());
-  EXPECT_TRUE(filter_mainframe->pinch_gesture_active_cleared());
-  filter_child_b->WaitForPinchGestureEnd();
-  EXPECT_TRUE(filter_child_b->pinch_gesture_active_set());
-  EXPECT_TRUE(filter_child_b->pinch_gesture_active_cleared());
+  interceptor_mainframe->WaitForPinchGestureEnd();
+  EXPECT_TRUE(interceptor_mainframe->pinch_gesture_active_set());
+  EXPECT_TRUE(interceptor_mainframe->pinch_gesture_active_cleared());
+  interceptor_child_b->WaitForPinchGestureEnd();
+  EXPECT_TRUE(interceptor_child_b->pinch_gesture_active_set());
+  EXPECT_TRUE(interceptor_child_b->pinch_gesture_active_cleared());
 }
 
 // Verify that sandbox flags specified by a CSP header are properly inherited by

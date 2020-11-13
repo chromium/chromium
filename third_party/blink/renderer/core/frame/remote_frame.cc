@@ -420,6 +420,11 @@ void RemoteFrame::SetInsecureNavigationsSet(const WebVector<unsigned>& set) {
   security_context_.SetInsecureNavigationsSet(set);
 }
 
+void RemoteFrame::SetVisualProperties(
+    const blink::FrameVisualProperties& properties) {
+  GetRemoteFrameHostRemote().SynchronizeVisualProperties(properties);
+}
+
 void RemoteFrame::WillEnterFullscreen(
     mojom::blink::FullscreenOptionsPtr request_options) {
   // This should only ever be called when the FrameOwner is local.
