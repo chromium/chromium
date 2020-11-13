@@ -14,6 +14,7 @@
 #include "content/browser/accessibility/accessibility_event_recorder.h"
 #include "content/public/browser/accessibility_tree_formatter.h"
 #include "content/public/test/content_browser_test.h"
+#include "content/public/test/dump_accessibility_test_helper.h"
 #include "third_party/blink/public/common/features.h"
 
 namespace content {
@@ -97,7 +98,6 @@ class DumpAccessibilityTestBase : public ContentBrowserTest,
   // string to appear before comparing the results. There can be multiple
   // @WAIT-FOR: directives.
   void ParseHtmlForExtraDirectives(
-      const DumpAccessibilityTestHelper& test_helper,
       const std::string& test_html,
       std::vector<std::string>* no_load_expected,
       std::vector<std::string>* wait_for,
@@ -136,6 +136,9 @@ class DumpAccessibilityTestBase : public ContentBrowserTest,
   bool enable_accessibility_after_navigating_;
 
   base::test::ScopedFeatureList scoped_feature_list_;
+
+ protected:
+  DumpAccessibilityTestHelper test_helper_;
 
  private:
   BrowserAccessibility* FindNodeInSubtree(BrowserAccessibility& node,

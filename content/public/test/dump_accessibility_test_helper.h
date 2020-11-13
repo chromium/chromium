@@ -10,6 +10,7 @@
 #include "base/optional.h"
 
 namespace base {
+class CommandLine;
 class FilePath;
 }
 
@@ -30,6 +31,9 @@ class DumpAccessibilityTestHelper {
   // suitable expectation file can be found, logs an error message and returns
   // an empty path.
   base::FilePath GetExpectationFilePath(const base::FilePath& test_file_path);
+
+  // Sets up a command line for the test.
+  void SetUpCommandLine(base::CommandLine*) const;
 
   // Parses property filter directive, if the line is a valid property filter
   // directive, then a new property filter is created and appneded to the list,

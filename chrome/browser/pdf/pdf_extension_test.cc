@@ -3145,15 +3145,15 @@ class PDFExtensionAccessibilityTreeDumpTest
     : public PDFExtensionTest,
       public ::testing::WithParamInterface<std::pair<bool, AXTestPass>> {
  public:
-  PDFExtensionAccessibilityTreeDumpTest() : test_pass_(GetParam().second) {}
+  PDFExtensionAccessibilityTreeDumpTest()
+      : test_pass_(GetParam().second), test_helper_(test_pass_.name) {}
   ~PDFExtensionAccessibilityTreeDumpTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     PDFExtensionTest::SetUpCommandLine(command_line);
 
     // Each test pass might require custom command-line setup
-    if (test_pass_.set_up_command_line)
-      test_pass_.set_up_command_line(command_line);
+    test_helper_.SetUpCommandLine(command_line);
   }
 
  protected:
@@ -3184,7 +3184,6 @@ class PDFExtensionAccessibilityTreeDumpTest
 
   //  See chrome/test/data/pdf/accessibility/readme.md for more info.
   void ParsePdfForExtraDirectives(
-      const content::DumpAccessibilityTestHelper& test_helper,
       const std::string& pdf_contents,
       std::vector<AXPropertyFilter>* property_filters) {
     const char kCommentMark = '%';
@@ -3193,7 +3192,7 @@ class PDFExtensionAccessibilityTreeDumpTest
       if (line.size() > 1 && line[0] == kCommentMark) {
         // Remove first character since it's the comment mark.
         std::string trimmed_line = line.substr(1);
-        test_helper.ParsePropertyFilter(trimmed_line, property_filters);
+        test_helper_.ParsePropertyFilter(trimmed_line, property_filters);
       }
     }
   }
@@ -3207,20 +3206,18 @@ class PDFExtensionAccessibilityTreeDumpTest
 
     // Set up the tree formatter. Parse filters and other directives in the test
     // file.
-    content::DumpAccessibilityTestHelper test_helper(test_pass_.name);
-
     std::unique_ptr<AXTreeFormatter> formatter = test_pass_.create_formatter();
     std::vector<AXPropertyFilter> property_filters;
     formatter->AddDefaultFilters(&property_filters);
     AddDefaultFilters(&property_filters);
-    ParsePdfForExtraDirectives(test_helper, pdf_contents, &property_filters);
+    ParsePdfForExtraDirectives(pdf_contents, &property_filters);
     formatter->SetPropertyFilters(property_filters);
 
     // Exit without running the test if we can't find an expectation file or if
     // the expectation file contains a skip marker.
     // This is used to skip certain tests on certain platforms.
     base::FilePath expected_file_path =
-        test_helper.GetExpectationFilePath(test_file_path);
+        test_helper_.GetExpectationFilePath(test_file_path);
     if (expected_file_path.empty()) {
       LOG(INFO) << "No expectation file present, ignoring test on this "
                    "platform.";
@@ -3228,7 +3225,7 @@ class PDFExtensionAccessibilityTreeDumpTest
     }
 
     base::Optional<std::vector<std::string>> expected_lines =
-        test_helper.LoadExpectationFile(expected_file_path);
+        test_helper_.LoadExpectationFile(expected_file_path);
     if (!expected_lines) {
       LOG(INFO) << "Skipping this test on this platform.";
       return;
@@ -3257,7 +3254,7 @@ class PDFExtensionAccessibilityTreeDumpTest
                           base::SPLIT_WANT_NONEMPTY);
 
     // Validate the dump against the expectation file.
-    EXPECT_TRUE(test_helper.ValidateAgainstExpectation(
+    EXPECT_TRUE(test_helper_.ValidateAgainstExpectation(
         test_file_path, expected_file_path, actual_lines, *expected_lines));
   }
 
@@ -3297,6 +3294,7 @@ class PDFExtensionAccessibilityTreeDumpTest
   }
 
   content::AccessibilityTreeFormatter::TestPass test_pass_;
+  content::DumpAccessibilityTestHelper test_helper_;
 };
 
 // Parameterize the tests so that each test-pass is run independently.

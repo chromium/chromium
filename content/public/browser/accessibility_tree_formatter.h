@@ -9,10 +9,6 @@
 #include "content/common/content_export.h"
 #include "ui/accessibility/platform/inspect/tree_formatter.h"
 
-namespace base {
-class CommandLine;
-}
-
 namespace content {
 
 // A helper class used to instantiate platform-specific accessibility
@@ -25,11 +21,9 @@ class CONTENT_EXPORT AccessibilityTreeFormatter : public ui::AXTreeFormatter {
   // Get a set of factory methods to create tree-formatters, one for each test
   // pass; see |DumpAccessibilityTestBase|.
   using FormatterFactory = std::unique_ptr<ui::AXTreeFormatter> (*)();
-  using CommandLineHelper = void (*)(base::CommandLine* command_line);
   struct TestPass {
     const char* name;
     FormatterFactory create_formatter;
-    CommandLineHelper set_up_command_line;
   };
   static std::vector<TestPass> GetTestPasses();
 };

@@ -16,7 +16,6 @@
 #include <string>
 #include <utility>
 
-#include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
@@ -30,7 +29,6 @@
 #include "base/win/scoped_variant.h"
 #include "content/browser/accessibility/accessibility_tree_formatter_utils_win.h"
 #include "content/browser/accessibility/browser_accessibility_manager.h"
-#include "ui/accessibility/accessibility_switches.h"
 #include "ui/gfx/win/hwnd_util.h"
 
 namespace {
@@ -323,12 +321,6 @@ void AccessibilityTreeFormatterUia::AddDefaultFilters(
                     AXPropertyFilter::DENY);
   // UIA_WindowPatternId
   AddPropertyFilter(property_filters, "Window.IsModal=*");
-}
-
-// static
-void AccessibilityTreeFormatterUia::SetUpCommandLineForTestPass(
-    base::CommandLine* command_line) {
-  command_line->AppendSwitch(::switches::kEnableExperimentalUIAutomation);
 }
 
 base::Value AccessibilityTreeFormatterUia::BuildTree(

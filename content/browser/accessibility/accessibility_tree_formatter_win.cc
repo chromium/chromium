@@ -14,7 +14,6 @@
 #include <string>
 #include <utility>
 
-#include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
@@ -31,7 +30,6 @@
 #include "content/browser/accessibility/browser_accessibility_manager.h"
 #include "content/browser/accessibility/browser_accessibility_win.h"
 #include "third_party/iaccessible2/ia2_api_all.h"
-#include "ui/accessibility/accessibility_switches.h"
 #include "ui/base/win/atl_module.h"
 #include "ui/gfx/win/hwnd_util.h"
 
@@ -47,7 +45,6 @@ class AccessibilityTreeFormatterWin : public AccessibilityTreeFormatterBase {
   base::Value BuildTreeForSelector(
       const AXTreeSelector& selector) const override;
 
-  static void SetUpCommandLineForTestPass(base::CommandLine* command_line);
   void AddDefaultFilters(
       std::vector<AXPropertyFilter>* property_filters) override;
 
@@ -98,17 +95,10 @@ AccessibilityTreeFormatter::GetTestPasses() {
   // In addition to the 'Blink' pass, Windows includes two accessibility APIs
   // that need to be tested independently (MSAA & UIA).
   return {
-      {"blink", &AccessibilityTreeFormatterBlink::CreateBlink, nullptr},
-      {"win", &AccessibilityTreeFormatter::Create,
-       &AccessibilityTreeFormatterWin::SetUpCommandLineForTestPass},
-      {"uia", &AccessibilityTreeFormatterUia::CreateUia,
-       &AccessibilityTreeFormatterUia::SetUpCommandLineForTestPass},
+      {"blink", &AccessibilityTreeFormatterBlink::CreateBlink},
+      {"win", &AccessibilityTreeFormatter::Create},
+      {"uia", &AccessibilityTreeFormatterUia::CreateUia},
   };
-}
-
-void AccessibilityTreeFormatterWin::SetUpCommandLineForTestPass(
-    base::CommandLine* command_line) {
-  command_line->RemoveSwitch(::switches::kEnableExperimentalUIAutomation);
 }
 
 void AccessibilityTreeFormatterWin::AddDefaultFilters(

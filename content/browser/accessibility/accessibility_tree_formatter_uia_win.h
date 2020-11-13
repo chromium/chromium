@@ -26,8 +26,6 @@ class AccessibilityTreeFormatterUia : public AccessibilityTreeFormatterBase {
 
   static std::unique_ptr<ui::AXTreeFormatter> CreateUia();
 
-  static void SetUpCommandLineForTestPass(base::CommandLine* command_line);
-
   // AccessibilityTreeFormatterBase:
   void AddDefaultFilters(
       std::vector<AXPropertyFilter>* property_filters) override;

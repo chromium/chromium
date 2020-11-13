@@ -13,6 +13,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "content/public/common/content_switches.h"
+#include "ui/accessibility/accessibility_switches.h"
 #include "ui/accessibility/platform/inspect/tree_formatter.h"
 
 #if defined(OS_WIN)
@@ -31,63 +32,84 @@ const char kMarkSkipFile[] = "#<skip";
 const char kSignalDiff[] = "*";
 const char kMarkEndOfFile[] = "<-- End-of-file -->";
 
+using SetUpCommandLine = void (*)(base::CommandLine*);
+
 struct TypeInfo {
   std::string type;
   struct Mapping {
     std::string directive_prefix;
     base::FilePath::StringType expectations_file_postfix;
+    SetUpCommandLine setup_command_line;
   } mapping;
 };
 
-const TypeInfo kTypeInfos[] = {{
-                                   "android",
-                                   {
-                                       "@ANDROID",
-                                       FILE_PATH_LITERAL("-android"),
-                                   },
-                               },
-                               {
-                                   "blink",
-                                   {
-                                       "@BLINK",
-                                       FILE_PATH_LITERAL("-blink"),
-                                   },
-                               },
-                               {
-                                   "linux",
-                                   {
-                                       "@AURALINUX",
-                                       FILE_PATH_LITERAL("-auralinux"),
-                                   },
-                               },
-                               {
-                                   "mac",
-                                   {
-                                       "@MAC",
-                                       FILE_PATH_LITERAL("-mac"),
-                                   },
-                               },
-                               {
-                                   "content",
-                                   {
-                                       "@",
-                                       FILE_PATH_LITERAL(""),
-                                   },
-                               },
-                               {
-                                   "uia",
-                                   {
-                                       "@UIA-WIN",
-                                       FILE_PATH_LITERAL("-uia-win"),
-                                   },
-                               },
-                               {
-                                   "win",
-                                   {
-                                       "@WIN",
-                                       FILE_PATH_LITERAL("-win"),
-                                   },
-                               }};
+const TypeInfo kTypeInfos[] = {
+    {
+        "android",
+        {
+            "@ANDROID",
+            FILE_PATH_LITERAL("-android"),
+            [](base::CommandLine*) {},
+        },
+    },
+    {
+        "blink",
+        {
+            "@BLINK",
+            FILE_PATH_LITERAL("-blink"),
+            [](base::CommandLine*) {},
+        },
+    },
+    {
+        "linux",
+        {
+            "@AURALINUX",
+            FILE_PATH_LITERAL("-auralinux"),
+            [](base::CommandLine*) {},
+        },
+    },
+    {
+        "mac",
+        {
+            "@MAC",
+            FILE_PATH_LITERAL("-mac"),
+            [](base::CommandLine*) {},
+        },
+    },
+    {
+        "content",
+        {
+            "@",
+            FILE_PATH_LITERAL(""),
+            [](base::CommandLine*) {},
+        },
+    },
+    {
+        "uia",
+        {
+            "@UIA-WIN",
+            FILE_PATH_LITERAL("-uia-win"),
+            [](base::CommandLine* command_line) {
+#if defined(OS_WIN)
+              command_line->AppendSwitch(
+                  ::switches::kEnableExperimentalUIAutomation);
+#endif
+            },
+        },
+    },
+    {
+        "win",
+        {
+            "@WIN",
+            FILE_PATH_LITERAL("-win"),
+            [](base::CommandLine* command_line) {
+#if defined(OS_WIN)
+              command_line->RemoveSwitch(
+                  ::switches::kEnableExperimentalUIAutomation);
+#endif
+            },
+        },
+    }};
 
 const TypeInfo::Mapping* TypeMapping(const std::string& type) {
   const TypeInfo::Mapping* mapping = nullptr;
@@ -136,6 +158,14 @@ base::FilePath DumpAccessibilityTestHelper::GetExpectationFilePath(
             << "with the switch: --"
             << switches::kGenerateAccessibilityTestExpectations;
   return base::FilePath();
+}
+
+void DumpAccessibilityTestHelper::SetUpCommandLine(
+    base::CommandLine* command_line) const {
+  const TypeInfo::Mapping* mapping = TypeMapping(expectation_type_);
+  if (mapping) {
+    mapping->setup_command_line(command_line);
+  }
 }
 
 bool DumpAccessibilityTestHelper::ParsePropertyFilter(

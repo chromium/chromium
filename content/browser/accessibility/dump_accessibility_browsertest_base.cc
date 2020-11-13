@@ -36,7 +36,6 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
-#include "content/public/test/dump_accessibility_test_helper.h"
 #include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "content/test/content_browser_test_utils_internal.h"
@@ -85,7 +84,9 @@ using ui::AXTreeFormatter;
 DumpAccessibilityTestBase::DumpAccessibilityTestBase()
     : formatter_factory_(nullptr),
       event_recorder_factory_(nullptr),
-      enable_accessibility_after_navigating_(false) {}
+      enable_accessibility_after_navigating_(false),
+      test_helper_(
+          AccessibilityTreeFormatter::GetTestPasses()[GetParam()].name) {}
 
 DumpAccessibilityTestBase::~DumpAccessibilityTestBase() {}
 
@@ -93,12 +94,8 @@ void DumpAccessibilityTestBase::SetUpCommandLine(
     base::CommandLine* command_line) {
   IsolateAllSitesForTesting(command_line);
 
-  // Each test pass might require custom command-line setup
-  auto passes = AccessibilityTreeFormatter::GetTestPasses();
-  size_t current_pass = GetParam();
-  CHECK_LT(current_pass, passes.size());
-  if (passes[current_pass].set_up_command_line)
-    passes[current_pass].set_up_command_line(command_line);
+  // Each test pass may require custom command-line setup.
+  test_helper_.SetUpCommandLine(command_line);
 }
 
 void DumpAccessibilityTestBase::SetUpOnMainThread() {
@@ -157,7 +154,6 @@ DumpAccessibilityTestBase::DumpUnfilteredAccessibilityTreeAsString() {
 }
 
 void DumpAccessibilityTestBase::ParseHtmlForExtraDirectives(
-    const DumpAccessibilityTestHelper& test_helper,
     const std::string& test_html,
     std::vector<std::string>* no_load_expected,
     std::vector<std::string>* wait_for,
@@ -166,12 +162,12 @@ void DumpAccessibilityTestBase::ParseHtmlForExtraDirectives(
     std::vector<std::string>* default_action_on) {
   for (const std::string& line : base::SplitString(
            test_html, "\n", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL)) {
-    if (test_helper.ParsePropertyFilter(line, &property_filters_) ||
-        test_helper.ParseNodeFilter(line, &node_filters_)) {
+    if (test_helper_.ParsePropertyFilter(line, &property_filters_) ||
+        test_helper_.ParseNodeFilter(line, &node_filters_)) {
       continue;
     }
 
-    Directive directive = test_helper.ParseDirective(line);
+    Directive directive = test_helper_.ParseDirective(line);
     switch (directive.type) {
       case Directive::kNoLoadExpected:
         no_load_expected->push_back(directive.value);
@@ -220,8 +216,6 @@ void DumpAccessibilityTestBase::RunTestForPlatform(
     const base::FilePath file_path,
     const char* file_dir) {
   formatter_ = formatter_factory_();
-  DumpAccessibilityTestHelper test_helper(
-      AccessibilityTreeFormatter::GetTestPasses()[GetParam()].name);
 
   // Disable the "hot tracked" state (set when the mouse is hovering over
   // an object) because it makes test output change based on the mouse position.
@@ -241,7 +235,7 @@ void DumpAccessibilityTestBase::RunTestForPlatform(
   // We have to check for this in advance in order to avoid waiting on a
   // WAIT-FOR directive in the source file that's looking for something not
   // supported on the current platform.
-  base::FilePath expected_file = test_helper.GetExpectationFilePath(file_path);
+  base::FilePath expected_file = test_helper_.GetExpectationFilePath(file_path);
   if (expected_file.empty()) {
     LOG(INFO) << "No expectation file present, ignoring test on this "
                  "platform.";
@@ -249,7 +243,7 @@ void DumpAccessibilityTestBase::RunTestForPlatform(
   }
 
   base::Optional<std::vector<std::string>> expected_lines =
-      test_helper.LoadExpectationFile(expected_file);
+      test_helper_.LoadExpectationFile(expected_file);
   if (!expected_lines) {
     LOG(INFO) << "Skipping this test on this platform.";
     return;
@@ -279,9 +273,8 @@ void DumpAccessibilityTestBase::RunTestForPlatform(
   node_filters_.clear();
   formatter_->AddDefaultFilters(&property_filters_);
   AddDefaultFilters(&property_filters_);
-  ParseHtmlForExtraDirectives(test_helper, html_contents, &no_load_expected,
-                              &wait_for, &execute, &run_until,
-                              &default_action_on);
+  ParseHtmlForExtraDirectives(html_contents, &no_load_expected, &wait_for,
+                              &execute, &run_until, &default_action_on);
 
   // Get the test URL.
   GURL url(embedded_test_server()->GetURL("/" + std::string(file_dir) + "/" +
@@ -366,7 +359,7 @@ void DumpAccessibilityTestBase::RunTestForPlatform(
   }
 
   // Validate against the expectation file.
-  bool matches_expectation = test_helper.ValidateAgainstExpectation(
+  bool matches_expectation = test_helper_.ValidateAgainstExpectation(
       file_path, expected_file, actual_lines, *expected_lines);
   EXPECT_TRUE(matches_expectation);
   if (!matches_expectation)
