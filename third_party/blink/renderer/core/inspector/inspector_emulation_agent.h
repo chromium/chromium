@@ -96,6 +96,7 @@ class CORE_EXPORT InspectorEmulationAgent final
                       ResourceRequest&,
                       const FetchInitiatorInfo&,
                       ResourceType);
+  void WillCommitLoad(LocalFrame*, DocumentLoader*);
 
   // InspectorBaseAgent overrides.
   protocol::Response disable() override;
@@ -118,6 +119,7 @@ class CORE_EXPORT InspectorEmulationAgent final
 
   Member<WebLocalFrameImpl> web_local_frame_;
   base::TimeTicks virtual_time_base_ticks_;
+  HeapVector<Member<DocumentLoader>> pending_document_loaders_;
 
   std::unique_ptr<TimeZoneController::TimeZoneOverride> timezone_override_;
 

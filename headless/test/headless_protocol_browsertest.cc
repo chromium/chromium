@@ -259,6 +259,8 @@ HEADLESS_PROTOCOL_TEST(VirtualTimeFetchKeepalive,
                        "emulation/virtual-time-fetch-keepalive.js")
 HEADLESS_PROTOCOL_TEST(VirtualTimeDisposeWhileRunning,
                        "emulation/virtual-time-dispose-while-running.js")
+HEADLESS_PROTOCOL_TEST(VirtualTimePausesDocumentLoading,
+                       "emulation/virtual-time-pauses-document-loading.js")
 
 // http://crbug.com/633321
 #if defined(OS_ANDROID)
