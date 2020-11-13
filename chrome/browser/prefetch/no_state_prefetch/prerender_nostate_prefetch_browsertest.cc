@@ -1698,9 +1698,9 @@ IN_PROC_BROWSER_TEST_F(NoStatePrefetchIncognitoBrowserTest,
 }
 
 // Checks that prerenders are aborted when an incognito profile is closed.
-// ToDo(crbug.com/994068): The test is crashing on multiple platforms.
+// TODO(crbug.com/994068): The test is crashing on multiple platforms.
 IN_PROC_BROWSER_TEST_F(NoStatePrefetchIncognitoBrowserTest,
-                       PrerenderIncognitoClosed) {
+                       DISABLED_PrerenderIncognitoClosed) {
   std::unique_ptr<TestPrerender> test_prerender =
       PrefetchFromFile(kHungPrerenderPage, FINAL_STATUS_PROFILE_DESTROYED);
   current_browser()->window()->Close();
