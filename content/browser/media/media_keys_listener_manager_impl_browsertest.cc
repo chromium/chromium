@@ -6,6 +6,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/chromeos_buildflags.h"
 #include "content/browser/browser_main_loop.h"
 #include "content/browser/media/hardware_key_media_controller.h"
 #include "content/public/test/browser_test.h"
@@ -16,6 +17,9 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/accelerators/media_keys_listener.h"
+
+// Disable on CrOS because MediaKeysListenerManager is disabled.
+#if !BUILDFLAG(IS_LACROS)
 
 namespace content {
 
@@ -345,3 +349,5 @@ IN_PROC_BROWSER_TEST_F(MediaKeysListenerManagerImplTest,
 }
 
 }  // namespace content
+
+#endif  // !BUILDFLAG(IS_LACROS)

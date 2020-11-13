@@ -135,6 +135,32 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosChromeServiceImpl {
     return feedback_remote_;
   }
 
+  // media_session_audio_focus_remote() can only be used when this method
+  // returns true;
+  bool IsMediaSessionAudioFocusAvailable();
+
+  // This must be called on the affine sequence.
+  void BindAudioFocusManager(
+      mojo::PendingReceiver<media_session::mojom::AudioFocusManager> remote);
+
+  // media_session_audio_focus_debug_remote() can only be used when this method
+  // returns true;
+  bool IsMediaSessionAudioFocusDebugAvailable();
+
+  // This must be called on the affine sequence.
+  void BindAudioFocusManagerDebug(
+      mojo::PendingReceiver<media_session::mojom::AudioFocusManagerDebug>
+          remote);
+
+  // media_session_controller_remote() can only be used when this method returns
+  // true;
+  bool IsMediaSessionControllerAvailable();
+
+  // This must be called on the affine sequence.
+  void BindMediaControllerManager(
+      mojo::PendingReceiver<media_session::mojom::MediaControllerManager>
+          remote);
+
   // account_manager_remote() can only be used if this method returns true.
   bool IsAccountManagerAvailable();
 

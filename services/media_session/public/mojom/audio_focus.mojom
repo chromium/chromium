@@ -10,7 +10,7 @@ import "services/media_session/public/mojom/media_session.mojom";
 // Next MinVersion: 8
 
 // These are the different modes the AudioFocusManager can enforce audio focus.
-[Extensible]
+[Stable, Extensible]
 enum EnforcementMode {
   // This will default to whatever enforcement mode is configured through
   // feature flags.
@@ -32,7 +32,7 @@ enum EnforcementMode {
 };
 
 // These are the different types of audio focus that can be requested.
-[Extensible]
+[Stable, Extensible]
 enum AudioFocusType {
   // Request permanent audio focus when you plan to play audio for the
   // foreseeable future (for example, when playing music) and you expect the
@@ -55,6 +55,7 @@ enum AudioFocusType {
 
 // Contains information about |MediaSessions| that have requested audio focus
 // and their current requested type.
+[Stable]
 struct AudioFocusRequestState {
   MediaSessionInfo session_info;
   AudioFocusType audio_focus_type;
@@ -64,17 +65,20 @@ struct AudioFocusRequestState {
 };
 
 // The observer for audio focus events.
+// Next method id: 2
+[Stable]
 interface AudioFocusObserver {
   // The given |session| gained audio focus.
-  OnFocusGained(AudioFocusRequestState state);
+  OnFocusGained@0(AudioFocusRequestState state);
 
   // The given |session| lost audio focus.
-  OnFocusLost(AudioFocusRequestState state);
+  OnFocusLost@1(AudioFocusRequestState state);
 };
 
 // Controls audio focus for an associated request.
 // Next Method ID: 5
 // Deprecated method IDs: 3, 4
+[Stable]
 interface AudioFocusRequestClient {
   // Requests updated audio focus for this request. If the request was granted
   // then the callback will resolve.
@@ -92,6 +96,7 @@ interface AudioFocusRequestClient {
 // the media session service.
 // Next Method ID: 9
 // Deprecated method IDs: 3
+[Stable, Uuid="acb554fd-5b45-4759-8e8e-ad4be348fba8"]
 interface AudioFocusManager {
   // Requests audio focus with |type| for the |session| with |session_info|.
   // Media sessions should provide a |request| that will provide an
@@ -152,8 +157,10 @@ interface AudioFocusManager {
 };
 
 // Provides debug information about audio focus requests.
+// Next method id: 1
+[Stable, Uuid="c3b8b522-9a66-49cf-881b-c5fd19391b76"]
 interface AudioFocusManagerDebug {
   // Gets debugging information for a |MediaSession| with |request_id|.
-  GetDebugInfoForRequest(mojo_base.mojom.UnguessableToken request_id)
+  GetDebugInfoForRequest@0(mojo_base.mojom.UnguessableToken request_id)
       => (MediaSessionDebugInfo debug_info);
 };
