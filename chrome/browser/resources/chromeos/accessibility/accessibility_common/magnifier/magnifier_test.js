@@ -12,19 +12,18 @@ GEN_INCLUDE(['../../common/rect_util.js']);
 MagnifierE2ETest = class extends E2ETestBase {
   constructor() {
     super();
-    this.mockAccessibilityPrivate = MockAccessibilityPrivate;
-    chrome.accessibilityPrivate = this.mockAccessibilityPrivate;
-
     window.RoleType = chrome.automation.RoleType;
-    window.getNextMagnifierLocation = this.getNextMagnifierLocation;
-
-    // Re-initialize AccessibilityCommon with mock AccessibilityPrivate API.
-    window.accessibilityCommon = new AccessibilityCommon();
   }
 
-  async getNextMagnifierLocation() {
+  async getNextMagnifierBounds() {
     return new Promise(resolve => {
-      chrome.accessibilityPrivate.registerMoveMagnifierToRectCallback(resolve);
+      const listener = (magnifierBounds) => {
+        chrome.accessibilityPrivate.onMagnifierBoundsChanged.removeListener(
+            listener);
+        resolve(magnifierBounds);
+      };
+      chrome.accessibilityPrivate.onMagnifierBoundsChanged.addListener(
+          listener);
     });
   }
 
@@ -51,29 +50,32 @@ MagnifierE2ETest = class extends E2ETestBase {
   }
 };
 
-// Disabled - flaky: https://crbug.com/1139939
-TEST_F(
-    'MagnifierE2ETest', 'DISABLED_MovesScreenMagnifierToFocusedElement',
-    function() {
-      const site = `
-        <button id="apple">Apple</button>
-        <button id="banana">Banana</button>
+TEST_F('MagnifierE2ETest', 'MovesScreenMagnifierToFocusedElement', function() {
+  const site = `
+        <button id="apple">Apple</button><br />
+        <button id="banana" style="margin-top: 400px">Banana</button>
       `;
-      this.runWithLoadedTree(site, async function(root) {
-        // Validate magnifier wants to move to root.
-        const rootLocation = await getNextMagnifierLocation();
-        assertTrue(RectUtil.equal(rootLocation, root.location));
+  this.runWithLoadedTree(site, async function(root) {
+    const apple = root.find({attributes: {name: 'Apple'}});
+    const banana = root.find({attributes: {name: 'Banana'}});
 
-        // Focus banana node.
-        const banana =
-            root.find({role: RoleType.BUTTON, attributes: {name: 'Banana'}});
-        banana.focus();
+    // Focus and move magnifier to apple.
+    apple.focus();
 
-        // Validate magnifier wants to move to banana.
-        const bananaLocation = await getNextMagnifierLocation();
-        assertTrue(RectUtil.equal(bananaLocation, banana.location));
-      });
-    });
+    // Verify magnifier bounds contains apple, but not banana.
+    let bounds = await this.getNextMagnifierBounds();
+    assertTrue(RectUtil.contains(bounds, apple.location));
+    assertFalse(RectUtil.contains(bounds, banana.location));
+
+    // Focus and move magnifier to banana.
+    banana.focus();
+
+    // Verify magnifier bounds contains banana, but not apple.
+    bounds = await this.getNextMagnifierBounds();
+    assertFalse(RectUtil.contains(bounds, apple.location));
+    assertTrue(RectUtil.contains(bounds, banana.location));
+  });
+});
 
 // Disabled - flaky: https://crbug.com/1145612
 TEST_F(
@@ -116,33 +118,39 @@ TEST_F(
     });
 
 
-// Disabled - flaky: https://crbug.com/1139939
 TEST_F(
-    'MagnifierE2ETest', 'DISABLED_MovesScreenMagnifierToActiveDescendant',
-    function() {
+    'MagnifierE2ETest', 'MovesScreenMagnifierToActiveDescendant', function() {
       const site = `
-    <div role="group" id="parent" aria-activedescendant="apple">
+    <span tabindex="1">Top</span>
+    <div id="group" role="group" style="width: 200px"
+        aria-activedescendant="apple">
       <div id="apple" role="treeitem">Apple</div>
-      <div id="banana" role="treeitem">Banana</div>
+      <div id="banana" role="treeitem" style="margin-top: 400px">Banana</div>
     </div>
     <script>
-      const parent = document.getElementById('parent');
-      parent.addEventListener('click', function() {
-        parent.setAttribute('aria-activedescendant', 'banana');
+      const group = document.getElementById('group');
+      group.addEventListener('click', function() {
+        group.setAttribute('aria-activedescendant', 'banana');
       });
-      </script>
+    </script>
   `;
       this.runWithLoadedTree(site, async function(root) {
-        // Click parent to change active descendant from apple to banana.
-        const parent = root.find({role: RoleType.GROUP});
-        parent.doDefault();
+        const top = root.find({attributes: {name: 'Top'}});
+        const banana = root.find({attributes: {name: 'Banana'}});
+        const group = root.find({role: RoleType.GROUP});
 
-        // Register and wait for rect from magnifier.
-        const rect = await getNextMagnifierLocation();
+        // Focus and move magnifier to top.
+        top.focus();
 
-        // Validate rect from magnifier is rect of banana.
-        const bananaNode =
-            root.find({role: RoleType.TREE_ITEM, attributes: {name: 'Banana'}});
-        assertTrue(RectUtil.equal(rect, bananaNode.location));
+        // Verify magnifier bounds don't contain banana.
+        let bounds = await this.getNextMagnifierBounds();
+        assertFalse(RectUtil.contains(bounds, banana.location));
+
+        // Click group to change active descendant to banana.
+        group.doDefault();
+
+        // Verify magnifier bounds contain banana.
+        bounds = await this.getNextMagnifierBounds();
+        assertTrue(RectUtil.contains(bounds, banana.location));
       });
     });
