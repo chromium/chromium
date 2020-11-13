@@ -188,6 +188,13 @@ message SetVolumeLimit {
   optional float max_volume_multiplier = 2;
 }
 
+// Asks the mixer to return a list of registered builtin post processors.
+message ListPostprocessors {}
+
+message PostprocessorList{
+  repeated string postprocessors = 1;
+}
+
 // Sends arbitrary config data to a specific postprocessor.
 message ConfigurePostprocessor {
   optional string name = 1;
@@ -259,4 +266,6 @@ message Generic {
   optional StreamInterruption stream_interruption = 22;
   optional SetAudioClockRate set_audio_clock_rate = 23;
   optional MixerUnderrun mixer_underrun = 24;
+  optional ListPostprocessors list_postprocessors = 25;
+  optional PostprocessorList postprocessor_list = 26;
 }

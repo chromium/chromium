@@ -40,6 +40,10 @@ void MixerControl::ConfigurePostprocessor(std::string postprocessor_name,
                 std::move(postprocessor_name), std::move(config));
 }
 
+void MixerControl::ListPostprocessors(ListPostprocessorsCallback callback) {
+  control_.Post(FROM_HERE, &ControlConnection::ListPostprocessors,
+                std::move(callback));
+}
 void MixerControl::ReloadPostprocessors() {
   control_.Post(FROM_HERE, &ControlConnection::ReloadPostprocessors);
 }

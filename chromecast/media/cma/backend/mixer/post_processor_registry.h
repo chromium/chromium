@@ -45,6 +45,11 @@ class PostProcessorRegistry {
                                               const std::string& config,
                                               int channels);
 
+  // Returns a map of registered libraries and their create functions.
+  const base::flat_map<std::string, CreateFunction>& Libraries() const {
+    return creators_;
+  }
+
  private:
   base::flat_map<std::string /* library_name */, CreateFunction> creators_;
 };

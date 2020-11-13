@@ -15,6 +15,7 @@
 #include "chromecast/media/cma/backend/mixer/loopback_handler.h"
 #include "chromecast/media/cma/backend/mixer/mixer_input_connection.h"
 #include "chromecast/media/cma/backend/mixer/mixer_loopback_connection.h"
+#include "chromecast/media/cma/backend/mixer/post_processor_registry.h"
 #include "chromecast/media/cma/backend/mixer/stream_mixer.h"
 
 namespace chromecast {
@@ -68,6 +69,9 @@ class MixerServiceReceiver::ControlConnection
                             message.set_device_volume().content_type()),
                         message.set_device_volume().volume_multiplier());
     }
+    if (message.has_list_postprocessors()) {
+      OnListPostprocessors();
+    }
     if (message.has_configure_postprocessor()) {
       mixer_->SetPostProcessorConfig(
           message.configure_postprocessor().name(),
@@ -97,6 +101,15 @@ class MixerServiceReceiver::ControlConnection
                          size_t size,
                          int64_t timestamp) override {
     return true;
+  }
+
+  void OnListPostprocessors() {
+    mixer_service::Generic message;
+    auto* postprocessor_list = message.mutable_postprocessor_list();
+    for (const auto& library_pair : PostProcessorRegistry::Get()->Libraries()) {
+      postprocessor_list->add_postprocessors(library_pair.first);
+    }
+    socket_->SendProto(message);
   }
 
   void OnConnectionError() override {
