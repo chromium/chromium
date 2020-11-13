@@ -41,7 +41,7 @@ class LogFactoryManager;
 class ServiceMetrics;
 class SystemInfo;
 
-class Service : public mojom::AudioService {
+class Service final : public mojom::AudioService {
  public:
   // Abstracts AudioManager ownership. Lives and must be accessed on a thread
   // its created on, and that thread must be AudioManager main thread.

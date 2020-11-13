@@ -55,8 +55,8 @@ namespace audio {
 // source OutputStream and format-convert it. 3) A "flow network" that runs via
 // a different task runner, to take all the audio collected in the SnooperNodes
 // and mix it into a single data stream.
-class LoopbackStream : public media::mojom::AudioInputStream,
-                       public LoopbackCoordinator::Observer {
+class LoopbackStream final : public media::mojom::AudioInputStream,
+                             public LoopbackCoordinator::Observer {
  public:
   using CreatedCallback =
       base::OnceCallback<void(media::mojom::ReadOnlyAudioDataPipePtr)>;

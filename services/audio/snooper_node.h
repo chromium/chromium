@@ -54,7 +54,7 @@ namespace audio {
 // because the inbound audio is from a source that pre-renders audio for playout
 // in the near future, while the outbound audio is audio that would have been
 // played-out in the recent past.
-class SnooperNode : public LoopbackGroupMember::Snooper {
+class SnooperNode final : public LoopbackGroupMember::Snooper {
  public:
   // Use sample counts as a precise measure of audio signal position and time
   // duration.

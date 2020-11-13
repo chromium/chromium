@@ -21,8 +21,8 @@ class LoopbackGroupMember;
 // Mutes a group of streams, from construction time until destruction time. In
 // between, LocalMuter ensures new group members are also muted. Holds all
 // mojom::LocalMuter bindings.
-class LocalMuter : public mojom::LocalMuter,
-                   public LoopbackCoordinator::Observer {
+class LocalMuter final : public mojom::LocalMuter,
+                         public LoopbackCoordinator::Observer {
  public:
   LocalMuter(LoopbackCoordinator* coordinator,
              const base::UnguessableToken& group_id);

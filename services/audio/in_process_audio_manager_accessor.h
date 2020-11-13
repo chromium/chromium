@@ -18,7 +18,8 @@ namespace audio {
 // Holds a pointer to an existing AudioManager. Must be created on AudioManager
 // main thread. To be used with in-process Audio service which does not own
 // AudioManager.
-class InProcessAudioManagerAccessor : public Service::AudioManagerAccessor {
+class InProcessAudioManagerAccessor final
+    : public Service::AudioManagerAccessor {
  public:
   explicit InProcessAudioManagerAccessor(media::AudioManager* audio_manager);
   ~InProcessAudioManagerAccessor() final;
