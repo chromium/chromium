@@ -130,8 +130,6 @@ source_set("lib") {
     "//chrome/updater:base",
     "//chrome/updater:version_header",
     "//chrome/updater/app/server/win:updater_idl_idl",
-    "//chrome/updater/app/server/win:updater_internal_idl_idl",
-    "//chrome/updater/app/server/win:updater_legacy_idl_idl",
     "//components/update_client",
     "//url:url",
   ]

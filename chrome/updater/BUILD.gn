@@ -187,8 +187,6 @@ if (is_win || is_mac) {
     if (is_win) {
       deps += [
         "//chrome/updater/app/server/win:updater_idl_idl",
-        "//chrome/updater/app/server/win:updater_internal_idl_idl",
-        "//chrome/updater/app/server/win:updater_legacy_idl_idl",
         "//chrome/updater/win:constants",
         "//chrome/updater/win:lib",
       ]
@@ -338,9 +336,6 @@ if (is_win || is_mac) {
       ]
 
       deps += [
-        "//chrome/updater/app/server/win:updater_idl_idl",
-        "//chrome/updater/app/server/win:updater_internal_idl_idl",
-        "//chrome/updater/app/server/win:updater_legacy_idl_idl",
         "//chrome/updater/win:constants",
         "//chrome/updater/win:lib",
         "//chrome/updater/win:updater_tests",

@@ -10,7 +10,6 @@
 
 #include "base/strings/string16.h"
 #include "chrome/updater/app/server/win/updater_idl.h"
-#include "chrome/updater/app/server/win/updater_internal_idl.h"
 #include "chrome/updater/update_service.h"
 
 // Definitions for native COM updater classes.

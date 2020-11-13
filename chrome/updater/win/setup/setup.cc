@@ -28,8 +28,6 @@
 #include "chrome/installer/util/self_cleaning_temp_dir.h"
 #include "chrome/installer/util/work_item_list.h"
 #include "chrome/updater/app/server/win/updater_idl.h"
-#include "chrome/updater/app/server/win/updater_internal_idl.h"
-#include "chrome/updater/app/server/win/updater_legacy_idl.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/util.h"
 #include "chrome/updater/win/constants.h"
@@ -50,9 +48,8 @@ void AddComServerWorkItems(HKEY root,
     return;
   }
 
-  for (const auto& clsid :
-       {__uuidof(UpdaterClass), __uuidof(UpdaterControlClass),
-        __uuidof(GoogleUpdate3WebUserClass)}) {
+  for (const auto& clsid : {__uuidof(UpdaterClass), CLSID_UpdaterControlClass,
+                            CLSID_GoogleUpdate3WebUserClass}) {
     const base::string16 clsid_reg_path = GetComServerClsidRegistryPath(clsid);
 
     // Delete any old registrations first.
@@ -96,7 +93,7 @@ void AddComServiceWorkItems(const base::FilePath& com_service_path,
   list->AddWorkItem(new installer::InstallServiceWorkItem(
       kWindowsServiceName, kWindowsServiceName,
       base::CommandLine(com_service_path), base::ASCIIToUTF16(UPDATER_KEY),
-      {__uuidof(UpdaterServiceClass)}, {}));
+      {CLSID_UpdaterServiceClass}, {}));
 }
 
 // Adds work items to register the COM Interfaces with Windows.
@@ -134,18 +131,16 @@ void AddComInterfacesWorkItems(HKEY root,
                                  base::win::WStringFromGUID(iid), true);
 
     // The TypeLib registration for the Ole Automation marshaler.
-    const base::FilePath qualified_typelib_path =
-        typelib_path.Append(GetComTypeLibResourceIndex(iid));
     list->AddCreateRegKeyWorkItem(root, typelib_reg_path + L"\\1.0\\0\\win32",
                                   WorkItem::kWow64Default);
     list->AddSetRegValueWorkItem(root, typelib_reg_path + L"\\1.0\\0\\win32",
                                  WorkItem::kWow64Default, L"",
-                                 qualified_typelib_path.value(), true);
+                                 typelib_path.value(), true);
     list->AddCreateRegKeyWorkItem(root, typelib_reg_path + L"\\1.0\\0\\win64",
                                   WorkItem::kWow64Default);
     list->AddSetRegValueWorkItem(root, typelib_reg_path + L"\\1.0\\0\\win64",
                                  WorkItem::kWow64Default, L"",
-                                 qualified_typelib_path.value(), true);
+                                 typelib_path.value(), true);
   }
 }
 

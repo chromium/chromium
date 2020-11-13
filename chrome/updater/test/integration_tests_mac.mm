@@ -23,6 +23,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace updater {
+
 namespace test {
 
 // crbug.com/1112527: These tests are not compatible with component build.
@@ -177,4 +178,5 @@ base::FilePath GetFakeUpdaterInstallFolderPath(const base::Version& version) {
 #endif  // !defined(COMPONENT_BUILD)
 
 }  // namespace test
+
 }  // namespace updater

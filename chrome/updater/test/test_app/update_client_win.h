@@ -10,7 +10,7 @@
 #include <windows.h>
 #include <wrl/client.h>
 
-class IUpdater;
+#include "chrome/updater/app/server/win/updater_idl.h"
 
 namespace base {
 class SingleThreadTaskRunner;

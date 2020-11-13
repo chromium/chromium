@@ -183,17 +183,6 @@ TEST_F(IntegrationTest, RegisterTestApp) {
 }
 #endif  // OS_MAC
 
-#if defined(OS_WIN)
-// Tests the COM registration after the install. For now, tests that the
-// COM interfaces are registered, which is indirectly testing the type
-// library separation for the public, private, and legacy interfaces.
-TEST_F(IntegrationTest, COMRegistration) {
-  Install();
-  ExpectInterfacesRegistered();
-  Uninstall();
-}
-#endif  // OS_WIN
-
 #endif  // defined(OS_WIN) || !defined(COMPONENT_BUILD)
 
 }  // namespace test
