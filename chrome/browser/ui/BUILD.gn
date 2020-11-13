@@ -910,6 +910,8 @@ static_library("ui") {
       "collected_cookies_infobar_delegate.h",
       "commander/apps_command_source.cc",
       "commander/apps_command_source.h",
+      "commander/bookmark_command_source.cc",
+      "commander/bookmark_command_source.h",
       "commander/command_source.cc",
       "commander/command_source.h",
       "commander/commander.cc",
