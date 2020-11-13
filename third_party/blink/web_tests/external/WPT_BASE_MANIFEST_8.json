@@ -76216,8 +76216,37 @@
         }
        ]
       ],
+      "image-orientation-background-properties-border-radius.html": [
+       "b7c80ff0f678b3d816fb122f085b12be3e81f8f2",
+       [
+        null,
+        [
+         [
+          "/css/css-images/image-orientation/reference/image-orientation-background-properties-border-radius-ref.html",
+          "=="
+         ]
+        ],
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             10,
+             10
+            ],
+            [
+             100,
+             100
+            ]
+           ]
+          ]
+         ]
+        }
+       ]
+      ],
       "image-orientation-background-properties.html": [
-       "45651286b176df4a93e3237425458c07fabfdda9",
+       "732233949e5949a6b03458c7b54edc509ba6f482",
        [
         null,
         [
@@ -192369,8 +192398,12 @@
         "a19e535dabcec2f24b7cc16e2aa7ae92ccfc99d9",
         []
        ],
+       "image-orientation-background-properties-border-radius-ref.html": [
+        "4a7e00c646fae3fe3fdab9cd87fa89b099e70250",
+        []
+       ],
        "image-orientation-background-properties-ref.html": [
-        "0d2aabc4d00d057b1fca18597602847d04513943",
+        "be5edf420b656597af97ca9940eedf5e2e90cbae",
         []
        ],
        "image-orientation-border-image-ref.html": [
@@ -240058,6 +240091,10 @@
      "73858969e02e64e97f1cc50a84935eeeb9068dfe",
      []
     ],
+    "find-range-from-text-directive-target.html": [
+     "8e119d6448a6072dbc822dd3ad06b235e569d9b7",
+     []
+    ],
     "force-load-at-top-target.html": [
      "72feec8a4086283f2df5af5994dafc79f93d387b",
      []
@@ -243778,7 +243815,19 @@
        "3f6fffb9078b74ea674951d1299e2a29ce1f93ac",
        []
       ]
-     }
+     },
+     "svglength-animation-invalid-value-1-expected.txt": [
+      "62e28a80f71c64ca3eca4613b4af2543401f1b26",
+      []
+     ],
+     "svglength-animation-invalid-value-2-expected.txt": [
+      "ca657aa805537410fbf86848c36460adc8b2f07d",
+      []
+     ],
+     "svglength-animation-invalid-value-3-expected.txt": [
+      "cbfeb7177c65ae1fd231a1019636072ce7f729f1",
+      []
+     ]
     },
     "coordinate-systems": {
      "support": {
@@ -403916,6 +403965,16 @@
     ]
    },
    "scroll-to-text-fragment": {
+    "find-range-from-text-directive.html": [
+     "ce05a92b2125dad0dfac13c7ca5f94b72cb5d810",
+     [
+      null,
+      {
+       "testdriver": true,
+       "timeout": "long"
+      }
+     ]
+    ],
     "force-load-at-top.html": [
      "1399de3d624927131c21ef9bf548825de4b059a4",
      [
@@ -414641,21 +414700,21 @@
       ]
      ],
      "svglength-animation-invalid-value-1.html": [
-      "9b45c5a8ca0dd1fec4aad07c02e6bbc7caad0a3a",
+      "90a45efa32045efad2f01c7e675ee45db802fda1",
       [
        null,
        {}
       ]
      ],
      "svglength-animation-invalid-value-2.html": [
-      "64d5884df44bc1334da2750b0c23ce52e0ad5028",
+      "f9a6bcc40d1425080cfa7793d99011a07a6d9572",
       [
        null,
        {}
       ]
      ],
      "svglength-animation-invalid-value-3.html": [
-      "0fb1794eaa2c738e17ba42a63c478d877e52de29",
+      "1e16245001a5354ec6304651e3dbdd29a60c5485",
       [
        null,
        {}

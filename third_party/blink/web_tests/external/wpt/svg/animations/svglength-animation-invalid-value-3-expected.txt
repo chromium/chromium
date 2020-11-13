@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Test SVGLength animation with invalid value: No spaces after number and unit. assert_approx_equals: expected 100 +/- 1 but got 0
+Harness: the test ran to completion.
+
