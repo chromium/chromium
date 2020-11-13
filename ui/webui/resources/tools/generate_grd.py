@@ -147,11 +147,19 @@ def main(argv):
 
   if args.input_files != None:
     assert(args.input_files_base_dir)
+    args.input_files_base_dir = args.input_files_base_dir.replace('\\', '/')
+    args.root_gen_dir = args.root_gen_dir.replace('\\', '/')
+
+    # Detect whether the input files reside under $root_src_dir or
+    # $root_gen_dir.
+    base_dir = os.path.join('${root_src_dir}', args.input_files_base_dir)
+    if args.input_files_base_dir.startswith(args.root_gen_dir + '/'):
+      base_dir = args.input_files_base_dir.replace(args.root_gen_dir + '/', '${root_gen_dir}/')
+
     for filename in args.input_files:
-      filepath = os.path.join(
-          args.input_files_base_dir, filename).replace('\\', '/')
+      filepath = os.path.join(base_dir, filename).replace('\\', '/')
       grd_file.write(_generate_include_row(
-          args.grd_prefix, filename, '${root_src_dir}/' + filepath,
+          args.grd_prefix, filename, filepath,
           resource_path_rewrites, args.resource_path_prefix))
 
   if args.manifest_files != None:

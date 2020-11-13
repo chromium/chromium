@@ -111,6 +111,15 @@ class GenerateGrdTest(unittest.TestCase):
       input_files = [ 'images/test_svg.svg', 'test_html_in_src.html' ],
       input_files_base_dir = 'test_src_dir')
 
+  def testSuccessWithGeneratedInputFiles(self):
+    # For generated |input_files|, |input_files_base_dir| must be a
+    # sub-directory of |root_gen_dir|.
+    base_dir = os.path.join(_CWD, pathToHere, 'tests', 'foo', 'bar')
+    self._run_test_(
+      'expected_grd_with_generated_input_files.grd',
+      input_files = [ 'baz/a.svg', 'b.svg' ],
+      input_files_base_dir = base_dir)
+
   def testSuccessWithGrdpFiles(self):
     self._run_test_(
       EXPECTED_GRD_WITH_GRDP_FILES,
