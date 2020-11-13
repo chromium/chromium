@@ -16,7 +16,6 @@
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/no_destructor.h"
 #include "base/stl_util.h"
 #include "base/task/post_task.h"
 #include "base/threading/thread_restrictions.h"
@@ -43,7 +42,6 @@
 #include "extensions/common/api/declarative_net_request/dnr_manifest_data.h"
 #include "extensions/common/api/declarative_net_request/utils.h"
 #include "extensions/common/extension_id.h"
-#include "tools/json_schema_compiler/util.h"
 
 namespace extensions {
 namespace declarative_net_request {
@@ -167,47 +165,6 @@ void RulesMonitorService::UpdateEnabledStaticRulesets(
                      weak_factory_.GetWeakPtr(), extension.id(),
                      std::move(ids_to_disable), std::move(ids_to_enable),
                      std::move(callback)));
-}
-
-const base::ListValue& RulesMonitorService::GetSessionRulesValue(
-    const ExtensionId& extension_id) const {
-  static const base::NoDestructor<base::ListValue> empty_rules;
-  auto it = session_rules_.find(extension_id);
-  return it == session_rules_.end() ? *empty_rules : it->second;
-}
-
-std::vector<api::declarative_net_request::Rule>
-RulesMonitorService::GetSessionRules(const ExtensionId& extension_id) const {
-  std::vector<api::declarative_net_request::Rule> result;
-  base::string16 error;
-  DCHECK(json_schema_compiler::util::PopulateArrayFromList(
-      GetSessionRulesValue(extension_id), &result, &error));
-  DCHECK(error.empty());
-  return result;
-}
-
-void RulesMonitorService::UpdateSessionRules(
-    const ExtensionId& extension_id,
-    std::vector<int> rule_ids_to_remove,
-    std::vector<api::declarative_net_request::Rule> rules_to_add) {
-  std::vector<api::declarative_net_request::Rule> new_rules =
-      GetSessionRules(extension_id);
-
-  std::set<int> ids_to_remove(rule_ids_to_remove.begin(),
-                              rule_ids_to_remove.end());
-  base::EraseIf(new_rules, [&ids_to_remove](const dnr_api::Rule& rule) {
-    return base::Contains(ids_to_remove, rule.id);
-  });
-
-  new_rules.insert(new_rules.end(),
-                   std::make_move_iterator(rules_to_add.begin()),
-                   std::make_move_iterator(rules_to_add.end()));
-
-  // TODO(crbug.com/1043200): Index and evaluate session scoped rules.
-  std::unique_ptr<base::ListValue> new_rules_value = base::ListValue::From(
-      json_schema_compiler::util::CreateValueFromArray(new_rules));
-  DCHECK(new_rules_value);
-  session_rules_[extension_id] = std::move(*new_rules_value);
 }
 
 RulesMonitorService::RulesMonitorService(

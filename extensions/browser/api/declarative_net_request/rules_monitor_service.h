@@ -96,21 +96,6 @@ class RulesMonitorService : public BrowserContextKeyedAPI,
                                    std::set<RulesetID> ids_to_enable,
                                    UpdateEnabledRulesetsUICallback callback);
 
-  // Returns the list of session scoped rules for |extension_id| as a
-  // base::ListValue.
-  const base::ListValue& GetSessionRulesValue(
-      const ExtensionId& extension_id) const;
-
-  // Returns a copy of the session scoped rules for the given |extension_id|.
-  std::vector<api::declarative_net_request::Rule> GetSessionRules(
-      const ExtensionId& extension_id) const;
-
-  // Updates the session scoped rules for the given |extension_id|.
-  void UpdateSessionRules(
-      const ExtensionId& extension_id,
-      std::vector<int> rule_ids_to_remove,
-      std::vector<api::declarative_net_request::Rule> rules_to_add);
-
   RulesetManager* ruleset_manager() { return &ruleset_manager_; }
 
   const ActionTracker& action_tracker() const { return action_tracker_; }
@@ -239,9 +224,6 @@ class RulesMonitorService : public BrowserContextKeyedAPI,
   // ruleset load in response to OnExtensionLoaded.
   std::map<ExtensionId, std::unique_ptr<base::OneShotEvent>>
       tasks_pending_on_load_;
-
-  // Session scoped rules value corresponding to extensions.
-  std::map<ExtensionId, base::ListValue> session_rules_;
 
   // Must be the last member variable. See WeakPtrFactory documentation for
   // details.

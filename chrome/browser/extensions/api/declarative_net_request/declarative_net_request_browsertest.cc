@@ -350,18 +350,43 @@ class DeclarativeNetRequestBrowserTest
 
   void AddDynamicRules(const ExtensionId& extension_id,
                        const std::vector<TestRule>& rules) {
-    UpdateRules(extension_id, {}, rules, RulesetScope::kDynamic);
-  }
-  void RemoveDynamicRules(const ExtensionId& extension_id,
-                          const std::vector<int>& rule_ids) {
-    UpdateRules(extension_id, rule_ids, {}, RulesetScope::kDynamic);
+    static constexpr char kScript[] = R"(
+      chrome.declarativeNetRequest.updateDynamicRules({addRules: $1},
+        function () {
+          window.domAutomationController.send(chrome.runtime.lastError ?
+              chrome.runtime.lastError.message : 'success');
+        });
+    )";
+
+    // Serialize |rules|.
+    ListBuilder builder;
+    for (const auto& rule : rules)
+      builder.Append(rule.ToValue());
+
+    // A cast is necessary from ListValue to Value, else this fails to compile.
+    const std::string script = content::JsReplace(
+        kScript, static_cast<const base::Value&>(*builder.Build()));
+    ASSERT_EQ("success", ExecuteScriptInBackgroundPage(extension_id, script));
   }
 
-  void UpdateSessionRules(const ExtensionId& extension_id,
-                          const std::vector<int>& rule_ids_to_remove,
-                          const std::vector<TestRule>& rules_to_add) {
-    UpdateRules(extension_id, rule_ids_to_remove, rules_to_add,
-                RulesetScope::kSession);
+  void RemoveDynamicRules(const ExtensionId& extension_id,
+                          const std::vector<int> rule_ids) {
+    static constexpr char kScript[] = R"(
+      chrome.declarativeNetRequest.updateDynamicRules({removeRuleIds: $1},
+        function () {
+          window.domAutomationController.send(chrome.runtime.lastError ?
+              chrome.runtime.lastError.message : 'success');
+        });
+    )";
+
+    // Serialize |rule_ids|.
+    std::unique_ptr<base::Value> rule_ids_value =
+        ListBuilder().Append(rule_ids.begin(), rule_ids.end()).Build();
+
+    // A cast is necessary from ListValue to Value, else this fails to compile.
+    const std::string script = content::JsReplace(
+        kScript, static_cast<const base::Value&>(*rule_ids_value));
+    ASSERT_EQ("success", ExecuteScriptInBackgroundPage(extension_id, script));
   }
 
   void UpdateEnabledRulesets(
@@ -548,49 +573,6 @@ class DeclarativeNetRequestBrowserTest
   }
 
  private:
-  enum class RulesetScope { kDynamic, kSession };
-  void UpdateRules(const ExtensionId& extension_id,
-                   const std::vector<int>& rule_ids_to_remove,
-                   const std::vector<TestRule>& rules_to_add,
-                   RulesetScope scope) {
-    static constexpr char kScript[] = R"(
-      chrome.declarativeNetRequest.%s(
-        {addRules: $1, removeRuleIds: $2},
-        function() {
-          window.domAutomationController.send(chrome.runtime.lastError ?
-              chrome.runtime.lastError.message : 'success');
-        });
-    )";
-
-    // Serialize |rules_to_add|.
-    ListBuilder rules_to_add_builder;
-    for (const auto& rule : rules_to_add)
-      rules_to_add_builder.Append(rule.ToValue());
-
-    // Serialize |rule_ids|.
-    std::unique_ptr<base::Value> rule_ids_to_remove_value =
-        ListBuilder()
-            .Append(rule_ids_to_remove.begin(), rule_ids_to_remove.end())
-            .Build();
-
-    const char* function_name = nullptr;
-    switch (scope) {
-      case RulesetScope::kDynamic:
-        function_name = "updateDynamicRules";
-        break;
-      case RulesetScope::kSession:
-        function_name = "updateSessionRules";
-        break;
-    }
-
-    // A cast is necessary from ListValue to Value, else this fails to compile.
-    const std::string script = content::JsReplace(
-        base::StringPrintf(kScript, function_name),
-        static_cast<const base::Value&>(*rules_to_add_builder.Build()),
-        static_cast<const base::Value&>(*rule_ids_to_remove_value));
-    ASSERT_EQ("success", ExecuteScriptInBackgroundPage(extension_id, script));
-  }
-
   // Handler to monitor the requests which reach the EmbeddedTestServer. This
   // will be run on the EmbeddedTestServer's IO thread.
   void MonitorRequest(const net::test_server::HttpRequest& request) {
@@ -1764,33 +1746,23 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest_Packed,
 
   set_config_flags(ConfigFlag::kConfig_HasBackgroundScript);
 
-  // Block all main frame requests to "static.com".
+  // Block all main frame requests to "index.html".
   TestRule rule = CreateGenericRule();
-  rule.condition->url_filter = std::string("static.com");
+  rule.condition->url_filter = std::string("index.html");
   rule.condition->resource_types = std::vector<std::string>({"main_frame"});
-  ASSERT_NO_FATAL_FAILURE(LoadExtensionWithRules({rule}, "extension", {}));
+  ASSERT_NO_FATAL_FAILURE(LoadExtensionWithRules({rule}));
   const ExtensionId extension_id = last_loaded_extension_id();
 
-  // Add dynamic rule to block main-frame requests to "dynamic.com".
-  rule.condition->url_filter = std::string("dynamic.com");
+  // Add dynamic rule to block main-frame requests to "page.html".
+  rule.condition->url_filter = std::string("page.html");
   ASSERT_NO_FATAL_FAILURE(AddDynamicRules(extension_id, {rule}));
 
-  // Add session rule to block main-frame requests to "session.com".
-  rule.condition->url_filter = std::string("session.com");
-  ASSERT_NO_FATAL_FAILURE(UpdateSessionRules(extension_id, {}, {rule}));
-
   EXPECT_TRUE(IsNavigationBlocked(embedded_test_server()->GetURL(
-      "static.com", "/pages_with_script/index.html")));
+      "example.com", "/pages_with_script/index.html")));
   EXPECT_TRUE(IsNavigationBlocked(embedded_test_server()->GetURL(
-      "dynamic.com", "/pages_with_script/index.html")));
-
-  // TODO(crbug.com/1043200): This should be true once we start evaluating
-  // session scoped rules.
+      "example.com", "/pages_with_script/page.html")));
   EXPECT_FALSE(IsNavigationBlocked(embedded_test_server()->GetURL(
-      "session.com", "/pages_with_script/index.html")));
-
-  EXPECT_FALSE(IsNavigationBlocked(embedded_test_server()->GetURL(
-      "unmatched.com", "/pages_with_script/index.html")));
+      "example.com", "/pages_with_script/page2.html")));
 }
 
 IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest_Packed,
@@ -1799,35 +1771,14 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest_Packed,
   // directory won't be persisted across browser restarts.
   ASSERT_EQ(ExtensionLoadType::PACKED, GetParam());
 
-  const Extension* extension = nullptr;
-  for (const auto& ext : extension_registry()->enabled_extensions()) {
-    if (ext->name() == "extension") {
-      extension = ext.get();
-      break;
-    }
-  }
-  ASSERT_TRUE(extension);
-
-  // The session-scoped ruleset should not be enabled after the browser
-  // restarts. However both the static and dynamic ruleset enabled in the last
-  // session should be enabled.
-  CompositeMatcher* composite_matcher =
-      ruleset_manager()->GetMatcherForExtension(extension->id());
-  ASSERT_TRUE(composite_matcher);
-  EXPECT_THAT(
-      GetPublicRulesetIDs(*extension, *composite_matcher),
-      UnorderedElementsAre(kDefaultRulesetID, dnr_api::DYNAMIC_RULESET_ID));
-
   // Ensure that the DNR extension enabled in previous browser session still
   // correctly blocks network requests.
   EXPECT_TRUE(IsNavigationBlocked(embedded_test_server()->GetURL(
-      "static.com", "/pages_with_script/index.html")));
+      "example.com", "/pages_with_script/index.html")));
   EXPECT_TRUE(IsNavigationBlocked(embedded_test_server()->GetURL(
-      "dynamic.com", "/pages_with_script/index.html")));
+      "example.com", "/pages_with_script/page.html")));
   EXPECT_FALSE(IsNavigationBlocked(embedded_test_server()->GetURL(
-      "session.com", "/pages_with_script/index.html")));
-  EXPECT_FALSE(IsNavigationBlocked(embedded_test_server()->GetURL(
-      "unmatched.com", "/pages_with_script/index.html")));
+      "example.com", "/pages_with_script/page2.html")));
 }
 
 // Tests than an extension can omit the "declarative_net_request" manifest key

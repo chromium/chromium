@@ -5,9 +5,7 @@
 #include "extensions/browser/api/declarative_net_request/declarative_net_request_api.h"
 
 #include <memory>
-#include <set>
 #include <utility>
-#include <vector>
 
 #include "base/bind.h"
 #include "base/feature_list.h"
@@ -161,55 +159,6 @@ void DeclarativeNetRequestGetDynamicRulesFunction::OnDynamicRulesFetched(
 
   Respond(ArgumentList(
       dnr_api::GetDynamicRules::Results::Create(read_json_result.rules)));
-}
-
-DeclarativeNetRequestUpdateSessionRulesFunction::
-    DeclarativeNetRequestUpdateSessionRulesFunction() = default;
-DeclarativeNetRequestUpdateSessionRulesFunction::
-    ~DeclarativeNetRequestUpdateSessionRulesFunction() = default;
-
-ExtensionFunction::ResponseAction
-DeclarativeNetRequestUpdateSessionRulesFunction::Run() {
-  using Params = dnr_api::UpdateSessionRules::Params;
-
-  base::string16 error;
-  std::unique_ptr<Params> params(Params::Create(*args_, &error));
-  EXTENSION_FUNCTION_VALIDATE(params);
-  EXTENSION_FUNCTION_VALIDATE(error.empty());
-
-  std::vector<int> rule_ids_to_remove;
-  if (params->options.remove_rule_ids)
-    rule_ids_to_remove = std::move(*params->options.remove_rule_ids);
-
-  std::vector<api::declarative_net_request::Rule> rules_to_add;
-  if (params->options.add_rules)
-    rules_to_add = std::move(*params->options.add_rules);
-
-  // Early return if there is nothing to do.
-  if (rule_ids_to_remove.empty() && rules_to_add.empty())
-    return RespondNow(NoArguments());
-
-  auto* rules_monitor_service =
-      declarative_net_request::RulesMonitorService::Get(browser_context());
-  DCHECK(rules_monitor_service);
-  rules_monitor_service->UpdateSessionRules(
-      extension_id(), std::move(rule_ids_to_remove), std::move(rules_to_add));
-  return RespondNow(NoArguments());
-}
-
-DeclarativeNetRequestGetSessionRulesFunction::
-    DeclarativeNetRequestGetSessionRulesFunction() = default;
-DeclarativeNetRequestGetSessionRulesFunction::
-    ~DeclarativeNetRequestGetSessionRulesFunction() = default;
-
-ExtensionFunction::ResponseAction
-DeclarativeNetRequestGetSessionRulesFunction::Run() {
-  auto* rules_monitor_service =
-      declarative_net_request::RulesMonitorService::Get(browser_context());
-  DCHECK(rules_monitor_service);
-
-  return RespondNow(OneArgument(
-      rules_monitor_service->GetSessionRulesValue(extension_id()).Clone()));
 }
 
 DeclarativeNetRequestUpdateEnabledRulesetsFunction::
