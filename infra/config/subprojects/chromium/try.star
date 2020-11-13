@@ -142,6 +142,10 @@ try_.list_view(
 )
 
 try_.list_view(
+    name = "tryserver.chromium.updater",
+)
+
+try_.list_view(
     name = "tryserver.chromium.win",
     branch_selector = branches.STANDARD_MILESTONE,
 )
@@ -1390,6 +1394,26 @@ try_.chromium_mac_ios_builder(
     properties = {
         "xcode_build_version": "12b5035g",
     },
+)
+
+try_.chromium_updater_mac_builder(
+    name = "mac-updater-try-builder-rel",
+    main_list_view = "try",
+    tryjob = try_.job(
+        location_regexp = [
+            ".+/[+]/chrome/updater/.+",
+        ],
+    ),
+)
+
+try_.chromium_updater_win_builder(
+    name = "win-updater-try-builder-rel",
+    main_list_view = "try",
+    tryjob = try_.job(
+        location_regexp = [
+            ".+/[+]/chrome/updater/.+",
+        ],
+    ),
 )
 
 try_.chromium_win_builder(

@@ -293,6 +293,11 @@ builder.
   * [`//chrome/browser/vr/.+`](https://cs.chromium.org/chromium/src/chrome/browser/vr/)
   * [`//content/browser/xr/.+`](https://cs.chromium.org/chromium/src/content/browser/xr/)
 
+* [mac-updater-try-builder-rel](https://ci.chromium.org/p/chromium/builders/try/mac-updater-try-builder-rel) ([definition](https://cs.chromium.org/search?q=package:%5Echromium$+file:/cq.star$+-file:/beta/+-file:/stable/+mac-updater-try-builder-rel)) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+mac-updater-try-builder-rel))
+
+  Path regular expressions:
+  * [`//chrome/updater/.+`](https://cs.chromium.org/chromium/src/chrome/updater/)
+
 * [mac_optional_gpu_tests_rel](https://ci.chromium.org/p/chromium/builders/try/mac_optional_gpu_tests_rel) ([definition](https://cs.chromium.org/search?q=package:%5Echromium$+file:/cq.star$+-file:/beta/+-file:/stable/+mac_optional_gpu_tests_rel)) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+mac_optional_gpu_tests_rel))
 
   Path regular expressions:
@@ -311,6 +316,11 @@ builder.
   * [`//third_party/blink/renderer/platform/graphics/gpu/.+`](https://cs.chromium.org/chromium/src/third_party/blink/renderer/platform/graphics/gpu/)
   * [`//tools/clang/scripts/update.py`](https://cs.chromium.org/search?q=package:%5Echromium$+file:tools/clang/scripts/update.py)
   * [`//ui/gl/.+`](https://cs.chromium.org/chromium/src/ui/gl/)
+
+* [win-updater-try-builder-rel](https://ci.chromium.org/p/chromium/builders/try/win-updater-try-builder-rel) ([definition](https://cs.chromium.org/search?q=package:%5Echromium$+file:/cq.star$+-file:/beta/+-file:/stable/+win-updater-try-builder-rel)) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+win-updater-try-builder-rel))
+
+  Path regular expressions:
+  * [`//chrome/updater/.+`](https://cs.chromium.org/chromium/src/chrome/updater/)
 
 * [win7-rel](https://ci.chromium.org/p/chromium/builders/try/win7-rel) ([definition](https://cs.chromium.org/search?q=package:%5Echromium$+file:/cq.star$+-file:/beta/+-file:/stable/+win7-rel)) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+win7-rel))
 
