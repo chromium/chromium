@@ -208,7 +208,8 @@ class ExceptionToAbortStreamingScope {
 };
 
 RawResource* GetRawResource(ScriptState* script_state,
-                            const String& url_string) {
+                            const String& url_string,
+                            Response* response) {
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
   if (!execution_context)
     return nullptr;
@@ -220,6 +221,18 @@ RawResource* GetRawResource(ScriptState* script_state,
     return nullptr;
   Resource* resource = fetcher->CachedResource(url);
   if (!resource)
+    return nullptr;
+
+  // Make sure the resource matches the |response|. To check that, we make sure
+  // the response times match, and the response sources match.
+  const ResourceResponse& resource_response = resource->GetResponse();
+  const FetchResponseData* fetch_response_data =
+      response->GetResponse()->InternalResponse();
+  if (resource_response.ResponseTime() != fetch_response_data->ResponseTime())
+    return nullptr;
+  bool from_service_worker = fetch_response_data->ResponseSource() ==
+                             network::mojom::FetchResponseSource::kUnspecified;
+  if (resource_response.WasFetchedViaServiceWorker() != from_service_worker)
     return nullptr;
 
   // Wasm modules should be fetched as raw resources.
@@ -349,13 +362,12 @@ void StreamFromResponseCallback(
   String url = response->url();
   const std::string& url_utf8 = url.Utf8();
   streaming->SetUrl(url_utf8.c_str(), url_utf8.size());
-  RawResource* raw_resource = GetRawResource(script_state, url);
-  if (raw_resource) {
-    SingleCachedMetadataHandler* cache_handler =
-        raw_resource->ScriptCacheHandler();
+  RawResource* resource = GetRawResource(script_state, url, response);
+  if (resource) {
+    SingleCachedMetadataHandler* cache_handler = resource->ScriptCacheHandler();
     if (cache_handler) {
       auto client = std::make_shared<WasmStreamingClient>(
-          url, raw_resource->GetResponse().ResponseTime());
+          url, resource->GetResponse().ResponseTime());
       streaming->SetClient(client);
       scoped_refptr<CachedMetadata> cached_module =
           cache_handler->GetCachedMetadata(kWasmModuleTag);
