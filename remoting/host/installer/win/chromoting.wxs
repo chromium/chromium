@@ -13,7 +13,7 @@
        see http://crbug.com/121785 -->
   <?if $(var.Branding) ~= Chrome ?>
     <?define ChromotingHost = "Chrome Remote Desktop Host" ?>
-    <?define Manufacturer = "Google Inc." ?>
+    <?define Manufacturer = "Google LLC" ?>
   <?else?>
     <?define ChromotingHost = "Chromoting Host" ?>
     <?define Manufacturer = "The Chromium Authors" ?>
@@ -118,12 +118,6 @@
                       Maximum="$(var.Version)"
                       Minimum="0.0.0.0"
                       Property="OLDERVERSIONBEINGUPGRADED" />
-      <!-- Detect versions that didn't handle the usagestats value properly. -->
-      <UpgradeVersion IncludeMaximum="yes"
-                      IncludeMinimum="yes"
-                      Maximum="24.0.1312.29"
-                      Minimum="0.0.0.0"
-                      Property="BROKENUSAGESTATSVERSION" />
     </Upgrade>
 
     <Condition Message="A later version of [ProductName] is already installed. Setup will now exit.">
@@ -280,9 +274,7 @@
                         Account="LocalSystem"
                         ErrorControl="ignore"
                         Interactive="no">
-          <!-- Configure the service to restart after one minute when it
-               crashes.
-          -->
+          <!-- Configure the service to restart after 1 minute if it crashes -->
           <util:ServiceConfig
               xmlns:util="http://schemas.microsoft.com/wix/UtilExtension"
               FirstFailureActionType="restart"
@@ -622,19 +614,6 @@
         <CreateFolder/>
       </Component>
 
-      <!-- Delete the usagestats flag to reset the crash dump reporting settings
-           for existing users. -->
-      <Component Id="delete_usagestats"
-                 Guid="5c73f2b9-b865-426f-81cc-90a27ebb54aa"
-                 KeyPath="yes">
-        <Condition>BROKENUSAGESTATSVERSION</Condition>
-        <RemoveRegistryValue
-            Id="usagestats"
-            Key="SOFTWARE\Google\Update\ClientStateMedium\$(var.OmahaAppid)"
-            Name="usagestats"
-            Root="HKLM" />
-      </Component>
-
     </DirectoryRef>
 
     <!-- Register with Sawbuck. See http://code.google.com/p/sawbuck/. -->
@@ -705,7 +684,6 @@
 
     <Feature Id="chromoting_host" Level="1" Title="$(var.ChromotingHost)">
       <ComponentRef Id="credits"/>
-      <ComponentRef Id="delete_usagestats"/>
       <?if $(var.OfficialBuild) != 0 ?>
         <ComponentRef Id="omaha_registration"/>
       <?endif?>
