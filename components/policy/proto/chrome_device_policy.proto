@@ -1292,7 +1292,6 @@ message DeviceOffHoursProto {
   // are in the timezone specified by the timezone string.
   repeated WeeklyTimeIntervalProto intervals = 1;
   // Timezone in the same format as SystemTimezoneProto.timezone.
-  // If timezone isn't set then "GMT" will be used
   optional string timezone = 2;
   // List of policy proto tags which settings are ignored during OffHours
   // mode. List contains policy proto tags from ChromeDeviceSettingsProto
