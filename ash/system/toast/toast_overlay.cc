@@ -232,7 +232,7 @@ class ToastOverlayView : public views::View {
             AshColorProvider::BaseLayerType::kTransparent80)));
     if (managed_icon_) {
       managed_icon_->SetImage(gfx::CreateVectorIcon(
-          kUnifiedMenuManagedIcon,
+          kSystemMenuBusinessIcon,
           color_provider->GetContentLayerColor(
               AshColorProvider::ContentLayerType::kIconColorPrimary)));
     }
