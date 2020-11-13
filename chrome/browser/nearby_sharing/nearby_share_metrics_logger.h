@@ -31,5 +31,8 @@ void RecordNearbyShareTransferRateMetric(
     base::TimeDelta time_elapsed);
 void RecordNearbyShareTransferNumAttachmentsMetric(size_t num_text_attachments,
                                                    size_t num_file_attachments);
+void RecordNearbyShareStartAdvertisingResultMetric(
+    bool is_high_visibility,
+    location::nearby::connections::mojom::Status status);
 
 #endif  // CHROME_BROWSER_NEARBY_SHARING_NEARBY_SHARE_METRICS_LOGGER_H_

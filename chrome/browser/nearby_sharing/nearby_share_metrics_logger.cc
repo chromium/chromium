@@ -13,6 +13,10 @@
 
 namespace {
 
+const char kStartAdvertisingResultMetricPrefix[] =
+    "Nearby.Share.StartAdvertising.Result";
+const char kStartAdvertisingResultFailureReasonMetricPrefix[] =
+    "Nearby.Share.StartAdvertising.Result.FailureReason";
 const char kTransferMetricPrefix[] = "Nearby.Share.Transfer";
 const size_t kBytesPerKilobyte = 1024;
 
@@ -44,6 +48,21 @@ enum class TransferNotCompletedReason {
   kMaxValue = kUnsupportedAttachmentType
 };
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused. If entries are added, kMaxValue should
+// be updated.
+enum class StartAdvertisingFailureReason {
+  kUnknown = 0,
+  kError = 1,
+  kOutOfOrderApiCall = 2,
+  kAlreadyHaveActiveStrategy = 3,
+  kAlreadyAdvertising = 4,
+  kBluetoothError = 5,
+  kBleError = 6,
+  kWifiLanError = 7,
+  kMaxValue = kWifiLanError
+};
+
 TransferNotCompletedReason TransferMetadataStatusToTransferNotCompletedReason(
     TransferMetadata::Status status) {
   switch (status) {
@@ -73,6 +92,40 @@ TransferNotCompletedReason TransferMetadataStatusToTransferNotCompletedReason(
     case TransferMetadata::Status::kExternalProviderLaunched:
       NOTREACHED();
       return TransferNotCompletedReason::kUnknown;
+  }
+}
+
+StartAdvertisingFailureReason
+NearbyConnectionsStatusToStartAdvertisingFailureReason(
+    location::nearby::connections::mojom::Status status) {
+  switch (status) {
+    case location::nearby::connections::mojom::Status::kError:
+      return StartAdvertisingFailureReason::kError;
+    case location::nearby::connections::mojom::Status::kOutOfOrderApiCall:
+      return StartAdvertisingFailureReason::kOutOfOrderApiCall;
+    case location::nearby::connections::mojom::Status::
+        kAlreadyHaveActiveStrategy:
+      return StartAdvertisingFailureReason::kAlreadyHaveActiveStrategy;
+    case location::nearby::connections::mojom::Status::kAlreadyAdvertising:
+      return StartAdvertisingFailureReason::kAlreadyAdvertising;
+    case location::nearby::connections::mojom::Status::kBluetoothError:
+      return StartAdvertisingFailureReason::kBluetoothError;
+    case location::nearby::connections::mojom::Status::kBleError:
+      return StartAdvertisingFailureReason::kBleError;
+    case location::nearby::connections::mojom::Status::kWifiLanError:
+      return StartAdvertisingFailureReason::kWifiLanError;
+    case location::nearby::connections::mojom::Status::kSuccess:
+      NOTREACHED();
+      FALLTHROUGH;
+    case location::nearby::connections::mojom::Status::kAlreadyDiscovering:
+    case location::nearby::connections::mojom::Status::kEndpointIOError:
+    case location::nearby::connections::mojom::Status::kEndpointUnknown:
+    case location::nearby::connections::mojom::Status::kConnectionRejected:
+    case location::nearby::connections::mojom::Status::
+        kAlreadyConnectedToEndpoint:
+    case location::nearby::connections::mojom::Status::kNotConnectedToEndpoint:
+    case location::nearby::connections::mojom::Status::kPayloadUnknown:
+      return StartAdvertisingFailureReason::kUnknown;
   }
 }
 
@@ -227,4 +280,25 @@ void RecordNearbyShareTransferNumAttachmentsMetric(
       kTransferMetricPrefix + kAttachmentInfix + ".Text", num_text_attachments);
   base::UmaHistogramCounts100(
       kTransferMetricPrefix + kAttachmentInfix + ".File", num_file_attachments);
+}
+
+void RecordNearbyShareStartAdvertisingResultMetric(
+    bool is_high_visibility,
+    location::nearby::connections::mojom::Status status) {
+  const std::string mode_suffix =
+      is_high_visibility ? ".HighVisibility" : ".BLE";
+  const bool success =
+      status == location::nearby::connections::mojom::Status::kSuccess;
+
+  base::UmaHistogramBoolean(kStartAdvertisingResultMetricPrefix, success);
+  base::UmaHistogramBoolean(kStartAdvertisingResultMetricPrefix + mode_suffix,
+                            success);
+  if (!success) {
+    StartAdvertisingFailureReason reason =
+        NearbyConnectionsStatusToStartAdvertisingFailureReason(status);
+    base::UmaHistogramEnumeration(
+        kStartAdvertisingResultFailureReasonMetricPrefix, reason);
+    base::UmaHistogramEnumeration(
+        kStartAdvertisingResultFailureReasonMetricPrefix + mode_suffix, reason);
+  }
 }

@@ -3401,6 +3401,9 @@ void NearbySharingServiceImpl::UnregisterShareTarget(
 void NearbySharingServiceImpl::OnStartAdvertisingResult(
     bool used_device_name,
     NearbyConnectionsManager::ConnectionsStatus status) {
+  RecordNearbyShareStartAdvertisingResultMetric(
+      /*is_high_visibility=*/used_device_name, status);
+
   if (status == NearbyConnectionsManager::ConnectionsStatus::kSuccess) {
     NS_LOG(VERBOSE)
         << "StartAdvertising over Nearby Connections was successful.";

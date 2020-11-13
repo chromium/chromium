@@ -50429,6 +50429,17 @@ Called by update_use_counter_css.py.-->
   <int value="4" label="Transfer already in progress"/>
 </enum>
 
+<enum name="NearbyShareStartAdvertisingFailureReason">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Error"/>
+  <int value="2" label="Out-of-order API call"/>
+  <int value="3" label="Already have active strategy"/>
+  <int value="4" label="Already advertising"/>
+  <int value="5" label="Bluetooth error"/>
+  <int value="6" label="BLE error"/>
+  <int value="7" label="WiFiLAN error"/>
+</enum>
+
 <enum name="NearbyShareTransferNotCompletedReason">
   <int value="0" label="Unknown"/>
   <int value="1" label="Awaiting remote acceptance failed"/>
