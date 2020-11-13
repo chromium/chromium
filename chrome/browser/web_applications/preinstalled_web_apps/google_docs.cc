@@ -35,8 +35,7 @@ ExternalInstallOptions GetConfigForGoogleDocs() {
         GURL("https://docs.google.com/document/?usp=installed_webapp");
     info->scope = GURL("https://docs.google.com/document/");
     info->display_mode = DisplayMode::kBrowser;
-    info->icon_bitmaps_any =
-        LoadBundledIcons({IDR_PREINSTALLED_WEB_APPS_GOOGLE_DOCS_ICON_192_PNG});
+    // TODO(crbug.com/1147692): Use Google Docs icon.
     return info;
   });
 

@@ -190,8 +190,6 @@ if (!is_android) {
     defines = chrome_grit_defines
     outputs = [
       "grit/preinstalled_web_apps_resources.h",
-      "grit/preinstalled_web_apps_resources_map.cc",
-      "grit/preinstalled_web_apps_resources_map.h",
       "preinstalled_web_apps_resources.pak",
     ]
     output_dir = "$root_gen_dir/chrome"
