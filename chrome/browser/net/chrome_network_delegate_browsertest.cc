@@ -7,6 +7,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/macros.h"
 #include "base/path_service.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/net/chrome_network_delegate.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -21,7 +22,7 @@
 #include "net/base/network_delegate.h"
 #include "url/gurl.h"
 
-#if defined(OS_CHROMEOS)
+#if defined(OS_CHROMEOS) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
 class ChromeNetworkDelegateBrowserTest : public InProcessBrowserTest {
  protected:
@@ -89,4 +90,4 @@ IN_PROC_BROWSER_TEST_F(ChromeNetworkDelegateBrowserTest, AccessToSymlink) {
   EXPECT_EQ(net::ERR_ACCESS_DENIED, observer.last_net_error_code());
 }
 
-#endif  // defined(OS_CHROMEOS)
+#endif  // defined(OS_CHROMEOS) || BUILDFLAG(IS_CHROMEOS_LACROS)

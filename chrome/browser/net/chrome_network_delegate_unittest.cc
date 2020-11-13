@@ -8,12 +8,12 @@
 #include "base/macros.h"
 #include "base/path_service.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_CHROMEOS)
+#if defined(OS_CHROMEOS) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "base/system/sys_info.h"
 #include "base/time/time.h"
-#include "chrome/browser/chromeos/scoped_set_running_on_chromeos_for_testing.h"
 #include "chrome/browser/download/download_prefs.h"
 #endif
 
@@ -31,30 +31,40 @@ bool IsAccessAllowed(const std::string& path,
       base::FilePath::FromUTF8Unsafe(profile_path));
 }
 
-#if defined(OS_CHROMEOS)
+#if defined(OS_CHROMEOS) || BUILDFLAG(IS_CHROMEOS_LACROS)
 const char kLsbRelease[] =
     "CHROMEOS_RELEASE_NAME=Chrome OS\n"
     "CHROMEOS_RELEASE_VERSION=1.2.3.4\n";
-#endif
+
+// TODO(jamescook): Merge with chromeos::ScopedSetRunningOnChromeOSForTesting.
+// We can't use that here due to dependency issues.
+class ScopedIsRunningOnChromeOS {
+ public:
+  ScopedIsRunningOnChromeOS() {
+    base::SysInfo::SetChromeOSVersionInfoForTest(kLsbRelease, base::Time());
+  }
+  ~ScopedIsRunningOnChromeOS() {
+    base::SysInfo::SetChromeOSVersionInfoForTest("", base::Time());
+  }
+};
+#endif  // defined(OS_CHROMEOS) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
 }  // namespace
 
 TEST(ChromeNetworkDelegateStaticTest, IsAccessAllowed) {
-#if !defined(OS_CHROMEOS) && !defined(OS_ANDROID)
-  // Platforms other than Chrome OS and Android have access to any files.
-  EXPECT_TRUE(IsAccessAllowed("/", ""));
-  EXPECT_TRUE(IsAccessAllowed("/foo.txt", ""));
-#endif
-
-#if defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#if defined(OS_CHROMEOS) || BUILDFLAG(IS_CHROMEOS_LACROS) || defined(OS_ANDROID)
   // Chrome OS and Android don't have access to random files.
   EXPECT_FALSE(IsAccessAllowed("/", ""));
   EXPECT_FALSE(IsAccessAllowed("/foo.txt", ""));
   // Empty path should not be allowed.
   EXPECT_FALSE(IsAccessAllowed("", ""));
+#else
+  // Platforms other than Chrome OS and Android have access to any files.
+  EXPECT_TRUE(IsAccessAllowed("/", ""));
+  EXPECT_TRUE(IsAccessAllowed("/foo.txt", ""));
 #endif
 
-#if defined(OS_CHROMEOS)
+#if defined(OS_CHROMEOS) || BUILDFLAG(IS_CHROMEOS_LACROS)
   base::FilePath temp_dir;
   ASSERT_TRUE(base::PathService::Get(base::DIR_TEMP, &temp_dir));
   // Chrome OS allows the following directories.
@@ -98,8 +108,7 @@ TEST(ChromeNetworkDelegateStaticTest, IsAccessAllowed) {
       DownloadPrefs::GetDefaultDownloadDirectory().value();
   EXPECT_TRUE(IsAccessAllowed(home_downloads, ""));
   {
-    chromeos::ScopedSetRunningOnChromeOSForTesting fake_release(kLsbRelease,
-                                                                base::Time());
+    ScopedIsRunningOnChromeOS is_running_on_chromeos;
     EXPECT_FALSE(IsAccessAllowed(home_downloads, ""));
   }
 
