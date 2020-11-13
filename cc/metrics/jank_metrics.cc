@@ -4,6 +4,7 @@
 
 #include "cc/metrics/jank_metrics.h"
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <utility>
@@ -21,6 +22,13 @@ namespace {
 constexpr int kBuiltinSequenceNum =
     static_cast<int>(FrameSequenceTrackerType::kMaxType) + 1;
 constexpr int kMaximumJankHistogramIndex = 2 * kBuiltinSequenceNum;
+constexpr int kMaximumStaleHistogramIndex = kBuiltinSequenceNum;
+
+constexpr base::TimeDelta kStaleHistogramMin =
+    base::TimeDelta::FromMicroseconds(1);
+constexpr base::TimeDelta kStaleHistogramMax =
+    base::TimeDelta::FromMilliseconds(1000);
+constexpr int kStaleHistogramBucketCount = 200;
 
 constexpr bool IsValidJankThreadType(FrameSequenceMetrics::ThreadType type) {
   return type == FrameSequenceMetrics::ThreadType::kCompositor ||
@@ -51,10 +59,26 @@ int GetIndexForJankMetric(FrameSequenceMetrics::ThreadType thread_type,
   return static_cast<int>(type) + kBuiltinSequenceNum;
 }
 
+int GetIndexForStaleMetric(FrameSequenceTrackerType type) {
+  return static_cast<int>(type);
+}
+
 std::string GetJankHistogramName(FrameSequenceTrackerType type,
                                  const char* thread_name) {
   return base::StrCat(
       {"Graphics.Smoothness.Jank.", thread_name, ".",
+       FrameSequenceTracker::GetFrameSequenceTrackerTypeName(type)});
+}
+
+std::string GetStaleHistogramName(FrameSequenceTrackerType type) {
+  return base::StrCat(
+      {"Graphics.Smoothness.Stale.",
+       FrameSequenceTracker::GetFrameSequenceTrackerTypeName(type)});
+}
+
+std::string GetMaxStaleHistogramName(FrameSequenceTrackerType type) {
+  return base::StrCat(
+      {"Graphics.Smoothness.MaxStale.",
        FrameSequenceTracker::GetFrameSequenceTrackerTypeName(type)});
 }
 
@@ -139,8 +163,17 @@ void JankMetrics::AddPresentedFrame(
   base::TimeDelta current_frame_delta = current_presentation_timestamp -
                                         last_presentation_timestamp_ -
                                         no_update_time;
-  if (current_frame_delta < base::TimeDelta::FromMilliseconds(0))
-    current_frame_delta = base::TimeDelta::FromMilliseconds(0);
+  const base::TimeDelta zero_delta = base::TimeDelta::FromMilliseconds(0);
+
+  // Guard against the situation when the physical presentation interval is
+  // shorter than |no_update_time|. For example, consider two BeginFrames A and
+  // B separated by 5 vsync cycles of no-updates (i.e. |no_update_time| = 5
+  // vsync cycles); the Presentation of A occurs 2 vsync cycles after BeginFrame
+  // A, whereas Presentation B occurs in the same vsync cycle as BeginFrame B.
+  // In this situation, the physical presentation interval is shorter than 5
+  // vsync cycles and will result in a negative |current_frame_delta|.
+  if (current_frame_delta < zero_delta)
+    current_frame_delta = zero_delta;
 
   // Only start tracking jank if this function has already been
   // called at least once (so that |last_presentation_timestamp_|
@@ -151,18 +184,37 @@ void JankMetrics::AddPresentedFrame(
   // with small fluctuations. The 0.5 * |frame_interval| criterion
   // is chosen so that the jank detection is robust to those
   // fluctuations.
-  if (!last_presentation_timestamp_.is_null() && !prev_frame_delta_.is_zero() &&
-      current_frame_delta > prev_frame_delta_ + 0.5 * frame_interval) {
-    jank_count_++;
+  if (!last_presentation_timestamp_.is_null()) {
+    base::TimeDelta staleness = current_frame_delta - frame_interval;
+    if (staleness < zero_delta)
+      staleness = zero_delta;
 
-    TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP1(
-        "cc,benchmark", "Jank", TRACE_ID_LOCAL(this),
-        last_presentation_timestamp_, "thread-type",
-        GetJankThreadTypeName(effective_thread_));
-    TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP1(
-        "cc,benchmark", "Jank", TRACE_ID_LOCAL(this),
-        current_presentation_timestamp, "tracker-type",
-        FrameSequenceTracker::GetFrameSequenceTrackerTypeName(tracker_type_));
+    if (tracker_type_ != FrameSequenceTrackerType::kCustom) {
+      STATIC_HISTOGRAM_POINTER_GROUP(
+          GetStaleHistogramName(tracker_type_),
+          GetIndexForStaleMetric(tracker_type_), kMaximumStaleHistogramIndex,
+          AddTimeMillisecondsGranularity(staleness),
+          base::Histogram::FactoryTimeGet(
+              GetStaleHistogramName(tracker_type_), kStaleHistogramMin,
+              kStaleHistogramMax, kStaleHistogramBucketCount,
+              base::HistogramBase::kUmaTargetedHistogramFlag));
+      if (staleness > max_staleness_)
+        max_staleness_ = staleness;
+    }
+
+    if (!prev_frame_delta_.is_zero() &&
+        current_frame_delta > prev_frame_delta_ + 0.5 * frame_interval) {
+      jank_count_++;
+
+      TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP1(
+          "cc,benchmark", "Jank", TRACE_ID_LOCAL(this),
+          last_presentation_timestamp_, "thread-type",
+          GetJankThreadTypeName(effective_thread_));
+      TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP1(
+          "cc,benchmark", "Jank", TRACE_ID_LOCAL(this),
+          current_presentation_timestamp, "tracker-type",
+          FrameSequenceTracker::GetFrameSequenceTrackerTypeName(tracker_type_));
+    }
   }
   last_presentation_timestamp_ = current_presentation_timestamp;
   last_presentation_frame_id_ = presented_frame_id;
@@ -184,11 +236,23 @@ void JankMetrics::ReportJankMetrics(int frames_expected) {
       base::LinearHistogram::FactoryGet(
           GetJankHistogramName(tracker_type_, jank_thread_name), 1, 100, 101,
           base::HistogramBase::kUmaTargetedHistogramFlag));
+
+  // Report the max staleness metrics
+  STATIC_HISTOGRAM_POINTER_GROUP(
+      GetMaxStaleHistogramName(tracker_type_),
+      GetIndexForStaleMetric(tracker_type_), kMaximumStaleHistogramIndex,
+      AddTimeMillisecondsGranularity(max_staleness_),
+      base::Histogram::FactoryTimeGet(
+          GetMaxStaleHistogramName(tracker_type_), kStaleHistogramMin,
+          kStaleHistogramMax, kStaleHistogramBucketCount,
+          base::HistogramBase::kUmaTargetedHistogramFlag));
 }
 
 void JankMetrics::Merge(std::unique_ptr<JankMetrics> jank_metrics) {
-  if (jank_metrics)
+  if (jank_metrics) {
     jank_count_ += jank_metrics->jank_count_;
+    max_staleness_ = std::max(max_staleness_, jank_metrics->max_staleness_);
+  }
 }
 
 }  // namespace cc
