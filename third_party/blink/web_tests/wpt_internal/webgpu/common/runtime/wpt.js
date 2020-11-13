@@ -1,14 +1,21 @@
 /**
  * AUTO-GENERATED - DO NOT EDIT. Source: https://github.com/gpuweb/cts
- **/ import { DefaultTestFileLoader } from '../framework/file_loader.js';
+ **/ // Implements the wpt-embedded test runner (see also: wpt/cts.html).
+import { DefaultTestFileLoader } from '../framework/file_loader.js';
 import { Logger } from '../framework/logging/logger.js';
 import { parseQuery } from '../framework/query/parseQuery.js';
-
-import { AsyncMutex } from '../framework/util/async_mutex.js';
 import { assert } from '../framework/util/util.js';
 
 import { optionEnabled } from './helper/options.js';
 import { TestWorker } from './helper/test_worker.js';
+
+// testharness.js API (https://web-platform-tests.org/writing-tests/testharness-api.html)
+
+setup({
+  // It's convenient for us to asynchronously add tests to the page. Prevent done() from being
+  // called implicitly when the page is finished loading.
+  explicit_done: true,
+});
 
 (async () => {
   const loader = new DefaultTestFileLoader();
@@ -16,42 +23,30 @@ import { TestWorker } from './helper/test_worker.js';
   assert(qs.length === 1, 'currently, there must be exactly one ?q=');
   const testcases = await loader.loadCases(parseQuery(qs[0]));
 
-  await addWPTTests(testcases);
-})();
-
-// Note: `async_test`s must ALL be added within the same task. This function *must not* be async.
-function addWPTTests(testcases) {
   const worker = optionEnabled('worker') ? new TestWorker(false) : undefined;
 
   const log = new Logger(false);
-  const mutex = new AsyncMutex();
-  const running = [];
 
   for (const testcase of testcases) {
     const name = testcase.query.toString();
-    const wpt_fn = function () {
-      const p = mutex.with(async () => {
-        const [rec, res] = log.record(name);
-        if (worker) {
-          await worker.run(rec, name);
-        } else {
-          await testcase.run(rec);
+    const wpt_fn = async t => {
+      const [rec, res] = log.record(name);
+      if (worker) {
+        await worker.run(rec, name);
+      } else {
+        await testcase.run(rec);
+      }
+
+      t.step(() => {
+        // Unfortunately, it seems not possible to surface any logs for warn/skip.
+        if (res.status === 'fail') {
+          throw (res.logs || []).map(s => s.toJSON()).join('\n\n');
         }
-
-        this.step(() => {
-          // Unfortunately, it seems not possible to surface any logs for warn/skip.
-          if (res.status === 'fail') {
-            throw (res.logs || []).map(s => s.toJSON()).join('\n\n');
-          }
-        });
-        this.done();
       });
-
-      running.push(p);
     };
 
-    async_test(wpt_fn, name);
+    promise_test(wpt_fn, name);
   }
 
-  return Promise.all(running).then(() => log);
-}
+  done();
+})();

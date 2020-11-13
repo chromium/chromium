@@ -289,7 +289,7 @@ class PrimitiveTopologyTest extends GPUTest {
         GPUBufferUsage.INDEX
       );
 
-      renderPass.setIndexBuffer(indexBuffer, 0);
+      renderPass.setIndexBuffer(indexBuffer, 'uint32');
       renderPass.drawIndexed(7, 1, 0, 0, 0); // extra index for restart
     } else {
       renderPass.draw(6, 1, 0, 0);

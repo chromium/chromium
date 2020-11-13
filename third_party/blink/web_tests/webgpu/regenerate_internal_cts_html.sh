@@ -26,17 +26,19 @@ echo $expectations
 
 pushd third_party/blink > /dev/null
 
+  echo 'Extracting expectation names...'
   tools/extract_expectation_names.py web_tests/WebGPUExpectations > $expectations
 
 popd > /dev/null
 
 pushd third_party/webgpu-cts/src > /dev/null
 
+  echo 'Updating node for webgpu-cts...'
   npm install --frozen-lockfile
   npx grunt run:generate-listings
 
-  echo 'Regenerating...'
-  npx ./tools/gen_wpt_cts_html \
+  echo 'Regenerating expectations...'
+  npm run gen_wpt_cts_html \
     ../../blink/web_tests/wpt_internal/webgpu/cts.html \
     ../../blink/web_tests/webgpu/ctshtml-template.txt \
     ../../blink/web_tests/webgpu/argsprefixes.txt \

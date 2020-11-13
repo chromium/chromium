@@ -334,7 +334,19 @@ export const kRegularTextureFormatInfo = {
     blockWidth: 1,
     blockHeight: 1,
   },
-  rg11b10float: {
+  rg11b10ufloat: {
+    renderable: false,
+    color: true,
+    depth: false,
+    stencil: false,
+    storage: false,
+    copySrc: true,
+    copyDst: true,
+    bytesPerBlock: 4,
+    blockWidth: 1,
+    blockHeight: 1,
+  },
+  rgb9e5ufloat: {
     renderable: false,
     color: true,
     depth: false,
@@ -649,7 +661,7 @@ export const kCompressedTextureFormatInfo = {
     blockHeight: 4,
     extension: 'texture-compression-bc',
   },
-  'bc6h-rgb-sfloat': {
+  'bc6h-rgb-float': {
     renderable: false,
     color: true,
     depth: false,
@@ -766,6 +778,7 @@ export const kTextureComponentTypeInfo = {
   float: {},
   sint: {},
   uint: {},
+  'depth-comparison': {},
 };
 
 export const kTextureComponentTypes = keysOf(kTextureComponentTypeInfo);
@@ -892,6 +905,11 @@ export const kSamplerBindingTypes = keysOf(kSamplerBindingTypeInfo);
 
 export const kTextureBindingTypeInfo = {
   'sampled-texture': {
+    usage: GPUConst.TextureUsage.SAMPLED,
+    ...kBindingKind.sampledTex,
+    ...kValidStagesAll,
+  },
+  'multisampled-texture': {
     usage: GPUConst.TextureUsage.SAMPLED,
     ...kBindingKind.sampledTex,
     ...kValidStagesAll,

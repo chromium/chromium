@@ -79,7 +79,7 @@ class F extends ValidationTest {
     const encoder = this.device.createCommandEncoder();
     const pass = this.beginRenderPass(encoder);
     pass.setPipeline(pipeline);
-    pass.setIndexBuffer(indexBuffer);
+    pass.setIndexBuffer(indexBuffer, 'uint32');
     pass.drawIndexed(indexCount, instanceCount, firstIndex, baseVertex, firstInstance);
     pass.endPass();
 
@@ -103,7 +103,7 @@ class F extends ValidationTest {
     const encoder = this.device.createCommandEncoder();
     const pass = this.beginRenderPass(encoder);
     pass.setPipeline(pipeline);
-    pass.setIndexBuffer(indexBuffer, 0);
+    pass.setIndexBuffer(indexBuffer, 'uint32');
     pass.drawIndexedIndirect(indirectBuffer, indirectOffset);
     pass.endPass();
 

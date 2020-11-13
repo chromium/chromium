@@ -106,7 +106,7 @@ class DrawCall {
   // Insert an indexed draw call into |pass|
   drawIndexed(pass) {
     this.bindVertexBuffers(pass);
-    pass.setIndexBuffer(this.indexBuffer);
+    pass.setIndexBuffer(this.indexBuffer, 'uint16');
     pass.drawIndexed(
       this.indexCount,
       this.instanceCount,
@@ -125,7 +125,7 @@ class DrawCall {
   // Insert an indexed indirect draw call into |pass|
   drawIndexedIndirect(pass) {
     this.bindVertexBuffers(pass);
-    pass.setIndexBuffer(this.indexBuffer);
+    pass.setIndexBuffer(this.indexBuffer, 'uint16');
     pass.drawIndexedIndirect(this.generateIndexedIndirectBuffer(), 0);
   }
 

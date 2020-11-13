@@ -31,12 +31,13 @@ wpt_internal/webgpu/cts.html?q=webgpu:api,validation,copyTextureToTexture:textur
 
 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,buffers,map_oom:mappedAtCreation,smaller_getMappedRange:* [ Failure ]
 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,render_pass,storeOp:* [ Failure ]
+wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createBindGroup:buffer_binding_must_contain_exactly_one_buffer_of_its_type,* [ Failure ]
+wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createBindGroup:texture_binding_must_have_correct_usage,* [ Failure ]
 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createBindGroupLayout:bindingTypeSpecific_optional_members,* [ Failure ]
 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createBindGroupLayout:visibility,* [ Failure ]
-wpt_internal/webgpu/cts.html?q=webgpu:api,validation,render_pass,storeOp:* [ Failure ]
 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,copyBufferToBuffer:copy_with_invalid_buffer: [ Failure ]
-wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createBindGroup:buffer_binding_must_contain_exactly_one_buffer_of_its_type,* [ Failure ]
 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,encoding,cmds,compute_pass:* [ Failure ]
+wpt_internal/webgpu/cts.html?q=webgpu:api,validation,render_pass,storeOp:* [ Failure ]
 
 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,buffer_mapping:mapAsync,invalidBuffer:* [ Failure ]
 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,buffer_mapping:mapAsync,offsetAndSizeAlignment,* [ Failure ]

@@ -106,6 +106,13 @@ const float32 = {
   bitLength: 32,
 };
 
+const componentUnimplemented = {
+  write: () => {
+    unreachable('TexelComponentInfo not implemented for this texture format');
+  },
+  bitLength: 0,
+};
+
 const repeatComponents = (componentOrder, perComponentInfo) => {
   const componentInfo = componentOrder.reduce((acc, curr) => {
     return Object.assign(acc, {
@@ -160,9 +167,19 @@ const kRepresentationInfo = {
     componentInfo: { R: unorm10, G: unorm10, B: unorm10, A: unorm2 },
     sRGB: false,
   },
-  rg11b10float: {
+  rg11b10ufloat: {
     componentOrder: kRGB,
     componentInfo: { R: float11, G: float11, B: float10 },
+    sRGB: false,
+  },
+  // TODO: the e5 is shared between all components; figure out how to write it.
+  rgb9e5ufloat: {
+    componentOrder: kRGB,
+    componentInfo: {
+      R: componentUnimplemented,
+      G: componentUnimplemented,
+      B: componentUnimplemented,
+    },
     sRGB: false,
   },
 
