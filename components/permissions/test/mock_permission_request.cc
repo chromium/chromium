@@ -103,7 +103,7 @@ GURL MockPermissionRequest::GetOrigin() const {
   return origin_;
 }
 
-void MockPermissionRequest::PermissionGranted() {
+void MockPermissionRequest::PermissionGranted(bool is_one_time) {
   granted_ = true;
 }
 

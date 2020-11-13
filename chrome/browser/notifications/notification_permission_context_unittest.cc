@@ -84,13 +84,14 @@ class TestNotificationPermissionContext : public NotificationPermissionContext {
                            const GURL& embedder_origin,
                            permissions::BrowserPermissionCallback callback,
                            bool persist,
-                           ContentSetting content_setting) override {
+                           ContentSetting content_setting,
+                           bool is_one_time) override {
     permission_set_count_++;
     last_permission_set_persisted_ = persist;
     last_permission_set_setting_ = content_setting;
     NotificationPermissionContext::NotifyPermissionSet(
         id, requesting_origin, embedder_origin, std::move(callback), persist,
-        content_setting);
+        content_setting, /*is_one_time=*/false);
   }
 
   int permission_set_count_;
@@ -120,7 +121,8 @@ class NotificationPermissionContextTest
                             const GURL& requesting_origin,
                             const GURL& embedding_origin,
                             ContentSetting setting) {
-    context->UpdateContentSetting(requesting_origin, embedding_origin, setting);
+    context->UpdateContentSetting(requesting_origin, embedding_origin, setting,
+                                  /*is_one_time=*/false);
   }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)

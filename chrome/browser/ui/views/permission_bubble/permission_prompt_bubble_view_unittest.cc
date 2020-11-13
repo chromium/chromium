@@ -55,6 +55,7 @@ class TestDelegate : public permissions::PermissionPrompt::Delegate {
   }
 
   void Accept() override {}
+  void AcceptThisTime() override {}
   void Deny() override {}
   void Closing() override {}
 

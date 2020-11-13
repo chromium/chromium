@@ -131,8 +131,8 @@ void PermissionContextBase::RequestPermission(
              << embedding_origin << " (" << type_name
              << " is not supported in popups)";
     NotifyPermissionSet(id, requesting_origin, embedding_origin,
-                        std::move(callback), false /* persist */,
-                        CONTENT_SETTING_BLOCK);
+                        std::move(callback), /*persist=*/false,
+                        CONTENT_SETTING_BLOCK, /*is_one_time=*/false);
     return;
   }
 
@@ -183,8 +183,8 @@ void PermissionContextBase::RequestPermission(
     // suppressed the prompt.
     PermissionUmaUtil::RecordEmbargoPromptSuppressionFromSource(result.source);
     NotifyPermissionSet(id, requesting_origin, embedding_origin,
-                        std::move(callback), false /* persist */,
-                        result.content_setting);
+                        std::move(callback), /*persist=*/false,
+                        result.content_setting, /*is_one_time=*/false);
     return;
   }
 
@@ -401,7 +401,8 @@ void PermissionContextBase::PermissionDecided(
     const GURL& requesting_origin,
     const GURL& embedding_origin,
     BrowserPermissionCallback callback,
-    ContentSetting content_setting) {
+    ContentSetting content_setting,
+    bool is_one_time) {
   DCHECK(content_setting == CONTENT_SETTING_ALLOW ||
          content_setting == CONTENT_SETTING_BLOCK ||
          content_setting == CONTENT_SETTING_DEFAULT);
@@ -410,7 +411,8 @@ void PermissionContextBase::PermissionDecided(
 
   bool persist = content_setting != CONTENT_SETTING_DEFAULT;
   NotifyPermissionSet(id, requesting_origin, embedding_origin,
-                      std::move(callback), persist, content_setting);
+                      std::move(callback), persist, content_setting,
+                      is_one_time);
 }
 
 content::BrowserContext* PermissionContextBase::browser_context() const {
@@ -423,11 +425,14 @@ void PermissionContextBase::NotifyPermissionSet(
     const GURL& embedding_origin,
     BrowserPermissionCallback callback,
     bool persist,
-    ContentSetting content_setting) {
+    ContentSetting content_setting,
+    bool is_one_time) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  if (persist)
-    UpdateContentSetting(requesting_origin, embedding_origin, content_setting);
+  if (persist) {
+    UpdateContentSetting(requesting_origin, embedding_origin, content_setting,
+                         is_one_time);
+  }
 
   UpdateTabContext(id, requesting_origin,
                    content_setting == CONTENT_SETTING_ALLOW);
@@ -443,10 +448,10 @@ void PermissionContextBase::CleanUpRequest(const PermissionRequestID& id) {
   DCHECK(success == 1) << "Missing request " << id.ToString();
 }
 
-void PermissionContextBase::UpdateContentSetting(
-    const GURL& requesting_origin,
-    const GURL& embedding_origin,
-    ContentSetting content_setting) {
+void PermissionContextBase::UpdateContentSetting(const GURL& requesting_origin,
+                                                 const GURL& embedding_origin,
+                                                 ContentSetting content_setting,
+                                                 bool is_one_time) {
   DCHECK_EQ(requesting_origin, requesting_origin.GetOrigin());
   DCHECK_EQ(embedding_origin, embedding_origin.GetOrigin());
   DCHECK(content_setting == CONTENT_SETTING_ALLOW ||
@@ -454,10 +459,15 @@ void PermissionContextBase::UpdateContentSetting(
   DCHECK(!requesting_origin.SchemeIsFile());
   DCHECK(!embedding_origin.SchemeIsFile());
 
+  using Constraints = content_settings::ContentSettingConstraints;
   PermissionsClient::Get()
       ->GetSettingsMap(browser_context_)
-      ->SetContentSettingDefaultScope(requesting_origin, embedding_origin,
-                                      content_settings_type_, content_setting);
+      ->SetContentSettingDefaultScope(
+          requesting_origin, embedding_origin, content_settings_type_,
+          content_setting,
+          is_one_time ? Constraints{base::Time(),
+                                    content_settings::SessionModel::OneTime}
+                      : Constraints());
 }
 
 bool PermissionContextBase::PermissionAllowedByFeaturePolicy(

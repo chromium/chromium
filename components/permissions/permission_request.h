@@ -73,7 +73,10 @@ class PermissionRequest {
   virtual GURL GetOrigin() const = 0;
 
   // Called when the user has granted the requested permission.
-  virtual void PermissionGranted() = 0;
+  // If is_one_time is true the permission will last until all tabs of a given
+  // |origin| are closed or navigated away from. The permission will
+  // automatically expire after 1 day.
+  virtual void PermissionGranted(bool is_one_time) = 0;
 
   // Called when the user has denied the requested permission.
   virtual void PermissionDenied() = 0;

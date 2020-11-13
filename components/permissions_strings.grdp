@@ -134,6 +134,15 @@ This will otherwise be blocked by your privacy settings. This will allow the con
   <message name="IDS_PERMISSION_DENY" desc="Label on button to deny a permissions request.">
     Block
   </message>
+  <message name="IDS_PERMISSION_ALLOW_ONCE">
+    Only this time
+  </message>
+  <message name="IDS_PERMISSION_ALLOW_ALWAYS">
+    On every visit
+  </message>
+  <message name="IDS_PERMISSIONS_BUBBLE_PROMPT_ONE_TIME" desc="The label that is used to introduce permission request details to the user in a popup.">
+    Allow <ph name="SITE_NAME">$1<ex>google.com</ex></ph> to:
+  </message>
 
   <if expr="not is_android">
     <message name="IDS_GEOLOCATION_PERMISSION_CHIP" desc="Button text representing a request for the user's physical location from a website. When clicked, shows a permission prompt bubble with more information.">

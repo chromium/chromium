@@ -133,7 +133,8 @@ class PermissionContextBase : public KeyedService {
                                    const GURL& embedding_origin,
                                    BrowserPermissionCallback callback,
                                    bool persist,
-                                   ContentSetting content_setting);
+                                   ContentSetting content_setting,
+                                   bool is_one_time);
 
   // Implementors can override this method to update the icons on the
   // url bar with the result of the new permission.
@@ -149,7 +150,8 @@ class PermissionContextBase : public KeyedService {
   // (for example for desktop notifications).
   virtual void UpdateContentSetting(const GURL& requesting_origin,
                                     const GURL& embedding_origin,
-                                    ContentSetting content_setting);
+                                    ContentSetting content_setting,
+                                    bool is_one_time);
 
   // Whether the permission should be restricted to secure origins.
   virtual bool IsRestrictedToSecureOrigins() const = 0;
@@ -180,7 +182,8 @@ class PermissionContextBase : public KeyedService {
                          const GURL& requesting_origin,
                          const GURL& embedding_origin,
                          BrowserPermissionCallback callback,
-                         ContentSetting content_setting);
+                         ContentSetting content_setting,
+                         bool is_one_time);
 
   content::BrowserContext* browser_context_;
   const ContentSettingsType content_settings_type_;

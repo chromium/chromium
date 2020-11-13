@@ -297,16 +297,19 @@ GURL PermissionRequestImpl::GetOrigin() const {
   return request_origin_;
 }
 
-void PermissionRequestImpl::PermissionGranted() {
-  std::move(permission_decided_callback_).Run(CONTENT_SETTING_ALLOW);
+void PermissionRequestImpl::PermissionGranted(bool is_one_time) {
+  std::move(permission_decided_callback_)
+      .Run(CONTENT_SETTING_ALLOW, is_one_time);
 }
 
 void PermissionRequestImpl::PermissionDenied() {
-  std::move(permission_decided_callback_).Run(CONTENT_SETTING_BLOCK);
+  std::move(permission_decided_callback_)
+      .Run(CONTENT_SETTING_BLOCK, /*is_one_time=*/false);
 }
 
 void PermissionRequestImpl::Cancelled() {
-  std::move(permission_decided_callback_).Run(CONTENT_SETTING_DEFAULT);
+  std::move(permission_decided_callback_)
+      .Run(CONTENT_SETTING_DEFAULT, /*is_one_time=*/false);
 }
 
 void PermissionRequestImpl::RequestFinished() {

@@ -34,7 +34,10 @@ class AttestationPermissionRequest : public permissions::PermissionRequest {
         IDS_SECURITY_KEY_ATTESTATION_PERMISSION_FRAGMENT);
   }
   GURL GetOrigin() const override { return origin_.GetURL(); }
-  void PermissionGranted() override { std::move(callback_).Run(true); }
+  void PermissionGranted(bool is_one_time) override {
+    DCHECK(!is_one_time);
+    std::move(callback_).Run(true);
+  }
   void PermissionDenied() override { std::move(callback_).Run(false); }
   void Cancelled() override { std::move(callback_).Run(false); }
 

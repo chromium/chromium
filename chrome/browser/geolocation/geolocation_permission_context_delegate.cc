@@ -40,7 +40,7 @@ bool GeolocationPermissionContextDelegate::DecidePermission(
       context->NotifyPermissionSet(
           id, requesting_origin,
           web_contents->GetLastCommittedURL().GetOrigin(), std::move(*callback),
-          false /* persist */, content_setting);
+          /*persist=*/false, content_setting, /*is_one_time=*/false);
     }
     return true;
   }

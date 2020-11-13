@@ -36,6 +36,7 @@ class PermissionPromptBubbleView : public views::BubbleDialogDelegateView {
   base::string16 GetWindowTitle() const override;
 
   void AcceptPermission();
+  void AcceptPermissionThisTime();
   void DenyPermission();
   void ClosingPermission();
 
@@ -60,6 +61,11 @@ class PermissionPromptBubbleView : public views::BubbleDialogDelegateView {
 
   // Record UMA Permissions.Prompt.TimeToDecision metric.
   void RecordDecision();
+
+  // Determines whether the current request should also display an
+  // "Allow only this time" option in addition to the "Allow on every visit"
+  // option.
+  bool ShouldShowAllowThisTimeButton() const;
 
   Browser* const browser_;
   permissions::PermissionPrompt::Delegate* const delegate_;

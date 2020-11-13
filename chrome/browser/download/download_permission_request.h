@@ -30,7 +30,7 @@ class DownloadPermissionRequest : public permissions::PermissionRequest {
 #endif
   base::string16 GetMessageTextFragment() const override;
   GURL GetOrigin() const override;
-  void PermissionGranted() override;
+  void PermissionGranted(bool is_one_time) override;
   void PermissionDenied() override;
   void Cancelled() override;
   void RequestFinished() override;

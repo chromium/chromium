@@ -57,10 +57,12 @@ class StorageAccessGrantPermissionContext
                            const GURL& embedding_origin,
                            permissions::BrowserPermissionCallback callback,
                            bool persist,
-                           ContentSetting content_setting) override;
+                           ContentSetting content_setting,
+                           bool is_one_time) override;
   void UpdateContentSetting(const GURL& requesting_origin,
                             const GURL& embedding_origin,
-                            ContentSetting content_setting) override;
+                            ContentSetting content_setting,
+                            bool is_one_time) override;
 
   // Internal implementation for NotifyPermissionSet. Allows for differentiation
   // of implicit and explicit grants using |implicit_result|.

@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/views/title_origin_label.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/permissions/features.h"
 #include "components/permissions/permission_request.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/elide_url.h"
@@ -33,6 +34,7 @@
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
+#include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/color_tracking_icon_view.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -57,13 +59,40 @@ PermissionPromptBubbleView::PermissionPromptBubbleView(
   // as the default action.
   SetDefaultButton(ui::DIALOG_BUTTON_NONE);
 
-  SetButtonLabel(ui::DIALOG_BUTTON_OK,
-                 l10n_util::GetStringUTF16(IDS_PERMISSION_ALLOW));
+  if (ShouldShowAllowThisTimeButton()) {
+    if (permissions::feature_params::kOkButtonBehavesAsAllowAlways.Get()) {
+      SetButtonLabel(ui::DIALOG_BUTTON_OK,
+                     l10n_util::GetStringUTF16(IDS_PERMISSION_ALLOW_ALWAYS));
+      SetAcceptCallback(
+          base::BindOnce(&PermissionPromptBubbleView::AcceptPermission,
+                         base::Unretained(this)));
+
+      SetExtraView(std::make_unique<views::MdTextButton>(
+          base::BindRepeating(
+              &PermissionPromptBubbleView::AcceptPermissionThisTime,
+              base::Unretained(this)),
+          l10n_util::GetStringUTF16(IDS_PERMISSION_ALLOW_ONCE)));
+    } else {
+      SetButtonLabel(ui::DIALOG_BUTTON_OK,
+                     l10n_util::GetStringUTF16(IDS_PERMISSION_ALLOW_ONCE));
+      SetAcceptCallback(
+          base::BindOnce(&PermissionPromptBubbleView::AcceptPermissionThisTime,
+                         base::Unretained(this)));
+
+      SetExtraView(std::make_unique<views::MdTextButton>(
+          base::BindRepeating(&PermissionPromptBubbleView::AcceptPermission,
+                              base::Unretained(this)),
+          l10n_util::GetStringUTF16(IDS_PERMISSION_ALLOW_ALWAYS)));
+    }
+  } else {
+    SetButtonLabel(ui::DIALOG_BUTTON_OK,
+                   l10n_util::GetStringUTF16(IDS_PERMISSION_ALLOW));
+    SetAcceptCallback(base::BindOnce(
+        &PermissionPromptBubbleView::AcceptPermission, base::Unretained(this)));
+  }
+
   SetButtonLabel(ui::DIALOG_BUTTON_CANCEL,
                  l10n_util::GetStringUTF16(IDS_PERMISSION_DENY));
-
-  SetAcceptCallback(base::BindOnce(
-      &PermissionPromptBubbleView::AcceptPermission, base::Unretained(this)));
   SetCancelCallback(base::BindOnce(&PermissionPromptBubbleView::DenyPermission,
                                    base::Unretained(this)));
 
@@ -218,8 +247,13 @@ bool PermissionPromptBubbleView::ShouldShowCloseButton() const {
 }
 
 base::string16 PermissionPromptBubbleView::GetWindowTitle() const {
-  return l10n_util::GetStringFUTF16(IDS_PERMISSIONS_BUBBLE_PROMPT,
-                                    name_or_origin_.name_or_origin);
+  int message_id;
+  if (ShouldShowAllowThisTimeButton()) {
+    message_id = IDS_PERMISSIONS_BUBBLE_PROMPT_ONE_TIME;
+  } else {
+    message_id = IDS_PERMISSIONS_BUBBLE_PROMPT;
+  }
+  return l10n_util::GetStringFUTF16(message_id, name_or_origin_.name_or_origin);
 }
 
 base::string16 PermissionPromptBubbleView::GetAccessibleWindowTitle() const {
@@ -305,6 +339,11 @@ void PermissionPromptBubbleView::AcceptPermission() {
   delegate_->Accept();
 }
 
+void PermissionPromptBubbleView::AcceptPermissionThisTime() {
+  RecordDecision();
+  delegate_->AcceptThisTime();
+}
+
 void PermissionPromptBubbleView::DenyPermission() {
   RecordDecision();
   delegate_->Deny();
@@ -319,4 +358,16 @@ void PermissionPromptBubbleView::RecordDecision() {
   base::UmaHistogramLongTimes(
       "Permissions.Prompt.TimeToDecision",
       base::TimeTicks::Now() - permission_requested_time_);
+}
+
+bool PermissionPromptBubbleView::ShouldShowAllowThisTimeButton() const {
+  if (!base::FeatureList::IsEnabled(
+          permissions::features::kOneTimeGeolocationPermission)) {
+    return false;
+  }
+  if (delegate_->Requests().size() > 1)
+    return false;
+  CHECK_GT(delegate_->Requests().size(), 0u);
+  return delegate_->Requests()[0]->GetContentSettingsType() ==
+         ContentSettingsType::GEOLOCATION;
 }
