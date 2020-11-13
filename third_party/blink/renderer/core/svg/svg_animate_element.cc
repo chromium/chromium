@@ -43,12 +43,6 @@ namespace blink {
 
 namespace {
 
-bool IsTargetAttributeCSSProperty(const SVGElement& target_element,
-                                  const QualifiedName& attribute_name) {
-  return SVGElement::IsAnimatableCSSProperty(attribute_name) ||
-         target_element.IsPresentationAttribute(attribute_name);
-}
-
 String ComputeCSSPropertyValue(SVGElement* element, CSSPropertyID id) {
   DCHECK(element);
   // TODO(fs): StyleEngine doesn't support document without a frame.
@@ -217,16 +211,13 @@ void SVGAnimateElement::UpdateTargetProperty() {
 }
 
 bool SVGAnimateElement::HasValidAnimation() const {
-  if (AttributeName() == AnyQName())
-    return false;
   if (type_ == kAnimatedUnknown)
     return false;
   // Always animate CSS properties using the ApplyCSSAnimation code path,
   // regardless of the attributeType value.
   // If attributeType="CSS" and attributeName doesn't point to a CSS property,
   // ignore the animation.
-  return IsTargetAttributeCSSProperty(*targetElement(), AttributeName()) ||
-         GetAttributeType() != kAttributeTypeCSS;
+  return IsAnimatingCSSProperty() || GetAttributeType() != kAttributeTypeCSS;
 }
 
 SVGPropertyBase* SVGAnimateElement::CreatePropertyForAttributeAnimation(
