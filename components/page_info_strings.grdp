@@ -60,7 +60,7 @@
   <message name="IDS_PAGE_INFO_SAFETY_TIP_LOOKALIKE_TITLE" desc="Title of Safety Tip infobar on a domain that looks like another domain.">
     Did you mean <ph name='LOOKALIKE_DOMAIN'>$1<ex>google.com</ex></ph>?
   </message>
-  <message name="IDS_PAGE_INFO_SAFETY_TIP_LOOKALIKE_DESCRIPTION" desc="Body of a warning when the user visits a page that triggered a Safety Tip.">
+  <message name="IDS_PAGE_INFO_SAFETY_TIP_DESCRIPTION" desc="Body of a warning when the user visits a page that triggered a Safety Tip.">
     Attackers sometimes mimic sites by making hard-to-see changes to the web address.
   </message>
 

@@ -97,8 +97,7 @@ base::string16 GetSafetyTipDescription(
   switch (warning_type) {
     case security_state::SafetyTipStatus::kBadReputation:
     case security_state::SafetyTipStatus::kLookalike:
-      return l10n_util::GetStringUTF16(
-          IDS_PAGE_INFO_SAFETY_TIP_LOOKALIKE_DESCRIPTION);
+      return l10n_util::GetStringUTF16(IDS_PAGE_INFO_SAFETY_TIP_DESCRIPTION);
     case security_state::SafetyTipStatus::kBadReputationIgnored:
     case security_state::SafetyTipStatus::kLookalikeIgnored:
     case security_state::SafetyTipStatus::kBadKeyword:

@@ -231,7 +231,7 @@ CreateSecurityDescriptionForSafetyTip(
         IDS_PAGE_INFO_SAFETY_TIP_LOOKALIKE_TITLE, safe_host);
   }
   security_description->details =
-      l10n_util::GetStringUTF16(IDS_PAGE_INFO_SAFETY_TIP_LOOKALIKE_DESCRIPTION);
+      l10n_util::GetStringUTF16(IDS_PAGE_INFO_SAFETY_TIP_DESCRIPTION);
   security_description->type = PageInfoUI::SecurityDescriptionType::SAFETY_TIP;
   return security_description;
 }
