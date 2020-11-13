@@ -21,7 +21,7 @@ Chrome on Android.
  * Android Q (TrichromeChrome.aab + TrichromeLibrary.apk):
    * Trichrome uses the exact same native library as Monochrome:
      `libmonochrome.so`.
-   * `libmonochrome.so` is stored in the shared library (TrichromeLibrary.apk)
+   * `libmonochrome.so` is stored in the shared APK (TrichromeLibrary.apk)
      so that it can be shared with TrichromeWebView.
    * It is loaded by `libchromium_android_linker.so` using
      `android_dlopen_ext()` to enable RELRO sharing.
