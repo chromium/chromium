@@ -287,14 +287,11 @@ class ClipboardHistoryBitmapItemView::BitmapContentsView
           scaling_up_ratio = 1.f;
         else
           scaling_up_ratio = std::fmin(width_ratio, height_ratio);
+        DCHECK_LE(scaling_up_ratio, 1.f);
         break;
       }
       case ui::ClipboardInternalFormat::kHtml: {
-        if (width_ratio >= 1.f || height_ratio >= 1.f)
-          scaling_up_ratio = 1.f;
-        else
-          scaling_up_ratio =
-              std::fmin(std::fmax(width_ratio, height_ratio), 1.f);
+        scaling_up_ratio = std::fmax(width_ratio, height_ratio);
         break;
       }
       default:
@@ -302,7 +299,6 @@ class ClipboardHistoryBitmapItemView::BitmapContentsView
         break;
     }
 
-    DCHECK_LE(scaling_up_ratio, 1.f);
     DCHECK_GT(scaling_up_ratio, 0.f);
 
     image_view_->SetImage(image_view_->original_image(),
