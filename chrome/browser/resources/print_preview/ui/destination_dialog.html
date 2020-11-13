@@ -1,5 +1,4 @@
-<style include="print-preview-shared action-link md-select cr-hidden-style
-    throbber">
+<style include="print-preview-shared md-select cr-hidden-style throbber">
   :host-context([dir=rtl]) #manageIcon {
     transform: scaleX(-1);
   }
@@ -55,47 +54,6 @@
     margin-inline-end: 0;
   }
 
-  #dialog #promos {
-    background: rgb(248, 249, 250);
-    padding: 0;
-  }
-
-  @media (prefers-color-scheme: dark) {
-    #dialog #promos {
-      background: rgb(50, 54, 57);
-    }
-  }
-
-  #invitationPromo {
-    align-items: center;
-    color: var(--cr-primary-text-color);
-    display: flex;
-    flex-direction: column;
-    padding: 16px 20px;
-    text-align: center;
-  }
-
-  #invitationPromo .invitation-buttons {
-    display: flex;
-    padding: 12px 0;
-  }
-
-  #invitationPromo cr-button {
-    margin: 0 4px;
-  }
-
-  @media (prefers-color-scheme: light) {
-    #invitationPromo cr-button {
-      background-color: white;
-    }
-  }
-
-  #invitationPromo invitation-details {
-    color: var(--cr-secondary-text-color);
-    font-size: calc(10 / 13 * 1em);
-    font-weight: 500;
-  }
-
   cr-button iron-icon {
     --iron-icon-fill-color: currentColor;
     margin-inline-start: 8px;
@@ -141,21 +99,9 @@
       $i18n{cancel}
     </cr-button>
   </div>
-  <div id="promos" slot="footer" hidden="[[!invitation_]]">
-    <div id="invitationPromo">
-      <div inner-h-t-m-l="[[getInvitationText_(invitation_)]]"></div>
-      <div class="invitation-buttons">
-        <cr-button on-click="onInvitationAcceptClick_">
-          [[getAcceptButtonText_(invitation_)]]
-        </cr-button>
-        <cr-button on-click="onInvitationRejectClick_">
-          $i18n{reject}
-        </cr-button>
-        <div id="invitation-process-throbber" class="throbber" hidden></div>
-      </div>
-      <div class="invitation-details">
-        $i18nRaw{registerPrinterInformationMessage}
-      </div>
-    </div>
-  </div>
+  <template is="dom-if" if="[[activeUser]]">
+    <print-preview-invitation-promo slot="footer" active-user="[[activeUser]]"
+        invitation-store="[[invitationStore]]" metrics="[[metrics_]]">
+    </print-preview-invitation-promo>
+  </template>
 </cr-dialog>

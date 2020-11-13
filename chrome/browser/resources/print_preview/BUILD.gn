@@ -134,6 +134,7 @@ preprocess_grit("preprocess_generated") {
     "ui/duplex_settings.js",
     "ui/header.js",
     "ui/icons.js",
+    "ui/invitation_promo.js",
     "ui/layout_settings.js",
     "ui/margin_control.js",
     "ui/margin_control_container.js",
