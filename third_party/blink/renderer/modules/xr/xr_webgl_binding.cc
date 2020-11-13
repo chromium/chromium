@@ -31,6 +31,13 @@ XRWebGLBinding* XRWebGLBinding::Create(XRSession* session,
     return nullptr;
   }
 
+  if (!session->immersive()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "Cannot create an XRWebGLBinding for an "
+                                      "inline XRSession.");
+    return nullptr;
+  }
+
   WebGLRenderingContextBase* webgl_context =
       webglRenderingContextBaseFromUnion(context);
 
@@ -41,7 +48,7 @@ XRWebGLBinding* XRWebGLBinding::Create(XRSession* session,
     return nullptr;
   }
 
-  if (session->immersive() && !webgl_context->IsXRCompatible()) {
+  if (!webgl_context->IsXRCompatible()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         "WebGL context must be marked as XR compatible in order to "
