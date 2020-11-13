@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/location_bar/test/fake_location_bar_consumer.h"
+#import "ios/chrome/browser/ui/location_bar/test/fake_location_bar_steady_view_consumer.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
-@implementation FakeLocationBarConsumer
+@implementation FakeLocationBarSteadyViewConsumer
 
 - (void)updateLocationText:(NSString*)string clipTail:(BOOL)clipTail {
   _locationText = string;
@@ -25,14 +25,7 @@
   _locationShareable = shareable;
 }
 
-- (void)defocusOmnibox {
-}
-
 - (void)updateAfterNavigatingToNTP {
-}
-
-- (void)updateSearchByImageSupported:(BOOL)searchByImageSupported {
-  _searchByImageSupported = searchByImageSupported;
 }
 
 @end

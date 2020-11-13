@@ -13,6 +13,9 @@ source_set("location_bar") {
     "location_bar_mediator.mm",
     "location_bar_steady_view.h",
     "location_bar_steady_view.mm",
+    "location_bar_steady_view_consumer.h",
+    "location_bar_steady_view_mediator.h",
+    "location_bar_steady_view_mediator.mm",
     "location_bar_url_loader.h",
     "location_bar_view_controller.h",
     "location_bar_view_controller.mm",
@@ -140,7 +143,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "location_bar_coordinator_unittest.mm",
-    "location_bar_mediator_unittest.mm",
+    "location_bar_steady_view_mediator_unittest.mm",
   ]
   deps = [
     ":location_bar",

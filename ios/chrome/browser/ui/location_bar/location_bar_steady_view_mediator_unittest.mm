@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/location_bar/location_bar_mediator.h"
+#import "ios/chrome/browser/ui/location_bar/location_bar_steady_view_mediator.h"
 
 #include "components/omnibox/browser/test_location_bar_model.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
@@ -13,7 +13,7 @@
 #import "ios/chrome/browser/overlays/public/web_content_area/http_auth_overlay.h"
 #import "ios/chrome/browser/overlays/public/web_content_area/java_script_dialog_overlay.h"
 #include "ios/chrome/browser/overlays/test/fake_overlay_presentation_context.h"
-#import "ios/chrome/browser/ui/location_bar/test/fake_location_bar_consumer.h"
+#import "ios/chrome/browser/ui/location_bar/test/fake_location_bar_steady_view_consumer.h"
 #import "ios/chrome/browser/web_state_list/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_opener.h"
@@ -30,14 +30,14 @@
 
 using java_script_dialog_overlays::JavaScriptDialogRequest;
 
-// Test fixture for LocationBarMediator.
-class LocationBarMediatorTest : public PlatformTest {
+// Test fixture for LocationBarSteadyViewMediator.
+class LocationBarSteadyViewMediatorTest : public PlatformTest {
  protected:
-  LocationBarMediatorTest()
+  LocationBarSteadyViewMediatorTest()
       : web_state_list_(&web_state_list_delegate_),
-        mediator_(
-            [[LocationBarMediator alloc] initWithLocationBarModel:&model_]),
-        consumer_([[FakeLocationBarConsumer alloc] init]) {
+        mediator_([[LocationBarSteadyViewMediator alloc]
+            initWithLocationBarModel:&model_]),
+        consumer_([[FakeLocationBarSteadyViewConsumer alloc] init]) {
     // Set up the TestBrowser.
     TestChromeBrowserState::Builder browser_state_builder;
     browser_state_ = browser_state_builder.Build();
@@ -52,7 +52,7 @@ class LocationBarMediatorTest : public PlatformTest {
     mediator_.webContentAreaOverlayPresenter = overlay_presenter;
     mediator_.consumer = consumer_;
   }
-  ~LocationBarMediatorTest() override { [mediator_ disconnect]; }
+  ~LocationBarSteadyViewMediatorTest() override { [mediator_ disconnect]; }
 
   FakeOverlayPresentationContext presentation_context_;
   web::WebTaskEnvironment task_environment_;
@@ -61,13 +61,13 @@ class LocationBarMediatorTest : public PlatformTest {
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   std::unique_ptr<Browser> browser_;
   TestLocationBarModel model_;
-  LocationBarMediator* mediator_;
-  FakeLocationBarConsumer* consumer_;
+  LocationBarSteadyViewMediator* mediator_;
+  FakeLocationBarSteadyViewConsumer* consumer_;
 };
 
 // Tests that the share button is disabled while overlays are presented
 // over the web content area.
-TEST_F(LocationBarMediatorTest, DisableShareForOverlays) {
+TEST_F(LocationBarSteadyViewMediatorTest, DisableShareForOverlays) {
   const GURL kUrl("https://chromium.test");
   std::unique_ptr<web::TestWebState> passed_web_state =
       std::make_unique<web::TestWebState>();
@@ -95,7 +95,7 @@ TEST_F(LocationBarMediatorTest, DisableShareForOverlays) {
 
 // Tests that the location text and page icon are updated when an HTTP auth
 // dialog is displayed.
-TEST_F(LocationBarMediatorTest, HTTPAuthDialog) {
+TEST_F(LocationBarSteadyViewMediatorTest, HTTPAuthDialog) {
   const GURL kUrl("https://chromium.test");
   std::unique_ptr<web::TestWebState> passed_web_state =
       std::make_unique<web::TestWebState>();
@@ -122,7 +122,8 @@ TEST_F(LocationBarMediatorTest, HTTPAuthDialog) {
 
 // Tests that the location text is updated correctly when an HTTP auth dialog
 // finishes its dismissal after the active WebState is set to null.
-TEST_F(LocationBarMediatorTest, HTTPAuthDialogDismissalWithNullWebState) {
+TEST_F(LocationBarSteadyViewMediatorTest,
+       HTTPAuthDialogDismissalWithNullWebState) {
   const GURL kUrl("https://chromium.test");
   std::unique_ptr<web::TestWebState> passed_web_state =
       std::make_unique<web::TestWebState>();

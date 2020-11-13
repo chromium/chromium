@@ -6,8 +6,8 @@ source_set("test") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
-    "fake_location_bar_consumer.h",
-    "fake_location_bar_consumer.mm",
+    "fake_location_bar_steady_view_consumer.h",
+    "fake_location_bar_steady_view_consumer.mm",
   ]
   deps = [ "//ios/chrome/browser/ui/location_bar" ]
 }

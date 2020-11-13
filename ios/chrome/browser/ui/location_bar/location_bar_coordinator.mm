@@ -37,7 +37,10 @@
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_ui_updater.h"
 #import "ios/chrome/browser/ui/infobars/infobar_feature.h"
 #import "ios/chrome/browser/ui/location_bar/location_bar_constants.h"
+#import "ios/chrome/browser/ui/location_bar/location_bar_consumer.h"
 #import "ios/chrome/browser/ui/location_bar/location_bar_mediator.h"
+#import "ios/chrome/browser/ui/location_bar/location_bar_steady_view_consumer.h"
+#import "ios/chrome/browser/ui/location_bar/location_bar_steady_view_mediator.h"
 #import "ios/chrome/browser/ui/location_bar/location_bar_url_loader.h"
 #include "ios/chrome/browser/ui/location_bar/location_bar_view_controller.h"
 #import "ios/chrome/browser/ui/ntp/ntp_util.h"
@@ -69,6 +72,7 @@
                                       LocationBarDelegate,
                                       LocationBarViewControllerDelegate,
                                       LocationBarConsumer,
+                                      LocationBarSteadyViewConsumer,
                                       URLDragDataSource> {
   // API endpoint for omnibox.
   std::unique_ptr<WebOmniboxEditControllerImpl> _editController;
@@ -88,6 +92,7 @@
 // Coordinator for the omnibox.
 @property(nonatomic, strong) OmniboxCoordinator* omniboxCoordinator;
 @property(nonatomic, strong) LocationBarMediator* mediator;
+@property(nonatomic, strong) LocationBarSteadyViewMediator* steadyViewMediator;
 @property(nonatomic, strong) LocationBarViewController* viewController;
 @property(nonatomic, readonly) ChromeBrowserState* browserState;
 @property(nonatomic, readonly) WebStateList* webStateList;
@@ -198,14 +203,18 @@
   _badgeFullscreenUIUpdater = std::make_unique<FullscreenUIUpdater>(
       fullscreenController, self.badgeViewController);
 
-  self.mediator = [[LocationBarMediator alloc]
-      initWithLocationBarModel:[self locationBarModel]];
-  self.mediator.webStateList = self.webStateList;
-  self.mediator.webContentAreaOverlayPresenter = OverlayPresenter::FromBrowser(
-      self.browser, OverlayModality::kWebContentArea);
+  self.mediator = [[LocationBarMediator alloc] init];
   self.mediator.templateURLService =
       ios::TemplateURLServiceFactory::GetForBrowserState(self.browserState);
   self.mediator.consumer = self;
+
+  self.steadyViewMediator = [[LocationBarSteadyViewMediator alloc]
+      initWithLocationBarModel:[self locationBarModel]];
+  self.steadyViewMediator.webStateList = self.browser->GetWebStateList();
+  self.steadyViewMediator.webContentAreaOverlayPresenter =
+      OverlayPresenter::FromBrowser(self.browser,
+                                    OverlayModality::kWebContentArea);
+  self.steadyViewMediator.consumer = self;
 
   _omniboxFullscreenUIUpdater = std::make_unique<FullscreenUIUpdater>(
       fullscreenController, self.viewController);
@@ -234,8 +243,9 @@
   _editController.reset();
 
   self.viewController = nil;
-  [self.mediator disconnect];
   self.mediator = nil;
+  [self.steadyViewMediator disconnect];
+  self.steadyViewMediator = nil;
 
   _badgeFullscreenUIUpdater = nullptr;
   _omniboxFullscreenUIUpdater = nullptr;
@@ -393,14 +403,20 @@
 
 #pragma mark - LocationBarConsumer
 
+- (void)defocusOmnibox {
+  [self cancelOmniboxEdit];
+}
+
+- (void)updateSearchByImageSupported:(BOOL)searchByImageSupported {
+  self.viewController.searchByImageEnabled = searchByImageSupported;
+}
+
+#pragma mark - LocationBarSteadyViewConsumer
+
 - (void)updateLocationText:(NSString*)text clipTail:(BOOL)clipTail {
   [self.omniboxCoordinator updateOmniboxState];
   [self.viewController updateLocationText:text clipTail:clipTail];
   [self.viewController updateForNTP:NO];
-}
-
-- (void)defocusOmnibox {
-  [self cancelOmniboxEdit];
 }
 
 - (void)updateLocationIcon:(UIImage*)icon
@@ -414,10 +430,6 @@
 
 - (void)updateLocationShareable:(BOOL)shareable {
   [self.viewController setShareButtonEnabled:shareable];
-}
-
-- (void)updateSearchByImageSupported:(BOOL)searchByImageSupported {
-  self.viewController.searchByImageEnabled = searchByImageSupported;
 }
 
 #pragma mark - URLDragDataSource
