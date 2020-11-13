@@ -310,21 +310,14 @@ template("mac_toolchain") {
         link_command += " -Wl,-install_name,@rpath/\"{{target_output_name}}{{output_extension}}\" "
       }
       link_command += dsym_switch
-
-      # TODO(https://crbug.com/1147968): Try replacing -Wl,@ with just @ here,
-      # or use -L,@ in gcc_toolchain.gni too. With -Wl,@, the linker reads
-      # the response file and the compiler driver just passes on the flag
-      # verbatim. With @ without -Wl, the compiler driver reads the response
-      # file and then writes the arguments to the linker to a separate response
-      # file if the contents are long enough.
-      link_command += "{{ldflags}} -o \"$dylib\" -Wl,@\"$rspfile\" {{frameworks}} {{swiftmodules}} {{solibs}} {{libs}}"
+      link_command += "{{ldflags}} -o \"$dylib\" -Wl,-filelist,\"$rspfile\" {{frameworks}} {{swiftmodules}} {{solibs}} {{libs}}"
 
       replace_command = "if ! cmp -s \"$temporary_tocname\" \"$tocname\"; then mv \"$temporary_tocname\" \"$tocname\""
       extract_toc_command = "{ $otool -l \"$dylib\" | grep LC_ID_DYLIB -A 5; $nm -gPp \"$dylib\" | cut -f1-2 -d' ' | grep -v U\$\$; true; }"
 
       command = "if $does_reexport_command ; then $link_command && $extract_toc_command > \"$tocname\"; else $link_command && $extract_toc_command > \"$temporary_tocname\" && $replace_command ; fi; fi"
 
-      rspfile_content = "{{inputs}}"
+      rspfile_content = "{{inputs_newline}}"
 
       description = "SOLINK {{output}}"
 
@@ -364,13 +357,7 @@ template("mac_toolchain") {
       rspfile = sofile + ".rsp"
       pool = "//build/toolchain:link_pool($default_toolchain)"
 
-      # TODO(https://crbug.com/1147968): Try replacing -Wl,@ with just @ here,
-      # or use -L,@ in gcc_toolchain.gni too. With -Wl,@, the linker reads
-      # the response file and the compiler driver just passes on the flag
-      # verbatim. With @ without -Wl, the compiler driver reads the response
-      # file and then writes the arguments to the linker to a separate response
-      # file if the contents are long enough.
-      link_command = "$linker_driver $ld -bundle {{ldflags}} -o \"$sofile\" -Wl,@\"$rspfile\""
+      link_command = "$linker_driver $ld -bundle {{ldflags}} -o \"$sofile\" -Wl,-filelist,\"$rspfile\""
       if (is_component_build) {
         link_command += " -Wl,-install_name,@rpath/{{target_output_name}}{{output_extension}}"
       }
@@ -378,7 +365,7 @@ template("mac_toolchain") {
       link_command += " {{frameworks}} {{swiftmodules}} {{solibs}} {{libs}}"
       command = link_command
 
-      rspfile_content = "{{inputs}}"
+      rspfile_content = "{{inputs_newline}}"
 
       description = "SOLINK_MODULE {{output}}"
 
@@ -403,15 +390,17 @@ template("mac_toolchain") {
       rspfile = "$outfile.rsp"
       pool = "//build/toolchain:link_pool($default_toolchain)"
 
-      # TODO(https://crbug.com/1147968): Try replacing -Wl,@ with just @ here,
-      # or use -L,@ in gcc_toolchain.gni too. With -Wl,@, the linker reads
-      # the response file and the compiler driver just passes on the flag
-      # verbatim. With @ without -Wl, the compiler driver reads the response
-      # file and then writes the arguments to the linker to a separate response
-      # file if the contents are long enough.
-      command = "$linker_driver $ld $dsym_switch {{ldflags}} -o \"$outfile\" -Wl,@\"$rspfile\" {{frameworks}} {{swiftmodules}} {{solibs}} {{libs}}"
+      # Note about -filelist: Apple's linker reads the file list file and
+      # interprets each newline-separated chunk of text as a file name. It
+      # doesn't do the things one would expect from the shell like unescaping
+      # or handling quotes. In contrast, when Ninja finds a file name with
+      # spaces, it single-quotes them in $inputs_newline as it would normally
+      # do for command-line arguments. Thus any source names with spaces, or
+      # label names with spaces (which GN bases the output paths on) will be
+      # corrupted by this process. Don't use spaces for source files or labels.
+      command = "$linker_driver $ld $dsym_switch {{ldflags}} -o \"$outfile\" -Wl,-filelist,\"$rspfile\" {{frameworks}} {{swiftmodules}} {{solibs}} {{libs}}"
       description = "LINK $outfile"
-      rspfile_content = "{{inputs}}"
+      rspfile_content = "{{inputs_newline}}"
       outputs = [ outfile ]
 
       if (_enable_dsyms) {
