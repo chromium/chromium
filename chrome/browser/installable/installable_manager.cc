@@ -14,7 +14,6 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "build/build_config.h"
 #include "chrome/browser/installable/installable_metrics.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ssl/security_state_tab_helper.h"
 #include "components/security_state/core/security_state.h"
 #include "content/public/browser/browser_context.h"
@@ -252,8 +251,7 @@ InstallableManager::InstallableManager(content::WebContents* web_contents)
   if (web_contents) {
     content::StoragePartition* storage_partition =
         content::BrowserContext::GetStoragePartition(
-            Profile::FromBrowserContext(web_contents->GetBrowserContext()),
-            web_contents->GetSiteInstance());
+            web_contents->GetBrowserContext(), web_contents->GetSiteInstance());
     DCHECK(storage_partition);
 
     service_worker_context_ = storage_partition->GetServiceWorkerContext();
@@ -591,8 +589,7 @@ void InstallableManager::WorkOnTask() {
 void InstallableManager::CheckEligiblity() {
   // Fail if this is an incognito window, non-main frame, or insecure context.
   content::WebContents* web_contents = GetWebContents();
-  if (Profile::FromBrowserContext(web_contents->GetBrowserContext())
-          ->IsOffTheRecord()) {
+  if (web_contents->GetBrowserContext()->IsOffTheRecord()) {
     eligibility_->errors.push_back(IN_INCOGNITO);
   }
   if (!IsContentSecure(web_contents)) {
