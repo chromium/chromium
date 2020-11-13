@@ -44,6 +44,17 @@ void AppendConfig(std::vector<std::string>& config,
   }
 }
 
+// Appends |config| vector with key value pair, respecting max value length.
+// Key is prepent with BreakpadServerParameterPrefix_.
+void AppendConfigWithBreakpadServerParam(std::vector<std::string>& config,
+                                         std::string key,
+                                         std::string value) {
+  AppendConfig(
+      config,
+      base::StringPrintf("BreakpadServerParameterPrefix_%s", key.c_str()),
+      value);
+}
+
 }  // namespace
 
 void CreateSyntheticCrashReportForUte(
@@ -66,44 +77,41 @@ void CreateSyntheticCrashReportForUte(
   AppendConfig(config, "BreakpadURL", breakpad_url);
   AppendConfig(config, "BreakpadMinidumpLocation", path.value());
   PreviousSessionInfo* previous_session = [PreviousSessionInfo sharedInstance];
-  AppendConfig(config, "BreakpadServerParameterPrefix_free_disk_in_kb",
-               base::NumberToString(previous_session.availableDeviceStorage));
+  AppendConfigWithBreakpadServerParam(
+      config, "free_disk_in_kb",
+      base::NumberToString(previous_session.availableDeviceStorage));
   if (previous_session.didSeeMemoryWarningShortlyBeforeTerminating) {
-    AppendConfig(config,
-                 "BreakpadServerParameterPrefix_memory_warning_in_progress",
-                 "yes");
+    AppendConfigWithBreakpadServerParam(config, "memory_warning_in_progress",
+                                        "yes");
   }
 
   if (previous_session.applicationState &&
       *(previous_session.applicationState) == UIApplicationStateBackground) {
-    AppendConfig(config, "BreakpadServerParameterPrefix_crashed_in_background",
-                 "yes");
+    AppendConfigWithBreakpadServerParam(config, "crashed_in_background", "yes");
   }
 
   if (previous_session.terminatedDuringSessionRestoration) {
-    AppendConfig(config,
-                 "BreakpadServerParameterPrefix_crashed_during_session_restore",
-                 "yes");
+    AppendConfigWithBreakpadServerParam(
+        config, "crashed_during_session_restore", "yes");
   }
 
   if (previous_session.OSVersion) {
-    AppendConfig(config, "BreakpadServerParameterPrefix_osVersion",
-                 base::SysNSStringToUTF8(previous_session.OSVersion));
-    AppendConfig(config, "BreakpadServerParameterPrefix_osName", "iOS");
+    AppendConfigWithBreakpadServerParam(
+        config, "osVersion",
+        base::SysNSStringToUTF8(previous_session.OSVersion));
+    AppendConfigWithBreakpadServerParam(config, "osName", "iOS");
   }
 
-  AppendConfig(config, "BreakpadServerParameterPrefix_platform",
-               base::SysInfo::HardwareModelName());
-  AppendConfig(config, "BreakpadServerParameterPrefix_breadcrumbs",
-               base::JoinString(breadcrumbs, "\n"));
-  AppendConfig(config, "BreakpadServerParameterPrefix_signature",
-               breadcrumbs.back().substr(strlen("00:00 ")));
+  AppendConfigWithBreakpadServerParam(config, "platform",
+                                      base::SysInfo::HardwareModelName());
+  AppendConfigWithBreakpadServerParam(config, "breadcrumbs",
+                                      base::JoinString(breadcrumbs, "\n"));
+  AppendConfigWithBreakpadServerParam(
+      config, "signature", breadcrumbs.back().substr(strlen("00:00 ")));
 
   for (NSString* key in previous_session.reportParameters.allKeys) {
-    AppendConfig(
-        config,
-        base::StringPrintf("BreakpadServerParameterPrefix_%s",
-                           base::SysNSStringToUTF8(key).c_str()),
+    AppendConfigWithBreakpadServerParam(
+        config, base::SysNSStringToUTF8(key),
         base::SysNSStringToUTF8(previous_session.reportParameters[key]));
   }
 
@@ -114,8 +122,9 @@ void CreateSyntheticCrashReportForUte(
                  base::NumberToString(static_cast<long>(uptime * 1000)));
   }
 
-  AppendConfig(config, "BreakpadServerParameterPrefix_memory_footprint",
-               base::NumberToString(previous_session.memoryFootprint));
+  AppendConfigWithBreakpadServerParam(
+      config, "memory_footprint",
+      base::NumberToString(previous_session.memoryFootprint));
 
   // Write empty minidump file, as Breakpad can't upload config without the
   // minidump.
