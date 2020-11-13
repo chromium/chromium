@@ -44,8 +44,6 @@
   // Request decoding of an input chunk.
   //
   // You must call configure() before calling decode() for the first time.
-  //
-  // TODO(sandersd): Change to a dictionary type.
   [RaisesException] void decode(EncodedVideoChunk chunk);
 
   // Request output from all previous decode requests.

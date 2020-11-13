@@ -32,8 +32,6 @@
   // Request decoding of an input chunk.
   //
   // You must call configure() before calling decode() for the first time.
-  //
-  // TODO(chcunningham): Change to a dictionary type.
   [RaisesException] void decode(EncodedAudioChunk chunk);
 
   // Request output from all previous decode requests.
