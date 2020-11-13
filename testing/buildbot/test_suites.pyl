@@ -152,6 +152,11 @@
       'blink_platform_unittests': {},
       'chrome_java_test_pagecontroller_tests': {},
       'chrome_java_test_webapk_launch_tests': {},
+      'content_browsertests': {
+        'swarming': {
+          'shards': 15,
+        },
+      },
       'monochrome_public_bundle_fake_modules_smoke_test': {},
       'monochrome_public_bundle_smoke_test': {},
       'monochrome_public_smoke_test': {},

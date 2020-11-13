@@ -1058,6 +1058,9 @@
           '--gtest_filter=-BackgroundTracingManagerBrowserTest.PerfettoSystemBackgroundScenario*',
         ],
       },
+      'android-pie-arm64-rel': {
+        'experiment_percentage': 50,
+      },
       'android-pie-x86-rel': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_p.content_browsertests.filter',
