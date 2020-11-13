@@ -590,6 +590,10 @@ class ChildProcessSecurityPolicyImpl::SecurityState {
     return browsing_instance_ids_;
   }
 
+  unsigned max_browsing_instance_count() const {
+    return max_browsing_instance_count_;
+  }
+
   void ClearBrowsingInstanceId(const BrowsingInstanceId& id) {
     browsing_instance_ids_.erase(id);
   }
@@ -1636,11 +1640,13 @@ bool ChildProcessSecurityPolicyImpl::CanAccessDataForOrigin(
         // BrowsingInstances are registered in the process. Allow this for now,
         // to maintain legacy behavior, until we rule out all the ways it can
         // happen.
+        failure_reason =
+            base::StringPrintf("no BrowsingInstanceIds (max count %d)",
+                               security_state->max_browsing_instance_count());
         LogCanAccessDataForOriginCrashKeys(
             expected_process_lock.ToString(),
             GetKilledProcessOriginLock(security_state), url.GetOrigin().spec(),
-            "process is locked, but there are no BrowsingInstanceIds "
-            "registered");
+            failure_reason);
         base::debug::DumpWithoutCrashing();
         return true;
       }
