@@ -439,13 +439,9 @@ class CONTENT_EXPORT RenderThreadImpl
 
   // mojom::Renderer:
   void CreateAgentSchedulingGroup(
-      mojo::PendingRemote<mojom::AgentSchedulingGroupHost>
-          agent_scheduling_group_host,
       mojo::PendingReceiver<mojom::AgentSchedulingGroup> agent_scheduling_group)
       override;
   void CreateAssociatedAgentSchedulingGroup(
-      mojo::PendingAssociatedRemote<mojom::AgentSchedulingGroupHost>
-          agent_scheduling_group_host,
       mojo::PendingAssociatedReceiver<mojom::AgentSchedulingGroup>
           agent_scheduling_group) override;
   void OnNetworkConnectionChanged(

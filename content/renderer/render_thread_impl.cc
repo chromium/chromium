@@ -1642,22 +1642,16 @@ gpu::GpuChannelHost* RenderThreadImpl::GetGpuChannel() {
 }
 
 void RenderThreadImpl::CreateAgentSchedulingGroup(
-    mojo::PendingRemote<mojom::AgentSchedulingGroupHost>
-        agent_scheduling_group_host,
     mojo::PendingReceiver<mojom::AgentSchedulingGroup> agent_scheduling_group) {
   agent_scheduling_groups_.emplace(std::make_unique<AgentSchedulingGroup>(
-      *this, std::move(agent_scheduling_group_host),
-      std::move(agent_scheduling_group)));
+      *this, std::move(agent_scheduling_group)));
 }
 
 void RenderThreadImpl::CreateAssociatedAgentSchedulingGroup(
-    mojo::PendingAssociatedRemote<mojom::AgentSchedulingGroupHost>
-        agent_scheduling_group_host,
     mojo::PendingAssociatedReceiver<mojom::AgentSchedulingGroup>
         agent_scheduling_group) {
   agent_scheduling_groups_.emplace(std::make_unique<AgentSchedulingGroup>(
-      *this, std::move(agent_scheduling_group_host),
-      std::move(agent_scheduling_group)));
+      *this, std::move(agent_scheduling_group)));
 }
 
 void RenderThreadImpl::OnNetworkConnectionChanged(

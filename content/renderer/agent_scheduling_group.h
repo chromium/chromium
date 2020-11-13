@@ -39,12 +39,9 @@ class CONTENT_EXPORT AgentSchedulingGroup
  public:
   AgentSchedulingGroup(
       RenderThread& render_thread,
-      mojo::PendingRemote<mojom::AgentSchedulingGroupHost> host_remote,
       mojo::PendingReceiver<mojom::AgentSchedulingGroup> receiver);
   AgentSchedulingGroup(
       RenderThread& render_thread,
-      mojo::PendingAssociatedRemote<mojom::AgentSchedulingGroupHost>
-          host_remote,
       mojo::PendingAssociatedReceiver<mojom::AgentSchedulingGroup> receiver);
   ~AgentSchedulingGroup() override;
 
@@ -65,14 +62,14 @@ class CONTENT_EXPORT AgentSchedulingGroup
   }
 
  private:
-  // `MaybeAssociatedReceiver` and `MaybeAssociatedRemote` are temporary helper
-  // classes that allow us to switch between using associated and non-associated
-  // mojo interfaces. This behavior is controlled by the
-  // `kMbiDetachAgentSchedulingGroupFromChannel` feature flag.
-  // Associated interfaces are associated with the IPC channel (transitively,
-  // via the `Renderer` interface), thus preserving cross-agent scheduling group
-  // message order. Non-associated interfaces are independent from each other
-  // and do not preserve message order between agent scheduling groups.
+  // `MaybeAssociatedReceiver` is a temporary helper class that allows us to
+  // switch between using an associated and non-associated receiver. This
+  // behavior is controlled by the `kMbiDetachAgentSchedulingGroupFromChannel`
+  // feature flag. Associated receivers are associated with the IPC channel
+  // (transitively, via the `Renderer` interface), thus preserving cross-agent
+  // scheduling group message order. Non-associated receivers are independent
+  // from each other and do not preserve message order between agent scheduling
+  // groups.
   // TODO(crbug.com/1111231): Remove these once we can remove the flag.
   class MaybeAssociatedReceiver {
    public:
@@ -92,24 +89,6 @@ class CONTENT_EXPORT AgentSchedulingGroup
         receiver_;
   };
 
-  class MaybeAssociatedRemote {
-   public:
-    explicit MaybeAssociatedRemote(
-        mojo::PendingRemote<mojom::AgentSchedulingGroupHost> host_remote,
-        scoped_refptr<base::SingleThreadTaskRunner> task_runner);
-    explicit MaybeAssociatedRemote(
-        mojo::PendingAssociatedRemote<mojom::AgentSchedulingGroupHost>
-            host_remote,
-        scoped_refptr<base::SingleThreadTaskRunner> task_runner);
-    ~MaybeAssociatedRemote();
-    mojom::AgentSchedulingGroupHost* get();
-
-   private:
-    absl::variant<mojo::Remote<mojom::AgentSchedulingGroupHost>,
-                  mojo::AssociatedRemote<mojom::AgentSchedulingGroupHost>>
-        remote_;
-  };
-
   // mojom::AgentSchedulingGroup:
   void CreateView(mojom::CreateViewParamsPtr params) override;
   void DestroyView(int32_t view_id, DestroyViewCallback callback) override;
@@ -122,9 +101,12 @@ class CONTENT_EXPORT AgentSchedulingGroup
       const FrameReplicationState& replicated_state,
       const base::UnguessableToken& frame_token,
       const base::UnguessableToken& devtools_frame_token) override;
-  void BindAssociatedRouteProvider(
-      mojo::PendingAssociatedRemote<mojom::RouteProvider> remote,
-      mojo::PendingAssociatedReceiver<mojom::RouteProvider> receiever) override;
+  void BindAssociatedInterfaces(
+      mojo::PendingAssociatedRemote<mojom::AgentSchedulingGroupHost>
+          remote_host,
+      mojo::PendingAssociatedRemote<mojom::RouteProvider> remote_route_provider,
+      mojo::PendingAssociatedReceiver<mojom::RouteProvider>
+          route_provider_receiever) override;
 
   // mojom::RouteProvider
   void GetRoute(
@@ -155,7 +137,7 @@ class CONTENT_EXPORT AgentSchedulingGroup
 
   // Remote stub of mojom::AgentSchedulingGroupHost, used for sending calls to
   // the (browser-side) AgentSchedulingGroupHost.
-  MaybeAssociatedRemote host_remote_;
+  mojo::AssociatedRemote<mojom::AgentSchedulingGroupHost> host_remote_;
 
   // The |mojom::RouteProvider| mojo pair to setup
   // |blink::AssociatedInterfaceProvider| routes between us and the browser-side

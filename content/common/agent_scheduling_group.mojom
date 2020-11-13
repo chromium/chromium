@@ -221,20 +221,19 @@ interface AgentSchedulingGroupHost {
 // AgentSchedulingGroupHost and the renderer process's AgentSchedulingGroup.
 // Implemented by content::AgentSchedulingGroup (in the renderer process).
 interface AgentSchedulingGroup {
-  // Tells the renderer to bind the receiver to a backing RouteProvider
-  // implementation, which in practice is itself. Also passes a remote to the
-  // RouteProvider interface owned by AgentSchedulingGroupHost so that we
-  // immediately have bidirectional RouteProvider communication between
-  // AgentSchedulingGroup <=> AgentSchedulingGroupHost. We have this as a
-  // method on this interface, as opposed to passing this remote/receiver pair
-  // over the method that creates the remote AgentSchedulingGroup. This is
-  // because we need the RouteProvider remote/receiver pair to be associated
-  // with the message pipe that the AgentSchedulingGroup is associated with,
-  // which may be different than the message pipe that we create the
-  // AgentSchedulingGroup over.
-  BindAssociatedRouteProvider(
-    pending_associated_remote<RouteProvider> remote,
-    pending_associated_receiver<RouteProvider> receiver);
+  // Tells the renderer to bind the AgentSchedulingGroup's associated
+  // interfaces. This includes the host remote (mojom::AgentSchedulingGroupHost)
+  // as well as RouteProvider remote/receiver pair.
+  // We have this as a method on this interface, as opposed to passing the
+  // pending interfaces over the method that creates the AgentSchedulingGroup.
+  // This is because we need these interfaces to be associated with the message
+  // pipe that the AgentSchedulingGroup is associated with, which may be
+  // different than the message pipe that we create the AgentSchedulingGroup
+  // over.
+  BindAssociatedInterfaces(
+    pending_associated_remote<AgentSchedulingGroupHost> remote_host,
+    pending_associated_remote<RouteProvider> remote_route_provider,
+    pending_associated_receiver<RouteProvider> route_provider_receiver);
 
   // Tells the renderer to create a new view.
   CreateView(CreateViewParams params);

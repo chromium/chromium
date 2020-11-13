@@ -237,17 +237,7 @@ bool GetWindowsKeyCode(char ascii_character, int* key_code) {
 
 std::unique_ptr<AgentSchedulingGroup> CreateAgentSchedulingGroup(
     RenderThread& render_thread) {
-  // Fake mojos for the AgentSchedulingGroupHost interface.
-  mojo::PendingAssociatedRemote<mojom::AgentSchedulingGroupHost>
-      agent_scheduling_group_host;
-  ignore_result(
-      agent_scheduling_group_host.InitWithNewEndpointAndPassReceiver());
-  mojo::PendingAssociatedReceiver<mojom::AgentSchedulingGroup>
-      agent_scheduling_group_receiver;
-
-  return std::make_unique<MockAgentSchedulingGroup>(
-      render_thread, std::move(agent_scheduling_group_host),
-      std::move(agent_scheduling_group_receiver));
+  return std::make_unique<MockAgentSchedulingGroup>(render_thread);
 }
 
 }  // namespace

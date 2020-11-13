@@ -58,33 +58,9 @@ AgentSchedulingGroup::MaybeAssociatedReceiver::MaybeAssociatedReceiver(
 AgentSchedulingGroup::MaybeAssociatedReceiver::~MaybeAssociatedReceiver() =
     default;
 
-// MaybeAssociatedRemote:
-AgentSchedulingGroup::MaybeAssociatedRemote::MaybeAssociatedRemote(
-    PendingRemote<mojom::AgentSchedulingGroupHost> host_remote,
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner)
-    : remote_(absl::in_place_type<Remote<mojom::AgentSchedulingGroupHost>>,
-              std::move(host_remote),
-              task_runner) {}
-
-AgentSchedulingGroup::MaybeAssociatedRemote::MaybeAssociatedRemote(
-    PendingAssociatedRemote<mojom::AgentSchedulingGroupHost> host_remote,
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner)
-    : remote_(absl::in_place_type<
-                  AssociatedRemote<mojom::AgentSchedulingGroupHost>>,
-              std::move(host_remote),
-              task_runner) {}
-
-AgentSchedulingGroup::MaybeAssociatedRemote::~MaybeAssociatedRemote() = default;
-
-mojom::AgentSchedulingGroupHost*
-AgentSchedulingGroup::MaybeAssociatedRemote::get() {
-  return absl::visit([](auto& r) { return r.get(); }, remote_);
-}
-
 // AgentSchedulingGroup:
 AgentSchedulingGroup::AgentSchedulingGroup(
     RenderThread& render_thread,
-    PendingRemote<mojom::AgentSchedulingGroupHost> host_remote,
     PendingReceiver<mojom::AgentSchedulingGroup> receiver)
     : agent_group_scheduler_(
           blink::scheduler::WebThreadScheduler::MainThreadScheduler()
@@ -92,9 +68,7 @@ AgentSchedulingGroup::AgentSchedulingGroup(
       render_thread_(render_thread),
       receiver_(*this,
                 std::move(receiver),
-                agent_group_scheduler_->DefaultTaskRunner()),
-      host_remote_(std::move(host_remote),
-                   agent_group_scheduler_->DefaultTaskRunner()) {
+                agent_group_scheduler_->DefaultTaskRunner()) {
   DCHECK(agent_group_scheduler_);
   DCHECK(base::FeatureList::IsEnabled(
       features::kMbiDetachAgentSchedulingGroupFromChannel));
@@ -102,7 +76,6 @@ AgentSchedulingGroup::AgentSchedulingGroup(
 
 AgentSchedulingGroup::AgentSchedulingGroup(
     RenderThread& render_thread,
-    PendingAssociatedRemote<mojom::AgentSchedulingGroupHost> host_remote,
     PendingAssociatedReceiver<mojom::AgentSchedulingGroup> receiver)
     : agent_group_scheduler_(
           blink::scheduler::WebThreadScheduler::MainThreadScheduler()
@@ -110,9 +83,7 @@ AgentSchedulingGroup::AgentSchedulingGroup(
       render_thread_(render_thread),
       receiver_(*this,
                 std::move(receiver),
-                agent_group_scheduler_->DefaultTaskRunner()),
-      host_remote_(std::move(host_remote),
-                   agent_group_scheduler_->DefaultTaskRunner()) {
+                agent_group_scheduler_->DefaultTaskRunner()) {
   DCHECK(agent_group_scheduler_);
   DCHECK(!base::FeatureList::IsEnabled(
       features::kMbiDetachAgentSchedulingGroupFromChannel));
@@ -203,12 +174,16 @@ void AgentSchedulingGroup::CreateFrameProxy(
       parent_routing_id, replicated_state, frame_token, devtools_frame_token);
 }
 
-void AgentSchedulingGroup::BindAssociatedRouteProvider(
-    mojo::PendingAssociatedRemote<mojom::RouteProvider> remote,
-    mojo::PendingAssociatedReceiver<mojom::RouteProvider> receiver) {
-  remote_route_provider_.Bind(std::move(remote),
+void AgentSchedulingGroup::BindAssociatedInterfaces(
+    mojo::PendingAssociatedRemote<mojom::AgentSchedulingGroupHost> remote_host,
+    mojo::PendingAssociatedRemote<mojom::RouteProvider> remote_route_provider,
+    mojo::PendingAssociatedReceiver<mojom::RouteProvider>
+        route_provider_receiever) {
+  host_remote_.Bind(std::move(remote_host),
+                    agent_group_scheduler_->DefaultTaskRunner());
+  remote_route_provider_.Bind(std::move(remote_route_provider),
                               agent_group_scheduler_->DefaultTaskRunner());
-  route_provider_receiver_.Bind(std::move(receiver),
+  route_provider_receiver_.Bind(std::move(route_provider_receiever),
                                 agent_group_scheduler_->DefaultTaskRunner());
 }
 

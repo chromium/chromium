@@ -9,13 +9,10 @@
 
 namespace content {
 
-MockAgentSchedulingGroup::MockAgentSchedulingGroup(
-    RenderThread& render_thread,
-    mojo::PendingAssociatedRemote<mojom::AgentSchedulingGroupHost> host_remote,
-    mojo::PendingAssociatedReceiver<mojom::AgentSchedulingGroup> receiver)
-    : AgentSchedulingGroup(render_thread,
-                           std::move(host_remote),
-                           std::move(receiver)) {}
+MockAgentSchedulingGroup::MockAgentSchedulingGroup(RenderThread& render_thread)
+    : AgentSchedulingGroup(
+          render_thread,
+          mojo::PendingAssociatedReceiver<mojom::AgentSchedulingGroup>()) {}
 
 mojom::RouteProvider* MockAgentSchedulingGroup::GetRemoteRouteProvider() {
   DCHECK(!RenderThreadImpl::current());

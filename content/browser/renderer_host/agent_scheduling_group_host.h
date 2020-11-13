@@ -106,47 +106,14 @@ class CONTENT_EXPORT AgentSchedulingGroupHost
   friend StateTransitions<LifecycleState>;
   friend std::ostream& operator<<(std::ostream& os, LifecycleState state);
 
-  // `MaybeAssociatedReceiver` and `MaybeAssociatedRemote` are temporary helper
-  // classes that allow us to switch between using associated and non-associated
-  // mojo interfaces. This behavior is controlled by the
-  // `kMbiDetachAgentSchedulingGroupFromChannel` feature flag.
-  // Associated interfaces are associated with the IPC channel (transitively,
+  // `MaybeAssociatedRemote` is a temporary helper class that allows us to
+  // switch between using an associated and non-associated remote. This behavior
+  // is controlled by the `kMbiDetachAgentSchedulingGroupFromChannel` feature
+  // flag. Associated remotes are associated with the IPC channel (transitively,
   // via the `Renderer` interface), thus preserving cross-agent scheduling group
   // message order. Non-associated interfaces are independent from each other
   // and do not preserve message order between agent scheduling groups.
-  // TODO(crbug.com/1111231): Remove these once we can remove the flag.
-  class MaybeAssociatedReceiver {
-   public:
-    MaybeAssociatedReceiver(AgentSchedulingGroupHost& host,
-                            bool should_associate);
-    ~MaybeAssociatedReceiver();
-
-    mojo::PendingRemote<mojom::AgentSchedulingGroupHost>
-    BindNewPipeAndPassRemote() WARN_UNUSED_RESULT;
-    mojo::PendingAssociatedRemote<mojom::AgentSchedulingGroupHost>
-    BindNewEndpointAndPassRemote() WARN_UNUSED_RESULT;
-
-    void reset();
-    bool is_bound();
-
-   private:
-    // This will hold the actual receiver pointed to by |receiver_|.
-    absl::variant<
-        // This is required to make the variant default constructible. After the
-        // ctor body finishes, the variant will never hold this alternative.
-        absl::monostate,
-        mojo::Receiver<mojom::AgentSchedulingGroupHost>,
-        mojo::AssociatedReceiver<mojom::AgentSchedulingGroupHost>>
-        receiver_or_monostate_;
-
-    // View of |receiver_or_monostate_| that "strips out" the `monostate`,
-    // allowing for easier handling of the underlying remote. Should be declared
-    // after |receiver_or_monostate_| so that it is destroyed first.
-    absl::variant<mojo::Receiver<mojom::AgentSchedulingGroupHost>*,
-                  mojo::AssociatedReceiver<mojom::AgentSchedulingGroupHost>*>
-        receiver_;
-  };
-
+  // TODO(crbug.com/1111231): Remove this once we can remove the flag.
   class MaybeAssociatedRemote {
    public:
     explicit MaybeAssociatedRemote(bool should_associate);
@@ -209,7 +176,7 @@ class CONTENT_EXPORT AgentSchedulingGroupHost
 
   // Implementation of `mojom::AgentSchedulingGroupHost`, used for responding to
   // calls from the (renderer-side) `AgentSchedulingGroup`.
-  MaybeAssociatedReceiver receiver_;
+  mojo::AssociatedReceiver<mojom::AgentSchedulingGroupHost> receiver_;
 
   // Remote stub of `mojom::AgentSchedulingGroup`, used for sending calls to the
   // (renderer-side) `AgentSchedulingGroup`.

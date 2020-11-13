@@ -52,48 +52,6 @@ class AgentGroupHostUserData : public base::SupportsUserData::Data {
 
 }  // namespace
 
-// MaybeAssociatedReceiver:
-AgentSchedulingGroupHost::MaybeAssociatedReceiver::MaybeAssociatedReceiver(
-    AgentSchedulingGroupHost& host,
-    bool should_associate) {
-  if (should_associate) {
-    receiver_or_monostate_
-        .emplace<AssociatedReceiver<mojom::AgentSchedulingGroupHost>>(&host);
-    receiver_ = &absl::get<AssociatedReceiver<mojom::AgentSchedulingGroupHost>>(
-        receiver_or_monostate_);
-  } else {
-    receiver_or_monostate_.emplace<Receiver<mojom::AgentSchedulingGroupHost>>(
-        &host);
-    receiver_ = &absl::get<Receiver<mojom::AgentSchedulingGroupHost>>(
-        receiver_or_monostate_);
-  }
-}
-
-AgentSchedulingGroupHost::MaybeAssociatedReceiver::~MaybeAssociatedReceiver() =
-    default;
-
-PendingRemote<mojom::AgentSchedulingGroupHost>
-AgentSchedulingGroupHost::MaybeAssociatedReceiver::BindNewPipeAndPassRemote() {
-  return absl::get<Receiver<mojom::AgentSchedulingGroupHost>*>(receiver_)
-      ->BindNewPipeAndPassRemote();
-}
-
-PendingAssociatedRemote<mojom::AgentSchedulingGroupHost>
-AgentSchedulingGroupHost::MaybeAssociatedReceiver::
-    BindNewEndpointAndPassRemote() {
-  return absl::get<AssociatedReceiver<mojom::AgentSchedulingGroupHost>*>(
-             receiver_)
-      ->BindNewEndpointAndPassRemote();
-}
-
-void AgentSchedulingGroupHost::MaybeAssociatedReceiver::reset() {
-  absl::visit([](auto* r) { r->reset(); }, receiver_);
-}
-
-bool AgentSchedulingGroupHost::MaybeAssociatedReceiver::is_bound() {
-  return absl::visit([](auto* r) { return r->is_bound(); }, receiver_);
-}
-
 // MaybeAssociatedRemote:
 AgentSchedulingGroupHost::MaybeAssociatedRemote::MaybeAssociatedRemote(
     bool should_associate) {
@@ -162,7 +120,7 @@ AgentSchedulingGroupHost::AgentSchedulingGroupHost(RenderProcessHost& process,
                                                    bool should_associate)
     : process_(process),
       should_associate_(should_associate),
-      receiver_(*this, should_associate),
+      receiver_(this),
       mojo_remote_(should_associate) {
   process_.AddObserver(this);
 
@@ -370,15 +328,14 @@ void AgentSchedulingGroupHost::SetUpMojoIfNeeded() {
 
   if (should_associate_) {
     process_.GetRendererInterface()->CreateAssociatedAgentSchedulingGroup(
-        receiver_.BindNewEndpointAndPassRemote(),
         mojo_remote_.BindNewEndpointAndPassReceiver());
   } else {
     process_.GetRendererInterface()->CreateAgentSchedulingGroup(
-        receiver_.BindNewPipeAndPassRemote(),
         mojo_remote_.BindNewPipeAndPassReceiver());
   }
 
-  mojo_remote_.get()->BindAssociatedRouteProvider(
+  mojo_remote_.get()->BindAssociatedInterfaces(
+      receiver_.BindNewEndpointAndPassRemote(),
       route_provider_receiver_.BindNewEndpointAndPassRemote(),
       remote_route_provider_.BindNewEndpointAndPassReceiver());
   SetState(LifecycleState::kBound);

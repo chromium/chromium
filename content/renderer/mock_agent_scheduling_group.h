@@ -22,13 +22,7 @@ class RenderThread;
 // in the browser process.
 class MockAgentSchedulingGroup : public AgentSchedulingGroup {
  public:
-  // `mojo_disconnect_handler` is an optional callback that will be called with
-  // `this` when `receiver` is disconnected.
-  MockAgentSchedulingGroup(
-      RenderThread& render_thread,
-      mojo::PendingAssociatedRemote<mojom::AgentSchedulingGroupHost>
-          host_remote,
-      mojo::PendingAssociatedReceiver<mojom::AgentSchedulingGroup> receiver);
+  explicit MockAgentSchedulingGroup(RenderThread& render_thread);
 
   mojom::RouteProvider* GetRemoteRouteProvider() override;
 };
