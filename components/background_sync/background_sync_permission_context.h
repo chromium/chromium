@@ -14,7 +14,6 @@
 // The permission status is ALLOW by default and can be changed globally or on a
 // per-site basis from the content settings page. The user is not prompted for
 // permission.
-// TODO(nsatragno): actually implement the UI to allow changing the setting.
 class BackgroundSyncPermissionContext
     : public permissions::PermissionContextBase {
  public:
