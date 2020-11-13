@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <limits>
+#include <set>
 #include <unordered_set>
 
 #include "base/strings/string_util.h"
@@ -162,6 +163,69 @@ TEST(GUIDTest, UnorderedSet) {
   EXPECT_EQ(2u, guid_set.size());
   guid_set.insert(GUID::ParseCaseInsensitive(ToUpperASCII(kGUID2)));
   EXPECT_EQ(2u, guid_set.size());
+}
+
+TEST(GUIDTest, Set) {
+  std::set<GUID> guid_set;
+
+  static constexpr char kGUID1[] = "01234567-89ab-cdef-0123-456789abcdef";
+  const GUID guid1 = GUID::ParseLowercase(kGUID1);
+  ASSERT_TRUE(guid1.is_valid());
+  guid_set.insert(guid1);
+
+  static constexpr char kGUID2[] = "deadbeef-dead-beef-dead-beefdeadbeef";
+  const GUID guid2 = GUID::ParseLowercase(kGUID2);
+  ASSERT_TRUE(guid2.is_valid());
+  guid_set.insert(guid2);
+
+  // Test that the order of the GUIDs was preserved.
+  auto it = guid_set.begin();
+  EXPECT_EQ(guid1, *it);
+  ++it;
+  EXPECT_EQ(guid2, *it);
+  ++it;
+  EXPECT_EQ(guid_set.end(), it);
+}
+
+TEST(GUIDTest, Compare) {
+  static constexpr char kGUID[] = "21abd97f-73e8-4b88-9389-a9fee6abda5e";
+  static constexpr char kGUIDLess[] = "1e0dcaca-9e7c-4f4b-bcc6-e4c02b0c99df";
+  static constexpr char kGUIDGreater[] = "6eeb1bc8-186b-433c-9d6a-a827bc96b2d4";
+
+  const GUID guid = GUID::ParseLowercase(kGUID);
+  const GUID guid_eq = GUID::ParseLowercase(kGUID);
+  const GUID guid_lt = GUID::ParseLowercase(kGUIDLess);
+  const GUID guid_gt = GUID::ParseLowercase(kGUIDGreater);
+  const GUID guid_invalid = GUID();
+
+  EXPECT_TRUE(guid_eq == guid);
+  EXPECT_FALSE(guid_eq != guid);
+  EXPECT_FALSE(guid_eq < guid);
+  EXPECT_TRUE(guid_eq <= guid);
+  EXPECT_FALSE(guid_eq > guid);
+  EXPECT_TRUE(guid_eq >= guid);
+
+  EXPECT_FALSE(guid_lt == guid);
+  EXPECT_TRUE(guid_lt != guid);
+  EXPECT_TRUE(guid_lt < guid);
+  EXPECT_TRUE(guid_lt <= guid);
+  EXPECT_FALSE(guid_lt > guid);
+  EXPECT_FALSE(guid_lt >= guid);
+
+  EXPECT_FALSE(guid_gt == guid);
+  EXPECT_TRUE(guid_gt != guid);
+  EXPECT_FALSE(guid_gt < guid);
+  EXPECT_FALSE(guid_gt <= guid);
+  EXPECT_TRUE(guid_gt > guid);
+  EXPECT_TRUE(guid_gt >= guid);
+
+  // Invalid GUIDs are the "least".
+  EXPECT_FALSE(guid_invalid == guid);
+  EXPECT_TRUE(guid_invalid != guid);
+  EXPECT_TRUE(guid_invalid < guid);
+  EXPECT_TRUE(guid_invalid <= guid);
+  EXPECT_FALSE(guid_invalid > guid);
+  EXPECT_FALSE(guid_invalid >= guid);
 }
 
 }  // namespace base

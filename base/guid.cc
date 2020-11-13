@@ -153,6 +153,22 @@ bool GUID::operator!=(const GUID& other) const {
   return !(*this == other);
 }
 
+bool GUID::operator<(const GUID& other) const {
+  return AsLowercaseString() < other.AsLowercaseString();
+}
+
+bool GUID::operator<=(const GUID& other) const {
+  return *this < other || *this == other;
+}
+
+bool GUID::operator>(const GUID& other) const {
+  return !(*this <= other);
+}
+
+bool GUID::operator>=(const GUID& other) const {
+  return !(*this < other);
+}
+
 std::ostream& operator<<(std::ostream& out, const GUID& guid) {
   return out << guid.AsLowercaseString();
 }

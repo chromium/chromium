@@ -72,6 +72,10 @@ class BASE_EXPORT GUID {
   // Invalid GUIDs are equal.
   bool operator==(const GUID& other) const;
   bool operator!=(const GUID& other) const;
+  bool operator<(const GUID& other) const;
+  bool operator<=(const GUID& other) const;
+  bool operator>(const GUID& other) const;
+  bool operator>=(const GUID& other) const;
 
  private:
   // TODO(crbug.com/1026195): Consider using a different internal type.
