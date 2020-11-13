@@ -9373,6 +9373,81 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </token>
 </histogram>
 
+<histogram name="Nearby.Share.Transfer.NumAttachments{Type}"
+    units="attachments" expires_after="2021-08-19">
+  <owner>nohle@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records the number of {Type} attachments intended to be sent in a Nearby
+    Share transfer. Emitted when the transfer concludes, successfully or not.
+  </summary>
+  <token key="Type">
+    <variant name="" summary="text or file"/>
+    <variant name=".File" summary="file"/>
+    <variant name=".Text" summary="text"/>
+  </token>
+</histogram>
+
+<histogram
+    name="Nearby.Share.Transfer.Rate{Direction}{ShareTargetType}{PayloadStatus}"
+    units="KB/s" expires_after="2021-08-19">
+  <owner>nohle@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records the transfer rate of a Nearby Share {Direction} transfer that
+    {PayloadStatus} when sharing with {ShareTargetType}. Emitted when the
+    transfer concludes.
+  </summary>
+  <token key="Direction">
+    <variant name="" summary="outgoing (send) or incoming (receive)"/>
+    <variant name=".Receive" summary="incoming (receive)"/>
+    <variant name=".Send" summary="outgoing (send)"/>
+  </token>
+  <token key="ShareTargetType">
+    <variant name="" summary="any device type"/>
+    <variant name=".Laptop" summary="a laptop"/>
+    <variant name=".Phone" summary="a phone"/>
+    <variant name=".Tablet" summary="a tablet"/>
+    <variant name=".Unknown" summary="an unknown device type"/>
+  </token>
+  <token key="PayloadStatus">
+    <variant name="" summary="succeeded, failed, or was cancelled"/>
+    <variant name=".Cancelled" summary="was cancelled"/>
+    <variant name=".Failed" summary="failed"/>
+    <variant name=".Succeeded" summary="succeeded"/>
+  </token>
+</histogram>
+
+<histogram
+    name="Nearby.Share.Transfer.TotalSize{Direction}{ShareTargetType}{PayloadStatus}"
+    units="KB" expires_after="2021-08-19">
+  <owner>nohle@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records the total payload size of a Nearby Share {Direction} transfer that
+    {PayloadStatus} when sharing with {ShareTargetType}. Emitted when the
+    transfer concludes.
+  </summary>
+  <token key="Direction">
+    <variant name="" summary="outgoing (send) or incoming (receive)"/>
+    <variant name=".Receive" summary="incoming (receive)"/>
+    <variant name=".Send" summary="outgoing (send)"/>
+  </token>
+  <token key="ShareTargetType">
+    <variant name="" summary="any device type"/>
+    <variant name=".Laptop" summary="a laptop"/>
+    <variant name=".Phone" summary="a phone"/>
+    <variant name=".Tablet" summary="a tablet"/>
+    <variant name=".Unknown" summary="an unknown device type"/>
+  </token>
+  <token key="PayloadStatus">
+    <variant name="" summary="succeeded, failed, or was cancelled"/>
+    <variant name=".Cancelled" summary="was cancelled"/>
+    <variant name=".Failed" summary="failed"/>
+    <variant name=".Succeeded" summary="succeeded"/>
+  </token>
+</histogram>
+
 <histogram name="net.HttpIdentSrcURL" units="requests" expires_after="M85">
   <owner>tsepez@chromium.org</owner>
   <summary>

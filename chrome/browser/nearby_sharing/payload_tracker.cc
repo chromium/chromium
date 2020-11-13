@@ -7,6 +7,7 @@
 #include "base/callback.h"
 #include "chrome/browser/nearby_sharing/constants.h"
 #include "chrome/browser/nearby_sharing/logging/logging.h"
+#include "chrome/browser/nearby_sharing/nearby_share_metrics_logger.h"
 #include "chrome/browser/nearby_sharing/transfer_metadata_builder.h"
 
 PayloadTracker::PayloadTracker(
@@ -16,7 +17,7 @@ PayloadTracker::PayloadTracker(
         update_callback)
     : share_target_(share_target),
       update_callback_(std::move(update_callback)) {
-  total_download_size_ = 0;
+  total_transfer_size_ = 0;
 
   for (const auto& file : share_target.file_attachments) {
     auto it = attachment_info_map.find(file.id());
@@ -29,7 +30,8 @@ PayloadTracker::PayloadTracker(
     }
 
     payload_state_.emplace(*it->second.payload_id, State(file.size()));
-    total_download_size_ += file.size();
+    ++num_file_attachments_;
+    total_transfer_size_ += file.size();
   }
 
   for (const auto& text : share_target.text_attachments) {
@@ -43,7 +45,8 @@ PayloadTracker::PayloadTracker(
     }
 
     payload_state_.emplace(*it->second.payload_id, State(text.size()));
-    total_download_size_ += text.size();
+    ++num_text_attachments_;
+    total_transfer_size_ += text.size();
   }
 }
 
@@ -54,7 +57,13 @@ void PayloadTracker::OnStatusUpdate(PayloadTransferUpdatePtr update) {
   if (it == payload_state_.end())
     return;
 
-  it->second.amount_downloaded = update->bytes_transferred;
+  // For metrics.
+  if (!first_update_timestamp_.has_value()) {
+    first_update_timestamp_ = base::TimeTicks::Now();
+    num_first_update_bytes_ = update->bytes_transferred;
+  }
+
+  it->second.amount_transferred = update->bytes_transferred;
   if (it->second.status != update->status) {
     it->second.status = update->status;
 
@@ -67,6 +76,8 @@ void PayloadTracker::OnStatusUpdate(PayloadTransferUpdatePtr update) {
 void PayloadTracker::OnTransferUpdate() {
   if (IsComplete()) {
     NS_LOG(VERBOSE) << __func__ << ": All payloads are complete.";
+    EmitFinalMetrics(
+        location::nearby::connections::mojom::PayloadStatus::kSuccess);
     update_callback_.Run(share_target_,
                          TransferMetadataBuilder()
                              .set_status(TransferMetadata::Status::kComplete)
@@ -77,6 +88,8 @@ void PayloadTracker::OnTransferUpdate() {
 
   if (IsCancelled()) {
     NS_LOG(VERBOSE) << __func__ << ": Payloads cancelled.";
+    EmitFinalMetrics(
+        location::nearby::connections::mojom::PayloadStatus::kCanceled);
     update_callback_.Run(share_target_,
                          TransferMetadataBuilder()
                              .set_status(TransferMetadata::Status::kCancelled)
@@ -86,6 +99,8 @@ void PayloadTracker::OnTransferUpdate() {
 
   if (HasFailed()) {
     NS_LOG(VERBOSE) << __func__ << ": Payloads failed.";
+    EmitFinalMetrics(
+        location::nearby::connections::mojom::PayloadStatus::kFailure);
     update_callback_.Run(share_target_,
                          TransferMetadataBuilder()
                              .set_status(TransferMetadata::Status::kFailed)
@@ -114,7 +129,7 @@ void PayloadTracker::OnTransferUpdate() {
                            .build());
 }
 
-bool PayloadTracker::IsComplete() {
+bool PayloadTracker::IsComplete() const {
   for (const auto& state : payload_state_) {
     if (state.second.status !=
         location::nearby::connections::mojom::PayloadStatus::kSuccess) {
@@ -124,7 +139,7 @@ bool PayloadTracker::IsComplete() {
   return true;
 }
 
-bool PayloadTracker::IsCancelled() {
+bool PayloadTracker::IsCancelled() const {
   for (const auto& state : payload_state_) {
     if (state.second.status ==
         location::nearby::connections::mojom::PayloadStatus::kCanceled) {
@@ -134,7 +149,7 @@ bool PayloadTracker::IsCancelled() {
   return false;
 }
 
-bool PayloadTracker::HasFailed() {
+bool PayloadTracker::HasFailed() const {
   for (const auto& state : payload_state_) {
     if (state.second.status ==
         location::nearby::connections::mojom::PayloadStatus::kFailure) {
@@ -144,15 +159,42 @@ bool PayloadTracker::HasFailed() {
   return false;
 }
 
-double PayloadTracker::CalculateProgressPercent() {
-  if (!total_download_size_) {
+uint64_t PayloadTracker::GetTotalTransferred() const {
+  uint64_t total_transferred = 0;
+  for (const auto& state : payload_state_)
+    total_transferred += state.second.amount_transferred;
+
+  return total_transferred;
+}
+
+double PayloadTracker::CalculateProgressPercent() const {
+  if (!total_transfer_size_) {
     NS_LOG(WARNING) << __func__ << ": Total attachment size is 0";
     return 100.0;
   }
 
-  uint64_t total_downloaded = 0;
-  for (const auto& state : payload_state_)
-    total_downloaded += state.second.amount_downloaded;
+  return (100.0 * GetTotalTransferred()) / total_transfer_size_;
+}
 
-  return (100.0 * total_downloaded) / total_download_size_;
+void PayloadTracker::EmitFinalMetrics(
+    location::nearby::connections::mojom::PayloadStatus status) const {
+  DCHECK_NE(status,
+            location::nearby::connections::mojom::PayloadStatus::kInProgress);
+  RecordNearbyShareTransferSizeMetric(share_target_.is_incoming,
+                                      share_target_.type, status,
+                                      total_transfer_size_);
+
+  RecordNearbyShareTransferNumAttachmentsMetric(num_text_attachments_,
+                                                num_file_attachments_);
+
+  // Because we only start tracking after receiving the first status update,
+  // subtract off that first transfer size.
+  uint64_t transferred_bytes_with_offset =
+      GetTotalTransferred() - num_first_update_bytes_;
+  if (first_update_timestamp_ && transferred_bytes_with_offset > 0) {
+    RecordNearbyShareTransferRateMetric(
+        share_target_.is_incoming, share_target_.type, status,
+        transferred_bytes_with_offset,
+        base::TimeTicks::Now() - *first_update_timestamp_);
+  }
 }

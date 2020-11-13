@@ -7,6 +7,7 @@
 
 #include "base/callback_forward.h"
 #include "base/containers/flat_map.h"
+#include "base/optional.h"
 #include "base/time/time.h"
 #include "chrome/browser/nearby_sharing/attachment_info.h"
 #include "chrome/browser/nearby_sharing/nearby_connections_manager.h"
@@ -14,6 +15,8 @@
 #include "chrome/browser/nearby_sharing/transfer_metadata.h"
 #include "chromeos/services/nearby/public/mojom/nearby_connections_types.mojom.h"
 
+// Listens for incoming or outgoing transfer updates from Nearby Connections and
+// forwards the transfer progress to the |update_callback|.
 class PayloadTracker : public NearbyConnectionsManager::PayloadStatusListener {
  public:
   PayloadTracker(
@@ -31,7 +34,7 @@ class PayloadTracker : public NearbyConnectionsManager::PayloadStatusListener {
     explicit State(int64_t total_size) : total_size(total_size) {}
     ~State() = default;
 
-    uint64_t amount_downloaded = 0;
+    uint64_t amount_transferred = 0;
     const uint64_t total_size;
     location::nearby::connections::mojom::PayloadStatus status =
         location::nearby::connections::mojom::PayloadStatus::kInProgress;
@@ -39,11 +42,15 @@ class PayloadTracker : public NearbyConnectionsManager::PayloadStatusListener {
 
   void OnTransferUpdate();
 
-  bool IsComplete();
-  bool IsCancelled();
-  bool HasFailed();
+  bool IsComplete() const;
+  bool IsCancelled() const;
+  bool HasFailed() const;
 
-  double CalculateProgressPercent();
+  uint64_t GetTotalTransferred() const;
+  double CalculateProgressPercent() const;
+
+  void EmitFinalMetrics(
+      location::nearby::connections::mojom::PayloadStatus status) const;
 
   ShareTarget share_target_;
   base::RepeatingCallback<void(ShareTarget, TransferMetadata)> update_callback_;
@@ -51,10 +58,16 @@ class PayloadTracker : public NearbyConnectionsManager::PayloadStatusListener {
   // Map of payload id to state of payload.
   std::map<int64_t, State> payload_state_;
 
-  uint64_t total_download_size_;
+  uint64_t total_transfer_size_;
 
   int last_update_progress_ = 0;
   base::Time last_update_timestamp_;
+
+  // For metrics.
+  size_t num_text_attachments_ = 0;
+  size_t num_file_attachments_ = 0;
+  uint64_t num_first_update_bytes_ = 0;
+  base::Optional<base::TimeTicks> first_update_timestamp_;
 };
 
 #endif  // CHROME_BROWSER_NEARBY_SHARING_PAYLOAD_TRACKER_H_
