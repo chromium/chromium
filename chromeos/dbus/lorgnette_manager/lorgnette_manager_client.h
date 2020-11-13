@@ -59,15 +59,16 @@ class COMPONENT_EXPORT(LORGNETTE_MANAGER) LorgnetteManagerClient
 
   // Requests that lorgnette cancel the currently running scan job.
   // When this function returns, that guarantees that cancelling has been
-  // requested, but the cancelled scan may not be completely terminated yet.
+  // requested, but the cancelled scan is not completely terminated until
+  // |cancel_callback| reports a successful result.
   //
-  // Once CancelScan returns, it is safe to request another scan, because
+  // Once CancelScan() returns, it is safe to request another scan, because
   // lorgnette will prevent access to a device until the previous scan job has
   // released it.
   //
   // This function makes the assumption that LorgnetteManagerClient only has one
   // scan running at a time.
-  virtual void CancelScan(VoidDBusMethodCallback completion_callback) = 0;
+  virtual void CancelScan(VoidDBusMethodCallback cancel_callback) = 0;
 
   // Factory function, creates a new instance and returns ownership.
   // For normal usage, access the singleton via DBusThreadManager::Get().
