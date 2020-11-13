@@ -440,33 +440,44 @@ size_t ProfileAttributesEntry::GetAvatarIconIndex() const {
   return icon_index;
 }
 
-ProfileThemeColors ProfileAttributesEntry::GetProfileThemeColors() const {
-#if defined(OS_ANDROID)
-  // Profile theme colors shouldn't be queried on Android.
-  NOTREACHED();
-  return {SK_ColorRED, SK_ColorRED, SK_ColorRED};
-#else
+base::Optional<ProfileThemeColors>
+ProfileAttributesEntry::GetProfileThemeColorsIfSet() const {
   base::Optional<SkColor> profile_highlight_color =
       GetProfileThemeColor(kProfileHighlightColorKey);
   base::Optional<SkColor> default_avatar_fill_color =
       GetProfileThemeColor(kDefaultAvatarFillColorKey);
   base::Optional<SkColor> default_avatar_stroke_color =
       GetProfileThemeColor(kDefaultAvatarStrokeColorKey);
-  if (!profile_highlight_color.has_value()) {
-    DCHECK(!default_avatar_fill_color.has_value() &&
-           !default_avatar_stroke_color.has_value());
-    return GetDefaultProfileThemeColors(
-        ui::NativeTheme::GetInstanceForNativeUi()->ShouldUseDarkColors());
-  }
 
-  DCHECK(default_avatar_fill_color.has_value() &&
-         default_avatar_stroke_color.has_value());
+  DCHECK_EQ(profile_highlight_color.has_value(),
+            default_avatar_stroke_color.has_value());
+  DCHECK_EQ(profile_highlight_color.has_value(),
+            default_avatar_fill_color.has_value());
+
+  if (!profile_highlight_color.has_value()) {
+    return base::nullopt;
+  }
 
   ProfileThemeColors colors;
   colors.profile_highlight_color = profile_highlight_color.value();
   colors.default_avatar_fill_color = default_avatar_fill_color.value();
   colors.default_avatar_stroke_color = default_avatar_stroke_color.value();
   return colors;
+}
+
+ProfileThemeColors ProfileAttributesEntry::GetProfileThemeColors() const {
+#if defined(OS_ANDROID)
+  // Profile theme colors shouldn't be queried on Android.
+  NOTREACHED();
+  return {SK_ColorRED, SK_ColorRED, SK_ColorRED};
+#else
+  base::Optional<ProfileThemeColors> theme_colors =
+      GetProfileThemeColorsIfSet();
+  if (theme_colors)
+    return *theme_colors;
+
+  return GetDefaultProfileThemeColors(
+      ui::NativeTheme::GetInstanceForNativeUi()->ShouldUseDarkColors());
 #endif
 }
 
