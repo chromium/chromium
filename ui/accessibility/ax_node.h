@@ -22,6 +22,7 @@ namespace ui {
 
 class AXTableInfo;
 struct AXLanguageInfo;
+struct AXTreeData;
 
 // One node in an AXTree.
 class AX_EXPORT AXNode final {
@@ -55,6 +56,8 @@ class AX_EXPORT AXNode final {
     virtual AXTableInfo* GetTableInfo(const AXNode* table_node) const = 0;
     // See AXTree::GetFromId.
     virtual AXNode* GetFromId(int32_t id) const = 0;
+    // See AXTree::data.
+    virtual const AXTreeData& data() const = 0;
 
     virtual base::Optional<int> GetPosInSet(const AXNode& node) = 0;
     virtual base::Optional<int> GetSetSize(const AXNode& node) = 0;
@@ -424,6 +427,12 @@ class AX_EXPORT AXNode final {
 
   // Returns true if node has ignored state or ignored role.
   bool IsIgnored() const;
+
+  // Returns true if node is invisible or ignored.
+  bool IsInvisibleOrIgnored() const;
+
+  // Returns true if node is focused within this tree.
+  bool IsFocusedWithinThisTree() const;
 
   // Returns true if an ancestor of this node (not including itself) is a
   // leaf node, meaning that this node is not actually exposed to any

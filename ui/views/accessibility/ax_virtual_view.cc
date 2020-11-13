@@ -373,7 +373,7 @@ gfx::NativeViewAccessible AXVirtualView::HitTestSync(
   return nullptr;
 }
 
-gfx::NativeViewAccessible AXVirtualView::GetFocus() {
+gfx::NativeViewAccessible AXVirtualView::GetFocus() const {
   View* owner_view = GetOwnerView();
   if (owner_view) {
     if (!(owner_view->HasFocus())) {

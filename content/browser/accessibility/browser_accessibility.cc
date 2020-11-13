@@ -1511,6 +1511,17 @@ bool BrowserAccessibility::IsLeaf() const {
   return PlatformGetRootOfChildTree() ? false : node()->IsLeaf();
 }
 
+bool BrowserAccessibility::IsFocused() const {
+  return manager()->GetFocus() == this;
+}
+
+bool BrowserAccessibility::IsInvisibleOrIgnored() const {
+  if (IsFocused())
+    return false;
+
+  return node()->IsInvisibleOrIgnored();
+}
+
 bool BrowserAccessibility::IsToplevelBrowserWindow() {
   return false;
 }
@@ -1610,7 +1621,7 @@ gfx::NativeViewAccessible BrowserAccessibility::HitTestSync(
   return accessible->GetNativeViewAccessible();
 }
 
-gfx::NativeViewAccessible BrowserAccessibility::GetFocus() {
+gfx::NativeViewAccessible BrowserAccessibility::GetFocus() const {
   BrowserAccessibility* focused = manager()->GetFocus();
   if (!focused)
     return nullptr;

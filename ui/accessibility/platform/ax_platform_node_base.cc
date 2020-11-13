@@ -119,7 +119,7 @@ const AXNodeData& AXPlatformNodeBase::GetData() const {
   return *empty_data;
 }
 
-gfx::NativeViewAccessible AXPlatformNodeBase::GetFocus() {
+gfx::NativeViewAccessible AXPlatformNodeBase::GetFocus() const {
   if (delegate_)
     return delegate_->GetFocus();
   return nullptr;
@@ -883,9 +883,6 @@ base::Optional<float> AXPlatformNodeBase::GetFontSizeInPoints() const {
 
 bool AXPlatformNodeBase::HasCaret(
     const AXTree::Selection* unignored_selection) {
-  if (IsInvisibleOrIgnored())
-    return false;
-
   if (IsPlainTextField() &&
       HasIntAttribute(ax::mojom::IntAttribute::kTextSelStart) &&
       HasIntAttribute(ax::mojom::IntAttribute::kTextSelEnd)) {
@@ -917,7 +914,17 @@ bool AXPlatformNodeBase::IsChildOfLeaf() const {
 }
 
 bool AXPlatformNodeBase::IsInvisibleOrIgnored() const {
-  return GetData().IsInvisibleOrIgnored();
+  if (!GetData().IsInvisibleOrIgnored())
+    return false;
+
+  if (GetData().HasState(ax::mojom::State::kFocusable))
+    return !IsFocused();
+
+  return !const_cast<AXPlatformNodeBase*>(this)->HasCaret();
+}
+
+bool AXPlatformNodeBase::IsFocused() const {
+  return delegate_ && FromNativeViewAccessible(delegate_->GetFocus()) == this;
 }
 
 bool AXPlatformNodeBase::IsScrollable() const {

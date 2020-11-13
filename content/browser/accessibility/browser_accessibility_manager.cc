@@ -642,10 +642,16 @@ BrowserAccessibility* BrowserAccessibilityManager::GetActiveDescendant(
     active_descendant = focus->manager()->GetFromID(active_descendant_id);
   }
 
+  // When getting the active descendant, we avoid calling IsInvisibleOrIgnored
+  // on the node because IsInvisibleOrIgnored takes the focused object into
+  // account by retrieving it. We already have the focused object, thus there is
+  // no need to re-retrieve it. Furthermore, doing so can lead to an infinite
+  // loop. Therefore just check the AXNodeData.
+
   if (focus->GetRole() == ax::mojom::Role::kPopUpButton) {
     BrowserAccessibility* child = focus->InternalGetFirstChild();
     if (child && child->GetRole() == ax::mojom::Role::kMenuListPopup &&
-        !child->GetData().HasState(ax::mojom::State::kInvisible)) {
+        !child->GetData().IsInvisibleOrIgnored()) {
       // The active descendant is found on the menu list popup, i.e. on the
       // actual list and not on the button that opens it.
       // If there is no active descendant, focus should stay on the button so
@@ -661,8 +667,7 @@ BrowserAccessibility* BrowserAccessibilityManager::GetActiveDescendant(
     }
   }
 
-  if (active_descendant &&
-      !active_descendant->GetData().HasState(ax::mojom::State::kInvisible))
+  if (active_descendant && !active_descendant->GetData().IsInvisibleOrIgnored())
     return active_descendant;
 
   return focus;

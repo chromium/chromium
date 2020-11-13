@@ -93,7 +93,7 @@ class TestAXNodeWrapper : public AXPlatformNodeDelegateBase {
   gfx::NativeViewAccessible HitTestSync(
       int screen_physical_pixel_x,
       int screen_physical_pixel_y) const override;
-  gfx::NativeViewAccessible GetFocus() override;
+  gfx::NativeViewAccessible GetFocus() const override;
   bool IsMinimized() const override;
   bool IsWebContent() const override;
   AXPlatformNode* GetFromNodeID(int32_t id) override;

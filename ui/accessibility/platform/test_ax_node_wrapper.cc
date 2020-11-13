@@ -301,7 +301,7 @@ gfx::NativeViewAccessible TestAXNodeWrapper::HitTestSync(
                  : nullptr;
 }
 
-gfx::NativeViewAccessible TestAXNodeWrapper::GetFocus() {
+gfx::NativeViewAccessible TestAXNodeWrapper::GetFocus() const {
   auto focused = g_focused_node_in_tree.find(tree_);
   if (focused != g_focused_node_in_tree.end() &&
       focused->second->IsDescendantOf(node_)) {

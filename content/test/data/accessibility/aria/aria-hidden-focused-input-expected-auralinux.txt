@@ -1,0 +1,3 @@
+[document web] focusable showing visible
+++[entry] name='input 1' focusable selectable-text hidden:true
+++[entry] name='input 2' focusable focused showing visible selectable-text

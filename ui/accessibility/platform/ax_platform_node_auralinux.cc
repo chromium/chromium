@@ -3062,7 +3062,7 @@ void AXPlatformNodeAuraLinux::GetAtkState(AtkStateSet* atk_state_set) {
     atk_state_set_add_state(atk_state_set, ATK_STATE_FOCUSABLE);
   if (data.HasState(ax::mojom::State::kHorizontal))
     atk_state_set_add_state(atk_state_set, ATK_STATE_HORIZONTAL);
-  if (!data.HasState(ax::mojom::State::kInvisible)) {
+  if (!IsInvisibleOrIgnored()) {
     atk_state_set_add_state(atk_state_set, ATK_STATE_VISIBLE);
     if (!delegate_->IsOffscreen() && !is_minimized)
       atk_state_set_add_state(atk_state_set, ATK_STATE_SHOWING);
@@ -3693,7 +3693,7 @@ bool AXPlatformNodeAuraLinux::SelectionAndFocusAreTheSame() {
   // on the select element and not the newly-selected descendant.
   if (AXPlatformNodeBase* parent = FromAtkObject(GetParent())) {
     if (parent->GetData().role == ax::mojom::Role::kMenuListPopup)
-      return !parent->GetData().HasState(ax::mojom::State::kInvisible);
+      return !parent->IsInvisibleOrIgnored();
   }
 
   return false;

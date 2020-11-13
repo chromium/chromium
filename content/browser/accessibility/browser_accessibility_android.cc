@@ -236,10 +236,6 @@ bool BrowserAccessibilityAndroid::IsFocusable() const {
   return HasState(ax::mojom::State::kFocusable);
 }
 
-bool BrowserAccessibilityAndroid::IsFocused() const {
-  return manager()->GetFocus() == this;
-}
-
 bool BrowserAccessibilityAndroid::IsFormDescendant() const {
   // Iterate over parents and see if any are a form.
   const BrowserAccessibility* parent = PlatformGetParent();
@@ -304,7 +300,7 @@ bool BrowserAccessibilityAndroid::IsSlider() const {
 }
 
 bool BrowserAccessibilityAndroid::IsVisibleToUser() const {
-  return !HasState(ax::mojom::State::kInvisible);
+  return !IsInvisibleOrIgnored();
 }
 
 bool BrowserAccessibilityAndroid::IsInterestingOnAndroid() const {
@@ -319,7 +315,7 @@ bool BrowserAccessibilityAndroid::IsInterestingOnAndroid() const {
     return false;
 
   // Mark as uninteresting if it's hidden, even if it is focusable.
-  if (HasState(ax::mojom::State::kInvisible))
+  if (IsInvisibleOrIgnored())
     return false;
 
   // Walk up the ancestry. A non-focusable child of a control is not
@@ -330,7 +326,7 @@ bool BrowserAccessibilityAndroid::IsInterestingOnAndroid() const {
       return false;
 
     if (parent->GetRole() == ax::mojom::Role::kIframe &&
-        parent->GetData().HasState(ax::mojom::State::kInvisible)) {
+        parent->IsInvisibleOrIgnored()) {
       return false;
     }
 

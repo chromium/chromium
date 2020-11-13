@@ -1173,6 +1173,17 @@ bool AXNode::IsIgnored() const {
   return data().IsIgnored();
 }
 
+bool AXNode::IsInvisibleOrIgnored() const {
+  if (!data().IsInvisibleOrIgnored())
+    return false;
+
+  return !IsFocusedWithinThisTree();
+}
+
+bool AXNode::IsFocusedWithinThisTree() const {
+  return id() == tree_->data().focus_id;
+}
+
 bool AXNode::IsChildOfLeaf() const {
   const AXNode* ancestor = GetUnignoredParent();
   while (ancestor) {

@@ -63,7 +63,7 @@ class AX_EXPORT AXFragmentRootWin : public ui::AXPlatformNodeDelegateBase {
   gfx::NativeViewAccessible GetNextSibling() override;
   gfx::NativeViewAccessible GetPreviousSibling() override;
   gfx::NativeViewAccessible HitTestSync(int x, int y) const override;
-  gfx::NativeViewAccessible GetFocus() override;
+  gfx::NativeViewAccessible GetFocus() const override;
   const ui::AXUniqueId& GetUniqueId() const override;
   gfx::AcceleratedWidget GetTargetForNativeAccessibilityEvent() override;
   AXPlatformNode* GetFromTreeIDAndNodeID(const ui::AXTreeID& ax_tree_id,

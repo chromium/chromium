@@ -1571,7 +1571,7 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
   if (![self instanceActive])
     return YES;
   return [[self role] isEqualToString:NSAccessibilityUnknownRole] ||
-         _owner->HasState(ax::mojom::State::kInvisible);
+         _owner->IsInvisibleOrIgnored();
 }
 
 - (NSString*)invalid {

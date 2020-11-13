@@ -379,7 +379,7 @@ gfx::NativeViewAccessible AXFragmentRootWin::HitTestSync(int x, int y) const {
   return nullptr;
 }
 
-gfx::NativeViewAccessible AXFragmentRootWin::GetFocus() {
+gfx::NativeViewAccessible AXFragmentRootWin::GetFocus() const {
   AXPlatformNodeDelegate* child_delegate = GetChildNodeDelegate();
   if (child_delegate)
     return child_delegate->GetFocus();

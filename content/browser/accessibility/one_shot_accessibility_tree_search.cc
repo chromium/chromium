@@ -195,7 +195,7 @@ bool OneShotAccessibilityTreeSearch::Matches(BrowserAccessibility* node) {
       return false;
   }
 
-  if (node->HasState(ax::mojom::State::kInvisible))
+  if (node->IsInvisibleOrIgnored())
     return false;  // Programmatically hidden, e.g. aria-hidden or via CSS.
 
   if (onscreen_only_ && node->IsOffscreen())

@@ -149,7 +149,7 @@ class VIEWS_EXPORT AXVirtualView : public ui::AXPlatformNodeDelegateBase {
   gfx::NativeViewAccessible HitTestSync(
       int screen_physical_pixel_x,
       int screen_physical_pixel_y) const override;
-  gfx::NativeViewAccessible GetFocus() override;
+  gfx::NativeViewAccessible GetFocus() const override;
   ui::AXPlatformNode* GetFromNodeID(int32_t id) override;
   bool AccessibilityPerformAction(const ui::AXActionData& data) override;
   bool ShouldIgnoreHoveredStateForTesting() override;

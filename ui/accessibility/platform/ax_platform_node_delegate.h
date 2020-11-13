@@ -152,6 +152,12 @@ class AX_EXPORT AXPlatformNodeDelegate {
   // layer.
   virtual bool IsLeaf() const = 0;
 
+  // Returns true if this node is invisible or ignored.
+  virtual bool IsInvisibleOrIgnored() const = 0;
+
+  // Returns true if this node is focused.
+  virtual bool IsFocused() const = 0;
+
   // Returns true if this is a top-level browser window that doesn't have a
   // parent accessible node, or its parent is the application accessible node on
   // platforms that have one.
@@ -259,7 +265,7 @@ class AX_EXPORT AXPlatformNodeDelegate {
   // Return the node within this node's subtree (inclusive) that currently has
   // focus, or return nullptr if this subtree is not connected to the top
   // document through its ancestry chain.
-  virtual gfx::NativeViewAccessible GetFocus() = 0;
+  virtual gfx::NativeViewAccessible GetFocus() const = 0;
 
   // Get whether this node is offscreen.
   virtual bool IsOffscreen() const = 0;

@@ -62,7 +62,7 @@ class AX_EXPORT AXPlatformNodeBase : public AXPlatformNode {
 
   // These are simple wrappers to our delegate.
   const AXNodeData& GetData() const;
-  gfx::NativeViewAccessible GetFocus();
+  gfx::NativeViewAccessible GetFocus() const;
   gfx::NativeViewAccessible GetParent() const;
   int GetChildCount() const;
   gfx::NativeViewAccessible ChildAtIndex(int index) const;
@@ -236,6 +236,9 @@ class AX_EXPORT AXPlatformNodeBase : public AXPlatformNode {
 
   // See AXPlatformNodeDelegate::IsInvisibleOrIgnored().
   bool IsInvisibleOrIgnored() const;
+
+  // Returns true if this node is currently focused.
+  bool IsFocused() const;
 
   // Returns true if this node can be scrolled either in the horizontal or the
   // vertical direction.

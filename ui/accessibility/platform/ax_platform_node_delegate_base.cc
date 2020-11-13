@@ -160,6 +160,14 @@ bool AXPlatformNodeDelegateBase::IsLeaf() const {
   return !GetChildCount();
 }
 
+bool AXPlatformNodeDelegateBase::IsFocused() const {
+  return false;
+}
+
+bool AXPlatformNodeDelegateBase::IsInvisibleOrIgnored() const {
+  return false;
+}
+
 bool AXPlatformNodeDelegateBase::IsToplevelBrowserWindow() {
   return false;
 }
@@ -313,7 +321,7 @@ gfx::NativeViewAccessible AXPlatformNodeDelegateBase::HitTestSync(
   return nullptr;
 }
 
-gfx::NativeViewAccessible AXPlatformNodeDelegateBase::GetFocus() {
+gfx::NativeViewAccessible AXPlatformNodeDelegateBase::GetFocus() const {
   return nullptr;
 }
 

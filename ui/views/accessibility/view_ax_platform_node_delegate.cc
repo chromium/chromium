@@ -381,6 +381,10 @@ bool ViewAXPlatformNodeDelegate::IsLeaf() const {
   return ViewAccessibility::IsLeaf() || AXPlatformNodeDelegateBase::IsLeaf();
 }
 
+bool ViewAXPlatformNodeDelegate::IsFocused() const {
+  return GetFocus() == GetNativeObject();
+}
+
 bool ViewAXPlatformNodeDelegate::IsToplevelBrowserWindow() {
   // Note: only used on Desktop Linux. Other platforms don't have an application
   // node so this would never return true.
@@ -478,7 +482,7 @@ gfx::NativeViewAccessible ViewAXPlatformNodeDelegate::HitTestSync(
                                      : (*i)->GetNativeViewAccessible();
 }
 
-gfx::NativeViewAccessible ViewAXPlatformNodeDelegate::GetFocus() {
+gfx::NativeViewAccessible ViewAXPlatformNodeDelegate::GetFocus() const {
   gfx::NativeViewAccessible focus_override =
       ui::AXPlatformNode::GetPopupFocusOverride();
   if (focus_override)

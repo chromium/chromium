@@ -424,6 +424,8 @@ class CONTENT_EXPORT BrowserAccessibility : public ui::AXPlatformNodeDelegate {
   bool IsChildOfLeaf() const override;
   bool IsDescendantOfPlainTextField() const override;
   bool IsLeaf() const override;
+  bool IsFocused() const override;
+  bool IsInvisibleOrIgnored() const override;
   bool IsToplevelBrowserWindow() override;
   gfx::NativeViewAccessible GetClosestPlatformObject() const override;
 
@@ -453,7 +455,7 @@ class CONTENT_EXPORT BrowserAccessibility : public ui::AXPlatformNodeDelegate {
       ui::AXOffscreenResult* offscreen_result = nullptr) const override;
   gfx::NativeViewAccessible HitTestSync(int physical_pixel_x,
                                         int physical_pixel_y) const override;
-  gfx::NativeViewAccessible GetFocus() override;
+  gfx::NativeViewAccessible GetFocus() const override;
   ui::AXPlatformNode* GetFromNodeID(int32_t id) override;
   ui::AXPlatformNode* GetFromTreeIDAndNodeID(const ui::AXTreeID& ax_tree_id,
                                              int32_t id) override;

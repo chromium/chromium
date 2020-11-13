@@ -1,0 +1,3 @@
+Document
+++Button Name='Button 1' IsControlElement=false
+++Button Name='Button 2'

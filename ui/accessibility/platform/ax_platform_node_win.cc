@@ -7191,8 +7191,8 @@ bool AXPlatformNodeWin::IsUIAControl() const {
   }  // end of web-content only case.
 
   const AXNodeData& data = GetData();
-  return !(data.HasState(ax::mojom::State::kInvisible) ||
-           (data.IsIgnored() && !data.HasState(ax::mojom::State::kFocusable)));
+  return !(IsInvisibleOrIgnored() &&
+           !data.HasState(ax::mojom::State::kFocusable));
 }
 
 base::Optional<LONG> AXPlatformNodeWin::ComputeUIALandmarkType() const {
@@ -7476,10 +7476,8 @@ int AXPlatformNodeWin::MSAAState() const {
   // TODO(dmazzoni): this should probably check if focus is actually inside
   // the menu bar, but we don't currently track focus inside menu pop-ups,
   // and Chrome only has one menu visible at a time so this works for now.
-  if (data.role == ax::mojom::Role::kMenuBar &&
-      !(data.HasState(ax::mojom::State::kInvisible))) {
+  if (data.role == ax::mojom::Role::kMenuBar && !IsInvisibleOrIgnored())
     msaa_state |= STATE_SYSTEM_FOCUSED;
-  }
 
   // Handle STATE_SYSTEM_LINKED
   if (GetData().role == ax::mojom::Role::kLink)

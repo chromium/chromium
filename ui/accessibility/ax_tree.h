@@ -58,7 +58,7 @@ class AX_EXPORT AXTree : public AXNode::OwnerTree {
 
   AXNode* root() const { return root_; }
 
-  const AXTreeData& data() const { return data_; }
+  const AXTreeData& data() const override;
 
   // Destroys the tree and notifies all observers.
   void Destroy();

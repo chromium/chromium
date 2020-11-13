@@ -1,0 +1,4 @@
+AutomationFocusChanged on role=textbox, name=search
+AutomationFocusChanged on role=textbox, name=search
+Text_TextSelectionChanged on role=document
+Text_TextSelectionChanged on role=textbox, name=search

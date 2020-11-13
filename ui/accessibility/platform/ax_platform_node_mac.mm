@@ -490,7 +490,7 @@ bool AlsoUseShowMenuActionForDefaultAction(const ui::AXNodeData& data) {
     return YES;
 
   return [[self AXRole] isEqualToString:NSAccessibilityUnknownRole] ||
-         _node->GetData().HasState(ax::mojom::State::kInvisible);
+         _node->IsInvisibleOrIgnored();
 }
 
 - (id)accessibilityHitTest:(NSPoint)point {
@@ -955,7 +955,7 @@ bool AlsoUseShowMenuActionForDefaultAction(const ui::AXNodeData& data) {
     return NO;
 
   return (![[self AXRole] isEqualToString:NSAccessibilityUnknownRole] &&
-          !_node->GetData().HasState(ax::mojom::State::kInvisible));
+          !_node->IsInvisibleOrIgnored());
 }
 - (BOOL)isAccessibilityEnabled {
   if (!_node)

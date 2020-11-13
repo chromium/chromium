@@ -512,6 +512,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+                       AccessibilityEventsCaretMoveHiddenInput) {
+  RunEventTest(FILE_PATH_LITERAL("caret-move-hidden-input.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
                        AccessibilityEventsCheckboxValidity) {
   RunEventTest(FILE_PATH_LITERAL("checkbox-validity.html"));
 }
