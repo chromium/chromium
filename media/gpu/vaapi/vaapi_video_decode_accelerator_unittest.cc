@@ -213,9 +213,9 @@ class VaapiVideoDecodeAcceleratorTest : public TestWithParam<TestParams>,
   // Reset epilogue, needed to get |vda_| worker thread out of its Wait().
   void ResetSequence() {
     base::RunLoop run_loop;
-    base::Closure quit_closure = run_loop.QuitClosure();
     EXPECT_CALL(*mock_decoder_, Reset());
-    EXPECT_CALL(*this, NotifyResetDone()).WillOnce(RunClosure(quit_closure));
+    EXPECT_CALL(*this, NotifyResetDone())
+        .WillOnce(RunClosure(run_loop.QuitClosure()));
     vda_.Reset();
     run_loop.Run();
   }
@@ -231,8 +231,6 @@ class VaapiVideoDecodeAcceleratorTest : public TestWithParam<TestParams>,
                                 bool expect_dismiss_picture_buffers = false,
                                 size_t num_picture_buffers_to_dismiss = 0) {
     ::testing::InSequence s;
-    base::RunLoop run_loop;
-    base::Closure quit_closure = run_loop.QuitClosure();
     EXPECT_CALL(*mock_decoder_,
                 SetStream(_, IsExpectedDecoderBuffer(kInputSize, nullptr)))
         .WillOnce(Return());
@@ -262,10 +260,12 @@ class VaapiVideoDecodeAcceleratorTest : public TestWithParam<TestParams>,
             ? num_pictures - kNumReferenceFrames
             : num_pictures;
 
+    base::RunLoop run_loop;
+
     EXPECT_CALL(*this,
                 ProvidePictureBuffers(expected_num_picture_buffers_requested, _,
                                       1, picture_size, _))
-        .WillOnce(RunClosure(quit_closure));
+        .WillOnce(RunClosure(run_loop.QuitClosure()));
 
     auto region = base::UnsafeSharedMemoryRegion::TakeHandleForSerialization(
         in_shm_.Duplicate());
@@ -285,9 +285,6 @@ class VaapiVideoDecodeAcceleratorTest : public TestWithParam<TestParams>,
                                     int32_t bitstream_id) {
     ASSERT_TRUE(vda_.curr_input_buffer_)
         << "QueueInputBuffer() should have been called";
-
-    base::RunLoop run_loop;
-    base::Closure quit_closure = run_loop.QuitClosure();
 
     // |decode_using_client_picture_buffers| determines the concrete method for
     // creation of context, surfaces and VaapiPictures.
@@ -326,10 +323,12 @@ class VaapiVideoDecodeAcceleratorTest : public TestWithParam<TestParams>,
     }
 
     ::testing::InSequence s;
+    base::RunLoop run_loop;
+
     EXPECT_CALL(*mock_decoder_, Decode())
         .WillOnce(Return(AcceleratedVideoDecoder::kRanOutOfStreamData));
     EXPECT_CALL(*this, NotifyEndOfBitstreamBuffer(bitstream_id))
-        .WillOnce(RunClosure(quit_closure));
+        .WillOnce(RunClosure(run_loop.QuitClosure()));
 
     const auto tex_target = mock_vaapi_picture_factory_->GetGLTextureTarget();
     int irrelevant_id = 2;
@@ -352,14 +351,13 @@ class VaapiVideoDecodeAcceleratorTest : public TestWithParam<TestParams>,
   // because the Decode() is (almost) immediate.
   void DecodeOneFrameFast(int32_t bitstream_id) {
     base::RunLoop run_loop;
-    base::Closure quit_closure = run_loop.QuitClosure();
     EXPECT_CALL(*mock_decoder_,
                 SetStream(_, IsExpectedDecoderBuffer(kInputSize, nullptr)))
         .WillOnce(Return());
     EXPECT_CALL(*mock_decoder_, Decode())
         .WillOnce(Return(AcceleratedVideoDecoder::kRanOutOfStreamData));
     EXPECT_CALL(*this, NotifyEndOfBitstreamBuffer(bitstream_id))
-        .WillOnce(RunClosure(quit_closure));
+        .WillOnce(RunClosure(run_loop.QuitClosure()));
 
     auto region = base::UnsafeSharedMemoryRegion::TakeHandleForSerialization(
         in_shm_.Duplicate());
@@ -442,14 +440,13 @@ TEST_P(VaapiVideoDecodeAcceleratorTest, QueueInputBufferAndDecodeError) {
   BitstreamBuffer bitstream_buffer(kBitstreamId, std::move(region), kInputSize);
 
   base::RunLoop run_loop;
-  base::Closure quit_closure = run_loop.QuitClosure();
   EXPECT_CALL(*mock_decoder_,
               SetStream(_, IsExpectedDecoderBuffer(kInputSize, nullptr)))
       .WillOnce(Return());
   EXPECT_CALL(*mock_decoder_, Decode())
       .WillOnce(Return(AcceleratedVideoDecoder::kDecodeError));
   EXPECT_CALL(*this, NotifyError(VaapiVideoDecodeAccelerator::PLATFORM_FAILURE))
-      .WillOnce(RunClosure(quit_closure));
+      .WillOnce(RunClosure(run_loop.QuitClosure()));
 
   QueueInputBuffer(std::move(bitstream_buffer));
   run_loop.Run();

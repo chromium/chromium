@@ -1078,8 +1078,8 @@ class VideoFrameQualityValidator
   VideoFrameQualityValidator(const VideoCodecProfile profile,
                              const VideoPixelFormat pixel_format,
                              bool verify_quality,
-                             const base::Closure& flush_complete_cb,
-                             const base::Closure& decode_error_cb);
+                             const base::RepeatingClosure& flush_complete_cb,
+                             const base::RepeatingClosure& decode_error_cb);
   void Initialize(const gfx::Size& coded_size, const gfx::Rect& visible_size);
   // Save original YUV frame to compare it with the decoded frame later.
   void AddOriginalFrame(scoped_refptr<VideoFrame> frame);
@@ -1111,8 +1111,8 @@ class VideoFrameQualityValidator
   const bool verify_quality_;
   std::unique_ptr<FFmpegVideoDecoder> decoder_;
   // Callback of Flush(). Called after all frames are decoded.
-  const base::Closure flush_complete_cb_;
-  const base::Closure decode_error_cb_;
+  base::RepeatingClosure flush_complete_cb_;
+  base::RepeatingClosure decode_error_cb_;
   State decoder_state_;
   base::queue<scoped_refptr<VideoFrame>> original_frames_;
   base::queue<scoped_refptr<DecoderBuffer>> decode_buffers_;
@@ -1124,8 +1124,8 @@ VideoFrameQualityValidator::VideoFrameQualityValidator(
     const VideoCodecProfile profile,
     const VideoPixelFormat pixel_format,
     const bool verify_quality,
-    const base::Closure& flush_complete_cb,
-    const base::Closure& decode_error_cb)
+    const base::RepeatingClosure& flush_complete_cb,
+    const base::RepeatingClosure& decode_error_cb)
     : profile_(profile),
       pixel_format_(pixel_format),
       verify_quality_(verify_quality),

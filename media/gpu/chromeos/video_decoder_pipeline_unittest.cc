@@ -163,9 +163,8 @@ TEST_P(VideoDecoderPipelineTest, Initialize) {
   SetCreateDecoderFunctions(GetParam().create_decoder_functions);
 
   base::RunLoop run_loop;
-  base::Closure quit_closure = run_loop.QuitClosure();
   EXPECT_CALL(*this, OnInit(MatchesStatusCode(GetParam().status_code)))
-      .WillOnce(RunClosure(quit_closure));
+      .WillOnce(RunClosure(run_loop.QuitClosure()));
 
   InitializeDecoder();
   run_loop.Run();

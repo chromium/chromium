@@ -182,7 +182,6 @@ class VaapiVideoEncodeAcceleratorTest
 
   void InitializeSequenceForVP9(const VideoEncodeAccelerator::Config& config) {
     base::RunLoop run_loop;
-    base::Closure quit_closure = run_loop.QuitClosure();
     ::testing::InSequence s;
     constexpr auto kBitrateControl =
         AcceleratedVideoEncoder::BitrateControl::kConstantQuantizationParameter;
@@ -208,14 +207,12 @@ class VaapiVideoEncodeAcceleratorTest
         }));
     EXPECT_CALL(client_, NotifyEncoderInfoChange(MatchesEncoderInfo(
                              config.spatial_layers[0].num_of_temporal_layers)))
-        .WillOnce([&quit_closure]() { quit_closure.Run(); });
+        .WillOnce(RunClosure(run_loop.QuitClosure()));
     ASSERT_TRUE(InitializeVideoEncodeAccelerator(config));
     run_loop.Run();
   }
 
   void EncodeSequenceForVP9(bool use_temporal_layer_encoding) {
-    base::RunLoop run_loop;
-    base::Closure quit_closure = run_loop.QuitClosure();
     ::testing::InSequence s;
 
     constexpr VABufferID kCodedBufferId = 123;
@@ -284,11 +281,13 @@ class VaapiVideoEncodeAcceleratorTest
             }));
 
     constexpr int32_t kBitstreamId = 12;
+    base::RunLoop run_loop;
+
     EXPECT_CALL(client_, BitstreamBufferReady(kBitstreamId,
                                               MatchesBitstreamBufferMetadata(
                                                   kEncodedChunkSize, false,
                                                   use_temporal_layer_encoding)))
-        .WillOnce(RunClosure(quit_closure));
+        .WillOnce(RunClosure(run_loop.QuitClosure()));
 
     auto region = base::UnsafeSharedMemoryRegion::Create(output_buffer_size_);
     ASSERT_TRUE(region.IsValid());
