@@ -1819,6 +1819,8 @@ void NetworkContext::OnHttpAuthDynamicParamsChanged(
       http_auth_dynamic_network_service_params->negotiate_disable_cname_lookup);
   http_auth_merged_preferences_.set_negotiate_enable_port(
       http_auth_dynamic_network_service_params->enable_negotiate_port);
+  http_auth_merged_preferences_.set_basic_over_http_enabled(
+      http_auth_dynamic_network_service_params->basic_over_http_enabled);
 #if defined(OS_POSIX) || defined(OS_FUCHSIA)
   http_auth_merged_preferences_.set_ntlm_v2_enabled(
       http_auth_dynamic_network_service_params->ntlm_v2_enabled);

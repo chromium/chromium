@@ -780,6 +780,7 @@ extern const char kAuthAndroidNegotiateAccountType[];
 extern const char kAllowCrossOriginAuthPrompt[];
 extern const char kGloballyScopeHTTPAuthCacheEnabled[];
 extern const char kAmbientAuthenticationInPrivateModesEnabled[];
+extern const char kBasicAuthOverHttpEnabled[];
 
 #if defined(OS_LINUX) || defined(OS_MAC) || defined(OS_CHROMEOS)
 extern const char kAuthNegotiateDelegateByKdcPolicy[];

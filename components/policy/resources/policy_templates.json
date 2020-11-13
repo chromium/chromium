@@ -447,6 +447,7 @@
         'AuthSchemes',
         'DisableAuthNegotiateCnameLookup',
         'EnableAuthNegotiatePort',
+        'BasicAuthOverHttpEnabled',
         'AuthServerAllowlist',
         'AuthServerWhitelist',
         'AuthNegotiateDelegateAllowlist',
@@ -4255,7 +4256,7 @@
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:9-','android:46-','chrome_os:62-'],
       'features': {
-        'dynamic_refresh': False,
+        'dynamic_refresh': True,
         'per_profile': False,
       },
       'example_value': False,
@@ -4273,7 +4274,7 @@
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:9-','chrome_os:62-'],
       'features': {
-        'dynamic_refresh': False,
+        'dynamic_refresh': True,
         'per_profile': False,
       },
       'example_value': False,
@@ -4283,6 +4284,35 @@
       'desc': '''Setting the policy to Enabled and entering a nonstandard port (in other words, a port other than 80 or 443) includes it in the generated Kerberos SPN.
 
       Setting the policy to Disabled or leaving it unset means the generated Kerberos SPN won't include a port.''',
+    },
+    {
+      'name': 'BasicAuthOverHttpEnabled',
+      'owners': ['file://components/policy/resources/OWNERS'],
+      'type': 'main',
+      'schema': { 'type': 'boolean' },
+      'supported_on': ['chrome.*:88-','chrome_os:88-'],
+      'features': {
+        'dynamic_refresh': True,
+        'per_profile': False,
+      },
+      'items': [
+        {
+          'value': True,
+          'caption': '<ph name="BASIC_AUTH">Basic</ph> authentication is allowed on HTTP connections',
+        },
+        {
+          'value': False,
+          'caption': 'Non-secure HTTP connections are not permitted to use <ph name="BASIC_AUTH">Basic</ph> authentication; HTTPS is required',
+        },
+      ],
+      'default': True,
+      'example_value': False,
+      'id': 806,
+      'caption': '''Allow <ph name="BASIC_AUTH">Basic</ph> authentication for HTTP''',
+      'tags': [],
+      'desc': '''Setting the policy to Enabled or leaving it unset will allow <ph name="BASIC_AUTH">Basic</ph> authentication challenges received over non-secure HTTP.
+
+      Setting the policy to Disabled forbids non-secure HTTP requests from using the <ph name="BASIC_AUTH">Basic</ph> authentication scheme; only secure HTTPS is allowed.''',
     },
     {
       'name': 'AuthServerWhitelist',
@@ -4314,7 +4344,7 @@
       'schema': { 'type': 'string' },
       'supported_on': ['chrome.*:86-','android:86-','webview_android:86-','chrome_os:86-'],
       'features': {
-        'dynamic_refresh': False,
+        'dynamic_refresh': True,
         'per_profile': False,
       },
       'example_value': '*.example.com,example.com',
@@ -4355,7 +4385,7 @@
       'schema': { 'type': 'string' },
       'supported_on': ['chrome.*:86-','android:86-','chrome_os:86-'],
       'features': {
-        'dynamic_refresh': False,
+        'dynamic_refresh': True,
         'per_profile': False,
       },
       'example_value': 'foobar.example.com',
@@ -16934,7 +16964,7 @@
 
       Setting the policy means users can turn on an app on the lock screen if the app's extension ID is in the policy list value. So, setting it to an empty list will turn off note-taking on the lock screen. The policy with an app ID doesn't necessarily mean that users can turn the app on as a note-taking app on the lock screen. For example, on <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> 61, the set of available apps is also restricted by the platform.
 
-      Leaving the policy unset amounts to no restrictions on the set of apps users can enable on the lock screen imposed by the policy."'''
+      Leaving the policy unset amounts to no restrictions on the set of apps users can enable on the lock screen imposed by the policy.'''
     },
     {
       'name': 'CastReceiverEnabled',
@@ -24678,6 +24708,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 805,
+  'highest_id_currently_used': 806,
   'highest_atomic_group_id_currently_used': 40
 }

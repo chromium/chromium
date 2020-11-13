@@ -1226,6 +1226,16 @@
     ]
   },
 
+  "BasicAuthOverHttpEnabled": {
+    "os": ["win", "linux", "mac", "chromeos", "android"],
+    "policy_pref_mapping_test": [
+      {
+        "policies": { "BasicAuthOverHttpEnabled": false },
+        "prefs": { "auth.basic_over_http_enabled": { "local_state": true } }
+      }
+    ]
+  },
+
   "AuthServerWhitelist": {
     "os": ["win", "linux", "mac", "chromeos", "android"],
     "policy_pref_mapping_test": [

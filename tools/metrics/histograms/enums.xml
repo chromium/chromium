@@ -22534,6 +22534,7 @@ Called by update_document_policy_enum.py.-->
   <int value="803" label="RemoteAccessHostEnableUserInterface"/>
   <int value="804" label="FullscreenAlertEnabled"/>
   <int value="805" label="NTPCardsVisible"/>
+  <int value="806" label="BasicAuthOverHttpEnabled"/>
 </enum>
 
 <enum name="EnterprisePolicyDeviceIdValidity">

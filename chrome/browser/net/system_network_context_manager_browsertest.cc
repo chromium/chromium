@@ -228,6 +228,7 @@ IN_PROC_BROWSER_TEST_F(SystemNetworkContextManagerBrowsertest, AuthParams) {
       SystemNetworkContextManager::GetHttpAuthDynamicParamsForTesting();
   EXPECT_FALSE(dynamic_params->negotiate_disable_cname_lookup);
   EXPECT_FALSE(dynamic_params->enable_negotiate_port);
+  EXPECT_TRUE(dynamic_params->basic_over_http_enabled);
   EXPECT_EQ("", dynamic_params->server_allowlist);
   EXPECT_EQ("", dynamic_params->delegate_allowlist);
   EXPECT_FALSE(dynamic_params->delegate_by_kdc_policy);
@@ -239,6 +240,7 @@ IN_PROC_BROWSER_TEST_F(SystemNetworkContextManagerBrowsertest, AuthParams) {
       SystemNetworkContextManager::GetHttpAuthDynamicParamsForTesting();
   EXPECT_TRUE(dynamic_params->negotiate_disable_cname_lookup);
   EXPECT_FALSE(dynamic_params->enable_negotiate_port);
+  EXPECT_TRUE(dynamic_params->basic_over_http_enabled);
   EXPECT_EQ("", dynamic_params->server_allowlist);
   EXPECT_EQ("", dynamic_params->delegate_allowlist);
   EXPECT_FALSE(dynamic_params->delegate_by_kdc_policy);
@@ -248,6 +250,17 @@ IN_PROC_BROWSER_TEST_F(SystemNetworkContextManagerBrowsertest, AuthParams) {
       SystemNetworkContextManager::GetHttpAuthDynamicParamsForTesting();
   EXPECT_TRUE(dynamic_params->negotiate_disable_cname_lookup);
   EXPECT_TRUE(dynamic_params->enable_negotiate_port);
+  EXPECT_TRUE(dynamic_params->basic_over_http_enabled);
+  EXPECT_EQ("", dynamic_params->server_allowlist);
+  EXPECT_EQ("", dynamic_params->delegate_allowlist);
+  EXPECT_FALSE(dynamic_params->delegate_by_kdc_policy);
+
+  local_state->SetBoolean(prefs::kBasicAuthOverHttpEnabled, false);
+  dynamic_params =
+      SystemNetworkContextManager::GetHttpAuthDynamicParamsForTesting();
+  EXPECT_TRUE(dynamic_params->negotiate_disable_cname_lookup);
+  EXPECT_TRUE(dynamic_params->enable_negotiate_port);
+  EXPECT_FALSE(dynamic_params->basic_over_http_enabled);
   EXPECT_EQ("", dynamic_params->server_allowlist);
   EXPECT_EQ("", dynamic_params->delegate_allowlist);
   EXPECT_FALSE(dynamic_params->delegate_by_kdc_policy);
@@ -258,6 +271,7 @@ IN_PROC_BROWSER_TEST_F(SystemNetworkContextManagerBrowsertest, AuthParams) {
       SystemNetworkContextManager::GetHttpAuthDynamicParamsForTesting();
   EXPECT_TRUE(dynamic_params->negotiate_disable_cname_lookup);
   EXPECT_TRUE(dynamic_params->enable_negotiate_port);
+  EXPECT_FALSE(dynamic_params->basic_over_http_enabled);
   EXPECT_EQ(kServerAllowList, dynamic_params->server_allowlist);
   EXPECT_EQ("", dynamic_params->delegate_allowlist);
 
@@ -269,6 +283,7 @@ IN_PROC_BROWSER_TEST_F(SystemNetworkContextManagerBrowsertest, AuthParams) {
   EXPECT_TRUE(dynamic_params->negotiate_disable_cname_lookup);
   EXPECT_TRUE(dynamic_params->enable_negotiate_port);
   EXPECT_EQ(kServerAllowList, dynamic_params->server_allowlist);
+  EXPECT_FALSE(dynamic_params->basic_over_http_enabled);
   EXPECT_EQ(kDelegateAllowList, dynamic_params->delegate_allowlist);
   EXPECT_FALSE(dynamic_params->delegate_by_kdc_policy);
 
@@ -278,6 +293,7 @@ IN_PROC_BROWSER_TEST_F(SystemNetworkContextManagerBrowsertest, AuthParams) {
       SystemNetworkContextManager::GetHttpAuthDynamicParamsForTesting();
   EXPECT_TRUE(dynamic_params->negotiate_disable_cname_lookup);
   EXPECT_TRUE(dynamic_params->enable_negotiate_port);
+  EXPECT_FALSE(dynamic_params->basic_over_http_enabled);
   EXPECT_EQ(kServerAllowList, dynamic_params->server_allowlist);
   EXPECT_EQ(kDelegateAllowList, dynamic_params->delegate_allowlist);
   EXPECT_TRUE(dynamic_params->delegate_by_kdc_policy);

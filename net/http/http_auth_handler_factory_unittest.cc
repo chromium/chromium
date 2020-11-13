@@ -212,6 +212,60 @@ TEST(HttpAuthHandlerFactoryTest, DefaultFactory) {
   }
 }
 
+TEST(HttpAuthHandlerFactoryTest, BasicFactoryRespectsHTTPEnabledPref) {
+  std::unique_ptr<HostResolver> host_resolver(new MockHostResolver());
+  std::unique_ptr<HttpAuthHandlerRegistryFactory> http_auth_handler_factory(
+      HttpAuthHandlerFactory::CreateDefault());
+
+  // Set the Preference that blocks Basic Auth over HTTP on all of the
+  // factories. It shouldn't impact any behavior except for the Basic factory.
+  MockAllowHttpAuthPreferences http_auth_preferences;
+  http_auth_preferences.set_basic_over_http_enabled(false);
+  http_auth_handler_factory->SetHttpAuthPreferences(kBasicAuthScheme,
+                                                    &http_auth_preferences);
+  http_auth_handler_factory->SetHttpAuthPreferences(kDigestAuthScheme,
+                                                    &http_auth_preferences);
+  http_auth_handler_factory->SetHttpAuthPreferences(kNtlmAuthScheme,
+                                                    &http_auth_preferences);
+  http_auth_handler_factory->SetHttpAuthPreferences(kNegotiateAuthScheme,
+                                                    &http_auth_preferences);
+
+  GURL nonsecure_origin("http://www.example.com");
+  GURL secure_origin("https://www.example.com");
+  SSLInfo null_ssl_info;
+
+  const HttpAuth::Target kTargets[] = {HttpAuth::AUTH_SERVER,
+                                       HttpAuth::AUTH_PROXY};
+  struct TestCase {
+    int expected_net_error;
+    const GURL origin;
+    const char* challenge;
+  } const kTestCases[] = {
+    // Challenges that result in success results.
+    {OK, secure_origin, "Basic realm=\"FooBar\""},
+    {OK, secure_origin, "Digest realm=\"FooBar\", nonce=\"xyz\""},
+    {OK, nonsecure_origin, "Digest realm=\"FooBar\", nonce=\"xyz\""},
+    {OK, secure_origin, "Ntlm"},
+    {OK, nonsecure_origin, "Ntlm"},
+#if BUILDFLAG(USE_KERBEROS) && !defined(OS_ANDROID)
+    {OK, secure_origin, "Negotiate"},
+    {OK, nonsecure_origin, "Negotiate"},
+#endif
+    // Challenges that result in error results.
+    {ERR_UNSUPPORTED_AUTH_SCHEME, nonsecure_origin, "Basic realm=\"FooBar\""},
+  };
+
+  for (const auto target : kTargets) {
+    for (const TestCase& test_case : kTestCases) {
+      std::unique_ptr<HttpAuthHandler> handler;
+      int rv = http_auth_handler_factory->CreateAuthHandlerFromString(
+          test_case.challenge, target, null_ssl_info, NetworkIsolationKey(),
+          test_case.origin, NetLogWithSource(), host_resolver.get(), &handler);
+      EXPECT_THAT(rv, IsError(test_case.expected_net_error));
+    }
+  }
+}
+
 TEST(HttpAuthHandlerFactoryTest, LogCreateAuthHandlerResults) {
   std::unique_ptr<HostResolver> host_resolver(new MockHostResolver());
   std::unique_ptr<HttpAuthHandlerRegistryFactory> http_auth_handler_factory(
