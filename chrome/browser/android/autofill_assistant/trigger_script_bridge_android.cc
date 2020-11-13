@@ -176,7 +176,8 @@ void TriggerScriptBridgeAndroid::OnTriggerScriptShown(
       env, java_object_, ToJavaArrayOfStrings(env, cancel_popup_items),
       ToJavaIntArray(env, cancel_popup_actions), jleft_aligned_chips,
       ToJavaIntArray(env, left_aligned_chip_actions), jright_aligned_chips,
-      ToJavaIntArray(env, right_aligned_chip_actions));
+      ToJavaIntArray(env, right_aligned_chip_actions),
+      proto.resize_visual_viewport());
 }
 
 void TriggerScriptBridgeAndroid::OnTriggerScriptHidden() {

@@ -17,6 +17,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.ActivityKeyboardVisibilityDelegate;
+import org.chromium.ui.base.ApplicationViewportInsetSupplier;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -68,7 +69,8 @@ class TestingAutofillAssistantModuleEntryProvider extends AutofillAssistantModul
                 CompositorViewHolder compositorViewHolder, Context context,
                 @NonNull WebContents webContents,
                 ActivityKeyboardVisibilityDelegate keyboardVisibilityDelegate,
-                boolean skipOnboarding, boolean isChromeCustomTab, @NonNull String initialUrl,
+                ApplicationViewportInsetSupplier bottomInsetProvider, boolean skipOnboarding,
+                boolean isChromeCustomTab, @NonNull String initialUrl,
                 Map<String, String> parameters, String experimentIds,
                 @Nullable String callerAccount, @Nullable String userName) {}
 

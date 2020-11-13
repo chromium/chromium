@@ -571,6 +571,9 @@ message TriggerScriptUIProto {
   // The status message to display when transitioning from this trigger script
   // to the regular script.
   optional string regular_script_loading_status_message = 7;
+  // Whether the visual viewport should be resized to allow scrolling to the
+  // bottom of the page while the trigger script is being displayed.
+  optional bool resize_visual_viewport = 8;
 }
 
 enum KeyboardValueFillStrategy {

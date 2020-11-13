@@ -162,6 +162,7 @@ public class AutofillAssistantFacade {
                                 activity.getBrowserControlsManager(),
                                 activity.getCompositorViewHolder(), activity, tab.getWebContents(),
                                 activity.getWindowAndroid().getKeyboardDelegate(),
+                                activity.getWindowAndroid().getApplicationBottomInsetProvider(),
                                 !AutofillAssistantPreferencesUtil.getShowOnboarding(),
                                 activity instanceof CustomTabActivity, arguments.getInitialUrl(),
                                 arguments.getParameters(), arguments.getExperimentIds(),
